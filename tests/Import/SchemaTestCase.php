@@ -32,6 +32,9 @@
  */
 class Doctrine_Import_Schema_TestCase extends Doctrine_UnitTestCase 
 {
+    public $buildSchema;
+    public $schema;
+    
     public function testYmlImport()
     {
         $import = new Doctrine_Import_Schema();
@@ -39,14 +42,65 @@ class Doctrine_Import_Schema_TestCase extends Doctrine_UnitTestCase
         
         if ( ! file_exists('classes/User.php')) {
             $this->fail();
-        } else {
-            unlink('classes/User.php');
         }
         
-        if ( ! file_exists('classes/Group.php')) {
+        if ( ! file_exists('classes/Profile.php')) {
             $this->fail();
+        }
+    }
+    
+    public function testBuildSchema()
+    {
+        $schema = new Doctrine_Import_Schema();
+        $array = $schema->buildSchema('schema.yml', 'yml');
+        
+        $model = $array['User'];
+
+        $this->assertTrue(array_key_exists('connection', $model));
+        $this->assertTrue(array_key_exists('className', $model));
+        $this->assertTrue(array_key_exists('tableName', $model));
+        $this->assertTrue(array_key_exists('columns', $model) && is_array($model['columns']));
+        $this->assertTrue(array_key_exists('relations', $model) && is_array($model['relations']));
+        $this->assertTrue(array_key_exists('indexes', $model) && is_array($model['indexes']));
+        $this->assertTrue(array_key_exists('attributes', $model) && is_array($model['attributes']));
+        $this->assertTrue(array_key_exists('templates', $model) && is_array($model['columns']));
+        $this->assertTrue(array_key_exists('actAs', $model) && is_array($model['actAs']));
+        $this->assertTrue(array_key_exists('options', $model) && is_array($model['options']));
+        $this->assertTrue(array_key_exists('package', $model));
+    }
+    
+    public function testSchemaRelationshipCompletion()
+    {
+        $this->buildSchema = new Doctrine_Import_Schema();
+        $this->schema = $this->buildSchema->buildSchema('schema.yml', 'yml');
+        
+        foreach ($this->schema as $name => $properties) {
+            $relations = $this->buildSchema->getRelations($properties);
+            
+            foreach ($relations as $alias => $relation) {
+                if (!$this->_verifyMultiDirectionalRelationship($name, $alias, $relation)) {
+                    $this->fail();
+                    
+                    return false;
+                }
+            }
+        }
+        
+        $this->pass();
+    }
+    
+    protected function _verifyMultiDirectionalRelationship($class, $relationAlias, $relation)
+    {
+        $foreignClass = $relation['class'];
+        $foreignAlias = isset($relation['foreignAlias']) ? $relation['foreignAlias']:$class;
+        
+        $foreignClassRelations = $this->buildSchema->getRelations($this->schema[$foreignClass]);
+        
+        // Check to see if the foreign class has the opposite end defined for the class/foreignAlias
+        if (isset($foreignClassRelations[$foreignAlias])) {
+            return true;
         } else {
-            unlink('classes/Group.php');
+            return false;
         }
     }
 }

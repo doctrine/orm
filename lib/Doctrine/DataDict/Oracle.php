@@ -107,15 +107,19 @@ class Doctrine_DataDict_Oracle extends Doctrine_DataDict
      */
     public function getPortableDeclaration(array $field)
     {
-        $dbType = strtolower($field['type']);
+        if ( ! isset($field['data_type'])) {
+            throw new Doctrine_DataDict_Exception('Native oracle definition must have a data_type key specified');
+        }
+        
+        $dbType = strtolower($field['data_type']);
         $type = array();
         $length = $unsigned = $fixed = null;
-        if ( ! empty($field['length'])) {
-            $length = $field['length'];
+        if ( ! empty($field['data_length'])) {
+            $length = $field['data_length'];
         }
 
-        if ( ! isset($field['name'])) {
-            $field['name'] = '';
+        if ( ! isset($field['column_name'])) {
+            $field['column_name'] = '';
         }
 
         switch ($dbType) {
@@ -125,7 +129,7 @@ class Doctrine_DataDict_Oracle extends Doctrine_DataDict
                 $type[] = 'integer';
                 if ($length == '1') {
                     $type[] = 'boolean';
-                    if (preg_match('/^(is|has)/', $field['name'])) {
+                    if (preg_match('/^(is|has)/', $field['column_name'])) {
                         $type = array_reverse($type);
                     }
                 }
@@ -139,7 +143,7 @@ class Doctrine_DataDict_Oracle extends Doctrine_DataDict
                 $type[] = 'string';
                 if ($length == '1') {
                     $type[] = 'boolean';
-                    if (preg_match('/^(is|has)/', $field['name'])) {
+                    if (preg_match('/^(is|has)/', $field['column_name'])) {
                         $type = array_reverse($type);
                     }
                 }
@@ -156,13 +160,13 @@ class Doctrine_DataDict_Oracle extends Doctrine_DataDict
                 $type[] = 'float';
                 break;
             case 'number':
-                if ( ! empty($field['scale'])) {
+                if ( ! empty($field['data_scale'])) {
                     $type[] = 'decimal';
                 } else {
                     $type[] = 'integer';
                     if ($length == '1') {
                         $type[] = 'boolean';
-                        if (preg_match('/^(is|has)/', $field['name'])) {
+                        if (preg_match('/^(is|has)/', $field['column_name'])) {
                             $type = array_reverse($type);
                         }
                     }

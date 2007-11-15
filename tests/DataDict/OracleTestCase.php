@@ -34,7 +34,7 @@ class Doctrine_DataDict_Oracle_TestCase extends Doctrine_UnitTestCase {
     public function testGetPortableDeclarationForUnknownNativeTypeThrowsException() 
     {
         try {
-            $this->dataDict->getPortableDeclaration(array('type' => 'some_unknown_type'));
+            $this->dataDict->getPortableDeclaration(array('data_type' => 'some_unknown_type'));
             $this->fail();
         } catch(Doctrine_DataDict_Exception $e) {
             $this->pass();
@@ -42,7 +42,7 @@ class Doctrine_DataDict_Oracle_TestCase extends Doctrine_UnitTestCase {
     }
     public function testGetPortableDeclarationSupportsNativeFloatType() 
     {
-        $type = $this->dataDict->getPortableDeclaration(array('type' => 'float'));
+        $type = $this->dataDict->getPortableDeclaration(array('data_type' => 'float'));
 
         $this->assertEqual($type, array('type' => array('float'),
                                         'length' => null,
@@ -51,21 +51,21 @@ class Doctrine_DataDict_Oracle_TestCase extends Doctrine_UnitTestCase {
     }
     public function testGetPortableDeclarationSupportsNativeIntegerTypes()
     {
-        $type = $this->dataDict->getPortableDeclaration(array('type' => 'integer'));
+        $type = $this->dataDict->getPortableDeclaration(array('data_type' => 'integer'));
         
         $this->assertEqual($type, array('type' => array('integer'),
                                         'length' => null,
                                         'unsigned' => null,
                                         'fixed' => null));
 
-        $type = $this->dataDict->getPortableDeclaration(array('type' => 'pls_integer', 'length' => 1));
+        $type = $this->dataDict->getPortableDeclaration(array('data_type' => 'pls_integer', 'data_length' => 1));
         
         $this->assertEqual($type, array('type' => array('integer', 'boolean'),
                                         'length' => 1,
                                         'unsigned' => null,
                                         'fixed' => null));
 
-        $type = $this->dataDict->getPortableDeclaration(array('type' => 'binary_integer', 'length' => 1));
+        $type = $this->dataDict->getPortableDeclaration(array('data_type' => 'binary_integer', 'data_length' => 1));
         
         $this->assertEqual($type, array('type' => array('integer', 'boolean'),
                                         'length' => 1,
@@ -74,35 +74,35 @@ class Doctrine_DataDict_Oracle_TestCase extends Doctrine_UnitTestCase {
     }
     public function testGetPortableDeclarationSupportsNativeStringTypes() 
     {
-        $type = $this->dataDict->getPortableDeclaration(array('type' => 'varchar'));
+        $type = $this->dataDict->getPortableDeclaration(array('data_type' => 'varchar'));
 
         $this->assertEqual($type, array('type' => array('string'),
                                         'length' => null,
                                         'unsigned' => null,
                                         'fixed' => null));
 
-        $type = $this->dataDict->getPortableDeclaration(array('type' => 'varchar2', 'length' => 1));
+        $type = $this->dataDict->getPortableDeclaration(array('data_type' => 'varchar2', 'data_length' => 1));
 
         $this->assertEqual($type, array('type' => array('string', 'boolean'),
                                         'length' => 1,
                                         'unsigned' => null,
                                         'fixed' => false));
 
-        $type = $this->dataDict->getPortableDeclaration(array('type' => 'nvarchar2', 'length' => 1));
+        $type = $this->dataDict->getPortableDeclaration(array('data_type' => 'nvarchar2', 'data_length' => 1));
         
         $this->assertEqual($type, array('type' => array('string', 'boolean'),
                                         'length' => 1,
                                         'unsigned' => null,
                                         'fixed' => false));
         
-        $type = $this->dataDict->getPortableDeclaration(array('type' => 'char', 'length' => 1));
+        $type = $this->dataDict->getPortableDeclaration(array('data_type' => 'char', 'data_length' => 1));
 
         $this->assertEqual($type, array('type' => array('string', 'boolean'),
                                         'length' => 1,
                                         'unsigned' => null,
                                         'fixed' => true));
 
-        $type = $this->dataDict->getPortableDeclaration(array('type' => 'nchar', 'length' => 1));
+        $type = $this->dataDict->getPortableDeclaration(array('data_type' => 'nchar', 'data_length' => 1));
         
         $this->assertEqual($type, array('type' => array('string', 'boolean'),
                                         'length' => 1,
@@ -111,7 +111,7 @@ class Doctrine_DataDict_Oracle_TestCase extends Doctrine_UnitTestCase {
     }
     public function testGetPortableDeclarationSupportsNativeNumberType() 
     {
-        $type = $this->dataDict->getPortableDeclaration(array('type' => 'number'));
+        $type = $this->dataDict->getPortableDeclaration(array('data_type' => 'number'));
         
         $this->assertEqual($type, array('type' => array('integer'),
                                         'length' => null,
@@ -119,7 +119,7 @@ class Doctrine_DataDict_Oracle_TestCase extends Doctrine_UnitTestCase {
                                         'fixed' => null));
 
 
-        $type = $this->dataDict->getPortableDeclaration(array('type' => 'number', 'length' => 1));
+        $type = $this->dataDict->getPortableDeclaration(array('data_type' => 'number', 'data_length' => 1));
         
         $this->assertEqual($type, array('type' => array('integer', 'boolean'),
                                         'length' => 1,
@@ -129,14 +129,14 @@ class Doctrine_DataDict_Oracle_TestCase extends Doctrine_UnitTestCase {
     }
     public function testGetPortableDeclarationSupportsNativeTimestampType() 
     {
-        $type = $this->dataDict->getPortableDeclaration(array('type' => 'date'));
+        $type = $this->dataDict->getPortableDeclaration(array('data_type' => 'date'));
         
         $this->assertEqual($type, array('type' => array('timestamp'),
                                         'length' => null,
                                         'unsigned' => null,
                                         'fixed' => null));
 
-        $type = $this->dataDict->getPortableDeclaration(array('type' => 'timestamp'));
+        $type = $this->dataDict->getPortableDeclaration(array('data_type' => 'timestamp'));
         
         $this->assertEqual($type, array('type' => array('timestamp'),
                                         'length' => null,
@@ -145,21 +145,21 @@ class Doctrine_DataDict_Oracle_TestCase extends Doctrine_UnitTestCase {
     }
     public function testGetPortableDeclarationSupportsNativeClobTypes() 
     {
-        $type = $this->dataDict->getPortableDeclaration(array('type' => 'clob'));
+        $type = $this->dataDict->getPortableDeclaration(array('data_type' => 'clob'));
         
         $this->assertEqual($type, array('type' => array('clob'),
                                         'length' => null,
                                         'unsigned' => null,
                                         'fixed' => null));
 
-        $type = $this->dataDict->getPortableDeclaration(array('type' => 'long'));
+        $type = $this->dataDict->getPortableDeclaration(array('data_type' => 'long'));
         
         $this->assertEqual($type, array('type' => array('string', 'clob'),
                                         'length' => null,
                                         'unsigned' => null,
                                         'fixed' => null));
         
-        $type = $this->dataDict->getPortableDeclaration(array('type' => 'nclob'));
+        $type = $this->dataDict->getPortableDeclaration(array('data_type' => 'nclob'));
         
         $this->assertEqual($type, array('type' => array('clob'),
                                         'length' => null,
@@ -169,28 +169,28 @@ class Doctrine_DataDict_Oracle_TestCase extends Doctrine_UnitTestCase {
     }
     public function testGetPortableDeclarationSupportsNativeBlobTypes() 
     {
-        $type = $this->dataDict->getPortableDeclaration(array('type' => 'blob'));
+        $type = $this->dataDict->getPortableDeclaration(array('data_type' => 'blob'));
         
         $this->assertEqual($type, array('type' => array('blob'),
                                         'length' => null,
                                         'unsigned' => null,
                                         'fixed' => null));
 
-        $type = $this->dataDict->getPortableDeclaration(array('type' => 'long raw'));
+        $type = $this->dataDict->getPortableDeclaration(array('data_type' => 'long raw'));
 
         $this->assertEqual($type, array('type' => array('blob'),
                                         'length' => null,
                                         'unsigned' => null,
                                         'fixed' => null));
 
-        $type = $this->dataDict->getPortableDeclaration(array('type' => 'long raw'));
+        $type = $this->dataDict->getPortableDeclaration(array('data_type' => 'long raw'));
 
         $this->assertEqual($type, array('type' => array('blob'),
                                         'length' => null,
                                         'unsigned' => null,
                                         'fixed' => null));
         
-        $type = $this->dataDict->getPortableDeclaration(array('type' => 'raw'));
+        $type = $this->dataDict->getPortableDeclaration(array('data_type' => 'raw'));
 
         $this->assertEqual($type, array('type' => array('blob'),
                                         'length' => null,

@@ -263,7 +263,19 @@ $migration->addTestCase(new Doctrine_Migration_Mysql_TestCase());
 $test->addTestCase($migration);
 
 $test->addTestCase(new Doctrine_Query_ApplyInheritance_TestCase());
-$test->addTestCase(new Doctrine_Import_Schema_TestCase());
-$test->addTestCase(new Doctrine_Export_Schema_TestCase());
+
+$parser = new GroupTest('Parser tests', 'parser');
+$parser->addTestCase(new Doctrine_Parser_TestCase());
+$test->addTestCase($parser);
+
+$schemaFiles = new GroupTest('Schema files', 'schema_files');
+$schemaFiles->addTestCase(new Doctrine_Import_Schema_TestCase());
+$schemaFiles->addTestCase(new Doctrine_Export_Schema_TestCase());
+$test->addTestCase($schemaFiles);
+
+$data = new GroupTest('Data exporting/importing fixtures', 'data_fixtures');
+$data->addTestCase(new Doctrine_Data_Import_TestCase());
+$data->addTestCase(new Doctrine_Data_Export_TestCase());
+$test->addTestCase($data);
 
 $test->run();

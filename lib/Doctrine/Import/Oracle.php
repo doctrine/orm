@@ -126,6 +126,8 @@ class Doctrine_Import_Oracle extends Doctrine_Import
 
         $result = $this->conn->fetchAssoc($sql);
 
+        $descr = array();
+
         foreach($result as $val) {
             $val = array_change_key_case($val, CASE_LOWER);
             $decl = $this->conn->dataDict->getPortableDeclaration($val);

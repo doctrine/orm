@@ -32,15 +32,15 @@
  */
 class Doctrine_Migration_Mysql_TestCase extends Doctrine_UnitTestCase
 {
-
     protected $serverExists = false;
 
     public function setUp()
     {
         parent::setUp();
+        
         try {
             $dsn = 'mysql://doctrine_tester:d0cTrynR0x!@localhost/doctrine_unit_test';
-            $this->conn = $this->manager->openConnection($dsn,'unit_test',true);
+            $this->conn = $this->manager->openConnection($dsn, 'unit_test', true);
             $this->conn->connect();
             $this->serverExists = true;
         } catch (Exception $e){
@@ -48,16 +48,14 @@ class Doctrine_Migration_Mysql_TestCase extends Doctrine_UnitTestCase
         }
     }
 
-
     public function testMigration()
     {
-        if($this->serverExists){
+        if ($this->serverExists){
             // Clean up any left over tables from broken test runs.
             try {
-		            $this->conn->export->dropTable('migration_test');
-		            $this->conn->export->dropTable('migration_version');
-            } catch(Exception $e) {
-            }
+		        $this->conn->export->dropTable('migration_test');
+		        $this->conn->export->dropTable('migration_version');
+            } catch(Exception $e) { }
 
             // New migration for the 'migration_classes' directory
             $migration = new Doctrine_Migration('mysql_migration_classes');

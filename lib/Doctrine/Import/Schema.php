@@ -102,7 +102,7 @@ class Doctrine_Import_Schema
         $array = array();
 
         foreach ((array) $schema AS $s) {
-            if (is_file($s)) {
+            if (is_file($s) || is_string($s)) {
                 $array = array_merge($array, $this->parseSchema($s, $format));
             } else if (is_dir($s)) {
                 $it = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($s),
@@ -119,7 +119,7 @@ class Doctrine_Import_Schema
 
         $this->_buildRelationships($array);
 
-        return array('schema' => $array, 'relations' => $this->_relations);
+        return $array;
     }
 
     /**
@@ -144,10 +144,8 @@ class Doctrine_Import_Schema
             }
         }
         
-        $schema = $this->buildSchema($schema, $format);
-        
-        $array = $schema['schema'];
-        
+        $array = $this->buildSchema($schema, $format);
+
         foreach ($array as $name => $properties) {
             if ( ! empty($models) && !in_array($properties['className'], $models)) {
                 continue;

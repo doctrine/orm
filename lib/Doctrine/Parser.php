@@ -131,9 +131,16 @@ abstract class Doctrine_Parser
         return $contents;
     }
 
-    public function doDump($data, $path)
+    /**
+     * doDump
+     *
+     * @param string $data 
+     * @param string $path 
+     * @return void
+     */
+    public function doDump($data, $path = null)
     {
-      if ($path) {
+      if ($path !== null) {
             return file_put_contents($path, $data);
         } else {
             return $data;

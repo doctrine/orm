@@ -20,7 +20,7 @@
  */
 
 /**
- * Doctrine_Migration_TestCase
+ * Doctrine_Data_Export_TestCase
  *
  * @package     Doctrine
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
@@ -30,25 +30,6 @@
  * @since       1.0
  * @version     $Revision$
  */
-class Doctrine_Migration_TestCase extends Doctrine_UnitTestCase 
+class Doctrine_Data_Export_TestCase extends Doctrine_UnitTestCase 
 {
-    public function testMigration()
-    {
-        // New migration for the 'migration_classes' directory
-        $migration = new Doctrine_Migration('migration_classes');
-
-        // Make sure the current version is 0
-        $this->assertEqual($migration->getCurrentVersion(), 0);
-
-        // migrate to version latest version
-        $migration->migrate($migration->getLatestVersion());
-        // Make sure the current version is latest version
-        $this->assertEqual($migration->getCurrentVersion(), $migration->getLatestVersion());
-
-        // now migrate back to original version
-        $migration->migrate(0);
-
-        // Make sure the current version is 0
-        $this->assertEqual($migration->getCurrentVersion(), 0);
-    }
 }

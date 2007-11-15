@@ -8,6 +8,6 @@ class MysqlChangeColumn extends Doctrine_Migration
     
     public function down()
     {
-    		$this->renameColumn('migration_test','field3','field2');
+    	$this->renameColumn('migration_test','field3','field2');
     }  
 }
