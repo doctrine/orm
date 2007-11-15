@@ -119,7 +119,20 @@ class Doctrine_ClassTableInheritance_TestCase extends Doctrine_UnitTestCase
         $this->assertTrue(isset($record->added));
         $this->assertEqual($record->age, 13);
     }
-    
+
+    public function testReferenfingParentColumnsUsesProperAliases()
+    {
+        $q = new Doctrine_Query();
+        $q->from('CTITest c')->where("c.name = 'Jack'");
+
+        $this->assertEqual($q->getSql(), "SELECT c.id AS c__id, c2.name AS c__name, c2.verified AS c__verified, c3.added AS c__added, c.age AS c__age FROM c_t_i_test_parent4 c LEFT JOIN c_t_i_test_parent2 c2 ON c.id = c2.id LEFT JOIN c_t_i_test_parent3 c3 ON c.id = c3.id WHERE c2.name = 'Jack'");
+
+        $q = new Doctrine_Query();
+        $q->from('CTITest c')->where("name = 'Jack'");
+
+        $this->assertEqual($q->getSql(), "SELECT c.id AS c__id, c2.name AS c__name, c2.verified AS c__verified, c3.added AS c__added, c.age AS c__age FROM c_t_i_test_parent4 c LEFT JOIN c_t_i_test_parent2 c2 ON c.id = c2.id LEFT JOIN c_t_i_test_parent3 c3 ON c.id = c3.id WHERE c2.name = 'Jack'");
+    }
+
     public function testFetchingCtiRecordsSupportsLimitSubqueryAlgorithm()
     {
     	$record = new CTITestOneToManyRelated;
