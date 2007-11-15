@@ -114,6 +114,15 @@ class Doctrine_Data_Import extends Doctrine_Data
         }
     }
     
+    protected function _getImportedObject($rowKey)
+    {
+        if (isset($this->_importedObjects[$rowKey])) {
+            return $this->_importedObjects[$rowKey];
+        } else {
+            throw new Doctrine_Data_Exception('Invalid row key specified: ' . $rowKey);
+        }
+    }
+    
     protected function _processRow($rowKey, $row)
     {
         $obj = $this->_importedObjects[$rowKey];
@@ -130,18 +139,18 @@ class Doctrine_Data_Import extends Doctrine_Data
                         foreach ($value as $link) {
                             
                             if ($obj->getTable()->getRelation($key)->getType() === Doctrine_Relation::ONE) {
-                                $obj->set($key, $this->_importedObjects[$link]);
+                                $obj->set($key, $this->_getImportedObject($link));
                             } else if ($obj->getTable()->getRelation($key)->getType() === Doctrine_Relation::MANY) {
                                 $relation = $obj->$key;
                                 
-                                $relation[] = $this->_importedObjects[$link];
+                                $relation[] = $this->_getImportedObject($link);
                             }
                         }
                     } else {
                         $obj->$key->fromArray($value);
                     }
-                } else if (isset($this->_importedObjects[$value])) {
-                    $obj->set($key, $this->_importedObjects[$value]);
+                } else {
+                    $obj->set($key, $this->_getImportedObject($value));
                 }
             }
         }
