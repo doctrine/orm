@@ -23,7 +23,7 @@
  * Doctrine_Ticket_480_TestCase
  *
  * @package     Doctrine
- * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
+ * @author      Miloslav Kmet <adrive-nospam@hip-hop.sk>
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @category    Object Relational Mapping
  * @link        www.phpdoctrine.com
