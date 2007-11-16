@@ -47,11 +47,10 @@ In the following example we add some data with finnish and english translations:
 
 <code type="php">
 $item = new NewsItem();
-$item->title = 'Some title';
 $item->content = 'This is some content. This field is not being translated.';
 
 $item->Translation['FI']->title = 'Joku otsikko';
-
+$item->Translation['EN']->title = 'Some title';
 $item->save();
 </code>
 
