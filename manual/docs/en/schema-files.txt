@@ -85,7 +85,7 @@ User:
     export: all
     validate: true
 Group:
-  tableName: groupp
+  tableName: group_table
   columns:
     id:
       type: integer(4)
