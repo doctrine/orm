@@ -200,13 +200,14 @@ class Doctrine_Data_Import extends Doctrine_Data
             $this->_processRow($rowKey, $row);
         }
 
+        $objects = array();
+        foreach ($this->_importedObjects as $object) {
+            $className = get_class($object);
+            $objects[$className] = $className;
+        }
+
         $manager = Doctrine_Manager::getInstance();
-        foreach ($manager as $connection) {
-            $objects = array();
-            foreach ($this->_importedObjects as $object) {
-              $objects[] = get_class($object);
-            }
-            
+        foreach ($manager as $connection) {            
             $tree = $connection->unitOfWork->buildFlushTree($objects);
             
             foreach ($tree as $model) {
