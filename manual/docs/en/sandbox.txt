@@ -4,7 +4,7 @@ Currently the only way you can install and use the sandbox is by svn. It is avai
 
 <code>
 svn co http://doctrine.pengus.net/svn/trunk doctrine_trunk
-cd doctrine_trunk/sandbox
+cd doctrine_trunk/tools/sandbox
 chmod 0777 cli
 
 ./cli
