@@ -105,6 +105,20 @@ abstract class Doctrine_Query_Abstract extends Doctrine_Hydrate
     }
 
     /**
+     * whereNotIn
+     * adds NOT IN condition to the query WHERE part
+     *
+     * @param string $expr          the operand of the NOT IN
+     * @param mixed $params         an array of parameters or a simple scalar
+     * @return Doctrine_Query
+     */
+
+    public function whereNotIn($expr, $params = array())
+    {
+        return $this->whereIn($expr, $params, true);
+    } 
+
+    /**
      * addGroupBy
      * adds fields to the GROUP BY part of the query
      *
