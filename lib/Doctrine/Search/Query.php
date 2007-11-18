@@ -42,6 +42,8 @@ class Doctrine_Search_Query
     
     protected $_params = array();
     
+    protected $_words = array();
+    
 
     protected $_condition;
 
@@ -195,23 +197,30 @@ class Doctrine_Search_Query
         }
         return $where;
     }
-    public function parseWord($word) 
+    public function parseWord($word)
     {
+        $this->_words[] = str_replace('*', '', $word);
+
         if (strpos($word, '?') !== false ||
             strpos($word, '*') !== false) {
-            
+
             $word = str_replace('*', '%', $word);
 
             $where = 'keyword LIKE ?';
-            
+
             $params = array($word);
         } else {
             $where = 'keyword = ?';
         }
-        
+
         $this->_params[] = $word;
 
         return $where;
+    }
+
+    public function getWords()
+    {
+        return $this->_words;
     }
     public function getParams()
     {
