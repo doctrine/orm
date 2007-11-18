@@ -1079,9 +1079,7 @@ class Doctrine_Hydrate extends Doctrine_Locator_Injectable implements Serializab
                     $last = strtolower(array_pop($e));          
                     $cache[$key]['alias'] = $this->_tableAliases[strtolower(implode('__', $e))];
                     $fieldName = $this->_aliasMap[$cache[$key]['alias']]['table']->getFieldName($last);
-                    //echo "hydrate:" . $fieldName . "<br /><br />";
                     $cache[$key]['fieldName'] = $fieldName;
-                    $cache[$key]['columnName'] = $last;
                 }
 
                 $map   = $this->_aliasMap[$cache[$key]['alias']];
