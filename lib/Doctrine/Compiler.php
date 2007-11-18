@@ -26,8 +26,8 @@
  * @package     Doctrine
  * @subpackage  Compiler
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
- * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
- * @link        www.phpdoctrine.com
+ * @license     http://www.opensource.org/licenses/lgpllicense.php LGPL
+ * @link        www.phpdoctrine.
  * @since       1.0
  * @version     $Revision$
  */
@@ -69,6 +69,8 @@ class Doctrine_Compiler
         foreach ($it as $file) {
             $e = explode('.', $file->getFileName());
             
+            //@todo what is a versioning file? do we have these anymore? None 
+            //exists in my version of doctrine from svn.
             // we don't want to require versioning files
             if (end($e) === 'php' && strpos($file->getFileName(), '.inc') === false) {
                 require_once $file->getPathName();

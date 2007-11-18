@@ -254,14 +254,9 @@ class Doctrine_Hydrate extends Doctrine_Locator_Injectable implements Serializab
      */
     public function useCache($driver = true, $timeToLive = null)
     {
-        if ($driver !== null) {
-            if ($driver !== true) {
-                if ( ! ($driver instanceof Doctrine_Cache_Interface)) {
-                    $msg = 'First argument should be instance of Doctrine_Cache_Interface or null.';
-
-                    throw new Doctrine_Hydrate_Exception($msg);
-                }
-            }
+        if($driver !== null && $driver !== true && !($driver instanceOf Doctrine_Cache_Interface)){
+            $msg = 'First argument should be instance of Doctrine_Cache_Interface or null.';
+            throw new Doctrine_Hydrate_Exception($msg);
         }
         $this->_cache = $driver;
 
@@ -549,14 +544,14 @@ class Doctrine_Hydrate extends Doctrine_Locator_Injectable implements Serializab
      */
     public function removeQueryPart($name)
     {
-        if (isset($this->parts[$name])) {
-            if ($name == 'limit' || $name == 'offset') {
-                $this->parts[$name] = false;
-            } else {
-                $this->parts[$name] = array();
-            }
-        } else {
+        if ( ! isset($this->parts[$name])) {
             throw new Doctrine_Hydrate_Exception('Unknown query part ' . $name);
+        }
+
+        if ($name == 'limit' || $name == 'offset') {
+                $this->parts[$name] = false;
+        } else {
+                $this->parts[$name] = array();
         }
         return $this;
     }
@@ -798,6 +793,13 @@ class Doctrine_Hydrate extends Doctrine_Locator_Injectable implements Serializab
 
         return serialize(array($resultSet, $map, $this->getTableAliases()));
     }
+
+    /**
+     * _execute 
+     * 
+     * @param array $params 
+     * @return void
+     */
     public function _execute($params)
     {
         $params = $this->_conn->convertBooleans($params);
@@ -1018,6 +1020,9 @@ class Doctrine_Hydrate extends Doctrine_Locator_Injectable implements Serializab
      *
      * The key idea is the loop over the rowset only once doing all the needed operations
      * within this massive loop.
+     *
+     * @todo: Can we refactor this function so that it is not so long and 
+     * nested?
      *
      * @param mixed $stmt
      * @return array
@@ -1240,24 +1245,24 @@ class Doctrine_Hydrate extends Doctrine_Locator_Injectable implements Serializab
         }
         if ($index !== false) {
             $prev[$alias] =& $coll[$index];
-        } else {
-            // first check the count (we do not want to get the last element
-            // of an empty collection/array)
-            if (count($coll) > 0) {
-                if (is_array($coll)) {
-                    if ($oneToOne) {
-                        $prev[$alias] =& $coll;
-                    } else {
-                        end($coll);
-                        $prev[$alias] =& $coll[key($coll)];
-                    }
+            return;
+        }
+        // first check the count (we do not want to get the last element
+        // of an empty collection/array)
+        if (count($coll) > 0) {
+            if (is_array($coll)) {
+                if ($oneToOne) {
+                    $prev[$alias] =& $coll;
                 } else {
-                    $prev[$alias] = $coll->getLast();
+                    end($coll);
+                    $prev[$alias] =& $coll[key($coll)];
                 }
             } else {
-                if (isset($prev[$alias])) {
-                    unset($prev[$alias]);
-                }
+                $prev[$alias] = $coll->getLast();
+            }
+        } else {
+            if (isset($prev[$alias])) {
+                unset($prev[$alias]);
             }
         }
     }

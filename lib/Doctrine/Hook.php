@@ -208,7 +208,10 @@ class Doctrine_Hook
     }
 
     /**
-     * @param integer $limit
+     * set the hook limit 
+     * 
+     * @param integer $limit 
+     * @return void
      */
     public function hookLimit($limit)
     {
@@ -216,6 +219,8 @@ class Doctrine_Hook
     }
 
     /**
+     * set the hook offset
+     *
      * @param integer $offset
      */
     public function hookOffset($offset)

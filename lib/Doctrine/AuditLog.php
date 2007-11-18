@@ -40,11 +40,24 @@ class Doctrine_AuditLog extends Doctrine_Plugin
                             'pluginTable'   => false,
                             );
 
+    /**
+     * Create a new auditlog_ 
+     * 
+     * @param array $options An array of options
+     * @return void
+     */
     public function __construct($options)
     {
         $this->_options = array_merge($this->_options, $options);
     }
 
+    /**
+     * Get the version 
+     * 
+     * @param Doctrine_Record $record 
+     * @param mixed $version 
+     * @return array An array with version information
+     */
     public function getVersion(Doctrine_Record $record, $version)
     {           
         $className = $this->_options['className'];
@@ -65,6 +78,13 @@ class Doctrine_AuditLog extends Doctrine_Plugin
 
         return $q->execute($values, Doctrine::HYDRATE_ARRAY);
     }
+
+    /**
+     * buildDefinition for a table 
+     * 
+     * @param Doctrine_Table $table 
+     * @return boolean true on success otherwise false.
+     */
     public function buildDefinition(Doctrine_Table $table)
     {
         $this->_options['className'] = str_replace('%CLASS%', 

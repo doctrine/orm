@@ -36,12 +36,12 @@ class Doctrine_Cache extends Doctrine_EventListener implements Countable, Iterat
      * @var array $_options                         an array of general caching options
      */
     protected $_options = array('size'                  => 1000,
-                                'lifeTime'              => 3600,
-                                'addStatsPropability'   => 0.25,
-                                'savePropability'       => 0.10,
-                                'cleanPropability'      => 0.01,
-                                'statsFile'             => '../data/stats.cache',
-                                );
+        'lifeTime'              => 3600,
+        'addStatsPropability'   => 0.25,
+        'savePropability'       => 0.10,
+        'cleanPropability'      => 0.01,
+        'statsFile'             => '../data/stats.cache',
+    );
 
     /**
      * @var array $_queries                         query stack
@@ -72,19 +72,19 @@ class Doctrine_Cache extends Doctrine_EventListener implements Countable, Iterat
     public function __construct($driver, $options = array())
     {
         if (is_object($driver)) {
-           if ( ! ($driver instanceof Doctrine_Cache_Interface)) {
-               throw new Doctrine_Cache_Exception('Driver should implement Doctrine_Cache_Interface.');
-           }
-           
-           $this->_driver = $driver;
-           $this->_driver->setOptions($options);
+            if ( ! ($driver instanceof Doctrine_Cache_Interface)) {
+                throw new Doctrine_Cache_Exception('Driver should implement Doctrine_Cache_Interface.');
+            }
+
+            $this->_driver = $driver;
+            $this->_driver->setOptions($options);
         } else {
             $class = 'Doctrine_Cache_' . ucwords(strtolower($driver));
-    
+
             if ( ! class_exists($class)) {
                 throw new Doctrine_Cache_Exception('Cache driver ' . $driver . ' could not be found.');
             }
-    
+
             $this->_driver = new $class($options);
         }
     }
@@ -168,7 +168,7 @@ class Doctrine_Cache extends Doctrine_EventListener implements Countable, Iterat
 
             return $this->_queries[$namespace];
         }
-        
+
         return $this->_queries;
     }
 
@@ -235,7 +235,7 @@ class Doctrine_Cache extends Doctrine_EventListener implements Countable, Iterat
             $queries = $this->readStats();
 
             $stats   = array();
-    
+
             foreach ($queries as $query) {
                 if (isset($stats[$query])) {
                     $stats[$query]++;
@@ -244,9 +244,9 @@ class Doctrine_Cache extends Doctrine_EventListener implements Countable, Iterat
                 }
             }
             sort($stats);
-    
+
             $i = $this->_options['size'];
-    
+
             while ($i--) {
                 $element = next($stats);
                 $query   = key($stats);
@@ -266,11 +266,11 @@ class Doctrine_Cache extends Doctrine_EventListener implements Countable, Iterat
     public function readStats() 
     {
         if ($this->_options['statsFile'] !== false) {
-           $content = file_get_contents($this->_options['statsFile']);
-           
-           $e = explode("\n", $content);
-           
-           return array_map('unserialize', $e);
+            $content = file_get_contents($this->_options['statsFile']);
+
+            $e = explode("\n", $content);
+
+            return array_map('unserialize', $e);
         }
         return array();
     }
@@ -288,7 +288,7 @@ class Doctrine_Cache extends Doctrine_EventListener implements Countable, Iterat
             if ( ! file_exists($this->_options['statsFile'])) {
                 throw new Doctrine_Cache_Exception("Couldn't save cache statistics. Cache statistics file doesn't exists!");
             }
-            
+
             $rand = (mt_rand() / mt_getrandmax());
 
             if ($rand <= $this->_options['addStatsPropability']) {
@@ -312,32 +312,33 @@ class Doctrine_Cache extends Doctrine_EventListener implements Countable, Iterat
 
         $data  = false;
         // only process SELECT statements
-        if (strtoupper(substr(ltrim($query), 0, 6)) == 'SELECT') {
+        if (strtoupper(substr(ltrim($query), 0, 6)) != 'SELECT') {
+            return false;
+        }
 
-            $this->add($query, $event->getInvoker()->getName());
+        $this->add($query, $event->getInvoker()->getName());
 
-            $data = $this->_driver->fetch(md5(serialize($query)));
+        $data = $this->_driver->fetch(md5(serialize($query)));
 
-            $this->success = ($data) ? true : false;
+        $this->success = ($data) ? true : false;
 
-            if ( ! $data) {
-                $rand = (mt_rand() / mt_getrandmax());
+        if ( ! $data) {
+            $rand = (mt_rand() / mt_getrandmax());
 
-                if ($rand < $this->_options['savePropability']) {
-                    $stmt = $event->getInvoker()->getAdapter()->query($query);
+            if ($rand < $this->_options['savePropability']) {
+                $stmt = $event->getInvoker()->getAdapter()->query($query);
 
-                    $data = $stmt->fetchAll(Doctrine::FETCH_ASSOC);
+                $data = $stmt->fetchAll(Doctrine::FETCH_ASSOC);
 
-                    $this->success = true;
+                $this->success = true;
 
-                    $this->_driver->save(md5(serialize($query)), $data);
-                }
+                $this->_driver->save(md5(serialize($query)), $data);
             }
-            if ($this->success)
-            {
-                $this->_data = $data;
-                return true;
-            }
+        }
+        if ($this->success)
+        {
+            $this->_data = $data;
+            return true;
         }
         return false;
     }
@@ -387,35 +388,36 @@ class Doctrine_Cache extends Doctrine_EventListener implements Countable, Iterat
         $data  = false;
 
         // only process SELECT statements
-        if (strtoupper(substr(ltrim($query), 0, 6)) == 'SELECT') {
+        if (strtoupper(substr(ltrim($query), 0, 6)) != 'SELECT') {
+            return false;
+        }
 
-            $this->add($query, $event->getInvoker()->getDbh()->getName());
+        $this->add($query, $event->getInvoker()->getDbh()->getName());
 
-            $data = $this->_driver->fetch(md5(serialize(array($query, $event->getParams()))));
+        $data = $this->_driver->fetch(md5(serialize(array($query, $event->getParams()))));
 
-            $this->success = ($data) ? true : false;
+        $this->success = ($data) ? true : false;
 
-            if ( ! $data) {
-                $rand = (mt_rand() / mt_getrandmax());
+        if ( ! $data) {
+            $rand = (mt_rand() / mt_getrandmax());
 
-                if ($rand <= $this->_options['savePropability']) {
+            if ($rand <= $this->_options['savePropability']) {
 
-                    $stmt = $event->getInvoker()->getStatement();
+                $stmt = $event->getInvoker()->getStatement();
 
-                    $stmt->execute($event->getParams());
+                $stmt->execute($event->getParams());
 
-                    $data = $stmt->fetchAll(Doctrine::FETCH_ASSOC);
+                $data = $stmt->fetchAll(Doctrine::FETCH_ASSOC);
 
-                    $this->success = true;
+                $this->success = true;
 
-                    $this->_driver->save(md5(serialize(array($query, $event->getParams()))), $data);
-                }
+                $this->_driver->save(md5(serialize(array($query, $event->getParams()))), $data);
             }
-            if ($this->success)
-            {
-                $this->_data = $data;
-                return true;
-            }
+        }
+        if ($this->success)
+        {
+            $this->_data = $data;
+            return true;
         }
         return false;
     }

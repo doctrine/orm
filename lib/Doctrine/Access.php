@@ -103,6 +103,8 @@ abstract class Doctrine_Access extends Doctrine_Locator_Injectable implements Ar
     }
 
     /**
+     * Check if an offsetExists. Alias for contains.
+     *
      * @param mixed $offset
      * @return boolean          whether or not this object contains $offset
      */
@@ -113,6 +115,7 @@ abstract class Doctrine_Access extends Doctrine_Locator_Injectable implements Ar
 
     /**
      * offsetGet    an alias of get()
+     *
      * @see get,  __get
      * @param mixed $offset
      * @return mixed

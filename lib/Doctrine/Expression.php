@@ -36,6 +36,13 @@ class Doctrine_Expression
     
     protected $_conn;
 
+    /**
+     * Create an expression 
+     * 
+     * @param string $expr The expression
+     * @param Doctrine_Connection $conn The connection (optional)
+     * @return void
+     */
     public function __construct($expr, $conn = null)
     {
         $this->setExpression($expr);
@@ -45,6 +52,11 @@ class Doctrine_Expression
         }
     }
 
+    /**
+     * getConnection 
+     * 
+     * @return Doctrine_Connection The connection
+     */
     public function getConnection()
     {
         if ( ! isset($this->_conn)) {
@@ -54,11 +66,25 @@ class Doctrine_Expression
         return $this->_conn;
     }
 
+    /**
+     * setExpression 
+     * 
+     * @param string $clause The expression to set
+     * @return void
+     */
     public function setExpression($clause)
     {
         $this->_expression = $this->parseClause($clause);
     }
 
+    /**
+     * parseExpression 
+     *
+     * @todo: What does this function do?
+     * 
+     * @param string $expr The expression to parse
+     * @return void
+     */
     public function parseExpression($expr)
     {
         $pos  = strpos($expr, '(');
@@ -78,6 +104,12 @@ class Doctrine_Expression
         return call_user_func_array(array($this->getConnection()->expression, $name), $args);
     }
 
+    /**
+     * parseClause 
+     * 
+     * @param string $clause The clause
+     * @return string The parse clause
+     */
     public function parseClause($clause)
     {
         $e = Doctrine_Tokenizer::bracketExplode($clause, ' ');
@@ -89,12 +121,22 @@ class Doctrine_Expression
         return implode(' ', $e);
     }
 
+    /**
+     * getSql 
+     * 
+     * @return string The expression
+     */
     public function getSql()
     {
 
         return $this->_expression;
     }
 
+    /**
+     * __toString 
+     * 
+     * @return void
+     */
     public function __toString()
     {
         return $this->getSql();

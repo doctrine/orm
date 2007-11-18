@@ -46,16 +46,17 @@ class Doctrine_Formatter extends Doctrine_Connection_Module
      */
     public function escapePattern($text)
     {
-        if ($this->string_quoting['escape_pattern']) {
-            $tmp = $this->conn->string_quoting;
+        if ( ! $this->string_quoting['escape_pattern']) {
+            return $text;
+        }
+        $tmp = $this->conn->string_quoting;
 
-            $text = str_replace($tmp['escape_pattern'], 
-                                $tmp['escape_pattern'] .
-                                $tmp['escape_pattern'], $text);
+        $text = str_replace($tmp['escape_pattern'], 
+            $tmp['escape_pattern'] .
+            $tmp['escape_pattern'], $text);
 
-            foreach ($this->wildcards as $wildcard) {
-                $text = str_replace($wildcard, $tmp['escape_pattern'] . $wildcard, $text);
-            }
+        foreach ($this->wildcards as $wildcard) {
+            $text = str_replace($wildcard, $tmp['escape_pattern'] . $wildcard, $text);
         }
         return $text;
     }
@@ -125,8 +126,8 @@ class Doctrine_Formatter extends Doctrine_Connection_Module
         }
         $tmp = $this->conn->identifier_quoting;
         $str = str_replace($tmp['end'],
-                           $tmp['escape'] .
-                           $tmp['end'], $str);
+            $tmp['escape'] .
+            $tmp['end'], $str);
 
         return $tmp['start'] . $str . $tmp['end'];
     }
@@ -145,28 +146,28 @@ class Doctrine_Formatter extends Doctrine_Connection_Module
             $type = gettype($input);
         }
         switch ($type) {
-            case 'integer':
-            case 'enum':
-            case 'boolean':
-            case 'double':
-            case 'float':
-            case 'bool':
-            case 'decimal':
-            case 'int':
-                return $input;
-            case 'array':
-            case 'object':
-                $input = serialize($input);
-            case 'string':
-            case 'char':
-            case 'varchar':
-            case 'text':
-            case 'gzip':
-            case 'blob':
-            case 'clob':
-                $this->conn->connect();
+        case 'integer':
+        case 'enum':
+        case 'boolean':
+        case 'double':
+        case 'float':
+        case 'bool':
+        case 'decimal':
+        case 'int':
+            return $input;
+        case 'array':
+        case 'object':
+            $input = serialize($input);
+        case 'string':
+        case 'char':
+        case 'varchar':
+        case 'text':
+        case 'gzip':
+        case 'blob':
+        case 'clob':
+            $this->conn->connect();
 
-                return $this->conn->getDbh()->quote($input);
+            return $this->conn->getDbh()->quote($input);
         }
     }
 
@@ -224,9 +225,9 @@ class Doctrine_Formatter extends Doctrine_Connection_Module
     public function getIndexName($idx)
     {
         return sprintf($this->conn->getAttribute(Doctrine::ATTR_IDXNAME_FORMAT),
-                preg_replace('/[^a-z0-9_\$]/i', '_', $idx));
+            preg_replace('/[^a-z0-9_\$]/i', '_', $idx));
     }
-    
+
     /**
      * adds table name formatting to a table name
      *
@@ -236,6 +237,6 @@ class Doctrine_Formatter extends Doctrine_Connection_Module
     public function getTableName($table)
     {
         return sprintf($this->conn->getAttribute(Doctrine::ATTR_TBLNAME_FORMAT),
-                preg_replace('/[^a-z0-9_\$]/i', '_', $table));
+            preg_replace('/[^a-z0-9_\$]/i', '_', $table));
     }
 }

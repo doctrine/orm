@@ -379,13 +379,14 @@ abstract class Doctrine_Configurable extends Doctrine_Locator_Injectable
             throw new Doctrine_Exception('Unknown attribute.');
         }
 
-        if ( ! isset($this->attributes[$attribute])) {
-            if (isset($this->parent)) {
-                return $this->parent->getAttribute($attribute);
-            }
-            return null;
+        if (isset($this->attributes[$attribute])) {
+            return $this->attributes[$attribute];
         }
-        return $this->attributes[$attribute];
+        
+        if (isset($this->parent)) {
+            return $this->parent->getAttribute($attribute);
+        }
+        return null;
     }
 
     /**

@@ -49,6 +49,12 @@ class Doctrine_Search extends Doctrine_Plugin
     protected $_built = false;
 
     
+    /**
+     * __construct 
+     * 
+     * @param array $options 
+     * @return void
+     */
     public function __construct(array $options)
     {
         $this->_options = array_merge($this->_options, $options);
@@ -62,6 +68,12 @@ class Doctrine_Search extends Doctrine_Plugin
     }
 
 
+    /**
+     * search 
+     * 
+     * @param string $query 
+     * @return Doctrine_Collection The collection of search results
+     */
     public function search($query)
     {
         $q = new Doctrine_Search_Query($this->_options['pluginTable']);
@@ -71,6 +83,12 @@ class Doctrine_Search extends Doctrine_Plugin
         return $this->_options['connection']->fetchAll($q->getSql(), $q->getParams());;
     }
     
+    /**
+     * analyze 
+     * 
+     * @param string $text 
+     * @return void
+     */
     public function analyze($text)
     {
         return $this->_options['analyzer']->analyze($text);
@@ -131,6 +149,13 @@ class Doctrine_Search extends Doctrine_Plugin
         }
     }
 
+    /**
+     * readTableData 
+     * 
+     * @param mixed $limit 
+     * @param mixed $offset 
+     * @return Doctrine_Collection The collection of results
+     */
     public function readTableData($limit = null, $offset = null)
     {
         $this->buildDefinition(); 
@@ -152,6 +177,13 @@ class Doctrine_Search extends Doctrine_Plugin
     
 
 
+    /**
+     * batchUpdateIndex 
+     * 
+     * @param mixed $limit 
+     * @param mixed $offset 
+     * @return void
+     */
     public function batchUpdateIndex($limit = null, $offset = null)
     {
         $this->buildDefinition();
@@ -202,6 +234,11 @@ class Doctrine_Search extends Doctrine_Plugin
         }
     }
 
+    /**
+     * buildDefinition 
+     * 
+     * @return void
+     */
     public function buildDefinition()
     {
     	if ($this->_built) {

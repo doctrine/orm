@@ -114,6 +114,37 @@ class Doctrine_Migration
         }
     }
 
+
+    /**
+     * loadMigrationClassesFromDirectory 
+     * 
+     * refactored out from loadMigrationClasses
+     * $param array An array of classes
+     * @return void
+     */
+    public function loadMigrationClassesFromDirectory($classes){
+        foreach ((array) $this->_migrationClassesDirectory as $dir) {
+            $it = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($dir),
+                RecursiveIteratorIterator::LEAVES_ONLY);
+
+            foreach ($it as $file) {
+                $e = explode('.', $file->getFileName());
+                if (end($e) === 'php' && strpos($file->getFileName(), '.inc') === false) {
+                    if ( ! in_array($file->getFileName(), $this->_loadedMigrations)) {
+                        require_once($file->getPathName());
+
+                        $requiredClass = array_diff(get_declared_classes(), $classes);
+                        $requiredClass = end($requiredClass);
+
+                        if ($requiredClass) {
+                            $this->_loadedMigrations[$requiredClass] = $file->getFileName();
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     /**
      * loadMigrationClasses
      *
@@ -130,27 +161,9 @@ class Doctrine_Migration
         $classes = get_declared_classes();
         
         if ($this->_migrationClassesDirectory !== null) {
-            foreach ((array) $this->_migrationClassesDirectory as $dir) {
-                $it = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($dir),
-                                                        RecursiveIteratorIterator::LEAVES_ONLY);
-
-                foreach ($it as $file) {
-                    $e = explode('.', $file->getFileName());
-                    if (end($e) === 'php' && strpos($file->getFileName(), '.inc') === false) {
-                        if ( ! in_array($file->getFileName(), $this->_loadedMigrations)) {
-                            require_once($file->getPathName());
-                            
-                            $requiredClass = array_diff(get_declared_classes(), $classes);
-                            $requiredClass = end($requiredClass);
-                            
-                            if ($requiredClass) {
-                                $this->_loadedMigrations[$requiredClass] = $file->getFileName();
-                            }
-                        }
-                    }
-                }
-            }
+            $this->loadMigrationClassesFromDirectory($classes);
         }
+
         
         $parent = new ReflectionClass('Doctrine_Migration');
         
@@ -317,16 +330,17 @@ class Doctrine_Migration
      */
     protected function doMigrate($direction)
     {
-        if (method_exists($this, $direction)) {
-            $this->$direction();
+        if (! method_exists($this, $direction)) {
+            return;
+        }
+        $this->$direction();
 
-            foreach ($this->_changes as $type => $changes) {
-                $process = new Doctrine_Migration_Process();
-                $funcName = 'process' . Doctrine::classify($type);
+        foreach ($this->_changes as $type => $changes) {
+            $process = new Doctrine_Migration_Process();
+            $funcName = 'process' . Doctrine::classify($type);
 
-                if ( ! empty($changes)) {
-                    $process->$funcName($changes); 
-                }
+            if ( ! empty($changes)) {
+                $process->$funcName($changes); 
             }
         }
     }

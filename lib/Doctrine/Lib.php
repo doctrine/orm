@@ -221,7 +221,11 @@ class Doctrine_Lib
     }
 
     /**
-     * @return string
+     * formatSql 
+     * 
+     * @todo: What about creating a config varialbe for the color?
+     * @param mixed $sql 
+     * @return string the formated sql
      */
     public static function formatSql($sql)
     {

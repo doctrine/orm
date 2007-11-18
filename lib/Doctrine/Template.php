@@ -85,6 +85,14 @@ class Doctrine_Template extends Doctrine_Record_Abstract
         return $this->_invoker;
     }
 
+    /**
+     * addChild 
+     *
+     * Adds a plugin as a child to this plugin
+     * 
+     * @param Doctrine_Template $template 
+     * @return Doctrine_Template. Chainable.
+     */
     public function addChild(Doctrine_Template $template)
     {
         $this->_plugin->addChild($template);
@@ -93,24 +101,53 @@ class Doctrine_Template extends Doctrine_Record_Abstract
     }
 
 
+    /**
+     * getPlugin 
+     * 
+     * @return void
+     */
     public function getPlugin()
     {
         return $this->_plugin;
     }
 
+    /**
+     * get 
+     * 
+     * @param mixed $name 
+     * @return void
+     */
     public function get($name) 
     {
         throw new Doctrine_Exception("Templates doesn't support accessors.");
     }
+
+    /**
+     * set 
+     * 
+     * @param mixed $name 
+     * @param mixed $value 
+     * @return void
+     */
     public function set($name, $value)
     {
         throw new Doctrine_Exception("Templates doesn't support accessors.");
     }
+    /**
+     * setUp 
+     * 
+     * @return void
+     */
     public function setUp()
     {
 
     }
 
+    /**
+     * setTableDefinition 
+     * 
+     * @return void
+     */
     public function setTableDefinition()
     {
 
