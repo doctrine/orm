@@ -2,7 +2,6 @@
 ++ View
 ++ Profiler
 ++ Locking Manager
-++ Connection Profiler
 ++ Internationalization with I18n
 
 Doctrine_I18n is a plugin for Doctrine that provides internationalization support for record classes. In the following example we have a NewsItem class with two fields 'title' and 'content'. We want to have the field 'title' with different languages support. This can be achieved as follows:
