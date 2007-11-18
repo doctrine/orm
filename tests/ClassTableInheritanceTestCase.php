@@ -109,7 +109,7 @@ class Doctrine_ClassTableInheritance_TestCase extends Doctrine_UnitTestCase
         $q = new Doctrine_Query();
         $q->from('CTITest c')->where('c.id = 1');
 
-        $this->assertEqual($q->getSql(), 'SELECT c.id AS c__id, c2.name AS c__name, c2.verified AS c__verified, c3.added AS c__added, c.age AS c__age FROM c_t_i_test_parent4 c LEFT JOIN c_t_i_test_parent2 c2 ON c.id = c2.id LEFT JOIN c_t_i_test_parent3 c3 ON c.id = c3.id WHERE c.id = 1');
+        $this->assertEqual($q->getSql(), 'SELECT c.id AS c__id, c3.added AS c__added, c2.name AS c__name, c2.verified AS c__verified, c.age AS c__age FROM c_t_i_test_parent4 c LEFT JOIN c_t_i_test_parent2 c2 ON c.id = c2.id LEFT JOIN c_t_i_test_parent3 c3 ON c.id = c3.id WHERE c.id = 1');
 
         $record = $q->fetchOne();
         

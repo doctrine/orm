@@ -78,7 +78,7 @@ class Doctrine_Hydrate_Record extends Doctrine_Locator_Injectable
      */
     public function isIdentifiable(array $row, Doctrine_Table $table)
     {
-        $primaryKeys = $table->getIdentifier();
+        $primaryKeys = $table->getIdentifierColumnNames();
 
         if (is_array($primaryKeys)) {
             foreach ($primaryKeys as $id) {
@@ -103,8 +103,15 @@ class Doctrine_Hydrate_Record extends Doctrine_Locator_Injectable
             $this->_tables[$component] = Doctrine_Manager::getInstance()->getTable($component);
             $this->_tables[$component]->setAttribute(Doctrine::ATTR_LOAD_REFERENCES, false);
         }
+        
+        //echo "..before..";
+        //Doctrine::dump($data);
+        
         $this->_tables[$component]->setData($data);
         $record = $this->_tables[$component]->getRecord();
+        
+        //echo "..after..";
+        //Doctrine::dump($record->getData());
 
         if ( ! isset($this->_records[$record->getOid()]) ) {
             $record->clearRelated();

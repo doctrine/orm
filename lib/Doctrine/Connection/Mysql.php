@@ -166,7 +166,7 @@ class Doctrine_Connection_Mysql extends Doctrine_Connection_Common
      *
      * @return integer      the number of affected rows
      */
-    public function replace($table, array $fields, array $keys)
+    public function replace(Doctrine_Table $table, array $fields, array $keys)
     {
         $count = count($fields);
         $query = $values = '';
@@ -180,7 +180,7 @@ class Doctrine_Connection_Mysql extends Doctrine_Connection_Common
                 $values.= ',';
             }
 
-            $query .= $name;
+            $query .= $table->getColumnName($name);
 
             if (isset($fields[$name]['null']) && $fields[$name]['null']) {
                 $value = 'NULL';
@@ -202,7 +202,7 @@ class Doctrine_Connection_Mysql extends Doctrine_Connection_Common
         if ($keys == 0) {
             throw new Doctrine_Connection_Mysql_Exception('not specified which fields are keys');
         }
-        $query = 'REPLACE INTO ' . $table . ' (' . $query . ') VALUES (' . $values . ')';
+        $query = 'REPLACE INTO ' . $table->getTableName() . ' (' . $query . ') VALUES (' . $values . ')';
 
         return $this->exec($query);
     }

@@ -819,7 +819,7 @@ class Doctrine_Hydrate extends Doctrine_Locator_Injectable implements Serializab
         if ($this->type !== self::SELECT) {
             return $this->_conn->exec($query, $params);
         }
-
+        //echo $query . "<br /><br />";
         $stmt = $this->_conn->execute($query, $params);
         return $stmt;
     }
@@ -850,7 +850,7 @@ class Doctrine_Hydrate extends Doctrine_Locator_Injectable implements Serializab
             if ($cached === false) {
                 // cache miss
                 $stmt = $this->_execute($params);
-                $array = $this->parseData2($stmt, Doctrine::HYDRATE_ARRAY);
+                $array = $this->hydrateResultSet($stmt, Doctrine::HYDRATE_ARRAY);
 
                 $cached = $this->getCachedForm($array);
 
@@ -883,7 +883,7 @@ class Doctrine_Hydrate extends Doctrine_Locator_Injectable implements Serializab
                 return $stmt;
             }
             
-            $array = $this->parseData2($stmt, $hydrationMode);
+            $array = $this->hydrateResultSet($stmt, $hydrationMode);
         }
         return $array;
     }
@@ -1022,7 +1022,7 @@ class Doctrine_Hydrate extends Doctrine_Locator_Injectable implements Serializab
      * @param mixed $stmt
      * @return array
      */
-    public function parseData2($stmt, $hydrationMode)
+    public function hydrateResultSet($stmt, $hydrationMode)
     {
         if ($hydrationMode == Doctrine::HYDRATE_NONE) {
             return $stmt->fetchAll(PDO::FETCH_NUM);
@@ -1076,29 +1076,33 @@ class Doctrine_Hydrate extends Doctrine_Locator_Injectable implements Serializab
                 // of magnitude.
                 if ( ! isset($cache[$key])) {
                     $e = explode('__', $key);
-                    $cache[$key]['field'] = $field = strtolower(array_pop($e));
+                    $last = strtolower(array_pop($e));          
                     $cache[$key]['alias'] = $this->_tableAliases[strtolower(implode('__', $e))];
+                    $fieldName = $this->_aliasMap[$cache[$key]['alias']]['table']->getFieldName($last);
+                    //echo "hydrate:" . $fieldName . "<br /><br />";
+                    $cache[$key]['fieldName'] = $fieldName;
+                    $cache[$key]['columnName'] = $last;
                 }
 
                 $map   = $this->_aliasMap[$cache[$key]['alias']];
                 $table = $map['table'];
                 $alias = $cache[$key]['alias'];
-                $field = $cache[$key]['field'];
+                $fieldName = $cache[$key]['fieldName'];
 
-                if (isset($this->_aliasMap[$alias]['agg'][$field])) {
-                    $field = $this->_aliasMap[$alias]['agg'][$field];
+                if (isset($this->_aliasMap[$alias]['agg'][$fieldName])) {
+                    $fieldName = $this->_aliasMap[$alias]['agg'][$fieldName];
                 }
 
-
-                if ($table->isIdentifier($field)) {
+                if ($table->isIdentifier($fieldName)) {
                     $id[$alias] .= '|' . $value;
                 }
 
-                $currData[$alias][$field] = $table->prepareValue($field, $value);
+                $currData[$alias][$fieldName] = $table->prepareValue($fieldName, $value);
 
                 if ($value !== null) {
                     $identifiable[$alias] = true;
                 }
+                
             }
 
             // dealing with root component
@@ -1162,7 +1166,7 @@ class Doctrine_Hydrate extends Doctrine_Locator_Injectable implements Serializab
                 if ( ! isset($prev[$parent])) {
                     break;
                 }
-
+                
                 // check the type of the relation
                 if ( ! $relation->isOneToOne()) {
                     // initialize the collection
@@ -1207,7 +1211,7 @@ class Doctrine_Hydrate extends Doctrine_Locator_Injectable implements Serializab
                     } else {
                         $prev[$parent][$componentAlias] = $element;
                     }
-                    $oneToOne = true;
+                    $oneToOne = true; 
                 }
                 $coll =& $prev[$parent][$componentAlias];
                 $this->_setLastElement($prev, $coll, $index, $alias, $oneToOne);
@@ -1215,7 +1219,7 @@ class Doctrine_Hydrate extends Doctrine_Locator_Injectable implements Serializab
             }
             $id[$rootAlias] = '';
         }
-
+        
         $driver->flush();
 
         $stmt->closeCursor();

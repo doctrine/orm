@@ -1,6 +1,10 @@
 Beta 2
 ------
 
+* r3183: NestedSet: 'level' column renamed to 'lvl' because LEVEL is an oracle keyword.
+         In order to upgrade existing trees you need to rename the level column to lvl
+         in your databases. This does not affect your code because the NestedSet now uses
+         a column alias (lvl as level). So your code still refers to the 'level' field.
 * r3048: Doctrine::exportSchema() replaced by Doctrine::createTablesFromModels()
 * r3048: Doctrine::exportSql() replaced by Doctrine::generateSqlFromModels()
 * r3048: Doctrine::importSchema() replaced by Doctrine::generateModelsFromDb()

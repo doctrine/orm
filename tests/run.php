@@ -280,3 +280,4 @@ $data->addTestCase(new Doctrine_Data_Export_TestCase());
 $test->addTestCase($data);
 
 $test->run();
+

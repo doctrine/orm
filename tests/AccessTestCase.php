@@ -48,7 +48,7 @@ class Doctrine_Access_TestCase extends Doctrine_UnitTestCase
     public function testIsset() 
     {
         $user = new User();
-        
+
         $this->assertTrue(isset($user->name));  
         $this->assertFalse(isset($user->unknown));
         
@@ -70,7 +70,7 @@ class Doctrine_Access_TestCase extends Doctrine_UnitTestCase
     public function testOffsetMethods() 
     {
         $user = new User();
-        $this->assertEqual($user['name'],null);
+        $this->assertEqual($user['name'], null);
 
         $user['name'] = 'Jack';
         $this->assertEqual($user['name'], 'Jack');

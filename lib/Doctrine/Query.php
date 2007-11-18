@@ -32,6 +32,7 @@ Doctrine::autoload('Doctrine_Query_Abstract');
  */
 class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
 {
+    /** @todo document the query states (and the transitions between them). */
     const STATE_CLEAN  = 1;
 
     const STATE_DIRTY  = 2;
@@ -156,7 +157,10 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
     protected $_pendingJoinConditions = array();
 
     protected $_expressionMap = array();
-
+    
+    /**
+     * @var integer $_state   The current state of this query.
+     */
     protected $_state = Doctrine_Query::STATE_CLEAN;
 
     /**
@@ -170,7 +174,10 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
     {
         return new Doctrine_Query($conn);
     }
-
+    
+    /**
+     * Resets the query to the state just after it has been instantiated.
+     */
     public function reset()
     {
         $this->_pendingJoinConditions = array();
@@ -318,6 +325,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
      *
      * @throws Doctrine_Query_Exception     if unknown parser name given
      * @return Doctrine_Query_Part
+     * @todo Doc/Description: What is the parameter for? Which parsers are available?
      */
     public function getParser($name)
     {
@@ -386,10 +394,12 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
 
     /**
      * getDqlPart
-     * returns the given DQL query part 
+     * returns a specific DQL query part.
      *
      * @param string $queryPart     the name of the query part
      * @return string   the DQL query part
+     * @todo Description: List which query parts exist or point to the method/property
+     *       where they are listed.
      */
     public function getDqlPart($queryPart)
     {
@@ -402,7 +412,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
 
     /**
      * getDql
-     * returns the DQL query associated with this object
+     * returns the DQL query that is represented by this query object.
      *
      * the query is built from $_dqlParts
      *
@@ -432,6 +442,8 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
      * @throws Doctrine_Query_Exception     if unknown component alias has been given
      * @param string $componentAlias        the alias of the component
      * @return void
+     * @todo Description: What is a 'pending field' (and are there non-pending fields, too)?
+     *       What is 'processed'? (Meaning: What information is gathered & stored away)
      */
     public function processPendingFields($componentAlias)
     {
@@ -443,6 +455,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
 
             // check for wildcards
             if (in_array('*', $fields)) {
+                //echo "<br />";Doctrine::dump($table->getColumnNames()); echo "<br />";
                 $fields = $table->getColumnNames();
             } else {
                 // only auto-add the primary key fields if this query object is not
@@ -477,7 +490,8 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
             }
 
             $this->_neededTables[] = $tableAlias;
-
+            //Doctrine::dump(implode(', ', $sql));
+            //echo "<br /><br />";
             return implode(', ', $sql);
         }
     }
@@ -487,6 +501,9 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
      *
      * @throws Doctrine_Query_Exception     if unknown component alias has been given
      * @return void
+     * @todo Description: Explain what this method does. Is there a relation to parseSelect()?
+     *       (It doesnt seem to get called from there...?). In what circumstances is this method
+     *       used?
      */
     public function parseSelectField($field)
     {
@@ -533,6 +550,8 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
      *
      * @param string $expr      expression from which to get to owner from
      * @return string           the component alias
+     * @todo Description: What does it mean if a component is an 'owner' of an expression?
+     *       What kind of 'expression' are we talking about here?
      */
     public function getExpressionOwner($expr)
     {
@@ -557,6 +576,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
      * adds selected fields to pendingFields array
      *
      * @param string $dql
+     * @todo Description: What information is extracted (and then stored)?
      */
     public function parseSelect($dql)
     {
@@ -640,8 +660,10 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
      * 5. Parses nested clauses and subqueries recursively
      *
      * @return string   SQL string
+     * @todo Description: What is a 'dql clause' (and what not)?
+     *       Refactor: Too long & nesting level
      */
-    public function parseClause($clause) 
+    public function parseClause($clause)
     {
     	$clause = trim($clause);
 
@@ -670,7 +692,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
                     // convert DQL function to its RDBMS specific equivalent
                     try {
                         $expr = call_user_func_array(array($this->_conn->expression, $name), $args);
-                    } catch(Doctrine_Expression_Exception $e) {
+                    } catch (Doctrine_Expression_Exception $e) {
                         throw new Doctrine_Query_Exception('Unknown function ' . $expr . '.');
                     }
                     $term[0] = $expr;
@@ -849,6 +871,8 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
      * since some subqueries may be correlated
      *
      * @return void
+     * @todo Better description. i.e. What is a 'pending subquery'? What does 'processed' mean?
+     *       (parsed? sql is constructed? some information is gathered?)
      */
     public function processPendingSubqueries()
     {
@@ -878,6 +902,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
      * processes pending aggregate values for given component alias
      *
      * @return void
+     * @todo Better description. i.e. What is a 'pending aggregate'? What does 'processed' mean?
      */
     public function processPendingAggregates()
     {
@@ -1135,7 +1160,8 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
         $table = $map['table'];
         $rootAlias = key($this->_aliasMap);
 
-        if ( ! empty($this->parts['limit']) && $this->needsSubquery && $table->getAttribute(Doctrine::ATTR_QUERY_LIMIT) == Doctrine::LIMIT_RECORDS) {
+        if ( ! empty($this->parts['limit']) && $this->needsSubquery &&
+                $table->getAttribute(Doctrine::ATTR_QUERY_LIMIT) == Doctrine::LIMIT_RECORDS) {
             $this->isLimitSubqueryUsed = true;
             $needsSubQuery = true;
         }
@@ -1235,6 +1261,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
      * of limiting the number of sql result set rows
      *
      * @return string       the limit subquery
+     * @todo A little refactor to make the method easier to understand & maybe shorter?
      */
     public function getLimitSubquery()
     {
@@ -1445,7 +1472,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
 
         $parts = $this->tokenizeQuery($query);
 
-        foreach($parts as $k => $part) {
+        foreach ($parts as $k => $part) {
             $part = implode(' ', $part);
             $k = strtolower($k);
             switch ($k) {
@@ -1485,7 +1512,10 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
 
         return $this;
     }
-
+    
+    /**
+     * @todo DESCRIBE ME! REFACTOR ME! I'M FAR TOO LONG AND COMPLEX! HARD TO UNDERSTAND!
+     */
     public function load($path, $loadFields = true)
     {
     	if (isset($this->_aliasMap[$path])) {
@@ -1610,7 +1640,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
 
                     $queryPart .= ' ON ' . $localAlias
                                 . '.'
-                                . $localTable->getIdentifier()
+                                . $localTable->getIdentifier() // what about composite keys?
                                 . ' = '
                                 . $assocAlias . '.' . $relation->getLocal();
 
@@ -1708,6 +1738,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
      *
      * @param string $name
      * @param string $componentAlias
+     * @todo DESCRIBE ME!
      */
     public function loadRoot($name, $componentAlias)
     {
@@ -1737,11 +1768,14 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
 
         return $table;
     }
+    
+    /**
+     * @todo DESCRIBE ME!
+     */
     public function buildInheritanceJoinSql($name, $componentAlias)
     {
         // get the connection for the component
-        $this->_conn = Doctrine_Manager::getInstance()
-                      ->getConnectionForComponent($name);
+        $this->_conn = Doctrine_Manager::getInstance()->getConnectionForComponent($name);
 
         $table = $this->_conn->getTable($name);
         $tableName = $table->getTableName();
@@ -1762,6 +1796,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
             $queryPart .= ' LEFT JOIN ' . $this->_conn->quoteIdentifier($parentTable->getTableName())
                         . ' ' . $this->_conn->quoteIdentifier($parentTableAlias) . ' ON ';
             
+            //Doctrine::dump($table->getIdentifier());
             foreach ((array) $table->getIdentifier() as $identifier) {
                 $column = $table->getColumnName($identifier);
 

@@ -151,7 +151,7 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
     protected $options    = array();
 
     /**
-     * @var array $availableDrivers         an array containing all availible drivers
+     * @var array $availableDrivers         an array containing all available drivers
      */
     private static $availableDrivers    = array(
                                         'Mysql',
@@ -180,7 +180,7 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
 
             $this->isConnected = true;
 
-        } elseif (is_array($adapter)) {
+        } else if (is_array($adapter)) {
             $this->pendingAttributes[Doctrine::ATTR_DRIVER_NAME] = $adapter['scheme'];
 
             $this->options['dsn']      = $adapter['dsn'];
@@ -468,7 +468,7 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
      * @throws PDOException                         if something fails at PDO level
      * @return integer                              number of rows affected
      */
-    public function replace($table, array $fields, array $keys)
+    public function replace(Doctrine_Table $table, array $fields, array $keys)
     {
         //if ( ! $this->supports('replace'))
         //    throw new Doctrine_Connection_Exception('replace query is not supported');
@@ -478,25 +478,25 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
         }
         $condition = $values = array();
 
-        foreach ($fields as $name => $value) {
-            $values[$name] = $value;
+        foreach ($fields as $fieldName => $value) {
+            $values[$fieldName] = $value;
 
-            if (in_array($name, $keys)) {
+            if (in_array($fieldName, $keys)) {
                 if ($value === null)
-                    throw new Doctrine_Connection_Exception('key value '.$name.' may not be null');
+                    throw new Doctrine_Connection_Exception('key value '.$fieldName.' may not be null');
 
-                $condition[]       = $name . ' = ?';
+                $condition[] = $table->getColumnName($fieldName) . ' = ?';
                 $conditionValues[] = $value;
             }
         }
 
-        $query          = 'DELETE FROM ' . $this->quoteIdentifier($table) . ' WHERE ' . implode(' AND ', $condition);
-        $affectedRows   = $this->exec($query);
+        $query = 'DELETE FROM ' . $this->quoteIdentifier($table->getTableName())
+                . ' WHERE ' . implode(' AND ', $condition);
+        $affectedRows = $this->exec($query, $conditionValues);
 
         $this->insert($table, $values);
 
         $affectedRows++;
-
 
         return $affectedRows;
     }
@@ -509,16 +509,16 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
      * @param array $identifier     An associateve array containing identifier column-value pairs.
      * @return integer              The number of affected rows
      */
-    public function delete($table, array $identifier)
+    public function delete(Doctrine_Table $table, array $identifier)
     {
         $tmp = array();
 
         foreach (array_keys($identifier) as $id) {
-            $tmp[] = $id . ' = ?';
+            $tmp[] = $table->getColumnName($id) . ' = ?';
         }
 
         $query = 'DELETE FROM '
-               . $this->quoteIdentifier($table)
+               . $this->quoteIdentifier($table->getTableName())
                . ' WHERE ' . implode(' AND ', $tmp);
 
 
@@ -534,27 +534,27 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
      * @return mixed            boolean false if empty value array was given,
      *                          otherwise returns the number of affected rows
      */
-    public function update($table, array $values, array $identifier)
+    public function update(Doctrine_Table $table, array $fields, array $identifier)
     {
-        if (empty($values)) {
+        if (empty($fields)) {
             return false;
         }
 
         $set = array();
-        foreach ($values as $name => $value) {
+        foreach ($fields as $fieldName => $value) {
             if ($value instanceof Doctrine_Expression) {
-                $set[] = $name . ' = ' . $value->getSql();
+                $set[] = $table->getColumnName($fieldName) . ' = ' . $value->getSql();
                 unset($values[$name]);
             } else {
-                $set[] = $name . ' = ?';
+                $set[] = $table->getColumnName($fieldName) . ' = ?';
             }
         }
 
-        $params = array_merge(array_values($values), array_values($identifier));
+        $params = array_merge(array_values($fields), array_values($identifier));
 
-        $sql  = 'UPDATE ' . $this->quoteIdentifier($table)
+        $sql  = 'UPDATE ' . $this->quoteIdentifier($table->getTableName())
               . ' SET ' . implode(', ', $set)
-              . ' WHERE ' . implode(' = ? AND ', array_keys($identifier))
+              . ' WHERE ' . implode(' = ? AND ', $table->getIdentifierColumnNames())
               . ' = ?';
 
         return $this->exec($sql, $params);
@@ -568,34 +568,36 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
      * @return mixed            boolean false if empty value array was given,
      *                          otherwise returns the number of affected rows
      */
-    public function insert($table, array $values) {
-        if (empty($values)) {
+    public function insert(Doctrine_Table $table, array $fields) {
+        if (empty($fields)) {
             return false;
         }
+
+        $tableName = $table->getTableName();
 
         // column names are specified as array keys
         $cols = array();
         // the query VALUES will contain either expresions (eg 'NOW()') or ?
         $a = array();
-        foreach ($values as $k => $value) {
-            $cols[] = $this->quoteIdentifier($k);
+        foreach ($fields as $fieldName => $value) {
+            $cols[] = $this->quoteIdentifier($table->getColumnName($fieldName));
             if ($value instanceof Doctrine_Expression) {
                 $a[] = $value->getSql();
-                unset($values[$k]);
+                unset($fields[$fieldName]);
             } else {
                 $a[] = '?';
             }
         }
 
         // build the statement
-        $query = 'INSERT INTO ' . $this->quoteIdentifier($table) 
+        $query = 'INSERT INTO ' . $this->quoteIdentifier($tableName) 
                . ' (' . implode(', ', $cols) . ') '
                . 'VALUES (';
 
         $query .= implode(', ', $a) . ')';
         // prepare and execute the statement
 
-        return $this->exec($query, array_values($values));
+        return $this->exec($query, array_values($fields));
     }
 
     /**
@@ -912,6 +914,7 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
                 $this->getAttribute(Doctrine::ATTR_LISTENER)->preQuery($event);
 
                 if ( ! $event->skipOperation) {
+                    //echo $query . "<br />";
                     $stmt = $this->dbh->query($query);
 
                     $this->_count++;
