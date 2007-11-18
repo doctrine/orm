@@ -88,7 +88,7 @@ class Doctrine_Search_Query
         $where .= $this->parseClause($text);
 
         $groupby = 'GROUP BY ' . $foreignId;
-        $orderby = 'ORDER BY relevance';
+        $orderby = 'ORDER BY relevance DESC';
 
         $this->_sql = $select . ' ' . $from . ' ' . $where . ' ' . $groupby . ' ' . $orderby;
     }
