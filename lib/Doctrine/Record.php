@@ -455,7 +455,6 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
      */
     public function hydrate(array $data)
     {
-        
         $this->_values = array_merge($this->_values, $this->cleanData($data));
         $this->_data   = array_merge($this->_data, $data);
         //Doctrine::dump($this->_data);

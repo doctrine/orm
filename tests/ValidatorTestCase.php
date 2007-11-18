@@ -216,7 +216,7 @@ class Doctrine_Validator_TestCase extends Doctrine_UnitTestCase
             $user->name = "this is an example of too long user name not very good example but an example nevertheless";
             $user->save();
             $this->fail();
-        } catch(Doctrine_Validator_Exception $e) {
+        } catch (Doctrine_Validator_Exception $e) {
             $this->pass();
             $a = $e->getInvalidRecords();
             //var_dump($a[1]->getErrorStack());

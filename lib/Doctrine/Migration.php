@@ -90,7 +90,8 @@ class Doctrine_Migration
      */
     public function setTableName($tableName)
     {
-        $this->_migrationTableName = $tableName;
+        $this->_migrationTableName = Doctrine_Manager::connection()
+                ->formatter->getTableName($tableName);
     }
 
     /**

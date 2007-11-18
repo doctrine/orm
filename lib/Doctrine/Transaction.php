@@ -248,18 +248,14 @@ class Doctrine_Transaction extends Doctrine_Connection_Module
             }
 
             $listener->postSavepointCommit($event);
-        } else {
-
-            if ($this->transactionLevel == 1) {  
+        } else {            
+            if ($this->transactionLevel == 1) {
                 if ( ! empty($this->invalid)) {
                     $this->rollback();
-
                     $tmp = $this->invalid;
                     $this->invalid = array();
-
                     throw new Doctrine_Validator_Exception($tmp);
                 }
-
                 // take snapshots of all collections used within this transaction
                 foreach ($this->_collections as $coll) {
                     $coll->takeSnapshot();
