@@ -172,6 +172,6 @@ class Doctrine_Search_TestCase extends Doctrine_UnitTestCase
     {
         $oQuery = new Doctrine_Search_Query("SearchTest");
         $oQuery->query("^test");
-        $this->assertEqual($oQuery->getSql(), "SELECT SUM(sub_relevance) AS relevance, id FROM  WHERE keyword = ? GROUP BY id ORDER BY relevance");
+        $this->assertEqual($oQuery->getSql(), "SELECT SUM(sub_relevance) AS relevance, id FROM  WHERE keyword = ? GROUP BY id ORDER BY relevance DESC");
     }
 }
