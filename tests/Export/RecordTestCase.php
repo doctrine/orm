@@ -96,12 +96,12 @@ class Doctrine_Export_Record_TestCase extends Doctrine_UnitTestCase
 
     public function testExportModelFromDirectory()
     {
+        
         Doctrine::createTablesFromModels(dirname(__FILE__) . DIRECTORY_SEPARATOR .'..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'models' . DIRECTORY_SEPARATOR . 'export');
-
         $this->assertEqual($this->adapter->pop(), 'COMMIT');
         $this->assertEqual($this->adapter->pop(), 'ALTER TABLE cms__category_languages ADD FOREIGN KEY (category_id) REFERENCES cms__category(id) ON DELETE CASCADE');
         $this->assertEqual($this->adapter->pop(), 'CREATE TABLE cms__category_languages (id BIGINT AUTO_INCREMENT, name TEXT, category_id BIGINT, language_id BIGINT, INDEX index_category_idx (category_id), INDEX index_language_idx (language_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci ENGINE = INNODB');
-        $this->assertEqual($this->adapter->pop(), 'CREATE TABLE cms__category (id BIGINT AUTO_INCREMENT, created DATETIME, parent BIGINT, position MEDIUMINT, active BIGINT, INDEX index_parent_idx (parent), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci ENGINE = INNODB');    
+        $this->assertEqual($this->adapter->pop(), 'CREATE TABLE cms__category (id BIGINT AUTO_INCREMENT, created DATETIME, parent BIGINT, position MEDIUMINT, active BIGINT, INDEX index_parent_idx (parent), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci ENGINE = INNODB');   
         $this->assertEqual($this->adapter->pop(), 'BEGIN TRANSACTION');
     }
 

@@ -1094,6 +1094,16 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
     {
         return $this->getTable($name)->create();
     }
+    
+    /**
+     * Creates a new Doctrine_Query object that operates on this connection.
+     * 
+     * @return Doctrine_Query 
+     */
+    public function createQuery()
+    {
+        return new Doctrine_Query($this);
+    }
 
     /**
      * flush

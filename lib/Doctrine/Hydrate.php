@@ -32,7 +32,7 @@
  * @version     $Revision$
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  */
-class Doctrine_Hydrate extends Doctrine_Locator_Injectable implements Serializable
+abstract class Doctrine_Hydrate extends Doctrine_Locator_Injectable implements Serializable
 {
     /**
      * QUERY TYPE CONSTANTS
@@ -1284,4 +1284,6 @@ class Doctrine_Hydrate extends Doctrine_Locator_Injectable implements Serializab
     {
         return $this->parts;
     }
+    
+    abstract public function getQuery($params = array());
 }

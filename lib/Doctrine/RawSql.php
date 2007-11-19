@@ -143,7 +143,7 @@ class Doctrine_RawSql extends Doctrine_Query_Abstract
      *
      * @return string       the built sql query
      */
-    public function getQuery()
+    public function getQuery($params = array())
     {
         $select = array();
 

@@ -450,50 +450,53 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
         $tableAlias = $this->getTableAlias($componentAlias);
         $table      = $this->_aliasMap[$componentAlias]['table'];
 
-        if (isset($this->_pendingFields[$componentAlias])) {
-            $fields = $this->_pendingFields[$componentAlias];
-
-            // check for wildcards
-            if (in_array('*', $fields)) {
-                //echo "<br />";Doctrine::dump($table->getColumnNames()); echo "<br />";
-                $fields = $table->getColumnNames();
-            } else {
-                // only auto-add the primary key fields if this query object is not
-                // a subquery of another query object
-                if ( ! $this->isSubquery) {
-                    $fields = array_unique(array_merge((array) $table->getIdentifier(), $fields));
-                }
-            }
-            $sql = array();
-            foreach ($fields as $name) {
-                if (($owner = $table->getColumnOwner($name)) !== null && 
-                     $owner !== $table->getComponentName()) {
-
-
-                    $parent = $this->_conn->getTable($owner);
-
-                    $name = $parent->getColumnName($name);
-
-                    $parentAlias = $this->getTableAlias($componentAlias . '.' . $parent->getComponentName());
-
-                    $sql[] = $this->_conn->quoteIdentifier($parentAlias . '.' . $name)
-                           . ' AS '
-                           . $this->_conn->quoteIdentifier($tableAlias . '__' . $name);
-                } else {
-
-                    $name = $table->getColumnName($name);
-    
-                    $sql[] = $this->_conn->quoteIdentifier($tableAlias . '.' . $name)
-                           . ' AS '
-                           . $this->_conn->quoteIdentifier($tableAlias . '__' . $name);
-                }
-            }
-
-            $this->_neededTables[] = $tableAlias;
-            //Doctrine::dump(implode(', ', $sql));
-            //echo "<br /><br />";
-            return implode(', ', $sql);
+        if ( ! isset($this->_pendingFields[$componentAlias])) {
+            return;
         }
+
+        $fields = $this->_pendingFields[$componentAlias];
+
+        // check for wildcards
+        if (in_array('*', $fields)) {
+            //echo "<br />";Doctrine::dump($table->getColumnNames()); echo "<br />";
+            $fields = $table->getFieldNames();
+        } else {
+            // only auto-add the primary key fields if this query object is not
+            // a subquery of another query object
+            if ( ! $this->isSubquery) {
+                $fields = array_unique(array_merge((array) $table->getIdentifier(), $fields));
+            }
+        }
+        
+        $sql = array();
+        foreach ($fields as $fieldName) {
+            $columnName = $table->getColumnName($fieldName);
+            if (($owner = $table->getColumnOwner($columnName)) !== null && 
+                    $owner !== $table->getComponentName()) {
+
+                $parent = $this->_conn->getTable($owner);
+
+                $columnName = $parent->getColumnName($fieldName);
+
+                $parentAlias = $this->getTableAlias($componentAlias . '.' . $parent->getComponentName());
+
+                $sql[] = $this->_conn->quoteIdentifier($parentAlias . '.' . $columnName)
+                       . ' AS '
+                       . $this->_conn->quoteIdentifier($tableAlias . '__' . $columnName);
+            } else {
+
+                $columnName = $table->getColumnName($fieldName);
+
+                $sql[] = $this->_conn->quoteIdentifier($tableAlias . '.' . $columnName)
+                       . ' AS '
+                       . $this->_conn->quoteIdentifier($tableAlias . '__' . $columnName);
+            }
+        }
+
+        $this->_neededTables[] = $tableAlias;
+        //Doctrine::dump(implode(', ', $sql));
+        //echo "<br /><br />";
+        return implode(', ', $sql);
     }
 
     /**
@@ -1126,8 +1129,6 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
            return $this->_sql;
         }
 
-        $parts = $this->_dqlParts;
-
         // reset the state
         if ( ! $this->isSubquery()) {
             $this->_aliasMap = array();
@@ -1140,6 +1141,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
         foreach ($this->_dqlParts as $queryPartName => $queryParts) {
             $this->processQueryPart($queryPartName, $queryParts);
         }
+        
         $params = $this->convertEnums($params);
 
         $this->_state = self::STATE_DIRECT;
@@ -1147,8 +1149,6 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
         // invoke the preQuery hook
         $this->preQuery();        
         $this->_state = self::STATE_CLEAN;
-
-        $this->_dqlParts = $parts;
 
         if (empty($this->parts['from'])) {
             return false;
@@ -1205,8 +1205,8 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
 
             if ($needsSubQuery) {
                 $subquery = $this->getLimitSubquery();
-
-
+                // what about composite keys?
+                $idColumnName = $table->getColumnName($table->getIdentifier());
                 switch (strtolower($this->_conn->getName())) {
                     case 'mysql':
                         // mysql doesn't support LIMIT in subqueries
@@ -1215,11 +1215,11 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
                         break;
                     case 'pgsql':
                         // pgsql needs special nested LIMIT subquery
-                        $subquery = 'SELECT doctrine_subquery_alias.' . $table->getIdentifier(). ' FROM (' . $subquery . ') AS doctrine_subquery_alias';
+                        $subquery = 'SELECT doctrine_subquery_alias.' . $idColumnName . ' FROM (' . $subquery . ') AS doctrine_subquery_alias';
                         break;
                 }
 
-                $field = $this->getTableAlias($rootAlias) . '.' . $table->getIdentifier();
+                $field = $this->getTableAlias($rootAlias) . '.' . $idColumnName;
 
                 // only append the subquery if it actually contains something
                 if ($subquery !== '') {
@@ -1236,7 +1236,6 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
         $q .= ( ! empty($this->parts['orderby']))? ' ORDER BY ' . implode(', ', $this->parts['orderby'])  : '';
 
         if ($modifyLimit) {
-
             $q = $this->_conn->modifyLimitQuery($q, $this->parts['limit'], $this->parts['offset']);
         }
 

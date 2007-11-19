@@ -147,10 +147,9 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
             $this->_table = $table;
             $exists = ( ! $isNewEntry);
         } else {
-            $class  = get_class($this);
+            $class = get_class($this);
             // get the table of this class
-            $this->_table = Doctrine_Manager::getInstance()
-                            ->getTable($class);
+            $this->_table = Doctrine_Manager::getInstance()->getTable($class);
             $exists = false;
         }
 
@@ -185,7 +184,7 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
             // set the default values for this record
             $this->assignDefaultValues();
         } else {
-            $this->_state      = Doctrine_Record::STATE_CLEAN;
+            $this->_state = Doctrine_Record::STATE_CLEAN;
 
             if ($count < $this->_table->getColumnCount()) {
                 $this->_state  = Doctrine_Record::STATE_PROXY;
@@ -247,7 +246,7 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
     /**
      * isValid
      *
-     * @return boolean                          whether or not this record passes all column validations
+     * @return boolean  whether or not this record is valid
      */
     public function isValid()
     {
@@ -428,13 +427,13 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
      *
      * @param array $data       data array to be cleaned
      * @return integer
+     * @todo Better description. What exactly does this "cleaning" involve?
      */
     public function cleanData(&$data)
     {
         $tmp = $data;
         $data = array();
 
-        //Doctrine::dump($this->getTable()->getFieldNames());
         foreach ($this->getTable()->getFieldNames() as $fieldName) {
             if ( ! isset($tmp[$fieldName])) {
                 $data[$fieldName] = self::$_null;
@@ -458,7 +457,6 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
     {
         $this->_values = array_merge($this->_values, $this->cleanData($data));
         $this->_data   = array_merge($this->_data, $data);
-        //Doctrine::dump($this->_data);
         $this->prepareIdentifiers(true);
     }
 
@@ -638,8 +636,7 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
         }
 
         if ($this->_state === Doctrine_Record::STATE_TCLEAN ||
-            $this->_state === Doctrine_Record::STATE_CLEAN) {
-
+                $this->_state === Doctrine_Record::STATE_CLEAN) {
             $this->_modified = array();
         }
 

@@ -97,7 +97,7 @@ class Doctrine_Hydrate_Mock extends Doctrine_Hydrate
     {
         $this->data = $data;
     }
-    public function getQuery()
+    public function getQuery($params = array())
     {
     	
     }

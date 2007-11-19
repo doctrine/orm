@@ -956,8 +956,13 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
             $fieldName = $parts[0];
         }
         $name = strtolower($parts[0]);
-        $this->_columnNames[$fieldName] = $name;
-        $this->_fieldNames[$name] = $fieldName;
+        if ($prepend) {
+            $this->_columnNames = array_merge(array($fieldName => $name), $this->_columnNames);
+            $this->_fieldNames = array_merge(array($name => $fieldName), $this->_fieldNames);
+        } else {
+            $this->_columnNames[$fieldName] = $name;
+            $this->_fieldNames[$name] = $fieldName;
+        }
 
         if ($length == null) {
             switch ($type) {
