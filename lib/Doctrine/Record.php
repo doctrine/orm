@@ -106,6 +106,7 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
 
     /**
      * @var array $_modified                an array containing field names that have been modified
+     * @todo Better name? $_modifiedFields?
      */
     protected $_modified     = array();
 
@@ -761,7 +762,7 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
 
     /**
      * load
-     * loads all the unitialized properties from the database
+     * loads all the uninitialized properties from the database
      *
      * @return boolean
      */
@@ -790,7 +791,7 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
         $value = self::$_null;
 
         if (isset($this->_data[$fieldName])) {
-            // check if the property is null (= it is the Doctrine_Null object located in self::$_null)
+            // check if the value is the Doctrine_Null object located in self::$_null)
             if ($this->_data[$fieldName] === self::$_null && $load) {
                 $this->load();
             }
@@ -1379,6 +1380,7 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
      * returns the value of autoincremented primary key of this object (if any)
      *
      * @return integer
+     * @todo Better name? 
      */
     final public function getIncremented()
     {

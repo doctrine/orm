@@ -1215,6 +1215,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
      *
      * @param Doctrine_Record $record       record to be added
      * @return boolean
+     * @todo Better name? registerRecord?
      */
     public function addRecord(Doctrine_Record $record)
     {

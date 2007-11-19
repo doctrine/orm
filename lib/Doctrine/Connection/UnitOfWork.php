@@ -305,6 +305,9 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
         return true;
     }
     
+    /**
+     * @todo Description. See also the todo for deleteMultiple().
+     */
     public function deleteRecord(Doctrine_Record $record)
     {
         $ids = $record->identifier();
@@ -329,46 +332,54 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
      * deletes all records from the pending delete list
      *
      * @return void
+     * @todo Refactor. Maybe move to the Connection class? Sometimes UnitOfWork constructs
+     *       queries itself and sometimes it leaves the sql construction to Connection.
+     *       This should be changed.
      */
     public function deleteMultiple(array $records)
-    {
-
+    {        
         foreach ($this->delete as $name => $deletes) {
             $record = false;
-            $ids    = array();
+            $ids = array();
+            
+            // Note: Why is the last element's table identifier checked here and then 
+            // the table object from $deletes[0] used???
+            if (is_array($deletes[count($deletes)-1]->getTable()->getIdentifier()) &&
+                    count($deletes) > 0) {
+                $table = $deletes[0]->getTable();
+                $query = 'DELETE FROM '
+                       . $this->conn->quoteIdentifier($table->getTableName())
+                       . ' WHERE ';
 
-            if (is_array($deletes[count($deletes)-1]->getTable()->getIdentifier())) {
-                if (count($deletes) > 0) {
-                    $query = 'DELETE FROM '
-                           . $this->conn->quoteIdentifier($deletes[0]->getTable()->getTableName())
-                           . ' WHERE ';
-    
-                    $params = array();
-                    $cond = array();
-                    foreach ($deletes as $k => $record) {
-                        $ids = $record->identifier();
-                        $tmp = array();
-                        foreach (array_keys($ids) as $id) {
-                            $tmp[] = $id . ' = ? ';
-                        }
-                        $params = array_merge($params, array_values($ids));
-                        $cond[] = '(' . implode(' AND ', $tmp) . ')';
+                $params = array();
+                $cond = array();
+                foreach ($deletes as $k => $record) {
+                    $ids = $record->identifier();
+                    $tmp = array();
+                    foreach (array_keys($ids) as $id) {
+                        $tmp[] = $table->getColumnName($id) . ' = ? ';
                     }
-                    $query .= implode(' OR ', $cond);
-
-                    $this->conn->execute($query, $params);
+                    $params = array_merge($params, array_values($ids));
+                    $cond[] = '(' . implode(' AND ', $tmp) . ')';
                 }
+                $query .= implode(' OR ', $cond);
+
+                $this->conn->execute($query, $params);
             } else {
                 foreach ($deletes as $k => $record) {
                     $ids[] = $record->getIncremented();
                 }
+                // looks pretty messy. $record should be already out of scope. ugly php behaviour.
+                // even the php manual agrees on that and recommends to unset() the last element
+                // immediately after the loop ends.
+                $table = $record->getTable();
                 if ($record instanceof Doctrine_Record) {
                     $params = substr(str_repeat('?, ', count($ids)), 0, -2);
     
                     $query = 'DELETE FROM '
                            . $this->conn->quoteIdentifier($record->getTable()->getTableName())
                            . ' WHERE '
-                           . $record->getTable()->getIdentifier()
+                           . $table->getColumnName($table->getIdentifier())
                            . ' IN(' . $params . ')';
         
                     $this->conn->execute($query, $ids);
@@ -395,15 +406,14 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
 
             if ($rel instanceof Doctrine_Relation_ForeignKey) {
                 $saveLater[$k] = $rel;
-            } elseif ($rel instanceof Doctrine_Relation_LocalKey) {
+            } else if ($rel instanceof Doctrine_Relation_LocalKey) {
                 // ONE-TO-ONE relationship
                 $obj = $record->get($rel->getAlias());
 
                 // Protection against infinite function recursion before attempting to save
-                if ($obj instanceof Doctrine_Record &&
-                    $obj->isModified()) {
+                if ($obj instanceof Doctrine_Record && $obj->isModified()) {
                     $obj->save($this->conn);
-                    /**
+                    /** Can this be removed?
                     $id = array_values($obj->identifier());
 
                     foreach ((array) $rel->getLocal() as $k => $field) {
@@ -472,11 +482,9 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
         foreach ($record->getTable()->getRelations() as $fk) {
             if ($fk->isComposite()) {
                 $obj = $record->get($fk->getAlias());
-                if ( $obj instanceof Doctrine_Record && 
-                     $obj->state() != Doctrine_Record::STATE_LOCKED)  {
-
+                if ($obj instanceof Doctrine_Record && 
+                        $obj->state() != Doctrine_Record::STATE_LOCKED)  {
                     $obj->delete($this->conn);
-
                 }
             }
         }
@@ -568,6 +576,7 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
 
         return true;
     }
+    
     /**
      * inserts a record into database
      *

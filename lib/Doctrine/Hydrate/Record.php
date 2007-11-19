@@ -53,6 +53,7 @@ class Doctrine_Hydrate_Record extends Doctrine_Locator_Injectable
         
         return $coll->key();
     }
+    
     public function initRelated($record, $name)
     {
         if ( ! is_array($record)) {
@@ -62,6 +63,7 @@ class Doctrine_Hydrate_Record extends Doctrine_Locator_Injectable
         }
         return false;
     }
+    
     public function registerCollection(Doctrine_Collection $coll)
     {
         $this->_collections[] = $coll;
@@ -93,10 +95,12 @@ class Doctrine_Hydrate_Record extends Doctrine_Locator_Injectable
         }
         return true;
     }
+    
     public function getNullPointer() 
     {
         return self::$_null;
     }
+    
     public function getElement(array $data, $component)
     {
         if ( ! isset($this->_tables[$component])) {
@@ -104,14 +108,8 @@ class Doctrine_Hydrate_Record extends Doctrine_Locator_Injectable
             $this->_tables[$component]->setAttribute(Doctrine::ATTR_LOAD_REFERENCES, false);
         }
         
-        //echo "..before..";
-        //Doctrine::dump($data);
-        
         $this->_tables[$component]->setData($data);
         $record = $this->_tables[$component]->getRecord();
-        
-        //echo "..after..";
-        //Doctrine::dump($record->getData());
 
         if ( ! isset($this->_records[$record->getOid()]) ) {
             $record->clearRelated();
@@ -120,6 +118,7 @@ class Doctrine_Hydrate_Record extends Doctrine_Locator_Injectable
 
         return $record;
     }
+    
     public function flush()
     {
         // take snapshots from all initialized collections
