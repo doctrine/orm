@@ -10,7 +10,7 @@ Unlike the column definitions the {{hasMany}} and {{hasOne}} methods are placed 
 * **onDelete**, the onDelete integrity action.
 * **onUpdate**, the onUpdate integrity action.
 
-So lets take our first example, say we have two classes Forum_Board and Forum_Thread. Here Forum_Board has many Forum_Threads, hence their relation is one-to-many. We don't want to write Forum_ when accessing relations, so we use relation aliases.
+So lets take our first example, say we have two classes Forum_Board and Forum_Thread. Here Forum_Board has many Forum_Threads, hence their relation is one-to-many. We don't want to write Forum_ when accessing relations, so we use relation aliases and use the alias Threads.
 
 First lets take a look at the Forum_Board class. It has three columns: name, description and since we didn't specify any primary key, Doctrine auto-creates an id column for it.
 
@@ -170,7 +170,7 @@ class Task extends Doctrine_Record
 
 If you are coming from relational database background it may be familiar to you how many-to-many associations are handled: an additional association table is needed.
 
-In many-to-many relations the relation between the two components is always an aggregate relation and the association table is owned by both ends. For example in the case of users and groups when user is being deleted the groups it belongs to are not being deleted and the associations between this user and the groups it belongs to are being deleted.
+In many-to-many relations the relation between the two components is always an aggregate relation and the association table is owned by both ends. For example in the case of users and groups when user is being deleted the groups it belongs to are not being deleted, but the associations between this user and the groups it belongs to are being deleted.
 
 Sometimes you may not want that association table rows are being deleted when user / group is being deleted. You can override this behaviour by setting the relations to association component (in this case {{Groupuser}}) explicitly. 
 
