@@ -1,10 +1,10 @@
-Syntax:
+DQL JOIN Syntax:
 
 <code>
-[[LEFT | INNER] JOIN <component_reference1>] [ON | WITH] <join_condition1> [MAP] <map_condition1>,
-[[LEFT | INNER] JOIN <component_reference2>] [ON | WITH] <join_condition2> [MAP] <map_condition2>,
+[[LEFT | INNER] JOIN <component_reference1>] [ON | WITH] <join_condition1> [INDEXBY] <map_condition1>,
+[[LEFT | INNER] JOIN <component_reference2>] [ON | WITH] <join_condition2> [INDEXBY] <map_condition2>,
 ...
-[[LEFT | INNER] JOIN <component_referenceN>] [ON | WITH] <join_conditionN> [MAP] <map_conditionN>
+[[LEFT | INNER] JOIN <component_referenceN>] [ON | WITH] <join_conditionN> [INDEXBY] <map_conditionN>
 </code>
 
 DQL supports two kinds of joins INNER JOINs and LEFT JOINs. For each joined component, you can optionally specify an alias.
