@@ -1,3 +1,15 @@
+DQL GROUP BY syntax:
+
+<code>
+GROUP BY groupby_item {, groupby_item}*
+</code>
+
+DQL HAVING syntax:
+
+<code>
+HAVING conditional_expression
+</code> 
+
 * GROUP BY and HAVING clauses can be used for dealing with aggregate functions
 * Following aggregate functions are available on DQL: COUNT, MAX, MIN, AVG, SUM
 
