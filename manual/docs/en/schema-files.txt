@@ -23,7 +23,7 @@ User:
     username:
       type: string(255)
     password:
-      type: stirng(255)
+      type: string(255)
   relations:
     Contact:
       foreignType: one
