@@ -30,75 +30,14 @@ Doctrine::autoload('Doctrine_Query_Abstract');
  * @version     $Revision$
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  */
-class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
+class Doctrine_Query extends Doctrine_Query_Abstract implements Countable, Serializable
 {
-    /** @todo document the query states (and the transitions between them). */
-    const STATE_CLEAN  = 1;
-
-    const STATE_DIRTY  = 2;
-
-    const STATE_DIRECT = 3;
-
-    const STATE_LOCKED = 4;
-
-    protected static $_keywords  = array('ALL', 
-                                         'AND', 
-                                         'ANY', 
-                                         'AS', 
-                                         'ASC', 
-                                         'AVG', 
-                                         'BETWEEN', 
-                                         'BIT_LENGTH', 
-                                         'BY', 
-                                         'CHARACTER_LENGTH', 
-                                         'CHAR_LENGTH', 
-                                         'CURRENT_DATE',
-                                         'CURRENT_TIME', 
-                                         'CURRENT_TIMESTAMP', 
-                                         'DELETE', 
-                                         'DESC', 
-                                         'DISTINCT', 
-                                         'EMPTY', 
-                                         'EXISTS', 
-                                         'FALSE', 
-                                         'FETCH', 
-                                         'FROM', 
-                                         'GROUP', 
-                                         'HAVING', 
-                                         'IN', 
-                                         'INDEXBY', 
-                                         'INNER', 
-                                         'IS', 
-                                         'JOIN',
-                                         'LEFT', 
-                                         'LIKE', 
-                                         'LOWER',
-                                         'MEMBER',
-                                         'MOD',
-                                         'NEW', 
-                                         'NOT', 
-                                         'NULL', 
-                                         'OBJECT', 
-                                         'OF', 
-                                         'OR', 
-                                         'ORDER', 
-                                         'OUTER', 
-                                         'POSITION', 
-                                         'SELECT', 
-                                         'SOME',
-                                         'TRIM', 
-                                         'TRUE', 
-                                         'UNKNOWN', 
-                                         'UPDATE', 
-                                         'WHERE');
-
-
-    protected $subqueryAliases   = array();
+    protected $subqueryAliases = array();
 
     /**
      * @param boolean $needsSubquery
      */
-    protected $needsSubquery     = false;
+    protected $needsSubquery = false;
 
     /**
      * @param boolean $isSubquery           whether or not this query object is a subquery of another 
@@ -106,12 +45,10 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
      */
     protected $isSubquery;
 
-    protected $isLimitSubqueryUsed = false;
-
     /**
      * @var array $_neededTables            an array containing the needed table aliases
      */
-    protected $_neededTables     = array();
+    protected $_neededTables = array();
 
     /**
      * @var array $pendingSubqueries        SELECT part subqueries, these are called pending subqueries since
@@ -122,17 +59,12 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
     /**
      * @var array $_pendingFields           an array of pending fields (fields waiting to be parsed)
      */
-    protected $_pendingFields     = array();
+    protected $_pendingFields = array();
 
     /**
      * @var array $_parsers                 an array of parser objects, each DQL query part has its own parser
      */
-    protected $_parsers    = array();
-
-    /**
-     * @var array $_enumParams              an array containing the keys of the parameters that should be enumerated
-     */
-    protected $_enumParams = array();
+    protected $_parsers = array();
 
     /**
      * @var array $_dqlParts                an array containing all DQL query parts
@@ -162,6 +94,12 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
      * @var integer $_state   The current state of this query.
      */
     protected $_state = Doctrine_Query::STATE_CLEAN;
+    
+    /**
+     * @var string $_sql            cached SQL query
+     */
+    protected $_sql;
+    
 
     /**
      * create
@@ -191,18 +129,23 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
     }
 
     /**
-     * setOption
+     * createSubquery
+     * creates a subquery
      *
-     * @param string $name      option name
-     * @param string $value     option value
-     * @return Doctrine_Query   this object
+     * @return Doctrine_Hydrate
      */
-    public function setOption($name, $value)
+    public function createSubquery()
     {
-        if ( ! isset($this->_options[$name])) {
-            throw new Doctrine_Query_Exception('Unknown option ' . $name);
-        }
-        $this->_options[$name] = $value;
+        $class = get_class($this);
+        $obj   = new $class();
+
+        // copy the aliases to the subquery
+        $obj->copyAliases($this);
+
+        // this prevents the 'id' being selected, re ticket #307
+        $obj->isSubquery(true);
+
+        return $obj;
     }
 
     /**
@@ -245,33 +188,86 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
     {
         return $this->_enumParams;
     }
-
+    
     /**
-     * limitSubqueryUsed
+     * getParams
      *
-     * @return boolean
+     * @return array
      */
-    public function isLimitSubqueryUsed()
+    public function getParams()
     {
-        return $this->isLimitSubqueryUsed;
+        return array_merge($this->_params['set'], $this->_params['where'], $this->_params['having']);
     }
-
+    
     /**
-     * convertEnums
-     * convert enum parameters to their integer equivalents
+     * setParams
      *
-     * @return array    converted parameter array
+     * @param array $params
      */
-    public function convertEnums($params)
+    public function setParams(array $params = array()) {
+        $this->_params = $params;
+    }
+    
+    /**
+     * getCachedForm
+     * returns the cached form of this query for given resultSet
+     *
+     * @param array $resultSet
+     * @return string           serialized string representation of this query
+     */
+    public function getCachedForm(array $resultSet)
     {
-        foreach ($this->_enumParams as $key => $values) {
-            if (isset($params[$key])) {
-                if ( ! empty($values)) {
-                    $params[$key] = $values[0]->enumIndex($values[1], $params[$key]);
-                }
+        $map = '';
+
+        foreach ($this->getAliasMap() as $k => $v) {
+            if ( ! isset($v['parent'])) {
+                $map[$k][] = $v['table']->getComponentName();
+            } else {
+                $map[$k][] = $v['parent'] . '.' . $v['relation']->getAlias();
+            }
+            if (isset($v['agg'])) {
+                $map[$k][] = $v['agg'];
             }
         }
-        return $params;
+
+        return serialize(array($resultSet, $map, $this->getTableAliases()));
+    }
+    
+    /**
+     * fetchArray
+     * Convenience method to execute using array fetching as hydration mode.
+     *
+     * @param string $params
+     * @return array
+     */
+    public function fetchArray($params = array()) {
+        return $this->execute($params, Doctrine::HYDRATE_ARRAY);
+    }
+    
+    /**
+     * fetchOne
+     * Convenience method to execute the query and return the first item
+     * of the collection.
+     *
+     * @param string $params Parameters
+     * @param int $hydrationMode Hydration mode
+     * @return mixed Array or Doctrine_Collection or false if no result.
+     */
+    public function fetchOne($params = array(), $hydrationMode = null)
+    {
+        $collection = $this->execute($params, $hydrationMode);
+
+        if (count($collection) === 0) {
+            return false;
+        }
+
+        if ($collection instanceof Doctrine_Collection) {
+            return $collection->getFirst();
+        } else if (is_array($collection)) {
+            return array_shift($collection);
+        }
+
+        return false;
     }
 
     /**
@@ -1090,6 +1086,8 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
      * @param string $queryPartName     the name of the query part
      * @param array $queryParts         an array containing the query part data
      * @return Doctrine_Query           this object
+     * @todo Better description. "parses given query part" ??? Then wheres the difference
+     *       between process/parseQueryPart? I suppose this does something different.
      */
     public function processQueryPart($queryPartName, $queryParts)
     {
@@ -1199,7 +1197,6 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
             }
         }
 
-
         $modifyLimit = true;
         if ( ! empty($this->parts['limit']) || ! empty($this->parts['offset'])) {
 
@@ -1270,13 +1267,13 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
 
         // get short alias
         $alias      = $this->getTableAlias($componentAlias);
-        $primaryKey = $alias . '.' . $table->getIdentifier();
+        // what about composite keys?
+        $primaryKey = $alias . '.' . $table->getColumnName($table->getIdentifier());
 
         // initialize the base of the subquery
         $subquery   = 'SELECT DISTINCT ' . $this->_conn->quoteIdentifier($primaryKey);
 
         $driverName = $this->_conn->getAttribute(Doctrine::ATTR_DRIVER_NAME);
-
 
         // pgsql needs the order by fields to be preserved in select clause
         if ($driverName == 'pgsql') {
@@ -1309,9 +1306,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
             }
         }
 
-
         $subquery .= ' FROM';
-
 
         foreach ($this->parts['from'] as $part) {
             // preserve LEFT JOINs only if needed
@@ -1921,7 +1916,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
         $new = new Doctrine_Query();
         $new->_dqlParts = $query->_dqlParts;
         $new->_params = $query->_params;
-        $new->_hydrationMode = $query->_hydrationMode;
+        $new->_hydrator = $query->_hydrator;
 
         return $new;
     }
@@ -1941,5 +1936,28 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
         $this->_parsers = array();
         $this->_dqlParts = array();
         $this->_enumParams = array();
+    }
+    
+    /**
+     * serialize
+     * this method is automatically called when this Doctrine_Hydrate is serialized
+     *
+     * @return array    an array of serialized properties
+     */
+    public function serialize()
+    {
+        $vars = get_object_vars($this);
+    }
+
+    /**
+     * unseralize
+     * this method is automatically called everytime a Doctrine_Hydrate object is unserialized
+     *
+     * @param string $serialized                Doctrine_Record as serialized string
+     * @return void
+     */
+    public function unserialize($serialized)
+    {
+
     }
 }

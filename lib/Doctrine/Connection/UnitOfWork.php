@@ -278,7 +278,7 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
 
         if ( ! $event->skipOperation) {
             $record->state(Doctrine_Record::STATE_TDIRTY);
-            if (count($table->getOption('joinedParents')) > 0) {
+            if ($table->getOption('joinedParents')) {
 
                 foreach ($table->getOption('joinedParents') as $parent) {
                     $parentTable = $table->getConnection()->getTable($parent);
@@ -413,6 +413,7 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
                 // Protection against infinite function recursion before attempting to save
                 if ($obj instanceof Doctrine_Record && $obj->isModified()) {
                     $obj->save($this->conn);
+                    
                     /** Can this be removed?
                     $id = array_values($obj->identifier());
 
@@ -461,8 +462,8 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
 
                 foreach ($v->getInsertDiff() as $r) {
                     $assocRecord = $assocTable->create();
-                    $assocRecord->set($rel->getForeign(), $r);
-                    $assocRecord->set($rel->getLocal(), $record);
+                    $assocRecord->set($assocTable->getFieldName($rel->getForeign()), $r);
+                    $assocRecord->set($assocTable->getFieldName($rel->getLocal()), $record);
 
                     $this->saveGraph($assocRecord);
                 }
@@ -540,7 +541,7 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
         if ( ! $event->skipOperation) {
             $identifier = $record->identifier();
 
-            if (count($table->getOption('joinedParents')) > 0) {
+            if ($table->getOption('joinedParents')) {
                 $dataSet = $this->formatDataSet($record);
                 
                 $component = $table->getComponentName();
@@ -595,7 +596,7 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
         $table->getRecordListener()->preInsert($event);
 
         if ( ! $event->skipOperation) {
-            if (count($table->getOption('joinedParents')) > 0) {
+            if ($table->getOption('joinedParents')) {
                 $dataSet = $this->formatDataSet($record);
                 
                 $component = $table->getComponentName();

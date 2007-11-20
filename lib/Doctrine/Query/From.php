@@ -35,7 +35,7 @@ class Doctrine_Query_From extends Doctrine_Query_Part
     /**
      * DQL FROM PARSER
      * parses the from part of the query string
-
+     *
      * @param string $str
      * @return void
      */
