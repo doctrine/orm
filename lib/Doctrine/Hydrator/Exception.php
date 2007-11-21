@@ -1,6 +1,6 @@
 <?php
 /*
- *  $Id$
+ *  $Id: Exception.php 1080 2007-02-10 18:17:08Z romanb $
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -18,56 +18,17 @@
  * and is licensed under the LGPL. For more information, see
  * <http://www.phpdoctrine.com>.
  */
-
+Doctrine::autoload('Doctrine_Exception');
 /**
- * Doctrine_Hydrate_Array
- * defines an array fetching strategy for Doctrine_Hydrate
+ * Doctrine_Hydrator_Exception
  *
  * @package     Doctrine
  * @subpackage  Hydrate
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @link        www.phpdoctrine.com
  * @since       1.0
- * @version     $Revision$
+ * @version     $Revision: 1080 $
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  */
-class Doctrine_Hydrator_Default_FetchModeDriver_Array
-{
-    public function getElementCollection($component)
-    {
-        return array();
-    }
-    public function getElement(array $data, $component)
-    {
-        return $data;
-    }
-    public function isIdentifiable(array $data, Doctrine_Table $table)
-    {
-        return ( ! empty($data));
-    }
-    public function registerCollection($coll)
-    {
-
-    }
-    public function initRelated(array &$data, $name)
-    {
-        if ( ! isset($data[$name])) {
-            $data[$name] = array();
-        }
-        return true;
-    }
-    public function getNullPointer() 
-    {
-        return null;    
-    }
-    public function getLastKey(&$data)
-    {
-        end($data);
-        return key($data);
-    }
-
-    public function flush()
-    {
-        
-    }
-}
+class Doctrine_Hydrator_Exception extends Doctrine_Exception
+{ }

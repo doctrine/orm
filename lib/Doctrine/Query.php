@@ -209,31 +209,6 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable, Seria
     }
     
     /**
-     * getCachedForm
-     * returns the cached form of this query for given resultSet
-     *
-     * @param array $resultSet
-     * @return string           serialized string representation of this query
-     */
-    public function getCachedForm(array $resultSet)
-    {
-        $map = '';
-
-        foreach ($this->getAliasMap() as $k => $v) {
-            if ( ! isset($v['parent'])) {
-                $map[$k][] = $v['table']->getComponentName();
-            } else {
-                $map[$k][] = $v['parent'] . '.' . $v['relation']->getAlias();
-            }
-            if (isset($v['agg'])) {
-                $map[$k][] = $v['agg'];
-            }
-        }
-
-        return serialize(array($resultSet, $map, $this->getTableAliases()));
-    }
-    
-    /**
      * fetchArray
      * Convenience method to execute using array fetching as hydration mode.
      *
@@ -950,8 +925,8 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable, Seria
             }
 
             if (count($tableAliases) !== 1) {
-                $componentAlias = reset($this->tableAliases);
-                $tableAlias = key($this->tableAliases);
+                $componentAlias = reset($this->_tableAliases);
+                $tableAlias = key($this->_tableAliases);
             }
 
             $index    = count($this->aggregateMap);
@@ -1405,7 +1380,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable, Seria
     {
         $e = Doctrine_Tokenizer::sqlExplode($query, ' ');
 
-        foreach ($e as $k=>$part) {
+        foreach ($e as $k => $part) {
             $part = trim($part);
             switch (strtolower($part)) {
                 case 'delete':
@@ -1752,7 +1727,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable, Seria
             $queryPart .= ' ' . $this->_conn->quoteIdentifier($tableAlias);
         }
         
-        $this->tableAliases[$tableAlias] = $componentAlias;
+        $this->_tableAliases[$tableAlias] = $componentAlias;
 
         $queryPart .= $this->buildInheritanceJoinSql($name, $componentAlias);
 

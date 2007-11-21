@@ -98,7 +98,7 @@ class Doctrine_Hydrate_Mock extends Doctrine_Hydrator_Abstract
         $this->data = $data;
     }
     
-    public function hydrateResultSet($stmt, $aliasMap, $tableAliases, $hydrationMode = null)
+    public function hydrateResultSet($stmt, $tableAliases, $hydrationMode = null)
     {
         return true;
     }

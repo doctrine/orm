@@ -47,7 +47,7 @@ abstract class Doctrine_Hydrator_Abstract extends Doctrine_Locator_Injectable
      *          map                 the name of the column / aggregate value this
      *                              component is mapped to a collection
      */
-    protected $_aliasMap         = array();
+    protected $_queryComponents = array();
 
     /**
      * The current hydration mode.
@@ -59,10 +59,7 @@ abstract class Doctrine_Hydrator_Abstract extends Doctrine_Locator_Injectable
      *
      * @param Doctrine_Connection|null $connection
      */
-    public function __construct()
-    {
-        
-    }
+    public function __construct() {}
 
     /**
      * Sets the fetchmode.
@@ -81,10 +78,9 @@ abstract class Doctrine_Hydrator_Abstract extends Doctrine_Locator_Injectable
      * @param array $map            alias map
      * @return Doctrine_Hydrate     this object
      */
-    public function setAliasMap(array $map)
+    public function setQueryComponents(array $queryComponents)
     {
-        $this->_aliasMap = $map;
-        return $this;
+        $this->_queryComponents = $queryComponents;
     }
 
     /**
@@ -93,9 +89,9 @@ abstract class Doctrine_Hydrator_Abstract extends Doctrine_Locator_Injectable
      *
      * @return array    component alias map
      */
-    public function getAliasMap()
+    public function getQueryComponents()
     {
-        return $this->_aliasMap;
+        return $this->_queryComponents;
     }
 
     /**
@@ -114,6 +110,6 @@ abstract class Doctrine_Hydrator_Abstract extends Doctrine_Locator_Injectable
      * @param mixed $stmt
      * @return array
      */
-    abstract public function hydrateResultSet($stmt, $aliasMap, $tableAliases, $hydrationMode = null);
+    abstract public function hydrateResultSet($stmt, $tableAliases, $hydrationMode = null);
     
 }

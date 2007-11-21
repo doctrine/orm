@@ -31,7 +31,7 @@
  * @version     $Revision$
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  */
-class Doctrine_Hydrator_Default_FetchModeDriver_Record extends Doctrine_Locator_Injectable
+class Doctrine_Hydrator_Default_RecordDriver extends Doctrine_Locator_Injectable
 {
     protected $_collections = array();
     
@@ -56,12 +56,14 @@ class Doctrine_Hydrator_Default_FetchModeDriver_Record extends Doctrine_Locator_
     
     public function initRelated($record, $name)
     {
+        return true;
+        /*
         if ( ! is_array($record)) {
             $record[$name];
-
             return true;
         }
         return false;
+        */
     }
     
     public function registerCollection(Doctrine_Collection $coll)

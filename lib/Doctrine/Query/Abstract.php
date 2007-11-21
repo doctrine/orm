@@ -752,8 +752,9 @@ abstract class Doctrine_Query_Abstract
             if ($cached === false) {
                 // cache miss
                 $stmt = $this->_execute($params);
-                $array = $this->_hydrator->hydrateResultSet($stmt, $this->_aliasMap,
-                        $this->_tableAliases, Doctrine::HYDRATE_ARRAY);
+                $this->_hydrator->setQueryComponents($this->_aliasMap);
+                $array = $this->_hydrator->hydrateResultSet($stmt, $this->_tableAliases,
+                        Doctrine::HYDRATE_ARRAY);
 
                 $cached = $this->getCachedForm($array);
 
@@ -786,12 +787,36 @@ abstract class Doctrine_Query_Abstract
                 return $stmt;
             }
             
-            $array = $this->_hydrator->hydrateResultSet($stmt, $this->_aliasMap,
-                    $this->_tableAliases, $hydrationMode);
+            $this->_hydrator->setQueryComponents($this->_aliasMap);
+            $array = $this->_hydrator->hydrateResultSet($stmt, $this->_tableAliases, $hydrationMode);
         }
         return $array;
     }
     
+    /**
+     * getCachedForm
+     * returns the cached form of this query for given resultSet
+     *
+     * @param array $resultSet
+     * @return string           serialized string representation of this query
+     */
+    public function getCachedForm(array $resultSet)
+    {
+        $map = array();
+
+        foreach ($this->getAliasMap() as $k => $v) {
+            if ( ! isset($v['parent'])) {
+                $map[$k][] = $v['table']->getComponentName();
+            } else {
+                $map[$k][] = $v['parent'] . '.' . $v['relation']->getAlias();
+            }
+            if (isset($v['agg'])) {
+                $map[$k][] = $v['agg'];
+            }
+        }
+
+        return serialize(array($resultSet, $map, $this->getTableAliases()));
+    }
     
     /**
      * addSelect
