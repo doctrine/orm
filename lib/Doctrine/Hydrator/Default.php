@@ -59,7 +59,7 @@ class Doctrine_Hydrator_Default extends Doctrine_Hydrator_Abstract
      */
     public function hydrateResultSet($stmt, $aliasMap, $tableAliases, $hydrationMode = null)
     {
-        $s = microtime(true);
+        //$s = microtime(true);
         
         $this->_aliasMap = $aliasMap;
         $this->_tableAliases = $tableAliases;
