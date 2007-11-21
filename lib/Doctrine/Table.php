@@ -1612,7 +1612,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
     {
         if ($value === self::$_null) {
             return self::$_null;
-        } elseif ($value === null) {
+        } else if ($value === null) {
             return null;
         } else {
             $type = $this->getTypeOf($fieldName);
