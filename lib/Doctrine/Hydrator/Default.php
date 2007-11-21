@@ -242,7 +242,7 @@ class Doctrine_Hydrator_Default extends Doctrine_Hydrator_Abstract
 
         $stmt->closeCursor();
         
-        $e = microtime(true);
+        //$e = microtime(true);
 
         //echo 'Hydration took: ' . ($e - $s) . ' for '.count($result).' records<br />';
         
