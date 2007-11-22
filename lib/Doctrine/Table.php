@@ -1488,12 +1488,17 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
      *
      * @return boolean
      */
-    public function removeColumn($columnName)
+    public function removeColumn($fieldName)
     {
+    	$columnName = array_search($fieldName, $this->_fieldNames);
+
+        unset($this->_fieldNames[$columnName]);
+
         if (isset($this->_columns[$columnName])) {
             unset($this->_columns[$columnName]);
             return true;
         }
+        $this->columnCount--;
         
         return false;
     }
