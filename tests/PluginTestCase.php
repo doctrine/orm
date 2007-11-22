@@ -45,8 +45,31 @@ class Doctrine_Plugin_TestCase extends Doctrine_UnitTestCase
         
         $this->assertEqual($sql[0], 'CREATE TABLE wiki_translation_version (title VARCHAR(255), content VARCHAR(2147483647), lang VARCHAR(2), id INTEGER, version INTEGER, PRIMARY KEY(lang, id, version))');
         $this->assertEqual($sql[1], 'CREATE TABLE wiki_translation_index (keyword VARCHAR(200), field VARCHAR(50), position INTEGER, lang VARCHAR(2), id INTEGER, PRIMARY KEY(keyword, field, position, lang, id))');
-        $this->assertEqual($sql[2], 'CREATE TABLE wiki_translation (title VARCHAR(255), content VARCHAR(2147483647), lang VARCHAR(2), id INTEGER, PRIMARY KEY(lang, id))');
-        $this->assertEqual($sql[3], 'CREATE TABLE wiki (id INTEGER PRIMARY KEY AUTOINCREMENT)');
+        $this->assertEqual($sql[2], 'CREATE TABLE wiki_translation (title VARCHAR(255), content VARCHAR(2147483647), lang VARCHAR(2), id INTEGER, version INTEGER, PRIMARY KEY(lang, id))');
+        $this->assertEqual($sql[3], 'CREATE TABLE wiki (id INTEGER PRIMARY KEY AUTOINCREMENT, created_at DATETIME, updated_at DATETIME)');
+    
+        foreach ($sql as $query) {
+            $this->conn->exec($query);
+        }
+    }
+
+    public function testCreatingNewRecordsInvokesAllPlugins()
+    {
+        $wiki = new Wiki();
+        $wiki->state(Doctrine_Record::STATE_TDIRTY);
+        $wiki->save();
+        
+        $fi = $wiki->Translation['FI'];
+        $fi->title = 'Michael Jeffrey Jordan';
+        $fi->content = "Michael Jeffrey Jordan (s. 17. helmikuuta 1963, Brooklyn, New York) on yhdysvaltalainen entinen NBA-koripalloilija, jota pidetään yleisesti kaikkien aikojen parhaana pelaajana.";
+
+        $fi->save();
+        $this->assertEqual($fi->version, 1);
+
+        $fi->title = 'Micheal Jordan';
+        $fi->save();
+        
+        $this->assertEqual($fi->version, 2);
     }
 }
 class Wiki extends Doctrine_Record
@@ -62,11 +85,15 @@ class Wiki extends Doctrine_Record
     	$options = array('fields' => array('title', 'content'));
         $auditLog = new Doctrine_Template_Versionable($options);
         $search = new Doctrine_Template_Searchable($options);
-    	$i18n = new Doctrine_Template_I18n($options);
-        
+    	$slug = new Doctrine_Template_Sluggable($options);
+        $i18n = new Doctrine_Template_I18n($options);
+
+
         $i18n->addChild($auditLog)
-             ->addChild($search);
+             ->addChild($search)
+             ->addChild($slug);
 
         $this->actAs($i18n);
+        $this->actAs('Timestampable');
     }
 }
