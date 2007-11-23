@@ -543,8 +543,8 @@ final class Doctrine
         $loadedModels = array();
 
         foreach ((array) $classes as $name) {
-
             try {
+                $declaredBefore = get_declared_classes();
                 $class = new ReflectionClass($name);
                 if (self::isValidModelClass($class)) {
                     $loadedModels[] = $name;
@@ -554,11 +554,10 @@ final class Doctrine
                 // The possibility exists that the class name(s) contained in the model
                 // file is not the same as the actual model file name itself
                 if (isset(self::$_loadedModels[$name])) {
-                    $declaredBefore = get_declared_classes();
                     try {
+                        $tmp = self::$_loadedModels[$name];
                         require_once self::$_loadedModels[$name];
                         $declaredAfter = get_declared_classes();
-                        // Using array_slice since array_diff is broken is some versions
                         $foundClasses = array_slice($declaredAfter, count($declaredBefore)-1);
                         if ($foundClasses) {
                             foreach ($foundClasses as $name) {
@@ -575,7 +574,6 @@ final class Doctrine
             }
 
         }
-
         return $loadedModels;
     }
 
