@@ -555,9 +555,9 @@ final class Doctrine
                 // file is not the same as the actual model file name itself
                 if (isset(self::$_loadedModels[$name])) {
                     try {
-                        $tmp = self::$_loadedModels[$name];
                         require_once self::$_loadedModels[$name];
                         $declaredAfter = get_declared_classes();
+                        // Using array_slice since array_diff is broken is some versions
                         $foundClasses = array_slice($declaredAfter, count($declaredBefore)-1);
                         if ($foundClasses) {
                             foreach ($foundClasses as $name) {
