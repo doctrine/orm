@@ -61,8 +61,8 @@ class Doctrine_Query_Tokenizer
         $tokens = $this->sqlExplode($query, ' ');
 
         foreach ($tokens as $index => $token) {
-            $token = strtolower(trim($token));
-            switch ($token) {
+            $token = trim($token);
+            switch (strtolower($token)) {
                 case 'delete':
                 case 'update':
                 case 'select':

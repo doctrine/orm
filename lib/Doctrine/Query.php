@@ -1383,73 +1383,6 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable, Seria
     }
 
     /**
-     * tokenizeQuery
-     * splits the given dql query into an array where keys
-     * represent different query part names and values are
-     * arrays splitted using sqlExplode method
-     *
-     * example:
-     *
-     * parameter:
-     *      $query = "SELECT u.* FROM User u WHERE u.name LIKE ?"
-     * returns:
-     *      array('select' => array('u.*'),
-     *            'from'   => array('User', 'u'),
-     *            'where'  => array('u.name', 'LIKE', '?'))
-     *
-     * @param string $query                 DQL query
-     * @throws Doctrine_Query_Exception     if some generic parsing error occurs
-     * @return array                        an array containing the query string parts
-     */
-    public function tokenizeQuery($query)
-    {
-        $parts = array();
-        $tokens = $this->_tokenizer->sqlExplode($query, ' ');
-
-        foreach ($tokens as $index => $token) {
-            $token = trim($token);
-            switch (strtolower($token)) {
-                case 'delete':
-                case 'update':
-                case 'select':
-                case 'set':
-                case 'from':
-                case 'where':
-                case 'limit':
-                case 'offset':
-                case 'having':
-                    $p = $token;
-                    //$parts[$token] = array();
-                    $parts[$token] = '';
-                break;
-                case 'order':
-                case 'group':
-                    $i = ($index + 1);
-                    if (isset($tokens[$i]) && strtolower($tokens[$i]) === 'by') {
-                        $p = $token;
-                        $parts[$token] = '';
-                        //$parts[$token] = array();
-                    } else {
-                        $parts[$p] .= "$token ";
-                        //$parts[$p][] = $token;
-                    }
-                break;
-                case 'by':
-                    continue;
-                default:
-                    if ( ! isset($p)) {
-                        throw new Doctrine_Query_Tokenizer_Exception(
-                                "Couldn't tokenize query. Encountered invalid token: '$token'.");
-                    }
-
-                    $parts[$p] .= "$token ";
-                    //$parts[$p][] = $token;
-            }
-        }
-        return $parts;
-    }
-
-    /**
      * DQL PARSER
      * parses a DQL query
      * first splits the query in parts and then uses individual
@@ -1470,7 +1403,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable, Seria
         $query = str_replace("\n", ' ', $query);
         $query = str_replace("\r", ' ', $query);
 
-        $parts = $this->tokenizeQuery($query);
+        $parts = $this->_tokenizer->tokenizeQuery($query);
 
         foreach ($parts as $partName => $subParts) {
             $subParts = trim($subParts);
@@ -1514,7 +1447,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable, Seria
     }
     
     /**
-     * @todo DESCRIBE ME! REFACTOR ME! I'M FAR TOO LONG AND COMPLEX! HARD TO UNDERSTAND!
+     * @todo Describe & refactor... too long and nested.
      */
     public function load($path, $loadFields = true)
     {
