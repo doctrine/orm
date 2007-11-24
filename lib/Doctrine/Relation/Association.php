@@ -55,7 +55,9 @@ class Doctrine_Relation_Association extends Doctrine_Relation
      */
     public function getRelationDql($count, $context = 'record')
     {
+        $table = $this->definition['refTable'];
         $component = $this->definition['refTable']->getComponentName();
+        
         switch ($context) {
             case "record":
                 $sub  = substr(str_repeat("?, ", $count),0,-2);
@@ -88,7 +90,7 @@ class Doctrine_Relation_Association extends Doctrine_Relation
         if (empty($id) || ! $this->definition['table']->getAttribute(Doctrine::ATTR_LOAD_REFERENCES)) {
             $coll = new Doctrine_Collection($this->getTable());
         } else {
-            $coll = Doctrine_Query::create()->parseQuery($this->getRelationDql(1))->execute(array($id));
+            $coll = Doctrine_Query::create()->query($this->getRelationDql(1), array($id));
         }
         $coll->setReference($record, $this);
         return $coll;

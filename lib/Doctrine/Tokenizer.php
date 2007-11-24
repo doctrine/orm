@@ -109,7 +109,7 @@ class Doctrine_Tokenizer
      *
      * parameters:
      *      $str = email LIKE 'John@example.com'
-     *      $d = ' AND '
+     *      $d = ' LIKE '
      *
      * would return an array:
      *      array("email", "LIKE", "'John@example.com'")

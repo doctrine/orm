@@ -21,6 +21,9 @@
 Doctrine::autoload('Doctrine_Query_Abstract');
 /**
  * Doctrine_Query
+ * A Doctrine_Query object represents a DQL query. It is used to query databases for
+ * data in an object-oriented fashion. A DQL query understands relations and inheritance
+ * and is dbms independant.
  *
  * @package     Doctrine
  * @subpackage  Query
@@ -29,21 +32,112 @@ Doctrine::autoload('Doctrine_Query_Abstract');
  * @since       1.0
  * @version     $Revision$
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
+ * @todo        Proposal: This class does far too much. It should have only 1 task: Collecting
+ *              the DQL query parts and the query parameters (the query state and caching options/methods
+ *              can remain here, too).
+ *              The actual SQL construction could be done by a separate object (Doctrine_Query_SqlBuilder?)
+ *              whose task it is to convert DQL into SQL.
+ *              Furthermore the SqlBuilder? can then use other objects (Doctrine_Query_Tokenizer?),
+ *              (Doctrine_Query_Parser(s)?) to accomplish his work. Doctrine_Query does not need
+ *              to know the tokenizer/parsers. There could be extending
+ *              implementations of SqlBuilder? that cover the specific SQL dialects.
+ *              This would release Doctrine_Connection and the Doctrine_Connection_xxx classes
+ *              from this tedious task.
+ *              This would also largely reduce the currently huge interface of Doctrine_Query(_Abstract)
+ *              and better hide all these transformation internals from the public Query API.
+ *
+ * @internal    The lifecycle of a Query object is the following:
+ *              After construction the query object is empty. Through using the fluent
+ *              query interface the user fills the query object with DQL parts and query parameters.
+ *              These get collected in {@link $_dqlParts} and {@link $_params}, respectively.
+ *              When the query is executed the first time, or when {@link getSqlQuery()}
+ *              is called the first time, the collected DQL parts get parsed and the resulting
+ *              connection-driver specific SQL is generated. The generated SQL parts are
+ *              stored in {@link $_sqlParts} and the final resulting SQL query is stored in
+ *              {@link $_sql}.
  */
 class Doctrine_Query extends Doctrine_Query_Abstract implements Countable, Serializable
 {
-    protected $subqueryAliases = array();
+    /**
+     * @var array  The DQL keywords.
+     */
+    protected static $_keywords  = array('ALL', 
+                                         'AND', 
+                                         'ANY', 
+                                         'AS', 
+                                         'ASC', 
+                                         'AVG', 
+                                         'BETWEEN', 
+                                         'BIT_LENGTH', 
+                                         'BY', 
+                                         'CHARACTER_LENGTH', 
+                                         'CHAR_LENGTH', 
+                                         'CURRENT_DATE',
+                                         'CURRENT_TIME', 
+                                         'CURRENT_TIMESTAMP', 
+                                         'DELETE', 
+                                         'DESC', 
+                                         'DISTINCT', 
+                                         'EMPTY', 
+                                         'EXISTS', 
+                                         'FALSE', 
+                                         'FETCH', 
+                                         'FROM', 
+                                         'GROUP', 
+                                         'HAVING', 
+                                         'IN', 
+                                         'INDEXBY', 
+                                         'INNER', 
+                                         'IS', 
+                                         'JOIN',
+                                         'LEFT', 
+                                         'LIKE', 
+                                         'LOWER',
+                                         'MEMBER',
+                                         'MOD',
+                                         'NEW', 
+                                         'NOT', 
+                                         'NULL', 
+                                         'OBJECT', 
+                                         'OF', 
+                                         'OR', 
+                                         'ORDER', 
+                                         'OUTER', 
+                                         'POSITION', 
+                                         'SELECT', 
+                                         'SOME',
+                                         'TRIM', 
+                                         'TRUE', 
+                                         'UNKNOWN', 
+                                         'UPDATE', 
+                                         'WHERE');
+    
+    /**
+     * @var array
+     */
+    protected $_subqueryAliases = array();
+    
+    /**
+     * @var array $_aggregateAliasMap       an array containing all aggregate aliases, keys as dql aliases
+     *                                      and values as sql aliases
+     */
+    protected $_aggregateAliasMap      = array();
+    
+    /**
+     * @var array
+     */
+    protected $_pendingAggregates = array();
 
     /**
      * @param boolean $needsSubquery
      */
-    protected $needsSubquery = false;
+    protected $_needsSubquery = false;
 
     /**
      * @param boolean $isSubquery           whether or not this query object is a subquery of another 
      *                                      query object
      */
-    protected $isSubquery;
+    protected $_isSubquery;
 
     /**
      * @var array $_neededTables            an array containing the needed table aliases
@@ -67,33 +161,14 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable, Seria
     protected $_parsers = array();
 
     /**
-     * @var array $_dqlParts                an array containing all DQL query parts
-     */
-    protected $_dqlParts   = array(
-                            'from'      => array(),
-                            'select'    => array(),
-                            'forUpdate' => false,
-                            'set'       => array(),
-                            'join'      => array(),
-                            'where'     => array(),
-                            'groupby'   => array(),
-                            'having'    => array(),
-                            'orderby'   => array(),
-                            'limit'     => array(),
-                            'offset'    => array(),
-                            );
-
-    /**
      * @var array $_pendingJoinConditions    an array containing pending joins
      */
     protected $_pendingJoinConditions = array();
-
-    protected $_expressionMap = array();
     
     /**
-     * @var integer $_state   The current state of this query.
+     * @var array
      */
-    protected $_state = Doctrine_Query::STATE_CLEAN;
+    protected $_expressionMap = array();
     
     /**
      * @var string $_sql            cached SQL query
@@ -123,9 +198,9 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable, Seria
         $this->_pendingFields = array();
         $this->_neededTables = array();
         $this->_expressionMap = array();
-        $this->subqueryAliases = array();
-        $this->needsSubquery = false;
-        $this->isLimitSubqueryUsed = false;
+        $this->_subqueryAliases = array();
+        $this->_needsSubquery = false;
+        $this->_isLimitSubqueryUsed = false;
     }
 
     /**
@@ -149,13 +224,13 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable, Seria
     }
 
     /**
-     * addPendingJoinCondition
+     * _addPendingJoinCondition
      *
      * @param string $componentAlias    component alias
      * @param string $joinCondition     dql join condition
      * @return Doctrine_Query           this object
      */
-    public function addPendingJoinCondition($componentAlias, $joinCondition)
+    protected function _addPendingJoinCondition($componentAlias, $joinCondition)
     {
         $this->_pendingJoins[$componentAlias] = $joinCondition;
     }
@@ -187,6 +262,29 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable, Seria
     public function getEnumParams()
     {
         return $this->_enumParams;
+    }
+    
+    /**
+     * getDql
+     * returns the DQL query that is represented by this query object.
+     *
+     * the query is built from $_dqlParts
+     *
+     * @return string   the DQL query
+     */
+    public function getDql()
+    {
+        $q = '';
+        $q .= ( ! empty($this->_dqlParts['select']))?  'SELECT '    . implode(', ', $this->_dqlParts['select']) : '';
+        $q .= ( ! empty($this->_dqlParts['from']))?    ' FROM '     . implode(' ', $this->_dqlParts['from']) : '';
+        $q .= ( ! empty($this->_dqlParts['where']))?   ' WHERE '    . implode(' AND ', $this->_dqlParts['where']) : '';
+        $q .= ( ! empty($this->_dqlParts['groupby']))? ' GROUP BY ' . implode(', ', $this->_dqlParts['groupby']) : '';
+        $q .= ( ! empty($this->_dqlParts['having']))?  ' HAVING '   . implode(' AND ', $this->_dqlParts['having']) : '';
+        $q .= ( ! empty($this->_dqlParts['orderby']))? ' ORDER BY ' . implode(', ', $this->_dqlParts['orderby']) : '';
+        $q .= ( ! empty($this->_dqlParts['limit']))?   ' LIMIT '    . implode(' ', $this->_dqlParts['limit']) : '';
+        $q .= ( ! empty($this->_dqlParts['offset']))?  ' OFFSET '   . implode(' ', $this->_dqlParts['offset']) : '';
+
+        return $q;
     }
     
     /**
@@ -261,10 +359,10 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable, Seria
     public function isSubquery($bool = null)
     {
         if ($bool === null) {
-            return $this->isSubquery;
+            return $this->_isSubquery;
         }
 
-        $this->isSubquery = (bool) $bool;
+        $this->_isSubquery = (bool) $bool;
         return $this;
     }
 
@@ -273,46 +371,33 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable, Seria
      *
      * @param string $dqlAlias      the dql alias of an aggregate value
      * @return string
+     * @deprecated
      */
     public function getAggregateAlias($dqlAlias)
     {
-        if (isset($this->aggregateMap[$dqlAlias])) {
+        return $this->getSqlAggregateAlias($dqlAlias);
+    }
+    
+    /**
+     * getSqlAggregateAlias
+     *
+     * @param string $dqlAlias      the dql alias of an aggregate value
+     * @return string
+     */
+    public function getSqlAggregateAlias($dqlAlias)
+    {
+        if (isset($this->_aggregateAliasMap[$dqlAlias])) {
             // mark the expression as used
             $this->_expressionMap[$dqlAlias][1] = true;
 
-            return $this->aggregateMap[$dqlAlias];
-        }
-        if ( ! empty($this->pendingAggregates)) {
+            return $this->_aggregateAliasMap[$dqlAlias];
+        } else if ( ! empty($this->_pendingAggregates)) {
             $this->processPendingAggregates();
 
-            return $this->getAggregateAlias($dqlAlias);
+            return $this->getSqlAggregateAlias($dqlAlias);
+        } else {
+             throw new Doctrine_Query_Exception('Unknown aggregate alias: ' . $dqlAlias);
         }
-        throw new Doctrine_Query_Exception('Unknown aggregate alias ' . $dqlAlias);
-    }
-
-    /**
-     * getParser
-     * parser lazy-loader
-     *
-     * @throws Doctrine_Query_Exception     if unknown parser name given
-     * @return Doctrine_Query_Part
-     * @todo Doc/Description: What is the parameter for? Which parsers are available?
-     */
-    public function getParser($name)
-    {
-        if ( ! isset($this->_parsers[$name])) {
-            $class = 'Doctrine_Query_' . ucwords(strtolower($name));
-
-            Doctrine::autoload($class);
-
-            if ( ! class_exists($class)) {
-                throw new Doctrine_Query_Exception('Unknown parser ' . $name);
-            }
-
-            $this->_parsers[$name] = new $class($this);
-        }
-
-        return $this->_parsers[$name];
     }
 
     /**
@@ -326,7 +411,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable, Seria
      *                                  the given query part stack with $queryPart
      * @return Doctrine_Query           this object
      */
-    public function parseQueryPart($queryPartName, $queryPart, $append = false) 
+    /*protected function parseQueryPart($queryPartName, $queryPart, $append = false) 
     {
         if ($this->_state === self::STATE_LOCKED) {
             throw new Doctrine_Query_Exception('This query object is locked. No query parts can be manipulated.');
@@ -345,15 +430,15 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable, Seria
         }
 
         if ($this->_state === self::STATE_DIRECT) {
-            $parser = $this->getParser($queryPartName);
+            $parser = $this->_getParser($queryPartName);
 
             $sql = $parser->parse($queryPart);
 
             if (isset($sql)) {
                 if ($append) {
-                    $this->addQueryPart($queryPartName, $sql);
+                    $this->addSqlQueryPart($queryPartName, $sql);
                 } else {
-                    $this->setQueryPart($queryPartName, $sql);
+                    $this->setSqlQueryPart($queryPartName, $sql);
                 }
             }
         }
@@ -361,7 +446,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable, Seria
         $this->_state = Doctrine_Query::STATE_DIRTY;
 
         return $this;
-    }
+    }*/
 
     /**
      * getDqlPart
@@ -382,29 +467,6 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable, Seria
     }
 
     /**
-     * getDql
-     * returns the DQL query that is represented by this query object.
-     *
-     * the query is built from $_dqlParts
-     *
-     * @return string   the DQL query
-     */
-    public function getDql()
-    {
-        $q = '';
-        $q .= ( ! empty($this->_dqlParts['select']))?  'SELECT '    . implode(', ', $this->_dqlParts['select']) : '';
-        $q .= ( ! empty($this->_dqlParts['from']))?    ' FROM '     . implode(' ', $this->_dqlParts['from']) : '';
-        $q .= ( ! empty($this->_dqlParts['where']))?   ' WHERE '    . implode(' AND ', $this->_dqlParts['where']) : '';
-        $q .= ( ! empty($this->_dqlParts['groupby']))? ' GROUP BY ' . implode(', ', $this->_dqlParts['groupby']) : '';
-        $q .= ( ! empty($this->_dqlParts['having']))?  ' HAVING '   . implode(' AND ', $this->_dqlParts['having']) : '';
-        $q .= ( ! empty($this->_dqlParts['orderby']))? ' ORDER BY ' . implode(', ', $this->_dqlParts['orderby']) : '';
-        $q .= ( ! empty($this->_dqlParts['limit']))?   ' LIMIT '    . implode(' ', $this->_dqlParts['limit']) : '';
-        $q .= ( ! empty($this->_dqlParts['offset']))?  ' OFFSET '   . implode(' ', $this->_dqlParts['offset']) : '';
-
-        return $q;
-    }
-
-    /**
      * processPendingFields
      * the fields in SELECT clause cannot be parsed until the components
      * in FROM clause are parsed, hence this method is called everytime a 
@@ -419,7 +481,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable, Seria
     public function processPendingFields($componentAlias)
     {
         $tableAlias = $this->getTableAlias($componentAlias);
-        $table      = $this->_aliasMap[$componentAlias]['table'];
+        $table      = $this->_queryComponents[$componentAlias]['table'];
 
         if ( ! isset($this->_pendingFields[$componentAlias])) {
             return;
@@ -434,7 +496,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable, Seria
         } else {
             // only auto-add the primary key fields if this query object is not
             // a subquery of another query object
-            if ( ! $this->isSubquery) {
+            if ( ! $this->_isSubquery) {
                 $fields = array_unique(array_merge((array) $table->getIdentifier(), $fields));
             }
         }
@@ -446,18 +508,13 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable, Seria
                     $owner !== $table->getComponentName()) {
 
                 $parent = $this->_conn->getTable($owner);
-
                 $columnName = $parent->getColumnName($fieldName);
-
                 $parentAlias = $this->getTableAlias($componentAlias . '.' . $parent->getComponentName());
-
                 $sql[] = $this->_conn->quoteIdentifier($parentAlias . '.' . $columnName)
                        . ' AS '
                        . $this->_conn->quoteIdentifier($tableAlias . '__' . $columnName);
             } else {
-
                 $columnName = $table->getColumnName($fieldName);
-
                 $sql[] = $this->_conn->quoteIdentifier($tableAlias . '.' . $columnName)
                        . ' AS '
                        . $this->_conn->quoteIdentifier($tableAlias . '__' . $columnName);
@@ -487,13 +544,13 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable, Seria
             $componentAlias = $terms[0];
             $field = $terms[1];
         } else {
-            reset($this->_aliasMap);
-            $componentAlias = key($this->_aliasMap);
+            reset($this->_queryComponents);
+            $componentAlias = key($this->_queryComponents);
             $fields = $terms[0];
         }
 
         $tableAlias = $this->getTableAlias($componentAlias);
-        $table      = $this->_aliasMap[$componentAlias]['table'];
+        $table      = $this->_queryComponents[$componentAlias]['table'];
 
 
         // check for wildcards
@@ -554,14 +611,14 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable, Seria
      */
     public function parseSelect($dql)
     {
-        $refs = Doctrine_Tokenizer::sqlExplode($dql, ',');
+        $refs = $this->_tokenizer->sqlExplode($dql, ',');
 
         $pos   = strpos(trim($refs[0]), ' ');
         $first = substr($refs[0], 0, $pos);
 
         // check for DISTINCT keyword
         if ($first === 'DISTINCT') {
-            $this->parts['distinct'] = true;
+            $this->_sqlParts['distinct'] = true;
 
             $refs[0] = substr($refs[0], ++$pos);
         }
@@ -575,7 +632,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable, Seria
                 continue;
             }
 
-            $terms = Doctrine_Tokenizer::sqlExplode($reference, ' ');
+            $terms = $this->_tokenizer->sqlExplode($reference, ' ');
 
             $pos   = strpos($terms[0], '(');
 
@@ -592,16 +649,16 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable, Seria
 
                 $tableAlias = $this->getTableAlias($componentAlias);
 
-                $index    = count($this->aggregateMap);
+                $index    = count($this->_aggregateAliasMap);
 
                 $sqlAlias = $this->_conn->quoteIdentifier($tableAlias . '__' . $index);
 
-                $this->parts['select'][] = $expression . ' AS ' . $sqlAlias;
+                $this->_sqlParts['select'][] = $expression . ' AS ' . $sqlAlias;
 
-                $this->aggregateMap[$alias] = $sqlAlias;
+                $this->_aggregateAliasMap[$alias] = $sqlAlias;
                 $this->_expressionMap[$alias][0] = $expression;
 
-                $this->_aliasMap[$componentAlias]['agg'][$index] = $alias;
+                $this->_queryComponents[$componentAlias]['agg'][$index] = $alias;
 
                 $this->_neededTables[] = $tableAlias;
             } else {
@@ -611,8 +668,8 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable, Seria
                     $componentAlias = $e[0];
                     $field = $e[1];
                 } else {
-                    reset($this->_aliasMap);
-                    $componentAlias = key($this->_aliasMap);
+                    reset($this->_queryComponents);
+                    $componentAlias = key($this->_queryComponents);
                     $field = $e[0];
                 }
 
@@ -629,7 +686,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable, Seria
      *
      * 1. Converts all DQL functions to their native SQL equivalents
      * 2. Converts all component references to their table alias equivalents
-     * 3. Converts all column aliases to actual column names
+     * 3. Converts all field names to actual column names
      * 4. Quotes all identifiers
      * 5. Parses nested clauses and subqueries recursively
      *
@@ -645,7 +702,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable, Seria
     	   return $clause;
     	}
 
-        $terms = Doctrine_Tokenizer::clauseExplode($clause, array(' ', '+', '-', '*', '/'));
+        $terms = $this->_tokenizer->clauseExplode($clause, array(' ', '+', '-', '*', '/'));
 
         $str = '';
         foreach ($terms as $term) {
@@ -659,7 +716,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable, Seria
                     $args   = array();
                     // parse args
 
-                    foreach (Doctrine_Tokenizer::sqlExplode($argStr, ',') as $expr) {
+                    foreach ($this->_tokenizer->sqlExplode($argStr, ',') as $expr) {
                        $args[] = $this->parseClause($expr);
                     }
 
@@ -671,12 +728,12 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable, Seria
                     }
                     $term[0] = $expr;
                 } else {
-                    $trimmed = trim(Doctrine_Tokenizer::bracketTrim($term[0]));
+                    $trimmed = trim($this->_tokenizer->bracketTrim($term[0]));
 
                     // check for possible subqueries
                     if (substr($trimmed, 0, 4) == 'FROM' || substr($trimmed, 0, 6) == 'SELECT') {
                         // parse subquery
-                        $trimmed = $this->createSubquery()->parseQuery($trimmed)->getQuery();
+                        $trimmed = $this->createSubquery()->parseDqlQuery($trimmed)->getQuery();
                     } else {
                         // parse normal clause
                         $trimmed = $this->parseClause($trimmed);
@@ -703,11 +760,11 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable, Seria
                                 $this->load($componentAlias);
 
                                 // check the existence of the component alias
-                                if ( ! isset($this->_aliasMap[$componentAlias])) {
+                                if ( ! isset($this->_queryComponents[$componentAlias])) {
                                     throw new Doctrine_Query_Exception('Unknown component alias ' . $componentAlias);
                                 }
 
-                                $table = $this->_aliasMap[$componentAlias]['table'];
+                                $table = $this->_queryComponents[$componentAlias]['table'];
     
                                 // get the actual field name from alias
                                 $field = $table->getColumnName($field);
@@ -740,7 +797,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable, Seria
 
                             if ($componentAlias !== false && 
                                 $componentAlias !== null) {
-                                $table = $this->_aliasMap[$componentAlias]['table'];
+                                $table = $this->_queryComponents[$componentAlias]['table'];
 
                                 // check column existence
                                 if ($table->hasColumn($term[0])) {
@@ -766,7 +823,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable, Seria
                             }
 
                             if ( ! $found) {
-                                $term[0] = $this->getAggregateAlias($term[0]);
+                                $term[0] = $this->getSqlAggregateAlias($term[0]);
                             }
                         }
                     }
@@ -789,7 +846,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable, Seria
      */
     public function parseAggregateFunction($expr, $nestedCall = false)
     {
-        $e    = Doctrine_Tokenizer::bracketExplode($expr, ' ');
+        $e    = $this->_tokenizer->bracketExplode($expr, ' ');
         $func = $e[0];
 
         $pos  = strpos($func, '(');
@@ -803,14 +860,14 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable, Seria
 
         $args   = array();
         // parse args
-        foreach (Doctrine_Tokenizer::bracketExplode($argStr, ',') as $expr) {
+        foreach ($this->_tokenizer->bracketExplode($argStr, ',') as $expr) {
            $args[] = $this->parseAggregateFunction($expr, true);
         }
 
         // convert DQL function to its RDBMS specific equivalent
         try {
             $expr = call_user_func_array(array($this->_conn->expression, $name), $args);
-        } catch(Doctrine_Expression_Exception $e) {
+        } catch (Doctrine_Expression_Exception $e) {
             throw new Doctrine_Query_Exception('Unknown function ' . $func . '.');
         }
 
@@ -831,7 +888,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable, Seria
                 $alias = substr($expr, 0, strpos($expr, '('));
             }
 
-            $this->pendingAggregates[] = array($expr, $m[0], $alias);
+            $this->_pendingAggregates[] = array($expr, $m[0], $alias);
         }
 
         return $expr;
@@ -855,18 +912,18 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable, Seria
 
             $subquery = $this->createSubquery();
 
-            $sql = $subquery->parseQuery($dql, false)->getQuery();
+            $sql = $subquery->parseDqlQuery($dql, false)->getQuery();
 
-            reset($this->_aliasMap);
-            $componentAlias = key($this->_aliasMap);
+            reset($this->_queryComponents);
+            $componentAlias = key($this->_queryComponents);
             $tableAlias = $this->getTableAlias($componentAlias);
 
-            $sqlAlias = $tableAlias . '__' . count($this->aggregateMap);
+            $sqlAlias = $tableAlias . '__' . count($this->_aggregateAliasMap);
 
-            $this->parts['select'][] = '(' . $sql . ') AS ' . $this->_conn->quoteIdentifier($sqlAlias);
+            $this->_sqlParts['select'][] = '(' . $sql . ') AS ' . $this->_conn->quoteIdentifier($sqlAlias);
 
-            $this->aggregateMap[$alias] = $sqlAlias;
-            $this->_aliasMap[$componentAlias]['agg'][] = $alias;
+            $this->_aggregateAliasMap[$alias] = $sqlAlias;
+            $this->_queryComponents[$componentAlias]['agg'][] = $alias;
         }
         $this->_pendingSubqueries = array();
     }
@@ -881,7 +938,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable, Seria
     public function processPendingAggregates()
     {
         // iterate trhough all aggregates
-        foreach ($this->pendingAggregates as $aggregate) {
+        foreach ($this->_pendingAggregates as $aggregate) {
             list ($expression, $components, $alias) = $aggregate;
 
             $tableAliases = array();
@@ -900,11 +957,11 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable, Seria
                     $componentAlias = implode('.', $e);
 
                     // check the existence of the component alias
-                    if ( ! isset($this->_aliasMap[$componentAlias])) {
+                    if ( ! isset($this->_queryComponents[$componentAlias])) {
                         throw new Doctrine_Query_Exception('Unknown component alias ' . $componentAlias);
                     }
 
-                    $table = $this->_aliasMap[$componentAlias]['table'];
+                    $table = $this->_queryComponents[$componentAlias]['table'];
 
                     $field = $table->getColumnName($field);
 
@@ -913,48 +970,49 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable, Seria
                         throw new Doctrine_Query_Exception('Unknown column ' . $field);
                     }
 
-                    $tableAlias = $this->getTableAlias($componentAlias);
+                    $sqlTableAlias = $this->getSqlTableAlias($componentAlias);
 
-                    $tableAliases[$tableAlias] = true;
+                    $tableAliases[$sqlTableAlias] = true;
 
                     // build sql expression
 
-                    $identifier = $this->_conn->quoteIdentifier($tableAlias . '.' . $field);
+                    $identifier = $this->_conn->quoteIdentifier($sqlTableAlias . '.' . $field);
                     $expression = str_replace($component, $identifier, $expression);
                 }
             }
 
             if (count($tableAliases) !== 1) {
-                $componentAlias = reset($this->_tableAliases);
-                $tableAlias = key($this->_tableAliases);
+                $componentAlias = reset($this->_tableAliasMap);
+                $tableAlias = key($this->_tableAliasMap);
             }
 
-            $index    = count($this->aggregateMap);
+            $index    = count($this->_aggregateAliasMap);
             $sqlAlias = $this->_conn->quoteIdentifier($tableAlias . '__' . $index);
 
-            $this->parts['select'][] = $expression . ' AS ' . $sqlAlias;
+            $this->_sqlParts['select'][] = $expression . ' AS ' . $sqlAlias;
 
-            $this->aggregateMap[$alias] = $sqlAlias;
+            $this->_aggregateAliasMap[$alias] = $sqlAlias;
             $this->_expressionMap[$alias][0] = $expression;
 
-            $this->_aliasMap[$componentAlias]['agg'][$index] = $alias;
+            $this->_queryComponents[$componentAlias]['agg'][$index] = $alias;
 
             $this->_neededTables[] = $tableAlias;
         }
         // reset the state
-        $this->pendingAggregates = array();
+        $this->_pendingAggregates = array();
     }
 
     /**
-     * getQueryBase
+     * _getSqlQueryBase
      * returns the base of the generated sql query
      * On mysql driver special strategy has to be used for DELETE statements
+     * (where is this special strategy??)
      *
      * @return string       the base of the generated sql query
      */
-    public function getQueryBase()
+    protected function _getSqlQueryBase()
     {
-        switch ($this->type) {
+        switch ($this->_type) {
             case self::DELETE:
                 $q = 'DELETE FROM ';
             break;
@@ -962,24 +1020,23 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable, Seria
                 $q = 'UPDATE ';
             break;
             case self::SELECT:
-                $distinct = ($this->parts['distinct']) ? 'DISTINCT ' : '';
-
-                $q = 'SELECT ' . $distinct . implode(', ', $this->parts['select']) . ' FROM ';
+                $distinct = ($this->_sqlParts['distinct']) ? 'DISTINCT ' : '';
+                $q = 'SELECT ' . $distinct . implode(', ', $this->_sqlParts['select']) . ' FROM ';
             break;
         }
         return $q;
     }
 
     /**
-     * buildFromPart
+     * _buildSqlFromPart
      * builds the from part of the query and returns it
      *
      * @return string   the query sql from part
      */
-    public function buildFromPart()
+    protected function _buildSqlFromPart()
     {
         $q = '';
-        foreach ($this->parts['from'] as $k => $part) {
+        foreach ($this->_sqlParts['from'] as $k => $part) {
             if ($k === 0) {
                 $q .= $part;
                 continue;
@@ -993,7 +1050,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable, Seria
                 if (substr($part, 0, 9) === 'LEFT JOIN') {
                     $e = explode(' ', $part);
 
-                    $aliases = array_merge($this->subqueryAliases,
+                    $aliases = array_merge($this->_subqueryAliases,
                                 array_keys($this->_neededTables));
 
                     if ( ! in_array($e[3], $aliases) &&
@@ -1021,7 +1078,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable, Seria
                 $q .= ' ' . $part;
             }
 
-            $this->parts['from'][$k] = $part;
+            $this->_sqlParts['from'][$k] = $part;
         }
         return $q;
     }
@@ -1055,40 +1112,6 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable, Seria
     }
 
     /**
-     * processQueryPart
-     * parses given query part
-     *
-     * @param string $queryPartName     the name of the query part
-     * @param array $queryParts         an array containing the query part data
-     * @return Doctrine_Query           this object
-     * @todo Better description. "parses given query part" ??? Then wheres the difference
-     *       between process/parseQueryPart? I suppose this does something different.
-     */
-    public function processQueryPart($queryPartName, $queryParts)
-    {
-        $this->removeQueryPart($queryPartName);
-
-        if (is_array($queryParts) && ! empty($queryParts)) {
-
-            foreach ($queryParts as $queryPart) {
-                $parser = $this->getParser($queryPartName);
-
-                $sql = $parser->parse($queryPart);
-
-                if (isset($sql)) {
-                    if ($queryPartName == 'limit' ||
-                        $queryPartName == 'offset') {
-
-                        $this->setQueryPart($queryPartName, $sql);
-                    } else {
-                        $this->addQueryPart($queryPartName, $sql);
-                    }
-                }
-            }
-        }
-    }
-
-    /**
      * builds the sql query from the given parameters and applies things such as
      * column aggregation inheritance and limit subqueries if needed
      *
@@ -1096,7 +1119,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable, Seria
      *                                  when limit subquery algorithm is used)
      * @return string                   the built sql query
      */
-    public function getQuery($params = array())
+    public function getSqlQuery($params = array())
     {
         if ($this->_state !== self::STATE_DIRTY) {
            return $this->_sql;
@@ -1104,60 +1127,62 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable, Seria
 
         // reset the state
         if ( ! $this->isSubquery()) {
-            $this->_aliasMap = array();
-            $this->pendingAggregates = array();
-            $this->aggregateMap = array();
+            $this->_queryComponents = array();
+            $this->_pendingAggregates = array();
+            $this->_aggregateAliasMap = array();
         }
-        $this->reset();   
-
-        // parse the DQL parts
-        foreach ($this->_dqlParts as $queryPartName => $queryParts) {
-            $this->processQueryPart($queryPartName, $queryParts);
-        }
-        
-        $params = $this->convertEnums($params);
-
-        $this->_state = self::STATE_DIRECT;
+        $this->reset();
 
         // invoke the preQuery hook
-        $this->preQuery();        
-        $this->_state = self::STATE_CLEAN;
+        $this->preQuery();
 
-        if (empty($this->parts['from'])) {
+        // process the DQL parts => generate the SQL parts.
+        // this will also populate the $_queryComponents.
+        foreach ($this->_dqlParts as $queryPartName => $queryParts) {
+            $this->_processDqlQueryPart($queryPartName, $queryParts);
+        }
+        $this->_state = self::STATE_CLEAN;
+        
+        $params = $this->convertEnums($params);        
+
+
+        // Proceed with the generated SQL
+        
+        if (empty($this->_sqlParts['from'])) {
             return false;
         }
 
         $needsSubQuery = false;
         $subquery = '';
-        $map   = reset($this->_aliasMap);
+        $map   = reset($this->_queryComponents);
         $table = $map['table'];
-        $rootAlias = key($this->_aliasMap);
+        $rootAlias = key($this->_queryComponents);
 
-        if ( ! empty($this->parts['limit']) && $this->needsSubquery &&
+        if ( ! empty($this->_sqlParts['limit']) && $this->_needsSubquery &&
                 $table->getAttribute(Doctrine::ATTR_QUERY_LIMIT) == Doctrine::LIMIT_RECORDS) {
-            $this->isLimitSubqueryUsed = true;
+            $this->_isLimitSubqueryUsed = true;
             $needsSubQuery = true;
         }
 
         $sql = array();
-        foreach ($this->_aliasMap as $alias => $map) {
+        foreach ($this->_queryComponents as $alias => $map) {
             $fieldSql = $this->processPendingFields($alias);
             if ( ! empty($fieldSql)) {
                 $sql[] = $fieldSql;
             }
         }
         if ( ! empty($sql)) {
-            array_unshift($this->parts['select'], implode(', ', $sql));
+            array_unshift($this->_sqlParts['select'], implode(', ', $sql));
         }
 
         $this->_pendingFields = array();
 
         // build the basic query
-        $q  = $this->getQueryBase();
-        $q .= $this->buildFromPart();
+        $q  = $this->_getSqlQueryBase();
+        $q .= $this->_buildSqlFromPart();
 
-        if ( ! empty($this->parts['set'])) {
-            $q .= ' SET ' . implode(', ', $this->parts['set']);
+        if ( ! empty($this->_sqlParts['set'])) {
+            $q .= ' SET ' . implode(', ', $this->_sqlParts['set']);
         }
 
 
@@ -1166,14 +1191,14 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable, Seria
         // apply inheritance to WHERE part
         if ( ! empty($string)) {
             if (substr($string, 0, 1) === '(' && substr($string, -1) === ')') {
-                $this->parts['where'][] = $string;
+                $this->_sqlParts['where'][] = $string;
             } else {
-                $this->parts['where'][] = '(' . $string . ')';
+                $this->_sqlParts['where'][] = '(' . $string . ')';
             }
         }
 
         $modifyLimit = true;
-        if ( ! empty($this->parts['limit']) || ! empty($this->parts['offset'])) {
+        if ( ! empty($this->_sqlParts['limit']) || ! empty($this->_sqlParts['offset'])) {
 
             if ($needsSubQuery) {
                 $subquery = $this->getLimitSubquery();
@@ -1191,32 +1216,32 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable, Seria
                         break;
                 }
 
-                $field = $this->getTableAlias($rootAlias) . '.' . $idColumnName;
+                $field = $this->getSqlTableAlias($rootAlias) . '.' . $idColumnName;
 
                 // only append the subquery if it actually contains something
                 if ($subquery !== '') {
-                    array_unshift($this->parts['where'], $this->_conn->quoteIdentifier($field) . ' IN (' . $subquery . ')');
+                    array_unshift($this->_sqlParts['where'], $this->_conn->quoteIdentifier($field) . ' IN (' . $subquery . ')');
                 }
 
                 $modifyLimit = false;
             }
         }
 
-        $q .= ( ! empty($this->parts['where']))?   ' WHERE '    . implode(' AND ', $this->parts['where']) : '';
-        $q .= ( ! empty($this->parts['groupby']))? ' GROUP BY ' . implode(', ', $this->parts['groupby'])  : '';
-        $q .= ( ! empty($this->parts['having']))?  ' HAVING '   . implode(' AND ', $this->parts['having']): '';
-        $q .= ( ! empty($this->parts['orderby']))? ' ORDER BY ' . implode(', ', $this->parts['orderby'])  : '';
+        $q .= ( ! empty($this->_sqlParts['where']))?   ' WHERE '    . implode(' AND ', $this->_sqlParts['where']) : '';
+        $q .= ( ! empty($this->_sqlParts['groupby']))? ' GROUP BY ' . implode(', ', $this->_sqlParts['groupby'])  : '';
+        $q .= ( ! empty($this->_sqlParts['having']))?  ' HAVING '   . implode(' AND ', $this->_sqlParts['having']): '';
+        $q .= ( ! empty($this->_sqlParts['orderby']))? ' ORDER BY ' . implode(', ', $this->_sqlParts['orderby'])  : '';
 
         if ($modifyLimit) {
-            $q = $this->_conn->modifyLimitQuery($q, $this->parts['limit'], $this->parts['offset']);
+            $q = $this->_conn->modifyLimitQuery($q, $this->_sqlParts['limit'], $this->_sqlParts['offset']);
         }
 
         // return to the previous state
         if ( ! empty($string)) {
-            array_pop($this->parts['where']);
+            array_pop($this->_sqlParts['where']);
         }
         if ($needsSubQuery) {
-            array_shift($this->parts['where']);
+            array_shift($this->_sqlParts['where']);
         }
         $this->_sql = $q;
 
@@ -1236,9 +1261,9 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable, Seria
      */
     public function getLimitSubquery()
     {
-        $map    = reset($this->_aliasMap);
+        $map    = reset($this->_queryComponents);
         $table  = $map['table'];
-        $componentAlias = key($this->_aliasMap);
+        $componentAlias = key($this->_queryComponents);
 
         // get short alias
         $alias      = $this->getTableAlias($componentAlias);
@@ -1252,9 +1277,9 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable, Seria
 
         // pgsql needs the order by fields to be preserved in select clause
         if ($driverName == 'pgsql') {
-            foreach ($this->parts['orderby'] as $part) {
+            foreach ($this->_sqlParts['orderby'] as $part) {
                 $part = trim($part);
-                $e = Doctrine_Tokenizer::bracketExplode($part, ' ');
+                $e = $this->_tokenizer->bracketExplode($part, ' ');
                 $part = trim($e[0]);
 
                 if (strpos($part, '.') === false) {
@@ -1276,19 +1301,19 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable, Seria
         if ($driverName == 'mysql' || $driverName == 'pgsql') {
             foreach ($this->_expressionMap as $dqlAlias => $expr) {
                 if (isset($expr[1])) {
-                    $subquery .= ', ' . $expr[0] . ' AS ' . $this->aggregateMap[$dqlAlias];
+                    $subquery .= ', ' . $expr[0] . ' AS ' . $this->_aggregateAliasMap[$dqlAlias];
                 }
             }
         }
 
         $subquery .= ' FROM';
 
-        foreach ($this->parts['from'] as $part) {
+        foreach ($this->_sqlParts['from'] as $part) {
             // preserve LEFT JOINs only if needed
             if (substr($part, 0, 9) === 'LEFT JOIN') {
                 $e = explode(' ', $part);
 
-                if (empty($this->parts['orderby']) && empty($this->parts['where'])) {
+                if (empty($this->_sqlParts['orderby']) && empty($this->_sqlParts['where'])) {
                     continue;
                 }
             }
@@ -1297,16 +1322,16 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable, Seria
         }
 
         // all conditions must be preserved in subquery
-        $subquery .= ( ! empty($this->parts['where']))?   ' WHERE '    . implode(' AND ', $this->parts['where'])  : '';
-        $subquery .= ( ! empty($this->parts['groupby']))? ' GROUP BY ' . implode(', ', $this->parts['groupby'])   : '';
-        $subquery .= ( ! empty($this->parts['having']))?  ' HAVING '   . implode(' AND ', $this->parts['having']) : '';
+        $subquery .= ( ! empty($this->_sqlParts['where']))?   ' WHERE '    . implode(' AND ', $this->_sqlParts['where'])  : '';
+        $subquery .= ( ! empty($this->_sqlParts['groupby']))? ' GROUP BY ' . implode(', ', $this->_sqlParts['groupby'])   : '';
+        $subquery .= ( ! empty($this->_sqlParts['having']))?  ' HAVING '   . implode(' AND ', $this->_sqlParts['having']) : '';
 
-        $subquery .= ( ! empty($this->parts['orderby']))? ' ORDER BY ' . implode(', ', $this->parts['orderby'])   : '';
+        $subquery .= ( ! empty($this->_sqlParts['orderby']))? ' ORDER BY ' . implode(', ', $this->_sqlParts['orderby'])   : '';
 
         // add driver specific limit clause
-        $subquery = $this->_conn->modifyLimitQuery($subquery, $this->parts['limit'], $this->parts['offset']);
+        $subquery = $this->_conn->modifyLimitQuery($subquery, $this->_sqlParts['limit'], $this->_sqlParts['offset']);
 
-        $parts = Doctrine_Tokenizer::quoteExplode($subquery, ' ', "'", "'");
+        $parts = $this->_tokenizer->quoteExplode($subquery, ' ', "'", "'");
 
         foreach ($parts as $k => $part) {
             if (strpos($part, ' ') !== false) {
@@ -1378,11 +1403,12 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable, Seria
      */
     public function tokenizeQuery($query)
     {
-        $e = Doctrine_Tokenizer::sqlExplode($query, ' ');
+        $parts = array();
+        $tokens = $this->_tokenizer->sqlExplode($query, ' ');
 
-        foreach ($e as $k => $part) {
-            $part = trim($part);
-            switch (strtolower($part)) {
+        foreach ($tokens as $index => $token) {
+            $token = trim($token);
+            switch (strtolower($token)) {
                 case 'delete':
                 case 'update':
                 case 'select':
@@ -1392,27 +1418,32 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable, Seria
                 case 'limit':
                 case 'offset':
                 case 'having':
-                    $p = $part;
-                    $parts[$part] = array();
+                    $p = $token;
+                    //$parts[$token] = array();
+                    $parts[$token] = '';
                 break;
                 case 'order':
                 case 'group':
-                    $i = ($k + 1);
-                    if (isset($e[$i]) && strtolower($e[$i]) === 'by') {
-                        $p = $part;
-                        $parts[$part] = array();
+                    $i = ($index + 1);
+                    if (isset($tokens[$i]) && strtolower($tokens[$i]) === 'by') {
+                        $p = $token;
+                        $parts[$token] = '';
+                        //$parts[$token] = array();
                     } else {
-                        $parts[$p][] = $part;
+                        $parts[$p] .= "$token ";
+                        //$parts[$p][] = $token;
                     }
                 break;
                 case 'by':
                     continue;
                 default:
                     if ( ! isset($p)) {
-                        throw new Doctrine_Query_Exception("Couldn't parse query.");
+                        throw new Doctrine_Query_Tokenizer_Exception(
+                                "Couldn't tokenize query. Encountered invalid token: '$token'.");
                     }
 
-                    $parts[$p][] = $part;
+                    $parts[$p] .= "$token ";
+                    //$parts[$p][] = $token;
             }
         }
         return $parts;
@@ -1429,7 +1460,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable, Seria
      * @throws Doctrine_Query_Exception     if some generic parsing error occurs
      * @return Doctrine_Query
      */
-    public function parseQuery($query, $clear = true)
+    public function parseDqlQuery($query, $clear = true)
     {
         if ($clear) {
             $this->clear();
@@ -1441,40 +1472,40 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable, Seria
 
         $parts = $this->tokenizeQuery($query);
 
-        foreach ($parts as $k => $part) {
-            $part = implode(' ', $part);
-            $k = strtolower($k);
-            switch ($k) {
+        foreach ($parts as $partName => $subParts) {
+            $subParts = trim($subParts);
+            $partName = strtolower($partName);
+            switch ($partName) {
                 case 'create':
-                    $this->type = self::CREATE;
+                    $this->_type = self::CREATE;
                 break;
                 case 'insert':
-                    $this->type = self::INSERT;
+                    $this->_type = self::INSERT;
                 break;
                 case 'delete':
-                    $this->type = self::DELETE;
+                    $this->_type = self::DELETE;
                 break;
                 case 'select':
-                    $this->type = self::SELECT;
-                    $this->parseQueryPart($k, $part);
+                    $this->_type = self::SELECT;
+                    $this->_addDqlQueryPart($partName, $subParts);
                 break;
                 case 'update':
-                    $this->type = self::UPDATE;
-                    $k = 'from';
+                    $this->_type = self::UPDATE;
+                    $partName = 'from';
                 case 'from':
-                    $this->parseQueryPart($k, $part);
+                    $this->_addDqlQueryPart($partName, $subParts);
                 break;
                 case 'set':
-                    $this->parseQueryPart($k, $part, true);
+                    $this->_addDqlQueryPart($partName, $subParts, true);
                 break;
                 case 'group':
                 case 'order':
-                    $k .= 'by';
+                    $partName .= 'by';
                 case 'where':
                 case 'having':
                 case 'limit':
                 case 'offset':
-                    $this->parseQueryPart($k, $part);
+                    $this->_addDqlQueryPart($partName, $subParts);
                 break;
             }
         }
@@ -1487,10 +1518,10 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable, Seria
      */
     public function load($path, $loadFields = true)
     {
-    	if (isset($this->_aliasMap[$path])) {
-    	   return $this->_aliasMap[$path];
+    	if (isset($this->_queryComponents[$path])) {
+    	   return $this->_queryComponents[$path];
     	}
-        $e = Doctrine_Tokenizer::quoteExplode($path, ' INDEXBY ');
+        $e = $this->_tokenizer->quoteExplode($path, ' INDEXBY ');
 
         $mapWith = null;
         if (count($e) > 1) {
@@ -1527,8 +1558,8 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable, Seria
         $prevPath = '';
         $fullLength = strlen($fullPath);
 
-        if (isset($this->_aliasMap[$e[0]])) {
-            $table = $this->_aliasMap[$e[0]]['table'];
+        if (isset($this->_queryComponents[$e[0]])) {
+            $table = $this->_queryComponents[$e[0]]['table'];
             $componentAlias = $e[0];
 
             $prevPath = $parent = array_shift($e);
@@ -1551,7 +1582,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable, Seria
             }
 
             // if the current alias already exists, skip it
-            if (isset($this->_aliasMap[$componentAlias])) {
+            if (isset($this->_queryComponents[$componentAlias])) {
                 continue;
             }
 
@@ -1566,12 +1597,12 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable, Seria
                 $localTable = $table;
 
                 $table    = $relation->getTable();
-                $this->_aliasMap[$componentAlias] = array('table'    => $table,
+                $this->_queryComponents[$componentAlias] = array('table'    => $table,
                                                           'parent'   => $parent,
                                                           'relation' => $relation,
                                                           'map'      => null);
                 if ( ! $relation->isOneToOne()) {
-                   $this->needsSubquery = true;
+                   $this->_needsSubquery = true;
                 }
 
                 $localAlias   = $this->getTableAlias($parent, $table->getTableName());
@@ -1587,7 +1618,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable, Seria
                 $map = $relation->getTable()->inheritanceMap;
 
                 if ( ! $loadFields || ! empty($map) || $joinCondition) {
-                    $this->subqueryAliases[] = $foreignAlias;
+                    $this->_subqueryAliases[] = $foreignAlias;
                 }
 
                 if ($relation instanceof Doctrine_Relation_Association) {
@@ -1596,12 +1627,12 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable, Seria
                     $assocTableName = $asf->getTableName();
 
                     if ( ! $loadFields || ! empty($map) || $joinCondition) {
-                        $this->subqueryAliases[] = $assocTableName;
+                        $this->_subqueryAliases[] = $assocTableName;
                     }
 
                     $assocPath = $prevPath . '.' . $asf->getComponentName();
 
-                    $this->_aliasMap[$assocPath] = array('parent' => $prevPath, 'relation' => $relation, 'table' => $asf);
+                    $this->_queryComponents[$assocPath] = array('parent' => $prevPath, 'relation' => $relation, 'table' => $asf);
 
                     $assocAlias = $this->getTableAlias($assocPath, $asf->getTableName());
 
@@ -1622,7 +1653,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable, Seria
                                     . $assocAlias . '.' . $relation->getForeign();
                     }
 
-                    $this->parts['from'][] = $queryPart;
+                    $this->_sqlParts['from'][] = $queryPart;
 
                     $queryPart = $join . $foreignSql;
 
@@ -1662,7 +1693,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable, Seria
 
                 $queryPart .= $this->buildInheritanceJoinSql($table->getComponentName(), $componentAlias);
 
-                $this->parts['from'][$componentAlias] = $queryPart;
+                $this->_sqlParts['from'][$componentAlias] = $queryPart;
                 if ( ! empty($joinCondition)) {
                     $this->_pendingJoinConditions[$componentAlias] = $joinCondition;
                 }
@@ -1678,7 +1709,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable, Seria
             $parent = $prevPath;
         }
         
-        $table = $this->_aliasMap[$componentAlias]['table'];
+        $table = $this->_queryComponents[$componentAlias]['table'];
 
         $indexBy = null;
 
@@ -1697,9 +1728,9 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable, Seria
                 throw new Doctrine_Query_Exception("Couldn't use key mapping. Column " . $indexBy . " does not exist.");
             }
     
-            $this->_aliasMap[$componentAlias]['map'] = $table->getColumnName($indexBy);
+            $this->_queryComponents[$componentAlias]['map'] = $table->getColumnName($indexBy);
         }
-        return $this->_aliasMap[$componentAlias];
+        return $this->_queryComponents[$componentAlias];
     }
 
     /**
@@ -1723,17 +1754,17 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable, Seria
         // quote table name
         $queryPart = $this->_conn->quoteIdentifier($tableName);
 
-        if ($this->type === self::SELECT) {
+        if ($this->_type === self::SELECT) {
             $queryPart .= ' ' . $this->_conn->quoteIdentifier($tableAlias);
         }
         
-        $this->_tableAliases[$tableAlias] = $componentAlias;
+        $this->_tableAliasMap[$tableAlias] = $componentAlias;
 
         $queryPart .= $this->buildInheritanceJoinSql($name, $componentAlias);
 
-        $this->parts['from'][] = $queryPart;
+        $this->_sqlParts['from'][] = $queryPart;
 
-        $this->_aliasMap[$componentAlias] = array('table' => $table, 'map' => null);
+        $this->_queryComponents[$componentAlias] = array('table' => $table, 'map' => null);
 
         return $table;
     }
@@ -1802,14 +1833,15 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable, Seria
      */
     public function count($params = array())
     {
-        $this->getQuery();
+        // triggers dql parsing/processing
+        $this->getQuery(); // this is ugly
 
         // initialize temporary variables
-        $where  = $this->parts['where'];
-        $having = $this->parts['having'];
-        $groupby = $this->parts['groupby'];
-        $map    = reset($this->_aliasMap);
-        $componentAlias = key($this->_aliasMap);
+        $where  = $this->_sqlParts['where'];
+        $having = $this->_sqlParts['having'];
+        $groupby = $this->_sqlParts['groupby'];
+        $map = reset($this->_queryComponents);
+        $componentAlias = key($this->_queryComponents);
         $table = $map['table'];
 
         // build the query base
@@ -1817,13 +1849,13 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable, Seria
               . '.' . implode(',', (array) $table->getIdentifier())
               . ') AS num_results';
 
-        foreach ($this->parts['select'] as $field) {
+        foreach ($this->_sqlParts['select'] as $field) {
             if (strpos($field, '(') !== false) {
                 $q .= ', ' . $field;
             }
         }
 
-        $q .= ' FROM ' . $this->buildFromPart();
+        $q .= ' FROM ' . $this->_buildSqlFromPart();
 
         // append column aggregation inheritance (if needed)
         $string = $this->applyInheritance();
@@ -1870,8 +1902,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable, Seria
      */
     public function query($query, $params = array(), $hydrationMode = null)
     {
-        $this->parseQuery($query);
-
+        $this->parseDqlQuery($query);
         return $this->execute($params, $hydrationMode);
     }
 

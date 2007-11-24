@@ -914,17 +914,15 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
                 $this->getAttribute(Doctrine::ATTR_LISTENER)->preQuery($event);
 
                 if ( ! $event->skipOperation) {
-                    //echo $query . "<br />";
                     $stmt = $this->dbh->query($query);
-
                     $this->_count++;
                 }
                 $this->getAttribute(Doctrine::ATTR_LISTENER)->postQuery($event);
 
                 return $stmt;
             }
-        } catch(Doctrine_Adapter_Exception $e) {
-        } catch(PDOException $e) { }
+        } catch (Doctrine_Adapter_Exception $e) {
+        } catch (PDOException $e) { }
 
         $this->rethrowException($e, $this);
     }
@@ -959,8 +957,8 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
 
                 return $count;
             }
-        } catch(Doctrine_Adapter_Exception $e) {
-        } catch(PDOException $e) { }
+        } catch (Doctrine_Adapter_Exception $e) {
+        } catch (PDOException $e) { }
 
         $this->rethrowException($e, $this);
     }
@@ -975,7 +973,7 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
         $event = new Doctrine_Event($this, Doctrine_Event::CONN_ERROR);
 
         $this->getListener()->preError($event);
-
+        
         $name = 'Doctrine_Connection_' . $this->driverName . '_Exception';
 
         $exc  = new $name($e->getMessage(), (int) $e->getCode());
@@ -1200,6 +1198,31 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
         $this->connect();
 
         return $this->dbh->errorInfo();
+    }
+    
+    /**
+     * getCacheDriver
+     *
+     * @return Doctrine_Cache_Interface
+     * @deprecated Use getResultCacheDriver()
+     */
+    public function getCacheDriver()
+    {
+        return $this->getResultCacheDriver();
+    }
+    
+    /**
+     * getResultCacheDriver
+     *
+     * @return Doctrine_Cache_Interface
+     */
+    public function getResultCacheDriver()
+    {
+        if ( ! isset($this->attributes[Doctrine::ATTR_CACHE])) {
+            throw new Doctrine_Exception('Result Cache driver not initialized.');
+        }
+
+        return $this->attributes[Doctrine::ATTR_CACHE];
     }
 
     /**

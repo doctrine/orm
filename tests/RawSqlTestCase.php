@@ -94,8 +94,8 @@ class Doctrine_RawSql_TestCase extends Doctrine_UnitTestCase
         $fields = $query->getFields();
 
         $this->assertEqual($fields, array('entity.name', 'entity.id'));
-
-        $coll = $query->execute();
+        
+        $coll = $query->execute();        
 
         $this->assertEqual($coll->count(), 11);
 
@@ -125,6 +125,7 @@ class Doctrine_RawSql_TestCase extends Doctrine_UnitTestCase
         $coll[5]->Phonenumber[0]->phonenumber;
         $this->assertEqual($count, $this->conn->count());
     }
+    
     public function testAliasesAreSupportedInAddComponent()
     {
         $query = new Doctrine_RawSql();
@@ -161,12 +162,14 @@ class Doctrine_RawSql_TestCase extends Doctrine_UnitTestCase
         $this->assertTrue(is_numeric($coll[3]->id));
         $this->assertTrue(is_numeric($coll[7]->id));
     }
+    
     public function testConvenienceMethods()
     {
+        
         $query = new Doctrine_RawSql($this->connection);
         $query->select('{entity.name}')->from('entity');
         $query->addComponent('entity', 'User');
-
+        
         $coll = $query->execute();
 
         $this->assertEqual($coll->count(), 8);
@@ -247,7 +250,7 @@ class Doctrine_RawSql_TestCase extends Doctrine_UnitTestCase
 
         $this->assertEqual(count($coll), 3);
     }
-
+    
     public function testParseQueryPartShouldAddPartIfNotSelectAndAppend()
     {
       $query = new Doctrine_Rawsql();
@@ -258,7 +261,7 @@ class Doctrine_RawSql_TestCase extends Doctrine_UnitTestCase
       $this->assertTrue(isset($parts["test"][0]));
       $this->assertEqual("test", $parts["test"][0]);
     }
-
+    
     public function testParseQueryShouldExtractGroupBy()
     {
         $query = new Doctrine_RawSql();

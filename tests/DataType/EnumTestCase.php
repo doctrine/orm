@@ -49,16 +49,6 @@ class Doctrine_DataType_Enum_TestCase extends Doctrine_UnitTestCase
 
         try {
             $query = new Doctrine_Query($this->connection);
-            $ret = $query->parseQuery('FROM EnumTest WHERE EnumTest.status = ?')
-                         ->execute(array('open'));
-
-            $this->assertEqual(count($ret), 1);
-        } catch (Exception $e) {
-            $this->fail();
-        }
-
-        try {
-            $query = new Doctrine_Query($this->connection);
             $ret = $query->query("FROM EnumTest WHERE EnumTest.status = 'open'");
             $this->assertEqual(count($ret), 1);
         } catch (Exception $e) {

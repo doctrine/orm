@@ -239,20 +239,6 @@ abstract class Doctrine_Configurable extends Doctrine_Locator_Injectable
     }
 
     /**
-     * getCacheDriver
-     *
-     * @return Doctrine_Cache_Interface
-     */
-    public function getCacheDriver()
-    {
-        if ( ! isset($this->attributes[Doctrine::ATTR_CACHE])) {
-            throw new Doctrine_Exception('Cache driver not initialized.');
-        }
-
-        return $this->attributes[Doctrine::ATTR_CACHE];
-    }
-
-    /**
      * @param Doctrine_EventListener $listener
      * @return void
      */

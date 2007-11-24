@@ -98,7 +98,7 @@ class Doctrine_Query_TestCase extends Doctrine_UnitTestCase
     	$q = new Doctrine_Query();
         $q->from('User u')->leftJoin('u.Phonenumber p');
         $q->getQuery();
-
+        //Doctrine::dump($q->getCachedForm(array('foo' => 'bar')));
         $this->assertEqual($q->parseClause("CONCAT('u.name', u.name)"), "CONCAT('u.name', e.name)");
     }
 }
@@ -106,8 +106,6 @@ class MyQuery extends Doctrine_Query
 {
     public function preQuery()
     {
-        if ($this->getRoot()->getComponentName() == 'User') {
-            $this->where('u.id = 4');
-        }
+        $this->where('u.id = 4');
     }
 }

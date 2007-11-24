@@ -34,13 +34,13 @@ class Doctrine_Query_From extends Doctrine_Query_Part
 {
     /**
      * DQL FROM PARSER
-     * parses the from part of the query string
+     * parses the FROM part of the query string
      *
      * @param string $str
      * @return void
      */
     public function parse($str)
-    {
+    {        
         $str = trim($str);
         $parts = Doctrine_Tokenizer::bracketExplode($str, 'JOIN');
 
@@ -54,7 +54,6 @@ class Doctrine_Query_From extends Doctrine_Query_Part
             break;
         }
 
-
         $last = '';
 
         foreach ($parts as $k => $part) {
@@ -64,7 +63,7 @@ class Doctrine_Query_From extends Doctrine_Query_Part
                 continue;
             }
 
-            $e    = explode(' ', $part);
+            $e = explode(' ', $part);
 
             if (end($e) == 'INNER' || end($e) == 'LEFT') {
                 $last = array_pop($e);
@@ -79,7 +78,7 @@ class Doctrine_Query_From extends Doctrine_Query_Part
                 if ($operator) {
                     $e[0] = array_shift($e2) . $operator . implode('.', $e2);
                 }
-
+                
                 $table = $this->query->load(implode(' ', $e));
             }
 
