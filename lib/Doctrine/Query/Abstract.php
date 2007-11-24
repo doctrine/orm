@@ -231,8 +231,6 @@ abstract class Doctrine_Query_Abstract
     
     protected $_isLimitSubqueryUsed = false;
     
-    protected $_sqlBuilder;
-    
     
     /**
      *
@@ -250,7 +248,6 @@ abstract class Doctrine_Query_Abstract
         $this->_conn = $connection;
         $this->_hydrator = $hydrator;
         $this->_tokenizer = new Doctrine_Query_Tokenizer();
-        $this->_sqlBuilder = new Doctrine_Query_SqlBuilder($this->_tokenizer);
     }
     
     /**
