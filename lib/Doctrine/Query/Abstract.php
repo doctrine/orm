@@ -229,12 +229,17 @@ abstract class Doctrine_Query_Abstract
      */
     protected $_enumParams = array();
     
+    /**
+     * @var boolean
+     */
     protected $_isLimitSubqueryUsed = false;
     
     
     /**
+     * Constructor.
      *
-     *
+     * @param Doctrine_Connection  The connection object the query will use.
+     * @param Doctrine_Hydrator_Abstract  The hydrator that will be used for generating result sets.
      */
     public function __construct(Doctrine_Connection $connection = null,
             Doctrine_Hydrator_Abstract $hydrator = null)
@@ -1685,7 +1690,7 @@ abstract class Doctrine_Query_Abstract
                 throw new Doctrine_Query_Exception('Unknown parser ' . $name);
             }
 
-            $this->_parsers[$name] = new $class($this);
+            $this->_parsers[$name] = new $class($this, $this->_tokenizer);
         }
 
         return $this->_parsers[$name];

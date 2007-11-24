@@ -36,7 +36,7 @@ class Doctrine_Query_JoinCondition extends Doctrine_Query_Condition
     {
         $condition = trim($condition);
 
-        $e         = Doctrine_Tokenizer::sqlExplode($condition);
+        $e = $this->_tokenizer->sqlExplode($condition);
 
         if (count($e) > 2) {
             $a         = explode('.', $e[0]);
@@ -54,7 +54,7 @@ class Doctrine_Query_JoinCondition extends Doctrine_Query_Condition
 
             if (substr($value, 0, 1) == '(') {
                 // trim brackets
-                $trimmed   = Doctrine_Tokenizer::bracketTrim($value);
+                $trimmed   = $this->_tokenizer->bracketTrim($value);
 
                 if (substr($trimmed, 0, 4) == 'FROM' || substr($trimmed, 0, 6) == 'SELECT') {
                     // subquery found
@@ -64,7 +64,7 @@ class Doctrine_Query_JoinCondition extends Doctrine_Query_Condition
                     $value = '(' . substr($trimmed, 4) . ')';
                 } else {
                     // simple in expression found
-                    $e     = Doctrine_Tokenizer::sqlExplode($trimmed, ',');
+                    $e     = $this->_tokenizer->sqlExplode($trimmed, ',');
 
                     $value = array();
                     foreach ($e as $part) {

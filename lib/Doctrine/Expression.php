@@ -33,8 +33,8 @@ Doctrine::autoload('Doctrine_Connection_Module');
 class Doctrine_Expression
 {
     protected $_expression;
-    
     protected $_conn;
+    protected $_tokenizer;
 
     /**
      * Create an expression 
@@ -45,8 +45,8 @@ class Doctrine_Expression
      */
     public function __construct($expr, $conn = null)
     {
+        $this->_tokenizer = new Doctrine_Query_Tokenizer();
         $this->setExpression($expr);
-        
         if ($conn !== null) {
             $this->_conn = $conn;
         }
@@ -97,7 +97,7 @@ class Doctrine_Expression
         $argStr = substr($expr, ($pos + 1), -1);
 
         // parse args
-        foreach (Doctrine_Tokenizer::bracketExplode($argStr, ',') as $arg) {
+        foreach ($this->_tokenizer->bracketExplode($argStr, ',') as $arg) {
            $args[] = $this->parseClause($arg);
         }
 
@@ -112,7 +112,7 @@ class Doctrine_Expression
      */
     public function parseClause($clause)
     {
-        $e = Doctrine_Tokenizer::bracketExplode($clause, ' ');
+        $e = $this->_tokenizer->bracketExplode($clause, ' ');
 
         foreach ($e as $k => $expr) {
             $e[$k] = $this->parseExpression($expr);

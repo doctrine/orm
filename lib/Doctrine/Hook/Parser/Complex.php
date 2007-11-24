@@ -32,6 +32,16 @@ Doctrine::autoload('Doctrine_Hook_Parser');
  */
 abstract class Doctrine_Hook_Parser_Complex extends Doctrine_Hook_Parser
 {
+    protected $_tokenizer;
+    
+    /**
+     * Constructor.
+     */
+    public function __construct()
+    {
+        $this->_tokenizer = new Doctrine_Query_Tokenizer();
+    }
+    
     /**
      * parse
      * Parses given field and field value to DQL condition
@@ -59,7 +69,7 @@ abstract class Doctrine_Hook_Parser_Complex extends Doctrine_Hook_Parser
      */
     public function parseClause($alias, $field, $value)
     {
-        $parts = Doctrine_Tokenizer::quoteExplode($value, ' AND ');
+        $parts = $this->_tokenizer->quoteExplode($value, ' AND ');
 
         if (count($parts) > 1) {
             $ret = array();
@@ -69,7 +79,7 @@ abstract class Doctrine_Hook_Parser_Complex extends Doctrine_Hook_Parser
 
             $r = implode(' AND ', $ret);
         } else {
-            $parts = Doctrine_Tokenizer::quoteExplode($value, ' OR ');
+            $parts = $this->_tokenizer->quoteExplode($value, ' OR ');
             if (count($parts) > 1) {
                 $ret = array();
                 foreach ($parts as $part) {

@@ -34,9 +34,9 @@ class Doctrine_Query_Where extends Doctrine_Query_Condition
 {
     public function load($where) 
     {
-        $where = Doctrine_Tokenizer::bracketTrim(trim($where));
+        $where = $this->_tokenizer->bracketTrim(trim($where));
         $conn  = $this->query->getConnection();
-        $terms = Doctrine_Tokenizer::sqlExplode($where);  
+        $terms = $this->_tokenizer->sqlExplode($where);  
 
         if (count($terms) > 1) {
             if (substr($where, 0, 6) == 'EXISTS') {
@@ -47,7 +47,7 @@ class Doctrine_Query_Where extends Doctrine_Query_Condition
         }
 
         if (count($terms) < 3) {
-            $terms = Doctrine_Tokenizer::sqlExplode($where, array('=', '<', '<>', '>', '!='));
+            $terms = $this->_tokenizer->sqlExplode($where, array('=', '<', '<>', '>', '!='));
         }
 
         if (count($terms) > 1) {
@@ -90,7 +90,7 @@ class Doctrine_Query_Where extends Doctrine_Query_Condition
     {
         if (substr($value, 0, 1) == '(') {
             // trim brackets
-            $trimmed   = Doctrine_Tokenizer::bracketTrim($value);
+            $trimmed = $this->_tokenizer->bracketTrim($value);
 
             if (substr($trimmed, 0, 4) == 'FROM' ||
                 substr($trimmed, 0, 6) == 'SELECT') {
@@ -103,7 +103,7 @@ class Doctrine_Query_Where extends Doctrine_Query_Condition
                 $value = '(' . substr($trimmed, 4) . ')';
             } else {
                 // simple in expression found
-                $e = Doctrine_Tokenizer::sqlExplode($trimmed, ',');
+                $e = $this->_tokenizer->sqlExplode($trimmed, ',');
 
                 $value = array();
 
@@ -123,7 +123,7 @@ class Doctrine_Query_Where extends Doctrine_Query_Condition
 
                 $value = '(' . implode(', ', $value) . ')';
             }
-        } elseif (substr($value, 0, 1) == ':' || $value === '?') {
+        } else if (substr($value, 0, 1) == ':' || $value === '?') {
             // placeholder found
             if (isset($table) && isset($field) && $table->getTypeOf($field) == 'enum') {
                 $this->query->addEnumParam($value, $table, $field);
@@ -163,7 +163,7 @@ class Doctrine_Query_Where extends Doctrine_Query_Condition
             throw new Doctrine_Query_Exception('Unknown expression, expected a subquery with () -marks');
         }
 
-        $sub = Doctrine_Tokenizer::bracketTrim(substr($where, $pos));
+        $sub = $this->_tokenizer->bracketTrim(substr($where, $pos));
 
         return $operator . ' (' . $this->query->createSubquery()->parseQuery($sub, false)->getQuery() . ')';
     }

@@ -34,11 +34,13 @@ class Doctrine_Query_Condition_TestCase extends Doctrine_UnitTestCase
 {
     public function prepareData() { }
     public function prepareTables() { }
-
+    
+    /** @todo belongs in TokenizerTestCase? */
     public function testBracktExplode() 
     {
+        $tokenizer = new Doctrine_Query_Tokenizer();
         $str   = "item OR item || item";
-        $parts = Doctrine_Tokenizer::bracketExplode($str, array(' \|\| ', ' OR '), "(", ")");
+        $parts = $tokenizer->bracketExplode($str, array(' \|\| ', ' OR '), "(", ")");
 
         $this->assertEqual($parts, array('item','item','item'));
 

@@ -42,6 +42,8 @@ class Doctrine_Query_Check
      *                                      parsed from the given dql CHECK definition
      */
     protected $sql;
+    
+    protected $_tokenizer;
 
     /**
      * @param Doctrine_Table|string $table  Doctrine_Table object
@@ -54,6 +56,7 @@ class Doctrine_Query_Check
                         ->getTable($table);
         }
         $this->table = $table;
+        $this->_tokenizer = new Doctrine_Query_Tokenizer();
     }
 
     /**
@@ -88,7 +91,7 @@ class Doctrine_Query_Check
      */
     public function parseClause($dql)
     {
-        $parts = Doctrine_Tokenizer::sqlExplode($dql, ' AND ');
+        $parts = $this->_tokenizer->sqlExplode($dql, ' AND ');
 
         if (count($parts) > 1) {
             $ret = array();
@@ -98,7 +101,7 @@ class Doctrine_Query_Check
 
             $r = implode(' AND ', $ret);
         } else {
-            $parts = Doctrine_Tokenizer::quoteExplode($dql, ' OR ');
+            $parts = $this->_tokenizer->quoteExplode($dql, ' OR ');
             if (count($parts) > 1) {
                 $ret = array();
                 foreach ($parts as $part) {
@@ -113,6 +116,7 @@ class Doctrine_Query_Check
         }
         return '(' . $r . ')';
     }
+    
     public function parseSingle($part)
     {
         $e = explode(' ', $part);

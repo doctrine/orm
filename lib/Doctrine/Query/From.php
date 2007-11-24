@@ -42,7 +42,7 @@ class Doctrine_Query_From extends Doctrine_Query_Part
     public function parse($str)
     {        
         $str = trim($str);
-        $parts = Doctrine_Tokenizer::bracketExplode($str, 'JOIN');
+        $parts = $this->_tokenizer->bracketExplode($str, 'JOIN');
 
         $operator = false;
 
@@ -70,7 +70,7 @@ class Doctrine_Query_From extends Doctrine_Query_Part
             }
             $part = implode(' ', $e);
 
-            foreach (Doctrine_Tokenizer::bracketExplode($part, ',') as $reference) {
+            foreach ($this->_tokenizer->bracketExplode($part, ',') as $reference) {
                 $reference = trim($reference);
                 $e = explode(' ', $reference);
                 $e2 = explode('.', $e[0]);

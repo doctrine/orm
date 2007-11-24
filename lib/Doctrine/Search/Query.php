@@ -44,6 +44,7 @@ class Doctrine_Search_Query
     
     protected $_words = array();
     
+    protected $_tokenizer;
 
     protected $_condition;
 
@@ -60,6 +61,7 @@ class Doctrine_Search_Query
             }
         }
 
+        $this->_tokenizer = new Doctrine_Query_Tokenizer();
         $this->_table = $table;
 
         $foreignId = current(array_diff($this->_table->getColumnNames(), array('keyword', 'field', 'position')));
@@ -97,7 +99,7 @@ class Doctrine_Search_Query
 
     public function parseClause($originalClause, $recursive = false)
     {
-        $clause = Doctrine_Tokenizer::bracketTrim($originalClause);
+        $clause = $this->_tokenizer->bracketTrim($originalClause);
         
         $brackets = false;
 
@@ -107,7 +109,7 @@ class Doctrine_Search_Query
 
         $foreignId = current(array_diff($this->_table->getColumnNames(), array('keyword', 'field', 'position')));
         
-        $terms = Doctrine_Tokenizer::sqlExplode($clause, ' OR ', '(', ')');
+        $terms = $this->_tokenizer->sqlExplode($clause, ' OR ', '(', ')');
 
         $ret = array();
 
@@ -130,7 +132,7 @@ class Doctrine_Search_Query
                 $brackets = false;
             }
         } else {
-            $terms = Doctrine_Tokenizer::sqlExplode($clause, ' ', '(', ')');
+            $terms = $this->_tokenizer->sqlExplode($clause, ' ', '(', ')');
             
             if (count($terms) === 1 && ! $recursive) {
                 $return = $this->parseTerm($clause);
@@ -170,7 +172,7 @@ class Doctrine_Search_Query
         if (strpos($term, '(') !== false) {
             return true;
         } else {
-            $terms = Doctrine_Tokenizer::quoteExplode($term);
+            $terms = $this->_tokenizer->quoteExplode($term);
             
             return (count($terms) > 1);
         }
@@ -185,7 +187,7 @@ class Doctrine_Search_Query
         } else {
             $term = trim($term, "' ");
 
-            $terms = Doctrine_Tokenizer::quoteExplode($term);
+            $terms = $this->_tokenizer->quoteExplode($term);
             $where = $this->parseWord($terms[0]);
 
             foreach ($terms as $k => $word) {

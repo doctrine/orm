@@ -47,7 +47,7 @@ class Doctrine_Query_Having extends Doctrine_Query_Condition
 
             $name   = substr($func, 0, $pos);
             $func   = substr($func, ($pos + 1), -1);
-            $params = Doctrine_Tokenizer::bracketExplode($func, ',', '(', ')');
+            $params = $this->_tokenizer->bracketExplode($func, ',', '(', ')');
 
             foreach ($params as $k => $param) {
                 $params[$k] = $this->parseAggregateFunction($param);
@@ -88,7 +88,7 @@ class Doctrine_Query_Having extends Doctrine_Query_Condition
      */
     final public function load($having)
     {
-        $tokens = Doctrine_Tokenizer::bracketExplode($having, ' ', '(', ')');
+        $tokens = $this->_tokenizer->bracketExplode($having, ' ', '(', ')');
         $part = $this->parseAggregateFunction(array_shift($tokens));
         $operator  = array_shift($tokens);
         $value     = implode(' ', $tokens);

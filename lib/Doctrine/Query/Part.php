@@ -36,13 +36,19 @@ abstract class Doctrine_Query_Part
      * @var Doctrine_Query $query           the query object associated with this parser
      */
     protected $query;
+    
+    protected $_tokenizer;
 
     /**
      * @param Doctrine_Query $query         the query object associated with this parser
      */
-    public function __construct($query)
+    public function __construct($query, Doctrine_Query_Tokenizer $tokenizer = null)
     {
         $this->query = $query;
+        if ( ! $tokenizer) {
+            $tokenizer = new Doctrine_Query_Tokenizer();
+        }
+        $this->_tokenizer = $tokenizer;
     }
 
     /**

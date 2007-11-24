@@ -34,7 +34,7 @@ class Doctrine_Query_Set extends Doctrine_Query_Part
 {
     public function parse($dql)
     {
-    	$terms = Doctrine_Tokenizer::sqlExplode($dql, ' ');
+    	$terms = $this->_tokenizer->sqlExplode($dql, ' ');
     	
     	foreach ($terms as $term) {
 

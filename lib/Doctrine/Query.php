@@ -1063,7 +1063,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable, Seria
                 }
 
                 if (isset($this->_pendingJoinConditions[$k])) {
-                    $parser = new Doctrine_Query_JoinCondition($this);
+                    $parser = new Doctrine_Query_JoinCondition($this, $this->_tokenizer);
 
                     if (strpos($part, ' ON ') !== false) {
                         $part .= ' AND ';
