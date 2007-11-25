@@ -184,8 +184,7 @@ class Doctrine_Pager
     {
         $this->lastPage = $page;
 
-        if ($this->getPage() > $page)
-        {
+        if ($this->getPage() > $page) {
             $this->_setPage($page);
         }
     }
@@ -346,7 +345,7 @@ class Doctrine_Pager
     protected function setQuery($query)
     {
         if (is_string($query)) {
-            $query = Doctrine_Query::create()->from($query);
+            $query = Doctrine_Query::create()->parseQuery($query);
         }
 
         $this->query = $query;

@@ -102,7 +102,7 @@ class Doctrine_Pager_Range_Jumping extends Doctrine_Pager_Range
         $endPage = ($startPage + $this->getChunkLength()) - 1;
 
         // Check for EndPage out-range
-        if ( $endPage > $pager->getLastPage() ) {
+        if ($endPage > $pager->getLastPage()) {
             $endPage = $pager->getLastPage();
         }
 
