@@ -32,23 +32,33 @@
  */
 class Doctrine_Search_File extends Doctrine_Search
 {
+    /**
+     * constructor
+     *
+     * @param array $options    an array of plugin options
+     */
     public function __construct(array $options = array())
     {
         parent::__construct($options);
 
         if ( ! isset($this->_options['resource'])) {
             $table = new Doctrine_Table('File', Doctrine_Manager::connection());
-            
+
             $table->setColumn('url', 'string', 255, array('primary' => true));
         }
-        
+
         if (empty($this->_options['fields'])) {
             $this->_options['fields'] = array('url', 'content');
         }
-        
+
         $this->buildPluginDefinition($table);
     }
-    
+    /**
+     * indexes given directory
+     *
+     * @param string $dir   the name of the directory to index
+     * @return void
+     */
     public function indexDirectory($dir)
     {
         $it = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($dir),
