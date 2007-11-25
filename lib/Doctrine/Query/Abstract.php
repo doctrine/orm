@@ -248,7 +248,7 @@ abstract class Doctrine_Query_Abstract
             $connection = Doctrine_Manager::getInstance()->getCurrentConnection();
         }
         if ($hydrator === null) {
-            $hydrator = new Doctrine_Hydrator_Default();
+            $hydrator = new Doctrine_Hydrator();
         }
         $this->_conn = $connection;
         $this->_hydrator = $hydrator;
@@ -862,14 +862,29 @@ abstract class Doctrine_Query_Abstract
      * _execute 
      * 
      * @param array $params 
-     * @return void
+     * @return PDOStatement  The executed PDOStatement.
      */
     protected function _execute($params)
     {
         $params = $this->_conn->convertBooleans($params);
 
         if ( ! $this->_view) {
-            $query = $this->getSqlQuery($params);
+            if ($this->_queryCache) {
+                $queryCacheDriver = $this->getQueryCacheDriver();
+                // calculate hash for dql query
+                $dql = $this->getDql(); 
+                $hash = md5($dql);
+                $cached = $queryCacheDriver->fetch($hash);
+                if ($cached) {
+                    $query = $this->_constructQueryFromCache($cached);
+                } else {
+                    $query = $this->getSqlQuery($params);
+                    $serializedQuery = $this->getCachedForm($query);
+                    $queryCacheDriver->save($hash, $serializedQuery, $this->_queryCacheTTL);
+                }
+            } else {
+                $query = $this->getSqlQuery($params);
+            }
         } else {
             $query = $this->_view->getSelectSql();
         }
@@ -884,7 +899,7 @@ abstract class Doctrine_Query_Abstract
         if ($this->_type !== self::SELECT) {
             return $this->_conn->exec($query, $params);
         }
-        //echo $query . "<br /><br />";
+
         $stmt = $this->_conn->execute($query, $params);
         return $stmt;
     }
@@ -916,32 +931,14 @@ abstract class Doctrine_Query_Abstract
                 // cache miss
                 $stmt = $this->_execute($params);
                 $this->_hydrator->setQueryComponents($this->_queryComponents);
-                $array = $this->_hydrator->hydrateResultSet($stmt, $this->_tableAliasMap,
+                $result = $this->_hydrator->hydrateResultSet($stmt, $this->_tableAliasMap,
                         Doctrine::HYDRATE_ARRAY);
 
-                $cached = $this->getCachedForm($array);
-
+                $cached = $this->getCachedForm($result);
                 $cacheDriver->save($hash, $cached, $this->_resultCacheTTL);
+                return $result;
             } else {
-                $cached = unserialize($cached);
-                $this->_tableAliasMap = $cached[2];
-                $array = $cached[0];
-
-                $map = array();
-                foreach ($cached[1] as $k => $v) {
-                    $e = explode('.', $v[0]);
-                    if (count($e) === 1) {
-                        $map[$k]['table'] = $this->_conn->getTable($e[0]);
-                    } else {
-                        $map[$k]['parent']   = $e[0];
-                        $map[$k]['relation'] = $map[$e[0]]['table']->getRelation($e[1]);
-                        $map[$k]['table']    = $map[$k]['relation']->getTable();
-                    }
-                    if (isset($v[1])) {
-                        $map[$k]['agg'] = $v[1];
-                    }
-                }
-                $this->_queryComponents = $map;
+                return $this->_constructQueryFromCache($cached);
             }
         } else {
             $stmt = $this->_execute($params);
@@ -951,9 +948,45 @@ abstract class Doctrine_Query_Abstract
             }
             
             $this->_hydrator->setQueryComponents($this->_queryComponents);
-            $array = $this->_hydrator->hydrateResultSet($stmt, $this->_tableAliasMap, $hydrationMode);
+            return $this->_hydrator->hydrateResultSet($stmt, $this->_tableAliasMap, $hydrationMode);
         }
-        return $array;
+    }
+    
+    /**
+     * Constructs the query from the cached form.
+     * 
+     * @param string  The cached query, in a serialized form.
+     * @return array  The custom component that was cached together with the essential
+     *                query data. This can be either a result set (result caching)
+     *                or an SQL query string (query caching).
+     */
+    protected function _constructQueryFromCache($cached)
+    {
+        $cached = unserialize($cached);
+        $this->_tableAliasMap = $cached[2];
+        $customComponent = $cached[0];
+
+        $queryComponents = array();
+        $cachedComponents = $cached[1];
+        foreach ($cachedComponents as $alias => $components) {
+            $e = explode('.', $components[0]);
+            if (count($e) === 1) {
+                $queryComponents[$alias]['table'] = $this->_conn->getTable($e[0]);
+            } else {
+                $queryComponents[$alias]['parent'] = $e[0];
+                $queryComponents[$alias]['relation'] = $queryComponents[$e[0]]['table']->getRelation($e[1]);
+                $queryComponents[$alias]['table'] = $queryComponents[$alias]['relation']->getTable();
+            }
+            if (isset($v[1])) {
+                $queryComponents[$alias]['agg'] = $components[1];
+            }
+            if (isset($v[2])) {
+                $queryComponents[$alias]['map'] = $components[2];
+            }
+        }
+        $this->_queryComponents = $queryComponents;
+        
+        return $customComponent;
     }
     
     /**
@@ -963,22 +996,25 @@ abstract class Doctrine_Query_Abstract
      * @param array $resultSet
      * @return string           serialized string representation of this query
      */
-    public function getCachedForm(array $resultSet)
+    public function getCachedForm($customComponent = null)
     {
-        $map = array();
+        $componentInfo = array();
 
-        foreach ($this->getAliasMap() as $k => $v) {
-            if ( ! isset($v['parent'])) {
-                $map[$k][] = $v['table']->getComponentName();
+        foreach ($this->getQueryComponents() as $alias => $components) {
+            if ( ! isset($components['parent'])) {
+                $componentInfo[$alias][] = $components['table']->getComponentName();
             } else {
-                $map[$k][] = $v['parent'] . '.' . $v['relation']->getAlias();
+                $componentInfo[$alias][] = $components['parent'] . '.' . $components['relation']->getAlias();
             }
-            if (isset($v['agg'])) {
-                $map[$k][] = $v['agg'];
+            if (isset($components['agg'])) {
+                $componentInfo[$alias][] = $components['agg'];
+            }
+            if (isset($components['map'])) {
+                $componentInfo[$alias][] = $components['map'];
             }
         }
-
-        return serialize(array($resultSet, $map, $this->getTableAliasMap()));
+        
+        return serialize(array($customComponent, $componentInfo, $this->getTableAliasMap()));
     }
     
     /**
@@ -1468,7 +1504,7 @@ abstract class Doctrine_Query_Abstract
      */
     public function useResultCache($driver = true, $timeToLive = null)
     {
-        if($driver !== null && $driver !== true && ! ($driver instanceOf Doctrine_Cache_Interface)){
+        if ($driver !== null && $driver !== true && ! ($driver instanceOf Doctrine_Cache_Interface)){
             $msg = 'First argument should be instance of Doctrine_Cache_Interface or null.';
             throw new Doctrine_Query_Exception($msg);
         }
@@ -1484,9 +1520,15 @@ abstract class Doctrine_Query_Abstract
      * @param integer $timeToLive                        how long the cache entry is valid
      * @return Doctrine_Hydrate         this object
      */
-    public function useQueryCache($driver = null, $timeToLive = null)
+    public function useQueryCache($driver = true, $timeToLive = null)
     {
-        throw new Doctrine_Query_Exception("Not yet implemented.");
+        if ($driver !== null && $driver !== true && ! ($driver instanceof Doctrine_Cache_Interface)){
+            $msg = 'First argument should be instance of Doctrine_Cache_Interface or null.';
+            throw new Doctrine_Query_Exception($msg);
+        }
+        $this->_queryCache = $driver;
+
+        return $this->setQueryCacheLifeSpan($timeToLive);
     }
     
     /**

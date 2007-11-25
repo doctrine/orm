@@ -31,7 +31,7 @@
  * @version     $Revision$
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  */
-class Doctrine_Hydrator_Default_ArrayDriver
+class Doctrine_Hydrator_ArrayDriver
 {
     public function getElementCollection($component)
     {

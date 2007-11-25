@@ -32,7 +32,7 @@
  * @version     $Revision: 3192 $
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  */
-class Doctrine_Hydrator_Default extends Doctrine_Hydrator_Abstract
+class Doctrine_Hydrator extends Doctrine_Hydrator_Abstract
 {    
     /**
      * hydrateResultSet
@@ -73,9 +73,9 @@ class Doctrine_Hydrator_Default extends Doctrine_Hydrator_Abstract
         }
 
         if ($hydrationMode === Doctrine::HYDRATE_ARRAY) {
-            $driver = new Doctrine_Hydrator_Default_ArrayDriver();
+            $driver = new Doctrine_Hydrator_ArrayDriver();
         } else {
-            $driver = new Doctrine_Hydrator_Default_RecordDriver();
+            $driver = new Doctrine_Hydrator_RecordDriver();
         }
 
         $event = new Doctrine_Event(null, Doctrine_Event::HYDRATE, null);

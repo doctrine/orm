@@ -1018,14 +1018,14 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable, Seria
     }
 
     /**
-     * _getSqlQueryBase
+     * _buildSqlQueryBase
      * returns the base of the generated sql query
      * On mysql driver special strategy has to be used for DELETE statements
      * (where is this special strategy??)
      *
      * @return string       the base of the generated sql query
      */
-    protected function _getSqlQueryBase()
+    protected function _buildSqlQueryBase()
     {
         switch ($this->_type) {
             case self::DELETE:
@@ -1169,7 +1169,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable, Seria
 
         $needsSubQuery = false;
         $subquery = '';
-        $map   = reset($this->_queryComponents);
+        $map = reset($this->_queryComponents);
         $table = $map['table'];
         $rootAlias = key($this->_queryComponents);
 
@@ -1193,7 +1193,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable, Seria
         $this->_pendingFields = array();
 
         // build the basic query
-        $q  = $this->_getSqlQueryBase();
+        $q  = $this->_buildSqlQueryBase();
         $q .= $this->_buildSqlFromPart();
 
         if ( ! empty($this->_sqlParts['set'])) {
@@ -1355,8 +1355,8 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable, Seria
 
             $part = trim($part, "\"'`");
 
-            if ($this->hasTableAlias($part)) {
-                $parts[$k] = $this->_conn->quoteIdentifier($this->generateNewTableAlias($part));
+            if ($this->hasSqlTableAlias($part)) {
+                $parts[$k] = $this->_conn->quoteIdentifier($this->generateNewSqlTableAlias($part));
                 continue;
             }
 
@@ -1367,7 +1367,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable, Seria
 
             foreach ($m[0] as $match) {
                 $e = explode('.', $match);
-                $e[0] = $this->generateNewTableAlias($e[0]);
+                $e[0] = $this->generateNewSqlTableAlias($e[0]);
 
                 $parts[$k] = str_replace($match, implode('.', $e), $parts[$k]);
             }

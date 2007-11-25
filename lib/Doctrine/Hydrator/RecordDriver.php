@@ -31,7 +31,7 @@
  * @version     $Revision$
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  */
-class Doctrine_Hydrator_Default_RecordDriver extends Doctrine_Locator_Injectable
+class Doctrine_Hydrator_RecordDriver extends Doctrine_Locator_Injectable
 {
     protected $_collections = array();
     
