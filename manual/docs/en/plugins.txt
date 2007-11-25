@@ -1,3 +1,5 @@
+This chapter describes various plugins availible for Doctrine. When refering to plugins we refer to classes that extend Doctrine_Plugin. All the components in this chapter can be considered 'core' plugins, that means they reside at the Doctrine main repository. There are other official plugins too which can be found at the homesite of the Sensei project (www.sensei-project.org).
+
 ++ Validators
 ++ View
 ++ Profiler
