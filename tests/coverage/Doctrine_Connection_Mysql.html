@@ -16,7 +16,7 @@
 <td class="normal">/*
 </td></tr>
 <tr><td>3</td>
-<td class="normal">&nbsp;*&nbsp;&nbsp;$Id:&nbsp;Mysql.php&nbsp;3070&nbsp;2007-11-03&nbsp;15:47:24Z&nbsp;zYne&nbsp;$
+<td class="normal">&nbsp;*&nbsp;&nbsp;$Id:&nbsp;Mysql.php&nbsp;3183&nbsp;2007-11-18&nbsp;16:06:37Z&nbsp;romanb&nbsp;$
 </td></tr>
 <tr><td>4</td>
 <td class="normal">&nbsp;*
@@ -97,7 +97,7 @@
 <td class="normal">&nbsp;*&nbsp;@author&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Lukas&nbsp;Smith&nbsp;&lt;smith@pooteeweet.org&gt;&nbsp;(PEAR&nbsp;MDB2&nbsp;library)
 </td></tr>
 <tr><td>30</td>
-<td class="normal">&nbsp;*&nbsp;@version&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$Revision:&nbsp;3070&nbsp;$
+<td class="normal">&nbsp;*&nbsp;@version&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$Revision:&nbsp;3183&nbsp;$
 </td></tr>
 <tr><td>31</td>
 <td class="normal">&nbsp;*&nbsp;@link&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;www.phpdoctrine.com
@@ -514,7 +514,7 @@
 <td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*/
 </td></tr>
 <tr><td>169</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;public&nbsp;function&nbsp;replace($table,&nbsp;array&nbsp;$fields,&nbsp;array&nbsp;$keys)
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;public&nbsp;function&nbsp;replace(Doctrine_Table&nbsp;$table,&nbsp;array&nbsp;$fields,&nbsp;array&nbsp;$keys)
 </td></tr>
 <tr><td>170</td>
 <td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;{
@@ -556,7 +556,7 @@
 <td class="normal">
 </td></tr>
 <tr><td>183</td>
-<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$query&nbsp;.=&nbsp;$name;
+<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$query&nbsp;.=&nbsp;$table-&gt;getColumnName($name);
 </td></tr>
 <tr><td>184</td>
 <td class="normal">
@@ -622,7 +622,7 @@
 <td class="orange">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}
 </td></tr>
 <tr><td>205</td>
-<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$query&nbsp;=&nbsp;'REPLACE&nbsp;INTO&nbsp;'&nbsp;.&nbsp;$table&nbsp;.&nbsp;'&nbsp;('&nbsp;.&nbsp;$query&nbsp;.&nbsp;')&nbsp;VALUES&nbsp;('&nbsp;.&nbsp;$values&nbsp;.&nbsp;')';
+<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$query&nbsp;=&nbsp;'REPLACE&nbsp;INTO&nbsp;'&nbsp;.&nbsp;$table-&gt;getTableName()&nbsp;.&nbsp;'&nbsp;('&nbsp;.&nbsp;$query&nbsp;.&nbsp;')&nbsp;VALUES&nbsp;('&nbsp;.&nbsp;$values&nbsp;.&nbsp;')';
 </td></tr>
 <tr><td>206</td>
 <td class="normal">

@@ -16,7 +16,7 @@
 <td class="normal">/*
 </td></tr>
 <tr><td>3</td>
-<td class="normal">&nbsp;*&nbsp;&nbsp;$Id:&nbsp;Where.php&nbsp;3029&nbsp;2007-10-29&nbsp;18:04:22Z&nbsp;zYne&nbsp;$
+<td class="normal">&nbsp;*&nbsp;&nbsp;$Id:&nbsp;Where.php&nbsp;3212&nbsp;2007-11-24&nbsp;18:58:33Z&nbsp;romanb&nbsp;$
 </td></tr>
 <tr><td>4</td>
 <td class="normal">&nbsp;*
@@ -97,7 +97,7 @@
 <td class="normal">&nbsp;*&nbsp;@since&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1.0
 </td></tr>
 <tr><td>30</td>
-<td class="normal">&nbsp;*&nbsp;@version&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$Revision:&nbsp;3029&nbsp;$
+<td class="normal">&nbsp;*&nbsp;@version&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$Revision:&nbsp;3212&nbsp;$
 </td></tr>
 <tr><td>31</td>
 <td class="normal">&nbsp;*&nbsp;@author&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Konsta&nbsp;Vesterinen&nbsp;&lt;kvesteri@cc.hut.fi&gt;
@@ -118,13 +118,13 @@
 <td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;{
 </td></tr>
 <tr><td>37</td>
-<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$where&nbsp;=&nbsp;Doctrine_Tokenizer::bracketTrim(trim($where));
+<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$where&nbsp;=&nbsp;$this-&gt;_tokenizer-&gt;bracketTrim(trim($where));
 </td></tr>
 <tr><td>38</td>
 <td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$conn&nbsp;&nbsp;=&nbsp;$this-&gt;query-&gt;getConnection();
 </td></tr>
 <tr><td>39</td>
-<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$terms&nbsp;=&nbsp;Doctrine_Tokenizer::sqlExplode($where);&nbsp;&nbsp;
+<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$terms&nbsp;=&nbsp;$this-&gt;_tokenizer-&gt;sqlExplode($where);&nbsp;&nbsp;
 </td></tr>
 <tr><td>40</td>
 <td class="normal">
@@ -157,7 +157,7 @@
 <td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if&nbsp;(count($terms)&nbsp;&lt;&nbsp;3)&nbsp;{
 </td></tr>
 <tr><td>50</td>
-<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$terms&nbsp;=&nbsp;Doctrine_Tokenizer::sqlExplode($where,&nbsp;array('=',&nbsp;'&lt;',&nbsp;'&lt;&gt;',&nbsp;'&gt;',&nbsp;'!='));
+<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$terms&nbsp;=&nbsp;$this-&gt;_tokenizer-&gt;sqlExplode($where,&nbsp;array('=',&nbsp;'&lt;',&nbsp;'&lt;&gt;',&nbsp;'&gt;',&nbsp;'!='));
 </td></tr>
 <tr><td>51</td>
 <td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}
@@ -286,7 +286,7 @@
 <td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;//&nbsp;trim&nbsp;brackets
 </td></tr>
 <tr><td>93</td>
-<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$trimmed&nbsp;&nbsp;&nbsp;=&nbsp;Doctrine_Tokenizer::bracketTrim($value);
+<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$trimmed&nbsp;=&nbsp;$this-&gt;_tokenizer-&gt;bracketTrim($value);
 </td></tr>
 <tr><td>94</td>
 <td class="normal">
@@ -325,7 +325,7 @@
 <td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;//&nbsp;simple&nbsp;in&nbsp;expression&nbsp;found
 </td></tr>
 <tr><td>106</td>
-<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$e&nbsp;=&nbsp;Doctrine_Tokenizer::sqlExplode($trimmed,&nbsp;',');
+<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$e&nbsp;=&nbsp;$this-&gt;_tokenizer-&gt;sqlExplode($trimmed,&nbsp;',');
 </td></tr>
 <tr><td>107</td>
 <td class="normal">
@@ -385,7 +385,7 @@
 <td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}
 </td></tr>
 <tr><td>126</td>
-<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;elseif&nbsp;(substr($value,&nbsp;0,&nbsp;1)&nbsp;==&nbsp;':'&nbsp;||&nbsp;$value&nbsp;===&nbsp;'?')&nbsp;{
+<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;else&nbsp;if&nbsp;(substr($value,&nbsp;0,&nbsp;1)&nbsp;==&nbsp;':'&nbsp;||&nbsp;$value&nbsp;===&nbsp;'?')&nbsp;{
 </td></tr>
 <tr><td>127</td>
 <td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;//&nbsp;placeholder&nbsp;found
@@ -505,7 +505,7 @@
 <td class="normal">
 </td></tr>
 <tr><td>166</td>
-<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$sub&nbsp;=&nbsp;Doctrine_Tokenizer::bracketTrim(substr($where,&nbsp;$pos));
+<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$sub&nbsp;=&nbsp;$this-&gt;_tokenizer-&gt;bracketTrim(substr($where,&nbsp;$pos));
 </td></tr>
 <tr><td>167</td>
 <td class="normal">

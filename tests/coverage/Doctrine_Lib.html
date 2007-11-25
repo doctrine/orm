@@ -16,7 +16,7 @@
 <td class="normal">/*
 </td></tr>
 <tr><td>3</td>
-<td class="normal">&nbsp;*&nbsp;&nbsp;$Id:&nbsp;Lib.php&nbsp;3016&nbsp;2007-10-26&nbsp;09:56:31Z&nbsp;meus&nbsp;$
+<td class="normal">&nbsp;*&nbsp;&nbsp;$Id:&nbsp;Lib.php&nbsp;3189&nbsp;2007-11-18&nbsp;20:37:44Z&nbsp;meus&nbsp;$
 </td></tr>
 <tr><td>4</td>
 <td class="normal">&nbsp;*
@@ -97,7 +97,7 @@
 <td class="normal">&nbsp;*&nbsp;@since&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1.0
 </td></tr>
 <tr><td>30</td>
-<td class="normal">&nbsp;*&nbsp;@version&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$Revision:&nbsp;3016&nbsp;$
+<td class="normal">&nbsp;*&nbsp;@version&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$Revision:&nbsp;3189&nbsp;$
 </td></tr>
 <tr><td>31</td>
 <td class="normal">&nbsp;*&nbsp;@author&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Konsta&nbsp;Vesterinen&nbsp;&lt;kvesteri@cc.hut.fi&gt;
@@ -679,123 +679,135 @@
 <td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;/**
 </td></tr>
 <tr><td>224</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@return&nbsp;string
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;formatSql&nbsp;
 </td></tr>
 <tr><td>225</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*/
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;
 </td></tr>
 <tr><td>226</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;public&nbsp;static&nbsp;function&nbsp;formatSql($sql)
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@todo:&nbsp;What&nbsp;about&nbsp;creating&nbsp;a&nbsp;config&nbsp;varialbe&nbsp;for&nbsp;the&nbsp;color?
 </td></tr>
 <tr><td>227</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;{
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@param&nbsp;mixed&nbsp;$sql&nbsp;
 </td></tr>
 <tr><td>228</td>
-<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$e&nbsp;=&nbsp;explode(&quot;\n&quot;,$sql);
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@return&nbsp;string&nbsp;the&nbsp;formated&nbsp;sql
 </td></tr>
 <tr><td>229</td>
-<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$color&nbsp;=&nbsp;&quot;367FAC&quot;;
-</td></tr>
-<tr><td>230</td>
-<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$l&nbsp;=&nbsp;$sql;
-</td></tr>
-<tr><td>231</td>
-<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$l&nbsp;=&nbsp;str_replace(&quot;SELECT&nbsp;&quot;,&nbsp;&quot;&lt;font&nbsp;color='$color'&gt;&lt;b&gt;SELECT&nbsp;&lt;/b&gt;&lt;/font&gt;&lt;br&nbsp;\&gt;&nbsp;&nbsp;&quot;,$l);
-</td></tr>
-<tr><td>232</td>
-<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$l&nbsp;=&nbsp;str_replace(&quot;FROM&nbsp;&quot;,&nbsp;&quot;&lt;font&nbsp;color='$color'&gt;&lt;b&gt;FROM&nbsp;&lt;/b&gt;&lt;/font&gt;&lt;br&nbsp;\&gt;&quot;,$l);
-</td></tr>
-<tr><td>233</td>
-<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$l&nbsp;=&nbsp;str_replace(&quot;&nbsp;LEFT&nbsp;JOIN&nbsp;&quot;,&nbsp;&quot;&lt;br&nbsp;\&gt;&lt;font&nbsp;color='$color'&gt;&lt;b&gt;&nbsp;LEFT&nbsp;JOIN&nbsp;&lt;/b&gt;&lt;/font&gt;&quot;,$l);
-</td></tr>
-<tr><td>234</td>
-<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$l&nbsp;=&nbsp;str_replace(&quot;&nbsp;INNER&nbsp;JOIN&nbsp;&quot;,&nbsp;&quot;&lt;br&nbsp;\&gt;&lt;font&nbsp;color='$color'&gt;&lt;b&gt;&nbsp;INNER&nbsp;JOIN&nbsp;&lt;/b&gt;&lt;/font&gt;&quot;,$l);
-</td></tr>
-<tr><td>235</td>
-<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$l&nbsp;=&nbsp;str_replace(&quot;&nbsp;WHERE&nbsp;&quot;,&nbsp;&quot;&lt;br&nbsp;\&gt;&lt;font&nbsp;color='$color'&gt;&lt;b&gt;&nbsp;WHERE&nbsp;&lt;/b&gt;&lt;/font&gt;&quot;,$l);
-</td></tr>
-<tr><td>236</td>
-<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$l&nbsp;=&nbsp;str_replace(&quot;&nbsp;GROUP&nbsp;BY&nbsp;&quot;,&nbsp;&quot;&lt;br&nbsp;\&gt;&lt;font&nbsp;color='$color'&gt;&lt;b&gt;&nbsp;GROUP&nbsp;BY&nbsp;&lt;/b&gt;&lt;/font&gt;&quot;,$l);
-</td></tr>
-<tr><td>237</td>
-<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$l&nbsp;=&nbsp;str_replace(&quot;&nbsp;HAVING&nbsp;&quot;,&nbsp;&quot;&lt;br&nbsp;\&gt;&lt;font&nbsp;color='$color'&gt;&lt;b&gt;&nbsp;HAVING&nbsp;&lt;/b&gt;&lt;/font&gt;&quot;,$l);
-</td></tr>
-<tr><td>238</td>
-<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$l&nbsp;=&nbsp;str_replace(&quot;&nbsp;AS&nbsp;&quot;,&nbsp;&quot;&lt;font&nbsp;color='$color'&gt;&lt;b&gt;&nbsp;AS&nbsp;&lt;/b&gt;&lt;/font&gt;&lt;br&nbsp;\&gt;&nbsp;&nbsp;&quot;,$l);
-</td></tr>
-<tr><td>239</td>
-<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$l&nbsp;=&nbsp;str_replace(&quot;&nbsp;ON&nbsp;&quot;,&nbsp;&quot;&lt;font&nbsp;color='$color'&gt;&lt;b&gt;&nbsp;ON&nbsp;&lt;/b&gt;&lt;/font&gt;&quot;,$l);
-</td></tr>
-<tr><td>240</td>
-<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$l&nbsp;=&nbsp;str_replace(&quot;&nbsp;ORDER&nbsp;BY&nbsp;&quot;,&nbsp;&quot;&lt;font&nbsp;color='$color'&gt;&lt;b&gt;&nbsp;ORDER&nbsp;BY&nbsp;&lt;/b&gt;&lt;/font&gt;&lt;br&nbsp;\&gt;&quot;,$l);
-</td></tr>
-<tr><td>241</td>
-<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$l&nbsp;=&nbsp;str_replace(&quot;&nbsp;LIMIT&nbsp;&quot;,&nbsp;&quot;&lt;font&nbsp;color='$color'&gt;&lt;b&gt;&nbsp;LIMIT&nbsp;&lt;/b&gt;&lt;/font&gt;&lt;br&nbsp;\&gt;&quot;,$l);
-</td></tr>
-<tr><td>242</td>
-<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$l&nbsp;=&nbsp;str_replace(&quot;&nbsp;OFFSET&nbsp;&quot;,&nbsp;&quot;&lt;font&nbsp;color='$color'&gt;&lt;b&gt;&nbsp;OFFSET&nbsp;&lt;/b&gt;&lt;/font&gt;&lt;br&nbsp;\&gt;&quot;,$l);
-</td></tr>
-<tr><td>243</td>
-<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$l&nbsp;=&nbsp;str_replace(&quot;&nbsp;&nbsp;&quot;,&nbsp;&quot;&lt;dd&gt;&quot;,$l);
-</td></tr>
-<tr><td>244</td>
-<td class="normal">
-</td></tr>
-<tr><td>245</td>
-<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return&nbsp;$l;
-</td></tr>
-<tr><td>246</td>
-<td class="orange">&nbsp;&nbsp;&nbsp;&nbsp;}
-</td></tr>
-<tr><td>247</td>
-<td class="normal">
-</td></tr>
-<tr><td>248</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;/**
-</td></tr>
-<tr><td>249</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;returns&nbsp;a&nbsp;string&nbsp;representation&nbsp;of&nbsp;Doctrine_Collection&nbsp;object
-</td></tr>
-<tr><td>250</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@param&nbsp;Doctrine_Collection&nbsp;$collection
-</td></tr>
-<tr><td>251</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@return&nbsp;string
-</td></tr>
-<tr><td>252</td>
 <td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*/
 </td></tr>
-<tr><td>253</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;public&nbsp;static&nbsp;function&nbsp;getCollectionAsString(Doctrine_Collection&nbsp;$collection)
+<tr><td>230</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;public&nbsp;static&nbsp;function&nbsp;formatSql($sql)
 </td></tr>
-<tr><td>254</td>
+<tr><td>231</td>
 <td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;{
 </td></tr>
-<tr><td>255</td>
-<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$r[]&nbsp;=&nbsp;&quot;&lt;pre&gt;&quot;;
+<tr><td>232</td>
+<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$e&nbsp;=&nbsp;explode(&quot;\n&quot;,$sql);
 </td></tr>
-<tr><td>256</td>
-<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$r[]&nbsp;=&nbsp;get_class($collection);
+<tr><td>233</td>
+<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$color&nbsp;=&nbsp;&quot;367FAC&quot;;
 </td></tr>
-<tr><td>257</td>
-<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$r[]&nbsp;=&nbsp;'data&nbsp;:&nbsp;'&nbsp;.&nbsp;Doctrine::dump($collection-&gt;getData(),&nbsp;false);
+<tr><td>234</td>
+<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$l&nbsp;=&nbsp;$sql;
 </td></tr>
-<tr><td>258</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;//$r[]&nbsp;=&nbsp;'snapshot&nbsp;:&nbsp;'&nbsp;.&nbsp;Doctrine::dump($collection-&gt;getSnapshot());
+<tr><td>235</td>
+<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$l&nbsp;=&nbsp;str_replace(&quot;SELECT&nbsp;&quot;,&nbsp;&quot;&lt;font&nbsp;color='$color'&gt;&lt;b&gt;SELECT&nbsp;&lt;/b&gt;&lt;/font&gt;&lt;br&nbsp;\&gt;&nbsp;&nbsp;&quot;,$l);
 </td></tr>
-<tr><td>259</td>
+<tr><td>236</td>
+<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$l&nbsp;=&nbsp;str_replace(&quot;FROM&nbsp;&quot;,&nbsp;&quot;&lt;font&nbsp;color='$color'&gt;&lt;b&gt;FROM&nbsp;&lt;/b&gt;&lt;/font&gt;&lt;br&nbsp;\&gt;&quot;,$l);
+</td></tr>
+<tr><td>237</td>
+<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$l&nbsp;=&nbsp;str_replace(&quot;&nbsp;LEFT&nbsp;JOIN&nbsp;&quot;,&nbsp;&quot;&lt;br&nbsp;\&gt;&lt;font&nbsp;color='$color'&gt;&lt;b&gt;&nbsp;LEFT&nbsp;JOIN&nbsp;&lt;/b&gt;&lt;/font&gt;&quot;,$l);
+</td></tr>
+<tr><td>238</td>
+<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$l&nbsp;=&nbsp;str_replace(&quot;&nbsp;INNER&nbsp;JOIN&nbsp;&quot;,&nbsp;&quot;&lt;br&nbsp;\&gt;&lt;font&nbsp;color='$color'&gt;&lt;b&gt;&nbsp;INNER&nbsp;JOIN&nbsp;&lt;/b&gt;&lt;/font&gt;&quot;,$l);
+</td></tr>
+<tr><td>239</td>
+<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$l&nbsp;=&nbsp;str_replace(&quot;&nbsp;WHERE&nbsp;&quot;,&nbsp;&quot;&lt;br&nbsp;\&gt;&lt;font&nbsp;color='$color'&gt;&lt;b&gt;&nbsp;WHERE&nbsp;&lt;/b&gt;&lt;/font&gt;&quot;,$l);
+</td></tr>
+<tr><td>240</td>
+<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$l&nbsp;=&nbsp;str_replace(&quot;&nbsp;GROUP&nbsp;BY&nbsp;&quot;,&nbsp;&quot;&lt;br&nbsp;\&gt;&lt;font&nbsp;color='$color'&gt;&lt;b&gt;&nbsp;GROUP&nbsp;BY&nbsp;&lt;/b&gt;&lt;/font&gt;&quot;,$l);
+</td></tr>
+<tr><td>241</td>
+<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$l&nbsp;=&nbsp;str_replace(&quot;&nbsp;HAVING&nbsp;&quot;,&nbsp;&quot;&lt;br&nbsp;\&gt;&lt;font&nbsp;color='$color'&gt;&lt;b&gt;&nbsp;HAVING&nbsp;&lt;/b&gt;&lt;/font&gt;&quot;,$l);
+</td></tr>
+<tr><td>242</td>
+<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$l&nbsp;=&nbsp;str_replace(&quot;&nbsp;AS&nbsp;&quot;,&nbsp;&quot;&lt;font&nbsp;color='$color'&gt;&lt;b&gt;&nbsp;AS&nbsp;&lt;/b&gt;&lt;/font&gt;&lt;br&nbsp;\&gt;&nbsp;&nbsp;&quot;,$l);
+</td></tr>
+<tr><td>243</td>
+<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$l&nbsp;=&nbsp;str_replace(&quot;&nbsp;ON&nbsp;&quot;,&nbsp;&quot;&lt;font&nbsp;color='$color'&gt;&lt;b&gt;&nbsp;ON&nbsp;&lt;/b&gt;&lt;/font&gt;&quot;,$l);
+</td></tr>
+<tr><td>244</td>
+<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$l&nbsp;=&nbsp;str_replace(&quot;&nbsp;ORDER&nbsp;BY&nbsp;&quot;,&nbsp;&quot;&lt;font&nbsp;color='$color'&gt;&lt;b&gt;&nbsp;ORDER&nbsp;BY&nbsp;&lt;/b&gt;&lt;/font&gt;&lt;br&nbsp;\&gt;&quot;,$l);
+</td></tr>
+<tr><td>245</td>
+<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$l&nbsp;=&nbsp;str_replace(&quot;&nbsp;LIMIT&nbsp;&quot;,&nbsp;&quot;&lt;font&nbsp;color='$color'&gt;&lt;b&gt;&nbsp;LIMIT&nbsp;&lt;/b&gt;&lt;/font&gt;&lt;br&nbsp;\&gt;&quot;,$l);
+</td></tr>
+<tr><td>246</td>
+<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$l&nbsp;=&nbsp;str_replace(&quot;&nbsp;OFFSET&nbsp;&quot;,&nbsp;&quot;&lt;font&nbsp;color='$color'&gt;&lt;b&gt;&nbsp;OFFSET&nbsp;&lt;/b&gt;&lt;/font&gt;&lt;br&nbsp;\&gt;&quot;,$l);
+</td></tr>
+<tr><td>247</td>
+<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$l&nbsp;=&nbsp;str_replace(&quot;&nbsp;&nbsp;&quot;,&nbsp;&quot;&lt;dd&gt;&quot;,$l);
+</td></tr>
+<tr><td>248</td>
 <td class="normal">
 </td></tr>
-<tr><td>260</td>
-<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$r[]&nbsp;=&nbsp;&quot;&lt;/pre&gt;&quot;;
+<tr><td>249</td>
+<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return&nbsp;$l;
 </td></tr>
-<tr><td>261</td>
-<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return&nbsp;implode(&quot;\n&quot;,$r);
-</td></tr>
-<tr><td>262</td>
+<tr><td>250</td>
 <td class="orange">&nbsp;&nbsp;&nbsp;&nbsp;}
 </td></tr>
+<tr><td>251</td>
+<td class="normal">
+</td></tr>
+<tr><td>252</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;/**
+</td></tr>
+<tr><td>253</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;returns&nbsp;a&nbsp;string&nbsp;representation&nbsp;of&nbsp;Doctrine_Collection&nbsp;object
+</td></tr>
+<tr><td>254</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@param&nbsp;Doctrine_Collection&nbsp;$collection
+</td></tr>
+<tr><td>255</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@return&nbsp;string
+</td></tr>
+<tr><td>256</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*/
+</td></tr>
+<tr><td>257</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;public&nbsp;static&nbsp;function&nbsp;getCollectionAsString(Doctrine_Collection&nbsp;$collection)
+</td></tr>
+<tr><td>258</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;{
+</td></tr>
+<tr><td>259</td>
+<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$r[]&nbsp;=&nbsp;&quot;&lt;pre&gt;&quot;;
+</td></tr>
+<tr><td>260</td>
+<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$r[]&nbsp;=&nbsp;get_class($collection);
+</td></tr>
+<tr><td>261</td>
+<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$r[]&nbsp;=&nbsp;'data&nbsp;:&nbsp;'&nbsp;.&nbsp;Doctrine::dump($collection-&gt;getData(),&nbsp;false);
+</td></tr>
+<tr><td>262</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;//$r[]&nbsp;=&nbsp;'snapshot&nbsp;:&nbsp;'&nbsp;.&nbsp;Doctrine::dump($collection-&gt;getSnapshot());
+</td></tr>
 <tr><td>263</td>
+<td class="normal">
+</td></tr>
+<tr><td>264</td>
+<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$r[]&nbsp;=&nbsp;&quot;&lt;/pre&gt;&quot;;
+</td></tr>
+<tr><td>265</td>
+<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return&nbsp;implode(&quot;\n&quot;,$r);
+</td></tr>
+<tr><td>266</td>
+<td class="orange">&nbsp;&nbsp;&nbsp;&nbsp;}
+</td></tr>
+<tr><td>267</td>
 <td class="normal">}
 </td></tr>
 </table></body></html>

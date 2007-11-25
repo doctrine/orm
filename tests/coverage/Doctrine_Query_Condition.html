@@ -16,7 +16,7 @@
 <td class="normal">/*
 </td></tr>
 <tr><td>3</td>
-<td class="normal">&nbsp;*&nbsp;&nbsp;$Id:&nbsp;Condition.php&nbsp;3032&nbsp;2007-10-29&nbsp;19:50:16Z&nbsp;meus&nbsp;$
+<td class="normal">&nbsp;*&nbsp;&nbsp;$Id:&nbsp;Condition.php&nbsp;3212&nbsp;2007-11-24&nbsp;18:58:33Z&nbsp;romanb&nbsp;$
 </td></tr>
 <tr><td>4</td>
 <td class="normal">&nbsp;*
@@ -97,7 +97,7 @@
 <td class="normal">&nbsp;*&nbsp;@since&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1.0
 </td></tr>
 <tr><td>30</td>
-<td class="normal">&nbsp;*&nbsp;@version&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$Revision:&nbsp;3032&nbsp;$
+<td class="normal">&nbsp;*&nbsp;@version&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$Revision:&nbsp;3212&nbsp;$
 </td></tr>
 <tr><td>31</td>
 <td class="normal">&nbsp;*&nbsp;@author&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Konsta&nbsp;Vesterinen&nbsp;&lt;kvesteri@cc.hut.fi&gt;
@@ -145,7 +145,7 @@
 <td class="normal">
 </td></tr>
 <tr><td>46</td>
-<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$parts&nbsp;=&nbsp;Doctrine_Tokenizer::bracketExplode($str,&nbsp;array('&nbsp;\&amp;\&amp;&nbsp;',&nbsp;'&nbsp;AND&nbsp;'),&nbsp;'(',&nbsp;')');
+<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$parts&nbsp;=&nbsp;$this-&gt;_tokenizer-&gt;bracketExplode($str,&nbsp;array('&nbsp;\&amp;\&amp;&nbsp;',&nbsp;'&nbsp;AND&nbsp;'),&nbsp;'(',&nbsp;')');
 </td></tr>
 <tr><td>47</td>
 <td class="normal">
@@ -160,7 +160,7 @@
 <td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;foreach&nbsp;($parts&nbsp;as&nbsp;$part)&nbsp;{
 </td></tr>
 <tr><td>51</td>
-<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$part&nbsp;=&nbsp;Doctrine_Tokenizer::bracketTrim($part,&nbsp;'(',&nbsp;')');
+<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$part&nbsp;=&nbsp;$this-&gt;_tokenizer-&gt;bracketTrim($part,&nbsp;'(',&nbsp;')');
 </td></tr>
 <tr><td>52</td>
 <td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$ret[]&nbsp;=&nbsp;$this-&gt;parse($part);
@@ -178,7 +178,7 @@
 <td class="normal">
 </td></tr>
 <tr><td>57</td>
-<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$parts&nbsp;=&nbsp;Doctrine_Tokenizer::bracketExplode($str,&nbsp;array('&nbsp;\|\|&nbsp;',&nbsp;'&nbsp;OR&nbsp;'),&nbsp;'(',&nbsp;')');
+<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$parts&nbsp;=&nbsp;$this-&gt;_tokenizer-&gt;bracketExplode($str,&nbsp;array('&nbsp;\|\|&nbsp;',&nbsp;'&nbsp;OR&nbsp;'),&nbsp;'(',&nbsp;')');
 </td></tr>
 <tr><td>58</td>
 <td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if&nbsp;(count($parts)&nbsp;&gt;&nbsp;1)&nbsp;{
@@ -190,7 +190,7 @@
 <td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;foreach&nbsp;($parts&nbsp;as&nbsp;$part)&nbsp;{
 </td></tr>
 <tr><td>61</td>
-<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$part&nbsp;=&nbsp;Doctrine_Tokenizer::bracketTrim($part,&nbsp;'(',&nbsp;')');
+<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$part&nbsp;=&nbsp;$this-&gt;_tokenizer-&gt;bracketTrim($part,&nbsp;'(',&nbsp;')');
 </td></tr>
 <tr><td>62</td>
 <td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$ret[]&nbsp;=&nbsp;$this-&gt;parse($part);

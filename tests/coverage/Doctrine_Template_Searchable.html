@@ -118,102 +118,96 @@
 <td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;{
 </td></tr>
 <tr><td>37</td>
-<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$this-&gt;_plugin&nbsp;=&nbsp;new&nbsp;Doctrine_Search($options);
+<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$this-&gt;_plugin&nbsp;=&nbsp;new&nbsp;Doctrine_Search($options);&nbsp;
 </td></tr>
 <tr><td>38</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-</td></tr>
-<tr><td>39</td>
-<td class="normal">
-</td></tr>
-<tr><td>40</td>
 <td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;}
 </td></tr>
-<tr><td>41</td>
+<tr><td>39</td>
 <td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;
 </td></tr>
-<tr><td>42</td>
+<tr><td>40</td>
 <td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;public&nbsp;function&nbsp;getPlugin()
 </td></tr>
-<tr><td>43</td>
+<tr><td>41</td>
 <td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;{
 </td></tr>
-<tr><td>44</td>
+<tr><td>42</td>
 <td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return&nbsp;$this-&gt;_plugin;
 </td></tr>
-<tr><td>45</td>
+<tr><td>43</td>
 <td class="orange">&nbsp;&nbsp;&nbsp;&nbsp;}
 </td></tr>
-<tr><td>46</td>
+<tr><td>44</td>
 <td class="normal">
 </td></tr>
-<tr><td>47</td>
+<tr><td>45</td>
 <td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;public&nbsp;function&nbsp;setUp()
 </td></tr>
-<tr><td>48</td>
+<tr><td>46</td>
 <td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;{
 </td></tr>
-<tr><td>49</td>
+<tr><td>47</td>
 <td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$id&nbsp;=&nbsp;$this-&gt;_table-&gt;getIdentifier();
 </td></tr>
-<tr><td>50</td>
+<tr><td>48</td>
 <td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$name&nbsp;=&nbsp;$this-&gt;_table-&gt;getComponentName();
 </td></tr>
-<tr><td>51</td>
+<tr><td>49</td>
 <td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$className&nbsp;=&nbsp;$this-&gt;_plugin-&gt;getOption('className');
 </td></tr>
-<tr><td>52</td>
+<tr><td>50</td>
 <td class="normal">
 </td></tr>
-<tr><td>53</td>
+<tr><td>51</td>
 <td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if&nbsp;(strpos($className,&nbsp;'%CLASS%')&nbsp;!==&nbsp;false)&nbsp;{
 </td></tr>
-<tr><td>54</td>
+<tr><td>52</td>
 <td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$this-&gt;_plugin-&gt;setOption('className',&nbsp;str_replace('%CLASS%',&nbsp;$name,&nbsp;$className));
 </td></tr>
-<tr><td>55</td>
+<tr><td>53</td>
 <td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$className&nbsp;=&nbsp;$this-&gt;_plugin-&gt;getOption('className');
 </td></tr>
-<tr><td>56</td>
+<tr><td>54</td>
 <td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}
 </td></tr>
-<tr><td>57</td>
+<tr><td>55</td>
 <td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$this-&gt;_plugin-&gt;setOption('resource',&nbsp;$this-&gt;_table);
 </td></tr>
-<tr><td>58</td>
+<tr><td>56</td>
 <td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$this-&gt;_plugin-&gt;buildDefinition();
+</td></tr>
+<tr><td>57</td>
+<td class="normal">
+</td></tr>
+<tr><td>58</td>
+<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$this-&gt;hasMany($className,&nbsp;array('local'&nbsp;=&gt;&nbsp;$id,&nbsp;'foreign'&nbsp;=&gt;&nbsp;$id));
 </td></tr>
 <tr><td>59</td>
 <td class="normal">
 </td></tr>
 <tr><td>60</td>
-<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$this-&gt;hasMany($className,&nbsp;array('local'&nbsp;=&gt;&nbsp;$id,&nbsp;'foreign'&nbsp;=&gt;&nbsp;$id));
-</td></tr>
-<tr><td>61</td>
-<td class="normal">
-</td></tr>
-<tr><td>62</td>
 <td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$this-&gt;addListener(new&nbsp;Doctrine_Search_Listener($this-&gt;_plugin));
 </td></tr>
-<tr><td>63</td>
+<tr><td>61</td>
 <td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;}
 </td></tr>
-<tr><td>64</td>
+<tr><td>62</td>
 <td class="normal">
 </td></tr>
-<tr><td>65</td>
+<tr><td>63</td>
 <td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;public&nbsp;function&nbsp;batchUpdateIndex($limit&nbsp;=&nbsp;null,&nbsp;$offset&nbsp;=&nbsp;null)
 </td></tr>
-<tr><td>66</td>
+<tr><td>64</td>
 <td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;{
 </td></tr>
-<tr><td>67</td>
+<tr><td>65</td>
 <td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$this-&gt;_plugin-&gt;batchUpdateIndex($limit,&nbsp;$offset);
 </td></tr>
-<tr><td>68</td>
+<tr><td>66</td>
 <td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;}
 </td></tr>
-<tr><td>69</td>
+<tr><td>67</td>
 <td class="normal">}
 </td></tr>
 </table></body></html>

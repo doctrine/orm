@@ -16,7 +16,7 @@
 <td class="normal">/*
 </td></tr>
 <tr><td>3</td>
-<td class="normal">&nbsp;*&nbsp;&nbsp;$Id:&nbsp;From.php&nbsp;2702&nbsp;2007-10-03&nbsp;21:43:22Z&nbsp;Jonathan.Wage&nbsp;$
+<td class="normal">&nbsp;*&nbsp;&nbsp;$Id:&nbsp;From.php&nbsp;3212&nbsp;2007-11-24&nbsp;18:58:33Z&nbsp;romanb&nbsp;$
 </td></tr>
 <tr><td>4</td>
 <td class="normal">&nbsp;*
@@ -97,7 +97,7 @@
 <td class="normal">&nbsp;*&nbsp;@since&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1.0
 </td></tr>
 <tr><td>30</td>
-<td class="normal">&nbsp;*&nbsp;@version&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$Revision:&nbsp;2702&nbsp;$
+<td class="normal">&nbsp;*&nbsp;@version&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$Revision:&nbsp;3212&nbsp;$
 </td></tr>
 <tr><td>31</td>
 <td class="normal">&nbsp;*&nbsp;@author&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Konsta&nbsp;Vesterinen&nbsp;&lt;kvesteri@cc.hut.fi&gt;
@@ -118,10 +118,10 @@
 <td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;DQL&nbsp;FROM&nbsp;PARSER
 </td></tr>
 <tr><td>37</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;parses&nbsp;the&nbsp;from&nbsp;part&nbsp;of&nbsp;the&nbsp;query&nbsp;string
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;parses&nbsp;the&nbsp;FROM&nbsp;part&nbsp;of&nbsp;the&nbsp;query&nbsp;string
 </td></tr>
 <tr><td>38</td>
-<td class="normal">
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*
 </td></tr>
 <tr><td>39</td>
 <td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@param&nbsp;string&nbsp;$str
@@ -136,13 +136,13 @@
 <td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;public&nbsp;function&nbsp;parse($str)
 </td></tr>
 <tr><td>43</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;{
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;{&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 </td></tr>
 <tr><td>44</td>
 <td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$str&nbsp;=&nbsp;trim($str);
 </td></tr>
 <tr><td>45</td>
-<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$parts&nbsp;=&nbsp;Doctrine_Tokenizer::bracketExplode($str,&nbsp;'JOIN');
+<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$parts&nbsp;=&nbsp;$this-&gt;_tokenizer-&gt;bracketExplode($str,&nbsp;'JOIN');
 </td></tr>
 <tr><td>46</td>
 <td class="normal">
@@ -178,104 +178,101 @@
 <td class="normal">
 </td></tr>
 <tr><td>57</td>
-<td class="normal">
-</td></tr>
-<tr><td>58</td>
 <td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$last&nbsp;=&nbsp;'';
 </td></tr>
-<tr><td>59</td>
+<tr><td>58</td>
 <td class="normal">
 </td></tr>
-<tr><td>60</td>
+<tr><td>59</td>
 <td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;foreach&nbsp;($parts&nbsp;as&nbsp;$k&nbsp;=&gt;&nbsp;$part)&nbsp;{
 </td></tr>
-<tr><td>61</td>
+<tr><td>60</td>
 <td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$part&nbsp;=&nbsp;trim($part);
 </td></tr>
-<tr><td>62</td>
+<tr><td>61</td>
 <td class="normal">
 </td></tr>
-<tr><td>63</td>
+<tr><td>62</td>
 <td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if&nbsp;(empty($part))&nbsp;{
 </td></tr>
-<tr><td>64</td>
+<tr><td>63</td>
 <td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;continue;
 </td></tr>
-<tr><td>65</td>
+<tr><td>64</td>
 <td class="orange">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}
 </td></tr>
-<tr><td>66</td>
+<tr><td>65</td>
 <td class="normal">
+</td></tr>
+<tr><td>66</td>
+<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$e&nbsp;=&nbsp;explode('&nbsp;',&nbsp;$part);
 </td></tr>
 <tr><td>67</td>
-<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$e&nbsp;&nbsp;&nbsp;&nbsp;=&nbsp;explode('&nbsp;',&nbsp;$part);
+<td class="normal">
 </td></tr>
 <tr><td>68</td>
-<td class="normal">
-</td></tr>
-<tr><td>69</td>
 <td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if&nbsp;(end($e)&nbsp;==&nbsp;'INNER'&nbsp;||&nbsp;end($e)&nbsp;==&nbsp;'LEFT')&nbsp;{
 </td></tr>
-<tr><td>70</td>
+<tr><td>69</td>
 <td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$last&nbsp;=&nbsp;array_pop($e);
 </td></tr>
-<tr><td>71</td>
+<tr><td>70</td>
 <td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}
 </td></tr>
-<tr><td>72</td>
+<tr><td>71</td>
 <td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$part&nbsp;=&nbsp;implode('&nbsp;',&nbsp;$e);
 </td></tr>
-<tr><td>73</td>
+<tr><td>72</td>
 <td class="normal">
+</td></tr>
+<tr><td>73</td>
+<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;foreach&nbsp;($this-&gt;_tokenizer-&gt;bracketExplode($part,&nbsp;',')&nbsp;as&nbsp;$reference)&nbsp;{
 </td></tr>
 <tr><td>74</td>
-<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;foreach&nbsp;(Doctrine_Tokenizer::bracketExplode($part,&nbsp;',')&nbsp;as&nbsp;$reference)&nbsp;{
-</td></tr>
-<tr><td>75</td>
 <td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$reference&nbsp;=&nbsp;trim($reference);
 </td></tr>
-<tr><td>76</td>
+<tr><td>75</td>
 <td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$e&nbsp;=&nbsp;explode('&nbsp;',&nbsp;$reference);
 </td></tr>
-<tr><td>77</td>
+<tr><td>76</td>
 <td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$e2&nbsp;=&nbsp;explode('.',&nbsp;$e[0]);
 </td></tr>
-<tr><td>78</td>
+<tr><td>77</td>
 <td class="normal">
 </td></tr>
-<tr><td>79</td>
+<tr><td>78</td>
 <td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if&nbsp;($operator)&nbsp;{
 </td></tr>
-<tr><td>80</td>
+<tr><td>79</td>
 <td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$e[0]&nbsp;=&nbsp;array_shift($e2)&nbsp;.&nbsp;$operator&nbsp;.&nbsp;implode('.',&nbsp;$e2);
 </td></tr>
-<tr><td>81</td>
+<tr><td>80</td>
 <td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}
 </td></tr>
-<tr><td>82</td>
-<td class="normal">
+<tr><td>81</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 </td></tr>
-<tr><td>83</td>
+<tr><td>82</td>
 <td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$table&nbsp;=&nbsp;$this-&gt;query-&gt;load(implode('&nbsp;',&nbsp;$e));
 </td></tr>
-<tr><td>84</td>
+<tr><td>83</td>
 <td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}
 </td></tr>
-<tr><td>85</td>
+<tr><td>84</td>
 <td class="normal">
 </td></tr>
-<tr><td>86</td>
+<tr><td>85</td>
 <td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$operator&nbsp;=&nbsp;($last&nbsp;==&nbsp;'INNER')&nbsp;?&nbsp;':'&nbsp;:&nbsp;'.';
 </td></tr>
-<tr><td>87</td>
+<tr><td>86</td>
 <td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}
 </td></tr>
-<tr><td>88</td>
+<tr><td>87</td>
 <td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return&nbsp;null;
 </td></tr>
-<tr><td>89</td>
+<tr><td>88</td>
 <td class="orange">&nbsp;&nbsp;&nbsp;&nbsp;}
 </td></tr>
-<tr><td>90</td>
+<tr><td>89</td>
 <td class="covered">}</td></tr>
 </table></body></html>
