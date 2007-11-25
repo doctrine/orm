@@ -89,8 +89,8 @@ class Doctrine_Pager
      */
     protected function initialize()
     {
-        // etrieve the number of itens found
-		$count = $this->getQuery()->offset(0)->limit(0)->count();
+        // retrieve the number of items found
+		$count = $this->getQuery()->count();
         $this->setNbResults($count);
 
         $this->adjustOffset();
