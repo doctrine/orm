@@ -37,8 +37,27 @@ class Doctrine_Query_Cache_TestCase extends Doctrine_UnitTestCase
     {
         $cache = new Doctrine_Cache_Array();
         $q = new Doctrine_Query();
-        $q->select('u.name')->from('User u')->leftJoin('u.Phonenumber p')
+        $q->select('u.name')->from('User u')->leftJoin('u.Phonenumber p')->where('u.name = ?', 'walhala')
                 ->useQueryCache($cache);
+        
+        $coll = $q->execute();
+        
+        $this->assertEqual($cache->count(), 1);
+        $this->assertEqual(count($coll), 0);
+
+        $coll = $q->execute();
+
+        $this->assertEqual($cache->count(), 1);
+        $this->assertEqual(count($coll), 0);    
+    }
+    
+    public function testQueryCacheWorksWithGlobalConfiguration()
+    {
+        $cache = new Doctrine_Cache_Array();
+        Doctrine_Manager::getInstance()->setAttribute(Doctrine::ATTR_QUERY_CACHE, $cache);
+        
+        $q = new Doctrine_Query();
+        $q->select('u.name')->from('User u')->leftJoin('u.Phonenumber p');
         
         $coll = $q->execute();
         

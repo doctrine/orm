@@ -53,7 +53,7 @@ class Doctrine_Hydrator extends Doctrine_Hydrator_Abstract
      *                              'table' => Table object,
      *                              'parent' => Parent DQL alias (if any),
      *                              'relation' => Relation object (if any),
-     *                              'map' => ??? (if any)
+     *                              'map' => Custom index to use as the key in the result (if any)
      *                              )
      *                         )
      * @return array

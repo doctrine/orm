@@ -92,6 +92,8 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
             $init = true;
             $attributes = array(
                         Doctrine::ATTR_CACHE                    => null,
+                        Doctrine::ATTR_RESULT_CACHE             => null,
+                        Doctrine::ATTR_QUERY_CACHE              => null,
                         Doctrine::ATTR_LOAD_REFERENCES          => true,
                         Doctrine::ATTR_LISTENER                 => new Doctrine_EventListener(),
                         Doctrine::ATTR_RECORD_LISTENER          => new Doctrine_Record_Listener(),

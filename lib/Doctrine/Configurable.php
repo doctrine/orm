@@ -102,6 +102,8 @@ abstract class Doctrine_Configurable extends Doctrine_Locator_Injectable
                 }
                 break;
             case Doctrine::ATTR_CACHE:
+            case Doctrine::ATTR_RESULT_CACHE:
+            case Doctrine::ATTR_QUERY_CACHE:
                 if ($value !== null) {
                     if ( ! ($value instanceof Doctrine_Cache_Interface)) {
                         throw new Doctrine_Exception('Cache driver should implement Doctrine_Cache_Interface');
