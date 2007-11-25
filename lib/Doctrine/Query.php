@@ -489,6 +489,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable, Seria
 
         $fields = $this->_pendingFields[$componentAlias];
 
+
         // check for wildcards
         if (in_array('*', $fields)) {
             //echo "<br />";Doctrine::dump($table->getColumnNames()); echo "<br />";
@@ -563,16 +564,14 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable, Seria
 
             return implode(', ', $sql);
         } else {
-
+            $name = $table->getColumnName($field);
+    
+            $this->_neededTables[] = $tableAlias;
+    
+            return $this->_conn->quoteIdentifier($tableAlias . '.' . $name)
+                   . ' AS '
+                   . $this->_conn->quoteIdentifier($tableAlias . '__' . $name);
         }
-
-        $name = $table->getColumnName($field);
-
-        $this->_neededTables[] = $tableAlias;
-
-        return $this->_conn->quoteIdentifier($tableAlias . '.' . $name)
-               . ' AS '
-               . $this->_conn->quoteIdentifier($tableAlias . '__' . $name);
     }
 
     /**
@@ -765,15 +764,21 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable, Seria
                                 }
 
                                 $table = $this->_queryComponents[$componentAlias]['table'];
-    
+
+                                $def = $table->getDefinitionOf($field);
+
                                 // get the actual field name from alias
                                 $field = $table->getColumnName($field);
-    
+
                                 // check column existence
-                                if ( ! $table->hasColumn($field)) {
+                                if ( ! $def) {
                                     throw new Doctrine_Query_Exception('Unknown column ' . $field);
                                 }
-    
+                                
+                                if (isset($def['owner'])) {
+                                    $componentAlias = $componentAlias . '.' . $def['owner'];
+                                }
+
                                 $tableAlias = $this->getTableAlias($componentAlias);
 
                                 // build sql expression
@@ -802,9 +807,19 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable, Seria
                                 // check column existence
                                 if ($table->hasColumn($term[0])) {
                                     $found = true;
-    
-                                    // get the actual field name from alias
+
+
+                                    $def = $table->getDefinitionOf($term[0]);
+
+                                    // get the actual column name from alias
                                     $term[0] = $table->getColumnName($term[0]);
+
+
+                                    if (isset($def['owner'])) {
+                                        $componentAlias = $componentAlias . '.' . $def['owner'];
+                                    }
+
+                                    $tableAlias = $this->getTableAlias($componentAlias);
 
                                     $tableAlias = $this->getTableAlias($componentAlias);
 
