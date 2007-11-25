@@ -30,13 +30,17 @@
  * @link        www.phpdoctrine.com
  * @since       1.0
  */
-class Doctrine_Plugin 
+abstract class Doctrine_Plugin
 {
     /**
      * @var array $_options     an array of plugin specific options
      */
     protected $_options = array('generateFiles' => false,
-                                'identifier'    => false);
+                                'identifier'    => false,
+                                'generateFiles' => false,
+                                'table'         => false,
+                                'pluginTable'   => false,
+                                'children'      => array(),);
 
     /**
      * __get
@@ -93,7 +97,7 @@ class Doctrine_Plugin
 
     public function addChild(Doctrine_Template $template)
     {
-        $this->_options['children'][] = $template;    	
+        $this->_options['children'][] = $template;
     }
 
     /**
@@ -104,6 +108,42 @@ class Doctrine_Plugin
     public function getOptions()
     {
         return $this->_options;
+    }
+
+    public function buildPluginDefinition(Doctrine_Table $table)
+    {
+    	$this->_options['table'] = $table;
+
+        $this->_options['className'] = str_replace('%CLASS%',
+                                                   $this->_options['table']->getComponentName(),
+                                                   $this->_options['className']);
+
+        // check that class doesn't exist (otherwise we cannot create it)
+        if (class_exists($this->_options['className'])) {
+            return false;
+        }
+        
+        $this->buildDefinition();
+    }
+    
+    abstract public function buildDefinition();
+
+    public function buildForeignKeys(Doctrine_Table $table)
+    {
+        $id = $table->getIdentifier();
+
+        $fk = array();
+        foreach ((array) $id as $column) {
+            $def = $table->getDefinitionOf($column);
+
+            unset($def['autoincrement']);
+            unset($def['sequence']);
+            unset($def['unique']);
+
+            $fk[$column] = $def;
+        }
+        
+        return $fk;
     }
 
     public function generateChildDefinitions()

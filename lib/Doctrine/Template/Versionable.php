@@ -38,8 +38,9 @@ class Doctrine_Template_Versionable extends Doctrine_Template
     }
     public function setUp()
     {
-        $this->_plugin->setOption('table', $this->_table);
-        $this->_plugin->buildDefinition($this->_table);
+        $this->_plugin->buildPluginDefinition($this->_table);
+
+        $this->hasColumn('version', 'integer', 8);
 
         $this->addListener(new Doctrine_AuditLog_Listener($this->_plugin));
     }

@@ -46,7 +46,7 @@ class Doctrine_AuditLog extends Doctrine_Plugin
      * @param array $options An array of options
      * @return void
      */
-    public function __construct($options)
+    public function __construct(array $options = array())
     {
         $this->_options = array_merge($this->_options, $options);
     }
@@ -85,22 +85,11 @@ class Doctrine_AuditLog extends Doctrine_Plugin
      * @param Doctrine_Table $table 
      * @return boolean true on success otherwise false.
      */
-    public function buildDefinition(Doctrine_Table $table)
+    public function buildDefinition()
     {
-        $this->_options['className'] = str_replace('%CLASS%', 
-                                                   $this->_options['table']->getComponentName(),
-                                                   $this->_options['className']);
+        $name = $this->_options['table']->getComponentName();
 
-        $name = $table->getComponentName();
-
-        $className = $name . 'Version';
-
-        // check that class doesn't exist (otherwise we cannot create it)
-        if (class_exists($className)) {
-            return false;
-        }
-
-        $columns = $table->getColumns();
+        $columns = $this->_options['table']->getColumns();
 
         // remove all sequence, autoincrement and unique constraint definitions
         foreach ($columns as $column => $definition) {
@@ -114,10 +103,10 @@ class Doctrine_AuditLog extends Doctrine_Plugin
                                                            'length' => 8,
                                                            'primary' => true);
 
-        $id = $table->getIdentifier();
+        $id = $this->_options['table']->getIdentifier();
 
-        $options = array('className' => $className);
-        
+        $options = array('className' => $this->_options['className']);
+
         $relations = array($name => array('local' => $id,
                                           'foreign' => $id, 
                                           'onDelete' => 'CASCADE',
@@ -125,7 +114,7 @@ class Doctrine_AuditLog extends Doctrine_Plugin
 
         $this->generateClass($options, $columns, array());
         
-        $this->_options['pluginTable'] = $table->getConnection()->getTable($this->_options['className']);
+        $this->_options['pluginTable'] = $this->_options['table']->getConnection()->getTable($this->_options['className']);
 
         return true;
     }

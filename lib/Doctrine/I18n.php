@@ -58,48 +58,29 @@ class Doctrine_I18n extends Doctrine_Plugin
      * @param object $Doctrine_Table 
      * @return void
      */
-    public function buildDefinition(Doctrine_Table $table)
+    public function buildDefinition()
     {
       	if (empty($this->_options['fields'])) {
       	    throw new Doctrine_I18n_Exception('Fields not set.');
       	}
 
-        $this->_options['className'] = str_replace('%CLASS%',
-                                                   $this->_options['table']->getComponentName(),
-                                                   $this->_options['className']);
-
-        $name = $table->getComponentName();
-
-        if (class_exists($this->_options['className'])) {
-            return false;
-        }
+        $name = $this->_options['table']->getComponentName();
 
         $columns = array();
 
-        $id = $table->getIdentifier();
-
         $options = array('className' => $this->_options['className']);
 
-        $fk = array();
-        foreach ((array) $id as $column) {
-            $def = $table->getDefinitionOf($column);
+        $fk = $this->buildForeignKeys($this->_options['table']);
 
-            unset($def['autoincrement']);
-            unset($def['sequence']);
-            unset($def['unique']);
-
-            $fk[$column] = $def;
-        }
-
-        $cols = $table->getColumns();
+        $cols = $this->_options['table']->getColumns();
 
         foreach ($cols as $column => $definition) {
             if (in_array($column, $this->_options['fields'])) {
                 $columns[$column] = $definition;
-                $table->removeColumn($column);
+                $this->_options['table']->removeColumn($column);
             }
         }
-        
+
         $columns['lang'] = array('type'    => 'string',
                                  'length'  => 2,
                                  'fixed'   => true,
@@ -108,7 +89,7 @@ class Doctrine_I18n extends Doctrine_Plugin
         $local = (count($fk) > 1) ? array_keys($fk) : key($fk);
 
         $relations = array($name => array('local' => $local,
-                                          'foreign' => $id,
+                                          'foreign' => $this->_options['table']->getIdentifier(),
                                           'onDelete' => 'CASCADE',
                                           'onUpdate' => 'CASCADE'));
 
@@ -120,7 +101,7 @@ class Doctrine_I18n extends Doctrine_Plugin
 
         $this->generateClass($options, $columns, $relations);
 
-        $this->_options['pluginTable'] = $table->getConnection()->getTable($this->_options['className']);
+        $this->_options['pluginTable'] = $this->_options['table']->getConnection()->getTable($this->_options['className']);
         
         $this->_options['pluginTable']->bindQueryPart('indexBy', 'lang');
 
