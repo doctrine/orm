@@ -40,15 +40,12 @@ class Doctrine_Search extends Doctrine_Plugin
                                 'type'          => self::INDEX_TABLES,
                                 'className'     => '%CLASS%Index',
                                 'generatePath'  => false,
-                                'resource'      => null,
+                                'table'         => null,
                                 'batchUpdates'  => false,
                                 'pluginTable'   => false,
                                 'fields'        => array(),
-                                'connection'    => null);
-                                
-    protected $_built = false;
-
-    
+                                'connection'    => null,
+                                'children'      => array());
     /**
      * __construct 
      * 
@@ -71,7 +68,7 @@ class Doctrine_Search extends Doctrine_Plugin
     /**
      * search 
      * 
-     * @param string $query 
+     * @param string $query
      * @return Doctrine_Collection The collection of search results
      */
     public function search($query)
@@ -107,10 +104,10 @@ class Doctrine_Search extends Doctrine_Plugin
 
         $fields = $this->getOption('fields');
         $class  = $this->getOption('className');
-        $name   = $this->getOption('resource')->getComponentName();
-        $conn   = $this->getOption('resource')->getConnection();
-        $identifier = $this->_options['resource']->getIdentifier();
-        
+        $name   = $this->getOption('table')->getComponentName();
+        $conn   = $this->getOption('table')->getConnection();
+        $identifier = $this->_options['table']->getIdentifier();
+
         $q = Doctrine_Query::create()->delete()
                                      ->from($class);
         foreach ((array) $identifier as $id) {
@@ -121,7 +118,7 @@ class Doctrine_Search extends Doctrine_Plugin
         if ($this->_options['batchUpdates'] === true) {
             $index = new $class(); 
 
-            foreach ((array) $this->_options['resource']->getIdentifier() as $id) {
+            foreach ((array) $this->_options['table']->getIdentifier() as $id) {
                 $index->$id = $data[$id];
             }
 
@@ -139,7 +136,7 @@ class Doctrine_Search extends Doctrine_Plugin
                     $index->keyword = $term;
                     $index->position = $pos;
                     $index->field = $field;
-                    foreach ((array) $this->_options['resource']->getIdentifier() as $id) {
+                    foreach ((array) $this->_options['table']->getIdentifier() as $id) {
                         $index->$id = $data[$id];
                     }
 
@@ -160,9 +157,9 @@ class Doctrine_Search extends Doctrine_Plugin
     {
         $this->buildDefinition(); 
 
-        $conn      = $this->_options['resource']->getConnection();
-        $tableName = $this->_options['resource']->getTableName();
-        $id        = $this->_options['resource']->getIdentifier();
+        $conn      = $this->_options['table']->getConnection();
+        $tableName = $this->_options['table']->getTableName();
+        $id        = $this->_options['table']->getIdentifier();
 
         $query = 'SELECT * FROM ' . $conn->quoteIdentifier($tableName)
                . ' WHERE ' . $conn->quoteIdentifier($id)
@@ -188,7 +185,7 @@ class Doctrine_Search extends Doctrine_Plugin
     {
         $this->buildDefinition();
 
-        $id        = $this->_options['resource']->getIdentifier();
+        $id        = $this->_options['table']->getIdentifier();
         $class     = $this->_options['className'];
         $fields    = $this->_options['fields'];
         $conn      = $this->_options['connection'];
@@ -241,17 +238,12 @@ class Doctrine_Search extends Doctrine_Plugin
      */
     public function buildDefinition()
     {
-    	if ($this->_built) {
-            return true;
+    	if ( ! isset($this->_options['table'])) {
+    	    Doctrine::dump(debug_backtrace());
+    	    throw new Doctrine_Plugin_Exception("Unknown option 'table'.");
     	}
-        $this->_built = true;
 
-        $componentName = $this->_options['resource']->getComponentName();
-
-        // check for placeholders
-        if (strpos($this->_options['className'], '%') !== false) {
-            $this->_options['className'] = str_replace('%CLASS%', $componentName, $this->_options['className']);
-        }
+        $componentName = $this->_options['table']->getComponentName();
 
         $className = $this->getOption('className');
 
@@ -271,20 +263,19 @@ class Doctrine_Search extends Doctrine_Plugin
                                              'primary' => true,
                                              ));
 
-        $id = $this->_options['resource']->getIdentifier();
+        $id = $this->_options['table']->getIdentifier();
 
-        $options = array('className' => $className);
+        $fk = $this->buildForeignKeys($this->_options['table']);
 
-        $fk = $this->generateForeignKeys($this->_options['resource']);
         $columns += $fk;
 
         $relations = array();
         // only generate relations for database based searches
         if ( ! $this instanceof Doctrine_Search_File) {
-            $relations = $this->generateRelation($this->_options['resource'], $fk);
+            $relations = $this->buildRelation();
         }
 
-        $this->generateClass($options, $columns, $relations);
+        $this->generateClass($columns, $relations);
 
         $this->_options['pluginTable'] = $this->_options['connection']->getTable($this->_options['className']);
 

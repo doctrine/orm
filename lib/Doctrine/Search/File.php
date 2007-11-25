@@ -40,15 +40,13 @@ class Doctrine_Search_File extends Doctrine_Search
             $table = new Doctrine_Table('File', Doctrine_Manager::connection());
             
             $table->setColumn('url', 'string', 255, array('primary' => true));
-
-            $this->_options['resource'] = $table;
         }
         
         if (empty($this->_options['fields'])) {
             $this->_options['fields'] = array('url', 'content');
         }
         
-        $this->buildDefinition();
+        $this->buildPluginDefinition($table);
     }
     
     public function indexDirectory($dir)
@@ -58,7 +56,7 @@ class Doctrine_Search_File extends Doctrine_Search
                                                 
         foreach ($it as $file) {
             if (strpos($file, DIRECTORY_SEPARATOR . '.svn') !== false) {
-                continue;                                                          	
+                continue;
             }
 
             $this->updateIndex(array('url' => $file->getPathName(),

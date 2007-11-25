@@ -275,7 +275,7 @@ abstract class Doctrine_Record_Abstract extends Doctrine_Access
 
     /**
      * actAs
-     * loads a given plugin 
+     * loads the given plugin 
      *
      * @param mixed $tpl
      * @param array $options

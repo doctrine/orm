@@ -38,6 +38,7 @@ class Doctrine_AuditLog extends Doctrine_Plugin
                             'generateFiles' => false,
                             'table'         => false,
                             'pluginTable'   => false,
+                            'children'      => array(),
                             );
 
     /**
@@ -105,14 +106,9 @@ class Doctrine_AuditLog extends Doctrine_Plugin
 
         $id = $this->_options['table']->getIdentifier();
 
-        $options = array('className' => $this->_options['className']);
+        $relations = $this->buildRelation();
 
-        $relations = array($name => array('local' => $id,
-                                          'foreign' => $id, 
-                                          'onDelete' => 'CASCADE',
-                                          'onUpdate' => 'CASCADE'));
-
-        $this->generateClass($options, $columns, array());
+        $this->generateClass($columns, $relations);
         
         $this->_options['pluginTable'] = $this->_options['table']->getConnection()->getTable($this->_options['className']);
 

@@ -86,26 +86,17 @@ class Doctrine_I18n extends Doctrine_Plugin
                                  'fixed'   => true,
                                  'primary' => true);
 
-        $local = (count($fk) > 1) ? array_keys($fk) : key($fk);
-
-        $relations = array($name => array('local' => $local,
-                                          'foreign' => $this->_options['table']->getIdentifier(),
-                                          'onDelete' => 'CASCADE',
-                                          'onUpdate' => 'CASCADE'));
-
+        $relations = $this->buildRelation();
 
         $columns += $fk;
 
-        $options = array('className' => $this->_options['className'],
-                         'queryParts' => array('indexBy' => 'lang'));
+        $options = array('queryParts' => array('indexBy' => 'lang'));
 
-        $this->generateClass($options, $columns, $relations);
+        $this->generateClass($columns, $relations, $options);
 
         $this->_options['pluginTable'] = $this->_options['table']->getConnection()->getTable($this->_options['className']);
         
         $this->_options['pluginTable']->bindQueryPart('indexBy', 'lang');
-
-        $this->generateChildDefinitions();
 
         return true;
     }

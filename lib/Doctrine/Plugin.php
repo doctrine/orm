@@ -40,7 +40,7 @@ abstract class Doctrine_Plugin
                                 'generateFiles' => false,
                                 'table'         => false,
                                 'pluginTable'   => false,
-                                'children'      => array(),);
+                                'children'      => array());
 
     /**
      * __get
@@ -112,6 +112,8 @@ abstract class Doctrine_Plugin
 
     public function buildPluginDefinition(Doctrine_Table $table)
     {
+    	$this->initOptions();
+
     	$this->_options['table'] = $table;
 
         $this->_options['className'] = str_replace('%CLASS%',
@@ -122,32 +124,31 @@ abstract class Doctrine_Plugin
         if (class_exists($this->_options['className'])) {
             return false;
         }
-        
+
         $this->buildDefinition();
+
+        $this->buildChildDefinitions();
     }
-    
+    /** 
+     * empty template method for providing the concrete plugins the ability
+     * to initialize options before the actual definition is being built
+     * 
+     * @return void
+     */
+    public function initOptions()
+    {
+    	
+    }
+
     abstract public function buildDefinition();
 
-    public function buildForeignKeys(Doctrine_Table $table)
+    public function buildChildDefinitions()
     {
-        $id = $table->getIdentifier();
+    	if ( ! isset($this->_options['children'])) {
+    	   Doctrine::dump(debug_backtrace());
+            throw new Doctrine_Plugin_Exception("Unknown option 'children'.");
+    	}
 
-        $fk = array();
-        foreach ((array) $id as $column) {
-            $def = $table->getDefinitionOf($column);
-
-            unset($def['autoincrement']);
-            unset($def['sequence']);
-            unset($def['unique']);
-
-            $fk[$column] = $def;
-        }
-        
-        return $fk;
-    }
-
-    public function generateChildDefinitions()
-    {
         foreach ($this->_options['children'] as $child) {
             $this->_options['pluginTable']->addTemplate(get_class($child), $child);
 
@@ -166,7 +167,7 @@ abstract class Doctrine_Plugin
      * @param Doctrine_Table $table     the table object that owns the plugin
      * @return array                    an array of foreign key definitions
      */
-    public function generateForeignKeys(Doctrine_Table $table)
+    public function buildForeignKeys(Doctrine_Table $table)
     {
         $fk = array();
 
@@ -186,22 +187,18 @@ abstract class Doctrine_Plugin
     }
 
     /**
-     * generates a relation array to given table
+     * build a relation array to given table
      *
      * this method can be used for generating the relation from the plugin 
      * table to the owner table
      *
-     * @param Doctrine_Table $table     the table object to construct the relation to
-     * @param array $foreignKeys        an array of foreign keys
      * @return array                    the generated relation array
      */
-    public function generateRelation(Doctrine_Table $table, array $foreignKeys)
+    public function buildRelation()
     {
-        $local = (count($foreignKeys) > 1) ? array_keys($foreignKeys) : key($foreignKeys);
-        
-        $relation = array($table->getComponentName() => 
-                        array('local'    => $local,
-                              'foreign'  => $table->getIdentifier(),
+        $relation = array($this->_options['table']->getComponentName() =>
+                        array('local'    => $this->_options['table']->getIdentifier(),
+                              'foreign'  => $this->_options['table']->getIdentifier(),
                               'onDelete' => 'CASCADE',
                               'onUpdate' => 'CASCADE'));
 
@@ -211,15 +208,19 @@ abstract class Doctrine_Plugin
     /**
      * generates the class definition for plugin class
      *
-     * @param array $options    plugin class options, keys representing the option names 
-     *                          and values as option values
      * @param array $columns    the plugin class columns, keys representing the column names
      *                          and values as column definitions
+     *
      * @param array $relations  the bound relations of the plugin class
+     *
+     * @param array $options    plugin class options, keys representing the option names
+     *                          and values as option values
      * @return void
      */
-    public function generateClass($options, $columns, $relations)
+    public function generateClass(array $columns = array(), array $relations = array(), array $options = array())
     {
+    	$options['className'] = $this->_options['className'];
+
         $builder = new Doctrine_Import_Builder();
 
         if ($this->_options['generateFiles']) {
