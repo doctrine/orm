@@ -130,19 +130,19 @@ class Doctrine_Import_Mysql extends Doctrine_Import
             $values = isset($decl['values']) ? $decl['values'] : array();
 
             $description = array(
-                'name'      => $val['field'],
-                'type'      => $decl['type'][0],
-                'alltypes'  => $decl['type'],
-                'ntype'     => $val['type'],
-                'length'    => $decl['length'],
-                'fixed'     => $decl['fixed'],
-                'unsigned'  => $decl['unsigned'],
-                'values'    => $values,
-                'primary'   => (strtolower($val['key']) == 'pri'),
-                'default'   => $val['default'],
-                'notnull'   => (bool) ($val['null'] != 'YES'),
-                'autoinc'   => (bool) (strpos($val['extra'], 'auto_increment') !== false),
-            );
+                          'name'          => $val['field'],
+                          'type'          => $decl['type'][0],
+                          'alltypes'      => $decl['type'],
+                          'ntype'         => $val['type'],
+                          'length'        => $decl['length'],
+                          'fixed'         => $decl['fixed'],
+                          'unsigned'      => $decl['unsigned'],
+                          'values'        => $values,
+                          'primary'       => (strtolower($val['key']) == 'pri'),
+                          'default'       => $val['default'],
+                          'notnull'       => (bool) ($val['null'] != 'YES'),
+                          'autoincrement' => (bool) (strpos($val['extra'], 'auto_increment') !== false),
+                          );
             $columns[$val['field']] = $description;
         }
 
