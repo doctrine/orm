@@ -82,9 +82,7 @@ class Doctrine_Migration_Builder
      */
     public function setMigrationsPath($path)
     {
-        if ( ! file_exists($path)) {
-            mkdir($path, 0777);
-        }
+        Doctrine::makeDirectories($path);
 
         $this->migrationsPath = $path;
     }
@@ -138,7 +136,7 @@ END;
      */
     public function generateMigrationsFromDb()
     {
-        $directory = '/tmp/tmp_doctrine_models';
+        $directory = sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'tmp_doctrine_models';
 
         Doctrine::generateModelsFromDb($directory);
         
@@ -173,7 +171,7 @@ END;
             $up = $this->buildCreateTable($export);
             $down = $this->buildDropTable($export);
             
-            $className = 'Add'.Doctrine::classify($export['tableName']);
+            $className = 'Add' . Doctrine::classify($export['tableName']);
             
             $this->generateMigrationClass($className, array(), $up, $down);
         }
@@ -207,7 +205,7 @@ END;
      */
     public function buildCreateForeignKey($tableName, $definition)
     {
-        return "\t\t\$this->createForeignKey('" . $tableName . "', " . $this->dataToPhpCode($definition) . ");";
+        return "\t\t\$this->createForeignKey('" . $tableName . "', " . var_export($definition, true) . ");";
     }
 
     /**
@@ -232,9 +230,9 @@ END;
     {
         $code  = "\t\t\$this->createTable('" . $tableData['tableName'] . "', ";
         
-        $code .= $this->dataToPhpCode($tableData['columns']) . ", ";
+        $code .= var_export($tableData['columns'], true) . ", ";
         
-        $code .= $this->dataToPhpCode(array('indexes' => $tableData['options']['indexes'], 'primary' => $tableData['options']['primary']));
+        $code .= var_export(array('indexes' => $tableData['options']['indexes'], 'primary' => $tableData['options']['primary']), true);
         
         $code .= ");";
         
@@ -250,22 +248,6 @@ END;
     public function buildDropTable($tableData)
     {
         return "\t\t\$this->dropTable('" . $tableData['tableName'] . "');";
-    }
-
-    /**
-     * dataToPhpCode
-     *
-     * @param string $data 
-     * @return string
-     */
-    public function dataToPhpCode($data)
-    {
-        ob_start();
-        var_export($data);
-        $results = ob_get_contents();
-        ob_end_clean();
-        
-        return $results;
     }
 
     /**

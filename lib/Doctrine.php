@@ -1114,7 +1114,7 @@ final class Doctrine
      */
     public static function makeDirectories($path, $mode = 0777)
     {
-        if (!$path) {
+        if ( ! $path) {
           return false;
         }
 
