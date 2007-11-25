@@ -41,16 +41,19 @@ class Doctrine_Plugin_TestCase extends Doctrine_UnitTestCase
 
     public function testNestedPluginsGetExportedRecursively()
     {
+
+
         $sql = $this->conn->export->exportClassesSql(array('Wiki'));
-        
-        $this->assertEqual($sql[0], 'CREATE TABLE wiki_translation_version (title VARCHAR(255), content VARCHAR(2147483647), lang VARCHAR(2), id INTEGER, version INTEGER, PRIMARY KEY(lang, id, version))');
-        $this->assertEqual($sql[1], 'CREATE TABLE wiki_translation_index (keyword VARCHAR(200), field VARCHAR(50), position INTEGER, lang VARCHAR(2), id INTEGER, PRIMARY KEY(keyword, field, position, lang, id))');
-        $this->assertEqual($sql[2], 'CREATE TABLE wiki_translation (title VARCHAR(255), content VARCHAR(2147483647), lang VARCHAR(2), id INTEGER, version INTEGER, PRIMARY KEY(lang, id))');
+
+        $this->assertEqual($sql[0], 'CREATE TABLE wiki_translation_version (title VARCHAR(255), content VARCHAR(2147483647), lang CHAR(2), id INTEGER, version INTEGER, PRIMARY KEY(lang, id, version))');
+        $this->assertEqual($sql[1], 'CREATE TABLE wiki_translation_index (keyword VARCHAR(200), field VARCHAR(50), position INTEGER, lang CHAR(2), id INTEGER, PRIMARY KEY(keyword, field, position, lang, id))');
+        $this->assertEqual($sql[2], 'CREATE TABLE wiki_translation (title VARCHAR(255), content VARCHAR(2147483647), lang CHAR(2), id INTEGER, version INTEGER, PRIMARY KEY(lang, id))');
         $this->assertEqual($sql[3], 'CREATE TABLE wiki (id INTEGER PRIMARY KEY AUTOINCREMENT, created_at DATETIME, updated_at DATETIME)');
-    
+
         foreach ($sql as $query) {
             $this->conn->exec($query);
         }
+
     }
 
     public function testCreatingNewRecordsInvokesAllPlugins()
@@ -58,7 +61,7 @@ class Doctrine_Plugin_TestCase extends Doctrine_UnitTestCase
         $wiki = new Wiki();
         $wiki->state(Doctrine_Record::STATE_TDIRTY);
         $wiki->save();
-        
+
         $fi = $wiki->Translation['FI'];
         $fi->title = 'Michael Jeffrey Jordan';
         $fi->content = "Michael Jeffrey Jordan (s. 17. helmikuuta 1963, Brooklyn, New York) on yhdysvaltalainen entinen NBA-koripalloilija, jota pidetään yleisesti kaikkien aikojen parhaana pelaajana.";
@@ -70,6 +73,17 @@ class Doctrine_Plugin_TestCase extends Doctrine_UnitTestCase
         $fi->save();
         
         $this->assertEqual($fi->version, 2);
+    }
+
+    public function testSavingUnmodifiedRecordsDoesNotInvokeTimestampableListener()
+    {
+    	$this->conn->clear();
+
+        $wiki = Doctrine_Query::create()->from('Wiki w')->where('w.id = 1')->fetchOne();
+        
+        $wiki->save();
+
+        $this->assertEqual($wiki->Translation['FI']->version, 2);
     }
 }
 class Wiki extends Doctrine_Record
@@ -94,6 +108,8 @@ class Wiki extends Doctrine_Record
              ->addChild($slug);
 
         $this->actAs($i18n);
-        $this->actAs('Timestampable');
+
+        $this->actAs('Timestampable');   
+
     }
 }
