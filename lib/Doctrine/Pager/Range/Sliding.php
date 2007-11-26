@@ -102,7 +102,7 @@ class Doctrine_Pager_Range_Sliding extends Doctrine_Pager_Range
         $endPage = ($startPage + $this->getChunkLength()) - 1;
 
         // Check for EndPage out-range
-        if ( $endPage > $pager->getLastPage() ) {
+        if ($endPage > $pager->getLastPage()) {
             $offset = $endPage - $pager->getLastPage();
 
             $endPage = $pager->getLastPage();
@@ -110,7 +110,7 @@ class Doctrine_Pager_Range_Sliding extends Doctrine_Pager_Range
         }
 
         // Check for StartPage out-range
-        if ( $startPage < $pager->getFirstPage() ) {
+        if ($startPage < $pager->getFirstPage()) {
             $startPage = $pager->getFirstPage();
         }
 
