@@ -36,6 +36,17 @@ abstract class Doctrine_Record_Abstract extends Doctrine_Access
      * @param Doctrine_Table $_table     reference to associated Doctrine_Table instance
      */
     protected $_table;
+    
+    /**
+     * getTable
+     * returns the associated table object
+     *
+     * @return Doctrine_Table               the associated table object
+     */
+    public function getTable()
+    {
+        return $this->_table;
+    }
 
     /**
      * addListener
@@ -275,7 +286,7 @@ abstract class Doctrine_Record_Abstract extends Doctrine_Access
 
     /**
      * actAs
-     * loads the given plugin 
+     * loads the given plugin
      *
      * @param mixed $tpl
      * @param array $options
