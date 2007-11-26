@@ -1493,6 +1493,46 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
     }
 
     /**
+     * mergeDeep
+     * merges this record with an array of values
+     *
+     * @pre it is expected that the array keys representing a hasMany
+     * relationship are the keyColumn set with INDEXBY
+     *
+     * @param array $values
+     * @param $rmFromCollection if some records are not found in the array,
+     *    they are removed from the collection<->relation
+     * @return void
+     */
+    public function mergeDeep(array $values, $rmFromCollection = false)
+    {
+        $this->merge($values);
+
+        foreach ($values as $rel_name => $rel_data) {
+            if ($this->getTable()->hasRelation($rel_name)) {
+                $rel = $this->get($rel_name);
+                if ($rel instanceof Doctrine_Collection) {
+                    foreach ($rel as $key => $record) {
+                        if (isset($rel_data[$key])) {
+                            $record->mergeDeep($rel_data[$key], $rmFromCollection);
+                            unset($rel_data[$key]);
+                        } elseif ($rmFromCollection) {
+                            $rel->remove($key);
+                        }
+                    }
+                    foreach ($rel_data as $key => $new_data) {
+                        $new_record = $rel->getTable()->create();
+                        $new_record->mergeDeep($new_data);
+                        $rel->add($new_record, $key);
+                    }
+                } else {
+                    $rel->mergeDeep($rel_data);
+                }
+            }
+        }
+    }
+
+    /**
      * call
      *
      * @param string|array $callback    valid callback
