@@ -179,6 +179,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
     protected $_parser;
 
     /**
+     * @see Doctrine_Template
      * @var array $_templates                   an array containing all templates attached to this table
      */
     protected $_templates   = array();
@@ -187,6 +188,11 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
      * @var array $_filters                     an array containing all record filters attached to this table
      */
     protected $_filters     = array();
+    /**
+     * @see Doctrine_Plugin
+     * @var array $_plugins                     an array containing all plugins attached to this table
+     */
+    protected $_plugins     = array();
 
     /**
      * @var array $_invokedMethods              method invoker cache
@@ -1747,7 +1753,29 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
 
         return $this;
     }
+    public function getPlugin($plugin)
+    {
+        if ( ! isset($this->_plugins[$plugin])) {
+            throw new Doctrine_Table_Exception('Plugin ' . $plugin . ' not loaded');
+        }
 
+        return $this->_plugins[$plugin];
+    }
+    
+    public function hasPlugin($plugin)
+    {
+        return isset($this->_plugins[$plugin]);
+    }
+
+    public function addPlugin(Doctrine_Plugin $plugin, $name = null)
+    {
+    	if ($name === null) {
+            $this->_plugins[] = $plugin;
+        } else {
+            $this->_plugins[$name] = $plugin;
+        }
+        return $this;
+    }
     /**
      * bindQueryParts
      * binds query parts to given component
