@@ -307,7 +307,7 @@ User:
       type: string(255)
 </code>
 
-If you are only interested in keeping using only one of the columns, such as a created_at timestamp, but not a an updated_at field, set the flag disabled=>true for either of the fields as in the example below. 
+If you are only interested in using only one of the columns, such as a created_at timestamp, but not a an updated_at field, set the flag disabled=>true for either of the fields as in the example below. 
 
 YAML Example
 <code type="yaml">
