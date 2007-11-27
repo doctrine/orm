@@ -1069,9 +1069,9 @@ final class Doctrine
      * @param string $tablename
      * @return string
      */
-    public static function classify($tablename)
+    public static function classify($tableName)
     {
-        return preg_replace_callback('~(_?)(_)([\w])~', array("Doctrine", "classifyCallback"), ucfirst($tablename));
+        return preg_replace_callback('~(_?)(_)([\w])~', array("Doctrine", "classifyCallback"), ucfirst(strtolower($tableName)));
     }
 
     /**
