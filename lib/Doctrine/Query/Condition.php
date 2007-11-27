@@ -74,8 +74,6 @@ abstract class Doctrine_Query_Condition extends Doctrine_Query_Part
         return '(' . $r . ')';
     }
 
-
-
     /**
      * parses a literal value and returns the parsed value
      *
@@ -100,7 +98,9 @@ abstract class Doctrine_Query_Condition extends Doctrine_Query_Part
 
                 if ( ! is_numeric($a[0])) {
                     // a component found
-                    $value = $this->query->getTableAlias($a[0]). '.' . $a[1];
+                    $field     = array_pop($a);
+                	  $reference = implode('.', $a);
+                    $value = $this->query->getTableAlias($reference). '.' . $field;
                 }
             }
         } else {
