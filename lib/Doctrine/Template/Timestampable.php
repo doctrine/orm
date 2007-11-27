@@ -58,7 +58,8 @@ class Doctrine_Template_Timestampable extends Doctrine_Template
      */
     public function __construct(array $options)
     {
-        $this->_options = array_merge($options, $this->_options);
+        $this->_options['created'] = array_merge($this->_options['created'], $options['created']);
+        $this->_options['updated'] = array_merge($this->_options['updated'], $options['updated']);
     }
     
     /**
