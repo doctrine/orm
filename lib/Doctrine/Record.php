@@ -1294,8 +1294,12 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
      *
      * @return Doctrine_Record
      */
-    public function copy()
+    public function copy($deep = false)
     {
+        if ($deep) {
+            return $this->copyDeep();
+        }
+        
         $data = $this->_data;
 
         if ($this->_table->getIdentifierType() === Doctrine::IDENTIFIER_AUTOINC) {

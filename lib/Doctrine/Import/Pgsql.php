@@ -175,12 +175,22 @@ class Doctrine_Import_Pgsql extends Doctrine_Import
                 'length'    => $decl['length'],
                 'fixed'     => $decl['fixed'],
                 'unsigned'  => $decl['unsigned'],
-                'notnull'   => ($val['isnotnull'] == ''),
+                'notnull'   => ($val['isnotnull'] == true),
                 'default'   => $val['default'],
                 'primary'   => ($val['pri'] == 't'),
             );
+            
+            $matches = array(); 
+
+            if (preg_match("/^nextval\('(.*)'(::.*)?\)$/", $description['default'], $matches)) { 
+     
+                $description['sequence'] = $this->conn->formatter->fixSequenceName($matches[1]); 
+                $description['default'] = null; 
+            } 
+            
             $columns[$val['field']] = $description;
         }
+        
         return $columns;
     }
 

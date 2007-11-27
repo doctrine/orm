@@ -332,6 +332,7 @@ class Doctrine_Import_Schema
                     $colDesc['default'] = isset($field['default']) ? $field['default']:null;
                     $colDesc['autoincrement'] = isset($field['autoincrement']) ? (bool) (isset($field['autoincrement']) && $field['autoincrement']):null;
                     $colDesc['autoincrement'] = isset($field['autoinc']) ? (bool) (isset($field['autoinc']) && $field['autoinc']):$colDesc['autoincrement'];
+                    $colDesc['sequence'] = isset($field['sequence']) ? (string) $field['sequence']:null;
                     $colDesc['values'] = isset($field['values']) ? (array) $field['values']:null;
                     
                     $validators = Doctrine::getValidators();

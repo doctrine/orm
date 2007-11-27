@@ -293,7 +293,6 @@ abstract class Doctrine_Record_Abstract extends Doctrine_Access
      */
     public function actAs($tpl, array $options = array())
     {
-
         if ( ! is_object($tpl)) {
             if (class_exists($tpl, true)) {
                 $tpl = new $tpl($options);
@@ -312,8 +311,9 @@ abstract class Doctrine_Record_Abstract extends Doctrine_Access
         if ( ! ($tpl instanceof Doctrine_Template)) {
             throw new Doctrine_Record_Exception('Loaded plugin class is not an istance of Doctrine_Template.');
         }
+
         $className = get_class($tpl);
-        
+
         $this->_table->addTemplate($className, $tpl);
 
         $tpl->setTable($this->_table);
