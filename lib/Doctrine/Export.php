@@ -1174,16 +1174,14 @@ class Doctrine_Export extends Doctrine_Connection_Module
     {
         $plugins = array();
 
-        foreach ($table->getTemplates() as $name => $template) {
-            $plugin = $template->getPlugin();
-
+        foreach ($table->getPlugins() as $name => $plugin) {
             if ($plugin === null) {
                 continue;                     	
             }
 
             $plugins[] = $plugin;
 
-            $pluginTable = $plugin->getOption('pluginTable');
+            $pluginTable = $plugin->getTable();
             
             if ($pluginTable instanceof Doctrine_Table) {
                 $plugins = array_merge($plugins, $this->getAllPlugins($pluginTable));
@@ -1205,7 +1203,7 @@ class Doctrine_Export extends Doctrine_Connection_Module
     	$sql = array();
 
         foreach ($this->getAllPlugins($table) as $name => $plugin) {
-            $table = $plugin->getOption('pluginTable');
+            $table = $plugin->getTable();
             
             // Make sure plugin has a valid table
             if ($table instanceof Doctrine_Table) {

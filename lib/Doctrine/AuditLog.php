@@ -86,7 +86,7 @@ class Doctrine_AuditLog extends Doctrine_Plugin
      * @param Doctrine_Table $table 
      * @return boolean true on success otherwise false.
      */
-    public function buildDefinition()
+    public function setTableDefinition()
     {
         $name = $this->_options['table']->getComponentName();
 
@@ -99,19 +99,9 @@ class Doctrine_AuditLog extends Doctrine_Plugin
             unset($columns[$column]['unique']);
         }
 
+        $this->hasColumns($columns);
+
         // the version column should be part of the primary key definition
-        $columns[$this->_options['versionColumn']] = array('type' => 'integer',
-                                                           'length' => 8,
-                                                           'primary' => true);
-
-        $id = $this->_options['table']->getIdentifier();
-
-        $relations = $this->buildRelation();
-
-        $this->generateClass($columns, $relations);
-        
-        $this->_options['pluginTable'] = $this->_options['table']->getConnection()->getTable($this->_options['className']);
-
-        return true;
+        $this->hasColumn($this->_options['versionColumn'], 'integer', 8, array('primary' => true));
     }
 }

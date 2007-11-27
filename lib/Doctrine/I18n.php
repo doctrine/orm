@@ -52,25 +52,25 @@ class Doctrine_I18n extends Doctrine_Plugin
         $this->_options = array_merge($this->_options, $options);
     }
 
+    public function buildRelation()
+    {
+    	$this->buildForeignRelation('Translation');
+        $this->buildLocalRelation();
+    }
+
     /**
      * buildDefinition
      *
-     * @param object $Doctrine_Table 
+     * @param object $Doctrine_Table
      * @return void
      */
-    public function buildDefinition()
+    public function setTableDefinition()
     {
       	if (empty($this->_options['fields'])) {
       	    throw new Doctrine_I18n_Exception('Fields not set.');
       	}
 
-        $name = $this->_options['table']->getComponentName();
-
-        $columns = array();
-
         $options = array('className' => $this->_options['className']);
-
-        $fk = $this->buildForeignKeys($this->_options['table']);
 
         $cols = $this->_options['table']->getColumns();
 
@@ -81,23 +81,11 @@ class Doctrine_I18n extends Doctrine_Plugin
             }
         }
 
-        $columns['lang'] = array('type'    => 'string',
-                                 'length'  => 2,
-                                 'fixed'   => true,
-                                 'primary' => true);
+        $this->hasColumns($columns);
 
-        $relations = $this->buildRelation();
-
-        $columns += $fk;
-
-        $options = array('queryParts' => array('indexBy' => 'lang'));
-
-        $this->generateClass($columns, $relations, $options);
-
-        $this->_options['pluginTable'] = $this->_options['table']->getConnection()->getTable($this->_options['className']);
-        
-        $this->_options['pluginTable']->bindQueryPart('indexBy', 'lang');
-
-        return true;
+        $this->hasColumn('lang', 'string', 2, array('fixed'   => true,
+                                                    'primary' => true));
+                                                    
+        $this->bindQueryParts(array('indexBy' => 'lang'));
     }
 }

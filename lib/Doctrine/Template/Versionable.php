@@ -38,7 +38,7 @@ class Doctrine_Template_Versionable extends Doctrine_Template
     }
     public function setUp()
     {
-        $this->_plugin->buildPluginDefinition($this->_table);
+        $this->_plugin->initialize($this->_table);
 
         $this->hasColumn('version', 'integer', 8);
 

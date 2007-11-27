@@ -30,7 +30,7 @@
  * @link        www.phpdoctrine.com
  * @since       1.0
  */
-abstract class Doctrine_Plugin
+abstract class Doctrine_Plugin extends Doctrine_Record_Abstract
 {
     /**
      * @var array $_options     an array of plugin specific options
@@ -41,7 +41,8 @@ abstract class Doctrine_Plugin
                                 'table'         => false,
                                 'pluginTable'   => false,
                                 'children'      => array());
-
+                                
+    protected $_initialized = false;
     /**
      * __get
      * an alias for getOption
@@ -110,11 +111,19 @@ abstract class Doctrine_Plugin
         return $this->_options;
     }
 
-    public function buildPluginDefinition(Doctrine_Table $table)
+    public function initialize(Doctrine_Table $table)
     {
-    	$this->initOptions();
+    	if ($this->_initialized) {
+    	    return false;
+    	}
+        
+        $this->_initialized = true;
 
-    	$this->_options['table'] = $table;
+        $this->initOptions();
+
+        $table->addPlugin($this, get_class($this));
+
+        $this->_options['table'] = $table;
 
         $this->_options['className'] = str_replace('%CLASS%',
                                                    $this->_options['table']->getComponentName(),
@@ -125,35 +134,47 @@ abstract class Doctrine_Plugin
             return false;
         }
 
-        $this->buildDefinition();
+        $conn = $this->_options['table']->getConnection();
+
+        $this->_table = new Doctrine_Table($this->_options['className'], $conn);
+        
+        $conn->addTable($this->_table);
+
+        $fk = $this->buildForeignKeys($this->_options['table']);
+        
+        $this->_table->setColumns($fk);
+
+        $this->buildRelation();
+
+        $this->setTableDefinition();
+        $this->setUp();
+
+        $this->generateClass($this->_table->getColumns());
 
         $this->buildChildDefinitions();
+
     }
     /** 
      * empty template method for providing the concrete plugins the ability
      * to initialize options before the actual definition is being built
-     * 
+     *
      * @return void
      */
     public function initOptions()
     {
-    	
+        
     }
-
-    abstract public function buildDefinition();
-
     public function buildChildDefinitions()
     {
-    	if ( ! isset($this->_options['children'])) {
-    	   Doctrine::dump(debug_backtrace());
+        if ( ! isset($this->_options['children'])) {
             throw new Doctrine_Plugin_Exception("Unknown option 'children'.");
-    	}
+        }
 
         foreach ($this->_options['children'] as $child) {
-            $this->_options['pluginTable']->addTemplate(get_class($child), $child);
+            $this->_table->addTemplate(get_class($child), $child);
 
-            $child->setTable($this->_options['pluginTable']);
-            
+            $child->setTable($this->_table);
+
             $child->setUp();
         }
     }
@@ -186,6 +207,35 @@ abstract class Doctrine_Plugin
         return $fk;
     }
 
+    public function buildLocalRelation()
+    {
+        $options = array('local'    => $this->_options['table']->getIdentifier(),
+                         'foreign'  => $this->_options['table']->getIdentifier(),
+                         'type'     => Doctrine_Relation::MANY);
+
+        $options['type'] = Doctrine_Relation::ONE;
+        $options['onDelete'] = 'CASCADE';
+        $options['onUpdate'] = 'CASCADE';
+
+        $this->_table->getRelationParser()->bind($this->_options['table']->getComponentName(), $options);
+    }
+    
+    public function buildForeignRelation($alias = null)
+    {
+        $options = array('local'    => $this->_options['table']->getIdentifier(),
+                         'foreign'  => $this->_options['table']->getIdentifier(),
+                         'type'     => Doctrine_Relation::MANY);
+
+        $aliasStr = '';
+
+        if ($alias !== null) {
+            $aliasStr = ' as ' . $alias;
+        }
+
+        $this->_options['table']->getRelationParser()->bind($this->_table->getComponentName() . $aliasStr,
+                                                            $options);
+    }
+
     /**
      * build a relation array to given table
      *
@@ -196,13 +246,8 @@ abstract class Doctrine_Plugin
      */
     public function buildRelation()
     {
-        $relation = array($this->_options['table']->getComponentName() =>
-                        array('local'    => $this->_options['table']->getIdentifier(),
-                              'foreign'  => $this->_options['table']->getIdentifier(),
-                              'onDelete' => 'CASCADE',
-                              'onUpdate' => 'CASCADE'));
-
-        return $relation;
+    	$this->buildForeignRelation();
+        $this->buildLocalRelation();
     }
 
     /**
@@ -219,7 +264,7 @@ abstract class Doctrine_Plugin
      */
     public function generateClass(array $columns = array(), array $relations = array(), array $options = array())
     {
-    	$options['className'] = $this->_options['className'];
+        $options['className'] = $this->_options['className'];
 
         $builder = new Doctrine_Import_Builder();
 

@@ -49,17 +49,9 @@ class Doctrine_Template_I18n extends Doctrine_Template
      */
     public function setUp()
     {
-        $name = $this->_table->getComponentName();
-
-        $this->_plugin->buildPluginDefinition($this->_table);
-
-        $className = $this->_plugin->getOption('className');
-
-        $id = $this->_table->getIdentifier();
-
-        $this->hasMany($className . ' as Translation', array('local' => $id, 'foreign' => $id));
+        $this->_plugin->initialize($this->_table); 
     }
-    
+
     /**
      * getI18n
      *

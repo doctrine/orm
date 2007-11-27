@@ -37,18 +37,9 @@ class Doctrine_Template_Searchable extends Doctrine_Template
         $this->_plugin = new Doctrine_Search($options); 
     }
     
-    public function getPlugin()
-    {
-        return $this->_plugin;
-    }
-
     public function setUp()
     {
-        $id = $this->_table->getIdentifier();
-
-        $this->_plugin->buildPluginDefinition($this->_table);
-
-        $this->hasMany($this->_plugin->getOption('className'), array('local' => $id, 'foreign' => $id));
+        $this->_plugin->initialize($this->_table);
 
         $this->addListener(new Doctrine_Search_Listener($this->_plugin));
     }

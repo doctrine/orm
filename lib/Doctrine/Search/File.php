@@ -51,8 +51,12 @@ class Doctrine_Search_File extends Doctrine_Search
             $this->_options['fields'] = array('url', 'content');
         }
 
-        $this->buildPluginDefinition($table);
+        $this->initialize($table);
     }
+    public function buildRelation()
+    {
+    	
+    }	
     /**
      * indexes given directory
      *
