@@ -164,6 +164,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
                                      'treeOptions'    => null,
                                      'indexes'        => array(),
                                      'parents'        => array(),
+                                     'joinedParents'  => array(),
                                      'queryParts'     => array(),
                                      'versioning'     => null,
                                      );
@@ -227,6 +228,10 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
             // if tree, set up tree
             if ($this->isTree()) {
                 $this->getTree()->setUp();
+            }
+        } else {
+            if ( ! isset($this->_options['tableName'])) {
+                $this->_options['tableName'] = Doctrine::tableize($this->_options['name']);
             }
         }
         $this->_filters[]  = new Doctrine_Record_Filter_Standard();
@@ -926,7 +931,12 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
         }
         return $columnName;
     }
-
+    public function setColumns(array $definitions)
+    {
+        foreach ($definitions as $name => $options) {
+            $this->setColumn($name, $options['type'], $options['length'], $options);
+        }
+    }
     /**
      * setColumn
      *
@@ -1752,6 +1762,10 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
         $this->_templates[$template] = $impl;
 
         return $this;
+    }
+    public function getPlugins()
+    {
+        return $this->_plugins;
     }
     public function getPlugin($plugin)
     {
