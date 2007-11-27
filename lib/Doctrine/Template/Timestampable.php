@@ -66,8 +66,8 @@ class Doctrine_Template_Timestampable extends Doctrine_Template
      */
     public function setTableDefinition()
     {
-        $this->hasColumn($this->_options['created']['name'], $this->_options['created']['type'], null, $this->_options['created']['name']);
-        $this->hasColumn($this->_options['updated']['name'], $this->_options['updated']['type'], null, $this->_options['updated']['name']);
+        $this->hasColumn($this->_options['created']['name'], $this->_options['created']['type'], null, $this->_options['created']['options']);
+        $this->hasColumn($this->_options['updated']['name'], $this->_options['updated']['type'], null, $this->_options['updated']['options']);
         
         $this->addListener(new Doctrine_Template_Listener_Timestampable($this->_options));
     }
