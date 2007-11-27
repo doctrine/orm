@@ -273,10 +273,12 @@ class User extends Doctrine_Record
         $this->actAs('Timestampable', array('created' =>  array('name'    =>  'created_at',
                                                                 'type'    =>  'timestamp',
                                                                 'format'  =>  'Y-m-d H:i:s',
+                                                                'disabled' => false,
                                                                 'options' =>  array()),
                                             'updated' =>  array('name'    =>  'updated_at',
                                                                 'type'    =>  'timestamp',
                                                                 'format'  =>  'Y-m-d H:i:s',
+                                                                'disabled' => false,
                                                                 'options' =>  array())));
     }
 }
@@ -298,6 +300,28 @@ User:
         type: timestamp
         format: Y-m-d H:i:s
         options: []
+  columns:
+    username:
+      type: string(125)
+    password:
+      type: string(255)
+</code>
+
+If you are only interested in keeping using only one of the columns, such as a created_at timestamp, but not a an updated_at field, set the flag disabled=>true for either of the fields as in the example below. 
+
+YAML Example
+<code type="yaml">
+---
+User:
+  actAs:
+    Timestampable:
+      created:
+        name: created_at
+        type: timestamp
+        format:Y-m-d H:i:s
+        options: []
+      updated:
+        disabled: true
   columns:
     username:
       type: string(125)

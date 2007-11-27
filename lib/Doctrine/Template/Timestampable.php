@@ -42,10 +42,12 @@ class Doctrine_Template_Timestampable extends Doctrine_Template
     protected $_options = array('created' =>  array('name'    =>  'created_at',
                                                     'type'    =>  'timestamp',
                                                     'format'  =>  'Y-m-d H:i:s',
+                                                    'disabled' => false,
                                                     'options' =>  array()),
                                 'updated' =>  array('name'    =>  'updated_at',
                                                     'type'    =>  'timestamp',
                                                     'format'  =>  'Y-m-d H:i:s',
+                                                    'disabled' => false,
                                                     'options' =>  array()));
     
     /**
@@ -66,9 +68,12 @@ class Doctrine_Template_Timestampable extends Doctrine_Template
      */
     public function setTableDefinition()
     {
-        $this->hasColumn($this->_options['created']['name'], $this->_options['created']['type'], null, $this->_options['created']['options']);
-        $this->hasColumn($this->_options['updated']['name'], $this->_options['updated']['type'], null, $this->_options['updated']['options']);
-        
+        if(!$this->_options['created']['disabled']) {
+            $this->hasColumn($this->_options['created']['name'], $this->_options['created']['type'], null, $this->_options['created']['options']);
+        }
+        if(!$this->_options['updated']['disabled']) {
+            $this->hasColumn($this->_options['updated']['name'], $this->_options['updated']['type'], null, $this->_options['updated']['options']);
+        }
         $this->addListener(new Doctrine_Template_Listener_Timestampable($this->_options));
     }
 }
