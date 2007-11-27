@@ -158,3 +158,20 @@ $users[0]->description;
 </code>
 
 Doctrine does the proxy evaluation based on loaded field count. It does not evaluate which fields are loaded on field-by-field basis. The reason for this is simple: performance. Field lazy-loading is very rarely needed in PHP world, hence introducing some kind of variable to check which fields are loaded would introduce unnecessary overhead to basic fetching.
+
+++ Overriding the constructor
+
+Sometimes you want to do some operations at the creation time of your objects. Doctrine doesn't allow you to override the Doctrine_Record::__construct() method but provides an alternative:
+
+<code type="php">
+class User extends Doctrine_Record
+{
+    public function construct()
+    {
+        $this->name = 'Test Name';
+        $this->do_something();
+    }
+}
+</code>
+
+The only drawback is that it doesn't provide a way to pass parameters to the constructor.
