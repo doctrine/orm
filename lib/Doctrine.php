@@ -441,13 +441,13 @@ final class Doctrine
     private static $_debug = false;
 
     /**
-     * _loadedModels
+     * _loadedModelFiles
      *
      * Array of all the loaded models and the path to each one for autoloading
      *
      * @var array
      */
-    private static $_loadedModels = array();
+    private static $_loadedModelFiles = array();
 
     /**
      * _validators
@@ -517,13 +517,44 @@ final class Doctrine
                 foreach ($it as $file) {
                     $e = explode('.', $file->getFileName());
                     if (end($e) === 'php' && strpos($file->getFileName(), '.inc') === false) {
-                        self::$_loadedModels[$e[0]] = $file->getPathName();
+                        self::$_loadedModelFiles[$e[0]] = $file->getPathName();
+                    }
+                }
+            }
+
+            $loadedModels = array();
+
+            $modelFiles = array_keys(self::$_loadedModelFiles);
+
+            foreach ($modelFiles as $name) {
+                if (class_exists($name)) {
+                    $declaredBefore = get_declared_classes();
+
+                    if (self::isValidModelClass($name) && !in_array($name, $loadedModels)) {
+                        $loadedModels[] = $name;
+                    }
+                } else {
+                    // Determine class names by the actual inclusion of the model file
+                    // The possibility exists that the class name(s) contained in the model
+                    // file is not the same as the actual model file name itself
+                    if (isset(self::$_loadedModelFiles[$name])) {
+                        require_once self::$_loadedModelFiles[$name];
+                        $declaredAfter = get_declared_classes();
+                        // Using array_slice since array_diff is broken is some versions
+                        $foundClasses = array_slice($declaredAfter, count($declaredBefore) - 1);
+                        if ($foundClasses) {
+                            foreach ($foundClasses as $name) {
+                                if (self::isValidModelClass($name) && !in_array($name, $loadedModels)) {
+                                    $loadedModels[] = $name;
+                                }
+                            }
+                        }
                     }
                 }
             }
         }
 
-        return self::getLoadedModels(array_keys(self::$_loadedModels));
+        return self::filterInvalidModels($loadedModels);
     }
 
     /**
@@ -541,57 +572,51 @@ final class Doctrine
     {
         if ($classes === null) {
             $classes = get_declared_classes();
-            $classes = array_merge($classes, array_keys(self::$_loadedModels));
+            $classes = array_merge($classes, array_keys(self::$_loadedModelFiles));
         }
 
-        $loadedModels = array();
-
-        foreach ((array) $classes as $name) {
-            try {
-                $declaredBefore = get_declared_classes();
-                $class = new ReflectionClass($name);
-                if (self::isValidModelClass($class)) {
-                    $loadedModels[] = $name;
-                }
-            } catch (Exception $e) {
-                // Determine class names by the actual inclusion of the model file
-                // The possibility exists that the class name(s) contained in the model
-                // file is not the same as the actual model file name itself
-                if (isset(self::$_loadedModels[$name])) {
-                    try {
-                        require_once self::$_loadedModels[$name];
-                        $declaredAfter = get_declared_classes();
-                        // Using array_slice since array_diff is broken is some versions
-                        $foundClasses = array_slice($declaredAfter, count($declaredBefore)-1);
-                        if ($foundClasses) {
-                            foreach ($foundClasses as $name) {
-                                $class = new ReflectionClass($name);
-                                if (self::isValidModelClass($class)) {
-                                    $loadedModels[] = $name;
-                                }
-                            }
-                        }
-                    } catch (Exception $e) {
-                        continue;
-                    }
-                }
-            }
-
-        }
-        return $loadedModels;
+        return self::filterInvalidModels($classes);
     }
 
+    /**
+     * filterInvalidModels
+     *
+     * Filter through an array of classes and return all the classes that are valid models
+     *
+     * @param classes  Array of classes to filter through, otherwise uses get_declared_classes()
+     * @return array   $loadedModels
+     */
+    public static function filterInvalidModels($classes)
+    {
+        $validModels = array();
+
+        foreach ((array) $classes as $name) {
+            if (self::isValidModelClass($name) && !in_array($name, $validModels)) {
+                $validModels[] = $name;
+            }
+        }
+
+        return $validModels;
+    }
 
     /**
      * isValidModelClass
      *
-     * Checks whether a reflection class is a valid Doctrine model class
+     * Checks if what is passed is a valid Doctrine_Record
      *
-     * @param class  A reflection class to validate
-     * @return boolean
+     * @param   mixed   $class Can be a string named after the class, an instance of the class, or an instance of the class reflected
+     * @return  boolean
      */
     public static function isValidModelClass($class)
     {
+        if ($class instanceof Doctrine_Record) {
+            $class = get_class($class);
+        }
+
+        if (is_string($class) && class_exists($class)) {
+            $class = new ReflectionClass($class);
+        }
+
         if ($class instanceof ReflectionClass) {
             // Skip the following classes
             // - abstract classes
@@ -600,12 +625,13 @@ final class Doctrine
             if (!$class->isAbstract() &&
                 $class->isSubClassOf('Doctrine_Record') &&
                 $class->hasMethod('setTableDefinition')) {
+
                 return true;
             }
         }
+
         return false;
     }
-
 
     /**
      * getConnectionByTableName
@@ -1001,7 +1027,7 @@ final class Doctrine
             return true;
         }
 
-        $loadedModels = self::$_loadedModels;
+        $loadedModels = self::$_loadedModelFiles;
 
         if (isset($loadedModels[$className]) && file_exists($loadedModels[$className])) {
             require_once($loadedModels[$className]);

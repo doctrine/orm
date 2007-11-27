@@ -1124,7 +1124,7 @@ class Doctrine_Export extends Doctrine_Connection_Module
      */
     public function exportClassesSql(array $classes)
     {
-        $models = Doctrine::getLoadedModels($classes);
+        $models = Doctrine::filterInvalidModels($classes);
         
         $sql = array();
         

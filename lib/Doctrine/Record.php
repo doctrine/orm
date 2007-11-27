@@ -1174,7 +1174,7 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
      * @param boolean $deep - Return also the relations
      * @return array
      */
-    public function toArray($deep = false, $prefixKey = false)
+    public function toArray($deep = true, $prefixKey = false)
     {
         $a = array();
 
@@ -1184,10 +1184,12 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
             }
             $a[$column] = $value;
         }
+
         if ($this->_table->getIdentifierType() ==  Doctrine::IDENTIFIER_AUTOINC) {
             $i      = $this->_table->getIdentifier();
             $a[$i]  = $this->getIncremented();
         }
+
         if ($deep) {
             foreach ($this->_references as $key => $relation) {
                 if ( ! $relation instanceof Doctrine_Null) {
@@ -1195,21 +1197,59 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
                 }
             }
         }
+
         return array_merge($a, $this->_values);
     }
-    public function fromArray($array)
+
+    /**
+     * merge
+     *
+     * merges this record with an array of values
+     * or with another existing instance of this object
+     *
+     * @param  mixed $data Data to merge. Either another instance of this model or an array
+     * @param  bool  $deep Bool value for whether or not to merge the data deep
+     * @return void
+     */
+    public function merge($data, $deep = true)
+    {
+        if ($data instanceof $this) {
+            $array = $data->toArray($deep);
+        } else if (is_array($data)) {
+            $array = $data;
+        }
+
+        return $this->fromArray($array, $deep);
+    }
+
+    /**
+     * fromArray
+     *
+     * @param   string $array
+     * @param   bool  $deep Bool value for whether or not to merge the data deep
+     * @return  void
+     */
+    public function fromArray($array, $deep = true)
     {
         if (is_array($array)) {
             foreach ($array as $key => $value) {
-                if ($this->getTable()->hasRelation($key)) {
-                    $this->$key->fromArray($value);
+                if ($this->getTable()->hasRelation($key) && $deep) {
+                    $this->$key->fromArray($value, $deep);
                 } else if($this->getTable()->hasColumn($key)) {
                     $this->set($key, $value);
                 }
             }
         }
     }
-    public function exportTo($type, $deep = false)
+
+    /**
+     * exportTo
+     *
+     * @param string $type 
+     * @param string $deep 
+     * @return void
+     */
+    public function exportTo($type, $deep = true)
     {
         if ($type == 'array') {
             return $this->toArray($deep);
@@ -1217,6 +1257,15 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
             return Doctrine_Parser::dump($this->toArray($deep, true), $type);
         }
     }
+
+    /**
+     * importFrom
+     *
+     * @param string $type 
+     * @param string $data 
+     * @return void
+     * @author Jonathan H. Wage
+     */
     public function importFrom($type, $data)
     {
         if ($type == 'array') {
@@ -1294,12 +1343,8 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
      *
      * @return Doctrine_Record
      */
-    public function copy($deep = false)
+    public function copy($deep = true)
     {
-        if ($deep) {
-            return $this->copyDeep();
-        }
-        
         $data = $this->_data;
 
         if ($this->_table->getIdentifierType() === Doctrine::IDENTIFIER_AUTOINC) {
@@ -1315,30 +1360,21 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
             if ( ! ($val instanceof Doctrine_Null)) {
                 $ret->_modified[] = $key;
             }
-        } 
+        }
 
-        return $ret;
-    }
-
-    /**
-     * copyDeep
-     * returns a copy of this object and all its related objects
-     *
-     * @return Doctrine_Record
-     */
-    public function copyDeep() {
-        $copy = $this->copy();
-
-        foreach ($this->_references as $key => $value) {
-            if ($value instanceof Doctrine_Collection) {
-                foreach ($value as $record) {
-                    $copy->{$key}[] = $record->copyDeep();
+        if ($deep) {
+            foreach ($this->_references as $key => $value) {
+                if ($value instanceof Doctrine_Collection) {
+                    foreach ($value as $record) {
+                        $rt->{$key}[] = $record->copy($deep);
+                    }
+                } else {
+                    $rt->set($key, $value->copy($deep));
                 }
-            } else {
-                $copy->set($key, $value->copyDeep());
             }
         }
-        return $copy;
+
+        return $ret;
     }
 
     /**
@@ -1474,66 +1510,6 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
     {
         $rel = $this->_table->getRelation($name);
         $this->_references[$name] = $rel->fetchRelatedFor($this);
-    }
-
-    /**
-     * merge
-     * merges this record with an array of values
-     *
-     * @param array $values
-     * @return void
-     */
-    public function merge(array $values)
-    {
-        foreach ($this->_table->getFieldNames() as $fieldName) {
-            try {
-                if (isset($values[$fieldName])) {
-                    $this->set($fieldName, $values[$fieldName]);
-                }
-            } catch (Doctrine_Exception $e) {
-                // silence all exceptions
-            }
-        }
-    }
-
-    /**
-     * mergeDeep
-     * merges this record with an array of values
-     *
-     * @pre it is expected that the array keys representing a hasMany
-     * relationship are the keyColumn set with INDEXBY
-     *
-     * @param array $values
-     * @param $rmFromCollection if some records are not found in the array,
-     *    they are removed from the collection<->relation
-     * @return void
-     */
-    public function mergeDeep(array $values, $rmFromCollection = false)
-    {
-        $this->merge($values);
-
-        foreach ($values as $rel_name => $rel_data) {
-            if ($this->getTable()->hasRelation($rel_name)) {
-                $rel = $this->get($rel_name);
-                if ($rel instanceof Doctrine_Collection) {
-                    foreach ($rel as $key => $record) {
-                        if (isset($rel_data[$key])) {
-                            $record->mergeDeep($rel_data[$key], $rmFromCollection);
-                            unset($rel_data[$key]);
-                        } elseif ($rmFromCollection) {
-                            $rel->remove($key);
-                        }
-                    }
-                    foreach ($rel_data as $key => $new_data) {
-                        $new_record = $rel->getTable()->create();
-                        $new_record->mergeDeep($new_data);
-                        $rel->add($new_record, $key);
-                    }
-                } else {
-                    $rel->mergeDeep($rel_data);
-                }
-            }
-        }
     }
 
     /**

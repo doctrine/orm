@@ -274,7 +274,7 @@ class Doctrine_Data
      */
     public function purge($models = array())
     {
-        $models = Doctrine::getLoadedModels($models);
+        $models = Doctrine::filterInvalidModels($models);
 
         foreach ($models as $model)
         {
