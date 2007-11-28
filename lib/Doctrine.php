@@ -527,9 +527,8 @@ final class Doctrine
             $modelFiles = array_keys(self::$_loadedModelFiles);
 
             foreach ($modelFiles as $name) {
+                $declaredBefore = get_declared_classes();
                 if (class_exists($name)) {
-                    $declaredBefore = get_declared_classes();
-
                     if (self::isValidModelClass($name) && !in_array($name, $loadedModels)) {
                         $loadedModels[] = $name;
                     }
