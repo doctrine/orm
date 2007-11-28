@@ -30,7 +30,7 @@
  * @version     $Revision$
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  */
-class Doctrine_AuditLog extends Doctrine_Plugin
+class Doctrine_AuditLog extends Doctrine_Record_Generator
 {
     protected $_options = array(
                             'className'     => '%CLASS%Version',

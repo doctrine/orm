@@ -1153,7 +1153,7 @@ class Doctrine_Export extends Doctrine_Connection_Module
             }
             
             if ($table->getAttribute(Doctrine::ATTR_EXPORT) & Doctrine::EXPORT_PLUGINS) {
-                $sql = array_merge($sql, $this->exportPluginsSql($table));
+                $sql = array_merge($sql, $this->exportGeneratorsSql($table));
             }
         }
         
@@ -1165,45 +1165,45 @@ class Doctrine_Export extends Doctrine_Connection_Module
     }
 
     /**
-     * fetches all plugins recursively for given table
+     * fetches all generators recursively for given table
      *
-     * @param Doctrine_Table $table     table object to retrieve the plugins from
-     * @return array                    an array of Doctrine_Plugin objects
+     * @param Doctrine_Table $table     table object to retrieve the generators from
+     * @return array                    an array of Doctrine_Record_Generator objects
      */
-    public function getAllPlugins(Doctrine_Table $table)
+    public function getAllGenerators(Doctrine_Table $table)
     {
-        $plugins = array();
+        $generators = array();
 
-        foreach ($table->getPlugins() as $name => $plugin) {
-            if ($plugin === null) {
+        foreach ($table->getGenerators() as $name => $generator) {
+            if ($generator === null) {
                 continue;                     	
             }
 
-            $plugins[] = $plugin;
+            $generators[] = $generator;
 
-            $pluginTable = $plugin->getTable();
+            $generatorTable = $generator->getTable();
             
-            if ($pluginTable instanceof Doctrine_Table) {
-                $plugins = array_merge($plugins, $this->getAllPlugins($pluginTable));
+            if ($generatorTable instanceof Doctrine_Table) {
+                $generators = array_merge($generators, $this->getAllGenerators($generatorTable));
             }
         }
 
-        return $plugins;
+        return $generators;
     }
 
     /**
-     * exportPluginsSql
+     * exportGeneratorsSql
      * exports plugin tables for given table
      *
-     * @param Doctrine_Table $table     the table in which the plugins belong to
-     * @return array    an array of sql strings
+     * @param Doctrine_Table $table     the table in which the generators belong to
+     * @return array                    an array of sql strings
      */
-    public function exportPluginsSql(Doctrine_Table $table)
+    public function exportGeneratorsSql(Doctrine_Table $table)
     {
     	$sql = array();
 
-        foreach ($this->getAllPlugins($table) as $name => $plugin) {
-            $table = $plugin->getTable();
+        foreach ($this->getAllGenerators($table) as $name => $generator) {
+            $table = $generator->getTable();
             
             // Make sure plugin has a valid table
             if ($table instanceof Doctrine_Table) {

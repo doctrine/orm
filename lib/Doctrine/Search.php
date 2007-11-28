@@ -30,7 +30,7 @@
  * @link        www.phpdoctrine.com
  * @since       1.0
  */
-class Doctrine_Search extends Doctrine_Plugin
+class Doctrine_Search extends Doctrine_Record_Generator
 {
     const INDEX_FILES = 0;
 

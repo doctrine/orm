@@ -294,11 +294,11 @@ abstract class Doctrine_Record_Abstract extends Doctrine_Access
         return $this;
     }
 
-    public function loadPlugin(Doctrine_Plugin $plugin)
+    public function loadGenerator(Doctrine_Record_Generator $generator)
     {
-    	$plugin->initialize($this->_table);
+    	$generator->initialize($this->_table);
 
-        $this->_table->addPlugin($plugin, get_class($plugin));
+        $this->_table->addGenerator($generator, get_class($generator));
     }
 
 

@@ -20,7 +20,7 @@
  */
 
 /**
- * Doctrine_Plugin
+ * Doctrine_Record_Generator
  *
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  * @package     Doctrine
@@ -30,7 +30,7 @@
  * @link        www.phpdoctrine.com
  * @since       1.0
  */
-abstract class Doctrine_Plugin extends Doctrine_Record_Abstract
+abstract class Doctrine_Record_Generator extends Doctrine_Record_Abstract
 {
     /**
      * @var array $_options     an array of plugin specific options
@@ -96,7 +96,7 @@ abstract class Doctrine_Plugin extends Doctrine_Record_Abstract
         return $this;
     }
 
-    public function addChild(Doctrine_Template $template)
+    public function addChild(Doctrine_Record_Generator $template)
     {
         $this->_options['children'][] = $template;
     }
@@ -121,7 +121,7 @@ abstract class Doctrine_Plugin extends Doctrine_Record_Abstract
 
         $this->initOptions();
 
-        $table->addPlugin($this, get_class($this));
+        $table->addGenerator($this, get_class($this));
 
         $this->_options['table'] = $table;
 
@@ -171,7 +171,7 @@ abstract class Doctrine_Plugin extends Doctrine_Record_Abstract
         }
 
         foreach ($this->_options['children'] as $child) {
-            $this->_table->addTemplate(get_class($child), $child);
+            $this->_table->addGenerator($child, get_class($child));
 
             $child->setTable($this->_table);
 
@@ -274,7 +274,7 @@ abstract class Doctrine_Plugin extends Doctrine_Record_Abstract
 
                 $builder->buildRecord($options, $columns, $relations);
             } else {
-                throw new Doctrine_Plugin_Exception('If you wish to generate files then you must specify the path to generate the files in.');
+                throw new Doctrine_Record_Exception('If you wish to generate files then you must specify the path to generate the files in.');
             }
         } else {
             $def = $builder->buildDefinition($options, $columns, $relations);

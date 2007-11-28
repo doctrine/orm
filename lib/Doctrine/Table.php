@@ -186,14 +186,15 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
     protected $_templates   = array();
 
     /**
+     * @see Doctrine_Record_Filter
      * @var array $_filters                     an array containing all record filters attached to this table
      */
     protected $_filters     = array();
     /**
-     * @see Doctrine_Plugin
-     * @var array $_plugins                     an array containing all plugins attached to this table
+     * @see Doctrine_Record_Generator
+     * @var array $_generators                  an array containing all generators attached to this table
      */
-    protected $_plugins     = array();
+    protected $_generators     = array();
 
     /**
      * @var array $_invokedMethods              method invoker cache
@@ -607,28 +608,6 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
         return array('tableName' => $this->getOption('tableName'),
                      'columns'   => $columns,
                      'options'   => array_merge($this->getOptions(), $options));
-    }
-
-    /**
-     * exportConstraints
-     * exports the constraints of this table into database based on option definitions
-     *
-     * @throws Doctrine_Connection_Exception    if something went wrong on db level
-     * @return void
-     */
-    public function exportConstraints()
-    {
-        try {
-            $this->_conn->beginTransaction();
-
-            foreach ($this->_options['index'] as $index => $definition) {
-                $this->_conn->export->createIndex($this->_options['tableName'], $index, $definition);
-            }
-            $this->_conn->commit();
-        } catch (Doctrine_Connection_Exception $e) {
-            $this->_conn->rollback();
-            throw $e;
-        }
     }
 
     /**
@@ -1763,30 +1742,30 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
 
         return $this;
     }
-    public function getPlugins()
+    public function getGenerators()
     {
-        return $this->_plugins;
+        return $this->_generators;
     }
-    public function getPlugin($plugin)
+    public function getGenerator($generator)
     {
-        if ( ! isset($this->_plugins[$plugin])) {
-            throw new Doctrine_Table_Exception('Plugin ' . $plugin . ' not loaded');
+        if ( ! isset($this->_generators[$generator])) {
+            throw new Doctrine_Table_Exception('Generator ' . $generator . ' not loaded');
         }
 
-        return $this->_plugins[$plugin];
+        return $this->_generators[$plugin];
     }
     
-    public function hasPlugin($plugin)
+    public function hasGenerator($generator)
     {
-        return isset($this->_plugins[$plugin]);
+        return isset($this->_generators[$generator]);
     }
 
-    public function addPlugin(Doctrine_Plugin $plugin, $name = null)
+    public function addGenerator(Doctrine_Record_Generator $generator, $name = null)
     {
     	if ($name === null) {
-            $this->_plugins[] = $plugin;
+            $this->_generators[] = $generator;
         } else {
-            $this->_plugins[$name] = $plugin;
+            $this->_generators[$name] = $generator;
         }
         return $this;
     }
