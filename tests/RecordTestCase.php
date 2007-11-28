@@ -868,4 +868,29 @@ class Doctrine_Record_TestCase extends Doctrine_UnitTestCase
         $this->assertEqual(count($user->Address), 0);
     }
 
+    public function testRefreshDeep()
+    {
+        $user = $this->connection->getTable("User")->find(4);
+        $user->Address[0]->address = "Address #1";
+        $user->Address[1]->address = "Address #2";
+        $user->save();
+        $this->assertEqual(count($user->Address), 2);
+
+        Doctrine_Query::create()->delete()->from('EntityAddress')->where('user_id = ? AND address_id = ?', array($user->id, $user->Address[1]->id))->execute();
+        $user->refresh(true);
+        $this->assertEqual(count($user->Address), 1);
+
+        $address = $user->Address[0];
+        Doctrine_Query::create()->delete()->from('EntityAddress')->where('user_id = ? AND address_id = ?', array($user->id, $user->Address[0]->id))->execute();
+        $user->refresh(true);
+        $this->assertEqual(count($user->Address), 0);
+
+        $entity_address = new EntityAddress();
+        $entity_address->user_id = $user->id;
+        $entity_address->address_id = $address->id;
+        $entity_address->save();
+        $this->assertNotEqual(count($user->Address), 1);
+        $user->refresh(true);
+        $this->assertEqual(count($user->Address), 1);
+    }
 }

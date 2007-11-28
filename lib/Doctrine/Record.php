@@ -649,11 +649,14 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
      * refresh
      * refresh internal data from the database
      *
+     * @param bool $deep                        If true, fetch also current relations. Caution: this deletes
+     *                                          any aggregated values you may have queried beforee 
+     *
      * @throws Doctrine_Record_Exception        When the refresh operation fails (when the database row
      *                                          this record represents does not exist anymore)
      * @return boolean
      */
-    public function refresh()
+    public function refresh($deep = false)
     {
         $id = $this->identifier();
         if ( ! is_array($id)) {
@@ -664,14 +667,24 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
         }
         $id = array_values($id);
 
-        // Use FETCH_ARRAY to avoid clearing object relations
-        $record = $this->getTable()->find($id, Doctrine::FETCH_ARRAY);
+        if ($deep) {
+            $query = $this->getTable()->createQuery();
+            foreach (array_keys($this->_references) as $name) {
+                $query->leftJoin(get_class($this) . '.' . $name);
+            }
+            $query->where(implode(' = ? AND ', $this->getTable()->getIdentifierColumnNames()) . ' = ?');
+            $record = $query->fetchOne($id);
+        } else {
+            // Use FETCH_ARRAY to avoid clearing object relations
+            $record = $this->getTable()->find($id, Doctrine::HYDRATE_ARRAY);
+            if ($record) {
+                $this->hydrate($record);
+            }
+        }
 
         if ($record === false) {
             throw new Doctrine_Record_Exception('Failed to refresh. Record does not exist.');
         }
-
-        $this->hydrate($record);
 
         $this->_modified = array();
 
