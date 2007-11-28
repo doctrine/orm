@@ -36,7 +36,17 @@ abstract class Doctrine_Record_Abstract extends Doctrine_Access
      * @param Doctrine_Table $_table     reference to associated Doctrine_Table instance
      */
     protected $_table;
-    
+
+    public function setTableDefinition()
+    {
+    	
+    }
+    public function setUp()
+    {
+    	
+    }	
+
+
     /**
      * getTable
      * returns the associated table object
@@ -283,6 +293,14 @@ abstract class Doctrine_Record_Abstract extends Doctrine_Access
 
         return $this;
     }
+
+    public function loadPlugin(Doctrine_Plugin $plugin)
+    {
+    	$plugin->initialize($this->_table);
+
+        $this->_table->addPlugin($plugin, get_class($plugin));
+    }
+
 
     /**
      * actAs
