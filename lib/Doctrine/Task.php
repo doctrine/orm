@@ -62,7 +62,7 @@ abstract class Doctrine_Task
      * @param string $notification 
      * @return void
      */
-    public function notify()
+    public function notify($notification = null)
     {
         if (is_object($this->dispatcher) && method_exists($this->dispatcher, 'notify')) {
             $args = func_get_args();
