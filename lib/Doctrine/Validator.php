@@ -272,9 +272,9 @@ class Doctrine_Validator extends Doctrine_Locator_Injectable
          switch ($type) {
              case 'float':
              case 'double':
-                 return (String)$var == strval(floatval($var));
+                 return (string)$var == strval(floatval($var));
              case 'integer':
-                 return (String)$var == strval(intval($var));
+                 return (string)$var == strval(intval($var));
              case 'string':
                  return is_string($var) || is_int($var) || is_float($var);
              case 'blob':
