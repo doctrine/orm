@@ -335,7 +335,7 @@ class Doctrine_Import_Schema
                     $colDesc['sequence'] = isset($field['sequence']) ? (string) $field['sequence']:null;
                     $colDesc['values'] = isset($field['values']) ? (array) $field['values']:null;
                     
-                    $validators = Doctrine::getValidators();
+                    $validators = Doctrine_Lib::getValidators();
                     
                     foreach ($validators as $validator) {
                         if (isset($field[$validator])) {

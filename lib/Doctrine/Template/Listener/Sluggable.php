@@ -78,19 +78,6 @@ class Doctrine_Template_Listener_Sluggable extends Doctrine_Record_Listener
             }
         }
 
-        $value = trim($value);
-        $value = strtolower($value);
-
-        // strip all non word chars
-        $value = preg_replace('/\W/', ' ', $value);
-
-        // replace all white space sections with a dash
-        $value = preg_replace('/\ +/', '-', $value);
-
-        // trim dashes
-        $value = preg_replace('/\-$/', '', $value);
-        $value = preg_replace('/^\-/', '', $value);
-
-        return $value;
+        return Doctrine_Inflector::urlize($value);
     }
 }

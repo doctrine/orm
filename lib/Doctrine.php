@@ -1068,9 +1068,11 @@ final class Doctrine
             default:
                 $ret[] = var_export($var, true);
         }
+
         if ($output) {
             print implode("\n", $ret);
         }
+
         return implode("\n", $ret);
     }
 
@@ -1082,9 +1084,9 @@ final class Doctrine
      * @param string $classname
      * @return string
      */
-    public static function tableize($classname)
+    public static function tableize($className)
     {
-         return strtolower(preg_replace('~(?<=\\w)([A-Z])~', '_$1', $classname));
+         return Doctrine_Inflector::tableize($className);
     }
 
     /**
@@ -1097,20 +1099,7 @@ final class Doctrine
      */
     public static function classify($tableName)
     {
-        return preg_replace_callback('~(_?)(_)([\w])~', array("Doctrine", "classifyCallback"), ucfirst(strtolower($tableName)));
-    }
-
-    /**
-     * classifyCallback
-     *
-     * Callback function to classify a classname properly.
-     *
-     * @param array $matches An array of matches from a pcre_replace call
-     * @return string A string with matches 1 and mathces 3 in upper case.
-     */
-    public static function classifyCallback($matches)
-    {
-        return $matches[1] . strtoupper($matches[3]);
+        return Doctrine_Inflector::classify($tableName);
     }
 
     /**
@@ -1121,90 +1110,8 @@ final class Doctrine
      * @param string $classname
      * @return boolean
      */
-    public static function isValidClassname($classname)
+    public static function isValidClassname($className)
     {
-        if (preg_match('~(^[a-z])|(_[a-z])|([\W])|(_{2})~', $classname)) {
-            return false;
-        }
-
-        return true;
-    }
-
-    /**
-     * makeDirectories
-     *
-     * Makes the directories for a path recursively
-     *
-     * @param string $path
-     * @return void
-     */
-    public static function makeDirectories($path, $mode = 0777)
-    {
-        if ( ! $path) {
-          return false;
-        }
-
-        if (is_dir($path) || is_file($path)) {
-          return true;
-        }
-
-        return mkdir($path, $mode, true);
-    }
-
-    /**
-     * removeDirectories
-     *
-     * @param string $folderPath
-     * @return void
-     */
-    public static function removeDirectories($folderPath)
-    {
-        if (is_dir($folderPath))
-        {
-            foreach (scandir($folderPath) as $value)
-            {
-                if ($value != '.' && $value != '..')
-                {
-                    $value = $folderPath . "/" . $value;
-
-                    if (is_dir($value)) {
-                        self::removeDirectories($value);
-                    } else if (is_file($value)) {
-                        @unlink($value);
-                    }
-                }
-            }
-
-            return rmdir ( $folderPath );
-        } else {
-            return false;
-        }
-    }
-
-    /**
-     * getValidators
-     *
-     * Get available doctrine validators
-     *
-     * @return array $validators
-     */
-    public static function getValidators()
-    {
-        if (empty(self::$_validators)) {
-            $dir = Doctrine::getPath() . DIRECTORY_SEPARATOR . 'Doctrine' . DIRECTORY_SEPARATOR . 'Validator';
-
-            $files = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($dir), RecursiveIteratorIterator::LEAVES_ONLY);
-            foreach ($files as $file) {
-                $e = explode('.', $file->getFileName());
-
-                if (end($e) == 'php') {
-                    $name = strtolower($e[0]);
-
-                    self::$_validators[$name] = $name;
-                }
-            }
-        }
-
-        return self::$_validators;
+        return Doctrine_Lib::isValidClassName($className);
     }
 }

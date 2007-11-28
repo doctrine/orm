@@ -732,7 +732,7 @@ END;
                                        null
                                        );
         
-        Doctrine::makeDirectories($path);
+        Doctrine_Lib::makeDirectories($path);
         
         $writePath = $path . DIRECTORY_SEPARATOR . $className . $this->_suffix;
         
@@ -797,11 +797,11 @@ END;
         }
 
         if (isset($writePath)) {
-            Doctrine::makeDirectories($writePath);
+            Doctrine_Lib::makeDirectories($writePath);
             
             $writePath .= DIRECTORY_SEPARATOR . $fileName;
         } else {
-            Doctrine::makeDirectories($this->_path);
+            Doctrine_Lib::makeDirectories($this->_path);
             
             $writePath = $this->_path . DIRECTORY_SEPARATOR . $fileName;
         }

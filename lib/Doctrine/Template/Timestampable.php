@@ -58,8 +58,7 @@ class Doctrine_Template_Timestampable extends Doctrine_Template
      */
     public function __construct(array $options)
     {
-        $this->_options['created'] = array_merge($this->_options['created'], $options['created']);
-        $this->_options['updated'] = array_merge($this->_options['updated'], $options['updated']);
+        $this->_options = Doctrine_Lib::arrayDeepMerge($this->_options, $options);
     }
     
     /**
@@ -69,12 +68,14 @@ class Doctrine_Template_Timestampable extends Doctrine_Template
      */
     public function setTableDefinition()
     {
-        if(!$this->_options['created']['disabled']) {
+        if( ! $this->_options['created']['disabled']) {
             $this->hasColumn($this->_options['created']['name'], $this->_options['created']['type'], null, $this->_options['created']['options']);
         }
-        if(!$this->_options['updated']['disabled']) {
+
+        if( ! $this->_options['updated']['disabled']) {
             $this->hasColumn($this->_options['updated']['name'], $this->_options['updated']['type'], null, $this->_options['updated']['options']);
         }
+
         $this->addListener(new Doctrine_Template_Listener_Timestampable($this->_options));
     }
 }

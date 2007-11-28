@@ -82,7 +82,7 @@ class Doctrine_Migration_Builder
      */
     public function setMigrationsPath($path)
     {
-        Doctrine::makeDirectories($path);
+        Doctrine_Lib::makeDirectories($path);
 
         $this->migrationsPath = $path;
     }
@@ -142,7 +142,7 @@ END;
         
         $result = $this->generateMigrationsFromModels($directory);
         
-        Doctrine::removeDirectories($directory);
+        Doctrine_Lib::removeDirectories($directory);
         
         return $result;
     }

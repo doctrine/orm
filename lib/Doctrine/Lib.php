@@ -33,33 +33,38 @@
 class Doctrine_Lib
 {
     /**
-     * @param integer $state                the state of record
+     * getRecordStateAsString
+     *
+     * @param integer $state the state of record
      * @see Doctrine_Record::STATE_* constants
-     * @return string                       string representation of given state
+     * @return string string representation of given state
      */
     public static function getRecordStateAsString($state)
     {
         switch ($state) {
-        case Doctrine_Record::STATE_PROXY:
-            return "proxy";
-            break;
-        case Doctrine_Record::STATE_CLEAN:
-            return "persistent clean";
-            break;
-        case Doctrine_Record::STATE_DIRTY:
-            return "persistent dirty";
-            break;
-        case Doctrine_Record::STATE_TDIRTY:
-            return "transient dirty";
-            break;
-        case Doctrine_Record::STATE_TCLEAN:
-            return "transient clean";
-            break;
+            case Doctrine_Record::STATE_PROXY:
+                return "proxy";
+                break;
+            case Doctrine_Record::STATE_CLEAN:
+                return "persistent clean";
+                break;
+            case Doctrine_Record::STATE_DIRTY:
+                return "persistent dirty";
+                break;
+            case Doctrine_Record::STATE_TDIRTY:
+                return "transient dirty";
+                break;
+            case Doctrine_Record::STATE_TCLEAN:
+                return "transient clean";
+                break;
         }
     }
 
     /**
+     * getRecordAsString
+     *
      * returns a string representation of Doctrine_Record object
+     *
      * @param Doctrine_Record $record
      * @return string
      */
@@ -73,123 +78,37 @@ class Doctrine_Lib
         $r[] = 'OID        : ' . $record->getOID();
         $r[] = 'data       : ' . Doctrine::dump($record->getData(), false);
         $r[] = '</pre>';
+
         return implode("\n",$r)."<br />";
     }
 
     /**
-     * Return an collection of records as XML. 
-     * 
-     * @see getRecordAsXml for options to set in the record class to control this.
+     * getConnectionStateAsString
      *
-     * @param Doctrine_Collection $collection
-     * @param SimpleXMLElement $xml
-     * @return string Xml as string 
-     */
-    public static function getCollectionAsXml(Doctrine_Collection $collection, SimpleXMLElement $incomming_xml = null) {
-
-        $collectionName = Doctrine_Lib::plurelize($collection->getTable()->tableName);
-        if ( $collection->count() != 0) {
-            $record = $collection[0];
-            $xml_options = $record->option("xml");
-            if ( isset($xml_options["collection_name"])) {
-                $collectionName = $xml_options["collection_name"];
-            }
-        }
-
-        if ( ! isset($incomming_xml)) {
-            $new_xml_string = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?><" . $collectionName . "></" . $collectionName . ">";
-            $xml = new SimpleXMLElement($new_xml_string);
-        } else {
-            $xml = $incomming_xml->addChild($collectionName);
-        }
-        foreach ($collection as $key => $record) {
-            Doctrine_Lib::getRecordAsXml($record, $xml);
-        }
-        return $xml->asXML();
-    }
-
-    public static function plurelize($string) {
-        return $string . "s";
-    }
-
-    /**
-     * Return a recrd as XML. 
-     *
-     * In order to control how this is done set the "xml" option in a record. 
-     * This option is an array that has the keys "ignore_fields" and "include_relations". Both of these are arrays that list the name of fields/relations to include/process. 
-     *
-     * If you want to insert this xml as a part inside another xml send a 
-     * SimpleXMLElement to the function. Because of the nature of SimpleXML the 
-     * content you add to this element will be avilable after the function is 
-     * complete.
-     *
-     * @param Doctrine_Record $record
-     * @param SimpleXMLElement $xml
-     * @return string Xml as string
-     */
-    public static function getRecordAsXml(Doctrine_Record $record, SimpleXMlElement $incomming_xml = NULL)
-    {
-        $recordname = $record->getTable()->tableName;
-        if ( !isset($incomming_xml)) {
-            $new_xml_string = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?><" . $recordname . "></" . $recordname . ">";
-            $xml = new SimpleXMLElement($new_xml_string);
-        } else {
-            $xml = $incomming_xml->addChild($recordname);
-				}
-        $xml_options = $record->option("xml");
-        if ( isset($xml_options["record_name"])) {
-            $recordname = $xml_options["record_name"];
-        }
-        foreach ($record->getData() as $field => $value) {
-            if ((isset($xml_options["ignore_fields"]) && !in_array($field, $xml_options["ignore_fields"])) || !isset($xml_options["ignore_fields"])) {
-                if ($value instanceOf Doctrine_Null) {
-                    $xml->addChild($field);
-                } else {    
-                    $xml->addChild($field, $value);
-                }
-            }
-        }
-        if ( ! isset($xml_options["include_relations"])) {
-            return $xml->asXML();
-        }
-        $relations = $record->getTable()->getRelations();
-        foreach ($relations as $name => $relation) {
-            if (in_array($name, $xml_options["include_relations"])) {
-                $relation_type = $relation->getType();
-                $related_records = $record->get($name);
-                if ($relation_type == Doctrine_Relation::ONE && $related_records instanceOf Doctrine_Record) {
-                    Doctrine_Lib::getRecordAsXml($related_records, $xml);
-                } else {
-                    Doctrine_Lib::getCollectionAsXml($related_records, $xml);
-                }
-            }
-        }
-        return $xml->asXML();
-    }
-
-
-    /**
-     * getStateAsString
      * returns a given connection state as string
-     * @param integer $state        connection state
+     *
+     * @param integer $state State of the connection as a string
      */
     public static function getConnectionStateAsString($state)
     {
         switch ($state) {
-        case Doctrine_Transaction::STATE_SLEEP:
-            return "open";
-            break;
-        case Doctrine_Transaction::STATE_BUSY:
-            return "busy";
-            break;
-        case Doctrine_Transaction::STATE_ACTIVE:
-            return "active";
-            break;
+            case Doctrine_Transaction::STATE_SLEEP:
+                return "open";
+                break;
+            case Doctrine_Transaction::STATE_BUSY:
+                return "busy";
+                break;
+            case Doctrine_Transaction::STATE_ACTIVE:
+                return "active";
+                break;
         }
     }
 
     /**
+     * getConnectionAsString
+     *
      * returns a string representation of Doctrine_Connection object
+     *
      * @param Doctrine_Connection $connection
      * @return string
      */
@@ -201,13 +120,16 @@ class Doctrine_Lib
         $r[] = 'Open Transactions   : ' . $connection->transaction->getTransactionLevel();
         $r[] = 'Table in memory     : ' . $connection->count();
         $r[] = 'Driver name         : ' . $connection->getAttribute(Doctrine::ATTR_DRIVER_NAME);
-
         $r[] = "</pre>";
+        
         return implode("\n",$r)."<br>";
     }
 
     /**
+     * getTableAsString
+     *
      * returns a string representation of Doctrine_Table object
+     *
      * @param Doctrine_Table $table
      * @return string
      */
@@ -217,6 +139,7 @@ class Doctrine_Lib
         $r[] = "Component   : ".$table->getComponentName();
         $r[] = "Table       : ".$table->getTableName();
         $r[] = "</pre>";
+        
         return implode("\n",$r)."<br>";
     }
 
@@ -250,7 +173,10 @@ class Doctrine_Lib
     }
 
     /**
+     * getCollectionAsString
+     *
      * returns a string representation of Doctrine_Collection object
+     *
      * @param Doctrine_Collection $collection
      * @return string
      */
@@ -260,8 +186,230 @@ class Doctrine_Lib
         $r[] = get_class($collection);
         $r[] = 'data : ' . Doctrine::dump($collection->getData(), false);
         //$r[] = 'snapshot : ' . Doctrine::dump($collection->getSnapshot());
-
         $r[] = "</pre>";
+        
         return implode("\n",$r);
+    }
+
+    // Code from symfony sfToolkit class. See LICENSE
+    // code from php at moechofe dot com (array_merge comment on php.net)
+    /*
+     * arrayDeepMerge
+     *
+     * array arrayDeepMerge ( array array1 [, array array2 [, array ...]] )
+     *
+     * Like array_merge
+     *
+     *  arrayDeepMerge() merges the elements of one or more arrays together so
+     * that the values of one are appended to the end of the previous one. It
+     * returns the resulting array.
+     *  If the input arrays have the same string keys, then the later value for
+     * that key will overwrite the previous one. If, however, the arrays contain
+     * numeric keys, the later value will not overwrite the original value, but
+     * will be appended.
+     *  If only one array is given and the array is numerically indexed, the keys
+     * get reindexed in a continuous way.
+     *
+     * Different from array_merge
+     *  If string keys have arrays for values, these arrays will merge recursively.
+     */
+     public static function arrayDeepMerge()
+     {
+         switch (func_num_args()) {
+             case 0:
+                return false;
+             case 1:
+                return func_get_arg(0);
+             case 2:
+                $args = func_get_args();
+                $args[2] = array();
+                
+                if (is_array($args[0]) && is_array($args[1]))
+                {
+                    foreach (array_unique(array_merge(array_keys($args[0]),array_keys($args[1]))) as $key)
+                    {
+                        $isKey0 = array_key_exists($key, $args[0]);
+                        $isKey1 = array_key_exists($key, $args[1]);
+
+                        if ($isKey0 && $isKey1 && is_array($args[0][$key]) && is_array($args[1][$key]))
+                        {
+                            $args[2][$key] = self::arrayDeepMerge($args[0][$key], $args[1][$key]);
+                        } else if ($isKey0 && $isKey1) {
+                            $args[2][$key] = $args[1][$key];
+                        } else if ( ! $isKey1) {
+                            $args[2][$key] = $args[0][$key];
+                        } else if ( ! $isKey0) {
+                            $args[2][$key] = $args[1][$key];
+                        }
+                    }
+
+                    return $args[2];
+                } else {
+                    return $args[1];
+                }
+            default:
+                $args = func_get_args();
+                $args[1] = sfToolkit::arrayDeepMerge($args[0], $args[1]);
+                array_shift($args);
+
+                return call_user_func_array(array('Doctrine', 'arrayDeepMerge'), $args);
+            break;
+        }
+    }
+
+    // Code from symfony sfToolkit class. See LICENSE
+    /**
+     * stringToArray
+     *
+     * @param string $string 
+     * @return void
+     */
+    public static function stringToArray($string)
+    {
+        preg_match_all('/
+          \s*(\w+)              # key                               \\1
+          \s*=\s*               # =
+          (\'|")?               # values may be included in \' or " \\2
+          (.*?)                 # value                             \\3
+          (?(2) \\2)            # matching \' or " if needed        \\4
+          \s*(?:
+            (?=\w+\s*=) | \s*$  # followed by another key= or the end of the string
+          )
+        /x', $string, $matches, PREG_SET_ORDER);
+
+        $attributes = array();
+        foreach ($matches as $val) {
+            $attributes[$val[1]] = self::literalize($val[3]);
+        }
+
+        return $attributes;
+    }
+
+    /**
+     * Finds the type of the passed value, returns the value as the new type.
+     *
+     * @param  string
+     * @return mixed
+     */
+    public static function literalize($value, $quoted = false)
+    {
+        // lowercase our value for comparison
+        $value  = trim($value);
+        $lvalue = strtolower($value);
+
+        if (in_array($lvalue, array('null', '~', '')))
+        {
+            $value = null;
+        } else if (in_array($lvalue, array('true', 'on', '+', 'yes'))) {
+            $value = true;
+        } else if (in_array($lvalue, array('false', 'off', '-', 'no'))) {
+            $value = false;
+        } else if (ctype_digit($value)) {
+            $value = (int) $value;
+        } else if (is_numeric($value)) {
+            $value = (float) $value;
+        } else {
+            if ($quoted)
+            {
+                $value = '\''.str_replace('\'', '\\\'', $value).'\'';
+            }
+        }
+
+        return $value;
+    }
+
+    /**
+     * getValidators
+     *
+     * Get available doctrine validators
+     *
+     * @return array $validators
+     */
+    public static function getValidators()
+    {
+        $validators = array();
+
+        $dir = Doctrine::getPath() . DIRECTORY_SEPARATOR . 'Doctrine' . DIRECTORY_SEPARATOR . 'Validator';
+
+        $files = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($dir), RecursiveIteratorIterator::LEAVES_ONLY);
+        foreach ($files as $file) {
+            $e = explode('.', $file->getFileName());
+
+            if (end($e) == 'php') {
+                $name = strtolower($e[0]);
+
+                $validators[$name] = $name;
+            }
+        }
+
+        return $validators;
+    }
+
+    /**
+     * makeDirectories
+     *
+     * Makes the directories for a path recursively
+     *
+     * @param string $path
+     * @return void
+     */
+    public static function makeDirectories($path, $mode = 0777)
+    {
+        if ( ! $path) {
+          return false;
+        }
+
+        if (is_dir($path) || is_file($path)) {
+          return true;
+        }
+
+        return mkdir($path, $mode, true);
+    }
+
+    /**
+     * removeDirectories
+     *
+     * @param string $folderPath
+     * @return void
+     */
+    public static function removeDirectories($folderPath)
+    {
+        if (is_dir($folderPath))
+        {
+            foreach (scandir($folderPath) as $value)
+            {
+                if ($value != '.' && $value != '..')
+                {
+                    $value = $folderPath . "/" . $value;
+
+                    if (is_dir($value)) {
+                        self::removeDirectories($value);
+                    } else if (is_file($value)) {
+                        @unlink($value);
+                    }
+                }
+            }
+
+            return rmdir ( $folderPath );
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * isValidClassName
+     *
+     * checks for valid class name (uses camel case and underscores)
+     *
+     * @param string $classname
+     * @return boolean
+     */
+    public static function isValidClassName($className)
+    {
+        if (preg_match('~(^[a-z])|(_[a-z])|([\W])|(_{2})~', $className)) {
+            return false;
+        }
+
+        return true;
     }
 }

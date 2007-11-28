@@ -49,7 +49,7 @@ class Doctrine_AuditLog extends Doctrine_Plugin
      */
     public function __construct(array $options = array())
     {
-        $this->_options = array_merge($this->_options, $options);
+        $this->_options = Doctrine_Lib::arrayDeepMerge($this->_options, $options);
     }
 
     /**
