@@ -1,18 +1,17 @@
-This chapter describes various plugins availible for Doctrine. When refering to plugins we refer to classes that extend Doctrine_Plugin. All the components in this chapter can be considered 'core' plugins, that means they reside at the Doctrine main repository. There are other official plugins too which can be found at the homesite of the Sensei project (www.sensei-project.org).
+This chapter describes the usage of various plugins availible for Doctrine. You'll also learn how to create your own plugins. In order to grasp the concepts of this chapter you should already be familiar with the theory behind Doctrine_Template and Doctrine_Record_Generator. When refering to plugins we refer to class packages that use templates, generators and listeners extensively. All the introduced components in this chapter can be considered 'core' plugins, that means they reside at the Doctrine main repository. There are other official plugins too which can be found at the homesite of the Sensei project (www.sensei-project.org).
 
-Usually plugins are used side-to-side with template classes (classes that extend Doctrine_Template). The common workflow is:
+Usually plugins use generators side-to-side with template classes (classes that extend Doctrine_Template). The common workflow is:
 
 # A new template is being initiliazed
-# The template creates the plugin and calls buildPluginDefinition() method
+# The template creates the generator and calls initialize() method
 # The template is attached to given class
 
-As you may already know templates are used for adding common definitions and options to record classes. The purpose of plugins is much more complex. Usually they are being used for creating generic record classes dynamically. The definitions of these generic classes usually depend on the owner class. For example the columns of the auditlog versioning class are the columns of the parent class with all the sequence and autoincrement definitions removed.
-
+As you may already know templates are used for adding common definitions and options to record classes. The purpose of generators is much more complex. Usually they are being used for creating generic record classes dynamically. The definitions of these generic classes usually depend on the owner class. For example the columns of the auditlog versioning class are the columns of the parent class with all the sequence and autoincrement definitions removed.
 
 
 ++ Internationalization with I18n
 
-Doctrine_I18n is a plugin for Doctrine that provides internationalization support for record classes. In the following example we have a NewsItem class with two fields 'title' and 'content'. We want to have the field 'title' with different languages support. This can be achieved as follows:
+Doctrine_I18n package is a plugin for Doctrine that provides internationalization support for record classes. In the following example we have a NewsItem class with two fields 'title' and 'content'. We want to have the field 'title' with different languages support. This can be achieved as follows:
 
 <code type="php">
 class NewsItem extends Doctrine_Record
@@ -173,7 +172,6 @@ class NewsItem extends Doctrine_Record
 
 You can also control the name of the versioning record and the name of the version table with option attributes 'className' and 'tableName'.
 
-++ Hook
 ++ Soft-delete
 
 Soft-delete is a very simple plugin for achieving the following behaviour: when a record is deleted its not removed from database. Usually the record contains some special field like 'deleted' which tells the state of the record (deleted or alive).
@@ -215,34 +213,24 @@ var_dump($record->deleted); // true
 
 ++ Creating plugins
 
-This subchapter provides you the means for creating your own plugins. In order to grasp the concepts of this chapter you should already be familiar with the ideas of Doctrine_Template. 
+This subchapter provides you the means for creating your own plugins. Lets say we have various different Record classes that need to have one-to-many emails. We achieve this functionality by creating a generic plugin which creates Email classes on the fly.
 
-Lets say we have various different Record classes that need to have one-to-many emails. We achieve this functionality by creating a generic plugin which creates Email classes on the fly.
+We start this task by creating a plugin called EmailPlugin with buildDefinition() method. Inside the buildDefinition() method various helper methods can be used for easily creating the dynamic record definition. Commonly the following methods are being used:
 
-We start this task by creating a plugin called EmailPlugin with buildDefinition() method.
+# buildForeignKeys()
 
 <code type="php">
-class EmailPlugin extends Doctrine_Plugin
+class EmailPlugin extends Doctrine_Record_Generator
 {
     public function initOptions()
     {
         $this->setOption('className', '%CLASS%Email');
     }
     
-    public function buildDefinition()
+    public function setTableDefinition()
     {
-        // build the foreign key definitions
-        $fk = $this->buildForeignKeys($this->_options['table']);
-
-        $relations = $this->buildRelation($fk);
-
-        $columns['address'] = array('type'   => 'string',
-                                    'length' => 255,
-                                    'email'  => true,
-                                    'primary' => true);
-        $columns += $fk;
-        
-        $this->generateClassDefinition(array(), $columns, $relations);
+        $this->hasColumn('address', 'string', 255, array('email'  => true,
+                                                         'primary' => true));
     }
 }
 </code>
