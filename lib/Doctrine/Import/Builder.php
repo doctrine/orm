@@ -325,7 +325,7 @@ END;
      * @param  string $table
      * @param  array  $tableColumns
      */
-    public function buildTableDefinition(array $options, array $columns, array $relations, array $indexes, array $attributes, array $tableOptions)
+    public function buildTableDefinition(array $options, array $columns, array $relations, array $indexes, array $attributes, array $tableOptions, array $templates, array $actAs)
     {
         $ret = array();
         
@@ -376,6 +376,13 @@ END;
         $i++;
         
         $ret[$i] = $this->buildTableOptions($tableOptions);
+        $i++;
+        
+        $ret[$i] = $this->buildTemplates($templates);
+        $i++;
+        
+        $ret[$i] = $this->buildActAs($actAs);
+        $i++;
         
         $code = implode("\n", $ret);
         $code = trim($code);
@@ -585,12 +592,6 @@ END;
             $ret[$i] = "    ".'$this->setInheritanceMap(array(\''.$options['inheritance']['keyField'].'\' => \''.$options['inheritance']['keyValue'].'\'));';
         }
         
-        $ret[$i] = $this->buildTemplates($templates);
-        $i++;
-        
-        $ret[$i] = $this->buildActAs($actAs);
-        $i++;
-        
         $code = implode("\n", $ret);
         $code = trim($code);
         
@@ -622,7 +623,7 @@ END;
         $extends = isset($options['inheritance']['extends']) ? $options['inheritance']['extends']:$this->_baseClassName;
 
         if ( ! (isset($options['no_definition']) && $options['no_definition'] === true)) {
-            $definition = $this->buildTableDefinition($options, $columns, $relations, $indexes, $attributes, $tableOptions);
+            $definition = $this->buildTableDefinition($options, $columns, $relations, $indexes, $attributes, $tableOptions, $templates, $actAs);
             $setUp = $this->buildSetUp($options, $columns, $relations, $templates, $actAs);
         } else {
             $definition = null;
