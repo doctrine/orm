@@ -715,6 +715,39 @@ class Doctrine_Expression_Driver extends Doctrine_Connection_Module
     }
 
     /**
+     * sin
+     *
+     * @param string $value 
+     * @return void
+     */
+    public function sin($value)
+    {
+        return 'SIN(' . $value . ')';
+    }
+
+    /**
+     * pi
+     *
+     * @return void
+     */
+    public function pi()
+    {
+        return 'PI()';
+    }
+
+    /**
+     * cos
+     *
+     * @param string $value 
+     * @return void
+     * @author Jonathan H. Wage
+     */
+    public function cos($value)
+    {
+        return 'COS(' . $value . ')';
+    }
+
+    /**
      * __call
      *
      * for all native RDBMS functions the function name itself is returned
