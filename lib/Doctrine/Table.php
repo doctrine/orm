@@ -996,7 +996,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
             $this->_columns[$name] = $options;
         }
 
-        if (isset($options['primary'])) {
+        if (!empty($options['primary'])) {
             if (isset($this->_identifier)) {
                 $this->_identifier = (array) $this->_identifier; 
             }
