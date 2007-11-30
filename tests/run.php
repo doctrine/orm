@@ -281,4 +281,4 @@ $test->addTestCase($data);
 
 $test->run();
 
-echo memory_get_peak_usage() / 1024;
+echo memory_get_peak_usage() / 1024 . "\n";
