@@ -424,10 +424,11 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
 
     /**
      * cleanData
+     * leaves the $data array only with values whose key is a field inside this
+     * record and returns the values that where removed from $data.
      *
      * @param array $data       data array to be cleaned
-     * @return integer
-     * @todo Better description. What exactly does this "cleaning" involve?
+     * @return array $tmp       values cleaned from data
      */
     public function cleanData(&$data)
     {
