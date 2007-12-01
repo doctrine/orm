@@ -42,6 +42,8 @@ class Doctrine_Relation_Association_Self extends Doctrine_Relation_Association
     {
         switch ($context) {
             case 'record':
+                $identifierColumnNames = $this->definition['table']->getIdentifierColumnNames();
+                $identifier = array_pop($identifierColumnNames);
                 $sub    = 'SELECT '.$this->definition['foreign'] 
                         . ' FROM '.$this->definition['refTable']->getTableName()
                         . ' WHERE '.$this->definition['local']
@@ -55,10 +57,10 @@ class Doctrine_Relation_Association_Self extends Doctrine_Relation_Association
                 $dql  = 'FROM ' . $this->definition['table']->getComponentName()
                       . '.' . $this->definition['refTable']->getComponentName()
                       . ' WHERE ' . $this->definition['table']->getComponentName()
-                      . '.' . $this->definition['table']->getIdentifier() 
+                      . '.' . $identifier 
                       . ' IN (' . $sub . ')'
                       . ' || ' . $this->definition['table']->getComponentName() 
-                      . '.' . $this->definition['table']->getIdentifier() 
+                      . '.' . $identifier
                       . ' IN (' . $sub2 . ')';
                 break;
             case 'collection':
@@ -80,7 +82,8 @@ class Doctrine_Relation_Association_Self extends Doctrine_Relation_Association
 
         $assocTable = $this->getAssociationFactory()->getTableName();
         $tableName  = $record->getTable()->getTableName();
-        $identifier = $record->getTable()->getIdentifier();
+        $identifierColumnNames = $record->getTable()->getIdentifierColumnNames();
+        $identifier = array_pop($identifierColumnNames);
 
         $sub     = 'SELECT '.$this->getForeign().
                    ' FROM '.$assocTable.

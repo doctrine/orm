@@ -257,6 +257,7 @@ class Doctrine_Relation_Parser
     {
         $conn = $this->_table->getConnection();
         $def['table'] = $this->getImpl($def['class']);
+        $def['localTable'] = $this->_table;
         $def['class'] = $def['table']->getComponentName();
         $def['refTable'] = $this->getImpl($def['refClass']);
 
@@ -371,6 +372,7 @@ class Doctrine_Relation_Parser
     {
         $conn = $this->_table->getConnection();
         $def['table'] = $this->getImpl($def['class']);
+        $def['localTable'] = $this->_table;
         $def['class'] = $def['table']->getComponentName();
 
         $foreignClasses = array_merge($def['table']->getOption('parents'), array($def['class']));

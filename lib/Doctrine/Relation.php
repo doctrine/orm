@@ -66,6 +66,7 @@ abstract class Doctrine_Relation implements ArrayAccess
                                   'class'       => true,
                                   'type'        => true,
                                   'table'       => true,
+                                  'localTable'  => true,
                                   'name'        => false,
                                   'refTable'    => false,
                                   'onDelete'    => false,
@@ -87,6 +88,8 @@ abstract class Doctrine_Relation implements ArrayAccess
      *          foreign                 the foreign reference field(s)
      *
      *          table                   the foreign table object
+     *
+     *          localTable              the local table object
      *
      *          refTable                the reference table object (if any)
      *
@@ -246,6 +249,15 @@ abstract class Doctrine_Relation implements ArrayAccess
     {
         return $this->definition['local'];
     }
+    
+    /**
+     * getLocalFieldName
+     * returns the field name of the local column
+     */
+    final public function getLocalFieldName()
+    {
+        return $this->definition['localTable']->getFieldName($this->definition['local']);
+    }
 
     /**
      * getForeign
@@ -257,6 +269,15 @@ abstract class Doctrine_Relation implements ArrayAccess
     final public function getForeign()
     {
         return $this->definition['foreign'];
+    }
+    
+    /**
+     * getLocalFieldName
+     * returns the field name of the local column
+     */
+    final public function getForeignFieldName()
+    {
+        return $this->definition['table']->getFieldName($this->definition['foreign']);
     }
 
     /**

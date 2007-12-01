@@ -821,9 +821,9 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
 
         try {
             if ( ! isset($this->_references[$fieldName]) && $load) {
-
+                
                 $rel = $this->_table->getRelation($fieldName);
-
+                
                 $this->_references[$fieldName] = $rel->fetchRelatedFor($this);
             }
             return $this->_references[$fieldName];

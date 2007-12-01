@@ -262,15 +262,15 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
      */
     public function setReference(Doctrine_Record $record, Doctrine_Relation $relation)
     {
-        $this->reference       = $record;
-        $this->relation        = $relation;
+        $this->reference = $record;
+        $this->relation  = $relation;
 
         if ($relation instanceof Doctrine_Relation_ForeignKey || 
-            $relation instanceof Doctrine_Relation_LocalKey) {
+                $relation instanceof Doctrine_Relation_LocalKey) {
 
-            $this->referenceField = $relation->getForeign();
+            $this->referenceField = $relation->getForeignFieldName();
 
-            $value = $record->get($relation->getLocal());
+            $value = $record->get($relation->getLocalFieldName());
 
             foreach ($this->data as $record) {
                 if ($value !== null) {
@@ -348,7 +348,7 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
             $record = $this->_table->create();
 
             if (isset($this->referenceField)) {
-                $value = $this->reference->get($this->relation->getLocal());
+                $value = $this->reference->get($this->relation->getLocalFieldName());
 
                 if ($value !== null) {
                     $record->set($this->referenceField, $value, false);
@@ -436,7 +436,7 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
     public function add(Doctrine_Record $record, $key = null)
     {
         if (isset($this->referenceField)) {
-            $value = $this->reference->get($this->relation->getLocal());
+            $value = $this->reference->get($this->relation->getLocalFieldName());
 
             if ($value !== null) {
                 $record->set($this->referenceField, $value, false);

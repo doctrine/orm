@@ -43,7 +43,8 @@ class Doctrine_Relation_LocalKey extends Doctrine_Relation
      */
     public function fetchRelatedFor(Doctrine_Record $record)
     {
-        $id = $record->get($this->definition['local']);
+        $localFieldName = $record->getTable()->getFieldName($this->definition['local']);
+        $id = $record->get($localFieldName);
 
         if (empty($id) || ! $this->definition['table']->getAttribute(Doctrine::ATTR_LOAD_REFERENCES)) {
             $related = $this->getTable()->create();
@@ -61,7 +62,7 @@ class Doctrine_Relation_LocalKey extends Doctrine_Relation
             }
         }
 
-        $record->set($this->definition['local'], $related, false);
+        $record->set($localFieldName, $related, false);
 
         return $related;
     }
