@@ -289,8 +289,12 @@ class Doctrine_Hydrator extends Doctrine_Hydrator_Abstract
                 $e = explode('__', $key);
                 $last = strtolower(array_pop($e));
                 $cache[$key]['dqlAlias'] = $this->_tableAliases[strtolower(implode('__', $e))];
-                $fieldName = $this->_queryComponents[$cache[$key]['dqlAlias']]['table']->getFieldName($last);
+                $table = $this->_queryComponents[$cache[$key]['dqlAlias']]['table'];
+                $fieldName = $table->getFieldName($last);
                 $cache[$key]['fieldName'] = $fieldName;
+                if ($table->isIdentifier($fieldName)) {
+                    $cache[$key]['isIdentifier'] = true;
+                }
             }
 
             $map   = $this->_queryComponents[$cache[$key]['dqlAlias']];
@@ -302,7 +306,7 @@ class Doctrine_Hydrator extends Doctrine_Hydrator_Abstract
                 $fieldName = $this->_queryComponents[$dqlAlias]['agg'][$fieldName];
             }
 
-            if ($table->isIdentifier($fieldName)) {
+            if (isset($cache[$key]['isIdentifier'])) {
                 $id[$dqlAlias] .= '|' . $value;
             }
 
