@@ -15,6 +15,8 @@ $tickets->addTestCase(new Doctrine_Ticket_Njero_TestCase());
 $tickets->addTestCase(new Doctrine_Ticket_428_TestCase());
 $tickets->addTestCase(new Doctrine_Ticket_480_TestCase());
 $tickets->addTestCase(new Doctrine_Ticket_587_TestCase());
+$tickets->addTestCase(new Doctrine_Ticket_576_TestCase());
+$tickets->addTestCase(new Doctrine_Ticket_583_TestCase());
 //If you write a ticket testcase add it here like shown above!
 $test->addTestCase($tickets);
 
