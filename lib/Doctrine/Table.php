@@ -1554,11 +1554,17 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
      */
     public function getTypeOf($fieldName)
     {
-        $columnName = $this->getColumnName($fieldName);
-        if (isset($this->_columns[$columnName])) {
-            return $this->_columns[$columnName]['type'];
-        }
-        return false;
+        return $this->getTypeOfColumn($this->getColumnName($fieldName));
+    }
+    
+    /**
+     * getTypeOfColumn
+     *
+     * @return mixed  The column type or FALSE if the type cant be determined.
+     */
+    public function getTypeOfColumn($columnName)
+    {
+        return isset($this->_columns[$columnName]) ? $this->_columns[$columnName]['type'] : false;
     }
 
     /**
@@ -1618,6 +1624,16 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
             $type = $this->getTypeOf($fieldName);
 
             switch ($type) {
+                case 'integer':
+                case 'string';
+                    // don't do any casting here PHP INT_MAX is smaller than what the databases support
+                break;
+                case 'enum':
+                    return $this->enumValue($fieldName, $value);
+                break;
+                case 'boolean':
+                    return (boolean) $value;
+                break;
                 case 'array':
                 case 'object':
                     if (is_string($value)) {
@@ -1636,15 +1652,6 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
                         throw new Doctrine_Table_Exception('Uncompressing of ' . $fieldName . ' failed.');
                     }
                     return $value;
-                break;
-                case 'enum':
-                    return $this->enumValue($fieldName, $value);
-                break;
-                case 'boolean':
-                    return (boolean) $value;
-                break;
-                case 'integer':
-                    // don't do any casting here PHP INT_MAX is smaller than what the databases support
                 break;
             }
         }

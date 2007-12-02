@@ -294,6 +294,14 @@ class Doctrine_Hydrator extends Doctrine_Hydrator_Abstract
                 $cache[$key]['fieldName'] = $fieldName;
                 if ($table->isIdentifier($fieldName)) {
                     $cache[$key]['isIdentifier'] = true;
+                } else {
+                    $cache[$key]['isIdentifier'] = false;
+                }
+                $type = $table->getTypeOfColumn($last);
+                if ($type == 'integer' || $type == 'string') {
+                    $cache[$key]['isSimpleType'] = true;
+                } else {
+                    $cache[$key]['isSimpleType'] = false;
                 }
             }
 
@@ -306,11 +314,15 @@ class Doctrine_Hydrator extends Doctrine_Hydrator_Abstract
                 $fieldName = $this->_queryComponents[$dqlAlias]['agg'][$fieldName];
             }
 
-            if (isset($cache[$key]['isIdentifier'])) {
+            if ($cache[$key]['isIdentifier']) {
                 $id[$dqlAlias] .= '|' . $value;
             }
 
-            $rowData[$dqlAlias][$fieldName] = $table->prepareValue($fieldName, $value);
+            if ($cache[$key]['isSimpleType']) {
+                $rowData[$dqlAlias][$fieldName] = $value;
+            } else {
+                $rowData[$dqlAlias][$fieldName] = $table->prepareValue($fieldName, $value);
+            }
 
             if ( ! isset($nonemptyComponents[$dqlAlias]) && $value !== null) {
                 $nonemptyComponents[$dqlAlias] = true;
