@@ -211,7 +211,7 @@ class Doctrine_RawSql extends Doctrine_Query_Abstract
         foreach ($this->getTableAliasMap() as $tableAlias => $componentAlias) {
             $map = $this->_queryComponents[$componentAlias];
 
-            foreach ((array) $map['table']->getIdentifier() as $key) {
+            foreach ((array) $map['table']->getIdentifierColumnNames() as $key) {
                 $field = $tableAlias . '.' . $key;
 
                 if ( ! isset($this->_sqlParts['select'][$field])) {
