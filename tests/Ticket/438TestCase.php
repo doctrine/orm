@@ -92,12 +92,12 @@ class Doctrine_Ticket_438_TestCase extends Doctrine_UnitTestCase
 
       // 2. Fetch relationship in single query
       $q = new Doctrine_Query();
-      $q->select('sc.*, s.*, c.*')
+      $coll = $q->select('sc.*, s.*, c.*')
         ->from('T438_StudentCourse sc, sc.Student s, sc.Course c')
         ->where('sc.student_id = ? AND sc.course_id = ?',array('07090002', 'MATH001'))
         ->execute();
 
-      $record = $q->getFirst();
+      $record = $coll->getFirst();
       $this->assertEqual($record->student_id, '07090002');
       $this->assertEqual($record->course_id,  'MATH001');
 
@@ -119,7 +119,7 @@ class T438_Student extends Doctrine_Record
   
   public function setUp()
   {
-    $this->hasMany('T438_Course as StudyCourses', array('refClass' => 'T438_StudentCourse', 'local' => 'student_id', 'foreign' => 'course_id'));
+    $this->hasMany('T438_Course as StudyCourses', array('refClass' => 'T438_StudentCourse', 'local' => 'sc_student_id', 'foreign' => 'sc_course_id'));
   }
 }
 
@@ -136,7 +136,7 @@ class T438_Course extends Doctrine_Record
   
   public function setUp()
   {
-    $this->hasMany('T438_Student as Students', array('refClass' => 'T438_StudentCourse', 'local' => 'course_id', 'foreign' => 'student_id'));
+    $this->hasMany('T438_Student as Students', array('refClass' => 'T438_StudentCourse', 'local' => 'sc_course_id', 'foreign' => 'sc_student_id'));
   }
 }
 
@@ -153,7 +153,7 @@ class T438_StudentCourse extends Doctrine_Record
   
   public function setUp()
   {
-    $this->hasOne('T438_Student as Student', array('local' => 'student_id', 'foreign' => 'id'));
-    $this->hasOne('T438_Course as Course', array('local' => 'course_id', 'foreign' => 'id'));
+    $this->hasOne('T438_Student as Student', array('local' => 'sc_student_id', 'foreign' => 's_id'));
+    $this->hasOne('T438_Course as Course', array('local' => 'sc_course_id', 'foreign' => 'c_id'));
   }
 }
