@@ -1673,11 +1673,11 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable, Seria
         }
 
         if ($indexBy !== null) {
-            if ( ! $table->hasColumn($indexBy)) {
+            if ( ! $table->hasColumn($table->getColumnName($indexBy))) {
                 throw new Doctrine_Query_Exception("Couldn't use key mapping. Column " . $indexBy . " does not exist.");
             }
     
-            $this->_queryComponents[$componentAlias]['map'] = $table->getColumnName($indexBy);
+            $this->_queryComponents[$componentAlias]['map'] = $indexBy;
         }
         return $this->_queryComponents[$componentAlias];
     }
