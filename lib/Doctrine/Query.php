@@ -1588,7 +1588,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable, Seria
 
                     $queryPart .= ' ON ' . $localAlias
                                 . '.'
-                                . $localTable->getIdentifier() // what about composite keys?
+                                . $localTable->getColumnName($localTable->getIdentifier()) // what about composite keys?
                                 . ' = '
                                 . $assocAlias . '.' . $relation->getLocal();
 
@@ -1611,8 +1611,9 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable, Seria
                         if ($relation->isEqual()) {
                             $queryPart .= '(';
                         }
-
-                        $queryPart .= $this->_conn->quoteIdentifier($foreignAlias . '.' . $relation->getTable()->getIdentifier())
+                        
+                        $relationTable = $relation->getTable();
+                        $queryPart .= $this->_conn->quoteIdentifier($foreignAlias . '.' . $relationTable->getColumnName($relationTable->getIdentifier()))
                                     . ' = '
                                     . $this->_conn->quoteIdentifier($assocAlias . '.' . $relation->getForeign());
 
@@ -1622,9 +1623,9 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable, Seria
                                         . ' = ' 
                                         . $this->_conn->quoteIdentifier($assocAlias . '.' . $relation->getLocal())
                                         . ') AND ' 
-                                        . $this->_conn->quoteIdentifier($foreignAlias . '.' . $table->getIdentifier())
+                                        . $this->_conn->quoteIdentifier($foreignAlias . '.' . $table->getColumnName($table->getIdentifier()))
                                         . ' != '  
-                                        . $this->_conn->quoteIdentifier($localAlias . '.' . $table->getIdentifier());
+                                        . $this->_conn->quoteIdentifier($localAlias . '.' . $table->getColumnName($table->getIdentifier()));
                         }
                     }
                 } else {
@@ -1794,7 +1795,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable, Seria
 
         // build the query base
         $q  = 'SELECT COUNT(DISTINCT ' . $this->getTableAlias($componentAlias)
-              . '.' . implode(',', (array) $table->getIdentifier())
+              . '.' . implode(',', $table->getIdentifierColumnNames())
               . ') AS num_results';
 
         foreach ($this->_sqlParts['select'] as $field) {
