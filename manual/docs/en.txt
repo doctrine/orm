@@ -1,6 +1,4 @@
 + Getting started
-+ Sandbox
-+ Facade
 + Connection management
 + Basic schema mapping
 + Relations
@@ -26,3 +24,4 @@
 + Exceptions and warnings
 + Real world examples
 + Coding standards
++ Utilities
