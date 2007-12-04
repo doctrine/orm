@@ -187,6 +187,13 @@ class Doctrine_DataDict_Pgsql_TestCase extends Doctrine_UnitTestCase
                                         'unsigned' => null, 
                                         'fixed' => null));
 
+        $type = $this->dataDict->getPortableDeclaration(array('type' => 'interval'));
+
+        $this->assertEqual($type, array('type' => array('string'),
+                                        'length' => null,
+                                        'unsigned' => null,
+                                        'fixed' => false));
+
         $type = $this->dataDict->getPortableDeclaration(array('type' => 'varchar', 'length' => 1));
 
         $this->assertEqual($type, array('type' => array('string', 'boolean'),
