@@ -486,6 +486,7 @@ class Doctrine_DataDict_Pgsql extends Doctrine_DataDict
                 break;
             case 'text':
             case 'varchar':
+            case 'interval':
                 $fixed = false;
             case 'unknown':
             case 'char':
