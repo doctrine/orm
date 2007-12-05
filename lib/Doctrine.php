@@ -1010,7 +1010,7 @@ final class Doctrine
      */
     public static function autoload($className)
     {
-        if (class_exists($className, false)) {
+        if (class_exists($className, false) || interface_exists($className, false)) {
             return false;
         }
 
@@ -1021,7 +1021,7 @@ final class Doctrine
         $class = self::$_path . DIRECTORY_SEPARATOR . str_replace('_', DIRECTORY_SEPARATOR, $className) . '.php';
 
         if (file_exists($class)) {
-            require_once($class);
+            require $class;
 
             return true;
         }
@@ -1029,7 +1029,7 @@ final class Doctrine
         $loadedModels = self::$_loadedModelFiles;
 
         if (isset($loadedModels[$className]) && file_exists($loadedModels[$className])) {
-            require_once($loadedModels[$className]);
+            require_once $loadedModels[$className];
 
             return true;
         }
