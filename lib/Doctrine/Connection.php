@@ -237,7 +237,7 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
         if ($this->isConnected) {
             try {
                 return $this->dbh->getAttribute($attribute);
-            } catch(Exception $e) {
+            } catch (Exception $e) {
                 throw new Doctrine_Connection_Exception('Attribute ' . $attribute . ' not found.');
             }
         } else {
@@ -1014,7 +1014,8 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
         }
         $class = $name . 'Table';
 
-        if (class_exists($class) && in_array('Doctrine_Table', class_parents($class))) {
+        if (class_exists($class, $this->getAttribute(Doctrine::ATTR_AUTOLOAD_TABLE_CLASSES)) &&
+                in_array('Doctrine_Table', class_parents($class))) {
             $table = new $class($name, $this, true);
         } else {
             $table = new Doctrine_Table($name, $this, true);

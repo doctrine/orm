@@ -240,6 +240,6 @@ class Doctrine_Formatter extends Doctrine_Connection_Module
     public function getTableName($table)
     {
         return sprintf($this->conn->getAttribute(Doctrine::ATTR_TBLNAME_FORMAT),
-            preg_replace('/[^a-z0-9_\$]/i', '_', $table));
+                $table);
     }
 }

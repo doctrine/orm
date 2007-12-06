@@ -109,6 +109,7 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
                         Doctrine::ATTR_EXPORT                   => Doctrine::EXPORT_ALL,
                         Doctrine::ATTR_DECIMAL_PLACES           => 2,
                         Doctrine::ATTR_DEFAULT_PARAM_NAMESPACE  => 'doctrine',
+                        Doctrine::ATTR_AUTOLOAD_TABLE_CLASSES   => true,
                         ); 
             foreach ($attributes as $attribute => $value) {
                 $old = $this->getAttribute($attribute);
