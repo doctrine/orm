@@ -18,7 +18,6 @@
  * and is licensed under the LGPL. For more information, see
  * <http://www.phpdoctrine.com>.
  */
-Doctrine::autoload('Doctrine_Collection_Offset');
 /**
  * Doctrine_Collection_Offset
  * Collection of Doctrine_Record objects.
