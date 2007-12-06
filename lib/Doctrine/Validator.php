@@ -84,7 +84,7 @@ class Doctrine_Validator extends Doctrine_Locator_Injectable
                 $value = $value->getIncremented();
             }
 
-            $column = $columns[$key];
+            $column = $columns[$record->getTable()->getColumnName($key)];
 
             if ($column['type'] == 'enum') {
                 $value = $record->getTable()->enumIndex($key, $value);
