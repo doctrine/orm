@@ -41,7 +41,7 @@ class Doctrine_Tokenizer_TestCase extends Doctrine_UnitTestCase
     public function testSqlExplode()
     {
         $tokenizer = new Doctrine_Query_Tokenizer();
-        
+
         $str = "word1 word2 word3";
         $a   = $tokenizer->sqlExplode($str);
 
@@ -111,6 +111,20 @@ class Doctrine_Tokenizer_TestCase extends Doctrine_UnitTestCase
         $a   = $tokenizer->sqlExplode($str, ' OR ');
 
         $this->assertEqual($a, array('rdbms (dbal OR database)'));
+    }
+
+    public function testBracketExplode()
+    {
+        $tokenizer = new Doctrine_Query_Tokenizer();
+
+        $str = 'foo.field AND bar.field';
+        $a   = $tokenizer->bracketExplode($str, array(' \&\& ', ' AND '), '(', ')');
+        $this->assertEqual($a, array('foo.field', 'bar.field'));
+
+        // delimiters should be case insensitive
+        $str = 'foo.field and bar.field';
+        $a   = $tokenizer->bracketExplode($str, array(' \&\& ', ' AND '), '(', ')');
+        $this->assertEqual($a, array('foo.field', 'bar.field'));
     }
 
 

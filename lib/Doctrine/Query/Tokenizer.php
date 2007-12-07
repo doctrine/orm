@@ -33,9 +33,9 @@
  *       into a stateless StringUtil? class. This tokenizer should be concerned with tokenizing
  *       DQL strings.
  */
-class Doctrine_Query_Tokenizer 
+class Doctrine_Query_Tokenizer
 {
-    
+
     /**
      * tokenizeQuery
      * splits the given dql query into an array where keys
@@ -102,7 +102,7 @@ class Doctrine_Query_Tokenizer
         }
         return $parts;
     }
-    
+
     /**
      * trims brackets
      *
@@ -143,7 +143,7 @@ class Doctrine_Query_Tokenizer
     public function bracketExplode($str, $d = ' ', $e1 = '(', $e2 = ')')
     {
         if (is_array($d)) {
-            $a = preg_split('#('.implode('|', $d).')#', $str);
+            $a = preg_split('#('.implode('|', $d).')#i', $str);
             $d = stripslashes($d[0]);
         } else {
             $a = explode($d, $str);
@@ -156,7 +156,7 @@ class Doctrine_Query_Tokenizer
                 $term[$i] = trim($val);
                 $s1 = substr_count($term[$i], $e1);
                 $s2 = substr_count($term[$i], $e2);
-                
+
                 if ($s1 == $s2) {
                     $i++;
                 }
@@ -164,8 +164,8 @@ class Doctrine_Query_Tokenizer
                 $term[$i] .= $d . trim($val);
                 $c1 = substr_count($term[$i], $e1);
                 $c2 = substr_count($term[$i], $e2);
-                
-                if ($c1 == $c2) { 
+
+                if ($c1 == $c2) {
                     $i++;
                 }
             }
