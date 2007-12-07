@@ -518,39 +518,32 @@ final class Doctrine
                 foreach ($it as $file) {
                     $e = explode('.', $file->getFileName());
                     if (end($e) === 'php' && strpos($file->getFileName(), '.inc') === false) {
-                        self::$_loadedModelFiles[$e[0]] = $file->getPathName();
+                        self::$_loadedModelFiles[] = array(
+                            'filename' => $e[0],
+                            'filepath' => $file->getPathName()
+                        );
                     }
                 }
             }
 
             $loadedModels = array();
 
-            $modelFiles = array_keys(self::$_loadedModelFiles);
+            $modelFiles = self::$_loadedModelFiles;
 
-            foreach ($modelFiles as $name) {
+            foreach ($modelFiles as $key => $model) {
                 $declaredBefore = get_declared_classes();
-                if (class_exists($name)) {
-                    if (self::isValidModelClass($name) && !in_array($name, $loadedModels)) {
-                        $loadedModels[] = $name;
-                    }
-                } else {
-                    // Determine class names by the actual inclusion of the model file
-                    // The possibility exists that the class name(s) contained in the model
-                    // file is not the same as the actual model file name itself
-                    if (isset(self::$_loadedModelFiles[$name])) {
-                        require_once self::$_loadedModelFiles[$name];
-                        $declaredAfter = get_declared_classes();
-                        // Using array_slice since array_diff is broken is some versions
-                        $foundClasses = array_slice($declaredAfter, count($declaredBefore) - 1);
-                        if ($foundClasses) {
-                            foreach ($foundClasses as $name) {
-                                if (self::isValidModelClass($name) && !in_array($name, $loadedModels)) {
-                                    $loadedModels[] = $name;
-                                }
-                            }
+                require_once $model['filepath'];
+                $declaredAfter = get_declared_classes();
+                // Using array_slice because array_diff is broken is some PHP versions
+                $foundClasses = array_slice($declaredAfter, count($declaredBefore) - 1);
+                if ($foundClasses) {
+                    foreach ($foundClasses as $className) {
+                        if (self::isValidModelClass($className) && !in_array($className, $loadedModels)) {
+                            $loadedModels[] = $className;
                         }
                     }
                 }
+
             }
         }
 
@@ -574,7 +567,6 @@ final class Doctrine
             $classes = get_declared_classes();
             $classes = array_merge($classes, array_keys(self::$_loadedModelFiles));
         }
-
         return self::filterInvalidModels($classes);
     }
 
