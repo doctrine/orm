@@ -683,7 +683,7 @@ final class Doctrine
 
         $result = $export->exportSchema($yamlPath, 'yml', $directory);
 
-        exec('rm -rf ' . $directory);
+        Doctrine_Lib::removeDirectories($directory);
 
         return $result;
     }
