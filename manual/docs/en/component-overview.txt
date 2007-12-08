@@ -214,7 +214,7 @@ $event->save();
 
 The last line would execute sql (in sqlite):
 <code>
-INSERT INTO event (name, timepoint) VALUES (?, 'NOW()')
+INSERT INTO event (name, timepoint) VALUES ('Rock festival', 'NOW()')
 </code>
 
 +++ Getting record state
@@ -510,7 +510,7 @@ foreach($users as $user) {
 }
 </code>
 
-The example above shows how to do this more efficiently by using the DQL API.
+The example below shows how to do this more efficiently by using the DQL API.
 
 <code type="php">
 // load everything here
