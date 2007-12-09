@@ -999,8 +999,7 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
     {
         if (isset($this->_data[$fieldName])) {
             $this->_data[$fieldName] = array();
-        }
-        if (isset($this->_references[$fieldName])) {
+        } else if (isset($this->_references[$fieldName])) {
             if ($this->_references[$fieldName] instanceof Doctrine_Record) {
                 // todo: delete related record when saving $this
                 $this->_references[$fieldName] = self::$_null;
