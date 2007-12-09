@@ -1,6 +1,7 @@
 Beta 3
 ------
 
+* r3323: Added Doctrine_Record and Doctrine_Collection synchronizeWithArray method
 * r3264: Added a $deep parameter to Doctrine_Record::refresh()
 
 Beta 2
