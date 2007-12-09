@@ -218,6 +218,7 @@ $record->addTestCase(new Doctrine_Record_Lock_TestCase());
 $record->addTestCase(new Doctrine_Record_ZeroValues_TestCase());
 //$record->addTestCase(new Doctrine_Record_SaveBlankRecord_TestCase());
 $record->addTestCase(new Doctrine_Record_Inheritance_TestCase());
+$record->addTestCase(new Doctrine_Record_Synchronize_TestCase());
 $test->addTestCase($record);
 
 $test->addTestCase(new Doctrine_CustomPrimaryKey_TestCase());

@@ -679,6 +679,33 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
     }
 
     /**
+     * synchronizeWithArray
+     * synchronizes a Doctrine_Collection with data from an array
+     *
+     * it expects an array representation of a Doctrine_Collection similar to the return
+     * value of the toArray() method. It will create Dectrine_Records that don't exist
+     * on the collection, update the ones that do and remove the ones missing in the $array
+     *
+     * @param array $array representation of a Doctrine_Collection
+     */
+    public function synchronizeWithArray(array $array)
+    {
+        foreach ($this as $key => $record) {
+            if (isset($array[$key])) {
+                $record->synchronizeWithArray($array[$key]);
+                unset($array[$key]);
+            } else {
+                // remove records that don't exist in the array
+                $this->remove($key);
+            }
+        }
+        // create new records for each new row in the array
+        foreach ($array as $rowKey => $row) {
+            $this[$rowKey]->fromArray($row);
+        }
+    }
+
+    /**
      * exportTo
      *
      * Export a Doctrine_Collection to one of the supported Doctrine_Parser formats

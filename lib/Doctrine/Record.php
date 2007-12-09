@@ -1000,7 +1000,14 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
         if (isset($this->_data[$fieldName])) {
             $this->_data[$fieldName] = array();
         }
-        // todo: what to do with references ?
+        if (isset($this->_references[$fieldName])) {
+            if ($this->_references[$fieldName] instanceof Doctrine_Record) {
+                // todo: delete related record when saving $this
+                $this->_references[$fieldName] = self::$_null;
+            } elseif ($this->_references[$fieldName] instanceof Doctrine_Collection) {
+                $this->_references[$fieldName]->setData(array());
+            }
+        }
     }
 
     /**
@@ -1252,6 +1259,34 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
                 } else if($this->getTable()->hasColumn($key)) {
                     $this->set($key, $value);
                 }
+            }
+        }
+    }
+
+    /**
+     * synchronizeWithArray
+     * synchronizes a Doctrine_Record and its relations with data from an array
+     *
+     * it expects an array representation of a Doctrine_Record similar to the return
+     * value of the toArray() method. If the array contains relations it will create
+     * those that don't exist, update the ones that do, and delete the ones missing
+     * on the array but available on the Doctrine_Record
+     *
+     * @param array $array representation of a Doctrine_Record
+     */
+    public function synchronizeWithArray(array $array)
+    {
+        foreach ($array as $key => $value) {
+            if ($this->getTable()->hasRelation($key)) {
+                $this->get($key)->synchronizeWithArray($value);
+            } else if ($this->getTable()->hasColumn($key)) {
+                $this->set($key, $value);
+            }
+        }
+        // eliminate relationships missing in the $array
+        foreach ($this->_references as $name => $obj) {
+            if (!isset($array[$name])) {
+                unset($this->$name);
             }
         }
     }
