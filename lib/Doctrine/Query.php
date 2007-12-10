@@ -706,32 +706,14 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable, Seria
         $str = '';
         foreach ($terms as $term) {
             $pos = strpos($term[0], '(');
-            
+
             if ($pos !== false) {
                 $name = substr($term[0], 0, $pos);
-                if ($name !== '') {
-                    $argStr = substr($term[0], ($pos + 1), -1);
-
-                    $args   = array();
-                    // parse args
-
-                    foreach ($this->_tokenizer->sqlExplode($argStr, ',') as $expr) {
-                       $args[] = $this->parseClause($expr);
-                    }
-
-                    // convert DQL function to its RDBMS specific equivalent
-                    try {
-                        $expr = call_user_func_array(array($this->_conn->expression, $name), $args);
-                    } catch (Doctrine_Expression_Exception $e) {
-                        throw new Doctrine_Query_Exception('Unknown function ' . $expr . '.');
-                    }
-                    $term[0] = $expr;
-                } else {
-                    $term[0] = $this->parseSubquery($term[0]);
-                }
+                
+                $term[0] = $this->parseFunctionExpression($term[0]);
             } else {
                 if (substr($term[0], 0, 1) !== "'" && substr($term[0], -1) !== "'") {
-                    
+
                     if (strpos($term[0], '.') !== false) {
                         if ( ! is_numeric($term[0])) {
                             $e = explode('.', $term[0]);
@@ -837,6 +819,34 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable, Seria
             $str .= $term[0] . $term[1];
         }
         return $str;
+    }
+    public function parseFunctionExpression($expr)
+    {
+        $pos = strpos($expr, '(');
+        
+        $name = substr($expr, 0, $pos);
+
+        if ($name === '') {
+            return $this->parseSubquery($expr);
+        }
+
+        $argStr = substr($expr, ($pos + 1), -1);
+
+        $args   = array();
+        // parse args
+
+        foreach ($this->_tokenizer->sqlExplode($argStr, ',') as $arg) {
+           $args[] = $this->parseClause($arg);
+        }
+
+        // convert DQL function to its RDBMS specific equivalent
+        try {
+            $expr = call_user_func_array(array($this->_conn->expression, $name), $args);
+        } catch (Doctrine_Expression_Exception $e) {
+            throw new Doctrine_Query_Exception('Unknown function ' . $name . '.');
+        }
+        
+        return $expr;
     }
     public function parseSubquery($subquery)
     {
