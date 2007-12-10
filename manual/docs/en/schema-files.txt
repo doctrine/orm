@@ -52,7 +52,7 @@ User:
     username:
       type: string(255)
     password:
-      type: stirng(255)
+      type: string(255)
 Phonenumber:
   columns:
     id:
@@ -128,7 +128,7 @@ User:
     username:
       type: string(255)
     password:
-      type: stirng(255)
+      type: string(255)
 </code>
 
 ++ Attributes
@@ -147,7 +147,7 @@ User:
     username:
       type: string(255)
     password:
-      type: stirng(255)
+      type: string(255)
   attributes:
     export: none
     validate: false
@@ -169,7 +169,7 @@ User:
     username:
       type: string(255)
     password:
-      type: stirng(255)
+      type: string(255)
   templates:
     MyCustomTemplate
       option1: value
@@ -192,7 +192,7 @@ User:
     username:
       type: string(255)
     password:
-      type: stirng(255)
+      type: string(255)
   actAs:
     Sluggable:
       fields: [username]
@@ -214,7 +214,7 @@ User:
     username:
       type: string(255)
     password:
-      type: stirng(255)
+      type: string(255)
   options:
     type: INNODB
     collate: utf8_unicode_ci
