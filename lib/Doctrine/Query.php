@@ -709,7 +709,6 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable, Seria
 
             if ($pos !== false) {
                 $name = substr($term[0], 0, $pos);
-                
                 $term[0] = $this->parseFunctionExpression($term[0]);
             } else {
                 if (substr($term[0], 0, 1) !== "'" && substr($term[0], -1) !== "'") {
@@ -792,8 +791,6 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable, Seria
 
                                     $tableAlias = $this->getTableAlias($componentAlias);
 
-                                    $tableAlias = $this->getTableAlias($componentAlias);
-
                                     if ($this->getType() === Doctrine_Query::SELECT) {
                                         // build sql expression
                                         $term[0] = $this->_conn->quoteIdentifier($tableAlias)
@@ -820,6 +817,12 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable, Seria
         }
         return $str;
     }
+    
+    public function parseIdentifierReference($expr)
+    {
+    	
+    }
+
     public function parseFunctionExpression($expr)
     {
         $pos = strpos($expr, '(');
@@ -863,65 +866,6 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable, Seria
 
         return '(' . $trimmed . ')';
     }
-    /**
-     * parseAggregateFunction
-     * parses an aggregate function and returns the parsed form
-     *
-     * @see Doctrine_Expression
-     * @param string $expr                  DQL aggregate function
-     * @throws Doctrine_Query_Exception     if unknown aggregate function given
-     * @return array                        parsed form of given function
-     */
-    public function parseAggregateFunction($expr, $nestedCall = false)
-    {
-        $e    = $this->_tokenizer->bracketExplode($expr, ' ');
-        $func = $e[0];
-
-        $pos  = strpos($func, '(');
-        if ($pos === false) {
-            return $expr;
-        }
-
-        // get the name of the function
-        $name   = substr($func, 0, $pos);
-        $argStr = substr($func, ($pos + 1), -1);
-
-        $args   = array();
-        // parse args
-        foreach ($this->_tokenizer->bracketExplode($argStr, ',') as $expr) {
-           $args[] = $this->parseAggregateFunction($expr, true);
-        }
-
-        // convert DQL function to its RDBMS specific equivalent
-        try {
-            $expr = call_user_func_array(array($this->_conn->expression, $name), $args);
-        } catch (Doctrine_Expression_Exception $e) {
-            throw new Doctrine_Query_Exception('Unknown function ' . $func . '.');
-        }
-
-        if ( ! $nestedCall) {
-            // try to find all component references
-            preg_match_all("/[a-z0-9_]+\.[a-z0-9_]+[\.[a-z0-9]+]*/i", $argStr, $m);
-
-            if (isset($e[1])) {
-                if (strtoupper($e[1]) === 'AS') {
-                    if ( ! isset($e[2])) {
-                        throw new Doctrine_Query_Exception('Missing aggregate function alias.');
-                    }
-                    $alias = $e[2];
-                } else {
-                    $alias = $e[1];
-                }
-            } else {
-                $alias = substr($expr, 0, strpos($expr, '('));
-            }
-
-            $this->_pendingAggregates[] = array($expr, $m[0], $alias);
-        }
-
-        return $expr;
-    }
-
     /**
      * processPendingSubqueries
      * processes pending subqueries
