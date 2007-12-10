@@ -1,0 +1,75 @@
+QueryLanguage   = SelectStatement | UpdateStatement | DeleteStatement
+
+SelectStatement = [SelectClause] FromClause [WhereClause] [GroupByClause] [HavingClause] [OrderByClause] [LimitClause]
+UpdateStatement = UpdateClause [WhereClause] [OrderByClause] [LimitClause]
+DeleteStatement = DeleteClause [WhereClause] [OrderByClause] [LimitClause]
+
+Subselect       = SimpleSelectClause FromClause [WhereClause] [GroupByClause] [HavingClause] [OrderByClause] [LimitClause] [OffsetClause]
+SelectClause    = "SELECT" ["ALL" | "DISTINCT"] SelectExpression {"," SelectExpression}
+SimpleSelectClause = "SELECT" ["ALL" | "DISTINCT"] SelectExpression
+DeleteClause    = "DELETE" "FROM" RangeVariableDeclaration
+WhereClause     = "WHERE" ConditionalExpression
+FromClause      = "FROM" IdentificationVariableDeclaration {"," IdentificationVariableDeclaration}
+HavingClause    = "HAVING" ConditionalExpression
+GroupByClause   = "GROUP" "BY" GroupByItem {"," GroupByItem}
+OrderByClause   = "ORDER" "BY" OrderByItem {"," OrderByItem}
+LimitClause     = "LIMIT" Expression ["OFFSET" Expression]
+UpdateClause    = "UPDATE" RangeVariableDeclaration "SET" UpdateItem {"," UpdateItem}
+
+OrderByItem = PathExpression ["ASC" | "DESC"]
+GroupByItem = PathExpression
+UpdateItem = PathExpression "=" (Expression | "NULL")
+
+IdentificationVariableDeclaration =  RangeVariableDeclaration {Join}
+RangeVariableDeclaration = PathExpression [["AS" ] identifier<identification-variable>]
+
+Join = ["LEFT" | "INNER"] "JOIN" PathExpression "AS" identifier
+
+ConditionalExpression = ConditionalTerm {"OR" ConditionalTerm}
+ConditionalTerm       = ConditionalFactor {"AND" ConditionalFactor}
+ConditionalFactor     = ["NOT"] ConditionalPrimary
+ConditionalPrimary    = SimpleConditionalExpression | "(" ConditionalExpression ")"
+SimpleConditionalExpression
+                      = Expression (ComparisonExpression | BetweenExpression | LikeExpression
+                      | InExpression | NullComparisonExpression) | ExistsExpression
+
+Atom = string-literal | numeric-constant | input-parameter
+
+Expression  = Expression {("+" | "-" | "*" | "/") Expression}
+Expression  = ("+" | "-") Expression
+Expression  = "(" Expression ")"
+Expression  = PathExpression | Atom | | Function | AggregateExpression
+
+SelectExpression  = (Expression | "(" Subselect ")" ) [["AS"] identifier]
+PathExpression = identifier {"." identifier}
+
+AggregateExpression = ("AVG" | "MAX" | "MIN" | "SUM") "(" ["DISTINCT"] Expression ")"
+                    | "COUNT" "(" ["DISTINCT"] (Expression | "*") ")"
+
+QuantifiedExpression     = ("ALL" | "ANY" | "SOME") "(" Subselect ")"
+BetweenExpression        = ["NOT"] "BETWEEN" Expression "AND" Expression
+ComparisonExpression     = ComparisonOperator ( QuantifiedExpression | Expression | "(" Subselect ")" )
+InExpression             = ["NOT"] "IN" "(" (Atom {"," Atom} | Subselect) ")"
+LikeExpression           = ["NOT"] "LIKE" Expression ["ESCAPE" escape_character]
+NullComparisonExpression = "IS" ["NOT"] "NULL"
+ExistsExpression         = ["NOT"] "EXISTS" "(" Subselect ")"
+
+
+Function =
+    "CURRENT_DATE" |
+    "CURRENT_TIME" |
+    "CURRENT_TIMESTAMP" |
+    "LENGTH" "(" Expression ")" |
+    "LOCATE" "(" Expression "," Expression ["," Expression] ")" |
+    "ABS" "(" Expression ")" |
+    "SQRT" "(" Expression ")" |
+    "MOD" "(" Expression "," Expression ")" |
+    "SIZE" "(" Expression ")" |
+    "CONCAT" "(" Expression "," Expression ")" |
+    "SUBSTRING" "(" Expression "," Expression "," "Expression" ")" |
+    "TRIM" "(" [[TrimSpecification] [trim_character] "FROM"] string_primary ")" |
+    "LOWER" "(" string_primary ")" |
+    "UPPER" "(" string_primary ")" |
+    identifier "(" [Expression {"," Expression}]")" // Custom function
+
+TrimSpecification = "LEADING" | "TRAILING" | "BOTH"
