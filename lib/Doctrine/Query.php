@@ -727,18 +727,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable, Seria
                     }
                     $term[0] = $expr;
                 } else {
-                    $trimmed = trim($this->_tokenizer->bracketTrim($term[0]));
-
-                    // check for possible subqueries
-                    if (substr($trimmed, 0, 4) == 'FROM' || substr($trimmed, 0, 6) == 'SELECT') {
-                        // parse subquery
-                        $trimmed = $this->createSubquery()->parseDqlQuery($trimmed)->getQuery();
-                    } else {
-                        // parse normal clause
-                        $trimmed = $this->parseClause($trimmed);
-                    }
-
-                    $term[0] = '(' . $trimmed . ')';
+                    $term[0] = $this->parseSubquery($term[0]);
                 }
             } else {
                 if (substr($term[0], 0, 1) !== "'" && substr($term[0], -1) !== "'") {
@@ -849,7 +838,21 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable, Seria
         }
         return $str;
     }
+    public function parseSubquery($subquery)
+    {
+        $trimmed = trim($this->_tokenizer->bracketTrim($subquery));
 
+        // check for possible subqueries
+        if (substr($trimmed, 0, 4) == 'FROM' || substr($trimmed, 0, 6) == 'SELECT') {
+            // parse subquery
+            $trimmed = $this->createSubquery()->parseDqlQuery($trimmed)->getQuery();
+        } else {
+            // parse normal clause
+            $trimmed = $this->parseClause($trimmed);
+        }
+
+        return '(' . $trimmed . ')';
+    }
     /**
      * parseAggregateFunction
      * parses an aggregate function and returns the parsed form
