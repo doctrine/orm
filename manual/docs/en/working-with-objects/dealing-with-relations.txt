@@ -120,3 +120,17 @@ $user->unlink('Phonenumber', array(1, 3));
 
 $user->Phonenumber->count(); // 1
 </code> 
+
++++ Working with related records
+
+++++ Testing the existance of a relation
+<code type="php">
+$obj = new Model();
+if(isset($obj->Relation())) { // returns false
+        ...
+}
+$obj->Relation = new Relation();
+if(isset($obj->Relation())) { // returns true
+        ...
+}
+</code>
