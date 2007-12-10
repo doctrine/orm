@@ -487,6 +487,7 @@ class Doctrine_DataDict_Pgsql extends Doctrine_DataDict
             case 'text':
             case 'varchar':
             case 'interval':
+            case '_varchar':
                 $fixed = false;
             case 'unknown':
             case 'char':
