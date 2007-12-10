@@ -180,28 +180,28 @@ class Doctrine_Query_AggregateValue_TestCase extends Doctrine_UnitTestCase
     public function testAggregateFunctionParser()
     {
         $q = new Doctrine_Query();
-        $func = $q->parseAggregateFunction('SUM(i.price)');
+        $func = $q->from('QueryTest_Item i')->parseFunctionExpression('SUM(i.price)');
     
         $this->assertEqual($func, 'SUM(i.price)');
     }
     public function testAggregateFunctionParser2()
     {
         $q = new Doctrine_Query();
-        $func = $q->parseAggregateFunction('SUM(i.price * i.quantity)');
-    
+        $func = $q->from('QueryTest_Item i')->parseFunctionExpression('SUM(i.price * i.quantity)');
+
         $this->assertEqual($func, 'SUM(i.price * i.quantity)');
     }
     public function testAggregateFunctionParser3()
     {
         $q = new Doctrine_Query();
-        $func = $q->parseAggregateFunction('MOD(i.price, i.quantity)');
+        $func = $q->from('QueryTest_Item i')->parseFunctionExpression('MOD(i.price, i.quantity)');
 
         $this->assertEqual($func, 'MOD(i.price, i.quantity)');
     }
     public function testAggregateFunctionParser4()
     {
         $q = new Doctrine_Query();
-        $func = $q->parseAggregateFunction('CONCAT(i.price, i.quantity)');
+        $func = $q->from('QueryTest_Item i')->parseFunctionExpression('CONCAT(i.price, i.quantity)');
 
         $this->assertEqual($func, 'CONCAT(i.price, i.quantity)');
     }
