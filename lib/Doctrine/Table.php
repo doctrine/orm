@@ -1064,6 +1064,15 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
     {
         return isset($this->_columns[$columnName]);
     }
+    
+    /**
+     * hasField
+     * @return boolean
+     */
+    public function hasField($fieldName)
+    {
+        return isset($this->_columnNames[$fieldName]);
+    }
 
     /**
      * sets the connection for this class
