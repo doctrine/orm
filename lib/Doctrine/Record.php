@@ -1705,12 +1705,12 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
         if ($rel instanceof Doctrine_Relation_Association) {
 
             $modelClassName = $rel->getAssociationTable()->getComponentName();
-            $localFieldName = $rel->getLocal();
+            $localFieldName = $rel->getLocalFieldName();
             $localFieldDef  = $rel->getAssociationTable()->getColumnDefinition($localFieldName);
             if ($localFieldDef['type'] == 'integer') {
                 $identifier = (integer) $identifier;
             }
-            $foreignFieldName = $rel->getForeign();
+            $foreignFieldName = $rel->getForeignFieldName();
             $foreignFieldDef  = $rel->getAssociationTable()->getColumnDefinition($foreignFieldName);
             if ($foreignFieldDef['type'] == 'integer') {
                 for ($i = 0; $i < count($ids); $i++) {
@@ -1742,7 +1742,7 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
             $q = new Doctrine_Query();
 
             $q->update($this->getTable()->getComponentName())
-              ->set($rel->getLocal(), '?', $ids);
+              ->set($rel->getLocalFieldName(), '?', $ids);
 
             if (count($ids) > 0) {
                 $q->whereIn($rel->getTable()->getIdentifier(), array_values($this->identifier()));
