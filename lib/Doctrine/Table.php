@@ -1147,6 +1147,24 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
     }
 
     /**
+     * findBySql
+     * finds records with given SQL where clause
+     * returns a collection of records
+     *
+     * @param string $dql               DQL after WHERE clause
+     * @param array $params             query parameters
+     * @param int $hydrationMode        Doctrine::FETCH_ARRAY or Doctrine::FETCH_RECORD
+     * @return Doctrine_Collection
+     * 
+     * @todo This actually takes DQL, not SQL, but it requires column names 
+     *       instead of field names. This should be fixed to use raw SQL instead.
+     */
+    public function findBySql($dql, array $params = array(), $hydrationMode = null)
+    {
+        return $this->createQuery()->where($dql)->execute($params, $hydrationMode);
+    }
+
+    /**
      * findByDql
      * finds records with given DQL where clause
      * returns a collection of records
@@ -1156,14 +1174,13 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
      * @param int $hydrationMode        Doctrine::FETCH_ARRAY or Doctrine::FETCH_RECORD
      * @return Doctrine_Collection
      */
-    public function findBySql($dql, array $params = array(), $hydrationMode = null)
-    {
-        return $this->createQuery()->where($dql)->execute($params, $hydrationMode);
-    }
-
     public function findByDql($dql, array $params = array(), $hydrationMode = null)
     {
-        return $this->findBySql($dql, $params, $hydrationMode);
+        $parser = new Doctrine_Query($this->_conn);
+        $component = $this->getComponentName();
+        $query = 'FROM ' . $component . ' WHERE ' . $dql;
+
+        return $parser->query($query, $params, $hydrationMode);        
     }
 
     /**
