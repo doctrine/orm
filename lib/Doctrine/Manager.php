@@ -287,6 +287,9 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
         if ($name !== null) {
             $name = (string) $name;
             if (isset($this->_connections[$name])) {
+                if ($setCurrent) {
+                    $this->_currIndex = $name;
+                }
                 return $this->_connections[$name];
             }
         } else {
