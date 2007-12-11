@@ -545,6 +545,17 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
         }
         return $this->getCurrentConnection();
     }
+    
+    /**
+     * hasConnectionForComponent
+     *
+     * @param string $componentName
+     * @return boolean
+     */
+    public function hasConnectionForComponent($componentName = null)
+    {
+        return isset($this->_bound[$componentName]);
+    }
 
     /**
      * getTable

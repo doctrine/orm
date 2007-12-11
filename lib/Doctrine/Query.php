@@ -1649,8 +1649,10 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable, Seria
     public function loadRoot($name, $componentAlias)
     {
         // get the connection for the component
-        $this->_conn = Doctrine_Manager::getInstance()
-                      ->getConnectionForComponent($name);
+        $manager = Doctrine_Manager::getInstance();
+        if ($manager->hasConnectionForComponent($name)) {
+            $this->_conn = $manager->getConnectionForComponent($name);
+        }
 
         $table = $this->_conn->getTable($name);
         $tableName = $table->getTableName();
@@ -1681,7 +1683,10 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable, Seria
     public function buildInheritanceJoinSql($name, $componentAlias)
     {
         // get the connection for the component
-        $this->_conn = Doctrine_Manager::getInstance()->getConnectionForComponent($name);
+        $manager = Doctrine_Manager::getInstance();
+        if ($manager->hasConnectionForComponent($name)) {
+            $this->_conn = $manager->getConnectionForComponent($name);
+        }
 
         $table = $this->_conn->getTable($name);
         $tableName = $table->getTableName();
