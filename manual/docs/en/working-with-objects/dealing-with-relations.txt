@@ -1,6 +1,6 @@
 +++ Creating related records
 
-Accessing related records in Doctrine is easy: you can use exactly the same getters and setters as for the record properties. 
+Accessing related records in Doctrine is easy: you can use exactly the same getters and setters as for the record properties.
 
 You can use any of the three ways above, however the last one is the recommended one for array portability purposes.
 
@@ -35,6 +35,73 @@ $user->Phonenumber[]->phonenumber = '123 777';
 
 // saves the user and the associated phonenumbers
 $user->save();
+</code>
+
+Another way to easily create a link between two related components is by using Doctrine_Record::link(). It often happens that you have two existing records that you would like to relate (or link) to one another. In this case, if there is a relation defined between the involved record classes, you only need the identifiers of the related record(s):
+
+<code type="php">
+
+// We keep track of the new phone number identifiers
+
+$phoneIds = array();
+
+// Some phone numbers are created...
+
+$phone1 = new Phonenumber();
+$phone1['phonenumber'] = '555 202 7890';
+$phone1->save();
+
+$phoneIds[] = $phone1['id'];
+
+$phone2 = new Phonenumber();
+$phone2['phonenumber'] = '555 100 7890';
+$phone2->save();
+
+$phoneIds[] = $phone2['id'];
+
+// Some user is created...
+
+$user = new User();
+$user['name'] = 'Werner Mollentze';
+$user->save();
+
+// Let's link the phone numbers to the user, since the relation to Phonenumber exists for the User record...
+
+$user->link('Phonenumber', $phoneIds);
+
+</code>
+
+If a relation to the User record class is defined for the Phonenumber record class, you may even do this:
+
+<code type="php">
+
+// Some user is created...
+
+$user = new User();
+$user['name'] = 'wernerm';
+$user->save();
+
+// Some phone numbers are created and linked to the User on-the-fly...
+// This is possible if a relation to User exists for the Phonenumber record
+
+$phone1 = new Phonenumber();
+$phone1['phonenumber'] = '555 202 7890';
+$phone1->save();
+
+// Let's link this Phonenumber to our User...
+
+$phone1->link('User', array($user['id']));
+
+// We create another phone number...
+
+$phone2 = new Phonenumber();
+$phone2['phonenumber'] = '555 100 7890';
+$phone2->save();
+
+// Let's link this Phonenumber to our User too...
+
+$phone2->link('User', array($user['id']));
+
 </code>
 
 +++ Retrieving related records
@@ -119,7 +186,7 @@ Lets say we have a User who has 3 Phonenumbers (with identifiers 1, 2 and 3). No
 $user->unlink('Phonenumber', array(1, 3));
 
 $user->Phonenumber->count(); // 1
-</code> 
+</code>
 
 +++ Working with related records
 
