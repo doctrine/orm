@@ -788,7 +788,7 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
             $conn = $this->_table->getConnection();
         }
         
-        $conn->beginTransaction();
+        $conn->beginInternalTransaction();
 
         $conn->transaction->addCollection($this);
 
@@ -817,7 +817,7 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
             $conn = $this->_table->getConnection();
         }
 
-        $conn->beginTransaction();
+        $conn->beginInternalTransaction();
         $conn->transaction->addCollection($this);
 
         foreach ($this as $key => $record) {

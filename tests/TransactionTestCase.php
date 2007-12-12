@@ -121,27 +121,21 @@ class Doctrine_Transaction_TestCase extends Doctrine_UnitTestCase
     public function testReleaseSavepointIsOnlyImplementedAtDriverLevel()
     {
         try {
-            $this->transaction->setTransactionLevel(1);
-
             $this->transaction->commit('savepoint');
             $this->fail();
-        } catch(Doctrine_Transaction_Exception $e) {
+        } catch (Doctrine_Transaction_Exception $e) {
             $this->pass();
         }
-        $this->transaction->setTransactionLevel(0);
     }
 
     public function testRollbackSavepointIsOnlyImplementedAtDriverLevel() 
     {
         try {
-            $this->transaction->setTransactionLevel(1);
-
             $this->transaction->rollback('savepoint');
             $this->fail();
         } catch(Doctrine_Transaction_Exception $e) {
             $this->pass();
         }    
-        $this->transaction->setTransactionLevel(0);
     }
 
     public function testSetIsolationIsOnlyImplementedAtDriverLevel() 
@@ -174,14 +168,24 @@ class Doctrine_Transaction_TestCase extends Doctrine_UnitTestCase
         $this->assertEqual($this->transaction->getState(), Doctrine_Transaction::STATE_SLEEP);                                                      
     }
 
-    public function testCommittingNotActiveTransactionReturnsFalse()
+    public function testCommittingWithNoActiveTransactionThrowsException()
     {
-        $this->assertEqual($this->transaction->commit(), false);
+        try {
+            $this->transaction->commit();
+            $this->fail();
+        } catch (Doctrine_Transaction_Exception $e) {
+            $this->pass();
+        }
     }
 
     public function testExceptionIsThrownWhenUsingRollbackOnNotActiveTransaction() 
     {
-        $this->assertEqual($this->transaction->rollback(), false);
+        try {
+            $this->transaction->rollback();
+            $this->fail();
+        } catch (Doctrine_Transaction_Exception $e) {
+            $this->pass();
+        }
     }
 
     public function testBeginTransactionStartsNewTransaction() 
@@ -214,7 +218,7 @@ class Doctrine_Transaction_TestCase extends Doctrine_UnitTestCase
             $phonenumber->set('entity_id', $user->get('id'));
             $phonenumber->set('phonenumber', '123 123');
             $phonenumber->save();
-            
+
             $conn->commit();    
         } catch (Exception $e) {
             $conn->rollback();

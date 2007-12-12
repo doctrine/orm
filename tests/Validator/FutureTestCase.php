@@ -67,7 +67,7 @@ class Doctrine_Validator_Future_TestCase extends Doctrine_UnitTestCase
     public function testInvalidFutureDates()
     {
         $this->manager->setAttribute(Doctrine::ATTR_VALIDATE, Doctrine::VALIDATE_ALL);
-        
+
         $user1 = new ValidatorTest_DateModel();
         $user1->death = date('Y-m-d', 42);
         $this->assertFalse($user1->trySave());

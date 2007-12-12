@@ -50,9 +50,21 @@ class Doctrine_Transaction extends Doctrine_Connection_Module
     const STATE_BUSY        = 2;
 
     /**
-     * @var integer $transactionLevel      the nesting level of transactions, used by transaction methods
+     * @var integer $_nestingLevel      The current nesting level of this transaction.
+     *                                  A nesting level of 0 means there is currently no active
+     *                                  transaction.
      */
-    protected $transactionLevel  = 0;
+    protected $_nestingLevel = 0;
+    
+    /**
+     * @var integer $_internalNestingLevel  The current internal nesting level of this transaction.
+     *                                      "Internal" means transactions started by Doctrine itself.
+     *                                      Therefore the internal nesting level is always
+     *                                      lower or equal to the overall nesting level.
+     *                                      A level of 0 means there is currently no active
+     *                                      transaction that was initiated by Doctrine itself.
+     */
+    protected $_internalNestingLevel = 0;
 
     /**
      * @var array $invalid                  an array containing all invalid records within this transaction
@@ -90,14 +102,14 @@ class Doctrine_Transaction extends Doctrine_Connection_Module
 
     /**
      * getState
-     * returns the state of this connection
+     * returns the state of this transaction module.
      *
      * @see Doctrine_Connection_Transaction::STATE_* constants
      * @return integer          the connection state
      */
     public function getState()
     {
-        switch ($this->transactionLevel) {
+        switch ($this->_nestingLevel) {
             case 0:
                 return Doctrine_Transaction::STATE_SLEEP;
                 break;
@@ -132,7 +144,8 @@ class Doctrine_Transaction extends Doctrine_Connection_Module
     *
     * @return array An array of invalid records
     */ 
-    public function getInvalid(){
+    public function getInvalid()
+    {
         return $this->invalid;
     }
 
@@ -144,20 +157,7 @@ class Doctrine_Transaction extends Doctrine_Connection_Module
      */
     public function getTransactionLevel()
     {
-        return $this->transactionLevel;
-    }
-
-    /**
-     * getTransactionLevel
-     * set the current transaction nesting level
-     *
-     * @return Doctrine_Transaction     this object
-     */
-    public function setTransactionLevel($level)
-    {
-        $this->transactionLevel = $level;
-
-        return $this;
+        return $this->_nestingLevel;
     }
 
     /**
@@ -166,6 +166,9 @@ class Doctrine_Transaction extends Doctrine_Connection_Module
      *
      * if trying to set a savepoint and there is no active transaction
      * a new transaction is being started
+     *
+     * This method should only be used by userland-code to initiate transactions.
+     * To initiate a transaction from inside Doctrine use {@link beginInternalTransaction()}.
      *
      * Listeners: onPreTransactionBegin, onTransactionBegin
      *
@@ -192,7 +195,7 @@ class Doctrine_Transaction extends Doctrine_Connection_Module
 
             $listener->postSavepointCreate($event);
         } else {
-            if ($this->transactionLevel == 0) {
+            if ($this->_nestingLevel == 0) {
                 $event = new Doctrine_Event($this, Doctrine_Event::TX_BEGIN);
 
                 $listener->preTransactionBegin($event);
@@ -200,7 +203,7 @@ class Doctrine_Transaction extends Doctrine_Connection_Module
                 if ( ! $event->skipOperation) {
                     try {
                         $this->conn->getDbh()->beginTransaction();
-                    } catch(Exception $e) {
+                    } catch (Exception $e) {
                         throw new Doctrine_Transaction_Exception($e->getMessage());
                     }
                 }
@@ -208,7 +211,7 @@ class Doctrine_Transaction extends Doctrine_Connection_Module
             }
         }
 
-        $level = ++$this->transactionLevel;
+        $level = ++$this->_nestingLevel;
 
         return $level;
     }
@@ -228,16 +231,16 @@ class Doctrine_Transaction extends Doctrine_Connection_Module
      */
     public function commit($savepoint = null)
     {
-        $this->conn->connect();
-
-        if ($this->transactionLevel == 0) {
-            return false;
+        if ($this->_nestingLevel == 0) {
+            throw new Doctrine_Transaction_Exception("Commit failed. There is no active transaction.");
         }
+        
+        $this->conn->connect();
 
         $listener = $this->conn->getAttribute(Doctrine::ATTR_LISTENER);
 
         if ( ! is_null($savepoint)) {
-            $this->transactionLevel -= $this->removeSavePoints($savepoint);
+            $this->_nestingLevel -= $this->removeSavePoints($savepoint);
 
             $event = new Doctrine_Event($this, Doctrine_Event::SAVEPOINT_COMMIT);
 
@@ -248,31 +251,42 @@ class Doctrine_Transaction extends Doctrine_Connection_Module
             }
 
             $listener->postSavepointCommit($event);
-        } else {            
-            if ($this->transactionLevel == 1) {
+        } else {
+                 
+            if ($this->_nestingLevel == 1 || $this->_internalNestingLevel == 1) {
                 if ( ! empty($this->invalid)) {
-                    $this->rollback();
-                    $tmp = $this->invalid;
-                    $this->invalid = array();
-                    throw new Doctrine_Validator_Exception($tmp);
+                    if ($this->_internalNestingLevel == 1) {
+                        // transaction was started by doctrine, so we are responsible
+                        // for a rollback
+                        $this->rollback();
+                        $tmp = $this->invalid;
+                        $this->invalid = array();
+                        throw new Doctrine_Validator_Exception($tmp);
+                    }
                 }
-                // take snapshots of all collections used within this transaction
-                foreach ($this->_collections as $coll) {
-                    $coll->takeSnapshot();
-                }
-                $this->_collections = array();
-                
-                $event = new Doctrine_Event($this, Doctrine_Event::TX_COMMIT);
-            
-                $listener->preTransactionCommit($event);
-                if ( ! $event->skipOperation) {
-                    $this->conn->getDbh()->commit();
-                }
-                $listener->postTransactionCommit($event);
+                if ($this->_nestingLevel == 1) {
+                    // take snapshots of all collections used within this transaction
+                    foreach ($this->_collections as $coll) {
+                        $coll->takeSnapshot();
+                    }
+                    $this->_collections = array();
 
+                    $event = new Doctrine_Event($this, Doctrine_Event::TX_COMMIT);
+
+                    $listener->preTransactionCommit($event);
+                    if ( ! $event->skipOperation) {
+                        $this->conn->getDbh()->commit();
+                    }
+                    $listener->postTransactionCommit($event);
+                }
             }
             
-            $this->transactionLevel--;
+            if ($this->_nestingLevel > 0) {
+                $this->_nestingLevel--;
+            }            
+            if ($this->_internalNestingLevel > 0) {
+                $this->_internalNestingLevel--;
+            } 
         }
 
         return true;
@@ -300,17 +314,22 @@ class Doctrine_Transaction extends Doctrine_Connection_Module
      */
     public function rollback($savepoint = null)
     {
-        $this->conn->connect();
-        $currentState = $this->getState();
+        if ($this->_nestingLevel == 0) {
+            throw new Doctrine_Transaction_Exception("Rollback failed. There is no active transaction.");
+        }
         
-        if ($currentState != self::STATE_ACTIVE && $currentState != self::STATE_BUSY) {
+        $this->conn->connect();
+
+        if ($this->_internalNestingLevel > 1 || $this->_nestingLevel > 1) {
+            $this->_internalNestingLevel--;
+            $this->_nestingLevel--;
             return false;
         }
 
         $listener = $this->conn->getAttribute(Doctrine::ATTR_LISTENER);
 
         if ( ! is_null($savepoint)) {
-            $this->transactionLevel -= $this->removeSavePoints($savepoint);
+            $this->_nestingLevel -= $this->removeSavePoints($savepoint);
 
             $event = new Doctrine_Event($this, Doctrine_Event::SAVEPOINT_ROLLBACK);
 
@@ -327,7 +346,8 @@ class Doctrine_Transaction extends Doctrine_Connection_Module
             $listener->preTransactionRollback($event);
             
             if ( ! $event->skipOperation) {
-                $this->transactionLevel = 0;
+                $this->_nestingLevel = 0;
+                $this->_internalNestingLevel = 0;
                 try {
                     $this->conn->getDbh()->rollback();
                 } catch (Exception $e) {
@@ -450,4 +470,17 @@ class Doctrine_Transaction extends Doctrine_Connection_Module
     {
         throw new Doctrine_Transaction_Exception('Fetching transaction isolation level not supported by this driver.');
     }
+    
+    /**
+     * Initiates a transaction.
+     *
+     * This method must only be used by Doctrine itself to initiate transactions.
+     * Userland-code must use {@link beginTransaction()}.
+     */
+    public function beginInternalTransaction($savepoint = null)
+    {
+        $this->_internalNestingLevel++;
+        return $this->beginTransaction($savepoint);
+    }
+    
 }

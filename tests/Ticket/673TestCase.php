@@ -44,7 +44,7 @@ class Doctrine_Ticket_673_TestCase extends Doctrine_UnitTestCase
         ->delete()
         ->from('T673_Student s')
         ->where('s.name = ? AND s.foo < ?', 'foo', 3);
-      var_dump($q->getSql());
+      
       $this->assertTrue(preg_match_all('/(s_name)/', $q->getSql(), $m) === 1);
       $this->assertTrue(preg_match_all('/(s_foo)/', $q->getSql(), $m) === 1);
 

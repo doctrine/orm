@@ -1114,7 +1114,7 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
      */
     public function flush()
     {
-        $this->beginTransaction();
+        $this->beginInternalTransaction();
         $this->unitOfWork->saveAll();
         $this->commit();
     }
@@ -1273,6 +1273,11 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
     public function beginTransaction($savepoint = null)
     {
         $this->transaction->beginTransaction($savepoint);
+    }
+    
+    public function beginInternalTransaction($savepoint = null)
+    {
+        $this->transaction->beginInternalTransaction($savepoint);
     }
 
     /**

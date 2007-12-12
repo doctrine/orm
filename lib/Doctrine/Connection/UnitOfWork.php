@@ -149,7 +149,7 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
 
         $record->state(Doctrine_Record::STATE_LOCKED);
         
-        $conn->beginTransaction();
+        $conn->beginInternalTransaction();
         $saveLater = $this->saveRelated($record);
 
         $record->state($state);
@@ -260,7 +260,7 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
         if ( ! $record->exists()) {
             return false;
         }
-        $this->conn->beginTransaction();
+        $this->conn->beginInternalTransaction();
 
         $event = new Doctrine_Event($record, Doctrine_Event::RECORD_DELETE);
 

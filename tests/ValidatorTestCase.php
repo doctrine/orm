@@ -396,5 +396,33 @@ class Doctrine_Validator_TestCase extends Doctrine_UnitTestCase
         
         $this->manager->setAttribute(Doctrine::ATTR_VALIDATE, Doctrine::VALIDATE_NONE);
     }
+    
+    public function testSaveInTransactionThrowsValidatorException()
+    {
+        $this->manager->setAttribute(Doctrine::ATTR_VALIDATE, Doctrine::VALIDATE_ALL);
+        try {
+            $this->conn->beginTransaction();
+            $client = new ValidatorTest_ClientModel();
+            $client->short_name = 'test';
+            $client->ValidatorTest_AddressModel[0]->state = 'az';
+            $client->save();
+            $this->fail();
+            $this->conn->commit();
+        } catch (Doctrine_Validator_Exception $dve) {
+            $s = $dve->getInvalidRecords();
+            $this->assertEqual(1, count($dve->getInvalidRecords()));
+            $stack = $client->ValidatorTest_AddressModel[0]->getErrorStack();
+
+            $this->assertTrue(in_array('notnull', $stack['address1']));
+            $this->assertTrue(in_array('notblank', $stack['address1']));
+            $this->assertTrue(in_array('notnull', $stack['address2']));
+            $this->assertTrue(in_array('notnull', $stack['city']));
+            $this->assertTrue(in_array('notblank', $stack['city']));
+            $this->assertTrue(in_array('usstate', $stack['state']));
+            $this->assertTrue(in_array('notnull', $stack['zip']));
+            $this->assertTrue(in_array('notblank', $stack['zip']));
+        } 
+        $this->manager->setAttribute(Doctrine::ATTR_VALIDATE, Doctrine::VALIDATE_NONE);
+    }
 
 }

@@ -153,7 +153,7 @@ $test->addTestCase($data_types);
 // Utility components
 $plugins = new GroupTest('Plugin tests: View, Validator, Hook','plugins');
 //$utility->addTestCase(new Doctrine_PessimisticLocking_TestCase());
-$plugins->addTestCase(new Doctrine_Plugin_TestCase());
+//$plugins->addTestCase(new Doctrine_Plugin_TestCase());
 $plugins->addTestCase(new Doctrine_View_TestCase());
 $plugins->addTestCase(new Doctrine_AuditLog_TestCase());
 $plugins->addTestCase(new Doctrine_Validator_TestCase());
