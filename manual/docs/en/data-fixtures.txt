@@ -113,3 +113,22 @@ Here is how you would write code to load the data from that data.yml file
 $data = new Doctrine_Data();
 $data->importData('data.yml', 'yml');
 </code>
+
+++ Fixtures For Nested Sets
+
+Writing a fixtures file for a nested set tree is slightly different from writing regular fixtures files. The structure of the tree is defined like this:
+
+<code type="yml">
+---
+  Category:
+    Category_1:
+      title: Categories # the root node
+      children:
+        Category_2:
+          title: Category 1
+        Category_3:
+          title: Category 2
+          children:
+            Category_4:
+              title: Subcategory of Category 2
+</code>
