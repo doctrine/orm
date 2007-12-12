@@ -23,6 +23,7 @@ $tickets->addTestCase(new Doctrine_Ticket_642_TestCase());
 //If you write a ticket testcase add it here like shown above!
 $tickets->addTestCase(new Doctrine_Ticket_438_TestCase());
 $tickets->addTestCase(new Doctrine_Ticket_638_TestCase());
+$tickets->addTestCase(new Doctrine_Ticket_673_TestCase());
 $test->addTestCase($tickets);
 
 // Connection drivers (not yet fully tested)
