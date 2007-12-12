@@ -128,7 +128,7 @@ class Doctrine_Data_Import extends Doctrine_Data
         $obj = $this->_importedObjects[$rowKey];
         
         foreach ($row as $key => $value) {
-            if ($obj->getTable()->hasColumn($key)) {
+            if ($obj->getTable()->hasField($key)) {
                 $obj->set($key, $value);
             } else if (method_exists($obj, 'set' . Doctrine::classify($key))) {
                 $func = 'set' . Doctrine::classify($key);
