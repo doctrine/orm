@@ -757,11 +757,11 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable, Seria
                                          . $this->_conn->quoteIdentifier($field);
                             } else {
                                 // build sql expression
+                                $field = $this->getRoot()->getColumnName($field);
                                 $term[0] = $this->_conn->quoteIdentifier($field);
                             }
                         }
                     } else {
-
                         if ( ! empty($term[0]) &&
                              ! in_array(strtoupper($term[0]), self::$_keywords) &&
                              ! is_numeric($term[0])) {
@@ -775,13 +775,12 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable, Seria
                                 $table = $this->_queryComponents[$componentAlias]['table'];
 
                                 // check column existence
-                                if ($table->hasColumn($term[0])) {
+                                if ($table->hasField($term[0])) {
                                     $found = true;
-
 
                                     $def = $table->getDefinitionOf($term[0]);
 
-                                    // get the actual column name from alias
+                                    // get the actual column name from field name
                                     $term[0] = $table->getColumnName($term[0]);
 
 

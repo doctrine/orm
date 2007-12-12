@@ -77,7 +77,7 @@ class Doctrine_Query_Where extends Doctrine_Query_Condition
                 }
             }
             $first = $this->query->parseClause($first);
-
+            
             $sql = $first . ' ' . $operator . ' ' . $this->parseValue($value, $table, $field);
         
             return $sql;  
