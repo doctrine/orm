@@ -1,4 +1,4 @@
-<?php
+f<?php
 error_reporting(E_ALL | E_STRICT);
 ini_set('max_execution_time', 900);
 ini_set("date.timezone", "GMT+0");
@@ -21,6 +21,8 @@ $tickets->addTestCase(new Doctrine_Ticket_626B_TestCase());
 $tickets->addTestCase(new Doctrine_Ticket_626C_TestCase());
 $tickets->addTestCase(new Doctrine_Ticket_642_TestCase());
 //If you write a ticket testcase add it here like shown above!
+$tickets->addTestCase(new Doctrine_Ticket_438_TestCase());
+$tickets->addTestCase(new Doctrine_Ticket_638_TestCase());
 $test->addTestCase($tickets);
 
 // Connection drivers (not yet fully tested)
