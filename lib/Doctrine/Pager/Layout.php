@@ -65,6 +65,12 @@ class Doctrine_Pager_Layout
      * @var string $_urlMask      URL to be assigned for each page. Masks are used as: {%var_name}
      */
     private $_urlMask;
+    
+    /**
+     * @var array $_maskReplacements      Stores references of masks and their correspondent 
+     *                                    (replaces defined masks with new masks or values)
+     */
+    private $_maskReplacements = array();
 
 
     /**
@@ -77,14 +83,13 @@ class Doctrine_Pager_Layout
      */
     public function __construct($pager, $pagerRange, $urlMask)
     {
-        $this->setPager($pager);
-        $this->setPagerRange($pagerRange);
+        $this->_setPager($pager);
+        $this->_setPagerRange($pagerRange);
+        $this->_setUrlMask($urlMask);
 
         $this->setTemplate('');
         $this->setSelectedTemplate('');
         $this->setSeparatorTemplate('');
-
-        $this->setUrlMask($urlMask);
     }
 
 
@@ -102,14 +107,14 @@ class Doctrine_Pager_Layout
 
 
     /**
-     * setPager
+     * _setPager
      *
      * Defines the Doctrine_Pager object related to the pager layout
      *
      * @param $pager       Doctrine_Pager object related to the pager range
      * @return void
      */
-    protected function setPager($pager)
+    protected function _setPager($pager)
     {
         $this->_pager = $pager;
     }
@@ -129,14 +134,14 @@ class Doctrine_Pager_Layout
 
 
     /**
-     * setPagerRange
+     * _setPagerRange
      *
      * Defines the Doctrine_Pager_Range subclass object related to the pager layout
      *
      * @param $pagerRange       Doctrine_Pager_Range subclass object related to the pager range
      * @return void
      */
-    protected function setPagerRange($pagerRange)
+    protected function _setPagerRange($pagerRange)
     {
         $this->_pagerRange = $pagerRange;
         $this->getPagerRange()->setPager($this->getPager());
@@ -157,14 +162,14 @@ class Doctrine_Pager_Layout
 
 
     /**
-     * setUrlMask
+     * _setUrlMask
      *
      * Defines the URL to be assigned for each page
      *
      * @param $urlMask       URL to be assigned for each page
      * @return void
      */
-    protected function setUrlMask($urlMask)
+    protected function _setUrlMask($urlMask)
     {
         $this->_urlMask = $urlMask;
     }
@@ -250,6 +255,59 @@ class Doctrine_Pager_Layout
     {
         $this->_separatorTemplate = $separatorTemplate;
     }
+    
+    
+    /**
+     * addMaskReplacement
+     *
+     * Defines a mask replacement. When parsing template, it converts replacement
+     * masks into new ones (or values), allowing to change masks behavior on the fly
+     *
+     * @param $oldMask       Mask to be replaced
+     * @param $newMask       Mask or Value that will be defined after replacement
+     * @param $asValue       Optional value (default false) that if defined as true,
+     *                       changes the bahavior of replacement mask to replacement
+     *                       value
+     * @return void
+     */ 
+    public function addMaskReplacement($oldMask, $newMask, $asValue = false)
+    {
+        $this->_maskReplacements[$oldMask] = array(
+            'newMask' => $newMask,
+            'asValue' => ($asValue === false) ? false : true
+        );
+    }
+    
+    
+    /**
+     * removeMaskReplacement
+     *
+     * Remove a mask replacement
+     *
+     * @param $oldMask       Replacement Mask to be removed
+     * @return void
+     */ 
+    public function removeMaskReplacement($oldMask)
+    {
+        if (isset($this->_maskReplacements[$oldMask])) {
+            $this->_maskReplacements[$oldMask] = null;
+            unset($this->_maskReplacements[$oldMask]);
+        }
+    }
+    
+    
+    /**
+     * cleanMaskReplacements
+     *
+     * Remove all mask replacements
+     *
+     * @return void
+     */ 
+    public function cleanMaskReplacements()
+    {
+        $this->_maskReplacements = null;
+        $this->_maskReplacements = array();
+    }
 
 
     /**
@@ -272,10 +330,11 @@ class Doctrine_Pager_Layout
         // For each page in range
         for ($i = 0, $l = count($range); $i < $l; $i++) {
             // Define some optional mask values
-            $options['page'] = $range[$i];
-            $options['url'] = $this->parseUrl($options);
+            $options['page_number'] = $range[$i];
+            $options['page'] = $range[$i]; // Handy assignment for URLs
+            $options['url'] = $this->_parseUrl($options);
 
-            $str .= $this->parseTemplate($options);
+            $str .= $this->_parseTemplate($options);
 
             // Apply separator between pages
             if ($i < $l - 1) {
@@ -293,60 +352,74 @@ class Doctrine_Pager_Layout
 
 
     /**
-     * parseTemplate
+     * _parseTemplate
      *
      * Process the template of a given page and return the processed template
      *
      * @param $options    Optional parameters to be applied in template and url mask
      * @return string  
      */
-    protected function parseTemplate($options = array())
+    protected function _parseTemplate($options = array())
     {
         $str = '';
 
-        if (isset($options['page']) && $options['page'] == $this->getPager()->getPage()) {
-            $str = $this->getSelectedTemplate();
+        if (isset($options['page_number']) && $options['page_number'] == $this->getPager()->getPage()) {
+            $str = $this->_parseMaskReplacements($this->getSelectedTemplate());
         }
 
         // Possible attempt where Selected == Template
         if ($str == '') {
-            $str = $this->getTemplate();
+            $str = $this->_parseMaskReplacements($this->getTemplate());
         }
 
-        $keys = array();
-        $values = array();
-
+        $replacements = array();
+        
         foreach ($options as $k => $v) {
-            $keys[] = '{%'.$k.'}';
-            $values[] = $v;
+            $replacements['{%'.$k.'}'] = $v;
         }
 
-        return str_replace($keys, $values, $str);
+        return strtr($str, $replacements);
     }
 
 
     /**
-     * parseUrl
+     * _parseUrl
      *
      * Process the url mask of a given page and return the processed url
      *
      * @param $options    Optional parameters to be applied in template and url mask
-     * @return string  
+     * @return string
      */
-    protected function parseUrl($options = array())
+    protected function _parseUrl($options = array())
     {
-        $str = $this->getUrlMask();
+        $str = $this->_parseMaskReplacements($this->getUrlMask());
 
-        $keys = array();
-        $values = array();
+        $replacements = array();
 
         foreach ($options as $k => $v) {
-            $keys[] = '{%'.$k.'}';
-            $values[] = $v;
+            $replacements['{%'.$k.'}'] = $v;
         }
 
-        return str_replace($keys, $values, $str);
+        return strtr($str, $replacements);
+    }
+    
+    
+    /**
+     * _parseMaskReplacements
+     *
+     * Process the mask replacements, changing from to-be replaced mask with new masks/values
+     *
+     * @param $str    String to have masks replaced
+     * @return string  
+     */
+    protected function _parseMaskReplacements($str)
+    {
+        $replacements = array();
+
+        foreach ($this->_maskReplacements as $k => $v) {
+            $replacements['{%'.$k.'}'] = ($v['asValue'] === true) ? $v['newMask'] : '{%'.$v['newMask'].'}';
+        }
+
+        return strtr($str, $replacements);
     }
 }
-
-?>

@@ -54,7 +54,7 @@ abstract class Doctrine_Pager_Range
      */
     final public function __construct($options = array(), $pager = null)
     {
-        $this->setOptions($options);
+        $this->_setOptions($options);
 
         if ($pager !== null) {
             $this->setPager($pager);
@@ -91,7 +91,7 @@ abstract class Doctrine_Pager_Range
         // Lazy-load initialization. It only should be called when all
         // needed information data is ready (this can only happens when we have
         // options stored and a Doctrine_Pager assocated)
-        $this->initialize();
+        $this->_initialize();
     }
 
 
@@ -109,27 +109,27 @@ abstract class Doctrine_Pager_Range
 
 
     /**
-     * setOptions
+     * _setOptions
      *
      * Defines the subclass implementation options
      *
      * @param $options       Custom Doctrine_Pager_Range implementation options
      * @return void
      */
-    protected function setOptions($options)
+    protected function _setOptions($options)
     {
         $this->options = $options;
     }
 
 
     /**
-     * initialize
+     * _initialize
      *
      * Initialize Doctrine_Page_Range subclass which does custom class definitions
      *
      * @return void
      */
-    abstract protected function initialize();
+    abstract protected function _initialize();
 
 
     /**

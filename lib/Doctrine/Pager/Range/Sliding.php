@@ -42,16 +42,16 @@ class Doctrine_Pager_Range_Sliding extends Doctrine_Pager_Range
 
 
     /**
-     * initialize
+     * _initialize
      *
      * Initialize Doctrine_Pager_Range_Sliding and does custom assignments
      *
      * @return void
      */
-    protected function initialize()
+    protected function _initialize()
     {
         if (isset($this->options['chunk'])) {
-            $this->setChunkLength($this->options['chunk']);
+            $this->_setChunkLength($this->options['chunk']);
         } else {
             throw new Doctrine_Pager_Exception('Missing parameter \'chunk\' that must be define in options.');
         }
@@ -72,14 +72,14 @@ class Doctrine_Pager_Range_Sliding extends Doctrine_Pager_Range
 
 
     /**
-     * setChunkLength
+     * _setChunkLength
      *
      * Defines the size of the chunk
      *
      * @param $chunkLength       Chunk length
      * @return void
      */
-    protected function setChunkLength($chunkLength)
+    protected function _setChunkLength($chunkLength)
     {
         $this->chunkLength = $chunkLength;
     }

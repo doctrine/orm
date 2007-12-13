@@ -71,43 +71,43 @@ class Doctrine_Pager
      */
     public function __construct($query, $page, $maxPerPage = 0)
     {
-        $this->setQuery($query);
+        $this->_setQuery($query);
 
         $this->_setMaxPerPage($maxPerPage);
         $this->_setPage($page);
 
-        $this->initialize();
+        $this->_initialize();
     }
 
 
     /**
-     * initialize
+     * _initialize
      *
      * Initialize Pager object calculating number of results
      *
      * @return void
      */
-    protected function initialize()
+    protected function _initialize()
     {
         // retrieve the number of items found
 		$count = $this->getQuery()->count();
-        $this->setNumResults($count);
+        $this->_setNumResults($count);
 
-        $this->adjustOffset();
+        $this->_adjustOffset();
     }
 
 
     /**
-     * adjustOffset
+     * _adjustOffset
      *
      * Adjusts last page of Doctrine_Pager, offset and limit of Doctrine_Query associated
      *
      * @return void
      */
-    protected function adjustOffset()
+    protected function _adjustOffset()
     {
         // Define new total of pages
-		$this->setLastPage(
+		$this->_setLastPage(
             max(1, ceil($this->getNumResults() / $this->getMaxPerPage()))
         );
         $offset = ($this->getPage() - 1) * $this->getMaxPerPage();
@@ -133,14 +133,14 @@ class Doctrine_Pager
 
 
     /**
-     * setNumResults
+     * _setNumResults
      *
      * Defines the number of total results on initial query
      *
      * @param $nb       Number of results found on initial query fetch
      * @return void
      */
-    protected function setNumResults($nb)
+    protected function _setNumResults($nb)
     {
         $this->_numResults = $nb;
     }
@@ -173,14 +173,14 @@ class Doctrine_Pager
 
 
     /**
-     * setLastPage
+     * _setLastPage
      *
      * Defines the last page (total of pages)
      *
      * @param $page       last page (total of pages)
      * @return void
      */
-    protected function setLastPage($page)
+    protected function _setLastPage($page)
     {
         $this->_lastPage = $page;
 
@@ -253,7 +253,7 @@ class Doctrine_Pager
     public function setPage($page)
     {
         $this->_setPage($page);
-        $this->adjustOffset();
+        $this->_adjustOffset();
     }
 
 
@@ -296,7 +296,7 @@ class Doctrine_Pager
     public function setMaxPerPage($max)
     {
         $this->_setMaxPerPage($max);
-        $this->adjustOffset();
+        $this->_adjustOffset();
     }
 
 
@@ -334,7 +334,7 @@ class Doctrine_Pager
 
 
     /**
-     * setQuery
+     * _setQuery
      *
      * Defines the maximum number of itens per page
      *
@@ -342,7 +342,7 @@ class Doctrine_Pager
 	 *                   (which does the Doctrine_Query class creation).
      * @return void
      */
-    protected function setQuery($query)
+    protected function _setQuery($query)
     {
         if (is_string($query)) {
             $query = Doctrine_Query::create()->parseQuery($query);
