@@ -227,7 +227,7 @@ $test->addTestCase($record);
 $test->addTestCase(new Doctrine_CustomPrimaryKey_TestCase());
 $test->addTestCase(new Doctrine_CustomResultSetOrder_TestCase());
 
-
+$test->addTestCase(new Doctrine_CtiColumnAggregation_TestCase());
 $test->addTestCase(new Doctrine_ColumnAggregationInheritance_TestCase());
 $test->addTestCase(new Doctrine_ClassTableInheritance_TestCase());
 $test->addTestCase(new Doctrine_ColumnAlias_TestCase());
@@ -240,10 +240,6 @@ $test->addTestCase(new Doctrine_NewCore_TestCase());
 $test->addTestCase(new Doctrine_Template_TestCase());
 
 //$test->addTestCase(new Doctrine_Import_Builder_TestCase());
-
-
-//$test->addTestCase(new Doctrine_IntegrityAction_TestCase());
-
 $test->addTestCase(new Doctrine_NestedSet_SingleRoot_TestCase());
 
 // Search tests
