@@ -159,6 +159,68 @@ $users[0]->description;
 
 Doctrine does the proxy evaluation based on loaded field count. It does not evaluate which fields are loaded on field-by-field basis. The reason for this is simple: performance. Field lazy-loading is very rarely needed in PHP world, hence introducing some kind of variable to check which fields are loaded would introduce unnecessary overhead to basic fetching.
 
+++ Arrays and objects
+
+Doctrine_Records and Doctrine_Collections provide methods to facilitate working with arrays: {{toArray()}}, {{fromArray()}} and {{synchronizeFromArray()}}.
+
++++ toArray
+
+The {{toArray()}} method returns an array representation of your records or collections. It also accesses the relationships the objects may have. If you need to print a record for debugging purposes you can get an array representation of the object and print that.
+
+<code type="php">
+print_r ($user->toArray()); // toArray(false) if you don't want to get the relations
+</code>
+
++++ fromArray
+
+If you have an array of values you want to use to fill a record or even a collection, the {{fromArray()}} method simplifies this common task.
+
+<code type="php">
+// If you have an array like this
+$data = array(
+  'name' => 'John',
+  'age' => '25',
+  'Emails' => array('john@mail.com', 'john@work.com')
+);
+
+// you can populate a user record with an Emails relationship like this
+$user = new User();
+$user->fromArray($data);
+$user->Emails->count(); // --> 2
+</code>
+
++++ synchronizeFromArray
+
+{{synchronizeFromArray()}} allows you to... well, synchronize a record with an array. So if have an array representation of your model and modify a field, modify a relationship field or even delete or create a relationship, this changes will be applied to the record.
+
+<code type="php">
+$user = Doctrine_Query::create()
+    ->from('User')
+    ->leftJoin('Groups')
+    ->where('id = ?')
+    ->fetchOne(array(1));
+
+// Display this object on a cool javascript form that allows you to:
+
+$arrayUser['name'] = 'New name'; // modify a field
+$arrayUser['Group'][0]['name'] = 'Renamed Group'; // modify a field on a relation
+$arrayUser['Group'][] = array('name' => 'New Group'); // create a new relation
+unset($arrayUser['Group'][1]); // even remove a relation
+
+// submit the form and on the next script use the same query to retrieve the record
+
+$user = Doctrine_Query::create()
+    ->from('User')
+    ->leftJoin('Groups')
+    ->where('id = ?')
+    ->fetchOne(array(1));
+
+// sanitize the form input an get the data
+
+$user->synchronizeFromArray($arrayUser);
+$user->save(); // all changes get applied to the user object
+</code>
+
 ++ Overriding the constructor
 
 Sometimes you want to do some operations at the creation time of your objects. Doctrine doesn't allow you to override the Doctrine_Record::__construct() method but provides an alternative:
