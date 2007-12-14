@@ -178,6 +178,37 @@ Doctrine_Query::create()->update('User u')
                         ->execute();
 </code>
 
++++ Refreshing records
+
+Sometimes you may want to refresh your record with data from the database, use {{Doctrine_Record::refresh()}}.
+
+<code type="php">
+$user = $conn->getTable('User')->find(2);
+$user->name = 'New name';
+// oups, I want to refresh the name
+$user->refresh();
+</code>
+
+++++ Refreshing relationships
+
+The {{Doctrine_Record::refresh()}} method can also refresh record relationships, but you need to specify them on the query.
+
+<code type="php">
+$user = Doctrine_Query::create()->from('User')->leftJoin('Groups')->where('id = ?')->fetchOne(array(1));
+
+$group = Doctrine_Query::create()->from('Group')->leftJoin('Users')->where('id = ?')->fetchOne(array(1));
+
+$userGroup = new UserGroup();
+$userGroup->user_id = $user->id;
+$userGroup->group_id = $group->id;
+$userGroup->save();
+
+// get new group on user
+$user->refresh(true);
+// get new user on group
+$group->refresh(true);
+</code>
+
 +++ Deleting records
 
 Deleting records in Doctrine is handled by {{Doctrine_Record::delete()}}, {{Doctrine_Collection::delete()}} and {{Doctrine_Connection::delete()}} methods.
