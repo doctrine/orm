@@ -194,9 +194,17 @@ $user->refresh();
 The {{Doctrine_Record::refresh()}} method can also refresh record relationships, but you need to specify them on the query.
 
 <code type="php">
-$user = Doctrine_Query::create()->from('User')->leftJoin('Groups')->where('id = ?')->fetchOne(array(1));
+$user = Doctrine_Query::create()
+    ->from('User')
+    ->leftJoin('Groups')
+    ->where('id = ?')
+    ->fetchOne(array(1));
 
-$group = Doctrine_Query::create()->from('Group')->leftJoin('Users')->where('id = ?')->fetchOne(array(1));
+$group = Doctrine_Query::create()
+    ->from('Group')
+    ->leftJoin('Users')
+    ->where('id = ?')
+    ->fetchOne(array(1));
 
 $userGroup = new UserGroup();
 $userGroup->user_id = $user->id;
