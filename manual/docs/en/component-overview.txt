@@ -266,15 +266,14 @@ endswitch;
 Sometimes you may want to get a copy of your object (a new object with all properties copied). Doctrine provides a simple method for this: {{Doctrine_Record::copy()}}.
 
 <code type="php">
-// get a simple copy
 $copy = $user->copy();
 </code>
 
-Notice that copying the record with copy() returns a new record (state TDIRTY) with the values of the old record, but it does *not* copy the relations of that record. If you want to copy the relations too, you need to use copyDeep().
+Notice that copying the record with copy() returns a new record (state TDIRTY) with the values of the old record, and it copies the relations of that record. If you do not want to copy the relations too, you need to use copy(false).
 
 <code type="php">
-// get a copy of user with all the relations
-$copy = $user->copyDeep();
+// get a copy of user without the relations
+$copy = $user->copy(false);
 </code>
 
 +++ Saving a blank record
