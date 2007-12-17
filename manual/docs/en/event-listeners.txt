@@ -167,6 +167,7 @@ class HydrationListener extends Doctrine_Record_Listener
         $data = $event->data;
 
         $data['fullname'] = $data['firstname'] . ' ' . $data['lastname'];
+        $event->data = $data;
     }
 }
 </code>
