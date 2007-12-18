@@ -53,7 +53,7 @@ class Doctrine_Pager_Range_Sliding extends Doctrine_Pager_Range
         if (isset($this->options['chunk'])) {
             $this->_setChunkLength($this->options['chunk']);
         } else {
-            throw new Doctrine_Pager_Exception('Missing parameter \'chunk\' that must be define in options.');
+            throw new Doctrine_Pager_Exception('Missing parameter \'chunk\' that must be defined in options.');
         }
     }
 
