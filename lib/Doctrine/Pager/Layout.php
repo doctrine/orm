@@ -350,6 +350,14 @@ class Doctrine_Pager_Layout
         echo $str;
     }
 
+    /**
+     * simply calls display, and returns the output.
+     */
+    public function __toString()
+    {
+      return $this->display(array(), true);
+    }
+
 
     /**
      * _parseTemplate
