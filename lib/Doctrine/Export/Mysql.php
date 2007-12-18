@@ -518,7 +518,15 @@ class Doctrine_Export_Mysql extends Doctrine_Export
                 }
             }
     
-            $default = ' DEFAULT ' . $this->conn->quote($field['default'], $field['type']);
+            // Proposed patch:
+            if ($field['type'] == 'enum' && $this->conn->getAttribute(Doctrine::ATTR_USE_NATIVE_ENUM)) {
+                $fieldType = 'varchar';
+            } else {
+                $fieldType = $field['type'];
+            }
+            
+            $default = ' DEFAULT ' . $this->conn->quote($field['default'], $fieldType);
+            //$default = ' DEFAULT ' . $this->conn->quote($field['default'], $field['type']);
         }
         return $default;
     }
