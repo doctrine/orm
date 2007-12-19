@@ -1272,12 +1272,12 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
      */
     public function beginTransaction($savepoint = null)
     {
-        $this->transaction->beginTransaction($savepoint);
+        return $this->transaction->beginTransaction($savepoint);
     }
     
     public function beginInternalTransaction($savepoint = null)
     {
-        $this->transaction->beginInternalTransaction($savepoint);
+        return $this->transaction->beginInternalTransaction($savepoint);
     }
 
     /**
@@ -1295,7 +1295,7 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
      */
     public function commit($savepoint = null)
     {
-        $this->transaction->commit($savepoint);
+        return $this->transaction->commit($savepoint);
     }
 
     /**
