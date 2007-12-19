@@ -19,7 +19,7 @@
  * and is licensed under the LGPL. For more information, see
  * <http://www.phpdoctrine.com>.
  */
- 
+
 Doctrine::autoload('Doctrine_Pager_Range');
 
 /**
@@ -36,9 +36,9 @@ Doctrine::autoload('Doctrine_Pager_Range');
 class Doctrine_Pager_Range_Jumping extends Doctrine_Pager_Range
 {
     /**
-     * @var int $chunkLength     Chunk length to be returned
+     * @var int $_chunkLength     Chunk length to be returned
      */
-    private $chunkLength;
+    private $_chunkLength;
 
 
     /**
@@ -67,7 +67,7 @@ class Doctrine_Pager_Range_Jumping extends Doctrine_Pager_Range
      */
     public function getChunkLength()
     {
-        return $this->chunkLength;
+        return $this->_chunkLength;
     }
 
 
@@ -81,7 +81,7 @@ class Doctrine_Pager_Range_Jumping extends Doctrine_Pager_Range
      */
     protected function _setChunkLength($chunkLength)
     {
-        $this->chunkLength = $chunkLength;
+        $this->_chunkLength = $chunkLength;
     }
 
 
