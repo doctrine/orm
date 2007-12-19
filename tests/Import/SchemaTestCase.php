@@ -75,10 +75,8 @@ class Doctrine_Import_Schema_TestCase extends Doctrine_UnitTestCase
         $this->schema = $this->buildSchema->buildSchema('schema.yml', 'yml');
         
         foreach ($this->schema as $name => $properties) {
-            $relations = $this->buildSchema->getRelations($properties);
-            
-            foreach ($relations as $alias => $relation) {
-                if (!$this->_verifyMultiDirectionalRelationship($name, $alias, $relation)) {
+            foreach ($properties['relations'] as $alias => $relation) {
+                if ( ! $this->_verifyMultiDirectionalRelationship($name, $alias, $relation)) {
                     $this->fail();
                     
                     return false;
@@ -94,7 +92,7 @@ class Doctrine_Import_Schema_TestCase extends Doctrine_UnitTestCase
         $foreignClass = $relation['class'];
         $foreignAlias = isset($relation['foreignAlias']) ? $relation['foreignAlias']:$class;
         
-        $foreignClassRelations = $this->buildSchema->getRelations($this->schema[$foreignClass]);
+        $foreignClassRelations = $this->schema[$foreignClass]['relations'];
         
         // Check to see if the foreign class has the opposite end defined for the class/foreignAlias
         if (isset($foreignClassRelations[$foreignAlias])) {

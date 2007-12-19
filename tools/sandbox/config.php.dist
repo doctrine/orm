@@ -50,3 +50,5 @@ spl_autoload_register(array('Doctrine', 'autoload'));
 
 $pdo = new PDO(DSN);
 Doctrine_Manager::connection($pdo, 'sandbox');
+
+Doctrine_Manager::getInstance()->setAttribute(Doctrine::ATTR_MODEL_LOADING, Doctrine::MODEL_LOADING_CONSERVATIVE);

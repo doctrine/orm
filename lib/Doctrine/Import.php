@@ -213,12 +213,14 @@ class Doctrine_Import extends Doctrine_Connection_Module
 
           $classes = array();
           foreach ($connection->import->listTables() as $table) {
-              $builder->buildRecord(array('tableName' => $table,
-                                          'className' => Doctrine::classify($table)),
-                                          $connection->import->listTableColumns($table),
-                                          array());
+              $definition = array();
+              $definition['tableName'] = $table;
+              $definition['className'] = Doctrine_Inflector::classify($table);
+              $definition['columns'] = $connection->import->listTableColumns($table);
+              
+              $builder->buildRecord($definition);
         
-              $classes[] = Doctrine::classify($table);
+              $classes[] = $definition['className'];
           }
         }
         

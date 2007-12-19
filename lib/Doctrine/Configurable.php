@@ -89,7 +89,7 @@ abstract class Doctrine_Configurable extends Doctrine_Locator_Injectable
         }
         switch ($attribute) {
             case Doctrine::ATTR_FETCHMODE:
-                throw new Doctrine_Exception('Deprecated attribute. See http://doctrine.pengus.net/doctrine/manual/new/?chapter=configuration');
+                throw new Doctrine_Exception('Deprecated attribute. See http://www.phpdoctrine.org/documentation/manual?chapter=configuration');
             case Doctrine::ATTR_LISTENER:
                 $this->setEventListener($value);
                 break;
@@ -125,6 +125,7 @@ abstract class Doctrine_Configurable extends Doctrine_Locator_Injectable
             case Doctrine::ATTR_THROW_EXCEPTIONS:
             case Doctrine::ATTR_DEFAULT_PARAM_NAMESPACE:
             case Doctrine::ATTR_AUTOLOAD_TABLE_CLASSES:
+            case Doctrine::ATTR_MODEL_LOADING:
 
                 break;
             case Doctrine::ATTR_SEQCOL_NAME:

@@ -130,9 +130,6 @@ class Doctrine_Data_Import extends Doctrine_Data
         foreach ($row as $key => $value) {
             if ($obj->getTable()->hasField($key)) {
                 $obj->set($key, $value);
-            } else if (method_exists($obj, 'set' . Doctrine::classify($key))) {
-                $func = 'set' . Doctrine::classify($key);
-                $obj->$func($value);
             } else if ($obj->getTable()->hasRelation($key)) {
                 if (is_array($value)) {
                     if (isset($value[0])) {
@@ -152,6 +149,9 @@ class Doctrine_Data_Import extends Doctrine_Data
                 } else {
                     $obj->set($key, $this->_getImportedObject($value));
                 }
+            } else if (method_exists($obj, 'set' . Doctrine::classify($key))) {
+                $func = 'set' . Doctrine::classify($key);
+                $obj->$func($value);
             }
         }
     }

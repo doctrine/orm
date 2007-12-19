@@ -192,6 +192,7 @@ final class Doctrine
     const ATTR_QUERY_CACHE              = 157;
     const ATTR_QUERY_CACHE_LIFESPAN     = 158;
     const ATTR_AUTOLOAD_TABLE_CLASSES   = 160;
+    const ATTR_MODEL_LOADING            = 161;
 
     /**
      * LIMIT CONSTANTS
@@ -426,6 +427,23 @@ final class Doctrine
     const IDENTIFIER_COMPOSITE      = 4;
 
     /**
+     * MODEL_LOADING_AGRESSIVE
+     *
+     * Constant for agressive model loading
+     * Will require_once() all found model files
+     */
+    const MODEL_LOADING_AGRESSIVE   = 1;
+
+    /**
+     * MODEL_LOADING_CONSERVATIVE
+     *
+     * Constant for conservative model loading
+     * Will not require_once() found model files inititally instead it will build an array
+     * and reference it in autoload() when a class is needed it will require_once() it
+     */
+    const MODEL_LOADING_CONSERVATIVE= 2;
+    
+    /**
      * Path
      *
      * @var string $path            doctrine root directory
@@ -505,45 +523,44 @@ final class Doctrine
      * Recursively load all models from a directory or array of directories
      *
      * @param string $directory    Path to directory of models or array of directory paths
+     * @param bool   $aggressive   Bool true/false for whether to load models aggressively.
+     *                             If true it will require_once() all found .php files
      * @return array $loadedModels
      */
-    public static function loadModels($directory)
+    public static function loadModels($directory, $agressive = true)
     {
+        $loadedModels = array();
+        
         if ($directory !== null) {
             $manager = Doctrine_Manager::getInstance();
-
+            
             foreach ((array) $directory as $dir) {
                 $it = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($dir),
                                                         RecursiveIteratorIterator::LEAVES_ONLY);
                 foreach ($it as $file) {
                     $e = explode('.', $file->getFileName());
                     if (end($e) === 'php' && strpos($file->getFileName(), '.inc') === false) {
-                        self::$_loadedModelFiles[] = array(
-                            'filename' => $e[0],
-                            'filepath' => $file->getPathName()
-                        );
-                    }
-                }
-            }
-
-            $loadedModels = array();
-
-            $modelFiles = self::$_loadedModelFiles;
-
-            foreach ($modelFiles as $key => $model) {
-                $declaredBefore = get_declared_classes();
-                require_once $model['filepath'];
-                $declaredAfter = get_declared_classes();
-                // Using array_slice because array_diff is broken is some PHP versions
-                $foundClasses = array_slice($declaredAfter, count($declaredBefore) - 1);
-                if ($foundClasses) {
-                    foreach ($foundClasses as $className) {
-                        if (self::isValidModelClass($className) && !in_array($className, $loadedModels)) {
-                            $loadedModels[] = $className;
+                        
+                        if ($manager->getAttribute(Doctrine::ATTR_MODEL_LOADING) == Doctrine::MODEL_LOADING_CONSERVATIVE) {
+                            self::$_loadedModelFiles[$e[0]] = $file->getPathName();
+                            $loadedModels[] = $e[0];
+                        } else {
+                            $declaredBefore = get_declared_classes();
+                            require_once($file->getPathName());
+                            
+                            $declaredAfter = get_declared_classes();
+                            // Using array_slice because array_diff is broken is some PHP versions
+                            $foundClasses = array_slice($declaredAfter, count($declaredBefore) - 1);
+                            if ($foundClasses) {
+                                foreach ($foundClasses as $className) {
+                                    if (self::isValidModelClass($className) && !in_array($className, $loadedModels)) {
+                                        $loadedModels[] = $className;
+                                    }
+                                }
+                            }
                         }
                     }
                 }
-
             }
         }
 
@@ -567,6 +584,7 @@ final class Doctrine
             $classes = get_declared_classes();
             $classes = array_merge($classes, array_keys(self::$_loadedModelFiles));
         }
+
         return self::filterInvalidModels($classes);
     }
 
