@@ -427,12 +427,12 @@ final class Doctrine
     const IDENTIFIER_COMPOSITE      = 4;
 
     /**
-     * MODEL_LOADING_AGRESSIVE
+     * MODEL_LOADING_AGGRESSIVE
      *
      * Constant for agressive model loading
      * Will require_once() all found model files
      */
-    const MODEL_LOADING_AGRESSIVE   = 1;
+    const MODEL_LOADING_AGGRESSIVE   = 1;
 
     /**
      * MODEL_LOADING_CONSERVATIVE
