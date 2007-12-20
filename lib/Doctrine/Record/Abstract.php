@@ -188,6 +188,8 @@ abstract class Doctrine_Record_Abstract extends Doctrine_Access
     }
 
     /**
+     * DEPRECATED ALSO? - REMOVE SOON
+     *
      * ownsOne
      * binds One-to-One composite relation
      *
@@ -204,6 +206,8 @@ abstract class Doctrine_Record_Abstract extends Doctrine_Access
     }
 
     /**
+     * DEPRECATED - REMOVE SOON
+     *
      * ownsMany
      * binds One-to-Many / Many-to-Many composite relation
      *
