@@ -1,0 +1,64 @@
+TBD
+
+Basic customization to generate this page links generation:
+
+« ‹ 1 2 3 4 5 › »
+
+<code type="php">
+class PagerLayout extends Doctrine_Pager_Layout
+{
+	public function initialize()
+	{
+	}
+
+
+	public function display($options = array(), $return = false)
+    {
+		$str = '';
+
+		// First page
+        $options['page_number'] = $this->getPager()->getFirstPage();
+        $options['page'] = '&laquo;';
+        $options['url'] = $this->_parseUrl($options);
+
+		$str .= $this->_parseTemplate($options);
+
+		// Previous page
+		$options['page_number'] = $this->getPager()->getPreviousPage();
+        $options['page'] = '&lsaquo;';
+        $options['url'] = $this->_parseUrl($options);
+
+		$str .= $this->_parseTemplate($options);
+
+		// Current chunk
+
+		// Removing page, page_mask and url
+		unset($options['page']);
+		unset($options['page_text']);
+		unset($options['url']);
+
+		$str .= parent::display($options, true);
+
+		// Next page
+		$options['page_number'] = $this->getPager()->getNextPage();
+        $options['page'] = '&rsaquo;';
+        $options['url'] = $this->_parseUrl($options);
+
+		$str .= $this->_parseTemplate($options);
+
+		// Last page
+		$options['page_number'] = $this->getPager()->getLastPage();
+        $options['page'] = '&raquo;';
+		$options['url'] = $this->_parseUrl($options);
+
+		$str .= $this->_parseTemplate($options);
+
+		// Possible wish to return value instead of print it on screen
+        if ($return) {
+            return $str;
+        }
+
+        echo $str;
+	}
+}
+</code>
