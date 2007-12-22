@@ -3,7 +3,6 @@
 + Basic schema mapping
 + Relations
 + Working with objects
-+ Pagination
 + Component overview
 + Hierarchical data
 + Configuration
