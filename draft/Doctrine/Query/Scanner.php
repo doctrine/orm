@@ -1,5 +1,5 @@
 <?php
-class Doctrine_Query_Scanner2
+class Doctrine_Query_Scanner
 {
     /**
      * Array of scanned tokens
