@@ -91,7 +91,7 @@ class Doctrine_Query_Parser
 
         if ($isMatch) {
             //$this->_printer->println($this->lookahead['value']);
-            $this->lookahead = $this->_scanner->scan();
+            $this->lookahead = $this->_scanner->next();
             $this->_errorDistance++;
         } else {
             $this->syntaxError();
@@ -141,11 +141,13 @@ class Doctrine_Query_Parser
      */
     public function parse()
     {
-        $this->lookahead = $this->_scanner->scan();
+        $this->lookahead = $this->_scanner->next();
 
         $this->getProduction('QueryLanguage')->execute();
 
-        $this->match(Doctrine_Query_Token::T_EOS);
+        if ($this->lookahead !== null) {
+            $this->_error('End of string expected.');
+        }
 
         if (count($this->_errors)) {
             $msg = 'Query string parsing failed ('

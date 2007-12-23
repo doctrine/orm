@@ -1,12 +1,12 @@
 <?php
-class Doctrine_Query_Token
+final class Doctrine_Query_Token
 {
-    const T_EOS                 = 0;
     const T_NONE                = 1;
     const T_IDENTIFIER          = 2;
     const T_NUMERIC             = 3;
     const T_STRING              = 4;
     const T_INPUT_PARAMETER     = 5;
+
     const T_ALL                 = 101;
     const T_AND                 = 102;
     const T_ANY                 = 103;
@@ -58,4 +58,6 @@ class Doctrine_Query_Token
     const T_TRIM                = 149;
     const T_LOWER               = 150;
     const T_UPPER               = 151;
+
+    private function __construct() {}
 }

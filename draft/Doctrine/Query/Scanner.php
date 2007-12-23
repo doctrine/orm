@@ -1,43 +1,17 @@
 <?php
-class Doctrine_Query_Scanner
+class Doctrine_Query_Scanner2
 {
     /**
-     * The query string
-     *
-     * @var string
-     */
-    protected $_input;
-
-    /**
-     * The length of the query string
-     *
-     * @var string
-     */
-    protected $_length;
-
-    /**
-     * Array of tokens already peeked
+     * Array of scanned tokens
      *
      * @var array
      */
     protected $_tokens = array();
 
-    /**
-     *
-     * @var int
-     */
-    protected $_peekPosition = 0;
+    protected $_nextToken = 0;
 
-    protected $_position = 0;
-    protected $_line = 1;
-    protected $_column = 1;
+    protected $_peek = 0;
 
-    protected static $_regex = array(
-        'identifier'          => '/^[a-z][a-z0-9_]*/i',
-        'numeric'             => '/^[+-]?([0-9]+([\.][0-9]+)?)(e[+-]?[0-9]+)?/i',
-        'string'              => "/^'([^']|'')*'/",
-        'input_parameter'     => '/^\?|:[a-z]+/'
-    );
 
     /**
      * Creates a new query scanner object.
@@ -46,8 +20,7 @@ class Doctrine_Query_Scanner
      */
     public function __construct($input)
     {
-        $this->_input = $input;
-        $this->_length = strlen($input);
+        $this->_scan($input);
     }
 
     /**
@@ -69,105 +42,79 @@ class Doctrine_Query_Scanner
         }
 
         return Doctrine_Query_Token::T_IDENTIFIER;
-    }
+   }
 
     /**
-     * Returns the next token in the input string.
+     * Scans the input string for tokens.
      *
-     * The returned token is an associative array containing the following keys:
-     *     'type'     : type of the token; @see Doctrine_Query_Token::T_* constants
-     *     'value'    : string value of the token in the input string
-     *     'position' : start position of the token in the input string
-     *     'line'     :
-     *     'column'   :
-     *
-     * @return array the next token
+     * @param string $input a query string
      */
-    protected function _nextToken()
+    protected function _scan($input)
     {
-        // ignore whitespace
-        while ($this->_position < $this->_length
-                && ctype_space($this->_input[$this->_position])) {
-            if ($this->_input[$this->_position] === "\n") {
-                $this->_line++;
-                $this->_column = 1;
-            } else {
-                $this->_column++;
-            }
-            $this->_position++;
+        static $regex;
+
+        if ( ! isset($regex)) {
+            $patterns = array(
+                '[a-z_][a-z0-9_]*',
+                '(?:[0-9]+(?:[\.][0-9]+)?)(?:e[+-]?[0-9]+)?',
+                "'(?:[^']|'')*'",
+                '\?|:[a-z]+'
+            );
+            $regex = '/(' . implode(')|(', $patterns) . ')|\s+|(.)/i';
         }
 
-        if ($this->_position < $this->_length) {
-            $subject = substr($this->_input, $this->_position);
+        $flags = PREG_SPLIT_NO_EMPTY| PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_OFFSET_CAPTURE;
+        $matches = preg_split($regex, $input, -1, $flags);
 
-            if (preg_match(self::$_regex['identifier'], $subject, $matches)) {
-                $value = $matches[0];
-                $type = $this->_checkLiteral($value);
-            } elseif (preg_match(self::$_regex['numeric'], $subject, $matches)) {
-                $value = $matches[0];
+        foreach ($matches as $match) {
+            $value = $match[0];
+
+            if (is_numeric($value)) {
                 $type = Doctrine_Query_Token::T_NUMERIC;
-            } elseif (preg_match(self::$_regex['string'], $subject, $matches)) {
-                $value = $matches[0];
+            } elseif ($value[0] === "'" && $value[strlen($value) - 1] === "'") {
                 $type = Doctrine_Query_Token::T_STRING;
-            } elseif (preg_match(self::$_regex['input_parameter'], $subject, $matches)) {
-                $value = $matches[0];
+            } elseif (ctype_alpha($value[0]) || $value[0] === '_') {
+                $type = $this->_checkLiteral($value);
+            } elseif ($value[0] === '?' || $value[0] === ':') {
                 $type = Doctrine_Query_Token::T_INPUT_PARAMETER;
             } else {
-                $value = $subject[0];
                 $type = Doctrine_Query_Token::T_NONE;
             }
-        } else {
-            $value = '';
-            $type = Doctrine_Query_Token::T_EOS;
+
+            $this->_tokens[] = array(
+                'value' => $value,
+                'type'  => $type,
+                'position' => $match[1]
+            );
         }
-
-        $token = array(
-            'type'     => $type,
-            'value'    => $value,
-            'position' => $this->_position,
-            'line'     => $this->_line,
-            'column'   => $this->_column
-        );
-
-
-        $increment = strlen($value);
-        $this->_position += $increment;
-        $this->_column += $increment;
-
-        return $token;
     }
 
-    /**
-     * Returns the next token without removing it from the input string.
-     *
-     * @return array the next token
-     */
     public function peek()
     {
-        if ($this->_peekPosition >= count($this->_tokens)) {
-            $this->_tokens[] = $this->_nextToken();
-        }
-
-        return $this->_tokens[$this->_peekPosition++];
+        return $this->_tokens[$this->_nextToken + $this->_peek++];
     }
 
     public function resetPeek()
     {
-        $this->_peekPosition = 0;
+        $this->_peek = 0;
     }
 
     /**
      * Returns the next token in the input string.
      *
-     * @return array the next token
+     * A token is an associative array containing three items:
+     *  - 'value'    : the string value of the token in the input string
+     *  - 'type'     : the type of the token (identifier, numeric, string, input
+     *                 parameter, none)
+     *  - 'position' : the position of the token in the input string
+     *
+     * @return array|null the next token; null if there is no more tokens left
      */
-    public function scan()
+    public function next()
     {
-        if (count($this->_tokens) > 0) {
-            $this->resetPeek();
-            return array_shift($this->_tokens);
-        } else {
-            return $this->_nextToken();
-        }
+        $this->_peek = 0;
+        return $this->_tokens[$this->_nextToken++];
     }
+
+
 }
