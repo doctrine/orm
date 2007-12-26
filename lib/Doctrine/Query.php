@@ -294,7 +294,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable, Seria
      */
     public function getParams()
     {
-        return array_merge($this->_params['set'], $this->_params['where'], $this->_params['having']);
+        return array_merge($this->_params['join'], $this->_params['set'], $this->_params['where'], $this->_params['having']);
     }
     
     /**

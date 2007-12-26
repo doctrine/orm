@@ -102,7 +102,8 @@ abstract class Doctrine_Query_Abstract
     /**
      * @var array $params  The parameters of this query.
      */
-    protected $_params = array('where' => array(),
+    protected $_params = array('join' => array(),
+                               'where' => array(),
                                'set' => array(),
                                'having' => array());
     
@@ -913,7 +914,8 @@ abstract class Doctrine_Query_Abstract
      */
     public function execute($params = array(), $hydrationMode = null)
     {
-        $params = array_merge($this->_params['set'], 
+        $params = array_merge($this->_params['join'],
+                              $this->_params['set'], 
                               $this->_params['where'],
                               $this->_params['having'], 
                               $params);
@@ -1280,8 +1282,14 @@ abstract class Doctrine_Query_Abstract
      * @param string $join         Query INNER JOIN
      * @return Doctrine_Query
      */
-    public function innerJoin($join)
+    public function innerJoin($join, $params = array())
     {
+        if (is_array($params)) {
+            $this->_params['join'] = array_merge($this->_params['join'], $params);
+        } else {
+            $this->_params['join'][] = $params;
+        }
+
         return $this->_addDqlQueryPart('from', 'INNER JOIN ' . $join, true);
     }
 
@@ -1292,8 +1300,14 @@ abstract class Doctrine_Query_Abstract
      * @param string $join         Query LEFT JOIN
      * @return Doctrine_Query
      */
-    public function leftJoin($join)
+    public function leftJoin($join, $params = array())
     {
+        if (is_array($params)) {
+            $this->_params['join'] = array_merge($this->_params['join'], $params);
+        } else {
+            $this->_params['join'][] = $params;
+        }
+
         return $this->_addDqlQueryPart('from', 'LEFT JOIN ' . $join, true);
     }
 
