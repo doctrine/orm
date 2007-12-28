@@ -28,7 +28,7 @@ class Forum_Board extends Doctrine_Record
     {
         // notice the 'as' keyword here
         $this->hasMany('Forum_Thread as Threads', array('local' => 'id',
-                                                        'foreign' => 'board_id');
+                                                        'foreign' => 'board_id'));
     }
 }
 </code>
@@ -49,7 +49,7 @@ class Forum_Thread extends Doctrine_Record
     {
         // notice the 'as' keyword here
         $this->hasOne('Forum_Board as Board', array('local' => 'board_id',
-                                                    'foreign' => 'id');
+                                                    'foreign' => 'id'));
     }
 }
 </code>
@@ -255,12 +255,12 @@ class User extends Doctrine_Record
         $this->hasMany('User as Parents', array('local'    => 'parent_id',
                                                 'foreign'  => 'child_id',
                                                 'refClass' => 'UserReference'
-                                                );
+                                                ));
 
         $this->hasMany('User as Children', array('local'    => 'child_id',
                                                  'foreign'  => 'parent_id',
                                                  'refClass' => 'UserReference'
-                                                 );
+                                                 ));
 
     }
     public function setTableDefinition() 
@@ -293,7 +293,7 @@ class User extends Doctrine_Record
                                                'foreign'  => 'user2',
                                                'refClass' => 'UserReference',
                                                'equal'    => true,
-                                                );
+                                                ));
     }
     public function setTableDefinition() 
     {

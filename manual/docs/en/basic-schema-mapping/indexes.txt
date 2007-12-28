@@ -20,7 +20,7 @@ class IndexTest extends Doctrine_Record
     {
         $this->hasColumn('name', 'string');
 
-        $this->index('myindex', array('fields' => 'name');
+        $this->index('myindex', array('fields' => 'name'));
     }
 }
 </code>
