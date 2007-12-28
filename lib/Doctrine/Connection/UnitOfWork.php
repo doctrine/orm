@@ -611,6 +611,8 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
                         $rootRecord->merge($dataSet[$parent]);
 
                         $this->processSingleInsert($rootRecord);
+
+                        $record->assignIdentifier($rootRecord->identifier());
                     } else {
                         foreach ((array) $rootRecord->identifier() as $id => $value) {
                             $dataSet[$parent][$id] = $value;

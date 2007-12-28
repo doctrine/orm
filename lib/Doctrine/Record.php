@@ -1443,11 +1443,18 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
             $this->_state    = Doctrine_Record::STATE_CLEAN;
             $this->_modified = array();
         } else {
-            $name = $this->_table->getIdentifier();
-            $this->_id[$name] = $id;
-            $this->_data[$name] = $id;
-            $this->_state     = Doctrine_Record::STATE_CLEAN;
-            $this->_modified  = array();
+            if (is_array($id)) {
+                foreach ($id as $fieldName => $value) {
+                    $this->_id[$fieldName] = $value;
+                    $this->_data[$fieldName] = $value;
+                }
+            } else {
+                $name = $this->_table->getIdentifier();
+                $this->_id[$name] = $id;
+                $this->_data[$name] = $id;
+            }
+            $this->_state = Doctrine_Record::STATE_CLEAN;
+            $this->_modified = array();
         }
     }
 
