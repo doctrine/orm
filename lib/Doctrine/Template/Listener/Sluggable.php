@@ -44,7 +44,7 @@ class Doctrine_Template_Listener_Sluggable extends Doctrine_Record_Listener
                                 'length'  =>  null,
                                 'options' =>  array(),
                                 'fields'  =>  array());
-    
+
     /**
      * __construct
      *
@@ -53,7 +53,7 @@ class Doctrine_Template_Listener_Sluggable extends Doctrine_Record_Listener
      */
     public function __construct(array $options)
     {
-        $this->_options = array_merge($options, $this->_options);
+        $this->_options = Doctrine_Lib::arrayDeepMerge($this->_options, $options);
     }
 
     public function preInsert(Doctrine_Event $event)
@@ -61,7 +61,7 @@ class Doctrine_Template_Listener_Sluggable extends Doctrine_Record_Listener
         $name = $this->_options['name'];
 
         $record = $event->getInvoker();
-        
+
         if (!$record->$name) {
             $record->$name = $this->buildSlug($record);
         }

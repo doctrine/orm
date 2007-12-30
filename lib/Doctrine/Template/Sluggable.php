@@ -44,7 +44,7 @@ class Doctrine_Template_Sluggable extends Doctrine_Template
                                 'length'  =>  null,
                                 'options' =>  array(),
                                 'fields'  =>  array());
-    
+
     /**
      * __construct
      *
@@ -55,7 +55,7 @@ class Doctrine_Template_Sluggable extends Doctrine_Template
     {
         $this->_options = Doctrine_Lib::arrayDeepMerge($this->_options, $options);
     }
-    
+
     /**
      * setTableDefinition
      *
@@ -64,7 +64,7 @@ class Doctrine_Template_Sluggable extends Doctrine_Template
     public function setTableDefinition()
     {
         $this->hasColumn($this->_options['name'], $this->_options['type'], $this->_options['length'], $this->_options['options']);
-        
+
         $this->addListener(new Doctrine_Template_Listener_Sluggable($this->_options));
     }
 }
