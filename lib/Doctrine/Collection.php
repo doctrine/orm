@@ -91,6 +91,10 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
             $keyColumn = $table->getBoundQueryPart('indexBy');
         }
 
+        if ($keyColumn === null) {
+        	$keyColumn = $table->getAttribute(Doctrine::ATTR_COLL_KEY);
+        }
+
         if ($keyColumn !== null) {
             $this->keyColumn = $keyColumn;
         }

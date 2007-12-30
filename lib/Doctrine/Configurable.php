@@ -97,8 +97,8 @@ abstract class Doctrine_Configurable extends Doctrine_Locator_Injectable
                 if ( ! ($this instanceof Doctrine_Table)) {
                     throw new Doctrine_Exception("This attribute can only be set at table level.");
                 }
-                if ($value !== null && ! $this->hasColumn($value)) {
-                    throw new Doctrine_Exception("Couldn't set collection key attribute. No such column '$value'");
+                if ($value !== null && ! $this->hasField($value)) {
+                    throw new Doctrine_Exception("Couldn't set collection key attribute. No such field '$value'");
                 }
                 break;
             case Doctrine::ATTR_CACHE:
