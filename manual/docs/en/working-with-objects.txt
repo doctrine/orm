@@ -161,7 +161,7 @@ Doctrine does the proxy evaluation based on loaded field count. It does not eval
 
 ++ Arrays and objects
 
-Doctrine_Records and Doctrine_Collections provide methods to facilitate working with arrays: {{toArray()}}, {{fromArray()}} and {{synchronizeFromArray()}}.
+Doctrine_Records and Doctrine_Collections provide methods to facilitate working with arrays: {{toArray()}}, {{fromArray()}} and {{synchronizeWithArray()}}.
 
 +++ toArray
 
@@ -189,9 +189,9 @@ $user->fromArray($data);
 $user->Emails->count(); // --> 2
 </code>
 
-+++ synchronizeFromArray
++++ synchronizeWithArray
 
-{{synchronizeFromArray()}} allows you to... well, synchronize a record with an array. So if have an array representation of your model and modify a field, modify a relationship field or even delete or create a relationship, this changes will be applied to the record.
+{{synchronizeWithArray()}} allows you to... well, synchronize a record with an array. So if have an array representation of your model and modify a field, modify a relationship field or even delete or create a relationship, this changes will be applied to the record.
 
 <code type="php">
 $user = Doctrine_Query::create()
@@ -217,7 +217,7 @@ $user = Doctrine_Query::create()
 
 // sanitize the form input an get the data
 
-$user->synchronizeFromArray($arrayUser);
+$user->synchronizeWithArray($arrayUser);
 $user->save(); // all changes get applied to the user object
 </code>
 
