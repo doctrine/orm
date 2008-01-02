@@ -153,6 +153,26 @@ User:
     validate: false
 </code>
 
+++ Enums
+
+<code type="yaml">
+---
+TvListing:
+ tableName: tv_listing
+ actAs: [Timestampable]
+ columns:
+   notes:
+     type: string
+   taping:
+     type: enum
+     length: 4
+     values: ['live', 'tape']
+   region:
+     type: enum
+     length: 4
+     values: ['US', 'CA']
+</code>
+
 ++ Templates
 
 <code type="yaml">
