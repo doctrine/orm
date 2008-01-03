@@ -523,11 +523,9 @@ final class Doctrine
      * Recursively load all models from a directory or array of directories
      *
      * @param string $directory    Path to directory of models or array of directory paths
-     * @param bool   $aggressive   Bool true/false for whether to load models aggressively.
-     *                             If true it will require_once() all found .php files
      * @return array $loadedModels
      */
-    public static function loadModels($directory, $agressive = true)
+    public static function loadModels($directory)
     {
         $loadedModels = array();
         
