@@ -1075,17 +1075,9 @@ final class Doctrine
             self::$_path = dirname(__FILE__);
         }
 
-        $findPattern = self::$_path . DIRECTORY_SEPARATOR . '*' . DIRECTORY_SEPARATOR . str_replace('_', DIRECTORY_SEPARATOR, str_replace('Doctrine_', '', $className)) . '.php';
-
-        $matches = glob($findPattern);
-
-        if ( ! isset($matches[0])) {
-            return false;
-        }
-
-        $class = $matches[0];
+        $class = self::locate($className . '.php');
         
-        if (file_exists($class)) {
+        if ($class && file_exists($class)) {
             require $class;
 
             return true;
@@ -1100,6 +1092,19 @@ final class Doctrine
         }
 
         return false;
+    }
+    
+    public static function locate($name)
+    {
+        $findPattern = self::$_path . DIRECTORY_SEPARATOR . '*' . DIRECTORY_SEPARATOR . str_replace('_', DIRECTORY_SEPARATOR, str_replace('Doctrine_', '', $name));
+
+        $matches = glob($findPattern);
+
+        if ( isset($matches[0])) {
+            return $matches[0];
+        } else {
+            return false;
+        }
     }
 
     /**

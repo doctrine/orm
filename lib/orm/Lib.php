@@ -329,7 +329,7 @@ class Doctrine_Lib
     {
         $validators = array();
 
-        $dir = Doctrine::getPath() . DIRECTORY_SEPARATOR . 'Doctrine' . DIRECTORY_SEPARATOR . 'Validator';
+        $dir = Doctrine::locate('Doctrine_Validator');
 
         $files = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($dir), RecursiveIteratorIterator::LEAVES_ONLY);
         foreach ($files as $file) {
