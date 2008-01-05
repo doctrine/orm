@@ -27,6 +27,7 @@ class Doctrine_Relation_ManyToMany_TestCase extends Doctrine_UnitTestCase {
         }
         $this->assertEqual($rel->getLocal(), 'oid');
     }
+    
     public function testJoinComponent() {
         $component = new JC3();
         

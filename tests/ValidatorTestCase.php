@@ -139,7 +139,7 @@ class Doctrine_Validator_TestCase extends Doctrine_UnitTestCase
 
     public function testValidate() 
     {
-        $user = $this->connection->getTable('User')->find(4);
+        $user = $this->connection->getMapper('User')->find(4);
 
         $set = array('password' => 'this is an example of too long password',
                      'loginname' => 'this is an example of too long loginname',
@@ -198,7 +198,7 @@ class Doctrine_Validator_TestCase extends Doctrine_UnitTestCase
     public function testSave() 
     {
         $this->manager->setAttribute(Doctrine::ATTR_VALIDATE, Doctrine::VALIDATE_ALL);
-        $user = $this->connection->getTable("User")->find(4);
+        $user = $this->connection->getMapper("User")->find(4);
         try {
             $user->name = "this is an example of too long name not very good example but an example nevertheless";
             $user->save();
@@ -258,7 +258,7 @@ class Doctrine_Validator_TestCase extends Doctrine_UnitTestCase
         }
         
         // Tests validateOnUpdate()
-        $user = $this->connection->getTable("User")->find(4);
+        $user = $this->connection->getMapper("User")->find(4);
         try {
             $user->name = "The Saint";  // Set correct name
             $user->password = "Top Secret"; // Set correct password
@@ -335,7 +335,7 @@ class Doctrine_Validator_TestCase extends Doctrine_UnitTestCase
         $r->identifier = '1234';
         $r->save();
         
-        $r = $this->connection->getTable('ValidatorTest_Person')->findAll()->getFirst();
+        $r = $this->connection->getMapper('ValidatorTest_Person')->findAll()->getFirst();
         $r->identifier = 1234;
         try {
            $r->save();
@@ -409,6 +409,7 @@ class Doctrine_Validator_TestCase extends Doctrine_UnitTestCase
             $this->fail();
             $this->conn->commit();
         } catch (Doctrine_Validator_Exception $dve) {
+            $this->conn->rollback();
             $s = $dve->getInvalidRecords();
             $this->assertEqual(1, count($dve->getInvalidRecords()));
             $stack = $client->ValidatorTest_AddressModel[0]->getErrorStack();

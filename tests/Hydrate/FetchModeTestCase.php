@@ -120,7 +120,6 @@ class Doctrine_Hydrate_FetchMode_TestCase extends Doctrine_UnitTestCase
         $q = new Doctrine_Query();
 
         $q->select('u.*, p.*')->from('User u')->innerJoin('u.Phonenumber p');
-        $count = count($this->conn);
         $users = $q->execute(array(), Doctrine::FETCH_RECORD);
 
         $this->assertEqual(count($users), 8);
@@ -128,8 +127,6 @@ class Doctrine_Hydrate_FetchMode_TestCase extends Doctrine_UnitTestCase
         $this->assertEqual($users[0]->state(), Doctrine_Record::STATE_CLEAN);
         $this->assertTrue($users instanceof Doctrine_Collection);
         $this->assertTrue($users[0]->Phonenumber instanceof Doctrine_Collection);
-
-        $this->assertEqual(count($this->conn), $count + 1);
     }
 
     public function testFetchRecordSupportsSimpleFetching()

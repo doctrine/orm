@@ -32,6 +32,32 @@ Doctrine::autoload('Doctrine_Connection_Module');
  */
 class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
 {
+    protected $_autoflush = true;
+    protected $_inserts = array();
+    protected $_updates = array();
+    protected $_deletes = array();
+    
+    public function flush()
+    {
+        return $this->saveAll();
+    }
+    
+    public function addInsert()
+    {
+        
+    }
+    
+    public function addUpdate()
+    {
+        
+    }
+    
+    public function addDelete()
+    {
+        
+    }
+    
+    
     /**
      * buildFlushTree
      * builds a flush tree that is used in transactions
@@ -47,9 +73,8 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
     {
         $tree = array();
         foreach ($tables as $k => $table) {
-
-            if ( ! ($table instanceof Doctrine_Table)) {
-                $table = $this->conn->getTable($table, false);
+            if ( ! ($table instanceof Doctrine_Mapper)) {
+                $table = $this->conn->getMapper($table);
             }
             $nm     = $table->getComponentName();
 
@@ -60,7 +85,7 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
                 $index  = max(array_keys($tree));
             }
 
-            $rels = $table->getRelations();
+            $rels = $table->getTable()->getRelations();
 
             // group relations
 
@@ -93,7 +118,7 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
                         $tree[] = $name;
                     }
 
-                } elseif ($rel instanceof Doctrine_Relation_LocalKey) {
+                } else if ($rel instanceof Doctrine_Relation_LocalKey) {
                     if ($index2 !== false) {
                         if ($index2 <= $index)
                             continue;
@@ -104,7 +129,7 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
                         array_unshift($tree,$name);
                         $index++;
                     }
-                } elseif ($rel instanceof Doctrine_Relation_Association) {
+                } else if ($rel instanceof Doctrine_Relation_Association) {
                     $t = $rel->getAssociationFactory();
                     $n = $t->getComponentName();
 
@@ -138,7 +163,7 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
      * @param Doctrine_Record $record
      * @return void
      */
-    public function saveGraph(Doctrine_Record $record)
+    /*public function saveGraph(Doctrine_Record $record)
     {
         $conn = $this->getConnection();
 
@@ -210,15 +235,15 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
         $conn->commit();
 
         return true;
-    }
-
+    }*/
+    
     /**
      * saves the given record
      *
      * @param Doctrine_Record $record
      * @return void
      */
-    public function save(Doctrine_Record $record)
+    /*public function save(Doctrine_Record $record)
     {
         $event = new Doctrine_Event($record, Doctrine_Event::RECORD_SAVE);
 
@@ -245,7 +270,7 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
         $record->getTable()->getRecordListener()->postSave($event);
         
         $record->postSave($event);
-    }
+    }*/
 
     /**
      * deletes given record and all the related composites
@@ -254,9 +279,13 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
      * this event can be listened by the onPreDelete and onDelete listeners
      *
      * @return boolean      true on success, false on failure
+     * @todo Move to Doctrine_Table (which will become Doctrine_Mapper).
      */
     public function delete(Doctrine_Record $record)
     {
+        if ( ! $this->_autoflush) {
+            return true;
+        }
         if ( ! $record->exists()) {
             return false;
         }
@@ -278,16 +307,15 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
 
         if ( ! $event->skipOperation) {
             $record->state(Doctrine_Record::STATE_TDIRTY);
-            if ($table->getOption('joinedParents')) {
-
+            
+            if ($table->getInheritanceType() == Doctrine::INHERITANCETYPE_JOINED) {
                 foreach ($table->getOption('joinedParents') as $parent) {
                     $parentTable = $table->getConnection()->getTable($parent);
-                    
                     $this->conn->delete($parentTable, $record->identifier());
                 }
             }
+            
             $this->conn->delete($table, $record->identifier());
-
             $record->state(Doctrine_Record::STATE_TCLEAN);
         } else {
             // return to original state   
@@ -298,7 +326,7 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
 
         $record->postDelete($event);
         
-        $table->removeRecord($record);
+        $record->getMapper()->removeRecord($record);
 
         $this->conn->commit();
 
@@ -308,7 +336,7 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
     /**
      * @todo Description. See also the todo for deleteMultiple().
      */
-    public function deleteRecord(Doctrine_Record $record)
+    /*public function deleteRecord(Doctrine_Record $record)
     {
         $ids = $record->identifier();
         $tmp = array();
@@ -325,7 +353,7 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
 
 
         return $this->conn->exec($query, $params);
-    }
+    }*/
 
     /**
      * deleteMultiple
@@ -395,7 +423,7 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
      * @throws PDOException         if something went wrong at database level
      * @param Doctrine_Record $record
      */
-    public function saveRelated(Doctrine_Record $record)
+    /*public function saveRelated(Doctrine_Record $record)
     {
         $saveLater = array();
         foreach ($record->getReferences() as $k => $v) {
@@ -413,20 +441,12 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
                 // Protection against infinite function recursion before attempting to save
                 if ($obj instanceof Doctrine_Record && $obj->isModified()) {
                     $obj->save($this->conn);
-                    
-                    /** Can this be removed?
-                    $id = array_values($obj->identifier());
-
-                    foreach ((array) $rel->getLocal() as $k => $field) {
-                        $record->set($field, $id[$k]);
-                    }
-                    */
                 }
             }
         }
 
         return $saveLater;
-    }
+    }*/
 
     /**
      * saveAssociations
@@ -443,7 +463,7 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
      * @param Doctrine_Record $record
      * @return void
      */
-    public function saveAssociations(Doctrine_Record $record)
+    /*public function saveAssociations(Doctrine_Record $record)
     {
         foreach ($record->getReferences() as $k => $v) {
             $rel = $record->getTable()->getRelation($k);
@@ -469,7 +489,7 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
                 }
             }
         }
-    }
+    }*/
 
     /**
      * deletes all related composites
@@ -498,7 +518,7 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
      * @throws PDOException         if something went wrong at database level
      * @return void
      */
-    public function saveAll()
+    /*public function saveAll()
     {
         // get the flush tree
         $tree = $this->buildFlushTree($this->conn->getTables());
@@ -508,7 +528,7 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
             $table = $this->conn->getTable($name);
 
             foreach ($table->getRepository() as $record) {
-                $this->save($record);
+                $table->save($record);
             }
         }
 
@@ -517,7 +537,41 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
             $table = $this->conn->getTable($name);
 
             foreach ($table->getRepository() as $record) {
-                $this->saveAssociations($record);
+                $table->saveAssociations($record);
+            }
+        }
+    }*/
+    
+    /**
+     * saveAll
+     * persists all the pending records from all tables
+     *
+     * @throws PDOException         if something went wrong at database level
+     * @return void
+     */
+    public function saveAll()
+    {
+        //echo "<br /><br />flushin all.<br /><br />";
+        // get the flush tree
+        $tree = $this->buildFlushTree($this->conn->getMappers());
+        //foreach ($tree as $name) echo $name . "<br />";
+
+        // save all records
+        foreach ($tree as $name) {
+            $mapper = $this->conn->getMapper($name);
+
+            foreach ($mapper->getRepository() as $record) {
+                //echo $record->getOid() . "<br />";
+                $mapper->save($record);
+            }
+        }
+
+        // save all associations
+        foreach ($tree as $name) {
+            $mapper = $this->conn->getMapper($name);
+
+            foreach ($mapper->getRepository() as $record) {
+                $mapper->saveAssociations($record);
             }
         }
     }
@@ -527,9 +581,14 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
      *
      * @param Doctrine_Record $record   record to be updated
      * @return boolean                  whether or not the update was successful
+     * @todo Move to Doctrine_Table (which will become Doctrine_Mapper).
      */
-    public function update(Doctrine_Record $record)
+    /*public function update(Doctrine_Record $record)
     {
+        if ( ! $this->_autoflush) {
+            return true;
+        }
+        
         $event = new Doctrine_Event($record, Doctrine_Event::RECORD_UPDATE);
 
         $record->preUpdate($event);
@@ -541,7 +600,8 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
         if ( ! $event->skipOperation) {
             $identifier = $record->identifier();
 
-            if ($table->getOption('joinedParents')) {
+            if ($table->getInheritanceType() == Doctrine::INHERITANCETYPE_JOINED
+                    && count($table->getOption('joinedParents')) > 0) {
                 $dataSet = $this->formatDataSet($record);
                 
                 $component = $table->getComponentName();
@@ -560,8 +620,7 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
 
                 foreach ($classes as $class) {
                     $parentTable = $this->conn->getTable($class);
-
-                    $this->conn->update($this->conn->getTable($class), $dataSet[$class], $identifier);
+                    $this->conn->update($parentTable, $dataSet[$class], $identifier);
                 }
             } else {
                 $array = $record->getPrepared();
@@ -576,17 +635,22 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
         $record->postUpdate($event);
 
         return true;
-    }
+    }*/
     
     /**
      * inserts a record into database
      *
      * @param Doctrine_Record $record   record to be inserted
      * @return boolean
+     * @todo Move to Doctrine_Table (which will become Doctrine_Mapper).
      */
-    public function insert(Doctrine_Record $record)
+    /*public function insert(Doctrine_Record $record)
     {
-         // listen the onPreInsert event
+        if ( ! $this->_autoflush) {
+            return true;
+        }
+        
+        // listen the onPreInsert event
         $event = new Doctrine_Event($record, Doctrine_Event::RECORD_INSERT);
 
         $record->preInsert($event);
@@ -596,7 +660,8 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
         $table->getRecordListener()->preInsert($event);
 
         if ( ! $event->skipOperation) {
-            if ($table->getOption('joinedParents')) {
+            if ($table->getInheritanceType() == Doctrine::INHERITANCETYPE_JOINED &&
+                    count($table->getOption('joinedParents')) > 0) {
                 $dataSet = $this->formatDataSet($record);
                 
                 $component = $table->getComponentName();
@@ -633,12 +698,12 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
         $record->postInsert($event);
 
         return true;
-    }
+    }*/
     
     /**
      * @todo DESCRIBE WHAT THIS METHOD DOES, PLEASE!
      */
-    public function formatDataSet(Doctrine_Record $record)
+    /*public function formatDataSet(Doctrine_Record $record)
     {
     	$table = $record->getTable();
 
@@ -662,50 +727,6 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
         }    
         
         return $dataSet;
-    }
+    }*/
     
-    /**
-     * @todo DESCRIBE WHAT THIS METHOD DOES, PLEASE!
-     */
-    public function processSingleInsert(Doctrine_Record $record)
-    {
-        $fields = $record->getPrepared();
-
-        if (empty($fields)) {
-            return false;
-        }
-        
-        $table = $record->getTable();
-        $identifier = (array) $table->getIdentifier();
-
-        $seq = $record->getTable()->sequenceName;
-
-        if ( ! empty($seq)) {
-            $id = $this->conn->sequence->nextId($seq);
-            $seqName = $table->getIdentifier();
-            $fields[$seqName] = $id;
-
-            $record->assignIdentifier($id);
-        }
-
-        $this->conn->insert($table, $fields);
-
-        if (empty($seq) && count($identifier) == 1 && $identifier[0] == $table->getIdentifier() &&
-            $table->getIdentifierType() != Doctrine::IDENTIFIER_NATURAL) {
-
-            if (strtolower($this->conn->getName()) == 'pgsql') {
-                $seq = $table->getTableName() . '_' . $identifier[0];
-            }
-
-            $id = $this->conn->sequence->lastInsertId($seq);
-
-            if ( ! $id) {
-                throw new Doctrine_Connection_Exception("Couldn't get last insert identifier.");
-            }
-
-            $record->assignIdentifier($id);
-        } else {
-            $record->assignIdentifier(true);
-        }    	
-    }
 }

@@ -51,7 +51,7 @@ class Doctrine_Table_Repository implements Countable, IteratorAggregate
      *
      * @param Doctrine_Table $table
      */
-    public function __construct(Doctrine_Table $table)
+    public function __construct(Doctrine_Mapper $table)
     {
         $this->table = $table;
     }
@@ -126,7 +126,7 @@ class Doctrine_Table_Repository implements Countable, IteratorAggregate
     public function evictAll()
     {
         $evicted = 0;
-        foreach ($this->registry as $oid=>$record) {
+        foreach ($this->registry as $oid => $record) {
             if ($this->evict($oid)) {
                 $evicted++;
             }

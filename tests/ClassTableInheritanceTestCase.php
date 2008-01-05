@@ -43,7 +43,8 @@ class Doctrine_ClassTableInheritance_TestCase extends Doctrine_UnitTestCase
 
         $table = $class->getTable();
 
-        $this->assertEqual($table->getOption('joinedParents'), array('CTITestParent2', 'CTITestParent3'));
+        $this->assertEqual($table->getOption('joinedParents'),
+                array('CTITestParent4', 'CTITestParent3', 'CTITestParent2', 'CTITestParent1'));
     }
 
     public function testExportGeneratesAllInheritedTables()
@@ -93,7 +94,8 @@ class Doctrine_ClassTableInheritance_TestCase extends Doctrine_UnitTestCase
         $record->save();
         
         // pop the commit event
-        $profiler->pop();
+        $p = $profiler->pop();
+        var_dump($p->getQuery());
         $this->assertEqual($profiler->pop()->getQuery(), 'INSERT INTO c_t_i_test_parent4 (age, id) VALUES (?, ?)');
         // pop the prepare event
         $profiler->pop();
@@ -166,7 +168,7 @@ class Doctrine_ClassTableInheritance_TestCase extends Doctrine_UnitTestCase
         $profiler = new Doctrine_Connection_Profiler();
     	$this->conn->addListener($profiler);
 
-        $record = $this->conn->getTable('CTITest')->find(1);
+        $record = $this->conn->getMapper('CTITest')->find(1);
         
         $record->age = 11;
         $record->name = 'Jack';
@@ -191,7 +193,7 @@ class Doctrine_ClassTableInheritance_TestCase extends Doctrine_UnitTestCase
     {
         $this->conn->clear();
         
-        $record = $this->conn->getTable('CTITest')->find(1);
+        $record = $this->conn->getMapper('CTITest')->find(1);
         
         $this->assertEqual($record->id, 1);
         $this->assertEqual($record->name, 'Jack');
@@ -207,7 +209,7 @@ class Doctrine_ClassTableInheritance_TestCase extends Doctrine_UnitTestCase
         $profiler = new Doctrine_Connection_Profiler();
     	$this->conn->addListener($profiler);
 
-        $record = $this->conn->getTable('CTITest')->find(1);
+        $record = $this->conn->getMapper('CTITest')->find(1);
         
         $record->delete();
 
@@ -223,12 +225,14 @@ class Doctrine_ClassTableInheritance_TestCase extends Doctrine_UnitTestCase
         $this->conn->addListener(new Doctrine_EventListener());
     }
 }
-abstract class CTIAbstractBase extends Doctrine_Record
-{ }
-class CTITestParent1 extends CTIAbstractBase
+class CTITestParent1 extends Doctrine_Record
 {
     public function setTableDefinition()
     {
+        $this->setInheritanceType(Doctrine::INHERITANCETYPE_JOINED, array(
+                'CTITestParent1' => 1, 'CTITestParent2' => 2,
+                'CTITestParent3' => 3, 'CTITestParent4' => 4,
+                'CTITest' => 5));
         $this->hasColumn('name', 'string', 200);
     }
 }
@@ -236,8 +240,6 @@ class CTITestParent2 extends CTITestParent1
 {
     public function setTableDefinition()
     {
-    	parent::setTableDefinition();
-
         $this->hasColumn('verified', 'boolean', 1);
     }
 }
@@ -257,7 +259,10 @@ class CTITestParent4 extends CTITestParent3
 }
 class CTITest extends CTITestParent4
 {
-
+    public function setTableDefinition()
+    {
+        $this->hasColumn('age2', 'integer', 4);
+    }
 }
 
 class CTITestOneToManyRelated extends Doctrine_Record

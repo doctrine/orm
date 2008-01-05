@@ -40,7 +40,7 @@ class Doctrine_Query_From extends Doctrine_Query_Part
      * @return void
      */
     public function parse($str)
-    {        
+    {
         $str = trim($str);
         $parts = $this->_tokenizer->bracketExplode($str, 'JOIN');
 
@@ -78,7 +78,6 @@ class Doctrine_Query_From extends Doctrine_Query_Part
                 if ($operator) {
                     $e[0] = array_shift($e2) . $operator . implode('.', $e2);
                 }
-                
                 $table = $this->query->load(implode(' ', $e));
             }
 

@@ -62,6 +62,6 @@ class Doctrine_Query_Registry_TestCase extends Doctrine_UnitTestCase
 
         $user = new User();
         
-        $user->getTable()->execute('all');
+        $user->getMapper()->execute('all');
     }
 }

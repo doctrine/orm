@@ -195,11 +195,11 @@ class Doctrine_UnitTestCase extends UnitTestCase
             }
         }
         $this->conn->export->exportClasses($this->tables);
-        $this->objTable = $this->connection->getTable('User');
+        $this->objTable = $this->connection->getMapper('User');
     }
     public function prepareData() 
     {
-        $groups = new Doctrine_Collection($this->connection->getTable('Group'));
+        $groups = new Doctrine_Collection('Group');
 
         $groups[0]->name = 'Drama Actors';
 

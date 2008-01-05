@@ -20,10 +20,9 @@
  */
 Doctrine::autoload('Doctrine_Relation');
 /**
- * Doctrine_Relation_Association    this class takes care of association mapping
- *                         (= many-to-many relationships, where the relationship is handled with an additional relational table
- *                         which holds 2 foreign keys)
+ * Doctrine_Relation_Association
  *
+ * This class is reponsible for lazy-loading the related objects in a many-to-many relation.
  *
  * @package     Doctrine
  * @subpackage  Relation
@@ -46,6 +45,12 @@ class Doctrine_Relation_Association extends Doctrine_Relation
     {
         return $this->definition['refTable'];
     }
+    
+    public function getAssociationClassName()
+    {
+        return $this->definition['refClass'];
+    }
+    
 
     /**
      * getRelationDql
@@ -55,21 +60,36 @@ class Doctrine_Relation_Association extends Doctrine_Relation
      */
     public function getRelationDql($count, $context = 'record')
     {
-        $table = $this->definition['refTable'];
-        $component = $this->definition['refTable']->getComponentName();
+        //$table = $this->definition['refTable'];
+        $assocRelationName = isset($this->definition['refReverseRelationName']) ?
+                $this->definition['refReverseRelationName'] : $this->definition['refClass'];
+
+        /*if ($this->definition['localTable'] === $this->definition['table']) {
+            echo $this->definition['class'];
+            $rel = $this->definition['table']->getRelation('User');
+            $relationName = $rel->getRelationName();
+        }*/   
+               
+        //var_dump($this->definition['foreign']) . "<br />";
+        //echo $component;
+        //$rel = $this->definition['refTable']->getRelation($this->_foreignMapper->getComponentName());
+        //echo "LOCAL:" . $rel->getLocal() . "<br />";
+        
+        $relatedClassName = $this->_foreignMapper->getComponentName();
         
         switch ($context) {
             case "record":
                 $sub  = substr(str_repeat("?, ", $count),0,-2);
-                $dql  = 'FROM ' . $this->getTable()->getComponentName();
-                $dql .= '.' . $component;
-                $dql .= ' WHERE ' . $this->getTable()->getComponentName()
-                . '.' . $component . '.' . $this->definition['local'] . ' IN (' . $sub . ')';
+                $dql  = "FROM $relatedClassName";
+                $dql .= " INNER JOIN $relatedClassName.$assocRelationName";
+                //$dql .= " ON $relatedClassName.$assocRelationName.$inverseJoinColumn = $relatedClassName.$relatedClassIdentifier";
+                $dql .= " WHERE $relatedClassName.$assocRelationName.{$this->definition['local']} IN ($sub)";
                 break;
             case "collection":
                 $sub  = substr(str_repeat("?, ", $count),0,-2);
-                $dql  = 'FROM ' . $component . '.' . $this->getTable()->getComponentName();
-                $dql .= ' WHERE ' . $component . '.' . $this->definition['local'] . ' IN (' . $sub . ')';
+                $dql  = "FROM $assocRelationName INNER JOIN $assocRelationName.$relatedClassName";
+                //$dql .= " ON $relatedClassName.$assocRelationName.$inverseJoinColumn = $relatedClassName.$relatedClassIdentifier";
+                $dql .= " WHERE $assocRelationName.{$this->definition['local']} IN ($sub)";
                 break;
         }
 
@@ -87,9 +107,13 @@ class Doctrine_Relation_Association extends Doctrine_Relation
     public function fetchRelatedFor(Doctrine_Record $record)
     {
         $id = $record->getIncremented();
-        if (empty($id) || ! $this->definition['table']->getAttribute(Doctrine::ATTR_LOAD_REFERENCES)) {
-            $coll = new Doctrine_Collection($this->getTable());
+        if (empty($id) || ! $this->_foreignMapper->getAttribute(Doctrine::ATTR_LOAD_REFERENCES)) {
+            $coll = new Doctrine_Collection($this->getForeignComponentName());
         } else {
+            $query = Doctrine_Query::create()->parseQuery($this->getRelationDql(1));
+            //echo $query->getDql() . "<br />";
+            //echo $query->getSql() . "<br />";
+            //echo "<br /><br />";
             $coll = Doctrine_Query::create()->query($this->getRelationDql(1), array($id));
         }
         $coll->setReference($record, $this);

@@ -233,7 +233,7 @@ class Doctrine_RawSql extends Doctrine_Query_Abstract
             }
         }
 
-        $string = $this->applyInheritance();
+        $string = $this->_createDiscriminatorSql();
         if ( ! empty($string)) {
             $this->_sqlParts['where'][] = $string;
         }
@@ -312,13 +312,16 @@ class Doctrine_RawSql extends Doctrine_Query_Abstract
                         ->getConnectionForComponent($component);
                         
                 $table = $conn->getTable($component);
-                $this->_queryComponents[$componentAlias] = array('table' => $table);
+                $this->_queryComponents[$componentAlias] = array(
+                        'table' => $table, 'mapper' => $conn->getMapper($component));
             } else {
                 $relation = $table->getRelation($component);
 
-                $this->_queryComponents[$componentAlias] = array('table'    => $relation->getTable(),
-                                                          'parent'   => $parent,
-                                                          'relation' => $relation);
+                $this->_queryComponents[$componentAlias] = array(
+                        'table'    => $relation->getTable(),
+                        'mapper' => $this->_conn->getMapper($component),
+                        'parent'   => $parent,
+                        'relation' => $relation);
             }
             $this->addSqlTableAlias($tableAlias, $componentAlias);
 

@@ -52,8 +52,7 @@ class Doctrine_UnitOfWork_TestCase extends Doctrine_UnitTestCase {
         $this->assertEqual($tree, $this->correct);
 
         $tree = $this->unitOfWork->buildFlushTree(array('Assignment', 'Task', 'Resource'));
-
-        $this->assertEqual($tree, array('Resource', 'Task', 'ResourceType', 'Assignment', 'ResourceReference'));
+        $this->assertEqual($tree, $this->correct2);
     }
     public function testbuildFlushTree2() {
         $this->correct = array('Forum_Category','Forum_Board','Forum_Thread');

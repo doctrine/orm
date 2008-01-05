@@ -105,9 +105,10 @@ class Doctrine_Relation_Nest extends Doctrine_Relation_Association
         $id = $record->getIncremented();
 
 
-        if (empty($id) || ! $this->definition['table']->getAttribute(Doctrine::ATTR_LOAD_REFERENCES)) {
-            return new Doctrine_Collection($this->getTable());
+        if (empty($id) || ! $this->_foreignMapper->getAttribute(Doctrine::ATTR_LOAD_REFERENCES)) {
+            return new Doctrine_Collection($this->getForeignComponentName());
         } else {
+            
             $q = new Doctrine_RawSql();
 
             $assocTable = $this->getAssociationFactory()->getTableName();

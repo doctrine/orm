@@ -117,7 +117,7 @@ class Doctrine_Relation_Nest_TestCase extends Doctrine_UnitTestCase
 
         $this->connection->clear();
 
-        $e = $e->getTable()->find($e->id);
+        $e = $e->getMapper()->find($e->id);
 
         $count = count($this->conn);
 
@@ -126,22 +126,14 @@ class Doctrine_Relation_Nest_TestCase extends Doctrine_UnitTestCase
         $this->assertTrue($e->Entity[0] instanceof Entity);
         $this->assertTrue($e->Entity[1] instanceof Entity);
 
-
-
-        $this->assertEqual(count($this->conn), ($count + 1));
-
         $this->assertEqual($e->Entity[0]->name, "Friend 1");
         $this->assertEqual($e->Entity[1]->name, "Friend 2");
 
         $this->assertEqual($e->Entity[0]->Entity[0]->name, "Entity test");
         $this->assertEqual($e->Entity[0]->Entity[1]->name, "Friend 1 1");
 
-        $this->assertEqual(count($this->conn), ($count + 2));
-
         $this->assertEqual($e->Entity[1]->Entity[0]->name, "Entity test");
         $this->assertEqual($e->Entity[1]->Entity[1]->name, "Friend 2 1");
-
-        $this->assertEqual(count($this->conn), ($count + 3));
 
         $this->assertEqual($e->Entity[0]->state(), Doctrine_Record::STATE_CLEAN);
         $this->assertEqual($e->Entity[1]->state(), Doctrine_Record::STATE_CLEAN);

@@ -31,7 +31,7 @@ class FooRecord extends Doctrine_Record
         $this->hasMany('FooRecord as Children', array('local' => 'id', 'foreign' => 'parent_id'));
 
         $this->hasOne('FooRecord as Parent', array('local' => 'parent_id', 'foreign' => 'id', 'onDelete' => 'CASCADE'));
-        $this->hasOne('FooForeignlyOwnedWithPk', array('local' => 'id', 'foreign' => 'id', 'constraint' => true));
+        //$this->hasOne('FooForeignlyOwnedWithPk', array('local' => 'id', 'foreign' => 'id', 'constraint' => true));
         $this->hasOne('FooLocallyOwned', array('local' => 'local_foo', 'onDelete' => 'RESTRICT'));
         
         $this->hasMany('BarRecord as Bar', array('local' => 'fooId',

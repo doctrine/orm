@@ -55,7 +55,7 @@ class Doctrine_Ticket_480_TestCase extends Doctrine_UnitTestCase
 	{
 	    $this->conn->export->exportClasses(array('stComment'));
 	    $queries = $this->dbh->getAll();
-	    
+
 	    // (2nd|1st except transaction init.) executed query must be CREATE TABLE or CREATE SEQUENCE, not CREATE TRIGGER
 	    // Trigger can be created after both CREATE TABLE and CREATE SEQUENCE
 	    $this->assertFalse(preg_match('~^CREATE TRIGGER.*~', $queries[1]));

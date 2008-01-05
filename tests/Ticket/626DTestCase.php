@@ -37,7 +37,7 @@ class Doctrine_Ticket_626D_TestCase extends Doctrine_UnitTestCase
       $student1 = $this->newStudent('T626D_Student1', '07090002', 'First Student');
 
       try {
-        $student = Doctrine::getTable('T626D_Student1')->find('07090002');
+        $student = $this->conn->getMapper('T626D_Student1')->find('07090002');
         $this->pass();
       } catch (Exception $e) {
         $this->fail($e->__toString());

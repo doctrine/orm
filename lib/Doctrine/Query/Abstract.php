@@ -152,21 +152,21 @@ abstract class Doctrine_Query_Abstract
             );
             
     /**
-     * @var array $_dqlParts                an array containing all DQL query parts
+     * @var array $_dqlParts   An array containing all DQL query parts.
      */
     protected $_dqlParts = array(
-                            'from'      => array(),
-                            'select'    => array(),
-                            'forUpdate' => false,
-                            'set'       => array(),
-                            'join'      => array(),
-                            'where'     => array(),
-                            'groupby'   => array(),
-                            'having'    => array(),
-                            'orderby'   => array(),
-                            'limit'     => array(),
-                            'offset'    => array(),
-                            );
+            'from'      => array(),
+            'select'    => array(),
+            'forUpdate' => false,
+            'set'       => array(),
+            'join'      => array(),
+            'where'     => array(),
+            'groupby'   => array(),
+            'having'    => array(),
+            'orderby'   => array(),
+            'limit'     => array(),
+            'offset'    => array(),
+            );
             
     
     /**
@@ -522,21 +522,59 @@ abstract class Doctrine_Query_Abstract
     }
     
     /**
-     * applyInheritance
-     * applies column aggregation inheritance to DQL / SQL query
-     *
-     * @return string
+     * Creates the SQL snippet for additional joins.
+     * 
+     * @return string  The created SQL snippet.
      */
-    public function applyInheritance()
+    protected function _createCustomJoinSql($componentName, $componentAlias)
     {
-        // get the inheritance maps
+        $table = $this->_conn->getTable($componentName);
+        $tableAlias = $this->getSqlTableAlias($componentAlias, $table->getTableName());
+        $customJoins = $this->_conn->getMapper($componentName)->getCustomJoins();
+        $sql = '';
+        foreach ($customJoins as $componentName) {
+            $joinedTable = $this->_conn->getTable($componentName);
+            $joinedAlias = $componentAlias . '.' . $componentName;
+            $joinedTableAlias = $this->getSqlTableAlias($joinedAlias, $joinedTable->getTableName());
+            $sql .= ' LEFT JOIN ' . $this->_conn->quoteIdentifier($joinedTable->getTableName())
+                    . ' ' . $this->_conn->quoteIdentifier($joinedTableAlias) . ' ON ';
+            
+            foreach ($table->getIdentifierColumnNames() as $column) {
+                $sql .= $this->_conn->quoteIdentifier($tableAlias) 
+                        . '.' . $this->_conn->quoteIdentifier($column)
+                        . ' = ' . $this->_conn->quoteIdentifier($joinedTableAlias)
+                        . '.' . $this->_conn->quoteIdentifier($column);
+            }
+        }
+        
+        return $sql;
+    }
+    
+    /**
+     * Creates the SQL snippet for the WHERE part that contains the discriminator
+     * column conditions.
+     *
+     * @return string  The created SQL snippet.
+     */
+    protected function _createDiscriminatorSql()
+    {
         $array = array();
-
         foreach ($this->_queryComponents as $componentAlias => $data) {
             $tableAlias = $this->getSqlTableAlias($componentAlias);
-            $array[$tableAlias][] = $data['table']->inheritanceMap;
+            //echo $data['table']->getComponentName() . " -- ";
+            /*if (!isset($data['mapper'])) {
+                //echo $data['table']->getComponentName();
+                echo $this->getDql();
+            }*/
+            /*if ($data['mapper']->getComponentName() != $data['table']->getComponentName()) {
+                //echo $this->getDql() . "<br />";
+            }*/
+            //echo $data['mapper']->getComponentName() . "_<br />";
+            //var_dump($data['mapper']->getDiscriminatorColumn($data['mapper']->getComponentName()));
+            
+            $array[$tableAlias][] = $data['mapper']->getDiscriminatorColumn($data['mapper']->getComponentName());
         }
-
+        //var_dump($array);
         // apply inheritance maps
         $str = '';
         $c = array();
@@ -902,6 +940,7 @@ abstract class Doctrine_Query_Abstract
         }
 
         $stmt = $this->_conn->execute($query, $params);
+        
         return $stmt;
     }
 
@@ -973,11 +1012,13 @@ abstract class Doctrine_Query_Abstract
         foreach ($cachedComponents as $alias => $components) {
             $e = explode('.', $components[0]);
             if (count($e) === 1) {
-                $queryComponents[$alias]['table'] = $this->_conn->getTable($e[0]);
+                $queryComponents[$alias]['mapper'] = $this->_conn->getMapper($e[0]);
+                $queryComponents[$alias]['table'] = $queryComponents[$alias]['mapper']->getTable();
             } else {
                 $queryComponents[$alias]['parent'] = $e[0];
                 $queryComponents[$alias]['relation'] = $queryComponents[$e[0]]['table']->getRelation($e[1]);
-                $queryComponents[$alias]['table'] = $queryComponents[$alias]['relation']->getTable();
+                $queryComponents[$alias]['mapper'] = $this->_conn->getMapper($queryComponents[$alias]['relation']->getForeignComponentName());
+                $queryComponents[$alias]['table'] = $queryComponents[$alias]['mapper']->getTable();
             }
             if (isset($v[1])) {
                 $queryComponents[$alias]['agg'] = $components[1];
@@ -1004,7 +1045,8 @@ abstract class Doctrine_Query_Abstract
 
         foreach ($this->getQueryComponents() as $alias => $components) {
             if ( ! isset($components['parent'])) {
-                $componentInfo[$alias][] = $components['table']->getComponentName();
+                $componentInfo[$alias][] = $components['mapper']->getComponentName();
+                //$componentInfo[$alias][] = $components['mapper']->getComponentName();
             } else {
                 $componentInfo[$alias][] = $components['parent'] . '.' . $components['relation']->getAlias();
             }

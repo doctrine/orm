@@ -194,6 +194,33 @@ final class Doctrine
     const ATTR_AUTOLOAD_TABLE_CLASSES   = 160;
     const ATTR_MODEL_LOADING            = 161;
 
+
+    /**
+     * INHERITANCE TYPE CONSTANTS.
+     */
+     
+     /**
+      * Constant for Single Table Inheritance.
+      *
+      * @see http://martinfowler.com/eaaCatalog/singleTableInheritance.html
+      */
+     const INHERITANCETYPE_SINGLE_TABLE = 1;
+     
+     /**
+      * Constant for Class Table Inheritance.
+      *
+      * @see http://martinfowler.com/eaaCatalog/classTableInheritance.html
+      */
+     const INHERITANCETYPE_JOINED = 2;
+     
+     /**
+      * Constant for Concrete Table Inheritance.
+      *
+      * @see http://martinfowler.com/eaaCatalog/concreteTableInheritance.html
+      */
+     const INHERITANCETYPE_TABLE_PER_CLASS = 3;
+
+
     /**
      * LIMIT CONSTANTS
      */

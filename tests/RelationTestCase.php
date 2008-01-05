@@ -140,7 +140,7 @@ class Doctrine_Relation_TestCase extends Doctrine_UnitTestCase
          
         // test that join table relations can be initialized even before the association have been initialized
         try {
-            $user->Groupuser;
+            $user->UserGroupuser;
             $this->pass();
         } catch(Doctrine_Exception $e) {
             $this->fail();

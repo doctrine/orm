@@ -1201,16 +1201,13 @@ class Doctrine_Export extends Doctrine_Connection_Module
     public function exportGeneratorsSql(Doctrine_Table $table)
     {
     	$sql = array();
-
         foreach ($this->getAllGenerators($table) as $name => $generator) {
             $table = $generator->getTable();
             
             // Make sure plugin has a valid table
             if ($table instanceof Doctrine_Table) {
                 $data = $table->getExportableFormat();
-
                 $query = $this->conn->export->createTableSql($data['tableName'], $data['columns'], $data['options']);
-
                 $sql = array_merge($sql, (array) $query);
             }
         }

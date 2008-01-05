@@ -229,11 +229,10 @@ $test->addTestCase($record);
 $test->addTestCase(new Doctrine_CustomPrimaryKey_TestCase());
 $test->addTestCase(new Doctrine_CustomResultSetOrder_TestCase());
 
-$test->addTestCase(new Doctrine_CtiColumnAggregation_TestCase());
+//$test->addTestCase(new Doctrine_CtiColumnAggregation_TestCase());
 $test->addTestCase(new Doctrine_ColumnAggregationInheritance_TestCase());
-$test->addTestCase(new Doctrine_ClassTableInheritance_TestCase());
+//$test->addTestCase(new Doctrine_ClassTableInheritance_TestCase());
 $test->addTestCase(new Doctrine_ColumnAlias_TestCase());
-
 
 $test->addTestCase(new Doctrine_RawSql_TestCase());
 
@@ -242,13 +241,20 @@ $test->addTestCase(new Doctrine_NewCore_TestCase());
 $test->addTestCase(new Doctrine_Template_TestCase());
 
 //$test->addTestCase(new Doctrine_Import_Builder_TestCase());
+
+// Inheritance mapping tests
+$test->addTestCase(new Doctrine_Inheritance_SingleTable_TestCase());
+$test->addTestCase(new Doctrine_Inheritance_Joined_TestCase());
+$test->addTestCase(new Doctrine_Inheritance_TablePerClass_TestCase());
+
+// nestedset tests
 $test->addTestCase(new Doctrine_NestedSet_SingleRoot_TestCase());
 
 // Search tests
 $search = new GroupTest('Search tests','search');
-$search->addTestCase(new Doctrine_Search_TestCase());
-$search->addTestCase(new Doctrine_Search_Query_TestCase());
-$search->addTestCase(new Doctrine_Search_File_TestCase());
+//$search->addTestCase(new Doctrine_Search_TestCase());
+//$search->addTestCase(new Doctrine_Search_Query_TestCase());
+//$search->addTestCase(new Doctrine_Search_File_TestCase());
 
 $test->addTestCase($search);
 
@@ -267,7 +273,7 @@ $test->addTestCase($cache);
 // Migration Tests
 $migration = new GroupTest('Migration tests','migration');
 $migration->addTestCase(new Doctrine_Migration_TestCase());
-$migration->addTestCase(new Doctrine_Migration_Mysql_TestCase());
+//$migration->addTestCase(new Doctrine_Migration_Mysql_TestCase());
 $test->addTestCase($migration);
 
 $test->addTestCase(new Doctrine_Query_ApplyInheritance_TestCase());

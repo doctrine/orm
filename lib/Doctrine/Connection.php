@@ -60,11 +60,18 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
      */
     protected $dbh;
 
+    protected $_tableFactory;
+
     /**
      * @var array $tables                       an array containing all the initialized Doctrine_Table objects
-     *                                          keys representing Doctrine_Table component names and values as Doctrine_Table objects
+     *                                          keys representing component names and values as Doctrine_Table objects
      */
-    protected $tables           = array();
+    protected $tables = array();
+    
+    /**
+     * @var array  An array of mapper objects currently maintained by this connection.
+     */
+    protected $_mappers = array();
 
     /**
      * @var string $driverName                  the name of this connection driver
@@ -195,6 +202,8 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
         }
 
         $this->setParent($manager);
+        
+        $this->_tableFactory = new Doctrine_Table_Factory($this);
 
         $this->setAttribute(Doctrine::ATTR_CASE, Doctrine::CASE_NATURAL);
         $this->setAttribute(Doctrine::ATTR_ERRMODE, Doctrine::ERRMODE_EXCEPTION);
@@ -568,7 +577,8 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
      * @return mixed            boolean false if empty value array was given,
      *                          otherwise returns the number of affected rows
      */
-    public function insert(Doctrine_Table $table, array $fields) {
+    public function insert(Doctrine_Table $table, array $fields)
+    {
         if (empty($fields)) {
             return false;
         }
@@ -588,7 +598,7 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
                 $a[] = '?';
             }
         }
-
+        
         // build the statement
         $query = 'INSERT INTO ' . $this->quoteIdentifier($tableName) 
                . ' (' . implode(', ', $cols) . ') '
@@ -596,8 +606,52 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
 
         $query .= implode(', ', $a) . ')';
         // prepare and execute the statement
-
+        
         return $this->exec($query, array_values($fields));
+    }
+    
+    /**
+     * @todo DESCRIBE WHAT THIS METHOD DOES, PLEASE!
+     */
+    public function processSingleInsert(Doctrine_Record $record)
+    {
+        $fields = $record->getPrepared();
+        if (empty($fields)) {
+            return false;
+        }
+        
+        $table = $record->getTable();
+        $identifier = (array) $table->getIdentifier();
+
+        $seq = $record->getTable()->getOption('sequenceName');
+        
+        if ( ! empty($seq)) {
+            $id = $this->sequence->nextId($seq);
+            $seqName = $table->getIdentifier();
+            $fields[$seqName] = $id;
+
+            $record->assignIdentifier($id);
+        }
+        
+        $this->insert($table, $fields);
+
+        if (empty($seq) && count($identifier) == 1 && $identifier[0] == $table->getIdentifier() &&
+                $table->getIdentifierType() != Doctrine::IDENTIFIER_NATURAL) {
+
+            if (strtolower($this->getName()) == 'pgsql') {
+                $seq = $table->getTableName() . '_' . $identifier[0];
+            }
+
+            $id = $this->sequence->lastInsertId($seq);
+
+            if ( ! $id) {
+                throw new Doctrine_Connection_Exception("Couldn't get last insert identifier.");
+            }
+
+            $record->assignIdentifier($id);
+        } else {
+            $record->assignIdentifier(true);
+        }
     }
 
     /**
@@ -914,7 +968,14 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
                 $this->getAttribute(Doctrine::ATTR_LISTENER)->preQuery($event);
 
                 if ( ! $event->skipOperation) {
-                    $stmt = $this->dbh->query($query);
+                    //try {
+                        $stmt = $this->dbh->query($query);
+                    /*} catch (Exception $e) {
+                        if (strstr($e->getMessage(), 'no such column')) {
+                            echo $query . "<br /><br />";
+                        }
+                    }*/
+                    
                     $this->_count++;
                 }
                 $this->getAttribute(Doctrine::ATTR_LISTENER)->postQuery($event);
@@ -941,7 +1002,7 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
             if ( ! empty($params)) {
                 $stmt = $this->prepare($query);
                 $stmt->execute($params);
-
+                //echo "<br /><br />" . $query . "<br /><br />";
                 return $stmt->rowCount();
             } else {
                 $event = new Doctrine_Event($this, Doctrine_Event::CONN_EXEC, $query, $params);
@@ -950,7 +1011,7 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
 
                 if ( ! $event->skipOperation) {
                     $count = $this->dbh->exec($query);
-
+                    //echo "<br /><br />" . $query . "<br /><br />";
                     $this->_count++;
                 }
                 $this->getAttribute(Doctrine::ATTR_LISTENER)->postExec($event);
@@ -976,7 +1037,7 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
         
         $name = 'Doctrine_Connection_' . $this->driverName . '_Exception';
 
-        $exc  = new $name($e->getMessage(), (int) $e->getCode());
+        $exc = new $name($e->getMessage(), (int) $e->getCode());
         if ( ! is_array($e->errorInfo)) {
             $e->errorInfo = array(null, null, null, null);
         }
@@ -1000,30 +1061,58 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
     {
         return isset($this->tables[$name]);
     }
-
+    
     /**
-     * returns a table object for given component name
+     * Gets the table object that represents the database table that is used to
+     * persist the specified domain class.
      *
      * @param string $name              component name
-     * @return object Doctrine_Table
+     * @return Doctrine_Table
      */
-    public function getTable($name)
+    public function getTable($className)
     {
-        if (isset($this->tables[$name])) {
-            return $this->tables[$name];
+        if (isset($this->tables[$className])) {
+            return $this->tables[$className];
         }
-        $class = $name . 'Table';
-
-        if (class_exists($class, $this->getAttribute(Doctrine::ATTR_AUTOLOAD_TABLE_CLASSES)) &&
-                in_array('Doctrine_Table', class_parents($class))) {
-            $table = new $class($name, $this, true);
+        $this->_tableFactory->loadTables($className, $this->tables);
+        return $this->tables[$className];
+    }
+    
+    /**
+     * Gets a mapper for the specified domain class that is used map instances of
+     * the class between the relational database and their object representation.
+     * 
+     * @return Doctrine_Mapper_Abstract  The mapper object.
+     */
+    public function getMapper($className)
+    {        
+        if (isset($this->_mappers[$className])) {
+            return $this->_mappers[$className];
+        }
+        
+        $customMapperClass = $className . 'Mapper';
+        if (class_exists($customMapperClass, $this->getAttribute(Doctrine::ATTR_AUTOLOAD_TABLE_CLASSES)) &&
+                in_array('Doctrine_Mapper', class_parents($customMapperClass))) {
+            $table = $this->getTable($className);
+            $mapper = new $customMapperClass($className, $this);
         } else {
-            $table = new Doctrine_Table($name, $this, true);
+            // instantiate correct mapper type
+            $table = $this->getTable($className);
+            $inheritanceType = $table->getInheritanceType();
+            if ($inheritanceType == Doctrine::INHERITANCETYPE_JOINED) {
+                $mapper = new Doctrine_Mapper_Joined($className, $table);
+            } else if ($inheritanceType == Doctrine::INHERITANCETYPE_SINGLE_TABLE) {
+                $mapper = new Doctrine_Mapper_SingleTable($className, $table);
+            } else if ($inheritanceType == Doctrine::INHERITANCETYPE_TABLE_PER_CLASS) {
+                $mapper = new Doctrine_Mapper_TablePerClass($className, $table);
+            } else {
+                throw new Doctrine_Connection_Exception("Unknown inheritance type '$inheritanceType'. Can't create mapper.");
+            }
         }
 
-        $this->tables[$name] = $table;
-
-        return $table;
+        $this->_mappers[$className] = $mapper;
+        
+        return $mapper;
     }
 
     /**
@@ -1034,6 +1123,12 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
     public function getTables()
     {
         return $this->tables;
+    }
+    
+    public function getMappers()
+    {
+        //var_dump($this->_mappers);
+        return $this->_mappers;
     }
 
     /**
@@ -1091,7 +1186,7 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
      */
     public function create($name)
     {
-        return $this->getTable($name)->create();
+        return $this->getMapper($name)->create();
     }
     
     /**
@@ -1127,9 +1222,9 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
      */
     public function clear()
     {
-        foreach ($this->tables as $k => $table) {
-            $table->getRepository()->evictAll();
-            $table->clear();
+        foreach ($this->_mappers as $mapper) {
+            $mapper->getRepository()->evictAll();
+            $mapper->clear();
         }
     }
 
@@ -1142,6 +1237,7 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
     public function evictTables()
     {
         $this->tables = array();
+        $this->_mappers = array();
         $this->exported = array();
     }
 
@@ -1174,6 +1270,16 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
     {
         return $this->transaction->getTransactionLevel();
     }
+    
+    /**
+     * get the current internal transaction nesting level
+     *
+     * @return integer
+     */
+    public function getInternalTransactionLevel()
+    {
+        return $this->transaction->getInternalTransactionLevel();
+    }
 
     /**
      * errorCode
@@ -1184,7 +1290,6 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
     public function errorCode()
     {
         $this->connect();
-
         return $this->dbh->errorCode();
     }
 
@@ -1197,7 +1302,6 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
     public function errorInfo()
     {
         $this->connect();
-
         return $this->dbh->errorInfo();
     }
     
@@ -1222,7 +1326,6 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
         if ( ! $this->getAttribute(Doctrine::ATTR_RESULT_CACHE)) {
             throw new Doctrine_Exception('Result Cache driver not initialized.');
         }
-
         return $this->getAttribute(Doctrine::ATTR_RESULT_CACHE);
     }
     
@@ -1236,7 +1339,6 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
         if ( ! $this->getAttribute(Doctrine::ATTR_QUERY_CACHE)) {
             throw new Doctrine_Exception('Query Cache driver not initialized.');
         }
-
         return $this->getAttribute(Doctrine::ATTR_QUERY_CACHE);
     }
 
@@ -1275,6 +1377,12 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
         return $this->transaction->beginTransaction($savepoint);
     }
     
+    /**
+     * Initiates a transaction.
+     *
+     * This method must only be used by Doctrine itself to initiate transactions.
+     * Userland-code must use {@link beginTransaction()}.
+     */
     public function beginInternalTransaction($savepoint = null)
     {
         return $this->transaction->beginInternalTransaction($savepoint);

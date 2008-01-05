@@ -7,6 +7,6 @@ class FooForeignlyOwnedWithPk extends Doctrine_Record
     }
     public function setUp()
     {
-        $this->hasOne('FooRecord', array('local' => 'id', 'foreign' => 'id'));
+        //$this->hasOne('FooRecord', array('local' => 'id', 'foreign' => 'id'));
     }
 }

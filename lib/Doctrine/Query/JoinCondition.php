@@ -99,6 +99,7 @@ class Doctrine_Query_JoinCondition extends Doctrine_Query_Condition
             }
 
         }
+        
         return $condition;
     }
 }

@@ -151,7 +151,7 @@ class Doctrine_DataType_Enum_TestCase extends Doctrine_UnitTestCase
 
     public function testFailingRefresh() 
     {
-        $enum = $this->connection->getTable('EnumTest')->find(1);
+        $enum = $this->connection->getMapper('EnumTest')->find(1);
 
         $this->conn->exec('DELETE FROM enum_test WHERE id = 1');
 

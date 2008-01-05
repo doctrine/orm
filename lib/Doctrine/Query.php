@@ -396,7 +396,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable, Seria
 
             return $this->getSqlAggregateAlias($dqlAlias);
         } else {
-             throw new Doctrine_Query_Exception('Unknown aggregate alias: ' . $dqlAlias);
+            throw new Doctrine_Query_Exception('Unknown aggregate alias: ' . $dqlAlias);
         }
     }
 
@@ -507,7 +507,6 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable, Seria
             $columnName = $table->getColumnName($fieldName);
             if (($owner = $table->getColumnOwner($columnName)) !== null && 
                     $owner !== $table->getComponentName()) {
-
                 $parent = $this->_conn->getTable($owner);
                 $columnName = $parent->getColumnName($fieldName);
                 $parentAlias = $this->getTableAlias($componentAlias . '.' . $parent->getComponentName());
@@ -1156,10 +1155,8 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable, Seria
             $q .= ' SET ' . implode(', ', $this->_sqlParts['set']);
         }
 
-
-        $string = $this->applyInheritance();
-
-        // apply inheritance to WHERE part
+        // append discriminator column conditions (if any)
+        $string = $this->_createDiscriminatorSql();
         if ( ! empty($string)) {
             if (substr($string, 0, 1) === '(' && substr($string, -1) === ')') {
                 $this->_sqlParts['where'][] = $string;
@@ -1496,15 +1493,19 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable, Seria
                 $table = $this->loadRoot($name, $componentAlias);
             } else {
                 $join = ($delimeter == ':') ? 'INNER JOIN ' : 'LEFT JOIN ';
-
+                //echo "!!!!!!" . $prevPath . "!!!!!<br />";
                 $relation = $table->getRelation($name);
                 $localTable = $table;
 
                 $table    = $relation->getTable();
-                $this->_queryComponents[$componentAlias] = array('table'    => $table,
-                                                          'parent'   => $parent,
-                                                          'relation' => $relation,
-                                                          'map'      => null);
+                //echo "<br /><br />" . $table->getComponentName() . "------" . $relation->getForeignComponentName() . "<br /><br />";
+                $this->_queryComponents[$componentAlias] = array(
+                        'table'    => $table,
+                        'mapper'   => $this->_conn->getMapper($relation->getForeignComponentName()),
+                        'parent'   => $parent,
+                        'relation' => $relation,
+                        'map'      => null
+                );
                 if ( ! $relation->isOneToOne()) {
                    $this->_needsSubquery = true;
                 }
@@ -1519,7 +1520,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable, Seria
                               . ' '
                               . $this->_conn->quoteIdentifier($foreignAlias);
 
-                $map = $relation->getTable()->inheritanceMap;
+                $map = $relation->getTable()->getOption('inheritanceMap');
 
                 if ( ! $loadFields || ! empty($map) || $joinCondition) {
                     $this->_subqueryAliases[] = $foreignAlias;
@@ -1529,14 +1530,20 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable, Seria
                     $asf = $relation->getAssociationTable();
 
                     $assocTableName = $asf->getTableName();
-
+                    
                     if ( ! $loadFields || ! empty($map) || $joinCondition) {
                         $this->_subqueryAliases[] = $assocTableName;
                     }
 
                     $assocPath = $prevPath . '.' . $asf->getComponentName();
-
-                    $this->_queryComponents[$assocPath] = array('parent' => $prevPath, 'relation' => $relation, 'table' => $asf);
+                    //var_dump($name); echo "hrrrr";
+                    //echo "<br /><br />" . $asf->getComponentName() . "---2---" . $relation->getForeignComponentName() . "<br /><br />";
+                    $this->_queryComponents[$assocPath] = array(
+                            'parent' => $prevPath,
+                            'relation' => $relation,
+                            'table' => $asf,
+                            'mapper' => $this->_conn->getMapper($relation->getAssociationClassName())
+                    );
 
                     $assocAlias = $this->getTableAlias($assocPath, $asf->getTableName());
 
@@ -1595,8 +1602,8 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable, Seria
                                    . $this->_conn->quoteIdentifier($foreignAlias . '.' . $relation->getForeign());
                     }
                 }
-
-                $queryPart .= $this->buildInheritanceJoinSql($table->getComponentName(), $componentAlias);
+                
+                $queryPart .= $this->_createCustomJoinSql($table->getComponentName(), $componentAlias);
 
                 $this->_sqlParts['from'][$componentAlias] = $queryPart;
                 if ( ! empty($joinCondition)) {
@@ -1615,6 +1622,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable, Seria
         }
         
         $table = $this->_queryComponents[$componentAlias]['table'];
+        $mapper = $this->_queryComponents[$componentAlias]['mapper'];
 
         $indexBy = null;
 
@@ -1624,12 +1632,12 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable, Seria
             if (isset($e[1])) {
                 $indexBy = $e[1];
             }
-        } elseif ($table->getBoundQueryPart('indexBy') !== null) {
-            $indexBy = $table->getBoundQueryPart('indexBy');
+        } else if ($mapper->getBoundQueryPart('indexBy') !== null) {
+            $indexBy = $mapper->getBoundQueryPart('indexBy');
         }
 
         if ($indexBy !== null) {
-            if ( ! $table->hasColumn($table->getColumnName($indexBy))) {
+            if ( ! $table->hasField($indexBy)) {
                 throw new Doctrine_Query_Exception("Couldn't use key mapping. Column " . $indexBy . " does not exist.");
             }
     
@@ -1667,57 +1675,14 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable, Seria
         
         $this->_tableAliasMap[$tableAlias] = $componentAlias;
 
-        $queryPart .= $this->buildInheritanceJoinSql($name, $componentAlias);
+        $queryPart .= $this->_createCustomJoinSql($name, $componentAlias);
 
         $this->_sqlParts['from'][] = $queryPart;
-
-        $this->_queryComponents[$componentAlias] = array('table' => $table, 'map' => null);
+        //echo "<br /><br />" . $table->getComponentName() . "---3---" . $name . "<br /><br />";
+        $this->_queryComponents[$componentAlias] = array(
+                'table' => $table, 'mapper' => $this->_conn->getMapper($name), 'map' => null);
 
         return $table;
-    }
-    
-    /**
-     * @todo DESCRIBE ME!
-     */
-    public function buildInheritanceJoinSql($name, $componentAlias)
-    {
-        // get the connection for the component
-        $manager = Doctrine_Manager::getInstance();
-        if ($manager->hasConnectionForComponent($name)) {
-            $this->_conn = $manager->getConnectionForComponent($name);
-        }
-
-        $table = $this->_conn->getTable($name);
-        $tableName = $table->getTableName();
-
-        // get the short alias for this table
-        $tableAlias = $this->getTableAlias($componentAlias, $tableName);
-        
-        $queryPart = '';
-
-        foreach ($table->getOption('joinedParents') as $parent) {
-        	$parentTable = $this->_conn->getTable($parent);
-
-            $parentAlias = $componentAlias . '.' . $parent;
-
-            // get the short alias for the parent table
-            $parentTableAlias = $this->getTableAlias($parentAlias, $parentTable->getTableName());
-
-            $queryPart .= ' LEFT JOIN ' . $this->_conn->quoteIdentifier($parentTable->getTableName())
-                        . ' ' . $this->_conn->quoteIdentifier($parentTableAlias) . ' ON ';
-            
-            //Doctrine::dump($table->getIdentifier());
-            foreach ((array) $table->getIdentifier() as $identifier) {
-                $column = $table->getColumnName($identifier);
-
-                $queryPart .= $this->_conn->quoteIdentifier($tableAlias) 
-                            . '.' . $this->_conn->quoteIdentifier($column)
-                            . ' = ' . $this->_conn->quoteIdentifier($parentTableAlias)
-                            . '.' . $this->_conn->quoteIdentifier($column);
-            }
-        }
-        
-        return $queryPart;
     }
 
     /**
@@ -1767,12 +1732,12 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable, Seria
 
         $q .= ' FROM ' . $this->_buildSqlFromPart();
 
-        // append column aggregation inheritance (if needed)
-        $string = $this->applyInheritance();
-
+        // append discriminator column conditions (if any)
+        $string = $this->_createDiscriminatorSql();
         if ( ! empty($string)) {
             $where[] = $string;
         }
+        
         // append conditions
         $q .= ( ! empty($where)) ?  ' WHERE '  . implode(' AND ', $where) : '';
         $q .= ( ! empty($groupby)) ?  ' GROUP BY '  . implode(', ', $groupby) : '';

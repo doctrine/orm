@@ -167,10 +167,6 @@ class Doctrine_Connection_TestCase extends Doctrine_UnitTestCase
             $f = true;
         }
         $this->assertTrue($f);
-
-        $table = $this->connection->getTable('User');
-        $this->assertTrue($table instanceof UserTable);
-
     }
 
     public function testCreate() 

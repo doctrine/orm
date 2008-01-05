@@ -60,22 +60,36 @@ abstract class Doctrine_Relation implements ArrayAccess
     const ONE   = 0;
     const MANY  = 2;
     
-    protected $definition = array('alias'       => true,
-                                  'foreign'     => true,
-                                  'local'       => true,
-                                  'class'       => true,
-                                  'type'        => true,
-                                  'table'       => true,
-                                  'localTable'  => true,
-                                  'name'        => false,
-                                  'refTable'    => false,
+    protected $definition = array('alias'       => true, // relation alias
+                                  'foreign'     => true, // foreign column names
+                                  'local'       => true, // local column names
+                                  'class'       => true, // related(foreign) class name
+                                  'type'        => true, // relation type
+                                  'table'       => true, // related(foreign) table object
+                                  'localTable'  => true, // local table object
+                                  'name'        => false, 
                                   'onDelete'    => false,
                                   'onUpdate'    => false,
                                   'deferred'    => false,
                                   'deferrable'  => false,
                                   'constraint'  => false,
                                   'equal'       => false,
+                                  'refClass'    => false, // the name of the association class (many-many)
+                                  'refTable'    => false, // the association table object (many-many)
+                                  'refRelationName' => false,
+                                  'refReverseRelationName' => false,
+                                  
                                   );
+                              
+    /**
+     * The mapper of the foreign (related) class.
+     */
+    protected $_foreignMapper;
+    
+    /**
+     * The mapper of the local class.
+     */
+    protected $_localMapper;
 
     /**
      * constructor
@@ -137,8 +151,8 @@ abstract class Doctrine_Relation implements ArrayAccess
                 $def[$key] = null;          
             }
         }
-
         $this->definition = $def;
+        $this->_foreignMapper = $this->getTable()->getConnection()->getMapper($def['class']);
     }
 
     /**
@@ -153,6 +167,7 @@ abstract class Doctrine_Relation implements ArrayAccess
                 ($this->definition['onUpdate']) ||
                 ($this->definition['onDelete']));
     }
+    
     public function isDeferred()
     {
         return $this->definition['deferred'];
@@ -162,6 +177,7 @@ abstract class Doctrine_Relation implements ArrayAccess
     {
         return $this->definition['deferrable'];
     }
+    
     public function isEqual()
     {
         return $this->definition['equal'];
@@ -212,6 +228,11 @@ abstract class Doctrine_Relation implements ArrayAccess
     final public function getAlias()
     {
         return $this->definition['alias'];
+    }
+    
+    public function getRelationName()
+    {
+        return $this->definition['relName'];
     }
 
     /**
@@ -319,6 +340,11 @@ abstract class Doctrine_Relation implements ArrayAccess
               . ' IN (' . substr(str_repeat('?, ', $count), 0, -2) . ')';
 
         return $dql;
+    }
+    
+    public function getForeignComponentName()
+    {
+        return $this->definition['class'];
     }
 
     /**

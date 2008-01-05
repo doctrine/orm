@@ -60,7 +60,7 @@ class Doctrine_DataType_Boolean_TestCase extends Doctrine_UnitTestCase {
         
         $this->connection->clear();
         
-        $test = $test->getTable()->find($test->id);
+        $test = $test->getMapper()->find($test->id);
         $this->assertIdentical($test->is_working, true);
     }
     public function testNormalQuerying() {

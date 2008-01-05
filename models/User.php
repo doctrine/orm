@@ -27,7 +27,13 @@ class User extends Entity
             'local' => 'user_id', 
             'foreign' => 'group_id',
             'refClass' => 'Groupuser',
+            'refRelationName' => 'UserGroupuser',
+            'refReverseRelationName' => 'GroupGroupuser'
         ));
+        /*$this->hasMany('Groupuser as Group', array(
+                'local' => 'id', 'foreign' => 'user_id'
+        ));*/
+        
     }
 
     /** Custom validation */

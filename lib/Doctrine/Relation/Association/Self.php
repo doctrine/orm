@@ -54,19 +54,19 @@ class Doctrine_Relation_Association_Self extends Doctrine_Relation_Association
                         . ' WHERE '.$this->definition['foreign']
                         . ' = ?';
 
-                $dql  = 'FROM ' . $this->definition['table']->getComponentName()
+                $dql  = 'FROM ' . $this->_foreignMapper->getComponentName()
                       . '.' . $this->definition['refTable']->getComponentName()
-                      . ' WHERE ' . $this->definition['table']->getComponentName()
+                      . ' WHERE ' . $this->_foreignMapper->getComponentName()
                       . '.' . $identifier 
                       . ' IN (' . $sub . ')'
-                      . ' || ' . $this->definition['table']->getComponentName() 
+                      . ' || ' . $this->_foreignMapper->getComponentName() 
                       . '.' . $identifier
                       . ' IN (' . $sub2 . ')';
                 break;
             case 'collection':
                 $sub  = substr(str_repeat('?, ', $count),0,-2);
                 $dql  = 'FROM '.$this->definition['refTable']->getComponentName()
-                      . '.' . $this->definition['table']->getComponentName()
+                      . '.' . $this->_foreignMapper->getComponentName()
                       . ' WHERE '.$this->definition['refTable']->getComponentName()
                       . '.' . $this->definition['local'] . ' IN (' . $sub . ')';
         };

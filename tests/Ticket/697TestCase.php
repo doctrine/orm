@@ -23,6 +23,10 @@ class Doctrine_Ticket_697_TestCase extends Doctrine_UnitTestCase
 
     public function testIdsAreSetWhenSavingSubclassInstancesInCTI()
     {
+        $personTable = $this->conn->getTable('T697_Person');
+        $userTable = $this->conn->getTable('T697_User');
+        //var_dump($userTable->getColumns());
+        
         $p = new T697_Person();
         $p['name']='Rodrigo';
         $p->save();
@@ -40,7 +44,11 @@ class T697_Person extends Doctrine_Record
 {
     public function setTableDefinition()
     {
+        $this->setInheritanceType(Doctrine::INHERITANCETYPE_JOINED,
+                array('T697_Person' => array('dtype' => 1), 'T697_User' => array('dtype' => 2)));
+        $this->setTableName('t697_person');
         $this->hasColumn('name', 'string', 30);
+        $this->hasColumn('dtype', 'integer', 4);
     }
 }
 
@@ -48,6 +56,7 @@ class T697_Person extends Doctrine_Record
 class T697_User extends T697_Person {
     public function setTableDefinition()
     {
+        $this->setTableName('t697_user');
         $this->hasColumn('password', 'string', 30);
     }
 }

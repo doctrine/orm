@@ -36,11 +36,18 @@ abstract class Doctrine_Record_Abstract extends Doctrine_Access
      * @param Doctrine_Table $_table     reference to associated Doctrine_Table instance
      */
     protected $_table;
+    
+    /**
+     *
+     * @var Doctrine_Mapper_Abstract
+     */
+    protected $_mapper;
 
     public function setTableDefinition()
     {
     	
     }
+    
     public function setUp()
     {
     	
@@ -56,6 +63,11 @@ abstract class Doctrine_Record_Abstract extends Doctrine_Access
     public function getTable()
     {
         return $this->_table;
+    }
+    
+    public function getMapper()
+    {
+        return $this->_mapper;
     }
 
     /**
@@ -120,6 +132,11 @@ abstract class Doctrine_Record_Abstract extends Doctrine_Access
     {
         $this->_table->setTableName($tableName);
     }
+    
+    /**
+     *
+     * @deprecated Use setSubclasses()
+     */
     public function setInheritanceMap($map)
     {
         $this->_table->setOption('inheritanceMap', $map);
@@ -127,16 +144,10 @@ abstract class Doctrine_Record_Abstract extends Doctrine_Access
 
     public function setSubclasses($map)
     {
-        if (isset($map[get_class($this)])) {
-            $this->_table->setOption('inheritanceMap', $map[get_class($this)]);
-            return;
-        }
+        //echo "setting inheritance map on " . get_class($this) . "<br />";
+        $this->_table->setOption('inheritanceMap', $map);
         $this->_table->setOption('subclasses', array_keys($map));
-        $conn = $this->_table->getConnection(); 
-        foreach ($map as $key => $value) {
-            $table = $conn->getTable($key);
-            $table->setOption('inheritanceMap', $value);
-        }
+        $this->_table->setInheritanceType(Doctrine::INHERITANCETYPE_SINGLE_TABLE);
     }
 
     /**
@@ -293,6 +304,13 @@ abstract class Doctrine_Record_Abstract extends Doctrine_Access
      */
     public function bindQueryParts(array $queryParts)
     {
+        if (!$this->_table) {
+            try {
+                throw new Exception();
+            } catch (Exception $e) {
+                echo $e->getTraceAsString() . "<br />";
+            }
+        }
     	$this->_table->bindQueryParts($queryParts);
 
         return $this;
@@ -331,7 +349,7 @@ abstract class Doctrine_Record_Abstract extends Doctrine_Access
         }
 
         if ( ! ($tpl instanceof Doctrine_Template)) {
-            throw new Doctrine_Record_Exception('Loaded plugin class is not an istance of Doctrine_Template.');
+            throw new Doctrine_Record_Exception('Loaded plugin class is not an instance of Doctrine_Template.');
         }
 
         $className = get_class($tpl);
@@ -343,6 +361,27 @@ abstract class Doctrine_Record_Abstract extends Doctrine_Access
         $tpl->setTableDefinition();
 
         return $this;
+    }
+    
+    /**
+     * 
+     *
+     */
+    public function setInheritanceType($type, array $options = null)
+    {
+        if ($type == Doctrine::INHERITANCETYPE_SINGLE_TABLE) {
+            $this->setSubclasses($options);
+        } else if ($type == Doctrine::INHERITANCETYPE_JOINED) {
+            $this->setSubclasses($options);
+        } else if ($type == Doctrine::INHERITANCETYPE_TABLE_PER_CLASS) {
+            // concrete table inheritance ...
+        }
+        $this->_table->setInheritanceType($type);
+    }
+    
+    protected function _getMapper($className)
+    {
+        
     }
 
     /**

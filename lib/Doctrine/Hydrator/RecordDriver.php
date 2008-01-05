@@ -106,7 +106,7 @@ class Doctrine_Hydrator_RecordDriver extends Doctrine_Locator_Injectable
     public function getElement(array $data, $component)
     {
         if ( ! isset($this->_tables[$component])) {
-            $this->_tables[$component] = Doctrine_Manager::getInstance()->getTable($component);
+            $this->_tables[$component] = Doctrine_Manager::getInstance()->getMapper($component);
             $this->_tables[$component]->setAttribute(Doctrine::ATTR_LOAD_REFERENCES, false);
         }
         

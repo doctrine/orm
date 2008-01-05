@@ -269,7 +269,7 @@ class Doctrine_Query_Limit_TestCase extends Doctrine_UnitTestCase
     }
     public function testLimitWithNormalManyToMany() 
     {
-        $coll = new Doctrine_Collection($this->connection->getTable("Photo"));
+        $coll = new Doctrine_Collection('Photo');
         $tag = new Tag();
         $tag->tag = "Some tag";
         $coll[0]->Tag[0] = $tag;

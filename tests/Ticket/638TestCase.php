@@ -57,7 +57,7 @@ class Doctrine_Ticket_638_TestCase extends Doctrine_UnitTestCase
       $course1 = $this->newCourse('MATH001', 'Maths');
       $course2 = $this->newCourse('ENG002', 'English Literature');
 
-      $sc = new T638_StudentCourse;
+      $sc = new T638_StudentCourse;      
       $sc->set('Student', $student1);
       $sc->set('Course', $course1);
 

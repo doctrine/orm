@@ -53,7 +53,7 @@ class Doctrine_CustomPrimaryKey_TestCase extends Doctrine_UnitTestCase
         $this->assertEqual($c->identifier(), array('uid' => 1));
         $this->connection->clear();
         
-        $c = $this->connection->getTable('CustomPK')->find(1);
+        $c = $this->connection->getMapper('CustomPK')->find(1);
     
         $this->assertEqual($c->identifier(), array('uid' => 1));
     }

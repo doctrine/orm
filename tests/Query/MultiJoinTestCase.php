@@ -43,7 +43,7 @@ class Doctrine_Query_MultiJoin_TestCase extends Doctrine_UnitTestCase
 
         $query = new Doctrine_Query($this->connection);
 
-        $user = $this->connection->getTable('User')->find(4);
+        $user = $this->connection->getMapper('User')->find(4);
 
 
         $album = $this->connection->create('Album');
@@ -73,7 +73,7 @@ class Doctrine_Query_MultiJoin_TestCase extends Doctrine_UnitTestCase
         $this->assertEqual(count($user->Album[1]->Song), 4);
         
         
-        $user = $this->connection->getTable('User')->find(5);
+        $user = $this->connection->getMapper('User')->find(5);
         
         $user->Album[0]->name = 'Clayman';
         $user->Album[1]->name = 'Colony';
@@ -122,7 +122,7 @@ class Doctrine_Query_MultiJoin_TestCase extends Doctrine_UnitTestCase
 
     public function testInitializeMoreData() 
     {
-        $user = $this->connection->getTable('User')->find(4);
+        $user = $this->connection->getMapper('User')->find(4);
         $user->Book[0]->name = 'The Prince';
         $user->Book[0]->Author[0]->name = 'Niccolo Machiavelli';
         $user->Book[0]->Author[1]->name = 'Someone';
@@ -133,7 +133,7 @@ class Doctrine_Query_MultiJoin_TestCase extends Doctrine_UnitTestCase
 
         $user->save();
 
-        $user = $this->connection->getTable('User')->find(5);
+        $user = $this->connection->getMapper('User')->find(5);
         $user->Book[0]->name = 'Zadig';
         $user->Book[0]->Author[0]->name = 'Voltaire';
         $user->Book[0]->Author[1]->name = 'Someone';
