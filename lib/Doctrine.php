@@ -34,6 +34,25 @@
 final class Doctrine
 {
     /**
+     * DEPRECATED ATTRIBUTE CONSTANT NAMES AND VALUES
+     *
+     * REMOVE BEFORE 1.0
+     * These were deprecated either because they are not used anymore or because they didn't follow the naming pattern required
+     * by Doctrine attributes
+     *
+     * Attribute names must be ATTR_{ATTR_NAME} and the values must be {ATTR_NAME}_NAME_OF_VALUE
+     */
+    const LIMIT_ROWS            = 1;
+    const LIMIT_RECORDS         = 2;
+    const FETCH_IMMEDIATE       = 0;
+    const FETCH_BATCH           = 1;
+    const FETCH_OFFSET          = 3;
+    const FETCH_LAZY_OFFSET     = 4;
+    const FETCH_VHOLDER         = 1;
+    const FETCH_RECORD          = 2;
+    const FETCH_ARRAY           = 3;
+
+    /**
      * VERSION
      */
     const VERSION                   = '1.0.0';
@@ -81,45 +100,45 @@ final class Doctrine
     /**
      * PDO derived constants
      */
-    const CASE_LOWER = 2;
-    const CASE_NATURAL = 0;
-    const CASE_UPPER = 1;
-    const CURSOR_FWDONLY = 0;
-    const CURSOR_SCROLL = 1;
-    const ERRMODE_EXCEPTION = 2;
-    const ERRMODE_SILENT = 0;
-    const ERRMODE_WARNING = 1;
-    const FETCH_ASSOC = 2;
-    const FETCH_BOTH = 4;
-    const FETCH_BOUND = 6;
-    const FETCH_CLASS = 8;
-    const FETCH_CLASSTYPE = 262144;
-    const FETCH_COLUMN = 7;
-    const FETCH_FUNC = 10;
-    const FETCH_GROUP = 65536;
-    const FETCH_INTO = 9;
-    const FETCH_LAZY = 1;
-    const FETCH_NAMED = 11;
-    const FETCH_NUM = 3;
-    const FETCH_OBJ = 5;
-    const FETCH_ORI_ABS = 4;
-    const FETCH_ORI_FIRST = 2;
-    const FETCH_ORI_LAST = 3;
-    const FETCH_ORI_NEXT = 0;
-    const FETCH_ORI_PRIOR = 1;
-    const FETCH_ORI_REL = 5;
-    const FETCH_SERIALIZE = 524288;
-    const FETCH_UNIQUE = 196608;
-    const NULL_EMPTY_STRING = 1;
-    const NULL_NATURAL = 0;
-    const NULL_TO_STRING         = NULL;
-    const PARAM_BOOL = 5;
-    const PARAM_INPUT_OUTPUT = -2147483648;
-    const PARAM_INT = 1;
-    const PARAM_LOB = 3;
-    const PARAM_NULL = 0;
-    const PARAM_STMT = 4;
-    const PARAM_STR = 2;
+    const CASE_NATURAL              = 0;
+    const CASE_UPPER                = 1;
+    const CASE_LOWER                = 2;
+    const CURSOR_FWDONLY            = 0;
+    const CURSOR_SCROLL             = 1;
+    const ERRMODE_EXCEPTION         = 2;
+    const ERRMODE_SILENT            = 0;
+    const ERRMODE_WARNING           = 1;
+    const FETCH_ASSOC               = 2;
+    const FETCH_BOTH                = 4;
+    const FETCH_BOUND               = 6;
+    const FETCH_CLASS               = 8;
+    const FETCH_CLASSTYPE           = 262144;
+    const FETCH_COLUMN              = 7;
+    const FETCH_FUNC                = 10;
+    const FETCH_GROUP               = 65536;
+    const FETCH_INTO                = 9;
+    const FETCH_LAZY                = 1;
+    const FETCH_NAMED               = 11;
+    const FETCH_NUM                 = 3;
+    const FETCH_OBJ                 = 5;
+    const FETCH_ORI_ABS             = 4;
+    const FETCH_ORI_FIRST           = 2;
+    const FETCH_ORI_LAST            = 3;
+    const FETCH_ORI_NEXT            = 0;
+    const FETCH_ORI_PRIOR           = 1;
+    const FETCH_ORI_REL             = 5;
+    const FETCH_SERIALIZE           = 524288;
+    const FETCH_UNIQUE              = 196608;
+    const NULL_EMPTY_STRING         = 1;
+    const NULL_NATURAL              = 0;
+    const NULL_TO_STRING            = NULL;
+    const PARAM_BOOL                = 5;
+    const PARAM_INPUT_OUTPUT        = -2147483648;
+    const PARAM_INT                 = 1;
+    const PARAM_LOB                 = 3;
+    const PARAM_NULL                = 0;
+    const PARAM_STMT                = 4;
+    const PARAM_STR                 = 2;
 
     /**
      * ATTRIBUTE CONSTANTS
@@ -151,36 +170,33 @@ final class Doctrine
     /**
      * Doctrine constants
      */
-    const ATTR_LISTENER             = 100;
-    const ATTR_QUOTE_IDENTIFIER     = 101;
-    const ATTR_FIELD_CASE           = 102;
-    const ATTR_IDXNAME_FORMAT       = 103;
-    const ATTR_SEQNAME_FORMAT       = 104;
-    const ATTR_SEQCOL_NAME          = 105;
-    const ATTR_CMPNAME_FORMAT       = 118;
-    const ATTR_DBNAME_FORMAT        = 117;
-    const ATTR_TBLCLASS_FORMAT      = 119;
-    const ATTR_TBLNAME_FORMAT       = 120;
-    const ATTR_EXPORT               = 140;
-    const ATTR_DECIMAL_PLACES       = 141;
-
-    const ATTR_PORTABILITY          = 106;
-    const ATTR_VALIDATE             = 107;
-    const ATTR_COLL_KEY             = 108;
-    const ATTR_QUERY_LIMIT          = 109;
-    const ATTR_DEFAULT_TABLE_TYPE   = 112;
-    const ATTR_DEF_TEXT_LENGTH      = 113;
-    const ATTR_DEF_VARCHAR_LENGTH   = 114;
-    const ATTR_DEF_TABLESPACE       = 115;
-    const ATTR_EMULATE_DATABASE     = 116;
-    const ATTR_USE_NATIVE_ENUM      = 117;
-    const ATTR_DEFAULT_SEQUENCE     = 133;
-
+    const ATTR_LISTENER                 = 100;
+    const ATTR_QUOTE_IDENTIFIER         = 101;
+    const ATTR_FIELD_CASE               = 102;
+    const ATTR_IDXNAME_FORMAT           = 103;
+    const ATTR_SEQNAME_FORMAT           = 104;
+    const ATTR_SEQCOL_NAME              = 105;
+    const ATTR_CMPNAME_FORMAT           = 118;
+    const ATTR_DBNAME_FORMAT            = 117;
+    const ATTR_TBLCLASS_FORMAT          = 119;
+    const ATTR_TBLNAME_FORMAT           = 120;
+    const ATTR_EXPORT                   = 140;
+    const ATTR_DECIMAL_PLACES           = 141;
+    const ATTR_PORTABILITY              = 106;
+    const ATTR_VALIDATE                 = 107;
+    const ATTR_COLL_KEY                 = 108;
+    const ATTR_QUERY_LIMIT              = 109;
+    const ATTR_DEFAULT_TABLE_TYPE       = 112;
+    const ATTR_DEF_TEXT_LENGTH          = 113;
+    const ATTR_DEF_VARCHAR_LENGTH       = 114;
+    const ATTR_DEF_TABLESPACE           = 115;
+    const ATTR_EMULATE_DATABASE         = 116;
+    const ATTR_USE_NATIVE_ENUM          = 117;
+    const ATTR_DEFAULT_SEQUENCE         = 133;
     const ATTR_FETCHMODE                = 118;
     const ATTR_NAME_PREFIX              = 121;
     const ATTR_CREATE_TABLES            = 122;
     const ATTR_COLL_LIMIT               = 123;
-
     const ATTR_CACHE                    = 150;
     const ATTR_RESULT_CACHE             = 150;
     const ATTR_CACHE_LIFESPAN           = 151;
@@ -193,47 +209,28 @@ final class Doctrine
     const ATTR_QUERY_CACHE_LIFESPAN     = 158;
     const ATTR_AUTOLOAD_TABLE_CLASSES   = 160;
     const ATTR_MODEL_LOADING            = 161;
-
-
-    /**
-     * INHERITANCE TYPE CONSTANTS.
-     */
-     
-     /**
-      * Constant for Single Table Inheritance.
-      *
-      * @see http://martinfowler.com/eaaCatalog/singleTableInheritance.html
-      */
-     const INHERITANCETYPE_SINGLE_TABLE = 1;
-     
-     /**
-      * Constant for Class Table Inheritance.
-      *
-      * @see http://martinfowler.com/eaaCatalog/classTableInheritance.html
-      */
-     const INHERITANCETYPE_JOINED = 2;
-     
-     /**
-      * Constant for Concrete Table Inheritance.
-      *
-      * @see http://martinfowler.com/eaaCatalog/concreteTableInheritance.html
-      */
-     const INHERITANCETYPE_TABLE_PER_CLASS = 3;
-
+    const ATTR_LOCK                     = 162;
+    const ATTR_HYDRATE                  = 163;
+    const ATTR_IDENTIFIER               = 164;
 
     /**
-     * LIMIT CONSTANTS
+     * QUERY_LIMIT CONSTANTS
      */
 
     /**
+     * QUERY_LIMIT_ROWS
+     *
      * constant for row limiting
+     *
+     * @see self::ATTR_QUERY_LIMIT
      */
-    const LIMIT_ROWS       = 1;
+    const QUERY_LIMIT_ROWS      = 1;
 
     /**
      * constant for record limiting
+     * @see self::ATTR_QUERY_LIMIT
      */
-    const LIMIT_RECORDS    = 2;
+    const QUERY_LIMIT_RECORDS         = 2;
 
     /**
      * FETCHMODE CONSTANTS
@@ -242,117 +239,163 @@ final class Doctrine
     /**
      * IMMEDIATE FETCHING
      * mode for immediate fetching
+     * @see self::ATTR_FETCHMODE
      */
-    const FETCH_IMMEDIATE       = 0;
+    const FETCHMODE_IMMEDIATE       = 0;
 
     /**
-     * BATCH FETCHING
+     * FETCHMODE_BATCH
+     *
      * mode for batch fetching
+     *
+     * @see self::ATTR_FETCHMODE
      */
-    const FETCH_BATCH           = 1;
+    const FETCHMODE_BATCH           = 1;
 
     /**
-     * LAZY FETCHING
+     * FETCHMODE_OFFSET
+     *
      * mode for offset fetching
+     *
+     * @see self::ATTR_FETCHMODE
      */
-    const FETCH_OFFSET          = 3;
+    const FETCHMODE_OFFSET          = 3;
 
     /**
-     * LAZY OFFSET FETCHING
+     * FETCHMODE_LAZY_OFFSET
+     *
      * mode for lazy offset fetching
+     *
+     * @see self::ATTR_FETCHMODE
      */
-    const FETCH_LAZY_OFFSET     = 4;
+    const FETCHMODE_LAZY_OFFSET     = 4;
 
     /**
-     * FETCH CONSTANTS
+     * FETCHMODE CONSTANTS
      */
 
-
     /**
-     * FETCH VALUEHOLDER
+     * FETCHMODE_VHOLDER
+     *
+     * @see self::ATTR_FETCHMODE
      */
-    const FETCH_VHOLDER         = 1;
+    const FETCHMODE_VHOLDER         = 1;
 
     /**
-     * FETCH RECORD
+     * FETCHMODE_RECORD
      *
      * Specifies that the fetch method shall return Doctrine_Record
      * objects as the elements of the result set.
      *
      * This is the default fetchmode.
+     *
+     * @see self::ATTR_FETCHMODE
      */
-    const FETCH_RECORD          = 2;
+    const FETCHMODE_RECORD          = 2;
 
     /**
-     * FETCH ARRAY
+     * FETCHMODE_ARRAY
+     *
+     * @see self::ATTR_FETCHMODE
      */
-    const FETCH_ARRAY           = 3;
+    const FETCHMODE_ARRAY           = 3;
 
     /**
      * PORTABILITY CONSTANTS
      */
 
     /**
+     * PORTABILITY_NONE
+     *
      * Portability: turn off all portability features.
+     *
      * @see self::ATTR_PORTABILITY
      */
     const PORTABILITY_NONE          = 0;
 
     /**
+     * PORTABILITY_FIX_CASE
+     *
      * Portability: convert names of tables and fields to case defined in the
      * "field_case" option when using the query*(), fetch*() methods.
+     *
      * @see self::ATTR_PORTABILITY
      */
     const PORTABILITY_FIX_CASE      = 1;
 
     /**
+     * PORTABILITY_RTRIM
+     *
      * Portability: right trim the data output by query*() and fetch*().
+     *
      * @see self::ATTR_PORTABILITY
      */
     const PORTABILITY_RTRIM         = 2;
 
     /**
+     * PORTABILITY_DELETE_COUNT
+     *
      * Portability: force reporting the number of rows deleted.
+     *
      * @see self::ATTR_PORTABILITY
      */
     const PORTABILITY_DELETE_COUNT  = 4;
 
     /**
+     * PORTABILITY_EMPTY_TO_NULL
+     *
      * Portability: convert empty values to null strings in data output by
      * query*() and fetch*().
+     *
      * @see self::ATTR_PORTABILITY
      */
     const PORTABILITY_EMPTY_TO_NULL = 8;
 
     /**
+     * PORTABILITY_FIX_ASSOC_FIELD_NAMES
+     *
      * Portability: removes database/table qualifiers from associative indexes
+     *
      * @see self::ATTR_PORTABILITY
      */
     const PORTABILITY_FIX_ASSOC_FIELD_NAMES = 16;
 
     /**
+     * PORTABILITY_EXPR
+     *
      * Portability: makes Doctrine_Expression throw exception for unportable RDBMS expressions
+     *
      * @see self::ATTR_PORTABILITY
      */
     const PORTABILITY_EXPR          = 32;
 
     /**
+     * PORTABILITY_ALL
+     *
      * Portability: turn on all portability features.
+     *
      * @see self::ATTR_PORTABILITY
      */
     const PORTABILITY_ALL           = 63;
 
     /**
-     * LOCKMODE CONSTANTS
+     * LOCK CONSTANTS
      */
 
     /**
+     * LOCK_OPTIMISTIC
+     *
      * mode for optimistic locking
+     * @see self::ATTR_LOCK
      */
     const LOCK_OPTIMISTIC       = 0;
 
     /**
+     * LOCK_PESSIMISTIC
+     *
      * mode for pessimistic locking
+     *
+     * @see self::ATTR_LOCK
      */
     const LOCK_PESSIMISTIC      = 1;
 
@@ -362,66 +405,96 @@ final class Doctrine
 
     /**
      * EXPORT_NONE
+     *
+     * @see self::ATTR_EXPORT
      */
     const EXPORT_NONE               = 0;
 
     /**
      * EXPORT_TABLES
+     *
+     * @see self::ATTR_EXPORT
      */
     const EXPORT_TABLES             = 1;
 
     /**
      * EXPORT_CONSTRAINTS
+     *
+     * @see self::ATTR_EXPORT
      */
     const EXPORT_CONSTRAINTS        = 2;
 
     /**
      * EXPORT_PLUGINS
+     *
+     * @see self::ATTR_EXPORT
      */
     const EXPORT_PLUGINS            = 4;
 
     /**
      * EXPORT_ALL
+     *
+     * @see self::ATTR_EXPORT
      */
     const EXPORT_ALL                = 7;
 
     /**
-     * HYDRATION CONSTANTS
+     * HYDRATE CONSTANTS
+     */
+
+    /**
+     * HYDRATE_RECORD
+     *
+     * @see self::ATTR_HYDRATE
      */
     const HYDRATE_RECORD            = 2;
 
     /**
      * HYDRATE_ARRAY
+     *
+     * @see self::ATTR_HYDRATE
      */
     const HYDRATE_ARRAY             = 3;
 
     /**
      * HYDRATE_NONE
+     *
+     * @see self::ATTR_HYDRATE
      */
     const HYDRATE_NONE              = 4;
 
     /**
-     * VALIDATION CONSTANTS
+     * VALIDATE CONSTANTS
+     *
+     * @see self::ATTR_VALIDATE
      */
     const VALIDATE_NONE             = 0;
 
     /**
      * VALIDATE_LENGTHS
+     *
+     * @see self::ATTR_VALIDATE
      */
     const VALIDATE_LENGTHS          = 1;
 
     /**
      * VALIDATE_TYPES
+     *
+     * @see self::ATTR_VALIDATE
      */
     const VALIDATE_TYPES            = 2;
 
     /**
      * VALIDATE_CONSTRAINTS
+     *
+     * @see self::ATTR_VALIDATE
      */
     const VALIDATE_CONSTRAINTS      = 4;
 
     /**
      * VALIDATE_ALL
+     *
+     * @see self::ATTR_VALIDATE
      */
     const VALIDATE_ALL              = 7;
 
@@ -429,6 +502,8 @@ final class Doctrine
      * IDENTIFIER_AUTOINC
      *
      * constant for auto_increment identifier
+     *
+     * @see self::ATTR_IDENTIFIER
      */
     const IDENTIFIER_AUTOINC        = 1;
 
@@ -436,6 +511,8 @@ final class Doctrine
      * IDENTIFIER_SEQUENCE
      *
      * constant for sequence identifier
+     *
+     * @see self::ATTR_IDENTIFIER
      */
     const IDENTIFIER_SEQUENCE       = 2;
 
@@ -443,6 +520,8 @@ final class Doctrine
      * IDENTIFIER_NATURAL
      *
      * constant for normal identifier
+     *
+     * @see self::ATTR_IDENTIFIER
      */
     const IDENTIFIER_NATURAL        = 3;
 
@@ -450,6 +529,7 @@ final class Doctrine
      * IDENTIFIER_COMPOSITE
      *
      * constant for composite identifier
+     * @see self::ATTR_IDENTIFIER
      */
     const IDENTIFIER_COMPOSITE      = 4;
 
@@ -458,6 +538,8 @@ final class Doctrine
      *
      * Constant for agressive model loading
      * Will require_once() all found model files
+     *
+     * @see self::ATTR_MODEL_LOADING
      */
     const MODEL_LOADING_AGGRESSIVE   = 1;
 
@@ -467,24 +549,43 @@ final class Doctrine
      * Constant for conservative model loading
      * Will not require_once() found model files inititally instead it will build an array
      * and reference it in autoload() when a class is needed it will require_once() it
+     *
+     * @see self::ATTR_MODEL_LOADING
      */
     const MODEL_LOADING_CONSERVATIVE= 2;
     
+    /**
+     * INHERITANCE TYPE CONSTANTS.
+     */
+          
+    /**
+     * Constant for Single Table Inheritance.
+     *
+     * @see http://martinfowler.com/eaaCatalog/singleTableInheritance.html
+    */
+    const INHERITANCETYPE_SINGLE_TABLE = 1;
+         
+    /**
+     * Constant for Class Table Inheritance.
+     *
+     * @see http://martinfowler.com/eaaCatalog/classTableInheritance.html
+     */
+    const INHERITANCETYPE_JOINED = 2;
+     
+    /**
+     * Constant for Concrete Table Inheritance.
+     *
+     * @see http://martinfowler.com/eaaCatalog/concreteTableInheritance.html
+     */
+    const INHERITANCETYPE_TABLE_PER_CLASS = 3;
+    
+
     /**
      * Path
      *
      * @var string $path            doctrine root directory
      */
     private static $_path;
-
-    /**
-     * Debug
-     *
-     * Bool true/false
-     *
-     * @var boolean $_debug
-     */
-    private static $_debug = false;
 
     /**
      * _loadedModelFiles
@@ -496,14 +597,6 @@ final class Doctrine
     private static $_loadedModelFiles = array();
 
     /**
-     * _validators
-     *
-     * Array of all the loaded validators
-     * @var array
-     */
-    private static $_validators = array();
-
-    /**
      * __construct
      *
      * @return void
@@ -513,22 +606,7 @@ final class Doctrine
     {
         throw new Doctrine_Exception('Doctrine is static class. No instances can be created.');
     }
-
-    /**
-     * debug
-     *
-     * @param string $bool
-     * @return void
-     */
-    public static function debug($bool = null)
-    {
-        if ($bool !== null) {
-            self::$_debug = (bool) $bool;
-        }
-
-        return self::$_debug;
-    }
-
+    
     /**
      * getPath
      * returns the doctrine root
@@ -566,7 +644,7 @@ final class Doctrine
                     $e = explode('.', $file->getFileName());
                     if (end($e) === 'php' && strpos($file->getFileName(), '.inc') === false) {
                         
-                        if ($manager->getAttribute(Doctrine::ATTR_MODEL_LOADING) == Doctrine::MODEL_LOADING_CONSERVATIVE) {
+                        if ($manager->getAttribute(Doctrine::ATTR_MODEL_LOADING) === Doctrine::MODEL_LOADING_CONSERVATIVE) {
                             self::$_loadedModelFiles[$e[0]] = $file->getPathName();
                             $loadedModels[] = $e[0];
                         } else {
@@ -600,15 +678,12 @@ final class Doctrine
      * Will filter through an array of classes and return the Doctrine_Records out of them.
      * If you do not specify $classes it will return all of the currently loaded Doctrine_Records
      *
-     * @param classes  Array of classes to filter through, otherwise uses get_declared_classes()
      * @return array   $loadedModels
      */
-    public static function getLoadedModels($classes = null)
+    public static function getLoadedModels()
     {
-        if ($classes === null) {
-            $classes = get_declared_classes();
-            $classes = array_merge($classes, array_keys(self::$_loadedModelFiles));
-        }
+        $classes = get_declared_classes();
+        $classes = array_merge($classes, array_keys(self::$_loadedModelFiles));
 
         return self::filterInvalidModels($classes);
     }
@@ -718,7 +793,7 @@ final class Doctrine
      */
     public static function generateYamlFromDb($yamlPath)
     {
-        $directory = '/tmp/tmp_doctrine_models';
+        $directory = sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'tmp_doctrine_models';
 
         Doctrine::generateModelsFromDb($directory);
 
@@ -888,7 +963,7 @@ final class Doctrine
             }
 
             try {
-                $connection->export->dropDatabase($name);
+                $connection->export->dropDatabase($connection->getDatabaseName());
 
                 $results[$name] = true;
             } catch (Exception $e) {
@@ -1008,34 +1083,6 @@ final class Doctrine
     }
 
     /**
-     * fileFinder
-     *
-     * @param string $type
-     * @return void
-     */
-    public static function fileFinder($type)
-    {
-        return Doctrine_FileFinder::type($type);
-    }
-
-    /**
-     * compile
-     *
-     * method for making a single file of most used doctrine runtime components
-     * including the compiled file instead of multiple files (in worst
-     * cases dozens of files) can improve performance by an order of magnitude
-     *
-     * @param string $target
-     * @param array  $includedDrivers
-     * @throws Doctrine_Exception
-     * @return void
-     */
-    public static function compile($target = null, $includedDrivers = array())
-    {
-        return Doctrine_Compiler::compile($target, $includedDrivers);
-    }
-
-    /**
      * autoload
      *
      * simple autoload function
@@ -1055,7 +1102,7 @@ final class Doctrine
         }
 
         $class = self::$_path . DIRECTORY_SEPARATOR . str_replace('_', DIRECTORY_SEPARATOR, $className) . '.php';
-
+        
         if (file_exists($class)) {
             require $class;
 
@@ -1071,6 +1118,19 @@ final class Doctrine
         }
 
         return false;
+    }
+    
+    public static function locate($name)
+    {
+        $findPattern = self::$_path . DIRECTORY_SEPARATOR . '*' . DIRECTORY_SEPARATOR . str_replace('_', DIRECTORY_SEPARATOR, str_replace('Doctrine_', '', $name));
+
+        $matches = glob($findPattern);
+
+        if ( isset($matches[0])) {
+            return $matches[0];
+        } else {
+            return false;
+        }
     }
 
     /**
@@ -1135,18 +1195,5 @@ final class Doctrine
     public static function classify($tableName)
     {
         return Doctrine_Inflector::classify($tableName);
-    }
-
-    /**
-     * isValidClassName
-     *
-     * checks for valid class name (uses camel case and underscores)
-     *
-     * @param string $classname
-     * @return boolean
-     */
-    public static function isValidClassname($className)
-    {
-        return Doctrine_Lib::isValidClassName($className);
     }
 }
