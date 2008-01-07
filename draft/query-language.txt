@@ -23,7 +23,8 @@ UpdateItem = PathExpression "=" (Expression | "NULL")
 IdentificationVariableDeclaration =  RangeVariableDeclaration {Join}
 RangeVariableDeclaration = PathExpression [["AS" ] identifier<identification-variable>]
 
-Join = ["LEFT" | "INNER"] "JOIN" PathExpression "AS" identifier
+Join = ["LEFT" | "INNER"] "JOIN" PathExpression "AS" identifier [["ON" | "WITH"] ConditionalExpression] IndexBy
+IndexBy = "INDEXBY" identifier
 
 ConditionalExpression = ConditionalTerm {"OR" ConditionalTerm}
 ConditionalTerm       = ConditionalFactor {"AND" ConditionalFactor}
