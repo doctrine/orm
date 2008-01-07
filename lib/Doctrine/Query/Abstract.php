@@ -1518,6 +1518,27 @@ abstract class Doctrine_Query_Abstract
     {
         return $this->_sqlParts;
     }
+
+    /**
+     * getQueryPartValue
+     * return the value of queryPartName
+     * 
+     * @param $queryPartName
+     * @return mixed value of queryPartName
+     * 
+     */
+    public function getQueryPartValue($queryPartName)
+    {
+        if(isset($this->_dqlParts[$queryPartName])) {
+            if(count($this->_dqlParts[$queryPartName]) == 1) {
+                return $this->_dqlParts[$queryPartName][0];
+            } else {
+               return $this->_dqlParts[$queryPartName];
+            }
+        } else {
+            return null;
+        }
+    }
     
     /**
      * getType
