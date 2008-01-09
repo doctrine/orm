@@ -249,6 +249,7 @@ $test->addTestCase(new Doctrine_Inheritance_TablePerClass_TestCase());
 
 // nestedset tests
 $test->addTestCase(new Doctrine_NestedSet_SingleRoot_TestCase());
+$test->addTestCase(new Doctrine_NestedSet_LoadInSetUp_TestCase());
 
 // Search tests
 $search = new GroupTest('Search tests','search');
