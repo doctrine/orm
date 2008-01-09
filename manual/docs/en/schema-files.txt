@@ -108,10 +108,40 @@ GroupUser:
       primary: true
 </code>
 
++++ One to One Aggregate
+
+<code type="yaml">
+---
+User:
+  columns:
+    id:
+      type: integer(4)
+      primary: true
+      autoincrement: true
+    contact_id:
+      type: integer(4)
+    username:
+      type: string(255)
+    password:
+      type: string(255)
+  relations:
+    Contact:
+      foreignType: one
+      onDelete: CASCADE
+Contact:
+  columns:
+    id:
+      type: integer(4)
+      primary: true
+      autoincrement: true
+    name:
+      type: string(255)
+</code>
+
 ++ Connection Binding
 
 <code type="php">
-Doctrine::connection('mysql://jwage:pass@localhost/connection1', 'connection1');
+Doctrine::connection('mysql://user:pass@localhost/connection1', 'connection1');
 </code>
 
 <code type="yaml">
