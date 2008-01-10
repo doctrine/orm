@@ -52,7 +52,7 @@ class Doctrine_Query_Expression_TestCase extends Doctrine_UnitTestCase
         $q = new Doctrine_Query();
 
         try {
-            $q->parseQuery('SELECT u.name || u.unknown FROM User u');
+            $q->parseQuery('SELECT CONCAT(u.name, u.unknown) FROM User u');
 
             $q->execute();
             $this->fail();
