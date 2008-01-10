@@ -1,5 +1,5 @@
 <?php
-/* 
+/*
  *  $Id$
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
@@ -30,16 +30,16 @@
  * @link        www.phpdoctrine.com
  * @since       1.0
  */
-class Doctrine_Query_Expression_TestCase extends Doctrine_UnitTestCase 
+class Doctrine_Query_Expression_TestCase extends Doctrine_UnitTestCase
 {
 
-    public function testUnknownExpressionInSelectClauseThrowsException() 
+    public function testUnknownExpressionInSelectClauseThrowsException()
     {
         $q = new Doctrine_Query();
-        
+
         try {
             $q->parseQuery('SELECT SOMEUNKNOWNFUNC(u.name, " ", u.loginname) FROM User u');
-            
+
             $q->getQuery();
             $this->fail();
         } catch(Doctrine_Query_Exception $e) {
@@ -47,13 +47,13 @@ class Doctrine_Query_Expression_TestCase extends Doctrine_UnitTestCase
         }
     }
 
-    public function testUnknownColumnWithinFunctionInSelectClauseThrowsException() 
+    public function testUnknownColumnWithinFunctionInSelectClauseThrowsException()
     {
         $q = new Doctrine_Query();
-        
+
         try {
-            $q->parseQuery('SELECT CONCAT(u.name, u.unknown) FROM User u');
-            
+            $q->parseQuery('SELECT u.name || u.unknown FROM User u');
+
             $q->execute();
             $this->fail();
         } catch(Doctrine_Query_Exception $e) {
@@ -61,31 +61,31 @@ class Doctrine_Query_Expression_TestCase extends Doctrine_UnitTestCase
         }
     }
 
-    public function testConcatIsSupportedInSelectClause() 
+    public function testConcatIsSupportedInSelectClause()
     {
         $q = new Doctrine_Query();
-        
+
         $q->parseQuery('SELECT CONCAT(u.name, u.loginname) FROM User u');
-        
-        $this->assertEqual($q->getQuery(), 'SELECT CONCAT(e.name, e.loginname) AS e__0 FROM entity e WHERE (e.type = 0)');
+
+        $this->assertEqual($q->getQuery(), 'SELECT e.name || e.loginname AS e__0 FROM entity e WHERE (e.type = 0)');
     }
 
-    public function testConcatInSelectClauseSupportsLiteralStrings() 
+    public function testConcatInSelectClauseSupportsLiteralStrings()
     {
         $q = new Doctrine_Query();
-        
+
         $q->parseQuery("SELECT CONCAT(u.name, 'The Man') FROM User u");
-        
-        $this->assertEqual($q->getQuery(), "SELECT CONCAT(e.name, 'The Man') AS e__0 FROM entity e WHERE (e.type = 0)");
+
+        $this->assertEqual($q->getQuery(), "SELECT e.name || 'The Man' AS e__0 FROM entity e WHERE (e.type = 0)");
     }
 
-    public function testConcatInSelectClauseSupportsMoreThanTwoArgs() 
+    public function testConcatInSelectClauseSupportsMoreThanTwoArgs()
     {
         $q = new Doctrine_Query();
-        
+
         $q->parseQuery("SELECT CONCAT(u.name, 'The Man', u.loginname) FROM User u");
-        
-        $this->assertEqual($q->getQuery(), "SELECT CONCAT(e.name, 'The Man', e.loginname) AS e__0 FROM entity e WHERE (e.type = 0)");
+
+        $this->assertEqual($q->getQuery(), "SELECT e.name || 'The Man' || e.loginname AS e__0 FROM entity e WHERE (e.type = 0)");
     }
 
     public function testNonPortableFunctionsAreSupported()
@@ -99,7 +99,7 @@ class Doctrine_Query_Expression_TestCase extends Doctrine_UnitTestCase
          $radius = '33';
 
          $query->select("l.*, i18n.*, GeoDistKM(l.lat, l.lon, $lat, $lon) distance")
-              ->from('Location l, l.LocationI18n i18n')          
+              ->from('Location l, l.LocationI18n i18n')
               ->where('l.id <> ? AND i18n.culture = ?', array(1, 'en'))
               ->having("distance < $radius")
               ->orderby('distance ASC')
