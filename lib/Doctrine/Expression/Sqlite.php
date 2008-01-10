@@ -56,17 +56,6 @@ class Doctrine_Expression_Sqlite extends Doctrine_Expression_Driver
     }
 
     /**
-     * Returns a concatenation of the data that SQLite's concat() function receives.
-     *
-     * @return string
-     */
-    public static function concatImpl()
-    {
-        $args = func_get_args();
-        return join('', $args);
-    }
-
-    /**
      * locate
      * returns the position of the first occurrence of substring $substr in string $str that
      * SQLite's locate() function receives
