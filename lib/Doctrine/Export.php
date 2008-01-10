@@ -694,6 +694,12 @@ class Doctrine_Export extends Doctrine_Connection_Module
     public function getDeclaration($name, array $field)
     {
 
+        $method = 'get' . $field['type'] . 'Declaration';
+
+        if (method_exists($this->conn->dataDict, $method)) {
+            return $this->conn->dataDict->$method($name, $field);
+        }
+
         $default   = $this->getDefaultFieldDeclaration($field);
 
         $charset   = (isset($field['charset']) && $field['charset']) ?
@@ -710,13 +716,8 @@ class Doctrine_Export extends Doctrine_Connection_Module
         $check     = (isset($field['check']) && $field['check']) ?
                     ' ' . $field['check'] : '';
 
-        $method = 'get' . $field['type'] . 'Declaration';
+        $dec = $this->conn->dataDict->getNativeDeclaration($field);
 
-        if (method_exists($this->conn->dataDict, $method)) {
-            return $this->conn->dataDict->$method($name, $field);
-        } else {
-            $dec = $this->conn->dataDict->getNativeDeclaration($field);
-        }
         return $this->conn->quoteIdentifier($name, true) . ' ' . $dec . $charset . $default . $notnull . $unique . $check . $collation;
     }
 
@@ -730,15 +731,18 @@ class Doctrine_Export extends Doctrine_Connection_Module
      */
     public function getDefaultFieldDeclaration($field)
     {
-        $default = '';
+        $default = empty($field['notnull']) ? ' DEFAULT NULL' : '';
         if (isset($field['default'])) {
             if ($field['default'] === '') {
-                $field['default'] = empty($field['notnull'])
-                    ? null : $this->valid_default_values[$field['type']];
+                $field['default'] = null;
+                if (! empty($field['notnull']) && array_key_exists($field['type'], $this->valid_default_values)) {
+                   $field['default'] = $this->valid_default_values[$field['type']];
+                }
 
-                if ($field['default'] === '' &&
-                   ($this->conn->getAttribute(Doctrine::ATTR_PORTABILITY) & Doctrine::PORTABILITY_EMPTY_TO_NULL)) {
-                    $field['default'] = null;
+                if ($field['default'] === ''
+                    && ($this->conn->getAttribute(Doctrine::ATTR_PORTABILITY) & Doctrine::PORTABILITY_EMPTY_TO_NULL)
+                ) {
+                    $field['default'] = ' ';
                 }
             }
 

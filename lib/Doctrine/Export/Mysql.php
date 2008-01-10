@@ -512,7 +512,7 @@ class Doctrine_Export_Mysql extends Doctrine_Export
      */
     public function getDefaultFieldDeclaration($field)
     {
-        $default = '';
+        $default = empty($field['notnull']) ? ' DEFAULT NULL' : '';
         if (isset($field['default']) && ( ! isset($field['length']) || $field['length'] <= 255)) {
             if ($field['default'] === '') {
                 $field['default'] = null;
@@ -530,6 +530,9 @@ class Doctrine_Export_Mysql extends Doctrine_Export
             if ($field['type'] == 'enum' && $this->conn->getAttribute(Doctrine::ATTR_USE_NATIVE_ENUM)) {
                 $fieldType = 'varchar';
             } else {
+               if ($field['type'] === 'boolean') {
+                   $fields['default'] = $this->conn->convertBooleans($field['default']);
+               }
                 $fieldType = $field['type'];
             }
 

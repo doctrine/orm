@@ -230,7 +230,7 @@ class Doctrine_DataDict_Mysql extends Doctrine_DataDict
     }
 
     /**
-     * Maps a native array description of a field to a MDB2 datatype and length
+     * Maps a native array description of a field to a Doctrine datatype and length
      *
      * @param array  $field native field description
      * @return array containing the various possible types, length, sign, fixed
@@ -453,12 +453,9 @@ class Doctrine_DataDict_Mysql extends Doctrine_DataDict
             } else {
                 $default = ' DEFAULT '.$this->conn->quote($field['default']);
             }
-        }
-        /**
-        elseif (empty($field['notnull'])) {
+        } elseif (empty($field['notnull'])) {
             $default = ' DEFAULT NULL';
         }
-        */
 
         $notnull  = (isset($field['notnull'])  && $field['notnull'])  ? ' NOT NULL' : '';
         $unsigned = (isset($field['unsigned']) && $field['unsigned']) ? ' UNSIGNED' : '';
