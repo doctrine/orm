@@ -81,7 +81,7 @@ class Doctrine_Export_Sqlite_TestCase extends Doctrine_UnitTestCase
         $options = array('primary' => array('name', 'type'));
         $this->export->createTable($name, $fields, $options);
 
-        $this->assertEqual($this->adapter->pop(), 'CREATE TABLE mytable (name CHAR(10) DEFAULT NULL, type INTEGER, PRIMARY KEY(name, type))');
+        $this->assertEqual($this->adapter->pop(), 'CREATE TABLE mytable (name CHAR(10) DEFAULT NULL, type INTEGER DEFAULT NULL, PRIMARY KEY(name, type))');
     }
     public function testCreateTableSupportsIndexes()
     {
@@ -138,7 +138,7 @@ class Doctrine_Export_Sqlite_TestCase extends Doctrine_UnitTestCase
         $options = array('primary' => array('name', 'type'));
         $this->export->createTable($name, $fields, $options);
 
-        $this->assertEqual($this->adapter->pop(), 'CREATE TABLE "mytable" ("name" CHAR(10) DEFAULT NULL, "type" INTEGER, PRIMARY KEY("name", "type"))');
+        $this->assertEqual($this->adapter->pop(), 'CREATE TABLE "mytable" ("name" CHAR(10) DEFAULT NULL, "type" INTEGER DEFAULT NULL, PRIMARY KEY("name", "type"))');
 
         $this->conn->setAttribute(Doctrine::ATTR_QUOTE_IDENTIFIER, false);
     }

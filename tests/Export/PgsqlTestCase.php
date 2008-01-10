@@ -74,7 +74,7 @@ class Doctrine_Export_Pgsql_TestCase extends Doctrine_UnitTestCase
         $options = array('primary' => array('name', 'type'));
         $this->export->createTable($name, $fields, $options);
 
-        $this->assertEqual($this->adapter->pop(), 'CREATE TABLE "mytable" ("name" CHAR(10) DEFAULT NULL, "type" INT, PRIMARY KEY("name", "type"))');
+        $this->assertEqual($this->adapter->pop(), 'CREATE TABLE "mytable" ("name" CHAR(10) DEFAULT NULL, "type" INT DEFAULT NULL, PRIMARY KEY("name", "type"))');
 
         $this->conn->setAttribute(Doctrine::ATTR_QUOTE_IDENTIFIER, false);
     }
@@ -95,7 +95,7 @@ class Doctrine_Export_Pgsql_TestCase extends Doctrine_UnitTestCase
 
         $sql = $this->export->createTableSql($name, $fields, $options);
 
-        $this->assertEqual($sql[0], 'CREATE TABLE "mytable" ("id" BOOLEAN DEFAULT NULL, "foreignKey" INT)');
+        $this->assertEqual($sql[0], 'CREATE TABLE "mytable" ("id" BOOLEAN DEFAULT NULL, "foreignKey" INT DEFAULT NULL)');
         $this->assertEqual($sql[1], 'ALTER TABLE "mytable" ADD FOREIGN KEY ("foreignKey") REFERENCES "sometable"("id") NOT DEFERRABLE INITIALLY IMMEDIATE');
 
         $this->conn->setAttribute(Doctrine::ATTR_QUOTE_IDENTIFIER, false);
@@ -121,19 +121,19 @@ class Doctrine_Export_Pgsql_TestCase extends Doctrine_UnitTestCase
         $options = array('primary' => array('name', 'type'));
         $this->export->createTable($name, $fields, $options);
 
-        $this->assertEqual($this->adapter->pop(), 'CREATE TABLE mytable (name CHAR(10) DEFAULT NULL, type INT, PRIMARY KEY(name, type))');
+        $this->assertEqual($this->adapter->pop(), 'CREATE TABLE mytable (name CHAR(10) DEFAULT NULL, type INT DEFAULT NULL, PRIMARY KEY(name, type))');
     }
     public function testExportSql()
     {
         $sql = $this->export->exportClassesSql(array("FooRecord", "FooReferenceRecord", "FooLocallyOwned", "FooForeignlyOwned", "FooForeignlyOwnedWithPK", "FooBarRecord", "BarRecord"));
         //dirname(__FILE__) . DIRECTORY_SEPARATOR . '_files');
 
-        $this->assertEqual($sql, array ( 0 => 'CREATE TABLE foo_reference (foo1 BIGINT, foo2 BIGINT, PRIMARY KEY(foo1, foo2))',
+        $this->assertEqual($sql, array ( 0 => 'CREATE TABLE foo_reference (foo1 BIGINT DEFAULT NULL, foo2 BIGINT DEFAULT NULL, PRIMARY KEY(foo1, foo2))',
                                          1 => 'CREATE TABLE foo_locally_owned (id BIGSERIAL, name VARCHAR(200) DEFAULT NULL, PRIMARY KEY(id))',
                                          2 => 'CREATE TABLE foo_foreignly_owned_with_pk (id BIGSERIAL, name VARCHAR(200) DEFAULT NULL, PRIMARY KEY(id))',
-                                         3 => 'CREATE TABLE foo_foreignly_owned (id BIGSERIAL, name VARCHAR(200) DEFAULT NULL, fooid BIGINT, PRIMARY KEY(id))',
-                                         4 => 'CREATE TABLE foo_bar_record (fooid BIGINT, barid BIGINT, PRIMARY KEY(fooid, barid))',
-                                         5 => 'CREATE TABLE foo (id BIGSERIAL, name VARCHAR(200) NOT NULL, parent_id BIGINT, local_foo BIGINT, PRIMARY KEY(id))',
+                                         3 => 'CREATE TABLE foo_foreignly_owned (id BIGSERIAL, name VARCHAR(200) DEFAULT NULL, fooid BIGINT DEFAULT NULL, PRIMARY KEY(id))',
+                                         4 => 'CREATE TABLE foo_bar_record (fooid BIGINT DEFAULT NULL, barid BIGINT DEFAULT NULL, PRIMARY KEY(fooid, barid))',
+                                         5 => 'CREATE TABLE foo (id BIGSERIAL, name VARCHAR(200) NOT NULL, parent_id BIGINT DEFAULT NULL, local_foo BIGINT DEFAULT NULL, PRIMARY KEY(id))',
                                          6 => 'CREATE TABLE bar (id BIGSERIAL, name VARCHAR(200) DEFAULT NULL, PRIMARY KEY(id))',
                                          7 => 'ALTER TABLE foo_reference ADD FOREIGN KEY (foo1) REFERENCES foo(id) NOT DEFERRABLE INITIALLY IMMEDIATE',
                                          8 => 'ALTER TABLE foo_bar_record ADD FOREIGN KEY (fooId) REFERENCES foo(id) NOT DEFERRABLE INITIALLY IMMEDIATE',
