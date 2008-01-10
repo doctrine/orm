@@ -104,6 +104,11 @@ class Doctrine_RawSql extends Doctrine_Query_Abstract
         $this->_sqlParts['select'] = array();
     }
     
+    
+    public function parseQuery($query)
+    {
+        return $this->parseDqlQuery($query);
+    }
     /**
      * parseDqlQuery
      * parses an sql query and adds the parts to internal array.
