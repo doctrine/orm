@@ -110,4 +110,18 @@ class Doctrine_Expression_Mysql extends Doctrine_Expression_Driver
     {
         return 'UUID()';
     }
+
+    /**
+     * Returns string to concatenate two or more string parameters
+     *
+     * @param string $value1
+     * @param string $value2
+     * @param string $values...
+     * @return string to concatenate two strings
+     **/
+    function concat($value1, $value2)
+    {
+        $args = func_get_args();
+        return 'CONCAT('.implode(', ', $args).')';
+    }
 }
