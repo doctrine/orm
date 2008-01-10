@@ -731,7 +731,9 @@ class Doctrine_Export extends Doctrine_Connection_Module
      */
     public function getDefaultFieldDeclaration($field)
     {
-        $default = empty($field['notnull']) ? ' DEFAULT NULL' : '';
+        $default = empty($field['notnull']) && !in_array($field['type'], array('clob', 'blob'))
+            ? ' DEFAULT NULL' : '';
+
         if (isset($field['default'])) {
             if ($field['default'] === '') {
                 $field['default'] = null;

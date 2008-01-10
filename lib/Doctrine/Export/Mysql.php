@@ -512,7 +512,9 @@ class Doctrine_Export_Mysql extends Doctrine_Export
      */
     public function getDefaultFieldDeclaration($field)
     {
-        $default = empty($field['notnull']) ? ' DEFAULT NULL' : '';
+        $default = empty($field['notnull']) && !in_array($field['type'], array('clob', 'blob'))
+            ? ' DEFAULT NULL' : '';
+
         if (isset($field['default']) && ( ! isset($field['length']) || $field['length'] <= 255)) {
             if ($field['default'] === '') {
                 $field['default'] = null;
