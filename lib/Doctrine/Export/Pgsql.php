@@ -43,7 +43,7 @@ class Doctrine_Export_Pgsql extends Doctrine_Export
     public function createDatabaseSql($name)
     {
         $query  = 'CREATE DATABASE ' . $this->conn->quoteIdentifier($name);
-        
+
         return $query;
     }
 
@@ -57,7 +57,7 @@ class Doctrine_Export_Pgsql extends Doctrine_Export
     public function dropDatabaseSql($name)
     {
         $query  = 'DROP DATABASE ' . $this->conn->quoteIdentifier($name);
-        
+
         return $query;
     }
 
@@ -124,7 +124,7 @@ class Doctrine_Export_Pgsql extends Doctrine_Export
         if ($check) {
             return true;
         }
-        
+
         $sql = array();
 
         if (isset($changes['add']) && is_array($changes['add'])) {
@@ -177,10 +177,10 @@ class Doctrine_Export_Pgsql extends Doctrine_Export
             $changeName = $this->conn->quoteIdentifier($changes['name'], true);
             $sql[] = 'ALTER TABLE ' . $name . ' RENAME TO ' . $changeName;
         }
-        
+
         return $sql;
     }
-    
+
     /**
      * alter an existing table
      *
@@ -276,7 +276,7 @@ class Doctrine_Export_Pgsql extends Doctrine_Export
         foreach ($sql as $query) {
             $this->conn->exec($query);
         }
-        return true;    
+        return true;
     }
 
     /**
@@ -324,7 +324,7 @@ class Doctrine_Export_Pgsql extends Doctrine_Export
         if ( ! $name) {
             throw new Doctrine_Export_Exception('no valid table name specified');
         }
-        
+
         if (empty($fields)) {
             throw new Doctrine_Export_Exception('no fields specified for table ' . $name);
         }
@@ -347,7 +347,7 @@ class Doctrine_Export_Pgsql extends Doctrine_Export
                 $sql[] = $this->createIndexSql($name, $index, $definition);
             }
         }
-        
+
         if (isset($options['foreignKeys'])) {
 
             foreach ((array) $options['foreignKeys'] as $k => $definition) {
@@ -356,8 +356,57 @@ class Doctrine_Export_Pgsql extends Doctrine_Export
                 }
             }
         }
-        
+
         return $sql;
     }
 
+    /**
+     * Obtain DBMS specific SQL code portion needed to declare an integer type
+     * field to be used in statements like CREATE TABLE.
+     *
+     * @param string $name name the field to be declared.
+     * @param array $field associative array with the name of the properties
+     *       of the field being declared as array indexes. Currently, the types
+     *       of supported field properties are as follows:
+     *
+     *       unsigned
+     *           Boolean flag that indicates whether the field should be
+     *           declared as unsigned integer if possible.
+     *
+     *       default
+     *           Integer value to be used as default for this field.
+     *
+     *       notnull
+     *           Boolean flag that indicates whether this field is constrained
+     *           to not be set to null.
+     * @return string DBMS specific SQL code portion that should be used to
+     *       declare the specified field.
+     */
+    public function getIntegerDeclaration($name, $field)
+    {
+        /**
+        if ( ! empty($field['unsigned'])) {
+            $this->conn->warnings[] = "unsigned integer field \"$name\" is being declared as signed integer";
+        }
+        */
+
+        if ( ! empty($field['autoincrement'])) {
+            $name = $this->conn->quoteIdentifier($name, true);
+            return $name . ' ' . $this->conn->dataDict->getNativeDeclaration($field);
+        }
+
+        $default = '';
+        if (array_key_exists('default', $field)) {
+            if ($field['default'] === '') {
+                $field['default'] = empty($field['notnull']) ? null : 0;
+            }
+            $default = ' DEFAULT '.$this->conn->quote($field['default'], $field['type']);
+        } elseif (empty($field['notnull'])) {
+            $default = ' DEFAULT NULL';
+        }
+
+        $notnull = empty($field['notnull']) ? '' : ' NOT NULL';
+        $name = $this->conn->quoteIdentifier($name, true);
+        return $name . ' ' . $this->conn->dataDict->getNativeDeclaration($field) . $default . $notnull;
+    }
 }

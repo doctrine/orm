@@ -693,11 +693,10 @@ class Doctrine_Export extends Doctrine_Connection_Module
      */
     public function getDeclaration($name, array $field)
     {
-
         $method = 'get' . $field['type'] . 'Declaration';
 
-        if (method_exists($this->conn->dataDict, $method)) {
-            return $this->conn->dataDict->$method($name, $field);
+        if (method_exists($this, $method)) {
+            return $this->$method($name, $field);
         }
 
         $default   = $this->getDefaultFieldDeclaration($field);

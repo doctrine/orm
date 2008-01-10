@@ -503,6 +503,57 @@ class Doctrine_Export_Mysql extends Doctrine_Export
     }
 
     /**
+     * Obtain DBMS specific SQL code portion needed to declare an integer type
+     * field to be used in statements like CREATE TABLE.
+     *
+     * @param string  $name   name the field to be declared.
+     * @param string  $field  associative array with the name of the properties
+     *                        of the field being declared as array indexes.
+     *                        Currently, the types of supported field
+     *                        properties are as follows:
+     *
+     *                       unsigned
+     *                        Boolean flag that indicates whether the field
+     *                        should be declared as unsigned integer if
+     *                        possible.
+     *
+     *                       default
+     *                        Integer value to be used as default for this
+     *                        field.
+     *
+     *                       notnull
+     *                        Boolean flag that indicates whether this field is
+     *                        constrained to not be set to null.
+     * @return string  DBMS specific SQL code portion that should be used to
+     *                 declare the specified field.
+     */
+    public function getIntegerDeclaration($name, $field)
+    {
+        $default = $autoinc = '';
+        if ( ! empty($field['autoincrement'])) {
+            $autoinc = ' AUTO_INCREMENT';
+        } elseif (array_key_exists('default', $field)) {
+            if ($field['default'] === '') {
+                $field['default'] = empty($field['notnull']) ? null : 0;
+            }
+            if (is_null($field['default'])) {
+                $default = ' DEFAULT NULL';
+            } else {
+                $default = ' DEFAULT '.$this->conn->quote($field['default']);
+            }
+        } elseif (empty($field['notnull'])) {
+            $default = ' DEFAULT NULL';
+        }
+
+        $notnull  = (isset($field['notnull'])  && $field['notnull'])  ? ' NOT NULL' : '';
+        $unsigned = (isset($field['unsigned']) && $field['unsigned']) ? ' UNSIGNED' : '';
+
+        $name = $this->conn->quoteIdentifier($name, true);
+
+        return $name . ' ' . $this->conn->dataDict->getNativeDeclaration($field) . $unsigned . $default . $notnull . $autoinc;
+    }
+
+    /**
      * getDefaultDeclaration
      * Obtain DBMS specific SQL code portion needed to set a default value
      * declaration to be used in statements like CREATE TABLE.

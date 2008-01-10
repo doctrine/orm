@@ -560,60 +560,6 @@ class Doctrine_DataDict_Pgsql extends Doctrine_DataDict
     }
 
     /**
-     * Obtain DBMS specific SQL code portion needed to declare an integer type
-     * field to be used in statements like CREATE TABLE.
-     *
-     * @param string $name name the field to be declared.
-     * @param array $field associative array with the name of the properties
-     *       of the field being declared as array indexes. Currently, the types
-     *       of supported field properties are as follows:
-     *
-     *       unsigned
-     *           Boolean flag that indicates whether the field should be
-     *           declared as unsigned integer if possible.
-     *
-     *       default
-     *           Integer value to be used as default for this field.
-     *
-     *       notnull
-     *           Boolean flag that indicates whether this field is constrained
-     *           to not be set to null.
-     * @return string DBMS specific SQL code portion that should be used to
-     *       declare the specified field.
-     */
-    public function getIntegerDeclaration($name, $field)
-    {
-        /**
-        if ( ! empty($field['unsigned'])) {
-            $this->conn->warnings[] = "unsigned integer field \"$name\" is being declared as signed integer";
-        }
-        */
-
-        if ( ! empty($field['autoincrement'])) {
-            $name = $this->conn->quoteIdentifier($name, true);
-            return $name . ' ' . $this->getNativeDeclaration($field);
-        }
-
-        $default = '';
-        if (array_key_exists('default', $field)) {
-            if ($field['default'] === '') {
-                $field['default'] = empty($field['notnull']) ? null : 0;
-            }
-            $default = ' DEFAULT '.$this->conn->quote($field['default'], $field['type']);
-        }
-        /**
-        TODO: is this needed ?
-        elseif (empty($field['notnull'])) {
-            $default = ' DEFAULT NULL';
-        }
-        */
-
-        $notnull = empty($field['notnull']) ? '' : ' NOT NULL';
-        $name = $this->conn->quoteIdentifier($name, true);
-        return $name . ' ' . $this->getNativeDeclaration($field) . $default . $notnull;
-    }
-
-    /**
      * parseBoolean
      * parses a literal boolean value and returns
      * proper sql equivalent

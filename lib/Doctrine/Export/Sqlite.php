@@ -100,7 +100,7 @@ class Doctrine_Export_Sqlite extends Doctrine_Export
      * Obtain DBMS specific SQL code portion needed to set an index
      * declaration to be used in statements like CREATE TABLE.
      *
-     * @return string   
+     * @return string
      */
     public function getIndexFieldDeclarationList(array $fields)
     {
@@ -162,15 +162,15 @@ class Doctrine_Export_Sqlite extends Doctrine_Export
         if ( ! $name) {
             throw new Doctrine_Export_Exception('no valid table name specified');
         }
-        
+
         if (empty($fields)) {
             throw new Doctrine_Export_Exception('no fields specified for table '.$name);
         }
         $queryFields = $this->getFieldDeclarationList($fields);
-        
+
         $autoinc = false;
         foreach($fields as $field) {
-            if (isset($field['autoincrement']) && $field['autoincrement'] || 
+            if (isset($field['autoincrement']) && $field['autoincrement'] ||
               (isset($field['autoinc']) && $field['autoinc'])) {
                 $autoinc = true;
                 break;
@@ -204,8 +204,8 @@ class Doctrine_Export_Sqlite extends Doctrine_Export
             }
         }
         return $query;
-        
-        
+
+
         /**
         try {
 
@@ -309,7 +309,7 @@ class Doctrine_Export_Sqlite extends Doctrine_Export
             $this->conn->exec('INSERT INTO ' . $sequenceName . ' (' . $seqcolName . ') VALUES (' . ($start-1) . ')');
             return true;
         } catch(Doctrine_Connection_Exception $e) {
-            // Handle error    
+            // Handle error
 
             try {
                 $result = $db->exec('DROP TABLE ' . $sequenceName);
@@ -332,7 +332,7 @@ class Doctrine_Export_Sqlite extends Doctrine_Export
 
         return 'DROP TABLE ' . $sequenceName;
     }
-    
+
     public function alterTableSql($name, array $changes, $check = false)
     {
         if ( ! $name) {
@@ -388,7 +388,7 @@ class Doctrine_Export_Sqlite extends Doctrine_Export
                     $oldFieldName = $fieldName;
                 }
                 $oldFieldName = $this->conn->quoteIdentifier($oldFieldName, true);
-                $query .= 'CHANGE ' . $oldFieldName . ' ' 
+                $query .= 'CHANGE ' . $oldFieldName . ' '
                         . $this->getDeclaration($fieldName, $field['definition']);
             }
         }
@@ -410,7 +410,61 @@ class Doctrine_Export_Sqlite extends Doctrine_Export
         }
 
         $name = $this->conn->quoteIdentifier($name, true);
-        
+
         return 'ALTER TABLE ' . $name . ' ' . $query;
+    }
+
+    /**
+     * Obtain DBMS specific SQL code portion needed to declare an integer type
+     * field to be used in statements like CREATE TABLE.
+     *
+     * @param string  $name   name the field to be declared.
+     * @param array  $field   associative array with the name of the properties
+     *                        of the field being declared as array indexes.
+     *                        Currently, the types of supported field
+     *                        properties are as follows:
+     *
+     *                       unsigned
+     *                        Boolean flag that indicates whether the field
+     *                        should be declared as unsigned integer if
+     *                        possible.
+     *
+     *                       default
+     *                        Integer value to be used as default for this
+     *                        field.
+     *
+     *                       notnull
+     *                        Boolean flag that indicates whether this field is
+     *                        constrained to not be set to null.
+     * @return string  DBMS specific SQL code portion that should be used to
+     *                 declare the specified field.
+     * @access protected
+     */
+    public function getIntegerDeclaration($name, array $field)
+    {
+        $default = $autoinc = '';
+        $type    = $this->conn->dataDict->getNativeDeclaration($field);
+
+        $autoincrement = isset($field['autoincrement']) && $field['autoincrement'];
+
+        if ($autoincrement) {
+            $autoinc = ' PRIMARY KEY AUTOINCREMENT';
+            $type    = 'INTEGER';
+        } elseif (array_key_exists('default', $field)) {
+            if ($field['default'] === '') {
+                $field['default'] = empty($field['notnull']) ? null : 0;
+            }
+            $default = ' DEFAULT ' . $this->conn->quote($field['default'], $field['type']);
+        } elseif (empty($field['notnull'])) {
+            $default = ' DEFAULT NULL';
+        }
+
+        $notnull  = (isset($field['notnull']) && $field['notnull']) ? ' NOT NULL' : '';
+
+        // sqlite does not support unsigned attribute for autoinremented fields
+        $unsigned = (isset($field['unsigned']) && $field['unsigned'] && !$autoincrement) ? ' UNSIGNED' : '';
+
+        $name = $this->conn->quoteIdentifier($name, true);
+        return $name . ' ' . $type . $unsigned . $default . $notnull . $autoinc;
     }
 }
