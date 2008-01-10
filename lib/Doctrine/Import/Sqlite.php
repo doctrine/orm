@@ -59,7 +59,7 @@ class Doctrine_Import_Sqlite extends Doctrine_Import
      */
     public function listTriggers($database = null)
     {
-
+        return $this->listTableTriggers(null);
     }
 
     /**
@@ -190,7 +190,24 @@ class Doctrine_Import_Sqlite extends Doctrine_Import
      */
     public function listTableTriggers($table)
     {
+        $query = "SELECT name FROM sqlite_master WHERE type='trigger' AND sql NOT NULL";
+        if (!is_null($table)) {
+            if ($this->conn->getAttribute(Doctrine::ATTR_PORTABILITY) & Doctrine::PORTABILITY_FIX_CASE) {
+                if ($this->conn->getAttribute(Doctrine::ATTR_FIELD_CASE) == CASE_LOWER) {
+                    $query.= ' AND LOWER(tbl_name)='.$db->quote(strtolower($table), 'text');
+                } else {
+                    $query.= ' AND UPPER(tbl_name)='.$db->quote(strtoupper($table), 'text');
+                }
+            } else {
+                $query.= ' AND tbl_name='.$db->quote($table, 'text');
+            }
+        }
+        $result = $this->conn->fetchColumn($query);
 
+        if ($this->conn->getAttribute(Doctrine::ATTR_PORTABILITY) & Doctrine::PORTABILITY_FIX_CASE) {
+            $result = array_map(($this->conn->getAttribute(Doctrine::ATTR_FIELD_CASE) == CASE_LOWER ? 'strtolower' : 'strtoupper'), $result);
+        }
+        return $result;
     }
 
     /**
