@@ -53,31 +53,25 @@ class Doctrine_Sequence_Sqlite extends Doctrine_Sequence
 
         } catch(Doctrine_Connection_Exception $e) {
             if ($onDemand && $e->getPortableCode() == Doctrine::ERR_NOSUCHTABLE) {
-                // Since we are creating the sequence on demand
-                // we know the first id = 1 so initialize the
-                // sequence at 2
-
                 try {
-                    $result = $this->conn->export->createSequence($seqName, 2);
+                    $this->conn->export->createSequence($seqName);
+                    return $this->nextId($seqName, false);
                 } catch(Doctrine_Exception $e) {
                     throw new Doctrine_Sequence_Exception('on demand sequence ' . $seqName . ' could not be created');
                 }
-                // First ID of a newly created sequence is 1
-                return 1;
             }
             throw $e;
         }
 
-        $value = $this->conn->getDbh()->lastInsertId();
+        $value = $this->lastInsertId();
 
         if (is_numeric($value)) {
             $query = 'DELETE FROM ' . $sequenceName . ' WHERE ' . $seqcolName . ' < ' . $value;
-            
-            $this->conn->exec($query);
-            /**
-            TODO: is the following needed ?
-            $this->warnings[] = 'nextID: could not delete previous sequence table values from '.$seq_name;
-            */
+            try {
+                $this->conn->exec($query);
+            } catch(Doctrine_Exception $e) {
+                throw new Doctrine_Sequence_Exception('could not delete previous sequence table values from ' . $seqName);
+            }
         }
         return $value;
     }
