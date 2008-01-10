@@ -30,7 +30,7 @@
  * @since       1.0
  * @version     $Revision$
  */
-class Doctrine_Query_TestCase extends Doctrine_UnitTestCase 
+class Doctrine_Query_TestCase extends Doctrine_UnitTestCase
 {
 
     public function testGetQueryHookResetsTheManuallyAddedDqlParts()
@@ -48,7 +48,7 @@ class Doctrine_Query_TestCase extends Doctrine_UnitTestCase
 
     public function testParseClauseSupportsArithmeticOperators()
     {
-    	$q = new Doctrine_Query();
+        $q = new Doctrine_Query();
 
         $str = $q->parseClause('2 + 3');
 
@@ -60,7 +60,7 @@ class Doctrine_Query_TestCase extends Doctrine_UnitTestCase
     }
     public function testParseClauseSupportsArithmeticOperatorsWithFunctions()
     {
-    	$q = new Doctrine_Query();
+        $q = new Doctrine_Query();
 
         $str = $q->parseClause('ACOS(2) + 3');
 
@@ -69,7 +69,7 @@ class Doctrine_Query_TestCase extends Doctrine_UnitTestCase
 
     public function testParseClauseSupportsArithmeticOperatorsWithParenthesis()
     {
-    	$q = new Doctrine_Query();
+        $q = new Doctrine_Query();
 
         $str = $q->parseClause('(3 + 3)*3');
 
@@ -82,7 +82,7 @@ class Doctrine_Query_TestCase extends Doctrine_UnitTestCase
 
     public function testParseClauseSupportsArithmeticOperatorsWithParenthesisAndFunctions()
     {
-    	$q = new Doctrine_Query();
+        $q = new Doctrine_Query();
 
         $str = $q->parseClause('(3 + 3)*ACOS(3)');
 
@@ -95,11 +95,11 @@ class Doctrine_Query_TestCase extends Doctrine_UnitTestCase
 
     public function testParseClauseSupportsComponentReferences()
     {
-    	$q = new Doctrine_Query();
+        $q = new Doctrine_Query();
         $q->from('User u')->leftJoin('u.Phonenumber p');
         $q->getQuery();
         //Doctrine::dump($q->getCachedForm(array('foo' => 'bar')));
-        $this->assertEqual($q->parseClause("CONCAT('u.name', u.name)"), "CONCAT('u.name', e.name)");
+        $this->assertEqual($q->parseClause("CONCAT('u.name', u.name)"), "'u.name' || e.name");
     }
 }
 class MyQuery extends Doctrine_Query

@@ -38,8 +38,8 @@ class Doctrine_Expression_TestCase extends Doctrine_UnitTestCase
 
     public function testSavingWithAnExpression()
     {
-        $e = new Doctrine_Expression("CONCAT('some', 'one')");
-        $this->assertEqual($e->getSql(), "CONCAT('some', 'one')");
+        $e = new Doctrine_Expression("'some' || 'one'");
+        $this->assertEqual($e->getSql(), "'some' || 'one'");
 
         $u = new User();
         $u->name = $e;
@@ -56,8 +56,7 @@ class Doctrine_Expression_TestCase extends Doctrine_UnitTestCase
 
     public function testExpressionParserSupportsFunctionComposition()
     {
-        $e = new Doctrine_Expression("SUBSTRING(CONCAT('some', 'one'), 0, 3)");
-        $this->assertEqual($e->getSql(), "SUBSTR(CONCAT('some', 'one'), 0, 3)");
+        $e = new Doctrine_Expression("SUBSTRING('some' || 'one', 0, 3)");
+        $this->assertEqual($e->getSql(), "SUBSTR('some' || 'one', 0, 3)");
     }
 }
-
