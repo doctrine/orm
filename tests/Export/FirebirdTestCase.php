@@ -30,9 +30,9 @@
  * @since       1.0
  * @version     $Revision$
  */
-class Doctrine_Export_Firebird_TestCase extends Doctrine_UnitTestCase 
+class Doctrine_Export_Firebird_TestCase extends Doctrine_UnitTestCase
 {
-    public function testCreateDatabaseDoesNotExecuteSql() 
+    public function testCreateDatabaseDoesNotExecuteSql()
     {
         try {
             $this->export->createDatabase('db');
@@ -41,7 +41,7 @@ class Doctrine_Export_Firebird_TestCase extends Doctrine_UnitTestCase
             $this->pass();
         }
     }
-    public function testDropDatabaseDoesNotExecuteSql() 
+    public function testDropDatabaseDoesNotExecuteSql()
     {
         try {
             $this->export->dropDatabase('db');
@@ -50,37 +50,37 @@ class Doctrine_Export_Firebird_TestCase extends Doctrine_UnitTestCase
             $this->pass();
         }
     }
-    public function testCreateTableSupportsAutoincPks() 
+    public function testCreateTableSupportsAutoincPks()
     {
         $name = 'mytable';
-        
+
         $fields  = array('id' => array('type' => 'integer', 'unsigned' => 1, 'autoincrement' => true));
 
         $this->export->createTable($name, $fields);
 
         $this->assertEqual($this->adapter->pop(), 'CREATE TRIGGER mytable_AUTOINCREMENT_PK FOR mytable ACTIVE BEFORE INSERT POSITION 0 AS BEGIN IF (NEW.id IS NULL OR NEW.id = 0) THEN NEW.id = GEN_ID(mytable_seq, 1) END');
     }
-    public function testCreateTableSupportsDefaultAttribute() 
+    public function testCreateTableSupportsDefaultAttribute()
     {
         $name = 'mytable';
         $fields  = array('name' => array('type' => 'char', 'length' => 10, 'default' => 'def'),
                          'type' => array('type' => 'integer', 'length' => 3, 'default' => 12)
                          );
-                         
+
         $options = array('primary' => array('name', 'type'));
         $this->export->createTable($name, $fields, $options);
 
         $this->assertEqual($this->adapter->pop(), 'CREATE TABLE mytable (name CHAR(10) DEFAULT \'def\', type INT DEFAULT 12, PRIMARY KEY(name, type))');
     }
-    public function testCreateTableSupportsMultiplePks() 
+    public function testCreateTableSupportsMultiplePks()
     {
         $name = 'mytable';
         $fields  = array('name' => array('type' => 'char', 'length' => 10),
                          'type' => array('type' => 'integer', 'length' => 3));
-                         
+
         $options = array('primary' => array('name', 'type'));
         $this->export->createTable($name, $fields, $options);
-        
-        $this->assertEqual($this->adapter->pop(), 'CREATE TABLE mytable (name CHAR(10), type INT, PRIMARY KEY(name, type))');
+
+        $this->assertEqual($this->adapter->pop(), 'CREATE TABLE mytable (name CHAR(10) DEFAULT NULL, type INT DEFAULT NULL, PRIMARY KEY(name, type))');
     }
 }
