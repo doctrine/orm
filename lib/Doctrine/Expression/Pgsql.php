@@ -84,17 +84,6 @@ class Doctrine_Expression_Pgsql extends Doctrine_Expression_Driver
     }
 
     /**
-     * Returns a series of strings concatinated
-     *
-     * concat() accepts an arbitrary number of parameters. Each parameter
-     * must contain an expression or an array with expressions.
-     *
-     * @param string|array(string) strings that will be concatinated.
-     * @return string
-     */
-
-
-    /**
      * PostgreSQLs AGE(<timestamp1> [, <timestamp2>]) function.
      *
      * @param string $timestamp1 timestamp to subtract from NOW()
@@ -129,19 +118,6 @@ class Doctrine_Expression_Pgsql extends Doctrine_Expression_Driver
      */
     public function to_char($time, $text) {
         return 'TO_CHAR(' . $time . ', ' . $text . ')';
-    }
-
-    /**
-     * PostgreSQLs CONCAT() function
-     *
-     * @param  an array of values
-     * @return string
-     */
-    public function concat()
-    {
-        $args = func_get_args();
-
-        return join(' || ' , $args);
     }
 
     /**

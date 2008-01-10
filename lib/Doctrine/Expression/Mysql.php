@@ -112,16 +112,17 @@ class Doctrine_Expression_Mysql extends Doctrine_Expression_Driver
     }
 
     /**
-     * Returns string to concatenate two or more string parameters
+     * Returns a series of strings concatinated
      *
-     * @param string $value1
-     * @param string $value2
-     * @param string $values...
-     * @return string to concatenate two strings
-     **/
-    function concat($value1, $value2)
+     * concat() accepts an arbitrary number of parameters. Each parameter
+     * must contain an expression or an array with expressions.
+     *
+     * @param string|array(string) strings that will be concatinated.
+     */
+    public function concat()
     {
         $args = func_get_args();
-        return 'CONCAT('.implode(', ', $args).')';
+
+        return 'CONCAT(' . join(', ', (array) $args) . ')';
     }
 }

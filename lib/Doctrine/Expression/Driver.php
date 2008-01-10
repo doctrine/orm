@@ -299,15 +299,16 @@ class Doctrine_Expression_Driver extends Doctrine_Connection_Module
      * Returns a series of strings concatinated
      *
      * concat() accepts an arbitrary number of parameters. Each parameter
-     * must contain an expression or an array with expressions.
+     * must contain an expression
      *
-     * @param string|array(string) strings that will be concatinated.
+     * @param string $arg1, $arg2 ... $argN     strings that will be concatinated.
+     * @return string
      */
     public function concat()
     {
         $args = func_get_args();
 
-        return 'CONCAT(' . join(', ', (array) $args) . ')';
+        return join(' || ' , $args);
     }
 
     /**
@@ -717,7 +718,7 @@ class Doctrine_Expression_Driver extends Doctrine_Connection_Module
     /**
      * sin
      *
-     * @param string $value 
+     * @param string $value
      * @return void
      */
     public function sin($value)
@@ -738,7 +739,7 @@ class Doctrine_Expression_Driver extends Doctrine_Connection_Module
     /**
      * cos
      *
-     * @param string $value 
+     * @param string $value
      * @return void
      * @author Jonathan H. Wage
      */
@@ -752,7 +753,7 @@ class Doctrine_Expression_Driver extends Doctrine_Connection_Module
      *
      * for all native RDBMS functions the function name itself is returned
      */
-    public function __call($m, $a) 
+    public function __call($m, $a)
     {
         if ($this->conn->getAttribute(Doctrine::ATTR_PORTABILITY) & Doctrine::PORTABILITY_EXPR) {
             throw new Doctrine_Expression_Exception('Unknown expression ' . $m);

@@ -33,22 +33,6 @@ Doctrine::autoload('Doctrine_Expression_Driver');
 class Doctrine_Expression_Oracle extends Doctrine_Expression_Driver
 {
     /**
-     * Returns a series of strings concatinated
-     *
-     * concat() accepts an arbitrary number of parameters. Each parameter
-     * must contain an expression
-     *
-     * @param string $arg1, $arg2 ... $argN     strings that will be concatinated.
-     * @return string
-     */
-    public function concat()
-    {
-        $args = func_get_args();
-
-        return join(' || ' , $args);
-    }
-
-    /**
      * return string to call a function to get a substring inside an SQL statement
      *
      * Note: Not SQL92, but common functionality.
