@@ -203,6 +203,7 @@ $query_tests->addTestCase(new Doctrine_Query_Where_TestCase());
 $query_tests->addTestCase(new Doctrine_Query_From_TestCase());
 $query_tests->addTestCase(new Doctrine_Query_Select_TestCase());
 $query_tests->addTestCase(new Doctrine_Query_JoinCondition_TestCase());
+$query_tests->addTestCase(new Doctrine_Query_JoinCondition2_TestCase());
 $query_tests->addTestCase(new Doctrine_Query_MultipleAggregateValue_TestCase());
 $query_tests->addTestCase(new Doctrine_Query_TestCase());
 $query_tests->addTestCase(new Doctrine_Query_MysqlSubquery_TestCase());
