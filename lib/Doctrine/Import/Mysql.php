@@ -103,9 +103,24 @@ class Doctrine_Import_Mysql extends Doctrine_Import
      * @param string $table     database table name
      * @return array
      */
-    public function listTableForeignKeys($table) 
+    public function listTableForeignKeys($table)
     {
-        $sql = 'SHOW CREATE TABLE ' . $this->conn->quoteIdentifier($table, true);    
+        $sql = 'SHOW CREATE TABLE ' . $this->conn->quoteIdentifier($table, true);
+        $definition = $this->conn->fetchOne($sql);
+        if (!empty($definition)) {
+            $pattern = '/\bCONSTRAINT\s+([^\s]+)\s+FOREIGN KEY\b/i';
+            if (preg_match_all($pattern, str_replace('`', '', $definition), $matches) > 1) {
+                foreach ($matches[1] as $constraint) {
+                    $result[$constraint] = true;
+                }
+            }
+        }
+
+        if ($this->conn->getAttribute(Doctrine::ATTR_PORTABILITY) & Doctrine::PORTABILITY_FIX_CASE) {
+            $result = array_change_key_case($result, $this->conn->getAttribute(Doctrine::ATTR_FIELD_CASE));
+        }
+
+        return $result;
     }
 
     /**
@@ -145,7 +160,6 @@ class Doctrine_Import_Mysql extends Doctrine_Import
                           );
             $columns[$val['field']] = $description;
         }
-
 
         return $columns;
     }
