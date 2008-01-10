@@ -1,4 +1,4 @@
-f<?php
+<?php
 error_reporting(E_ALL | E_STRICT);
 ini_set('max_execution_time', 900);
 ini_set("date.timezone", "GMT+0");
@@ -33,7 +33,7 @@ $driver = new GroupTest("Driver tests", 'driver');
 $driver->addTestCase(new Doctrine_Connection_Pgsql_TestCase());
 $driver->addTestCase(new Doctrine_Connection_Oracle_TestCase());
 $driver->addTestCase(new Doctrine_Connection_Sqlite_TestCase());
-$driver->addTestCase(new Doctrine_Connection_Mssql_TestCase()); 
+$driver->addTestCase(new Doctrine_Connection_Mssql_TestCase());
 $driver->addTestCase(new Doctrine_Connection_Mysql_TestCase());
 $driver->addTestCase(new Doctrine_Connection_Firebird_TestCase());
 $driver->addTestCase(new Doctrine_Connection_Informix_TestCase());
