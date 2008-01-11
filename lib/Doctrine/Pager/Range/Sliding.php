@@ -19,7 +19,7 @@
  * and is licensed under the LGPL. For more information, see
  * <http://www.phpdoctrine.com>.
  */
- 
+
 Doctrine::autoload('Doctrine_Pager_Range');
 
 /**
@@ -81,7 +81,12 @@ class Doctrine_Pager_Range_Sliding extends Doctrine_Pager_Range
      */
     protected function _setChunkLength($chunkLength)
     {
-        $this->_chunkLength = $chunkLength;
+        $chunkLength = (int) $chunkLength;
+        if (!$chunkLength) {
+            $chunkLength = 1;
+        } else {
+            $this->_chunkLength = $chunkLength;
+        }
     }
 
 
@@ -95,25 +100,29 @@ class Doctrine_Pager_Range_Sliding extends Doctrine_Pager_Range
     public function rangeAroundPage()
     {
         $pager = $this->getPager();
-        $page = $pager->getPage();
+        $page  = $pager->getPage();
+        $pages = $pager->getLastPage();
 
-        // Define initial assignments for StartPage and EndPage
-        $startPage = $page - floor($this->getChunkLength() - 1) / 2;
-        $endPage = ($startPage + $this->getChunkLength()) - 1;
-
-        // Check for EndPage out-range
-        if ($endPage > $pager->getLastPage()) {
-            $offset = $endPage - $pager->getLastPage();
-
-            $endPage = $pager->getLastPage();
-            $startPage = $startPage - $offset;
+        $chunk = $this->getChunkLength();
+        if ($chunk > $pages) {
+            $chunk = $pages;
         }
 
-        // Check for StartPage out-range
-        if ($startPage < $pager->getFirstPage()) {
-            $startPage = $pager->getFirstPage();
+        $chunkStart = $page - (floor($chunk / 2));
+        $chunkEnd   = $page + (ceil($chunk / 2)-1);
+
+        if ($chunkStart < 1) {
+            $adjust = 1 - $chunkStart;
+            $chunkStart = 1;
+            $chunkEnd = $chunkEnd + $adjust;
+        }
+        if ($chunkEnd > $pages) {
+            $adjust = $chunkEnd - $pages;
+            $chunkStart = $chunkStart - $adjust;
+            $chunkEnd = $pages;
         }
 
-        return range($startPage, $endPage);
+        return range($chunkStart, $chunkEnd);
+
     }
 }
