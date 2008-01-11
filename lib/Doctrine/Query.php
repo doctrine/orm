@@ -481,7 +481,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable, Seria
     public function processPendingFields($componentAlias)
     {
         $tableAlias = $this->getTableAlias($componentAlias);
-        $table      = $this->_queryComponents[$componentAlias]['table'];
+        $table = $this->_queryComponents[$componentAlias]['table'];
 
         if ( ! isset($this->_pendingFields[$componentAlias])) {
             return;
@@ -1610,8 +1610,8 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable, Seria
                     $this->_pendingJoinConditions[$componentAlias] = $joinCondition;
                 }
             }
-            if ($loadFields) {
 
+            if ($loadFields) {
                 $restoreState = false;
                 // load fields if necessary
                 if ($loadFields && empty($this->_dqlParts['select'])) {

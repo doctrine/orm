@@ -61,7 +61,6 @@ class Doctrine_Hydrator extends Doctrine_Hydrator_Abstract
     public function hydrateResultSet($stmt, $tableAliases, $hydrationMode = null)
     {
         //$s = microtime(true);
-        
         $this->_tableAliases = $tableAliases;
         
         if ($hydrationMode == Doctrine::HYDRATE_NONE) {
@@ -284,7 +283,7 @@ class Doctrine_Hydrator extends Doctrine_Hydrator_Abstract
     protected function _gatherRowData(&$data, &$cache, &$id, &$nonemptyComponents)
     {
         $rowData = array();
-
+        
         foreach ($data as $key => $value) {
             // Parse each column name only once. Cache the results.
             if ( ! isset($cache[$key])) {

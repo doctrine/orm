@@ -910,7 +910,7 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
      * @return Doctrine_Record
      */
     public function set($fieldName, $value, $load = true)
-    {        
+    {
         if (isset($this->_data[$fieldName])) {            
             if ($value instanceof Doctrine_Record) {
                 $type = $this->_table->getTypeOf($fieldName);
