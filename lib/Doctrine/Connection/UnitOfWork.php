@@ -73,7 +73,7 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
     {
         $tree = array();
         foreach ($tables as $k => $table) {
-            if ( ! ($table instanceof Doctrine_Mapper)) {
+            if ( ! ($table instanceof Doctrine_Mapper_Abstract)) {
                 $table = $this->conn->getMapper($table);
             }
             $nm     = $table->getComponentName();
@@ -281,7 +281,7 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
      * @return boolean      true on success, false on failure
      * @todo Move to Doctrine_Table (which will become Doctrine_Mapper).
      */
-    public function delete(Doctrine_Record $record)
+    /*public function delete(Doctrine_Record $record)
     {
         if ( ! $this->_autoflush) {
             return true;
@@ -331,7 +331,7 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
         $this->conn->commit();
 
         return true;
-    }
+    }*/
     
     /**
      * @todo Description. See also the todo for deleteMultiple().
@@ -356,6 +356,8 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
     }*/
 
     /**
+     * DOESNT SEEM TO BE USED ANYWHERE. 
+     *
      * deleteMultiple
      * deletes all records from the pending delete list
      *
@@ -364,7 +366,7 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
      *       queries itself and sometimes it leaves the sql construction to Connection.
      *       This should be changed.
      */
-    public function deleteMultiple(array $records)
+    /*public function deleteMultiple(array $records)
     {        
         foreach ($this->delete as $name => $deletes) {
             $record = false;
@@ -414,7 +416,7 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
                 }
             }
         }
-    }
+    }*/
 
     /**
      * saveRelated
@@ -498,7 +500,7 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
      * @throws PDOException         if something went wrong at database level
      * @return void
      */
-    public function deleteComposites(Doctrine_Record $record)
+    /*public function deleteComposites(Doctrine_Record $record)
     {
         foreach ($record->getTable()->getRelations() as $fk) {
             if ($fk->isComposite()) {
@@ -509,7 +511,7 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
                 }
             }
         }
-    }
+    }*/
 
     /**
      * saveAll
@@ -554,22 +556,19 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
         //echo "<br /><br />flushin all.<br /><br />";
         // get the flush tree
         $tree = $this->buildFlushTree($this->conn->getMappers());
-        //foreach ($tree as $name) echo $name . "<br />";
 
         // save all records
         foreach ($tree as $name) {
             $mapper = $this->conn->getMapper($name);
-
             foreach ($mapper->getRepository() as $record) {
                 //echo $record->getOid() . "<br />";
-                $mapper->save($record);
+                $mapper->saveSingleRecord($record);
             }
         }
 
         // save all associations
         foreach ($tree as $name) {
             $mapper = $this->conn->getMapper($name);
-
             foreach ($mapper->getRepository() as $record) {
                 $mapper->saveAssociations($record);
             }

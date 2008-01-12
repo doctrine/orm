@@ -532,11 +532,11 @@ abstract class Doctrine_Query_Abstract
         $tableAlias = $this->getSqlTableAlias($componentAlias, $table->getTableName());
         $customJoins = $this->_conn->getMapper($componentName)->getCustomJoins();
         $sql = '';
-        foreach ($customJoins as $componentName) {
+        foreach ($customJoins as $componentName => $joinType) {
             $joinedTable = $this->_conn->getTable($componentName);
             $joinedAlias = $componentAlias . '.' . $componentName;
             $joinedTableAlias = $this->getSqlTableAlias($joinedAlias, $joinedTable->getTableName());
-            $sql .= ' LEFT JOIN ' . $this->_conn->quoteIdentifier($joinedTable->getTableName())
+            $sql .= " $joinType JOIN " . $this->_conn->quoteIdentifier($joinedTable->getTableName())
                     . ' ' . $this->_conn->quoteIdentifier($joinedTableAlias) . ' ON ';
             
             foreach ($table->getIdentifierColumnNames() as $column) {
@@ -556,23 +556,16 @@ abstract class Doctrine_Query_Abstract
      *
      * @return string  The created SQL snippet.
      */
-    protected function _createDiscriminatorSql()
-    {
+    protected function _createDiscriminatorConditionSql()
+    {        
         $array = array();
         foreach ($this->_queryComponents as $componentAlias => $data) {
-            $tableAlias = $this->getSqlTableAlias($componentAlias);
-            //echo $data['table']->getComponentName() . " -- ";
-            /*if (!isset($data['mapper'])) {
-                //echo $data['table']->getComponentName();
-                echo $this->getDql();
-            }*/
-            /*if ($data['mapper']->getComponentName() != $data['table']->getComponentName()) {
-                //echo $this->getDql() . "<br />";
-            }*/
-            //echo $data['mapper']->getComponentName() . "_<br />";
-            //var_dump($data['mapper']->getDiscriminatorColumn($data['mapper']->getComponentName()));
-            
-            $array[$tableAlias][] = $data['mapper']->getDiscriminatorColumn($data['mapper']->getComponentName());
+            $sqlTableAlias = $this->getSqlTableAlias($componentAlias);
+            if ( ! $data['mapper'] instanceof Doctrine_Mapper_SingleTable) {
+                $array[$sqlTableAlias][] = array();
+            } else {
+                $array[$sqlTableAlias][] = $data['mapper']->getDiscriminatorColumn();
+            }
         }
         //var_dump($array);
         // apply inheritance maps

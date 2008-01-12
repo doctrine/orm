@@ -85,7 +85,7 @@ class Doctrine_Query_MultiJoin2_TestCase extends Doctrine_UnitTestCase
                     ->execute();
             // Test that accessing a loaded (but empty) relation doesnt trigger an extra query
             $this->assertEqual($queryCount + 1, $this->connection->count());
-
+            $this->assertEqual(0, count($categories[0]->subCategories));
             $categories[0]->subCategories;
             $this->assertEqual($queryCount + 1, $this->connection->count());
         } catch (Doctrine_Exception $e) {

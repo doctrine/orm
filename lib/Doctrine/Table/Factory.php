@@ -200,11 +200,9 @@ class Doctrine_Table_Factory
         $table->setOption('declaringClass', $class);
 
         // set the table definition for the given tree implementation
-        if ($table->isTree()) {
+        /*if ($table->isTree()) {
             $table->getTree()->setTableDefinition();
-        }
-
-        $table->setColumnCount(count($table->getColumns()));
+        }*/
         
         $tableName = $table->getOption('tableName');
         if ( ! isset($tableName)) {
@@ -217,9 +215,9 @@ class Doctrine_Table_Factory
         $record->setUp();
         
         // if tree, set up tree relations
-        if ($table->isTree()) {
+        /*if ($table->isTree()) {
             $table->getTree()->setUp();
-        }
+        }*/
         
         return $table;
     }
@@ -304,8 +302,6 @@ class Doctrine_Table_Factory
                     $table->setIdentifier('id');
                     $table->setIdentifierType(Doctrine::IDENTIFIER_AUTOINC);
                 }
-                $currentCount = $table->getColumnCount();
-                $table->setColumnCount(++$currentCount);
                 break;
             case 1:
                 foreach ($table->getIdentifier() as $pk) {

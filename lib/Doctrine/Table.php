@@ -437,6 +437,11 @@ class Doctrine_Table extends Doctrine_Configurable implements Serializable
             $fieldName = $parts[0];
         }
         $name = strtolower($parts[0]);
+        
+        if (isset($this->_columnNames[$fieldName])) {
+            return;
+        }
+        
         if ($prepend) {
             $this->_columnNames = array_merge(array($fieldName => $name), $this->_columnNames);
             $this->_fieldNames = array_merge(array($name => $fieldName), $this->_fieldNames);
@@ -493,6 +498,8 @@ class Doctrine_Table extends Doctrine_Configurable implements Serializable
         if (isset($options['default'])) {
             $this->hasDefaultValues = true;
         }
+        
+        $this->columnCount++;
     }
     
     /**
@@ -632,11 +639,6 @@ class Doctrine_Table extends Doctrine_Configurable implements Serializable
     public function getColumnCount()
     {
         return $this->columnCount;
-    }
-    
-    public function setColumnCount($count)
-    {
-        $this->columnCount = $count;
     }
 
     /**

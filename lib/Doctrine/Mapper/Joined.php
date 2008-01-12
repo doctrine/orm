@@ -1,7 +1,8 @@
 <?php 
 
-class Doctrine_Mapper_Joined extends Doctrine_Mapper
+class Doctrine_Mapper_Joined extends Doctrine_Mapper_Abstract
 {
+    protected $_columnNameFieldNameMap = array();
     
     /**
      * inserts a record into database
@@ -10,7 +11,7 @@ class Doctrine_Mapper_Joined extends Doctrine_Mapper
      * @return boolean
      * @todo Move to Doctrine_Table (which will become Doctrine_Mapper).
      */
-    public function insert(Doctrine_Record $record)
+    protected function _doInsert(Doctrine_Record $record)
     {
         $table = $this->_table;
                     
@@ -19,19 +20,39 @@ class Doctrine_Mapper_Joined extends Doctrine_Mapper
 
         $classes = $table->getOption('joinedParents');
         array_unshift($classes, $component);
-
-        foreach (array_reverse($classes) as $k => $parent) {
-            if ($k === 0) {
-                $rootRecord = new $parent();
-                $rootRecord->merge($dataSet[$parent]);
-                parent::insert($rootRecord);
-                $record->assignIdentifier($rootRecord->identifier());
-            } else {
-                foreach ((array) $rootRecord->identifier() as $id => $value) {
-                    $dataSet[$parent][$id] = $value;
+        
+        try {
+            $this->_conn->beginInternalTransaction();
+            $identifier = null;
+            foreach (array_reverse($classes) as $k => $parent) {
+                $parentTable = $this->_conn->getTable($parent);
+                if ($k == 0) {
+                    $identifierType = $parentTable->getIdentifierType();
+                    if ($identifierType == Doctrine::IDENTIFIER_AUTOINC) {
+                        $this->_conn->insert($parentTable, $dataSet[$parent]);
+                        $identifier = $this->_conn->sequence->lastInsertId();
+                    } else if ($identifierType == Doctrine::IDENTIFIER_SEQUENCE) {
+                        $seq = $record->getTable()->getOption('sequenceName');
+                        if ( ! empty($seq)) {
+                            $identifier = $this->_conn->sequence->nextId($seq);
+                            $dataSet[$parent][$parentTable->getIdentifier()] = $identifier;
+                            $this->_conn->insert($parentTable, $dataSet[$parent]);
+                        }
+                    } else {
+                        throw new Doctrine_Mapper_Exception("Unsupported identifier type '$identifierType'.");
+                    }
+                    $record->assignIdentifier($identifier);
+                } else {
+                    foreach ((array) $record->identifier() as $id => $value) {
+                        $dataSet[$parent][$id] = $value;
+                    }
+                    $this->_conn->insert($parentTable, $dataSet[$parent]);
                 }
-                $this->_conn->insert($this->_conn->getTable($parent), $dataSet[$parent]);
             }
+            $this->_conn->commit();
+        } catch (Exception $e) {
+            $this->_conn->rollback();
+            throw $e;
         }
 
         return true;
@@ -44,39 +65,58 @@ class Doctrine_Mapper_Joined extends Doctrine_Mapper
      * @return boolean                  whether or not the update was successful
      * @todo Move to Doctrine_Table (which will become Doctrine_Mapper).
      */
-    public function update(Doctrine_Record $record)
+    protected function _doUpdate(Doctrine_Record $record)
     {
-        $event = new Doctrine_Event($record, Doctrine_Event::RECORD_UPDATE);
-        $record->preUpdate($event);
         $table = $this->_table;
-        $this->getRecordListener()->preUpdate($event);
+        $identifier = $record->identifier();                     
+        $dataSet = $this->_formatDataSet($record);
+        $component = $table->getComponentName();
+        $classes = $table->getOption('joinedParents');
+        array_unshift($classes, $component);
 
-        if ( ! $event->skipOperation) {
-            $identifier = $record->identifier();                     
-            $dataSet = $this->_formatDataSet($record);
-            $component = $table->getComponentName();
-            $classes = $table->getOption('joinedParents');
-            array_unshift($classes, $component);
-
-            foreach ($record as $field => $value) {
-                if ($value instanceof Doctrine_Record) {
-                    if ( ! $value->exists()) {
-                        $value->save();
-                    }
-                    $record->set($field, $value->getIncremented());
+        foreach ($record as $field => $value) {
+            if ($value instanceof Doctrine_Record) {
+                if ( ! $value->exists()) {
+                    $value->save();
                 }
+                $record->set($field, $value->getIncremented());
             }
+        }
 
-            foreach (array_reverse($classes) as $class) {
-                $parentTable = $this->_conn->getTable($class);
-                $this->_conn->update($parentTable, $dataSet[$class], $identifier);
-            }
-            
-            $record->assignIdentifier(true);
+        foreach (array_reverse($classes) as $class) {
+            $parentTable = $this->_conn->getTable($class);
+            $this->_conn->update($parentTable, $dataSet[$class], $identifier);
         }
         
-        $this->getRecordListener()->postUpdate($event);
-        $record->postUpdate($event);
+        $record->assignIdentifier(true);
+
+        return true;
+    }
+    
+
+    protected function _doDelete(Doctrine_Record $record, Doctrine_Connection $conn)
+    {
+        try {
+            $table = $this->_table;
+            $conn->beginInternalTransaction();
+            $this->deleteComposites($record);
+
+            $record->state(Doctrine_Record::STATE_TDIRTY);
+
+            foreach ($table->getOption('joinedParents') as $parent) {
+                $parentTable = $conn->getTable($parent);
+                $conn->delete($parentTable, $record->identifier());
+            }
+
+            $conn->delete($table, $record->identifier());
+            $record->state(Doctrine_Record::STATE_TCLEAN);
+
+            $this->removeRecord($record);
+            $conn->commit();
+        } catch (Exception $e) {
+            $conn->rollback();
+            throw $e;
+        }
 
         return true;
     }
@@ -87,13 +127,33 @@ class Doctrine_Mapper_Joined extends Doctrine_Mapper
      */
     public function getCustomJoins()
     {
-        return $this->_table->getOption('joinedParents');
+        $customJoins = array();
+        foreach ($this->_table->getOption('joinedParents') as $parentClass) {
+            $customJoins[$parentClass] = 'INNER';
+        }
+        foreach ((array)$this->_table->getOption('subclasses') as $subClass) {
+            if ($subClass != $this->_domainClassName) {
+                $customJoins[$subClass] = 'LEFT';
+            }
+        }
+        return $customJoins;
+    }
+    
+    public function getCustomFields()
+    {
+        $fields = array();
+        if ($this->_table->getOption('subclasses')) {
+            foreach ($this->_table->getOption('subclasses') as $subClass) {
+                $fields = array_merge($this->_conn->getTable($subClass)->getFieldNames(), $fields);
+            }
+        }
+        return array_unique($fields);
     }
     
     /**
      *
      */
-    public function getDiscriminatorColumn($domainClassName)
+    public function getDiscriminatorColumn()
     {
         $joinedParents = $this->_table->getOption('joinedParents');
         if (count($joinedParents) <= 0) {
@@ -101,7 +161,7 @@ class Doctrine_Mapper_Joined extends Doctrine_Mapper
         } else {
             $inheritanceMap = $this->_conn->getTable(array_pop($joinedParents))->getOption('inheritanceMap');
         }
-        return isset($inheritanceMap[$domainClassName]) ? $inheritanceMap[$domainClassName] : array();
+        return isset($inheritanceMap[$this->_domainClassName]) ? $inheritanceMap[$this->_domainClassName] : array();
     }
     
     /**
@@ -115,12 +175,65 @@ class Doctrine_Mapper_Joined extends Doctrine_Mapper
         
         $fieldNames = $this->_table->getFieldNames();
         foreach ($this->_table->getOption('joinedParents') as $parent) {
-            $fieldNames = array_merge($this->_conn->getTable($parent)->getFieldNames(),
-                    $fieldNames);
+            $parentTable = $this->_conn->getTable($parent);
+            $fieldNames = array_merge($parentTable->getFieldNames(), $fieldNames);
         }
-        $this->_fieldNames = $fieldNames;
+        $this->_fieldNames = array_unique($fieldNames);
         
         return $fieldNames;
+    }
+    
+    public function getFieldName($columnName)
+    {
+        if (isset($this->_columnNameFieldNameMap[$columnName])) {
+            return $this->_columnNameFieldNameMap[$columnName];
+        }
+        
+        if ($this->_table->hasColumn($columnName)) {
+            $this->_columnNameFieldNameMap[$columnName] = $this->_table->getFieldName($columnName);
+            return $this->_columnNameFieldNameMap[$columnName];
+        }
+        
+        foreach ($this->_table->getOption('joinedParents') as $parentClass) {
+            $parentTable = $this->_conn->getTable($parentClass);
+            if ($parentTable->hasColumn($columnName)) {
+                $this->_columnNameFieldNameMap[$columnName] = $parentTable->getFieldName($columnName);
+                return $this->_columnNameFieldNameMap[$columnName];
+            }
+        }
+        
+        foreach ((array)$this->_table->getOption('subclasses') as $subClass) {
+            $subTable = $this->_conn->getTable($subClass);
+            if ($subTable->hasColumn($columnName)) {
+                $this->_columnNameFieldNameMap[$columnName] = $subTable->getFieldName($columnName);
+                return $this->_columnNameFieldNameMap[$columnName];
+            }
+        }
+        
+        throw new Doctrine_Mapper_Exception("No field name found for column name '$columnName'.");
+    }
+    
+    public function getOwningTable($fieldName)
+    {
+        if ($this->_table->hasField($fieldName)) {
+            return $this->_table;
+        }
+        
+        foreach ($this->_table->getOption('joinedParents') as $parentClass) {
+            $parentTable = $this->_conn->getTable($parentClass);
+            if ($parentTable->hasField($fieldName)) {
+                return $parentTable;
+            }
+        }
+        
+        foreach ((array)$this->_table->getOption('subclasses') as $subClass) {
+            $subTable = $this->_conn->getTable($subClass);
+            if ($subTable->hasField($fieldName)) {
+                return $subTable;
+            }
+        }
+        
+        throw new Doctrine_Mapper_Exception("Unable to find owner of field '$fieldName'.");
     }
     
     /**

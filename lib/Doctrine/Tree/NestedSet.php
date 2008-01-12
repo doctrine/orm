@@ -319,39 +319,4 @@ class Doctrine_Tree_NestedSet extends Doctrine_Tree implements Doctrine_Tree_Int
         $this->_baseQuery = $this->_createBaseQuery();
     }
 
-    /**
-     * Enter description here...
-     *
-     * @param unknown_type $graph
-     */
-    /*
-    public function computeLevels($tree)
-    {
-        $right = array();
-        $isArray = is_array($tree);
-        $rootColumnName = $this->getAttribute('rootColumnName');
-        
-        for ($i = 0, $count = count($tree); $i < $count; $i++) {
-            if ($rootColumnName && $i > 0 && $tree[$i][$rootColumnName] != $tree[$i-1][$rootColumnName]) {
-                $right = array();
-            }
-            
-            if (count($right) > 0) {
-                while (count($right) > 0 && $right[count($right)-1] < $tree[$i]['rgt']) {
-                    //echo count($right);
-                    array_pop($right);
-                }
-            }
-     
-            if ($isArray) {
-                $tree[$i]['level'] = count($right);
-            } else {
-                $tree[$i]->getNode()->setLevel(count($right));
-            }
-    
-            $right[] = $tree[$i]['rgt'];
-        }
-        return $tree;
-    }
-    */
 }

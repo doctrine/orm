@@ -326,11 +326,6 @@ class Doctrine_Transaction extends Doctrine_Connection_Module
     public function rollback($savepoint = null)
     {
         if ($this->_nestingLevel == 0) {
-            /*try {
-                throw new Doctrine_Transaction_Exception("Rollback failed. There is no active transaction.");
-            } catch (Exception $e) {
-                echo $e->getTraceAsString() . "<br />";
-            }*/
             throw new Doctrine_Transaction_Exception("Rollback failed. There is no active transaction.");
         }
         

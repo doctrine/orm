@@ -47,7 +47,7 @@ class Doctrine_Sequence_Pgsql extends Doctrine_Sequence
         $query = "SELECT NEXTVAL('" . $sequenceName . "')";
         try {
             $result = (int) $this->conn->fetchOne($query);
-        } catch(Doctrine_Connection_Exception $e) {
+        } catch (Doctrine_Connection_Exception $e) {
             if ($onDemand && $e->getPortableCode() == Doctrine::ERR_NOSUCHTABLE) {
 
                 try {
@@ -70,6 +70,7 @@ class Doctrine_Sequence_Pgsql extends Doctrine_Sequence
      * @param   string  name of the table into which a new row was inserted
      * @param   string  name of the field into which a new row was inserted
      * @return integer      the autoincremented id
+     * @todo Why not use $this->conn->getDbh()->lastInsertId($sequenceName) ?
      */
     public function lastInsertId($table = null, $field = null)
     {

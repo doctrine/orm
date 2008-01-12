@@ -140,6 +140,40 @@ class Doctrine_Inheritance_Joined_TestCase extends Doctrine_UnitTestCase
         $this->assertEqual('Billy the Kid', $superManager->gosutitle);
         $this->assertEqual(4, $superManager->type);
     }
+    
+    public function testDqlQueryJoinsTransparentlyAcrossParents()
+    {
+        $this->_createManager();
+        $this->conn->getMapper('CTI_Manager')->clear();
+        
+        $query = $this->conn->createQuery();
+        $query->parseQuery("SELECT m.* FROM CTI_Manager m");
+        $manager = $query->execute()->getFirst();
+        
+        $this->assertTrue($manager instanceof CTI_Manager);
+        $this->assertEqual(1, $manager->id);
+        $this->assertEqual(80000, $manager->salary);
+        $this->assertEqual('John Smith', $manager->name);
+        $this->assertEqual(2, $manager->type);
+    }
+    
+    public function testQueryingBaseClassOuterJoinsSubClassesAndReturnsSubclassInstances()
+    {
+        $this->_createManager();
+        $this->conn->getMapper('CTI_Manager')->clear();
+        $this->conn->getMapper('CTI_User')->clear();
+        
+        $query = $this->conn->createQuery();
+        $query->parseQuery("SELECT u.* FROM CTI_User u");
+        //echo $query->getSql();
+        $user = $query->execute()->getFirst();
+        
+        $this->assertTrue($user instanceof CTI_Manager);
+        $this->assertEqual(1, $user->id);
+        $this->assertEqual(80000, $user->salary);
+        $this->assertEqual('John Smith', $user->name);
+        $this->assertEqual(2, $user->type);
+    }
 }
 
 
@@ -152,7 +186,15 @@ class CTI_User extends Doctrine_Record
                       'CTI_Manager' => array('type' => 2),
                       'CTI_Customer' => array('type' => 3),
                       'CTI_SuperManager' => array('type' => 4))
-        );
+        );/*
+        $class->setInheritanceType(Doctrine::INHERITANCETYPE_JOINED, array(
+                'discriminatorColumn' => 'type',
+                'map' => array(1 => 'CTI_User', 2 => 'CTI_Manager', 3 => 'CTI_Customer',
+                               4 => 'CTI_SuperManager')
+                ));
+        $class->setDiscriminatorValue(1);
+        $class->setInheritanceOption('fetchType', 'explicit');
+        */
         $this->setTableName('cti_user');
         $this->hasColumn('cti_id as id', 'integer', 4, array('primary' => true, 'autoincrement' => true));
         $this->hasColumn('cti_foo as foo', 'integer', 4);

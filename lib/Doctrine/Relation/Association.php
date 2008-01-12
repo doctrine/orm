@@ -107,7 +107,10 @@ class Doctrine_Relation_Association extends Doctrine_Relation
     public function fetchRelatedFor(Doctrine_Record $record)
     {
         $id = $record->getIncremented();
+        //var_dump($id);
+        //echo "<br /><br />";
         if (empty($id) || ! $this->_foreignMapper->getAttribute(Doctrine::ATTR_LOAD_REFERENCES)) {
+            //echo "here" . $this->_foreignMapper->getAttribute(Doctrine::ATTR_LOAD_REFERENCES);
             $coll = new Doctrine_Collection($this->getForeignComponentName());
         } else {
             $query = Doctrine_Query::create()->parseQuery($this->getRelationDql(1));

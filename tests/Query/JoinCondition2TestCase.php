@@ -74,7 +74,7 @@ class Doctrine_Query_JoinCondition2_TestCase extends Doctrine_UnitTestCase
 
         // Should only find zYne
         $this->assertEqual($rs->count(), 1);
-
+        
         // Grab the number of runned queries
         $queryCount = $this->connection->count();
 

@@ -58,6 +58,16 @@ class Doctrine_Inheritance_SingleTable_TestCase extends Doctrine_UnitTestCase
             $this->fail("Saving record in single table inheritance failed: " . $e->getMessage());
         }
     }
+    
+    public function testQuery()
+    {
+        //$this->_createManager();
+        $query = $this->conn->createQuery();
+        $query->select("m.*")->from("STI_Manager m");
+        //echo $query->getSql();
+        //$managers = $query->execute();
+        
+    }
 }
 
 

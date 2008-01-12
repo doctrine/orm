@@ -101,6 +101,27 @@ class Doctrine_Query_TestCase extends Doctrine_UnitTestCase
         //Doctrine::dump($q->getCachedForm(array('foo' => 'bar')));
         $this->assertEqual($q->parseClause("CONCAT('u.name', u.name)"), "'u.name' || e.name");
     }
+    
+    public function testUsingDuplicateClassAliasThrowsException()
+    {
+        $q = new Doctrine_Query();
+        $q->from('User u')->leftJoin('u.Phonenumber u');
+        try {
+            $q->getSqlQuery();
+            $this->fail();
+        } catch (Doctrine_Query_Exception $e) {
+            $this->pass();
+        }
+        
+        $q = new Doctrine_Query();
+        $q->parseDqlQuery('FROM User u, u.Phonenumber u');
+        try {
+            $q->getSqlQuery();
+            $this->fail();
+        } catch (Doctrine_Query_Exception $e) {
+            $this->pass();
+        }
+    }
 }
 class MyQuery extends Doctrine_Query
 {
