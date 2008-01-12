@@ -18,7 +18,7 @@ class Doctrine_Query_Production_QueryLanguage extends Doctrine_Query_Production
                 $this->DeleteStatement();
             break;
             default:
-                $this->_parser->syntaxError();
+                $this->_parser->logError();
         }
     }
 }

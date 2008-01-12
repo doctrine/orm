@@ -50,14 +50,6 @@ final class Doctrine_Query_Token
     const T_SQRT                = 141;
     const T_MOD                 = 142;
     const T_SIZE                = 143;
-    const T_CURRENT_DATE        = 144;
-    const T_CURRENT_TIMESTAMP   = 145;
-    const T_CURRENT_TIME        = 146;
-    const T_SUBSTRING           = 147;
-    const T_CONCAT              = 148;
-    const T_TRIM                = 149;
-    const T_LOWER               = 150;
-    const T_UPPER               = 151;
 
     private function __construct() {}
 }
