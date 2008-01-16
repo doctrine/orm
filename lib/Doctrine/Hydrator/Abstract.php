@@ -93,6 +93,47 @@ abstract class Doctrine_Hydrator_Abstract extends Doctrine_Locator_Injectable
     {
         return $this->_queryComponents;
     }
+    
+    /**
+     * hasAliasDeclaration
+     * whether or not this object has a declaration for given component alias
+     *
+     * @param string $componentAlias    the component alias the retrieve the declaration from
+     * @return boolean
+     */
+    public function hasAliasDeclaration($componentAlias)
+    {
+        return isset($this->_queryComponents[$componentAlias]);
+    }
+    
+    /**
+     * getAliasDeclaration
+     * get the declaration for given component alias
+     *
+     * @param string $componentAlias    the component alias the retrieve the declaration from
+     * @return array                    the alias declaration
+     * @deprecated
+     */
+    public function getAliasDeclaration($componentAlias)
+    {
+        return $this->getQueryComponent($componentAlias);
+    }
+
+    /**
+     * getQueryComponent
+     * get the declaration for given component alias
+     *
+     * @param string $componentAlias    the component alias the retrieve the declaration from
+     * @return array                    the alias declaration
+     */
+    public function getQueryComponent($componentAlias)
+    {
+        if ( ! isset($this->_queryComponents[$componentAlias])) {
+            throw new Doctrine_Query_Exception('Unknown component alias ' . $componentAlias);
+        }
+
+        return $this->_queryComponents[$componentAlias];
+    }
 
     /**
      * parseData
