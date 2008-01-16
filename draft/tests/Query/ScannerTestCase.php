@@ -1,9 +1,7 @@
 <?php
-require_once 'PHPUnit/Framework.php';
-require_once '../Doctrine.php';
 spl_autoload_register(array('Doctrine', 'autoload'));
 
-class ScannerTest extends PHPUnit_Framework_TestCase
+class Doctrine_Query_Scanner_TestCase extends Doctrine_UnitTestCase
 {
     public function testScannerRecognizesIdentifierWithLengthOfOneCharacter()
     {
