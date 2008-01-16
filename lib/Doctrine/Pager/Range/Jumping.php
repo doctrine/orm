@@ -30,8 +30,8 @@ Doctrine::autoload('Doctrine_Pager_Range');
  * @subpackage  Pager
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @version     $Revision$
- * @link        www.phpdoctrine.com
- * @since       1.0
+ * @link        www.phpdoctrine.org
+ * @since       0.9
  */
 class Doctrine_Pager_Range_Jumping extends Doctrine_Pager_Range
 {
@@ -95,19 +95,26 @@ class Doctrine_Pager_Range_Jumping extends Doctrine_Pager_Range
     public function rangeAroundPage()
     {
         $pager = $this->getPager();
-        $page = $pager->getPage();
 
-        // Define initial assignments for StartPage and EndPage
-        $startPage = $page - ($page - 1) % $this->getChunkLength();
-        $endPage = ($startPage + $this->getChunkLength()) - 1;
+        if ($pager->getExecuted()) {
+            $page = $pager->getPage();
 
-        // Check for EndPage out-range
-        if ($endPage > $pager->getLastPage()) {
-            $endPage = $pager->getLastPage();
+            // Define initial assignments for StartPage and EndPage
+            $startPage = $page - ($page - 1) % $this->getChunkLength();
+            $endPage = ($startPage + $this->getChunkLength()) - 1;
+
+            // Check for EndPage out-range
+            if ($endPage > $pager->getLastPage()) {
+                $endPage = $pager->getLastPage();
+            }
+
+            // No need to check for out-range in start, it will never happens
+
+            return range($startPage, $endPage);
         }
 
-        // No need to check for out-range in start, it will never happens
-
-        return range($startPage, $endPage);
+        throw new Doctrine_Pager_Exception(
+            'Cannot retrieve the range around the page of a not yet executed Pager query'
+        );
     }
 }

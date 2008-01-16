@@ -28,8 +28,8 @@
  * @subpackage  Pager
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @version     $Revision$
- * @link        www.phpdoctrine.com
- * @since       1.0
+ * @link        www.phpdoctrine.org
+ * @since       0.9
  */
 abstract class Doctrine_Pager_Range
 {

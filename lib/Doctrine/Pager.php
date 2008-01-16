@@ -28,8 +28,8 @@
  * @subpackage  Pager
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @version     $Revision$
- * @link        www.phpdoctrine.com
- * @since       1.0
+ * @link        www.phpdoctrine.org
+ * @since       0.9
  */
 class Doctrine_Pager
 {
@@ -58,25 +58,30 @@ class Doctrine_Pager
      */
     protected $_lastPage;
 
+    /**
+     * @var boolean $_executed          Pager was initialized (called "execute" at least once)
+     */
+    protected $_executed;
+
 
 
     /**
      * __construct
      *
      * @param mixed $query     Accepts either a Doctrine_Query object or a string 
-	 *                        (which does the Doctrine_Query class creation).
+     *                        (which does the Doctrine_Query class creation).
      * @param int $page     Current page
      * @param int $maxPerPage     Maximum itens per page
      * @return void
      */
     public function __construct($query, $page, $maxPerPage = 0)
     {
-        $this->_setQuery($query);
+        $this->_setExecuted(false);
 
-        $this->_setMaxPerPage($maxPerPage);
+        $this->_setQuery($query);
         $this->_setPage($page);
 
-        $this->_initialize();
+        $this->setMaxPerPage($maxPerPage);
     }
 
 
@@ -85,15 +90,18 @@ class Doctrine_Pager
      *
      * Initialize Pager object calculating number of results
      *
+     * @param $params  Optional parameters to Doctrine_Query::execute
      * @return void
      */
-    protected function _initialize()
+    protected function _initialize($params = array())
     {
         // retrieve the number of items found
-		$count = $this->getQuery()->count();
+        $count = $this->getQuery()->count($params);
         $this->_setNumResults($count);
 
         $this->_adjustOffset();
+
+	$this->_setExecuted(true);
     }
 
 
@@ -106,16 +114,45 @@ class Doctrine_Pager
      */
     protected function _adjustOffset()
     {
-        // Define new total of pages
-		$this->_setLastPage(
-            max(1, ceil($this->getNumResults() / $this->getMaxPerPage()))
-        );
-        $offset = ($this->getPage() - 1) * $this->getMaxPerPage();
+        if (!$this->getExecuted()) {
+            // Define new total of pages
+            $this->_setLastPage(
+                max(1, ceil($this->getNumResults() / $this->getMaxPerPage()))
+            );
+            $offset = ($this->getPage() - 1) * $this->getMaxPerPage();
 
-		// Assign new offset and limit to Doctrine_Query object
-        $p = $this->getQuery();
-        $p->offset($offset);
-        $p->limit($this->getMaxPerPage());
+            // Assign new offset and limit to Doctrine_Query object
+            $p = $this->getQuery();
+            $p->offset($offset);
+            $p->limit($this->getMaxPerPage());
+        }
+    }
+
+
+    /**
+     * getExecuted
+     *
+     * Returns the check if Pager was already executed at least once
+     *
+     * @return boolen        Pager was executed
+     */
+    public function getExecuted()
+    {
+        return $this->_executed;
+    }
+
+
+    /**
+     * _setExecuted
+     *
+     * Defines if Pager was already executed
+     *
+     * @param $executed       Pager was executed
+     * @return void
+     */
+    protected function _setExecuted($executed)
+    {
+        $this->_executed = $executed;
     }
 
 
@@ -128,7 +165,13 @@ class Doctrine_Pager
      */
     public function getNumResults()
     {
-        return $this->_numResults;
+        if ($this->getExecuted()) {
+            return $this->_numResults;
+        }
+
+        throw new Doctrine_Pager_Exception(
+            'Cannot retrieve the number of results of a not yet executed Pager query'
+        );
     }
 
 
@@ -168,7 +211,13 @@ class Doctrine_Pager
      */
     public function getLastPage()
     {
-        return $this->_lastPage;
+        if ($this->getExecuted()) {
+            return $this->_lastPage;
+        }
+
+        throw new Doctrine_Pager_Exception(
+            'Cannot retrieve the last page number of a not yet executed Pager query'
+        );
     }
 
 
@@ -212,7 +261,13 @@ class Doctrine_Pager
      */
     public function getNextPage()
     {
-        return min($this->getPage() + 1, $this->getLastPage());
+        if ($this->getExecuted()) {
+            return $this->_lastPage;
+        }
+
+        throw new Doctrine_Pager_Exception(
+            'Cannot retrieve the last page number of a not yet executed Pager query'
+        );return min($this->getPage() + 1, $this->getLastPage());
     }
 
 
@@ -225,7 +280,13 @@ class Doctrine_Pager
      */
     public function getPreviousPage()
     {
-        return max($this->getPage() - 1, $this->getFirstPage());
+        if ($this->getExecuted()) {
+            return max($this->getPage() - 1, $this->getFirstPage());
+        }
+
+        throw new Doctrine_Pager_Exception(
+            'Cannot retrieve the previous page number of a not yet executed Pager query'
+        );
     }
 
 
@@ -238,7 +299,13 @@ class Doctrine_Pager
      */
     public function haveToPaginate()
     {
-        return $this->getNumResults() > $this->getMaxPerPage();
+        if ($this->getExecuted()) {
+            return $this->getNumResults() > $this->getMaxPerPage();
+        }
+
+        throw new Doctrine_Pager_Exception(
+            'Cannot know if it is necessary to paginate a not yet executed Pager query'
+        );
     }
 
 
@@ -253,7 +320,7 @@ class Doctrine_Pager
     public function setPage($page)
     {
         $this->_setPage($page);
-        $this->_adjustOffset();
+        $this->_setExecuted(false);
     }
 
 
@@ -295,21 +362,6 @@ class Doctrine_Pager
      */
     public function setMaxPerPage($max)
     {
-        $this->_setMaxPerPage($max);
-        $this->_adjustOffset();
-    }
-
-
-    /**
-     * _setMaxPerPage
-     *
-     * Defines the maximum number of itens per page
-     *
-     * @param $max       maximum number of itens per page
-     * @return void
-     */
-    private function _setMaxPerPage($max)
-    {
         if ($max > 0) {
             $this->_maxPerPage = $max;
         } else if ($max == 0) {
@@ -317,6 +369,8 @@ class Doctrine_Pager
         } else {
             $this->_maxPerPage = abs($max);
         }
+
+        $this->_setExecuted(false);
     }
 
 
@@ -339,7 +393,7 @@ class Doctrine_Pager
      * Defines the maximum number of itens per page
      *
      * @param $query     Accepts either a Doctrine_Query object or a string 
-	 *                   (which does the Doctrine_Query class creation).
+     *                   (which does the Doctrine_Query class creation).
      * @return void
      */
     protected function _setQuery($query)
@@ -354,15 +408,18 @@ class Doctrine_Pager
 
     /**
      * execute
-     * executes the query and populates the data set
      *
-     * @param $params        Optional parameters to Doctrine_Query::execute
-     * @param $hydrationMode        Hyddration Mode of Doctrine_Query::execute 
-	 *                              returned ResultSet. Doctrine::Default is FETCH_RECORD
-     * @return Doctrine_Collection            the root collection
+     * Executes the query, populates the collection and then return it
+     *
+     * @param $params               Optional parameters to Doctrine_Query::execute
+     * @param $hydrationMode        Hydration Mode of Doctrine_Query::execute 
+     *                              returned ResultSet. Doctrine::Default is FETCH_RECORD
+     * @return Doctrine_Collection  The root collection
      */
     public function execute($params = array(), $hydrationMode = Doctrine::FETCH_RECORD)
     {
+        $this->_initialize($params);
+
         return $this->getQuery()->execute($params, $hydrationMode);
     }
 }

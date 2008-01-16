@@ -30,8 +30,8 @@ Doctrine::autoload('Doctrine_Pager_Range');
  * @subpackage  Pager
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @version     $Revision$
- * @link        www.phpdoctrine.com
- * @since       1.0
+ * @link        www.phpdoctrine.org
+ * @since       0.9
  */
 class Doctrine_Pager_Range_Sliding extends Doctrine_Pager_Range
 {
@@ -100,29 +100,37 @@ class Doctrine_Pager_Range_Sliding extends Doctrine_Pager_Range
     public function rangeAroundPage()
     {
         $pager = $this->getPager();
-        $page  = $pager->getPage();
-        $pages = $pager->getLastPage();
 
-        $chunk = $this->getChunkLength();
-        if ($chunk > $pages) {
-            $chunk = $pages;
+        if ($pager->getExecuted()) {
+            $page  = $pager->getPage();
+            $pages = $pager->getLastPage();
+
+            $chunk = $this->getChunkLength();
+
+            if ($chunk > $pages) {
+                $chunk = $pages;
+            }
+
+            $chunkStart = $page - (floor($chunk / 2));
+            $chunkEnd   = $page + (ceil($chunk / 2)-1);
+
+            if ($chunkStart < 1) {
+                $adjust = 1 - $chunkStart;
+                $chunkStart = 1;
+                $chunkEnd = $chunkEnd + $adjust;
+            }
+
+            if ($chunkEnd > $pages) {
+                $adjust = $chunkEnd - $pages;
+                $chunkStart = $chunkStart - $adjust;
+                $chunkEnd = $pages;
+            }
+
+            return range($chunkStart, $chunkEnd);
         }
 
-        $chunkStart = $page - (floor($chunk / 2));
-        $chunkEnd   = $page + (ceil($chunk / 2)-1);
-
-        if ($chunkStart < 1) {
-            $adjust = 1 - $chunkStart;
-            $chunkStart = 1;
-            $chunkEnd = $chunkEnd + $adjust;
-        }
-        if ($chunkEnd > $pages) {
-            $adjust = $chunkEnd - $pages;
-            $chunkStart = $chunkStart - $adjust;
-            $chunkEnd = $pages;
-        }
-
-        return range($chunkStart, $chunkEnd);
-
+        throw new Doctrine_Pager_Exception(
+            'Cannot retrieve the range around the page of a not yet executed Pager query'
+        );
     }
 }
