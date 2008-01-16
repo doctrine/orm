@@ -102,7 +102,7 @@ class Doctrine_Query_Where extends Doctrine_Query_Condition
             } elseif (substr($trimmed, 0, 4) == 'SQL:') {
                 $value = '(' . substr($trimmed, 4) . ')';
             } else {
-                // simple in expression found
+                // simple IN expression found
                 $e = $this->_tokenizer->sqlExplode($trimmed, ',');
 
                 $value = array();
