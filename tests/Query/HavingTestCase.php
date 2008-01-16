@@ -49,6 +49,14 @@ class Doctrine_Query_Having_TestCase extends Doctrine_UnitTestCase
         $this->assertEqual($q->getQuery(), "SELECT e.id AS e__id, e.name AS e__name FROM entity e LEFT JOIN phonenumber p ON e.id = p.entity_id WHERE (e.type = 0) HAVING MAX(e.name) = 'zYne'");
     }
 
+    public function testMultipleAggregateFunctionsInHavingReturnValidSql()
+    {
+        $q = new Doctrine_Query();
+        
+        $q->parseQuery('SELECT u.name FROM User u LEFT JOIN u.Phonenumber p HAVING COUNT(p.id) = MAX(u.id)');
+        $this->assertEqual($q->getQuery(), "SELECT e.id AS e__id, e.name AS e__name FROM entity e LEFT JOIN phonenumber p ON e.id = p.entity_id WHERE (e.type = 0) HAVING COUNT(p.id) = MAX(e.id)");
+    }
+
     public function testAggregateFunctionsInHavingSupportMultipleParameters() 
     {
         $q = new Doctrine_Query();
