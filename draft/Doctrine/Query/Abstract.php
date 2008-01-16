@@ -179,7 +179,7 @@ abstract class Doctrine_Query_Abstract
      * @var Doctrine_Hydrator   The hydrator object used to hydrate query results.
      */
     protected $_hydrator;
-    
+
     /**
      * @var Doctrine_Query_Parser  The parser that is used for query parsing.
      */
@@ -191,14 +191,7 @@ abstract class Doctrine_Query_Abstract
      *                                      aliases.
      */
     protected $_tableAliasSeeds = array();
-    
-    /**
-     * @var array $_options                 an array of options
-     */
-    protected $_options    = array(
-                            'fetchMode'      => Doctrine::FETCH_RECORD
-                            );
-    
+
     /**
      * @var array $_enumParams              an array containing the keys of the parameters that should be enumerated
      */
@@ -1535,61 +1528,7 @@ abstract class Doctrine_Query_Abstract
         $this->_state = Doctrine_Query::STATE_DIRTY;
         return $this;     
     }
-    
-    /**
-     * _processDqlQueryPart
-     * parses given query part
-     *
-     * @param string $queryPartName     the name of the query part
-     * @param array $queryParts         an array containing the query part data
-     * @return Doctrine_Query           this object
-     * @todo Better description. "parses given query part" ??? Then wheres the difference
-     *       between process/parseQueryPart? I suppose this does something different.
-     */
-    protected function _processDqlQueryPart($queryPartName, $queryParts)
-    {
-        $this->removeSqlQueryPart($queryPartName);
 
-        if (is_array($queryParts) && ! empty($queryParts)) {
-            foreach ($queryParts as $queryPart) {
-                $parser = $this->_getParser($queryPartName);
-                $sql = $parser->parse($queryPart);
-                if (isset($sql)) {
-                    if ($queryPartName == 'limit' || $queryPartName == 'offset') {
-                        $this->setSqlQueryPart($queryPartName, $sql);
-                    } else {
-                        $this->addSqlQueryPart($queryPartName, $sql);
-                    }
-                }
-            }
-        }
-    }
-    
-    /**
-     * _getParser
-     * parser lazy-loader
-     *
-     * @throws Doctrine_Query_Exception     if unknown parser name given
-     * @return Doctrine_Query_Part
-     * @todo Doc/Description: What is the parameter for? Which parsers are available?
-     */
-    protected function _getParser($name)
-    {
-        if ( ! isset($this->_parsers[$name])) {
-            $class = 'Doctrine_Query_' . ucwords(strtolower($name));
-
-            Doctrine::autoload($class);
-
-            if ( ! class_exists($class)) {
-                throw new Doctrine_Query_Exception('Unknown parser ' . $name);
-            }
-
-            $this->_parsers[$name] = new $class($this, $this->_tokenizer);
-        }
-
-        return $this->_parsers[$name];
-    }
-    
     /**
      * Gets the SQL query that corresponds to this query object.
      * The returned SQL syntax depends on the connection driver that is used 
