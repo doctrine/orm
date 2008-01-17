@@ -49,22 +49,14 @@ class Doctrine_Query_Production_AbstractSchemaName extends Doctrine_Query_Produc
      */
     public function execute(array $params = array())
     {
-        $table = null;
         $token = $this->_parser->lookahead;
 
         if ($token['type'] === Doctrine_Query_Token::T_IDENTIFIER) {
-
-            $table = $this->_parser->getConnection()->getTable($token['value']);
-
-            if ($table === null) {
-                $this->_parser->logError('Table named "' . $name . '" does not exist.');
-            }
-
             $this->_parser->match(Doctrine_Query_Token::T_IDENTIFIER);
         } else {
             $this->_parser->logError('Identifier expected');
         }
 
-        return $table;
+        return $token;
     }
 }

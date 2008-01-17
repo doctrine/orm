@@ -6,12 +6,15 @@ class Doctrine_Query_Production_RangeVariableDeclaration extends Doctrine_Query_
 {
     public function execute(array $params = array())
     {
-        $this->AbstractSchemaName();
+        $abstractSchemaName = $this->AbstractSchemaName();
 
         if ($this->_isNextToken(Doctrine_Query_Token::T_AS)) {
             $this->_parser->match(Doctrine_Query_Token::T_AS);
         }
 
-        $this->IdentificationVariable();
+        $identifier = $this->IdentificationVariable();
+        
+        return array('abstractSchemaName' => $abstractSchemaName,
+                     'identifier'         => $identifier);
     }
 }

@@ -36,8 +36,8 @@ UpdateItem = PathExpression "=" (Expression | "NULL")
 IdentificationVariableDeclaration = RangeVariableDeclaration {Join}
 RangeVariableDeclaration = AbstractSchemaName ["AS"] IdentificationVariable
 
-Join = ["LEFT" | "INNER"] "JOIN" PathExpression ["AS"] IdentificationVariable [("ON" | "WITH") ConditionalExpression] [IndexBy]
-IndexBy = "INDEXBY" PathExpression
+Join = ["LEFT" | "INNER"] "JOIN" RangeVariableDeclaration [("ON" | "WITH") ConditionalExpression] [IndexBy]
+IndexBy = "INDEX" "BY" PathExpression
 
 ConditionalExpression = ConditionalTerm {"OR" ConditionalTerm}
 ConditionalTerm       = ConditionalFactor {"AND" ConditionalFactor}

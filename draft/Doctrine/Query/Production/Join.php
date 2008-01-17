@@ -19,7 +19,7 @@ class Doctrine_Query_Production_Join extends Doctrine_Query_Production
 
         $this->_parser->match(Doctrine_Query_Token::T_JOIN);
 
-        $this->PathExpression();
+        $this->RangeVariableDeclaration();
 
         $this->_parser->match(Doctrine_Query_Token::T_AS);
         $this->_parser->match(Doctrine_Query_Token::T_IDENTIFIER);

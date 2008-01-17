@@ -15,5 +15,6 @@ class Doctrine_Query_Production_IdentificationVariable extends Doctrine_Query_Pr
             $this->error('"' . $name . '" is not a identification variable.');
         }
         */
+        return $token;
     }
 }
