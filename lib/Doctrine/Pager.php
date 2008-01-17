@@ -39,6 +39,16 @@ class Doctrine_Pager
     protected $_query;
 
     /**
+     * @var Doctrine_Query $_countQuery Doctrine_Query object related to the counter of pager
+     */
+    protected $_countQuery;
+
+    /**
+     * @var array $_countQueryParams    Hold the params to be used by Doctrine_Query counter object of pager
+     */
+    protected $_countQueryParams;
+
+    /**
      * @var integer $_numResults        Number of results found
      */
     protected $_numResults;
@@ -96,7 +106,7 @@ class Doctrine_Pager
     protected function _initialize($params = array())
     {
         // retrieve the number of items found
-        $count = $this->getQuery()->count($params);
+        $count = $this->getCountQuery()->count($this->getCountQueryParams($params));
         $this->_setNumResults($count);
 
         $this->_adjustOffset();
@@ -377,9 +387,9 @@ class Doctrine_Pager
     /**
      * getQuery
      *
-     * Returns the Doctrine_Query object related to the pager
+     * Returns the Doctrine_Query collector object related to the pager
      *
-     * @return Doctrine_Query        Doctrine_Query object related to the pager
+     * @return Doctrine_Query    Doctrine_Query object related to the pager
      */
     public function getQuery()
     {
@@ -390,10 +400,10 @@ class Doctrine_Pager
     /**
      * _setQuery
      *
-     * Defines the maximum number of itens per page
+     * Defines the collector query to be used by pager
      *
-     * @param $query     Accepts either a Doctrine_Query object or a string 
-     *                   (which does the Doctrine_Query class creation).
+     * @param Doctrine_Query     Accepts either a Doctrine_Query object or a string 
+     *                           (which does the Doctrine_Query class creation).
      * @return void
      */
     protected function _setQuery($query)
@@ -403,6 +413,75 @@ class Doctrine_Pager
         }
 
         $this->_query = $query;
+    }
+
+
+    /**
+     * getCountQuery
+     *
+     * Returns the Doctrine_Query object that is used to make the count results to pager
+     *
+     * @return Doctrine_Query     Doctrine_Query object related to the pager
+     */
+    public function getCountQuery()
+    {
+        return ($this->_countQuery !== null) ? $this->_countQuery : $this->_query;
+    }
+
+
+    /**
+     * setCountQuery
+     *
+     * Defines the counter query to be used by pager
+     *
+     * @param Doctrine_Query     Accepts either a Doctrine_Query object or a string 
+     *                           (which does the Doctrine_Query class creation).
+     * @return void
+     */
+    public function setCountQuery($query)
+    {
+        if (is_string($query)) {
+            $query = Doctrine_Query::create()->parseQuery($query);
+        }
+
+        $this->_countQuery = $query;
+
+        $this->_setExecuted(false);
+    }
+
+
+    /**
+     * getCountQueryParams
+     *
+     * Returns the params to be used by counter Doctrine_Query
+     *
+     * @return array     Doctrine_Query counter params
+     */
+    public function getCountQueryParams($defaultParams = array())
+    {
+        return ($this->_countQueryParams !== null) ? $this->_countQueryParams : $defaultParams;
+    }
+
+
+    /**
+     * setCountQueryParams
+     *
+     * Defines the params to be used by counter Doctrine_Query
+     *
+     * @param array       Optional params to be used by counter Doctrine_Query. 
+     *                    If not defined, the params passed to execute method will be used.
+     * @param boolean     Optional argument that append the query param instead of overriding the existent ones.
+     * @return void
+     */
+    public function setCountQueryParams($params = array(), $append = false)
+    {
+        if ($append && is_array($this->_countQueryParams)) {
+            $this->_countQueryParams = array_merge($this->_countQueryParams, $params);
+        } else {
+            $this->_countQueryParams = $params;
+        }
+
+        $this->_setExecuted(false);
     }
 
 
@@ -418,7 +497,9 @@ class Doctrine_Pager
      */
     public function execute($params = array(), $hydrationMode = Doctrine::FETCH_RECORD)
     {
-        $this->_initialize($params);
+        if (!$this->getExecuted()) {
+            $this->_initialize($params);
+        }
 
         return $this->getQuery()->execute($params, $hydrationMode);
     }
