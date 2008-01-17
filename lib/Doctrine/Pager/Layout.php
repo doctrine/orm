@@ -88,7 +88,7 @@ class Doctrine_Pager_Layout
         $this->_setUrlMask($urlMask);
 
         $this->setTemplate('[<a href="{%url}">{%page}</a>]');
-        $this->setSelectedTemplate('[{%page}]');
+        $this->setSelectedTemplate('');
         $this->setSeparatorTemplate('');
     }
 
