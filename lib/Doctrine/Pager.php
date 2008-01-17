@@ -109,9 +109,9 @@ class Doctrine_Pager
         $count = $this->getCountQuery()->count($this->getCountQueryParams($params));
         $this->_setNumResults($count);
 
-        $this->_adjustOffset();
+        $this->_setExecuted(true);
 
-	$this->_setExecuted(true);
+        $this->_adjustOffset();
     }
 
 
