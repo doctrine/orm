@@ -107,9 +107,9 @@ class Doctrine_Pager
     {
         // retrieve the number of items found
         $count = $this->getCountQuery()->count($this->getCountQueryParams($params));
-        $this->_setNumResults($count);
 
-        $this->_setExecuted(true);
+        $this->_setNumResults($count);
+        $this->_setExecuted(true); // _adjustOffset relies of _executed equals true = getNumResults()
 
         $this->_adjustOffset();
     }
@@ -124,18 +124,16 @@ class Doctrine_Pager
      */
     protected function _adjustOffset()
     {
-        if (!$this->getExecuted()) {
-            // Define new total of pages
-            $this->_setLastPage(
-                max(1, ceil($this->getNumResults() / $this->getMaxPerPage()))
-            );
-            $offset = ($this->getPage() - 1) * $this->getMaxPerPage();
+        // Define new total of pages
+        $this->_setLastPage(
+            max(1, ceil($this->getNumResults() / $this->getMaxPerPage()))
+        );
+        $offset = ($this->getPage() - 1) * $this->getMaxPerPage();
 
-            // Assign new offset and limit to Doctrine_Query object
-            $p = $this->getQuery();
-            $p->offset($offset);
-            $p->limit($this->getMaxPerPage());
-        }
+        // Assign new offset and limit to Doctrine_Query object
+        $p = $this->getQuery();
+        $p->offset($offset);
+        $p->limit($this->getMaxPerPage());
     }
 
 
