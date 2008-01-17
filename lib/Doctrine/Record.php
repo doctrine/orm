@@ -1251,7 +1251,16 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
             }
         }
 
-        return array_merge($a, $this->_values);
+        // [FIX] Prevent mapped Doctrine_Records from being displayed fully
+        foreach ($this->_values as $key => $value) {
+            if ($value instanceof Doctrine_Record) {
+                $a[$key] = $value->toArray($deep, $prefixKey);
+            } else {
+                $a[$key] = $value;
+            }
+        }
+
+        return $a;
     }
 
     /**
