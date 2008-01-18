@@ -29,12 +29,12 @@ OrderByClause   = "ORDER" "BY" OrderByItem {"," OrderByItem}
 LimitClause     = "LIMIT" Expression ["OFFSET" Expression]
 UpdateClause    = "UPDATE" RangeVariableDeclaration "SET" UpdateItem {"," UpdateItem}
 
-OrderByItem = PathExpression ["ASC" | "DESC"]
+OrderByItem = Expression ["ASC" | "DESC"]
 GroupByItem = PathExpression
 UpdateItem = PathExpression "=" (Expression | "NULL")
 
 IdentificationVariableDeclaration = RangeVariableDeclaration {Join}
-RangeVariableDeclaration = AbstractSchemaName ["AS"] IdentificationVariable
+RangeVariableDeclaration = PathExpression [["AS"] IdentificationVariable]
 
 Join = ["LEFT" | "INNER"] "JOIN" RangeVariableDeclaration [("ON" | "WITH") ConditionalExpression] [IndexBy]
 IndexBy = "INDEX" "BY" PathExpression

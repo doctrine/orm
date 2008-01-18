@@ -20,7 +20,7 @@
  */
 
 /**
- * ...
+ * Scans a DQL query for tokens.
  *
  * @package     Doctrine
  * @subpackage  Query
@@ -39,7 +39,7 @@ class Doctrine_Query_Scanner
      */
     protected $_tokens = array();
 
-    protected $_nextToken = 0;
+    protected $_position = 0;
 
     protected $_peek = 0;
 
@@ -122,7 +122,7 @@ class Doctrine_Query_Scanner
 
     public function peek()
     {
-        return $this->_tokens[$this->_nextToken + $this->_peek++];
+        return $this->_tokens[$this->_position + $this->_peek++];
     }
 
     public function resetPeek()
@@ -144,7 +144,12 @@ class Doctrine_Query_Scanner
     public function next()
     {
         $this->_peek = 0;
-        return $this->_tokens[$this->_nextToken++];
+
+        if (isset($this->_tokens[$this->_position])) {
+            return $this->_tokens[$this->_position++];
+        } else {
+            return null;
+        }
     }
 
 

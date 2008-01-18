@@ -28,7 +28,7 @@
  * @subpackage  Query
  * @author      Janne Vanhala <jpvanhal@cc.hut.fi>
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
- * @link        www.phpdoctrine.org
+ * @link        http://www.phpdoctrine.org
  * @since       1.0
  * @version     $Revision$
  */
@@ -111,11 +111,22 @@ class Doctrine_Query_Parser
         $this->_conn = $conn;
     }
 
+    /**
+     * Returns the connection object used by the query.
+     *
+     * @return Doctrine_Connection
+     */
     public function getConnection()
     {
         return $this->_conn;
     }
 
+    /**
+     * Returns a production object with the given name.
+     *
+     * @param string $name production name
+     * @return Doctrine_Query_Production
+     */
     public function getProduction($name)
     {
         if ( ! isset($this->_productions[$name])) {
@@ -154,12 +165,17 @@ class Doctrine_Query_Parser
     public function logError($message = '')
     {
         if ($message === '') {
-            $message = 'Unexpected "' . $this->lookahead['value'] . '"';
+            if ($this->lookahead === null) {
+                $message = 'Unexpected end of string.';
+            } else {
+                $message = 'Unexpected "' . $this->lookahead['value'] . '"';
+            }
         }
 
         if ($this->_errorDistance >= self::MIN_ERROR_DISTANCE) {
-            $message .= 'at line ' . $this->lookahead['line']
-                 . ', column ' . $this->lookahead['column'];
+            if ($this->lookahead !== null) {
+                $message .= ' at position ' . $this->lookahead['position'];
+            }
             $this->_errors[] = $message;
         }
 
@@ -176,6 +192,11 @@ class Doctrine_Query_Parser
         return $this->_scanner;
     }
 
+    /**
+     * Returns the parse tree printer object associated with this object.
+     *
+     * @return Doctrine_Query_Printer
+     */
     public function getPrinter()
     {
         return $this->_printer;
@@ -193,11 +214,11 @@ class Doctrine_Query_Parser
         $this->getProduction('QueryLanguage')->execute();
 
         if ($this->lookahead !== null) {
-            $this->_error('End of string expected.');
+            $this->logError('End of string expected');
         }
 
         if (count($this->_errors)) {
-            $msg = 'Query string parsing failed ('
+            $msg = 'Errors were detected during the query parsing ('
                  . implode('; ', $this->_errors) . ').';
             throw new Doctrine_Query_Parser_Exception($msg);
         }

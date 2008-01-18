@@ -27,7 +27,7 @@
  * @subpackage  Query
  * @author      Janne Vanhala <jpvanhal@cc.hut.fi>
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
- * @link        www.phpdoctrine.org
+ * @link        http://www.phpdoctrine.org
  * @since       1.0
  * @version     $Revision$
  */
@@ -66,7 +66,7 @@ abstract class Doctrine_Query_Production
      */
     public function __call($method, $args)
     {
-        $this->_parser->getPrinter()->startProduction($name);
+        $this->_parser->getPrinter()->startProduction($method);
         $retval = $this->_parser->getProduction($method)->execute($args);
         $this->_parser->getPrinter()->endProduction();
 
