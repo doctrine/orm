@@ -445,7 +445,8 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
     /**
      * cleanData
      * leaves the $data array only with values whose key is a field inside this
-     * record and returns the values that where removed from $data.
+     * record and returns the values that were removed from $data.  Also converts
+     * any values of 'null' to objects of type Doctrine_Null.
      *
      * @param array $data       data array to be cleaned
      * @return array $tmp       values cleaned from data
@@ -459,6 +460,8 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
         foreach ($fieldNames as $fieldName) {
             if (isset($tmp[$fieldName])) {
                 $data[$fieldName] = $tmp[$fieldName];
+            } else if (array_key_exists($fieldName, $tmp)) {
+                $data[$fieldName] = self::$_null;
             } else if (!isset($this->_data[$fieldName])) {
                 $data[$fieldName] = self::$_null;
             }
