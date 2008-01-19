@@ -20,7 +20,8 @@
  */
 
 /**
- * ComparisonOperator = "=" | "<" | "<=" | "<>" | ">" | ">="
+ * Subselect = SimpleSelectClause FromClause [WhereClause] [GroupByClause]
+ *     [HavingClause] [OrderByClause] [LimitClause] [OffsetClause]
  *
  * @package     Doctrine
  * @subpackage  Query
@@ -30,30 +31,32 @@
  * @since       1.0
  * @version     $Revision$
  */
-class Doctrine_Query_Production_ComparisonOperator extends Doctrine_Query_Production
+class Doctrine_Query_Production_Subselect extends Doctrine_Query_Production
 {
     public function execute(array $params = array())
     {
-        switch ($this->_parser->lookahead['value']) {
-            case '=':
-                $this->_parser->match('=');
-            break;
-            case '<':
-                $this->_parser->match('<');
-                if ($this->_isNextToken('=')) {
-                    $this->_parser->match('=');
-                } elseif ($this->_isNextToken('>')) {
-                    $this->_parser->match('>');
-                }
-            break;
-            case '>':
-                $this->_parser->match('>');
-                if ($this->_isNextToken('=')) {
-                    $this->_parser->match('=');
-                }
-            break;
-            default:
-                $this->_parser->logError();
+        $this->SimpleSelectClause();
+
+        $this->FromClause();
+
+        if ($this->_isNextToken(Doctrine_Query_Token::T_WHERE)) {
+            $this->WhereClause();
+        }
+
+        if ($this->_isNextToken(Doctrine_Query_Token::T_GROUP)) {
+            $this->GroupByClause();
+        }
+
+        if ($this->_isNextToken(Doctrine_Query_Token::T_HAVING)) {
+            $this->HavingClause();
+        }
+
+        if ($this->_isNextToken(Doctrine_Query_Token::T_ORDER)) {
+            $this->OrderByClause();
+        }
+
+        if ($this->_isNextToken(Doctrine_Query_Token::T_LIMIT)) {
+            $this->LimitClause();
         }
     }
 }

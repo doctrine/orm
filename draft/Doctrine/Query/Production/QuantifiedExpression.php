@@ -45,7 +45,7 @@ class Doctrine_Query_Production_QuantifiedExpression extends Doctrine_Query_Prod
                 $this->_parser->match(Doctrine_Query_Token::T_SOME);
             break;
             default:
-                $this->syntaxError();
+                $this->_parser->logError();
         }
 
         $this->_parser->match('(');

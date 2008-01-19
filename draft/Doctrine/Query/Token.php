@@ -75,10 +75,6 @@ final class Doctrine_Query_Token
     const T_SUM                 = 135;
     const T_UPDATE              = 136;
     const T_WHERE               = 137;
-    const T_LENGTH              = 138;
-    const T_LOCATE              = 139;
-    const T_ABS                 = 140;
-    const T_SQRT                = 141;
     const T_MOD                 = 142;
     const T_SIZE                = 143;
 

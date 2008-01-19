@@ -122,7 +122,11 @@ class Doctrine_Query_Scanner
 
     public function peek()
     {
-        return $this->_tokens[$this->_position + $this->_peek++];
+        if (isset($this->_tokens[$this->_position + $this->_peek])) {
+            return $this->_tokens[$this->_position + $this->_peek++];
+        } else {
+            return null;
+        }
     }
 
     public function resetPeek()
