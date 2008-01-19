@@ -50,3 +50,11 @@ foreach ($comments as $comment) {
     echo $comment['author']['first_name'] . ' - ' . $comment['author']['last_name'] . '<br />';
 }
 </code> **Array fetching is the best choice whenever you need data read-only like passing it to the view for display. And from my experience, most of the time when you fetch a large amount of data it's only for display purposes. And these are exactly the cases where you get the best performance payoff when fetching arrays instead of objects.**
+
+Sometimes, you may want the direct output from PDO instead of an object or an array.  To do this, set the hydration mode to **Doctrine::HYDRATE_NONE**.  Here's an example:
+<code type="php">
+$total = Doctrine_Query::create()
+  ->select('SUM(d.amount)')
+  ->from('Donation d')
+  ->execute(array(), Doctrine::HYDRATE_NONE);
+</code>
