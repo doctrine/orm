@@ -91,6 +91,24 @@ class Doctrine_Query_Scanner_TestCase extends Doctrine_UnitTestCase
         $this->assertEqual("'abc''defg'''", $token['value']);
     }
 
+    public function testScannerRecognizesInputParameter()
+    {
+        $scanner = new Doctrine_Query_Scanner('?');
+
+        $token = $scanner->next();
+        $this->assertEqual(Doctrine_Query_Token::T_INPUT_PARAMETER, $token['type']);
+        $this->assertEqual('?', $token['value']);
+    }
+
+    public function testScannerRecognizesNamedInputParameter()
+    {
+        $scanner = new Doctrine_Query_Scanner(':name');
+
+        $token = $scanner->next();
+        $this->assertEqual(Doctrine_Query_Token::T_INPUT_PARAMETER, $token['type']);
+        $this->assertEqual(':name', $token['value']);
+    }
+
     public function testScannerTokenizesASimpleQueryCorrectly()
     {
         $dql = "SELECT u.* FROM User u WHERE u.name = 'Jack O''Neil'";

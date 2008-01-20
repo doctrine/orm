@@ -45,19 +45,11 @@ class Doctrine_Query_Production_SelectExpression extends Doctrine_Query_Producti
         return $token['value'] === '*';
     }
 
-    private function _isSubquery()
-    {
-        $lookahead = $this->_parser->lookahead;
-        $next = $this->_parser->getScanner()->peek();
-
-        return $lookahead['value'] === '(' && $next['type'] === Doctrine_Query_Token::T_SELECT;
-    }
-
     public function execute(array $params = array())
     {
         if ($this->_isPathExpressionEndingWithAsterisk()) {
             $this->PathExpressionEndingWithAsterisk();
-        } elseif ($this->_isSubquery()) {
+        } elseif ($this->_isSubselect()) {
             $this->_parser->match('(');
             $this->Subselect();
             $this->_parser->match(')');

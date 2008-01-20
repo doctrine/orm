@@ -32,19 +32,11 @@
  */
 class Doctrine_Query_Production_ComparisonExpression extends Doctrine_Query_Production
 {
-    private function _isSubquery()
-    {
-        $lookahead = $this->_parser->lookahead;
-        $next = $this->_parser->getScanner()->peek();
-
-        return $lookahead['value'] === '(' && $next['type'] === Doctrine_Query_Token::T_SELECT;
-    }
-
     public function execute(array $params = array())
     {
         $this->ComparisonOperator();
 
-        if ($this->_isSubquery()) {
+        if ($this->_isSubselect()) {
             $this->_parser->match('(');
             $this->Subselect();
             $this->_parser->match(')');

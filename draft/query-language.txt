@@ -13,9 +13,9 @@
 
 QueryLanguage   = SelectStatement | UpdateStatement | DeleteStatement
 
-SelectStatement = [SelectClause] FromClause [WhereClause] [GroupByClause] [HavingClause] [OrderByClause] [LimitClause]
-UpdateStatement = UpdateClause [WhereClause] [OrderByClause] [LimitClause]
-DeleteStatement = DeleteClause [WhereClause] [OrderByClause] [LimitClause]
+SelectStatement = [SelectClause] FromClause [WhereClause] [GroupByClause] [HavingClause] [OrderByClause] [LimitClause] [OffsetClause]
+UpdateStatement = UpdateClause [WhereClause] [OrderByClause] [LimitClause] [OffsetClause]
+DeleteStatement = DeleteClause [WhereClause] [OrderByClause] [LimitClause] [OffsetClause]
 
 Subselect       = SimpleSelectClause FromClause [WhereClause] [GroupByClause] [HavingClause] [OrderByClause] [LimitClause] [OffsetClause]
 SelectClause    = "SELECT" ["ALL" | "DISTINCT"] SelectExpression {"," SelectExpression}
@@ -26,7 +26,8 @@ FromClause      = "FROM" IdentificationVariableDeclaration {"," IdentificationVa
 HavingClause    = "HAVING" ConditionalExpression
 GroupByClause   = "GROUP" "BY" GroupByItem {"," GroupByItem}
 OrderByClause   = "ORDER" "BY" OrderByItem {"," OrderByItem}
-LimitClause     = "LIMIT" Expression ["OFFSET" Expression]
+LimitClause     = "LIMIT" Expression
+OffsetClause    = "OFFSET" Expression
 UpdateClause    = "UPDATE" RangeVariableDeclaration "SET" UpdateItem {"," UpdateItem}
 
 OrderByItem = Expression ["ASC" | "DESC"]
@@ -67,6 +68,6 @@ ComparisonExpression     = ComparisonOperator ( QuantifiedExpression | Expressio
 InExpression             = ["NOT"] "IN" "(" (Atom {"," Atom} | Subselect) ")"
 LikeExpression           = ["NOT"] "LIKE" Expression ["ESCAPE" string_literal]
 NullComparisonExpression = "IS" ["NOT"] "NULL"
-ExistsExpression         = ["NOT"] "EXISTS" "(" Subselect ")"
+ExistsExpression         = "EXISTS" "(" Subselect ")"
 
 Function = identifier "(" [Expression {"," Expression}] ")"

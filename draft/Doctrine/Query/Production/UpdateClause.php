@@ -38,10 +38,10 @@ class Doctrine_Query_Production_UpdateClause extends Doctrine_Query_Production
         $this->RangeVariableDeclaration();
         $this->_parser->match(Doctrine_Query_Token::T_SET);
 
-        $this->RangeVariableDeclaration();
+        $this->UpdateItem();
         while ($this->_isNextToken(',')) {
             $this->_parser->match(',');
-            $this->RangeVariableDeclaration();
+            $this->UpdateItem();
         }
     }
 }

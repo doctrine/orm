@@ -37,9 +37,7 @@ class Doctrine_Query_Production_Primary extends Doctrine_Query_Production
     {
         switch ($this->_parser->lookahead['type']) {
             case Doctrine_Query_Token::T_IDENTIFIER:
-                $nextToken = $this->_parser->getScanner()->peek();
-
-                if ($nextToken['value'] === '(') {
+                if ($this->_isFunction()) {
                     $this->Function();
                 } else {
                     $this->PathExpression();

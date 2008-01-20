@@ -20,7 +20,7 @@
  */
 
 /**
- * ExistsExpression = "EXISTS" "(" Subselect ")"
+ * UpdateItem = PathExpression "=" (Expression | "NULL")
  *
  * @package     Doctrine
  * @subpackage  Query
@@ -30,14 +30,18 @@
  * @since       1.0
  * @version     $Revision$
  */
-class Doctrine_Query_Production_ExistsExpression extends Doctrine_Query_Production
+class Doctrine_Query_Production_UpdateItem extends Doctrine_Query_Production
 {
     public function execute(array $params = array())
     {
-        $this->_parser->match(Doctrine_Query_Token::T_EXISTS);
+        $this->PathExpression();
 
-        $this->_parser->match('(');
-        $this->Subselect();
-        $this->_parser->match(')');
+        $this->_parser->match('=');
+
+        if ($this->_isNextToken(Doctrine_Query_Token::T_NULL)) {
+            $this->_parser->match(Doctrine_Query_Token::T_NULL);
+        } else {
+            $this->Expression();
+        }
     }
 }

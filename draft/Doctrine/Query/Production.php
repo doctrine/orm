@@ -56,6 +56,20 @@ abstract class Doctrine_Query_Production
         return ($la['type'] === $token || $la['value'] === $token);
     }
 
+    protected function _isFunction()
+    {
+        $la = $this->_parser->lookahead;
+        $next = $this->_parser->getScanner()->peek();
+        return ($la['type'] === Doctrine_Query_Token::T_IDENTIFIER && $next['value'] === '(');
+    }
+
+    protected function _isSubselect()
+    {
+        $la = $this->_parser->lookahead;
+        $next = $this->_parser->getScanner()->peek();
+        return ($la['value'] === '(' && $next['type'] === Doctrine_Query_Token::T_SELECT);
+    }
+
     /**
      * Executes a production with specified name and parameters.
      *

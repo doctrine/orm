@@ -20,7 +20,7 @@
  */
 
 /**
- * Join = ["LEFT" ["OUTER"] | "INNER"] "JOIN" PathExpression "AS" identifier
+ * Join = ["LEFT" | "INNER"] "JOIN" RangeVariableDeclaration [("ON" | "WITH") ConditionalExpression] [IndexBy]
  *
  * @package     Doctrine
  * @subpackage  Query
@@ -36,11 +36,6 @@ class Doctrine_Query_Production_Join extends Doctrine_Query_Production
     {
         if ($this->_isNextToken(Doctrine_Query_Token::T_LEFT)) {
             $this->_parser->match(Doctrine_Query_Token::T_LEFT);
-
-            if ($this->_isNextToken(Doctrine_Query_Token::T_OUTER)) {
-                $this->_parser->match(Doctrine_Query_Token::T_OUTER);
-            }
-
         } elseif ($this->_isNextToken(Doctrine_Query_Token::T_INNER)) {
             $this->_parser->match(Doctrine_Query_Token::T_INNER);
         }
@@ -49,7 +44,16 @@ class Doctrine_Query_Production_Join extends Doctrine_Query_Production
 
         $this->RangeVariableDeclaration();
 
-        $this->_parser->match(Doctrine_Query_Token::T_AS);
-        $this->_parser->match(Doctrine_Query_Token::T_IDENTIFIER);
+        if ($this->_isNextToken(Doctrine_Query_Token::T_ON)) {
+            $this->_parser->match(Doctrine_Query_Token::T_ON);
+            $this->ConditionalExpression();
+        } elseif ($this->_isNextToken(Doctrine_Query_Token::T_WITH)) {
+            $this->_parser->match(Doctrine_Query_Token::T_WITH);
+            $this->ConditionalExpression();
+        }
+
+        if ($this->_isNextToken(Doctrine_Query_Token::T_INDEX)) {
+            $this->IndexBy();
+        }
     }
 }

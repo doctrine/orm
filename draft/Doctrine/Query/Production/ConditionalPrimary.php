@@ -32,9 +32,52 @@
  */
 class Doctrine_Query_Production_ConditionalPrimary extends Doctrine_Query_Production
 {
+    private function _isConditionalExpression()
+    {
+        $token = $this->_parser->lookahead;
+        $parenthesis = 0;
+
+        if ($token['value'] === '(') {
+            $parenthesis++;
+        }
+
+        while ($parenthesis > 0) {
+            $token = $this->_parser->getScanner()->peek();
+
+            if ($token['value'] === '(') {
+                $parenthesis++;
+            } elseif ($token['value'] === ')') {
+                $parenthesis--;
+            } else {
+                switch ($token['type']) {
+                    case Doctrine_Query_Token::T_NOT:
+                    case Doctrine_Query_Token::T_AND:
+                    case Doctrine_Query_Token::T_OR:
+                    case Doctrine_Query_Token::T_BETWEEN:
+                    case Doctrine_Query_Token::T_LIKE:
+                    case Doctrine_Query_Token::T_IN:
+                    case Doctrine_Query_Token::T_IS:
+                    case Doctrine_Query_Token::T_EXISTS:
+                        return true;
+
+                    case Doctrine_Query_Token::T_NONE:
+                        switch ($token['value']) {
+                            case '=':
+                            case '<':
+                            case '>':
+                                return true;
+                        }
+                    break;
+                }
+            }
+        }
+
+        return false;
+    }
+
     public function execute(array $params = array())
     {
-        if ($this->_isNextToken('(')) {
+        if ($this->_isConditionalExpression()) {
             $this->_parser->match('(');
             $this->ConditionalExpression();
             $this->_parser->match(')');

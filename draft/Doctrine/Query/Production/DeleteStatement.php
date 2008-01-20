@@ -20,7 +20,7 @@
  */
 
 /**
- * DeleteStatement = DeleteClause [WhereClause] [OrderByClause] [LimitClause]
+ * DeleteStatement = DeleteClause [WhereClause] [OrderByClause] [LimitClause] [OffsetClause]
  *
  * @package     Doctrine
  * @subpackage  Query
@@ -46,6 +46,10 @@ class Doctrine_Query_Production_DeleteStatement extends Doctrine_Query_Productio
 
         if ($this->_isNextToken(Doctrine_Query_Token::T_LIMIT)) {
             $this->LimitClause();
+        }
+
+        if ($this->_isNextToken(Doctrine_Query_Token::T_OFFSET)) {
+            $this->OffsetClause();
         }
     }
 }
