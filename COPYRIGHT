@@ -6,16 +6,16 @@ Doctrine
 
 Doctrine is a Object Relational Mapper built from scratch with PHP5. It contains a few ports of other popular PHP classes/libraries.
 
-Url:        http://www.phpdoctrine.net
+Url:        http://www.phpdoctrine.org
 Copyright:  2005-2007 Konsta Vesterinen
-License:    GPL - see LICENSE file
+License:    LGPL - see LICENSE file
 
 symfony
 -------
 
 Doctrine contains ports of a few symfony classes/libraries
 
-Url:       http://www.symfony-project.com/
+Url:       http://www.symfony-project.org
 Copyright: Fabien Potencier
 License:   MIT - see LICENSE file
 
