@@ -36,11 +36,19 @@ class Doctrine_Query_Production_IdentificationVariableDeclaration extends Doctri
     {
         $rangeVarDecl = $this->RangeVariableDeclaration();
 
+        if ($this->_isNextToken(Doctrine_Query_Token::T_INDEX)) {
+            $this->IndexBy();
+        }
+
         while ($this->_isNextToken(Doctrine_Query_Token::T_LEFT) ||
                $this->_isNextToken(Doctrine_Query_Token::T_INNER) ||
                $this->_isNextToken(Doctrine_Query_Token::T_JOIN)) {
 
             $this->Join();
+
+            if ($this->_isNextToken(Doctrine_Query_Token::T_INDEX)) {
+                $this->IndexBy();
+            }
         }
     }
 }

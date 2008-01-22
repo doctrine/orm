@@ -34,9 +34,10 @@ final class Doctrine_Query_Token
 {
     const T_NONE                = 1;
     const T_IDENTIFIER          = 2;
-    const T_NUMERIC             = 3;
+    const T_INTEGER             = 3;
     const T_STRING              = 4;
     const T_INPUT_PARAMETER     = 5;
+    const T_FLOAT               = 6;
 
     const T_ALL                 = 101;
     const T_AND                 = 102;
@@ -80,6 +81,8 @@ final class Doctrine_Query_Token
     const T_UPDATE              = 140;
     const T_WHERE               = 141;
     const T_WITH                = 142;
+    const T_TRUE                = 143;
+    const T_FALSE               = 144;
 
     private function __construct() {}
 }

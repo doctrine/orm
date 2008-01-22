@@ -42,7 +42,7 @@ class Doctrine_Query_Scanner_TestCase extends Doctrine_UnitTestCase
         $scanner = new Doctrine_Query_Scanner('1234');
 
         $token = $scanner->next();
-        $this->assertEqual(Doctrine_Query_Token::T_NUMERIC, $token['type']);
+        $this->assertEqual(Doctrine_Query_Token::T_INTEGER, $token['type']);
         $this->assertEqual(1234, $token['value']);
     }
 
@@ -51,7 +51,7 @@ class Doctrine_Query_Scanner_TestCase extends Doctrine_UnitTestCase
         $scanner = new Doctrine_Query_Scanner('1.234');
 
         $token = $scanner->next();
-        $this->assertEqual(Doctrine_Query_Token::T_NUMERIC, $token['type']);
+        $this->assertEqual(Doctrine_Query_Token::T_FLOAT, $token['type']);
         $this->assertEqual(1.234, $token['value']);
     }
 
@@ -60,7 +60,7 @@ class Doctrine_Query_Scanner_TestCase extends Doctrine_UnitTestCase
         $scanner = new Doctrine_Query_Scanner('1.2e3');
 
         $token = $scanner->next();
-        $this->assertEqual(Doctrine_Query_Token::T_NUMERIC, $token['type']);
+        $this->assertEqual(Doctrine_Query_Token::T_FLOAT, $token['type']);
         $this->assertEqual(1.2e3, $token['value']);
     }
 
@@ -69,7 +69,7 @@ class Doctrine_Query_Scanner_TestCase extends Doctrine_UnitTestCase
         $scanner = new Doctrine_Query_Scanner('7E-10');
 
         $token = $scanner->next();
-        $this->assertEqual(Doctrine_Query_Token::T_NUMERIC, $token['type']);
+        $this->assertEqual(Doctrine_Query_Token::T_FLOAT, $token['type']);
         $this->assertEqual(7E-10, $token['value']);
     }
 

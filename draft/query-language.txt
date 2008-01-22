@@ -26,18 +26,18 @@ FromClause      = "FROM" IdentificationVariableDeclaration {"," IdentificationVa
 HavingClause    = "HAVING" ConditionalExpression
 GroupByClause   = "GROUP" "BY" GroupByItem {"," GroupByItem}
 OrderByClause   = "ORDER" "BY" OrderByItem {"," OrderByItem}
-LimitClause     = "LIMIT" Expression
-OffsetClause    = "OFFSET" Expression
+LimitClause     = "LIMIT" integer
+OffsetClause    = "OFFSET" integer
 UpdateClause    = "UPDATE" RangeVariableDeclaration "SET" UpdateItem {"," UpdateItem}
 
 OrderByItem = Expression ["ASC" | "DESC"]
 GroupByItem = PathExpression
 UpdateItem = PathExpression "=" (Expression | "NULL")
 
-IdentificationVariableDeclaration = RangeVariableDeclaration {Join}
+IdentificationVariableDeclaration = RangeVariableDeclaration [IndexBy] {Join [IndexBy]}
 RangeVariableDeclaration = PathExpression [["AS"] IdentificationVariable]
 
-Join = ["LEFT" | "INNER"] "JOIN" RangeVariableDeclaration [("ON" | "WITH") ConditionalExpression] [IndexBy]
+Join = ["LEFT" | "INNER"] "JOIN" RangeVariableDeclaration [("ON" | "WITH") ConditionalExpression]
 IndexBy = "INDEX" "BY" PathExpression
 
 ConditionalExpression = ConditionalTerm {"OR" ConditionalTerm}
@@ -48,7 +48,7 @@ SimpleConditionalExpression
                       = Expression (ComparisonExpression | BetweenExpression | LikeExpression
                       | InExpression | NullComparisonExpression) | ExistsExpression
 
-Atom = string_literal | numeric_constant | input_parameter
+Atom = string | integer | float | boolean | input_parameter
 
 Expression = Term {("+" | "-") Term}
 Term       = Factor {("*" | "/") Factor}
@@ -66,7 +66,7 @@ QuantifiedExpression     = ("ALL" | "ANY" | "SOME") "(" Subselect ")"
 BetweenExpression        = ["NOT"] "BETWEEN" Expression "AND" Expression
 ComparisonExpression     = ComparisonOperator ( QuantifiedExpression | Expression | "(" Subselect ")" )
 InExpression             = ["NOT"] "IN" "(" (Atom {"," Atom} | Subselect) ")"
-LikeExpression           = ["NOT"] "LIKE" Expression ["ESCAPE" string_literal]
+LikeExpression           = ["NOT"] "LIKE" Expression ["ESCAPE" string]
 NullComparisonExpression = "IS" ["NOT"] "NULL"
 ExistsExpression         = "EXISTS" "(" Subselect ")"
 

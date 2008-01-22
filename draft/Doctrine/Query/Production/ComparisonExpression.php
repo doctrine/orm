@@ -43,8 +43,8 @@ class Doctrine_Query_Production_ComparisonExpression extends Doctrine_Query_Prod
         } else {
             switch ($this->_parser->lookahead['type']) {
                 case Doctrine_Query_Token::T_ALL:
+                case Doctrine_Query_Token::T_ANY:
                 case Doctrine_Query_Token::T_SOME:
-                case Doctrine_Query_Token::T_NONE:
                     $this->QuantifiedExpression();
                 break;
                 default:

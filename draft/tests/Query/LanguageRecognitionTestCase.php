@@ -92,12 +92,12 @@ class Doctrine_Query_LanguageRecognition_TestCase extends Doctrine_UnitTestCase
 
     public function testExistsExpressionSupportedInWherePart()
     {
-        $this->assertValidDql('FROM User WHERE EXISTS (SELECT g.id FROM Groupuser g WHERE g.user_id = u.id)');
+        $this->assertValidDql('FROM User WHERE EXISTS (SELECT g.id FROM UserGroupuser g WHERE g.user_id = u.id)');
     }
 
     public function testNotExistsExpressionSupportedInWherePart()
     {
-        $this->assertValidDql('FROM User WHERE NOT EXISTS (SELECT g.id FROM Groupuser g WHERE g.user_id = u.id)');
+        $this->assertValidDql('FROM User WHERE NOT EXISTS (SELECT g.id FROM UserGroupuser g WHERE g.user_id = u.id)');
     }
 
     public function testLiteralValueAsInOperatorOperandIsSupported()
@@ -183,42 +183,42 @@ class Doctrine_Query_LanguageRecognition_TestCase extends Doctrine_UnitTestCase
 
     public function testLeftJoin()
     {
-        $this->assertValidDql('FROM User u LEFT JOIN u.Group');
+        $this->assertValidDql('FROM User u LEFT JOIN u.UserGroup');
     }
 
     public function testJoin()
     {
-        $this->assertValidDql('FROM User u JOIN u.Group');
+        $this->assertValidDql('FROM User u JOIN u.UserGroup');
     }
 
     public function testInnerJoin()
     {
-        $this->assertValidDql('FROM User u INNER JOIN u.Group');
+        $this->assertValidDql('FROM User u INNER JOIN u.UserGroup');
     }
 
     public function testMultipleLeftJoin()
     {
-        $this->assertValidDql('FROM User u LEFT JOIN u.Group LEFT JOIN u.Phonenumber');
+        $this->assertValidDql('FROM User u LEFT JOIN u.UserGroup LEFT JOIN u.Phonenumber');
     }
 
     public function testMultipleInnerJoin()
     {
-        $this->assertValidDql('SELECT u.name FROM User u INNER JOIN u.Group INNER JOIN u.Phonenumber');
+        $this->assertValidDql('SELECT u.name FROM User u INNER JOIN u.UserGroup INNER JOIN u.Phonenumber');
     }
 
     public function testMultipleInnerJoin2()
     {
-        $this->assertValidDql('SELECT u.name FROM User u INNER JOIN u.Group, u.Phonenumber');
+        $this->assertValidDql('SELECT u.name FROM User u INNER JOIN u.UserGroup, u.Phonenumber');
     }
 
     public function testMixingOfJoins()
     {
-        $this->assertValidDql('SELECT u.name, g.name, p.phonenumber FROM User u INNER JOIN u.Group g LEFT JOIN u.Phonenumber p');
+        $this->assertValidDql('SELECT u.name, g.name, p.phonenumber FROM User u INNER JOIN u.UserGroup g LEFT JOIN u.Phonenumber p');
     }
 
     public function testMixingOfJoins2()
     {
-        $this->assertValidDql('SELECT u.name, g.name, p.phonenumber FROM User u INNER JOIN u.Group.Phonenumber p');
+        $this->assertValidDql('SELECT u.name, g.name, p.phonenumber FROM User u INNER JOIN u.UserGroup.Phonenumber p');
     }
 
     public function testOrderBySingleColumn()
@@ -256,14 +256,14 @@ class Doctrine_Query_LanguageRecognition_TestCase extends Doctrine_UnitTestCase
         $this->assertValidDql("SELECT u.name, (SELECT COUNT(p.id) FROM Phonenumber p WHERE p.entity_id = u.id) pcount FROM User u WHERE u.name = 'zYne' LIMIT 1");
     }
 
-    public function testInputParameter()
+    public function testPositionalInputParameter()
     {
-        $this->assertValidDql('FROM User WHERE u.id = ?');
+        $this->assertValidDql('FROM User u WHERE u.id = ?');
     }
 
     public function testNamedInputParameter()
     {
-        $this->assertValidDql('FROM User WHERE u.id = :id');
+        $this->assertValidDql('FROM User u WHERE u.id = :id');
     }
 
     public function testCustomJoinsAndWithKeywordSupported()
@@ -279,5 +279,40 @@ class Doctrine_Query_LanguageRecognition_TestCase extends Doctrine_UnitTestCase
     public function testIndexByClauseWithOneComponent()
     {
         $this->assertValidDql('FROM Record_City c INDEX BY c.name');
+    }
+
+    public function testIndexBySupportsJoins()
+    {
+        $this->assertValidDql('FROM Record_Country c LEFT JOIN c.City c2 INDEX BY c2.name');
+    }
+
+    public function testIndexBySupportsJoins2()
+    {
+        $this->assertValidDql('FROM User u INDEX BY u.name LEFT JOIN u.Phonenumber p INDEX BY p.phonenumber');
+    }
+
+    public function testBetweenExpressionSupported()
+    {
+        $this->assertValidDql("FROM User u WHERE u.name BETWEEN 'jepso' AND 'zYne'");
+    }
+
+    public function testNotBetweenExpressionSupported()
+    {
+        $this->assertValidDql("FROM User u WHERE u.name NOT BETWEEN 'jepso' AND 'zYne'");
+    }
+
+    public function testAllExpression()
+    {
+        $this->assertValidDql('FROM Employee e WHERE e.salary > ALL (SELECT m.salary FROM Manager m WHERE m.department = e.department)');
+    }
+
+    public function testAnyExpression()
+    {
+        $this->assertValidDql('FROM Employee e WHERE e.salary > ANY (SELECT m.salary FROM Manager m WHERE m.department = e.department)');
+    }
+
+    public function testSomeExpression()
+    {
+        $this->assertValidDql('FROM Employee e WHERE e.salary > SOME (SELECT m.salary FROM Manager m WHERE m.department = e.department)');
     }
 }

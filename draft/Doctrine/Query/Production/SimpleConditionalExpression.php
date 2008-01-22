@@ -70,7 +70,7 @@ class Doctrine_Query_Production_SimpleConditionalExpression extends Doctrine_Que
                     $this->ComparisonExpression();
                 break;
                 default:
-                    $this->_parser->syntaxError();
+                    $this->_parser->logError();
             }
         }
 

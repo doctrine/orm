@@ -101,7 +101,11 @@ class Doctrine_Query_Scanner
             $value = $match[0];
 
             if (is_numeric($value)) {
-                $type = Doctrine_Query_Token::T_NUMERIC;
+                if (strpos($value, '.') !== false || stripos($value, 'e') !== false) {
+                    $type = Doctrine_Query_Token::T_FLOAT;
+                } else {
+                    $type = Doctrine_Query_Token::T_INTEGER;
+                }
             } elseif ($value[0] === "'" && $value[strlen($value) - 1] === "'") {
                 $type = Doctrine_Query_Token::T_STRING;
             } elseif (ctype_alpha($value[0]) || $value[0] === '_') {

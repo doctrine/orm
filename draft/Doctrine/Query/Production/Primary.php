@@ -44,7 +44,8 @@ class Doctrine_Query_Production_Primary extends Doctrine_Query_Production
                 }
             break;
             case Doctrine_Query_Token::T_STRING:
-            case Doctrine_Query_Token::T_NUMERIC:
+            case Doctrine_Query_Token::T_INTEGER:
+            case Doctrine_Query_Token::T_FLOAT:
             case Doctrine_Query_Token::T_INPUT_PARAMETER:
                 $this->Atom();
             break;

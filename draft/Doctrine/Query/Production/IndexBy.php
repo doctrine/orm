@@ -20,7 +20,7 @@
  */
 
 /**
- * Join = ["LEFT" | "INNER"] "JOIN" RangeVariableDeclaration [("ON" | "WITH") ConditionalExpression]
+ * IndexBy = "INDEX" "BY" PathExpression
  *
  * @package     Doctrine
  * @subpackage  Query
@@ -30,26 +30,12 @@
  * @since       1.0
  * @version     $Revision$
  */
-class Doctrine_Query_Production_Join extends Doctrine_Query_Production
+class Doctrine_Query_Production_IndexBy extends Doctrine_Query_Production
 {
     public function execute(array $params = array())
     {
-        if ($this->_isNextToken(Doctrine_Query_Token::T_LEFT)) {
-            $this->_parser->match(Doctrine_Query_Token::T_LEFT);
-        } elseif ($this->_isNextToken(Doctrine_Query_Token::T_INNER)) {
-            $this->_parser->match(Doctrine_Query_Token::T_INNER);
-        }
-
-        $this->_parser->match(Doctrine_Query_Token::T_JOIN);
-
-        $this->RangeVariableDeclaration();
-
-        if ($this->_isNextToken(Doctrine_Query_Token::T_ON)) {
-            $this->_parser->match(Doctrine_Query_Token::T_ON);
-            $this->ConditionalExpression();
-        } elseif ($this->_isNextToken(Doctrine_Query_Token::T_WITH)) {
-            $this->_parser->match(Doctrine_Query_Token::T_WITH);
-            $this->ConditionalExpression();
-        }
+        $this->_parser->match(Doctrine_Query_Token::T_INDEX);
+        $this->_parser->match(Doctrine_Query_Token::T_BY);
+        $this->PathExpression();
     }
 }

@@ -20,7 +20,7 @@
  */
 
 /**
- * OffsetClause = "OFFSET" Expression
+ * OffsetClause = "OFFSET" integer
  *
  * @package     Doctrine
  * @subpackage  Query
@@ -35,6 +35,6 @@ class Doctrine_Query_Production_OffsetClause extends Doctrine_Query_Production
     public function execute(array $params = array())
     {
         $this->_parser->match(Doctrine_Query_Token::T_OFFSET);
-        $this->Expression();
+        $this->_parser->match(Doctrine_Query_Token::T_INTEGER);
     }
 }

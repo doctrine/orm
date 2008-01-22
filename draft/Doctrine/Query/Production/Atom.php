@@ -20,7 +20,7 @@
  */
 
 /**
- * Atom = string | numeric | input_parameter
+ * Atom = string | integer | float | input_parameter
  *
  * @package     Doctrine
  * @subpackage  Query
@@ -38,8 +38,11 @@ class Doctrine_Query_Production_Atom extends Doctrine_Query_Production
             case Doctrine_Query_Token::T_STRING:
                 $this->_parser->match(Doctrine_Query_Token::T_STRING);
             break;
-            case Doctrine_Query_Token::T_NUMERIC:
-                $this->_parser->match(Doctrine_Query_Token::T_NUMERIC);
+            case Doctrine_Query_Token::T_INTEGER:
+                $this->_parser->match(Doctrine_Query_Token::T_INTEGER);
+            break;
+            case Doctrine_Query_Token::T_FLOAT:
+                $this->_parser->match(Doctrine_Query_Token::T_FLOAT);
             break;
             case Doctrine_Query_Token::T_INPUT_PARAMETER:
                 $this->_parser->match(Doctrine_Query_Token::T_INPUT_PARAMETER);
