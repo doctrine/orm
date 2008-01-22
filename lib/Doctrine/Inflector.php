@@ -864,7 +864,7 @@ class Doctrine_Inflector
                            preg_replace('/([A-Z]+)([A-Z][a-z])/', '\1_\2',
                            preg_replace('/::/', '/', $text)))));
         
-        return trim($text);
+        return trim($text, '-');
     }
 
     /**
