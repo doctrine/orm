@@ -279,12 +279,20 @@ abstract class Doctrine_Record_Abstract extends Doctrine_Access
     {
         $this->_table->setColumn($name, $type, $length, $options);
     }
+
+    /**
+     * hasColumns
+     *
+     * @param array $definitions
+     * @return void
+     */
     public function hasColumns(array $definitions)
     {
         foreach ($definitions as $name => $options) {
             $this->hasColumn($name, $options['type'], $options['length'], $options);
         }
-    } 
+    }
+    
     /**
      * loadTemplate
      *

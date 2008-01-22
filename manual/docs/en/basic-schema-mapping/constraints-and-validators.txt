@@ -76,22 +76,6 @@ class User extends Doctrine_Record
 
 >> Note: You should only use unique constraints for other than primary key columns. Primary key columns are always unique.
 
-The following definition adds a unique constraint for columns {{name}} and {{age}}.
-
-<code type="php">
-class User extends Doctrine_Record
-{
-    public function setTableDefinition()
-    {
-        $this->hasColumn('name', 'string', 200);
-        $this->hasColumn('age', 'integer', 2);
-        
-        $this->unique(array('name', 'age'));
-    }
-}
-</code>
-
-
 +++ Check
 
 Some of the Doctrine validators also act as database level check constraints. When a record with these validators is exported additional CHECK constraints are being added to CREATE TABLE statement.
