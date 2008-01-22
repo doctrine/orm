@@ -16,7 +16,7 @@
  *
  * This software consists of voluntary contributions made by many individuals
  * and is licensed under the LGPL. For more information, see
- * <http://www.phpdoctrine.net>.
+ * <http://www.phpdoctrine.org>.
  */
 
 /**
@@ -26,7 +26,7 @@
  * @subpackage  Doctrine_Locator
  * @category    Locator
  * @license     http://www.gnu.org/licenses/lgpl.txt LGPL
- * @link        http://www.phpdoctrine.net
+ * @link        http://www.phpdoctrine.org
  * @author      Janne Vanhala <jpvanhal@cc.hut.fi>
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  * @version     $Revision$
