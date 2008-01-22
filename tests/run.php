@@ -153,8 +153,8 @@ $data_types->addTestCase(new Doctrine_DataType_Boolean_TestCase());
 $test->addTestCase($data_types);
 
 // Utility components
-$plugins = new GroupTest('Plugin tests: View, Validator, Hook','plugins');
-//$utility->addTestCase(new Doctrine_PessimisticLocking_TestCase());
+$plugins = new GroupTest('Plugin tests: View, Validator, Hook', 'plugins');
+//$plugins->addTestCase(new Doctrine_PessimisticLocking_TestCase());
 //$plugins->addTestCase(new Doctrine_Plugin_TestCase());
 $plugins->addTestCase(new Doctrine_View_TestCase());
 $plugins->addTestCase(new Doctrine_AuditLog_TestCase());

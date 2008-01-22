@@ -32,23 +32,17 @@
  */
 class Doctrine_Export_Sqlite_TestCase extends Doctrine_UnitTestCase
 {
-    public function testCreateDatabaseDoesNotExecuteSql()
+    public function testCreateDatabaseDoesNotExecuteSqlAndCreatesSqliteFile()
     {
-        try {
-            $this->export->createDatabase('db');
-            $this->fail();
-        } catch(Doctrine_Export_Exception $e) {
-            $this->pass();
-        }
+        $this->export->createDatabase('sqlite.db');
+        
+        $this->assertTrue(file_exists('sqlite.db'));
     }
-    public function testDropDatabaseDoesNotExecuteSql()
+    public function testDropDatabaseDoesNotExecuteSqlAndDeletesSqliteFile()
     {
-        try {
-            $this->export->dropDatabase('db');
-            $this->fail();
-        } catch(Doctrine_Export_Exception $e) {
-            $this->pass();
-        }
+        $this->export->dropDatabase('sqlite.db');
+
+        $this->assertFalse(file_exists('sqlite.db'));
     }
     public function testCreateTableSupportsAutoincPks()
     {
@@ -171,24 +165,9 @@ class Doctrine_Export_Sqlite_TestCase extends Doctrine_UnitTestCase
 
         $this->export->createTable('sometable', $fields, $options);
 
-        //removed this assertion and inserted the two below
-//        $this->assertEqual($this->adapter->pop(), 'CREATE TABLE sometable (id INTEGER PRIMARY KEY AUTOINCREMENT, name VARCHAR(4), INDEX myindex (id ASC, name DESC))');
-
         $this->assertEqual($this->adapter->pop(),"CREATE INDEX myindex_idx ON sometable (id ASC, name DESC)");
 
         $this->assertEqual($this->adapter->pop(), 'CREATE TABLE sometable (id INTEGER PRIMARY KEY AUTOINCREMENT, name VARCHAR(4) DEFAULT NULL)');
 
     }
-
-    /**
-    public function testExportSupportsEmulationOfCascadingDeletes()
-    {
-        $r = new ForeignKeyTest;
-
-        $this->assertEqual($this->adapter->pop(), 'COMMIT');
-        $this->assertEqual($this->adapter->pop(), 'CREATE TRIGGER doctrine_foreign_key_test_cscd_delete AFTER DELETE ON foreign_key_test BEGIN DELETE FROM foreign_key_test WHERE parent_id = old.id;END;');
-        $this->assertEqual($this->adapter->pop(), 'CREATE TABLE foreign_key_test (id INTEGER PRIMARY KEY AUTOINCREMENT, name VARCHAR(2147483647), code INTEGER, content VARCHAR(4000), parent_id INTEGER)');
-        $this->assertEqual($this->adapter->pop(), 'BEGIN TRANSACTION');
-    }
-    */
 }

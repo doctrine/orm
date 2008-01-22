@@ -48,8 +48,8 @@ class Doctrine_Task_DropDb extends Doctrine_Task
 
         $results = Doctrine::dropDatabases();
         
-        foreach ($results as $dbName => $bool) {
-            $msg = $bool ? 'Successfully dropped database named: "' . $dbName . '"':'Could not drop database named: "' .$dbName . '"';
+        foreach ($results as $name => $result) {
+            $msg = $result instanceof Exception ? 'Could not drop database for connection: "' .$name . '." Failed with exception: ' . $result->getMessage():$result;
             
             $this->notify($msg);
         }

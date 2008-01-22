@@ -96,13 +96,40 @@ class Doctrine_Connection_Sqlite extends Doctrine_Connection_Common
     }
 
     /**
-     * getDatabaseFile
+     * createDatabase
      *
-     * @param string $name      the name of the database
-     * @return string
+     * @return void
      */
-    public function getDatabaseFile($name)
+    public function createDatabase()
     {
-        return $name . '.db';
+      try {
+          $manager = $this->getManager();
+
+          $info = $manager->parseDsn($this->getOption('dsn'));
+
+          $this->export->createDatabase($info['database']);
+
+          return 'Successfully created database for connection "' . $this->getName() . '" at path "' . $info['database'] . '"';
+      } catch (Exception $e) {
+          return $e;
+      }
+    }
+
+    /**
+     * dropDatabase
+     *
+     * @return void
+     */
+    public function dropDatabase()
+    {
+      try {
+          $info = $this->getManager()->parseDsn($this->getOption('dsn'));
+
+          $this->export->dropDatabase($info['database']);
+
+          return 'Successfully dropped database for connection "' . $this->getName() . '" at path "' . $info['database'] . '"';
+      } catch (Exception $e) {
+          return $e;
+      }
     }
 }

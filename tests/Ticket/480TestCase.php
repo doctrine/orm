@@ -45,8 +45,8 @@ class Doctrine_Ticket_480_TestCase extends Doctrine_UnitTestCase
 {
     public function testInit()
     {
-                $this->dbh = new Doctrine_Adapter_Mock('oracle');
-                $this->conn = Doctrine_Manager::getInstance()->openConnection($this->dbh);
+        $this->dbh = new Doctrine_Adapter_Mock('oracle');
+        $this->conn = Doctrine_Manager::getInstance()->openConnection($this->dbh);
     }
 
     public function testTicket()

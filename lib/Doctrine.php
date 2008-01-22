@@ -894,47 +894,7 @@ final class Doctrine
      */
     public static function createDatabases($specifiedConnections = array())
     {
-        if ( ! is_array($specifiedConnections)) {
-            $specifiedConnections = (array) $specifiedConnections;
-        }
-
-        $manager = Doctrine_Manager::getInstance();
-        $connections = $manager->getConnections();
-
-        $results = array();
-
-        foreach ($connections as $name => $connection) {
-            if ( ! empty($specifiedConnections) && !in_array($name, $specifiedConnections)) {
-                continue;
-            }
-
-            $info = $manager->parsePdoDsn($connection->getOption('dsn'));
-            $username = $connection->getOption('username');
-            $password = $connection->getOption('password');
-
-            // Make connection without database specified so we can create it
-            $connect = $manager->openConnection(new PDO($info['scheme'] . ':host=' . $info['host'], $username, $password), 'tmp_connection', false);
-
-            try {
-                // Create database
-                $connect->export->createDatabase($name);
-
-                // Close the tmp connection with no database
-                $manager->closeConnection($connect);
-
-                // Close original connection
-                $manager->closeConnection($connection);
-
-                // Reopen original connection with newly created database
-                $manager->openConnection(new PDO($info['dsn'], $username, $password), $name, true);
-
-                $results[$name] = true;
-            } catch (Exception $e) {
-                $results[$name] = false;
-            }
-        }
-
-        return $results;
+        return Doctrine_Manager::getInstance()->createDatabases($specifiedConnections);
     }
 
     /**
@@ -947,31 +907,7 @@ final class Doctrine
      */
     public static function dropDatabases($specifiedConnections = array())
     {
-        if ( ! is_array($specifiedConnections)) {
-            $specifiedConnections = (array) $specifiedConnections;
-        }
-
-        $manager = Doctrine_Manager::getInstance();
-
-        $connections = $manager->getConnections();
-
-        $results = array();
-
-        foreach ($connections as $name => $connection) {
-            if ( ! empty($specifiedConnections) && !in_array($name, $specifiedConnections)) {
-                continue;
-            }
-
-            try {
-                $connection->export->dropDatabase($connection->getDatabaseName());
-
-                $results[$name] = true;
-            } catch (Exception $e) {
-                $results[$name] = false;
-            }
-        }
-
-        return $results;
+        return Doctrine_Manager::getInstance()->dropDatabases($specifiedConnections);
     }
 
     /**

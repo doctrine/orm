@@ -103,16 +103,15 @@ class Doctrine_TreeStructure_TestCase extends Doctrine_UnitTestCase
         $o4->name = 'o4';
         $o4->save();
 
-        $o1->Children;
         $this->assertFalse(isset($o1->Parent));
+        $this->assertTrue(isset($o2->Parent));
+        $this->assertTrue($o2->Parent === $o1);
+        $this->assertFalse(isset($o4->Parent));
+        
         $this->assertTrue(count($o1->Children) == 2);
         $this->assertTrue(count($o1->get('Children')) == 2);
 
-        $this->assertTrue(isset($o2->Parent));
-        $this->assertTrue($o2->Parent === $o1);
-
         $this->assertTrue(count($o4->Children) == 0);
-        $this->assertFalse(isset($o4->Parent));
     }
     public function testTreeStructureFetchingWorksWithDql()
     {

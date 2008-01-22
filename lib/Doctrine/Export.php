@@ -1056,6 +1056,10 @@ class Doctrine_Export extends Doctrine_Connection_Module
 
     /**
      * exportClasses
+     *
+     * FIXME: This method is a big huge hack. The sql needs to be executed in the correct order. I have some stupid logic to 
+     * make sure they are in the right order.
+     *
      * method for exporting Doctrine_Record classes to a schema
      *
      * @throws Doctrine_Connection_Exception    if some error other than Doctrine::ERR_ALREADY_EXISTS
@@ -1073,7 +1077,8 @@ class Doctrine_Export extends Doctrine_Connection_Module
 
             if ( ! isset($connections[$connectionName])) {
                 $connections[$connectionName] = array();
-                $connections[$connectionName]['creates'] = array();
+                $connections[$connectionName]['create_tables'] = array();
+                $connections[$connectionName]['create_sequences'] = array();
                 $connections[$connectionName]['alters'] = array();
             }
 
@@ -1081,9 +1086,15 @@ class Doctrine_Export extends Doctrine_Connection_Module
             // Build array of all the creates
             // We need these to happen first
             foreach ($sql as $key => $query) {
-                if (strstr($query, 'CREATE')) {
-                    $connections[$connectionName]['creates'][] = $query;
-                    // Unset the create from sql so we can have an array of everything else but creates
+                if (strstr($query, 'CREATE TABLE')) {
+                    $connections[$connectionName]['create_tables'][] = $query;
+
+                    unset($sql[$key]);
+                }
+
+                if (strstr($query, 'CREATE SEQUENCE')) {
+                    $connections[$connectionName]['create_sequences'][] = $query;
+
                     unset($sql[$key]);
                 }
             }
@@ -1094,7 +1105,7 @@ class Doctrine_Export extends Doctrine_Connection_Module
         // Loop over all the sql again to merge the creates and alters in to the same array, but so that the alters are at the bottom
         $build = array();
         foreach ($connections as $connectionName => $sql) {
-            $build[$connectionName] = array_merge($sql['creates'], $sql['alters']);
+            $build[$connectionName] = array_merge($sql['create_tables'], $sql['create_sequences'], $sql['alters']);
         }
 
         foreach ($build as $connectionName => $sql) {

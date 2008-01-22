@@ -75,6 +75,15 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
      * @var array  An array of mapper objects currently maintained by this connection.
      */
     protected $_mappers = array();
+    
+    /**
+     * $_name
+     *
+     * Name of the connection
+     *
+     * @var string $_name
+     */
+    protected $_name;
 
     /**
      * @var string $driverName                  the name of this connection driver
@@ -306,6 +315,16 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
      */
     public function getName()
     {
+        return $this->_name;
+    }
+    
+    public function setName($name)
+    {
+        $this->_name = $name;
+    }
+    
+    public function getDriverName()
+    {
         return $this->driverName;
     }
 
@@ -340,7 +359,7 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
                     $this->modules[$name] = new Doctrine_Formatter($this);
                     break;
                 default:
-                    $class = 'Doctrine_' . ucwords($name) . '_' . $this->getName();
+                    $class = 'Doctrine_' . ucwords($name) . '_' . $this->getDriverName();
                     $this->modules[$name] = new $class($this);
                 }
         }
@@ -1378,6 +1397,59 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
     public function rollback($savepoint = null)
     {
         $this->transaction->rollback($savepoint);
+    }
+
+    /**
+     * createDatabase
+     *
+     * @return void
+     */
+    public function createDatabase()
+    {
+      $manager = $this->getManager();
+
+      $info = $manager->parsePdoDsn($this->getOption('dsn'));
+      $username = $this->getOption('username');
+      $password = $this->getOption('password');
+
+      // Make connection without database specified so we can create it
+      $connect = $manager->openConnection(new PDO($info['scheme'] . ':host=' . $info['host'], $username, $password), 'tmp_connection', false);
+      
+      try {
+          // Create database
+          $connect->export->createDatabase($info['dbname']);
+
+          // Close the tmp connection with no database
+          $manager->closeConnection($connect);
+
+          // Close original connection
+          $manager->closeConnection($this);
+
+          // Reopen original connection with newly created database
+          $manager->openConnection(new PDO($info['dsn'], $username, $password), $this->getName(), true);
+
+          return 'Successfully created database for connection "' . $this->getName() . '" named "' . $info['dbname'] . '"';
+      } catch (Exception $e) {
+          return $e;
+      }
+    }
+
+    /**
+     * dropDatabase
+     *
+     * @return void
+     */
+    public function dropDatabase()
+    {
+      try {
+          $info = $this->getManager()->parsePdoDsn($this->getOption('dsn'));
+          
+          $this->export->dropDatabase($info['dbname']);
+
+          return 'Successfully dropped database for connection "' . $this->getName() . '" named "' . $info['dbname'] . '"';
+      } catch (Exception $e) {
+          return $e;
+      }
     }
 
     /**

@@ -312,6 +312,7 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
         
         $className = $drivers[$driverName];
         $conn = new $className($this, $adapter);
+        $conn->setName($name);
 
         $this->_connections[$name] = $conn;
 
@@ -345,10 +346,16 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
         
         $e = explode(';', $e[1]);
         foreach ($e as $string) {
-            list($key, $value) = explode('=', $string);
-            $parts[$key] = $value;
+            if ($string) {
+                $e2 = explode('=', $string);
+
+                if (isset($e2[0]) && isset($e2[1])) {
+                    list($key, $value) = $e2;
+                    $parts[$key] = $value;
+                }
+            }
         }
-        
+
         return $parts;
     }
 
@@ -360,9 +367,10 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
      */
     public function parseDsn($dsn)
     {
-        //fix linux sqlite dsn so that it will parse correctly
-        $dsn = str_replace("///", "/", $dsn);
-
+        // fix sqlite dsn so that it will parse correctly
+        $dsn = str_replace("////", "/", $dsn);
+        $dsn = str_replace("///c:/", "//c:/", $dsn);
+        
         // silence any warnings
         $parts = @parse_url($dsn);
 
@@ -450,7 +458,6 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
             default:
                 throw new Doctrine_Manager_Exception('Unknown driver '.$parts['scheme']);
         }
-
 
         return $parts;
     }
@@ -693,6 +700,60 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
             throw new Doctrine_Connection_Exception();
         }
         return $this->_connections[$i];
+    }
+
+    /**
+     * createDatabases
+     *
+     * Creates databases for connections
+     *
+     * @param string $specifiedConnections Array of connections you wish to create the database for
+     * @return void
+     */
+    public function createDatabases($specifiedConnections = array())
+    {
+        if ( ! is_array($specifiedConnections)) {
+            $specifiedConnections = (array) $specifiedConnections;
+        }
+
+        $results = array();
+
+        foreach ($this as $name => $connection) {
+            if ( ! empty($specifiedConnections) && !in_array($name, $specifiedConnections)) {
+                continue;
+            }
+
+            $results[$name] = $connection->createDatabase();
+        }
+
+        return $results;
+    }
+
+    /**
+     * dropDatabases
+     *
+     * Drops databases for connections
+     *
+     * @param string $specifiedConnections Array of connections you wish to drop the database for
+     * @return void
+     */
+    public function dropDatabases($specifiedConnections = array())
+    {
+        if ( ! is_array($specifiedConnections)) {
+            $specifiedConnections = (array) $specifiedConnections;
+        }
+
+        $results = array();
+
+        foreach ($this as $name => $connection) {
+            if ( ! empty($specifiedConnections) && !in_array($name, $specifiedConnections)) {
+                continue;
+            }
+
+            $results[$name] = $connection->dropDatabase();
+        }
+
+        return $results;
     }
 
     /**
