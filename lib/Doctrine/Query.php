@@ -419,6 +419,19 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable, Seria
     }
 
     /**
+     * contains
+     *
+     * Method to check if a arbitrary piece of dql exists
+     *
+     * @param string $dql Arbitrary piece of dql to check for
+     * @return boolean
+     */
+    public function contains($dql)
+    {
+      return stripos($this->getDql(), $dql) === false ? false : true;
+    }
+
+    /**
      * processPendingFields
      * the fields in SELECT clause cannot be parsed until the components
      * in FROM clause are parsed, hence this method is called everytime a 
@@ -1122,7 +1135,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable, Seria
                 $subquery = $this->getLimitSubquery();
                 // what about composite keys?
                 $idColumnName = $table->getColumnName($table->getIdentifier());
-                switch (strtolower($this->_conn->getName())) {
+                switch (strtolower($this->_conn->getDriverName())) {
                     case 'mysql':
                         // mysql doesn't support LIMIT in subqueries
                         $list     = $this->_conn->execute($subquery, $params)->fetchAll(Doctrine::FETCH_COLUMN);
