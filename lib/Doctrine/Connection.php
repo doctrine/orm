@@ -1402,47 +1402,59 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
     /**
      * createDatabase
      *
-     * @return void
+     * Method for creating the database for the connection instance
+     *
+     * @return mixed Will return an instance of the exception thrown if the create database fails, otherwise it returns a string detailing the success
      */
     public function createDatabase()
     {
-      $manager = $this->getManager();
+        try {
+            if ( ! $dsn = $this->getOption('dsn')) {
+                throw new Doctrine_Connection_Exception('You must create your Doctrine_Connection by using a valid Doctrine style dsn in order to use the create/drop database functionality');
+            }
 
-      $info = $manager->parsePdoDsn($this->getOption('dsn'));
-      $username = $this->getOption('username');
-      $password = $this->getOption('password');
+            $manager = $this->getManager();
 
-      // Make connection without database specified so we can create it
-      $connect = $manager->openConnection(new PDO($info['scheme'] . ':host=' . $info['host'], $username, $password), 'tmp_connection', false);
-      
-      try {
-          // Create database
-          $connect->export->createDatabase($info['dbname']);
+            $info = $manager->parsePdoDsn($dsn);
+            $username = $this->getOption('username');
+            $password = $this->getOption('password');
 
-          // Close the tmp connection with no database
-          $manager->closeConnection($connect);
+            // Make connection without database specified so we can create it
+            $connect = $manager->openConnection(new PDO($info['scheme'] . ':host=' . $info['host'], $username, $password), 'tmp_connection', false);
 
-          // Close original connection
-          $manager->closeConnection($this);
+            // Create database
+            $connect->export->createDatabase($info['dbname']);
 
-          // Reopen original connection with newly created database
-          $manager->openConnection(new PDO($info['dsn'], $username, $password), $this->getName(), true);
+            // Close the tmp connection with no database
+            $manager->closeConnection($connect);
 
-          return 'Successfully created database for connection "' . $this->getName() . '" named "' . $info['dbname'] . '"';
-      } catch (Exception $e) {
-          return $e;
-      }
+            // Close original connection
+            $manager->closeConnection($this);
+
+            // Reopen original connection with newly created database
+            $manager->openConnection(new PDO($info['dsn'], $username, $password), $this->getName(), true);
+
+            return 'Successfully created database for connection "' . $this->getName() . '" named "' . $info['dbname'] . '"';
+        } catch (Exception $e) {
+            return $e;
+        }
     }
 
     /**
      * dropDatabase
      *
-     * @return void
+     * Method for dropping the database for the connection instance
+     *
+     * @return mixed Will return an instance of the exception thrown if the drop database fails, otherwise it returns a string detailing the success
      */
     public function dropDatabase()
     {
       try {
-          $info = $this->getManager()->parsePdoDsn($this->getOption('dsn'));
+          if ( ! $dsn = $this->getOption('dsn')) {
+              throw new Doctrine_Connection_Exception('You must create your Doctrine_Connection by using a valid Doctrine style dsn in order to use the create/drop database functionality');
+          }
+
+          $info = $this->getManager()->parsePdoDsn($dsn);
           
           $this->export->dropDatabase($info['dbname']);
 

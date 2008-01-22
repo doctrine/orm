@@ -91,16 +91,6 @@ class Doctrine_Connection_Mysql extends Doctrine_Connection_Common
     }
 
     /**
-     * returns the name of the connected database
-     *
-     * @return string
-     */
-    public function getDatabaseName()
-    {
-        return $this->fetchOne('SELECT DATABASE()');
-    }
-
-    /**
      * Set the charset on the current connection
      *
      * @param string    charset
