@@ -86,6 +86,8 @@ class Doctrine_Cache_Memcache extends Doctrine_Cache_Driver
 
         if (is_array($tmp)) {
             return $tmp[0];
+        } else if (is_string($tmp)) {
+            return $tmp;
         }
 
         return false;
