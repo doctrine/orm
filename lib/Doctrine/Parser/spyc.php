@@ -510,6 +510,10 @@
     function _parseLine($line) {
       $line = trim($line);
 
+      if(!preg_match("/\\\#/", $line)) { 
+        $line = trim(preg_replace('/#.*$/', '', $line)); 
+      }
+
       $array = array();
 
       if (preg_match('/^-(.*):$/',$line)) {
