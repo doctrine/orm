@@ -39,11 +39,7 @@ class Doctrine_Template_Listener_Sluggable extends Doctrine_Record_Listener
      *
      * @var string
      */
-    protected $_options = array('name'    =>  'slug',
-                                'type'    =>  'clob',
-                                'length'  =>  null,
-                                'options' =>  array(),
-                                'fields'  =>  array());
+    protected $_options = array();
 
     /**
      * __construct
@@ -53,7 +49,7 @@ class Doctrine_Template_Listener_Sluggable extends Doctrine_Record_Listener
      */
     public function __construct(array $options)
     {
-        $this->_options = Doctrine_Lib::arrayDeepMerge($this->_options, $options);
+        $this->_options = $options;
     }
 
     public function preInsert(Doctrine_Event $event)
