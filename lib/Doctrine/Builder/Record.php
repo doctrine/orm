@@ -26,7 +26,7 @@
  * based on a database schema.
  *
  * @package     Doctrine
- * @subpackage  Import
+ * @subpackage  Builder
  * @link        www.phpdoctrine.com
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @since       1.0
@@ -36,7 +36,7 @@
  * @author      Nicolas Bérard-Nault <nicobn@php.net>
  * @author      Jonathan H. Wage <jwage@mac.com>
  */
-class Doctrine_Import_Builder
+class Doctrine_Builder_Record
 {
     /**
      * Path
@@ -625,7 +625,7 @@ END;
     public function buildDefinition(array $definition)
     {
         if ( ! isset($definition['className'])) {
-            throw new Doctrine_Import_Builder_Exception('Missing class name.');
+            throw new Doctrine_Builder_Exception('Missing class name.');
         }
 
         $abstract = isset($definition['abstract']) && $definition['abstract'] === true ? 'abstract ':null;
@@ -667,7 +667,7 @@ END;
     public function buildRecord(array $definition)
     {
         if ( !isset($definition['className'])) {
-            throw new Doctrine_Import_Builder_Exception('Missing class name.');
+            throw new Doctrine_Builder_Exception('Missing class name.');
         }
 
         if ($this->generateBaseClasses()) {
@@ -802,7 +802,7 @@ END;
         }
 
         if (isset($bytes) && $bytes === false) {
-            throw new Doctrine_Import_Builder_Exception("Couldn't write file " . $writePath);
+            throw new Doctrine_Builder_Exception("Couldn't write file " . $writePath);
         }
     }
 }

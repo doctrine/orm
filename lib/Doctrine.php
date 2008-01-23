@@ -974,7 +974,7 @@ final class Doctrine
      */
     public static function generateMigrationClass($className, $migrationsPath)
     {
-        $builder = new Doctrine_Migration_Builder($migrationsPath);
+        $builder = new Doctrine_Builder_Migration($migrationsPath);
 
         return $builder->generateMigrationClass($className);
     }
@@ -988,7 +988,7 @@ final class Doctrine
      */
     public static function generateMigrationsFromDb($migrationsPath)
     {
-        $builder = new Doctrine_Migration_Builder($migrationsPath);
+        $builder = new Doctrine_Builder_Migration($migrationsPath);
 
         return $builder->generateMigrationsFromDb();
     }
@@ -1002,7 +1002,7 @@ final class Doctrine
      */
     public static function generateMigrationsFromModels($migrationsPath, $modelsPath = null)
     {
-        $builder = new Doctrine_Migration_Builder($migrationsPath);
+        $builder = new Doctrine_Builder_Migration($migrationsPath);
 
         return $builder->generateMigrationsFromModels($modelsPath);
     }

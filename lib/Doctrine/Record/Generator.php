@@ -266,7 +266,7 @@ abstract class Doctrine_Record_Generator extends Doctrine_Record_Abstract
     {
         $options['className'] = $this->_options['className'];
 
-        $builder = new Doctrine_Import_Builder();
+        $builder = new Doctrine_Builder_Record();
 
         if ($this->_options['generateFiles']) {
             if (isset($this->_options['generatePath']) && $this->_options['generatePath']) {

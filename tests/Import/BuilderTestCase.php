@@ -36,7 +36,7 @@ class Doctrine_Import_Builder_TestCase extends Doctrine_UnitTestCase
     {
         $table = $this->conn->getTable('Phonenumber');
         
-        $builder = new Doctrine_Import_Builder();
+        $builder = new Doctrine_Builder_Record();
         
         $rel = $builder->buildRelationDefinition($table->getRelations());
 

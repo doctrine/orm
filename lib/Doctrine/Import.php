@@ -207,7 +207,7 @@ class Doctrine_Import extends Doctrine_Connection_Module
             continue;
           }
           
-          $builder = new Doctrine_Import_Builder();
+          $builder = new Doctrine_Builder_Record();
           $builder->setTargetPath($directory);
           $builder->setOptions($options);
 

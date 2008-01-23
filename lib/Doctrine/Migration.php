@@ -22,15 +22,13 @@
 /**
  * Doctrine_Migration
  *
- * this class represents a database view
- *
  * @package     Doctrine
  * @subpackage  Migration
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @link        www.phpdoctrine.com
  * @since       1.0
  * @version     $Revision: 1080 $
- * @author      Jonathan H. Wage <jwage@mac.com>
+ * @author      Jonathan H. Wage <jonwage@gmail.com>
  */
 class Doctrine_Migration
 {

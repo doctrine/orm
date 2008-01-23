@@ -23,7 +23,7 @@
  * Doctrine_Migration_Builder
  *
  * @package     Doctrine
- * @subpackage  Migration
+ * @subpackage  Builder
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  * @author      Jonathan H. Wage <jwage@mac.com>
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
@@ -31,7 +31,7 @@
  * @since       1.0
  * @version     $Revision: 2939 $
  */
-class Doctrine_Migration_Builder
+class Doctrine_Builder_Migration extends Doctrine_Builder
 {
     /**
      * migrationsPath
