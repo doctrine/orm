@@ -160,7 +160,7 @@ class Doctrine_Migration
         $classes = get_declared_classes();
 
         if ($this->_migrationClassesDirectory !== null) {
-            $this->_loadMigrationClassesFromDirectory($classes);
+            $this->loadMigrationClassesFromDirectory($classes);
         }
 
         $parent = new ReflectionClass('Doctrine_Migration');
