@@ -66,6 +66,10 @@ abstract class Doctrine_Configurable extends Doctrine_Locator_Injectable
      * // or
      *
      * $manager->setAttribute('portability', Doctrine::PORTABILITY_ALL);
+     *
+     * // or
+     *
+     * $manager->setAttribute('portability', 'all');
      * </code>
      *
      * @param mixed $attribute              either a Doctrine::ATTR_* integer constant or a string
@@ -75,18 +79,31 @@ abstract class Doctrine_Configurable extends Doctrine_Locator_Injectable
      * @throws Doctrine_Exception           if the value is invalid
      * @return void
      */
-    public function setAttribute($attribute,$value)
+    public function setAttribute($attribute, $value)
     {
         if (is_string($attribute)) {
             $upper = strtoupper($attribute);
 
-            $const = 'Doctrine::ATTR_' . $attribute;
+            $const = 'Doctrine::ATTR_' . $upper;
+
             if (defined($const)) {
-                $this->_state = constant($const);
+                $attribute = constant($const);
+                $this->_state = $attribute;
             } else {
-                throw new Doctrine_Exception('Unknown attribute ' . $attribute);
+                throw new Doctrine_Exception('Unknown attribute: "' . $attribute . '"');
             }
         }
+
+        if (is_string($value) && isset($upper)) {
+            $const = 'Doctrine::' . $upper . '_' . strtoupper($value);
+
+            if (defined($const)) {
+                $value = constant($const);
+            } else {
+                throw new Doctrine_Exception('Unknown attribute value: "' . $value . '"');
+            }
+        }
+
         switch ($attribute) {
             case Doctrine::ATTR_FETCHMODE:
                 throw new Doctrine_Exception('Deprecated attribute. See http://www.phpdoctrine.org/documentation/manual?chapter=configuration');
