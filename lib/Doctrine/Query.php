@@ -193,17 +193,6 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable, Seria
      */
     public function reset()
     {
-        $this->_dqlParts = array('from'      => array(),
-                                 'select'    => array(),
-                                 'forUpdate' => false,
-                                 'set'       => array(),
-                                 'join'      => array(),
-                                 'where'     => array(),
-                                 'groupby'   => array(),
-                                 'having'    => array(),
-                                 'orderby'   => array(),
-                                 'limit'     => array(),
-                                 'offset'    => array());
         $this->_pendingJoinConditions = array();
         $this->_pendingSubqueries = array();
         $this->_pendingFields = array();
