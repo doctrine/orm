@@ -1310,7 +1310,7 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
     }
 
     /**
-     * synchronizeWithArray
+     * synchronizeFromArray
      * synchronizes a Doctrine_Record and its relations with data from an array
      *
      * it expects an array representation of a Doctrine_Record similar to the return
@@ -1320,7 +1320,7 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
      *
      * @param array $array representation of a Doctrine_Record
      */
-    public function synchronizeWithArray(array $array)
+    public function synchronizeFromArray(array $array)
     {
         foreach ($array as $key => $value) {
             if ($this->getTable()->hasRelation($key)) {
