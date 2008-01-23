@@ -106,7 +106,7 @@ class Doctrine_Table_TestCase extends Doctrine_UnitTestCase
         $fk = $this->objTable->getTable()->getRelation("Email");
         $this->assertTrue($fk instanceof Doctrine_Relation_LocalKey);
         $this->assertTrue($fk->getTable() instanceof Doctrine_Table);
-        $this->assertTrue($fk->getType() == Doctrine_Relation::ONE_COMPOSITE);
+        $this->assertTrue($fk->getType() == Doctrine_Relation::ONE_AGGREGATE);
         $this->assertTrue($fk->getLocal() == "email_id");
         $this->assertTrue($fk->getForeign() == $fk->getTable()->getIdentifier());
 

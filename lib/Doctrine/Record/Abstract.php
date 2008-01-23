@@ -211,9 +211,7 @@ abstract class Doctrine_Record_Abstract extends Doctrine_Access
      */
     public function ownsOne()
     {
-        $this->_table->bind(func_get_args(), Doctrine_Relation::ONE_COMPOSITE);
-        
-        return $this;
+        throw new Doctrine_Exception('ownsMany() has been deprecated.');
     }
 
     /**
@@ -229,8 +227,7 @@ abstract class Doctrine_Record_Abstract extends Doctrine_Access
      */
     public function ownsMany()
     {
-        $this->_table->bind(func_get_args(), Doctrine_Relation::MANY_COMPOSITE);
-        return $this;
+        throw new Doctrine_Exception('ownsOne() has been deprecated.');
     }
 
     /**

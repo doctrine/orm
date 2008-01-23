@@ -60,13 +60,13 @@ class Doctrine_Record_Synchronize_TestCase extends Doctrine_UnitTestCase
         // delete a Phonenumber
         array_pop($userArray['Phonenumber']);
 
-        $user->synchronizeWithArray($userArray);
+        $user->synchronizeFromArray($userArray);
         $this->assertEqual($user->Phonenumber->count(), 1);
         $this->assertEqual($user->Phonenumber[0]->phonenumber, '555 321');
 
         // change Email
         $userArray['Email']['address'] = 'johndow@mail.com';
-        $user->synchronizeWithArray($userArray);
+        $user->synchronizeFromArray($userArray);
         $this->assertEqual($user->Email->address, 'johndow@mail.com');
 
         $user->save();
@@ -86,7 +86,7 @@ class Doctrine_Record_Synchronize_TestCase extends Doctrine_UnitTestCase
         $userArray = $user->toArray(true);
         $userArray['Phonenumber'][] = array('phonenumber' => '333 238');
 
-        $user->synchronizeWithArray($userArray);
+        $user->synchronizeFromArray($userArray);
         $this->assertEqual($user->Phonenumber->count(), 2);
         $this->assertEqual($user->Phonenumber[1]->phonenumber, '333 238');
         $user->save();
@@ -106,7 +106,7 @@ class Doctrine_Record_Synchronize_TestCase extends Doctrine_UnitTestCase
         unset($userArray['Phonenumber']);
         unset($userArray['Email']);
 
-        $user->synchronizeWithArray($userArray);
+        $user->synchronizeFromArray($userArray);
         $this->assertEqual($user->Phonenumber->count(), 0);
         $this->assertTrue(!isset($user->Email));
         $user->save();

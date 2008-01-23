@@ -3,9 +3,9 @@ class Entity extends Doctrine_Record
 {
     public function setUp() 
     {
-        $this->ownsOne('Email', array('local' => 'email_id'));
+        $this->hasOne('Email', array('local' => 'email_id'));
         $this->hasMany('Phonenumber', array('local' => 'id', 'foreign' => 'entity_id'));
-        $this->ownsOne('Account', array('foreign' => 'entity_id'));
+        $this->hasOne('Account', array('foreign' => 'entity_id'));
         $this->hasMany('Entity', array('local' => 'entity1', 
             'refClass' => 'EntityReference',
             'foreign' => 'entity2',

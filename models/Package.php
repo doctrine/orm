@@ -6,6 +6,6 @@ class Package extends Doctrine_Record {
 
     public function setUp()
     {
-        $this->ownsMany('PackageVersion as Version', 'PackageVersion.package_id');
+        $this->hasMany('PackageVersion as Version', 'PackageVersion.package_id');
     }
 }

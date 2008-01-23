@@ -9,7 +9,7 @@ class Rec2  extends Doctrine_Record
 
     public function setUp()
     {
-        $this->ownsOne('Rec1 as User', 'Rec2.user_id');
+        $this->hasOne('Rec1 as User', 'Rec2.user_id');
     }
 
 }

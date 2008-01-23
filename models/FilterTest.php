@@ -4,6 +4,6 @@ class FilterTest extends Doctrine_Record {
         $this->hasColumn('name', 'string',100);
     }
     public function setUp() {
-        $this->ownsMany('FilterTest2 as filtered', 'FilterTest2.test1_id');
+        $this->hasMany('FilterTest2 as filtered', 'FilterTest2.test1_id');
     }
 }

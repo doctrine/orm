@@ -6,6 +6,6 @@ class ValidatorTest_Person extends Doctrine_Record {
    }
    
    public function setUp() {
-      $this->ownsOne('ValidatorTest_FootballPlayer', 'ValidatorTest_FootballPlayer.person_id');
+      $this->hasOne('ValidatorTest_FootballPlayer', 'ValidatorTest_FootballPlayer.person_id');
    }
 }

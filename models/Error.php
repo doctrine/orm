@@ -1,7 +1,7 @@
 <?php
 class Error extends Doctrine_Record {
     public function setUp() {
-        $this->ownsMany('Description', 'Description.file_md5', 'file_md5');
+        $this->hasMany('Description', 'Description.file_md5', 'file_md5');
     }
     public function setTableDefinition() {
         $this->hasColumn('message', 'string',200);

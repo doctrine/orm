@@ -22,6 +22,6 @@ class QueryTest_Board extends Doctrine_Record
     public function setUp()
     {
         $this->hasOne('QueryTest_Category as category', 'QueryTest_Board.categoryId');
-        $this->ownsOne('QueryTest_Entry as lastEntry', 'QueryTest_Board.lastEntryId');
+        $this->hasOne('QueryTest_Entry as lastEntry', 'QueryTest_Board.lastEntryId');
     }
 }
