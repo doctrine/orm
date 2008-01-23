@@ -46,6 +46,10 @@ p, ul, ol, dl {
     font-size: small;
 }
 
+p.caption {
+    font-style: italic;
+}
+
 dd {
     margin-bottom: 0.5em;
 }
@@ -110,7 +114,7 @@ pre {
     color: black;
     background-color: #f7f7f7;
     border: 1px solid #d7d7d7;
-    
+
     /* Pup's Box Flow Hack, Rev 2 */
     overflow/**/: auto;
     \height: 1%;
@@ -120,9 +124,9 @@ pre {
 pre, x:-moz-any-link {
     /* overflow: auto causes artefacts */
     overflow: hidden;
-    
+
     /* prevents text to be hidden by wrapping it */
-    white-space: -moz-pre-wrap !important;  
+    white-space: -moz-pre-wrap !important;
 }
 
 pre .default {

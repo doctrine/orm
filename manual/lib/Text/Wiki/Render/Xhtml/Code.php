@@ -30,7 +30,8 @@ class Text_Wiki_Render_Xhtml_Code extends Text_Wiki_Render {
         'css_code' => null, // class for generic <code>
         'css_php'  => null, // class for PHP <code>
         'css_html' => null, // class for HTML <code>
-        'css_filename' => null // class for optional filename <div>
+        'css_filename' => null, // class for optional filename <div>
+        'code_begin_callback' => null
     );
 
     /**
@@ -47,7 +48,7 @@ class Text_Wiki_Render_Xhtml_Code extends Text_Wiki_Render {
     */
 
     function token($options)
-    {   
+    {
         $text = $options['text'];
         $attr = $options['attr'];
         $type = strtolower($attr['type']);
@@ -102,6 +103,11 @@ class Text_Wiki_Render_Xhtml_Code extends Text_Wiki_Render {
         if ($css_filename && isset($attr['filename'])) {
             $text = "<div$css_filename>" .
                 $attr['filename'] . '</div>' . $text;
+        }
+
+        $callback = $this->getConf('code_begin_callback');
+        if ($callback) {
+            $text = call_user_func($callback) . $text;
         }
 
         return "\n$text\n\n";

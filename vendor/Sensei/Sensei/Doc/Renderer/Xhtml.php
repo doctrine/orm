@@ -34,28 +34,32 @@ class Sensei_Doc_Renderer_Xhtml extends Sensei_Doc_Renderer
 {
     /**
      * Available options
-     * 
+     *
      * (Sensei_Doc_Section|null) section :
      *     Section to be rendered. If null all sections will be rendered.
      *
      * (string) url_prefix :
-     *     All URLs pointing to sections will be prefixed with this. 
+     *     All URLs pointing to sections will be prefixed with this.
      */
     protected $_options = array(
         'section'    => null,
         'url_prefix' => ''
     );
-    
+
+    private $_chapter;
+    private $_codeListingsIndex;
+
     public function __construct(Sensei_Doc_Toc $toc, array $options = array())
     {
         parent::__construct($toc, $options);
-        
+
         $this->_wiki->setRenderConf('xhtml', 'Doclink', 'url_callback', array(&$this, 'makeUrl'));
+        $this->_wiki->setRenderConf('xhtml', 'Code', 'code_begin_callback', array(&$this, 'codeListingsNumberingCallback'));
     }
 
     /**
      * Renders table of contents as nested unordered lists.
-     * 
+     *
      * @return string  rendered table of contents
      */
     public function renderToc()
@@ -72,7 +76,7 @@ class Sensei_Doc_Renderer_Xhtml extends Sensei_Doc_Renderer
     protected function _renderToc($section)
     {
         $output = '';
-    
+
         if ($section instanceof Sensei_Doc_Toc) {
             $class = ' class="tree"';
         } elseif ($section !== $this->_options['section']) {
@@ -80,27 +84,27 @@ class Sensei_Doc_Renderer_Xhtml extends Sensei_Doc_Renderer
         } else {
             $class = '';
         }
-        
-        $output .= '<ul' . $class . '>' . "\n";       
-       
+
+        $output .= '<ul' . $class . '>' . "\n";
+
         for ($i = 0; $i < $section->count(); $i++) {
             $child = $section->getChild($i);
-            
+
             $text = $child->getIndex() . ' ' . $child->getName();
             $href = $this->makeUrl($child);
-            
+
             $output .= '<li><a href="' . $href . '">' . $text . '</a>';
-            
+
             if ($child->count() > 0) {
                 $output .= "\n";
                 $output .= $this->_renderToc($child);
             }
-    
+
             $output .= '</li>' . "\n";
         }
-    
+
         $output .= '</ul>' . "\n";
-        
+
         return $output;
     }
 
@@ -113,29 +117,29 @@ class Sensei_Doc_Renderer_Xhtml extends Sensei_Doc_Renderer
     public function render()
     {
         $section = $this->_options['section'];
-        
+
         if ($section instanceof Sensei_Doc_Section) {
-        
+
             $content = $this->_renderSection($section);
-        
+
         } else {
 
-            // No section was set, so let's render all sections            
+            // No section was set, so let's render all sections
             $content = '';
             for ($i = 0; $i < count($this->_toc); $i++) {
                 $content .= $this->_renderSection($this->_toc->getChild($i));
             }
         }
-        
+
         $output = $this->_options['template'];
-        
+
         $output = str_replace('%TITLE%', $this->_options['title'], $output);
         $output = str_replace('%AUTHOR%', $this->_options['author'], $output);
         $output = str_replace('%SUBJECT%', $this->_options['subject'], $output);
         $output = str_replace('%KEYWORDS%', $this->_options['keywords'], $output);
         $output = str_replace('%TOC%', $this->renderToc(), $output);
         $output = str_replace('%CONTENT%', $content, $output);
-        
+
         return $output;
     }
 
@@ -148,21 +152,23 @@ class Sensei_Doc_Renderer_Xhtml extends Sensei_Doc_Renderer
     protected function _renderSection(Sensei_Doc_Section $section)
     {
         $output = '';
-        
+
         $title = $section->getIndex() . ' ' . $section->getName();
         $level = $section->getLevel();
-        
+
         if ($level === 1) {
             $class = ' class="chapter"';
             $title = 'Chapter ' . $title;
+            $this->_chapter = $section->getIndex();
+            $this->_codeListingsIndex = 0;
         } else {
             $class = ' class="section"';
         }
-        
+
         $output .= '<div' . $class .'>' . "\n";
-        
+
         $output .= "<h$level>";
-        
+
         if ( ! ($this->_options['section'] instanceof Sensei_Doc_Section)
         || ($level > $this->_options['section']->getLevel())) {
             $anchor = $this->makeAnchor($section);
@@ -171,22 +177,22 @@ class Sensei_Doc_Renderer_Xhtml extends Sensei_Doc_Renderer
         } else {
             $output .= $title;
         }
-        
+
         $output .= "</h$level>";
-        
+
         // Transform section contents from wiki syntax to XHTML
         $output .= $this->_wiki->transform($section->getText());
-        
+
         // Render children of this section recursively
         for ($i = 0; $i < count($section); $i++) {
             $output .= $this->_renderSection($section->getChild($i));
         }
-        
+
         $output .= '</div>' . "\n";
-        
-        return $output;       
+
+        return $output;
     }
-    
+
     public function makeUrl($section)
     {
         if ($section instanceof Sensei_Doc_Section) {
@@ -194,22 +200,22 @@ class Sensei_Doc_Renderer_Xhtml extends Sensei_Doc_Renderer
         } else {
             $path = $section;
         }
-        
+
         $url = $this->_options['url_prefix'];
-        
+
         if ($this->_options['section'] instanceof Sensei_Doc_Section) {
             $level = $this->_options['section']->getLevel();
             $url .= implode(':', array_slice(explode(':', $path), 0, $level));
         }
-        
+
         $anchor = $this->makeAnchor($section);
         if ($anchor !== '') {
             $url .= '#' . $anchor;
         }
-        
+
         return $url;
     }
-    
+
     public function makeAnchor($section)
     {
         if ($section instanceof Sensei_Doc_Section) {
@@ -217,12 +223,20 @@ class Sensei_Doc_Renderer_Xhtml extends Sensei_Doc_Renderer
         } else {
             $path = $section;
         }
-        
+
         if ($this->_options['section'] instanceof Sensei_Doc_Section) {
             $level = $this->_options['section']->getLevel();
             return implode(':', array_slice(explode(':', $path), $level));
         } else {
             return $path;
         }
+    }
+
+    public function codeListingsNumberingCallback()
+    {
+        $this->_codeListingsIndex++;
+        $html = '<p class="caption">Listing ' . $this->_chapter . '.'
+              . $this->_codeListingsIndex . "</p>\n";
+        return $html;
     }
 }
