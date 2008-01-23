@@ -211,7 +211,10 @@ abstract class Doctrine_Record_Abstract extends Doctrine_Access
      */
     public function ownsOne()
     {
-        throw new Doctrine_Exception('ownsMany() has been deprecated.');
+        throw new Doctrine_Exception(
+            'ownsMany() has been deprecated. ' .
+            'To create a composite relationship, use hasMany() with onDelete CASCADE option.'
+        );
     }
 
     /**
@@ -227,7 +230,10 @@ abstract class Doctrine_Record_Abstract extends Doctrine_Access
      */
     public function ownsMany()
     {
-        throw new Doctrine_Exception('ownsOne() has been deprecated.');
+        throw new Doctrine_Exception(
+            'ownsOne() has been deprecated. ' .
+            'To create a composite relationship, use hasOne() with onDelete CASCADE option.'
+        );
     }
 
     /**
