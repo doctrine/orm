@@ -50,6 +50,7 @@ class Doctrine_Template_Timestampable extends Doctrine_Template
                                                     'format'        =>  'Y-m-d H:i:s',
                                                     'disabled'      => false,
                                                     'expression'    => false,
+                                                    'onInsert'      => true,
                                                     'options'       =>  array()));
 
     /**
