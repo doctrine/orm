@@ -34,8 +34,8 @@ class Doctrine_Task_Dql extends Doctrine_Task
 {
     public $description          =   'Execute dql query and display the results',
            $requiredArguments    =   array('models_path'    =>  'Specify path to your Doctrine_Record definitions.',
-                                           'dql_query' => 'Specify the complete dql query to execute.'),
-           $optionalArguments    =   array();
+                                           'dql_query'      =>  'Specify the complete dql query to execute.'),
+           $optionalArguments    =   array('params'         =>  'Comma separated list of the params to replace the ? tokens in the dql');
     
     public function execute()
     {
@@ -47,7 +47,7 @@ class Doctrine_Task_Dql extends Doctrine_Task
         
         $this->notify('executing: "' . $dql . '"');
         
-        $results = $query->query($dql);
+        $results = $query->query($dql, explode(',', $this->getArgument('params')));
         
         $this->printResults($results);
     }
