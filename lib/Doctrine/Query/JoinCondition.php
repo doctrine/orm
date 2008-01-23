@@ -45,12 +45,16 @@ class Doctrine_Query_JoinCondition extends Doctrine_Query_Condition
             $operator  = $e[1];
             $value     = $e[2];
 
+            $conn      = $this->query->getConnection();
             $alias     = $this->query->getTableAlias($reference);
             $map       = $this->query->getAliasDeclaration($reference);
             $table     = $map['table'];
             // check if value is enumerated value
             $enumIndex = $table->enumIndex($field, trim($value, "'"));
 
+            if (false !== $enumIndex && $conn->getAttribute(Doctrine::ATTR_USE_NATIVE_ENUM)) {
+                $enumIndex = $conn->quote($enumIndex, 'text');
+            }
 
             if (substr($value, 0, 1) == '(') {
                 // trim brackets
@@ -68,7 +72,12 @@ class Doctrine_Query_JoinCondition extends Doctrine_Query_Condition
 
                     $value = array();
                     foreach ($e as $part) {
-                        $index   = $table->enumIndex($field, trim($part, "'"));
+                        $index = $table->enumIndex($field, trim($part, "'"));
+
+                        if (false !== $index && $conn->getAttribute(Doctrine::ATTR_USE_NATIVE_ENUM)) {
+                            $index = $conn->quote($index, 'text');
+                        }
+
                         if ($index !== false) {
                             $value[] = $index;
                         } else {

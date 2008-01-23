@@ -316,23 +316,25 @@ class Doctrine_DataDict_Mysql extends Doctrine_DataDict
             break;
             case 'enum':
                 $type[] = 'enum';
-                preg_match_all('/\'.+\'/U', $field['type'], $matches);
+                preg_match_all('/\'((?:\'\'|[^\'])*)\'/', $field['type'], $matches);
                 $length = 0;
                 $fixed = false;
                 if (is_array($matches)) {
-                    foreach ($matches[0] as $value) {
-                        $length = max($length, strlen($value)-2);
+                    foreach ($matches[1] as &$value) {
+                        $value = str_replace('\'\'', '\'', $value);
+                        $length = max($length, strlen($value));
                     }
-                    if ($length == '1' && count($matches[0]) == 2) {
+                    if ($length == '1' && count($matches[1]) == 2) {
                         $type[] = 'boolean';
                         if (preg_match('/^(is|has)/', $field['name'])) {
                             $type = array_reverse($type);
                         }
                     } else {
-                        $values = $matches[0];
+                        $values = $matches[1];
                     }
                 }
                 $type[] = 'integer';
+                break;
             case 'set':
                 $fixed = false;
                 $type[] = 'text';
