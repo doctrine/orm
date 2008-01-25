@@ -51,10 +51,10 @@ class Doctrine_Task_Dql extends Doctrine_Task
         
         $results = $query->query($dql, $params);
 
-        $this->printResults($results);
+        $this->_printResults($results);
     }
 
-    protected function printResults($data)
+    protected function _printResults($data)
     {
         $array = $data->toArray(true);
 
