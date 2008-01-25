@@ -1841,7 +1841,7 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
             }
         }
 
-        throw new Doctrine_Record_Exception('Unknown method ' . $method);
+        throw new Doctrine_Record_Exception(sprintf('Unknown method %s::%s', get_class($this), $method));
     }
 
     /**
