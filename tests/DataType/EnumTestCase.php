@@ -56,7 +56,28 @@ class Doctrine_DataType_Enum_TestCase extends Doctrine_UnitTestCase
         }
     }
 
+    public function testParameterConversionInCount() 
+    {
+        try {
+            $query = new Doctrine_Query($this->connection);
+            $ret = $query->parseQuery("FROM EnumTest WHERE EnumTest.status = 'open'")
+              ->count();
+            $this->assertEqual($ret, 1);
+        } catch (Exception $e) {
+            $this->fail();
+        }
 
+        try {
+            $query = new Doctrine_Query($this->connection);
+            $ret = $query->parseQuery("FROM EnumTest WHERE EnumTest.status = 'open'")
+              ->count(array('open'));
+            $this->assertEqual($ret, 1);
+        } catch (Exception $e) {
+            $this->fail();
+        }
+
+
+    }
 
     public function testInAndNotIn() 
     {
