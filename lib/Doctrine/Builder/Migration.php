@@ -20,7 +20,7 @@
  */
 
 /**
- * Doctrine_Migration_Builder
+ * Doctrine_Builder_Migration
  *
  * @package     Doctrine
  * @subpackage  Builder
@@ -35,7 +35,7 @@ class Doctrine_Builder_Migration extends Doctrine_Builder
 {
     /**
      * migrationsPath
-     * 
+     *
      * The path to your migration classes directory
      *
      * @var string
@@ -44,7 +44,7 @@ class Doctrine_Builder_Migration extends Doctrine_Builder
 
     /**
      * suffix
-     * 
+     *
      * File suffix to use when writing class definitions
      *
      * @var string $suffix
@@ -70,7 +70,7 @@ class Doctrine_Builder_Migration extends Doctrine_Builder
         if ($migrationsPath) {
             $this->setMigrationsPath($migrationsPath);
         }
-        
+
         $this->_loadTemplate();
     }
 
@@ -99,12 +99,12 @@ class Doctrine_Builder_Migration extends Doctrine_Builder
 
     /**
      * loadTemplate
-     * 
+     *
      * Loads the class template used for generating classes
      *
      * @return void
      */
-    protected function _loadTemplate() 
+    protected function _loadTemplate()
     {
         if (isset(self::$_tpl)) {
             return;
@@ -139,18 +139,18 @@ END;
         $directory = sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'tmp_doctrine_models';
 
         Doctrine::generateModelsFromDb($directory);
-        
+
         $result = $this->generateMigrationsFromModels($directory);
-        
+
         Doctrine_Lib::removeDirectories($directory);
-        
+
         return $result;
     }
 
     /**
      * generateMigrationsFromModels
      *
-     * @param string $modelsPath 
+     * @param string $modelsPath
      * @return void
      */
     public function generateMigrationsFromModels($modelsPath = null)
@@ -160,47 +160,47 @@ END;
         } else {
             $models = Doctrine::getLoadedModels();
         }
-        
+
         $foreignKeys = array();
-        
+
         foreach ($models as $model) {
             $export = Doctrine::getTable($model)->getExportableFormat();
-            
+
             $foreignKeys[$export['tableName']] = $export['options']['foreignKeys'];
-            
+
             $up = $this->buildCreateTable($export);
             $down = $this->buildDropTable($export);
-            
+
             $className = 'Add' . Doctrine::classify($export['tableName']);
-            
+
             $this->generateMigrationClass($className, array(), $up, $down);
         }
-        
+
         $className = 'ApplyForeignKeyConstraints';
-        
+
         $up = '';
         $down = '';
         foreach ($foreignKeys as $tableName => $definitions)    {
             $tableForeignKeyNames[$tableName] = array();
-            
+
             foreach ($definitions as $definition) {
                 $definition['name'] = $tableName . '_' . $definition['foreignTable'] . '_' . $definition['local'] . '_' . $definition['foreign'];
-                
+
                 $up .= $this->buildCreateForeignKey($tableName, $definition);
                 $down .= $this->buildDropForeignKey($tableName, $definition);
             }
         }
-        
+
         $this->generateMigrationClass($className, array(), $up, $down);
-        
+
         return true;
     }
 
     /**
      * buildCreateForeignKey
      *
-     * @param string $tableName 
-     * @param string $definition 
+     * @param string $tableName
+     * @param string $definition
      * @return void
      */
     public function buildCreateForeignKey($tableName, $definition)
@@ -211,8 +211,8 @@ END;
     /**
      * buildDropForeignKey
      *
-     * @param string $tableName 
-     * @param string $definition 
+     * @param string $tableName
+     * @param string $definition
      * @return void
      */
     public function buildDropForeignKey($tableName, $definition)
@@ -223,26 +223,26 @@ END;
     /**
      * buildCreateTable
      *
-     * @param string $tableData 
+     * @param string $tableData
      * @return void
      */
     public function buildCreateTable($tableData)
     {
         $code  = "\t\t\$this->createTable('" . $tableData['tableName'] . "', ";
-        
+
         $code .= var_export($tableData['columns'], true) . ", ";
-        
+
         $code .= var_export(array('indexes' => $tableData['options']['indexes'], 'primary' => $tableData['options']['primary']), true);
-        
+
         $code .= ");";
-        
+
         return $code;
     }
 
     /**
      * buildDropTable
      *
-     * @param string $tableData 
+     * @param string $tableData
      * @return string
      */
     public function buildDropTable($tableData)
@@ -263,16 +263,16 @@ END;
             if ( ! $this->getMigrationsPath()) {
                 throw new Doctrine_Migration_Exception('You must specify the path to your migrations.');
             }
-            
+
             $migration = new Doctrine_Migration($this->getMigrationsPath());
             $next = (string) $migration->getNextVersion();
-            
+
             $fileName = str_repeat('0', (3 - strlen($next))) . $next . '_' . Doctrine::tableize($className) . $this->_suffix;
-            
+
             $class = $this->buildMigrationClass($className, $fileName, $options, $up, $down);
-            
+
             $path = $this->getMigrationsPath() . DIRECTORY_SEPARATOR . $fileName;
-            
+
             file_put_contents($path, $class);
         }
     }
@@ -285,15 +285,15 @@ END;
     public function buildMigrationClass($className, $fileName = null, $options = array(), $up = null, $down = null)
     {
         $extends = isset($options['extends']) ? $options['extends']:'Doctrine_Migration';
-        
+
         $content  = '<?php' . PHP_EOL;
-        
+
         $content .= sprintf(self::$_tpl, $className,
                                        $extends,
                                        $up,
                                        $down);
-        
-        
+
+
         return $content;
     }
 }

@@ -20,7 +20,7 @@
  */
 
 /**
- * Doctrine_Import_Builder
+ * Doctrine_Builder_Record
  *
  * Import builder is responsible of building Doctrine_Record classes
  * based on a database schema.
@@ -40,13 +40,13 @@ class Doctrine_Builder_Record
 {
     /**
      * Path
-     * 
+     *
      * the path where imported files are being generated
      *
      * @var string $_path
      */
     protected $_path = '';
-    
+
     /**
      * packagesPrefix
      *
@@ -60,10 +60,10 @@ class Doctrine_Builder_Record
      * @var string
      */
     protected $_packagesPath = '';
-    
+
     /**
      * suffix
-     * 
+     *
      * File suffix to use when writing class definitions
      *
      * @var string $suffix
@@ -72,7 +72,7 @@ class Doctrine_Builder_Record
 
     /**
      * generateBaseClasses
-     * 
+     *
      * Bool true/false for whether or not to generate base classes
      *
      * @var string $suffix
@@ -81,20 +81,20 @@ class Doctrine_Builder_Record
 
     /**
      * baseClassesDirectory
-     * 
+     *
      * Directory to put the generate base classes in
      *
      * @var string $suffix
      */
     protected $_baseClassesDirectory = 'generated';
-    
+
     /**
      * baseClassName
      *
      * @var string
      */
     protected $_baseClassName = 'Doctrine_Record';
-    
+
     /**
      * tpl
      *
@@ -128,11 +128,11 @@ class Doctrine_Builder_Record
 
         $this->_path = $path;
     }
-    
+
     /**
      * setPackagePath
      *
-     * @param string $packagesPrefix 
+     * @param string $packagesPrefix
      * @return void
      */
     public function setPackagesPrefix($packagesPrefix)
@@ -143,14 +143,14 @@ class Doctrine_Builder_Record
     /**
      * setPackagesPath
      *
-     * @param string $packagesPath 
+     * @param string $packagesPath
      * @return void
      */
     public function setPackagesPath($packagesPath)
     {
         $this->_packagesPath = $packagesPath;
     }
-    
+
     /**
      * generateBaseClasses
      *
@@ -177,7 +177,7 @@ class Doctrine_Builder_Record
     {
         $this->_baseClassesDirectory;
     }
-    
+
     /**
      * setBaseClassName
      *
@@ -187,11 +187,11 @@ class Doctrine_Builder_Record
     {
         $this->_baseClassName = $className;
     }
-    
+
     /**
      * setSuffix
      *
-     * @param string $suffix 
+     * @param string $suffix
      * @return void
      */
     public function setSuffix($suffix)
@@ -212,7 +212,7 @@ class Doctrine_Builder_Record
     /**
      * setOptions
      *
-     * @param string $options 
+     * @param string $options
      * @return void
      */
     public function setOptions($options)
@@ -227,14 +227,14 @@ class Doctrine_Builder_Record
     /**
      * setOption
      *
-     * @param string $key 
-     * @param string $value 
+     * @param string $key
+     * @param string $value
      * @return void
      */
     public function setOption($key, $value)
     {
         $name = 'set' . Doctrine::classify($key);
-        
+
         if (method_exists($this, $name)) {
             $this->$name($value);
         } else {
@@ -245,12 +245,12 @@ class Doctrine_Builder_Record
 
     /**
      * loadTemplate
-     * 
+     *
      * Loads the class template used for generating classes
      *
      * @return void
      */
-    public function loadTemplate() 
+    public function loadTemplate()
     {
         if (isset(self::$_tpl)) {
             return;
@@ -281,50 +281,50 @@ END;
         if (isset($definition['inheritance']['type']) && ($definition['inheritance']['type'] == 'simple' || $definition['inheritance']['type'] == 'aggregation')) {
             return;
         }
-        
+
         $ret = array();
-        
+
         $i = 0;
-        
+
         if (isset($definition['inheritance']['extends']) && !(isset($definition['override_parent']) && $definition['override_parent'] == false)) {
             $ret[$i] = "    parent::setTableDefinition();";
             $i++;
         }
-        
+
         if (isset($definition['tableName']) && !empty($definition['tableName'])) {
             $ret[$i] = "    ".'$this->setTableName(\''. $definition['tableName'].'\');';
-            
+
             $i++;
         }
-        
+
         if (isset($definition['columns']) && is_array($definition['columns']) && !empty($definition['columns'])) {
             $ret[$i] = $this->buildColumns($definition['columns']);
             $i++;
         }
-        
+
         if (isset($definition['indexes']) && is_array($definition['indexes']) && !empty($definition['indexes'])) {
             $ret[$i] = $this->buildIndexes($definition['indexes']);
             $i++;
         }
-        
+
         if (isset($definition['attributes']) && is_array($definition['attributes']) && !empty($definition['attributes'])) {
             $ret[$i] = $this->buildAttributes($definition['attributes']);
             $i++;
         }
-        
+
         if (isset($definition['options']) && is_array($definition['options']) && !empty($definition['options'])) {
             $ret[$i] = $this->buildOptions($definition['options']);
             $i++;
         }
-        
+
         if (isset($definition['subclasses']) && is_array($definition['subclasses']) && !empty($definition['subclasses'])) {
             $ret[$i] = '    $this->setSubclasses(' . var_export($definition['subclasses'], true) . ');';
             $i++;
         }
-        
+
         $code = implode("\n", $ret);
         $code = trim($code);
-        
+
         if ($code) {
           return "\n  public function setTableDefinition()"."\n  {\n    ".$code."\n  }";
         }
@@ -333,21 +333,21 @@ END;
     /**
      * buildSetUp
      *
-     * @param  array $options 
-     * @param  array $columns 
-     * @param  array $relations 
+     * @param  array $options
+     * @param  array $columns
+     * @param  array $relations
      * @return string
      */
     public function buildSetUp(array $definition)
-    {   
+    {
         $ret = array();
         $i = 0;
-        
+
         if (isset($definition['inheritance']['extends']) && !(isset($definition['override_parent']) && $definition['override_parent'] == false)) {
             $ret[$i] = "    parent::setUp();";
             $i++;
         }
-        
+
         if (isset($definition['relations']) && is_array($definition['relations']) && !empty($definition['relations'])) {
             foreach ($definition['relations'] as $name => $relation) {
                 $class = isset($relation['class']) ? $relation['class']:$name;
@@ -357,49 +357,49 @@ END;
                     $relation['type'] = Doctrine_Relation::ONE;
                 }
 
-                if ($relation['type'] === Doctrine_Relation::ONE || 
+                if ($relation['type'] === Doctrine_Relation::ONE ||
                     $relation['type'] === Doctrine_Relation::ONE_COMPOSITE) {
                     $ret[$i] = "    ".'$this->hasOne(\'' . $class . $alias . '\'';
                 } else {
                     $ret[$i] = "    ".'$this->hasMany(\'' . $class . $alias . '\'';
                 }
-            
+
                 $a = array();
 
                 if (isset($relation['refClass'])) {
                     $a[] = '\'refClass\' => ' . var_export($relation['refClass'], true);
                 }
-            
+
                 if (isset($relation['deferred']) && $relation['deferred']) {
                     $a[] = '\'default\' => ' . var_export($relation['deferred'], true);
                 }
-            
+
                 if (isset($relation['local']) && $relation['local']) {
                     $a[] = '\'local\' => ' . var_export($relation['local'], true);
                 }
-            
+
                 if (isset($relation['foreign']) && $relation['foreign']) {
                     $a[] = '\'foreign\' => ' . var_export($relation['foreign'], true);
                 }
-            
+
                 if (isset($relation['onDelete']) && $relation['onDelete']) {
                     $a[] = '\'onDelete\' => ' . var_export($relation['onDelete'], true);
                 }
-            
+
                 if (isset($relation['onUpdate']) && $relation['onUpdate']) {
                     $a[] = '\'onUpdate\' => ' . var_export($relation['onUpdate'], true);
                 }
-            
-                if (isset($relation['equal']) && $relation['equal']) { 
-                    $a[] = '\'equal\' => ' . var_export($relation['equal'], true); 
+
+                if (isset($relation['equal']) && $relation['equal']) {
+                    $a[] = '\'equal\' => ' . var_export($relation['equal'], true);
                 }
-            
+
                 if ( ! empty($a)) {
                     $ret[$i] .= ', ' . 'array(';
                     $length = strlen($ret[$i]);
                     $ret[$i] .= implode(',' . PHP_EOL . str_repeat(' ', $length), $a) . ')';
                 }
-            
+
                 $ret[$i] .= ');'."\n";
                 $i++;
             }
@@ -426,7 +426,7 @@ END;
     /**
      * buildColumns
      *
-     * @param string $array 
+     * @param string $array
      * @return void
      */
     public function buildColumns(array $columns)
@@ -434,7 +434,7 @@ END;
         $build = null;
         foreach ($columns as $name => $column) {
             $build .= "    ".'$this->hasColumn(\'' . $name . '\', \'' . $column['type'] . '\'';
-    
+
             if ($column['length']) {
                 $build .= ', ' . $column['length'];
             } else {
@@ -448,14 +448,14 @@ END;
                     unset($options[$key]);
                 }
             }
-            
+
             if (is_array($options) && !empty($options)) {
                 $build .= ', ' . var_export($options, true);
             }
-    
+
             $build .= ");\n";
         }
-        
+
         return $build;
     }
 
@@ -471,11 +471,11 @@ END;
         foreach (array_keys($definition['columns']) as $name) {
             $accessors[] = $name;
         }
-        
+
         foreach ($definition['relations'] as $relation) {
             $accessors[] = $relation['alias'];
         }
-        
+
         $ret = '';
         foreach ($accessors as $name) {
             // getters
@@ -497,17 +497,17 @@ END;
     /**
      * buildTemplates
      *
-     * @param string $array 
+     * @param string $array
      * @return void
      */
     public function buildTemplates(array $templates)
     {
         $build = '';
         foreach ($templates as $name => $options) {
-            
+
             if (is_array($options) && !empty($options)) {
                 $optionsPhp = var_export($options, true);
-            
+
                 $build .= "    \$this->loadTemplate('" . $name . "', " . $optionsPhp . ");\n";
             } else {
                 if (isset($templates[0])) {
@@ -517,14 +517,14 @@ END;
                 }
             }
         }
-        
+
         return $build;
     }
 
     /**
      * buildActAs
      *
-     * @param string $array 
+     * @param string $array
      * @return void
      */
     public function buildActAs(array $actAs)
@@ -533,7 +533,7 @@ END;
         foreach ($actAs as $name => $options) {
             if (is_array($options) && !empty($options)) {
                 $optionsPhp = var_export($options, true);
-                
+
                 $build .= "    \$this->actAs('" . $name . "', " . $optionsPhp . ");\n";
             } else {
                 if (isset($actAs[0])) {
@@ -543,21 +543,21 @@ END;
                 }
             }
         }
-        
+
         return $build;
     }
 
     /**
      * buildAttributes
      *
-     * @param string $array 
+     * @param string $array
      * @return void
      */
     public function buildAttributes(array $attributes)
     {
         $build = "\n";
         foreach ($attributes as $key => $value) {
-          
+
             if (is_bool($value))
             {
               $values = $value ? 'true':'false';
@@ -565,26 +565,26 @@ END;
                 if ( ! is_array($value)) {
                     $value = array($value);
                 }
-            
+
                 $values = '';
                 foreach ($value as $attr) {
                     $values .= "Doctrine::" . strtoupper($key) . "_" . strtoupper($attr) . ' ^ ';
                 }
-                
+
                 // Trim last ^
                 $values = substr($values, 0, strlen($values) - 3);
             }
-            
+
             $build .= "    \$this->setAttribute(Doctrine::ATTR_" . strtoupper($key) . ", " . $values . ");\n";
         }
-        
+
         return $build;
     }
-    
+
     /**
      * buildTableOptions
      *
-     * @param string $array 
+     * @param string $array
      * @return void
      */
     public function buildOptions(array $options)
@@ -593,14 +593,14 @@ END;
         foreach ($options as $name => $value) {
             $build .= "    \$this->option('$name', " . var_export($value, true) . ");\n";
         }
-        
+
         return $build;
     }
 
     /**
      * buildIndexes
      *
-     * @param string $array 
+     * @param string $array
      * @return void
      */
     public function buildIndexes(array $indexes)
@@ -639,29 +639,29 @@ END;
             $tableDefinitionCode = null;
             $setUpCode = null;
         }
-        
+
         $accessorsCode = (isset($definition['generate_accessors']) && $definition['generate_accessors'] === true) ? $this->buildAccessors($definition):null;
-        
+
         $content = sprintf(self::$_tpl, $abstract,
                                        $className,
                                        $extends,
                                        $tableDefinitionCode,
                                        $setUpCode,
                                        $accessorsCode);
-        
+
         return $content;
     }
 
     /**
      * buildRecord
      *
-     * @param array $options 
-     * @param array $columns 
-     * @param array $relations 
-     * @param array $indexes 
-     * @param array $attributes 
-     * @param array $templates 
-     * @param array $actAs 
+     * @param array $options
+     * @param array $columns
+     * @param array $relations
+     * @param array $indexes
+     * @param array $attributes
+     * @param array $templates
+     * @param array $actAs
      * @return void=
      */
     public function buildRecord(array $definition)
@@ -672,19 +672,19 @@ END;
 
         if ($this->generateBaseClasses()) {
             $definition['is_package'] = (isset($definition['package']) && $definition['package']) ? true:false;
-            
+
             if ($definition['is_package']) {
                 $e = explode('.', $definition['package']);
                 $definition['package_name'] = $e[0];
                 unset($e[0]);
-                
+
                 $definition['package_path'] = implode(DIRECTORY_SEPARATOR, $e);
             }
-            
+
             // Top level definition that extends from all the others
             $topLevel = $definition;
             unset($topLevel['tableName']);
-            
+
             // If we have a package then we need to make this extend the package definition and not the base definition
             // The package definition will then extends the base definition
             $topLevel['inheritance']['extends'] = (isset($topLevel['package']) && $topLevel['package']) ? $this->_packagesPrefix . $topLevel['className']:'Base' . $topLevel['className'];
@@ -695,7 +695,7 @@ END;
 
             // Package level definition that extends from the base definition
             if (isset($definition['package'])) {
-                
+
                 $packageLevel = $definition;
                 $packageLevel['className'] = $topLevel['inheritance']['extends'];
                 $packageLevel['inheritance']['extends'] = 'Base' . $topLevel['className'];
@@ -714,11 +714,11 @@ END;
             $baseClass['is_base_class'] = true;
 
             $this->writeDefinition($baseClass);
-            
+
             if (!empty($packageLevel)) {
                 $this->writeDefinition($packageLevel);
             }
-            
+
             $this->writeDefinition($topLevel);
         } else {
             $this->writeDefinition($definition);
@@ -728,13 +728,13 @@ END;
     /**
      * writeDefinition
      *
-     * @param array $options 
-     * @param array $columns 
-     * @param array $relations 
-     * @param array $indexes 
-     * @param array $attributes 
-     * @param array $templates 
-     * @param array $actAs 
+     * @param array $options
+     * @param array $columns
+     * @param array $relations
+     * @param array $indexes
+     * @param array $attributes
+     * @param array $templates
+     * @param array $actAs
      * @return void
      */
     public function writeDefinition(array $definition)
@@ -759,10 +759,10 @@ END;
         // If is the package class then we need to make the path to the complete package
         if (isset($definition['is_package_class']) && $definition['is_package_class']) {
             $path = str_replace('.', DIRECTORY_SEPARATOR, trim($definition['package']));
-            
+
             $writePath = $packagesPath . DIRECTORY_SEPARATOR . $path;
         }
-        
+
         // If it is the base class of the doctrine record definition
         if (isset($definition['is_base_class']) && $definition['is_base_class']) {
             // If it is a part of a package then we need to put it in a package subfolder
@@ -776,11 +776,11 @@ END;
 
         if (isset($writePath)) {
             Doctrine_Lib::makeDirectories($writePath);
-            
+
             $writePath .= DIRECTORY_SEPARATOR . $fileName;
         } else {
             Doctrine_Lib::makeDirectories($this->_path);
-            
+
             $writePath = $this->_path . DIRECTORY_SEPARATOR . $fileName;
         }
 
