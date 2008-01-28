@@ -44,15 +44,13 @@ phptype
 The currently supported database backends are: 
 
 ||~ Driver name ||~ Supported databases ||
-||  fbsql       ||  FrontBase ||
-||  ibase       ||  InterBase / Firebird (requires PHP 5) ||
-||  mssql       ||  Microsoft SQL Server (NOT for Sybase. Compile PHP --with-mssql) ||
+||  firbird     ||  Firebird ||
+||  informix    ||  Informix ||
+||  mssql       ||  Microsoft SQL Server ||
 ||  mysql       ||  MySQL ||
-||  mysqli      ||  MySQL (supports new authentication protocol) (requires PHP 5) ||
-||  oci8        ||  Oracle 7/8/9/10    ||
+||  oracle      ||  Oracle    ||
 ||  pgsql       ||  PostgreSQL  ||
-||  querysim    ||  QuerySim   ||
-||  sqlite      ||  SQLite 2 ||
+||  sqlite      ||  SQLite ||
 
 A second DSN format supported is
 
@@ -102,10 +100,3 @@ sqlite:////full/unix/path/to/file.db?mode=0666
 <code>
 sqlite:///c:/full/windows/path/to/file.db?mode=0666
 </code>
-
-**Example 5.** Connect to MySQLi using SSL
-
-<code>
-mysqli://user:pass@localhost/pear?key=client-key.pem&cert=client-cert.pem
-</code>
-
