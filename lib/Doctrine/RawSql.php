@@ -42,7 +42,7 @@ class Doctrine_RawSql extends Doctrine_Query_Abstract
      * @var array $fields
      */
     private $fields = array();
-    
+
     /**
      * @deprecated
      */
@@ -66,24 +66,24 @@ class Doctrine_RawSql extends Doctrine_Query_Abstract
      *                                  the given query part stack with $queryPart
      * @return Doctrine_Query           this object
      */
- 	public function parseDqlQueryPart($queryPartName, $queryPart, $append = false)
+    public function parseDqlQueryPart($queryPartName, $queryPart, $append = false)
     {
         if ($queryPartName == 'select') {
-     	    $this->_parseSelectFields($queryPart);
-     	    return $this;
-     	}
-     	if ( ! isset($this->parts[$queryPartName])) {
-     	    $this->_sqlParts[$queryPartName] = array();
-     	}
-     	
-     	if ( ! $append) {
-     	    $this->_sqlParts[$queryPartName] = array($queryPart);
-     	} else {
-     	    $this->_sqlParts[$queryPartName][] = $queryPart;
-     	}
-     	return $this;
+            $this->_parseSelectFields($queryPart);
+            return $this;
+        }
+        if ( ! isset($this->parts[$queryPartName])) {
+            $this->_sqlParts[$queryPartName] = array();
+        }
+
+        if ( ! $append) {
+            $this->_sqlParts[$queryPartName] = array($queryPart);
+        } else {
+            $this->_sqlParts[$queryPartName][] = $queryPart;
+        }
+        return $this;
     }
-    
+
     /**
      * Adds a DQL query part. Overrides Doctrine_Query_Abstract::_addDqlQueryPart().
      * This implementation for RawSql parses the new parts right away, generating the SQL.
@@ -92,7 +92,7 @@ class Doctrine_RawSql extends Doctrine_Query_Abstract
     {
         return $this->parseQueryPart($queryPartName, $queryPart, $append);
     }
-    
+
     /**
      * Add select parts to fields.
      *
@@ -103,8 +103,8 @@ class Doctrine_RawSql extends Doctrine_Query_Abstract
         $this->fields = $m[1];
         $this->_sqlParts['select'] = array();
     }
-    
-    
+
+
     public function parseQuery($query)
     {
         return $this->parseDqlQuery($query);
@@ -159,8 +159,8 @@ class Doctrine_RawSql extends Doctrine_Query_Abstract
                     if ( ! isset($parts[$type][0])) {
                         $parts[$type][0] = $part;
                     } else {
-                        // why does this add to index 0 and not append to the 
-                        // array. If it had done that one could have used 
+                        // why does this add to index 0 and not append to the
+                        // array. If it had done that one could have used
                         // parseQueryPart.
                         $parts[$type][0] .= ' '.$part;
                     }
@@ -180,7 +180,7 @@ class Doctrine_RawSql extends Doctrine_Query_Abstract
      * @return string       the built sql query
      */
     public function getSqlQuery($params = array())
-    {        
+    {
         $select = array();
 
         foreach ($this->fields as $field) {
@@ -198,7 +198,7 @@ class Doctrine_RawSql extends Doctrine_Query_Abstract
             }
 
             $componentAlias = $this->getComponentAlias($e[0]);
-            
+
             if ($e[1] == '*') {
                 foreach ($this->_queryComponents[$componentAlias]['table']->getColumnNames() as $name) {
                     $field = $e[0] . '.' . $name;
@@ -224,7 +224,7 @@ class Doctrine_RawSql extends Doctrine_Query_Abstract
                 }
             }
         }
-        
+
         // first add the fields of the root component
         reset($this->_queryComponents);
         $componentAlias = key($this->_queryComponents);
@@ -315,7 +315,7 @@ class Doctrine_RawSql extends Doctrine_Query_Abstract
             if ( ! isset($table)) {
                 $conn = Doctrine_Manager::getInstance()
                         ->getConnectionForComponent($component);
-                        
+
                 $table = $conn->getTable($component);
                 $this->_queryComponents[$componentAlias] = array(
                         'table' => $table, 'mapper' => $conn->getMapper($component));
