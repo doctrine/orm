@@ -63,7 +63,7 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
      * @var Doctrine_Query_Registry     the query registry
      */
     protected $_queryRegistry;
-    
+
     protected static $driverMap = array('oci' => 'oracle');
 
     /**
@@ -95,7 +95,7 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
                         Doctrine::ATTR_QUERY_CACHE              => null,
                         Doctrine::ATTR_LOAD_REFERENCES          => true,
                         Doctrine::ATTR_LISTENER                 => new Doctrine_EventListener(),
-                        Doctrine::ATTR_RECORD_LISTENER          => new Doctrine_Record_Listener(),
+                        Doctrine::ATTR_RECORD_LISTENER          => null,
                         Doctrine::ATTR_THROW_EXCEPTIONS         => true,
                         Doctrine::ATTR_VALIDATE                 => Doctrine::VALIDATE_NONE,
                         Doctrine::ATTR_QUERY_LIMIT              => Doctrine::LIMIT_RECORDS,
@@ -109,7 +109,7 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
                         Doctrine::ATTR_DECIMAL_PLACES           => 2,
                         Doctrine::ATTR_DEFAULT_PARAM_NAMESPACE  => 'doctrine',
                         Doctrine::ATTR_AUTOLOAD_TABLE_CLASSES   => true,
-                        ); 
+                        );
             foreach ($attributes as $attribute => $value) {
                 $old = $this->getAttribute($attribute);
                 if ($old === null) {
@@ -170,16 +170,16 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
     public function setQueryRegistry(Doctrine_Query_Registry $registry)
     {
         $this->_queryRegistry = $registry;
-        
+
         return $this;
     }
 
     /**
      * fetch
-     * fetches data using the provided queryKey and 
+     * fetches data using the provided queryKey and
      * the associated query in the query registry
      *
-     * if no query for given queryKey is being found a 
+     * if no query for given queryKey is being found a
      * Doctrine_Query_Registry exception is being thrown
      *
      * @param string $queryKey      the query key
@@ -196,10 +196,10 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
 
     /**
      * fetchOne
-     * fetches data using the provided queryKey and 
+     * fetches data using the provided queryKey and
      * the associated query in the query registry
      *
-     * if no query for given queryKey is being found a 
+     * if no query for given queryKey is being found a
      * Doctrine_Query_Registry exception is being thrown
      *
      * @param string $queryKey      the query key
@@ -269,7 +269,7 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
             $parts['scheme'] = $e[0];
             $parts['user']   = (isset($adapter[1])) ? $adapter[1] : null;
             $parts['pass']   = (isset($adapter[2])) ? $adapter[2] : null;
-            
+
             $driverName = $e[0];
             $adapter = $parts;
         } else {
@@ -305,11 +305,11 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
                          'firebird' => 'Doctrine_Connection_Firebird',
                          'informix' => 'Doctrine_Connection_Informix',
                          'mock'     => 'Doctrine_Connection_Mock');
-        
+
         if ( ! isset($drivers[$driverName])) {
             throw new Doctrine_Manager_Exception('Unknown driver ' . $driverName);
         }
-        
+
         $className = $drivers[$driverName];
         $conn = new $className($this, $adapter);
         $conn->setName($name);
@@ -321,17 +321,17 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
         }
         return $this->_connections[$name];
     }
-    
+
     /**
-     * parsePdoDsn 
-     * 
-     * @param array $dsn An array of dsn information 
+     * parsePdoDsn
+     *
+     * @param array $dsn An array of dsn information
      * @return array The array parsed
      */
     public function parsePdoDsn($dsn)
     {
         $parts = array();
-        
+
         $names = array('dsn', 'scheme', 'host', 'port', 'user', 'pass', 'path', 'query', 'fragment');
 
         foreach ($names as $name) {
@@ -339,11 +339,11 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
                 $parts[$name] = null;
             }
         }
-        
+
         $e = explode(':', $dsn);
         $parts['scheme'] = $e[0];
         $parts['dsn'] = $dsn;
-        
+
         $e = explode(';', $e[1]);
         foreach ($e as $string) {
             if ($string) {
@@ -370,7 +370,7 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
         // fix sqlite dsn so that it will parse correctly
         $dsn = str_replace("////", "/", $dsn);
         $dsn = str_replace("///c:/", "//c:/", $dsn);
-        
+
         // silence any warnings
         $parts = @parse_url($dsn);
 
@@ -404,7 +404,7 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
                 }
 
                 break;
-            
+
             case 'mssql':
             case 'dblib':
                 if ( ! isset($parts['path']) || $parts['path'] == '/') {
@@ -416,7 +416,7 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
                 if ( ! isset($parts['host'])) {
                     throw new Doctrine_Manager_Exception('No hostname set in data source name');
                 }
-                
+
                 if (isset(self::$driverMap[$parts['scheme']])) {
                     $parts['scheme'] = self::$driverMap[$parts['scheme']];
                 }
@@ -424,7 +424,7 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
                 $parts['dsn'] = $parts['scheme'] . ':host='
                               . $parts['host'] . (isset($parts['port']) ? ':' . $parts['port']:null) . ';dbname='
                               . $parts['database'];
-                
+
                 break;
 
             case 'mysql':
@@ -445,7 +445,7 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
                 if ( ! isset($parts['host'])) {
                     throw new Doctrine_Manager_Exception('No hostname set in data source name');
                 }
-                
+
                 if (isset(self::$driverMap[$parts['scheme']])) {
                     $parts['scheme'] = self::$driverMap[$parts['scheme']];
                 }
@@ -453,7 +453,7 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
                 $parts['dsn'] = $parts['scheme'] . ':host='
                               . $parts['host'] . (isset($parts['port']) ? ';port=' . $parts['port']:null) . ';dbname='
                               . $parts['database'];
-                
+
                 break;
             default:
                 throw new Doctrine_Manager_Exception('Unknown driver '.$parts['scheme']);
@@ -550,7 +550,7 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
         }
         return $this->getCurrentConnection();
     }
-    
+
     /**
      * hasConnectionForComponent
      *
@@ -575,7 +575,7 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
     {
         return $this->getConnectionForComponent($componentName)->getTable($componentName);
     }
-    
+
     /**
      * getMapper
      * Returns the mapper object for the given component name.

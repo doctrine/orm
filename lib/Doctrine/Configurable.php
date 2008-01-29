@@ -50,7 +50,7 @@ abstract class Doctrine_Configurable extends Doctrine_Locator_Injectable
      *                                      implementation classes
      */
     protected $_impl = array();
-    
+
     /**
      * @var array $_params                  an array of user defined parameters
      */
@@ -175,36 +175,36 @@ abstract class Doctrine_Configurable extends Doctrine_Locator_Injectable
     	if ($namespace == null) {
     	    $namespace = $this->getAttribute(Doctrine::ATTR_DEFAULT_PARAM_NAMESPACE);
     	}
-    	
+
     	if ( ! isset($this->_params[$namespace])) {
     	    return null;
     	}
 
         return $this->_params[$namespace];
     }
-    
+
     public function getParamNamespaces()
     {
         return array_keys($this->_params);
     }
 
-    public function setParam($name, $value, $namespace = null) 
+    public function setParam($name, $value, $namespace = null)
     {
     	if ($namespace == null) {
     	    $namespace = $this->getAttribute(Doctrine::ATTR_DEFAULT_PARAM_NAMESPACE);
     	}
-    	
+
     	$this->_params[$namespace][$name] = $value;
-    	
+
     	return $this;
     }
-    
-    public function getParam($name, $value, $namespace) 
+
+    public function getParam($name, $value, $namespace)
     {
     	if ($namespace == null) {
     	    $namespace = $this->getAttribute(Doctrine::ATTR_DEFAULT_PARAM_NAMESPACE);
     	}
-    	
+
         if ( ! isset($this->_params[$name])) {
             if (isset($this->parent)) {
                 return $this->parent->getParam($name);
@@ -213,7 +213,7 @@ abstract class Doctrine_Configurable extends Doctrine_Locator_Injectable
         }
         return $this->_params[$name];
     }
-    
+
     /**
      * setImpl
      * binds given class to given template name
@@ -247,8 +247,8 @@ abstract class Doctrine_Configurable extends Doctrine_Locator_Injectable
         }
         return $this->_impl[$template];
     }
-    
-    
+
+
     public function hasImpl($template)
     {
         if ( ! isset($this->_impl[$template])) {
@@ -298,7 +298,7 @@ abstract class Doctrine_Configurable extends Doctrine_Locator_Injectable
             if (isset($this->parent)) {
                 return $this->parent->getRecordListener();
             }
-            return null;
+            $this->attributes[Doctrine::ATTR_RECORD_LISTENER] = new Doctrine_Record_Listener();
         }
         return $this->attributes[Doctrine::ATTR_RECORD_LISTENER];
     }
@@ -390,7 +390,7 @@ abstract class Doctrine_Configurable extends Doctrine_Locator_Injectable
         if (isset($this->attributes[$attribute])) {
             return $this->attributes[$attribute];
         }
-        
+
         if (isset($this->parent)) {
             return $this->parent->getAttribute($attribute);
         }
