@@ -73,6 +73,8 @@ class Doctrine_Import_Mssql extends Doctrine_Import
                 $type .= '(' . $val['length'] . ')';
             }
 
+            $val['type'] = $type;
+            $val['identity'] = $identity;
             $decl = $this->conn->dataDict->getPortableDeclaration($val);
 
             $description  = array(
@@ -112,7 +114,7 @@ class Doctrine_Import_Mssql extends Doctrine_Import
      */
     public function listTables($database = null)
     {
-        $sql = "SELECT name FROM sysobjects WHERE type = 'U' ORDER BY name";
+        $sql = "SELECT name FROM sysobjects WHERE type = 'U' AND name <> 'dtproperties' ORDER BY name";
 
         return $this->conn->fetchColumn($sql);
     }
