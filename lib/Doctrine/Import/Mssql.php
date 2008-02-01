@@ -85,7 +85,7 @@ class Doctrine_Import_Mssql extends Doctrine_Import
                 'length'    => $decl['length'],
                 'fixed'     => $decl['fixed'],
                 'unsigned'  => $decl['unsigned'],
-                'notnull'   => (bool) ($val['is_nullable'] === 'NO'),
+                'notnull'   => (bool) (trim($val['is_nullable']) === 'NO'),
                 'default'   => $val['column_def'],
                 'primary'   => (strtolower($identity) == 'identity'),
             );

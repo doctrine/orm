@@ -159,8 +159,11 @@ class Doctrine_DataDict_Mssql extends Doctrine_DataDict
             break;
             case 'text':
             case 'varchar':
+            case 'ntext':
+            case 'nvarchar':
                 $fixed = false;
             case 'char':
+            case 'nchar':
                 $type[0] = 'string';
                 if ($length == '1') {
                     $type[] = 'boolean';
