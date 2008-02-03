@@ -1,13 +1,10 @@
 <?php
 class BarRecord extends Doctrine_Record
 {
-    public function setTableDefinition()
+    public static function initMetadata($class)
     {
-    	$this->setTableName('bar');
-    	$this->hasColumn('name', 'string', 200);
-    }
-    public function setUp()
-    {
-        $this->hasMany('FooRecord as Foo', array('local' => 'barId', 'foreign' => 'fooId', 'refClass' => 'FooBarRecord'));
+    	$class->setTableName('bar');
+    	$class->setColumn('name', 'string', 200);
+    	$class->hasMany('FooRecord as Foo', array('local' => 'barId', 'foreign' => 'fooId', 'refClass' => 'FooBarRecord'));
     }
 }

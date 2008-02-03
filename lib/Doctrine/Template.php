@@ -45,7 +45,7 @@ class Doctrine_Template extends Doctrine_Record_Abstract
      *
      * @param Doctrine_Table $_table        the table object this Template belongs to
      */
-    public function setTable(Doctrine_Table $table)
+    public function setTable($table)
     {
         $this->_table = $table;
     }

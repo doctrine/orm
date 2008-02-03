@@ -64,6 +64,9 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
      */
     protected $_queryRegistry;
 
+    /**
+     *
+     */
     protected static $driverMap = array('oci' => 'oracle');
 
     /**
@@ -475,6 +478,32 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
         }
 
         return $this->_connections[$name];
+    }
+    
+    /**
+     * Creates a new Doctrine_Query object that uses the currently active connection.
+     * 
+     * @return Doctrine_Query 
+     */
+    public function createQuery($dql = "")
+    {
+        $query = new Doctrine_Query($this->getCurrentConnection());
+        if ( ! empty($dql)) {
+            $query->parseQuery($dql);
+        }
+        
+        return $query;
+    }
+    
+    /**
+     * Creates a query object out of a registered, named query.
+     *
+     * @param string $name     The name of the query.
+     * @return Doctrine_Query  The query object.
+     */
+    public function createNamedQuery($name)
+    {
+        return $this->_queryRegistry->get($name);
     }
 
     /**

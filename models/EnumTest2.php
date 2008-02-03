@@ -1,8 +1,8 @@
 <?php
 class EnumTest2 extends Doctrine_Record 
 {
-    public function setTableDefinition() {
-        $this->hasColumn('status', 'enum', 11, array('values' => array('open', 'verified', 'closed')));
-        $this->hasColumn('enum_test_id', 'integer');
+    public static function initMetadata($class) {
+        $class->setColumn('status', 'enum', 11, array('values' => array('open', 'verified', 'closed')));
+        $class->setColumn('enum_test_id', 'integer');
     }
 }

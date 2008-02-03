@@ -58,6 +58,7 @@ class Doctrine_Query_TestCase extends Doctrine_UnitTestCase
 
         $this->assertEqual($str, '2 + 3 - 5 * 6');
     }
+    
     public function testParseClauseSupportsArithmeticOperatorsWithFunctions()
     {
         $q = new Doctrine_Query();

@@ -1,22 +1,22 @@
 <?php
 class SerializeTest extends Doctrine_Record 
 {
-    public function setTableDefinition()
+    public static function initMetadata($class)
     {
-        $this->setTableName('serialize_test');
+        $class->setTableName('serialize_test');
     
-        $this->hasColumn('booltest', 'boolean');
-        $this->hasColumn('integertest', 'integer', 4, array('unsigned' => true));
-        $this->hasColumn('floattest', 'float');
-        $this->hasColumn('stringtest', 'string', 200, array('fixed' => true));
-        $this->hasColumn('arraytest', 'array', 10000);
-        $this->hasColumn('objecttest', 'object');
-        $this->hasColumn('blobtest', 'blob');
-        $this->hasColumn('clobtest', 'clob');
-        $this->hasColumn('timestamptest', 'timestamp');
-        $this->hasColumn('timetest', 'time');
-        $this->hasColumn('datetest', 'date');
-        $this->hasColumn('enumtest', 'enum', 4, 
+        $class->setColumn('booltest', 'boolean');
+        $class->setColumn('integertest', 'integer', 4, array('unsigned' => true));
+        $class->setColumn('floattest', 'float');
+        $class->setColumn('stringtest', 'string', 200, array('fixed' => true));
+        $class->setColumn('arraytest', 'array', 10000);
+        $class->setColumn('objecttest', 'object');
+        $class->setColumn('blobtest', 'blob');
+        $class->setColumn('clobtest', 'clob');
+        $class->setColumn('timestamptest', 'timestamp');
+        $class->setColumn('timetest', 'time');
+        $class->setColumn('datetest', 'date');
+        $class->setColumn('enumtest', 'enum', 4, 
                          array(
                             'values' => array(
                                         'php',
@@ -25,7 +25,7 @@ class SerializeTest extends Doctrine_Record
                                         )
                                )
         );
-        $this->hasColumn('gziptest', 'gzip');
+        $class->setColumn('gziptest', 'gzip');
     }
 
 }

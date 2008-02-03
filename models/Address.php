@@ -1,13 +1,11 @@
 <?php
 class Address extends Doctrine_Record 
 {
-    public function setUp()
+    public static function initMetadata($class)
     {
-        $this->hasMany('User', array('local' => 'address_id', 
+        $class->setColumn('address', 'string', 200);
+        $class->hasMany('User', array('local' => 'address_id', 
                                      'foreign' => 'user_id',
                                      'refClass' => 'EntityAddress'));
-    }
-    public function setTableDefinition() {
-        $this->hasColumn('address', 'string', 200);
     }
 }

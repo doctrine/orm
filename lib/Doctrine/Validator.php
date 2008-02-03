@@ -21,7 +21,7 @@
 
 /**
  * Doctrine_Validator
- * Doctrine_Validator performs validations in record properties
+ * Doctrine_Validator performs validations on record properties
  *
  * @package     Doctrine
  * @subpackage  Validator
@@ -105,14 +105,15 @@ class Doctrine_Validator extends Doctrine_Locator_Injectable
 
             foreach ($column as $name => $args) {
                 if (empty($name)
-                    || $name == 'primary'
-                    || $name == 'protected'
-                    || $name == 'autoincrement'
-                    || $name == 'default'
-                    || $name == 'values'
-                    || $name == 'sequence'
-                    || $name == 'zerofill'
-                    || $name == 'scale') {
+                        || $name == 'primary'
+                        || $name == 'protected'
+                        || $name == 'autoincrement'
+                        || $name == 'default'
+                        || $name == 'values'
+                        || $name == 'sequence'
+                        || $name == 'zerofill'
+                        || $name == 'scale'
+                        || $name == 'inherited') {
                     continue;
                 }
 

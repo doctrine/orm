@@ -1,8 +1,8 @@
 <?php
 class TestRecord extends Doctrine_Record 
 {
-    public function setTableDefinition()
+    public static function initMetadata($class)
     {
-        $this->setTableName('test');
+        $class->setTableName('test');
     }
 }

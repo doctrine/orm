@@ -1,12 +1,10 @@
 <?php
 class Element extends Doctrine_Record {
-    public function setTableDefinition() {
-        $this->hasColumn('name', 'string', 100);
-        $this->hasColumn('parent_id', 'integer');
-    }
-    public function setUp() {
-        $this->hasMany('Element as Child', 'Child.parent_id');
-        $this->hasOne('Element as Parent', 'Element.parent_id');
+    public static function initMetadata($class) {
+        $class->setColumn('name', 'string', 100);
+        $class->setColumn('parent_id', 'integer');
+        $class->hasMany('Element as Child', array('local' => 'id', 'foreign' => 'parent_id'));
+        $class->hasOne('Element as Parent', array('local' => 'parent_id', 'foreign' => 'id'));
     }
 }
 

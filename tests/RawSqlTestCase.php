@@ -49,6 +49,7 @@ class Doctrine_RawSql_TestCase extends Doctrine_UnitTestCase
         $this->assertEqual($query->getQueryPart('where'), array('p.can_see = -1 AND t.tag_id = 62'));
         $this->assertEqual($query->getQueryPart('limit'), array(200));
     }
+    
     public function testAsteriskOperator() 
     {
         // Selecting with *
@@ -65,6 +66,7 @@ class Doctrine_RawSql_TestCase extends Doctrine_UnitTestCase
 
         $this->assertEqual($coll->count(), 11);
     }
+    
     public function testLazyPropertyLoading() 
     {
         $query = new Doctrine_RawSql($this->connection);
@@ -222,7 +224,7 @@ class Doctrine_RawSql_TestCase extends Doctrine_UnitTestCase
         $query->parseQuery("SELECT {entity.name} FROM (SELECT entity.name FROM entity WHERE entity.name = 'something') WHERE entity.id = 2 ORDER BY entity.name");
 
         $this->assertEqual($query->getQuery(),
-        "SELECT entity.name AS entity__name, entity.id AS entity__id FROM (SELECT entity.name FROM entity WHERE entity.name = 'something') WHERE entity.id = 2 ORDER BY entity.name");
+        "SELECT entity.name AS entity__name, entity.id AS entity__id FROM (SELECT entity.name FROM entity WHERE entity.name = 'something') WHERE entity.id = 2 AND (entity.type = 2 OR entity.type = 1 OR entity.type = 0) ORDER BY entity.name");
     }
 
     public function testSelectingWithoutIdentifiersOnRootComponent()
@@ -232,7 +234,7 @@ class Doctrine_RawSql_TestCase extends Doctrine_UnitTestCase
         $query->parseQuery('SELECT {entity.name}, {phonenumber.*} FROM entity LEFT JOIN phonenumber ON phonenumber.entity_id = entity.id LIMIT 3');
         $query->addComponent('entity', 'Entity');
         $query->addComponent('phonenumber', 'Entity.Phonenumber');
-        $this->assertEqual($query->getSql(), 'SELECT entity.name AS entity__name, entity.id AS entity__id, phonenumber.id AS phonenumber__id, phonenumber.phonenumber AS phonenumber__phonenumber, phonenumber.entity_id AS phonenumber__entity_id FROM entity LEFT JOIN phonenumber ON phonenumber.entity_id = entity.id LIMIT 3');
+        $this->assertEqual($query->getSql(), 'SELECT entity.name AS entity__name, entity.id AS entity__id, phonenumber.id AS phonenumber__id, phonenumber.phonenumber AS phonenumber__phonenumber, phonenumber.entity_id AS phonenumber__entity_id FROM entity LEFT JOIN phonenumber ON phonenumber.entity_id = entity.id WHERE (entity.type = 2 OR entity.type = 1 OR entity.type = 0) LIMIT 3');
         $coll = $query->execute(array(), Doctrine::FETCH_ARRAY);
 
         $this->assertEqual(count($coll), 3);
@@ -245,7 +247,7 @@ class Doctrine_RawSql_TestCase extends Doctrine_UnitTestCase
         $query->parseQuery('SELECT {phonenumber.*}, {entity.name} FROM entity LEFT JOIN phonenumber ON phonenumber.entity_id = entity.id LIMIT 3');
         $query->addComponent('entity', 'Entity');
         $query->addComponent('phonenumber', 'Entity.Phonenumber');
-        $this->assertEqual($query->getSql(), 'SELECT entity.name AS entity__name, entity.id AS entity__id, phonenumber.id AS phonenumber__id, phonenumber.phonenumber AS phonenumber__phonenumber, phonenumber.entity_id AS phonenumber__entity_id FROM entity LEFT JOIN phonenumber ON phonenumber.entity_id = entity.id LIMIT 3');
+        $this->assertEqual($query->getSql(), 'SELECT entity.name AS entity__name, entity.id AS entity__id, phonenumber.id AS phonenumber__id, phonenumber.phonenumber AS phonenumber__phonenumber, phonenumber.entity_id AS phonenumber__entity_id FROM entity LEFT JOIN phonenumber ON phonenumber.entity_id = entity.id WHERE (entity.type = 2 OR entity.type = 1 OR entity.type = 0) LIMIT 3');
         $coll = $query->execute(array(), Doctrine::FETCH_ARRAY);
 
         $this->assertEqual(count($coll), 3);

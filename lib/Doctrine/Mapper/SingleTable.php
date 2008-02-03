@@ -5,7 +5,7 @@ class Doctrine_Mapper_SingleTable extends Doctrine_Mapper_Abstract
     
     public function getDiscriminatorColumn()
     {
-        $inheritanceMap = $this->_table->getOption('inheritanceMap');
+        $inheritanceMap = $this->_classMetadata->getOption('inheritanceMap');
         return isset($inheritanceMap[$this->_domainClassName]) ? $inheritanceMap[$this->_domainClassName] : array();
     }
     

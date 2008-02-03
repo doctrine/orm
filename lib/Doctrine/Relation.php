@@ -143,6 +143,11 @@ abstract class Doctrine_Relation implements ArrayAccess
         $def = array();
         foreach ($this->definition as $key => $val) {
             if ( ! isset($definition[$key]) && $val) {
+                try {
+                    throw new Exception();
+                } catch (Exception $e) {
+                    echo $e->getTraceAsString() . "<br />";
+                }
                 throw new Doctrine_Exception($key . ' is required!');
             }
             if (isset($definition[$key])) {
@@ -257,7 +262,7 @@ abstract class Doctrine_Relation implements ArrayAccess
     {
         return Doctrine_Manager::getInstance()
                ->getConnectionForComponent($this->definition['class'])
-               ->getTable($this->definition['class']);
+               ->getMetadata($this->definition['class']);
     }
 
     /**

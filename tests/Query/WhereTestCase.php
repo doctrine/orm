@@ -37,7 +37,7 @@ class Doctrine_Query_Where_TestCase extends Doctrine_UnitTestCase
     { }
     public function prepareTables() 
     {
-        $this->tables = array('Entity', 'EnumTest', 'GroupUser', 'Account', 'Book');
+        $this->tables = array('Entity', 'EnumTest', 'Groupuser', 'Account', 'Book');
         parent::prepareTables();
     }
 

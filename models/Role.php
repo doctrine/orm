@@ -1,13 +1,11 @@
 <?php
 class Role extends Doctrine_Record 
 {
-    public function setTableDefinition() 
+    public static function initMetadata($class) 
     {
-        $this->hasColumn('name', 'string', 20, array('unique' => true));
+        $class->setColumn('name', 'string', 20, array('unique' => true));
+        $class->hasMany('Auth', array('local' => 'id', 'foreign' => 'roleid'));
     }
-    public function setUp() 
-    {
-        $this->hasMany('Auth', array('local' => 'id', 'foreign' => 'roleid'));
-    }
+
 }
 

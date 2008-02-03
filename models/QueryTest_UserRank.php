@@ -1,9 +1,9 @@
 <?php
 class QueryTest_UserRank extends Doctrine_Record
 {
-    public function setTableDefinition()
+    public static function initMetadata($class)
     {        
-        $this->hasColumn('rankId', 'integer', 4, array('primary'));
-        $this->hasColumn('userId', 'integer', 4, array('primary'));
+        $class->setColumn('rankId', 'integer', 4, array('primary'));
+        $class->setColumn('userId', 'integer', 4, array('primary'));
     }
 }

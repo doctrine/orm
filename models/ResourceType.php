@@ -1,10 +1,8 @@
 <?php
 class ResourceType extends Doctrine_Record {
-    public function setUp() {
-        $this->hasMany('Resource as ResourceAlias', 'ResourceReference.resource_id');
-    }
-    public function setTableDefinition() {
-        $this->hasColumn('type', 'string',100);
+    public static function initMetadata($class) {
+        $class->setColumn('type', 'string',100);
+        $class->hasMany('Resource as ResourceAlias', array('local' => 'type_id', 'foreign' => 'resource_id', 'refClass' => 'ResourceReference'));
     }
 }
 

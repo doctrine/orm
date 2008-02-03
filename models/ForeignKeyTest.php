@@ -1,24 +1,22 @@
 <?php
 class ForeignKeyTest extends Doctrine_Record
 {
-    public function setTableDefinition()
+    public static function initMetadata($class)
     {
-        $this->hasColumn('name', 'string', null);
-        $this->hasColumn('code', 'integer', 4);
-        $this->hasColumn('content', 'string', 4000);
-        $this->hasColumn('parent_id', 'integer');
+        $class->setColumn('name', 'string', null);
+        $class->setColumn('code', 'integer', 4);
+        $class->setColumn('content', 'string', 4000);
+        $class->setColumn('parent_id', 'integer');
 
-        $this->hasOne('ForeignKeyTest as Parent',
+        $class->hasOne('ForeignKeyTest as Parent',
                        array('local'    => 'parent_id',
                              'foreign'  => 'id',
                              'onDelete' => 'CASCADE',
                              'onUpdate' => 'RESTRICT')
                        );
 
-        $this->hasMany('ForeignKeyTest as Children',
-                       'ForeignKeyTest.parent_id');
+        $class->hasMany('ForeignKeyTest as Children', array('local' => 'id', 'foreign' => 'parent_id'));
 
-        $this->option('type', 'INNODB');
-
+        $class->setTableOption('type', 'INNODB');
     }
 }

@@ -13,19 +13,19 @@ class Doctrine_Mapper_Joined extends Doctrine_Mapper_Abstract
      */
     protected function _doInsert(Doctrine_Record $record)
     {
-        $table = $this->_table;
+        $table = $this->_classMetadata;
                     
         $dataSet = $this->_formatDataSet($record);
-        $component = $table->getComponentName();
+        $component = $table->getClassName();
 
-        $classes = $table->getOption('joinedParents');
+        $classes = $table->getOption('parents');
         array_unshift($classes, $component);
         
         try {
             $this->_conn->beginInternalTransaction();
             $identifier = null;
             foreach (array_reverse($classes) as $k => $parent) {
-                $parentTable = $this->_conn->getTable($parent);
+                $parentTable = $this->_conn->getMetadata($parent);
                 if ($k == 0) {
                     $identifierType = $parentTable->getIdentifierType();
                     if ($identifierType == Doctrine::IDENTIFIER_AUTOINC) {
@@ -67,11 +67,11 @@ class Doctrine_Mapper_Joined extends Doctrine_Mapper_Abstract
      */
     protected function _doUpdate(Doctrine_Record $record)
     {
-        $table = $this->_table;
+        $table = $this->_classMetadata;
         $identifier = $record->identifier();                     
         $dataSet = $this->_formatDataSet($record);
-        $component = $table->getComponentName();
-        $classes = $table->getOption('joinedParents');
+        $component = $table->getClassName();
+        $classes = $table->getOption('parents');
         array_unshift($classes, $component);
 
         foreach ($record as $field => $value) {
@@ -84,7 +84,7 @@ class Doctrine_Mapper_Joined extends Doctrine_Mapper_Abstract
         }
 
         foreach (array_reverse($classes) as $class) {
-            $parentTable = $this->_conn->getTable($class);
+            $parentTable = $this->_conn->getMetadata($class);
             $this->_conn->update($parentTable, $dataSet[$class], $identifier);
         }
         
@@ -97,7 +97,7 @@ class Doctrine_Mapper_Joined extends Doctrine_Mapper_Abstract
     protected function _doDelete(Doctrine_Record $record, Doctrine_Connection $conn)
     {
         try {
-            $table = $this->_table;
+            $table = $this->_classMetadata;
             $conn->beginInternalTransaction();
             $this->deleteComposites($record);
 
@@ -128,10 +128,10 @@ class Doctrine_Mapper_Joined extends Doctrine_Mapper_Abstract
     public function getCustomJoins()
     {
         $customJoins = array();
-        foreach ($this->_table->getOption('joinedParents') as $parentClass) {
+        foreach ($this->_classMetadata->getOption('parents') as $parentClass) {
             $customJoins[$parentClass] = 'INNER';
         }
-        foreach ((array)$this->_table->getOption('subclasses') as $subClass) {
+        foreach ((array)$this->_classMetadata->getOption('subclasses') as $subClass) {
             if ($subClass != $this->_domainClassName) {
                 $customJoins[$subClass] = 'LEFT';
             }
@@ -141,10 +141,11 @@ class Doctrine_Mapper_Joined extends Doctrine_Mapper_Abstract
     
     public function getCustomFields()
     {
-        $fields = array();
-        if ($this->_table->getOption('subclasses')) {
-            foreach ($this->_table->getOption('subclasses') as $subClass) {
-                $fields = array_merge($this->_conn->getTable($subClass)->getFieldNames(), $fields);
+        $fields = array($this->_classMetadata->getInheritanceOption('discriminatorColumn'));
+        //$fields = array();
+        if ($this->_classMetadata->getOption('subclasses')) {
+            foreach ($this->_classMetadata->getOption('subclasses') as $subClass) {
+                $fields = array_merge($this->_conn->getMetadata($subClass)->getFieldNames(), $fields);
             }
         }
         return array_unique($fields);
@@ -155,9 +156,9 @@ class Doctrine_Mapper_Joined extends Doctrine_Mapper_Abstract
      */
     public function getDiscriminatorColumn()
     {
-        $joinedParents = $this->_table->getOption('joinedParents');
+        $joinedParents = $this->_classMetadata->getOption('joinedParents');
         if (count($joinedParents) <= 0) {
-            $inheritanceMap = $this->_table->getOption('inheritanceMap');
+            $inheritanceMap = $this->_classMetadata->getOption('inheritanceMap');
         } else {
             $inheritanceMap = $this->_conn->getTable(array_pop($joinedParents))->getOption('inheritanceMap');
         }
@@ -173,11 +174,7 @@ class Doctrine_Mapper_Joined extends Doctrine_Mapper_Abstract
             return $this->_fieldNames;
         }
         
-        $fieldNames = $this->_table->getFieldNames();
-        foreach ($this->_table->getOption('joinedParents') as $parent) {
-            $parentTable = $this->_conn->getTable($parent);
-            $fieldNames = array_merge($parentTable->getFieldNames(), $fieldNames);
-        }
+        $fieldNames = $this->_classMetadata->getFieldNames();
         $this->_fieldNames = array_unique($fieldNames);
         
         return $fieldNames;
@@ -189,46 +186,46 @@ class Doctrine_Mapper_Joined extends Doctrine_Mapper_Abstract
             return $this->_columnNameFieldNameMap[$columnName];
         }
         
-        if ($this->_table->hasColumn($columnName)) {
-            $this->_columnNameFieldNameMap[$columnName] = $this->_table->getFieldName($columnName);
+        if ($this->_classMetadata->hasColumn($columnName)) {
+            $this->_columnNameFieldNameMap[$columnName] = $this->_classMetadata->getFieldName($columnName);
             return $this->_columnNameFieldNameMap[$columnName];
         }
         
-        foreach ($this->_table->getOption('joinedParents') as $parentClass) {
-            $parentTable = $this->_conn->getTable($parentClass);
+        foreach ($this->_classMetadata->getOption('parents') as $parentClass) {
+            $parentTable = $this->_conn->getMetadata($parentClass);
             if ($parentTable->hasColumn($columnName)) {
                 $this->_columnNameFieldNameMap[$columnName] = $parentTable->getFieldName($columnName);
                 return $this->_columnNameFieldNameMap[$columnName];
             }
         }
         
-        foreach ((array)$this->_table->getOption('subclasses') as $subClass) {
-            $subTable = $this->_conn->getTable($subClass);
+        foreach ((array)$this->_classMetadata->getOption('subclasses') as $subClass) {
+            $subTable = $this->_conn->getMetadata($subClass);
             if ($subTable->hasColumn($columnName)) {
                 $this->_columnNameFieldNameMap[$columnName] = $subTable->getFieldName($columnName);
                 return $this->_columnNameFieldNameMap[$columnName];
             }
         }
-        
+
         throw new Doctrine_Mapper_Exception("No field name found for column name '$columnName'.");
     }
     
     public function getOwningTable($fieldName)
-    {
-        if ($this->_table->hasField($fieldName)) {
-            return $this->_table;
+    {        
+        if ($this->_classMetadata->hasField($fieldName) && ! $this->_classMetadata->isInheritedField($fieldName)) {
+            return $this->_classMetadata;
         }
         
-        foreach ($this->_table->getOption('joinedParents') as $parentClass) {
-            $parentTable = $this->_conn->getTable($parentClass);
-            if ($parentTable->hasField($fieldName)) {
+        foreach ($this->_classMetadata->getOption('parents') as $parentClass) {
+            $parentTable = $this->_conn->getMetadata($parentClass);
+            if ($parentTable->hasField($fieldName) && ! $parentTable->isInheritedField($fieldName)) {
                 return $parentTable;
             }
         }
         
-        foreach ((array)$this->_table->getOption('subclasses') as $subClass) {
-            $subTable = $this->_conn->getTable($subClass);
-            if ($subTable->hasField($fieldName)) {
+        foreach ((array)$this->_classMetadata->getOption('subclasses') as $subClass) {
+            $subTable = $this->_conn->getMetadata($subClass);
+            if ($subTable->hasField($fieldName) && ! $subTable->isInheritedField($fieldName)) {
                 return $subTable;
             }
         }
@@ -241,17 +238,18 @@ class Doctrine_Mapper_Joined extends Doctrine_Mapper_Abstract
      */
     protected function _formatDataSet(Doctrine_Record $record)
     {
-        $table = $this->_table;
+        $table = $this->_classMetadata;
         $dataSet = array();
-        $component = $table->getComponentName();
+        $component = $table->getClassName();
         $array = $record->getPrepared();
         
-        $classes = array_merge(array($component), $this->_table->getOption('joinedParents'));
+        $classes = array_merge(array($component), $this->_classMetadata->getParentClasses());
         
         foreach ($classes as $class) {
-            $table = $this->_conn->getTable($class);
-            foreach ($table->getColumns() as $columnName => $definition) {
-                if (isset($definition['primary'])) {
+            $metadata = $this->_conn->getMetadata($class);
+            foreach ($metadata->getColumns() as $columnName => $definition) {
+                if ((isset($definition['primary']) && $definition['primary'] === true) ||
+                        (isset($definition['inherited']) && $definition['inherited'] === true)) {
                     continue;
                 }
                 $fieldName = $table->getFieldName($columnName);

@@ -1,15 +1,12 @@
 <?php
 class Author extends Doctrine_Record
 {
-    public function setUp()
+    public static function initMetadata($class)
     {
-        $this->hasOne('Book', array('local' => 'book_id',
+        $class->setColumn('book_id', 'integer');
+        $class->setColumn('name', 'string',20);
+        $class->hasOne('Book', array('local' => 'book_id',
                                     'foreign' => 'id',
                                     'onDelete' => 'CASCADE'));
-    }
-    public function setTableDefinition()
-    {
-        $this->hasColumn('book_id', 'integer');
-        $this->hasColumn('name', 'string',20);
     }
 }

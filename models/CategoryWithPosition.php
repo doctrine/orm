@@ -1,10 +1,8 @@
 <?php
 class CategoryWithPosition extends Doctrine_Record {
-    public function setTableDefinition() {
-        $this->hasColumn('position', 'integer');
-        $this->hasColumn('name', 'string', 255);
+    public static function initMetadata($class) {
+        $class->setColumn('position', 'integer');
+        $class->setColumn('name', 'string', 255);
+        $class->hasMany('BoardWithPosition as Boards', array('local' => 'id' , 'foreign' => 'category_id')); 
     }
-    public function setUp() {
-        $this->hasMany('BoardWithPosition as Boards', array('local' => 'id' , 'foreign' => 'category_id')); 
-    }   
 }

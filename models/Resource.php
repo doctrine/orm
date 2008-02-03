@@ -1,10 +1,8 @@
 <?php
 class Resource extends Doctrine_Record {
-   public function setUp() {
-      $this->hasMany('Task as TaskAlias', 'Assignment.task_id');
-      $this->hasMany('ResourceType as Type', 'ResourceReference.type_id');
-   }
-   public function setTableDefinition() {
-      $this->hasColumn('name', 'string',100);
+   public static function initMetadata($class) {
+      $class->setColumn('name', 'string',100);
+      $class->hasMany('Task as TaskAlias', array('local' => 'resource_id', 'foreign' => 'task_id', 'refClass' => 'Assignment'));
+      $class->hasMany('ResourceType as Type', array('local' => 'resource_id', 'foreign' => 'type_id', 'refClass' => 'ResourceReference'));
    }
 }

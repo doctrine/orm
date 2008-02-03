@@ -111,8 +111,8 @@ abstract class Doctrine_Configurable extends Doctrine_Locator_Injectable
                 $this->setEventListener($value);
                 break;
             case Doctrine::ATTR_COLL_KEY:
-                if ( ! ($this instanceof Doctrine_Table)) {
-                    throw new Doctrine_Exception("This attribute can only be set at table level.");
+                if ( ! ($this instanceof Doctrine_ClassMetadata)) {
+                    throw new Doctrine_Exception("This attribute can only be set at class level.");
                 }
                 if ($value !== null && ! $this->hasField($value)) {
                     throw new Doctrine_Exception("Couldn't set collection key attribute. No such field '$value'");
@@ -320,6 +320,11 @@ abstract class Doctrine_Configurable extends Doctrine_Locator_Injectable
 
         return $this;
     }
+    /*
+    public function removeRecordListeners()
+    {
+        $this->attributes[Doctrine::ATTR_RECORD_LISTENER] = 
+    }*/
 
     /**
      * addListener
@@ -364,8 +369,7 @@ abstract class Doctrine_Configurable extends Doctrine_Locator_Injectable
     public function setListener($listener)
     {
         if ( ! ($listener instanceof Doctrine_EventListener_Interface)
-            && ! ($listener instanceof Doctrine_Overloadable)
-        ) {
+                && ! ($listener instanceof Doctrine_Overloadable)) {
             throw new Doctrine_EventListener_Exception("Couldn't set eventlistener. EventListeners should implement either Doctrine_EventListener_Interface or Doctrine_Overloadable");
         }
         $this->attributes[Doctrine::ATTR_LISTENER] = $listener;

@@ -1,9 +1,9 @@
 <?php
 class ORM_AccessControlsGroups extends Doctrine_Record 
 {
-    public function setTableDefinition() 
+    public static function initMetadata($class) 
     {
-        $this->hasColumn('accessControlID', 'integer', 11, array('primary' => true)); 
-        $this->hasColumn('accessGroupID', 'integer', 11, array('primary' => true));
+        $class->setColumn('accessControlID', 'integer', 11, array('primary' => true)); 
+        $class->setColumn('accessGroupID', 'integer', 11, array('primary' => true));
     }
 }

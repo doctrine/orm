@@ -31,39 +31,31 @@ class Doctrine_Ticket_741_TestCase extends Doctrine_UnitTestCase
 
 class Parent741 extends Doctrine_Record
 {
-  public function setTableDefinition()
+  public static function initMetadata($class)
   {
-    $this->hasColumn('id', 'integer', 4, array (
+    $class->setColumn('id', 'integer', 4, array (
       'primary' => true,
       'autoincrement' => true,
       'notnull' => true,
     ));
 
-    $this->hasColumn('amount', 'integer');
-  }
-
-  public function setUp()
-  {
-    $this->hasMany('Child741 as Cows', array('local' => 'id', 'foreign' => 'moo_id'));
+    $class->setColumn('amount', 'integer');
+    $class->hasMany('Child741 as Cows', array('local' => 'id', 'foreign' => 'moo_id'));
   }
 }
 
 class Child741 extends Doctrine_Record
 {
-  public function setTableDefinition()
+  public static function initMetadata($class)
   {
-    $this->hasColumn('id', 'integer', 4, array (
+    $class->setColumn('id', 'integer', 4, array (
       'primary' => true,
       'autoincrement' => true,
       'notnull' => true,
     ));
 
-    $this->hasColumn('moo_id', 'integer');
-  }
-
-  public function setUp()
-  {
-    $this->hasOne('Parent741 as Moo', array('local' => 'moo_id', 'foreign' => 'id'));
+    $class->setColumn('moo_id', 'integer');
+    $class->hasOne('Parent741 as Moo', array('local' => 'moo_id', 'foreign' => 'id'));
   }
 
   public function postInsert($e)
@@ -86,5 +78,3 @@ class Child741 extends Doctrine_Record
     */
   }
 }
-
-

@@ -23,20 +23,20 @@ class Doctrine_Inheritance_Joined_TestCase extends Doctrine_UnitTestCase
 
     public function testMetadataSetup()
     {        
-        $suManagerTable = $this->conn->getTable('CTI_SuperManager');
-        $userTable = $this->conn->getTable('CTI_User');
-        $customerTable = $this->conn->getTable('CTI_Customer');
-        $managerTable = $this->conn->getTable('CTI_Manager');
+        $suManagerTable = $this->conn->getMetadata('CTI_SuperManager');
+        $userTable = $this->conn->getMetadata('CTI_User');
+        $customerTable = $this->conn->getMetadata('CTI_Customer');
+        $managerTable = $this->conn->getMetadata('CTI_Manager');
         $this->assertTrue($suManagerTable !== $userTable);
         $this->assertTrue($suManagerTable !== $customerTable);
         $this->assertTrue($userTable !== $customerTable);
         $this->assertTrue($managerTable !== $suManagerTable);
         
         // expected column counts
-        $this->assertEqual(2, count($suManagerTable->getColumns()));
+        $this->assertEqual(6, count($suManagerTable->getColumns()));
         $this->assertEqual(4, count($userTable->getColumns()));
-        $this->assertEqual(2, count($managerTable->getColumns()));
-        $this->assertEqual(2, count($customerTable->getColumns()));
+        $this->assertEqual(5, count($managerTable->getColumns()));
+        $this->assertEqual(5, count($customerTable->getColumns()));
         
         // expected table names
         $this->assertEqual('cti_user', $userTable->getTableName());
@@ -45,20 +45,15 @@ class Doctrine_Inheritance_Joined_TestCase extends Doctrine_UnitTestCase
         $this->assertEqual('cti_supermanager', $suManagerTable->getTableName());
         
         // expected joined parents option
-        $this->assertEqual(array(), $userTable->getOption('joinedParents'));
-        $this->assertEqual(array('CTI_User'), $managerTable->getOption('joinedParents'));
-        $this->assertEqual(array('CTI_User'), $customerTable->getOption('joinedParents'));
-        $this->assertEqual(array('CTI_Manager', 'CTI_User'), $suManagerTable->getOption('joinedParents'));
+        $this->assertEqual(array(), $userTable->getOption('parents'));
+        $this->assertEqual(array('CTI_User'), $managerTable->getOption('parents'));
+        $this->assertEqual(array('CTI_User'), $customerTable->getOption('parents'));
+        $this->assertEqual(array('CTI_Manager', 'CTI_User'), $suManagerTable->getOption('parents'));
         
         // check inheritance map
-        $this->assertEqual(array(
-                'CTI_User' => array('type' => 1),
-                'CTI_Manager' => array('type' => 2),
-                'CTI_Customer' => array('type' => 3),
-                'CTI_SuperManager' => array('type' => 4)), $userTable->getOption('inheritanceMap'));
-                
+        $this->assertEqual(array(1 => 'CTI_User', 2 => 'CTI_Manager',
+                3 => 'CTI_Customer', 4 => 'CTI_SuperManager'), $userTable->getInheritanceOption('discriminatorMap'));
         
-        //$this->assertEqual(array('CTI_User', 'CTI_Manager', ''))
     }
     
     protected function _createManager()
@@ -97,14 +92,14 @@ class Doctrine_Inheritance_Joined_TestCase extends Doctrine_UnitTestCase
         $this->assertEqual(1, $manager->id);
         $this->assertEqual(80000, $manager->salary);
         $this->assertEqual('John Smith', $manager->name);
-        $this->assertEqual(2, $manager->type);
+        $this->assertTrue($manager instanceof CTI_Manager);
         
         $superManager = $this->_createSuperManager();
         $this->assertEqual(2, $superManager->id);
         $this->assertEqual(1000000, $superManager->salary);
         $this->assertEqual('Bill Gates', $superManager->name);
         $this->assertEqual('BillyBoy', $superManager->gosutitle);
-        $this->assertEqual(4, $superManager->type);
+        $this->assertTrue($superManager instanceof CTI_SuperManager);
     }
     
     public function testUpdateUpdatesDataAcrossJoinedTablesTransparently()
@@ -121,7 +116,7 @@ class Doctrine_Inheritance_Joined_TestCase extends Doctrine_UnitTestCase
         $this->assertEqual(1, $manager->id);
         $this->assertEqual(90000, $manager->salary);
         $this->assertEqual('John Locke', $manager->name);
-        $this->assertEqual(2, $manager->type);
+        $this->assertTrue($manager instanceof CTI_Manager);
         
         
         $superManager = $this->_createSuperManager();
@@ -138,7 +133,7 @@ class Doctrine_Inheritance_Joined_TestCase extends Doctrine_UnitTestCase
         $this->assertEqual(0, $superManager->salary);
         $this->assertEqual('Bill Clinton', $superManager->name);
         $this->assertEqual('Billy the Kid', $superManager->gosutitle);
-        $this->assertEqual(4, $superManager->type);
+        $this->assertTrue($superManager instanceof CTI_SuperManager);
     }
     
     public function testDqlQueryJoinsTransparentlyAcrossParents()
@@ -154,7 +149,6 @@ class Doctrine_Inheritance_Joined_TestCase extends Doctrine_UnitTestCase
         $this->assertEqual(1, $manager->id);
         $this->assertEqual(80000, $manager->salary);
         $this->assertEqual('John Smith', $manager->name);
-        $this->assertEqual(2, $manager->type);
     }
     
     public function testQueryingBaseClassOuterJoinsSubClassesAndReturnsSubclassInstances()
@@ -172,60 +166,54 @@ class Doctrine_Inheritance_Joined_TestCase extends Doctrine_UnitTestCase
         $this->assertEqual(1, $user->id);
         $this->assertEqual(80000, $user->salary);
         $this->assertEqual('John Smith', $user->name);
-        $this->assertEqual(2, $user->type);
     }
 }
 
 
 class CTI_User extends Doctrine_Record
 {    
-    public function setTableDefinition()
+    public static function initMetadata($class)
     {
-        $this->setInheritanceType(Doctrine::INHERITANCETYPE_JOINED,
-                array('CTI_User' => array('type' => 1),
-                      'CTI_Manager' => array('type' => 2),
-                      'CTI_Customer' => array('type' => 3),
-                      'CTI_SuperManager' => array('type' => 4))
-        );/*
         $class->setInheritanceType(Doctrine::INHERITANCETYPE_JOINED, array(
-                'discriminatorColumn' => 'type',
-                'map' => array(1 => 'CTI_User', 2 => 'CTI_Manager', 3 => 'CTI_Customer',
-                               4 => 'CTI_SuperManager')
+                'discriminatorColumn' => 'dtype',
+                'discriminatorMap' => array(1 => 'CTI_User', 2 => 'CTI_Manager',
+                        3 => 'CTI_Customer', 4 => 'CTI_SuperManager')
                 ));
-        $class->setDiscriminatorValue(1);
-        $class->setInheritanceOption('fetchType', 'explicit');
-        */
-        $this->setTableName('cti_user');
-        $this->hasColumn('cti_id as id', 'integer', 4, array('primary' => true, 'autoincrement' => true));
-        $this->hasColumn('cti_foo as foo', 'integer', 4);
-        $this->hasColumn('cti_name as name', 'string', 50);
-        $this->hasColumn('type', 'integer', 4);
-    }
+        $class->setSubclasses(array('CTI_Manager', 'CTI_Customer', 'CTI_SuperManager'));  
+        $class->setTableName('cti_user');
+        $class->setColumn('cti_id as id', 'integer', 4, array('primary' => true, 'autoincrement' => true));
+        $class->setColumn('cti_foo as foo', 'integer', 4);
+        $class->setColumn('cti_name as name', 'string', 50);
+        $class->setColumn('dtype', 'integer', 2);
+    }    
 }
 
 class CTI_Manager extends CTI_User 
 {
-    public function setTableDefinition()
+    protected $name;
+    
+    public static function initMetadata($class)
     {
-        $this->setTableName('cti_manager');
-        $this->hasColumn('ctim_salary as salary', 'varchar', 50, array());
+        $class->setTableName('cti_manager');
+        $class->setSubclasses(array('CTI_SuperManager')); 
+        $class->setColumn('ctim_salary as salary', 'varchar', 50, array());
     }
 }
 
 class CTI_Customer extends CTI_User
 {
-    public function setTableDefinition()
+    public static function initMetadata($class)
     {
-        $this->setTableName('cti_customer');
-        $this->hasColumn('ctic_bonuspoints as bonuspoints', 'varchar', 50, array());
+        $class->setTableName('cti_customer');
+        $class->setColumn('ctic_bonuspoints as bonuspoints', 'varchar', 50, array());
     }
 }
 
 class CTI_SuperManager extends CTI_Manager
 {
-    public function setTableDefinition()
+    public static function initMetadata($class)
     {
-        $this->setTableName('cti_supermanager');
-        $this->hasColumn('ctism_gosutitle as gosutitle', 'varchar', 50, array());
+        $class->setTableName('cti_supermanager');
+        $class->setColumn('ctism_gosutitle as gosutitle', 'varchar', 50, array());
     }
 }

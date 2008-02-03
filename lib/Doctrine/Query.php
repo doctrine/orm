@@ -1620,7 +1620,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable, Seria
             $this->_conn = $manager->getConnectionForComponent($name);
         }
 
-        $table = $this->_conn->getTable($name);
+        $table = $this->_conn->getMetadata($name);
         $tableName = $table->getTableName();
 
         // get the short alias for this table

@@ -1,9 +1,9 @@
 <?php
 class ConcreteUser extends Doctrine_Record
 {
-    public function setUp()
+    public static function initMetadata($class)
     {
-        $this->loadTemplate('UserTemplate');
+        $class->loadTemplate('UserTemplate');
     }
 }
 

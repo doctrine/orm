@@ -1,10 +1,9 @@
 <?php
 class MysqlGroup extends Doctrine_Record
 {
-    public function setTableDefinition()
+    public static function initMetadata($class)
     {
-        $this->hasColumn('name', 'string', null);
-
-        $this->hasMany('MysqlUser', 'MysqlGroupMember.user_id');
+        $class->setColumn('name', 'string', null);
+        $class->hasMany('MysqlUser', array('local' => 'id', 'foreign' => 'user_id'));
     }
 }

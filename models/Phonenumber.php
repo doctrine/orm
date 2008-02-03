@@ -1,22 +1,20 @@
 <?php
 class Phonenumber extends Doctrine_Record 
 {
-    public function setTableDefinition() 
+    public static function initMetadata($class) 
     {
-        $this->hasColumn('phonenumber', 'string',20);
-        $this->hasColumn('entity_id', 'integer');
-    }
-    public function setUp() 
-    {
-        $this->hasOne('Entity', array('local' => 'entity_id', 
+        $class->setColumn('phonenumber', 'string',20);
+        $class->setColumn('entity_id', 'integer');
+        
+        $class->hasOne('Entity', array('local' => 'entity_id', 
                                       'foreign' => 'id', 
                                       'onDelete' => 'CASCADE'));
         
-        $this->hasOne('Group', array('local' => 'entity_id', 
+        $class->hasOne('Group', array('local' => 'entity_id', 
                                       'foreign' => 'id', 
                                       'onDelete' => 'CASCADE'));
           
-        $this->hasOne('User', array('local' => 'entity_id', 
+        $class->hasOne('User', array('local' => 'entity_id', 
                                     'foreign' => 'id', 
                                     'onDelete' => 'CASCADE'));
     }

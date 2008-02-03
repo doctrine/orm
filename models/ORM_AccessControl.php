@@ -1,12 +1,12 @@
 <?php
 class ORM_AccessControl extends Doctrine_Record 
 {
-    public function setTableDefinition() 
+    public static function initMetadata($class) 
     {
-        $this->hasColumn('name', 'string', 255);
-    }
-    public function setUp() 
-    {
-        $this->hasMany('ORM_AccessGroup as accessGroups', 'ORM_AccessControlsGroups.accessGroupID');
+        $class->setColumn('name', 'string', 255);
+        $class->hasMany('ORM_AccessGroup as accessGroups', array(
+                'local' => 'accessControlID', 'foreign' => 'accessGroupID',
+                'refClass' => 'ORM_AccessControlsGroups')
+                );
     }
 }

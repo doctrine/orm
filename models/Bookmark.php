@@ -1,9 +1,9 @@
 <?php
 class Bookmark extends Doctrine_Record
 {
-    public function setTableDefinition()
+    public static function initMetadata($class)
     {
-        $this->hasColumn('user_id', 'integer', null, array('primary' => true));
-        $this->hasColumn('page_id', 'integer', null, array('primary' => true));
+        $class->setColumn('user_id', 'integer', null, array('primary' => true));
+        $class->setColumn('page_id', 'integer', null, array('primary' => true));
     }
 }

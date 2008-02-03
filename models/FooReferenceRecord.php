@@ -1,11 +1,10 @@
 <?php
 class FooReferenceRecord extends Doctrine_Record
 {
-    public function setTableDefinition()
+    public static function initMetadata($class)
     {
-        $this->setTableName('foo_reference');
-        
-        $this->hasColumn('foo1', 'integer', null, array('primary' => true));
-        $this->hasColumn('foo2', 'integer', null, array('primary' => true));
+        $class->setTableName('foo_reference');
+        $class->setColumn('foo1', 'integer', null, array('primary' => true));
+        $class->setColumn('foo2', 'integer', null, array('primary' => true));
     }
 }

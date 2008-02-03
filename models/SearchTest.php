@@ -1,16 +1,12 @@
 <?php
 class SearchTest extends Doctrine_Record
 {
-    public function setTableDefinition()
+    public static function initMetadata($class)
     {
-        $this->hasColumn('title', 'string', 100);
-        $this->hasColumn('content', 'string');
-    }
-    public function setUp()
-    {
-    	$options = array('generateFiles' => false,
+        $class->setColumn('title', 'string', 100);
+        $class->setColumn('content', 'string');
+        $options = array('generateFiles' => false,
                          'fields' => array('title', 'content'));
-
-        $this->actAs('Searchable', $options);
+        $class->actAs('Searchable', $options);
     }
 }

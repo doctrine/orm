@@ -42,16 +42,21 @@ abstract class Doctrine_Record_Abstract extends Doctrine_Access
      * @var Doctrine_Mapper_Abstract
      */
     protected $_mapper;
-
-    public function setTableDefinition()
-    {
-    	
-    }
     
+    /**
+     * @deprecated
+     */
+    public function setTableDefinition()
+    {}
+    
+    /**
+     * @deprecated
+     */
     public function setUp()
-    {
-    	
-    }	
+    {}	
+
+    public static function initMapping(Doctrine_MetadataClass $class)
+    {}
 
 
     /**
@@ -65,6 +70,9 @@ abstract class Doctrine_Record_Abstract extends Doctrine_Access
         return $this->_table;
     }
     
+    /**
+     * Returns the mapper of the entity.
+     */
     public function getMapper()
     {
         return $this->_mapper;
@@ -105,51 +113,12 @@ abstract class Doctrine_Record_Abstract extends Doctrine_Access
 
         return $this;
     }
-
-    /**
-     * index
-     * defines or retrieves an index
-     * if the second parameter is set this method defines an index
-     * if not this method retrieves index named $name
-     *
-     * @param string $name              the name of the index
-     * @param array $definition         the definition array
-     * @return mixed
-     */
-    public function index($name, array $definition = array())
-    {
-        if ( ! $definition) {
-            return $this->_table->getIndex($name);
-        } else {
-            return $this->_table->addIndex($name, $definition);
-        }
-    }
+    
     public function setAttribute($attr, $value)
     {
         $this->_table->setAttribute($attr, $value);
     }
-    public function setTableName($tableName)
-    {
-        $this->_table->setTableName($tableName);
-    }
     
-    /**
-     *
-     * @deprecated Use setSubclasses()
-     */
-    public function setInheritanceMap($map)
-    {
-        $this->_table->setOption('inheritanceMap', $map);
-    }
-
-    public function setSubclasses($map)
-    {
-        //echo "setting inheritance map on " . get_class($this) . "<br />";
-        $this->_table->setOption('inheritanceMap', $map);
-        $this->_table->setOption('subclasses', array_keys($map));
-        $this->_table->setInheritanceType(Doctrine::INHERITANCETYPE_SINGLE_TABLE);
-    }
-
     /**
      * attribute
      * sets or retrieves an option
@@ -172,6 +141,50 @@ abstract class Doctrine_Record_Abstract extends Doctrine_Access
         } else {
             $this->_table->setAttribute($attr, $value);
         }    
+    }
+
+    
+    /* THE FOLLOWING STUFF WILL ALL BE REMOVED SOON */
+
+    public function setTableName($tableName)
+    {
+        $this->_table->setTableName($tableName);
+    }
+
+    /**
+     * index
+     * defines or retrieves an index
+     * if the second parameter is set this method defines an index
+     * if not this method retrieves index named $name
+     *
+     * @param string $name              the name of the index
+     * @param array $definition         the definition array
+     * @return mixed
+     */
+    public function index($name, array $definition = array())
+    {
+        if ( ! $definition) {
+            return $this->_table->getIndex($name);
+        } else {
+            return $this->_table->addIndex($name, $definition);
+        }
+    }
+    
+    /**
+     *
+     * @deprecated Use setSubclasses()
+     */
+    public function setInheritanceMap($map)
+    {
+        $this->_table->setOption('inheritanceMap', $map);
+    }
+
+    public function setSubclasses($map)
+    {
+        //echo "setting inheritance map on " . get_class($this) . "<br />";
+        $this->_table->setOption('inheritanceMap', $map);
+        $this->_table->setOption('subclasses', array_keys($map));
+        $this->_table->setInheritanceType(Doctrine::INHERITANCETYPE_SINGLE_TABLE);
     }
 
     /**
@@ -282,7 +295,7 @@ abstract class Doctrine_Record_Abstract extends Doctrine_Access
     {
         $this->_table->setColumn($name, $type, $length, $options);
     }
-
+    
     /**
      * hasColumns
      *
@@ -388,11 +401,6 @@ abstract class Doctrine_Record_Abstract extends Doctrine_Access
             // concrete table inheritance ...
         }
         $this->_table->setInheritanceType($type);
-    }
-    
-    protected function _getMapper($className)
-    {
-        
     }
 
     /**

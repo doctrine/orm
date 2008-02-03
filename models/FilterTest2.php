@@ -1,7 +1,7 @@
 <?php
 class FilterTest2 extends Doctrine_Record {
-    public function setTableDefinition() {
-        $this->hasColumn('name', 'string',100);
-        $this->hasColumn('test1_id', 'integer');
+    public static function initMetadata($class) {
+        $class->setColumn('name', 'string',100);
+        $class->setColumn('test1_id', 'integer');
     }
 }

@@ -53,7 +53,7 @@ class Doctrine_Query_Check
         if ( ! ($table instanceof Doctrine_Table)) {
             $table = Doctrine_Manager::getInstance()
                         ->getCurrentConnection()
-                        ->getTable($table);
+                        ->getClassMetadata($table);
         }
         $this->table = $table;
         $this->_tokenizer = new Doctrine_Query_Tokenizer();

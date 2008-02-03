@@ -1,9 +1,9 @@
 <?php
 class gnatEmail extends Doctrine_Record 
 {
-    public function setTableDefinition() 
+    public static function initMetadata($class) 
     {
-        $this->hasColumn('address', 'string', 150);
+        $class->setColumn('address', 'string', 150);
     }
     
     

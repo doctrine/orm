@@ -111,7 +111,7 @@ abstract class Doctrine_Record_Generator extends Doctrine_Record_Abstract
         return $this->_options;
     }
 
-    public function initialize(Doctrine_Table $table)
+    public function initialize($table)
     {
     	if ($this->_initialized) {
     	    return false;
@@ -188,7 +188,7 @@ abstract class Doctrine_Record_Generator extends Doctrine_Record_Abstract
      * @param Doctrine_Table $table     the table object that owns the plugin
      * @return array                    an array of foreign key definitions
      */
-    public function buildForeignKeys(Doctrine_Table $table)
+    public function buildForeignKeys($table)
     {
         $fk = array();
 

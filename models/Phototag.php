@@ -1,7 +1,7 @@
 <?php
 class Phototag extends Doctrine_Record {
-    public function setTableDefinition() {
-        $this->hasColumn('photo_id', 'integer');
-        $this->hasColumn('tag_id', 'integer');
+    public static function initMetadata($class) {
+        $class->setColumn('photo_id', 'integer');
+        $class->setColumn('tag_id', 'integer');
     }
 }

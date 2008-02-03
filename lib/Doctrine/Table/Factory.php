@@ -27,7 +27,7 @@ class Doctrine_Table_Factory
      * @param array  $tables The metadata collection to which the loaded metadata is added.
      */
     public function loadTables($name, array &$tables)
-    {
+    {        
         $parentClass = $name;
         $parentClasses = array();
         $parentClassWithTable = false;
@@ -102,13 +102,6 @@ class Doctrine_Table_Factory
             throw new Doctrine_Table_Factory_Exception("Failed to load meta data. Unknown inheritance type "
                     . "or no inheritance type specified for hierarchy.");
         }
-    }
-    
-    
-    protected function _createTable($domainClassName)
-    {        
-        return $this->_loadMetaDataFromCode($table, $domainClassName);
-        
     }
     
     /**
@@ -187,11 +180,12 @@ class Doctrine_Table_Factory
                             $joinedParents[] = $parentColumns[$columnName]['owner'];*/
                             $joinedParents[] = $parentTable->getComponentName();
                         }
-                    } else {
+                    }/* else {
+                        //echo "adding primary key $columnName on ".$table->getComponentName().".<br />";
                         unset($definition['autoincrement']);
                         $fullName = $columnName . ' as ' . $parentTable->getFieldName($columnName);
                         $table->setColumn($fullName, $definition['type'], $definition['length'], $definition, true);
-                    }
+                    }*/
                 }
             }
             $table->setOption('joinedParents', array_values(array_unique($joinedParents)));
@@ -289,7 +283,7 @@ class Doctrine_Table_Factory
                         unset($definition['sequence']);
 
                         // add the inherited primary key column
-                        $fullName = $id . ' as ' . $rootTable->getFieldName($id);
+                        $fullName = $rootTable->getColumnName($id) . ' as ' . $id;
                         $table->setColumn($fullName, $definition['type'], $definition['length'],
                                 $definition, true);
                     }

@@ -22,11 +22,7 @@ class Doctrine_Ticket_697_TestCase extends Doctrine_UnitTestCase
     }
 
     public function testIdsAreSetWhenSavingSubclassInstancesInCTI()
-    {
-        $personTable = $this->conn->getTable('T697_Person');
-        $userTable = $this->conn->getTable('T697_User');
-        //var_dump($userTable->getColumns());
-        
+    {        
         $p = new T697_Person();
         $p['name']='Rodrigo';
         $p->save();
@@ -42,21 +38,26 @@ class Doctrine_Ticket_697_TestCase extends Doctrine_UnitTestCase
 
 class T697_Person extends Doctrine_Record
 {
-    public function setTableDefinition()
+    public static function initMetadata($class)
     {
-        $this->setInheritanceType(Doctrine::INHERITANCETYPE_JOINED,
-                array('T697_Person' => array('dtype' => 1), 'T697_User' => array('dtype' => 2)));
-        $this->setTableName('t697_person');
-        $this->hasColumn('name', 'string', 30);
-        $this->hasColumn('dtype', 'integer', 4);
+        $class->setInheritanceType(Doctrine::INHERITANCETYPE_JOINED, array(
+                'discriminatorColumn' => 'dtype',
+                'discriminatorMap' => array(
+                        1 => 'T697_Person', 2 => 'T697_User'
+                        )
+                ));
+        $class->setSubclasses(array('T697_User'));
+        $class->setTableName('t697_person');
+        $class->setColumn('name', 'string', 30);
+        $class->setColumn('dtype', 'integer', 4);
     }
 }
 
 //Class table inheritance
 class T697_User extends T697_Person {
-    public function setTableDefinition()
+    public static function initMetadata($class)
     {
-        $this->setTableName('t697_user');
-        $this->hasColumn('password', 'string', 30);
+        $class->setTableName('t697_user');
+        $class->setColumn('password', 'string', 30);
     }
 }

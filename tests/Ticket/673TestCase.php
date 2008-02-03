@@ -60,12 +60,12 @@ class Doctrine_Ticket_673_TestCase extends Doctrine_UnitTestCase
 
 class T673_Student extends Doctrine_Record
 {
-  public function setTableDefinition()
+  public static function initMetadata($class)
   {
-    $this->setTableName('T673_Student_record');
+    $class->setTableName('T673_Student_record');
 
-    $this->hasColumn('s_id as id', 'varchar', 30, array (  'primary' => true,));
-    $this->hasColumn('s_foo as foo', 'integer', 4, array ('notnull'=>true));
-    $this->hasColumn('s_name as name', 'varchar', 50, array ());
+    $class->setColumn('s_id as id', 'varchar', 30, array (  'primary' => true,));
+    $class->setColumn('s_foo as foo', 'integer', 4, array ('notnull'=>true));
+    $class->setColumn('s_name as name', 'varchar', 50, array ());
   }
 }

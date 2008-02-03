@@ -1,16 +1,13 @@
 <?php
 class Book extends Doctrine_Record
 {
-    public function setUp()
+    public static function initMetadata($class)
     {
-        $this->hasMany('Author', array('local' => 'id', 'foreign' => 'book_id'));
-        $this->hasOne('User', array('local' => 'user_id',
+        $class->setColumn('user_id', 'integer');
+        $class->setColumn('name', 'string',20);
+        $class->hasMany('Author', array('local' => 'id', 'foreign' => 'book_id'));
+        $class->hasOne('User', array('local' => 'user_id',
                                     'foreign' => 'id',
                                     'onDelete' => 'CASCADE'));
-    }
-    public function setTableDefinition()
-    {
-        $this->hasColumn('user_id', 'integer');
-        $this->hasColumn('name', 'string',20);
     }
 }

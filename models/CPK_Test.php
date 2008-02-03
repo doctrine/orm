@@ -1,9 +1,7 @@
 <?php
 class CPK_Test extends Doctrine_Record {
-    public function setTableDefinition() {
-        $this->hasColumn('name', 'string', 255);
-    }
-    public function setUp() {
-        $this->hasMany('CPK_Test2 as Test', 'CPK_Association.test2_id');
+    public static function initMetadata($class) {
+        $class->setColumn('name', 'string', 255);
+        $class->hasMany('CPK_Test2 as Test', array('local' => 'test_id', 'foreign' => 'test2_id', 'refClass' => 'CPK_Association'));
     }
 }

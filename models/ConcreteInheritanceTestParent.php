@@ -1,18 +1,16 @@
 <?php
 class ConcreteInheritanceTestParent extends Doctrine_Record
 {
-    public function setTableDefinition()
+    public static function initMetadata($class)
     {
-        $this->hasColumn('name', 'string');
+        $class->setColumn('name', 'string');
     }
 }
 
 class ConcreteInheritanceTestChild extends ConcreteInheritanceTestParent
 {
-    public function setTableDefinition()
+    public static function initMetadata($class)
     {
-        $this->hasColumn('age', 'integer');
-        
-        parent::setTableDefinition();
+        $class->setColumn('age', 'integer');
     }
 }

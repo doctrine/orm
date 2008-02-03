@@ -528,12 +528,12 @@ abstract class Doctrine_Query_Abstract
      */
     protected function _createCustomJoinSql($componentName, $componentAlias)
     {
-        $table = $this->_conn->getTable($componentName);
+        $table = $this->_conn->getMetadata($componentName);
         $tableAlias = $this->getSqlTableAlias($componentAlias, $table->getTableName());
         $customJoins = $this->_conn->getMapper($componentName)->getCustomJoins();
         $sql = '';
         foreach ($customJoins as $componentName => $joinType) {
-            $joinedTable = $this->_conn->getTable($componentName);
+            $joinedTable = $this->_conn->getMetadata($componentName);
             $joinedAlias = $componentAlias . '.' . $componentName;
             $joinedTableAlias = $this->getSqlTableAlias($joinedAlias, $joinedTable->getTableName());
             $sql .= " $joinType JOIN " . $this->_conn->quoteIdentifier($joinedTable->getTableName())
@@ -553,6 +553,7 @@ abstract class Doctrine_Query_Abstract
     /**
      * Creates the SQL snippet for the WHERE part that contains the discriminator
      * column conditions.
+     * Used solely for Single Table Inheritance.
      *
      * @return string  The created SQL snippet.
      */
@@ -564,7 +565,25 @@ abstract class Doctrine_Query_Abstract
             if ( ! $data['mapper'] instanceof Doctrine_Mapper_SingleTable) {
                 $array[$sqlTableAlias][] = array();
             } else {
-                $array[$sqlTableAlias][] = $data['mapper']->getDiscriminatorColumn();
+                $discCol = $data['table']->getInheritanceOption('discriminatorColumn');
+                $discMap = $data['table']->getInheritanceOption('discriminatorMap');
+                $discValue = array_search($data['table']->getClassName(), $discMap);
+                if ($discValue === false) {
+                    continue;
+                }
+                $discriminator = array();
+                $discriminator[] = array($discCol => $discValue);
+                
+                $subclasses = $data['table']->getSubclasses();
+                foreach ((array)$subclasses as $subclass) {
+                    $subClassMetadata = $this->_conn->getClassMetadata($subclass);
+                    $discCol = $subClassMetadata->getInheritanceOption('discriminatorColumn');
+                    $discMap = $subClassMetadata->getInheritanceOption('discriminatorMap');
+                    $discValue = array_search($subclass, $discMap);
+                    $discriminator[] = array($discCol => $discValue);
+                }
+                
+                $array[$sqlTableAlias][] = $discriminator;
             }
         }
         //var_dump($array);
@@ -584,10 +603,11 @@ abstract class Doctrine_Query_Abstract
             }
 
             foreach ($maps as $map) {
+                //echo "start";
                 $b = array();
-                foreach ($map as $field => $value) {
-                    $identifier = $this->_conn->quoteIdentifier($tableAlias . $field);
-
+                foreach ($map as $discriminator) {
+                    list($column, $value) = each($discriminator);
+                    $identifier = $this->_conn->quoteIdentifier($tableAlias . $column);
                     if ($index > 0) {
                         $b[] = '(' . $identifier . ' = ' . $this->_conn->quote($value)
                              . ' OR ' . $identifier . ' IS NULL)';
@@ -597,10 +617,14 @@ abstract class Doctrine_Query_Abstract
                 }
 
                 if ( ! empty($b)) {
-                    $a[] = implode(' AND ', $b);
+                    if (count($b) > 1) {
+                        $a[] = '(' . implode(' OR ', $b) . ')';
+                    } else {
+                        $a[] = implode(' OR ', $b);
+                    }                    
                 }
             }
-
+            //echo "end<br />";
             if ( ! empty($a)) {
                 $c[] = implode(' AND ', $a);
             }

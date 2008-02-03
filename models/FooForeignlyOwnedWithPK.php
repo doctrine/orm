@@ -1,12 +1,8 @@
 <?php
 class FooForeignlyOwnedWithPk extends Doctrine_Record
 {
-    public function setTableDefinition()
+    public static function initMetadata($class)
     {
-        $this->hasColumn('name', 'string', 200);
-    }
-    public function setUp()
-    {
-        //$this->hasOne('FooRecord', array('local' => 'id', 'foreign' => 'id'));
+        $class->setColumn('name', 'string', 200);
     }
 }

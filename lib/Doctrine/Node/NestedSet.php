@@ -302,8 +302,10 @@ class Doctrine_Node_NestedSet extends Doctrine_Node implements Doctrine_Node_Int
     {
         $path = array();
         $ancestors = $this->getAncestors();
-        foreach ($ancestors as $ancestor) {
-            $path[] = $ancestor->__toString();
+        if ($ancestors) {
+            foreach ($ancestors as $ancestor) {
+                $path[] = $ancestor->__toString();
+            }
         }
         if ($includeRecord) {
             $path[] = $this->getRecord()->__toString();

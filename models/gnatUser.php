@@ -3,17 +3,11 @@ class gnatUserTable { }
 
 class gnatUser extends Doctrine_Record 
 {
-    public function setTableDefinition() 
+    public static function initMetadata($class) 
     {
-        $this->hasColumn('name', 'string', 150);
-        $this->hasColumn('foreign_id', 'integer', 10, array ('unique' => true,));
-    }
-    
-    public function setUp()
-    {
-        parent::setUp();
-        $this->hasOne('gnatEmail as Email', array('local'=> 'foreign_id', 'foreign'=>'id', 'onDelete'=>'CASCADE'));
-    }
-    
+        $class->setColumn('name', 'string', 150);
+        $class->setColumn('foreign_id', 'integer', 10, array ('unique' => true));
+        $class->hasOne('gnatEmail as Email', array('local'=> 'foreign_id', 'foreign'=>'id', 'onDelete'=>'CASCADE'));
+    }    
 }
 

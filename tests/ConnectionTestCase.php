@@ -158,10 +158,10 @@ class Doctrine_Connection_TestCase extends Doctrine_UnitTestCase
 
     public function testGetTable() 
     {
-        $table = $this->connection->getTable('Group');
-        $this->assertTrue($table instanceof Doctrine_Table);
+        $table = $this->connection->getClassMetadata('Group');
+        $this->assertTrue($table instanceof Doctrine_ClassMetadata);
         try {
-            $table = $this->connection->getTable('Unknown');
+            $table = $this->connection->getClassMetadata('Unknown');
             $f = false;
         } catch(Doctrine_Exception $e) {
             $f = true;
@@ -194,11 +194,6 @@ class Doctrine_Connection_TestCase extends Doctrine_UnitTestCase
     {
         $this->assertEqual($this->connection->transaction->getState(),Doctrine_Transaction::STATE_SLEEP);
         $this->assertEqual(Doctrine_Lib::getConnectionStateAsString($this->connection->transaction->getState()), 'open');
-    }
-
-    public function testGetTables() 
-    {
-        $this->assertTrue(is_array($this->connection->getTables()));
     }
 
     public function testRollback() 

@@ -1,23 +1,23 @@
 <?php
 class RelationTest extends Doctrine_Record 
 {
-    public function setTableDefinition() 
+    public static function initMetadata($class) 
     {
-        $this->hasColumn('name', 'string', 200);
-        $this->hasColumn('parent_id', 'integer');
+        $class->setColumn('name', 'string', 200);
+        $class->setColumn('parent_id', 'integer');
     }
 }
 
 class RelationTestChild extends RelationTest 
 {
-    public function setUp() 
+    public static function initMetadata($class) 
     {
-        $this->hasOne('RelationTest as Parent', array(
+        $class->hasOne('RelationTest as Parent', array(
             'local' => 'parent_id',
             'foreign' => 'id',
             'onDelete' => 'CASCADE',
         ));
-        $this->hasMany('RelationTestChild as Children', array(
+        $class->hasMany('RelationTestChild as Children', array(
             'local' => 'id',
             'foreign' => 'parent_id',
         ));

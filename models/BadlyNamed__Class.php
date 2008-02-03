@@ -1,8 +1,7 @@
 <?php
 class BadLyNamed__Class extends Doctrine_Record {
-    public function setTableDefinition() {
+    public static function initMetadata($class) {
                                          	
     }
-    public function setUp() { }
 }
 

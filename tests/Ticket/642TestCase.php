@@ -52,10 +52,10 @@ class Doctrine_Ticket_642_TestCase extends Doctrine_UnitTestCase
 
 class stDummyObj extends Doctrine_Record
 {
-    public function setTableDefinition()
+    public static function initMetadata($class)
     {
-        $this->setTableName('st_dummy_obj');
-        $this->hasColumn('startDate', 'timestamp', null, array(
+        $class->setTableName('st_dummy_obj');
+        $class->setColumn('startDate', 'timestamp', null, array(
             'notnull' => true, 
             'default' => '0000-00-00 00:00:00'
         ));

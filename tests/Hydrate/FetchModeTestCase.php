@@ -45,6 +45,7 @@ class Doctrine_Hydrate_FetchMode_TestCase extends Doctrine_UnitTestCase
 
         $this->assertEqual(count($users), 1);
     }
+    
     public function testFetchArraySupportsOneToManyRelations2()
     {
         $q = new Doctrine_Query();
@@ -57,6 +58,7 @@ class Doctrine_Hydrate_FetchMode_TestCase extends Doctrine_UnitTestCase
 
         $this->assertEqual(count($users), 8);
     }
+    
     public function testFetchArraySupportsOneToManyRelations3()
     {
         $q = new Doctrine_Query();
@@ -70,6 +72,7 @@ class Doctrine_Hydrate_FetchMode_TestCase extends Doctrine_UnitTestCase
         $this->assertEqual(count($users), 1);
         $this->assertEqual(count($users[0]['Phonenumber']), 3);
     }
+    
     public function testFetchArraySupportsOneToOneRelations()
     {
         $q = new Doctrine_Query();
@@ -81,6 +84,7 @@ class Doctrine_Hydrate_FetchMode_TestCase extends Doctrine_UnitTestCase
         $this->assertEqual(count($users), 8);
         $this->assertEqual($users[0]['Email']['address'], 'zYne@example.com');
     }
+    
     public function testFetchArraySupportsOneToOneRelations2()
     {
         $q = new Doctrine_Query();

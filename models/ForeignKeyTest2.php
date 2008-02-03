@@ -1,11 +1,10 @@
 <?php
 class ForeignKeyTest2 extends Doctrine_Record
 {
-    public function setTableDefinition() 
+    public static function initMetadata($class) 
     {
-        $this->hasColumn('name', 'string', null);
-        $this->hasColumn('foreignkey', 'integer');
-       
-        $this->hasOne('ForeignKeyTest', 'ForeignKeyTest2.foreignkey');
+        $class->setColumn('name', 'string', null);
+        $class->setColumn('foreignkey', 'integer');
+        $class->hasOne('ForeignKeyTest', array('local' => 'foreignkey', 'foreign' => 'id'));
     }
 }

@@ -2,38 +2,28 @@
 
 require_once('Entity.php');
 
-// UserTable doesn't extend Doctrine_Table -> Doctrine_Connection
-// won't initialize grouptable when Doctrine_Connection->getTable('User') is called
-class UserTable extends Doctrine_Table { }
 
 class User extends Entity
 {
-    public function setUp() 
+    public static function initMetadata($class) 
     {
-        parent::setUp();
-        $this->hasMany('Address', array(
+        $class->hasMany('Address', array(
             'local' => 'user_id', 
             'foreign' => 'address_id',
             'refClass' => 'EntityAddress',
         ));
-        $this->hasMany('Address as Addresses', array(
+        $class->hasMany('Address as Addresses', array(
             'local' => 'user_id', 
             'foreign' => 'address_id',
             'refClass' => 'EntityAddress',
         ));
-        $this->hasMany('Album', array('local' => 'id', 'foreign' => 'user_id'));
-        $this->hasMany('Book', array('local' => 'id', 'foreign' => 'user_id'));
-        $this->hasMany('Group', array(
+        $class->hasMany('Album', array('local' => 'id', 'foreign' => 'user_id'));
+        $class->hasMany('Book', array('local' => 'id', 'foreign' => 'user_id'));
+        $class->hasMany('Group', array(
             'local' => 'user_id', 
             'foreign' => 'group_id',
-            'refClass' => 'Groupuser',
-            'refRelationName' => 'UserGroupuser',
-            'refReverseRelationName' => 'GroupGroupuser'
-        ));
-        /*$this->hasMany('Groupuser as Group', array(
-                'local' => 'id', 'foreign' => 'user_id'
-        ));*/
-        
+            'refClass' => 'Groupuser'
+        ));        
     }
 
     /** Custom validation */

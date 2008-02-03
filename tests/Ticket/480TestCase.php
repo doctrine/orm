@@ -33,11 +33,11 @@
 
 class stComment extends Doctrine_Record
 {
-    public function setTableDefinition()
+    public static function initMetadata($class)
     {
-        $this->setTableName('st_comment');
-        $this->hasColumn('title', 'string', 100, array());
-        $this->hasColumn('body', 'string', 1000, array());
+        $class->setTableName('st_comment');
+        $class->setColumn('title', 'string', 100, array());
+        $class->setColumn('body', 'string', 1000, array());
     }
 }
 

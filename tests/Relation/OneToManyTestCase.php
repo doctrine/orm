@@ -42,7 +42,7 @@ class Doctrine_Relation_OneToMany_TestCase extends Doctrine_UnitTestCase
     }
     public function testRelationParsing()
     {
-        $table = $this->conn->getTable('Entity');
+        $table = $this->conn->getClassMetadata('Entity');
 
         $rel = $table->getRelation('Phonenumber');
 
@@ -55,7 +55,7 @@ class Doctrine_Relation_OneToMany_TestCase extends Doctrine_UnitTestCase
 
     public function testRelationParsing2()
     {
-        $table = $this->conn->getTable('Phonenumber');
+        $table = $this->conn->getClassMetadata('Phonenumber');
 
         $rel = $table->getRelation('Entity');
 
@@ -64,7 +64,7 @@ class Doctrine_Relation_OneToMany_TestCase extends Doctrine_UnitTestCase
 
     public function testRelationParsing3()
     {
-        $table = $this->conn->getTable('Policy');
+        $table = $this->conn->getClassMetadata('Policy');
 
         $rel = $table->getRelation('PolicyAssets');
 

@@ -77,7 +77,7 @@ class Doctrine_Relation_TestCase extends Doctrine_UnitTestCase
 
         $this->assertEqual($groups->count(), 3);
 
-        $links = Doctrine_Query::create()->from('GroupUser gu')->execute();
+        $links = Doctrine_Query::create()->from('Groupuser gu')->execute();
 
         $this->assertEqual($links->count(), 0);
     }
@@ -140,7 +140,7 @@ class Doctrine_Relation_TestCase extends Doctrine_UnitTestCase
          
         // test that join table relations can be initialized even before the association have been initialized
         try {
-            $user->UserGroupuser;
+            $user->Groupuser;
             $this->pass();
         } catch(Doctrine_Exception $e) {
             $this->fail();

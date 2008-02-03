@@ -8,19 +8,13 @@ class GroupTable { }
 
 class Group extends Entity
 {
-    public function setUp()
+    public static function initMetadata($class)
     {
-        parent::setUp();
-        $this->hasMany('User', array(
+        $class->hasMany('User', array(
             'local' => 'group_id',
             'foreign' => 'user_id',
-            'refClass' => 'Groupuser',
-            'refRelationName' => 'GroupGroupuser',
-            'refReverseRelationName' => 'UserGroupuser'
+            'refClass' => 'Groupuser'
         ));
-        /*$this->hasMany('Groupuser as User', array(
-                'local' => 'id', 'foreign' => 'group_id'
-        ));*/
     }
 }
 

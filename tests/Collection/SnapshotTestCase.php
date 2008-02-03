@@ -40,7 +40,7 @@ class Doctrine_Collection_Snapshot_TestCase extends Doctrine_UnitTestCase
 {
     public function prepareTables()
     {
-        $this->tables = array('Entity', 'User', 'Group', 'GroupUser', 'Account', 'Album', 'Phonenumber', 'Email', 'Book');
+        $this->tables = array('Entity', 'User', 'Group', 'Groupuser', 'Account', 'Album', 'Phonenumber', 'Email', 'Book');
         
         parent::prepareTables();
     }

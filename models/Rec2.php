@@ -1,15 +1,10 @@
 <?php
 class Rec2  extends Doctrine_Record
 {
-    public function setTableDefinition()
+    public static function initMetadata($class)
     {
-        $this->hasColumn('user_id', 'integer', 10, array (  'unique' => true,));
-        $this->hasColumn('address', 'string', 150, array ());
+        $class->setColumn('user_id', 'integer', 10, array (  'unique' => true,));
+        $class->setColumn('address', 'string', 150, array ());
+        $class->hasOne('Rec1 as User', array('local' => 'user_id', 'foreign' => 'id'));
     }
-
-    public function setUp()
-    {
-        $this->hasOne('Rec1 as User', 'Rec2.user_id');
-    }
-
 }

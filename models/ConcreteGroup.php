@@ -1,8 +1,8 @@
 <?php
 class ConcreteGroup extends Doctrine_Record
 {
-    public function setUp()
+    public static function initMetadata($class)
     {
-        $this->loadTemplate('GroupTemplate');
+        $class->loadTemplate('GroupTemplate');
     }
 }

@@ -1,9 +1,9 @@
 <?php
 class FooBarRecord extends Doctrine_Record
 {
-    public function setTableDefinition()
+    public static function initMetadata($class)
     {
-        $this->hasColumn('fooId', 'integer', null, array('primary' => true));
-        $this->hasColumn('barId', 'integer', null, array('primary' => true));
+        $class->setColumn('fooId', 'integer', null, array('primary' => true));
+        $class->setColumn('barId', 'integer', null, array('primary' => true));
     }
 }

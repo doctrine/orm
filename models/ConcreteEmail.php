@@ -1,8 +1,8 @@
 <?php
 class ConcreteEmail extends Doctrine_Record
 {
-    public function setUp()
+    public static function initMetadata($class)
     {
-        $this->loadTemplate('EmailTemplate');
+        $class->loadTemplate('EmailTemplate');
     }
 }

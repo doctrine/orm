@@ -48,11 +48,11 @@ class Doctrine_Ticket_626D_TestCase extends Doctrine_UnitTestCase
 
 class T626D_Student1 extends Doctrine_Record
 {
-  public function setTableDefinition()
+  public static function initMetadata($class)
   {
-    $this->setTableName('T626D_Student_record_1');
+    $class->setTableName('T626D_Student_record_1');
 
-    $this->hasColumn('s_id as id', 'varchar', 30, array (  'primary' => true,));
-    $this->hasColumn('s_name as name', 'varchar', 50, array ());
+    $class->setColumn('s_id as id', 'varchar', 30, array (  'primary' => true,));
+    $class->setColumn('s_name as name', 'varchar', 50, array ());
   }
 }

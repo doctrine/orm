@@ -86,7 +86,7 @@ class Doctrine_Query_Where extends Doctrine_Query_Condition
         }
     }
 
-    public function parseValue($value, Doctrine_Table $table = null, $field = null)
+    public function parseValue($value, $table = null, $field = null)
     {
         $conn = $this->query->getConnection();
 

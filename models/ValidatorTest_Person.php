@@ -1,11 +1,8 @@
 <?php
 class ValidatorTest_Person extends Doctrine_Record {
-   public function setTableDefinition() {
-      $this->hasColumn('identifier', 'integer', 4, array('notblank', 'unique'));
-      $this->hasColumn('is_football_player', 'boolean');
-   }
-   
-   public function setUp() {
-      $this->hasOne('ValidatorTest_FootballPlayer', 'ValidatorTest_FootballPlayer.person_id');
+   public static function initMetadata($class) {
+      $class->setColumn('identifier', 'integer', 4, array('notblank', 'unique'));
+      $class->setColumn('is_football_player', 'boolean');
+      $class->hasOne('ValidatorTest_FootballPlayer', array('local' => 'id', 'foreign' => 'person_id'));
    }
 }

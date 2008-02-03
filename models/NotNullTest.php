@@ -1,7 +1,7 @@
 <?php
 class NotNullTest extends Doctrine_Record {
-    public function setTableDefinition() {
-        $this->hasColumn('name', 'string', 100, 'notnull');
-        $this->hasColumn('type', 'integer', 11);                                     	
+    public static function initMetadata($class) {
+        $class->setColumn('name', 'string', 100, 'notnull');
+        $class->setColumn('type', 'integer', 11);                                     	
     }
 }

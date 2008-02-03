@@ -60,16 +60,15 @@ class Doctrine_Hydrator extends Doctrine_Hydrator_Abstract
      */
     public function hydrateResultSet($stmt, $tableAliases, $hydrationMode = null)
     {
-        //$s = microtime(true);
-        $this->_tableAliases = $tableAliases;
+        if ($hydrationMode === null) {
+            $hydrationMode = $this->_hydrationMode;
+        }
         
         if ($hydrationMode == Doctrine::HYDRATE_NONE) {
             return $stmt->fetchAll(PDO::FETCH_NUM);
         }
         
-        if ($hydrationMode === null) {
-            $hydrationMode = $this->_hydrationMode;
-        }
+        $this->_tableAliases = $tableAliases;
 
         if ($hydrationMode === Doctrine::HYDRATE_ARRAY) {
             $driver = new Doctrine_Hydrator_ArrayDriver();
@@ -108,7 +107,7 @@ class Doctrine_Hydrator extends Doctrine_Hydrator_Abstract
         foreach ($this->_queryComponents as $dqlAlias => $data) {
             $data['mapper']->setAttribute(Doctrine::ATTR_LOAD_REFERENCES, false);
             $componentName = $data['mapper']->getComponentName();
-            $listeners[$componentName] = $data['table']->getRecordListener();
+            $listeners[$componentName] = $data['mapper']->getRecordListener();
             $identifierMap[$dqlAlias] = array();
             $prev[$dqlAlias] = array();
             $id[$dqlAlias] = '';

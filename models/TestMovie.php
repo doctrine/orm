@@ -2,26 +2,24 @@
 class TestMovie extends Doctrine_Record
 {
 
-    public function setUp() 
+    public static function initMetadata($class) 
     {
-    	$this->hasOne('TestUser as User', 
+        $class->setColumn('user_id', 'integer', null);
+        $class->setColumn('name', 'string', 30);
+        
+    	$class->hasOne('TestUser as User', 
                         array('local' => 'user_id', 
                               'foreign' => 'id'));
 
-        $this->hasMany('TestUser as MovieBookmarks', 
+        $class->hasMany('TestUser as MovieBookmarks', 
                         array('local' => 'movie_id',
                               'foreign' => 'user_id',
                               'refClass' => 'TestMovieUserBookmark'));
 
-        $this->hasMany('TestUser as MovieVotes', 
+        $class->hasMany('TestUser as MovieVotes', 
                         array('local' => 'movie_id',
                               'foreign' => 'user_id',
                               'refClass' => 'TestMovieUserVote'));
     }
 
-    public function setTableDefinition() 
-    {
-    	$this->hasColumn('user_id', 'integer', null);
-        $this->hasColumn('name', 'string', 30);
-    }
 }

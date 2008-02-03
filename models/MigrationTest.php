@@ -1,8 +1,8 @@
 <?php
 class MigrationTest extends Doctrine_Record
 {
-    public function setTableDefinition() 
+    public static function initMetadata($class) 
     {
-        $this->hasColumn('field1', 'string');
+        $class->setColumn('field1', 'string');
     }
 }

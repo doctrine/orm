@@ -90,70 +90,55 @@ class Doctrine_Ticket_626B_TestCase extends Doctrine_UnitTestCase
 
 class T626B_Student extends Doctrine_Record
 {
-  public function setTableDefinition()
+  public static function initMetadata($class)
   {
-    $this->setTableName('T626B_Student_record');
+    $class->setTableName('T626B_Student_record');
 
-    $this->hasColumn('s_id as id', 'varchar', 30, array (  'primary' => true,));
-    $this->hasColumn('s_g_id as group_id', 'varchar', 30, array ('notnull'=>true));
-    $this->hasColumn('s_name as name', 'varchar', 50, array ());
-  }
-  
-  public function setUp()
-  {
-    $this->hasMany('T626_Course as StudyCourses', array('refClass' => 'T626B_StudentCourse', 'local' => 'sc_student_id', 'foreign' => 'sc_course_id'));
-    $this->hasOne('T626_Group as Group', array('local' => 's_g_id', 'foreign' => 'g_id'));
+    $class->setColumn('s_id as id', 'varchar', 30, array (  'primary' => true,));
+    $class->setColumn('s_g_id as group_id', 'varchar', 30, array ('notnull'=>true));
+    $class->setColumn('s_name as name', 'varchar', 50, array ());
+    
+    $class->hasMany('T626_Course as StudyCourses', array('refClass' => 'T626B_StudentCourse', 'local' => 'sc_student_id', 'foreign' => 'sc_course_id'));
+    $class->hasOne('T626_Group as Group', array('local' => 's_g_id', 'foreign' => 'g_id'));
   }
 }
 
 class T626_Group extends Doctrine_Record
 {
-  public function setTableDefinition()
+  public static function initMetadata($class)
   {
-    $this->setTableName('T626B_Student_group');
+    $class->setTableName('T626B_Student_group');
 
-    $this->hasColumn('g_id as id', 'varchar', 30, array (  'primary' => true,));
-    $this->hasColumn('g_name as name', 'varchar', 50, array ());
-  }
-  
-  public function setUp()
-  {
-    $this->hasMany('T626B_Student as Students', 
-      array('local' => 'g_id', 'foreign' => 's_id'));
+    $class->setColumn('g_id as id', 'varchar', 30, array (  'primary' => true,));
+    $class->setColumn('g_name as name', 'varchar', 50, array ());
+    
+    $class->hasMany('T626B_Student as Students', array('local' => 'g_id', 'foreign' => 's_id'));
   }
 }
 
 
 class T626_Course extends Doctrine_Record
 {
-  public function setTableDefinition()
+  public static function initMetadata($class)
   {
-    $this->setTableName('T626_course');
+    $class->setTableName('T626_course');
 
-    $this->hasColumn('c_id as id', 'varchar', 20, array (  'primary' => true,));
-    $this->hasColumn('c_name as name', 'varchar', 50, array ());
-  }
-  
-  public function setUp()
-  {
-    $this->hasMany('T626B_Student as Students', array('refClass' => 'T626B_StudentCourse', 'local' => 'sc_course_id', 'foreign' => 'sc_student_id'));
+    $class->setColumn('c_id as id', 'varchar', 20, array (  'primary' => true,));
+    $class->setColumn('c_name as name', 'varchar', 50, array ());
+    $class->hasMany('T626B_Student as Students', array('refClass' => 'T626B_StudentCourse', 'local' => 'sc_course_id', 'foreign' => 'sc_student_id'));
   }
 }
 
 class T626B_StudentCourse extends Doctrine_Record
 {
-  public function setTableDefinition()
+  public static function initMetadata($class)
   {
-    $this->setTableName('T626B_Student_course');
+    $class->setTableName('T626B_Student_course');
 
-    $this->hasColumn('sc_student_id as student_id', 'varchar', 30, array (  'primary' => true,));
-    $this->hasColumn('sc_course_id as course_id', 'varchar', 20, array (  'primary' => true,));
-    $this->hasColumn('sc_remark  as remark', 'varchar', 500, array ());
-  }
-  
-  public function setUp()
-  {
-    $this->hasOne('T626B_Student as Student', array('local' => 'sc_student_id', 'foreign' => 's_id'));
-    $this->hasOne('T626_Course as Course', array('local' => 'sc_course_id', 'foreign' => 'c_id'));
+    $class->setColumn('sc_student_id as student_id', 'varchar', 30, array (  'primary' => true,));
+    $class->setColumn('sc_course_id as course_id', 'varchar', 20, array (  'primary' => true,));
+    $class->setColumn('sc_remark  as remark', 'varchar', 500, array ());
+    $class->hasOne('T626B_Student as Student', array('local' => 'sc_student_id', 'foreign' => 's_id'));
+    $class->hasOne('T626_Course as Course', array('local' => 'sc_course_id', 'foreign' => 'c_id'));
   }
 }

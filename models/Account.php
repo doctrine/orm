@@ -1,10 +1,10 @@
 <?php
 class Account extends Doctrine_Record 
 {
-    public function setTableDefinition() 
+    public static function initMetadata($class) 
     {
-        $this->hasColumn('entity_id', 'integer');
-        $this->hasColumn('amount', 'integer');
+        $class->setColumn('entity_id', 'integer');
+        $class->setColumn('amount', 'integer');
     }
 }
 

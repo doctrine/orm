@@ -41,7 +41,7 @@ class Doctrine_Tree_NestedSet extends Doctrine_Tree implements Doctrine_Tree_Int
      * @param object $table                     instance of Doctrine_Table
      * @param array $options                    options
      */
-    public function __construct(Doctrine_Table $table, $options)
+    public function __construct($table, $options)
     {
         // set default many root attributes
         $options['hasManyRoots'] = isset($options['hasManyRoots']) ? $options['hasManyRoots'] : false;

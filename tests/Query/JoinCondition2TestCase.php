@@ -34,30 +34,38 @@ class Doctrine_Query_JoinCondition2_TestCase extends Doctrine_UnitTestCase
 {
     public function prepareTables()
     {
-        $this->tables[] = 'Entity';
-        $this->tables[] = 'User';
-        $this->tables[] = 'GroupUser';
-        $this->tables[] = 'Group';
+        $this->tables = array('User', 'Groupuser');
         parent::prepareTables();
     }
 
 
     public function prepareData()
     {
-        parent::prepareData();
-
-        $groups = new Doctrine_Collection('Group');
-
-        $groups[0]->name = 'PHP Users';
-
-        $groups[1]->name = 'Developers';
-
-        $groups->save();
-
-        $zYne = Doctrine_Query::create()->from('User u')->where('u.name = ?', 'zYne')->fetchOne();
-        $zYne->Group[0] = $groups[0];
-        $zYne->Group[1] = $groups[1];
+        $this->conn->getMapper('User')->clear();
+        $this->conn->getMapper('Group')->clear();
+        $this->conn->getMapper('Groupuser')->clear();
+        
+        $zYne = new User();
+        $zYne->name = 'zYne';
         $zYne->save();
+        
+        $groups = new Doctrine_Collection('Group');
+        $groups[0]->name = 'PHP Users';
+        $groups[1]->name = 'Developers';
+        //$groups->save();
+        
+        $zYne->Group = $groups;
+        $zYne->save();
+        
+        /*$q = new Doctrine_Query($this->connection);
+        $q->select('g.*')->from('Groupuser g');
+        //echo $q->getSql();
+        var_dump($q->execute(array(), Doctrine::HYDRATE_ARRAY));
+        echo "<br /><br />";*/
+        
+        //$q = new Doctrine_Query($this->connection);
+        //$q->select('u.id, g.id')->from('User u')->leftJoin('u.Group g')->where('u.name = ?', 'zYne');
+        //var_dump($q->execute(array(), Doctrine::HYDRATE_ARRAY));
     }
 
     public function testJoinConditionsArgumentsLeftJoins()

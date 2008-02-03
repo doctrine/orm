@@ -1,26 +1,29 @@
 <?php
 class Entity extends Doctrine_Record 
 {
-    public function setUp() 
+    public static function initMetadata($class) 
     {
-        $this->hasOne('Email', array('local' => 'email_id'));
-        $this->hasMany('Phonenumber', array('local' => 'id', 'foreign' => 'entity_id'));
-        $this->hasOne('Account', array('foreign' => 'entity_id'));
-        $this->hasMany('Entity', array('local' => 'entity1', 
+        $class->setColumn('id', 'integer',20, array('autoincrement' => true, 'primary' => true));
+        $class->setColumn('name', 'string',50);
+        $class->setColumn('loginname', 'string',20, array('unique' => true));
+        $class->setColumn('password', 'string',16);
+        $class->setColumn('type', 'integer');
+        $class->setColumn('created', 'integer',11);
+        $class->setColumn('updated', 'integer',11);
+        $class->setColumn('email_id', 'integer');
+        
+        $class->setSubclasses(array('Group', 'User'));
+        $class->setInheritanceType(Doctrine::INHERITANCETYPE_SINGLE_TABLE, array(
+                'discriminatorColumn' => 'type',
+                'discriminatorMap' => array(0 => 'User', 1 => 'Group', 2 => 'Entity')
+                ));
+        
+        $class->hasOne('Email', array('local' => 'email_id'));
+        $class->hasMany('Phonenumber', array('local' => 'id', 'foreign' => 'entity_id'));
+        $class->hasOne('Account', array('foreign' => 'entity_id'));
+        $class->hasMany('Entity', array('local' => 'entity1',
             'refClass' => 'EntityReference',
             'foreign' => 'entity2',
             'equal'    => true));
-    }
-    public function setTableDefinition() 
-    {
-        $this->hasColumn('id', 'integer',20, 'autoincrement|primary');
-        $this->hasColumn('name', 'string',50);
-        $this->hasColumn('loginname', 'string',20, array('unique'));
-        $this->hasColumn('password', 'string',16);
-        $this->hasColumn('type', 'integer',1);
-        $this->hasColumn('created', 'integer',11);
-        $this->hasColumn('updated', 'integer',11);
-        $this->hasColumn('email_id', 'integer');
-        $this->setSubclasses(array("User" => array("type" => 0), "Group" => array("type" => 1)));
     }
 }

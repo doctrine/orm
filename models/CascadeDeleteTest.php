@@ -1,13 +1,10 @@
 <?php
 class CascadeDeleteTest extends Doctrine_Record
 {
-    public function setTableDefinition()
+    public static function initMetadata($class)
     {
-        $this->hasColumn('name', 'string');
-    }
-    public function setUp()
-    {
-        $this->hasMany('CascadeDeleteRelatedTest as Related', 
+        $class->setColumn('name', 'string');
+        $class->hasMany('CascadeDeleteRelatedTest as Related', 
                         array('local' => 'id',
                               'foreign' => 'cscd_id'));
     }

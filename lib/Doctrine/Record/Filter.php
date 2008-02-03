@@ -35,7 +35,7 @@ abstract class Doctrine_Record_Filter
 {
     protected $_table;
 
-    public function setTable(Doctrine_Table $table)
+    public function setTable(Doctrine_ClassMetadata $table)
     {
         $this->_table = $table;
     }

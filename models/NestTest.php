@@ -1,20 +1,17 @@
 <?php
 class NestTest extends Doctrine_Record
 {
-    public function setTableDefinition() 
+    public static function initMetadata($class) 
     {
-        $this->hasColumn('name', 'string');
-    }
-    public function setUp()
-    {
-        $this->hasMany('NestTest as Parents', array('local' => 'child_id',
+        $class->setColumn('name', 'string');
+        $class->hasMany('NestTest as Parents', array('local' => 'child_id',
                                                     'refClass' => 'NestReference',
                                                     'foreign' => 'parent_id'));
-        $this->hasMany('NestTest as Children', array('local' => 'parent_id',
+        $class->hasMany('NestTest as Children', array('local' => 'parent_id',
                                                      'refClass' => 'NestReference',
                                                      'foreign' => 'child_id'));
                                                      
-        $this->hasMany('NestTest as Relatives', array('local' => 'child_id',
+        $class->hasMany('NestTest as Relatives', array('local' => 'child_id',
                                                       'refClass' => 'NestReference',
                                                       'foreign' => 'parent_id',
                                                       'equal'   => true));

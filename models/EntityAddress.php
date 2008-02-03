@@ -1,9 +1,9 @@
 <?php
 class EntityAddress extends Doctrine_Record 
 {
-    public function setTableDefinition() 
+    public static function initMetadata($class) 
     {
-        $this->hasColumn('user_id', 'integer', null, array('primary' => true));
-        $this->hasColumn('address_id', 'integer', null, array('primary' => true));
+        $class->setColumn('user_id', 'integer', null, array('primary' => true));
+        $class->setColumn('address_id', 'integer', null, array('primary' => true));
     }
 }

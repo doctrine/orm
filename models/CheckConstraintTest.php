@@ -1,10 +1,10 @@
 <?php
 class CheckConstraintTest extends Doctrine_Record
 {
-    public function setTableDefinition()
+    public static function initMetadata($class)
     {
-        $this->hasColumn('price', 'decimal', 2, array('max' => 5000, 'min' => 100));
-        $this->hasColumn('discounted_price', 'decimal', 2);
-        $this->check('price > discounted_price');
+        $class->setColumn('price', 'decimal', 2, array('max' => 5000, 'min' => 100));
+        $class->setColumn('discounted_price', 'decimal', 2);
+        $class->check('price > discounted_price');
     }
 }

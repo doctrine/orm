@@ -25,14 +25,10 @@ class Doctrine_Inheritance_TablePerClass_TestCase extends Doctrine_UnitTestCase
 
     public function testMetadataTableSetup()
     { 
-        $supMngrTable = $this->conn->getTable('CCTI_SuperManager');
-        $usrTable = $this->conn->getTable('CCTI_User');
-        $mngrTable = $this->conn->getTable('CCTI_Manager');
-        $customerTable = $this->conn->getTable('CCTI_Customer');
-        $this->assertTrue($supMngrTable !== $usrTable);
-        $this->assertTrue($supMngrTable !== $mngrTable);
-        $this->assertTrue($usrTable !== $mngrTable);
-        $this->assertTrue($customerTable !== $usrTable);
+        $supMngrTable = $this->conn->getClassMetadata('CCTI_SuperManager');
+        $usrTable = $this->conn->getClassMetadata('CCTI_User');
+        $mngrTable = $this->conn->getClassMetadata('CCTI_Manager');
+        $customerTable = $this->conn->getClassMetadata('CCTI_Customer');
         
         $this->assertEqual(3, count($usrTable->getColumns()));
         $this->assertEqual(4, count($mngrTable->getColumns()));
@@ -72,39 +68,41 @@ class Doctrine_Inheritance_TablePerClass_TestCase extends Doctrine_UnitTestCase
 
 class CCTI_User extends Doctrine_Record
 {
-    public function setTableDefinition()
+    public static function initMetadata($class)
     {
-        $this->setInheritanceType(Doctrine::INHERITANCETYPE_TABLE_PER_CLASS);
-        $this->setTableName('ccti_user');
-        $this->hasColumn('ccti_id as id', 'integer', 4, array ('primary' => true, 'autoincrement' => true));
-        $this->hasColumn('ccti_foo as foo', 'integer', 4);
-        $this->hasColumn('ccti_name as name', 'varchar', 50, array ());
+        $class->setInheritanceType(Doctrine::INHERITANCETYPE_TABLE_PER_CLASS);
+        $class->setTableName('ccti_user');
+        $class->setSubclasses(array('CCTI_Manager', 'CCTI_Customer', 'CCTI_SuperManager'));
+        $class->setColumn('ccti_id as id', 'integer', 4, array ('primary' => true, 'autoincrement' => true));
+        $class->setColumn('ccti_foo as foo', 'integer', 4);
+        $class->setColumn('ccti_name as name', 'varchar', 50, array ());
     }
 }
 
 class CCTI_Manager extends CCTI_User 
 {
-    public function setTableDefinition()
+    public static function initMetadata($class)
     {
-        $this->setTableName('ccti_manager');
-        $this->hasColumn('ccti_salary as salary', 'varchar', 50, array());
+        $class->setTableName('ccti_manager');
+        $class->setSubclasses(array('CCTI_SuperManager'));
+        $class->setColumn('ccti_salary as salary', 'varchar', 50, array());
     }
 }
 
 class CCTI_Customer extends CCTI_User
 {
-    public function setTableDefinition()
+    public static function initMetadata($class)
     {
-        $this->setTableName('ccti_customer');
-        $this->hasColumn('ccti_bonuspoints as bonuspoints', 'varchar', 50, array());
+        $class->setTableName('ccti_customer');
+        $class->setColumn('ccti_bonuspoints as bonuspoints', 'varchar', 50, array());
     }
 }
 
 class CCTI_SuperManager extends CCTI_Manager
 {
-    public function setTableDefinition()
+    public static function initMetadata($class)
     {
-        $this->setTableName('ccti_supermanager');
-        $this->hasColumn('ccti_gosutitle as gosutitle', 'varchar', 50, array());
+        $class->setTableName('ccti_supermanager');
+        $class->setColumn('ccti_gosutitle as gosutitle', 'varchar', 50, array());
     }
 }

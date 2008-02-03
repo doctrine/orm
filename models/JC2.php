@@ -1,8 +1,8 @@
 <?php
 class JC2 extends Doctrine_Record {
-    public function setTableDefinition() {
-        $this->hasColumn('c1_id', 'integer');
-        $this->hasColumn('c2_id', 'integer');
+    public static function initMetadata($class) {
+        $class->setColumn('c1_id', 'integer');
+        $class->setColumn('c2_id', 'integer');
     }
 }
 

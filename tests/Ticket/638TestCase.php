@@ -107,32 +107,25 @@ class Doctrine_Ticket_638_TestCase extends Doctrine_UnitTestCase
 
 class T638_Student extends Doctrine_Record
 {
-  public function setTableDefinition()
+  public static function initMetadata($class)
   {
-    $this->setTableName('T638_student');
+    $class->setTableName('T638_student');
 
-    $this->hasColumn('s_id as id', 'varchar', 30, array (  'primary' => true,));
-    $this->hasColumn('s_g_id as group_id', 'varchar', 30, array ('notnull'=>true));
-    $this->hasColumn('s_name as name', 'varchar', 50, array ('notnull'=>true));
+    $class->setColumn('s_id as id', 'varchar', 30, array (  'primary' => true,));
+    $class->setColumn('s_g_id as group_id', 'varchar', 30, array ('notnull'=>true));
+    $class->setColumn('s_name as name', 'varchar', 50, array ('notnull'=>true));
   }
   
-  public function setUp()
-  {
-  }
 }
 
 class T638_Course extends Doctrine_Record
 {
-  public function setTableDefinition()
+  public static function initMetadata($class)
   {
-    $this->setTableName('T638_course');
+    $class->setTableName('T638_course');
 
-    $this->hasColumn('c_id as id', 'varchar', 20, array (  'primary' => true,));
-    $this->hasColumn('c_name as name', 'varchar', 50, array ('notnull'=>true));
-  }
-  
-  public function setUp()
-  {
+    $class->setColumn('c_id as id', 'varchar', 20, array (  'primary' => true,));
+    $class->setColumn('c_name as name', 'varchar', 50, array ('notnull'=>true));
   }
 
   public function set($fieldName, $value, $load = true)
@@ -143,19 +136,16 @@ class T638_Course extends Doctrine_Record
 
 class T638_StudentCourse extends Doctrine_Record
 {
-  public function setTableDefinition()
+  public static function initMetadata($class)
   {
-    $this->setTableName('T638_Student_course');
+    $class->setTableName('T638_Student_course');
 
-    $this->hasColumn('sc_student_id as student_id', 'varchar', 30, array (  'primary' => true,));
-    $this->hasColumn('sc_course_id as course_id', 'varchar', 20, array (  'primary' => true,));
-    $this->hasColumn('sc_remark  as remark', 'varchar', 500, array ('notnull'=>true));
-  }
-  
-  public function setUp()
-  {
-    $this->hasOne('T638_Student as Student', array('local' => 'sc_student_id', 'foreign' => 's_id'));
-    $this->hasOne('T638_Course as Course', array('local' => 'sc_course_id', 'foreign' => 'c_id'));
+    $class->setColumn('sc_student_id as student_id', 'varchar', 30, array (  'primary' => true,));
+    $class->setColumn('sc_course_id as course_id', 'varchar', 20, array (  'primary' => true,));
+    $class->setColumn('sc_remark  as remark', 'varchar', 500, array ('notnull'=>true));
+    
+    $class->hasOne('T638_Student as Student', array('local' => 'sc_student_id', 'foreign' => 's_id'));
+    $class->hasOne('T638_Course as Course', array('local' => 'sc_course_id', 'foreign' => 'c_id'));
   }
 }
 

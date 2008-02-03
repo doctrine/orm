@@ -1,10 +1,10 @@
 <?php
 class QueryTest_Item extends Doctrine_Record
 {
-    public function setTableDefinition()
+    public static function initMetadata($class)
     {
-        $this->hasColumn('price', 'decimal');
-        $this->hasColumn('quantity', 'integer');
+        $class->setColumn('price', 'decimal');
+        $class->setColumn('quantity', 'integer');
     }
 }
 

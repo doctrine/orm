@@ -49,7 +49,7 @@ class Doctrine_Import_Mssql_TestCase extends Doctrine_UnitTestCase
     {
         $this->import->listTables();
         
-        $this->assertEqual($this->adapter->pop(), "SELECT name FROM sysobjects WHERE type = 'U' ORDER BY name");
+        $this->assertEqual($this->adapter->pop(), "SELECT name FROM sysobjects WHERE type = 'U' AND name <> 'dtproperties' ORDER BY name");
     }
     public function testListTriggersExecutesSql()
     {

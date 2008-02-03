@@ -16,6 +16,7 @@ class Doctrine_Ticket_Njero_TestCase extends Doctrine_UnitTestCase
     public function prepareData() { }
     public function prepareTables()
     {
+        $this->tables = array();
         $this->tables[] = 'CoverageCodeN';
         $this->tables[] = 'PolicyCodeN';
         $this->tables[] = 'LiabilityCodeN';

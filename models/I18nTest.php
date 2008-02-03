@@ -1,13 +1,10 @@
 <?php
 class I18nTest extends Doctrine_Record
 {
-    public function setTableDefinition()
+    public static function initMetadata($class)
     {
-        $this->hasColumn('name', 'string', 200);
-        $this->hasColumn('title', 'string', 200);
-    }
-    public function setUp()
-    {
-        $this->actAs('I18n', array('fields' => array('name', 'title')));
+        $class->setColumn('name', 'string', 200);
+        $class->setColumn('title', 'string', 200);
+        $class->actAs('I18n', array('fields' => array('name', 'title')));
     }
 }

@@ -32,9 +32,13 @@
  */
 class Doctrine_Query_AggregateValue_TestCase extends Doctrine_UnitTestCase 
 {
-    public function prepareData() 
-    { 
+    public function prepareTables() {
+        $this->tables = array('User', 'Phonenumber', 'QueryTest_Item');
+        parent::prepareTables();
     }
+    
+    public function prepareData() {}
+    
     public function testInitData() 
     {
         $users = new Doctrine_Collection('User');

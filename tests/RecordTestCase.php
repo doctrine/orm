@@ -397,7 +397,7 @@ class Doctrine_Record_TestCase extends Doctrine_UnitTestCase
     
     public function testNewOperator() 
     {
-        $table = $this->connection->getTable("User");
+        $table = $this->connection->getClassMetadata("User");
 
         $this->assertEqual($this->connection->getMapper("User")->getData(), array());
         $user = new User();
@@ -489,7 +489,7 @@ class Doctrine_Record_TestCase extends Doctrine_UnitTestCase
         $this->assertTrue($fk instanceof Doctrine_Relation_ForeignKey);
         $this->assertEqual($fk->getLocal(),'file_md5');
         $this->assertEqual($fk->getForeign(),'file_md5');
-        $this->assertTrue($fk->getTable() instanceof Doctrine_Table);
+        $this->assertTrue($fk->getTable() instanceof Doctrine_ClassMetadata);
 
         $e->Description[0]->description = 'This is the 1st description';
         $e->Description[1]->description = 'This is the 2nd description';
@@ -744,13 +744,11 @@ class Doctrine_Record_TestCase extends Doctrine_UnitTestCase
         $user = $userMapper->find(5);
         $this->assertTrue($userMapper === $user->getMapper());
         $this->assertTrue($userMapper->getTable() === $user->getMapper()->getTable());
-        $this->assertTrue($userMapper->getTable() === $this->conn->getTable('User'));
+        $this->assertTrue($userMapper->getTable() === $this->conn->getClassMetadata('User'));
         $this->assertTrue($this->conn === $userMapper->getConnection());
         
         
         $userTable = $userMapper->getTable();
-        $rel1 = $userTable->getRelation('GroupGroupuser');
-        $rel2 = $userTable->getRelation('UserGroupuser');
         /*echo get_class($rel1) . "<br />";
         echo get_class($rel2) . "<br />";
         echo get_class($userTable->getRelation('Group'));
@@ -844,27 +842,27 @@ class Doctrine_Record_TestCase extends Doctrine_UnitTestCase
         // ACCESSING ASSOCIATION OBJECT PROPERTIES
 
         $user = new User();
-        $this->assertTrue($user->getTable()->getRelation("UserGroupuser") instanceof Doctrine_Relation_ForeignKey);
+        $this->assertTrue($user->getTable()->getRelation("Groupuser") instanceof Doctrine_Relation_ForeignKey);
 
-        $this->assertTrue($user->UserGroupuser instanceof Doctrine_Collection);
-        $this->assertTrue($user->UserGroupuser[0] instanceof Groupuser);
+        $this->assertTrue($user->Groupuser instanceof Doctrine_Collection);
+        $this->assertTrue($user->Groupuser[0] instanceof Groupuser);
 
         $user->name = "Jack Daniels";
         $user->Group[0]->name = "Group #1";
         $user->Group[1]->name = "Group #2";
         $t1 = time();
         $t2 = time();
-        $user->UserGroupuser[0]->added = $t1;
-        $user->UserGroupuser[1]->added = $t2;
+        $user->Groupuser[0]->added = $t1;
+        $user->Groupuser[1]->added = $t2;
 
-        $this->assertEqual($user->UserGroupuser[0]->added, $t1);
-        $this->assertEqual($user->UserGroupuser[1]->added, $t2);
+        $this->assertEqual($user->Groupuser[0]->added, $t1);
+        $this->assertEqual($user->Groupuser[1]->added, $t2);
 
         $user->save();
 
         $user->refresh();
-        $this->assertEqual($user->UserGroupuser[0]->added, $t1);
-        $this->assertEqual($user->UserGroupuser[1]->added, $t2);
+        $this->assertEqual($user->Groupuser[0]->added, $t1);
+        $this->assertEqual($user->Groupuser[1]->added, $t2);
         
     }
 

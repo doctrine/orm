@@ -1,9 +1,9 @@
 <?php
 class TestMovieUserVote extends Doctrine_Record  
 {    
-    public function setTableDefinition() {
-        $this->hasColumn('vote', 'string', 30);
-        $this->hasColumn('user_id', 'integer', null, array('primary' => true));
-        $this->hasColumn('movie_id', 'integer', null, array('primary' => true));
+    public static function initMetadata($class) {
+        $class->setColumn('vote', 'string', 30);
+        $class->setColumn('user_id', 'integer', null, array('primary' => true));
+        $class->setColumn('movie_id', 'integer', null, array('primary' => true));
     }
 }

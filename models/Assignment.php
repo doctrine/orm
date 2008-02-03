@@ -1,8 +1,8 @@
 <?php
 class Assignment extends Doctrine_Record {
-    public function setTableDefinition() {
-       $this->hasColumn('task_id', 'integer'); 
-       $this->hasColumn('resource_id', 'integer'); 
+    public static function initMetadata($class) {
+       $class->setColumn('task_id', 'integer'); 
+       $class->setColumn('resource_id', 'integer'); 
     } 
 }
 

@@ -1,7 +1,7 @@
 <?php
 class DateTest extends Doctrine_Record {
-    public function setTableDefinition() {
-        $this->hasColumn('date', 'date', 20); 
+    public static function initMetadata($class) {
+        $class->setColumn('date', 'date', 20); 
     }
 }
 

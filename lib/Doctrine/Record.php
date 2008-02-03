@@ -26,6 +26,7 @@ Doctrine::autoload('Doctrine_Record_Abstract');
  * @package     Doctrine
  * @subpackage  Record
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
+ * @author      Roman Borschel <roman@code-factory.org>
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @link        www.phpdoctrine.com
  * @since       1.0
@@ -41,33 +42,33 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
      * DIRTY STATE
      * a Doctrine_Record is in dirty state when its properties are changed
      */
-    const STATE_DIRTY       = 1;
+    const STATE_DIRTY = 1;
 
     /**
      * TDIRTY STATE
      * a Doctrine_Record is in transient dirty state when it is created
      * and some of its fields are modified but it is NOT yet persisted into database
      */
-    const STATE_TDIRTY      = 2;
+    const STATE_TDIRTY = 2;
 
     /**
      * CLEAN STATE
      * a Doctrine_Record is in clean state when all of its properties are loaded from the database
      * and none of its properties are changed
      */
-    const STATE_CLEAN       = 3;
+    const STATE_CLEAN = 3;
 
     /**
      * PROXY STATE
      * a Doctrine_Record is in proxy state when its properties are not fully loaded
      */
-    const STATE_PROXY       = 4;
+    const STATE_PROXY = 4;
 
     /**
      * NEW TCLEAN
      * a Doctrine_Record is in transient clean state when it is created and none of its fields are modified
      */
-    const STATE_TCLEAN      = 5;
+    const STATE_TCLEAN = 5;
 
     /**
      * LOCKED STATE
@@ -76,7 +77,7 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
      * This state is used internally to ensure that circular deletes
      * and saves will not cause infinite loops
      */
-    const STATE_LOCKED     = 6;
+    const STATE_LOCKED = 6;
 
     /**
      *
@@ -85,58 +86,78 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
 
     /**
      * @var Doctrine_Node_<TreeImpl>        node object
+     * @todo Specific to the NestedSet Behavior plugin. Move outta here.
      */
     protected $_node;
 
     /**
-     * @var integer $_id                    the primary keys of this object
+     * The values that make up the ID/primary key of the object.
+     *
+     * @var array                   
      */
-    protected $_id           = array();
+    protected $_id = array();
 
     /**
-     * @var array $_data                    the record data
+     * The record data.
+     *
+     * @var array                  
      */
-    protected $_data         = array();
+    protected $_data = array();
 
     /**
-     * @var array $_values                  the values array, aggregate values and such are mapped into this array
+     * The values array, aggregate values and such are mapped into this array.
+     *
+     * @var array                  
      */
-    protected $_values       = array();
+    protected $_values = array();
 
     /**
-     * @var integer $_state                 the state of this record
+     * The state of the object.
+     *
+     * @var integer             
      * @see STATE_* constants
      */
     protected $_state;
 
     /**
-     * @var array $_modified                an array containing field names that have been modified
+     * The names of fields that have been modified but not yet persisted.
+     *
+     * @var array               
      * @todo Better name? $_modifiedFields?
      */
-    protected $_modified     = array();
+    protected $_modified = array();
 
     /**
-     * @var Doctrine_Validator_ErrorStack   error stack object
+     * The error stack used to collect errors during validation.
+     *
+     * @var Doctrine_Validator_ErrorStack   
      */
     protected $_errorStack;
 
     /**
-     * @var array $_references              an array containing all the references
+     * The names of all relations.
+     *
+     * @var array $_references              
      */
-    protected $_references     = array();
+    protected $_references = array();
 
     /**
-     * @var integer $index                  this index is used for creating object identifiers
+     * Index used for creating object identifiers (oid's).
+     *
+     * @var integer $index                  
      */
     private static $_index = 1;
 
     /**
-     * @var integer $oid                    object identifier, each Record object has a unique object identifier
+     * The object identifier of the object. Each object has a unique identifier during runtime.
+     * 
+     * @var integer $oid                    
      */
     private $_oid;
 
     /**
-     * constructor
+     * Constructor.
+     *
      * @param Doctrine_Table|null $table       a Doctrine_Table object or null,
      *                                         if null the table object is retrieved from current connection
      *
@@ -148,21 +169,12 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
      */
     public function __construct($mapper = null, $isNewEntry = false, array $data = array())
     {
-        //echo get_class($this) . "<br />";
-        if (isset($mapper) && $mapper instanceof Doctrine_Table) {
-            //echo "one<br />";
-            $this->_table = $mapper;
-            //$this->_mapper = Doctrine_Manager::getInstance()->getMapper(get_class($this));
-            $exists = ! $isNewEntry;
-            return;
-        } else if (isset($mapper) && $mapper instanceof Doctrine_Mapper_Abstract) {
-            //echo "two<br />";
+        if (isset($mapper) && $mapper instanceof Doctrine_Mapper_Abstract) {
             $class = get_class($this);
             $this->_mapper = Doctrine_Manager::getInstance()->getMapper($class);
             $this->_table = $this->_mapper->getTable();
             $exists = ! $isNewEntry;
         } else {
-            //echo "three<br />";
             $this->_mapper = Doctrine_Manager::getInstance()->getMapper(get_class($this));
             $this->_table = $this->_mapper->getTable();
             $exists = false;
@@ -302,56 +314,56 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
      * Empty template method to provide concrete Record classes with the possibility
      * to hook into the serializing procedure.
      */
-    public function preSerialize($event)
+    public function preSerialize(Doctrine_Event $event)
     { }
     
     /**
      * Empty template method to provide concrete Record classes with the possibility
      * to hook into the serializing procedure.
      */
-    public function postSerialize($event)
+    public function postSerialize(Doctrine_Event $event)
     { }
     
     /**
      * Empty template method to provide concrete Record classes with the possibility
      * to hook into the serializing procedure.
      */
-    public function preUnserialize($event)
+    public function preUnserialize(Doctrine_Event $event)
     { }
     
     /**
      * Empty template method to provide concrete Record classes with the possibility
      * to hook into the serializing procedure.
      */
-    public function postUnserialize($event)
+    public function postUnserialize(Doctrine_Event $event)
     { }
     
     /**
      * Empty template method to provide concrete Record classes with the possibility
      * to hook into the saving procedure.
      */
-    public function preSave($event)
+    public function preSave(Doctrine_Event $event)
     { }
     
     /**
      * Empty template method to provide concrete Record classes with the possibility
      * to hook into the saving procedure.
      */
-    public function postSave($event)
+    public function postSave(Doctrine_Event $event)
     { }
     
     /**
      * Empty template method to provide concrete Record classes with the possibility
      * to hook into the deletion procedure.
      */
-    public function preDelete($event)
+    public function preDelete(Doctrine_Event $event)
     { }
     
     /**
      * Empty template method to provide concrete Record classes with the possibility
      * to hook into the deletion procedure.
      */
-    public function postDelete($event)
+    public function postDelete(Doctrine_Event $event)
     { }
     
     /**
@@ -359,7 +371,7 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
      * to hook into the saving procedure only when the record is going to be
      * updated.
      */
-    public function preUpdate($event)
+    public function preUpdate(Doctrine_Event $event)
     { }
     
     /**
@@ -367,7 +379,7 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
      * to hook into the saving procedure only when the record is going to be
      * updated.
      */
-    public function postUpdate($event)
+    public function postUpdate(Doctrine_Event $event)
     { }
     
     /**
@@ -375,7 +387,7 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
      * to hook into the saving procedure only when the record is going to be
      * inserted into the data store the first time.
      */
-    public function preInsert($event)
+    public function preInsert(Doctrine_Event $event)
     { }
     
     /**
@@ -383,7 +395,7 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
      * to hook into the saving procedure only when the record is going to be
      * inserted into the data store the first time.
      */
-    public function postInsert($event)
+    public function postInsert(Doctrine_Event $event)
     { }
     
     /**
@@ -855,9 +867,11 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
                 $this->_references[$fieldName] = $rel->fetchRelatedFor($this);
             }
             return $this->_references[$fieldName];
-        } catch (Doctrine_Table_Exception $e) {
-            //echo $e->getTraceAsString();
-            //echo "<br /><br />";
+        } catch (Doctrine_Relation_Exception $e) {
+            //echo $this->_domainClassName . "<br />";
+            //var_dump($this->_values);
+            echo $e->getTraceAsString();
+            echo "<br /><br />";
             foreach ($this->_table->getFilters() as $filter) {
                 if (($value = $filter->filterGet($this, $fieldName, $value)) !== null) {
                     return $value;
@@ -932,8 +946,17 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
             }
         } else {
             try {
+                /*echo $this->_domainClassName;
+                var_dump($this->_data);
+                echo "<br /><br />";
+                try {
+                    throw new Exception();
+                } catch (Exception $e) {
+                    echo $e->getTraceAsString() . "<br />";
+                }
+                echo "<br /><br />";*/
                 $this->_coreSetRelated($fieldName, $value);
-            } catch (Doctrine_Table_Exception $e) {
+            } catch (Doctrine_Relation_Exception $e) {
                 foreach ($this->_table->getFilters() as $filter) {
                     if (($value = $filter->filterSet($this, $fieldName, $value)) !== null) {
                         return $value;
@@ -1187,15 +1210,20 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
                     $a[$field] = $this->_data[$field];
             }
         }
-        //$map = $this->_table->getOption('inheritanceMap');
-        $map = $this->_mapper->getDiscriminatorColumn();
-        foreach ($map as $k => $v) {
-            $old = $this->get($k, false);
+        
+        // @todo cleanup
+        if ($this->_table->getInheritanceType() == Doctrine::INHERITANCETYPE_JOINED ||
+                $this->_table->getInheritanceType() == Doctrine::INHERITANCETYPE_SINGLE_TABLE) {
+            $discCol = $this->_table->getInheritanceOption('discriminatorColumn');
+            $discMap = $this->_table->getInheritanceOption('discriminatorMap');
+            $old = $this->get($discCol, false);
+            $v = array_search($this->_domainClassName, $discMap);
             if ((string) $old !== (string) $v || $old === null) {
-                $a[$k] = $v;
-                $this->_data[$k] = $v;
+                $a[$discCol] = $v;
+                $this->_data[$discCol] = $v;
             }
         }
+
 
         return $a;
     }

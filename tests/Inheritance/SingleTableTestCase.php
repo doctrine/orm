@@ -17,28 +17,20 @@ class Doctrine_Inheritance_SingleTable_TestCase extends Doctrine_UnitTestCase
 
     public function testMetadataSetup()
     { 
-        $userTable = $this->conn->getTable('STI_User');
-        $superManagerTable = $this->conn->getTable('STI_SuperManager');
-        $managerTable = $this->conn->getTable('STI_Manager');
-        $customerTable = $this->conn->getTable('STI_Customer');
+        $userTable = $this->conn->getMetadata('STI_User');
+        $superManagerTable = $this->conn->getMetadata('STI_SuperManager');
+        $managerTable = $this->conn->getMetadata('STI_Manager');
+        $customerTable = $this->conn->getMetadata('STI_Customer');
         
-        $this->assertTrue($superManagerTable === $userTable);
-        $this->assertTrue($customerTable === $managerTable);
-        $this->assertTrue($superManagerTable === $managerTable);
-        $this->assertTrue($userTable === $customerTable);
-        $this->assertEqual(7, count($userTable->getColumns()));
-        
-        $this->assertEqual(array(), $userTable->getOption('joinedParents'));
-        $this->assertEqual(array(), $superManagerTable->getOption('joinedParents'));
-        $this->assertEqual(array(), $managerTable->getOption('joinedParents'));
-        $this->assertEqual(array(), $customerTable->getOption('joinedParents'));
+        $this->assertEqual(4, count($userTable->getFields()));
+        $this->assertEqual('sti_entity', $userTable->getTableName());
+        $this->assertEqual('sti_entity', $managerTable->getTableName());
         
         // check inheritance map
-        $this->assertEqual(array(
-                'STI_User' => array('type' => 1),
-                'STI_Manager' => array('type' => 2),
-                'STI_Customer' => array('type' => 3),
-                'STI_SuperManager' => array('type' => 4)), $userTable->getOption('inheritanceMap'));
+        $this->assertEqual(array(1 => 'STI_User',
+              2 => 'STI_Manager',
+              3 => 'STI_Customer',
+              4 => 'STI_SuperManager'), $userTable->getInheritanceOption('discriminatorMap'));
         
         //var_dump($superManagerTable->getComponentName());
     }
@@ -73,42 +65,46 @@ class Doctrine_Inheritance_SingleTable_TestCase extends Doctrine_UnitTestCase
 
 class STI_User extends Doctrine_Record
 {
-    public function setTableDefinition()
+    public static function initMetadata($class)
     {
-        $this->setInheritanceType(Doctrine::INHERITANCETYPE_SINGLE_TABLE,
-                array('STI_User' => array('type' => 1),
-                      'STI_Manager' => array('type' => 2),
-                      'STI_Customer' => array('type' => 3),
-                      'STI_SuperManager' => array('type' => 4))
+        $class->setInheritanceType(Doctrine::INHERITANCETYPE_SINGLE_TABLE, array(
+                'discriminatorColumn' => 'type',
+                'discriminatorMap' => array(
+                      1 => 'STI_User',
+                      2 => 'STI_Manager',
+                      3 => 'STI_Customer',
+                      4 => 'STI_SuperManager'))
         );
-        $this->setTableName('sti_entity');
-        $this->hasColumn('sti_id as id', 'integer', 4, array('primary' => true, 'autoincrement' => true));
-        $this->hasColumn('sti_foo as foo', 'integer', 4);
-        $this->hasColumn('sti_name as name', 'varchar', 50);
-        $this->hasColumn('type', 'integer', 4);
+        $class->setSubclasses(array('STI_Manager', 'STI_Customer', 'STI_SuperManager'));
+        $class->setTableName('sti_entity');
+        $class->setColumn('sti_id as id', 'integer', 4, array('primary' => true, 'autoincrement' => true));
+        $class->setColumn('sti_foo as foo', 'integer', 4);
+        $class->setColumn('sti_name as name', 'varchar', 50);
+        $class->setColumn('type', 'integer', 4);
     }
 }
 
 class STI_Manager extends STI_User 
 {
-    public function setTableDefinition()
+    public static function initMetadata($class)
     {
-        $this->hasColumn('stim_salary as salary', 'varchar', 50, array());
+        $class->setSubclasses(array('STI_SuperManager'));
+        $class->setColumn('stim_salary as salary', 'varchar', 50, array());
     }
 }
 
 class STI_Customer extends STI_User
 {
-    public function setTableDefinition()
+    public static function initMetadata($class)
     {
-        $this->hasColumn('stic_bonuspoints as bonuspoints', 'varchar', 50, array());
+        $class->setColumn('stic_bonuspoints as bonuspoints', 'varchar', 50, array());
     }
 }
 
 class STI_SuperManager extends STI_Manager
 {
-    public function setTableDefinition()
+    public static function initMetadata($class)
     {
-        $this->hasColumn('stism_gosutitle as gosutitle', 'varchar', 50, array());
+        $class->setColumn('stism_gosutitle as gosutitle', 'varchar', 50, array());
     }
 }

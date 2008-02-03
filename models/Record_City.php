@@ -1,12 +1,10 @@
 <?php
 class Record_City extends Doctrine_Record {
-    public function setTableDefinition() {
-        $this->hasColumn('name', 'string', 200);
-        $this->hasColumn('country_id', 'integer');
-        $this->hasColumn('district_id', 'integer');
-    }
-    public function setUp() {
-        $this->hasOne('Record_Country as Country', 'Record_City.country_id');
-        $this->hasOne('Record_District as District', 'Record_City.district_id');
+    public static function initMetadata($class) {
+        $class->setColumn('name', 'string', 200);
+        $class->setColumn('country_id', 'integer');
+        $class->setColumn('district_id', 'integer');
+        $class->hasOne('Record_Country as Country', array('local' => 'country_id', 'foreign' => 'id'));
+        $class->hasOne('Record_District as District', array('local' => 'district_id', 'foreign' => 'id'));
     }
 }

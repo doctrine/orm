@@ -13,6 +13,12 @@
  */
 class Doctrine_Ticket_428_TestCase extends Doctrine_UnitTestCase
 {
+    public function prepareTables()
+    {
+        $this->tables = array('Album', 'Song');
+        parent::prepareTables();
+    }
+    
     public function prepareData()
     {
     }
@@ -38,7 +44,7 @@ class Doctrine_Ticket_428_TestCase extends Doctrine_UnitTestCase
 
         $q->select('a.name, COUNT(s.id) count')->from('Album a')->leftJoin('a.Song s')->groupby('a.id');
         $albums = $q->execute();
-
+        
         // Should not reuse the existing collection in this case
         $this->assertEqual(count($albums[0]->Song), 1);
 

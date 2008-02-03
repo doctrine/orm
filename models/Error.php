@@ -1,12 +1,10 @@
 <?php
 class Error extends Doctrine_Record {
-    public function setUp() {
-        $this->hasMany('Description', 'Description.file_md5', 'file_md5');
-    }
-    public function setTableDefinition() {
-        $this->hasColumn('message', 'string',200);
-        $this->hasColumn('code', 'integer',11);
-        $this->hasColumn('file_md5', 'string',32, 'primary');
+    public static function initMetadata($class) {
+        $class->setColumn('message', 'string',200);
+        $class->setColumn('code', 'integer',11);
+        $class->setColumn('file_md5', 'string',32, 'primary');
+        $class->hasMany('Description', array('local' => 'file_md5', 'foreign' => 'file_md5'));
     }
 }
 

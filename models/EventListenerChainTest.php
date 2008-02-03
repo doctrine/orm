@@ -1,10 +1,8 @@
 <?php
 class EventListenerChainTest extends Doctrine_Record 
 {
-    public function setTableDefinition() {
-        $this->hasColumn('name', 'string', 100);
-    }
-    public function setUp() {
+    public static function initMetadata($class) {
+        $class->setColumn('name', 'string', 100);
         $chain = new Doctrine_EventListener_Chain();
         $chain->add(new Doctrine_EventListener_TestA());
         $chain->add(new Doctrine_EventListener_TestB());

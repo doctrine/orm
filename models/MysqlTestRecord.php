@@ -1,11 +1,11 @@
 <?php
 class MysqlTestRecord extends Doctrine_Record 
 {
-    public function setTableDefinition() 
+    public static function initMetadata($class) 
     {
-        $this->hasColumn('name', 'string', null, 'primary');
-        $this->hasColumn('code', 'integer', null, 'primary');
+        $class->setColumn('name', 'string', null, 'primary');
+        $class->setColumn('code', 'integer', null, 'primary');
 
-        $this->option('type', 'INNODB');
+        $class->setTableOption('type', 'INNODB');
     }
 }

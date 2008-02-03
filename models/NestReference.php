@@ -1,9 +1,9 @@
 <?php
 class NestReference extends Doctrine_Record 
 {
-    public function setTableDefinition() 
+    public static function initMetadata($class) 
     {
-        $this->hasColumn('parent_id', 'integer', 4, 'primary');
-        $this->hasColumn('child_id', 'integer', 4, 'primary');
+        $class->setColumn('parent_id', 'integer', 4, 'primary');
+        $class->setColumn('child_id', 'integer', 4, 'primary');
     }
 }

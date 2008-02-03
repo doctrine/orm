@@ -12,25 +12,19 @@ class QueryTest_Category extends Doctrine_Record
     /**
      * Table definition.
      */
-    public function setTableDefinition()
+    public static function initMetadata($class)
     {        
-        $this->hasColumn('rootCategoryId as rootCategoryId', 'integer', 4,
+        $class->setColumn('rootCategoryId as rootCategoryId', 'integer', 4,
                 array('default' => 0));
-        $this->hasColumn('parentCategoryId as parentCategoryId', 'integer', 4,
+        $class->setColumn('parentCategoryId as parentCategoryId', 'integer', 4,
                 array('notnull', 'default' => 0));
-        $this->hasColumn('name as name', 'string', 50,
+        $class->setColumn('name as name', 'string', 50,
                 array('notnull', 'unique'));
-        $this->hasColumn('position as position', 'integer', 4,
+        $class->setColumn('position as position', 'integer', 4,
                 array('default' => 0, 'notnull'));
-    }
-
-    /**
-     * Relations definition.
-     */
-    public function setUp()
-    {
-        $this->hasMany('QueryTest_Category as subCategories', 'subCategories.parentCategoryId');
-        $this->hasOne('QueryTest_Category as rootCategory', 'QueryTest_Category.rootCategoryId');
-        $this->hasMany('QueryTest_Board as boards', 'QueryTest_Board.categoryId');
+                
+        $class->hasMany('QueryTest_Category as subCategories', array('local' => 'id', 'foreign' => 'parentCategoryId'));
+        $class->hasOne('QueryTest_Category as rootCategory', array('local' => 'rootCategoryId', 'foreign' => 'id'));
+        $class->hasMany('QueryTest_Board as boards', array('local' => 'id', 'foreign' => 'categoryId'));
     }
 }

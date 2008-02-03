@@ -1,14 +1,11 @@
 <?php
 class Auth extends Doctrine_Record 
 {
-    public function setTableDefinition() 
+    public static function initMetadata($class) 
     {
-        $this->hasColumn('roleid', 'integer', 10);
-        $this->hasColumn('name', 'string', 50);
-    }
-    public function setUp() 
-    {
-        $this->hasOne('Role', array('local' => 'roleid', 'foreign' => 'id'));
+        $class->setColumn('roleid', 'integer', 10);
+        $class->setColumn('name', 'string', 50);
+        $class->hasOne('Role', array('local' => 'roleid', 'foreign' => 'id'));
     }
 }
 

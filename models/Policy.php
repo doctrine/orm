@@ -1,15 +1,12 @@
 <?php
 class Policy extends Doctrine_Record
 {
-    public function setTableDefinition()
+    public static function initMetadata($class)
     {
-        $this->hasColumn('policy_number', 'integer', 11, array('unique' => true));
+        $class->setColumn('policy_number', 'integer', 11, array('unique' => true));
+        $class->hasMany('PolicyAsset as PolicyAssets', array('local' => 'policy_number',
+                                                            'foreign' => 'policy_number'));
+        $class->addIndex('policy_number_index', array('fields' => array('policy_number')));
     }
   
-    public function setUp()
-    {
-        $this->hasMany('PolicyAsset as PolicyAssets', array('local' => 'policy_number',
-                                                            'foreign' => 'policy_number'));
-        $this->index('policy_number_index', array('fields' => array('policy_number')));
-    }
 }

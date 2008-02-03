@@ -1,9 +1,9 @@
 <?php
 class FooLocallyOwned extends Doctrine_Record
 {
-    public function setTableDefinition()
+    public static function initMetadata($class)
     {
-        $this->hasColumn('name', 'string', 200);
+        $class->setColumn('name', 'string', 200);
     }
 }
 

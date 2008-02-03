@@ -1,36 +1,27 @@
 <?php
 class InheritanceEntityUser extends Doctrine_Record
 {
-    public function setTableDefinition()
+    public static function initMetadata($class)
     {
-        $this->setInheritanceType(Doctrine::INHERITANCETYPE_SINGLE_TABLE, 
-                array('InheritanceDealUser' => array('type' => 1)));
-        
-        $this->setTableName('inheritance_entity_user');
-
-        $this->hasColumn('type', 'integer', 4, array (  'primary' => true,));
-        $this->hasColumn('user_id', 'integer', 4, array (  'primary' => true,));
-        $this->hasColumn('entity_id', 'integer', 4, array (  'primary' => true,));
-    }
-
-    public function setUp()
-    {  
+        $class->setInheritanceType(Doctrine::INHERITANCETYPE_SINGLE_TABLE, array(
+                'discriminatorColumn' => 'type',
+                'discriminatorMap' => array(1 => 'InheritanceDealUser', 2 => 'InheritanceEntityUser')
+                ));
+        $class->setSubclasses(array('InheritanceDealUser'));
+        $class->setTableName('inheritance_entity_user');
+        $class->setColumn('type', 'integer', 4, array (  'primary' => true,));
+        $class->setColumn('user_id', 'integer', 4, array (  'primary' => true,));
+        $class->setColumn('entity_id', 'integer', 4, array (  'primary' => true,));
     }
 }
 
 class InheritanceDealUser extends InheritanceEntityUser
 {
-    public function setTableDefinition()
+    public static function initMetadata($class)
     {
-        $this->hasColumn('user_id', 'integer', 4, array (  'primary' => true,));
-        $this->hasColumn('entity_id', 'integer', 4, array (  'primary' => true,));
-    }
-
-    public function setUp()
-    {
-        parent::setUp();
-
-        $this->hasOne('InheritanceUser as User', array('local' => 'user_id', 'foreign' => 'id'));
-        $this->hasOne('InheritanceDeal as Deal', array('local' => 'entity_id', 'foreign' => 'id'));
+        $class->setColumn('user_id', 'integer', 4, array (  'primary' => true,));
+        $class->setColumn('entity_id', 'integer', 4, array (  'primary' => true,));
+        $class->hasOne('InheritanceUser as User', array('local' => 'user_id', 'foreign' => 'id'));
+        $class->hasOne('InheritanceDeal as Deal', array('local' => 'entity_id', 'foreign' => 'id'));
     }
 }

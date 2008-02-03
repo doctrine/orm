@@ -1,7 +1,7 @@
 <?php
 class MyUserOneThing extends Doctrine_Record {
-    public function setTableDefinition() {
-        $this->hasColumn('user_id', 'integer');
-        $this->hasColumn('one_thing_id', 'integer');
+    public static function initMetadata($class) {
+        $class->setColumn('user_id', 'integer');
+        $class->setColumn('one_thing_id', 'integer');
     }
 }

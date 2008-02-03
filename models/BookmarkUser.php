@@ -1,14 +1,11 @@
 <?php
 class BookmarkUser extends Doctrine_Record
 {
-    public function setUp()
+    public static function initMetadata($class)
     {
-    	$this->hasMany('Bookmark as Bookmarks',
+        $class->setColumn('name', 'string', 30);
+    	$class->hasMany('Bookmark as Bookmarks',
                         array('local' => 'id',
                               'foreign' => 'user_id'));
-    }
-    public function setTableDefinition()
-    {
-        $this->hasColumn('name', 'string', 30);
     }
 }

@@ -1,15 +1,11 @@
 <?php
 class LocationI18n extends Doctrine_Record
 { 
-    public function setTableDefinition()
+    public static function initMetadata($class)
     {
-        $this->hasColumn('name', 'string', 50, array());
-        $this->hasColumn('id', 'integer', 10, array('primary' => true));
-        $this->hasColumn('culture', 'string', 2);
-    }
-    
-    public function setUp()
-    {
-        $this->hasOne('Location as Location', array('local' => 'id'));
+        $class->setColumn('name', 'string', 50, array());
+        $class->setColumn('id', 'integer', 10, array('primary' => true));
+        $class->setColumn('culture', 'string', 2);
+        $class->hasOne('Location as Location', array('local' => 'id'));
     }
 }

@@ -98,22 +98,24 @@ class Doctrine_Table_TestCase extends Doctrine_UnitTestCase
     {
         $fk = $this->objTable->getTable()->getRelation("Group");
         $this->assertTrue($fk instanceof Doctrine_Relation_Association);
-        $this->assertTrue($fk->getTable() instanceof Doctrine_Table);
+        $this->assertTrue($fk->getTable() instanceof Doctrine_ClassMetadata);
         $this->assertTrue($fk->getType() == Doctrine_Relation::MANY_AGGREGATE);
         $this->assertTrue($fk->getLocal() == "user_id");
         $this->assertTrue($fk->getForeign() == "group_id");
 
         $fk = $this->objTable->getTable()->getRelation("Email");
         $this->assertTrue($fk instanceof Doctrine_Relation_LocalKey);
-        $this->assertTrue($fk->getTable() instanceof Doctrine_Table);
+
+        $this->assertTrue($fk->getTable() instanceof Doctrine_ClassMetadata);
         $this->assertTrue($fk->getType() == Doctrine_Relation::ONE_AGGREGATE);
+
         $this->assertTrue($fk->getLocal() == "email_id");
         $this->assertTrue($fk->getForeign() == $fk->getTable()->getIdentifier());
 
 
         $fk = $this->objTable->getTable()->getRelation('Phonenumber');
         $this->assertTrue($fk instanceof Doctrine_Relation_ForeignKey);
-        $this->assertTrue($fk->getTable() instanceof Doctrine_Table);
+        $this->assertTrue($fk->getTable() instanceof Doctrine_ClassMetadata);
         $this->assertTrue($fk->getType() == Doctrine_Relation::MANY);
         $this->assertTrue($fk->getLocal() == $this->objTable->getTable()->getIdentifier());
         $this->assertTrue($fk->getForeign() == 'entity_id');

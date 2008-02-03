@@ -1,13 +1,10 @@
 <?php
 class VersioningTest extends Doctrine_Record 
 {
-    public function setTableDefinition()
+    public static function initMetadata($class)
     {
-        $this->hasColumn('name', 'string');
-        $this->hasColumn('version', 'integer');
-    }
-    public function setUp()
-    {
-        $this->actAs('Versionable');
+        $class->setColumn('name', 'string');
+        $class->setColumn('version', 'integer');
+        $class->actAs('Versionable');
     }
 }

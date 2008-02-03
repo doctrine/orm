@@ -2,16 +2,12 @@
 class Page extends Doctrine_Record
 {
 
-    public function setUp()
+    public static function initMetadata($class)
     {
-    	$this->hasMany('Bookmark as Bookmarks',
+        $class->setColumn('name', 'string', 30);
+        $class->setColumn('url', 'string', 100);
+    	$class->hasMany('Bookmark as Bookmarks',
                         array('local' => 'id',
                               'foreign' => 'page_id'));
-    }
-
-    public function setTableDefinition()
-    {
-        $this->hasColumn('name', 'string', 30);
-        $this->hasColumn('url', 'string', 100);
     }
 }

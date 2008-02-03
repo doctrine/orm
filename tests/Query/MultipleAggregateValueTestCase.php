@@ -33,9 +33,13 @@
  */
 class Doctrine_Query_MultipleAggregateValue_TestCase extends Doctrine_UnitTestCase 
 {
+    public function prepareTables()
+    {
+        $this->tables = array('User', 'Email', 'Album', 'Book');
+        parent::prepareTables();
+    }
+    
     public function prepareData() 
-    { }
-    public function testInitData()
     {
         $user = new User();
         $user->name = 'jon';
@@ -57,7 +61,7 @@ class Doctrine_Query_MultipleAggregateValue_TestCase extends Doctrine_UnitTestCa
         $query->leftJoin('u.Album a, u.Book b');
         $query->where("u.name = 'jon'");
         $query->limit(1);
-        
+
         $user = $query->execute()->getFirst();
         
         try {
@@ -71,6 +75,7 @@ class Doctrine_Query_MultipleAggregateValue_TestCase extends Doctrine_UnitTestCa
         $this->assertEqual($num_albums, 3);
         $this->assertEqual($num_books, 2);
     }
+    
     public function testMultipleAggregateValuesWithArrayFetching()
     {
         $query = new Doctrine_Query();

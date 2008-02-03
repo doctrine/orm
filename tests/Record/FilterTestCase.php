@@ -86,22 +86,19 @@ class Doctrine_Record_Filter_TestCase extends Doctrine_UnitTestCase
 }
 class CompositeRecord extends Doctrine_Record
 {
-    public function setTableDefinition()
+    public static function initMetadata($class)
     {
-        $this->hasColumn('name', 'string');
-    }
-    public function setUp()
-    {
-    	$this->hasOne('RelatedCompositeRecord as Related', array('foreign' => 'foreign_id'));
+        $class->setColumn('name', 'string');
+        $class->hasOne('RelatedCompositeRecord as Related', array('local' => 'id', 'foreign' => 'foreign_id'));
 
-    	$this->unshiftFilter(new Doctrine_Record_Filter_Compound(array('Related')));
+    	$class->unshiftFilter(new Doctrine_Record_Filter_Compound(array('Related')));
     }
 }
 class RelatedCompositeRecord extends Doctrine_Record
 {
-    public function setTableDefinition()
+    public static function initMetadata($class)
     {
-        $this->hasColumn('address', 'string');
-        $this->hasColumn('foreign_id', 'integer');
+        $class->setColumn('address', 'string');
+        $class->setColumn('foreign_id', 'integer');
     }
 }

@@ -65,32 +65,33 @@ class Doctrine_UnitTestCase extends UnitTestCase
     {
         $this->_name = get_class($this);
 
-        $this->manager   = Doctrine_Manager::getInstance();
+        $this->manager = Doctrine_Manager::getInstance();
         $this->manager->setAttribute(Doctrine::ATTR_EXPORT, Doctrine::EXPORT_ALL);
 
         $this->tables = array_merge($this->tables, 
-                        array('entity',
-                              'entityReference',
-                              'email',
-                              'phonenumber',
-                              'groupuser',
-                              'album',
-                              'song',
-                              'element',
-                              'error',
-                              'description',
-                              'address',
-                              'account',
-                              'task',
-                              'resource',
-                              'assignment',
-                              'resourceType',
-                              'resourceReference')
+                        array('Entity',
+                              'EntityReference',
+                              'Email',
+                              'Phonenumber',
+                              'Groupuser',
+                              'Album',
+                              'Book',
+                              'Song',
+                              'Element',
+                              'Error',
+                              'Description',
+                              'Address',
+                              'Account',
+                              'Task',
+                              'Resource',
+                              'Assignment',
+                              'ResourceType',
+                              'ResourceReference')
                               );
 
 
         $class = get_class($this);
-        $e     = explode('_', $class);
+        $e = explode('_', $class);
 
 
         if ( ! $this->driverName) {
@@ -134,7 +135,7 @@ class Doctrine_UnitTestCase extends UnitTestCase
 
             $this->manager->setAttribute(Doctrine::ATTR_LISTENER, $this->listener);
 
-        } catch(Doctrine_Manager_Exception $e) {
+        } catch (Doctrine_Manager_Exception $e) {
             if($this->driverName == 'main') {
                 $this->dbh = new PDO('sqlite::memory:');
                 $this->dbh->sqliteCreateFunction('trim', 'trim', 1);
@@ -144,7 +145,7 @@ class Doctrine_UnitTestCase extends UnitTestCase
 
             $this->conn = $this->connection = $this->manager->openConnection($this->dbh, $this->driverName);
 
-            if($this->driverName !== 'main') {
+            if ($this->driverName !== 'main') {
                 $exc  = 'Doctrine_Connection_' . ucwords($this->driverName) . '_Exception';
 
                 $this->exc = new $exc();
@@ -155,8 +156,8 @@ class Doctrine_UnitTestCase extends UnitTestCase
             $this->listener = new Doctrine_EventListener();
             $this->manager->setAttribute(Doctrine::ATTR_LISTENER, $this->listener);
         }
+        
         if ($this->driverName !== 'main') {
-
             if (isset($module)) {
                 switch($module) {
                     case 'Export':
@@ -174,29 +175,31 @@ class Doctrine_UnitTestCase extends UnitTestCase
                 }
             }
         }
+        
         $this->unitOfWork = $this->connection->unitOfWork;
         $this->connection->setListener(new Doctrine_EventListener());
         $this->query = new Doctrine_Query($this->connection);
-
+        
         if ($this->driverName === 'main') {
             $this->prepareTables();
             $this->prepareData();
         }
     }
+    
     public function prepareTables() {
-        foreach($this->tables as $name) {
-            $name = ucwords($name);
-            $table = $this->connection->getTable($name);
+        foreach ($this->tables as $name) {
+            $table = $this->connection->getMetadata($name);
             $query = 'DROP TABLE ' . $table->getTableName();
             try {
                 $this->conn->exec($query);
-            } catch(Doctrine_Connection_Exception $e) {
-
-            }
+            } catch (Doctrine_Connection_Exception $e) {}
         }
+        //echo "exporting : " . var_dump($this->tables);
+        //echo "<br /><br />";
         $this->conn->export->exportClasses($this->tables);
         $this->objTable = $this->connection->getMapper('User');
     }
+    
     public function prepareData() 
     {
         $groups = new Doctrine_Collection('Group');
@@ -255,10 +258,12 @@ class Doctrine_UnitTestCase extends UnitTestCase
         $this->users = $users;
         $this->users->save(); 
     }
+    
     public function getConnection() 
     {
         return $this->connection;
     }
+    
     public function assertDeclarationType($type, $type2) 
     {
         $dec = $this->getDeclaration($type);
@@ -269,10 +274,12 @@ class Doctrine_UnitTestCase extends UnitTestCase
 
         $this->assertEqual($dec['type'], $type2);
     }
+    
     public function getDeclaration($type) 
     {
         return $this->dataDict->getPortableDeclaration(array('type' => $type, 'name' => 'colname', 'length' => 1, 'fixed' => true));
     }
+    
     public function clearCache() 
     {
         foreach($this->tables as $name) {
@@ -280,11 +287,13 @@ class Doctrine_UnitTestCase extends UnitTestCase
             $table->getCache()->deleteAll();
         }
     }
+    
     public function setUp()
     {
         if ( ! $this->init) {
             $this->init();
         }
+        
         if (isset($this->objTable)) {
             $this->objTable->clear();
         }

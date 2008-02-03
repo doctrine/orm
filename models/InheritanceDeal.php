@@ -1,16 +1,12 @@
 <?php
 class InheritanceDeal extends Doctrine_Record
 {
-    public function setTableDefinition()
+    public static function initMetadata($class)
     {
-        $this->setTableName('inheritance_deal');
+        $class->setTableName('inheritance_deal');
         
-        $this->hasColumn('id', 'integer', 4, array (  'primary' => true,  'autoincrement' => true,));
-        $this->hasColumn('name', 'string', 255, array ());
-    }
-  
-    public function setUp()
-    {
-        $this->hasMany('InheritanceUser as Users', array('refClass' => 'InheritanceDealUser', 'local' => 'entity_id', 'foreign' => 'user_id'));
+        $class->setColumn('id', 'integer', 4, array (  'primary' => true,  'autoincrement' => true,));
+        $class->setColumn('name', 'string', 255, array ());
+        $class->hasMany('InheritanceUser as Users', array('refClass' => 'InheritanceDealUser', 'local' => 'entity_id', 'foreign' => 'user_id'));
     }
 }
