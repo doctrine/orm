@@ -19,7 +19,7 @@ $description =<<<EOT
 Doctrine_DBAL is a DBAL (database abstraction layer) for PHP 5.2.x+ .
 EOT;
 
-$packagefile = './package.xml';
+$packagefile = './package_DBAL.xml';
 
 $options = array(
     'filelistgenerator' => 'svn',

@@ -20,7 +20,7 @@ Doctrine_Core is the core package for the Doctrine DBAL/ORM. It contains various
 helper classes that are necessary for both the DBAL and the ORM.
 EOT;
 
-$packagefile = './package_core.xml';
+$packagefile = './package_Core.xml';
 
 $options = array(
     'filelistgenerator' => 'svn',

@@ -23,7 +23,7 @@ provides developers with a powerful alternative to SQL that maintains a maximum
 of flexibility without requiring needless code duplication.
 EOT;
 
-$packagefile = './package.xml';
+$packagefile = './package_ORM.xml';
 
 $options = array(
     'filelistgenerator' => 'svn',
@@ -39,7 +39,6 @@ $options = array(
         'lib/Doctrine/Auditlog/',
         'lib/Doctrine/Cache/',
         'lib/Doctrine/Collection/',
-        'lib/Doctrine/Column/',
         'lib/Doctrine/Hook/',
         'lib/Doctrine/Hydrator/',
         'lib/Doctrine/I18n/',
