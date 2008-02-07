@@ -102,6 +102,19 @@ class Doctrine_Inheritance_Joined_TestCase extends Doctrine_UnitTestCase
         $this->assertTrue($superManager instanceof CTI_SuperManager);
     }
     
+    public function testUpdateUpdatesOnlyChangedFields()
+    {
+        $manager = $this->_createManager();        
+        try {
+            $manager->salary = 12;
+            $manager->save();
+            $this->pass();
+        } catch (Exception $e) {
+            $this->fail("Update failed [{$e->getMessage()}].");
+        }
+        
+    }
+    
     public function testUpdateUpdatesDataAcrossJoinedTablesTransparently()
     {
         $manager = $this->_createManager();
@@ -183,7 +196,7 @@ class CTI_User extends Doctrine_Record
         $class->setTableName('cti_user');
         $class->setColumn('cti_id as id', 'integer', 4, array('primary' => true, 'autoincrement' => true));
         $class->setColumn('cti_foo as foo', 'integer', 4);
-        $class->setColumn('cti_name as name', 'string', 50);
+        $class->setColumn('cti_name as name', 'string', 50, array('notnull' => true));
         $class->setColumn('dtype', 'integer', 2);
     }    
 }

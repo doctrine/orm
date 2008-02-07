@@ -3,12 +3,6 @@
 class Doctrine_Mapper_SingleTable extends Doctrine_Mapper_Abstract
 {
     
-    public function getDiscriminatorColumn()
-    {
-        $inheritanceMap = $this->_classMetadata->getOption('inheritanceMap');
-        return isset($inheritanceMap[$this->_domainClassName]) ? $inheritanceMap[$this->_domainClassName] : array();
-    }
-    
     /*public function addToWhere($componentAlias, array &$sqlWhereParts, Doctrine_Query $query)
     {
         $array = array();

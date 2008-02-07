@@ -425,7 +425,7 @@ abstract class Doctrine_Mapper_Abstract extends Doctrine_Configurable implements
                 . ' WHERE ' . implode(' = ? && ', $identifierColumnNames) . ' = ?';
             $query = $this->applyInheritance($query);
 
-            $params = array_merge(array($id), array_values($this->getDiscriminatorColumn()));
+            $params = array_merge(array($id),array());
 
             $data = $this->_conn->execute($query, $params)->fetch(PDO::FETCH_ASSOC);
 
@@ -804,11 +804,6 @@ abstract class Doctrine_Mapper_Abstract extends Doctrine_Configurable implements
         }
     }
     
-    protected function _fireEvent($type, $callback, $invoker)
-    {
-        
-    }
-    
     /**
      * saves the given record
      *
@@ -817,7 +812,6 @@ abstract class Doctrine_Mapper_Abstract extends Doctrine_Configurable implements
      */
     public function saveSingleRecord(Doctrine_Record $record)
     {
-        //$this->_fireEvent(Doctrine_Event::RECORD_SAVE, 'preSave', $record);
         $event = new Doctrine_Event($record, Doctrine_Event::RECORD_SAVE);
         $record->preSave($event);
         $this->getRecordListener()->preSave($event);
@@ -926,7 +920,7 @@ abstract class Doctrine_Mapper_Abstract extends Doctrine_Configurable implements
     }
     
     /**
-     * updates given record
+     * Updates an entity.
      *
      * @param Doctrine_Record $record   record to be updated
      * @return boolean                  whether or not the update was successful
@@ -949,6 +943,9 @@ abstract class Doctrine_Mapper_Abstract extends Doctrine_Configurable implements
         return true;
     }
     
+    /**
+     * Updates an entity.
+     */
     protected function _doUpdate(Doctrine_Record $record)
     {
         $identifier = $record->identifier();
@@ -958,7 +955,7 @@ abstract class Doctrine_Mapper_Abstract extends Doctrine_Configurable implements
     }
     
     /**
-     * inserts a record into database
+     * Inserts an entity.
      *
      * @param Doctrine_Record $record   record to be inserted
      * @return boolean
@@ -982,6 +979,9 @@ abstract class Doctrine_Mapper_Abstract extends Doctrine_Configurable implements
         return true;
     }
     
+    /**
+     * Inserts an entity.
+     */
     protected function _doInsert(Doctrine_Record $record)
     {
         $this->insertSingleRecord($record);
@@ -1033,11 +1033,14 @@ abstract class Doctrine_Mapper_Abstract extends Doctrine_Configurable implements
         return true;
     }
     
+    /**
+     * Deletes an entity.
+     */
     protected function _doDelete(Doctrine_Record $record, Doctrine_Connection $conn)
     {
         try {
             $conn->beginInternalTransaction();
-            $this->deleteComposites($record);
+            $this->_deleteComposites($record);
 
             $record->state(Doctrine_Record::STATE_TDIRTY);
 
@@ -1060,7 +1063,7 @@ abstract class Doctrine_Mapper_Abstract extends Doctrine_Configurable implements
      * @throws PDOException         if something went wrong at database level
      * @return void
      */
-    protected function deleteComposites(Doctrine_Record $record)
+    protected function _deleteComposites(Doctrine_Record $record)
     {
         foreach ($this->_classMetadata->getRelations() as $fk) {
             if ($fk->isComposite()) {
@@ -1125,17 +1128,18 @@ abstract class Doctrine_Mapper_Abstract extends Doctrine_Configurable implements
     
     /* Hooks used during SQL query construction to manipulate the query. */
     
+    /**
+     * Callback that is invoked during the SQL construction process.
+     */
     public function getCustomJoins()
     {
         return array();
     }
     
+    /**
+     * Callback that is invoked during the SQL construction process.
+     */
     public function getCustomFields()
-    {
-        return array();
-    }
-    
-    public function getDiscriminatorColumn()
     {
         return array();
     }
