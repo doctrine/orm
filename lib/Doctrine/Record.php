@@ -236,8 +236,8 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
      *
      * @return void
      */
-    public function setUp()
-    { }
+    /*public function setUp()
+    { }*/
     
     /**
      * construct
@@ -433,6 +433,7 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
      *
      * @param boolean $overwrite                whether or not to overwrite the already set values
      * @return boolean
+     * @todo Maybe better placed in the Mapper?
      */
     public function assignDefaultValues($overwrite = false)
     {
@@ -462,6 +463,7 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
      *
      * @param array $data       data array to be cleaned
      * @return array $tmp       values cleaned from data
+     * @todo Maybe better placed in the Mapper?
      */
     public function cleanData(&$data)
     {
@@ -503,6 +505,7 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
      *
      * @param boolean $exists               whether or not this record exists in persistent data store
      * @return void
+     * @todo Maybe better placed in the Mapper?
      */
     private function prepareIdentifiers($exists = true)
     {
@@ -692,6 +695,7 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
      * @throws Doctrine_Record_Exception        When the refresh operation fails (when the database row
      *                                          this record represents does not exist anymore)
      * @return boolean
+     * @todo Logic is better placed in the Mapper. Just forward to the mapper.
      */
     public function refresh($deep = false)
     {
@@ -741,6 +745,7 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
      *                                  if set, this method only refreshes the specified related component
      *
      * @return Doctrine_Record          this object
+     * @todo Logic is better placed in the Mapper. Just forward to the mapper.
      */
     public function refreshRelated($name = null)
     {
@@ -766,27 +771,18 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
     }
 
     /**
-     * getTable
-     * returns the table object for this record
+     * Gets the current property values.
      *
-     * @return Doctrine_Table        a Doctrine_Table object
-     */
-    public function getTable()
-    {
-        return $this->_table;
-    }
-
-    /**
-     * getData
-     * return all the internal data
-     *
-     * @return array                        an array containing all the properties
+     * @return array  The current properties and their values.                     
      */
     public function getData()
     {
         return $this->_data;
     }
     
+    /**
+     * 
+     */
     public function getValues()
     {
         return $this->_values;
@@ -870,8 +866,8 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
         } catch (Doctrine_Relation_Exception $e) {
             //echo $this->_domainClassName . "<br />";
             //var_dump($this->_values);
-            echo $e->getTraceAsString();
-            echo "<br /><br />";
+            //echo $e->getTraceAsString();
+            //echo "<br /><br />";
             foreach ($this->_table->getFilters() as $filter) {
                 if (($value = $filter->filterGet($this, $fieldName, $value)) !== null) {
                     return $value;
@@ -889,6 +885,7 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
      * @param string $name                  the name of the mapped value
      * @param mixed $value                  mixed value to be mapped
      * @return void
+     * @todo Maybe better placed in the Mapper.
      */
     public function mapValue($name, $value)
     {
@@ -967,7 +964,7 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
     }
 
     /**
-     * DESCRIBE WHAT THIS METHOD DOES, PLEASE!
+     * Sets a related component.
      * @todo Refactor. What about composite keys?
      */
     private function _coreSetRelated($name, $value)
@@ -1145,19 +1142,6 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
     }
 
     /**
-     * REDUNDANT?
-     */
-    /*public function modifiedFields()
-    {
-        $a = array();
-
-        foreach ($this->_modified as $k => $v) {
-            $a[$v] = $this->_data[$v];
-        }
-        return $a;
-    }*/
-
-    /**
      * getPrepared
      *
      * returns an array of modified fields and values with data preparation
@@ -1166,6 +1150,7 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
      * @param array $array
      * @return array
      * @todo What about a little bit more expressive name? getPreparedData?
+     * @todo Maybe not the best place here ... need to think about it.
      */
     public function getPrepared(array $array = array())
     {
@@ -1212,6 +1197,7 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
         }
         
         // @todo cleanup
+        // populates the discriminator field in Single & Class Table Inheritance
         if ($this->_table->getInheritanceType() == Doctrine::INHERITANCETYPE_JOINED ||
                 $this->_table->getInheritanceType() == Doctrine::INHERITANCETYPE_SINGLE_TABLE) {
             $discCol = $this->_table->getInheritanceOption('discriminatorColumn');
@@ -1224,7 +1210,6 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
             }
         }
 
-
         return $a;
     }
 
@@ -1235,6 +1220,7 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
      * Implementation of the Countable interface.
      *
      * @return integer          the number of columns in this record
+     * @todo IMHO this is unintuitive.
      */
     public function count()
     {
@@ -1242,18 +1228,7 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
     }
 
     /**
-     * alias for count()
-     *
-     * @return integer          the number of columns in this record
-     */
-    public function columnCount()
-    {
-        return $this->count();
-    }
-
-    /**
-     * toArray
-     * returns the record as an array
+     * Creates an array representation of the object's data.
      *
      * @param boolean $deep - Return also the relations
      * @return array
@@ -1399,10 +1374,9 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
     }
 
     /**
-     * exists
-     * returns true if this record is persistent, otherwise false
+     * Checks whether the entity already has a persistent state.
      *
-     * @return boolean
+     * @return boolean  TRUE if the object is managed and has persistent state, FALSE otherwise.
      */
     public function exists()
     {
@@ -1411,10 +1385,10 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
     }
 
     /**
-     * isModified
-     * returns true if this record was modified, otherwise false
+     * Checks whether the entity has been modified since it was last synchronized
+     * with the database.
      *
-     * @return boolean
+     * @return boolean  TRUE if the object has been modified, FALSE otherwise.
      */
     public function isModified()
     {
@@ -1424,6 +1398,7 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
 
     /**
      * method for checking existence of properties and Doctrine_Record references
+     *
      * @param mixed $name               name of the property or reference
      * @return boolean
      */
@@ -1445,10 +1420,9 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
     }
 
     /**
-     * deletes this data access object and all the related composites
-     * this operation is isolated by a transaction
+     * Deletes the entity.
      *
-     * this event can be listened by the onPreDelete and onDelete listeners
+     * This event can be listened by the onPreDelete and onDelete listeners
      *
      * @return boolean      true on success, false on failure
      */
@@ -1458,8 +1432,7 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
     }
 
     /**
-     * copy
-     * returns a copy of this object
+     * Creates a copy of the entity.
      *
      * @return Doctrine_Record
      */
@@ -1502,6 +1475,7 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
      *
      * @param integer $id
      * @return void
+     * @todo Not sure this is the right place here.
      */
     public function assignIdentifier($id = false)
     {
@@ -1544,7 +1518,7 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
      * returns the value of autoincremented primary key of this object (if any)
      *
      * @return integer
-     * @todo Better name?
+     * @todo Better name? Not sure this is the right place here.
      */
     final public function getIncremented()
     {
@@ -1554,19 +1528,6 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
         }
 
         return $id;
-    }
-
-    /**
-     * getLast
-     * this method is used internally be Doctrine_Query
-     * it is needed to provide compatibility between
-     * records and collections
-     *
-     * @return Doctrine_Record
-     */
-    public function getLast()
-    {
-        return $this;
     }
 
     /**
@@ -1602,7 +1563,7 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
         if (isset($this->_references[$name])) {
             return $this->_references[$name];
         }
-        throw new Doctrine_Record_Exception("Unknown reference $name");
+        throw new Doctrine_Record_Exception("Unknown reference $name.");
     }
 
     /**
@@ -1667,6 +1628,7 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
      * getter for node assciated with this record
      *
      * @return mixed if tree returns Doctrine_Node otherwise returns false
+     * @todo Should go to the NestedSet Behavior plugin.
      */
     public function getNode()
     {
@@ -1691,6 +1653,7 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
      * @throws Doctrine_Record_Exception    if given version does not exist
      * @param integer $version      an integer > 1
      * @return Doctrine_Record      this object
+     * @todo Should go to the Versionable plugin.
      */
     public function revert($version)
     {
@@ -1875,6 +1838,7 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
     /**
      * used to delete node from tree - MUST BE USE TO DELETE RECORD IF TABLE ACTS AS TREE
      *
+     * @todo Should go to the NestedSet Behavior plugin.
      */
     public function deleteNode()
     {

@@ -270,6 +270,8 @@ class Doctrine_Hydrator extends Doctrine_Hydrator_Abstract
                 end($coll);
                 $prev[$dqlAlias] =& $coll[key($coll)];
             }
+        } else if ($coll instanceof Doctrine_Record) {
+            $prev[$dqlAlias] = $coll;
         } else if (count($coll) > 0) {
             $prev[$dqlAlias] = $coll->getLast();
         } else if (isset($prev[$dqlAlias])) {
