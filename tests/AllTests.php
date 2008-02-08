@@ -9,6 +9,7 @@ require_once 'lib/Doctrine_TestSuite.php';
 
 require_once 'Dbal/AllTests.php';
 require_once 'Orm/AllTests.php';
+require_once 'Ticket/AllTests.php';
 
 class AllTests
 {
@@ -23,7 +24,8 @@ class AllTests
 
         $suite->addTest(Dbal_AllTests::suite());
         $suite->addTest(Orm_AllTests::suite());
-        
+        $suite->addTest(Ticket_AllTests::suite());
+
         return $suite;
     }
 }
