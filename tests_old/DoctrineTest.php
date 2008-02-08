@@ -169,7 +169,7 @@ class DoctrineTest
      */
     public function requireModels()
     {
-        $models = new DirectoryIterator(dirname(__FILE__) . '/../models/');
+        $models = new DirectoryIterator(dirname(__FILE__) . '/models/');
         foreach($models as $key => $file) {
             if ($file->isFile() && ! $file->isDot()) {
                 $e = explode('.', $file->getFileName());
