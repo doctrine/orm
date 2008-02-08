@@ -3,10 +3,9 @@ if (!defined('PHPUnit_MAIN_METHOD')) {
     define('PHPUnit_MAIN_METHOD', 'Dbal_Component_AllTests::main');
 }
 
-require_once 'PHPUnit/Framework.php';
-require_once 'PHPUnit/TextUI/TestRunner.php';
-require_once 'lib/Doctrine_TestSuite.php';
+require_once 'lib/DoctrineTestInit.php';
 
+// Tests
 require_once 'Orm/Component/TestTest.php';
 
 class Orm_Component_AllTests

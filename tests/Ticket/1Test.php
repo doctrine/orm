@@ -1,5 +1,5 @@
 <?php
-require_once 'lib/Doctrine_TestCase.php';
+require_once 'lib/DoctrineTestInit.php';
  
 class Ticket_1Test extends Doctrine_TestCase
 {

@@ -1,5 +1,5 @@
 <?php
-require_once 'lib/Doctrine_TestCase.php';
+require_once 'lib/DoctrineTestInit.php';
  
 class Dbal_Component_TestTest extends Doctrine_TestCase
 {
