@@ -7,6 +7,7 @@ require_once 'lib/DoctrineTestInit.php';
 
 // Suites
 require_once 'Dbal/Component/AllTests.php';
+require_once 'Dbal/Ticket/AllTests.php';
 
 class Dbal_AllTests
 {
@@ -20,6 +21,7 @@ class Dbal_AllTests
         $suite = new Doctrine_DbalTestSuite('Doctrine Dbal');
 
         $suite->addTest(Dbal_Component_AllTests::suite());
+        $suite->addTest(Dbal_Ticket_AllTests::suite());
         
         return $suite;
     }

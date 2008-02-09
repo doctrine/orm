@@ -6,9 +6,9 @@ if (!defined('PHPUnit_MAIN_METHOD')) {
 require_once 'lib/DoctrineTestInit.php';
 
 // Tests
-require_once 'Ticket/1Test.php';
+require_once 'Dbal/Ticket/1Test.php';
 
-class Ticket_AllTests
+class Dbal_Ticket_AllTests
 {
     public static function main()
     {
@@ -19,7 +19,7 @@ class Ticket_AllTests
     {
         $suite = new Doctrine_TestSuite('Doctrine Orm');
 
-        $suite->addTestSuite('Ticket_1Test');
+        $suite->addTestSuite('Dbal_Ticket_1Test');
         
         return $suite;
     }

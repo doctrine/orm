@@ -1,7 +1,7 @@
 <?php
 require_once 'lib/DoctrineTestInit.php';
  
-class Ticket_1Test extends Doctrine_TestCase
+class Dbal_Ticket_1Test extends Doctrine_DbalTestCase
 {
     public function testTest()
     {
