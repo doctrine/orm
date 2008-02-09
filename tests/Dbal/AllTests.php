@@ -17,7 +17,7 @@ class Dbal_AllTests
 
     public static function suite()
     {
-        $suite = new Doctrine_TestSuite('Doctrine Dbal');
+        $suite = new Doctrine_DbalTestSuite('Doctrine Dbal');
 
         $suite->addTest(Dbal_Component_AllTests::suite());
         

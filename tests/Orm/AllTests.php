@@ -17,7 +17,7 @@ class Orm_AllTests
 
     public static function suite()
     {
-        $suite = new Doctrine_TestSuite('Doctrine Orm');
+        $suite = new Doctrine_OrmTestSuite('Doctrine Orm');
 
         $suite->addTest(Orm_Component_AllTests::suite());
         
