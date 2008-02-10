@@ -12,7 +12,6 @@ class Doctrine_OrmTestCase extends Doctrine_TestCase
     
     /**
      * All loaded fixtures during test execution. Common fixture cache.
-     * Shared across all test cases.
      */
     private static $_fixtures = array();
     
@@ -32,14 +31,17 @@ class Doctrine_OrmTestCase extends Doctrine_TestCase
      *                         (forum, cms or ecommerce).
      * @param string $name     The name of the fixture to load from the specified package.
      */
-    protected function loadFixture($package, $name)
+    protected function loadFixture($package, $scenario, $name)
     {
-        $uniqueName = $package . '/' . $name;
+        $uniqueName = $package . '/' . $scenario . '/' . $name;
         
         if ( ! isset(self::$_fixtures[$uniqueName])) {
             // load fixture file
-            $fixtureFile = 'fixtures' . DIRECTORY_SEPARATOR . $package . DIRECTORY_SEPARATOR
-                    . $name . '.php';
+            $fixtureFile = 'fixtures'
+                    . DIRECTORY_SEPARATOR . $package
+                    . DIRECTORY_SEPARATOR . $scenario
+                    . DIRECTORY_SEPARATOR . $name
+                    . '.php';
             require $fixtureFile;
             self::$_fixtures[$uniqueName] = $fixture;
             
@@ -76,10 +78,10 @@ class Doctrine_OrmTestCase extends Doctrine_TestCase
      *                         (forum, cms or ecommerce).
      * @param array $names     The names of the fixtures to load from the specified package.
      */
-    protected function loadFixtures($package, array $names)
+    protected function loadFixtures($package, $scenario, array $names)
     {
         foreach ($names as $name) {
-            $this->loadFixture($package, $name);
+            $this->loadFixture($package, $scenario, $name);
         }
     }
     
