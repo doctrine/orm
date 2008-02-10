@@ -20,8 +20,5 @@ class Doctrine_OrmTestSuite extends Doctrine_TestSuite
     }
     
     protected function tearDown()
-    {
-        Doctrine_Manager::getInstance()->getConnection('sqlite_memory')->close();
-        $this->sharedFixture = NULL;
-    }    
+    {} 
 }

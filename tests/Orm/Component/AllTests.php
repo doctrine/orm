@@ -17,7 +17,7 @@ class Orm_Component_AllTests
 
     public static function suite()
     {
-        $suite = new Doctrine_TestSuite('Doctrine Dbal Component');
+        $suite = new Doctrine_TestSuite('Doctrine Orm Component');
 
         $suite->addTestSuite('Orm_Component_TestTest');
 

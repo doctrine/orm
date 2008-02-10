@@ -1277,7 +1277,7 @@ class Doctrine_Export extends Doctrine_Connection_Module
      * @return boolean                          whether or not the export operation was successful
      *                                          false if table already existed in the database
      */
-    public function exportTable(Doctrine_Table $table)
+    public function exportTable(Doctrine_ClassMetadata $metadata)
     {
         /**
         TODO: maybe there should be portability option for the following check
@@ -1287,10 +1287,10 @@ class Doctrine_Export extends Doctrine_Connection_Module
         */
 
         try {
-            $data = $table->getExportableFormat();
+            $data = $metadata->getExportableFormat();
 
             $this->conn->export->createTable($data['tableName'], $data['columns'], $data['options']);
-        } catch(Doctrine_Connection_Exception $e) {
+        } catch (Doctrine_Connection_Exception $e) {
             // we only want to silence table already exists errors
             if ($e->getPortableCode() !== Doctrine::ERR_ALREADY_EXISTS) {
                 throw $e;
