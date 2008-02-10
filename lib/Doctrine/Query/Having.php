@@ -93,6 +93,10 @@ class Doctrine_Query_Having extends Doctrine_Query_Condition
         $operator  = array_shift($tokens);
         $value     = implode(' ', $tokens);
         $part .= ' ' . $operator . ' ' . $value;
+        // check the RHS for aggregate functions
+        if (strpos($value, '(') !== false) {
+          $value = $this->parseAggregateFunction($value);
+        }
         return $part;
     }
 }
