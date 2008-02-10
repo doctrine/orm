@@ -11,13 +11,7 @@ class Doctrine_DbalTestSuite extends Doctrine_TestSuite
     
     protected function setUp()
     {
-        // @todo Make DBMS choice configurable
         $this->sharedFixture['connection'] = Doctrine_TestUtil::getConnection();
-    }
-
-    protected function loadConnection($conn, $name)
-    {
-        return Doctrine_Manager::connection($conn, $name);
     }
     
     protected function tearDown()

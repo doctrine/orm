@@ -16,7 +16,6 @@ class Doctrine_DbalTestCase extends Doctrine_TestCase
     {
         // Setup a db connection if there is none, yet. This makes it possible
         // to run tests that use a connection standalone.
-        // @todo Make DBMS choice configurable
         if ( ! isset($this->sharedFixture['connection'])) {
             $this->sharedFixture['connection'] = Doctrine_TestUtil::getConnection();
         }
