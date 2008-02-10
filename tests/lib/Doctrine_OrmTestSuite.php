@@ -10,6 +10,7 @@ class Doctrine_OrmTestSuite extends Doctrine_TestSuite
 {
     protected function setUp()
     {
+        // @todo Make DBMS choice configurable
         $pdo = new PDO('sqlite::memory:');
         $this->sharedFixture['connection'] = $this->loadConnection($pdo, 'sqlite_memory');
     }

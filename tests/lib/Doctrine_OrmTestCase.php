@@ -23,6 +23,20 @@ class Doctrine_OrmTestCase extends Doctrine_TestCase
     private static $_exportedTables = array();
     
     /**
+     * setUp()
+     */
+    protected function setUp()
+    {
+        // Setup a db connection if there is none, yet. This makes it possible
+        // to run tests that use a connection standalone.
+        // @todo Make DBMS choice configurable
+        if ( ! isset($this->sharedFixture['connection'])) {
+            $pdo = new PDO('sqlite::memory:');
+            $this->sharedFixture['connection'] = Doctrine_Manager::connection($pdo, 'sqlite_memory');
+        }
+    }
+    
+    /**
      * Loads a data fixture into the database. This method must only be called
      * from within the setUp() method of testcases. The database will then be
      * populated with fresh data of all loaded fixtures for each test method.
