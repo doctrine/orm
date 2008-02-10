@@ -15,8 +15,8 @@ class Doctrine_OrmTestCase extends Doctrine_TestCase
         
         if ( ! isset(self::$_fixtures[$uniqueName])) {
             // load fixture file
-            $fixtureFile = 'fixtures' . DIRECTORY_SEPARATOR . 'orm' . DIRECTORY_SEPARATOR
-                    . $package . DIRECTORY_SEPARATOR . $name . '.php';
+            $fixtureFile = 'fixtures' . DIRECTORY_SEPARATOR . $package . DIRECTORY_SEPARATOR
+                    . $name . '.php';
             require $fixtureFile;
             self::$_fixtures[$uniqueName] = $fixture;
             
