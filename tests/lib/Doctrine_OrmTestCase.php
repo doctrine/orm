@@ -27,8 +27,14 @@ class Doctrine_OrmTestCase extends Doctrine_TestCase
      * from within the setUp() method of testcases. The database will then be
      * populated with fresh data of all loaded fixtures for each test method.
      *
+     * WARNING: A single testcase should never load fixtures from different scenarios of
+     * the same package as the concistency and uniqueness of keys is not guaranteed.
+     *
      * @param string $package  The package name. Must be one of Doctrine's test model packages
      *                         (forum, cms or ecommerce).
+     * @param string $scenario The fixture scenario. A model package can have many fixture
+     *                         scenarios. Within a scenario all primary keys and foreign keys
+     *                         of fixtures are consistent and unique.
      * @param string $name     The name of the fixture to load from the specified package.
      */
     protected function loadFixture($package, $scenario, $name)
@@ -69,13 +75,19 @@ class Doctrine_OrmTestCase extends Doctrine_TestCase
     }
     
     /**
-     * Loads multiple fixtures of the same package.
+     * Loads multiple fixtures of the same package and scenario.
      * This method must only be called from within the setUp() method of testcases.
      * The database will then be populated with fresh data of all loaded fixtures for each
      * test method.
      *
+     * WARNING: A single testcase should never load fixtures from different scenarios of
+     * the same package as the concistency and uniqueness of keys is not guaranteed.
+     *
      * @param string $package  The package name. Must be one of Doctrine's test model packages
      *                         (forum, cms or ecommerce).
+     * @param string $scenario The fixture scenario. A model package can have many fixture
+     *                         scenarios. Within a scenario all primary keys and foreign keys
+     *                         of fixtures are consistent and unique.
      * @param array $names     The names of the fixtures to load from the specified package.
      */
     protected function loadFixtures($package, $scenario, array $names)
