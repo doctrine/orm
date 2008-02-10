@@ -31,13 +31,6 @@
    <pearinstaller>
     <min>1.4.1</min>
    </pearinstaller>
-   <package>
-    <name>Doctrine</name>
-    <channel>pear.php.net</channel>
-    <min>1.0.0</min>
-    <max>1.0.0</max>
-    <exclude>1.0.0</exclude>
-   </package>
   </required>
  </dependencies>
 
