@@ -24,6 +24,11 @@ class Doctrine_OrmTestCase extends Doctrine_TestCase
     
     /**
      * setUp()
+     *
+     * Note: This setUp() and the one of DbalTestCase currently look identical. However,
+     * please dont pull this method up. In the future with a separation of Dbal/Orm
+     * this setUp() will take care of a ORM connection/session/manager initialization
+     * and the DBAL setUp() will take care of just a DBAL connection.
      */
     protected function setUp()
     {
