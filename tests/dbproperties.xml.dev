@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Use this configuration file as a template to run the tests against any dbms.
+    Procedure:
+        1) Save a copy of this file with a name of your chosing. It doesn't matter
+           where you place it as long as you know where it is.
+           i.e. "mysqlconf.xml" (It needs the ending .xml).
+        2) Edit the file and fill in your settings (database name, type, username, etc.)
+           Just change the "value"s, not the names of the var elements.
+        3) To run the tests against the database type the following from within the
+           tests/ folder: phpunit --configuration <filename> ...
+           Example: phpunit --configuration mysqlconf.xml AllTests
+-->
+<phpunit>
+  <php>
+    <var name="db_type" value="mysql"/>
+    <var name="db_host" value="localhost" />
+    <var name="db_username" value="foo" />
+    <var name="db_password" value="bar" />
+    <var name="db_name" value="doctrinetests" />
+  </php>
+</phpunit>

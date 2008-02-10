@@ -2,6 +2,7 @@
 require_once 'PHPUnit/Framework.php';
 require_once 'PHPUnit/TextUI/TestRunner.php';
 require_once 'Doctrine_TestCase.php';
+require_once 'Doctrine_TestUtil.php';
 require_once 'Doctrine_DbalTestCase.php';
 require_once 'Doctrine_OrmTestCase.php';
 require_once 'Doctrine_TestSuite.php';

@@ -18,8 +18,7 @@ class Doctrine_DbalTestCase extends Doctrine_TestCase
         // to run tests that use a connection standalone.
         // @todo Make DBMS choice configurable
         if ( ! isset($this->sharedFixture['connection'])) {
-            $pdo = new PDO('sqlite::memory:');
-            $this->sharedFixture['connection'] = Doctrine_Manager::connection($pdo, 'sqlite_memory');
+            $this->sharedFixture['connection'] = Doctrine_TestUtil::getConnection();
         }
     }
 }
