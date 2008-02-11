@@ -4,11 +4,13 @@ $fixture = array(
     'rows' => array(
         array(
             'id' => 1,
-            'username' => 'romanb'
+            'username' => 'romanb',
+            'dtype' => 'admin'
         ),
         array(
             'id' => 2,
-            'username' => 'jwage'
+            'username' => 'jwage',
+            'dtype' => 'user'
         )
     )
 );

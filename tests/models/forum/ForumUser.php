@@ -8,15 +8,19 @@ class ForumUser extends Doctrine_Record
         $class->setInheritanceType(Doctrine::INHERITANCETYPE_JOINED, array(
                 'discriminatorColumn' => 'dtype',
                 'discriminatorMap' => array(
-                        1 => 'ForumUser',
-                        2 => 'ForumAdministrator')
+                        'user' => 'ForumUser',
+                        'admin' => 'ForumAdministrator')
                 ));
         $class->setSubclasses(array('ForumAdministrator'));
+        
+        // the discriminator column
+        $class->addMappedColumn('dtype', 'string', 50);
         
         // property mapping
         $class->addMappedColumn('id', 'integer', 4, array(
                 'primary' => true,
                 'autoincrement' => true));
         $class->addMappedColumn('username', 'string', 50);
+        
     }
 }

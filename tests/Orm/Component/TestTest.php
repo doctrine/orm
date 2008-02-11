@@ -6,7 +6,7 @@ class Orm_Component_TestTest extends Doctrine_OrmTestCase
     protected function setUp()
     {
         parent::setUp();
-        $this->loadFixture('forum', 'common', 'users');
+        $this->loadFixtures('forum', 'common', array('users', 'admins'));
     }
     
     public function testTest()
