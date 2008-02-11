@@ -106,8 +106,8 @@ class Doctrine_Mapper_Joined extends Doctrine_Mapper_Abstract
 
             $record->state(Doctrine_Record::STATE_TDIRTY);
 
-            foreach ($table->getOption('joinedParents') as $parent) {
-                $parentTable = $conn->getTable($parent);
+            foreach ($table->getParentClasses() as $parent) {
+                $parentTable = $conn->getClassMetadata($parent);
                 $conn->delete($parentTable, $record->identifier());
             }
 
