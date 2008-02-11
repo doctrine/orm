@@ -1,6 +1,6 @@
 <?php
 
-class Forum_User extends Doctrine_Record
+class ForumUser extends Doctrine_Record
 {
     public static function initMetadata($class) 
     {
@@ -8,10 +8,10 @@ class Forum_User extends Doctrine_Record
         $class->setInheritanceType(Doctrine::INHERITANCETYPE_JOINED, array(
                 'discriminatorColumn' => 'dtype',
                 'discriminatorMap' => array(
-                        1 => 'Forum_User',
-                        2 => 'Forum_Administrator')
+                        1 => 'ForumUser',
+                        2 => 'ForumAdministrator')
                 ));
-        $class->setSubclasses(array('Forum_Administrator'));
+        $class->setSubclasses(array('ForumAdministrator'));
         
         // property mapping
         $class->addMappedColumn('id', 'integer', 4, array(

@@ -16,7 +16,7 @@ class Orm_Component_TestTest extends Doctrine_OrmTestCase
     
     public function testFixture()
     {
-        $forumUsers = $this->sharedFixture['connection']->query("FROM Forum_User u");
+        $forumUsers = $this->sharedFixture['connection']->query("FROM ForumUser u");
         $this->assertEquals(2, count($forumUsers));
         $forumUsers[0]->delete();
         unset($forumUsers[0]);
@@ -25,7 +25,7 @@ class Orm_Component_TestTest extends Doctrine_OrmTestCase
     
     public function testFixture2()
     {
-        $forumUsers = $this->sharedFixture['connection']->query("FROM Forum_User u");
+        $forumUsers = $this->sharedFixture['connection']->query("FROM ForumUser u");
         $this->assertEquals(2, count($forumUsers));
     }
 }
