@@ -1,6 +1,6 @@
 <?php
 $fixture = array(
-    'model' => 'ForumUser',
+    'model' => 'Forum_User',
     'rows' => array(
         array(
             'id' => 1,

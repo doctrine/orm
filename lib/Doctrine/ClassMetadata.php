@@ -1,11 +1,31 @@
 <?php 
+/*
+ *  $Id$
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+ * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+ * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+ * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+ * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+ * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ * This software consists of voluntary contributions made by many individuals
+ * and is licensed under the LGPL. For more information, see
+ * <http://www.phpdoctrine.org>.
+ */
 
 /**
- * A MetadataClass instance holds all the information (metadata) of an entity class and it's relations.
- * These informations are needed for the proper object-relational mapping of the domain class.
+ * A ClassMetadata instance holds all the information (metadata) of an entity and it's relations.
+ * These informations are used for the proper object-relational mapping of the class.
  *
  * @package Doctrine
  * @author  Roman Borschel <roman@code-factory.org>
+ * @since   1.0
  */
 class Doctrine_ClassMetadata extends Doctrine_Configurable implements Serializable
 {    
@@ -14,7 +34,7 @@ class Doctrine_ClassMetadata extends Doctrine_Configurable implements Serializab
      * 
      * @var string
      */
-    protected $_domainClassName;
+    protected $_entityName;
     
     /**
      *
@@ -70,7 +90,8 @@ class Doctrine_ClassMetadata extends Doctrine_Configurable implements Serializab
      * An array containing all templates attached to the class.
      *
      * @see Doctrine_Template
-     * @var array $_templates                   
+     * @var array $_templates
+     * @todo Unify under 'Behaviors'.                 
      */
     protected $_templates = array();
     
@@ -78,12 +99,13 @@ class Doctrine_ClassMetadata extends Doctrine_Configurable implements Serializab
      * An array containing all generators attached to this class.
      *
      * @see Doctrine_Record_Generator
-     * @var array $_generators                  
+     * @var array $_generators
+     * @todo Unify under 'Behaviors'.
      */
     protected $_generators = array();
 
     /**
-     * An array containing all filters attached to this class.
+     * An array containing all filters attached to the class.
      *
      * @see Doctrine_Record_Filter
      * @var array $_filters                     
@@ -144,7 +166,7 @@ class Doctrine_ClassMetadata extends Doctrine_Configurable implements Serializab
      *
      * @var integer           
      */
-    protected $columnCount;
+    protected $_columnCount;
     
     /**
      * Whether or not this class has default values.
@@ -159,12 +181,6 @@ class Doctrine_ClassMetadata extends Doctrine_Configurable implements Serializab
      * @var Doctrine_Relation_Parser $_parser   
      */
     protected $_parser;
-    
-    /**
-     * Contains the mapping of the discriminator column (which discriminator value identifies
-     * which class). Used in Single & Class Table Inheritance.
-     */
-    protected $_inheritanceMap = array();
     
     /**
      * Enum value arrays. 
@@ -191,7 +207,7 @@ class Doctrine_ClassMetadata extends Doctrine_Configurable implements Serializab
             );
     
     /**
-     * 
+     * Inheritance options.
      */
     protected $_inheritanceOptions = array(
             'discriminatorColumn' => null,
@@ -234,9 +250,9 @@ class Doctrine_ClassMetadata extends Doctrine_Configurable implements Serializab
      *
      * @param string $domainClassName  Name of the class the metadata instance is used for.
      */
-    public function __construct($domainClassName, Doctrine_Connection $conn)
+    public function __construct($entityName, Doctrine_Connection $conn)
     {        
-        $this->_domainClassName = $domainClassName;
+        $this->_entityName = $entityName;
         $this->_conn = $conn;
         $this->_parser = new Doctrine_Relation_Parser($this);
         $this->_filters[]  = new Doctrine_Record_Filter_Standard();
@@ -258,16 +274,19 @@ class Doctrine_ClassMetadata extends Doctrine_Configurable implements Serializab
      */
     public function getClassName()
     {
-        return $this->_domainClassName;
+        return $this->_entityName;
     }
     
+    /**
+     * @deprecated
+     */
     public function getComponentName()
     {
         return $this->getClassName();
     }
     
     /**
-     * Whether a field is part of the identifier/primary key field(s).
+     * Checks whether a field is part of the identifier/primary key field(s).
      *
      * @param string $fieldName  The field name
      * @return boolean  TRUE if the field is part of the table identifier/primary key field(s), 
@@ -329,31 +348,28 @@ class Doctrine_ClassMetadata extends Doctrine_Configurable implements Serializab
             case 'enumMap':
                 $this->_enumMap = $value;
                 return;
-            case 'inheritanceMap':
-                $this->_inheritanceMap = $value;
-                return;
         }
         $this->_options[$name] = $value;
     }
     
     /**
-     *
+     * Sets a table option.
      */
     public function setTableOption($name, $value)
     {
         if ( ! array_key_exists($name, $this->_tableOptions)) {
-            throw new Doctrine_MetadataClass_Exception("Unknown table option: '$name'.");
+            throw new Doctrine_ClassMetadata_Exception("Unknown table option: '$name'.");
         }
         $this->_tableOptions[$name] = $value;        
     }
     
     /**
-     *
+     * Gets a table option.
      */
     public function getTableOption($name)
     {
         if ( ! array_key_exists($name, $this->_tableOptions)) {
-            throw new Doctrine_MetadataClass_Exception("Unknown table option: '$name'.");
+            throw new Doctrine_ClassMetadata_Exception("Unknown table option: '$name'.");
         }
         
         return $this->_tableOptions[$name];
@@ -455,13 +471,16 @@ class Doctrine_ClassMetadata extends Doctrine_Configurable implements Serializab
         }
     }
     
+    /**
+     * @deprecated
+     */
     public function mapField($name, $type, $length = null, $options = array(), $prepend = false)
     {
         return $this->setColumn($name, $type, $length, $options, $prepend);
     }
     
     /**
-     * setColumn
+     * addMappedColumn
      *
      * @param string $name
      * @param string $type
@@ -469,10 +488,10 @@ class Doctrine_ClassMetadata extends Doctrine_Configurable implements Serializab
      * @param mixed $options
      * @param boolean $prepend   Whether to prepend or append the new column to the column list.
      *                           By default the column gets appended.
-     * @throws Doctrine_Table_Exception     if trying use wrongly typed parameter
-     * @return void
+     * @throws Doctrine_ClassMetadata_Exception If trying use wrongly typed parameter.
+     * @deprecated
      */
-    public function setColumn($name, $type, $length = null, $options = array(), $prepend = false)
+    public function addMappedColumn($name, $type, $length = null, $options = array(), $prepend = false)
     {
         if (is_string($options)) {
             $options = explode('|', $options);
@@ -557,7 +576,25 @@ class Doctrine_ClassMetadata extends Doctrine_Configurable implements Serializab
             $this->_hasDefaultValues = true;
         }
         
-        $this->columnCount++;
+        $this->_columnCount++;
+    }
+    
+    /**
+     * setColumn
+     *
+     * @param string $name
+     * @param string $type
+     * @param integer $length
+     * @param mixed $options
+     * @param boolean $prepend   Whether to prepend or append the new column to the column list.
+     *                           By default the column gets appended.
+     * @throws Doctrine_Table_Exception     if trying use wrongly typed parameter
+     * @return void
+     * @deprecated
+     */
+    public function setColumn($name, $type, $length = null, $options = array(), $prepend = false)
+    {
+        return $this->addMappedColumn($name, $type, $length, $options, $prepend);
     }
     
     /**
@@ -696,7 +733,7 @@ class Doctrine_ClassMetadata extends Doctrine_Configurable implements Serializab
      */
     public function getColumnCount()
     {
-        return $this->columnCount;
+        return $this->_columnCount;
     }
 
     /**
@@ -725,7 +762,7 @@ class Doctrine_ClassMetadata extends Doctrine_Configurable implements Serializab
             unset($this->_columns[$columnName]);
             return true;
         }
-        $this->columnCount--;
+        $this->_columnCount--;
         
         return false;
     }
@@ -841,8 +878,9 @@ class Doctrine_ClassMetadata extends Doctrine_Configurable implements Serializab
      *
      * @param string $name  The name under which the query gets registered.
      * @param string $query The DQL query.
+     * @todo Implementation.
      */
-    public function setNamedQuery($name, $query)
+    public function addNamedQuery($name, $query)
     {
         
     }
@@ -943,7 +981,7 @@ class Doctrine_ClassMetadata extends Doctrine_Configurable implements Serializab
      */
     public function setSubclasses(array $subclasses)
     {
-        $this->setOption('subclasses', $subclasses);        
+        $this->_options['subclasses'] = $subclasses;     
     }
     
     /**
@@ -957,7 +995,17 @@ class Doctrine_ClassMetadata extends Doctrine_Configurable implements Serializab
     }
     
     /**
-     * 
+     * Checks whether the class has any persistent subclasses.
+     *
+     * @return boolean TRUE if the class has one or more persistent subclasses, FALSE otherwise.
+     */
+    public function hasSubclasses()
+    {
+        return ! $this->getOption('subclasses');
+    }
+    
+    /**
+     * Gets the names of all parent classes.
      */
     public function getParentClasses()
     {
@@ -965,7 +1013,25 @@ class Doctrine_ClassMetadata extends Doctrine_Configurable implements Serializab
     }
     
     /**
-     * Sets the inheritance type used by the class.
+     * Sets the parent class names.
+     */
+    public function setParentClasses(array $classNames)
+    {
+        $this->_options['parents'] = $classNames;
+    }
+    
+    /**
+     * Checks whether the class has any persistence parent classes.
+     *
+     * @return boolean TRUE if the class has one or more persistent parent classes, FALSE otherwise.
+     */
+    public function hasParentClasses()
+    {
+        return ! $this->getOption('parents');
+    }
+    
+    /**
+     * Sets the inheritance type used by the class and it's subclasses.
      *
      * @param integer $type
      */
@@ -978,7 +1044,7 @@ class Doctrine_ClassMetadata extends Doctrine_Configurable implements Serializab
         } else if ($type == Doctrine::INHERITANCETYPE_TABLE_PER_CLASS) {
             // concrete table inheritance ...
         } else {
-            throw new Doctrine_MetadataClass_Exception("Invalid inheritance type '$type'.");
+            throw new Doctrine_ClassMetadata_Exception("Invalid inheritance type '$type'.");
         }
         $this->_inheritanceType = $type;
         foreach ($options as $name => $value) {
@@ -1178,6 +1244,7 @@ class Doctrine_ClassMetadata extends Doctrine_Configurable implements Serializab
      *
      * @param string $template 
      * @return void
+     * @todo Unify under 'Behaviors'.
      */
     public function getTemplate($template)
     {
@@ -1188,11 +1255,17 @@ class Doctrine_ClassMetadata extends Doctrine_Configurable implements Serializab
         return $this->_templates[$template];
     }
     
+    /**
+     * @todo Unify under 'Behaviors'.
+     */
     public function hasTemplate($template)
     {
         return isset($this->_templates[$template]);
     }
-
+    
+    /**
+     * @todo Unify under 'Behaviors'.
+     */
     public function addTemplate($template, Doctrine_Template $impl)
     {
         $this->_templates[$template] = $impl;
@@ -1200,11 +1273,17 @@ class Doctrine_ClassMetadata extends Doctrine_Configurable implements Serializab
         return $this;
     }
     
+    /**
+     * @todo Unify under 'Behaviors'.
+     */
     public function getGenerators()
     {
         return $this->_generators;
     }
     
+    /**
+     * @todo Unify under 'Behaviors'.
+     */
     public function getGenerator($generator)
     {
         if ( ! isset($this->_generators[$generator])) {
@@ -1214,11 +1293,17 @@ class Doctrine_ClassMetadata extends Doctrine_Configurable implements Serializab
         return $this->_generators[$plugin];
     }
     
+    /**
+     * @todo Unify under 'Behaviors'.
+     */
     public function hasGenerator($generator)
     {
         return isset($this->_generators[$generator]);
     }
-
+    
+    /**
+     * @todo Unify under 'Behaviors'.
+     */
     public function addGenerator(Doctrine_Record_Generator $generator, $name = null)
     {
     	if ($name === null) {
@@ -1227,6 +1312,26 @@ class Doctrine_ClassMetadata extends Doctrine_Configurable implements Serializab
             $this->_generators[$name] = $generator;
         }
         return $this;
+    }
+    
+    /**
+     * loadTemplate
+     *
+     * @param string $template
+     * @todo Unify under 'Behaviors'.
+     */
+    public function loadTemplate($template, array $options = array())
+    {
+        $this->actAs($template, $options);
+    }
+    
+    /**
+     * @todo Unify under 'Behaviors'.
+     */
+    public function loadGenerator(Doctrine_Record_Generator $generator)
+    {
+    	$generator->initialize($this->_table);
+        $this->addGenerator($generator, get_class($generator));
     }
     
     /**
@@ -1249,6 +1354,7 @@ class Doctrine_ClassMetadata extends Doctrine_Configurable implements Serializab
      * getter for associated tree
      *
      * @return mixed  if tree return instance of Doctrine_Tree, otherwise returns false
+     * @todo Belongs to the NestedSet Behavior.
      */
     public function getTree()
     {
@@ -1269,6 +1375,7 @@ class Doctrine_ClassMetadata extends Doctrine_Configurable implements Serializab
      * determine if table acts as tree
      *
      * @return mixed  if tree return true, otherwise returns false
+     * @todo Belongs to the NestedSet Behavior.
      */
     public function isTree()
     {
@@ -1286,7 +1393,9 @@ class Doctrine_ClassMetadata extends Doctrine_Configurable implements Serializab
     }
     
     /**
-     * 
+     * Checks whether a persistent field is inherited from a superclass.
+     *
+     * @return boolean TRUE if the field is inherited, FALSE otherwise.
      */
     public function isInheritedField($fieldName)
     {
@@ -1335,10 +1444,9 @@ class Doctrine_ClassMetadata extends Doctrine_Configurable implements Serializab
     }
 
     /**
-     * setTableName
+     * Sets the name of the primary table the class is mapped to.
      *
-     * @param string $tableName 
-     * @return void
+     * @param string $tableName  The table name.
      */
     public function setTableName($tableName)
     {
@@ -1370,7 +1478,7 @@ class Doctrine_ClassMetadata extends Doctrine_Configurable implements Serializab
     }
     
     /**
-     * 
+     * @todo Implementation.
      */
     public function oneToOne($targetEntity, $definition)
     {
@@ -1378,7 +1486,7 @@ class Doctrine_ClassMetadata extends Doctrine_Configurable implements Serializab
     }
     
     /**
-     * 
+     * @todo Implementation.
      */
     public function oneToMany($targetEntity, $definition)
     {
@@ -1386,7 +1494,7 @@ class Doctrine_ClassMetadata extends Doctrine_Configurable implements Serializab
     }
     
     /**
-     * 
+     * @todo Implementation.
      */
     public function manyToOne($targetEntity, $definition)
     {
@@ -1394,29 +1502,12 @@ class Doctrine_ClassMetadata extends Doctrine_Configurable implements Serializab
     }
     
     /**
-     * 
+     * @todo Implementation.
      */
     public function manyToMany($targetEntity, $definition)
     {
                 
     }
-    
-    /**
-     * loadTemplate
-     *
-     * @param string $template
-     */
-    public function loadTemplate($template, array $options = array())
-    {
-        $this->actAs($template, $options);
-    }
-    
-    public function loadGenerator(Doctrine_Record_Generator $generator)
-    {
-    	$generator->initialize($this->_table);
-        $this->addGenerator($generator, get_class($generator));
-    }
-
 
     /**
      * actAs
@@ -1424,6 +1515,7 @@ class Doctrine_ClassMetadata extends Doctrine_Configurable implements Serializab
      *
      * @param mixed $tpl
      * @param array $options
+     * @todo Unify under 'Behaviors'.
      */
     public function actAs($tpl, array $options = array())
     {
@@ -1432,12 +1524,9 @@ class Doctrine_ClassMetadata extends Doctrine_Configurable implements Serializab
                 $tpl = new $tpl($options);
             } else {
                 $className = 'Doctrine_Template_' . $tpl;
-
                 if ( ! class_exists($className, true)) {
                     throw new Doctrine_Record_Exception("Couldn't load plugin.");
                 }
-
-
                 $tpl = new $className($options);
             }
         }
@@ -1492,6 +1581,7 @@ class Doctrine_ClassMetadata extends Doctrine_Configurable implements Serializab
      * Mixes a predefined behaviour into the class.
      * 
      * @param string|object  The name of the behavior or the behavior object.
+     * @todo Implementation.
      */
     public function addBehavior($behavior)
     {
@@ -1506,6 +1596,14 @@ class Doctrine_ClassMetadata extends Doctrine_Configurable implements Serializab
         //Doctrine::CLASSTYPE_ENTITY
         //Doctrine::CLASSTYPE_MAPPED_SUPERCLASS
         //Doctrine::CLASSTYPE_TRANSIENT
+    }
+    
+    /**
+     * @todo Implementation.
+     */
+    public function isImmutable()
+    {
+        return false;
     }
     
     /**

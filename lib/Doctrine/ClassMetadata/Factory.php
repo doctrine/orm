@@ -1,10 +1,30 @@
 <?php 
+/*
+ *  $Id$
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+ * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+ * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+ * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+ * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+ * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ * This software consists of voluntary contributions made by many individuals
+ * and is licensed under the LGPL. For more information, see
+ * <http://www.phpdoctrine.org>.
+ */
 
 /**
- * A table factory is used to create table objects and load them with meta data.
+ * The metadata factory is used to create ClassMetadata objects that contain all the
+ * metadata of a class.
  *
- * @todo Support different drivers for loading the metadata from different sources.
  * @package Doctrine
+ * @since   1.0
  */
 class Doctrine_ClassMetadata_Factory
 {
@@ -12,10 +32,18 @@ class Doctrine_ClassMetadata_Factory
     protected $_driver;
     
     /**
-     * 
+     * The already loaded metadata objects.
      */
     protected $_loadedMetadata = array();
     
+    /**
+     * Constructor.
+     * Creates a new factory instance that uses the given connection and metadata driver
+     * implementations.
+     *
+     * @param $conn    The connection to use.
+     * @param $driver  The metadata driver to use.
+     */
     public function __construct(Doctrine_Connection $conn, $driver)
     {
         $this->_conn = $conn;
@@ -87,7 +115,6 @@ class Doctrine_ClassMetadata_Factory
             $this->_addInheritedRelations($subClass, $parent);
             $this->_loadMetadata($subClass, $subclassName);
             if ($parent->getInheritanceType() == Doctrine::INHERITANCETYPE_SINGLE_TABLE) {
-                //echo "<br />". $subClass->getClassName() . $parent->getTableName() . "<br />";
                 $subClass->setTableName($parent->getTableName());
             }
             $classes[$subclassName] = $subClass;
@@ -98,12 +125,9 @@ class Doctrine_ClassMetadata_Factory
     protected function _addInheritedFields($subClass, $parentClass)
     {
         foreach ($parentClass->getColumns() as $name => $definition) {
-            /*if (isset($definition['autoincrement']) && $definition['autoincrement'] === true) {
-                unset($definition['autoincrement']);
-            }*/
             $fullName = "$name as " . $parentClass->getFieldName($name);
             $definition['inherited'] = true;
-            $subClass->setColumn($fullName, $definition['type'], $definition['length'],
+            $subClass->addMappedColumn($fullName, $definition['type'], $definition['length'],
                     $definition);
         }
     }
@@ -145,7 +169,7 @@ class Doctrine_ClassMetadata_Factory
         }
 
         // save parents
-        $class->setOption('parents', $names);
+        $class->setParentClasses($names);
 
         // load further metadata
         $this->_driver->loadMetadataForClass($name, $class);
@@ -244,13 +268,13 @@ class Doctrine_ClassMetadata_Factory
                                 $found = true;
 
                                 if ($value) {
-                                    $class->setOption('sequenceName', $value);
+                                    $class->setTableOption('sequenceName', $value);
                                 } else {
                                     if (($sequence = $class->getAttribute(Doctrine::ATTR_DEFAULT_SEQUENCE)) !== null) {
-                                        $class->setOption('sequenceName', $sequence);
+                                        $class->setTableOption('sequenceName', $sequence);
                                     } else {
-                                        $class->setOption('sequenceName', $class->getConnection()
-                                                ->getSequenceName($class->getOption('tableName')));
+                                        $class->setTableOption('sequenceName', $class->getConnection()
+                                                ->getSequenceName($class->getTableName()));
                                     }
                                 }
                                 break;
