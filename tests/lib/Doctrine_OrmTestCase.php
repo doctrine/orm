@@ -67,11 +67,6 @@ class Doctrine_OrmTestCase extends Doctrine_TestCase
                     . '.php';
             require $fixtureFile;
             self::$_fixtures[$uniqueName] = $fixture;
-            
-            // load model file
-            $modelFile = 'models' . DIRECTORY_SEPARATOR . $package . DIRECTORY_SEPARATOR .
-                    $fixture['model'] . '.php';
-            require $modelFile;
         }
         
         $fixture = self::$_fixtures[$uniqueName];
