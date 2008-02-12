@@ -10,6 +10,12 @@
   <email>kvesteri@cc.hut.fi</email>
   <active>yes</active>
  </lead>
+ <lead>
+  <name>Jonathan H. Wage</name>
+  <user>jwage</user>
+  <email>jonwage@gmail.com</email>
+  <active>yes</active>
+ </lead>
  <date>2007-12-08</date>
  <version>
   <release>1.0.0</release>
