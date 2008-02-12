@@ -773,23 +773,24 @@ abstract class Doctrine_Mapper_Abstract extends Doctrine_Configurable implements
             return false;
         }
         
-        $table = $record->getTable();
-        $identifier = (array) $table->getIdentifier();
+        $class = $record->getClassMetadata();
+        $identifier = (array) $class->getIdentifier();
+        $fields = $this->_convertFieldToColumnNames($fields, $class);
 
-        $seq = $table->getOption('sequenceName');
+        $seq = $class->getTableOption('sequenceName');
         if ( ! empty($seq)) {
             $id = $this->_conn->sequence->nextId($seq);
-            $seqName = $table->getIdentifier();
+            $seqName = $class->getIdentifier();
             $fields[$seqName] = $id;
             $record->assignIdentifier($id);
         }
 
-        $this->_conn->insert($table, $fields);
+        $this->_conn->insert($class->getTableName(), $fields);
 
-        if (empty($seq) && count($identifier) == 1 && $identifier[0] == $table->getIdentifier() &&
-                $table->getIdentifierType() != Doctrine::IDENTIFIER_NATURAL) {
+        if (empty($seq) && count($identifier) == 1 && $identifier[0] == $class->getIdentifier() &&
+                $class->getIdentifierType() != Doctrine::IDENTIFIER_NATURAL) {
             if (strtolower($this->_conn->getName()) == 'pgsql') {
-                $seq = $table->getTableName() . '_' . $identifier[0];
+                $seq = $class->getTableName() . '_' . $identifier[0];
             }
 
             $id = $this->_conn->sequence->lastInsertId($seq);
@@ -802,6 +803,16 @@ abstract class Doctrine_Mapper_Abstract extends Doctrine_Configurable implements
         } else {
             $record->assignIdentifier(true);
         }
+    }
+    
+    protected function _convertFieldToColumnNames(array $fields, Doctrine_ClassMetadata $class)
+    {
+        $converted = array();
+        foreach ($fields as $fieldName => $value) {
+            $converted[$class->getColumnName($fieldName)] = $value;
+        }
+        
+        return $converted;
     }
     
     /**
@@ -948,9 +959,9 @@ abstract class Doctrine_Mapper_Abstract extends Doctrine_Configurable implements
      */
     protected function _doUpdate(Doctrine_Record $record)
     {
-        $identifier = $record->identifier();
-        $array = $record->getPrepared();
-        $this->_conn->update($this->_classMetadata, $array, $identifier);
+        $identifier = $this->_convertFieldToColumnNames($record->identifier(), $this->_classMetadata);
+        $data = $this->_convertFieldToColumnNames($record->getPrepared(), $this->_classMetadata);
+        $this->_conn->update($this->_classMetadata->getTableName(), $data, $identifier);
         $record->assignIdentifier(true);
     }
     
@@ -1043,8 +1054,9 @@ abstract class Doctrine_Mapper_Abstract extends Doctrine_Configurable implements
             $this->_deleteComposites($record);
 
             $record->state(Doctrine_Record::STATE_TDIRTY);
-
-            $conn->delete($this->_classMetadata, $record->identifier());
+            
+            $identifier = $this->_convertFieldToColumnNames($record->identifier(), $this->_classMetadata);
+            $conn->delete($this->_classMetadata->getTableName(), $identifier);
             $record->state(Doctrine_Record::STATE_TCLEAN);
 
             $this->removeRecord($record);

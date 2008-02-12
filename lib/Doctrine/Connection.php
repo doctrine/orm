@@ -510,26 +510,26 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
      * @throws PDOException                         if something fails at PDO level
      * @return integer                              number of rows affected
      */
-    public function replace(Doctrine_Table $table, array $fields, array $keys)
+    public function replace($tableName, array $data, array $keys)
     {
         if (empty($keys)) {
             throw new Doctrine_Connection_Exception('Not specified which fields are keys');
         }
         $condition = $values = array();
 
-        foreach ($fields as $fieldName => $value) {
-            $values[$fieldName] = $value;
+        foreach ($data as $columnName => $value) {
+            $values[$columnName] = $value;
 
-            if (in_array($fieldName, $keys)) {
+            if (in_array($columnName, $keys)) {
                 if ($value === null)
-                    throw new Doctrine_Connection_Exception('key value '.$fieldName.' may not be null');
+                    throw new Doctrine_Connection_Exception('key value '.$columnName.' may not be null');
 
-                $condition[] = $table->getColumnName($fieldName) . ' = ?';
+                $condition[] = $columnName . ' = ?';
                 $conditionValues[] = $value;
             }
         }
 
-        $query = 'DELETE FROM ' . $this->quoteIdentifier($table->getTableName())
+        $query = 'DELETE FROM ' . $this->quoteIdentifier($tableName)
                 . ' WHERE ' . implode(' AND ', $condition);
         $affectedRows = $this->exec($query, $conditionValues);
 
@@ -541,25 +541,22 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
     }
 
     /**
-     * deletes table row(s) matching the specified identifier
+     * Deletes table row(s) matching the specified identifier.
      *
      * @throws Doctrine_Connection_Exception    if something went wrong at the database level
      * @param string $table         The table to delete data from
      * @param array $identifier     An associateve array containing identifier fieldname-value pairs.
      * @return integer              The number of affected rows
-     *
-     * @todo First argument should just be a table name. Move the conversion from
-     *       field to column names one layer up.
      */
-    public function delete(Doctrine_ClassMetadata $table, array $identifier)
+    public function delete($tableName, array $identifier)
     {
         $criteria = array();
         foreach (array_keys($identifier) as $id) {
-            $criteria[] = $table->getColumnName($id) . ' = ?';
+            $criteria[] = $id . ' = ?';
         }
 
         $query = 'DELETE FROM '
-               . $this->quoteIdentifier($table->getTableName())
+               . $this->quoteIdentifier($tableName)
                . ' WHERE ' . implode(' AND ', $criteria);
 
         return $this->exec($query, array_values($identifier));
@@ -573,31 +570,28 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
      * @param array $values     An associateve array containing column-value pairs.
      * @return mixed            boolean false if empty value array was given,
      *                          otherwise returns the number of affected rows
-     *
-     * @todo First argument should just be a table name. Move the conversion from
-     *       field to column names one layer up.
      */
-    public function update(Doctrine_ClassMetadata $table, array $fields, array $identifier)
+    public function update($tableName, array $data, array $identifier)
     {
-        if (empty($fields)) {
+        if (empty($data)) {
             return false;
         }
 
         $set = array();
-        foreach ($fields as $fieldName => $value) {
+        foreach ($data as $columnName => $value) {
             if ($value instanceof Doctrine_Expression) {
-                $set[] = $table->getColumnName($fieldName) . ' = ' . $value->getSql();
-                unset($fields[$fieldName]);
+                $set[] = $columnName . ' = ' . $value->getSql();
+                unset($data[$columnName]);
             } else {
-                $set[] = $table->getColumnName($fieldName) . ' = ?';
+                $set[] = $columnName . ' = ?';
             }
         }
 
-        $params = array_merge(array_values($fields), array_values($identifier));
+        $params = array_merge(array_values($data), array_values($identifier));
 
-        $sql  = 'UPDATE ' . $this->quoteIdentifier($table->getTableName())
+        $sql  = 'UPDATE ' . $this->quoteIdentifier($tableName)
               . ' SET ' . implode(', ', $set)
-              . ' WHERE ' . implode(' = ? AND ', $table->getIdentifierColumnNames())
+              . ' WHERE ' . implode(' = ? AND ', array_keys($identifier))
               . ' = ?';
 
         return $this->exec($sql, $params);
@@ -610,27 +604,22 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
      * @param array $fields     An associateve array containing fieldname-value pairs.
      * @return mixed            boolean false if empty value array was given,
      *                          otherwise returns the number of affected rows
-     * 
-     * @todo First argument should just be a table name. Move the conversion from
-     *       field to column names one layer up.
      */
-    public function insert(Doctrine_ClassMetadata $table, array $fields)
+    public function insert($tableName, array $data)
     {
-        if (empty($fields)) {
+        if (empty($data)) {
             return false;
         }
-
-        $tableName = $table->getTableName();
 
         // column names are specified as array keys
         $cols = array();
         // the query VALUES will contain either expresions (eg 'NOW()') or ?
         $a = array();
-        foreach ($fields as $fieldName => $value) {
-            $cols[] = $this->quoteIdentifier($table->getColumnName($fieldName));
+        foreach ($data as $columnName => $value) {
+            $cols[] = $this->quoteIdentifier($columnName);
             if ($value instanceof Doctrine_Expression) {
                 $a[] = $value->getSql();
-                unset($fields[$fieldName]);
+                unset($data[$columnName]);
             } else {
                 $a[] = '?';
             }
@@ -643,8 +632,8 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
 
         $query .= implode(', ', $a) . ')';
         // prepare and execute the statement
-
-        return $this->exec($query, array_values($fields));
+        
+        return $this->exec($query, array_values($data));
     }
 
     /**

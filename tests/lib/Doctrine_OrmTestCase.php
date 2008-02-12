@@ -82,7 +82,7 @@ class Doctrine_OrmTestCase extends Doctrine_TestCase
         }
         
         foreach ($fixture['rows'] as $row) {
-            $conn->insert($classMetadata, $row);
+            $conn->insert($tableName, $row);
         }
     }
     

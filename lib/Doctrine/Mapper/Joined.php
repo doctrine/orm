@@ -9,34 +9,32 @@ class Doctrine_Mapper_Joined extends Doctrine_Mapper_Abstract
      *
      * @param Doctrine_Record $record   record to be inserted
      * @return boolean
-     * @todo Move to Doctrine_Table (which will become Doctrine_Mapper).
      */
     protected function _doInsert(Doctrine_Record $record)
     {
-        $table = $this->_classMetadata;
+        $class = $this->_classMetadata;
                     
         $dataSet = $this->_formatDataSet($record);
-        $component = $table->getClassName();
-
-        $classes = $table->getParentClasses();
+        $component = $class->getClassName();
+        $classes = $class->getParentClasses();
         array_unshift($classes, $component);
         
         try {
             $this->_conn->beginInternalTransaction();
             $identifier = null;
             foreach (array_reverse($classes) as $k => $parent) {
-                $parentTable = $this->_conn->getMetadata($parent);
+                $parentClass = $this->_conn->getClassMetadata($parent);
                 if ($k == 0) {
-                    $identifierType = $parentTable->getIdentifierType();
+                    $identifierType = $parentClass->getIdentifierType();
                     if ($identifierType == Doctrine::IDENTIFIER_AUTOINC) {
-                        $this->_conn->insert($parentTable, $dataSet[$parent]);
+                        $this->_conn->insert($parentClass->getTableName(), $dataSet[$parent]);
                         $identifier = $this->_conn->sequence->lastInsertId();
                     } else if ($identifierType == Doctrine::IDENTIFIER_SEQUENCE) {
-                        $seq = $record->getTable()->getOption('sequenceName');
+                        $seq = $record->getClassMetadata()->getTableOption('sequenceName');
                         if ( ! empty($seq)) {
                             $identifier = $this->_conn->sequence->nextId($seq);
-                            $dataSet[$parent][$parentTable->getIdentifier()] = $identifier;
-                            $this->_conn->insert($parentTable, $dataSet[$parent]);
+                            $dataSet[$parent][$parentClass->getIdentifier()] = $identifier;
+                            $this->_conn->insert($parentClass->getTableName(), $dataSet[$parent]);
                         }
                     } else {
                         throw new Doctrine_Mapper_Exception("Unsupported identifier type '$identifierType'.");
@@ -44,9 +42,9 @@ class Doctrine_Mapper_Joined extends Doctrine_Mapper_Abstract
                     $record->assignIdentifier($identifier);
                 } else {
                     foreach ((array) $record->identifier() as $id => $value) {
-                        $dataSet[$parent][$id] = $value;
+                        $dataSet[$parent][$parentClass->getColumnName($id)] = $value;
                     }
-                    $this->_conn->insert($parentTable, $dataSet[$parent]);
+                    $this->_conn->insert($parentClass->getTableName(), $dataSet[$parent]);
                 }
             }
             $this->_conn->commit();
@@ -68,10 +66,10 @@ class Doctrine_Mapper_Joined extends Doctrine_Mapper_Abstract
     protected function _doUpdate(Doctrine_Record $record)
     {
         $table = $this->_classMetadata;
-        $identifier = $record->identifier();                     
+        $identifier = $this->_convertFieldToColumnNames($record->identifier(), $this->_classMetadata);
         $dataSet = $this->_formatDataSet($record);
         $component = $table->getClassName();
-        $classes = $table->getOption('parents');
+        $classes = $table->getParentClasses();
         array_unshift($classes, $component);
 
         foreach ($record as $field => $value) {
@@ -84,8 +82,8 @@ class Doctrine_Mapper_Joined extends Doctrine_Mapper_Abstract
         }
 
         foreach (array_reverse($classes) as $class) {
-            $parentTable = $this->_conn->getMetadata($class);
-            $this->_conn->update($parentTable, $dataSet[$class], $identifier);
+            $parentTable = $this->_conn->getClassMetadata($class);
+            $this->_conn->update($parentTable->getTableName(), $dataSet[$class], $identifier);
         }
         
         $record->assignIdentifier(true);
@@ -100,18 +98,20 @@ class Doctrine_Mapper_Joined extends Doctrine_Mapper_Abstract
     protected function _doDelete(Doctrine_Record $record, Doctrine_Connection $conn)
     {
         try {
-            $table = $this->_classMetadata;
+            $class = $this->_classMetadata;
             $conn->beginInternalTransaction();
             $this->deleteComposites($record);
 
             $record->state(Doctrine_Record::STATE_TDIRTY);
 
-            foreach ($table->getParentClasses() as $parent) {
-                $parentTable = $conn->getClassMetadata($parent);
-                $conn->delete($parentTable, $record->identifier());
+            $identifier = $this->_convertFieldToColumnNames($record->identifier(), $class);
+
+            foreach ($class->getParentClasses() as $parent) {
+                $parentClass = $conn->getClassMetadata($parent);
+                $conn->delete($parentClass->getTableName(), $identifier);
             }
 
-            $conn->delete($table, $record->identifier());
+            $conn->delete($class->getTableName(), $identifier);
             $record->state(Doctrine_Record::STATE_TCLEAN);
 
             $this->removeRecord($record);
@@ -269,7 +269,7 @@ class Doctrine_Mapper_Joined extends Doctrine_Mapper_Abstract
                 if ( ! array_key_exists($fieldName, $array)) {
                     continue;
                 }
-                $dataSet[$class][$fieldName] = $array[$fieldName];
+                $dataSet[$class][$columnName] = $array[$fieldName];
             }
         }
         
