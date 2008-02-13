@@ -1076,10 +1076,11 @@ class Doctrine_Export extends Doctrine_Connection_Module
             $connectionName = Doctrine_Manager::getInstance()->getConnectionName($connection);
 
             if ( ! isset($connections[$connectionName])) {
-                $connections[$connectionName] = array();
-                $connections[$connectionName]['create_tables'] = array();
-                $connections[$connectionName]['create_sequences'] = array();
-                $connections[$connectionName]['alters'] = array();
+                $connections[$connectionName] = array(
+                    'create_tables' => array(),
+                    'create_sequences' => array(),
+                    'alters' => array()
+                );
             }
 
             $sql = $this->exportClassesSql(array($class));
