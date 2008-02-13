@@ -70,7 +70,7 @@ class Doctrine_Hydrator extends Doctrine_Hydrator_Abstract
         
         $this->_tableAliases = $tableAliases;
 
-        if ($hydrationMode === Doctrine::HYDRATE_ARRAY) {
+        if ($hydrationMode == Doctrine::HYDRATE_ARRAY) {
             $driver = new Doctrine_Hydrator_ArrayDriver();
         } else {
             $driver = new Doctrine_Hydrator_RecordDriver();
