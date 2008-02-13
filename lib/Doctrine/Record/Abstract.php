@@ -33,13 +33,15 @@ Doctrine::autoload('Doctrine_Access');
 abstract class Doctrine_Record_Abstract extends Doctrine_Access
 {
     /**
-     * @param Doctrine_Table $_table     reference to associated Doctrine_Table instance
+     * The metadata container that describes the entity class.
+     *
+     * @param Doctrine_ClassMetadata
      */
     protected $_table;
     
     /**
      *
-     * @var Doctrine_Mapper_Abstract
+     * @var Doctrine_Mapper
      */
     protected $_mapper;
     
@@ -77,6 +79,8 @@ abstract class Doctrine_Record_Abstract extends Doctrine_Access
     
     /**
      * Returns the mapper of the entity.
+     *
+     * @return Doctrine_Mapper
      */
     public function getMapper()
     {

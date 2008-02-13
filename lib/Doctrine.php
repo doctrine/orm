@@ -240,6 +240,7 @@ final class Doctrine
      * IMMEDIATE FETCHING
      * mode for immediate fetching
      * @see self::ATTR_FETCHMODE
+     * @deprecated???
      */
     const FETCHMODE_IMMEDIATE       = 0;
 
@@ -249,6 +250,7 @@ final class Doctrine
      * mode for batch fetching
      *
      * @see self::ATTR_FETCHMODE
+     * @deprecated???
      */
     const FETCHMODE_BATCH           = 1;
 
@@ -258,6 +260,7 @@ final class Doctrine
      * mode for offset fetching
      *
      * @see self::ATTR_FETCHMODE
+     * @deprecated???
      */
     const FETCHMODE_OFFSET          = 3;
 
@@ -267,6 +270,7 @@ final class Doctrine
      * mode for lazy offset fetching
      *
      * @see self::ATTR_FETCHMODE
+     * @deprecated???
      */
     const FETCHMODE_LAZY_OFFSET     = 4;
 
@@ -387,6 +391,7 @@ final class Doctrine
      *
      * mode for optimistic locking
      * @see self::ATTR_LOCK
+     * @deprecated???
      */
     const LOCK_OPTIMISTIC       = 0;
 
@@ -396,6 +401,7 @@ final class Doctrine
      * mode for pessimistic locking
      *
      * @see self::ATTR_LOCK
+     * @deprecated???
      */
     const LOCK_PESSIMISTIC      = 1;
 

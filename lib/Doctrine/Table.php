@@ -6,6 +6,7 @@
  *
  * @package Doctrine
  * @author  Roman Borschel <roman@code-factory.org>
+ * @todo Remove or is there use for such a class in the DBAL?
  */
 class Doctrine_Table extends Doctrine_Configurable implements Serializable
 {

@@ -52,6 +52,7 @@ Doctrine::autoload('Doctrine_Configurable');
  * @version     $Revision$
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  * @author      Lukas Smith <smith@pooteeweet.org> (MDB2 library)
+ * @author      Roman Borschel <roman@code-factory.org>
  */
 abstract class Doctrine_Connection extends Doctrine_Configurable implements Countable, IteratorAggregate
 {
@@ -63,16 +64,18 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
     protected $dbh;
 
     /**
-     * The metadata factory is used to retrieve the metadata of classes.
+     * The metadata factory is used to retrieve the metadata of entity classes.
      *
      * @var Doctrine_ClassMetadata_Factory
+     * @todo package:orm
      */
     protected $_metadataFactory;
 
     /**
      * An array of mapper objects currently maintained by this connection.
      *
-     * @var array  
+     * @var array
+     * @todo package:orm 
      */
     protected $_mappers = array();
 
@@ -202,6 +205,7 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
      *
      * @param Doctrine_Manager $manager                 the manager object
      * @param PDO|Doctrine_Adapter_Interface $adapter   database driver
+     * @todo Remove the dependency on the Manager for DBAL/ORM separation.
      */
     public function __construct(Doctrine_Manager $manager, $adapter, $user = null, $pass = null)
     {
@@ -985,7 +989,6 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
             if ( ! empty($params)) {
                 $stmt = $this->prepare($query);
                 $stmt->execute($params);
-                //echo "<br /><br />" . $query . "<br /><br />";
                 return $stmt->rowCount();
             } else {
                 $event = new Doctrine_Event($this, Doctrine_Event::CONN_EXEC, $query, $params);
@@ -994,7 +997,6 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
 
                 if ( ! $event->skipOperation) {
                     $count = $this->dbh->exec($query);
-                    //echo "<br /><br />" . $query . "<br /><br />";
                     $this->_count++;
                 }
                 $this->getAttribute(Doctrine::ATTR_LISTENER)->postExec($event);
@@ -1042,6 +1044,8 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
      *
      * @param mixed $name
      * @return boolean
+     * @deprecated
+     * @todo package:orm
      */
     public function hasTable($name)
     {
@@ -1052,6 +1056,7 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
      * Returns the metadata for a class.
      *
      * @return Doctrine_Metadata
+     * @deprecated Use getClassMetadata()
      * @todo package:orm
      */
     public function getMetadata($className)
@@ -1080,6 +1085,7 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
      * classes.
      *
      * @param $driver  The driver to use.
+     * @todo package:orm
      */
     public function setClassMetadataDriver($driver)
     {
@@ -1090,35 +1096,35 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
      * Gets a mapper for the specified domain class that is used to map instances of
      * the class between the relational database and their object representation.
      *
+     * @param string $entityClassName  The name of the entity class.
      * @return Doctrine_Mapper  The mapper object.
      * @todo package:orm  
      */
-    public function getMapper($className)
+    public function getMapper($entityClassName)
     {
-        if (isset($this->_mappers[$className])) {
-            return $this->_mappers[$className];
+        if (isset($this->_mappers[$entityClassName])) {
+            return $this->_mappers[$entityClassName];
         }
 
-        $customMapperClass = $className . 'Mapper';
-        $metadata = $this->getMetadata($className);
-        if (class_exists($customMapperClass, $this->getAttribute(Doctrine::ATTR_AUTOLOAD_TABLE_CLASSES)) &&
-                in_array('Doctrine_Mapper_Abstract', class_parents($customMapperClass))) {
-            $mapper = new $customMapperClass($className, $metadata);
+        $metadata = $this->getClassMetadata($entityClassName);
+        $customMapperClassName = $metadata->getCustomMapperClass();
+        if ($customMapperClassName !== null) {
+            $mapper = new $customMapperClassName($entityClassName, $metadata);
         } else {
             // instantiate correct mapper type
             $inheritanceType = $metadata->getInheritanceType();
             if ($inheritanceType == Doctrine::INHERITANCETYPE_JOINED) {
-                $mapper = new Doctrine_Mapper_Joined($className, $metadata);
+                $mapper = new Doctrine_Mapper_Joined($entityClassName, $metadata);
             } else if ($inheritanceType == Doctrine::INHERITANCETYPE_SINGLE_TABLE) {
-                $mapper = new Doctrine_Mapper_SingleTable($className, $metadata);
+                $mapper = new Doctrine_Mapper_SingleTable($entityClassName, $metadata);
             } else if ($inheritanceType == Doctrine::INHERITANCETYPE_TABLE_PER_CLASS) {
-                $mapper = new Doctrine_Mapper_TablePerClass($className, $metadata);
+                $mapper = new Doctrine_Mapper_TablePerClass($entityClassName, $metadata);
             } else {
                 throw new Doctrine_Connection_Exception("Unknown inheritance type '$inheritanceType'. Can't create mapper.");
             }
         }
 
-        $this->_mappers[$className] = $mapper;
+        $this->_mappers[$entityClassName] = $mapper;
 
         return $mapper;
     }

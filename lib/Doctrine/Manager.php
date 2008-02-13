@@ -330,6 +330,7 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
      *
      * @param array $dsn An array of dsn information
      * @return array The array parsed
+     * @todo package:dbal
      */
     public function parsePdoDsn($dsn)
     {
@@ -367,6 +368,7 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
      *
      * @param string $dsn
      * @return array Parsed contents of DSN
+     * @todo package:dbal
      */
     public function parseDsn($dsn)
     {
@@ -599,6 +601,7 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
      * @see Doctrine_Connection::getTable()
      * @param string $componentName
      * @return Doctrine_Table
+     * @deprecated
      */
     public function getTable($componentName)
     {
@@ -698,6 +701,7 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
      * returns the number of opened connections
      *
      * @return integer
+     * @todo This is unintuitive.
      */
     public function count()
     {
@@ -738,6 +742,7 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
      *
      * @param string $specifiedConnections Array of connections you wish to create the database for
      * @return void
+     * @todo package:dbal
      */
     public function createDatabases($specifiedConnections = array())
     {
@@ -765,6 +770,7 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
      *
      * @param string $specifiedConnections Array of connections you wish to drop the database for
      * @return void
+     * @todo package:dbal
      */
     public function dropDatabases($specifiedConnections = array())
     {

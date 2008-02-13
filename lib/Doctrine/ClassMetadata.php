@@ -37,6 +37,13 @@ class Doctrine_ClassMetadata extends Doctrine_Configurable implements Serializab
     protected $_entityName;
     
     /**
+     * The name of the custom mapper class used for the entity class.
+     *
+     * @var string
+     */
+    protected $_customMapperClassName;
+    
+    /**
      *
      * @var Doctrine_Connection
      */
@@ -49,9 +56,9 @@ class Doctrine_ClassMetadata extends Doctrine_Configurable implements Serializab
     
     /**
      * The field names of all fields that are part of the identifier/primary key
-     * of the described class.
+     * of the described entity class.
      *
-     * @var array 
+     * @var array
      */
     protected $_identifier = array();
     
@@ -134,8 +141,9 @@ class Doctrine_ClassMetadata extends Doctrine_Configurable implements Serializab
     /**
      * An array of field names. used to look up field names from column names.
      * Keys are column names and values are field names.
+     * This is the reverse lookup map of $_columnNames.
      *
-     * @var array          
+     * @var array
      */
     protected $_fieldNames = array();
     
@@ -161,10 +169,10 @@ class Doctrine_ClassMetadata extends Doctrine_Configurable implements Serializab
     protected $_tree;
     
     /**
-     * Cached column count, Doctrine_Record uses this column count in when
+     * Cached column count, Doctrine_Record uses this column count when
      * determining its state.
      *
-     * @var integer           
+     * @var integer
      */
     protected $_columnCount;
     
@@ -201,8 +209,8 @@ class Doctrine_ClassMetadata extends Doctrine_Configurable implements Serializab
     protected $_options      = array(
             'treeImpl'       => null,
             'treeOptions'    => null,
-            'subclasses'     => array(),
             'queryParts'     => array(),
+            'subclasses'     => array(),
             'parents'        => array()
             );
     
@@ -1589,7 +1597,32 @@ class Doctrine_ClassMetadata extends Doctrine_Configurable implements Serializab
     }
     
     /**
+     * Registers a custom mapper for the entity class.
      *
+     * @param string $mapperClassName  The class name of the custom mapper.
+     */
+    public function setCustomMapperClass($mapperClassName)
+    {
+        if ( ! is_subclass_of($mapperClassName, 'Doctrine_Mapper')) {
+            throw new Doctrine_ClassMetadata_Exception("The custom mapper must be a subclass"
+                    . " of Doctrine_Mapper.");
+        }
+        $this->_customMapperClassName = $mapperClassName;
+    }
+    
+    /**
+     * Gets the name of the custom mapper class used for the entity class.
+     *
+     * @return string|null  The name of the custom mapper class or NULL if the entity
+     *                      class does not have a custom mapper class.
+     */
+    public function getCustomMapperClass()
+    {
+        return $this->_customMapperClassName;
+    }
+    
+    /**
+     * @todo Thoughts & Implementation.
      */
     public function setType($type)
     {
@@ -1599,7 +1632,9 @@ class Doctrine_ClassMetadata extends Doctrine_Configurable implements Serializab
     }
     
     /**
-     * @todo Implementation.
+     * @todo Implementation. Immutable entities can not be updated or deleted once
+     *       they are created. This means the entity can only be modified as long as it's
+     *       in transient state (TCLEAN, TDIRTY).
      */
     public function isImmutable()
     {
