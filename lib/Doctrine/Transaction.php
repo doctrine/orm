@@ -35,17 +35,17 @@ Doctrine::autoload('Doctrine_Connection_Module');
 class Doctrine_Transaction extends Doctrine_Connection_Module
 {
     /**
-     * Doctrine_Transaction is in sleep state when it has no active transactions
+     * A transaction is in sleep state when it is not active.
      */
     const STATE_SLEEP       = 0;
 
     /**
-     * Doctrine_Transaction is in active state when it has one active transaction
+     * A transaction is in active state when it is active.
      */
     const STATE_ACTIVE      = 1;
 
     /**
-     * Doctrine_Transaction is in busy state when it has multiple active transactions
+     * A transaction is in busy state when it is active and has a nesting level > 1.
      */
     const STATE_BUSY        = 2;
 
@@ -63,24 +63,27 @@ class Doctrine_Transaction extends Doctrine_Connection_Module
      *                                      lower or equal to the overall nesting level.
      *                                      A level of 0 means there is currently no active
      *                                      transaction that was initiated by Doctrine itself.
+     * @todo package:orm. I guess the DBAL does not start transactions on its own?
      */
     protected $_internalNestingLevel = 0;
 
     /**
      * @var array $invalid                  an array containing all invalid records within this transaction
      * @todo What about a more verbose name? $invalidRecords?
+     *       package:orm
      */
-    protected $invalid          = array();
+    protected $invalid = array();
 
     /**
      * @var array $savepoints               an array containing all savepoints
      */
-    protected $savePoints       = array();
+    protected $savePoints = array();
 
     /**
      * @var array $_collections             an array of Doctrine_Collection objects that were affected during the Transaction
+     * @todo package:orm
      */
-    protected $_collections     = array();
+    protected $_collections = array();
 
     /**
      * addCollection
@@ -92,6 +95,7 @@ class Doctrine_Transaction extends Doctrine_Connection_Module
      *
      * @param Doctrine_Collection $coll     a collection to be added
      * @return Doctrine_Transaction         this object
+     * @todo package:orm
      */
     public function addCollection(Doctrine_Collection $coll)
     {
@@ -128,6 +132,7 @@ class Doctrine_Transaction extends Doctrine_Connection_Module
      * @param Doctrine_Record $record
      * @return boolean        false if record already existed in invalid records list,
      *                        otherwise true
+     * @todo package:orm
      */
     public function addInvalid(Doctrine_Record $record)
     {
@@ -143,6 +148,7 @@ class Doctrine_Transaction extends Doctrine_Connection_Module
     * Return the invalid records
     *
     * @return array An array of invalid records
+    * @todo package:orm
     */ 
     public function getInvalid()
     {
@@ -154,6 +160,7 @@ class Doctrine_Transaction extends Doctrine_Connection_Module
      * get the current transaction nesting level
      *
      * @return integer
+     * @todo Name suggestion: getLevel(). $transaction->getTransactionLevel() looks odd.
      */
     public function getTransactionLevel()
     {
@@ -165,6 +172,7 @@ class Doctrine_Transaction extends Doctrine_Connection_Module
      * get the current internal transaction nesting level
      *
      * @return integer
+     * @todo package:orm. I guess the DBAL does not start transactions itself?
      */
     public function getInternalTransactionLevel()
     {
@@ -186,6 +194,7 @@ class Doctrine_Transaction extends Doctrine_Connection_Module
      * @param string $savepoint                 name of a savepoint to set
      * @throws Doctrine_Transaction_Exception   if the transaction fails at database level     
      * @return integer                          current transaction nesting level
+     * @todo Name suggestion: begin(). $transaction->beginTransaction() looks odd.
      */
     public function beginTransaction($savepoint = null)
     {
@@ -267,9 +276,6 @@ class Doctrine_Transaction extends Doctrine_Connection_Module
             if ($this->_nestingLevel == 1 || $this->_internalNestingLevel == 1) {
                 if ( ! empty($this->invalid)) {
                     if ($this->_internalNestingLevel == 1) {
-                        // transaction was started by doctrine, so we are responsible
-                        // for a rollback
-                        $this->rollback();
                         $tmp = $this->invalid;
                         $this->invalid = array();
                         throw new Doctrine_Validator_Exception($tmp);
@@ -295,7 +301,7 @@ class Doctrine_Transaction extends Doctrine_Connection_Module
             if ($this->_nestingLevel > 0) {
                 $this->_nestingLevel--;
             }            
-            if ($this->_internalNestingLevel > 0) {
+            if ($this->_internalNestingLevel > 0) {      
                 $this->_internalNestingLevel--;
             } 
         }
@@ -316,12 +322,6 @@ class Doctrine_Transaction extends Doctrine_Connection_Module
      * @param string $savepoint                 name of a savepoint to rollback to   
      * @throws Doctrine_Transaction_Exception   if the rollback operation fails at database level
      * @return boolean                          false if rollback couldn't be performed, true otherwise
-     * @todo Shouldnt this method only commit a rollback if the transactionLevel is 1
-     *       (STATE_ACTIVE)? Explanation: Otherwise a rollback that is triggered from inside doctrine
-     *       in an (emulated) nested transaction would lead to a complete database level
-     *       rollback even though the client code did not yet want to do that.
-     *       In other words: if the user starts a transaction doctrine shouldnt roll it back.
-     *       Doctrine should only roll back transactions started by doctrine. Thoughts?
      */
     public function rollback($savepoint = null)
     {
@@ -341,19 +341,14 @@ class Doctrine_Transaction extends Doctrine_Connection_Module
 
         if ( ! is_null($savepoint)) {
             $this->_nestingLevel -= $this->removeSavePoints($savepoint);
-
             $event = new Doctrine_Event($this, Doctrine_Event::SAVEPOINT_ROLLBACK);
-
             $listener->preSavepointRollback($event);
-            
             if ( ! $event->skipOperation) {
                 $this->rollbackSavePoint($savepoint);
             }
-
             $listener->postSavepointRollback($event);
         } else {
             $event = new Doctrine_Event($this, Doctrine_Event::TX_ROLLBACK);
-    
             $listener->preTransactionRollback($event);
             
             if ( ! $event->skipOperation) {
@@ -365,7 +360,6 @@ class Doctrine_Transaction extends Doctrine_Connection_Module
                     throw new Doctrine_Transaction_Exception($e->getMessage());
                 }
             }
-
             $listener->postTransactionRollback($event);
         }
 

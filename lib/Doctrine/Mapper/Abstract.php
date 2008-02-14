@@ -749,12 +749,7 @@ abstract class Doctrine_Mapper_Abstract extends Doctrine_Configurable implements
             $record->state($state);
             $conn->commit();
         } catch (Exception $e) {
-            // save() calls can be nested recursively and exceptions bubble up, so check
-            // if there are any internal transactions left that need to be rolled back 
-            // before doing so.
-            if ($conn->getInternalTransactionLevel() > 0) {
-                $conn->rollback();
-            } 
+            $conn->rollback();
             throw $e;
         }
         
