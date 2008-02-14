@@ -70,7 +70,7 @@ class Doctrine_Template_Listener_Sluggable extends Doctrine_Record_Listener
         } else {
             $value = '';
             foreach ($this->_options['fields'] as $field) {
-                $value = $record->$field . ' ';
+                $value .= $record->$field . ' ';
             }
         }
 
