@@ -38,19 +38,19 @@ abstract class Doctrine_Record_Abstract extends Doctrine_Access
      * @param Doctrine_ClassMetadata
      */
     protected $_table;
-    
+
     /**
      *
      * @var Doctrine_Mapper
      */
     protected $_mapper;
-    
+
     /**
      * @deprecated
      */
     public function setTableDefinition()
     {}
-    
+
     /**
      * @deprecated
      */
@@ -76,7 +76,7 @@ abstract class Doctrine_Record_Abstract extends Doctrine_Access
     {
         return $this->_table;
     }
-    
+
     /**
      * Returns the mapper of the entity.
      *
@@ -122,12 +122,12 @@ abstract class Doctrine_Record_Abstract extends Doctrine_Access
 
         return $this;
     }
-    
+
     public function setAttribute($attr, $value)
     {
         $this->_table->setAttribute($attr, $value);
     }
-    
+
     /**
      * attribute
      * sets or retrieves an option
@@ -151,4 +151,5 @@ abstract class Doctrine_Record_Abstract extends Doctrine_Access
             $this->_table->setAttribute($attr, $value);
         }    
     }
+
 }

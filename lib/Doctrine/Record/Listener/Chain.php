@@ -84,8 +84,14 @@ class Doctrine_Record_Listener_Chain extends Doctrine_Access implements Doctrine
      * @param Doctrine_Record_Listener $listener    listener to be added
      * @return Doctrine_Record_Listener_Chain       this object
      */
-    public function set($key, Doctrine_EventListener $listener)
+    public function set($key, $listener)
     {
+        if ( ! ($listener instanceof Doctrine_Record_Listener_Interface) &&
+             ! ($listener instanceof Doctrine_Overloadable)) {
+            
+            throw new Doctrine_EventListener_Exception("Couldn't add eventlistener. Record listeners should implement either Doctrine_EventListener_Interface or Doctrine_Overloadable");
+        }
+ 
         $this->_listeners[$key] = $listener;
     }
 

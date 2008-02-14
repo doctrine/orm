@@ -463,8 +463,12 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
      * @param Doctrine_Record $record
      * @return void
      */
-    public function set($key, Doctrine_Record $record)
+    public function set($key, $record)
     {
+        if( ! $record instanceOf Doctrine_Record) {
+            throw new Doctrine_Record_Exception('Value variable in set is not an instance of Doctrine_Record');
+        }
+
         if (isset($this->referenceField)) {
             $record->set($this->referenceField, $this->reference, false);
         }
@@ -477,8 +481,12 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
      * @param string $key                          optional key for the record
      * @return boolean
      */
-    public function add(Doctrine_Record $record, $key = null)
+    public function add($record, $key = null)
     {
+        if( ! $record instanceOf Doctrine_Record) {
+            throw new Doctrine_Record_Exception('Value variable in set is not an instance of Doctrine_Record');
+        }
+
         if (isset($this->referenceField)) {
             $value = $this->reference->get($this->relation->getLocalFieldName());
 

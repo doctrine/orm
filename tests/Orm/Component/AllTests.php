@@ -7,6 +7,7 @@ require_once 'lib/DoctrineTestInit.php';
 
 // Tests
 require_once 'Orm/Component/TestTest.php';
+require_once 'Orm/Component/AccessTest.php';
 
 class Orm_Component_AllTests
 {
@@ -19,7 +20,8 @@ class Orm_Component_AllTests
     {
         $suite = new Doctrine_TestSuite('Doctrine Orm Component');
 
-        $suite->addTestSuite('Orm_Component_TestTest');
+//        $suite->addTestSuite('Orm_Component_TestTest');
+				$suite->addTestSuite('Orm_Component_AccessTest');
 
         return $suite;
     }

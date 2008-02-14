@@ -1043,7 +1043,7 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
      * @param string $name
      * @return void
      */
-    public function __unset($fieldName)
+    public function remove($fieldName)
     {
         if (isset($this->_data[$fieldName])) {
             $this->_data[$fieldName] = array();

@@ -110,29 +110,7 @@ class Doctrine_Template extends Doctrine_Record_Abstract
     {
         return $this->_plugin;
     }
-
-    /**
-     * get 
-     * 
-     * @param mixed $name 
-     * @return void
-     */
-    public function get($name) 
-    {
-        throw new Doctrine_Exception("Templates doesn't support accessors.");
-    }
-
-    /**
-     * set 
-     * 
-     * @param mixed $name 
-     * @param mixed $value 
-     * @return void
-     */
-    public function set($name, $value)
-    {
-        throw new Doctrine_Exception("Templates doesn't support accessors.");
-    }
+ 
     /**
      * setUp 
      * 
