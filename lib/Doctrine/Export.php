@@ -748,7 +748,7 @@ class Doctrine_Export extends Doctrine_Connection_Module
             }
 
             if ($field['type'] === 'boolean') {
-                $fields['default'] = $this->conn->convertBooleans($field['default']);
+                $field['default'] = $this->conn->convertBooleans($field['default']);
             }
             $default = ' DEFAULT ' . $this->conn->quote($field['default'], $field['type']);
         }
