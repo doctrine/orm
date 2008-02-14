@@ -147,4 +147,45 @@ class Orm_Component_AccessTest extends Doctrine_OrmTestCase
 
     }
 
+    /**
+     * @test
+     * @expectedException Doctrine_Exception
+     */
+     public function shouldNotBeAbleToUseContainsWhenNotImplemented()
+     {
+         $stub = new AccessStub();
+         isset($stub['foo']);
+     }
+
+    /**
+     * @test
+     * @expectedException Doctrine_Exception
+     */
+     public function shouldNotBeAbleToUseSetWhenNotImplemented()
+     {
+         $stub = new AccessStub();
+         $stub['foo']  = 'foo';
+     }
+
+    /**
+     * @test
+     * @expectedException Doctrine_Exception
+     */
+     public function shouldNotBeAbleToUseUnsetWhenNotImplemented()
+     {
+         $stub = new AccessStub();
+         unset($stub['foo']);
+     }
+
+    /**
+     * @test
+     * @expectedException Doctrine_Exception
+     */
+     public function shouldNotBeAbleToUseGetWhenNotImplemented()
+     {
+         $stub = new AccessStub();
+         $stub['foo'];
+     }
 }
+
+class AccessStub extends Doctrine_Access {}
