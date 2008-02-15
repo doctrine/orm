@@ -51,3 +51,5 @@ spl_autoload_register(array('Doctrine', 'autoload'));
 Doctrine_Manager::connection(DSN, 'sandbox');
 
 Doctrine_Manager::getInstance()->setAttribute('model_loading', 'conservative');
+
+Doctrine::loadModels('models');
