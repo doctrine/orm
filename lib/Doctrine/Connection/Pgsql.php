@@ -106,7 +106,7 @@ class Doctrine_Connection_Pgsql extends Doctrine_Connection_Common
     {
         if (is_array($item)) {
             foreach ($item as $key => $value) {
-                if (is_bool($value) || is_numeric($item)) {
+                if (is_bool($value)) {
                     $item[$key] = ($value) ? 'true' : 'false';
                 }
             }
