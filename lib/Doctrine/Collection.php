@@ -184,7 +184,7 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
         unset($vars['expanded']);
         unset($vars['generator']);
 
-        $vars['_table'] = $vars['_table']->getComponentName();
+        $vars['_mapper'] = $vars['_mapper']->getComponentName();
 
         return serialize($vars);
     }
@@ -194,6 +194,8 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
      * This method is automatically called everytime a Doctrine_Collection object is unserialized.
      *
      * Part of the implementation of the Serializable interface.
+     *
+     * @param string $serialized The serialized data
      *
      * @return void
      */
@@ -241,7 +243,7 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
      */
     public function getKeyColumn()
     {
-        return $this->column;
+        return $this->keyColumn;
     }
 
     /**
@@ -515,6 +517,7 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
             return true;
         }
 
+         // why is this not checked when the keyColumn is set? 
         if (isset($this->keyColumn)) {
             $value = $record->get($this->keyColumn);
             if ($value === null) {

@@ -5,6 +5,6 @@ class CmsUser extends Doctrine_Record
   {
       $class->setColumn('id', 'integer', 4, array('primary' => true, 'autoincrement' => true));
       $class->setColumn('username', 'string', 255);
-      $class->setColumn('username', 'string', 255);
+      $class->setColumn('name', 'string', 255);
   }
 }
