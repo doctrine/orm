@@ -63,10 +63,16 @@ abstract class Doctrine_Query_Condition extends Doctrine_Query_Part
                 }
                 $r = implode(' OR ', $ret);
             } else {
+                // Fix for #710
                 if (substr($parts[0],0,1) == '(' && substr($parts[0], -1) == ')') {
                     return $this->parse(substr($parts[0], 1, -1));
                 } else {
-                    return $this->load($parts[0]);
+                    // Processing NOT here
+                    if (strtoupper(substr($parts[0], 0, 4)) === 'NOT ') {
+                        $r = 'NOT ('.$this->parse(substr($parts[0], 4)).')';
+                    } else {
+                        return $this->load($parts[0]);
+                    }
                 }
             }
         }
