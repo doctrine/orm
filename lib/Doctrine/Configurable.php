@@ -385,6 +385,19 @@ abstract class Doctrine_Configurable extends Doctrine_Locator_Injectable
      */
     public function getAttribute($attribute)
     {
+        if (is_string($attribute)) {
+            $upper = strtoupper($attribute);
+
+            $const = 'Doctrine::ATTR_' . $upper; 
+
+            if (defined($const)) {
+                $attribute = constant($const);
+                $this->_state = $attribute;
+            } else {
+                throw new Doctrine_Exception('Unknown attribute: "' . $attribute . '"');
+            }
+        }
+
         $attribute = (int) $attribute;
 
         if ($attribute < 0) {
