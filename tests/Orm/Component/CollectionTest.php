@@ -98,7 +98,7 @@ class Orm_Component_CollectionTest extends Doctrine_OrmTestCase
     {
         $serializedFormCollection='C:19:"Doctrine_Collection":158:{a:7:{s:4:"data";a:0:{}s:7:"_mapper";s:9:"ForumUser";s:9:"_snapshot";a:0:{}s:14:"referenceField";N;s:9:"keyColumn";N;s:8:"_locator";N;s:10:"_resources";a:0:{}}}';
         $coll = unserialize($serializedFormCollection);
-        $this->assertEquals(Doctrine_Collection, get_class($coll));
+        $this->assertEquals('Doctrine_Collection', get_class($coll));
     }
 
     /**

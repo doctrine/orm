@@ -480,25 +480,24 @@ class Doctrine_ClassMetadata extends Doctrine_Configurable implements Serializab
     }
     
     /**
-     * addMappedColumn
+     * Maps a column of the class' database table to a property of the entity.
      *
-     * @param string $name
-     * @param string $type
-     * @param integer $length
+     * @param string $name      The name of the column to map. Syntax: columnName [as propertyName].
+     *                          The property name is optional. If not used the column will be 
+     *                          mapped to a property with the same name.
+     * @param string $type      The type of the column.
+     * @param integer $length   The length of the column.
      * @param mixed $options
-     * @param boolean $prepend   Whether to prepend or append the new column to the column list.
-     *                           By default the column gets appended.
+     * @param boolean $prepend  Whether to prepend or append the new column to the column list.
+     *                          By default the column gets appended.
+     *
      * @throws Doctrine_ClassMetadata_Exception If trying use wrongly typed parameter.
      */
     public function mapColumn($name, $type, $length = null, $options = array(), $prepend = false)
     {
-        if (is_string($options)) {
-            $options = explode('|', $options);
-        }
-
         foreach ($options as $k => $option) {
             if (is_numeric($k)) {
-                if ( ! empty($option)) {
+                if ( ! empty($option) && $option !== false) {
                     $options[$option] = true;
                 }
                 unset($options[$k]);
@@ -598,7 +597,7 @@ class Doctrine_ClassMetadata extends Doctrine_Configurable implements Serializab
     
     /**
      * hasDefaultValues
-     * returns true if this table has default values, otherwise false
+     * returns true if this class has default values, otherwise false
      *
      * @return boolean
      */
@@ -609,7 +608,7 @@ class Doctrine_ClassMetadata extends Doctrine_Configurable implements Serializab
 
     /**
      * getDefaultValueOf
-     * returns the default value(if any) for given column
+     * returns the default value(if any) for given field
      *
      * @param string $fieldName
      * @return mixed

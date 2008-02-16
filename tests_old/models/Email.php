@@ -1,9 +1,9 @@
 <?php
-class Email extends Doctrine_Record 
+class Email extends Doctrine_Record
 {
-    public static function initMetadata($class) 
+    public static function initMetadata($class)
     {
-        $class->setColumn('address', 'string', 150, 'email|unique');
+        $class->setColumn('address', 'string', 150, array('email', 'unique' => true));
     }
     
     

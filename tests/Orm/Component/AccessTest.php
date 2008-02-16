@@ -20,8 +20,7 @@
  */
 
 /**
- * Doctrine
- * the base class of Doctrine framework
+ * Testcase for basic accessor/mutator functionality.
  *
  * @package     Doctrine
  * @author      Bjarte Stien Karlsen <doctrine@bjartek.org>
@@ -31,6 +30,8 @@
  * @version     $Revision: 3754 $
  */
 require_once 'lib/DoctrineTestInit.php';
+
+class AccessStub extends Doctrine_Access {}
 
 class Orm_Component_AccessTest extends Doctrine_OrmTestCase
 {
@@ -66,7 +67,7 @@ class Orm_Component_AccessTest extends Doctrine_OrmTestCase
      */
     public function shouldSetSingleValueInRecord()
     {
-        $this->user->username ='meus';
+        $this->user->username = 'meus';
         $this->assertEquals('meus', $this->user->username);
         $this->assertEquals('meus', $this->user['username']);
     }
@@ -106,7 +107,7 @@ class Orm_Component_AccessTest extends Doctrine_OrmTestCase
      */
     public function shouldNotBeAbleToSetNonExistantField()
     {
-        $this->user->rat ='meus';
+        $this->user->rat = 'meus';
     }
 
     /**
@@ -115,7 +116,7 @@ class Orm_Component_AccessTest extends Doctrine_OrmTestCase
      */
     public function shouldNotBeAbleToSetNonExistantFieldWithOffset()
     {
-        $this->user['rat'] ='meus';
+        $this->user['rat'] = 'meus';
     }
 
     /**
@@ -126,7 +127,7 @@ class Orm_Component_AccessTest extends Doctrine_OrmTestCase
     {
         $this->user->setArray(array(
             'rat' => 'meus',
-            'id'       => 22));
+            'id'  => 22));
 
     }
 
@@ -138,7 +139,6 @@ class Orm_Component_AccessTest extends Doctrine_OrmTestCase
     {
         $col = new Doctrine_Collection('ForumUser');
         $this->assertEquals(0, count($col));
-        $this->assertFalse(isset($coll[0]));
         $this->assertFalse(isset($coll[0]));
     }
 
@@ -218,5 +218,3 @@ class Orm_Component_AccessTest extends Doctrine_OrmTestCase
          $stub['foo'];
      }
 }
-
-class AccessStub extends Doctrine_Access {}
