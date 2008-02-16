@@ -14,13 +14,13 @@ class ForumUser extends Doctrine_Record
         $class->setSubclasses(array('ForumAdministrator'));
         
         // the discriminator column
-        $class->addMappedColumn('dtype', 'string', 50);
+        $class->mapColumn('dtype', 'string', 50);
         
         // property mapping
-        $class->addMappedColumn('id', 'integer', 4, array(
+        $class->mapColumn('id', 'integer', 4, array(
                 'primary' => true,
                 'autoincrement' => true));
-        $class->addMappedColumn('username', 'string', 50);
+        $class->mapColumn('username', 'string', 50);
         
     }
 }

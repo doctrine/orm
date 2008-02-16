@@ -480,14 +480,6 @@ class Doctrine_ClassMetadata extends Doctrine_Configurable implements Serializab
     }
     
     /**
-     * @deprecated
-     */
-    public function mapField($name, $type, $length = null, $options = array(), $prepend = false)
-    {
-        return $this->setColumn($name, $type, $length, $options, $prepend);
-    }
-    
-    /**
      * addMappedColumn
      *
      * @param string $name
@@ -497,9 +489,8 @@ class Doctrine_ClassMetadata extends Doctrine_Configurable implements Serializab
      * @param boolean $prepend   Whether to prepend or append the new column to the column list.
      *                           By default the column gets appended.
      * @throws Doctrine_ClassMetadata_Exception If trying use wrongly typed parameter.
-     * @deprecated
      */
-    public function addMappedColumn($name, $type, $length = null, $options = array(), $prepend = false)
+    public function mapColumn($name, $type, $length = null, $options = array(), $prepend = false)
     {
         if (is_string($options)) {
             $options = explode('|', $options);
@@ -598,11 +589,11 @@ class Doctrine_ClassMetadata extends Doctrine_Configurable implements Serializab
      *                           By default the column gets appended.
      * @throws Doctrine_Table_Exception     if trying use wrongly typed parameter
      * @return void
-     * @deprecated
+     * @deprecated Use mapColumn()
      */
     public function setColumn($name, $type, $length = null, $options = array(), $prepend = false)
     {
-        return $this->addMappedColumn($name, $type, $length, $options, $prepend);
+        return $this->mapColumn($name, $type, $length, $options, $prepend);
     }
     
     /**

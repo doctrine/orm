@@ -127,7 +127,7 @@ class Doctrine_ClassMetadata_Factory
         foreach ($parentClass->getColumns() as $name => $definition) {
             $fullName = "$name as " . $parentClass->getFieldName($name);
             $definition['inherited'] = true;
-            $subClass->addMappedColumn($fullName, $definition['type'], $definition['length'],
+            $subClass->mapColumn($fullName, $definition['type'], $definition['length'],
                     $definition);
         }
     }

@@ -22,7 +22,7 @@ class Doctrine_Metadata_Factory_TestCase extends Doctrine_UnitTestCase
 
     public function testMetadataSetupOnClassTableInheritanceHierarchy()
     {        
-        $userClass = $this->conn->getMetadata('Metadata_User');
+        $userClass = $this->conn->getClassMetadata('Metadata_User');
         $this->assertTrue($userClass instanceof Doctrine_ClassMetadata);
         $this->assertEqual('cti_user', $userClass->getTableName());
         $this->assertEqual(4, count($userClass->getFields()));
@@ -156,10 +156,10 @@ class Metadata_User extends Doctrine_Record
                 )
         );
         $class->setSubclasses(array('Metadata_Manager', 'Metadata_Customer', 'Metadata_SuperManager'));
-        $class->mapField('cti_id as id', 'integer', 4, array('primary' => true, 'autoincrement' => true));
-        $class->mapField('cti_foo as foo', 'integer', 4);
-        $class->mapField('cti_name as name', 'string', 50);
-        $class->mapField('type', 'integer', 1);
+        $class->mapColumn('cti_id as id', 'integer', 4, array('primary' => true, 'autoincrement' => true));
+        $class->mapColumn('cti_foo as foo', 'integer', 4);
+        $class->mapColumn('cti_name as name', 'string', 50);
+        $class->mapColumn('type', 'integer', 1);
         
         //$class->setNamedQuery('findByName', 'SELECT u.* FROM User u WHERE u.name = ?');
     }
@@ -171,7 +171,7 @@ class Metadata_Manager extends Metadata_User
     {
         $class->setTableName('cti_manager');
         $class->setSubclasses(array('Metadata_SuperManager'));
-        $class->mapField('ctim_salary as salary', 'varchar', 50, array());
+        $class->mapColumn('ctim_salary as salary', 'varchar', 50, array());
     }
 }
 
@@ -180,7 +180,7 @@ class Metadata_Customer extends Metadata_User
     public static function initMetadata(Doctrine_ClassMetadata $class)
     {
         $class->setTableName('cti_customer');
-        $class->setColumn('ctic_bonuspoints as bonuspoints', 'varchar', 50, array());
+        $class->mapColumn('ctic_bonuspoints as bonuspoints', 'varchar', 50, array());
     }
 }
 
@@ -189,7 +189,7 @@ class Metadata_SuperManager extends Metadata_Manager
     public static function initMetadata(Doctrine_ClassMetadata $class)
     {
         $class->setTableName('cti_supermanager');
-        $class->mapField('ctism_gosutitle as gosutitle', 'varchar', 50, array());
+        $class->mapColumn('ctism_gosutitle as gosutitle', 'varchar', 50, array());
     }
 }
 
@@ -210,10 +210,10 @@ class Metadata_STI_User extends Doctrine_Record
                 )
         );
         $class->setSubclasses(array('Metadata_STI_Manager', 'Metadata_STI_Customer', 'Metadata_STI_SuperManager'));
-        $class->mapField('cti_id as id', 'integer', 4, array('primary' => true, 'autoincrement' => true));
-        $class->mapField('cti_foo as foo', 'integer', 4);
-        $class->mapField('cti_name as name', 'string', 50);
-        $class->mapField('type', 'integer', 1);
+        $class->mapColumn('cti_id as id', 'integer', 4, array('primary' => true, 'autoincrement' => true));
+        $class->mapColumn('cti_foo as foo', 'integer', 4);
+        $class->mapColumn('cti_name as name', 'string', 50);
+        $class->mapColumn('type', 'integer', 1);
         
         //$class->setNamedQuery('findByName', 'SELECT u.* FROM User u WHERE u.name = ?');
     }
@@ -225,7 +225,7 @@ class Metadata_STI_Manager extends Metadata_STI_User
     {
         $class->setTableName('cti_manager');
         $class->setSubclasses(array('Metadata_STI_SuperManager'));
-        $class->mapField('ctim_salary as salary', 'varchar', 50, array());
+        $class->mapColumn('ctim_salary as salary', 'varchar', 50, array());
     }
 }
 
@@ -234,7 +234,7 @@ class Metadata_STI_Customer extends Metadata_STI_User
     public static function initMetadata($class)
     {
         $class->setTableName('cti_customer');
-        $class->setColumn('ctic_bonuspoints as bonuspoints', 'varchar', 50, array());
+        $class->mapColumn('ctic_bonuspoints as bonuspoints', 'varchar', 50, array());
     }
 }
 
@@ -243,7 +243,7 @@ class Metadata_STI_SuperManager extends Metadata_STI_Manager
     public static function initMetadata($class)
     {
         $class->setTableName('cti_supermanager');
-        $class->mapField('ctism_gosutitle as gosutitle', 'varchar', 50, array());
+        $class->mapColumn('ctism_gosutitle as gosutitle', 'varchar', 50, array());
     }
 }
 
