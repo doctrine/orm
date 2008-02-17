@@ -325,20 +325,24 @@ class Doctrine_Migration
      */
     protected function _doMigrate($direction)
     {
-        if ( ! method_exists($this, $direction)) {
-            return;
-        }
+        $method = 'pre'.$direction;
+        $this->$method();
 
-        $this->$direction();
-
-        foreach ($this->_changes as $type => $changes) {
-            $process = new Doctrine_Migration_Process();
-            $funcName = 'process' . Doctrine::classify($type);
-
-            if ( ! empty($changes)) {
-                $process->$funcName($changes); 
+        if ( method_exists($this, $direction)) {
+            $this->$direction();
+    
+            foreach ($this->_changes as $type => $changes) {
+                if ( ! empty($changes)) {
+                    $funcName = 'process' . Doctrine::classify($type);
+    
+                    $process = new Doctrine_Migration_Process();
+                    $process->$funcName($changes); 
+                }
             }
         }
+
+        $method = 'post'.$direction;
+        $this->$method();
     }
 
     /**
@@ -580,4 +584,45 @@ class Doctrine_Migration
 
         $this->_addChange('removed_indexes', $options);
     }
+
+    /**
+     * preUp
+     *
+     * @return void
+     */
+    public function preUp()
+    {
+        return;
+    }
+
+    /**
+     * postUp
+     *
+     * @return void
+     */
+    public function postUp()
+    {
+        return;
+    }
+
+    /**
+     * preDown
+     *
+     * @return void
+     */
+    public function preDown()
+    {
+        return;
+    }
+
+    /**
+     * postDown
+     *
+     * @return void
+     */
+    public function postDown()
+    {
+        return;
+    }
+
 }
