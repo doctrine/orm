@@ -62,6 +62,11 @@ public function changeColumn($tableName, $columnName, $type, array $options = ar
 public function removeColumn($tableName, $columnName)
 public function addIndex($tableName, $indexName, array $options = array())
 public function removeIndex($tableName, $indexName)
+public function createConstraint($tableName, $constraintName, array $definition)
+public function dropConstraint($tableName, $constraintName, $primary = false)
+public function createForeignKey($tableName, array $definition)
+public function dropForeignKey($tableName, $fkName)
+
 </code>
 
 +++ Altering Data
@@ -90,6 +95,46 @@ class AddUser extends Doctrine_Migration
 }
 </code>
 
+Since the functions for creating tables and columns in reality just set up the migration (no sql is executed until after the up() or down() function returns), if you wish to insert data into tables created in that step you should use one of the following functions:
+
+<code type="php">
+public function preUp()
+public function postUp()
+public function preDown()
+public function postDown()
+</code>
+
+In the case of an upward progression where version '5' of your schema you create a user table and would like to insert test data you would use the postUp() function as shown below, otherwise the insertion of the user record would happen before the creation of the table.
+
+<code type="php">
+// 005_add_user.class.php
+class AddUser extends Doctrine_Migration
+{
+    public function up()
+    {
+        $this->createTable('users',array(
+                                                    'id'=>array('type'=>'integer','primary'=>true,'autoincrement'=>true),
+                                                    'name'=>array('type'=>'string','length'=>32)
+                                                    ),
+                                                    array('indexes'=>array(),'primary'=>array(0=>'id'));
+    }
+
+    public function postUp()
+    {
+        // Add new user
+        $user = new User();
+        $user->name = 'jwage';
+        $user->save();
+    }
+
+    public function down()
+    {
+        // Effectively deletes the user we added in the up
+        $this->dropTable('users');
+    }
+}
+</code>
+
 ++ Performing Migrations
 
 <code type="php">
@@ -101,3 +146,16 @@ $migration->migrate(0); // takes you from 3 to 0
 
 echo $migration->getCurrentVersion(); // 0
 </code>
+
+++ Migration Notes
+
+Migrations aren't feature complete and still have many bugs, so the documentation below is from experience and will likely need to go away when everything is solidified. Migrations as of yet do not auto-create themselves based on changes to models or schema. Moving from one level to another will not modify or update your models. At this time It strictly allows you to move a project's DB or any copy of a project's DB between versions of a schema. If you move between one version and another, you'll have to modify either your schema or the models directly to match the current DB. This is obviously an incomplete feature as we hope to be able to use migrations to keep your schema and / or models in sync with the changes made in a migration step.
+
+When using migrations on an pre-existing project (particularly with symfony), there are tasks to create the initial migration classes. Last I checked it had a bug where the migration class files were not numbered correctly. The task should create one migration class for each table in your schema, and a single migration class for all the foreign keys. Since I prefer to have each migration perform one logical step, I move them all into one class. Thus my 001_create_tables.class, is very large and essentially does the same thing as the insert-sql task. In the case where you have already created the database, and it is populated with data, you will have to manually create the migration table within your database. Its a very simple table. Since your project already contains a database, you will also have to insert the starting version. In my case with all tables created in 001_create_tables.class.php I would do the following.
+
+<code type="sql"> 
+CREATE TABLE migration_version ( version INT );
+INSERT INTO migration_versiont (version) VALUES (1);
+</code>
+
+If you prefer the one operation per migration, you may be starting at step 9 or 30 or who knows. If you have no existing tables or data that you care to keep, you can drop all your existing tables and call the migration function to create all your initial tables.
