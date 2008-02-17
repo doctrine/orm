@@ -253,6 +253,19 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
     }
 
     /**
+     * setOption
+     * 
+     * Set option value
+     *
+     * @param string $option 
+     * @return void
+     */
+    public function setOption($option, $value)
+    {
+      return $this->options[$option] = $value;
+    }
+
+    /**
      * getAttribute
      * retrieves a database connection attribute
      *
