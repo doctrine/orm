@@ -45,11 +45,12 @@ class Doctrine_Task_Dql extends Doctrine_Task
 
         $query = new Doctrine_Query();
 
-        $params = explode(',', $this->getArgument('params'));
+        $params = $this->getArgument('params');
+        $params = $params ? explode(',', $params):null;
 
         $this->notify('executing: "' . $dql . '" (' . implode(', ', $params) . ')');
 
-        $results = $query->query($dql, $params);
+        $results = $query->query($dql);
 
         $this->_printResults($results);
     }
