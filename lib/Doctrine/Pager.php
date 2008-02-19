@@ -383,6 +383,27 @@ class Doctrine_Pager
 
 
     /**
+     * getResultsInPage
+     *
+     * Returns the number of itens in current page
+     *
+     * @return int    Number of itens in current page
+     */
+    public function getResultsInPage()
+    {
+        $page = $this->getPage();
+
+        if ($page != $this->getLastPage()) {
+            return $page * $this->getMaxPerPage();
+        }
+
+        $offset = ($this->getPage() - 1) * $this->getMaxPerPage();
+
+        return abs($this->getNumResults() - $offset);
+    }
+
+
+    /**
      * getQuery
      *
      * Returns the Doctrine_Query collector object related to the pager
@@ -432,17 +453,21 @@ class Doctrine_Pager
      *
      * Defines the counter query to be used by pager
      *
-     * @param Doctrine_Query     Accepts either a Doctrine_Query object or a string 
-     *                           (which does the Doctrine_Query class creation).
+     * @param Doctrine_Query  Accepts either a Doctrine_Query object or a string 
+     *                        (which does the Doctrine_Query class creation).
+     * @param array           Optional params to be used by counter Doctrine_Query. 
+     *                        If not defined, the params passed to execute method will be used.
      * @return void
      */
-    public function setCountQuery($query)
+    public function setCountQuery($query, $params = null)
     {
         if (is_string($query)) {
             $query = Doctrine_Query::create()->parseQuery($query);
         }
 
         $this->_countQuery = $query;
+
+        $this->setCountQueryParams($params);
 
         $this->_setExecuted(false);
     }
@@ -476,6 +501,10 @@ class Doctrine_Pager
         if ($append && is_array($this->_countQueryParams)) {
             $this->_countQueryParams = array_merge($this->_countQueryParams, $params);
         } else {
+            if ($params !== null && !is_array($params)) {
+                $params = array($params);
+            }
+
             $this->_countQueryParams = $params;
         }
 
