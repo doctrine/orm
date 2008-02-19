@@ -25,7 +25,7 @@ For exporting the user class into database we need a simple build script:
 
 <code type="php">
 //require the base Doctrine class
-require_once('lib/Doctrine.php');
+require_once('path-to-doctrine/lib/Doctrine.php');
 
 //register the autoloader
 spl_autoload_register(array('Doctrine', 'autoload'));

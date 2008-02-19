@@ -25,7 +25,7 @@ CREATE TABLE file (
 Now we would like to convert it into Doctrine record class. It can be achieved easily with the following code snippet:
 
 <code type="php">
-require_once('lib/Doctrine.php');
+require_once('path-to-doctrine/lib/Doctrine.php');
 
 spl_autoload_register(array('Doctrine', 'autoload'));
 Doctrine_Manager::connection('mysql://root:dc34@localhost/test');
