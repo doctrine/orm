@@ -689,7 +689,14 @@ final class Doctrine
             }
         }
 
-        return self::filterInvalidModels($loadedModels);
+        // We do not want to filter invalid models when using conservative model loading
+        // The filtering requires that the class be loaded and inflected in order to determine if it is 
+        // a valid class.
+        if ($manager->getAttribute(Doctrine::ATTR_MODEL_LOADING) == Doctrine::MODEL_LOADING_CONSERVATIVE) {
+            return $loadedModels;
+        } else {
+            return self::filterInvalidModels($loadedModels);
+        }
     }
 
     /**
@@ -714,6 +721,7 @@ final class Doctrine
      * filterInvalidModels
      *
      * Filter through an array of classes and return all the classes that are valid models
+     * This will inflect the class, causing it to be loaded in to memory.
      *
      * @param classes  Array of classes to filter through, otherwise uses get_declared_classes()
      * @return array   $loadedModels
@@ -735,6 +743,7 @@ final class Doctrine
      * isValidModelClass
      *
      * Checks if what is passed is a valid Doctrine_Record
+     * Will load class in to memory in order to inflect it and find out information about the class
      *
      * @param   mixed   $class Can be a string named after the class, an instance of the class, or an instance of the class reflected
      * @return  boolean
