@@ -45,10 +45,10 @@ class Doctrine_Export_Schema
     public function buildSchema($directory = null, $models = array())
     {
         if ($directory) {
-            Doctrine::loadModels($directory);
+            $loadedModels = Doctrine::loadModels($directory);
+        } else {
+            $loadedModels = Doctrine::getLoadedModels();
         }
-
-        $loadedModels = Doctrine::getLoadedModels();
 
         $array = array();
         

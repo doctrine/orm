@@ -157,9 +157,9 @@ END;
     {
         if ($modelsPath) {
             $models = Doctrine::loadModels($modelsPath);
+        } else {
+            $models = Doctrine::getLoadedModels();
         }
-
-        $models = Doctrine::getLoadedModels();
 
         $foreignKeys = array();
 
