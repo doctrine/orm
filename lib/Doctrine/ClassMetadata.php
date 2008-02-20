@@ -78,22 +78,6 @@ class Doctrine_ClassMetadata extends Doctrine_Configurable implements Serializab
     protected $_inheritanceType = Doctrine::INHERITANCETYPE_TABLE_PER_CLASS;
     
     /**
-     * The name of the column that acts as a discriminator to identify the type of an
-     * object. Used in Single Table Inheritance and Class Table Inheritance.
-     *
-     * @var string
-     */
-    protected $_discriminatorColumn;
-    
-    /**
-     * The discriminator map contains the mapping of discriminator values (keys)
-     * to class names (values).
-     *
-     * @var array
-     */
-    protected $_discriminatorMap;
-    
-    /**
      * An array containing all templates attached to the class.
      *
      * @see Doctrine_Template
@@ -120,10 +104,10 @@ class Doctrine_ClassMetadata extends Doctrine_Configurable implements Serializab
     protected $_filters = array();
     
     /**
-     * An array of column definitions,
-     * keys are column names and values are column definitions
+     * The mapped columns and their mapping definitions.
+     * Keys are column names and values are definitions.
      *
-     * the definition array has atleast the following values:
+     * The definition array has atleast the following values:
      *
      *  -- type         the column type, eg. 'integer'
      *  -- length       the column length, eg. 11
@@ -157,6 +141,12 @@ class Doctrine_ClassMetadata extends Doctrine_Configurable implements Serializab
     protected $_columnNames = array();
     
     /**
+     * Caches enum value mappings. Keys are field names and values arrays with the
+     * mapping.
+     */
+    protected $_enumValues = array();
+    
+    /**
      * @todo Implementation.
      */
     protected $_readOnlyFieldNames = array();
@@ -164,7 +154,8 @@ class Doctrine_ClassMetadata extends Doctrine_Configurable implements Serializab
     /**
      * Tree object associated with the class.
      *
-     * @var Doctrine_Tree                
+     * @var Doctrine_Tree
+     * @todo Belongs to the NestedSet Behavior plugin.               
      */
     protected $_tree;
     
@@ -692,18 +683,25 @@ class Doctrine_ClassMetadata extends Doctrine_Configurable implements Serializab
      * @return mixed
      */
     public function enumValue($fieldName, $index)
-    {
+    {        
         if ($index instanceof Doctrine_Null) {
             return $index;
+        }
+        
+        if (isset($this->_enumValues[$fieldName][$index])) {
+            return $this->_enumValues[$fieldName][$index];
         }
         
         $columnName = $this->getColumnName($fieldName);
         if ( ! $this->_conn->getAttribute(Doctrine::ATTR_USE_NATIVE_ENUM) &&
                 isset($this->_columns[$columnName]['values'][$index])) {
-            return $this->_columns[$columnName]['values'][$index];
+            $enumValue = $this->_columns[$columnName]['values'][$index];
+        } else {
+            $enumValue = $index;
         }
-
-        return $index;
+        $this->_enumValues[$fieldName][$index] = $enumValue;
+        
+        return $enumValue;
     }
 
     /**

@@ -51,7 +51,7 @@ class Doctrine_Table_Repository implements Countable, IteratorAggregate
      *
      * @param Doctrine_Table $table
      */
-    public function __construct(Doctrine_Mapper_Abstract $mapper)
+    public function __construct($mapper)
     {
         $this->table = $mapper;
     }

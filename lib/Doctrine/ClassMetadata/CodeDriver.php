@@ -13,6 +13,10 @@ class Doctrine_ClassMetadata_CodeDriver
      */
     public function loadMetadataForClass($className, Doctrine_ClassMetadata $metadata)
     {
+        if ( ! method_exists($className, 'initMetadata')) {
+            throw new Doctrine_ClassMetadata_Exception("Unable to load metadata for class"
+                    . " '$className'. Callback method 'initMetadata' not found.");
+        }
         call_user_func_array(array($className, 'initMetadata'), array($metadata));
     }   
 }

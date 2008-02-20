@@ -31,6 +31,8 @@ Doctrine::autoload('Doctrine_Record_Abstract');
  * @link        www.phpdoctrine.com
  * @since       1.0
  * @version     $Revision$
+ * @todo Remove the depdency on the ClassMetadata. All operations that involve the metadata
+ *       should be left to the mapper.
  */
 abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Countable, IteratorAggregate, Serializable
 {
@@ -169,14 +171,14 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
      */
     public function __construct($mapper = null, $isNewEntry = false, array $data = array())
     {
-        if (isset($mapper) && $mapper instanceof Doctrine_Mapper_Abstract) {
+        if (isset($mapper) && $mapper instanceof Doctrine_Mapper) {
             $class = get_class($this);
             $this->_mapper = Doctrine_Manager::getInstance()->getMapper($class);
-            $this->_table = $this->_mapper->getTable();
+            $this->_table = $this->_mapper->getClassMetadata();
             $exists = ! $isNewEntry;
         } else {
             $this->_mapper = Doctrine_Manager::getInstance()->getMapper(get_class($this));
-            $this->_table = $this->_mapper->getTable();
+            $this->_table = $this->_mapper->getClassMetadata();
             $exists = false;
         }
 
@@ -193,7 +195,7 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
         
         $this->_values = $this->cleanData($this->_data);
 
-        $this->prepareIdentifiers($exists);
+        $this->_extractIdentifier($exists);
         
         if ( ! $exists) {
             if ($count > count($this->_values)) {
@@ -212,7 +214,6 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
             }
         }
 
-        $this->_errorStack = new Doctrine_Validator_ErrorStack(get_class($this));
         $repository = $this->_mapper->getRepository();
         $repository->add($this);
 
@@ -270,8 +271,9 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
         if ( ! $this->_mapper->getAttribute(Doctrine::ATTR_VALIDATE)) {
             return true;
         }
+        
         // Clear the stack from any previous errors.
-        $this->_errorStack->clear();
+        $this->getErrorStack()->clear();
 
         // Run validation process
         $validator = new Doctrine_Validator();
@@ -283,7 +285,7 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
             $this->validateOnUpdate();
         }
 
-        return $this->_errorStack->count() == 0 ? true : false;
+        return $this->getErrorStack()->count() == 0 ? true : false;
     }
 
     /**
@@ -405,6 +407,9 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
      */
     public function getErrorStack()
     {
+        if (is_null($this->_errorStack)) {
+            $this->_errorStack = new Doctrine_Validator_ErrorStack();
+        }
         return $this->_errorStack;
     }
 
@@ -423,7 +428,7 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
             }
             $this->_errorStack = $stack;
         } else {
-            return $this->_errorStack;
+            return $this->getErrorStack();
         }
     }
 
@@ -496,7 +501,7 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
     {
         $this->_values = array_merge($this->_values, $this->cleanData($data));
         $this->_data   = array_merge($this->_data, $data);
-        $this->prepareIdentifiers(true);
+        $this->_extractIdentifier(true);
     }
 
     /**
@@ -507,7 +512,7 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
      * @return void
      * @todo Maybe better placed in the Mapper?
      */
-    private function prepareIdentifiers($exists = true)
+    private function _extractIdentifier($exists = true)
     {
         switch ($this->_table->getIdentifierType()) {
             case Doctrine::IDENTIFIER_AUTOINC:
@@ -637,7 +642,7 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
 
         $this->_mapper->getRepository()->add($this);
         $this->cleanData($this->_data);
-        $this->prepareIdentifiers($this->exists());
+        $this->_extractIdentifier($this->exists());
         
         $this->postUnserialize($event);
     }
@@ -730,7 +735,7 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
 
         $this->_modified = array();
 
-        $this->prepareIdentifiers();
+        $this->_extractIdentifier();
 
         $this->_state = Doctrine_Record::STATE_CLEAN;
 
@@ -1485,7 +1490,7 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
             $this->_state    = Doctrine_Record::STATE_TCLEAN;
             $this->_modified = array();
         } else if ($id === true) {
-            $this->prepareIdentifiers(true);
+            $this->_extractIdentifier(true);
             $this->_state    = Doctrine_Record::STATE_CLEAN;
             $this->_modified = array();
         } else {

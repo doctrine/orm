@@ -92,7 +92,7 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
     {
         $tree = array();
         foreach ($mappers as $k => $mapper) {
-            if ( ! ($mapper instanceof Doctrine_Mapper_Abstract)) {
+            if ( ! ($mapper instanceof Doctrine_Mapper)) {
                 $mapper = $this->conn->getMapper($mapper);
             }
             $nm     = $mapper->getComponentName();

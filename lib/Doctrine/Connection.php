@@ -1128,31 +1128,57 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
      * @return Doctrine_Mapper  The mapper object.
      * @todo package:orm  
      */
-    public function getMapper($entityClassName)
+    /*public function getMapper($entityName)
     {
-        if (isset($this->_mappers[$entityClassName])) {
-            return $this->_mappers[$entityClassName];
+        if (isset($this->_mappers[$entityName])) {
+            return $this->_mappers[$entityName];
         }
 
-        $metadata = $this->getClassMetadata($entityClassName);
+        $metadata = $this->getClassMetadata($entityName);
         $customMapperClassName = $metadata->getCustomMapperClass();
         if ($customMapperClassName !== null) {
-            $mapper = new $customMapperClassName($entityClassName, $metadata);
+            $mapper = new $customMapperClassName($entityName, $metadata);
         } else {
             // instantiate correct mapper type
             $inheritanceType = $metadata->getInheritanceType();
             if ($inheritanceType == Doctrine::INHERITANCETYPE_JOINED) {
-                $mapper = new Doctrine_Mapper_Joined($entityClassName, $metadata);
+                $mapper = new Doctrine_Mapper_Joined($entityName, $metadata);
             } else if ($inheritanceType == Doctrine::INHERITANCETYPE_SINGLE_TABLE) {
-                $mapper = new Doctrine_Mapper_SingleTable($entityClassName, $metadata);
+                $mapper = new Doctrine_Mapper_SingleTable($entityName, $metadata);
             } else if ($inheritanceType == Doctrine::INHERITANCETYPE_TABLE_PER_CLASS) {
-                $mapper = new Doctrine_Mapper_TablePerClass($entityClassName, $metadata);
+                $mapper = new Doctrine_Mapper_TablePerClass($entityName, $metadata);
             } else {
                 throw new Doctrine_Connection_Exception("Unknown inheritance type '$inheritanceType'. Can't create mapper.");
             }
         }
 
-        $this->_mappers[$entityClassName] = $mapper;
+        $this->_mappers[$entityName] = $mapper;
+
+        return $mapper;
+    }*/
+    
+    /**
+     * Gets a mapper for the specified domain class that is used to map instances of
+     * the class between the relational database and their object representation.
+     *
+     * @param string $entityClassName  The name of the entity class.
+     * @return Doctrine_Mapper  The mapper object.
+     * @todo package:orm  
+     */
+    public function getMapper($entityName)
+    {
+        if (isset($this->_mappers[$entityName])) {
+            return $this->_mappers[$entityName];
+        }
+
+        $metadata = $this->getClassMetadata($entityName);
+        $customMapperClassName = $metadata->getCustomMapperClass();
+        if ($customMapperClassName !== null) {
+            $mapper = new $customMapperClassName($entityName, $metadata);
+        } else {
+            $mapper = new Doctrine_Mapper($entityName, $metadata);
+        }
+        $this->_mappers[$entityName] = $mapper;
 
         return $mapper;
     }

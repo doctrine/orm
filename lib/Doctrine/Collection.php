@@ -109,7 +109,7 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
         $this->_mapper = $mapper;
 
         if ($keyColumn === null) {
-            $keyColumn = $mapper->getBoundQueryPart('indexBy');
+            $keyColumn = $mapper->getClassMetadata()->getBoundQueryPart('indexBy');
         }
 
         if ($keyColumn === null) {
@@ -214,7 +214,7 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
 
         $keyColumn = isset($array['keyColumn']) ? $array['keyColumn'] : null;
         if ($keyColumn === null) {
-            $keyColumn = $this->_mapper->getBoundQueryPart('indexBy');
+            $keyColumn = $this->_mapper->getClassMetadata()->getBoundQueryPart('indexBy');
         }
 
         if ($keyColumn !== null) {

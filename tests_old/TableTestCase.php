@@ -137,11 +137,6 @@ class Doctrine_Table_TestCase extends Doctrine_UnitTestCase
         $this->assertTrue($this->objTable->getConnection() instanceof Doctrine_Connection);
     }
 
-    public function testGetData() 
-    {
-        $this->assertTrue($this->objTable->getData() == array());
-    }
-
     public function testSetSequenceName()
     {
         $this->objTable->sequenceName = 'test-seq';

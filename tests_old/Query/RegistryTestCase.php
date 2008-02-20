@@ -54,14 +54,14 @@ class Doctrine_Query_Registry_TestCase extends Doctrine_UnitTestCase
     {
         $registry = new Doctrine_Query_Registry();
 
-        $registry->add('User/all', 'SELECT u.* FROM User u');
+        $registry->add('User.all', 'SELECT u.* FROM User u');
 
-        $this->assertEqual($registry->get('all', 'User')->getDql(), 'SELECT u.* FROM User u');
+        $this->assertEqual($registry->get('User.all')->getDql(), 'SELECT u.* FROM User u');
         
         $this->manager->setQueryRegistry($registry);
 
         $user = new User();
         
-        $user->getMapper()->execute('all');
+        $user->getMapper()->executeNamedQuery('User.all');
     }
 }

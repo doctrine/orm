@@ -31,7 +31,7 @@
  * @link        www.phpdoctrine.org
  * @since       1.0
  */
-abstract class Doctrine_Mapper_Abstract extends Doctrine_Configurable implements Countable
+class Doctrine_Mapper extends Doctrine_Configurable implements Countable
 {
     /**
      * @var Doctrine_Table  Metadata container that represents the database table this
@@ -43,11 +43,6 @@ abstract class Doctrine_Mapper_Abstract extends Doctrine_Configurable implements
      * The name of the domain class this mapper is used for.
      */
     protected $_domainClassName;
-    
-    /**
-     * The names of all the fields that are available on entities created by this mapper. 
-     */
-    protected $_fieldNames = array();
 
     /**
      * The Doctrine_Connection object that the database connection of this mapper.
@@ -55,6 +50,11 @@ abstract class Doctrine_Mapper_Abstract extends Doctrine_Configurable implements
      * @var Doctrine_Connection $conn
      */
     protected $_conn;
+    
+    /**
+     * The concrete mapping strategy that is used.
+     */
+    protected $_mappingStrategy;
 
     /**
      * @var array $identityMap                          first level cache
@@ -81,13 +81,18 @@ abstract class Doctrine_Mapper_Abstract extends Doctrine_Configurable implements
      * @param Doctrine_Table $table           The table object used for the mapping procedure.
      * @throws Doctrine_Connection_Exception  if there are no opened connections
      */
-    public function __construct($name, Doctrine_ClassMetadata $metadata)
+    public function __construct($name, Doctrine_ClassMetadata $classMetadata)
     {
         $this->_domainClassName = $name;
-        $this->_conn = $metadata->getConnection();
-        $this->_classMetadata = $metadata;
+        $this->_conn = $classMetadata->getConnection();
+        $this->_classMetadata = $classMetadata;
         $this->setParent($this->_conn);
-        $this->_repository = new Doctrine_Table_Repository($this);  
+        $this->_repository = new Doctrine_Table_Repository($this);
+        if ($classMetadata->getInheritanceType() == Doctrine::INHERITANCETYPE_JOINED) {
+            $this->_mappingStrategy = new Doctrine_Mapper_JoinedStrategy($this);
+        } else {
+            $this->_mappingStrategy = new Doctrine_Mapper_DefaultStrategy($this);
+        }
     }
 
     public function getMethodOwner($method)
@@ -150,6 +155,7 @@ abstract class Doctrine_Mapper_Abstract extends Doctrine_Configurable implements
      * getRepository
      *
      * @return Doctrine_Table_Repository
+     * @todo refactor
      */
     public function getRepository()
     {
@@ -161,6 +167,7 @@ abstract class Doctrine_Mapper_Abstract extends Doctrine_Configurable implements
      *
      * @params Doctrine_Connection      a connection object 
      * @return Doctrine_Table           this object
+     * @todo refactor
      */
     public function setConnection(Doctrine_Connection $conn)
     {
@@ -195,7 +202,7 @@ abstract class Doctrine_Mapper_Abstract extends Doctrine_Configurable implements
     }
 
     /**
-     * finds a record by its identifier
+     * Finds an entity by its primary key.
      *
      * @param $id                       database row id
      * @param int $hydrationMode        Doctrine::HYDRATE_ARRAY or Doctrine::HYDRATE_RECORD
@@ -215,10 +222,10 @@ abstract class Doctrine_Mapper_Abstract extends Doctrine_Configurable implements
     }
 
     /**
-     * findAll
-     * returns a collection of records
+     * Finds all entities of the mapper's class.
+     * Use with care.
      *
-     * @param int $hydrationMode        Doctrine::FETCH_ARRAY or Doctrine::FETCH_RECORD
+     * @param int $hydrationMode        Doctrine::HYDRATE_ARRAY or Doctrine::HYDRATE_RECORD
      * @return Doctrine_Collection
      */
     public function findAll($hydrationMode = null)
@@ -262,50 +269,20 @@ abstract class Doctrine_Mapper_Abstract extends Doctrine_Configurable implements
 
         return $query->query($dql, $params, $hydrationMode);        
     }
-
-    /**
-     * execute
-     * fetches data using the provided queryKey and 
-     * the associated query in the query registry
-     *
-     * if no query for given queryKey is being found a 
-     * Doctrine_Query_Registry exception is being thrown
-     *
-     * @param string $queryKey      the query key
-     * @param array $params         prepared statement params (if any)
-     * @return mixed                the fetched data
-     */
-    public function execute($queryKey, $params = array(), $hydrationMode = Doctrine::HYDRATE_RECORD)
-    {
-        return Doctrine_Manager::getInstance()
-                ->getQueryRegistry()
-                ->get($queryKey, $this->getComponentName())
-                ->execute($params, $hydrationMode);
-    }
     
+    /**
+     * Executes a named query.
+     *
+     * @param string $queryName     The name that was used when storing the query.
+     * @param array $params         The query parameters.
+     * @return mixed                The result.
+     * @deprecated
+     */
     public function executeNamedQuery($queryName, $params = array(), $hydrationMode = Doctrine::HYDRATE_RECORD)
     {
-        return $this->execute($queryName, $params, $hydrationMode);        
-    }
-
-    /**
-     * executeOne
-     * fetches data using the provided queryKey and 
-     * the associated query in the query registry
-     *
-     * if no query for given queryKey is being found a 
-     * Doctrine_Query_Registry exception is being thrown
-     *
-     * @param string $queryKey      the query key
-     * @param array $params         prepared statement params (if any)
-     * @return mixed                the fetched data
-     */
-    public function executeOne($queryKey, $params = array(), $hydrationMode = Doctrine::HYDRATE_RECORD)
-    {
         return Doctrine_Manager::getInstance()
-                ->getQueryRegistry()
-                ->get($queryKey, $this->getComponentName())
-                ->fetchOne($params, $hydrationMode);
+                ->createNamedQuery($queryName)
+                ->execute($params, $hydrationMode);    
     }
 
     /**
@@ -364,8 +341,8 @@ abstract class Doctrine_Mapper_Abstract extends Doctrine_Configurable implements
 
     /**
      * getRecord
-     * first checks if record exists in identityMap, if not
-     * returns a new record
+     * First checks if record exists in identityMap, if not
+     * returns a new record.
      *
      * @return Doctrine_Record
      */
@@ -414,7 +391,6 @@ abstract class Doctrine_Mapper_Abstract extends Doctrine_Configurable implements
 
     /**
      * @param $id                       database row id
-     * @throws Doctrine_Find_Exception
      */
     final public function getProxy($id = null)
     {
@@ -470,18 +446,9 @@ abstract class Doctrine_Mapper_Abstract extends Doctrine_Configurable implements
      */
     public function count()
     {
-        $a = $this->_conn->execute('SELECT COUNT(1) FROM ' . $this->_classMetadata->getOption('tableName'))->fetch(Doctrine::FETCH_NUM);
+        $a = $this->_conn->execute('SELECT COUNT(1) FROM ' . $this->_classMetadata->getTableName())
+                ->fetch(Doctrine::FETCH_NUM);
         return current($a);
-    }
-
-    /**
-     * @return Doctrine_Query  a Doctrine_Query object
-     */
-    public function getQueryObject()
-    {
-        $graph = new Doctrine_Query($this->getConnection());
-        $graph->load($this->getComponentName());
-        return $graph;
     }
 
     /**
@@ -505,17 +472,19 @@ abstract class Doctrine_Mapper_Abstract extends Doctrine_Configurable implements
      * @throws Doctrine_Table_Exception     if uncompression of gzip typed column fails         *
      * @param string $field     the name of the field
      * @param string $value     field value
+     * @param string $typeHint  A hint on the type of the value. If provided, the type lookup
+     *                          for the field can be skipped. Used i.e. during hydration to
+     *                          improve performance on large and/or complex results.
      * @return mixed            prepared value
      */
-    public function prepareValue($fieldName, $value)
+    public function prepareValue($fieldName, $value, $typeHint = null)
     {
         if ($value === self::$_null) {
             return self::$_null;
         } else if ($value === null) {
             return null;
         } else {
-            $type = $this->_classMetadata->getTypeOf($fieldName);
-
+            $type = is_null($typeHint) ? $this->_classMetadata->getTypeOf($fieldName) : $typeHint;
             switch ($type) {
                 case 'integer':
                 case 'string';
@@ -548,6 +517,17 @@ abstract class Doctrine_Mapper_Abstract extends Doctrine_Configurable implements
         }
         return $value;
     }
+    
+    /**
+     * Hydrates the given data into the entity.
+     * 
+     */
+    public function hydrate(Doctrine_Record $entity, array $data)
+    {
+        $this->_values = array_merge($this->_values, $this->cleanData($data));
+        $this->_data   = array_merge($this->_data, $data);
+        $this->_extractIdentifier(true);
+    }
 
     /**
      * getTree
@@ -579,8 +559,17 @@ abstract class Doctrine_Mapper_Abstract extends Doctrine_Configurable implements
      * getComponentName
      *
      * @return void
+     * @deprecated Use getMappedClassName()
      */
     public function getComponentName()
+    {
+        return $this->_domainClassName;
+    }
+    
+    /**
+     * Gets the name of the class the mapper is used for.
+     */
+    public function getMappedClassName()
     {
         return $this->_domainClassName;
     }
@@ -620,7 +609,7 @@ abstract class Doctrine_Mapper_Abstract extends Doctrine_Configurable implements
     {
         $results = $this->createQuery()->where($fieldName . ' = ?')->limit(1)->execute(
                 array($value), $hydrationMode);
-        return $hydrationMode === Doctrine::HYDRATE_ARRAY ? $results[0] : $results->getFirst();
+        return $hydrationMode === Doctrine::HYDRATE_ARRAY ? array_shift($results) : $results->getFirst();
     }
     
     /**
@@ -631,6 +620,9 @@ abstract class Doctrine_Mapper_Abstract extends Doctrine_Configurable implements
      * findById, findByContactId, etc.
      *
      * @return void
+     * @throws Doctrine_Mapper_Exception  If the method called is an invalid find* method
+     *                                    or no find* method at all and therefore an invalid
+     *                                    method call.
      */
     public function __call($method, $arguments)
     {
@@ -640,13 +632,13 @@ abstract class Doctrine_Mapper_Abstract extends Doctrine_Configurable implements
         } else if (substr($method, 0, 9) == 'findOneBy') {
             $by = substr($method, 9, strlen($method));
             $method = 'findOneBy';
-        }/* else {
-            throw new Doctrine_Mapper_Exception("Unknown method '$method'.");
-        }*/
+        } else {
+            throw new Doctrine_Mapper_Exception("Undefined method '$method'.");
+        }
         
         if (isset($by)) {
             if ( ! isset($arguments[0])) {
-                throw new Doctrine_Mapper_Exception('You must specify the value to findBy');
+                throw new Doctrine_Mapper_Exception('You must specify the value to findBy.');
             }
             
             $fieldName = Doctrine::tableize($by);
@@ -656,11 +648,9 @@ abstract class Doctrine_Mapper_Abstract extends Doctrine_Configurable implements
                 return $this->$method($fieldName, $arguments[0], $hydrationMode);
             } else if ($this->_classMetadata->hasRelation($by)) {
                 $relation = $this->_classMetadata->getRelation($by);
-                
                 if ($relation['type'] === Doctrine_Relation::MANY) {
-                    throw new Doctrine_Table_Exception('Cannot findBy many relationship.');
+                    throw new Doctrine_Mapper_Exception('Cannot findBy many relationship.');
                 }
-                
                 return $this->$method($relation['local'], $arguments[0], $hydrationMode);
             } else {
                 throw new Doctrine_Mapper_Exception('Cannot find by: ' . $by . '. Invalid field or relationship alias.');
@@ -674,7 +664,7 @@ abstract class Doctrine_Mapper_Abstract extends Doctrine_Configurable implements
      * @param Doctrine_Record $record    The entity to save.
      * @param Doctrine_Connection $conn  The connection to use. Will default to the mapper's
      *                                   connection.
-     * @throws Doctrine_Mapper_Exception If the mapper is unable to save the given record.
+     * @throws Doctrine_Mapper_Exception If the mapper is unable to save the given entity.
      */
     public function save(Doctrine_Record $record, Doctrine_Connection $conn = null)
     {
@@ -697,34 +687,11 @@ abstract class Doctrine_Mapper_Abstract extends Doctrine_Configurable implements
         try {
             $conn->beginInternalTransaction();
             $saveLater = $this->_saveRelated($record);
-            //echo "num savelater:" . count($saveLater) . "<br />";
 
             $record->state($state);
 
             if ($record->isValid()) {
-                $event = new Doctrine_Event($record, Doctrine_Event::RECORD_SAVE);
-                $record->preSave($event);
-                $this->getRecordListener()->preSave($event);
-                
-                $state = $record->state();
-                
-                if ( ! $event->skipOperation) {
-                    switch ($state) {
-                        case Doctrine_Record::STATE_TDIRTY:
-                            $this->insert($record);
-                            break;
-                        case Doctrine_Record::STATE_DIRTY:
-                        case Doctrine_Record::STATE_PROXY:
-                            $this->update($record);
-                            break;
-                        case Doctrine_Record::STATE_CLEAN:
-                        case Doctrine_Record::STATE_TCLEAN:
-                            break;
-                    }
-                }
-
-                $this->getRecordListener()->postSave($event);
-                $record->postSave($event);
+                $this->_insertOrUpdate($record);
             } else {
                 $conn->transaction->addInvalid($record);
             }
@@ -757,57 +724,34 @@ abstract class Doctrine_Mapper_Abstract extends Doctrine_Configurable implements
     }
     
     /**
-     * Inserts a single entity into the database, without any related entities.
+     * Inserts or updates an entity, depending on it's state. 
      *
-     * @param Doctrine_Record $record   The entity to insert.
+     * @param Doctrine_Record $record  The entity to insert/update.
      */
-    protected function insertSingleRecord(Doctrine_Record $record)
+    protected function _insertOrUpdate(Doctrine_Record $record)
     {
-        $fields = $record->getPrepared();
-        if (empty($fields)) {
-            return false;
-        }
+        $event = new Doctrine_Event($record, Doctrine_Event::RECORD_SAVE);
+        $record->preSave($event);
+        $this->getRecordListener()->preSave($event);
         
-        $class = $record->getClassMetadata();
-        $identifier = (array) $class->getIdentifier();
-        $fields = $this->_convertFieldToColumnNames($fields, $class);
-
-        $seq = $class->getTableOption('sequenceName');
-        if ( ! empty($seq)) {
-            $id = $this->_conn->sequence->nextId($seq);
-            $seqName = $class->getIdentifier();
-            $fields[$seqName] = $id;
-            $record->assignIdentifier($id);
-        }
-
-        $this->_conn->insert($class->getTableName(), $fields);
-
-        if (empty($seq) && count($identifier) == 1 && $identifier[0] == $class->getIdentifier() &&
-                $class->getIdentifierType() != Doctrine::IDENTIFIER_NATURAL) {
-            if (strtolower($this->_conn->getName()) == 'pgsql') {
-                $seq = $class->getTableName() . '_' . $identifier[0];
+        if ( ! $event->skipOperation) {
+            switch ($record->state()) {
+                case Doctrine_Record::STATE_TDIRTY:
+                    $this->_insert($record);
+                    break;
+                case Doctrine_Record::STATE_DIRTY:
+                case Doctrine_Record::STATE_PROXY:
+                    $this->_update($record);
+                    break;
+                case Doctrine_Record::STATE_CLEAN:
+                case Doctrine_Record::STATE_TCLEAN:
+                    // do nothing
+                    break;
             }
-
-            $id = $this->_conn->sequence->lastInsertId($seq);
-
-            if ( ! $id) {
-                throw new Doctrine_Connection_Exception("Couldn't get last insert identifier.");
-            }
-
-            $record->assignIdentifier($id);
-        } else {
-            $record->assignIdentifier(true);
         }
-    }
-    
-    protected function _convertFieldToColumnNames(array $fields, Doctrine_ClassMetadata $class)
-    {
-        $converted = array();
-        foreach ($fields as $fieldName => $value) {
-            $converted[$class->getColumnName($fieldName)] = $value;
-        }
-        
-        return $converted;
+                
+        $this->getRecordListener()->postSave($event);
+        $record->postSave($event);
     }
     
     /**
@@ -818,28 +762,7 @@ abstract class Doctrine_Mapper_Abstract extends Doctrine_Configurable implements
      */
     public function saveSingleRecord(Doctrine_Record $record)
     {
-        $event = new Doctrine_Event($record, Doctrine_Event::RECORD_SAVE);
-        $record->preSave($event);
-        $this->getRecordListener()->preSave($event);
-
-        if ( ! $event->skipOperation) {
-            switch ($record->state()) {
-                case Doctrine_Record::STATE_TDIRTY:
-                    $this->insert($record);
-                    break;
-                case Doctrine_Record::STATE_DIRTY:
-                case Doctrine_Record::STATE_PROXY:
-                    $this->update($record);
-                    break;
-                case Doctrine_Record::STATE_CLEAN:
-                case Doctrine_Record::STATE_TCLEAN:
-                    // do nothing
-                    break;
-            }
-        }
-
-        $this->getRecordListener()->postSave($event);
-        $record->postSave($event);
+        $this->_insertOrUpdate($record);
     }
     
     /**
@@ -913,13 +836,14 @@ abstract class Doctrine_Mapper_Abstract extends Doctrine_Configurable implements
                            . ' AND ' . $rel->getLocal() . ' = ?';
                     $this->_conn->execute($query, array($r->getIncremented(), $record->getIncremented()));
                 }
-
-                foreach ($relatedObject->getInsertDiff() as $r)  {
-                    $assocRecord = $this->_conn->getMapper($assocTable->getComponentName())->create();
+                
+                $assocMapper = $this->_conn->getMapper($assocTable->getComponentName());
+                foreach ($relatedObject->getInsertDiff() as $r)  {    
+                    $assocRecord = $assocMapper->create();
                     $assocRecord->set($assocTable->getFieldName($rel->getForeign()), $r);
                     $assocRecord->set($assocTable->getFieldName($rel->getLocal()), $record);
-
-                    $this->saveSingleRecord($assocRecord);
+                    $assocMapper->save($assocRecord);
+                    //$this->saveSingleRecord($assocRecord);
                 }
             }
         }
@@ -932,7 +856,7 @@ abstract class Doctrine_Mapper_Abstract extends Doctrine_Configurable implements
      * @return boolean                  whether or not the update was successful
      * @todo Move to Doctrine_Table (which will become Doctrine_Mapper).
      */
-    protected function update(Doctrine_Record $record)
+    protected function _update(Doctrine_Record $record)
     {
         $event = new Doctrine_Event($record, Doctrine_Event::RECORD_UPDATE);
         $record->preUpdate($event);
@@ -940,7 +864,7 @@ abstract class Doctrine_Mapper_Abstract extends Doctrine_Configurable implements
         $this->getRecordListener()->preUpdate($event);
 
         if ( ! $event->skipOperation) {
-            $this->_doUpdate($record);
+            $this->_mappingStrategy->doUpdate($record);
         }
         
         $this->getRecordListener()->postUpdate($event);
@@ -952,13 +876,13 @@ abstract class Doctrine_Mapper_Abstract extends Doctrine_Configurable implements
     /**
      * Updates an entity.
      */
-    protected function _doUpdate(Doctrine_Record $record)
+    /*protected function _doUpdate(Doctrine_Record $record)
     {
         $identifier = $this->_convertFieldToColumnNames($record->identifier(), $this->_classMetadata);
         $data = $this->_convertFieldToColumnNames($record->getPrepared(), $this->_classMetadata);
         $this->_conn->update($this->_classMetadata->getTableName(), $data, $identifier);
         $record->assignIdentifier(true);
-    }
+    }*/
     
     /**
      * Inserts an entity.
@@ -966,7 +890,7 @@ abstract class Doctrine_Mapper_Abstract extends Doctrine_Configurable implements
      * @param Doctrine_Record $record   record to be inserted
      * @return boolean
      */
-    protected function insert(Doctrine_Record $record)
+    protected function _insert(Doctrine_Record $record)
     {        
         // trigger event
         $event = new Doctrine_Event($record, Doctrine_Event::RECORD_INSERT);
@@ -974,7 +898,7 @@ abstract class Doctrine_Mapper_Abstract extends Doctrine_Configurable implements
         $this->getRecordListener()->preInsert($event);
 
         if ( ! $event->skipOperation) {
-            $this->_doInsert($record);
+            $this->_mappingStrategy->doInsert($record);
         }
         
         // trigger event
@@ -986,21 +910,66 @@ abstract class Doctrine_Mapper_Abstract extends Doctrine_Configurable implements
     }
     
     /**
-     * Inserts an entity.
+     * Inserts a single entity into the database, without any related entities.
+     *
+     * @param Doctrine_Record $record   The entity to insert.
      */
-    protected function _doInsert(Doctrine_Record $record)
+    /*protected function _doInsert(Doctrine_Record $record)
     {
-        $this->insertSingleRecord($record);
-    }
+        $fields = $record->getPrepared();
+        if (empty($fields)) {
+            return false;
+        }
+        
+        if ($record->getClassMetadata() !== $this->_classMetadata) {
+            echo $record->getClassMetadata()->getClassname() . ' != ' . $this->_classMetadata->getClassName() . "<br /><br />";
+            try {
+                throw new Exception();
+            } catch (Exception $e) {
+                echo $e->getTraceAsString() . "<br /><br />";
+            }
+        }
+        
+        //$class = $record->getClassMetadata();
+        $class = $this->_classMetadata;
+        $identifier = (array) $class->getIdentifier();
+        $fields = $this->_convertFieldToColumnNames($fields, $class);
+
+        $seq = $class->getTableOption('sequenceName');
+        if ( ! empty($seq)) {
+            $id = $this->_conn->sequence->nextId($seq);
+            $seqName = $class->getIdentifier();
+            $fields[$seqName] = $id;
+            $record->assignIdentifier($id);
+        }
+
+        $this->_conn->insert($class->getTableName(), $fields);
+
+        if (empty($seq) && count($identifier) == 1 && $identifier[0] == $class->getIdentifier() &&
+                $class->getIdentifierType() != Doctrine::IDENTIFIER_NATURAL) {
+            if (strtolower($this->_conn->getName()) == 'pgsql') {
+                $seq = $class->getTableName() . '_' . $identifier[0];
+            }
+
+            $id = $this->_conn->sequence->lastInsertId($seq);
+
+            if ( ! $id) {
+                throw new Doctrine_Mapper_Exception("Couldn't get last insert identifier.");
+            }
+
+            $record->assignIdentifier($id);
+        } else {
+            $record->assignIdentifier(true);
+        }
+    }*/
     
     /**
-     * deletes given record and all the related composites
-     * this operation is isolated by a transaction
+     * Deletes given entity and all it's related entities.
      *
-     * this event can be listened by the onPreDelete and onDelete listeners
+     * Triggered Events: onPreDelete, onDelete.
      *
      * @return boolean      true on success, false on failure
-     * @todo Move to Doctrine_Table (which will become Doctrine_Mapper).
+     * @throws Doctrine_Mapper_Exception
      */
     public function delete(Doctrine_Record $record, Doctrine_Connection $conn = null)
     {
@@ -1027,7 +996,7 @@ abstract class Doctrine_Mapper_Abstract extends Doctrine_Configurable implements
         $record->state(Doctrine_Record::STATE_LOCKED);
         
         if ( ! $event->skipOperation) {
-            $this->_doDelete($record, $conn);
+            $this->_mappingStrategy->doDelete($record);
         } else {
             // return to original state   
             $record->state($state);
@@ -1042,26 +1011,26 @@ abstract class Doctrine_Mapper_Abstract extends Doctrine_Configurable implements
     /**
      * Deletes an entity.
      */
-    protected function _doDelete(Doctrine_Record $record, Doctrine_Connection $conn)
+    /*protected function _doDelete(Doctrine_Record $record)
     {
         try {
-            $conn->beginInternalTransaction();
+            $this->_conn->beginInternalTransaction();
             $this->_deleteComposites($record);
 
             $record->state(Doctrine_Record::STATE_TDIRTY);
             
             $identifier = $this->_convertFieldToColumnNames($record->identifier(), $this->_classMetadata);
-            $conn->delete($this->_classMetadata->getTableName(), $identifier);
+            $this->_conn->delete($this->_classMetadata->getTableName(), $identifier);
             $record->state(Doctrine_Record::STATE_TCLEAN);
 
             $this->removeRecord($record);
-            $conn->commit();
+            $this->_conn->commit();
         } catch (Exception $e) {
-            $conn->rollback();
+            $this->_conn->rollback();
             throw $e;
         }        
         
-    }
+    }*/
     
     /**
      * deletes all related composites
@@ -1070,7 +1039,7 @@ abstract class Doctrine_Mapper_Abstract extends Doctrine_Configurable implements
      * @throws PDOException         if something went wrong at database level
      * @return void
      */
-    protected function _deleteComposites(Doctrine_Record $record)
+    /*protected function _deleteComposites(Doctrine_Record $record)
     {
         foreach ($this->_classMetadata->getRelations() as $fk) {
             if ($fk->isComposite()) {
@@ -1081,7 +1050,7 @@ abstract class Doctrine_Mapper_Abstract extends Doctrine_Configurable implements
                 }
             }
         }
-    }
+    }*/
     
     public function executeQuery(Doctrine_Query $query)
     {
@@ -1092,22 +1061,8 @@ abstract class Doctrine_Mapper_Abstract extends Doctrine_Configurable implements
     {
         return $this->_classMetadata;
     }
-
-    public function getFieldName($columnName)
-    {
-        return $this->_classMetadata->getFieldName($columnName);
-    }
     
-    public function getFieldNames()
-    {
-        if ($this->_fieldNames) {
-            return $this->_fieldNames;
-        }
-        $this->_fieldNames = $this->_classMetadata->getFieldNames();
-        return $this->_fieldNames;
-    }
-    
-    public function getOwningTable($fieldName)
+    public function getClassMetadata()
     {
         return $this->_classMetadata;
     }
@@ -1122,6 +1077,10 @@ abstract class Doctrine_Mapper_Abstract extends Doctrine_Configurable implements
         var_dump($this->_invokedMethods);
     }
     
+    public function free()
+    {
+        $this->_mappingStrategy = null;
+    }
     
     /*public function addToWhere($componentAlias, array &$sqlWhereParts, Doctrine_Query $query)
     {
@@ -1133,6 +1092,21 @@ abstract class Doctrine_Mapper_Abstract extends Doctrine_Configurable implements
         
     }*/
     
+    public function getFieldName($columnName)
+    {
+        return $this->_mappingStrategy->getFieldName($columnName);
+    }
+    
+    public function getFieldNames()
+    {
+        return $this->_mappingStrategy->getFieldNames();
+    }
+    
+    public function getOwningTable($fieldName)
+    {
+        return $this->_mappingStrategy->getOwningTable($fieldName);
+    }
+    
     /* Hooks used during SQL query construction to manipulate the query. */
     
     /**
@@ -1140,7 +1114,7 @@ abstract class Doctrine_Mapper_Abstract extends Doctrine_Configurable implements
      */
     public function getCustomJoins()
     {
-        return array();
+        return $this->_mappingStrategy->getCustomJoins();
     }
     
     /**
@@ -1148,6 +1122,6 @@ abstract class Doctrine_Mapper_Abstract extends Doctrine_Configurable implements
      */
     public function getCustomFields()
     {
-        return array();
+        return $this->_mappingStrategy->getCustomFields();
     }
 }

@@ -562,7 +562,7 @@ abstract class Doctrine_Query_Abstract
         $array = array();
         foreach ($this->_queryComponents as $componentAlias => $data) {
             $sqlTableAlias = $this->getSqlTableAlias($componentAlias);
-            if ( ! $data['mapper'] instanceof Doctrine_Mapper_SingleTable) {
+            if ($data['table']->getInheritanceType() != Doctrine::INHERITANCETYPE_SINGLE_TABLE) {
                 $array[$sqlTableAlias][] = array();
             } else {
                 $discCol = $data['table']->getInheritanceOption('discriminatorColumn');

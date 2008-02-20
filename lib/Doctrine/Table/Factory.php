@@ -5,6 +5,7 @@
  *
  * @todo Support different drivers for loading the meta data from different sources.
  * @package Doctrine
+ * @deprecated
  */
 class Doctrine_Table_Factory
 {

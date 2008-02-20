@@ -78,6 +78,7 @@ class Doctrine_Relation_ManyToMany2_TestCase extends Doctrine_UnitTestCase
                        ->from('TestMovie d, d.MovieBookmarks i, i.UserVotes u, u.User c')
                        ->execute()
                        ->getFirst();
+                       
         $newdata['MovieBookmarks'][0]['UserVotes'][0]['User']['name'] = 'user2';
         try {
             $newdata->save();

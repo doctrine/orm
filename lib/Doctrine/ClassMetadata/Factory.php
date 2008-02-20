@@ -165,6 +165,11 @@ class Doctrine_ClassMetadata_Factory
         } while ($className = get_parent_class($className));
 
         if ($className === false) {
+            try {
+                throw new Exception();
+            } catch (Exception $e) {
+                echo $e->getTraceAsString() . "<br />";
+            }
             throw new Doctrine_ClassMetadata_Factory_Exception("Unknown component '$className'.");
         }
 

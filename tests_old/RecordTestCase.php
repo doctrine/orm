@@ -391,15 +391,12 @@ class Doctrine_Record_TestCase extends Doctrine_UnitTestCase
         $this->assertEqual($user->name, "Jack Daniels");
         $this->assertEqual($user->created, null);
         $this->assertEqual($user->updated, null);
-        $this->assertEqual($user->getMapper()->getData(), array());
-
     }
     
     public function testNewOperator() 
     {
         $table = $this->connection->getClassMetadata("User");
 
-        $this->assertEqual($this->connection->getMapper("User")->getData(), array());
         $user = new User();
         $this->assertEqual(Doctrine_Lib::getRecordStateAsString($user->state()), Doctrine_Lib::getRecordStateAsString(Doctrine_Record::STATE_TCLEAN));
         $user->name = "John Locke";
