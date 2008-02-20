@@ -200,6 +200,9 @@ class Group extends Doctrine_Record
                                      'foreign' => 'user_id', // <- in the association table
             // the following line is needed in many-to-many relations!
                                      'refClass' => 'GroupUser'));
+
+        //group is reserved keyword so either do this or enable ATTR_QUOTE_IDENTIFIERS
+        $this->setTableName('my_group'); 
     }
     public function setTableDefinition() {
         $this->hasColumn('name', 'string', 30);
