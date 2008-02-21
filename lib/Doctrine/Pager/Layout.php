@@ -409,7 +409,7 @@ class Doctrine_Pager_Layout
     /**
      * _parseTemplate
      *
-     * Process the template of a given page and return the processed template
+     * Parse the template of a given page and return the processed template
      *
      * @param array    Optional parameters to be applied in template and url mask
      * @return string  
@@ -426,7 +426,7 @@ class Doctrine_Pager_Layout
     /**
      * _parseUrlTemplate
      *
-     * Processes the url mask to return the correct template depending of the options sent.
+     * Parse the url mask to return the correct template depending of the options sent.
      * Already process the mask replacements assigned.
      *
      * @param $options    Optional parameters to be applied in template and url mask
@@ -453,7 +453,7 @@ class Doctrine_Pager_Layout
     /**
      * _parseUrl
      *
-     * Process the url mask of a given page and return the processed url
+     * Parse the mask replacements of a given page
      *
      * @param $options    Optional parameters to be applied in template and url mask
      * @return string
@@ -476,7 +476,7 @@ class Doctrine_Pager_Layout
     /**
      * _parseUrl
      *
-     * Process the url mask of a given page and return the processed url
+     * Parse the url mask of a given page and return the processed url
      *
      * @param $options    Optional parameters to be applied in template and url mask
      * @return string
@@ -493,12 +493,12 @@ class Doctrine_Pager_Layout
 
         return strtr($str, $replacements);
     }
-    
-    
+
+
     /**
      * _parseMaskReplacements
      *
-     * Process the mask replacements, changing from to-be replaced mask with new masks/values
+     * Parse the mask replacements, changing from to-be replaced mask with new masks/values
      *
      * @param $str    String to have masks replaced
      * @return string  
