@@ -416,6 +416,24 @@ class Doctrine_Pager_Layout
      */
     protected function _parseTemplate($options = array())
     {
+        $str = $this->_parseUrlTemplate($options);
+        $replacements = $this->_parseReplacementsTemplate($options);
+
+        return strtr($str, $replacements);
+    }
+
+
+    /**
+     * _parseUrlTemplate
+     *
+     * Processes the url mask to return the correct template depending of the options sent.
+     * Already process the mask replacements assigned.
+     *
+     * @param $options    Optional parameters to be applied in template and url mask
+     * @return string
+     */
+    protected function _parseUrlTemplate($options = array())
+    {
         $str = '';
 
         // If given page is the current active one
@@ -428,6 +446,20 @@ class Doctrine_Pager_Layout
             $str = $this->_parseMaskReplacements($this->getTemplate());
         }
 
+        return $str;
+    }
+
+
+    /**
+     * _parseUrl
+     *
+     * Process the url mask of a given page and return the processed url
+     *
+     * @param $options    Optional parameters to be applied in template and url mask
+     * @return string
+     */
+    protected function _parseReplacementsTemplate($options = array())
+    {
         // Defining "url" options index to allow {%url} mask
         $options['url'] = $this->_parseUrl($options);
 
@@ -437,7 +469,7 @@ class Doctrine_Pager_Layout
             $replacements['{%'.$k.'}'] = $v;
         }
 
-        return strtr($str, $replacements);
+        return $replacements;
     }
 
 
