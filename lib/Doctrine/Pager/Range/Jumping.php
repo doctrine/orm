@@ -50,8 +50,8 @@ class Doctrine_Pager_Range_Jumping extends Doctrine_Pager_Range
      */
     protected function _initialize()
     {
-        if (isset($this->options['chunk'])) {
-            $this->_setChunkLength($this->options['chunk']);
+        if (isset($this->_options['chunk'])) {
+            $this->_setChunkLength($this->_options['chunk']);
         } else {
             throw new Doctrine_Pager_Exception('Missing parameter \'chunk\' that must be define in options.');
         }

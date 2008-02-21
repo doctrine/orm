@@ -194,7 +194,7 @@ class Doctrine_Pager_Layout
      /**
      * getTemplate
      *
-     * Returns the Template to be applied for inactive pages 
+     * Returns the Template to be applied for inactive pages
      *
      * @return string        Template to be applied for inactive pages
      */

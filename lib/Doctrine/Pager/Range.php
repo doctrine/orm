@@ -34,9 +34,9 @@
 abstract class Doctrine_Pager_Range
 {
     /**
-     * @var array $options     Custom Doctrine_Pager_Range implementation options
+     * @var array $_options     Custom Doctrine_Pager_Range implementation options
      */
-	protected $options;
+    protected $_options;
 
     /**
      * @var Doctrine_Pager $pager     Doctrine_Pager object related to the pager range
@@ -104,7 +104,26 @@ abstract class Doctrine_Pager_Range
      */
     public function getOptions()
     {
-        return $this->options;
+        return $this->_options;
+    }
+
+
+    /**
+     * getOption
+     *
+     * Returns the custom Doctrine_Pager_Range implementation offset option
+     *
+     * @return array        Custom Doctrine_Pager_Range implementation options
+     */
+    public function getOption($option)
+    {
+        if (isset($this->_options[$option])) {
+            return $this->_options[$option];
+        }
+
+        throw new Doctrine_Pager_Exception(
+            'Cannot access unexistent option \'' . $option . '\' in Doctrine_Pager_Range class'
+        );
     }
 
 
@@ -118,7 +137,7 @@ abstract class Doctrine_Pager_Range
      */
     protected function _setOptions($options)
     {
-        $this->options = $options;
+        $this->_options = $options;
     }
 
 

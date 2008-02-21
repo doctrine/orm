@@ -36,7 +36,7 @@ $pager_layout = new Doctrine_Pager_Layout(
     new Doctrine_Pager_Range_Sliding(array(
         'chunk' => 5
     )),
-    'http://wwww.domain.com/app/User/list/page,{%page}'
+    'http://wwww.domain.com/app/User/list/page,{%page_number}'
 );
 
 // Assigning templates for page links creation
@@ -47,7 +47,7 @@ $pager_layout->setSelectedTemplate('[{%page}]');
 $pager = $pager_layout->getPager();
 
 // Fetching users
-$users = $pager->execute();
+$users = $pager->execute(); // This is possible too!
 
 // Displaying page links
 // Displays: [1][2][3][4][5]
@@ -75,7 +75,7 @@ $pager_layout = new Doctrine_Pager_Layout(
     new Doctrine_Pager_Range_Sliding(array(
         'chunk' => 5
     )),
-    'http://wwww.domain.com/app/User/list/page,{%page}?search={%search}'
+    'http://wwww.domain.com/app/User/list/page,{%page_number}?search={%search}'
 );
 </code>
 
@@ -87,11 +87,8 @@ We then assign the templates, just as defined before, without any change. And al
 $pager_layout->setTemplate('[<a href="{%url}">{%page}</a>]');
 $pager_layout->setSelectedTemplate('[{%page}]');
 
-// Retrieving Doctrine_Pager instance
-$pager = $pager_layout->getPager();
-
 // Fetching users
-$users = $pager->execute();
+$users = $pager_layout->execute();
 </code>
 
 The method {{display()}} is the place where we define the custom mask we created. This method accepts 2 optional arguments: one array of optional masks and if the output should be returned instead of printed on screen.
@@ -123,7 +120,14 @@ $pager_layout->getTemplate();
 // Return the current page template associated to the Pager_Layout
 $pager_layout->getSelectedTemplate();
 
+// Defines the Separator template, applied between each page
+$pager_layout->setSeparatorTemplate($separatorTemplate);
+
 // Return the current page template associated to the Pager_Layout
 $pager_layout->getSeparatorTemplate();
+
+// Handy method to execute the query without need to retrieve the Pager instance
+$pager_layout->execute($params = array(), $hydrationMode = Doctrine::FETCH_RECORD);
 </code>
 
+There are a couple of other methods that are available if you want to extend the {{Doctrine_Pager_Layout}} to create you custom layouter. We will see these methods in the next section.

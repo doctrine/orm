@@ -1,64 +1,66 @@
-TBD
+{{Doctrine_Pager_Layout}} does a really good job, but sometimes it is not enough. Let's suppose a situation where you have to create a layout of pagination like this one:
 
-Basic customization to generate this page links generation:
+<<  <  1 2 3 4 5  >  >>
 
-« ‹ 1 2 3 4 5 › »
+Currently, it is impossible with raw {{Doctrine_Pager_Layout}}. But if you extend it and use the available methods, you can achieve it. The base Layout class provides you some methods that can be used to create your own implementation. They are:
 
 <code type="php">
-class PagerLayout extends Doctrine_Pager_Layout
+// $this refers to an instance of Doctrine_Pager_Layout
+
+// Defines a mask replacement. When parsing template, it converts replacement
+// masks into new ones (or values), allowing to change masks behavior on the fly
+$this->addMaskReplacement($oldMask, $newMask, $asValue = false);
+
+// Remove a mask replacement
+$this->removeMaskReplacement($oldMask);
+
+// Remove all mask replacements
+$this->cleanMaskReplacements();
+
+// Parses the template and returns the string of a processed page
+$this->processPage($options = array()); // Needs at least page_number offset in $options array
+</code>
+
+Now that you have a small tip of useful methods to be used when extending {{Doctrine_Pager_Layout}}, it's time to see our implemented class:
+
+<code type="php">
+class PagerLayoutWithArrows extends Doctrine_Pager_Layout
 {
-	public function initialize()
-	{
-	}
-
-
 	public function display($options = array(), $return = false)
-    {
+	{
+		$pager = $this->getPager();
 		$str = '';
 
 		// First page
-        $options['page_number'] = $this->getPager()->getFirstPage();
-        $options['page'] = '&laquo;';
-        $options['url'] = $this->_parseUrl($options);
-
-		$str .= $this->_parseTemplate($options);
+		$this->addMaskReplacement('page', '&laquo;', true);
+		$options['page_number'] = $pager->getFirstPage();
+		$str .= $this->processPage($options);
 
 		// Previous page
-		$options['page_number'] = $this->getPager()->getPreviousPage();
-        $options['page'] = '&lsaquo;';
-        $options['url'] = $this->_parseUrl($options);
+		$this->addMaskReplacement('page', '&lsaquo;', true);
+		$options['page_number'] = $pager->getPreviousPage();
+		$str .= $this->processPage($options);
 
-		$str .= $this->_parseTemplate($options);
-
-		// Current chunk
-
-		// Removing page, page_mask and url
-		unset($options['page']);
-		unset($options['page_text']);
-		unset($options['url']);
-
+		// Pages listing
+		$this->removeMaskReplacement('page');
 		$str .= parent::display($options, true);
 
 		// Next page
-		$options['page_number'] = $this->getPager()->getNextPage();
-        $options['page'] = '&rsaquo;';
-        $options['url'] = $this->_parseUrl($options);
-
-		$str .= $this->_parseTemplate($options);
+		$this->addMaskReplacement('page', '&rsaquo;', true);
+		$options['page_number'] = $pager->getNextPage();
+		$str .= $this->processPage($options);
 
 		// Last page
-		$options['page_number'] = $this->getPager()->getLastPage();
-        $options['page'] = '&raquo;';
-		$options['url'] = $this->_parseUrl($options);
-
-		$str .= $this->_parseTemplate($options);
+		$this->addMaskReplacement('page', '&raquo;', true);
+		$options['page_number'] = $pager->getLastPage();
+		$str .= $this->processPage($options);
 
 		// Possible wish to return value instead of print it on screen
-        if ($return) {
-            return $str;
-        }
+		if ($return) {
+			return $str;
+		}
 
-        echo $str;
+		echo $str;
 	}
 }
 </code>
