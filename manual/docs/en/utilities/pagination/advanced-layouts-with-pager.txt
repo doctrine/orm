@@ -25,18 +25,18 @@ Now we know how to create the {{Doctrine_Pager_Layout}} and the types that are a
 <code type="php">
 // Creating pager layout
 $pager_layout = new Doctrine_Pager_Layout(
-    new Doctrine_Pager(
-        Doctrine_Query::create()
-            ->from( 'User u' )
-            ->leftJoin( 'u.Group g' )
-            ->orderby( 'u.username ASC' ),
-        $currentPage,
-        $resultsPerPage
-    ),
-    new Doctrine_Pager_Range_Sliding(array(
-        'chunk' => 5
-    )),
-    'http://wwww.domain.com/app/User/list/page,{%page_number}'
+	new Doctrine_Pager(
+		Doctrine_Query::create()
+			->from( 'User u' )
+			->leftJoin( 'u.Group g' )
+			->orderby( 'u.username ASC' ),
+		$currentPage,
+		$resultsPerPage
+	),
+	new Doctrine_Pager_Range_Sliding(array(
+		'chunk' => 5
+	)),
+	'http://wwww.domain.com/app/User/list/page,{%page_number}'
 );
 
 // Assigning templates for page links creation
@@ -63,19 +63,19 @@ The first change we need to do is tho adjust the {{Doctrine_Query}} object and a
 <code type="php">
 // Creating pager layout
 $pager_layout = new Doctrine_Pager_Layout(
-    new Doctrine_Pager(
-        Doctrine_Query::create()
-            ->from( 'User u' )
-            ->leftJoin( 'u.Group g' )
-            ->where( 'LOWER(u.username) LIKE LOWER(?)', array( '%'.$_GET['search'].'%' ) )
-            ->orderby( 'u.username ASC' ),
-        $currentPage,
-        $resultsPerPage
-    ),
-    new Doctrine_Pager_Range_Sliding(array(
-        'chunk' => 5
-    )),
-    'http://wwww.domain.com/app/User/list/page,{%page_number}?search={%search}'
+	new Doctrine_Pager(
+		Doctrine_Query::create()
+			->from( 'User u' )
+			->leftJoin( 'u.Group g' )
+			->where( 'LOWER(u.username) LIKE LOWER(?)', array( '%'.$_GET['search'].'%' ) )
+			->orderby( 'u.username ASC' ),
+		$currentPage,
+		$resultsPerPage
+	),
+	new Doctrine_Pager_Range_Sliding(array(
+		'chunk' => 5
+	)),
+	'http://wwww.domain.com/app/User/list/page,{%page_number}?search={%search}'
 );
 </code>
 
@@ -89,6 +89,10 @@ $pager_layout->setSelectedTemplate('[{%page}]');
 
 // Fetching users
 $users = $pager_layout->execute();
+
+foreach ($users as $user) {
+	// ...
+}
 </code>
 
 The method {{display()}} is the place where we define the custom mask we created. This method accepts 2 optional arguments: one array of optional masks and if the output should be returned instead of printed on screen.
@@ -98,7 +102,7 @@ Custom masks are defined in key => value pairs. So all needed code is to define 
 <code type="php">
 // Displaying page links
 $pager_layout->display( array(
-    'search' => urlencode($_GET['search'])
+	'search' => urlencode($_GET['search'])
 ) );
 </code>
 

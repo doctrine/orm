@@ -7,12 +7,12 @@ $resultsPerPage = 50;
 
 // Creating pager object
 $pager = new Doctrine_Pager(
-    Doctrine_Query::create()
-        ->from( 'User u' )
-        ->leftJoin( 'u.Group g' )
-        ->orderby( 'u.username ASC' ),
-    $currentPage, // Current page of request
-    $resultsPerPage // (Optional) Number of results per page. Default is 25
+	Doctrine_Query::create()
+		->from( 'User u' )
+		->leftJoin( 'u.Group g' )
+		->orderby( 'u.username ASC' ),
+	$currentPage, // Current page of request
+	$resultsPerPage // (Optional) Number of results per page. Default is 25
 );
 </code>
 
@@ -28,7 +28,11 @@ If you try to access any of the methods provided by Doctrine_Pager now, you'll e
 To run the query, the process is similar to the current existent {{Doctrine_Query}} execute call. It even allow arguments the way you usually do it. Here is the PHP complete syntax, including the syntax of optional parameters:
 
 <code type="php">
-$pager->execute([$args = array() [, $fetchType = Doctrine::FETCH_RECORD]]);
+$items = $pager->execute([$args = array() [, $fetchType = Doctrine::FETCH_RECORD]]);
+
+foreach ($items as $item) {
+	// ...
+}
 </code>
 
 There are some special cases where the return records query differ of the counter query. To allow this situation, {{Doctrine_Pager}} has some methods that enable you to count and then to execute. The first thing you have to do is to define the count query:

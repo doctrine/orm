@@ -41,10 +41,10 @@ Now that we know how the different of styles of pager range works, it's time to 
 
 <code type="php">
 $pager_range = new Doctrine_Pager_Range_Sliding(
-    array(
-        'chunk' => 5 // Chunk length
-    ),
-    $pager // Doctrine_Pager object we learned how to create in previous topic
+	array(
+		'chunk' => 5 // Chunk length
+	),
+	$pager // Doctrine_Pager object we learned how to create in previous topic
 );
 </code>
 
