@@ -75,6 +75,9 @@ $pager_range->getOptions();
 // Returns the custom Doctrine_Pager_Range implementation offset option
 $pager_range->getOption($option);
 
+// Check if a given page is in the range
+$pager_range->isInRange($page);
+
 // Return the range around the current page (obtained from Doctrine_Pager
 // associated to the $pager_range instance)
 $pager_range->rangeAroundPage();

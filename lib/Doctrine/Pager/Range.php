@@ -142,6 +142,20 @@ abstract class Doctrine_Pager_Range
 
 
     /**
+     * isInRange
+     *
+     * Check if a given page is in the range
+     *
+     * @param $page       Page to be checked
+     * @return boolean
+     */
+    public function isInRange($page)
+    {
+        return (array_search($page, $this->rangeAroundPage()) !== false);
+    }
+
+
+    /**
      * _initialize
      *
      * Initialize Doctrine_Page_Range subclass which does custom class definitions
