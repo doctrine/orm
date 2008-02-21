@@ -270,12 +270,12 @@ class Doctrine_Pager
     public function getNextPage()
     {
         if ($this->getExecuted()) {
-            return $this->_lastPage;
+            return min($this->getPage() + 1, $this->getLastPage());
         }
 
         throw new Doctrine_Pager_Exception(
             'Cannot retrieve the last page number of a not yet executed Pager query'
-        );return min($this->getPage() + 1, $this->getLastPage());
+        );
     }
 
 
