@@ -286,7 +286,7 @@ END;
 
         $i = 0;
 
-        if (isset($definition['inheritance']['extends']) && !(isset($definition['override_parent']) && $definition['override_parent'] == false)) {
+        if (isset($definition['inheritance']['extends']) && ! (isset($definition['override_parent']) && $definition['override_parent'] == true)) {
             $ret[$i] = "    parent::setTableDefinition();";
             $i++;
         }
@@ -343,7 +343,7 @@ END;
         $ret = array();
         $i = 0;
 
-        if (isset($definition['inheritance']['extends']) && !(isset($definition['override_parent']) && $definition['override_parent'] == false)) {
+        if (isset($definition['inheritance']['extends']) && ! (isset($definition['override_parent']) && $definition['override_parent'] == true)) {
             $ret[$i] = "    parent::setUp();";
             $i++;
         }
@@ -710,7 +710,7 @@ END;
             $baseClass = $definition;
             $baseClass['className'] = 'Base' . $baseClass['className'];
             $baseClass['abstract'] = true;
-            $baseClass['override_parent'] = true;
+            $baseClass['override_parent'] = false;
             $baseClass['is_base_class'] = true;
 
             $this->writeDefinition($baseClass);
