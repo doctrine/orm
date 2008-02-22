@@ -28,7 +28,7 @@ Doctrine::autoload('Doctrine_Exception');
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  * @since       1.0
  * @version     $Revision$
- * @link        www.phpdoctrine.com
+ * @link        www.phpdoctrine.org
  */
 class Doctrine_Transaction_Exception extends Doctrine_Exception
 { }

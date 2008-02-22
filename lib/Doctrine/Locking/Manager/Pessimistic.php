@@ -26,7 +26,7 @@
  *
  * @package     Doctrine
  * @subpackage  Locking
- * @link        www.phpdoctrine.com
+ * @link        www.phpdoctrine.org
  * @author      Roman Borschel <roman@code-factory.org>
  * @author      Pierre Minnieur <pm@pierre-minnieur.de>
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>

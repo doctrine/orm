@@ -27,7 +27,7 @@ Doctrine::autoload('Doctrine_Search_Exception');
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @version     $Revision$
- * @link        www.phpdoctrine.com
+ * @link        www.phpdoctrine.org
  * @since       1.0
  */
 class Doctrine_Search_Analyzer_Exception extends Doctrine_Search_Exception

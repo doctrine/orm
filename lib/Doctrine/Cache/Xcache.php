@@ -25,7 +25,7 @@ Doctrine::autoload('Doctrine_Cache_Driver');
  * @package     Doctrine
  * @subpackage  Cache
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
- * @link        www.phpdoctrine.com
+ * @link        www.phpdoctrine.org
  * @since       1.0
  * @version     $Revision: $
  * @author      Dmitry Bakaleinik (dima@snaiper.net)

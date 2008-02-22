@@ -29,7 +29,7 @@ Doctrine::autoload('Doctrine_Access');
  * @package     Doctrine
  * @subpackage  EventListener
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
- * @link        www.phpdoctrine.com
+ * @link        www.phpdoctrine.org
  * @since       1.0
  * @version     $Revision$
  */

@@ -26,7 +26,7 @@
  *
  * @package     Doctrine
  * @subpackage  Export
- * @link        www.phpdoctrine.com
+ * @link        www.phpdoctrine.org
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @version     $Revision: 1838 $
  * @author      Nicolas Bérard-Nault <nicobn@gmail.com>

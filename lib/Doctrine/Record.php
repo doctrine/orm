@@ -28,7 +28,7 @@ Doctrine::autoload('Doctrine_Record_Abstract');
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  * @author      Roman Borschel <roman@code-factory.org>
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
- * @link        www.phpdoctrine.com
+ * @link        www.phpdoctrine.org
  * @since       1.0
  * @version     $Revision$
  * @todo Remove the depdency on the ClassMetadata. All operations that involve the metadata

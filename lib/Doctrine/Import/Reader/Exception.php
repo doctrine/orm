@@ -24,7 +24,7 @@
  *
  * @package     Doctrine
  * @subpackage  Import
- * @link        www.phpdoctrine.com
+ * @link        www.phpdoctrine.org
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @since       1.0
  * @version     $Revision$
