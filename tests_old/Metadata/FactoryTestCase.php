@@ -25,8 +25,8 @@ class Doctrine_Metadata_Factory_TestCase extends Doctrine_UnitTestCase
         $userClass = $this->conn->getClassMetadata('Metadata_User');
         $this->assertTrue($userClass instanceof Doctrine_ClassMetadata);
         $this->assertEqual('cti_user', $userClass->getTableName());
-        $this->assertEqual(4, count($userClass->getFields()));
-        $this->assertIdentical(array(), $userClass->getOption('parents'));
+        $this->assertEqual(4, count($userClass->getMappedColumns()));
+        $this->assertIdentical(array(), $userClass->getParentClasses());
         $this->assertEqual('type', $userClass->getInheritanceOption('discriminatorColumn'));
         $this->assertIdentical(array(
               1 => 'CTI_User',
@@ -37,9 +37,9 @@ class Doctrine_Metadata_Factory_TestCase extends Doctrine_UnitTestCase
         
         $managerClass = $this->conn->getMetadata('Metadata_Manager');
         $this->assertTrue($managerClass instanceof Doctrine_ClassMetadata);
-        $this->assertIdentical(array('Metadata_User'), $managerClass->getOption('parents'));
+        $this->assertIdentical(array('Metadata_User'), $managerClass->getParentClasses());
         $this->assertEqual('cti_manager', $managerClass->getTableName());
-        $this->assertEqual(5, count($managerClass->getFields()));
+        $this->assertEqual(5, count($managerClass->getMappedColumns()));
         $this->assertEqual('type', $managerClass->getInheritanceOption('discriminatorColumn'));
         $this->assertIdentical(array(
               1 => 'CTI_User',
@@ -50,9 +50,9 @@ class Doctrine_Metadata_Factory_TestCase extends Doctrine_UnitTestCase
         
         $suManagerClass = $this->conn->getMetadata('Metadata_SuperManager');
         $this->assertTrue($suManagerClass instanceof Doctrine_ClassMetadata);
-        $this->assertIdentical(array('Metadata_Manager', 'Metadata_User'), $suManagerClass->getOption('parents'));
+        $this->assertIdentical(array('Metadata_Manager', 'Metadata_User'), $suManagerClass->getParentClasses());
         $this->assertEqual('cti_supermanager', $suManagerClass->getTableName());
-        $this->assertEqual(6, count($suManagerClass->getFields()));
+        $this->assertEqual(6, count($suManagerClass->getMappedColumns()));
         $this->assertEqual('type', $suManagerClass->getInheritanceOption('discriminatorColumn'));
         $this->assertIdentical(array(
               1 => 'CTI_User',
@@ -65,7 +65,7 @@ class Doctrine_Metadata_Factory_TestCase extends Doctrine_UnitTestCase
     
     public function testExportableFormatOfClassInClassTableInheritanceHierarchy()
     {
-        $userClass = $this->conn->getMetadata('Metadata_User');
+        $userClass = $this->conn->getClassMetadata('Metadata_User');
         $userClassExportableFormat = $userClass->getExportableFormat();
         $this->assertEqual(4, count($userClassExportableFormat['columns']));
         $this->assertTrue(isset($userClassExportableFormat['columns']['cti_id']));
@@ -75,21 +75,21 @@ class Doctrine_Metadata_Factory_TestCase extends Doctrine_UnitTestCase
         $this->assertTrue(isset($userClassExportableFormat['columns']['cti_name']));
         $this->assertTrue(isset($userClassExportableFormat['columns']['type']));
         
-        $managerClass = $this->conn->getMetadata('Metadata_Manager');
+        $managerClass = $this->conn->getClassMetadata('Metadata_Manager');
         $managerClassExportableFormat = $managerClass->getExportableFormat();
         $this->assertEqual(2, count($managerClassExportableFormat['columns']));
         $this->assertTrue(isset($managerClassExportableFormat['columns']['cti_id']));
         $this->assertTrue(isset($managerClassExportableFormat['columns']['cti_id']['primary']));
         $this->assertFalse(isset($managerClassExportableFormat['columns']['cti_id']['autoincrement']));
         
-        $customerClass = $this->conn->getMetadata('Metadata_Customer');
+        $customerClass = $this->conn->getClassMetadata('Metadata_Customer');
         $customerClassExportableFormat = $customerClass->getExportableFormat();
         $this->assertEqual(2, count($customerClassExportableFormat['columns']));
         $this->assertTrue(isset($customerClassExportableFormat['columns']['cti_id']));
         $this->assertTrue(isset($customerClassExportableFormat['columns']['cti_id']['primary']));
         $this->assertFalse(isset($customerClassExportableFormat['columns']['cti_id']['autoincrement']));
         
-        $superManagerClass = $this->conn->getMetadata('Metadata_SuperManager');
+        $superManagerClass = $this->conn->getClassMetadata('Metadata_SuperManager');
         $superManagerClassExportableFormat = $superManagerClass->getExportableFormat();
         $this->assertEqual(2, count($superManagerClassExportableFormat['columns']));
         $this->assertTrue(isset($superManagerClassExportableFormat['columns']['cti_id']));
@@ -99,11 +99,11 @@ class Doctrine_Metadata_Factory_TestCase extends Doctrine_UnitTestCase
     
     public function testMetadataSetupOnSingleTableInheritanceHierarchy()
     {        
-        $userClass = $this->conn->getMetadata('Metadata_STI_User');
+        $userClass = $this->conn->getClassMetadata('Metadata_STI_User');
         $this->assertTrue($userClass instanceof Doctrine_ClassMetadata);
         $this->assertEqual('cti_user', $userClass->getTableName());
-        $this->assertEqual(4, count($userClass->getFields()));
-        $this->assertIdentical(array(), $userClass->getOption('parents'));
+        $this->assertEqual(4, count($userClass->getMappedColumns()));
+        $this->assertIdentical(array(), $userClass->getParentClasses());
         $this->assertEqual('type', $userClass->getInheritanceOption('discriminatorColumn'));
         $this->assertIdentical(array(
               1 => 'CTI_User',
@@ -111,11 +111,11 @@ class Doctrine_Metadata_Factory_TestCase extends Doctrine_UnitTestCase
               3 => 'CTI_Customer',
               4 => 'CTI_SuperManager'), $userClass->getInheritanceOption('discriminatorMap'));
         
-        $managerClass = $this->conn->getMetadata('Metadata_STI_Manager');
+        $managerClass = $this->conn->getClassMetadata('Metadata_STI_Manager');
         $this->assertTrue($managerClass instanceof Doctrine_ClassMetadata);
-        $this->assertIdentical(array('Metadata_STI_User'), $managerClass->getOption('parents'));
+        $this->assertIdentical(array('Metadata_STI_User'), $managerClass->getParentClasses());
         $this->assertEqual('cti_user', $managerClass->getTableName());
-        $this->assertEqual(5, count($managerClass->getFields()));
+        $this->assertEqual(5, count($managerClass->getMappedColumns()));
         $this->assertEqual('type', $managerClass->getInheritanceOption('discriminatorColumn'));
         $this->assertIdentical(array(
               1 => 'CTI_User',
@@ -124,11 +124,11 @@ class Doctrine_Metadata_Factory_TestCase extends Doctrine_UnitTestCase
               4 => 'CTI_SuperManager'), $managerClass->getInheritanceOption('discriminatorMap'));
         
         
-        $suManagerClass = $this->conn->getMetadata('Metadata_STI_SuperManager');
+        $suManagerClass = $this->conn->getClassMetadata('Metadata_STI_SuperManager');
         $this->assertTrue($suManagerClass instanceof Doctrine_ClassMetadata);
-        $this->assertIdentical(array('Metadata_STI_Manager', 'Metadata_STI_User'), $suManagerClass->getOption('parents'));
+        $this->assertIdentical(array('Metadata_STI_Manager', 'Metadata_STI_User'), $suManagerClass->getParentClasses());
         $this->assertEqual('cti_user', $suManagerClass->getTableName());
-        $this->assertEqual(6, count($suManagerClass->getFields()));
+        $this->assertEqual(6, count($suManagerClass->getMappedColumns()));
         $this->assertEqual('type', $suManagerClass->getInheritanceOption('discriminatorColumn'));
         $this->assertIdentical(array(
               1 => 'CTI_User',

@@ -317,6 +317,17 @@ class Doctrine_Mapper extends Doctrine_Configurable implements Countable
 
         return true;
     }
+    
+    /**
+     * Tells the mapper to manage the entity if it's not already managed.
+     *
+     * @return boolean  TRUE if the entity was previously not managed and is now managed,
+     *                  FALSE otherwise (the entity is already managed).
+     */
+    public function manage(Doctrine_Record $record)
+    {
+        return $this->getRepository()->add($record);
+    }
 
     /**
      * removeRecord

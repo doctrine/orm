@@ -17,20 +17,20 @@ class Doctrine_Inheritance_SingleTable_TestCase extends Doctrine_UnitTestCase
 
     public function testMetadataSetup()
     { 
-        $userTable = $this->conn->getMetadata('STI_User');
-        $superManagerTable = $this->conn->getMetadata('STI_SuperManager');
-        $managerTable = $this->conn->getMetadata('STI_Manager');
-        $customerTable = $this->conn->getMetadata('STI_Customer');
+        $userClass = $this->conn->getClassMetadata('STI_User');
+        $superManagerClass = $this->conn->getClassMetadata('STI_SuperManager');
+        $managerClass = $this->conn->getClassMetadata('STI_Manager');
+        $customerClass = $this->conn->getClassMetadata('STI_Customer');
         
-        $this->assertEqual(4, count($userTable->getFields()));
-        $this->assertEqual('sti_entity', $userTable->getTableName());
-        $this->assertEqual('sti_entity', $managerTable->getTableName());
+        $this->assertEqual(4, count($userClass->getMappedColumns()));
+        $this->assertEqual('sti_entity', $userClass->getTableName());
+        $this->assertEqual('sti_entity', $managerClass->getTableName());
         
         // check inheritance map
         $this->assertEqual(array(1 => 'STI_User',
               2 => 'STI_Manager',
               3 => 'STI_Customer',
-              4 => 'STI_SuperManager'), $userTable->getInheritanceOption('discriminatorMap'));
+              4 => 'STI_SuperManager'), $userClass->getInheritanceOption('discriminatorMap'));
         
         //var_dump($superManagerTable->getComponentName());
     }

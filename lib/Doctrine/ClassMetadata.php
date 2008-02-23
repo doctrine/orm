@@ -120,7 +120,7 @@ class Doctrine_ClassMetadata extends Doctrine_Configurable implements Serializab
      *
      * @var array $columns
      */
-    protected $_columns = array();
+    protected $_mappedColumns = array();
 
     /**
      * An array of field names. used to look up field names from column names.
@@ -417,8 +417,8 @@ class Doctrine_ClassMetadata extends Doctrine_Configurable implements Serializab
      * getColumnName
      *
      * returns a column name for a field name.
-     * if the actual name for the alias cannot be found
-     * this method returns the given alias
+     * if the column name for the field cannot be found
+     * this method returns the given field name.
      *
      * @param string $alias         column alias
      * @return string               column name
@@ -428,21 +428,22 @@ class Doctrine_ClassMetadata extends Doctrine_Configurable implements Serializab
         if (isset($this->_columnNames[$fieldName])) {
             return $this->_columnNames[$fieldName];
         }
-        
+
         return $fieldName;
     }
     
     /**
-     *
-     *
+     * @deprecated
      */
     public function getColumnDefinition($columnName)
     {
-        if ( ! isset($this->_columns[$columnName])) {
-            return false;
-        }
-        
-        return $this->_columns[$columnName];
+        return $this->getColumnMapping($columnName);
+    }
+    
+    public function getColumnMapping($columnName)
+    {
+        return isset($this->_mappedColumns[$columnName]) ?
+                $this->_mappedColumns[$columnName] : false;
     }
     
     /**
@@ -471,7 +472,7 @@ class Doctrine_ClassMetadata extends Doctrine_Configurable implements Serializab
     }
     
     /**
-     * Maps a column of the class' database table to a property of the entity.
+     * Maps a column of the class' database table to a field of the entity.
      *
      * @param string $name      The name of the column to map. Syntax: columnName [as propertyName].
      *                          The property name is optional. If not used the column will be 
@@ -548,9 +549,9 @@ class Doctrine_ClassMetadata extends Doctrine_Configurable implements Serializab
         $options['length'] = $length;
         
         if ($prepend) {
-            $this->_columns = array_merge(array($name => $options), $this->_columns);
+            $this->_mappedColumns = array_merge(array($name => $options), $this->_mappedColumns);
         } else {
-            $this->_columns[$name] = $options;
+            $this->_mappedColumns[$name] = $options;
         }
 
         if ( ! empty($options['primary'])) {
@@ -587,6 +588,17 @@ class Doctrine_ClassMetadata extends Doctrine_Configurable implements Serializab
     }
     
     /**
+     * Gets the names of all validators that are applied on a field.
+     *
+     */
+    public function getFieldValidators($fieldName)
+    {
+        $columnName = $this->getColumnName($fieldName);
+        return isset($this->_mappedColumns[$columnName]['validators']) ?
+                $this->_mappedColumns[$columnName]['validators'] : array();
+    }
+    
+    /**
      * hasDefaultValues
      * returns true if this class has default values, otherwise false
      *
@@ -607,11 +619,11 @@ class Doctrine_ClassMetadata extends Doctrine_Configurable implements Serializab
     public function getDefaultValueOf($fieldName)
     {
         $columnName = $this->getColumnName($fieldName);
-        if ( ! isset($this->_columns[$columnName])) {
+        if ( ! isset($this->_mappedColumns[$columnName])) {
             throw new Doctrine_Table_Exception("Couldn't get default value. Column ".$columnName." doesn't exist.");
         }
-        if (isset($this->_columns[$columnName]['default'])) {
-            return $this->_columns[$columnName]['default'];
+        if (isset($this->_mappedColumns[$columnName]['default'])) {
+            return $this->_mappedColumns[$columnName]['default'];
         } else {
             return null;
         }
@@ -649,7 +661,7 @@ class Doctrine_ClassMetadata extends Doctrine_Configurable implements Serializab
      */
     public function hasColumn($columnName)
     {
-        return isset($this->_columns[$columnName]);
+        return isset($this->_mappedColumns[$columnName]);
     }
     
     /**
@@ -668,8 +680,8 @@ class Doctrine_ClassMetadata extends Doctrine_Configurable implements Serializab
     public function getEnumValues($fieldName)
     {
         $columnName = $this->getColumnName($fieldName);
-        if (isset($this->_columns[$columnName]['values'])) {
-            return $this->_columns[$columnName]['values'];
+        if (isset($this->_mappedColumns[$columnName]['values'])) {
+            return $this->_mappedColumns[$columnName]['values'];
         } else {
             return array();
         }
@@ -694,8 +706,8 @@ class Doctrine_ClassMetadata extends Doctrine_Configurable implements Serializab
         
         $columnName = $this->getColumnName($fieldName);
         if ( ! $this->_conn->getAttribute(Doctrine::ATTR_USE_NATIVE_ENUM) &&
-                isset($this->_columns[$columnName]['values'][$index])) {
-            $enumValue = $this->_columns[$columnName]['values'][$index];
+                isset($this->_mappedColumns[$columnName]['values'][$index])) {
+            $enumValue = $this->_mappedColumns[$columnName]['values'][$index];
         } else {
             $enumValue = $index;
         }
@@ -726,20 +738,66 @@ class Doctrine_ClassMetadata extends Doctrine_Configurable implements Serializab
      * getColumnCount
      *
      * @return integer      the number of columns in this table
+     * @deprecated
      */
     public function getColumnCount()
     {
         return $this->_columnCount;
+    }
+    
+    /**
+     * getMappedColumnCount
+     *
+     * @return integer      the number of mapped columns in the class.
+     */
+    public function getMappedColumnCount()
+    {
+        return $this->_columnCount;
+    }
+    
+    /**
+     * 
+     * @return string  The name of the accessor (getter) method or NULL if the field does
+     *                 not have a custom accessor.
+     */
+    public function getCustomAccessor($fieldName)
+    {
+        $columnName = $this->getColumnName($fieldName);
+        return isset($this->_mappedColumns[$columnName]['accessor']) ?
+                $this->_mappedColumns[$columnName]['accessor'] : null;
+    }
+    
+    /**
+     * 
+     * @return string  The name of the mutator (setter) method or NULL if the field does
+     *                 not have a custom mutator.
+     */
+    public function getCustomMutator($fieldName)
+    {
+        $columnName = $this->getColumnName($fieldName);
+        return isset($this->_mappedColumns[$columnName]['mutator']) ?
+                $this->_mappedColumns[$columnName]['mutator'] : null;
     }
 
     /**
      * returns all columns and their definitions
      *
      * @return array
+     * @deprecated
      */
     public function getColumns()
     {
-        return $this->_columns;
+        return $this->_mappedColumns;
+    }
+    
+    /**
+     * Gets all mapped columns and their mapping definitions.
+     *
+     * @return array
+     */
+    public function getMappedColumns()
+    {
+        return $this->_mappedColumns;
     }
 
     /**
@@ -754,8 +812,8 @@ class Doctrine_ClassMetadata extends Doctrine_Configurable implements Serializab
 
         unset($this->_fieldNames[$columnName]);
 
-        if (isset($this->_columns[$columnName])) {
-            unset($this->_columns[$columnName]);
+        if (isset($this->_mappedColumns[$columnName])) {
+            unset($this->_mappedColumns[$columnName]);
             return true;
         }
         $this->_columnCount--;
@@ -771,7 +829,7 @@ class Doctrine_ClassMetadata extends Doctrine_Configurable implements Serializab
     public function getColumnNames(array $fieldNames = null)
     {
         if ($fieldNames === null) {
-            return array_keys($this->_columns);
+            return array_keys($this->_mappedColumns);
         } else {
            $columnNames = array();
            foreach ($fieldNames as $fieldName) {
@@ -831,7 +889,15 @@ class Doctrine_ClassMetadata extends Doctrine_Configurable implements Serializab
      */
     public function getTypeOfColumn($columnName)
     {
-        return isset($this->_columns[$columnName]) ? $this->_columns[$columnName]['type'] : false;
+        return isset($this->_mappedColumns[$columnName]) ? $this->_mappedColumns[$columnName]['type'] : false;
+    }
+    
+    /**
+     * Gets the (maximum) length of a field.
+     */
+    public function getFieldLength($fieldName)
+    {
+        return $this->_mappedColumns[$this->getColumnName($fieldName)]['length'];
     }
     
     /**
@@ -844,33 +910,13 @@ class Doctrine_ClassMetadata extends Doctrine_Configurable implements Serializab
         return $this->getTableOption('tableName');
     }
     
-    /**
-     *
-     */
-    public function getFieldMapping($fieldName)
-    {
-        return $this->getDefinitionOf($fieldName);
-    }
-    
-    /**
-     * 
-     */
-    public function getFields()
-    {
-        return $this->_columns;
-    }
-    
     public function getInheritedFields()
     {
         
     }
     
-    public function getAllFields()
-    {
-        
-    }
-    
     /**
+     * Adds a named query.
      *
      * @param string $name  The name under which the query gets registered.
      * @param string $query The DQL query.
@@ -952,6 +998,7 @@ class Doctrine_ClassMetadata extends Doctrine_Configurable implements Serializab
      * returns all templates attached to this table
      *
      * @return array     an array containing all templates
+     * @todo Unify under 'Behaviors'
      */
     public function getTemplates()
     {
@@ -971,7 +1018,7 @@ class Doctrine_ClassMetadata extends Doctrine_Configurable implements Serializab
     /**
      * Sets the subclasses of the class.
      * All entity classes that participate in a hierarchy and have subclasses
-     * need to declare them in this way.
+     * need to declare them this way.
      *
      * @param array $subclasses  The names of all subclasses.
      */
@@ -1002,6 +1049,8 @@ class Doctrine_ClassMetadata extends Doctrine_Configurable implements Serializab
     
     /**
      * Gets the names of all parent classes.
+     *
+     * @return array  The names of all parent classes.
      */
     public function getParentClasses()
     {
@@ -1048,6 +1097,14 @@ class Doctrine_ClassMetadata extends Doctrine_Configurable implements Serializab
         }
     }
     
+    /**
+     * Checks if the 2 options 'discriminatorColumn' and 'discriminatorMap' are present.
+     * If either of them is missing an exception is thrown.
+     *
+     * @param array $options  The options.
+     * @throws Doctrine_ClassMetadata_Exception  If at least one of the required discriminator
+     *                                           options is missing.
+     */
     private function _checkRequiredDiscriminatorOptions(array $options)
     {
         if ( ! isset($options['discriminatorColumn'])) {
@@ -1059,21 +1116,30 @@ class Doctrine_ClassMetadata extends Doctrine_Configurable implements Serializab
         }
     }
     
+    /**
+     * Gets an inheritance option.
+     *
+     */
     public function getInheritanceOption($name)
     {
         if ( ! array_key_exists($name, $this->_inheritanceOptions)) {
-            echo $name;
             throw new Doctrine_ClassMetadata_Exception("Unknown inheritance option: '$name'.");
         }
         
         return $this->_inheritanceOptions[$name];
     }
     
+    /**
+     * Gets all inheritance options.
+     */
     public function getInheritanceOptions()
     {
         return $this->_inheritanceOptions;
     }
     
+    /**
+     * Sets an inheritance option.
+     */
     public function setInheritanceOption($name, $value)
     {
         if ( ! array_key_exists($name, $this->_inheritanceOptions)) {
@@ -1082,7 +1148,7 @@ class Doctrine_ClassMetadata extends Doctrine_Configurable implements Serializab
         
         switch ($name) {
             case 'discriminatorColumn':
-                if ( $value !== null && ! is_string($value)) {
+                if ($value !== null && ! is_string($value)) {
                     throw new Doctrine_ClassMetadata_Exception("Invalid value '$value' for option"
                             . " 'discriminatorColumn'.");
                 }
@@ -1395,7 +1461,7 @@ class Doctrine_ClassMetadata extends Doctrine_Configurable implements Serializab
      */
     public function isInheritedField($fieldName)
     {
-        return isset($this->_columns[$this->getColumnName($fieldName)]['inherited']);
+        return isset($this->_mappedColumns[$this->getColumnName($fieldName)]['inherited']);
     }
     
     /**
@@ -1450,15 +1516,15 @@ class Doctrine_ClassMetadata extends Doctrine_Configurable implements Serializab
     }
     
     /**
-     * Serializes the metadata class.
+     * Serializes the metadata.
      *
      * Part of the implementation of the Serializable interface.
      *
-     * @return string  The serialized metadata class.
+     * @return string  The serialized metadata.
      */
     public function serialize()
     {
-        return serialize($this->_columns);
+        return serialize($this->_mappedColumns);
     }
     
     /**

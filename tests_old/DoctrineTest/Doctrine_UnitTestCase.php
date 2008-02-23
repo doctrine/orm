@@ -300,4 +300,13 @@ class Doctrine_UnitTestCase extends UnitTestCase
 
         $this->init = true;
     }
+    
+    public function tearDown()
+    {
+        /*foreach ($this->tables as $table) {
+            foreach ($this->conn->getMapper($table)->getRepository() as $obj) {
+                $obj->free();
+            }
+        }*/
+    }
 }

@@ -116,11 +116,15 @@ class UnitTestCase
         foreach (get_class_methods($this) as $method) {
             if (substr($method, 0, 4) === 'test') {
                 $this->setUp();
-
                 $this->$method();
+                $this->tearDown();
             }
         }
     }
+    
+    public function setUp() {}
+    public function tearDown() {}
+    
     public function getMessages()
     {
         return $this->_messages;

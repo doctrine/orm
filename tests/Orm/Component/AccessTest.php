@@ -44,6 +44,16 @@ class Orm_Component_AccessTest extends Doctrine_OrmTestCase
         $this->user = new ForumUser();
     }
 
+    public function testAccessorOverridePerformance() {
+        $this->user->username;
+        $start = microtime(true);
+        for ($i = 0; $i < 1; $i++) {
+            $this->user->username;
+        }
+        $end = microtime(true);
+        echo ($end - $start) . " seconds" . PHP_EOL;
+    }
+
     /**
      * @test 
      */

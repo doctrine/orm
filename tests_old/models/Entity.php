@@ -5,7 +5,7 @@ class Entity extends Doctrine_Record
     {
         $class->setColumn('id', 'integer',20, array('autoincrement' => true, 'primary' => true));
         $class->setColumn('name', 'string',50);
-        $class->setColumn('loginname', 'string',20, array('unique' => true));
+        $class->setColumn('loginname', 'string',20, array('unique' => true, 'validators' => array('unique')));
         $class->setColumn('password', 'string',16);
         $class->setColumn('type', 'integer');
         $class->setColumn('created', 'integer',11);

@@ -29,15 +29,61 @@ Doctrine::autoload('Doctrine_Connection_Module');
  * @since       1.0
  * @version     $Revision$
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
+ * @author      Roman Borschel <roman@code-factory.org>
  * @todo package:orm. Figure out a useful implementation.
  */
 class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
 {
+    /**
+     * A map of all currently managed entities.
+     *
+     * @var array
+     */
+    protected $_managedEntities = array();
+    
+    /**
+     * The identity map that holds references to all managed entities that have
+     * an identity.
+     */
+    protected $_identityMap = array();
+    
+    /**
+     * Boolean flag that indicates whether the unit of work immediately executes any
+     * database operations or whether these operations are postponed until the
+     * unit of work is flushed/committed.
+     *
+     * @var boolean
+     */
     protected $_autoflush = true;
+    
+    /**
+     * A list of all postponed inserts.
+     */
     protected $_inserts = array();
+    
+    /**
+     * A list of all postponed updates.
+     */
     protected $_updates = array();
+    
+    /**
+     * A list of all postponed deletes.
+     */
     protected $_deletes = array();
     
+    /**
+     * The dbal connection used by the unit of work.
+     *
+     * @var Doctrine_Connection
+     * @todo Allow multiple connections for transparent master-slave replication.
+     */
+    protected $_conn;
+    
+    /**
+     * Flushes the unit of work, executing all operations that have been postponed
+     * up to this point.
+     *
+     */
     public function flush()
     {
         // get the flush tree
@@ -47,7 +93,6 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
         foreach ($tree as $name) {
             $mapper = $this->conn->getMapper($name);
             foreach ($mapper->getRepository() as $record) {
-                //echo $record->getOid() . "<br />";
                 $mapper->saveSingleRecord($record);
             }
         }
@@ -95,7 +140,7 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
             if ( ! ($mapper instanceof Doctrine_Mapper)) {
                 $mapper = $this->conn->getMapper($mapper);
             }
-            $nm     = $mapper->getComponentName();
+            $nm = $mapper->getComponentName();
 
             $index  = array_search($nm, $tree);
 
@@ -172,6 +217,7 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
                 }
             }
         }
+        
         return array_values($tree);
     }
     

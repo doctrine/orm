@@ -56,4 +56,5 @@ class Doctrine_Ticket_381_TestCase extends Doctrine_UnitTestCase {
         $this->assertEqual($obj->get('name'), 'yes2');
         $obj->save();
     }
+    
 }

@@ -16,11 +16,17 @@ class ForumUser extends Doctrine_Record
         // the discriminator column
         $class->mapColumn('dtype', 'string', 50);
         
-        // property mapping
+        // column mapping
         $class->mapColumn('id', 'integer', 4, array(
                 'primary' => true,
                 'autoincrement' => true));
         $class->mapColumn('username', 'string', 50);
         
     }
+    /*
+    public function getUsername()
+    {
+        return $this->rawGet('username') . "!";
+    }
+    */
 }

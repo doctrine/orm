@@ -139,6 +139,7 @@ class Doctrine_Validator_TestCase extends Doctrine_UnitTestCase
 
     public function testValidate() 
     {
+        $this->manager->setAttribute(Doctrine::ATTR_VALIDATE, Doctrine::VALIDATE_ALL);
         $user = $this->connection->getMapper('User')->find(4);
 
         $set = array('password' => 'this is an example of too long password',
@@ -152,11 +153,11 @@ class Doctrine_Validator_TestCase extends Doctrine_UnitTestCase
         $this->assertTrue($user->getModified() == $set);
 
         $validator = new Doctrine_Validator();
+
         $validator->validateRecord($user);
 
-
         $stack = $user->errorStack();
-
+        
         $this->assertTrue($stack instanceof Doctrine_Validator_ErrorStack);
         $this->assertTrue(in_array('length', $stack['loginname']));
         $this->assertTrue(in_array('length', $stack['password']));
@@ -171,6 +172,7 @@ class Doctrine_Validator_TestCase extends Doctrine_UnitTestCase
         $stack = $email->errorStack();
 
         $this->assertTrue(in_array('unique', $stack['address']));
+        $this->manager->setAttribute(Doctrine::ATTR_VALIDATE, Doctrine::VALIDATE_NONE);
     }
 
     /**

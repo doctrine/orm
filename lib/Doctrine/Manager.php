@@ -498,6 +498,21 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
     }
     
     /**
+     * Creates a new native query (instance of Doctrine_RawSql).
+     *
+     * @return Doctrine_RawSql
+     */
+    public function createNativeQuery($sql = "")
+    {
+        $nativeQuery = new Doctrine_RawSql($this->getCurrentConnection());
+        if ( ! empty($sql)) {
+            $nativeQuery->parseQuery($sql);
+        }
+        
+        return $nativeQuery;
+    }
+    
+    /**
      * Creates a query object out of a registered, named query.
      *
      * @param string $name     The name of the query.
