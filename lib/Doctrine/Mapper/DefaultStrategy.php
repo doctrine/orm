@@ -77,14 +77,14 @@ class Doctrine_Mapper_DefaultStrategy extends Doctrine_Mapper_Strategy
         $seq = $class->getTableOption('sequenceName');
         if ( ! empty($seq)) {
             $id = $conn->sequence->nextId($seq);
-            $seqName = $class->getIdentifier();
+            $seqName = $identifier[0];
             $fields[$seqName] = $id;
             $record->assignIdentifier($id);
         }
 
         $this->_insertRow($class->getTableName(), $fields);
 
-        if (empty($seq) && count($identifier) == 1 && $identifier[0] == $class->getIdentifier() &&
+        if (empty($seq) && count($identifier) == 1 &&
                 $class->getIdentifierType() != Doctrine::IDENTIFIER_NATURAL) {
             if (strtolower($conn->getName()) == 'pgsql') {
                 $seq = $class->getTableName() . '_' . $identifier[0];

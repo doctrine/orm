@@ -536,10 +536,8 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
             case Doctrine::IDENTIFIER_AUTOINC:
             case Doctrine::IDENTIFIER_SEQUENCE:
             case Doctrine::IDENTIFIER_NATURAL:
-                $name = $this->_table->getIdentifier();
-                if (is_array($name)) {
-                    $name = $name[0];
-                }
+                $name = (array)$this->_table->getIdentifier();
+                $name = $name[0];
                 if ($exists) {
                     if (isset($this->_data[$name]) && $this->_data[$name] !== self::$_null) {
                         $this->_id[$name] = $this->_data[$name];
@@ -547,7 +545,7 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
                 }
                 break;
             case Doctrine::IDENTIFIER_COMPOSITE:
-                $names = $this->_table->getIdentifier();
+                $names = (array)$this->_table->getIdentifier();
 
                 foreach ($names as $name) {
                     if ($this->_data[$name] === self::$_null) {
@@ -581,7 +579,7 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
         unset($vars['_filter']);
         unset($vars['_node']);
 
-        $name = $this->_table->getIdentifier();
+        //$name = (array)$this->_table->getIdentifier();
         $this->_data = array_merge($this->_data, $this->_id);
 
         foreach ($this->_data as $k => $v) {
@@ -1005,7 +1003,9 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
             if ( ! $rel->isOneToOne()) {
                 // one-to-many relation found
                 if ( ! ($value instanceof Doctrine_Collection)) {
-                    throw new Doctrine_Record_Exception("Couldn't call Doctrine::set(), second argument should be an instance of Doctrine_Collection when setting one-to-many references.");
+                    throw new Doctrine_Record_Exception("Couldn't call Doctrine::set(), second"
+                            . " argument should be an instance of Doctrine_Collection when"
+                            . " setting one-to-many references.");
                 }
                 if (isset($this->_references[$name])) {
                     $this->_references[$name]->setData($value->getData());
@@ -1019,10 +1019,13 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
 
                     // one-to-one relation found
                     if ( ! ($value instanceof Doctrine_Record)) {
-                        throw new Doctrine_Record_Exception("Couldn't call Doctrine::set(), second argument should be an instance of Doctrine_Record or Doctrine_Null when setting one-to-one references.");
+                        throw new Doctrine_Record_Exception("Couldn't call Doctrine::set(),"
+                                . " second argument should be an instance of Doctrine_Record"
+                                . " or Doctrine_Null when setting one-to-one references.");
                     }
                     if ($rel instanceof Doctrine_Relation_LocalKey) {
-                        if ( ! empty($foreignFieldName) && $foreignFieldName != $value->getTable()->getIdentifier()) {
+                        $idFieldNames = (array)$value->getTable()->getIdentifier();
+                        if ( ! empty($foreignFieldName) && $foreignFieldName != $idFieldNames[0]) {
                             $this->set($localFieldName, $value->rawGet($foreignFieldName), false);
                         } else {
                             $this->set($localFieldName, $value, false);
@@ -1271,8 +1274,9 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
         }
 
         if ($this->_table->getIdentifierType() == Doctrine::IDENTIFIER_AUTOINC) {
-            $i = $this->_table->getIdentifier();
-            $a[$i] = $this->getIncremented();
+            $idFieldNames = (array)$this->_table->getIdentifier();
+            $id = $idFieldNames[0];
+            $a[$id] = $this->getIncremented();
         }
 
         if ($deep) {
@@ -1465,8 +1469,8 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
         $data = $this->_data;
 
         if ($this->_table->getIdentifierType() === Doctrine::IDENTIFIER_AUTOINC) {
-            $id = $this->_table->getIdentifier();
-
+            $idFieldNames = (array)$this->_table->getIdentifier();
+            $id = $idFieldNames[0];
             unset($data[$id]);
         }
 
@@ -1519,7 +1523,8 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
                     $this->_data[$fieldName] = $value;
                 }
             } else {
-                $name = $this->_table->getIdentifier();
+                $idFieldNames = (array)$this->_table->getIdentifier();
+                $name = $idFieldNames[0];
                 $this->_id[$name] = $id;
                 $this->_data[$name] = $id;
             }
@@ -1734,7 +1739,8 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
               ->addWhere($rel->getForeign() . ' = ?', array_values($this->identifier()));
 
             if (count($ids) > 0) {
-                $q->whereIn($rel->getTable()->getIdentifier(), $ids);
+                $relTableIdFieldNames = (array)$rel->getTable()->getIdentifier();
+                $q->whereIn($relTableIdFieldNames[0], $ids);
             }
 
             $q->execute();
@@ -1802,7 +1808,8 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
               ->set($rel->getForeign(), '?', array_values($this->identifier()));
 
             if (count($ids) > 0) {
-                $q->whereIn($rel->getTable()->getIdentifier(), $ids);
+                $relTableIdFieldNames = (array)$rel->getTable()->getIdentifier();
+                $q->whereIn($relTableIdFieldNames[0], $ids);
             }
 
             $q->execute();
@@ -1815,7 +1822,8 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
                     ->set($rel->getLocalFieldName(), '?', $ids);
 
             if (count($ids) > 0) {
-                $q->whereIn($rel->getTable()->getIdentifier(), array_values($this->identifier()));
+                $relTableIdFieldNames = (array)$rel->getTable()->getIdentifier();
+                $q->whereIn($relTableIdFieldNames[0], array_values($this->identifier()));
             }
 
             $q->execute();

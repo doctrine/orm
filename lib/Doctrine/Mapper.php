@@ -344,11 +344,7 @@ class Doctrine_Mapper extends Doctrine_Configurable implements Countable
     public function getRecord(array $data)
     {
         if ( ! empty($data)) {
-            $identifierFieldNames = $this->_classMetadata->getIdentifier();
-
-            if ( ! is_array($identifierFieldNames)) {
-                $identifierFieldNames = array($identifierFieldNames);
-            }
+            $identifierFieldNames = (array)$this->_classMetadata->getIdentifier();
 
             $found = false;
             foreach ($identifierFieldNames as $fieldName) {

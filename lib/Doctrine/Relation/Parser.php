@@ -336,14 +336,14 @@ class Doctrine_Relation_Parser
     public function getIdentifiers($table)
     {
         $componentNameToLower = strtolower($table->getComponentName());
-        if (is_array($table->getIdentifier())) {
-            $columns = array();      
+        $idFieldNames = (array)$table->getIdentifier();
+        if (count($idFieldNames) > 1) {
+            $columns = array();
             foreach ((array) $table->getIdentifierColumnNames() as $identColName) {
                 $columns[] = $componentNameToLower . '_' . $identColName;
             }
         } else {
-            $columns = $componentNameToLower . '_' . $table->getColumnName(
-                    $table->getIdentifier());
+            $columns = $componentNameToLower . '_' . $table->getColumnName($idFieldNames[0]);
         }
 
         return $columns;
@@ -405,15 +405,6 @@ class Doctrine_Relation_Parser
         $localClasses   = array_merge($this->_table->getOption('parents'), array($this->_table->getClassName()));
 
         $localIdentifierColumnNames = $this->_table->getIdentifierColumnNames();
-        if ((count($localIdentifierColumnNames) - 1) < 0) {
-            echo $this->_table->getClassName();
-            var_dump($this->_table->getIdentifier());
-            try {
-                throw new Exception();
-            } catch (Exception $e) {
-                echo $e->getTraceAsString() . "<br />";
-            }
-        }
         $localIdColumnName = $localIdentifierColumnNames[count($localIdentifierColumnNames) - 1];
         $foreignIdentifierColumnNames = $def['table']->getIdentifierColumnNames();
         $foreignIdColumnName = $foreignIdentifierColumnNames[count($foreignIdentifierColumnNames) - 1];

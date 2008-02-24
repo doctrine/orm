@@ -1133,7 +1133,8 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable, Seria
             if ($needsSubQuery) {
                 $subquery = $this->getLimitSubquery();
                 // what about composite keys?
-                $idColumnName = $table->getColumnName($table->getIdentifier());
+                $idFieldNames = (array)$table->getIdentifier();
+                $idColumnName = $table->getColumnName($idFieldNames[0]);
                 switch (strtolower($this->_conn->getDriverName())) {
                     case 'mysql':
                         // mysql doesn't support LIMIT in subqueries
@@ -1198,7 +1199,8 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable, Seria
         // get short alias
         $alias      = $this->getTableAlias($componentAlias);
         // what about composite keys?
-        $primaryKey = $alias . '.' . $table->getColumnName($table->getIdentifier());
+        $idFieldNames = (array)$table->getIdentifier();
+        $primaryKey = $alias . '.' . $table->getColumnName($idFieldNames[0]);
 
         // initialize the base of the subquery
         $subquery   = 'SELECT DISTINCT ' . $this->_conn->quoteIdentifier($primaryKey);
@@ -1507,18 +1509,20 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable, Seria
                     $assocAlias = $this->getTableAlias($assocPath, $asf->getTableName());
 
                     $queryPart = $join . $assocTableName . ' ' . $assocAlias;
-
+                    
+                    $localTableIdFieldNames = (array)$localTable->getIdentifier();
                     $queryPart .= ' ON ' . $localAlias
                                 . '.'
-                                . $localTable->getColumnName($localTable->getIdentifier()) // what about composite keys?
+                                . $localTable->getColumnName($localTableIdFieldNames[0]) // what about composite keys?
                                 . ' = '
                                 . $assocAlias . '.' . $relation->getLocal();
-
+                    
+                    $tableIdFieldNames = (array)$table->getIdentifier();
                     if ($relation->isEqual()) {
                         // equal nest relation needs additional condition
                         $queryPart .= ' OR ' . $localAlias
                                     . '.'
-                                    . $table->getColumnName($table->getIdentifier())
+                                    . $table->getColumnName($tableIdFieldNames[0])
                                     . ' = '
                                     . $assocAlias . '.' . $relation->getForeign();
                     }
@@ -1535,19 +1539,20 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable, Seria
                         }
                         
                         $relationTable = $relation->getTable();
-                        $queryPart .= $this->_conn->quoteIdentifier($foreignAlias . '.' . $relationTable->getColumnName($relationTable->getIdentifier()))
+                        $relationTableIdFieldNames = (array)$relationTable->getIdentifier();
+                        $queryPart .= $this->_conn->quoteIdentifier($foreignAlias . '.' . $relationTable->getColumnName($relationTableIdFieldNames[0]))
                                     . ' = '
                                     . $this->_conn->quoteIdentifier($assocAlias . '.' . $relation->getForeign());
 
                         if ($relation->isEqual()) {
                             $queryPart .= ' OR '
-                                        . $this->_conn->quoteIdentifier($foreignAlias . '.' . $table->getColumnName($table->getIdentifier()))
+                                        . $this->_conn->quoteIdentifier($foreignAlias . '.' . $table->getColumnName($tableIdFieldNames[0]))
                                         . ' = ' 
                                         . $this->_conn->quoteIdentifier($assocAlias . '.' . $relation->getLocal())
                                         . ') AND ' 
-                                        . $this->_conn->quoteIdentifier($foreignAlias . '.' . $table->getColumnName($table->getIdentifier()))
+                                        . $this->_conn->quoteIdentifier($foreignAlias . '.' . $table->getColumnName($tableIdFieldNames[0]))
                                         . ' != '  
-                                        . $this->_conn->quoteIdentifier($localAlias . '.' . $table->getColumnName($table->getIdentifier()));
+                                        . $this->_conn->quoteIdentifier($localAlias . '.' . $table->getColumnName($tableIdFieldNames[0]));
                         }
                     }
                 } else {

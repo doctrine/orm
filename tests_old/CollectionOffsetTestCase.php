@@ -40,7 +40,8 @@ class Doctrine_Collection_Offset_TestCase extends Doctrine_UnitTestCase {
 
 
         $this->connection->setAttribute(Doctrine::ATTR_COLL_LIMIT, 1);
-        $users = $this->connection->query("FROM User-b, User.Phonenumber-o WHERE User.".$this->objTable->getIdentifier()." = 5");
+        $idFieldNames = (array)$this->objTable->getIdentifier();
+        $users = $this->connection->query("FROM User-b, User.Phonenumber-o WHERE User.".$idFieldNames[0]." = 5");
 
         $this->assertEqual(count($users), 1);
 

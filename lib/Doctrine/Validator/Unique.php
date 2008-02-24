@@ -41,7 +41,7 @@ class Doctrine_Validator_Unique
     public function validate($value)
     {
         $table = $this->invoker->getTable();
-        $pks = $table->getIdentifier();
+        $pks = (array)$table->getIdentifier();
 
         if ( is_array($pks) ) {
             $pks = join(',', $pks);

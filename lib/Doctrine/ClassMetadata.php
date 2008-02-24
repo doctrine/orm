@@ -24,8 +24,9 @@
  * These informations are used for the proper object-relational mapping of the class.
  *
  * @package Doctrine
- * @author  Roman Borschel <roman@code-factory.org>
- * @since   1.0
+ * @subpackage ClassMetadata
+ * @author Roman Borschel <roman@code-factory.org>
+ * @since 1.0
  */
 class Doctrine_ClassMetadata extends Doctrine_Configurable implements Serializable
 {    
@@ -299,8 +300,7 @@ class Doctrine_ClassMetadata extends Doctrine_Configurable implements Serializab
      */
     public function isIdentifier($fieldName)
     {
-        return ($fieldName === $this->getIdentifier() || 
-                in_array($fieldName, (array) $this->getIdentifier()));
+        return in_array($fieldName, (array)$this->getIdentifier());
     }
     
     /**
@@ -572,10 +572,7 @@ class Doctrine_ClassMetadata extends Doctrine_Configurable implements Serializab
         }
 
         if ( ! empty($options['primary'])) {
-            if (isset($this->_identifier)) {
-                $this->_identifier = $this->_identifier; 
-            }
-            if ( ! in_array($fieldName, (array) $this->_identifier)) {
+            if ( ! in_array($fieldName, $this->_identifier)) {
                 $this->_identifier[] = $fieldName;
             }
         }
@@ -657,7 +654,7 @@ class Doctrine_ClassMetadata extends Doctrine_Configurable implements Serializab
         return $this->_identifier;
     }
     
-    public function setIdentifier($identifier)
+    public function setIdentifier(array $identifier)
     {
         $this->_identifier = $identifier;
     }

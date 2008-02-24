@@ -300,11 +300,7 @@ class Doctrine_Data_Import extends Doctrine_Data
                                with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.");
         
         $columns = array_keys($record->toArray());
-        $pks = $record->getTable()->getIdentifier();
-        
-        if ( ! is_array($pks)) {
-          $pks = array($pks);
-        }
+        $pks = (array)$record->getTable()->getIdentifier();
         
         foreach ($columns as $column) {
             

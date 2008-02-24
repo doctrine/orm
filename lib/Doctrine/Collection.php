@@ -426,15 +426,30 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
     public function getPrimaryKeys()
     {
         $list = array();
-        $name = $this->_mapper->getTable()->getIdentifier();
+        $idFieldNames = (array)$this->_mapper->getClassMetadata()->getIdentifier();
 
         foreach ($this->data as $record) {
-            if (is_array($record) && isset($record[$name])) {
-                $list[] = $record[$name];
+            if (is_array($record)) {
+                if (count($idFieldNames) > 1) {
+                    $id = array();
+                    foreach ($idFieldNames as $fieldName) {
+                         if (isset($record[$fieldName])) {
+                             $id[] = $record[$fieldName];
+                         }
+                    }
+                    $list[] = $id;
+                } else {
+                    $idField = $idFieldNames[0];
+                    if (isset($record[$idField])) {
+                        $list[] = $record[$idField];
+                    }
+                }
             } else {
+                // @todo does not take composite keys into account
                 $list[] = $record->getIncremented();
             }
         }
+        
         return $list;
     }
 
@@ -615,7 +630,8 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
                 $this->data[$key]->setRelated($name, $sub);
             }
         } else if ($rel instanceof Doctrine_Relation_Association) {
-            $identifier = $this->_mapper->getTable()->getIdentifier();
+            // @TODO composite key support
+            $identifier = (array)$this->_mapper->getClassMetadata()->getIdentifier();
             $asf        = $rel->getAssociationFactory();
             $name       = $table->getComponentName();
 
@@ -625,7 +641,8 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
                 }
                 $sub = new Doctrine_Collection($rel->getForeignComponentName());
                 foreach ($coll as $k => $related) {
-                    if ($related->get($local) == $record[$identifier]) {
+                    $idField = $identifier[0];
+                    if ($related->get($local) == $record[$idField]) {
                         $sub->add($related->get($name));
                     }
                 }

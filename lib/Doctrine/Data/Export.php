@@ -145,11 +145,7 @@ class Doctrine_Data_Export extends Doctrine_Data
                     }
                     
                     // skip single primary keys, we need to maintain composite primary keys
-                    $keys = $record->getTable()->getIdentifier();
-                    
-                    if ( ! is_array($keys)) {
-                      $keys = array($keys);
-                    }
+                    $keys = (array)$record->getTable()->getIdentifier();
                     
                     if (count($keys) <= 1 && in_array($key, $keys)) {
                         continue;

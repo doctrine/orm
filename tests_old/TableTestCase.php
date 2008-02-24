@@ -110,14 +110,16 @@ class Doctrine_Table_TestCase extends Doctrine_UnitTestCase
         $this->assertTrue($fk->getType() == Doctrine_Relation::ONE_AGGREGATE);
 
         $this->assertTrue($fk->getLocal() == "email_id");
-        $this->assertTrue($fk->getForeign() == $fk->getTable()->getIdentifier());
+        $fkIdFieldNames = (array)$fk->getTable()->getIdentifier();
+        $this->assertTrue($fk->getForeign() == $fkIdFieldNames[0]);
 
 
         $fk = $this->objTable->getTable()->getRelation('Phonenumber');
         $this->assertTrue($fk instanceof Doctrine_Relation_ForeignKey);
         $this->assertTrue($fk->getTable() instanceof Doctrine_ClassMetadata);
         $this->assertTrue($fk->getType() == Doctrine_Relation::MANY);
-        $this->assertTrue($fk->getLocal() == $this->objTable->getTable()->getIdentifier());
+        $objTableIdFieldNames = (array)$this->objTable->getTable()->getIdentifier();
+        $this->assertTrue($fk->getLocal() == $objTableIdFieldNames[0]);
         $this->assertTrue($fk->getForeign() == 'entity_id');
 
 

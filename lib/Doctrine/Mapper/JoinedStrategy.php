@@ -33,8 +33,9 @@ class Doctrine_Mapper_JoinedStrategy extends Doctrine_Mapper_Strategy
                     } else if ($identifierType == Doctrine::IDENTIFIER_SEQUENCE) {
                         $seq = $record->getClassMetadata()->getTableOption('sequenceName');
                         if ( ! empty($seq)) {
-                            $identifier = $conn->sequence->nextId($seq);
-                            $dataSet[$parent][$parentClass->getIdentifier()] = $identifier;
+                            $id = $conn->sequence->nextId($seq);
+                            $identifierFields = (array)$parentClass->getIdentifier();
+                            $dataSet[$parent][$identifierFields[0]] = $id;
                             $this->_insertRow($parentClass->getTableName(), $dataSet[$parent]);
                         }
                     } else {

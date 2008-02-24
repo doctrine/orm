@@ -206,7 +206,7 @@ class Doctrine_ClassMetadata_Factory
      */
     protected function _initIdentifier(Doctrine_ClassMetadata $class)
     {
-        switch (count($class->getIdentifier())) {
+        switch (count((array)$class->getIdentifier())) {
             case 0:
                 if ($class->getInheritanceType() == Doctrine::INHERITANCETYPE_JOINED &&
                         count($class->getOption('parents')) > 0) {
@@ -242,12 +242,12 @@ class Doctrine_ClassMetadata_Factory
                                         'autoincrement' => true,
                                         'primary' => true);
                     $class->setColumn('id', $definition['type'], $definition['length'], $definition, true);
-                    $class->setIdentifier('id');
+                    $class->setIdentifier(array('id'));
                     $class->setIdentifierType(Doctrine::IDENTIFIER_AUTOINC);
                 }
                 break;
             case 1:
-                foreach ($class->getIdentifier() as $pk) {
+                foreach ((array)$class->getIdentifier() as $pk) {
                     $columnName = $class->getColumnName($pk);
                     $thisColumns = $class->getColumns();
                     $e = $thisColumns[$columnName];
@@ -291,7 +291,7 @@ class Doctrine_ClassMetadata_Factory
                     }
                 }
 
-                $class->setIdentifier($pk);
+                $class->setIdentifier(array($pk));
 
                 break;
             default:
