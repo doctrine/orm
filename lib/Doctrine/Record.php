@@ -1682,7 +1682,7 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
     public function revert($version)
     {
         $data = $this->_table
-                ->getTemplate('Doctrine_Template_Versionable')
+                ->getBehavior('Doctrine_Template_Versionable')
                 ->getAuditLog()
                 ->getVersion($this, $version);
 
@@ -1841,17 +1841,16 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
      */
     public function __call($method, $args)
     {
-        if (($template = $this->_mapper->getMethodOwner($method)) !== false) {
-            $template->setInvoker($this);
-            return call_user_func_array(array($template, $method), $args);
+        if (($behavior = $this->_table->getBehaviorForMethod($method)) !== false) {
+            $behavior->setInvoker($this);
+            return call_user_func_array(array($behavior, $method), $args);
         }
 
-        foreach ($this->_mapper->getTable()->getTemplates() as $template) {
-            if (method_exists($template, $method)) {
-                $template->setInvoker($this);
-                $this->_mapper->setMethodOwner($method, $template);
-
-                return call_user_func_array(array($template, $method), $args);
+        foreach ($this->_table->getBehaviors() as $behavior) {
+            if (method_exists($behavior, $method)) {
+                $behavior->setInvoker($this);
+                $this->_table->addBehaviorMethod($method, $behavior);
+                return call_user_func_array(array($behavior, $method), $args);
             }
         }
 

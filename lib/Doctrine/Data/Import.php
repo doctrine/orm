@@ -178,7 +178,7 @@ class Doctrine_Data_Import extends Doctrine_Data
             // This is simple here to get the templates present for this model
             // better way?
             $obj = new $className(null, true);
-            $templates = array_keys($obj->getTable()->getTemplates());
+            $templates = array_keys($obj->getTable()->getBehaviors());
             
             if (in_array('Doctrine_Template_NestedSet', $templates)) {
                 $nestedSets[$className][] = $data;

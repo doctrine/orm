@@ -78,16 +78,16 @@ class Doctrine_ClassMetadata extends Doctrine_Configurable implements Serializab
     protected $_inheritanceType = Doctrine::INHERITANCETYPE_TABLE_PER_CLASS;
     
     /**
-     * An array containing all templates attached to the class.
+     * An array containing all behaviors attached to the class.
      *
      * @see Doctrine_Template
      * @var array $_templates
      * @todo Unify under 'Behaviors'.                 
      */
-    protected $_templates = array();
+    protected $_behaviors = array();
     
     /**
-     * An array containing all generators attached to this class.
+     * An array containing all behavior generators attached to the class.
      *
      * @see Doctrine_Record_Generator
      * @var array $_generators
@@ -242,7 +242,13 @@ class Doctrine_ClassMetadata extends Doctrine_Configurable implements Serializab
             'collate'        => null,
             'indexes'        => array(),
             'checks'         => array()
-            );     
+            );
+            
+    /**
+     * @var array $_invokedMethods              method invoker cache
+     */
+    protected $_invokedMethods = array();
+        
     
     /**
      * Constructs a new metadata instance.
@@ -372,6 +378,17 @@ class Doctrine_ClassMetadata extends Doctrine_Configurable implements Serializab
         }
         
         return $this->_tableOptions[$name];
+    }
+    
+    public function getBehaviorForMethod($method)
+    {
+        return (isset($this->_invokedMethods[$method])) ?
+                $this->_invokedMethods[$method] : false;
+    }
+    
+    public function addBehaviorMethod($method, $behavior)
+    {
+        $this->_invokedMethods[$method] = $class;
     }
 
     /**
@@ -590,6 +607,8 @@ class Doctrine_ClassMetadata extends Doctrine_Configurable implements Serializab
     /**
      * Gets the names of all validators that are applied on a field.
      *
+     * @param string  The field name.
+     * @return array  The names of all validators that are applied on the specified field.
      */
     public function getFieldValidators($fieldName)
     {
@@ -599,10 +618,9 @@ class Doctrine_ClassMetadata extends Doctrine_Configurable implements Serializab
     }
     
     /**
-     * hasDefaultValues
-     * returns true if this class has default values, otherwise false
+     * Checks whether the class mapped class has a default value on any field.
      *
-     * @return boolean
+     * @return boolean  TRUE if the entity has a default value on any field, otherwise false.
      */
     public function hasDefaultValues()
     {
@@ -630,6 +648,8 @@ class Doctrine_ClassMetadata extends Doctrine_Configurable implements Serializab
     }
     
     /**
+     * Gets the identifier (primary key) field(s) of the mapped class.
+     *
      * @return mixed
      */
     public function getIdentifier()
@@ -643,6 +663,10 @@ class Doctrine_ClassMetadata extends Doctrine_Configurable implements Serializab
     }
 
     /**
+     * Gets the type of the identifier (primary key) used by the mapped class. The type
+     * can be either "Doctrine::IDENTIFIER_NATURAL", "Doctrine::IDENTIFIER_AUTOINCREMENT",
+     * "Doctrine::IDENTIFIER_SEQUENCE" or "Doctrine::IDENTIFIER_COMPOSITE".
+     * 
      * @return integer
      */
     public function getIdentifierType()
@@ -650,6 +674,9 @@ class Doctrine_ClassMetadata extends Doctrine_Configurable implements Serializab
         return $this->_identifierType;
     }
     
+    /**
+     * Sets the identifier type used by the mapped class.
+     */
     public function setIdentifierType($type)
     {
         $this->_identifierType = $type;
@@ -658,8 +685,14 @@ class Doctrine_ClassMetadata extends Doctrine_Configurable implements Serializab
     /**
      * hasColumn
      * @return boolean
+     * @deprecated
      */
     public function hasColumn($columnName)
+    {
+        return isset($this->_mappedColumns[$columnName]);
+    }
+    
+    public function hasMappedColumn($columnName)
     {
         return isset($this->_mappedColumns[$columnName]);
     }
@@ -864,8 +897,16 @@ class Doctrine_ClassMetadata extends Doctrine_Configurable implements Serializab
      * getDefinitionOf
      *
      * @return mixed        array on success, false on failure
+     * @deprecated
      */
     public function getDefinitionOf($fieldName)
+    {
+        $columnName = $this->getColumnName($fieldName);
+        
+        return $this->getColumnDefinition($columnName);
+    }
+    
+    public function getMappingForField($fieldName)
     {
         $columnName = $this->getColumnName($fieldName);
         
@@ -876,8 +917,14 @@ class Doctrine_ClassMetadata extends Doctrine_Configurable implements Serializab
      * getTypeOf
      *
      * @return mixed        string on success, false on failure
+     * @deprecated
      */
     public function getTypeOf($fieldName)
+    {
+        return $this->getTypeOfColumn($this->getColumnName($fieldName));
+    }
+    
+    public function getTypeOfField($fieldName)
     {
         return $this->getTypeOfColumn($this->getColumnName($fieldName));
     }
@@ -994,15 +1041,15 @@ class Doctrine_ClassMetadata extends Doctrine_Configurable implements Serializab
     }
     
     /**
-     * getTemplates
-     * returns all templates attached to this table
+     * getBehaviors
+     * returns all behaviors attached to the class.
      *
      * @return array     an array containing all templates
      * @todo Unify under 'Behaviors'
      */
-    public function getTemplates()
+    public function getBehaviors()
     {
-        return $this->_templates;
+        return $this->_behaviors;
     }
     
     /**
@@ -1308,29 +1355,29 @@ class Doctrine_ClassMetadata extends Doctrine_Configurable implements Serializab
      * @return void
      * @todo Unify under 'Behaviors'.
      */
-    public function getTemplate($template)
+    public function getBehavior($behaviorName)
     {
-        if ( ! isset($this->_templates[$template])) {
-            throw new Doctrine_Table_Exception('Template ' . $template . ' not loaded');
+        if ( ! isset($this->_behaviors[$behaviorName])) {
+            throw new Doctrine_Table_Exception('Template ' . $behaviorName . ' not loaded');
         }
 
-        return $this->_templates[$template];
+        return $this->_behaviors[$behaviorName];
     }
     
     /**
      * @todo Unify under 'Behaviors'.
      */
-    public function hasTemplate($template)
+    public function hasBehavior($behaviorName)
     {
-        return isset($this->_templates[$template]);
+        return isset($this->_behaviors[$behaviorName]);
     }
     
     /**
      * @todo Unify under 'Behaviors'.
      */
-    public function addTemplate($template, Doctrine_Template $impl)
+    public function addBehavior($behaviorName, Doctrine_Template $impl)
     {
-        $this->_templates[$template] = $impl;
+        $this->_behaviors[$behaviorName] = $impl;
 
         return $this;
     }
@@ -1599,7 +1646,7 @@ class Doctrine_ClassMetadata extends Doctrine_Configurable implements Serializab
 
         $className = get_class($tpl);
 
-        $this->addTemplate($className, $tpl);
+        $this->addBehavior($className, $tpl);
 
         $tpl->setTable($this);
         $tpl->setUp();
@@ -1637,17 +1684,6 @@ class Doctrine_ClassMetadata extends Doctrine_Configurable implements Serializab
         } else {
             $this->_tableOptions['checks'][] = $definition;
         }
-    }
-    
-    /**
-     * Mixes a predefined behaviour into the class.
-     * 
-     * @param string|object  The name of the behavior or the behavior object.
-     * @todo Implementation.
-     */
-    public function addBehavior($behavior)
-    {
-        // ...
     }
     
     /**
@@ -1726,6 +1762,8 @@ class Doctrine_ClassMetadata extends Doctrine_Configurable implements Serializab
 
         return $this;
     }
+    
+
     
     /**
      *

@@ -68,11 +68,6 @@ class Doctrine_Mapper extends Doctrine_Configurable implements Countable
      */
     protected $_repository;
 
-    /**
-     * @var array $_invokedMethods              method invoker cache
-     */
-    protected $_invokedMethods = array();
-
 
     /**
      * Constructs a new mapper.
@@ -93,17 +88,6 @@ class Doctrine_Mapper extends Doctrine_Configurable implements Countable
         } else {
             $this->_mappingStrategy = new Doctrine_Mapper_DefaultStrategy($this);
         }
-    }
-
-    public function getMethodOwner($method)
-    {
-        return (isset($this->_invokedMethods[$method])) ?
-                      $this->_invokedMethods[$method] : false;
-    }
-    
-    public function setMethodOwner($method, $class)
-    {
-        $this->_invokedMethods[$method] = $class;
     }
 
     /**

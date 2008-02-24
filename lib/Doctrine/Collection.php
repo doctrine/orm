@@ -485,8 +485,8 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
      */
     public function add($record, $key = null)
     {
-        if( ! $record instanceOf Doctrine_Record) {
-            throw new Doctrine_Record_Exception('Value variable in set is not an instance of Doctrine_Record');
+        if ( ! $record instanceof Doctrine_Record) {
+            throw new Doctrine_Record_Exception('Value variable in set is not an instance of Doctrine_Record.');
         }
 
         if (isset($this->referenceField)) {
@@ -527,6 +527,7 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
         } else {
             $this->data[] = $record;
         }
+        
         return true;
     }
 
