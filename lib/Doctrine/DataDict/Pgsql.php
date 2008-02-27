@@ -521,6 +521,7 @@ class Doctrine_DataDict_Pgsql extends Doctrine_DataDict
                 break;
             case 'float':
             case 'float4':
+            case 'float8':
             case 'double':
             case 'double precision':
             case 'real':
