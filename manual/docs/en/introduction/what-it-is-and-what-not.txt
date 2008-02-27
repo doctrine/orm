@@ -9,7 +9,7 @@ However, it's currently not possible to ditch the ActiveRecord approach complete
 The ActiveRecord approach comes with it's typical limitations. The most obvious is the enforcement for a class to extend a specific base class in order to be persistent (an Entity). In general, the design of your domain model is pretty much restricted by the design of your relational model. There is an exception though. When dealing with inheritance structures, Doctrine provides some sophisticated mapping strategies which allow your domain model to diverge a bit from the relational model and therefore give you a bit more freedom. Doctrine is in a continous development process and we always try to add new features that provide more freedom in the modeling of the domain. However, as long as Doctrine remains mainly an ActiveRecord approach, there will always be a pretty large, (forced) similarity of these two models.
 The current situation is depicted in the following picture.
 
-[http://localhost/graphics/relational-bounds.jpg]
+[http://code-factory.org/doctrine-manual-images/relational-bounds.jpg]
 
 As you see in the picture, the domain model can't drift far away from the bounds of the relational model.
 
