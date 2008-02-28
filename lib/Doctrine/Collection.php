@@ -482,7 +482,12 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
      */
     public function set($key, $record)
     {
-        if( ! $record instanceOf Doctrine_Record) {
+        if ( ! $record instanceOf Doctrine_Record) {
+            try {
+                throw new Exception();
+            } catch (Exception $e) {
+                echo $e->getTraceAsString() . "<br/><br/>";
+            }
             throw new Doctrine_Record_Exception('Value variable in set is not an instance of Doctrine_Record');
         }
 

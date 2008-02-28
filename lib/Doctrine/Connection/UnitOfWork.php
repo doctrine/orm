@@ -88,20 +88,27 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
     {
         // get the flush tree
         $tree = $this->buildFlushTree($this->conn->getMappers());
-
+        
+        $tree = array_combine($tree, array_fill(0, count($tree), array()));
+        
+        foreach ($this->_managedEntities as $oid => $entity) {
+            $className = $entity->getClassName();
+            $tree[$className][] = $entity;
+        }
+        
         // save all records
-        foreach ($tree as $name) {
-            $mapper = $this->conn->getMapper($name);
-            foreach ($mapper->getRepository() as $record) {
-                $mapper->saveSingleRecord($record);
+        foreach ($tree as $className => $entities) {
+            $mapper = $this->conn->getMapper($className);
+            foreach ($entities as $entity) {
+                $mapper->saveSingleRecord($entity);
             }
         }
-
+        
         // save all associations
-        foreach ($tree as $name) {
-            $mapper = $this->conn->getMapper($name);
-            foreach ($mapper->getRepository() as $record) {
-                $mapper->saveAssociations($record);
+        foreach ($tree as $className => $entities) {
+            $mapper = $this->conn->getMapper($className);
+            foreach ($entities as $entity) {
+                $mapper->saveAssociations($entity);
             }
         }
     }
@@ -142,7 +149,7 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
             }
             $nm = $mapper->getComponentName();
 
-            $index  = array_search($nm, $tree);
+            $index = array_search($nm, $tree);
 
             if ($index === false) {
                 $tree[] = $nm;
@@ -162,7 +169,7 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
 
             foreach ($rels as $rel) {
                 $name   = $rel->getTable()->getComponentName();
-                $index2 = array_search($name,$tree);
+                $index2 = array_search($name, $tree);
                 $type   = $rel->getType();
 
                 // skip self-referenced relations
@@ -187,7 +194,7 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
                             continue;
 
                         unset($tree[$index2]);
-                        array_splice($tree,$index,0,$name);
+                        array_splice($tree, $index, 0, $name);
                     } else {
                         array_unshift($tree,$name);
                         $index++;
@@ -196,8 +203,9 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
                     $t = $rel->getAssociationFactory();
                     $n = $t->getComponentName();
 
-                    if ($index2 !== false)
+                    if ($index2 !== false) {
                         unset($tree[$index2]);
+                    }
 
                     array_splice($tree, $index, 0, $name);
                     $index++;
@@ -218,7 +226,7 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
             }
         }
         
-        return array_values($tree);
+        return $tree;
     }
     
     /**
@@ -232,6 +240,85 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
     public function saveAll()
     {
         return $this->flush();
+    }
+    
+    /**
+     * Adds an entity to the pool of managed entities.
+     *
+     */
+    public function addManagedEntity(Doctrine_Record $entity)
+    {
+        $oid = $entity->getOid();
+        if ( ! isset($this->_managedEntities[$oid])) {
+            $this->_managedEntities[$oid] = $entity;
+            return true;
+        }
+        return false;
+    }
+    
+    /**
+     * get
+     * @param integer $oid
+     * @throws Doctrine_Table_Repository_Exception
+     */
+    public function getManagedEntity($oid)
+    {
+        if ( ! isset($this->_managedEntities[$oid])) {
+            throw new Doctrine_Connection_UnitOfWork_Exception("Unknown object identifier '$oid'.");
+        }
+        return $this->_managedEntities[$oid];
+    }
+    
+    /**
+     * @param integer $oid                  object identifier
+     * @return boolean                      whether ot not the operation was successful
+     */
+    public function detachManagedEntity(Doctrine_Record $entity)
+    {
+        $oid = $entity->getOid();
+        if ( ! isset($this->_managedEntities[$oid])) {
+            return false;
+        }
+        unset($this->_managedEntities[$oid]);
+        return true;
+    }
+    
+    /**
+     * @return integer                      number of records evicted
+     */
+    public function detachAllManagedEntities()
+    {
+        $evicted = 0;
+        foreach ($this->_managedEntities as $entity) {
+            if ($this->detachManagedEntity($entity)) {
+                $evicted++;
+            }
+        }
+        return $evicted;
+    }
+    
+    /**
+     * contains
+     * @param integer $oid                  object identifier
+     */
+    public function isManagedEntity($oid)
+    {
+        return isset($this->_managedEntities[$oid]);
+    }
+    
+    /**
+     * Adds an entity to the identity map.
+     * 
+     */
+    public function addToIdentityMap(Doctrine_Record $entity)
+    {
+        $id = implode(' ', $entity->identifier());
+        $className = $entity->getClassMetadata()->getRootClassName();
+        if (isset($this->_identityMap[$className][$id])) {
+            return false;
+        }
+        $this->_identityMap[$className][$id] = $entity;
+        return true;
     }
     
 }

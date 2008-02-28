@@ -76,9 +76,6 @@ abstract class Doctrine_Relation implements ArrayAccess
                                   'equal'       => false,
                                   'refClass'    => false, // the name of the association class (many-many)
                                   'refTable'    => false, // the association table object (many-many)
-                                  'refRelationName' => false,
-                                  'refReverseRelationName' => false,
-                                  
                                   );
                               
     /**

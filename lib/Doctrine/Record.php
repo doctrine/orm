@@ -656,7 +656,7 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
             }
         }
 
-        $this->_mapper->getRepository()->add($this);
+        $this->_mapper->manage($this);
         $this->cleanData($this->_data);
         $this->_extractIdentifier($this->exists());
         
@@ -927,6 +927,11 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
     public function mapValue($name, $value)
     {
         $this->_values[$name] = $value;
+    }
+    
+    public function getClassName()
+    {
+        return $this->_entityName;
     }
 
     /**
@@ -1897,7 +1902,7 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
      */
     public function free()
     {
-        $this->_mapper->getRepository()->evict($this->_oid);
+        $this->_mapper->detach($this);
         $this->_mapper->removeRecord($this);
         $this->_data = array();
         $this->_id = array();

@@ -58,15 +58,15 @@ class Doctrine_Mapper extends Doctrine_Configurable implements Countable
 
     /**
      * @var array $identityMap                          first level cache
-     * @todo Proper identity map implementation & move elsewhere?
+     * @todo Move to UnitOfWork.
      */
     protected $_identityMap = array();
 
     /**
      * @var Doctrine_Table_Repository $repository       record repository
-     * @todo Needed? What is it used for? Does the identity map not suffice?
+     * @todo Move to UnifOfWork together with identity map.
      */
-    protected $_repository;
+    //protected $_repository;
 
 
     /**
@@ -78,11 +78,19 @@ class Doctrine_Mapper extends Doctrine_Configurable implements Countable
      */
     public function __construct($name, Doctrine_ClassMetadata $classMetadata)
     {
+        if ($name != $classMetadata->getClassName()) {
+            try {
+                throw new Exception();
+            } catch (Exception $e) {
+                echo $e->getTraceAsString() . "<br/><br/>";
+            }
+        }
+        
         $this->_domainClassName = $name;
         $this->_conn = $classMetadata->getConnection();
         $this->_classMetadata = $classMetadata;
         $this->setParent($this->_conn);
-        $this->_repository = new Doctrine_Table_Repository($this);
+        //$this->_repository = new Doctrine_Table_Repository($this);
         if ($classMetadata->getInheritanceType() == Doctrine::INHERITANCETYPE_JOINED) {
             $this->_mappingStrategy = new Doctrine_Mapper_JoinedStrategy($this);
         } else {
@@ -141,10 +149,10 @@ class Doctrine_Mapper extends Doctrine_Configurable implements Countable
      * @return Doctrine_Table_Repository
      * @todo refactor
      */
-    public function getRepository()
+    /*public function getRepository()
     {
         return $this->_repository;
-    }
+    }*/
 
     /**
      * sets the connection for this class
@@ -183,6 +191,11 @@ class Doctrine_Mapper extends Doctrine_Configurable implements Countable
         $record->fromArray($array);
 
         return $record;
+    }
+    
+    public function detach(Doctrine_Record $entity)
+    {
+        return $this->_conn->unitOfWork->detachManagedEntity($entity);
     }
 
     /**
@@ -310,7 +323,7 @@ class Doctrine_Mapper extends Doctrine_Configurable implements Countable
      */
     public function manage(Doctrine_Record $record)
     {
-        return $this->getRepository()->add($record);
+        return $this->_conn->unitOfWork->addManagedEntity($record);
     }
 
     /**
@@ -865,17 +878,6 @@ class Doctrine_Mapper extends Doctrine_Configurable implements Countable
     }
     
     /**
-     * Updates an entity.
-     */
-    /*protected function _doUpdate(Doctrine_Record $record)
-    {
-        $identifier = $this->_convertFieldToColumnNames($record->identifier(), $this->_classMetadata);
-        $data = $this->_convertFieldToColumnNames($record->getPrepared(), $this->_classMetadata);
-        $this->_conn->update($this->_classMetadata->getTableName(), $data, $identifier);
-        $record->assignIdentifier(true);
-    }*/
-    
-    /**
      * Inserts an entity.
      *
      * @param Doctrine_Record $record   record to be inserted
@@ -899,60 +901,6 @@ class Doctrine_Mapper extends Doctrine_Configurable implements Countable
         
         return true;
     }
-    
-    /**
-     * Inserts a single entity into the database, without any related entities.
-     *
-     * @param Doctrine_Record $record   The entity to insert.
-     */
-    /*protected function _doInsert(Doctrine_Record $record)
-    {
-        $fields = $record->getPrepared();
-        if (empty($fields)) {
-            return false;
-        }
-        
-        if ($record->getClassMetadata() !== $this->_classMetadata) {
-            echo $record->getClassMetadata()->getClassname() . ' != ' . $this->_classMetadata->getClassName() . "<br /><br />";
-            try {
-                throw new Exception();
-            } catch (Exception $e) {
-                echo $e->getTraceAsString() . "<br /><br />";
-            }
-        }
-        
-        //$class = $record->getClassMetadata();
-        $class = $this->_classMetadata;
-        $identifier = (array) $class->getIdentifier();
-        $fields = $this->_convertFieldToColumnNames($fields, $class);
-
-        $seq = $class->getTableOption('sequenceName');
-        if ( ! empty($seq)) {
-            $id = $this->_conn->sequence->nextId($seq);
-            $seqName = $class->getIdentifier();
-            $fields[$seqName] = $id;
-            $record->assignIdentifier($id);
-        }
-
-        $this->_conn->insert($class->getTableName(), $fields);
-
-        if (empty($seq) && count($identifier) == 1 && $identifier[0] == $class->getIdentifier() &&
-                $class->getIdentifierType() != Doctrine::IDENTIFIER_NATURAL) {
-            if (strtolower($this->_conn->getName()) == 'pgsql') {
-                $seq = $class->getTableName() . '_' . $identifier[0];
-            }
-
-            $id = $this->_conn->sequence->lastInsertId($seq);
-
-            if ( ! $id) {
-                throw new Doctrine_Mapper_Exception("Couldn't get last insert identifier.");
-            }
-
-            $record->assignIdentifier($id);
-        } else {
-            $record->assignIdentifier(true);
-        }
-    }*/
     
     /**
      * Deletes given entity and all it's related entities.
@@ -999,50 +947,6 @@ class Doctrine_Mapper extends Doctrine_Configurable implements Countable
         return true;
     }
     
-    /**
-     * Deletes an entity.
-     */
-    /*protected function _doDelete(Doctrine_Record $record)
-    {
-        try {
-            $this->_conn->beginInternalTransaction();
-            $this->_deleteComposites($record);
-
-            $record->state(Doctrine_Record::STATE_TDIRTY);
-            
-            $identifier = $this->_convertFieldToColumnNames($record->identifier(), $this->_classMetadata);
-            $this->_conn->delete($this->_classMetadata->getTableName(), $identifier);
-            $record->state(Doctrine_Record::STATE_TCLEAN);
-
-            $this->removeRecord($record);
-            $this->_conn->commit();
-        } catch (Exception $e) {
-            $this->_conn->rollback();
-            throw $e;
-        }        
-        
-    }*/
-    
-    /**
-     * deletes all related composites
-     * this method is always called internally when a record is deleted
-     *
-     * @throws PDOException         if something went wrong at database level
-     * @return void
-     */
-    /*protected function _deleteComposites(Doctrine_Record $record)
-    {
-        foreach ($this->_classMetadata->getRelations() as $fk) {
-            if ($fk->isComposite()) {
-                $obj = $record->get($fk->getAlias());
-                if ($obj instanceof Doctrine_Record && 
-                        $obj->state() != Doctrine_Record::STATE_LOCKED)  {
-                    $obj->delete($this->_conn);
-                }
-            }
-        }
-    }*/
-    
     public function executeQuery(Doctrine_Query $query)
     {
         
@@ -1072,16 +976,6 @@ class Doctrine_Mapper extends Doctrine_Configurable implements Countable
     {
         $this->_mappingStrategy = null;
     }
-    
-    /*public function addToWhere($componentAlias, array &$sqlWhereParts, Doctrine_Query $query)
-    {
-        
-    }
-    
-    public function addToFrom($sqlString, Doctrine_Query $query)
-    {
-        
-    }*/
     
     public function getFieldName($columnName)
     {

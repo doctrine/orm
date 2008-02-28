@@ -664,7 +664,7 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
 
         $query .= implode(', ', $a) . ')';
         // prepare and execute the statement
-        
+
         return $this->exec($query, array_values($data));
     }
 
@@ -1264,7 +1264,7 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
     public function flush()
     {
         $this->beginInternalTransaction();
-        $this->unitOfWork->saveAll();
+        $this->unitOfWork->flush();
         $this->commit();
     }
 
@@ -1277,9 +1277,9 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
      */
     public function clear()
     {
+        $this->unitOfWork->detachAllManagedEntities();
         foreach ($this->_mappers as $mapper) {
-            $mapper->getRepository()->evictAll();
-            $mapper->clear();
+            $mapper->clear(); // clear identity map of each mapper
         }
     }
 
@@ -1292,6 +1292,7 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
      */
     public function evictTables()
     {
+        $this->clear();
         $this->tables = array();
         $this->_mappers = array();
         $this->exported = array();

@@ -31,11 +31,20 @@
 class Doctrine_ClassMetadata extends Doctrine_Configurable implements Serializable
 {    
     /**
-     * The name of the domain class that is mapped to the database with this metadata.
+     * The name of the entity class that is mapped to the database with this metadata.
      * 
      * @var string
      */
     protected $_entityName;
+    
+    /**
+     * The name of the entity class that is at the root of the entity inheritance
+     * hierarchy. If the entity is not part of an inheritance hierarchy this is the same
+     * as the $_entityName.
+     *
+     * @var string
+     */
+    protected $_rootEntityName;
     
     /**
      * The name of the custom mapper class used for the entity class.
@@ -259,6 +268,7 @@ class Doctrine_ClassMetadata extends Doctrine_Configurable implements Serializab
     public function __construct($entityName, Doctrine_Connection $conn)
     {        
         $this->_entityName = $entityName;
+        $this->_rootEntityName = $entityName;
         $this->_conn = $conn;
         $this->_parser = new Doctrine_Relation_Parser($this);
         $this->_filters[]  = new Doctrine_Record_Filter_Standard();
@@ -281,6 +291,11 @@ class Doctrine_ClassMetadata extends Doctrine_Configurable implements Serializab
     public function getClassName()
     {
         return $this->_entityName;
+    }
+    
+    public function getRootClassName()
+    {
+        return $this->_rootEntityName;
     }
     
     /**
@@ -648,8 +663,19 @@ class Doctrine_ClassMetadata extends Doctrine_Configurable implements Serializab
      * Gets the identifier (primary key) field(s) of the mapped class.
      *
      * @return mixed
+     * @deprecated Use getIdentifierFieldNames()
      */
     public function getIdentifier()
+    {
+        return $this->_identifier;
+    }
+    
+    /**
+     * Gets the identifier (primary key) field(s) of the mapped class.
+     *
+     * @return mixed
+     */
+    public function getIdentifierFieldNames()
     {
         return $this->_identifier;
     }
@@ -1107,6 +1133,7 @@ class Doctrine_ClassMetadata extends Doctrine_Configurable implements Serializab
     public function setParentClasses(array $classNames)
     {
         $this->_options['parents'] = $classNames;
+        $this->_rootEntityName = array_pop($classNames);
     }
     
     /**
