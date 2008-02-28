@@ -36,7 +36,7 @@ class Doctrine_Validator_Readonly
      */
     public function validate($value)
     {
-        $modified = $this->invoker->getModifed();
+        $modified = $this->invoker->getModified();
         
         return array_key_exists($this->field, $modified) ? false : true;
     }
