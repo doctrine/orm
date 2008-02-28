@@ -1170,17 +1170,6 @@ abstract class Doctrine_Query_Abstract
             if ($value instanceof Doctrine_Expression) {
                 $value = $value->getSql();
                 unset($params[$k]);
-            } else if (is_object($value) && $value instanceof Doctrine_Query) { // Imbricated Query?
-                $field = $value->getDqlPart('select');
-                $field = $field[0];
-
-                $rstemp = $value->execute();
-
-                $value = array();
-
-                foreach ($rstemp as $key => $object) { // Create a table with values in imbricated query
-                    array_push($value, $object->$field);
-                }
             } else {
                 $value = '?';
             }
