@@ -144,6 +144,9 @@ Doctrine_Export::alterTable() takes two parameters:
 : string //$name// : name of the table that is intended to be changed. 
 
 : array //$changes// : associative array that contains the details of each type of change that is intended to be performed.
+
+An optional third parameter (default: false) is accepted in alterTable and alterTableSql; it is named //$check// and it identifies if the DBMS driver can perform the requested table alterations if the value is true or actually perform them otherwise.
+
 The types of changes that are currently supported are defined as follows:
 
 * //name//
