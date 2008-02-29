@@ -1902,11 +1902,22 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
      */
     public function free()
     {
-        $this->_mapper->detach($this);
-        $this->_mapper->removeRecord($this);
-        $this->_data = array();
-        $this->_id = array();
-        $this->_references = array();
+        if ($this->_state != self::STATE_LOCKED) {
+            $this->_mapper->detach($this);
+            $this->_mapper->removeRecord($this);
+            $this->_data = array();
+            $this->_id = array();
+
+            if ($deep) {
+                foreach ($this->_references as $name => $reference) {
+                    if ( ! ($reference instanceof Doctrine_Null)) {
+                        $reference->free($deep);
+                    }
+                }
+            }
+
+            $this->_references = array();
+        }
     }
-    
+
 }

@@ -912,6 +912,24 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
         return $this;
     }
 
+
+    public function free($deep = false)
+    {
+        foreach ($this->getData() as $key => $record) {
+            if ( ! ($record instanceof Doctrine_Null)) {
+                $record->free($deep);
+            }
+        }
+
+        $this->data = array();
+
+        if ($this->reference) {
+            $this->reference->free($deep);
+            $this->reference = null;
+        }
+    }
+
+
     /**
      * getIterator
      * @return object ArrayIterator
