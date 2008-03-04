@@ -668,7 +668,7 @@ class User extends Doctrine_Record
     }
     public function setUp()
     {
-        $this->index('id', array('fields' => 'id'));
+        $this->index('id_idx', array('fields' => 'id'));
 
         $this->hasMany('Phonenumber', array('local' => 'id', 
                                             'foreign' => 'user_id'));
@@ -683,7 +683,7 @@ class Phonenumber extends Doctrine_Record
     }
     public function setUp()
     {
-        $this->index('product_id', array('fields' => 'user_id'));
+        $this->index('user_id_idx', array('fields' => 'user_id'));
 
         $this->hasOne('User', array('local' => 'user_id',
                                     'foreign' => 'id',
