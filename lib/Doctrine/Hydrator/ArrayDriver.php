@@ -52,10 +52,10 @@ class Doctrine_Hydrator_ArrayDriver
     /** 
      *
      */
-    public function isIdentifiable(array $data, Doctrine_Table $table)
+    /*public function isIdentifiable(array $data, Doctrine_Table $table)
     {
         return ( ! empty($data));
-    }
+    }*/
     
     /**
      *

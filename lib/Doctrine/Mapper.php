@@ -62,12 +62,6 @@ class Doctrine_Mapper extends Doctrine_Configurable implements Countable
      */
     protected $_identityMap = array();
 
-    /**
-     * @var Doctrine_Table_Repository $repository       record repository
-     * @todo Move to UnifOfWork together with identity map.
-     */
-    //protected $_repository;
-
 
     /**
      * Constructs a new mapper.
@@ -90,7 +84,6 @@ class Doctrine_Mapper extends Doctrine_Configurable implements Countable
         $this->_conn = $classMetadata->getConnection();
         $this->_classMetadata = $classMetadata;
         $this->setParent($this->_conn);
-        //$this->_repository = new Doctrine_Table_Repository($this);
         if ($classMetadata->getInheritanceType() == Doctrine::INHERITANCETYPE_JOINED) {
             $this->_mappingStrategy = new Doctrine_Mapper_JoinedStrategy($this);
         } else {
@@ -144,17 +137,6 @@ class Doctrine_Mapper extends Doctrine_Configurable implements Countable
     }
 
     /**
-     * getRepository
-     *
-     * @return Doctrine_Table_Repository
-     * @todo refactor
-     */
-    /*public function getRepository()
-    {
-        return $this->_repository;
-    }*/
-
-    /**
      * sets the connection for this class
      *
      * @params Doctrine_Connection      a connection object 
@@ -195,7 +177,7 @@ class Doctrine_Mapper extends Doctrine_Configurable implements Countable
     
     public function detach(Doctrine_Record $entity)
     {
-        return $this->_conn->unitOfWork->detachManagedEntity($entity);
+        return $this->_conn->unitOfWork->detach($entity);
     }
 
     /**
@@ -323,7 +305,7 @@ class Doctrine_Mapper extends Doctrine_Configurable implements Countable
      */
     public function manage(Doctrine_Record $record)
     {
-        return $this->_conn->unitOfWork->addManagedEntity($record);
+        return $this->_conn->unitOfWork->manage($record);
     }
 
     /**
@@ -976,6 +958,13 @@ class Doctrine_Mapper extends Doctrine_Configurable implements Countable
     {
         $this->_mappingStrategy = null;
     }
+    
+    public function getMappingStrategy()
+    {
+        return $this->_mappingStrategy;
+    }
+    
+    
     
     public function getFieldName($columnName)
     {

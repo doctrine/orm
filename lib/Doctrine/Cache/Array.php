@@ -38,9 +38,7 @@ class Doctrine_Cache_Array implements Countable, Doctrine_Cache_Interface
     protected $data;
 
     /**
-     * Test if a cache is available for the given id and (if yes) return it (false else)
-     * 
-     * Note : return value is always "string" (unserialization is done by the core not by the backend)
+     * Test if a cache is available for the given id and (if yes) return it (false else).
      * 
      * @param string $id cache id
      * @param boolean $testCacheValidity        if set to false, the cache validity won't be tested

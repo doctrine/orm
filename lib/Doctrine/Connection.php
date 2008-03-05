@@ -1277,7 +1277,7 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
      */
     public function clear()
     {
-        $this->unitOfWork->detachAllManagedEntities();
+        $this->unitOfWork->detachAll();
         foreach ($this->_mappers as $mapper) {
             $mapper->clear(); // clear identity map of each mapper
         }
@@ -1289,6 +1289,7 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
      *
      * @return void
      * @todo package:orm
+     * @deprecated
      */
     public function evictTables()
     {

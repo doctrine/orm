@@ -33,7 +33,7 @@
 interface Doctrine_Cache_Interface 
 {
     /**
-     * Test if a cache is available for the given id and (if yes) return it (false else)
+     * Test if a cache entry is available for the given id and (if yes) return it (false else).
      * 
      * Note : return value is always "string" (unserialization is done by the core not by the backend)
      * 

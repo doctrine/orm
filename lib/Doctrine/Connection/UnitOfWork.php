@@ -43,7 +43,7 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
     
     /**
      * The identity map that holds references to all managed entities that have
-     * an identity.
+     * an identity. The entities are grouped by their class name.
      */
     protected $_identityMap = array();
     
@@ -246,7 +246,7 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
      * Adds an entity to the pool of managed entities.
      *
      */
-    public function addManagedEntity(Doctrine_Record $entity)
+    public function manage(Doctrine_Record $entity)
     {
         $oid = $entity->getOid();
         if ( ! isset($this->_managedEntities[$oid])) {
@@ -257,14 +257,15 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
     }
     
     /**
-     * get
-     * @param integer $oid
+     * Gets a managed entity by it's object id (oid).
+     *
+     * @param integer $oid  The object id.
      * @throws Doctrine_Table_Repository_Exception
      */
-    public function getManagedEntity($oid)
+    public function getByOid($oid)
     {
         if ( ! isset($this->_managedEntities[$oid])) {
-            throw new Doctrine_Connection_UnitOfWork_Exception("Unknown object identifier '$oid'.");
+            throw new Doctrine_Connection_Exception("Unknown object identifier '$oid'.");
         }
         return $this->_managedEntities[$oid];
     }
@@ -273,7 +274,7 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
      * @param integer $oid                  object identifier
      * @return boolean                      whether ot not the operation was successful
      */
-    public function detachManagedEntity(Doctrine_Record $entity)
+    public function detach(Doctrine_Record $entity)
     {
         $oid = $entity->getOid();
         if ( ! isset($this->_managedEntities[$oid])) {
@@ -284,41 +285,69 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
     }
     
     /**
-     * @return integer                      number of records evicted
+     * Detaches all currently managed entities.
+     *
+     * @return integer   The number of detached entities.
      */
-    public function detachAllManagedEntities()
+    public function detachAll()
     {
-        $evicted = 0;
-        foreach ($this->_managedEntities as $entity) {
-            if ($this->detachManagedEntity($entity)) {
-                $evicted++;
-            }
-        }
-        return $evicted;
+        $numDetached = count($this->_managedEntities);
+        $this->_managedEntities = array();
+        return $numDetached;
     }
     
     /**
-     * contains
-     * @param integer $oid                  object identifier
-     */
-    public function isManagedEntity($oid)
-    {
-        return isset($this->_managedEntities[$oid]);
-    }
-    
-    /**
-     * Adds an entity to the identity map.
+     * Checks whether an entity is managed.
      * 
+     * @param Doctrine_Record $entity  The entity to check.
+     * @return boolean  TRUE if the entity is currently managed by doctrine, FALSE otherwise.
      */
-    public function addToIdentityMap(Doctrine_Record $entity)
+    public function isManaged(Doctrine_Record $entity)
+    {
+        return isset($this->_managedEntities[$entity->getOid()]);
+    }
+    
+    /**
+     * Registers an entity in the identity map.
+     * 
+     * @return boolean  TRUE if the registration was successful, FALSE if the identity of
+     *                  the entity in question is already managed.
+     * @throws Doctrine_Connection_Exception  If the entity has no (database) identity.
+     */
+    public function registerIdentity(Doctrine_Record $entity)
     {
         $id = implode(' ', $entity->identifier());
+        if ( ! $id) {
+            throw new Doctrine_Connection_Exception("Entity with oid '" . $entity->getOid()
+                    . "' has no database identity and therefore can't be added to the identity map.");
+        }
         $className = $entity->getClassMetadata()->getRootClassName();
         if (isset($this->_identityMap[$className][$id])) {
             return false;
         }
         $this->_identityMap[$className][$id] = $entity;
         return true;
+    }
+    
+    public function unregisterIdentity(Doctrine_Record $entity)
+    {
+        $id = implode(' ', $entity->identifier());
+        if ( ! $id) {
+            throw new Doctrine_Connection_Exception("Entity with oid '" . $entity->getOid()
+                    . "' has no database identity and therefore can't be removed from the identity map.");
+        }
+        $className = $entity->getClassMetadata()->getRootClassName();
+        if (isset($this->_identityMap[$className][$id])) {
+            unset($this->_identityMap[$className][$id]);
+            return true;
+        }
+
+        return false;
+    }
+    
+    public function containsIdentity(Doctrine_Record $entity)
+    {
+        
     }
     
 }

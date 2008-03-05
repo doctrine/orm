@@ -730,12 +730,12 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
         $id = array_values($id);
 
         if ($deep) {
-            
             $query = $this->_mapper->createQuery();
             foreach (array_keys($this->_references) as $name) {
                 $query->leftJoin(get_class($this) . '.' . $name);
             }
             $query->where(implode(' = ? AND ', $this->_table->getIdentifierColumnNames()) . ' = ?');
+            $this->clearRelated();
             $record = $query->fetchOne($id);
         } else {
             // Use FETCH_ARRAY to avoid clearing object relations
@@ -1900,7 +1900,7 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
      * Note: The entity is no longer useable after free() has been called. Any operations
      * done with the entity afterwards can lead to unpredictable results.
      */
-    public function free()
+    public function free($deep = false)
     {
         if ($this->_state != self::STATE_LOCKED) {
             $this->_mapper->detach($this);

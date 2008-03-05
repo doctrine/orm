@@ -24,7 +24,7 @@
  * a database result set.
  *
  * @package     Doctrine
- * @subpackage  Hydrate
+ * @subpackage  Hydrator
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @link        www.phpdoctrine.org
  * @since       1.0
@@ -104,10 +104,11 @@ class Doctrine_Hydrator extends Doctrine_Hydrator_Abstract
         }
 
         // Initialize
-        foreach ($this->_queryComponents as $dqlAlias => $data) {
-            $data['mapper']->setAttribute(Doctrine::ATTR_LOAD_REFERENCES, false);
-            $componentName = $data['mapper']->getComponentName();
-            $listeners[$componentName] = $data['mapper']->getRecordListener();
+        foreach ($this->_queryComponents as $dqlAlias => $component) {
+            // disable lazy-loading of related elements during hydration
+            $component['mapper']->setAttribute(Doctrine::ATTR_LOAD_REFERENCES, false);
+            $componentName = $component['mapper']->getComponentName();
+            $listeners[$componentName] = $component['mapper']->getRecordListener();
             $identifierMap[$dqlAlias] = array();
             $prev[$dqlAlias] = array();
             $id[$dqlAlias] = '';
@@ -290,28 +291,38 @@ class Doctrine_Hydrator extends Doctrine_Hydrator_Abstract
     protected function _gatherRowData(&$data, &$cache, &$id, &$nonemptyComponents)
     {
         $rowData = array();
+        //$className = null;
         
         foreach ($data as $key => $value) {
             // Parse each column name only once. Cache the results.
             if ( ! isset($cache[$key])) {
                 // cache general information like the column name <-> field name mapping
                 $e = explode('__', $key);
-                $last = strtolower(array_pop($e));
+                $columnName = strtolower(array_pop($e));
                 $cache[$key]['dqlAlias'] = $this->_tableAliases[strtolower(implode('__', $e))];
                 $mapper = $this->_queryComponents[$cache[$key]['dqlAlias']]['mapper'];
-                $table = $mapper->getTable();
-                $fieldName = $mapper->getFieldName($last);
+                $classMetadata = $mapper->getClassMetadata();
+                $fieldName = $mapper->getFieldName($columnName);
                 $cache[$key]['fieldName'] = $fieldName;
                 
+                // determine the class name 
+                /*if ( ! $className) {
+                    if ($classMetadata->isDiscriminatorColumn($columnName)) {
+                        $className = $this->_getClassnameToReturn();
+                    } else if ( ! $className) {
+                        $className = $classMetadata->getClassName();
+                    }
+                }*/
+                
                 // cache identifier information
-                if ($table->isIdentifier($fieldName)) {
+                if ($classMetadata->isIdentifier($fieldName)) {
                     $cache[$key]['isIdentifier'] = true;
                 } else {
                     $cache[$key]['isIdentifier'] = false;
                 }
                 
                 // cache type information
-                $type = $table->getTypeOfColumn($last);
+                $type = $classMetadata->getTypeOfColumn($columnName);
                 if ($type == 'integer' || $type == 'string') {
                     $cache[$key]['isSimpleType'] = true;
                 } else {

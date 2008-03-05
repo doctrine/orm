@@ -141,7 +141,6 @@ abstract class Doctrine_Configurable extends Doctrine_Locator_Injectable
             case Doctrine::ATTR_RECORD_LISTENER:
             case Doctrine::ATTR_THROW_EXCEPTIONS:
             case Doctrine::ATTR_DEFAULT_PARAM_NAMESPACE:
-            case Doctrine::ATTR_AUTOLOAD_TABLE_CLASSES:
             case Doctrine::ATTR_MODEL_LOADING:
 
                 break;

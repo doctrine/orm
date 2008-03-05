@@ -20,7 +20,7 @@
  */
 
 /**
- * A ClassMetadata instance holds all the information (metadata) of an entity and it's relations.
+ * A <tt>ClassMetadata</tt> instance holds all the information (metadata) of an entity and it's relations.
  * These informations are used for the proper object-relational mapping of the class.
  *
  * @package Doctrine
@@ -479,7 +479,7 @@ class Doctrine_ClassMetadata extends Doctrine_Configurable implements Serializab
     }
     
     /**
-     * getColumnAlias
+     * getFieldName
      * 
      * returns a column alias for a column name 
      * if no alias can be found the column name is returned.
@@ -687,8 +687,8 @@ class Doctrine_ClassMetadata extends Doctrine_Configurable implements Serializab
 
     /**
      * Gets the type of the identifier (primary key) used by the mapped class. The type
-     * can be either "Doctrine::IDENTIFIER_NATURAL", "Doctrine::IDENTIFIER_AUTOINCREMENT",
-     * "Doctrine::IDENTIFIER_SEQUENCE" or "Doctrine::IDENTIFIER_COMPOSITE".
+     * can be either <tt>Doctrine::IDENTIFIER_NATURAL</tt>, <tt>Doctrine::IDENTIFIER_AUTOINCREMENT</tt>,
+     * <tt>Doctrine::IDENTIFIER_SEQUENCE</tt> or <tt>Doctrine::IDENTIFIER_COMPOSITE</tt>.
      * 
      * @return integer
      */
@@ -1255,7 +1255,6 @@ class Doctrine_ClassMetadata extends Doctrine_Configurable implements Serializab
      * for the class.
      *
      * @return array
-     * @todo Move somewhere else ... somehow this seems wrong here. Exporting is a separate task.
      */
     public function getExportableFormat($parseForeignKeys = true)
     {
@@ -1448,14 +1447,14 @@ class Doctrine_ClassMetadata extends Doctrine_Configurable implements Serializab
     }
     
     /**
-     * loadTemplate
+     * loadBehavior
      *
      * @param string $template
      * @todo Unify under 'Behaviors'.
      */
-    public function loadTemplate($template, array $options = array())
+    public function loadBehavior($behavior, array $options = array())
     {
-        $this->actAs($template, $options);
+        $this->actAs($behavior, $options);
     }
     
     /**
@@ -1472,6 +1471,7 @@ class Doctrine_ClassMetadata extends Doctrine_Configurable implements Serializab
      *
      * @param  object Doctrine_Record_Filter $filter
      * @return object $this
+     * @todo Remove filters, if possible.
      */
     public function unshiftFilter(Doctrine_Record_Filter $filter)
     {
@@ -1519,6 +1519,7 @@ class Doctrine_ClassMetadata extends Doctrine_Configurable implements Serializab
      * getFilters
      *
      * @return array $filters
+     * @todo Remove filters, if possible.
      */
     public function getFilters()
     {
@@ -1755,6 +1756,11 @@ class Doctrine_ClassMetadata extends Doctrine_Configurable implements Serializab
         return false;
     }
     
+    public function isDiscriminatorColumn($columnName)
+    {
+        return $columnName === $this->_inheritanceOptions['discriminatorColumn'];
+    }
+    
     /**
      * hasOne
      * binds One-to-One aggregate relation
@@ -1786,7 +1792,6 @@ class Doctrine_ClassMetadata extends Doctrine_Configurable implements Serializab
 
         return $this;
     }
-    
 
     
     /**

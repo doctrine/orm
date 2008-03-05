@@ -35,7 +35,6 @@
 class Doctrine_Hydrator_RecordDriver extends Doctrine_Locator_Injectable
 {
     protected $_collections = array();
-    protected $_records = array();
     protected $_mappers = array();
 
     public function getElementCollection($component)
@@ -79,7 +78,7 @@ class Doctrine_Hydrator_RecordDriver extends Doctrine_Locator_Injectable
      * @param Doctrine_Table $table
      * @return boolean
      */
-    public function isIdentifiable(array $row, Doctrine_Table $table)
+    /*public function isIdentifiable(array $row, Doctrine_Table $table)
     {
         $primaryKeys = $table->getIdentifierColumnNames();
 
@@ -95,26 +94,21 @@ class Doctrine_Hydrator_RecordDriver extends Doctrine_Locator_Injectable
             }
         }
         return true;
-    }
+    }*/
     
     public function getNullPointer() 
     {
         return self::$_null;
     }
     
-    public function getElement(array $data, $component)
+    public function getElement(array $data, $className)
     {
-        $component = $this->_getClassnameToReturn($data, $component);
-        if ( ! isset($this->_mappers[$component])) {
-            $this->_mappers[$component] = Doctrine_Manager::getInstance()->getMapper($component);
+        $className = $this->_getClassnameToReturn($data, $className);
+        if ( ! isset($this->_mappers[$className])) {
+            $this->_mappers[$className] = Doctrine_Manager::getInstance()->getMapper($className);
         }
 
-        $record = $this->_mappers[$component]->getRecord($data);
-
-        if ( ! isset($this->_records[$record->getOid()]) ) {
-            $record->clearRelated();
-            $this->_records[$record->getOid()] = $record;
-        }
+        $record = $this->_mappers[$className]->getRecord($data);
 
         return $record;
     }
@@ -125,6 +119,8 @@ class Doctrine_Hydrator_RecordDriver extends Doctrine_Locator_Injectable
         foreach ($this->_collections as $key => $coll) {
             $coll->takeSnapshot();
         }
+        $this->_collections = array();
+        $this->_mappers = array();
     }
     
     /**
@@ -141,18 +137,17 @@ class Doctrine_Hydrator_RecordDriver extends Doctrine_Locator_Injectable
             $this->_mappers[$className] = Doctrine_Manager::getInstance()->getMapper($className);
         }
         
-        $discCol = $this->_mappers[$className]->getTable()->getInheritanceOption('discriminatorColumn');
+        $discCol = $this->_mappers[$className]->getClassMetadata()->getInheritanceOption('discriminatorColumn');
         if ( ! $discCol) {
             return $className;
         }
         
-        $discMap = $this->_mappers[$className]->getTable()->getInheritanceOption('discriminatorMap');
-        foreach ($discMap as $value => $class) {
-            if (isset($data[$discCol]) && $data[$discCol] == $value) {
-                return $class;
-            }
-        }
+        $discMap = $this->_mappers[$className]->getClassMetadata()->getInheritanceOption('discriminatorMap');
         
-        return $className;
+        if (isset($data[$discCol], $discMap[$data[$discCol]])) {
+            return $discMap[$data[$discCol]];
+        } else {
+            return $className;
+        }
     }
 }

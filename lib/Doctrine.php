@@ -207,7 +207,6 @@ final class Doctrine
     const ATTR_DEFAULT_PARAM_NAMESPACE  = 156;
     const ATTR_QUERY_CACHE              = 157;
     const ATTR_QUERY_CACHE_LIFESPAN     = 158;
-    const ATTR_AUTOLOAD_TABLE_CLASSES   = 160;
     const ATTR_MODEL_LOADING            = 161;
     const ATTR_LOCK                     = 162;
     const ATTR_HYDRATE                  = 163;

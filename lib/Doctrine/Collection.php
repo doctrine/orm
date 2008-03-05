@@ -479,16 +479,13 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
      * @param integer $key
      * @param Doctrine_Record $record
      * @return void
+     * @internal Can't type-hint the second parameter to Doctrine_Record because we need
+     *           to adhere to the Doctrine_Access::set() signature.
      */
     public function set($key, $record)
     {
         if ( ! $record instanceOf Doctrine_Record) {
-            try {
-                throw new Exception();
-            } catch (Exception $e) {
-                echo $e->getTraceAsString() . "<br/><br/>";
-            }
-            throw new Doctrine_Record_Exception('Value variable in set is not an instance of Doctrine_Record');
+            throw new Doctrine_Collection_Exception('Value variable in set is not an instance of Doctrine_Record');
         }
 
         if (isset($this->referenceField)) {

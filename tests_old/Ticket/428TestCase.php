@@ -13,6 +13,8 @@
  */
 class Doctrine_Ticket_428_TestCase extends Doctrine_UnitTestCase
 {
+    private $_albums;
+    
     public function prepareTables()
     {
         $this->tables = array('Album', 'Song');
@@ -36,10 +38,15 @@ class Doctrine_Ticket_428_TestCase extends Doctrine_UnitTestCase
         $albums[0]->Song[3]->title = 'Michelle';
         $albums->save();
         $this->assertEqual(count($albums[0]->Song), 4);
+        $this->_albums = $albums;
     }
 
     public function testAggregateValueMappingSupportsLeftJoins() 
     {
+        foreach ($this->_albums as $album) {
+            $album->clearRelated();
+        }
+        
         $q = new Doctrine_Query();
 
         $q->select('a.name, COUNT(s.id) count')->from('Album a')->leftJoin('a.Song s')->groupby('a.id');
