@@ -18,14 +18,14 @@ class Orm_UnitOfWorkTestCase extends Doctrine_OrmTestCase
     public function testTransientEntityIsManaged()
     {
         $this->assertTrue($this->_unitOfWork->isManaged($this->_user));
-        $this->assertSame($this->_user, $this->_unitOfWork->get($this->_user->getOid()));
+        $this->assertSame($this->_user, $this->_unitOfWork->getByOid($this->_user->getOid()));
     }
     
     public function testDetachSingleEntity()
     {
         $this->assertTrue($this->_unitOfWork->detach($this->_user));
         try {
-            $this->_unitOfWork->get($this->_user->getOid());
+            $this->_unitOfWork->getByOid($this->_user->getOid());
             $this->fail("Entity is still managed after is has been detached.");
         } catch (Doctrine_Connection_Exception $ex) {}
     }
@@ -34,7 +34,7 @@ class Orm_UnitOfWorkTestCase extends Doctrine_OrmTestCase
     {
         $this->assertEquals(1, $this->_unitOfWork->detachAll());
         try {
-            $this->_unitOfWork->get($this->_user->getOid());
+            $this->_unitOfWork->getByOid($this->_user->getOid());
             $this->fail("Entity is still managed after all entities have been detached.");
         } catch (Doctrine_Connection_Exception $ex) {}
     }
