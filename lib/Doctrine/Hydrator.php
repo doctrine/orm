@@ -291,7 +291,6 @@ class Doctrine_Hydrator extends Doctrine_Hydrator_Abstract
     protected function _gatherRowData(&$data, &$cache, &$id, &$nonemptyComponents)
     {
         $rowData = array();
-        //$className = null;
         
         foreach ($data as $key => $value) {
             // Parse each column name only once. Cache the results.
@@ -304,15 +303,6 @@ class Doctrine_Hydrator extends Doctrine_Hydrator_Abstract
                 $classMetadata = $mapper->getClassMetadata();
                 $fieldName = $mapper->getFieldName($columnName);
                 $cache[$key]['fieldName'] = $fieldName;
-                
-                // determine the class name 
-                /*if ( ! $className) {
-                    if ($classMetadata->isDiscriminatorColumn($columnName)) {
-                        $className = $this->_getClassnameToReturn();
-                    } else if ( ! $className) {
-                        $className = $classMetadata->getClassName();
-                    }
-                }*/
                 
                 // cache identifier information
                 if ($classMetadata->isIdentifier($fieldName)) {
