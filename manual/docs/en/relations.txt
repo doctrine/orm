@@ -324,7 +324,7 @@ $brandy->name = 'John Brandy';
 $koskenkorva = new User();
 $koskenkorva->name = 'Mikko Koskenkorva';
 
-$beer = new Stefan();
+$beer = new User();
 $beer->name = 'Stefan Beer';
 
 $daniels->Friend[0] = $brandy;
