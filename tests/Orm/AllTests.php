@@ -9,7 +9,6 @@ require_once 'lib/DoctrineTestInit.php';
 require_once 'Orm/Component/AllTests.php';
 require_once 'Orm/Ticket/AllTests.php';
 require_once 'Orm/UnitOfWorkTestCase.php';
-require_once 'Orm/ConfigurableTestCase.php';
 
 class Orm_AllTests
 {
@@ -23,7 +22,7 @@ class Orm_AllTests
         $suite = new Doctrine_OrmTestSuite('Doctrine Orm');
 
         $suite->addTestSuite('Orm_UnitOfWorkTestCase');
-        $suite->addTestSuite('Orm_ConfigurableTestCase');
+        //$suite->addTestSuite('Orm_ConfigurableTestCase');
         
         $suite->addTest(Orm_Component_AllTests::suite());
         $suite->addTest(Orm_Ticket_AllTests::suite());
