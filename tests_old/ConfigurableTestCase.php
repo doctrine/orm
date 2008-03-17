@@ -173,43 +173,6 @@ class Doctrine_Configurable_TestCase extends Doctrine_UnitTestCase {
         $this->manager->setAttribute(Doctrine::ATTR_BATCH_SIZE, 5);
         $this->assertEqual($this->manager->getAttribute(Doctrine::ATTR_BATCH_SIZE),5);
 
-        $this->manager->setAttribute(Doctrine::ATTR_LOCKMODE, Doctrine::LOCK_PESSIMISTIC);
-        $this->assertEqual($this->manager->getAttribute(Doctrine::ATTR_LOCKMODE), Doctrine::LOCK_PESSIMISTIC);
-
-        // test invalid arguments
-        /**
-        try {
-            $this->manager->setAttribute(Doctrine::ATTR_CACHE_TTL,-12);
-        } catch(Exception $e) {
-            $this->assertTrue($e instanceof Exception);
-        }
-        try {
-            $this->manager->setAttribute(Doctrine::ATTR_CACHE_SIZE,-12);
-        } catch(Exception $e) {
-            $this->assertTrue($e instanceof Exception);
-        }
-        try {
-            $this->manager->setAttribute(Doctrine::ATTR_BATCH_SIZE,-12);
-        } catch(Exception $e) {
-            $this->assertTrue($e instanceof Exception);
-        }
-        */
-        try {
-            $this->connection->beginTransaction();
-            $this->manager->setAttribute(Doctrine::ATTR_LOCKMODE, Doctrine::LOCK_OPTIMISTIC);
-        } catch(Exception $e) {
-            $this->assertTrue($e instanceof Exception);
-            $this->connection->commit();
-        }
-
-        try {
-            $this->connection->beginTransaction();
-            $this->connection->setAttribute(Doctrine::ATTR_LOCKMODE, Doctrine::LOCK_PESSIMISTIC);
-        } catch(Exception $e) {
-            $this->assertTrue($e instanceof Exception);
-            $this->connection->commit();
-        }
-
     }
     public function testGetAttributes() {
         $this->assertTrue(is_array($this->manager->getAttributes()));

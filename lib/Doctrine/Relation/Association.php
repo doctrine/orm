@@ -97,7 +97,7 @@ class Doctrine_Relation_Association extends Doctrine_Relation
         $id = $record->getIncremented();
         //var_dump($id);
         //echo "<br /><br />";
-        if (empty($id) || ! $this->_foreignMapper->getAttribute(Doctrine::ATTR_LOAD_REFERENCES)) {
+        if (empty($id) || ! $this->_foreignMapper->getClassMetadata()->getAttribute(Doctrine::ATTR_LOAD_REFERENCES)) {
             //echo "here" . $this->_foreignMapper->getAttribute(Doctrine::ATTR_LOAD_REFERENCES);
             $coll = new Doctrine_Collection($this->getForeignComponentName());
         } else {

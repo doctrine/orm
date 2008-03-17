@@ -55,7 +55,7 @@ final class Doctrine
     /**
      * VERSION
      */
-    const VERSION                   = '1.0.0';
+    const VERSION                   = '2.0.0';
 
     /**
      * ERROR CONSTANTS
@@ -171,46 +171,48 @@ final class Doctrine
      * Doctrine constants
      */
     const ATTR_LISTENER                 = 100;
-    const ATTR_QUOTE_IDENTIFIER         = 101;
-    const ATTR_FIELD_CASE               = 102;
-    const ATTR_IDXNAME_FORMAT           = 103;
-    const ATTR_SEQNAME_FORMAT           = 104;
-    const ATTR_SEQCOL_NAME              = 105;
-    const ATTR_CMPNAME_FORMAT           = 118;
-    const ATTR_DBNAME_FORMAT            = 117;
-    const ATTR_TBLCLASS_FORMAT          = 119;
-    const ATTR_TBLNAME_FORMAT           = 120;
-    const ATTR_EXPORT                   = 140;
-    const ATTR_DECIMAL_PLACES           = 141;
-    const ATTR_PORTABILITY              = 106;
-    const ATTR_VALIDATE                 = 107;
-    const ATTR_COLL_KEY                 = 108;
-    const ATTR_QUERY_LIMIT              = 109;
-    const ATTR_DEFAULT_TABLE_TYPE       = 112;
-    const ATTR_DEF_TEXT_LENGTH          = 113;
-    const ATTR_DEF_VARCHAR_LENGTH       = 114;
-    const ATTR_DEF_TABLESPACE           = 115;
-    const ATTR_EMULATE_DATABASE         = 116;
-    const ATTR_USE_NATIVE_ENUM          = 117;
-    const ATTR_DEFAULT_SEQUENCE         = 133;
-    const ATTR_FETCHMODE                = 118;
-    const ATTR_NAME_PREFIX              = 121;
-    const ATTR_CREATE_TABLES            = 122;
-    const ATTR_COLL_LIMIT               = 123;
-    const ATTR_CACHE                    = 150;
-    const ATTR_RESULT_CACHE             = 150;
-    const ATTR_CACHE_LIFESPAN           = 151;
-    const ATTR_RESULT_CACHE_LIFESPAN    = 151;
-    const ATTR_LOAD_REFERENCES          = 153;
+    const ATTR_QUOTE_IDENTIFIER         = 101; // manager/session attribute
+    const ATTR_FIELD_CASE               = 102; // manager/session attribute
+    const ATTR_IDXNAME_FORMAT           = 103; // manager/session attribute
+    const ATTR_SEQNAME_FORMAT           = 104; // manager/session attribute
+    const ATTR_SEQCOL_NAME              = 105; // class attribute
+    const ATTR_CMPNAME_FORMAT           = 118; // ??
+    const ATTR_DBNAME_FORMAT            = 117; // manager/session attribute
+    const ATTR_TBLCLASS_FORMAT          = 119; // manager/session attribute
+    const ATTR_TBLNAME_FORMAT           = 120; // manager/session attribute
+    const ATTR_EXPORT                   = 140; // manager/session attribute
+    const ATTR_DECIMAL_PLACES           = 141; // manager/session attribute
+    const ATTR_PORTABILITY              = 106; // manager/session attribute
+    const ATTR_VALIDATE                 = 107; // manager/session attribute
+    const ATTR_COLL_KEY                 = 108; // class attribute
+    const ATTR_QUERY_LIMIT              = 109; // manager/session attribute
+    const ATTR_DEFAULT_TABLE_TYPE       = 112; // manager/session attribute
+    const ATTR_DEF_TEXT_LENGTH          = 113; // manager/session attribute
+    const ATTR_DEF_VARCHAR_LENGTH       = 114; // manager/session attribute
+    const ATTR_DEF_TABLESPACE           = 115; // manager/session attribute
+    const ATTR_EMULATE_DATABASE         = 116; // manager/session attribute
+    const ATTR_USE_NATIVE_ENUM          = 117; // manager/session attribute
+    const ATTR_DEFAULT_SEQUENCE         = 133; // ??
+    const ATTR_FETCHMODE                = 118; // deprecated
+    const ATTR_NAME_PREFIX              = 121; // ??
+    const ATTR_CREATE_TABLES            = 122; // manager/session attribute
+    const ATTR_COLL_LIMIT               = 123; // manager/session attribute
+    const ATTR_CACHE                    = 150; // deprecated
+    const ATTR_RESULT_CACHE             = 150; // manager/session attribute
+    const ATTR_CACHE_LIFESPAN           = 151; // deprecated
+    const ATTR_RESULT_CACHE_LIFESPAN    = 151; // manager/session attribute
+    const ATTR_LOAD_REFERENCES          = 153; // class attribute
     const ATTR_RECORD_LISTENER          = 154;
-    const ATTR_THROW_EXCEPTIONS         = 155;
-    const ATTR_DEFAULT_PARAM_NAMESPACE  = 156;
-    const ATTR_QUERY_CACHE              = 157;
-    const ATTR_QUERY_CACHE_LIFESPAN     = 158;
-    const ATTR_MODEL_LOADING            = 161;
-    const ATTR_LOCK                     = 162;
-    const ATTR_HYDRATE                  = 163;
-    const ATTR_IDENTIFIER               = 164;
+    const ATTR_THROW_EXCEPTIONS         = 155; // manager/session attribute
+    const ATTR_DEFAULT_PARAM_NAMESPACE  = 156; // ??
+    const ATTR_QUERY_CACHE              = 157; // manager/session attribute
+    const ATTR_QUERY_CACHE_LIFESPAN     = 158; // manager/session attribute
+    const ATTR_MODEL_LOADING            = 161; // manager/session attribute
+    const ATTR_LOCK                     = 162; // ??
+    const ATTR_HYDRATE                  = 163; // ??
+    const ATTR_IDENTIFIER               = 164; // ??
+    const ATTR_METADATA_CACHE           = 165; // manager/session attribute
+    const ATTR_METADATA_CACHE_LIFESPAN  = 166; // manager/session attribute
 
     /**
      * QUERY_LIMIT CONSTANTS
@@ -281,6 +283,7 @@ final class Doctrine
      * FETCHMODE_VHOLDER
      *
      * @see self::ATTR_FETCHMODE
+     * @deprecated???
      */
     const FETCHMODE_VHOLDER         = 1;
 
@@ -293,6 +296,7 @@ final class Doctrine
      * This is the default fetchmode.
      *
      * @see self::ATTR_FETCHMODE
+     * @deprecated???
      */
     const FETCHMODE_RECORD          = 2;
 
@@ -300,6 +304,7 @@ final class Doctrine
      * FETCHMODE_ARRAY
      *
      * @see self::ATTR_FETCHMODE
+     * @deprecated???
      */
     const FETCHMODE_ARRAY           = 3;
 
@@ -493,6 +498,7 @@ final class Doctrine
      * VALIDATE_CONSTRAINTS
      *
      * @see self::ATTR_VALIDATE
+     * Not used? Purpose?
      */
     const VALIDATE_CONSTRAINTS      = 4;
 
@@ -557,7 +563,7 @@ final class Doctrine
      *
      * @see self::ATTR_MODEL_LOADING
      */
-    const MODEL_LOADING_CONSERVATIVE= 2;
+    const MODEL_LOADING_CONSERVATIVE = 2;
     
     /**
      * INHERITANCE TYPE CONSTANTS.
@@ -583,7 +589,7 @@ final class Doctrine
      * @see http://martinfowler.com/eaaCatalog/concreteTableInheritance.html
      */
     const INHERITANCETYPE_TABLE_PER_CLASS = 3;
-    
+
 
     /**
      * Path
@@ -763,8 +769,7 @@ final class Doctrine
             // - not a subclass of Doctrine_Record
             // - don't have a setTableDefinition method
             if (!$class->isAbstract() &&
-                $class->isSubClassOf('Doctrine_Record') &&
-                $class->hasMethod('setTableDefinition')) {
+                $class->isSubClassOf('Doctrine_Record')) {
 
                 return true;
             }

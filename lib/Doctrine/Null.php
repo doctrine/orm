@@ -34,7 +34,18 @@
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  */
 final class Doctrine_Null
-{ 
+{
+    private static $_instance;
+    public function __construct() {}
+    
+    public static function getInstance()
+    {
+        if (is_null(self::$_instance)) {
+            self::$_instance = new Doctrine_Null();
+        }
+        return self::$_instance;
+    }
+    
     public function exists()
     {
         return false;    

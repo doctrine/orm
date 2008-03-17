@@ -55,7 +55,7 @@ class Doctrine_Relation_ForeignKey extends Doctrine_Relation
         
         if ($this->isOneToOne()) {
             if ( ! $record->exists() || empty($id) || 
-                    ! $this->_foreignMapper->getAttribute(Doctrine::ATTR_LOAD_REFERENCES)) {
+                    ! $this->_foreignMapper->getClassMetadata()->getAttribute(Doctrine::ATTR_LOAD_REFERENCES)) {
                 $related = $this->_foreignMapper->create();
             } else {
                 $dql  = 'FROM ' . $this->_foreignMapper->getComponentName()
@@ -69,7 +69,7 @@ class Doctrine_Relation_ForeignKey extends Doctrine_Relation
                     $record, false);
         } else {
             if ( ! $record->exists() || empty($id) || 
-                    ! $this->_foreignMapper->getAttribute(Doctrine::ATTR_LOAD_REFERENCES)) {
+                    ! $this->_foreignMapper->getClassMetadata()->getAttribute(Doctrine::ATTR_LOAD_REFERENCES)) {
                 $related = new Doctrine_Collection($this->_foreignMapper->getComponentName());
             } else {
                 $query = $this->getRelationDql(1);

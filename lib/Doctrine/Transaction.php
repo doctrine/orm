@@ -160,7 +160,7 @@ class Doctrine_Transaction extends Doctrine_Connection_Module
      * get the current transaction nesting level
      *
      * @return integer
-     * @todo Name suggestion: getLevel(). $transaction->getTransactionLevel() looks odd.
+     * @todo Name suggestion: getNestingLevel(). $transaction->getTransactionLevel() looks odd.
      */
     public function getTransactionLevel()
     {

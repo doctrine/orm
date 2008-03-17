@@ -79,7 +79,7 @@ class Doctrine_Record_Hook_TestCase extends Doctrine_UnitTestCase
         $this->assertEqual($r->pop(), 'preDelete');
     }
 
-    public function testSoftDelete()
+    /*public function testSoftDelete()
     {
         $r = new SoftDeleteTest();
         $r->name = 'something';
@@ -99,5 +99,5 @@ class Doctrine_Record_Hook_TestCase extends Doctrine_UnitTestCase
         } catch(Doctrine_Exception $e) {
             $this->fail();
         }
-    }
+    }*/
 }

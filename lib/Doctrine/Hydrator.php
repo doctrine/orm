@@ -106,9 +106,9 @@ class Doctrine_Hydrator extends Doctrine_Hydrator_Abstract
         // Initialize
         foreach ($this->_queryComponents as $dqlAlias => $component) {
             // disable lazy-loading of related elements during hydration
-            $component['mapper']->setAttribute(Doctrine::ATTR_LOAD_REFERENCES, false);
+            $component['table']->setAttribute(Doctrine::ATTR_LOAD_REFERENCES, false);
             $componentName = $component['mapper']->getComponentName();
-            $listeners[$componentName] = $component['mapper']->getRecordListener();
+            $listeners[$componentName] = $component['table']->getRecordListener();
             $identifierMap[$dqlAlias] = array();
             $prev[$dqlAlias] = array();
             $id[$dqlAlias] = '';
@@ -121,7 +121,7 @@ class Doctrine_Hydrator extends Doctrine_Hydrator_Abstract
             $rowData = $this->_gatherRowData($data, $cache, $id, $nonemptyComponents);
 
             //
-            // hydrate the data of the root component from the current row
+            // hydrate the data of the root entity from the current row
             //
             $table = $this->_queryComponents[$rootAlias]['table'];
             $mapper = $this->_queryComponents[$rootAlias]['mapper'];
@@ -162,9 +162,10 @@ class Doctrine_Hydrator extends Doctrine_Hydrator_Abstract
             // $prev[$rootAlias] now points to the last element in $result.
             // now hydrate the rest of the data found in the current row, that belongs to other
             // (related) components.
-            $oneToOne = false;
+            
             foreach ($rowData as $dqlAlias => $data) {
                 $index = false;
+                $oneToOne = false;
                 $map   = $this->_queryComponents[$dqlAlias];
                 $table = $map['table'];
                 $mapper = $map['mapper'];
@@ -181,7 +182,7 @@ class Doctrine_Hydrator extends Doctrine_Hydrator_Abstract
                 $path = $parent . '.' . $dqlAlias;
 
                 if ( ! isset($prev[$parent])) {
-                    break;
+                    continue;
                 }
                 
                 // check the type of the relation
@@ -232,7 +233,7 @@ class Doctrine_Hydrator extends Doctrine_Hydrator_Abstract
         
         // re-enable lazy loading
         foreach ($this->_queryComponents as $dqlAlias => $data) {
-            $data['mapper']->setAttribute(Doctrine::ATTR_LOAD_REFERENCES, true);
+            $data['table']->setAttribute(Doctrine::ATTR_LOAD_REFERENCES, true);
         }
         
         //$e = microtime(true);

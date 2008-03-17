@@ -20,8 +20,8 @@
  */
 
 /**
- * A <tt>ClassMetadata</tt> instance holds all the information (metadata) of an entity and it's relations.
- * These informations are used for the proper object-relational mapping of the class.
+ * A <tt>ClassMetadata</tt> instance holds all the information (metadata) of an entity and
+ * it's associations and how they're mapped to the relational model.
  *
  * @package Doctrine
  * @subpackage ClassMetadata
@@ -48,6 +48,7 @@ class Doctrine_ClassMetadata extends Doctrine_Configurable implements Serializab
     
     /**
      * The name of the custom mapper class used for the entity class.
+     * (Optional).
      *
      * @var string
      */
@@ -60,7 +61,7 @@ class Doctrine_ClassMetadata extends Doctrine_Configurable implements Serializab
     protected $_conn;
     
     /**
-     * The names of the parent classes.
+     * The names of the parent classes (ancestors).
      */
     protected $_parentClasses = array();
     
@@ -75,13 +76,14 @@ class Doctrine_ClassMetadata extends Doctrine_Configurable implements Serializab
     /**
      * The identifier type of the class.
      *
-     * @see Doctrine_Identifier constants
+     * @see Doctrine::IDENTIFIER_* constants
      * @var integer
      */
     protected $_identifierType;
     
     /**
      * The inheritance mapping type used by the class.
+     * 
      *
      * @var integer
      */
@@ -115,9 +117,9 @@ class Doctrine_ClassMetadata extends Doctrine_Configurable implements Serializab
     
     /**
      * The mapped columns and their mapping definitions.
-     * Keys are column names and values are definitions.
+     * Keys are column names and values are mapping definitions.
      *
-     * The definition array has atleast the following values:
+     * The mapping definition array has at least the following values:
      *
      *  -- type         the column type, eg. 'integer'
      *  -- length       the column length, eg. 11
@@ -155,11 +157,6 @@ class Doctrine_ClassMetadata extends Doctrine_Configurable implements Serializab
      * mapping.
      */
     protected $_enumValues = array();
-    
-    /**
-     * @todo Implementation.
-     */
-    protected $_readOnlyFieldNames = array();
     
     /**
      * Tree object associated with the class.
@@ -219,8 +216,10 @@ class Doctrine_ClassMetadata extends Doctrine_Configurable implements Serializab
      * Inheritance options.
      */
     protected $_inheritanceOptions = array(
+            // JOINED & TABLE_PER_CLASS options
             'discriminatorColumn' => null,
             'discriminatorMap'    => array(),
+            // JOINED options
             'joinSubclasses'      => true
             );
     
@@ -261,9 +260,9 @@ class Doctrine_ClassMetadata extends Doctrine_Configurable implements Serializab
         
     
     /**
-     * Constructs a new metadata instance.
+     * Constructs a new ClassMetadata instance.
      *
-     * @param string $domainClassName  Name of the class the metadata instance is used for.
+     * @param string $entityName  Name of the entity class the metadata info is used for.
      */
     public function __construct($entityName, Doctrine_Connection $conn)
     {        
@@ -272,7 +271,7 @@ class Doctrine_ClassMetadata extends Doctrine_Configurable implements Serializab
         $this->_conn = $conn;
         $this->_parser = new Doctrine_Relation_Parser($this);
         $this->_filters[]  = new Doctrine_Record_Filter_Standard();
-        $this->setParent($this->_conn); 
+        $this->setConfigurableParent($this->_conn); 
     }
     
     /**
@@ -286,13 +285,20 @@ class Doctrine_ClassMetadata extends Doctrine_Configurable implements Serializab
     /**
      * getComponentName
      *
-     * @return void
+     * @return string
      */
     public function getClassName()
     {
         return $this->_entityName;
     }
     
+    /**
+     * Gets the name of the root class of the entity hierarchy. If the entity described
+     * by the ClassMetadata is not participating in a hierarchy, this is the same as the
+     * name returned by {@link getClassName()}.
+     *
+     * @return string
+     */
     public function getRootClassName()
     {
         return $this->_rootEntityName;
@@ -315,7 +321,7 @@ class Doctrine_ClassMetadata extends Doctrine_Configurable implements Serializab
      */
     public function isIdentifier($fieldName)
     {
-        return in_array($fieldName, (array)$this->getIdentifier());
+        return in_array($fieldName, $this->getIdentifier());
     }
     
     /**
@@ -353,10 +359,11 @@ class Doctrine_ClassMetadata extends Doctrine_Configurable implements Serializab
      * @param string $name              the name of the option to set
      * @param mixed $value              the value of the option
      * @return Doctrine_Table           this object
+     * @deprecated
      */
     public function setOption($name, $value)
     {
-        switch ($name) {
+        /*switch ($name) {
             case 'tableName':
             case 'index':
             case 'sequenceName':
@@ -368,7 +375,7 @@ class Doctrine_ClassMetadata extends Doctrine_Configurable implements Serializab
             case 'enumMap':
                 $this->_enumMap = $value;
                 return;
-        }
+        }*/
         $this->_options[$name] = $value;
     }
     
@@ -457,11 +464,8 @@ class Doctrine_ClassMetadata extends Doctrine_Configurable implements Serializab
      */
     public function getColumnName($fieldName)
     {
-        if (isset($this->_columnNames[$fieldName])) {
-            return $this->_columnNames[$fieldName];
-        }
-
-        return $fieldName;
+        return isset($this->_columnNames[$fieldName]) ?
+                $this->_columnNames[$fieldName] : $fieldName;
     }
     
     /**
@@ -481,21 +485,21 @@ class Doctrine_ClassMetadata extends Doctrine_Configurable implements Serializab
     /**
      * getFieldName
      * 
-     * returns a column alias for a column name 
-     * if no alias can be found the column name is returned.
+     * returns the field name for a column name 
+     * if no field name can be found the column name is returned.
      *
      * @param string $columnName    column name
      * @return string               column alias
      */
     public function getFieldName($columnName)
     {
-        if (isset($this->_fieldNames[$columnName])) {
-            return $this->_fieldNames[$columnName];
-        }
-        
-        return $columnName;
+        return isset($this->_fieldNames[$columnName]) ?
+                $this->_fieldNames[$columnName] : $columnName;
     }
     
+    /**
+     * @deprecated
+     */
     public function setColumns(array $definitions)
     {
         foreach ($definitions as $name => $options) {
@@ -1791,6 +1795,21 @@ class Doctrine_ClassMetadata extends Doctrine_Configurable implements Serializab
         $this->bind(func_get_args(), Doctrine_Relation::MANY_AGGREGATE);
 
         return $this;
+    }
+    
+    public function hasAttribute($key)
+    {
+        switch ($key) {
+            case Doctrine::ATTR_SEQCOL_NAME:
+            case Doctrine::ATTR_COLL_KEY:
+            case Doctrine::ATTR_LOAD_REFERENCES:
+            case Doctrine::ATTR_EXPORT:
+            case Doctrine::ATTR_QUERY_LIMIT:
+            case Doctrine::ATTR_VALIDATE:
+                return true;
+            default:
+                return false;
+        }
     }
 
     

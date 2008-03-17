@@ -90,7 +90,7 @@ abstract class Doctrine_Mapper_Strategy
         return $this->_fieldNames;
     }
     
-    public function getOwningTable($fieldName)
+    public function getOwningClass($fieldName)
     {
         return $this->_mapper->getClassMetadata();
     }

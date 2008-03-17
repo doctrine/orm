@@ -105,7 +105,7 @@ class Doctrine_Relation_Nest extends Doctrine_Relation_Association
         $id = $record->getIncremented();
 
 
-        if (empty($id) || ! $this->_foreignMapper->getAttribute(Doctrine::ATTR_LOAD_REFERENCES)) {
+        if (empty($id) || ! $this->_foreignMapper->getClassMetadata()->getAttribute(Doctrine::ATTR_LOAD_REFERENCES)) {
             return new Doctrine_Collection($this->getForeignComponentName());
         } else {
             

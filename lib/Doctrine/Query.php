@@ -470,7 +470,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable, Seria
         
         $sql = array();
         foreach ($fields as $fieldName) {
-            $table = $mapper->getOwningTable($fieldName);
+            $table = $mapper->getOwningClass($fieldName);
             if ($table !== $baseTable) {
                 $tableAlias = $this->getSqlTableAlias($componentAlias . '.' . $table->getComponentName());
             } else {

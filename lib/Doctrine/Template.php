@@ -18,7 +18,7 @@
  * and is licensed under the LGPL. For more information, see
  * <http://www.phpdoctrine.org>.
  */
-Doctrine::autoload('Doctrine_Record_Abstract');
+
 /**
  * Doctrine_Template
  *
@@ -30,7 +30,7 @@ Doctrine::autoload('Doctrine_Record_Abstract');
  * @version     $Revision$
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  */
-class Doctrine_Template extends Doctrine_Record_Abstract
+class Doctrine_Template
 {
     /**
      * @param Doctrine_Record $_invoker     the record that invoked the last delegated call

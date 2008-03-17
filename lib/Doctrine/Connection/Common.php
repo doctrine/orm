@@ -38,8 +38,9 @@ class Doctrine_Connection_Common extends Doctrine_Connection
      * @param string $query
      * @param mixed $limit
      * @param mixed $offset
+     * @todo 4th parameter not used? Remove?
      */
-    public function modifyLimitQuery($query, $limit = false,$offset = false,$isManip=false)
+    public function modifyLimitQuery($query, $limit = false, $offset = false, $isManip = false)
     {
         $limit = (int) $limit;
         $offset = (int) $offset;

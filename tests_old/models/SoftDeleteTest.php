@@ -7,14 +7,14 @@ class SoftDeleteTest extends Doctrine_Record
         $class->setColumn('something', 'string', '25', array('notnull' => true, 'unique' => true));
         $class->setColumn('deleted', 'boolean', 1);
     }
-    public function preDelete(Doctrine_Event $event)
+    /*public function preDelete()
     {
         $event->skipOperation();
     }
-    public function postDelete(Doctrine_Event $event)
+    public function postDelete()
     {
         $this->deleted = true;
 
         $this->save();
-    }
+    }*/
 }

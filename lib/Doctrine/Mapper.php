@@ -31,11 +31,12 @@
  * @link        www.phpdoctrine.org
  * @since       1.0
  */
-class Doctrine_Mapper extends Doctrine_Configurable implements Countable
+class Doctrine_Mapper
 {
     /**
-     * @var Doctrine_Table  Metadata container that represents the database table this
-     *                      mapper is mapping objects to.
+     * Metadata object that descibes the mapping of the mapped entity class.
+     *
+     * @var Doctrine_ClassMetadata
      */
     protected $_classMetadata;
     
@@ -61,6 +62,16 @@ class Doctrine_Mapper extends Doctrine_Configurable implements Countable
      * @todo Move to UnitOfWork.
      */
     protected $_identityMap = array();
+    
+    /**
+     * Null object.
+     */
+    private $_nullObject;
+    
+    /**
+     * A list of registered entity listeners.
+     */
+    private $_entityListeners = array();
 
 
     /**
@@ -71,53 +82,17 @@ class Doctrine_Mapper extends Doctrine_Configurable implements Countable
      * @throws Doctrine_Connection_Exception  if there are no opened connections
      */
     public function __construct($name, Doctrine_ClassMetadata $classMetadata)
-    {
-        if ($name != $classMetadata->getClassName()) {
-            try {
-                throw new Exception();
-            } catch (Exception $e) {
-                echo $e->getTraceAsString() . "<br/><br/>";
-            }
-        }
-        
+    {        
         $this->_domainClassName = $name;
         $this->_conn = $classMetadata->getConnection();
         $this->_classMetadata = $classMetadata;
-        $this->setParent($this->_conn);
+        $this->_nullObject = Doctrine_Null::getInstance();
         if ($classMetadata->getInheritanceType() == Doctrine::INHERITANCETYPE_JOINED) {
             $this->_mappingStrategy = new Doctrine_Mapper_JoinedStrategy($this);
         } else {
             $this->_mappingStrategy = new Doctrine_Mapper_DefaultStrategy($this);
         }
     }
-
-    /**
-     * export
-     * exports this table to database based on column and option definitions
-     *
-     * @throws Doctrine_Connection_Exception    if some error other than Doctrine::ERR_ALREADY_EXISTS
-     *                                          occurred during the create table operation
-     * @return boolean                          whether or not the export operation was successful
-     *                                          false if table already existed in the database
-     * @deprecated
-     * @todo Remove
-     */
-    /*public function export()
-    {
-        $this->_conn->export->exportTable($this->_table);
-    }*/
-
-    /**
-     * getExportableFormat
-     * returns exportable presentation of this object
-     *
-     * @return array
-     * @todo move to Table
-     */
-    /*public function getExportableFormat($parseForeignKeys = true)
-    {
-        return $this->_table->getExportableFormat($parseForeignKeys);
-    }*/
 
     /**
      * createQuery
@@ -146,7 +121,6 @@ class Doctrine_Mapper extends Doctrine_Configurable implements Countable
     public function setConnection(Doctrine_Connection $conn)
     {
         $this->_conn = $conn;
-        $this->setParent($this->_conn);
         return $this;
     }
 
@@ -173,6 +147,34 @@ class Doctrine_Mapper extends Doctrine_Configurable implements Countable
         $record->fromArray($array);
 
         return $record;
+    }
+    
+    public function addEntityListener(Doctrine_Record_Listener $listener)
+    {
+        if ( ! in_array($listener, $this->_entityListeners)) {
+            $this->_entityListeners[] = $listener;
+            return true;
+        }
+        return false;
+    }
+    
+    public function removeEntityListener(Doctrine_Record_Listener $listener)
+    {
+        if ($key = array_search($listener, $this->_entityListeners, true)) {
+            unset($this->_entityListeners[$key]);
+            return true;
+        }
+        return false;
+    }
+    
+    public function notifyEntityListeners(Doctrine_Record $entity, $callback, $eventType)
+    {
+        if ($this->_entityListeners) {
+            $event = new Doctrine_Event($entity, $eventType);
+            foreach ($this->_entityListeners as $listener) {
+                $listener->$callback($event);
+            }
+        }
     }
     
     public function detach(Doctrine_Record $entity)
@@ -426,18 +428,6 @@ class Doctrine_Mapper extends Doctrine_Configurable implements Countable
     }
 
     /**
-     * count
-     *
-     * @return integer
-     */
-    public function count()
-    {
-        $a = $this->_conn->execute('SELECT COUNT(1) FROM ' . $this->_classMetadata->getTableName())
-                ->fetch(Doctrine::FETCH_NUM);
-        return current($a);
-    }
-
-    /**
      * prepareValue
      * this method performs special data preparation depending on
      * the type of the given column
@@ -465,8 +455,8 @@ class Doctrine_Mapper extends Doctrine_Configurable implements Countable
      */
     public function prepareValue($fieldName, $value, $typeHint = null)
     {
-        if ($value === self::$_null) {
-            return self::$_null;
+        if ($value === $this->_nullObject) {
+            return $this->_nullObject;
         } else if ($value === null) {
             return null;
         } else {
@@ -619,6 +609,11 @@ class Doctrine_Mapper extends Doctrine_Configurable implements Countable
             $by = substr($method, 9, strlen($method));
             $method = 'findOneBy';
         } else {
+            try {
+                throw new Exception();
+            } catch (Exception $e) {
+                echo $e->getTraceAsString() . "<br/><br/>";
+            }
             throw new Doctrine_Mapper_Exception("Undefined method '$method'.");
         }
         
@@ -716,28 +711,25 @@ class Doctrine_Mapper extends Doctrine_Configurable implements Countable
      */
     protected function _insertOrUpdate(Doctrine_Record $record)
     {
-        $event = new Doctrine_Event($record, Doctrine_Event::RECORD_SAVE);
-        $record->preSave($event);
-        $this->getRecordListener()->preSave($event);
+        $record->preSave();
+        $this->notifyEntityListeners($record, 'preSave', Doctrine_Event::RECORD_SAVE);
         
-        if ( ! $event->skipOperation) {
-            switch ($record->state()) {
-                case Doctrine_Record::STATE_TDIRTY:
-                    $this->_insert($record);
-                    break;
-                case Doctrine_Record::STATE_DIRTY:
-                case Doctrine_Record::STATE_PROXY:
-                    $this->_update($record);
-                    break;
-                case Doctrine_Record::STATE_CLEAN:
-                case Doctrine_Record::STATE_TCLEAN:
-                    // do nothing
-                    break;
-            }
+        switch ($record->state()) {
+            case Doctrine_Record::STATE_TDIRTY:
+                $this->_insert($record);
+                break;
+            case Doctrine_Record::STATE_DIRTY:
+            case Doctrine_Record::STATE_PROXY:
+                $this->_update($record);
+                break;
+            case Doctrine_Record::STATE_CLEAN:
+            case Doctrine_Record::STATE_TCLEAN:
+                // do nothing
+                break;
         }
-                
-        $this->getRecordListener()->postSave($event);
-        $record->postSave($event);
+        
+        $record->postSave();
+        $this->notifyEntityListeners($record, 'postSave', Doctrine_Event::RECORD_SAVE);
     }
     
     /**
@@ -844,17 +836,14 @@ class Doctrine_Mapper extends Doctrine_Configurable implements Countable
      */
     protected function _update(Doctrine_Record $record)
     {
-        $event = new Doctrine_Event($record, Doctrine_Event::RECORD_UPDATE);
-        $record->preUpdate($event);
-        $table = $this->_classMetadata;
-        $this->getRecordListener()->preUpdate($event);
-
-        if ( ! $event->skipOperation) {
-            $this->_mappingStrategy->doUpdate($record);
-        }
+        $record->preUpdate();
+        $this->notifyEntityListeners($record, 'preUpdate', Doctrine_Event::RECORD_UPDATE);
         
-        $this->getRecordListener()->postUpdate($event);
-        $record->postUpdate($event);
+        $table = $this->_classMetadata;
+        $this->_mappingStrategy->doUpdate($record);
+        
+        $record->postUpdate();
+        $this->notifyEntityListeners($record, 'postUpdate', Doctrine_Event::RECORD_UPDATE);
 
         return true;
     }
@@ -866,20 +855,15 @@ class Doctrine_Mapper extends Doctrine_Configurable implements Countable
      * @return boolean
      */
     protected function _insert(Doctrine_Record $record)
-    {        
-        // trigger event
-        $event = new Doctrine_Event($record, Doctrine_Event::RECORD_INSERT);
-        $record->preInsert($event);
-        $this->getRecordListener()->preInsert($event);
+    {
+        $record->preInsert();
+        $this->notifyEntityListeners($record, 'preInsert', Doctrine_Event::RECORD_INSERT);
 
-        if ( ! $event->skipOperation) {
-            $this->_mappingStrategy->doInsert($record);
-        }
-        
-        // trigger event
+        $this->_mappingStrategy->doInsert($record);
         $this->addRecord($record);
-        $this->getRecordListener()->postInsert($event);
-        $record->postInsert($event);
+        
+        $record->postInsert();
+        $this->notifyEntityListeners($record, 'postInsert', Doctrine_Event::RECORD_INSERT);
         
         return true;
     }
@@ -907,26 +891,33 @@ class Doctrine_Mapper extends Doctrine_Configurable implements Countable
             $conn = $this->_conn;
         }
 
-        $event = new Doctrine_Event($record, Doctrine_Event::RECORD_DELETE);
-        $record->preDelete($event);
-        $this->getRecordListener()->preDelete($event);
+        $record->preDelete();
+        $this->notifyEntityListeners($record, 'preDelete', Doctrine_Event::RECORD_DELETE);
         
         $table = $this->_classMetadata;
 
         $state = $record->state();
         $record->state(Doctrine_Record::STATE_LOCKED);
         
-        if ( ! $event->skipOperation) {
-            $this->_mappingStrategy->doDelete($record);
-        } else {
-            // return to original state   
-            $record->state($state);
-        }
+        $this->_mappingStrategy->doDelete($record);
         
-        $this->getRecordListener()->postDelete($event);
-        $record->postDelete($event);
+        $record->postDelete();
+        $this->notifyEntityListeners($record, 'postDelete', Doctrine_Event::RECORD_DELETE);
 
         return true;
+    }
+    
+    public function hasAttribute($key)
+    {
+        switch ($key) {
+            case Doctrine::ATTR_LOAD_REFERENCES:
+            case Doctrine::ATTR_QUERY_LIMIT:
+            case Doctrine::ATTR_COLL_KEY:
+            case Doctrine::ATTR_VALIDATE:
+                return true;
+            default:
+                return false;
+        }
     }
     
     public function executeQuery(Doctrine_Query $query)
@@ -959,7 +950,7 @@ class Doctrine_Mapper extends Doctrine_Configurable implements Countable
         $this->_mappingStrategy = null;
     }
     
-    public function getMappingStrategy()
+    public function getMapping()
     {
         return $this->_mappingStrategy;
     }
@@ -976,9 +967,9 @@ class Doctrine_Mapper extends Doctrine_Configurable implements Countable
         return $this->_mappingStrategy->getFieldNames();
     }
     
-    public function getOwningTable($fieldName)
+    public function getOwningClass($fieldName)
     {
-        return $this->_mappingStrategy->getOwningTable($fieldName);
+        return $this->_mappingStrategy->getOwningClass($fieldName);
     }
     
     /* Hooks used during SQL query construction to manipulate the query. */

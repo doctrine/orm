@@ -20,9 +20,9 @@
  */
 Doctrine::autoload('Doctrine_Access');
 /**
- * A Doctrine_Collection represents a collection of record objects.
+ * A Doctrine_Collection represents a collection of entities.
  * A collection object is strongly typed in the sense that it can only contain
- * records of a specific type or one it's subtypes.
+ * entities of a specific type or one it's subtypes.
  *
  * @package     Doctrine
  * @subpackage  Collection
@@ -113,7 +113,7 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
         }
 
         if ($keyColumn === null) {
-        	$keyColumn = $mapper->getAttribute(Doctrine::ATTR_COLL_KEY);
+        	$keyColumn = $mapper->getClassMetadata()->getAttribute(Doctrine::ATTR_COLL_KEY);
         }
 
         if ($keyColumn !== null) {

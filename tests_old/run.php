@@ -122,7 +122,6 @@ $core->addTestCase(new Doctrine_Access_TestCase());
 //$core->addTestCase(new Doctrine_Configurable_TestCase());
 $core->addTestCase(new Doctrine_Manager_TestCase());
 $core->addTestCase(new Doctrine_Connection_TestCase());
-$core->addTestCase(new Doctrine_Table_TestCase());
 $core->addTestCase(new Doctrine_UnitOfWork_TestCase());
 //$core->addTestCase(new Doctrine_Collection_TestCase());
 $core->addTestCase(new Doctrine_Collection_Snapshot_TestCase());
@@ -259,8 +258,8 @@ $test->addTestCase(new Doctrine_Inheritance_TablePerClass_TestCase());
 $test->addTestCase(new Doctrine_Metadata_Factory_TestCase());
 
 // nestedset tests
-$test->addTestCase(new Doctrine_NestedSet_SingleRoot_TestCase());
-$test->addTestCase(new Doctrine_NestedSet_LoadInSetUp_TestCase());
+//$test->addTestCase(new Doctrine_NestedSet_SingleRoot_TestCase());
+//$test->addTestCase(new Doctrine_NestedSet_LoadInSetUp_TestCase());
 
 // Search tests
 $search = new GroupTest('Search tests','search');

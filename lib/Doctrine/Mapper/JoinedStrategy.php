@@ -238,15 +238,7 @@ class Doctrine_Mapper_JoinedStrategy extends Doctrine_Mapper_Strategy
             return $this->_columnNameFieldNameMap[$columnName];
         }
         
-        foreach ($classMetadata->getParentClasses() as $parentClass) {
-            $parentTable = $conn->getClassMetadata($parentClass);
-            if ($parentTable->hasColumn($columnName)) {
-                $this->_columnNameFieldNameMap[$columnName] = $parentTable->getFieldName($columnName);
-                return $this->_columnNameFieldNameMap[$columnName];
-            }
-        }
-        
-        foreach ((array)$classMetadata->getSubclasses() as $subClass) {
+        foreach ($classMetadata->getSubclasses() as $subClass) {
             $subTable = $conn->getClassMetadata($subClass);
             if ($subTable->hasColumn($columnName)) {
                 $this->_columnNameFieldNameMap[$columnName] = $subTable->getFieldName($columnName);
@@ -261,7 +253,7 @@ class Doctrine_Mapper_JoinedStrategy extends Doctrine_Mapper_Strategy
      * 
      * @todo Looks like this better belongs into the ClassMetadata class.
      */
-    public function getOwningTable($fieldName)
+    public function getOwningClass($fieldName)
     {
         $conn = $this->_mapper->getConnection();
         $classMetadata = $this->_mapper->getClassMetadata();
@@ -283,13 +275,14 @@ class Doctrine_Mapper_JoinedStrategy extends Doctrine_Mapper_Strategy
             }
         }
         
-        throw new Doctrine_Mapper_Exception("Unable to find owner of field '$fieldName'.");
+        throw new Doctrine_Mapper_Exception("Unable to find defining class of field '$fieldName'.");
     }
     
     /**
      * Analyzes the fields of the entity and creates a map in which the field names
      * are grouped by the class names they belong to. 
      *
+     * @return array
      */
     protected function _groupFieldsByDefiningClass(Doctrine_Record $record)
     {
