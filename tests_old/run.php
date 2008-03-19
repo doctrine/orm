@@ -303,6 +303,11 @@ $data->addTestCase(new Doctrine_Data_Import_TestCase());
 $data->addTestCase(new Doctrine_Data_Export_TestCase());
 $test->addTestCase($data);
 
+$s = microtime(true);
 $test->run();
+$e = microtime(true);
 
-echo memory_get_peak_usage() / 1024 . "\n";
+echo 'test run took: ' . ($e - $s) . ' seconds<br />';
+
+
+echo "peak memory usage: " . memory_get_peak_usage() / 1024 . "KB\n";

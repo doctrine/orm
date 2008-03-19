@@ -29,14 +29,15 @@
  * @link        www.phpdoctrine.org
  * @since       1.0
  * @version     $Revision$
+ * @author      Roman Borschel <roman@code-factory.org>
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  */
-class Doctrine_Validator extends Doctrine_Locator_Injectable
+class Doctrine_Validator
 {
     /**
      * @var array $validators           an array of validator objects
      */
-    private static $validators  = array();
+    private static $validators = array();
 
     /**
      * returns a validator object
@@ -50,6 +51,8 @@ class Doctrine_Validator extends Doctrine_Locator_Injectable
             $class = 'Doctrine_Validator_' . ucwords(strtolower($name));
             if (class_exists($class)) {
                 self::$validators[$name] = new $class;
+            } else if (class_exists($name)) {
+                self::$validators[$name] = new $name;
             } else {
                 throw new Doctrine_Exception("Validator named '$name' not available.");
             }
@@ -78,7 +81,7 @@ class Doctrine_Validator extends Doctrine_Locator_Injectable
         $fields = ($record->exists()) ? $record->getModified() : $record->getData();
         $err = array();
         foreach ($fields as $fieldName => $value) {
-            if ($value === self::$_null) {
+            if ($value === Doctrine_Null::$INSTANCE) {
                 $value = null;
             } else if ($value instanceof Doctrine_Record) {
                 $value = $value->getIncremented();

@@ -32,10 +32,16 @@
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  * @author      Roman Borschel <roman@code-factory.org>
  */
-class Doctrine_Hydrator_RecordDriver extends Doctrine_Locator_Injectable
+class Doctrine_Hydrator_RecordDriver
 {
     protected $_collections = array();
     protected $_mappers = array();
+    private $_nullObject;
+    
+    public function __construct()
+    {
+        $this->_nullObject = Doctrine_Null::$INSTANCE;
+    }
 
     public function getElementCollection($component)
     {
@@ -98,7 +104,7 @@ class Doctrine_Hydrator_RecordDriver extends Doctrine_Locator_Injectable
     
     public function getNullPointer() 
     {
-        return self::$_null;
+        return $this->_nullObject;
     }
     
     public function getElement(array $data, $className)

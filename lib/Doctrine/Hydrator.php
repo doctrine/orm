@@ -254,7 +254,7 @@ class Doctrine_Hydrator extends Doctrine_Hydrator_Abstract
      */
     protected function _setLastElement(&$prev, &$coll, $index, $dqlAlias, $oneToOne)
     {
-        if ($coll === self::$_null) {
+        if ($coll === $this->_nullObject) {
             return false;
         }
         

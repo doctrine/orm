@@ -84,6 +84,17 @@ class Doctrine_Connection_Mssql extends Doctrine_Connection
         if ($checkOption && ! $this->getAttribute(Doctrine::ATTR_QUOTE_IDENTIFIER)) {
             return $identifier;
         }
+        
+        if (strpos($identifier, '.') !== false) { 
+            $parts = explode('.', $identifier); 
+            $quotedParts = array(); 
+            foreach ($parts as $p) { 
+                $quotedParts[] = $this->quoteIdentifier($p); 
+            }
+            
+            return implode('.', $quotedParts); 
+        }
+        
         return '[' . str_replace(']', ']]', $identifier) . ']';
     }
 

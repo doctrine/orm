@@ -208,7 +208,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
     {
         if (isset($mapper) && $mapper instanceof Doctrine_Mapper) {
             $class = get_class($this);
-            $this->_mapper = Doctrine_Manager::getInstance()->getMapper($class);
+            $this->_mapper = $mapper;
             $this->_class = $this->_mapper->getClassMetadata();
             $exists = ! $isNewEntry;
         } else {
@@ -262,16 +262,6 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
     {
         return self::$_index;
     }
-
-    /**
-     * setUp
-     * this method is used for setting up relations and attributes
-     * it should be implemented by child classes
-     *
-     * @return void
-     */
-    /*public function setUp()
-    { }*/
     
     /**
      * construct
@@ -485,7 +475,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
                 continue;
             }
 
-            if ($value === self::$_null || $overwrite) {
+            if ($value === Doctrine_Null::$INSTANCE || $overwrite) {
                 $this->_data[$column] = $default;
                 $this->_modified[]    = $column;
                 $this->_state = Doctrine_Record::STATE_TDIRTY;
@@ -513,9 +503,9 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
             if (isset($tmp[$fieldName])) {
                 $data[$fieldName] = $tmp[$fieldName];
             } else if (array_key_exists($fieldName, $tmp)) {
-                $data[$fieldName] = self::$_null;
+                $data[$fieldName] = Doctrine_Null::$INSTANCE;
             } else if (!isset($this->_data[$fieldName])) {
-                $data[$fieldName] = self::$_null;
+                $data[$fieldName] = Doctrine_Null::$INSTANCE;
             }
             unset($tmp[$fieldName]);
         }
@@ -554,7 +544,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
                 $name = (array)$this->_class->getIdentifier();
                 $name = $name[0];
                 if ($exists) {
-                    if (isset($this->_data[$name]) && $this->_data[$name] !== self::$_null) {
+                    if (isset($this->_data[$name]) && $this->_data[$name] !== Doctrine_Null::$INSTANCE) {
                         $this->_id[$name] = $this->_data[$name];
                     }
                 }
@@ -563,7 +553,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
                 $names = (array)$this->_class->getIdentifier();
 
                 foreach ($names as $name) {
-                    if ($this->_data[$name] === self::$_null) {
+                    if ($this->_data[$name] === Doctrine_Null::$INSTANCE) {
                         $this->_id[$name] = null;
                     } else {
                         $this->_id[$name] = $this->_data[$name];
@@ -600,7 +590,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
         foreach ($this->_data as $k => $v) {
             if ($v instanceof Doctrine_Record && $this->_class->getTypeOf($k) != 'object') {
                 unset($vars['_data'][$k]);
-            } else if ($v === self::$_null) {
+            } else if ($v === Doctrine_Null::$INSTANCE) {
                 unset($vars['_data'][$k]);
             } else {
                 switch ($this->_class->getTypeOf($k)) {
@@ -838,7 +828,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
         if ( ! isset($this->_data[$fieldName])) {
             throw new Doctrine_Record_Exception('Unknown property '. $fieldName);
         }
-        if ($this->_data[$fieldName] === self::$_null) {
+        if ($this->_data[$fieldName] === Doctrine_Null::$INSTANCE) {
             return null;
         }
 
@@ -895,15 +885,16 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
         }*/
         
         // Use built-in accessor functionality
-        $value = self::$_null;
+        $nullObj = Doctrine_Null::$INSTANCE;
+        $value = $nullObj;
         if (isset($this->_data[$fieldName])) {
-            if ($this->_data[$fieldName] !== self::$_null) {
+            if ($this->_data[$fieldName] !== $nullObj) {
                 return $this->_data[$fieldName];
             }
-            if ($this->_data[$fieldName] === self::$_null && $load) {
+            if ($this->_data[$fieldName] === $nullObj && $load) {
                 $this->load();
             }
-            if ($this->_data[$fieldName] === self::$_null) {
+            if ($this->_data[$fieldName] === $nullObj) {
                 $value = null;
             }
             return $value;
@@ -982,7 +973,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
 
             if ($old !== $value) {
                 if ($value === null) {
-                    $value = self::$_null;
+                    $value = Doctrine_Null::$INSTANCE;
                 }
 
                 $this->_data[$fieldName] = $value;
@@ -1032,7 +1023,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
                     return $this;
                 }
             } else {
-                if ($value !== self::$_null) {
+                if ($value !== Doctrine_Null::$INSTANCE) {
                     $relatedTable = $value->getTable();
                     $foreignFieldName = $rel->getForeignFieldName();
                     $localFieldName = $rel->getLocalFieldName();
@@ -1083,7 +1074,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
             return true;
         }
         if (isset($this->_references[$fieldName]) &&
-                $this->_references[$fieldName] !== self::$_null) {
+                $this->_references[$fieldName] !== Doctrine_Null::$INSTANCE) {
             return true;
         }
         return false;
@@ -1100,7 +1091,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
         } else if (isset($this->_references[$fieldName])) {
             if ($this->_references[$fieldName] instanceof Doctrine_Record) {
                 // todo: delete related record when saving $this
-                $this->_references[$fieldName] = self::$_null;
+                $this->_references[$fieldName] = Doctrine_Null::$INSTANCE;
             } else if ($this->_references[$fieldName] instanceof Doctrine_Collection) {
                 $this->_references[$fieldName]->setData(array());
             }
@@ -1211,7 +1202,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
         foreach ($modifiedFields as $field) {
             $type = $this->_class->getTypeOf($field);
 
-            if ($this->_data[$field] === self::$_null) {
+            if ($this->_data[$field] === Doctrine_Null::$INSTANCE) {
                 $dataSet[$field] = null;
                 continue;
             }
@@ -1286,7 +1277,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
         $a = array();
 
         foreach ($this as $column => $value) {
-            if ($value === self::$_null || is_object($value)) {
+            if ($value === Doctrine_Null::$INSTANCE || is_object($value)) {
                 $value = null;
             }
             $a[$column] = $value;

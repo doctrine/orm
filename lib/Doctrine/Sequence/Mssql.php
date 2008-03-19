@@ -138,7 +138,7 @@ class Doctrine_Sequence_Mssql extends Doctrine_Sequence
             $query = 'SELECT @@IDENTITY';
         }
 
-        return $this->conn->fetchOne($query);
+        return (string) floor((float) $this->conn->fetchOne($query));
     }
 
     /**

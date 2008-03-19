@@ -33,17 +33,16 @@
  * @version     $Revision$
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  */
+// static initializer
+Doctrine_Null::$INSTANCE = new Doctrine_Null();
 final class Doctrine_Null
 {
-    private static $_instance;
+    public static $INSTANCE;
     public function __construct() {}
     
     public static function getInstance()
     {
-        if (is_null(self::$_instance)) {
-            self::$_instance = new Doctrine_Null();
-        }
-        return self::$_instance;
+        return self::$INSTANCE;
     }
     
     public function exists()

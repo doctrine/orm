@@ -193,7 +193,7 @@ final class Doctrine
     const ATTR_EMULATE_DATABASE         = 116; // manager/session attribute
     const ATTR_USE_NATIVE_ENUM          = 117; // manager/session attribute
     const ATTR_DEFAULT_SEQUENCE         = 133; // ??
-    const ATTR_FETCHMODE                = 118; // deprecated
+    const ATTR_FETCHMODE                = 118; // deprecated? might use them again for associations
     const ATTR_NAME_PREFIX              = 121; // ??
     const ATTR_CREATE_TABLES            = 122; // manager/session attribute
     const ATTR_COLL_LIMIT               = 123; // manager/session attribute
@@ -208,7 +208,6 @@ final class Doctrine
     const ATTR_QUERY_CACHE              = 157; // manager/session attribute
     const ATTR_QUERY_CACHE_LIFESPAN     = 158; // manager/session attribute
     const ATTR_MODEL_LOADING            = 161; // manager/session attribute
-    const ATTR_LOCK                     = 162; // ??
     const ATTR_HYDRATE                  = 163; // ??
     const ATTR_IDENTIFIER               = 164; // ??
     const ATTR_METADATA_CACHE           = 165; // manager/session attribute

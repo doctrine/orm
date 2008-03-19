@@ -86,7 +86,7 @@ class Doctrine_Mapper
         $this->_domainClassName = $name;
         $this->_conn = $classMetadata->getConnection();
         $this->_classMetadata = $classMetadata;
-        $this->_nullObject = Doctrine_Null::getInstance();
+        $this->_nullObject = Doctrine_Null::$INSTANCE;
         if ($classMetadata->getInheritanceType() == Doctrine::INHERITANCETYPE_JOINED) {
             $this->_mappingStrategy = new Doctrine_Mapper_JoinedStrategy($this);
         } else {

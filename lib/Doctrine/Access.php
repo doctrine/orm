@@ -33,7 +33,7 @@
  * @version     $Revision$
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  */
-abstract class Doctrine_Access extends Doctrine_Locator_Injectable implements ArrayAccess
+abstract class Doctrine_Access implements ArrayAccess
 {
     /**
      * setArray

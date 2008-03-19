@@ -77,7 +77,6 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
     private function __construct()
     {
         $this->_root = dirname(__FILE__);
-        Doctrine_Locator_Injectable::initNullObject(new Doctrine_Null);
     }
 
     /**
@@ -543,7 +542,7 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
     }
     
     /**
-     * Creates a new native query (instance of Doctrine_RawSql).
+     * Creates a new native (SQL) query.
      *
      * @return Doctrine_RawSql
      */
