@@ -173,6 +173,7 @@ class Doctrine_Validator
          switch ($type) {
              case 'float':
              case 'double':
+             case 'decimal':
                  return (string)$var == strval(floatval($var));
              case 'integer':
                  return (string)$var == strval(intval($var));
@@ -189,8 +190,11 @@ class Doctrine_Validator
              case 'boolean':
                  return is_bool($var);
              case 'timestamp':
-                 // todo: validate the timestamp is in YYYY-MM-DD HH:MM:SS format
-                 return true;
+                 $validator = self::getValidator('timestamp');
+                 return $validator->validate($var);
+             case 'time':
+                 $validator = self::getValidator('time');
+                 return $validator->validate($var);
              case 'date':
                  $validator = self::getValidator('date');
                  return $validator->validate($var);
