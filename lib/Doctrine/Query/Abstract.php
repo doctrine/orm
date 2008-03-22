@@ -1037,10 +1037,10 @@ abstract class Doctrine_Query_Abstract
                 $queryComponents[$alias]['mapper'] = $this->_conn->getMapper($queryComponents[$alias]['relation']->getForeignComponentName());
                 $queryComponents[$alias]['table'] = $queryComponents[$alias]['mapper']->getTable();
             }
-            if (isset($v[1])) {
+            if (isset($components[1])) {
                 $queryComponents[$alias]['agg'] = $components[1];
             }
-            if (isset($v[2])) {
+            if (isset($components[2])) {
                 $queryComponents[$alias]['map'] = $components[2];
             }
         }
