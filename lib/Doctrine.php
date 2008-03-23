@@ -567,27 +567,28 @@ final class Doctrine
     /**
      * INHERITANCE TYPE CONSTANTS.
      */
-          
+    const INHERITANCE_TYPE_NONE = 0;
+    
     /**
      * Constant for Single Table Inheritance.
      *
      * @see http://martinfowler.com/eaaCatalog/singleTableInheritance.html
     */
-    const INHERITANCETYPE_SINGLE_TABLE = 1;
+    const INHERITANCE_TYPE_SINGLE_TABLE = 1;
          
     /**
      * Constant for Class Table Inheritance.
      *
      * @see http://martinfowler.com/eaaCatalog/classTableInheritance.html
      */
-    const INHERITANCETYPE_JOINED = 2;
+    const INHERITANCE_TYPE_JOINED = 2;
      
     /**
      * Constant for Concrete Table Inheritance.
      *
      * @see http://martinfowler.com/eaaCatalog/concreteTableInheritance.html
      */
-    const INHERITANCETYPE_TABLE_PER_CLASS = 3;
+    const INHERITANCE_TYPE_TABLE_PER_CLASS = 3;
 
 
     /**

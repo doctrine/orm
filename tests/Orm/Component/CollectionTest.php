@@ -57,7 +57,7 @@ class Orm_Component_CollectionTest extends Doctrine_OrmTestCase
      */
     public function shouldHaveBlankAsDefaultKeyColumn()
     {
-        $this->assertEquals('', $this->coll->getKeyColumn());
+        $this->assertEquals('', $this->coll->getKeyField());
     }	
 
 
@@ -67,7 +67,7 @@ class Orm_Component_CollectionTest extends Doctrine_OrmTestCase
     public function shouldUseSpecifiedKeyColumn()
     {
         $coll = new Doctrine_Collection('ForumUser', 'id');
-        $this->assertEquals('id', $coll->getKeyColumn());
+        $this->assertEquals('id', $coll->getKeyField());
     }
 
     /**
@@ -75,11 +75,11 @@ class Orm_Component_CollectionTest extends Doctrine_OrmTestCase
      * possible to set this to something that is not valid. 
      *
      * @test 
-     * @expectedException Doctrine_Exception
+     * @expectedException Doctrine_Collection_Exception
      */
     public function shouldThrowExceptionIfNonValidFieldSetAsKey()
     {
-        $coll = new Doctrine_Collection('ForumUser', 'rat');
+        $coll = new Doctrine_Collection('ForumUser', 'xxNonValidFieldxx');
     }
 
     /**
@@ -87,8 +87,8 @@ class Orm_Component_CollectionTest extends Doctrine_OrmTestCase
      */
     public function shouldSerializeEmptyCollection()
     {
-        $serializedFormCollection='C:19:"Doctrine_Collection":158:{a:7:{s:4:"data";a:0:{}s:7:"_mapper";s:9:"ForumUser";s:9:"_snapshot";a:0:{}s:14:"referenceField";N;s:9:"keyColumn";N;s:8:"_locator";N;s:10:"_resources";a:0:{}}}';
-        $this->assertEquals($serializedFormCollection, serialize($this->coll));
+        $serialized = serialize($this->coll);
+        $this->assertTrue(is_string($serialized));
     }
 
     /**
@@ -96,8 +96,8 @@ class Orm_Component_CollectionTest extends Doctrine_OrmTestCase
      */
     public function shouldUnserializeEmptyCollectionIntoObject()
     {
-        $serializedFormCollection='C:19:"Doctrine_Collection":158:{a:7:{s:4:"data";a:0:{}s:7:"_mapper";s:9:"ForumUser";s:9:"_snapshot";a:0:{}s:14:"referenceField";N;s:9:"keyColumn";N;s:8:"_locator";N;s:10:"_resources";a:0:{}}}';
-        $coll = unserialize($serializedFormCollection);
+        $serialized = serialize($this->coll);
+        $coll = unserialize($serialized);
         $this->assertEquals('Doctrine_Collection', get_class($coll));
     }
 
@@ -119,12 +119,11 @@ class Orm_Component_CollectionTest extends Doctrine_OrmTestCase
         $serialized = serialize($this->cmsColl);
         $coll = unserialize($serialized);
 
-        $this->assertEquals('username', $coll->getKeyColumn());
+        $this->assertEquals('username', $coll->getKeyField());
         $this->assertTrue(isset($coll['test']));
         $user = $coll['test'];
         $this->assertTrue($user instanceOf CmsUser);
         $this->assertEquals('test', $user['username']);
-
     }
 
 }

@@ -1237,8 +1237,8 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
         
         // @todo cleanup
         // populates the discriminator field in Single & Class Table Inheritance
-        if ($this->_class->getInheritanceType() == Doctrine::INHERITANCETYPE_JOINED ||
-                $this->_class->getInheritanceType() == Doctrine::INHERITANCETYPE_SINGLE_TABLE) {
+        if ($this->_class->getInheritanceType() == Doctrine::INHERITANCE_TYPE_JOINED ||
+                $this->_class->getInheritanceType() == Doctrine::INHERITANCE_TYPE_SINGLE_TABLE) {
             $discCol = $this->_class->getInheritanceOption('discriminatorColumn');
             $discMap = $this->_class->getInheritanceOption('discriminatorMap');
             $old = $this->get($discCol, false);

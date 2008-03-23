@@ -81,7 +81,7 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
      *
      * @var string
      */
-    protected $keyColumn;
+    protected $_keyField;
 
     /**
      * Helper variable. Used for fast null value testing.
@@ -101,23 +101,26 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
      * @param string $keyColumn                The field name that will be used as the key
      *                                         in the collection.
      */
-    public function __construct($mapper, $keyColumn = null)
+    public function __construct($mapper, $keyField = null)
     {
         if (is_string($mapper)) {
             $mapper = Doctrine_Manager::getInstance()->getMapper($mapper);
         }
         $this->_mapper = $mapper;
 
-        if ($keyColumn === null) {
-            $keyColumn = $mapper->getClassMetadata()->getBoundQueryPart('indexBy');
+        if ($keyField === null) {
+            $keyField = $mapper->getClassMetadata()->getBoundQueryPart('indexBy');
         }
 
-        if ($keyColumn === null) {
-        	$keyColumn = $mapper->getClassMetadata()->getAttribute(Doctrine::ATTR_COLL_KEY);
+        if ($keyField === null) {
+        	$keyField = $mapper->getClassMetadata()->getAttribute(Doctrine::ATTR_COLL_KEY);
         }
 
-        if ($keyColumn !== null) {
-            $this->keyColumn = $keyColumn;
+        if ($keyField !== null) {
+            if ( ! $this->_mapper->getClassMetadata()->hasField($keyField)) {
+                throw new Doctrine_Collection_Exception("Invalid field '$keyField' can't be uses as key.");
+            }
+            $this->_keyField = $keyField;
         }
     }
 
@@ -218,32 +221,32 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
         }
 
         if ($keyColumn !== null) {
-            $this->keyColumn = $keyColumn;
+            $this->_keyField = $keyColumn;
         }
     }
 
     /**
-     * setKeyColumn
+     * setKeyField
      * sets the key column for this collection
      *
      * @param string $column
      * @return Doctrine_Collection
      */
-    public function setKeyColumn($column)
+    public function setKeyField($fieldName)
     {
-        $this->keyColumn = $column;
+        $this->_keyField = $fieldName;
         return $this;
     }
 
     /**
-     * getKeyColumn
+     * getKeyField
      * returns the name of the key column
      *
      * @return string
      */
-    public function getKeyColumn()
+    public function getKeyField()
     {
-        return $this->keyColumn;
+        return $this->_keyField;
     }
 
     /**
@@ -408,8 +411,8 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
                 $this->data[$key] = $record;      	
             }
 
-            if (isset($this->keyColumn)) {
-                $record->set($this->keyColumn, $key);
+            if (isset($this->_keyField)) {
+                $record->set($this->_keyField, $key);
             }
 
             return $record;
@@ -535,10 +538,10 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
         }
 
          // why is this not checked when the keyColumn is set? 
-        if (isset($this->keyColumn)) {
-            $value = $record->get($this->keyColumn);
+        if (isset($this->_keyField)) {
+            $value = $record->get($this->_keyField);
             if ($value === null) {
-                throw new Doctrine_Collection_Exception("Couldn't create collection index. Record field '".$this->keyColumn."' was null.");
+                throw new Doctrine_Collection_Exception("Couldn't create collection index. Record field '".$this->_keyField."' was null.");
             }
             $this->data[$value] = $record;
         } else {

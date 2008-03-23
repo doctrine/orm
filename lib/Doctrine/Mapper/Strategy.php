@@ -61,6 +61,27 @@ abstract class Doctrine_Mapper_Strategy
     }
     
     /**
+     * deletes all related composites
+     * this method is always called internally when a record is deleted
+     *
+     * @throws PDOException         if something went wrong at database level
+     * @return void
+     */
+    protected function _deleteComposites(Doctrine_Record $record)
+    {
+        $classMetadata = $this->_mapper->getClassMetadata();
+        foreach ($classMetadata->getRelations() as $fk) {
+            if ($fk->isComposite()) {
+                $obj = $record->get($fk->getAlias());
+                if ($obj instanceof Doctrine_Record && 
+                        $obj->state() != Doctrine_Record::STATE_LOCKED)  {
+                    $obj->delete($this->_mapper->getConnection());
+                }
+            }
+        }
+    }
+    
+    /**
      * Callback that is invoked during the SQL construction process.
      */
     public function getCustomJoins()

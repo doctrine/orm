@@ -114,7 +114,7 @@ class Doctrine_ClassMetadata_Factory
             $this->_addInheritedFields($subClass, $parent);
             $this->_addInheritedRelations($subClass, $parent);
             $this->_loadMetadata($subClass, $subclassName);
-            if ($parent->getInheritanceType() == Doctrine::INHERITANCETYPE_SINGLE_TABLE) {
+            if ($parent->getInheritanceType() == Doctrine::INHERITANCE_TYPE_SINGLE_TABLE) {
                 $subClass->setTableName($parent->getTableName());
             }
             $classes[$subclassName] = $subClass;
@@ -208,7 +208,7 @@ class Doctrine_ClassMetadata_Factory
     {
         switch (count((array)$class->getIdentifier())) {
             case 0:
-                if ($class->getInheritanceType() == Doctrine::INHERITANCETYPE_JOINED &&
+                if ($class->getInheritanceType() == Doctrine::INHERITANCE_TYPE_JOINED &&
                         count($class->getOption('parents')) > 0) {
                             
                     $parents = $class->getOption('parents');

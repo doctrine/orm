@@ -70,7 +70,7 @@ class CCTI_User extends Doctrine_Record
 {
     public static function initMetadata($class)
     {
-        $class->setInheritanceType(Doctrine::INHERITANCETYPE_TABLE_PER_CLASS);
+        $class->setInheritanceType(Doctrine::INHERITANCE_TYPE_TABLE_PER_CLASS);
         $class->setTableName('ccti_user');
         $class->setSubclasses(array('CCTI_Manager', 'CCTI_Customer', 'CCTI_SuperManager'));
         $class->setColumn('ccti_id as id', 'integer', 4, array ('primary' => true, 'autoincrement' => true));

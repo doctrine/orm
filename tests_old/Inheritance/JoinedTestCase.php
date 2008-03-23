@@ -187,7 +187,7 @@ class CTI_User extends Doctrine_Record
 {    
     public static function initMetadata($class)
     {
-        $class->setInheritanceType(Doctrine::INHERITANCETYPE_JOINED, array(
+        $class->setInheritanceType(Doctrine::INHERITANCE_TYPE_JOINED, array(
                 'discriminatorColumn' => 'dtype',
                 'discriminatorMap' => array(1 => 'CTI_User', 2 => 'CTI_Manager',
                         3 => 'CTI_Customer', 4 => 'CTI_SuperManager')

@@ -4,11 +4,7 @@ $fixture = array(
     'rows' => array(
         array(
             'id' => 1,
-            'foo' => 'bar'
-        ),
-        array(
-            'id' => 2,
-            'foo' => 'bar2'
+            'access_level' => 4
         )
     )
 );

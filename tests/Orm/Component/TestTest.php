@@ -28,4 +28,11 @@ class Orm_Component_TestTest extends Doctrine_OrmTestCase
         $forumUsers = $this->sharedFixture['connection']->query("FROM ForumUser u");
         $this->assertEquals(2, count($forumUsers));
     }
+    
+    public function testFixture3()
+    {
+        $forumAdmins = $this->sharedFixture['connection']->query("FROM ForumAdministrator adm");
+        $this->assertEquals(1, count($forumAdmins));
+        $forumAdmins[0]->delete();
+    }
 }

@@ -255,14 +255,14 @@ class Doctrine_Collection_TestCase extends Doctrine_UnitTestCase
 
 
 
-        $coll->setKeyColumn('id');
+        $coll->setKeyField('id');
         $user = $this->connection->getTable("User")->find(4);
 
     }
     public function testGenerator() 
     {
         $coll = new Doctrine_Collection($this->objTable);
-        $coll->setKeyColumn('name');
+        $coll->setKeyField('name');
 
         $user = new User();
         $user->name = "name";

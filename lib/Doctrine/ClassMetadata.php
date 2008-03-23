@@ -87,7 +87,7 @@ class Doctrine_ClassMetadata extends Doctrine_Configurable implements Serializab
      *
      * @var integer
      */
-    protected $_inheritanceType = Doctrine::INHERITANCETYPE_TABLE_PER_CLASS;
+    protected $_inheritanceType = Doctrine::INHERITANCE_TYPE_NONE;
     
     /**
      * An array containing all behaviors attached to the class.
@@ -1157,11 +1157,11 @@ class Doctrine_ClassMetadata extends Doctrine_Configurable implements Serializab
      */
     public function setInheritanceType($type, array $options = array())
     {
-        if ($type == Doctrine::INHERITANCETYPE_SINGLE_TABLE) {
+        if ($type == Doctrine::INHERITANCE_TYPE_SINGLE_TABLE) {
             $this->_checkRequiredDiscriminatorOptions($options);
-        } else if ($type == Doctrine::INHERITANCETYPE_JOINED) {
+        } else if ($type == Doctrine::INHERITANCE_TYPE_JOINED) {
             $this->_checkRequiredDiscriminatorOptions($options);
-        } else if ($type == Doctrine::INHERITANCETYPE_TABLE_PER_CLASS) {
+        } else if ($type == Doctrine::INHERITANCE_TYPE_TABLE_PER_CLASS) {
             // concrete table inheritance ...
         } else {
             throw new Doctrine_ClassMetadata_Exception("Invalid inheritance type '$type'.");
@@ -1268,7 +1268,7 @@ class Doctrine_ClassMetadata extends Doctrine_Configurable implements Serializab
         
         // If the class is part of a Single Table Inheritance hierarchy, collect the fields
         // of all classes in the hierarchy.
-        if ($this->_inheritanceType == Doctrine::INHERITANCETYPE_SINGLE_TABLE) {
+        if ($this->_inheritanceType == Doctrine::INHERITANCE_TYPE_SINGLE_TABLE) {
             $parents = $this->getOption('parents');
             if ($parents) {
                 $rootClass = $this->_conn->getClassMetadata(array_pop($parents));
@@ -1280,7 +1280,7 @@ class Doctrine_ClassMetadata extends Doctrine_Configurable implements Serializab
                 $subClassMetadata = $this->_conn->getClassMetadata($subClass);
                 $allColumns = array_merge($allColumns, $subClassMetadata->getColumns());
             }
-        } else if ($this->_inheritanceType == Doctrine::INHERITANCETYPE_JOINED) {
+        } else if ($this->_inheritanceType == Doctrine::INHERITANCE_TYPE_JOINED) {
             // Remove inherited, non-pk fields. They're not in the table of this class
             foreach ($allColumns as $name => $definition) {
                 if (isset($definition['primary']) && $definition['primary'] === true) {
@@ -1293,7 +1293,7 @@ class Doctrine_ClassMetadata extends Doctrine_Configurable implements Serializab
                     unset($allColumns[$name]);
                 }
             }
-        } else if ($this->_inheritanceType == Doctrine::INHERITANCETYPE_TABLE_PER_CLASS) {
+        } else if ($this->_inheritanceType == Doctrine::INHERITANCE_TYPE_TABLE_PER_CLASS) {
             // If this is a subclass, just remove existing autoincrement options on the pk
             if ($this->getParentClasses()) {
                 foreach ($allColumns as $name => $definition) {

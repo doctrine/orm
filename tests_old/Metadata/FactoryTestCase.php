@@ -146,7 +146,7 @@ class Metadata_User extends Doctrine_Record
     public static function initMetadata(Doctrine_ClassMetadata $class)
     {
         $class->setTableName('cti_user');
-        $class->setInheritanceType(Doctrine::INHERITANCETYPE_JOINED,
+        $class->setInheritanceType(Doctrine::INHERITANCE_TYPE_JOINED,
                 array('discriminatorColumn' => 'type',
                       'discriminatorMap' => array(
                           1 => 'CTI_User',
@@ -200,7 +200,7 @@ class Metadata_STI_User extends Doctrine_Record
     public static function initMetadata($class)
     {
         $class->setTableName('cti_user');
-        $class->setInheritanceType(Doctrine::INHERITANCETYPE_SINGLE_TABLE,
+        $class->setInheritanceType(Doctrine::INHERITANCE_TYPE_SINGLE_TABLE,
                 array('discriminatorColumn' => 'type',
                       'discriminatorMap' => array(
                           1 => 'CTI_User',

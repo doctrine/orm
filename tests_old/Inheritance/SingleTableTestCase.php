@@ -67,7 +67,7 @@ class STI_User extends Doctrine_Record
 {
     public static function initMetadata($class)
     {
-        $class->setInheritanceType(Doctrine::INHERITANCETYPE_SINGLE_TABLE, array(
+        $class->setInheritanceType(Doctrine::INHERITANCE_TYPE_SINGLE_TABLE, array(
                 'discriminatorColumn' => 'type',
                 'discriminatorMap' => array(
                       1 => 'STI_User',

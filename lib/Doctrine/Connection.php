@@ -1144,11 +1144,11 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
         } else {
             // instantiate correct mapper type
             $inheritanceType = $metadata->getInheritanceType();
-            if ($inheritanceType == Doctrine::INHERITANCETYPE_JOINED) {
+            if ($inheritanceType == Doctrine::INHERITANCE_TYPE_JOINED) {
                 $mapper = new Doctrine_Mapper_Joined($entityName, $metadata);
-            } else if ($inheritanceType == Doctrine::INHERITANCETYPE_SINGLE_TABLE) {
+            } else if ($inheritanceType == Doctrine::INHERITANCE_TYPE_SINGLE_TABLE) {
                 $mapper = new Doctrine_Mapper_SingleTable($entityName, $metadata);
-            } else if ($inheritanceType == Doctrine::INHERITANCETYPE_TABLE_PER_CLASS) {
+            } else if ($inheritanceType == Doctrine::INHERITANCE_TYPE_TABLE_PER_CLASS) {
                 $mapper = new Doctrine_Mapper_TablePerClass($entityName, $metadata);
             } else {
                 throw new Doctrine_Connection_Exception("Unknown inheritance type '$inheritanceType'. Can't create mapper.");

@@ -135,18 +135,19 @@ class Doctrine_Mapper_JoinedStrategy extends Doctrine_Mapper_Strategy
         try {
             $class = $this->_mapper->getClassMetadata();
             $conn->beginInternalTransaction();
-            $this->deleteComposites($record);
+            $this->_deleteComposites($record);
 
             $record->state(Doctrine_Record::STATE_TDIRTY);
 
             $identifier = $this->_convertFieldToColumnNames($record->identifier(), $class);
-
+            
+            // run deletions, starting from the class, upwards the hierarchy
+            $conn->delete($class->getTableName(), $identifier);
             foreach ($class->getParentClasses() as $parent) {
                 $parentClass = $conn->getClassMetadata($parent);
                 $this->_deleteRow($parentClass->getTableName(), $identifier);
             }
-
-            $conn->delete($class->getTableName(), $identifier);
+            
             $record->state(Doctrine_Record::STATE_TCLEAN);
 
             $this->_mapper->removeRecord($record);

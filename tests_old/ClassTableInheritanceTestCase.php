@@ -229,7 +229,7 @@ class CTITestParent1 extends Doctrine_Record
 {
     public function setTableDefinition()
     {
-        $this->setInheritanceType(Doctrine::INHERITANCETYPE_JOINED, array(
+        $this->setInheritanceType(Doctrine::INHERITANCE_TYPE_JOINED, array(
                 'CTITestParent1' => 1, 'CTITestParent2' => 2,
                 'CTITestParent3' => 3, 'CTITestParent4' => 4,
                 'CTITest' => 5));

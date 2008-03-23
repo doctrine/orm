@@ -21,7 +21,7 @@ class Orm_Component_AllTests
     {
         $suite = new Doctrine_TestSuite('Doctrine Orm Component');
 
-        //$suite->addTestSuite('Orm_Component_TestTest');
+        $suite->addTestSuite('Orm_Component_TestTest');
 		$suite->addTestSuite('Orm_Component_AccessTest');
         $suite->addTestSuite('Orm_Component_CollectionTest');
 

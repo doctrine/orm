@@ -13,7 +13,7 @@ class Entity extends Doctrine_Record
         $class->setColumn('email_id', 'integer');
         
         $class->setSubclasses(array('Group', 'User'));
-        $class->setInheritanceType(Doctrine::INHERITANCETYPE_SINGLE_TABLE, array(
+        $class->setInheritanceType(Doctrine::INHERITANCE_TYPE_SINGLE_TABLE, array(
                 'discriminatorColumn' => 'type',
                 'discriminatorMap' => array(0 => 'User', 1 => 'Group', 2 => 'Entity')
                 ));
