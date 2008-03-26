@@ -23,7 +23,7 @@ class User extends Entity
             'local' => 'user_id', 
             'foreign' => 'group_id',
             'refClass' => 'Groupuser'
-        ));        
+        ));
     }
 
     /** Custom validation */

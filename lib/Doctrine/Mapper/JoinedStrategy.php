@@ -21,7 +21,7 @@
 
 /**
  * The joined mapping strategy maps a single entity instance to several tables in the
- * database as it is defined by <b>Class Table Inheritance</b>.
+ * database as it is defined by <tt>Class Table Inheritance</tt>.
  *
  * @author      Roman Borschel <roman@code-factory.org>
  * @package     Doctrine
@@ -175,7 +175,7 @@ class Doctrine_Mapper_JoinedStrategy extends Doctrine_Mapper_Strategy
         foreach ($classMetadata->getParentClasses() as $parentClass) {
             $customJoins[$parentClass] = 'INNER';
         }
-        foreach ((array)$classMetadata->getSubclasses() as $subClass) {
+        foreach ($classMetadata->getSubclasses() as $subClass) {
             if ($subClass != $this->_mapper->getComponentName()) {
                 $customJoins[$subClass] = 'LEFT';
             }
@@ -200,7 +200,7 @@ class Doctrine_Mapper_JoinedStrategy extends Doctrine_Mapper_Strategy
         $fields = array($classMetadata->getInheritanceOption('discriminatorColumn'));
         if ($classMetadata->getSubclasses()) {
             foreach ($classMetadata->getSubclasses() as $subClass) {
-                $fields = array_merge($conn->getMetadata($subClass)->getFieldNames(), $fields);
+                $fields = array_merge($conn->getClassMetadata($subClass)->getFieldNames(), $fields);
             }
         }
         

@@ -215,7 +215,7 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
 
         $this->_mapper = $connection->getMapper($this->_mapper);
 
-        $keyColumn = isset($array['keyColumn']) ? $array['keyColumn'] : null;
+        $keyColumn = isset($array['keyField']) ? $array['keyField'] : null;
         if ($keyColumn === null) {
             $keyColumn = $this->_mapper->getClassMetadata()->getBoundQueryPart('indexBy');
         }

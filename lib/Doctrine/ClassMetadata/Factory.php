@@ -133,13 +133,16 @@ class Doctrine_ClassMetadata_Factory
     }
     
     protected function _addInheritedRelations($subClass, $parentClass) {
-        foreach ($parentClass->getRelationParser()->getRelations() as $name => $relation) {
-            $subClass->getRelationParser()->addRelation($name, $relation);
+        foreach ($parentClass->getRelationParser()->getRelationDefinitions() as $name => $definition) {
+            $subClass->getRelationParser()->addRelationDefinition($name, $definition);
         }
     }
     
     /**
-     * Current code driver.
+     * Loads the metadata of a specified class.
+     *
+     * @param Doctrine_ClassMetadata $class  The container for the metadata.
+     * @param string $name  The name of the class for which the metadata will be loaded.
      */
     protected function _loadMetadata(Doctrine_ClassMetadata $class, $name)
     {
@@ -190,16 +193,6 @@ class Doctrine_ClassMetadata_Factory
     }
     
     /**
-     * Code driver.
-     *
-     * @todo Move to code driver.
-     */
-    /*protected function _loadMetadataFromCode($class, $name)
-    {
-        call_user_func_array(array($name, 'initMetadata'), array($class));
-    }*/
-    
-    /**
      * Initializes the class identifier(s)/primary key(s).
      *
      * @param Doctrine_Metadata  The metadata container of the class in question.
@@ -209,9 +202,9 @@ class Doctrine_ClassMetadata_Factory
         switch (count((array)$class->getIdentifier())) {
             case 0:
                 if ($class->getInheritanceType() == Doctrine::INHERITANCE_TYPE_JOINED &&
-                        count($class->getOption('parents')) > 0) {
+                        count($class->getParentClasses()) > 0) {
                             
-                    $parents = $class->getOption('parents');
+                    $parents = $class->getParentClasses();
                     $root = end($parents);
                     $rootClass = $class->getConnection()->getMetadata($root);
                     $class->setIdentifier($rootClass->getIdentifier());

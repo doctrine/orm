@@ -1159,7 +1159,7 @@ class Doctrine_Export extends Doctrine_Connection_Module
             // as soon as ONE table is exported, because the data of one class is stored
             // across many tables.
             if ($classMetadata->getInheritanceType() == Doctrine::INHERITANCE_TYPE_JOINED) {
-                $parents = $classMetadata->getOption('parents');
+                $parents = $classMetadata->getParentClasses();
                 foreach ($parents as $parent) {
                     $data = $classMetadata->getConnection()->getClassMetadata($parent)->getExportableFormat();
                     $query = $this->conn->export->createTableSql($data['tableName'], $data['columns'], $data['options']);

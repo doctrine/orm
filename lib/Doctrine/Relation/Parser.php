@@ -46,14 +46,14 @@ class Doctrine_Relation_Parser
     /**
      * @var array $_pending                 relations waiting for parsing
      */
-    protected $_pending   = array();
+    protected $_relationDefinitions = array();
 
     /**
      * constructor
      *
      * @param Doctrine_Table $table         the table object this parser belongs to
      */
-    public function __construct(/*Doctrine_Table*/ $table) 
+    public function __construct(Doctrine_ClassMetadata $table) 
     {
         $this->_table = $table;
     }
@@ -72,19 +72,30 @@ class Doctrine_Relation_Parser
      * getPendingRelation
      *
      * @return array            an array defining a pending relation
+     * @deprecated
      */
     public function getPendingRelation($name) 
     {
-        if ( ! isset($this->_pending[$name])) {
-            throw new Doctrine_Relation_Exception('Unknown pending relation ' . $name);
+        return $this->getRelationDefinition($name);
+    }
+    
+    public function getRelationDefinition($name)
+    {
+        if ( ! isset($this->_relationDefinitions[$name])) {
+            throw new Doctrine_Relation_Exception("Unknown relation '$name'.");
         }
         
-        return $this->_pending[$name];
+        return $this->_relationDefinitions[$name];
+    }
+    
+    public function getRelationDefinitions()
+    {
+        return $this->_relationDefinitions;
     }
     
     public function hasRelation($name)
     {
-        if ( ! isset($this->_pending[$name]) && ! isset($this->_relations[$name])) {
+        if ( ! isset($this->_relationDefinitions[$name]) && ! isset($this->_relations[$name])) {
             return false;
         }
         
@@ -112,9 +123,9 @@ class Doctrine_Relation_Parser
             throw new Doctrine_Relation_Exception('Relation type not set.');
         }
         
-        $this->_pending[$alias] = array_merge($options, array('class' => $name, 'alias' => $alias));
+        $this->_relationDefinitions[$alias] = array_merge($options, array('class' => $name, 'alias' => $alias));
 
-        return $this->_pending[$alias];
+        return $this->_relationDefinitions[$alias];
     }
 
     /**
@@ -128,7 +139,7 @@ class Doctrine_Relation_Parser
             return $this->_relations[$alias];
         }
 
-        if (isset($this->_pending[$alias])) {
+        if (isset($this->_relationDefinitions[$alias])) {
             $this->_loadRelation($alias);
         }
         
@@ -154,6 +165,14 @@ class Doctrine_Relation_Parser
         $this->_relations[$name] = $relation;
     }
     
+    public function addRelationDefinition($name, array $definition)
+    {
+        if (isset($this->_relationDefinitions[$name])) {
+            throw new Doctrine_Relation_Exception("Relation definition for '$name' does already exist.");
+        }
+        $this->_relationDefinitions[$name] = $definition;
+    }
+    
     /**
      * Loads a relation and puts it into the collection of loaded relations.
      * In the process of initializing a relation it is common that multiple other, closely related
@@ -163,17 +182,17 @@ class Doctrine_Relation_Parser
      */
     protected function _loadRelation($alias)
     {
-        $def = $this->_pending[$alias];
+        $def = $this->_relationDefinitions[$alias];
         
         // check if reference class name exists
         // if it does we are dealing with an association relation (many-many)
         if (isset($def['refClass'])) {
             $def = $this->completeAssocDefinition($def);
-            $localClasses = array_merge($this->_table->getOption('parents'), array($this->_table->getClassName()));
+            $localClasses = array_merge($this->_table->getParentClasses(), array($this->_table->getClassName()));
 
             $relationName = $def['refClass'];
 
-            if ( ! isset($this->_pending[$relationName]) && ! isset($this->_relations[$relationName])) {
+            if ( ! isset($this->_relationDefinitions[$relationName]) && ! isset($this->_relations[$relationName])) {
                 $this->_completeManyToManyRelation($def);
             }
             
@@ -193,7 +212,6 @@ class Doctrine_Relation_Parser
             }
         }
         if (isset($rel)) {
-            unset($this->_pending[$alias]);
             $this->_relations[$alias] = $rel;
             return $rel;
         }
@@ -242,7 +260,7 @@ class Doctrine_Relation_Parser
      */
     public function getRelations()
     {
-        foreach ($this->_pending as $k => $v) {
+        foreach ($this->_relationDefinitions as $k => $v) {
             $this->getRelation($k);
         }
 
@@ -401,8 +419,8 @@ class Doctrine_Relation_Parser
         $def['table'] = $this->getImpl($def, 'class');
         $def['localTable'] = $this->_table;
 
-        $foreignClasses = array_merge($def['table']->getOption('parents'), array($def['class']));
-        $localClasses   = array_merge($this->_table->getOption('parents'), array($this->_table->getClassName()));
+        $foreignClasses = array_merge($def['table']->getParentClasses(), array($def['class']));
+        $localClasses   = array_merge($this->_table->getParentClasses(), array($this->_table->getClassName()));
 
         $localIdentifierColumnNames = $this->_table->getIdentifierColumnNames();
         $localIdColumnName = $localIdentifierColumnNames[count($localIdentifierColumnNames) - 1];

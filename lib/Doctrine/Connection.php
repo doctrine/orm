@@ -866,6 +866,7 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
      * @param int $hydrationMode        Doctrine::FETCH_ARRAY or Doctrine::FETCH_RECORD
      * @see Doctrine_Query
      * @return Doctrine_Collection      Collection of Doctrine_Record objects
+     * @todo package:orm
      */
     public function query($query, array $params = array(), $hydrationMode = null)
     {
@@ -885,17 +886,17 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
 
         try {
             $event = new Doctrine_Event($this, Doctrine_Event::CONN_PREPARE, $statement);
-
+    
             $this->getAttribute(Doctrine::ATTR_LISTENER)->prePrepare($event);
 
             $stmt = false;
-
+    
             if ( ! $event->skipOperation) {
                 $stmt = $this->dbh->prepare($statement);
             }
-
+    
             $this->getAttribute(Doctrine::ATTR_LISTENER)->postPrepare($event);
-
+            
             return new Doctrine_Connection_Statement($this, $stmt);
         } catch(Doctrine_Adapter_Exception $e) {
         } catch(PDOException $e) { }

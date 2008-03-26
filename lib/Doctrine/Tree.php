@@ -56,7 +56,7 @@ class Doctrine_Tree
         $this->_baseComponent = $table->getComponentName();
         $class = $this->_baseComponent;
         if ($table->getOption('inheritanceMap')) {
-            $subclasses = $table->getOption('subclasses');
+            $subclasses = $table->getSubclasses();
             while (in_array($class, $subclasses)) {
                 $class = get_parent_class($class);
             }

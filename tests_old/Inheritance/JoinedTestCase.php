@@ -45,10 +45,10 @@ class Doctrine_Inheritance_Joined_TestCase extends Doctrine_UnitTestCase
         $this->assertEqual('cti_supermanager', $suManagerTable->getTableName());
         
         // expected joined parents option
-        $this->assertEqual(array(), $userTable->getOption('parents'));
-        $this->assertEqual(array('CTI_User'), $managerTable->getOption('parents'));
-        $this->assertEqual(array('CTI_User'), $customerTable->getOption('parents'));
-        $this->assertEqual(array('CTI_Manager', 'CTI_User'), $suManagerTable->getOption('parents'));
+        $this->assertEqual(array(), $userTable->getParentClasses());
+        $this->assertEqual(array('CTI_User'), $managerTable->getParentClasses());
+        $this->assertEqual(array('CTI_User'), $customerTable->getParentClasses());
+        $this->assertEqual(array('CTI_Manager', 'CTI_User'), $suManagerTable->getParentClasses());
         
         // check inheritance map
         $this->assertEqual(array(1 => 'CTI_User', 2 => 'CTI_Manager',

@@ -30,7 +30,7 @@
  * @link        www.phpdoctrine.org
  * @since       1.0
  */
-abstract class Doctrine_Record_Generator extends Doctrine_Record_Abstract
+abstract class Doctrine_Record_Generator
 {
     /**
      * @var array $_options     an array of plugin specific options

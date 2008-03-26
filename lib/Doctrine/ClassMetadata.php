@@ -21,12 +21,12 @@
 
 /**
  * A <tt>ClassMetadata</tt> instance holds all the information (metadata) of an entity and
- * it's associations and how they're mapped to the relational model.
+ * it's associations and how they're mapped to the relational database.
  *
  * @package Doctrine
  * @subpackage ClassMetadata
  * @author Roman Borschel <roman@code-factory.org>
- * @since 1.0
+ * @since 2.0
  */
 class Doctrine_ClassMetadata extends Doctrine_Configurable implements Serializable
 {    
@@ -64,6 +64,11 @@ class Doctrine_ClassMetadata extends Doctrine_Configurable implements Serializab
      * The names of the parent classes (ancestors).
      */
     protected $_parentClasses = array();
+    
+    /**
+     * The names of all subclasses
+     */
+    protected $_subClasses = array();
     
     /**
      * The field names of all fields that are part of the identifier/primary key
@@ -194,9 +199,7 @@ class Doctrine_ClassMetadata extends Doctrine_Configurable implements Serializab
     protected $_enumMap = array();
     
     /**
-     * @var array $options                  an array containing all options
-     *
-     *      -- parents                      the parent classes of this component                          
+     * @var array $options                  an array containing all options                        
      *
      *      -- treeImpl                     the tree implementation of this table (if any)
      *
@@ -204,12 +207,10 @@ class Doctrine_ClassMetadata extends Doctrine_Configurable implements Serializab
      *
      *      -- queryParts                   the bound query parts
      */
-    protected $_options      = array(
-            'treeImpl'       => null,
-            'treeOptions'    => null,
-            'queryParts'     => array(),
-            'subclasses'     => array(),
-            'parents'        => array()
+    protected $_options = array(
+            'treeImpl'    => null,
+            'treeOptions' => null,
+            'queryParts'  => array()
             );
     
     /**
@@ -1098,7 +1099,7 @@ class Doctrine_ClassMetadata extends Doctrine_Configurable implements Serializab
      */
     public function setSubclasses(array $subclasses)
     {
-        $this->_options['subclasses'] = $subclasses;     
+        $this->_subClasses = $subclasses;     
     }
     
     /**
@@ -1108,7 +1109,7 @@ class Doctrine_ClassMetadata extends Doctrine_Configurable implements Serializab
      */
     public function getSubclasses()
     {
-        return $this->getOption('subclasses');
+        return $this->_subClasses;
     }
     
     /**
@@ -1118,7 +1119,7 @@ class Doctrine_ClassMetadata extends Doctrine_Configurable implements Serializab
      */
     public function hasSubclasses()
     {
-        return ! $this->getOption('subclasses');
+        return ! $this->_subClasses;
     }
     
     /**
@@ -1128,7 +1129,7 @@ class Doctrine_ClassMetadata extends Doctrine_Configurable implements Serializab
      */
     public function getParentClasses()
     {
-        return $this->getOption('parents');
+        return $this->_parentClasses;
     }
     
     /**
@@ -1136,18 +1137,18 @@ class Doctrine_ClassMetadata extends Doctrine_Configurable implements Serializab
      */
     public function setParentClasses(array $classNames)
     {
-        $this->_options['parents'] = $classNames;
+        $this->_parentClasses = $classNames;
         $this->_rootEntityName = array_pop($classNames);
     }
     
     /**
-     * Checks whether the class has any persistence parent classes.
+     * Checks whether the class has any persistent parent classes.
      *
      * @return boolean TRUE if the class has one or more persistent parent classes, FALSE otherwise.
      */
     public function hasParentClasses()
     {
-        return ! $this->getOption('parents');
+        return ! $this->_parentClasses;
     }
     
     /**
@@ -1157,15 +1158,23 @@ class Doctrine_ClassMetadata extends Doctrine_Configurable implements Serializab
      */
     public function setInheritanceType($type, array $options = array())
     {
+        if ($parentClassNames = $this->getParentClasses()) {
+            if ($this->_conn->getClassMetadata($parentClassNames[0])->getInheritanceType() != $type) {
+                throw new Doctrine_ClassMetadata_Exception("All classes in an inheritance hierarchy"
+                        . " must share the same inheritance mapping type. Mixing is not allowed.");
+            }
+        }
+        
         if ($type == Doctrine::INHERITANCE_TYPE_SINGLE_TABLE) {
             $this->_checkRequiredDiscriminatorOptions($options);
         } else if ($type == Doctrine::INHERITANCE_TYPE_JOINED) {
             $this->_checkRequiredDiscriminatorOptions($options);
         } else if ($type == Doctrine::INHERITANCE_TYPE_TABLE_PER_CLASS) {
-            // concrete table inheritance ...
-        } else {
+            ;
+        } else {       
             throw new Doctrine_ClassMetadata_Exception("Invalid inheritance type '$type'.");
         }
+        
         $this->_inheritanceType = $type;
         foreach ($options as $name => $value) {
             $this->setInheritanceOption($name, $value);
@@ -1269,13 +1278,13 @@ class Doctrine_ClassMetadata extends Doctrine_Configurable implements Serializab
         // If the class is part of a Single Table Inheritance hierarchy, collect the fields
         // of all classes in the hierarchy.
         if ($this->_inheritanceType == Doctrine::INHERITANCE_TYPE_SINGLE_TABLE) {
-            $parents = $this->getOption('parents');
+            $parents = $this->getParentClasses();
             if ($parents) {
                 $rootClass = $this->_conn->getClassMetadata(array_pop($parents));
             } else {
                 $rootClass = $this;
             }
-            $subClasses = $rootClass->getOption('subclasses');
+            $subClasses = $rootClass->getSubclasses();
             foreach ($subClasses as $subClass) {
                 $subClassMetadata = $this->_conn->getClassMetadata($subClass);
                 $allColumns = array_merge($allColumns, $subClassMetadata->getColumns());
@@ -1600,7 +1609,10 @@ class Doctrine_ClassMetadata extends Doctrine_Configurable implements Serializab
      */
     public function serialize()
     {
-        return serialize($this->_mappedColumns);
+        //$contents = get_object_vars($this);
+        /* @TODO How to handle $this->_conn and $this->_parser ? */
+        //return serialize($contents);
+        return "";
     }
     
     /**
@@ -1748,6 +1760,17 @@ class Doctrine_ClassMetadata extends Doctrine_Configurable implements Serializab
         //Doctrine::CLASSTYPE_ENTITY
         //Doctrine::CLASSTYPE_MAPPED_SUPERCLASS
         //Doctrine::CLASSTYPE_TRANSIENT
+    }
+    
+    /**
+     * 
+     * @todo Implementation. Replaces the bindComponent() methods on the old Doctrine_Manager.
+     *       Binding an Entity to a specific EntityManager in 2.0 is the same as binding
+     *       it to a Connection in 1.0.
+     */
+    public function bindToEntityManager($emName)
+    {
+        
     }
     
     /**
