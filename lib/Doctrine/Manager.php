@@ -417,8 +417,12 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
     public function parseDsn($dsn)
     {
         // fix sqlite dsn so that it will parse correctly
-        $dsn = str_replace("////", "/", $dsn);
-        $dsn = str_replace("///c:/", "//c:/", $dsn);
+        if (false !== strpos($dsn, ':///')) {
+            // replace windows directory separators
+            $dsn = str_replace("\\", "/", $dsn);
+            // replace file:/// format with parse_url()-compatible file://
+            $dsn = str_replace(":///", "://", $dsn);
+        }
 
         // silence any warnings
         $parts = @parse_url($dsn);
