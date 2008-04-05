@@ -207,9 +207,9 @@ class Doctrine_Hydrator extends Doctrine_Hydrator_Abstract
                         } else {
                             $index = $identifierMap[$path][$id[$parent]][$id[$dqlAlias]];
                         }
+                        // register collection for later snapshots
+                        $driver->registerCollection($prev[$parent][$relationAlias]);
                     }
-                    // register collection for later snapshots
-                    $driver->registerCollection($prev[$parent][$relationAlias]);
                 } else {
                     // 1-1 relation
                     $oneToOne = true; 

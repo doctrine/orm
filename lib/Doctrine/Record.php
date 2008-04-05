@@ -87,7 +87,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
     private static $_index = 1;
     
     /**
-     * Boolean flag that indicated whether automatic accessor overriding is enabled.
+     * Boolean flag that indicates whether automatic accessor overriding is enabled.
      *
      * @var boolean
      */
