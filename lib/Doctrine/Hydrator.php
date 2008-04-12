@@ -78,15 +78,14 @@ class Doctrine_Hydrator extends Doctrine_Hydrator_Abstract
 
         $event = new Doctrine_Event(null, Doctrine_Event::HYDRATE, null);
 
-
+        //$s = microtime(true);
+        
         // Used variables during hydration
         reset($this->_queryComponents);
         $rootAlias = key($this->_queryComponents);
         $rootComponentName = $this->_queryComponents[$rootAlias]['mapper']->getComponentName();
         // if only one component is involved we can make our lives easier
         $isSimpleQuery = count($this->_queryComponents) <= 1;
-        // Holds the resulting hydrated data structure
-        $result = array();
         // Holds hydration listeners that get called during hydration
         $listeners = array();
         // Lookup map to quickly discover/lookup existing records in the result 
@@ -97,6 +96,7 @@ class Doctrine_Hydrator extends Doctrine_Hydrator_Abstract
         // separated by a pipe '|' and grouped by component alias (r, u, i, ... whatever)
         $id = array(); 
         
+        // Holds the resulting hydrated data structure
         $result = $driver->getElementCollection($rootComponentName);
 
         if ($stmt === false || $stmt === 0) {
@@ -126,15 +126,21 @@ class Doctrine_Hydrator extends Doctrine_Hydrator_Abstract
             $table = $this->_queryComponents[$rootAlias]['table'];
             $mapper = $this->_queryComponents[$rootAlias]['mapper'];
             $componentName = $mapper->getComponentName();
+            
+            // just event stuff
             $event->set('data', $rowData[$rootAlias]);
             $listeners[$componentName]->preHydrate($event);
-            $element = $driver->getElement($rowData[$rootAlias], $componentName);
-            $index = false;
+            //--
             
             // Check for an existing element
+            $index = false;
             if ($isSimpleQuery || ! isset($identifierMap[$rootAlias][$id[$rootAlias]])) {
+                $element = $driver->getElement($rowData[$rootAlias], $componentName);
+                
+                // just event stuff
                 $event->set('data', $element);
                 $listeners[$componentName]->postHydrate($event);
+                //--
 
                 // do we need to index by a custom field?
                 if ($field = $this->_getCustomIndexField($rootAlias)) {
@@ -164,16 +170,19 @@ class Doctrine_Hydrator extends Doctrine_Hydrator_Abstract
             // (related) components.
             foreach ($rowData as $dqlAlias => $data) {
                 $index = false;
-                $map   = $this->_queryComponents[$dqlAlias];
+                $map = $this->_queryComponents[$dqlAlias];
                 $table = $map['table'];
                 $mapper = $map['mapper'];
                 $componentName = $mapper->getComponentName();
+                
+                // just event stuff
                 $event->set('data', $data);
                 $listeners[$componentName]->preHydrate($event);
+                //--
 
                 $element = $driver->getElement($data, $componentName);
 
-                $parent   = $map['parent'];
+                $parent = $map['parent'];
                 $relation = $map['relation'];
                 $relationAlias = $map['relation']->getAlias();
 
@@ -188,15 +197,18 @@ class Doctrine_Hydrator extends Doctrine_Hydrator_Abstract
                     $oneToOne = false;
                     // append element
                     if (isset($nonemptyComponents[$dqlAlias])) {
-                        if ($isSimpleQuery || ! isset($identifierMap[$path][$id[$parent]][$id[$dqlAlias]])) {
+                        if ( ! isset($identifierMap[$path][$id[$parent]][$id[$dqlAlias]])) {
+                            // just event stuff
                             $event->set('data', $element);
                             $listeners[$componentName]->postHydrate($event);
-
+                            //--
                             if ($field = $this->_getCustomIndexField($dqlAlias)) {
+                                // TODO: we should check this earlier. Fields used in INDEXBY
+                                //       must be unique. Then this can be removed here.
                                 if (isset($prev[$parent][$relationAlias][$field])) {
-                                    throw new Doctrine_Hydrator_Exception("Hydration failed. Found non-unique key mapping.");
+                                    throw Doctrine_Hydrator_Exception::nonUniqueKeyMapping();
                                 } else if ( ! isset($element[$field])) {
-                                    throw new Doctrine_Hydrator_Exception("Hydration failed. Found a non-existent field '$field'.");
+                                    throw Doctrine_Hydrator_Exception::nonExistantFieldUsedAsIndex($field);
                                 }
                                 $prev[$parent][$relationAlias][$element[$field]] = $element;
                             } else {
@@ -247,7 +259,11 @@ class Doctrine_Hydrator extends Doctrine_Hydrator_Abstract
      * sets the last element of given data array / collection
      * as previous element
      *
-     * @param boolean|integer $index
+     * @param array $prev  The array that contains the pointers to the latest element of each class.
+     * @param array|Collection  The object collection.
+     * @param boolean|integer $index  Index of the element in the collection.
+     * @param string $dqlAlias
+     * @param boolean $oneToOne  Whether it is a single-valued association or not.
      * @return void
      * @todo Detailed documentation
      */

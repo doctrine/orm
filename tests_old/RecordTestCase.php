@@ -79,7 +79,7 @@ class Doctrine_Record_TestCase extends Doctrine_UnitTestCase
         $account->amount = 2000;
         
         $this->assertEqual($account->getTable()->getColumnNames(), array('id', 'entity_id', 'amount'));
-        $this->connection->flush();
+        $this->connection->unitOfWork->saveAll();
         $this->assertEqual($user->state(), Doctrine_Record::STATE_CLEAN);
         $this->assertTrue($account instanceof Account);
 
@@ -342,7 +342,7 @@ class Doctrine_Record_TestCase extends Doctrine_UnitTestCase
         $task->name = "Task 1";
         $task->ResourceAlias[0]->name = "Resource 1";
 
-        $this->connection->flush();
+        $this->connection->unitOfWork->saveAll();
 
         $this->assertTrue($task->ResourceAlias[0] instanceof Resource);
         $this->assertEqual($task->ResourceAlias[0]->name, "Resource 1");
@@ -366,7 +366,7 @@ class Doctrine_Record_TestCase extends Doctrine_UnitTestCase
         $this->assertEqual($task->ResourceAlias->count(), 1);
         $this->assertEqual($task->Subtask[0]->name, "Subtask 1");
 
-        $this->connection->flush();
+        $this->connection->unitOfWork->saveAll();
 
         $task = $task->getMapper()->find($task->identifier());
 
@@ -436,7 +436,7 @@ class Doctrine_Record_TestCase extends Doctrine_UnitTestCase
 
 
 
-        $this->connection->flush();
+        $this->connection->unitOfWork->saveAll();
         $elements = $this->connection->query("FROM Element");
         $this->assertEqual($elements->count(), 5);
 

@@ -21,7 +21,7 @@
 
 /**
  * Doctrine_Hydrate_RecordDriver
- * Hydration strategy used for creating collections of entity objects.
+ * Hydration strategy used for creating graphs of entity objects.
  *
  * @package     Doctrine
  * @subpackage  Hydrate
@@ -122,7 +122,7 @@ class Doctrine_Hydrator_RecordDriver
     public function flush()
     {
         // take snapshots from all initialized collections
-        foreach ($this->_collections as $key => $coll) {
+        foreach ($this->_collections as $coll) {
             $coll->takeSnapshot();
         }
         $this->_collections = array();

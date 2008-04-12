@@ -19,7 +19,7 @@ class Doctrine_Relation_Access_TestCase extends Doctrine_UnitTestCase {
         $us = array();
         $us[1] = new MyUser();
         $us[1]->name = "user1";
-        $this->connection->flush();
+        $this->connection->unitOfWork->saveAll();
         // OneThings
         $onethings_gs = array(
             array(6,1)
@@ -65,7 +65,7 @@ class Doctrine_Relation_Access_TestCase extends Doctrine_UnitTestCase {
             }
         }
          */
-        $this->connection->flush();
+        $this->connection->unitOfWork->saveAll();
         $this->connection->clear();
     }
 

@@ -31,6 +31,8 @@ Doctrine::autoload('Doctrine_Record_Abstract');
  * @link        www.phpdoctrine.org
  * @since       1.0
  * @version     $Revision$
+ * @todo Rename to "Entity". Split up into "Entity" and "ActiveRecord"???
+ * @todo Remove as many methods as possible.
  */
 abstract class Doctrine_Record extends Doctrine_Access implements Countable, IteratorAggregate, Serializable
 {
@@ -242,6 +244,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
             // set the default values for this record
             $this->assignDefaultValues();
         } else {
+            // TODO: registerClean() on UnitOfWork
             $this->_state = Doctrine_Record::STATE_CLEAN;
             if ($count < $this->_class->getColumnCount()) {
                 $this->_state  = Doctrine_Record::STATE_PROXY;
@@ -1107,6 +1110,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
      */
     public function save(Doctrine_Connection $conn = null)
     {
+        // TODO: Forward to EntityManager. There: registerNew() OR registerDirty() on UnitOfWork.
         $this->_mapper->save($this, $conn);
     }
 
@@ -1467,6 +1471,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
      */
     public function delete(Doctrine_Connection $conn = null)
     {
+        // TODO: Forward to EntityManager. There: registerRemoved() on UnitOfWork
         return $this->_mapper->delete($this, $conn);
     }
 

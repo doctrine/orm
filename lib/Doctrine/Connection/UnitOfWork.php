@@ -38,6 +38,8 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
      * A map of all currently managed entities.
      *
      * @var array
+     * @deprecated Only here to keep the saveAll() functionality working. We don't need 
+     *             this in the future.
      */
     protected $_managedEntities = array();
     
@@ -57,78 +59,95 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
     protected $_autoflush = true;
     
     /**
-     * A list of all postponed inserts.
+     * A list of all new entities.
      */
-    protected $_inserts = array();
+    protected $_newEntities = array();
     
     /**
-     * A list of all postponed updates.
+     * A list of all dirty entities.
      */
-    protected $_updates = array();
+    protected $_dirtyEntities = array();
     
     /**
-     * A list of all postponed deletes.
+     * A list of all removed entities.
      */
-    protected $_deletes = array();
+    protected $_removedEntities = array();
+    
+    /**
+     * The EntityManager the unit of work belongs to.
+     */
+    protected $_em;
     
     /**
      * The dbal connection used by the unit of work.
      *
      * @var Doctrine_Connection
-     * @todo Allow multiple connections for transparent master-slave replication.
+     * @todo Not needed in the future. Remove.
      */
     protected $_conn;
     
     /**
-     * Flushes the unit of work, executing all operations that have been postponed
+     * Commits the unit of work, executing all operations that have been postponed
      * up to this point.
      *
      */
-    public function flush()
+    public function commit()
     {
-        // get the flush tree
-        $tree = $this->buildFlushTree($this->conn->getMappers());
+        $this->_orderCommits();
         
-        $tree = array_combine($tree, array_fill(0, count($tree), array()));
-        
-        foreach ($this->_managedEntities as $oid => $entity) {
-            $className = $entity->getClassName();
-            $tree[$className][] = $entity;
+        $this->_insertNew();
+        $this->_updateDirty();
+        $this->_deleteRemoved();
+    }
+    
+    private function _orderCommits()
+    {
+
+    }
+    
+    /**
+     * Register a new entity.
+     */
+    public function registerNew(Doctrine_Record $entity)
+    {
+        if (isset($this->_dirtyEntities[$entity->getOid()])) {
+            throw new Doctrine_Connection_Exception("Dirty object can't be registered as new.");
+        } else if (isset($this->_removedEntities[$entity->getOid()])) {
+            throw new Doctrine_Connection_Exception("Removed object can't be registered as new.");
         }
-        
-        // save all records
-        foreach ($tree as $className => $entities) {
-            $mapper = $this->conn->getMapper($className);
-            foreach ($entities as $entity) {
-                $mapper->saveSingleRecord($entity);
-            }
+        $this->_newEntities[$entity->getOid()] = $entity;
+    }
+    
+    /**
+     * Registers a clean entity.
+     */
+    public function registerClean(Doctrine_Record $entity)
+    {
+        $this->registerIdentity($entity);
+    }
+    
+    /**
+     * Registers a dirty entity.
+     */
+    public function registerDirty(Doctrine_Record $entity)
+    {
+        if (isset($this->_removedEntities[$entity->getOid()])) {
+            throw new Doctrine_Connection_Exception("Removed object can't be registered as dirty.");
+        } else if (isset($this->_newEntities[$entity->getOid()])) {
+            throw new Doctrine_Connection_Exception("");
         }
-        
-        // save all associations
-        foreach ($tree as $className => $entities) {
-            $mapper = $this->conn->getMapper($className);
-            foreach ($entities as $entity) {
-                $mapper->saveAssociations($entity);
-            }
-        }
+        $this->_dirtyEntities[$entity->getOid()] = $entity;
     }
     
-    public function addInsert()
+    /** 
+     * Registers a deleted entity.
+     */
+    public function registerDeleted(Doctrine_Record $entity)
     {
-        
+        $this->unregisterIdentity($entity);
+        $this->_removedEntities[$entity->getOid()] = $entity;
     }
-    
-    public function addUpdate()
-    {
-        
-    }
-    
-    public function addDelete()
-    {
-        
-    }
-    
-    
+
     /**
      * buildFlushTree
      * builds a flush tree that is used in transactions
@@ -239,7 +258,33 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
      */
     public function saveAll()
     {
-        return $this->flush();
+        $this->conn->beginInternalTransaction();
+        // get the flush tree
+        $tree = $this->buildFlushTree($this->conn->getMappers());
+        
+        $tree = array_combine($tree, array_fill(0, count($tree), array()));
+        
+        foreach ($this->_managedEntities as $oid => $entity) {
+            $className = $entity->getClassName();
+            $tree[$className][] = $entity;
+        }
+        
+        // save all records
+        foreach ($tree as $className => $entities) {
+            $mapper = $this->conn->getMapper($className);
+            foreach ($entities as $entity) {
+                $mapper->saveSingleRecord($entity);
+            }
+        }
+        
+        // save all associations
+        foreach ($tree as $className => $entities) {
+            $mapper = $this->conn->getMapper($className);
+            foreach ($entities as $entity) {
+                $mapper->saveAssociations($entity);
+            }
+        }
+        $this->conn->commit();
     }
     
     /**
@@ -329,6 +374,11 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
         return true;
     }
     
+    public function clearIdentitiesForEntity($entityName)
+    {
+        $this->_identityMap[$entityName] = array();
+    }
+    
     public function unregisterIdentity(Doctrine_Record $entity)
     {
         $id = implode(' ', $entity->identifier());
@@ -345,9 +395,14 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
         return false;
     }
     
-    public function containsIdentity(Doctrine_Record $entity)
+    public function getByIdentity($id, $rootClassName)
     {
-        
+        return $this->_identityMap[$rootClassName][$id];
+    }
+    
+    public function containsIdentity($id, $rootClassName)
+    {
+        return isset($this->_identityMap[$rootClassName][$id]);
     }
     
 }

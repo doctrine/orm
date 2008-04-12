@@ -34,6 +34,8 @@ class Doctrine_Connection_UnitOfWork_TestCase extends Doctrine_UnitTestCase
 {
     public function testFlush() 
     {
+        $uow = $this->connection->unitOfWork;
+        
         $user = $this->connection->getTable('User')->find(4);
         $this->assertTrue(is_numeric($user->Phonenumber[0]->entity_id));
 
@@ -59,7 +61,7 @@ class Doctrine_Connection_UnitOfWork_TestCase extends Doctrine_UnitTestCase
         $this->assertTrue($user->Phonenumber[0]->entity_id instanceof User);
         $this->assertTrue($user->Phonenumber[2]->entity_id instanceof User);
 
-        $this->connection->flush();
+        $uow->saveAll();
 
         $this->assertTrue(is_numeric($user->Phonenumber[0]->entity_id));
 
@@ -90,7 +92,7 @@ class Doctrine_Connection_UnitOfWork_TestCase extends Doctrine_UnitTestCase
         $user->Phonenumber = $coll;
         $this->assertTrue($user->Phonenumber->count() == 0);
 
-        $this->connection->flush();
+        $uow->saveAll();
         unset($user);
         $user = $this->objTable->find(5);
 
@@ -102,7 +104,7 @@ class Doctrine_Connection_UnitOfWork_TestCase extends Doctrine_UnitTestCase
         $this->assertTrue(is_numeric($user->Phonenumber[0]->entity_id));
 
         $user->Phonenumber[1]->phonenumber = '123 123';
-        $this->connection->flush();
+        $uow->saveAll();
 
 
         $this->assertEqual($user->Phonenumber->count(), 2);
@@ -112,7 +114,7 @@ class Doctrine_Connection_UnitOfWork_TestCase extends Doctrine_UnitTestCase
         $this->assertEqual($user->Phonenumber->count(), 2);
 
         $user->Phonenumber[3]->phonenumber = '123 123';
-        $this->connection->flush();
+        $uow->saveAll();
 
         $this->assertEqual($user->Phonenumber->count(), 3);
         unset($user);
@@ -134,7 +136,7 @@ class Doctrine_Connection_UnitOfWork_TestCase extends Doctrine_UnitTestCase
         $user->Phonenumber['work']->phonenumber = '444 444';
 
         $this->assertEqual($user->Phonenumber->count(), 2);
-        $this->connection->flush();
+        $uow->saveAll();
 
         $this->assertEqual($user->Phonenumber->count(), 2);
         unset($user);
@@ -153,7 +155,7 @@ class Doctrine_Connection_UnitOfWork_TestCase extends Doctrine_UnitTestCase
 
 
         $user->Phonenumber = $coll;
-        $this->connection->flush();
+        $uow->saveAll();
         $this->assertEqual($user->Phonenumber->count(), 3);
         $user = $this->objTable->find(5);
         $this->assertEqual($user->Phonenumber->count(), 3);
@@ -163,7 +165,7 @@ class Doctrine_Connection_UnitOfWork_TestCase extends Doctrine_UnitTestCase
 
         $user->Email->address = 'drinker@drinkmore.info';
         $this->assertTrue($user->Email instanceof Email);
-        $this->connection->flush();
+        $uow->saveAll();
         $this->assertTrue($user->Email instanceof Email);
         $user = $this->objTable->find(5);
         $this->assertEqual($user->Email->address, 'drinker@drinkmore.info');
@@ -177,7 +179,7 @@ class Doctrine_Connection_UnitOfWork_TestCase extends Doctrine_UnitTestCase
 
         $this->assertTrue($user->Email instanceof Email);
         $this->assertEqual($user->Email->address, 'absolutist@nottodrink.com');
-        $this->connection->flush();
+        $uow->saveAll();
         unset($user);
 
         $user = $this->objTable->find(5);
@@ -190,7 +192,7 @@ class Doctrine_Connection_UnitOfWork_TestCase extends Doctrine_UnitTestCase
 
     public function testTransactions() 
     {
-
+        $uow = $this->connection->unitOfWork;
         $this->connection->beginTransaction();
         $this->assertEqual($this->connection->transaction->getState(),Doctrine_Transaction::STATE_ACTIVE);
         $this->connection->commit();
@@ -201,7 +203,7 @@ class Doctrine_Connection_UnitOfWork_TestCase extends Doctrine_UnitTestCase
         $user = $this->objTable->find(6);
         
         $user->name = 'Jack Daniels';
-        $this->connection->flush();
+        $uow->saveAll();
         $this->connection->commit();
 
         $user = $this->objTable->find(6);

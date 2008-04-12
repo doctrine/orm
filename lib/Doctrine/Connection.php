@@ -389,6 +389,11 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
         }
 
         if ( ! isset($this->modules[$name])) {
+            try {
+                throw new Exception();
+            } catch (Exception $e) {
+                echo $e->getTraceAsString() . "<br/><br/>";
+            }
             throw new Doctrine_Connection_Exception('Unknown module / property ' . $name);
         }
         if ($this->modules[$name] === false) {
@@ -1211,7 +1216,7 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
      */
     public function getIterator()
     {
-        return new ArrayIterator($this->tables);
+        return new ArrayIterator($this->_mappers);
     }
 
     /**

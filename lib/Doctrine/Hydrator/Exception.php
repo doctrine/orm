@@ -31,4 +31,14 @@ Doctrine::autoload('Doctrine_Exception');
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  */
 class Doctrine_Hydrator_Exception extends Doctrine_Exception
-{ }
+{
+    public static function nonUniqueKeyMapping()
+    {
+        return new self("Hydration failed. Found non-unique key mapping.");
+    }
+    
+    public static function nonExistantFieldUsedAsIndex($field)
+    {
+        return new self("Hydration failed. Found a non-existent field '$field'.");
+    }
+}

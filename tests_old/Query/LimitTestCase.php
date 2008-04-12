@@ -223,7 +223,7 @@ class Doctrine_Query_Limit_TestCase extends Doctrine_UnitTestCase
         $this->assertEqual($user->Group[0]->name, "Action Actors");
         $this->assertEqual(count($user->Group), 3);
 
-        $this->connection->flush();
+        $this->connection->unitOfWork->saveAll();
 
         $this->assertEqual($user->Group[0]->name, "Action Actors");
         $this->assertEqual(count($user->Group), 3);
@@ -280,7 +280,7 @@ class Doctrine_Query_Limit_TestCase extends Doctrine_UnitTestCase
         $coll[2]->name = "photo 3";
         $coll[3]->Tag[0]->tag = "Other tag";
         $coll[3]->name = "photo 4";
-        $this->connection->flush();
+        $this->connection->unitOfWork->saveAll();
 
         $q = new Doctrine_Query();
         $q->from('Photo')->where('Photo.Tag.id = ?')->orderby('Photo.id DESC')->limit(100);

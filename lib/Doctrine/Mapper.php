@@ -29,7 +29,9 @@
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @version     $Revision: 3406 $
  * @link        www.phpdoctrine.org
- * @since       1.0
+ * @since       2.0
+ * @todo  Move all finder stuff to EntityRepository.
+ * @todo Rename to "EntityPersister" or similar.
  */
 class Doctrine_Mapper
 {
@@ -188,6 +190,7 @@ class Doctrine_Mapper
      * @param $id                       database row id
      * @param int $hydrationMode        Doctrine::HYDRATE_ARRAY or Doctrine::HYDRATE_RECORD
      * @return mixed                    Array or Doctrine_Record or false if no result
+     * @todo Remove. Move to EntityRepository.
      */
     public function find($id, $hydrationMode = null)
     {
@@ -208,6 +211,7 @@ class Doctrine_Mapper
      *
      * @param int $hydrationMode        Doctrine::HYDRATE_ARRAY or Doctrine::HYDRATE_RECORD
      * @return Doctrine_Collection
+     * @todo Remove. Move to EntityRepository.
      */
     public function findAll($hydrationMode = null)
     {
@@ -226,6 +230,7 @@ class Doctrine_Mapper
      * 
      * @todo This actually takes DQL, not SQL, but it requires column names 
      *       instead of field names. This should be fixed to use raw SQL instead.
+     * @todo Remove. Move to EntityRepository.
      */
     public function findBySql($dql, array $params = array(), $hydrationMode = null)
     {
@@ -241,6 +246,7 @@ class Doctrine_Mapper
      * @param array $params             query parameters
      * @param int $hydrationMode        Doctrine::FETCH_ARRAY or Doctrine::FETCH_RECORD
      * @return Doctrine_Collection
+     * @todo Remove. Move to EntityRepository.
      */
     public function findByDql($dql, array $params = array(), $hydrationMode = null)
     {
@@ -276,6 +282,7 @@ class Doctrine_Mapper
     public function clear()
     {
         $this->_identityMap = array();
+        //$this->_conn->unitOfWork->clearIdentitiesForEntity($this->_classMetadata->getRootClassName());
     }
 
     /**
@@ -289,11 +296,15 @@ class Doctrine_Mapper
     public function addRecord(Doctrine_Record $record)
     {
         $id = implode(' ', $record->identifier());
-
+        
         if (isset($this->_identityMap[$id])) {
             return false;
         }
+        /*if ($this->_conn->unitOfWork->containsIdentity($id, $record->getClassMetadata()->getRootClassname())) {
+            return false;
+        }*/
 
+        //$this->_conn->unitOfWork->registerIdentity($record);
         $this->_identityMap[$id] = $record;
 
         return true;
@@ -327,6 +338,10 @@ class Doctrine_Mapper
             unset($this->_identityMap[$id]);
             return true;
         }
+        /*if ($this->_conn->unitOfWork->containsIdentity($id, $record->getClassMetadata()->getRootClassName())) {
+            $this->_conn->unitOfWork->unregisterIdentity($record);
+            return true;
+        }*/
 
         return false;
     }
@@ -363,10 +378,13 @@ class Doctrine_Mapper
             $id = implode(' ', $id);
 
             if (isset($this->_identityMap[$id])) {
+            //if ($this->_conn->unitOfWork->containsIdentity($id, $this->_classMetadata->getRootClassName())) {
                 $record = $this->_identityMap[$id];
+                //$record = $this->_conn->unitOfWork->getByIdentity($id, $this->_classMetadata->getRootClassName());
                 $record->hydrate($data);
             } else {
                 $record = new $this->_domainClassName($this, false, $data);
+                //$this->_conn->unitOfWork->registerIdentity($record);
                 $this->_identityMap[$id] = $record;
             }
             $data = array();
@@ -567,6 +585,7 @@ class Doctrine_Mapper
      * @param string $value 
      * @param string $hydrationMode 
      * @return void
+     * @todo Remove. Move to EntityRepository.
      */
     protected function findBy($fieldName, $value, $hydrationMode = null)
     {
@@ -580,6 +599,7 @@ class Doctrine_Mapper
      * @param string $value 
      * @param string $hydrationMode 
      * @return void
+     * @todo Remove. Move to EntityRepository.
      */
     protected function findOneBy($fieldName, $value, $hydrationMode = null)
     {
@@ -599,6 +619,7 @@ class Doctrine_Mapper
      * @throws Doctrine_Mapper_Exception  If the method called is an invalid find* method
      *                                    or no find* method at all and therefore an invalid
      *                                    method call.
+     * @todo Remove. Move to EntityRepository.
      */
     public function __call($method, $arguments)
     {
