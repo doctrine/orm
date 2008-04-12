@@ -1,6 +1,6 @@
 <?php
 if (!defined('PHPUnit_MAIN_METHOD')) {
-    define('PHPUnit_MAIN_METHOD', 'Dbal_Component_AllTests::main');
+    define('PHPUnit_MAIN_METHOD', 'Orm_Component_AllTests::main');
 }
 
 require_once 'lib/DoctrineTestInit.php';
@@ -29,6 +29,6 @@ class Orm_Component_AllTests
     }
 }
 
-if (PHPUnit_MAIN_METHOD == 'Dbal_Component_AllTests::main') {
+if (PHPUnit_MAIN_METHOD == 'Orm_Component_AllTests::main') {
     Dbal_Component_AllTests::main();
 }
