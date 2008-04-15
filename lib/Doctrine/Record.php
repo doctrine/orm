@@ -31,7 +31,7 @@ Doctrine::autoload('Doctrine_Record_Abstract');
  * @link        www.phpdoctrine.org
  * @since       1.0
  * @version     $Revision$
- * @todo Rename to "Entity". Split up into "Entity" and "ActiveRecord"???
+ * @todo Rename to "Entity". Split up into "Entity" and "ActiveRecord (extends Entity)"???
  * @todo Remove as many methods as possible.
  */
 abstract class Doctrine_Record extends Doctrine_Access implements Countable, IteratorAggregate, Serializable
@@ -291,6 +291,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
      * isValid
      *
      * @return boolean  whether or not this record is valid
+     * @todo Move to new Validator implementation (once we have it).
      */
     public function isValid()
     {
@@ -318,6 +319,8 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
      * Empty template method to provide concrete Record classes with the possibility
      * to hook into the validation procedure, doing any custom / specialized
      * validations that are neccessary.
+     *
+     * @todo Move to new Validator implementation (once we have it).
      */
     protected function validate()
     { }
@@ -326,6 +329,8 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
      * Empty template method to provide concrete Record classes with the possibility
      * to hook into the validation procedure only when the record is going to be
      * updated.
+     *
+     * @todo Move to new Validator implementation (once we have it).
      */
     protected function validateOnUpdate()
     { }
@@ -334,6 +339,8 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
      * Empty template method to provide concrete Record classes with the possibility
      * to hook into the validation procedure only when the record is going to be
      * inserted into the data store the first time.
+     *
+     * @todo Move to new Validator implementation (once we have it).
      */
     protected function validateOnInsert()
     { }
@@ -430,6 +437,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
      * getErrorStack
      *
      * @return Doctrine_Validator_ErrorStack    returns the errorStack associated with this record
+     * @todo Move to new Validator implementation (once we have it).
      */
     public function getErrorStack()
     {
@@ -445,6 +453,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
      *
      * @param Doctrine_Validator_ErrorStack          errorStack to be assigned for this record
      * @return void|Doctrine_Validator_ErrorStack    returns the errorStack associated with this record
+     * @todo Move to new Validator implementation (once we have it).
      */
     public function errorStack($stack = null)
     {
@@ -725,6 +734,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
      *                                          this record represents does not exist anymore)
      * @return boolean
      * @todo Logic is better placed in the Mapper. Just forward to the mapper.
+     * @todo ActiveRecord method.
      */
     public function refresh($deep = false)
     {
@@ -775,6 +785,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
      *
      * @return Doctrine_Record          this object
      * @todo Logic is better placed in the Mapper. Just forward to the mapper.
+     * @todo ActiveRecord method.
      */
     public function refreshRelated($name = null)
     {
@@ -843,6 +854,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
      * loads all the uninitialized properties from the database
      *
      * @return boolean
+     * @todo ActiveRecord method.
      */
     public function load()
     {
@@ -1107,6 +1119,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
      *
      * @param Doctrine_Connection $conn                 optional connection parameter
      * @return void
+     * @todo ActiveRecord method.
      */
     public function save(Doctrine_Connection $conn = null)
     {
@@ -1122,6 +1135,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
      *
      * @param Doctrine_Connection $conn                 optional connection parameter
      * @return TRUE if the record was saved sucessfully without errors, FALSE otherwise.
+     * @todo ActiveRecord method. Find new place in new Validation system.
      */
     public function trySave(Doctrine_Connection $conn = null) {
         try {
@@ -1149,6 +1163,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
      * @throws Doctrine_Connection_Exception        if there were no key fields
      * @throws Doctrine_Connection_Exception        if something fails at database level
      * @return integer                              number of rows affected
+     * @todo ActiveRecord method.
      */
     public function replace(Doctrine_Connection $conn = null)
     {
@@ -1264,6 +1279,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
      *
      * @return integer          the number of columns in this record
      * @todo IMHO this is unintuitive.
+     * @todo ActiveRecord method. (if at all)
      */
     public function count()
     {
@@ -1275,6 +1291,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
      *
      * @param boolean $deep - Return also the relations
      * @return array
+     * @todo ActiveRecord method.
      */
     public function toArray($deep = true, $prefixKey = false)
     {
@@ -1320,6 +1337,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
      * @param  mixed $data Data to merge. Either another instance of this model or an array
      * @param  bool  $deep Bool value for whether or not to merge the data deep
      * @return void
+     * @todo ActiveRecord method.
      */
     public function merge($data, $deep = true)
     {
@@ -1340,6 +1358,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
      * @param   string $array
      * @param   bool  $deep Bool value for whether or not to merge the data deep
      * @return  void
+     * @todo ActiveRecord method.
      */
     public function fromArray($array, $deep = true)
     {
@@ -1364,6 +1383,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
      * on the array but available on the Doctrine_Record
      *
      * @param array $array representation of a Doctrine_Record
+     * @todo ActiveRecord method.
      */
     public function synchronizeFromArray(array $array)
     {
@@ -1388,6 +1408,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
      * @param string $type
      * @param string $deep
      * @return void
+     * @todo ActiveRecord method.
      */
     public function exportTo($type, $deep = true)
     {
@@ -1405,6 +1426,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
      * @param string $data
      * @return void
      * @author Jonathan H. Wage
+     * @todo ActiveRecord method.
      */
     public function importFrom($type, $data)
     {
@@ -1419,11 +1441,22 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
      * Checks whether the entity already has a persistent state.
      *
      * @return boolean  TRUE if the object is managed and has persistent state, FALSE otherwise.
+     * @deprecated
      */
     public function exists()
     {
         return ($this->_state !== Doctrine_Record::STATE_TCLEAN &&
                 $this->_state !== Doctrine_Record::STATE_TDIRTY);
+    }
+    
+    /**
+     * Checks whether the entity already has a persistent state.
+     *
+     * @return boolean  TRUE if the object is new, FALSE otherwise.
+     */
+    public function isNew()
+    {
+        return $this->_state == self::STATE_TCLEAN || $this->_state == self::STATE_TDIRTY;
     }
 
     /**
@@ -1468,6 +1501,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
      * Triggered events: onPreDelete, onDelete.
      *
      * @return boolean      true on success, false on failure
+     * @todo ActiveRecord method.
      */
     public function delete(Doctrine_Connection $conn = null)
     {
@@ -1479,6 +1513,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
      * Creates a copy of the entity.
      *
      * @return Doctrine_Record
+     * @todo ActiveRecord method. Implementation to EntityManager.
      */
     public function copy($deep = true)
     {
@@ -1564,6 +1599,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
      *
      * @return integer
      * @todo Better name? Not sure this is the right place here.
+     * @todo Plays against full composite key support..
      */
     final public function getIncremented()
     {
@@ -1654,6 +1690,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
      * @param mixed arg1 ... argN       optional callback arguments
      * @return Doctrine_Record
      * @todo Really needed/used? If not, remove.
+     * @todo ActiveRecord method. (if at all)
      */
     public function call($callback, $column)
     {
@@ -1718,6 +1755,9 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
         return $this;
     }
     
+    /**
+     * @todo get rid of filters. at least the way they're implemented atm.
+     */
     public function unshiftFilter(Doctrine_Record_Filter $filter)
     {
         return $this->_class->unshiftFilter($filter);
@@ -1731,6 +1771,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
      * @param string $alias     related component alias
      * @param array $ids        the identifiers of the related records
      * @return Doctrine_Record  this object
+     * @todo ActiveRecord method.
      */
     public function unlink($alias, $ids = array())
     {
@@ -1785,6 +1826,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
      * @param string $alias     related component alias
      * @param array $ids        the identifiers of the related records
      * @return Doctrine_Record  this object
+     * @todo ActiveRecord method.
      */
     public function link($alias, array $ids)
     {
@@ -1864,6 +1906,9 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
      * @param string $method        name of the method
      * @param array $args           method arguments
      * @return mixed                the return value of the given method
+     * @todo In order to avoid name clashes and provide a more robust implementation
+     *       we decided that all behaviors should be accessed through getBehavior($name)
+     *       before they're used.
      */
     public function __call($method, $args)
     {

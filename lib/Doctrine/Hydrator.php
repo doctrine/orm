@@ -94,7 +94,10 @@ class Doctrine_Hydrator extends Doctrine_Hydrator_Abstract
         $prev = array();
         // holds the values of the identifier/primary key fields of components,
         // separated by a pipe '|' and grouped by component alias (r, u, i, ... whatever)
-        $id = array(); 
+        // the $idTemplate is a prepared template. $id is set to a fresh template when
+        // starting to process a row.
+        $id = array();
+        $idTemplate = array();
         
         // Holds the resulting hydrated data structure
         $result = $driver->getElementCollection($rootComponentName);
@@ -111,12 +114,13 @@ class Doctrine_Hydrator extends Doctrine_Hydrator_Abstract
             $listeners[$componentName] = $component['table']->getRecordListener();
             $identifierMap[$dqlAlias] = array();
             $prev[$dqlAlias] = array();
-            $id[$dqlAlias] = '';
+            $idTemplate[$dqlAlias] = '';
         }
         
         // Process result set
         $cache = array();
         while ($data = $stmt->fetch(Doctrine::FETCH_ASSOC)) {
+            $id = $idTemplate; // initialize the id-memory
             $nonemptyComponents = array();
             $rowData = $this->_gatherRowData($data, $cache, $id, $nonemptyComponents);
 
@@ -233,9 +237,7 @@ class Doctrine_Hydrator extends Doctrine_Hydrator_Abstract
                 }
                 $coll =& $prev[$parent][$relationAlias];
                 $this->_setLastElement($prev, $coll, $index, $dqlAlias, $oneToOne);
-                $id[$dqlAlias] = '';
-            }
-            $id[$rootAlias] = '';
+            }        
         }
 
         $stmt->closeCursor();

@@ -71,8 +71,5 @@ class Orm_Hydration_BasicHydrationTest extends Doctrine_OrmTestCase
         $this->assertEquals(2, $objectResult[1]->id);
         $this->assertEquals('jwage', $objectResult[1]->name);
         
-        //Doctrine::dump($res);
-        
-        $this->assertEquals(0, 0);
     }
 }

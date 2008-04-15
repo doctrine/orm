@@ -1080,6 +1080,9 @@ final class Doctrine
             return true;
         }
 
+        /* TODO: Move the following code out of here. A generic Doctrine_Autoloader
+           class that can be configured in various ways might be a good idea.
+           Same goes for locate().*/
         $loadedModels = self::$_loadedModelFiles;
 
         if (isset($loadedModels[$className]) && file_exists($loadedModels[$className])) {
