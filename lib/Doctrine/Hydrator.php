@@ -38,8 +38,7 @@ class Doctrine_Hydrator extends Doctrine_Hydrator_Abstract
      * hydrateResultSet
      * parses the data returned by statement object
      *
-     * This is method defines the core of Doctrine's object population algorithm
-     * hence this method strives to be as fast as possible
+     * This is method defines the core of Doctrine's object population algorithm.
      *
      * The key idea is the loop over the rowset only once doing all the needed operations
      * within this massive loop.
@@ -88,7 +87,8 @@ class Doctrine_Hydrator extends Doctrine_Hydrator_Abstract
         $isSimpleQuery = count($this->_queryComponents) <= 1;
         // Holds hydration listeners that get called during hydration
         $listeners = array();
-        // Lookup map to quickly discover/lookup existing records in the result 
+        // Lookup map to quickly discover/lookup existing records in the result
+        // It's the identifier "memory"
         $identifierMap = array();
         // Holds for each component the last previously seen element in the result set
         $prev = array();
@@ -230,7 +230,7 @@ class Doctrine_Hydrator extends Doctrine_Hydrator_Abstract
                     $oneToOne = true; 
                     if ( ! isset($nonemptyComponents[$dqlAlias])) {
                         $prev[$parent][$relationAlias] = $driver->getNullPointer();
-                    } else {
+                    } else if ( ! isset($prev[$parent][$relationAlias])) {
                         $element = $driver->getElement($data, $componentName);
                         $prev[$parent][$relationAlias] = $element;
                     }

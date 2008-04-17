@@ -531,6 +531,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
      *
      * @param array $data
      * @return boolean
+     * @todo ActiveRecord method
      */
     public function hydrate(array $data)
     {
