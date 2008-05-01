@@ -18,7 +18,7 @@
  * and is licensed under the LGPL. For more information, see
  * <http://www.phpdoctrine.org>.
  */
-Doctrine::autoload('Doctrine_Sequence');
+
 /**
  * Doctrine_Sequence_Firebird
  *
@@ -33,7 +33,7 @@ Doctrine::autoload('Doctrine_Sequence');
 class Doctrine_Sequence_Firebird extends Doctrine_Sequence
 {
     /**
-     * Returns the next free id of a sequence
+     * Returns the next free id of a sequence.
      *
      * @param string $seqName   name of the sequence
      * @param bool              when true missing sequences are automatic created

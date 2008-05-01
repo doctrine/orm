@@ -33,7 +33,7 @@
 class Doctrine_Sequence_Sqlite extends Doctrine_Sequence
 {
     /**
-     * Returns the next free id of a sequence
+     * Returns the next free id of a sequence.
      *
      * @param string $seqName   name of the sequence
      * @param bool $onDemand    when true missing sequences are automatic created
@@ -48,9 +48,7 @@ class Doctrine_Sequence_Sqlite extends Doctrine_Sequence
         $query = 'INSERT INTO ' . $sequenceName . ' (' . $seqcolName . ') VALUES (NULL)';
 
         try {
-
-            $num = $this->conn->exec($query);
-
+            $this->conn->exec($query);
         } catch (Doctrine_Connection_Exception $e) {
             if ($onDemand && $e->getPortableCode() == Doctrine::ERR_NOSUCHTABLE) {
                 try {

@@ -354,7 +354,6 @@ class Doctrine_Mapper
                 return $record;
             }
 
-
             $idHash = $this->_conn->unitOfWork->getIdentifierHash($id);
 
             if ($record = $this->_conn->unitOfWork->tryGetByIdHash($idHash,
@@ -374,6 +373,7 @@ class Doctrine_Mapper
 
     /**
      * @param $id                       database row id
+     * @todo Looks broken. Figure out an implementation and decide whether its needed.
      */
     final public function getProxy($id = null)
     {
@@ -544,16 +544,6 @@ class Doctrine_Mapper
     {
         return $this->_domainClassName;
     }
-
-    /**
-     * returns a string representation of this object
-     *
-     * @return string
-     */
-    /*public function __toString()
-    {
-        return Doctrine_Lib::getTableAsString($this);
-    }*/
     
     /**
      * findBy

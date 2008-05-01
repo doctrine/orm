@@ -30,6 +30,7 @@
  * @version     $Revision$
  * @link        www.phpdoctrine.org
  * @since       0.9
+ * @todo Move the Pager into a separate package ("Doctrine Utilities"? or even a "Doctrine Pager" package?)
  */
 class Doctrine_Pager
 {
