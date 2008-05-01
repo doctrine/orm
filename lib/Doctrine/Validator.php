@@ -161,6 +161,7 @@ class Doctrine_Validator
      * @param mixed $var
      * @param string $type
      * @return boolean
+     * @deprecated No more type validations like this. There will only be validators.
      */
      public static function isValidType($var, $type)
      {

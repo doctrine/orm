@@ -18,7 +18,7 @@
  * and is licensed under the LGPL. For more information, see
  * <http://www.phpdoctrine.org>.
  */
-Doctrine::autoload('Doctrine_Connection');
+
 /**
  * standard connection, the parent of pgsql, mysql and sqlite
  *

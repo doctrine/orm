@@ -29,6 +29,7 @@ Doctrine::autoload('Doctrine_Adapter_Statement_Interface');
  * @link        www.phpdoctrine.org
  * @since       1.0
  * @version     $Revision: 1532 $
+ * @todo Do we seriously need this wrapper?
  */
 class Doctrine_Connection_Statement implements Doctrine_Adapter_Statement_Interface
 {

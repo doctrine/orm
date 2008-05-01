@@ -22,8 +22,8 @@
 /**
  * Doctrine_Null
  *
- * Simple empty class representing a null value
- * used for extra fast null value testing with isset() rather than array_key_exists()
+ * Simple empty class representing a null value.
+ * Used for extra fast null value testing with isset() rather than array_key_exists().
  *
  * @package     Doctrine
  * @subpackage  Null

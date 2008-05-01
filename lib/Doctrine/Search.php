@@ -29,6 +29,7 @@
  * @version     $Revision$
  * @link        www.phpdoctrine.org
  * @since       1.0
+ * @todo Move to separate "Doctrine Search" package.
  */
 class Doctrine_Search extends Doctrine_Record_Generator
 {

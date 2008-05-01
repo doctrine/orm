@@ -18,7 +18,7 @@
  * and is licensed under the LGPL. For more information, see
  * <http://www.phpdoctrine.org>.
  */
-Doctrine::autoload('Doctrine_Record_Abstract');
+
 /**
  * Doctrine_Record
  * All record classes should inherit this super class
@@ -909,10 +909,12 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
             }
             if ($this->_data[$fieldName] === $nullObj && $load) {
                 $this->load();
+                $value = $this->_data[$fieldName];
             }
-            if ($this->_data[$fieldName] === $nullObj) {
+            if ($value === $nullObj) {
                 $value = null;
             }
+            
             return $value;
         }
 
@@ -927,6 +929,8 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
             }
             return $this->_references[$fieldName];
         } catch (Doctrine_Relation_Exception $e) {
+            echo $e->getTraceAsString();
+            echo "<br/><br/>";
             foreach ($this->_class->getFilters() as $filter) {
                 if (($value = $filter->filterGet($this, $fieldName, $value)) !== null) {
                     return $value;
@@ -1007,6 +1011,8 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
             try {
                 $this->_coreSetRelated($fieldName, $value);
             } catch (Doctrine_Relation_Exception $e) {
+                            echo $e->getTraceAsString();
+            echo "<br/><br/>";
                 foreach ($this->_class->getFilters() as $filter) {
                     if (($value = $filter->filterSet($this, $fieldName, $value)) !== null) {
                         return $value;

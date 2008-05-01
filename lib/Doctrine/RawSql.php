@@ -18,7 +18,7 @@
  * and is licensed under the LGPL. For more information, see
  * <http://www.phpdoctrine.org>.
  */
-Doctrine::autoload('Doctrine_Query_Abstract');
+
 /**
  * Doctrine_RawSql
  *
@@ -35,6 +35,7 @@ Doctrine::autoload('Doctrine_Query_Abstract');
  * @since       1.0
  * @version     $Revision$
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
+ * @deprecated  Reimplement in NativeQuery with a more complete & robust implementation.
  */
 class Doctrine_RawSql extends Doctrine_Query_Abstract
 {

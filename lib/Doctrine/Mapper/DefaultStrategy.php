@@ -85,8 +85,6 @@ class Doctrine_Mapper_DefaultStrategy extends Doctrine_Mapper_Strategy
             $record->assignIdentifier($id);
         }
         
-        
-        //echo $class->getTableName() . "--" . $class->getClassName() . '---' . get_class($record) . "<br/>";
         $this->_insertRow($class->getTableName(), $fields);
 
         if (empty($seq) && count($identifier) == 1 &&

@@ -367,14 +367,13 @@ class Doctrine_Record_TestCase extends Doctrine_UnitTestCase
         $this->assertEqual($task->Subtask[0]->name, "Subtask 1");
 
         $this->connection->unitOfWork->saveAll();
-
+        
         $task = $task->getMapper()->find($task->identifier());
 
         $this->assertEqual($task->name, "Task 1");
         $this->assertEqual($task->ResourceAlias[0]->name, "Resource 1");
         $this->assertEqual($task->ResourceAlias->count(), 1);
         $this->assertEqual($task->Subtask[0]->name, "Subtask 1");
-
     }
 
     

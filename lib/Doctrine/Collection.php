@@ -18,9 +18,9 @@
  * and is licensed under the LGPL. For more information, see
  * <http://www.phpdoctrine.org>.
  */
-Doctrine::autoload('Doctrine_Access');
+
 /**
- * A Doctrine_Collection represents a collection of entities.
+ * A persistent collection of entities.
  * A collection object is strongly typed in the sense that it can only contain
  * entities of a specific type or one it's subtypes.
  *

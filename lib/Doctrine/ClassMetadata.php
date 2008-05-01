@@ -1138,7 +1138,9 @@ class Doctrine_ClassMetadata extends Doctrine_Configurable implements Serializab
     public function setParentClasses(array $classNames)
     {
         $this->_parentClasses = $classNames;
-        $this->_rootEntityName = array_pop($classNames);
+        if (count($classNames) > 0) {
+            $this->_rootEntityName = array_pop($classNames);
+        }
     }
     
     /**

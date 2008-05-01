@@ -237,7 +237,7 @@ class Doctrine_Hydrator extends Doctrine_Hydrator_Abstract
                 }
                 $coll =& $prev[$parent][$relationAlias];
                 $this->_setLastElement($prev, $coll, $index, $dqlAlias, $oneToOne);
-            }        
+            }
         }
 
         $stmt->closeCursor();

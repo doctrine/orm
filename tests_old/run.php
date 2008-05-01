@@ -309,6 +309,4 @@ $test->run();
 $e = microtime(true);
 
 echo 'test run took: ' . ($e - $s) . ' seconds<br />';
-
-
 echo "peak memory usage: " . memory_get_peak_usage() / 1024 . "KB\n";

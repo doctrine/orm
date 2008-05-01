@@ -58,12 +58,6 @@ class Doctrine_Mapper
      * The concrete mapping strategy that is used.
      */
     protected $_mappingStrategy;
-
-    /**
-     * @var array $identityMap                          first level cache
-     * @todo Move to UnitOfWork.
-     */
-    protected $_identityMap = array();
     
     /**
      * Null object.
@@ -281,8 +275,7 @@ class Doctrine_Mapper
      */
     public function clear()
     {
-        $this->_identityMap = array();
-        //$this->_conn->unitOfWork->clearIdentitiesForEntity($this->_classMetadata->getRootClassName());
+        $this->_conn->unitOfWork->clearIdentitiesForEntity($this->_classMetadata->getRootClassName());
     }
 
     /**
@@ -295,17 +288,10 @@ class Doctrine_Mapper
      */
     public function addRecord(Doctrine_Record $record)
     {
-        $id = implode(' ', $record->identifier());
-        
-        if (isset($this->_identityMap[$id])) {
+        if ($this->_conn->unitOfWork->contains($record)) {
             return false;
         }
-        /*if ($this->_conn->unitOfWork->containsIdentity($id, $record->getClassMetadata()->getRootClassname())) {
-            return false;
-        }*/
-
-        //$this->_conn->unitOfWork->registerIdentity($record);
-        $this->_identityMap[$id] = $record;
+        $this->_conn->unitOfWork->registerIdentity($record);
 
         return true;
     }
@@ -332,16 +318,10 @@ class Doctrine_Mapper
      */
     public function removeRecord(Doctrine_Record $record)
     {
-        $id = implode(' ', $record->identifier());
-
-        if (isset($this->_identityMap[$id])) {
-            unset($this->_identityMap[$id]);
-            return true;
-        }
-        /*if ($this->_conn->unitOfWork->containsIdentity($id, $record->getClassMetadata()->getRootClassName())) {
+        if ($this->_conn->unitOfWork->contains($record)) {
             $this->_conn->unitOfWork->unregisterIdentity($record);
             return true;
-        }*/
+        }
 
         return false;
     }
@@ -356,7 +336,7 @@ class Doctrine_Mapper
     public function getRecord(array $data)
     {
         if ( ! empty($data)) {
-            $identifierFieldNames = (array)$this->_classMetadata->getIdentifier();
+            $identifierFieldNames = $this->_classMetadata->getIdentifier();
 
             $found = false;
             foreach ($identifierFieldNames as $fieldName) {
@@ -375,17 +355,14 @@ class Doctrine_Mapper
             }
 
 
-            $id = implode(' ', $id);
+            $idHash = $this->_conn->unitOfWork->getIdentifierHash($id);
 
-            if (isset($this->_identityMap[$id])) {
-            //if ($this->_conn->unitOfWork->containsIdentity($id, $this->_classMetadata->getRootClassName())) {
-                $record = $this->_identityMap[$id];
-                //$record = $this->_conn->unitOfWork->getByIdentity($id, $this->_classMetadata->getRootClassName());
+            if ($record = $this->_conn->unitOfWork->tryGetByIdHash($idHash,
+                    $this->_classMetadata->getRootClassName())) {
                 $record->hydrate($data);
             } else {
                 $record = new $this->_domainClassName($this, false, $data);
-                //$this->_conn->unitOfWork->registerIdentity($record);
-                $this->_identityMap[$id] = $record;
+                $this->_conn->unitOfWork->registerIdentity($record);
             }
             $data = array();
         } else {
@@ -516,12 +493,12 @@ class Doctrine_Mapper
      * Hydrates the given data into the entity.
      * 
      */
-    public function hydrate(Doctrine_Record $entity, array $data)
+    /*public function hydrate(Doctrine_Record $entity, array $data)
     {
         $this->_values = array_merge($this->_values, $this->cleanData($data));
         $this->_data   = array_merge($this->_data, $data);
         $this->_extractIdentifier(true);
-    }
+    }*/
 
     /**
      * getTree
@@ -573,10 +550,10 @@ class Doctrine_Mapper
      *
      * @return string
      */
-    public function __toString()
+    /*public function __toString()
     {
         return Doctrine_Lib::getTableAsString($this);
-    }
+    }*/
     
     /**
      * findBy
@@ -630,11 +607,6 @@ class Doctrine_Mapper
             $by = substr($method, 9, strlen($method));
             $method = 'findOneBy';
         } else {
-            try {
-                throw new Exception();
-            } catch (Exception $e) {
-                echo $e->getTraceAsString() . "<br/><br/>";
-            }
             throw new Doctrine_Mapper_Exception("Undefined method '$method'.");
         }
         
@@ -954,11 +926,6 @@ class Doctrine_Mapper
     public function getClassMetadata()
     {
         return $this->_classMetadata;
-    }
-    
-    public function getIdentityMap()
-    {
-        return $this->_identityMap;
     }
     
     public function dump()

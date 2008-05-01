@@ -29,11 +29,12 @@ class Doctrine_Ticket_583_TestCase extends Doctrine_UnitTestCase
         $entity->save();
 
         // load our user and our collection of pages
-        $user = Doctrine_Query::create()->select('id')->from('Entity')->fetchOne();
+        $user = Doctrine_Query::create()->select('id')->from('Entity')->fetchOne();       
         $this->assertEqual($user->name, 'myname');
 
         // load our user and our collection of pages
         $user = Doctrine_Query::create()->select('*')->from('Entity')->fetchOne();
         $this->assertEqual($user->name, 'myname');
+        
     }
 }

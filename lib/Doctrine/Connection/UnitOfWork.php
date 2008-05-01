@@ -18,7 +18,7 @@
  * and is licensed under the LGPL. For more information, see
  * <http://www.phpdoctrine.org>.
  */
-Doctrine::autoload('Doctrine_Connection_Module');
+
 /**
  * Doctrine_Connection_UnitOfWork
  *
@@ -26,7 +26,7 @@ Doctrine::autoload('Doctrine_Connection_Module');
  * @subpackage  Connection
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @link        www.phpdoctrine.org
- * @since       1.0
+ * @since       2.0
  * @version     $Revision$
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  * @author      Roman Borschel <roman@code-factory.org>
@@ -46,17 +46,12 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
     /**
      * The identity map that holds references to all managed entities that have
      * an identity. The entities are grouped by their class name.
+     * Since all classes in a hierarchy must share the same identifier set,
+     * we always take the root class name of the hierarchy.
+     *
+     * @var array
      */
     protected $_identityMap = array();
-    
-    /**
-     * Boolean flag that indicates whether the unit of work immediately executes any
-     * database operations or whether these operations are postponed until the
-     * unit of work is flushed/committed.
-     *
-     * @var boolean
-     */
-    protected $_autoflush = true;
     
     /**
      * A list of all new entities.
@@ -118,6 +113,11 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
         $this->_newEntities[$entity->getOid()] = $entity;
     }
     
+    public function isRegisteredNew(Doctrine_Record $entity)
+    {
+        return isset($this->_newEntities[$entity->getOid()]);
+    }
+    
     /**
      * Registers a clean entity.
      */
@@ -139,13 +139,23 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
         $this->_dirtyEntities[$entity->getOid()] = $entity;
     }
     
+    public function isRegisteredDirty(Doctrine_Record $entity)
+    {
+        return isset($this->_dirtyEntities[$entity->getOid()]);
+    }
+    
     /** 
      * Registers a deleted entity.
      */
-    public function registerDeleted(Doctrine_Record $entity)
+    public function registerRemoved(Doctrine_Record $entity)
     {
         $this->unregisterIdentity($entity);
         $this->_removedEntities[$entity->getOid()] = $entity;
+    }
+    
+    public function isRegisteredRemoved(Doctrine_Record $entity)
+    {
+        return isset($this->_removedEntities[$entity->getOid()]);
     }
 
     /**
@@ -289,7 +299,7 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
     
     /**
      * Adds an entity to the pool of managed entities.
-     *
+     * @deprecated
      */
     public function manage(Doctrine_Record $entity)
     {
@@ -302,22 +312,9 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
     }
     
     /**
-     * Gets a managed entity by it's object id (oid).
-     *
-     * @param integer $oid  The object id.
-     * @throws Doctrine_Table_Repository_Exception
-     */
-    public function getByOid($oid)
-    {
-        if ( ! isset($this->_managedEntities[$oid])) {
-            throw new Doctrine_Connection_Exception("Unknown object identifier '$oid'.");
-        }
-        return $this->_managedEntities[$oid];
-    }
-    
-    /**
      * @param integer $oid                  object identifier
      * @return boolean                      whether ot not the operation was successful
+     * @deprecated
      */
     public function detach(Doctrine_Record $entity)
     {
@@ -342,17 +339,6 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
     }
     
     /**
-     * Checks whether an entity is managed.
-     * 
-     * @param Doctrine_Record $entity  The entity to check.
-     * @return boolean  TRUE if the entity is currently managed by doctrine, FALSE otherwise.
-     */
-    public function isManaged(Doctrine_Record $entity)
-    {
-        return isset($this->_managedEntities[$entity->getOid()]);
-    }
-    
-    /**
      * Registers an entity in the identity map.
      * 
      * @return boolean  TRUE if the registration was successful, FALSE if the identity of
@@ -361,16 +347,16 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
      */
     public function registerIdentity(Doctrine_Record $entity)
     {
-        $id = implode(' ', $entity->identifier());
-        if ( ! $id) {
+        $idHash = $this->getIdentifierHash($entity->identifier());
+        if ( ! $idHash) {
             throw new Doctrine_Connection_Exception("Entity with oid '" . $entity->getOid()
-                    . "' has no database identity and therefore can't be added to the identity map.");
+                    . "' has no identity and therefore can't be added to the identity map.");
         }
         $className = $entity->getClassMetadata()->getRootClassName();
-        if (isset($this->_identityMap[$className][$id])) {
+        if (isset($this->_identityMap[$className][$idHash])) {
             return false;
         }
-        $this->_identityMap[$className][$id] = $entity;
+        $this->_identityMap[$className][$idHash] = $entity;
         return true;
     }
     
@@ -381,28 +367,58 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
     
     public function unregisterIdentity(Doctrine_Record $entity)
     {
-        $id = implode(' ', $entity->identifier());
-        if ( ! $id) {
+        $idHash = $this->getIdentifierHash($entity->identifier());
+        if ( ! $idHash) {
             throw new Doctrine_Connection_Exception("Entity with oid '" . $entity->getOid()
-                    . "' has no database identity and therefore can't be removed from the identity map.");
+                    . "' has no identity and therefore can't be removed from the identity map.");
         }
         $className = $entity->getClassMetadata()->getRootClassName();
-        if (isset($this->_identityMap[$className][$id])) {
-            unset($this->_identityMap[$className][$id]);
+        if (isset($this->_identityMap[$className][$idHash])) {
+            unset($this->_identityMap[$className][$idHash]);
             return true;
         }
 
         return false;
     }
     
-    public function getByIdentity($id, $rootClassName)
+    public function getByIdHash($idHash, $rootClassName)
     {
-        return $this->_identityMap[$rootClassName][$id];
+        return $this->_identityMap[$rootClassName][$idHash];
     }
     
-    public function containsIdentity($id, $rootClassName)
+    public function tryGetByIdHash($idHash, $rootClassName)
     {
-        return isset($this->_identityMap[$rootClassName][$id]);
+        if ($this->containsIdHash($idHash, $rootClassName)) {
+            return $this->getByIdHash($idHash, $rootClassName);
+        }
+        return false;
+    }
+    
+    public function getIdentifierHash(array $id)
+    {
+        return implode(' ', $id);
+    }
+    
+    /**
+     * Checks whether an entity is registered in the identity map.
+     *
+     * @param Doctrine_Record $entity
+     * @return boolean
+     */
+    public function contains(Doctrine_Record $entity)
+    {
+        $id = implode(' ', $entity->identifier());
+        if ( ! $id) {
+            return false;
+        }
+        return isset($this->_identityMap[
+                $entity->getClassMetadata()->getRootClassName()
+                ][$id]);
+    }
+    
+    public function containsIdHash($idHash, $rootClassName)
+    {
+        return isset($this->_identityMap[$rootClassName][$idHash]);
     }
     
 }
