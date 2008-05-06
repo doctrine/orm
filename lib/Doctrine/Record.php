@@ -31,7 +31,7 @@
  * @link        www.phpdoctrine.org
  * @since       1.0
  * @version     $Revision$
- * @todo Rename to "Entity". Split up into "Entity" and "ActiveRecord (extends Entity)"???
+ * @todo Rename to "Entity". Split up into "Entity" and "ActiveEntity (extends Entity)"???
  * @todo Remove as many methods as possible.
  */
 abstract class Doctrine_Record extends Doctrine_Access implements Countable, IteratorAggregate, Serializable

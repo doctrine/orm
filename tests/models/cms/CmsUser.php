@@ -9,5 +9,7 @@ class CmsUser extends Doctrine_Record
       
       $class->hasMany('CmsPhonenumber as phonenumbers', array(
               'local' => 'id', 'foreign' => 'user_id'));
+      $class->hasMany('CmsArticle as articles', array(
+              'local' => 'id', 'foreign' => 'user_id'));
   }
 }

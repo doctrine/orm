@@ -358,7 +358,156 @@ class Orm_Hydration_BasicHydrationTest extends Doctrine_OrmTestCase
     }
     
     
-    
+/**
+     * select u.id, u.status, p.phonenumber, upper(u.name) nameUpper, a.id, a.topic
+     * from User u
+     * join u.phonenumbers p
+     * join u.articles a
+     * =
+     * select u.id, u.status, p.phonenumber, upper(u.name) as u__0, a.id, a.topic
+     * from USERS u
+     * inner join PHONENUMBERS p ON u.id = p.user_id
+     * inner join ARTICLES a ON u.id = a.user_id
+     * 
+     * @dataProvider hydrationModeProvider
+     */
+    public function testNewHydrationMixedQueryMultipleFetchJoin($hydrationMode)
+    {
+        // Faked query components
+        $queryComponents = array(
+            'u' => array(
+                'table' => $this->sharedFixture['connection']->getClassMetadata('CmsUser'),
+                'mapper' => $this->sharedFixture['connection']->getMapper('CmsUser'),
+                'parent' => null,
+                'relation' => null,
+                'map' => null,
+                'agg' => array('0' => 'nameUpper')
+                ),
+            'p' => array(
+                'table' => $this->sharedFixture['connection']->getClassMetadata('CmsPhonenumber'),
+                'mapper' => $this->sharedFixture['connection']->getMapper('CmsPhonenumber'),
+                'parent' => 'u',
+                'relation' => $this->sharedFixture['connection']->getClassMetadata('CmsUser')->getRelation('phonenumbers'),
+                'map' => null
+                ),
+            'a' => array(
+                'table' => $this->sharedFixture['connection']->getClassMetadata('CmsArticle'),
+                'mapper' => $this->sharedFixture['connection']->getMapper('CmsArticle'),
+                'parent' => 'u',
+                'relation' => $this->sharedFixture['connection']->getClassMetadata('CmsUser')->getRelation('articles'),
+                'map' => null
+                ),
+            );
+        
+        // Faked table alias map
+        $tableAliasMap = array(
+            'u' => 'u',
+            'p' => 'p',
+            'a' => 'a'
+            );
+        
+        // Faked result set
+        $resultSet = array(
+            //row1
+            array(
+                'u__id' => '1',
+                'u__status' => 'developer',
+                'u__0' => 'ROMANB',
+                'p__phonenumber' => '42',
+                'a__id' => '1',
+                'a__topic' => 'Getting things done!'
+                ),
+           array(
+                'u__id' => '1',
+                'u__status' => 'developer',
+                'u__0' => 'ROMANB',
+                'p__phonenumber' => '43',
+                'a__id' => '1',
+                'a__topic' => 'Getting things done!'
+                ),
+            array(
+                'u__id' => '1',
+                'u__status' => 'developer',
+                'u__0' => 'ROMANB',
+                'p__phonenumber' => '42',
+                'a__id' => '2',
+                'a__topic' => 'ZendCon'
+                ),
+           array(
+                'u__id' => '1',
+                'u__status' => 'developer',
+                'u__0' => 'ROMANB',
+                'p__phonenumber' => '43',
+                'a__id' => '2',
+                'a__topic' => 'ZendCon'
+                ),
+            array(
+                'u__id' => '2',
+                'u__status' => 'developer',
+                'u__0' => 'JWAGE',
+                'p__phonenumber' => '91',
+                'a__id' => '3',
+                'a__topic' => 'LINQ'
+                ),
+           array(
+                'u__id' => '2',
+                'u__status' => 'developer',
+                'u__0' => 'JWAGE',
+                'p__phonenumber' => '91',
+                'a__id' => '4',
+                'a__topic' => 'PHP6'
+                ),
+            );
+            
+        $stmt = new Doctrine_HydratorMockStatement($resultSet);
+        $hydrator = new Doctrine_HydratorNew();
+        $hydrator->setQueryComponents($queryComponents);
+        
+        $hydrator->setResultMixed(true);
+        
+        $result = $hydrator->hydrateResultSet($stmt, $tableAliasMap, $hydrationMode);
+        if ($hydrationMode == Doctrine::HYDRATE_ARRAY) {
+            //var_dump($result);
+        }
+        
+        $this->assertEquals(2, count($result));
+        $this->assertTrue(is_array($result));
+        $this->assertTrue(is_array($result[0]));
+        $this->assertTrue(is_array($result[1]));
+        
+        // first user => 2 phonenumbers, 2 articles
+        $this->assertEquals(2, count($result[0][0]['phonenumbers']));
+        $this->assertEquals(2, count($result[0][0]['articles']));
+        $this->assertEquals('ROMANB', $result[0]['nameUpper']);
+        // second user => 1 phonenumber, 2 articles
+        $this->assertEquals(1, count($result[1][0]['phonenumbers']));
+        $this->assertEquals(2, count($result[1][0]['articles']));
+        $this->assertEquals('JWAGE', $result[1]['nameUpper']);
+        
+        $this->assertEquals(42, $result[0][0]['phonenumbers'][0]['phonenumber']);
+        $this->assertEquals(43, $result[0][0]['phonenumbers'][1]['phonenumber']);
+        $this->assertEquals(91, $result[1][0]['phonenumbers'][0]['phonenumber']);
+        
+        $this->assertEquals('Getting things done!', $result[0][0]['articles'][0]['topic']);
+        $this->assertEquals('ZendCon', $result[0][0]['articles'][1]['topic']);
+        $this->assertEquals('LINQ', $result[1][0]['articles'][0]['topic']);
+        $this->assertEquals('PHP6', $result[1][0]['articles'][1]['topic']);
+        
+        if ($hydrationMode == Doctrine::HYDRATE_RECORD) {
+            $this->assertTrue($result[0][0] instanceof Doctrine_Record);
+            $this->assertTrue($result[0][0]['phonenumbers'] instanceof Doctrine_Collection);
+            $this->assertTrue($result[0][0]['phonenumbers'][0] instanceof Doctrine_Record);
+            $this->assertTrue($result[0][0]['phonenumbers'][1] instanceof Doctrine_Record);
+            $this->assertTrue($result[0][0]['articles'] instanceof Doctrine_Collection);
+            $this->assertTrue($result[0][0]['articles'][0] instanceof Doctrine_Record);
+            $this->assertTrue($result[0][0]['articles'][1] instanceof Doctrine_Record);
+            $this->assertTrue($result[1][0] instanceof Doctrine_Record);
+            $this->assertTrue($result[1][0]['phonenumbers'] instanceof Doctrine_Collection);
+            $this->assertTrue($result[1][0]['phonenumbers'][0] instanceof Doctrine_Record);
+            $this->assertTrue($result[1][0]['articles'][0] instanceof Doctrine_Record);
+            $this->assertTrue($result[1][0]['articles'][1] instanceof Doctrine_Record);
+        }
+    }
     
     
     
