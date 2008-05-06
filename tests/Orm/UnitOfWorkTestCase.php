@@ -18,6 +18,8 @@ class Orm_UnitOfWorkTestCase extends Doctrine_OrmTestCase
     
     public function testRegisterNew()
     {
+        $this->_user->username = 'romanb';
+        $this->_user->id = 1;
         $this->_unitOfWork->registerNew($this->_user);
         $this->assertFalse($this->_unitOfWork->contains($this->_user));
         $this->assertTrue($this->_unitOfWork->isRegisteredNew($this->_user));
@@ -35,7 +37,15 @@ class Orm_UnitOfWorkTestCase extends Doctrine_OrmTestCase
         $this->assertTrue($this->_unitOfWork->isRegisteredDirty($this->_user));
         $this->assertFalse($this->_unitOfWork->isRegisteredNew($this->_user));
         $this->assertFalse($this->_unitOfWork->isRegisteredRemoved($this->_user));
-        
+    }
+    
+    public function testRegisterRemovedOnTransientEntityIsIgnored()
+    {
+        $this->_user->username = 'romanb';
+        $this->_user->id = 1;
+        $this->assertFalse($this->_unitOfWork->isRegisteredRemoved($this->_user));
+        $this->_unitOfWork->registerRemoved($this->_user);
+        $this->assertFalse($this->_unitOfWork->isRegisteredRemoved($this->_user));        
     }
     
     /*public function testSavedEntityHasIdentityAndIsManaged()

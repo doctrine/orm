@@ -91,23 +91,6 @@ class Doctrine_Mapper
     }
 
     /**
-     * createQuery
-     * creates a new Doctrine_Query object and adds the component name
-     * of this table as the query 'from' part
-     *
-     * @param string Optional alias name for component aliasing.
-     *
-     * @return Doctrine_Query
-     */
-    public function createQuery($alias = '')
-    {
-        if ( ! empty($alias)) {
-            $alias = ' ' . trim($alias);
-        }
-        return Doctrine_Query::create($this->_conn)->from($this->getComponentName() . $alias);
-    }
-
-    /**
      * sets the connection for this class
      *
      * @params Doctrine_Connection      a connection object 
@@ -139,7 +122,7 @@ class Doctrine_Mapper
      */
     public function create(array $array = array()) 
     {
-        $record = new $this->_domainClassName($this, true);
+        $record = new $this->_domainClassName();
         $record->fromArray($array);
 
         return $record;
@@ -176,79 +159,6 @@ class Doctrine_Mapper
     public function detach(Doctrine_Record $entity)
     {
         return $this->_conn->unitOfWork->detach($entity);
-    }
-
-    /**
-     * Finds an entity by its primary key.
-     *
-     * @param $id                       database row id
-     * @param int $hydrationMode        Doctrine::HYDRATE_ARRAY or Doctrine::HYDRATE_RECORD
-     * @return mixed                    Array or Doctrine_Record or false if no result
-     * @todo Remove. Move to EntityRepository.
-     */
-    public function find($id, $hydrationMode = null)
-    {
-        if (is_null($id)) {
-            return false;
-        }
-
-        $id = is_array($id) ? array_values($id) : array($id);
-        
-        return $this->createQuery()
-                ->where(implode(' = ? AND ', (array) $this->_classMetadata->getIdentifier()) . ' = ?')
-                ->fetchOne($id, $hydrationMode);
-    }
-
-    /**
-     * Finds all entities of the mapper's class.
-     * Use with care.
-     *
-     * @param int $hydrationMode        Doctrine::HYDRATE_ARRAY or Doctrine::HYDRATE_RECORD
-     * @return Doctrine_Collection
-     * @todo Remove. Move to EntityRepository.
-     */
-    public function findAll($hydrationMode = null)
-    {
-        return $this->createQuery()->execute(array(), $hydrationMode);
-    }
-
-    /**
-     * findBySql
-     * finds records with given SQL where clause
-     * returns a collection of records
-     *
-     * @param string $dql               DQL after WHERE clause
-     * @param array $params             query parameters
-     * @param int $hydrationMode        Doctrine::FETCH_ARRAY or Doctrine::FETCH_RECORD
-     * @return Doctrine_Collection
-     * 
-     * @todo This actually takes DQL, not SQL, but it requires column names 
-     *       instead of field names. This should be fixed to use raw SQL instead.
-     * @todo Remove. Move to EntityRepository.
-     */
-    public function findBySql($dql, array $params = array(), $hydrationMode = null)
-    {
-        return $this->createQuery()->where($dql)->execute($params, $hydrationMode);
-    }
-
-    /**
-     * findByDql
-     * finds records with given DQL where clause
-     * returns a collection of records
-     *
-     * @param string $dql               DQL after WHERE clause
-     * @param array $params             query parameters
-     * @param int $hydrationMode        Doctrine::FETCH_ARRAY or Doctrine::FETCH_RECORD
-     * @return Doctrine_Collection
-     * @todo Remove. Move to EntityRepository.
-     */
-    public function findByDql($dql, array $params = array(), $hydrationMode = null)
-    {
-        $query = new Doctrine_Query($this->_conn);
-        $component = $this->getComponentName();
-        $dql = 'FROM ' . $component . ' WHERE ' . $dql;
-
-        return $query->query($dql, $params, $hydrationMode);        
     }
     
     /**
@@ -349,9 +259,7 @@ class Doctrine_Mapper
             }
 
             if ($found) {
-                $record = new $this->_domainClassName($this, true, $data);
-                $data = array();
-                return $record;
+                return new $this->_domainClassName(true, $data);
             }
 
             $idHash = $this->_conn->unitOfWork->getIdentifierHash($id);
@@ -360,12 +268,12 @@ class Doctrine_Mapper
                     $this->_classMetadata->getRootClassName())) {
                 $record->hydrate($data);
             } else {
-                $record = new $this->_domainClassName($this, false, $data);
+                $record = new $this->_domainClassName(false, $data);
                 $this->_conn->unitOfWork->registerIdentity($record);
             }
             $data = array();
         } else {
-            $record = new $this->_domainClassName($this, true, $data);
+            $record = new $this->_domainClassName(true, $data);
         }
 
         return $record;
@@ -546,83 +454,6 @@ class Doctrine_Mapper
     }
     
     /**
-     * findBy
-     *
-     * @param string $column 
-     * @param string $value 
-     * @param string $hydrationMode 
-     * @return void
-     * @todo Remove. Move to EntityRepository.
-     */
-    protected function findBy($fieldName, $value, $hydrationMode = null)
-    {
-        return $this->createQuery()->where($fieldName . ' = ?')->execute(array($value), $hydrationMode);
-    }
-    
-    /**
-     * findOneBy
-     *
-     * @param string $column 
-     * @param string $value 
-     * @param string $hydrationMode 
-     * @return void
-     * @todo Remove. Move to EntityRepository.
-     */
-    protected function findOneBy($fieldName, $value, $hydrationMode = null)
-    {
-        $results = $this->createQuery()->where($fieldName . ' = ?')->limit(1)->execute(
-                array($value), $hydrationMode);
-        return $hydrationMode === Doctrine::HYDRATE_ARRAY ? array_shift($results) : $results->getFirst();
-    }
-    
-    /**
-     * __call
-     *
-     * Adds support for magic finders.
-     * findByColumnName, findByRelationAlias
-     * findById, findByContactId, etc.
-     *
-     * @return void
-     * @throws Doctrine_Mapper_Exception  If the method called is an invalid find* method
-     *                                    or no find* method at all and therefore an invalid
-     *                                    method call.
-     * @todo Remove. Move to EntityRepository.
-     */
-    public function __call($method, $arguments)
-    {
-        if (substr($method, 0, 6) == 'findBy') {
-            $by = substr($method, 6, strlen($method));
-            $method = 'findBy';
-        } else if (substr($method, 0, 9) == 'findOneBy') {
-            $by = substr($method, 9, strlen($method));
-            $method = 'findOneBy';
-        } else {
-            throw new Doctrine_Mapper_Exception("Undefined method '$method'.");
-        }
-        
-        if (isset($by)) {
-            if ( ! isset($arguments[0])) {
-                throw new Doctrine_Mapper_Exception('You must specify the value to findBy.');
-            }
-            
-            $fieldName = Doctrine::tableize($by);
-            $hydrationMode = isset($arguments[1]) ? $arguments[1]:null;
-            
-            if ($this->_classMetadata->hasField($fieldName)) {
-                return $this->$method($fieldName, $arguments[0], $hydrationMode);
-            } else if ($this->_classMetadata->hasRelation($by)) {
-                $relation = $this->_classMetadata->getRelation($by);
-                if ($relation['type'] === Doctrine_Relation::MANY) {
-                    throw new Doctrine_Mapper_Exception('Cannot findBy many relationship.');
-                }
-                return $this->$method($relation['local'], $arguments[0], $hydrationMode);
-            } else {
-                throw new Doctrine_Mapper_Exception('Cannot find by: ' . $by . '. Invalid field or relationship alias.');
-            }
-        }
-    }
-    
-    /**
      * Saves an entity and all it's related entities.
      *
      * @param Doctrine_Record $record    The entity to save.
@@ -795,7 +626,12 @@ class Doctrine_Mapper
                     $query = 'DELETE FROM ' . $assocTable->getTableName()
                            . ' WHERE ' . $rel->getForeign() . ' = ?'
                            . ' AND ' . $rel->getLocal() . ' = ?';
-                    $this->_conn->execute($query, array($r->getIncremented(), $record->getIncremented()));
+                    // FIXME: composite key support
+                    $ids1 = $r->identifier();
+                    $id1 = count($ids1) > 0 ? array_pop($ids1) : null;
+                    $ids2 = $record->identifier();
+                    $id2 = count($ids2) > 0 ? array_pop($ids2) : null;
+                    $this->_conn->execute($query, array($id1, $id2));
                 }
                 
                 $assocMapper = $this->_conn->getMapper($assocTable->getComponentName());
@@ -804,7 +640,6 @@ class Doctrine_Mapper
                     $assocRecord->set($assocTable->getFieldName($rel->getForeign()), $r);
                     $assocRecord->set($assocTable->getFieldName($rel->getLocal()), $record);
                     $assocMapper->save($assocRecord);
-                    //$this->saveSingleRecord($assocRecord);
                 }
             }
         }
@@ -888,19 +723,6 @@ class Doctrine_Mapper
         $this->notifyEntityListeners($record, 'postDelete', Doctrine_Event::RECORD_DELETE);
 
         return true;
-    }
-    
-    public function hasAttribute($key)
-    {
-        switch ($key) {
-            case Doctrine::ATTR_LOAD_REFERENCES:
-            case Doctrine::ATTR_QUERY_LIMIT:
-            case Doctrine::ATTR_COLL_KEY:
-            case Doctrine::ATTR_VALIDATE:
-                return true;
-            default:
-                return false;
-        }
     }
     
     public function executeQuery(Doctrine_Query $query)

@@ -20,7 +20,7 @@
  */
 
 /**
- * Doctrine_Hydrate_RecordDriver
+ * Doctrine_Hydrator_RecordDriver
  * Hydration strategy used for creating graphs of entity objects.
  *
  * @package     Doctrine
@@ -34,8 +34,13 @@
  */
 class Doctrine_Hydrator_RecordDriver
 {
+    /** Collections initialized by the driver */
     protected $_collections = array();
+    /** Mappers */
     protected $_mappers = array();
+    /** Memory for initialized relations */
+    private $_initializedRelations = array();
+    /** Null object */
     private $_nullObject;
     
     public function __construct()
@@ -53,54 +58,32 @@ class Doctrine_Hydrator_RecordDriver
 
     public function getLastKey($coll) 
     {
-        $coll->end();
-        
-        return $coll->key();
+        // check needed because of mixed results
+        if (is_array($coll)) {
+            end($coll);
+            return key($coll);
+        } else {
+            $coll->end();
+            return $coll->key(); 
+        }
     }
     
-    public function initRelated($record, $name)
+    public function initRelated(Doctrine_Record $record, $name)
     {
-        return true;
-        /*
-        if ( ! is_array($record)) {
-            $record[$name];
-            return true;
+        if ( ! isset($this->_initializedRelations[$record->getOid()][$name])) {
+            $relation = $record->getClassMetadata()->getRelation($name);
+            $relatedClass = $relation->getTable();
+            $coll = $this->getElementCollection($relatedClass->getClassName());
+            $coll->setReference($record, $relation);
+            $record[$name] = $coll;
+            $this->_initializedRelations[$record->getOid()][$name] = true;
         }
-        return false;
-        */
     }
     
     public function registerCollection(Doctrine_Collection $coll)
     {
         $this->_collections[] = $coll;
     }
-
-    /**
-     * isIdentifiable
-     * returns whether or not a given data row is identifiable (it contains
-     * all primary key fields specified in the second argument)
-     *
-     * @param array $row
-     * @param Doctrine_Table $table
-     * @return boolean
-     */
-    /*public function isIdentifiable(array $row, Doctrine_Table $table)
-    {
-        $primaryKeys = $table->getIdentifierColumnNames();
-
-        if (is_array($primaryKeys)) {
-            foreach ($primaryKeys as $id) {
-                if ( ! isset($row[$id])) {
-                    return false;
-                }
-            }
-        } else {
-            if ( ! isset($row[$primaryKeys])) {
-                return false;
-            }
-        }
-        return true;
-    }*/
     
     public function getNullPointer() 
     {
@@ -127,6 +110,7 @@ class Doctrine_Hydrator_RecordDriver
         }
         $this->_collections = array();
         $this->_mappers = array();
+        $this->_initializedRelations = array();
     }
     
     /**

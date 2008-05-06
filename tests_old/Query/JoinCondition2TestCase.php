@@ -41,9 +41,9 @@ class Doctrine_Query_JoinCondition2_TestCase extends Doctrine_UnitTestCase
 
     public function prepareData()
     {
-        $this->conn->getMapper('User')->clear();
-        $this->conn->getMapper('Group')->clear();
-        $this->conn->getMapper('Groupuser')->clear();
+        $this->conn->clear('User');
+        $this->conn->clear('Group');
+        $this->conn->clear('Groupuser');
         
         $zYne = new User();
         $zYne->name = 'zYne';

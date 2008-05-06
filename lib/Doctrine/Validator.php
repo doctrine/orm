@@ -84,7 +84,8 @@ class Doctrine_Validator
             if ($value === Doctrine_Null::$INSTANCE) {
                 $value = null;
             } else if ($value instanceof Doctrine_Record) {
-                $value = $value->getIncremented();
+                $ids = $value->identifier();
+                $value = count($ids) > 0 ? array_pop($ids) : null;
             }
             
             $dataType = $classMetadata->getTypeOf($fieldName);

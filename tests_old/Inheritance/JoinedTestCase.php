@@ -152,7 +152,7 @@ class Doctrine_Inheritance_Joined_TestCase extends Doctrine_UnitTestCase
     public function testDqlQueryJoinsTransparentlyAcrossParents()
     {
         $this->_createManager();
-        $this->conn->getMapper('CTI_Manager')->clear();
+        $this->conn->clear('CTI_Manager');
         
         $query = $this->conn->createQuery();
         $query->parseQuery("SELECT m.* FROM CTI_Manager m");
@@ -167,8 +167,8 @@ class Doctrine_Inheritance_Joined_TestCase extends Doctrine_UnitTestCase
     public function testQueryingBaseClassOuterJoinsSubClassesAndReturnsSubclassInstances()
     {
         $this->_createManager();
-        $this->conn->getMapper('CTI_Manager')->clear();
-        $this->conn->getMapper('CTI_User')->clear();
+        $this->conn->clear('CTI_Manager');
+        $this->conn->clear('CTI_User');
         
         $query = $this->conn->createQuery();
         $query->parseQuery("SELECT u.* FROM CTI_User u");

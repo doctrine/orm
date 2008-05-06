@@ -32,7 +32,7 @@
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  * @author      Roman Borschel <roman@code-factory.org>
  */
-class Doctrine_Hydrator extends Doctrine_Hydrator_Abstract
+class Doctrine_HydratorNew extends Doctrine_Hydrator_Abstract
 {    
     /**
      * hydrateResultSet
@@ -53,13 +53,13 @@ class Doctrine_Hydrator extends Doctrine_Hydrator_Abstract
      *                              'parent' => Parent DQL alias (if any),
      *                              'relation' => Relation object (if any),
      *                              'map' => Custom index to use as the key in the result (if any),
-     *                              'agg' => List of aggregate values (sql alias => dql alias)
+     *                              'agg' => List of aggregate value names (sql alias => dql alias)
      *                              )
      *                         )
      * @return mixed  The created object/array graph.
      */
     public function hydrateResultSet($stmt, $tableAliases, $hydrationMode = null)
-    {        
+    {
         if ($hydrationMode === null) {
             $hydrationMode = $this->_hydrationMode;
         }
@@ -83,16 +83,16 @@ class Doctrine_Hydrator extends Doctrine_Hydrator_Abstract
         // Used variables during hydration
         reset($this->_queryComponents);
         $rootAlias = key($this->_queryComponents);
-        $rootComponentName = $this->_queryComponents[$rootAlias]['table']->getComponentName();
-        // if only one component is involved we can make our lives easier
+        $rootComponentName = $this->_queryComponents[$rootAlias]['table']->getClassName();
+        // if only one class is involved we can make our lives easier
         $isSimpleQuery = count($this->_queryComponents) <= 1;
         // Holds hydration listeners that get called during hydration
         $listeners = array();
         // Lookup map to quickly discover/lookup existing records in the result
         // It's the identifier "memory"
         $identifierMap = array();
-        // Holds for each component the last previously seen element in the result set
-        $prev = array();
+        // Holds for each class a pointer to the last previously seen element in the result set
+        $resultPointers = array();
         // holds the values of the identifier/primary key fields of components,
         // separated by a pipe '|' and grouped by component alias (r, u, i, ... whatever)
         // the $idTemplate is a prepared template. $id is set to a fresh template when
@@ -101,7 +101,11 @@ class Doctrine_Hydrator extends Doctrine_Hydrator_Abstract
         $idTemplate = array();
         
         // Holds the resulting hydrated data structure
-        $result = $driver->getElementCollection($rootComponentName);
+        if ($this->_isResultMixed) {
+            $result = array();
+        } else {
+            $result = $driver->getElementCollection($rootComponentName);
+        }  
 
         if ($stmt === false || $stmt === 0) {
             return $result;
@@ -114,13 +118,13 @@ class Doctrine_Hydrator extends Doctrine_Hydrator_Abstract
             $componentName = $component['table']->getClassName();
             $listeners[$componentName] = $component['table']->getRecordListener();
             $identifierMap[$dqlAlias] = array();
-            $prev[$dqlAlias] = array();
+            $resultPointers[$dqlAlias] = array();
             $idTemplate[$dqlAlias] = '';
         }
         
         // Process result set
         $cache = array();
-        while ($data = $stmt->fetch(Doctrine::FETCH_ASSOC)) {
+        while ($data = $stmt->fetch(Doctrine::FETCH_ASSOC)) {            
             $id = $idTemplate; // initialize the id-memory
             $nonemptyComponents = array();
             $rowData = $this->_gatherRowData($data, $cache, $id, $nonemptyComponents);
@@ -153,9 +157,17 @@ class Doctrine_Hydrator extends Doctrine_Hydrator_Abstract
                     } else if ( ! isset($element[$field])) {
                         throw new Doctrine_Hydrator_Exception("Couldn't hydrate. Found a non-existent key.");
                     }
-                    $result[$element[$field]] = $element;
+                    if ($this->_isResultMixed) {
+                        $result[] = array($element[$field] => $element);
+                    } else {
+                        $result[$element[$field]] = $element;
+                    }
                 } else {
-                    $result[] = $element;
+                    if ($this->_isResultMixed) {
+                        $result[] = array($element);
+                    } else {
+                        $result[] = $element;
+                    }
                 }
 
                 $identifierMap[$rootAlias][$id[$rootAlias]] = $driver->getLastKey($result);
@@ -163,16 +175,20 @@ class Doctrine_Hydrator extends Doctrine_Hydrator_Abstract
                 $index = $identifierMap[$rootAlias][$id[$rootAlias]];
             }
 
-            $this->_setLastElement($prev, $result, $index, $rootAlias, false);
+            $this->_setLastElement($resultPointers, $result, $index, $rootAlias, false);
             unset($rowData[$rootAlias]);
-            
             // end hydrate data of the root component for the current row
             
+            // Check for scalar values
+            if (isset($rowData['scalars'])) {
+                $scalars = $rowData['scalars'];
+                unset($rowData['scalars']);
+            }
             
             // $prev[$rootAlias] now points to the last element in $result.
             // now hydrate the rest of the data found in the current row, that belongs to other
             // (related) components.
-            foreach ($rowData as $dqlAlias => $data) {
+            foreach ($rowData as $dqlAlias => $data) {                
                 $index = false;
                 $map = $this->_queryComponents[$dqlAlias];
                 $componentName = $map['table']->getComponentName();
@@ -187,17 +203,22 @@ class Doctrine_Hydrator extends Doctrine_Hydrator_Abstract
                 $relationAlias = $relation->getAlias();
 
                 $path = $parent . '.' . $dqlAlias;
-
-                if ( ! isset($prev[$parent])) {
+                
+                $key = key(reset($resultPointers));
+                if ($this->_isResultMixed && $parent == $rootAlias && isset($resultPointers[$parent][$key])) {
+                    $baseElement =& $resultPointers[$parent][$key];
+                } else if (isset($resultPointers[$parent])) {
+                    $baseElement =& $resultPointers[$parent];
+                } else {
                     continue;
                 }
                 
-                // check the type of the relation
+                // check the type of the relation (many or single-valued)
                 if ( ! $relation->isOneToOne()) {
+                    // x-many relation
                     $oneToOne = false;
-                    // append element
                     if (isset($nonemptyComponents[$dqlAlias])) {
-                        $driver->initRelated($prev[$parent], $relationAlias);
+                        $driver->initRelated($baseElement, $relationAlias);
                         if ( ! isset($identifierMap[$path][$id[$parent]][$id[$dqlAlias]])) {
                             $element = $driver->getElement($data, $componentName);
                             
@@ -209,40 +230,44 @@ class Doctrine_Hydrator extends Doctrine_Hydrator_Abstract
                             if ($field = $this->_getCustomIndexField($dqlAlias)) {
                                 // TODO: we should check this earlier. Fields used in INDEXBY
                                 //       must be unique. Then this can be removed here.
-                                if (isset($prev[$parent][$relationAlias][$field])) {
+                                if (isset($baseElement[$relationAlias][$field])) {
                                     throw Doctrine_Hydrator_Exception::nonUniqueKeyMapping();
                                 } else if ( ! isset($element[$field])) {
                                     throw Doctrine_Hydrator_Exception::nonExistantFieldUsedAsIndex($field);
                                 }
-                                $prev[$parent][$relationAlias][$element[$field]] = $element;
+                                $baseElement[$relationAlias][$element[$field]] = $element;
                             } else {
-                                $prev[$parent][$relationAlias][] = $element;
+                                $baseElement[$relationAlias][] = $element;
                             }
 
-                            $identifierMap[$path][$id[$parent]][$id[$dqlAlias]] = $driver->getLastKey($prev[$parent][$relationAlias]);
+                            $identifierMap[$path][$id[$parent]][$id[$dqlAlias]] = $driver->getLastKey($baseElement[$relationAlias]);
                         } else {
                             $index = $identifierMap[$path][$id[$parent]][$id[$dqlAlias]];
                         }
-                        // register collection for later snapshots
-                        //$driver->registerCollection($prev[$parent][$relationAlias]);
                     }
                 } else {
-                    // 1-1 relation
+                    // x-1 relation
                     $oneToOne = true; 
                     if ( ! isset($nonemptyComponents[$dqlAlias])) {
-                        $prev[$parent][$relationAlias] = $driver->getNullPointer();
-                    } else if ( ! isset($prev[$parent][$relationAlias])) {
-                        $element = $driver->getElement($data, $componentName);
-                        $prev[$parent][$relationAlias] = $element;
+                        $baseElement[$relationAlias] = $driver->getNullPointer();
+                    } else if ( ! isset($baseElement[$relationAlias])) {
+                        $baseElement[$relationAlias] = $driver->getElement($data, $componentName);
                     }
                 }
-                $coll =& $prev[$parent][$relationAlias];
-                $this->_setLastElement($prev, $coll, $index, $dqlAlias, $oneToOne);
+                $coll =& $baseElement[$relationAlias];
+                $this->_setLastElement($resultPointers, $coll, $index, $dqlAlias, $oneToOne);
+            }
+            
+            // append scalar values
+            if (isset($scalars)) {
+                $rowNumber = count($result) - 1;
+                foreach ($scalars as $name => $value) {
+                    $result[$rowNumber][$name] = $value;
+                }
             }
         }
 
-        $stmt->closeCursor();
-        
+        $stmt->closeCursor(); 
         $driver->flush();
         
         // re-enable lazy loading
@@ -270,7 +295,7 @@ class Doctrine_Hydrator extends Doctrine_Hydrator_Abstract
      * @return void
      * @todo Detailed documentation
      */
-    protected function _setLastElement(&$prev, &$coll, $index, $dqlAlias, $oneToOne)
+    protected function _setLastElement(&$resultPointers, &$coll, $index, $dqlAlias, $oneToOne)
     {
         if ($coll === $this->_nullObject) {
             return false;
@@ -279,23 +304,23 @@ class Doctrine_Hydrator extends Doctrine_Hydrator_Abstract
         if ($index !== false) {
             // Link element at $index to previous element for the component 
             // identified by the DQL alias $alias
-            $prev[$dqlAlias] =& $coll[$index];
+            $resultPointers[$dqlAlias] =& $coll[$index];
             return;
         }
         
         if (is_array($coll) && $coll) {
             if ($oneToOne) {
-                $prev[$dqlAlias] =& $coll;
+                $resultPointers[$dqlAlias] =& $coll;
             } else {
                 end($coll);
-                $prev[$dqlAlias] =& $coll[key($coll)];
+                $resultPointers[$dqlAlias] =& $coll[key($coll)];
             }
         } else if ($coll instanceof Doctrine_Record) {
-            $prev[$dqlAlias] = $coll;
+            $resultPointers[$dqlAlias] = $coll;
         } else if (count($coll) > 0) {
-            $prev[$dqlAlias] = $coll->getLast();
-        } else if (isset($prev[$dqlAlias])) {
-            unset($prev[$dqlAlias]);
+            $resultPointers[$dqlAlias] = $coll->getLast();
+        } else if (isset($resultPointers[$dqlAlias])) {
+            unset($resultPointers[$dqlAlias]);
         }
     }
     
@@ -323,8 +348,10 @@ class Doctrine_Hydrator extends Doctrine_Hydrator_Abstract
                 // check whether it's an aggregate value or a regular field
                 if (isset($this->_queryComponents[$cache[$key]['dqlAlias']]['agg'][$columnName])) {
                     $fieldName = $this->_queryComponents[$cache[$key]['dqlAlias']]['agg'][$columnName];
+                    $cache[$key]['isScalar'] = true;
                 } else {
                     $fieldName = $mapper->getFieldName($columnName);
+                    $cache[$key]['isScalar'] = false;
                 }
                 
                 $cache[$key]['fieldName'] = $fieldName;
@@ -350,6 +377,11 @@ class Doctrine_Hydrator extends Doctrine_Hydrator_Abstract
             $dqlAlias = $cache[$key]['dqlAlias'];
             $fieldName = $cache[$key]['fieldName'];
 
+            if ($cache[$key]['isScalar']) {
+                $rowData['scalars'][$fieldName] = $value;
+                continue;
+            }
+            
             if ($cache[$key]['isIdentifier']) {
                 $id[$dqlAlias] .= '|' . $value;
             }
@@ -378,6 +410,13 @@ class Doctrine_Hydrator extends Doctrine_Hydrator_Abstract
     protected function _getCustomIndexField($alias)
     {
         return isset($this->_queryComponents[$alias]['map']) ? $this->_queryComponents[$alias]['map'] : null;
+    }
+    
+    
+    private $_isResultMixed = false;
+    public function setResultMixed($bool)
+    {
+        $this->_isResultMixed = $bool;
     }
     
 }

@@ -197,7 +197,7 @@ class Doctrine_UnitTestCase extends UnitTestCase
         //echo "exporting : " . var_dump($this->tables);
         //echo "<br /><br />";
         $this->conn->export->exportClasses($this->tables);
-        $this->objTable = $this->connection->getMapper('User');
+        $this->objTable = $this->connection->getRepository('User');
     }
     
     public function prepareData() 

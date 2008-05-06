@@ -6,5 +6,8 @@ class CmsUser extends Doctrine_Record
       $class->mapColumn('id', 'integer', 4, array('primary' => true, 'autoincrement' => true));
       $class->mapColumn('username', 'string', 255);
       $class->mapColumn('name', 'string', 255);
+      
+      $class->hasMany('CmsPhonenumber as phonenumbers', array(
+              'local' => 'id', 'foreign' => 'user_id'));
   }
 }

@@ -18,7 +18,7 @@
  * and is licensed under the LGPL. For more information, see
  * <http://www.phpdoctrine.org>.
  */
-Doctrine::autoload('Doctrine_Query_Abstract');
+
 /**
  * Doctrine_Query
  * A Doctrine_Query object represents a DQL query. It is used to query databases for

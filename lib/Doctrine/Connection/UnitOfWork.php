@@ -20,7 +20,23 @@
  */
 
 /**
- * Doctrine_Connection_UnitOfWork
+ * The UnitOfWork is responsible for writing out changes to the database at
+ * the correct time and in the correct order.
+ * 
+ * Some terminology:
+ * 
+ * <b>New entity</b>: From the point of view of the unitOfWork is an entity that
+ * already has an identity but is not yet persisted into the database. This
+ * is usually the case for all newly saved entities that use a SEQUENCE id
+ * generator. Entities with an IDENTITY id generator get persisted as soon
+ * as they're saved in order to obtain the identifier. Therefore entities that
+ * use an IDENTITY id generator never appear in the list of new entities of the UoW.
+ * 
+ * <b>Dirty entity</b>: ...
+ * 
+ * <b>Removed entity</b>: ...
+ * 
+ * <b>Clean entity</b>: ...
  *
  * @package     Doctrine
  * @subpackage  Connection
@@ -105,12 +121,19 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
      */
     public function registerNew(Doctrine_Record $entity)
     {
-        if (isset($this->_dirtyEntities[$entity->getOid()])) {
-            throw new Doctrine_Connection_Exception("Dirty object can't be registered as new.");
-        } else if (isset($this->_removedEntities[$entity->getOid()])) {
-            throw new Doctrine_Connection_Exception("Removed object can't be registered as new.");
+        if ( ! $entity->identifier()) {
+            throw new Doctrine_Connection_Exception("Entity without identity "
+                    . "can't be registered as new.");
         }
-        $this->_newEntities[$entity->getOid()] = $entity;
+        $oid = $entity->getOid();
+        if (isset($this->_dirtyEntities[$oid])) {
+            throw new Doctrine_Connection_Exception("Dirty object can't be registered as new.");
+        } else if (isset($this->_removedEntities[$oid])) {
+            throw new Doctrine_Connection_Exception("Removed object can't be registered as new.");
+        } else if (isset($this->_newEntities[$oid])) {
+            throw new Doctrine_Connection_Exception("Object already registered as new. Can't register twice.");
+        }
+        $this->_newEntities[$oid] = $entity;
     }
     
     public function isRegisteredNew(Doctrine_Record $entity)
@@ -131,12 +154,17 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
      */
     public function registerDirty(Doctrine_Record $entity)
     {
+        if ( ! $entity->identifier()) {
+            throw new Doctrine_Connection_Exception("Entity without identity "
+                    . "can't be registered as dirty.");
+        }
+        $oid = $entity->getOid();
         if (isset($this->_removedEntities[$entity->getOid()])) {
             throw new Doctrine_Connection_Exception("Removed object can't be registered as dirty.");
-        } else if (isset($this->_newEntities[$entity->getOid()])) {
-            throw new Doctrine_Connection_Exception("");
         }
-        $this->_dirtyEntities[$entity->getOid()] = $entity;
+        if ( ! isset($this->_dirtyEntities[$oid], $this->_newEntities[$oid])) {
+            $this->_dirtyEntities[$entity->getOid()] = $entity;
+        }
     }
     
     public function isRegisteredDirty(Doctrine_Record $entity)
@@ -149,8 +177,21 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
      */
     public function registerRemoved(Doctrine_Record $entity)
     {
+        if ($entity->isTransient()) {
+            return;
+        }
         $this->unregisterIdentity($entity);
-        $this->_removedEntities[$entity->getOid()] = $entity;
+        $oid = $entity->getOid();
+        if (isset($this->_newEntities[$oid])) {
+            unset($this->_newEntities[$oid]);
+            return;
+        }
+        if (isset($this->_dirtyEntities[$oid])) {
+            unset($this->_dirtyEntities[$oid]);
+        }
+        if ( ! isset($this->_removedEntities[$oid])) {
+            $this->_removedEntities[$oid] = $entity;
+        }
     }
     
     public function isRegisteredRemoved(Doctrine_Record $entity)

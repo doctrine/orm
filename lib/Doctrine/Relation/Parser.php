@@ -147,12 +147,6 @@ class Doctrine_Relation_Parser
             $this->getRelations();
             return $this->getRelation($alias, false);
         } else {
-            /*try {
-                throw new Exception();
-            } catch (Exception $e) {
-                //echo "" . "<br />";
-                ///echo $e->getTraceAsString() . "<br /><br /><br />";
-            }*/
             throw new Doctrine_Relation_Exception("Unknown relation '$alias'.");
         }
     }

@@ -117,7 +117,7 @@ class Doctrine_Relation_Nest_TestCase extends Doctrine_UnitTestCase
 
         $this->connection->clear();
 
-        $e = $e->getMapper()->find($e->id);
+        $e = $e->getRepository()->find($e->id);
 
         $count = count($this->conn);
 

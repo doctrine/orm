@@ -18,7 +18,7 @@
  * and is licensed under the LGPL. For more information, see
  * <http://www.phpdoctrine.org>.
  */
-Doctrine::autoload('Doctrine_Relation_Association');
+
 /**
  * Doctrine_Relation_Association_Self
  *
@@ -76,7 +76,9 @@ class Doctrine_Relation_Association_Self extends Doctrine_Relation_Association
 
     public function fetchRelatedFor(Doctrine_Record $record)
     {
-        $id      = $record->getIncremented();
+        // FIXME: composite key support
+        $ids = $record->identifier();
+        $id = count($ids) > 0 ? array_pop($ids) : null;
 
         $q = new Doctrine_RawSql();
 

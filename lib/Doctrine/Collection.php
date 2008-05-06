@@ -449,7 +449,8 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
                 }
             } else {
                 // @todo does not take composite keys into account
-                $list[] = $record->getIncremented();
+                $ids = $record->identifier();
+                $list[] = count($ids) > 0 ? array_pop($ids) : null;
             }
         }
         
@@ -564,7 +565,9 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
 
         if ( ! isset($name)) {
             foreach ($this->data as $record) {
-                $value = $record->getIncremented();
+                // FIXME: composite key support
+                $ids = $record->identifier();
+                $value = count($ids) > 0 ? array_pop($ids) : null;
                 if ($value !== null) {
                     $list[] = $value;
                 }
@@ -583,7 +586,8 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
             }
         } else {
             foreach ($this->data as $record) {
-                $value = $record->getIncremented();
+                $ids = $record->identifier();
+                $value = count($ids) > 0 ? array_pop($ids) : null;
                 if ($value !== null) {
                     $list[] = $value;
                 }

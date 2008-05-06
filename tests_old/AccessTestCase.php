@@ -77,7 +77,7 @@ class Doctrine_Access_TestCase extends Doctrine_UnitTestCase
 
         $user->save();
 
-        $user = $this->connection->getMapper('User')->find($user->identifier());
+        $user = $this->connection->getRepository('User')->find($user->identifier());
         $this->assertEqual($user->name, 'Jack');
 
         $user['name'] = 'Jack';
@@ -97,7 +97,7 @@ class Doctrine_Access_TestCase extends Doctrine_UnitTestCase
         
         $user->save();
 
-        $user = $this->connection->getMapper('User')->find($user->identifier());
+        $user = $this->connection->getRepository('User')->find($user->identifier());
         $this->assertEqual($user->name, 'Jack');
 
         $user->name = 'Jack';
@@ -115,7 +115,7 @@ class Doctrine_Access_TestCase extends Doctrine_UnitTestCase
 
         $user->save();
 
-        $user = $this->connection->getMapper('User')->find($user->identifier());
+        $user = $this->connection->getRepository('User')->find($user->identifier());
 
         $this->assertEqual($user->get('name'), 'Jack');
 

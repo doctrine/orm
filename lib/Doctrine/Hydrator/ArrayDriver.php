@@ -71,8 +71,6 @@ class Doctrine_Hydrator_ArrayDriver
         if ( ! isset($data[$name])) {
             $data[$name] = array();
         }
-        
-        return true;
     }
     
     /**

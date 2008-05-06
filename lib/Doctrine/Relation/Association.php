@@ -94,17 +94,14 @@ class Doctrine_Relation_Association extends Doctrine_Relation
      */
     public function fetchRelatedFor(Doctrine_Record $record)
     {
-        $id = $record->getIncremented();
-        //var_dump($id);
-        //echo "<br /><br />";
+        // FIXME: composite key support
+        $ids = $record->identifier();
+        $id = count($ids) > 0 ? array_pop($ids) : null;
+
         if (empty($id) || ! $this->_foreignMapper->getClassMetadata()->getAttribute(Doctrine::ATTR_LOAD_REFERENCES)) {
-            //echo "here" . $this->_foreignMapper->getAttribute(Doctrine::ATTR_LOAD_REFERENCES);
             $coll = new Doctrine_Collection($this->getForeignComponentName());
         } else {
             $query = Doctrine_Query::create()->parseQuery($this->getRelationDql(1));
-            //echo $query->getDql() . "<br />";
-            //echo $query->getSql() . "<br />";
-            //echo "<br /><br />";
             $coll = Doctrine_Query::create()->query($this->getRelationDql(1), array($id));
         }
         $coll->setReference($record, $this);

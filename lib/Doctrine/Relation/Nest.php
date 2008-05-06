@@ -74,35 +74,11 @@ class Doctrine_Relation_Nest extends Doctrine_Relation_Association
         return $dql;
     }
 
-    /**
     public function fetchRelatedFor(Doctrine_Record $record)
     {
-        $id = $record->getIncremented();
-
-        if (empty($id) || ! $this->definition['table']->getAttribute(Doctrine::ATTR_LOAD_REFERENCES)) {
-            return new Doctrine_Collection($this->getTable());
-        } else {
-            $q = new Doctrine_Query();
-            
-            $c  = $this->getTable()->getComponentName();
-            $a  = substr($c, 0, 1);
-            $c2 = $this->getAssociationTable()->getComponentName();
-            $a2 = substr($c2, 0, 1);
-
-            $q->from($c)
-              ->innerJoin($c . '.' . $c2)
-
-            $sub = 'SELECT ' . $this->getForeign() 
-                 . ' FROM '  . $c2
-                 . ' WHERE ' . $this->getLocal() 
-                 . ' = ?';
-        }
-    }
-    */
-
-    public function fetchRelatedFor(Doctrine_Record $record)
-    {
-        $id = $record->getIncremented();
+        // FIXME: composite key support
+        $ids = $record->identifier();
+        $id = count($ids) > 0 ? array_pop($ids) : null;
 
 
         if (empty($id) || ! $this->_foreignMapper->getClassMetadata()->getAttribute(Doctrine::ATTR_LOAD_REFERENCES)) {

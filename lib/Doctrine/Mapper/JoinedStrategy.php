@@ -111,7 +111,8 @@ class Doctrine_Mapper_JoinedStrategy extends Doctrine_Mapper_Strategy
                 if ( ! $value->exists()) {
                     $value->save();
                 }
-                $record->set($field, $value->getIncremented());
+                $idValues = $value->identifier();
+                $record->set($field, $idValues[0]);
             }
         }
 

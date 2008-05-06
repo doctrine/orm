@@ -168,7 +168,7 @@ class Doctrine_ClassTableInheritance_TestCase extends Doctrine_UnitTestCase
         $profiler = new Doctrine_Connection_Profiler();
     	$this->conn->addListener($profiler);
 
-        $record = $this->conn->getMapper('CTITest')->find(1);
+        $record = $this->conn->getRepository('CTITest')->find(1);
         
         $record->age = 11;
         $record->name = 'Jack';
@@ -193,7 +193,7 @@ class Doctrine_ClassTableInheritance_TestCase extends Doctrine_UnitTestCase
     {
         $this->conn->clear();
         
-        $record = $this->conn->getMapper('CTITest')->find(1);
+        $record = $this->conn->getRepository('CTITest')->find(1);
         
         $this->assertEqual($record->id, 1);
         $this->assertEqual($record->name, 'Jack');
@@ -209,7 +209,7 @@ class Doctrine_ClassTableInheritance_TestCase extends Doctrine_UnitTestCase
         $profiler = new Doctrine_Connection_Profiler();
     	$this->conn->addListener($profiler);
 
-        $record = $this->conn->getMapper('CTITest')->find(1);
+        $record = $this->conn->getRepository('CTITest')->find(1);
         
         $record->delete();
 

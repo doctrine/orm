@@ -62,6 +62,6 @@ class Doctrine_Query_Registry_TestCase extends Doctrine_UnitTestCase
 
         $user = new User();
         
-        $user->getMapper()->executeNamedQuery('User.all');
+        $user->getEntityManager()->executeNamedQuery('User.all');
     }
 }
