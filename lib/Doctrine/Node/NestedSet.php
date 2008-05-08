@@ -350,15 +350,28 @@ class Doctrine_Node_NestedSet extends Doctrine_Node implements Doctrine_Node_Int
         if ($dest->getNode()->isRoot()) {
             return false;
         }
-        $newRoot = $dest->getNode()->getRootValue();
-        $this->shiftRLValues($dest->getNode()->getLeftValue(), 1, $newRoot);
-        $this->shiftRLValues($dest->getNode()->getRightValue() + 2, 1, $newRoot);
         
-        $newLeft = $dest->getNode()->getLeftValue();
+        $newLeft  = $dest->getNode()->getLeftValue();
         $newRight = $dest->getNode()->getRightValue() + 2;
-
-        $this->record['level'] = $dest['level'] - 1;
-        $this->insertNode($newLeft, $newRight, $newRoot);
+        $newRoot  = $dest->getNode()->getRootValue();
+		$newLevel = $dest->getNode()->getLevel();
+		
+		// Make space for new node
+        $this->shiftRLValues($dest->getNode()->getRightValue() + 1, 2, $newRoot);
+        
+        // Slide child nodes over one and down one to allow new parent to wrap them
+		$componentName = $this->_tree->getBaseComponent();		
+        $q = new Doctrine_Query();
+        $q->update($componentName);
+        $q->set("$componentName.lft", "$componentName.lft + 1");
+        $q->set("$componentName.rgt", "$componentName.rgt + 1");
+        $q->set("$componentName.level", "$componentName.level + 1");
+        $q->where("$componentName.lft >= ? AND $componentName.rgt <= ?", array($newLeft, $newRight));
+		$q = $this->_tree->returnQueryWithRootId($q, $newRoot);
+		$q->execute();
+        
+        $this->record['level'] = $newLevel;
+		$this->insertNode($newLeft, $newRight, $newRoot);
         
         return true;
     }
