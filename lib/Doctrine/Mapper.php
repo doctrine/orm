@@ -615,7 +615,9 @@ class Doctrine_Mapper
     public function saveAssociations(Doctrine_Record $record)
     {
         foreach ($record->getReferences() as $relationName => $relatedObject) {
-            
+            if ($relatedObject === Doctrine_Null::$INSTANCE) {
+                continue;
+            }
             $rel = $record->getTable()->getRelation($relationName);
             
             if ($rel instanceof Doctrine_Relation_Association) {

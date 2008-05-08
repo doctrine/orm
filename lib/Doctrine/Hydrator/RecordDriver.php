@@ -68,7 +68,7 @@ class Doctrine_Hydrator_RecordDriver
         }
     }
     
-    public function initRelated(Doctrine_Record $record, $name)
+    public function initRelatedCollection(Doctrine_Record $record, $name)
     {
         if ( ! isset($this->_initializedRelations[$record->getOid()][$name])) {
             $relation = $record->getClassMetadata()->getRelation($name);

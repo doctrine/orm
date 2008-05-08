@@ -20,8 +20,27 @@
  */
 
 /**
- * The hydrator has the tedious task to construct object or array graphs out of
- * a database result set.
+ * The hydrator has the tedious to process result sets returned by the database
+ * and turn them into useable structures.
+ * 
+ * Runtime complexity: The following gives the overall number of iterations
+ * required to process a result set.
+ * 
+ * <code>numRowsInResult * numColumnsInResult + numRowsInResult * numClassesInQuery</code>
+ * 
+ * This comes down to:
+ * 
+ * <code>(numRowsInResult * (numColumnsInResult + numClassesInQuery))</code>
+ * 
+ * Note that this is only a crude definition of the complexity as it also heavily
+ * depends on the complexity of all the single operations that are performed in
+ * each iteration.
+ * 
+ * As can be seen, the number of columns in the result has the most impact on
+ * the overall performance (apart from the row counr, of course), since numClassesInQuery
+ * is usually pretty low.
+ * That's why the performance of the gatherRowData() method which is responsible
+ * for the "numRowsInResult * numColumnsInResult" part is crucial to fast hydraton.
  *
  * @package     Doctrine
  * @subpackage  Hydrator
@@ -153,9 +172,9 @@ class Doctrine_HydratorNew extends Doctrine_Hydrator_Abstract
                 // do we need to index by a custom field?
                 if ($field = $this->_getCustomIndexField($rootAlias)) {
                     if (isset($result[$field])) {
-                        throw new Doctrine_Hydrator_Exception("Couldn't hydrate. Found non-unique key mapping.");
+                        throw Doctrine_Hydrator_Exception::nonUniqueKeyMapping();
                     } else if ( ! isset($element[$field])) {
-                        throw new Doctrine_Hydrator_Exception("Couldn't hydrate. Found a non-existent key.");
+                        throw Doctrine_Hydrator_Exception::nonExistantFieldUsedAsIndex($field);
                     }
                     if ($this->_isResultMixed) {
                         $result[] = array($element[$field] => $element);
@@ -169,7 +188,6 @@ class Doctrine_HydratorNew extends Doctrine_Hydrator_Abstract
                         $result[] = $element;
                     }
                 }
-
                 $identifierMap[$rootAlias][$id[$rootAlias]] = $driver->getLastKey($result);
             } else {
                 $index = $identifierMap[$rootAlias][$id[$rootAlias]];
@@ -185,7 +203,7 @@ class Doctrine_HydratorNew extends Doctrine_Hydrator_Abstract
                 unset($rowData['scalars']);
             }
             
-            // $prev[$rootAlias] now points to the last element in $result.
+            // $resultPointers[$rootAlias] now points to the last element in $result.
             // now hydrate the rest of the data found in the current row, that belongs to other
             // (related) components.
             foreach ($rowData as $dqlAlias => $data) {                
@@ -204,21 +222,23 @@ class Doctrine_HydratorNew extends Doctrine_Hydrator_Abstract
 
                 $path = $parent . '.' . $dqlAlias;
                 
-                $key = key(reset($resultPointers));
-                if ($this->_isResultMixed && $parent == $rootAlias && isset($resultPointers[$parent][$key])) {
+                // pick the right element that will get the associated element attached
+                if ($this->_isResultMixed && $parent == $rootAlias) {
+                    $key = key(reset($resultPointers));
+                    // TODO: Exception if $key === null ?
                     $baseElement =& $resultPointers[$parent][$key];
                 } else if (isset($resultPointers[$parent])) {
                     $baseElement =& $resultPointers[$parent];
                 } else {
                     continue;
                 }
-                
+
                 // check the type of the relation (many or single-valued)
                 if ( ! $relation->isOneToOne()) {
                     // x-many relation
                     $oneToOne = false;
                     if (isset($nonemptyComponents[$dqlAlias])) {
-                        $driver->initRelated($baseElement, $relationAlias);
+                        $driver->initRelatedCollection($baseElement, $relationAlias);
                         if ( ! isset($identifierMap[$path][$id[$parent]][$id[$dqlAlias]])) {
                             $element = $driver->getElement($data, $componentName);
                             
@@ -244,18 +264,22 @@ class Doctrine_HydratorNew extends Doctrine_Hydrator_Abstract
                         } else {
                             $index = $identifierMap[$path][$id[$parent]][$id[$dqlAlias]];
                         }
+                    } else if ( ! isset($baseElement[$relationAlias])) {
+                        $baseElement[$relationAlias] = $driver->getNullPointer();
                     }
                 } else {
                     // x-1 relation
-                    $oneToOne = true; 
+                    $oneToOne = true;
                     if ( ! isset($nonemptyComponents[$dqlAlias])) {
                         $baseElement[$relationAlias] = $driver->getNullPointer();
                     } else if ( ! isset($baseElement[$relationAlias])) {
                         $baseElement[$relationAlias] = $driver->getElement($data, $componentName);
                     }
                 }
-                $coll =& $baseElement[$relationAlias];
-                $this->_setLastElement($resultPointers, $coll, $index, $dqlAlias, $oneToOne);
+                if ($baseElement[$relationAlias] !== null) {
+                    $coll =& $baseElement[$relationAlias];
+                    $this->_setLastElement($resultPointers, $coll, $index, $dqlAlias, $oneToOne);   
+                }
             }
             
             // append scalar values

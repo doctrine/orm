@@ -928,6 +928,9 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
                 $rel = $this->_class->getRelation($fieldName);
                 $this->_references[$fieldName] = $rel->fetchRelatedFor($this);
             }
+            if ($this->_references[$fieldName] === Doctrine_Null::$INSTANCE) {
+                return null;
+            }
             return $this->_references[$fieldName];
         } catch (Doctrine_Relation_Exception $e) {
             //echo $e->getTraceAsString();
@@ -1038,14 +1041,19 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
      */
     private function _coreSetRelated($name, $value)
     {
+        if ($value === Doctrine_Null::$INSTANCE) {
+            $this->_references[$name] = $value;
+            return;
+        }
+        
         $rel = $this->_class->getRelation($name);
 
         // one-to-many or one-to-one relation
         if ($rel instanceof Doctrine_Relation_ForeignKey ||
-            $rel instanceof Doctrine_Relation_LocalKey) {
+                $rel instanceof Doctrine_Relation_LocalKey) {
             if ( ! $rel->isOneToOne()) {
                 // one-to-many relation found
-                if ( ! ($value instanceof Doctrine_Collection)) {
+                if ( ! $value instanceof Doctrine_Collection) {
                     throw new Doctrine_Record_Exception("Couldn't call Doctrine::set(), second"
                             . " argument should be an instance of Doctrine_Collection when"
                             . " setting one-to-many references.");
@@ -1067,7 +1075,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
                                 . " or Doctrine_Null when setting one-to-one references.");
                     }
                     if ($rel instanceof Doctrine_Relation_LocalKey) {
-                        $idFieldNames = (array)$value->getTable()->getIdentifier();
+                        $idFieldNames = $value->getTable()->getIdentifier();
                         if ( ! empty($foreignFieldName) && $foreignFieldName != $idFieldNames[0]) {
                             $this->set($localFieldName, $value->rawGet($foreignFieldName), false);
                         } else {
@@ -1097,6 +1105,9 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
     public function contains($fieldName)
     {
         if (isset($this->_data[$fieldName])) {
+            if ($this->_data[$fieldName] === Doctrine_Null::$INSTANCE) {
+                return false;
+            }
             return true;
         }
         if (isset($this->_id[$fieldName])) {

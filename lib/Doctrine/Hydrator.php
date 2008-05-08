@@ -197,7 +197,7 @@ class Doctrine_Hydrator extends Doctrine_Hydrator_Abstract
                     $oneToOne = false;
                     // append element
                     if (isset($nonemptyComponents[$dqlAlias])) {
-                        $driver->initRelated($prev[$parent], $relationAlias);
+                        $driver->initRelatedCollection($prev[$parent], $relationAlias);
                         if ( ! isset($identifierMap[$path][$id[$parent]][$id[$dqlAlias]])) {
                             $element = $driver->getElement($data, $componentName);
                             
@@ -225,6 +225,8 @@ class Doctrine_Hydrator extends Doctrine_Hydrator_Abstract
                         }
                         // register collection for later snapshots
                         //$driver->registerCollection($prev[$parent][$relationAlias]);
+                    } else if ( ! isset($prev[$parent][$relationAlias])) {
+                        $prev[$parent][$relationAlias] = $driver->getNullPointer();
                     }
                 } else {
                     // 1-1 relation
@@ -236,8 +238,10 @@ class Doctrine_Hydrator extends Doctrine_Hydrator_Abstract
                         $prev[$parent][$relationAlias] = $element;
                     }
                 }
-                $coll =& $prev[$parent][$relationAlias];
-                $this->_setLastElement($prev, $coll, $index, $dqlAlias, $oneToOne);
+                if ($prev[$parent][$relationAlias] !== null) {
+                    $coll =& $prev[$parent][$relationAlias];
+                    $this->_setLastElement($prev, $coll, $index, $dqlAlias, $oneToOne);
+                }
             }
         }
 

@@ -115,7 +115,7 @@ class Doctrine_Record_Synchronize_TestCase extends Doctrine_UnitTestCase
     public function testSynchronizeAfterRemoveRecord()
     {
         $user = Doctrine_Query::create()->from('User u, u.Email, u.Phonenumber')->fetchOne();
-        $this->assertEqual($user->Phonenumber->count(), 0);
+        $this->assertTrue(!isset($user->Phonenumber));
         $this->assertTrue(!isset($user->Email));
     }
 }

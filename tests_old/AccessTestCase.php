@@ -49,10 +49,10 @@ class Doctrine_Access_TestCase extends Doctrine_UnitTestCase
     {
         $user = new User();
 
-        $this->assertTrue(isset($user->name));  
+        $this->assertTrue(!isset($user->name));  
         $this->assertFalse(isset($user->unknown));
         
-        $this->assertTrue(isset($user['name']));
+        $this->assertTrue(!isset($user['name']));
         $this->assertFalse(isset($user['unknown']));
         
         $coll = new Doctrine_Collection('User');

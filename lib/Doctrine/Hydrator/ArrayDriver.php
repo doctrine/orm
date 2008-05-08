@@ -66,7 +66,7 @@ class Doctrine_Hydrator_ArrayDriver
     /**
      *
      */
-    public function initRelated(array &$data, $name)
+    public function initRelatedCollection(array &$data, $name)
     {
         if ( ! isset($data[$name])) {
             $data[$name] = array();

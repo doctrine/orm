@@ -83,7 +83,7 @@ class Doctrine_Relation_OneToOne_TestCase extends Doctrine_UnitTestCase
         $this->assertTrue($user->Email instanceOf Email);
         $user->Email = Doctrine_Null::$INSTANCE;
         $user->save();
-        $this->assertTrue($user->Email instanceOf Doctrine_Null);
+        $this->assertTrue($user->Email === null);
     }
 
     public function testSavingRelatedObjects()
