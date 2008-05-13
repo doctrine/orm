@@ -1,5 +1,5 @@
 <?php
-class ValidatorTest_ClientModel extends Doctrine_Record {
+class ValidatorTest_ClientModel extends Doctrine_Entity {
 	public static function initMetadata($class) {
 		$class->setColumn('id', 'integer', 4, array('notnull' => true,
 	                                           'primary' => true,

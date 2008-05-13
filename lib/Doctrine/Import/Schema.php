@@ -23,7 +23,7 @@
  * class Doctrine_Import_Schema
  *
  * Different methods to import a XML schema. The logic behind using two different
- * methods is simple. Some people will like the idea of producing Doctrine_Record
+ * methods is simple. Some people will like the idea of producing Doctrine_Entity
  * objects directly, which is totally fine. But in fast and growing application,
  * table definitions tend to be a little bit more volatile. importArr() can be used
  * to output a table definition in a PHP file. This file can then be stored
@@ -44,7 +44,7 @@ class Doctrine_Import_Schema
                                 'packagesPath'          =>  '',
                                 'generateBaseClasses'   =>  true,
                                 'baseClassesDirectory'  =>  'generated',
-                                'baseClassName'         =>  'Doctrine_Record',
+                                'baseClassName'         =>  'Doctrine_Entity',
                                 'suffix'                =>  '.php');
     
     /**
@@ -136,10 +136,10 @@ class Doctrine_Import_Schema
     /**
      * importSchema
      *
-     * A method to import a Schema and translate it into a Doctrine_Record object
+     * A method to import a Schema and translate it into a Doctrine_Entity object
      *
      * @param  string $schema       The file containing the XML schema
-     * @param  string $directory    The directory where the Doctrine_Record class will be written
+     * @param  string $directory    The directory where the Doctrine_Entity class will be written
      * @param  array $models        Optional array of models to import
      *
      * @return void

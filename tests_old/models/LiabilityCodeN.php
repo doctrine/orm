@@ -1,5 +1,5 @@
 <?php
-class LiabilityCodeN extends Doctrine_Record {
+class LiabilityCodeN extends Doctrine_Entity {
   
   public static function initMetadata($class) {
     $class->setTableName('liability_codes');

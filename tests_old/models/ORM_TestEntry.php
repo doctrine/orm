@@ -1,5 +1,5 @@
 <?php
-class ORM_TestEntry extends Doctrine_Record {
+class ORM_TestEntry extends Doctrine_Entity {
    public function setTableDefinition() {
         $this->setTableName('test_entries');
         $this->hasColumn('id', 'integer', 11, 'autoincrement|primary');

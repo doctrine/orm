@@ -20,7 +20,7 @@
  */
 /**
  * Doctrine_Collection_Offset
- * Collection of Doctrine_Record objects.
+ * Collection of Doctrine_Entity objects.
  *
  * @package     Doctrine
  * @subpackage  Collection

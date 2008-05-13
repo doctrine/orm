@@ -63,11 +63,9 @@ class Doctrine_EntityRepository
     }
     
     /**
-     * clear
-     * clears the first level cache (identityMap)
+     * Clears the repository, causing all managed entities to become detached.
      *
      * @return void
-     * @todo what about a more descriptive name? clearIdentityMap?
      */
     public function clear()
     {
@@ -77,9 +75,9 @@ class Doctrine_EntityRepository
     /**
      * Finds an entity by its primary key.
      *
-     * @param $id                       database row id
-     * @param int $hydrationMode        Doctrine::HYDRATE_ARRAY or Doctrine::HYDRATE_RECORD
-     * @return mixed                    Array or Doctrine_Record or false if no result
+     * @param $id                       The identifier.
+     * @param int $hydrationMode        The hydration mode to use.
+     * @return mixed                    Array or Doctrine_Entity or false if no result
      * @todo Remove. Move to EntityRepository.
      */
     public function find($id, $hydrationMode = null)

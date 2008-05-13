@@ -101,7 +101,7 @@ class Doctrine_PessimisticLocking_TestCase extends Doctrine_UnitTestCase {
      * Tests the retrieving of a lock's owner.
      * This test implicitly tests getLock().
      *
-     * @param Doctrine_Record $lockedRecord
+     * @param Doctrine_Entity $lockedRecord
      */
     public function testGetLockOwner() {
         $entries = $this->connection->query("FROM Forum_Entry WHERE Forum_Entry.author = 'Bart Simpson'");

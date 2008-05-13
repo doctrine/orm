@@ -1,5 +1,5 @@
 <?php
-class Element extends Doctrine_Record {
+class Element extends Doctrine_Entity {
     public static function initMetadata($class) {
         $class->setColumn('name', 'string', 100);
         $class->setColumn('parent_id', 'integer');

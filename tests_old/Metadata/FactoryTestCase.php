@@ -141,7 +141,7 @@ class Doctrine_Metadata_Factory_TestCase extends Doctrine_UnitTestCase
 }
 
 
-class Metadata_User extends Doctrine_Record
+class Metadata_User extends Doctrine_Entity
 {    
     public static function initMetadata(Doctrine_ClassMetadata $class)
     {
@@ -195,7 +195,7 @@ class Metadata_SuperManager extends Metadata_Manager
 
 
 
-class Metadata_STI_User extends Doctrine_Record
+class Metadata_STI_User extends Doctrine_Entity
 {    
     public static function initMetadata($class)
     {

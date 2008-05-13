@@ -1,5 +1,5 @@
 <?php
-class BookmarkUser extends Doctrine_Record
+class BookmarkUser extends Doctrine_Entity
 {
     public static function initMetadata($class)
     {

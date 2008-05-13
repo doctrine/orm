@@ -119,7 +119,7 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
     /**
      * Register a new entity.
      */
-    public function registerNew(Doctrine_Record $entity)
+    public function registerNew(Doctrine_Entity $entity)
     {
         if ( ! $entity->identifier()) {
             throw new Doctrine_Connection_Exception("Entity without identity "
@@ -136,7 +136,7 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
         $this->_newEntities[$oid] = $entity;
     }
     
-    public function isRegisteredNew(Doctrine_Record $entity)
+    public function isRegisteredNew(Doctrine_Entity $entity)
     {
         return isset($this->_newEntities[$entity->getOid()]);
     }
@@ -144,7 +144,7 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
     /**
      * Registers a clean entity.
      */
-    public function registerClean(Doctrine_Record $entity)
+    public function registerClean(Doctrine_Entity $entity)
     {
         $this->registerIdentity($entity);
     }
@@ -152,7 +152,7 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
     /**
      * Registers a dirty entity.
      */
-    public function registerDirty(Doctrine_Record $entity)
+    public function registerDirty(Doctrine_Entity $entity)
     {
         if ( ! $entity->identifier()) {
             throw new Doctrine_Connection_Exception("Entity without identity "
@@ -167,7 +167,7 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
         }
     }
     
-    public function isRegisteredDirty(Doctrine_Record $entity)
+    public function isRegisteredDirty(Doctrine_Entity $entity)
     {
         return isset($this->_dirtyEntities[$entity->getOid()]);
     }
@@ -175,7 +175,7 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
     /** 
      * Registers a deleted entity.
      */
-    public function registerRemoved(Doctrine_Record $entity)
+    public function registerRemoved(Doctrine_Entity $entity)
     {
         if ($entity->isTransient()) {
             return;
@@ -194,7 +194,7 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
         }
     }
     
-    public function isRegisteredRemoved(Doctrine_Record $entity)
+    public function isRegisteredRemoved(Doctrine_Entity $entity)
     {
         return isset($this->_removedEntities[$entity->getOid()]);
     }
@@ -342,7 +342,7 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
      * Adds an entity to the pool of managed entities.
      * @deprecated
      */
-    public function manage(Doctrine_Record $entity)
+    public function manage(Doctrine_Entity $entity)
     {
         $oid = $entity->getOid();
         if ( ! isset($this->_managedEntities[$oid])) {
@@ -357,7 +357,7 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
      * @return boolean                      whether ot not the operation was successful
      * @deprecated
      */
-    public function detach(Doctrine_Record $entity)
+    public function detach(Doctrine_Entity $entity)
     {
         $oid = $entity->getOid();
         if ( ! isset($this->_managedEntities[$oid])) {
@@ -386,7 +386,7 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
      *                  the entity in question is already managed.
      * @throws Doctrine_Connection_Exception  If the entity has no (database) identity.
      */
-    public function registerIdentity(Doctrine_Record $entity)
+    public function registerIdentity(Doctrine_Entity $entity)
     {
         $idHash = $this->getIdentifierHash($entity->identifier());
         if ( ! $idHash) {
@@ -406,7 +406,7 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
         $this->_identityMap[$entityName] = array();
     }
     
-    public function unregisterIdentity(Doctrine_Record $entity)
+    public function unregisterIdentity(Doctrine_Entity $entity)
     {
         $idHash = $this->getIdentifierHash($entity->identifier());
         if ( ! $idHash) {
@@ -443,10 +443,10 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
     /**
      * Checks whether an entity is registered in the identity map.
      *
-     * @param Doctrine_Record $entity
+     * @param Doctrine_Entity $entity
      * @return boolean
      */
-    public function contains(Doctrine_Record $entity)
+    public function contains(Doctrine_Entity $entity)
     {
         $id = implode(' ', $entity->identifier());
         if ( ! $id) {

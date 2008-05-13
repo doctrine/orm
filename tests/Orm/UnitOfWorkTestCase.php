@@ -31,7 +31,7 @@ class Orm_UnitOfWorkTestCase extends Doctrine_OrmTestCase
     {
         $this->_user->username = 'romanb';
         $this->_user->id = 1;
-        $this->assertEquals(Doctrine_Record::STATE_TDIRTY, $this->_user->state());
+        $this->assertEquals(Doctrine_Entity::STATE_TDIRTY, $this->_user->state());
         $this->assertFalse($this->_unitOfWork->contains($this->_user));
         $this->_unitOfWork->registerDirty($this->_user);
         $this->assertTrue($this->_unitOfWork->isRegisteredDirty($this->_user));

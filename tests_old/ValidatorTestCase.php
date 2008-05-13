@@ -235,7 +235,7 @@ class Doctrine_Validator_TestCase extends Doctrine_UnitTestCase
 
     /**
      * Tests whether the validate() callback works correctly
-     * in descendants of Doctrine_Record.
+     * in descendants of Doctrine_Entity.
      */
     public function testValidationHooks() 
     {
@@ -282,7 +282,7 @@ class Doctrine_Validator_TestCase extends Doctrine_UnitTestCase
 
     /**
      * Tests whether the validateOnInsert() callback works correctly
-     * in descendants of Doctrine_Record.
+     * in descendants of Doctrine_Entity.
      */
     public function testHookValidateOnInsert() 
     {

@@ -1,5 +1,5 @@
 <?php
-class Book extends Doctrine_Record
+class Book extends Doctrine_Entity
 {
     public static function initMetadata($class)
     {

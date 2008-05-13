@@ -1,5 +1,5 @@
 <?php
-class CmsUser extends Doctrine_Record
+class CmsUser extends Doctrine_Entity
 {
   public static function initMetadata($class) 
   {

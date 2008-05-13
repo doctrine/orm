@@ -1,6 +1,6 @@
 <?php
 
-class ForumUser extends Doctrine_Record
+class ForumUser extends Doctrine_Entity
 {
     public static function initMetadata($class) 
     {

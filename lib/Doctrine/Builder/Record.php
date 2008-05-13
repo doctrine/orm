@@ -22,7 +22,7 @@
 /**
  * Doctrine_Builder_Record
  *
- * Import builder is responsible of building Doctrine_Record classes
+ * Import builder is responsible of building Doctrine_Entity classes
  * based on a database schema.
  *
  * @package     Doctrine
@@ -93,7 +93,7 @@ class Doctrine_Builder_Record
      *
      * @var string
      */
-    protected $_baseClassName = 'Doctrine_Record';
+    protected $_baseClassName = 'Doctrine_Entity';
 
     /**
      * tpl
@@ -270,7 +270,7 @@ END;
     }
 
     /*
-     * Build the table definition of a Doctrine_Record object
+     * Build the table definition of a Doctrine_Entity object
      *
      * @param  string $table
      * @param  array  $tableColumns

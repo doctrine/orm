@@ -1,5 +1,5 @@
 <?php
-class TestMovieUserVote extends Doctrine_Record  
+class TestMovieUserVote extends Doctrine_Entity  
 {    
     public static function initMetadata($class) {
         $class->setColumn('vote', 'string', 30);

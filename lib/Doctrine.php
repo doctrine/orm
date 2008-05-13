@@ -289,7 +289,7 @@ final class Doctrine
     /**
      * FETCHMODE_RECORD
      *
-     * Specifies that the fetch method shall return Doctrine_Record
+     * Specifies that the fetch method shall return Doctrine_Entity
      * objects as the elements of the result set.
      *
      * This is the default fetchmode.
@@ -471,6 +471,14 @@ final class Doctrine
      * @see self::ATTR_HYDRATE
      */
     const HYDRATE_NONE              = 4;
+    
+    /* new hydration modes. move to Query class when it's time. */
+    //const HYDRATE_IDENTITY_OBJECT = 1; // default, auto-adds PKs, produces object graphs
+    //const HYDRATE_IDENTITY_ARRAY = 2; // auto-adds PKs, produces array graphs
+    //const HYDRATE_SCALAR = 3; // produces flat result list with scalar values
+    //const HYDRATE_SINGLE_SCALAR = 4; // produces a single scalar value
+    //const HYDRATE_NONE = 5; // produces a result set as it's returned by the db
+    
 
     /**
      * VALIDATE CONSTANTS
@@ -709,8 +717,8 @@ final class Doctrine
      *
      * Get all the loaded models, you can provide an array of classes or it will use get_declared_classes()
      *
-     * Will filter through an array of classes and return the Doctrine_Records out of them.
-     * If you do not specify $classes it will return all of the currently loaded Doctrine_Records
+     * Will filter through an array of classes and return the Doctrine_Entitys out of them.
+     * If you do not specify $classes it will return all of the currently loaded Doctrine_Entitys
      *
      * @return array   $loadedModels
      */
@@ -747,7 +755,7 @@ final class Doctrine
     /**
      * isValidModelClass
      *
-     * Checks if what is passed is a valid Doctrine_Record
+     * Checks if what is passed is a valid Doctrine_Entity
      * Will load class in to memory in order to inflect it and find out information about the class
      *
      * @param   mixed   $class Can be a string named after the class, an instance of the class, or an instance of the class reflected
@@ -755,7 +763,7 @@ final class Doctrine
      */
     public static function isValidModelClass($class)
     {
-        if ($class instanceof Doctrine_Record) {
+        if ($class instanceof Doctrine_Entity) {
             $class = get_class($class);
         }
 
@@ -766,10 +774,10 @@ final class Doctrine
         if ($class instanceof ReflectionClass) {
             // Skip the following classes
             // - abstract classes
-            // - not a subclass of Doctrine_Record
+            // - not a subclass of Doctrine_Entity
             // - don't have a setTableDefinition method
             if (!$class->isAbstract() &&
-                $class->isSubClassOf('Doctrine_Record')) {
+                $class->isSubClassOf('Doctrine_Entity')) {
 
                 return true;
             }
@@ -805,7 +813,7 @@ final class Doctrine
     /**
      * generateModelsFromDb
      *
-     * method for importing existing schema to Doctrine_Record classes
+     * method for importing existing schema to Doctrine_Entity classes
      *
      * @param string $directory Directory to write your models to
      * @param array $databases Array of databases to generate models for

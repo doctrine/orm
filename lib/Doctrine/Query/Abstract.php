@@ -249,7 +249,7 @@ abstract class Doctrine_Query_Abstract
             $connection = Doctrine_Manager::getInstance()->getCurrentConnection();
         }
         if ($hydrator === null) {
-            $hydrator = new Doctrine_Hydrator();
+            $hydrator = new Doctrine_Hydrator($connection);
         }
         $this->_conn = $connection;
         $this->_hydrator = $hydrator;
@@ -988,9 +988,9 @@ abstract class Doctrine_Query_Abstract
             if ($cached === false) {
                 // cache miss
                 $stmt = $this->_execute($params);
-                $this->_hydrator->setQueryComponents($this->_queryComponents);
-                $result = $this->_hydrator->hydrateResultSet($stmt, $this->_tableAliasMap,
-                        Doctrine::HYDRATE_ARRAY);
+                $result = $this->_hydrator->hydrateResultSet(
+                        $this->_createParserResult($stmt, $this->_queryComponents,
+                                $this->_tableAliasMap, Doctrine::HYDRATE_ARRAY));
 
                 $cached = $this->getCachedForm($result);
                 $cacheDriver->save($hash, $cached, $this->_resultCacheTTL);
@@ -1005,9 +1005,30 @@ abstract class Doctrine_Query_Abstract
                 return $stmt;
             }
             
-            $this->_hydrator->setQueryComponents($this->_queryComponents);
-            return $this->_hydrator->hydrateResultSet($stmt, $this->_tableAliasMap, $hydrationMode);
+            return $this->_hydrator->hydrateResultSet(
+                    $this->_createParserResult($stmt, $this->_queryComponents,
+                            $this->_tableAliasMap, $hydrationMode));
         }
+    }
+    
+    /**
+     * Creates a parser result object.
+     *
+     * @param unknown_type $stmt
+     * @param unknown_type $queryComponents
+     * @param unknown_type $tableToClassAliasMap
+     * @param unknown_type $hydrationMode
+     * @return unknown
+     */
+    private function _createParserResult($stmt, $queryComponents, $tableToClassAliasMap,
+            $hydrationMode)
+    {
+        $parserResult = new Doctrine_Query_ParserResultDummy();
+        $parserResult->setDatabaseStatement($stmt);
+        $parserResult->setHydrationMode($hydrationMode);
+        $parserResult->setQueryComponents($queryComponents);
+        $parserResult->setTableToClassAliasMap($tableToClassAliasMap);
+        return $parserResult;
     }
     
     /**

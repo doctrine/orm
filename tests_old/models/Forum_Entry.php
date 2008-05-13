@@ -1,5 +1,5 @@
 <?php
-class Forum_Entry extends Doctrine_Record { 
+class Forum_Entry extends Doctrine_Entity { 
     public static function initMetadata($class) {
         $class->setColumn('author', 'string', 50); 
         $class->setColumn('topic', 'string', 100);

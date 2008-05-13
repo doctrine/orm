@@ -1,5 +1,5 @@
 <?php
-class ForumCategory extends Doctrine_Record {
+class ForumCategory extends Doctrine_Entity {
     public static function initMetadata($class) {
         $class->mapColumn('position', 'integer');
         $class->mapColumn('name', 'string', 255);

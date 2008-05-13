@@ -1,5 +1,5 @@
 <?php
-class ClientModel extends Doctrine_Record
+class ClientModel extends Doctrine_Entity
 {
 	public static function initMetadata($class) 
     {
@@ -14,7 +14,7 @@ class ClientModel extends Doctrine_Record
 	}
 }
 
-class ClientToAddressModel extends Doctrine_Record 
+class ClientToAddressModel extends Doctrine_Entity 
 {
 	public static function initMetadata($class) 
     {
@@ -28,7 +28,7 @@ class ClientToAddressModel extends Doctrine_Record
 	}
 }
 
-class AddressModel extends Doctrine_Record 
+class AddressModel extends Doctrine_Entity 
 {
 	public static function initMetadata($class) 
     {

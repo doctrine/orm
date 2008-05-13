@@ -84,7 +84,7 @@ class Doctrine_Record_Filter_TestCase extends Doctrine_UnitTestCase
         }
     }
 }
-class CompositeRecord extends Doctrine_Record
+class CompositeRecord extends Doctrine_Entity
 {
     public static function initMetadata($class)
     {
@@ -94,7 +94,7 @@ class CompositeRecord extends Doctrine_Record
     	$class->unshiftFilter(new Doctrine_Record_Filter_Compound(array('Related')));
     }
 }
-class RelatedCompositeRecord extends Doctrine_Record
+class RelatedCompositeRecord extends Doctrine_Entity
 {
     public static function initMetadata($class)
     {

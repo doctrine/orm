@@ -149,18 +149,18 @@ class Doctrine_Table_TestCase extends Doctrine_UnitTestCase
     public function testCreate() 
     {
         $record = $this->objTable->create();
-        $this->assertTrue($record instanceof Doctrine_Record);
-        $this->assertTrue($record->state() == Doctrine_Record::STATE_TCLEAN);
+        $this->assertTrue($record instanceof Doctrine_Entity);
+        $this->assertTrue($record->state() == Doctrine_Entity::STATE_TCLEAN);
     }
 
     public function testFind() 
     {
         $record = $this->objTable->find(4);
-        $this->assertTrue($record instanceof Doctrine_Record);
+        $this->assertTrue($record instanceof Doctrine_Entity);
         
         try {
             $record = $this->objTable->find('4');
-            $this->assertTrue($record instanceof Doctrine_Record);
+            $this->assertTrue($record instanceof Doctrine_Entity);
         } catch(Exception $e) {
             $this->assertTrue(false);
         }
@@ -171,7 +171,7 @@ class Doctrine_Table_TestCase extends Doctrine_UnitTestCase
             $this->assertTrue( ! is_object($record));
             $this->assertTrue(array_key_exists('id', $record));
             $this->assertTrue(array_key_exists('name', $record));
-            $this->assertTrue( ! $record instanceof Doctrine_Record);
+            $this->assertTrue( ! $record instanceof Doctrine_Entity);
         } catch(Exception $e) {
             $this->assertTrue(false);
         }
@@ -221,7 +221,7 @@ class Doctrine_Table_TestCase extends Doctrine_UnitTestCase
     public function testGetProxy() 
     {
         $user = $this->objTable->getProxy(4);
-        $this->assertTrue($user instanceof Doctrine_Record);
+        $this->assertTrue($user instanceof Doctrine_Entity);
 
         try {
             $record = $this->objTable->find(123);

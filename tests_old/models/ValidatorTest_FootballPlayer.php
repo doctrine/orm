@@ -1,5 +1,5 @@
 <?php
-class ValidatorTest_FootballPlayer extends Doctrine_Record {
+class ValidatorTest_FootballPlayer extends Doctrine_Entity {
    public static function initMetadata($class) {
       $class->setColumn('person_id', 'string', 255);     
       $class->setColumn('team_name', 'string', 255);

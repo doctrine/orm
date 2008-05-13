@@ -84,7 +84,7 @@ class Doctrine_Ticket_749_TestCase extends Doctrine_UnitTestCase
     }
 }
 
-class Parent749 extends Doctrine_Record
+class Parent749 extends Doctrine_Entity
 {
   public function setTableDefinition()
   {
@@ -124,7 +124,7 @@ class Record749 extends Parent749
   }
 }
 
-class RelatedRecord749 extends Doctrine_Record
+class RelatedRecord749 extends Doctrine_Entity
 {
   public function setTableDefinition()
   {

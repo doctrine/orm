@@ -1,5 +1,5 @@
 <?php
-class ValidatorTest extends Doctrine_Record {
+class ValidatorTest extends Doctrine_Entity {
     public static function initMetadata($class) {
         $class->setColumn('mymixed', 'string', 100);
         $class->setColumn('mystring', 'string', 100,

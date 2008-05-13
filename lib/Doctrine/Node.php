@@ -33,7 +33,7 @@
 class Doctrine_Node implements IteratorAggregate
 {
     /**
-     * @param object    $record   reference to associated Doctrine_Record instance
+     * @param object    $record   reference to associated Doctrine_Entity instance
      */
     protected $record;
 
@@ -62,10 +62,10 @@ class Doctrine_Node implements IteratorAggregate
     /**
      * contructor, creates node with reference to record and any options
      *
-     * @param object $record                    instance of Doctrine_Record
+     * @param object $record                    instance of Doctrine_Entity
      * @param array $options                    options
      */
-    public function __construct(Doctrine_Record $record, $options)
+    public function __construct(Doctrine_Entity $record, $options)
     {
         $this->record = $record;
         $this->options = $options;
@@ -90,12 +90,12 @@ class Doctrine_Node implements IteratorAggregate
     /**
      * factory method to return node instance based upon chosen implementation
      *
-     * @param object $record                    instance of Doctrine_Record
+     * @param object $record                    instance of Doctrine_Entity
      * @param string $impName                   implementation (NestedSet, AdjacencyList, MaterializedPath)
      * @param array $options                    options
      * @return object $options                  instance of Doctrine_Node
      */
-    public static function factory(Doctrine_Record $record, $implName, $options = array())
+    public static function factory(Doctrine_Entity $record, $implName, $options = array())
     {
         $class = 'Doctrine_Node_' . $implName;
 
@@ -109,9 +109,9 @@ class Doctrine_Node implements IteratorAggregate
     /**
      * setter for record attribute
      *
-     * @param object $record                    instance of Doctrine_Record
+     * @param object $record                    instance of Doctrine_Entity
      */
-    public function setRecord(Doctrine_Record $record)
+    public function setRecord(Doctrine_Entity $record)
     {
         $this->record = $record;
     }
@@ -119,7 +119,7 @@ class Doctrine_Node implements IteratorAggregate
     /**
      * getter for record attribute
      *
-     * @return object                           instance of Doctrine_Record
+     * @return object                           instance of Doctrine_Entity
      */
     public function getRecord()
     {

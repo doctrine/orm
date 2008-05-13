@@ -1,5 +1,5 @@
 <?php
-class MysqlIndexTestRecord extends Doctrine_Record
+class MysqlIndexTestRecord extends Doctrine_Entity
 {
     public static function initMetadata($class) 
     {

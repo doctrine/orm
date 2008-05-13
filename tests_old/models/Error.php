@@ -1,5 +1,5 @@
 <?php
-class Error extends Doctrine_Record {
+class Error extends Doctrine_Entity {
     public static function initMetadata($class) {
         $class->setColumn('message', 'string',200);
         $class->setColumn('code', 'integer',11);

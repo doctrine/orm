@@ -1,5 +1,5 @@
 <?php
-class TreeLeaf extends Doctrine_Record
+class TreeLeaf extends Doctrine_Entity
 {
     public static function initMetadata($class)
     {

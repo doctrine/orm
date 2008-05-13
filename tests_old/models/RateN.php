@@ -1,5 +1,5 @@
 <?php
-class RateN extends Doctrine_Record{
+class RateN extends Doctrine_Entity{
   
   public static function initMetadata($class) {
     $class->setTableName('rates');

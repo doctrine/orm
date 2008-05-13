@@ -1,5 +1,5 @@
 <?php
-class SoftDeleteTest extends Doctrine_Record
+class SoftDeleteTest extends Doctrine_Entity
 {
     public static function initMetadata($class)
     {

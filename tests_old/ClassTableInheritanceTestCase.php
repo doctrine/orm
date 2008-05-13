@@ -225,7 +225,7 @@ class Doctrine_ClassTableInheritance_TestCase extends Doctrine_UnitTestCase
         $this->conn->addListener(new Doctrine_EventListener());
     }
 }
-class CTITestParent1 extends Doctrine_Record
+class CTITestParent1 extends Doctrine_Entity
 {
     public function setTableDefinition()
     {
@@ -265,7 +265,7 @@ class CTITest extends CTITestParent4
     }
 }
 
-class CTITestOneToManyRelated extends Doctrine_Record
+class CTITestOneToManyRelated extends Doctrine_Entity
 {
     public function setTableDefinition()
     {

@@ -60,7 +60,7 @@ class Doctrine_View_TestCase extends Doctrine_UnitTestCase
         $this->assertTrue($users instanceof Doctrine_Collection);
         $this->assertEqual($users->count(), 8);
         $this->assertEqual($users[0]->name, 'zYne');
-        $this->assertEqual($users[0]->state(), Doctrine_Record::STATE_CLEAN);
+        $this->assertEqual($users[0]->state(), Doctrine_Entity::STATE_CLEAN);
         $this->assertEqual($count, $this->conn->count());
 
         $success = true;

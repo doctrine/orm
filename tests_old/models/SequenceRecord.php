@@ -1,5 +1,5 @@
 <?php
-class SequenceRecord extends Doctrine_Record {
+class SequenceRecord extends Doctrine_Entity {
     public function setTableDefinition()
     {
         $this->hasColumn('id', 'integer', null, array('primary', 'sequence'));

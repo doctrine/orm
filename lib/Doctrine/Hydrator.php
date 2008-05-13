@@ -58,22 +58,27 @@ class Doctrine_Hydrator extends Doctrine_Hydrator_Abstract
      *                         )
      * @return mixed  The created object/array graph.
      */
-    public function hydrateResultSet($stmt, $tableAliases, $hydrationMode = null)
+    public function hydrateResultSet($parserResult)
     {        
-        if ($hydrationMode === null) {
+        if ($parserResult->getHydrationMode() === null) {
             $hydrationMode = $this->_hydrationMode;
+        } else {
+            $hydrationMode = $parserResult->getHydrationMode();
         }
+        
+        $stmt = $parserResult->getDatabaseStatement();
         
         if ($hydrationMode == Doctrine::HYDRATE_NONE) {
             return $stmt->fetchAll(PDO::FETCH_NUM);
         }
         
-        $this->_tableAliases = $tableAliases;
+        $this->_tableAliases = $parserResult->getTableToClassAliasMap();
+        $this->_queryComponents = $parserResult->getQueryComponents();
 
         if ($hydrationMode == Doctrine::HYDRATE_ARRAY) {
             $driver = new Doctrine_Hydrator_ArrayDriver();
         } else {
-            $driver = new Doctrine_Hydrator_RecordDriver();
+            $driver = new Doctrine_Hydrator_RecordDriver($this->_em);
         }
 
         $event = new Doctrine_Event(null, Doctrine_Event::HYDRATE, null);
@@ -294,7 +299,7 @@ class Doctrine_Hydrator extends Doctrine_Hydrator_Abstract
                 end($coll);
                 $prev[$dqlAlias] =& $coll[key($coll)];
             }
-        } else if ($coll instanceof Doctrine_Record) {
+        } else if ($coll instanceof Doctrine_Entity) {
             $prev[$dqlAlias] = $coll;
         } else if (count($coll) > 0) {
             $prev[$dqlAlias] = $coll->getLast();

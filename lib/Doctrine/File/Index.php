@@ -30,7 +30,7 @@
  * @link        www.phpdoctrine.org
  * @since       1.0
  */
-class Doctrine_File_Index extends Doctrine_Record
+class Doctrine_File_Index extends Doctrine_Entity
 {
     public function setTableDefinition()
     {

@@ -4,9 +4,12 @@ require_once 'lib/mocks/Doctrine_HydratorMockStatement.php';
  
 class Orm_Hydration_BasicHydrationTest extends Doctrine_OrmTestCase
 {
+    private $_em;
+    
     protected function setUp()
     {
         parent::setUp();
+        $this->_em = $this->sharedFixture['connection'];
     }
     
     /** Getter for the hydration mode dataProvider */
@@ -18,13 +21,26 @@ class Orm_Hydration_BasicHydrationTest extends Doctrine_OrmTestCase
         );
     }
     
+    /** Helper method */
+    private function _createParserResult($stmt, $queryComponents, $tableToClassAliasMap,
+            $hydrationMode, $isMixedQuery = false)
+    {
+        $parserResult = new Doctrine_Query_ParserResultDummy();
+        $parserResult->setDatabaseStatement($stmt);
+        $parserResult->setHydrationMode($hydrationMode);
+        $parserResult->setQueryComponents($queryComponents);
+        $parserResult->setTableToClassAliasMap($tableToClassAliasMap);
+        $parserResult->setMixedQuery($isMixedQuery);
+        return $parserResult;
+    }
+    
     /**
      * Select u.id, u.name from CmsUser u
      *
      * @dataProvider hydrationModeProvider
      */
     public function testNewHydrationSimpleEntityQuery($hydrationMode)
-    {
+    {        
         // Faked query components
         $queryComponents = array(
             'u' => array(
@@ -55,10 +71,10 @@ class Orm_Hydration_BasicHydrationTest extends Doctrine_OrmTestCase
         
             
         $stmt = new Doctrine_HydratorMockStatement($resultSet);
-        $hydrator = new Doctrine_HydratorNew();
-        $hydrator->setQueryComponents($queryComponents);
+        $hydrator = new Doctrine_HydratorNew($this->_em);
         
-        $result = $hydrator->hydrateResultSet($stmt, $tableAliasMap, $hydrationMode);        
+        $result = $hydrator->hydrateResultSet($this->_createParserResult(
+                $stmt, $queryComponents, $tableAliasMap, $hydrationMode));        
         
         $this->assertEquals(2, count($result));
         $this->assertEquals(1, $result[0]['id']);
@@ -68,8 +84,8 @@ class Orm_Hydration_BasicHydrationTest extends Doctrine_OrmTestCase
           
         if ($hydrationMode == Doctrine::HYDRATE_RECORD) {
             $this->assertTrue($result instanceof Doctrine_Collection);
-            $this->assertTrue($result[0] instanceof Doctrine_Record);
-            $this->assertTrue($result[1] instanceof Doctrine_Record);
+            $this->assertTrue($result[0] instanceof Doctrine_Entity);
+            $this->assertTrue($result[1] instanceof Doctrine_Entity);
         } else {
             $this->assertTrue(is_array($result));
         }
@@ -135,12 +151,10 @@ class Orm_Hydration_BasicHydrationTest extends Doctrine_OrmTestCase
             );
             
         $stmt = new Doctrine_HydratorMockStatement($resultSet);
-        $hydrator = new Doctrine_HydratorNew();
-        $hydrator->setQueryComponents($queryComponents);
+        $hydrator = new Doctrine_HydratorNew($this->_em);
         
-        $hydrator->setResultMixed(true);
-        
-        $result = $hydrator->hydrateResultSet($stmt, $tableAliasMap, $hydrationMode);
+        $result = $hydrator->hydrateResultSet($this->_createParserResult(
+                $stmt, $queryComponents, $tableAliasMap, $hydrationMode, true));
         //var_dump($result);
         
         $this->assertEquals(2, count($result));
@@ -161,11 +175,11 @@ class Orm_Hydration_BasicHydrationTest extends Doctrine_OrmTestCase
         $this->assertEquals(91, $result[1][0]['phonenumbers'][0]['phonenumber']);
         
         if ($hydrationMode == Doctrine::HYDRATE_RECORD) {
-            $this->assertTrue($result[0][0] instanceof Doctrine_Record);
+            $this->assertTrue($result[0][0] instanceof Doctrine_Entity);
             $this->assertTrue($result[0][0]['phonenumbers'] instanceof Doctrine_Collection);
-            $this->assertTrue($result[0][0]['phonenumbers'][0] instanceof Doctrine_Record);
-            $this->assertTrue($result[0][0]['phonenumbers'][1] instanceof Doctrine_Record);
-            $this->assertTrue($result[1][0] instanceof Doctrine_Record);
+            $this->assertTrue($result[0][0]['phonenumbers'][0] instanceof Doctrine_Entity);
+            $this->assertTrue($result[0][0]['phonenumbers'][1] instanceof Doctrine_Entity);
+            $this->assertTrue($result[1][0] instanceof Doctrine_Entity);
             $this->assertTrue($result[1][0]['phonenumbers'] instanceof Doctrine_Collection);
         } 
     }
@@ -223,12 +237,10 @@ class Orm_Hydration_BasicHydrationTest extends Doctrine_OrmTestCase
         
             
         $stmt = new Doctrine_HydratorMockStatement($resultSet);
-        $hydrator = new Doctrine_HydratorNew();
-        $hydrator->setQueryComponents($queryComponents);
+        $hydrator = new Doctrine_HydratorNew($this->_em);
         
-        $hydrator->setResultMixed(true);
-        
-        $result = $hydrator->hydrateResultSet($stmt, $tableAliasMap, $hydrationMode);
+        $result = $hydrator->hydrateResultSet($this->_createParserResult(
+                $stmt, $queryComponents, $tableAliasMap, $hydrationMode, true));
         //var_dump($result);
         
         $this->assertEquals(2, count($result));
@@ -242,8 +254,8 @@ class Orm_Hydration_BasicHydrationTest extends Doctrine_OrmTestCase
         $this->assertEquals(1, $result[1]['numPhones']);
         
         if ($hydrationMode == Doctrine::HYDRATE_RECORD) {
-            $this->assertTrue($result[0][0] instanceof Doctrine_Record);
-            $this->assertTrue($result[1][0] instanceof Doctrine_Record);
+            $this->assertTrue($result[0][0] instanceof Doctrine_Entity);
+            $this->assertTrue($result[1][0] instanceof Doctrine_Entity);
         }
     }
     
@@ -308,13 +320,10 @@ class Orm_Hydration_BasicHydrationTest extends Doctrine_OrmTestCase
         
             
         $stmt = new Doctrine_HydratorMockStatement($resultSet);
-        $hydrator = new Doctrine_HydratorNew();
-        $hydrator->setQueryComponents($queryComponents);
+        $hydrator = new Doctrine_HydratorNew($this->_em);
         
-        // give the hydrator an artificial hint
-        $hydrator->setResultMixed(true);
-        
-        $result = $hydrator->hydrateResultSet($stmt, $tableAliasMap, $hydrationMode);
+        $result = $hydrator->hydrateResultSet($this->_createParserResult(
+                $stmt, $queryComponents, $tableAliasMap, $hydrationMode, true));
         if ($hydrationMode == Doctrine::HYDRATE_ARRAY) {
             //var_dump($result);
         }
@@ -340,8 +349,8 @@ class Orm_Hydration_BasicHydrationTest extends Doctrine_OrmTestCase
         $this->assertEquals('JWAGE', $result[1]['nameUpper']);
         
         if ($hydrationMode == Doctrine::HYDRATE_RECORD) {
-            $this->assertTrue($result[0]['1'] instanceof Doctrine_Record);
-            $this->assertTrue($result[1]['2'] instanceof Doctrine_Record);
+            $this->assertTrue($result[0]['1'] instanceof Doctrine_Entity);
+            $this->assertTrue($result[1]['2'] instanceof Doctrine_Entity);
             $this->assertTrue($result[0]['1']['phonenumbers'] instanceof Doctrine_Collection);
             $this->assertEquals(2, count($result[0]['1']['phonenumbers']));
         }
@@ -450,12 +459,10 @@ class Orm_Hydration_BasicHydrationTest extends Doctrine_OrmTestCase
             );
             
         $stmt = new Doctrine_HydratorMockStatement($resultSet);
-        $hydrator = new Doctrine_HydratorNew();
-        $hydrator->setQueryComponents($queryComponents);
+        $hydrator = new Doctrine_HydratorNew($this->_em);
         
-        $hydrator->setResultMixed(true);
-        
-        $result = $hydrator->hydrateResultSet($stmt, $tableAliasMap, $hydrationMode);
+        $result = $hydrator->hydrateResultSet($this->_createParserResult(
+                $stmt, $queryComponents, $tableAliasMap, $hydrationMode, true));
         if ($hydrationMode == Doctrine::HYDRATE_ARRAY) {
             //var_dump($result);
         }
@@ -484,18 +491,18 @@ class Orm_Hydration_BasicHydrationTest extends Doctrine_OrmTestCase
         $this->assertEquals('PHP6', $result[1][0]['articles'][1]['topic']);
         
         if ($hydrationMode == Doctrine::HYDRATE_RECORD) {
-            $this->assertTrue($result[0][0] instanceof Doctrine_Record);
+            $this->assertTrue($result[0][0] instanceof Doctrine_Entity);
             $this->assertTrue($result[0][0]['phonenumbers'] instanceof Doctrine_Collection);
-            $this->assertTrue($result[0][0]['phonenumbers'][0] instanceof Doctrine_Record);
-            $this->assertTrue($result[0][0]['phonenumbers'][1] instanceof Doctrine_Record);
+            $this->assertTrue($result[0][0]['phonenumbers'][0] instanceof Doctrine_Entity);
+            $this->assertTrue($result[0][0]['phonenumbers'][1] instanceof Doctrine_Entity);
             $this->assertTrue($result[0][0]['articles'] instanceof Doctrine_Collection);
-            $this->assertTrue($result[0][0]['articles'][0] instanceof Doctrine_Record);
-            $this->assertTrue($result[0][0]['articles'][1] instanceof Doctrine_Record);
-            $this->assertTrue($result[1][0] instanceof Doctrine_Record);
+            $this->assertTrue($result[0][0]['articles'][0] instanceof Doctrine_Entity);
+            $this->assertTrue($result[0][0]['articles'][1] instanceof Doctrine_Entity);
+            $this->assertTrue($result[1][0] instanceof Doctrine_Entity);
             $this->assertTrue($result[1][0]['phonenumbers'] instanceof Doctrine_Collection);
-            $this->assertTrue($result[1][0]['phonenumbers'][0] instanceof Doctrine_Record);
-            $this->assertTrue($result[1][0]['articles'][0] instanceof Doctrine_Record);
-            $this->assertTrue($result[1][0]['articles'][1] instanceof Doctrine_Record);
+            $this->assertTrue($result[1][0]['phonenumbers'][0] instanceof Doctrine_Entity);
+            $this->assertTrue($result[1][0]['articles'][0] instanceof Doctrine_Entity);
+            $this->assertTrue($result[1][0]['articles'][1] instanceof Doctrine_Entity);
         }
     }
     
@@ -625,12 +632,10 @@ class Orm_Hydration_BasicHydrationTest extends Doctrine_OrmTestCase
             );
             
         $stmt = new Doctrine_HydratorMockStatement($resultSet);
-        $hydrator = new Doctrine_HydratorNew();
-        $hydrator->setQueryComponents($queryComponents);
+        $hydrator = new Doctrine_HydratorNew($this->_em);
         
-        $hydrator->setResultMixed(true);
-        
-        $result = $hydrator->hydrateResultSet($stmt, $tableAliasMap, $hydrationMode);
+        $result = $hydrator->hydrateResultSet($this->_createParserResult(
+                $stmt, $queryComponents, $tableAliasMap, $hydrationMode, true));
         if ($hydrationMode == Doctrine::HYDRATE_ARRAY) {
             //var_dump($result);
         }
@@ -667,23 +672,23 @@ class Orm_Hydration_BasicHydrationTest extends Doctrine_OrmTestCase
         $this->assertFalse(isset($result[1][0]['articles'][1]['comments']));
         
         if ($hydrationMode == Doctrine::HYDRATE_RECORD) {
-            $this->assertTrue($result[0][0] instanceof Doctrine_Record);
-            $this->assertTrue($result[1][0] instanceof Doctrine_Record);
+            $this->assertTrue($result[0][0] instanceof Doctrine_Entity);
+            $this->assertTrue($result[1][0] instanceof Doctrine_Entity);
             // phonenumbers
             $this->assertTrue($result[0][0]['phonenumbers'] instanceof Doctrine_Collection);
-            $this->assertTrue($result[0][0]['phonenumbers'][0] instanceof Doctrine_Record);
-            $this->assertTrue($result[0][0]['phonenumbers'][1] instanceof Doctrine_Record);
+            $this->assertTrue($result[0][0]['phonenumbers'][0] instanceof Doctrine_Entity);
+            $this->assertTrue($result[0][0]['phonenumbers'][1] instanceof Doctrine_Entity);
             $this->assertTrue($result[1][0]['phonenumbers'] instanceof Doctrine_Collection);
-            $this->assertTrue($result[1][0]['phonenumbers'][0] instanceof Doctrine_Record);
+            $this->assertTrue($result[1][0]['phonenumbers'][0] instanceof Doctrine_Entity);
             // articles
             $this->assertTrue($result[0][0]['articles'] instanceof Doctrine_Collection);
-            $this->assertTrue($result[0][0]['articles'][0] instanceof Doctrine_Record);
-            $this->assertTrue($result[0][0]['articles'][1] instanceof Doctrine_Record);
-            $this->assertTrue($result[1][0]['articles'][0] instanceof Doctrine_Record);
-            $this->assertTrue($result[1][0]['articles'][1] instanceof Doctrine_Record);
+            $this->assertTrue($result[0][0]['articles'][0] instanceof Doctrine_Entity);
+            $this->assertTrue($result[0][0]['articles'][1] instanceof Doctrine_Entity);
+            $this->assertTrue($result[1][0]['articles'][0] instanceof Doctrine_Entity);
+            $this->assertTrue($result[1][0]['articles'][1] instanceof Doctrine_Entity);
             // article comments
             $this->assertTrue($result[0][0]['articles'][0]['comments'] instanceof Doctrine_Collection);
-            $this->assertTrue($result[0][0]['articles'][0]['comments'][0] instanceof Doctrine_Record);
+            $this->assertTrue($result[0][0]['articles'][0]['comments'][0] instanceof Doctrine_Entity);
         }
     }
     
@@ -772,12 +777,10 @@ class Orm_Hydration_BasicHydrationTest extends Doctrine_OrmTestCase
             );
             
         $stmt = new Doctrine_HydratorMockStatement($resultSet);
-        $hydrator = new Doctrine_HydratorNew();
-        $hydrator->setQueryComponents($queryComponents);
+        $hydrator = new Doctrine_HydratorNew($this->_em);
         
-        //$hydrator->setResultMixed(true);
-        
-        $result = $hydrator->hydrateResultSet($stmt, $tableAliasMap, $hydrationMode);
+        $result = $hydrator->hydrateResultSet($this->_createParserResult(
+                $stmt, $queryComponents, $tableAliasMap, $hydrationMode));
         if ($hydrationMode == Doctrine::HYDRATE_ARRAY) {
             //var_dump($result);
         }
@@ -794,8 +797,8 @@ class Orm_Hydration_BasicHydrationTest extends Doctrine_OrmTestCase
             $this->assertTrue(is_array($result[1]));
         } else {
             $this->assertTrue($result instanceof Doctrine_Collection);
-            $this->assertTrue($result[0] instanceof Doctrine_Record);
-            $this->assertTrue($result[1] instanceof Doctrine_Record);
+            $this->assertTrue($result[0] instanceof Doctrine_Entity);
+            $this->assertTrue($result[1] instanceof Doctrine_Entity);
         }     
 
     }

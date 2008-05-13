@@ -36,7 +36,7 @@ class Doctrine_Ticket_697_TestCase extends Doctrine_UnitTestCase
     }
 }
 
-class T697_Person extends Doctrine_Record
+class T697_Person extends Doctrine_Entity
 {
     public static function initMetadata($class)
     {

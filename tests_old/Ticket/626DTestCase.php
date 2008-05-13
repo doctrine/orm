@@ -46,7 +46,7 @@ class Doctrine_Ticket_626D_TestCase extends Doctrine_UnitTestCase
 }
 
 
-class T626D_Student1 extends Doctrine_Record
+class T626D_Student1 extends Doctrine_Entity
 {
   public static function initMetadata($class)
   {

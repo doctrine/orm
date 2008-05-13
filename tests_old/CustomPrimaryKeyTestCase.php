@@ -44,7 +44,7 @@ class Doctrine_CustomPrimaryKey_TestCase extends Doctrine_UnitTestCase
     public function testOperations() 
     {
         $c = new CustomPK();
-        $this->assertTrue($c instanceof Doctrine_Record);
+        $this->assertTrue($c instanceof Doctrine_Entity);
 
         $c->name = 'custom pk test';
         $this->assertEqual($c->identifier(), array());

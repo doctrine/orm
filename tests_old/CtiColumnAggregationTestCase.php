@@ -34,7 +34,7 @@ class Doctrine_CtiColumnAggregation_TestCase extends Doctrine_UnitTestCase
 {
 
 }
-abstract class CTICAAbstractBase extends Doctrine_Record
+abstract class CTICAAbstractBase extends Doctrine_Entity
 { }
 class CTICATestParent1 extends CTICAAbstractBase
 {
@@ -85,7 +85,7 @@ class CTICATest2 extends CTICATestParent2
     }
 }
 
-class CTICATestOneToManyRelated extends Doctrine_Record
+class CTICATestOneToManyRelated extends Doctrine_Entity
 {
     public function setTableDefinition()
     {

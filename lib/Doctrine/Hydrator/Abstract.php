@@ -55,14 +55,17 @@ abstract class Doctrine_Hydrator_Abstract
     protected $_hydrationMode = Doctrine::HYDRATE_RECORD;
     
     protected $_nullObject;
+    
+    protected $_em;
 
     /**
      * constructor
      *
      * @param Doctrine_Connection|null $connection
      */
-    public function __construct()
+    public function __construct(Doctrine_Connection $em)
     {
+        $this->_em = $em;
         $this->_nullObject = Doctrine_Null::$INSTANCE;
     }
 
@@ -156,6 +159,6 @@ abstract class Doctrine_Hydrator_Abstract
      * @param mixed $stmt
      * @return array
      */
-    abstract public function hydrateResultSet($stmt, $tableAliases, $hydrationMode = null);
+    abstract public function hydrateResultSet($parserResult);
     
 }

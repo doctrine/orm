@@ -1,5 +1,5 @@
 <?php
-class NestedSetTest_SingleRootNode extends Doctrine_Record {
+class NestedSetTest_SingleRootNode extends Doctrine_Entity {
     
     public static function initMetadata($class) {
         $class->actAs('NestedSet');

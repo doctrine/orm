@@ -1,5 +1,5 @@
 <?php
-class PolicyCodeN extends Doctrine_Record {
+class PolicyCodeN extends Doctrine_Entity {
   
   public static function initMetadata($class) {
     $class->setTableName('policy_codes');

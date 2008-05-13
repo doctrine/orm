@@ -1,5 +1,5 @@
 <?php
-class FooForeignlyOwned extends Doctrine_Record
+class FooForeignlyOwned extends Doctrine_Entity
 {
     public static function initMetadata($class)
     {

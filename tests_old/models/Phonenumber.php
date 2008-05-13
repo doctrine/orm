@@ -1,5 +1,5 @@
 <?php
-class Phonenumber extends Doctrine_Record 
+class Phonenumber extends Doctrine_Entity 
 {
     public static function initMetadata($class) 
     {

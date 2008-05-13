@@ -56,7 +56,7 @@ class Doctrine_Validator_Unique
         // unique value already exists in the database IF the record in the database is the same
         // as the one that is validated here.
         $state = $this->invoker->state();
-        if ( ! ($state == Doctrine_Record::STATE_TDIRTY || $state == Doctrine_Record::STATE_TCLEAN)) {
+        if ( ! ($state == Doctrine_Entity::STATE_TDIRTY || $state == Doctrine_Entity::STATE_TCLEAN)) {
             foreach ((array) $table->getIdentifier() as $pk) {
                 $sql .= " AND {$pk} != ?";
                 $values[] = $this->invoker->$pk;

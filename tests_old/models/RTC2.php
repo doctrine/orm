@@ -1,5 +1,5 @@
 <?php
-class RTC2 extends Doctrine_Record {
+class RTC2 extends Doctrine_Entity {
     public function setTableDefinition() { 
         $this->hasColumn('name', 'string', 200);
     }

@@ -81,7 +81,7 @@ class Doctrine_Relation_Access_TestCase extends Doctrine_UnitTestCase {
     public function testOneToOneAggregateRelationFetching() {
         $coll = $this->connection->query("FROM File_Owner.Data_File WHERE File_Owner.name = 'owner1'");
         $this->assertTrue(count($coll) == 1);
-        $this->assertTrue($coll[0] instanceof Doctrine_Record);
+        $this->assertTrue($coll[0] instanceof Doctrine_Entity);
 
         $this->assertEqual($coll[0]->id, 1);
     }

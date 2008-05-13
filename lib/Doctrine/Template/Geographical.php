@@ -92,7 +92,7 @@ class Doctrine_Template_Geographical extends Doctrine_Template
         return $query;
     }
 
-    public function getDistance(Doctrine_Record $record, $kilometers = false)
+    public function getDistance(Doctrine_Entity $record, $kilometers = false)
     {
         $query = $this->getDistanceQuery($kilometers);
         

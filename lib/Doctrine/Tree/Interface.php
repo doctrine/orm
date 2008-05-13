@@ -35,14 +35,14 @@ interface Doctrine_Tree_Interface {
     /**
      * creates root node from given record or from a new record
      *
-     * @param object $record                    instance of Doctrine_Record
+     * @param object $record                    instance of Doctrine_Entity
      */
-    public function createRoot(Doctrine_Record $record = null);
+    public function createRoot(Doctrine_Entity $record = null);
 
     /**
      * returns root node
      *
-     * @return object $record                   instance of Doctrine_Record
+     * @return object $record                   instance of Doctrine_Entity
      */
     public function findRoot($root_id = 1);
 

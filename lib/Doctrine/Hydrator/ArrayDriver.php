@@ -33,6 +33,7 @@
  */
 class Doctrine_Hydrator_ArrayDriver
 {
+    
     /**
      *
      */
@@ -71,6 +72,52 @@ class Doctrine_Hydrator_ArrayDriver
         if ( ! isset($data[$name])) {
             $data[$name] = array();
         }
+    }
+    
+    public function addRelatedIndexedElement(array &$entity1, $property, array &$entity2,
+            $indexField)
+    {
+        $entity1[$property][$entity2[$indexField]] = $entity2;
+    }
+    
+    public function addRelatedElement(array &$entity1, $property, array &$entity2)
+    {
+        $entity1[$property][] = $entity2;
+    }
+    
+    public function setRelatedElement(array &$entity1, $property, &$entity2)
+    {
+        $entity1[$property] = $entity2;
+    }
+    
+    public function isIndexKeyInUse(array &$entity, $assocField, $indexField)
+    {
+        return isset($entity[$assocField][$indexField]);
+    }
+    
+    public function isFieldSet(array &$entity, $field)
+    {
+        return isset($entity[$field]);
+    }
+    
+    public function getFieldValue(array &$entity, $field)
+    {
+        return $entity[$field];
+    }
+    
+    public function &getReferenceValue(array &$entity, $field)
+    {
+        return $entity[$field];
+    }
+    
+    public function addElementToIndexedCollection(array &$coll, array &$entity, $keyField)
+    {
+        $coll[$entity[$keyField]] = $entity;
+    }
+    
+    public function addElementToCollection(array &$coll, array &$entity)
+    {
+        $coll[] = $entity;
     }
     
     /**

@@ -1,5 +1,5 @@
 <?php
-class QueryTest_Entry extends Doctrine_Record
+class QueryTest_Entry extends Doctrine_Entity
 {
     /**
      * Table structure.

@@ -36,7 +36,7 @@ class Doctrine_Mapper_DefaultStrategy extends Doctrine_Mapper_Strategy
     /**
      * Deletes an entity.
      */
-    public function doDelete(Doctrine_Record $record)
+    public function doDelete(Doctrine_Entity $record)
     {
         $conn = $this->_mapper->getConnection();
         $metadata = $this->_mapper->getClassMetadata();
@@ -44,11 +44,11 @@ class Doctrine_Mapper_DefaultStrategy extends Doctrine_Mapper_Strategy
             $conn->beginInternalTransaction();
             $this->_deleteComposites($record);
 
-            $record->state(Doctrine_Record::STATE_TDIRTY);
+            $record->state(Doctrine_Entity::STATE_TDIRTY);
             
             $identifier = $this->_convertFieldToColumnNames($record->identifier(), $metadata);
             $this->_deleteRow($metadata->getTableName(), $identifier);
-            $record->state(Doctrine_Record::STATE_TCLEAN);
+            $record->state(Doctrine_Entity::STATE_TCLEAN);
 
             $this->_mapper->removeRecord($record);
             $conn->commit();
@@ -61,9 +61,9 @@ class Doctrine_Mapper_DefaultStrategy extends Doctrine_Mapper_Strategy
     /**
      * Inserts a single entity into the database, without any related entities.
      *
-     * @param Doctrine_Record $record   The entity to insert.
+     * @param Doctrine_Entity $record   The entity to insert.
      */
-    public function doInsert(Doctrine_Record $record)
+    public function doInsert(Doctrine_Entity $record)
     {
         $conn = $this->_mapper->getConnection();
         
@@ -108,7 +108,7 @@ class Doctrine_Mapper_DefaultStrategy extends Doctrine_Mapper_Strategy
     /**
      * Updates an entity.
      */
-    public function doUpdate(Doctrine_Record $record)
+    public function doUpdate(Doctrine_Entity $record)
     {
         $conn = $this->_mapper->getConnection();
         $classMetadata = $this->_mapper->getClassMetadata();

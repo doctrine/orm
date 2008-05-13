@@ -1,5 +1,5 @@
 <?php
-class M2MTest2 extends Doctrine_Record {
+class M2MTest2 extends Doctrine_Entity {
     public static function initMetadata($class) {
         $class->setColumn('oid', 'integer', 11, array('autoincrement', 'primary'));
         $class->setColumn('name', 'string', 20);

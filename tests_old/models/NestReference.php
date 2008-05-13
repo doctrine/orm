@@ -1,5 +1,5 @@
 <?php
-class NestReference extends Doctrine_Record 
+class NestReference extends Doctrine_Entity 
 {
     public static function initMetadata($class) 
     {

@@ -1,5 +1,5 @@
 <?php
-class PackageVersionNotes extends Doctrine_Record 
+class PackageVersionNotes extends Doctrine_Entity 
 {
     public function setTableDefinition()
     {

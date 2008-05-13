@@ -1,5 +1,5 @@
 <?php
-class QueryTest_Board extends Doctrine_Record
+class QueryTest_Board extends Doctrine_Entity
 {
     /**
      * Initializes the table definition.

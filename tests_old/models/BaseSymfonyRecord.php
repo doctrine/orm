@@ -1,5 +1,5 @@
 <?php
-abstract class BaseSymfonyRecord extends Doctrine_Record
+abstract class BaseSymfonyRecord extends Doctrine_Entity
 {
     public static function initMetadata($class)
     {

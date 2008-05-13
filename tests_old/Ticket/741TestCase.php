@@ -29,7 +29,7 @@ class Doctrine_Ticket_741_TestCase extends Doctrine_UnitTestCase
 
 
 
-class Parent741 extends Doctrine_Record
+class Parent741 extends Doctrine_Entity
 {
   public static function initMetadata($class)
   {
@@ -44,7 +44,7 @@ class Parent741 extends Doctrine_Record
   }
 }
 
-class Child741 extends Doctrine_Record
+class Child741 extends Doctrine_Entity
 {
   public static function initMetadata($class)
   {

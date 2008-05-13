@@ -1,5 +1,5 @@
 <?php
-class VersioningTest extends Doctrine_Record 
+class VersioningTest extends Doctrine_Entity 
 {
     public static function initMetadata($class)
     {

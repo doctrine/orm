@@ -1,5 +1,5 @@
 <?php
-class CategoryNestedSet extends Doctrine_Record
+class CategoryNestedSet extends Doctrine_Entity
 {
   public static function initMetadata($class)
   {

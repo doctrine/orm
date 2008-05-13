@@ -1,5 +1,5 @@
 <?php
-class EnumTest extends Doctrine_Record 
+class EnumTest extends Doctrine_Entity 
 {
     public static function initMetadata($class) {
         $class->setColumn('status', 'enum', 11, array('values' => array('open', 'verified', 'closed')));

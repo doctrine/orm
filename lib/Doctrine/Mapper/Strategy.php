@@ -67,14 +67,14 @@ abstract class Doctrine_Mapper_Strategy
      * @throws PDOException         if something went wrong at database level
      * @return void
      */
-    protected function _deleteComposites(Doctrine_Record $record)
+    protected function _deleteComposites(Doctrine_Entity $record)
     {
         $classMetadata = $this->_mapper->getClassMetadata();
         foreach ($classMetadata->getRelations() as $fk) {
             if ($fk->isComposite()) {
                 $obj = $record->get($fk->getAlias());
-                if ($obj instanceof Doctrine_Record && 
-                        $obj->state() != Doctrine_Record::STATE_LOCKED)  {
+                if ($obj instanceof Doctrine_Entity && 
+                        $obj->state() != Doctrine_Entity::STATE_LOCKED)  {
                     $obj->delete($this->_mapper->getConnection());
                 }
             }
@@ -116,9 +116,9 @@ abstract class Doctrine_Mapper_Strategy
         return $this->_mapper->getClassMetadata();
     }
     
-    abstract public function doDelete(Doctrine_Record $record);
-    abstract public function doInsert(Doctrine_Record $record);
-    abstract public function doUpdate(Doctrine_Record $record);
+    abstract public function doDelete(Doctrine_Entity $record);
+    abstract public function doInsert(Doctrine_Entity $record);
+    abstract public function doUpdate(Doctrine_Entity $record);
     
     /**
      * Inserts a row into a table.

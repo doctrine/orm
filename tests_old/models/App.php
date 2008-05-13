@@ -1,5 +1,5 @@
 <?php
-class App extends Doctrine_Record {
+class App extends Doctrine_Entity {
     public static function initMetadata($class) {
         $class->setColumn('name', 'string', 32);
         $class->setColumn('user_id', 'integer', 11);

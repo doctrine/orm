@@ -1,5 +1,5 @@
 <?php
-class ORM_AccessGroup extends Doctrine_Record 
+class ORM_AccessGroup extends Doctrine_Entity 
 {
     public static function initMetadata($class) 
     {

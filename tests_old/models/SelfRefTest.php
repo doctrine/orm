@@ -1,5 +1,5 @@
 <?php
-class SelfRefTest extends Doctrine_Record
+class SelfRefTest extends Doctrine_Entity
 {
     public static function initMetadata($class) 
     {

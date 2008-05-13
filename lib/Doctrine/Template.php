@@ -33,7 +33,7 @@
 class Doctrine_Template
 {
     /**
-     * @param Doctrine_Record $_invoker     the record that invoked the last delegated call
+     * @param Doctrine_Entity $_invoker     the record that invoked the last delegated call
      */
     protected $_invoker;
     
@@ -66,10 +66,10 @@ class Doctrine_Template
      *
      * sets the last used invoker
      *
-     * @param Doctrine_Record $invoker      the record that invoked the last delegated call
+     * @param Doctrine_Entity $invoker      the record that invoked the last delegated call
      * @return Doctrine_Template            this object
      */
-    public function setInvoker(Doctrine_Record $invoker)
+    public function setInvoker(Doctrine_Entity $invoker)
     {
         $this->_invoker = $invoker;
     }
@@ -78,7 +78,7 @@ class Doctrine_Template
      * setInvoker
      * returns the last used invoker
      *
-     * @return Doctrine_Record              the record that invoked the last delegated call
+     * @return Doctrine_Entity              the record that invoked the last delegated call
      */
     public function getInvoker()
     {

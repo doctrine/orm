@@ -1,5 +1,5 @@
 <?php
-class MigrationTest extends Doctrine_Record
+class MigrationTest extends Doctrine_Entity
 {
     public static function initMetadata($class) 
     {

@@ -1,5 +1,5 @@
 <?php
-class QueryTest_UserRank extends Doctrine_Record
+class QueryTest_UserRank extends Doctrine_Entity
 {
     public static function initMetadata($class)
     {        

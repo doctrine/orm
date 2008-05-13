@@ -1,5 +1,5 @@
 <?php
-class Log_Entry extends Doctrine_Record {
+class Log_Entry extends Doctrine_Entity {
     public static function initMetadata($class) {
         $class->setColumn('stamp', 'timestamp');
         $class->setColumn('status_id', 'integer');

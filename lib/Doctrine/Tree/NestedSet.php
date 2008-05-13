@@ -71,9 +71,9 @@ class Doctrine_Tree_NestedSet extends Doctrine_Tree implements Doctrine_Tree_Int
     /**
      * creates root node from given record or from a new record
      *
-     * @param object $record        instance of Doctrine_Record
+     * @param object $record        instance of Doctrine_Entity
      */
-    public function createRoot(Doctrine_Record $record = null)
+    public function createRoot(Doctrine_Entity $record = null)
     {
         if ( ! $record) {
             $record = $this->table->create();
@@ -96,7 +96,7 @@ class Doctrine_Tree_NestedSet extends Doctrine_Tree implements Doctrine_Tree_Int
     /**
      * returns root node
      *
-     * @return object $record        instance of Doctrine_Record
+     * @return object $record        instance of Doctrine_Entity
      * @deprecated Use fetchRoot()
      */
     public function findRoot($rootId = 1)
@@ -178,7 +178,7 @@ class Doctrine_Tree_NestedSet extends Doctrine_Tree implements Doctrine_Tree_Int
     public function fetchBranch($pk, $options = array())
     {
         $record = $this->table->find($pk);
-        if ( ! ($record instanceof Doctrine_Record) || !$record->exists()) {
+        if ( ! ($record instanceof Doctrine_Entity) || !$record->exists()) {
             // TODO: if record doesn't exist, throw exception or similar?
             return false;
         }

@@ -1,5 +1,5 @@
 <?php
-class gnatEmail extends Doctrine_Record 
+class gnatEmail extends Doctrine_Entity 
 {
     public static function initMetadata($class) 
     {

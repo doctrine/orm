@@ -88,7 +88,7 @@ class Doctrine_Ticket_626B_TestCase extends Doctrine_UnitTestCase
 }
 
 
-class T626B_Student extends Doctrine_Record
+class T626B_Student extends Doctrine_Entity
 {
   public static function initMetadata($class)
   {
@@ -103,7 +103,7 @@ class T626B_Student extends Doctrine_Record
   }
 }
 
-class T626_Group extends Doctrine_Record
+class T626_Group extends Doctrine_Entity
 {
   public static function initMetadata($class)
   {
@@ -117,7 +117,7 @@ class T626_Group extends Doctrine_Record
 }
 
 
-class T626_Course extends Doctrine_Record
+class T626_Course extends Doctrine_Entity
 {
   public static function initMetadata($class)
   {
@@ -129,7 +129,7 @@ class T626_Course extends Doctrine_Record
   }
 }
 
-class T626B_StudentCourse extends Doctrine_Record
+class T626B_StudentCourse extends Doctrine_Entity
 {
   public static function initMetadata($class)
   {

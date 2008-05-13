@@ -1,5 +1,5 @@
 <?php
-class Forum_Thread extends Doctrine_Record {
+class Forum_Thread extends Doctrine_Entity {
     public static function initMetadata($class) {
         $class->setColumn('board_id', 'integer', 10);
         $class->setColumn('updated', 'integer', 10);

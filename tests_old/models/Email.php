@@ -1,5 +1,5 @@
 <?php
-class Email extends Doctrine_Record
+class Email extends Doctrine_Entity
 {
     public static function initMetadata($class)
     {

@@ -1,5 +1,5 @@
 <?php
-class Policy extends Doctrine_Record
+class Policy extends Doctrine_Entity
 {
     public static function initMetadata($class)
     {

@@ -62,7 +62,7 @@ class Doctrine_Ticket_626C_TestCase extends Doctrine_UnitTestCase
 }
 
 
-class T626C_Student1 extends Doctrine_Record
+class T626C_Student1 extends Doctrine_Entity
 {
   public static function initMetadata($class)
   {
@@ -73,7 +73,7 @@ class T626C_Student1 extends Doctrine_Record
   }
 }
 
-class T626C_Student2 extends Doctrine_Record
+class T626C_Student2 extends Doctrine_Entity
 {
   public static function initMetadata($class)
   {

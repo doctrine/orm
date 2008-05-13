@@ -1,5 +1,5 @@
 <?php
-class Song extends Doctrine_Record
+class Song extends Doctrine_Entity
 {
     public static function initMetadata($class)
     {

@@ -1,5 +1,5 @@
 <?php
-class ORM_AccessControl extends Doctrine_Record 
+class ORM_AccessControl extends Doctrine_Entity 
 {
     public static function initMetadata($class) 
     {

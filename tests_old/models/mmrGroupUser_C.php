@@ -1,6 +1,6 @@
 <?php
 
-class mmrGroupUser_C extends Doctrine_Record 
+class mmrGroupUser_C extends Doctrine_Entity 
 {
     public static function initMetadata($class) 
     {

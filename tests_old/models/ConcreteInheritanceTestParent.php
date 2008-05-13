@@ -1,5 +1,5 @@
 <?php
-class ConcreteInheritanceTestParent extends Doctrine_Record
+class ConcreteInheritanceTestParent extends Doctrine_Entity
 {
     public static function initMetadata($class)
     {

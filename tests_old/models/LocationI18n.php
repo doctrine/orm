@@ -1,5 +1,5 @@
 <?php
-class LocationI18n extends Doctrine_Record
+class LocationI18n extends Doctrine_Entity
 { 
     public static function initMetadata($class)
     {

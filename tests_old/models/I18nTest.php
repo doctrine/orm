@@ -1,5 +1,5 @@
 <?php
-class I18nTest extends Doctrine_Record
+class I18nTest extends Doctrine_Entity
 {
     public static function initMetadata($class)
     {

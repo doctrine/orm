@@ -31,7 +31,7 @@
  * @version     $Revision$
  */
 
-class stComment extends Doctrine_Record
+class stComment extends Doctrine_Entity
 {
     public static function initMetadata($class)
     {

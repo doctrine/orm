@@ -137,6 +137,14 @@ class Doctrine_ClassMetadata extends Doctrine_Configurable implements Serializab
      * @var array $columns
      */
     protected $_mappedColumns = array();
+    
+    /**
+     * The mapped embedded values (value objects).
+     *
+     * @var array
+     * @TODO Implementation (Value Object support)
+     */
+    protected $_mappedEmbeddedValues = array();
 
     /**
      * An array of field names. used to look up field names from column names.
@@ -171,7 +179,7 @@ class Doctrine_ClassMetadata extends Doctrine_Configurable implements Serializab
     protected $_tree;
 
     /**
-     * Cached column count, Doctrine_Record uses this column count when
+     * Cached column count, Doctrine_Entity uses this column count when
      * determining its state.
      *
      * @var integer
@@ -1571,7 +1579,7 @@ class Doctrine_ClassMetadata extends Doctrine_Configurable implements Serializab
      * binds query parts to given component
      *
      * @param array $queryParts         an array of pre-bound query parts
-     * @return Doctrine_Record          this object
+     * @return Doctrine_Entity          this object
      */
     public function bindQueryParts(array $queryParts)
     {
@@ -1585,7 +1593,7 @@ class Doctrine_ClassMetadata extends Doctrine_Configurable implements Serializab
      *
      * @param string $queryPart
      * @param mixed $value
-     * @return Doctrine_Record          this object
+     * @return Doctrine_Entity          this object
      */
     public function bindQueryPart($queryPart, $value)
     {
@@ -1719,7 +1727,7 @@ class Doctrine_ClassMetadata extends Doctrine_Configurable implements Serializab
      *
      * @param mixed $constraint     either a SQL constraint portion or an array of CHECK constraints
      * @param string $name          optional constraint name
-     * @return Doctrine_Record      this object
+     * @return Doctrine_Entity      this object
      * @todo Should be done through $_tableOptions
      */
     public function check($constraint, $name = null)
@@ -1834,7 +1842,7 @@ class Doctrine_ClassMetadata extends Doctrine_Configurable implements Serializab
      * @param string $componentName     the name of the related component
      * @param string $options           relation options
      * @see Doctrine_Relation::_$definition
-     * @return Doctrine_Record          this object
+     * @return Doctrine_Entity          this object
      */
     public function hasOne()
     {
@@ -1850,7 +1858,7 @@ class Doctrine_ClassMetadata extends Doctrine_Configurable implements Serializab
      * @param string $componentName     the name of the related component
      * @param string $options           relation options
      * @see Doctrine_Relation::_$definition
-     * @return Doctrine_Record          this object
+     * @return Doctrine_Entity          this object
      */
     public function hasMany()
     {

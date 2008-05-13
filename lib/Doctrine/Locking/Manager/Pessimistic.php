@@ -90,15 +90,15 @@ class Doctrine_Locking_Manager_Pessimistic
     }
 
     /**
-     * Obtains a lock on a {@link Doctrine_Record}
+     * Obtains a lock on a {@link Doctrine_Entity}
      *
-     * @param  Doctrine_Record $record     The record that has to be locked
+     * @param  Doctrine_Entity $record     The record that has to be locked
      * @param  mixed           $userIdent  A unique identifier of the locking user
      * @return boolean  TRUE if the locking was successful, FALSE if another user
      *                  holds a lock on this record
      * @throws Doctrine_Locking_Exception  If the locking failed due to database errors
      */
-    public function getLock(Doctrine_Record $record, $userIdent)
+    public function getLock(Doctrine_Entity $record, $userIdent)
     {
         $objectType = $record->getTable()->getComponentName();
         $key        = $record->obtainIdentifier();
@@ -160,14 +160,14 @@ class Doctrine_Locking_Manager_Pessimistic
     }
 
     /**
-     * Releases a lock on a {@link Doctrine_Record}
+     * Releases a lock on a {@link Doctrine_Entity}
      *
-     * @param  Doctrine_Record $record    The record for which the lock has to be released
+     * @param  Doctrine_Entity $record    The record for which the lock has to be released
      * @param  mixed           $userIdent The unique identifier of the locking user
      * @return boolean  TRUE if a lock was released, FALSE if no lock was released
      * @throws Doctrine_Locking_Exception If the release procedure failed due to database errors
      */
-    public function releaseLock(Doctrine_Record $record, $userIdent)
+    public function releaseLock(Doctrine_Entity $record, $userIdent)
     {
         $objectType = $record->getTable()->getComponentName();
         $key        = $record->obtainIdentifier();
@@ -235,7 +235,7 @@ class Doctrine_Locking_Manager_Pessimistic
      * Gets the identifier that identifies the owner of the lock on the given
      * record.
      *
-     * @param Doctrine_Record $lockedRecord  The record.
+     * @param Doctrine_Entity $lockedRecord  The record.
      * @return mixed The unique user identifier that identifies the owner of the lock.
      */
     public function getLockOwner($lockedRecord)

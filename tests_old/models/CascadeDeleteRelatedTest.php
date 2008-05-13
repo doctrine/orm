@@ -1,5 +1,5 @@
 <?php
-class CascadeDeleteRelatedTest extends Doctrine_Record
+class CascadeDeleteRelatedTest extends Doctrine_Entity
 {
     public static function initMetadata($class)
     {

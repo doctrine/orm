@@ -1,5 +1,5 @@
 <?php
-class MyOneThing extends Doctrine_Record {
+class MyOneThing extends Doctrine_Entity {
     public function setTableDefinition() {
         $this->hasColumn('name', 'string');
         $this->hasColumn('user_id', 'integer');

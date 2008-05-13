@@ -50,7 +50,7 @@ class Doctrine_Ticket_642_TestCase extends Doctrine_UnitTestCase
 }
 
 
-class stDummyObj extends Doctrine_Record
+class stDummyObj extends Doctrine_Entity
 {
     public static function initMetadata($class)
     {

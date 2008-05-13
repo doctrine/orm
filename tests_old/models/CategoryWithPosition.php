@@ -1,5 +1,5 @@
 <?php
-class CategoryWithPosition extends Doctrine_Record {
+class CategoryWithPosition extends Doctrine_Entity {
     public static function initMetadata($class) {
         $class->setColumn('position', 'integer');
         $class->setColumn('name', 'string', 255);

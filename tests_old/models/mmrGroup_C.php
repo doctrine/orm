@@ -1,5 +1,5 @@
 <?php
-class mmrGroup_C extends Doctrine_Record
+class mmrGroup_C extends Doctrine_Entity
 {
     public static function initMetadata($class)
     {

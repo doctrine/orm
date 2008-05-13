@@ -107,7 +107,7 @@ class Doctrine_Ticket_438_TestCase extends Doctrine_UnitTestCase
 }
 
 
-class T438_Student extends Doctrine_Record
+class T438_Student extends Doctrine_Entity
 {
   public static function initMetadata($class)
   {
@@ -119,7 +119,7 @@ class T438_Student extends Doctrine_Record
 }
 
 
-class T438_Course extends Doctrine_Record
+class T438_Course extends Doctrine_Entity
 {
   public static function initMetadata($class)
   {
@@ -130,7 +130,7 @@ class T438_Course extends Doctrine_Record
   }
 }
 
-class T438_StudentCourse extends Doctrine_Record
+class T438_StudentCourse extends Doctrine_Entity
 {
   public static function initMetadata($class)
   {

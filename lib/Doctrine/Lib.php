@@ -36,25 +36,25 @@ class Doctrine_Lib
      * getRecordStateAsString
      *
      * @param integer $state the state of record
-     * @see Doctrine_Record::STATE_* constants
+     * @see Doctrine_Entity::STATE_* constants
      * @return string string representation of given state
      */
     public static function getRecordStateAsString($state)
     {
         switch ($state) {
-            case Doctrine_Record::STATE_PROXY:
+            case Doctrine_Entity::STATE_PROXY:
                 return "proxy";
                 break;
-            case Doctrine_Record::STATE_CLEAN:
+            case Doctrine_Entity::STATE_CLEAN:
                 return "persistent clean";
                 break;
-            case Doctrine_Record::STATE_DIRTY:
+            case Doctrine_Entity::STATE_DIRTY:
                 return "persistent dirty";
                 break;
-            case Doctrine_Record::STATE_TDIRTY:
+            case Doctrine_Entity::STATE_TDIRTY:
                 return "transient dirty";
                 break;
-            case Doctrine_Record::STATE_TCLEAN:
+            case Doctrine_Entity::STATE_TCLEAN:
                 return "transient clean";
                 break;
         }
@@ -63,12 +63,12 @@ class Doctrine_Lib
     /**
      * getRecordAsString
      *
-     * returns a string representation of Doctrine_Record object
+     * returns a string representation of Doctrine_Entity object
      *
-     * @param Doctrine_Record $record
+     * @param Doctrine_Entity $record
      * @return string
      */
-    public static function getRecordAsString(Doctrine_Record $record)
+    public static function getRecordAsString(Doctrine_Entity $record)
     {
         $r[] = '<pre>';
         $r[] = 'Component  : ' . $record->getTable()->getComponentName();

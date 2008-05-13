@@ -1,5 +1,5 @@
 <?php
-class ValidatorTest_Person extends Doctrine_Record {
+class ValidatorTest_Person extends Doctrine_Entity {
    public static function initMetadata($class) {
       $class->setColumn('identifier', 'integer', 4,
             array('validators' => array('notblank', 'unique')));

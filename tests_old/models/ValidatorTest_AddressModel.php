@@ -1,5 +1,5 @@
 <?php
-class ValidatorTest_AddressModel extends Doctrine_Record {
+class ValidatorTest_AddressModel extends Doctrine_Entity {
 	public static function initMetadata($class) {
 		$class->setColumn("id", "integer", 11, array('autoincrement' => true,
 													'primary'       => true

@@ -66,7 +66,7 @@ class Doctrine_Inheritance_TablePerClass_TestCase extends Doctrine_UnitTestCase
 }
 
 
-class CCTI_User extends Doctrine_Record
+class CCTI_User extends Doctrine_Entity
 {
     public static function initMetadata($class)
     {

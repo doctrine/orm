@@ -146,7 +146,7 @@ class Doctrine_View
     /**
      * execute
      * executes the view
-     * returns a collection of Doctrine_Record objects
+     * returns a collection of Doctrine_Entity objects
      *
      * @return Doctrine_Collection
      */

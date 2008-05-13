@@ -90,79 +90,79 @@ class Doctrine_Record_State_TestCase extends Doctrine_UnitTestCase
         } catch(Doctrine_Record_State_Exception $e) {
             $this->pass();
         }
-        $this->assertEqual($user->state(), Doctrine_Record::STATE_TCLEAN);
+        $this->assertEqual($user->state(), Doctrine_Entity::STATE_TCLEAN);
         try {
             $user->state('some unknown state');
             $this->fail();
-        } catch(Doctrine_Record_State_Exception $e) {
+        } catch(Doctrine_Entity_State_Exception $e) {
             $this->pass();
         }
-        $this->assertEqual($user->state(), Doctrine_Record::STATE_TCLEAN);
+        $this->assertEqual($user->state(), Doctrine_Entity::STATE_TCLEAN);
     }
 
     public function testAssignDirtyState() 
     {
         $user = new User();
 
-        $user->state(Doctrine_Record::STATE_DIRTY);
+        $user->state(Doctrine_Entity::STATE_DIRTY);
 
-        $this->assertEqual($user->state(), Doctrine_Record::STATE_DIRTY);
+        $this->assertEqual($user->state(), Doctrine_Entity::STATE_DIRTY);
         
         $user->state('dirty');
 
-        $this->assertEqual($user->state(), Doctrine_Record::STATE_DIRTY);
+        $this->assertEqual($user->state(), Doctrine_Entity::STATE_DIRTY);
     }
 
     public function testAssignCleanState() 
     {
         $user = new User();
 
-        $user->state(Doctrine_Record::STATE_CLEAN);
+        $user->state(Doctrine_Entity::STATE_CLEAN);
 
-        $this->assertEqual($user->state(), Doctrine_Record::STATE_CLEAN);
+        $this->assertEqual($user->state(), Doctrine_Entity::STATE_CLEAN);
         
         $user->state('clean');
 
-        $this->assertEqual($user->state(), Doctrine_Record::STATE_CLEAN);
+        $this->assertEqual($user->state(), Doctrine_Entity::STATE_CLEAN);
     }
 
     public function testAssignTransientCleanState() 
     {
         $user = new User();
 
-        $user->state(Doctrine_Record::STATE_TCLEAN);
+        $user->state(Doctrine_Entity::STATE_TCLEAN);
 
-        $this->assertEqual($user->state(), Doctrine_Record::STATE_TCLEAN);
+        $this->assertEqual($user->state(), Doctrine_Entity::STATE_TCLEAN);
         
         $user->state('tclean');
 
-        $this->assertEqual($user->state(), Doctrine_Record::STATE_TCLEAN);
+        $this->assertEqual($user->state(), Doctrine_Entity::STATE_TCLEAN);
     }
 
     public function testAssignTransientDirtyState() 
     {
         $user = new User();
 
-        $user->state(Doctrine_Record::STATE_TDIRTY);
+        $user->state(Doctrine_Entity::STATE_TDIRTY);
 
-        $this->assertEqual($user->state(), Doctrine_Record::STATE_TDIRTY);
+        $this->assertEqual($user->state(), Doctrine_Entity::STATE_TDIRTY);
         
         $user->state('tdirty');
 
-        $this->assertEqual($user->state(), Doctrine_Record::STATE_TDIRTY);
+        $this->assertEqual($user->state(), Doctrine_Entity::STATE_TDIRTY);
     }
 
     public function testAssignProxyState()
     {
         $user = new User();
 
-        $user->state(Doctrine_Record::STATE_PROXY);
+        $user->state(Doctrine_Entity::STATE_PROXY);
 
-        $this->assertEqual($user->state(), Doctrine_Record::STATE_PROXY);
+        $this->assertEqual($user->state(), Doctrine_Entity::STATE_PROXY);
         
         $user->state('proxy');
 
-        $this->assertEqual($user->state(), Doctrine_Record::STATE_PROXY);
+        $this->assertEqual($user->state(), Doctrine_Entity::STATE_PROXY);
     }
 
     public function testProxiesAreAutomaticallyUpdatedWithFetches()
@@ -176,7 +176,7 @@ class Doctrine_Record_State_TestCase extends Doctrine_UnitTestCase
 
         $user = $this->connection->queryOne("SELECT u.name FROM User u WHERE u.name = 'someuser'");
         
-        $this->assertEqual($user->state(), Doctrine_Record::STATE_PROXY);
+        $this->assertEqual($user->state(), Doctrine_Entity::STATE_PROXY);
         
         $user2 = $this->connection->queryOne("FROM User u WHERE u.name = 'someuser'");     
 
@@ -208,7 +208,7 @@ class Doctrine_Record_State_TestCase extends Doctrine_UnitTestCase
         
         // to make sure it is saved correctly
         $user1 = $this->connection->queryOne("FROM User u WHERE u.name = '" . UNAME . "'");
-        $this->assertEqual($user1->state(), Doctrine_Record::STATE_CLEAN);
+        $this->assertEqual($user1->state(), Doctrine_Entity::STATE_CLEAN);
         $this->assertEqual($user1->name,UNAME) ;
         $this->assertEqual($user1->password,UPWD1) ;
         $this->assertEqual($user1->loginname,ULNAME) ;
@@ -222,7 +222,7 @@ class Doctrine_Record_State_TestCase extends Doctrine_UnitTestCase
         $user2 = $this->connection->queryOne("SELECT u.name FROM User u WHERE u.name = '" . UNAME . "'");
         
         // the object should be in state proxy with only 'name' fetched ...
-        $this->assertEqual($user2->state(), Doctrine_Record::STATE_PROXY);
+        $this->assertEqual($user2->state(), Doctrine_Entity::STATE_PROXY);
         $this->assertEqual($user2->name,UNAME) ;
         $this->assertEqual($user2->password,null) ;
         $this->assertEqual($user2->loginname,null) ;
@@ -231,7 +231,7 @@ class Doctrine_Record_State_TestCase extends Doctrine_UnitTestCase
         $user2->password = UPWD2 ;
         
         // now it should be dirty (but may be PDIRTY ... ?)
-        $this->assertEqual($user2->state(),Doctrine_Record::STATE_DIRTY) ;
+        $this->assertEqual($user2->state(),Doctrine_Entity::STATE_DIRTY) ;
         $this->assertEqual($user2->name,UNAME) ;
         $this->assertEqual($user2->password,UPWD2) ;
         $this->assertEqual($user2->loginname,null) ;
@@ -240,11 +240,11 @@ class Doctrine_Record_State_TestCase extends Doctrine_UnitTestCase
         $user2->save() ;
 
         // the logic would suggest the object to go back to PROXY mode (becausse $user2->loginname is null aka not sync with DB)
-        $boolState = ($user2->loginname == null) && ($user2->state() === Doctrine_Record::STATE_PROXY) ;
+        $boolState = ($user2->loginname == null) && ($user2->state() === Doctrine_Entity::STATE_PROXY) ;
         // this one will currently fail 
         $this->assertTrue($boolState) ;
         // this will also currently fail (becausse it currently goes back to STATE_CLEAN, which shouldnt be the case)
-        //$this->assertEqual($user2->state(), Doctrine_Record::STATE_PROXY);
+        //$this->assertEqual($user2->state(), Doctrine_Entity::STATE_PROXY);
         $this->assertEqual($user2->name,UNAME) ;
         $this->assertEqual($user2->password,UPWD2) ;
         $this->assertEqual($user2->loginname,null) ;

@@ -183,7 +183,7 @@ class Doctrine_Inheritance_Joined_TestCase extends Doctrine_UnitTestCase
 }
 
 
-class CTI_User extends Doctrine_Record
+class CTI_User extends Doctrine_Entity
 {    
     public static function initMetadata($class)
     {

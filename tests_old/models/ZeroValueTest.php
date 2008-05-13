@@ -1,5 +1,5 @@
 <?php
-class ZeroValueTest extends Doctrine_Record
+class ZeroValueTest extends Doctrine_Entity
 {
     public static function initMetadata($class)
     {

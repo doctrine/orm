@@ -354,10 +354,10 @@ abstract class Doctrine_Relation implements ArrayAccess
      *
      * fetches a component related to given record
      *
-     * @param Doctrine_Record $record
-     * @return Doctrine_Record|Doctrine_Collection
+     * @param Doctrine_Entity $record
+     * @return Doctrine_Entity|Doctrine_Collection
      */
-    abstract public function fetchRelatedFor(Doctrine_Record $record);
+    abstract public function fetchRelatedFor(Doctrine_Entity $record);
 
     /**
      * __toString

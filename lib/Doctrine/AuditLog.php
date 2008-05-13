@@ -55,11 +55,11 @@ class Doctrine_AuditLog extends Doctrine_Record_Generator
     /**
      * Get the version 
      * 
-     * @param Doctrine_Record $record 
+     * @param Doctrine_Entity $record 
      * @param mixed $version 
      * @return array An array with version information
      */
-    public function getVersion(Doctrine_Record $record, $version)
+    public function getVersion(Doctrine_Entity $record, $version)
     {           
         $className = $this->_options['className'];
 

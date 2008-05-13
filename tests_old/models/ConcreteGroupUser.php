@@ -1,5 +1,5 @@
 <?php
-class ConcreteGroupUser extends Doctrine_Record
+class ConcreteGroupUser extends Doctrine_Entity
 {
     public static function initMetadata($class)
     {

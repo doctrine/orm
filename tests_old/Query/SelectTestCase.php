@@ -293,7 +293,7 @@ class Doctrine_Query_Select_TestCase extends Doctrine_UnitTestCase
 
         $users = $q->execute();
 
-        $this->assertEqual($users[0]->Phonenumber[0]->state(), Doctrine_Record::STATE_TDIRTY);
+        $this->assertEqual($users[0]->Phonenumber[0]->state(), Doctrine_Entity::STATE_TDIRTY);
 
         $this->assertEqual($users[0]->Phonenumber[0]->count, 1);
         $this->assertEqual($users[1]->Phonenumber[0]->count, 3);

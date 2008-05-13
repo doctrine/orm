@@ -1,5 +1,5 @@
 <?php
-class QueryTest_Category extends Doctrine_Record
+class QueryTest_Category extends Doctrine_Entity
 {    
     /**
      * The depth of the category inside the tree.

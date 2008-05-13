@@ -1,5 +1,5 @@
 <?php
-class Forum_Board extends Doctrine_Record { 
+class Forum_Board extends Doctrine_Entity { 
     public static function initMetadata($class) {
         $class->setColumn('category_id', 'integer', 10);
         $class->setColumn('name', 'string', 100);

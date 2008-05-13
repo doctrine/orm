@@ -1,7 +1,7 @@
 <?php 
 class gnatUserTable { }
 
-class gnatUser extends Doctrine_Record 
+class gnatUser extends Doctrine_Entity 
 {
     public static function initMetadata($class) 
     {

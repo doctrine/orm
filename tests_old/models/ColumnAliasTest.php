@@ -1,5 +1,5 @@
 <?php
-class ColumnAliasTest extends Doctrine_Record
+class ColumnAliasTest extends Doctrine_Entity
 {
     public static function initMetadata($class)
     {

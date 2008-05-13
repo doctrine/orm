@@ -59,7 +59,7 @@ class Doctrine_Plugin_TestCase extends Doctrine_UnitTestCase
     public function testCreatingNewRecordsInvokesAllPlugins()
     {
         $wiki = new Wiki();
-        $wiki->state(Doctrine_Record::STATE_TDIRTY);
+        $wiki->state(Doctrine_Entity::STATE_TDIRTY);
         $wiki->save();
 
         $fi = $wiki->Translation['FI'];
@@ -86,7 +86,7 @@ class Doctrine_Plugin_TestCase extends Doctrine_UnitTestCase
         $this->assertEqual($wiki->Translation['FI']->version, 2);
     }
 }
-class Wiki extends Doctrine_Record
+class Wiki extends Doctrine_Entity
 {
     public function setTableDefinition()
     {

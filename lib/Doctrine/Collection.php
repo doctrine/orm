@@ -58,7 +58,7 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
     /**
      * This record this collection is attached to, if any.
      * 
-     * @var Doctrine_Record
+     * @var Doctrine_Entity
      */
     protected $reference;
 
@@ -308,7 +308,7 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
      *
      * @return void
      */
-    public function setReference(Doctrine_Record $record, Doctrine_Relation $relation)
+    public function setReference(Doctrine_Entity $record, Doctrine_Relation $relation)
     {
         $this->reference = $record;
         $this->relation  = $relation;
@@ -368,7 +368,7 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
     /**
      *
      */
-    public function search(Doctrine_Record $record)
+    public function search(Doctrine_Entity $record)
     {
         return array_search($record, $this->data, true);
     }
@@ -388,7 +388,7 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
      * Collection also maps referential information to newly created records
      *
      * @param mixed $key                    the key of the element
-     * @return Doctrine_Record              return a specified record
+     * @return Doctrine_Entity              return a specified record
      */
     public function get($key)
     {
@@ -481,15 +481,15 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
     /**
      * set
      * @param integer $key
-     * @param Doctrine_Record $record
+     * @param Doctrine_Entity $record
      * @return void
-     * @internal Can't type-hint the second parameter to Doctrine_Record because we need
+     * @internal Can't type-hint the second parameter to Doctrine_Entity because we need
      *           to adhere to the Doctrine_Access::set() signature.
      */
     public function set($key, $record)
     {
-        if ( ! $record instanceOf Doctrine_Record) {
-            throw new Doctrine_Collection_Exception('Value variable in set is not an instance of Doctrine_Record');
+        if ( ! $record instanceOf Doctrine_Entity) {
+            throw new Doctrine_Collection_Exception('Value variable in set is not an instance of Doctrine_Entity');
         }
 
         if (isset($this->referenceField)) {
@@ -500,14 +500,14 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
 
     /**
      * adds a record to collection
-     * @param Doctrine_Record $record              record to be added
+     * @param Doctrine_Entity $record              record to be added
      * @param string $key                          optional key for the record
      * @return boolean
      */
     public function add($record, $key = null)
     {
-        if ( ! $record instanceof Doctrine_Record) {
-            throw new Doctrine_Record_Exception('Value variable in set is not an instance of Doctrine_Record.');
+        if ( ! $record instanceof Doctrine_Entity) {
+            throw new Doctrine_Record_Exception('Value variable in set is not an instance of Doctrine_Entity.');
         }
 
         if (isset($this->referenceField)) {

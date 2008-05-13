@@ -1,5 +1,5 @@
 <?php
-class mmrUser_C extends Doctrine_Record 
+class mmrUser_C extends Doctrine_Entity 
 {
     public function setUp() 
     {

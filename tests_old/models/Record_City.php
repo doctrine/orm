@@ -1,5 +1,5 @@
 <?php
-class Record_City extends Doctrine_Record {
+class Record_City extends Doctrine_Entity {
     public static function initMetadata($class) {
         $class->setColumn('name', 'string', 200);
         $class->setColumn('country_id', 'integer');

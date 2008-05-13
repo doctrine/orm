@@ -1,5 +1,5 @@
 <?php
-class EventListenerChainTest extends Doctrine_Record 
+class EventListenerChainTest extends Doctrine_Entity 
 {
     public static function initMetadata($class) {
         $class->setColumn('name', 'string', 100);

@@ -242,13 +242,13 @@ class Doctrine_Data
     /**
      * isRelation
      *
-     * Check if a fieldName on a Doctrine_Record is a relation, if it is we return that relationData
+     * Check if a fieldName on a Doctrine_Entity is a relation, if it is we return that relationData
      * 
-     * @param string $Doctrine_Record 
+     * @param string $Doctrine_Entity 
      * @param string $fieldName 
      * @return void
      */
-    public function isRelation(Doctrine_Record $record, $fieldName)
+    public function isRelation(Doctrine_Entity $record, $fieldName)
     {
         $relations = $record->getTable()->getRelations();
         
@@ -267,7 +267,7 @@ class Doctrine_Data
     /**
      * purge
      * 
-     * Purge all data for loaded models or for the passed array of Doctrine_Records
+     * Purge all data for loaded models or for the passed array of Doctrine_Entitys
      *
      * @param string $models 
      * @return void

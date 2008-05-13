@@ -1797,7 +1797,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable, Seria
      * unseralize
      * this method is automatically called everytime a Doctrine_Hydrate object is unserialized
      *
-     * @param string $serialized                Doctrine_Record as serialized string
+     * @param string $serialized                Doctrine_Entity as serialized string
      * @return void
      */
     public function unserialize($serialized)

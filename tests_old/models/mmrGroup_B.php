@@ -1,5 +1,5 @@
 <?php
-class mmrGroup_B extends Doctrine_Record
+class mmrGroup_B extends Doctrine_Entity
 {
     public function setUp() {
         $this->hasMany('mmrUser_B', array('local' => 'group_id',

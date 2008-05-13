@@ -190,7 +190,7 @@ class Doctrine_Import extends Doctrine_Connection_Module
     /**
      * importSchema
      *
-     * method for importing existing schema to Doctrine_Record classes
+     * method for importing existing schema to Doctrine_Entity classes
      *
      * @param string $directory
      * @param array $databases

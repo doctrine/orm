@@ -289,7 +289,7 @@ class Doctrine_Data_Import extends Doctrine_Data
         }
     }
     
-    public function populateDummyRecord(Doctrine_Record $record)
+    public function populateDummyRecord(Doctrine_Entity $record)
     {
         $lorem = explode(' ', "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem 
                                Ipsum has been the industry's standard dummy text ever since the 1500s, when an 

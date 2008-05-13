@@ -1,5 +1,5 @@
 <?php
-class MysqlGroupMember extends Doctrine_Record
+class MysqlGroupMember extends Doctrine_Entity
 {
     public function setTableDefinition() 
     {

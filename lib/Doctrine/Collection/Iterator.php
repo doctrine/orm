@@ -96,7 +96,7 @@ abstract class Doctrine_Collection_Iterator implements Iterator
     /**
      * returns the current record
      *
-     * @return Doctrine_Record
+     * @return Doctrine_Entity
      */
     public function current()
     {

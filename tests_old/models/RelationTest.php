@@ -1,5 +1,5 @@
 <?php
-class RelationTest extends Doctrine_Record 
+class RelationTest extends Doctrine_Entity 
 {
     public static function initMetadata($class) 
     {

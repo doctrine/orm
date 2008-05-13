@@ -38,10 +38,10 @@ class Doctrine_Mapper_JoinedStrategy extends Doctrine_Mapper_Strategy
     /**
      * Inserts an entity that is part of a Class Table Inheritance hierarchy.
      *
-     * @param Doctrine_Record $record   record to be inserted
+     * @param Doctrine_Entity $record   record to be inserted
      * @return boolean
      */
-    public function doInsert(Doctrine_Record $record)
+    public function doInsert(Doctrine_Entity $record)
     {
         $class = $this->_mapper->getClassMetadata();
         $conn = $this->_mapper->getConnection();
@@ -92,11 +92,11 @@ class Doctrine_Mapper_JoinedStrategy extends Doctrine_Mapper_Strategy
     /**
      * Updates an entity that is part of a Class Table Inheritance hierarchy.
      *
-     * @param Doctrine_Record $record   record to be updated
+     * @param Doctrine_Entity $record   record to be updated
      * @return boolean                  whether or not the update was successful
      * @todo Move to Doctrine_Table (which will become Doctrine_Mapper).
      */
-    public function doUpdate(Doctrine_Record $record)
+    public function doUpdate(Doctrine_Entity $record)
     {
         $conn = $this->_mapper->getConnection();
         $classMetadata = $this->_mapper->getClassMetadata();
@@ -107,7 +107,7 @@ class Doctrine_Mapper_JoinedStrategy extends Doctrine_Mapper_Strategy
         array_unshift($classes, $component);
 
         foreach ($record as $field => $value) {
-            if ($value instanceof Doctrine_Record) {
+            if ($value instanceof Doctrine_Entity) {
                 if ( ! $value->exists()) {
                     $value->save();
                 }
@@ -130,7 +130,7 @@ class Doctrine_Mapper_JoinedStrategy extends Doctrine_Mapper_Strategy
      * Deletes an entity that is part of a Class Table Inheritance hierarchy.
      *
      */
-    public function doDelete(Doctrine_Record $record)
+    public function doDelete(Doctrine_Entity $record)
     {
         $conn = $this->_mapper->getConnection();
         try {
@@ -138,7 +138,7 @@ class Doctrine_Mapper_JoinedStrategy extends Doctrine_Mapper_Strategy
             $conn->beginInternalTransaction();
             $this->_deleteComposites($record);
 
-            $record->state(Doctrine_Record::STATE_TDIRTY);
+            $record->state(Doctrine_Entity::STATE_TDIRTY);
 
             $identifier = $this->_convertFieldToColumnNames($record->identifier(), $class);
             
@@ -149,7 +149,7 @@ class Doctrine_Mapper_JoinedStrategy extends Doctrine_Mapper_Strategy
                 $this->_deleteRow($parentClass->getTableName(), $identifier);
             }
             
-            $record->state(Doctrine_Record::STATE_TCLEAN);
+            $record->state(Doctrine_Entity::STATE_TCLEAN);
 
             $this->_mapper->removeRecord($record);
             $conn->commit();
@@ -286,7 +286,7 @@ class Doctrine_Mapper_JoinedStrategy extends Doctrine_Mapper_Strategy
      *
      * @return array
      */
-    protected function _groupFieldsByDefiningClass(Doctrine_Record $record)
+    protected function _groupFieldsByDefiningClass(Doctrine_Entity $record)
     {
         $conn = $this->_mapper->getConnection();
         $classMetadata = $this->_mapper->getClassMetadata();

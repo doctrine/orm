@@ -1,5 +1,5 @@
 <?php
-class Author extends Doctrine_Record
+class Author extends Doctrine_Entity
 {
     public static function initMetadata($class)
     {

@@ -4,7 +4,7 @@
  * Doctrine_Record_Inheritance_TestCase
  *
  * This test case demonstrates the use of inheritance involving subclasses of
- * Doctrine_Record.  This type of inheritance is heavily used in sfDoctrine,
+ * Doctrine_Entity.  This type of inheritance is heavily used in sfDoctrine,
  * and as new inheritance-related features get added to Doctrine it seems to
  * be an area where subtle breakage can sneak in.
  *
@@ -49,7 +49,7 @@ class Doctrine_Record_Inheritance_TestCase extends Doctrine_UnitTestCase
         // does it have the appropriate parentage?
         $this->assertTrue($record instanceof PluginSymfonyRecord);
         $this->assertTrue($record instanceof BaseSymfonyRecord);
-        $this->assertTrue($record instanceof Doctrine_Record);
+        $this->assertTrue($record instanceof Doctrine_Entity);
 
         // does it have the expected data?
         $this->assertEqual($record['name'], 'Test me');

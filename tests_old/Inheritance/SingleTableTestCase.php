@@ -63,7 +63,7 @@ class Doctrine_Inheritance_SingleTable_TestCase extends Doctrine_UnitTestCase
 }
 
 
-class STI_User extends Doctrine_Record
+class STI_User extends Doctrine_Entity
 {
     public static function initMetadata($class)
     {

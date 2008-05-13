@@ -1,5 +1,5 @@
 <?php
-class CheckConstraintTest extends Doctrine_Record
+class CheckConstraintTest extends Doctrine_Entity
 {
     public static function initMetadata($class)
     {

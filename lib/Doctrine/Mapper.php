@@ -68,6 +68,8 @@ class Doctrine_Mapper
      * A list of registered entity listeners.
      */
     private $_entityListeners = array();
+    
+    private $_dataTemplate = array();
 
 
     /**
@@ -118,7 +120,7 @@ class Doctrine_Mapper
      *
      * @param $array             an array where keys are field names and
      *                           values representing field values
-     * @return Doctrine_Record   the created record object
+     * @return Doctrine_Entity   the created record object
      */
     public function create(array $array = array()) 
     {
@@ -146,7 +148,7 @@ class Doctrine_Mapper
         return false;
     }
     
-    public function notifyEntityListeners(Doctrine_Record $entity, $callback, $eventType)
+    public function notifyEntityListeners(Doctrine_Entity $entity, $callback, $eventType)
     {
         if ($this->_entityListeners) {
             $event = new Doctrine_Event($entity, $eventType);
@@ -156,7 +158,7 @@ class Doctrine_Mapper
         }
     }
     
-    public function detach(Doctrine_Record $entity)
+    public function detach(Doctrine_Entity $entity)
     {
         return $this->_conn->unitOfWork->detach($entity);
     }
@@ -192,11 +194,11 @@ class Doctrine_Mapper
      * addRecord
      * adds a record to identity map
      *
-     * @param Doctrine_Record $record       record to be added
+     * @param Doctrine_Entity $record       record to be added
      * @return boolean
      * @todo Better name? registerRecord? Move elsewhere to the new location of the identity maps.
      */
-    public function addRecord(Doctrine_Record $record)
+    public function addRecord(Doctrine_Entity $record)
     {
         if ($this->_conn->unitOfWork->contains($record)) {
             return false;
@@ -212,7 +214,7 @@ class Doctrine_Mapper
      * @return boolean  TRUE if the entity was previously not managed and is now managed,
      *                  FALSE otherwise (the entity is already managed).
      */
-    public function manage(Doctrine_Record $record)
+    public function manage(Doctrine_Entity $record)
     {
         return $this->_conn->unitOfWork->manage($record);
     }
@@ -222,11 +224,11 @@ class Doctrine_Mapper
      * removes a record from the identity map, returning true if the record
      * was found and removed and false if the record wasn't found.
      *
-     * @param Doctrine_Record $record       record to be removed
+     * @param Doctrine_Entity $record       record to be removed
      * @return boolean
      * @todo Move elsewhere to the new location of the identity maps.
      */
-    public function removeRecord(Doctrine_Record $record)
+    public function removeRecord(Doctrine_Entity $record)
     {
         if ($this->_conn->unitOfWork->contains($record)) {
             $this->_conn->unitOfWork->unregisterIdentity($record);
@@ -241,7 +243,7 @@ class Doctrine_Mapper
      * First checks if record exists in identityMap, if not
      * returns a new record.
      *
-     * @return Doctrine_Record
+     * @return Doctrine_Entity
      */
     public function getRecord(array $data)
     {
@@ -401,7 +403,7 @@ class Doctrine_Mapper
      * Hydrates the given data into the entity.
      * 
      */
-    /*public function hydrate(Doctrine_Record $entity, array $data)
+    /*public function hydrate(Doctrine_Entity $entity, array $data)
     {
         $this->_values = array_merge($this->_values, $this->cleanData($data));
         $this->_data   = array_merge($this->_data, $data);
@@ -456,12 +458,12 @@ class Doctrine_Mapper
     /**
      * Saves an entity and all it's related entities.
      *
-     * @param Doctrine_Record $record    The entity to save.
+     * @param Doctrine_Entity $record    The entity to save.
      * @param Doctrine_Connection $conn  The connection to use. Will default to the mapper's
      *                                   connection.
      * @throws Doctrine_Mapper_Exception If the mapper is unable to save the given entity.
      */
-    public function save(Doctrine_Record $record, Doctrine_Connection $conn = null)
+    public function save(Doctrine_Entity $record, Doctrine_Connection $conn = null)
     {
         if ( ! ($record instanceof $this->_domainClassName)) {
             throw new Doctrine_Mapper_Exception("Mapper of type " . $this->_domainClassName . " 
@@ -473,11 +475,11 @@ class Doctrine_Mapper
         }
 
         $state = $record->state();
-        if ($state === Doctrine_Record::STATE_LOCKED) {
+        if ($state === Doctrine_Entity::STATE_LOCKED) {
             return false;
         }
         
-        $record->state(Doctrine_Record::STATE_LOCKED);
+        $record->state(Doctrine_Entity::STATE_LOCKED);
         
         try {
             $conn->beginInternalTransaction();
@@ -492,7 +494,7 @@ class Doctrine_Mapper
             }
 
             $state = $record->state();
-            $record->state(Doctrine_Record::STATE_LOCKED);
+            $record->state(Doctrine_Entity::STATE_LOCKED);
 
             foreach ($saveLater as $fk) {
                 $alias = $fk->getAlias();
@@ -521,23 +523,23 @@ class Doctrine_Mapper
     /**
      * Inserts or updates an entity, depending on it's state. 
      *
-     * @param Doctrine_Record $record  The entity to insert/update.
+     * @param Doctrine_Entity $record  The entity to insert/update.
      */
-    protected function _insertOrUpdate(Doctrine_Record $record)
+    protected function _insertOrUpdate(Doctrine_Entity $record)
     {
         $record->preSave();
         $this->notifyEntityListeners($record, 'preSave', Doctrine_Event::RECORD_SAVE);
         
         switch ($record->state()) {
-            case Doctrine_Record::STATE_TDIRTY:
+            case Doctrine_Entity::STATE_TDIRTY:
                 $this->_insert($record);
                 break;
-            case Doctrine_Record::STATE_DIRTY:
-            case Doctrine_Record::STATE_PROXY:
+            case Doctrine_Entity::STATE_DIRTY:
+            case Doctrine_Entity::STATE_PROXY:
                 $this->_update($record);
                 break;
-            case Doctrine_Record::STATE_CLEAN:
-            case Doctrine_Record::STATE_TCLEAN:
+            case Doctrine_Entity::STATE_CLEAN:
+            case Doctrine_Entity::STATE_TCLEAN:
                 // do nothing
                 break;
         }
@@ -549,10 +551,10 @@ class Doctrine_Mapper
     /**
      * saves the given record
      *
-     * @param Doctrine_Record $record
+     * @param Doctrine_Entity $record
      * @return void
      */
-    public function saveSingleRecord(Doctrine_Record $record)
+    public function saveSingleRecord(Doctrine_Entity $record)
     {
         $this->_insertOrUpdate($record);
     }
@@ -562,9 +564,9 @@ class Doctrine_Mapper
      * saves all related records to $record
      *
      * @throws PDOException         if something went wrong at database level
-     * @param Doctrine_Record $record
+     * @param Doctrine_Entity $record
      */
-    protected function _saveRelated(Doctrine_Record $record)
+    protected function _saveRelated(Doctrine_Entity $record)
     {
         $saveLater = array();
         foreach ($record->getReferences() as $k => $v) {
@@ -580,7 +582,7 @@ class Doctrine_Mapper
                 $obj = $record->get($rel->getAlias());
 
                 // Protection against infinite function recursion before attempting to save
-                if ($obj instanceof Doctrine_Record && $obj->isModified()) {
+                if ($obj instanceof Doctrine_Entity && $obj->isModified()) {
                     $obj->save($this->_conn);
                     
                     /** Can this be removed?
@@ -609,10 +611,10 @@ class Doctrine_Mapper
      * save new associations to 4 and 5
      *
      * @throws Doctrine_Connection_Exception         if something went wrong at database level
-     * @param Doctrine_Record $record
+     * @param Doctrine_Entity $record
      * @return void
      */
-    public function saveAssociations(Doctrine_Record $record)
+    public function saveAssociations(Doctrine_Entity $record)
     {
         foreach ($record->getReferences() as $relationName => $relatedObject) {
             if ($relatedObject === Doctrine_Null::$INSTANCE) {
@@ -650,11 +652,11 @@ class Doctrine_Mapper
     /**
      * Updates an entity.
      *
-     * @param Doctrine_Record $record   record to be updated
+     * @param Doctrine_Entity $record   record to be updated
      * @return boolean                  whether or not the update was successful
      * @todo Move to Doctrine_Table (which will become Doctrine_Mapper).
      */
-    protected function _update(Doctrine_Record $record)
+    protected function _update(Doctrine_Entity $record)
     {
         $record->preUpdate();
         $this->notifyEntityListeners($record, 'preUpdate', Doctrine_Event::RECORD_UPDATE);
@@ -671,10 +673,10 @@ class Doctrine_Mapper
     /**
      * Inserts an entity.
      *
-     * @param Doctrine_Record $record   record to be inserted
+     * @param Doctrine_Entity $record   record to be inserted
      * @return boolean
      */
-    protected function _insert(Doctrine_Record $record)
+    protected function _insert(Doctrine_Entity $record)
     {
         $record->preInsert();
         $this->notifyEntityListeners($record, 'preInsert', Doctrine_Event::RECORD_INSERT);
@@ -696,7 +698,7 @@ class Doctrine_Mapper
      * @return boolean      true on success, false on failure
      * @throws Doctrine_Mapper_Exception
      */
-    public function delete(Doctrine_Record $record, Doctrine_Connection $conn = null)
+    public function delete(Doctrine_Entity $record, Doctrine_Connection $conn = null)
     {
         if ( ! $record->exists()) {
             return false;
@@ -717,7 +719,7 @@ class Doctrine_Mapper
         $table = $this->_classMetadata;
 
         $state = $record->state();
-        $record->state(Doctrine_Record::STATE_LOCKED);
+        $record->state(Doctrine_Entity::STATE_LOCKED);
         
         $this->_mappingStrategy->doDelete($record);
         

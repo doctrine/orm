@@ -1,5 +1,5 @@
 <?php
-class App_Category extends Doctrine_Record {
+class App_Category extends Doctrine_Entity {
     public static function initMetadata($class) {
         $class->setColumn('name', 'string', 32);
         $class->setColumn('parent_id', 'integer');

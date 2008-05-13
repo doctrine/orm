@@ -145,6 +145,13 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
      * -----------   EntityManager attributes    ---------------
      */
     /**
+     * Enter description here...
+     *
+     * @var array
+     */
+    private static $_ems = array();
+    
+    /**
      * The metadata factory is used to retrieve the metadata of entity classes.
      *
      * @var Doctrine_ClassMetadata_Factory
@@ -1129,14 +1136,26 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
     }
     
     
+    
     /*
      * -----------   EntityManager methods    ---------------
      */
     
     /**
+     * Gets the EntityManager that is responsible for the Entity.
+     *
+     * @param string $entityName
+     * @return EntityManager
+     */
+    public static function getManagerForEntity($entityName)
+    {
+        // ...
+    }
+    
+    /**
      * query
      * queries the database using Doctrine Query Language
-     * returns a collection of Doctrine_Record objects
+     * returns a collection of Doctrine_Entity objects
      *
      * <code>
      * $users = $conn->query('SELECT u.* FROM User u');
@@ -1148,7 +1167,7 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
      * @param array $params             query parameters
      * @param int $hydrationMode        Doctrine::FETCH_ARRAY or Doctrine::FETCH_RECORD
      * @see Doctrine_Query
-     * @return Doctrine_Collection      Collection of Doctrine_Record objects
+     * @return Doctrine_Collection      Collection of Doctrine_Entity objects
      * @todo package:orm
      */
     public function query($query, array $params = array(), $hydrationMode = null)
@@ -1174,7 +1193,7 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
      * @param string $query             DQL query
      * @param array $params             query parameters
      * @see Doctrine_Query
-     * @return Doctrine_Record|false    Doctrine_Record object on success,
+     * @return Doctrine_Entity|false    Doctrine_Entity object on success,
      *                                  boolean false on failure
      */
     public function queryOne($query, array $params = array())
@@ -1301,7 +1320,7 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
      *
      * create                       creates a record
      * @param string $name          component name
-     * @return Doctrine_Record      Doctrine_Record object
+     * @return Doctrine_Entity      Doctrine_Entity object
      * @todo Any strong reasons why this should not be removed?
      * @todo package:orm
      */
@@ -1377,12 +1396,12 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
         $this->exported = array();
     }
     
-    public function save(Doctrine_Record $entity, $conn = null)
+    public function save(Doctrine_Entity $entity, $conn = null)
     {
         $this->getMapper($entity->getClassName())->save($entity, $conn);
     }
     
-    public function remove(Doctrine_Record $entity, $conn = null)
+    public function remove(Doctrine_Entity $entity, $conn = null)
     {
         $this->getMapper($entity->getClassName())->delete($entity, $conn);
     }
@@ -1392,17 +1411,17 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
         return $this->getMapper($entityName)->create($data);
     }
     
-    public function detach(Doctrine_Record $entity)
+    public function detach(Doctrine_Entity $entity)
     {
         $this->getMapper($entity->getClassName())->detach($entity);
     }
     
-    public function removeRecord(Doctrine_Record $entity)
+    public function removeRecord(Doctrine_Entity $entity)
     {
         $this->getMapper($entity->getClassName())->removeRecord($entity);
     }
     
-    public function manage(Doctrine_Record $entity)
+    public function manage(Doctrine_Entity $entity)
     {
         $this->getMapper($entity->getClassName())->manage($entity);
     }
@@ -1502,6 +1521,77 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
         $this->_repositories[$entityName] = $repository;
 
         return $repository;
+    }
+    
+    /**
+     * createEntity
+     * First checks if record exists in identityMap, if not
+     * returns a new record.
+     *
+     * @return Doctrine_Entity
+     */
+    public function createEntity2($className, array $data)
+    {
+        $className = $this->_getClassnameToReturn($data, $className);
+        $classMetadata = $this->getClassMetadata($className);
+        if ( ! empty($data)) {
+            $identifierFieldNames = $classMetadata->getIdentifier();
+            $isNew = false;
+            foreach ($identifierFieldNames as $fieldName) {
+                if ( ! isset($data[$fieldName])) {
+                    // id field not found return new entity
+                    $isNew = true;
+                    break;
+                }
+                $id[] = $data[$fieldName];
+            }
+            if ($isNew) {
+                return new $className(true, $data);
+            }
+
+            $idHash = $this->unitOfWork->getIdentifierHash($id);
+
+            if ($entity = $this->unitOfWork->tryGetByIdHash($idHash,
+                    $classMetadata->getRootClassName())) {
+                // @todo return $entity; the one in-memory is the most recent.
+                $entity->hydrate($data);
+            } else {
+                $entity = new $className(false, $data);
+                $this->unitOfWork->registerIdentity($entity);
+            }
+            $data = array();
+        } else {
+            $entity = new $className(true, $data);
+        }
+
+        return $entity;
+    }
+    
+    /**
+     * Check the dataset for a discriminator column to determine the correct
+     * class to instantiate. If no discriminator column is found, the given
+     * classname will be returned.
+     *
+     * @return string The name of the class to instantiate.
+     * @todo Can be optimized performance-wise.
+     * @todo Move to EntityManager::createEntity()
+     */
+    protected function _getClassnameToReturn(array $data, $className)
+    {
+        $class = $this->getClassMetadata($className);
+
+        $discCol = $class->getInheritanceOption('discriminatorColumn');
+        if ( ! $discCol) {
+            return $className;
+        }
+        
+        $discMap = $class->getInheritanceOption('discriminatorMap');
+        
+        if (isset($data[$discCol], $discMap[$data[$discCol]])) {
+            return $discMap[$data[$discCol]];
+        } else {
+            return $className;
+        }
     }
 
     

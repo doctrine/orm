@@ -110,7 +110,7 @@ class Doctrine_Hydrate_FetchMode_TestCase extends Doctrine_UnitTestCase
         $this->assertEqual($users[0]['Email']['address'], 'zYne@example.com');
         $this->assertTrue($users[0] instanceof User);
         $this->assertTrue($users instanceof Doctrine_Collection);  
-        $this->assertEqual($users[0]->state(), Doctrine_Record::STATE_CLEAN);
+        $this->assertEqual($users[0]->state(), Doctrine_Entity::STATE_CLEAN);
         $this->assertEqual($users[0]->id, 4);
 
         $this->assertTrue($users[0]['Email'] instanceof Email);
@@ -128,7 +128,7 @@ class Doctrine_Hydrate_FetchMode_TestCase extends Doctrine_UnitTestCase
 
         $this->assertEqual(count($users), 8);
         $this->assertTrue($users[0] instanceof User);
-        $this->assertEqual($users[0]->state(), Doctrine_Record::STATE_CLEAN);
+        $this->assertEqual($users[0]->state(), Doctrine_Entity::STATE_CLEAN);
         $this->assertTrue($users instanceof Doctrine_Collection);
         $this->assertTrue($users[0]->Phonenumber instanceof Doctrine_Collection);
     }
@@ -143,7 +143,7 @@ class Doctrine_Hydrate_FetchMode_TestCase extends Doctrine_UnitTestCase
 
         $this->assertEqual(count($users), 8);
         $this->assertTrue($users[0] instanceof User);
-        $this->assertEqual($users[0]->state(), Doctrine_Record::STATE_CLEAN);
+        $this->assertEqual($users[0]->state(), Doctrine_Entity::STATE_CLEAN);
 
 
         $this->assertEqual($this->conn->count(), $count + 1);

@@ -1,5 +1,5 @@
 <?php
-class RTC4 extends Doctrine_Record {
+class RTC4 extends Doctrine_Entity {
     public static function initMetadata($class) {
         $class->setColumn('oid', 'integer', 11, array('autoincrement', 'primary'));  
         $class->setColumn('name', 'string', 20);

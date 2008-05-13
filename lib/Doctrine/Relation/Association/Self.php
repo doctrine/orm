@@ -74,7 +74,7 @@ class Doctrine_Relation_Association_Self extends Doctrine_Relation_Association
         return $dql;
     }
 
-    public function fetchRelatedFor(Doctrine_Record $record)
+    public function fetchRelatedFor(Doctrine_Entity $record)
     {
         // FIXME: composite key support
         $ids = $record->identifier();

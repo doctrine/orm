@@ -1030,13 +1030,13 @@ class Doctrine_Export extends Doctrine_Connection_Module
 
     /**
      * exportSchema
-     * method for exporting Doctrine_Record classes to a schema
+     * method for exporting Doctrine_Entity classes to a schema
      *
      * if the directory parameter is given this method first iterates
      * recursively trhough the given directory in order to find any model classes
      *
      * Then it iterates through all declared classes and creates tables for the ones
-     * that extend Doctrine_Record and are not abstract classes
+     * that extend Doctrine_Entity and are not abstract classes
      *
      * @throws Doctrine_Connection_Exception    if some error other than Doctrine::ERR_ALREADY_EXISTS
      *                                          occurred during the create table operation
@@ -1060,7 +1060,7 @@ class Doctrine_Export extends Doctrine_Connection_Module
      * FIXME: This method is a big huge hack. The sql needs to be executed in the correct order. I have some stupid logic to 
      * make sure they are in the right order.
      *
-     * method for exporting Doctrine_Record classes to a schema
+     * method for exporting Doctrine_Entity classes to a schema
      *
      * @throws Doctrine_Connection_Exception    if some error other than Doctrine::ERR_ALREADY_EXISTS
      *                                          occurred during the create table operation
@@ -1133,7 +1133,7 @@ class Doctrine_Export extends Doctrine_Connection_Module
 
     /**
      * exportClassesSql
-     * method for exporting Doctrine_Record classes to a schema
+     * method for exporting Doctrine_Entity classes to a schema
      *
      * @throws Doctrine_Connection_Exception    if some error other than Doctrine::ERR_ALREADY_EXISTS
      *                                          occurred during the create table operation
@@ -1244,13 +1244,13 @@ class Doctrine_Export extends Doctrine_Connection_Module
 
     /**
      * exportSql
-     * returns the sql for exporting Doctrine_Record classes to a schema
+     * returns the sql for exporting Doctrine_Entity classes to a schema
      *
      * if the directory parameter is given this method first iterates
      * recursively trhough the given directory in order to find any model classes
      *
      * Then it iterates through all declared classes and creates tables for the ones
-     * that extend Doctrine_Record and are not abstract classes
+     * that extend Doctrine_Entity and are not abstract classes
      *
      * @throws Doctrine_Connection_Exception    if some error other than Doctrine::ERR_ALREADY_EXISTS
      *                                          occurred during the create table operation

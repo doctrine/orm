@@ -1,5 +1,5 @@
 <?php
-class Cms_CategoryLanguages extends Doctrine_Record
+class Cms_CategoryLanguages extends Doctrine_Entity
 {
 	public static function initMetadata($class) 
     {

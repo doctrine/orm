@@ -21,7 +21,7 @@ class Doctrine_Cache_SqliteTestCase extends Doctrine_UnitTestCase {
         $this->assertTrue($this->cache->store($this->objTable->find(4)));
 
         $record = $this->cache->fetch(4);
-        $this->assertTrue($record instanceof Doctrine_Record);
+        $this->assertTrue($record instanceof Doctrine_Entity);
 
         foreach($this->old as $name => $value) {
             $this->assertEqual($record->get($name), $value);
@@ -36,7 +36,7 @@ class Doctrine_Cache_SqliteTestCase extends Doctrine_UnitTestCase {
         $array = $this->cache->fetchMultiple(array(5,6));
         $this->assertEqual(gettype($array), "array");
         $this->assertEqual(count($array), 1);
-        $this->assertTrue($array[0] instanceof Doctrine_Record);
+        $this->assertTrue($array[0] instanceof Doctrine_Entity);
     }
     public function testDeleteMultiple() {
         $this->assertEqual($this->cache->deleteMultiple(array()),0);
@@ -52,7 +52,7 @@ class Doctrine_Cache_SqliteTestCase extends Doctrine_UnitTestCase {
     }
     public function testDelete() {
         $this->cache->store($this->objTable->find(5));
-        $this->assertTrue($this->cache->fetch(5) instanceof Doctrine_Record);
+        $this->assertTrue($this->cache->fetch(5) instanceof Doctrine_Entity);
 
         $this->assertEqual($this->cache->delete(5),true);
         $this->assertFalse($this->cache->fetch(5));

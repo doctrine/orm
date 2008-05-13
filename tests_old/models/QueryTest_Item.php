@@ -1,5 +1,5 @@
 <?php
-class QueryTest_Item extends Doctrine_Record
+class QueryTest_Item extends Doctrine_Entity
 {
     public static function initMetadata($class)
     {

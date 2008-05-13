@@ -79,7 +79,7 @@ class Doctrine_ClassMetadata_Factory
         $parentClasses = array();
         $loadedParentClass = false;
         while ($parentClass = get_parent_class($parentClass)) {
-            if ($parentClass == 'Doctrine_Record') {
+            if ($parentClass == 'Doctrine_Entity') {
                 break;
             }
             if (isset($classes[$parentClass])) {
@@ -159,7 +159,7 @@ class Doctrine_ClassMetadata_Factory
         $className = $name;
         // get parent classes
         do {
-            if ($className === 'Doctrine_Record') {
+            if ($className === 'Doctrine_Entity') {
                 break;
             } else if ($className == $name) {
                 continue;

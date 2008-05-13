@@ -48,8 +48,8 @@ class Doctrine_Relation_Nest_TestCase extends Doctrine_UnitTestCase
         $this->assertTrue($e->Entity[0] instanceof Entity);
         $this->assertTrue($e->Entity[1] instanceof Entity);
 
-        $this->assertEqual($e->Entity[0]->state(), Doctrine_Record::STATE_TCLEAN);
-        $this->assertEqual($e->Entity[1]->state(), Doctrine_Record::STATE_TCLEAN);
+        $this->assertEqual($e->Entity[0]->state(), Doctrine_Entity::STATE_TCLEAN);
+        $this->assertEqual($e->Entity[1]->state(), Doctrine_Entity::STATE_TCLEAN);
         
         $e->Entity[0]->name = 'Friend 1';
         $e->Entity[1]->name = 'Friend 2';
@@ -69,8 +69,8 @@ class Doctrine_Relation_Nest_TestCase extends Doctrine_UnitTestCase
         $this->assertEqual($e->Entity[1]->Entity[0]->name, 'Friend 2 1');
         $this->assertEqual($e->Entity[1]->Entity[1]->name, 'Friend 2 2');
 
-        $this->assertEqual($e->Entity[0]->state(), Doctrine_Record::STATE_TDIRTY);
-        $this->assertEqual($e->Entity[1]->state(), Doctrine_Record::STATE_TDIRTY);
+        $this->assertEqual($e->Entity[0]->state(), Doctrine_Entity::STATE_TDIRTY);
+        $this->assertEqual($e->Entity[1]->state(), Doctrine_Entity::STATE_TDIRTY);
 
         $count = count($this->conn);
 
@@ -83,7 +83,7 @@ class Doctrine_Relation_Nest_TestCase extends Doctrine_UnitTestCase
         $this->connection->clear();
 
         $e = $this->conn->queryOne('FROM Entity e LEFT JOIN e.Entity e2 LEFT JOIN e2.Entity e3 WHERE e.id = 1 ORDER BY e.name, e2.name, e3.name');
-        $this->assertEqual($e->state(), Doctrine_Record::STATE_CLEAN);
+        $this->assertEqual($e->state(), Doctrine_Entity::STATE_CLEAN);
 
         $this->assertTrue($e->Entity[0] instanceof Entity);
         $this->assertTrue($e->Entity[1] instanceof Entity);
@@ -99,8 +99,8 @@ class Doctrine_Relation_Nest_TestCase extends Doctrine_UnitTestCase
         $this->assertEqual($e->Entity[1]->Entity[1]->name, 'Friend 2 1');
         $this->assertEqual($e->Entity[1]->Entity[2]->name, 'Friend 2 2');
 
-        $this->assertEqual($e->Entity[0]->state(), Doctrine_Record::STATE_CLEAN);
-        $this->assertEqual($e->Entity[1]->state(), Doctrine_Record::STATE_CLEAN);
+        $this->assertEqual($e->Entity[0]->state(), Doctrine_Entity::STATE_CLEAN);
+        $this->assertEqual($e->Entity[1]->state(), Doctrine_Entity::STATE_CLEAN);
 
         $this->assertTrue(is_numeric($e->id));
 
@@ -135,12 +135,12 @@ class Doctrine_Relation_Nest_TestCase extends Doctrine_UnitTestCase
         $this->assertEqual($e->Entity[1]->Entity[0]->name, "Entity test");
         $this->assertEqual($e->Entity[1]->Entity[1]->name, "Friend 2 1");
 
-        $this->assertEqual($e->Entity[0]->state(), Doctrine_Record::STATE_CLEAN);
-        $this->assertEqual($e->Entity[1]->state(), Doctrine_Record::STATE_CLEAN);
+        $this->assertEqual($e->Entity[0]->state(), Doctrine_Entity::STATE_CLEAN);
+        $this->assertEqual($e->Entity[1]->state(), Doctrine_Entity::STATE_CLEAN);
         
         $coll = $this->connection->query("FROM Entity WHERE Entity.name = 'Friend 1'");
         $this->assertEqual($coll->count(), 1);
-        $this->assertEqual($coll[0]->state(), Doctrine_Record::STATE_CLEAN);
+        $this->assertEqual($coll[0]->state(), Doctrine_Entity::STATE_CLEAN);
         
         $this->assertEqual($coll[0]->name, "Friend 1");
         

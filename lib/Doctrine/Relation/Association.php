@@ -89,10 +89,10 @@ class Doctrine_Relation_Association extends Doctrine_Relation
      *
      * fetches a component related to given record
      *
-     * @param Doctrine_Record $record
-     * @return Doctrine_Record|Doctrine_Collection
+     * @param Doctrine_Entity $record
+     * @return Doctrine_Entity|Doctrine_Collection
      */
-    public function fetchRelatedFor(Doctrine_Record $record)
+    public function fetchRelatedFor(Doctrine_Entity $record)
     {
         // FIXME: composite key support
         $ids = $record->identifier();

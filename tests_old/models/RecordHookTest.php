@@ -1,5 +1,5 @@
 <?php
-class RecordHookTest extends Doctrine_Record
+class RecordHookTest extends Doctrine_Entity
 {
     protected $_messages = array();
 

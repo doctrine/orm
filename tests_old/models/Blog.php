@@ -1,5 +1,5 @@
 <?php
-class Blog extends Doctrine_Record
+class Blog extends Doctrine_Entity
 {
     public static function initMetadata($class)
     {
@@ -13,7 +13,7 @@ class Taggable extends Doctrine_Template
         //$this->hasMany('[Component]TagTemplate as Tag');
     }
 }
-class TagTemplate extends Doctrine_Record
+class TagTemplate extends Doctrine_Entity
 {
     public static function initMetadata($class)
     {
