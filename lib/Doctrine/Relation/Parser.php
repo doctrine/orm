@@ -271,7 +271,7 @@ class Doctrine_Relation_Parser
      */
     public function getImpl(array &$def, $key)
     {
-        $conn = $this->_table->getConnection();
+        $em = $this->_table->getEntityManager();
         if (in_array('Doctrine_Template', class_parents($def[$key]))) {
             $impl = $this->_table->getImpl($def[$key]);
             if ($impl === null) {
@@ -280,7 +280,7 @@ class Doctrine_Relation_Parser
             $def[$key] = $impl;
         }
 
-        return $conn->getMetadata($def[$key]);
+        return $em->getClassMetadata($def[$key]);
     }
     
     protected function _isTemplate($className)

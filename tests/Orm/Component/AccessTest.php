@@ -41,6 +41,7 @@ class Orm_Component_AccessTest extends Doctrine_OrmTestCase
     public function setUp()
     {
         parent::setUp();
+        $em = new Doctrine_EntityManager(new Doctrine_Connection_Mock());
         $this->user = new ForumUser();
     }
 
@@ -57,10 +58,10 @@ class Orm_Component_AccessTest extends Doctrine_OrmTestCase
     /**
      * @test 
      */
-    public function shouldMarkExistingFieldAsSetOnNewRecord()
+    public function shouldMarkEmptyFieldAsNotSetOnNewRecord()
     {
-        $this->assertTrue(isset($this->user->username));
-        $this->assertTrue(isset($this->user['username']));
+        $this->assertFalse(isset($this->user->username));
+        $this->assertFalse(isset($this->user['username']));
     }
 
     /**
@@ -113,7 +114,7 @@ class Orm_Component_AccessTest extends Doctrine_OrmTestCase
 
     /**
      * @test 
-     * @expectedException Doctrine_Record_Exception
+     * @expectedException Doctrine_Entity_Exception
      */
     public function shouldNotBeAbleToSetNonExistantField()
     {
@@ -122,7 +123,7 @@ class Orm_Component_AccessTest extends Doctrine_OrmTestCase
 
     /**
      * @test 
-     * @expectedException Doctrine_Record_Exception
+     * @expectedException Doctrine_Entity_Exception
      */
     public function shouldNotBeAbleToSetNonExistantFieldWithOffset()
     {
@@ -131,14 +132,13 @@ class Orm_Component_AccessTest extends Doctrine_OrmTestCase
 
     /**
      * @test 
-     * @expectedException Doctrine_Record_Exception
+     * @expectedException Doctrine_Entity_Exception
      */
     public function shouldNotBeAbleToSetNonExistantFieldAsPartInSetArray()
     {
         $this->user->setArray(array(
             'rat' => 'meus',
             'id'  => 22));
-
     }
 
 

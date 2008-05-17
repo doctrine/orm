@@ -1129,7 +1129,6 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable, Seria
 
         $modifyLimit = true;
         if ( ! empty($this->_sqlParts['limit']) || ! empty($this->_sqlParts['offset'])) {
-
             if ($needsSubQuery) {
                 $subquery = $this->getLimitSubquery();
                 // what about composite keys?
@@ -1138,7 +1137,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable, Seria
                 switch (strtolower($this->_conn->getDriverName())) {
                     case 'mysql':
                         // mysql doesn't support LIMIT in subqueries
-                        $list     = $this->_conn->execute($subquery, $params)->fetchAll(Doctrine::FETCH_COLUMN);
+                        $list = $this->_conn->execute($subquery, $params)->fetchAll(Doctrine::FETCH_COLUMN);
                         $subquery = implode(', ', array_map(array($this->_conn, 'quote'), $list));
                         break;
                     case 'pgsql':
@@ -1192,18 +1191,18 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable, Seria
      */
     public function getLimitSubquery()
     {
-        $map    = reset($this->_queryComponents);
-        $table  = $map['table'];
+        $map = reset($this->_queryComponents);
+        $table = $map['table'];
         $componentAlias = key($this->_queryComponents);
 
         // get short alias
-        $alias      = $this->getTableAlias($componentAlias);
+        $alias = $this->getTableAlias($componentAlias);
         // what about composite keys?
         $idFieldNames = (array)$table->getIdentifier();
         $primaryKey = $alias . '.' . $table->getColumnName($idFieldNames[0]);
 
         // initialize the base of the subquery
-        $subquery   = 'SELECT DISTINCT ' . $this->_conn->quoteIdentifier($primaryKey);
+        $subquery = 'SELECT DISTINCT ' . $this->_conn->quoteIdentifier($primaryKey);
 
         $driverName = $this->_conn->getAttribute(Doctrine::ATTR_DRIVER_NAME);
 
@@ -1261,7 +1260,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable, Seria
         $subquery .= ( ! empty($this->_sqlParts['orderby']))? ' ORDER BY ' . implode(', ', $this->_sqlParts['orderby'])   : '';
 
         // add driver specific limit clause
-        $subquery = $this->_conn->modifyLimitQuery($subquery, $this->_sqlParts['limit'], $this->_sqlParts['offset']);
+        $subquery = $this->_conn->modifyLimitSubquery($table, $subquery, $this->_sqlParts['limit'], $this->_sqlParts['offset']);
 
         $parts = $this->_tokenizer->quoteExplode($subquery, ' ', "'", "'");
 
@@ -1643,7 +1642,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable, Seria
         $this->_sqlParts['from'][] = $queryPart;
         //echo "<br /><br />" . $table->getComponentName() . "---3---" . $name . "<br /><br />";
         $this->_queryComponents[$componentAlias] = array(
-                'table' => $table, 'mapper' => $this->_conn->getMapper($name), 'map' => null);
+                'table' => $table, 'mapper' => $this->_conn->getEntityPersister($name), 'map' => null);
 
         return $table;
     }

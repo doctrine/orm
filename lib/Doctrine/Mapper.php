@@ -30,7 +30,6 @@
  * @version     $Revision: 3406 $
  * @link        www.phpdoctrine.org
  * @since       2.0
- * @todo  Move all finder stuff to EntityRepository.
  * @todo Rename to "EntityPersister" or similar.
  */
 class Doctrine_Mapper
@@ -69,6 +68,12 @@ class Doctrine_Mapper
      */
     private $_entityListeners = array();
     
+    /**
+     * Enter description here...
+     *
+     * @var unknown_type
+     * @todo To EntityManager.
+     */
     private $_dataTemplate = array();
 
 
@@ -121,6 +126,7 @@ class Doctrine_Mapper
      * @param $array             an array where keys are field names and
      *                           values representing field values
      * @return Doctrine_Entity   the created record object
+     * @todo To EntityManager.
      */
     public function create(array $array = array()) 
     {
@@ -158,24 +164,16 @@ class Doctrine_Mapper
         }
     }
     
+    /**
+     * Enter description here...
+     *
+     * @param Doctrine_Entity $entity
+     * @return unknown
+     * @todo To EntityManager
+     */
     public function detach(Doctrine_Entity $entity)
     {
         return $this->_conn->unitOfWork->detach($entity);
-    }
-    
-    /**
-     * Executes a named query.
-     *
-     * @param string $queryName     The name that was used when storing the query.
-     * @param array $params         The query parameters.
-     * @return mixed                The result.
-     * @deprecated
-     */
-    public function executeNamedQuery($queryName, $params = array(), $hydrationMode = Doctrine::HYDRATE_RECORD)
-    {
-        return Doctrine_Manager::getInstance()
-                ->createNamedQuery($queryName)
-                ->execute($params, $hydrationMode);    
     }
 
     /**
@@ -184,6 +182,7 @@ class Doctrine_Mapper
      *
      * @return void
      * @todo what about a more descriptive name? clearIdentityMap?
+     * @todo To EntityManager
      */
     public function clear()
     {
@@ -197,6 +196,7 @@ class Doctrine_Mapper
      * @param Doctrine_Entity $record       record to be added
      * @return boolean
      * @todo Better name? registerRecord? Move elsewhere to the new location of the identity maps.
+     * @todo Remove.
      */
     public function addRecord(Doctrine_Entity $record)
     {
@@ -213,6 +213,7 @@ class Doctrine_Mapper
      *
      * @return boolean  TRUE if the entity was previously not managed and is now managed,
      *                  FALSE otherwise (the entity is already managed).
+     * @todo Remove.
      */
     public function manage(Doctrine_Entity $record)
     {
@@ -244,6 +245,7 @@ class Doctrine_Mapper
      * returns a new record.
      *
      * @return Doctrine_Entity
+     * @todo To EntityManager.
      */
     public function getRecord(array $data)
     {
@@ -310,6 +312,7 @@ class Doctrine_Mapper
      * applyInheritance
      * @param $where                    query where part to be modified
      * @return string                   query where part with column aggregation inheritance added
+     * @todo What to do with this? Remove if possible.
      */
     final public function applyInheritance($where)
     {
@@ -357,6 +360,8 @@ class Doctrine_Mapper
      *                          for the field can be skipped. Used i.e. during hydration to
      *                          improve performance on large and/or complex results.
      * @return mixed            prepared value
+     * @todo To EntityManager. Make private and use in createEntity().
+     *       .. Or, maybe better: Move to hydrator for performance reasons.
      */
     public function prepareValue($fieldName, $value, $typeHint = null)
     {
@@ -397,43 +402,6 @@ class Doctrine_Mapper
             }
         }
         return $value;
-    }
-    
-    /**
-     * Hydrates the given data into the entity.
-     * 
-     */
-    /*public function hydrate(Doctrine_Entity $entity, array $data)
-    {
-        $this->_values = array_merge($this->_values, $this->cleanData($data));
-        $this->_data   = array_merge($this->_data, $data);
-        $this->_extractIdentifier(true);
-    }*/
-
-    /**
-     * getTree
-     *
-     * getter for associated tree
-     *
-     * @return mixed  if tree return instance of Doctrine_Tree, otherwise returns false
-     * @todo Part of the NestedSet Behavior plugin. Move outta here some day...
-     */
-    public function getTree()
-    {
-        return $this->_classMetadata->getTree();
-    }
-    
-    /**
-     * isTree
-     *
-     * determine if table acts as tree
-     *
-     * @return mixed  if tree return true, otherwise returns false
-     * @todo Part of the NestedSet Behavior plugin. Move outta here some day...
-     */
-    public function isTree()
-    {
-        return $this->_classMetadata->isTree();
     }
 
     /**
@@ -729,24 +697,9 @@ class Doctrine_Mapper
         return true;
     }
     
-    public function executeQuery(Doctrine_Query $query)
-    {
-        
-    }
-    
-    public function getTable()
-    {
-        return $this->_classMetadata;
-    }
-    
     public function getClassMetadata()
     {
         return $this->_classMetadata;
-    }
-    
-    public function dump()
-    {
-        var_dump($this->_invokedMethods);
     }
     
     public function free()
@@ -758,8 +711,6 @@ class Doctrine_Mapper
     {
         return $this->_mappingStrategy;
     }
-    
-    
     
     public function getFieldName($columnName)
     {

@@ -25,18 +25,21 @@
  * 
  * Some terminology:
  * 
- * <b>New entity</b>: From the point of view of the unitOfWork is an entity that
- * already has an identity but is not yet persisted into the database. This
- * is usually the case for all newly saved entities that use a SEQUENCE id
- * generator. Entities with an IDENTITY id generator get persisted as soon
- * as they're saved in order to obtain the identifier. Therefore entities that
- * use an IDENTITY id generator never appear in the list of new entities of the UoW.
+ * <b>New entity</b>: A new entity is an entity that already has an identity but
+ * is not yet persisted into the database. This is usually the case for all
+ * newly saved entities that use a SEQUENCE id generator. Entities with an
+ * IDENTITY id generator get persisted as soon as they're saved in order to
+ * obtain the identifier. Therefore entities that use an IDENTITY id generator
+ * never appear in the list of new entities of the UoW.
  * 
- * <b>Dirty entity</b>: ...
+ * <b>Dirty entity</b>: A dirty entity is a managed entity whose values have
+ * been altered.
  * 
- * <b>Removed entity</b>: ...
+ * <b>Removed entity</b>: A removed entity is a managed entity that is scheduled
+ * for deletion from the database.
  * 
- * <b>Clean entity</b>: ...
+ * <b>Clean entity</b>: A clean entity is a managed entity that has been fetched
+ * from the database and whose values have not yet been altered.
  *
  * @package     Doctrine
  * @subpackage  Connection
@@ -226,7 +229,7 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
                 $index  = max(array_keys($tree));
             }
 
-            $rels = $mapper->getTable()->getRelations();
+            $rels = $mapper->getClassMetadata()->getRelations();
 
             // group relations
 
@@ -355,7 +358,8 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
     /**
      * @param integer $oid                  object identifier
      * @return boolean                      whether ot not the operation was successful
-     * @deprecated
+     * @deprecated The new implementation of detach() should remove the entity
+     *             from the identity map.
      */
     public function detach(Doctrine_Entity $entity)
     {
@@ -371,6 +375,8 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
      * Detaches all currently managed entities.
      *
      * @return integer   The number of detached entities.
+     * @todo Deprecated. The new implementation should remove all entities from
+     *       the identity map.
      */
     public function detachAll()
     {
@@ -401,11 +407,24 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
         return true;
     }
     
+    /**
+     * Enter description here...
+     *
+     * @param unknown_type $entityName
+     * @todo unify with detachAll()
+     */
     public function clearIdentitiesForEntity($entityName)
     {
         $this->_identityMap[$entityName] = array();
     }
     
+    /**
+     * Removes an entity from the identity map.
+     *
+     * @param Doctrine_Entity $entity
+     * @return unknown
+     * @todo This will be the new detach().
+     */
     public function unregisterIdentity(Doctrine_Entity $entity)
     {
         $idHash = $this->getIdentifierHash($entity->identifier());
@@ -422,6 +441,13 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
         return false;
     }
     
+    /**
+     * Finds an entity in the identity map by its identifier hash.
+     *
+     * @param unknown_type $idHash
+     * @param unknown_type $rootClassName
+     * @return unknown
+     */
     public function getByIdHash($idHash, $rootClassName)
     {
         return $this->_identityMap[$rootClassName][$idHash];
@@ -435,6 +461,12 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
         return false;
     }
     
+    /**
+     * Gets the identifier hash for a set of identifier values.
+     *
+     * @param array $id
+     * @return string
+     */
     public function getIdentifierHash(array $id)
     {
         return implode(' ', $id);
@@ -448,15 +480,22 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
      */
     public function contains(Doctrine_Entity $entity)
     {
-        $id = implode(' ', $entity->identifier());
-        if ( ! $id) {
+        $idHash = $this->getIdentifierHash($entity->identifier());
+        if ( ! $idHash) {
             return false;
         }
-        return isset($this->_identityMap[
-                $entity->getClassMetadata()->getRootClassName()
-                ][$id]);
+        return isset($this->_identityMap
+                [$entity->getClassMetadata()->getRootClassName()]
+                [$idHash]);
     }
     
+    /**
+     * Checks whether an identifier hash exists in the identity map.
+     *
+     * @param string $idHash
+     * @param string $rootClassName
+     * @return boolean
+     */
     public function containsIdHash($idHash, $rootClassName)
     {
         return isset($this->_identityMap[$rootClassName][$idHash]);

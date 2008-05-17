@@ -55,8 +55,8 @@ class Doctrine_Connection_Db2 extends Doctrine_Connection
             $col = explode('select', $select);
 
             $sql = 'WITH OFFSET AS(' . $select . ', ROW_NUMBER() ' .
-               'OVER(ORDER BY ' . $col[1] . ') AS dctrn_rownum FROM ' . $table . ')' .
-               $select . 'FROM OFFSET WHERE dctrn_rownum BETWEEN ' . $offset .
+               'OVER(ORDER BY ' . $col[1] . ') AS doctrine_rownum FROM ' . $table . ')' .
+               $select . 'FROM OFFSET WHERE doctrine_rownum BETWEEN ' . $offset .
                    'AND ' . ($offset + $limit - 1);
             return $sql;
         }

@@ -5,8 +5,10 @@ require_once 'Doctrine_TestCase.php';
 require_once 'Doctrine_TestUtil.php';
 require_once 'Doctrine_DbalTestCase.php';
 require_once 'Doctrine_OrmTestCase.php';
+require_once 'Doctrine_OrmFunctionalTestCase.php';
 require_once 'Doctrine_TestSuite.php';
 require_once 'Doctrine_OrmTestSuite.php';
+require_once 'Doctrine_OrmFunctionalTestSuite.php';
 require_once 'Doctrine_DbalTestSuite.php';
 
 require_once '../lib/Doctrine.php';

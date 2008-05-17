@@ -115,6 +115,7 @@ abstract class Doctrine_Entity extends Doctrine_Access implements Countable, Ite
      * The metadata container that describes the entity class.
      *
      * @var Doctrine_ClassMetadata
+     * @todo Lazy initialization.
      */
     protected $_class;
     
@@ -188,6 +189,7 @@ abstract class Doctrine_Entity extends Doctrine_Access implements Countable, Ite
      * The EntityManager that is responsible for the persistence of the entity.
      *
      * @var Doctrine_EntityManager
+     * @todo Lazy initialization.
      */
     protected $_em;
 
@@ -214,8 +216,7 @@ abstract class Doctrine_Entity extends Doctrine_Access implements Countable, Ite
     public function __construct($isNewEntry = true, array $data = array())
     {
         $this->_entityName = get_class($this);
-        $this->_em = Doctrine_Manager::getInstance()->getCurrentConnection();
-        // future: $this->_em = Doctrine_EntityManager::getManagerForEntity($this->_entityName);
+        $this->_em = Doctrine_EntityManager::getManager($this->_entityName);
         $this->_class = $this->_em->getClassMetadata($this->_entityName);
         $this->_oid = self::$_index++;
 
@@ -227,18 +228,15 @@ abstract class Doctrine_Entity extends Doctrine_Access implements Countable, Ite
 
         // get the column count
         $count = count($this->_data);
-        
-        $this->_values = $this->cleanData($this->_data);
 
         $this->_extractIdentifier( ! $isNewEntry);
         
         if ($isNewEntry) {
-            if ($count > count($this->_values)) {
+            if ($count > 0) {
                 $this->_state = Doctrine_Entity::STATE_TDIRTY;
             } else {
                 $this->_state = Doctrine_Entity::STATE_TCLEAN;
             }
-
             // set the default values for this record
             $this->assignDefaultValues();
         } else {
@@ -251,8 +249,6 @@ abstract class Doctrine_Entity extends Doctrine_Access implements Countable, Ite
         //--
         
         self::$_useAutoAccessorOverride = false; // @todo read from attribute the first time
-        $this->_em->manage($this); // @todo Remove
-        $this->construct(); // @todo Remove
     }
 
     /**
@@ -509,7 +505,7 @@ abstract class Doctrine_Entity extends Doctrine_Access implements Countable, Ite
         $tmp = $data;
         $data = array();
 
-        $fieldNames = $this->_em->getMapper($this->_entityName)->getFieldNames();
+        $fieldNames = $this->_em->getEntityPersister($this->_entityName)->getFieldNames();
         foreach ($fieldNames as $fieldName) {
             if (isset($tmp[$fieldName])) {
                 $data[$fieldName] = $tmp[$fieldName];
@@ -650,13 +646,14 @@ abstract class Doctrine_Entity extends Doctrine_Access implements Countable, Ite
 
         $this->preUnserialize($event);
 
-        $manager = Doctrine_Manager::getInstance();
-        $connection = $manager->getConnectionForComponent(get_class($this));
+        $this->_entityName = get_class($this);
+        $manager = Doctrine_EntityManager::getManager($this->_entityName);
+        $connection = $manager->getConnection();
 
         $this->_oid = self::$_index;
         self::$_index++;
 
-        $this->_em = $connection;  
+        $this->_em = $manager;  
 
         $array = unserialize($serialized);
 
@@ -664,7 +661,6 @@ abstract class Doctrine_Entity extends Doctrine_Access implements Countable, Ite
             $this->$k = $v;
         }
         
-        $this->_entityName = get_class($this);
         $this->_class = $this->_em->getClassMetadata($this->_entityName);
 
         foreach ($this->_data as $k => $v) {
@@ -683,7 +679,6 @@ abstract class Doctrine_Entity extends Doctrine_Access implements Countable, Ite
             }
         }
 
-        $this->_em->manage($this);
         $this->cleanData($this->_data);
         $this->_extractIdentifier($this->exists());
         
@@ -997,7 +992,7 @@ abstract class Doctrine_Entity extends Doctrine_Access implements Countable, Ite
      * @throws Doctrine_Record_Exception        if trying to get a value of unknown property / related component
      * @return mixed
      */
-    public function get($fieldName, $load = true)
+    public function get($fieldName, $load = false)
     {
         /*// check for custom accessor, if not done yet.
         if ( ! isset(self::$_accessorCache[$this->_entityName][$fieldName])) {
@@ -1020,62 +1015,35 @@ abstract class Doctrine_Entity extends Doctrine_Access implements Countable, Ite
             return $this->$getter();
         }*/
         
-        // Use built-in accessor functionality
+        // Use built-in accessor functionality        
         $nullObj = Doctrine_Null::$INSTANCE;
-        $value = $nullObj;
         if (isset($this->_data[$fieldName])) {
-            if ($this->_data[$fieldName] !== $nullObj) {
-                return $this->_data[$fieldName];
-            }
-            if ($this->_data[$fieldName] === $nullObj && $load) {
-                $this->load();
-                $value = $this->_data[$fieldName];
-            }
-            if ($value === $nullObj) {
-                $value = null;
-            }
-            
-            return $value;
-        }
-
-        if (isset($this->_values[$fieldName])) {
-            return $this->_values[$fieldName];
-        }
-
-        try {
-            if ( ! isset($this->_references[$fieldName]) && $load) {
-                $rel = $this->_class->getRelation($fieldName);
-                $this->_references[$fieldName] = $rel->fetchRelatedFor($this);
-            }
-            if ($this->_references[$fieldName] === Doctrine_Null::$INSTANCE) {
-                return null;
-            }
-            return $this->_references[$fieldName];
-        } catch (Doctrine_Relation_Exception $e) {
-            //echo $e->getTraceAsString();
-            //echo "<br/><br/>";
-            foreach ($this->_class->getFilters() as $filter) {
-                if (($value = $filter->filterGet($this, $fieldName, $value)) !== null) {
-                    return $value;
+            return $this->_data[$fieldName] !== $nullObj ?
+                    $this->_data[$fieldName] : null;
+        } else if (isset($this->_references[$fieldName])) {
+            return $this->_references[$fieldName] !== $nullObj ?
+                    $this->_references[$fieldName] : null;
+        } else {
+            if ($this->_class->hasField($fieldName)) {
+                if ($load) {
+                    $this->load();
+                    return $this->get($fieldName);
+                } else {
+                    return null;
                 }
+            } else if ($this->_class->hasRelation($fieldName)) {
+                if ($load) {
+                    $rel = $this->_class->getRelation($fieldName);
+                    $this->_references[$fieldName] = $rel->fetchRelatedFor($this);
+                    return $this->_references[$fieldName] !== $nullObj ?
+                            $this->_references[$fieldName] : null;
+                } else {
+                    return null;
+                }
+            } else {
+                throw Doctrine_Entity_Exception::invalidField($fieldName);
             }
         }
-    }
-
-    /**
-     * mapValue
-     * This simple method is used for mapping values to $values property.
-     * Usually this method is used internally by Doctrine for the mapping of
-     * aggregate values.
-     *
-     * @param string $name                  the name of the mapped value
-     * @param mixed $value                  mixed value to be mapped
-     * @return void
-     * @todo Maybe better placed in the Mapper.
-     */
-    public function mapValue($name, $value)
-    {
-        $this->_values[$name] = $value;
     }
     
     public function getClassName()
@@ -1097,9 +1065,9 @@ abstract class Doctrine_Entity extends Doctrine_Access implements Countable, Ite
      *
      * @return Doctrine_Entity
      */
-    public function set($fieldName, $value, $load = true)
-    {
-        if (isset($this->_data[$fieldName])) {            
+    public function set($fieldName, $value, $load = false)
+    {        
+        if ($this->_class->hasField($fieldName)) {
             if ($value instanceof Doctrine_Entity) {
                 $type = $this->_class->getTypeOf($fieldName);
                 // FIXME: composite key support
@@ -1111,16 +1079,12 @@ abstract class Doctrine_Entity extends Doctrine_Access implements Countable, Ite
             }
 
             if ($load) {
-                $old = $this->get($fieldName, $load);
+                $old = $this->get($fieldName, true);
             } else {
-                $old = $this->_data[$fieldName];
+                $old = isset($this->_data[$fieldName]) ? $this->_data[$fieldName] : null;
             }
 
             if ($old !== $value) {
-                if ($value === null) {
-                    $value = Doctrine_Null::$INSTANCE;
-                }
-
                 $this->_data[$fieldName] = $value;
                 $this->_modified[] = $fieldName;
                 
@@ -1139,18 +1103,10 @@ abstract class Doctrine_Entity extends Doctrine_Access implements Countable, Ite
                         break;
                 }
             }
+        } else if ($this->_class->hasRelation($fieldName)) {
+            $this->rawSetReference($fieldName, $value);
         } else {
-            try {
-                $this->rawSetReference($fieldName, $value);
-            } catch (Doctrine_Relation_Exception $e) {
-                //echo $e->getTraceAsString();
-                //echo "<br/><br/>";
-                foreach ($this->_class->getFilters() as $filter) {
-                    if (($value = $filter->filterSet($this, $fieldName, $value)) !== null) {
-                        return $value;
-                    }
-                }
-            }
+            throw Doctrine_Entity_Exception::invalidField($fieldName);
         }
     }
 
@@ -2067,8 +2023,7 @@ abstract class Doctrine_Entity extends Doctrine_Access implements Countable, Ite
     public function getEntityManager()
     {
         if ( ! $this->_em) {
-            $this->_em = Doctrine_Manager::getInstance()->getCurrentConnection();
-            // future: $this->_em = Doctrine_EntityManager::getManagerForEntity($this->_entityName);
+            $this->_em = Doctrine_EntityManager::getManager($this->_entityName);
         }
         return $this->_em;
     }
@@ -2106,7 +2061,6 @@ abstract class Doctrine_Entity extends Doctrine_Access implements Countable, Ite
     {
         if ($this->_state != self::STATE_LOCKED) {
             $this->_em->detach($this);
-            $this->_em->removeRecord($this);
             $this->_data = array();
             $this->_id = array();
 

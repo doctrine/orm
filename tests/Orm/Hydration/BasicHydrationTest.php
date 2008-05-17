@@ -9,7 +9,7 @@ class Orm_Hydration_BasicHydrationTest extends Doctrine_OrmTestCase
     protected function setUp()
     {
         parent::setUp();
-        $this->_em = $this->sharedFixture['connection'];
+        $this->_em = new Doctrine_EntityManager(new Doctrine_Connection_Mock());
     }
     
     /** Getter for the hydration mode dataProvider */
@@ -44,8 +44,8 @@ class Orm_Hydration_BasicHydrationTest extends Doctrine_OrmTestCase
         // Faked query components
         $queryComponents = array(
             'u' => array(
-                'table' => $this->sharedFixture['connection']->getClassMetadata('CmsUser'),
-                'mapper' => $this->sharedFixture['connection']->getMapper('CmsUser'),
+                'table' => $this->_em->getClassMetadata('CmsUser'),
+                'mapper' => $this->_em->getEntityPersister('CmsUser'),
                 'parent' => null,
                 'relation' => null,
                 'map' => null
@@ -105,18 +105,18 @@ class Orm_Hydration_BasicHydrationTest extends Doctrine_OrmTestCase
         // Faked query components
         $queryComponents = array(
             'u' => array(
-                'table' => $this->sharedFixture['connection']->getClassMetadata('CmsUser'),
-                'mapper' => $this->sharedFixture['connection']->getMapper('CmsUser'),
+                'table' => $this->_em->getClassMetadata('CmsUser'),
+                'mapper' => $this->_em->getEntityPersister('CmsUser'),
                 'parent' => null,
                 'relation' => null,
                 'map' => null,
                 'agg' => array('0' => 'nameUpper')
                 ),
             'p' => array(
-                'table' => $this->sharedFixture['connection']->getClassMetadata('CmsPhonenumber'),
-                'mapper' => $this->sharedFixture['connection']->getMapper('CmsPhonenumber'),
+                'table' => $this->_em->getClassMetadata('CmsPhonenumber'),
+                'mapper' => $this->_em->getEntityPersister('CmsPhonenumber'),
                 'parent' => 'u',
-                'relation' => $this->sharedFixture['connection']->getClassMetadata('CmsUser')->getRelation('phonenumbers'),
+                'relation' => $this->_em->getClassMetadata('CmsUser')->getRelation('phonenumbers'),
                 'map' => null
                 )
             );
@@ -155,14 +155,16 @@ class Orm_Hydration_BasicHydrationTest extends Doctrine_OrmTestCase
         
         $result = $hydrator->hydrateResultSet($this->_createParserResult(
                 $stmt, $queryComponents, $tableAliasMap, $hydrationMode, true));
-        //var_dump($result);
+                
+        if ($hydrationMode == Doctrine::HYDRATE_ARRAY) {
+            //var_dump($result);
+        }
         
         $this->assertEquals(2, count($result));
         $this->assertTrue(is_array($result));
         $this->assertTrue(is_array($result[0]));
         $this->assertTrue(is_array($result[1]));
         
-        $this->assertEquals(3, count($result[0][0]));
         // first user => 2 phonenumbers
         $this->assertEquals(2, count($result[0][0]['phonenumbers']));
         $this->assertEquals('ROMANB', $result[0]['nameUpper']);
@@ -198,17 +200,17 @@ class Orm_Hydration_BasicHydrationTest extends Doctrine_OrmTestCase
         // Faked query components
         $queryComponents = array(
             'u' => array(
-                'table' => $this->sharedFixture['connection']->getClassMetadata('CmsUser'),
-                'mapper' => $this->sharedFixture['connection']->getMapper('CmsUser'),
+                'table' => $this->_em->getClassMetadata('CmsUser'),
+                'mapper' => $this->_em->getEntityPersister('CmsUser'),
                 'parent' => null,
                 'relation' => null,
                 'map' => null
                 ),
             'p' => array(
-                'table' => $this->sharedFixture['connection']->getClassMetadata('CmsPhonenumber'),
-                'mapper' => $this->sharedFixture['connection']->getMapper('CmsPhonenumber'),
+                'table' => $this->_em->getClassMetadata('CmsPhonenumber'),
+                'mapper' => $this->_em->getEntityPersister('CmsPhonenumber'),
                 'parent' => 'u',
-                'relation' => $this->sharedFixture['connection']->getClassMetadata('CmsUser')->getRelation('phonenumbers'),
+                'relation' => $this->_em->getClassMetadata('CmsUser')->getRelation('phonenumbers'),
                 'map' => null,
                 'agg' => array('0' => 'numPhones')
                 )
@@ -273,18 +275,18 @@ class Orm_Hydration_BasicHydrationTest extends Doctrine_OrmTestCase
         // Faked query components
         $queryComponents = array(
             'u' => array(
-                'table' => $this->sharedFixture['connection']->getClassMetadata('CmsUser'),
-                'mapper' => $this->sharedFixture['connection']->getMapper('CmsUser'),
+                'table' => $this->_em->getClassMetadata('CmsUser'),
+                'mapper' => $this->_em->getEntityPersister('CmsUser'),
                 'parent' => null,
                 'relation' => null,
                 'agg' => array('0' => 'nameUpper'),
                 'map' => 'id'
                 ),
             'p' => array(
-                'table' => $this->sharedFixture['connection']->getClassMetadata('CmsPhonenumber'),
-                'mapper' => $this->sharedFixture['connection']->getMapper('CmsPhonenumber'),
+                'table' => $this->_em->getClassMetadata('CmsPhonenumber'),
+                'mapper' => $this->_em->getEntityPersister('CmsPhonenumber'),
                 'parent' => 'u',
-                'relation' => $this->sharedFixture['connection']->getClassMetadata('CmsUser')->getRelation('phonenumbers'),
+                'relation' => $this->_em->getClassMetadata('CmsUser')->getRelation('phonenumbers'),
                 'map' => 'phonenumber'
                 )
             );
@@ -375,25 +377,25 @@ class Orm_Hydration_BasicHydrationTest extends Doctrine_OrmTestCase
         // Faked query components
         $queryComponents = array(
             'u' => array(
-                'table' => $this->sharedFixture['connection']->getClassMetadata('CmsUser'),
-                'mapper' => $this->sharedFixture['connection']->getMapper('CmsUser'),
+                'table' => $this->_em->getClassMetadata('CmsUser'),
+                'mapper' => $this->_em->getEntityPersister('CmsUser'),
                 'parent' => null,
                 'relation' => null,
                 'map' => null,
                 'agg' => array('0' => 'nameUpper')
                 ),
             'p' => array(
-                'table' => $this->sharedFixture['connection']->getClassMetadata('CmsPhonenumber'),
-                'mapper' => $this->sharedFixture['connection']->getMapper('CmsPhonenumber'),
+                'table' => $this->_em->getClassMetadata('CmsPhonenumber'),
+                'mapper' => $this->_em->getEntityPersister('CmsPhonenumber'),
                 'parent' => 'u',
-                'relation' => $this->sharedFixture['connection']->getClassMetadata('CmsUser')->getRelation('phonenumbers'),
+                'relation' => $this->_em->getClassMetadata('CmsUser')->getRelation('phonenumbers'),
                 'map' => null
                 ),
             'a' => array(
-                'table' => $this->sharedFixture['connection']->getClassMetadata('CmsArticle'),
-                'mapper' => $this->sharedFixture['connection']->getMapper('CmsArticle'),
+                'table' => $this->_em->getClassMetadata('CmsArticle'),
+                'mapper' => $this->_em->getEntityPersister('CmsArticle'),
                 'parent' => 'u',
-                'relation' => $this->sharedFixture['connection']->getClassMetadata('CmsUser')->getRelation('articles'),
+                'relation' => $this->_em->getClassMetadata('CmsUser')->getRelation('articles'),
                 'map' => null
                 ),
             );
@@ -528,32 +530,32 @@ class Orm_Hydration_BasicHydrationTest extends Doctrine_OrmTestCase
         // Faked query components
         $queryComponents = array(
             'u' => array(
-                'table' => $this->sharedFixture['connection']->getClassMetadata('CmsUser'),
-                'mapper' => $this->sharedFixture['connection']->getMapper('CmsUser'),
+                'table' => $this->_em->getClassMetadata('CmsUser'),
+                'mapper' => $this->_em->getEntityPersister('CmsUser'),
                 'parent' => null,
                 'relation' => null,
                 'map' => null,
                 'agg' => array('0' => 'nameUpper')
                 ),
             'p' => array(
-                'table' => $this->sharedFixture['connection']->getClassMetadata('CmsPhonenumber'),
-                'mapper' => $this->sharedFixture['connection']->getMapper('CmsPhonenumber'),
+                'table' => $this->_em->getClassMetadata('CmsPhonenumber'),
+                'mapper' => $this->_em->getEntityPersister('CmsPhonenumber'),
                 'parent' => 'u',
-                'relation' => $this->sharedFixture['connection']->getClassMetadata('CmsUser')->getRelation('phonenumbers'),
+                'relation' => $this->_em->getClassMetadata('CmsUser')->getRelation('phonenumbers'),
                 'map' => null
                 ),
             'a' => array(
-                'table' => $this->sharedFixture['connection']->getClassMetadata('CmsArticle'),
-                'mapper' => $this->sharedFixture['connection']->getMapper('CmsArticle'),
+                'table' => $this->_em->getClassMetadata('CmsArticle'),
+                'mapper' => $this->_em->getEntityPersister('CmsArticle'),
                 'parent' => 'u',
-                'relation' => $this->sharedFixture['connection']->getClassMetadata('CmsUser')->getRelation('articles'),
+                'relation' => $this->_em->getClassMetadata('CmsUser')->getRelation('articles'),
                 'map' => null
                 ),
             'c' => array(
-                'table' => $this->sharedFixture['connection']->getClassMetadata('CmsComment'),
-                'mapper' => $this->sharedFixture['connection']->getMapper('CmsComment'),
+                'table' => $this->_em->getClassMetadata('CmsComment'),
+                'mapper' => $this->_em->getEntityPersister('CmsComment'),
                 'parent' => 'a',
-                'relation' => $this->sharedFixture['connection']->getClassMetadata('CmsArticle')->getRelation('comments'),
+                'relation' => $this->_em->getClassMetadata('CmsArticle')->getRelation('comments'),
                 'map' => null
                 ),
             );
@@ -719,17 +721,17 @@ class Orm_Hydration_BasicHydrationTest extends Doctrine_OrmTestCase
         // Faked query components
         $queryComponents = array(
             'c' => array(
-                'table' => $this->sharedFixture['connection']->getClassMetadata('ForumCategory'),
-                'mapper' => $this->sharedFixture['connection']->getMapper('ForumCategory'),
+                'table' => $this->_em->getClassMetadata('ForumCategory'),
+                'mapper' => $this->_em->getEntityPersister('ForumCategory'),
                 'parent' => null,
                 'relation' => null,
                 'map' => null
                 ),
             'b' => array(
-                'table' => $this->sharedFixture['connection']->getClassMetadata('ForumBoard'),
-                'mapper' => $this->sharedFixture['connection']->getMapper('ForumBoard'),
+                'table' => $this->_em->getClassMetadata('ForumBoard'),
+                'mapper' => $this->_em->getEntityPersister('ForumBoard'),
                 'parent' => 'c',
-                'relation' => $this->sharedFixture['connection']->getClassMetadata('ForumCategory')->getRelation('boards'),
+                'relation' => $this->_em->getClassMetadata('ForumCategory')->getRelation('boards'),
                 'map' => null
                 ),
             );

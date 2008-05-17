@@ -23,6 +23,11 @@ class Doctrine_Entity_Exception extends Doctrine_Exception
         return new self("Invalid value. The value of a reference in a ManyToMany "
                 . "association must be a Collection.");
     }
+    
+    public static function invalidField($field)
+    {
+        return new self("Invalid field: '$field'.");
+    }
 }
 
 ?>

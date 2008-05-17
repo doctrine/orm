@@ -530,7 +530,7 @@ abstract class Doctrine_Query_Abstract
     {
         $table = $this->_conn->getMetadata($componentName);
         $tableAlias = $this->getSqlTableAlias($componentAlias, $table->getTableName());
-        $customJoins = $this->_conn->getMapper($componentName)->getCustomJoins();
+        $customJoins = $this->_conn->getEntityPersister($componentName)->getCustomJoins();
         $sql = '';
         foreach ($customJoins as $componentName => $joinType) {
             $joinedTable = $this->_conn->getMetadata($componentName);
@@ -1051,12 +1051,12 @@ abstract class Doctrine_Query_Abstract
             $e = explode('.', $components[0]);
             if (count($e) === 1) {
                 $queryComponents[$alias]['mapper'] = $this->_conn->getMapper($e[0]);
-                $queryComponents[$alias]['table'] = $queryComponents[$alias]['mapper']->getTable();
+                $queryComponents[$alias]['table'] = $queryComponents[$alias]['mapper']->getClassMetadata();
             } else {
                 $queryComponents[$alias]['parent'] = $e[0];
                 $queryComponents[$alias]['relation'] = $queryComponents[$e[0]]['table']->getRelation($e[1]);
                 $queryComponents[$alias]['mapper'] = $this->_conn->getMapper($queryComponents[$alias]['relation']->getForeignComponentName());
-                $queryComponents[$alias]['table'] = $queryComponents[$alias]['mapper']->getTable();
+                $queryComponents[$alias]['table'] = $queryComponents[$alias]['mapper']->getClassMetadata();
             }
             if (isset($components[1])) {
                 $queryComponents[$alias]['agg'] = $components[1];

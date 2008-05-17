@@ -63,7 +63,7 @@ abstract class Doctrine_Hydrator_Abstract
      *
      * @param Doctrine_Connection|null $connection
      */
-    public function __construct(Doctrine_Connection $em)
+    public function __construct(Doctrine_EntityManager $em)
     {
         $this->_em = $em;
         $this->_nullObject = Doctrine_Null::$INSTANCE;

@@ -43,7 +43,7 @@ class Doctrine_Hydrator_RecordDriver
     /** The EntityManager */
     private $_em;
     
-    public function __construct(Doctrine_Connection $em)
+    public function __construct(Doctrine_EntityManager $em)
     {
         $this->_nullObject = Doctrine_Null::$INSTANCE;
         $this->_em = $em;
@@ -93,7 +93,7 @@ class Doctrine_Hydrator_RecordDriver
     
     public function getElement(array $data, $className)
     {
-        return $this->_em->createEntity2($className, $data);
+        return $this->_em->createEntity($className, $data);
     }
     
     public function addRelatedIndexedElement(Doctrine_Entity $entity1, $property,

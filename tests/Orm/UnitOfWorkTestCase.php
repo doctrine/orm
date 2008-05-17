@@ -8,8 +8,9 @@ class Orm_UnitOfWorkTestCase extends Doctrine_OrmTestCase
     
     protected function setUp() {
         parent::setUp();
+        $em = new Doctrine_EntityManager(new Doctrine_Connection_Mock());
         $this->_user = new ForumUser();
-        $this->_unitOfWork = $this->sharedFixture['connection']->unitOfWork;
+        $this->_unitOfWork = $em->getUnitOfWork();
     }
     
     protected function tearDown() {

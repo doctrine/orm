@@ -31,9 +31,12 @@
  * @since       1.0
  * @version     $Revision$
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
+ * @todo Rename to EntityCollection
  */
 class Doctrine_Collection extends Doctrine_Access implements Countable, IteratorAggregate, Serializable
 {
+    protected $_entityBaseType;
+    
     /**
      * An array containing the records of this collection.
      *
@@ -101,10 +104,11 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
      * @param string $keyColumn                The field name that will be used as the key
      *                                         in the collection.
      */
-    public function __construct($mapper, $keyField = null)
+    public function __construct($entityBaseType, $keyField = null)
     {
-        if (is_string($mapper)) {
-            $mapper = Doctrine_Manager::getInstance()->getMapper($mapper);
+        if (is_string($entityBaseType)) {
+            $this->_entityBaseType = $entityBaseType;
+            $mapper = Doctrine_EntityManager::getManager($entityBaseType)->getEntityPersister($entityBaseType);
         }
         $this->_mapper = $mapper;
 
@@ -204,16 +208,16 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
      */
     public function unserialize($serialized)
     {
-        $manager = Doctrine_Manager::getInstance();
-        $connection = $manager->getCurrentConnection();
-
+        $manager = Doctrine_EntityManager::getManager();
+        $connection = $manager->getConnection();
+        
         $array = unserialize($serialized);
 
         foreach ($array as $name => $values) {
             $this->$name = $values;
         }
 
-        $this->_mapper = $connection->getMapper($this->_mapper);
+        $this->_mapper = $manager->getEntityPersister($this->_entityBaseType);
 
         $keyColumn = isset($array['keyField']) ? $array['keyField'] : null;
         if ($keyColumn === null) {
@@ -506,6 +510,7 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
      */
     public function add($record, $key = null)
     {
+        /** @TODO Use raw getters/setters */
         if ( ! $record instanceof Doctrine_Entity) {
             throw new Doctrine_Record_Exception('Value variable in set is not an instance of Doctrine_Entity.');
         }

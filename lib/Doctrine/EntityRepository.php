@@ -35,13 +35,13 @@
 class Doctrine_EntityRepository
 {
     protected $_entityName;
-    protected $_conn;
+    protected $_em;
     protected $_classMetadata;
     
     public function __construct($entityName, Doctrine_ClassMetadata $classMetadata)
     {
         $this->_entityName = $entityName;
-        $this->_conn = $classMetadata->getConnection();
+        $this->_em = $classMetadata->getConnection();
         $this->_classMetadata = $classMetadata;
     }
     
@@ -59,7 +59,7 @@ class Doctrine_EntityRepository
         if ( ! empty($alias)) {
             $alias = ' ' . trim($alias);
         }
-        return Doctrine_Query::create($this->_conn)->from($this->_entityName . $alias);
+        return Doctrine_Query::create($this->_em)->from($this->_entityName . $alias);
     }
     
     /**
@@ -69,7 +69,7 @@ class Doctrine_EntityRepository
      */
     public function clear()
     {
-        $this->_conn->unitOfWork->clearIdentitiesForEntity($this->_classMetadata->getRootClassName());
+        $this->_em->unitOfWork->clearIdentitiesForEntity($this->_classMetadata->getRootClassName());
     }
     
     /**
@@ -170,7 +170,7 @@ class Doctrine_EntityRepository
      */
     public function findByDql($dql, array $params = array(), $hydrationMode = null)
     {
-        $query = new Doctrine_Query($this->_conn);
+        $query = new Doctrine_Query($this->_em);
         $component = $this->getComponentName();
         $dql = 'FROM ' . $component . ' WHERE ' . $dql;
 

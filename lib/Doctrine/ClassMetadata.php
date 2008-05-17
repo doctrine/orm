@@ -272,20 +272,23 @@ class Doctrine_ClassMetadata extends Doctrine_Configurable implements Serializab
      *
      * @param string $entityName  Name of the entity class the metadata info is used for.
      */
-    public function __construct($entityName, Doctrine_Connection $conn)
+    public function __construct($entityName, Doctrine_EntityManager $em)
     {
         $this->_entityName = $entityName;
         $this->_rootEntityName = $entityName;
-        $this->_conn = $conn;
+        $this->_conn = $em;
         $this->_parser = new Doctrine_Relation_Parser($this);
-        $this->_filters[]  = new Doctrine_Record_Filter_Standard();
-        $this->setConfigurableParent($this->_conn);
     }
 
     /**
      *
      */
     public function getConnection()
+    {
+        return $this->_conn;
+    }
+    
+    public function getEntityManager()
     {
         return $this->_conn;
     }
@@ -598,7 +601,13 @@ class Doctrine_ClassMetadata extends Doctrine_Configurable implements Serializab
 
         $this->_columnCount++;
     }
-
+    
+    /**
+     * Gets the default length for a field type.
+     *
+     * @param unknown_type $type
+     * @return unknown
+     */
     private function _getDefaultLength($type)
     {
         switch ($type) {
@@ -624,6 +633,16 @@ class Doctrine_ClassMetadata extends Doctrine_Configurable implements Serializab
                 // YYYY-MM-DDTHH:MM:SS+00:00 ISO 8601
                 return 25;
         }
+    }
+    
+    /**
+     * Maps an embedded value object.
+     *
+     * @todo Implementation.
+     */
+    public function mapEmbeddedValue()
+    {
+        //...
     }
 
     /**
@@ -956,11 +975,16 @@ class Doctrine_ClassMetadata extends Doctrine_Configurable implements Serializab
 
         return $this->getColumnDefinition($columnName);
     }
-
+    
+    /**
+     * Gets the mapping information for a field.
+     *
+     * @param string $fieldName
+     * @return array
+     */
     public function getMappingForField($fieldName)
     {
         $columnName = $this->getColumnName($fieldName);
-
         return $this->getColumnDefinition($columnName);
     }
 
@@ -974,7 +998,13 @@ class Doctrine_ClassMetadata extends Doctrine_Configurable implements Serializab
     {
         return $this->getTypeOfColumn($this->getColumnName($fieldName));
     }
-
+    
+    /**
+     * Gets the type of a field.
+     *
+     * @param string $fieldName
+     * @return string
+     */
     public function getTypeOfField($fieldName)
     {
         return $this->getTypeOfColumn($this->getColumnName($fieldName));
@@ -1022,7 +1052,7 @@ class Doctrine_ClassMetadata extends Doctrine_Configurable implements Serializab
      */
     public function addNamedQuery($name, $query)
     {
-
+        //...
     }
 
     public function bindRelation($args, $type)
@@ -1622,7 +1652,8 @@ class Doctrine_ClassMetadata extends Doctrine_Configurable implements Serializab
      */
     public function setTableName($tableName)
     {
-        $this->setTableOption('tableName', $this->_conn->formatter->getTableName($tableName));
+        $this->setTableOption('tableName', $this->_conn->getConnection()
+                ->formatter->getTableName($tableName));
     }
 
     /**

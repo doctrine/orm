@@ -680,7 +680,7 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
      */
     public function getMapper($componentName)
     {
-        return $this->getConnectionForComponent($componentName)->getMapper($componentName);
+        return $this->getConnectionForComponent($componentName)->getEntityPersister($componentName);
     }
 
     /**

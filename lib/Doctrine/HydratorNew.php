@@ -375,6 +375,10 @@ class Doctrine_HydratorNew extends Doctrine_Hydrator_Abstract
         foreach ($data as $key => $value) {
             // Parse each column name only once. Cache the results.
             if ( ! isset($cache[$key])) {
+                // check ignored names. fastest solution for now. if we get more we'll start
+                // to introduce a list.
+                if ($key == 'doctrine_rownum') continue;
+                
                 // cache general information like the column name <-> field name mapping
                 $e = explode('__', $key);
                 $columnName = strtolower(array_pop($e));                
