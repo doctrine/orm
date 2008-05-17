@@ -473,11 +473,11 @@ final class Doctrine
     const HYDRATE_NONE              = 4;
     
     /* new hydration modes. move to Query class when it's time. */
-    //const HYDRATE_IDENTITY_OBJECT = 1; // default, auto-adds PKs, produces object graphs
-    //const HYDRATE_IDENTITY_ARRAY = 2; // auto-adds PKs, produces array graphs
-    //const HYDRATE_SCALAR = 3; // produces flat result list with scalar values
-    //const HYDRATE_SINGLE_SCALAR = 4; // produces a single scalar value
-    //const HYDRATE_NONE = 5; // produces a result set as it's returned by the db
+    const HYDRATE_IDENTITY_OBJECT = 2; // default, auto-adds PKs, produces object graphs
+    const HYDRATE_IDENTITY_ARRAY = 3; // auto-adds PKs, produces array graphs
+    const HYDRATE_SCALAR = 5; // produces flat result list with scalar values
+    const HYDRATE_SINGLE_SCALAR = 6; // produces a single scalar value
+    //const HYDRATE_NONE = 4; // produces a result set as it's returned by the db
     
 
     /**

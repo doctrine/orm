@@ -24,7 +24,8 @@
  * and turn them into useable structures.
  * 
  * Runtime complexity: The following gives the overall number of iterations
- * required to process a result set.
+ * required to process a result set when using identity hydration
+ * (HYDRATE_IDENTITY_OBJECT or HYDRATE_IDENTITY_ARRAY).
  * 
  * <code>numRowsInResult * numColumnsInResult + numRowsInResult * numClassesInQuery</code>
  * 
@@ -32,15 +33,19 @@
  * 
  * <code>(numRowsInResult * (numColumnsInResult + numClassesInQuery))</code>
  * 
- * Note that this is only a crude definition of the complexity as it also heavily
+ * For scalar hydration (HYDRATE_SCALAR) it's:
+ * 
+ * <code>numRowsInResult * numColumnsInResult</code>
+ * 
+ * Note that this is only a crude definition as it also heavily
  * depends on the complexity of all the single operations that are performed in
  * each iteration.
  * 
  * As can be seen, the number of columns in the result has the most impact on
- * the overall performance (apart from the row counr, of course), since numClassesInQuery
+ * the overall performance (apart from the row count, of course), since numClassesInQuery
  * is usually pretty low.
- * That's why the performance of the gatherRowData() method which is responsible
- * for the "numRowsInResult * numColumnsInResult" part is crucial to fast hydraton.
+ * That's why the performance of the _gatherRowData() methods which are responsible
+ * for the "numRowsInResult * numColumnsInResult" part is crucial to fast hydration.
  *
  * @package     Doctrine
  * @subpackage  Hydrator
@@ -54,13 +59,9 @@
 class Doctrine_HydratorNew extends Doctrine_Hydrator_Abstract
 {    
     /**
-     * hydrateResultSet
-     * parses the data returned by statement object
+     * Parses the data returned by statement object.
      *
      * This is method defines the core of Doctrine's object population algorithm.
-     *
-     * The key idea is the loop over the rowset only once doing all the needed operations
-     * within this massive loop.
      *
      * @todo: Detailed documentation. Refactor (too long & nesting level).
      *
@@ -125,7 +126,7 @@ class Doctrine_HydratorNew extends Doctrine_Hydrator_Abstract
         $idTemplate = array();
         
         // Holds the resulting hydrated data structure
-        if ($parserResult->isMixedQuery()) {
+        if ($parserResult->isMixedQuery() || $hydrationMode == Doctrine::HYDRATE_SCALAR) {
             $result = array();
         } else {
             $result = $driver->getElementCollection($rootComponentName);
@@ -140,7 +141,7 @@ class Doctrine_HydratorNew extends Doctrine_Hydrator_Abstract
             // disable lazy-loading of related elements during hydration
             $component['table']->setAttribute(Doctrine::ATTR_LOAD_REFERENCES, false);
             $componentName = $component['table']->getClassName();
-            $listeners[$componentName] = $component['table']->getRecordListener();
+            //$listeners[$componentName] = $component['table']->getRecordListener();
             $identifierMap[$dqlAlias] = array();
             $resultPointers[$dqlAlias] = array();
             $idTemplate[$dqlAlias] = '';
@@ -148,7 +149,12 @@ class Doctrine_HydratorNew extends Doctrine_Hydrator_Abstract
         
         // Process result set
         $cache = array();
-        while ($data = $stmt->fetch(Doctrine::FETCH_ASSOC)) {            
+        while ($data = $stmt->fetch(Doctrine::FETCH_ASSOC)) {
+            if ($hydrationMode == Doctrine::HYDRATE_SCALAR) {
+                $result[] = $this->_gatherScalarRowData($data, $cache);
+                continue;      
+            }
+            
             $id = $idTemplate; // initialize the id-memory
             $nonemptyComponents = array();
             $rowData = $this->_gatherRowData($data, $cache, $id, $nonemptyComponents);
@@ -160,8 +166,8 @@ class Doctrine_HydratorNew extends Doctrine_Hydrator_Abstract
             $componentName = $class->getComponentName();
             
             // just event stuff
-            $event->set('data', $rowData[$rootAlias]);
-            $listeners[$componentName]->preHydrate($event);
+            //$event->set('data', $rowData[$rootAlias]);
+            //$listeners[$componentName]->preHydrate($event);
             //--
             
             // Check for an existing element
@@ -170,8 +176,8 @@ class Doctrine_HydratorNew extends Doctrine_Hydrator_Abstract
                 $element = $driver->getElement($rowData[$rootAlias], $componentName);
                 
                 // just event stuff
-                $event->set('data', $element);
-                $listeners[$componentName]->postHydrate($event);
+                //$event->set('data', $element);
+                //$listeners[$componentName]->postHydrate($event);
                 //--
 
                 // do we need to index by a custom field?
@@ -201,7 +207,6 @@ class Doctrine_HydratorNew extends Doctrine_Hydrator_Abstract
             } else {
                 $index = $identifierMap[$rootAlias][$id[$rootAlias]];
             }
-
             $this->_setLastElement($resultPointers, $result, $index, $rootAlias, false);
             unset($rowData[$rootAlias]);
             // end hydrate data of the root component for the current row
@@ -212,7 +217,6 @@ class Doctrine_HydratorNew extends Doctrine_Hydrator_Abstract
                 unset($rowData['scalars']);
             }
             
-            // $resultPointers[$rootAlias] now points to the last element in $result.
             // now hydrate the rest of the data found in the current row, that belongs to other
             // (related) components.
             foreach ($rowData as $dqlAlias => $data) {                
@@ -221,14 +225,13 @@ class Doctrine_HydratorNew extends Doctrine_Hydrator_Abstract
                 $componentName = $map['table']->getComponentName();
                 
                 // just event stuff
-                $event->set('data', $data);
-                $listeners[$componentName]->preHydrate($event);
+                //$event->set('data', $data);
+                //$listeners[$componentName]->preHydrate($event);
                 //--
 
                 $parent = $map['parent'];
                 $relation = $map['relation'];
                 $relationAlias = $relation->getAlias();
-
                 $path = $parent . '.' . $dqlAlias;
                 
                 // pick the right element that will get the associated element attached
@@ -252,8 +255,8 @@ class Doctrine_HydratorNew extends Doctrine_Hydrator_Abstract
                             $element = $driver->getElement($data, $componentName);
                             
                             // just event stuff
-                            $event->set('data', $element);
-                            $listeners[$componentName]->postHydrate($event);
+                            //$event->set('data', $element);
+                            //$listeners[$componentName]->postHydrate($event);
                             //--
                             
                             if ($field = $this->_getCustomIndexField($dqlAlias)) {
@@ -268,7 +271,6 @@ class Doctrine_HydratorNew extends Doctrine_Hydrator_Abstract
                             } else {
                                 $driver->addRelatedElement($baseElement, $relationAlias, $element);
                             }
-
                             $identifierMap[$path][$id[$parent]][$id[$dqlAlias]] = $driver->getLastKey(
                                     $driver->getReferenceValue($baseElement, $relationAlias));
                         } else {
@@ -361,9 +363,12 @@ class Doctrine_HydratorNew extends Doctrine_Hydrator_Abstract
     }
     
     /**
-     * Puts the fields of a data row into a new array, grouped by the component
+     * Processes a row of the result set.
+     * Used for identity hydration (HYDRATE_IDENTITY_OBJECT and HYDRATE_IDENTITY_ARRAY).
+     * Puts the elements of a result row into a new array, grouped by the class
      * they belong to. The column names in the result set are mapped to their 
-     * field names during this procedure.
+     * field names during this procedure as well as any necessary conversions on
+     * the values applied.
      * 
      * @return array  An array with all the fields (name => value) of the data row, 
      *                grouped by their component (alias).
@@ -377,7 +382,7 @@ class Doctrine_HydratorNew extends Doctrine_Hydrator_Abstract
             if ( ! isset($cache[$key])) {
                 // check ignored names. fastest solution for now. if we get more we'll start
                 // to introduce a list.
-                if ($key == 'doctrine_rownum') continue;
+                if ($this->_isIgnoredName($key)) continue;
                 
                 // cache general information like the column name <-> field name mapping
                 $e = explode('__', $key);
@@ -441,18 +446,94 @@ class Doctrine_HydratorNew extends Doctrine_Hydrator_Abstract
         return $rowData;
     }
     
+    /**
+     * Processes a row of the result set.
+     * Used for HYDRATE_SCALAR. This is a variant of _gatherRowData() that
+     * simply converts column names to field names and properly prepares the
+     * values. The resulting row has the same number of elements as before.
+     *
+     * @param array $data
+     * @param array $cache
+     * @return array The processed row.
+     */
+    private function _gatherScalarRowData(&$data, &$cache)
+    {
+        $rowData = array();
+        
+        foreach ($data as $key => $value) {
+            // Parse each column name only once. Cache the results.
+            if ( ! isset($cache[$key])) {
+                // check ignored names. fastest solution for now. if we get more we'll start
+                // to introduce a list.
+                if ($this->_isIgnoredName($key)) continue;
+                
+                // cache general information like the column name <-> field name mapping
+                $e = explode('__', $key);
+                $columnName = strtolower(array_pop($e));                
+                $cache[$key]['dqlAlias'] = $this->_tableAliases[strtolower(implode('__', $e))];
+                $mapper = $this->_queryComponents[$cache[$key]['dqlAlias']]['mapper'];
+                $classMetadata = $mapper->getClassMetadata();
+                // check whether it's an aggregate value or a regular field
+                if (isset($this->_queryComponents[$cache[$key]['dqlAlias']]['agg'][$columnName])) {
+                    $fieldName = $this->_queryComponents[$cache[$key]['dqlAlias']]['agg'][$columnName];
+                    $cache[$key]['isScalar'] = true;
+                } else {
+                    $fieldName = $mapper->getFieldName($columnName);
+                    $cache[$key]['isScalar'] = false;
+                }
+                
+                $cache[$key]['fieldName'] = $fieldName;
+                
+                // cache type information
+                $type = $classMetadata->getTypeOfColumn($columnName);
+                if ($type == 'integer' || $type == 'string') {
+                    $cache[$key]['isSimpleType'] = true;
+                } else {
+                    $cache[$key]['type'] = $type;
+                    $cache[$key]['isSimpleType'] = false;
+                }
+            }
+
+            $mapper = $this->_queryComponents[$cache[$key]['dqlAlias']]['mapper'];
+            $dqlAlias = $cache[$key]['dqlAlias'];
+            $fieldName = $cache[$key]['fieldName'];
+
+            if ($cache[$key]['isSimpleType'] || $cache[$key]['isScalar']) {
+                $rowData[$dqlAlias . '_' . $fieldName] = $value;
+            } else {
+                $rowData[$dqlAlias . '_' . $fieldName] = $mapper->prepareValue(
+                        $fieldName, $value, $cache[$key]['type']);
+            }
+        }
+        
+        return $rowData;
+    }
+    
     /** 
      * Gets the custom field used for indexing for the specified component alias.
      * 
      * @return string  The field name of the field used for indexing or NULL
      *                 if the component does not use any custom field indices.
      */
-    protected function _getCustomIndexField($alias)
+    private function _getCustomIndexField($alias)
     {
         return isset($this->_queryComponents[$alias]['map']) ? $this->_queryComponents[$alias]['map'] : null;
     }
     
+    /**
+     * Checks whether a name is ignored. Used during result set parsing to skip
+     * certain elements in the result set that do not have any meaning for the result.
+     * (I.e. ORACLE limit/offset emulation adds doctrine_rownum to the result set).
+     *
+     * @param string $name
+     * @return boolean
+     */
+    private function _isIgnoredName($name)
+    {
+        return $name == 'doctrine_rownum';
+    }
     
+    /** Needed only temporarily until the new parser is ready */
     private $_isResultMixed = false;
     public function setResultMixed($bool)
     {

@@ -200,8 +200,9 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
     public function __construct($adapter, $user = null, $pass = null)
     {
         if (is_object($adapter)) {
-            if ( ! ($adapter instanceof PDO) && ! in_array('Doctrine_Adapter_Interface', class_implements($adapter))) {
-                throw new Doctrine_Connection_Exception('First argument should be an instance of PDO or implement Doctrine_Adapter_Interface');
+            if ( ! $adapter instanceof PDO) {
+                throw new Doctrine_Connection_Exception(
+                        'First argument should be an instance of PDO or implement Doctrine_Adapter_Interface');
             }
             $this->dbh = $adapter;
             $this->isConnected = true;
@@ -216,12 +217,7 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
             if (isset($adapter['other'])) {
                 $this->options['other'] = array(Doctrine::ATTR_PERSISTENT => $adapter['persistent']);
             }
-
         }
-
-        $this->setAttribute(Doctrine::ATTR_CASE, Doctrine::CASE_NATURAL);
-        $this->setAttribute(Doctrine::ATTR_ERRMODE, Doctrine::ERRMODE_EXCEPTION);
-        $this->getAttribute(Doctrine::ATTR_LISTENER)->onOpen($this);
     }
     
     
@@ -327,26 +323,16 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
         $this->getListener()->preConnect($event);
 
         $e = explode(':', $this->options['dsn']);
-        $found = false;
-
         if (extension_loaded('pdo')) {
             if (in_array($e[0], PDO::getAvailableDrivers())) {
-                $this->dbh = new PDO($this->options['dsn'], $this->options['username'],
-                                     $this->options['password'], $this->options['other']);
-
+                $this->dbh = new PDO(
+                        $this->options['dsn'], $this->options['username'],
+                        $this->options['password'], $this->options['other']);
                 $this->dbh->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-                $found = true;
+                $this->dbh->setAttribute(PDO::ATTR_CASE, PDO::CASE_LOWER);
             }
-        }
-
-        if ( ! $found) {
-            $class = 'Doctrine_Adapter_' . ucwords($e[0]);
-
-            if (class_exists($class)) {
-                $this->dbh = new $class($this->options['dsn'], $this->options['username'], $this->options['password']);
-            } else {
-                throw new Doctrine_Connection_Exception("Couldn't locate driver named " . $e[0]);
-            }
+        } else {
+            throw new Doctrine_Connection_Exception("Couldn't locate driver named " . $e[0]);
         }
 
         // attach the pending attributes to adapter
