@@ -77,6 +77,7 @@ class Doctrine_HydratorNew extends Doctrine_Hydrator_Abstract
      *                              )
      *                         )
      * @return mixed  The created object/array graph.
+     * @throws Doctrine_Hydrator_Exception  If the hydration process failed.
      */
     public function hydrateResultSet($parserResult)
     {
@@ -147,9 +148,20 @@ class Doctrine_HydratorNew extends Doctrine_Hydrator_Abstract
             $idTemplate[$dqlAlias] = '';
         }
         
-        // Process result set
+        
         $cache = array();
+        // Evaluate HYDRATE_SINGLE_SCALAR
+        if ($hydrationMode == Doctrine::HYDRATE_SINGLE_SCALAR) {
+            $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            if (count($result) > 1 || count($result[0]) > 1) {
+                throw Doctrine_Hydrator_Exception::nonUniqueResult();
+            }
+            return array_shift($this->_gatherScalarRowData($result[0], $cache)); 
+        }
+        
+        // Process result set
         while ($data = $stmt->fetch(Doctrine::FETCH_ASSOC)) {
+            // Evaluate HYDRATE_SCALAR
             if ($hydrationMode == Doctrine::HYDRATE_SCALAR) {
                 $result[] = $this->_gatherScalarRowData($data, $cache);
                 continue;      
@@ -372,6 +384,8 @@ class Doctrine_HydratorNew extends Doctrine_Hydrator_Abstract
      * 
      * @return array  An array with all the fields (name => value) of the data row, 
      *                grouped by their component (alias).
+     * @todo Significant code duplication with _gatherScalarRowData(). Good refactoring
+     *       possible without sacrificing performance?
      */
     protected function _gatherRowData(&$data, &$cache, &$id, &$nonemptyComponents)
     {
@@ -455,6 +469,8 @@ class Doctrine_HydratorNew extends Doctrine_Hydrator_Abstract
      * @param array $data
      * @param array $cache
      * @return array The processed row.
+     * @todo Significant code duplication with _gatherRowData(). Good refactoring
+     *       possible without sacrificing performance?
      */
     private function _gatherScalarRowData(&$data, &$cache)
     {

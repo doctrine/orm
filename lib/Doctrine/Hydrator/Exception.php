@@ -18,7 +18,7 @@
  * and is licensed under the LGPL. For more information, see
  * <http://www.phpdoctrine.org>.
  */
-Doctrine::autoload('Doctrine_Exception');
+
 /**
  * Doctrine_Hydrator_Exception
  *
@@ -40,5 +40,10 @@ class Doctrine_Hydrator_Exception extends Doctrine_Exception
     public static function nonExistantFieldUsedAsIndex($field)
     {
         return new self("Hydration failed. Found a non-existent field '$field'.");
+    }
+    
+    public static function nonUniqueResult()
+    {
+        return new self("Hydration failed. Non-unique result returned.");
     }
 }

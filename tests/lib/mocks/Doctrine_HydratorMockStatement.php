@@ -33,6 +33,14 @@ class Doctrine_HydratorMockStatement
         return $this->_resultSet;
     }
     
+    public function fetchColumn($columnNumber = 0)
+    {
+        $row = array_shift($this->_resultSet);
+        if ( ! is_array($row)) return false;
+        $val = array_shift($row);
+        return $val !== null ? $val : false;
+    }
+    
     /**
      * Fetches the next row in the result set.
      *

@@ -856,6 +856,86 @@ class Orm_Hydration_BasicHydrationTest extends Doctrine_OrmTestCase
 
     }
     
+    /** Result set provider for the HYDRATE_SINGLE_SCALAR tests */
+    public static function singleScalarResultSetProvider() {
+        return array(
+          // valid
+          array('name' => 'result1',
+                'resultSet' => array(
+                  array(
+                      'u__name' => 'romanb'
+                  )
+               )),
+          // valid
+          array('name' => 'result2',
+                'resultSet' => array(
+                  array(
+                      'u__id' => '1'
+                  )
+             )),
+           // invalid
+           array('name' => 'result3',
+                'resultSet' => array(
+                  array(
+                      'u__id' => '1',
+                      'u__name' => 'romanb'
+                  )
+             )),
+           // invalid
+           array('name' => 'result4',
+                'resultSet' => array(
+                  array(
+                      'u__id' => '1'
+                  ),
+                  array(
+                      'u__id' => '2'
+                  )
+             )),
+        );
+    }
     
+    /**
+     * select u.name from CmsUser u where u.id = 1
+     * 
+     * @dataProvider singleScalarResultSetProvider
+     */
+    public function testHydrateSingleScalar($name, $resultSet)
+    {        
+        // Faked query components
+        $queryComponents = array(
+            'u' => array(
+                'table' => $this->_em->getClassMetadata('CmsUser'),
+                'mapper' => $this->_em->getEntityPersister('CmsUser'),
+                'parent' => null,
+                'relation' => null,
+                'map' => null
+                )
+            );
+        
+        // Faked table alias map
+        $tableAliasMap = array(
+            'u' => 'u'
+            );
+            
+        $stmt = new Doctrine_HydratorMockStatement($resultSet);
+        $hydrator = new Doctrine_HydratorNew($this->_em);
+        
+        if ($name == 'result1') {
+            $result = $hydrator->hydrateResultSet($this->_createParserResult(
+                $stmt, $queryComponents, $tableAliasMap, Doctrine::HYDRATE_SINGLE_SCALAR));
+            $this->assertEquals('romanb', $result);
+        } else if ($name == 'result2') {
+            $result = $hydrator->hydrateResultSet($this->_createParserResult(
+                $stmt, $queryComponents, $tableAliasMap, Doctrine::HYDRATE_SINGLE_SCALAR));
+            $this->assertEquals(1, $result);
+        } else if ($name == 'result3' || $name == 'result4') {
+            try {
+                $result = $hydrator->hydrateResultSet($this->_createParserResult(
+                    $stmt, $queryComponents, $tableAliasMap, Doctrine::HYDRATE_SINGLE_SCALAR));
+                $this->fail();
+            } catch (Doctrine_Hydrator_Exception $ex) {}
+        }
+        
+    }
     
 }
