@@ -994,26 +994,7 @@ abstract class Doctrine_Entity extends Doctrine_Access implements Countable, Ite
      */
     public function get($fieldName, $load = false)
     {
-        /*// check for custom accessor, if not done yet.
-        if ( ! isset(self::$_accessorCache[$this->_entityName][$fieldName])) {
-            if (self::$_useAutoAccessorOverride) {
-                $getterMethod = 'get' . Doctrine::classify($fieldName);
-                if (method_exists($this, $getterMethod)) {
-                    self::$_accessorCache[$this->_entityName][$fieldName] = $getterMethod;
-                } else {
-                    self::$_accessorCache[$this->_entityName][$fieldName] = false;
-                }
-            }
-            if ($getter = $this->_class->getCustomAccessor($fieldName)) {
-                self::$_accessorCache[$this->_entityName][$fieldName] = $getter;
-            } else if ( ! isset(self::$_accessorCache[$this->_entityName][$fieldName])) {
-                self::$_accessorCache[$this->_entityName][$fieldName] = false;
-            }
-        }
-        // invoke custom accessor, if it exists.
-        if ($getter = self::$_accessorCache[$this->_entityName][$fieldName]) {
-            return $this->$getter();
-        }*/
+        $this->_invokeCustomAccessor($fieldName);
         
         // Use built-in accessor functionality        
         $nullObj = Doctrine_Null::$INSTANCE;
@@ -1043,6 +1024,29 @@ abstract class Doctrine_Entity extends Doctrine_Access implements Countable, Ite
             } else {
                 throw Doctrine_Entity_Exception::invalidField($fieldName);
             }
+        }
+    }
+    
+    private function _invokeCustomAccessor($fieldName)
+    {
+        if ( ! isset(self::$_accessorCache[$this->_entityName][$fieldName])) {
+            if (self::$_useAutoAccessorOverride) {
+                $getterMethod = 'get' . Doctrine::classify($fieldName);
+                if (method_exists($this, $getterMethod)) {
+                    self::$_accessorCache[$this->_entityName][$fieldName] = $getterMethod;
+                } else {
+                    self::$_accessorCache[$this->_entityName][$fieldName] = false;
+                }
+            }
+            if ($getter = $this->_class->getCustomAccessor($fieldName)) {
+                self::$_accessorCache[$this->_entityName][$fieldName] = $getter;
+            } else if ( ! isset(self::$_accessorCache[$this->_entityName][$fieldName])) {
+                self::$_accessorCache[$this->_entityName][$fieldName] = false;
+            }
+        }
+        // invoke custom accessor, if it exists.
+        if ($getter = self::$_accessorCache[$this->_entityName][$fieldName]) {
+            return $this->$getter();
         }
     }
     

@@ -59,7 +59,7 @@ class Doctrine_EntityRepository
         if ( ! empty($alias)) {
             $alias = ' ' . trim($alias);
         }
-        return Doctrine_Query::create($this->_em)->from($this->_entityName . $alias);
+        return $this->_em->createQuery()->from($this->_entityName . $alias);
     }
     
     /**
@@ -101,11 +101,10 @@ class Doctrine_EntityRepository
     }
 
     /**
-     * Finds all entities of the mapper's class.
-     * Use with care.
+     * Finds all entities in the repository.
      *
-     * @param int $hydrationMode        Doctrine::HYDRATE_ARRAY or Doctrine::HYDRATE_RECORD
-     * @return Doctrine_Collection
+     * @param int $hydrationMode
+     * @return mixed
      */
     public function findAll($hydrationMode = null)
     {

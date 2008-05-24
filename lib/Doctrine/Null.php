@@ -20,10 +20,17 @@
  */
 
 /**
- * Doctrine_Null
- *
- * Simple empty class representing a null value.
- * Used for extra fast null value testing with isset() rather than array_key_exists().
+ * Null class representing a null value that has been fetched from
+ * the database or a fetched, empty association. This is for internal use only.
+ * User code should never deal with this null object.
+ * 
+ * Semantics are as follows:
+ * 
+ * Regular PHP null : Value is undefined. When a field with that value is accessed
+ *                    and lazy loading is used the database is queried.
+ * 
+ * Null object: Null valued of a field or empty association that has already been loaded.
+ *              On access, the database is not queried. 
  *
  * @package     Doctrine
  * @subpackage  Null
