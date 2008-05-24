@@ -74,6 +74,12 @@ class Doctrine_Query_Production_AggregateExpression extends Doctrine_Query_Produ
     }
 
 
+    public function semantical($paramHolder)
+    {
+        $this->_expression->semantical($paramHolder);
+    }
+
+
     public function buildSql()
     {
         return $this->_functionName

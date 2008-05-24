@@ -52,10 +52,10 @@ class Doctrine_Query_Production_FromClause extends Doctrine_Query_Production
 
     public function buildSql()
     {
-        echo "FromClause:\n";
-        for ($i = 0; $i < count($this->_identificationVariableDeclaration);$i++) {
-            echo (($this->_identificationVariableDeclaration[$i] instanceof IdentificationVariableDeclaration) ? get_class($this->_identificationVariableDeclaration[$i]) : get_class($this->_identificationVariableDeclaration[$i])) . "\n";
-        }
+        //echo "FromClause:\n";
+        //for ($i = 0; $i < count($this->_identificationVariableDeclaration);$i++) {
+        //    echo (($this->_identificationVariableDeclaration[$i] instanceof IdentificationVariableDeclaration) ? get_class($this->_identificationVariableDeclaration[$i]) : get_class($this->_identificationVariableDeclaration[$i])) . "\n";
+        //}
 
         return 'FROM ' . implode(', ', $this->_mapIdentificationVariableDeclarations());
     }

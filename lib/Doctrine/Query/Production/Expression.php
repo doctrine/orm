@@ -60,6 +60,16 @@ class Doctrine_Query_Production_Expression extends Doctrine_Query_Production
     }
 
 
+    public function semantical($paramHolder)
+    {
+        for ($i = 0, $l = count($this->_terms); $i < $l; $i++) {
+            if ($this->_terms[$i] != '+' && $this->_terms[$i] != '-') {
+                $this->_terms[$i]->semantical($paramHolder);
+            }
+        }
+    }
+
+
     public function buildSql()
     {
         return implode(' ', $this->_mapTerms());

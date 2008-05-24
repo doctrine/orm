@@ -58,6 +58,12 @@ class Doctrine_Query_Production_Factor extends Doctrine_Query_Production
     }
 
 
+    public function semantical($paramHolder)
+    {
+        $this->_primary->semantical($paramHolder);
+    }
+
+
     public function buildSql()
     {
         return $this->_type . ' ' . $this->_primary->buildSql();

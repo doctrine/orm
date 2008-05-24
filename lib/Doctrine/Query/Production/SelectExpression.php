@@ -80,6 +80,8 @@ class Doctrine_Query_Production_SelectExpression extends Doctrine_Query_Producti
             );
         }
 
+        $this->_leftExpression->semantical($paramHolder);
+
         /*if ($this->_identificationVariable !== null) {
             if ($this->_leftExpression instanceof Doctrine_Query_Production_PathExpression) {
                 // We bring the queryComponent from the class instance
@@ -98,8 +100,8 @@ class Doctrine_Query_Production_SelectExpression extends Doctrine_Query_Producti
         }*/
 
         // We need to add scalar in queryComponent the item alias if identificationvariable is set.
-        echo "SelectExpression:\n";
-        echo get_class($this->_leftExpression) . "\n";
+        //echo "SelectExpression:\n";
+        //echo get_class($this->_leftExpression) . "\n";
 
         // The check for duplicate IdentificationVariable was already done
     }

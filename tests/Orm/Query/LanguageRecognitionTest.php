@@ -1,4 +1,41 @@
 <?php
+
+/*
+ *  $Id$
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+ * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+ * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+ * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+ * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+ * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ * This software consists of voluntary contributions made by many individuals
+ * and is licensed under the LGPL. For more information, see
+ * <http://www.phpdoctrine.org>.
+ */
+require_once 'lib/DoctrineTestInit.php';
+/**
+ * Test case for testing the saving and referencing of query identifiers.
+ *
+ * @package     Doctrine
+ * @subpackage  Query
+ * @author      Guilherme Blanco <guilhermeblanco@hotmail.com>
+ * @author      Janne Vanhala <jpvanhal@cc.hut.fi>
+ * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
+ * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
+ * @link        http://www.phpdoctrine.org
+ * @since       1.0
+ * @version     $Revision$
+ * @todo        1) [romanb] We  might want to split the SQL generation tests into multiple
+ *              testcases later since we'll have a lot of them and we might want to have special SQL
+ *              generation tests for some dbms specific SQL syntaxes.
+ */
 class Orm_Query_LanguageRecognitionTest extends Doctrine_OrmTestCase
 {
     public function assertValidDql($dql, $method = '')
@@ -47,7 +84,7 @@ class Orm_Query_LanguageRecognitionTest extends Doctrine_OrmTestCase
 
     public function testInvalidSelectSingleComponentWithAsterisk()
     {
-        $this->assertValidDql('SELECT p.* FROM CmsUser u');
+        $this->assertInvalidDql('SELECT p.* FROM CmsUser u');
     }
 
     public function testSelectSingleComponentWithMultipleColumns()
@@ -97,12 +134,12 @@ class Orm_Query_LanguageRecognitionTest extends Doctrine_OrmTestCase
 
     public function testExistsExpressionSupportedInWherePart()
     {
-        $this->assertValidDql('SELECT * FROM CmsUser u WHERE EXISTS (SELECT p.user_id FROM CmsPhonenumber p WHERE p.user_id = u.id)');
+        $this->assertValidDql('SELECT u.* FROM CmsUser u WHERE EXISTS (SELECT p.user_id FROM CmsPhonenumber p WHERE p.user_id = u.id)');
     }
 
     public function testNotExistsExpressionSupportedInWherePart()
     {
-        $this->assertValidDql('SELECT * FROM CmsUser u WHERE NOT EXISTS (SELECT p.user_id FROM CmsPhonenumber p WHERE p.user_id = u.id)');
+        $this->assertValidDql('SELECT u.* FROM CmsUser u WHERE NOT EXISTS (SELECT p.user_id FROM CmsPhonenumber p WHERE p.user_id = u.id)');
     }
 
     public function testLiteralValueAsInOperatorOperandIsSupported()
@@ -147,6 +184,7 @@ class Orm_Query_LanguageRecognitionTest extends Doctrine_OrmTestCase
         $this->assertValidDql('DELETE FROM CmsUser LIMIT 10 OFFSET 20');
     }
 */
+
     public function testAdditionExpression()
     {
         $this->assertValidDql('SELECT u.*, (u.id + u.id) addition FROM CmsUser u');
@@ -190,7 +228,7 @@ class Orm_Query_LanguageRecognitionTest extends Doctrine_OrmTestCase
 
     public function testLeftJoin()
     {
-        $this->assertValidDql('SELECT * FROM CmsUser u LEFT JOIN u.phonenumbers');
+        $this->assertValidDql('SELECT u.*, p.* FROM CmsUser u LEFT JOIN u.phonenumbers p');
     }
 
     public function testJoin()
@@ -200,12 +238,12 @@ class Orm_Query_LanguageRecognitionTest extends Doctrine_OrmTestCase
 
     public function testInnerJoin()
     {
-        $this->assertValidDql('SELECT * FROM CmsUser u INNER JOIN u.phonenumbers');
+        $this->assertValidDql('SELECT u.*, u.phonenumbers.* FROM CmsUser u INNER JOIN u.phonenumbers');
     }
 
     public function testMultipleLeftJoin()
     {
-        $this->assertValidDql('SELECT * FROM CmsUser u LEFT JOIN u.articles LEFT JOIN u.phonenumbers');
+        $this->assertValidDql('SELECT u.articles.*, u.phonenumbers.* FROM CmsUser u LEFT JOIN u.articles LEFT JOIN u.phonenumbers');
     }
 
     public function testMultipleInnerJoin()
@@ -222,12 +260,12 @@ class Orm_Query_LanguageRecognitionTest extends Doctrine_OrmTestCase
     {
         $this->assertValidDql('SELECT u.name, a.topic, p.phonenumber FROM CmsUser u INNER JOIN u.articles a LEFT JOIN u.phonenumbers p');
     }
-/*
+
     public function testMixingOfJoins2()
     {
-        $this->assertValidDql('SELECT u.name, u.articles.topic, c.text FROM CmsUser u INNER JOIN u.articles.comments c');
+        $this->assertInvalidDql('SELECT u.name, u.articles.topic, c.text FROM CmsUser u INNER JOIN u.articles.comments c');
     }
-*/
+
     public function testOrderBySingleColumn()
     {
         $this->assertValidDql('SELECT u.name FROM CmsUser u ORDER BY u.name');
@@ -252,12 +290,12 @@ class Orm_Query_LanguageRecognitionTest extends Doctrine_OrmTestCase
     {
         $this->assertValidDql('SELECT u.name FROM CmsUser u ORDER BY COALESCE(u.id, u.name) DESC');
     }
-
+/*
     public function testSubselectInInExpression()
     {
         $this->assertValidDql("SELECT * FROM CmsUser u WHERE u.id NOT IN (SELECT u2.id FROM CmsUser u2 WHERE u2.name = 'zYne')");
     }
-/*
+
     public function testSubselectInSelectPart()
     {
         // Semantical error: Unknown query component u (probably in subselect)
@@ -280,6 +318,7 @@ class Orm_Query_LanguageRecognitionTest extends Doctrine_OrmTestCase
         $this->assertValidDql('SELECT c.*, c2.*, d.* FROM Record_Country c INNER JOIN c.City c2 WITH c2.id = 2 WHERE c.id = 1');
     }
 */
+
     public function testJoinConditionsSupported()
     {
         $this->assertValidDql("SELECT u.name, p.* FROM CmsUser u LEFT JOIN u.phonenumbers p ON p.phonenumber = '123 123'");
@@ -292,12 +331,12 @@ class Orm_Query_LanguageRecognitionTest extends Doctrine_OrmTestCase
 
     public function testIndexBySupportsJoins()
     {
-        $this->assertValidDql('SELECT * FROM CmsUser u LEFT JOIN u.articles INDEX BY id'); // INDEX BY is now referring to articles
+        $this->assertValidDql('SELECT u.*, u.articles.* FROM CmsUser u LEFT JOIN u.articles INDEX BY id'); // INDEX BY is now referring to articles
     }
 
     public function testIndexBySupportsJoins2()
     {
-        $this->assertValidDql('SELECT * FROM CmsUser u INDEX BY id LEFT JOIN u.phonenumbers p INDEX BY phonenumber');
+        $this->assertValidDql('SELECT u.*, u.phonenumbers.* FROM CmsUser u INDEX BY id LEFT JOIN u.phonenumbers p INDEX BY phonenumber');
     }
 
     public function testBetweenExpressionSupported()
@@ -342,4 +381,5 @@ class Orm_Query_LanguageRecognitionTest extends Doctrine_OrmTestCase
     {
         $this->assertValidDql("SELECT u.id FROM CmsUser u WHERE u.name LIKE 'z|%' ESCAPE '|'");
     }
+
 }

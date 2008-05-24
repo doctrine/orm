@@ -102,22 +102,24 @@ class Orm_Query_DeleteSqlGenerationTest extends Doctrine_OrmTestCase
         try {
             $q->getSql();
             $this->fail("Invalid DQL '$invalidDql' was not rejected.");
-        } catch (Doctrine_Query_Parser_Exception $parseEx) {}
+        } catch (Doctrine_Exception $parseEx) {}
+        $q->free();
 
-        $invalidDql = 'DELETE FROM hey.boy';
+        $invalidDql = 'DELETE FROM CmsUser.articles';
         $q->setDql($invalidDql);
         try {
             $q->getSql();
             $this->fail("Invalid DQL '$invalidDql' was not rejected.");
-        } catch (Doctrine_Query_Parser_Exception $parseEx) {}
+        } catch (Doctrine_Exception $parseEx) {}
+        $q->free();
 
-        $invalidDql = 'DELETE FROM CmsUser cu WHERE cu.my.thing > ?';
+        $invalidDql = 'DELETE FROM CmsUser cu WHERE cu.articles.id > ?';
         $q->setDql($invalidDql);
         try {
             $q->getSql();
             $this->fail("Invalid DQL '$invalidDql' was not rejected.");
-        } catch (Doctrine_Relation_Exception $parseEx) {}
-
+        } catch (Doctrine_Exception $parseEx) {}
+        $q->free();
     }
 
 

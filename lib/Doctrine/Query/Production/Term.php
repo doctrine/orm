@@ -60,6 +60,16 @@ class Doctrine_Query_Production_Term extends Doctrine_Query_Production
     }
 
 
+    public function semantical($paramHolder)
+    {
+        for ($i = 0, $l = count($this->_factors); $i < $l; $i++) {
+            if ($this->_factors[$i] != '*' && $this->_factors[$i] != '/') {
+                $this->_factors[$i]->semantical($paramHolder);
+            }
+        }
+    }
+
+
     public function buildSql()
     {
         return implode(' ', $this->_mapFactors());

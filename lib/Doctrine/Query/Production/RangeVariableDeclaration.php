@@ -208,7 +208,6 @@ class Doctrine_Query_Production_RangeVariableDeclaration extends Doctrine_Query_
 
                     $queryComponent = array(
                         'metadata' => $classMetadata,
-                        'mapper'   => $manager->getEntityPersister($relation->getForeignComponentName()),
                         'parent'   => $parent,
                         'relation' => $relation,
                         'map'      => null,
