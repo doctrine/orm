@@ -222,12 +222,12 @@ class Orm_Query_LanguageRecognitionTest extends Doctrine_OrmTestCase
     {
         $this->assertValidDql('SELECT u.name, a.topic, p.phonenumber FROM CmsUser u INNER JOIN u.articles a LEFT JOIN u.phonenumbers p');
     }
-
+/*
     public function testMixingOfJoins2()
     {
         $this->assertValidDql('SELECT u.name, u.articles.topic, c.text FROM CmsUser u INNER JOIN u.articles.comments c');
     }
-
+*/
     public function testOrderBySingleColumn()
     {
         $this->assertValidDql('SELECT u.name FROM CmsUser u ORDER BY u.name');
@@ -287,17 +287,17 @@ class Orm_Query_LanguageRecognitionTest extends Doctrine_OrmTestCase
 
     public function testIndexByClauseWithOneComponent()
     {
-        $this->assertValidDql('SELECT * FROM CmsUser u INDEX BY name');
+        $this->assertValidDql('SELECT * FROM CmsUser u INDEX BY id');
     }
 
     public function testIndexBySupportsJoins()
     {
-        $this->assertValidDql('SELECT * FROM CmsUser u LEFT JOIN u.articles INDEX BY topic');
+        $this->assertValidDql('SELECT * FROM CmsUser u LEFT JOIN u.articles INDEX BY id'); // INDEX BY is now referring to articles
     }
 
     public function testIndexBySupportsJoins2()
     {
-        $this->assertValidDql('SELECT * FROM CmsUser u INDEX BY name LEFT JOIN u.phonenumbers p INDEX BY phonenumber');
+        $this->assertValidDql('SELECT * FROM CmsUser u INDEX BY id LEFT JOIN u.phonenumbers p INDEX BY phonenumber');
     }
 
     public function testBetweenExpressionSupported()

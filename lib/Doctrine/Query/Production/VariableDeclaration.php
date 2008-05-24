@@ -132,6 +132,8 @@ class Doctrine_Query_Production_VariableDeclaration extends Doctrine_Query_Produ
             $conn = $manager->getConnectionForComponent($this->_componentName);
         }
 
+        echo "Query Component Table Name: " . var_export($queryComponent['metadata']->getTableName(), true) . "\n";
+
         return $conn->quoteIdentifier($queryComponent['metadata']->getTableName()) . ' '
              . $conn->quoteIdentifier($parserResult->getTableAliasFromComponentAlias($this->_componentAlias));
     }

@@ -49,7 +49,7 @@ class Doctrine_Connection_Mock extends Doctrine_Connection_Common
 
     }
     
-    public function quote($input)
+    public function quote($input, $type = null)
     {
         return $input;
     }

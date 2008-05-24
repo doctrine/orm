@@ -55,7 +55,7 @@ class Orm_Query_IdentifierRecognitionTest extends Doctrine_OrmTestCase
     public function testSingleAliasDeclarationWithIndexByIsSupported()
     {
         $query = new Doctrine_Query;
-        $query->setDql('SELECT u.* FROM CmsUser u INDEX BY name');
+        $query->setDql('SELECT u.* FROM CmsUser u INDEX BY id');
         $parserResult = $query->parse();
 
         $decl = $parserResult->getQueryComponent('u');
@@ -64,13 +64,13 @@ class Orm_Query_IdentifierRecognitionTest extends Doctrine_OrmTestCase
         $this->assertEquals(null, $decl['relation']);
         $this->assertEquals(null, $decl['parent']);
         $this->assertEquals(null, $decl['agg']);
-        $this->assertEquals('name', $decl['map']);
+        $this->assertEquals('id', $decl['map']);
     }
 
     public function testQueryParserSupportsMultipleAliasDeclarations()
     {
         $query = new Doctrine_Query;
-        $query->setDql('SELECT u.* FROM CmsUser u INDEX BY name LEFT JOIN u.phonenumbers p');
+        $query->setDql('SELECT u.* FROM CmsUser u INDEX BY id LEFT JOIN u.phonenumbers p');
         $parserResult = $query->parse();
 
         $decl = $parserResult->getQueryComponent('u');
@@ -79,7 +79,7 @@ class Orm_Query_IdentifierRecognitionTest extends Doctrine_OrmTestCase
         $this->assertEquals(null, $decl['relation']);
         $this->assertEquals(null, $decl['parent']);
         $this->assertEquals(null, $decl['agg']);
-        $this->assertEquals('name', $decl['map']);
+        $this->assertEquals('id', $decl['map']);
 
         $decl = $parserResult->getQueryComponent('p');
 
@@ -94,7 +94,7 @@ class Orm_Query_IdentifierRecognitionTest extends Doctrine_OrmTestCase
     public function testQueryParserSupportsMultipleAliasDeclarationsWithIndexBy()
     {
         $query = new Doctrine_Query;
-        $query->setDql('SELECT u.* FROM CmsUser u INDEX BY name LEFT JOIN u.articles a INNER JOIN u.phonenumbers pn INDEX BY phonenumber');
+        $query->setDql('SELECT u.* FROM CmsUser u INDEX BY id LEFT JOIN u.articles a INNER JOIN u.phonenumbers pn INDEX BY phonenumber');
         $parserResult = $query->parse();
 
         $decl = $parserResult->getQueryComponent('u');
@@ -103,7 +103,7 @@ class Orm_Query_IdentifierRecognitionTest extends Doctrine_OrmTestCase
         $this->assertEquals(null, $decl['relation']);
         $this->assertEquals(null, $decl['parent']);
         $this->assertEquals(null, $decl['agg']);
-        $this->assertEquals('name', $decl['map']);
+        $this->assertEquals('id', $decl['map']);
 
         $decl = $parserResult->getQueryComponent('a');
 

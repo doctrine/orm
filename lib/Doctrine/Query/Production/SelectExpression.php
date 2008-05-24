@@ -80,7 +80,7 @@ class Doctrine_Query_Production_SelectExpression extends Doctrine_Query_Producti
             );
         }
 
-        if ($this->_identificationVariable !== null) {
+        /*if ($this->_identificationVariable !== null) {
             if ($this->_leftExpression instanceof Doctrine_Query_Production_PathExpression) {
                 // We bring the queryComponent from the class instance
                 // $queryComponent = $this->_leftExpression->getQueryComponent();
@@ -95,7 +95,7 @@ class Doctrine_Query_Production_SelectExpression extends Doctrine_Query_Producti
             $queryComponent['scalar'][$idx] = $this->_identificationVariable;
 
             //$parserResult->setQueryComponent($componentAlias, $queryComponent);
-        }
+        }*/
 
         // We need to add scalar in queryComponent the item alias if identificationvariable is set.
         echo "SelectExpression:\n";
@@ -107,8 +107,7 @@ class Doctrine_Query_Production_SelectExpression extends Doctrine_Query_Producti
 
     public function buildSql()
     {
-        return $this->_leftExpression->buildSql() . ' AS '
-             . (($this->_identificationVariable !== null) ? $this->_identificationVariable : '');
+        return $this->_leftExpression->buildSql();// . ' AS ' . (($this->_identificationVariable !== null) ? $this->_identificationVariable : '');
     }
 
 
