@@ -125,12 +125,8 @@ class Doctrine_Query_Production_VariableDeclaration extends Doctrine_Query_Produ
         $queryComponent = $parserResult->getQueryComponent($this->_componentAlias);
 
         // Retrieving connection
-        $conn = $this->_parser->getSqlBuilder()->getConnection();
-        $manager = Doctrine_Manager::getInstance();
-
-        if ($manager->hasConnectionForComponent($this->_componentName)) {
-            $conn = $manager->getConnectionForComponent($this->_componentName);
-        }
+        $manager = Doctrine_EntityManager::getManager();
+        $conn = $manager->getConnection();
 
         echo "Query Component Table Name: " . var_export($queryComponent['metadata']->getTableName(), true) . "\n";
 

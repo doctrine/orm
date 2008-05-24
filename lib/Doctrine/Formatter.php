@@ -237,7 +237,9 @@ class Doctrine_Formatter extends Doctrine_Connection_Module
      */
     public function getTableName($table)
     {
+        return $table;
+        /*
         return sprintf($this->conn->getAttribute(Doctrine::ATTR_TBLNAME_FORMAT),
-                $table);
+                $table);*/
     }
 }

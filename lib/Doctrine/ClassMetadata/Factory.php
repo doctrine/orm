@@ -57,7 +57,7 @@ class Doctrine_ClassMetadata_Factory
      * @return Doctrine_Metadata
      */
     public function getMetadataFor($className)
-    {
+    {        
         if (isset($this->_loadedMetadata[$className])) {
             return $this->_loadedMetadata[$className];
         }
