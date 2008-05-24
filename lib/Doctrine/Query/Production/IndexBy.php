@@ -79,7 +79,7 @@ class Doctrine_Query_Production_IndexBy extends Doctrine_Query_Production
         // The INDEXBY field must be either the (primary && not part of composite pk) || (unique && notnull)
         $columnMapping = $classMetadata->getColumnMapping($this->_fieldName);
 
-        if ( ! $classMetadata->isIdentifier($field) && ! $classMetadata->isUniqueField($field) && ! $classMetadata->isNotNull($field)) {
+        if ( ! $classMetadata->isIdentifier($this->_fieldName) && ! $classMetadata->isUniqueField($this->_fieldName) && ! $classMetadata->isNotNull($this->_fieldName)) {
             $this->_parser->semanticalError(
                 "Field '" . $this->_fieldName . "' of component  '" . $classMetadata->getClassName() .
                 "' must be unique and notnull to be used as index.",
@@ -87,7 +87,7 @@ class Doctrine_Query_Production_IndexBy extends Doctrine_Query_Production
             );
         }
 
-        if ($classMetadata->isIdentifier($field) && $classMetadata->isIdentifierComposite()) {
+        if ($classMetadata->isIdentifier($this->_fieldName) && $classMetadata->isIdentifierComposite()) {
             $this->_parser->semanticalError(
                 "Field '" . $this->_fieldName . "' of component  '" . $classMetadata->getClassName() .
                 "' must be primary and not part of a composite primary key to be used as index.",

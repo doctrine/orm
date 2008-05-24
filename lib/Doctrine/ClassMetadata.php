@@ -339,6 +339,51 @@ class Doctrine_ClassMetadata extends Doctrine_Configurable implements Serializab
     }
 
     /**
+     * Check if the field is unique
+     *
+     * @param string $fieldName  The field name
+     * @return boolean  TRUE if the field is unique, FALSE otherwise.
+     */
+    public function isIdentifierComposite()
+    {
+        return ($this->_identifierType == Doctrine::IDENTIFIER_COMPOSITE);
+    }
+
+    /**
+     * Check if the field is unique
+     *
+     * @param string $fieldName  The field name
+     * @return boolean  TRUE if the field is unique, FALSE otherwise.
+     */
+    public function isUniqueField($fieldName)
+    {
+        $mapping = $this->getColumnMapping($fieldName);
+
+        if ($mapping !== false) {
+            return isset($mapping['unique']) && $mapping['unique'] == true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Check if the field is not null
+     *
+     * @param string $fieldName  The field name
+     * @return boolean  TRUE if the field is not null, FALSE otherwise.
+     */
+    public function isNotNull($fieldName)
+    {
+        $mapping = $this->getColumnMapping($fieldName);
+
+        if ($mapping !== false) {
+            return isset($mapping['notnull']) && $mapping['notnull'] == true;
+        }
+
+        return false;
+    }
+
+    /**
      * addIndex
      *
      * adds an index to this table

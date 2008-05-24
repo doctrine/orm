@@ -853,7 +853,7 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
      *
      * @return string
      */
-    public function modifyLimitQuery($query, $query, $limit = false, $offset = false, $isManip = false)
+    public function modifyLimitQuery($query, $limit = false, $offset = false, $isManip = false)
     {
         return $query;
     }
