@@ -33,21 +33,22 @@
 abstract class Doctrine_Hydrator_Abstract
 {
     /**
-     * @var array $_aliasMap                    two dimensional array containing the map for query aliases
-     *      Main keys are component aliases
+     * @var array $_queryComponents
      *
-     *          table               table object associated with given alias
+     * Two dimensional array containing the map for query aliases. Main keys are component aliases.
      *
-     *          relation            the relation object owned by the parent
-     *
-     *          parent              the alias of the parent
-     *
-     *          agg                 the aggregates of this component
-     *
-     *          map                 the name of the column / aggregate value this
-     *                              component is mapped to a collection
+     * table    Table object associated with given alias.
+     * relation Relation object owned by the parent.
+     * parent   Alias of the parent.
+     * agg      Aggregates of this component.
+     * map      Name of the column / aggregate value this component is mapped to a collection.
      */
     protected $_queryComponents = array();
+
+    /**
+     * @var array Table alias map. Keys are SQL aliases and values DQL aliases.
+     */
+    protected $_tableAliasMap = array();
 
     /**
      * The current hydration mode.
@@ -57,6 +58,7 @@ abstract class Doctrine_Hydrator_Abstract
     protected $_nullObject;
     
     protected $_em;
+
 
     /**
      * constructor
@@ -69,96 +71,88 @@ abstract class Doctrine_Hydrator_Abstract
         $this->_nullObject = Doctrine_Null::$INSTANCE;
     }
 
+
     /**
-     * Sets the fetchmode.
+     * setHydrationMode
      *
-     * @param integer $fetchmode  One of the Doctrine::HYDRATE_* constants.
+     * Defines the hydration process mode.
+     *
+     * @param integer $hydrationMode Doctrine processing mode to be used during hydration process.
+     *                               One of the Doctrine::HYDRATE_* constants.
      */
     public function setHydrationMode($hydrationMode)
     {
         $this->_hydrationMode = $hydrationMode;
     }
 
+
     /**
-     * setAliasMap
-     * sets the whole component alias map
+     * setQueryComponents
      *
-     * @param array $map            alias map
-     * @return Doctrine_Hydrate     this object
+     * Defines the mapping components.
+     *
+     * @param array $queryComponents Query components.
      */
     public function setQueryComponents(array $queryComponents)
     {
         $this->_queryComponents = $queryComponents;
     }
 
+
     /**
-     * getAliasMap
-     * returns the component alias map
+     * getQueryComponents
      *
-     * @return array    component alias map
+     * Gets the mapping components.
+     *
+     * @return array Query components.
      */
     public function getQueryComponents()
     {
         return $this->_queryComponents;
     }
-    
-    /**
-     * hasAliasDeclaration
-     * whether or not this object has a declaration for given component alias
-     *
-     * @param string $componentAlias    the component alias the retrieve the declaration from
-     * @return boolean
-     */
-    public function hasAliasDeclaration($componentAlias)
-    {
-        return isset($this->_queryComponents[$componentAlias]);
-    }
-    
-    /**
-     * getAliasDeclaration
-     * get the declaration for given component alias
-     *
-     * @param string $componentAlias    the component alias the retrieve the declaration from
-     * @return array                    the alias declaration
-     * @deprecated
-     */
-    public function getAliasDeclaration($componentAlias)
-    {
-        return $this->getQueryComponent($componentAlias);
-    }
+
 
     /**
-     * getQueryComponent
-     * get the declaration for given component alias
+     * setTableAliasMap
      *
-     * @param string $componentAlias    the component alias the retrieve the declaration from
-     * @return array                    the alias declaration
+     * Defines the table aliases.
+     *
+     * @param array $tableAliasMap Table aliases.
      */
-    public function getQueryComponent($componentAlias)
+    public function setTableAliasMap(array $tableAliasMap)
     {
-        if ( ! isset($this->_queryComponents[$componentAlias])) {
-            throw new Doctrine_Query_Exception('Unknown component alias ' . $componentAlias);
-        }
-
-        return $this->_queryComponents[$componentAlias];
+        $this->_tableAliasMap = $tableAliasMap;
     }
 
+
     /**
-     * parseData
-     * parses the data returned by statement object
+     * getTableAliasMap
+     *
+     * Returns all table aliases.
+     *
+     * @return array Table aliases as an array.
+     */
+    public function getTableAliasMap()
+    {
+        return $this->_tableAliasMap;
+    }
+
+
+    /**
+     * hydrateResultSet
+     *
+     * Processes data returned by statement object.
      *
      * This is method defines the core of Doctrine object population algorithm
-     * hence this method strives to be as fast as possible
+     * hence this method strives to be as fast as possible.
      *
      * The key idea is the loop over the rowset only once doing all the needed operations
      * within this massive loop.
      *
-     * @todo: Can we refactor this function so that it is not so long and 
-     * nested?
-     *
-     * @param mixed $stmt
-     * @return array
+     * @param mixed $stmt PDOStatement
+     * @param integer $hydrationMode Doctrine processing mode to be used during hydration process.
+     *                               One of the Doctrine::HYDRATE_* constants.
+     * @return mixed Doctrine_Collection|array
      */
     abstract public function hydrateResultSet($parserResult);
-    
 }

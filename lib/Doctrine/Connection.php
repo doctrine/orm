@@ -303,7 +303,8 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
      */
     public function getDbh()
     {
-        $this->connect();
+        //$this->connect();
+        
         
         return $this->dbh;
     }
@@ -319,8 +320,8 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
             return false;
         }
 
-        $event = new Doctrine_Event($this, Doctrine_Event::CONN_CONNECT);
-        $this->getListener()->preConnect($event);
+        //$event = new Doctrine_Event($this, Doctrine_Event::CONN_CONNECT);
+        //$this->getListener()->preConnect($event);
 
         $e = explode(':', $this->options['dsn']);
         if (extension_loaded('pdo')) {
@@ -346,7 +347,7 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
 
         $this->isConnected = true;
 
-        $this->getListener()->postConnect($event);
+        //$this->getListener()->postConnect($event);
         return true;
     }
     

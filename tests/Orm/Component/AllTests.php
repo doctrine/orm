@@ -28,5 +28,5 @@ class Orm_Component_AllTests
 }
 
 if (PHPUnit_MAIN_METHOD == 'Orm_Component_AllTests::main') {
-    Dbal_Component_AllTests::main();
+    Orm_Component_AllTests::main();
 }

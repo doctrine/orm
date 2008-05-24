@@ -236,6 +236,18 @@ abstract class Doctrine_Relation implements ArrayAccess
     {
         return $this->definition['relName'];
     }
+    
+    /**
+     * getTable
+     * returns the foreign table object
+     *
+     * @return object Doctrine_Table
+     */
+    final public function getTable()
+    {
+        return Doctrine_EntityManager::getManager($this->definition['class'])
+               ->getClassMetadata($this->definition['class']);
+    }
 
     /**
      * getType
@@ -255,7 +267,7 @@ abstract class Doctrine_Relation implements ArrayAccess
      *
      * @return object Doctrine_Table
      */
-    final public function getTable()
+    final public function getClassMetadata()
     {
         return Doctrine_EntityManager::getManager($this->definition['class'])
                ->getClassMetadata($this->definition['class']);
@@ -334,7 +346,7 @@ abstract class Doctrine_Relation implements ArrayAccess
      */
     public function getRelationDql($count)
     {
-        $component = $this->getTable()->getComponentName();
+        $component = $this->getClassMetadata()->getComponentName();
 
         $dql  = 'FROM ' . $component
               . ' WHERE ' . $component . '.' . $this->definition['foreign']
