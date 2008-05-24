@@ -220,10 +220,6 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
         }
     }
     
-    
-    /*
-     * -----------   Connection methods    ---------------
-     */
     /**
      * getOption
      *

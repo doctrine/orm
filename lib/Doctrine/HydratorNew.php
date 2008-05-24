@@ -368,14 +368,13 @@ class Doctrine_HydratorNew extends Doctrine_Hydrator_Abstract
                 $e = explode('__', $key);
                 $columnName = strtolower(array_pop($e));                
                 $cache[$key]['dqlAlias'] = $this->_tableAliases[strtolower(implode('__', $e))];
-                $mapper = $this->_queryComponents[$cache[$key]['dqlAlias']]['mapper'];
-                $classMetadata = $mapper->getClassMetadata();
+                $classMetadata = $this->_queryComponents[$cache[$key]['dqlAlias']]['table'];
                 // check whether it's an aggregate value or a regular field
                 if (isset($this->_queryComponents[$cache[$key]['dqlAlias']]['agg'][$columnName])) {
                     $fieldName = $this->_queryComponents[$cache[$key]['dqlAlias']]['agg'][$columnName];
                     $cache[$key]['isScalar'] = true;
                 } else {
-                    $fieldName = $mapper->getFieldName($columnName);
+                    $fieldName = $classMetadata->lookupFieldName($columnName);
                     $cache[$key]['isScalar'] = false;
                 }
                 
@@ -398,7 +397,7 @@ class Doctrine_HydratorNew extends Doctrine_Hydrator_Abstract
                 }
             }
 
-            $mapper = $this->_queryComponents[$cache[$key]['dqlAlias']]['mapper'];
+            $class = $this->_queryComponents[$cache[$key]['dqlAlias']]['table'];
             $dqlAlias = $cache[$key]['dqlAlias'];
             $fieldName = $cache[$key]['fieldName'];
 
@@ -414,7 +413,7 @@ class Doctrine_HydratorNew extends Doctrine_Hydrator_Abstract
             if ($cache[$key]['isSimpleType']) {
                 $rowData[$dqlAlias][$fieldName] = $value;
             } else {
-                $rowData[$dqlAlias][$fieldName] = $mapper->prepareValue(
+                $rowData[$dqlAlias][$fieldName] = $class->prepareValue(
                         $fieldName, $value, $cache[$key]['type']);
             }
 
@@ -453,14 +452,13 @@ class Doctrine_HydratorNew extends Doctrine_Hydrator_Abstract
                 $e = explode('__', $key);
                 $columnName = strtolower(array_pop($e));                
                 $cache[$key]['dqlAlias'] = $this->_tableAliases[strtolower(implode('__', $e))];
-                $mapper = $this->_queryComponents[$cache[$key]['dqlAlias']]['mapper'];
-                $classMetadata = $mapper->getClassMetadata();
+                $classMetadata = $this->_queryComponents[$cache[$key]['dqlAlias']]['table'];
                 // check whether it's an aggregate value or a regular field
                 if (isset($this->_queryComponents[$cache[$key]['dqlAlias']]['agg'][$columnName])) {
                     $fieldName = $this->_queryComponents[$cache[$key]['dqlAlias']]['agg'][$columnName];
                     $cache[$key]['isScalar'] = true;
                 } else {
-                    $fieldName = $mapper->getFieldName($columnName);
+                    $fieldName = $classMetadata->lookupFieldName($columnName);
                     $cache[$key]['isScalar'] = false;
                 }
                 
@@ -476,15 +474,15 @@ class Doctrine_HydratorNew extends Doctrine_Hydrator_Abstract
                 }
             }
 
-            $mapper = $this->_queryComponents[$cache[$key]['dqlAlias']]['mapper'];
+            $class = $this->_queryComponents[$cache[$key]['dqlAlias']]['table'];
             $dqlAlias = $cache[$key]['dqlAlias'];
             $fieldName = $cache[$key]['fieldName'];
 
             if ($cache[$key]['isSimpleType'] || $cache[$key]['isScalar']) {
                 $rowData[$dqlAlias . '_' . $fieldName] = $value;
             } else {
-                $rowData[$dqlAlias . '_' . $fieldName] = $mapper->prepareValue(
-                        $fieldName, $value, $cache[$key]['type']);
+                $rowData[$dqlAlias . '_' . $fieldName] = $this->prepareValue(
+                        $class, $fieldName, $value, $cache[$key]['type']);
             }
         }
         
@@ -514,6 +512,77 @@ class Doctrine_HydratorNew extends Doctrine_Hydrator_Abstract
     {
         return $name == 'doctrine_rownum';
     }
+    
+    /**
+     * prepareValue
+     * this method performs special data preparation depending on
+     * the type of the given column
+     *
+     * 1. It unserializes array and object typed columns
+     * 2. Uncompresses gzip typed columns
+     * 3. Gets the appropriate enum values for enum typed columns
+     * 4. Initializes special null object pointer for null values (for fast column existence checking purposes)
+     *
+     * example:
+     * <code type='php'>
+     * $field = 'name';
+     * $value = null;
+     * $table->prepareValue($field, $value); // Doctrine_Null
+     * </code>
+     *
+     * @throws Doctrine_Table_Exception     if unserialization of array/object typed column fails or
+     * @throws Doctrine_Table_Exception     if uncompression of gzip typed column fails         *
+     * @param string $field     the name of the field
+     * @param string $value     field value
+     * @param string $typeHint  A hint on the type of the value. If provided, the type lookup
+     *                          for the field can be skipped. Used i.e. during hydration to
+     *                          improve performance on large and/or complex results.
+     * @return mixed            prepared value
+     * @todo To EntityManager. Make private and use in createEntity().
+     *       .. Or, maybe better: Move to hydrator for performance reasons.
+     */
+    public function prepareValue(Doctrine_ClassMetadata $class, $fieldName, $value, $typeHint = null)
+    {
+        if ($value === $this->_nullObject) {
+            return $this->_nullObject;
+        } else if ($value === null) {
+            return null;
+        } else {
+            $type = is_null($typeHint) ? $class->getTypeOf($fieldName) : $typeHint;
+            switch ($type) {
+                case 'integer':
+                case 'string';
+                    // don't do any casting here PHP INT_MAX is smaller than what the databases support
+                break;
+                case 'enum':
+                    return $class->enumValue($fieldName, $value);
+                break;
+                case 'boolean':
+                    return (boolean) $value;
+                break;
+                case 'array':
+                case 'object':
+                    if (is_string($value)) {
+                        $value = unserialize($value);
+                        if ($value === false) {
+                            throw new Doctrine_Hydrator_Exception('Unserialization of ' . $fieldName . ' failed.');
+                        }
+                        return $value;
+                    }
+                break;
+                case 'gzip':
+                    $value = gzuncompress($value);
+                    if ($value === false) {
+                        throw new Doctrine_Hydrator_Exception('Uncompressing of ' . $fieldName . ' failed.');
+                    }
+                    return $value;
+                break;
+            }
+        }
+        return $value;
+    }
+    
+    
     
     /** Needed only temporarily until the new parser is ready */
     private $_isResultMixed = false;

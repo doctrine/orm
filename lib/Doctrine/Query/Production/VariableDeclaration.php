@@ -93,7 +93,6 @@ class Doctrine_Query_Production_VariableDeclaration extends Doctrine_Query_Produ
                 // Building queryComponent
                 $queryComponent = array(
                     'metadata' => $classMetadata,
-                    'mapper'   => $manager->getEntityPersister($this->_componentName),
                     'parent'   => null,
                     'relation' => null,
                     'map'      => null,

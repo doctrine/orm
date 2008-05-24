@@ -555,6 +555,33 @@ class Doctrine_ClassMetadata extends Doctrine_Configurable implements Serializab
         return isset($this->_fieldNames[$columnName]) ?
         $this->_fieldNames[$columnName] : $columnName;
     }
+    
+    private $_subclassFieldNames = array();
+    
+    /**
+     * 
+     */
+    public function lookupFieldName($columnName)
+    {
+        if (isset($this->_fieldNames[$columnName])) {
+            return $this->_fieldNames[$columnName];
+        } else if (isset($this->_subclassFieldNames[$columnName])) {
+            return $this->_subclassFieldNames[$columnName];
+        }
+        
+        $classMetadata = $this;
+        $conn = $this->_conn;
+        
+        foreach ($classMetadata->getSubclasses() as $subClass) {
+            $subClassMetadata = $conn->getClassMetadata($subClass);
+            if ($subClassMetadata->hasColumn($columnName)) {
+                $this->_subclassFieldNames[$columnName] = $subClassMetadata->getFieldName($columnName);
+                return $this->_subclassFieldNames[$columnName];
+            }
+        }
+
+        throw new Doctrine_ClassMetadata_Exception("No field name found for column name '$columnName' during lookup.");
+    }
 
     /**
      * @deprecated

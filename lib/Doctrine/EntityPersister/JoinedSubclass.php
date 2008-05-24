@@ -226,7 +226,7 @@ class Doctrine_EntityPersister_JoinedSubclass extends Doctrine_EntityPersister_A
     /**
      * 
      */
-    public function getFieldName($columnName)
+    /*public function getFieldName($columnName)
     {
         if (isset($this->_columnNameFieldNameMap[$columnName])) {
             return $this->_columnNameFieldNameMap[$columnName];
@@ -249,7 +249,7 @@ class Doctrine_EntityPersister_JoinedSubclass extends Doctrine_EntityPersister_A
         }
 
         throw new Doctrine_Mapper_Exception("No field name found for column name '$columnName'.");
-    }
+    }*/
     
     /**
      * 

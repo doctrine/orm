@@ -168,221 +168,6 @@ abstract class Doctrine_EntityPersister_Abstract
     }
 
     /**
-     * creates a new record
-     *
-     * @param $array             an array where keys are field names and
-     *                           values representing field values
-     * @return Doctrine_Entity   the created record object
-     * @todo To EntityManager.
-     */
-    public function create(array $array = array()) 
-    {
-        $record = new $this->_domainClassName();
-        $record->fromArray($array);
-
-        return $record;
-    }
-    
-    public function addEntityListener(Doctrine_Record_Listener $listener)
-    {
-        if ( ! in_array($listener, $this->_entityListeners)) {
-            $this->_entityListeners[] = $listener;
-            return true;
-        }
-        return false;
-    }
-    
-    public function removeEntityListener(Doctrine_Record_Listener $listener)
-    {
-        if ($key = array_search($listener, $this->_entityListeners, true)) {
-            unset($this->_entityListeners[$key]);
-            return true;
-        }
-        return false;
-    }
-    
-    public function notifyEntityListeners(Doctrine_Entity $entity, $callback, $eventType)
-    {
-        if ($this->_entityListeners) {
-            $event = new Doctrine_Event($entity, $eventType);
-            foreach ($this->_entityListeners as $listener) {
-                $listener->$callback($event);
-            }
-        }
-    }
-    
-    /**
-     * Enter description here...
-     *
-     * @param Doctrine_Entity $entity
-     * @return unknown
-     * @todo To EntityManager
-     */
-    public function detach(Doctrine_Entity $entity)
-    {
-        return $this->_conn->getUnitOfWork()->detach($entity);
-    }
-
-    /**
-     * clear
-     * clears the first level cache (identityMap)
-     *
-     * @return void
-     * @todo what about a more descriptive name? clearIdentityMap?
-     * @todo To EntityManager
-     */
-    public function clear()
-    {
-        $this->_conn->getUnitOfWork()->clearIdentitiesForEntity($this->_classMetadata->getRootClassName());
-    }
-
-    /**
-     * addRecord
-     * adds a record to identity map
-     *
-     * @param Doctrine_Entity $record       record to be added
-     * @return boolean
-     * @todo Better name? registerRecord? Move elsewhere to the new location of the identity maps.
-     * @todo Remove.
-     */
-    public function addRecord(Doctrine_Entity $record)
-    {
-        if ($this->_conn->unitOfWork->contains($record)) {
-            return false;
-        }
-        $this->_conn->unitOfWork->registerIdentity($record);
-
-        return true;
-    }
-    
-    /**
-     * Tells the mapper to manage the entity if it's not already managed.
-     *
-     * @return boolean  TRUE if the entity was previously not managed and is now managed,
-     *                  FALSE otherwise (the entity is already managed).
-     * @todo Remove.
-     */
-    public function manage(Doctrine_Entity $record)
-    {
-        return $this->_conn->unitOfWork->manage($record);
-    }
-
-    /**
-     * removeRecord
-     * removes a record from the identity map, returning true if the record
-     * was found and removed and false if the record wasn't found.
-     *
-     * @param Doctrine_Entity $record       record to be removed
-     * @return boolean
-     * @todo Move elsewhere to the new location of the identity maps.
-     */
-    public function removeRecord(Doctrine_Entity $record)
-    {
-        if ($this->_conn->unitOfWork->contains($record)) {
-            $this->_conn->unitOfWork->unregisterIdentity($record);
-            return true;
-        }
-
-        return false;
-    }
-
-    /**
-     * getRecord
-     * First checks if record exists in identityMap, if not
-     * returns a new record.
-     *
-     * @return Doctrine_Entity
-     * @todo To EntityManager.
-     */
-    public function getRecord(array $data)
-    {
-        if ( ! empty($data)) {
-            $identifierFieldNames = $this->_classMetadata->getIdentifier();
-
-            $found = false;
-            foreach ($identifierFieldNames as $fieldName) {
-                if ( ! isset($data[$fieldName])) {
-                    // primary key column not found return new record
-                    $found = true;
-                    break;
-                }
-                $id[] = $data[$fieldName];
-            }
-
-            if ($found) {
-                return new $this->_domainClassName(true, $data);
-            }
-
-            $idHash = $this->_conn->unitOfWork->getIdentifierHash($id);
-
-            if ($record = $this->_conn->unitOfWork->tryGetByIdHash($idHash,
-                    $this->_classMetadata->getRootClassName())) {
-                $record->hydrate($data);
-            } else {
-                $record = new $this->_domainClassName(false, $data);
-                $this->_conn->unitOfWork->registerIdentity($record);
-            }
-            $data = array();
-        } else {
-            $record = new $this->_domainClassName(true, $data);
-        }
-
-        return $record;
-    }
-
-    /**
-     * @param $id                       database row id
-     * @todo Looks broken. Figure out an implementation and decide whether its needed.
-     */
-    final public function getProxy($id = null)
-    {
-        if ($id !== null) {
-            $identifierColumnNames = $this->_classMetadata->getIdentifierColumnNames();
-            $query = 'SELECT ' . implode(', ', $identifierColumnNames)
-                . ' FROM ' . $this->_classMetadata->getTableName()
-                . ' WHERE ' . implode(' = ? && ', $identifierColumnNames) . ' = ?';
-            $query = $this->applyInheritance($query);
-
-            $params = array_merge(array($id),array());
-
-            $data = $this->_conn->execute($query, $params)->fetch(PDO::FETCH_ASSOC);
-
-            if ($data === false) {
-                return false;
-            }
-        }
-        
-        return $this->getRecord($data);
-    }
-
-    /**
-     * applyInheritance
-     * @param $where                    query where part to be modified
-     * @return string                   query where part with column aggregation inheritance added
-     * @todo What to do with this? Remove if possible.
-     */
-    final public function applyInheritance($where)
-    {
-        $discCol = $this->_classMetadata->getInheritanceOption('discriminatorColumn');
-        if ( ! $discCol) {
-            return $where;
-        }
-        
-        $discMap = $this->_classMetadata->getInheritanceOption('discriminatorMap');
-        $inheritanceMap = array($discCol => array_search($this->_domainClassName, $discMap));
-        if ( ! empty($inheritanceMap)) {
-            $a = array();
-            foreach ($inheritanceMap as $column => $value) {
-                $a[] = $column . ' = ?';
-            }
-            $i = implode(' AND ', $a);
-            $where .= ' AND ' . $i;
-        }
-
-        return $where;
-    }
-
-    /**
      * prepareValue
      * this method performs special data preparation depending on
      * the type of the given column
@@ -410,7 +195,7 @@ abstract class Doctrine_EntityPersister_Abstract
      * @todo To EntityManager. Make private and use in createEntity().
      *       .. Or, maybe better: Move to hydrator for performance reasons.
      */
-    public function prepareValue($fieldName, $value, $typeHint = null)
+    /*public function prepareValue($fieldName, $value, $typeHint = null)
     {
         if ($value === $this->_nullObject) {
             return $this->_nullObject;
@@ -449,7 +234,7 @@ abstract class Doctrine_EntityPersister_Abstract
             }
         }
         return $value;
-    }
+    }*/
 
     /**
      * getComponentName
@@ -458,14 +243,6 @@ abstract class Doctrine_EntityPersister_Abstract
      * @deprecated Use getMappedClassName()
      */
     public function getComponentName()
-    {
-        return $this->_domainClassName;
-    }
-    
-    /**
-     * Gets the name of the class the mapper is used for.
-     */
-    public function getMappedClassName()
     {
         return $this->_domainClassName;
     }
@@ -788,10 +565,10 @@ abstract class Doctrine_EntityPersister_Abstract
         return $this->_classMetadata;
     }
     
-    public function getFieldName($columnName)
+    /*public function getFieldName($columnName)
     {
         return $this->_classMetadata->getFieldName($columnName);
-    }
+    }*/
     
     public function getFieldNames()
     {
