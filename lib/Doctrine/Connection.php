@@ -619,7 +619,7 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
      */
     public function quote($input, $type = null)
     {
-        return $this->formatter->quote($input, $type);
+        return $this->dbh->quote($input, $type);
     }
 
     /**
