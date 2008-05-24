@@ -413,8 +413,8 @@ class Doctrine_HydratorNew extends Doctrine_Hydrator_Abstract
             if ($cache[$key]['isSimpleType']) {
                 $rowData[$dqlAlias][$fieldName] = $value;
             } else {
-                $rowData[$dqlAlias][$fieldName] = $class->prepareValue(
-                        $fieldName, $value, $cache[$key]['type']);
+                $rowData[$dqlAlias][$fieldName] = $this->prepareValue(
+                        $class, $fieldName, $value, $cache[$key]['type']);
             }
 
             if ( ! isset($nonemptyComponents[$dqlAlias]) && $value !== null) {
