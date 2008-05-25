@@ -20,20 +20,8 @@ class ForumUser extends Doctrine_Entity
         $class->mapColumn('id', 'integer', 4, array(
                 'primary' => true,
                 'autoincrement' => true));
-        $class->mapColumn('username', 'string', 50, array(
-                'accessor' => 'getUsernameCustom',
-                'mutator' => 'setUsernameCustom'));
+        $class->mapColumn('username', 'string', 50, array());
         
-    }
-    
-    public function getUsernameCustom()
-    {
-        return $this->rawGetField('username') . "!";
-    }
-    
-    public function setUsernameCustom($username)
-    {
-        $this->rawSetField('username', $username . "?");
     }
     
 }
