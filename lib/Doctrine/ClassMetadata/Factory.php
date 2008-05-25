@@ -1,4 +1,4 @@
-<?php 
+<?php
 /*
  *  $Id$
  *
@@ -23,8 +23,14 @@
  * The metadata factory is used to create ClassMetadata objects that contain all the
  * metadata of a class.
  *
- * @package Doctrine
- * @since   1.0
+ * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
+ * @author      Roman Borschel <roman@code-factory.org>
+ * @package     Doctrine
+ * @subpackage  ClassMetadata
+ * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
+ * @version     $Revision$
+ * @link        www.phpdoctrine.org
+ * @since       2.0
  */
 class Doctrine_ClassMetadata_Factory
 {
@@ -132,7 +138,8 @@ class Doctrine_ClassMetadata_Factory
         }
     }
     
-    protected function _addInheritedRelations($subClass, $parentClass) {
+    protected function _addInheritedRelations($subClass, $parentClass) 
+    {
         foreach ($parentClass->getRelationParser()->getRelationDefinitions() as $name => $definition) {
             $subClass->getRelationParser()->addRelationDefinition($name, $definition);
         }
