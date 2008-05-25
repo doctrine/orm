@@ -951,7 +951,7 @@ class Doctrine_ClassMetadata extends Doctrine_Configurable implements Serializab
     {
         $columnName = $this->getColumnName($fieldName);
         return isset($this->_mappedColumns[$columnName]['mutator']) ?
-        $this->_mappedColumns[$columnName]['mutator'] : null;
+                $this->_mappedColumns[$columnName]['mutator'] : null;
     }
 
     /**

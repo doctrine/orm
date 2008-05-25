@@ -248,7 +248,7 @@ abstract class Doctrine_Entity extends Doctrine_Access implements Countable, Ite
         }
         //--
         
-        self::$_useAutoAccessorOverride = false; // @todo read from attribute the first time
+        self::$_useAutoAccessorOverride = true; // @todo read from attribute the first time
     }
 
     /**
@@ -994,6 +994,9 @@ abstract class Doctrine_Entity extends Doctrine_Access implements Countable, Ite
      */
     public function get($fieldName, $load = false)
     {
+        if ($getter = $this->_getCustomAccessor($fieldName)) {
+            return $this->$getter();
+        }
         $this->_invokeCustomAccessor($fieldName);
         
         // Use built-in accessor functionality        
@@ -1027,7 +1030,29 @@ abstract class Doctrine_Entity extends Doctrine_Access implements Countable, Ite
         }
     }
     
-    private function _invokeCustomAccessor($fieldName)
+    private function _getCustomMutator($fieldName)
+    {
+        if ( ! isset(self::$_mutatorCache[$this->_entityName][$fieldName])) {
+            if (self::$_useAutoAccessorOverride) {
+                $setterMethod = 'set' . Doctrine::classify($fieldName);
+                if (method_exists($this, $setterMethod)) {
+                    self::$_mutatorCache[$this->_entityName][$fieldName] = $setterMethod;
+                } else {
+                    self::$_mutatorCache[$this->_entityName][$fieldName] = false;
+                }
+            }
+            
+            if ($setter = $this->_class->getCustomMutator($fieldName)) {
+                self::$_mutatorCache[$this->_entityName][$fieldName] = $setter;
+            } else if ( ! isset(self::$_mutatorCache[$this->_entityName][$fieldName])) {
+                self::$_mutatorCache[$this->_entityName][$fieldName] = false;
+            }
+        }
+        
+        return self::$_mutatorCache[$this->_entityName][$fieldName];
+    }
+    
+    private function _getCustomAccessor($fieldName)
     {
         if ( ! isset(self::$_accessorCache[$this->_entityName][$fieldName])) {
             if (self::$_useAutoAccessorOverride) {
@@ -1044,10 +1069,8 @@ abstract class Doctrine_Entity extends Doctrine_Access implements Countable, Ite
                 self::$_accessorCache[$this->_entityName][$fieldName] = false;
             }
         }
-        // invoke custom accessor, if it exists.
-        if ($getter = self::$_accessorCache[$this->_entityName][$fieldName]) {
-            return $this->$getter();
-        }
+        
+        return self::$_accessorCache[$this->_entityName][$fieldName];
     }
     
     public function getClassName()
@@ -1070,7 +1093,11 @@ abstract class Doctrine_Entity extends Doctrine_Access implements Countable, Ite
      * @return Doctrine_Entity
      */
     public function set($fieldName, $value, $load = false)
-    {        
+    {
+        if ($setter = $this->_getCustomMutator($fieldName)) {
+            return $this->$setter($value);
+        }
+        
         if ($this->_class->hasField($fieldName)) {
             if ($value instanceof Doctrine_Entity) {
                 $type = $this->_class->getTypeOf($fieldName);
