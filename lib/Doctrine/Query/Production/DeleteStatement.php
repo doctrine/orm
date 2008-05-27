@@ -54,6 +54,6 @@ class Doctrine_Query_Production_DeleteStatement extends Doctrine_Query_Productio
         // The 1=1 is needed to workaround the affected_rows in MySQL.
         // Simple "DELETE FROM table_name" gives 0 affected rows.
         return $this->_deleteClause->buildSql() . (($this->_whereClause !== null)
-             ? $this->_whereClause->buildSql() : ' WHERE 1 = 1');
+             ? ' ' . $this->_whereClause->buildSql() : ' WHERE 1 = 1');
     }
 }

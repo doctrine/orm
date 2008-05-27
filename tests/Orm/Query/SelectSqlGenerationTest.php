@@ -37,25 +37,38 @@ require_once 'lib/DoctrineTestInit.php';
  */
 class Orm_Query_SelectSqlGenerationTest extends Doctrine_OrmTestCase
 {
-    public function testWithoutWhere()
+    public function assertSqlGeneration($dqlToBeTested, $sqlToBeConfirmed)
     {
-        $q = new Doctrine_Query();
+        try {
+            $entityManager = Doctrine_EntityManager::getManager();
+            $query = $entityManager->createQuery($dqlToBeTested);
 
-        // NO WhereClause
-        $q->setDql('SELECT u.id FROM CmsUser u');
-        $this->assertEquals('SELECT cu.id AS cu__id FROM cms_user cu WHERE 1 = 1', $q->getSql());
-        $q->free();
+            parent::assertEquals($sqlToBeConfirmed, $query->getSql());
 
-        $q->setDql('SELECT u.* FROM CmsUser u');
-        $this->assertEquals('SELECT cu.id AS cu__id, cu.status AS cu__status, cu.username AS cu__username, cu.name AS cu__name FROM cms_user cu WHERE 1 = 1', $q->getSql());
-        $q->free();
+            $query->free();
+        } catch (Doctrine_Exception $e) {
+            $this->fail($e->getMessage());
+        }
     }
 
-/*
+
+    public function testWithoutWhere()
+    {
+        // NO WhereClause
+        $this->assertSqlGeneration(
+            'SELECT u.id FROM CmsUser u', 
+            'SELECT cu.id AS cu__id FROM cms_user cu WHERE 1 = 1'
+        );
+
+        $this->assertSqlGeneration(
+            'SELECT u.* FROM CmsUser u', 
+            'SELECT cu.id AS cu__id, cu.status AS cu__status, cu.username AS cu__username, cu.name AS cu__name FROM cms_user cu WHERE 1 = 1'
+        );
+    }
+
+
     public function testWithWhere()
     {
-        $q = new Doctrine_Query();
-
         // "WHERE" ConditionalExpression
         // ConditionalExpression = ConditionalTerm {"OR" ConditionalTerm}
         // ConditionalTerm       = ConditionalFactor {"AND" ConditionalFactor}
@@ -66,9 +79,10 @@ class Orm_Query_SelectSqlGenerationTest extends Doctrine_OrmTestCase
         //                       | InExpression | NullComparisonExpression) | ExistsExpression
 
         // If this one test fail, all others will fail too. That's the simplest case possible
-        $q->setDql('SELECT u.* FROM CmsUser u WHERE id = ?');
-        $this->assertEquals('DELETE FROM cms_user cu WHERE cu.id = ?', $q->getSql());
-        $q->free();
+        $this->assertSqlGeneration(
+            'SELECT u.* FROM CmsUser u WHERE id = ?', 
+            'SELECT cu.id AS cu__id, cu.status AS cu__status, cu.username AS cu__username, cu.name AS cu__name FROM cms_user cu WHERE cu.id = ?'
+        );
     }
-*/
+
 }

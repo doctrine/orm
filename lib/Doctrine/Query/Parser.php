@@ -111,10 +111,10 @@ class Doctrine_Query_Parser
      * @param string $dql DQL to be parsed.
      * @param Doctrine_Connection $connection The connection to use
      */
-    public function __construct($dql, Doctrine_Connection $connection = null)
+    public function __construct(Doctrine_Query $query)
     {
-        $this->_scanner = new Doctrine_Query_Scanner($dql);
-        $this->_sqlBuilder = Doctrine_Query_SqlBuilder::fromConnection($connection);
+        $this->_scanner = new Doctrine_Query_Scanner($query->getDql());
+        $this->_sqlBuilder = Doctrine_Query_SqlBuilder::fromConnection($query->getEntityManager());
         $this->_keywordTable = new Doctrine_Query_Token();
 
         $this->_parserResult = new Doctrine_Query_ParserResult(

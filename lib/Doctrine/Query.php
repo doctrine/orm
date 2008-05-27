@@ -37,9 +37,9 @@
 class Doctrine_Query extends Doctrine_Query_Abstract
 {
     /**
-     * @var Doctrine_Connection The connection used by this query object.
+     * @var Doctrine_EntityManager The entity manager used by this query object.
      */
-    protected $_connection;
+    protected $_entityManager;
 
     /**
      * @var Doctrine_Hydrator   The hydrator object used to hydrate query results.
@@ -93,15 +93,10 @@ class Doctrine_Query extends Doctrine_Query_Abstract
     // End of Caching Stuff
 
 
-    public function __construct(Doctrine_Connection $conn = null, Doctrine_Hydrator_Abstract $hydrator = null)
+    public function __construct(Doctrine_EntityManager $entityManager)
     {
-        $this->setConnection($conn);
-
-        if ($hydrator === null) {
-            $hydrator = new Doctrine_Hydrator(Doctrine_EntityManager::getManager());
-        }
-
-        $this->_hydrator = $hydrator;
+        $this->_entityManager = $entityManager;
+        $this->_hydrator = new Doctrine_Hydrator($entityManager);
 
         $this->free();
     }
@@ -120,29 +115,13 @@ class Doctrine_Query extends Doctrine_Query_Abstract
 
 
     /**
-     * Retrieves the assocated Doctrine_Connection to this Doctrine_Query
+     * Retrieves the assocated Doctrine_EntityManager to this Doctrine_Query
      *
-     * @return Doctrine_Connection
+     * @return Doctrine_EntityManager
      */
-    public function getConnection()
+    public function getEntityManager()
     {
-        return $this->_connection;
-    }
-
-
-    /**
-     * Defines an assocated Doctrine_Connection to this Doctrine_Query
-     *
-     * @param Doctrine_Connection $conn A valid Doctrine_Connection
-     * @return void
-     */
-    public function setConnection(Doctrine_Connection $conn = null)
-    {
-        if ($conn === null) {
-            $conn = Doctrine_EntityManager::getManager()->getConnection();
-        }
-
-        $this->_connection = $conn;
+        return $this->_entityManager;
     }
 
 
@@ -230,7 +209,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract
     public function parse()
     {
         if ($this->_state === self::STATE_DIRTY) {
-            $parser = new Doctrine_Query_Parser($this->getDql());
+            $parser = new Doctrine_Query_Parser($this);
             $this->_parserResult = $parser->parse();
             $this->_state = self::STATE_CLEAN;
         }
@@ -313,7 +292,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract
     protected function _execute2($params)
     {
         // If there is a CacheDriver associated to cache queries...
-        if ($this->_queryCache || $this->_connection->getAttribute(Doctrine::ATTR_QUERY_CACHE)) {
+        if ($this->_queryCache || $this->_entityManager->getConnection()->getAttribute(Doctrine::ATTR_QUERY_CACHE)) {
             $queryCacheDriver = $this->getQueryCacheDriver();
 
             // Calculate hash for dql query.
@@ -347,7 +326,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract
         // Double the params if we are using limit-subquery algorithm
         // We always have an instance of Doctrine_Query_ParserResult on hands...
         if ($this->_parserResult->isLimitSubqueryUsed() &&
-            $this->_connection->getAttribute(Doctrine::ATTR_DRIVER_NAME) !== 'mysql') {
+            $this->_entityManager->getConnection()->getAttribute(Doctrine::ATTR_DRIVER_NAME) !== 'mysql') {
             $params = array_merge($params, $params);
         }
 
@@ -362,7 +341,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract
     protected function _prepareParams(array $params)
     {
         // Convert boolean params
-        $params = $this->_connection->convertBooleans($params);
+        $params = $this->_entityManager->getConnection()->convertBooleans($params);
 
         // Convert enum params
         return $this->convertEnums($params);
@@ -399,7 +378,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract
         if ($this->_resultCache instanceof Doctrine_Cache_Interface) {
             return $this->_resultCache;
         } else {
-            return $this->_connection->getResultCacheDriver();
+            return $this->_entityManager->getConnection()->getResultCacheDriver();
         }
     }
 
@@ -488,7 +467,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract
         if ($this->_queryCache instanceof Doctrine_Cache_Interface) {
             return $this->_queryCache;
         } else {
-            return $this->_connection->getQueryCacheDriver();
+            return $this->_entityManager->getConnection()->getQueryCacheDriver();
         }
     }
 

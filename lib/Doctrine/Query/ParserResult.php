@@ -74,7 +74,7 @@ class Doctrine_Query_ParserResult extends Doctrine_Query_AbstractResult
      *
      * @param array $queryFields Query fields.
      */
-    public function setQueryComponents(array $queryFields)
+    public function setQueryFields(array $queryFields)
     {
         $this->_queryFields = $queryFields;
     }

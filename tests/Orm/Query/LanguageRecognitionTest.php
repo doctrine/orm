@@ -38,11 +38,11 @@ require_once 'lib/DoctrineTestInit.php';
  */
 class Orm_Query_LanguageRecognitionTest extends Doctrine_OrmTestCase
 {
-    public function assertValidDql($dql, $method = '')
+    public function assertValidDql($dql)
     {
         try {
-            $query = new Doctrine_Query;
-            $query->setDql($dql);
+            $entityManager = Doctrine_EntityManager::getManager();
+            $query = $entityManager->createQuery($dql);
             $parserResult = $query->parse();
         } catch (Doctrine_Exception $e) {
             $this->fail($e->getMessage());
@@ -52,7 +52,8 @@ class Orm_Query_LanguageRecognitionTest extends Doctrine_OrmTestCase
     public function assertInvalidDql($dql)
     {
         try {
-            $query = new Doctrine_Query;
+            $entityManager = Doctrine_EntityManager::getManager();
+            $query = $entityManager->createQuery($dql);
             $query->setDql($dql);
             $parserResult = $query->parse();
 
@@ -380,6 +381,16 @@ class Orm_Query_LanguageRecognitionTest extends Doctrine_OrmTestCase
     public function testLikeExpressionWithCustomEscapeCharacter()
     {
         $this->assertValidDql("SELECT u.id FROM CmsUser u WHERE u.name LIKE 'z|%' ESCAPE '|'");
+    }
+
+
+    public function testInvalidSyntaxIsRejected()
+    {
+        $this->assertInvalidDql("FOOBAR CmsUser");
+
+        $this->assertInvalidDql("DELETE FROM CmsUser.articles");
+
+        $this->assertInvalidDql("DELETE FROM CmsUser cu WHERE cu.articles.id > ?");
     }
 
 }

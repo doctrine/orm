@@ -47,6 +47,6 @@ class Doctrine_Query_Production_WhereClause extends Doctrine_Query_Production
 
     public function buildSql()
     {
-        return ' WHERE ' . $this->_conditionalExpression->buildSql();
+        return 'WHERE ' . $this->_conditionalExpression->buildSql();
     }
 }

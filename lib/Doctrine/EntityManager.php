@@ -246,7 +246,7 @@ class Doctrine_EntityManager
     {
         $query = new Doctrine_Query($this);
         if ( ! empty($dql)) {
-            $query->parseQuery($dql);
+            $query->setDql($dql);
         }
         
         return $query;

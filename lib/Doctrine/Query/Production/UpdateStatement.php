@@ -54,6 +54,6 @@ class Doctrine_Query_Production_UpdateStatement extends Doctrine_Query_Productio
         // The 1=1 is needed to workaround the affected_rows in MySQL.
         // Simple "UPDATE table_name SET column_name = value" gives 0 affected rows.
         return $this->_updateClause->buildSql() . (($this->_whereClause !== null)
-             ? $this->_whereClause->buildSql() : ' WHERE 1 = 1');
+             ? ' ' . $this->_whereClause->buildSql() : ' WHERE 1 = 1');
     }
 }

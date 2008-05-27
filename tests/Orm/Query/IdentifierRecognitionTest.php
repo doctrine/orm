@@ -39,8 +39,8 @@ class Orm_Query_IdentifierRecognitionTest extends Doctrine_OrmTestCase
 
     public function testSingleAliasDeclarationIsSupported()
     {
-        $query = new Doctrine_Query;
-        $query->setDql('SELECT u.* FROM CmsUser u');
+        $entityManager = Doctrine_EntityManager::getManager();
+        $query = $entityManager->createQuery('SELECT u.* FROM CmsUser u');
         $parserResult = $query->parse();
 
         $decl = $parserResult->getQueryComponent('u');
@@ -54,8 +54,8 @@ class Orm_Query_IdentifierRecognitionTest extends Doctrine_OrmTestCase
 
     public function testSingleAliasDeclarationWithIndexByIsSupported()
     {
-        $query = new Doctrine_Query;
-        $query->setDql('SELECT u.* FROM CmsUser u INDEX BY id');
+        $entityManager = Doctrine_EntityManager::getManager();
+        $query = $entityManager->createQuery('SELECT u.* FROM CmsUser u INDEX BY id');
         $parserResult = $query->parse();
 
         $decl = $parserResult->getQueryComponent('u');
@@ -69,8 +69,8 @@ class Orm_Query_IdentifierRecognitionTest extends Doctrine_OrmTestCase
 
     public function testQueryParserSupportsMultipleAliasDeclarations()
     {
-        $query = new Doctrine_Query;
-        $query->setDql('SELECT u.* FROM CmsUser u INDEX BY id LEFT JOIN u.phonenumbers p');
+        $entityManager = Doctrine_EntityManager::getManager();
+        $query = $entityManager->createQuery('SELECT u.* FROM CmsUser u INDEX BY id LEFT JOIN u.phonenumbers p');
         $parserResult = $query->parse();
 
         $decl = $parserResult->getQueryComponent('u');
@@ -93,8 +93,8 @@ class Orm_Query_IdentifierRecognitionTest extends Doctrine_OrmTestCase
 
     public function testQueryParserSupportsMultipleAliasDeclarationsWithIndexBy()
     {
-        $query = new Doctrine_Query;
-        $query->setDql('SELECT u.* FROM CmsUser u INDEX BY id LEFT JOIN u.articles a INNER JOIN u.phonenumbers pn INDEX BY phonenumber');
+        $entityManager = Doctrine_EntityManager::getManager();
+        $query = $entityManager->createQuery('SELECT u.* FROM CmsUser u INDEX BY id LEFT JOIN u.articles a INNER JOIN u.phonenumbers pn INDEX BY phonenumber');
         $parserResult = $query->parse();
 
         $decl = $parserResult->getQueryComponent('u');

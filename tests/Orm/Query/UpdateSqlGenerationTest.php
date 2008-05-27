@@ -37,17 +37,32 @@
  */
 class Orm_Query_UpdateSqlGenerationTest extends Doctrine_OrmTestCase
 {
+    public function assertSqlGeneration($dqlToBeTested, $sqlToBeConfirmed)
+    {
+        try {
+            $entityManager = Doctrine_EntityManager::getManager();
+            $query = $entityManager->createQuery($dqlToBeTested);
+
+            parent::assertEquals($sqlToBeConfirmed, $query->getSql());
+
+            $query->free();
+        } catch (Doctrine_Exception $e) {
+            $this->fail($e->getMessage());
+        }
+    }
+
+
     public function testWithoutWhere()
     {
-        $q = new Doctrine_Query();
-
         // NO WhereClause
-        $q->setDql('UPDATE CmsUser u SET name = ?');
-        $this->assertEquals('UPDATE cms_user cu SET cu.name = ? WHERE 1 = 1', $q->getSql());
-        $q->free();
+        $this->assertSqlGeneration(
+            'UPDATE CmsUser u SET name = ?', 
+            'UPDATE cms_user cu SET cu.name = ? WHERE 1 = 1'
+        );
 
-        $q->setDql('UPDATE CmsUser u SET name = ?, username = ?');
-        $this->assertEquals('UPDATE cms_user cu SET cu.name = ?, cu.username = ? WHERE 1 = 1', $q->getSql());
-        $q->free();
+        $this->assertSqlGeneration(
+            'UPDATE CmsUser u SET name = ?, username = ?', 
+            'UPDATE cms_user cu SET cu.name = ?, cu.username = ? WHERE 1 = 1'
+        );
     }
 }
