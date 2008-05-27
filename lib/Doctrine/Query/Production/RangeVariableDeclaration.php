@@ -129,7 +129,7 @@ class Doctrine_Query_Production_RangeVariableDeclaration extends Doctrine_Query_
                 'parent'   => null,
                 'relation' => null,
                 'map'      => null,
-                'agg'      => null,
+                'scalar'   => null,
             );
         } catch (Doctrine_Exception $e) {
             //echo "Tried to load class metadata from '".$componentName."': " . $e->getMessage() . "\n";
@@ -173,7 +173,7 @@ class Doctrine_Query_Production_RangeVariableDeclaration extends Doctrine_Query_
         // We loop into others identifier to build query components
         for ($i = 1, $l = count($this->_identifiers); $i < $l; $i++) {
             $relationName = $this->_identifiers[$i];
-            $path = '.' . $relationName;
+            $path .= '.' . $relationName;
 
             if ($parserResult->hasQueryComponent($path)) {
                 // We already have the query component on hands, get it
@@ -211,7 +211,7 @@ class Doctrine_Query_Production_RangeVariableDeclaration extends Doctrine_Query_
                         'parent'   => $parent,
                         'relation' => $relation,
                         'map'      => null,
-                        'agg'      => null,
+                        'scalar'   => null,
                     );
 
                     $parent = $path;

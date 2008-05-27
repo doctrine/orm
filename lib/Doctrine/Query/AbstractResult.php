@@ -132,6 +132,18 @@ abstract class Doctrine_Query_AbstractResult
 
 
     /**
+     * Get the component alias for a given query component
+     *
+     * @param array $queryComponent The query component
+     * @param string Component alias
+     */
+    public function getComponentAlias($queryComponent)
+    {
+        return array_search($queryComponent, $this->_queryComponents);;
+    }
+
+
+    /**
      * Whether or not this object has a declaration for given component alias.
      *
      * @param string $componentAlias Component alias the retrieve the declaration from.

@@ -20,27 +20,26 @@
  */
 
 /**
- * IdentificationVariable = identifier
+ * FieldIdentificationVariable = identifier
  *
  * @package     Doctrine
  * @subpackage  Query
- * @author      Guilherme Blanco <guilhermeblanco@hotmail.com>
  * @author      Janne Vanhala <jpvanhal@cc.hut.fi>
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @link        http://www.phpdoctrine.org
  * @since       1.0
  * @version     $Revision$
  */
-class Doctrine_Query_Production_IdentificationVariable extends Doctrine_Query_Production
+class Doctrine_Query_Production_FieldIdentificationVariable extends Doctrine_Query_Production
 {
     protected $_componentAlias;
 
 
     public function syntax($paramHolder)
     {
-        // IdentificationVariable = identifier
+        // FieldIdentificationVariable = identifier
         $this->_parser->match(Doctrine_Query_Token::T_IDENTIFIER);
-        $this->_componentAlias = $this->_parser->token['value'];
+        $this->_fieldAlias = $this->_parser->token['value'];
     }
 
 
@@ -48,18 +47,16 @@ class Doctrine_Query_Production_IdentificationVariable extends Doctrine_Query_Pr
     {
         $parserResult = $this->_parser->getParserResult();
 
-        if ($parserResult->hasQueryComponent($this->_componentAlias)) {
+        if ($parserResult->hasQueryField($this->_fieldAlias)) {
             // We should throw semantical error if there's already a component for this alias
-            $queryComponent = $parserResult->getQueryComponent($this->_componentAlias);
-            $componentName = $queryComponent['metadata']->getClassName();
+            $queryComponent = $parserResult->getQueryField($this->_fieldAlias);
+            $fieldName = $queryComponent['fieldName'];
 
-            $message  = "Cannot re-declare component alias '{$this->_componentAlias}'"
-                      . "for '".$paramHolder->get('componentName')."'. It was already declared for "
-                      . "component '{$componentName}'.";
+            $message  = "Cannot re-declare field alias '{$this->_fieldAlias}'"
+                      . "for '".$paramHolder->get('fieldName')."'. It was already declared for "
+                      . "field '{$fieldName}'.";
 
             $this->_parser->semanticalError($message);
         }
-
-        return $this->_componentAlias;
     }
 }

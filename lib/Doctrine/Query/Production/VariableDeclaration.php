@@ -96,7 +96,7 @@ class Doctrine_Query_Production_VariableDeclaration extends Doctrine_Query_Produ
                     'parent'   => null,
                     'relation' => null,
                     'map'      => null,
-                    'agg'      => null,
+                    'scalar'   => null,
                 );
             } catch (Doctrine_Exception $e) {
                 $this->_parser->semanticalError($e->getMessage());

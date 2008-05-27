@@ -336,7 +336,7 @@ class Orm_Query_LanguageRecognitionTest extends Doctrine_OrmTestCase
 
     public function testIndexBySupportsJoins2()
     {
-        $this->assertValidDql('SELECT u.*, u.phonenumbers.* FROM CmsUser u INDEX BY id LEFT JOIN u.phonenumbers p INDEX BY phonenumber');
+        $this->assertValidDql('SELECT u.*, p.* FROM CmsUser u INDEX BY id LEFT JOIN u.phonenumbers p INDEX BY phonenumber');
     }
 
     public function testBetweenExpressionSupported()

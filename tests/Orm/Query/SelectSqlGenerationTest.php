@@ -46,9 +46,9 @@ class Orm_Query_SelectSqlGenerationTest extends Doctrine_OrmTestCase
         $this->assertEquals('SELECT cu.id AS cu__id FROM cms_user cu WHERE 1 = 1', $q->getSql());
         $q->free();
 
-        //$q->setDql('SELECT u.* FROM CmsUser u');
-        //$this->assertEquals('DELETE FROM cms_user cu WHERE 1 = 1', $q->getSql());
-        //$q->free();
+        $q->setDql('SELECT u.* FROM CmsUser u');
+        $this->assertEquals('SELECT cu.id AS cu__id, cu.status AS cu__status, cu.username AS cu__username, cu.name AS cu__name FROM cms_user cu WHERE 1 = 1', $q->getSql());
+        $q->free();
     }
 
 /*

@@ -114,9 +114,24 @@ class Doctrine_Query_Parser
     public function __construct($dql, Doctrine_Connection $connection = null)
     {
         $this->_scanner = new Doctrine_Query_Scanner($dql);
-        $this->_parserResult = new Doctrine_Query_ParserResult();
         $this->_sqlBuilder = Doctrine_Query_SqlBuilder::fromConnection($connection);
         $this->_keywordTable = new Doctrine_Query_Token();
+
+        $this->_parserResult = new Doctrine_Query_ParserResult(
+            '',
+            array( // queryComponent
+                'dctrn' => array(
+                    'metadata' => null,
+                    'parent'   => null,
+                    'relation' => null,
+                    'map'      => null,
+                    'scalar'   => null,
+                ),
+            ),
+            array( // tableAliasMap
+                'dctrn' => 'dctrn',
+            )
+        );
 
         $this->free(true);
     }

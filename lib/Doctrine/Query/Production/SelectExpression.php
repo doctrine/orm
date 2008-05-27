@@ -38,7 +38,7 @@ class Doctrine_Query_Production_SelectExpression extends Doctrine_Query_Producti
 
     protected $_isSubselect;
 
-    protected $_identificationVariable;
+    protected $_fieldIdentificationVariable;
 
     private $__columnAliasInSql;
 
@@ -51,12 +51,20 @@ class Doctrine_Query_Production_SelectExpression extends Doctrine_Query_Producti
 
         if ($this->_isPathExpressionEndingWithAsterisk()) {
             $this->_leftExpression = $this->AST('PathExpressionEndingWithAsterisk', $paramHolder);
+
+            $fieldName = implode('.', $this->_leftExpression->getIdentifiers()) . '.*';
         } elseif(($this->_isSubselect = $this->_isSubselect()) === true) {
             $this->_parser->match('(');
             $this->_leftExpression = $this->AST('Subselect', $paramHolder);
             $this->_parser->match(')');
+
+            // [TODO] Any way to make it more fancy for user error?
+            $fieldName = '<Subselect>';
         } else {
             $this->_leftExpression = $this->AST('Expression', $paramHolder);
+
+            // [TODO] Any way to make it more fancy for user error?
+            $fieldName = '<Expression>';
         }
 
         if ($this->_isNextToken(Doctrine_Query_Token::T_AS)) {
@@ -64,17 +72,24 @@ class Doctrine_Query_Production_SelectExpression extends Doctrine_Query_Producti
         }
 
         if ($this->_isNextToken(Doctrine_Query_Token::T_IDENTIFIER)) {
-            $this->_identificationVariable = $this->AST('IdentificationVariable', $paramHolder);
+            $paramHolder->set('fieldName', $fieldName);
+
+            // Will return an identifier, with the semantical check already applied
+            $this->_fieldIdentificationVariable = $this->AST('FieldIdentificationVariable', $paramHolder);
+
+            $paramHolder->remove('fieldName');
         }
     }
 
 
     public function semantical($paramHolder)
     {
+        $parserResult = $this->_parser->getParserResult();
+
         // Here we inspect for duplicate IdentificationVariable, and if the
         // left expression needs the identification variable. If yes, check
         // its existance.
-        if ($this->_leftExpression instanceof Doctrine_Query_Production_PathExpressionEndingWithAsterisk && $this->_identificationVariable !== null) {
+        if ($this->_leftExpression instanceof Doctrine_Query_Production_PathExpressionEndingWithAsterisk && $this->_fieldIdentificationVariable !== null) {
             $this->_parser->semanticalError(
                 "Cannot assign an identification variable to a path expression with asterisk (ie. foo.bar.* AS foobaz)."
             );
@@ -82,34 +97,15 @@ class Doctrine_Query_Production_SelectExpression extends Doctrine_Query_Producti
 
         $this->_leftExpression->semantical($paramHolder);
 
-        /*if ($this->_identificationVariable !== null) {
-            if ($this->_leftExpression instanceof Doctrine_Query_Production_PathExpression) {
-                // We bring the queryComponent from the class instance
-                // $queryComponent = $this->_leftExpression->getQueryComponent();
-            } else {
-                // We bring the default queryComponent
-                // $queryComponent = $parserResult->getQueryComponent(null);
-            }
-
-            $idx = count($queryComponent['scalar']);
-            $this->__columnAliasInSql .= '__' . $idx;
-
-            $queryComponent['scalar'][$idx] = $this->_identificationVariable;
-
-            //$parserResult->setQueryComponent($componentAlias, $queryComponent);
-        }*/
-
-        // We need to add scalar in queryComponent the item alias if identificationvariable is set.
-        //echo "SelectExpression:\n";
-        //echo get_class($this->_leftExpression) . "\n";
-
-        // The check for duplicate IdentificationVariable was already done
+        if($this->_fieldIdentificationVariable !== null) {
+            $this->_fieldIdentificationVariable->semantical($paramHolder);
+        }
     }
 
 
     public function buildSql()
     {
-        return $this->_leftExpression->buildSql();// . ' AS ' . (($this->_identificationVariable !== null) ? $this->_identificationVariable : '');
+        return $this->_leftExpression->buildSql() . $this->_buildColumnAliasInSql();
     }
 
 
@@ -123,5 +119,55 @@ class Doctrine_Query_Production_SelectExpression extends Doctrine_Query_Producti
         }
 
         return $token['value'] === '*';
+    }
+
+
+    protected function _buildColumnAliasInSql()
+    {
+        // Retrieving parser result
+        $parserResult = $this->_parser->getParserResult();
+
+        switch (get_class($this->_leftExpression)) {
+            case 'Doctrine_Query_Production_PathExpressionEndingWithAsterisk':
+                return '';
+            break;
+
+            case 'Doctrine_Query_Production_PathExpression':
+                // We bring the queryComponent from the class instance
+                $queryComponent = $this->_leftExpression->getQueryComponent();
+            break;
+
+            default:
+                // We bring the default queryComponent
+                $queryComponent = $parserResult->getQueryComponent('dctrn');
+            break;
+        }
+
+        // Retrieving connection
+        $manager = Doctrine_EntityManager::getManager(); 
+        $conn = $manager->getConnection();
+
+        $componentAlias = $parserResult->getComponentAlias($queryComponent);
+
+        if ($this->_fieldIdentificationVariable !== null) {
+            // We need to add scalar map in queryComponent if iidentificationvariable is set.
+            $idx = count($queryComponent['scalar']);
+            $queryComponent['scalar'][$idx] = $this->_fieldIdentificationVariable;
+            $parserResult->setQueryComponent($componentAlias, $queryComponent);
+
+            $columnAlias = $parserResult->getTableAliasFromComponentAlias($componentAlias) . '__' . $idx;
+        } elseif ($this->_leftExpression instanceof Doctrine_Query_Production_PathExpression) {
+            // We need to build the column alias based on column name
+            $columnAlias = $parserResult->getTableAliasFromComponentAlias($componentAlias) 
+                         . '__' . $queryComponent['metadata']->getColumnName($this->_leftExpression->getFieldName());
+        } else {
+            // The right thing should be return the index alone... but we need a better solution.
+            // Possible we can search the index for mapped values and add our item there.
+
+            // [TODO] Find another return value. We cant return 0 here.
+            $columnAlias = 'idx__' . 0;
+        }
+
+        return ' AS ' . $conn->quoteIdentifier($columnAlias);
     }
 }

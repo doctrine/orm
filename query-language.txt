@@ -40,6 +40,7 @@ UpdateItem = PathExpression "=" (Expression | "NULL")
 IdentificationVariableDeclaration = RangeVariableDeclaration [IndexBy] {Join [IndexBy]}
 RangeVariableDeclaration = identifier {"." identifier} [["AS"] IdentificationVariable]
 VariableDeclaration = identifier [["AS"] IdentificationVariable]
+IdentificationVariable = identifier
 
 Join = ["LEFT" | "INNER"] "JOIN" RangeVariableDeclaration [("ON" | "WITH") ConditionalExpression]
 IndexBy = "INDEX" "BY" identifier
@@ -59,9 +60,10 @@ Term       = Factor {("*" | "/") Factor}
 Factor     = [("+" | "-")] Primary
 Primary    = PathExpression | Atom | "(" Expression ")" | Function | AggregateExpression
 
-SelectExpression  = (PathExpressionEndingWithAsterisk | Expression | "(" Subselect ")" ) [["AS"] IdentificationVariable]
+SelectExpression  = (PathExpressionEndingWithAsterisk | Expression | "(" Subselect ")" ) [["AS"] FieldIdentificationVariable]
 PathExpression = identifier {"." identifier}
 PathExpressionEndingWithAsterisk = {identifier "."} "*"
+FieldIdentificationVariable = identifier
 
 AggregateExpression = ("AVG" | "MAX" | "MIN" | "SUM") "(" ["DISTINCT"] Expression ")"
                     | "COUNT" "(" ["DISTINCT"] (Expression | "*") ")"

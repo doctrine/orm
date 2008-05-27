@@ -48,7 +48,7 @@ class Orm_Query_IdentifierRecognitionTest extends Doctrine_OrmTestCase
         $this->assertTrue($decl['metadata'] instanceof Doctrine_ClassMetadata);
         $this->assertEquals(null, $decl['relation']);
         $this->assertEquals(null, $decl['parent']);
-        $this->assertEquals(null, $decl['agg']);
+        $this->assertEquals(null, $decl['scalar']);
         $this->assertEquals(null, $decl['map']);
     }
 
@@ -63,7 +63,7 @@ class Orm_Query_IdentifierRecognitionTest extends Doctrine_OrmTestCase
         $this->assertTrue($decl['metadata'] instanceof Doctrine_ClassMetadata);
         $this->assertEquals(null, $decl['relation']);
         $this->assertEquals(null, $decl['parent']);
-        $this->assertEquals(null, $decl['agg']);
+        $this->assertEquals(null, $decl['scalar']);
         $this->assertEquals('id', $decl['map']);
     }
 
@@ -78,7 +78,7 @@ class Orm_Query_IdentifierRecognitionTest extends Doctrine_OrmTestCase
         $this->assertTrue($decl['metadata'] instanceof Doctrine_ClassMetadata);
         $this->assertEquals(null, $decl['relation']);
         $this->assertEquals(null, $decl['parent']);
-        $this->assertEquals(null, $decl['agg']);
+        $this->assertEquals(null, $decl['scalar']);
         $this->assertEquals('id', $decl['map']);
 
         $decl = $parserResult->getQueryComponent('p');
@@ -86,7 +86,7 @@ class Orm_Query_IdentifierRecognitionTest extends Doctrine_OrmTestCase
         $this->assertTrue($decl['metadata'] instanceof Doctrine_ClassMetadata);
         $this->assertTrue($decl['relation'] instanceof Doctrine_Relation);
         $this->assertEquals('u', $decl['parent']);
-        $this->assertEquals(null, $decl['agg']);
+        $this->assertEquals(null, $decl['scalar']);
         $this->assertEquals(null, $decl['map']);
     }
 
@@ -102,7 +102,7 @@ class Orm_Query_IdentifierRecognitionTest extends Doctrine_OrmTestCase
         $this->assertTrue($decl['metadata'] instanceof Doctrine_ClassMetadata);
         $this->assertEquals(null, $decl['relation']);
         $this->assertEquals(null, $decl['parent']);
-        $this->assertEquals(null, $decl['agg']);
+        $this->assertEquals(null, $decl['scalar']);
         $this->assertEquals('id', $decl['map']);
 
         $decl = $parserResult->getQueryComponent('a');
@@ -110,7 +110,7 @@ class Orm_Query_IdentifierRecognitionTest extends Doctrine_OrmTestCase
         $this->assertTrue($decl['metadata'] instanceof Doctrine_ClassMetadata);
         $this->assertTrue($decl['relation'] instanceof Doctrine_Relation);
         $this->assertEquals('u', $decl['parent']);
-        $this->assertEquals(null, $decl['agg']);
+        $this->assertEquals(null, $decl['scalar']);
         $this->assertEquals(null, $decl['map']);
 
         $decl = $parserResult->getQueryComponent('pn');
@@ -118,7 +118,7 @@ class Orm_Query_IdentifierRecognitionTest extends Doctrine_OrmTestCase
         $this->assertTrue($decl['metadata'] instanceof Doctrine_ClassMetadata);
         $this->assertTrue($decl['relation'] instanceof Doctrine_Relation);
         $this->assertEquals('u', $decl['parent']);
-        $this->assertEquals(null, $decl['agg']);
+        $this->assertEquals(null, $decl['scalar']);
         $this->assertEquals('phonenumber', $decl['map']);
     }
 }

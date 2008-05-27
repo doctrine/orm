@@ -43,6 +43,13 @@ class Doctrine_Query_ParserResult extends Doctrine_Query_AbstractResult
      */
     protected $_tableAliasSeeds = array();
 
+    /**
+     * Simple array of keys representing the fields used in query.
+     *
+     * @var array $_queryFields
+     */
+    protected $_queryFields = array();
+
 
     /**
      * @nodoc
@@ -59,6 +66,68 @@ class Doctrine_Query_ParserResult extends Doctrine_Query_AbstractResult
     public function getSqlExecutor()
     {
         return $this->_data;
+    }
+
+
+    /**
+     * Defines the mapping fields.
+     *
+     * @param array $queryFields Query fields.
+     */
+    public function setQueryComponents(array $queryFields)
+    {
+        $this->_queryFields = $queryFields;
+    }
+
+
+    /**
+     * Sets the declaration for given field alias.
+     *
+     * @param string $fieldAlias The field alias to set the declaration to.
+     * @param string $queryField Alias declaration.
+     */
+    public function setQueryField($fieldAlias, array $queryField)
+    {
+        $this->_queryFields[$fieldAlias] = $queryField;
+    }
+
+
+    /**
+     * Gets the mapping fields.
+     *
+     * @return array Query fields.
+     */
+    public function getQueryFields()
+    {
+        return $this->_queryComponents;
+    }
+
+
+    /**
+     * Get the declaration for given field alias.
+     *
+     * @param string $fieldAlias The field alias the retrieve the declaration from.
+     * @return array Alias declaration.
+     */
+    public function getQueryField($fieldAlias)
+    {
+        if ( ! isset($this->_queryFields[$fieldAlias])) {
+            throw new Doctrine_Query_Exception('Unknown query field ' . $fieldAlias);
+        }
+
+        return $this->_queryFields[$fieldAlias];
+    }
+
+
+    /**
+     * Whether or not this object has a declaration for given field alias.
+     *
+     * @param string $fieldAlias Field alias the retrieve the declaration from.
+     * @return boolean True if this object has given alias, otherwise false.
+     */
+    public function hasQueryField($fieldAlias)
+    {
+        return isset($this->_queryFields[$fieldAlias]);
     }
 
 
