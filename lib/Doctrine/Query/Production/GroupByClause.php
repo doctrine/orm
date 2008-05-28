@@ -52,7 +52,7 @@ class Doctrine_Query_Production_GroupByClause extends Doctrine_Query_Production
 
     public function buildSql()
     {
-        return 'GROUP BY ' . implode(', ', $this->_mapGroupByItems()) . ')';
+        return 'GROUP BY ' . implode(', ', $this->_mapGroupByItems());
     }
 
 

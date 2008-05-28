@@ -37,7 +37,7 @@ class Doctrine_Query_Production_PathExpression extends Doctrine_Query_Production
 
     protected $_fieldName;
 
-    protected $_queryComponent;
+    protected $_componentAlias;
 
 
     public function syntax($paramHolder)
@@ -73,21 +73,20 @@ class Doctrine_Query_Production_PathExpression extends Doctrine_Query_Production
 
             // Retrieve ClassMetadata
             $k = array_keys($queryComponents);
-            $componentAlias = $k[1];
+            $this->_componentAlias = $k[1];
 
-            $this->_queryComponent = $queryComponents[$componentAlias];
-            $classMetadata = $this->_queryComponent['metadata'];
+            $classMetadata = $queryComponents[$this->_componentAlias]['metadata'];
         } else {
-            $path = $this->_identifiers[0];
-            $this->_queryComponent = $parserResult->getQueryComponent($path);
+            $this->_componentAlias = $path = $this->_identifiers[0];
+            $queryComponent = $parserResult->getQueryComponent($path);
 
             // We should have a semantical error if the queryComponent does not exists yet
-            if ($this->_queryComponent === null) {
+            if ($queryComponent === null) {
                 $this->_parser->semanticalError("Undefined component alias for '{$path}'", $this->_parser->token);
             }
 
             // Initializing ClassMetadata
-            $classMetadata = $this->_queryComponent['metadata'];
+            $classMetadata = $queryComponent['metadata'];
 
             // Looping through relations
             for ($i = 1; $i < $l; $i++) {
@@ -108,10 +107,11 @@ class Doctrine_Query_Production_PathExpression extends Doctrine_Query_Production
                     $this->_parser->semanticalError("Cannot use the path '{$path}' without defining it in FROM.", $this->_parser->token);
                 }
 
-                // Assigning new queryComponent and classMetadata
-                $this->_queryComponent = $parserResult->getQueryComponent($path);
+                // Assigning new componentAlias, queryComponent and classMetadata
+                $this->_componentAlias = $path;
 
-                $classMetadata = $this->_queryComponent['metadata'];
+                $queryComponent = $parserResult->getQueryComponent($path);
+                $classMetadata = $queryComponent['metadata'];
             }
         }
 
@@ -133,20 +133,12 @@ class Doctrine_Query_Production_PathExpression extends Doctrine_Query_Production
         $manager = Doctrine_EntityManager::getManager(); 
         $conn = $manager->getConnection();
 
-        // Looking for componentAlias to fetch
-        $componentAlias = implode('.', $this->_identifiers);
-
-        if (count($this->_identifiers) == 0) {
-            $queryComponents = $parserResult->getQueryComponents();
-
-            // Retrieve ClassMetadata
-            $k = array_keys($queryComponents);
-            $componentAlias = $k[1];
-        }
+        // Looking for queryComponent to fetch
+        $queryComponent = $parserResult->getQueryComponent($this->_componentAlias);
 
         // Generating the SQL piece
-        $str = $parserResult->getTableAliasFromComponentAlias($componentAlias) . '.'
-             . $this->_queryComponent['metadata']->getColumnName($this->_fieldName);
+        $str = $parserResult->getTableAliasFromComponentAlias($this->_componentAlias) . '.'
+             . $queryComponent['metadata']->getColumnName($this->_fieldName);
 
         return $conn->quoteIdentifier($str);
     }

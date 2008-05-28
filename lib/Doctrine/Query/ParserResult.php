@@ -86,7 +86,7 @@ class Doctrine_Query_ParserResult extends Doctrine_Query_AbstractResult
      * @param string $fieldAlias The field alias to set the declaration to.
      * @param string $queryField Alias declaration.
      */
-    public function setQueryField($fieldAlias, array $queryField)
+    public function setQueryField($fieldAlias, $queryField)
     {
         $this->_queryFields[$fieldAlias] = $queryField;
     }
@@ -99,7 +99,7 @@ class Doctrine_Query_ParserResult extends Doctrine_Query_AbstractResult
      */
     public function getQueryFields()
     {
-        return $this->_queryComponents;
+        return $this->_queryFields;
     }
 
 

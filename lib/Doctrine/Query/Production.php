@@ -36,6 +36,18 @@
 abstract class Doctrine_Query_Production
 {
     /**
+     * @nodoc
+     */
+    const SQLALIAS_SEPARATOR = '__';
+
+
+    /**
+     * @nodoc
+     */
+    const DEFAULT_QUERYCOMPONENT = 'dctrn';
+
+
+    /**
      * Parser object
      *
      * @var Doctrine_Query_Parser

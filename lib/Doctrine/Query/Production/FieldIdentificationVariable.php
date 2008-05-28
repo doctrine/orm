@@ -32,7 +32,9 @@
  */
 class Doctrine_Query_Production_FieldIdentificationVariable extends Doctrine_Query_Production
 {
-    protected $_componentAlias;
+    protected $_fieldAlias;
+
+    protected $_columnAlias;
 
 
     public function syntax($paramHolder)
@@ -49,14 +51,27 @@ class Doctrine_Query_Production_FieldIdentificationVariable extends Doctrine_Que
 
         if ($parserResult->hasQueryField($this->_fieldAlias)) {
             // We should throw semantical error if there's already a component for this alias
-            $queryComponent = $parserResult->getQueryField($this->_fieldAlias);
-            $fieldName = $queryComponent['fieldName'];
+            $fieldName = $parserResult->getQueryField($this->_fieldAlias);
 
             $message  = "Cannot re-declare field alias '{$this->_fieldAlias}'"
-                      . "for '".$paramHolder->get('fieldName')."'. It was already declared for "
-                      . "field '{$fieldName}'.";
+                      . "for '".$paramHolder->get('fieldName')."'.";
 
             $this->_parser->semanticalError($message);
         }
+
+        // Now we map it in queryComponent
+        $componentAlias = Doctrine_Query_Production::DEFAULT_QUERYCOMPONENT;
+        $queryComponent = $parserResult->getQueryComponent($componentAlias);
+
+        $idx = count($queryComponent['scalar']);
+        $queryComponent['scalar'][$idx] = $this->_fieldAlias;
+        $parserResult->setQueryComponent($componentAlias, $queryComponent);
+
+        // And also in field aliases
+        $parserResult->setQueryField($queryComponent['scalar'][$idx], $idx);
+
+        // Build the column alias
+        $this->_columnAlias = $parserResult->getTableAliasFromComponentAlias($componentAlias)
+                            . Doctrine_Query_Production::SQLALIAS_SEPARATOR . $idx;
     }
 }

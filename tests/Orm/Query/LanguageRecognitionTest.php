@@ -71,11 +71,13 @@ class Orm_Query_LanguageRecognitionTest extends Doctrine_OrmTestCase
     public function testPlainFromClauseWithoutAlias()
     {
         $this->assertValidDql('SELECT * FROM CmsUser');
+
+        $this->assertValidDql('SELECT id FROM CmsUser');
     }
 
     public function testPlainFromClauseWithAlias()
     {
-        $this->assertValidDql('SELECT u.* FROM CmsUser u');
+        $this->assertValidDql('SELECT u.id FROM CmsUser u');
     }
 
     public function testSelectSingleComponentWithAsterisk()

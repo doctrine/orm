@@ -42,6 +42,7 @@ class Orm_Query_SelectSqlGenerationTest extends Doctrine_OrmTestCase
         try {
             $entityManager = Doctrine_EntityManager::getManager();
             $query = $entityManager->createQuery($dqlToBeTested);
+            //echo print_r($query->parse()->getQueryFields(), true) . "\n";
 
             parent::assertEquals($sqlToBeConfirmed, $query->getSql());
 
@@ -52,14 +53,31 @@ class Orm_Query_SelectSqlGenerationTest extends Doctrine_OrmTestCase
     }
 
 
-    public function testWithoutWhere()
+    public function testPlainFromClauseWithoutAlias()
     {
-        // NO WhereClause
+        $this->assertSqlGeneration(
+            'SELECT * FROM CmsUser',
+            'SELECT cu.id AS cu__id, cu.status AS cu__status, cu.username AS cu__username, cu.name AS cu__name FROM cms_user cu WHERE 1 = 1'
+        );
+
+        $this->assertSqlGeneration(
+            'SELECT id FROM CmsUser',
+            'SELECT cu.id AS cu__id FROM cms_user cu WHERE 1 = 1'
+        );
+    }
+
+
+    public function testPlainFromClauseWithAlias()
+    {
         $this->assertSqlGeneration(
             'SELECT u.id FROM CmsUser u', 
             'SELECT cu.id AS cu__id FROM cms_user cu WHERE 1 = 1'
         );
+    }
 
+
+    public function testSelectSingleComponentWithAsterisk()
+    {
         $this->assertSqlGeneration(
             'SELECT u.* FROM CmsUser u', 
             'SELECT cu.id AS cu__id, cu.status AS cu__status, cu.username AS cu__username, cu.name AS cu__name FROM cms_user cu WHERE 1 = 1'
@@ -67,21 +85,84 @@ class Orm_Query_SelectSqlGenerationTest extends Doctrine_OrmTestCase
     }
 
 
-    public function testWithWhere()
+    public function testSelectSingleComponentWithMultipleColumns()
     {
-        // "WHERE" ConditionalExpression
-        // ConditionalExpression = ConditionalTerm {"OR" ConditionalTerm}
-        // ConditionalTerm       = ConditionalFactor {"AND" ConditionalFactor}
-        // ConditionalFactor     = ["NOT"] ConditionalPrimary
-        // ConditionalPrimary    = SimpleConditionalExpression | "(" ConditionalExpression ")"
-        // SimpleConditionalExpression
-        //                       = Expression (ComparisonExpression | BetweenExpression | LikeExpression
-        //                       | InExpression | NullComparisonExpression) | ExistsExpression
-
-        // If this one test fail, all others will fail too. That's the simplest case possible
         $this->assertSqlGeneration(
-            'SELECT u.* FROM CmsUser u WHERE id = ?', 
-            'SELECT cu.id AS cu__id, cu.status AS cu__status, cu.username AS cu__username, cu.name AS cu__name FROM cms_user cu WHERE cu.id = ?'
+            'SELECT u.username, u.name FROM CmsUser u', 
+            'SELECT cu.username AS cu__username, cu.name AS cu__name FROM cms_user cu WHERE 1 = 1'
+        );
+    }
+
+/*
+    Not supported yet!
+
+    public function testSelectMultipleComponentsWithAsterisk()
+    {
+        $this->assertSqlGeneration(
+            'SELECT u.*, p.* FROM CmsUser u, u.phonenumbers p',
+            'SELECT cu.id AS cu__id, cu.status AS cu__status, cu.username AS cu__username, cu.name AS cu__name FROM cms_user cu WHERE 1 = 1'
+        );
+    }
+*/
+
+    public function testSelectDistinctIsSupported()
+    {
+        $this->assertSqlGeneration(
+            'SELECT DISTINCT u.name FROM CmsUser u',
+            'SELECT DISTINCT cu.name AS cu__name FROM cms_user cu WHERE 1 = 1'
+        );
+    }
+
+
+    public function testAggregateFunctionInSelect()
+    {
+        $this->assertSqlGeneration(
+            'SELECT COUNT(u.id) FROM CmsUser u GROUP BY u.id',
+            'SELECT COUNT(cu.id) AS dctrn__0 FROM cms_user cu WHERE 1 = 1 GROUP BY cu.id'
+        );
+    }
+
+    public function testAggregateFunctionWithDistinctInSelect()
+    {
+        $this->assertSqlGeneration(
+            'SELECT COUNT(DISTINCT u.name) FROM CmsUser u',
+            'SELECT COUNT(DISTINCT cu.name) AS dctrn__0 FROM cms_user cu WHERE 1 = 1'
+        );
+    }
+
+
+    public function testFunctionalExpressionsSupportedInWherePart()
+    {
+        $this->assertSqlGeneration(
+            "SELECT u.name FROM CmsUser u WHERE TRIM(u.name) = 'someone'",
+            "SELECT cu.name AS cu__name FROM cms_user cu WHERE TRIM(cu.name) = ''someone''" // SQLite double slashes for strings
+        );
+    }
+
+
+    public function testArithmeticExpressionsSupportedInWherePart()
+    {
+        $this->assertSqlGeneration(
+            'SELECT u.* FROM CmsUser u WHERE ((u.id + 5000) * u.id + 3) < 10000000',
+            'SELECT cu.id AS cu__id, cu.status AS cu__status, cu.username AS cu__username, cu.name AS cu__name FROM cms_user cu WHERE ((cu.id + 5000) * cu.id + 3) < 10000000'
+        );
+    }
+
+
+    public function testInExpressionSupportedInWherePart()
+    {
+        $this->assertSqlGeneration(
+            'SELECT * FROM CmsUser WHERE CmsUser.id IN (1, 2)',
+            'SELECT cu.id AS cu__id, cu.status AS cu__status, cu.username AS cu__username, cu.name AS cu__name FROM cms_user cu WHERE cu.id IN (1, 2)'
+        );
+    }
+
+
+    public function testNotInExpressionSupportedInWherePart()
+    {
+        $this->assertSqlGeneration(
+            'SELECT * FROM CmsUser WHERE CmsUser.id NOT IN (1)',
+            'SELECT cu.id AS cu__id, cu.status AS cu__status, cu.username AS cu__username, cu.name AS cu__name FROM cms_user cu WHERE cu.id NOT IN (1)'
         );
     }
 
