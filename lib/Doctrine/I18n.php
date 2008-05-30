@@ -19,6 +19,8 @@
  * <http://www.phpdoctrine.org>.
  */
 
+#namespace Doctrine::Behaviors::I18n;
+
 /**
  * Doctrine_I18n
  *
@@ -29,6 +31,7 @@
  * @since       1.0
  * @version     $Revision$
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
+ * @todo To "Doctrine Behaviors" package. Separate download.
  */
 class Doctrine_I18n extends Doctrine_Record_Generator
 {

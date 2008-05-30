@@ -18,7 +18,7 @@
  * and is licensed under the LGPL. For more information, see
  * <http://www.phpdoctrine.org>.
  */
-Doctrine::autoload('Doctrine_Connection_Module');
+
 /**
  * Doctrine_Util
  *
@@ -29,6 +29,7 @@ Doctrine::autoload('Doctrine_Connection_Module');
  * @since       1.0
  * @version     $Revision$
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
+ * @todo Remove?
  */
 class Doctrine_Util extends Doctrine_Connection_Module
 { }

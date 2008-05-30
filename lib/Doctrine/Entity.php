@@ -19,6 +19,8 @@
  * <http://www.phpdoctrine.org>.
  */
 
+#namespace Doctrine::ORM;
+
 /**
  * Doctrine_Entity
  * All record classes should inherit this super class
@@ -997,7 +999,6 @@ abstract class Doctrine_Entity extends Doctrine_Access implements Countable, Ite
         if ($getter = $this->_getCustomAccessor($fieldName)) {
             return $this->$getter();
         }
-        $this->_invokeCustomAccessor($fieldName);
         
         // Use built-in accessor functionality        
         $nullObj = Doctrine_Null::$INSTANCE;

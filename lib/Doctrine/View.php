@@ -19,6 +19,8 @@
  * <http://www.phpdoctrine.org>.
  */
 
+#namespace Doctrine::ORM::?;
+
 /**
  * Doctrine_View
  *
@@ -31,6 +33,7 @@
  * @link        www.phpdoctrine.org
  * @since       1.0
  * @version     $Revision$
+ * @todo Maybe needs a reworked implementation and a new place.
  */
 class Doctrine_View
 {

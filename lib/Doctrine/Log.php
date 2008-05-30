@@ -27,6 +27,7 @@
  * @link        www.phpdoctrine.org
  * @since       1.0
  * @version     $Revision: 3155 $
+ * @todo Can possibly be removed.
  */
 class Doctrine_Log
 {

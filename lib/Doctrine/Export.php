@@ -18,7 +18,9 @@
  * and is licensed under the LGPL. For more information, see
  * <http://www.phpdoctrine.org>.
  */
-Doctrine::autoload('Doctrine_Connection_Module');
+
+#namespace Doctrine::DBAL::Export;
+
 /**
  * Doctrine_Export
  *

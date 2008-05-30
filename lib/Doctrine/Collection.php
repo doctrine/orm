@@ -19,6 +19,8 @@
  * <http://www.phpdoctrine.org>.
  */
 
+#namespace Doctrine::ORM;
+
 /**
  * A persistent collection of entities.
  * A collection object is strongly typed in the sense that it can only contain

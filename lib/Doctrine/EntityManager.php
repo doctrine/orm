@@ -19,7 +19,7 @@
  * <http://www.phpdoctrine.org>.
  */
 
-#namespace Doctrine::ORM;
+#namespace org::phpdoctrine::orm;
 
 /**
  * The EntityManager is a central access point to ORM functionality.
@@ -114,6 +114,13 @@ class Doctrine_EntityManager
     private $_unitOfWork;
     
     /**
+     * The event manager that is the central point of the event system.
+     *
+     * @var EventManager
+     */
+    private $_eventManager;
+    
+    /**
      * Enter description here...
      *
      * @var unknown_type
@@ -130,9 +137,11 @@ class Doctrine_EntityManager
     {
         $this->_conn = $conn;
         $this->_name = $name;
-        $this->_metadataFactory = new Doctrine_ClassMetadata_Factory($this,
-                new Doctrine_ClassMetadata_CodeDriver());
+        $this->_metadataFactory = new Doctrine_ClassMetadata_Factory(
+                $this, new Doctrine_ClassMetadata_CodeDriver());
         $this->_unitOfWork = new Doctrine_Connection_UnitOfWork($conn);
+        $this->_eventManager = new Doctrine_EventManager();
+        
         if ($name !== null) {
             self::$_ems[$name] = $this;
         } else {
@@ -164,10 +173,10 @@ class Doctrine_EntityManager
     }
     
     /**
-     * Enter description here...
+     * Binds an Entity to a specific EntityManager.
      *
-     * @param unknown_type $entityName
-     * @param unknown_type $emName
+     * @param string $entityName
+     * @param string $emName
      */
     public static function bindEntityToManager($entityName, $emName)
     {
@@ -544,9 +553,24 @@ class Doctrine_EntityManager
         }
     }
     
+    /**
+     * Gets the UnitOfWork used by the EntityManager.
+     *
+     * @return UnitOfWork
+     */
     public function getUnitOfWork()
     {
         return $this->_unitOfWork;
+    }
+    
+    /**
+     * Gets the EventManager used by the EntityManager.
+     *
+     * @return EventManager
+     */
+    public function getEventManager()
+    {
+        return $this->_eventManager;
     }
 }
 

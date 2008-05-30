@@ -19,6 +19,8 @@
  * <http://www.phpdoctrine.org>.
  */
 
+#namespace Doctrine::ORM::Mapping;
+
 /**
  * A <tt>ClassMetadata</tt> instance holds all the information (metadata) of an entity and
  * it's associations and how they're mapped to the relational database.
@@ -28,7 +30,7 @@
  * @author Roman Borschel <roman@code-factory.org>
  * @since 2.0
  */
-class Doctrine_ClassMetadata extends Doctrine_Configurable implements Serializable
+class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
 {
     /**
      * The name of the entity class that is mapped to the database with this metadata.
@@ -1970,19 +1972,19 @@ class Doctrine_ClassMetadata extends Doctrine_Configurable implements Serializab
         return $this;
     }
 
-    public function hasAttribute($key)
+    public function hasAttribute($name)
     {
-        switch ($key) {
-            case Doctrine::ATTR_SEQCOL_NAME:
-            case Doctrine::ATTR_COLL_KEY:
-            case Doctrine::ATTR_LOAD_REFERENCES:
-            case Doctrine::ATTR_EXPORT:
-            case Doctrine::ATTR_QUERY_LIMIT:
-            case Doctrine::ATTR_VALIDATE:
-                return true;
-            default:
-                return false;
-        }
+        return false;
+    }
+    
+    public function getAttribute($name)
+    {
+        return null;
+    }
+    
+    public function setAttribute($name, $value)
+    {
+        ;
     }
 
 

@@ -19,6 +19,8 @@
  * <http://www.phpdoctrine.org>.
  */
 
+#namespace Doctrine::ORM::Events;
+
 /**
  * Doctrine_Event
  *
@@ -32,9 +34,13 @@
  */
 class Doctrine_Event
 {
-    /**
-     * CONNECTION EVENT CODES
-     */
+    /* Event callback constants */
+    const preDelete = 'preDelete';
+    const postDelete = 'postDelete';
+    
+    
+    
+    /*
     const CONN_QUERY         = 1;
     const CONN_EXEC          = 2;
     const CONN_PREPARE       = 3;
@@ -55,51 +61,48 @@ class Doctrine_Event
 
     const HYDRATE            = 40;
 
-    /*
-     * RECORD EVENT CODES
-     */
     const RECORD_DELETE      = 21;
     const RECORD_SAVE        = 22;
     const RECORD_UPDATE      = 23;
     const RECORD_INSERT      = 24;
     const RECORD_SERIALIZE   = 25;
     const RECORD_UNSERIALIZE = 26;
-
+    */
     /**
      * @var mixed $_invoker             the handler which invoked this event
      */
-    protected $_invoker;
+    //protected $_invoker;
 
     /**
      * @var string $_query              the sql query associated with this event (if any)
      */
-    protected $_query;
+    //protected $_query;
 
     /**
      * @var string $_params             the parameters associated with the query (if any)
      */
-    protected $_params;
+    //protected $_params;
 
     /**
      * @see Doctrine_Event constants
      * @var integer $_code              the event code
      */
-    protected $_code;
+    //protected $_code;
 
     /**
      * @var integer $_startedMicrotime  the time point in which this event was started
      */
-    protected $_startedMicrotime;
+    //protected $_startedMicrotime;
 
     /**
      * @var integer $_endedMicrotime    the time point in which this event was ended
      */
-    protected $_endedMicrotime;
+    //protected $_endedMicrotime;
 
     /**
      * @var array $_options             an array of options
      */
-    protected $_options = array();
+    //protected $_options = array();
 
     /**
      * constructor
@@ -109,23 +112,23 @@ class Doctrine_Event
      * @param integer $code                                                  the event code
      * @param string $query                                                  the sql query associated with this event (if any)
      */
-    public function __construct($invoker, $code, $query = null, $params = array())
+    /*public function __construct($invoker, $code, $query = null, $params = array())
     {
         $this->_invoker = $invoker;
         $this->_code    = $code;
         $this->_query   = $query;
         $this->_params  = $params;
-    }
+    }*/
 
     /**
      * getQuery
      *
      * @return string       returns the query associated with this event (if any)
      */
-    public function getQuery()
+    /*public function getQuery()
     {
         return $this->_query;
-    }
+    }*/
 
     /**
      * getName
@@ -133,7 +136,7 @@ class Doctrine_Event
      *
      * @return string       the name of this event
      */
-    public function getName() 
+    /*public function getName() 
     {
         switch ($this->_code) {
             case self::CONN_QUERY:
@@ -184,16 +187,16 @@ class Doctrine_Event
                 return 'unserialize record';
         }
     }
-
+    */
     /**
      * getCode
      *
      * @return integer      returns the code associated with this event
      */
-    public function getCode()
+    /*public function getCode()
     {
         return $this->_code;
-    }
+    }*/
 
     /**
      * getOption
@@ -202,14 +205,14 @@ class Doctrine_Event
      * @param string $option    the name of the option
      * @return mixed
      */
-    public function __get($option)
+    /*public function __get($option)
     {
         if ( ! isset($this->_options[$option])) {
             return null;
         }
         
         return $this->_options[$option];
-    }
+    }*/
 
     /**
      * skipOperation
@@ -218,12 +221,12 @@ class Doctrine_Event
      *
      * @return Doctrine_Event   this object
      */
-    public function skipOperation()
+    /*public function skipOperation()
     {
         $this->_options['skipOperation'] = true;
     
         return $this;
-    }
+    }*/
 
     /**
      * setOption
@@ -233,12 +236,12 @@ class Doctrine_Event
      * @param mixed $value      the value of the given option
      * @return Doctrine_Event   this object
      */
-    public function __set($option, $value)
+    /*public function __set($option, $value)
     {
         $this->_options[$option] = $value;
 
         return $this;
-    }
+    }*/
 
     /**
      * setOption
@@ -248,12 +251,12 @@ class Doctrine_Event
      * @param mixed $value      the value of the given option
      * @return Doctrine_Event   this object
      */
-    public function set($option, &$value)
+    /*public function set($option, &$value)
     {
         $this->_options[$option] =& $value;
 
         return $this;
-    }
+    }*/
 
     /**
      * start
@@ -261,10 +264,10 @@ class Doctrine_Event
      *
      * @return Doctrine_Event   this object
      */
-    public function start()
+    /*public function start()
     {
         $this->_startedMicrotime = microtime(true);
-    }
+    }*/
 
     /**
      * hasEnded
@@ -272,10 +275,10 @@ class Doctrine_Event
      *
      * @return boolean
      */
-    public function hasEnded()
+    /*public function hasEnded()
     {
         return ($this->_endedMicrotime != null);
-    }
+    }*/
 
     /**
      * end
@@ -283,12 +286,12 @@ class Doctrine_Event
      *
      * @return Doctrine_Event   this object
      */
-    public function end()
+    /*public function end()
     {
         $this->_endedMicrotime = microtime(true);
         
         return $this;
-    }
+    }*/
 
     /**
      * getInvoker
@@ -297,10 +300,10 @@ class Doctrine_Event
      * @return Doctrine_Connection|Doctrine_Connection_Statement|
      *         Doctrine_Connection_UnitOfWork|Doctrine_Transaction   the handler that invoked this event
      */
-    public function getInvoker()
+    /*public function getInvoker()
     {
         return $this->_invoker;
-    }
+    }*/
 
     /**
      * getParams
@@ -308,10 +311,10 @@ class Doctrine_Event
      *
      * @return array   parameters of the query
      */
-    public function getParams()
+    /*public function getParams()
     {
         return $this->_params;
-    }
+    }*/
 
     /**
      * Get the elapsed time (in microseconds) that the event ran.  If the event has
@@ -319,11 +322,11 @@ class Doctrine_Event
      *
      * @return mixed
      */
-    public function getElapsedSecs()
+    /*public function getElapsedSecs()
     {
         if (is_null($this->_endedMicrotime)) {
             return false;
         }
         return ($this->_endedMicrotime - $this->_startedMicrotime);
-    }
+    }*/
 }

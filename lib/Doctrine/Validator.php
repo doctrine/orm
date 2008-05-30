@@ -19,6 +19,8 @@
  * <http://www.phpdoctrine.org>.
  */
 
+#namespace Doctrine::Validator;
+
 /**
  * Doctrine_Validator
  * Doctrine_Validator performs validations on record properties

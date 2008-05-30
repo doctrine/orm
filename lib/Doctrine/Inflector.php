@@ -19,6 +19,8 @@
  * <http://www.phpdoctrine.org>.
  */
 
+#namespace Doctrine::ORM::Tools;
+
 /**
  * Doctrine_Inflector has static methods for inflecting text
  * 

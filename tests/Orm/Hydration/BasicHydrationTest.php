@@ -1,4 +1,7 @@
 <?php
+
+#namespace Doctrine::Tests::ORM::Hydration;
+
 require_once 'lib/DoctrineTestInit.php';
 require_once 'lib/mocks/Doctrine_HydratorMockStatement.php';
  

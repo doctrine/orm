@@ -19,6 +19,8 @@
  * <http://www.phpdoctrine.org>.
  */
 
+#namespace Doctrine::Migration;
+
 /**
  * Doctrine_Migration
  *
@@ -29,6 +31,7 @@
  * @since       1.0
  * @version     $Revision: 1080 $
  * @author      Jonathan H. Wage <jonwage@gmail.com>
+ * @todo Move to "Doctrine Migration" package. Separate download.
  */
 class Doctrine_Migration
 {

@@ -19,6 +19,8 @@
  * <http://www.phpdoctrine.org>.
  */
 
+#namespace Doctrine::DBAL::DataDicts;
+
 /**
  * Doctrine_DataDict
  *

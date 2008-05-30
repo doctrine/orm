@@ -19,6 +19,8 @@
  * <http://www.phpdoctrine.org>.
  */
 
+#namespace Doctrine::DBAL::Connections;
+
 /**
  * Doctrine_Connection
  *
@@ -58,7 +60,7 @@
  *       it sits one layer below.
  *       Right now, this is the unification of these two classes.
  */
-abstract class Doctrine_Connection extends Doctrine_Configurable implements Countable
+abstract class Doctrine_Connection implements Doctrine_Configurable, Countable
 {
     /**
      * The PDO database handle. 
@@ -66,6 +68,13 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
      * @var PDO                 
      */
     protected $dbh;
+    
+    /**
+     * The attributes.
+     *
+     * @var array
+     */
+    protected $_attributes = array();
     
     /**
      * $_name
@@ -144,13 +153,6 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
      * -----------   Mixed attributes (need to split up)    ---------------
      */
     /**
-     * @var array $pendingAttributes            An array of pending attributes. When setting attributes
-     *                                          no connection is needed. When connected all the pending
-     *                                          attributes are passed to the underlying adapter (usually PDO) instance.
-     */
-    protected $pendingAttributes  = array();
-
-    /**
      * @var array $modules                      an array containing all modules
      *              transaction                 Doctrine_Transaction driver, handles savepoint and transaction isolation abstraction
      *
@@ -184,14 +186,13 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
                              'export'      => false,
                              'import'      => false,
                              'sequence'    => false,
-                             'unitOfWork'  => false,
                              'formatter'   => false,
                              'util'        => false,
                              );
     
 
     /**
-     * the constructor
+     * Constructor.
      *
      * @param Doctrine_Manager $manager                 the manager object
      * @param PDO|Doctrine_Adapter_Interface $adapter   database driver
@@ -218,34 +219,6 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
                 $this->options['other'] = array(Doctrine::ATTR_PERSISTENT => $adapter['persistent']);
             }
         }
-    }
-    
-    /**
-     * getOption
-     *
-     * Retrieves option
-     *
-     * @param string $option
-     * @return void
-     */
-    public function getOption($option)
-    {
-        if (isset($this->options[$option])) {
-            return $this->options[$option];
-        }
-    }
-
-    /**
-     * setOption
-     * 
-     * Set option value
-     *
-     * @param string $option 
-     * @return void
-     */
-    public function setOption($option, $value)
-    {
-      return $this->options[$option] = $value;
     }
     
     /**
@@ -300,7 +273,6 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
     public function getDbh()
     {
         //$this->connect();
-        
         
         return $this->dbh;
     }
@@ -1121,9 +1093,14 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
      */
     public function getAttribute($attribute)
     {
+        if ($attribute == Doctrine::ATTR_QUOTE_IDENTIFIER) {
+            return false;
+        }
+        
+        /* legacy */ 
         if ($attribute >= 100) {
             if ( ! isset($this->_attributes[$attribute])) {
-                return parent::getAttribute($attribute);
+                return null;
             }
             return $this->_attributes[$attribute];
         }
@@ -1167,6 +1144,11 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
             }
         }
         return $this;
+    }
+    
+    public function hasAttribute($name)
+    {
+        return false;
     }
 
     /**

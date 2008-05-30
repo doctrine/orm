@@ -29,6 +29,7 @@
  * @since       1.0
  * @version     $Revision$
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
+ * @todo May be no longer useful and can be removed later.
  */
 class Doctrine_Hook
 {

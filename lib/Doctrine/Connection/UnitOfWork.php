@@ -19,6 +19,8 @@
  * <http://www.phpdoctrine.org>.
  */
 
+#namespace Doctrine::ORM::Internal;
+
 /**
  * The UnitOfWork is responsible for writing out changes to the database at
  * the correct time and in the correct order.

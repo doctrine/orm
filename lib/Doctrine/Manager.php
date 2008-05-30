@@ -32,7 +32,7 @@
  * @version     $Revision$
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  */
-class Doctrine_Manager extends Doctrine_Configurable implements Countable, IteratorAggregate
+class Doctrine_Manager implements Doctrine_Configurable, Countable, IteratorAggregate
 {
     /**
      * @var array $connections          an array containing all the opened connections
@@ -124,46 +124,13 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
     
     public function hasAttribute($key)
     {
-        switch ($key) {
-            case Doctrine::ATTR_DEFAULT_PARAM_NAMESPACE:
-            case Doctrine::ATTR_COLL_KEY:
-            case Doctrine::ATTR_SEQCOL_NAME:
-            case Doctrine::ATTR_LISTENER:
-            case Doctrine::ATTR_RECORD_LISTENER:
-            case Doctrine::ATTR_QUOTE_IDENTIFIER:
-            case Doctrine::ATTR_FIELD_CASE:
-            case Doctrine::ATTR_IDXNAME_FORMAT:
-            case Doctrine::ATTR_SEQNAME_FORMAT:
-            case Doctrine::ATTR_DBNAME_FORMAT:
-            case Doctrine::ATTR_TBLCLASS_FORMAT:
-            case Doctrine::ATTR_TBLNAME_FORMAT:
-            case Doctrine::ATTR_EXPORT:
-            case Doctrine::ATTR_DECIMAL_PLACES:
-            case Doctrine::ATTR_PORTABILITY:
-            case Doctrine::ATTR_VALIDATE:
-            case Doctrine::ATTR_QUERY_LIMIT:
-            case Doctrine::ATTR_DEFAULT_TABLE_TYPE:
-            case Doctrine::ATTR_DEF_TEXT_LENGTH:
-            case Doctrine::ATTR_DEF_VARCHAR_LENGTH:
-            case Doctrine::ATTR_DEF_TABLESPACE:
-            case Doctrine::ATTR_EMULATE_DATABASE:
-            case Doctrine::ATTR_USE_NATIVE_ENUM:
-            case Doctrine::ATTR_CREATE_TABLES:
-            case Doctrine::ATTR_COLL_LIMIT:
-            case Doctrine::ATTR_CACHE: // deprecated
-            case Doctrine::ATTR_RESULT_CACHE:
-            case Doctrine::ATTR_CACHE_LIFESPAN: // deprecated
-            case Doctrine::ATTR_RESULT_CACHE_LIFESPAN:
-            case Doctrine::ATTR_LOAD_REFERENCES:
-            case Doctrine::ATTR_THROW_EXCEPTIONS:
-            case Doctrine::ATTR_QUERY_CACHE:
-            case Doctrine::ATTR_QUERY_CACHE_LIFESPAN:
-            case Doctrine::ATTR_MODEL_LOADING:
-            case Doctrine::ATTR_METADATA_CACHE:
-            case Doctrine::ATTR_METADATA_CACHE_LIFESPAN:
-                return true;
-            default:
-                return false;
+        return false;
+    }
+    
+    public function setAttribute($name, $value) {}
+    public function getAttribute($name) {
+        if ($name == Doctrine::ATTR_MODEL_LOADING) {
+            return Doctrine::MODEL_LOADING_CONSERVATIVE;
         }
     }
 

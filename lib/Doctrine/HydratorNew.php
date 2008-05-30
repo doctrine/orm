@@ -19,6 +19,8 @@
  * <http://www.phpdoctrine.org>.
  */
 
+#namespace Doctrine::ORM::Internal;
+
 /**
  * The hydrator has the tedious to process result sets returned by the database
  * and turn them into useable structures.

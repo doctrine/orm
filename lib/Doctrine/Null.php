@@ -19,6 +19,8 @@
  * <http://www.phpdoctrine.org>.
  */
 
+#namespace Doctrine::ORM::Internal;
+
 /**
  * Null class representing a null value that has been fetched from
  * the database or a fetched, empty association. This is for internal use only.

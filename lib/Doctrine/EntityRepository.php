@@ -19,6 +19,8 @@
  * <http://www.phpdoctrine.org>.
  */
 
+#namespace Doctrine::ORM;
+
 /**
  * Base class for all custom user-defined repositories.
  * Provides basic finder methods, common to all repositories.

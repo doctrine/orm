@@ -19,6 +19,8 @@
  * <http://www.phpdoctrine.org>.
  */
 
+#namespace Doctrine::ORM::Tools;
+
 /**
  * Doctrine_Lib has not commonly used static functions, mostly for debugging purposes
  *
@@ -29,6 +31,7 @@
  * @since       1.0
  * @version     $Revision$
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
+ * @todo Split into DBAL/ORM parts. DBAL class goes into Doctrine::DBAL::Tools
  */
 class Doctrine_Lib
 {
