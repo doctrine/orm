@@ -26,7 +26,7 @@
  * All record classes should inherit this super class
  *
  * @package     Doctrine
- * @subpackage  Record
+ * @subpackage  Entity
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  * @author      Roman Borschel <roman@code-factory.org>
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
