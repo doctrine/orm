@@ -140,7 +140,7 @@ class Doctrine_EntityManager
         $this->_metadataFactory = new Doctrine_ClassMetadata_Factory(
                 $this, new Doctrine_ClassMetadata_CodeDriver());
         $this->_unitOfWork = new Doctrine_Connection_UnitOfWork($conn);
-        $this->_eventManager = new Doctrine_EventManager();
+        //$this->_eventManager = new Doctrine_EventManager();
         
         if ($name !== null) {
             self::$_ems[$name] = $this;

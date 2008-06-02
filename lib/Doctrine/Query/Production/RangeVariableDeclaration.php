@@ -144,7 +144,7 @@ class Doctrine_Query_Production_RangeVariableDeclaration extends Doctrine_Query_
 
         //echo "Identification Variable: " .$this->_identificationVariable . "\n";
 
-        $tableAlias = $parserResult->generateTableAlias($componentName);
+        $tableAlias = $parserResult->generateTableAlias($classMetadata->getClassName());
         $parserResult->setQueryComponent($this->_identificationVariable, $queryComponent);
         $parserResult->setTableAlias($tableAlias, $this->_identificationVariable);
     }
@@ -216,7 +216,7 @@ class Doctrine_Query_Production_RangeVariableDeclaration extends Doctrine_Query_
 
                     $parent = $path;
                 } catch (Doctrine_Exception $e) {
-                    //echo "Tried to load class metadata from '".$relationName."'\n";
+                    echo "Tried to load class metadata from '".$relationName."'\n";
                     $this->_parser->semanticalError($e->getMessage());
 
                    return;
@@ -228,7 +228,10 @@ class Doctrine_Query_Production_RangeVariableDeclaration extends Doctrine_Query_
             $this->_identificationVariable = $path;
         }
 
-        $tableAlias = $parserResult->generateTableAlias($path);
+        $tableAlias = $parserResult->generateTableAlias($classMetadata->getClassName());
+
+	//echo "Table alias: " . $tableAlias . "\n";
+
         $parserResult->setQueryComponent($this->_identificationVariable, $queryComponent);
         $parserResult->setTableAlias($tableAlias, $this->_identificationVariable);
     }

@@ -45,6 +45,7 @@ class Orm_Query_SelectSqlGenerationTest extends Doctrine_OrmTestCase
             //echo print_r($query->parse()->getQueryFields(), true) . "\n";
 
             parent::assertEquals($sqlToBeConfirmed, $query->getSql());
+            //echo $query->getSql() . "\n";
 
             $query->free();
         } catch (Doctrine_Exception $e) {
@@ -93,17 +94,15 @@ class Orm_Query_SelectSqlGenerationTest extends Doctrine_OrmTestCase
         );
     }
 
-/*
-    Not supported yet!
 
     public function testSelectMultipleComponentsWithAsterisk()
     {
         $this->assertSqlGeneration(
             'SELECT u.*, p.* FROM CmsUser u, u.phonenumbers p',
-            'SELECT cu.id AS cu__id, cu.status AS cu__status, cu.username AS cu__username, cu.name AS cu__name FROM cms_user cu WHERE 1 = 1'
+            'SELECT cu.id AS cu__id, cu.status AS cu__status, cu.username AS cu__username, cu.name AS cu__name, cp.user_id AS cp__user_id, cp.phonenumber AS cp__phonenumber FROM cms_user cu, cms_phonenumber cp WHERE 1 = 1'
         );
     }
-*/
+
 
     public function testSelectDistinctIsSupported()
     {

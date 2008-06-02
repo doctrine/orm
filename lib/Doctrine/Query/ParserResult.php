@@ -142,6 +142,12 @@ class Doctrine_Query_ParserResult extends Doctrine_Query_AbstractResult
     {
         $baseAlias = strtolower(preg_replace('/[^A-Z]/', '\\1', $componentName));
 
+        // We may have a situation where we have all chars are lowercased
+        if ( $baseAlias == '' ) {
+            // We simply grab the first 2 chars of component name
+            $baseAlias = substr($componentNam, 0, 2);
+        }
+
         $alias = $baseAlias;
 
         if ( ! isset($this->_tableAliasSeeds[$baseAlias])) {
