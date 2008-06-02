@@ -46,7 +46,7 @@ class Doctrine_Connection_Sqlite extends Doctrine_Connection_Common
      * @param Doctrine_Manager $manager
      * @param PDO $pdo                          database handle
      */
-    public function __construct(Doctrine_Manager $manager, $adapter)
+    public function __construct($adapter, $user = null, $pass = null)
     {
         $this->supported = array('sequences'            => 'emulated',
                           'indexes'              => true,
@@ -67,7 +67,7 @@ class Doctrine_Connection_Sqlite extends Doctrine_Connection_Common
                           'identifier_quoting'   => true,
                           'pattern_escaping'     => false,
                           );
-         parent::__construct($manager, $adapter);
+        parent::__construct($adapter, $user, $pass);
 
         if ($this->isConnected) {
             $this->dbh->sqliteCreateFunction('mod',    array('Doctrine_Expression_Sqlite', 'modImpl'), 2);

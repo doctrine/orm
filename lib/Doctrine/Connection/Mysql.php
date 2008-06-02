@@ -44,7 +44,7 @@ class Doctrine_Connection_Mysql extends Doctrine_Connection_Common
      * @param Doctrine_Manager $manager
      * @param PDO|Doctrine_Adapter $adapter     database handler
      */
-    public function __construct(Doctrine_Manager $manager, $adapter)
+    public function __construct($adapter, $user = null, $pass = null)
     {
         $this->setAttribute(PDO::ATTR_EMULATE_PREPARES, true);
         $this->setAttribute(Doctrine::ATTR_DEFAULT_TABLE_TYPE, 'INNODB');
@@ -87,7 +87,7 @@ class Doctrine_Connection_Mysql extends Doctrine_Connection_Common
 
         $this->properties['varchar_max_length'] = 255;
 
-        parent::__construct($manager, $adapter);
+        parent::__construct($adapter, $user, $pass);
     }
 
     /**

@@ -325,7 +325,7 @@ class Doctrine_Manager implements Doctrine_Configurable, Countable, IteratorAggr
         }
 
         $className = $drivers[$driverName];
-        $conn = new $className($this, $adapter);
+        $conn = new $className($adapter);
         $conn->setName($name);
 
         $this->_connections[$name] = $conn;
