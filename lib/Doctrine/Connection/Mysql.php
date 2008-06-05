@@ -18,7 +18,9 @@
  * and is licensed under the LGPL. For more information, see
  * <http://www.phpdoctrine.org>.
  */
-Doctrine::autoload('Doctrine_Connection_Common');
+
+#namespace Doctrine::DBAL::Connections;
+
 /**
  * Doctrine_Connection_Mysql
  *
@@ -50,40 +52,42 @@ class Doctrine_Connection_Mysql extends Doctrine_Connection_Common
         $this->setAttribute(Doctrine::ATTR_DEFAULT_TABLE_TYPE, 'INNODB');
 
         $this->supported = array(
-                          'sequences'            => 'emulated',
-                          'indexes'              => true,
-                          'affected_rows'        => true,
-                          'transactions'         => true,
-                          'savepoints'           => false,
-                          'summary_functions'    => true,
-                          'order_by_text'        => true,
-                          'current_id'           => 'emulated',
-                          'limit_queries'        => true,
-                          'LOBs'                 => true,
-                          'replace'              => true,
-                          'sub_selects'          => true,
-                          'auto_increment'       => true,
-                          'primary_key'          => true,
-                          'result_introspection' => true,
-                          'prepared_statements'  => 'emulated',
-                          'identifier_quoting'   => true,
-                          'pattern_escaping'     => true
-                          );
+                'sequences'            => 'emulated',
+                'indexes'              => true,
+                'affected_rows'        => true,
+                'transactions'         => true,
+                'savepoints'           => false,
+                'summary_functions'    => true,
+                'order_by_text'        => true,
+                'current_id'           => 'emulated',
+                'limit_queries'        => true,
+                'LOBs'                 => true,
+                'replace'              => true,
+                'sub_selects'          => true,
+                'auto_increment'       => true,
+                'primary_key'          => true,
+                'result_introspection' => true,
+                'prepared_statements'  => 'emulated',
+                'identifier_quoting'   => true,
+                'pattern_escaping'     => true
+                );
 
-        $this->properties['string_quoting'] = array('start' => "'",
-                                                    'end' => "'",
-                                                    'escape' => '\\',
-                                                    'escape_pattern' => '\\');
+        $this->properties['string_quoting'] = array(
+                'start' => "'",
+                'end' => "'",
+                'escape' => '\\',
+                'escape_pattern' => '\\');
 
-        $this->properties['identifier_quoting'] = array('start' => '`',
-                                                        'end' => '`',
-                                                        'escape' => '`');
+        $this->properties['identifier_quoting'] = array(
+                'start' => '`',
+                'end' => '`',
+                'escape' => '`');
 
         $this->properties['sql_comments'] = array(
-                                            array('start' => '-- ', 'end' => "\n", 'escape' => false),
-                                            array('start' => '#', 'end' => "\n", 'escape' => false),
-                                            array('start' => '/*', 'end' => '*/', 'escape' => false),
-                                            );
+                array('start' => '-- ', 'end' => "\n", 'escape' => false),
+                array('start' => '#', 'end' => "\n", 'escape' => false),
+                array('start' => '/*', 'end' => '*/', 'escape' => false),
+                );
 
         $this->properties['varchar_max_length'] = 255;
 
@@ -97,9 +101,7 @@ class Doctrine_Connection_Mysql extends Doctrine_Connection_Common
      */
     public function setCharset($charset)
     {
-        $query = 'SET NAMES ' . $this->quote($charset);
-
-        $this->exec($query);
+        $this->exec('SET NAMES ' . $this->quote($charset));
     }
 
     /**

@@ -18,7 +18,9 @@
  * and is licensed under the LGPL. For more information, see
  * <http://www.phpdoctrine.org>.
  */
-Doctrine::autoload('Doctrine_Connection_Common');
+
+#namespace Doctrine::DBAL::Connections;
+
 /**
  * Doctrine_Connection_Mysql
  *

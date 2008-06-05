@@ -19,6 +19,8 @@
  * <http://www.phpdoctrine.org>.
  */
 
+#namespace Doctrine::ORM::Tools;
+
 /**
  * Doctrine_Compiler
  * This class can be used for compiling the entire Doctrine framework into a single file

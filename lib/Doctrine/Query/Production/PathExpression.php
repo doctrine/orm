@@ -130,7 +130,7 @@ class Doctrine_Query_Production_PathExpression extends Doctrine_Query_Production
         $parserResult = $this->_parser->getParserResult();
 
         // Retrieving connection
-        $manager = Doctrine_EntityManager::getManager(); 
+        $manager = Doctrine_EntityManagerFactory::getManager(); 
         $conn = $manager->getConnection();
 
         // Looking for queryComponent to fetch

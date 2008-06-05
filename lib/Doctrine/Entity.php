@@ -218,7 +218,7 @@ abstract class Doctrine_Entity extends Doctrine_Access implements Countable, Ite
     public function __construct($isNewEntry = true, array $data = array())
     {
         $this->_entityName = get_class($this);
-        $this->_em = Doctrine_EntityManager::getManager($this->_entityName);
+        $this->_em = Doctrine_EntityManagerFactory::getManager($this->_entityName);
         $this->_class = $this->_em->getClassMetadata($this->_entityName);
         $this->_oid = self::$_index++;
 
@@ -591,8 +591,8 @@ abstract class Doctrine_Entity extends Doctrine_Access implements Countable, Ite
      */
     public function serialize()
     {
-        $event = new Doctrine_Event($this, Doctrine_Event::RECORD_SERIALIZE);
-        $this->preSerialize($event);
+        //$event = new Doctrine_Event($this, Doctrine_Event::RECORD_SERIALIZE);
+        //$this->preSerialize($event);
 
         $vars = get_object_vars($this);
 
@@ -629,7 +629,7 @@ abstract class Doctrine_Entity extends Doctrine_Access implements Countable, Ite
         
         $str = serialize($vars);
 
-        $this->postSerialize($event);
+        //$this->postSerialize($event);
 
         return $str;
     }
@@ -644,12 +644,11 @@ abstract class Doctrine_Entity extends Doctrine_Access implements Countable, Ite
      */
     public function unserialize($serialized)
     {
-        $event = new Doctrine_Event($this, Doctrine_Event::RECORD_UNSERIALIZE);
-
-        $this->preUnserialize($event);
+        //$event = new Doctrine_Event($this, Doctrine_Event::RECORD_UNSERIALIZE);
+        //$this->preUnserialize($event);
 
         $this->_entityName = get_class($this);
-        $manager = Doctrine_EntityManager::getManager($this->_entityName);
+        $manager = Doctrine_EntityManagerFactory::getManager($this->_entityName);
         $connection = $manager->getConnection();
 
         $this->_oid = self::$_index;
@@ -684,7 +683,7 @@ abstract class Doctrine_Entity extends Doctrine_Access implements Countable, Ite
         $this->cleanData($this->_data);
         $this->_extractIdentifier($this->exists());
         
-        $this->postUnserialize($event);
+        //$this->postUnserialize($event);
     }
 
     /**

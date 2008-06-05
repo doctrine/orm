@@ -19,42 +19,21 @@
  * <http://www.phpdoctrine.org>.
  */
 
-#namespace Doctrine::ORM::Exceptions;
-
 /**
- * Doctrine_EntityManager_Exception
+ * Doctrine_ConnectionFactory_Exception
  *
- * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
+ * @package     Doctrine
+ * @subpackage  Compiler
  * @author      Roman Borschel <roman@code-factory.org>
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @link        www.phpdoctrine.org
  * @since       2.0
  * @version     $Revision$
  */
-class Doctrine_EntityManager_Exception extends Doctrine_Exception
+class Doctrine_ConnectionFactory_Exception extends Doctrine_Exception
 {
-    public static function invalidFlushMode()
+    public static function userRequired()
     {
-        return new self("Invalid flush mode.");
-    }
-    
-    public static function noEntityManagerAvailable()
-    {
-        return new self("No EntityManager available.");
-    }
-    
-    public static function entityAlreadyBound($entityName)
-    {
-        return new self("The entity '$entityName' is already bound.");
-    }
-    
-    public static function noManagerWithName($emName)
-    {
-        return new self("EntityManager named '$emName' not found.");
-    }
-    
-    public static function unknownAttribute($name)
-    {
-        return new self("Unknown EntityManager attribute '$name'.");
+        return new self("The 'user' option is mandatory.");   
     }
 }

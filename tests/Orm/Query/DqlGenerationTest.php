@@ -36,7 +36,7 @@ class Orm_Query_DqlGenerationTest extends Doctrine_OrmTestCase
 {
     protected function createQuery()
     {
-        $entityManager = Doctrine_EntityManager::getManager();
+        $entityManager = $this->sharedFixture['em'];
         return $entityManager->createQuery();
     }
 

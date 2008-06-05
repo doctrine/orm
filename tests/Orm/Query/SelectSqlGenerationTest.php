@@ -40,7 +40,7 @@ class Orm_Query_SelectSqlGenerationTest extends Doctrine_OrmTestCase
     public function assertSqlGeneration($dqlToBeTested, $sqlToBeConfirmed)
     {
         try {
-            $entityManager = Doctrine_EntityManager::getManager();
+            $entityManager = $this->sharedFixture['em'];
             $query = $entityManager->createQuery($dqlToBeTested);
             //echo print_r($query->parse()->getQueryFields(), true) . "\n";
 

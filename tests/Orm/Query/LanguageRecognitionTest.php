@@ -41,7 +41,7 @@ class Orm_Query_LanguageRecognitionTest extends Doctrine_OrmTestCase
     public function assertValidDql($dql)
     {
         try {
-            $entityManager = Doctrine_EntityManager::getManager();
+            $entityManager = $this->sharedFixture['em'];
             $query = $entityManager->createQuery($dql);
             $parserResult = $query->parse();
         } catch (Doctrine_Exception $e) {
@@ -52,7 +52,7 @@ class Orm_Query_LanguageRecognitionTest extends Doctrine_OrmTestCase
     public function assertInvalidDql($dql)
     {
         try {
-            $entityManager = Doctrine_EntityManager::getManager();
+            $entityManager = $this->sharedFixture['em'];
             $query = $entityManager->createQuery($dql);
             $query->setDql($dql);
             $parserResult = $query->parse();

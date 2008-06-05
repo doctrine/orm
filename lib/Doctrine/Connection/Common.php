@@ -29,6 +29,7 @@
  * @since       1.0
  * @version     $Revision$
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
+ * @TODO Remove this class and move the modifyLimitQuery implementation to Connection.
  */
 class Doctrine_Connection_Common extends Doctrine_Connection
 {

@@ -18,7 +18,7 @@
  * and is licensed under the LGPL. For more information, see
  * <http://www.phpdoctrine.org>.
  */
-Doctrine::autoload('Doctrine_EventListener_Interface');
+
 /**
  * Doctrine_EventListener     all event listeners extend this base class
  *                            the empty methods allow child classes to only implement the methods they need to implement

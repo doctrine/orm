@@ -30,6 +30,8 @@
  * @link        www.phpdoctrine.org
  * @since       1.0
  * @version     $Revision$
+ * @todo Remove all the constants, attributes to the new attribute system,
+ *       All methods to separate classes.
  */
 final class Doctrine
 {
@@ -183,7 +185,6 @@ final class Doctrine
     const ATTR_EXPORT                   = 140; // manager/session attribute
     const ATTR_DECIMAL_PLACES           = 141; // manager/session attribute
     const ATTR_PORTABILITY              = 106; // manager/session attribute
-    const ATTR_VALIDATE                 = 107; // manager/session attribute
     const ATTR_COLL_KEY                 = 108; // class attribute
     const ATTR_QUERY_LIMIT              = 109; // manager/session attribute
     const ATTR_DEFAULT_TABLE_TYPE       = 112; // manager/session attribute
@@ -197,9 +198,7 @@ final class Doctrine
     const ATTR_NAME_PREFIX              = 121; // ??
     const ATTR_CREATE_TABLES            = 122; // manager/session attribute
     const ATTR_COLL_LIMIT               = 123; // manager/session attribute
-    const ATTR_CACHE                    = 150; // deprecated
     const ATTR_RESULT_CACHE             = 150; // manager/session attribute
-    const ATTR_CACHE_LIFESPAN           = 151; // deprecated
     const ATTR_RESULT_CACHE_LIFESPAN    = 151; // manager/session attribute
     const ATTR_LOAD_REFERENCES          = 153; // class attribute
     const ATTR_RECORD_LISTENER          = 154;

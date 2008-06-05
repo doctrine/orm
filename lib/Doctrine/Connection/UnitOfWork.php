@@ -95,12 +95,13 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
     protected $_em;
     
     /**
-     * The dbal connection used by the unit of work.
+     * The calculator used to calculate the order in which changes to
+     * entities need to be written to the database.
      *
-     * @var Doctrine_Connection
-     * @todo Not needed in the future. Remove.
+     * @var unknown_type
+     * @todo Implementation. Replace buildFlushTree().
      */
-    protected $_conn;
+    protected $_commitOrderCalculator;
     
     /**
      * Commits the unit of work, executing all operations that have been postponed

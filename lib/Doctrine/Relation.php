@@ -245,7 +245,7 @@ abstract class Doctrine_Relation implements ArrayAccess
      */
     final public function getTable()
     {
-        return Doctrine_EntityManager::getManager($this->definition['class'])
+        return Doctrine_EntityManagerFactory::getManager($this->definition['class'])
                ->getClassMetadata($this->definition['class']);
     }
 
@@ -269,7 +269,7 @@ abstract class Doctrine_Relation implements ArrayAccess
      */
     final public function getClassMetadata()
     {
-        return Doctrine_EntityManager::getManager($this->definition['class'])
+        return Doctrine_EntityManagerFactory::getManager($this->definition['class'])
                ->getClassMetadata($this->definition['class']);
     }
 

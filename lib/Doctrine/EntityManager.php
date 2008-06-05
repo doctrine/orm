@@ -19,7 +19,16 @@
  * <http://www.phpdoctrine.org>.
  */
 
-#namespace org::phpdoctrine::orm;
+#namespace Doctrine::ORM;
+
+#use Doctrine::Common::Configuration;
+#use Doctrine::Common::EventManager;
+#use Doctrine::Common::NullObject;
+#use Doctrine::DBAL::Connections::Connection;
+#use Doctrine::ORM::Exceptions::EntityManagerException;
+#use Doctrine::ORM::Internal::UnitOfWork;
+#use Doctrine::ORM::Mapping::ClassMetadata;
+
 
 /**
  * The EntityManager is a central access point to ORM functionality.
@@ -33,7 +42,7 @@
  * @author      Roman Borschel <roman@code-factory.org>
  * @todo package:orm
  */
-class Doctrine_EntityManager
+class Doctrine_EntityManager implements Doctrine_Configurable
 {
     /**
      * The unique name of the EntityManager. The name is used to bind entity classes
@@ -42,6 +51,34 @@ class Doctrine_EntityManager
      * @var string
      */
     private $_name;
+    
+    /**
+     * The used Configuration.
+     *
+     * @var Configuration
+     */
+    private $_configuration;
+    
+    
+    // -- configuration stuff to be removed. replaced by Configuration.
+    private $_nullObject;
+    /**
+     * The attributes.
+     *
+     * @var array
+     */
+    private $_attributes = array(
+            'quoteIdentifier' => false,
+            'indexNameFormat' => '%s_idx',
+            'sequenceNameFormat' => '%s_seq',
+            'tableNameFormat' => '%s',
+            'resultCache' => null,
+            'resultCacheLifeSpan' => null,
+            'queryCache' => null,
+            'queryCacheLifeSpan' => null,
+            'metadataCache' => null,
+            'metadataCacheLifeSpan' => null
+    );
     
     /**
      * The database connection used by the EntityManager.
@@ -93,20 +130,6 @@ class Doctrine_EntityManager
     private $_flushMode = 'commit';
     
     /**
-     * Map of all EntityManagers, keys are the names.
-     *
-     * @var array
-     */
-    private static $_ems = array();
-    
-    /**
-     * EntityManager to Entity bindings.
-     *
-     * @var array
-     */
-    private static $_emBindings = array();
-    
-    /**
      * The unit of work.
      *
      * @var UnitOfWork
@@ -140,67 +163,19 @@ class Doctrine_EntityManager
         $this->_metadataFactory = new Doctrine_ClassMetadata_Factory(
                 $this, new Doctrine_ClassMetadata_CodeDriver());
         $this->_unitOfWork = new Doctrine_Connection_UnitOfWork($conn);
-        //$this->_eventManager = new Doctrine_EventManager();
-        
-        if ($name !== null) {
-            self::$_ems[$name] = $this;
-        } else {
-            self::$_ems[] = $this;
-        }
+        $this->_nullObject = Doctrine_Null::$INSTANCE;
+        $this->_initAttributes();
     }
     
-    /**
-     * Gets the EntityManager that is responsible for the Entity.
-     *
-     * @param string $entityName
-     * @return EntityManager
-     * @throws Doctrine_EntityManager_Exception  If a suitable manager can not be found.
-     */
-    public static function getManager($entityName = null)
+    private function _initAttributes()
     {
-        if ( ! is_null($entityName) && isset(self::$_emBindings[$entityName])) {
-            $emName = self::$_emBindings[$entityName];
-            if (isset(self::$_ems[$emName])) {
-                return self::$_ems[$emName];
-            } else {
-                throw Doctrine_EntityManager_Exception::noManagerWithName($emName);   
+        // Change null default values to references to the Null object to allow
+        // fast isset() checks instead of array_key_exists().
+        foreach ($this->_attributes as $key => $value) {
+            if ($value === null) {
+                $this->_attributes[$key] = $this->_nullObject;
             }
-        } else if (self::$_ems) {
-            return current(self::$_ems);
-        } else {
-            throw Doctrine_EntityManager_Exception::noEntityManagerAvailable();   
         }
-    }
-    
-    /**
-     * Binds an Entity to a specific EntityManager.
-     *
-     * @param string $entityName
-     * @param string $emName
-     */
-    public static function bindEntityToManager($entityName, $emName)
-    {
-        if (isset(self::$_emBindings[$entityName])) {
-            throw Doctrine_EntityManager_Exception::entityAlreadyBound($entityName);
-        }
-        self::$_emBindings[$entityName] = $emName;
-    }
-    
-    /**
-     * Clears all bindings between Entities and EntityManagers.
-     */
-    public static function unbindAllManagers()
-    {
-        self::$_emBindings = array();
-    }
-    
-    /**
-     * Releases all EntityManagers.
-     *
-     */
-    public static function releaseAllManagers()
-    {
-        self::$_ems = array();
     }
     
     /**
@@ -571,6 +546,53 @@ class Doctrine_EntityManager
     public function getEventManager()
     {
         return $this->_eventManager;
+    }
+    
+    /**
+     * Sets the EventManager used by the EntityManager.
+     *
+     * @param Doctrine_EventManager $eventManager
+     */
+    public function setEventManager(Doctrine_EventManager $eventManager)
+    {
+        $this->_eventManager = $eventManager;
+    }
+    
+    /**
+     * Sets the Configuration used by the EntityManager.
+     *
+     * @param Doctrine_Configuration $config
+     */
+    public function setConfiguration(Doctrine_Configuration $config)
+    {
+        $this->_configuration = $config;
+    }
+    
+    /* Configurable implementation */
+    
+    public function hasAttribute($name)
+    {
+        return isset($this->_attributes[$name]);
+    }
+    
+    public function getAttribute($name)
+    {
+        if ( ! $this->hasAttribute($name)) {
+            throw Doctrine_EntityManager_Exception::unknownAttribute($name);
+        }
+        if ($this->_attributes[$name] === $this->_nullObject) {
+            return null;
+        }
+        return $this->_attributes[$name];
+    }
+    
+    public function setAttribute($name, $value)
+    {
+        if ( ! $this->hasAttribute($name)) {
+            throw Doctrine_EntityManager_Exception::unknownAttribute($name);
+        }
+        // TODO: do some value checking depending on the attribute
+        $this->_attributes[$name] = $value;
     }
 }
 

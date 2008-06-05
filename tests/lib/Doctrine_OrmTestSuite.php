@@ -8,5 +8,21 @@
  */
 class Doctrine_OrmTestSuite extends Doctrine_TestSuite
 {
-
+    protected function setUp()
+    {
+        $emf = new Doctrine_EntityManagerFactory();
+        $emf->setConfiguration(new Doctrine_Configuration());
+        $emf->setEventManager(new Doctrine_EventManager());
+        $connectionOptions = array(
+            'driver' => 'mock',
+            'user' => 'john',
+            'password' => 'wayne'      
+        );      
+        $em = $emf->createEntityManager($connectionOptions, 'mockEM');
+        $this->sharedFixture['emf'] = $emf;
+        $this->sharedFixture['em'] = $em;
+    }
+    
+    protected function tearDown()
+    {} 
 }

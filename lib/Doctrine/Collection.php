@@ -110,7 +110,8 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
     {
         if (is_string($entityBaseType)) {
             $this->_entityBaseType = $entityBaseType;
-            $mapper = Doctrine_EntityManager::getManager($entityBaseType)->getEntityPersister($entityBaseType);
+            $mapper = Doctrine_EntityManagerFactory::getManager($entityBaseType)
+                    ->getEntityPersister($entityBaseType);
         }
         $this->_mapper = $mapper;
 
@@ -210,7 +211,7 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
      */
     public function unserialize($serialized)
     {
-        $manager = Doctrine_EntityManager::getManager();
+        $manager = Doctrine_EntityManagerFactory::getManager();
         $connection = $manager->getConnection();
         
         $array = unserialize($serialized);

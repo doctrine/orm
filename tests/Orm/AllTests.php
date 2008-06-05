@@ -13,6 +13,7 @@ require_once 'Orm/Ticket/AllTests.php';
 
 // Tests
 require_once 'Orm/UnitOfWorkTestCase.php';
+require_once 'Orm/EntityManagerFactoryTest.php';
 
 class Orm_AllTests
 {
@@ -26,6 +27,7 @@ class Orm_AllTests
         $suite = new Doctrine_OrmTestSuite('Doctrine Orm');
 
         $suite->addTestSuite('Orm_UnitOfWorkTestCase');
+        $suite->addTestSuite('Orm_EntityManagerFactoryTest');
         //$suite->addTestSuite('Orm_ConfigurableTestCase');
         
         $suite->addTest(Orm_Component_AllTests::suite());

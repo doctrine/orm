@@ -84,7 +84,7 @@ class Doctrine_Query_Production_VariableDeclaration extends Doctrine_Query_Produ
 
             // Get the connection for the component
             $conn = $this->_parser->getSqlBuilder()->getConnection();
-            $manager = Doctrine_EntityManager::getManager();
+            $manager = Doctrine_EntityManagerFactory::getManager();
 
             // Retrieving ClassMetadata and Mapper
             try {
@@ -124,7 +124,7 @@ class Doctrine_Query_Production_VariableDeclaration extends Doctrine_Query_Produ
         $queryComponent = $parserResult->getQueryComponent($this->_componentAlias);
 
         // Retrieving connection
-        $manager = Doctrine_EntityManager::getManager();
+        $manager = Doctrine_EntityManagerFactory::getManager();
         $conn = $manager->getConnection();
 
         return $conn->quoteIdentifier($queryComponent['metadata']->getTableName()) . ' '

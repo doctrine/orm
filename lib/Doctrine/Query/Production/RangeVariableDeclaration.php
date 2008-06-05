@@ -116,7 +116,7 @@ class Doctrine_Query_Production_RangeVariableDeclaration extends Doctrine_Query_
 
         // Get the connection for the component
         $conn = $this->_parser->getSqlBuilder()->getConnection();
-        $manager = Doctrine_EntityManager::getManager();
+        $manager = Doctrine_EntityManagerFactory::getManager();
         $componentName = $this->_identifiers[0];
 
         // Retrieving ClassMetadata and Mapper
@@ -156,7 +156,7 @@ class Doctrine_Query_Production_RangeVariableDeclaration extends Doctrine_Query_
 
         // Get the connection for the component
         $conn = $this->_parser->getSqlBuilder()->getConnection();
-        $manager = Doctrine_EntityManager::getManager();
+        $manager = Doctrine_EntityManagerFactory::getManager();
 
         // Retrieve the base component
         try {

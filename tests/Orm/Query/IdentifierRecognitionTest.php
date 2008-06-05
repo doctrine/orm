@@ -39,7 +39,7 @@ class Orm_Query_IdentifierRecognitionTest extends Doctrine_OrmTestCase
 
     public function testSingleAliasDeclarationIsSupported()
     {
-        $entityManager = Doctrine_EntityManager::getManager();
+        $entityManager = $this->sharedFixture['em'];
         $query = $entityManager->createQuery('SELECT u.* FROM CmsUser u');
         $parserResult = $query->parse();
 
@@ -54,7 +54,7 @@ class Orm_Query_IdentifierRecognitionTest extends Doctrine_OrmTestCase
 
     public function testSingleAliasDeclarationWithIndexByIsSupported()
     {
-        $entityManager = Doctrine_EntityManager::getManager();
+        $entityManager = $this->sharedFixture['em'];
         $query = $entityManager->createQuery('SELECT u.* FROM CmsUser u INDEX BY id');
         $parserResult = $query->parse();
 
@@ -69,7 +69,7 @@ class Orm_Query_IdentifierRecognitionTest extends Doctrine_OrmTestCase
 
     public function testQueryParserSupportsMultipleAliasDeclarations()
     {
-        $entityManager = Doctrine_EntityManager::getManager();
+        $entityManager = $this->sharedFixture['em'];
         $query = $entityManager->createQuery('SELECT u.* FROM CmsUser u INDEX BY id LEFT JOIN u.phonenumbers p');
         $parserResult = $query->parse();
 
@@ -93,7 +93,7 @@ class Orm_Query_IdentifierRecognitionTest extends Doctrine_OrmTestCase
 
     public function testQueryParserSupportsMultipleAliasDeclarationsWithIndexBy()
     {
-        $entityManager = Doctrine_EntityManager::getManager();
+        $entityManager = $this->sharedFixture['em'];
         $query = $entityManager->createQuery('SELECT u.* FROM CmsUser u INDEX BY id LEFT JOIN u.articles a INNER JOIN u.phonenumbers pn INDEX BY phonenumber');
         $parserResult = $query->parse();
 

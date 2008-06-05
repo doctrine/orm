@@ -19,6 +19,8 @@
  * <http://www.phpdoctrine.org>.
  */
 
+#namespace Doctrine::Behaviors::AuditLog;
+
 /**
  * Doctrine_AuditLog
  *
@@ -29,6 +31,7 @@
  * @since       1.0
  * @version     $Revision$
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
+ * @todo Move to "Doctrine Behaviors" package. Separate download.
  */
 class Doctrine_AuditLog extends Doctrine_Record_Generator
 {

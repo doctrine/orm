@@ -55,19 +55,47 @@
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  * @author      Lukas Smith <smith@pooteeweet.org> (MDB2 library)
  * @author      Roman Borschel <roman@code-factory.org>
- * @todo Split up into Doctrine::DBAL::Connection & Doctrine::ORM::EntityManager.
- *       Doctrine::DBAL::Connection must have no dependencies on ORM components since
- *       it sits one layer below.
- *       Right now, this is the unification of these two classes.
+ * @todo
+ * 1) REPLICATION SUPPORT
+ * Replication support should be tackled at this layer (DBAL).
+ * There can be options that look like:
+ *       'slaves' => array(
+ *           'slave1' => array(
+ *                user, pass etc.
+ *           ),
+ *           'slave2' => array(
+ *                user, pass etc.
+ *           )),
+ *       'slaveConnectionResolver' => new MySlaveConnectionResolver(),
+ *       'masters' => array(...),
+ *       'masterConnectionResolver' => new MyMasterConnectionResolver()
+ * 
+ * Doctrine::DBAL could ship with a simple standard resolver that uses a primitive
+ * round-robin approach to distribution. User can provide its own resolvers.
  */
 abstract class Doctrine_Connection implements Doctrine_Configurable, Countable
 {
     /**
      * The PDO database handle. 
      *
-     * @var PDO                 
+     * @var PDO
+     * @todo Rename to $pdo.              
      */
     protected $dbh;
+    
+    /**
+     * The Configuration.
+     *
+     * @var Configuration
+     */
+    protected $_config;
+    
+    /**
+     * The EventManager.
+     *
+     * @var EventManager
+     */
+    protected $_eventManager;
     
     /**
      * The attributes.
@@ -77,8 +105,6 @@ abstract class Doctrine_Connection implements Doctrine_Configurable, Countable
     protected $_attributes = array();
     
     /**
-     * $_name
-     *
      * Name of the connection
      *
      * @var string $_name
@@ -128,9 +154,9 @@ abstract class Doctrine_Connection implements Doctrine_Configurable, Countable
     protected $serverInfo = array();
     
     /**
-     *
+     * The parameters used during creation of the Connection.
      */
-    protected $options = array();
+    protected $_params = array();
     
     /**
      * List of all available drivers.
@@ -196,29 +222,60 @@ abstract class Doctrine_Connection implements Doctrine_Configurable, Countable
      *
      * @param Doctrine_Manager $manager                 the manager object
      * @param PDO|Doctrine_Adapter_Interface $adapter   database driver
-     * @todo Remove the dependency on the Manager for DBAL/ORM separation.
      */
-    public function __construct($adapter, $user = null, $pass = null)
+    public function __construct(array $params)
     {
-        if (is_object($adapter)) {
-            if ( ! $adapter instanceof PDO) {
-                throw new Doctrine_Connection_Exception(
-                        'First argument should be an instance of PDO or implement Doctrine_Adapter_Interface');
-            }
-            $this->dbh = $adapter;
+        if (isset($params['pdo'])) {
+            $this->dbh = $pdo;
             $this->isConnected = true;
-        } else if (is_array($adapter)) {
-            $this->pendingAttributes[Doctrine::ATTR_DRIVER_NAME] = $adapter['scheme'];
-
-            $this->options['dsn']      = $adapter['dsn'];
-            $this->options['username'] = $adapter['user'];
-            $this->options['password'] = $adapter['pass'];
-
-            $this->options['other'] = array();
-            if (isset($adapter['other'])) {
-                $this->options['other'] = array(Doctrine::ATTR_PERSISTENT => $adapter['persistent']);
-            }
         }
+        $this->_params = $params;
+    }
+    
+    /**
+     * Sets the Configuration used by the Connection.
+     *
+     * @param Doctrine_Configuration $config
+     */
+    public function setConfiguration(Doctrine_Configuration $config)
+    {
+        $this->_config = $config;
+    }
+    
+    /**
+     * Gets the Configuration used by the Connection.
+     *
+     * @return Configuration
+     */
+    public function getConfiguration()
+    {
+        if ( ! $this->_config) {
+            $this->_config = new Doctrine_Configuration();
+        }
+        return $this->_config;
+    }
+    
+    /**
+     * Sets the EventManager used by the Connection.
+     *
+     * @param Doctrine_EventManager $eventManager
+     */
+    public function setEventManager(Doctrine_EventManager $eventManager)
+    {
+        $this->_eventManager = $eventManager;
+    }
+    
+    /**
+     * Gets the EventManager used by the Connection.
+     *
+     * @return EventManager
+     */
+    public function getEventManager()
+    {
+        if ( ! $this->_eventManager) {
+            $this->_eventManager = new Doctrine_EventManager();
+        }
+        return $this->_eventManager;
     }
     
     /**
@@ -317,6 +374,19 @@ abstract class Doctrine_Connection implements Doctrine_Configurable, Countable
 
         //$this->getListener()->postConnect($event);
         return true;
+    }
+    
+    /**
+     * Constructs the PDO DSN for use in the PDO constructor.
+     * Concrete connection implementations override this implementation to
+     * create the proper DSN.
+     * 
+     * @return string
+     * @todo make abstract, implement in subclasses.
+     */
+    protected function _constructPdoDsn()
+    {
+        
     }
     
     /**
@@ -1073,12 +1143,6 @@ abstract class Doctrine_Connection implements Doctrine_Configurable, Countable
     {
         return Doctrine_Lib::getConnectionAsString($this);
     }
-    
-    
-    
-    /*
-     * -----------   EntityManager methods    ---------------
-     */
     
     /*
      * -----------   Mixed methods (need to figure out where they go)   ---------------

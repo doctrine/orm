@@ -92,14 +92,12 @@ class Doctrine_Manager implements Doctrine_Configurable, Countable, IteratorAggr
         if ( ! $init) {
             $init = true;
             $attributes = array(
-                        Doctrine::ATTR_CACHE                    => null,
                         Doctrine::ATTR_RESULT_CACHE             => null,
                         Doctrine::ATTR_QUERY_CACHE              => null,
                         Doctrine::ATTR_LOAD_REFERENCES          => true,
                         Doctrine::ATTR_LISTENER                 => new Doctrine_EventListener(),
                         Doctrine::ATTR_RECORD_LISTENER          => null,
                         Doctrine::ATTR_THROW_EXCEPTIONS         => true,
-                        Doctrine::ATTR_VALIDATE                 => Doctrine::VALIDATE_NONE,
                         Doctrine::ATTR_QUERY_LIMIT              => Doctrine::LIMIT_RECORDS,
                         Doctrine::ATTR_IDXNAME_FORMAT           => "%s_idx",
                         Doctrine::ATTR_SEQNAME_FORMAT           => "%s_seq",
