@@ -216,7 +216,7 @@ class Doctrine_Query_Production_RangeVariableDeclaration extends Doctrine_Query_
 
                     $parent = $path;
                 } catch (Doctrine_Exception $e) {
-                    echo "Tried to load class metadata from '".$relationName."'\n";
+                    //echo "Tried to load class metadata from '".$relationName."'\n";
                     $this->_parser->semanticalError($e->getMessage());
 
                    return;
