@@ -29,6 +29,12 @@ class MyCustomOptionRecord extends Doctrine_Record
 }
 </code>
 
+It is worth noting that for certain databases (Firebird, MySql and PostgreSQL) setting the charset option might not be enough for Doctrine to return data properly. For those databases, users are advised to also use the setCharset function of the database connection:
+
+<code type="php">
+Doctrine_Manager::connection($name)->setCharset("utf8");
+</code>
+
 Doctrine offers the ability to turn off foreign key constraints for specific Models.
 
 <code type="php">
