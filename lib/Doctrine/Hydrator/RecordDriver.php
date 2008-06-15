@@ -76,7 +76,7 @@ class Doctrine_Hydrator_RecordDriver
             $relatedClass = $relation->getTable();
             $coll = $this->getElementCollection($relatedClass->getClassName());
             $coll->setReference($entity, $relation);
-            $entity->rawSetReference($name, $coll);
+            $entity->_rawSetReference($name, $coll);
             $this->_initializedRelations[$entity->getOid()][$name] = true;
         }
     }
@@ -99,23 +99,23 @@ class Doctrine_Hydrator_RecordDriver
     public function addRelatedIndexedElement(Doctrine_Entity $entity1, $property,
             Doctrine_Entity $entity2, $indexField)
     {
-        $entity1->rawGetReference($property)->add($entity2, $entity2->rawGetField($indexField));
+        $entity1->_rawGetReference($property)->add($entity2, $entity2->_rawGetField($indexField));
     }
     
     public function addRelatedElement(Doctrine_Entity $entity1, $property,
             Doctrine_Entity $entity2)
     {
-        $entity1->rawGetReference($property)->add($entity2);       
+        $entity1->_rawGetReference($property)->add($entity2);       
     }
     
     public function setRelatedElement(Doctrine_Entity $entity1, $property, $entity2)
     {
-        $entity1->rawSetReference($property, $entity2);
+        $entity1->_rawSetReference($property, $entity2);
     }
     
     public function isIndexKeyInUse(Doctrine_Entity $entity, $assocField, $indexField)
     {
-        return $entity->rawGetReference($assocField)->contains($indexField);
+        return $entity->_rawGetReference($assocField)->contains($indexField);
     }
     
     public function isFieldSet(Doctrine_Entity $entity, $field)
@@ -125,17 +125,17 @@ class Doctrine_Hydrator_RecordDriver
     
     public function getFieldValue(Doctrine_Entity $entity, $field)
     {
-        return $entity->rawGetField($field);
+        return $entity->_rawGetField($field);
     }
     
     public function getReferenceValue(Doctrine_Entity $entity, $field)
     {
-        return $entity->rawGetReference($field);
+        return $entity->_rawGetReference($field);
     }
     
     public function addElementToIndexedCollection($coll, $entity, $keyField)
     {
-        $coll->add($entity, $entity->rawGetField($keyField));
+        $coll->add($entity, $entity->_rawGetField($keyField));
     }
     
     public function addElementToCollection($coll, $entity)

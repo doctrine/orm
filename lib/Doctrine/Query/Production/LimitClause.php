@@ -28,7 +28,7 @@
  * @author      Janne Vanhala <jpvanhal@cc.hut.fi>
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @link        http://www.phpdoctrine.org
- * @since       1.0
+ * @since       2.0
  * @version     $Revision$
  */
 class Doctrine_Query_Production_LimitClause extends Doctrine_Query_Production
@@ -44,5 +44,22 @@ class Doctrine_Query_Production_LimitClause extends Doctrine_Query_Production
         $this->_limit = $this->_parser->token['value'];
 
         return $this;
+    }
+    
+    /**
+     * Visitor support
+     *
+     * @param object $visitor
+     */
+    public function accept($visitor)
+    {
+        $visitor->visitLimitClause($this);
+    }
+    
+    /* Getters */
+    
+    public function getLimit()
+    {
+        return $this->_limit;
     }
 }

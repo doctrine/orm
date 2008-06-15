@@ -36,6 +36,13 @@ class Doctrine_Query_SqlExecutor_SingleTableDeleteUpdate extends Doctrine_Query_
     public function __construct(Doctrine_Query_Production $AST)
     {
         parent::__construct($AST);
+        
+        /*if ($AST instanceof Doctrine_Query_Production_DeleteStatement) {
+            $builder = new Doctrine_Query_SqlBuilder_MySql(Doctrine_EntityManagerFactory::getManager());
+            $AST->accept($builder);
+            echo PHP_EOL . "SQL:" . $builder->getSql() . PHP_EOL . PHP_EOL;
+        }*/
+        
         $this->_sqlStatements = $AST->buildSql();
     }
     

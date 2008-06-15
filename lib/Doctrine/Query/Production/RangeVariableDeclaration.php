@@ -28,7 +28,7 @@
  * @author      Janne Vanhala <jpvanhal@cc.hut.fi>
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @link        http://www.phpdoctrine.org
- * @since       1.0
+ * @since       2.0
  * @version     $Revision$
  */
 class Doctrine_Query_Production_RangeVariableDeclaration extends Doctrine_Query_Production
@@ -234,5 +234,27 @@ class Doctrine_Query_Production_RangeVariableDeclaration extends Doctrine_Query_
 
         $parserResult->setQueryComponent($this->_identificationVariable, $queryComponent);
         $parserResult->setTableAlias($tableAlias, $this->_identificationVariable);
+    }
+    
+    /**
+     * Visitor support
+     *
+     * @param object $visitor
+     */
+    public function accept($visitor)
+    {
+        $visitor->visitRangeVariableDeclaration($this);
+    }
+    
+    /* Getters */
+    
+    public function getIdentifiers()
+    {
+        return $this->_identifiers;
+    }
+    
+    public function getIdentificationVariable()
+    {
+        return $this->_identificationVariable;
     }
 }

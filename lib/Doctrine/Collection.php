@@ -97,10 +97,6 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
 
     /**
      * Constructor.
-     * Creates a new collection that will hold instances of the type that is
-     * specified through the mapper. That means if the mapper is a mapper for
-     * the entity "User", then the resulting collection will be a collection of
-     * user objects.
      *
      * @param Doctrine_Mapper|string $mapper   The mapper used by the collection.
      * @param string $keyColumn                The field name that will be used as the key
@@ -120,7 +116,7 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
         }
 
         if ($keyField === null) {
-        	$keyField = $mapper->getClassMetadata()->getAttribute(Doctrine::ATTR_COLL_KEY);
+        	//$keyField = $mapper->getClassMetadata()->getAttribute(Doctrine::ATTR_COLL_KEY);
         }
 
         if ($keyField !== null) {
@@ -366,6 +362,7 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
      *
      * @param mixed $key                    the key of the element
      * @return boolean
+     * @todo Rename to containsKey().
      */
     public function contains($key)
     {
@@ -432,6 +429,7 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
      * Returns the primary keys of all records in the collection.
      *
      * @return array   An array containing all primary keys.
+     * @todo Rename.
      */
     public function getPrimaryKeys()
     {
@@ -626,7 +624,7 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
             foreach ($this->data as $key => $record) {
                 foreach ($coll as $k => $related) {
                     if ($related[$foreign] == $record[$local]) {
-                        $this->data[$key]->setRelated($name, $related);
+                        $this->data[$key]->_setRelated($name, $related);
                     }
                 }
             }
@@ -644,7 +642,7 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
                     }
                 }
 
-                $this->data[$key]->setRelated($name, $sub);
+                $this->data[$key]->_setRelated($name, $sub);
             }
         } else if ($rel instanceof Doctrine_Relation_Association) {
             // @TODO composite key support
@@ -663,7 +661,7 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
                         $sub->add($related->get($name));
                     }
                 }
-                $this->data[$key]->setRelated($name, $sub);
+                $this->data[$key]->_setRelated($name, $sub);
 
             }
         }
@@ -799,6 +797,7 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
      * @param string $type 
      * @param string $deep 
      * @return void
+     * @todo Move elsewhere.
      */
     public function exportTo($type, $deep = false)
     {
@@ -817,6 +816,7 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
      * @param string $type 
      * @param string $data 
      * @return void
+     * @todo Move elsewhere.
      */
     public function importFrom($type, $data)
     {
@@ -868,11 +868,9 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
      * @param Doctrine_Connection $conn     optional connection parameter
      * @return Doctrine_Collection
      */
-    public function save(Doctrine_Connection $conn = null)
+    public function save()
     {
-        if ($conn == null) {
-            $conn = $this->_mapper->getConnection();
-        }
+        $conn = $this->_mapper->getConnection();
         
         try {
             $conn->beginInternalTransaction();
@@ -893,18 +891,13 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
     }
 
     /**
-     * delete
-     * single shot delete
-     * deletes all records from this collection
-     * and uses only one database query to perform this operation
+     * Deletes all records from the collection.
      *
-     * @return Doctrine_Collection
+     * @return void
      */
-    public function delete(Doctrine_Connection $conn = null)
-    {
-        if ($conn == null) {
-            $conn = $this->_mapper->getConnection();
-        }
+    public function delete($clearColl = false)
+    {  
+        $conn = $this->_mapper->getConnection();
 
         try {
             $conn->beginInternalTransaction();
@@ -919,9 +912,10 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
             $conn->rollback();
             throw $e;
         }
-
-        $this->data = array();
-        return $this;
+        
+        if ($clearColl) {
+            $this->clear();            
+        }
     }
 
 
@@ -967,5 +961,10 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
     public function getRelation()
     {
         return $this->relation;
+    }
+    
+    public function clear()
+    {
+        $this->data = array();
     }
 }

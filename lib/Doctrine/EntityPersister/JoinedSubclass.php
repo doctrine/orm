@@ -138,7 +138,7 @@ class Doctrine_EntityPersister_JoinedSubclass extends Doctrine_EntityPersister_A
             $conn->beginInternalTransaction();
             $this->_deleteComposites($record);
 
-            $record->state(Doctrine_Entity::STATE_TDIRTY);
+            $record->_state(Doctrine_Entity::STATE_TDIRTY);
 
             $identifier = $this->_convertFieldToColumnNames($record->identifier(), $class);
             
@@ -149,7 +149,7 @@ class Doctrine_EntityPersister_JoinedSubclass extends Doctrine_EntityPersister_A
                 $this->_deleteRow($parentClass->getTableName(), $identifier);
             }
             
-            $record->state(Doctrine_Entity::STATE_TCLEAN);
+            $record->_state(Doctrine_Entity::STATE_TCLEAN);
 
             $this->removeRecord($record); // @todo should be done in the unitofwork
             $conn->commit();

@@ -27,7 +27,7 @@
  * @author      Janne Vanhala <jpvanhal@cc.hut.fi>
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @link        http://www.phpdoctrine.org
- * @since       1.0
+ * @since       2.0
  * @version     $Revision$
  */
 class Doctrine_Query_Production_FieldIdentificationVariable extends Doctrine_Query_Production
@@ -73,5 +73,27 @@ class Doctrine_Query_Production_FieldIdentificationVariable extends Doctrine_Que
         // Build the column alias
         $this->_columnAlias = $parserResult->getTableAliasFromComponentAlias($componentAlias)
                             . Doctrine_Query_Production::SQLALIAS_SEPARATOR . $idx;
+    }
+    
+    /**
+     * Visitor support
+     *
+     * @param object $visitor
+     */
+    public function accept($visitor)
+    {
+        $visitor->visitFieldIdentificationVariable($this);
+    }
+    
+    /* Getters */
+    
+    public function getFieldAlias()
+    {
+        return $this->_fieldAlias;
+    }
+    
+    public function getColumnAlias()
+    {
+        return $this->_columnAlias;
     }
 }

@@ -28,7 +28,7 @@
  * @author      Janne Vanhala <jpvanhal@cc.hut.fi>
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @link        http://www.phpdoctrine.org
- * @since       1.0
+ * @since       2.0
  * @version     $Revision$
  */
 class Doctrine_Query_Production_ConditionalTerm extends Doctrine_Query_Production
@@ -68,5 +68,25 @@ class Doctrine_Query_Production_ConditionalTerm extends Doctrine_Query_Productio
     protected function _mapConditionalFactor($value)
     {
         return $value->buildSql();
+    }
+    
+    /**
+     * Visitor support
+     *
+     * @param object $visitor
+     */
+    public function accept($visitor)
+    {
+        foreach ($this->_conditionalFactors as $factor) {
+            $factor->accept($visitor);
+        }
+        $visitor->visitConditionalTerm($this);
+    }
+    
+    /* Getters */
+    
+    public function getConditionalFactors()
+    {
+        return $this->_conditionalFactors;
     }
 }

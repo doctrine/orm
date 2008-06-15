@@ -28,7 +28,7 @@
  * @author      Janne Vanhala <jpvanhal@cc.hut.fi>
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @link        http://www.phpdoctrine.org
- * @since       1.0
+ * @since       2.0
  * @version     $Revision$
  */
 class Doctrine_Query_Production_ConditionalFactor extends Doctrine_Query_Production
@@ -59,5 +59,23 @@ class Doctrine_Query_Production_ConditionalFactor extends Doctrine_Query_Product
     {
         // Do not need to check $notFactor. It'll be always present if we have this instance.
         return 'NOT ' . $this->_conditionalPrimary->buildSql();
+    }
+    
+    /**
+     * Visitor support
+     *
+     * @param object $visitor
+     */
+    public function accept($visitor)
+    {
+        $this->_conditionalPrimary->accept($visitor);
+        $visitor->visitConditionalFactor($this);
+    }
+    
+    /* Getters */
+    
+    public function getConditionalPrimary()
+    {
+        return $this->_conditionalPrimary;
     }
 }

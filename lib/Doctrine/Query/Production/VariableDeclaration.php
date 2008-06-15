@@ -28,7 +28,7 @@
  * @author      Janne Vanhala <jpvanhal@cc.hut.fi>
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @link        http://www.phpdoctrine.org
- * @since       1.0
+ * @since       2.0
  * @version     $Revision$
  */
 class Doctrine_Query_Production_VariableDeclaration extends Doctrine_Query_Production
@@ -129,5 +129,25 @@ class Doctrine_Query_Production_VariableDeclaration extends Doctrine_Query_Produ
 
         return $conn->quoteIdentifier($queryComponent['metadata']->getTableName()) . ' '
              . $conn->quoteIdentifier($parserResult->getTableAliasFromComponentAlias($this->_componentAlias));
+    }
+    
+    /**
+     * Visitor support.
+     */
+    public function accept($visitor)
+    {
+        $visitor->visitVariableDeclaration($this);
+    }
+    
+    /* Getters */
+    
+    public function getComponentName()
+    {
+        return $this->_componentName;
+    }
+    
+    public function getComponentAlias()
+    {
+        return $this->_componentAlias;
     }
 }

@@ -28,7 +28,7 @@
  * @author      Janne Vanhala <jpvanhal@cc.hut.fi>
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @link        http://www.phpdoctrine.org
- * @since       1.0
+ * @since       2.0
  * @version     $Revision$
  */
 class Doctrine_Query_Production_UpdateStatement extends Doctrine_Query_Production
@@ -55,5 +55,29 @@ class Doctrine_Query_Production_UpdateStatement extends Doctrine_Query_Productio
         // Simple "UPDATE table_name SET column_name = value" gives 0 affected rows.
         return $this->_updateClause->buildSql() . (($this->_whereClause !== null)
              ? ' ' . $this->_whereClause->buildSql() : ' WHERE 1 = 1');
+    }
+    
+    /**
+     * Visitor support.
+     */
+    public function accept($visitor)
+    {
+        $this->_updateClause->accept($visitor);
+        if ($this->_whereClause) {
+            $this->_whereClause->accept($visitor);
+        }
+        $visitor->visitUpdateStatment($this);
+    }
+    
+    /* Getters */
+    
+    public function getUpdateClause()
+    {
+        return $this->_updateClause;
+    }
+    
+    public function getWhereClause()
+    {
+        return $this->_whereClause;
     }
 }

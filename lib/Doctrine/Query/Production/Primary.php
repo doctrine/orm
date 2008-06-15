@@ -28,7 +28,7 @@
  * @author      Janne Vanhala <jpvanhal@cc.hut.fi>
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @link        http://www.phpdoctrine.org
- * @since       1.0
+ * @since       2.0
  * @version     $Revision$
  */
 class Doctrine_Query_Production_Primary extends Doctrine_Query_Production
@@ -88,4 +88,23 @@ class Doctrine_Query_Production_Primary extends Doctrine_Query_Production
     {
         return '(' . $this->_expression->buildSql() . ')';
     }
+    
+    /**
+     * Visitor support
+     *
+     * @param object $visitor
+     */
+    public function accept($visitor)
+    {
+        $this->_expression->accept($visitor);
+        $visitor->visitPrimary($this);
+    }
+    
+    /* Getters */
+    
+    public function getExpression()
+    {
+        return $this->_expression;
+    }
+    
 }

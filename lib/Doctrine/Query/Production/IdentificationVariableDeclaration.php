@@ -28,7 +28,7 @@
  * @author      Janne Vanhala <jpvanhal@cc.hut.fi>
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @link        http://www.phpdoctrine.org
- * @since       1.0
+ * @since       2.0
  * @version     $Revision$
  */
 class Doctrine_Query_Production_IdentificationVariableDeclaration extends Doctrine_Query_Production
@@ -91,5 +91,44 @@ class Doctrine_Query_Production_IdentificationVariableDeclaration extends Doctri
         }
 
         return $str;
+    }
+    
+    /**
+     * Visitor support
+     *
+     * @param object $visitor
+     */
+    public function accept($visitor)
+    {
+        $this->_rangeVariableDeclaration->accept($visitor);
+        if ($this->_indexBy) {
+            $this->_indexBy->accept($visitor);
+        }
+        foreach ($this->_relations as $relation) {
+            if ($relation['join']) {
+                $relation['join']->accept($visitor);
+            }
+            if ($relation['indexby']) {
+                $relation['indexby']->accept($visitor);
+            }
+        }
+        $visitor->visitIdentificationVariable($this);
+    }
+    
+    /* Getters */
+    
+    public function getRangeVariableDeclaration()
+    {
+        return $this->_rangeVariableDeclaration;
+    }
+    
+    public function getIndexBy()
+    {
+        return $this->_indexBy;
+    }
+    
+    public function getRelations()
+    {
+        return $this->_relations;
     }
 }

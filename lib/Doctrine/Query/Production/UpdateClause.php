@@ -74,4 +74,28 @@ class Doctrine_Query_Production_UpdateClause extends Doctrine_Query_Production
     {
         return $value->buildSql();
     }
+    
+    /**
+     * Visitor support.
+     */
+    public function accept($visitor)
+    {
+        $this->_variableDeclaration->accept($visitor);
+        foreach ($this->_updateItems as $item) {
+            $item->accept($visitor);
+        }
+        $visitor->visitUpdateClause($this);
+    }
+    
+    /* Getters */
+    
+    public function getVariableDeclaration()
+    {
+        return $this->_variableDeclaration;
+    }
+    
+    public function getUpdateItems()
+    {
+        return $this->_updateItems;
+    }
 }

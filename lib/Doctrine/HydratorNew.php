@@ -71,7 +71,7 @@ class Doctrine_HydratorNew extends Doctrine_Hydrator_Abstract
      * @param array $tableAliases  Array that maps table aliases (SQL alias => DQL alias)
      * @param array $aliasMap  Array that maps DQL aliases to their components
      *                         (DQL alias => array(
-     *                              'table' => Table object,
+     *                              'metadata' => Table object,
      *                              'parent' => Parent DQL alias (if any),
      *                              'relation' => Relation object (if any),
      *                              'map' => Custom index to use as the key in the result (if any),
@@ -109,7 +109,7 @@ class Doctrine_HydratorNew extends Doctrine_Hydrator_Abstract
         // Used variables during hydration
         reset($this->_queryComponents);
         $rootAlias = key($this->_queryComponents);
-        $rootComponentName = $this->_queryComponents[$rootAlias]['table']->getClassName();
+        $rootComponentName = $this->_queryComponents[$rootAlias]['metadata']->getClassName();
         // if only one class is involved we can make our lives easier
         $isSimpleQuery = count($this->_queryComponents) <= 1;
         // Lookup map to quickly discover/lookup existing records in the result
@@ -138,8 +138,8 @@ class Doctrine_HydratorNew extends Doctrine_Hydrator_Abstract
         // Initialize
         foreach ($this->_queryComponents as $dqlAlias => $component) {
             // disable lazy-loading of related elements during hydration
-            $component['table']->setAttribute(Doctrine::ATTR_LOAD_REFERENCES, false);
-            $componentName = $component['table']->getClassName();
+            $component['metadata']->setAttribute('loadReferences', false);
+            $componentName = $component['metadata']->getClassName();
             $identifierMap[$dqlAlias] = array();
             $resultPointers[$dqlAlias] = array();
             $idTemplate[$dqlAlias] = '';
@@ -170,7 +170,7 @@ class Doctrine_HydratorNew extends Doctrine_Hydrator_Abstract
             //
             // hydrate the data of the root entity from the current row
             //
-            $class = $this->_queryComponents[$rootAlias]['table'];
+            $class = $this->_queryComponents[$rootAlias]['metadata'];
             $componentName = $class->getComponentName();
             
             // Check for an existing element
@@ -180,17 +180,10 @@ class Doctrine_HydratorNew extends Doctrine_Hydrator_Abstract
 
                 // do we need to index by a custom field?
                 if ($field = $this->_getCustomIndexField($rootAlias)) {
-                    // TODO: must be checked in the parser. fields used in INDEXBY
-                    // must be a) the primary key or b) unique & notnull
-                    /*if (isset($result[$field])) {
-                        throw Doctrine_Hydrator_Exception::nonUniqueKeyMapping();
-                    } else if ( ! isset($element[$field])) {
-                        throw Doctrine_Hydrator_Exception::nonExistantFieldUsedAsIndex($field);
-                    }*/
                     if ($parserResult->isMixedQuery()) {
                         $result[] = array(
-                                $driver->getFieldValue($element, $field) => $element
-                                );
+                            $driver->getFieldValue($element, $field) => $element
+                        );
                     } else {
                         $driver->addElementToIndexedCollection($result, $element, $field);
                     }
@@ -220,7 +213,7 @@ class Doctrine_HydratorNew extends Doctrine_Hydrator_Abstract
             foreach ($rowData as $dqlAlias => $data) {                
                 $index = false;
                 $map = $this->_queryComponents[$dqlAlias];
-                $componentName = $map['table']->getClassName();
+                $componentName = $map['metadata']->getClassName();
                 $parent = $map['parent'];
                 $relation = $map['relation'];
                 $relationAlias = $relation->getAlias();
@@ -258,7 +251,7 @@ class Doctrine_HydratorNew extends Doctrine_Hydrator_Abstract
                         }
                     } else if ( ! isset($baseElement[$relationAlias])) {
                         $driver->setRelatedElement($baseElement, $relationAlias,
-                                $driver->getNullPointer());
+                                $driver->getElementCollection($componentName));
                     }
                 } else {
                     // x-1 relation
@@ -290,7 +283,7 @@ class Doctrine_HydratorNew extends Doctrine_Hydrator_Abstract
         
         // re-enable lazy loading
         foreach ($this->_queryComponents as $dqlAlias => $data) {
-            $data['table']->setAttribute(Doctrine::ATTR_LOAD_REFERENCES, true);
+            $data['metadata']->setAttribute('loadReferences', true);
         }
         
         $e = microtime(true);
@@ -370,7 +363,7 @@ class Doctrine_HydratorNew extends Doctrine_Hydrator_Abstract
                 $e = explode('__', $key);
                 $columnName = strtolower(array_pop($e));                
                 $cache[$key]['dqlAlias'] = $this->_tableAliases[strtolower(implode('__', $e))];
-                $classMetadata = $this->_queryComponents[$cache[$key]['dqlAlias']]['table'];
+                $classMetadata = $this->_queryComponents[$cache[$key]['dqlAlias']]['metadata'];
                 // check whether it's an aggregate value or a regular field
                 if (isset($this->_queryComponents[$cache[$key]['dqlAlias']]['agg'][$columnName])) {
                     $fieldName = $this->_queryComponents[$cache[$key]['dqlAlias']]['agg'][$columnName];
@@ -399,7 +392,7 @@ class Doctrine_HydratorNew extends Doctrine_Hydrator_Abstract
                 }
             }
 
-            $class = $this->_queryComponents[$cache[$key]['dqlAlias']]['table'];
+            $class = $this->_queryComponents[$cache[$key]['dqlAlias']]['metadata'];
             $dqlAlias = $cache[$key]['dqlAlias'];
             $fieldName = $cache[$key]['fieldName'];
 
@@ -454,7 +447,7 @@ class Doctrine_HydratorNew extends Doctrine_Hydrator_Abstract
                 $e = explode('__', $key);
                 $columnName = strtolower(array_pop($e));                
                 $cache[$key]['dqlAlias'] = $this->_tableAliases[strtolower(implode('__', $e))];
-                $classMetadata = $this->_queryComponents[$cache[$key]['dqlAlias']]['table'];
+                $classMetadata = $this->_queryComponents[$cache[$key]['dqlAlias']]['metadata'];
                 // check whether it's an aggregate value or a regular field
                 if (isset($this->_queryComponents[$cache[$key]['dqlAlias']]['agg'][$columnName])) {
                     $fieldName = $this->_queryComponents[$cache[$key]['dqlAlias']]['agg'][$columnName];
@@ -476,7 +469,7 @@ class Doctrine_HydratorNew extends Doctrine_Hydrator_Abstract
                 }
             }
 
-            $class = $this->_queryComponents[$cache[$key]['dqlAlias']]['table'];
+            $class = $this->_queryComponents[$cache[$key]['dqlAlias']]['metadata'];
             $dqlAlias = $cache[$key]['dqlAlias'];
             $fieldName = $cache[$key]['fieldName'];
 

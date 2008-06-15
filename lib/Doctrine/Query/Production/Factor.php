@@ -28,7 +28,7 @@
  * @author      Janne Vanhala <jpvanhal@cc.hut.fi>
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @link        http://www.phpdoctrine.org
- * @since       1.0
+ * @since       2.0
  * @version     $Revision$
  */
 class Doctrine_Query_Production_Factor extends Doctrine_Query_Production
@@ -67,5 +67,28 @@ class Doctrine_Query_Production_Factor extends Doctrine_Query_Production
     public function buildSql()
     {
         return $this->_type . ' ' . $this->_primary->buildSql();
+    }
+    
+    /**
+     * Visitor support
+     *
+     * @param object $visitor
+     */
+    public function accept($visitor)
+    {
+        $this->_primary->accept($visitor);
+        $visitor->visitFactor($this);
+    }
+    
+    /* Getters */
+    
+    public function getType()
+    {
+        return $this->_type;
+    }
+    
+    public function getPrimary()
+    {
+        return $this->_primary;
     }
 }

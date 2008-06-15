@@ -42,7 +42,7 @@
  * @author      Roman Borschel <roman@code-factory.org>
  * @todo package:orm
  */
-class Doctrine_EntityManager implements Doctrine_Configurable
+class Doctrine_EntityManager
 {
     /**
      * The unique name of the EntityManager. The name is used to bind entity classes
@@ -57,28 +57,8 @@ class Doctrine_EntityManager implements Doctrine_Configurable
      *
      * @var Configuration
      */
-    private $_configuration;
+    private $_config;
     
-    
-    // -- configuration stuff to be removed. replaced by Configuration.
-    private $_nullObject;
-    /**
-     * The attributes.
-     *
-     * @var array
-     */
-    private $_attributes = array(
-            'quoteIdentifier' => false,
-            'indexNameFormat' => '%s_idx',
-            'sequenceNameFormat' => '%s_seq',
-            'tableNameFormat' => '%s',
-            'resultCache' => null,
-            'resultCacheLifeSpan' => null,
-            'queryCache' => null,
-            'queryCacheLifeSpan' => null,
-            'metadataCache' => null,
-            'metadataCacheLifeSpan' => null
-    );
     
     /**
      * The database connection used by the EntityManager.
@@ -151,6 +131,13 @@ class Doctrine_EntityManager implements Doctrine_Configurable
     //private $_dataTemplates = array();
     
     /**
+     * Container that is used temporarily during hydration.
+     *
+     * @var array
+     */
+    private $_tmpEntityData = array();
+    
+    /**
      * Creates a new EntityManager that operates on the given database connection.
      *
      * @param Doctrine_Connection $conn
@@ -164,18 +151,6 @@ class Doctrine_EntityManager implements Doctrine_Configurable
                 $this, new Doctrine_ClassMetadata_CodeDriver());
         $this->_unitOfWork = new Doctrine_Connection_UnitOfWork($conn);
         $this->_nullObject = Doctrine_Null::$INSTANCE;
-        $this->_initAttributes();
-    }
-    
-    private function _initAttributes()
-    {
-        // Change null default values to references to the Null object to allow
-        // fast isset() checks instead of array_key_exists().
-        foreach ($this->_attributes as $key => $value) {
-            if ($value === null) {
-                $this->_attributes[$key] = $this->_nullObject;
-            }
-        }
     }
     
     /**
@@ -339,6 +314,17 @@ class Doctrine_EntityManager implements Doctrine_Configurable
     }
     
     /**
+     * Enter description here...
+     *
+     * @param unknown_type $entityName
+     * @param unknown_type $identifier
+     */
+    public function find($entityName, $identifier)
+    {
+        return $this->getRepository($entityName)->find($identifier);
+    }
+    
+    /**
      * Sets the flush mode.
      *
      * @param string $flushMode
@@ -459,7 +445,7 @@ class Doctrine_EntityManager implements Doctrine_Configurable
     }
     
     /**
-     * Creates an entity. Used to reconstitution as well as new creation.
+     * Creates an entity. Used for reconstitution as well as initial creation.
      *
      * @param
      * @param
@@ -467,7 +453,8 @@ class Doctrine_EntityManager implements Doctrine_Configurable
      */
     public function createEntity($className, array $data)
     {
-        $className = $this->_getClassnameToReturn($data, $className);
+        $this->_tmpEntityData = $data;
+        $className = $this->_inferCorrectClassName($data, $className);
         $classMetadata = $this->getClassMetadata($className);
         if ( ! empty($data)) {
             $identifierFieldNames = $classMetadata->getIdentifier();
@@ -480,25 +467,43 @@ class Doctrine_EntityManager implements Doctrine_Configurable
                 }
                 $id[] = $data[$fieldName];
             }
+            
             if ($isNew) {
-                return new $className(true, $data);
-            }
-
-            $idHash = $this->_unitOfWork->getIdentifierHash($id);
-
-            if ($entity = $this->_unitOfWork->tryGetByIdHash($idHash,
-                    $classMetadata->getRootClassName())) {
-                return $entity;
+                $entity = new $className(true);
+                //$entity->_setData($data);
             } else {
-                $entity = new $className(false, $data);
-                $this->_unitOfWork->registerIdentity($entity);
+                $idHash = $this->_unitOfWork->getIdentifierHash($id);
+                if ($entity = $this->_unitOfWork->tryGetByIdHash($idHash,
+                        $classMetadata->getRootClassName())) {
+                    return $entity;
+                } else {
+                    $entity = new $className(false);
+                    //$entity->_setData($data);
+                    $this->_unitOfWork->registerIdentity($entity);
+                }
             }
-            $data = array();
         } else {
-            $entity = new $className(true, $data);
+            $entity = new $className(true);
+            //$entity->_setData($data);
         }
+        
+        /*if (count($data) < $classMetadata->getMappedColumnCount()) {
+            $entity->_state(Doctrine_Entity::STATE_PROXY);
+        } else {
+            $entity->_state(Doctrine_Entity::STATE_CLEAN);
+        }*/
+        $this->_tmpEntityData = array();
 
         return $entity;
+    }
+    
+    /**
+     * INTERNAL:
+     * For internal hydration purposes only.
+     */
+    public function _getTmpEntityData()
+    {
+        return $this->_tmpEntityData;
     }
     
     /**
@@ -508,9 +513,8 @@ class Doctrine_EntityManager implements Doctrine_Configurable
      *
      * @return string The name of the class to instantiate.
      * @todo Can be optimized performance-wise.
-     * @todo Move to EntityManager::createEntity()
      */
-    private function _getClassnameToReturn(array $data, $className)
+    private function _inferCorrectClassName(array $data, $className)
     {
         $class = $this->getClassMetadata($className);
 
@@ -565,35 +569,19 @@ class Doctrine_EntityManager implements Doctrine_Configurable
      */
     public function setConfiguration(Doctrine_Configuration $config)
     {
-        $this->_configuration = $config;
+        $this->_config = $config;
     }
     
-    /* Configurable implementation */
-    
-    public function hasAttribute($name)
+    /**
+     * Gets the COnfiguration used by the EntityManager.
+     *
+     * @return Configuration
+     */
+    public function getConfiguration()
     {
-        return isset($this->_attributes[$name]);
+        return $this->_config;
     }
     
-    public function getAttribute($name)
-    {
-        if ( ! $this->hasAttribute($name)) {
-            throw Doctrine_EntityManager_Exception::unknownAttribute($name);
-        }
-        if ($this->_attributes[$name] === $this->_nullObject) {
-            return null;
-        }
-        return $this->_attributes[$name];
-    }
-    
-    public function setAttribute($name, $value)
-    {
-        if ( ! $this->hasAttribute($name)) {
-            throw Doctrine_EntityManager_Exception::unknownAttribute($name);
-        }
-        // TODO: do some value checking depending on the attribute
-        $this->_attributes[$name] = $value;
-    }
 }
 
 ?>

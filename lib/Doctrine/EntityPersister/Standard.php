@@ -44,11 +44,11 @@ class Doctrine_EntityPersister_Standard extends Doctrine_EntityPersister_Abstrac
             $conn->beginInternalTransaction();
             $this->_deleteComposites($record);
 
-            $record->state(Doctrine_Entity::STATE_TDIRTY);
+            $record->_state(Doctrine_Entity::STATE_TDIRTY);
             
             $identifier = $this->_convertFieldToColumnNames($record->identifier(), $metadata);
             $this->_deleteRow($metadata->getTableName(), $identifier);
-            $record->state(Doctrine_Entity::STATE_TCLEAN);
+            $record->_state(Doctrine_Entity::STATE_TCLEAN);
 
             $this->removeRecord($record);
             $conn->commit();

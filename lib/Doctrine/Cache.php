@@ -29,6 +29,7 @@
  * @link        www.phpdoctrine.org
  * @since       1.0
  * @version     $Revision$
+ * @todo Can this be removed?
  */
 class Doctrine_Cache extends Doctrine_EventListener implements Countable, IteratorAggregate
 {

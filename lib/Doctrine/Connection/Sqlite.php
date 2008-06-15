@@ -19,7 +19,7 @@
  * <http://www.phpdoctrine.org>.
  */
 
-Doctrine::autoload("Doctrine_Connection_Common");
+#namespace Doctrine::DBAL::Connections;
 
 /**
  * Doctrine_Connection_Sqlite
@@ -46,9 +46,10 @@ class Doctrine_Connection_Sqlite extends Doctrine_Connection_Common
      * @param Doctrine_Manager $manager
      * @param PDO $pdo                          database handle
      */
-    public function __construct($adapter, $user = null, $pass = null)
+    public function __construct(array $params)
     {
-        $this->supported = array('sequences'            => 'emulated',
+        $this->supported = array(
+                          'sequences'            => 'emulated',
                           'indexes'              => true,
                           'affected_rows'        => true,
                           'summary_functions'    => true,
@@ -67,10 +68,10 @@ class Doctrine_Connection_Sqlite extends Doctrine_Connection_Common
                           'identifier_quoting'   => true,
                           'pattern_escaping'     => false,
                           );
-        parent::__construct($adapter, $user, $pass);
+        parent::__construct($params);
 
         if ($this->isConnected) {
-            $this->dbh->sqliteCreateFunction('mod',    array('Doctrine_Expression_Sqlite', 'modImpl'), 2);
+            $this->dbh->sqliteCreateFunction('mod', array('Doctrine_Expression_Sqlite', 'modImpl'), 2);
             $this->dbh->sqliteCreateFunction('md5', 'md5', 1);
             $this->dbh->sqliteCreateFunction('now', 'time', 0);
         }

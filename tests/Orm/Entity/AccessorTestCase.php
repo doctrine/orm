@@ -29,12 +29,12 @@ class CustomAccessorMutatorTestEntity extends Doctrine_Entity
     
     public function getUsernameCustom()
     {
-        return $this->rawGetField('username') . "!";
+        return $this->_rawGetField('username') . "!";
     }
     
     public function setUsernameCustom($username)
     {
-        $this->rawSetField('username', $username . "?");
+        $this->_rawSetField('username', $username . "?");
     }
 }
 
@@ -47,11 +47,11 @@ class MagicAccessorMutatorTestEntity extends Doctrine_Entity
     
     public function getUsername()
     {
-        return $this->rawGetField('username') . "!";
+        return $this->_rawGetField('username') . "!";
     }
     
     public function setUsername($username)
     {
-        $this->rawSetField('username', $username . "?");
+        $this->_rawSetField('username', $username . "?");
     } 
 }

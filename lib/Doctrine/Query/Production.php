@@ -148,28 +148,6 @@ abstract class Doctrine_Query_Production
         return new $class($this->_parser);
     }
 
-
-    /**
-     * Executes a production with specified name and parameters.
-     *
-     * @param string $name production name
-     * @param array $params an associative array containing parameter names and
-     * their values
-     * @return mixed
-     */
-    public function __call($method, $args)
-    {
-        if (substr($method, 0, 3) === 'get') {
-            $var = '_' . substr($method, 3);
-            $var[1] = strtolower($var[1]);
-
-            return $this->$var;
-        }
-
-        return null;
-    }
-
-
     /**
      * Executes this production using the specified parameters.
      *
@@ -232,5 +210,10 @@ abstract class Doctrine_Query_Production
      */
     public function semantical($paramHolder)
     {
+    }
+    
+    public function getParser()
+    {
+        return $this->_parser;
     }
 }

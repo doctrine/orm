@@ -27,7 +27,7 @@
  * @author      Janne Vanhala <jpvanhal@cc.hut.fi>
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @link        www.phpdoctrine.org
- * @since       1.0
+ * @since       2.0
  * @version     $Revision$
  */
 class Doctrine_Query_Scanner
@@ -150,7 +150,7 @@ class Doctrine_Query_Scanner
 
         // World number: 1.000.000,02 or -1,234e-2
         $worldnum = strtr($value, array('.' => '', ',' => '.'));
-        if(is_numeric($worldnum)) {
+        if (is_numeric($worldnum)) {
             return $worldnum;
         }
 

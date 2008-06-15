@@ -54,16 +54,7 @@
  * @todo package:orm. Figure out a useful implementation.
  */
 class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
-{
-    /**
-     * A map of all currently managed entities.
-     *
-     * @var array
-     * @deprecated Only here to keep the saveAll() functionality working. We don't need 
-     *             this in the future.
-     */
-    protected $_managedEntities = array();
-    
+{    
     /**
      * The identity map that holds references to all managed entities that have
      * an identity. The entities are grouped by their class name.
@@ -131,7 +122,9 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
             throw new Doctrine_Connection_Exception("Entity without identity "
                     . "can't be registered as new.");
         }
+        
         $oid = $entity->getOid();
+        
         if (isset($this->_dirtyEntities[$oid])) {
             throw new Doctrine_Connection_Exception("Dirty object can't be registered as new.");
         } else if (isset($this->_removedEntities[$oid])) {
@@ -139,6 +132,8 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
         } else if (isset($this->_newEntities[$oid])) {
             throw new Doctrine_Connection_Exception("Object already registered as new. Can't register twice.");
         }
+        
+        $this->registerIdentity($entity);
         $this->_newEntities[$oid] = $entity;
     }
     
@@ -216,10 +211,10 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
      * @param array $tables     an array of Doctrine_Table objects or component names
      * @return array            an array of component names in flushing order
      */
-    public function buildFlushTree(array $mappers)
+    public function buildFlushTree(array $entityNames)
     {
         $tree = array();
-        foreach ($mappers as $k => $mapper) {
+        foreach ($entityNames as $k => $entity) {
             if ( ! ($mapper instanceof Doctrine_Mapper)) {
                 $mapper = $this->conn->getMapper($mapper);
             }
@@ -487,6 +482,7 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
         if ( ! $idHash) {
             return false;
         }
+
         return isset($this->_identityMap
                 [$entity->getClassMetadata()->getRootClassName()]
                 [$idHash]);

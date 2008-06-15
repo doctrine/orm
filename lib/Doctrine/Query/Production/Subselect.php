@@ -29,7 +29,7 @@
  * @author      Janne Vanhala <jpvanhal@cc.hut.fi>
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @link        http://www.phpdoctrine.org
- * @since       1.0
+ * @since       2.0
  * @version     $Revision$
  */
 class Doctrine_Query_Production_Subselect extends Doctrine_Query_Production
@@ -100,6 +100,62 @@ class Doctrine_Query_Production_Subselect extends Doctrine_Query_Production
              . (($this->_groupByClause !== null) ? ' ' . $this->_groupByClause->buildSql() : '')
              . (($this->_havingClause !== null) ? ' ' . $this->_havingClause->buildSql() : '')
              . (($this->_orderByClause !== null) ? ' ' . $this->_orderByClause->buildSql() : '');
+    }
+    
+    /**
+     * Visitor support
+     *
+     * @param object $visitor
+     */
+    public function accept($visitor)
+    {
+        $this->_simpleSelectClause->accept($visitor);
+        $this->_fromClause->accept($visitor);
+        if ($this->_whereClause) {
+            $this->_whereClause->accept($visitor);
+        }
+        if ($this->_groupByClause) {
+            $this->_groupByClause->accept($visitor);
+        }
+        if ($this->_havingClause) {
+            $this->_havingClause->accept($visitor);
+        }
+        if ($this->_orderByClause) {
+            $this->_orderByClause->accept($visitor);
+        }
+        $visitor->visitSubselect($this);
+    }
+    
+    /* Getters */
+    
+    public function getSimpleSelectClause()
+    {
+        return $this->_simpleSelectClause;
+    }
+    
+    public function getFromClause()
+    {
+        return $this->_fromClause;
+    }
+    
+    public function getWhereClause()
+    {
+        return $this->_whereClause;
+    }
+    
+    public function getGroupByClause()
+    {
+        return $this->_groupByClause;
+    }
+    
+    public function getHavingClause()
+    {
+        return $this->_havingClause;
+    }
+    
+    public function getOrderByClause()
+    {
+        return $this->_orderByClause;
     }
 
 }

@@ -27,7 +27,7 @@
  * @author      Bjarte Stien Karlsen <doctrine@bjartek.org>
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @link        www.phpdoctrine.org
- * @since       1.0
+ * @since       2.0
  * @version     $Revision: 3754 $
  */
 require_once 'lib/DoctrineTestInit.php';

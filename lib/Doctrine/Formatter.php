@@ -48,7 +48,8 @@ class Doctrine_Formatter extends Doctrine_Connection_Module
      */
     public function escapePattern($text)
     {
-        if ( ! $this->string_quoting['escape_pattern']) {
+        return $text;
+        /*if ( ! $this->string_quoting['escape_pattern']) {
             return $text;
         }
         $tmp = $this->conn->string_quoting;
@@ -60,7 +61,7 @@ class Doctrine_Formatter extends Doctrine_Connection_Module
         foreach ($this->wildcards as $wildcard) {
             $text = str_replace($wildcard, $tmp['escape_pattern'] . $wildcard, $text);
         }
-        return $text;
+        return $text;*/
     }
 
     /**

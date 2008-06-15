@@ -27,7 +27,7 @@
  * @author      Janne Vanhala <jpvanhal@cc.hut.fi>
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @link        http://www.phpdoctrine.org
- * @since       1.0
+ * @since       2.0
  * @version     $Revision$
  */
 class Doctrine_Query_Production_SimpleSelectClause extends Doctrine_Query_Production
@@ -64,5 +64,28 @@ class Doctrine_Query_Production_SimpleSelectClause extends Doctrine_Query_Produc
     {
         return 'SELECT ' . (($this->_isDistinct) ? 'DISTINCT ' : '')
              . $this->_selectExpression->buildSql();
+    }
+    
+    /**
+     * Visitor support
+     *
+     * @param object $visitor
+     */
+    public function acccept($visitor)
+    {
+        $this->_selectExpression->accept($visitor);
+        $visitor->visitSimpleSelectClause($this);
+    }
+    
+    /* Getters */
+    
+    public function isDistinct()
+    {
+        return $this->_isDistinct;
+    }
+    
+    public function getSelectExpression()
+    {
+        return $this->_selectExpression;
     }
 }

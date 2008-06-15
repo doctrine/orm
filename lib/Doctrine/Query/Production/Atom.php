@@ -86,10 +86,33 @@ class Doctrine_Query_Production_Atom extends Doctrine_Query_Production
             break;
 
             default:
-                return $conn->string_quoting['start']
+                $stringQuoting = $conn->getProperty('string_quoting');
+                return $stringQuoting['start']
                      . $conn->quote($this->_value, $this->_type)
-                     . $conn->string_quoting['end'];
+                     . $stringQuoting['end'];
             break;
         }
+    }
+    
+    /**
+     * Visitor support.
+     *
+     * @param object $visitor
+     */
+    public function accept($visitor)
+    {
+        $visitor->visitAtom($this);
+    }
+    
+    /* Getters */
+    
+    public function getType()
+    {
+        return $this->_type;
+    }
+    
+    public function getValue()
+    {
+        return $this->_value;
     }
 }

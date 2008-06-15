@@ -29,7 +29,7 @@
  * @package     Doctrine
  * @subpackage  Event
  * @link        www.phpdoctrine.org
- * @since       1.0
+ * @since       2.0
  * @version     $Revision$
  */
 class Doctrine_Event

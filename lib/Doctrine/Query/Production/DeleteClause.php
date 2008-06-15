@@ -28,7 +28,7 @@
  * @author      Janne Vanhala <jpvanhal@cc.hut.fi>
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @link        http://www.phpdoctrine.org
- * @since       1.0
+ * @since       2.0
  * @version     $Revision$
  */
 class Doctrine_Query_Production_DeleteClause extends Doctrine_Query_Production
@@ -48,9 +48,26 @@ class Doctrine_Query_Production_DeleteClause extends Doctrine_Query_Production
         $this->_variableDeclaration = $this->AST('VariableDeclaration', $paramHolder);
     }
 
-
     public function buildSql()
     {
         return 'DELETE FROM ' . $this->_variableDeclaration->buildSql();
+    }
+    
+    /**
+     * Visitor support
+     *
+     * @param object $visitor
+     */
+    public function accept($visitor)
+    {
+        $this->_variableDeclaration->accept($visitor);
+        $visitor->visitDeleteClause($this);
+    }
+    
+    /* Getters */
+    
+    public function getVariableDeclaration()
+    {
+        return $this->_variableDeclaration;
     }
 }

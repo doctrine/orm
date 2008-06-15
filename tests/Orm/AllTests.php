@@ -10,9 +10,10 @@ require_once 'Orm/Component/AllTests.php';
 require_once 'Orm/Query/AllTests.php';
 require_once 'Orm/Hydration/AllTests.php';
 require_once 'Orm/Ticket/AllTests.php';
+require_once 'Orm/Entity/AllTests.php';
 
 // Tests
-require_once 'Orm/UnitOfWorkTestCase.php';
+require_once 'Orm/UnitOfWorkTest.php';
 require_once 'Orm/EntityManagerFactoryTest.php';
 
 class Orm_AllTests
@@ -26,13 +27,14 @@ class Orm_AllTests
     {
         $suite = new Doctrine_OrmTestSuite('Doctrine Orm');
 
-        $suite->addTestSuite('Orm_UnitOfWorkTestCase');
+        $suite->addTestSuite('Orm_UnitOfWorkTest');
         $suite->addTestSuite('Orm_EntityManagerFactoryTest');
         //$suite->addTestSuite('Orm_ConfigurableTestCase');
         
         $suite->addTest(Orm_Component_AllTests::suite());
         $suite->addTest(Orm_Query_AllTests::suite());
         $suite->addTest(Orm_Hydration_AllTests::suite());
+        $suite->addTest(Orm_Entity_AllTests::suite());
         $suite->addTest(Orm_Ticket_AllTests::suite());
 
         return $suite;

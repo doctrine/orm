@@ -8,13 +8,7 @@ require_once 'lib/DoctrineTestInit.php';
  */
 class Orm_EntityManagerFactoryTest extends Doctrine_OrmTestCase
 {
-    private $_emf;
     private $_mockOptions = array('driver' => 'mock', 'user' => '', 'password' => '');
-    
-    protected function setUp() {
-        parent::setUp();
-        $this->_emf = $this->sharedFixture['emf'];
-    }
     
     protected function tearDown() {
         parent::tearDown();

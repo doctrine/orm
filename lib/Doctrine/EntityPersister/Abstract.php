@@ -132,7 +132,7 @@ abstract class Doctrine_EntityPersister_Abstract
             if ($fk->isComposite()) {
                 $obj = $record->get($fk->getAlias());
                 if ($obj instanceof Doctrine_Entity && 
-                        $obj->state() != Doctrine_Entity::STATE_LOCKED)  {
+                        $obj->_state() != Doctrine_Entity::STATE_LOCKED)  {
                     $obj->delete($this->_mapper->getConnection());
                 }
             }
@@ -266,18 +266,18 @@ abstract class Doctrine_EntityPersister_Abstract
             $conn = $this->_conn;
         }
 
-        $state = $record->state();
+        $state = $record->_state();
         if ($state === Doctrine_Entity::STATE_LOCKED) {
             return false;
         }
         
-        $record->state(Doctrine_Entity::STATE_LOCKED);
+        $record->_state(Doctrine_Entity::STATE_LOCKED);
         
         try {
             $conn->beginInternalTransaction();
             $saveLater = $this->_saveRelated($record);
 
-            $record->state($state);
+            $record->_state($state);
 
             if ($record->isValid()) {
                 $this->_insertOrUpdate($record);
@@ -285,8 +285,8 @@ abstract class Doctrine_EntityPersister_Abstract
                 $conn->transaction->addInvalid($record);
             }
 
-            $state = $record->state();
-            $record->state(Doctrine_Entity::STATE_LOCKED);
+            $state = $record->_state();
+            $record->_state(Doctrine_Entity::STATE_LOCKED);
 
             foreach ($saveLater as $fk) {
                 $alias = $fk->getAlias();
@@ -302,7 +302,7 @@ abstract class Doctrine_EntityPersister_Abstract
             // save the MANY-TO-MANY associations
             $this->saveAssociations($record);
             // reset state
-            $record->state($state);
+            $record->_state($state);
             $conn->commit();
         } catch (Exception $e) {
             $conn->rollback();
@@ -322,7 +322,7 @@ abstract class Doctrine_EntityPersister_Abstract
         $record->preSave();
         $this->notifyEntityListeners($record, 'preSave', Doctrine_Event::RECORD_SAVE);
         
-        switch ($record->state()) {
+        switch ($record->_state()) {
             case Doctrine_Entity::STATE_TDIRTY:
                 $this->_insert($record);
                 break;
@@ -361,7 +361,7 @@ abstract class Doctrine_EntityPersister_Abstract
     protected function _saveRelated(Doctrine_Entity $record)
     {
         $saveLater = array();
-        foreach ($record->getReferences() as $k => $v) {
+        foreach ($record->_getReferences() as $k => $v) {
             $rel = $record->getTable()->getRelation($k);
 
             $local = $rel->getLocal();
@@ -408,7 +408,7 @@ abstract class Doctrine_EntityPersister_Abstract
      */
     public function saveAssociations(Doctrine_Entity $record)
     {
-        foreach ($record->getReferences() as $relationName => $relatedObject) {
+        foreach ($record->_getReferences() as $relationName => $relatedObject) {
             if ($relatedObject === Doctrine_Null::$INSTANCE) {
                 continue;
             }
@@ -514,8 +514,8 @@ abstract class Doctrine_EntityPersister_Abstract
         
         $table = $this->_classMetadata;
 
-        $state = $record->state();
-        $record->state(Doctrine_Entity::STATE_LOCKED);
+        $state = $record->_state();
+        $record->_state(Doctrine_Entity::STATE_LOCKED);
         
         $this->_doDelete($record);
         

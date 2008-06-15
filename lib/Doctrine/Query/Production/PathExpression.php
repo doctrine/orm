@@ -28,7 +28,7 @@
  * @author      Janne Vanhala <jpvanhal@cc.hut.fi>
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @link        http://www.phpdoctrine.org
- * @since       1.0
+ * @since       2.0
  * @version     $Revision$
  */
 class Doctrine_Query_Production_PathExpression extends Doctrine_Query_Production
@@ -141,5 +141,32 @@ class Doctrine_Query_Production_PathExpression extends Doctrine_Query_Production
              . $queryComponent['metadata']->getColumnName($this->_fieldName);
 
         return $conn->quoteIdentifier($str);
+    }
+    
+    /**
+     * Visitor support
+     *
+     * @param object $visitor
+     */
+    public function accept($visitor)
+    {
+        $visitor->visitPathExpression($this);
+    }
+    
+    /* Getters */
+    
+    public function getIdentifiers()
+    {
+        return $this->_identifiers;
+    }
+    
+    public function getFieldName()
+    {
+        return $this->_fieldName;
+    }
+    
+    public function getComponentAlias()
+    {
+        return $this->_componentAlias;
     }
 }

@@ -19,7 +19,7 @@
  * <http://www.phpdoctrine.org>.
  */
 
-#namespace Doctrine::Core;
+#namespace Doctrine::Common;
 
 /**
  * Doctrine_Configurable

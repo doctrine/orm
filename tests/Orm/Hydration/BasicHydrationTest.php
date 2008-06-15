@@ -45,8 +45,7 @@ class Orm_Hydration_BasicHydrationTest extends Doctrine_OrmTestCase
         // Faked query components
         $queryComponents = array(
             'u' => array(
-                'table' => $this->_em->getClassMetadata('CmsUser'),
-                'mapper' => $this->_em->getEntityPersister('CmsUser'),
+                'metadata' => $this->_em->getClassMetadata('CmsUser'),
                 'parent' => null,
                 'relation' => null,
                 'map' => null
@@ -115,16 +114,14 @@ class Orm_Hydration_BasicHydrationTest extends Doctrine_OrmTestCase
         // Faked query components
         $queryComponents = array(
             'u' => array(
-                'table' => $this->_em->getClassMetadata('CmsUser'),
-                'mapper' => $this->_em->getEntityPersister('CmsUser'),
+                'metadata' => $this->_em->getClassMetadata('CmsUser'),
                 'parent' => null,
                 'relation' => null,
                 'map' => null,
                 'agg' => array('0' => 'nameUpper')
                 ),
             'p' => array(
-                'table' => $this->_em->getClassMetadata('CmsPhonenumber'),
-                'mapper' => $this->_em->getEntityPersister('CmsPhonenumber'),
+                'metadata' => $this->_em->getClassMetadata('CmsPhonenumber'),
                 'parent' => 'u',
                 'relation' => $this->_em->getClassMetadata('CmsUser')->getRelation('phonenumbers'),
                 'map' => null
@@ -198,7 +195,6 @@ class Orm_Hydration_BasicHydrationTest extends Doctrine_OrmTestCase
         } else if ($hydrationMode == Doctrine::HYDRATE_SCALAR) {
             $this->assertTrue(is_array($result));
             $this->assertEquals(3, count($result));
-
             $this->assertEquals(1, $result[0]['u_id']);
             $this->assertEquals('developer', $result[0]['u_status']);
             $this->assertEquals('ROMANB', $result[0]['u_nameUpper']);
@@ -222,15 +218,13 @@ class Orm_Hydration_BasicHydrationTest extends Doctrine_OrmTestCase
         // Faked query components
         $queryComponents = array(
             'u' => array(
-                'table' => $this->_em->getClassMetadata('CmsUser'),
-                'mapper' => $this->_em->getEntityPersister('CmsUser'),
+                'metadata' => $this->_em->getClassMetadata('CmsUser'),
                 'parent' => null,
                 'relation' => null,
                 'map' => null
                 ),
             'p' => array(
-                'table' => $this->_em->getClassMetadata('CmsPhonenumber'),
-                'mapper' => $this->_em->getEntityPersister('CmsPhonenumber'),
+                'metadata' => $this->_em->getClassMetadata('CmsPhonenumber'),
                 'parent' => 'u',
                 'relation' => $this->_em->getClassMetadata('CmsUser')->getRelation('phonenumbers'),
                 'map' => null,
@@ -308,16 +302,14 @@ class Orm_Hydration_BasicHydrationTest extends Doctrine_OrmTestCase
         // Faked query components
         $queryComponents = array(
             'u' => array(
-                'table' => $this->_em->getClassMetadata('CmsUser'),
-                'mapper' => $this->_em->getEntityPersister('CmsUser'),
+                'metadata' => $this->_em->getClassMetadata('CmsUser'),
                 'parent' => null,
                 'relation' => null,
                 'agg' => array('0' => 'nameUpper'),
                 'map' => 'id'
                 ),
             'p' => array(
-                'table' => $this->_em->getClassMetadata('CmsPhonenumber'),
-                'mapper' => $this->_em->getEntityPersister('CmsPhonenumber'),
+                'metadata' => $this->_em->getClassMetadata('CmsPhonenumber'),
                 'parent' => 'u',
                 'relation' => $this->_em->getClassMetadata('CmsUser')->getRelation('phonenumbers'),
                 'map' => 'phonenumber'
@@ -414,23 +406,20 @@ class Orm_Hydration_BasicHydrationTest extends Doctrine_OrmTestCase
         // Faked query components
         $queryComponents = array(
             'u' => array(
-                'table' => $this->_em->getClassMetadata('CmsUser'),
-                'mapper' => $this->_em->getEntityPersister('CmsUser'),
+                'metadata' => $this->_em->getClassMetadata('CmsUser'),
                 'parent' => null,
                 'relation' => null,
                 'map' => null,
                 'agg' => array('0' => 'nameUpper')
                 ),
             'p' => array(
-                'table' => $this->_em->getClassMetadata('CmsPhonenumber'),
-                'mapper' => $this->_em->getEntityPersister('CmsPhonenumber'),
+                'metadata' => $this->_em->getClassMetadata('CmsPhonenumber'),
                 'parent' => 'u',
                 'relation' => $this->_em->getClassMetadata('CmsUser')->getRelation('phonenumbers'),
                 'map' => null
                 ),
             'a' => array(
-                'table' => $this->_em->getClassMetadata('CmsArticle'),
-                'mapper' => $this->_em->getEntityPersister('CmsArticle'),
+                'metadata' => $this->_em->getClassMetadata('CmsArticle'),
                 'parent' => 'u',
                 'relation' => $this->_em->getClassMetadata('CmsUser')->getRelation('articles'),
                 'map' => null
@@ -573,30 +562,26 @@ class Orm_Hydration_BasicHydrationTest extends Doctrine_OrmTestCase
         // Faked query components
         $queryComponents = array(
             'u' => array(
-                'table' => $this->_em->getClassMetadata('CmsUser'),
-                'mapper' => $this->_em->getEntityPersister('CmsUser'),
+                'metadata' => $this->_em->getClassMetadata('CmsUser'),
                 'parent' => null,
                 'relation' => null,
                 'map' => null,
                 'agg' => array('0' => 'nameUpper')
                 ),
             'p' => array(
-                'table' => $this->_em->getClassMetadata('CmsPhonenumber'),
-                'mapper' => $this->_em->getEntityPersister('CmsPhonenumber'),
+                'metadata' => $this->_em->getClassMetadata('CmsPhonenumber'),
                 'parent' => 'u',
                 'relation' => $this->_em->getClassMetadata('CmsUser')->getRelation('phonenumbers'),
                 'map' => null
                 ),
             'a' => array(
-                'table' => $this->_em->getClassMetadata('CmsArticle'),
-                'mapper' => $this->_em->getEntityPersister('CmsArticle'),
+                'metadata' => $this->_em->getClassMetadata('CmsArticle'),
                 'parent' => 'u',
                 'relation' => $this->_em->getClassMetadata('CmsUser')->getRelation('articles'),
                 'map' => null
                 ),
             'c' => array(
-                'table' => $this->_em->getClassMetadata('CmsComment'),
-                'mapper' => $this->_em->getEntityPersister('CmsComment'),
+                'metadata' => $this->_em->getClassMetadata('CmsComment'),
                 'parent' => 'a',
                 'relation' => $this->_em->getClassMetadata('CmsArticle')->getRelation('comments'),
                 'map' => null
@@ -713,9 +698,10 @@ class Orm_Hydration_BasicHydrationTest extends Doctrine_OrmTestCase
             $this->assertEquals('First!', $result[0][0]['articles'][0]['comments'][0]['topic']);
     
             $this->assertTrue(isset($result[0][0]['articles'][0]['comments']));
-            $this->assertFalse(isset($result[0][0]['articles'][1]['comments']));
-            $this->assertFalse(isset($result[1][0]['articles'][0]['comments']));
-            $this->assertFalse(isset($result[1][0]['articles'][1]['comments']));
+            // empty collections/arrays
+            $this->assertTrue(isset($result[0][0]['articles'][1]['comments']));
+            $this->assertTrue(isset($result[1][0]['articles'][0]['comments']));
+            $this->assertTrue(isset($result[1][0]['articles'][1]['comments']));
         }
 
         if ($hydrationMode == Doctrine::HYDRATE_RECORD) {
@@ -736,8 +722,25 @@ class Orm_Hydration_BasicHydrationTest extends Doctrine_OrmTestCase
             // article comments
             $this->assertTrue($result[0][0]['articles'][0]['comments'] instanceof Doctrine_Collection);
             $this->assertTrue($result[0][0]['articles'][0]['comments'][0] instanceof Doctrine_Entity);
+            // empty comment collections
+            $this->assertTrue($result[0][0]['articles'][1]['comments'] instanceof Doctrine_Collection);
+            $this->assertEquals(0, count($result[0][0]['articles'][1]['comments']));
+            $this->assertTrue($result[1][0]['articles'][0]['comments'] instanceof Doctrine_Collection);
+            $this->assertEquals(0, count($result[1][0]['articles'][0]['comments']));
+            $this->assertTrue($result[1][0]['articles'][1]['comments'] instanceof Doctrine_Collection);
+            $this->assertEquals(0, count($result[1][0]['articles'][1]['comments']));
         } else if ($hydrationMode == Doctrine::HYDRATE_SCALAR) {
             //...
+        } else if ($hydrationMode == Doctrine::HYDRATE_ARRAY) {
+            //...
+            
+            // empty comment collections
+            $this->assertTrue(is_array($result[0][0]['articles'][1]['comments']));
+            $this->assertEquals(0, count($result[0][0]['articles'][1]['comments']));
+            $this->assertTrue(is_array($result[1][0]['articles'][0]['comments']));
+            $this->assertEquals(0, count($result[1][0]['articles'][0]['comments']));
+            $this->assertTrue(is_array($result[1][0]['articles'][1]['comments']));
+            $this->assertEquals(0, count($result[1][0]['articles'][1]['comments']));
         }
     }
     
@@ -768,15 +771,13 @@ class Orm_Hydration_BasicHydrationTest extends Doctrine_OrmTestCase
         // Faked query components
         $queryComponents = array(
             'c' => array(
-                'table' => $this->_em->getClassMetadata('ForumCategory'),
-                'mapper' => $this->_em->getEntityPersister('ForumCategory'),
+                'metadata' => $this->_em->getClassMetadata('ForumCategory'),
                 'parent' => null,
                 'relation' => null,
                 'map' => null
                 ),
             'b' => array(
-                'table' => $this->_em->getClassMetadata('ForumBoard'),
-                'mapper' => $this->_em->getEntityPersister('ForumBoard'),
+                'metadata' => $this->_em->getClassMetadata('ForumBoard'),
                 'parent' => 'c',
                 'relation' => $this->_em->getClassMetadata('ForumCategory')->getRelation('boards'),
                 'map' => null
@@ -904,8 +905,7 @@ class Orm_Hydration_BasicHydrationTest extends Doctrine_OrmTestCase
         // Faked query components
         $queryComponents = array(
             'u' => array(
-                'table' => $this->_em->getClassMetadata('CmsUser'),
-                'mapper' => $this->_em->getEntityPersister('CmsUser'),
+                'metadata' => $this->_em->getClassMetadata('CmsUser'),
                 'parent' => null,
                 'relation' => null,
                 'map' => null

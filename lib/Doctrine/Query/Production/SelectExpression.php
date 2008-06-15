@@ -53,7 +53,7 @@ class Doctrine_Query_Production_SelectExpression extends Doctrine_Query_Producti
             $this->_leftExpression = $this->AST('PathExpressionEndingWithAsterisk', $paramHolder);
 
             $fieldName = implode('.', $this->_leftExpression->getIdentifiers()) . '.*';
-        } elseif(($this->_isSubselect = $this->_isSubselect()) === true) {
+        } else if (($this->_isSubselect = $this->_isSubselect()) === true) {
             $this->_parser->match('(');
             $this->_leftExpression = $this->AST('Subselect', $paramHolder);
             $this->_parser->match(')');
@@ -87,14 +87,16 @@ class Doctrine_Query_Production_SelectExpression extends Doctrine_Query_Producti
         $parserResult = $this->_parser->getParserResult();
 
         // We cannot have aliases for foo.*
-        if ($this->_leftExpression instanceof Doctrine_Query_Production_PathExpressionEndingWithAsterisk && $this->_fieldIdentificationVariable !== null) {
+        if ($this->_leftExpression instanceof Doctrine_Query_Production_PathExpressionEndingWithAsterisk
+                && $this->_fieldIdentificationVariable !== null) {
             $this->_parser->semanticalError(
                 "Cannot assign an identification variable to a path expression ending with asterisk (ie. foo.bar.* AS foobaz)."
             );
         }
 
         // Also, we cannot have aliases for path expressions: foo.bar
-        if ($this->_leftExpression instanceof Doctrine_Query_Production_PathExpressionEndingWithAsterisk && $this->_fieldIdentificationVariable !== null) {
+        if ($this->_leftExpression instanceof Doctrine_Query_Production_PathExpressionEndingWithAsterisk
+                && $this->_fieldIdentificationVariable !== null) {
             $this->_parser->semanticalError(
                 "Cannot assign an identification variable to a path expression (ie. foo.bar AS foobaz)."
             );

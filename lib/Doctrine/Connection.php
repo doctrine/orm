@@ -73,7 +73,7 @@
  * Doctrine::DBAL could ship with a simple standard resolver that uses a primitive
  * round-robin approach to distribution. User can provide its own resolvers.
  */
-abstract class Doctrine_Connection implements Doctrine_Configurable, Countable
+abstract class Doctrine_Connection implements Countable
 {
     /**
      * The PDO database handle. 
@@ -226,7 +226,7 @@ abstract class Doctrine_Connection implements Doctrine_Configurable, Countable
     public function __construct(array $params)
     {
         if (isset($params['pdo'])) {
-            $this->dbh = $pdo;
+            $this->dbh = $params['pdo'];
             $this->isConnected = true;
         }
         $this->_params = $params;
@@ -276,6 +276,14 @@ abstract class Doctrine_Connection implements Doctrine_Configurable, Countable
             $this->_eventManager = new Doctrine_EventManager();
         }
         return $this->_eventManager;
+    }
+    
+    public function getProperty($name)
+    {
+        if ( ! isset($this->properties[$name])) {
+            throw Doctrine_Connection_Exception::unknownProperty($name);
+        }
+        return $this->properties[$name];
     }
     
     /**
@@ -626,10 +634,10 @@ abstract class Doctrine_Connection implements Doctrine_Configurable, Countable
         if (strpos($str, '.')) {
             $e = explode('.', $str);
 
-            return $this->formatter->quoteIdentifier($e[0], $checkOption) . '.'
-                 . $this->formatter->quoteIdentifier($e[1], $checkOption);
+            return $this->getFormatter()->quoteIdentifier($e[0], $checkOption) . '.'
+                 . $this->getFormatter()->quoteIdentifier($e[1], $checkOption);
         }
-        return $this->formatter->quoteIdentifier($str, $checkOption);
+        return $this->getFormatter()->quoteIdentifier($str, $checkOption);
     }
 
     /**
@@ -644,7 +652,7 @@ abstract class Doctrine_Connection implements Doctrine_Configurable, Countable
      */
     public function convertBooleans($item)
     {
-        return $this->formatter->convertBooleans($item);
+        return $this->getFormatter()->convertBooleans($item);
     }
 
     /**
@@ -915,8 +923,8 @@ abstract class Doctrine_Connection implements Doctrine_Configurable, Countable
      */
     public function rethrowException(Exception $e, $invoker)
     {
-        $event = new Doctrine_Event($this, Doctrine_Event::CONN_ERROR);
-        $this->getListener()->preError($event);
+        //$event = new Doctrine_Event($this, Doctrine_Event::CONN_ERROR);
+        //$this->getListener()->preError($event);
         
         $name = 'Doctrine_Connection_' . $this->driverName . '_Exception';
         
@@ -930,7 +938,7 @@ abstract class Doctrine_Connection implements Doctrine_Configurable, Countable
             throw $exc;
         }
 
-        $this->getListener()->postError($event);
+        //$this->getListener()->postError($event);
     }
     
     /**
@@ -951,15 +959,15 @@ abstract class Doctrine_Connection implements Doctrine_Configurable, Countable
      */
     public function close()
     {
-        $event = new Doctrine_Event($this, Doctrine_Event::CONN_CLOSE);
-        $this->getAttribute(Doctrine::ATTR_LISTENER)->preClose($event);
+        //$event = new Doctrine_Event($this, Doctrine_Event::CONN_CLOSE);
+        //this->getAttribute(Doctrine::ATTR_LISTENER)->preClose($event);
 
         $this->clear();
 
         unset($this->dbh);
         $this->isConnected = false;
 
-        $this->getAttribute(Doctrine::ATTR_LISTENER)->postClose($event);
+        //$this->getAttribute(Doctrine::ATTR_LISTENER)->postClose($event);
     }
 
     /**
@@ -1052,7 +1060,6 @@ abstract class Doctrine_Connection implements Doctrine_Configurable, Countable
     }
 
     /**
-     * rollback
      * Cancel any database changes done during a transaction or since a specific
      * savepoint that is in progress. This function may only be called when
      * auto-committing is disabled, otherwise it will fail. Therefore, a new
@@ -1061,9 +1068,9 @@ abstract class Doctrine_Connection implements Doctrine_Configurable, Countable
      * this method can be listened with onPreTransactionRollback and onTransactionRollback
      * eventlistener methods
      *
-     * @param string $savepoint                 name of a savepoint to rollback to
-     * @throws Doctrine_Transaction_Exception   if the rollback operation fails at database level
-     * @return boolean                          false if rollback couldn't be performed, true otherwise
+     * @param string $savepoint                 Name of a savepoint to rollback to.
+     * @throws Doctrine_Transaction_Exception   If the rollback operation fails at database level.
+     * @return boolean                          FALSE if rollback couldn't be performed, TRUE otherwise.
      */
     public function rollback($savepoint = null)
     {
@@ -1071,11 +1078,11 @@ abstract class Doctrine_Connection implements Doctrine_Configurable, Countable
     }
 
     /**
-     * createDatabase
+     * Creates the database for the connection instance.
      *
-     * Method for creating the database for the connection instance
-     *
-     * @return mixed Will return an instance of the exception thrown if the create database fails, otherwise it returns a string detailing the success
+     * @return mixed Will return an instance of the exception thrown if the
+     *               create database fails, otherwise it returns a string
+     *               detailing the success.
      */
     public function createDatabase()
     {
@@ -1116,7 +1123,8 @@ abstract class Doctrine_Connection implements Doctrine_Configurable, Countable
      *
      * Method for dropping the database for the connection instance
      *
-     * @return mixed Will return an instance of the exception thrown if the drop database fails, otherwise it returns a string detailing the success
+     * @return mixed Will return an instance of the exception thrown if the drop
+     *               database fails, otherwise it returns a string detailing the success.
      */
     public function dropDatabase()
     {
@@ -1154,104 +1162,22 @@ abstract class Doctrine_Connection implements Doctrine_Configurable, Countable
      *
      * @param integer $attribute
      * @return mixed
+     * @todo Implementation or remove if not needed. Configuration is the main
+     * container for all the attributes now.
      */
     public function getAttribute($attribute)
     {
         if ($attribute == Doctrine::ATTR_QUOTE_IDENTIFIER) {
             return false;
         }
-        
-        /* legacy */ 
-        if ($attribute >= 100) {
-            if ( ! isset($this->_attributes[$attribute])) {
-                return null;
-            }
-            return $this->_attributes[$attribute];
-        }
-
-        if ($this->isConnected) {
-            try {
-                return $this->dbh->getAttribute($attribute);
-            } catch (Exception $e) {
-                throw new Doctrine_Connection_Exception('Attribute ' . $attribute . ' not found.');
-            }
-        } else {
-            if ( ! isset($this->pendingAttributes[$attribute])) {
-                $this->connect();
-                $this->getAttribute($attribute);
-            }
-
-            return $this->pendingAttributes[$attribute];
-        }
     }
 
-    /**
-     * setAttribute
-     * sets an attribute
-     *
-     * @todo why check for >= 100? has this any special meaning when creating
-     * attributes?
-     *
-     * @param integer $attribute
-     * @param mixed $value
-     * @return boolean
-     */
-    public function setAttribute($attribute, $value)
-    {
-        if ($attribute >= 100) {
-            parent::setAttribute($attribute, $value);
-        } else {
-            if ($this->isConnected) {
-                $this->dbh->setAttribute($attribute, $value);
-            } else {
-                $this->pendingAttributes[$attribute] = $value;
-            }
-        }
-        return $this;
-    }
     
-    public function hasAttribute($name)
+    public function getFormatter()
     {
-        return false;
+        if ( ! $this->modules['formatter']) {
+            $this->modules['formatter'] = new Doctrine_Formatter($this);
+        }
+        return $this->modules['formatter'];
     }
-
-    /**
-     * __get
-     * lazy loads given module and returns it
-     *
-     * @see Doctrine_DataDict
-     * @see Doctrine_Expression
-     * @see Doctrine_Export
-     * @see Doctrine_Transaction
-     * @see Doctrine_Connection::$modules       all availible modules
-     * @param string $name                      the name of the module to get
-     * @throws Doctrine_Connection_Exception    if trying to get an unknown module
-     * @return Doctrine_Connection_Module       connection module
-     */
-    public function __get($name)
-    {
-        if (isset($this->properties[$name])) {
-            return $this->properties[$name];
-        }
-
-        if ( ! isset($this->modules[$name])) {
-            throw new Doctrine_Connection_Exception('Unknown module / property ' . $name);
-        }
-        if ($this->modules[$name] === false) {
-            switch ($name) {
-                case 'unitOfWork':
-                    $this->modules[$name] = new Doctrine_Connection_UnitOfWork($this);
-                    break;
-                case 'formatter':
-                    $this->modules[$name] = new Doctrine_Formatter($this);
-                    break;
-                default:
-                    $class = 'Doctrine_' . ucwords($name) . '_' . $this->getDriverName();
-                    $this->modules[$name] = new $class($this);
-                }
-        }
-
-        return $this->modules[$name];
-    }
-
 }

@@ -27,7 +27,7 @@
  * @author      Janne Vanhala <jpvanhal@cc.hut.fi>
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @link        http://www.phpdoctrine.org
- * @since       1.0
+ * @since       2.0
  * @version     $Revision$
  */
 class Doctrine_Query_Production_PathExpressionEndingWithAsterisk extends Doctrine_Query_Production
@@ -153,5 +153,27 @@ class Doctrine_Query_Production_PathExpressionEndingWithAsterisk extends Doctrin
         }
 
         return $str;
+    }
+    
+    /**
+     * Visitor support
+     *
+     * @param object $visitor
+     */
+    public function accept($visitor)
+    {
+        $visitor->visitPathExpressionEndingWithAsterisk($this);
+    }
+    
+    /* Getters */
+    
+    public function getIdentifiers()
+    {
+        return $this->_identifiers;
+    }
+    
+    public function getQueryComponent()
+    {
+        return  $this->_queryComponent;
     }
 }

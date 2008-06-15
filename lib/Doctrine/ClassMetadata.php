@@ -60,7 +60,7 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
      *
      * @var Doctrine_Connection
      */
-    protected $_conn;
+    protected $_em;
 
     /**
      * The names of the parent classes (ancestors).
@@ -115,14 +115,6 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
     protected $_generators = array();
 
     /**
-     * An array containing all filters attached to the class.
-     *
-     * @see Doctrine_Record_Filter
-     * @var array $_filters
-     */
-    protected $_filters = array();
-
-    /**
      * The mapped columns and their mapping definitions.
      * Keys are column names and values are mapping definitions.
      *
@@ -156,6 +148,13 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
      * @var array
      */
     protected $_fieldNames = array();
+    
+    /**
+     * Enter description here...
+     *
+     * @var unknown_type
+     */
+    protected $_attributes = array('loadReferences' => true);
 
     /**
      * An array of column names. Keys are field names and values column names.
@@ -165,6 +164,13 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
      * @var array
      */
     protected $_columnNames = array();
+    
+    /**
+     * Enter description here...
+     *
+     * @var unknown_type
+     */
+    protected $_subclassFieldNames = array();
 
     /**
      * Caches enum value mappings. Keys are field names and values arrays with the
@@ -278,7 +284,7 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
     {
         $this->_entityName = $entityName;
         $this->_rootEntityName = $entityName;
-        $this->_conn = $em;
+        $this->_em = $em;
         $this->_parser = new Doctrine_Relation_Parser($this);
     }
 
@@ -287,12 +293,12 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
      */
     public function getConnection()
     {
-        return $this->_conn;
+        return $this->_em;
     }
     
     public function getEntityManager()
     {
-        return $this->_conn;
+        return $this->_em;
     }
 
     /**
@@ -348,11 +354,11 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
      */
     public function isIdentifierComposite()
     {
-        return ($this->_identifierType == Doctrine::IDENTIFIER_COMPOSITE);
+        return $this->_identifierType == Doctrine::IDENTIFIER_COMPOSITE;
     }
 
     /**
-     * Check if the field is unique
+     * Check if the field is unique.
      *
      * @param string $fieldName  The field name
      * @return boolean  TRUE if the field is unique, FALSE otherwise.
@@ -369,7 +375,7 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
     }
 
     /**
-     * Check if the field is not null
+     * Check if the field is not null.
      *
      * @param string $fieldName  The field name
      * @return boolean  TRUE if the field is not null, FALSE otherwise.
@@ -391,6 +397,8 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
      * adds an index to this table
      *
      * @return void
+     * @deprecated
+     * @todo Should be done through setTableOption().
      */
     public function addIndex($index, array $definition)
     {
@@ -401,6 +409,8 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
      * getIndex
      *
      * @return array|boolean        array on success, FALSE on failure
+     * @todo Should be done through getTableOption().
+     * @deprecated
      */
     public function getIndex($index)
     {
@@ -424,19 +434,6 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
      */
     public function setOption($name, $value)
     {
-        /*switch ($name) {
-         case 'tableName':
-         case 'index':
-         case 'sequenceName':
-         case 'type':
-         case 'charset':
-         case 'collation':
-         case 'collate':
-         return $this->setTableOption($name, $value);
-         case 'enumMap':
-         $this->_enumMap = $value;
-         return;
-         }*/
         $this->_options[$name] = $value;
     }
 
@@ -468,7 +465,6 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
         return (isset($this->_invokedMethods[$method])) ?
         $this->_invokedMethods[$method] : false;
     }
-
     public function addBehaviorMethod($method, $behavior)
     {
         $this->_invokedMethods[$method] = $class;
@@ -540,7 +536,7 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
     public function getColumnMapping($columnName)
     {
         return isset($this->_mappedColumns[$columnName]) ?
-        $this->_mappedColumns[$columnName] : false;
+                $this->_mappedColumns[$columnName] : false;
     }
 
     /**
@@ -555,10 +551,8 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
     public function getFieldName($columnName)
     {
         return isset($this->_fieldNames[$columnName]) ?
-        $this->_fieldNames[$columnName] : $columnName;
+                $this->_fieldNames[$columnName] : $columnName;
     }
-    
-    private $_subclassFieldNames = array();
     
     /**
      * 
@@ -572,7 +566,7 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
         }
         
         $classMetadata = $this;
-        $conn = $this->_conn;
+        $conn = $this->_em;
         
         foreach ($classMetadata->getSubclasses() as $subClass) {
             $subClassMetadata = $conn->getClassMetadata($subClass);
@@ -882,7 +876,7 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
         }
 
         $columnName = $this->getColumnName($fieldName);
-        if ( ! $this->_conn->getAttribute(Doctrine::ATTR_USE_NATIVE_ENUM) &&
+        if ( ! $this->_em->getAttribute(Doctrine::ATTR_USE_NATIVE_ENUM) &&
         isset($this->_mappedColumns[$columnName]['values'][$index])) {
             $enumValue = $this->_mappedColumns[$columnName]['values'][$index];
         } else {
@@ -904,7 +898,7 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
     {
         $values = $this->getEnumValues($fieldName);
         $index = array_search($value, $values);
-        if ($index === false || ! $this->_conn->getAttribute(Doctrine::ATTR_USE_NATIVE_ENUM)) {
+        if ($index === false || ! $this->_em->getAttribute(Doctrine::ATTR_USE_NATIVE_ENUM)) {
             return $index;
         }
 
@@ -1288,7 +1282,7 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
     public function setInheritanceType($type, array $options = array())
     {
         if ($parentClassNames = $this->getParentClasses()) {
-            if ($this->_conn->getClassMetadata($parentClassNames[0])->getInheritanceType() != $type) {
+            if ($this->_em->getClassMetadata($parentClassNames[0])->getInheritanceType() != $type) {
                 throw new Doctrine_ClassMetadata_Exception("All classes in an inheritance hierarchy"
                 . " must share the same inheritance mapping type. Mixing is not allowed.");
             }
@@ -1388,7 +1382,7 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
      */
     public function export()
     {
-        $this->_conn->export->exportTable($this);
+        $this->_em->export->exportTable($this);
     }
 
     /**
@@ -1409,13 +1403,13 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
         if ($this->_inheritanceType == Doctrine::INHERITANCE_TYPE_SINGLE_TABLE) {
             $parents = $this->getParentClasses();
             if ($parents) {
-                $rootClass = $this->_conn->getClassMetadata(array_pop($parents));
+                $rootClass = $this->_em->getClassMetadata(array_pop($parents));
             } else {
                 $rootClass = $this;
             }
             $subClasses = $rootClass->getSubclasses();
             foreach ($subClasses as $subClass) {
-                $subClassMetadata = $this->_conn->getClassMetadata($subClass);
+                $subClassMetadata = $this->_em->getClassMetadata($subClass);
                 $allColumns = array_merge($allColumns, $subClassMetadata->getColumns());
             }
         } else if ($this->_inheritanceType == Doctrine::INHERITANCE_TYPE_JOINED) {
@@ -1454,7 +1448,7 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
                     break;
                 case 'boolean':
                     if (isset($definition['default'])) {
-                        $definition['default'] = $this->_conn->convertBooleans($definition['default']);
+                        $definition['default'] = $this->_em->convertBooleans($definition['default']);
                     }
                     break;
             }
@@ -1609,21 +1603,6 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
     }
 
     /**
-     * unshiftFilter
-     *
-     * @param  object Doctrine_Record_Filter $filter
-     * @return object $this
-     * @todo Remove filters, if possible.
-     */
-    public function unshiftFilter(Doctrine_Record_Filter $filter)
-    {
-        $filter->setTable($this);
-        array_unshift($this->_filters, $filter);
-
-        return $this;
-    }
-
-    /**
      * getTree
      *
      * getter for associated tree
@@ -1655,17 +1634,6 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
     public function isTree()
     {
         return ( ! is_null($this->getOption('treeImpl'))) ? true : false;
-    }
-
-    /**
-     * getFilters
-     *
-     * @return array $filters
-     * @todo Remove filters, if possible.
-     */
-    public function getFilters()
-    {
-        return $this->_filters;
     }
 
     /**
@@ -1726,8 +1694,8 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
      */
     public function setTableName($tableName)
     {
-        $this->setTableOption('tableName', $this->_conn->getConnection()
-                ->formatter->getTableName($tableName));
+        $this->setTableOption('tableName', $this->_em->getConnection()
+                ->getFormatter()->getTableName($tableName));
     }
 
     /**
@@ -1740,7 +1708,7 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
     public function serialize()
     {
         //$contents = get_object_vars($this);
-        /* @TODO How to handle $this->_conn and $this->_parser ? */
+        /* @TODO How to handle $this->_em and $this->_parser ? */
         //return serialize($contents);
         return "";
     }
@@ -1834,6 +1802,7 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
      * @param string $name          optional constraint name
      * @return Doctrine_Entity      this object
      * @todo Should be done through $_tableOptions
+     * @deprecated
      */
     public function check($constraint, $name = null)
     {
@@ -1847,7 +1816,6 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
 
         return $this;
     }
-
     protected function _addCheckConstraint($definition, $name)
     {
         if (is_string($name)) {
@@ -1855,21 +1823,6 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
         } else {
             $this->_tableOptions['checks'][] = $definition;
         }
-    }
-
-    /**
-     * Registers a custom mapper for the entity class.
-     *
-     * @param string $mapperClassName  The class name of the custom mapper.
-     * @deprecated
-     */
-    public function setCustomMapperClass($mapperClassName)
-    {
-        if ( ! is_subclass_of($mapperClassName, 'Doctrine_Mapper')) {
-            throw new Doctrine_ClassMetadata_Exception("The custom mapper must be a subclass"
-            . " of Doctrine_Mapper.");
-        }
-        $this->_customRepositoryClassName = $mapperClassName;
     }
     
     /**
@@ -1886,19 +1839,13 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
         }
         $this->_customRepositoryClassName = $repositoryClassName;
     }
-
-    /**
-     * Gets the name of the custom mapper class used for the entity class.
-     *
-     * @return string|null  The name of the custom mapper class or NULL if the entity
-     *                      class does not have a custom mapper class.
-     * @deprecated
-     */
-    public function getCustomMapperClass()
-    {
-        return $this->_customRepositoryClassName;
-    }
     
+    /**
+     * Gets the name of the custom repository class used for the entity class.
+     *
+     * @return string|null  The name of the custom repository class or NULL if the entity
+     *                      class does not have a custom repository class.
+     */
     public function getCustomRepositoryClass()
     {
          return $this->_customRepositoryClassName;
@@ -1909,13 +1856,14 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
      */
     public function setEntityType($type)
     {
-        //Doctrine::CLASSTYPE_ENTITY
-        //Doctrine::CLASSTYPE_MAPPED_SUPERCLASS
-        //Doctrine::CLASSTYPE_TRANSIENT
+        //Entity::TYPE_ENTITY
+        //Entity::TYPE_MAPPED_SUPERCLASS
+        //Entity::TYPE_TRANSIENT
     }
 
     /**
-     *
+     * Binds the entity instance of this class to a specific EntityManager.
+     * 
      * @todo Implementation. Replaces the bindComponent() methods on the old Doctrine_Manager.
      *       Binding an Entity to a specific EntityManager in 2.0 is the same as binding
      *       it to a Connection in 1.0.
@@ -1974,17 +1922,21 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
 
     public function hasAttribute($name)
     {
-        return false;
+        return isset($this->_attributes[$name]);
     }
     
     public function getAttribute($name)
     {
-        return null;
+        if ($this->hasAttribute($name)) {
+            return $this->_attributes[$name];
+        }
     }
     
     public function setAttribute($name, $value)
     {
-        ;
+        if ($this->hasAttribute($name)) {
+            $this->_attributes[$name] = $value;
+        }
     }
 
 

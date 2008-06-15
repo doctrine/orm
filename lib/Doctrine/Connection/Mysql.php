@@ -36,7 +36,9 @@
 class Doctrine_Connection_Mysql extends Doctrine_Connection_Common
 {
     /**
-     * @var string $driverName                  the name of this connection driver
+     * Driver name.
+     * 
+     * @var string                
      */
     protected $driverName = 'Mysql';
 
@@ -46,11 +48,8 @@ class Doctrine_Connection_Mysql extends Doctrine_Connection_Common
      * @param Doctrine_Manager $manager
      * @param PDO|Doctrine_Adapter $adapter     database handler
      */
-    public function __construct($adapter, $user = null, $pass = null)
+    public function __construct(array $params)
     {
-        $this->setAttribute(PDO::ATTR_EMULATE_PREPARES, true);
-        $this->setAttribute(Doctrine::ATTR_DEFAULT_TABLE_TYPE, 'INNODB');
-
         $this->supported = array(
                 'sequences'            => 'emulated',
                 'indexes'              => true,
@@ -91,7 +90,7 @@ class Doctrine_Connection_Mysql extends Doctrine_Connection_Common
 
         $this->properties['varchar_max_length'] = 255;
 
-        parent::__construct($adapter, $user, $pass);
+        parent::__construct($params);
     }
 
     /**

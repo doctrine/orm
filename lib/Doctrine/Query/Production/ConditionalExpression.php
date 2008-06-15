@@ -28,7 +28,7 @@
  * @author      Janne Vanhala <jpvanhal@cc.hut.fi>
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @link        http://www.phpdoctrine.org
- * @since       1.0
+ * @since       2.0
  * @version     $Revision$
  */
 class Doctrine_Query_Production_ConditionalExpression extends Doctrine_Query_Production
@@ -68,5 +68,25 @@ class Doctrine_Query_Production_ConditionalExpression extends Doctrine_Query_Pro
     protected function _mapConditionalTerm($value)
     {
         return $value->buildSql();
+    }
+    
+    /**
+     * Visitor support.
+     *
+     * @param object $visitor
+     */
+    public function accept($visitor)
+    {
+        foreach ($this->_conditionalTerms as $term) {
+            $term->accept($visitor);
+        }
+        $visitor->visitConditionalExpression($this);
+    }
+    
+    /* Getters */
+    
+    public function getConditionalTerms()
+    {
+        return $this->_conditionalTerms;
     }
 }

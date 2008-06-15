@@ -30,7 +30,7 @@ require_once 'lib/DoctrineTestInit.php';
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @link        http://www.phpdoctrine.org
- * @since       1.0
+ * @since       2.0
  * @version     $Revision$
  * @todo        1) [romanb] We  might want to split the SQL generation tests into multiple
  *              testcases later since we'll have a lot of them and we might want to have special SQL
@@ -41,7 +41,7 @@ class Orm_Query_LanguageRecognitionTest extends Doctrine_OrmTestCase
     public function assertValidDql($dql)
     {
         try {
-            $entityManager = $this->sharedFixture['em'];
+            $entityManager = $this->_em;
             $query = $entityManager->createQuery($dql);
             $parserResult = $query->parse();
         } catch (Doctrine_Exception $e) {
@@ -52,7 +52,7 @@ class Orm_Query_LanguageRecognitionTest extends Doctrine_OrmTestCase
     public function assertInvalidDql($dql)
     {
         try {
-            $entityManager = $this->sharedFixture['em'];
+            $entityManager = $this->_em;
             $query = $entityManager->createQuery($dql);
             $query->setDql($dql);
             $parserResult = $query->parse();

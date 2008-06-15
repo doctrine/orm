@@ -28,7 +28,7 @@
  * @author      Janne Vanhala <jpvanhal@cc.hut.fi>
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @link        http://www.phpdoctrine.org
- * @since       1.0
+ * @since       2.0
  * @version     $Revision$
  */
 class Doctrine_Query_Production_OffsetClause extends Doctrine_Query_Production
@@ -53,5 +53,22 @@ class Doctrine_Query_Production_OffsetClause extends Doctrine_Query_Production
         // The responsability to apply the limit-subquery is from
         // SelectStatement, not this object's one.
         return ' OFFSET ' . $this->_offset;
+    }
+    
+    /**
+     * Visitor support
+     *
+     * @param object $visitor
+     */
+    public function accept($visitor)
+    {
+        $visitor->visitOffsetClause($this);
+    }
+    
+    /* Getters */
+    
+    public function getOffset()
+    {
+        return $this->_offset;
     }
 }

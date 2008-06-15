@@ -28,7 +28,7 @@
  * @author      Janne Vanhala <jpvanhal@cc.hut.fi>
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @link        http://www.phpdoctrine.org
- * @since       1.0
+ * @since       2.0
  * @version     $Revision$
  */
 class Doctrine_Query_Production_InExpression extends Doctrine_Query_Production
@@ -86,5 +86,39 @@ class Doctrine_Query_Production_InExpression extends Doctrine_Query_Production
     protected function _mapAtom($value)
     {
         return $value->buildSql();
+    }
+    
+    /**
+     * Visitor support
+     *
+     * @param object $visitor
+     */
+    public function accept($visitor)
+    {
+        if ($this->_subselect !== null) {
+            $this->_subselect->accept($visitor);
+        } else {
+            foreach ($this->_atoms as $atom) {
+                $atom->accept($visitor);
+            }
+        }
+        $visitor->visitInExpression($this);
+    }
+    
+    /* Getters */
+    
+    public function isNot()
+    {
+        return $this->_not;
+    }
+    
+    public function getSubselect()
+    {
+        return $this->_subselect;
+    }
+    
+    public function getAtoms()
+    {
+        return $this->_atoms;
     }
 }

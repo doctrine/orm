@@ -76,7 +76,7 @@ class Doctrine_Lib
         $r[] = '<pre>';
         $r[] = 'Component  : ' . $record->getTable()->getComponentName();
         $r[] = 'ID         : ' . $record->obtainIdentifier();
-        $r[] = 'References : ' . count($record->getReferences());
+        $r[] = 'References : ' . count($record->_getReferences());
         $r[] = 'State      : ' . Doctrine_Lib::getRecordStateAsString($record->getState());
         $r[] = 'OID        : ' . $record->getOID();
         $r[] = 'data       : ' . Doctrine::dump($record->getData(), false);

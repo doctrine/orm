@@ -28,7 +28,7 @@
  * @author      Janne Vanhala <jpvanhal@cc.hut.fi>
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @link        http://www.phpdoctrine.org
- * @since       1.0
+ * @since       2.0
  * @version     $Revision$
  */
 class Doctrine_Query_Production_Expression extends Doctrine_Query_Production
@@ -85,5 +85,25 @@ class Doctrine_Query_Production_Expression extends Doctrine_Query_Production
     protected function _mapTerm($value)
     {
         return (is_string($value) ? $value : $value->buildSql());
+    }
+    
+    /**
+     * Visitor support
+     *
+     * @param object $visitor
+     */
+    public function accept($visitor)
+    {
+        foreach ($this->_terms as $term) {
+            $term->accept($visitor);
+        }
+        $visitor->visitExpression($this);
+    }
+    
+    /* Getters */
+    
+    public function getTerms()
+    {
+        return $this->_terms;
     }
 }

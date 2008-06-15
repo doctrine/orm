@@ -28,7 +28,7 @@
  * @author      Janne Vanhala <jpvanhal@cc.hut.fi>
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @link        http://www.phpdoctrine.org
- * @since       1.0
+ * @since       2.0
  * @version     $Revision$
  */
 class Doctrine_Query_Production_FromClause extends Doctrine_Query_Production
@@ -70,5 +70,25 @@ class Doctrine_Query_Production_FromClause extends Doctrine_Query_Production
     protected function _mapIdentificationVariableDeclaration($value)
     {
         return $value->buildSql();
+    }
+    
+    /**
+     * Visitor support
+     *
+     * @param object $visitor
+     */
+    public function accept($visitor)
+    {
+        foreach ($this->_identificationVariableDeclaration as $decl) {
+            $decl->accept($visitor);
+        }
+        $visitor->visitFromClause($this);
+    }
+    
+    /* Getters */
+    
+    public function getIdentificationVariableDeclarations()
+    {
+        return $this->_identificationVariableDeclaration;
     }
 }

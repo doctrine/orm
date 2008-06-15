@@ -11,7 +11,7 @@ class Doctrine_DbalTestSuite extends Doctrine_TestSuite
     
     protected function setUp()
     {
-        $this->sharedFixture['connection'] = Doctrine_TestUtil::getConnection();
+        $this->sharedFixture['conn'] = Doctrine_TestUtil::getConnection();
     }
     
     protected function tearDown()

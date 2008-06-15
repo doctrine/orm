@@ -28,7 +28,7 @@
  * @author      Janne Vanhala <jpvanhal@cc.hut.fi>
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @link        http://www.phpdoctrine.org
- * @since       1.0
+ * @since       2.0
  * @version     $Revision$
  */
 class Doctrine_Query_Production_UpdateItem extends Doctrine_Query_Production
@@ -58,5 +58,29 @@ class Doctrine_Query_Production_UpdateItem extends Doctrine_Query_Production
     {
         return $this->_pathExpression->buildSql() . ' = ' 
              . ($this->_expression === null ? 'NULL' : $this->_expression->buildSql());
+    }
+    
+    /**
+     * Visitor support.
+     */
+    public function accept($visitor)
+    {
+        $this->_pathExpression->accept($visitor);
+        if ($this->_expression) {
+            $this->_expression->accept($visitor);
+        }
+        $visitor->visitUpdateItem($this);
+    }
+    
+    /* Getters */
+    
+    public function getPathExpression()
+    {
+        return $this->_pathExpression;
+    }
+    
+    public function getExpression()
+    {
+        return $this->_expression;
     }
 }
