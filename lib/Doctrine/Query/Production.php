@@ -1,5 +1,4 @@
 <?php
-
 /*
  *  $Id$
  *
@@ -53,6 +52,13 @@ abstract class Doctrine_Query_Production
      * @var Doctrine_Query_Parser
      */
     protected $_parser;
+    
+    /**
+     * The EntityManager.
+     *
+     * @var EntityManager
+     */
+    protected $_em;
 
 
     /**
@@ -63,6 +69,7 @@ abstract class Doctrine_Query_Production
     public function __construct(Doctrine_Query_Parser $parser)
     {
         $this->_parser = $parser;
+        $this->_em = $this->_parser->getEntityManager();
     }
 
 

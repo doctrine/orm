@@ -248,14 +248,13 @@ abstract class Doctrine_EntityPersister_Abstract
     }
     
     /**
-     * Saves an entity and all it's related entities.
+     * Saves an entity.
      *
      * @param Doctrine_Entity $record    The entity to save.
      * @param Doctrine_Connection $conn  The connection to use. Will default to the mapper's
      *                                   connection.
-     * @throws Doctrine_Mapper_Exception If the mapper is unable to save the given entity.
      */
-    public function save(Doctrine_Entity $record, Doctrine_Connection $conn = null)
+    public function save(Doctrine_Entity $record)
     {
         if ( ! ($record instanceof $this->_domainClassName)) {
             throw new Doctrine_Mapper_Exception("Mapper of type " . $this->_domainClassName . " 
@@ -282,7 +281,7 @@ abstract class Doctrine_EntityPersister_Abstract
             if ($record->isValid()) {
                 $this->_insertOrUpdate($record);
             } else {
-                $conn->transaction->addInvalid($record);
+                $conn->getTransaction()->addInvalid($record);
             }
 
             $state = $record->_state();
@@ -375,7 +374,7 @@ abstract class Doctrine_EntityPersister_Abstract
 
                 // Protection against infinite function recursion before attempting to save
                 if ($obj instanceof Doctrine_Entity && $obj->isModified()) {
-                    $obj->save($this->_conn);
+                    $obj->save();
                     
                     /** Can this be removed?
                     $id = array_values($obj->identifier());

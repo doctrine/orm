@@ -66,7 +66,7 @@ abstract class Doctrine_Entity extends Doctrine_Access implements Serializable
      * PROXY STATE
      * An Entity is in proxy state when its properties are not fully loaded.
      */
-    const STATE_PROXY = 4;
+    //const STATE_PROXY = 4;
 
     /**
      * NEW TCLEAN
@@ -963,9 +963,8 @@ abstract class Doctrine_Entity extends Doctrine_Access implements Serializable
             return $this->$setter($value);
         }
         
-        $class = $this->_class;
-        if ($class->hasField($fieldName)) {
-            if ($value instanceof Doctrine_Entity) {
+        if ($this->_class->hasField($fieldName)) {
+            /*if ($value instanceof Doctrine_Entity) {
                 $type = $class->getTypeOf($fieldName);
                 // FIXME: composite key support
                 $ids = $value->identifier();
@@ -973,17 +972,15 @@ abstract class Doctrine_Entity extends Doctrine_Access implements Serializable
                 if ($id !== null && $type !== 'object') {
                     $value = $id;
                 }
-            }
+            }*/
 
             $old = isset($this->_data[$fieldName]) ? $this->_data[$fieldName] : null;
 
-            if ($old !== $value) {
+            if ($old != $value) {
                 $this->_data[$fieldName] = $value;
                 $this->_modified[] = $fieldName;
                 
-                /* We can't do this currently because there are tests that change
-                 * the primary key of already persisted entities (ugh). */
-                if ($this->isTransient() && $class->isIdentifier($fieldName)) {
+                if ($this->isTransient() && $this->_class->isIdentifier($fieldName)) {
                     $this->_id[$fieldName] = $value;
                 }
                 
@@ -996,7 +993,7 @@ abstract class Doctrine_Entity extends Doctrine_Access implements Serializable
                         break;
                 }
             }
-        } else if ($class->hasRelation($fieldName)) {
+        } else if ($this->_class->hasRelation($fieldName)) {
             $this->_rawSetReference($fieldName, $value);
         } else {
             throw Doctrine_Entity_Exception::invalidField($fieldName);
@@ -1141,12 +1138,12 @@ abstract class Doctrine_Entity extends Doctrine_Access implements Serializable
                     $dataSet[$field] = $this->_class->enumIndex($field, $this->_data[$field]);
                     break;
                 default:
-                    if ($this->_data[$field] instanceof Doctrine_Entity) {
+                    /*if ($this->_data[$field] instanceof Doctrine_Entity) {
                         // FIXME: composite key support
                         $ids = $this->_data[$field]->identifier();
                         $id = count($ids) > 0 ? array_pop($ids) : null;
                         $this->_data[$field] = $id;
-                    }
+                    }*/
                     /** TODO:
                     if ($this->_data[$v] === null) {
                         throw new Doctrine_Record_Exception('Unexpected null value.');
@@ -1159,11 +1156,10 @@ abstract class Doctrine_Entity extends Doctrine_Access implements Serializable
         
         // @todo cleanup
         // populates the discriminator field in Single & Class Table Inheritance
-        $class = $this->_class;
-        if ($class->getInheritanceType() == Doctrine::INHERITANCE_TYPE_JOINED ||
-                $class->getInheritanceType() == Doctrine::INHERITANCE_TYPE_SINGLE_TABLE) {
-            $discCol = $class->getInheritanceOption('discriminatorColumn');
-            $discMap = $class->getInheritanceOption('discriminatorMap');
+        if ($this->_class->getInheritanceType() == Doctrine::INHERITANCE_TYPE_JOINED ||
+                $this->_class->getInheritanceType() == Doctrine::INHERITANCE_TYPE_SINGLE_TABLE) {
+            $discCol = $this->_class->getInheritanceOption('discriminatorColumn');
+            $discMap = $this->_class->getInheritanceOption('discriminatorMap');
             $old = $this->get($discCol, false);
             $discValue = array_search($this->_entityName, $discMap);
             if ((string) $old !== (string) $discValue || $old === null) {

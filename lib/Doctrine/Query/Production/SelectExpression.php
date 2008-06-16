@@ -136,8 +136,7 @@ class Doctrine_Query_Production_SelectExpression extends Doctrine_Query_Producti
         $parserResult = $this->_parser->getParserResult();
 
         // Retrieving connection
-        $manager = Doctrine_EntityManagerFactory::getManager(); 
-        $conn = $manager->getConnection();
+        $conn = $this->_em->getConnection();
 
         switch (get_class($this->_leftExpression)) {
             case 'Doctrine_Query_Production_PathExpressionEndingWithAsterisk':

@@ -119,8 +119,7 @@ class Doctrine_Query_Production_PathExpressionEndingWithAsterisk extends Doctrin
         $parserResult = $this->_parser->getParserResult();
 
         // Retrieving connection
-        $manager = Doctrine_EntityManagerFactory::getManager(); 
-        $conn = $manager->getConnection();
+        $conn = $this->_em->getConnection();
 
         // Looking for componentAlias to fetch
         $componentAlias = implode('.', $this->_identifiers);

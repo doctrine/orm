@@ -59,7 +59,6 @@ class Doctrine_EntityManager
      */
     private $_config;
     
-    
     /**
      * The database connection used by the EntityManager.
      *
@@ -409,7 +408,24 @@ class Doctrine_EntityManager
      */
     public function save(Doctrine_Entity $entity)
     {
+        $state = $entity->_state();
+        if ($state == Doctrine_Entity::STATE_CLEAN || $state == Doctrine_Entity::STATE_LOCKED) {
+            return;
+        }
+        
         //...
+        //$this->_unitOfWork->
+        switch ($entity->_state()) {
+            case Doctrine_Entity::STATE_CLEAN:
+                //nothing to do
+                break;
+            case Doctrine_Entity::STATE_DIRTY:
+                $this->_unitOfWork->registerDirty($entity);
+                break;
+            case Doctrine_Entity::STATE_TCLEAN:
+            case Doctrine_Entity::STATE_TDIRTY:
+                //...
+        }
     }
     
     /**

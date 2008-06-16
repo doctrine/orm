@@ -115,13 +115,12 @@ class Doctrine_Query_Production_RangeVariableDeclaration extends Doctrine_Query_
         $parserResult = $this->_parser->getParserResult();
 
         // Get the connection for the component
-        $conn = $this->_parser->getSqlBuilder()->getConnection();
-        $manager = Doctrine_EntityManagerFactory::getManager();
+        $conn = $this->_em->getConnection();
         $componentName = $this->_identifiers[0];
 
         // Retrieving ClassMetadata and Mapper
         try {
-            $classMetadata = $manager->getClassMetadata($componentName);
+            $classMetadata = $this->_em->getClassMetadata($componentName);
 
             // Building queryComponent
             $queryComponent = array(
@@ -155,8 +154,7 @@ class Doctrine_Query_Production_RangeVariableDeclaration extends Doctrine_Query_
         $parserResult = $this->_parser->getParserResult();
 
         // Get the connection for the component
-        $conn = $this->_parser->getSqlBuilder()->getConnection();
-        $manager = Doctrine_EntityManagerFactory::getManager();
+        $conn = $this->_em->getConnection();
 
         // Retrieve the base component
         try {

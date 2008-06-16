@@ -83,12 +83,11 @@ class Doctrine_Query_Production_VariableDeclaration extends Doctrine_Query_Produ
             // No queryComponent was found. We will have to build it for the first time
 
             // Get the connection for the component
-            $conn = $this->_parser->getSqlBuilder()->getConnection();
-            $manager = Doctrine_EntityManagerFactory::getManager();
+            $conn = $this->_em->getConnection();
 
             // Retrieving ClassMetadata and Mapper
             try {
-                $classMetadata = $manager->getMetadata($this->_componentName);
+                $classMetadata = $this->_em->getMetadata($this->_componentName);
 
                 // Building queryComponent
                 $queryComponent = array(
@@ -124,8 +123,7 @@ class Doctrine_Query_Production_VariableDeclaration extends Doctrine_Query_Produ
         $queryComponent = $parserResult->getQueryComponent($this->_componentAlias);
 
         // Retrieving connection
-        $manager = Doctrine_EntityManagerFactory::getManager();
-        $conn = $manager->getConnection();
+        $conn = $this->_em->getConnection();
 
         return $conn->quoteIdentifier($queryComponent['metadata']->getTableName()) . ' '
              . $conn->quoteIdentifier($parserResult->getTableAliasFromComponentAlias($this->_componentAlias));

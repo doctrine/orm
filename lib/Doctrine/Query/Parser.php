@@ -101,6 +101,13 @@ class Doctrine_Query_Parser
      * @var int The number of tokens read since last error in the input string.
      */
     protected $_errorDistance;
+    
+    /**
+     * The EntityManager.
+     *
+     * @var EnityManager
+     */
+    protected $_em;
 
     // End of Error management stuff
 
@@ -113,8 +120,9 @@ class Doctrine_Query_Parser
      */
     public function __construct(Doctrine_Query $query)
     {
+        $this->_em = $query->getEntityManager();
         $this->_scanner = new Doctrine_Query_Scanner($query->getDql());
-        $this->_sqlBuilder = Doctrine_Query_SqlBuilder::fromConnection($query->getEntityManager());
+        $this->_sqlBuilder = Doctrine_Query_SqlBuilder::fromConnection($this->_em);
         $this->_keywordTable = new Doctrine_Query_Token();
 
         $this->_parserResult = new Doctrine_Query_ParserResult(
@@ -333,5 +341,14 @@ class Doctrine_Query_Parser
 
         $this->_errorDistance = 0;
     }
-
+    
+    /**
+     * Gets the EntityManager used by the parser.
+     *
+     * @return EntityManager
+     */
+    public function getEntityManager()
+    {
+        return $this->_em;
+    }
 }
