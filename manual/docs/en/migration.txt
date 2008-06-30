@@ -159,3 +159,20 @@ INSERT INTO migration_versiont (version) VALUES (1);
 </code>
 
 If you prefer the one operation per migration, you may be starting at step 9 or 30 or who knows. If you have no existing tables or data that you care to keep, you can drop all your existing tables and call the migration function to create all your initial tables.
+
+If you had to migrate a few steps down, you might get stuck between two migration steps if your model is out of sync with your table.
+Assume that migration step 3 adds a new attribute to your model - and step 2 tries to access that model, you cannot migrate to step 3, because the table doesn't know about the new attribute: 
+<code type="php">
+$migration = new Doctrine_Migration('/path/to/migration_classes');
+
+// Current version is 3
+echo $migration->getCurrentVersion(); // 3
+
+$migration->migrate(0); // takes you from 3 to 0
+$migration->migrate(3); // should take you from 0 to 3 but might throw an error if your model is out of sync
+
+echo $migration->getCurrentVersion(); // 1
+</code>
+
+A simple workaround is to comment out the new attribute in your model file, migrate up stepwise and uncomment the attribute, when you're done.   
+ 
