@@ -157,7 +157,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract
      */
     public function fetchOne($params = array(), $hydrationMode = null)
     {
-        $collection = $this->execute($params, $hydrationMode);
+        $collection = $this->limit(1)->execute($params, $hydrationMode);
 
         if (count($collection) === 0) {
             return false;
