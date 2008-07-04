@@ -11,6 +11,7 @@
  * instances as well as keeping track of all created EntityManagers and
  * hard bindings to Entities.
  *
+ * @author Roman Borschel <roman@code-factory.org>
  * @since 2.0
  */
 class Doctrine_EntityManagerFactory
@@ -52,21 +53,44 @@ class Doctrine_EntityManagerFactory
      */
     private $_config;
     
+    /**
+     * Constructor.
+     * Creates a new EntityManagerFactory.
+     */
     public function __construct()
     {
         $this->_connFactory = new Doctrine_ConnectionFactory();
     }
     
+    /**
+     * Sets the Configuration that is injected into all EntityManagers
+     * (and their Connections) that are created by this factory.
+     *
+     * @param Doctrine_Configuration $eventManager
+     */
     public function setConfiguration(Doctrine_Configuration $config)
     {
         $this->_config = $config;
     }
     
+    /**
+     * Sets the EventManager that is injected into all EntityManagers
+     * (and their Connections) that are created by this factory.
+     *
+     * @param Doctrine_EventManager $eventManager
+     */
     public function setEventManager(Doctrine_EventManager $eventManager)
     {
         $this->_eventManager = $eventManager;
     }
     
+    /**
+     * Creates an EntityManager.
+     *
+     * @param unknown_type $connParams
+     * @param unknown_type $name
+     * @return unknown
+     */
     public function createEntityManager($connParams, $name = null)
     {
         if ( ! $this->_config) {

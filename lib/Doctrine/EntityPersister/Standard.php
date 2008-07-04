@@ -20,7 +20,7 @@
  */
 
 /**
- * The default mapping strategy maps a single entity instance to a single database table,
+ * The default persister strategy maps a single entity instance to a single database table,
  * as is the case in Single Table Inheritance & Concrete Table Inheritance.
  *
  * @author      Roman Borschel <roman@code-factory.org>

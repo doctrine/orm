@@ -18,7 +18,7 @@
  * and is licensed under the LGPL. For more information, see
  * <http://www.phpdoctrine.org>.
  */
-Doctrine::autoload('Doctrine_Exception');
+
 /**
  * Doctrine_Query_Exception
  *
@@ -31,4 +31,9 @@ Doctrine::autoload('Doctrine_Exception');
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  */
 class Doctrine_Query_Exception extends Doctrine_Exception
-{ }
+{
+    public static function nonUniqueResult()
+    {
+        return new self("The query contains more than one result.");   
+    }
+}

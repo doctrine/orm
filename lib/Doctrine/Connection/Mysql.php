@@ -40,7 +40,7 @@ class Doctrine_Connection_Mysql extends Doctrine_Connection_Common
      * 
      * @var string                
      */
-    protected $driverName = 'Mysql';
+    protected $_driverName = 'Mysql';
 
     /**
      * the constructor
@@ -206,5 +206,31 @@ class Doctrine_Connection_Mysql extends Doctrine_Connection_Common
         $query = 'REPLACE INTO ' . $tableName . ' (' . $query . ') VALUES (' . $values . ')';
 
         return $this->exec($query);
+    }
+    
+    /**
+     * Constructs the MySql PDO DSN.
+     * 
+     * Overrides Connection#_constructPdoDsn().
+     *
+     * @return string  The DSN.
+     */
+    protected function _constructPdoDsn()
+    {
+        $dsn = 'mysql:';
+        if (isset($this->_params['host'])) {
+            $dsn .= 'host=' . $this->_params['host'] . ';';
+        }
+        if (isset($this->_params['port'])) {
+            $dsn .= 'port=' . $this->_params['port'] . ';';
+        }
+        if (isset($this->_params['dbname'])) {
+            $dsn .= 'dbname=' . $this->_params['dbname'] . ';';
+        }
+        if (isset($this->_params['unix_socket'])) {
+            $dsn .= 'unix_socket=' . $this->_params['unix_socket'] . ';';
+        }
+        
+        return $dsn;
     }
 }

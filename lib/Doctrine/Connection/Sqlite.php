@@ -38,7 +38,7 @@ class Doctrine_Connection_Sqlite extends Doctrine_Connection_Common
     /**
      * @var string $driverName                  the name of this connection driver
      */
-    protected $driverName = 'Sqlite';
+    protected $_driverName = 'Sqlite';
 
     /**
      * the constructor
@@ -68,12 +68,13 @@ class Doctrine_Connection_Sqlite extends Doctrine_Connection_Common
                           'identifier_quoting'   => true,
                           'pattern_escaping'     => false,
                           );
+                          
         parent::__construct($params);
 
-        if ($this->isConnected) {
-            $this->dbh->sqliteCreateFunction('mod', array('Doctrine_Expression_Sqlite', 'modImpl'), 2);
-            $this->dbh->sqliteCreateFunction('md5', 'md5', 1);
-            $this->dbh->sqliteCreateFunction('now', 'time', 0);
+        if ($this->_isConnected) {
+            $this->_pdo->sqliteCreateFunction('mod', array('Doctrine_Expression_Sqlite', 'modImpl'), 2);
+            $this->_pdo->sqliteCreateFunction('md5', 'md5', 1);
+            $this->_pdo->sqliteCreateFunction('now', 'time', 0);
         }
     }
 
@@ -85,15 +86,15 @@ class Doctrine_Connection_Sqlite extends Doctrine_Connection_Common
      */
     public function connect() 
     {
-        if ($this->isConnected) {
+        if ($this->_isConnected) {
             return false;
         }
 
         parent::connect();
 
-        $this->dbh->sqliteCreateFunction('mod',    array('Doctrine_Expression_Sqlite', 'modImpl'), 2);
-        $this->dbh->sqliteCreateFunction('md5', 'md5', 1);
-        $this->dbh->sqliteCreateFunction('now', 'time', 0);
+        $this->_pdo->sqliteCreateFunction('mod', array('Doctrine_Expression_Sqlite', 'modImpl'), 2);
+        $this->_pdo->sqliteCreateFunction('md5', 'md5', 1);
+        $this->_pdo->sqliteCreateFunction('now', 'time', 0);
     }
 
     /**
@@ -125,18 +126,37 @@ class Doctrine_Connection_Sqlite extends Doctrine_Connection_Common
      */
     public function dropDatabase()
     {
-      try {
-          if ( ! $dsn = $this->getOption('dsn')) {
-              throw new Doctrine_Connection_Exception('You must create your Doctrine_Connection by using a valid Doctrine style dsn in order to use the create/drop database functionality');
-          }
-          
-          $info = $this->getManager()->parseDsn($dsn);
+        try {
+            if ( ! $dsn = $this->getOption('dsn')) {
+                throw new Doctrine_Connection_Exception('You must create your Doctrine_Connection by using a valid Doctrine style dsn in order to use the create/drop database functionality');
+            }
 
-          $this->export->dropDatabase($info['database']);
+            $info = $this->getManager()->parseDsn($dsn);
 
-          return 'Successfully dropped database for connection "' . $this->getName() . '" at path "' . $info['database'] . '"';
-      } catch (Exception $e) {
-          return $e;
-      }
+            $this->export->dropDatabase($info['database']);
+
+            return 'Successfully dropped database for connection "' . $this->getName() . '" at path "' . $info['database'] . '"';
+        } catch (Exception $e) {
+            return $e;
+        }
+    }
+    
+    /**
+     * Constructs the Sqlite PDO DSN.
+     * 
+     * Overrides Connection#_constructPdoDsn().
+     *
+     * @return string  The DSN.
+     */
+    protected function _constructPdoDsn()
+    {
+        $dsn = 'sqlite:';
+        if (isset($this->_params['path'])) {
+            $dsn .= $this->_params['path'];
+        } else if (isset($this->_params['memory'])) {
+            $dsn .= ':memory:';
+        }
+        
+        return $dsn;
     }
 }

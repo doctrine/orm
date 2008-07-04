@@ -141,6 +141,13 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
     protected $_mappedEmbeddedValues = array();
 
     /**
+     * Enter description here...
+     *
+     * @var array
+     */
+    protected $_attributes = array('loadReferences' => true);
+    
+    /**
      * An array of field names. used to look up field names from column names.
      * Keys are column names and values are field names.
      * This is the reverse lookup map of $_columnNames.
@@ -148,13 +155,6 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
      * @var array
      */
     protected $_fieldNames = array();
-    
-    /**
-     * Enter description here...
-     *
-     * @var unknown_type
-     */
-    protected $_attributes = array('loadReferences' => true);
 
     /**
      * An array of column names. Keys are field names and values column names.
@@ -166,11 +166,20 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
     protected $_columnNames = array();
     
     /**
+     * Map that maps lowercased column names to field names.
+     * Mainly used during hydration because Doctrine enforces PDO_CASE_LOWER
+     * for portability.
+     *
+     * @var array
+     */
+    protected $_lcColumnToFieldNames = array();
+    
+    /**
      * Enter description here...
      *
      * @var unknown_type
      */
-    protected $_subclassFieldNames = array();
+    //protected $_subclassFieldNames = array();
 
     /**
      * Caches enum value mappings. Keys are field names and values arrays with the
@@ -192,7 +201,7 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
      *
      * @var integer
      */
-    protected $_columnCount;
+    //protected $_columnCount;
 
     /**
      * Whether or not this class has default values.
@@ -540,10 +549,8 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
     }
 
     /**
-     * getFieldName
-     *
-     * returns the field name for a column name
-     * if no field name can be found the column name is returned.
+     * Gets the field name for a column name.
+     * If no field name can be found the column name is returned.
      *
      * @param string $columnName    column name
      * @return string               column alias
@@ -555,28 +562,57 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
     }
     
     /**
-     * 
+     * Gets the field name for a completely lowercased column name.
+     * Mainly used during hydration.
+     *
+     * @param string $lcColumnName
+     * @return string
      */
-    public function lookupFieldName($columnName)
+    public function getFieldNameForLowerColumnName($lcColumnName)
     {
-        if (isset($this->_fieldNames[$columnName])) {
-            return $this->_fieldNames[$columnName];
-        } else if (isset($this->_subclassFieldNames[$columnName])) {
-            return $this->_subclassFieldNames[$columnName];
-        }
+        return isset($this->_lcColumnToFieldNames[$lcColumnName]) ?
+                $this->_lcColumnToFieldNames[$lcColumnName] : $lcColumnName;
+    }
+    
+    public function hasLowerColumn($lcColumnName)
+    {
+        return isset($this->_lcColumnToFieldNames[$lcColumnName]);
+    }
+    
+    /**
+     * Looks up the field name for a (lowercased) column name.
+     * 
+     * This is mostly used during hydration, because we want to make the
+     * conversion to field names while iterating over the result set for best
+     * performance. By doing this at that point, we can avoid re-iterating over
+     * the data just to convert the column names to field names.
+     * 
+     * However, when this is happening, we don't know the real
+     * class name to instantiate yet (the row data may target a sub-type), hence
+     * this method looks up the field name in the subclass mappings if it's not
+     * found on this class mapping.
+     * This lookup on subclasses is costly but happens only *once* for a column
+     * during hydration because the hydrator caches effectively.
+     */
+    public function lookupFieldName($lcColumnName)
+    {
+        if (isset($this->_lcColumnToFieldNames[$lcColumnName])) {
+            return $this->_lcColumnToFieldNames[$lcColumnName];
+        }/* else if (isset($this->_subclassFieldNames[$lcColumnName])) {
+            return $this->_subclassFieldNames[$lcColumnName];
+        }*/
         
-        $classMetadata = $this;
-        $conn = $this->_em;
-        
-        foreach ($classMetadata->getSubclasses() as $subClass) {
-            $subClassMetadata = $conn->getClassMetadata($subClass);
-            if ($subClassMetadata->hasColumn($columnName)) {
-                $this->_subclassFieldNames[$columnName] = $subClassMetadata->getFieldName($columnName);
-                return $this->_subclassFieldNames[$columnName];
+        foreach ($this->getSubclasses() as $subClass) {
+            $subClassMetadata = $this->_em->getClassMetadata($subClass);
+            if ($subClassMetadata->hasLowerColumn($lcColumnName)) {
+                /*$this->_subclassFieldNames[$lcColumnName] = $subClassMetadata->
+                        getFieldNameForLowerColumnName($lcColumnName);
+                return $this->_subclassFieldNames[$lcColumnName];*/
+                return $subClassMetadata->getFieldNameForLowerColumnName($lcColumnName);
             }
         }
 
-        throw new Doctrine_ClassMetadata_Exception("No field name found for column name '$columnName' during lookup.");
+        throw new Doctrine_ClassMetadata_Exception("No field name found for column name '$lcColumnName' during lookup.");
     }
 
     /**
@@ -615,26 +651,30 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
             }
         }
 
-        // extract column name & field name
+        // extract column name & field name & lowercased column name
         $parts = explode(' as ', $name);
         if (count($parts) > 1) {
             $fieldName = $parts[1];
         } else {
             $fieldName = $parts[0];
         }
-        $name = strtolower($parts[0]);
+        $columnName = $parts[0];
+        $lcColumnName = strtolower($parts[0]);
 
-        if (isset($this->_columnNames[$fieldName])) {
+        if (isset($this->_mappedColumns[$columnName])) {
             return;
         }
 
+        // Fill column name <-> field name lookup maps
         if ($prepend) {
-            $this->_columnNames = array_merge(array($fieldName => $name), $this->_columnNames);
-            $this->_fieldNames = array_merge(array($name => $fieldName), $this->_fieldNames);
+            $this->_columnNames = array_merge(array($fieldName => $columnName), $this->_columnNames);
+            $this->_fieldNames = array_merge(array($columnName => $fieldName), $this->_fieldNames);
         } else {
-            $this->_columnNames[$fieldName] = $name;
-            $this->_fieldNames[$name] = $fieldName;
+            $this->_columnNames[$fieldName] = $columnName;
+            $this->_fieldNames[$columnName] = $fieldName;
         }
+        $this->_lcColumnToFieldNames[$lcColumnName] = $fieldName;
+        
         
         // Inspect & fill $options
         
@@ -662,9 +702,9 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
         }*/
 
         if ($prepend) {
-            $this->_mappedColumns = array_merge(array($name => $options), $this->_mappedColumns);
+            $this->_mappedColumns = array_merge(array($columnName => $options), $this->_mappedColumns);
         } else {
-            $this->_mappedColumns[$name] = $options;
+            $this->_mappedColumns[$columnName] = $options;
         }
 
         $this->_columnCount++;

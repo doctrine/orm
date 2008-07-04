@@ -31,6 +31,7 @@
  * @since       1.0
  * @version     $Revision$
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
+ * @todo Remove.
  */
 class Doctrine_Manager implements Doctrine_Configurable, Countable, IteratorAggregate
 {

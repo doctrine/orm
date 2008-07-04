@@ -9,7 +9,7 @@ class Orm_UnitOfWorkTest extends Doctrine_OrmTestCase
     protected function setUp() {
         parent::setUp();
         $this->_user = new ForumUser();
-        $this->_unitOfWork = $this->_em->getUnitOfWork();
+        $this->_unitOfWork = new Doctrine_Connection_UnitOfWork($this->_em);
     }
     
     protected function tearDown() {

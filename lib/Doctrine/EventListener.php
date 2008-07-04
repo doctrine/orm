@@ -31,6 +31,7 @@
  * @link        www.phpdoctrine.org
  * @since       1.0
  * @version     $Revision$
+ * @todo Remove. The 2.0 event system has no listener interfaces.
  */
 class Doctrine_EventListener implements Doctrine_EventListener_Interface
 {

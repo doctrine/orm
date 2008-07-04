@@ -47,5 +47,10 @@ class Doctrine_Exception extends Exception
     {
         return $this->_innerException;
     }
+    
+    public static function notImplemented($method, $class)
+    {
+        return new self("The method '$method' is not implemented in the class '$class'.");
+    }
 
 }

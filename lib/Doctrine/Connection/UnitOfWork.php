@@ -22,17 +22,19 @@
 #namespace Doctrine::ORM::Internal;
 
 /**
- * The UnitOfWork is responsible for writing out changes to the database at
- * the correct time and in the correct order.
+ * The UnitOfWork is responsible for tracking changes to objects during an
+ * "object-level" transaction and for writing out changes to the database at
+ * in the correct order.
  * 
  * Some terminology:
  * 
  * <b>New entity</b>: A new entity is an entity that already has an identity but
  * is not yet persisted into the database. This is usually the case for all
- * newly saved entities that use a SEQUENCE id generator. Entities with an
+ * newly saved/persisted entities that use a SEQUENCE id generator. Entities with an
  * IDENTITY id generator get persisted as soon as they're saved in order to
  * obtain the identifier. Therefore entities that use an IDENTITY id generator
  * never appear in the list of new entities of the UoW.
+ * New entities are inserted into the database when the is UnitOfWork committed.
  * 
  * <b>Dirty entity</b>: A dirty entity is a managed entity whose values have
  * been altered.
@@ -53,7 +55,7 @@
  * @author      Roman Borschel <roman@code-factory.org>
  * @todo package:orm. Figure out a useful implementation.
  */
-class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
+class Doctrine_Connection_UnitOfWork
 {    
     /**
      * The identity map that holds references to all managed entities that have
@@ -93,6 +95,17 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
      * @todo Implementation. Replace buildFlushTree().
      */
     protected $_commitOrderCalculator;
+    
+    /**
+     * Constructor.
+     * Created a new UnitOfWork.
+     *
+     * @param Doctrine_EntityManager $em
+     */
+    public function __construct(Doctrine_EntityManager $em)
+    {
+        $this->_em = $em;
+    }
     
     /**
      * Commits the unit of work, executing all operations that have been postponed
@@ -201,7 +214,6 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
     }
 
     /**
-     * buildFlushTree
      * builds a flush tree that is used in transactions
      *
      * The returned array has all the initialized components in
@@ -301,14 +313,13 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
     }
     
     /**
-     * saveAll
      * persists all the pending records from all tables
      *
      * @throws PDOException         if something went wrong at database level
      * @return void
      * @deprecated
      */
-    public function saveAll()
+    /*public function saveAll()
     {
         $this->conn->beginInternalTransaction();
         // get the flush tree
@@ -337,7 +348,7 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
             }
         }
         $this->conn->commit();
-    }
+    }*/
     
     /**
      * Adds an entity to the pool of managed entities.

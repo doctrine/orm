@@ -38,7 +38,7 @@ class Doctrine_Connection_Mock extends Doctrine_Connection_Common
     /**
      * @var string $driverName                  the name of this connection driver
      */
-    protected $driverName = 'MySql';
+    protected $_driverName = 'Mysql';
 
     /**
      * the constructor

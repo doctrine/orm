@@ -21,12 +21,33 @@
 
 #namespace Doctrine::Common;
 
+/**
+ * The EventManager is the central point of Doctrine's event listener system.
+ * Listeners are registered on the manager and events are dispatch through the
+ * manager.
+ * 
+ * @author Roman Borschel <roman@code-factory.org>
+ * @author Guilherme Blanco <guilhermeblanco@hotmail.com>
+ * @since 2.0
+ */
 class Doctrine_EventManager
 {
+    /**
+     * Map of registered listeners.
+     * <event> => <listeners> 
+     *
+     * @var array
+     */
     private $_listeners = array();
 
-
-    public function dispatchEvent($event) {
+    /**
+     * Dispatches an event to all registered listeners.
+     *
+     * @param string|Event $event  The name of the event or the event object.
+     * @return boolean
+     */
+    public function dispatchEvent($event)
+    {
         $argIsCallback = is_string($event);
         $callback = $argIsCallback ? $event : $event->getType();
 
@@ -40,25 +61,43 @@ class Doctrine_EventManager
         return ! $event->getDefaultPrevented();
     }
 
-
-    public function getListeners($callback = null) {
-        return $callback ? $this->_listeners[$callback] : $this->_listeners;
+    /**
+     * Gets the listeners of a specific event or all listeners.
+     *
+     * @param string $event  The name of the event.
+     * @return 
+     */
+    public function getListeners($event = null)
+    {
+        return $event ? $this->_listeners[$event] : $this->_listeners;
     }
 
-
-    public function hasListeners($callback) {
-        return isset($this->_listeners[$callback]);
+    /**
+     * Checks whether an event has any registered listeners.
+     *
+     * @param string $event
+     * @return boolean
+     */
+    public function hasListeners($event)
+    {
+        return isset($this->_listeners[$event]);
     }
 
-
-    public function addEventListener($callbacks, $listener) {
+    /**
+     * Adds an event listener that listens on the specified events.
+     *
+     * @param string|array $events  The event(s) to listen on.
+     * @param object $listener  The listener object.
+     */
+    public function addEventListener($events, $listener)
+    {
         // TODO: maybe check for duplicate registrations?
-        if ( ! is_array($callbacks)) {
-            $callbacks = array($callbacks);
+        if ( ! is_array($events)) {
+            $events = array($events);
         }
 
-        foreach ($callbacks as $callback) {
-            $this->_listeners[$callback] = $listener;
+        foreach ($events as $event) {
+            $this->_listeners[$event] = $listener;
         }
     }
 }

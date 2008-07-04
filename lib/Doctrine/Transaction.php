@@ -22,7 +22,6 @@
 #namespace Doctrine::DBAL::Transactions;
 
 /**
- * Doctrine_Transaction
  * Handles transaction savepoint and isolation abstraction
  *
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>

@@ -148,7 +148,7 @@ class Doctrine_EntityManager
         $this->_name = $name;
         $this->_metadataFactory = new Doctrine_ClassMetadata_Factory(
                 $this, new Doctrine_ClassMetadata_CodeDriver());
-        $this->_unitOfWork = new Doctrine_Connection_UnitOfWork($conn);
+        $this->_unitOfWork = new Doctrine_Connection_UnitOfWork($this);
         $this->_nullObject = Doctrine_Null::$INSTANCE;
     }
     
@@ -463,8 +463,8 @@ class Doctrine_EntityManager
     /**
      * Creates an entity. Used for reconstitution as well as initial creation.
      *
-     * @param
-     * @param
+     * @param string $className  The name of the entity class.
+     * @param array $data  The data for the entity. 
      * @return Doctrine_Entity
      */
     public function createEntity($className, array $data)
@@ -485,22 +485,19 @@ class Doctrine_EntityManager
             }
             
             if ($isNew) {
-                $entity = new $className(true);
-                //$entity->_setData($data);
+                $entity = new $className;
             } else {
                 $idHash = $this->_unitOfWork->getIdentifierHash($id);
                 if ($entity = $this->_unitOfWork->tryGetByIdHash($idHash,
                         $classMetadata->getRootClassName())) {
                     return $entity;
                 } else {
-                    $entity = new $className(false);
-                    //$entity->_setData($data);
+                    $entity = new $className;
                     $this->_unitOfWork->registerIdentity($entity);
                 }
             }
         } else {
-            $entity = new $className(true);
-            //$entity->_setData($data);
+            $entity = new $className;
         }
         
         /*if (count($data) < $classMetadata->getMappedColumnCount()) {
@@ -508,7 +505,6 @@ class Doctrine_EntityManager
         } else {
             $entity->_state(Doctrine_Entity::STATE_CLEAN);
         }*/
-        $this->_tmpEntityData = array();
 
         return $entity;
     }
@@ -519,7 +515,9 @@ class Doctrine_EntityManager
      */
     public function _getTmpEntityData()
     {
-        return $this->_tmpEntityData;
+        $data = $this->_tmpEntityData;
+        $this->_tmpEntityData = array();
+        return $data;
     }
     
     /**
@@ -528,7 +526,6 @@ class Doctrine_EntityManager
      * classname will be returned.
      *
      * @return string The name of the class to instantiate.
-     * @todo Can be optimized performance-wise.
      */
     private function _inferCorrectClassName(array $data, $className)
     {
@@ -553,10 +550,10 @@ class Doctrine_EntityManager
      *
      * @return UnitOfWork
      */
-    public function getUnitOfWork()
+    /*public function getUnitOfWork()
     {
         return $this->_unitOfWork;
-    }
+    }*/
     
     /**
      * Gets the EventManager used by the EntityManager.

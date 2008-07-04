@@ -987,5 +987,28 @@ abstract class Doctrine_Query_Abstract
      * @return string SQL query
      */
     abstract public function getSql();
+    
+    /**
+     * Sets a query parameter.
+     *
+     * @param string|integer $key
+     * @param mixed $value
+     */
+    public function setParameter($key, $value)
+    {
+        $this->_params[$key] = $value;
+    }
+    
+    /**
+     * Sets a collection of query parameters.
+     *
+     * @param array $params
+     */
+    public function setParameters(array $params)
+    {
+        foreach ($params as $key => $value) {
+            $this->setParameter($key, $value);
+        }
+    }
 
 }

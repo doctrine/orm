@@ -52,6 +52,12 @@ class Doctrine_ConnectionFactory
         
     }
     
+    /**
+     * Creates a connection object with the specified parameters.
+     *
+     * @param array $params
+     * @return Connection
+     */
     public function createConnection(array $params)
     {
         // check for existing pdo object
@@ -79,14 +85,6 @@ class Doctrine_ConnectionFactory
         // driver
         if ( ! isset($params['driver'])) {
             throw Doctrine_ConnectionFactory_Exception::driverRequired();
-        }
-        // user
-        if ( ! isset($params['user'])) {
-            throw Doctrine_ConnectionFactory_Exception::userRequired();
-        }
-        // password
-        if ( ! isset($params['password'])) {
-            throw Doctrine_ConnectionFactory_Exception::passwordRequired();
         }
         
         // check validity of parameters

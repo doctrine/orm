@@ -78,10 +78,9 @@ abstract class Doctrine_Connection implements Countable
     /**
      * The PDO database handle. 
      *
-     * @var PDO
-     * @todo Rename to $pdo.              
+     * @var PDO           
      */
-    protected $dbh;
+    protected $_pdo;
     
     /**
      * The Configuration.
@@ -116,14 +115,14 @@ abstract class Doctrine_Connection implements Countable
      *
      * @var string $driverName                  
      */
-    protected $driverName;
+    protected $_driverName;
     
     /**
      * Whether or not a connection has been established.
      *
      * @var boolean $isConnected                
      */
-    protected $isConnected = false;
+    protected $_isConnected = false;
     
     /**
      * An array containing all features this driver supports, keys representing feature
@@ -163,7 +162,7 @@ abstract class Doctrine_Connection implements Countable
      * 
      * @var array $availableDrivers         
      */
-    private static $availableDrivers = array(
+    private static $_availableDrivers = array(
             'Mysql', 'Pgsql', 'Oracle', 'Informix', 'Mssql', 'Sqlite', 'Firebird'
             );
     
@@ -172,7 +171,7 @@ abstract class Doctrine_Connection implements Countable
      *
      * @var integer
      */
-    protected $_count = 0;
+    protected $_queryCount = 0;
 
     
     /*
@@ -220,14 +219,13 @@ abstract class Doctrine_Connection implements Countable
     /**
      * Constructor.
      *
-     * @param Doctrine_Manager $manager                 the manager object
-     * @param PDO|Doctrine_Adapter_Interface $adapter   database driver
+     * @param array $params  The connection parameters.
      */
     public function __construct(array $params)
     {
         if (isset($params['pdo'])) {
-            $this->dbh = $params['pdo'];
-            $this->isConnected = true;
+            $this->_pdo = $params['pdo'];
+            $this->_isConnected = true;
         }
         $this->_params = $params;
     }
@@ -319,27 +317,36 @@ abstract class Doctrine_Connection implements Countable
     }
 
     /**
-     * getDriverName
-     *
      * Gets the name of the instance driver
      *
      * @return void
      */
     public function getDriverName()
     {
-        return $this->driverName;
+        return $this->_driverName;
     }
     
     /**
      * returns the database handler which this connection uses
      *
      * @return PDO              the database handler
+     * @deprecated
      */
     public function getDbh()
     {
-        //$this->connect();
-        
-        return $this->dbh;
+        $this->connect();
+        return $this->_pdo;
+    }
+    
+    /**
+     * Gets the PDO handle used by the connection.
+     *
+     * @return PDO
+     */
+    public function getPdo()
+    {
+        $this->connect();
+        return $this->_pdo;
     }
     
     /**
@@ -349,36 +356,43 @@ abstract class Doctrine_Connection implements Countable
      */
     public function connect()
     {
-        if ($this->isConnected) {
+        if ($this->_isConnected) {
             return false;
         }
 
         //$event = new Doctrine_Event($this, Doctrine_Event::CONN_CONNECT);
         //$this->getListener()->preConnect($event);
 
-        $e = explode(':', $this->options['dsn']);
+        // TODO: the extension_loaded check can happen earlier, maybe in the factory
         if (extension_loaded('pdo')) {
-            if (in_array($e[0], PDO::getAvailableDrivers())) {
-                $this->dbh = new PDO(
-                        $this->options['dsn'], $this->options['username'],
-                        $this->options['password'], $this->options['other']);
-                $this->dbh->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-                $this->dbh->setAttribute(PDO::ATTR_CASE, PDO::CASE_LOWER);
-            }
+            $driverOptions = isset($this->_params['driverOptions']) ?
+                    $this->_params['driverOptions'] : array();
+            $user = isset($this->_params['user']) ?
+                    $this->_params['user'] : null;
+            $password = isset($this->_params['password']) ?
+                    $this->_params['password'] : null;
+            $this->_pdo = new PDO(
+                    $this->_constructPdoDsn(),
+                    $user,
+                    $password,
+                    $driverOptions
+                    );
+            $this->_pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+            $this->_pdo->setAttribute(PDO::ATTR_CASE, PDO::CASE_LOWER);
         } else {
             throw new Doctrine_Connection_Exception("Couldn't locate driver named " . $e[0]);
         }
 
         // attach the pending attributes to adapter
-        foreach($this->pendingAttributes as $attr => $value) {
+        /*foreach($this->pendingAttributes as $attr => $value) {
             // some drivers don't support setting this so we just skip it
             if ($attr == Doctrine::ATTR_DRIVER_NAME) {
                 continue;
             }
-            $this->dbh->setAttribute($attr, $value);
-        }
+            $this->_pdo->setAttribute($attr, $value);
+        }*/
 
-        $this->isConnected = true;
+        $this->_isConnected = true;
 
         //$this->getListener()->postConnect($event);
         return true;
@@ -394,7 +408,7 @@ abstract class Doctrine_Connection implements Countable
      */
     protected function _constructPdoDsn()
     {
-        
+        throw Doctrine_Exception::notImplemented('_constructPdoDsn', get_class($this));
     }
     
     /**
@@ -402,19 +416,11 @@ abstract class Doctrine_Connection implements Countable
      */
     public function incrementQueryCount() 
     {
-        $this->_count++;
+        $this->_queryCount++;
     }
 
     /**
-     * converts given driver name
-     *
-     * @param
-     */
-    public function driverName($name)
-    {}
-
-    /**
-     * supports
+     * Checks whether a certain feature is supported.
      *
      * @param string $feature   the name of the feature
      * @return boolean          whether or not this drivers supports given feature
@@ -665,7 +671,7 @@ abstract class Doctrine_Connection implements Countable
      */
     public function quote($input, $type = null)
     {
-        return $this->dbh->quote($input, $type);
+        return $this->_pdo->quote($input, $type);
     }
 
     /**
@@ -782,7 +788,7 @@ abstract class Doctrine_Connection implements Countable
             $stmt = false;
     
             if ( ! $event->skipOperation) {
-                $stmt = $this->dbh->prepare($statement);
+                $stmt = $this->_pdo->prepare($statement);
             }
     
             $this->getAttribute(Doctrine::ATTR_LISTENER)->postPrepare($event);
@@ -846,8 +852,8 @@ abstract class Doctrine_Connection implements Countable
                 $this->getAttribute(Doctrine::ATTR_LISTENER)->preQuery($event);
 
                 if ( ! $event->skipOperation) {
-                    $stmt = $this->dbh->query($query);
-                    $this->_count++;
+                    $stmt = $this->_pdo->query($query);
+                    $this->_queryCount++;
                 }
                 $this->getAttribute(Doctrine::ATTR_LISTENER)->postQuery($event);
 
@@ -881,8 +887,8 @@ abstract class Doctrine_Connection implements Countable
                 $this->getAttribute(Doctrine::ATTR_LISTENER)->preExec($event);
 
                 if ( ! $event->skipOperation) {
-                    $count = $this->dbh->exec($query);
-                    $this->_count++;
+                    $count = $this->_pdo->exec($query);
+                    $this->_queryCount++;
                 }
                 $this->getAttribute(Doctrine::ATTR_LISTENER)->postExec($event);
 
@@ -926,7 +932,7 @@ abstract class Doctrine_Connection implements Countable
         //$event = new Doctrine_Event($this, Doctrine_Event::CONN_ERROR);
         //$this->getListener()->preError($event);
         
-        $name = 'Doctrine_Connection_' . $this->driverName . '_Exception';
+        $name = 'Doctrine_Connection_' . $this->_driverName . '_Exception';
         
         $exc = new $name($e->getMessage(), (int) $e->getCode());
         if ( ! is_array($e->errorInfo)) {
@@ -949,7 +955,7 @@ abstract class Doctrine_Connection implements Countable
      */
     public function count()
     {
-        return $this->_count;
+        return $this->_queryCount;
     }
     
     /**
@@ -964,8 +970,8 @@ abstract class Doctrine_Connection implements Countable
 
         $this->clear();
 
-        unset($this->dbh);
-        $this->isConnected = false;
+        unset($this->_pdo);
+        $this->_isConnected = false;
 
         //$this->getAttribute(Doctrine::ATTR_LISTENER)->postClose($event);
     }
@@ -990,7 +996,7 @@ abstract class Doctrine_Connection implements Countable
     {
         $this->connect();
         
-        return $this->dbh->errorCode();
+        return $this->_pdo->errorCode();
     }
 
     /**
@@ -1003,7 +1009,7 @@ abstract class Doctrine_Connection implements Countable
     {
         $this->connect();
         
-        return $this->dbh->errorInfo();
+        return $this->_pdo->errorInfo();
     }
     
     /**

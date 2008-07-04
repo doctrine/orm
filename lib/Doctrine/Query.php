@@ -540,13 +540,14 @@ class Doctrine_Query extends Doctrine_Query_Abstract
         return $this;
     }
 
-
     /**
      * Empty template method to provide Query subclasses with the possibility
      * to hook into the query building procedure, doing any custom / specialized
      * query building procedures that are neccessary.
      *
      * @return void
+     * @deprecated Should be removed. Extending Query is no good solution. Should
+     *             Things like this should be done through listeners.
      */
     public function preQuery()
     {
@@ -559,12 +560,43 @@ class Doctrine_Query extends Doctrine_Query_Abstract
      * post query procedures (for example logging) that are neccessary.
      *
      * @return void
+     * @deprecated Should be removed. Extending Query is no good solution. Should
+     *             Things like this should be done through listeners.
      */
     public function postQuery()
     {
 
     }
-
+    
+    /**
+     * Gets the list of results for the query.
+     *
+     * @param integer $hydrationMode
+     * @return mixed
+     */
+    public function getResultList($hydrationMode = null)
+    {
+        return $this->execute(array(), $hydrationMode);
+    }
+    
+    /**
+     * Gets the single result of the query.
+     * Enforces the uniqueness of the result. If the result is not unique,
+     * a QueryException is thrown.
+     *
+     * @param integer $hydrationMode
+     * @return mixed
+     * @throws QueryException  If the query result is not unique.
+     */
+    public function getSingleResult($hydrationMode = null)
+    {
+        $result = $this->execute(array(), $hydrationMode);
+        if (count($result) > 1) {
+            throw Doctrine_Query_Exception::nonUniqueResult();
+        }
+        
+        return is_array($result) ? array_shift($result) : $result->getFirst();
+    }
 
     /**
      * This method is automatically called when this Doctrine_Hydrate is serialized.

@@ -27,6 +27,7 @@
  * The Configuration is the container for all configuration options of Doctrine.
  * It combines all configuration options from DBAL & ORM.
  *
+ * @author Roman Borschel <roman@code-factory.org>
  * @since 2.0
  */
 class Doctrine_Configuration
