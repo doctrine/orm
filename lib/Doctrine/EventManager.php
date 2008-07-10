@@ -56,9 +56,9 @@ class Doctrine_EventManager
             foreach ($this->_listeners[$callback] as $listener) {
                 $listener->$callback($event);
             }
+            return ! $event->getDefaultPrevented();
         }
-
-        return ! $event->getDefaultPrevented();
+        return true;
     }
 
     /**

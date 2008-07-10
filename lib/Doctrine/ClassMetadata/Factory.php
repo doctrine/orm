@@ -133,7 +133,10 @@ class Doctrine_ClassMetadata_Factory
         foreach ($parentClass->getColumns() as $name => $definition) {
             $fullName = "$name as " . $parentClass->getFieldName($name);
             $definition['inherited'] = true;
-            $subClass->mapColumn($fullName, $definition['type'], $definition['length'],
+            $subClass->mapColumn(
+                    $fullName,
+                    $definition['type'],
+                    $definition['length'],
                     $definition);
         }
     }
@@ -154,11 +157,6 @@ class Doctrine_ClassMetadata_Factory
     protected function _loadMetadata(Doctrine_ClassMetadata $class, $name)
     {
         if ( ! class_exists($name) || empty($name)) {
-            /*try {
-                throw new Exception();
-            } catch (Exception $e) {
-                echo $e->getTraceAsString();
-            }*/
             throw new Doctrine_Exception("Couldn't find class " . $name . ".");
         }
 
@@ -175,11 +173,6 @@ class Doctrine_ClassMetadata_Factory
         } while ($className = get_parent_class($className));
 
         if ($className === false) {
-            try {
-                throw new Exception();
-            } catch (Exception $e) {
-                echo $e->getTraceAsString() . "<br />";
-            }
             throw new Doctrine_ClassMetadata_Factory_Exception("Unknown component '$className'.");
         }
 
@@ -207,10 +200,11 @@ class Doctrine_ClassMetadata_Factory
     protected function _initIdentifier(Doctrine_ClassMetadata $class)
     {
         switch (count((array)$class->getIdentifier())) {
-            case 0:
+            case 0: // No identifier in the class mapping yet
+                
+                // If its a subclass, inherit the identifier from the parent.
                 if ($class->getInheritanceType() == Doctrine::INHERITANCE_TYPE_JOINED &&
-                        count($class->getParentClasses()) > 0) {
-                            
+                        count($class->getParentClasses()) > 0) {       
                     $parents = $class->getParentClasses();
                     $root = end($parents);
                     $rootClass = $class->getConnection()->getMetadata($root);
@@ -237,17 +231,20 @@ class Doctrine_ClassMetadata_Factory
                                 $definition, true);
                     }
                 } else {
+                    throw Doctrine_MappingException::identifierRequired($class->getClassName());      
+                    /* Legacy behavior of auto-adding an id field
                     $definition = array('type' => 'integer',
                                         'length' => 20,
                                         'autoincrement' => true,
                                         'primary' => true);
-                    $class->setColumn('id', $definition['type'], $definition['length'], $definition, true);
+                    $class->mapColumn('id', $definition['type'], $definition['length'], $definition, true);
                     $class->setIdentifier(array('id'));
                     $class->setIdentifierType(Doctrine::IDENTIFIER_AUTOINC);
+                    */
                 }
                 break;
-            case 1:
-                foreach ((array)$class->getIdentifier() as $pk) {
+            case 1: // A single identifier is in the mapping
+                foreach ($class->getIdentifier() as $pk) {
                     $columnName = $class->getColumnName($pk);
                     $thisColumns = $class->getColumns();
                     $e = $thisColumns[$columnName];
@@ -294,7 +291,7 @@ class Doctrine_ClassMetadata_Factory
                 $class->setIdentifier(array($pk));
 
                 break;
-            default:
+            default: // Multiple identifiers are in the mapping so its a composite id
                 $class->setIdentifierType(Doctrine::IDENTIFIER_COMPOSITE);
         }
     }

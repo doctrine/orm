@@ -31,10 +31,8 @@
 
 
 /**
- * The EntityManager is a central access point to ORM functionality.
+ * The EntityManager is the central access point to ORM functionality.
  *
- * @package     Doctrine
- * @subpackage  EntityManager
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @link        www.phpdoctrine.org
  * @since       2.0
@@ -88,7 +86,6 @@ class Doctrine_EntityManager
     
     /**
      * The EntityPersister instances.
-     * @todo Implementation.
      *
      * @var array
      */
@@ -109,7 +106,7 @@ class Doctrine_EntityManager
     private $_flushMode = 'commit';
     
     /**
-     * The unit of work.
+     * The unit of work used to coordinate object-level transactions.
      *
      * @var UnitOfWork
      */
@@ -121,13 +118,6 @@ class Doctrine_EntityManager
      * @var EventManager
      */
     private $_eventManager;
-    
-    /**
-     * Enter description here...
-     *
-     * @var unknown_type
-     */
-    //private $_dataTemplates = array();
     
     /**
      * Container that is used temporarily during hydration.
@@ -163,7 +153,7 @@ class Doctrine_EntityManager
     }
     
     /**
-     * Returns the metadata for a class. Alias for getClassMetadata().
+     * Gets the metadata for a class. Alias for getClassMetadata().
      *
      * @return Doctrine_Metadata
      * @todo package:orm
@@ -171,6 +161,17 @@ class Doctrine_EntityManager
     public function getMetadata($className)
     {
         return $this->getClassMetadata($className);
+    }
+    
+    /**
+     * Gets the transaction object used by the EntityManager to manage
+     * database transactions.
+     * 
+     * @return Doctrine::DBAL::Transaction
+     */
+    public function getTransaction()
+    {
+        return $this->_conn->getTransaction();
     }
 
     /**
@@ -184,8 +185,8 @@ class Doctrine_EntityManager
     }
     
     /**
-     * Sets the driver that is used to obtain metadata informations about entity
-     * classes.
+     * Sets the driver that is used to obtain metadata mapping information
+     * about Entities.
      *
      * @param $driver  The driver to use.
      */
@@ -197,7 +198,8 @@ class Doctrine_EntityManager
     /**
      * Creates a new Doctrine_Query object that operates on this connection.
      * 
-     * @return Doctrine_Query
+     * @param string  The DQL string.
+     * @return Doctrine::ORM::Query
      * @todo package:orm
      */
     public function createQuery($dql = "")
@@ -211,10 +213,12 @@ class Doctrine_EntityManager
     }
     
     /**
-     * Enter description here...
+     * Gets the EntityPersister for an Entity.
+     * 
+     * This is usually not of interest for users, mainly for internal use.
      *
-     * @param unknown_type $entityName
-     * @return unknown
+     * @param string $entityName  The name of the Entity.
+     * @return Doctrine::ORM::Internal::EntityPersister
      */
     public function getEntityPersister($entityName)
     {
@@ -239,30 +243,6 @@ class Doctrine_EntityManager
     public function detach(Doctrine_Entity $entity)
     {
         return $this->_unitOfWork->unregisterIdentity($entity);
-    }
-    
-    /**
-     * Returns the current internal transaction nesting level.
-     *
-     * @return integer  The nesting level. A value of 0 means theres no active transaction.
-     * @todo package:orm???
-     */
-    public function getInternalTransactionLevel()
-    {
-        return $this->transaction->getInternalTransactionLevel();
-    }
-    
-    /**
-     * Initiates a transaction.
-     *
-     * This method must only be used by Doctrine itself to initiate transactions.
-     * Userland-code must use {@link beginTransaction()}.
-     *
-     * @todo package:orm???
-     */
-    public function beginInternalTransaction($savepoint = null)
-    {
-        return $this->transaction->beginInternalTransaction($savepoint);
     }
     
     /**
@@ -307,16 +287,16 @@ class Doctrine_EntityManager
      */
     public function flush()
     {
-        $this->beginInternalTransaction();
         $this->_unitOfWork->flush();
-        $this->commit();
     }
     
     /**
-     * Enter description here...
+     * Finds an Entity by its identifier.
+     * This is just a convenient shortcut for getRepository()->find().
      *
-     * @param unknown_type $entityName
-     * @param unknown_type $identifier
+     * @param string $entityName
+     * @param mixed $identifier
+     * @return Doctrine::ORM::Entity
      */
     public function find($entityName, $identifier)
     {
@@ -356,11 +336,8 @@ class Doctrine_EntityManager
     {
         if ($entityName === null) {
             $this->_unitOfWork->detachAll();
-            foreach ($this->_mappers as $mapper) {
-                $mapper->clear(); // clear identity map of each mapper
-            }
         } else {
-            $this->getMapper($entityName)->clear();   
+            //... 
         }
     }
     
@@ -370,7 +347,7 @@ class Doctrine_EntityManager
      */
     public function close()
     {
-        
+        //Doctrine_EntityManagerFactory::releaseManager($this);
     }
     
     /**
@@ -408,24 +385,7 @@ class Doctrine_EntityManager
      */
     public function save(Doctrine_Entity $entity)
     {
-        $state = $entity->_state();
-        if ($state == Doctrine_Entity::STATE_CLEAN || $state == Doctrine_Entity::STATE_LOCKED) {
-            return;
-        }
-        
-        //...
-        //$this->_unitOfWork->
-        switch ($entity->_state()) {
-            case Doctrine_Entity::STATE_CLEAN:
-                //nothing to do
-                break;
-            case Doctrine_Entity::STATE_DIRTY:
-                $this->_unitOfWork->registerDirty($entity);
-                break;
-            case Doctrine_Entity::STATE_TCLEAN:
-            case Doctrine_Entity::STATE_TDIRTY:
-                //...
-        }
+        $this->_unitOfWork->save($entity);
     }
     
     /**
@@ -433,14 +393,14 @@ class Doctrine_EntityManager
      */
     public function delete(Doctrine_Entity $entity)
     {
-        //...
+        $this->_unitOfWork->delete($entity);
     }
     
     /**
-     * Gets the repository for the given entity name.
+     * Gets the repository for an Entity.
      *
-     * @return Doctrine_EntityRepository  The repository.
-     * @todo Implementation.
+     * @param string $entityName  The name of the Entity.
+     * @return Doctrine::ORM::EntityRepository  The repository.
      */
     public function getRepository($entityName)
     {

@@ -22,6 +22,7 @@ class CustomAccessorMutatorTestEntity extends Doctrine_Entity
 {
     public static function initMetadata($class) 
     {
+        $class->mapColumn('id', 'integer', 4, array('primary'));
         $class->mapColumn('username', 'string', 50, array(
                 'accessor' => 'getUsernameCustom',
                 'mutator' => 'setUsernameCustom'));
@@ -42,6 +43,7 @@ class MagicAccessorMutatorTestEntity extends Doctrine_Entity
 {
     public static function initMetadata($class) 
     {
+        $class->mapColumn('id', 'integer', 4, array('primary'));
         $class->mapColumn('username', 'string', 50, array());
     }
     

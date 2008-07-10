@@ -22,8 +22,8 @@
 #namespace Doctrine::ORM;
 
 /**
- * Doctrine_Entity
- * All record classes should inherit this super class.
+ * Base class for all Entities (objects with persistent state in a RDBMS that are
+ * managed by Doctrine).
  * 
  * NOTE: Methods that are intended for internal use only but must be public
  * are marked INTERNAL: and begin with an underscore "_" to indicate that they
@@ -37,8 +37,10 @@
  * @link        www.phpdoctrine.org
  * @since       2.0
  * @version     $Revision: 4342 $
- * @todo Split up into "Entity" and "ActiveEntity (extends Entity)"???
- * @todo Remove as many methods as possible.
+ * @todo Split up into "Entity" and "ActiveEntity" (extends Entity)
+ * @todo Move entity states into a separate enumeration (EntityStates).
+ * They do not need to be exposed to users in such a way. The states are mainly
+ * for internal use.
  */
 abstract class Doctrine_Entity extends Doctrine_Access implements Serializable
 {
@@ -47,6 +49,7 @@ abstract class Doctrine_Entity extends Doctrine_Access implements Serializable
      * An Entity is in dirty state when its properties are changed.
      */
     const STATE_DIRTY = 1;
+    const STATE_MANAGED_DIRTY = 1;
 
     /**
      * TDIRTY STATE
@@ -54,6 +57,7 @@ abstract class Doctrine_Entity extends Doctrine_Access implements Serializable
      * fields are modified but it is NOT yet persisted into database.
      */
     const STATE_TDIRTY = 2;
+    const STATE_NEW_DIRTY = 2;
 
     /**
      * CLEAN STATE
@@ -61,19 +65,17 @@ abstract class Doctrine_Entity extends Doctrine_Access implements Serializable
      * and none of its properties are changed.
      */
     const STATE_CLEAN = 3;
-
-    /**
-     * PROXY STATE
-     * An Entity is in proxy state when its properties are not fully loaded.
-     */
-    //const STATE_PROXY = 4;
+    const STATE_MANAGED_CLEAN = 3;
 
     /**
      * NEW TCLEAN
      * An Entity is in transient clean state when it is created and none of its
      * fields are modified.
+     * @todo Do we need this state? Just STATE_NEW may be enough without differentiating
+     * clean/dirty. A new entity is always "dirty".
      */
     const STATE_TCLEAN = 5;
+    const STATE_NEW_CLEAN = 5;
 
     /**
      * LOCKED STATE
@@ -81,8 +83,24 @@ abstract class Doctrine_Entity extends Doctrine_Access implements Serializable
      *
      * This state is used internally to ensure that circular deletes
      * and saves will not cause infinite loops.
+     * @todo Not sure this is a good idea. It is a problematic solution because
+     * it hides the original state while the locked state is active.
      */
     const STATE_LOCKED = 6;
+    
+    /**
+     * A detached Entity is an instance with a persistent identity that is not
+     * (or no longer) associated with an EntityManager (and a UnitOfWork).
+     * This means its no longer in the identity map.
+     */
+    const STATE_DETACHED = 7;
+    
+    /**
+     * A removed Entity instance is an instance with a persistent identity,
+     * associated with an EntityManager, that is scheduled for removal from the
+     * database.
+     */
+    const STATE_DELETED = 8;
     
     /**
      * Index used for creating object identifiers (oid's).
@@ -204,114 +222,16 @@ abstract class Doctrine_Entity extends Doctrine_Access implements Serializable
         // @todo read from attribute the first time and move this initialization elsewhere.
         self::$_useAutoAccessorOverride = true; 
     }
-
-    /**
-     * _index
-     *
-     * @return integer
-     */
-    /*public static function _index()
-    {
-        return self::$_index;
-    }*/
     
     /**
      * Returns the object identifier.
      *
      * @return integer
      */
-    public function getOid()
+    final public function getOid()
     {
         return $this->_oid;
     }
-    
-    /**
-     * Empty template method to provide concrete Record classes with the possibility
-     * to hook into the serializing procedure.
-     */
-    public function preSerialize()
-    { }
-    
-    /**
-     * Empty template method to provide concrete Record classes with the possibility
-     * to hook into the serializing procedure.
-     */
-    public function postSerialize()
-    { }
-    
-    /**
-     * Empty template method to provide concrete Record classes with the possibility
-     * to hook into the serializing procedure.
-     */
-    public function preUnserialize()
-    { }
-    
-    /**
-     * Empty template method to provide concrete Record classes with the possibility
-     * to hook into the serializing procedure.
-     */
-    public function postUnserialize()
-    { }
-    
-    /**
-     * Empty template method to provide concrete Record classes with the possibility
-     * to hook into the saving procedure.
-     */
-    public function preSave()
-    { }
-    
-    /**
-     * Empty template method to provide concrete Record classes with the possibility
-     * to hook into the saving procedure.
-     */
-    public function postSave()
-    { }
-    
-    /**
-     * Empty template method to provide concrete Record classes with the possibility
-     * to hook into the deletion procedure.
-     */
-    public function preDelete()
-    { }
-    
-    /**
-     * Empty template method to provide concrete Record classes with the possibility
-     * to hook into the deletion procedure.
-     */
-    public function postDelete()
-    { }
-    
-    /**
-     * Empty template method to provide concrete Record classes with the possibility
-     * to hook into the saving procedure only when the record is going to be
-     * updated.
-     */
-    public function preUpdate()
-    { }
-    
-    /**
-     * Empty template method to provide concrete Record classes with the possibility
-     * to hook into the saving procedure only when the record is going to be
-     * updated.
-     */
-    public function postUpdate()
-    { }
-    
-    /**
-     * Empty template method to provide concrete Record classes with the possibility
-     * to hook into the saving procedure only when the record is going to be
-     * inserted into the data store the first time.
-     */
-    public function preInsert()
-    { }
-    
-    /**
-     * Empty template method to provide concrete Record classes with the possibility
-     * to hook into the saving procedure only when the record is going to be
-     * inserted into the data store the first time.
-     */
-    public function postInsert()
-    { }
 
     /**
      * setDefaultValues
@@ -345,46 +265,15 @@ abstract class Doctrine_Entity extends Doctrine_Access implements Serializable
     }*/
 
     /**
-     * cleanData
-     * leaves the $data array only with values whose key is a field inside this
-     * record and returns the values that were removed from $data.  Also converts
-     * any values of 'null' to objects of type Doctrine_Null.
-     *
-     * @param array $data       data array to be cleaned
-     * @return array $tmp       values cleaned from data
-     * @todo Remove. Should not be necessary. Slows down instantiation.
-     */
-    /*public function cleanData(&$data)
-    {
-        $tmp = $data;
-        $data = array();
-
-        $fieldNames = $this->_em->getEntityPersister($this->_entityName)->getFieldNames();
-        foreach ($fieldNames as $fieldName) {
-            if (isset($tmp[$fieldName])) {
-                $data[$fieldName] = $tmp[$fieldName];
-            } else if (array_key_exists($fieldName, $tmp)) {
-                $data[$fieldName] = Doctrine_Null::$INSTANCE;
-            } else if ( ! isset($this->_data[$fieldName])) {
-                $data[$fieldName] = Doctrine_Null::$INSTANCE;
-            }
-            unset($tmp[$fieldName]);
-        }
-
-        return $tmp;
-    }*/
-
-    /**
-     * hydrate
      * hydrates this object from given array
      *
      * @param array $data
      * @return boolean
      */
-    public function hydrate(array $data)
+    final public function hydrate(array $data)
     {
         $this->_data = array_merge($this->_data, $data);
-        //$this->_extractIdentifier(true);
+        $this->_extractIdentifier();
     }
 
     /**
@@ -437,8 +326,8 @@ abstract class Doctrine_Entity extends Doctrine_Access implements Serializable
      */
     public function serialize()
     {
-        //$event = new Doctrine_Event($this, Doctrine_Event::RECORD_SERIALIZE);
-        //$this->preSerialize($event);
+        //$this->_em->getEventManager()->dispatchEvent(Event::preSerialize);
+        //$this->_class->dispatchLifecycleEvent(Event::preSerialize, $this);
 
         $vars = get_object_vars($this);
 
@@ -533,7 +422,7 @@ abstract class Doctrine_Entity extends Doctrine_Access implements Serializable
 
     /**
      * INTERNAL:
-     * returns / assigns the state of this record
+     * Gets or sets the state of this Entity.
      *
      * @param integer|string $state                 if set, this method tries to set the record state to $state
      * @see Doctrine_Entity::STATE_* constants
@@ -577,7 +466,7 @@ abstract class Doctrine_Entity extends Doctrine_Access implements Serializable
      *                                          this record represents does not exist anymore)
      * @return boolean
      * @todo Implementation to EntityManager.
-     * @todo ActiveEntity method.
+     * @todo Move to ActiveEntity (extends Entity).
      */
     public function refresh($deep = false)
     {
@@ -674,9 +563,10 @@ abstract class Doctrine_Entity extends Doctrine_Access implements Serializable
     }*/
 
     /**
-     * INTERNAL: (Usage from within extending classes is fine)
+     * INTERNAL: (Usage from within extending classes is intended)
+     * 
      * Gets the value of a field (regular field or reference).
-     * If the property is not yet loaded this method does NOT load it.
+     * If the field is not yet loaded this method does NOT load it.
      * 
      * NOTE: Use of this method from outside the scope of an extending class
      * is strongly discouraged.
@@ -684,6 +574,7 @@ abstract class Doctrine_Entity extends Doctrine_Access implements Serializable
      * @param $name                         name of the property
      * @throws Doctrine_Entity_Exception    if trying to get an unknown field
      * @return mixed
+     * @todo Rename to _get()
      */
     final public function _rawGet($fieldName)
     {
@@ -697,7 +588,8 @@ abstract class Doctrine_Entity extends Doctrine_Access implements Serializable
     }
     
     /**
-     * INTERNAL: (Usage from within extending classes is fine)
+     * INTERNAL: (Usage from within extending classes is intended)
+     * 
      * Sets the value of a field (regular field or reference).
      * If the field is not yet loaded this method does NOT load it.
      * 
@@ -707,6 +599,7 @@ abstract class Doctrine_Entity extends Doctrine_Access implements Serializable
      * @param $name                         name of the field
      * @throws Doctrine_Entity_Exception    if trying to get an unknown field
      * @return mixed
+     * @todo Rename to _set
      */
     final public function _rawSet($fieldName, $value)
     {
@@ -805,7 +698,7 @@ abstract class Doctrine_Entity extends Doctrine_Access implements Serializable
                 }
                 if (isset($this->_references[$name])) {
                     $this->_references[$name]->setData($value->getData());
-                    return $this;
+                    return;
                 }
             } else {
                 $relatedTable = $value->getTable();
@@ -819,12 +712,12 @@ abstract class Doctrine_Entity extends Doctrine_Access implements Serializable
                 if ($rel instanceof Doctrine_Relation_LocalKey) {
                     $idFieldNames = $value->getTable()->getIdentifier();
                     if ( ! empty($foreignFieldName) && $foreignFieldName != $idFieldNames[0]) {
-                        $this->set($localFieldName, $value->_rawGet($foreignFieldName), false);
+                        $this->set($localFieldName, $value->_rawGet($foreignFieldName));
                     } else {
-                        $this->set($localFieldName, $value, false);
+                        $this->set($localFieldName, $value);
                     }
                 } else {
-                    $value->set($foreignFieldName, $this, false);
+                    $value->set($foreignFieldName, $this);
                 }
             }
         } else if ($rel instanceof Doctrine_Relation_Association) {
@@ -894,6 +787,13 @@ abstract class Doctrine_Entity extends Doctrine_Access implements Serializable
         }
     }
     
+    /**
+     * Gets the custom mutator method for a field, if it exists.
+     *
+     * @param string $fieldName  The field name.
+     * @return mixed  The name of the custom mutator or FALSE, if the field does
+     *                not have a custom mutator.
+     */
     private function _getCustomMutator($fieldName)
     {
         if ( ! isset(self::$_mutatorCache[$this->_entityName][$fieldName])) {
@@ -916,6 +816,13 @@ abstract class Doctrine_Entity extends Doctrine_Access implements Serializable
         return self::$_mutatorCache[$this->_entityName][$fieldName];
     }
     
+    /**
+     * Gets the custom accessor method of a field, if it exists.
+     *
+     * @param string $fieldName  The field name.
+     * @return mixed  The name of the custom accessor method, or FALSE if the 
+     *                field does not have a custom accessor.
+     */
     private function _getCustomAccessor($fieldName)
     {
         if ( ! isset(self::$_accessorCache[$this->_entityName][$fieldName])) {
@@ -952,10 +859,6 @@ abstract class Doctrine_Entity extends Doctrine_Access implements Serializable
      *
      * @param mixed $name                   name of the property or reference
      * @param mixed $value                  value of the property or reference
-     * @param boolean $load                 whether or not to refresh / load the uninitialized record data
-     *
-     * @throws Doctrine_Record_Exception    if trying to set a value for unknown property / related component
-     * @throws Doctrine_Record_Exception    if trying to set a value of wrong type for related component
      */
     final public function set($fieldName, $value)
     {
@@ -978,9 +881,9 @@ abstract class Doctrine_Entity extends Doctrine_Access implements Serializable
 
             if ($old != $value) {
                 $this->_data[$fieldName] = $value;
-                $this->_modified[] = $fieldName;
+                $this->_modified[$fieldName] = array($old => $value);
                 
-                if ($this->isTransient() && $this->_class->isIdentifier($fieldName)) {
+                if ($this->isNew() && $this->_class->isIdentifier($fieldName)) {
                     $this->_id[$fieldName] = $value;
                 }
                 
@@ -1001,7 +904,9 @@ abstract class Doctrine_Entity extends Doctrine_Access implements Serializable
     }
 
     /**
-     * contains
+     * Checks whether a field is set (not null).
+     * 
+     * NOTE: Invoked by Doctrine::ORM::Access#__isset().
      *
      * @param string $name
      * @return boolean
@@ -1025,6 +930,10 @@ abstract class Doctrine_Entity extends Doctrine_Access implements Serializable
     }
 
     /**
+     * Clears the value of a field.
+     * 
+     * NOTE: Invoked by Doctrine::ORM::Access#__unset().
+     * 
      * @param string $name
      * @return void
      */
@@ -1220,8 +1129,8 @@ abstract class Doctrine_Entity extends Doctrine_Access implements Serializable
     }
 
     /**
-     * Merges this record with an array of values
-     * or with another existing instance of this object
+     * Merges this Entity with an array of values
+     * or with another existing instance of.
      *
      * @param  mixed $data Data to merge. Either another instance of this model or an array
      * @param  bool  $deep Bool value for whether or not to merge the data deep
@@ -1341,33 +1250,10 @@ abstract class Doctrine_Entity extends Doctrine_Access implements Serializable
      * Checks whether the entity already has a persistent state.
      *
      * @return boolean  TRUE if the object is new, FALSE otherwise.
-     * @deprecated Use isTransient()
      */
     final public function isNew()
     {
         return $this->_state == self::STATE_TCLEAN || $this->_state == self::STATE_TDIRTY;
-    }
-    
-    /**
-     * Checks whether the entity already has a persistent state.
-     *
-     * @return boolean  TRUE if the object is new, FALSE otherwise.
-     */
-    final public function isTransient()
-    {
-        return $this->_state == self::STATE_TCLEAN || $this->_state == self::STATE_TDIRTY;
-    }
-    
-    /**
-     * Checks whether the entity has been modified since it was last synchronized
-     * with the database.
-     *
-     * @return boolean  TRUE if the object has been modified, FALSE otherwise.
-     */
-    final public function isDirty()
-    {
-        return ($this->_state === Doctrine_Entity::STATE_DIRTY ||
-                $this->_state === Doctrine_Entity::STATE_TDIRTY);
     }
 
     /**
@@ -1375,7 +1261,6 @@ abstract class Doctrine_Entity extends Doctrine_Access implements Serializable
      * with the database.
      *
      * @return boolean  TRUE if the object has been modified, FALSE otherwise.
-     * @deprecated Use isDirty()
      */
     final public function isModified()
     {
@@ -1512,7 +1397,7 @@ abstract class Doctrine_Entity extends Doctrine_Access implements Serializable
      * @return boolean
      * @todo Better name? hasAssociation() ?
      */
-    public function hasReference($name)
+    final public function hasReference($name)
     {
         return isset($this->_references[$name]);
     }
@@ -1523,7 +1408,7 @@ abstract class Doctrine_Entity extends Doctrine_Access implements Serializable
      * @param string $name
      * @throws Doctrine_Record_Exception        if trying to get an unknown related component
      */
-    public function obtainReference($name)
+    final public function obtainReference($name)
     {
         if (isset($this->_references[$name])) {
             return $this->_references[$name];
@@ -1774,6 +1659,8 @@ abstract class Doctrine_Entity extends Doctrine_Access implements Serializable
 
     /**
      * Gets the ClassMetadata object that describes the entity class.
+     * 
+     * @return Doctrine::ORM::Mapping::ClassMetadata
      */
     final public function getClassMetadata()
     {
@@ -1781,9 +1668,10 @@ abstract class Doctrine_Entity extends Doctrine_Access implements Serializable
     }
     
     /**
-     * Enter description here...
+     * Gets the EntityManager that is responsible for the persistence of 
+     * the Entity.
      *
-     * @return unknown
+     * @return Doctrine::ORM::EntityManager
      */
     final public function getEntityManager()
     {
@@ -1791,9 +1679,9 @@ abstract class Doctrine_Entity extends Doctrine_Access implements Serializable
     }
     
     /**
-     * Enter description here...
+     * Gets the EntityRepository of the Entity.
      *
-     * @return unknown
+     * @return Doctrine::ORM::EntityRepository
      */
     final public function getRepository()
     {

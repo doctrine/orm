@@ -22,6 +22,7 @@
 #namespace Doctrine::ORM;
 
 /**
+ * A repository provides the illusion of an in-memory Entity store. 
  * Base class for all custom user-defined repositories.
  * Provides basic finder methods, common to all repositories.
  *
@@ -48,7 +49,6 @@ class Doctrine_EntityRepository
     }
     
     /**
-     * createQuery
      * creates a new Doctrine_Query object and adds the component name
      * of this table as the query 'from' part
      *

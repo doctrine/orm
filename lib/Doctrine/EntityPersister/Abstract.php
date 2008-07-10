@@ -63,19 +63,9 @@ abstract class Doctrine_EntityPersister_Abstract
     protected $_em;
     
     /**
-     * The concrete mapping strategy that is used.
-     */
-    protected $_mappingStrategy;
-    
-    /**
      * Null object.
      */
     private $_nullObject;
-    
-    /**
-     * A list of registered entity listeners.
-     */
-    private $_entityListeners = array();
     
     /**
      * Enter description here...
@@ -318,8 +308,8 @@ abstract class Doctrine_EntityPersister_Abstract
      */
     protected function _insertOrUpdate(Doctrine_Entity $record)
     {
-        $record->preSave();
-        $this->notifyEntityListeners($record, 'preSave', Doctrine_Event::RECORD_SAVE);
+        //$record->preSave();
+        //$this->notifyEntityListeners($record, 'preSave', Doctrine_Event::RECORD_SAVE);
         
         switch ($record->_state()) {
             case Doctrine_Entity::STATE_TDIRTY:
@@ -335,8 +325,8 @@ abstract class Doctrine_EntityPersister_Abstract
                 break;
         }
         
-        $record->postSave();
-        $this->notifyEntityListeners($record, 'postSave', Doctrine_Event::RECORD_SAVE);
+        //$record->postSave();
+        //$this->notifyEntityListeners($record, 'postSave', Doctrine_Event::RECORD_SAVE);
     }
     
     /**
@@ -351,7 +341,6 @@ abstract class Doctrine_EntityPersister_Abstract
     }
     
     /**
-     * _saveRelated
      * saves all related records to $record
      *
      * @throws PDOException         if something went wrong at database level

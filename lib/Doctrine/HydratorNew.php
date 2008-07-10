@@ -227,6 +227,7 @@ class Doctrine_HydratorNew extends Doctrine_Hydrator_Abstract
                 } else if (isset($resultPointers[$parent])) {
                     $baseElement =& $resultPointers[$parent];
                 } else {
+                    unset($prev[$dqlAlias]); // Ticket #1228
                     continue;
                 }
 
@@ -256,7 +257,8 @@ class Doctrine_HydratorNew extends Doctrine_Hydrator_Abstract
                 } else {
                     // x-1 relation
                     $oneToOne = true;
-                    if ( ! isset($nonemptyComponents[$dqlAlias])) {
+                    if ( ! isset($nonemptyComponents[$dqlAlias]) &&
+                            ! $driver->isFieldSet($baseElement, $relationAlias)) {
                         $driver->setRelatedElement($baseElement, $relationAlias,
                                 $driver->getNullPointer());
                     } else if ( ! $driver->isFieldSet($baseElement, $relationAlias)) {
@@ -293,8 +295,6 @@ class Doctrine_HydratorNew extends Doctrine_Hydrator_Abstract
     }
 
     /**
-     * _setLastElement
-     *
      * sets the last element of given data array / collection
      * as previous element
      *
@@ -308,7 +308,8 @@ class Doctrine_HydratorNew extends Doctrine_Hydrator_Abstract
      */
     protected function _setLastElement(&$resultPointers, &$coll, $index, $dqlAlias, $oneToOne)
     {
-        if ($coll === $this->_nullObject) {
+        if ($coll === $this->_nullObject || $coll === null) {
+            unset($resultPointers[$dqlAlias]); // Ticket #1228
             return false;
         }
         
@@ -330,8 +331,6 @@ class Doctrine_HydratorNew extends Doctrine_Hydrator_Abstract
             $resultPointers[$dqlAlias] = $coll;
         } else if (count($coll) > 0) {
             $resultPointers[$dqlAlias] = $coll->getLast();
-        } else if (isset($resultPointers[$dqlAlias])) {
-            unset($resultPointers[$dqlAlias]);
         }
     }
     

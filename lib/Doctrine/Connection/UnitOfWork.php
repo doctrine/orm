@@ -83,7 +83,7 @@ class Doctrine_Connection_UnitOfWork
     protected $_removedEntities = array();
     
     /**
-     * The EntityManager the unit of work belongs to.
+     * The EntityManager the UnitOfWork belongs to.
      */
     protected $_em;
     
@@ -98,7 +98,7 @@ class Doctrine_Connection_UnitOfWork
     
     /**
      * Constructor.
-     * Created a new UnitOfWork.
+     * Creates a new UnitOfWork.
      *
      * @param Doctrine_EntityManager $em
      */
@@ -110,7 +110,8 @@ class Doctrine_Connection_UnitOfWork
     /**
      * Commits the unit of work, executing all operations that have been postponed
      * up to this point.
-     *
+     * 
+     * @todo Impl
      */
     public function commit()
     {
@@ -191,7 +192,7 @@ class Doctrine_Connection_UnitOfWork
      */
     public function registerRemoved(Doctrine_Entity $entity)
     {
-        if ($entity->isTransient()) {
+        if ($entity->isNew()) {
             return;
         }
         $this->unregisterIdentity($entity);
@@ -511,4 +512,229 @@ class Doctrine_Connection_UnitOfWork
         return isset($this->_identityMap[$rootClassName][$idHash]);
     }
     
+    public function save(Doctrine_Entity $entity)
+    {        
+        switch ($entity->_state()) {
+            case Doctrine_Entity::STATE_CLEAN:
+                //nothing to do
+                // ignore $entity but cascade
+                break;
+            case Doctrine_Entity::STATE_DIRTY:
+                // update
+                $this->registerDirty($entity);
+                // todo:cascade
+                break;
+            case Doctrine_Entity::STATE_TCLEAN:
+            case Doctrine_Entity::STATE_TDIRTY:
+                // insert
+                // if identifier type IDENTITY:
+                //     cascade
+                //     if no transaction is started yet, do it
+                //     force insert (directly to persister)
+                // else
+                //     cascade
+                //     get & assign the identifier, then registerNew()
+                break;
+        }
+    }
+    
+    private function _cascadeSave(Doctrine_Entity $entity)
+    {
+        
+    }
+    
+    private function _cascadeDelete(Doctrine_Entity $entity)
+    {
+        
+    }
+    
+    
+    // Stuff from 0.11/1.0 that we will need later (need to modify it though)
+    
+    /**
+     * Collects all records that need to be deleted by applying defined
+     * application-level delete cascades.
+     *
+     * @param array $deletions  Map of the records to delete. Keys=Oids Values=Records.
+     */
+    /*private function _collectDeletions(Doctrine_Record $record, array &$deletions)
+    {
+        if ( ! $record->exists()) {
+            return;
+        }
+
+        $deletions[$record->getOid()] = $record;
+        $this->_cascadeDelete($record, $deletions);
+    }*/
+    
+    /**
+     * Cascades an ongoing delete operation to related objects. Applies only on relations
+     * that have 'delete' in their cascade options.
+     * This is an application-level cascade. Related objects that participate in the
+     * cascade and are not yet loaded are fetched from the database.
+     * Exception: many-valued relations are always (re-)fetched from the database to
+     * make sure we have all of them.
+     *
+     * @param Doctrine_Record  The record for which the delete operation will be cascaded.
+     * @throws PDOException    If something went wrong at database level
+     * @return void
+     */
+     /*protected function _cascadeDelete(Doctrine_Record $record, array &$deletions)
+     {
+         foreach ($record->getTable()->getRelations() as $relation) {
+             if ($relation->isCascadeDelete()) {
+                 $fieldName = $relation->getAlias();
+                 // if it's a xToOne relation and the related object is already loaded
+                 // we don't need to refresh.
+                 if ( ! ($relation->getType() == Doctrine_Relation::ONE && isset($record->$fieldName))) {
+                     $record->refreshRelated($relation->getAlias());
+                 }
+                 $relatedObjects = $record->get($relation->getAlias());
+                 if ($relatedObjects instanceof Doctrine_Record && $relatedObjects->exists()
+                        && ! isset($deletions[$relatedObjects->getOid()])) {
+                     $this->_collectDeletions($relatedObjects, $deletions);
+                 } else if ($relatedObjects instanceof Doctrine_Collection && count($relatedObjects) > 0) {
+                     // cascade the delete to the other objects
+                     foreach ($relatedObjects as $object) {
+                         if ( ! isset($deletions[$object->getOid()])) {
+                             $this->_collectDeletions($object, $deletions);
+                         }
+                     }
+                 }
+             }
+         }
+     }*/
+    
+    /**
+     * Executes the deletions for all collected records during a delete operation
+     * (usually triggered through $record->delete()).
+     *
+     * @param array $deletions  Map of the records to delete. Keys=Oids Values=Records.
+     */
+    /*private function _executeDeletions(array $deletions)
+    {
+        // collect class names
+        $classNames = array();
+        foreach ($deletions as $record) {
+            $classNames[] = $record->getTable()->getComponentName();
+        }
+        $classNames = array_unique($classNames);
+
+        // order deletes
+        $executionOrder = $this->buildFlushTree($classNames);
+
+        // execute
+        try {
+            $this->conn->beginInternalTransaction();
+
+            for ($i = count($executionOrder) - 1; $i >= 0; $i--) {
+                $className = $executionOrder[$i];
+                $table = $this->conn->getTable($className);
+
+                // collect identifiers
+                $identifierMaps = array();
+                $deletedRecords = array();
+                foreach ($deletions as $oid => $record) {
+                    if ($record->getTable()->getComponentName() == $className) {
+                        $veto = $this->_preDelete($record);
+                        if ( ! $veto) {
+                            $identifierMaps[] = $record->identifier();
+                            $deletedRecords[] = $record;
+                            unset($deletions[$oid]);
+                        }
+                    }
+                }
+
+                if (count($deletedRecords) < 1) {
+                    continue;
+                }
+
+                // extract query parameters (only the identifier values are of interest)
+                $params = array();
+                $columnNames = array();
+                foreach ($identifierMaps as $idMap) {
+                    while (list($fieldName, $value) = each($idMap)) {
+                        $params[] = $value;
+                        $columnNames[] = $table->getColumnName($fieldName);
+                    }
+                }
+                $columnNames = array_unique($columnNames);
+
+                // delete
+                $tableName = $table->getTableName();
+                $sql = "DELETE FROM " . $this->conn->quoteIdentifier($tableName) . " WHERE ";
+
+                if ($table->isIdentifierComposite()) {
+                    $sql .= $this->_buildSqlCompositeKeyCondition($columnNames, count($identifierMaps));
+                    $this->conn->exec($sql, $params);
+                } else {
+                    $sql .= $this->_buildSqlSingleKeyCondition($columnNames, count($params));
+                    $this->conn->exec($sql, $params);
+                }
+
+                // adjust state, remove from identity map and inform postDelete listeners
+                foreach ($deletedRecords as $record) {
+                    // currently just for bc!
+                    $this->_deleteCTIParents($table, $record);
+                    //--
+                    $record->state(Doctrine_Record::STATE_TCLEAN);
+                    $record->getTable()->removeRecord($record);
+                    $this->_postDelete($record);
+                }
+            }
+
+            $this->conn->commit();
+            // trigger postDelete for records skipped during the deletion (veto!)
+            foreach ($deletions as $skippedRecord) {
+                $this->_postDelete($skippedRecord);
+            }
+
+            return true;
+        } catch (Exception $e) {
+            $this->conn->rollback();
+            throw $e;
+        }
+    }*/
+
+    /**
+     * Builds the SQL condition to target multiple records who have a single-column
+     * primary key.
+     *
+     * @param Doctrine_Table $table  The table from which the records are going to be deleted.
+     * @param integer $numRecords  The number of records that are going to be deleted.
+     * @return string  The SQL condition "pk = ? OR pk = ? OR pk = ? ..."
+     */
+    /*private function _buildSqlSingleKeyCondition($columnNames, $numRecords)
+    {
+        $idColumn = $this->conn->quoteIdentifier($columnNames[0]);
+        return implode(' OR ', array_fill(0, $numRecords, "$idColumn = ?"));
+    }*/
+
+    /**
+     * Builds the SQL condition to target multiple records who have a composite primary key.
+     *
+     * @param Doctrine_Table $table  The table from which the records are going to be deleted.
+     * @param integer $numRecords  The number of records that are going to be deleted.
+     * @return string  The SQL condition "(pk1 = ? AND pk2 = ?) OR (pk1 = ? AND pk2 = ?) ..."
+     */
+    /*private function _buildSqlCompositeKeyCondition($columnNames, $numRecords)
+    {
+        $singleCondition = "";
+        foreach ($columnNames as $columnName) {
+            $columnName = $this->conn->quoteIdentifier($columnName);
+            if ($singleCondition === "") {
+                $singleCondition .= "($columnName = ?";
+            } else {
+                $singleCondition .= " AND $columnName = ?";
+            }
+        }
+        $singleCondition .= ")";
+        $fullCondition = implode(' OR ', array_fill(0, $numRecords, $singleCondition));
+
+        return $fullCondition;
+    }*/
 }
+
+
+
+

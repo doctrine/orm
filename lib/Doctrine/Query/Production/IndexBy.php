@@ -77,7 +77,7 @@ class Doctrine_Query_Production_IndexBy extends Doctrine_Query_Production
         }
 
         // The INDEXBY field must be either the (primary && not part of composite pk) || (unique && notnull)
-        $columnMapping = $classMetadata->getColumnMapping($this->_fieldName);
+        $columnMapping = $classMetadata->getFieldMapping($this->_fieldName);
 
         if ( ! $classMetadata->isIdentifier($this->_fieldName) && ! $classMetadata->isUniqueField($this->_fieldName) && ! $classMetadata->isNotNull($this->_fieldName)) {
             $this->_parser->semanticalError(

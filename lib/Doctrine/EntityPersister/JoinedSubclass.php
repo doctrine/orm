@@ -20,12 +20,10 @@
  */
 
 /**
- * The joined mapping strategy maps a single entity instance to several tables in the
+ * The joined subclass persister maps a single entity instance to several tables in the
  * database as it is defined by <tt>Class Table Inheritance</tt>.
  *
  * @author      Roman Borschel <roman@code-factory.org>
- * @package     Doctrine
- * @subpackage  JoinedSubclass
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @version     $Revision$
  * @link        www.phpdoctrine.org
@@ -33,7 +31,7 @@
  */
 class Doctrine_EntityPersister_JoinedSubclass extends Doctrine_EntityPersister_Abstract
 {
-    protected $_columnNameFieldNameMap = array();
+    //protected $_columnNameFieldNameMap = array();
     
     /**
      * Inserts an entity that is part of a Class Table Inheritance hierarchy.
@@ -94,7 +92,6 @@ class Doctrine_EntityPersister_JoinedSubclass extends Doctrine_EntityPersister_A
      *
      * @param Doctrine_Entity $record   record to be updated
      * @return boolean                  whether or not the update was successful
-     * @todo Move to Doctrine_Table (which will become Doctrine_Mapper).
      */
     protected function _doUpdate(Doctrine_Entity $record)
     {
@@ -222,34 +219,6 @@ class Doctrine_EntityPersister_JoinedSubclass extends Doctrine_EntityPersister_A
         
         return $fieldNames;
     }
-    
-    /**
-     * 
-     */
-    /*public function getFieldName($columnName)
-    {
-        if (isset($this->_columnNameFieldNameMap[$columnName])) {
-            return $this->_columnNameFieldNameMap[$columnName];
-        }
-        
-        $classMetadata = $this->_classMetadata;
-        $conn = $this->_conn;
-        
-        if ($classMetadata->hasColumn($columnName)) {
-            $this->_columnNameFieldNameMap[$columnName] = $classMetadata->getFieldName($columnName);
-            return $this->_columnNameFieldNameMap[$columnName];
-        }
-        
-        foreach ($classMetadata->getSubclasses() as $subClass) {
-            $subTable = $conn->getClassMetadata($subClass);
-            if ($subTable->hasColumn($columnName)) {
-                $this->_columnNameFieldNameMap[$columnName] = $subTable->getFieldName($columnName);
-                return $this->_columnNameFieldNameMap[$columnName];
-            }
-        }
-
-        throw new Doctrine_Mapper_Exception("No field name found for column name '$columnName'.");
-    }*/
     
     /**
      * 

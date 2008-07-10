@@ -24,9 +24,8 @@
 /**
  * A <tt>ClassMetadata</tt> instance holds all the information (metadata) of an entity and
  * it's associations and how they're mapped to the relational database.
+ * It is the backbone of Doctrine's metadata mapping.
  *
- * @package Doctrine
- * @subpackage ClassMetadata
  * @author Roman Borschel <roman@code-factory.org>
  * @since 2.0
  */
@@ -115,8 +114,8 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
     protected $_generators = array();
 
     /**
-     * The mapped columns and their mapping definitions.
-     * Keys are column names and values are mapping definitions.
+     * The field mappings of the class.
+     * Keys are field names and values are mapping definitions.
      *
      * The mapping definition array has at least the following values:
      *
@@ -128,9 +127,9 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
      *  -- values       enum values
      *  ... many more
      *
-     * @var array $columns
-     */
-    protected $_mappedColumns = array();
+     * @var array
+     */    
+    protected $_fieldMappings = array();
     
     /**
      * The mapped embedded values (value objects).
@@ -282,7 +281,29 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
      * @var array $_invokedMethods              method invoker cache
      */
     protected $_invokedMethods = array();
+    
+    /**
+     * The cached lifecycle listeners. There is only one instance of each
+     * listener class at any time.
+     *
+     * @var array
+     */
+    protected $_lifecycleListenerInstances = array();
 
+    /**
+     * The registered lifecycle callbacks for Entities of this class.
+     *
+     * @var array
+     */
+    protected $_lifecycleCallbacks = array();
+    
+    /**
+     * The registered lifecycle listeners for Entities of this class.
+     *
+     * @var array
+     */
+    protected $_lifecycleListeners = array();
+    
 
     /**
      * Constructs a new ClassMetadata instance.
@@ -374,7 +395,7 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
      */
     public function isUniqueField($fieldName)
     {
-        $mapping = $this->getColumnMapping($fieldName);
+        $mapping = $this->getFieldMapping($fieldName);
 
         if ($mapping !== false) {
             return isset($mapping['unique']) && $mapping['unique'] == true;
@@ -391,7 +412,7 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
      */
     public function isNotNull($fieldName)
     {
-        $mapping = $this->getColumnMapping($fieldName);
+        $mapping = $this->getFieldMapping($fieldName);
 
         if ($mapping !== false) {
             return isset($mapping['notnull']) && $mapping['notnull'] == true;
@@ -531,7 +552,7 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
     public function getColumnName($fieldName)
     {
         return isset($this->_columnNames[$fieldName]) ?
-        $this->_columnNames[$fieldName] : $fieldName;
+                $this->_columnNames[$fieldName] : $fieldName;
     }
 
     /**
@@ -542,10 +563,10 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
         return $this->getColumnMapping($columnName);
     }
 
-    public function getColumnMapping($columnName)
+    public function getFieldMapping($fieldName)
     {
-        return isset($this->_mappedColumns[$columnName]) ?
-                $this->_mappedColumns[$columnName] : false;
+        return isset($this->_fieldMappings[$fieldName]) ?
+                $this->_fieldMappings[$fieldName] : false;
     }
 
     /**
@@ -593,6 +614,10 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
      * found on this class mapping.
      * This lookup on subclasses is costly but happens only *once* for a column
      * during hydration because the hydrator caches effectively.
+     * 
+     * @return string  The field name.
+     * @throws Doctrine::ORM::Exceptions::ClassMetadataException if the field name could
+     *         not be found.
      */
     public function lookupFieldName($lcColumnName)
     {
@@ -626,7 +651,7 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
     }
 
     /**
-     * Maps a column of the class' database table to a field of the entity.
+     * Maps a field of the class to a database column.
      *
      * @param string $name      The name of the column to map. Syntax: columnName [as propertyName].
      *                          The property name is optional. If not used the column will be
@@ -639,7 +664,7 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
      *
      * @throws Doctrine_ClassMetadata_Exception If trying use wrongly typed parameter.
      */
-    public function mapColumn($name, $type, $length = null, $options = array(), $prepend = false)
+    public function mapColumn($name, $type, $length = null, $options = array())
     {
         // converts 0 => 'primary' to 'primary' => true etc.
         foreach ($options as $k => $option) {
@@ -661,18 +686,14 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
         $columnName = $parts[0];
         $lcColumnName = strtolower($parts[0]);
 
-        if (isset($this->_mappedColumns[$columnName])) {
+        if (isset($this->_fieldMappings[$fieldName])) {
             return;
         }
 
         // Fill column name <-> field name lookup maps
-        if ($prepend) {
-            $this->_columnNames = array_merge(array($fieldName => $columnName), $this->_columnNames);
-            $this->_fieldNames = array_merge(array($columnName => $fieldName), $this->_fieldNames);
-        } else {
-            $this->_columnNames[$fieldName] = $columnName;
-            $this->_fieldNames[$columnName] = $fieldName;
-        }
+        $this->_columnNames[$fieldName] = $columnName;
+        $this->_fieldNames[$columnName] = $fieldName;
+        $this->_lcColumnToFieldNames[$lcColumnName] = $fieldName;
         $this->_lcColumnToFieldNames[$lcColumnName] = $fieldName;
         
         
@@ -701,11 +722,7 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
             $options['immutable'] = false;
         }*/
 
-        if ($prepend) {
-            $this->_mappedColumns = array_merge(array($columnName => $options), $this->_mappedColumns);
-        } else {
-            $this->_mappedColumns[$columnName] = $options;
-        }
+        $this->_fieldMappings[$fieldName] = $options;
 
         $this->_columnCount++;
     }
@@ -754,24 +771,6 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
     }
 
     /**
-     * setColumn
-     *
-     * @param string $name
-     * @param string $type
-     * @param integer $length
-     * @param mixed $options
-     * @param boolean $prepend   Whether to prepend or append the new column to the column list.
-     *                           By default the column gets appended.
-     * @throws Doctrine_Table_Exception     if trying use wrongly typed parameter
-     * @return void
-     * @deprecated Use mapColumn()
-     */
-    public function setColumn($name, $type, $length = null, $options = array(), $prepend = false)
-    {
-        return $this->mapColumn($name, $type, $length, $options, $prepend);
-    }
-
-    /**
      * Gets the names of all validators that are applied on a field.
      *
      * @param string  The field name.
@@ -779,9 +778,8 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
      */
     public function getFieldValidators($fieldName)
     {
-        $columnName = $this->getColumnName($fieldName);
-        return isset($this->_mappedColumns[$columnName]['validators']) ?
-        $this->_mappedColumns[$columnName]['validators'] : array();
+        return isset($this->_fieldMappings[$fieldName]['validators']) ?
+                $this->_fieldMappings[$fieldName]['validators'] : array();
     }
 
     /**
@@ -803,12 +801,11 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
      */
     public function getDefaultValueOf($fieldName)
     {
-        $columnName = $this->getColumnName($fieldName);
-        if ( ! isset($this->_mappedColumns[$columnName])) {
-            throw new Doctrine_Table_Exception("Couldn't get default value. Column ".$columnName." doesn't exist.");
+        if ( ! isset($this->_fieldMappings[$fieldName])) {
+            throw new Doctrine_Table_Exception("Couldn't get default value. Column ".$fieldName." doesn't exist.");
         }
-        if (isset($this->_mappedColumns[$columnName]['default'])) {
-            return $this->_mappedColumns[$columnName]['default'];
+        if (isset($this->_fieldMappings[$fieldName]['default'])) {
+            return $this->_fieldMappings[$fieldName]['default'];
         } else {
             return null;
         }
@@ -867,12 +864,12 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
      */
     public function hasColumn($columnName)
     {
-        return isset($this->_mappedColumns[$columnName]);
+        return isset($this->_fieldNames[$columnName]);
     }
 
     public function hasMappedColumn($columnName)
     {
-        return isset($this->_mappedColumns[$columnName]);
+        return isset($this->_fieldNames[$columnName]);
     }
 
     /**
@@ -890,9 +887,8 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
      */
     public function getEnumValues($fieldName)
     {
-        $columnName = $this->getColumnName($fieldName);
-        if (isset($this->_mappedColumns[$columnName]['values'])) {
-            return $this->_mappedColumns[$columnName]['values'];
+        if (isset($this->_fieldMappings[$fieldName]['values'])) {
+            return $this->_fieldMappings[$fieldName]['values'];
         } else {
             return array();
         }
@@ -917,8 +913,8 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
 
         $columnName = $this->getColumnName($fieldName);
         if ( ! $this->_em->getAttribute(Doctrine::ATTR_USE_NATIVE_ENUM) &&
-        isset($this->_mappedColumns[$columnName]['values'][$index])) {
-            $enumValue = $this->_mappedColumns[$columnName]['values'][$index];
+                isset($this->_fieldMappings[$fieldName]['values'][$index])) {
+            $enumValue = $this->_fieldMappings[$fieldName]['values'][$index];
         } else {
             $enumValue = $index;
         }
@@ -973,9 +969,8 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
      */
     public function getCustomAccessor($fieldName)
     {
-        $columnName = $this->getColumnName($fieldName);
-        return isset($this->_mappedColumns[$columnName]['accessor']) ?
-                $this->_mappedColumns[$columnName]['accessor'] : null;
+        return isset($this->_fieldMappings[$fieldName]['accessor']) ?
+                $this->_fieldMappings[$fieldName]['accessor'] : null;
     }
 
     /**
@@ -985,9 +980,8 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
      */
     public function getCustomMutator($fieldName)
     {
-        $columnName = $this->getColumnName($fieldName);
-        return isset($this->_mappedColumns[$columnName]['mutator']) ?
-                $this->_mappedColumns[$columnName]['mutator'] : null;
+        return isset($this->_fieldMappings[$fieldName]['mutator']) ?
+                $this->_fieldMappings[$fieldName]['mutator'] : null;
     }
 
     /**
@@ -998,7 +992,7 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
      */
     public function getColumns()
     {
-        return $this->_mappedColumns;
+        return $this->_fieldMappings;
     }
 
     /**
@@ -1008,7 +1002,12 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
      */
     public function getMappedColumns()
     {
-        return $this->_mappedColumns;
+        return $this->_fieldMappings;
+    }
+    
+    public function getFieldMappings()
+    {
+        return $this->_fieldMappings;
     }
 
     /**
@@ -1023,8 +1022,8 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
 
         unset($this->_fieldNames[$columnName]);
 
-        if (isset($this->_mappedColumns[$columnName])) {
-            unset($this->_mappedColumns[$columnName]);
+        if (isset($this->_fieldMappings[$fieldName])) {
+            unset($this->_fieldMappings[$fieldName]);
             return true;
         }
         $this->_columnCount--;
@@ -1040,7 +1039,7 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
     public function getColumnNames(array $fieldNames = null)
     {
         if ($fieldNames === null) {
-            return array_keys($this->_mappedColumns);
+            return array_keys($this->_fieldNames);
         } else {
             $columnNames = array();
             foreach ($fieldNames as $fieldName) {
@@ -1092,8 +1091,7 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
      */
     public function getMappingForField($fieldName)
     {
-        $columnName = $this->getColumnName($fieldName);
-        return $this->getColumnDefinition($columnName);
+        return $this->_fieldMappings[$fieldName];
     }
 
     /**
@@ -1104,6 +1102,7 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
      */
     public function getTypeOf($fieldName)
     {
+        
         return $this->getTypeOfColumn($this->getColumnName($fieldName));
     }
     
@@ -1115,7 +1114,8 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
      */
     public function getTypeOfField($fieldName)
     {
-        return $this->getTypeOfColumn($this->getColumnName($fieldName));
+        return isset($this->_fieldMappings[$fieldName]) ?
+                $this->_fieldMappings[$fieldName]['type'] : false;
     }
 
     /**
@@ -1125,7 +1125,7 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
      */
     public function getTypeOfColumn($columnName)
     {
-        return isset($this->_mappedColumns[$columnName]) ? $this->_mappedColumns[$columnName]['type'] : false;
+        return $this->getTypeOfField($this->getFieldName($columnName));
     }
 
     /**
@@ -1133,7 +1133,7 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
      */
     public function getFieldLength($fieldName)
     {
-        return $this->_mappedColumns[$this->getColumnName($fieldName)]['length'];
+        return $this->_fieldMappings[$fieldName]['length'];
     }
 
     /**
@@ -1502,7 +1502,7 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
         // Collect foreign keys from the relations
         $options['foreignKeys'] = array();
         if ($parseForeignKeys && $this->getAttribute(Doctrine::ATTR_EXPORT)
-        & Doctrine::EXPORT_CONSTRAINTS) {
+                & Doctrine::EXPORT_CONSTRAINTS) {
             $constraints = array();
             $emptyIntegrity = array('onUpdate' => null, 'onDelete' => null);
             foreach ($this->getRelations() as $name => $relation) {
@@ -1683,7 +1683,7 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
      */
     public function isInheritedField($fieldName)
     {
-        return isset($this->_mappedColumns[$this->getColumnName($fieldName)]['inherited']);
+        return isset($this->_fieldMappings[$fieldName]['inherited']);
     }
 
     /**
@@ -1911,6 +1911,86 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
     public function bindToEntityManager($emName)
     {
 
+    }
+    
+    /**
+     * Dispatches the lifecycle event of the given Entity to the registered
+     * lifecycle callbacks and lifecycle listeners.
+     *
+     * @param string $event  The lifecycle event.
+     * @param Entity $entity  The Entity on which the event occured.
+     */
+    public function invokeLifecycleCallbacks($lifecycleEvent, Doctrine_Entity $entity)
+    {
+        foreach ($this->getLifecycleCallbacks($lifecycleEvent) as $callback) {
+            $entity->$callback();
+        }
+        foreach ($this->getLifecycleListeners($lifecycleEvent) as $className => $callback) {
+            if ( ! isset($this->_lifecycleListenerInstances[$className])) {
+                $this->_lifecycleListenerInstances[$className] = new $className;
+            }
+            $this->_lifecycleListenerInstances[$className]->$callback($entity);
+        }
+    }
+    
+    /**
+     * Gets the registered lifecycle callbacks for an event.
+     *
+     * @param string $event
+     * @return array
+     */
+    public function getLifecycleCallbacks($event)
+    {
+        return isset($this->_lifecycleCallbacks[$event]) ?
+                $this->_lifecycleCallbacks[$event] : array();
+    }
+    
+    /**
+     * Gets the registered lifecycle listeners for an event.
+     *
+     * @param string $event
+     * @return array
+     */
+    public function getLifecycleListeners($event)
+    {
+        return isset($this->_lifecycleListeners[$event]) ?
+                $this->_lifecycleListeners[$event] : array();
+    }
+    
+    /**
+     * Adds a lifecycle listener for Entities this class.
+     * 
+     * Note: If the same listener class is registered more than once, the old
+     * one will be overridden.
+     *
+     * @param string $listenerClass
+     * @param array $callbacks
+     */
+    public function addLifecycleListener($listenerClass, array $callbacks)
+    {
+        $this->_lifecycleListeners[$event][$listenerClass] = array();
+        foreach ($callbacks as $method => $event) {
+            $this->_lifecycleListeners[$event][$listenerClass][] = $method;
+        }
+    }
+    
+    /**
+     * Adds a lifecycle callback for Entities of this class.
+     *
+     * Note: If a the same callback is registered more than once, the old one
+     * will be overridden.
+     * 
+     * @param string $callback
+     * @param string $event
+     */
+    public function addLifecycleCallback($callback, $event)
+    {
+        if ( ! isset($this->_lifecycleCallbacks[$event])) {
+            $this->_lifecycleCallbacks[$event] = array();
+        }
+        if ( ! in_array($callback, $this->_lifecycleCallbacks[$event])) {
+            $this->_lifecycleCallbacks[$event][$callback] = $callback;
+        } 
     }
 
     /**

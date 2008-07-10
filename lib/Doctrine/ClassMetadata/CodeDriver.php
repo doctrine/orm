@@ -35,11 +35,18 @@
 class Doctrine_ClassMetadata_CodeDriver
 {
     /**
+     * Name of the callback method.
+     * 
+     * @todo We could make the name of the callback methods customizable for users.
+     */
+    const CALLBACK_METHOD = 'initMetadata';
+    
+    /**
      * Loads the metadata for the specified class into the provided container.
      */
     public function loadMetadataForClass($className, Doctrine_ClassMetadata $metadata)
     {
-        if ( ! method_exists($className, 'initMetadata')) {
+        if ( ! method_exists($className, self::CALLBACK_METHOD)) {
             throw new Doctrine_ClassMetadata_Exception("Unable to load metadata for class"
                     . " '$className'. Callback method 'initMetadata' not found.");
         }
