@@ -130,7 +130,7 @@ class Doctrine_ClassMetadata_Factory
     
     protected function _addInheritedFields($subClass, $parentClass)
     {
-        foreach ($parentClass->getColumns() as $name => $definition) {
+        foreach ($parentClass->getFieldMappings() as $name => $definition) {
             $fullName = "$name as " . $parentClass->getFieldName($name);
             $definition['inherited'] = true;
             $subClass->mapColumn(
@@ -246,7 +246,7 @@ class Doctrine_ClassMetadata_Factory
             case 1: // A single identifier is in the mapping
                 foreach ($class->getIdentifier() as $pk) {
                     $columnName = $class->getColumnName($pk);
-                    $thisColumns = $class->getColumns();
+                    $thisColumns = $class->getFieldMappings();
                     $e = $thisColumns[$columnName];
 
                     $found = false;

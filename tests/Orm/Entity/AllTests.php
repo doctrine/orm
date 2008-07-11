@@ -6,7 +6,7 @@ if (!defined('PHPUnit_MAIN_METHOD')) {
 require_once 'lib/DoctrineTestInit.php';
 
 // Tests
-require_once 'Orm/Entity/AccessorTestCase.php';
+require_once 'Orm/Entity/AccessorTest.php';
 require_once 'Orm/Entity/ConstructorTest.php';
 
 class Orm_Entity_AllTests
@@ -20,7 +20,7 @@ class Orm_Entity_AllTests
     {
         $suite = new Doctrine_TestSuite('Doctrine Orm Entity Tests');
 
-        $suite->addTestSuite('Orm_Entity_AccessorTestCase');
+        $suite->addTestSuite('Orm_Entity_AccessorTest');
         $suite->addTestSuite('Orm_Entity_ConstructorTest');
         
         return $suite;

@@ -1,12 +1,10 @@
 <?php
 require_once 'lib/DoctrineTestInit.php';
  
-class Orm_Entity_AccessorTestCase extends Doctrine_OrmTestCase
+class Orm_Entity_AccessorTest extends Doctrine_OrmTestCase
 {
     public function testGetterSetterOverride()
-    {
-        $em = new Doctrine_EntityManager(new Doctrine_Connection_Mock());
-        
+    {        
         $entity1 = new CustomAccessorMutatorTestEntity();
         $entity1->username = 'romanb';
         $this->assertEquals('romanb?!', $entity1->username);
@@ -14,9 +12,13 @@ class Orm_Entity_AccessorTestCase extends Doctrine_OrmTestCase
         $entity2 = new MagicAccessorMutatorTestEntity();
         $entity2->username = 'romanb';
         $this->assertEquals('romanb?!', $entity1->username);
-        
     }
+    
+    
 }
+
+
+/* Local test classes */
 
 class CustomAccessorMutatorTestEntity extends Doctrine_Entity
 {

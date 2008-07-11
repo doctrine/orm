@@ -133,7 +133,7 @@ class Doctrine_Query_Production_PathExpressionEndingWithAsterisk extends Doctrin
         }
 
         // Generating the SQL piece
-        $fields = $this->_queryComponent['metadata']->getMappedColumns();
+        $fields = $this->_queryComponent['metadata']->getFieldMappings();
         $tableAlias = $parserResult->getTableAliasFromComponentAlias($componentAlias);
         $str = '';
 

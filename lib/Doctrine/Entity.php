@@ -342,12 +342,12 @@ abstract class Doctrine_Entity extends Doctrine_Access implements Serializable
         $this->_data = array_merge($this->_data, $this->_id);
 
         foreach ($this->_data as $k => $v) {
-            if ($v instanceof Doctrine_Entity && $this->_class->getTypeOf($k) != 'object') {
+            if ($v instanceof Doctrine_Entity && $this->_class->getTypeOfField($k) != 'object') {
                 unset($vars['_data'][$k]);
             } else if ($v === Doctrine_Null::$INSTANCE) {
                 unset($vars['_data'][$k]);
             } else {
-                switch ($this->_class->getTypeOf($k)) {
+                switch ($this->_class->getTypeOfField($k)) {
                     case 'array':
                     case 'object':
                         $vars['_data'][$k] = serialize($vars['_data'][$k]);
@@ -400,7 +400,7 @@ abstract class Doctrine_Entity extends Doctrine_Access implements Serializable
         $this->_class = $this->_em->getClassMetadata($this->_entityName);
 
         foreach ($this->_data as $k => $v) {
-            switch ($this->_class->getTypeOf($k)) {
+            switch ($this->_class->getTypeOfField($k)) {
                 case 'array':
                 case 'object':
                     $this->_data[$k] = unserialize($this->_data[$k]);
@@ -1024,7 +1024,7 @@ abstract class Doctrine_Entity extends Doctrine_Access implements Serializable
         }
 
         foreach ($modifiedFields as $field) {
-            $type = $this->_class->getTypeOf($field);
+            $type = $this->_class->getTypeOfField($field);
 
             if ($this->_data[$field] === Doctrine_Null::$INSTANCE) {
                 $dataSet[$field] = null;

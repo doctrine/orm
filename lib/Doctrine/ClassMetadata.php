@@ -540,14 +540,12 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
     }
 
     /**
-     * getColumnName
+     * Gets a column name for a field name.
+     * If the column name for the field cannot be found, the given field name
+     * is returned.
      *
-     * returns a column name for a field name.
-     * if the column name for the field cannot be found
-     * this method returns the given field name.
-     *
-     * @param string $alias         column alias
-     * @return string               column name
+     * @param string $alias  The field name.
+     * @return string  The column name.
      */
     public function getColumnName($fieldName)
     {
@@ -556,17 +554,28 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
     }
 
     /**
-     * @deprecated
+     * Gets the mapping of a (regular) fields that holds some data but not a
+     * reference to another object.
+     *
+     * @param string $fieldName  The field name.
+     * @return array  The mapping.
      */
-    public function getColumnDefinition($columnName)
-    {
-        return $this->getColumnMapping($columnName);
-    }
-
     public function getFieldMapping($fieldName)
     {
         return isset($this->_fieldMappings[$fieldName]) ?
                 $this->_fieldMappings[$fieldName] : false;
+    }
+    
+    /**
+     * Gets the mapping of an association.
+     *
+     * @param string $fieldName  The field name that represents the association in
+     *                           the object model.
+     * @return Doctrine::ORM::Mapping::AssociationMapping  The mapping.
+     */
+    public function getAssociationMapping($fieldName)
+    {
+        //...
     }
 
     /**
@@ -588,6 +597,7 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
      *
      * @param string $lcColumnName
      * @return string
+     * @todo Better name.
      */
     public function getFieldNameForLowerColumnName($lcColumnName)
     {
@@ -641,16 +651,6 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
     }
 
     /**
-     * @deprecated
-     */
-    public function setColumns(array $definitions)
-    {
-        foreach ($definitions as $name => $options) {
-            $this->setColumn($name, $options['type'], $options['length'], $options);
-        }
-    }
-
-    /**
      * Maps a field of the class to a database column.
      *
      * @param string $name      The name of the column to map. Syntax: columnName [as propertyName].
@@ -663,6 +663,7 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
      *                          By default the column gets appended.
      *
      * @throws Doctrine_ClassMetadata_Exception If trying use wrongly typed parameter.
+     * @todo Rename to mapField()/addFieldMapping().
      */
     public function mapColumn($name, $type, $length = null, $options = array())
     {
@@ -783,14 +784,14 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
     }
 
     /**
-     * Checks whether the class mapped class has a default value on any field.
+     * Checks whether the mapped class has a default value on any field.
      *
      * @return boolean  TRUE if the entity has a default value on any field, otherwise false.
      */
-    public function hasDefaultValues()
+    /*public function hasDefaultValues()
     {
         return $this->_hasDefaultValues;
-    }
+    }*/
 
     /**
      * getDefaultValueOf
@@ -799,7 +800,7 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
      * @param string $fieldName
      * @return mixed
      */
-    public function getDefaultValueOf($fieldName)
+    /*public function getDefaultValueOf($fieldName)
     {
         if ( ! isset($this->_fieldMappings[$fieldName])) {
             throw new Doctrine_Table_Exception("Couldn't get default value. Column ".$fieldName." doesn't exist.");
@@ -809,10 +810,10 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
         } else {
             return null;
         }
-    }
+    }*/
 
     /**
-     * Gets the identifier (primary key) field(s) of the mapped class.
+     * Gets the identifier (primary key) field names of the class.
      *
      * @return mixed
      * @deprecated Use getIdentifierFieldNames()
@@ -823,7 +824,7 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
     }
 
     /**
-     * Gets the identifier (primary key) field(s) of the mapped class.
+     * Gets the identifier (primary key) field names of the class.
      *
      * @return mixed
      */
@@ -839,8 +840,11 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
 
     /**
      * Gets the type of the identifier (primary key) used by the mapped class. The type
-     * can be either <tt>Doctrine::IDENTIFIER_NATURAL</tt>, <tt>Doctrine::IDENTIFIER_AUTOINCREMENT</tt>,
-     * <tt>Doctrine::IDENTIFIER_SEQUENCE</tt> or <tt>Doctrine::IDENTIFIER_COMPOSITE</tt>.
+     * can be either
+     * <tt>Doctrine::IDENTIFIER_NATURAL</tt>,
+     * <tt>Doctrine::IDENTIFIER_AUTOINCREMENT</tt>,
+     * <tt>Doctrine::IDENTIFIER_SEQUENCE</tt> or
+     * <tt>Doctrine::IDENTIFIER_COMPOSITE</tt>.
      *
      * @return integer
      */
@@ -855,16 +859,6 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
     public function setIdentifierType($type)
     {
         $this->_identifierType = $type;
-    }
-
-    /**
-     * hasColumn
-     * @return boolean
-     * @deprecated
-     */
-    public function hasColumn($columnName)
-    {
-        return isset($this->_fieldNames[$columnName]);
     }
 
     public function hasMappedColumn($columnName)
@@ -885,14 +879,14 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
      * @param string $fieldName
      * @return array
      */
-    public function getEnumValues($fieldName)
+    /*public function getEnumValues($fieldName)
     {
         if (isset($this->_fieldMappings[$fieldName]['values'])) {
             return $this->_fieldMappings[$fieldName]['values'];
         } else {
             return array();
         }
-    }
+    }*/
 
     /**
      * enumValue
@@ -901,7 +895,7 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
      * @param integer $index
      * @return mixed
      */
-    public function enumValue($fieldName, $index)
+    /*public function enumValue($fieldName, $index)
     {
         if ($index instanceof Doctrine_Null) {
             return $index;
@@ -921,7 +915,7 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
         $this->_enumValues[$fieldName][$index] = $enumValue;
 
         return $enumValue;
-    }
+    }*/
 
     /**
      * enumIndex
@@ -930,7 +924,7 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
      * @param mixed $value
      * @return mixed
      */
-    public function enumIndex($fieldName, $value)
+    /*public function enumIndex($fieldName, $value)
     {
         $values = $this->getEnumValues($fieldName);
         $index = array_search($value, $values);
@@ -939,7 +933,7 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
         }
 
         return $value;
-    }
+    }*/
 
     /**
      * getColumnCount
@@ -947,23 +941,24 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
      * @return integer      the number of columns in this table
      * @deprecated
      */
-    public function getColumnCount()
+    /*public function getColumnCount()
     {
         return $this->_columnCount;
-    }
+    }*/
 
     /**
      * getMappedColumnCount
      *
      * @return integer      the number of mapped columns in the class.
      */
-    public function getMappedColumnCount()
+    public function getMappedFieldCount()
     {
         return $this->_columnCount;
     }
 
     /**
-     *
+     * Gets the custom accessor of a field.
+     * 
      * @return string  The name of the accessor (getter) method or NULL if the field does
      *                 not have a custom accessor.
      */
@@ -974,7 +969,8 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
     }
 
     /**
-     *
+     * Gets the custom mutator of a field.
+     * 
      * @return string  The name of the mutator (setter) method or NULL if the field does
      *                 not have a custom mutator.
      */
@@ -983,28 +979,12 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
         return isset($this->_fieldMappings[$fieldName]['mutator']) ?
                 $this->_fieldMappings[$fieldName]['mutator'] : null;
     }
-
-    /**
-     * returns all columns and their definitions
-     *
-     * @return array
-     * @deprecated
-     */
-    public function getColumns()
-    {
-        return $this->_fieldMappings;
-    }
-
-    /**
-     * Gets all mapped columns and their mapping definitions.
-     *
-     * @return array
-     */
-    public function getMappedColumns()
-    {
-        return $this->_fieldMappings;
-    }
     
+    /**
+     * Gets all field mappings.
+     *
+     * @return unknown
+     */
     public function getFieldMappings()
     {
         return $this->_fieldMappings;
@@ -1016,7 +996,7 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
      *
      * @return boolean
      */
-    public function removeColumn($fieldName)
+    /*public function removeColumn($fieldName)
     {
         $columnName = array_search($fieldName, $this->_fieldNames);
 
@@ -1029,7 +1009,7 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
         $this->_columnCount--;
 
         return false;
-    }
+    }*/
 
     /**
      * returns an array containing all the column names.
@@ -1076,35 +1056,12 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
      * @return mixed        array on success, false on failure
      * @deprecated
      */
-    public function getDefinitionOf($fieldName)
+    /*public function getDefinitionOf($fieldName)
     {
         $columnName = $this->getColumnName($fieldName);
 
         return $this->getColumnDefinition($columnName);
-    }
-    
-    /**
-     * Gets the mapping information for a field.
-     *
-     * @param string $fieldName
-     * @return array
-     */
-    public function getMappingForField($fieldName)
-    {
-        return $this->_fieldMappings[$fieldName];
-    }
-
-    /**
-     * getTypeOf
-     *
-     * @return mixed        string on success, false on failure
-     * @deprecated
-     */
-    public function getTypeOf($fieldName)
-    {
-        
-        return $this->getTypeOfColumn($this->getColumnName($fieldName));
-    }
+    }*/
     
     /**
      * Gets the type of a field.
@@ -1161,72 +1118,6 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
     public function addNamedQuery($name, $query)
     {
         //...
-    }
-
-    public function bindRelation($args, $type)
-    {
-        return $this->bind($args, $type);
-    }
-
-    /**
-     * DESCRIBE WHAT THIS METHOD DOES, PLEASE!
-     *
-     * @todo Name proposal: addRelation
-     */
-    public function bind($args, $type)
-    {
-        $options = array();
-        $options['type'] = $type;
-
-        if ( ! isset($args[1])) {
-            $args[1] = array();
-        }
-        if ( ! is_array($args[1])) {
-            try {
-                throw new Exception();
-            } catch (Exception $e) {
-                echo $e->getTraceAsString();
-            }
-        }
-        $options = array_merge($args[1], $options);
-        $this->_parser->bind($args[0], $options);
-    }
-
-    /**
-     * hasRelation
-     *
-     * @param string $alias      the relation to check if exists
-     * @return boolean           true if the relation exists otherwise false
-     */
-    public function hasRelation($alias)
-    {
-        return $this->_parser->hasRelation($alias);
-    }
-
-    /**
-     * getRelation
-     *
-     * @param string $alias      relation alias
-     */
-    public function getRelation($alias, $recursive = true)
-    {
-        return $this->_parser->getRelation($alias, $recursive);
-    }
-
-    public function getRelationParser()
-    {
-        return $this->_parser;
-    }
-
-    /**
-     * getRelations
-     * returns an array containing all relation objects
-     *
-     * @return array        an array of Doctrine_Relation objects
-     */
-    public function getRelations()
-    {
-        return $this->_parser->getRelations();
     }
 
     /**
@@ -2058,7 +1949,72 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
             $this->_attributes[$name] = $value;
         }
     }
+    
+    /* The following stuff needs to be touched for the association mapping rewrite */
+    
+    public function bindRelation($args, $type)
+    {
+        return $this->bind($args, $type);
+    }
 
+    /**
+     * @todo Relation mapping rewrite.
+     */
+    public function bind($args, $type)
+    {
+        $options = array();
+        $options['type'] = $type;
+
+        if ( ! isset($args[1])) {
+            $args[1] = array();
+        }
+        if ( ! is_array($args[1])) {
+            try {
+                throw new Exception();
+            } catch (Exception $e) {
+                echo $e->getTraceAsString();
+            }
+        }
+        $options = array_merge($args[1], $options);
+        $this->_parser->bind($args[0], $options);
+    }
+
+    /**
+     * hasRelation
+     *
+     * @param string $alias      the relation to check if exists
+     * @return boolean           true if the relation exists otherwise false
+     */
+    public function hasRelation($alias)
+    {
+        return $this->_parser->hasRelation($alias);
+    }
+
+    /**
+     * getRelation
+     *
+     * @param string $alias      relation alias
+     */
+    public function getRelation($alias, $recursive = true)
+    {
+        return $this->_parser->getRelation($alias, $recursive);
+    }
+
+    public function getRelationParser()
+    {
+        return $this->_parser;
+    }
+
+    /**
+     * getRelations
+     * returns an array containing all relation objects
+     *
+     * @return array        an array of Doctrine_Relation objects
+     */
+    public function getRelations()
+    {
+        return $this->_parser->getRelations();
+    }
 
     /**
      *
