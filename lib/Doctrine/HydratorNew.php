@@ -519,16 +519,12 @@ class Doctrine_HydratorNew extends Doctrine_Hydrator_Abstract
      * $table->prepareValue($field, $value); // Doctrine_Null
      * </code>
      *
-     * @throws Doctrine_Table_Exception     if unserialization of array/object typed column fails or
-     * @throws Doctrine_Table_Exception     if uncompression of gzip typed column fails         *
      * @param string $field     the name of the field
      * @param string $value     field value
      * @param string $typeHint  A hint on the type of the value. If provided, the type lookup
      *                          for the field can be skipped. Used i.e. during hydration to
      *                          improve performance on large and/or complex results.
      * @return mixed            prepared value
-     * @todo To EntityManager. Make private and use in createEntity().
-     *       .. Or, maybe better: Move to hydrator for performance reasons.
      */
     public function prepareValue(Doctrine_ClassMetadata $class, $fieldName, $value, $typeHint = null)
     {
@@ -540,15 +536,17 @@ class Doctrine_HydratorNew extends Doctrine_Hydrator_Abstract
             $type = is_null($typeHint) ? $class->getTypeOf($fieldName) : $typeHint;
             switch ($type) {
                 case 'integer':
-                case 'string';
-                    // don't do any casting here PHP INT_MAX is smaller than what the databases support
-                break;
+                case 'string':
                 case 'enum':
-                    return $class->enumValue($fieldName, $value);
-                break;
                 case 'boolean':
-                    return (boolean) $value;
+                    // don't do any conversions on primitive types
                 break;
+                //case 'enum':
+                //    return $class->enumValue($fieldName, $value);
+                //break;
+                //case 'boolean':
+                //    return (boolean) $value;
+                //break;
                 case 'array':
                 case 'object':
                     if (is_string($value)) {

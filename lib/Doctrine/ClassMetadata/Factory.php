@@ -19,6 +19,8 @@
  * <http://www.phpdoctrine.org>.
  */
 
+#namespace Doctrine::ORM::Internal;
+
 /**
  * The metadata factory is used to create ClassMetadata objects that contain all the
  * metadata of a class.
@@ -31,10 +33,11 @@
  * @version     $Revision$
  * @link        www.phpdoctrine.org
  * @since       2.0
+ * @todo Rename to ClassMetadataFactory.
  */
 class Doctrine_ClassMetadata_Factory
 {
-    protected $_conn;
+    protected $_em;
     protected $_driver;
     
     /**
@@ -52,7 +55,7 @@ class Doctrine_ClassMetadata_Factory
      */
     public function __construct(Doctrine_EntityManager $em, $driver)
     {
-        $this->_conn = $em;
+        $this->_em = $em;
         $this->_driver = $driver;
     }
     
@@ -101,7 +104,7 @@ class Doctrine_ClassMetadata_Factory
             $class = $classes[$loadedParentClass];
         } else {
             $rootClassOfHierarchy = count($parentClasses) > 0 ? array_shift($parentClasses) : $name;
-            $class = new Doctrine_ClassMetadata($rootClassOfHierarchy, $this->_conn);
+            $class = new Doctrine_ClassMetadata($rootClassOfHierarchy, $this->_em);
             $this->_loadMetadata($class, $rootClassOfHierarchy);
             $classes[$rootClassOfHierarchy] = $class;
         }
@@ -115,7 +118,7 @@ class Doctrine_ClassMetadata_Factory
         
         $parent = $class;
         foreach ($parentClasses as $subclassName) {
-            $subClass = new Doctrine_ClassMetadata($subclassName, $this->_conn);
+            $subClass = new Doctrine_ClassMetadata($subclassName, $this->_em);
             $subClass->setInheritanceType($parent->getInheritanceType(), $parent->getInheritanceOptions());
             $this->_addInheritedFields($subClass, $parent);
             $this->_addInheritedRelations($subClass, $parent);
@@ -130,14 +133,10 @@ class Doctrine_ClassMetadata_Factory
     
     protected function _addInheritedFields($subClass, $parentClass)
     {
-        foreach ($parentClass->getFieldMappings() as $name => $definition) {
+        foreach ($parentClass->getFieldMappings() as $fieldName => $mapping) {
             $fullName = "$name as " . $parentClass->getFieldName($name);
-            $definition['inherited'] = true;
-            $subClass->mapColumn(
-                    $fullName,
-                    $definition['type'],
-                    $definition['length'],
-                    $definition);
+            $mapping['inherited'] = true;
+            $subClass->mapField($mapping);
         }
     }
     
@@ -163,6 +162,7 @@ class Doctrine_ClassMetadata_Factory
         $names = array();
         $className = $name;
         // get parent classes
+        //TODO: Skip Entity types MappedSuperclass/Transient
         do {
             if ($className === 'Doctrine_Entity') {
                 break;
@@ -182,11 +182,13 @@ class Doctrine_ClassMetadata_Factory
         // load further metadata
         $this->_driver->loadMetadataForClass($name, $class);
         
+        // set default table name, if necessary
         $tableName = $class->getTableName();
         if ( ! isset($tableName)) {
             $class->setTableName(Doctrine::tableize($class->getClassName()));
         }
         
+        // complete identifier mapping
         $this->_initIdentifier($class);
         
         return $class;
@@ -199,7 +201,7 @@ class Doctrine_ClassMetadata_Factory
      */
     protected function _initIdentifier(Doctrine_ClassMetadata $class)
     {
-        switch (count((array)$class->getIdentifier())) {
+        /*switch (count($class->getIdentifier())) {
             case 0: // No identifier in the class mapping yet
                 
                 // If its a subclass, inherit the identifier from the parent.
@@ -217,7 +219,7 @@ class Doctrine_ClassMetadata_Factory
                     }
 
                     // add all inherited primary keys
-                    foreach ((array) $class->getIdentifier() as $id) {
+                    foreach ($class->getIdentifier() as $id) {
                         $definition = $rootClass->getDefinitionOf($id);
 
                         // inherited primary keys shouldn't contain autoinc
@@ -231,16 +233,7 @@ class Doctrine_ClassMetadata_Factory
                                 $definition, true);
                     }
                 } else {
-                    throw Doctrine_MappingException::identifierRequired($class->getClassName());      
-                    /* Legacy behavior of auto-adding an id field
-                    $definition = array('type' => 'integer',
-                                        'length' => 20,
-                                        'autoincrement' => true,
-                                        'primary' => true);
-                    $class->mapColumn('id', $definition['type'], $definition['length'], $definition, true);
-                    $class->setIdentifier(array('id'));
-                    $class->setIdentifierType(Doctrine::IDENTIFIER_AUTOINC);
-                    */
+                    throw Doctrine_MappingException::identifierRequired($class->getClassName());
                 }
                 break;
             case 1: // A single identifier is in the mapping
@@ -293,6 +286,36 @@ class Doctrine_ClassMetadata_Factory
                 break;
             default: // Multiple identifiers are in the mapping so its a composite id
                 $class->setIdentifierType(Doctrine::IDENTIFIER_COMPOSITE);
+        }*/
+        
+        // If the chosen generator type is "auto", then pick the one appropriate for
+        // the database.
+        
+        // FIXME: This is very ugly here. Such switch()es on the database driver
+        // are unnecessary as we can easily replace them with polymorphic calls on
+        // the connection (or another) object. We just need to decide where to put
+        // the id generation types.
+        if ($class->getIdGeneratorType() == Doctrine_ClassMetadata::GENERATOR_TYPE_AUTO) {
+            switch (strtolower($this->_em->getConnection()->getDriverName())) {
+                case 'mysql':
+                    // pick IDENTITY
+                    $class->setIdGeneratorType(Doctrine_ClassMetadata::GENERATOR_TYPE_IDENTITY);
+                    break;
+                case 'oracle':
+                    //pick SEQUENCE
+                    break;
+                case 'postgres':
+                    //pick SEQUENCE
+                    break;
+                case 'firebird':
+                    //pick what?
+                    break;
+                case 'mssql':
+                    //pick what?
+                default:
+                    throw new Doctrine_Exception("Encountered unknown database driver: "
+                            . $this->_em->getConnection()->getDriverName());
+            }
         }
     }
     

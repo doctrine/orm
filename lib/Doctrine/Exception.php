@@ -32,6 +32,7 @@
  * @version     $Revision$
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  * @author      Roman Borschel <roman@code-factory.org>
+ * @todo Rename to DoctrineException
  */
 class Doctrine_Exception extends Exception
 { 

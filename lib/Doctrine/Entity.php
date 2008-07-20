@@ -37,45 +37,23 @@
  * @link        www.phpdoctrine.org
  * @since       2.0
  * @version     $Revision: 4342 $
- * @todo Split up into "Entity" and "ActiveEntity" (extends Entity)
- * @todo Move entity states into a separate enumeration (EntityStates).
- * They do not need to be exposed to users in such a way. The states are mainly
- * for internal use.
+ * @todo Split up into "Entity" and "ActiveEntity" (extends Entity).
  */
 abstract class Doctrine_Entity extends Doctrine_Access implements Serializable
 {
     /**
-     * DIRTY STATE
-     * An Entity is in dirty state when its properties are changed.
+     * MANAGED
+     * An Entity is in managed state when it has a primary key/identifier and is
+     * managed by an EntityManager (registered in the identity map).
      */
-    const STATE_DIRTY = 1;
-    const STATE_MANAGED_DIRTY = 1;
+    const STATE_MANAGED = 1;
 
     /**
-     * TDIRTY STATE
-     * An Entity is in transient dirty state when it is created and some of its
-     * fields are modified but it is NOT yet persisted into database.
+     * NEW
+     * An Entity is new if it does not yet have an identifier/primary key
+     * and is not (yet) managed by an EntityManager.
      */
-    const STATE_TDIRTY = 2;
-    const STATE_NEW_DIRTY = 2;
-
-    /**
-     * CLEAN STATE
-     * An Entity is in clean state when all of its properties are loaded from the database
-     * and none of its properties are changed.
-     */
-    const STATE_CLEAN = 3;
-    const STATE_MANAGED_CLEAN = 3;
-
-    /**
-     * NEW TCLEAN
-     * An Entity is in transient clean state when it is created and none of its
-     * fields are modified.
-     * @todo Do we need this state? Just STATE_NEW may be enough without differentiating
-     * clean/dirty. A new entity is always "dirty".
-     */
-    const STATE_TCLEAN = 5;
-    const STATE_NEW_CLEAN = 5;
+    const STATE_NEW = 2;
 
     /**
      * LOCKED STATE
@@ -93,14 +71,14 @@ abstract class Doctrine_Entity extends Doctrine_Access implements Serializable
      * (or no longer) associated with an EntityManager (and a UnitOfWork).
      * This means its no longer in the identity map.
      */
-    const STATE_DETACHED = 7;
+    const STATE_DETACHED = 3;
     
     /**
      * A removed Entity instance is an instance with a persistent identity,
      * associated with an EntityManager, that is scheduled for removal from the
      * database.
      */
-    const STATE_DELETED = 8;
+    const STATE_DELETED = 4;
     
     /**
      * Index used for creating object identifiers (oid's).
@@ -145,12 +123,6 @@ abstract class Doctrine_Entity extends Doctrine_Access implements Serializable
     private $_entityName;
 
     /**
-     * @var Doctrine_Node_<TreeImpl>        node object
-     * @todo Specific to the NestedSet Behavior plugin. Move outta here.
-     */
-    //protected $_node;
-
-    /**
      * The values that make up the ID/primary key of the entity.
      *
      * @var array                   
@@ -167,16 +139,16 @@ abstract class Doctrine_Entity extends Doctrine_Access implements Serializable
     /**
      * The state of the object.
      *
-     * @var integer             
-     * @see STATE_* constants
+     * @var integer
      */
     private $_state;
 
     /**
      * The names of fields that have been modified but not yet persisted.
+     * Keys are field names, values oldValue => newValue tuples.
      *
-     * @var array               
-     * @todo Better name? $_modifiedFields?
+     * @var array
+     * @todo Rename to $_changeSet
      */
     private $_modified = array();
 
@@ -204,6 +176,7 @@ abstract class Doctrine_Entity extends Doctrine_Access implements Serializable
 
     /**
      * Constructor.
+     * Creates a new Entity instance.
      */
     public function __construct()
     {
@@ -214,9 +187,9 @@ abstract class Doctrine_Entity extends Doctrine_Access implements Serializable
         $this->_data = $this->_em->_getTmpEntityData();
         if ($this->_data) {
             $this->_extractIdentifier();
-            $this->_state = self::STATE_CLEAN;
+            $this->_state = self::STATE_MANAGED;
         } else {
-            $this->_state = self::STATE_TCLEAN;
+            $this->_state = self::STATE_NEW;
         }
         
         // @todo read from attribute the first time and move this initialization elsewhere.
@@ -265,7 +238,7 @@ abstract class Doctrine_Entity extends Doctrine_Access implements Serializable
     }*/
 
     /**
-     * hydrates this object from given array
+     * Hydrates this object from given array
      *
      * @param array $data
      * @return boolean
@@ -278,33 +251,26 @@ abstract class Doctrine_Entity extends Doctrine_Access implements Serializable
 
     /**
      * Copies the identifier names and values from _data into _id.
-     *
-     * @param boolean $exists               whether or not this record exists in persistent data store
-     * @return void
-     * @todo Looks like its better placed elsewhere (EntityManager?)
      */
     private function _extractIdentifier()
     {
-        switch ($this->_class->getIdentifierType()) {
-            case Doctrine::IDENTIFIER_AUTOINC:
-            case Doctrine::IDENTIFIER_SEQUENCE:
-            case Doctrine::IDENTIFIER_NATURAL:
-                $name = $this->_class->getIdentifier();
-                $name = $name[0];
-                if (isset($this->_data[$name]) && $this->_data[$name] !== Doctrine_Null::$INSTANCE) {
+        if ( ! $this->_class->isIdentifierComposite()) {
+            // Single field identifier
+            $name = $this->_class->getIdentifier();
+            $name = $name[0];
+            if (isset($this->_data[$name]) && $this->_data[$name] !== Doctrine_Null::$INSTANCE) {
+                $this->_id[$name] = $this->_data[$name];
+            }
+        } else {
+            // Composite identifier
+            $names = $this->_class->getIdentifier();
+            foreach ($names as $name) {
+                if ($this->_data[$name] === Doctrine_Null::$INSTANCE) {
+                    $this->_id[$name] = null;
+                } else {
                     $this->_id[$name] = $this->_data[$name];
                 }
-                break;
-            case Doctrine::IDENTIFIER_COMPOSITE:
-                $names = $this->_class->getIdentifier();
-                foreach ($names as $name) {
-                    if ($this->_data[$name] === Doctrine_Null::$INSTANCE) {
-                        $this->_id[$name] = null;
-                    } else {
-                        $this->_id[$name] = $this->_data[$name];
-                    }
-                }
-                break;
+            }
         }
     }
     
@@ -438,21 +404,15 @@ abstract class Doctrine_Entity extends Doctrine_Access implements Serializable
         
         /* TODO: Do we really need this check? This is only for internal use after all. */
         switch ($state) {
-            case self::STATE_TCLEAN:
-            case self::STATE_CLEAN:
-            case self::STATE_TDIRTY:
-            case self::STATE_DIRTY:
-            case self::STATE_PROXY:
+            case self::STATE_MANAGED:
+            case self::STATE_DELETED:
+            case self::STATE_DETACHED:
+            case self::STATE_NEW:
             case self::STATE_LOCKED:
                 $this->_state = $state;
                 break;
             default:
                 throw Doctrine_Entity_Exception::invalidState($state);
-        }
-
-        if ($this->_state === Doctrine_Entity::STATE_TCLEAN ||
-                $this->_state === Doctrine_Entity::STATE_CLEAN) {
-            $this->_modified = array();
         }
     }
 
@@ -878,22 +838,12 @@ abstract class Doctrine_Entity extends Doctrine_Access implements Serializable
             }*/
 
             $old = isset($this->_data[$fieldName]) ? $this->_data[$fieldName] : null;
-
+            //FIXME: null == 0 => true
             if ($old != $value) {
                 $this->_data[$fieldName] = $value;
                 $this->_modified[$fieldName] = array($old => $value);
-                
                 if ($this->isNew() && $this->_class->isIdentifier($fieldName)) {
                     $this->_id[$fieldName] = $value;
-                }
-                
-                switch ($this->_state) {
-                    case Doctrine_Entity::STATE_CLEAN:
-                        $this->_state = Doctrine_Entity::STATE_DIRTY;
-                        break;
-                    case Doctrine_Entity::STATE_TCLEAN:
-                        $this->_state = Doctrine_Entity::STATE_TDIRTY;
-                        break;
                 }
             }
         } else if ($this->_class->hasRelation($fieldName)) {
@@ -1253,7 +1203,7 @@ abstract class Doctrine_Entity extends Doctrine_Access implements Serializable
      */
     final public function isNew()
     {
-        return $this->_state == self::STATE_TCLEAN || $this->_state == self::STATE_TDIRTY;
+        return $this->_state == self::STATE_NEW;
     }
 
     /**
@@ -1264,8 +1214,7 @@ abstract class Doctrine_Entity extends Doctrine_Access implements Serializable
      */
     final public function isModified()
     {
-        return ($this->_state === Doctrine_Entity::STATE_DIRTY ||
-                $this->_state === Doctrine_Entity::STATE_TDIRTY);
+        return count($this->_modified) > 0;
     }
 
     /**
@@ -1349,44 +1298,33 @@ abstract class Doctrine_Entity extends Doctrine_Access implements Serializable
 
     /**
      * INTERNAL:
+     * Assigns an identifier to the entity. This is only intended for use by
+     * the EntityPersisters or the UnitOfWork.
      *
-     * @param integer $id
-     * @return void
-     * @todo Not sure this is the right place here.
+     * @param mixed $id
      */
-    final public function assignIdentifier($id = false)
+    final public function _assignIdentifier($id)
     {
-        if ($id === false) {
-            $this->_id       = array();
-            $this->_state    = Doctrine_Entity::STATE_TCLEAN;
-            $this->_modified = array();
-        } else if ($id === true) {
-            $this->_extractIdentifier(true);
-            $this->_state    = Doctrine_Entity::STATE_CLEAN;
-            $this->_modified = array();
-        } else {
-            if (is_array($id)) {
-                foreach ($id as $fieldName => $value) {
-                    $this->_id[$fieldName] = $value;
-                    $this->_data[$fieldName] = $value;
-                }
-            } else {
-                $idFieldNames = $this->_class->getIdentifier();
-                $name = $idFieldNames[0];
-                $this->_id[$name] = $id;
-                $this->_data[$name] = $id;
+        if (is_array($id)) {
+            foreach ($id as $fieldName => $value) {
+                $this->_id[$fieldName] = $value;
+                $this->_data[$fieldName] = $value;
             }
-            $this->_state = self::STATE_CLEAN;
-            $this->_modified = array();
+        } else {
+            $name = $this->_class->getSingleIdentifierFieldName();
+            $this->_id[$name] = $id;
+            $this->_data[$name] = $id;
         }
+        $this->_modified = array();
     }
 
     /**
-     * returns the primary keys of this object
+     * INTERNAL:
+     * Returns the primary keys of the entity (key => value pairs).
      *
      * @return array
      */
-    final public function identifier()
+    final public function _identifier()
     {
         return $this->_id;
     }
@@ -1656,13 +1594,13 @@ abstract class Doctrine_Entity extends Doctrine_Access implements Serializable
     {
         $this->getNode()->delete();
     }*/
-
+    
     /**
      * Gets the ClassMetadata object that describes the entity class.
      * 
      * @return Doctrine::ORM::Mapping::ClassMetadata
      */
-    final public function getClassMetadata()
+    final public function getClass()
     {
         return $this->_class;
     }

@@ -2,9 +2,14 @@
 
 class ForumAdministrator extends ForumUser
 {
-    public static function initMetadata($class) 
+    public static function initMetadata($mapping) 
     {
-        $class->mapColumn('access_level as accessLevel', 'integer', 1);
+        $mapping->mapField(array(
+            'fieldName' => 'accessLevel',
+            'columnName' => 'access_level',
+            'type' => 'integer',
+            'length' => 1
+        ));
     }
     
     public function banUser(ForumUser $user) {}

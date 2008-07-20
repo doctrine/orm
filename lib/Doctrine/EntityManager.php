@@ -42,6 +42,10 @@
  */
 class Doctrine_EntityManager
 {
+    const FLUSHMODE_AUTO = 'auto';
+    const FLUSHMODE_COMMIT = 'commit';
+    const FLUSHMODE_MANUAL = 'manual';
+    
     /**
      * The unique name of the EntityManager. The name is used to bind entity classes
      * to certain EntityManagers.
@@ -70,11 +74,11 @@ class Doctrine_EntityManager
     private static $_flushModes = array(
             // auto: Flush occurs automatically after each operation that issues database
             // queries. No operations are queued.
-            'auto',
+            self::FLUSHMODE_AUTO,
             // commit: Flush occurs automatically at transaction commit.
-            'commit',
+            self::FLUSHMODE_COMMIT,
             // manual: Flush occurs never automatically.
-            'manual'
+            self::FLUSHMODE_MANUAL
     );
     
     /**
@@ -242,7 +246,7 @@ class Doctrine_EntityManager
      */
     public function detach(Doctrine_Entity $entity)
     {
-        return $this->_unitOfWork->unregisterIdentity($entity);
+        return $this->_unitOfWork->removeFromIdentityMap($entity);
     }
     
     /**
@@ -287,7 +291,7 @@ class Doctrine_EntityManager
      */
     public function flush()
     {
-        $this->_unitOfWork->flush();
+        $this->_unitOfWork->commit();
     }
     
     /**
@@ -386,6 +390,9 @@ class Doctrine_EntityManager
     public function save(Doctrine_Entity $entity)
     {
         $this->_unitOfWork->save($entity);
+        if ($this->_flushMode == self::FLUSHMODE_AUTO) {
+            $this->flush();
+        }
     }
     
     /**
@@ -453,7 +460,7 @@ class Doctrine_EntityManager
                     return $entity;
                 } else {
                     $entity = new $className;
-                    $this->_unitOfWork->registerIdentity($entity);
+                    $this->_unitOfWork->addToIdentityMap($entity);
                 }
             }
         } else {
@@ -467,6 +474,17 @@ class Doctrine_EntityManager
         }*/
 
         return $entity;
+    }
+    
+    /**
+     * Checks if the instance is managed by the EntityManager.
+     * 
+     * @return boolean
+     */
+    public function contains(Doctrine_Entity $entity)
+    {
+        return $this->_unitOfWork->isInIdentityMap($entity) &&
+                ! $this->_unitOfWork->isRegisteredRemoved($entity);
     }
     
     /**
@@ -546,13 +564,23 @@ class Doctrine_EntityManager
     }
     
     /**
-     * Gets the COnfiguration used by the EntityManager.
+     * Gets the Configuration used by the EntityManager.
      *
      * @return Configuration
      */
     public function getConfiguration()
     {
         return $this->_config;
+    }
+    
+    /**
+     * Gets the UnitOfWork used by the EntityManager to coordinate operations.
+     *
+     * @return Doctrine::ORM::UnitOfWork
+     */
+    public function getUnitOfWork()
+    {
+        return $this->_unitOfWork;
     }
     
 }

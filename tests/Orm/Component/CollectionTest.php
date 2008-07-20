@@ -106,17 +106,17 @@ class Orm_Component_CollectionTest extends Doctrine_OrmTestCase
     /**
      * @test 
      */
-    public function shouldSetKeyColumnWhenAddingNewRowAsArray()
+    /*public function shouldSetKeyColumnWhenAddingNewRowAsArray()
     {
         $this->assertTrue(isset($this->cmsColl['test']));
         $this->assertEquals($this->cmsUser,  $this->cmsColl['test']);
-    }
+    }*/
 
 
     /**
      * @test
      */
-    public function shouldSerializeAndUnserializeCollectionWithData()
+    /*public function shouldSerializeAndUnserializeCollectionWithData()
     {
         $serialized = serialize($this->cmsColl);
         $coll = unserialize($serialized);
@@ -126,6 +126,6 @@ class Orm_Component_CollectionTest extends Doctrine_OrmTestCase
         $user = $coll['test'];
         $this->assertTrue($user instanceOf CmsUser);
         $this->assertEquals('test', $user['username']);
-    }
+    }*/
 
 }

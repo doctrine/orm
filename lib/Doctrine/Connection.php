@@ -138,8 +138,9 @@ abstract class Doctrine_Connection implements Countable
      * @var array $properties               
      */
     protected $properties = array(
-            'sql_comments' => array(array('start' => '--', 'end' => "\n", 'escape' => false),
-                                    array('start' => '/*', 'end' => '*/', 'escape' => false)),
+            'sql_comments' => array(
+                    array('start' => '--', 'end' => "\n", 'escape' => false),
+                    array('start' => '/*', 'end' => '*/', 'escape' => false)),
             'identifier_quoting' => array('start' => '"', 'end' => '"','escape' => '"'),
             'string_quoting' => array('start' => "'", 'end' => "'", 'escape' => false,
                                       'escape_pattern' => false),
@@ -154,6 +155,8 @@ abstract class Doctrine_Connection implements Countable
     
     /**
      * The parameters used during creation of the Connection.
+     * 
+     * @var array
      */
     protected $_params = array();
     
@@ -364,24 +367,24 @@ abstract class Doctrine_Connection implements Countable
         //$this->getListener()->preConnect($event);
 
         // TODO: the extension_loaded check can happen earlier, maybe in the factory
-        if (extension_loaded('pdo')) {
-            $driverOptions = isset($this->_params['driverOptions']) ?
-                    $this->_params['driverOptions'] : array();
-            $user = isset($this->_params['user']) ?
-                    $this->_params['user'] : null;
-            $password = isset($this->_params['password']) ?
-                    $this->_params['password'] : null;
-            $this->_pdo = new PDO(
-                    $this->_constructPdoDsn(),
-                    $user,
-                    $password,
-                    $driverOptions
-                    );
-            $this->_pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-            $this->_pdo->setAttribute(PDO::ATTR_CASE, PDO::CASE_LOWER);
-        } else {
+        if ( ! extension_loaded('pdo')) {
             throw new Doctrine_Connection_Exception("Couldn't locate driver named " . $e[0]);
         }
+        
+        $driverOptions = isset($this->_params['driverOptions']) ?
+                $this->_params['driverOptions'] : array();
+        $user = isset($this->_params['user']) ?
+                $this->_params['user'] : null;
+        $password = isset($this->_params['password']) ?
+                $this->_params['password'] : null;
+        $this->_pdo = new PDO(
+                $this->_constructPdoDsn(),
+                $user,
+                $password,
+                $driverOptions
+                );
+        $this->_pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        $this->_pdo->setAttribute(PDO::ATTR_CASE, PDO::CASE_LOWER);
 
         // attach the pending attributes to adapter
         /*foreach($this->pendingAttributes as $attr => $value) {
@@ -427,9 +430,8 @@ abstract class Doctrine_Connection implements Countable
      */
     public function supports($feature)
     {
-        return (isset($this->supported[$feature])
-                  && ($this->supported[$feature] === 'emulated'
-                   || $this->supported[$feature]));
+        return (isset($this->supported[$feature]) &&
+                ($this->supported[$feature] === 'emulated' || $this->supported[$feature]));
     }
     
     /**
@@ -662,8 +664,7 @@ abstract class Doctrine_Connection implements Countable
     }
 
     /**
-     * quote
-     * quotes given input parameter
+     * Quotes given input parameter
      *
      * @param mixed $input      parameter to be quoted
      * @param string $type
@@ -794,10 +795,9 @@ abstract class Doctrine_Connection implements Countable
             $this->getAttribute(Doctrine::ATTR_LISTENER)->postPrepare($event);
             
             return new Doctrine_Connection_Statement($this, $stmt);
-        } catch(Doctrine_Adapter_Exception $e) {
-        } catch(PDOException $e) { }
-
-        $this->rethrowException($e, $this);
+        } catch (PDOException $e) {
+            $this->rethrowException($e, $this);
+        }
     }
     
     /**
@@ -859,10 +859,9 @@ abstract class Doctrine_Connection implements Countable
 
                 return $stmt;
             }
-        } catch (Doctrine_Adapter_Exception $e) {
-        } catch (PDOException $e) { }
-
-        $this->rethrowException($e, $this);
+        } catch (PDOException $e) {
+            $this->rethrowException($e, $this);
+        }
     }
 
     /**
@@ -894,10 +893,9 @@ abstract class Doctrine_Connection implements Countable
 
                 return $count;
             }
-        } catch (Doctrine_Adapter_Exception $e) {
-        } catch (PDOException $e) { }
-
-        $this->rethrowException($e, $this);
+        } catch (PDOException $e) {
+            $this->rethrowException($e, $this);
+        }
     }
     
     /**
@@ -923,7 +921,7 @@ abstract class Doctrine_Connection implements Countable
     }
 
     /**
-     * rethrowException
+     * Wraps the given exception into a driver-specific exception and rethrows it.
      *
      * @throws Doctrine_Connection_Exception
      */
@@ -940,9 +938,7 @@ abstract class Doctrine_Connection implements Countable
         }
         $exc->processErrorInfo($e->errorInfo);
 
-         if ($this->getAttribute(Doctrine::ATTR_THROW_EXCEPTIONS)) {
-            throw $exc;
-        }
+        throw $exc;
 
         //$this->getListener()->postError($event);
     }
@@ -1178,12 +1174,32 @@ abstract class Doctrine_Connection implements Countable
         }
     }
 
-    
     public function getFormatter()
     {
         if ( ! $this->modules['formatter']) {
             $this->modules['formatter'] = new Doctrine_Formatter($this);
         }
         return $this->modules['formatter'];
+    }
+    
+    public function getSequenceModule()
+    {
+        if ( ! $this->modules['sequence']) {
+            $class = "Doctrine_Sequence_" . $this->_driverName;
+            $this->modules['sequence'] = new $class;
+        }
+        return $this->modules['sequence'];
+    }
+    
+    /**
+     * Gets the default (preferred) Id generation strategy of the database platform.
+     * 
+     * @todo Sure, the id generator types are more ORM functionality but they're
+     * still kind of dbal related. Maybe we need another set of classes (DatabasePlatform?)
+     * but im not so sure...
+     */
+    /*abstract*/ public function getDefaultIdGeneratorType()
+    {
+        
     }
 }

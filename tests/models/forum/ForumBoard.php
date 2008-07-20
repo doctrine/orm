@@ -1,6 +1,8 @@
 <?php
-class ForumBoard extends Doctrine_Entity {
-    public static function initMetadata($metadata) {
+class ForumBoard extends Doctrine_Entity
+{
+    public static function initMetadata($mapping)
+    {
         /*$metadata->mapField(array(
             'fieldName' => 'id',
             'id' => true,
@@ -8,10 +10,22 @@ class ForumBoard extends Doctrine_Entity {
             'length' => 4
             ));
         */
-        $metadata->mapColumn('id', 'integer', 4, array('primary'));
-        $metadata->mapColumn('position', 'integer');
-        $metadata->mapColumn('category_id', 'integer');
-        $metadata->hasOne('ForumCategory as category',
+        $mapping->mapField(array(
+            'fieldName' => 'id',
+            'type' => 'integer',
+            'length' => 4,
+            'id' => true
+        ));
+        $mapping->mapField(array(
+            'fieldName' => 'position',
+            'type' => 'integer'
+        ));
+        $mapping->mapField(array(
+            'fieldName' => 'category_id',
+            'type' => 'integer'
+        ));
+        
+        $mapping->hasOne('ForumCategory as category',
                 array('local' => 'category_id', 'foreign' => 'id'));
         /*       
         $metadata->mapOneToOne(array(

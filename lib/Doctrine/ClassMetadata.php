@@ -21,6 +21,8 @@
 
 #namespace Doctrine::ORM::Mapping;
 
+#use Doctrine::ORM::EntityManager;
+
 /**
  * A <tt>ClassMetadata</tt> instance holds all the information (metadata) of an entity and
  * it's associations and how they're mapped to the relational database.
@@ -28,11 +30,50 @@
  *
  * @author Roman Borschel <roman@code-factory.org>
  * @since 2.0
+ * @todo Rename to ClassDescriptor?
  */
 class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
 {
+    /* The inheritance mapping types */
+    const INHERITANCE_TYPE_NONE = 'none';
+    const INHERITANCE_TYPE_JOINED = 'joined';
+    const INHERITANCE_TYPE_SINGLE_TABLE = 'singleTable';
+    const INHERITANCE_TYPE_TABLE_PER_CLASS = 'tablePerClass';
+    
     /**
-     * The name of the entity class that is mapped to the database with this metadata.
+     * Inheritance types enumeration.
+     *
+     * @var array
+     */
+    protected static $_inheritanceTypes = array(
+        self::INHERITANCE_TYPE_NONE,
+        self::INHERITANCE_TYPE_JOINED,
+        self::INHERITANCE_TYPE_SINGLE_TABLE,
+        self::INHERITANCE_TYPE_TABLE_PER_CLASS
+    );
+    
+    /* The Id generator types. TODO: belongs more in a DBAL class */
+    const GENERATOR_TYPE_AUTO = 'auto';
+    const GENERATOR_TYPE_SEQUENCE = 'sequence';
+    const GENERATOR_TYPE_TABLE = 'table';
+    const GENERATOR_TYPE_IDENTITY = 'identity';
+    const GENERATOR_TYPE_NONE = 'none';
+    
+    /**
+     * Id Generator types enumeration.
+     *
+     * @var array
+     */
+    protected static $_generatorTypes = array(
+        self::GENERATOR_TYPE_AUTO,
+        self::GENERATOR_TYPE_SEQUENCE,
+        self::GENERATOR_TYPE_TABLE,
+        self::GENERATOR_TYPE_IDENTITY,
+        self::GENERATOR_TYPE_NONE
+    );
+    
+    /**
+     * The name of the entity class.
      *
      * @var string
      */
@@ -41,7 +82,7 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
     /**
      * The name of the entity class that is at the root of the entity inheritance
      * hierarchy. If the entity is not part of an inheritance hierarchy this is the same
-     * as the $_entityName.
+     * as $_entityName.
      *
      * @var string
      */
@@ -56,18 +97,23 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
     protected $_customRepositoryClassName;
 
     /**
-     *
-     * @var Doctrine_Connection
+     * The EntityManager.
+     * 
+     * @var Doctrine::ORM::EntityManager
      */
     protected $_em;
 
     /**
      * The names of the parent classes (ancestors).
+     * 
+     * @var array
      */
     protected $_parentClasses = array();
 
     /**
-     * The names of all subclasses
+     * The names of all subclasses.
+     * 
+     * @var array
      */
     protected $_subClasses = array();
 
@@ -78,22 +124,20 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
      * @var array
      */
     protected $_identifier = array();
-
-    /**
-     * The identifier type of the class.
-     *
-     * @see Doctrine::IDENTIFIER_* constants
-     * @var integer
-     */
-    protected $_identifierType;
-
+    
     /**
      * The inheritance mapping type used by the class.
      *
-     *
      * @var integer
      */
-    protected $_inheritanceType = Doctrine::INHERITANCE_TYPE_NONE;
+    protected $_inheritanceType = self::INHERITANCE_TYPE_NONE;
+    
+    /**
+     * The Id generator type used by the class.
+     *
+     * @var string
+     */
+    protected $_generatorType = self::GENERATOR_TYPE_NONE;
 
     /**
      * An array containing all behaviors attached to the class.
@@ -102,30 +146,51 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
      * @var array $_templates
      * @todo Unify under 'Behaviors'.
      */
-    protected $_behaviors = array();
-
-    /**
-     * An array containing all behavior generators attached to the class.
-     *
-     * @see Doctrine_Record_Generator
-     * @var array $_generators
-     * @todo Unify under 'Behaviors'.
-     */
-    protected $_generators = array();
-
+    //protected $_behaviors = array();
+    
     /**
      * The field mappings of the class.
      * Keys are field names and values are mapping definitions.
      *
-     * The mapping definition array has at least the following values:
-     *
-     *  -- type         the column type, eg. 'integer'
-     *  -- length       the column length, eg. 11
-     *
-     *  additional keys:
-     *  -- notnull      whether or not the column is marked as notnull
-     *  -- values       enum values
-     *  ... many more
+     * The mapping definition array has the following values:
+     * 
+     * - <b>fieldName</b> (string)
+     * The name of the field in the Entity. 
+     * 
+     * - <b>type</b> (string)
+     * The database type of the column. Can be one of Doctrine's portable types.
+     * 
+     * - <b>columnName</b> (string, optional)
+     * The column name. Optional. Defaults to the field name.
+     * 
+     * - <b>length</b> (integer, optional)
+     * The database length of the column. Optional. Defaults to Doctrine's 
+     * default values for the portable types.
+     * 
+     * - <b>id</b> (boolean, optional)
+     * Marks the field as the primary key of the Entity. Multiple fields of an
+     * entity can have the id attribute, forming a composite key.
+     * 
+     * - <b>generatorType</b> (string, optional, requires: id)
+     * The generation type used for the field. Optional. Can only be applied on
+     * fields that are marked with the 'id' attribute. The possible values are:
+     * auto, identity, sequence, table.
+     * 
+     * - <b>generator</b> (array, optional, requires: generationType=table|sequence)
+     * The generator options for a table or sequence generator. Can only be applied
+     * on fields that have a generationType of 'table' or 'sequence'.
+     * 
+     * - <b>nullable</b> (boolean, optional)
+     * Whether the column is nullable. Defaults to TRUE.
+     * 
+     * - <b>columnDefinition</b> (string, optional)
+     * The SQL fragment that is used when generating the DDL for the column.
+     * 
+     * - <b>precision</b> (integer, optional)
+     * The precision of a decimal column. Only valid if the column type is decimal.
+     * 
+     * - <b>scale</b> (integer, optional)
+     * The scale of a decimal column. Only valid if the column type is decimal.
      *
      * @var array
      */    
@@ -137,7 +202,7 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
      * @var array
      * @TODO Implementation (Value Object support)
      */
-    protected $_mappedEmbeddedValues = array();
+    //protected $_embeddedValueMappings = array();
 
     /**
      * Enter description here...
@@ -181,60 +246,12 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
     //protected $_subclassFieldNames = array();
 
     /**
-     * Caches enum value mappings. Keys are field names and values arrays with the
-     * mapping.
-     */
-    protected $_enumValues = array();
-
-    /**
-     * Tree object associated with the class.
-     *
-     * @var Doctrine_Tree
-     * @todo Belongs to the NestedSet Behavior plugin.
-     */
-    protected $_tree;
-
-    /**
-     * Cached column count, Doctrine_Entity uses this column count when
-     * determining its state.
-     *
-     * @var integer
-     */
-    //protected $_columnCount;
-
-    /**
-     * Whether or not this class has default values.
-     *
-     * @var boolean
-     */
-    protected $_hasDefaultValues;
-
-    /**
      * Relation parser object. Manages the relations for the class.
      *
      * @var Doctrine_Relation_Parser $_parser
+     * @todo Remove.
      */
     protected $_parser;
-
-    /**
-     * Enum value arrays.
-     */
-    protected $_enumMap = array();
-
-    /**
-     * @var array $options                  an array containing all options
-     *
-     *      -- treeImpl                     the tree implementation of this table (if any)
-     *
-     *      -- treeOptions                  the tree options
-     *
-     *      -- queryParts                   the bound query parts
-     */
-    protected $_options = array(
-            'treeImpl'    => null,
-            'treeOptions' => null,
-            'queryParts'  => array()
-    );
 
     /**
      * Inheritance options.
@@ -276,11 +293,6 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
             'indexes'        => array(),
             'checks'         => array()
     );
-
-    /**
-     * @var array $_invokedMethods              method invoker cache
-     */
-    protected $_invokedMethods = array();
     
     /**
      * The cached lifecycle listeners. There is only one instance of each
@@ -304,6 +316,19 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
      */
     protected $_lifecycleListeners = array();
     
+    /**
+     * The association mappings.
+     *
+     * @var array
+     */
+    protected $_associationMappings = array();
+    
+    /**
+     * Flag indicating whether the identifier/primary key of the class is composite.
+     *
+     * @var boolean
+     */
+    protected $_isIdentifierComposite = false;
 
     /**
      * Constructs a new ClassMetadata instance.
@@ -315,11 +340,12 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
         $this->_entityName = $entityName;
         $this->_rootEntityName = $entityName;
         $this->_em = $em;
+        
         $this->_parser = new Doctrine_Relation_Parser($this);
     }
 
     /**
-     *
+     * @deprecated
      */
     public function getConnection()
     {
@@ -370,21 +396,21 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
      */
     public function isIdentifier($fieldName)
     {
-        if ($this->_identifierType != Doctrine::IDENTIFIER_COMPOSITE) {
+        if ( ! $this->_isIdentifierComposite) {
             return $fieldName === $this->_identifier[0];
         }
         return in_array($fieldName, $this->_identifier);
     }
 
     /**
-     * Check if the field is unique
+     * Check if the class has a composite identifier.
      *
      * @param string $fieldName  The field name
-     * @return boolean  TRUE if the field is unique, FALSE otherwise.
+     * @return boolean  TRUE if the identifier is composite, FALSE otherwise.
      */
     public function isIdentifierComposite()
     {
-        return $this->_identifierType == Doctrine::IDENTIFIER_COMPOSITE;
+        return $this->_isIdentifierComposite;
     }
 
     /**
@@ -490,7 +516,7 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
         return $this->_tableOptions[$name];
     }
 
-    public function getBehaviorForMethod($method)
+    /*public function getBehaviorForMethod($method)
     {
         return (isset($this->_invokedMethods[$method])) ?
         $this->_invokedMethods[$method] : false;
@@ -498,10 +524,9 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
     public function addBehaviorMethod($method, $behavior)
     {
         $this->_invokedMethods[$method] = $class;
-    }
+    }*/
 
     /**
-     * getOption
      * returns the value of given option
      *
      * @param string $name  the name of the option
@@ -562,8 +587,11 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
      */
     public function getFieldMapping($fieldName)
     {
-        return isset($this->_fieldMappings[$fieldName]) ?
-                $this->_fieldMappings[$fieldName] : false;
+        if ( ! isset($this->_fieldMappings[$fieldName])) {
+            throw Doctrine_MappingException::mappingNotFound($fieldName);
+        }
+        
+        return $this->_fieldMappings[$fieldName];
     }
     
     /**
@@ -575,7 +603,21 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
      */
     public function getAssociationMapping($fieldName)
     {
-        //...
+        if ( ! isset($this->_associationMappings[$fieldName])) {
+            throw Doctrine_MappingException::mappingNotFound($fieldName);
+        }
+        
+        return $this->_associationMappings[$fieldName];
+    }
+    
+    /**
+     * Gets all association mappings of the class.
+     *
+     * @return array
+     */
+    public function getAssociationMappings()
+    {
+        return $this->_associationMappings;
     }
 
     /**
@@ -626,7 +668,7 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
      * during hydration because the hydrator caches effectively.
      * 
      * @return string  The field name.
-     * @throws Doctrine::ORM::Exceptions::ClassMetadataException if the field name could
+     * @throws Doctrine::ORM::Exceptions::ClassMetadataException If the field name could
      *         not be found.
      */
     public function lookupFieldName($lcColumnName)
@@ -649,90 +691,95 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
 
         throw new Doctrine_ClassMetadata_Exception("No field name found for column name '$lcColumnName' during lookup.");
     }
-
+    
     /**
-     * Maps a field of the class to a database column.
+     * Adds a field mapping.
      *
-     * @param string $name      The name of the column to map. Syntax: columnName [as propertyName].
-     *                          The property name is optional. If not used the column will be
-     *                          mapped to a property with the same name.
-     * @param string $type      The type of the column.
-     * @param integer $length   The length of the column.
-     * @param mixed $options
-     * @param boolean $prepend  Whether to prepend or append the new column to the column list.
-     *                          By default the column gets appended.
-     *
-     * @throws Doctrine_ClassMetadata_Exception If trying use wrongly typed parameter.
-     * @todo Rename to mapField()/addFieldMapping().
+     * @param array $mapping
      */
-    public function mapColumn($name, $type, $length = null, $options = array())
+    public function mapField(array $mapping)
     {
-        // converts 0 => 'primary' to 'primary' => true etc.
-        foreach ($options as $k => $option) {
-            if (is_numeric($k)) {
-                if ( ! empty($option) && $option !== false) {
-                    $options[$option] = true;
-                }
-                unset($options[$k]);
-            }
+        $mapping = $this->_validateAndCompleteFieldMapping($mapping);
+        if (isset($this->_fieldMappings[$mapping['fieldName']])) {
+            throw Doctrine_MappingException::duplicateFieldMapping();
         }
-
-        // extract column name & field name & lowercased column name
-        $parts = explode(' as ', $name);
-        if (count($parts) > 1) {
-            $fieldName = $parts[1];
-        } else {
-            $fieldName = $parts[0];
-        }
-        $columnName = $parts[0];
-        $lcColumnName = strtolower($parts[0]);
-
-        if (isset($this->_fieldMappings[$fieldName])) {
-            return;
-        }
-
-        // Fill column name <-> field name lookup maps
-        $this->_columnNames[$fieldName] = $columnName;
-        $this->_fieldNames[$columnName] = $fieldName;
-        $this->_lcColumnToFieldNames[$lcColumnName] = $fieldName;
-        $this->_lcColumnToFieldNames[$lcColumnName] = $fieldName;
-        
-        
-        // Inspect & fill $options
-        
-        if ($length == null) {
-            $length = $this->_getDefaultLength($type);
-        }
-
-        $options['type'] = $type;
-        $options['length'] = $length;
-        
-        if ( ! $this->_hasDefaultValues && isset($options['default'])) {
-            $this->_hasDefaultValues = true;
-        }
-        if ( ! empty($options['primary'])) {
-            if ( ! in_array($fieldName, $this->_identifier)) {
-                $this->_identifier[] = $fieldName;
-            }
-            /*if (isset($options['autoincrement']) && $options['autoincrement'] === true) {
-                
-            }*/
-        }
-        /*
-        if ( ! isset($options['immutable'])) {
-            $options['immutable'] = false;
-        }*/
-
-        $this->_fieldMappings[$fieldName] = $options;
-
-        $this->_columnCount++;
+        $this->_fieldMappings[$mapping['fieldName']] = $mapping;
     }
     
     /**
-     * Gets the default length for a field type.
+     * Overrides an existant field mapping.
+     * Used i.e. by Entity classes deriving from another Entity class that acts
+     * as a mapped superclass to refine the basic mapping.
      *
-     * @param unknown_type $type
-     * @return unknown
+     * @param array $newMapping
+     * @todo Implementation.
+     */
+    public function overrideFieldMapping(array $newMapping)
+    {
+        //...
+    }
+    
+    /**
+     * Validates & completes the field mapping. Default values are applied here.
+     *
+     * @param array $mapping
+     * @return array
+     */
+    private function _validateAndCompleteFieldMapping(array $mapping)
+    {
+        // Check mandatory fields
+        if ( ! isset($mapping['fieldName'])) {
+            throw Doctrine_MappingException::missingFieldName();
+        }
+        if ( ! isset($mapping['type'])) {
+            throw Doctrine_MappingException::missingType();
+        }
+        
+        // Complete fieldName and columnName mapping
+        if ( ! isset($mapping['columnName'])) {
+            $mapping['columnName'] = $mapping['fieldName'];
+        }
+        $lcColumnName = strtolower($mapping['columnName']);
+
+        $this->_columnNames[$mapping['fieldName']] = $mapping['columnName'];
+        $this->_fieldNames[$mapping['columnName']] = $mapping['fieldName'];
+        $this->_lcColumnToFieldNames[$lcColumnName] = $mapping['fieldName'];
+        
+        // Complete length mapping
+        if ( ! isset($mapping['length'])) {
+            $mapping['length'] = $this->_getDefaultLength($mapping['type']);
+        }
+        
+        // Complete id mapping
+        if (isset($mapping['id']) && $mapping['id'] === true) {
+            if ( ! in_array($mapping['fieldName'], $this->_identifier)) {
+                $this->_identifier[] = $mapping['fieldName'];
+            }
+            if (isset($mapping['generatorType'])) {
+                if ( ! in_array($mapping['generatorType'], self::$_generatorTypes)) {
+                    throw Doctrine_MappingException::invalidGeneratorType($mapping['generatorType']);
+                } else if (count($this->_identifier) > 1) {
+                    throw Doctrine_MappingException::generatorNotAllowedWithCompositeId();
+                }
+                $this->_generatorType = $mapping['generatorType'];
+            }
+            // TODO: validate/complete 'generator' mapping
+            
+            // Check for composite key
+            if ( ! $this->_isIdentifierComposite && count($this->_identifier) > 1) {
+                $this->_isIdentifierComposite = true;
+            }
+            
+        }
+        
+        return $mapping;
+    }
+    
+    /**
+     * Gets the default length for a column type.
+     *
+     * @param string $type
+     * @return mixed
      */
     private function _getDefaultLength($type)
     {
@@ -777,39 +824,10 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
      * @param string  The field name.
      * @return array  The names of all validators that are applied on the specified field.
      */
-    public function getFieldValidators($fieldName)
+    /*public function getFieldValidators($fieldName)
     {
         return isset($this->_fieldMappings[$fieldName]['validators']) ?
                 $this->_fieldMappings[$fieldName]['validators'] : array();
-    }
-
-    /**
-     * Checks whether the mapped class has a default value on any field.
-     *
-     * @return boolean  TRUE if the entity has a default value on any field, otherwise false.
-     */
-    /*public function hasDefaultValues()
-    {
-        return $this->_hasDefaultValues;
-    }*/
-
-    /**
-     * getDefaultValueOf
-     * returns the default value(if any) for given field
-     *
-     * @param string $fieldName
-     * @return mixed
-     */
-    /*public function getDefaultValueOf($fieldName)
-    {
-        if ( ! isset($this->_fieldMappings[$fieldName])) {
-            throw new Doctrine_Table_Exception("Couldn't get default value. Column ".$fieldName." doesn't exist.");
-        }
-        if (isset($this->_fieldMappings[$fieldName]['default'])) {
-            return $this->_fieldMappings[$fieldName]['default'];
-        } else {
-            return null;
-        }
     }*/
 
     /**
@@ -832,6 +850,21 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
     {
         return $this->_identifier;
     }
+    
+    /**
+     * Gets the name of the single id field. Note that this only works on
+     * entity classes that have a single-field pk.
+     *
+     * @return string
+     */
+    public function getSingleIdentifierFieldName()
+    {
+        if ($this->_isIdentifierComposite) {
+            throw new Doctrine_Exception("Calling getSingleIdentifierFieldName "
+                    . "on a class that uses a composite identifier is not allowed.");
+        }
+        return $this->_identifier[0];
+    }
 
     public function setIdentifier(array $identifier)
     {
@@ -839,121 +872,13 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
     }
 
     /**
-     * Gets the type of the identifier (primary key) used by the mapped class. The type
-     * can be either
-     * <tt>Doctrine::IDENTIFIER_NATURAL</tt>,
-     * <tt>Doctrine::IDENTIFIER_AUTOINCREMENT</tt>,
-     * <tt>Doctrine::IDENTIFIER_SEQUENCE</tt> or
-     * <tt>Doctrine::IDENTIFIER_COMPOSITE</tt>.
-     *
-     * @return integer
-     */
-    public function getIdentifierType()
-    {
-        return $this->_identifierType;
-    }
-
-    /**
-     * Sets the identifier type used by the mapped class.
-     */
-    public function setIdentifierType($type)
-    {
-        $this->_identifierType = $type;
-    }
-
-    public function hasMappedColumn($columnName)
-    {
-        return isset($this->_fieldNames[$columnName]);
-    }
-
-    /**
-     * hasField
+     * Checks whether the class has a (mapped) field with a certain name.
+     * 
      * @return boolean
      */
     public function hasField($fieldName)
     {
         return isset($this->_columnNames[$fieldName]);
-    }
-
-    /**
-     * @param string $fieldName
-     * @return array
-     */
-    /*public function getEnumValues($fieldName)
-    {
-        if (isset($this->_fieldMappings[$fieldName]['values'])) {
-            return $this->_fieldMappings[$fieldName]['values'];
-        } else {
-            return array();
-        }
-    }*/
-
-    /**
-     * enumValue
-     *
-     * @param string $field
-     * @param integer $index
-     * @return mixed
-     */
-    /*public function enumValue($fieldName, $index)
-    {
-        if ($index instanceof Doctrine_Null) {
-            return $index;
-        }
-
-        if (isset($this->_enumValues[$fieldName][$index])) {
-            return $this->_enumValues[$fieldName][$index];
-        }
-
-        $columnName = $this->getColumnName($fieldName);
-        if ( ! $this->_em->getAttribute(Doctrine::ATTR_USE_NATIVE_ENUM) &&
-                isset($this->_fieldMappings[$fieldName]['values'][$index])) {
-            $enumValue = $this->_fieldMappings[$fieldName]['values'][$index];
-        } else {
-            $enumValue = $index;
-        }
-        $this->_enumValues[$fieldName][$index] = $enumValue;
-
-        return $enumValue;
-    }*/
-
-    /**
-     * enumIndex
-     *
-     * @param string $field
-     * @param mixed $value
-     * @return mixed
-     */
-    /*public function enumIndex($fieldName, $value)
-    {
-        $values = $this->getEnumValues($fieldName);
-        $index = array_search($value, $values);
-        if ($index === false || ! $this->_em->getAttribute(Doctrine::ATTR_USE_NATIVE_ENUM)) {
-            return $index;
-        }
-
-        return $value;
-    }*/
-
-    /**
-     * getColumnCount
-     *
-     * @return integer      the number of columns in this table
-     * @deprecated
-     */
-    /*public function getColumnCount()
-    {
-        return $this->_columnCount;
-    }*/
-
-    /**
-     * getMappedColumnCount
-     *
-     * @return integer      the number of mapped columns in the class.
-     */
-    public function getMappedFieldCount()
-    {
-        return $this->_columnCount;
     }
 
     /**
@@ -983,7 +908,7 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
     /**
      * Gets all field mappings.
      *
-     * @return unknown
+     * @return array
      */
     public function getFieldMappings()
     {
@@ -991,28 +916,7 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
     }
 
     /**
-     * removeColumn
-     * removes given column
-     *
-     * @return boolean
-     */
-    /*public function removeColumn($fieldName)
-    {
-        $columnName = array_search($fieldName, $this->_fieldNames);
-
-        unset($this->_fieldNames[$columnName]);
-
-        if (isset($this->_fieldMappings[$fieldName])) {
-            unset($this->_fieldMappings[$fieldName]);
-            return true;
-        }
-        $this->_columnCount--;
-
-        return false;
-    }*/
-
-    /**
-     * returns an array containing all the column names.
+     * Gets an array containing all the column names.
      *
      * @return array
      */
@@ -1024,14 +928,13 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
             $columnNames = array();
             foreach ($fieldNames as $fieldName) {
                 $columnNames[] = $this->getColumnName($fieldName);
-            }
-             
+            } 
             return $columnNames;
         }
     }
 
     /**
-     * returns an array with all the identifier column names.
+     * Returns an array with all the identifier column names.
      *
      * @return array
      */
@@ -1041,7 +944,7 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
     }
 
     /**
-     * returns an array containing all the field names.
+     * Returns an array containing all the field names.
      *
      * @return array
      */
@@ -1049,19 +952,67 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
     {
         return array_values($this->_fieldNames);
     }
-
+    
     /**
-     * getDefinitionOf
+     * Gets the Id generator type used by the class.
      *
-     * @return mixed        array on success, false on failure
-     * @deprecated
+     * @return string
      */
-    /*public function getDefinitionOf($fieldName)
+    public function getIdGeneratorType()
     {
-        $columnName = $this->getColumnName($fieldName);
-
-        return $this->getColumnDefinition($columnName);
-    }*/
+        return $this->_generatorType;
+    }
+    
+    /**
+     * Checks whether the class uses an Id generator.
+     *
+     * @return boolean  TRUE if the class uses an Id generator, FALSE otherwise.
+     */
+    public function usesIdGenerator()
+    {
+        return $this->_generatorType != self::GENERATOR_TYPE_NONE;
+    }
+    
+    /**
+     * Checks whether the class uses an identity column for the Id generation.
+     *
+     * @return boolean TRUE if the class uses the IDENTITY generator, FALSE otherwise.
+     */
+    public function isIdGeneratorIdentity()
+    {
+        return $this->_generatorType == self::GENERATOR_TYPE_IDENTITY;
+    }
+    
+    /**
+     * Checks whether the class uses a sequence for id generation.
+     *
+     * @return boolean TRUE if the class uses the SEQUENCE generator, FALSE otherwise.
+     */
+    public function isIdGeneratorSequence()
+    {
+        return $this->_generatorType == self::GENERATOR_TYPE_SEQUENCE;
+    }
+    
+    /**
+     * Checks whether the class uses a table for id generation.
+     *
+     * @return boolean  TRUE if the class uses the TABLE generator, FALSE otherwise.
+     */
+    public function isIdGeneratorTable()
+    {
+        $this->_generatorType == self::GENERATOR_TYPE_TABLE;
+    }
+    
+    /**
+     * Checks whether the class has a natural identifier/pk (which means it does
+     * not use any Id generator.
+     *
+     * @return boolean
+     */
+    public function isIdentifierNatural()
+    {
+        return $this->_generatorType == self::GENERATOR_TYPE_NONE;
+    }
     
     /**
      * Gets the type of a field.
@@ -1127,10 +1078,10 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
      * @return array     an array containing all templates
      * @todo Unify under 'Behaviors'
      */
-    public function getBehaviors()
+    /*public function getBehaviors()
     {
         return $this->_behaviors;
-    }
+    }*/
 
     /**
      * Gets the inheritance type used by the class.
@@ -1186,6 +1137,8 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
 
     /**
      * Sets the parent class names.
+     * Assumes that the class names in the passed array are in the order:
+     * directParent -> directParentParent -> directParentParentParent ... -> root.
      */
     public function setParentClasses(array $classNames)
     {
@@ -1213,20 +1166,17 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
     public function setInheritanceType($type, array $options = array())
     {
         if ($parentClassNames = $this->getParentClasses()) {
-            if ($this->_em->getClassMetadata($parentClassNames[0])->getInheritanceType() != $type) {
-                throw new Doctrine_ClassMetadata_Exception("All classes in an inheritance hierarchy"
-                . " must share the same inheritance mapping type. Mixing is not allowed.");
-            }
+            throw new Doctrine_MappingException("All classes in an inheritance hierarchy"
+                . " must share the same inheritance mapping type and this type must be set"
+                . " in the root class of the hierarchy.");
         }
-
-        if ($type == Doctrine::INHERITANCE_TYPE_SINGLE_TABLE) {
+        if ( ! in_array($type, self::$_inheritanceTypes)) {
+            throw Doctrine_MappingException::invalidInheritanceType($type);
+        }
+        
+        if ($type == Doctrine::INHERITANCE_TYPE_SINGLE_TABLE ||
+                $type == Doctrine::INHERITANCE_TYPE_JOINED) {
             $this->_checkRequiredDiscriminatorOptions($options);
-        } else if ($type == Doctrine::INHERITANCE_TYPE_JOINED) {
-            $this->_checkRequiredDiscriminatorOptions($options);
-        } else if ($type == Doctrine::INHERITANCE_TYPE_TABLE_PER_CLASS) {
-            ;
-        } else {
-            throw new Doctrine_ClassMetadata_Exception("Invalid inheritance type '$type'.");
         }
 
         $this->_inheritanceType = $type;
@@ -1284,19 +1234,24 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
             throw new Doctrine_ClassMetadata_Exception("Unknown inheritance option: '$name'.");
         }
 
-        switch ($name) {
-            case 'discriminatorColumn':
-                if ($value !== null && ! is_string($value)) {
-                    throw new Doctrine_ClassMetadata_Exception("Invalid value '$value' for option"
-                    . " 'discriminatorColumn'.");
-                }
-                break;
-            case 'discriminatorMap':
-                if ( ! is_array($value)) {
-                    throw new Doctrine_ClassMetadata_Exception("Value for option 'discriminatorMap'"
-                    . " must be an array.");
-                }
-                break;
+        if ($this->_inheritanceType == 'joined' || $this->_inheritanceType == 'singleTable') {
+            switch ($name) {
+                case 'discriminatorColumn':
+                    if ($value !== null && ! is_string($value)) {
+                        throw new Doctrine_ClassMetadata_Exception("Invalid value '$value' for option"
+                        . " 'discriminatorColumn'.");
+                    }
+                    break;
+                case 'discriminatorMap':
+                    if ( ! is_array($value)) {
+                        throw new Doctrine_ClassMetadata_Exception("Value for option 'discriminatorMap'"
+                        . " must be an array.");
+                    }
+                    break;
+                    // ... further validation checks as needed
+                default:
+                    throw Doctrine_MappingException::invalidInheritanceOption($name);
+            }
         }
 
         $this->_inheritanceOptions[$name] = $value;
@@ -1439,135 +1394,6 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
     }
 
     /**
-     * getTemplate
-     *
-     * @param string $template
-     * @return void
-     * @todo Unify under 'Behaviors'.
-     */
-    public function getBehavior($behaviorName)
-    {
-        if ( ! isset($this->_behaviors[$behaviorName])) {
-            throw new Doctrine_Table_Exception('Template ' . $behaviorName . ' not loaded');
-        }
-
-        return $this->_behaviors[$behaviorName];
-    }
-
-    /**
-     * @todo Unify under 'Behaviors'.
-     */
-    public function hasBehavior($behaviorName)
-    {
-        return isset($this->_behaviors[$behaviorName]);
-    }
-
-    /**
-     * @todo Unify under 'Behaviors'.
-     */
-    public function addBehavior($behaviorName, Doctrine_Template $impl)
-    {
-        $this->_behaviors[$behaviorName] = $impl;
-
-        return $this;
-    }
-
-    /**
-     * @todo Unify under 'Behaviors'.
-     */
-    public function getGenerators()
-    {
-        return $this->_generators;
-    }
-
-    /**
-     * @todo Unify under 'Behaviors'.
-     */
-    public function getGenerator($generator)
-    {
-        if ( ! isset($this->_generators[$generator])) {
-            throw new Doctrine_Table_Exception('Generator ' . $generator . ' not loaded');
-        }
-
-        return $this->_generators[$plugin];
-    }
-
-    /**
-     * @todo Unify under 'Behaviors'.
-     */
-    public function hasGenerator($generator)
-    {
-        return isset($this->_generators[$generator]);
-    }
-
-    /**
-     * @todo Unify under 'Behaviors'.
-     */
-    public function addGenerator(Doctrine_Record_Generator $generator, $name = null)
-    {
-        if ($name === null) {
-            $this->_generators[] = $generator;
-        } else {
-            $this->_generators[$name] = $generator;
-        }
-        return $this;
-    }
-
-    /**
-     * loadBehavior
-     *
-     * @param string $template
-     * @todo Unify under 'Behaviors'.
-     */
-    public function loadBehavior($behavior, array $options = array())
-    {
-        $this->actAs($behavior, $options);
-    }
-
-    /**
-     * @todo Unify under 'Behaviors'.
-     */
-    public function loadGenerator(Doctrine_Record_Generator $generator)
-    {
-        $generator->initialize($this->_table);
-        $this->addGenerator($generator, get_class($generator));
-    }
-
-    /**
-     * getTree
-     *
-     * getter for associated tree
-     *
-     * @return mixed  if tree return instance of Doctrine_Tree, otherwise returns false
-     * @todo Belongs to the NestedSet Behavior.
-     */
-    public function getTree()
-    {
-        if ($this->getOption('treeImpl')) {
-            if ( ! $this->_tree) {
-                $options = $this->getOption('treeOptions') ? $this->getOption('treeOptions') : array();
-                $this->_tree = Doctrine_Tree::factory($this,
-                $this->getOption('treeImpl'), $options);
-            }
-            return $this->_tree;
-        }
-        return false;
-    }
-
-    /**
-     * isTree
-     *
-     * determine if table acts as tree
-     *
-     * @return mixed  if tree return true, otherwise returns false
-     * @todo Belongs to the NestedSet Behavior.
-     */
-    public function isTree()
-    {
-        return ( ! is_null($this->getOption('treeImpl'))) ? true : false;
-    }
-
-    /**
      * Checks whether a persistent field is inherited from a superclass.
      *
      * @return boolean TRUE if the field is inherited, FALSE otherwise.
@@ -1575,47 +1401,6 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
     public function isInheritedField($fieldName)
     {
         return isset($this->_fieldMappings[$fieldName]['inherited']);
-    }
-
-    /**
-     * bindQueryParts
-     * binds query parts to given component
-     *
-     * @param array $queryParts         an array of pre-bound query parts
-     * @return Doctrine_Entity          this object
-     */
-    public function bindQueryParts(array $queryParts)
-    {
-        $this->_options['queryParts'] = $queryParts;
-        return $this;
-    }
-
-    /**
-     * bindQueryPart
-     * binds given value to given query part
-     *
-     * @param string $queryPart
-     * @param mixed $value
-     * @return Doctrine_Entity          this object
-     */
-    public function bindQueryPart($queryPart, $value)
-    {
-        $this->_options['queryParts'][$queryPart] = $value;
-        return $this;
-    }
-
-    /**
-     * getBoundQueryPart
-     *
-     * @param string $queryPart
-     * @return string $queryPart
-     */
-    public function getBoundQueryPart($queryPart)
-    {
-        if ( ! isset($this->_options['queryParts'][$queryPart])) {
-            return null;
-        }
-        return $this->_options['queryParts'][$queryPart];
     }
 
     /**
@@ -1657,9 +1442,23 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
     }
 
     /**
+     * Adds a one-to-one association mapping.
+     * 
      * @todo Implementation.
      */
-    public function oneToOne($targetEntity, $definition)
+    public function mapOneToOne(array $mapping)
+    {
+        $oneToOneMapping = new Doctrine_Association_OneToOne($mapping);
+        if (isset($this->_associationMappings[$oneToOneMapping->getSourceFieldName()])) {
+            throw Doctrine_MappingException::duplicateFieldMapping();
+        }
+        $this->_associationMappings[$oneToOneMapping->getSourceFieldName()] = $oneToOneMapping;
+    }
+
+    /**
+     * @todo Implementation.
+     */
+    public function mapOneToMany(array $mapping)
     {
 
     }
@@ -1667,23 +1466,15 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
     /**
      * @todo Implementation.
      */
-    public function oneToMany($targetEntity, $definition)
+    public function mapManyToOne(array $mapping)
     {
-
+        
     }
 
     /**
      * @todo Implementation.
      */
-    public function manyToOne($targetEntity, $definition)
-    {
-
-    }
-
-    /**
-     * @todo Implementation.
-     */
-    public function manyToMany($targetEntity, $definition)
+    public function mapManyToMany(array $mapping)
     {
 
     }
@@ -1696,7 +1487,7 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
      * @param array $options
      * @todo Unify under 'Behaviors'.
      */
-    public function actAs($tpl, array $options = array())
+    /*public function actAs($tpl, array $options = array())
     {
         if ( ! is_object($tpl)) {
             if (class_exists($tpl, true)) {
@@ -1723,7 +1514,7 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
         $tpl->setTableDefinition();
 
         return $this;
-    }
+    }*/
 
     /**
      * check
@@ -1735,7 +1526,7 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
      * @todo Should be done through $_tableOptions
      * @deprecated
      */
-    public function check($constraint, $name = null)
+    /*public function check($constraint, $name = null)
     {
         if (is_array($constraint)) {
             foreach ($constraint as $name => $def) {
@@ -1754,7 +1545,7 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
         } else {
             $this->_tableOptions['checks'][] = $definition;
         }
-    }
+    }*/
     
     /**
      * Registers a custom mapper for the entity class.
@@ -1868,7 +1659,7 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
     /**
      * Adds a lifecycle callback for Entities of this class.
      *
-     * Note: If a the same callback is registered more than once, the old one
+     * Note: If the same callback is registered more than once, the old one
      * will be overridden.
      * 
      * @param string $callback
@@ -2014,6 +1805,14 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
     public function getRelations()
     {
         return $this->_parser->getRelations();
+    }
+    
+    /**
+     * @todo Set by the factory if type is AUTO. Not pretty. Find sth. better.
+     */
+    public function setIdGeneratorType($type)
+    {
+        $this->_generatorType = $type;
     }
 
     /**

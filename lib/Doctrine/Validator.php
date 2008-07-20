@@ -33,6 +33,7 @@
  * @version     $Revision$
  * @author      Roman Borschel <roman@code-factory.org>
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
+ * @todo Move to validator package.
  */
 class Doctrine_Validator
 {

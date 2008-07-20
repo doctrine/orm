@@ -1,16 +1,44 @@
 <?php
+
+#namespace Doctrine::Test::ORM::Models;
+
+#use Doctrine::ORM::Entity;
+
 class CmsUser extends Doctrine_Entity
 {
-  public static function initMetadata($class) 
-  {
-      $class->mapColumn('id', 'integer', 4, array('primary' => true, 'autoincrement' => true));
-      $class->mapColumn('status', 'string', 50);
-      $class->mapColumn('username', 'string', 255);
-      $class->mapColumn('name', 'string', 255);
-      
-      $class->hasMany('CmsPhonenumber as phonenumbers', array(
+    #protected $id;
+    #protected $status;
+    #protected $username;
+    #protected $name;
+    
+    public static function initMetadata($mapping)
+    {
+        $mapping->mapField(array(
+            'fieldName' => 'id',
+            'type' => 'integer',
+            'length' => 4,
+            'id' => true,
+            'generatorType' => 'auto'
+        ));
+        $mapping->mapField(array(
+            'fieldName' => 'status',
+            'type' => 'string',
+            'length' => 50
+        ));
+        $mapping->mapField(array(
+            'fieldName' => 'username',
+            'type' => 'string',
+            'length' => 255
+        ));
+        $mapping->mapField(array(
+            'fieldName' => 'name',
+            'type' => 'string',
+            'length' => 255
+        ));
+
+        $mapping->hasMany('CmsPhonenumber as phonenumbers', array(
               'local' => 'id', 'foreign' => 'user_id'));
-      $class->hasMany('CmsArticle as articles', array(
+        $mapping->hasMany('CmsArticle as articles', array(
               'local' => 'id', 'foreign' => 'user_id'));
-  }
+    }
 }

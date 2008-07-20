@@ -1,9 +1,21 @@
 <?php
 class CmsPhonenumber extends Doctrine_Entity
 {
-  public static function initMetadata($class)
-  {
-      $class->mapColumn('user_id', 'integer', 4);
-      $class->mapColumn('phonenumber', 'string', 50, array('primary' => true));
-  }
+    #protected $user_id;
+    #protected $phonenumber;
+    
+    public static function initMetadata($mapping)
+    {
+        $mapping->mapField(array(
+            'fieldName' => 'user_id',
+            'type' => 'integer',
+            'length' => 4
+        ));
+        $mapping->mapField(array(
+            'fieldName' => 'phonenumber',
+            'type' => 'string',
+            'length' => 50,
+            'id' => true
+        ));
+    }
 }

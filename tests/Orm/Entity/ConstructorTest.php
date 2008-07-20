@@ -22,10 +22,19 @@ class ConstructorTestEntity1 extends Doctrine_Entity
     }
     
     /* The mapping definition */
-    public static function initMetadata($class) 
+    public static function initMetadata($mapping) 
     {
-        $class->mapColumn('id', 'integer', 4, array('primary'));
-        $class->mapColumn('username', 'string', 50, array());
+        $mapping->mapField(array(
+            'fieldName' => 'id',
+            'type' => 'integer',
+            'length' => 4,
+            'id' => true
+        ));
+        $mapping->mapField(array(
+            'fieldName' => 'username',
+            'type' => 'string',
+            'length' => 50
+        ));
     }
 }
 

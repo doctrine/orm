@@ -1,26 +1,46 @@
 <?php
 
+#namespace Doctrine::Tests::ORM::Models::Forum;
+
+#use Doctrine::ORM::Entity;
+
 class ForumUser extends Doctrine_Entity
 {
-    public static function initMetadata($class) 
+    #protected $dtype;
+    #protected $id;
+    #protected $username;
+    
+    public static function initMetadata($mapping) 
     {
         // inheritance mapping
-        $class->setInheritanceType(Doctrine::INHERITANCE_TYPE_JOINED, array(
+        $mapping->setInheritanceType('joined', array(
                 'discriminatorColumn' => 'dtype',
                 'discriminatorMap' => array(
                         'user' => 'ForumUser',
                         'admin' => 'ForumAdministrator')
                 ));
         // register subclasses
-        $class->setSubclasses(array('ForumAdministrator'));
+        $mapping->setSubclasses(array('ForumAdministrator'));
         // the discriminator column
-        $class->mapColumn('dtype', 'string', 50);
+        $mapping->mapField(array(
+            'fieldName' => 'dtype',
+            'type' => 'string',
+            'length' => 50
+        ));
         
         // column-to-field mapping
-        $class->mapColumn('id', 'integer', 4, array(
-                'primary' => true,
-                'autoincrement' => true));
-        $class->mapColumn('username', 'string', 50, array());
+        $mapping->mapField(array(
+            'fieldName' => 'id',
+            'type' => 'integer',
+            'length' => 4,
+            'id' => true,
+            'generatorType' => 'auto'
+        ));
+        $mapping->mapField(array(
+            'fieldName' => 'username',
+            'type' => 'string',
+            'length' => 50
+        ));
         
     }
     

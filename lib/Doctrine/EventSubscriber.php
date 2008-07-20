@@ -1,6 +1,6 @@
 <?php
 /*
- *  $Id$
+ *  $Id: EventListener.php 4653 2008-07-10 17:17:58Z romanb $
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -20,18 +20,13 @@
  */
 
 /**
- * Doctrine_EventListener     all event listeners extend this base class
- *                            the empty methods allow child classes to only implement the methods they need to implement
- *
+ * EventSubscriber.
  *
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
- * @package     Doctrine
- * @subpackage  EventListener
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @link        www.phpdoctrine.org
  * @since       2.0
- * @version     $Revision$
- * @todo Remove. The 2.0 event system has no listener interfaces.
+ * @version     $Revision: 4653 $
  */
 interface Doctrine_EventSubscriber
 {

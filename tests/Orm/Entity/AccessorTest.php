@@ -22,12 +22,21 @@ class Orm_Entity_AccessorTest extends Doctrine_OrmTestCase
 
 class CustomAccessorMutatorTestEntity extends Doctrine_Entity
 {
-    public static function initMetadata($class) 
+    public static function initMetadata($mapping) 
     {
-        $class->mapColumn('id', 'integer', 4, array('primary'));
-        $class->mapColumn('username', 'string', 50, array(
-                'accessor' => 'getUsernameCustom',
-                'mutator' => 'setUsernameCustom'));
+        $mapping->mapField(array(
+            'fieldName' => 'id',
+            'type' => 'integer',
+            'length' => 4,
+            'id' => true
+        ));
+        $mapping->mapField(array(
+            'fieldName' => 'username',
+            'type' => 'string',
+            'length' => 50,
+            'accessor' => 'getUsernameCustom',
+            'mutator' => 'setUsernameCustom'
+        ));
     }
     
     public function getUsernameCustom()
@@ -43,10 +52,19 @@ class CustomAccessorMutatorTestEntity extends Doctrine_Entity
 
 class MagicAccessorMutatorTestEntity extends Doctrine_Entity
 {
-    public static function initMetadata($class) 
+    public static function initMetadata($mapping) 
     {
-        $class->mapColumn('id', 'integer', 4, array('primary'));
-        $class->mapColumn('username', 'string', 50, array());
+        $mapping->mapField(array(
+            'fieldName' => 'id',
+            'type' => 'integer',
+            'length' => 4,
+            'id' => true
+        ));
+        $mapping->mapField(array(
+            'fieldName' => 'username',
+            'type' => 'string',
+            'length' => 50
+        ));
     }
     
     public function getUsername()

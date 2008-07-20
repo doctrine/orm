@@ -28,6 +28,7 @@
  * @since       1.0
  * @version     $Revision$
  * @author      Joe Simms <joe.simms@websites4.com>
+ * @todo Move to NestedSet behavior.
  */
 class Doctrine_Tree
 {
