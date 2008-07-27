@@ -20,7 +20,6 @@
  */
 
 /**
- * Doctrine_Sequence
  * The base class for sequence handling drivers.
  *
  * @package     Doctrine

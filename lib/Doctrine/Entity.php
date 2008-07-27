@@ -29,8 +29,6 @@
  * are marked INTERNAL: and begin with an underscore "_" to indicate that they
  * ideally would not be public and to minimize naming collisions.
  *
- * @package     Doctrine
- * @subpackage  Entity
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  * @author      Roman Borschel <roman@code-factory.org>
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
@@ -75,15 +73,15 @@ abstract class Doctrine_Entity extends Doctrine_Access implements Serializable
     
     /**
      * A removed Entity instance is an instance with a persistent identity,
-     * associated with an EntityManager, that is scheduled for removal from the
-     * database.
+     * associated with an EntityManager, whose persistent state has been
+     * deleted (or is scheduled for deletion).
      */
     const STATE_DELETED = 4;
     
     /**
      * Index used for creating object identifiers (oid's).
      *
-     * @var integer $index                  
+     * @var integer $index
      */
     private static $_index = 1;
     
@@ -111,7 +109,7 @@ abstract class Doctrine_Entity extends Doctrine_Access implements Serializable
     /**
      * The class descriptor.
      *
-     * @var ClassMetadata
+     * @var Doctrine::ORM::ClassMetadata
      */
     private $_class;
     
@@ -162,7 +160,7 @@ abstract class Doctrine_Entity extends Doctrine_Access implements Serializable
     /**
      * The EntityManager that is responsible for the persistence of the entity.
      *
-     * @var Doctrine_EntityManager
+     * @var Doctrine::ORM::EntityManager
      */
     private $_em;
 
@@ -207,37 +205,6 @@ abstract class Doctrine_Entity extends Doctrine_Access implements Serializable
     }
 
     /**
-     * setDefaultValues
-     * sets the default values for records internal data
-     *
-     * @param boolean $overwrite                whether or not to overwrite the already set values
-     * @return boolean
-     * @todo Job of EntityManager.
-     * @deprecated
-     * Setting object-level default field values is much more natural to do in 
-     * the constructor and database-level default values are set by the database.
-     */
-    /*public function assignDefaultValues($overwrite = false)
-    {
-        if ( ! $this->_class->hasDefaultValues()) {
-            return false;
-        }
-        foreach ($this->_data as $column => $value) {
-            $default = $this->_class->getDefaultValueOf($column);
-
-            if ($default === null) {
-                continue;
-            }
-
-            if ($value === Doctrine_Null::$INSTANCE || $overwrite) {
-                $this->_data[$column] = $default;
-                $this->_modified[]    = $column;
-                $this->_state = Doctrine_Entity::STATE_TDIRTY;
-            }
-        }
-    }*/
-
-    /**
      * Hydrates this object from given array
      *
      * @param array $data
@@ -277,10 +244,10 @@ abstract class Doctrine_Entity extends Doctrine_Access implements Serializable
     /**
      * INTERNAL:
      */
-    final public function _setIdentifier(array $identifier)
+    /*final public function _setIdentifier(array $identifier)
     {
         $this->_id = $identifier;
-    }
+    }*/
 
     /**
      * Serializes the entity.
@@ -298,10 +265,6 @@ abstract class Doctrine_Entity extends Doctrine_Access implements Serializable
         $vars = get_object_vars($this);
 
         unset($vars['_references']);
-        unset($vars['_mapper']);
-        unset($vars['_errorStack']);
-        unset($vars['_filter']);
-        unset($vars['_node']);
         unset($vars['_em']);
 
         //$name = (array)$this->_table->getIdentifier();
@@ -417,7 +380,7 @@ abstract class Doctrine_Entity extends Doctrine_Access implements Serializable
     }
 
     /**
-     * refresh internal data from the database
+     * Refresh internal data from the database
      *
      * @param bool $deep                        If true, fetch also current relations. Caution: this deletes
      *                                          any aggregated values you may have queried beforee
@@ -426,7 +389,7 @@ abstract class Doctrine_Entity extends Doctrine_Access implements Serializable
      *                                          this record represents does not exist anymore)
      * @return boolean
      * @todo Implementation to EntityManager.
-     * @todo Move to ActiveEntity (extends Entity).
+     * @todo Move to ActiveEntity (extends Entity). Implementation to EntityManager.
      */
     public function refresh($deep = false)
     {
@@ -469,40 +432,6 @@ abstract class Doctrine_Entity extends Doctrine_Access implements Serializable
     }
 
     /**
-     * refresh
-     * refres data of related objects from the database
-     *
-     * @param string $name              name of a related component.
-     *                                  if set, this method only refreshes the specified related component
-     *
-     * @return Doctrine_Entity          this object
-     * @todo Implementation to EntityManager.
-     * @todo ActiveEntity method.
-     */
-    /*public function refreshRelated($name = null)
-    {
-        if (is_null($name)) {
-            foreach ($this->_class->getRelations() as $rel) {
-                $this->_references[$rel->getAlias()] = $rel->fetchRelatedFor($this);
-            }
-        } else {
-            $rel = $this->_class->getRelation($name);
-            $this->_references[$name] = $rel->fetchRelatedFor($this);
-        }
-    }*/
-
-    /**
-     * clearRelated
-     * unsets all the relationships this object has
-     *
-     * (references to related objects still remain on Table objects)
-     */
-    /*public function clearRelated()
-    {
-        $this->_references = array();
-    }*/
-
-    /**
      * Gets the current field values.
      *
      * @return array  The fields and their values.                     
@@ -511,16 +440,6 @@ abstract class Doctrine_Entity extends Doctrine_Access implements Serializable
     {
         return $this->_data;
     }
-    
-    /**
-     * INTERNAL:
-     * For internal hydration purposes only.
-     */
-    /*final public function _setData(array $data)
-    {
-        $this->_data = $data;
-        $this->_extractIdentifier();
-    }*/
 
     /**
      * INTERNAL: (Usage from within extending classes is intended)
@@ -534,9 +453,8 @@ abstract class Doctrine_Entity extends Doctrine_Access implements Serializable
      * @param $name                         name of the property
      * @throws Doctrine_Entity_Exception    if trying to get an unknown field
      * @return mixed
-     * @todo Rename to _get()
      */
-    final public function _rawGet($fieldName)
+    final public function _get($fieldName)
     {
         if (isset($this->_data[$fieldName])) {
             return $this->_rawGetField($fieldName);
@@ -559,9 +477,8 @@ abstract class Doctrine_Entity extends Doctrine_Access implements Serializable
      * @param $name                         name of the field
      * @throws Doctrine_Entity_Exception    if trying to get an unknown field
      * @return mixed
-     * @todo Rename to _set
      */
-    final public function _rawSet($fieldName, $value)
+    final public function _set($fieldName, $value)
     {
         if (isset($this->_data[$fieldName])) {
             return $this->_rawSetField($fieldName, $value);
@@ -578,7 +495,7 @@ abstract class Doctrine_Entity extends Doctrine_Access implements Serializable
      * 
      * NOTE: Use of this method from outside the scope of an extending class
      * is strongly discouraged. This method does NOT check whether the field
-     * exists. _rawGet() in extending classes should be preferred.
+     * exists. _get() in extending classes should be preferred.
      *
      * @param string $fieldName
      * @return mixed
@@ -598,7 +515,7 @@ abstract class Doctrine_Entity extends Doctrine_Access implements Serializable
      * 
      * NOTE: Use of this method from outside the scope of an extending class
      * is strongly discouraged. This method does NOT check whether the field
-     * exists. _rawSet() in extending classes should be preferred.
+     * exists. _set() in extending classes should be preferred.
      *
      * @param string $fieldName
      * @param mixed $value
@@ -616,7 +533,7 @@ abstract class Doctrine_Entity extends Doctrine_Access implements Serializable
      * is strongly discouraged. This method does NOT check whether the reference
      * exists.
      *
-     * @param unknown_type $fieldName
+     * @param string $fieldName
      * @todo Rename to _unsafeGetReference().
      */
     final public function _rawGetReference($fieldName)
@@ -631,8 +548,7 @@ abstract class Doctrine_Entity extends Doctrine_Access implements Serializable
      * INTERNAL:
      * Sets a reference to another Entity.
      * 
-     * NOTE: Use of this method from outside the scope of an extending class
-     * is strongly discouraged.
+     * NOTE: Use of this method is strongly discouraged for user-code.
      *
      * @param string $fieldName
      * @param mixed $value
@@ -672,7 +588,7 @@ abstract class Doctrine_Entity extends Doctrine_Access implements Serializable
                 if ($rel instanceof Doctrine_Relation_LocalKey) {
                     $idFieldNames = $value->getTable()->getIdentifier();
                     if ( ! empty($foreignFieldName) && $foreignFieldName != $idFieldNames[0]) {
-                        $this->set($localFieldName, $value->_rawGet($foreignFieldName));
+                        $this->set($localFieldName, $value->_get($foreignFieldName));
                     } else {
                         $this->set($localFieldName, $value);
                     }
@@ -688,23 +604,6 @@ abstract class Doctrine_Entity extends Doctrine_Access implements Serializable
 
         $this->_references[$name] = $value;
     }
-
-    /**
-     * loads all the uninitialized properties from the database.
-     *
-     * @return boolean
-     * @todo ActiveRecord method.
-     */
-    /*public function load()
-    {
-        // only load the data from database if the Doctrine_Entity is in proxy state
-        if ($this->_state == Doctrine_Entity::STATE_PROXY) {
-            $this->refresh();
-            $this->_state = Doctrine_Entity::STATE_CLEAN;
-            return true;
-        }
-        return false;
-    }*/
 
     /**
      * Generic getter.
@@ -903,7 +802,6 @@ abstract class Doctrine_Entity extends Doctrine_Access implements Serializable
 
     /**
      * Saves the current state of the entity into the database.
-     * This method also saves associated entities.
      *
      * @param Doctrine_Connection $conn                 optional connection parameter
      * @return void
@@ -942,18 +840,14 @@ abstract class Doctrine_Entity extends Doctrine_Access implements Serializable
     }
     
     /**
-     * Gets the names and values of all fields that have been modified since
-     * the entity was last synch'd with the database.
+     * INTERNAL:
+     * Gets the changeset of the entities persistent state.
      *
      * @return array
      */
-    final public function getModifiedFields()
+    final public function _getChangeSet()
     {
-        $a = array();
-        foreach ($this->_modified as $k => $v) {
-            $a[$v] = $this->_data[$v];
-        }
-        return $a;
+        //return $this->_changeSet;
     }
 
     /**
@@ -964,6 +858,7 @@ abstract class Doctrine_Entity extends Doctrine_Access implements Serializable
      * @return array
      * @todo What about a little bit more expressive name? getPreparedData?
      * @todo Does not look like the best place here ...
+     * @todo Prop: Move to EntityPersister. There call _getChangeSet() and apply this logic.
      */
     final public function getPrepared(array $array = array())
     {
@@ -997,18 +892,6 @@ abstract class Doctrine_Entity extends Doctrine_Access implements Serializable
                     $dataSet[$field] = $this->_class->enumIndex($field, $this->_data[$field]);
                     break;
                 default:
-                    /*if ($this->_data[$field] instanceof Doctrine_Entity) {
-                        // FIXME: composite key support
-                        $ids = $this->_data[$field]->identifier();
-                        $id = count($ids) > 0 ? array_pop($ids) : null;
-                        $this->_data[$field] = $id;
-                    }*/
-                    /** TODO:
-                    if ($this->_data[$v] === null) {
-                        throw new Doctrine_Record_Exception('Unexpected null value.');
-                    }
-                    */
-
                     $dataSet[$field] = $this->_data[$field];
             }
         }
@@ -1183,18 +1066,6 @@ abstract class Doctrine_Entity extends Doctrine_Access implements Serializable
             return $this->fromArray(Doctrine_Parser::load($data, $type));
         }
     }
-
-    /**
-     * Checks whether the entity already has a persistent state.
-     *
-     * @return boolean  TRUE if the object is managed and has persistent state, FALSE otherwise.
-     * @deprecated
-     */
-    /*public function exists()
-    {
-        return ($this->_state !== Doctrine_Entity::STATE_TCLEAN &&
-                $this->_state !== Doctrine_Entity::STATE_TDIRTY);
-    }*/
     
     /**
      * Checks whether the entity already has a persistent state.
@@ -1218,42 +1089,15 @@ abstract class Doctrine_Entity extends Doctrine_Access implements Serializable
     }
 
     /**
-     * method for checking existence of properties and Doctrine_Entity references
+     * Deletes the persistent state of the entity.
      *
-     * @param mixed $name               name of the property or reference
-     * @return boolean
-     * @todo Method name does not reflect the purpose.
-     */
-    /*public function hasRelation($fieldName)
-    {
-        if (isset($this->_data[$fieldName]) || isset($this->_id[$fieldName])) {
-            return true;
-        }
-        return $this->_class->hasRelation($fieldName);
-    }*/
-
-    /**
-     * getIterator
-     * @return Doctrine_Record_Iterator     a Doctrine_Record_Iterator that iterates through the data
-     * @todo Really needed/useful?
-     */
-    /*public function getIterator()
-    {
-        return new Doctrine_Record_Iterator($this);
-    }*/
-
-    /**
-     * Deletes the entity.
-     *
-     * Triggered events: onPreDelete, onDelete.
-     *
-     * @return boolean      true on success, false on failure
+     * @return boolean  TRUE on success, FALSE on failure.
      * @todo ActiveRecord method.
      */
-    public function delete(Doctrine_Connection $conn = null)
+    public function delete()
     {
         // TODO: Forward to EntityManager. There: registerRemoved() on UnitOfWork
-        return $this->_em->remove($this, $conn);
+        return $this->_em->remove($this);
     }
 
     /**
@@ -1333,7 +1177,7 @@ abstract class Doctrine_Entity extends Doctrine_Access implements Serializable
      * hasRefence
      * @param string $name
      * @return boolean
-     * @todo Better name? hasAssociation() ?
+     * @todo Better name? hasAssociation() ? Remove?
      */
     final public function hasReference($name)
     {
@@ -1345,6 +1189,7 @@ abstract class Doctrine_Entity extends Doctrine_Access implements Serializable
      *
      * @param string $name
      * @throws Doctrine_Record_Exception        if trying to get an unknown related component
+     * @todo Better name? Remove?
      */
     final public function obtainReference($name)
     {
@@ -1371,57 +1216,11 @@ abstract class Doctrine_Entity extends Doctrine_Access implements Serializable
      *
      * @param string $alias
      * @param Doctrine_Access $coll
+     * @todo Name? Remove?
      */
     final public function _setRelated($alias, Doctrine_Access $coll)
     {
         $this->_references[$alias] = $coll;
-    }
-
-    /**
-     * getter for node assciated with this record
-     *
-     * @return mixed if tree returns Doctrine_Node otherwise returns false
-     * @todo Should go to the NestedSet Behavior plugin.
-     */
-    /*public function getNode()
-    {
-        if ( ! $this->_class->isTree()) {
-            return false;
-        }
-
-        if ( ! isset($this->_node)) {
-            $this->_node = Doctrine_Node::factory($this,
-                    $this->getTable()->getOption('treeImpl'),
-                    $this->getTable()->getOption('treeOptions'));
-        }
-
-        return $this->_node;
-    }*/
-    
-    /**
-     * revert
-     * reverts this record to given version, this method only works if versioning plugin
-     * is enabled
-     *
-     * @throws Doctrine_Record_Exception    if given version does not exist
-     * @param integer $version      an integer > 1
-     * @return Doctrine_Entity      this object
-     * @todo Should go to the Versionable plugin.
-     */
-    public function revert($version)
-    {
-        $data = $this->_class
-                ->getBehavior('Doctrine_Template_Versionable')
-                ->getAuditLog()
-                ->getVersion($this, $version);
-
-        if ( ! isset($data[0])) {
-            throw new Doctrine_Record_Exception('Version ' . $version . ' does not exist!');
-        }
-
-        $this->_data = $data[0];
-
-        return $this;
     }
     
     /**
@@ -1549,51 +1348,6 @@ abstract class Doctrine_Entity extends Doctrine_Access implements Serializable
 
         return $this;
     }
-
-
-    /**
-     * __call
-     * this method is a magic method that is being used for method overloading
-     *
-     * the function of this method is to try to find given method from the templates
-     * this record is using and if it finds given method it will execute it
-     *
-     * So, in sense, this method replicates the usage of mixins (as seen in some programming languages)
-     *
-     * @param string $method        name of the method
-     * @param array $args           method arguments
-     * @return mixed                the return value of the given method
-     * @todo In order to avoid name clashes and provide a more robust implementation
-     *       we decided that all behaviors should be accessed through getBehavior($name)
-     *       before they're used.
-     */
-    /*public function __call($method, $args)
-    {
-        if (($behavior = $this->_class->getBehaviorForMethod($method)) !== false) {
-            $behavior->setInvoker($this);
-            return call_user_func_array(array($behavior, $method), $args);
-        }
-
-        foreach ($this->_class->getBehaviors() as $behavior) {
-            if (method_exists($behavior, $method)) {
-                $behavior->setInvoker($this);
-                $this->_class->addBehaviorMethod($method, $behavior);
-                return call_user_func_array(array($behavior, $method), $args);
-            }
-        }
-
-        throw new Doctrine_Record_Exception(sprintf('Unknown method %s::%s', get_class($this), $method));
-    }*/
-
-    /**
-     * used to delete node from tree - MUST BE USE TO DELETE RECORD IF TABLE ACTS AS TREE
-     *
-     * @todo Should go to the NestedSet Behavior plugin.
-     */
-    /*public function deleteNode()
-    {
-        $this->getNode()->delete();
-    }*/
     
     /**
      * Gets the ClassMetadata object that describes the entity class.
@@ -1607,7 +1361,7 @@ abstract class Doctrine_Entity extends Doctrine_Access implements Serializable
     
     /**
      * Gets the EntityManager that is responsible for the persistence of 
-     * the Entity.
+     * the entity.
      *
      * @return Doctrine::ORM::EntityManager
      */
@@ -1668,5 +1422,4 @@ abstract class Doctrine_Entity extends Doctrine_Access implements Serializable
             $this->_references = array();
         }
     }
-
 }

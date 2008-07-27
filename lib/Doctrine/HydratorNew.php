@@ -170,10 +170,7 @@ class Doctrine_HydratorNew extends Doctrine_Hydrator_Abstract
             $nonemptyComponents = array();
             $rowData = $this->_gatherRowData($data, $cache, $id, $nonemptyComponents);
 
-            // 2) Hydrate the data of the root entity from the current row
-            //$class = $this->_queryComponents[$rootAlias]['metadata'];
-            //$entityName = $class->getComponentName();
-            
+            // 2) Hydrate the data of the root entity from the current row            
             // Check for an existing element
             $index = false;
             if ($isSimpleQuery || ! isset($identifierMap[$rootAlias][$id[$rootAlias]])) {
@@ -208,7 +205,7 @@ class Doctrine_HydratorNew extends Doctrine_Hydrator_Abstract
             }
             
             // 3) Now hydrate the rest of the data found in the current row, that
-            // belongs to other (related) Entities.
+            // belongs to other (related) entities.
             foreach ($rowData as $dqlAlias => $data) {                
                 $index = false;
                 $map = $this->_queryComponents[$dqlAlias];
@@ -295,7 +292,7 @@ class Doctrine_HydratorNew extends Doctrine_Hydrator_Abstract
 
     /**
      * Updates the result pointer for an Entity. The result pointers point to the
-     * last seen instance of each Entity. This is used for graph construction.
+     * last seen instance of each Entity type. This is used for graph construction.
      *
      * @param array $resultPointers  The result pointers.
      * @param array|Collection $coll  The element.
@@ -540,13 +537,7 @@ class Doctrine_HydratorNew extends Doctrine_Hydrator_Abstract
                 case 'enum':
                 case 'boolean':
                     // don't do any conversions on primitive types
-                break;
-                //case 'enum':
-                //    return $class->enumValue($fieldName, $value);
-                //break;
-                //case 'boolean':
-                //    return (boolean) $value;
-                //break;
+                    break;
                 case 'array':
                 case 'object':
                     if (is_string($value)) {
@@ -556,14 +547,14 @@ class Doctrine_HydratorNew extends Doctrine_Hydrator_Abstract
                         }
                         return $value;
                     }
-                break;
+                    break;
                 case 'gzip':
                     $value = gzuncompress($value);
                     if ($value === false) {
                         throw new Doctrine_Hydrator_Exception('Uncompressing of ' . $fieldName . ' failed.');
                     }
                     return $value;
-                break;
+                    break;
             }
         }
         return $value;

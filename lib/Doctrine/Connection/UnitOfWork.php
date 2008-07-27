@@ -90,7 +90,6 @@ class Doctrine_Connection_UnitOfWork
      * entities need to be written to the database.
      *
      * @var Doctrine::ORM::Internal::CommitOrderCalculator
-     * @todo Implementation. Replace buildFlushTree().
      */
     protected $_commitOrderCalculator;
 
@@ -563,6 +562,13 @@ class Doctrine_Connection_UnitOfWork
             // In both cases we must commit the inserts instantly.
             //TODO: Isnt it enough to only execute the inserts instead of full flush?
             $this->commit();
+            /* The following may be better:
+            $commitOrder = $this->_getCommitOrder($insertNow);
+            foreach ($commitOrder as $class) {
+                $this->_executeInserts($class);
+            }
+            //... remove them from _newEntities, or dont store them there in the first place
+            */
         }
     }
 
@@ -593,11 +599,12 @@ class Doctrine_Connection_UnitOfWork
                     $this->_newEntities[$entity->getOid()] = $entity;
                 } else if ( ! $class->usesIdGenerator()) {
                     $insertNow[$entity->getOid()] = $entity;
+                    $this->_newEntities[$entity->getOid()] = $entity;
                     //...
                 } else if ($class->isIdGeneratorSequence()) {
                     // Get the next sequence number
                     //TODO: sequence name?
-                    $id = $this->_em->getConnection()->getSequenceModule()->nextId("foo");
+                    $id = $this->_em->getConnection()->getSequenceManager()->nextId("foo");
                     $entity->set($class->getSingleIdentifierFieldName(), $id);
                     $this->registerNew($entity);
                 } else {

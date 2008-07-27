@@ -7,7 +7,7 @@ class Doctrine_ConnectionMock extends Doctrine_Connection
     protected $_driverName = 'Mysql';
     private $_sequenceModuleMock;
     
-    public function getSequenceModule()
+    public function getSequenceManager()
     {
         if ( ! $this->_sequenceModuleMock) {
             $this->_sequenceModuleMock = new Doctrine_SequenceMock($this);

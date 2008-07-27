@@ -33,16 +33,16 @@ class Doctrine_Association_ManyToMany extends Doctrine_Association
     private $_relationTableName;
     
     /** The field in the source table that corresponds to the key in the relation table */
-    protected $_sourceKeyFields;
+    protected $_sourceKeyColumns;
 
     /**  The field in the target table that corresponds to the key in the relation table */
-    protected $_targetKeyFields;
+    protected $_targetKeyColumns;
 
     /** The field in the intermediate table that corresponds to the key in the source table */
-    protected $_sourceRelationKeyFields;
+    protected $_sourceRelationKeyColumns;
 
     /** The field in the intermediate table that corresponds to the key in the target table */
-    protected $_targetRelationKeyFields;
+    protected $_targetRelationKeyColumns;
     
     
     /**

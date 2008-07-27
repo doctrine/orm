@@ -31,6 +31,7 @@
  * @since       1.0
  * @version     $Revision$
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
+ * @todo Merge all Expression classes into the appropriate DBAL DatabasePlatform classes.
  */
 class Doctrine_Expression
 {

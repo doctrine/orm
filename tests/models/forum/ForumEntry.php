@@ -16,7 +16,7 @@ class ForumEntry extends Doctrine_Entity
                 'type' => 'integer',
                 'length' => 4,
                 'id' => true,
-                'generatorType' => 'auto'
+                'idGenerator' => 'auto'
                 ));
         $mapping->mapField(array(
                 'fieldName' => 'topic',

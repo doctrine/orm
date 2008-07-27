@@ -21,12 +21,10 @@
 
 #namespace Doctrine::DBAL::Connections;
 
+#use Doctrine::Common::Configuration;
+
 /**
- * Doctrine_Connection
- *
- * A wrapper layer on top of PDO / Doctrine_Adapter
- *
- * Doctrine_Connection is the heart of any Doctrine based application.
+ * A thin connection wrapper on top of PDO.
  *
  * 1. Event listeners
  *    An easy to use, pluggable eventlistener architecture. Aspects such as
@@ -41,13 +39,6 @@
  * 3. Convenience methods
  *    Doctrine_Connection provides many convenience methods such as fetchAll(), fetchOne() etc.
  *
- * 4. Modular structure
- *    Higher level functionality such as schema importing, exporting, sequence handling etc.
- *    is divided into modules. For a full list of connection modules see
- *    Doctrine_Connection::$_modules
- *
- * @package     Doctrine
- * @subpackage  Connection
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @link        www.phpdoctrine.org
  * @since       1.0
@@ -70,7 +61,7 @@
  *       'masters' => array(...),
  *       'masterConnectionResolver' => new MyMasterConnectionResolver()
  * 
- * Doctrine::DBAL could ship with a simple standard resolver that uses a primitive
+ * Doctrine::DBAL could ship with a simple standard broker that uses a primitive
  * round-robin approach to distribution. User can provide its own resolvers.
  */
 abstract class Doctrine_Connection implements Countable
@@ -85,14 +76,14 @@ abstract class Doctrine_Connection implements Countable
     /**
      * The Configuration.
      *
-     * @var Configuration
+     * @var Doctrine::Common::Configuration
      */
     protected $_config;
     
     /**
      * The EventManager.
      *
-     * @var EventManager
+     * @var Doctrine::Commom::EventManager
      */
     protected $_eventManager;
     
@@ -125,12 +116,11 @@ abstract class Doctrine_Connection implements Countable
     protected $_isConnected = false;
     
     /**
-     * An array containing all features this driver supports, keys representing feature
-     * names and values as one of the following (true, false, 'emulated').
+     * Boolean flag that indicates whether identifiers should get quoted.
      *
-     * @var array $supported                    
+     * @var boolean
      */
-    protected $supported = array();
+    protected $_quoteIdentifiers;
     
     /**
      * The connection properties.
@@ -163,7 +153,8 @@ abstract class Doctrine_Connection implements Countable
     /**
      * List of all available drivers.
      * 
-     * @var array $availableDrivers         
+     * @var array $availableDrivers
+     * @todo Move elsewhere.       
      */
     private static $_availableDrivers = array(
             'Mysql', 'Pgsql', 'Oracle', 'Informix', 'Mssql', 'Sqlite', 'Firebird'
@@ -175,52 +166,18 @@ abstract class Doctrine_Connection implements Countable
      * @var integer
      */
     protected $_queryCount = 0;
-
     
-    /*
-     * -----------   Mixed attributes (need to split up)    ---------------
-     */
     /**
-     * @var array $modules                      an array containing all modules
-     *              transaction                 Doctrine_Transaction driver, handles savepoint and transaction isolation abstraction
+     * The DatabasePlatform object that provides information about the
+     * database platform used by the connection.
      *
-     *              expression                  Doctrine_Expression driver, handles expression abstraction
-     *
-     *              dataDict                    Doctrine_DataDict driver, handles datatype abstraction
-     *
-     *              export                      Doctrine_Export driver, handles db structure modification abstraction (contains
-     *                                          methods such as alterTable, createConstraint etc.)
-     *              import                      Doctrine_Import driver, handles db schema reading
-     *
-     *              sequence                    Doctrine_Sequence driver, handles sequential id generation and retrieval
-     *
-     *              unitOfWork                  Doctrine_Connection_UnitOfWork handles many orm functionalities such as object
-     *                                          deletion and saving
-     *
-     *              formatter                   Doctrine_Formatter handles data formatting, quoting and escaping
-     *
-     * @see Doctrine_Connection::__get()
-     * @see Doctrine_DataDict
-     * @see Doctrine_Expression
-     * @see Doctrine_Export
-     * @see Doctrine_Transaction
-     * @see Doctrine_Sequence
-     * @see Doctrine_Connection_UnitOfWork
-     * @see Doctrine_Formatter
+     * @var Doctrine::DBAL::Platforms::DatabasePlatform
      */
-    private $modules = array('transaction' => false,
-                             'expression'  => false,
-                             'dataDict'    => false,
-                             'export'      => false,
-                             'import'      => false,
-                             'sequence'    => false,
-                             'formatter'   => false,
-                             'util'        => false,
-                             );
-    
+    protected $_databasePlatform;    
 
     /**
      * Constructor.
+     * Creates a new Connection.
      *
      * @param array $params  The connection parameters.
      */
@@ -236,7 +193,7 @@ abstract class Doctrine_Connection implements Countable
     /**
      * Sets the Configuration used by the Connection.
      *
-     * @param Doctrine_Configuration $config
+     * @param Doctrine::Common::Configuration $config
      */
     public function setConfiguration(Doctrine_Configuration $config)
     {
@@ -259,7 +216,7 @@ abstract class Doctrine_Connection implements Countable
     /**
      * Sets the EventManager used by the Connection.
      *
-     * @param Doctrine_EventManager $eventManager
+     * @param Doctrine::Common::EventManager $eventManager
      */
     public function setEventManager(Doctrine_EventManager $eventManager)
     {
@@ -269,7 +226,7 @@ abstract class Doctrine_Connection implements Countable
     /**
      * Gets the EventManager used by the Connection.
      *
-     * @return EventManager
+     * @return Doctrine::Common::EventManager
      */
     public function getEventManager()
     {
@@ -279,6 +236,13 @@ abstract class Doctrine_Connection implements Countable
         return $this->_eventManager;
     }
     
+    /**
+     * Enter description here...
+     *
+     * @param unknown_type $name
+     * @return unknown
+     * @todo Remove. Move properties to DatabasePlatform.
+     */
     public function getProperty($name)
     {
         if ( ! isset($this->properties[$name])) {
@@ -288,7 +252,8 @@ abstract class Doctrine_Connection implements Countable
     }
     
     /**
-     * returns an array of available PDO drivers
+     * Returns an array of available PDO drivers
+     * @todo Move elsewhere.
      */
     public static function getAvailableDrivers()
     {
@@ -296,7 +261,6 @@ abstract class Doctrine_Connection implements Countable
     }
     
     /**
-     * getName
      * returns the name of this driver
      *
      * @return string           the name of this driver
@@ -307,8 +271,6 @@ abstract class Doctrine_Connection implements Countable
     }
     
     /**
-     * setName
-     *
      * Sets the name of the connection
      *
      * @param string $name 
@@ -327,18 +289,6 @@ abstract class Doctrine_Connection implements Countable
     public function getDriverName()
     {
         return $this->_driverName;
-    }
-    
-    /**
-     * returns the database handler which this connection uses
-     *
-     * @return PDO              the database handler
-     * @deprecated
-     */
-    public function getDbh()
-    {
-        $this->connect();
-        return $this->_pdo;
     }
     
     /**
@@ -420,18 +370,6 @@ abstract class Doctrine_Connection implements Countable
     public function incrementQueryCount() 
     {
         $this->_queryCount++;
-    }
-
-    /**
-     * Checks whether a certain feature is supported.
-     *
-     * @param string $feature   the name of the feature
-     * @return boolean          whether or not this drivers supports given feature
-     */
-    public function supports($feature)
-    {
-        return (isset($this->supported[$feature]) &&
-                ($this->supported[$feature] === 'emulated' || $this->supported[$feature]));
     }
     
     /**
@@ -638,20 +576,29 @@ abstract class Doctrine_Connection implements Countable
      */
     public function quoteIdentifier($str, $checkOption = true)
     {
+        if (is_null($this->_quoteIdentifiers)) {
+            $this->_quoteIdentifiers = $this->_config->get('quoteIdentifiers');
+        }
+        if ( ! $this->_quoteIdentifiers) {
+            return $str;
+        }
+
         // quick fix for the identifiers that contain a dot
         if (strpos($str, '.')) {
             $e = explode('.', $str);
-
-            return $this->getFormatter()->quoteIdentifier($e[0], $checkOption) . '.'
-                 . $this->getFormatter()->quoteIdentifier($e[1], $checkOption);
+            return $this->quoteIdentifier($e[0]) . '.'
+                    . $this->quoteIdentifier($e[1]);
         }
-        return $this->getFormatter()->quoteIdentifier($str, $checkOption);
+        
+        $q = $this->properties['identifier_quoting'];
+        $str = str_replace($q['end'], $q['escape'] . $q['end'], $str);
+
+        return $q['start'] . $str . $q['end'];
     }
 
     /**
-     * convertBooleans
-     * some drivers need the boolean values to be converted into integers
-     * when using DQL API
+     * Some drivers need the boolean values to be converted into integers
+     * when using DQL API.
      *
      * This method takes care of that conversion
      *
@@ -660,7 +607,18 @@ abstract class Doctrine_Connection implements Countable
      */
     public function convertBooleans($item)
     {
-        return $this->getFormatter()->convertBooleans($item);
+        if (is_array($item)) {
+            foreach ($item as $k => $value) {
+                if (is_bool($value)) {
+                    $item[$k] = (int) $value;
+                }
+            }
+        } else {
+            if (is_bool($item)) {
+                $item = (int) $item;
+            }
+        }
+        return $item;
     }
 
     /**
@@ -674,6 +632,45 @@ abstract class Doctrine_Connection implements Countable
     {
         return $this->_pdo->quote($input, $type);
     }
+    /**
+     * quote
+     * quotes given input parameter
+     *
+     * @param mixed $input      parameter to be quoted
+     * @param string $type
+     * @return mixed
+     */
+    /*public function quote($input, $type = null)
+    {
+        if ($type == null) {
+            $type = gettype($input);
+        }
+        switch ($type) {
+        case 'integer':
+        case 'enum':
+        case 'boolean':
+        case 'double':
+        case 'float':
+        case 'bool':
+        case 'decimal':
+        case 'int':
+            return $input;
+        case 'array':
+        case 'object':
+            $input = serialize($input);
+        case 'date':
+        case 'time':
+        case 'timestamp':
+        case 'string':
+        case 'char':
+        case 'varchar':
+        case 'text':
+        case 'gzip':
+        case 'blob':
+        case 'clob':
+            return $this->conn->quote($input);
+        }
+    }*/
 
     /**
      * Set the date/time format for the current connection
@@ -695,7 +692,7 @@ abstract class Doctrine_Connection implements Countable
      */
     public function fetchAll($statement, array $params = array())
     {
-        return $this->execute($statement, $params)->fetchAll(Doctrine::FETCH_ASSOC);
+        return $this->execute($statement, $params)->fetchAll(PDO::FETCH_ASSOC);
     }
 
     /**
@@ -720,7 +717,7 @@ abstract class Doctrine_Connection implements Countable
      */
     public function fetchRow($statement, array $params = array())
     {
-        return $this->execute($statement, $params)->fetch(Doctrine::FETCH_ASSOC);
+        return $this->execute($statement, $params)->fetch(PDO::FETCH_ASSOC);
     }
 
     /**
@@ -732,7 +729,7 @@ abstract class Doctrine_Connection implements Countable
      */
     public function fetchArray($statement, array $params = array())
     {
-        return $this->execute($statement, $params)->fetch(Doctrine::FETCH_NUM);
+        return $this->execute($statement, $params)->fetch(PDO::FETCH_NUM);
     }
 
     /**
@@ -745,7 +742,7 @@ abstract class Doctrine_Connection implements Countable
      */
     public function fetchColumn($statement, array $params = array(), $colnum = 0)
     {
-        return $this->execute($statement, $params)->fetchAll(Doctrine::FETCH_COLUMN, $colnum);
+        return $this->execute($statement, $params)->fetchAll(PDO::FETCH_COLUMN, $colnum);
     }
 
     /**
@@ -757,7 +754,7 @@ abstract class Doctrine_Connection implements Countable
      */
     public function fetchAssoc($statement, array $params = array())
     {
-        return $this->execute($statement, $params)->fetchAll(Doctrine::FETCH_ASSOC);
+        return $this->execute($statement, $params)->fetchAll(PDO::FETCH_ASSOC);
     }
 
     /**
@@ -769,7 +766,7 @@ abstract class Doctrine_Connection implements Countable
      */
     public function fetchBoth($statement, array $params = array())
     {
-        return $this->execute($statement, $params)->fetchAll(Doctrine::FETCH_BOTH);
+        return $this->execute($statement, $params)->fetchAll(PDO::FETCH_BOTH);
     }
     
     /**
@@ -782,17 +779,16 @@ abstract class Doctrine_Connection implements Countable
         $this->connect();
 
         try {
-            $event = new Doctrine_Event($this, Doctrine_Event::CONN_PREPARE, $statement);
-    
-            $this->getAttribute(Doctrine::ATTR_LISTENER)->prePrepare($event);
+            //$event = new Doctrine_Event($this, Doctrine_Event::CONN_PREPARE, $statement);
+            //$this->getAttribute(Doctrine::ATTR_LISTENER)->prePrepare($event);
 
             $stmt = false;
     
-            if ( ! $event->skipOperation) {
+            //if ( ! $event->skipOperation) {
                 $stmt = $this->_pdo->prepare($statement);
-            }
+            //}
     
-            $this->getAttribute(Doctrine::ATTR_LISTENER)->postPrepare($event);
+            //$this->getAttribute(Doctrine::ATTR_LISTENER)->postPrepare($event);
             
             return new Doctrine_Connection_Statement($this, $stmt);
         } catch (PDOException $e) {
@@ -801,7 +797,7 @@ abstract class Doctrine_Connection implements Countable
     }
     
     /**
-     * queries the database with limit and offset
+     * Queries the database with limit and offset
      * added to the query and returns a Doctrine_Connection_Statement object
      *
      * @param string $query
@@ -847,15 +843,14 @@ abstract class Doctrine_Connection implements Countable
                 $stmt->execute($params);
                 return $stmt;
             } else {
-                $event = new Doctrine_Event($this, Doctrine_Event::CONN_QUERY, $query, $params);
+                //$event = new Doctrine_Event($this, Doctrine_Event::CONN_QUERY, $query, $params);
+                //$this->getAttribute(Doctrine::ATTR_LISTENER)->preQuery($event);
 
-                $this->getAttribute(Doctrine::ATTR_LISTENER)->preQuery($event);
-
-                if ( ! $event->skipOperation) {
+                //if ( ! $event->skipOperation) {
                     $stmt = $this->_pdo->query($query);
                     $this->_queryCount++;
-                }
-                $this->getAttribute(Doctrine::ATTR_LISTENER)->postQuery($event);
+                //}
+                //$this->getAttribute(Doctrine::ATTR_LISTENER)->postQuery($event);
 
                 return $stmt;
             }
@@ -881,15 +876,14 @@ abstract class Doctrine_Connection implements Countable
                 
                 return $stmt->rowCount();
             } else {
-                $event = new Doctrine_Event($this, Doctrine_Event::CONN_EXEC, $query, $params);
+                //$event = new Doctrine_Event($this, Doctrine_Event::CONN_EXEC, $query, $params);
+                //$this->getAttribute(Doctrine::ATTR_LISTENER)->preExec($event);
 
-                $this->getAttribute(Doctrine::ATTR_LISTENER)->preExec($event);
-
-                if ( ! $event->skipOperation) {
+                //if ( ! $event->skipOperation) {
                     $count = $this->_pdo->exec($query);
                     $this->_queryCount++;
-                }
-                $this->getAttribute(Doctrine::ATTR_LISTENER)->postExec($event);
+                //}
+                //$this->getAttribute(Doctrine::ATTR_LISTENER)->postExec($event);
 
                 return $count;
             }
@@ -902,6 +896,7 @@ abstract class Doctrine_Connection implements Countable
      * 
      *
      * @return string
+     * @todo Rather orm stuff
      */
     public function modifyLimitQuery($query, $limit = false, $offset = false, $isManip = false)
     {
@@ -913,6 +908,7 @@ abstract class Doctrine_Connection implements Countable
      * context of the limit-subquery algorithm.
      *
      * @return string
+     * @todo Rather ORM stuff
      */
     public function modifyLimitSubquery(Doctrine_Table $rootTable, $query, $limit = false,
             $offset = false, $isManip = false)
@@ -965,7 +961,6 @@ abstract class Doctrine_Connection implements Countable
         //this->getAttribute(Doctrine::ATTR_LISTENER)->preClose($event);
 
         $this->clear();
-
         unset($this->_pdo);
         $this->_isConnected = false;
 
@@ -983,7 +978,6 @@ abstract class Doctrine_Connection implements Countable
     }
     
     /**
-     * errorCode
      * Fetch the SQLSTATE associated with the last operation on the database handle
      *
      * @return integer
@@ -996,7 +990,6 @@ abstract class Doctrine_Connection implements Countable
     }
 
     /**
-     * errorInfo
      * Fetch extended error information associated with the last operation on the database handle
      *
      * @return array
@@ -1009,8 +1002,6 @@ abstract class Doctrine_Connection implements Countable
     }
     
     /**
-     * lastInsertId
-     *
      * Returns the ID of the last inserted row, or the last value from a sequence object,
      * depending on the underlying driver.
      *
@@ -1026,7 +1017,6 @@ abstract class Doctrine_Connection implements Countable
     }
 
     /**
-     * beginTransaction
      * Start a transaction or set a savepoint.
      *
      * if trying to set a savepoint and there is no active transaction
@@ -1044,8 +1034,7 @@ abstract class Doctrine_Connection implements Countable
     }
     
     /**
-     * commit
-     * Commit the database changes done during a transaction that is in
+     * Commits the database changes done during a transaction that is in
      * progress or release a savepoint. This function may only be called when
      * auto-committing is disabled, otherwise it will fail.
      *
@@ -1121,8 +1110,6 @@ abstract class Doctrine_Connection implements Countable
     }
 
     /**
-     * dropDatabase
-     *
      * Method for dropping the database for the connection instance
      *
      * @return mixed Will return an instance of the exception thrown if the drop
@@ -1144,6 +1131,107 @@ abstract class Doctrine_Connection implements Countable
           return $e;
       }
     }
+    
+    /**
+     * Quotes pattern (% and _) characters in a string)
+     *
+     * EXPERIMENTAL
+     *
+     * WARNING: this function is experimental and may change signature at
+     * any time until labelled as non-experimental
+     *
+     * @param   string  the input string to quote
+     *
+     * @return  string  quoted string
+     */
+    protected function _escapePattern($text)
+    {
+        return $text;
+        /*if ( ! $this->string_quoting['escape_pattern']) {
+            return $text;
+        }
+        $tmp = $this->conn->string_quoting;
+
+        $text = str_replace($tmp['escape_pattern'], 
+            $tmp['escape_pattern'] .
+            $tmp['escape_pattern'], $text);
+
+        foreach ($this->wildcards as $wildcard) {
+            $text = str_replace($wildcard, $tmp['escape_pattern'] . $wildcard, $text);
+        }
+        return $text;*/
+    }
+
+    /**
+     * Removes any formatting in an sequence name using the 'seqname_format' option
+     *
+     * @param string $sqn string that containts name of a potential sequence
+     * @return string name of the sequence with possible formatting removed
+     */
+    protected function _fixSequenceName($sqn)
+    {
+        $seqPattern = '/^'.preg_replace('/%s/', '([a-z0-9_]+)',  $this->conn->getAttribute(Doctrine::ATTR_SEQNAME_FORMAT)).'$/i';
+        $seqName    = preg_replace($seqPattern, '\\1', $sqn);
+
+        if ($seqName && ! strcasecmp($sqn, $this->getSequenceName($seqName))) {
+            return $seqName;
+        }
+        return $sqn;
+    }
+
+    /**
+     * Removes any formatting in an index name using the 'idxname_format' option
+     *
+     * @param string $idx string that containts name of anl index
+     * @return string name of the index with possible formatting removed
+     */
+    protected function _fixIndexName($idx)
+    {
+        $indexPattern   = '/^'.preg_replace('/%s/', '([a-z0-9_]+)', $this->conn->getAttribute(Doctrine::ATTR_IDXNAME_FORMAT)).'$/i';
+        $indexName      = preg_replace($indexPattern, '\\1', $idx);
+        if ($indexName && ! strcasecmp($idx, $this->getIndexName($indexName))) {
+            return $indexName;
+        }
+        return $idx;
+    }
+
+    /**
+     * adds sequence name formatting to a sequence name
+     *
+     * @param string    name of the sequence
+     * @return string   formatted sequence name
+     */
+    protected function _getSequenceName($sqn)
+    {
+        return sprintf($this->conn->getAttribute(Doctrine::ATTR_SEQNAME_FORMAT),
+            preg_replace('/[^a-z0-9_\$.]/i', '_', $sqn));
+    }
+
+    /**
+     * adds index name formatting to a index name
+     *
+     * @param string    name of the index
+     * @return string   formatted index name
+     */
+    protected function _getIndexName($idx)
+    {
+        return sprintf($this->conn->getAttribute(Doctrine::ATTR_IDXNAME_FORMAT),
+            preg_replace('/[^a-z0-9_\$]/i', '_', $idx));
+    }
+
+    /**
+     * adds table name formatting to a table name
+     *
+     * @param string    name of the table
+     * @return string   formatted table name
+     */
+    protected function _getTableName($table)
+    {
+        return $table;
+        /*
+        return sprintf($this->conn->getAttribute(Doctrine::ATTR_TBLNAME_FORMAT),
+                $table);*/
+    }
 
     /**
      * returns a string representation of this object
@@ -1159,7 +1247,6 @@ abstract class Doctrine_Connection implements Countable
      */    
     
     /**
-     * getAttribute
      * retrieves a database connection attribute
      *
      * @param integer $attribute
@@ -1182,7 +1269,7 @@ abstract class Doctrine_Connection implements Countable
         return $this->modules['formatter'];
     }
     
-    public function getSequenceModule()
+    public function getSequenceManager()
     {
         if ( ! $this->modules['sequence']) {
             $class = "Doctrine_Sequence_" . $this->_driverName;

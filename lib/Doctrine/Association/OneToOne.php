@@ -34,18 +34,21 @@
 class Doctrine_Association_OneToOne extends Doctrine_Association
 {
     /**
-     * Maps the source foreign/primary key fields to the target primary/foreign key fields.
+     * Maps the source foreign/primary key columns to the target primary/foreign key columns.
      * i.e. source.id (pk) => target.user_id (fk).
-     * Reverse mapping of _targetToSourceKeyFields.
+     * Reverse mapping of _targetToSourceKeyColumns.
      */
     protected $_sourceToTargetKeyColumns = array();
 
     /**
-     * Maps the target primary/foreign key fields to the source foreign/primary key fields.
+     * Maps the target primary/foreign key columns to the source foreign/primary key columns.
      * i.e. target.user_id (fk) => source.id (pk).
-     * Reverse mapping of _sourceToTargetKeyFields.
+     * Reverse mapping of _sourceToTargetKeyColumns.
      */
     protected $_targetToSourceKeyColumns = array();
+    
+    /** Whether to delete orphaned elements (when nulled out, i.e. $foo->other = null) */
+    protected $_deleteOrphans = false;
     
     /**
      * Constructor.

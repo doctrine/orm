@@ -40,18 +40,6 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
     const INHERITANCE_TYPE_SINGLE_TABLE = 'singleTable';
     const INHERITANCE_TYPE_TABLE_PER_CLASS = 'tablePerClass';
     
-    /**
-     * Inheritance types enumeration.
-     *
-     * @var array
-     */
-    protected static $_inheritanceTypes = array(
-        self::INHERITANCE_TYPE_NONE,
-        self::INHERITANCE_TYPE_JOINED,
-        self::INHERITANCE_TYPE_SINGLE_TABLE,
-        self::INHERITANCE_TYPE_TABLE_PER_CLASS
-    );
-    
     /* The Id generator types. TODO: belongs more in a DBAL class */
     const GENERATOR_TYPE_AUTO = 'auto';
     const GENERATOR_TYPE_SEQUENCE = 'sequence';
@@ -59,18 +47,14 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
     const GENERATOR_TYPE_IDENTITY = 'identity';
     const GENERATOR_TYPE_NONE = 'none';
     
-    /**
-     * Id Generator types enumeration.
-     *
-     * @var array
-     */
-    protected static $_generatorTypes = array(
-        self::GENERATOR_TYPE_AUTO,
-        self::GENERATOR_TYPE_SEQUENCE,
-        self::GENERATOR_TYPE_TABLE,
-        self::GENERATOR_TYPE_IDENTITY,
-        self::GENERATOR_TYPE_NONE
-    );
+    /* The Entity types */
+    // A regular entity is assumed to have persistent state that Doctrine should manage.
+    const ENTITY_TYPE_REGULAR = 'regular';
+    // A transient entity is ignored by Doctrine.
+    const ENTITY_TYPE_TRANSIENT = 'transient';
+    // A mapped superclass entity is itself not persisted by Doctrine but it's
+    // field & association mappings are inherited by subclasses.
+    const ENTITY_TYPE_MAPPED_SUPERCLASS = 'mappedSuperclass';
     
     /**
      * The name of the entity class.
@@ -171,14 +155,11 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
      * Marks the field as the primary key of the Entity. Multiple fields of an
      * entity can have the id attribute, forming a composite key.
      * 
-     * - <b>generatorType</b> (string, optional, requires: id)
-     * The generation type used for the field. Optional. Can only be applied on
-     * fields that are marked with the 'id' attribute. The possible values are:
-     * auto, identity, sequence, table.
-     * 
-     * - <b>generator</b> (array, optional, requires: generationType=table|sequence)
-     * The generator options for a table or sequence generator. Can only be applied
-     * on fields that have a generationType of 'table' or 'sequence'.
+     * - <b>idGenerator</b> (string, optional)
+     * Either: idGenerator => 'nameOfGenerator', usually only for TABLE/SEQUENCE generators
+     * Or: idGenerator => 'identity' or 'auto' or 'table' or 'sequence'
+     * Note that 'auto', 'table', 'sequence' and 'identity' are reserved names and
+     * therefore cant be used as a generator name!
      * 
      * - <b>nullable</b> (boolean, optional)
      * Whether the column is nullable. Defaults to TRUE.
@@ -755,15 +736,16 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
             if ( ! in_array($mapping['fieldName'], $this->_identifier)) {
                 $this->_identifier[] = $mapping['fieldName'];
             }
-            if (isset($mapping['generatorType'])) {
-                if ( ! in_array($mapping['generatorType'], self::$_generatorTypes)) {
+            if (isset($mapping['idGenerator'])) {
+                if ( ! $this->_isIdGeneratorType($mapping['idGenerator'])) {
+                    //TODO: check if the idGenerator specifies an existing generator by name
                     throw Doctrine_MappingException::invalidGeneratorType($mapping['generatorType']);
                 } else if (count($this->_identifier) > 1) {
                     throw Doctrine_MappingException::generatorNotAllowedWithCompositeId();
                 }
-                $this->_generatorType = $mapping['generatorType'];
+                $this->_generatorType = $mapping['idGenerator'];
             }
-            // TODO: validate/complete 'generator' mapping
+            // TODO: validate/complete 'tableGenerator' and 'sequenceGenerator' mappings
             
             // Check for composite key
             if ( ! $this->_isIdentifierComposite && count($this->_identifier) > 1) {
@@ -1170,7 +1152,7 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
                 . " must share the same inheritance mapping type and this type must be set"
                 . " in the root class of the hierarchy.");
         }
-        if ( ! in_array($type, self::$_inheritanceTypes)) {
+        if ( ! $this->_isInheritanceType($type)) {
             throw Doctrine_MappingException::invalidInheritanceType($type);
         }
         
@@ -1410,8 +1392,7 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
      */
     public function setTableName($tableName)
     {
-        $this->setTableOption('tableName', $this->_em->getConnection()
-                ->getFormatter()->getTableName($tableName));
+        $this->setTableOption('tableName', $tableName);
     }
 
     /**
@@ -1439,6 +1420,48 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
     public function unserialize($serialized)
     {
         return true;
+    }
+    
+    /**
+     * Checks whether the given name identifies an entity type.
+     *
+     * @param string $type
+     * @return boolean
+     */
+    private function _isEntityType($type)
+    {
+        return $type == self::ENTITY_TYPE_REGULAR ||
+                $type == self::ENTITY_TYPE_MAPPED_SUPERCLASS ||
+                $type == self::ENTITY_TYPE_TRANSIENT;
+    }
+    
+    /**
+     * Checks whether the given name identifies an inheritance type.
+     *
+     * @param string $type
+     * @return boolean
+     */
+    private function _isInheritanceType($type)
+    {
+        return $type == self::INHERITANCE_TYPE_NONE ||
+                $type == self::INHERITANCE_TYPE_SINGLE_TABLE ||
+                $type == self::INHERITANCE_TYPE_JOINED ||
+                $type == self::INHERITANCE_TYPE_TABLE_PER_CLASS;
+    }
+    
+    /**
+     * Checks whether the given name identifies an id generator type.
+     *
+     * @param string $type
+     * @return boolean
+     */
+    private function _isIdGeneratorType($type)
+    {
+        return $type == self::GENERATOR_TYPE_AUTO ||
+                $type == self::GENERATOR_TYPE_IDENTITY ||
+                $type == self::GENERATOR_TYPE_SEQUENCE ||
+                $type == self::GENERATOR_TYPE_TABLE ||
+                $type == self::GENERATOR_TYPE_NONE;
     }
 
     /**

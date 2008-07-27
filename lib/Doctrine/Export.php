@@ -32,6 +32,7 @@
  * @link        www.phpdoctrine.org
  * @since       1.0
  * @version     $Revision$
+ * @todo Rename to ExportManager. Subclasses: MySqlExportManager, PgSqlExportManager etc.
  */
 class Doctrine_Export extends Doctrine_Connection_Module
 {

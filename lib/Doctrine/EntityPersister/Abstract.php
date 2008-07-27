@@ -19,20 +19,22 @@
  * <http://www.phpdoctrine.org>.
  */
 
+#namespace Doctrine::ORM::Persisters;
+
 /**
- * 
+ * Base class for all EntityPersisters.
  *
  * @author      Roman Borschel <roman@code-factory.org>
- * @package     Doctrine
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @version     $Revision: 3406 $
  * @link        www.phpdoctrine.org
  * @since       2.0
+ * @todo Rename to AbstractEntityPersister
  */
 abstract class Doctrine_EntityPersister_Abstract
 {
     /**
-     * The names of all the fields that are available on entities created by this mapper. 
+     * The names of all the fields that are available on entities. 
      */
     protected $_fieldNames = array();
     
@@ -44,9 +46,11 @@ abstract class Doctrine_EntityPersister_Abstract
     protected $_classMetadata;
     
     /**
-     * The name of the domain class this mapper is used for.
+     * The name of the Entity the persister is used for.
+     * 
+     * @var string
      */
-    protected $_domainClassName;
+    protected $_entityName;
 
     /**
      * The Doctrine_Connection object that the database connection of this mapper.
@@ -58,7 +62,7 @@ abstract class Doctrine_EntityPersister_Abstract
     /**
      * The EntityManager.
      *
-     * @var unknown_type
+     * @var Doctrine::ORM::EntityManager
      */
     protected $_em;
     
@@ -66,30 +70,100 @@ abstract class Doctrine_EntityPersister_Abstract
      * Null object.
      */
     private $_nullObject;
-    
-    /**
-     * Enter description here...
-     *
-     * @var unknown_type
-     * @todo To EntityManager.
-     */
-    private $_dataTemplate = array();
-
 
     /**
-     * Constructs a new mapper.
-     *
-     * @param string $name                    The name of the domain class this mapper is used for.
-     * @param Doctrine_Table $table           The table object used for the mapping procedure.
-     * @throws Doctrine_Connection_Exception  if there are no opened connections
+     * Constructs a new persister.
      */
     public function __construct(Doctrine_EntityManager $em, Doctrine_ClassMetadata $classMetadata)
     {
         $this->_em = $em;
-        $this->_domainClassName = $classMetadata->getClassName();
-        $this->_conn = $classMetadata->getConnection();
+        $this->_entityName = $classMetadata->getClassName();
+        $this->_conn = $em->getConnection();
         $this->_classMetadata = $classMetadata;
         $this->_nullObject = Doctrine_Null::$INSTANCE;
+    }
+    
+    public function insert(Doctrine_Entity $entity)
+    {
+        //...
+    }
+    
+    public function update(Doctrine_Entity $entity)
+    {
+        //...
+    }
+    
+    public function delete(Doctrine_Entity $entity)
+    {
+        
+    }
+    
+    /**
+     * Inserts a row into a table.
+     *
+     * @todo This method could be used to allow mapping to secondary table(s).
+     * @see http://www.oracle.com/technology/products/ias/toplink/jpa/resources/toplink-jpa-annotations.html#SecondaryTable
+     */
+    protected function _insertRow($tableName, array $data)
+    {
+        $this->_conn->insert($tableName, $data);
+    }
+    
+    /**
+     * Deletes rows of a table.
+     *
+     * @todo This method could be used to allow mapping to secondary table(s).
+     * @see http://www.oracle.com/technology/products/ias/toplink/jpa/resources/toplink-jpa-annotations.html#SecondaryTable
+     */
+    protected function _deleteRow($tableName, array $identifierToMatch)
+    {
+        $this->_conn->delete($tableName, $identifierToMatch);
+    }
+    
+    /**
+     * Deletes rows of a table.
+     *
+     * @todo This method could be used to allow mapping to secondary table(s).
+     * @see http://www.oracle.com/technology/products/ias/toplink/jpa/resources/toplink-jpa-annotations.html#SecondaryTable
+     */
+    protected function _updateRow($tableName, array $data, array $identifierToMatch)
+    {
+        $this->_conn->update($tableName, $data, $identifierToMatch);
+    }
+    
+    public function getClassMetadata()
+    {
+        return $this->_classMetadata;
+    }
+    
+    public function getFieldNames()
+    {
+        if ($this->_fieldNames) {
+            return $this->_fieldNames;
+        }
+        $this->_fieldNames = $this->_classMetadata->getFieldNames();
+        return $this->_fieldNames;
+    }
+    
+    public function getOwningClass($fieldName)
+    {
+        return $this->_classMetadata;
+    }
+    
+    /**
+     * Callback that is invoked during the SQL construction process.
+     */
+    public function getCustomJoins()
+    {
+        return array();
+    }
+    
+    /**
+     * Callback that is invoked during the SQL construction process.
+     */
+    public function getCustomFields()
+    {
+        return array();
     }
     
     /**
@@ -107,6 +181,14 @@ abstract class Doctrine_EntityPersister_Abstract
         
         return $converted;
     }
+    
+
+    
+    
+    #############################################################
+   
+    # The following is old code that needs to be removed/ported
+    
     
     /**
      * deletes all related composites
@@ -128,19 +210,6 @@ abstract class Doctrine_EntityPersister_Abstract
             }
         }
     }
-
-    /**
-     * sets the connection for this class
-     *
-     * @params Doctrine_Connection      a connection object 
-     * @return Doctrine_Table           this object
-     * @todo refactor
-     */
-    /*public function setConnection(Doctrine_Connection $conn)
-    {
-        $this->_conn = $conn;
-        return $this;
-    }*/
 
     /**
      * Returns the connection the mapper is currently using.
@@ -482,7 +551,7 @@ abstract class Doctrine_EntityPersister_Abstract
      * @return boolean      true on success, false on failure
      * @throws Doctrine_Mapper_Exception
      */
-    public function delete(Doctrine_Entity $record, Doctrine_Connection $conn = null)
+    public function delete_old(Doctrine_Entity $record)
     {
         if ( ! $record->exists()) {
             return false;
@@ -513,80 +582,5 @@ abstract class Doctrine_EntityPersister_Abstract
         return true;
     }
     
-    abstract protected function _doDelete(Doctrine_Entity $entity);
-    
-    /**
-     * Inserts a row into a table.
-     *
-     * @todo This method could be used to allow mapping to secondary table(s).
-     * @see http://www.oracle.com/technology/products/ias/toplink/jpa/resources/toplink-jpa-annotations.html#SecondaryTable
-     */
-    protected function _insertRow($tableName, array $data)
-    {
-        $this->_conn->insert($tableName, $data);
-    }
-    
-    /**
-     * Deletes rows of a table.
-     *
-     * @todo This method could be used to allow mapping to secondary table(s).
-     * @see http://www.oracle.com/technology/products/ias/toplink/jpa/resources/toplink-jpa-annotations.html#SecondaryTable
-     */
-    protected function _deleteRow($tableName, array $identifierToMatch)
-    {
-        $this->_conn->delete($tableName, $identifierToMatch);
-    }
-    
-    /**
-     * Deletes rows of a table.
-     *
-     * @todo This method could be used to allow mapping to secondary table(s).
-     * @see http://www.oracle.com/technology/products/ias/toplink/jpa/resources/toplink-jpa-annotations.html#SecondaryTable
-     */
-    protected function _updateRow($tableName, array $data, array $identifierToMatch)
-    {
-        $this->_conn->update($tableName, $data, $identifierToMatch);
-    }
-    
-    public function getClassMetadata()
-    {
-        return $this->_classMetadata;
-    }
-    
-    /*public function getFieldName($columnName)
-    {
-        return $this->_classMetadata->getFieldName($columnName);
-    }*/
-    
-    public function getFieldNames()
-    {
-        if ($this->_fieldNames) {
-            return $this->_fieldNames;
-        }
-        $this->_fieldNames = $this->_classMetadata->getFieldNames();
-        return $this->_fieldNames;
-    }
-    
-    public function getOwningClass($fieldName)
-    {
-        return $this->_classMetadata;
-    }
-    
-    /* Hooks used during SQL query construction to manipulate the query. */
-    
-    /**
-     * Callback that is invoked during the SQL construction process.
-     */
-    public function getCustomJoins()
-    {
-        return array();
-    }
-    
-    /**
-     * Callback that is invoked during the SQL construction process.
-     */
-    public function getCustomFields()
-    {
-        return array();
-    }
+
 }

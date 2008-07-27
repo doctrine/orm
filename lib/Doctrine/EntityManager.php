@@ -404,6 +404,27 @@ class Doctrine_EntityManager
     }
     
     /**
+     * Refreshes the persistent state of the entity from the database.
+     *
+     * @param Doctrine_Entity $entity
+     */
+    public function refresh(Doctrine_Entity $entity)
+    {
+        //...
+    }
+    
+    /**
+     * Creates a copy of the given entity. Can create a shallow or a deep copy.
+     *
+     * @param Doctrine::ORM::Entity $entity  The entity to copy.
+     * @return Doctrine::ORM::Entity  The new entity.
+     */
+    public function copy(Doctrine_Entity $entity, $deep = false)
+    {
+        //...
+    }
+    
+    /**
      * Gets the repository for an Entity.
      *
      * @param string $entityName  The name of the Entity.
@@ -466,12 +487,6 @@ class Doctrine_EntityManager
         } else {
             $entity = new $className;
         }
-        
-        /*if (count($data) < $classMetadata->getMappedColumnCount()) {
-            $entity->_state(Doctrine_Entity::STATE_PROXY);
-        } else {
-            $entity->_state(Doctrine_Entity::STATE_CLEAN);
-        }*/
 
         return $entity;
     }
@@ -524,19 +539,9 @@ class Doctrine_EntityManager
     }
     
     /**
-     * Gets the UnitOfWork used by the EntityManager.
-     *
-     * @return UnitOfWork
-     */
-    /*public function getUnitOfWork()
-    {
-        return $this->_unitOfWork;
-    }*/
-    
-    /**
      * Gets the EventManager used by the EntityManager.
      *
-     * @return EventManager
+     * @return Doctrine::Common::EventManager
      */
     public function getEventManager()
     {
@@ -546,7 +551,7 @@ class Doctrine_EntityManager
     /**
      * Sets the EventManager used by the EntityManager.
      *
-     * @param Doctrine_EventManager $eventManager
+     * @param Doctrine::Common::EventManager $eventManager
      */
     public function setEventManager(Doctrine_EventManager $eventManager)
     {
@@ -556,7 +561,7 @@ class Doctrine_EntityManager
     /**
      * Sets the Configuration used by the EntityManager.
      *
-     * @param Doctrine_Configuration $config
+     * @param Doctrine::Common::Configuration $config
      */
     public function setConfiguration(Doctrine_Configuration $config)
     {
@@ -566,7 +571,7 @@ class Doctrine_EntityManager
     /**
      * Gets the Configuration used by the EntityManager.
      *
-     * @return Configuration
+     * @return Doctrine::Common::Configuration
      */
     public function getConfiguration()
     {

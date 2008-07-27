@@ -20,17 +20,15 @@
  */
 
 /**
- * Doctrine_Hydrator_RecordDriver
- * Hydration strategy used for creating graphs of entity objects.
+ * Hydration strategy used for creating graphs of entities.
  *
- * @package     Doctrine
- * @subpackage  Hydrate
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @link        www.phpdoctrine.org
  * @since       1.0
  * @version     $Revision$
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  * @author      Roman Borschel <roman@code-factory.org>
+ * @todo Rename to ObjectDriver
  */
 class Doctrine_Hydrator_RecordDriver
 {

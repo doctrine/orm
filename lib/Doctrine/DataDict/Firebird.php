@@ -18,7 +18,7 @@
  * and is licensed under the LGPL. For more information, see
  * <http://www.phpdoctrine.org>.
  */
-Doctrine::autoload('Doctrine_DataDict');
+
 /**
  * @package     Doctrine
  * @subpackage  DataDict
@@ -108,7 +108,7 @@ class Doctrine_DataDict_Firebird extends Doctrine_DataDict
      */
     public function getPortableDeclaration($field)
     {
-        $length  = (isset($field['length']) && $field['length'] > 0) ? $field['length'] : null;
+        $length = (isset($field['length']) && $field['length'] > 0) ? $field['length'] : null;
 
         $type = array();
         $unsigned = $fixed = null;

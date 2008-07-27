@@ -69,7 +69,6 @@ class Doctrine_Connection_Mssql extends Doctrine_Connection
     }
 
     /**
-     * quoteIdentifier
      * Quote a string so it can be safely used as a table / column name
      *
      * Quoting style depends on which database driver is being used.

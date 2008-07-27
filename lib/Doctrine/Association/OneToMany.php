@@ -4,24 +4,24 @@
 
 class Doctrine_Association_OneToMany extends Doctrine_Association
 {
-    /** The target foreign key fields that reference the sourceKeyFields. */
-    protected $_targetForeignKeyFields;
+    /** The target foreign key columns that reference the sourceKeyColumns. */
+    protected $_targetForeignKeyColumns;
 
-    /** The (typically primary) source key fields that are referenced by the targetForeignKeyFields. */
-    protected $_sourceKeyFields;
+    /** The (typically primary) source key columns that are referenced by the targetForeignKeyColumns. */
+    protected $_sourceKeyColumns;
 
-    /** This maps the target foreign key fields to the corresponding (primary) source key fields. */
+    /** This maps the target foreign key columns to the corresponding (primary) source key columns. */
     protected $_targetForeignKeysToSourceKeys;
     
-    /** This maps the (primary) source key fields to the corresponding target foreign key fields. */
+    /** This maps the (primary) source key columns to the corresponding target foreign key columns. */
     protected $_sourceKeysToTargetForeignKeys;
     
     /** Whether to delete orphaned elements (removed from the collection) */
-    protected $_isCascadeDeleteOrphan = false;
+    protected $_deleteOrphans = false;
     
-    public function isCascadeDeleteOrphan()
+    public function shouldDeleteOrphans()
     {
-        return $this->_isCascadeDeleteOrphan;
+        return $this->_deleteOrphans;
     }
 }
 

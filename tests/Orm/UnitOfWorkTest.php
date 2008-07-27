@@ -32,7 +32,7 @@ class Orm_UnitOfWorkTest extends Doctrine_OrmTestCase
         $this->_user->username = 'romanb';
 
         $this->_connectionMock = new Doctrine_ConnectionMock(array());
-        $this->_sequenceMock = $this->_connectionMock->getSequenceModule();
+        $this->_sequenceMock = $this->_connectionMock->getSequenceManager();
         $this->_emMock = new Doctrine_EntityManagerMock($this->_connectionMock);
         $this->_persisterMock = $this->_emMock->getEntityPersister("ForumUser");
         $this->_unitOfWork = $this->_emMock->getUnitOfWork();

@@ -40,7 +40,7 @@ class Doctrine_Configuration
      * @var array
      */
     private $_attributes = array(
-            'quoteIdentifier' => false,
+            'quoteIdentifiers' => false,
             'indexNameFormat' => '%s_idx',
             'sequenceNameFormat' => '%s_seq',
             'tableNameFormat' => '%s',
@@ -85,7 +85,7 @@ class Doctrine_Configuration
      */
     public function get($name)
     {
-        if ( ! $this->hasAttribute($name)) {
+        if ( ! $this->has($name)) {
             throw Doctrine_Configuration_Exception::unknownAttribute($name);
         }
         if ($this->_attributes[$name] === $this->_nullObject) {
@@ -102,7 +102,7 @@ class Doctrine_Configuration
      */
     public function set($name, $value)
     {
-        if ( ! $this->hasAttribute($name)) {
+        if ( ! $this->has($name)) {
             throw Doctrine_Configuration_Exception::unknownAttribute($name);
         }
         // TODO: do some value checking depending on the attribute

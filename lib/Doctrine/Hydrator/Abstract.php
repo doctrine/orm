@@ -20,15 +20,14 @@
  */
 
 /**
- * Doctrine_Hydrator_Abstract
+ * Base class for all hydrators (ok, we got only 1 currently).
  *
- * @package     Doctrine
- * @subpackage  Hydrate
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @link        www.phpdoctrine.org
  * @since       1.0
  * @version     $Revision: 3192 $
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
+ * @author      Roman Borschel <roman@code-factory.org>
  */
 abstract class Doctrine_Hydrator_Abstract
 {
@@ -71,7 +70,6 @@ abstract class Doctrine_Hydrator_Abstract
         $this->_nullObject = Doctrine_Null::$INSTANCE;
     }
 
-
     /**
      * setHydrationMode
      *
@@ -85,7 +83,6 @@ abstract class Doctrine_Hydrator_Abstract
         $this->_hydrationMode = $hydrationMode;
     }
 
-
     /**
      * setQueryComponents
      *
@@ -97,7 +94,6 @@ abstract class Doctrine_Hydrator_Abstract
     {
         $this->_queryComponents = $queryComponents;
     }
-
 
     /**
      * getQueryComponents
@@ -111,7 +107,6 @@ abstract class Doctrine_Hydrator_Abstract
         return $this->_queryComponents;
     }
 
-
     /**
      * setTableAliasMap
      *
@@ -124,7 +119,6 @@ abstract class Doctrine_Hydrator_Abstract
         $this->_tableAliasMap = $tableAliasMap;
     }
 
-
     /**
      * getTableAliasMap
      *
@@ -136,7 +130,6 @@ abstract class Doctrine_Hydrator_Abstract
     {
         return $this->_tableAliasMap;
     }
-
 
     /**
      * hydrateResultSet

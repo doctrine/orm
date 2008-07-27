@@ -32,6 +32,7 @@
  * @link        www.phpdoctrine.
  * @since       1.0
  * @version     $Revision$
+ * @todo Remove or put in a separate package and look for a maintainer.
  */
 class Doctrine_Compiler
 {

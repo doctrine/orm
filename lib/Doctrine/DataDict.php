@@ -32,6 +32,7 @@
  * @version     $Revision$
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  * @author      Lukas Smith <smith@pooteeweet.org> (PEAR MDB2 library)
+ * @todo Merge all the DataDict classes into the appropriate DBAL DatabasePlatform classes.
  */
 class Doctrine_DataDict extends Doctrine_Connection_Module
 {
