@@ -45,38 +45,9 @@ class Doctrine_Connection_Firebird extends Doctrine_Connection
      * @param Doctrine_Manager $manager
      * @param PDO $pdo                          database handle
      */
-    public function __construct(Doctrine_Manager $manager, $adapter)
+    public function __construct(array $params)
     {
-
-        $this->supported = array(
-                          'sequences'             => true,
-                          'indexes'               => true,
-                          'affected_rows'         => true,
-                          'summary_functions'     => true,
-                          'order_by_text'         => true,
-                          'transactions'          => true,
-                          'savepoints'            => true,
-                          'current_id'            => true,
-                          'limit_queries'         => 'emulated',
-                          'LOBs'                  => true,
-                          'replace'               => 'emulated',
-                          'sub_selects'           => true,
-                          'auto_increment'        => true,
-                          'primary_key'           => true,
-                          'result_introspection'  => true,
-                          'prepared_statements'   => true,
-                          'identifier_quoting'    => false,
-                          'pattern_escaping'      => true
-                          );
-        // initialize all driver options
-        /**
-        $this->options['DBA_username'] = false;
-        $this->options['DBA_password'] = false;
-        $this->options['database_path'] = '';
-        $this->options['database_extension'] = '.gdb';
-        $this->options['server_version'] = '';
-        */
-        parent::__construct($manager, $adapter);
+        parent::__construct($params);
     }
 
     /**
@@ -92,23 +63,4 @@ class Doctrine_Connection_Firebird extends Doctrine_Connection
         $this->exec($query);
     }
 
-    /**
-     * Adds an driver-specific LIMIT clause to the query
-     *
-     * @param string $query     query to modify
-     * @param integer $limit    limit the number of rows
-     * @param integer $offset   start reading from given offset
-     * @return string modified  query
-     */
-    public function modifyLimitQuery($query, $limit, $offset)
-    {
-        if ( ! $offset) {
-            $offset = 0;
-        }
-        if ($limit > 0) {
-            $query = preg_replace('/^([\s(])*SELECT(?!\s*FIRST\s*\d+)/i',
-                "SELECT FIRST $limit SKIP $offset", $query);
-        }
-        return $query;
-    }
 }

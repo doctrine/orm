@@ -18,7 +18,7 @@
  * and is licensed under the LGPL. For more information, see
  * <http://www.phpdoctrine.org>.
  */
-Doctrine::autoload('Doctrine_Expression_Driver');
+
 /**
  * Doctrine_Expression_Firebird
  *
@@ -31,27 +31,9 @@ Doctrine::autoload('Doctrine_Expression_Driver');
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  * @author      Lorenzo Alberton <l.alberton@quipo.it> (PEAR MDB2 Interbase driver)
  * @author      Lukas Smith <smith@pooteeweet.org> (PEAR MDB2 library)
+ * @todo Remove
  */
 class Doctrine_Expression_Firebird extends Doctrine_Expression_Driver
 {
-    /**
-     * return string for internal table used when calling only a function
-     *
-     * @return string for internal table used when calling only a function
-     * @access public
-     */
-    public function functionTable()
-    {
-        return ' FROM RDB$DATABASE';
-    }
-
-    /**
-     * build string to define escape pattern string
-     *
-     * @return string define escape pattern
-     */
-    function patternEscapeString()
-    {
-        return " ESCAPE '". $this->conn->string_quoting['escape_pattern'] ."'";
-    }
+    
 }

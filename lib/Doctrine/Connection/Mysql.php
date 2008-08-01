@@ -24,8 +24,6 @@
 /**
  * Doctrine_Connection_Mysql
  *
- * @package     Doctrine
- * @subpackage  Connection
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  * @author      Lukas Smith <smith@pooteeweet.org> (PEAR MDB2 library)
@@ -50,46 +48,6 @@ class Doctrine_Connection_Mysql extends Doctrine_Connection_Common
      */
     public function __construct(array $params)
     {
-        $this->supported = array(
-                'sequences'            => 'emulated',
-                'indexes'              => true,
-                'affected_rows'        => true,
-                'transactions'         => true,
-                'savepoints'           => false,
-                'summary_functions'    => true,
-                'order_by_text'        => true,
-                'current_id'           => 'emulated',
-                'limit_queries'        => true,
-                'LOBs'                 => true,
-                'replace'              => true,
-                'sub_selects'          => true,
-                'auto_increment'       => true,
-                'primary_key'          => true,
-                'result_introspection' => true,
-                'prepared_statements'  => 'emulated',
-                'identifier_quoting'   => true,
-                'pattern_escaping'     => true
-                );
-
-        $this->properties['string_quoting'] = array(
-                'start' => "'",
-                'end' => "'",
-                'escape' => '\\',
-                'escape_pattern' => '\\');
-
-        $this->properties['identifier_quoting'] = array(
-                'start' => '`',
-                'end' => '`',
-                'escape' => '`');
-
-        $this->properties['sql_comments'] = array(
-                array('start' => '-- ', 'end' => "\n", 'escape' => false),
-                array('start' => '#', 'end' => "\n", 'escape' => false),
-                array('start' => '/*', 'end' => '*/', 'escape' => false),
-                );
-
-        $this->properties['varchar_max_length'] = 255;
-
         parent::__construct($params);
     }
 
@@ -232,5 +190,18 @@ class Doctrine_Connection_Mysql extends Doctrine_Connection_Common
         }
         
         return $dsn;
+    }
+    
+    /**
+     * Gets the DatabasePlatform for the connection.
+     *
+     * @return Doctrine::DBAL::Platforms::MySqlPlatform
+     */
+    public function getDatabasePlatform()
+    {
+        if ( ! $this->_platform) {
+            $this->_platform = new Doctrine_DatabasePlatform_MySqlPlatform();
+        }
+        return $this->_platform;
     }
 }

@@ -47,30 +47,8 @@ class Doctrine_Connection_Sqlite extends Doctrine_Connection_Common
      * @param PDO $pdo                          database handle
      */
     public function __construct(array $params)
-    {
-        $this->supported = array(
-                          'sequences'            => 'emulated',
-                          'indexes'              => true,
-                          'affected_rows'        => true,
-                          'summary_functions'    => true,
-                          'order_by_text'        => true,
-                          'current_id'           => 'emulated',
-                          'limit_queries'        => true,
-                          'LOBs'                 => true,
-                          'replace'              => true,
-                          'transactions'         => true,
-                          'savepoints'           => false,
-                          'sub_selects'          => true,
-                          'auto_increment'       => true,
-                          'primary_key'          => true,
-                          'result_introspection' => false, // not implemented
-                          'prepared_statements'  => 'emulated',
-                          'identifier_quoting'   => true,
-                          'pattern_escaping'     => false,
-                          );
-                          
+    {                          
         parent::__construct($params);
-
         if ($this->_isConnected) {
             $this->_pdo->sqliteCreateFunction('mod', array('Doctrine_Expression_Sqlite', 'modImpl'), 2);
             $this->_pdo->sqliteCreateFunction('md5', 'md5', 1);

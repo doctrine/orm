@@ -34,8 +34,6 @@
  * Null object: Null valued of a field or empty association that has already been loaded.
  *              On access, the database is not queried. 
  *
- * @package     Doctrine
- * @subpackage  Null
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @link        www.phpdoctrine.org
  * @since       1.0

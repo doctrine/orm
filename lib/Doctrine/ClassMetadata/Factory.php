@@ -295,28 +295,7 @@ class Doctrine_ClassMetadata_Factory
         // are unnecessary as we can easily replace them with polymorphic calls on
         // the connection (or another) object. We just need to decide where to put
         // the id generation types.
-        if ($class->getIdGeneratorType() == Doctrine_ClassMetadata::GENERATOR_TYPE_AUTO) {
-            switch (strtolower($this->_em->getConnection()->getDriverName())) {
-                case 'mysql':
-                    // pick IDENTITY
-                    $class->setIdGeneratorType(Doctrine_ClassMetadata::GENERATOR_TYPE_IDENTITY);
-                    break;
-                case 'oracle':
-                    //pick SEQUENCE
-                    break;
-                case 'postgres':
-                    //pick SEQUENCE
-                    break;
-                case 'firebird':
-                    //pick what?
-                    break;
-                case 'mssql':
-                    //pick what?
-                default:
-                    throw new Doctrine_Exception("Encountered unknown database driver: "
-                            . $this->_em->getConnection()->getDriverName());
-            }
-        }
+        $class->completeIdentifierMapping();
     }
     
 }

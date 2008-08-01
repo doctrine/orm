@@ -6,7 +6,6 @@ class Doctrine_EntityManagerMock extends Doctrine_EntityManager
 {
     private $_persisterMock;
     
-    
     /**
      * Enter description here...
      *
@@ -15,10 +14,14 @@ class Doctrine_EntityManagerMock extends Doctrine_EntityManager
      */
     public function getEntityPersister($entityName)
     {
-        if ( ! $this->_persisterMock) {
-            $this->_persisterMock = new Doctrine_EntityPersisterMock($this, $this->getClassMetadata($entityName));
-        }
         return $this->_persisterMock;
+    }
+    
+    /* Mock API */
+    
+    public function setEntityPersister($persister)
+    {
+        $this->_persisterMock = $persister;
     }
 }
 

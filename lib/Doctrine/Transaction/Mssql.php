@@ -48,6 +48,7 @@ class Doctrine_Transaction_Mssql extends Doctrine_Transaction
      * @throws PDOException                         if something fails at the PDO level
      * @throws Doctrine_Transaction_Exception       if using unknown isolation level or unknown wait option
      * @return void
+     * @override
      */
     public function setIsolation($isolation, $options = array()) {
         switch ($isolation) {
@@ -68,6 +69,8 @@ class Doctrine_Transaction_Mssql extends Doctrine_Transaction
     
     /**
      * Performs the rollback.
+     * 
+     * @override
      */
     protected function _doRollback()
     {
@@ -76,6 +79,8 @@ class Doctrine_Transaction_Mssql extends Doctrine_Transaction
     
     /**
      * Performs the commit.
+     * 
+     * @override
      */
     protected function _doCommit()
     {
@@ -84,6 +89,8 @@ class Doctrine_Transaction_Mssql extends Doctrine_Transaction
     
     /**
      * Begins a database transaction.
+     * 
+     * @override
      */
     protected function _doBeginTransaction()
     {

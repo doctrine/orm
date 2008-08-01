@@ -44,28 +44,9 @@ class Doctrine_Connection_Mssql extends Doctrine_Connection
      * @param Doctrine_Manager $manager
      * @param PDO $pdo                          database handle
      */
-    public function __construct(Doctrine_Manager $manager, $adapter)
+    public function __construct(array $params)
     {
-        // initialize all driver options
-        $this->supported = array(
-                          'sequences'             => 'emulated',
-                          'indexes'               => true,
-                          'affected_rows'         => true,
-                          'transactions'          => true,
-                          'summary_functions'     => true,
-                          'order_by_text'         => true,
-                          'current_id'            => 'emulated',
-                          'limit_queries'         => 'emulated',
-                          'LOBs'                  => true,
-                          'replace'               => 'emulated',
-                          'sub_selects'           => true,
-                          'auto_increment'        => true,
-                          'primary_key'           => true,
-                          'result_introspection'  => true,
-                          'prepared_statements'   => 'emulated',
-                          );
-
-        parent::__construct($manager, $adapter);
+        parent::__construct($params);
     }
 
     /**
@@ -95,52 +76,6 @@ class Doctrine_Connection_Mssql extends Doctrine_Connection
         }
         
         return '[' . str_replace(']', ']]', $identifier) . ']';
-    }
-
-    /**
-     * Adds an adapter-specific LIMIT clause to the SELECT statement.
-     * [ borrowed from Zend Framework ]
-     *
-     * @param string $query
-     * @param mixed $limit
-     * @param mixed $offset
-     * @link http://lists.bestpractical.com/pipermail/rt-devel/2005-June/007339.html
-     * @return string
-     */
-    public function modifyLimitQuery($query, $limit, $offset, $isManip = false)
-    {
-        if ($limit > 0) {
-            $count = intval($limit);
-
-            $offset = intval($offset);
-            if ($offset < 0) {
-                throw new Doctrine_Connection_Exception("LIMIT argument offset=$offset is not valid");
-            }
-    
-            $orderby = stristr($query, 'ORDER BY');
-            if ($orderby !== false) {
-                $sort = (stripos($orderby, 'desc') !== false) ? 'desc' : 'asc';
-                $order = str_ireplace('ORDER BY', '', $orderby);
-                $order = trim(preg_replace('/ASC|DESC/i', '', $order));
-            }
-    
-            $query = preg_replace('/^SELECT\s/i', 'SELECT TOP ' . ($count+$offset) . ' ', $query);
-    
-            $query = 'SELECT * FROM (SELECT TOP ' . $count . ' * FROM (' . $query . ') AS inner_tbl';
-            if ($orderby !== false) {
-                $query .= ' ORDER BY ' . $order . ' ';
-                $query .= (stripos($sort, 'asc') !== false) ? 'DESC' : 'ASC';
-            }
-            $query .= ') AS outer_tbl';
-            if ($orderby !== false) {
-                $query .= ' ORDER BY ' . $order . ' ' . $sort;
-            }
-    
-            return $query;
-
-        }
-
-        return $query;
     }
 
     /**

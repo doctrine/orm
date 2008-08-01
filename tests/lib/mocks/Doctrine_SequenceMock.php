@@ -28,6 +28,8 @@ class Doctrine_SequenceMock extends Doctrine_Sequence
         return $this->_sequenceNumber;
     }
     
+    /* Mock API */
+    
     public function reset()
     {
         $this->_sequenceNumber = 0;

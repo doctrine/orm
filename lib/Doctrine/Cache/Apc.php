@@ -19,6 +19,8 @@
  * <http://www.phpdoctrine.org>.
  */
 
+#namespace Doctrine::Common::Cache;
+
 /**
  * Doctrine_Cache_Apc
  *
@@ -29,6 +31,7 @@
  * @since       1.0
  * @version     $Revision$
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
+ * @todo Rename to ApcCache
  */
 class Doctrine_Cache_Apc extends Doctrine_Cache_Driver
 {

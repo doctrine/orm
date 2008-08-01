@@ -1837,6 +1837,20 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
     {
         $this->_generatorType = $type;
     }
+    
+    public function completeIdentifierMapping()
+    {
+        if ($this->getIdGeneratorType() == self::GENERATOR_TYPE_AUTO) {
+            $platform = $this->_em->getConnection()->getDatabasePlatform();
+            if ($platform->prefersSequences()) {
+                $this->_generatorType = self::GENERATOR_TYPE_SEQUENCE;
+            } else if ($platform->prefersIdentityColumns()) {
+                $this->_generatorType = self::GENERATOR_TYPE_IDENTITY;
+            } else {
+                $this->_generatorType = self::GENERATOR_TYPE_TABLE;
+            }
+        }
+    }
 
     /**
      *

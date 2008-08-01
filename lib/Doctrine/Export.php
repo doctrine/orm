@@ -1069,6 +1069,7 @@ class Doctrine_Export extends Doctrine_Connection_Module
      *                                          occurred during the create table operation
      * @param array $classes
      * @return void
+     * @todo ORM stuff
      */
     public function exportClasses(array $classes)
     { 
@@ -1279,6 +1280,7 @@ class Doctrine_Export extends Doctrine_Connection_Module
      *                                          occurred during the create table operation
      * @return boolean                          whether or not the export operation was successful
      *                                          false if table already existed in the database
+     * @todo ORM stuff
      */
     public function exportTable(Doctrine_ClassMetadata $metadata)
     {

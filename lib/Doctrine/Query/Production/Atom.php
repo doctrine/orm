@@ -73,7 +73,7 @@ class Doctrine_Query_Production_Atom extends Doctrine_Query_Production
 
     public function buildSql()
     {
-        $conn = $this->_parser->getSqlBuilder()->getConnection();
+        $conn = $this->_em->getConnection();
 
         switch ($this->_type) {
             case 'param':
@@ -86,7 +86,7 @@ class Doctrine_Query_Production_Atom extends Doctrine_Query_Production
             break;
 
             default:
-                $stringQuoting = $conn->getProperty('string_quoting');
+                $stringQuoting = $conn->getDatabasePlatform()->getProperty('string_quoting');
                 return $stringQuoting['start']
                      . $conn->quote($this->_value, $this->_type)
                      . $stringQuoting['end'];

@@ -32,6 +32,7 @@
  * @version     $Revision$
  * @link        www.phpdoctrine.org
  * @since       1.0
+ * @todo Remove.
  */
 class Doctrine_Connection_Mock extends Doctrine_Connection_Common
 {
@@ -48,7 +49,12 @@ class Doctrine_Connection_Mock extends Doctrine_Connection_Common
      */
     public function __construct()
     {
-
+        
+    }
+    
+    public function getDatabasePlatform()
+    {
+        return new Doctrine_DatabasePlatform_MySqlPlatform();
     }
     
     public function quote($input, $type = null)

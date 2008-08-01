@@ -168,14 +168,26 @@ class Doctrine_EntityManager
     }
     
     /**
-     * Gets the transaction object used by the EntityManager to manage
-     * database transactions.
-     * 
-     * @return Doctrine::DBAL::Transaction
+     * Starts a database transaction.
      */
-    public function getTransaction()
+    public function beginTransaction()
     {
-        return $this->_conn->getTransaction();
+        return $this->_conn->beginTransaction();
+    }
+    
+    /**
+     * Commits a running database transaction.
+     * This causes a flush() of the EntityManager if the flush mode is set to
+     * AUTO or COMMIT.
+     *
+     * @return unknown
+     */
+    public function commit()
+    {
+        if ($this->_flushMode == self::FLUSHMODE_AUTO || $this->_flushMode == self::FLUSHMODE_COMMIT) {
+            $this->flush();
+        }
+        return $this->_conn->commitTransaction();
     }
 
     /**

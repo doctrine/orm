@@ -75,12 +75,7 @@ class Doctrine_Query_Production_IdentificationVariableDeclaration extends Doctri
         $queryComponent = $parserResult->getQueryComponent($this->_rangeVariableDeclaration);
 
         // Retrieving connection
-        $conn = $this->_parser->getSqlBuilder()->getConnection();
-        $manager = Doctrine_Manager::getInstance();
-
-        if ($manager->hasConnectionForComponent($queryComponent['metadata']->getClassName())) {
-            $conn = $manager->getConnectionForComponent($queryComponent['metadata']->getClassName());
-        }
+        $conn = $this->_em->getConnection();
 
         $str = $conn->quoteIdentifier($queryComponent['metadata']->getTableName()) . ' '
              . $conn->quoteIdentifier($parserResult->getTableAliasFromComponentAlias($this->_rangeVariableDeclaration));

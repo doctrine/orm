@@ -197,6 +197,7 @@ class Doctrine_Import extends Doctrine_Connection_Module
      * @param string $directory
      * @param array $databases
      * @return array                the names of the imported classes
+     * @todo ORM stuff
      */
     public function importSchema($directory, array $databases = array(), array $options = array())
     {

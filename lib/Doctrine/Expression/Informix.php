@@ -18,7 +18,7 @@
  * and is licensed under the LGPL. For more information, see
  * <http://www.phpdoctrine.org>.
  */
-Doctrine::autoload('Doctrine_Expression');
+
 /**
  * Doctrine_Expression_Informix
  *
@@ -29,6 +29,7 @@ Doctrine::autoload('Doctrine_Expression');
  * @since       1.0
  * @version     $Revision$
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
+ * @todo Remove
  */
 class Doctrine_Expression_Informix extends Doctrine_Expression
 { }

@@ -22,6 +22,8 @@
 #namespace Doctrine::DBAL::Connections;
 
 #use Doctrine::Common::Configuration;
+#use Doctrine::Common::EventManager;
+#use Doctrine::DBAL::Exceptions::ConnectionException;
 
 /**
  * A thin connection wrapper on top of PDO.
@@ -40,7 +42,6 @@
  *    Doctrine_Connection provides many convenience methods such as fetchAll(), fetchOne() etc.
  *
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
- * @link        www.phpdoctrine.org
  * @since       1.0
  * @version     $Revision$
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
@@ -62,9 +63,9 @@
  *       'masterConnectionResolver' => new MyMasterConnectionResolver()
  * 
  * Doctrine::DBAL could ship with a simple standard broker that uses a primitive
- * round-robin approach to distribution. User can provide its own resolvers.
+ * round-robin approach to distribution. User can provide its own brokers.
  */
-abstract class Doctrine_Connection implements Countable
+abstract class Doctrine_Connection
 {
     /**
      * The PDO database handle. 
@@ -88,13 +89,6 @@ abstract class Doctrine_Connection implements Countable
     protected $_eventManager;
     
     /**
-     * The attributes.
-     *
-     * @var array
-     */
-    protected $_attributes = array();
-    
-    /**
      * Name of the connection
      *
      * @var string $_name
@@ -111,7 +105,7 @@ abstract class Doctrine_Connection implements Countable
     /**
      * Whether or not a connection has been established.
      *
-     * @var boolean $isConnected                
+     * @var boolean               
      */
     protected $_isConnected = false;
     
@@ -121,22 +115,6 @@ abstract class Doctrine_Connection implements Countable
      * @var boolean
      */
     protected $_quoteIdentifiers;
-    
-    /**
-     * The connection properties.
-     * 
-     * @var array $properties               
-     */
-    protected $properties = array(
-            'sql_comments' => array(
-                    array('start' => '--', 'end' => "\n", 'escape' => false),
-                    array('start' => '/*', 'end' => '*/', 'escape' => false)),
-            'identifier_quoting' => array('start' => '"', 'end' => '"','escape' => '"'),
-            'string_quoting' => array('start' => "'", 'end' => "'", 'escape' => false,
-                                      'escape_pattern' => false),
-            'wildcards' => array('%', '_'),
-            'varchar_max_length' => 255,
-            );
     
     /**
      * @var array $serverInfo
@@ -173,7 +151,14 @@ abstract class Doctrine_Connection implements Countable
      *
      * @var Doctrine::DBAL::Platforms::DatabasePlatform
      */
-    protected $_databasePlatform;    
+    protected $_platform;
+
+    /**
+     * Enter description here...
+     *
+     * @var Doctrine::DBAL::Transactions::Transaction
+     */
+    protected $_transaction;
 
     /**
      * Constructor.
@@ -237,18 +222,14 @@ abstract class Doctrine_Connection implements Countable
     }
     
     /**
-     * Enter description here...
+     * Gets the DatabasePlatform for the connection.
      *
-     * @param unknown_type $name
-     * @return unknown
-     * @todo Remove. Move properties to DatabasePlatform.
+     * @return Doctrine::DBAL::Platforms::DatabasePlatform
      */
-    public function getProperty($name)
+    public function getDatabasePlatform()
     {
-        if ( ! isset($this->properties[$name])) {
-            throw Doctrine_Connection_Exception::unknownProperty($name);
-        }
-        return $this->properties[$name];
+        throw new Doctrine_Connection_Exception("No DatabasePlatform available "
+                . "for connection " . get_class($this));
     }
     
     /**
@@ -827,7 +808,8 @@ abstract class Doctrine_Connection implements Countable
     }
 
     /**
-     * execute
+     * Executes an SQL SELECT query with the given parameters.
+     * 
      * @param string $query     sql query
      * @param array $params     query parameters
      *
@@ -860,11 +842,13 @@ abstract class Doctrine_Connection implements Countable
     }
 
     /**
-     * exec
+     * Executes an SQL INSERT/UPDATE/DELETE query with the given parameters.
+     * 
      * @param string $query     sql query
      * @param array $params     query parameters
      *
      * @return PDOStatement|Doctrine_Adapter_Statement
+     * @todo Rename to executeUpdate().
      */
     public function exec($query, array $params = array()) {
         $this->connect();
@@ -890,30 +874,6 @@ abstract class Doctrine_Connection implements Countable
         } catch (PDOException $e) {
             $this->rethrowException($e, $this);
         }
-    }
-    
-    /**
-     * 
-     *
-     * @return string
-     * @todo Rather orm stuff
-     */
-    public function modifyLimitQuery($query, $limit = false, $offset = false, $isManip = false)
-    {
-        return $query;
-    }
-    
-    /**
-     * Creates dbms specific LIMIT/OFFSET SQL for the subqueries that are used in the
-     * context of the limit-subquery algorithm.
-     *
-     * @return string
-     * @todo Rather ORM stuff
-     */
-    public function modifyLimitSubquery(Doctrine_Table $rootTable, $query, $limit = false,
-            $offset = false, $isManip = false)
-    {
-        return $this->modifyLimitQuery($query, $limit, $offset, $isManip);
     }
 
     /**
@@ -945,7 +905,7 @@ abstract class Doctrine_Connection implements Countable
      * @return integer
      * @todo Better name: getQueryCount()
      */
-    public function count()
+    public function getQueryCount()
     {
         return $this->_queryCount;
     }
@@ -1030,7 +990,7 @@ abstract class Doctrine_Connection implements Countable
      */
     public function beginTransaction($savepoint = null)
     {
-        return $this->transaction->beginTransaction($savepoint);
+        return $this->_transaction->beginTransaction($savepoint);
     }
     
     /**
@@ -1260,14 +1220,6 @@ abstract class Doctrine_Connection implements Countable
             return false;
         }
     }
-
-    public function getFormatter()
-    {
-        if ( ! $this->modules['formatter']) {
-            $this->modules['formatter'] = new Doctrine_Formatter($this);
-        }
-        return $this->modules['formatter'];
-    }
     
     public function getSequenceManager()
     {
@@ -1276,17 +1228,5 @@ abstract class Doctrine_Connection implements Countable
             $this->modules['sequence'] = new $class;
         }
         return $this->modules['sequence'];
-    }
-    
-    /**
-     * Gets the default (preferred) Id generation strategy of the database platform.
-     * 
-     * @todo Sure, the id generator types are more ORM functionality but they're
-     * still kind of dbal related. Maybe we need another set of classes (DatabasePlatform?)
-     * but im not so sure...
-     */
-    /*abstract*/ public function getDefaultIdGeneratorType()
-    {
-        
     }
 }

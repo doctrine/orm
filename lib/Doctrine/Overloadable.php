@@ -30,7 +30,7 @@
  * @since       1.0
  * @version     $Revision$
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
- * @todo Really needed? Remove.
+ * @todo Remove.
  */
 interface Doctrine_Overloadable {
     /**

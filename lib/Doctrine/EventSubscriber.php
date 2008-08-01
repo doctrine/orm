@@ -19,10 +19,15 @@
  * <http://www.phpdoctrine.org>.
  */
 
+#namespace Doctrine::Common::Events;
+
 /**
- * EventSubscriber.
+ * An EventSubscriber knows itself what events it is interested in.
+ * If an EventSubscriber is added to an EventManager, the manager invokes
+ * getSubscribedEvents() and registers the subscriber as a listener for all
+ * returned events.
  *
- * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
+ * @author      Roman Borschel <roman@code-factory.org>
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @link        www.phpdoctrine.org
  * @since       2.0

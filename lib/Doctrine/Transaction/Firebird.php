@@ -18,14 +18,14 @@
  * and is licensed under the LGPL. For more information, see
  * <http://www.phpdoctrine.org>.
  */
-Doctrine::autoload('Doctrine_Transaction');
+
+#namespace Doctrine::DBAL::Transactions;
+
 /**
  *
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  * @author      Lukas Smith <smith@pooteeweet.org> (PEAR MDB2 library)
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
- * @package     Doctrine
- * @subpackage  Transaction
  * @link        www.phpdoctrine.org
  * @since       1.0
  * @version     $Revision$
@@ -33,11 +33,11 @@ Doctrine::autoload('Doctrine_Transaction');
 class Doctrine_Transaction_Firebird extends Doctrine_Transaction
 {
     /**
-     * createSavepoint
      * creates a new savepoint
      *
      * @param string $savepoint     name of a savepoint to set
      * @return void
+     * @override
      */
     protected function createSavePoint($savepoint)
     {
@@ -47,11 +47,11 @@ class Doctrine_Transaction_Firebird extends Doctrine_Transaction
     }
 
     /**
-     * releaseSavePoint
      * releases given savepoint
      *
      * @param string $savepoint     name of a savepoint to release
      * @return void
+     * @override
      */
     protected function releaseSavePoint($savepoint)
     {
@@ -61,11 +61,11 @@ class Doctrine_Transaction_Firebird extends Doctrine_Transaction
     }
 
     /**
-     * rollbackSavePoint
      * releases given savepoint
      *
      * @param string $savepoint     name of a savepoint to rollback to
      * @return void
+     * @override
      */
     protected function rollbackSavePoint($savepoint)
     {
@@ -90,6 +90,7 @@ class Doctrine_Transaction_Firebird extends Doctrine_Transaction
      * @throws PDOException                         if something fails at the PDO level
      * @throws Doctrine_Transaction_Exception       if using unknown isolation level or unknown wait option
      * @return void
+     * @override
      */
     public function setIsolation($isolation, $options = array()) {
         switch ($isolation) {

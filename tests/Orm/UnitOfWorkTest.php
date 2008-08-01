@@ -23,6 +23,7 @@ class Orm_UnitOfWorkTest extends Doctrine_OrmTestCase
     private $_persisterMock;
     // The EntityManager mock that provides the mock persister
     private $_emMock;
+    private $_platformMock;
     
     protected function setUp() {
         parent::setUp();
@@ -32,9 +33,17 @@ class Orm_UnitOfWorkTest extends Doctrine_OrmTestCase
         $this->_user->username = 'romanb';
 
         $this->_connectionMock = new Doctrine_ConnectionMock(array());
-        $this->_sequenceMock = $this->_connectionMock->getSequenceManager();
+        $this->_platformMock = new Doctrine_DatabasePlatformMock();
         $this->_emMock = new Doctrine_EntityManagerMock($this->_connectionMock);
-        $this->_persisterMock = $this->_emMock->getEntityPersister("ForumUser");
+        $this->_sequenceMock = new Doctrine_SequenceMock($this->_connectionMock);
+
+        $this->_connectionMock->setSequenceManager($this->_sequenceMock);
+        $this->_connectionMock->setDatabasePlatform($this->_platformMock);
+        
+        $this->_persisterMock = new Doctrine_EntityPersisterMock(
+                $this->_emMock, $this->_emMock->getClassMetadata("ForumUser"));
+        $this->_emMock->setEntityPersister($this->_persisterMock);
+        
         $this->_unitOfWork = $this->_emMock->getUnitOfWork();
     }
     
@@ -105,7 +114,7 @@ class Orm_UnitOfWorkTest extends Doctrine_OrmTestCase
         // should have an id
         $this->assertTrue(is_numeric($this->_user->id));
         
-        // Now lets check whether a subsequence commit() does anything
+        // Now lets check whether a subsequent commit() does anything
         
         $this->_persisterMock->reset();
         

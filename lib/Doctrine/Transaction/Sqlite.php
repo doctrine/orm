@@ -18,7 +18,7 @@
  * and is licensed under the LGPL. For more information, see
  * <http://www.phpdoctrine.org>.
  */
-Doctrine::autoload('Doctrine_Transaction');
+
 /**
  *
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
@@ -43,6 +43,7 @@ class Doctrine_Transaction_Sqlite extends Doctrine_Transaction
      * @throws PDOException                         if something fails at the PDO level
      * @throws Doctrine_Transaction_Exception       if using unknown isolation level
      * @return void
+     * @override
      */
     public function setIsolation($isolation)
     {

@@ -24,8 +24,6 @@
 /**
  * PgsqlConnection
  *
- * @package     Doctrine
- * @subpackage  Connection
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  * @author      Lukas Smith <smith@pooteeweet.org> (PEAR MDB2 library)
@@ -46,39 +44,9 @@ class Doctrine_Connection_Pgsql extends Doctrine_Connection_Common
      * @param Doctrine_Manager $manager
      * @param PDO $pdo                          database handle
      */
-    public function __construct(Doctrine_Manager $manager, $adapter)
+    public function __construct(array $params)
     {
-        // initialize all driver options
-        $this->supported = array(
-                          'sequences'               => true,
-                          'indexes'                 => true,
-                          'affected_rows'           => true,
-                          'summary_functions'       => true,
-                          'order_by_text'           => true,
-                          'transactions'            => true,
-                          'savepoints'              => true,
-                          'current_id'              => true,
-                          'limit_queries'           => true,
-                          'LOBs'                    => true,
-                          'replace'                 => 'emulated',
-                          'sub_selects'             => true,
-                          'auto_increment'          => 'emulated',
-                          'primary_key'             => true,
-                          'result_introspection'    => true,
-                          'prepared_statements'     => true,
-                          'identifier_quoting'      => true,
-                          'pattern_escaping'        => true,
-                          );
-
-        $this->properties['string_quoting'] = array('start' => "'",
-                                                    'end' => "'",
-                                                    'escape' => "'",
-                                                    'escape_pattern' => '\\');
-
-        $this->properties['identifier_quoting'] = array('start' => '"',
-                                                        'end' => '"',
-                                                        'escape' => '"');
-        parent::__construct($manager, $adapter);
+        parent::__construct($params);
     }
 
     /**
@@ -118,43 +86,6 @@ class Doctrine_Connection_Pgsql extends Doctrine_Connection_Common
            }
         }
         return $item;
-    }
-
-    /**
-     * Changes a query string for various DBMS specific reasons
-     *
-     * @param string $query         query to modify
-     * @param integer $limit        limit the number of rows
-     * @param integer $offset       start reading from given offset
-     * @param boolean $isManip      if the query is a DML query
-     * @return string               modified query
-     */
-    public function modifyLimitQuery($query, $limit = false, $offset = false, $isManip = false)
-    {
-        if ($limit > 0) {
-            $query = rtrim($query);
-
-            if (substr($query, -1) == ';') {
-                $query = substr($query, 0, -1);
-            }
-
-            if ($isManip) {
-                $manip = preg_replace('/^(DELETE FROM|UPDATE).*$/', '\\1', $query);
-                $from  = $match[2];
-                $where = $match[3];
-                $query = $manip . ' ' . $from . ' WHERE ctid=(SELECT ctid FROM '
-                       . $from . ' ' . $where . ' LIMIT ' . $limit . ')';
-
-            } else {
-                if ( ! empty($limit)) {
-                  $query .= ' LIMIT ' . $limit;
-                }
-                if ( ! empty($offset)) {
-                  $query .= ' OFFSET ' . $offset;
-                }
-            }
-        }
-        return $query;
     }
 
     /**

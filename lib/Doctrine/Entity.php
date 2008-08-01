@@ -28,6 +28,10 @@
  * NOTE: Methods that are intended for internal use only but must be public
  * are marked INTERNAL: and begin with an underscore "_" to indicate that they
  * ideally would not be public and to minimize naming collisions.
+ * 
+ * The "final" modifiers on most methods prevent accidental overrides.
+ * It is not desirable that subclasses can override these methods.
+ * The persistence layer should stay in the background as much as possible.
  *
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  * @author      Roman Borschel <roman@code-factory.org>
@@ -81,7 +85,7 @@ abstract class Doctrine_Entity extends Doctrine_Access implements Serializable
     /**
      * Index used for creating object identifiers (oid's).
      *
-     * @var integer $index
+     * @var integer
      */
     private static $_index = 1;
     
@@ -240,14 +244,6 @@ abstract class Doctrine_Entity extends Doctrine_Access implements Serializable
             }
         }
     }
-    
-    /**
-     * INTERNAL:
-     */
-    /*final public function _setIdentifier(array $identifier)
-    {
-        $this->_id = $identifier;
-    }*/
 
     /**
      * Serializes the entity.

@@ -31,6 +31,7 @@
  * @version     $Revision: 3192 $
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  * @author      Roman Borschel <roman@code-factory.org>
+ * @deprecated
  */
 class Doctrine_Hydrator extends Doctrine_Hydrator_Abstract
 {
