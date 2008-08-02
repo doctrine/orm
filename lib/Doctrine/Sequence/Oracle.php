@@ -40,7 +40,7 @@ class Doctrine_Sequence_Oracle extends Doctrine_Sequence
      *
      * @return integer          next id in the given sequence
      */
-    public function nextID($seqName, $onDemand = true)
+    public function nextId($seqName, $onDemand = true)
     {
         $sequenceName = $this->conn->quoteIdentifier($this->conn->formatter->getSequenceName($seqName), true);
         $query        = 'SELECT ' . $sequenceName . '.nextval FROM DUAL';
@@ -69,10 +69,10 @@ class Doctrine_Sequence_Oracle extends Doctrine_Sequence
      * @param   string  name of the table into which a new row was inserted
      * @param   string  name of the field into which a new row was inserted
      */
-    public function lastInsertID($table = null, $field = null)
+    public function lastInsertId($table = null, $field = null)
     {
         $seqName = $table . (empty($field) ? '' : '_'.$field);
-        $sequenceName =  $this->conn->quoteIdentifier($this->conn->formatter->getSequenceName($seqName), true);
+        $sequenceName = $this->conn->quoteIdentifier($this->conn->formatter->getSequenceName($seqName), true);
 
         return $this->conn->fetchOne('SELECT ' . $sequenceName . '.currval');
     }
@@ -84,7 +84,7 @@ class Doctrine_Sequence_Oracle extends Doctrine_Sequence
      *
      * @return integer          current id in the given sequence
      */
-    public function currID($seqName)
+    public function currId($seqName)
     {
         $sequenceName = $this->conn->quoteIdentifier($this->conn->formatter->getSequenceName($seqName), true);
         $query   = 'SELECT (last_number-1) FROM user_sequences';

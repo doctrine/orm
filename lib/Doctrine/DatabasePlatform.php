@@ -10,66 +10,64 @@
  * @author Roman Borschel <roman@code-factory.org>
  */
 abstract class Doctrine_DatabasePlatform
-{
+{    
     /**
-     * An array containing all features this platform supports, keys representing feature
-     * names and values as one of the following (true, false, 'emulated').
-     *
-     * @var array
+     * Constructor.
      */
-    protected $_supported = array();
-    
-    /**
-     * Platform specific properties. Subclasses can override these in the
-     * constructor.
-     * 
-     * @var array $properties               
-     */
-    protected $_properties = array(
-            'sql_comments' => array(
-                array(
-                    'start' => '--',
-                    'end' => "\n",
-                    'escape' => false
-                ),
-                array(
-                    'start' => '/*',
-                    'end' => '*/',
-                    'escape' => false
-                )
-            ),
-            'identifier_quoting' => array(
-                'start' => '"',
-                'end' => '"',
-                'escape' => '"'
-            ),
-            'string_quoting' => array(
-                'start' => "'",
-                'end' => "'",
-                'escape' => false,
-                'escape_pattern' => false
-            ),
-            'wildcards' => array('%', '_'),
-            'varchar_max_length' => 255,
-            );
-    
     public function __construct() {}
     
     /**
-     * Checks whether a certain feature is supported.
+     * Gets the character used for identifier quoting.
      *
-     * @param string $feature   the name of the feature
-     * @return boolean          whether or not this drivers supports given feature
+     * @return string
      */
-    public function supports($feature)
+    public function getIdentifierQuoteCharacter()
     {
-        return (isset($this->_supported[$feature]) &&
-                ($this->_supported[$feature] === 'emulated' || $this->_supported[$feature]));
+        return '"';
     }
     
     /**
-     * regexp
-     * returns the regular expression operator
+     * Gets the string portion that starts an SQL comment.
+     *
+     * @return string
+     */
+    public function getSqlCommentStartString()
+    {
+        return "--";
+    }
+    
+    /**
+     * Gets the string portion that starts an SQL comment.
+     *
+     * @return string
+     */
+    public function getSqlCommentEndString()
+    {
+        return "\n";
+    }
+    
+    /**
+     * Gets the maximum length of a varchar field.
+     *
+     * @return integer
+     */
+    public function getVarcharMaxLength()
+    {
+        return 255;
+    }
+    
+    /**
+     * Gets all SQL wildcard characters of the platform.
+     *
+     * @return array
+     */
+    public function getWildcards()
+    {
+        return array('%', '_');
+    }
+    
+    /**
+     * Returns the regular expression operator.
      *
      * @return string
      */
@@ -889,9 +887,10 @@ abstract class Doctrine_DatabasePlatform
      *
      * @param string $query  The SQL string to write to / append to.
      * @return string
+     * @todo Remove the ORM dependency
      */
-    public function writeLimitClauseInSubquery(Doctrine_ClassMetadata $rootClass, $query,
-            $limit = false, $offset = false)
+    public function writeLimitClauseInSubquery(Doctrine_ClassMetadata $rootClass,
+            $query, $limit = false, $offset = false)
     {
         return $this->modifyLimitQuery($query, $limit, $offset);
     }
@@ -909,6 +908,46 @@ abstract class Doctrine_DatabasePlatform
             throw Doctrine_Connection_Exception::unknownProperty($name);
         }
         return $this->_properties[$name];
+    }
+    
+    public function supportsSequences()
+    {
+        return false;
+    }
+    
+    public function supportsIdentityColumns()
+    {
+        return false;
+    }
+    
+    public function supportsIndexes()
+    {
+        return true;
+    }
+    
+    public function supportsTransactions()
+    {
+        return true;
+    }
+    
+    public function supportsSavepoints()
+    {
+        return true;
+    }
+    
+    public function supportsPrimaryConstraints()
+    {
+        return true;
+    }
+    
+    public function supportsForeignKeyConstraints()
+    {
+        return true;
+    }
+    
+    public function supportsGettingAffectedRows()
+    {
+        return true;
     }
 }
 

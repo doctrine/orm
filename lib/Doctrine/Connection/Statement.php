@@ -18,12 +18,10 @@
  * and is licensed under the LGPL. For more information, see
  * <http://www.phpdoctrine.org>.
  */
-Doctrine::autoload('Doctrine_Adapter_Statement_Interface');
+
 /**
- * Doctrine_Connection_Statement
+ * A thin wrapper around PDOStatement.
  *
- * @package     Doctrine
- * @subpackage  Connection
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @link        www.phpdoctrine.org
@@ -31,7 +29,7 @@ Doctrine::autoload('Doctrine_Adapter_Statement_Interface');
  * @version     $Revision: 1532 $
  * @todo Do we seriously need this wrapper?
  */
-class Doctrine_Connection_Statement implements Doctrine_Adapter_Statement_Interface
+class Doctrine_Connection_Statement
 {
     /**
      * @var Doctrine_Connection $conn       Doctrine_Connection object, every connection
@@ -40,7 +38,7 @@ class Doctrine_Connection_Statement implements Doctrine_Adapter_Statement_Interf
     protected $_conn;
 
     /**
-     * @var mixed $_stmt                    PDOStatement object, boolean false or Doctrine_Adapter_Statement object
+     * @var PDOStatement $_stmt                    PDOStatement object, boolean false or Doctrine_Adapter_Statement object
      */
     protected $_stmt;
 
@@ -81,7 +79,6 @@ class Doctrine_Connection_Statement implements Doctrine_Adapter_Statement_Interf
     }
 
     /**
-     * bindColumn
      * Bind a column to a PHP variable
      *
      * @param mixed $column         Number of the column (1-indexed) or name of the column in the result set.
@@ -125,7 +122,6 @@ class Doctrine_Connection_Statement implements Doctrine_Adapter_Statement_Interf
     }
 
     /**
-     * bindParam
      * Binds a PHP variable to a corresponding named or question mark placeholder in the
      * SQL statement that was use to prepare the statement. Unlike Doctrine_Adapter_Statement_Interface->bindValue(),
      * the variable is bound as a reference and will only be evaluated at the time
@@ -161,7 +157,6 @@ class Doctrine_Connection_Statement implements Doctrine_Adapter_Statement_Interf
     }
 
     /**
-     * closeCursor
      * Closes the cursor, enabling the statement to be executed again.
      *
      * @return boolean              Returns TRUE on success or FALSE on failure.
@@ -172,7 +167,6 @@ class Doctrine_Connection_Statement implements Doctrine_Adapter_Statement_Interf
     }
 
     /**
-     * columnCount
      * Returns the number of columns in the result set
      *
      * @return integer              Returns the number of columns in the result set represented
@@ -185,7 +179,6 @@ class Doctrine_Connection_Statement implements Doctrine_Adapter_Statement_Interf
     }
 
     /**
-     * errorCode
      * Fetch the SQLSTATE associated with the last operation on the statement handle
      *
      * @see Doctrine_Adapter_Interface::errorCode()
@@ -197,7 +190,6 @@ class Doctrine_Connection_Statement implements Doctrine_Adapter_Statement_Interf
     }
 
     /**
-     * errorInfo
      * Fetch extended error information associated with the last operation on the statement handle
      *
      * @see Doctrine_Adapter_Interface::errorInfo()
@@ -209,7 +201,6 @@ class Doctrine_Connection_Statement implements Doctrine_Adapter_Statement_Interf
     }
 
     /**
-     * execute
      * Executes a prepared statement
      *
      * If the prepared statement included parameter markers, you must either:
@@ -226,23 +217,21 @@ class Doctrine_Connection_Statement implements Doctrine_Adapter_Statement_Interf
     public function execute($params = null)
     {
         try {
-            $event = new Doctrine_Event($this, Doctrine_Event::STMT_EXECUTE, $this->getQuery(), $params);
-            $this->_conn->getListener()->preStmtExecute($event);
+            //$event = new Doctrine_Event($this, Doctrine_Event::STMT_EXECUTE, $this->getQuery(), $params);
+            //$this->_conn->getListener()->preStmtExecute($event);
 
             $result = true;
-            if ( ! $event->skipOperation) {
+            //if ( ! $event->skipOperation) {
                 $result = $this->_stmt->execute($params);
-                $this->_conn->incrementQueryCount();
-            }
+                //$this->_conn->incrementQueryCount();
+            //}
 
-            $this->_conn->getListener()->postStmtExecute($event);
+            //$this->_conn->getListener()->postStmtExecute($event);
 
             return $result;
         } catch (PDOException $e) {
-        } catch (Doctrine_Adapter_Exception $e) {
+            $this->_conn->rethrowException($e, $this);
         }
-
-        $this->_conn->rethrowException($e, $this);
 
         return false;
     }
@@ -278,25 +267,23 @@ class Doctrine_Connection_Statement implements Doctrine_Adapter_Statement_Interf
                           $cursorOrientation = Doctrine::FETCH_ORI_NEXT,
                           $cursorOffset = null)
     {
-        $event = new Doctrine_Event($this, Doctrine_Event::STMT_FETCH, $this->getQuery());
+        //$event = new Doctrine_Event($this, Doctrine_Event::STMT_FETCH, $this->getQuery());
+        //$event->fetchMode = $fetchMode;
+        //$event->cursorOrientation = $cursorOrientation;
+        //$event->cursorOffset = $cursorOffset;
 
-        $event->fetchMode = $fetchMode;
-        $event->cursorOrientation = $cursorOrientation;
-        $event->cursorOffset = $cursorOffset;
+        //$data = $this->_conn->getListener()->preFetch($event);
 
-        $data = $this->_conn->getListener()->preFetch($event);
-
-        if ( ! $event->skipOperation) {
+        //if ( ! $event->skipOperation) {
             $data = $this->_stmt->fetch($fetchMode, $cursorOrientation, $cursorOffset);
-        }
+        //}
 
-        $this->_conn->getListener()->postFetch($event);
+        //$this->_conn->getListener()->postFetch($event);
 
         return $data;
     }
 
     /**
-     * fetchAll
      * Returns an array containing all of the result set rows
      *
      * @param integer $fetchMode            Controls how the next row will be returned to the caller.
@@ -308,32 +295,28 @@ class Doctrine_Connection_Statement implements Doctrine_Adapter_Statement_Interf
      *
      * @return array
      */
-    public function fetchAll($fetchMode = Doctrine::FETCH_BOTH,
-                             $columnIndex = null)
+    public function fetchAll($fetchMode = Doctrine::FETCH_BOTH, $columnIndex = null)
     {
-        $event = new Doctrine_Event($this, Doctrine_Event::STMT_FETCHALL, $this->getQuery());
-        $event->fetchMode = $fetchMode;
-        $event->columnIndex = $columnIndex;
+        //$event = new Doctrine_Event($this, Doctrine_Event::STMT_FETCHALL, $this->getQuery());
+        //$event->fetchMode = $fetchMode;
+        //$event->columnIndex = $columnIndex;
+        //$this->_conn->getListener()->preFetchAll($event);
 
-        $this->_conn->getListener()->preFetchAll($event);
-
-        if ( ! $event->skipOperation) {
+        //if ( ! $event->skipOperation) {
             if ($columnIndex !== null) {
                 $data = $this->_stmt->fetchAll($fetchMode, $columnIndex);
             } else {
                 $data = $this->_stmt->fetchAll($fetchMode);
             }
+            //$event->data = $data;
+        //}
 
-            $event->data = $data;
-        }
-
-        $this->_conn->getListener()->postFetchAll($event);
+        //$this->_conn->getListener()->postFetchAll($event);
 
         return $data;
     }
 
     /**
-     * fetchColumn
      * Returns a single column from the next row of a
      * result set or FALSE if there are no more rows.
      *
@@ -349,7 +332,6 @@ class Doctrine_Connection_Statement implements Doctrine_Adapter_Statement_Interf
     }
 
     /**
-     * fetchObject
      * Fetches the next row and returns it as an object.
      *
      * Fetches the next row and returns it as an object. This function is an alternative to
@@ -367,7 +349,6 @@ class Doctrine_Connection_Statement implements Doctrine_Adapter_Statement_Interf
     }
 
     /**
-     * getAttribute
      * Retrieve a statement attribute
      *
      * @param integer $attribute
@@ -380,7 +361,6 @@ class Doctrine_Connection_Statement implements Doctrine_Adapter_Statement_Interf
     }
 
     /**
-     * getColumnMeta
      * Returns metadata for a column in a result set
      *
      * @param integer $column               The 0-indexed column in the result set.
@@ -401,7 +381,6 @@ class Doctrine_Connection_Statement implements Doctrine_Adapter_Statement_Interf
     }
 
     /**
-     * nextRowset
      * Advances to the next rowset in a multi-rowset statement handle
      *
      * Some database servers support stored procedures that return more than one rowset
@@ -417,7 +396,6 @@ class Doctrine_Connection_Statement implements Doctrine_Adapter_Statement_Interf
     }
 
     /**
-     * rowCount
      * rowCount() returns the number of rows affected by the last DELETE, INSERT, or UPDATE statement
      * executed by the corresponding object.
      *
@@ -434,7 +412,6 @@ class Doctrine_Connection_Statement implements Doctrine_Adapter_Statement_Interf
     }
 
     /**
-     * setAttribute
      * Set a statement attribute
      *
      * @param integer $attribute
@@ -447,7 +424,6 @@ class Doctrine_Connection_Statement implements Doctrine_Adapter_Statement_Interf
     }
 
     /**
-     * setFetchMode
      * Set the default fetch mode for this statement
      *
      * @param integer $mode                 The fetch mode must be one of the Doctrine::FETCH_* constants.

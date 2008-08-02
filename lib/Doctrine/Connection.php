@@ -26,7 +26,7 @@
 #use Doctrine::DBAL::Exceptions::ConnectionException;
 
 /**
- * A thin connection wrapper on top of PDO.
+ * A thin wrapper on top of the PDO class.
  *
  * 1. Event listeners
  *    An easy to use, pluggable eventlistener architecture. Aspects such as
@@ -117,9 +117,9 @@ abstract class Doctrine_Connection
     protected $_quoteIdentifiers;
     
     /**
-     * @var array $serverInfo
+     * @var array
      */
-    protected $serverInfo = array();
+    protected $_serverInfo = array();
     
     /**
      * The parameters used during creation of the Connection.
@@ -154,11 +154,18 @@ abstract class Doctrine_Connection
     protected $_platform;
 
     /**
-     * Enter description here...
+     * The transaction object.
      *
      * @var Doctrine::DBAL::Transactions::Transaction
      */
     protected $_transaction;
+    
+    /**
+     * The sequence manager.
+     *
+     * @var Doctrine::DBAL::Sequencing::SequenceManager
+     */
+    protected $_sequenceManager;
 
     /**
      * Constructor.
@@ -339,18 +346,11 @@ abstract class Doctrine_Connection
      * 
      * @return string
      * @todo make abstract, implement in subclasses.
+     * @todo throw different exception?
      */
     protected function _constructPdoDsn()
     {
         throw Doctrine_Exception::notImplemented('_constructPdoDsn', get_class($this));
-    }
-    
-    /**
-     * @todo Remove. Breaks encapsulation.
-     */
-    public function incrementQueryCount() 
-    {
-        $this->_queryCount++;
     }
     
     /**
@@ -360,8 +360,8 @@ abstract class Doctrine_Connection
      * inserting a new row.
      *
      * The REPLACE type of query does not make part of the SQL standards. Since
-     * practically only MySQL and SQLIte implement it natively, this type of
-     * query isemulated through this method for other DBMS using standard types
+     * practically only MySQL and SQLite implement it natively, this type of
+     * query is emulated through this method for other DBMS using standard types
      * of queries inside a transaction to assure the atomicity of the operation.
      *
      * @param                   string  name of the table on which the REPLACE query will
@@ -490,7 +490,7 @@ abstract class Doctrine_Connection
 
         // column names are specified as array keys
         $cols = array();
-        // the query VALUES will contain either expresions (eg 'NOW()') or ?
+        // the query VALUES will contain either expressions (eg 'NOW()') or ?
         $a = array();
         foreach ($data as $columnName => $value) {
             $cols[] = $this->quoteIdentifier($columnName);
@@ -502,13 +502,10 @@ abstract class Doctrine_Connection
             }
         }
 
-        // build the statement
         $query = 'INSERT INTO ' . $this->quoteIdentifier($tableName)
                . ' (' . implode(', ', $cols) . ') '
                . 'VALUES (';
-
         $query .= implode(', ', $a) . ')';
-        // prepare and execute the statement
 
         return $this->exec($query, array_values($data));
     }
@@ -567,14 +564,15 @@ abstract class Doctrine_Connection
         // quick fix for the identifiers that contain a dot
         if (strpos($str, '.')) {
             $e = explode('.', $str);
-            return $this->quoteIdentifier($e[0]) . '.'
+            return $this->quoteIdentifier($e[0])
+                    . '.'
                     . $this->quoteIdentifier($e[1]);
         }
-        
-        $q = $this->properties['identifier_quoting'];
-        $str = str_replace($q['end'], $q['escape'] . $q['end'], $str);
 
-        return $q['start'] . $str . $q['end'];
+        $c = $this->_platform->getIdentifierQuoteCharacter();
+        $str = str_replace($c, $c . $c, $str);
+
+        return $c . $str . $c;
     }
 
     /**
@@ -603,55 +601,16 @@ abstract class Doctrine_Connection
     }
 
     /**
-     * Quotes given input parameter
+     * Quotes given input parameter.
      *
-     * @param mixed $input      parameter to be quoted
-     * @param string $type
-     * @return mixed
+     * @param mixed $input  Parameter to be quoted.
+     * @param string $type  Type of the parameter.
+     * @return string  The quoted parameter.
      */
     public function quote($input, $type = null)
     {
         return $this->_pdo->quote($input, $type);
     }
-    /**
-     * quote
-     * quotes given input parameter
-     *
-     * @param mixed $input      parameter to be quoted
-     * @param string $type
-     * @return mixed
-     */
-    /*public function quote($input, $type = null)
-    {
-        if ($type == null) {
-            $type = gettype($input);
-        }
-        switch ($type) {
-        case 'integer':
-        case 'enum':
-        case 'boolean':
-        case 'double':
-        case 'float':
-        case 'bool':
-        case 'decimal':
-        case 'int':
-            return $input;
-        case 'array':
-        case 'object':
-            $input = serialize($input);
-        case 'date':
-        case 'time':
-        case 'timestamp':
-        case 'string':
-        case 'char':
-        case 'varchar':
-        case 'text':
-        case 'gzip':
-        case 'blob':
-        case 'clob':
-            return $this->conn->quote($input);
-        }
-    }*/
 
     /**
      * Set the date/time format for the current connection
@@ -882,21 +841,14 @@ abstract class Doctrine_Connection
      * @throws Doctrine_Connection_Exception
      */
     public function rethrowException(Exception $e, $invoker)
-    {
-        //$event = new Doctrine_Event($this, Doctrine_Event::CONN_ERROR);
-        //$this->getListener()->preError($event);
-        
+    {        
         $name = 'Doctrine_Connection_' . $this->_driverName . '_Exception';
-        
         $exc = new $name($e->getMessage(), (int) $e->getCode());
         if ( ! is_array($e->errorInfo)) {
             $e->errorInfo = array(null, null, null, null);
         }
         $exc->processErrorInfo($e->errorInfo);
-
         throw $exc;
-
-        //$this->getListener()->postError($event);
     }
     
     /**
@@ -1007,7 +959,7 @@ abstract class Doctrine_Connection
      */
     public function commit($savepoint = null)
     {
-        return $this->transaction->commit($savepoint);
+        return $this->_transaction->commit($savepoint);
     }
 
     /**
@@ -1025,7 +977,7 @@ abstract class Doctrine_Connection
      */
     public function rollback($savepoint = null)
     {
-        $this->transaction->rollback($savepoint);
+        $this->_transaction->rollback($savepoint);
     }
 
     /**
@@ -1202,31 +1154,18 @@ abstract class Doctrine_Connection
         return Doctrine_Lib::getConnectionAsString($this);
     }
     
-    /*
-     * -----------   Mixed methods (need to figure out where they go)   ---------------
-     */    
-    
     /**
-     * retrieves a database connection attribute
+     * Gets the SequenceManager that can be used to retrieve sequence values
+     * through this connection.
      *
-     * @param integer $attribute
-     * @return mixed
-     * @todo Implementation or remove if not needed. Configuration is the main
-     * container for all the attributes now.
+     * @return Doctrine::DBAL::Sequencing::SequenceManager
      */
-    public function getAttribute($attribute)
-    {
-        if ($attribute == Doctrine::ATTR_QUOTE_IDENTIFIER) {
-            return false;
-        }
-    }
-    
     public function getSequenceManager()
     {
-        if ( ! $this->modules['sequence']) {
+        if ( ! $this->_sequenceManager) {
             $class = "Doctrine_Sequence_" . $this->_driverName;
-            $this->modules['sequence'] = new $class;
+            $this->_sequenceManager = new $class;
         }
-        return $this->modules['sequence'];
+        return $this->_sequenceManager;
     }
 }

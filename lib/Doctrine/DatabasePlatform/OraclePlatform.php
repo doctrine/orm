@@ -8,26 +8,6 @@ class Doctrine_DatabasePlatform_OraclePlatform extends Doctrine_DatabasePlatform
     public function __construct()
     {
         parent::__construct();
-        $this->_supported = array(
-                          'sequences'            => true,
-                          'indexes'              => true,
-                          'summary_functions'    => true,
-                          'order_by_text'        => true,
-                          'current_id'           => true,
-                          'affected_rows'        => true,
-                          'transactions'         => true,
-                          'savepoints'           => true,
-                          'limit_queries'        => true,
-                          'LOBs'                 => true,
-                          'replace'              => 'emulated',
-                          'sub_selects'          => true,
-                          'auto_increment'       => false, // implementation is broken
-                          'primary_key'          => true,
-                          'result_introspection' => true,
-                          'prepared_statements'  => true,
-                          'identifier_quoting'   => true,
-                          'pattern_escaping'     => true,
-                          );
     }
     
     /**
@@ -44,6 +24,9 @@ class Doctrine_DatabasePlatform_OraclePlatform extends Doctrine_DatabasePlatform
         return $this->_createLimitSubquery($query, $limit, $offset);
     }
     
+    /**
+     * @todo Doc
+     */
     private function _createLimitSubquery($query, $limit, $offset, $column = null)
     {
         $limit = (int) $limit;

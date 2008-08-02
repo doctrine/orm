@@ -30,6 +30,7 @@
  * @link        www.phpdoctrine.org
  * @since       1.0
  * @todo Composite key support?
+ * @todo Remove. Association mapping needs a reimplementation.
  */
 class Doctrine_Relation_Parser 
 {

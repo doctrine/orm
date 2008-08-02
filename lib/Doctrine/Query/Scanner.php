@@ -33,14 +33,18 @@
 class Doctrine_Query_Scanner
 {
     /**
-     * Array of scanned tokens
+     * Array of scanned tokens.
      *
      * @var array
      */
     protected $_tokens = array();
-
+    /**
+     * @todo Doc
+     */
     protected $_position = 0;
-
+    /**
+     * @todo Doc
+     */
     protected $_peek = 0;
 
     /**
@@ -109,7 +113,9 @@ class Doctrine_Query_Scanner
         }
     }
 
-
+    /**
+     * @todo Doc
+     */
     protected function _getType(&$value)
     {
         // $value is referenced because it can be changed if it is numeric.
@@ -117,30 +123,32 @@ class Doctrine_Query_Scanner
         $type = Doctrine_Query_Token::T_NONE;
 
         $newVal = $this->_getNumeric($value);
-        if($newVal !== false){
+        if ($newVal !== false){
             $value = $newVal;
             if (strpos($value, '.') !== false || stripos($value, 'e') !== false) {
                 $type =  Doctrine_Query_Token::T_FLOAT;
-            } else{
+            } else {
                 $type = Doctrine_Query_Token::T_INTEGER;
             }
 
         }
         if ($value[0] === "'" && $value[strlen($value) - 1] === "'") {
             $type = Doctrine_Query_Token::T_STRING;
-        } elseif (ctype_alpha($value[0]) || $value[0] === '_') {
+        } else if (ctype_alpha($value[0]) || $value[0] === '_') {
             $type = $this->_checkLiteral($value);
-        } elseif ($value[0] === '?' || $value[0] === ':') {
+        } else if ($value[0] === '?' || $value[0] === ':') {
             $type = Doctrine_Query_Token::T_INPUT_PARAMETER;
         }
 
         return $type;
     }
 
-
+    /**
+     * @todo Doc
+     */
     protected function _getNumeric($value)
     {
-        if (!is_scalar($value)) {
+        if ( ! is_scalar($value)) {
             return false;
         }
         // Checking for valid numeric numbers: 1.234, -1.234e-2
@@ -164,7 +172,9 @@ class Doctrine_Query_Scanner
 
     }
 
-
+    /**
+     * @todo Doc
+     */
     public function isA($value, $token)
     {
         $type = $this->_getType($value);
@@ -172,7 +182,9 @@ class Doctrine_Query_Scanner
         return $type === $token;
     }
 
-
+    /**
+     * @todo Doc
+     */
     public function peek()
     {
         if (isset($this->_tokens[$this->_position + $this->_peek])) {
@@ -182,12 +194,13 @@ class Doctrine_Query_Scanner
         }
     }
 
-
+    /**
+     * @todo Doc
+     */
     public function resetPeek()
     {
         $this->_peek = 0;
     }
-
 
     /**
      * Returns the next token in the input string.
@@ -211,7 +224,9 @@ class Doctrine_Query_Scanner
         }
     }
 
-
+    /**
+     * @todo Doc
+     */
     public function resetPosition($position = 0)
     {
         $this->_position = $position;

@@ -9,7 +9,7 @@ class Doctrine_DatabasePlatform_PostgreSqlPlatform extends Doctrine_DatabasePlat
      * @param array
      * @todo Nedded? What about lazy initialization?
      */
-    protected static $_reservedKeywords = array(
+    /*protected static $_reservedKeywords = array(
             'abort', 'absolute', 'access', 'action', 'add', 'after', 'aggregate',
             'all', 'alter', 'analyse', 'analyze', 'and', 'any', 'as', 'asc',
             'assertion', 'assignment', 'at', 'authorization', 'backward', 'before',
@@ -54,7 +54,7 @@ class Doctrine_DatabasePlatform_PostgreSqlPlatform extends Doctrine_DatabasePlat
             'unknown', 'unlisten', 'until', 'update', 'usage', 'user', 'using',
             'vacuum', 'valid', 'validator', 'values', 'varchar', 'varying',
             'verbose', 'version', 'view', 'volatile', 'when', 'where', 'with',
-            'without', 'work', 'write', 'year','zone');
+            'without', 'work', 'write', 'year','zone');*/
     
     
     /**
@@ -63,28 +63,7 @@ class Doctrine_DatabasePlatform_PostgreSqlPlatform extends Doctrine_DatabasePlat
      */
     public function __construct()
     {
-         parent::__construct();
-        $this->_supported = array(
-                          'sequences'               => true,
-                          'indexes'                 => true,
-                          'affected_rows'           => true,
-                          'summary_functions'       => true,
-                          'order_by_text'           => true,
-                          'transactions'            => true,
-                          'savepoints'              => true,
-                          'current_id'              => true,
-                          'limit_queries'           => true,
-                          'LOBs'                    => true,
-                          'replace'                 => 'emulated',
-                          'sub_selects'             => true,
-                          'auto_increment'          => 'emulated',
-                          'primary_key'             => true,
-                          'result_introspection'    => true,
-                          'prepared_statements'     => true,
-                          'identifier_quoting'      => true,
-                          'pattern_escaping'        => true,
-                          );
-
+        parent::__construct();
         $this->_properties['string_quoting'] = array('start' => "'",
                                                     'end' => "'",
                                                     'escape' => "'",
@@ -93,7 +72,6 @@ class Doctrine_DatabasePlatform_PostgreSqlPlatform extends Doctrine_DatabasePlat
                                                         'end' => '"',
                                                         'escape' => '"');
     }
-    
     
     /**
      * Obtain DBMS specific SQL code portion needed to declare an text type
@@ -509,7 +487,39 @@ class Doctrine_DatabasePlatform_PostgreSqlPlatform extends Doctrine_DatabasePlat
     public function parseBoolean($value)
     {
         return $value;
-    }    
+    }
+    
+    /**
+     * Whether the platform supports sequences.
+     * Postgres has native support for sequences.
+     *
+     * @return boolean
+     */
+    public function supportsSequences()
+    {
+        return true;
+    }
+    
+    /**
+     * Whether the platform supports identity columns.
+     * Postgres supports these through the SERIAL keyword.
+     *
+     * @return boolean
+     */
+    public function supportsIdentityColumns()
+    {
+        return true;
+    }
+    
+    /**
+     * Whether the platform prefers sequences for ID generation.
+     *
+     * @return boolean
+     */
+    public function prefersSequences()
+    {
+        return true;
+    }
 }
 
 ?>

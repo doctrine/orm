@@ -45,26 +45,26 @@ class Doctrine_Query_Production_Atom extends Doctrine_Query_Production
             case Doctrine_Query_Token::T_STRING:
                 $this->_parser->match(Doctrine_Query_Token::T_STRING);
                 $this->_type = 'string';
-            break;
+                break;
 
             case Doctrine_Query_Token::T_INTEGER:
                 $this->_parser->match(Doctrine_Query_Token::T_INTEGER);
                 $this->_type = 'integer';
-            break;
+                break;
 
             case Doctrine_Query_Token::T_FLOAT:
                 $this->_parser->match(Doctrine_Query_Token::T_FLOAT);
                 $this->_type = 'float';
-            break;
+                break;
 
             case Doctrine_Query_Token::T_INPUT_PARAMETER:
                 $this->_parser->match(Doctrine_Query_Token::T_INPUT_PARAMETER);
                 $this->_type = 'param';
-            break;
+                break;
 
             default:
                 $this->_parser->syntaxError('string, number or parameter (? or :)');
-            break;
+                break;
         }
 
         $this->_value = $this->_parser->token['value'];
@@ -78,19 +78,20 @@ class Doctrine_Query_Production_Atom extends Doctrine_Query_Production
         switch ($this->_type) {
             case 'param':
                 return $this->_value;
-            break;
-
-            case 'integer':
-            case 'float':
+            case 'string':
+                //FIXME: Remove the quotes from _value! Should the scanner do that or where?
+                // 'mystring' => mystring. Otherwise 'mystring' is the content (with quotes)!
+                // Eg: select ... from ... where f.foo = 'bar'
+                // => $conn->quote('bar',...), CURRENTLY: $conn->quote("'bar'",...)
+                
+                // This fix looks a bit ugly or ... ? Should this happen earlier? Syntax?
+                // Scanner?
+                if (strpos($this->_value, "'") === 0) {
+                    $this->_value = substr($this->_value, 1, strlen($this->_value) - 2);
+                }
                 return $conn->quote($this->_value, $this->_type);
-            break;
-
             default:
-                $stringQuoting = $conn->getDatabasePlatform()->getProperty('string_quoting');
-                return $stringQuoting['start']
-                     . $conn->quote($this->_value, $this->_type)
-                     . $stringQuoting['end'];
-            break;
+                return $conn->quote($this->_value, $this->_type);
         }
     }
     

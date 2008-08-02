@@ -59,6 +59,9 @@ class Doctrine_Connection_Mock extends Doctrine_Connection_Common
     
     public function quote($input, $type = null)
     {
+        if ($type === 'string') {
+            return "'" . $input . "'";
+        }
         return $input;
     }
 }

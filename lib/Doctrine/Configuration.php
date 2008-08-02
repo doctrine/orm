@@ -63,13 +63,13 @@ class Doctrine_Configuration
     
     /**
      * Initializes the attributes.
+     * Changes null default values to references to the Null object to allow
+     * fast isset() checks instead of array_key_exists().
      * 
      * @return void
      */
     private function _initAttributes()
     {
-        // Change null default values to references to the Null object to allow
-        // fast isset() checks instead of array_key_exists().
         foreach ($this->_attributes as $key => $value) {
             if ($value === null) {
                 $this->_attributes[$key] = $this->_nullObject;

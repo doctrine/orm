@@ -16,26 +16,6 @@ class Doctrine_DatabasePlatform_FirebirdPlatform extends Doctrine_DatabasePlatfo
     public function __construct()
     {
         parent::__construct();
-        $this->_supported = array(
-                          'sequences'             => true,
-                          'indexes'               => true,
-                          'affected_rows'         => true,
-                          'summary_functions'     => true,
-                          'order_by_text'         => true,
-                          'transactions'          => true,
-                          'savepoints'            => true,
-                          'current_id'            => true,
-                          'limit_queries'         => 'emulated',
-                          'LOBs'                  => true,
-                          'replace'               => 'emulated',
-                          'sub_selects'           => true,
-                          'auto_increment'        => true,
-                          'primary_key'           => true,
-                          'result_introspection'  => true,
-                          'prepared_statements'   => true,
-                          'identifier_quoting'    => false,
-                          'pattern_escaping'      => true
-                          );
     }
     
     /**

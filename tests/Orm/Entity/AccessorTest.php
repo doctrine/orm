@@ -13,8 +13,6 @@ class Orm_Entity_AccessorTest extends Doctrine_OrmTestCase
         $entity2->username = 'romanb';
         $this->assertEquals('romanb?!', $entity1->username);
     }
-    
-    
 }
 
 
@@ -41,12 +39,12 @@ class CustomAccessorMutatorTestEntity extends Doctrine_Entity
     
     public function getUsernameCustom()
     {
-        return $this->_rawGetField('username') . "!";
+        return $this->_get('username') . "!";
     }
     
     public function setUsernameCustom($username)
     {
-        $this->_rawSetField('username', $username . "?");
+        $this->_set('username', $username . "?");
     }
 }
 
@@ -69,11 +67,11 @@ class MagicAccessorMutatorTestEntity extends Doctrine_Entity
     
     public function getUsername()
     {
-        return $this->_rawGetField('username') . "!";
+        return $this->_get('username') . "!";
     }
     
     public function setUsername($username)
     {
-        $this->_rawSetField('username', $username . "?");
+        $this->_set('username', $username . "?");
     } 
 }

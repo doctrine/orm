@@ -44,9 +44,9 @@ class Doctrine_Sequence_Mysql extends Doctrine_Sequence
      */
     public function nextId($seqName, $onDemand = true)
     {
-        $sequenceName  = $this->conn->quoteIdentifier($this->conn->formatter->getSequenceName($seqName), true);
-        $seqcolName    = $this->conn->quoteIdentifier($this->conn->getAttribute(Doctrine::ATTR_SEQCOL_NAME), true);
-        $query         = 'INSERT INTO ' . $sequenceName . ' (' . $seqcolName . ') VALUES (NULL)';
+        $sequenceName = $this->conn->quoteIdentifier($this->conn->formatter->getSequenceName($seqName), true);
+        $seqcolName = $this->conn->quoteIdentifier($this->conn->getAttribute(Doctrine::ATTR_SEQCOL_NAME), true);
+        $query = 'INSERT INTO ' . $sequenceName . ' (' . $seqcolName . ') VALUES (NULL)';
 
         try {
             $this->conn->exec($query);
@@ -68,7 +68,7 @@ class Doctrine_Sequence_Mysql extends Doctrine_Sequence
             $query = 'DELETE FROM ' . $sequenceName . ' WHERE ' . $seqcolName . ' < ' . $value;
             try {
                 $this->conn->exec($query);
-            } catch(Doctrine_Exception $e) {
+            } catch (Doctrine_Exception $e) {
                 throw new Doctrine_Sequence_Exception('could not delete previous sequence table values from ' . $seqName);
             }
         }

@@ -15,7 +15,7 @@ class Doctrine_DatabasePlatform_MySqlPlatform extends Doctrine_DatabasePlatform
      * @var array
      * @todo Needed? What about lazy initialization?
      */
-    protected static $_reservedKeywords = array(
+    /*protected static $_reservedKeywords = array(
                           'ADD', 'ALL', 'ALTER',
                           'ANALYZE', 'AND', 'AS',
                           'ASC', 'ASENSITIVE', 'BEFORE',
@@ -90,56 +90,30 @@ class Doctrine_DatabasePlatform_MySqlPlatform extends Doctrine_DatabasePlatform
                           'WHEN', 'WHERE', 'WHILE',
                           'WITH', 'WRITE', 'X509',
                           'XOR', 'YEAR_MONTH', 'ZEROFILL'
-                          );
-    
+                          );*/
     
     /**
      * Constructor.
-     * Creates a new MySqlPlatform.
+     * Creates a new MySqlPlatform instance.
      */
     public function __construct()
     {
-        parent::__construct();
-        $this->_supported = array(
-                'sequences'            => 'emulated',
-                'indexes'              => true,
-                'affected_rows'        => true,
-                'transactions'         => true,
-                'savepoints'           => false,
-                'summary_functions'    => true,
-                'order_by_text'        => true,
-                'current_id'           => 'emulated',
-                'limit_queries'        => true,
-                'LOBs'                 => true,
-                'replace'              => true,
-                'sub_selects'          => true,
-                'auto_increment'       => true,
-                'primary_key'          => true,
-                'result_introspection' => true,
-                'prepared_statements'  => 'emulated',
-                'identifier_quoting'   => true,
-                'pattern_escaping'     => true
-                );
-        $this->_properties['string_quoting'] = array(
-                'start' => "'",
-                'end' => "'",
-                'escape' => '\\',
-                'escape_pattern' => '\\');
-        $this->_properties['identifier_quoting'] = array(
-                'start' => '`',
-                'end' => '`',
-                'escape' => '`');
-        $this->_properties['sql_comments'] = array(
-                array('start' => '-- ', 'end' => "\n", 'escape' => false),
-                array('start' => '#', 'end' => "\n", 'escape' => false),
-                array('start' => '/*', 'end' => '*/', 'escape' => false),
-                );
-
-        $this->properties['varchar_max_length'] = 255;        
+        parent::__construct();      
     }
     
     /**
-     * returns the regular expression operator
+     * Gets the character used for identifier quoting.
+     *
+     * @return string
+     * @override
+     */
+    public function getIdentifierQuoteCharacter()
+    {
+        return '`';
+    }
+    
+    /**
+     * Returns the regular expression operator.
      *
      * @return string
      * @override
@@ -204,6 +178,7 @@ class Doctrine_DatabasePlatform_MySqlPlatform extends Doctrine_DatabasePlatform
         }
         $match.= "'";
         $match.= $this->patternEscapeString();
+        
         return $match;
     }
 
@@ -554,6 +529,29 @@ class Doctrine_DatabasePlatform_MySqlPlatform extends Doctrine_DatabasePlatform
     public function prefersIdentityColumns()
     {
         return true;
+    }
+    
+    /**
+     * Whether the platform supports identity columns.
+     * MySql supports this through AUTO_INCREMENT columns.
+     *
+     * @return boolean
+     * @override
+     */
+    public function supportsIdentityColumns()
+    {
+        return true;
+    }
+    
+    /**
+     * Whether the platform supports savepoints. MySql does not.
+     *
+     * @return boolean
+     * @override
+     */
+    public function supportsSavepoints()
+    {
+        return false;
     }
 }
 

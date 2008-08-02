@@ -165,7 +165,6 @@ class Doctrine_Query_Parser
         if ( ! $isMatch) {
             // No definition for value checking.
             $this->syntaxError($this->_keywordTable->getLiteral($token));
-
         }
 
         $this->next();

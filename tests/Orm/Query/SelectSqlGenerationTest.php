@@ -134,7 +134,9 @@ class Orm_Query_SelectSqlGenerationTest extends Doctrine_OrmTestCase
     {
         $this->assertSqlGeneration(
             "SELECT u.name FROM CmsUser u WHERE TRIM(u.name) = 'someone'",
-            "SELECT cu.name AS cu__name FROM cms_user cu WHERE TRIM(cu.name) = ''someone''" // SQLite double slashes for strings
+            // String quoting in the SQL usually depends on the database platform.
+            // This test works with a mock connection which uses ' for string quoting.
+            "SELECT cu.name AS cu__name FROM cms_user cu WHERE TRIM(cu.name) = 'someone'"
         );
     }
 
