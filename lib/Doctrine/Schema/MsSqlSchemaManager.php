@@ -19,57 +19,64 @@
  * <http://www.phpdoctrine.org>.
  */
 
+#namespace Doctrine::DBAL::Schema;
+
 /**
- * Doctrine_Export_Frontbase
+ * xxx
  *
- * @package     Doctrine
- * @subpackage  Export
+ * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  * @author      Lukas Smith <smith@pooteeweet.org> (PEAR MDB2 library)
- * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
- * @link        www.phpdoctrine.org
- * @since       1.0
  * @version     $Revision$
+ * @since       2.0
  */
-class Doctrine_Export_Frontbase extends Doctrine_Export
+class Doctrine_Schema_MsSqlSchemaManager extends Doctrine_Schema_SchemaManager
 {
+    public function __construct(Doctrine_Connection_Mssql $conn)
+    {
+        $this->_conn = $conn;
+    }
+    
     /**
      * create a new database
      *
      * @param string $name name of the database that should be created
-     * @return string
+     * @return void
      */
-    public function createDatabaseSql($name)
+    public function createDatabase($name)
     {
-        $name  = $this->conn->quoteIdentifier($name, true);
-        return 'CREATE DATABASE ' . $name;
+        $name = $this->conn->quoteIdentifier($name, true);
+        $query = "CREATE DATABASE $name";
+        if ($this->conn->options['database_device']) {
+            $query.= ' ON '.$this->conn->options['database_device'];
+            $query.= $this->conn->options['database_size'] ? '=' .
+                     $this->conn->options['database_size'] : '';
+        }
+        return $this->conn->standaloneQuery($query, null, true);
     }
 
     /**
      * drop an existing database
      *
      * @param string $name name of the database that should be dropped
-     * @return string
+     * @return void
      */
-    public function dropDatabaseSql($name)
+    public function dropDatabase($name)
     {
-        $name  = $this->conn->quoteIdentifier($name, true);
-        return 'DELETE DATABASE ' . $name;    
+        $name = $this->conn->quoteIdentifier($name, true);
+        return $this->conn->standaloneQuery('DROP DATABASE ' . $name, null, true);
     }
 
     /**
-     * drop an existing table
+     * Override the parent method.
      *
-     * @param object $this->conns        database object that is extended by this class
-     * @param string $name       name of the table that should be dropped
-     * @return string
+     * @return string The string required to be placed between "CREATE" and "TABLE"
+     *                to generate a temporary table, if possible.
      */
-    public function dropTableSql($name)
+    public function getTemporaryTableQuery()
     {
-        $name = $this->conn->quoteIdentifier($name, true);
-        return 'DROP TABLE ' . $name . ' CASCADE';
-    }
-
+        return '';
+    }  
     /**
      * alter an existing table
      *
@@ -88,7 +95,7 @@ class Doctrine_Export_Frontbase extends Doctrine_Export
      *                                 indexes of the array. The value of each entry of the array
      *                                 should be set to another associative array with the properties
      *                                 of the fields to be added. The properties of the fields should
-     *                                 be the same as defined by the MDB2 parser.
+     *                                 be the same as defined by the Metabase parser.
      *
      *
      *                            remove
@@ -117,7 +124,7 @@ class Doctrine_Export_Frontbase extends Doctrine_Export
      *                                 array with the properties of the fields to that are meant to be changed as
      *                                 array entries. These entries should be assigned to the new values of the
      *                                 respective properties. The properties of the fields should be the same
-     *                                 as defined by the MDB2 parser.
+     *                                 as defined by the Metabase parser.
      *
      *                            Example
      *                                array(
@@ -156,90 +163,46 @@ class Doctrine_Export_Frontbase extends Doctrine_Export
      * @param boolean $check     indicates whether the function should just check if the DBMS driver
      *                             can perform the requested table alterations if the value is true or
      *                             actually perform them otherwise.
-     * @access public
-     *
-     * @return boolean
+     * @return void
      */
     public function alterTable($name, array $changes, $check = false)
     {
         foreach ($changes as $changeName => $change) {
             switch ($changeName) {
-            case 'add':
-            case 'remove':
-            case 'change':
-            case 'rename':
-            case 'name':
-                break;
-            default:
-                throw new Doctrine_Export_Exception('change type "'.$changeName.'" not yet supported');
+                case 'add':
+                    break;
+                case 'remove':
+                    break;
+                case 'name':
+                case 'rename':
+                case 'change':
+                default:
+                    throw new Doctrine_Export_Exception('alterTable: change type "' . $changeName . '" not yet supported');
             }
         }
 
-        if ($check) {
-            return true;
-        }
-
         $query = '';
-        if ( ! empty($changes['name'])) {
-            $changeName = $this->conn->quoteIdentifier($changes['name'], true);
-            $query .= 'RENAME TO ' . $changeName;
-        }
-
         if ( ! empty($changes['add']) && is_array($changes['add'])) {
             foreach ($changes['add'] as $fieldName => $field) {
                 if ($query) {
-                    $query.= ', ';
+                    $query .= ', ';
                 }
-                $query.= 'ADD ' . $this->conn->getDeclaration($fieldName, $field);
+                $query .= 'ADD ' . $this->conn->getDeclaration($fieldName, $field);
             }
         }
 
         if ( ! empty($changes['remove']) && is_array($changes['remove'])) {
             foreach ($changes['remove'] as $fieldName => $field) {
                 if ($query) {
-                    $query.= ', ';
+                    $query .= ', ';
                 }
-                $fieldName = $this->conn->quoteIdentifier($fieldName, true);
-                $query.= 'DROP ' . $fieldName;
-            }
-        }
-
-        $rename = array();
-        if ( ! empty($changes['rename']) && is_array($changes['rename'])) {
-            foreach ($changes['rename'] as $fieldName => $field) {
-                $rename[$field['name']] = $fieldName;
-            }
-        }
-
-        if ( ! empty($changes['change']) && is_array($changes['change'])) {
-            foreach ($changes['change'] as $fieldName => $field) {
-                if ($query) {
-                    $query.= ', ';
-                }
-                if (isset($rename[$fieldName])) {
-                    $oldFieldName = $rename[$fieldName];
-                    unset($rename[$fieldName]);
-                } else {
-                    $oldFieldName = $fieldName;
-                }
-                $oldFieldName = $this->conn->quoteIdentifier($oldFieldName, true);
-                $query.= 'CHANGE ' . $oldFieldName . ' ' . $this->conn->getDeclaration($oldFieldName, $field['definition']);
-            }
-        }
-
-        if ( ! empty($rename) && is_array($rename)) {
-            foreach ($rename as $renamedFieldName => $renamed_field) {
-                if ($query) {
-                    $query.= ', ';
-                }
-                $oldFieldName = $rename[$renamedFieldName];
-                $field = $changes['rename'][$oldFieldName];
-                $query.= 'CHANGE ' . $this->conn->getDeclaration($oldFieldName, $field['definition']);
+                $field_name = $this->conn->quoteIdentifier($fieldName, true);
+                $query .= 'DROP COLUMN ' . $fieldName;
             }
         }
 
         if ( ! $query) {
-            return true;
+            return false;
         }
 
         $name = $this->conn->quoteIdentifier($name, true);
@@ -249,68 +212,217 @@ class Doctrine_Export_Frontbase extends Doctrine_Export
     /**
      * create sequence
      *
-     * @param string    $seqName     name of the sequence to be created
-     * @param string    $start         start value of the sequence; default is 1
+     * @param string $seqName name of the sequence to be created
+     * @param string $start start value of the sequence; default is 1
      * @param array     $options  An associative array of table options:
      *                          array(
      *                              'comment' => 'Foo',
      *                              'charset' => 'utf8',
      *                              'collate' => 'utf8_unicode_ci',
      *                          );
-     * @return void
+     * @return string
      */
-    public function createSequence($sequenceName, $start = 1, array $options = array())
+    public function createSequence($seqName, $start = 1, array $options = array())
     {
-        $sequenceName = $this->conn->quoteIdentifier($this->conn->getSequenceName($sequenceName), true);
-        $seqcolName   = $this->conn->quoteIdentifier($this->conn->getAttribute(Doctrine::ATTR_SEQCOL_NAME), true);
+        $sequenceName = $this->conn->quoteIdentifier($this->conn->getSequenceName($seqName), true);
+        $seqcolName = $this->conn->quoteIdentifier($this->conn->options['seqcol_name'], true);
+        $query = 'CREATE TABLE ' . $sequenceName . ' (' . $seqcolName .
+                 ' INT PRIMARY KEY CLUSTERED IDENTITY(' . $start . ', 1) NOT NULL)';
 
-        $query = 'CREATE TABLE ' . $sequenceName . ' (' . $seqcolName . ' INTEGER DEFAULT UNIQUE, PRIMARY KEY(' . $seqcolName . '))';
         $res = $this->conn->exec($query);
-        $res = $this->conn->exec('SET UNIQUE = 1 FOR ' . $sequenceName);
 
         if ($start == 1) {
             return true;
         }
-        
-        try {
-            $this->conn->exec('INSERT INTO ' . $sequenceName . ' (' . $seqcolName . ') VALUES (' . ($start-1) . ')');
-        } catch(Doctrine_Connection_Exception $e) {
-            // Handle error
-            try {
-                $this->conn->exec('DROP TABLE ' . $sequenceName);
-            } catch(Doctrine_Connection_Exception $e) {
-                throw new Doctrine_Export_Exception('could not drop inconsistent sequence table');
-            }
 
-            throw new Doctrine_Export_Exception('could not create sequence table');
+        try {
+            $query = 'SET IDENTITY_INSERT ' . $sequenceName . ' ON ' .
+                     'INSERT INTO ' . $sequenceName . ' (' . $seqcolName . ') VALUES ( ' . $start . ')';
+            $res = $this->conn->exec($query);
+        } catch (Exception $e) {
+            $result = $this->conn->exec('DROP TABLE ' . $sequenceName);
         }
+        return true;
     }
 
     /**
-     * drop existing sequence
+     * This function drops an existing sequence
      *
-     * @param string $seqName       name of the sequence to be dropped
-     * @return string
+     * @param string $seqName      name of the sequence to be dropped
+     * @return void
      */
     public function dropSequenceSql($seqName)
     {
         $sequenceName = $this->conn->quoteIdentifier($this->conn->getSequenceName($seqName), true);
+        return 'DROP TABLE ' . $sequenceName;
+    }
+    
+    /**
+     * lists all database sequences
+     *
+     * @param string|null $database
+     * @return array
+     */
+    public function listSequences($database = null)
+    {
+        $query = "SELECT name FROM sysobjects WHERE xtype = 'U'";
+        $tableNames = $this->conn->fetchColumn($query);
 
-        return 'DROP TABLE ' . $sequenceName . ' CASCADE';
+        return array_map(array($this->conn->formatter, 'fixSequenceName'), $tableNames);
     }
 
     /**
-     * drop existing index
+     * lists table constraints
      *
-     * @param string    $table        name of table that should be used in method
-     * @param string    $name         name of the index to be dropped
-     * @return boolean
+     * @param string $table     database table name
+     * @return array
      */
-    public function dropIndexSql($table, $name)
+    public function listTableColumns($table)
     {
-        $table = $this->conn->quoteIdentifier($table, true);
-        $name = $this->conn->quoteIdentifier($this->conn->getIndexName($name), true);
+        $sql     = 'EXEC sp_columns @table_name = ' . $this->conn->quoteIdentifier($table, true);
+        $result  = $this->conn->fetchAssoc($sql);
+        $columns = array();
 
-        return 'ALTER TABLE ' . $table . ' DROP INDEX ' . $name;
+        foreach ($result as $key => $val) {
+            $val = array_change_key_case($val, CASE_LOWER);
+
+            if (strstr($val['type_name'], ' ')) {
+                list($type, $identity) = explode(' ', $val['type_name']);
+            } else {
+                $type = $val['type_name'];
+                $identity = '';
+            }
+
+            if ($type == 'varchar') {
+                $type .= '(' . $val['length'] . ')';
+            }
+
+            $val['type'] = $type;
+            $val['identity'] = $identity;
+            $decl = $this->conn->dataDict->getPortableDeclaration($val);
+
+            $description  = array(
+                'name'      => $val['column_name'],
+                'ntype'     => $type,
+                'type'      => $decl['type'][0],
+                'alltypes'  => $decl['type'],
+                'length'    => $decl['length'],
+                'fixed'     => $decl['fixed'],
+                'unsigned'  => $decl['unsigned'],
+                'notnull'   => (bool) (trim($val['is_nullable']) === 'NO'),
+                'default'   => $val['column_def'],
+                'primary'   => (strtolower($identity) == 'identity'),
+            );
+            $columns[$val['column_name']] = $description;
+        }
+
+        return $columns;
     }
+
+    /**
+     * lists table constraints
+     *
+     * @param string $table     database table name
+     * @return array
+     */
+    public function listTableIndexes($table)
+    {
+
+    }
+
+    /**
+     * lists tables
+     *
+     * @param string|null $database
+     * @return array
+     */
+    public function listTables($database = null)
+    {
+        $sql = "SELECT name FROM sysobjects WHERE type = 'U' AND name <> 'dtproperties' ORDER BY name";
+
+        return $this->conn->fetchColumn($sql);
+    }
+
+    /**
+     * lists all triggers
+     *
+     * @return array
+     */
+    public function listTriggers($database = null)
+    {
+        $query = "SELECT name FROM sysobjects WHERE xtype = 'TR'";
+
+        $result = $this->conn->fetchColumn($query);
+
+        return $result;
+    }
+
+    /**
+     * lists table triggers
+     *
+     * @param string $table     database table name
+     * @return array
+     */
+    public function listTableTriggers($table)
+    {
+        $table = $this->conn->quote($table, 'text');
+        $query = "SELECT name FROM sysobjects WHERE xtype = 'TR' AND object_name(parent_obj) = " . $table;
+
+        $result = $this->conn->fetchColumn($query);
+
+        return $result;
+    }
+
+    /**
+     * lists table views
+     *
+     * @param string $table     database table name
+     * @return array
+     */
+    public function listTableViews($table)
+    {
+        $keyName = 'INDEX_NAME';
+        $pkName = 'PK_NAME';
+        if ($this->conn->getAttribute(Doctrine::ATTR_PORTABILITY) & Doctrine::PORTABILITY_FIX_CASE) {
+            if ($this->conn->getAttribute(Doctrine::ATTR_FIELD_CASE) == CASE_LOWER) {
+                $keyName = strtolower($keyName);
+                $pkName  = strtolower($pkName);
+            } else {
+                $keyName = strtoupper($keyName);
+                $pkName  = strtoupper($pkName);
+            }
+        }
+        $table = $this->conn->quote($table, 'text');
+        $query = 'EXEC sp_statistics @table_name = ' . $table;
+        $indexes = $this->conn->fetchColumn($query, $keyName);
+
+        $query = 'EXEC sp_pkeys @table_name = ' . $table;
+        $pkAll = $this->conn->fetchColumn($query, $pkName);
+
+        $result = array();
+
+        foreach ($indexes as $index) {
+            if ( ! in_array($index, $pkAll) && $index != null) {
+                $result[] = $this->conn->formatter->fixIndexName($index);
+            }
+        }
+
+        return $result;
+    }
+
+    /**
+     * lists database views
+     *
+     * @param string|null $database
+     * @return array
+     */
+    public function listViews($database = null)
+    {
+        $query = "SELECT name FROM sysobjects WHERE xtype = 'V'";
+
+        return $this->conn->fetchColumn($query);
+    }
+    
 }
+
+?>

@@ -298,8 +298,6 @@ class Doctrine_EntityManager
     
     /**
      * Flushes all changes to objects that have been queued up to now to the database.
-     *
-     * @todo package:orm
      */
     public function flush()
     {

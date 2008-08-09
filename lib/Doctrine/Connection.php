@@ -166,6 +166,13 @@ abstract class Doctrine_Connection
      * @var Doctrine::DBAL::Sequencing::SequenceManager
      */
     protected $_sequenceManager;
+    
+    /**
+     * The schema manager.
+     *
+     * @var Doctrine::DBAL::Schema::SchemaManager
+     */
+    protected $_schemaManager;
 
     /**
      * Constructor.
@@ -1167,5 +1174,20 @@ abstract class Doctrine_Connection
             $this->_sequenceManager = new $class;
         }
         return $this->_sequenceManager;
+    }
+    
+    /**
+     * Gets the SchemaManager that can be used to inspect or change the 
+     * database schema through the connection.
+     *
+     * @return Doctrine::DBAL::Schema::SchemaManager
+     */
+    public function getSchemaManager()
+    {
+        if ( ! $this->_schemaManager) {
+            $class = "Doctrine_Schema_" . $this->_driverName . "SchemaManager";
+            $this->_schemaManager = new $class($this);
+        }
+        return $this->_schemaManager;
     }
 }

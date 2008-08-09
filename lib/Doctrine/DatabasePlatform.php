@@ -5,6 +5,7 @@
 /**
  * Base class for all DatabasePlatforms. The DatabasePlatforms are the central
  * point of abstraction of platform-specific behaviors, features and SQL dialects.
+ * They are a passive source of information.
  *
  * @since 2.0
  * @author Roman Borschel <roman@code-factory.org>

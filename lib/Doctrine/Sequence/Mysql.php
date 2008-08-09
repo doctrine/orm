@@ -19,13 +19,11 @@
  * <http://www.phpdoctrine.org>.
  */
 
-#namespace Doctrine::DBAL::Sequences;
+#namespace Doctrine::DBAL::Sequencing;
 
 /**
  * Doctrine_Sequence_Mysql
  *
- * @package     Doctrine
- * @subpackage  Sequence
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @link        www.phpdoctrine.org

@@ -27,8 +27,6 @@
  *
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  * @author      Roman Borschel <roman@code-factory.org>
- * @package     Doctrine
- * @subpackage  ClassMetadata
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @version     $Revision$
  * @link        www.phpdoctrine.org
@@ -188,114 +186,9 @@ class Doctrine_ClassMetadata_Factory
             $class->setTableName(Doctrine::tableize($class->getClassName()));
         }
         
-        // complete identifier mapping
-        $this->_initIdentifier($class);
+        $class->completeIdentifierMapping();
         
         return $class;
-    }
-    
-    /**
-     * Initializes the class identifier(s)/primary key(s).
-     *
-     * @param Doctrine_Metadata  The metadata container of the class in question.
-     */
-    protected function _initIdentifier(Doctrine_ClassMetadata $class)
-    {
-        /*switch (count($class->getIdentifier())) {
-            case 0: // No identifier in the class mapping yet
-                
-                // If its a subclass, inherit the identifier from the parent.
-                if ($class->getInheritanceType() == Doctrine::INHERITANCE_TYPE_JOINED &&
-                        count($class->getParentClasses()) > 0) {       
-                    $parents = $class->getParentClasses();
-                    $root = end($parents);
-                    $rootClass = $class->getConnection()->getMetadata($root);
-                    $class->setIdentifier($rootClass->getIdentifier());
-                    
-                    if ($class->getIdentifierType() !== Doctrine::IDENTIFIER_AUTOINC) {
-                        $class->setIdentifierType($rootClass->getIdentifierType());
-                    } else {
-                        $class->setIdentifierType(Doctrine::IDENTIFIER_NATURAL);
-                    }
-
-                    // add all inherited primary keys
-                    foreach ($class->getIdentifier() as $id) {
-                        $definition = $rootClass->getDefinitionOf($id);
-
-                        // inherited primary keys shouldn't contain autoinc
-                        // and sequence definitions
-                        unset($definition['autoincrement']);
-                        unset($definition['sequence']);
-
-                        // add the inherited primary key column
-                        $fullName = $rootClass->getColumnName($id) . ' as ' . $id;
-                        $class->setColumn($fullName, $definition['type'], $definition['length'],
-                                $definition, true);
-                    }
-                } else {
-                    throw Doctrine_MappingException::identifierRequired($class->getClassName());
-                }
-                break;
-            case 1: // A single identifier is in the mapping
-                foreach ($class->getIdentifier() as $pk) {
-                    $columnName = $class->getColumnName($pk);
-                    $thisColumns = $class->getFieldMappings();
-                    $e = $thisColumns[$columnName];
-
-                    $found = false;
-
-                    foreach ($e as $option => $value) {
-                        if ($found) {
-                            break;
-                        }
-
-                        $e2 = explode(':', $option);
-
-                        switch (strtolower($e2[0])) {
-                            case 'autoincrement':
-                            case 'autoinc':
-                                $class->setIdentifierType(Doctrine::IDENTIFIER_AUTOINC);
-                                $found = true;
-                                break;
-                            case 'seq':
-                            case 'sequence':
-                                $class->setIdentifierType(Doctrine::IDENTIFIER_SEQUENCE);
-                                $found = true;
-
-                                if ($value) {
-                                    $class->setTableOption('sequenceName', $value);
-                                } else {
-                                    if (($sequence = $class->getAttribute(Doctrine::ATTR_DEFAULT_SEQUENCE)) !== null) {
-                                        $class->setTableOption('sequenceName', $sequence);
-                                    } else {
-                                        $class->setTableOption('sequenceName', $class->getConnection()
-                                                ->getSequenceName($class->getTableName()));
-                                    }
-                                }
-                                break;
-                        }
-                    }
-                    $identifierType = $class->getIdentifierType();
-                    if ( ! isset($identifierType)) {
-                        $class->setIdentifierType(Doctrine::IDENTIFIER_NATURAL);
-                    }
-                }
-
-                $class->setIdentifier(array($pk));
-
-                break;
-            default: // Multiple identifiers are in the mapping so its a composite id
-                $class->setIdentifierType(Doctrine::IDENTIFIER_COMPOSITE);
-        }*/
-        
-        // If the chosen generator type is "auto", then pick the one appropriate for
-        // the database.
-        
-        // FIXME: This is very ugly here. Such switch()es on the database driver
-        // are unnecessary as we can easily replace them with polymorphic calls on
-        // the connection (or another) object. We just need to decide where to put
-        // the id generation types.
-        $class->completeIdentifierMapping();
     }
     
 }
