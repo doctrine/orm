@@ -34,7 +34,18 @@ class CmsArticle extends Doctrine_Entity
             'type' => 'integer',
             'length' => 4
         ));
-        $mapping->hasMany('CmsComment as comments', array(
-              'local' => 'id', 'foreign' => 'article_id'));
+        
+        /*$mapping->hasMany('CmsComment as comments', array(
+              'local' => 'id', 'foreign' => 'article_id'));*/
+        
+        $mapping->mapOneToMany(array(
+            'fieldName' => 'comments',
+            'targetEntity' => 'CmsComment',
+        ));
+        
+        /*$mapping->mapManyToOne(array(
+            'fieldName' => 'author',
+            'joinColumns' => array('user_id' => 'id')
+        ));*/
     }
 }

@@ -73,7 +73,7 @@ class Doctrine_Query_Production_PathExpressionEndingWithAsterisk extends Doctrin
                 $relationName = $this->_identifiers[$i];
                 $path .= '.' . $relationName;
 
-                if ( ! $classMetadata->hasRelation($relationName)) {
+                if ( ! $classMetadata->hasAssociation($relationName)) {
                     $className = $classMetadata->getClassName();
 
                     $this->_parser->semanticalError(

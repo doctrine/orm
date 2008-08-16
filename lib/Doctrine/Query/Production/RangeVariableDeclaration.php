@@ -191,7 +191,7 @@ class Doctrine_Query_Production_RangeVariableDeclaration extends Doctrine_Query_
                 }
             } else {
                 // We don't have the query component yet
-                if ( ! $classMetadata->hasRelation($relationName)) {
+                if ( ! $classMetadata->hasAssociation($relationName)) {
                     $className = $classMetadata->getClassName();
 
                     $this->_parser->semanticalError("Relation '{$relationName}' does not exist in component '{$className}'");
@@ -199,13 +199,13 @@ class Doctrine_Query_Production_RangeVariableDeclaration extends Doctrine_Query_
                     return;
                 }
 
-                // Retrieving ClassMetadata and Mapper
+                // Retrieving ClassMetadata
                 try {
-                    $relation = $classMetadata->getRelation($relationName);
-                    $classMetadata = $relation->getClassMetadata();
+                    $relation = $classMetadata->getAssociationMapping($relationName);
+                    $targetClassMetadata = $this->_em->getClassMetadata($relation->getTargetEntityName());
 
                     $queryComponent = array(
-                        'metadata' => $classMetadata,
+                        'metadata' => $targetClassMetadata,
                         'parent'   => $parent,
                         'relation' => $relation,
                         'map'      => null,
@@ -226,7 +226,7 @@ class Doctrine_Query_Production_RangeVariableDeclaration extends Doctrine_Query_
             $this->_identificationVariable = $path;
         }
 
-        $tableAlias = $parserResult->generateTableAlias($classMetadata->getClassName());
+        $tableAlias = $parserResult->generateTableAlias($targetClassMetadata->getClassName());
 
 	//echo "Table alias: " . $tableAlias . "\n";
 

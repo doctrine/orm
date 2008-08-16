@@ -93,7 +93,7 @@ class Doctrine_Query_Production_PathExpression extends Doctrine_Query_Production
                 $relationName = $this->_identifiers[$i];
                 $path .= '.' . $relationName;
 
-                if ( ! $classMetadata->hasRelation($relationName)) {
+                if ( ! $classMetadata->hasAssociation($relationName)) {
                     $className = $classMetadata->getClassName();
 
                     $this->_parser->semanticalError(

@@ -23,7 +23,7 @@
 
 /**
  * Base class for all Entities (objects with persistent state in a RDBMS that are
- * managed by Doctrine).
+ * managed by Doctrine). Kind of a Layer Suptertype.
  * 
  * NOTE: Methods that are intended for internal use only but must be public
  * are marked INTERNAL: and begin with an underscore "_" to indicate that they
@@ -40,7 +40,7 @@
  * @since       2.0
  * @version     $Revision: 4342 $
  */
-abstract class Doctrine_Entity extends Doctrine_Access implements Serializable
+abstract class Doctrine_Entity implements ArrayAccess, Serializable
 {
     /**
      * MANAGED
@@ -145,23 +145,37 @@ abstract class Doctrine_Entity extends Doctrine_Access implements Serializable
     private $_state;
 
     /**
-     * The names of fields that have been modified but not yet persisted.
+     * The changes that happened to fields of the entity.
      * Keys are field names, values oldValue => newValue tuples.
      *
      * @var array
-     * @todo Rename to $_changeSet
      */
-    private $_modified = array();
+    private $_dataChangeSet = array();
+    
+    /**
+     * The changes that happened to references of the entity to other entities.
+     * Keys are field names, values oldReference => newReference tuples.
+     * 
+     * With one-one associations, a reference change means the reference has been
+     * swapped out / replaced by another one.
+     * 
+     * With one-many, many-many associations, a reference change means the complete
+     * collection has been sweapped out / replaced by another one.
+     *
+     * @var array
+     */
+    private $_referenceChangeSet = array();
 
     /**
      * The references for all associations of the entity to other entities.
+     * Keys are field names, values object references.
      *
      * @var array
      */
     private $_references = array();
     
     /**
-     * The EntityManager that is responsible for the persistence of the entity.
+     * The EntityManager that is responsible for the persistent state of the entity.
      *
      * @var Doctrine::ORM::EntityManager
      */
@@ -174,6 +188,14 @@ abstract class Doctrine_Entity extends Doctrine_Access implements Serializable
      * @var integer                  
      */
     private $_oid;
+    
+    /**
+     * Flag that indicates whether the entity is dirty.
+     * (which means it has local changes)
+     *
+     * @var boolean
+     */
+    //private $_isDirty = false;
 
     /**
      * Constructor.
@@ -238,7 +260,7 @@ abstract class Doctrine_Entity extends Doctrine_Access implements Serializable
      *
      * Part of the implementation of the Serializable interface.
      *
-     * @return array
+     * @return string
      */
     public function serialize()
     {
@@ -347,19 +369,7 @@ abstract class Doctrine_Entity extends Doctrine_Access implements Serializable
         if ($state == null) {
             return $this->_state;
         }
-        
-        /* TODO: Do we really need this check? This is only for internal use after all. */
-        switch ($state) {
-            case self::STATE_MANAGED:
-            case self::STATE_DELETED:
-            case self::STATE_DETACHED:
-            case self::STATE_NEW:
-            case self::STATE_LOCKED:
-                $this->_state = $state;
-                break;
-            default:
-                throw Doctrine_Entity_Exception::invalidState($state);
-        }
+        $this->_state = $state;
     }
 
     /**
@@ -374,39 +384,83 @@ abstract class Doctrine_Entity extends Doctrine_Access implements Serializable
 
     /**
      * Gets the value of a field (regular field or reference).
-     * If the field is not yet loaded this method does NOT load it.
      *
-     * @param $name                         name of the property
-     * @throws Doctrine_Entity_Exception    if trying to get an unknown field
-     * @return mixed
+     * @param $name  Name of the field.
+     * @return mixed  Value of the field.
+     * @throws Doctrine::ORM::Exceptions::EntityException  If trying to get an unknown field.
      */
     final protected function _get($fieldName)
-    {
+    {    
+        $nullObj = Doctrine_Null::$INSTANCE;
         if (isset($this->_data[$fieldName])) {
-            return $this->_internalGetField($fieldName);
+            return $this->_data[$fieldName] !== $nullObj ?
+                    $this->_data[$fieldName] : null;
         } else if (isset($this->_references[$fieldName])) {
-            return $this->_internalGetReference($fieldName);
+            return $this->_references[$fieldName] !== $nullObj ?
+                    $this->_references[$fieldName] : null;
         } else {
-            throw Doctrine_Entity_Exception::unknownField($fieldName);
+            if ($this->_class->hasField($fieldName)) {
+                return null;
+            } else if ($this->_class->hasAssociation($fieldName)) {
+                $rel = $this->_class->getAssociationMapping($fieldName);
+                if ($rel->isLazilyFetched()) {
+                    $this->_references[$fieldName] = $rel->lazyLoadFor($this);
+                    return $this->_references[$fieldName] !== $nullObj ?
+                            $this->_references[$fieldName] : null;
+                } else {
+                    return null;
+                }
+            } else {
+                throw Doctrine_Entity_Exception::invalidField($fieldName);
+            }
         }
     }
     
     /**
      * Sets the value of a field (regular field or reference).
-     * If the field is not yet loaded this method does NOT load it.
      *
-     * @param $name                         name of the field
-     * @throws Doctrine_Entity_Exception    if trying to get an unknown field
-     * @return mixed
+     * @param $fieldName The name of the field.
+     * @param $value The value of the field.
+     * @return void
+     * @throws Doctrine::ORM::Exceptions::EntityException
      */
     final protected function _set($fieldName, $value)
     {
         if ($this->_class->hasField($fieldName)) {
-            return $this->_internalSetField($fieldName, $value);
-        } else if ($this->_class->hasRelation($fieldName)) {
-            return $this->_internalSetReference($fieldName, $value);
+            $old = isset($this->_data[$fieldName]) ? $this->_data[$fieldName] : null;
+            // NOTE: Common case: $old != $value. Special case: null == 0 (TRUE), which
+            // is addressed by the type comparison.
+            if ($old != $value || gettype($old) != gettype($value)) {
+                $this->_data[$fieldName] = $value;
+                $this->_dataChangeSet[$fieldName] = array($old => $value);
+                if ($this->isNew() && $this->_class->isIdentifier($fieldName)) {
+                    $this->_id[$fieldName] = $value;
+                }
+                $this->_registerDirty();
+            }
+        } else if ($this->_class->hasAssociation($fieldName)) {
+            $old = isset($this->_references[$fieldName]) ? $this->_references[$fieldName] : null;
+            if ($old !== $value) {
+                $this->_internalSetReference($fieldName, $value);
+                $this->_referenceChangeSet[$fieldName] = array($old => $value);
+                $this->_registerDirty();
+                if ($old instanceof Doctrine_Collection) {
+                    $this->_em->getUnitOfWork()->scheduleCollectionDeletion($old);
+                }
+                if ($value instanceof Doctrine_Collection) {
+                    $this->_em->getUnitOfWork()->scheduleCollectionRecreation($value);
+                }
+            }
         } else {
-            throw Doctrine_Entity_Exception::unknownField($fieldName);
+            throw Doctrine_Entity_Exception::invalidField($fieldName);
+        }
+    }
+    
+    private function _registerDirty()
+    {
+        if ($this->_state == self::STATE_MANAGED &&
+                ! $this->_em->getUnitOfWork()->isRegisteredDirty($this)) {
+            $this->_em->getUnitOfWork()->registerDirty($this);
         }
     }
     
@@ -420,7 +474,6 @@ abstract class Doctrine_Entity extends Doctrine_Access implements Serializable
      *
      * @param string $fieldName
      * @return mixed
-     * @todo Rename to _unsafeGetField()
      */
     final public function _internalGetField($fieldName)
     {
@@ -447,6 +500,7 @@ abstract class Doctrine_Entity extends Doctrine_Access implements Serializable
     }
     
     /**
+     * INTERNAL:
      * Gets a reference to another Entity.
      * 
      * NOTE: Use of this method in userland code is strongly discouraged.
@@ -464,16 +518,15 @@ abstract class Doctrine_Entity extends Doctrine_Access implements Serializable
     
     /**
      * INTERNAL:
-     * Sets a reference to another Entity.
+     * Sets a reference to another entity or a collection of entities.
      * 
      * NOTE: Use of this method in userland code is strongly discouraged.
      *
      * @param string $fieldName
      * @param mixed $value
-     * @todo Refactor. What about composite keys?
-     * @todo Rename to _unsafeSetReference()
+     * @todo Refactor.
      */
-    final public function _internalSetReference($name, $value)
+    final public function _internalSetReference_OLD($name, $value)
     {
         if ($value === Doctrine_Null::$INSTANCE) {
             $this->_references[$name] = $value;
@@ -486,7 +539,7 @@ abstract class Doctrine_Entity extends Doctrine_Access implements Serializable
         if ($rel instanceof Doctrine_Relation_ForeignKey ||
                 $rel instanceof Doctrine_Relation_LocalKey) {
             if ( ! $rel->isOneToOne()) {
-                // one-to-many relation found
+                // one-to-many relation
                 if ( ! $value instanceof Doctrine_Collection) {
                     throw Doctrine_Entity_Exception::invalidValueForOneToManyReference();
                 }
@@ -522,44 +575,71 @@ abstract class Doctrine_Entity extends Doctrine_Access implements Serializable
 
         $this->_references[$name] = $value;
     }
+    
+    /**
+     * INTERNAL:
+     * Sets a reference to another entity or a collection of entities.
+     * 
+     * NOTE: Use of this method in userland code is strongly discouraged.
+     *
+     * @param string $fieldName
+     * @param mixed $value
+     * @todo Refactor.
+     */
+    final public function _internalSetReference($name, $value)
+    {
+        if ($value === Doctrine_Null::$INSTANCE) {
+            $this->_references[$name] = $value;
+            return;
+        }
+        
+        $rel = $this->_class->getAssociationMapping($name);
+
+        // one-to-many or one-to-one relation
+        if ($rel->isOneToOne() || $rel->isOneToMany()) {
+            if ( ! $rel->isOneToOne()) {
+                // one-to-many relation
+                if ( ! $value instanceof Doctrine_Collection) {
+                    throw Doctrine_Entity_Exception::invalidValueForOneToManyReference();
+                }
+                if (isset($this->_references[$name])) {
+                    $this->_references[$name]->setData($value->getData());
+                    return;
+                }
+            } else {
+                $relatedClass = $value->getClass();
+                //$foreignFieldName = $rel->getForeignFieldName();
+                //$localFieldName = $rel->getLocalFieldName();
+
+                // one-to-one relation found
+                if ( ! ($value instanceof Doctrine_Entity)) {
+                    throw Doctrine_Entity_Exception::invalidValueForOneToOneReference();
+                }
+            }
+        } else if ($rel instanceof Doctrine_Relation_Association) {
+            if ( ! ($value instanceof Doctrine_Collection)) {
+                throw Doctrine_Entity_Exception::invalidValueForManyToManyReference();
+            }
+        }
+
+        $this->_references[$name] = $value;
+    }
 
     /**
-     * Generic getter for all persistent fields.
+     * Generic getter for all (persistent) fields of the entity.
+     * 
+     * Invoked by Doctrine::ORM::Access#__get().
      *
      * @param string $fieldName  Name of the field.
      * @return mixed
+     * @override
      */
     final public function get($fieldName)
     {
         if ($getter = $this->_getCustomAccessor($fieldName)) {
             return $this->$getter();
         }
-        
-        // Use built-in accessor functionality        
-        $nullObj = Doctrine_Null::$INSTANCE;
-        if (isset($this->_data[$fieldName])) {
-            return $this->_data[$fieldName] !== $nullObj ?
-                    $this->_data[$fieldName] : null;
-        } else if (isset($this->_references[$fieldName])) {
-            return $this->_references[$fieldName] !== $nullObj ?
-                    $this->_references[$fieldName] : null;
-        } else {
-            $class = $this->_class;
-            if ($class->hasField($fieldName)) {
-                return null;
-            } else if ($class->hasRelation($fieldName)) {
-                $rel = $class->getRelation($fieldName);
-                if ($rel->isLazilyLoaded()) {
-                    $this->_references[$fieldName] = $rel->lazyLoadFor($this);
-                    return $this->_references[$fieldName] !== $nullObj ?
-                            $this->_references[$fieldName] : null;
-                } else {
-                    return null;
-                }
-            } else {
-                throw Doctrine_Entity_Exception::invalidField($fieldName);
-            }
-        }
+        return $this->_get($fieldName);
     }
     
     /**
@@ -630,42 +710,20 @@ abstract class Doctrine_Entity extends Doctrine_Access implements Serializable
     }
 
     /**
-     * Generic setter for persistent fields.
+     * Generic setter for (persistent) fields of the entity.
+     * 
+     * Invoked by Doctrine::ORM::Access#__set().
      *
      * @param string $name  The name of the field to set.
      * @param mixed $value  The value of the field.
+     * @override
      */
     final public function set($fieldName, $value)
     {
         if ($setter = $this->_getCustomMutator($fieldName)) {
             return $this->$setter($value);
         }
-        
-        if ($this->_class->hasField($fieldName)) {
-            /*if ($value instanceof Doctrine_Entity) {
-                $type = $class->getTypeOf($fieldName);
-                // FIXME: composite key support
-                $ids = $value->identifier();
-                $id = count($ids) > 0 ? array_pop($ids) : null;
-                if ($id !== null && $type !== 'object') {
-                    $value = $id;
-                }
-            }*/
-
-            $old = isset($this->_data[$fieldName]) ? $this->_data[$fieldName] : null;
-            //FIXME: null == 0 => true
-            if ($old != $value) {
-                $this->_data[$fieldName] = $value;
-                $this->_modified[$fieldName] = array($old => $value);
-                if ($this->isNew() && $this->_class->isIdentifier($fieldName)) {
-                    $this->_id[$fieldName] = $value;
-                }
-            }
-        } else if ($this->_class->hasRelation($fieldName)) {
-            $this->_internalSetReference($fieldName, $value);
-        } else {
-            throw Doctrine_Entity_Exception::invalidField($fieldName);
-        }
+        $this->_set($fieldName, $value);        
     }
 
     /**
@@ -697,7 +755,7 @@ abstract class Doctrine_Entity extends Doctrine_Access implements Serializable
     /**
      * Clears the value of a field.
      * 
-     * NOTE: Invoked by Doctrine::ORM::Access#__unset().
+     * Invoked by Doctrine::ORM::Access#__unset().
      * 
      * @param string $name
      * @return void
@@ -708,7 +766,7 @@ abstract class Doctrine_Entity extends Doctrine_Access implements Serializable
             $this->_data[$fieldName] = array();
         } else if (isset($this->_references[$fieldName])) {
             if ($this->_references[$fieldName] instanceof Doctrine_Entity) {
-                // todo: delete related record when saving $this
+                // todo: delete related record when saving $this (ONLY WITH deleteOrphans!)
                 $this->_references[$fieldName] = Doctrine_Null::$INSTANCE;
             } else if ($this->_references[$fieldName] instanceof Doctrine_Collection) {
                 $this->_references[$fieldName]->setData(array());
@@ -722,72 +780,14 @@ abstract class Doctrine_Entity extends Doctrine_Access implements Serializable
      *
      * @return array
      */
-    final public function _getChangeSet()
+    final public function _getDataChangeSet()
     {
-        //return $this->_changeSet;
+        return $this->_dataChangeSet;
     }
-
-    /**
-     * Returns an array of modified fields and values with data preparation
-     * adds column aggregation inheritance and converts Records into primary key values
-     *
-     * @param array $array
-     * @return array
-     * @todo What about a little bit more expressive name? getPreparedData?
-     * @todo Does not look like the best place here ...
-     * @todo Prop: Move to EntityPersister. There call _getChangeSet() and apply this logic.
-     */
-    final public function getPrepared(array $array = array())
+    
+    final public function _getReferenceChangeSet()
     {
-        $dataSet = array();
-
-        if (empty($array)) {
-            $modifiedFields = $this->_modified;
-        }
-
-        foreach ($modifiedFields as $field) {
-            $type = $this->_class->getTypeOfField($field);
-
-            if ($this->_data[$field] === Doctrine_Null::$INSTANCE) {
-                $dataSet[$field] = null;
-                continue;
-            }
-
-            switch ($type) {
-                case 'array':
-                case 'object':
-                    $dataSet[$field] = serialize($this->_data[$field]);
-                    break;
-                case 'gzip':
-                    $dataSet[$field] = gzcompress($this->_data[$field],5);
-                    break;
-                case 'boolean':
-                    $dataSet[$field] = $this->_em->getConnection()
-                            ->convertBooleans($this->_data[$field]);
-                break;
-                case 'enum':
-                    $dataSet[$field] = $this->_class->enumIndex($field, $this->_data[$field]);
-                    break;
-                default:
-                    $dataSet[$field] = $this->_data[$field];
-            }
-        }
-        
-        // @todo cleanup
-        // populates the discriminator field in Single & Class Table Inheritance
-        if ($this->_class->getInheritanceType() == Doctrine::INHERITANCE_TYPE_JOINED ||
-                $this->_class->getInheritanceType() == Doctrine::INHERITANCE_TYPE_SINGLE_TABLE) {
-            $discCol = $this->_class->getInheritanceOption('discriminatorColumn');
-            $discMap = $this->_class->getInheritanceOption('discriminatorMap');
-            $old = $this->get($discCol, false);
-            $discValue = array_search($this->_entityName, $discMap);
-            if ((string) $old !== (string) $discValue || $old === null) {
-                $dataSet[$discCol] = $discValue;
-                $this->_data[$discCol] = $discValue;
-            }
-        }
-
-        return $dataSet;
+        return $this->_referenceChangeSet;
     }
     
     /**
@@ -808,7 +808,7 @@ abstract class Doctrine_Entity extends Doctrine_Access implements Serializable
      */
     final public function isModified()
     {
-        return count($this->_modified) > 0;
+        return count($this->_fieldChangeSet) > 0;
     }
 
     /**
@@ -830,7 +830,7 @@ abstract class Doctrine_Entity extends Doctrine_Access implements Serializable
             $this->_id[$name] = $id;
             $this->_data[$name] = $id;
         }
-        $this->_modified = array();
+        $this->_dataChangeSet = array();
     }
 
     /**
@@ -948,6 +948,8 @@ abstract class Doctrine_Entity extends Doctrine_Access implements Serializable
      * from the instance pool.
      * Note: The entity is no longer useable after free() has been called. Any operations
      * done with the entity afterwards can lead to unpredictable results.
+     * 
+     * @param boolean $deep Whether to cascade the free() call to (loaded) associated entities.
      */
     public function free($deep = false)
     {
@@ -966,5 +968,108 @@ abstract class Doctrine_Entity extends Doctrine_Access implements Serializable
 
             $this->_references = array();
         }
+    }
+    
+    /**
+     * Check if an offsetExists.
+     * 
+     * Part of the ArrayAccess implementation.
+     *
+     * @param mixed $offset
+     * @return boolean          whether or not this object contains $offset
+     */
+    public function offsetExists($offset)
+    {
+        return $this->contains($offset);
+    }
+
+    /**
+     * offsetGet    an alias of get()
+     * 
+     * Part of the ArrayAccess implementation.
+     *
+     * @see get,  __get
+     * @param mixed $offset
+     * @return mixed
+     */
+    public function offsetGet($offset)
+    {
+        return $this->get($offset);
+    }
+
+    /**
+     * Part of the ArrayAccess implementation.
+     * 
+     * sets $offset to $value
+     * @see set,  __set
+     * @param mixed $offset
+     * @param mixed $value
+     * @return void
+     */
+    public function offsetSet($offset, $value)
+    {
+        return $this->set($offset, $value);
+    }
+
+    /**
+     * Part of the ArrayAccess implementation.
+     * 
+     * unset a given offset
+     * @see set, offsetSet, __set
+     * @param mixed $offset
+     */
+    public function offsetUnset($offset)
+    {
+        return $this->remove($offset);
+    }
+    
+    /**
+     * __set
+     *
+     * @see set, offsetSet
+     * @param $name
+     * @param $value
+     * @since 1.0
+     * @return void
+     */
+    public function __set($name, $value)
+    {
+        $this->set($name, $value);
+    }
+
+    /**
+     * __get
+     *
+     * @see get,  offsetGet
+     * @param mixed $name
+     * @return mixed
+     */
+    public function __get($name)
+    {
+        return $this->get($name);
+    }
+
+    /**
+     * __isset()
+     *
+     * @param string $name
+     * @since 1.0
+     * @return boolean          whether or not this object contains $name
+     */
+    public function __isset($name)
+    {
+        return $this->contains($name);
+    }
+
+    /**
+     * __unset()
+     *
+     * @param string $name
+     * @since 1.0
+     * @return void
+     */
+    public function __unset($name)
+    {
+        return $this->remove($name);
     }
 }

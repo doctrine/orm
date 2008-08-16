@@ -20,10 +20,6 @@
  * <http://www.phpdoctrine.org>.
  */
 
-Doctrine::autoload('Doctrine_Query_AbstractResult');
-Doctrine::autoload('Doctrine_Query_ParserResult');
-Doctrine::autoload('Doctrine_Query_QueryResult');
-
 /**
  * Doctrine_Query_CacheHandler
  *
@@ -136,8 +132,8 @@ abstract class Doctrine_Query_CacheHandler
                 $queryComponents[$alias]['table'] = $queryComponents[$alias]['mapper']->getTable();
             } else {
                 $queryComponents[$alias]['parent'] = $e[0];
-                $queryComponents[$alias]['relation'] = $queryComponents[$e[0]]['table']->getRelation($e[1]);
-                $queryComponents[$alias]['mapper'] = $query->getConnection()->getMapper($queryComponents[$alias]['relation']->getForeignComponentName());
+                $queryComponents[$alias]['relation'] = $queryComponents[$e[0]]['table']->getAssociation($e[1]);
+                $queryComponents[$alias]['mapper'] = $query->getConnection()->getMapper($queryComponents[$alias]['relation']->getTargetEntityName());
                 $queryComponents[$alias]['table'] = $queryComponents[$alias]['mapper']->getTable();
             }
 

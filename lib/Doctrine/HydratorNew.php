@@ -49,8 +49,6 @@
  * That's why the performance of the _gatherRowData() methods which are responsible
  * for the "numRowsInResult * numColumnsInResult" part is crucial to fast hydration.
  *
- * @package     Doctrine
- * @subpackage  Hydrator
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @link        www.phpdoctrine.org
  * @since       1.0
@@ -212,7 +210,7 @@ class Doctrine_HydratorNew extends Doctrine_Hydrator_Abstract
                 $entityName = $map['metadata']->getClassName();
                 $parent = $map['parent'];
                 $relation = $map['relation'];
-                $relationAlias = $relation->getAlias();
+                $relationAlias = $relation->getSourceFieldName();//$relation->getAlias();
                 $path = $parent . '.' . $dqlAlias;
                 
                 // pick the right element that will get the associated element attached

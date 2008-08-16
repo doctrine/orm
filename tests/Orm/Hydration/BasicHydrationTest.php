@@ -123,7 +123,7 @@ class Orm_Hydration_BasicHydrationTest extends Doctrine_OrmTestCase
             'p' => array(
                 'metadata' => $this->_em->getClassMetadata('CmsPhonenumber'),
                 'parent' => 'u',
-                'relation' => $this->_em->getClassMetadata('CmsUser')->getRelation('phonenumbers'),
+                'relation' => $this->_em->getClassMetadata('CmsUser')->getAssociationMapping('phonenumbers'),
                 'map' => null
                 )
             );
@@ -226,7 +226,7 @@ class Orm_Hydration_BasicHydrationTest extends Doctrine_OrmTestCase
             'p' => array(
                 'metadata' => $this->_em->getClassMetadata('CmsPhonenumber'),
                 'parent' => 'u',
-                'relation' => $this->_em->getClassMetadata('CmsUser')->getRelation('phonenumbers'),
+                'relation' => $this->_em->getClassMetadata('CmsUser')->getAssociationMapping('phonenumbers'),
                 'map' => null,
                 'agg' => array('0' => 'numPhones')
                 )
@@ -311,7 +311,7 @@ class Orm_Hydration_BasicHydrationTest extends Doctrine_OrmTestCase
             'p' => array(
                 'metadata' => $this->_em->getClassMetadata('CmsPhonenumber'),
                 'parent' => 'u',
-                'relation' => $this->_em->getClassMetadata('CmsUser')->getRelation('phonenumbers'),
+                'relation' => $this->_em->getClassMetadata('CmsUser')->getAssociationMapping('phonenumbers'),
                 'map' => 'phonenumber'
                 )
             );
@@ -415,13 +415,13 @@ class Orm_Hydration_BasicHydrationTest extends Doctrine_OrmTestCase
             'p' => array(
                 'metadata' => $this->_em->getClassMetadata('CmsPhonenumber'),
                 'parent' => 'u',
-                'relation' => $this->_em->getClassMetadata('CmsUser')->getRelation('phonenumbers'),
+                'relation' => $this->_em->getClassMetadata('CmsUser')->getAssociationMapping('phonenumbers'),
                 'map' => null
                 ),
             'a' => array(
                 'metadata' => $this->_em->getClassMetadata('CmsArticle'),
                 'parent' => 'u',
-                'relation' => $this->_em->getClassMetadata('CmsUser')->getRelation('articles'),
+                'relation' => $this->_em->getClassMetadata('CmsUser')->getAssociationMapping('articles'),
                 'map' => null
                 ),
             );
@@ -571,19 +571,19 @@ class Orm_Hydration_BasicHydrationTest extends Doctrine_OrmTestCase
             'p' => array(
                 'metadata' => $this->_em->getClassMetadata('CmsPhonenumber'),
                 'parent' => 'u',
-                'relation' => $this->_em->getClassMetadata('CmsUser')->getRelation('phonenumbers'),
+                'relation' => $this->_em->getClassMetadata('CmsUser')->getAssociationMapping('phonenumbers'),
                 'map' => null
                 ),
             'a' => array(
                 'metadata' => $this->_em->getClassMetadata('CmsArticle'),
                 'parent' => 'u',
-                'relation' => $this->_em->getClassMetadata('CmsUser')->getRelation('articles'),
+                'relation' => $this->_em->getClassMetadata('CmsUser')->getAssociationMapping('articles'),
                 'map' => null
                 ),
             'c' => array(
                 'metadata' => $this->_em->getClassMetadata('CmsComment'),
                 'parent' => 'a',
-                'relation' => $this->_em->getClassMetadata('CmsArticle')->getRelation('comments'),
+                'relation' => $this->_em->getClassMetadata('CmsArticle')->getAssociationMapping('comments'),
                 'map' => null
                 ),
             );
@@ -779,7 +779,7 @@ class Orm_Hydration_BasicHydrationTest extends Doctrine_OrmTestCase
             'b' => array(
                 'metadata' => $this->_em->getClassMetadata('ForumBoard'),
                 'parent' => 'c',
-                'relation' => $this->_em->getClassMetadata('ForumCategory')->getRelation('boards'),
+                'relation' => $this->_em->getClassMetadata('ForumCategory')->getAssociationMapping('boards'),
                 'map' => null
                 ),
             );

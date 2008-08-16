@@ -23,7 +23,7 @@
 
 /**
  * The metadata factory is used to create ClassMetadata objects that contain all the
- * metadata of a class.
+ * metadata mapping informations of a class.
  *
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  * @author      Roman Borschel <roman@code-factory.org>
@@ -45,7 +45,7 @@ class Doctrine_ClassMetadata_Factory
     
     /**
      * Constructor.
-     * Creates a new factory instance that uses the given connection and metadata driver
+     * Creates a new factory instance that uses the given EntityManager and metadata driver
      * implementations.
      *
      * @param $conn    The connection to use.
@@ -129,6 +129,12 @@ class Doctrine_ClassMetadata_Factory
         }
     }
     
+    /**
+     * Adds inherited fields to the subclass mapping.
+     *
+     * @param unknown_type $subClass
+     * @param unknown_type $parentClass
+     */
     protected function _addInheritedFields($subClass, $parentClass)
     {
         foreach ($parentClass->getFieldMappings() as $fieldName => $mapping) {
@@ -138,6 +144,12 @@ class Doctrine_ClassMetadata_Factory
         }
     }
     
+    /**
+     * Adds inherited associations to the subclass mapping.
+     *
+     * @param unknown_type $subClass
+     * @param unknown_type $parentClass
+     */
     protected function _addInheritedRelations($subClass, $parentClass) 
     {
         foreach ($parentClass->getRelationParser()->getRelationDefinitions() as $name => $definition) {
@@ -177,7 +189,7 @@ class Doctrine_ClassMetadata_Factory
         // save parents
         $class->setParentClasses($names);
 
-        // load further metadata
+        // load user-specified mapping metadata through the driver
         $this->_driver->loadMetadataForClass($name, $class);
         
         // set default table name, if necessary

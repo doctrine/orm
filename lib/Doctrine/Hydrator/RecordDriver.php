@@ -70,8 +70,8 @@ class Doctrine_Hydrator_RecordDriver
     public function initRelatedCollection(Doctrine_Entity $entity, $name)
     {
         if ( ! isset($this->_initializedRelations[$entity->getOid()][$name])) {
-            $relation = $entity->getClass()->getRelation($name);
-            $relatedClass = $relation->getTable();
+            $relation = $entity->getClass()->getAssociationMapping($name);
+            $relatedClass = $this->_em->getClassMetadata($relation->getTargetEntityName());
             $coll = $this->getElementCollection($relatedClass->getClassName());
             $coll->setReference($entity, $relation);
             $entity->_internalSetReference($name, $coll);

@@ -106,6 +106,17 @@ class Doctrine_Association_OneToOne extends Doctrine_Association
     }
     
     /**
+     * Whether the association is one-to-one.
+     *
+     * @return boolean
+     * @override
+     */
+    public function isOneToOne()
+    {
+        return true;
+    }
+    
+    /**
      * Lazy-loads the associated entity for a given entity.
      *
      * @param Doctrine::ORM::Entity $entity

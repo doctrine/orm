@@ -9,7 +9,7 @@ class Orm_Associations_OneToOneMappingTest extends Doctrine_OrmTestCase
             'fieldName' => 'address',
             'targetEntity' => 'Address',
             'joinColumns' => array('address_id' => 'id'),
-            'sourceEntity' => 'Person' // This is normally filled by ClassMetadata
+            'sourceEntity' => 'Person', // This is normally filled by ClassMetadata
         );
         
         $oneToOneMapping = new Doctrine_Association_OneToOne($owningSideMapping);
@@ -23,11 +23,16 @@ class Orm_Associations_OneToOneMappingTest extends Doctrine_OrmTestCase
         
         
         $inverseSideMapping = array(
+            'fieldName' => 'person',
+            'sourceEntity' => 'Address',
+            'targetEntity' => 'Person',
             'mappedBy' => 'address'
         );
         
         $oneToOneMapping = new Doctrine_Association_OneToOne($inverseSideMapping);
         $this->assertEquals('address', $oneToOneMapping->getMappedByFieldName());
+        $this->assertEquals('Address', $oneToOneMapping->getSourceEntityName());
+        $this->assertEquals('Person', $oneToOneMapping->getTargetEntityName());
         $this->assertTrue($oneToOneMapping->isInverseSide());
         
     }

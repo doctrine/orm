@@ -187,7 +187,7 @@ class Doctrine_Schema_MsSqlSchemaManager extends Doctrine_Schema_SchemaManager
                 if ($query) {
                     $query .= ', ';
                 }
-                $query .= 'ADD ' . $this->conn->getDeclaration($fieldName, $field);
+                $query .= 'ADD ' . $this->getDeclaration($fieldName, $field);
             }
         }
 

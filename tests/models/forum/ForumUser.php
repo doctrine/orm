@@ -6,9 +6,9 @@
 
 class ForumUser extends Doctrine_Entity
 {
-    #protected $dtype;
     #protected $id;
     #protected $username;
+    #protected $avatar;
     
     public static function initMetadata($mapping) 
     {
@@ -40,6 +40,12 @@ class ForumUser extends Doctrine_Entity
             'fieldName' => 'username',
             'type' => 'string',
             'length' => 50
+        ));
+        
+        $mapping->mapOneToOne(array(
+            'fieldName' => 'avatar',
+            'targetEntity' => 'ForumAvatar',
+            'joinColumns' => array('avatar_id' => 'id'),
         ));
         
     }

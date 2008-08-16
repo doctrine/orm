@@ -25,14 +25,13 @@ class ForumBoard extends Doctrine_Entity
             'type' => 'integer'
         ));
         
-        $mapping->hasOne('ForumCategory as category',
-                array('local' => 'category_id', 'foreign' => 'id'));
-        /*       
-        $metadata->mapOneToOne(array(
-            'fieldName' => 'category', // optional, defaults to targetEntity
+        /*$mapping->hasOne('ForumCategory as category',
+                array('local' => 'category_id', 'foreign' => 'id'));*/
+               
+        $mapping->mapOneToOne(array(
+            'fieldName' => 'category',
             'targetEntity' => 'ForumCategory',
             'joinColumns' => array('category_id' => 'id')
-            )); 
-        */       
+        ));
     }
 }

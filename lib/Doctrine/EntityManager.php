@@ -29,7 +29,6 @@
 #use Doctrine::ORM::Internal::UnitOfWork;
 #use Doctrine::ORM::Mapping::ClassMetadata;
 
-
 /**
  * The EntityManager is the central access point to ORM functionality.
  *
@@ -38,12 +37,28 @@
  * @since       2.0
  * @version     $Revision$
  * @author      Roman Borschel <roman@code-factory.org>
- * @todo package:orm
  */
 class Doctrine_EntityManager
 {
+    /**
+     * IMMEDIATE: Flush occurs automatically after each operation that issues database
+     * queries. No operations are queued.
+     */ 
+    const FLUSHMODE_IMMEDIATE = 'immediated';
+    /**
+     * AUTO: Flush occurs automatically in the following situations:
+     * - Before any query executions (to prevent getting stale data)
+     * - On EntityManager#commit()
+     */
     const FLUSHMODE_AUTO = 'auto';
+    /**
+     * COMMIT: Flush occurs automatically only on EntityManager#commit().
+     */
     const FLUSHMODE_COMMIT = 'commit';
+    /**
+     * MANUAL: Flush occurs never automatically. The only way to flush is
+     * through EntityManager#flush().
+     */
     const FLUSHMODE_MANUAL = 'manual';
     
     /**
@@ -67,19 +82,6 @@ class Doctrine_EntityManager
      * @var Doctrine_Connection
      */
     private $_conn;
-    
-    /**
-     * Flush modes enumeration.
-     */
-    private static $_flushModes = array(
-            // auto: Flush occurs automatically after each operation that issues database
-            // queries. No operations are queued.
-            self::FLUSHMODE_AUTO,
-            // commit: Flush occurs automatically at transaction commit.
-            self::FLUSHMODE_COMMIT,
-            // manual: Flush occurs never automatically.
-            self::FLUSHMODE_MANUAL
-    );
     
     /**
      * The metadata factory, used to retrieve the metadata of entity classes.
@@ -160,7 +162,6 @@ class Doctrine_EntityManager
      * Gets the metadata for a class. Alias for getClassMetadata().
      *
      * @return Doctrine_Metadata
-     * @todo package:orm
      */
     public function getMetadata($className)
     {
@@ -324,10 +325,18 @@ class Doctrine_EntityManager
      */
     public function setFlushMode($flushMode)
     {
-        if ( ! in_array($flushMode, self::$_flushModes)) {
+        if ( ! $this->_isFlushMode($flushMode)) {
             throw Doctrine_EntityManager_Exception::invalidFlushMode();
         }
         $this->_flushMode = $flushMode;
+    }
+    
+    private function _isFlushMode($value)
+    {
+        return $value == self::FLUSHMODE_AUTO ||
+                $value == self::FLUSHMODE_COMMIT ||
+                $value == self::FLUSHMODE_IMMEDIATE ||
+                $value == self::FLUSHMODE_MANUAL;
     }
     
     /**
@@ -365,10 +374,9 @@ class Doctrine_EntityManager
     }
     
     /**
-     * getResultCacheDriver
+     * Gets the result cache driver used by the EntityManager.
      *
-     * @return Doctrine_Cache_Interface
-     * @todo package:orm
+     * @return Doctrine::ORM::Cache::CacheDriver The cache driver.
      */
     public function getResultCacheDriver()
     {
@@ -383,7 +391,6 @@ class Doctrine_EntityManager
      * getQueryCacheDriver
      *
      * @return Doctrine_Cache_Interface
-     * @todo package:orm
      */
     public function getQueryCacheDriver()
     {
@@ -396,31 +403,45 @@ class Doctrine_EntityManager
     
     /**
      * Saves the given entity, persisting it's state.
+     * 
+     * @param Doctrine::ORM::Entity $entity
+     * @return void
      */
     public function save(Doctrine_Entity $entity)
     {
         $this->_unitOfWork->save($entity);
-        if ($this->_flushMode == self::FLUSHMODE_AUTO) {
+        if ($this->_flushMode == self::FLUSHMODE_IMMEDIATE) {
             $this->flush();
         }
     }
     
     /**
      * Removes the given entity from the persistent store.
+     * 
+     * @param Doctrine::ORM::Entity $entity
+     * @return void
      */
     public function delete(Doctrine_Entity $entity)
     {
         $this->_unitOfWork->delete($entity);
+        if ($this->_flushMode == self::FLUSHMODE_IMMEDIATE) {
+            $this->flush();
+        }
     }
     
     /**
-     * Refreshes the persistent state of the entity from the database.
+     * Refreshes the persistent state of the entity from the database,
+     * overriding any local changes that have not yet been persisted.
      *
-     * @param Doctrine_Entity $entity
+     * @param Doctrine::ORM::Entity $entity
+     * @return void
+     * @todo FIX Impl
      */
     public function refresh(Doctrine_Entity $entity)
     {
-        //...
+        $this->_mergeData($entity, $entity->getRepository()->find(
+                $entity->identifier(), Doctrine_Query::HYDRATE_ARRAY),
+                true);
     }
     
     /**
@@ -463,7 +484,7 @@ class Doctrine_EntityManager
      *
      * @param string $className  The name of the entity class.
      * @param array $data  The data for the entity. 
-     * @return Doctrine_Entity
+     * @return Doctrine::ORM::Entity
      */
     public function createEntity($className, array $data)
     {
@@ -488,6 +509,7 @@ class Doctrine_EntityManager
                 $idHash = $this->_unitOfWork->getIdentifierHash($id);
                 if ($entity = $this->_unitOfWork->tryGetByIdHash($idHash,
                         $classMetadata->getRootClassName())) {
+                    $this->_mergeData($entity, $data);
                     return $entity;
                 } else {
                     $entity = new $className;
@@ -502,9 +524,34 @@ class Doctrine_EntityManager
     }
     
     /**
+     * Merges the given data into the given entity, optionally overriding
+     * local changes.
+     *
+     * @param Doctrine::ORM::Entity $entity
+     * @param array $data
+     * @param boolean $overrideLocalChanges
+     * @return void
+     */
+    private function _mergeData(Doctrine_Entity $entity, array $data, $overrideLocalChanges = false) {
+        if ($overrideLocalChanges) {
+            foreach ($data as $field => $value) {
+                $entity->_internalSetField($field, $value);
+            }
+        } else {
+            foreach ($data as $field => $value) {
+                if ( ! $entity->contains($field) || $entity->_internalGetField($field) === null) {
+                    $entity->_internalSetField($field, $value);    
+                }
+            }
+        }
+    }
+    
+    /**
      * Checks if the instance is managed by the EntityManager.
      * 
-     * @return boolean
+     * @param Doctrine::ORM::Entity $entity
+     * @return boolean TRUE if this EntityManager currently manages the given entity
+     *                 (and has it in the identity map), FALSE otherwise.
      */
     public function contains(Doctrine_Entity $entity)
     {
@@ -513,8 +560,11 @@ class Doctrine_EntityManager
     }
     
     /**
-     * INTERNAL:
-     * For internal hydration purposes only.
+     * INTERNAL: For internal hydration purposes only.
+     * 
+     * Gets the temporarily stored entity data.
+     * 
+     * @return array
      */
     public function _getTmpEntityData()
     {
@@ -528,6 +578,8 @@ class Doctrine_EntityManager
      * class to instantiate. If no discriminator column is found, the given
      * classname will be returned.
      *
+     * @param array $data
+     * @param string $className
      * @return string The name of the class to instantiate.
      */
     private function _inferCorrectClassName(array $data, $className)
@@ -562,6 +614,7 @@ class Doctrine_EntityManager
      * Sets the EventManager used by the EntityManager.
      *
      * @param Doctrine::Common::EventManager $eventManager
+     * @return void
      */
     public function setEventManager(Doctrine_EventManager $eventManager)
     {
@@ -572,6 +625,7 @@ class Doctrine_EntityManager
      * Sets the Configuration used by the EntityManager.
      *
      * @param Doctrine::Common::Configuration $config
+     * @return void
      */
     public function setConfiguration(Doctrine_Configuration $config)
     {

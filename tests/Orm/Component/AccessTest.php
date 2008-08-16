@@ -26,7 +26,7 @@
  * @author      Bjarte Stien Karlsen <doctrine@bjartek.org>
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @link        www.phpdoctrine.org
- * @since       1.0
+ * @since       2.0
  * @version     $Revision: 3754 $
  */
 require_once 'lib/DoctrineTestInit.php';
@@ -97,23 +97,6 @@ class Orm_Component_AccessTest extends Doctrine_OrmTestCase
 
     /**
      * @test 
-     */
-    public function shouldSetArrayOfValusInRecord()
-    {
-        $this->user->setArray(array(
-            'username' => 'meus',
-            'id'       => 22));
-
-        $this->assertEquals('meus', $this->user->username);
-        $this->assertEquals('meus', $this->user['username']);
-
-        $this->assertEquals(22, $this->user->id);
-        $this->assertEquals(22, $this->user['id']);
-    }
-
-
-    /**
-     * @test 
      * @expectedException Doctrine_Entity_Exception
      */
     public function shouldNotBeAbleToSetNonExistantField()
@@ -128,17 +111,6 @@ class Orm_Component_AccessTest extends Doctrine_OrmTestCase
     public function shouldNotBeAbleToSetNonExistantFieldWithOffset()
     {
         $this->user['rat'] = 'meus';
-    }
-
-    /**
-     * @test 
-     * @expectedException Doctrine_Entity_Exception
-     */
-    public function shouldNotBeAbleToSetNonExistantFieldAsPartInSetArray()
-    {
-        $this->user->setArray(array(
-            'rat' => 'meus',
-            'id'  => 22));
     }
 
 
@@ -174,18 +146,6 @@ class Orm_Component_AccessTest extends Doctrine_OrmTestCase
         $this->assertTrue(isset($col->test));
         unset($col->test);
         $this->assertFalse(isset($col->test));
-    }
-
-
-    /**
-     *  
-     * @test
-     * @expectedException Doctrine_Exception
-     */
-    public function shouldNotBeAbleToSetNullFieldInRecord()
-    {
-        $this->user->offsetSet(null, 'test');
-
     }
 
     /**

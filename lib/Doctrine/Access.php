@@ -34,8 +34,7 @@
  * @since       1.0
  * @version     $Revision$
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
- * @todo Consider making Collection & Entity implement ArrayAccess directly.
- *       This base class is not really a huge benefit.
+ * @todo Remove.
  */
 abstract class Doctrine_Access implements ArrayAccess
 {

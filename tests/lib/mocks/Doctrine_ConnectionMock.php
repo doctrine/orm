@@ -8,6 +8,7 @@ class Doctrine_ConnectionMock extends Doctrine_Connection
     protected $_driverName = 'Mock';
     private $_sequenceModuleMock;
     private $_platformMock;
+    private $_inserts = array();
     
     public function __construct(array $params)
     {
@@ -30,6 +31,14 @@ class Doctrine_ConnectionMock extends Doctrine_Connection
         return $this->_platformMock;
     }
     
+    /**
+     * @override
+     */
+    public function insert($tableName, array $data)
+    {
+        $this->_inserts[$tableName][] = $data;
+    }
+    
     /* Mock API */
     
     public function setDatabasePlatform($platform)
@@ -40,6 +49,16 @@ class Doctrine_ConnectionMock extends Doctrine_Connection
     public function setSequenceManager($seqManager)
     {
         $this->_sequenceModuleMock = $seqManager;
+    }
+    
+    public function getInserts()
+    {
+        return $this->_inserts;
+    }
+    
+    public function reset()
+    {
+        $this->_inserts = array();
     }
 }
 

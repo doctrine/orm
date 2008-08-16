@@ -48,12 +48,18 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
     const GENERATOR_TYPE_NONE = 'none';
     
     /* The Entity types */
-    // A regular entity is assumed to have persistent state that Doctrine should manage.
+    /**
+     * A regular entity is assumed to have persistent state that Doctrine should manage.
+     */
     const ENTITY_TYPE_REGULAR = 'regular';
-    // A transient entity is ignored by Doctrine.
+    /**
+     * A transient entity is ignored by Doctrine.
+     */
     const ENTITY_TYPE_TRANSIENT = 'transient';
-    // A mapped superclass entity is itself not persisted by Doctrine but it's
-    // field & association mappings are inherited by subclasses.
+    /**
+     * A mapped superclass entity is itself not persisted by Doctrine but it's
+     * field & association mappings are inherited by subclasses.
+     */
     const ENTITY_TYPE_MAPPED_SUPERCLASS = 'mappedSuperclass';
     
     /**
@@ -122,15 +128,6 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
      * @var string
      */
     protected $_generatorType = self::GENERATOR_TYPE_NONE;
-
-    /**
-     * An array containing all behaviors attached to the class.
-     *
-     * @see Doctrine_Template
-     * @var array $_templates
-     * @todo Unify under 'Behaviors'.
-     */
-    //protected $_behaviors = array();
     
     /**
      * The field mappings of the class.
@@ -218,13 +215,6 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
      * @var array
      */
     protected $_lcColumnToFieldNames = array();
-    
-    /**
-     * Enter description here...
-     *
-     * @var unknown_type
-     */
-    //protected $_subclassFieldNames = array();
 
     /**
      * Relation parser object. Manages the relations for the class.
@@ -310,11 +300,15 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
      * @var boolean
      */
     protected $_isIdentifierComposite = false;
+    
+    protected $_customAssociationAccessors = array();
+    protected $_customAssociationMutators = array();
 
     /**
      * Constructs a new ClassMetadata instance.
      *
      * @param string $entityName  Name of the entity class the metadata info is used for.
+     * @param Doctrine::ORM::Entitymanager $em
      */
     public function __construct($entityName, Doctrine_EntityManager $em)
     {
@@ -324,15 +318,12 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
         
         $this->_parser = new Doctrine_Relation_Parser($this);
     }
-
-    /**
-     * @deprecated
-     */
-    public function getConnection()
-    {
-        return $this->_em;
-    }
     
+    /**
+     * Gets the EntityManager that holds this ClassMetadata.
+     *
+     * @return Doctrine::ORM::EntityManager
+     */
     public function getEntityManager()
     {
         return $this->_em;
@@ -358,14 +349,6 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
     public function getRootClassName()
     {
         return $this->_rootEntityName;
-    }
-
-    /**
-     * @deprecated
-     */
-    public function getComponentName()
-    {
-        return $this->getClassName();
     }
 
     /**
@@ -429,8 +412,6 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
     }
 
     /**
-     * addIndex
-     *
      * adds an index to this table
      *
      * @return void
@@ -459,22 +440,6 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
     }
 
     /**
-     * setOption
-     * sets an option and returns this object in order to
-     * allow flexible method chaining
-     *
-     * @see Doctrine_Table::$_options   for available options
-     * @param string $name              the name of the option to set
-     * @param mixed $value              the value of the option
-     * @return Doctrine_Table           this object
-     * @deprecated
-     */
-    public function setOption($name, $value)
-    {
-        $this->_options[$name] = $value;
-    }
-
-    /**
      * Sets a table option.
      */
     public function setTableOption($name, $value)
@@ -495,43 +460,6 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
         }
 
         return $this->_tableOptions[$name];
-    }
-
-    /*public function getBehaviorForMethod($method)
-    {
-        return (isset($this->_invokedMethods[$method])) ?
-        $this->_invokedMethods[$method] : false;
-    }
-    public function addBehaviorMethod($method, $behavior)
-    {
-        $this->_invokedMethods[$method] = $class;
-    }*/
-
-    /**
-     * returns the value of given option
-     *
-     * @param string $name  the name of the option
-     * @return mixed        the value of given option
-     */
-    public function getOption($name)
-    {
-        if (isset($this->_options[$name])) {
-            return $this->_options[$name];
-        } else if (isset($this->_tableOptions[$name])) {
-            return $this->_tableOptions[$name];
-        }
-        return null;
-    }
-
-    /**
-     * getOptions
-     * returns all options of this table and the associated values
-     *
-     * @return array    all options and their values
-     */
-    public function getOptions()
-    {
-        return $this->_options;
     }
 
     /**
@@ -703,8 +631,8 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
     /**
      * Validates & completes the field mapping. Default values are applied here.
      *
-     * @param array $mapping
-     * @return array
+     * @param array $mapping  The field mapping to validated & complete.
+     * @return array  The validated and completed field mapping.
      */
     private function _validateAndCompleteFieldMapping(array $mapping)
     {
@@ -801,18 +729,6 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
     }
 
     /**
-     * Gets the names of all validators that are applied on a field.
-     *
-     * @param string  The field name.
-     * @return array  The names of all validators that are applied on the specified field.
-     */
-    /*public function getFieldValidators($fieldName)
-    {
-        return isset($this->_fieldMappings[$fieldName]['validators']) ?
-                $this->_fieldMappings[$fieldName]['validators'] : array();
-    }*/
-
-    /**
      * Gets the identifier (primary key) field names of the class.
      *
      * @return mixed
@@ -871,8 +787,12 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
      */
     public function getCustomAccessor($fieldName)
     {
-        return isset($this->_fieldMappings[$fieldName]['accessor']) ?
-                $this->_fieldMappings[$fieldName]['accessor'] : null;
+        if (isset($this->_fieldMappings[$fieldName]['accessor'])) {
+            return $this->_fieldMappings[$fieldName]['accessor'];
+        } else if (isset($this->_customAssociationAccessors[$fieldName])) {
+            return $this->_customAssociationAccessors[$fieldName];
+        }
+        return null;
     }
 
     /**
@@ -883,8 +803,12 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
      */
     public function getCustomMutator($fieldName)
     {
-        return isset($this->_fieldMappings[$fieldName]['mutator']) ?
-                $this->_fieldMappings[$fieldName]['mutator'] : null;
+        if (isset($this->_fieldMappings[$fieldName]['mutator'])) {
+            return $this->_fieldMappings[$fieldName]['mutator'];
+        } else if (isset($this->_customAssociationMutators[$fieldName])) {
+            return $this->_customAssociationMutators[$fieldName];
+        }
+        return null;
     }
     
     /**
@@ -1054,18 +978,6 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
     }
 
     /**
-     * getBehaviors
-     * returns all behaviors attached to the class.
-     *
-     * @return array     an array containing all templates
-     * @todo Unify under 'Behaviors'
-     */
-    /*public function getBehaviors()
-    {
-        return $this->_behaviors;
-    }*/
-
-    /**
      * Gets the inheritance type used by the class.
      *
      * @return integer
@@ -1156,8 +1068,8 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
             throw Doctrine_MappingException::invalidInheritanceType($type);
         }
         
-        if ($type == Doctrine::INHERITANCE_TYPE_SINGLE_TABLE ||
-                $type == Doctrine::INHERITANCE_TYPE_JOINED) {
+        if ($type == self::INHERITANCE_TYPE_SINGLE_TABLE ||
+                $type == self::INHERITANCE_TYPE_JOINED) {
             $this->_checkRequiredDiscriminatorOptions($options);
         }
 
@@ -1240,25 +1152,25 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
     }
 
     /**
-     * export
      * exports this class to the database based on its mapping.
      *
      * @throws Doctrine_Connection_Exception    If some error other than Doctrine::ERR_ALREADY_EXISTS
      *                                          occurred during the create table operation.
      * @return boolean                          Whether or not the export operation was successful
      *                                          false if table already existed in the database.
+     * @todo Reimpl. & Placement.
      */
     public function export()
     {
-        $this->_em->export->exportTable($this);
+        //$this->_em->export->exportTable($this);
     }
 
     /**
-     * getExportableFormat
      * Returns an array with all the information needed to create the main database table
      * for the class.
      *
      * @return array
+     * @todo Reimpl. & placement.
      */
     public function getExportableFormat($parseForeignKeys = true)
     {
@@ -1268,7 +1180,7 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
 
         // If the class is part of a Single Table Inheritance hierarchy, collect the fields
         // of all classes in the hierarchy.
-        if ($this->_inheritanceType == Doctrine::INHERITANCE_TYPE_SINGLE_TABLE) {
+        if ($this->_inheritanceType == self::INHERITANCE_TYPE_SINGLE_TABLE) {
             $parents = $this->getParentClasses();
             if ($parents) {
                 $rootClass = $this->_em->getClassMetadata(array_pop($parents));
@@ -1280,7 +1192,7 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
                 $subClassMetadata = $this->_em->getClassMetadata($subClass);
                 $allColumns = array_merge($allColumns, $subClassMetadata->getColumns());
             }
-        } else if ($this->_inheritanceType == Doctrine::INHERITANCE_TYPE_JOINED) {
+        } else if ($this->_inheritanceType == self::INHERITANCE_TYPE_JOINED) {
             // Remove inherited, non-pk fields. They're not in the table of this class
             foreach ($allColumns as $name => $definition) {
                 if (isset($definition['primary']) && $definition['primary'] === true) {
@@ -1293,7 +1205,7 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
                     unset($allColumns[$name]);
                 }
             }
-        } else if ($this->_inheritanceType == Doctrine::INHERITANCE_TYPE_TABLE_PER_CLASS) {
+        } else if ($this->_inheritanceType == self::INHERITANCE_TYPE_TABLE_PER_CLASS) {
             // If this is a subclass, just remove existing autoincrement options on the pk
             if ($this->getParentClasses()) {
                 foreach ($allColumns as $name => $definition) {
@@ -1423,7 +1335,7 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
     }
     
     /**
-     * Checks whether the given name identifies an entity type.
+     * Checks whether the given type identifies an entity type.
      *
      * @param string $type
      * @return boolean
@@ -1436,7 +1348,7 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
     }
     
     /**
-     * Checks whether the given name identifies an inheritance type.
+     * Checks whether the given type identifies an inheritance type.
      *
      * @param string $type
      * @return boolean
@@ -1450,7 +1362,7 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
     }
     
     /**
-     * Checks whether the given name identifies an id generator type.
+     * Checks whether the given type identifies an id generator type.
      *
      * @param string $type
      * @return boolean
@@ -1463,7 +1375,38 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
                 $type == self::GENERATOR_TYPE_TABLE ||
                 $type == self::GENERATOR_TYPE_NONE;
     }
-
+    
+    /**
+     * Makes some automatic additions to the association mapping to make the life
+     * easier for the user.
+     *
+     * @param array $mapping
+     * @return unknown
+     * @todo Pass param by ref?
+     */
+    private function _completeAssociationMapping(array $mapping)
+    {
+        $mapping['sourceEntity'] = $this->_entityName;
+        return $mapping;
+    }
+    
+    /**
+     * Registers any custom accessors/mutators in the given association mapping in
+     * an internal cache for fast lookup.
+     *
+     * @param Doctrine_Association $assoc
+     * @param unknown_type $fieldName
+     */
+    private function _registerCustomAssociationAccessors(Doctrine_Association $assoc, $fieldName)
+    {
+        if ($acc = $assoc->getCustomAccessor()) {
+            $this->_customAssociationAccessors[$fieldName] = $acc;
+        }
+        if ($mut = $assoc->getCustomMutator()) {
+            $this->_customAssociationMutators[$fieldName] = $mut;
+        }
+    }
+    
     /**
      * Adds a one-to-one association mapping.
      * 
@@ -1471,11 +1414,14 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
      */
     public function mapOneToOne(array $mapping)
     {
+        $mapping = $this->_completeAssociationMapping($mapping);
         $oneToOneMapping = new Doctrine_Association_OneToOne($mapping);
-        if (isset($this->_associationMappings[$oneToOneMapping->getSourceFieldName()])) {
+        $sourceFieldName = $oneToOneMapping->getSourceFieldName();
+        if (isset($this->_associationMappings[$sourceFieldName])) {
             throw Doctrine_MappingException::duplicateFieldMapping();
         }
-        $this->_associationMappings[$oneToOneMapping->getSourceFieldName()] = $oneToOneMapping;
+        $this->_associationMappings[$sourceFieldName] = $oneToOneMapping;
+        $this->_registerCustomAssociationAccessors($oneToOneMapping, $sourceFieldName);
     }
 
     /**
@@ -1483,7 +1429,14 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
      */
     public function mapOneToMany(array $mapping)
     {
-
+        $mapping = $this->_completeAssociationMapping($mapping);
+        $oneToManyMapping = new Doctrine_Association_OneToMany($mapping);
+        $sourceFieldName = $oneToManyMapping->getSourceFieldName();
+        if (isset($this->_associationMappings[$sourceFieldName])) {
+            throw Doctrine_MappingException::duplicateFieldMapping();
+        }
+        $this->_associationMappings[$sourceFieldName] = $oneToManyMapping;
+        $this->_registerCustomAssociationAccessors($oneToManyMapping, $sourceFieldName);
     }
 
     /**
@@ -1501,80 +1454,11 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
     {
 
     }
-
-    /**
-     * actAs
-     * loads the given plugin
-     *
-     * @param mixed $tpl
-     * @param array $options
-     * @todo Unify under 'Behaviors'.
-     */
-    /*public function actAs($tpl, array $options = array())
-    {
-        if ( ! is_object($tpl)) {
-            if (class_exists($tpl, true)) {
-                $tpl = new $tpl($options);
-            } else {
-                $className = 'Doctrine_Template_' . $tpl;
-                if ( ! class_exists($className, true)) {
-                    throw new Doctrine_Record_Exception("Couldn't load plugin.");
-                }
-                $tpl = new $className($options);
-            }
-        }
-
-        if ( ! ($tpl instanceof Doctrine_Template)) {
-            throw new Doctrine_Record_Exception('Loaded plugin class is not an instance of Doctrine_Template.');
-        }
-
-        $className = get_class($tpl);
-
-        $this->addBehavior($className, $tpl);
-
-        $tpl->setTable($this);
-        $tpl->setUp();
-        $tpl->setTableDefinition();
-
-        return $this;
-    }*/
-
-    /**
-     * check
-     * adds a check constraint
-     *
-     * @param mixed $constraint     either a SQL constraint portion or an array of CHECK constraints
-     * @param string $name          optional constraint name
-     * @return Doctrine_Entity      this object
-     * @todo Should be done through $_tableOptions
-     * @deprecated
-     */
-    /*public function check($constraint, $name = null)
-    {
-        if (is_array($constraint)) {
-            foreach ($constraint as $name => $def) {
-                $this->_addCheckConstraint($def, $name);
-            }
-        } else {
-            $this->_addCheckConstraint($constraint, $name);
-        }
-
-        return $this;
-    }
-    protected function _addCheckConstraint($definition, $name)
-    {
-        if (is_string($name)) {
-            $this->_tableOptions['checks'][$name] = $definition;
-        } else {
-            $this->_tableOptions['checks'][] = $definition;
-        }
-    }*/
     
     /**
      * Registers a custom mapper for the entity class.
      *
      * @param string $mapperClassName  The class name of the custom mapper.
-     * @deprecated
      */
     public function setCustomRepositoryClass($repositoryClassName)
     {
@@ -1607,7 +1491,7 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
     }
 
     /**
-     * Binds the entity instance of this class to a specific EntityManager.
+     * Binds the entity instances of this class to a specific EntityManager.
      * 
      * @todo Implementation. Replaces the bindComponent() methods on the old Doctrine_Manager.
      *       Binding an Entity to a specific EntityManager in 2.0 is the same as binding
@@ -1697,6 +1581,24 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
             $this->_lifecycleCallbacks[$event][$callback] = $callback;
         } 
     }
+    
+    /**
+     * Completes the identifier mapping of the class.
+     * NOTE: Should only be called by the ClassMetadataFactory!
+     */
+    public function completeIdentifierMapping()
+    {
+        if ($this->getIdGeneratorType() == self::GENERATOR_TYPE_AUTO) {
+            $platform = $this->_em->getConnection()->getDatabasePlatform();
+            if ($platform->prefersSequences()) {
+                $this->_generatorType = self::GENERATOR_TYPE_SEQUENCE;
+            } else if ($platform->prefersIdentityColumns()) {
+                $this->_generatorType = self::GENERATOR_TYPE_IDENTITY;
+            } else {
+                $this->_generatorType = self::GENERATOR_TYPE_TABLE;
+            }
+        }
+    }
 
     /**
      * @todo Implementation. Immutable entities can not be updated or deleted once
@@ -1711,38 +1613,6 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
     public function isDiscriminatorColumn($columnName)
     {
         return $columnName === $this->_inheritanceOptions['discriminatorColumn'];
-    }
-
-    /**
-     * hasOne
-     * binds One-to-One aggregate relation
-     *
-     * @param string $componentName     the name of the related component
-     * @param string $options           relation options
-     * @see Doctrine_Relation::_$definition
-     * @return Doctrine_Entity          this object
-     */
-    public function hasOne()
-    {
-        $this->bind(func_get_args(), Doctrine_Relation::ONE_AGGREGATE);
-
-        return $this;
-    }
-
-    /**
-     * hasMany
-     * binds One-to-Many / Many-to-Many aggregate relation
-     *
-     * @param string $componentName     the name of the related component
-     * @param string $options           relation options
-     * @see Doctrine_Relation::_$definition
-     * @return Doctrine_Entity          this object
-     */
-    public function hasMany()
-    {
-        $this->bind(func_get_args(), Doctrine_Relation::MANY_AGGREGATE);
-
-        return $this;
     }
 
     public function hasAttribute($name)
@@ -1766,6 +1636,43 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
     
     /* The following stuff needs to be touched for the association mapping rewrite */
     
+    /**
+     * hasOne
+     * binds One-to-One aggregate relation
+     *
+     * @param string $componentName     the name of the related component
+     * @param string $options           relation options
+     * @see Doctrine_Relation::_$definition
+     * @return Doctrine_Entity          this object
+     * @deprecated
+     */
+    public function hasOne()
+    {
+        $this->bind(func_get_args(), Doctrine_Relation::ONE_AGGREGATE);
+
+        return $this;
+    }
+
+    /**
+     * hasMany
+     * binds One-to-Many / Many-to-Many aggregate relation
+     *
+     * @param string $componentName     the name of the related component
+     * @param string $options           relation options
+     * @see Doctrine_Relation::_$definition
+     * @return Doctrine_Entity          this object
+     * @deprecated
+     */
+    public function hasMany()
+    {
+        $this->bind(func_get_args(), Doctrine_Relation::MANY_AGGREGATE);
+
+        return $this;
+    }
+    
+    /**
+     * @deprecated
+     */
     public function bindRelation($args, $type)
     {
         return $this->bind($args, $type);
@@ -1773,6 +1680,7 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
 
     /**
      * @todo Relation mapping rewrite.
+     * @deprecated
      */
     public function bind($args, $type)
     {
@@ -1798,22 +1706,32 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
      *
      * @param string $alias      the relation to check if exists
      * @return boolean           true if the relation exists otherwise false
+     * @deprecated
      */
     public function hasRelation($alias)
     {
         return $this->_parser->hasRelation($alias);
+    }
+    
+    public function hasAssociation($fieldName)
+    {
+        return isset($this->_associationMappings[$fieldName]);
     }
 
     /**
      * getRelation
      *
      * @param string $alias      relation alias
+     * @deprecated
      */
     public function getRelation($alias, $recursive = true)
     {
         return $this->_parser->getRelation($alias, $recursive);
     }
-
+    
+    /**
+     * @deprecated
+     */
     public function getRelationParser()
     {
         return $this->_parser;
@@ -1824,32 +1742,11 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
      * returns an array containing all relation objects
      *
      * @return array        an array of Doctrine_Relation objects
+     * @deprecated
      */
     public function getRelations()
     {
         return $this->_parser->getRelations();
-    }
-    
-    /**
-     * @todo Set by the factory if type is AUTO. Not pretty. Find sth. better.
-     */
-    public function setIdGeneratorType($type)
-    {
-        $this->_generatorType = $type;
-    }
-    
-    public function completeIdentifierMapping()
-    {
-        if ($this->getIdGeneratorType() == self::GENERATOR_TYPE_AUTO) {
-            $platform = $this->_em->getConnection()->getDatabasePlatform();
-            if ($platform->prefersSequences()) {
-                $this->_generatorType = self::GENERATOR_TYPE_SEQUENCE;
-            } else if ($platform->prefersIdentityColumns()) {
-                $this->_generatorType = self::GENERATOR_TYPE_IDENTITY;
-            } else {
-                $this->_generatorType = self::GENERATOR_TYPE_TABLE;
-            }
-        }
     }
 
     /**

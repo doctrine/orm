@@ -55,7 +55,7 @@ abstract class Doctrine_EntityPersister_Abstract
     /**
      * The Doctrine_Connection object that the database connection of this mapper.
      *
-     * @var Doctrine_Connection $conn
+     * @var Doctrine::DBAL::Connection $conn
      */
     protected $_conn;
     
@@ -85,17 +85,58 @@ abstract class Doctrine_EntityPersister_Abstract
     
     public function insert(Doctrine_Entity $entity)
     {
-        //...
+        $insertData = array();
+        $dataChangeSet = $entity->_getDataChangeSet();
+        $referenceChangeSet = $entity->_getReferenceChangeSet();
+
+        foreach ($referenceChangeSet as $field => $change) {
+            list($old, $new) = each($change);
+            $assocMapping = $entity->getClass()->getAssociationMapping($field);
+            if ($assocMapping->isOneToOne()) {
+                if ($assocMapping->isInverseSide()) {
+                    //echo "INVERSE!";
+                    continue; // ignore inverse side
+                }
+                foreach ($assocMapping->getSourceToTargetKeyColumns() as $localColumn => $foreignColumn) {
+                    //echo "$localColumn -- $foreignColumn<br/>";
+                    //$insertData[$localColumn] = 1; //FIX
+                }
+                // ... set the foreign key column to the id of the related entity ($new)
+            }
+            //...
+        }
+        
+        foreach ($dataChangeSet as $field => $change) {
+            $insertData[$entity->getClass()->getColumnName($field)] = current($change);
+        }
+        
+        //TODO: perform insert
+        $this->_conn->insert($entity->getClass()->getTableName(), $insertData);
     }
     
     public function update(Doctrine_Entity $entity)
     {
-        //...
+        $dataChangeSet = $entity->_getDataChangeSet();
+        $referenceChangeSet = $entity->_getReferenceChangeSet();
+        
+        foreach ($referenceChangeSet as $field => $change) {
+            $assocMapping = $entity->getClass()->getAssociationMapping($field);
+            if ($assocMapping instanceof Doctrine_Association_OneToOneMapping) {
+                if ($assocMapping->isInverseSide()) {
+                    continue; // ignore inverse side
+                }
+                // ... null out the foreign key
+                
+            }
+            //...
+        }
+        
+        //TODO: perform update
     }
     
     public function delete(Doctrine_Entity $entity)
     {
-        
+        //TODO: perform delete
     }
     
     /**
@@ -182,6 +223,64 @@ abstract class Doctrine_EntityPersister_Abstract
         return $converted;
     }
     
+    /**
+     * Returns an array of modified fields and values with data preparation
+     * adds column aggregation inheritance and converts Records into primary key values
+     *
+     * @param array $array
+     * @return array
+     * @todo Move to EntityPersister. There call _getChangeSet() and apply this logic.
+     */
+    public function prepareData(array $data = array())
+    {
+        $dataSet = array();
+
+        $modifiedFields = $fields;
+
+        foreach ($data as $field => $value) {
+            $type = $this->_classMetadata->getTypeOfField($field);
+
+            if ($value === Doctrine_Null::$INSTANCE) {
+                $dataSet[$field] = null;
+                continue;
+            }
+
+            switch ($type) {
+                case 'array':
+                case 'object':
+                    $dataSet[$field] = serialize($value);
+                    break;
+                case 'gzip':
+                    $dataSet[$field] = gzcompress($value, 5);
+                    break;
+                case 'boolean':
+                    $dataSet[$field] = $this->_em->getConnection()
+                            ->convertBooleans($value);
+                break;
+                case 'enum':
+                    $dataSet[$field] = $this->_class->enumIndex($field, $value);
+                    break;
+                default:
+                    $dataSet[$field] = $value;
+            }
+        }
+        
+        // @todo cleanup
+        // populates the discriminator field in Single & Class Table Inheritance
+        if ($this->_classMetadata->getInheritanceType() == Doctrine_ClassMetadata::INHERITANCE_TYPE_JOINED ||
+                $this->_class->getInheritanceType() == Doctrine_ClassMetadata::INHERITANCE_TYPE_SINGLE_TABLE) {
+            $discCol = $this->_classMetadata->getInheritanceOption('discriminatorColumn');
+            $discMap = $this->_classMetadata->getInheritanceOption('discriminatorMap');
+            $old = $this->get($discCol, false);
+            $discValue = array_search($this->_entityName, $discMap);
+            if ((string) $old !== (string) $discValue || $old === null) {
+                $dataSet[$discCol] = $discValue;
+                //$this->_data[$discCol] = $discValue;
+            }
+        }
+
+        return $dataSet;
+    }
 
     
     
@@ -225,75 +324,6 @@ abstract class Doctrine_EntityPersister_Abstract
     {
         return $this->_em;
     }
-
-    /**
-     * prepareValue
-     * this method performs special data preparation depending on
-     * the type of the given column
-     *
-     * 1. It unserializes array and object typed columns
-     * 2. Uncompresses gzip typed columns
-     * 3. Gets the appropriate enum values for enum typed columns
-     * 4. Initializes special null object pointer for null values (for fast column existence checking purposes)
-     *
-     * example:
-     * <code type='php'>
-     * $field = 'name';
-     * $value = null;
-     * $table->prepareValue($field, $value); // Doctrine_Null
-     * </code>
-     *
-     * @throws Doctrine_Table_Exception     if unserialization of array/object typed column fails or
-     * @throws Doctrine_Table_Exception     if uncompression of gzip typed column fails         *
-     * @param string $field     the name of the field
-     * @param string $value     field value
-     * @param string $typeHint  A hint on the type of the value. If provided, the type lookup
-     *                          for the field can be skipped. Used i.e. during hydration to
-     *                          improve performance on large and/or complex results.
-     * @return mixed            prepared value
-     * @todo To EntityManager. Make private and use in createEntity().
-     *       .. Or, maybe better: Move to hydrator for performance reasons.
-     */
-    /*public function prepareValue($fieldName, $value, $typeHint = null)
-    {
-        if ($value === $this->_nullObject) {
-            return $this->_nullObject;
-        } else if ($value === null) {
-            return null;
-        } else {
-            $type = is_null($typeHint) ? $this->_classMetadata->getTypeOf($fieldName) : $typeHint;
-            switch ($type) {
-                case 'integer':
-                case 'string';
-                    // don't do any casting here PHP INT_MAX is smaller than what the databases support
-                break;
-                case 'enum':
-                    return $this->_classMetadata->enumValue($fieldName, $value);
-                break;
-                case 'boolean':
-                    return (boolean) $value;
-                break;
-                case 'array':
-                case 'object':
-                    if (is_string($value)) {
-                        $value = unserialize($value);
-                        if ($value === false) {
-                            throw new Doctrine_Mapper_Exception('Unserialization of ' . $fieldName . ' failed.');
-                        }
-                        return $value;
-                    }
-                break;
-                case 'gzip':
-                    $value = gzuncompress($value);
-                    if ($value === false) {
-                        throw new Doctrine_Mapper_Exception('Uncompressing of ' . $fieldName . ' failed.');
-                    }
-                    return $value;
-                break;
-            }
-        }
-        return $value;
-    }*/
 
     /**
      * getComponentName

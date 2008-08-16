@@ -410,7 +410,7 @@ class Doctrine_Relation_Parser
      */
     public function completeDefinition($def)
     {
-        $conn = $this->_table->getConnection();
+        $conn = $this->_table->getEntityManager();
         $def['table'] = $this->getImpl($def, 'class');
         $def['localTable'] = $this->_table;
 

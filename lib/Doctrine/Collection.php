@@ -23,26 +23,42 @@
 
 /**
  * A persistent collection of entities.
+ * 
  * A collection object is strongly typed in the sense that it can only contain
- * entities of a specific type or one it's subtypes.
+ * entities of a specific type or one of it's subtypes. A collection object is
+ * basically a wrapper around an ordinary php array and just like a php array
+ * it can have List or Map semantics.
+ * 
+ * A collection of entities represents only the associations (links) to those entities.
+ * That means, if the collection is part of a many-many mapping and you remove
+ * entities from the collection, only the links in the xref table are removed.
+ * Similarly, if you remove entities from a collection that is part of a one-many
+ * mapping this will only result in the nulling out of the foreign keys
+ * (or removal of the links in the xref table if the one-many is mapped through an
+ * xref table). If you want entities in a one-many collection to be removed when
+ * they're removed from the collection, use deleteOrphans => true on the one-many
+ * mapping.
  *
- * @package     Doctrine
- * @subpackage  Collection
- * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
- * @link        www.phpdoctrine.org
- * @since       1.0
- * @version     $Revision$
- * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
+ * @license   http://www.opensource.org/licenses/lgpl-license.php LGPL
+ * @since     1.0
+ * @version   $Revision$
+ * @author    Konsta Vesterinen <kvesteri@cc.hut.fi>
+ * @author    Roman Borschel <roman@code-factory.org>
  */
-class Doctrine_Collection extends Doctrine_Access implements Countable, IteratorAggregate, Serializable
+class Doctrine_Collection implements Countable, IteratorAggregate, Serializable, ArrayAccess
 {   
-    
+    /**
+     * The base type of the collection.
+     *
+     * @var string
+     */
     protected $_entityBaseType;
     
     /**
-     * An array containing the records of this collection.
+     * An array containing the entries of this collection.
+     * This is the wrapped php array.
      *
-     * @var array                     
+     * @var array 
      */
     protected $_data = array();
 
@@ -83,20 +99,17 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
      */
     //protected static $null;
     
+    protected $_mapping;
+    
     /**
      * The EntityManager.
      *
      * @var EntityManager
      */
     protected $_em;
-    protected $_isDirty = false;
 
     /**
      * Constructor.
-     *
-     * @param Doctrine_Mapper|string $mapper   The mapper used by the collection.
-     * @param string $keyColumn                The field name that will be used as the key
-     *                                         in the collection.
      */
     public function __construct($entityBaseType, $keyField = null)
     {
@@ -115,7 +128,6 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
      * setData
      *
      * @param array $data
-     * @return Doctrine_Collection
      */
     public function setData(array $data) 
     {
@@ -124,7 +136,7 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
 
     /**
      * Serializes the collection.
-     * This method is automatically called when this Doctrine_Collection is serialized.
+     * This method is automatically called when the Collection is serialized.
      *
      * Part of the implementation of the Serializable interface.
      *
@@ -145,7 +157,7 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
 
     /**
      * Reconstitutes the collection object from it's serialized form.
-     * This method is automatically called everytime a Doctrine_Collection object is unserialized.
+     * This method is automatically called everytime the Collection object is unserialized.
      *
      * Part of the implementation of the Serializable interface.
      *
@@ -172,8 +184,7 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
     }
 
     /**
-     * setKeyField
-     * sets the key column for this collection
+     * Sets the key column for this collection
      *
      * @param string $column
      * @return Doctrine_Collection
@@ -185,7 +196,6 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
     }
 
     /**
-     * getKeyField
      * returns the name of the key column
      *
      * @return string
@@ -196,7 +206,6 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
     }
 
     /**
-     * getData
      * returns all the records as an array
      *
      * @return array
@@ -207,7 +216,6 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
     }
 
     /**
-     * getFirst
      * returns the first record in the collection
      *
      * @return mixed
@@ -218,7 +226,6 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
     }
 
     /**
-     * getLast
      * returns the last record in the collection
      *
      * @return mixed
@@ -254,7 +261,7 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
      *
      * @return void
      */
-    public function setReference(Doctrine_Entity $entity, Doctrine_Relation $relation)
+    public function setReference(Doctrine_Entity $entity, $relation)
     {
         $this->_owner = $entity;
         //$this->relation  = $relation;
@@ -296,7 +303,87 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
     {
         $removed = $this->_data[$key];
         unset($this->_data[$key]);
+        //TODO: Register collection as dirty with the UoW if necessary
         return $removed;
+    }
+    
+    /**
+     * __isset()
+     *
+     * @param string $name
+     * @return boolean          whether or not this object contains $name
+     */
+    public function __isset($key)
+    {
+        return $this->containsKey($key);
+    }
+    
+    /**
+     * __unset()
+     *
+     * @param string $name
+     * @since 1.0
+     * @return void
+     */
+    public function __unset($key)
+    {
+        return $this->remove($key);
+    }
+    
+    /**
+     * Check if an offsetExists.
+     * 
+     * Part of the ArrayAccess implementation.
+     *
+     * @param mixed $offset
+     * @return boolean          whether or not this object contains $offset
+     */
+    public function offsetExists($offset)
+    {
+        return $this->containsKey($offset);
+    }
+
+    /**
+     * offsetGet    an alias of get()
+     * 
+     * Part of the ArrayAccess implementation.
+     *
+     * @see get,  __get
+     * @param mixed $offset
+     * @return mixed
+     */
+    public function offsetGet($offset)
+    {
+        return $this->get($offset);
+    }
+
+    /**
+     * Part of the ArrayAccess implementation.
+     * 
+     * sets $offset to $value
+     * @see set,  __set
+     * @param mixed $offset
+     * @param mixed $value
+     * @return void
+     */
+    public function offsetSet($offset, $value)
+    {
+        if ( ! isset($offset)) {
+            return $this->add($value);
+        }
+        return $this->set($offset, $value);
+    }
+
+    /**
+     * Part of the ArrayAccess implementation.
+     * 
+     * unset a given offset
+     * @see set, offsetSet, __set
+     * @param mixed $offset
+     */
+    public function offsetUnset($offset)
+    {
+        return $this->remove($offset);
     }
 
     /**
@@ -304,11 +391,32 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
      *
      * @param mixed $key                    the key of the element
      * @return boolean
-     * @todo Rename to containsKey().
      */
-    public function contains($key)
+    public function containsKey($key)
     {
         return isset($this->_data[$key]);
+    }
+    
+    /**
+     * Enter description here...
+     *
+     * @param unknown_type $entity
+     * @return unknown
+     */
+    public function contains($entity)
+    {
+        return in_array($entity, $this->_data, true);
+    }
+    
+    /**
+     * Enter description here...
+     *
+     * @param unknown_type $otherColl
+     * @todo Impl
+     */
+    public function containsAll($otherColl)
+    {
+        //...
     }
     
     /**
@@ -336,49 +444,25 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
     }
 
     /**
-     * Returns the primary keys of all records in the collection.
-     *
-     * @return array   An array containing all primary keys.
-     * @todo Rename.
-     */
-    public function getPrimaryKeys()
-    {
-        $list = array();
-        $idFieldNames = (array)$this->_mapper->getClassMetadata()->getIdentifier();
-
-        foreach ($this->_data as $record) {
-            if (is_array($record)) {
-                if (count($idFieldNames) > 1) {
-                    $id = array();
-                    foreach ($idFieldNames as $fieldName) {
-                         if (isset($record[$fieldName])) {
-                             $id[] = $record[$fieldName];
-                         }
-                    }
-                    $list[] = $id;
-                } else {
-                    $idField = $idFieldNames[0];
-                    if (isset($record[$idField])) {
-                        $list[] = $record[$idField];
-                    }
-                }
-            } else {
-                // @todo does not take composite keys into account
-                $ids = $record->identifier();
-                $list[] = count($ids) > 0 ? array_pop($ids) : null;
-            }
-        }
-        
-        return $list;
-    }
-
-    /**
-     * returns all keys
+     * Gets all keys.
+     * (Map method)
+     * 
      * @return array
      */
     public function getKeys()
     {
         return array_keys($this->_data);
+    }
+    
+    /**
+     * Gets all values.
+     * (Map method)
+     *
+     * @return array
+     */
+    public function getValues()
+    {
+        return array_values($this->_data);
     }
 
     /**
@@ -394,45 +478,39 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
     }
 
     /**
-     * set
+     * When the collection is a Map this is like put(key,value)/add(key,value).
+     * When the collection is a List this is like add(position,value).
+     * 
      * @param integer $key
-     * @param Doctrine_Entity $record
+     * @param mixed $value
      * @return void
-     * @internal Can't type-hint the second parameter to Doctrine_Entity because we need
-     *           to adhere to the Doctrine_Access::set() signature.
      */
     public function set($key, $value)
     {
         if ( ! $value instanceof Doctrine_Entity) {
             throw new Doctrine_Collection_Exception('Value variable in set is not an instance of Doctrine_Entity');
         }
-
         $this->_data[$key] = $value;
+        //TODO: Register collection as dirty with the UoW if necessary
+        $this->_changed();
     }
 
     /**
-     * adds a record to collection
+     * Adds an entry to the collection.
      * 
-     * @param Doctrine_Entity $record              record to be added
-     * @param string $key                          optional key for the record
+     * @param mixed $value
+     * @param string $key 
      * @return boolean
      */
     public function add($value, $key = null)
     {
-        /** @TODO Use raw getters/setters */
         if ( ! $value instanceof Doctrine_Entity) {
             throw new Doctrine_Record_Exception('Value variable in set is not an instance of Doctrine_Entity.');
         }
         
-        /*
-         * for some weird reason in_array cannot be used here (php bug ?)
-         *
-         * if used it results in fatal error : [ nesting level too deep ]
-         */
-        foreach ($this->_data as $val) {
-            if ($val === $value) {
-                return false;
-            }
+        // Neither Maps nor Lists allow duplicates, both are Sets
+        if (in_array($value, $this->_data, true)) {
+            return false;
         }
 
         if (isset($key)) {
@@ -440,12 +518,27 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
                 return false;
             }
             $this->_data[$key] = $value;
-            return true;
+        } else {
+            $this->_data[] = $value;
         }
-
-        $this->_data[] = $value;
+        
+        //TODO: Register collection as dirty with the UoW if necessary
+        $this->_changed();
         
         return true;
+    }
+    
+    /**
+     * Adds all entities of the other collection to this collection.
+     *
+     * @param unknown_type $otherCollection
+     * @todo Impl
+     */
+    public function addAll($otherCollection)
+    {
+        //...
+        //TODO: Register collection as dirty with the UoW if necessary
+        //$this->_changed();
     }
 
     /**
@@ -454,6 +547,7 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
      *
      * @param mixed $name
      * @return boolean
+     * @todo New implementation & maybe move elsewhere.
      */
     public function loadRelated($name = null)
     {
@@ -506,8 +600,9 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
      * @param string $name
      * @param Doctrine_Collection $coll
      * @return void
+     * @todo New implementation & maybe move elsewhere.
      */
-    public function populateRelated($name, Doctrine_Collection $coll)
+    protected function populateRelated($name, Doctrine_Collection $coll)
     {
         $rel     = $this->_mapper->getTable()->getRelation($name);
         $table   = $rel->getTable();
@@ -562,38 +657,23 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
     }
 
     /**
-     * getNormalIterator
-     * returns normal iterator - an iterator that will not expand this collection
+     * INTERNAL: Takes a snapshot from this collection.
      *
-     * @return Doctrine_Iterator_Normal
-     */
-    public function getNormalIterator()
-    {
-        return new Doctrine_Collection_Iterator_Normal($this);
-    }
-
-    /**
-     * takeSnapshot
-     * takes a snapshot from this collection
-     *
-     * snapshots are used for diff processing, for example
+     * Snapshots are used for diff processing, for example
      * when a fetched collection has three elements, then two of those
-     * are being removed the diff would contain one element
+     * are being removed the diff would contain one element.
      *
-     * Doctrine_Collection::save() attaches the diff with the help of last
-     * snapshot.
-     *
-     * @return Doctrine_Collection
+     * Collection::save() attaches the diff with the help of last snapshot.
+     * 
+     * @return void
      */
     public function takeSnapshot()
     {
         $this->_snapshot = $this->_data;
-        return $this;
     }
 
     /**
-     * getSnapshot
-     * returns the data of the last snapshot
+     * INTERNAL: Returns the data of the last snapshot.
      *
      * @return array    returns the data in last snapshot
      */
@@ -603,8 +683,7 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
     }
 
     /**
-     * processDiff
-     * processes the difference of the last snapshot and the current data
+     * Processes the difference of the last snapshot and the current data.
      *
      * an example:
      * Snapshot with the objects 1, 2 and 4
@@ -623,7 +702,6 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
     }
 
     /**
-     * toArray
      * Mimics the result of a $query->execute(array(), Doctrine::FETCH_ARRAY);
      *
      * @param boolean $deep
@@ -639,15 +717,18 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
         return $data;
     }
     
+    /**
+     * Checks whether the collection is empty.
+     *
+     * @return boolean TRUE if the collection is empty, FALSE otherwise.
+     */
     public function isEmpty()
     {
         return $this->count() == 0;
     }
 
     /**
-     * fromArray
-     *
-     * Populate a Doctrine_Collection from an array of data
+     * Populate a Doctrine_Collection from an array of data.
      *
      * @param string $array 
      * @return void
@@ -661,8 +742,7 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
     }
 
     /**
-     * synchronizeFromArray
-     * synchronizes a Doctrine_Collection with data from an array
+     * Synchronizes a Doctrine_Collection with data from an array.
      *
      * it expects an array representation of a Doctrine_Collection similar to the return
      * value of the toArray() method. It will create Dectrine_Records that don't exist
@@ -689,8 +769,6 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
     }
 
     /**
-     * exportTo
-     *
      * Export a Doctrine_Collection to one of the supported Doctrine_Parser formats
      *
      * @param string $type 
@@ -698,18 +776,16 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
      * @return void
      * @todo Move elsewhere.
      */
-    public function exportTo($type, $deep = false)
+    /*public function exportTo($type, $deep = false)
     {
         if ($type == 'array') {
             return $this->toArray($deep);
         } else {
             return Doctrine_Parser::dump($this->toArray($deep, true), $type);
         }
-    }
+    }*/
 
     /**
-     * importFrom
-     *
      * Import data to a Doctrine_Collection from one of the supported Doctrine_Parser formats
      *
      * @param string $type 
@@ -717,19 +793,19 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
      * @return void
      * @todo Move elsewhere.
      */
-    public function importFrom($type, $data)
+    /*public function importFrom($type, $data)
     {
         if ($type == 'array') {
             return $this->fromArray($data);
         } else {
             return $this->fromArray(Doctrine_Parser::load($data, $type));
         }
-    }
+    }*/
 
     /**
-     * getDeleteDiff
+     * INTERNAL: getDeleteDiff
      *
-     * @return void
+     * @return array
      */
     public function getDeleteDiff()
     {
@@ -737,9 +813,9 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
     }
 
     /**
-     * getInsertDiff
+     * INTERNAL getInsertDiff
      *
-     * @return void
+     * @return array
      */
     public function getInsertDiff()
     {
@@ -747,8 +823,9 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
     }
 
     /**
-     * _compareRecords
      * Compares two records. To be used on _snapshot diffs using array_udiff.
+     * 
+     * @return integer
      */
     protected function _compareRecords($a, $b)
     {
@@ -766,7 +843,7 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
      * @param Doctrine_Connection $conn     optional connection parameter
      * @return Doctrine_Collection
      */
-    public function save()
+    /*public function save()
     {
         $conn = $this->_mapper->getConnection();
         
@@ -786,14 +863,15 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
         }
 
         return $this;
-    }
+    }*/
 
     /**
      * Deletes all records from the collection.
+     * Shorthand for calling delete() for all entities in the collection.
      *
      * @return void
      */
-    public function delete($clearColl = false)
+    /*public function delete()
     {  
         $conn = $this->_mapper->getConnection();
 
@@ -811,10 +889,8 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
             throw $e;
         }
         
-        if ($clearColl) {
-            $this->clear();            
-        }
-    }
+        $this->clear();
+    }*/
 
 
     public function free($deep = false)
@@ -853,16 +929,54 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
     }
     
     /**
-     * returns the relation object
-     * @return object Doctrine_Relation
+     * Gets the association mapping of the collection.
+     * 
+     * @return Doctrine::ORM::Mapping::AssociationMapping
      */
-    public function getRelation()
+    public function getMapping()
     {
         return $this->relation;
     }
     
+    /**
+     * @todo Experiment. Waiting for 5.3 closures.
+     * Example usage:
+     * 
+     * $map = $coll->mapElements(function($key, $entity) {
+     *     return array($entity->id, $entity->name);
+     * });
+     * 
+     * or:
+     * 
+     * $map = $coll->mapElements(function($key, $entity) {
+     *     return array($entity->name, strtoupper($entity->name));
+     * });
+     * 
+     */
+    public function mapElements($lambda) {
+        $result = array();
+        foreach ($this->_data as $key => $entity) {
+            list($key, $value) = $lambda($key, $entity);
+            $result[$key] = $value;
+        }
+        return $result;
+    }
+    
+    /**
+     * Clears the collection.
+     *
+     * @return void
+     */
     public function clear()
     {
         $this->_data = array();
+        //TODO: Register collection as dirty with the UoW if necessary
+    }
+    
+    private function _changed()
+    {
+        /*if ( ! $this->_em->getUnitOfWork()->isCollectionScheduledForUpdate($this)) {
+            $this->_em->getUnitOfWork()->scheduleCollectionUpdate($this);
+        }*/
     }
 }

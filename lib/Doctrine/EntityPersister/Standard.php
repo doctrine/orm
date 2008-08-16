@@ -24,8 +24,6 @@
  * as is the case in Single Table Inheritance & Concrete Table Inheritance.
  *
  * @author      Roman Borschel <roman@code-factory.org>
- * @package     Doctrine
- * @subpackage  Abstract
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @version     $Revision$
  * @link        www.phpdoctrine.org
@@ -72,7 +70,6 @@ class Doctrine_EntityPersister_Standard extends Doctrine_EntityPersister_Abstrac
             return false;
         }
         
-        //$class = $record->getClassMetadata();
         $class = $this->_classMetadata;
         $identifier = $class->getIdentifier();
         $fields = $this->_convertFieldToColumnNames($fields, $class);

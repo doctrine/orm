@@ -154,7 +154,7 @@ abstract class Doctrine_Relation implements ArrayAccess
             }
         }
         $this->definition = $def;
-        $this->_foreignMapper = $this->getTable()->getConnection()->getEntityPersister($def['class']);
+        $this->_foreignMapper = $this->getTable()->getEntityManager()->getEntityPersister($def['class']);
     }
 
     /**

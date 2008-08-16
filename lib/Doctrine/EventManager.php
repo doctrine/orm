@@ -19,11 +19,11 @@
  * <http://www.phpdoctrine.org>.
  */
 
-#namespace Doctrine::Common;
+#namespace Doctrine::Common::Event;
 
 /**
  * The EventManager is the central point of Doctrine's event listener system.
- * Listeners are registered on the manager and events are dispatch through the
+ * Listeners are registered on the manager and events are dispatched through the
  * manager.
  * 
  * @author Roman Borschel <roman@code-factory.org>
@@ -99,6 +99,17 @@ class Doctrine_EventManager
         foreach ($events as $event) {
             $this->_listeners[$event] = $listener;
         }
+    }
+    
+    /**
+     * Adds an EventSubscriber. The subscriber is asked for all the events he is
+     * interested in and added as a listener for these events.
+     * 
+     * @param Doctrine::Common::Event::EventSubscriber $subscriber  The subscriber.
+     */
+    public function addEventSubscriber(Doctrine_EventSubscriber $subscriber)
+    {
+        $this->addEventListener($subscriber->getSubscribedEvents(), $subscriber);
     }
 }
 

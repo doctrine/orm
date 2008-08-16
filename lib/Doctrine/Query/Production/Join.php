@@ -50,7 +50,7 @@ class Doctrine_Query_Production_Join extends Doctrine_Query_Production
             $this->_parser->match(Doctrine_Query_Token::T_LEFT);
 
             $this->_joinType = 'LEFT';
-        } elseif ($this->_isNextToken(Doctrine_Query_Token::T_INNER)) {
+        } else if ($this->_isNextToken(Doctrine_Query_Token::T_INNER)) {
             $this->_parser->match(Doctrine_Query_Token::T_INNER);
         }
 
@@ -64,7 +64,7 @@ class Doctrine_Query_Production_Join extends Doctrine_Query_Production
             $this->_whereType = 'ON';
 
             $this->_conditionalExpression = $this->AST('ConditionalExpression', $paramHolder);
-        } elseif ($this->_isNextToken(Doctrine_Query_Token::T_WITH)) {
+        } else if ($this->_isNextToken(Doctrine_Query_Token::T_WITH)) {
             $this->_parser->match(Doctrine_Query_Token::T_WITH);
 
             $this->_conditionalExpression = $this->AST('ConditionalExpression', $paramHolder);

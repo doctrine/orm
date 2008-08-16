@@ -20,7 +20,12 @@ class ForumCategory extends Doctrine_Entity
             'length' => 255
         ));
         
-        $mapping->hasMany('ForumBoard as boards', array(
-                'local' => 'id' , 'foreign' => 'category_id')); 
+        /*$mapping->hasMany('ForumBoard as boards', array(
+                'local' => 'id' , 'foreign' => 'category_id'));*/
+        
+        $mapping->mapOneToMany(array(
+            'fieldName' => 'boards',
+            'targetEntity' => 'ForumBoard'
+        ));
     }
 }

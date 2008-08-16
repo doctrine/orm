@@ -24,8 +24,8 @@
 /**
  * Base class for association mappings.
  *
- * @since 2.0
  * @author Roman Borschel <roman@code-factory.org>
+ * @since 2.0
  * @todo Rename to AssociationMapping.
  */
 class Doctrine_Association implements Serializable
@@ -52,6 +52,9 @@ class Doctrine_Association implements Serializable
     protected $_isCascadeSave;
     protected $_isCascadeRefresh;
     
+    protected $_customAccessor;
+    protected $_customMutator;
+    
     /**
      * The fetch mode used for the association.
      *
@@ -66,6 +69,14 @@ class Doctrine_Association implements Serializable
      * @var boolean
      */
     protected $_isOwningSide = true;
+    
+    /**
+     * Whether the association is optional (0..X) or not (1..X).
+     * By default all associations are optional.
+     *
+     * @var boolean
+     */
+    protected $_isOptional = true;
     
     /**
      * The name of the source Entity (the Entity that defines this mapping).
@@ -84,7 +95,8 @@ class Doctrine_Association implements Serializable
     
     /**
      * Identifies the field on the source class (the class this AssociationMapping
-     * belongs to) that represents the association.
+     * belongs to) that represents the association and stores the reference to the
+     * other entity/entities.
      *
      * @var string
      */
@@ -106,12 +118,13 @@ class Doctrine_Association implements Serializable
      */
     public function __construct(array $mapping)
     {
-        $this->_validateMapping($mapping);
-        if ($this->_isOwningSide) {
-            $this->_sourceEntityName = $mapping['sourceEntity'];
-            $this->_targetEntityName = $mapping['targetEntity'];
-            $this->_sourceFieldName = $mapping['fieldName'];
-        } else {
+        $this->_validateAndCompleteMapping($mapping);
+        
+        $this->_sourceEntityName = $mapping['sourceEntity'];
+        $this->_targetEntityName = $mapping['targetEntity'];
+        $this->_sourceFieldName = $mapping['fieldName'];
+        
+        if ( ! $this->_isOwningSide) {
             $this->_mappedByFieldName = $mapping['mappedBy'];
         }        
     }
@@ -122,23 +135,50 @@ class Doctrine_Association implements Serializable
      * @param array $mapping
      * @return array  The validated & completed mapping.
      */
-    protected function _validateMapping(array $mapping)
-    {
+    protected function _validateAndCompleteMapping(array $mapping)
+    {        
         if (isset($mapping['mappedBy'])) {
+            // Inverse side, mapping can be found on the owning side.
             $this->_isOwningSide = false;
+        } else {
+            // Owning side
         }
         
-        if ($this->_isOwningSide) {
-            if ( ! isset($mapping['targetEntity'])) {
-                throw Doctrine_MappingException::missingTargetEntity();
-            } else if ( ! isset($mapping['fieldName'])) {
-                throw Doctrine_MappingException::missingFieldName();
-            }
+        // Mandatory attributes
+        if ( ! isset($mapping['fieldName'])) {
+            throw Doctrine_MappingException::missingFieldName();
         }
+        if ( ! isset($mapping['sourceEntity'])) {
+            throw Doctrine_MappingException::missingSourceEntity($mapping['fieldName']);
+        }
+        if ( ! isset($mapping['targetEntity'])) {
+            throw Doctrine_MappingException::missingTargetEntity($mapping['fieldName']);
+        }
+        
+        // Optional attributes
+        $this->_customAccessor = isset($mapping['accessor']) ? $mapping['accessor'] : null;
+        $this->_customMutator = isset($mapping['mutator']) ? $mapping['mutator'] : null;
+        $this->_isOptional = isset($mapping['isOptional']) ? (bool)$mapping['isOptional'] : true;
 
         return $mapping;
     }
     
+    protected function _validateAndCompleteInverseSideMapping()
+    {
+        
+    }
+    
+    protected function _validateAndCompleteOwningSideMapping()
+    {
+        
+    }
+    
+    /**
+     * Whether the association cascades delete() operations from the source entity
+     * to the target entity/entities.
+     *
+     * @return boolean
+     */
     public function isCascadeDelete()
     {
         if (is_null($this->_isCascadeDelete)) {
@@ -147,6 +187,12 @@ class Doctrine_Association implements Serializable
         return $this->_isCascadeDelete;
     }
     
+    /**
+     * Whether the association cascades save() operations from the source entity
+     * to the target entity/entities.
+     *
+     * @return boolean
+     */
     public function isCascadeSave()
     {
         if (is_null($this->_isCascadeSave)) {
@@ -155,6 +201,12 @@ class Doctrine_Association implements Serializable
         return $this->_isCascadeSave;
     }
     
+    /**
+     * Whether the association cascades refresh() operations from the source entity
+     * to the target entity/entities.
+     *
+     * @return boolean
+     */
     public function isCascadeRefresh()
     {
         if (is_null($this->_isCascadeRefresh)) {
@@ -163,36 +215,81 @@ class Doctrine_Association implements Serializable
         return $this->_isCascadeRefresh;
     }
     
+    /**
+     * Whether the target entity/entities of the association are eagerly fetched.
+     *
+     * @return boolean
+     */
     public function isEagerlyFetched()
     {
         return $this->_fetchMode == self::FETCH_EAGER;
     }
     
+    /**
+     * Whether the target entity/entities of the association are lazily fetched.
+     *
+     * @return boolean
+     */
     public function isLazilyFetched()
     {
         return $this->_fetchMode == self::FETCH_LAZY;
     }
     
+    /**
+     * Whether the target entity/entities of the association are manually fetched.
+     *
+     * @return boolean
+     */
     public function isManuallyFetched()
     {
         return $this->_fetchMode == self::FETCH_MANUAL;
     }
     
+    /**
+     * Whether the source entity of this association represents the owning side.
+     *
+     * @return boolean
+     */
     public function isOwningSide()
     {
         return $this->_isOwningSide;
     }
     
+    /**
+     * Whether the source entity of this association represents the inverse side.
+     *
+     * @return boolean
+     */
     public function isInverseSide()
     {
         return ! $this->_isOwningSide;
     }
     
+    /**
+     * Whether the association is optional (0..X), or not (1..X).
+     *
+     * @return boolean TRUE if the association is optional, FALSE otherwise.
+     */
+    public function isOptional()
+    {
+        return $this->_isOptional;
+    }
+    
+    /**
+     * Gets the name of the source entity class.
+     *
+     * @return string
+     */
     public function getSourceEntityName()
     {
         return $this->_sourceEntityName;
     }
     
+    /**
+     * Gets the name of the target entity class.
+     *
+     * @return string
+     */
     public function getTargetEntityName()
     {
         return $this->_targetEntityName;
@@ -201,15 +298,78 @@ class Doctrine_Association implements Serializable
     /**
      * Get the name of the field the association is mapped into.
      *
+     * @return string
      */
     public function getSourceFieldName()
     {
         return $this->_sourceFieldName;
     }
     
+    /**
+     * Gets the field name of the owning side in a bi-directional association.
+     *
+     * @return string
+     */
     public function getMappedByFieldName()
     {
         return $this->_mappedByFieldName;
+    }
+    
+    /**
+     * Whether the source field of the association has a custom accessor.
+     *
+     * @return boolean TRUE if the source field of the association has a custom accessor,
+     *                 FALSE otherwise.
+     */
+    public function hasCustomAccessor()
+    {
+        return isset($this->_customAccessor);
+    }
+    
+    /**
+     * Gets the name of the custom accessor method of the source field.
+     *
+     * @return string The name of the accessor method or NULL.
+     */
+    public function getCustomAccessor()
+    {
+        return $this->_customAccessor;
+    }
+    
+    /**
+     * Whether the source field of the association has a custom mutator.
+     *
+     * @return boolean TRUE if the source field of the association has a custom mutator,
+     *                 FALSE otherwise.
+     */
+    public function hasCustomMutator()
+    {
+        return isset($this->_customMutator);
+    }
+    
+    /**
+     * Gets the name of the custom mutator method of the source field.
+     *
+     * @return string The name of the mutator method or NULL.
+     */
+    public function getCustomMutator()
+    {
+        return $this->_customMutator;
+    }
+    
+    public function isOneToOne()
+    {
+        return false;
+    }
+    
+    public function isOneToMany()
+    {
+        return false;
+    }
+    
+    public function isManyToMany()
+    {
+        return false;
     }
     
     /* Serializable implementation */

@@ -77,6 +77,27 @@ class Doctrine_Connection_UnitOfWork
      * @todo Rename to _deletions?
      */
     protected $_deletedEntities = array();
+    
+    /**
+     * All collection deletions.
+     *
+     * @var array
+     */
+    protected $_collectionDeletions = array();
+    
+    /**
+     * All collection creations.
+     *
+     * @var array
+     */
+    protected $_collectionCreations = array();
+    
+    /**
+     * All collection updates.
+     *
+     * @var array
+     */
+    protected $_collectionUpdates = array();
 
     /**
      * The EntityManager the UnitOfWork belongs to.
@@ -115,16 +136,16 @@ class Doctrine_Connection_UnitOfWork
     public function commit()
     {
         // Detect changes in managed entities (mark dirty)
-        //TODO: Consider using registerDirty() in Entity#set() instead if its
-        // more performant.
-        foreach ($this->_identityMap as $entities) {
+        //TODO: Consider using registerDirty() in Entity#_set() instead if its
+        // more performant (SEE THERE).
+        /*foreach ($this->_identityMap as $entities) {
             foreach ($entities as $entity) {
                 if ($entity->_state() == Doctrine_Entity::STATE_MANAGED
                         && $entity->isModified()) {
                     $this->registerDirty($entity);
                 }
             }
-        }
+        }*/
 
         if (empty($this->_newEntities) &&
                 empty($this->_deletedEntities) &&
@@ -141,8 +162,12 @@ class Doctrine_Connection_UnitOfWork
             $this->_executeInserts($class);
             $this->_executeUpdates($class);
         }
+        
+        //TODO: collection deletions
+        //TODO: collection updates (deleteRows, updateRows, insertRows)
+        //TODO: collection recreations
 
-        // Deletions come last and need to be in reverse commit order
+        // Entity deletions come last and need to be in reverse commit order
         for ($count = count($commitOrder), $i = $count - 1; $i >= 0; $i--) {
             $this->_executeDeletions($commitOrder[$i]);
         }
@@ -232,7 +257,7 @@ class Doctrine_Connection_UnitOfWork
             foreach ($node->getClass()->getAssociationMappings() as $assocMapping) {
                 //TODO: should skip target classes that are not in the changeset.
                 if ($assocMapping->isOwningSide()) {
-                    $targetClass = $assocMapping->getTargetClass();
+                    $targetClass = $this->_em->getClassMetadata($assocMapping->getTargetEntityName());
                     $targetClassName = $targetClass->getClassName();
                     // if the target class does not yet have a node, create it
                     if ( ! $this->_commitOrderCalculator->hasNodeWithKey($targetClassName)) {
@@ -709,6 +734,38 @@ class Doctrine_Connection_UnitOfWork
     {
         //...        
         $this->_commitOrderCalculator->clear();
+    }
+    
+    public function scheduleCollectionUpdate(Doctrine_Collection $coll)
+    {
+        $this->_collectionUpdates[] = $coll;
+    }
+    
+    public function isCollectionScheduledForUpdate(Doctrine_Collection $coll)
+    {
+        //...
+    }
+    
+    public function scheduleCollectionDeletion(Doctrine_Collection $coll)
+    {
+        //TODO: if $coll is already scheduled for recreation ... what to do?
+        // Just remove $coll from the scheduled recreations?
+        $this->_collectionDeletions[] = $coll;
+    }
+    
+    public function isCollectionScheduledForDeletion(Doctrine_Collection $coll)
+    {
+        //...
+    }
+    
+    public function scheduleCollectionRecreation(Doctrine_Collection $coll)
+    {
+        $this->_collectionRecreations[] = $coll;
+    }
+    
+    public function isCollectionScheduledForRecreation(Doctrine_Collection $coll)
+    {
+        //...
     }
     
 
