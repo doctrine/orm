@@ -98,10 +98,11 @@ class Doctrine_Query_Production_ConditionalPrimary extends Doctrine_Query_Produc
 
         return false;
     }
-    
-    public function accept($visitor)
+
+
+    /* Getters */
+    public function getConditionalExpression()
     {
-        $this->_conditionalExpression->accept($visitor);
-        $visitor->visitConditionalPrimary($this);
+        return $this->_conditionalExpression;
     }
 }

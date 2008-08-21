@@ -71,22 +71,9 @@ class Doctrine_Query_Production_FromClause extends Doctrine_Query_Production
     {
         return $value->buildSql();
     }
-    
-    /**
-     * Visitor support
-     *
-     * @param object $visitor
-     */
-    public function accept($visitor)
-    {
-        foreach ($this->_identificationVariableDeclaration as $decl) {
-            $decl->accept($visitor);
-        }
-        $visitor->visitFromClause($this);
-    }
-    
+
+
     /* Getters */
-    
     public function getIdentificationVariableDeclarations()
     {
         return $this->_identificationVariableDeclaration;

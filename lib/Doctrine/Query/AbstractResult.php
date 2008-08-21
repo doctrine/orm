@@ -123,7 +123,7 @@ abstract class Doctrine_Query_AbstractResult
      */
     public function getQueryComponent($componentAlias)
     {
-        if ( ! isset($this->_queryComponents[$componentAlias])) {
+        if ( ! array_key_exists($componentAlias, $this->_queryComponents)) {
             throw new Doctrine_Query_Exception('Unknown query component ' . $componentAlias);
         }
 

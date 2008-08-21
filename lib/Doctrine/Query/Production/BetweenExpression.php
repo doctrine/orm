@@ -65,31 +65,21 @@ class Doctrine_Query_Production_BetweenExpression extends Doctrine_Query_Product
         return (($this->_not) ? 'NOT ' : '') . 'BETWEEN '
              . $this->_fromExpression->buildSql() . ' AND ' . $this->_toExpression->buildSql();
     }
-    
-    /**
-     * Visitor support.
-     *
-     * @param object $visitor
-     */
-    public function accept($visitor)
-    {
-        $this->_fromExpression->accept($visitor);
-        $this->_toExpression->accept($visitor);
-        $visitor->visitBetweenExpression($this);
-    }
-    
+
+
     /* Getters */
-    
     public function isNot()
     {
         return $this->_not;
     }
-    
+
+
     public function getFromExpression()
     {
         return $this->_fromExpression;
     }
-    
+
+
     public function getToExpression()
     {
         return $this->_toExpression;

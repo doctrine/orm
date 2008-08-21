@@ -153,24 +153,15 @@ class Doctrine_Query_Production_PathExpressionEndingWithAsterisk extends Doctrin
 
         return $str;
     }
-    
-    /**
-     * Visitor support
-     *
-     * @param object $visitor
-     */
-    public function accept($visitor)
-    {
-        $visitor->visitPathExpressionEndingWithAsterisk($this);
-    }
-    
+
+
     /* Getters */
-    
     public function getIdentifiers()
     {
         return $this->_identifiers;
     }
-    
+
+
     public function getQueryComponent()
     {
         return  $this->_queryComponent;

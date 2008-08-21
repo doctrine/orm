@@ -35,6 +35,8 @@ class Doctrine_Query_Production_RangeVariableDeclaration extends Doctrine_Query_
 {
     protected $_identifiers = array();
 
+    protected $_queryComponent;
+
     protected $_identificationVariable;
 
 
@@ -99,14 +101,19 @@ class Doctrine_Query_Production_RangeVariableDeclaration extends Doctrine_Query_
                 $this->_semanticalWithSingleIdentifier();
             }
         }
-
-        return $this->_identificationVariable;
     }
 
 
     public function buildSql()
     {
-        return '';
+         // We need to bring the queryComponent and get things from there.
+        $parserResult = $this->_parser->getParserResult();
+
+        // Retrieving connection
+        $conn = $this->_em->getConnection();
+
+        return $conn->quoteIdentifier($this->_queryComponent['metadata']->getTableName()) . ' '
+             . $conn->quoteIdentifier($parserResult->getTableAliasFromComponentAlias($this->_identificationVariable));
     }
 
 
@@ -123,7 +130,7 @@ class Doctrine_Query_Production_RangeVariableDeclaration extends Doctrine_Query_
             $classMetadata = $this->_em->getClassMetadata($componentName);
 
             // Building queryComponent
-            $queryComponent = array(
+            $this->_queryComponent = array(
                 'metadata' => $classMetadata,
                 'parent'   => null,
                 'relation' => null,
@@ -144,7 +151,7 @@ class Doctrine_Query_Production_RangeVariableDeclaration extends Doctrine_Query_
         //echo "Identification Variable: " .$this->_identificationVariable . "\n";
 
         $tableAlias = $parserResult->generateTableAlias($classMetadata->getClassName());
-        $parserResult->setQueryComponent($this->_identificationVariable, $queryComponent);
+        $parserResult->setQueryComponent($this->_identificationVariable, $this->_queryComponent);
         $parserResult->setTableAlias($tableAlias, $this->_identificationVariable);
     }
 
@@ -158,8 +165,8 @@ class Doctrine_Query_Production_RangeVariableDeclaration extends Doctrine_Query_
 
         // Retrieve the base component
         try {
-            $queryComponent = $parserResult->getQueryComponent($this->_identifiers[0]);
-            $classMetadata = $queryComponent['metadata'];
+            $this->_queryComponent = $parserResult->getQueryComponent($this->_identifiers[0]);
+            $classMetadata = $this->_queryComponent['metadata'];
             $className = $classMetadata->getClassName();
             $parent = $path = $this->_identifiers[0];
         } catch (Doctrine_Exception $e) {
@@ -175,8 +182,8 @@ class Doctrine_Query_Production_RangeVariableDeclaration extends Doctrine_Query_
 
             if ($parserResult->hasQueryComponent($path)) {
                 // We already have the query component on hands, get it
-                $queryComponent = $parserResult->getQueryComponent($path);
-                $classMetadata = $queryComponent['metadata'];
+                $this->_queryComponent = $parserResult->getQueryComponent($path);
+                $classMetadata = $this->_queryComponent['metadata'];
 
                 // If we are in our last check and identification variable is null, we throw semantical error
                 if ($i == $l - 1 && $this->_identificationVariable === null) {
@@ -204,7 +211,7 @@ class Doctrine_Query_Production_RangeVariableDeclaration extends Doctrine_Query_
                     $relation = $classMetadata->getAssociationMapping($relationName);
                     $targetClassMetadata = $this->_em->getClassMetadata($relation->getTargetEntityName());
 
-                    $queryComponent = array(
+                    $this->_queryComponent = array(
                         'metadata' => $targetClassMetadata,
                         'parent'   => $parent,
                         'relation' => $relation,
@@ -228,29 +235,24 @@ class Doctrine_Query_Production_RangeVariableDeclaration extends Doctrine_Query_
 
         $tableAlias = $parserResult->generateTableAlias($targetClassMetadata->getClassName());
 
-	//echo "Table alias: " . $tableAlias . "\n";
-
-        $parserResult->setQueryComponent($this->_identificationVariable, $queryComponent);
+        $parserResult->setQueryComponent($this->_identificationVariable, $this->_queryComponent);
         $parserResult->setTableAlias($tableAlias, $this->_identificationVariable);
     }
-    
-    /**
-     * Visitor support
-     *
-     * @param object $visitor
-     */
-    public function accept($visitor)
-    {
-        $visitor->visitRangeVariableDeclaration($this);
-    }
-    
+
+
     /* Getters */
-    
     public function getIdentifiers()
     {
         return $this->_identifiers;
     }
-    
+
+
+    public function getQueryComponent()
+    {
+        return $this->_queryComponent;
+    }
+
+
     public function getIdentificationVariable()
     {
         return $this->_identificationVariable;

@@ -62,21 +62,4 @@ class Doctrine_Query_Production_IdentificationVariable extends Doctrine_Query_Pr
 
         return $this->_componentAlias;
     }
-    
-    /**
-     * Visitor support
-     *
-     * @param object $visitor
-     */
-    public function accept($visitor)
-    {
-        $visitor->visitIdentificationVariable($this);
-    }
-    
-    /* Getters */
-    
-    public function getComponentAlias()
-    {
-        return $this->_componentAlias;
-    }
 }

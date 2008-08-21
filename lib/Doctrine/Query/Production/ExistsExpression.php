@@ -51,20 +51,9 @@ class Doctrine_Query_Production_ExistsExpression extends Doctrine_Query_Producti
     {
         return 'EXISTS (' . $this->_subselect->buildSql() . ')';
     }
-    
-    /**
-     * Visitor support
-     *
-     * @param object $visitor
-     */
-    public function accept($visitor)
-    {
-        $this->_subselect->accept($visitor);
-        $visitor->visitExistsExpression($this);
-    }
-    
+
+
     /* Getters */
-    
     public function getSubselect()
     {
         return $this->_subselect;

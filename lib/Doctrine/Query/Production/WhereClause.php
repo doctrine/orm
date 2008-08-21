@@ -49,18 +49,9 @@ class Doctrine_Query_Production_WhereClause extends Doctrine_Query_Production
     {
         return 'WHERE ' . $this->_conditionalExpression->buildSql();
     }
-    
-    /**
-     * Visitor support.
-     */
-    public function accept($visitor)
-    {
-        $this->_conditionalExpression->accept($visitor);
-        $visitor->visitWhereClause($this);
-    }
-    
+
+
     /* Getters */
-    
     public function getConditionalExpression()
     {
         return $this->_conditionalExpression;

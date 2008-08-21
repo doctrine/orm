@@ -24,6 +24,7 @@
  *
  * @package     Doctrine
  * @subpackage  Query
+ * @author      Guilherme Blanco <guilhermeblanco@hotmail.com>
  * @author      Janne Vanhala <jpvanhal@cc.hut.fi>
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @link        http://www.phpdoctrine.org
@@ -77,15 +78,5 @@ class Doctrine_Query_Production_ComparisonOperator extends Doctrine_Query_Produc
                 $this->_parser->syntaxError('=, <, <=, <>, >, >=, !=');
             break;
         }
-    }
-    
-    /**
-     * Visitor support.
-     *
-     * @param object $visitor
-     */
-    public function accept($visitor)
-    {
-        $visitor->visitComparisonOperator($this);
     }
 }

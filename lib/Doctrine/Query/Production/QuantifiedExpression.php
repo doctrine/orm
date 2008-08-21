@@ -69,25 +69,15 @@ class Doctrine_Query_Production_QuantifiedExpression extends Doctrine_Query_Prod
     {
         return $this->_type . ' (' . $this->_subselect->buildSql() . ')';
     }
-    
-    /**
-     * Visitor support
-     *
-     * @param object $visitor
-     */
-    public function accept($visitor)
-    {
-        $this->_subselect->accept($visitor);
-        $visitor->visitQuantifiedExpression($this);
-    }
-    
+
+
     /* Getters */
-    
     public function getType()
     {
         return $this->_type;
     }
-    
+
+
     public function getSubselect()
     {
         return $this->_subselect;

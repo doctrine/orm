@@ -190,4 +190,23 @@ class Doctrine_Query_Production_SelectExpression extends Doctrine_Query_Producti
     {
         return ! is_string($value);
     }
+
+
+     /* Getters */
+    public function getLeftExpression()
+    {
+        return $this->_leftExpression;
+    }
+
+
+    public function isSubselect()
+    {
+        return $this->_isSubselect;
+    }
+
+
+    public function getFieldIdentificationVariable()
+    {
+        return $this->_fieldIdentificationVariable;
+    }
 }

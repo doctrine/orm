@@ -80,7 +80,7 @@ abstract class Doctrine_Query_SqlBuilder
     // Here we follow the SQL-99 specifications available at:
     // http://savage.net.au/SQL/sql-99.bnf
 
-    
+
 
     // End of Common SQL generations
  

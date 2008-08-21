@@ -24,6 +24,7 @@
  *
  * @package     Doctrine
  * @subpackage  Query
+ * @author      Guilherme Blanco <guilhermeblanco@hotmail.com>
  * @author      Janne Vanhala <jpvanhal@cc.hut.fi>
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @link        http://www.phpdoctrine.org
@@ -71,30 +72,21 @@ class Doctrine_Query_Production_ComparisonExpression extends Doctrine_Query_Prod
             '(' . $this->_expression->buildSql() . ')' : $this->_expression->buildSql()
         );
     }
-    
-    /**
-     * Visitor support.
-     *
-     * @param object $visitor
-     */
-    public function accept($visitor)
-    {
-        $this->_expression->accept($visitor);
-        $visitor->visitComparisonExpression($this);
-    }
-    
+
+
     /* Getters */
-    
     public function getOperator()
     {
         return $this->_operator;
     }
-    
+
+
     public function getExpression()
     {
         return $this->_expression;
     }
-    
+
+
     public function isSubselect()
     {
         return $this->_isSubselect;

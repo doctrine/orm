@@ -173,7 +173,9 @@ class Doctrine_Query_Parser
 
 
     /**
-     * @todo [TODO] Document these!
+     * Moves the parser scanner to next token
+     *
+     * @return void
      */
     public function next()
     {

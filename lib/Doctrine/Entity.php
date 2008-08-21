@@ -23,7 +23,7 @@
 
 /**
  * Base class for all Entities (objects with persistent state in a RDBMS that are
- * managed by Doctrine). Kind of a Layer Suptertype.
+ * managed by Doctrine). Kind of a Layer Supertype.
  * 
  * NOTE: Methods that are intended for internal use only but must be public
  * are marked INTERNAL: and begin with an underscore "_" to indicate that they
@@ -126,14 +126,14 @@ abstract class Doctrine_Entity implements ArrayAccess, Serializable
     /**
      * The values that make up the ID/primary key of the entity.
      *
-     * @var array                   
+     * @var array
      */
     private $_id = array();
 
     /**
      * The entity data.
      *
-     * @var array                  
+     * @var array
      */
     private $_data = array();
 
@@ -173,7 +173,7 @@ abstract class Doctrine_Entity implements ArrayAccess, Serializable
      * @var array
      */
     private $_references = array();
-    
+
     /**
      * The EntityManager that is responsible for the persistent state of the entity.
      *
@@ -185,10 +185,10 @@ abstract class Doctrine_Entity implements ArrayAccess, Serializable
      * The object identifier of the object. Each object has a unique identifier
      * during script execution.
      * 
-     * @var integer                  
+     * @var integer
      */
     private $_oid;
-    
+
     /**
      * Flag that indicates whether the entity is dirty.
      * (which means it has local changes)
@@ -214,11 +214,11 @@ abstract class Doctrine_Entity implements ArrayAccess, Serializable
         } else {
             $this->_state = self::STATE_NEW;
         }
-        
+
         // @todo read from attribute the first time and move this initialization elsewhere.
         self::$_useAutoAccessorOverride = true; 
     }
-    
+
     /**
      * Returns the object identifier.
      *
@@ -295,7 +295,7 @@ abstract class Doctrine_Entity implements ArrayAccess, Serializable
                 }
             }
         }
-        
+
         $str = serialize($vars);
 
         //$this->postSerialize($event);
@@ -330,7 +330,7 @@ abstract class Doctrine_Entity implements ArrayAccess, Serializable
         foreach($array as $k => $v) {
             $this->$k = $v;
         }
-        
+
         $this->_class = $this->_em->getClassMetadata($this->_entityName);
 
         foreach ($this->_data as $k => $v) {
@@ -350,7 +350,7 @@ abstract class Doctrine_Entity implements ArrayAccess, Serializable
         }
 
         $this->_extractIdentifier(!$this->isNew());
-        
+
         //$this->postUnserialize($event);
     }
 
@@ -375,7 +375,7 @@ abstract class Doctrine_Entity implements ArrayAccess, Serializable
     /**
      * Gets the current field values.
      *
-     * @return array  The fields and their values.                     
+     * @return array  The fields and their values.
      */
     final public function getData()
     {
@@ -390,7 +390,7 @@ abstract class Doctrine_Entity implements ArrayAccess, Serializable
      * @throws Doctrine::ORM::Exceptions::EntityException  If trying to get an unknown field.
      */
     final protected function _get($fieldName)
-    {    
+    {
         $nullObj = Doctrine_Null::$INSTANCE;
         if (isset($this->_data[$fieldName])) {
             return $this->_data[$fieldName] !== $nullObj ?
@@ -415,7 +415,7 @@ abstract class Doctrine_Entity implements ArrayAccess, Serializable
             }
         }
     }
-    
+
     /**
      * Sets the value of a field (regular field or reference).
      *
@@ -455,7 +455,7 @@ abstract class Doctrine_Entity implements ArrayAccess, Serializable
             throw Doctrine_Entity_Exception::invalidField($fieldName);
         }
     }
-    
+
     private function _registerDirty()
     {
         if ($this->_state == self::STATE_MANAGED &&
@@ -463,7 +463,7 @@ abstract class Doctrine_Entity implements ArrayAccess, Serializable
             $this->_em->getUnitOfWork()->registerDirty($this);
         }
     }
-    
+
     /**
      * INTERNAL:
      * Gets the value of a field.
@@ -482,7 +482,7 @@ abstract class Doctrine_Entity implements ArrayAccess, Serializable
         }
         return $this->_data[$fieldName];
     }
-    
+
     /**
      * INTERNAL:
      * Sets the value of a field.
@@ -498,7 +498,7 @@ abstract class Doctrine_Entity implements ArrayAccess, Serializable
     {
         $this->_data[$fieldName] = $value;
     }
-    
+
     /**
      * INTERNAL:
      * Gets a reference to another Entity.
@@ -515,7 +515,7 @@ abstract class Doctrine_Entity implements ArrayAccess, Serializable
         }
         return $this->_references[$fieldName];
     }
-    
+
     /**
      * INTERNAL:
      * Sets a reference to another entity or a collection of entities.
@@ -532,7 +532,7 @@ abstract class Doctrine_Entity implements ArrayAccess, Serializable
             $this->_references[$name] = $value;
             return;
         }
-        
+
         $rel = $this->_class->getRelation($name);
 
         // one-to-many or one-to-one relation
@@ -575,7 +575,7 @@ abstract class Doctrine_Entity implements ArrayAccess, Serializable
 
         $this->_references[$name] = $value;
     }
-    
+
     /**
      * INTERNAL:
      * Sets a reference to another entity or a collection of entities.
@@ -592,7 +592,7 @@ abstract class Doctrine_Entity implements ArrayAccess, Serializable
             $this->_references[$name] = $value;
             return;
         }
-        
+
         $rel = $this->_class->getAssociationMapping($name);
 
         // one-to-many or one-to-one relation
@@ -641,7 +641,7 @@ abstract class Doctrine_Entity implements ArrayAccess, Serializable
         }
         return $this->_get($fieldName);
     }
-    
+
     /**
      * Gets the custom mutator method for a field, if it exists.
      *
@@ -660,17 +660,17 @@ abstract class Doctrine_Entity implements ArrayAccess, Serializable
                     self::$_mutatorCache[$this->_entityName][$fieldName] = false;
                 }
             }
-            
+
             if ($setter = $this->_class->getCustomMutator($fieldName)) {
                 self::$_mutatorCache[$this->_entityName][$fieldName] = $setter;
             } else if ( ! isset(self::$_mutatorCache[$this->_entityName][$fieldName])) {
                 self::$_mutatorCache[$this->_entityName][$fieldName] = false;
             }
         }
-        
+
         return self::$_mutatorCache[$this->_entityName][$fieldName];
     }
-    
+
     /**
      * Gets the custom accessor method of a field, if it exists.
      *
@@ -695,10 +695,10 @@ abstract class Doctrine_Entity implements ArrayAccess, Serializable
                 self::$_accessorCache[$this->_entityName][$fieldName] = false;
             }
         }
-        
+
         return self::$_accessorCache[$this->_entityName][$fieldName];
     }
-    
+
     /**
      * Gets the entity class name.
      *
@@ -773,7 +773,7 @@ abstract class Doctrine_Entity implements ArrayAccess, Serializable
             }
         }
     }
-    
+
     /**
      * INTERNAL:
      * Gets the changeset of the entities persistent state.
@@ -784,12 +784,12 @@ abstract class Doctrine_Entity implements ArrayAccess, Serializable
     {
         return $this->_dataChangeSet;
     }
-    
+
     final public function _getReferenceChangeSet()
     {
         return $this->_referenceChangeSet;
     }
-    
+
     /**
      * Checks whether the entity already has a persistent state.
      *
@@ -893,7 +893,7 @@ abstract class Doctrine_Entity implements ArrayAccess, Serializable
     {
         $this->_references[$alias] = $coll;
     }
-    
+
     /**
      * Gets the ClassMetadata object that describes the entity class.
      * 
@@ -903,7 +903,7 @@ abstract class Doctrine_Entity implements ArrayAccess, Serializable
     {
         return $this->_class;
     }
-    
+
     /**
      * Gets the EntityManager that is responsible for the persistence of 
      * the entity.
@@ -914,7 +914,7 @@ abstract class Doctrine_Entity implements ArrayAccess, Serializable
     {
         return $this->_em;
     }
-    
+
     /**
      * Gets the EntityRepository of the Entity.
      *
@@ -924,7 +924,7 @@ abstract class Doctrine_Entity implements ArrayAccess, Serializable
     {
         return $this->_em->getRepository($this->_entityName);
     }
-    
+
     /**
      * @todo Why toString() and __toString() ?
      */
@@ -941,7 +941,7 @@ abstract class Doctrine_Entity implements ArrayAccess, Serializable
     {
         return (string)$this->_oid;
     }
-    
+
     /**
      * Helps freeing the memory occupied by the entity.
      * Cuts all references the entity has to other entities and removes the entity
@@ -969,7 +969,7 @@ abstract class Doctrine_Entity implements ArrayAccess, Serializable
             $this->_references = array();
         }
     }
-    
+
     /**
      * Check if an offsetExists.
      * 
@@ -1022,7 +1022,7 @@ abstract class Doctrine_Entity implements ArrayAccess, Serializable
     {
         return $this->remove($offset);
     }
-    
+
     /**
      * __set
      *

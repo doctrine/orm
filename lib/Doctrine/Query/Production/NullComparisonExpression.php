@@ -55,19 +55,9 @@ class Doctrine_Query_Production_NullComparisonExpression extends Doctrine_Query_
     {
         return 'IS ' . (($this->_not) ? 'NOT ' : '') . 'NULL';
     }
-    
-    /**
-     * Visitor support
-     *
-     * @param object $visitor
-     */
-    public function accept($visitor)
-    {
-        $visitor->visitNullComparisonExpression($this);
-    }
-    
+
+
     /* Getters */
-    
     public function isNot()
     {
         return $this->_not;

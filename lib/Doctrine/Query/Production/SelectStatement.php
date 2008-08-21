@@ -93,58 +93,39 @@ class Doctrine_Query_Production_SelectStatement extends Doctrine_Query_Productio
              . (($this->_havingClause !== null) ? ' ' . $this->_havingClause->buildSql() : '')
              . (($this->_orderByClause !== null) ? ' ' . $this->_orderByClause->buildSql() : '');
     }
-    
-    /**
-     * Visitor support
-     *
-     * @param object $visitor
-     */
-    public function accept($visitor)
-    {
-        $this->_selectClause->accept($visitor);
-        $this->_fromClause->accept($visitor);
-        if ($this->_whereClause) {
-            $this->_whereClause->accept($visitor);
-        }
-        if ($this->_groupByClause) {
-            $this->_groupByClause->accept($visitor);
-        }
-        if ($this->_havingClause) {
-            $this->_havingClause->accept($visitor);
-        }
-        if ($this->_orderByClause) {
-            $this->_orderByClause->accept($visitor);
-        }
-        $visitor->visitSelectStatement($this);
-    }
-    
+
+
     /* Getters */
-    
     public function getSelectClause()
     {
         return $this->_selectClause;
     }
-    
+
+
     public function getFromClause()
     {
         return $this->_fromClause;
     }
-    
+
+
     public function getWhereClause()
     {
         return $this->_whereClause;
     }
-    
+
+
     public function getGroupByClause()
     {
         return $this->_groupByClause;
     }
-    
+
+
     public function getHavingClause()
     {
         return $this->_havingClause;
     }
-    
+
+
     public function getOrderByClause()
     {
         return $this->_orderByClause;

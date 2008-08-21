@@ -85,27 +85,15 @@ class Doctrine_Query_Production_SelectClause extends Doctrine_Query_Production
     {
         return $value->buildSql();
     }
-    
-    /**
-     * Visitor support
-     *
-     * @param object $visitor
-     */
-    public function accept($visitor)
-    {
-        foreach ($this->_selectExpressions as $expression) {
-            $expression->accept($visitor);
-        }
-        $visitor->visitSelectClause($this);
-    }
-    
+
+
     /* Getters */
-    
     public function isDistinct()
     {
         return $this->_isDistinct;
     }
-    
+
+
     public function getSelectExpressions()
     {
         return $this->_selectExpressions;

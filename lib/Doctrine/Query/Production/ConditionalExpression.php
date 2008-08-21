@@ -69,22 +69,9 @@ class Doctrine_Query_Production_ConditionalExpression extends Doctrine_Query_Pro
     {
         return $value->buildSql();
     }
-    
-    /**
-     * Visitor support.
-     *
-     * @param object $visitor
-     */
-    public function accept($visitor)
-    {
-        foreach ($this->_conditionalTerms as $term) {
-            $term->accept($visitor);
-        }
-        $visitor->visitConditionalExpression($this);
-    }
-    
+
+
     /* Getters */
-    
     public function getConditionalTerms()
     {
         return $this->_conditionalTerms;

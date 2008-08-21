@@ -20,7 +20,7 @@
  */
 
 /**
- * ConditionalFactor = ["NOT"] ConditionalPrimary
+ * JoinVariableDeclaration = Join [IndexBy]
  *
  * @package     Doctrine
  * @subpackage  Query
@@ -31,40 +31,40 @@
  * @since       2.0
  * @version     $Revision$
  */
-class Doctrine_Query_Production_ConditionalFactor extends Doctrine_Query_Production
+class Doctrine_Query_Production_JoinVariableDeclaration extends Doctrine_Query_Production
 {
-    protected $_conditionalPrimary;
+    protected $_join;
+
+    protected $_indexBy;
 
 
     public function syntax($paramHolder)
     {
-        // ConditionalFactor = ["NOT"] ConditionalPrimary
-        $notFactor = false;
+        $this->_join = $this->AST('Join', $paramHolder);
 
-        if ($this->_isNextToken(Doctrine_Query_Token::T_NOT)) {
-            $this->_parser->match(Doctrine_Query_Token::T_NOT);
-            $notFactor = true;
-        }
-
-        $this->_conditionalPrimary = $this->AST('ConditionalPrimary', $paramHolder);
-
-        // Optimize depth instances in AST
-        if ( ! $notFactor) {
-            return $this->_conditionalPrimary;
+        if ($this->_isNextToken(Doctrine_Query_Token::T_INDEX)) {
+            $paramHolder->set('componentAlias', $this->_join->getRangeVariableDeclaration()->getIdentificationVariable());
+            $this->_indexBy = $this->AST('IndexBy', $paramHolder);
+            $paramHolder->remove('componentAlias');
         }
     }
 
 
     public function buildSql()
     {
-        // Do not need to check $notFactor. It'll be always present if we have this instance.
-        return 'NOT ' . $this->_conditionalPrimary->buildSql();
+        return $this->_join->buildSql() . ' ' . (isset($this->_indexby) ? $this->_indexby->buildSql() . ' ' : '');
     }
 
 
     /* Getters */
-    public function getConditionalPrimary()
+    public function getJoin()
     {
-        return $this->_conditionalPrimary;
+        return $this->_join;
+    }
+
+
+    public function getIndexBy()
+    {
+        return $this->_indexBy;
     }
 }

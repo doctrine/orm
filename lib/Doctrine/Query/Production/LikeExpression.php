@@ -69,30 +69,21 @@ class Doctrine_Query_Production_LikeExpression extends Doctrine_Query_Production
         return (($this->_not) ? 'NOT ' : '') . 'LIKE ' . $this->_expression->buildSql()
              . (($this->_escapeString !== null) ? ' ESCAPE ' . $this->_escapeString : '');
     }
-    
-    /**
-     * Visitor support
-     *
-     * @param object $visitor
-     */
-    public function accept($visitor)
-    {
-        $this->_expression->accept($visitor);
-        $visitor->visitLikeExpression($this);
-    }
-    
+
+
     /* Getters */
-    
     public function isNot()
     {
         return $this->_not;
     }
-    
+
+
     public function getExpression()
     {
         return $this->_expression;
     }
-    
+
+
     public function getEscapeString()
     {
         return $this->_escapeString;

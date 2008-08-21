@@ -37,7 +37,8 @@ OrderByItem = Expression ["ASC" | "DESC"]
 GroupByItem = PathExpression
 UpdateItem = PathExpression "=" (Expression | "NULL")
 
-IdentificationVariableDeclaration = RangeVariableDeclaration [IndexBy] {Join [IndexBy]}
+IdentificationVariableDeclaration = RangeVariableDeclaration [IndexBy] {JoinVariableDeclaration}
+JoinVariableDeclaration = Join [IndexBy]
 RangeVariableDeclaration = identifier {"." identifier} [["AS"] IdentificationVariable]
 VariableDeclaration = identifier [["AS"] IdentificationVariable]
 IdentificationVariable = identifier

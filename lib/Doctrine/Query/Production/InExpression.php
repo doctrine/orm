@@ -87,36 +87,21 @@ class Doctrine_Query_Production_InExpression extends Doctrine_Query_Production
     {
         return $value->buildSql();
     }
-    
-    /**
-     * Visitor support
-     *
-     * @param object $visitor
-     */
-    public function accept($visitor)
-    {
-        if ($this->_subselect !== null) {
-            $this->_subselect->accept($visitor);
-        } else {
-            foreach ($this->_atoms as $atom) {
-                $atom->accept($visitor);
-            }
-        }
-        $visitor->visitInExpression($this);
-    }
-    
+
+
     /* Getters */
-    
     public function isNot()
     {
         return $this->_not;
     }
-    
+
+
     public function getSubselect()
     {
         return $this->_subselect;
     }
-    
+
+
     public function getAtoms()
     {
         return $this->_atoms;

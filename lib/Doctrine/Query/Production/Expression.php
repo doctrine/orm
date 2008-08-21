@@ -86,22 +86,9 @@ class Doctrine_Query_Production_Expression extends Doctrine_Query_Production
     {
         return (is_string($value) ? $value : $value->buildSql());
     }
-    
-    /**
-     * Visitor support
-     *
-     * @param object $visitor
-     */
-    public function accept($visitor)
-    {
-        foreach ($this->_terms as $term) {
-            $term->accept($visitor);
-        }
-        $visitor->visitExpression($this);
-    }
-    
+
+
     /* Getters */
-    
     public function getTerms()
     {
         return $this->_terms;

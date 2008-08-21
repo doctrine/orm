@@ -69,22 +69,9 @@ class Doctrine_Query_Production_ConditionalTerm extends Doctrine_Query_Productio
     {
         return $value->buildSql();
     }
-    
-    /**
-     * Visitor support
-     *
-     * @param object $visitor
-     */
-    public function accept($visitor)
-    {
-        foreach ($this->_conditionalFactors as $factor) {
-            $factor->accept($visitor);
-        }
-        $visitor->visitConditionalTerm($this);
-    }
-    
+
+
     /* Getters */
-    
     public function getConditionalFactors()
     {
         return $this->_conditionalFactors;

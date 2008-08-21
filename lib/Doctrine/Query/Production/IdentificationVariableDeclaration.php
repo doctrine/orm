@@ -20,7 +20,7 @@
  */
 
 /**
- * IdentificationVariableDeclaration = RangeVariableDeclaration [IndexBy] {Join [IndexBy]}
+ * IdentificationVariableDeclaration = RangeVariableDeclaration [IndexBy] {JoinVariableDeclaration}
  *
  * @package     Doctrine
  * @subpackage  Query
@@ -37,7 +37,7 @@ class Doctrine_Query_Production_IdentificationVariableDeclaration extends Doctri
 
     protected $_indexBy;
 
-    protected $_relations = array();
+    protected $_joinVariableDeclarations = array();
 
 
     public function syntax($paramHolder)
@@ -45,7 +45,7 @@ class Doctrine_Query_Production_IdentificationVariableDeclaration extends Doctri
         $this->_rangeVariableDeclaration = $this->AST('RangeVariableDeclaration', $paramHolder);
 
         if ($this->_isNextToken(Doctrine_Query_Token::T_INDEX)) {
-            $paramHolder->set('componentAlias', $this->_rangeVariableDeclaration);
+            $paramHolder->set('componentAlias', $this->_rangeVariableDeclaration->getIdentificationVariable());
             $this->_indexBy = $this->AST('IndexBy', $paramHolder);
             $paramHolder->remove('componentAlias');
         }
@@ -55,75 +55,38 @@ class Doctrine_Query_Production_IdentificationVariableDeclaration extends Doctri
             $this->_isNextToken(Doctrine_Query_Token::T_INNER) ||
             $this->_isNextToken(Doctrine_Query_Token::T_JOIN)
         ) {
-            $i = count($this->_relations);
-
-            $this->_relations[$i]['join'] = $this->AST('Join', $paramHolder);
-
-            if ($this->_isNextToken(Doctrine_Query_Token::T_INDEX)) {
-                $paramHolder->set('componentAlias', $this->_relations[$i]['join']->getRangeVariableDeclaration());
-                $this->_relations[$i]['indexBy'] = $this->AST('IndexBy', $paramHolder);
-                $paramHolder->remove('componentAlias');
-            }
+            $this->_joinVariableDeclarations[] = $this->AST('JoinVariableDeclaration', $paramHolder);
         }
     }
 
 
     public function buildSql()
     {
-        // We need to bring the queryComponent and get things from there.
-        $parserResult = $this->_parser->getParserResult();
-        $queryComponent = $parserResult->getQueryComponent($this->_rangeVariableDeclaration);
+        $str = $this->_rangeVariableDeclaration->buildSql();
 
-        // Retrieving connection
-        $conn = $this->_em->getConnection();
-
-        $str = $conn->quoteIdentifier($queryComponent['metadata']->getTableName()) . ' '
-             . $conn->quoteIdentifier($parserResult->getTableAliasFromComponentAlias($this->_rangeVariableDeclaration));
-
-        for ($i = 0, $l = count($this->_relations); $i < $l; $i++) {
-            $str .= $this->_relations[$i]['join']->buildSql() . ' '
-                  . ((isset($this->_relations[$i]['indexby'])) ? $this->_relations[$i]['indexby']->buildSql() . ' ' : '');
+        for ($i = 0, $l = count($this->_joinVariableDeclarations); $i < $l; $i++) {
+            $str .= ' ' . $this->_joinVariableDeclarations[$i]->buildSql();
         }
 
         return $str;
     }
-    
-    /**
-     * Visitor support
-     *
-     * @param object $visitor
-     */
-    public function accept($visitor)
-    {
-        $this->_rangeVariableDeclaration->accept($visitor);
-        if ($this->_indexBy) {
-            $this->_indexBy->accept($visitor);
-        }
-        foreach ($this->_relations as $relation) {
-            if ($relation['join']) {
-                $relation['join']->accept($visitor);
-            }
-            if ($relation['indexby']) {
-                $relation['indexby']->accept($visitor);
-            }
-        }
-        $visitor->visitIdentificationVariable($this);
-    }
-    
+
+
     /* Getters */
-    
     public function getRangeVariableDeclaration()
     {
         return $this->_rangeVariableDeclaration;
     }
-    
+
+
     public function getIndexBy()
     {
         return $this->_indexBy;
     }
-    
-    public function getRelations()
+
+
+    public function getJoinVariableDeclarations()
     {
-        return $this->_relations;
+        return $this->_joinVariableDeclarations;
     }
 }

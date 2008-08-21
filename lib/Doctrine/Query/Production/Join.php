@@ -24,6 +24,7 @@
  *
  * @package     Doctrine
  * @subpackage  Query
+ * @author      Guilherme Blanco <guilhermeblanco@hotmail.com>
  * @author      Janne Vanhala <jpvanhal@cc.hut.fi>
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @link        http://www.phpdoctrine.org
@@ -74,36 +75,68 @@ class Doctrine_Query_Production_Join extends Doctrine_Query_Production
 
     public function buildSql()
     {
-        return '';
+        $parserResult = $this->_parser->getParserResult();
+
+        // Get the connection for the component
+        $conn = $this->_em->getConnection();
+
+        $sql = $this->_joinType . ' JOIN ' . $this->_rangeVariableDeclaration->buildSql();
+        $conditionExpression = isset($this->_conditionExpression)
+            ? $this->_conditionExpression->buildSql() : '';
+
+        if ($this->_whereType == 'ON') {
+            return $sql . ' ON ' . $conditionExpression;
+        }
+
+        // We need to build the relationship conditions. Retrieving AssociationMapping
+       $queryComponent = $this->_rangeVariableDeclaration->getQueryComponent();
+       $relationColumns = $queryComponent['relation']->getSourceToTargetKeyColumns();
+       $relationConditionExpression = '';
+
+       // We have an array('localColumn' => 'foreignColumn', ...) here
+       foreach ($relationColumns as $localColumn => $foreignColumn) {
+           // leftExpression = rightExpression
+
+           // Defining leftExpression
+           $leftExpression = $conn->quoteIdentifier(
+               $parserResult->getTableAliasFromComponentAlias($queryComponent['parent']) . '.' . $localColumn
+           );
+
+           // Defining rightExpression
+           $rightExpression = $conn->quoteIdentifier(
+               $parserResult->getTableAliasFromComponentAlias(
+                   $this->_rangeVariableDeclaration->getIdentificationVariable()
+               ) . '.' . $foreignColumn
+           );
+
+           // Building the relation
+           $relationConditionExpression .= (($relationConditionExpression != '') ? ' AND ' : '')
+               . $leftExpression . ' = ' . $rightExpression;
+       }
+
+       return $sql . ' ON ' . $relationConditionExpression . ' AND (' . $conditionExpression . ')';
     }
-    
-    /**
-     * Visitor support
-     *
-     * @param object $visitor
-     */
-    public function accept($visitor)
-    {
-        $visitor->visitJoin($this);
-    }
-    
+
+
     /* Getters */
-    
     public function getJoinType()
     {
         return $this->_joinType;
     }
-    
+
+
     public function getRangeVariableDeclaration()
     {
         return $this->_rangeVariableDeclaration;
     }
-    
+
+
     public function getWhereType()
     {
         return $this->_whereType;
     }
-    
+
+
     public function getConditionalExpression()
     {
         return $this->_conditionalExpression;

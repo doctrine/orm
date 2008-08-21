@@ -106,26 +106,15 @@ class Doctrine_Query_Production_SimpleConditionalExpression extends Doctrine_Que
 
         return $token['type'];
     }
-    
-    /**
-     * Visitor support
-     *
-     * @param object $visitor
-     */
-    public function accept($visitor)
-    {
-        $this->_leftExpression->accept($visitor);
-        $this->_rightExpression->accept($visitor);
-        $visitor->visitSimpleConditionalExpression($this);
-    }
-    
+
+
     /* Getters */
-    
     public function getLeftExpression()
     {
         return $this->_leftExpression;
     }
-    
+
+
     public function getRightExpression()
     {
         return $this->_rightExpression;
