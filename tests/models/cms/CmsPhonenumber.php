@@ -17,5 +17,11 @@ class CmsPhonenumber extends Doctrine_Entity
             'length' => 50,
             'id' => true
         ));
+        
+        $mapping->mapManyToOne(array(
+            'fieldName' => 'user',
+            'targetEntity' => 'CmsUser',
+            'joinColumns' => array('user_id' => 'id')
+        ));
     }
 }

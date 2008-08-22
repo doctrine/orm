@@ -34,6 +34,11 @@ class Doctrine_SequenceMock extends Doctrine_Sequence
     {
         $this->_sequenceNumber = 0;
     }
+    
+    public function autoinc()
+    {
+        $this->_sequenceNumber++;
+    }
 }
 
 ?>

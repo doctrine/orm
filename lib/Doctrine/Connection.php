@@ -932,7 +932,7 @@ abstract class Doctrine_Connection
      */
     public function lastInsertId($table = null, $field = null)
     {
-        return $this->sequence->lastInsertId($table, $field);
+        return $this->getSequenceManager()->lastInsertId($table, $field);
     }
 
     /**

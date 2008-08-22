@@ -29,6 +29,7 @@
  * @version     $Revision$
  * @link        www.phpdoctrine.org
  * @since       1.0
+ * @todo Rename. Move. Reimpl?
  */
 abstract class Doctrine_Record_Generator
 {

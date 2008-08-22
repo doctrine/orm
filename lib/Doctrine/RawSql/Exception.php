@@ -18,7 +18,9 @@
  * and is licensed under the LGPL. For more information, see
  * <http://www.phpdoctrine.org>.
  */
-Doctrine::autoload('Doctrine_Exception');
+
+#namespace Doctrine::ORM::Exceptions;
+
 /**
  * Doctrine_RawSql_Exception
  *
@@ -29,6 +31,7 @@ Doctrine::autoload('Doctrine_Exception');
  * @since       1.0
  * @version     $Revision$
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
+ * @todo Rename to NativeSqlException or maybe remove.
  */
 class Doctrine_RawSql_Exception extends Doctrine_Exception
 { }

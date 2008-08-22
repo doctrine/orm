@@ -28,6 +28,7 @@
  * @version     $Revision$
  * @link        www.phpdoctrine.org
  * @since       1.0
+ * @todo Remove.
  */
 class Doctrine_DataDict_Informix extends Doctrine_DataDict
 {

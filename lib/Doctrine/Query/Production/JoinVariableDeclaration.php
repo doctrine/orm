@@ -52,7 +52,7 @@ class Doctrine_Query_Production_JoinVariableDeclaration extends Doctrine_Query_P
 
     public function buildSql()
     {
-        return $this->_join->buildSql() . ' ' . (isset($this->_indexby) ? $this->_indexby->buildSql() . ' ' : '');
+        return $this->_join->buildSql() . (isset($this->_indexby) ? $this->_indexby->buildSql() . ' ' : '');
     }
 
 

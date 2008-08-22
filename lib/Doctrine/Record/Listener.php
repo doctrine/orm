@@ -29,6 +29,7 @@
  * @link        www.phpdoctrine.org
  * @since       1.0
  * @version     $Revision$
+ * @deprecated Remove.
  */
 class Doctrine_Record_Listener implements Doctrine_Record_Listener_Interface
 {

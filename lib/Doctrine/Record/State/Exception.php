@@ -18,7 +18,7 @@
  * and is licensed under the LGPL. For more information, see
  * <http://www.phpdoctrine.org>.
  */
-Doctrine::autoload('Doctrine_Record_Exception');
+
 /**
  * Doctrine_Exception
  *
@@ -29,6 +29,7 @@ Doctrine::autoload('Doctrine_Record_Exception');
  * @since       1.0
  * @version     $Revision$
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
+ * @todo Deprecated. Remove
  */
 class Doctrine_Record_State_Exception extends Doctrine_Record_Exception
 { }

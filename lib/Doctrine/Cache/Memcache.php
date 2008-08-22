@@ -18,7 +18,7 @@
  * and is licensed under the LGPL. For more information, see
  * <http://www.phpdoctrine.org>.
  */
-Doctrine::autoload('Doctrine_Cache_Driver');
+
 /**
  * Doctrine_Cache_Memcache
  *
@@ -80,15 +80,7 @@ class Doctrine_Cache_Memcache extends Doctrine_Cache_Driver
      */
     public function fetch($id, $testCacheValidity = true) 
     {
-        $tmp = $this->_memcache->get($id);
-
-        if (is_array($tmp)) {
-            return $tmp[0];
-        } else if (is_string($tmp)) {
-            return $tmp;
-        }
-
-        return false;
+        return $this->_memcache->get($id);
     }
 
     /**

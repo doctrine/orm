@@ -44,7 +44,7 @@ class Doctrine_EntityManager
      * IMMEDIATE: Flush occurs automatically after each operation that issues database
      * queries. No operations are queued.
      */ 
-    const FLUSHMODE_IMMEDIATE = 'immediated';
+    const FLUSHMODE_IMMEDIATE = 'immediate';
     /**
      * AUTO: Flush occurs automatically in the following situations:
      * - Before any query executions (to prevent getting stale data)
@@ -86,7 +86,7 @@ class Doctrine_EntityManager
     /**
      * The metadata factory, used to retrieve the metadata of entity classes.
      *
-     * @var Doctrine_ClassMetadata_Factory
+     * @var Doctrine::ORM::Mapping::ClassMetadataFactory
      */
     private $_metadataFactory;
     
@@ -539,7 +539,8 @@ class Doctrine_EntityManager
             }
         } else {
             foreach ($data as $field => $value) {
-                if ( ! $entity->contains($field) || $entity->_internalGetField($field) === null) {
+                $currentValue = $entity->get($field);
+                if ( ! isset($currentValue) || $entity->_internalGetField($field) === null) {
                     $entity->_internalSetField($field, $value);    
                 }
             }

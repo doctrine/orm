@@ -29,6 +29,8 @@
  * @link        www.phpdoctrine.org
  * @since       1.0
  * @version     $Revision: 1298 $
+ * @todo Remove.
+ * @deprecated
  */
 class Doctrine_Record_Filter_Compound extends Doctrine_Record_Filter
 {

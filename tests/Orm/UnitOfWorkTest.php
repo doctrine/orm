@@ -126,6 +126,23 @@ class Orm_UnitOfWorkTest extends Doctrine_OrmTestCase
         $this->assertEquals(0, count($this->_persisterMock->getDeletes()));
     }
     
+    public function testCommitOrder()
+    {
+        $avatar = new ForumAvatar();
+        $this->_user->avatar = $avatar;
+        $this->_unitOfWork->save($this->_user); // save cascaded to avatar
+        
+        $this->assertEquals(2, count($this->_persisterMock->getInserts())); // insert forced
+        $this->assertEquals(0, count($this->_persisterMock->getUpdates()));
+        $this->assertEquals(0, count($this->_persisterMock->getDeletes()));
+        // verify order of inserts()s
+        $inserts = $this->_persisterMock->getInserts();
+        $this->assertSame($avatar, $inserts[0]);
+        $this->assertSame($this->_user, $inserts[1]);
+        
+        //...
+    }
+    
     public function testSavingSingleEntityWithSequenceIdGeneratorSchedulesInsert()
     {
         //...

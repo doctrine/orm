@@ -159,6 +159,7 @@ class Doctrine_Association implements Serializable
         $this->_customAccessor = isset($mapping['accessor']) ? $mapping['accessor'] : null;
         $this->_customMutator = isset($mapping['mutator']) ? $mapping['mutator'] : null;
         $this->_isOptional = isset($mapping['isOptional']) ? (bool)$mapping['isOptional'] : true;
+        $this->_cascades = isset($mapping['cascade']) ? (array)$mapping['cascade'] : array();
 
         return $mapping;
     }

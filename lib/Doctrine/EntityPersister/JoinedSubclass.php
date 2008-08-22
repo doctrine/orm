@@ -30,58 +30,53 @@
  * @since       2.0
  */
 class Doctrine_EntityPersister_JoinedSubclass extends Doctrine_EntityPersister_Abstract
-{
-    //protected $_columnNameFieldNameMap = array();
-    
+{    
     /**
      * Inserts an entity that is part of a Class Table Inheritance hierarchy.
      *
      * @param Doctrine_Entity $record   record to be inserted
      * @return boolean
+     * @override
      */
-    protected function _doInsert(Doctrine_Entity $record)
+    public function insert(Doctrine_Entity $entity)
     {
-        $class = $this->_classMetadata;
-        $conn = $this->_conn;
-                    
-        $dataSet = $this->_groupFieldsByDefiningClass($record);
+        $class = $entity->getClass();
+        
+        $dataSet = array();
+        
+        $this->_prepareData($entity, $dataSet, true);
+        
+        $dataSet = $this->_groupFieldsByDefiningClass($class, $dataSet);
+        
         $component = $class->getClassName();
         $classes = $class->getParentClasses();
         array_unshift($classes, $component);
         
-        try {
-            $conn->beginInternalTransaction();
-            $identifier = null;
-            foreach (array_reverse($classes) as $k => $parent) {
-                $parentClass = $conn->getClassMetadata($parent);
-                if ($k == 0) {
-                    $identifierType = $parentClass->getIdentifierType();
-                    if ($identifierType == Doctrine::IDENTIFIER_AUTOINC) {
-                        $this->_insertRow($parentClass->getTableName(), $dataSet[$parent]);
-                        $identifier = $conn->sequence->lastInsertId();
-                    } else if ($identifierType == Doctrine::IDENTIFIER_SEQUENCE) {
-                        $seq = $record->getClassMetadata()->getTableOption('sequenceName');
-                        if ( ! empty($seq)) {
-                            $id = $conn->sequence->nextId($seq);
-                            $identifierFields = (array)$parentClass->getIdentifier();
-                            $dataSet[$parent][$identifierFields[0]] = $id;
-                            $this->_insertRow($parentClass->getTableName(), $dataSet[$parent]);
-                        }
-                    } else {
-                        throw new Doctrine_Mapper_Exception("Unsupported identifier type '$identifierType'.");
-                    }
-                    $record->assignIdentifier($identifier);
-                } else {
-                    foreach ((array) $record->identifier() as $id => $value) {
-                        $dataSet[$parent][$parentClass->getColumnName($id)] = $value;
-                    }
+        $identifier = null;
+        foreach (array_reverse($classes) as $k => $parent) {
+            $parentClass = $this->_em->getClassMetadata($parent);
+            if ($k == 0) {
+                if ($parentClass->isIdGeneratorIdentity()) {
                     $this->_insertRow($parentClass->getTableName(), $dataSet[$parent]);
+                    $identifier = $this->_conn->lastInsertId();
+                } else if ($parentClass->isIdGeneratorSequence()) {
+                    $seq = $entity->getClassMetadata()->getTableOption('sequenceName');
+                    if ( ! empty($seq)) {
+                        $id = $this->_conn->getSequenceManager()->nextId($seq);
+                        $identifierFields = $parentClass->getIdentifier();
+                        $dataSet[$parent][$identifierFields[0]] = $id;
+                        $this->_insertRow($parentClass->getTableName(), $dataSet[$parent]);
+                    }
+                } else {
+                    throw new Doctrine_Mapper_Exception("Unsupported identifier type '$identifierType'.");
                 }
+                $entity->_assignIdentifier($identifier);
+            } else {
+                foreach ($entity->_identifier() as $id => $value) {
+                    $dataSet[$parent][$parentClass->getColumnName($id)] = $value;
+                }
+                $this->_insertRow($parentClass->getTableName(), $dataSet[$parent]);
             }
-            $conn->commit();
-        } catch (Exception $e) {
-            $conn->rollback();
-            throw $e;
         }
 
         return true;
@@ -255,29 +250,26 @@ class Doctrine_EntityPersister_JoinedSubclass extends Doctrine_EntityPersister_A
      *
      * @return array
      */
-    protected function _groupFieldsByDefiningClass(Doctrine_Entity $record)
+    protected function _groupFieldsByDefiningClass(Doctrine_ClassMetadata $class, array $fields)
     {
-        $conn = $this->_conn;
-        $classMetadata = $this->_classMetadata;
         $dataSet = array();
-        $component = $classMetadata->getClassName();
-        $array = $record->getPrepared();
+        $component = $class->getClassName();
         
-        $classes = array_merge(array($component), $classMetadata->getParentClasses());
+        $classes = array_merge(array($component), $class->getParentClasses());
         
         foreach ($classes as $class) {
             $dataSet[$class] = array();            
-            $parentClassMetadata = $conn->getClassMetadata($class);
-            foreach ($parentClassMetadata->getColumns() as $columnName => $definition) {
-                if ((isset($definition['primary']) && $definition['primary'] === true) ||
-                        (isset($definition['inherited']) && $definition['inherited'] === true)) {
+            $parentClassMetadata = $this->_em->getClassMetadata($class);
+            foreach ($parentClassMetadata->getFieldMappings() as $fieldName => $mapping) {
+                if ((isset($mapping['id']) && $mapping['id'] === true) ||
+                        (isset($mapping['inherited']) && $mapping['inherited'] === true)) {
                     continue;
                 }
-                $fieldName = $classMetadata->getFieldName($columnName);
-                if ( ! array_key_exists($fieldName, $array)) {
+                if ( ! array_key_exists($fieldName, $fields)) {
                     continue;
                 }
-                $dataSet[$class][$columnName] = $array[$fieldName];
+                $columnName = $parentClassMetadata->getColumnName($fieldName);
+                $dataSet[$class][$columnName] = $fields[$fieldName];
             }
         }
         

@@ -84,7 +84,7 @@ class Doctrine_Sequence_Sqlite extends Doctrine_Sequence
      */
     public function lastInsertId($table = null, $field = null)
     {
-        return $this->conn->getDbh()->lastInsertId();
+        return $this->conn->getPdo()->lastInsertId();
     }
 
     /**

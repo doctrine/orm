@@ -18,7 +18,7 @@
  * and is licensed under the LGPL. For more information, see
  * <http://www.phpdoctrine.org>.
  */        
-Doctrine::autoload('Doctrine_Relation_Exception');
+
 /**
  * Doctrine_Relation_Parser_Exception
  *
@@ -29,6 +29,7 @@ Doctrine::autoload('Doctrine_Relation_Exception');
  * @since       1.0
  * @version     $Revision$
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
+ * @deprecated Remove.
  */
 class Doctrine_Relation_Parser_Exception extends Doctrine_Relation_Exception
 { }

@@ -18,7 +18,7 @@
  * and is licensed under the LGPL. For more information, see
  * <http://www.phpdoctrine.org>.
  */
-Doctrine::autoload('Doctrine_Relation_Association');
+
 /**
  * Doctrine_Relation_Association_Self
  *
@@ -29,6 +29,7 @@ Doctrine::autoload('Doctrine_Relation_Association');
  * @since       1.0
  * @version     $Revision: 1434 $
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
+ * @deprecated
  */
 class Doctrine_Relation_Nest extends Doctrine_Relation_Association
 {

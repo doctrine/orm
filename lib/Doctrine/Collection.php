@@ -83,7 +83,7 @@ class Doctrine_Collection implements Countable, IteratorAggregate, Serializable,
      *
      * @var Doctrine::ORM::Mapping::AssociationMapping             
      */
-    protected $_associationMapping;
+    protected $_association;
 
     /**
      * The name of the column that is used for collection key mapping.
@@ -98,8 +98,6 @@ class Doctrine_Collection implements Countable, IteratorAggregate, Serializable,
      * @var Doctrine_Null
      */
     //protected static $null;
-    
-    protected $_mapping;
     
     /**
      * The EntityManager.
@@ -261,10 +259,10 @@ class Doctrine_Collection implements Countable, IteratorAggregate, Serializable,
      *
      * @return void
      */
-    public function setReference(Doctrine_Entity $entity, $relation)
+    public function setReference(Doctrine_Entity $entity, Doctrine_Association $relation)
     {
         $this->_owner = $entity;
-        //$this->relation  = $relation;
+        $this->_association = $relation;
 
         /*if ($relation instanceof Doctrine_Relation_ForeignKey || 
                 $relation instanceof Doctrine_Relation_LocalKey) {
@@ -304,6 +302,12 @@ class Doctrine_Collection implements Countable, IteratorAggregate, Serializable,
         $removed = $this->_data[$key];
         unset($this->_data[$key]);
         //TODO: Register collection as dirty with the UoW if necessary
+        //$this->_em->getUnitOfWork()->scheduleCollectionUpdate($this);
+        //TODO: delete entity if shouldDeleteOrphans
+        /*if ($this->_association->isOneToMany() && $this->_association->shouldDeleteOrphans()) {
+            $this->_em->delete($removed);
+        }*/
+        
         return $removed;
     }
     
@@ -323,7 +327,7 @@ class Doctrine_Collection implements Countable, IteratorAggregate, Serializable,
      *
      * @param string $name
      * @since 1.0
-     * @return void
+     * @return mixed
      */
     public function __unset($key)
     {
@@ -508,7 +512,7 @@ class Doctrine_Collection implements Countable, IteratorAggregate, Serializable,
             throw new Doctrine_Record_Exception('Value variable in set is not an instance of Doctrine_Entity.');
         }
         
-        // Neither Maps nor Lists allow duplicates, both are Sets
+        // TODO: Really prohibit duplicates?
         if (in_array($value, $this->_data, true)) {
             return false;
         }
@@ -956,7 +960,7 @@ class Doctrine_Collection implements Countable, IteratorAggregate, Serializable,
     public function mapElements($lambda) {
         $result = array();
         foreach ($this->_data as $key => $entity) {
-            list($key, $value) = $lambda($key, $entity);
+            list($key, $value) = each($lambda($key, $entity));
             $result[$key] = $value;
         }
         return $result;
@@ -969,14 +973,20 @@ class Doctrine_Collection implements Countable, IteratorAggregate, Serializable,
      */
     public function clear()
     {
-        $this->_data = array();
         //TODO: Register collection as dirty with the UoW if necessary
+        //TODO: If oneToMany() && shouldDeleteOrphan() delete entities
+        /*if ($this->_association->isOneToMany() && $this->_association->shouldDeleteOrphans()) {
+            foreach ($this->_data as $entity) {
+                $this->_em->delete($entity);
+            }
+        }*/
+        $this->_data = array();
     }
     
     private function _changed()
     {
         /*if ( ! $this->_em->getUnitOfWork()->isCollectionScheduledForUpdate($this)) {
             $this->_em->getUnitOfWork()->scheduleCollectionUpdate($this);
-        }*/
+        }*/  
     }
 }

@@ -88,33 +88,51 @@ class Doctrine_Query_Production_Join extends Doctrine_Query_Production
             return $sql . ' ON ' . $conditionExpression;
         }
 
-        // We need to build the relationship conditions. Retrieving AssociationMapping
-       $queryComponent = $this->_rangeVariableDeclaration->getQueryComponent();
-       $relationColumns = $queryComponent['relation']->getSourceToTargetKeyColumns();
-       $relationConditionExpression = '';
+        // We need to build the join conditions. Retrieving AssociationMapping
+        $queryComponent = $this->_rangeVariableDeclaration->getQueryComponent();
+        $association = $queryComponent['relation'];
+        $joinColumns = array();
+        
+        if ($association->isOneToMany() || $association->isOneToOne()) {
+            if ($association->isInverseSide()) {
+                // joinColumns are found on the other (owning) side
+                $targetClass = $this->_em->getClassMetadata($association->getTargetEntityName());
+                $joinColumns = $targetClass->getAssociationMapping($association->getMappedByFieldName())
+                        ->getTargetToSourceKeyColumns();
+            } else {
+                $joinColumns = $association->getSourceToTargetKeyColumns();
+            }
+        } else {
+            //TODO: many-many
+        }
+       
+        $relationConditionExpression = '';
 
-       // We have an array('localColumn' => 'foreignColumn', ...) here
-       foreach ($relationColumns as $localColumn => $foreignColumn) {
-           // leftExpression = rightExpression
+        // We have an array('localColumn' => 'foreignColumn', ...) here
+        foreach ($joinColumns as $localColumn => $foreignColumn) {
+            // leftExpression = rightExpression
 
-           // Defining leftExpression
-           $leftExpression = $conn->quoteIdentifier(
-               $parserResult->getTableAliasFromComponentAlias($queryComponent['parent']) . '.' . $localColumn
-           );
+            // Defining leftExpression
+            $leftExpression = $conn->quoteIdentifier(
+                $parserResult->getTableAliasFromComponentAlias($queryComponent['parent']) . '.' . $localColumn
+            );
 
-           // Defining rightExpression
-           $rightExpression = $conn->quoteIdentifier(
-               $parserResult->getTableAliasFromComponentAlias(
-                   $this->_rangeVariableDeclaration->getIdentificationVariable()
-               ) . '.' . $foreignColumn
-           );
+            // Defining rightExpression
+            $rightExpression = $conn->quoteIdentifier(
+                $parserResult->getTableAliasFromComponentAlias(
+                    $this->_rangeVariableDeclaration->getIdentificationVariable()
+                ) . '.' . $foreignColumn
+             );
 
-           // Building the relation
-           $relationConditionExpression .= (($relationConditionExpression != '') ? ' AND ' : '')
-               . $leftExpression . ' = ' . $rightExpression;
-       }
+             // Building the relation
+             $relationConditionExpression .= (($relationConditionExpression != '') ? ' AND ' : '')
+                 . $leftExpression . ' = ' . $rightExpression;
+        }
+        
+        $sql .= ' ON ' . $relationConditionExpression;
+        $sql .= empty($conditionExpression) ? '' : ' AND (' . $conditionExpression . ')';
 
-       return $sql . ' ON ' . $relationConditionExpression . ' AND (' . $conditionExpression . ')';
+        return $sql;
     }
 
 

@@ -29,6 +29,7 @@
  * @link        www.phpdoctrine.org
  * @since       1.0
  * @version     $Revision$
+ * @deprecated Remove.
  */
 interface Doctrine_Record_Listener_Interface
 {

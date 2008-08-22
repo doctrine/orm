@@ -18,7 +18,7 @@
  * and is licensed under the LGPL. For more information, see
  * <http://www.phpdoctrine.org>.
  */
-Doctrine::autoload('Doctrine_Hook_Parser_Complex');
+
 /**
  * Doctrine_Hook_Integer
  *
@@ -29,6 +29,8 @@ Doctrine::autoload('Doctrine_Hook_Parser_Complex');
  * @since       1.0
  * @version     $Revision$
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
+ * @todo Can be removed?
+ * @deprecated
  */
 class Doctrine_Hook_Integer extends Doctrine_Hook_Parser_Complex
 {

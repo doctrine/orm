@@ -18,7 +18,6 @@
  * and is licensed under the LGPL. For more information, see
  * <http://www.phpdoctrine.org>.
  */
-Doctrine::autoload('Doctrine_Access');
 
 /**
  * Doctrine_Record_Listener_Chain
@@ -32,6 +31,8 @@ Doctrine::autoload('Doctrine_Access');
  * @link        www.phpdoctrine.org
  * @since       1.0
  * @version     $Revision$
+ * @deprecated
+ * @todo Remove
  */
 class Doctrine_Record_Listener_Chain extends Doctrine_Access implements Doctrine_Record_Listener_Interface
 {

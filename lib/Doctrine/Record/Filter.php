@@ -30,6 +30,7 @@
  * @link        www.phpdoctrine.org
  * @since       1.0
  * @version     $Revision: 1298 $
+ * @deprecated Remove.
  */
 abstract class Doctrine_Record_Filter
 {

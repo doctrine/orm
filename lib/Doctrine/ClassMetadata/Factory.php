@@ -31,7 +31,7 @@
  * @version     $Revision$
  * @link        www.phpdoctrine.org
  * @since       2.0
- * @todo Rename to ClassMetadataFactory.
+ * @todo Rename to ClassDescriptorFactory.
  */
 class Doctrine_ClassMetadata_Factory
 {
@@ -114,6 +114,7 @@ class Doctrine_ClassMetadata_Factory
         // load metadata of subclasses
         // -> child1 -> child2 -> $name
         
+        // Move down the hierarchy of parent classes, starting from the topmost class
         $parent = $class;
         foreach ($parentClasses as $subclassName) {
             $subClass = new Doctrine_ClassMetadata($subclassName, $this->_em);
@@ -121,7 +122,7 @@ class Doctrine_ClassMetadata_Factory
             $this->_addInheritedFields($subClass, $parent);
             $this->_addInheritedRelations($subClass, $parent);
             $this->_loadMetadata($subClass, $subclassName);
-            if ($parent->getInheritanceType() == Doctrine::INHERITANCE_TYPE_SINGLE_TABLE) {
+            if ($parent->isInheritanceTypeSingleTable()) {
                 $subClass->setTableName($parent->getTableName());
             }
             $classes[$subclassName] = $subClass;
@@ -132,15 +133,17 @@ class Doctrine_ClassMetadata_Factory
     /**
      * Adds inherited fields to the subclass mapping.
      *
-     * @param unknown_type $subClass
-     * @param unknown_type $parentClass
+     * @param Doctrine::ORM::Mapping::ClassMetadata $subClass
+     * @param Doctrine::ORM::Mapping::ClassMetadata $parentClass
+     * @return void
      */
     protected function _addInheritedFields($subClass, $parentClass)
     {
         foreach ($parentClass->getFieldMappings() as $fieldName => $mapping) {
-            $fullName = "$name as " . $parentClass->getFieldName($name);
-            $mapping['inherited'] = true;
-            $subClass->mapField($mapping);
+            if ( ! isset($mapping['inherited'])) {
+                $mapping['inherited'] = $parentClass->getClassName();
+            }
+            $subClass->addFieldMapping($fieldName, $mapping);
         }
     }
     
@@ -152,8 +155,8 @@ class Doctrine_ClassMetadata_Factory
      */
     protected function _addInheritedRelations($subClass, $parentClass) 
     {
-        foreach ($parentClass->getRelationParser()->getRelationDefinitions() as $name => $definition) {
-            $subClass->getRelationParser()->addRelationDefinition($name, $definition);
+        foreach ($parentClass->getAssociationMappings() as $fieldName => $mapping) {
+            $subClass->addAssociationMapping($name, $mapping);
         }
     }
     

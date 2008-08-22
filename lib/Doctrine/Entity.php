@@ -143,6 +143,14 @@ abstract class Doctrine_Entity implements ArrayAccess, Serializable
      * @var integer
      */
     private $_state;
+    
+    /**
+     * Name => Value map of join columns.
+     *
+     * @var array
+     * @todo Not yet clear if needed.
+     */
+    //private $_joinColumns = array();
 
     /**
      * The changes that happened to fields of the entity.
@@ -188,14 +196,6 @@ abstract class Doctrine_Entity implements ArrayAccess, Serializable
      * @var integer
      */
     private $_oid;
-
-    /**
-     * Flag that indicates whether the entity is dirty.
-     * (which means it has local changes)
-     *
-     * @var boolean
-     */
-    //private $_isDirty = false;
 
     /**
      * Constructor.
@@ -444,6 +444,7 @@ abstract class Doctrine_Entity implements ArrayAccess, Serializable
                 $this->_internalSetReference($fieldName, $value);
                 $this->_referenceChangeSet[$fieldName] = array($old => $value);
                 $this->_registerDirty();
+                //TODO: Allow arrays in $value. Wrap them in a collection transparently.
                 if ($old instanceof Doctrine_Collection) {
                     $this->_em->getUnitOfWork()->scheduleCollectionDeletion($old);
                 }
@@ -524,67 +525,6 @@ abstract class Doctrine_Entity implements ArrayAccess, Serializable
      *
      * @param string $fieldName
      * @param mixed $value
-     * @todo Refactor.
-     */
-    final public function _internalSetReference_OLD($name, $value)
-    {
-        if ($value === Doctrine_Null::$INSTANCE) {
-            $this->_references[$name] = $value;
-            return;
-        }
-
-        $rel = $this->_class->getRelation($name);
-
-        // one-to-many or one-to-one relation
-        if ($rel instanceof Doctrine_Relation_ForeignKey ||
-                $rel instanceof Doctrine_Relation_LocalKey) {
-            if ( ! $rel->isOneToOne()) {
-                // one-to-many relation
-                if ( ! $value instanceof Doctrine_Collection) {
-                    throw Doctrine_Entity_Exception::invalidValueForOneToManyReference();
-                }
-                if (isset($this->_references[$name])) {
-                    $this->_references[$name]->setData($value->getData());
-                    return;
-                }
-            } else {
-                $relatedTable = $value->getTable();
-                $foreignFieldName = $rel->getForeignFieldName();
-                $localFieldName = $rel->getLocalFieldName();
-
-                // one-to-one relation found
-                if ( ! ($value instanceof Doctrine_Entity)) {
-                    throw Doctrine_Entity_Exception::invalidValueForOneToOneReference();
-                }
-                if ($rel instanceof Doctrine_Relation_LocalKey) {
-                    $idFieldNames = $value->getTable()->getIdentifier();
-                    if ( ! empty($foreignFieldName) && $foreignFieldName != $idFieldNames[0]) {
-                        $this->set($localFieldName, $value->_get($foreignFieldName));
-                    } else {
-                        $this->set($localFieldName, $value);
-                    }
-                } else {
-                    $value->set($foreignFieldName, $this);
-                }
-            }
-        } else if ($rel instanceof Doctrine_Relation_Association) {
-            if ( ! ($value instanceof Doctrine_Collection)) {
-                throw Doctrine_Entity_Exception::invalidValueForManyToManyReference();
-            }
-        }
-
-        $this->_references[$name] = $value;
-    }
-
-    /**
-     * INTERNAL:
-     * Sets a reference to another entity or a collection of entities.
-     * 
-     * NOTE: Use of this method in userland code is strongly discouraged.
-     *
-     * @param string $fieldName
-     * @param mixed $value
-     * @todo Refactor.
      */
     final public function _internalSetReference($name, $value)
     {
@@ -595,31 +535,14 @@ abstract class Doctrine_Entity implements ArrayAccess, Serializable
 
         $rel = $this->_class->getAssociationMapping($name);
 
-        // one-to-many or one-to-one relation
-        if ($rel->isOneToOne() || $rel->isOneToMany()) {
-            if ( ! $rel->isOneToOne()) {
-                // one-to-many relation
-                if ( ! $value instanceof Doctrine_Collection) {
-                    throw Doctrine_Entity_Exception::invalidValueForOneToManyReference();
-                }
-                if (isset($this->_references[$name])) {
-                    $this->_references[$name]->setData($value->getData());
-                    return;
-                }
-            } else {
-                $relatedClass = $value->getClass();
-                //$foreignFieldName = $rel->getForeignFieldName();
-                //$localFieldName = $rel->getLocalFieldName();
-
-                // one-to-one relation found
-                if ( ! ($value instanceof Doctrine_Entity)) {
-                    throw Doctrine_Entity_Exception::invalidValueForOneToOneReference();
-                }
-            }
-        } else if ($rel instanceof Doctrine_Relation_Association) {
-            if ( ! ($value instanceof Doctrine_Collection)) {
-                throw Doctrine_Entity_Exception::invalidValueForManyToManyReference();
-            }
+        if ($rel->isOneToOne() && ! $value instanceof Doctrine_Entity) {
+            throw Doctrine_Entity_Exception::invalidValueForOneToOneReference();
+        }
+        if ($rel->isOneToMany() && ! $value instanceof Doctrine_Collection) {
+            throw Doctrine_Entity_Exception::invalidValueForOneToManyReference();
+        }
+        if ($rel->isManyToMany() && ! $value instanceof Doctrine_Collection) {
+            throw Doctrine_Entity_Exception::invalidValueForManyToManyReference();
         }
 
         $this->_references[$name] = $value;
@@ -734,7 +657,7 @@ abstract class Doctrine_Entity implements ArrayAccess, Serializable
      * @param string $name
      * @return boolean
      */
-    final public function contains($fieldName)
+    private function _contains($fieldName)
     {
         if (isset($this->_data[$fieldName])) {
             if ($this->_data[$fieldName] === Doctrine_Null::$INSTANCE) {
@@ -755,28 +678,29 @@ abstract class Doctrine_Entity implements ArrayAccess, Serializable
     /**
      * Clears the value of a field.
      * 
-     * Invoked by Doctrine::ORM::Access#__unset().
-     * 
      * @param string $name
      * @return void
      */
-    final public function remove($fieldName)
+    private function _unset($fieldName)
     {
         if (isset($this->_data[$fieldName])) {
-            $this->_data[$fieldName] = array();
+            $this->_data[$fieldName] = null;
         } else if (isset($this->_references[$fieldName])) {
-            if ($this->_references[$fieldName] instanceof Doctrine_Entity) {
-                // todo: delete related record when saving $this (ONLY WITH deleteOrphans!)
-                $this->_references[$fieldName] = Doctrine_Null::$INSTANCE;
-            } else if ($this->_references[$fieldName] instanceof Doctrine_Collection) {
-                $this->_references[$fieldName]->setData(array());
+            $assoc = $this->_class->getAssociationMapping($fieldName);
+            if ($assoc->isOneToOne() && $assoc->shouldDeleteOrphans()) {
+                $this->_em->delete($this->_references[$fieldName]);
+            } else if ($assoc->isOneToMany() && $assoc->shouldDeleteOrphans()) {
+                foreach ($this->_references[$fieldName] as $entity) {
+                    $this->_em->delete($entity);
+                }
             }
+            $this->_references[$fieldName] = null;
         }
     }
 
     /**
      * INTERNAL:
-     * Gets the changeset of the entities persistent state.
+     * Gets the changeset of the entities data.
      *
      * @return array
      */
@@ -785,6 +709,12 @@ abstract class Doctrine_Entity implements ArrayAccess, Serializable
         return $this->_dataChangeSet;
     }
 
+    /**
+     * INTERNAL:
+     * Gets the changeset of the entities references to other entities.
+     *
+     * @return array
+     */
     final public function _getReferenceChangeSet()
     {
         return $this->_referenceChangeSet;
@@ -831,43 +761,34 @@ abstract class Doctrine_Entity implements ArrayAccess, Serializable
             $this->_data[$name] = $id;
         }
         $this->_dataChangeSet = array();
+        $this->_referenceChangeSet = array();
     }
+    
+    /**
+     * @todo Not yet clear if needed.
+     */
+    /*final public function _setJoinColumn($columnName, $value)
+    {
+        $this->_joinColumns[$columnName] = $value;
+    }*/
+    
+    /**
+     * @todo Not yet clear if needed.
+     */
+    /*final public function _getJoinColumn($columnName)
+    {
+        return $this->_joinColumns[$columnName];
+    }*/
 
     /**
      * INTERNAL:
-     * Returns the primary keys of the entity (key => value pairs).
+     * Returns the primary keys of the entity (field => value pairs).
      *
      * @return array
      */
     final public function _identifier()
     {
         return $this->_id;
-    }
-
-    /**
-     * hasRefence
-     * @param string $name
-     * @return boolean
-     * @todo Better name? hasAssociation() ? Remove?
-     */
-    final public function hasReference($name)
-    {
-        return isset($this->_references[$name]);
-    }
-
-    /**
-     * obtainReference
-     *
-     * @param string $name
-     * @throws Doctrine_Record_Exception        if trying to get an unknown related component
-     * @todo Better name? Remove?
-     */
-    final public function obtainReference($name)
-    {
-        if (isset($this->_references[$name])) {
-            return $this->_references[$name];
-        }
-        throw new Doctrine_Record_Exception("Unknown reference $name.");
     }
 
     /**
@@ -879,19 +800,6 @@ abstract class Doctrine_Entity implements ArrayAccess, Serializable
     final public function _getReferences()
     {
         return $this->_references;
-    }
-
-    /**
-     * INTERNAL:
-     * setRelated
-     *
-     * @param string $alias
-     * @param Doctrine_Access $coll
-     * @todo Name? Remove?
-     */
-    final public function _setRelated($alias, Doctrine_Access $coll)
-    {
-        $this->_references[$alias] = $coll;
     }
 
     /**
@@ -923,23 +831,6 @@ abstract class Doctrine_Entity implements ArrayAccess, Serializable
     final public function getRepository()
     {
         return $this->_em->getRepository($this->_entityName);
-    }
-
-    /**
-     * @todo Why toString() and __toString() ?
-     */
-    public function toString()
-    {
-        return Doctrine::dump(get_object_vars($this));
-    }
-
-    /**
-     * returns a string representation of this object
-     * @todo Why toString() and __toString() ?
-     */
-    public function __toString()
-    {
-        return (string)$this->_oid;
     }
 
     /**
@@ -980,7 +871,7 @@ abstract class Doctrine_Entity implements ArrayAccess, Serializable
      */
     public function offsetExists($offset)
     {
-        return $this->contains($offset);
+        return $this->_contains($offset);
     }
 
     /**
@@ -1020,7 +911,7 @@ abstract class Doctrine_Entity implements ArrayAccess, Serializable
      */
     public function offsetUnset($offset)
     {
-        return $this->remove($offset);
+        return $this->_unset($offset);
     }
 
     /**
@@ -1058,7 +949,7 @@ abstract class Doctrine_Entity implements ArrayAccess, Serializable
      */
     public function __isset($name)
     {
-        return $this->contains($name);
+        return $this->_contains($name);
     }
 
     /**
@@ -1070,6 +961,14 @@ abstract class Doctrine_Entity implements ArrayAccess, Serializable
      */
     public function __unset($name)
     {
-        return $this->remove($name);
+        return $this->_unset($name);
+    }
+    
+    /**
+     * returns a string representation of this object
+     */
+    public function __toString()
+    {
+        return (string)$this->_oid;
     }
 }

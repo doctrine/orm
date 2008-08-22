@@ -160,6 +160,8 @@ class Doctrine_Connection_UnitOfWork
 
         foreach ($commitOrder as $class) {
             $this->_executeInserts($class);
+        }
+        foreach ($commitOrder as $class) {
             $this->_executeUpdates($class);
         }
         
@@ -268,7 +270,7 @@ class Doctrine_Connection_UnitOfWork
                     }
                     // add dependency
                     $otherNode = $this->_commitOrderCalculator->getNodeForKey($targetClassName);
-                    $node->before($otherNode);
+                    $otherNode->before($node);
                 }
             }
         }

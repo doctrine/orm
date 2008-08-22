@@ -29,6 +29,7 @@
  * @since       1.0
  * @version     $Revision$
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
+ * @deprecated
  */
 class Doctrine_Relation_Association_Self extends Doctrine_Relation_Association
 {

@@ -172,7 +172,7 @@ class Orm_Query_SelectSqlGenerationTest extends Doctrine_OrmTestCase
     {
         $this->assertSqlGeneration(
             'SELECT u.id, a.id FROM CmsUser u LEFT JOIN u.articles a',
-            'SELECT cu.id AS cu__id, ca.id AS ca__id FROM cms_user cu LEFT JOIN cms_article ca ON ca.user_id = cu.id WHERE 1 = 1'
+            'SELECT cu.id AS cu__id, ca.id AS ca__id FROM cms_user cu LEFT JOIN cms_article ca ON cu.id = ca.user_id WHERE 1 = 1'
         );
     }
 

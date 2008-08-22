@@ -25,26 +25,65 @@
 
 /**
  * A <tt>ClassMetadata</tt> instance holds all the information (metadata) of an entity and
- * it's associations and how they're mapped to the relational database.
+ * it's associations and how they're mapped to a relational database.
  * It is the backbone of Doctrine's metadata mapping.
  *
  * @author Roman Borschel <roman@code-factory.org>
  * @since 2.0
- * @todo Rename to ClassDescriptor?
+ * @todo Rename to ClassDescriptor.
  */
 class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
 {
     /* The inheritance mapping types */
+    /**
+     * NONE means the class does not participate in an inheritance hierarchy
+     * and therefore does not need an inheritance mapping type.
+     */
     const INHERITANCE_TYPE_NONE = 'none';
+    /**
+     * JOINED means the class will be persisted according to the rules of
+     * <tt>Class Table Inheritance</tt>.
+     */
     const INHERITANCE_TYPE_JOINED = 'joined';
+    /**
+     * SINGLE_TABLE means the class will be persisted according to the rules of
+     * <tt>Single Table Inheritance</tt>.
+     */
     const INHERITANCE_TYPE_SINGLE_TABLE = 'singleTable';
+    /**
+     * TABLE_PER_CLASS means the class will be persisted according to the rules
+     * of <tt>Concrete Table Inheritance</tt>.
+     */
     const INHERITANCE_TYPE_TABLE_PER_CLASS = 'tablePerClass';
     
-    /* The Id generator types. TODO: belongs more in a DBAL class */
+    /* The Id generator types. */
+    /**
+     * AUTO means the generator type will depend on what the used platform prefers.
+     * Offers full portability.
+     */
     const GENERATOR_TYPE_AUTO = 'auto';
+    /**
+     * SEQUENCE means a separate sequence object will be used. Platforms that do
+     * not have native sequence support may emulate it. Full portability is currently
+     * not guaranteed.
+     */
     const GENERATOR_TYPE_SEQUENCE = 'sequence';
+    /**
+     * TABLE means a separate table is used for id generation.
+     * Offers full portability.
+     */
     const GENERATOR_TYPE_TABLE = 'table';
+    /**
+     * IDENTITY means an identity column is used for id generation. The database
+     * will fill in the id column on insertion. Platforms that do not support
+     * native identity columns may emulate them. Full portability is currently
+     * not guaranteed.
+     */
     const GENERATOR_TYPE_IDENTITY = 'identity';
+    /**
+     * NONE means the class does not have a generated id. That means the class
+     * must have a natural id.
+     */
     const GENERATOR_TYPE_NONE = 'none';
     
     /* The Entity types */
@@ -53,7 +92,7 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
      */
     const ENTITY_TYPE_REGULAR = 'regular';
     /**
-     * A transient entity is ignored by Doctrine.
+     * A transient entity is ignored by Doctrine (so ... it's not an entity really).
      */
     const ENTITY_TYPE_TRANSIENT = 'transient';
     /**
@@ -217,14 +256,6 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
     protected $_lcColumnToFieldNames = array();
 
     /**
-     * Relation parser object. Manages the relations for the class.
-     *
-     * @var Doctrine_Relation_Parser $_parser
-     * @todo Remove.
-     */
-    protected $_parser;
-
-    /**
      * Inheritance options.
      */
     protected $_inheritanceOptions = array(
@@ -315,8 +346,6 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
         $this->_entityName = $entityName;
         $this->_rootEntityName = $entityName;
         $this->_em = $em;
-        
-        $this->_parser = new Doctrine_Relation_Parser($this);
     }
     
     /**
@@ -503,6 +532,11 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
         return $this->_fieldMappings[$fieldName];
     }
     
+    public function addFieldMapping($fieldName, array $mapping)
+    {
+        $this->_fieldMappings[$fieldName] = $mapping;
+    }
+    
     /**
      * Gets the mapping of an association.
      *
@@ -517,6 +551,11 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
         }
         
         return $this->_associationMappings[$fieldName];
+    }
+    
+    public function addAssociationMapping($fieldName, Doctrine_Association $assoc)
+    {
+        $this->_associationMappings[$fieldName] = $assoc;
     }
     
     /**
@@ -879,6 +918,21 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
         return $this->_generatorType != self::GENERATOR_TYPE_NONE;
     }
     
+    public function isInheritanceTypeJoined()
+    {
+        return $this->_inheritanceType == self::INHERITANCE_TYPE_JOINED;
+    }
+    
+    public function isInheritanceTypeSingleTable()
+    {
+        return $this->_inheritanceType == self::INHERITANCE_TYPE_SINGLE_TABLE;
+    }
+    
+    public function isInheritanceTypeTablePerClass()
+    {
+        return $this->_inheritanceType == self::INHERITANCE_TYPE_TABLE_PER_CLASS;
+    }
+    
     /**
      * Checks whether the class uses an identity column for the Id generation.
      *
@@ -1007,6 +1061,29 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
     public function getSubclasses()
     {
         return $this->_subClasses;
+    }
+    
+    /**
+     * Gets the name of the class in the entity hierarchy that owns the field with
+     * the given name. The owning class is the one that defines the field.
+     *
+     * @param string $fieldName
+     * @return string
+     * @todo Consider using 'inherited' => 'ClassName' to make the lookup simpler.
+     */
+    public function getOwningClass($fieldName)
+    {
+        if ($this->_inheritanceType == self::INHERITANCE_TYPE_NONE) {
+            return $this;
+        } else {
+            foreach ($this->_parentClasses as $parentClass) {
+                if ( ! $this->_em->getClassMetadata($parentClass)->isInheritedField($fieldName)) {
+                    return $parentClass;
+                }
+            }
+        }
+        
+        throw new Doctrine_ClassMetadata_Exception("Unable to find defining class of field '$fieldName'.");
     }
 
     /**
@@ -1408,9 +1485,9 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
     }
     
     /**
-     * Adds a one-to-one association mapping.
+     * Adds a one-to-one mapping.
      * 
-     * @todo Implementation.
+     * @param array $mapping The mapping.
      */
     public function mapOneToOne(array $mapping)
     {
@@ -1425,7 +1502,9 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
     }
 
     /**
-     * @todo Implementation.
+     * Adds a one-to-many mapping.
+     * 
+     * @param array $mapping The mapping.
      */
     public function mapOneToMany(array $mapping)
     {
@@ -1440,11 +1519,14 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
     }
 
     /**
-     * @todo Implementation.
+     * Adds a many-to-one mapping.
+     * 
+     * @param array $mapping The mapping.
      */
     public function mapManyToOne(array $mapping)
     {
-        
+        // A many-to-one mapping is simply a one-one backreference
+        $this->mapOneToOne($mapping);
     }
 
     /**
@@ -1585,6 +1667,8 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
     /**
      * Completes the identifier mapping of the class.
      * NOTE: Should only be called by the ClassMetadataFactory!
+     * 
+     * @return void
      */
     public function completeIdentifierMapping()
     {
@@ -1603,7 +1687,7 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
     /**
      * @todo Implementation. Immutable entities can not be updated or deleted once
      *       they are created. This means the entity can only be modified as long as it's
-     *       in transient state (TCLEAN, TDIRTY).
+     *       new (STATE_NEW).
      */
     public function isImmutable()
     {
@@ -1634,119 +1718,9 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
         }
     }
     
-    /* The following stuff needs to be touched for the association mapping rewrite */
-    
-    /**
-     * hasOne
-     * binds One-to-One aggregate relation
-     *
-     * @param string $componentName     the name of the related component
-     * @param string $options           relation options
-     * @see Doctrine_Relation::_$definition
-     * @return Doctrine_Entity          this object
-     * @deprecated
-     */
-    public function hasOne()
-    {
-        $this->bind(func_get_args(), Doctrine_Relation::ONE_AGGREGATE);
-
-        return $this;
-    }
-
-    /**
-     * hasMany
-     * binds One-to-Many / Many-to-Many aggregate relation
-     *
-     * @param string $componentName     the name of the related component
-     * @param string $options           relation options
-     * @see Doctrine_Relation::_$definition
-     * @return Doctrine_Entity          this object
-     * @deprecated
-     */
-    public function hasMany()
-    {
-        $this->bind(func_get_args(), Doctrine_Relation::MANY_AGGREGATE);
-
-        return $this;
-    }
-    
-    /**
-     * @deprecated
-     */
-    public function bindRelation($args, $type)
-    {
-        return $this->bind($args, $type);
-    }
-
-    /**
-     * @todo Relation mapping rewrite.
-     * @deprecated
-     */
-    public function bind($args, $type)
-    {
-        $options = array();
-        $options['type'] = $type;
-
-        if ( ! isset($args[1])) {
-            $args[1] = array();
-        }
-        if ( ! is_array($args[1])) {
-            try {
-                throw new Exception();
-            } catch (Exception $e) {
-                echo $e->getTraceAsString();
-            }
-        }
-        $options = array_merge($args[1], $options);
-        $this->_parser->bind($args[0], $options);
-    }
-
-    /**
-     * hasRelation
-     *
-     * @param string $alias      the relation to check if exists
-     * @return boolean           true if the relation exists otherwise false
-     * @deprecated
-     */
-    public function hasRelation($alias)
-    {
-        return $this->_parser->hasRelation($alias);
-    }
-    
     public function hasAssociation($fieldName)
     {
         return isset($this->_associationMappings[$fieldName]);
-    }
-
-    /**
-     * getRelation
-     *
-     * @param string $alias      relation alias
-     * @deprecated
-     */
-    public function getRelation($alias, $recursive = true)
-    {
-        return $this->_parser->getRelation($alias, $recursive);
-    }
-    
-    /**
-     * @deprecated
-     */
-    public function getRelationParser()
-    {
-        return $this->_parser;
-    }
-
-    /**
-     * getRelations
-     * returns an array containing all relation objects
-     *
-     * @return array        an array of Doctrine_Relation objects
-     * @deprecated
-     */
-    public function getRelations()
-    {
-        return $this->_parser->getRelations();
     }
 
     /**

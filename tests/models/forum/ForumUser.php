@@ -21,12 +21,6 @@ class ForumUser extends Doctrine_Entity
                 ));
         // register subclasses
         $mapping->setSubclasses(array('ForumAdministrator'));
-        // the discriminator column
-        $mapping->mapField(array(
-            'fieldName' => 'dtype',
-            'type' => 'string',
-            'length' => 50
-        ));
         
         // column-to-field mapping
         $mapping->mapField(array(
@@ -46,6 +40,7 @@ class ForumUser extends Doctrine_Entity
             'fieldName' => 'avatar',
             'targetEntity' => 'ForumAvatar',
             'joinColumns' => array('avatar_id' => 'id'),
+            'cascade' => array('save')
         ));
         
     }

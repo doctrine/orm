@@ -35,21 +35,17 @@ class CmsUser extends Doctrine_Entity
             'type' => 'string',
             'length' => 255
         ));
-
-        /*$mapping->hasMany('CmsPhonenumber as phonenumbers', array(
-              'local' => 'id', 'foreign' => 'user_id'));
-        $mapping->hasMany('CmsArticle as articles', array(
-              'local' => 'id', 'foreign' => 'user_id'));*/
         
         $mapping->mapOneToMany(array(
             'fieldName' => 'phonenumbers',
             'targetEntity' => 'CmsPhonenumber',
-            
+            'mappedBy' => 'user'
         ));
         
         $mapping->mapOneToMany(array(
             'fieldName' => 'articles',
             'targetEntity' => 'CmsArticle',
+            'mappedBy' => 'user'
         ));
         
     }

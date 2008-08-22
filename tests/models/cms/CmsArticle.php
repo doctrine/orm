@@ -35,17 +35,16 @@ class CmsArticle extends Doctrine_Entity
             'length' => 4
         ));
         
-        /*$mapping->hasMany('CmsComment as comments', array(
-              'local' => 'id', 'foreign' => 'article_id'));*/
         
         $mapping->mapOneToMany(array(
             'fieldName' => 'comments',
             'targetEntity' => 'CmsComment',
         ));
         
-        /*$mapping->mapManyToOne(array(
-            'fieldName' => 'author',
+        $mapping->mapManyToOne(array(
+            'fieldName' => 'user',
+            'targetEntity' => 'CmsUser',
             'joinColumns' => array('user_id' => 'id')
-        ));*/
+        ));
     }
 }

@@ -228,6 +228,26 @@ class Doctrine_DatabasePlatform_MySqlPlatform extends Doctrine_DatabasePlatform
     }
     
     /**
+     * @TEST
+     */
+    public function getVarcharDeclaration(array $field)
+    {
+        if ( ! isset($field['length'])) {
+            if (array_key_exists('default', $field)) {
+                $field['length'] = $this->getVarcharMaxLength();
+            } else {
+                $field['length'] = false;
+            }
+        }
+
+        $length = ($field['length'] <= $this->getVarcharMaxLength()) ? $field['length'] : false;
+        $fixed  = (isset($field['fixed'])) ? $field['fixed'] : false;
+
+        return $fixed ? ($length ? 'CHAR(' . $length . ')' : 'CHAR(255)')
+                : ($length ? 'VARCHAR(' . $length . ')' : 'TEXT');
+    }
+    
+    /**
      * Obtain DBMS specific SQL code portion needed to declare an text type
      * field to be used in statements like CREATE TABLE.
      *
