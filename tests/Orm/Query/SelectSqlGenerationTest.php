@@ -171,8 +171,12 @@ class Orm_Query_SelectSqlGenerationTest extends Doctrine_OrmTestCase
     public function testPlainJoinWithoutClause()
     {
         $this->assertSqlGeneration(
-            'SELECT u.id, a.id FROM CmsUser u LEFT JOIN u.articles a',
+            'SELECT u.id, a.id from CmsUser u LEFT JOIN u.articles a',
             'SELECT cu.id AS cu__id, ca.id AS ca__id FROM cms_user cu LEFT JOIN cms_article ca ON cu.id = ca.user_id WHERE 1 = 1'
+        );
+        $this->assertSqlGeneration(
+            'SELECT u.id, a.id from CmsUser u JOIN u.articles a',
+            'SELECT cu.id AS cu__id, ca.id AS ca__id FROM cms_user cu INNER JOIN cms_article ca ON cu.id = ca.user_id WHERE 1 = 1'
         );
     }
 
