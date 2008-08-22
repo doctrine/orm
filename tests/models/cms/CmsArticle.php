@@ -39,6 +39,7 @@ class CmsArticle extends Doctrine_Entity
         $mapping->mapOneToMany(array(
             'fieldName' => 'comments',
             'targetEntity' => 'CmsComment',
+            'mappedBy' => 'article'
         ));
         
         $mapping->mapManyToOne(array(

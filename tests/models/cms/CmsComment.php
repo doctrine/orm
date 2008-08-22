@@ -34,5 +34,11 @@ class CmsComment extends Doctrine_Entity
             'type' => 'integer',
             'length' => 4
         ));
+        
+        $mapping->mapManyToOne(array(
+            'fieldName' => 'article',
+            'targetEntity' => 'CmsArticle',
+            'joinColumns' => array('article_id' => 'id')
+        ));
     }
 }

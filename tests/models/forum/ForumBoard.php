@@ -24,11 +24,8 @@ class ForumBoard extends Doctrine_Entity
             'fieldName' => 'category_id',
             'type' => 'integer'
         ));
-        
-        /*$mapping->hasOne('ForumCategory as category',
-                array('local' => 'category_id', 'foreign' => 'id'));*/
                
-        $mapping->mapOneToOne(array(
+        $mapping->mapManyToOne(array(
             'fieldName' => 'category',
             'targetEntity' => 'ForumCategory',
             'joinColumns' => array('category_id' => 'id')

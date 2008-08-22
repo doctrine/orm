@@ -47,6 +47,11 @@ class Doctrine_MappingException extends Doctrine_Exception
     {
         return new self("No mapping found for field '$fieldName'.");
     }
+    
+    public static function oneToManyRequiresMappedBy($fieldName)
+    {
+        return new self("OneToMany mapping on field '$fieldName' requires the 'mappedBy' attribute.");
+    }
 }
 
 ?>

@@ -68,6 +68,24 @@ class Doctrine_Association_OneToMany extends Doctrine_Association
     }
     
     /**
+     * Validates and completed the mapping.
+     *
+     * @param array $mapping The mapping to validate and complete.
+     * @return array The validated and completed mapping.
+     * @override
+     */
+    protected function _validateAndCompleteMapping(array $mapping)
+    {
+        $mapping = parent::_validateAndCompleteMapping($mapping);
+        // one-side MUST be inverse (must have mappedBy)
+        if ( ! isset($mapping['mappedBy'])) {
+            throw Doctrine_MappingException::oneToManyRequiresMappedBy($mapping['fieldName']);
+        }
+        
+        return $mapping;
+    }
+    
+    /**
      * Whether orphaned elements (removed from the collection) should be deleted.
      *
      * @return boolean TRUE if orphaned elements should be deleted, FALSE otherwise.
