@@ -141,6 +141,36 @@ class Orm_Query_SelectSqlGenerationTest extends Doctrine_OrmTestCase
     }
 
 
+    // Ticket #668
+    public function testKeywordUsageInStringParam()
+    {
+        $this->assertSqlGeneration(
+            "SELECT u.name FROM CmsUser u WHERE u.name LIKE '%foo OR bar%'",
+            "SELECT cu.name AS cu__name FROM cms_user cu WHERE cu.name LIKE '%foo OR bar%'"
+        );
+    }
+
+
+    // Ticket #973
+    public function testSingleInValueWithoutSpace()
+    {
+        $this->assertSqlGeneration(
+            "SELECT u.name FROM CmsUser u WHERE u.id IN(46)",
+            "SELECT cu.name AS cu__name FROM cms_user cu WHERE cu.id IN (46)"
+        );
+    }
+
+
+    // Ticket 894
+    public function testBetweenDeclarationWithInputParameter()
+    {
+        $this->assertSqlGeneration(
+            "SELECT u.name FROM CmsUser u WHERE u.id BETWEEN ? AND ?",
+            "SELECT cu.name AS cu__name FROM cms_user cu WHERE cu.id BETWEEN ? AND ?"
+        );
+    }
+
+
     public function testArithmeticExpressionsSupportedInWherePart()
     {
         $this->assertSqlGeneration(
