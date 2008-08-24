@@ -74,7 +74,7 @@ class Doctrine_Hydrator_RecordDriver
             $relatedClass = $this->_em->getClassMetadata($relation->getTargetEntityName());
             $coll = $this->getElementCollection($relatedClass->getClassName());
             $coll->setReference($entity, $relation);
-            $entity->_internalSetReference($name, $coll);
+            $entity->_internalSetReference($name, $coll, true);
             $this->_initializedRelations[$entity->getOid()][$name] = true;
         }
     }
@@ -108,7 +108,7 @@ class Doctrine_Hydrator_RecordDriver
     
     public function setRelatedElement(Doctrine_Entity $entity1, $property, $entity2)
     {
-        $entity1->_internalSetReference($property, $entity2);
+        $entity1->_internalSetReference($property, $entity2, true);
     }
     
     public function isIndexKeyInUse(Doctrine_Entity $entity, $assocField, $indexField)
@@ -150,6 +150,5 @@ class Doctrine_Hydrator_RecordDriver
         $this->_collections = array();
         $this->_initializedRelations = array();
     }
-    
     
 }

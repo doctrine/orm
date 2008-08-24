@@ -63,8 +63,6 @@ class Doctrine_Association_OneToMany extends Doctrine_Association
     public function __construct(array $mapping)
     {
         parent::__construct($mapping);
-        // one side in one-many can currently never be owning side, we may support that later
-        $this->_isOwningSide = false;
     }
     
     /**
@@ -76,13 +74,15 @@ class Doctrine_Association_OneToMany extends Doctrine_Association
      */
     protected function _validateAndCompleteMapping(array $mapping)
     {
-        $mapping = parent::_validateAndCompleteMapping($mapping);
+        parent::_validateAndCompleteMapping($mapping);
+        
         // one-side MUST be inverse (must have mappedBy)
         if ( ! isset($mapping['mappedBy'])) {
             throw Doctrine_MappingException::oneToManyRequiresMappedBy($mapping['fieldName']);
         }
         
-        return $mapping;
+        $this->_deleteOrphans = isset($mapping['deleteOrphans']) ?
+                (bool)$mapping['deleteOrphans'] : false;
     }
     
     /**

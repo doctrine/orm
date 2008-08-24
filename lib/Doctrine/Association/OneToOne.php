@@ -47,7 +47,11 @@ class Doctrine_Association_OneToOne extends Doctrine_Association
      */
     protected $_targetToSourceKeyColumns = array();
     
-    /** Whether to delete orphaned elements (when nulled out, i.e. $foo->other = null) */
+    /**
+     * Whether to delete orphaned elements (when nulled out, i.e. $foo->other = null)
+     * 
+     * @var boolean
+     */
     protected $_deleteOrphans = false;
     
     /**
@@ -59,10 +63,6 @@ class Doctrine_Association_OneToOne extends Doctrine_Association
     public function __construct(array $mapping)
     {
         parent::__construct($mapping);
-        if ($this->isOwningSide()) {
-            $this->_sourceToTargetKeyColumns = $mapping['joinColumns'];
-            $this->_targetToSourceKeyColumns = array_flip($this->_sourceToTargetKeyColumns);
-        }
     }
     
     /**
@@ -72,15 +72,20 @@ class Doctrine_Association_OneToOne extends Doctrine_Association
      * @return array  The validated & completed mapping.
      * @override
      */
-    protected function _validateMapping(array $mapping)
+    protected function _validateAndCompleteMapping(array $mapping)
     {
-        $mapping = parent::_validateMapping($mapping);
+        parent::_validateAndCompleteMapping($mapping);
         
         if ($this->isOwningSide()) {
             if ( ! isset($mapping['joinColumns'])) {
-                throw Doctrine_MappingException::missingJoinColumns();
+                throw Doctrine_MappingException::invalidMapping($this->_sourceFieldName);
             }
+            $this->_sourceToTargetKeyColumns = $mapping['joinColumns'];
+            $this->_targetToSourceKeyColumns = array_flip($this->_sourceToTargetKeyColumns);
         }
+        
+        $this->_deleteOrphans = isset($mapping['deleteOrphans']) ?
+                (bool)$mapping['deleteOrphans'] : false;
         
         return $mapping;
     }
@@ -145,7 +150,7 @@ class Doctrine_Association_OneToOne extends Doctrine_Association
         if ( ! $otherEntity) {
             $otherEntity = Doctrine_Null::$INSTANCE;
         }
-        $entity->_rawSetReference($this->_sourceFieldName, $otherEntity);
+        $entity->_internalSetReference($this->_sourceFieldName, $otherEntity);
     }
     
 }

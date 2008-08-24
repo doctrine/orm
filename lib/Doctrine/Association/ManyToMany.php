@@ -10,27 +10,13 @@
  * @todo Rename to ManyToManyMapping
  */
 class Doctrine_Association_ManyToMany extends Doctrine_Association
-{
-    /**
-     * Whether the mapping uses an association class.
-     *
-     * @var boolean
-     */
-    private $_usesAssociationClass;
-    
+{    
     /**
      * The name of the association class (if an association class is used).
      *
      * @var string
      */
-    private $_associationClassName;
-    
-    /**
-     * The name of the intermediate table.
-     *
-     * @var string
-     */
-    private $_relationTableName;
+    private $_associationClass;
     
     /** The field in the source table that corresponds to the key in the relation table */
     protected $_sourceKeyColumns;
@@ -44,6 +30,38 @@ class Doctrine_Association_ManyToMany extends Doctrine_Association
     /** The field in the intermediate table that corresponds to the key in the target table */
     protected $_targetRelationKeyColumns;
     
+    /**
+     * Constructor.
+     * Creates a new ManyToManyMapping.
+     *
+     * @param array $mapping  The mapping info.
+     */
+    public function __construct(array $mapping)
+    {
+        parent::__construct($mapping);
+    }
+    
+    /**
+     * Validates and completes the mapping.
+     *
+     * @param array $mapping
+     * @override
+     */
+    protected function _validateAndCompleteMapping(array $mapping)
+    {
+        parent::_validateAndCompleteMapping($mapping);
+        
+        if ($this->isOwningSide()) {
+            // many-many owning MUST have a join table
+            if ( ! isset($mapping['joinTable'])) {
+                throw Doctrine_MappingException::joinTableRequired($mapping['fieldName']);
+            }
+        
+            // optional attributes for many-many owning side
+            $this->_associationClass = isset($mapping['associationClass']) ?
+                    $mapping['associationClass'] : null;
+        }
+    }
     
     /**
      * Whether the mapping uses an association class for the intermediary
@@ -53,17 +71,7 @@ class Doctrine_Association_ManyToMany extends Doctrine_Association
      */
     public function usesAssociationClass()
     {
-        
-    }
-    
-    /**
-     * Gets the name of the intermediate table.
-     *
-     * @return string
-     */
-    public function getRelationTableName()
-    {
-        return $this->_relationTableName;
+        return $this->_associationClass !== null;
     }
     
     /**
@@ -73,7 +81,7 @@ class Doctrine_Association_ManyToMany extends Doctrine_Association
      */
     public function getAssociationClassName()
     {
-        return $this->_associationClassName;
+        return $this->_associationClass;
     }
 }
 

@@ -22,8 +22,6 @@
 /**
  * Doctrine_Query_QueryResult
  *
- * @package     Doctrine
- * @subpackage  Query
  * @author      Roman Borschel <roman@code-factory.org>
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @link        http://www.phpdoctrine.org
@@ -33,16 +31,15 @@
 abstract class Doctrine_Query_SqlExecutor_Abstract implements Serializable
 {
     // [TODO] Remove me later!
-    public $AST;
+    //public $AST;
 
     protected $_sqlStatements;
 
     public function __construct(Doctrine_Query_Production $AST)
     {
         // [TODO] Remove me later!
-        $this->AST = $AST;
+        //$this->AST = $AST;
     }
-
 
     /**
      * Gets the SQL statements that are executed by the executor.
@@ -54,7 +51,6 @@ abstract class Doctrine_Query_SqlExecutor_Abstract implements Serializable
         return $this->_sqlStatements;
     }
 
-
     /**
      * Executes all sql statements.
      *
@@ -62,7 +58,6 @@ abstract class Doctrine_Query_SqlExecutor_Abstract implements Serializable
      * @param array $params  The parameters.
      */
     abstract public function execute(Doctrine_Connection $conn, array $params);
-
 
     /**
      * Factory method.

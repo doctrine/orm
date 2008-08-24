@@ -525,8 +525,11 @@ abstract class Doctrine_Entity implements ArrayAccess, Serializable
      *
      * @param string $fieldName
      * @param mixed $value
+     * @param boolean $completeBidirectional Whether to complete bidirectional associations
+     *                                       (creating the back-reference). Should only
+     *                                       be used by hydration.
      */
-    final public function _internalSetReference($name, $value)
+    final public function _internalSetReference($name, $value, $completeBidirectional = false)
     {
         if ($value === Doctrine_Null::$INSTANCE) {
             $this->_references[$name] = $value;
@@ -546,6 +549,20 @@ abstract class Doctrine_Entity implements ArrayAccess, Serializable
         }
 
         $this->_references[$name] = $value;
+        
+        if ($completeBidirectional && $rel->isOneToOne()) {
+            //TODO: check if $rel is bidirectional, if yes create the back-reference
+            if ($rel->isOwningSide()) {
+                //TODO: how to check if its bidirectional? should be as efficient as possible
+                /*$targetClass = $this->_em->getClassMetadata($rel->getTargetEntityName());
+                if (($invAssoc = $targetClass->getInverseAssociation($name)) !== null) {
+                    $value->_internalSetReference($invAssoc->getSourceFieldName(), $this);
+                }*/
+            } else {
+                // for sure bi-directional, as there is no inverse side in unidirectional
+                $value->_internalSetReference($rel->getMappedByFieldName(), $this);
+            }
+        }
     }
 
     /**

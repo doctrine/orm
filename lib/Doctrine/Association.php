@@ -89,7 +89,7 @@ class Doctrine_Association implements Serializable
      * The name of the target Entity (the Enitity that is the target of the
      * association).
      *
-     * @var unknown_type
+     * @var string
      */
     protected $_targetEntityName;
     
@@ -104,11 +104,20 @@ class Doctrine_Association implements Serializable
     
     /**
      * Identifies the field on the owning side that has the mapping for the
-     * association.
+     * association. This is only set on the inverse side of an association.
      *
      * @var string
      */
     protected $_mappedByFieldName;
+    
+    /**
+     * The name of the join table, if any.
+     *
+     * @var string
+     */
+    protected $_joinTable;
+    
+    //protected $_mapping = array();
     
     /**
      * Constructor.
@@ -118,60 +127,67 @@ class Doctrine_Association implements Serializable
      */
     public function __construct(array $mapping)
     {
+        /*$this->_mapping = array(
+            'fieldName' => null,
+            'sourceEntity' => null,
+            'targetEntity' => null,
+            'mappedBy' => null,
+            'joinColumns' => null,
+            'joinTable' => null,
+            'accessor' => null,
+            'mutator' => null,
+            'optional' => true,
+            'cascade' => array()
+        );
+        $this->_mapping = array_merge($this->_mapping, $mapping);*/
         $this->_validateAndCompleteMapping($mapping);
-        
-        $this->_sourceEntityName = $mapping['sourceEntity'];
-        $this->_targetEntityName = $mapping['targetEntity'];
-        $this->_sourceFieldName = $mapping['fieldName'];
-        
-        if ( ! $this->_isOwningSide) {
-            $this->_mappedByFieldName = $mapping['mappedBy'];
-        }        
     }
     
     /**
      * Validates & completes the mapping. Mapping defaults are applied here.
      *
      * @param array $mapping
-     * @return array  The validated & completed mapping.
      */
     protected function _validateAndCompleteMapping(array $mapping)
     {        
-        if (isset($mapping['mappedBy'])) {
-            // Inverse side, mapping can be found on the owning side.
-            $this->_isOwningSide = false;
-        } else {
-            // Owning side
-        }
-        
-        // Mandatory attributes
+        // Mandatory attributes for both sides
         if ( ! isset($mapping['fieldName'])) {
             throw Doctrine_MappingException::missingFieldName();
         }
+        $this->_sourceFieldName = $mapping['fieldName'];
+        
         if ( ! isset($mapping['sourceEntity'])) {
             throw Doctrine_MappingException::missingSourceEntity($mapping['fieldName']);
         }
+        $this->_sourceEntityName = $mapping['sourceEntity'];
+        
         if ( ! isset($mapping['targetEntity'])) {
             throw Doctrine_MappingException::missingTargetEntity($mapping['fieldName']);
         }
+        $this->_targetEntityName = $mapping['targetEntity'];
         
-        // Optional attributes
-        $this->_customAccessor = isset($mapping['accessor']) ? $mapping['accessor'] : null;
-        $this->_customMutator = isset($mapping['mutator']) ? $mapping['mutator'] : null;
-        $this->_isOptional = isset($mapping['isOptional']) ? (bool)$mapping['isOptional'] : true;
-        $this->_cascades = isset($mapping['cascade']) ? (array)$mapping['cascade'] : array();
-
-        return $mapping;
-    }
-    
-    protected function _validateAndCompleteInverseSideMapping()
-    {
+        // Mandatory and optional attributes for either side
+        if ( ! isset($mapping['mappedBy'])) {            
+            // Optional
+            if (isset($mapping['joinTable'])) {
+                $this->_joinTable = $mapping['joinTable'];   
+            }
+        } else {
+            $this->_isOwningSide = false;
+            $this->_mappedByFieldName = $mapping['mappedBy'];
+        }
         
-    }
-    
-    protected function _validateAndCompleteOwningSideMapping()
-    {
-        
+        // Optional attributes for both sides
+        if (isset($mapping['accessor'])) {
+            $this->_customAccessor = $mapping['accessor'];
+        }
+        if (isset($mapping['mutator'])) {
+            $this->_customMutator = $mapping['mutator'];
+        }
+        $this->_isOptional = isset($mapping['optional']) ?
+                (bool)$mapping['optional'] : true;
+        $this->_cascades = isset($mapping['cascade']) ?
+                (array)$mapping['cascade'] : array();
     }
     
     /**
@@ -294,6 +310,16 @@ class Doctrine_Association implements Serializable
     public function getTargetEntityName()
     {
         return $this->_targetEntityName;
+    }
+    
+    /**
+     * Gets the name of the join table.
+     *
+     * @return string
+     */
+    public function getJoinTable()
+    {
+        return $this->_joinTable;
     }
     
     /**

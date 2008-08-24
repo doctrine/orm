@@ -22,8 +22,6 @@
 /**
  * Executor that executes the SQL statement for simple DQL SELECT statements.
  *
- * @package     Doctrine
- * @subpackage  Abstract
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @author      Roman Borschel <roman@code-factory.org>
  * @version     $Revision$

@@ -23,8 +23,6 @@
  * Executes the SQL statements for bulk DQL DELETE statements on classes in
  * Class Table Inheritance (JOINED).
  *
- * @package     Doctrine
- * @subpackage  Query
  * @author      Roman Borschel <roman@code-factory.org>
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @link        http://www.phpdoctrine.org
@@ -32,9 +30,30 @@
  * @version     $Revision$
  * @todo For a good implementation that uses temporary tables see the Hibernate sources:
  *       (org.hibernate.hql.ast.exec.MultiTableDeleteExecutor).
+ * @todo Rename to MultiTableDeleteExecutor
  */
 class Doctrine_Query_SqlExecutor_MultiTableDelete extends Doctrine_Query_SqlExecutor_Abstract
 {
+    /**
+     * Enter description here...
+     *
+     * @param Doctrine_Query_Production $AST
+     */
+    public function __construct(Doctrine_Query_Production $AST)
+    {
+        // TODO: Inspect the AST, create the necessary SQL queries and store them
+        // in $this->_sqlStatements
+    }
     
-    
+    /**
+     * Executes all sql statements.
+     *
+     * @param Doctrine_Connection $conn  The database connection that is used to execute the queries.
+     * @param array $params  The parameters.
+     * @override
+     */
+    public function execute(Doctrine_Connection $conn, array $params)
+    {
+        //...
+    }   
 }

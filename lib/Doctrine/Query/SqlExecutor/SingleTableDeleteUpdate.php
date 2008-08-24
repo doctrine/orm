@@ -23,13 +23,12 @@
  * Executor that executes the SQL statements for DQL DELETE/UPDATE statements on classes
  * that are mapped to a single table.
  *
- * @package     Doctrine
- * @subpackage  SingleTableDeleteUpdate
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @author      Roman Borschel <roman@code-factory.org>
  * @version     $Revision$
  * @link        www.phpdoctrine.org
  * @since       2.0
+ * @todo This is exactly the same as SingleSelectExecutor. Unify in SingleStatementExecutor. 
  */
 class Doctrine_Query_SqlExecutor_SingleTableDeleteUpdate extends Doctrine_Query_SqlExecutor_Abstract
 {
