@@ -117,7 +117,7 @@ class Doctrine_Export extends Doctrine_Connection_Module
         // Loop over all the sql again to merge the creates and alters in to the same array, but so that the alters are at the bottom
         $build = array();
         foreach ($connections as $connectionName => $sql) {
-            $build[$connectionName] = array_merge($sql['create_tables'], $sql['create_sequences'], $sql['alters']);
+            $build[$connectionName] = array_unique(array_merge($sql['create_tables'], $sql['create_sequences'], $sql['alters']));
         }
 
         foreach ($build as $connectionName => $sql) {
