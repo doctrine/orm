@@ -31,9 +31,9 @@
  * 
  * A collection of entities represents only the associations (links) to those entities.
  * That means, if the collection is part of a many-many mapping and you remove
- * entities from the collection, only the links in the xref table are removed.
+ * entities from the collection, only the links in the xref table are removed (on flush).
  * Similarly, if you remove entities from a collection that is part of a one-many
- * mapping this will only result in the nulling out of the foreign keys
+ * mapping this will only result in the nulling out of the foreign keys on flush
  * (or removal of the links in the xref table if the one-many is mapped through an
  * xref table). If you want entities in a one-many collection to be removed when
  * they're removed from the collection, use deleteOrphans => true on the one-many
@@ -44,6 +44,7 @@
  * @version   $Revision$
  * @author    Konsta Vesterinen <kvesteri@cc.hut.fi>
  * @author    Roman Borschel <roman@code-factory.org>
+ * @todo Add more typical Collection methods.
  */
 class Doctrine_Collection implements Countable, IteratorAggregate, Serializable, ArrayAccess
 {   
@@ -86,7 +87,7 @@ class Doctrine_Collection implements Countable, IteratorAggregate, Serializable,
     protected $_association;
 
     /**
-     * The name of the column that is used for collection key mapping.
+     * The name of the field that is used for collection key mapping.
      *
      * @var string
      */
@@ -100,14 +101,31 @@ class Doctrine_Collection implements Countable, IteratorAggregate, Serializable,
     //protected static $null;
     
     /**
-     * The EntityManager.
+     * The EntityManager that manages the persistence of the collection.
      *
-     * @var EntityManager
+     * @var Doctrine::ORM::EntityManager
      */
     protected $_em;
+    
+    /**
+     * The name of the field on the target entities that points to the owner
+     * of the collection. This is only set if the association is bidirectional.
+     *
+     * @var string
+     */
+    protected $_backRefFieldName;
+    
+    /**
+     * Hydration flag.
+     *
+     * @var boolean
+     * @see _setHydrationFlag()
+     */
+    protected $_hydrationFlag;
 
     /**
      * Constructor.
+     * Creates a new persistent collection.
      */
     public function __construct($entityBaseType, $keyField = null)
     {
@@ -126,6 +144,7 @@ class Doctrine_Collection implements Countable, IteratorAggregate, Serializable,
      * setData
      *
      * @param array $data
+     * @todo Remove?
      */
     public function setData(array $data) 
     {
@@ -133,56 +152,7 @@ class Doctrine_Collection implements Countable, IteratorAggregate, Serializable,
     }
 
     /**
-     * Serializes the collection.
-     * This method is automatically called when the Collection is serialized.
-     *
-     * Part of the implementation of the Serializable interface.
-     *
-     * @return array
-     */
-    public function serialize()
-    {
-        $vars = get_object_vars($this);
-
-        unset($vars['reference']);
-        unset($vars['relation']);
-        unset($vars['expandable']);
-        unset($vars['expanded']);
-        unset($vars['generator']);
-
-        return serialize($vars);
-    }
-
-    /**
-     * Reconstitutes the collection object from it's serialized form.
-     * This method is automatically called everytime the Collection object is unserialized.
-     *
-     * Part of the implementation of the Serializable interface.
-     *
-     * @param string $serialized The serialized data
-     *
-     * @return void
-     */
-    public function unserialize($serialized)
-    {
-        $manager = Doctrine_EntityManagerFactory::getManager();
-        $connection = $manager->getConnection();
-        
-        $array = unserialize($serialized);
-
-        foreach ($array as $name => $values) {
-            $this->$name = $values;
-        }
-
-        $keyColumn = isset($array['keyField']) ? $array['keyField'] : null;
-
-        if ($keyColumn !== null) {
-            $this->_keyField = $keyColumn;
-        }
-    }
-
-    /**
-     * Sets the key column for this collection
+     * INTERNAL: Sets the key column for this collection
      *
      * @param string $column
      * @return Doctrine_Collection
@@ -194,7 +164,7 @@ class Doctrine_Collection implements Countable, IteratorAggregate, Serializable,
     }
 
     /**
-     * returns the name of the key column
+     * INTERNAL: returns the name of the key column
      *
      * @return string
      */
@@ -208,7 +178,7 @@ class Doctrine_Collection implements Countable, IteratorAggregate, Serializable,
      *
      * @return array
      */
-    public function getData()
+    public function unwrap()
     {
         return $this->_data;
     }
@@ -255,29 +225,25 @@ class Doctrine_Collection implements Countable, IteratorAggregate, Serializable,
     
     /**
      * INTERNAL:
-     * sets a reference pointer
+     * Sets the collection owner. Used (only?) during hydration.
      *
      * @return void
      */
-    public function setReference(Doctrine_Entity $entity, Doctrine_Association $relation)
+    public function _setOwner(Doctrine_Entity $entity, Doctrine_Association $relation)
     {
         $this->_owner = $entity;
         $this->_association = $relation;
-
-        /*if ($relation instanceof Doctrine_Relation_ForeignKey || 
-                $relation instanceof Doctrine_Relation_LocalKey) {
-            $this->referenceField = $relation->getForeignFieldName();
-            $value = $entity->get($relation->getLocalFieldName());
-            foreach ($this->_data as $entity) {
-                if ($value !== null) {
-                    $entity->set($this->referenceField, $value, false);
-                } else {
-                    $entity->set($this->referenceField, $this->_owner, false);
-                }
+        if ($relation->isInverseSide()) {
+            // for sure bidirectional
+            $this->_backRefFieldName = $relation->getMappedByFieldName();
+        } else {
+            $targetClass = $this->_em->getClassMetadata($relation->getTargetEntityName());
+            if ($targetClass->hasInverseAssociationMapping($relation->getSourceFieldName())) {
+                // bidirectional
+                $this->_backRefFieldName = $targetClass->getInverseAssociationMapping(
+                        $relation->getSourceFieldName())->getSourceFieldName();
             }
-        } else if ($relation instanceof Doctrine_Relation_Association) {
-
-        }*/
+        }
     }
 
     /**
@@ -286,7 +252,7 @@ class Doctrine_Collection implements Countable, IteratorAggregate, Serializable,
      *
      * @return mixed
      */
-    public function getReference()
+    public function _getOwner()
     {
         return $this->_owner;
     }
@@ -508,8 +474,9 @@ class Doctrine_Collection implements Countable, IteratorAggregate, Serializable,
      */
     public function add($value, $key = null)
     {
+        //TODO: really only allow entities?
         if ( ! $value instanceof Doctrine_Entity) {
-            throw new Doctrine_Record_Exception('Value variable in set is not an instance of Doctrine_Entity.');
+            throw new Doctrine_Record_Exception('Value variable in collection is not an instance of Doctrine_Entity.');
         }
         
         // TODO: Really prohibit duplicates?
@@ -526,8 +493,15 @@ class Doctrine_Collection implements Countable, IteratorAggregate, Serializable,
             $this->_data[] = $value;
         }
         
-        //TODO: Register collection as dirty with the UoW if necessary
-        $this->_changed();
+        if ($this->_hydrationFlag) {
+            if ($this->_backRefFieldName) {
+                // set back reference to owner
+                $value->_internalSetReference($this->_backRefFieldName, $this->_owner);
+            }
+        } else {
+            //TODO: Register collection as dirty with the UoW if necessary
+            $this->_changed();
+        }
         
         return true;
     }
@@ -553,7 +527,7 @@ class Doctrine_Collection implements Countable, IteratorAggregate, Serializable,
      * @return boolean
      * @todo New implementation & maybe move elsewhere.
      */
-    public function loadRelated($name = null)
+    /*public function loadRelated($name = null)
     {
         $list = array();
         $query = new Doctrine_Query($this->_mapper->getConnection());
@@ -595,7 +569,7 @@ class Doctrine_Collection implements Countable, IteratorAggregate, Serializable,
         $coll = $query->query($dql, $list);
 
         $this->populateRelated($name, $coll);
-    }
+    }*/
 
     /**
      * INTERNAL:
@@ -606,7 +580,7 @@ class Doctrine_Collection implements Countable, IteratorAggregate, Serializable,
      * @return void
      * @todo New implementation & maybe move elsewhere.
      */
-    protected function populateRelated($name, Doctrine_Collection $coll)
+    /*protected function populateRelated($name, Doctrine_Collection $coll)
     {
         $rel     = $this->_mapper->getTable()->getRelation($name);
         $table   = $rel->getTable();
@@ -658,6 +632,23 @@ class Doctrine_Collection implements Countable, IteratorAggregate, Serializable,
 
             }
         }
+    }*/
+    
+    /**
+     * INTERNAL:
+     * Sets a flag that indicates whether the collection is currently being hydrated.
+     * This has the following consequences:
+     * 1) During hydration, bidirectional associations are completed automatically
+     *    by setting the back reference.
+     * 2) During hydration no change notifications are reported to the UnitOfWork.
+     *    I.e. that means add() etc. do not cause the collection to be scheduled
+     *    for an update.
+     *
+     * @param boolean $bool
+     */
+    public function _setHydrationFlag($bool)
+    {
+        $this->_hydrationFlag = $bool;
     }
 
     /**
@@ -671,7 +662,7 @@ class Doctrine_Collection implements Countable, IteratorAggregate, Serializable,
      * 
      * @return void
      */
-    public function takeSnapshot()
+    public function _takeSnapshot()
     {
         $this->_snapshot = $this->_data;
     }
@@ -681,13 +672,13 @@ class Doctrine_Collection implements Countable, IteratorAggregate, Serializable,
      *
      * @return array    returns the data in last snapshot
      */
-    public function getSnapshot()
+    public function _getSnapshot()
     {
         return $this->_snapshot;
     }
 
     /**
-     * Processes the difference of the last snapshot and the current data.
+     * INTERNAL: Processes the difference of the last snapshot and the current data.
      *
      * an example:
      * Snapshot with the objects 1, 2 and 4
@@ -696,6 +687,7 @@ class Doctrine_Collection implements Countable, IteratorAggregate, Serializable,
      * The process would remove objects 1 and 4
      *
      * @return Doctrine_Collection
+     * @todo Move elsewhere
      */
     public function processDiff() 
     {
@@ -706,9 +698,10 @@ class Doctrine_Collection implements Countable, IteratorAggregate, Serializable,
     }
 
     /**
-     * Mimics the result of a $query->execute(array(), Doctrine::FETCH_ARRAY);
+     * Creates an array representation of the collection.
      *
      * @param boolean $deep
+     * @return array
      */
     public function toArray($deep = false, $prefixKey = false)
     {
@@ -836,7 +829,6 @@ class Doctrine_Collection implements Countable, IteratorAggregate, Serializable,
         if ($a->getOid() == $b->getOid()) {
             return 0;
         }
-        
         return ($a->getOid() > $b->getOid()) ? 1 : -1;
     }
 
@@ -916,6 +908,7 @@ class Doctrine_Collection implements Countable, IteratorAggregate, Serializable,
 
     /**
      * getIterator
+     * 
      * @return object ArrayIterator
      */
     public function getIterator()
@@ -933,7 +926,7 @@ class Doctrine_Collection implements Countable, IteratorAggregate, Serializable,
     }
     
     /**
-     * Gets the association mapping of the collection.
+     * INTERNAL: Gets the association mapping of the collection.
      * 
      * @return Doctrine::ORM::Mapping::AssociationMapping
      */
@@ -988,5 +981,56 @@ class Doctrine_Collection implements Countable, IteratorAggregate, Serializable,
         /*if ( ! $this->_em->getUnitOfWork()->isCollectionScheduledForUpdate($this)) {
             $this->_em->getUnitOfWork()->scheduleCollectionUpdate($this);
         }*/  
+    }
+    
+    /* Serializable implementation */
+    
+    /**
+     * Serializes the collection.
+     * This method is automatically called when the Collection is serialized.
+     *
+     * Part of the implementation of the Serializable interface.
+     *
+     * @return array
+     */
+    public function serialize()
+    {
+        $vars = get_object_vars($this);
+
+        unset($vars['reference']);
+        unset($vars['relation']);
+        unset($vars['expandable']);
+        unset($vars['expanded']);
+        unset($vars['generator']);
+
+        return serialize($vars);
+    }
+
+    /**
+     * Reconstitutes the collection object from it's serialized form.
+     * This method is automatically called everytime the Collection object is unserialized.
+     *
+     * Part of the implementation of the Serializable interface.
+     *
+     * @param string $serialized The serialized data
+     *
+     * @return void
+     */
+    public function unserialize($serialized)
+    {
+        $manager = Doctrine_EntityManagerFactory::getManager();
+        $connection = $manager->getConnection();
+        
+        $array = unserialize($serialized);
+
+        foreach ($array as $name => $values) {
+            $this->$name = $values;
+        }
+
+        $keyColumn = isset($array['keyField']) ? $array['keyField'] : null;
+
+        if ($keyColumn !== null) {
+            $this->_keyField = $keyColumn;
+        }
     }
 }

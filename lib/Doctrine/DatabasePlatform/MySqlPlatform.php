@@ -230,7 +230,7 @@ class Doctrine_DatabasePlatform_MySqlPlatform extends Doctrine_DatabasePlatform
     /**
      * @TEST
      */
-    public function getVarcharDeclaration(array $field)
+    public function getVarcharDeclarationSql(array $field)
     {
         if ( ! isset($field['length'])) {
             if (array_key_exists('default', $field)) {
@@ -245,6 +245,26 @@ class Doctrine_DatabasePlatform_MySqlPlatform extends Doctrine_DatabasePlatform
 
         return $fixed ? ($length ? 'CHAR(' . $length . ')' : 'CHAR(255)')
                 : ($length ? 'VARCHAR(' . $length . ')' : 'TEXT');
+    }
+    
+    /**
+     * Enter description here...
+     *
+     * @param array $field
+     */
+    public function getClobDeclarationSql(array $field)
+    {
+        if ( ! empty($field['length'])) {
+            $length = $field['length'];
+            if ($length <= 255) {
+                return 'TINYTEXT';
+            } else if ($length <= 65532) {
+                return 'TEXT';
+            } else if ($length <= 16777215) {
+                return 'MEDIUMTEXT';
+            }
+        }
+        return 'LONGTEXT';
     }
     
     /**
@@ -271,7 +291,7 @@ class Doctrine_DatabasePlatform_MySqlPlatform extends Doctrine_DatabasePlatform
      *      declare the specified field.
      * @override
      */
-    public function getNativeDeclaration($field)
+    public function getNativeDeclaration(array $field)
     {
         if ( ! isset($field['type'])) {
             throw new Doctrine_DataDict_Exception('Missing column type.');
@@ -287,31 +307,9 @@ class Doctrine_DatabasePlatform_MySqlPlatform extends Doctrine_DatabasePlatform
             case 'object':
             case 'string':
             case 'gzip':
-                if ( ! isset($field['length'])) {
-                    if (array_key_exists('default', $field)) {
-                        $field['length'] = $this->conn->varchar_max_length;
-                    } else {
-                        $field['length'] = false;
-                    }
-                }
-
-                $length = ($field['length'] <= $this->conn->varchar_max_length) ? $field['length'] : false;
-                $fixed  = (isset($field['fixed'])) ? $field['fixed'] : false;
-
-                return $fixed ? ($length ? 'CHAR(' . $length . ')' : 'CHAR(255)')
-                    : ($length ? 'VARCHAR(' . $length . ')' : 'TEXT');
+                return $this->getVarcharDeclarationSql($field);
             case 'clob':
-                if ( ! empty($field['length'])) {
-                    $length = $field['length'];
-                    if ($length <= 255) {
-                        return 'TINYTEXT';
-                    } elseif ($length <= 65532) {
-                        return 'TEXT';
-                    } elseif ($length <= 16777215) {
-                        return 'MEDIUMTEXT';
-                    }
-                }
-                return 'LONGTEXT';
+                return $this->getClobDeclarationSql($field);
             case 'blob':
                 if ( ! empty($field['length'])) {
                     $length = $field['length'];
@@ -591,6 +589,648 @@ class Doctrine_DatabasePlatform_MySqlPlatform extends Doctrine_DatabasePlatform
     public function supportsSavepoints()
     {
         return false;
+    }
+    
+    /**
+     * Enter description here...
+     *
+     * @return unknown
+     * @override
+     */
+    public function getShowDatabasesSql()
+    {
+        return 'SHOW DATABASES';
+    }
+    
+    /**
+     * Enter description here...
+     *
+     * @todo Throw exception by default?
+     * @override
+     */
+    public function getListTablesSql()
+    {
+        return 'SHOW TABLES';
+    }
+    
+    /**
+     * create a new database
+     *
+     * @param string $name name of the database that should be created
+     * @return string
+     * @override
+     */
+    public function getCreateDatabaseSql($name)
+    {
+        return 'CREATE DATABASE ' . $this->quoteIdentifier($name);
+    }
+    
+    /**
+     * drop an existing database
+     *
+     * @param string $name name of the database that should be dropped
+     * @return string
+     * @override
+     */
+    public function getDropDatabaseSql($name)
+    {
+        return 'DROP DATABASE ' . $this->quoteIdentifier($name);
+    }
+    
+    /**
+     * create a new table
+     *
+     * @param string $name   Name of the database that should be created
+     * @param array $fields  Associative array that contains the definition of each field of the new table
+     *                       The indexes of the array entries are the names of the fields of the table an
+     *                       the array entry values are associative arrays like those that are meant to be
+     *                       passed with the field definitions to get[Type]Declaration() functions.
+     *                          array(
+     *                              'id' => array(
+     *                                  'type' => 'integer',
+     *                                  'unsigned' => 1
+     *                                  'notnull' => 1
+     *                                  'default' => 0
+     *                              ),
+     *                              'name' => array(
+     *                                  'type' => 'text',
+     *                                  'length' => 12
+     *                              ),
+     *                              'password' => array(
+     *                                  'type' => 'text',
+     *                                  'length' => 12
+     *                              )
+     *                          );
+     * @param array $options  An associative array of table options:
+     *                          array(
+     *                              'comment' => 'Foo',
+     *                              'charset' => 'utf8',
+     *                              'collate' => 'utf8_unicode_ci',
+     *                              'type'    => 'innodb',
+     *                          );
+     *
+     * @return void
+     * @override
+     */
+    public function getCreateTableSql($name, array $fields, array $options = array())
+    {
+        if ( ! $name) {
+            throw new Doctrine_Export_Exception('no valid table name specified');
+        }
+        if (empty($fields)) {
+            throw new Doctrine_Export_Exception('no fields specified for table "'.$name.'"');
+        }
+        $queryFields = $this->getFieldDeclarationListSql($fields);
+
+        // build indexes for all foreign key fields (needed in MySQL!!)
+        if (isset($options['foreignKeys'])) {
+            foreach ($options['foreignKeys'] as $fk) {
+                $local = $fk['local'];
+                $found = false;
+                if (isset($options['indexes'])) {
+                    foreach ($options['indexes'] as $definition) {
+                        if (is_string($definition['fields'])) {
+                            // Check if index already exists on the column
+                            $found = ($local == $definition['fields']);
+                        } else if (in_array($local, $definition['fields']) && count($definition['fields']) === 1) {
+                            // Index already exists on the column
+                            $found = true;
+                        }
+                    }
+                }
+                if (isset($options['primary']) && !empty($options['primary']) &&
+                        in_array($local, $options['primary'])) {
+                    // field is part of the PK and therefore already indexed
+                    $found = true;
+                }
+
+                if ( ! $found) {
+                    $options['indexes'][$local] = array('fields' => array($local => array()));
+                }
+            }
+        }
+
+        // add all indexes
+        if (isset($options['indexes']) && ! empty($options['indexes'])) {
+            foreach($options['indexes'] as $index => $definition) {
+                $queryFields .= ', ' . $this->getIndexDeclarationSql($index, $definition);
+            }
+        }
+
+        // attach all primary keys
+        if (isset($options['primary']) && ! empty($options['primary'])) {
+            $keyColumns = array_values($options['primary']);
+            $keyColumns = array_map(array($this->_conn, 'quoteIdentifier'), $keyColumns);
+            $queryFields .= ', PRIMARY KEY(' . implode(', ', $keyColumns) . ')';
+        }
+
+        $query = 'CREATE ';
+        if (!empty($options['temporary'])) {
+            $query .= 'TEMPORARY ';
+        }
+        $query.= 'TABLE ' . $this->quoteIdentifier($name, true) . ' (' . $queryFields . ')';
+
+        $optionStrings = array();
+
+        if (isset($options['comment'])) {
+            $optionStrings['comment'] = 'COMMENT = ' . $this->quote($options['comment'], 'text');
+        }
+        if (isset($options['charset'])) {
+            $optionStrings['charset'] = 'DEFAULT CHARACTER SET ' . $options['charset'];
+            if (isset($options['collate'])) {
+                $optionStrings['charset'] .= ' COLLATE ' . $options['collate'];
+            }
+        }
+
+        $type = false;
+
+        // get the type of the table
+        if (isset($options['type'])) {
+            $type = $options['type'];
+        } else {
+            $type = $this->getAttribute(Doctrine::ATTR_DEFAULT_TABLE_TYPE);
+        }
+
+        if ($type) {
+            $optionStrings[] = 'ENGINE = ' . $type;
+        }
+
+        if ( ! empty($optionStrings)) {
+            $query.= ' '.implode(' ', $optionStrings);
+        }
+        $sql[] = $query;
+
+        if (isset($options['foreignKeys'])) {
+            foreach ((array) $options['foreignKeys'] as $k => $definition) {
+                if (is_array($definition)) {
+                    $sql[] = $this->getCreateForeignKeySql($name, $definition);
+                }
+            }
+        }
+        
+        return $sql;
+    }
+    
+    /**
+     * alter an existing table
+     *
+     * @param string $name         name of the table that is intended to be changed.
+     * @param array $changes     associative array that contains the details of each type
+     *                             of change that is intended to be performed. The types of
+     *                             changes that are currently supported are defined as follows:
+     *
+     *                             name
+     *
+     *                                New name for the table.
+     *
+     *                            add
+     *
+     *                                Associative array with the names of fields to be added as
+     *                                 indexes of the array. The value of each entry of the array
+     *                                 should be set to another associative array with the properties
+     *                                 of the fields to be added. The properties of the fields should
+     *                                 be the same as defined by the Metabase parser.
+     *
+     *
+     *                            remove
+     *
+     *                                Associative array with the names of fields to be removed as indexes
+     *                                 of the array. Currently the values assigned to each entry are ignored.
+     *                                 An empty array should be used for future compatibility.
+     *
+     *                            rename
+     *
+     *                                Associative array with the names of fields to be renamed as indexes
+     *                                 of the array. The value of each entry of the array should be set to
+     *                                 another associative array with the entry named name with the new
+     *                                 field name and the entry named Declaration that is expected to contain
+     *                                 the portion of the field declaration already in DBMS specific SQL code
+     *                                 as it is used in the CREATE TABLE statement.
+     *
+     *                            change
+     *
+     *                                Associative array with the names of the fields to be changed as indexes
+     *                                 of the array. Keep in mind that if it is intended to change either the
+     *                                 name of a field and any other properties, the change array entries
+     *                                 should have the new names of the fields as array indexes.
+     *
+     *                                The value of each entry of the array should be set to another associative
+     *                                 array with the properties of the fields to that are meant to be changed as
+     *                                 array entries. These entries should be assigned to the new values of the
+     *                                 respective properties. The properties of the fields should be the same
+     *                                 as defined by the Metabase parser.
+     *
+     *                            Example
+     *                                array(
+     *                                    'name' => 'userlist',
+     *                                    'add' => array(
+     *                                        'quota' => array(
+     *                                            'type' => 'integer',
+     *                                            'unsigned' => 1
+     *                                        )
+     *                                    ),
+     *                                    'remove' => array(
+     *                                        'file_limit' => array(),
+     *                                        'time_limit' => array()
+     *                                    ),
+     *                                    'change' => array(
+     *                                        'name' => array(
+     *                                            'length' => '20',
+     *                                            'definition' => array(
+     *                                                'type' => 'text',
+     *                                                'length' => 20,
+     *                                            ),
+     *                                        )
+     *                                    ),
+     *                                    'rename' => array(
+     *                                        'sex' => array(
+     *                                            'name' => 'gender',
+     *                                            'definition' => array(
+     *                                                'type' => 'text',
+     *                                                'length' => 1,
+     *                                                'default' => 'M',
+     *                                            ),
+     *                                        )
+     *                                    )
+     *                                )
+     *
+     * @param boolean $check     indicates whether the function should just check if the DBMS driver
+     *                           can perform the requested table alterations if the value is true or
+     *                           actually perform them otherwise.
+     * @return boolean
+     * @override
+     */
+    public function getAlterTableSql($name, array $changes, $check = false)
+    {
+        if ( ! $name) {
+            throw new Doctrine_Export_Exception('no valid table name specified');
+        }
+        foreach ($changes as $changeName => $change) {
+            switch ($changeName) {
+                case 'add':
+                case 'remove':
+                case 'change':
+                case 'rename':
+                case 'name':
+                    break;
+                default:
+                    throw new Doctrine_Export_Exception('change type "' . $changeName . '" not yet supported');
+            }
+        }
+
+        if ($check) {
+            return true;
+        }
+
+        $query = '';
+        if ( ! empty($changes['name'])) {
+            $change_name = $this->quoteIdentifier($changes['name']);
+            $query .= 'RENAME TO ' . $change_name;
+        }
+
+        if ( ! empty($changes['add']) && is_array($changes['add'])) {
+            foreach ($changes['add'] as $fieldName => $field) {
+                if ($query) {
+                    $query.= ', ';
+                }
+                $query.= 'ADD ' . $this->getDeclarationSql($fieldName, $field);
+            }
+        }
+
+        if ( ! empty($changes['remove']) && is_array($changes['remove'])) {
+            foreach ($changes['remove'] as $fieldName => $field) {
+                if ($query) {
+                    $query .= ', ';
+                }
+                $fieldName = $this->quoteIdentifier($fieldName);
+                $query .= 'DROP ' . $fieldName;
+            }
+        }
+
+        $rename = array();
+        if ( ! empty($changes['rename']) && is_array($changes['rename'])) {
+            foreach ($changes['rename'] as $fieldName => $field) {
+                $rename[$field['name']] = $fieldName;
+            }
+        }
+
+        if ( ! empty($changes['change']) && is_array($changes['change'])) {
+            foreach ($changes['change'] as $fieldName => $field) {
+                if ($query) {
+                    $query.= ', ';
+                }
+                if (isset($rename[$fieldName])) {
+                    $oldFieldName = $rename[$fieldName];
+                    unset($rename[$fieldName]);
+                } else {
+                    $oldFieldName = $fieldName;
+                }
+                $oldFieldName = $this->quoteIdentifier($oldFieldName, true);
+                $query .= 'CHANGE ' . $oldFieldName . ' '
+                        . $this->getDeclarationSql($fieldName, $field['definition']);
+            }
+        }
+
+        if ( ! empty($rename) && is_array($rename)) {
+            foreach ($rename as $renameName => $renamedField) {
+                if ($query) {
+                    $query.= ', ';
+                }
+                $field = $changes['rename'][$renamedField];
+                $renamedField = $this->quoteIdentifier($renamedField, true);
+                $query .= 'CHANGE ' . $renamedField . ' '
+                        . $this->getDeclarationSql($field['name'], $field['definition']);
+            }
+        }
+
+        if ( ! $query) {
+            return false;
+        }
+
+        $name = $this->quoteIdentifier($name, true);
+
+        return 'ALTER TABLE ' . $name . ' ' . $query;
+    }
+    
+    /**
+     * Get the stucture of a field into an array
+     *
+     * @author Leoncx
+     * @param string    $table         name of the table on which the index is to be created
+     * @param string    $name          name of the index to be created
+     * @param array     $definition    associative array that defines properties of the index to be created.
+     *                                 Currently, only one property named FIELDS is supported. This property
+     *                                 is also an associative with the names of the index fields as array
+     *                                 indexes. Each entry of this array is set to another type of associative
+     *                                 array that specifies properties of the index that are specific to
+     *                                 each field.
+     *
+     *                                 Currently, only the sorting property is supported. It should be used
+     *                                 to define the sorting direction of the index. It may be set to either
+     *                                 ascending or descending.
+     *
+     *                                 Not all DBMS support index sorting direction configuration. The DBMS
+     *                                 drivers of those that do not support it ignore this property. Use the
+     *                                 function supports() to determine whether the DBMS driver can manage indexes.
+     *
+     *                                 Example
+     *                                    array(
+     *                                        'fields' => array(
+     *                                            'user_name' => array(
+     *                                                'sorting' => 'ASC'
+     *                                                'length' => 10
+     *                                            ),
+     *                                            'last_login' => array()
+     *                                        )
+     *                                    )
+     * @throws PDOException
+     * @return void
+     * @override
+     */
+    public function getCreateIndexSql($table, $name, array $definition)
+    {
+        $table = $table;
+        $name = $this->formatter->getIndexName($name);
+        $name = $this->quoteIdentifier($name);
+        $type = '';
+        if (isset($definition['type'])) {
+            switch (strtolower($definition['type'])) {
+                case 'fulltext':
+                case 'unique':
+                    $type = strtoupper($definition['type']) . ' ';
+                break;
+                default:
+                    throw new Doctrine_Export_Exception('Unknown index type ' . $definition['type']);
+            }
+        }
+        $query  = 'CREATE ' . $type . 'INDEX ' . $name . ' ON ' . $table;
+        $query .= ' (' . $this->getIndexFieldDeclarationListSql($definition['fields']) . ')';
+
+        return $query;
+    }
+    
+    /**
+     * Obtain DBMS specific SQL code portion needed to declare an integer type
+     * field to be used in statements like CREATE TABLE.
+     *
+     * @param string  $name   name the field to be declared.
+     * @param string  $field  associative array with the name of the properties
+     *                        of the field being declared as array indexes.
+     *                        Currently, the types of supported field
+     *                        properties are as follows:
+     *
+     *                       unsigned
+     *                        Boolean flag that indicates whether the field
+     *                        should be declared as unsigned integer if
+     *                        possible.
+     *
+     *                       default
+     *                        Integer value to be used as default for this
+     *                        field.
+     *
+     *                       notnull
+     *                        Boolean flag that indicates whether this field is
+     *                        constrained to not be set to null.
+     * @return string  DBMS specific SQL code portion that should be used to
+     *                 declare the specified field.
+     * @override
+     */
+    public function getIntegerDeclarationSql($name, $field)
+    {
+        $default = $autoinc = '';
+        if ( ! empty($field['autoincrement'])) {
+            $autoinc = ' AUTO_INCREMENT';
+        } elseif (array_key_exists('default', $field)) {
+            if ($field['default'] === '') {
+                $field['default'] = empty($field['notnull']) ? null : 0;
+            }
+            if (is_null($field['default'])) {
+                $default = ' DEFAULT NULL';
+            } else {
+                $default = ' DEFAULT '.$this->quote($field['default']);
+            }
+        } elseif (empty($field['notnull'])) {
+            $default = ' DEFAULT NULL';
+        }
+
+        $notnull  = (isset($field['notnull'])  && $field['notnull'])  ? ' NOT NULL' : '';
+        $unsigned = (isset($field['unsigned']) && $field['unsigned']) ? ' UNSIGNED' : '';
+
+        $name = $this->quoteIdentifier($name, true);
+
+        return $name . ' ' . $this->getNativeDeclaration($field) . $unsigned . $default . $notnull . $autoinc;
+    }
+    
+    /**
+     * getDefaultDeclaration
+     * Obtain DBMS specific SQL code portion needed to set a default value
+     * declaration to be used in statements like CREATE TABLE.
+     *
+     * @param array $field      field definition array
+     * @return string           DBMS specific SQL code portion needed to set a default value
+     * @override
+     */
+    public function getDefaultFieldDeclarationSql($field)
+    {
+        $default = empty($field['notnull']) && !in_array($field['type'], array('clob', 'blob'))
+            ? ' DEFAULT NULL' : '';
+
+        if (isset($field['default']) && ( ! isset($field['length']) || $field['length'] <= 255)) {
+            if ($field['default'] === '') {
+                $field['default'] = null;
+                if (! empty($field['notnull']) && array_key_exists($field['type'], $this->valid_default_values)) {
+                   $field['default'] = $this->valid_default_values[$field['type']];
+                }
+
+                if ($field['default'] === ''
+                    && ($this->_conn->getAttribute(Doctrine::ATTR_PORTABILITY) & Doctrine::PORTABILITY_EMPTY_TO_NULL)
+                ) {
+                    $field['default'] = ' ';
+                }
+            }
+
+            if ($field['type'] == 'enum' && $this->_conn->getAttribute(Doctrine::ATTR_USE_NATIVE_ENUM)) {
+                $fieldType = 'varchar';
+            } else {
+               if ($field['type'] === 'boolean') {
+                   $fields['default'] = $this->convertBooleans($field['default']);
+               }
+                $fieldType = $field['type'];
+            }
+
+            $default = ' DEFAULT ' . $this->quote($field['default'], $fieldType);
+        }
+        return $default;
+    }
+    
+    /**
+     * Obtain DBMS specific SQL code portion needed to set an index
+     * declaration to be used in statements like CREATE TABLE.
+     *
+     * @param string $charset       name of the index
+     * @param array $definition     index definition
+     * @return string  DBMS specific SQL code portion needed to set an index
+     * @override
+     */
+    public function getIndexDeclarationSql($name, array $definition)
+    {
+        $name   = $this->formatter->getIndexName($name);
+        $type   = '';
+        if (isset($definition['type'])) {
+            switch (strtolower($definition['type'])) {
+                case 'fulltext':
+                case 'unique':
+                    $type = strtoupper($definition['type']) . ' ';
+                break;
+                default:
+                    throw new Doctrine_Export_Exception('Unknown index type ' . $definition['type']);
+            }
+        }
+
+        if ( ! isset($definition['fields'])) {
+            throw new Doctrine_Export_Exception('No index columns given.');
+        }
+        if ( ! is_array($definition['fields'])) {
+            $definition['fields'] = array($definition['fields']);
+        }
+
+        $query = $type . 'INDEX ' . $this->quoteIdentifier($name);
+
+        $query .= ' (' . $this->getIndexFieldDeclarationListSql($definition['fields']) . ')';
+
+        return $query;
+    }
+    
+    /**
+     * getIndexFieldDeclarationList
+     * Obtain DBMS specific SQL code portion needed to set an index
+     * declaration to be used in statements like CREATE TABLE.
+     *
+     * @return string
+     * @override
+     */
+    public function getIndexFieldDeclarationListSql(array $fields)
+    {
+        $declFields = array();
+
+        foreach ($fields as $fieldName => $field) {
+            $fieldString = $this->quoteIdentifier($fieldName);
+
+            if (is_array($field)) {
+                if (isset($field['length'])) {
+                    $fieldString .= '(' . $field['length'] . ')';
+                }
+
+                if (isset($field['sorting'])) {
+                    $sort = strtoupper($field['sorting']);
+                    switch ($sort) {
+                        case 'ASC':
+                        case 'DESC':
+                            $fieldString .= ' ' . $sort;
+                            break;
+                        default:
+                            throw new Doctrine_Export_Exception('Unknown index sorting option given.');
+                    }
+                }
+            } else {
+                $fieldString = $this->quoteIdentifier($field);
+            }
+            $declFields[] = $fieldString;
+        }
+        return implode(', ', $declFields);
+    }
+    
+    /**
+     * getAdvancedForeignKeyOptions
+     * Return the FOREIGN KEY query section dealing with non-standard options
+     * as MATCH, INITIALLY DEFERRED, ON UPDATE, ...
+     *
+     * @param array $definition
+     * @return string
+     * @override
+     */
+    public function getAdvancedForeignKeyOptionsSql(array $definition)
+    {
+        $query = '';
+        if ( ! empty($definition['match'])) {
+            $query .= ' MATCH ' . $definition['match'];
+        }
+        if ( ! empty($definition['onUpdate'])) {
+            $query .= ' ON UPDATE ' . $this->getForeignKeyReferentialActionSql($definition['onUpdate']);
+        }
+        if ( ! empty($definition['onDelete'])) {
+            $query .= ' ON DELETE ' . $this->getForeignKeyReferentialActionSql($definition['onDelete']);
+        }
+        return $query;
+    }
+    
+    /**
+     * drop existing index
+     *
+     * @param string    $table          name of table that should be used in method
+     * @param string    $name           name of the index to be dropped
+     * @return void
+     * @override
+     */
+    public function getDropIndexSql($table, $name)
+    {
+        $table  = $this->quoteIdentifier($table, true);
+        $name   = $this->quoteIdentifier($this->formatter->getIndexName($name), true);
+        return 'DROP INDEX ' . $name . ' ON ' . $table;
+    }
+    
+    /**
+     * dropTable
+     *
+     * @param string    $table          name of table that should be dropped from the database
+     * @throws PDOException
+     * @return void
+     * @override
+     */
+    public function getDropTableSql($table)
+    {
+        $table  = $this->quoteIdentifier($table, true);
+        return 'DROP TABLE ' . $table;
     }
 }
 

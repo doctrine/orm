@@ -238,7 +238,7 @@ class Doctrine_Query_Parser
             throw new Doctrine_Query_Parser_Exception(implode("\r\n", $this->_errors));
         }
 
-        // Assign the SQL executor in parser result
+        // Assign the executor in parser result
         $this->_parserResult->setSqlExecutor(Doctrine_Query_SqlExecutor_Abstract::create($AST));
 
         return $this->_parserResult;

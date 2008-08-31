@@ -73,7 +73,8 @@ class Doctrine_Hydrator_RecordDriver
             $relation = $entity->getClass()->getAssociationMapping($name);
             $relatedClass = $this->_em->getClassMetadata($relation->getTargetEntityName());
             $coll = $this->getElementCollection($relatedClass->getClassName());
-            $coll->setReference($entity, $relation);
+            $coll->_setOwner($entity, $relation);
+            $coll->_setHydrationFlag(true);
             $entity->_internalSetReference($name, $coll, true);
             $this->_initializedRelations[$entity->getOid()][$name] = true;
         }
@@ -145,7 +146,8 @@ class Doctrine_Hydrator_RecordDriver
     {
         // take snapshots from all initialized collections
         foreach ($this->_collections as $coll) {
-            $coll->takeSnapshot();
+            $coll->_takeSnapshot();
+            $coll->_setHydrationFlag(false);
         }
         $this->_collections = array();
         $this->_initializedRelations = array();

@@ -102,9 +102,7 @@ class Doctrine_Query_Scanner
 
         foreach ($matches as $match) {
             $value = $match[0];
-
             $type = $this->_getType($value);
-
             $this->_tokens[] = array(
                 'value' => $value,
                 'type'  => $type,
@@ -130,7 +128,6 @@ class Doctrine_Query_Scanner
             } else {
                 $type = Doctrine_Query_Token::T_INTEGER;
             }
-
         }
         if ($value[0] === "'" && $value[strlen($value) - 1] === "'") {
             $type = Doctrine_Query_Token::T_STRING;

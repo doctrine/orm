@@ -123,6 +123,7 @@ abstract class Doctrine_EntityPersister_Abstract
         if ($class->isIdGeneratorIdentity()) {
             //TODO: Postgres IDENTITY columns (SERIAL) use a sequence, so we need to pass the
             // sequence name to lastInsertId().
+            //TODO: $this->_em->getIdGenerator($class)->generate();
             $entity->_assignIdentifier($this->_conn->lastInsertId());
         }
     }
@@ -312,6 +313,8 @@ abstract class Doctrine_EntityPersister_Abstract
                 default:
                     $result[$columnName] = $newVal;
             }
+            /*$result[$columnName] = $type->convertToDatabaseValue(
+                    $newVal, $this->_em->getConnection()->getDatabasePlatform());*/
         }
         
         // @todo Cleanup

@@ -180,13 +180,26 @@ abstract class Doctrine_Connection
      *
      * @param array $params  The connection parameters.
      */
-    public function __construct(array $params)
+    public function __construct(array $params, $config = null, $eventManager = null)
     {
         if (isset($params['pdo'])) {
             $this->_pdo = $params['pdo'];
             $this->_isConnected = true;
         }
         $this->_params = $params;
+        
+        // Create default config and event manager if none given
+        if ( ! $config) {
+            $this->_config = new Doctrine_Configuration();
+        }
+        if ( ! $eventManager) {
+            $this->_eventManager = new Doctrine_EventManager();
+        }
+        
+        // create platform
+        $class = "Doctrine_DatabasePlatform_" . $this->_driverName . "Platform";
+        $this->_platform = new $class();
+        $this->_platform->setQuoteIdentifiers($this->_config->getQuoteIdentifiers());
     }
     
     /**
@@ -242,8 +255,7 @@ abstract class Doctrine_Connection
      */
     public function getDatabasePlatform()
     {
-        throw new Doctrine_Connection_Exception("No DatabasePlatform available "
-                . "for connection " . get_class($this));
+        return $this->_platform;
     }
     
     /**
@@ -558,10 +570,12 @@ abstract class Doctrine_Connection
      * @param bool $checkOption     check the 'quote_identifier' option
      *
      * @return string               quoted identifier string
+     * @todo Moved to DatabasePlatform
+     * @deprecated
      */
-    public function quoteIdentifier($str, $checkOption = true)
+    public function quoteIdentifier($str)
     {
-        if (is_null($this->_quoteIdentifiers)) {
+        /*if (is_null($this->_quoteIdentifiers)) {
             $this->_quoteIdentifiers = $this->_config->get('quoteIdentifiers');
         }
         if ( ! $this->_quoteIdentifiers) {
@@ -579,7 +593,8 @@ abstract class Doctrine_Connection
         $c = $this->_platform->getIdentifierQuoteCharacter();
         $str = str_replace($c, $c . $c, $str);
 
-        return $c . $str . $c;
+        return $c . $str . $c;*/
+        return $this->getDatabasePlatform()->quoteIdentifier($str);
     }
 
     /**
@@ -590,6 +605,7 @@ abstract class Doctrine_Connection
      *
      * @param array $item
      * @return void
+     * @deprecated Moved to DatabasePlatform
      */
     public function convertBooleans($item)
     {

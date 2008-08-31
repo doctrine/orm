@@ -5,7 +5,7 @@
  *  - terminals begin with a lower case character
  *  - parentheses (...) are used for grouping
  *  - square brackets [...] are used for defining an optional part, eg. zero or
- *    one time time
+ *    one time
  *  - curly brackets {...} are used for repetion, eg. zero or more times
  *  - double quotation marks "..." define a terminal string
  *  - a vertical bar | represents an alternative
@@ -14,69 +14,69 @@
  * Initially Select and Sub-select DQL will not support LIMIT and OFFSET (due to limit-subquery algorithm)
  */
 
-QueryLanguage   = SelectStatement | UpdateStatement | DeleteStatement
+QueryLanguage   ::= SelectStatement | UpdateStatement | DeleteStatement
 
-SelectStatement = SelectClause FromClause [WhereClause] [GroupByClause] [HavingClause] [OrderByClause]
-UpdateStatement = UpdateClause [WhereClause]
-DeleteStatement = DeleteClause [WhereClause]
+SelectStatement ::= SelectClause FromClause [WhereClause] [GroupByClause] [HavingClause] [OrderByClause]
+UpdateStatement ::= UpdateClause [WhereClause]
+DeleteStatement ::= DeleteClause [WhereClause]
 
-Subselect       = SimpleSelectClause FromClause [WhereClause] [GroupByClause] [HavingClause] [OrderByClause]
-SelectClause    = "SELECT" ["ALL" | "DISTINCT"] SelectExpression {"," SelectExpression}
-SimpleSelectClause = "SELECT" ["ALL" | "DISTINCT"] SelectExpression
-DeleteClause    = "DELETE" ["FROM"] VariableDeclaration
-WhereClause     = "WHERE" ConditionalExpression
-FromClause      = "FROM" IdentificationVariableDeclaration {"," IdentificationVariableDeclaration}
-HavingClause    = "HAVING" ConditionalExpression
-GroupByClause   = "GROUP" "BY" GroupByItem {"," GroupByItem}
-OrderByClause   = "ORDER" "BY" OrderByItem {"," OrderByItem}
-LimitClause     = "LIMIT" integer
-OffsetClause    = "OFFSET" integer
-UpdateClause    = "UPDATE" VariableDeclaration "SET" UpdateItem {"," UpdateItem}
+Subselect       ::= SimpleSelectClause FromClause [WhereClause] [GroupByClause] [HavingClause] [OrderByClause]
+SelectClause    ::= "SELECT" ["ALL" | "DISTINCT"] SelectExpression {"," SelectExpression}*
+SimpleSelectClause ::= "SELECT" ["ALL" | "DISTINCT"] SelectExpression
+DeleteClause    ::= "DELETE" ["FROM"] VariableDeclaration
+WhereClause     ::= "WHERE" ConditionalExpression
+FromClause      ::= "FROM" IdentificationVariableDeclaration {"," IdentificationVariableDeclaration}*
+HavingClause    ::= "HAVING" ConditionalExpression
+GroupByClause   ::= "GROUP" "BY" GroupByItem {"," GroupByItem}*
+OrderByClause   ::= "ORDER" "BY" OrderByItem {"," OrderByItem}*
+LimitClause     ::= "LIMIT" integer
+OffsetClause    ::= "OFFSET" integer
+UpdateClause    ::= "UPDATE" VariableDeclaration "SET" UpdateItem {"," UpdateItem}*
 
-OrderByItem = Expression ["ASC" | "DESC"]
-GroupByItem = PathExpression
-UpdateItem = PathExpression "=" (Expression | "NULL")
+OrderByItem ::= Expression ["ASC" | "DESC"]
+GroupByItem ::= PathExpression
+UpdateItem ::= PathExpression "=" (Expression | "NULL")
 
-IdentificationVariableDeclaration = RangeVariableDeclaration [IndexBy] {JoinVariableDeclaration}
-JoinVariableDeclaration = Join [IndexBy]
-RangeVariableDeclaration = identifier {"." identifier} [["AS"] IdentificationVariable]
-VariableDeclaration = identifier [["AS"] IdentificationVariable]
-IdentificationVariable = identifier
+IdentificationVariableDeclaration ::= RangeVariableDeclaration [IndexBy] {JoinVariableDeclaration}*
+JoinVariableDeclaration ::= Join [IndexBy]
+RangeVariableDeclaration ::= identifier {"." identifier}* [["AS"] IdentificationVariable]
+VariableDeclaration ::= identifier [["AS"] IdentificationVariable]
+IdentificationVariable ::= identifier
 
-Join = ["LEFT" | "INNER"] "JOIN" RangeVariableDeclaration [("ON" | "WITH") ConditionalExpression]
-IndexBy = "INDEX" "BY" identifier
+Join ::= ["LEFT" | "INNER"] "JOIN" RangeVariableDeclaration [("ON" | "WITH") ConditionalExpression]
+IndexBy ::= "INDEX" "BY" identifier
 
-ConditionalExpression = ConditionalTerm {"OR" ConditionalTerm}
-ConditionalTerm       = ConditionalFactor {"AND" ConditionalFactor}
-ConditionalFactor     = ["NOT"] ConditionalPrimary
-ConditionalPrimary    = SimpleConditionalExpression | "(" ConditionalExpression ")"
+ConditionalExpression ::= ConditionalTerm {"OR" ConditionalTerm}*
+ConditionalTerm       ::= ConditionalFactor {"AND" ConditionalFactor}*
+ConditionalFactor     ::= ["NOT"] ConditionalPrimary
+ConditionalPrimary    ::= SimpleConditionalExpression | "(" ConditionalExpression ")"
 SimpleConditionalExpression
-                      = Expression (ComparisonExpression | BetweenExpression | LikeExpression
+                      ::= Expression (ComparisonExpression | BetweenExpression | LikeExpression
                       | InExpression | NullComparisonExpression) | ExistsExpression
 
-Atom = string | integer | float | boolean | input_parameter
+Atom ::= string | integer | float | boolean | input_parameter
 
-Expression = Term {("+" | "-") Term}
-Term       = Factor {("*" | "/") Factor}
-Factor     = [("+" | "-")] Primary
-Primary    = PathExpression | Atom | "(" Expression ")" | Function | AggregateExpression
+Expression ::= Term {("+" | "-") Term}*
+Term       ::= Factor {("*" | "/") Factor}*
+Factor     ::= [("+" | "-")] Primary
+Primary    ::= PathExpression | Atom | "(" Expression ")" | Function | AggregateExpression
 
-SelectExpression  = (PathExpressionEndingWithAsterisk | Expression | "(" Subselect ")" ) [["AS"] FieldIdentificationVariable]
-PathExpression = identifier {"." identifier}
-PathExpressionEndingWithAsterisk = {identifier "."} "*"
-FieldIdentificationVariable = identifier
+SelectExpression  ::= (PathExpressionEndingWithAsterisk | Expression | "(" Subselect ")" ) [["AS"] FieldIdentificationVariable]
+PathExpression ::= identifier {"." identifier}*
+PathExpressionEndingWithAsterisk ::= {identifier "."}* "*"
+FieldIdentificationVariable ::= identifier
 
-AggregateExpression = ("AVG" | "MAX" | "MIN" | "SUM") "(" ["DISTINCT"] Expression ")"
+AggregateExpression ::= ("AVG" | "MAX" | "MIN" | "SUM") "(" ["DISTINCT"] Expression ")"
                     | "COUNT" "(" ["DISTINCT"] (Expression | "*") ")"
 
-QuantifiedExpression     = ("ALL" | "ANY" | "SOME") "(" Subselect ")"
-BetweenExpression        = ["NOT"] "BETWEEN" Expression "AND" Expression
-ComparisonExpression     = ComparisonOperator ( QuantifiedExpression | Expression | "(" Subselect ")" )
-InExpression             = ["NOT"] "IN" "(" (Atom {"," Atom} | Subselect) ")"
-LikeExpression           = ["NOT"] "LIKE" Expression ["ESCAPE" string]
-NullComparisonExpression = "IS" ["NOT"] "NULL"
-ExistsExpression         = "EXISTS" "(" Subselect ")"
+QuantifiedExpression     ::= ("ALL" | "ANY" | "SOME") "(" Subselect ")"
+BetweenExpression        ::= ["NOT"] "BETWEEN" Expression "AND" Expression
+ComparisonExpression     ::= ComparisonOperator ( QuantifiedExpression | Expression | "(" Subselect ")" )
+InExpression             ::= ["NOT"] "IN" "(" (Atom {"," Atom}* | Subselect) ")"
+LikeExpression           ::= ["NOT"] "LIKE" Expression ["ESCAPE" string]
+NullComparisonExpression ::= "IS" ["NOT"] "NULL"
+ExistsExpression         ::= "EXISTS" "(" Subselect ")"
 
-ComparisonOperator = "=" | "<" | "<=" | "<>" | ">" | ">=" | "!="
+ComparisonOperator ::= "=" | "<" | "<=" | "<>" | ">" | ">=" | "!="
 
-Function = identifier "(" [Expression {"," Expression}] ")"
+Function ::= identifier "(" [Expression {"," Expression}*] ")"

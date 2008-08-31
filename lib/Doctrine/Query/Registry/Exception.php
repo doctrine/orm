@@ -18,7 +18,7 @@
  * and is licensed under the LGPL. For more information, see
  * <http://www.phpdoctrine.org>.
  */
-Doctrine::autoload('Doctrine_Query_Exception');
+
 /**
  * Doctrine_Query_Exception
  *
@@ -29,6 +29,7 @@ Doctrine::autoload('Doctrine_Query_Exception');
  * @link        www.phpdoctrine.org
  * @since       1.0
  * @version     $Revision$
+ * @todo Remove
  */
 class Doctrine_Query_Registry_Exception extends Doctrine_Query_Exception
 { }

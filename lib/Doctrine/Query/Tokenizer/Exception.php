@@ -18,7 +18,7 @@
  * and is licensed under the LGPL. For more information, see
  * <http://www.phpdoctrine.org>.
  */
-Doctrine::autoload('Doctrine_Exception');
+
 /**
  * Doctrine_Query_Exception
  *
@@ -29,6 +29,7 @@ Doctrine::autoload('Doctrine_Exception');
  * @since       1.0
  * @version     $Revision: 2702 $
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
+ * @todo Remove
  */
 class Doctrine_Query_Tokenizer_Exception extends Doctrine_Exception
 { }

@@ -19,8 +19,6 @@
  * <http://www.phpdoctrine.org>.
  */
 
-Doctrine::autoload('Doctrine_Query_AbstractResult');
-
 /**
  * Doctrine_Query_ParserResult
  *

@@ -65,6 +65,12 @@ class Doctrine_Association_OneToOne extends Doctrine_Association
         parent::__construct($mapping);
     }
     
+    protected function _initMappingArray()
+    {
+        parent::_initMappingArray();
+        $this->_mapping['deleteOrphans'] = false;
+    }
+    
     /**
      * Validates & completes the mapping. Mapping defaults are applied here.
      *

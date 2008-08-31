@@ -191,17 +191,4 @@ class Doctrine_Connection_Mysql extends Doctrine_Connection_Common
         
         return $dsn;
     }
-    
-    /**
-     * Gets the DatabasePlatform for the connection.
-     *
-     * @return Doctrine::DBAL::Platforms::MySqlPlatform
-     */
-    public function getDatabasePlatform()
-    {
-        if ( ! $this->_platform) {
-            $this->_platform = new Doctrine_DatabasePlatform_MySqlPlatform();
-        }
-        return $this->_platform;
-    }
 }

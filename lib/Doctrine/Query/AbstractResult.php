@@ -27,7 +27,7 @@
  * @subpackage  Query
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @link        www.phpdoctrine.com
- * @since       1.0
+ * @since       2.0
  * @version     $Revision: 1393 $
  * @author      Guilherme Blanco <guilhermeblanco@hotmail.com>
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>

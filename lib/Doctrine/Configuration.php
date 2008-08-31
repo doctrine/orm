@@ -26,6 +26,9 @@
 /**
  * The Configuration is the container for all configuration options of Doctrine.
  * It combines all configuration options from DBAL & ORM.
+ * 
+ * INTERNAL: When adding a new configuration option just write a getter/setter
+ * combination and add the option to the _attributes array with a proper default value.
  *
  * @author Roman Borschel <roman@code-factory.org>
  * @since 2.0
@@ -36,6 +39,8 @@ class Doctrine_Configuration
     
     /**
      * The attributes that are contained in the configuration.
+     * Values are default values. PHP null is replaced by a reference to the Null
+     * object on instantiation in order to use isset() instead of array_key_exists().
      *
      * @var array
      */
@@ -44,12 +49,9 @@ class Doctrine_Configuration
             'indexNameFormat' => '%s_idx',
             'sequenceNameFormat' => '%s_seq',
             'tableNameFormat' => '%s',
-            'resultCache' => null,
-            'resultCacheLifeSpan' => null,
-            'queryCache' => null,
-            'queryCacheLifeSpan' => null,
-            'metadataCache' => null,
-            'metadataCacheLifeSpan' => null
+            'resultCacheImpl' => null,
+            'queryCacheImpl' => null,
+            'metadataCacheImpl' => null,
         );
     
     /**
@@ -78,38 +80,6 @@ class Doctrine_Configuration
     }
     
     /**
-     * Gets the value of a configuration attribute.
-     *
-     * @param string $name
-     * @return mixed
-     */
-    public function get($name)
-    {
-        if ( ! $this->has($name)) {
-            throw Doctrine_Configuration_Exception::unknownAttribute($name);
-        }
-        if ($this->_attributes[$name] === $this->_nullObject) {
-            return null;
-        }
-        return $this->_attributes[$name];
-    }
-    
-    /**
-     * Sets the value of a configuration attribute.
-     *
-     * @param string $name
-     * @param mixed $value
-     */
-    public function set($name, $value)
-    {
-        if ( ! $this->has($name)) {
-            throw Doctrine_Configuration_Exception::unknownAttribute($name);
-        }
-        // TODO: do some value checking depending on the attribute
-        $this->_attributes[$name] = $value;
-    }
-    
-    /**
      * Checks whether the configuration contains/supports an attribute.
      *
      * @param string $name
@@ -118,5 +88,92 @@ class Doctrine_Configuration
     public function has($name)
     {
         return isset($this->_attributes[$name]);
+    }
+    
+    public function getQuoteIdentifiers()
+    {
+        return $this->_attributes['quoteIdentifiers'];
+    }
+    
+    public function setQuoteIdentifiers($bool)
+    {
+        $this->_attributes['quoteIdentifiers'] = (bool)$bool;
+    }
+    
+    public function getIndexNameFormat()
+    {
+        return $this->_attributes['indexNameFormat'];
+    }
+    
+    public function setIndexNameFormat($format)
+    {
+        //TODO: check format?
+        $this->_attributes['indexNameFormat'] = $format;
+    }
+    
+    public function getSequenceNameFormat()
+    {
+        return $this->_attributes['sequenceNameFormat'];
+    }
+    
+    public function setSequenceNameFormat($format)
+    {
+        //TODO: check format?
+        $this->_attributes['sequenceNameFormat'] = $format;
+    }
+    
+    public function getTableNameFormat()
+    {
+        return $this->_attributes['tableNameFormat'];
+    }
+    
+    public function setTableNameFormat($format)
+    {
+        //TODO: check format?
+        $this->_attributes['tableNameFormat'] = $format;
+    }
+    
+    public function getResultCacheImpl()
+    {
+        return $this->_attributes['resultCacheImpl'];
+    }
+    
+    public function setResultCacheImpl(Doctrine_Cache_Interface $cacheImpl)
+    {
+        $this->_attributes['resultCacheImpl'] = $cacheImpl;
+    }
+    
+    public function getQueryCacheImpl()
+    {
+        return $this->_attributes['queryCacheImpl'];
+    }
+    
+    public function setQueryCacheImpl(Doctrine_Cache_Interface $cacheImpl)
+    {
+        $this->_attributes['queryCacheImpl'] = $cacheImpl;
+    }
+    
+    public function getMetadataCacheImpl()
+    {
+        return $this->_attributes['metadataCacheImpl'];
+    }
+    
+    public function setMetadataCacheImpl(Doctrine_Cache_Interface $cacheImpl)
+    {
+        $this->_attributes['metadataCacheImpl'] = $cacheImpl;
+    }
+    
+    public function setCustomTypes(array $types)
+    {
+        foreach ($types as $name => $typeClassName) {
+            Doctrine_DataType::addCustomType($name, $typeClassName);
+        }
+    }
+    
+    public function setTypeOverrides(array $overrides)
+    {
+        foreach ($override as $name => $typeClassName) {
+            Doctrine_DataType::overrideType($name, $typeClassName);
+        }
     }
 }

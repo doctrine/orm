@@ -31,7 +31,6 @@
  * @link        http://www.phpdoctrine.org
  * @since       2.0
  * @version     $Revision$
- * @todo Merge into DatabasePlatform.
  */
 abstract class Doctrine_Query_SqlBuilder
 {

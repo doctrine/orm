@@ -59,7 +59,7 @@ class Doctrine_EntityManagerFactory
      */
     public function __construct()
     {
-        $this->_connFactory = new Doctrine_ConnectionFactory();
+        
     }
     
     /**
@@ -93,16 +93,20 @@ class Doctrine_EntityManagerFactory
      */
     public function createEntityManager($connParams, $name = null)
     {
-        if ( ! $this->_config) {
-            $this->_config = new Doctrine_Configuration();
-        }
-        if ( ! $this->_eventManager) {
-            $this->_eventManager = new Doctrine_EventManager();
+        if ( ! $this->_connFactory) {
+            // Initialize connection factory
+            $this->_connFactory = new Doctrine_ConnectionFactory();
+            if ( ! $this->_config) {
+                $this->_config = new Doctrine_Configuration();
+            }
+            if ( ! $this->_eventManager) {
+                $this->_eventManager = new Doctrine_EventManager();
+            }
+            $this->_connFactory->setConfiguration($this->_config);
+            $this->_connFactory->setEventManager($this->_eventManager);
         }
         
         $conn = $this->_connFactory->createConnection($connParams);
-        $conn->setEventManager($this->_eventManager);
-        $conn->setConfiguration($this->_config);
         
         $em = new Doctrine_EntityManager($conn);
         $em->setEventManager($this->_eventManager);

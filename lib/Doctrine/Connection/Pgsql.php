@@ -71,6 +71,7 @@ class Doctrine_Connection_Pgsql extends Doctrine_Connection_Common
      *
      * @param array $item
      * @return void
+     * @deprecated Moved to PostgreSqlPlatform
      */
     public function convertBooleans($item)
     {
@@ -94,7 +95,7 @@ class Doctrine_Connection_Pgsql extends Doctrine_Connection_Common
      * @param string $native    determines if the raw version string should be returned
      * @return array|string     an array or string with version information
      */
-    public function getServerVersion($native = false)
+    /*public function getServerVersion($native = false)
     {
         $query = 'SHOW SERVER_VERSION';
 
@@ -124,5 +125,5 @@ class Doctrine_Connection_Pgsql extends Doctrine_Connection_Common
             }
         }
         return $serverInfo;
-    }
+    }*/
 }

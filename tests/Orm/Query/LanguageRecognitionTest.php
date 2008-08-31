@@ -38,18 +38,21 @@ require_once 'lib/DoctrineTestInit.php';
  */
 class Orm_Query_LanguageRecognitionTest extends Doctrine_OrmTestCase
 {
-    public function assertValidDql($dql)
+    public function assertValidDql($dql, $debug = false)
     {
         try {
             $entityManager = $this->_em;
             $query = $entityManager->createQuery($dql);
             $parserResult = $query->parse();
         } catch (Doctrine_Exception $e) {
+            if ($debug) {
+                echo $e->getTraceAsString() . PHP_EOL;
+            }
             $this->fail($e->getMessage());
         }
     }
 
-    public function assertInvalidDql($dql)
+    public function assertInvalidDql($dql, $debug = false)
     {
         try {
             $entityManager = $this->_em;
@@ -59,6 +62,11 @@ class Orm_Query_LanguageRecognitionTest extends Doctrine_OrmTestCase
 
             $this->fail('No syntax errors were detected, when syntax errors were expected');
         } catch (Doctrine_Exception $e) {
+            //echo $e->getMessage() . PHP_EOL;
+            if ($debug) {
+                echo $e->getMessage() . PHP_EOL;
+                echo $e->getTraceAsString() . PHP_EOL;
+            }
             // It was expected!
         }
     }
@@ -351,20 +359,20 @@ class Orm_Query_LanguageRecognitionTest extends Doctrine_OrmTestCase
     {
         $this->assertValidDql("SELECT * FROM CmsUser u WHERE u.name NOT BETWEEN 'jepso' AND 'zYne'");
     }
-/*
-    public function testAllExpression()
+
+/*    public function testAllExpressionWithCorrelatedSubquery()
     {
         // We need existant classes here, otherwise semantical will always fail
-        $this->assertValidDql('SELECT * FROM Employee e WHERE e.salary > ALL (SELECT m.salary FROM Manager m WHERE m.department = e.department)');
+        $this->assertValidDql('SELECT * FROM CompanyEmployee e WHERE e.salary > ALL (SELECT m.salary FROM CompanyManager m WHERE m.department = e.department)', true);
     }
 
-    public function testAnyExpression()
+    public function testAnyExpressionWithCorrelatedSubquery()
     {
         // We need existant classes here, otherwise semantical will always fail
         $this->assertValidDql('SELECT * FROM Employee e WHERE e.salary > ANY (SELECT m.salary FROM Manager m WHERE m.department = e.department)');
     }
 
-    public function testSomeExpression()
+    public function testSomeExpressionWithCorrelatedSubquery()
     {
         // We need existant classes here, otherwise semantical will always fail
         $this->assertValidDql('SELECT * FROM Employee e WHERE e.salary > SOME (SELECT m.salary FROM Manager m WHERE m.department = e.department)');
@@ -385,14 +393,47 @@ class Orm_Query_LanguageRecognitionTest extends Doctrine_OrmTestCase
         $this->assertValidDql("SELECT u.id FROM CmsUser u WHERE u.name LIKE 'z|%' ESCAPE '|'");
     }
 
+    /**
+     * TODO: Hydration can't deal with this currently but it should be allowed.
+     *       Also, generated SQL looks like: "... FROM cms_user, cms_article ..." which
+     *       may not work on all dbms.
+     * 
+     * The main use case for this generalized style of join is when a join condition 
+     * does not involve a foreign key relationship that is mapped to an entity relationship.
+     */
+    public function testImplicitJoinWithCartesianProductAndConditionInWhere()
+    {
+        $this->assertValidDql("SELECT u.*, a.* FROM CmsUser u, CmsArticle a WHERE u.name = a.topic");
+    }
+    
+    public function testImplicitJoinInWhereOnSingleValuedAssociationPathExpression()
+    {
+        // This should be allowed because avatar is a single-value association.
+        // SQL: SELECT ... FROM forum_user fu INNER JOIN forum_avatar fa ON fu.avatar_id = fa.id WHERE fa.id = ?
+        $this->assertValidDql("SELECT u.* FROM ForumUser u WHERE u.avatar.id = ?");
+    }
+    
+    public function testImplicitJoinInWhereOnCollectionValuedPathExpression()
+    {
+        // This should be forbidden, because articles is a collection
+        $this->assertInvalidDql("SELECT u.* FROM CmsUser u WHERE u.articles.title = ?");
+    }
 
     public function testInvalidSyntaxIsRejected()
     {
         $this->assertInvalidDql("FOOBAR CmsUser");
-
         $this->assertInvalidDql("DELETE FROM CmsUser.articles");
-
         $this->assertInvalidDql("DELETE FROM CmsUser cu WHERE cu.articles.id > ?");
+        $this->assertInvalidDql("SELECT user FROM CmsUser user");
+        
+        // Error message here is: Relation 'comments' does not exist in component 'CmsUser'
+        // This means it is intepreted as:
+        // SELECT u.* FROM CmsUser u JOIN u.articles JOIN u.comments
+        // This seems wrong. "JOIN u.articles.comments" should not be allowed.
+        $this->assertInvalidDql("SELECT u.* FROM CmsUser u JOIN u.articles.comments");
+        
+        // Currently UNDEFINED OFFSET error
+        $this->assertInvalidDql("SELECT * FROM CmsUser.articles.comments");
     }
 
 }

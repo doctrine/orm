@@ -19,8 +19,6 @@
  * <http://www.phpdoctrine.org>.
  */
 
-Doctrine::autoload('Doctrine_Query_AbstractResult');
-
 /**
  * Doctrine_Query_QueryResult
  *
@@ -30,7 +28,7 @@ Doctrine::autoload('Doctrine_Query_AbstractResult');
  * @author      Janne Vanhala <jpvanhal@cc.hut.fi>
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @link        http://www.phpdoctrine.org
- * @since       1.0
+ * @since       2.0
  * @version     $Revision$
  */
 class Doctrine_Query_QueryResult extends Doctrine_Query_AbstractResult

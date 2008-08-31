@@ -429,8 +429,8 @@ abstract class Doctrine_Entity implements ArrayAccess, Serializable
         if ($this->_class->hasField($fieldName)) {
             $old = isset($this->_data[$fieldName]) ? $this->_data[$fieldName] : null;
             // NOTE: Common case: $old != $value. Special case: null == 0 (TRUE), which
-            // is addressed by the type comparison.
-            if ($old != $value || gettype($old) != gettype($value)) {
+            // is addressed by xor.
+            if ($old != $value || (is_null($old) xor is_null($value))) {
                 $this->_data[$fieldName] = $value;
                 $this->_dataChangeSet[$fieldName] = array($old => $value);
                 if ($this->isNew() && $this->_class->isIdentifier($fieldName)) {
@@ -456,7 +456,10 @@ abstract class Doctrine_Entity implements ArrayAccess, Serializable
             throw Doctrine_Entity_Exception::invalidField($fieldName);
         }
     }
-
+    
+    /**
+     * Registers the entity as dirty with the UnitOfWork.
+     */
     private function _registerDirty()
     {
         if ($this->_state == self::STATE_MANAGED &&
@@ -531,35 +534,33 @@ abstract class Doctrine_Entity implements ArrayAccess, Serializable
      */
     final public function _internalSetReference($name, $value, $completeBidirectional = false)
     {
-        if ($value === Doctrine_Null::$INSTANCE) {
+        if (is_null($value) || $value === Doctrine_Null::$INSTANCE) {
             $this->_references[$name] = $value;
-            return;
+            return; // early exit!
         }
 
         $rel = $this->_class->getAssociationMapping($name);
 
         if ($rel->isOneToOne() && ! $value instanceof Doctrine_Entity) {
             throw Doctrine_Entity_Exception::invalidValueForOneToOneReference();
-        }
-        if ($rel->isOneToMany() && ! $value instanceof Doctrine_Collection) {
+        } else if (($rel->isOneToMany() || $rel->isManyToMany()) && ! $value instanceof Doctrine_Collection) {
             throw Doctrine_Entity_Exception::invalidValueForOneToManyReference();
-        }
-        if ($rel->isManyToMany() && ! $value instanceof Doctrine_Collection) {
-            throw Doctrine_Entity_Exception::invalidValueForManyToManyReference();
         }
 
         $this->_references[$name] = $value;
         
         if ($completeBidirectional && $rel->isOneToOne()) {
-            //TODO: check if $rel is bidirectional, if yes create the back-reference
             if ($rel->isOwningSide()) {
-                //TODO: how to check if its bidirectional? should be as efficient as possible
-                /*$targetClass = $this->_em->getClassMetadata($rel->getTargetEntityName());
-                if (($invAssoc = $targetClass->getInverseAssociation($name)) !== null) {
-                    $value->_internalSetReference($invAssoc->getSourceFieldName(), $this);
-                }*/
+                // If there is an inverse mapping on the target class its bidirectional
+                $targetClass = $this->_em->getClassMetadata($rel->getTargetEntityName());
+                if ($targetClass->hasInverseAssociationMapping($name)) {
+                    $value->_internalSetReference(
+                            $targetClass->getInverseAssociationMapping($name)->getSourceFieldName(),
+                            $this
+                            );
+                }
             } else {
-                // for sure bi-directional, as there is no inverse side in unidirectional
+                // for sure bidirectional, as there is no inverse side in unidirectional
                 $value->_internalSetReference($rel->getMappedByFieldName(), $this);
             }
         }

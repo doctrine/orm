@@ -31,11 +31,37 @@
  * @author Lukas Smith <smith@pooteeweet.org> (PEAR MDB2 library)
  */
 abstract class Doctrine_DatabasePlatform
-{    
+{
+    protected $_quoteIdentifiers = false;
+    
+    protected $valid_default_values = array(
+        'text'      => '',
+        'boolean'   => true,
+        'integer'   => 0,
+        'decimal'   => 0.0,
+        'float'     => 0.0,
+        'timestamp' => '1970-01-01 00:00:00',
+        'time'      => '00:00:00',
+        'date'      => '1970-01-01',
+        'clob'      => '',
+        'blob'      => '',
+        'string'    => ''
+    );
+    
     /**
      * Constructor.
      */
     public function __construct() {}
+    
+    public function setQuoteIdentifiers($bool)
+    {
+        $this->_quoteIdentifiers = (bool)$bool;
+    }
+    
+    public function getQuoteIdentifiers()
+    {
+        return $this->_quoteIdentifiers;
+    }
     
     /**
      * Gets the character used for identifier quoting.
@@ -793,7 +819,790 @@ abstract class Doctrine_DatabasePlatform
         return 'COS(' . $value . ')';
     }
     
-        /**
+    /**
+     * Enter description here...
+     *
+     * @return string
+     */
+    public function getForUpdateSql()
+    {
+        return 'FOR UPDATE';
+    }
+    
+    /**
+     * Enter description here...
+     *
+     * @todo Throw exception by default?
+     */
+    public function getListDatabasesSql()
+    {
+        throw new Doctrine_Export_Exception('List databases not supported by this driver.');
+    }
+    
+    /**
+     * Enter description here...
+     *
+     * @todo Throw exception by default?
+     */
+    public function getListFunctionsSql()
+    {
+        throw new Doctrine_Export_Exception('List functions not supported by this driver.');
+    }
+    
+    /**
+     * Enter description here...
+     *
+     * @todo Throw exception by default?
+     */
+    public function getListTriggersSql()
+    {
+        throw new Doctrine_Export_Exception('List triggers not supported by this driver.');
+    }
+    
+    /**
+     * Enter description here...
+     *
+     * @todo Throw exception by default?
+     */
+    public function getListSequencesSql()
+    {
+        throw new Doctrine_Export_Exception('List sequences not supported by this driver.');
+    }
+    
+    /**
+     * Enter description here...
+     *
+     * @todo Throw exception by default?
+     */
+    public function getListTableConstraintsSql()
+    {
+        throw new Doctrine_Export_Exception('List table constraints not supported by this driver.');
+    }
+    
+    /**
+     * Enter description here...
+     *
+     * @todo Throw exception by default?
+     */
+    public function getListTableColumnsSql()
+    {
+        throw new Doctrine_Export_Exception('List table columns not supported by this driver.');
+    }
+    
+    /**
+     * Enter description here...
+     *
+     * @todo Throw exception by default?
+     */
+    public function getListTablesSql()
+    {
+        throw new Doctrine_Export_Exception('List tables not supported by this driver.');
+    }
+    
+    /**
+     * Enter description here...
+     *
+     * @todo Throw exception by default?
+     */
+    public function getListUsersSql()
+    {
+        throw new Doctrine_Export_Exception('List users not supported by this driver.');
+    }
+    
+    /**
+     * Enter description here...
+     *
+     * @todo Throw exception by default?
+     */
+    public function getListViewsSql()
+    {
+        throw new Doctrine_Export_Exception('List views not supported by this driver.');
+    }
+    
+    /**
+     * Enter description here...
+     *
+     * @todo Throw exception by default?
+     */
+    public function getDropDatabaseSql($database)
+    {
+        return 'DROP DATABASE ' . $database;
+    }
+    
+    /**
+     * Enter description here...
+     *
+     * @todo Throw exception by default?
+     */
+    public function getDropTableSql($table)
+    {
+        return 'DROP TABLE ' . $table;
+    }
+    
+    /**
+     * Enter description here...
+     *
+     * @todo Throw exception by default?
+     */
+    public function getDropIndexSql($index)
+    {
+        return 'DROP INDEX ' . $index;
+    }
+    
+    /**
+     * Enter description here...
+     *
+     * @todo Throw exception by default?
+     */
+    public function getDropSequenceSql()
+    {
+        throw new Doctrine_Export_Exception('Drop sequence not supported by this driver.');
+    }
+    
+    /**
+     * Gets the SQL for acquiring the next value from a sequence.
+     */
+    public function getSequenceNextValSql($sequenceName)
+    {
+        throw new Doctrine_Export_Exception('Sequences not supported by this driver.');
+    }
+    
+    /**
+     * Enter description here...
+     *
+     * @todo Throw exception by default?
+     */
+    public function getCreateDatabaseSql($database)
+    {
+        throw new Doctrine_Export_Exception('Create database not supported by this driver.');
+    }
+    
+    /**
+     * Enter description here...
+     *
+     * @todo Throw exception by default?
+     */
+    public function getCreateTableSql($table, array $columns, array $options)
+    {
+        if ( ! $table) {
+            throw new Doctrine_Export_Exception('no valid table name specified');
+        }
+        if (empty($columns)) {
+            throw new Doctrine_Export_Exception('no fields specified for table ' . $name);
+        }
+
+        $queryFields = $this->getFieldDeclarationList($columns);
+
+        if (isset($options['primary']) && ! empty($options['primary'])) {
+            $queryFields .= ', PRIMARY KEY(' . implode(', ', array_values($options['primary'])) . ')';
+        }
+
+        if (isset($options['indexes']) && ! empty($options['indexes'])) {
+            foreach($options['indexes'] as $index => $definition) {
+                $queryFields .= ', ' . $this->getIndexDeclaration($index, $definition);
+            }
+        }
+
+        $query = 'CREATE TABLE ' . $this->conn->quoteIdentifier($name, true) . ' (' . $queryFields;
+        
+        $check = $this->getCheckDeclaration($columns);
+
+        if ( ! empty($check)) {
+            $query .= ', ' . $check;
+        }
+
+        $query .= ')';
+
+        $sql[] = $query;
+
+        if (isset($options['foreignKeys'])) {
+            foreach ((array) $options['foreignKeys'] as $k => $definition) {
+                if (is_array($definition)) {
+                    $sql[] = $this->getCreateForeignKeySql($name, $definition);
+                }
+            }
+        }
+        return $sql;
+    }
+    
+    /**
+     * Enter description here...
+     *
+     * @todo Throw exception by default?
+     */
+    public function getCreateSequenceSql($sequenceName, $start = 1, array $options)
+    {
+        throw new Doctrine_Export_Exception('Create sequence not supported by this driver.');
+    }
+    
+    /**
+     * create a constraint on a table
+     *
+     * @param string    $table         name of the table on which the constraint is to be created
+     * @param string    $name          name of the constraint to be created
+     * @param array     $definition    associative array that defines properties of the constraint to be created.
+     *                                 Currently, only one property named FIELDS is supported. This property
+     *                                 is also an associative with the names of the constraint fields as array
+     *                                 constraints. Each entry of this array is set to another type of associative
+     *                                 array that specifies properties of the constraint that are specific to
+     *                                 each field.
+     *
+     *                                 Example
+     *                                    array(
+     *                                        'fields' => array(
+     *                                            'user_name' => array(),
+     *                                            'last_login' => array()
+     *                                        )
+     *                                    )
+     * @return void
+     */
+    public function getCreateConstraintSql($table, $name, $definition)
+    {
+        $query = 'ALTER TABLE ' . $table . ' ADD CONSTRAINT ' . $name;
+
+        if (isset($definition['primary']) && $definition['primary']) {
+            $query .= ' PRIMARY KEY';
+        } elseif (isset($definition['unique']) && $definition['unique']) {
+            $query .= ' UNIQUE';
+        }
+
+        $fields = array();
+        foreach (array_keys($definition['fields']) as $field) {
+            $fields[] = $field;
+        }
+        $query .= ' ('. implode(', ', $fields) . ')';
+
+        return $query;
+    }
+    
+    /**
+     * Get the stucture of a field into an array
+     *
+     * @param string    $table         name of the table on which the index is to be created
+     * @param string    $name          name of the index to be created
+     * @param array     $definition    associative array that defines properties of the index to be created.
+     * @see Doctrine_Export::createIndex()
+     * @return string
+     */
+    public function getCreateIndexSql($table, $name, array $definition)
+    {
+        $type = '';
+        if (isset($definition['type'])) {
+            switch (strtolower($definition['type'])) {
+                case 'unique':
+                    $type = strtoupper($definition['type']) . ' ';
+                break;
+                default:
+                    throw new Doctrine_Export_Exception('Unknown index type ' . $definition['type']);
+            }
+        }
+
+        $query = 'CREATE ' . $type . 'INDEX ' . $name . ' ON ' . $table;
+
+        $fields = array();
+        foreach ($definition['fields'] as $field) {
+            $fields[] = $field;
+        }
+        $query .= ' (' . implode(', ', $fields) . ')';
+
+        return $query;
+    }
+    
+    /**
+     * Quote a string so it can be safely used as a table or column name.
+     *
+     * Delimiting style depends on which database driver is being used.
+     *
+     * NOTE: just because you CAN use delimited identifiers doesn't mean
+     * you SHOULD use them.  In general, they end up causing way more
+     * problems than they solve.
+     *
+     * Portability is broken by using the following characters inside
+     * delimited identifiers:
+     *   + backtick (<kbd>`</kbd>) -- due to MySQL
+     *   + double quote (<kbd>"</kbd>) -- due to Oracle
+     *   + brackets (<kbd>[</kbd> or <kbd>]</kbd>) -- due to Access
+     *
+     * Delimited identifiers are known to generally work correctly under
+     * the following drivers:
+     *   + mssql
+     *   + mysql
+     *   + mysqli
+     *   + oci8
+     *   + pgsql
+     *   + sqlite
+     *
+     * InterBase doesn't seem to be able to use delimited identifiers
+     * via PHP 4.  They work fine under PHP 5.
+     *
+     * @param string $str           identifier name to be quoted
+     * @param bool $checkOption     check the 'quote_identifier' option
+     *
+     * @return string               quoted identifier string
+     */
+    public function quoteIdentifier($str)
+    {
+        if ( ! $this->_quoteIdentifiers) {
+            return $str;
+        }
+
+        // quick fix for the identifiers that contain a dot
+        if (strpos($str, '.')) {
+            $e = explode('.', $str);
+            return $this->quoteIdentifier($e[0])
+                    . '.'
+                    . $this->quoteIdentifier($e[1]);
+        }
+
+        $c = $this->getIdentifierQuoteCharacter();
+        $str = str_replace($c, $c . $c, $str);
+
+        return $c . $str . $c;
+    }
+    
+    /**
+     * createForeignKeySql
+     *
+     * @param string    $table         name of the table on which the foreign key is to be created
+     * @param array     $definition    associative array that defines properties of the foreign key to be created.
+     * @return string
+     */
+    public function getCreateForeignKeySql($table, array $definition)
+    {
+        $table = $this->quoteIdentifier($table);
+        $query = 'ALTER TABLE ' . $table . ' ADD ' . $this->getForeignKeyDeclarationSql($definition);
+
+        return $query;
+    }
+    
+    /**
+     * generates the sql for altering an existing table
+     * (this method is implemented by the drivers)
+     *
+     * @param string $name          name of the table that is intended to be changed.
+     * @param array $changes        associative array that contains the details of each type      *
+     * @param boolean $check        indicates whether the function should just check if the DBMS driver
+     *                              can perform the requested table alterations if the value is true or
+     *                              actually perform them otherwise.
+     * @see Doctrine_Export::alterTable()
+     * @return string
+     */
+    public function getAlterTableSql($name, array $changes, $check = false)
+    {
+        throw new Doctrine_Export_Exception('Alter table not supported by this driver.');
+    }
+    
+    /**
+     * Get declaration of a number of field in bulk
+     *
+     * @param array $fields  a multidimensional associative array.
+     *      The first dimension determines the field name, while the second
+     *      dimension is keyed with the name of the properties
+     *      of the field being declared as array indexes. Currently, the types
+     *      of supported field properties are as follows:
+     *
+     *      length
+     *          Integer value that determines the maximum length of the text
+     *          field. If this argument is missing the field should be
+     *          declared to have the longest length allowed by the DBMS.
+     *
+     *      default
+     *          Text value to be used as default for this field.
+     *
+     *      notnull
+     *          Boolean flag that indicates whether this field is constrained
+     *          to not be set to null.
+     *      charset
+     *          Text value with the default CHARACTER SET for this field.
+     *      collation
+     *          Text value with the default COLLATION for this field.
+     *      unique
+     *          unique constraint
+     *
+     * @return string
+     */
+    public function getFieldDeclarationListSql(array $fields)
+    {
+        foreach ($fields as $fieldName => $field) {
+            $query = $this->getDeclarationSql($fieldName, $field);
+
+            $queryFields[] = $query;
+        }
+        return implode(', ', $queryFields);
+    }
+
+    /**
+     * Obtain DBMS specific SQL code portion needed to declare a generic type
+     * field to be used in statements like CREATE TABLE.
+     *
+     * @param string $name   name the field to be declared.
+     * @param array  $field  associative array with the name of the properties
+     *      of the field being declared as array indexes. Currently, the types
+     *      of supported field properties are as follows:
+     *
+     *      length
+     *          Integer value that determines the maximum length of the text
+     *          field. If this argument is missing the field should be
+     *          declared to have the longest length allowed by the DBMS.
+     *
+     *      default
+     *          Text value to be used as default for this field.
+     *
+     *      notnull
+     *          Boolean flag that indicates whether this field is constrained
+     *          to not be set to null.
+     *      charset
+     *          Text value with the default CHARACTER SET for this field.
+     *      collation
+     *          Text value with the default COLLATION for this field.
+     *      unique
+     *          unique constraint
+     *      check
+     *          column check constraint
+     *
+     * @return string  DBMS specific SQL code portion that should be used to
+     *      declare the specified field.
+     */
+    public function getDeclarationSql($name, array $field)
+    {
+        $default   = $this->getDefaultFieldDeclarationSql($field);
+
+        $charset   = (isset($field['charset']) && $field['charset']) ?
+                    ' ' . $this->getCharsetFieldDeclarationSql($field['charset']) : '';
+
+        $collation = (isset($field['collation']) && $field['collation']) ?
+                    ' ' . $this->getCollationFieldDeclarationSql($field['collation']) : '';
+
+        $notnull   = (isset($field['notnull']) && $field['notnull']) ? ' NOT NULL' : '';
+
+        $unique    = (isset($field['unique']) && $field['unique']) ?
+                    ' ' . $this->getUniqueFieldDeclarationSql() : '';
+
+        $check     = (isset($field['check']) && $field['check']) ?
+                    ' ' . $field['check'] : '';
+
+        $method = 'get' . $field['type'] . 'Declaration';
+
+        if (method_exists($this, $method)) {
+            return $this->$method($name, $field);
+        } else {
+            $dec = $this->getNativeDeclaration($field);
+        }
+        
+        return $this->quoteIdentifier($name, true) . ' ' . $dec . $charset . $default . $notnull . $unique . $check . $collation;
+    }
+
+    /**
+     * getDefaultDeclaration
+     * Obtain DBMS specific SQL code portion needed to set a default value
+     * declaration to be used in statements like CREATE TABLE.
+     *
+     * @param array $field      field definition array
+     * @return string           DBMS specific SQL code portion needed to set a default value
+     */
+    public function getDefaultFieldDeclarationSql($field)
+    {
+        $default = '';
+        if (isset($field['default'])) {
+            if ($field['default'] === '') {
+                $field['default'] = empty($field['notnull'])
+                    ? null : $this->valid_default_values[$field['type']];
+
+                if ($field['default'] === '' &&
+                   ($this->_conn->getAttribute(Doctrine::ATTR_PORTABILITY) & Doctrine::PORTABILITY_EMPTY_TO_NULL)) {
+                    $field['default'] = null;
+                }
+            }
+
+            if ($field['type'] === 'boolean') {
+                $field['default'] = $this->convertBooleans($field['default']);
+            }
+            $default = ' DEFAULT ' . $this->quote($field['default'], $field['type']);
+        }
+        return $default;
+    }
+
+    /**
+     * Obtain DBMS specific SQL code portion needed to set a CHECK constraint
+     * declaration to be used in statements like CREATE TABLE.
+     *
+     * @param array $definition     check definition
+     * @return string               DBMS specific SQL code portion needed to set a CHECK constraint
+     */
+    public function getCheckDeclarationSql(array $definition)
+    {
+        $constraints = array();
+        foreach ($definition as $field => $def) {
+            if (is_string($def)) {
+                $constraints[] = 'CHECK (' . $def . ')';
+            } else {
+                if (isset($def['min'])) {
+                    $constraints[] = 'CHECK (' . $field . ' >= ' . $def['min'] . ')';
+                }
+
+                if (isset($def['max'])) {
+                    $constraints[] = 'CHECK (' . $field . ' <= ' . $def['max'] . ')';
+                }
+            }
+        }
+
+        return implode(', ', $constraints);
+    }
+
+    /**
+     * Obtain DBMS specific SQL code portion needed to set an index
+     * declaration to be used in statements like CREATE TABLE.
+     *
+     * @param string $name          name of the index
+     * @param array $definition     index definition
+     * @return string               DBMS specific SQL code portion needed to set an index
+     */
+    public function getIndexDeclarationSql($name, array $definition)
+    {
+        $name   = $this->quoteIdentifier($name);
+        $type   = '';
+
+        if (isset($definition['type'])) {
+            if (strtolower($definition['type']) == 'unique') {
+                $type = strtoupper($definition['type']) . ' ';
+            } else {
+                throw new Doctrine_Export_Exception('Unknown index type ' . $definition['type']);
+            }
+        }
+
+        if ( ! isset($definition['fields']) || ! is_array($definition['fields'])) {
+            throw new Doctrine_Export_Exception('No index columns given.');
+        }
+
+        $query = $type . 'INDEX ' . $name;
+
+        $query .= ' (' . $this->getIndexFieldDeclarationListSql($definition['fields']) . ')';
+
+        return $query;
+    }
+
+    /**
+     * getIndexFieldDeclarationList
+     * Obtain DBMS specific SQL code portion needed to set an index
+     * declaration to be used in statements like CREATE TABLE.
+     *
+     * @return string
+     */
+    public function getIndexFieldDeclarationListSql(array $fields)
+    {
+        $ret = array();
+        foreach ($fields as $field => $definition) {
+            if (is_array($definition)) {
+                $ret[] = $this->quoteIdentifier($field);
+            } else {
+                $ret[] = $this->quoteIdentifier($definition);
+            }
+        }
+        return implode(', ', $ret);
+    }
+
+    /**
+     * A method to return the required SQL string that fits between CREATE ... TABLE
+     * to create the table as a temporary table.
+     *
+     * Should be overridden in driver classes to return the correct string for the
+     * specific database type.
+     *
+     * The default is to return the string "TEMPORARY" - this will result in a
+     * SQL error for any database that does not support temporary tables, or that
+     * requires a different SQL command from "CREATE TEMPORARY TABLE".
+     *
+     * @return string The string required to be placed between "CREATE" and "TABLE"
+     *                to generate a temporary table, if possible.
+     */
+    public function getTemporaryTableSql()
+    {
+        return 'TEMPORARY';
+    }
+    
+    /**
+     * Enter description here...
+     *
+     * @return unknown
+     */
+    public function getShowDatabasesSql()
+    {
+        throw new Doctrine_Export_Exception('Show databases not supported by this driver.');
+    }
+    
+    /**
+     * getForeignKeyDeclaration
+     * Obtain DBMS specific SQL code portion needed to set the FOREIGN KEY constraint
+     * of a field declaration to be used in statements like CREATE TABLE.
+     *
+     * @param array $definition         an associative array with the following structure:
+     *          name                    optional constraint name
+     *
+     *          local                   the local field(s)
+     *
+     *          foreign                 the foreign reference field(s)
+     *
+     *          foreignTable            the name of the foreign table
+     *
+     *          onDelete                referential delete action
+     *
+     *          onUpdate                referential update action
+     *
+     *          deferred                deferred constraint checking
+     *
+     * The onDelete and onUpdate keys accept the following values:
+     *
+     * CASCADE: Delete or update the row from the parent table and automatically delete or
+     *          update the matching rows in the child table. Both ON DELETE CASCADE and ON UPDATE CASCADE are supported.
+     *          Between two tables, you should not define several ON UPDATE CASCADE clauses that act on the same column
+     *          in the parent table or in the child table.
+     *
+     * SET NULL: Delete or update the row from the parent table and set the foreign key column or columns in the
+     *          child table to NULL. This is valid only if the foreign key columns do not have the NOT NULL qualifier
+     *          specified. Both ON DELETE SET NULL and ON UPDATE SET NULL clauses are supported.
+     *
+     * NO ACTION: In standard SQL, NO ACTION means no action in the sense that an attempt to delete or update a primary
+     *           key value is not allowed to proceed if there is a related foreign key value in the referenced table.
+     *
+     * RESTRICT: Rejects the delete or update operation for the parent table. NO ACTION and RESTRICT are the same as
+     *           omitting the ON DELETE or ON UPDATE clause.
+     *
+     * SET DEFAULT
+     *
+     * @return string  DBMS specific SQL code portion needed to set the FOREIGN KEY constraint
+     *                 of a field declaration.
+     */
+    public function getForeignKeyDeclarationSql(array $definition)
+    {
+        $sql  = $this->getForeignKeyBaseDeclarationSql($definition);
+        $sql .= $this->getAdvancedForeignKeyOptionsSql($definition);
+
+        return $sql;
+    }
+
+    /**
+     * getAdvancedForeignKeyOptions
+     * Return the FOREIGN KEY query section dealing with non-standard options
+     * as MATCH, INITIALLY DEFERRED, ON UPDATE, ...
+     *
+     * @param array $definition     foreign key definition
+     * @return string
+     */
+    public function getAdvancedForeignKeyOptionsSql(array $definition)
+    {
+        $query = '';
+        if ( ! empty($definition['onUpdate'])) {
+            $query .= ' ON UPDATE ' . $this->getForeignKeyReferentialActionSql($definition['onUpdate']);
+        }
+        if ( ! empty($definition['onDelete'])) {
+            $query .= ' ON DELETE ' . $this->getForeignKeyReferentialActionSql($definition['onDelete']);
+        }
+        return $query;
+    }
+
+    /**
+     * returns given referential action in uppercase if valid, otherwise throws
+     * an exception
+     *
+     * @throws Doctrine_Exception_Exception     if unknown referential action given
+     * @param string $action    foreign key referential action
+     * @param string            foreign key referential action in uppercase
+     */
+    public function getForeignKeyReferentialActionSql($action)
+    {
+        $upper = strtoupper($action);
+        switch ($upper) {
+            case 'CASCADE':
+            case 'SET NULL':
+            case 'NO ACTION':
+            case 'RESTRICT':
+            case 'SET DEFAULT':
+                return $upper;
+            break;
+            default:
+                throw new Doctrine_Export_Exception('Unknown foreign key referential action \'' . $upper . '\' given.');
+        }
+    }
+
+    /**
+     * Obtain DBMS specific SQL code portion needed to set the FOREIGN KEY constraint
+     * of a field declaration to be used in statements like CREATE TABLE.
+     *
+     * @param array $definition
+     * @return string
+     */
+    public function getForeignKeyBaseDeclarationSql(array $definition)
+    {
+        $sql = '';
+        if (isset($definition['name'])) {
+            $sql .= ' CONSTRAINT ' . $this->quoteIdentifier($definition['name']) . ' ';
+        }
+        $sql .= 'FOREIGN KEY (';
+
+        if ( ! isset($definition['local'])) {
+            throw new Doctrine_Export_Exception('Local reference field missing from definition.');
+        }
+        if ( ! isset($definition['foreign'])) {
+            throw new Doctrine_Export_Exception('Foreign reference field missing from definition.');
+        }
+        if ( ! isset($definition['foreignTable'])) {
+            throw new Doctrine_Export_Exception('Foreign reference table missing from definition.');
+        }
+
+        if ( ! is_array($definition['local'])) {
+            $definition['local'] = array($definition['local']);
+        }
+        if ( ! is_array($definition['foreign'])) {
+            $definition['foreign'] = array($definition['foreign']);
+        }
+
+        $sql .= implode(', ', array_map(array($this, 'quoteIdentifier'), $definition['local']))
+              . ') REFERENCES '
+              . $this->_conn->quoteIdentifier($definition['foreignTable']) . '('
+              . implode(', ', array_map(array($this, 'quoteIdentifier'), $definition['foreign'])) . ')';
+
+        return $sql;
+    }
+
+    /**
+     * Obtain DBMS specific SQL code portion needed to set the UNIQUE constraint
+     * of a field declaration to be used in statements like CREATE TABLE.
+     *
+     * @return string  DBMS specific SQL code portion needed to set the UNIQUE constraint
+     *                 of a field declaration.
+     */
+    public function getUniqueFieldDeclarationSql()
+    {
+        return 'UNIQUE';
+    }
+
+    /**
+     * Obtain DBMS specific SQL code portion needed to set the CHARACTER SET
+     * of a field declaration to be used in statements like CREATE TABLE.
+     *
+     * @param string $charset   name of the charset
+     * @return string  DBMS specific SQL code portion needed to set the CHARACTER SET
+     *                 of a field declaration.
+     */
+    public function getCharsetFieldDeclarationSql($charset)
+    {
+        return '';
+    }
+
+    /**
+     * Obtain DBMS specific SQL code portion needed to set the COLLATION
+     * of a field declaration to be used in statements like CREATE TABLE.
+     *
+     * @param string $collation   name of the collation
+     * @return string  DBMS specific SQL code portion needed to set the COLLATION
+     *                 of a field declaration.
+     */
+    public function getCollationFieldDeclarationSql($collation)
+    {
+        return '';
+    }
+    
+    /**
      * build a pattern matching string
      *
      * EXPERIMENTAL
@@ -838,7 +1647,7 @@ abstract class Doctrine_DatabasePlatform
      * @return string  DBMS specific SQL code portion that should be used to
      *      declare the specified field.
      */
-    abstract public function getNativeDeclaration($field);
+    abstract public function getNativeDeclaration(array $field);
     
     /**
      * Maps a native array description of a field to a Doctrine datatype and length
@@ -930,6 +1739,31 @@ abstract class Doctrine_DatabasePlatform
         }
         return $this->_properties[$name];
     }
+    
+    /**
+     * Some platforms need the boolean values to be converted.
+     * Default conversion defined here converts to integers.
+     *
+     * @param array $item
+     * @return void
+     */
+    public function convertBooleans($item)
+    {
+        if (is_array($item)) {
+            foreach ($item as $k => $value) {
+                if (is_bool($value)) {
+                    $item[$k] = (int) $value;
+                }
+            }
+        } else {
+            if (is_bool($item)) {
+                $item = (int) $item;
+            }
+        }
+        return $item;
+    }
+    
+    /* supports*() metods */
     
     public function supportsSequences()
     {

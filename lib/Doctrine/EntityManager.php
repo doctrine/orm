@@ -653,6 +653,35 @@ class Doctrine_EntityManager
         return $this->_unitOfWork;
     }
     
+    /**
+     * Enter description here...
+     *
+     * @param unknown_type $type
+     * @param unknown_type $class
+     */
+    /*public function getIdGenerator($class)
+    {
+        $type = $class->getIdGeneratorType();
+        if ($type == Doctrine_ClassMetadata::GENERATOR_TYPE_IDENTITY) {
+            if ( ! isset($this->_idGenerators[$type])) {
+                $this->_idGenerators[$type] = new Doctrine_Id_IdentityGenerator($this);
+            }
+        } else if ($type == Doctrine_ClassMetadata::GENERATOR_TYPE_SEQUENCE) {
+            if ( ! isset($this->_idGenerators[$type])) {
+                $this->_idGenerators[$type] = new Doctrine_Id_SequenceGenerator($this);
+            }
+        } else if ($type == Doctrine_ClassMetadata::GENERATOR_TYPE_TABLE) {
+            if ( ! isset($this->_idGenerators[$type])) {
+                $this->_idGenerators[$type] = new Doctrine_Id_TableGenerator($this);
+            }
+        }
+        
+        $generator = $this->_idGenerators[$type];
+        $generator->configureForClass($class);
+        
+        return $generator;
+    }*/
+    
 }
 
 ?>

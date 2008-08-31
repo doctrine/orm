@@ -19,7 +19,7 @@
  * <http://www.phpdoctrine.org>.
  */
 
-#namespace Doctrine::DBAL::Import;
+#namespace Doctrine::ORM::Import;
 
 /**
  * class Doctrine_Import
@@ -64,11 +64,11 @@ class Doctrine_Import extends Doctrine_Connection_Module
           $builder->setOptions($options);
 
           $classes = array();
-          foreach ($connection->import->listTables() as $table) {
+          foreach ($connection->getSchemaManager()->listTables() as $table) {
               $definition = array();
               $definition['tableName'] = $table;
               $definition['className'] = Doctrine_Inflector::classify($table);
-              $definition['columns'] = $connection->import->listTableColumns($table);
+              $definition['columns'] = $connection->getSchemaManager()->listTableColumns($table);
               
               $builder->buildRecord($definition);
         

@@ -177,15 +177,16 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
      * - <b>fieldName</b> (string)
      * The name of the field in the Entity. 
      * 
-     * - <b>type</b> (string)
-     * The database type of the column. Can be one of Doctrine's portable types.
+     * - <b>type</b> (object Doctrine::DBAL::Types::* or custom type)
+     * The database type of the column. Can be one of Doctrine's portable types
+     * or a custom type.
      * 
      * - <b>columnName</b> (string, optional)
      * The column name. Optional. Defaults to the field name.
      * 
      * - <b>length</b> (integer, optional)
-     * The database length of the column. Optional. Defaults to Doctrine's 
-     * default values for the portable types.
+     * The database length of the column. Optional. Default value taken from
+     * the type.
      * 
      * - <b>id</b> (boolean, optional)
      * Marks the field as the primary key of the Entity. Multiple fields of an
@@ -200,14 +201,26 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
      * - <b>nullable</b> (boolean, optional)
      * Whether the column is nullable. Defaults to TRUE.
      * 
-     * - <b>columnDefinition</b> (string, optional)
+     * - <b>columnDefinition</b> (string, optional, schema-only)
      * The SQL fragment that is used when generating the DDL for the column.
      * 
-     * - <b>precision</b> (integer, optional)
+     * - <b>precision</b> (integer, optional, schema-only)
      * The precision of a decimal column. Only valid if the column type is decimal.
      * 
-     * - <b>scale</b> (integer, optional)
+     * - <b>scale</b> (integer, optional, schema-only)
      * The scale of a decimal column. Only valid if the column type is decimal.
+     * 
+     * - <b>index (string, optional, schema-only)</b>
+     * Whether an index should be generated for the column.
+     * The value specifies the name of the index. To create a multi-column index,
+     * just use the same name for several mappings.
+     * 
+     * - <b>unique (string, optional, schema-only)</b>
+     * Whether a unique constraint should be generated for the column.
+     * The value specifies the name of the unique constraint. To create a multi-column 
+     * unique constraint, just use the same name for several mappings.
+     * 
+     * - <b>foreignKey (string, optional, schema-only)</b>
      *
      * @var array
      */    
@@ -275,25 +288,13 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
      *
      *      -- charset                      character set
      *
-     *      -- checks                       the check constraints of this table, eg. 'price > dicounted_price'
-     *
-     *      -- collation                    collation attribute
-     *
-     *      -- indexes                      the index definitions of this table
-     *
-     *      -- sequenceName                 Some databases need sequences instead of auto incrementation primary keys,
-     *                                      you can set specific sequence for your table by calling setOption('sequenceName', $seqName)
-     *                                      where $seqName is the name of the desired sequence
+     *      -- collate                    collation attribute
      */
     protected $_tableOptions = array(
-            'tableName'      => null,
-            'sequenceName'   => null,
-            'type'           => null,
-            'charset'        => null,
-            'collation'      => null,
-            'collate'        => null,
-            'indexes'        => array(),
-            'checks'         => array()
+            'tableName' => null,
+            'type' => null,
+            'charset' => null,
+            'collate' => null
     );
     
     /**
@@ -319,11 +320,18 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
     protected $_lifecycleListeners = array();
     
     /**
-     * The association mappings.
+     * The association mappings. All mappings, inverse and owning side.
      *
      * @var array
      */
     protected $_associationMappings = array();
+    
+    /**
+     * List of inverse association mappings, indexed by mappedBy field name.
+     *
+     * @var array
+     */
+    protected $_inverseMappings = array();
     
     /**
      * Flag indicating whether the identifier/primary key of the class is composite.
@@ -553,6 +561,32 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
         return $this->_associationMappings[$fieldName];
     }
     
+    /**
+     * Gets the inverse association mapping for the given fieldname.
+     *
+     * @param string $mappedByFieldName
+     * @return Doctrine::ORM::Mapping::AssociationMapping The mapping.
+     */
+    public function getInverseAssociationMapping($mappedByFieldName)
+    {
+        if ( ! isset($this->_associationMappings[$fieldName])) {
+            throw Doctrine_MappingException::mappingNotFound($fieldName);
+        }
+        
+        return $this->_inverseMappings[$mappedByFieldName];
+    }
+    
+    /**
+     * Whether the class has an inverse association mapping on the given fieldname.
+     *
+     * @param string $mappedByFieldName
+     * @return boolean
+     */
+    public function hasInverseAssociationMapping($mappedByFieldName)
+    {
+        return isset($this->_inverseMappings[$mappedByFieldName]);
+    }
+    
     public function addAssociationMapping($fieldName, Doctrine_Association $assoc)
     {
         $this->_associationMappings[$fieldName] = $assoc;
@@ -718,7 +752,6 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
             if ( ! $this->_isIdentifierComposite && count($this->_identifier) > 1) {
                 $this->_isIdentifierComposite = true;
             }
-            
         }
         
         return $mapping;
@@ -1272,7 +1305,7 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
         } else if ($this->_inheritanceType == self::INHERITANCE_TYPE_JOINED) {
             // Remove inherited, non-pk fields. They're not in the table of this class
             foreach ($allColumns as $name => $definition) {
-                if (isset($definition['primary']) && $definition['primary'] === true) {
+                if (isset($definition['id']) && $definition['id'] === true) {
                     if ($this->getParentClasses() && isset($definition['autoincrement'])) {
                         unset($allColumns[$name]['autoincrement']);
                     }
@@ -1286,7 +1319,7 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
             // If this is a subclass, just remove existing autoincrement options on the pk
             if ($this->getParentClasses()) {
                 foreach ($allColumns as $name => $definition) {
-                    if (isset($definition['primary']) && $definition['primary'] === true) {
+                    if (isset($definition['id']) && $definition['id'] === true) {
                         if (isset($definition['autoincrement'])) {
                             unset($allColumns[$name]['autoincrement']);
                         }
@@ -1311,7 +1344,7 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
             }
             $columns[$name] = $definition;
 
-            if (isset($definition['primary']) && $definition['primary']) {
+            if (isset($definition['id']) && $definition['id']) {
                 $primary[] = $name;
             }
         }
@@ -1493,12 +1526,23 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
     {
         $mapping = $this->_completeAssociationMapping($mapping);
         $oneToOneMapping = new Doctrine_Association_OneToOne($mapping);
-        $sourceFieldName = $oneToOneMapping->getSourceFieldName();
-        if (isset($this->_associationMappings[$sourceFieldName])) {
-            throw Doctrine_MappingException::duplicateFieldMapping();
+        $this->_storeAssociationMapping($oneToOneMapping);
+        
+        /*if ($oneToOneMapping->isInverseSide()) {
+            //FIXME: infinite recursion possible?
+            // Alternative: Store inverse side mappings indexed by mappedBy fieldname
+            // ($this->_inverseMappings). Then look it up.            
+            $owningClass = $this->_em->getClassMetadata($oneToOneMapping->getTargetEntityName());
+            $owningClass->getAssociationMapping($oneToOneMapping->getMappedByFieldName())
+                    ->setBidirectional($oneToOneMapping->getSourceFieldName());
+        }*/
+    }
+    
+    private function _registerMappingIfInverse(Doctrine_Association $assoc)
+    {
+        if ($assoc->isInverseSide()) {
+            $this->_inverseMappings[$assoc->getMappedByFieldName()] = $assoc;
         }
-        $this->_associationMappings[$sourceFieldName] = $oneToOneMapping;
-        $this->_registerCustomAssociationAccessors($oneToOneMapping, $sourceFieldName);
     }
 
     /**
@@ -1510,12 +1554,7 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
     {
         $mapping = $this->_completeAssociationMapping($mapping);
         $oneToManyMapping = new Doctrine_Association_OneToMany($mapping);
-        $sourceFieldName = $oneToManyMapping->getSourceFieldName();
-        if (isset($this->_associationMappings[$sourceFieldName])) {
-            throw Doctrine_MappingException::duplicateFieldMapping();
-        }
-        $this->_associationMappings[$sourceFieldName] = $oneToManyMapping;
-        $this->_registerCustomAssociationAccessors($oneToManyMapping, $sourceFieldName);
+        $this->_storeAssociationMapping($oneToManyMapping);
     }
 
     /**
@@ -1530,11 +1569,31 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
     }
 
     /**
-     * @todo Implementation.
+     * Adds a many-to-many mapping.
+     * 
+     * @param array $mapping The mapping.
      */
     public function mapManyToMany(array $mapping)
     {
-
+        $mapping = $this->_completeAssociationMapping($mapping);
+        $manyToManyMapping = new Doctrine_Association_ManyToManyMapping($mapping);
+        $this->_storeAssociationMapping($manyToManyMapping);
+    }
+    
+    /**
+     * Stores the association mapping.
+     *
+     * @param Doctrine_Association $assocMapping
+     */
+    private function _storeAssociationMapping(Doctrine_Association $assocMapping)
+    {
+        $sourceFieldName = $assocMapping->getSourceFieldName();
+        if (isset($this->_associationMappings[$sourceFieldName])) {
+            throw Doctrine_MappingException::duplicateFieldMapping();
+        }
+        $this->_associationMappings[$sourceFieldName] = $assocMapping;
+        $this->_registerCustomAssociationAccessors($assocMapping, $sourceFieldName);
+        $this->_registerMappingIfInverse($assocMapping);
     }
     
     /**

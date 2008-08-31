@@ -299,7 +299,7 @@ class Doctrine_Schema_MsSqlSchemaManager extends Doctrine_Schema_SchemaManager
 
             $val['type'] = $type;
             $val['identity'] = $identity;
-            $decl = $this->conn->dataDict->getPortableDeclaration($val);
+            $decl = $this->conn->getDatabasePlatform()->getPortableDeclaration($val);
 
             $description  = array(
                 'name'      => $val['column_name'],

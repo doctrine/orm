@@ -96,6 +96,8 @@ class Doctrine_EntityRepository
             $values = is_array($id) ? array_values($id) : array($id);
             $keys = $this->_classMetadata->getIdentifier();
         }
+        
+        //TODO: check identity map?
 
         return $this->_createQuery()
                 ->where(implode(' = ? AND ', $keys) . ' = ?')

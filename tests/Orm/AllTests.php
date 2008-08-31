@@ -11,6 +11,7 @@ require_once 'Orm/Query/AllTests.php';
 require_once 'Orm/Hydration/AllTests.php';
 require_once 'Orm/Ticket/AllTests.php';
 require_once 'Orm/Entity/AllTests.php';
+require_once 'Orm/Associations/AllTests.php';
 
 // Tests
 require_once 'Orm/UnitOfWorkTest.php';
@@ -39,6 +40,7 @@ class Orm_AllTests
         $suite->addTest(Orm_Hydration_AllTests::suite());
         $suite->addTest(Orm_Entity_AllTests::suite());
         $suite->addTest(Orm_Ticket_AllTests::suite());
+        $suite->addTest(Orm_Associations_AllTests::suite());
 
         return $suite;
     }

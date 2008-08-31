@@ -103,12 +103,20 @@ class Doctrine_Association implements Serializable
     protected $_sourceFieldName;
     
     /**
-     * Identifies the field on the owning side that has the mapping for the
+     * Identifies the field on the owning side that controls the mapping for the
      * association. This is only set on the inverse side of an association.
      *
      * @var string
      */
     protected $_mappedByFieldName;
+    
+    /**
+     * Identifies the field on the inverse side of a bidirectional association.
+     * This is only set on the owning side of an association.
+     *
+     * @var string
+     */
+    //protected $_inverseSideFieldName;
     
     /**
      * The name of the join table, if any.
@@ -127,7 +135,16 @@ class Doctrine_Association implements Serializable
      */
     public function __construct(array $mapping)
     {
-        /*$this->_mapping = array(
+        //$this->_initMappingArray();
+        //$mapping = $this->_validateAndCompleteMapping($mapping);
+        //$this->_mapping = array_merge($this->_mapping, $mapping);*/
+        
+        $this->_validateAndCompleteMapping($mapping);
+    }
+    
+    protected function _initMappingArray()
+    {
+        $this->_mapping = array(
             'fieldName' => null,
             'sourceEntity' => null,
             'targetEntity' => null,
@@ -137,10 +154,8 @@ class Doctrine_Association implements Serializable
             'accessor' => null,
             'mutator' => null,
             'optional' => true,
-            'cascade' => array()
+            'cascades' => array()
         );
-        $this->_mapping = array_merge($this->_mapping, $mapping);*/
-        $this->_validateAndCompleteMapping($mapping);
     }
     
     /**
@@ -341,6 +356,36 @@ class Doctrine_Association implements Serializable
     {
         return $this->_mappedByFieldName;
     }
+    
+    /*public function getInverseSideFieldName()
+    {
+        return $this->_inverseSideFieldName;
+    }*/
+    /**
+     * Marks the association as bidirectional, specifying the field name of
+     * the inverse side.
+     * This is called on the owning side, when an inverse side is discovered.
+     * This does only make sense to call on the owning side.
+     *
+     * @param string $inverseSideFieldName
+     */
+    /*public function setBidirectional($inverseSideFieldName)
+    {
+        if ( ! $this->_isOwningSide) {
+            return; //TODO: exception?
+        }
+        $this->_inverseSideFieldName = $inverseSideFieldName;
+    }*/
+    
+    /**
+     * Whether the association is bidirectional.
+     *
+     * @return boolean
+     */
+    /*public function isBidirectional()
+    {
+        return $this->_mappedByFieldName || $this->_inverseSideFieldName;
+    }*/
     
     /**
      * Whether the source field of the association has a custom accessor.

@@ -666,7 +666,7 @@ END;
      */
     public function buildRecord(array $definition)
     {
-        if ( !isset($definition['className'])) {
+        if ( ! isset($definition['className'])) {
             throw new Doctrine_Builder_Exception('Missing class name.');
         }
 

@@ -400,6 +400,7 @@ class Doctrine_HydratorNew extends Doctrine_Hydrator_Abstract
                 $rowData[$dqlAlias][$fieldName] = $this->prepareValue(
                         $class, $fieldName, $value, $cache[$key]['type']);
             }
+            //$rowData[$dqlAlias][$fieldName] = $cache[$key]['type']->convertToObjectValue($value);
 
             if ( ! isset($nonemptyComponents[$dqlAlias]) && $value !== null) {
                 $nonemptyComponents[$dqlAlias] = true;
@@ -468,6 +469,7 @@ class Doctrine_HydratorNew extends Doctrine_Hydrator_Abstract
                 $rowData[$dqlAlias . '_' . $fieldName] = $this->prepareValue(
                         $class, $fieldName, $value, $cache[$key]['type']);
             }
+            //$rowData[$dqlAlias . '_' . $fieldName] = $cache[$key]['type']->convertToObjectValue($value);
         }
         
         return $rowData;
