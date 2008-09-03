@@ -14,10 +14,36 @@
  * Initially Select and Sub-select DQL will not support LIMIT and OFFSET (due to limit-subquery algorithm)
  */
 
+
+/*
+ * TERMINALS
+ *
+ * identifier (name, email, ...)
+ * string ('foo', 'bar''s house', '%ninja%', ...)
+ * char ('/', '\\', ' ', ...)
+ * integer (-1, 0, 1, 34, ...)
+ * float (-0.23, 0.007, 1.245342E+8, ...)
+ * boolean (false, true)
+ */
+
+
+/*
+ * QUERY LANGUAGE (START)
+ */
+QueryLanguage ::= SelectStatement | UpdateStatement | DeleteStatement
+
+
+/*
+ * STATEMENTS
+ */
+SelectStatement ::= SelectClause FromClause [WhereClause] [GroupByClause] [HavingClause] [OrderByClause]
+UpdateStatement ::= UpdateClause [WhereClause]
+DeleteStatement ::= DeleteClause [WhereClause]
+
+
 /*
  * IDENTIFIERS
  */
-
 IdentificationVariable ::= identifier
 
 /* identifier that must be a class name */
@@ -42,120 +68,132 @@ SimpleStateField ::= FieldIdentificationVariable
 /*
  * PATH EXPRESSIONS
  */
-JoinAssociationPathExpression      ::= JoinCollectionValuedPathExpression | JoinSingleValuedAssociationPathExpression
-JoinCollectionValuedPathExpression ::= IdentificationVariable "." CollectionValuedAssociationField
+JoinAssociationPathExpression             ::= JoinCollectionValuedPathExpression | JoinSingleValuedAssociationPathExpression
+JoinCollectionValuedPathExpression        ::= IdentificationVariable "." CollectionValuedAssociationField
 JoinSingleValuedAssociationPathExpression ::= IdentificationVariable "." SingleValuedAssociationField
-AssociationPathExpression          ::= CollectionValuedPathExpression | SingleValuedAssociationPathExpression
-SingleValuedPathExpression         ::= StateFieldPathExpression | SingleValuedAssociationPathExpression
-StateFieldPathExpression           ::= {IdentificationVariable | SingleValuedAssociationPathExpression} "." StateField
-SingleValuedAssociationPathExpression ::= IdentificationVariable "." {SingleValuedAssociationField "."}* SingleValuedAssociationField
-CollectionValuedPathExpression     ::= IdentificationVariable "." {SingleValuedAssociationField "."}*CollectionValuedAssociationField
-StateField                         ::= {EmbeddedClassStateField "."}*SimpleStateField
+AssociationPathExpression                 ::= CollectionValuedPathExpression | SingleValuedAssociationPathExpression
+SingleValuedPathExpression                ::= StateFieldPathExpression | SingleValuedAssociationPathExpression
+StateFieldPathExpression                  ::= {IdentificationVariable | SingleValuedAssociationPathExpression} "." StateField
+SingleValuedAssociationPathExpression     ::= IdentificationVariable "." {SingleValuedAssociationField "."}* SingleValuedAssociationField
+CollectionValuedPathExpression            ::= IdentificationVariable "." {SingleValuedAssociationField "."}* CollectionValuedAssociationField
+StateField                                ::= {EmbeddedClassStateField "."}* SimpleStateField
 
-
-/*
- * QUERY LANGUAGE (START)
- */
-QueryLanguage   ::= SelectStatement | UpdateStatement | DeleteStatement
-
-/*
- * STATEMENTS
- */
-SelectStatement ::= SelectClause FromClause [WhereClause] [GroupByClause] [HavingClause] [OrderByClause]
-UpdateStatement ::= UpdateClause [WhereClause]
-DeleteStatement ::= DeleteClause [WhereClause]
 
 /*
  * CLAUSES
  */
-SelectClause    ::= "SELECT" ["ALL" | "DISTINCT"] SelectExpression {"," SelectExpression}*
-SimpleSelectClause ::= "SELECT" ["ALL" | "DISTINCT"] SelectExpression
-DeleteClause    ::= "DELETE" ["FROM"] AbstractSchemaName [["AS"] IdentificationVariable]
-WhereClause     ::= "WHERE" ConditionalExpression
-FromClause      ::= "FROM" IdentificationVariableDeclaration {"," IdentificationVariableDeclaration}*
-HavingClause    ::= "HAVING" ConditionalExpression
-GroupByClause   ::= "GROUP" "BY" GroupByItem {"," GroupByItem}*
-OrderByClause   ::= "ORDER" "BY" OrderByItem {"," OrderByItem}*
-LimitClause     ::= "LIMIT" integer
-OffsetClause    ::= "OFFSET" integer
-UpdateClause    ::= "UPDATE" AbstractSchemaName [["AS"] IdentificationVariable] "SET" UpdateItem {"," UpdateItem}*
-/* TODO: subselect needs to be changed maybe. See JPQL spec. */
-Subselect       ::= SimpleSelectClause FromClause [WhereClause] [GroupByClause] [HavingClause] [OrderByClause]
+SelectClause        ::= "SELECT" ["ALL" | "DISTINCT"] SelectExpression {"," SelectExpression}*
+SimpleSelectClause  ::= "SELECT" ["ALL" | "DISTINCT"] SimpleSelectExpression
+DeleteClause        ::= "DELETE" ["FROM"] AbstractSchemaName [["AS"] IdentificationVariable]
+WhereClause         ::= "WHERE" ConditionalExpression
+FromClause          ::= "FROM" IdentificationVariableDeclaration {"," IdentificationVariableDeclaration}*
+SubselectFromClause ::= "FROM" SubselectIdentificationVariableDeclaration {"," SubselectIdentificationVariableDeclaration}*
+HavingClause        ::= "HAVING" ConditionalExpression
+GroupByClause       ::= "GROUP" "BY" GroupByItem {"," GroupByItem}*
+OrderByClause       ::= "ORDER" "BY" OrderByItem {"," OrderByItem}*
+LimitClause         ::= "LIMIT" integer
+OffsetClause        ::= "OFFSET" integer
+UpdateClause        ::= "UPDATE" AbstractSchemaName [["AS"] IdentificationVariable] "SET" UpdateItem {"," UpdateItem}*
+Subselect           ::= SimpleSelectClause SubselectFromClause [WhereClause] [GroupByClause] [HavingClause] [OrderByClause]
+
 
 /*
  * ITEMS
  */
 OrderByItem ::= StateFieldPathExpression ["ASC" | "DESC"]
 GroupByItem ::= SingleValuedPathExpression
-UpdateItem ::= [IdentificationVariable"."]{StateField | SingleValuedAssociationField} "=" NewValue
-NewValue ::= SimpleArithmeticExpression | StringPrimary | DatetimePrimary | BooleanPrimary |
-            EnumPrimary | SimpleEntityExpression | "NULL"
+UpdateItem  ::= [IdentificationVariable"."]{StateField | SingleValuedAssociationField} "=" NewValue
+NewValue    ::= SimpleArithmeticExpression | StringPrimary | DatetimePrimary | BooleanPrimary |
+                EnumPrimary | SimpleEntityExpression | "NULL"
+
 
 /*
  * FROM/JOIN/INDEX BY
  */
-IdentificationVariableDeclaration ::= RangeVariableDeclaration [IndexBy] {JoinVariableDeclaration}*
-JoinVariableDeclaration ::= Join [IndexBy]
-RangeVariableDeclaration ::= AbstractSchemaName [AS] IdentificationVariable
-Join ::= ["LEFT" ["OUTER"] | "INNER"] "JOIN" JoinAssociationPathExpression [AS] IdentificationVariable [("ON" | "WITH") ConditionalExpression]
-IndexBy ::= "INDEX" "BY" StateFieldPathExpression
+IdentificationVariableDeclaration          ::= RangeVariableDeclaration [IndexBy] {JoinVariableDeclaration}*
+SubselectIdentificationVariableDeclaration ::= IdentificationVariableDeclaration | AssociationPathExpression 
+                                               ["AS"] IdentificationVariable
+JoinVariableDeclaration                    ::= Join [IndexBy]
+RangeVariableDeclaration                   ::= AbstractSchemaName ["AS"] IdentificationVariable
+Join                                       ::= ["LEFT" ["OUTER"] | "INNER"] "JOIN" JoinAssociationPathExpression 
+                                               ["AS"] IdentificationVariable [("ON" | "WITH") ConditionalExpression]
+IndexBy                                    ::= "INDEX" "BY" StateFieldPathExpression
+
 
 /* 
  * SELECT EXPRESSION
  */
-SelectExpression ::= IdentificationVariable ["." "*"] |
-                     (StateFieldPathExpression | AggregateExpression |
-                     "(" Subselect ")" ) [["AS"] FieldIdentificationVariable]
+SelectExpression       ::= IdentificationVariable ["." "*"] |
+                           (StateFieldPathExpression | AggregateExpression |
+                           "(" Subselect ")" ) [["AS"] FieldIdentificationVariable]
+SimpleSelectExpression ::= SingleValuedPathExpression | IdentificationVariable | AggregateExpression
+
 
 /*
  * CONDITIONAL EXPRESSIONS
  */
-ConditionalExpression ::= ConditionalTerm | ConditionalExpression "OR" ConditionalTerm
-ConditionalTerm       ::= ConditionalFactor | ConditionalTerm "AND" ConditionalFactor
-ConditionalFactor     ::= ["NOT"] ConditionalPrimary
-ConditionalPrimary    ::= SimpleConditionalExpression | "(" ConditionalExpression ")"
-/* EmptyCollectionComparisonExpression and CollectionMemberExpression are for the future */
+ConditionalExpression       ::= ConditionalTerm | ConditionalExpression "OR" ConditionalTerm
+ConditionalTerm             ::= ConditionalFactor | ConditionalTerm "AND" ConditionalFactor
+ConditionalFactor           ::= ["NOT"] ConditionalPrimary
+ConditionalPrimary          ::= SimpleConditionalExpression | "(" ConditionalExpression ")"
 SimpleConditionalExpression ::= ComparisonExpression | BetweenExpression | LikeExpression |
-                      InExpression | NullComparisonExpression | ExistsExpression |
-                      EmptyCollectionComparisonExpression | CollectionMemberExpression
+                                InExpression | NullComparisonExpression | ExistsExpression |
+                                EmptyCollectionComparisonExpression | CollectionMemberExpression
+/* EmptyCollectionComparisonExpression and CollectionMemberExpression are for the future */
+
 
 /*
  * COLLECTION EXPRESSIONS (FOR THE FUTURE)
  */
 EmptyCollectionComparisonExpression ::= CollectionValuedPathExpression "IS" ["NOT"] "EMPTY"
-CollectionMemberExpression ::= EntityExpression ["NOT"] "MEMBER" ["OF"] CollectionValuedPathExpression 
+CollectionMemberExpression          ::= EntityExpression ["NOT"] "MEMBER" ["OF"] CollectionValuedPathExpression
 
-Atom ::= string | integer | float | boolean | input_parameter
+
+/*
+ * LITERAL VALUES
+ */
+Literal ::= string | char | integer | float | boolean | InputParameter
+
+
+/*
+ * INPUT PARAMETER
+ */
+InputParameter      ::= PositionalParameter | NamedParameter
+PositionalParameter ::= "?" integer
+NamedParameter      ::= ":" string
+
 
 /*
  * ARITHMETIC EXPRESSIONS
  */
-ArithmeticExpression ::= SimpleArithmeticExpression | "(" Subselect ")" 
+ArithmeticExpression       ::= SimpleArithmeticExpression | "(" Subselect ")"
 SimpleArithmeticExpression ::= ArithmeticTerm | SimpleArithmeticExpression ("+"|"-") ArithmeticTerm
-ArithmeticTerm ::= ArithmeticFactor | ArithmeticTerm ("*" |"/") ArithmeticFactor 
-ArithmeticFactor ::= [("+" | "-")] ArithmeticPrimary
-ArithmeticPrimary ::= StateFieldPathExpression | Atom | "(" SimpleArithmeticExpression ")" | Function | AggregateExpression
+ArithmeticTerm             ::= ArithmeticFactor | ArithmeticTerm ("*" |"/") ArithmeticFactor
+ArithmeticFactor           ::= [("+" | "-")] ArithmeticPrimary
+ArithmeticPrimary          ::= StateFieldPathExpression | Literal | "(" SimpleArithmeticExpression ")" | Function | AggregateExpression
 
 
 /*
  * STRING/BOOLEAN/DATE/ENTITY/ENUM EXPRESSIONS
  */
-StringExpression ::= StringPrimary | "(" Subselect ")" 
-StringPrimary ::= StateFieldPathExpression | string_literal | input_parameter | FunctionsReturningStrings | AggregateExpression
-BooleanExpression ::= BooleanPrimary | "(" Subselect ")"
-BooleanPrimary ::= StateFieldPathExpression | boolean_literal | input_parameter
-EnumExpression ::= EnumPrimary | "(" Subselect ")"
-EnumPrimary ::= StateFieldPathExpression | enum_literal | input_parameter
-EntityExpression ::= SingleValuedAssociationPathExpression | SimpleEntityExpression
-SimpleEntityExpression ::= IdentificationVariable | input_parameter
-DatetimeExpression ::= DatetimePrimary | "(" Subselect ")"
-DatetimePrimary ::= StateFieldPathExpression | input_parameter | FunctionsReturningDatetime | AggregateExpression 
+StringExpression       ::= StringPrimary | "(" Subselect ")"
+StringPrimary          ::= StateFieldPathExpression | string | InputParameter | FunctionsReturningStrings | AggregateExpression
+BooleanExpression      ::= BooleanPrimary | "(" Subselect ")"
+BooleanPrimary         ::= StateFieldPathExpression | boolean | InputParameter
+EnumExpression         ::= EnumPrimary | "(" Subselect ")"
+EnumPrimary            ::= StateFieldPathExpression | string | InputParameter
+EntityExpression       ::= SingleValuedAssociationPathExpression | SimpleEntityExpression
+SimpleEntityExpression ::= IdentificationVariable | InputParameter
+DatetimeExpression     ::= DatetimePrimary | "(" Subselect ")"
+DatetimePrimary        ::= StateFieldPathExpression | InputParameter | FunctionsReturningDatetime | AggregateExpression
+
 
 /*
  * AGGREGATE EXPRESSION
  */
 AggregateExpression ::= ("AVG" | "MAX" | "MIN" | "SUM") "(" ["DISTINCT"] StateFieldPathExpression ")" |
-                    "COUNT" "(" ["DISTINCT"] IdentificationVariable | SingleValuedAssociationPathExpression | StateFieldPathExpression ")"
+                        "COUNT" "(" ["DISTINCT"] (IdentificationVariable | SingleValuedAssociationPathExpression | StateFieldPathExpression) ")"
+
 
 /*
  * QUANTIFIED/BETWEEN/COMPARISON/LIKE/NULL/EXISTS EXPRESSIONS
@@ -163,30 +201,33 @@ AggregateExpression ::= ("AVG" | "MAX" | "MIN" | "SUM") "(" ["DISTINCT"] StateFi
 QuantifiedExpression     ::= ("ALL" | "ANY" | "SOME") "(" Subselect ")"
 BetweenExpression        ::= ArithmeticExpression ["NOT"] "BETWEEN" ArithmeticExpression "AND" ArithmeticExpression
 ComparisonExpression     ::= ArithmeticExpression ComparisonOperator ( QuantifiedExpression | ArithmeticExpression ) |
-                            StringExpression ComparisonOperator (StringExpression | QuantifiedExpression) |
-                            BooleanExpression ("=" | "<>") (BooleanExpression | QuantifiedExpression) |
-                            EnumExpression ("=" | "<>") (EnumExpression | QuantifiedExpression) |
-                            DatetimeExpression ComparisonOperator (DatetimeExpression | QuantifiedExpression) |
-                            EntityExpression ("=" | "<>") (EntityExpression | QuantifiedExpression)
-InExpression             ::= StateFieldPathExpression ["NOT"] "IN" "(" (Atom {"," Atom}* | Subselect) ")"
-LikeExpression           ::= ["NOT"] "LIKE" pattern_value ["ESCAPE" escape_character]
-NullComparisonExpression ::= (SingleValuedPathExpression | input_parameter) "IS" ["NOT"] "NULL"
+                             StringExpression ComparisonOperator (StringExpression | QuantifiedExpression) |
+                             BooleanExpression ("=" | "<>") (BooleanExpression | QuantifiedExpression) |
+                             EnumExpression ("=" | "<>") (EnumExpression | QuantifiedExpression) |
+                             DatetimeExpression ComparisonOperator (DatetimeExpression | QuantifiedExpression) |
+                             EntityExpression ("=" | "<>") (EntityExpression | QuantifiedExpression)
+InExpression             ::= StateFieldPathExpression ["NOT"] "IN" "(" (Literal {"," Literal}* | Subselect) ")"
+LikeExpression           ::= ["NOT"] "LIKE" string ["ESCAPE" char]
+NullComparisonExpression ::= (SingleValuedPathExpression | InputParameter) "IS" ["NOT"] "NULL"
 ExistsExpression         ::= ["NOT"] "EXISTS" "(" Subselect ")"
-ComparisonOperator ::= "=" | "<" | "<=" | "<>" | ">" | ">=" | "!="
+ComparisonOperator       ::= "=" | "<" | "<=" | "<>" | ">" | ">=" | "!="
+
 
 /*
  * FUNCTIONS
  */
-FunctionsReturningStrings ::= PortableFunctionsReturningStrings | OtherFunctionsReturningStrings
+FunctionsReturningStrings  ::= PortableFunctionsReturningStrings | OtherFunctionsReturningStrings
 FunctionsReturningNumerics ::= PortableFunctionsReturningNumerics | OtherFunctionsReturningNumerics
 FunctionsReturningDateTime ::= PortableFunctionsReturningDateTime | OtherFunctionsReturningDateTime
+
 
 /*
  * OTHER FUNCTIONS: List of all allowed (but not portable) functions here.
  */
-OtherFunctionsReturningStrings ::= ... 
+OtherFunctionsReturningStrings  ::= ...
 OtherFunctionsReturningNumerics ::= ...
 OtherFunctionsReturningDateTime ::= ...
+
 
 /*
  * PORTABLE FUNCTIONS: List all portable functions here
@@ -204,6 +245,6 @@ PortableFunctionsReturningDateTime ::= "CURRENT_DATE" | "CURRENT_TIME" | "CURREN
 PortableFunctionsReturningStrings ::=
         "CONCAT" "(" StringPrimary "," StringPrimary ")" |
         "SUBSTRING" "(" StringPrimary "," SimpleArithmeticExpression "," SimpleArithmeticExpression ")" |
-        "TRIM" "(" [["LEADING" | "TRAILING" | "BOTH"] [trim_character] "FROM"] StringPrimary ")" |
+        "TRIM" "(" [["LEADING" | "TRAILING" | "BOTH"] [char] "FROM"] StringPrimary ")" |
         "LOWER" "(" StringPrimary ")" |
         "UPPER" "(" StringPrimary ")"
