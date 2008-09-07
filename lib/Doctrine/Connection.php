@@ -89,13 +89,6 @@ abstract class Doctrine_Connection
     protected $_eventManager;
     
     /**
-     * Name of the connection
-     *
-     * @var string $_name
-     */
-    protected $_name;
-    
-    /**
      * The name of this connection driver.
      *
      * @var string $driverName                  
@@ -156,7 +149,7 @@ abstract class Doctrine_Connection
     /**
      * The transaction object.
      *
-     * @var Doctrine::DBAL::Transactions::Transaction
+     * @var Doctrine::DBAL::Transaction
      */
     protected $_transaction;
     

@@ -41,7 +41,7 @@ class Doctrine_Schema_MySqlSchemaManager extends Doctrine_Schema_SchemaManager
                             'listViews'       => "SHOW FULL TABLES %s WHERE Table_type = 'VIEW'",
                             );*/
     
-    public function __construct(Doctrine_Connection_MySql $conn)
+    public function __construct(Doctrine_Connection $conn)
     {
         $this->_conn = $conn;
     }
