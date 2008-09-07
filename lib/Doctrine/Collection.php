@@ -130,7 +130,7 @@ class Doctrine_Collection implements Countable, IteratorAggregate, Serializable,
     public function __construct($entityBaseType, $keyField = null)
     {
         $this->_entityBaseType = $entityBaseType;
-        $this->_em = Doctrine_EntityManagerFactory::getManager($entityBaseType);
+        $this->_em = Doctrine_EntityManager::getActiveEntityManager();
 
         if ($keyField !== null) {
             if ( ! $this->_em->getClassMetadata($entityBaseType)->hasField($keyField)) {
@@ -1018,7 +1018,7 @@ class Doctrine_Collection implements Countable, IteratorAggregate, Serializable,
      */
     public function unserialize($serialized)
     {
-        $manager = Doctrine_EntityManagerFactory::getManager();
+        $manager = Doctrine_EntityManager::getActiveEntityManager();
         $connection = $manager->getConnection();
         
         $array = unserialize($serialized);

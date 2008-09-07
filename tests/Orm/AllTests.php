@@ -15,7 +15,6 @@ require_once 'Orm/Associations/AllTests.php';
 
 // Tests
 require_once 'Orm/UnitOfWorkTest.php';
-require_once 'Orm/EntityManagerFactoryTest.php';
 require_once 'Orm/EntityManagerTest.php';
 require_once 'Orm/EntityPersisterTest.php';
 
@@ -31,7 +30,6 @@ class Orm_AllTests
         $suite = new Doctrine_OrmTestSuite('Doctrine Orm');
 
         $suite->addTestSuite('Orm_UnitOfWorkTest');
-        $suite->addTestSuite('Orm_EntityManagerFactoryTest');
         $suite->addTestSuite('Orm_EntityManagerTest');
         $suite->addTestSuite('Orm_EntityPersisterTest');
         

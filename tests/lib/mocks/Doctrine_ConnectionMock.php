@@ -5,9 +5,9 @@ require_once 'lib/mocks/Doctrine_DatabasePlatformMock.php';
 
 class Doctrine_ConnectionMock extends Doctrine_Connection
 {
-    protected $_driverName = 'Mock';
-    private $_sequenceModuleMock;
+    protected $_driverName = 'Mysql';
     private $_platformMock;
+    private $_lastInsertId = 0;
     private $_inserts = array();
     
     public function __construct(array $params)
@@ -18,16 +18,11 @@ class Doctrine_ConnectionMock extends Doctrine_Connection
     /**
      * @override
      */
-    public function getSequenceManager()
-    {
-        return $this->_sequenceModuleMock;
-    }
-    
-    /**
-     * @override
-     */
     public function getDatabasePlatform()
     {
+        if ( ! $this->_platformMock) {
+            $this->_platformMock = new Doctrine_DatabasePlatformMock();
+        }
         return $this->_platformMock;
     }
     
@@ -39,6 +34,25 @@ class Doctrine_ConnectionMock extends Doctrine_Connection
         $this->_inserts[$tableName][] = $data;
     }
     
+    /**
+     * @override
+     */
+    public function lastInsertId($seqName = null)
+    {
+        return $this->_lastInsertId;
+    }
+    
+    /**
+     * @override
+     */
+    public function quote($input, $type = null)
+    {
+        if ($type === 'string') {
+            return "'" . $input . "'";
+        }
+        return $input;
+    }
+    
     /* Mock API */
     
     public function setDatabasePlatform($platform)
@@ -46,9 +60,9 @@ class Doctrine_ConnectionMock extends Doctrine_Connection
         $this->_platformMock = $platform;
     }
     
-    public function setSequenceManager($seqManager)
+    public function setLastInsertId($id)
     {
-        $this->_sequenceModuleMock = $seqManager;
+        $this->_lastInsertId = $id;
     }
     
     public function getInserts()
@@ -59,6 +73,7 @@ class Doctrine_ConnectionMock extends Doctrine_Connection
     public function reset()
     {
         $this->_inserts = array();
+        $this->_lastInsertId = 0;
     }
 }
 

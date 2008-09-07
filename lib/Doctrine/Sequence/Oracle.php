@@ -29,6 +29,7 @@
  * @link        www.phpdoctrine.org
  * @since       1.0
  * @version     $Revision$
+ * @deprecated
  */
 class Doctrine_Sequence_Oracle extends Doctrine_Sequence
 {

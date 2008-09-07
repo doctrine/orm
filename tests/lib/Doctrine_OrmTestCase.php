@@ -9,21 +9,19 @@ class Doctrine_OrmTestCase extends Doctrine_TestCase
     protected $_emf;
     
     protected function setUp() {
-        if (isset($this->sharedFixture['emf'], $this->sharedFixture['em'])) {
-            $this->_emf = $this->sharedFixture['emf'];
+        if (isset($this->sharedFixture['em'])) {
             $this->_em = $this->sharedFixture['em'];
-        } else {
-            $emf = new Doctrine_EntityManagerFactory();
-            $emf->setConfiguration(new Doctrine_Configuration());
-            $emf->setEventManager(new Doctrine_EventManager());
+        } else { 
+            $config = new Doctrine_Configuration();
+            $eventManager = new Doctrine_EventManager();
             $connectionOptions = array(
-                'driver' => 'mock',
+                'driver' => 'Doctrine_ConnectionMock',
                 'user' => 'john',
                 'password' => 'wayne'      
-            );      
-            $em = $emf->createEntityManager($connectionOptions, 'mockEM');
-            $this->_emf = $emf;
+            );
+            $em = Doctrine_EntityManager::create($connectionOptions, 'mockEM', $config, $eventManager);
             $this->_em = $em;
         }
+        $this->_em->activate();
     }
 }

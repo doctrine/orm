@@ -2,6 +2,7 @@
 require_once 'lib/DoctrineTestInit.php';
 require_once 'lib/mocks/Doctrine_EntityManagerMock.php';
 require_once 'lib/mocks/Doctrine_ConnectionMock.php';
+require_once 'lib/mocks/Doctrine_ClassMetadataMock.php';
 
 /**
  * UnitOfWork tests.
@@ -18,33 +19,39 @@ class Orm_UnitOfWorkTest extends Doctrine_OrmTestCase
     // Provides a sequence mock to the UnitOfWork
     private $_connectionMock;
     // The sequence mock
-    private $_sequenceMock;
+    private $_idGeneratorMock;
     // The persister mock used by the UnitOfWork
     private $_persisterMock;
     // The EntityManager mock that provides the mock persister
     private $_emMock;
     private $_platformMock;
+    private $_classMetadataMock;
     
     protected function setUp() {
         parent::setUp();
-        
-        $this->_user = new ForumUser();
-        $this->_user->id = 1;
-        $this->_user->username = 'romanb';
 
         $this->_connectionMock = new Doctrine_ConnectionMock(array());
         $this->_platformMock = new Doctrine_DatabasePlatformMock();
-        $this->_emMock = new Doctrine_EntityManagerMock($this->_connectionMock);
-        $this->_sequenceMock = new Doctrine_SequenceMock($this->_connectionMock);
-
-        $this->_connectionMock->setSequenceManager($this->_sequenceMock);
+        $this->_platformMock->setPrefersIdentityColumns(true);
+        $this->_emMock = Doctrine_EntityManagerMock::create($this->_connectionMock, "uowMockEm");
+        $this->_idGeneratorMock = new Doctrine_SequenceMock($this->_emMock);
         $this->_connectionMock->setDatabasePlatform($this->_platformMock);
+        
+        $this->_classMetadataMock = new Doctrine_ClassMetadataMock("ForumUser", $this->_emMock);
+        $this->_classMetadataMock->setIdGenerator($this->_idGeneratorMock);
         
         $this->_persisterMock = new Doctrine_EntityPersisterMock(
                 $this->_emMock, $this->_emMock->getClassMetadata("ForumUser"));
         $this->_emMock->setEntityPersister($this->_persisterMock);
         
+        $this->_emMock->activate();
+        
+        // SUT
         $this->_unitOfWork = $this->_emMock->getUnitOfWork();
+        
+        $this->_user = new ForumUser();
+        $this->_user->id = 1;
+        $this->_user->username = 'romanb';
     }
     
     protected function tearDown() {

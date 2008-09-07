@@ -45,45 +45,11 @@ class Doctrine_ConnectionFactory
             'dblib'    => 'Doctrine_Connection_Mssql',
             'firebird' => 'Doctrine_Connection_Firebird',
             'informix' => 'Doctrine_Connection_Informix',
-            'mock'     => 'Doctrine_Connection_Mock');
-     
-     /**
-     * The EventManager that is injected into all created Connections.
-     *
-     * @var EventManager
-     */
-    private $_eventManager;
-    
-    /**
-     * The Configuration that is injected into all created Connections.
-     *
-     * @var Configuration
-     */
-    private $_config;
+            );
     
     public function __construct()
     {
         
-    }
-    
-    /**
-     * Sets the Configuration that is injected into all Connections.
-     *
-     * @param Doctrine_Configuration $config
-     */
-    public function setConfiguration(Doctrine_Configuration $config)
-    {
-        $this->_config = $config;
-    }
-    
-    /**
-     * Sets the EventManager that is injected into all Connections.
-     *
-     * @param Doctrine_EventManager $eventManager
-     */
-    public function setEventManager(Doctrine_EventManager $eventManager)
-    {
-        $this->_eventManager = $eventManager;
     }
     
     /**
@@ -92,14 +58,15 @@ class Doctrine_ConnectionFactory
      * @param array $params
      * @return Connection
      */
-    public function createConnection(array $params)
+    public function createConnection(array $params, Doctrine_Configuration $config = null,
+            Doctrine_EventManager $eventManager = null)
     {
         // create default config and event manager, if not set
-        if ( ! $this->_config) {
-            $this->_config = new Doctrine_Configuration();
+        if ( ! $config) {
+            $config = new Doctrine_Configuration();
         }
-        if ( ! $this->_eventManager) {
-            $this->_eventManager = new Doctrine_EventManager();
+        if ( ! $eventManager) {
+            $eventManager = new Doctrine_EventManager();
         }
         
         // check for existing pdo object
@@ -110,9 +77,13 @@ class Doctrine_ConnectionFactory
         } else {
             $this->_checkParams($params);
         }
-        $className = $this->_drivers[$params['driver']];
+        if (isset($params['driverClass'])) {
+            $className = $params['driverClass'];
+        } else {
+            $className = $this->_drivers[$params['driver']];
+        }
         
-        return new $className($params, $this->_config, $this->_eventManager);
+        return new $className($params, $config, $eventManager);
     }
     
     /**
@@ -125,14 +96,14 @@ class Doctrine_ConnectionFactory
         // check existance of mandatory parameters
         
         // driver
-        if ( ! isset($params['driver'])) {
+        if ( ! isset($params['driver']) && ! isset($params['driverClass'])) {
             throw Doctrine_ConnectionFactory_Exception::driverRequired();
         }
         
         // check validity of parameters
         
         // driver
-        if ( ! isset($this->_drivers[$params['driver']])) {
+        if ( isset($params['driver']) && ! isset($this->_drivers[$params['driver']])) {
             throw Doctrine_ConnectionFactory_Exception::unknownDriver($driverName);
         }
     }

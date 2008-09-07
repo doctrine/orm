@@ -331,6 +331,17 @@ class Doctrine_DatabasePlatform_OraclePlatform extends Doctrine_DatabasePlatform
                      'unsigned' => $unsigned,
                      'fixed'    => $fixed);
     }
+    
+    /**
+     * Enter description here...
+     *
+     * @param unknown_type $sequenceName
+     * @override
+     */
+    public function getSequenceNextValSql($sequenceName)
+    {
+        return 'SELECT ' . $this->quoteIdentifier($sequenceName) . '.nextval FROM DUAL';
+    }
 }
 
 ?>

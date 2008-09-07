@@ -246,6 +246,17 @@ class Doctrine_DatabasePlatform_FirebirdPlatform extends Doctrine_DatabasePlatfo
         return 'COLLATE ' . $collation;
     }
     
+    /**
+     * Enter description here...
+     *
+     * @param unknown_type $sequenceName
+     * @override
+     */
+    public function getSequenceNextValSql($sequenceName)
+    {
+        return 'SELECT GEN_ID(' . $this->quoteIdentifier($sequenceName) . ', 1) FROM RDB$DATABASE';
+    }
+    
 }
 
 ?>

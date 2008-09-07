@@ -41,7 +41,6 @@ class Orm_Component_AccessTest extends Doctrine_OrmTestCase
     public function setUp()
     {
         parent::setUp();
-        $em = new Doctrine_EntityManager(new Doctrine_Connection_Mock());
         $this->user = new ForumUser();
     }
 

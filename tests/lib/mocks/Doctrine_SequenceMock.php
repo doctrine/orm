@@ -1,8 +1,21 @@
 <?php
 
-class Doctrine_SequenceMock extends Doctrine_Sequence
+class Doctrine_SequenceMock extends Doctrine_Id_SequenceGenerator
 {
     private $_sequenceNumber = 0;
+    
+    /**
+     * Enter description here...
+     *
+     * @param Doctrine_Entity $entity
+     * @override
+     */
+    public function generate(Doctrine_Entity $entity)
+    {
+        return $this->_sequenceNumber++;
+    }
+    
+    
     
     /**
      * @override

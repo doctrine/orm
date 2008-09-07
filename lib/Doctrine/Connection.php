@@ -161,13 +161,6 @@ abstract class Doctrine_Connection
     protected $_transaction;
     
     /**
-     * The sequence manager.
-     *
-     * @var Doctrine::DBAL::Sequencing::SequenceManager
-     */
-    protected $_sequenceManager;
-    
-    /**
      * The schema manager.
      *
      * @var Doctrine::DBAL::Schema::SchemaManager
@@ -946,9 +939,9 @@ abstract class Doctrine_Connection
      * @param string $table     Name of the table into which a new row was inserted.
      * @param string $field     Name of the field into which a new row was inserted.
      */
-    public function lastInsertId($table = null, $field = null)
+    public function lastInsertId($seqName = null)
     {
-        return $this->getSequenceManager()->lastInsertId($table, $field);
+        return $this->_pdo->lastInsertId($seqName);
     }
 
     /**
@@ -1175,21 +1168,6 @@ abstract class Doctrine_Connection
     public function __toString()
     {
         return Doctrine_Lib::getConnectionAsString($this);
-    }
-    
-    /**
-     * Gets the SequenceManager that can be used to retrieve sequence values
-     * through this connection.
-     *
-     * @return Doctrine::DBAL::Sequencing::SequenceManager
-     */
-    public function getSequenceManager()
-    {
-        if ( ! $this->_sequenceManager) {
-            $class = "Doctrine_Sequence_" . $this->_driverName;
-            $this->_sequenceManager = new $class;
-        }
-        return $this->_sequenceManager;
     }
     
     /**

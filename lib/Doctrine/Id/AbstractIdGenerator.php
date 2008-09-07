@@ -1,6 +1,6 @@
 <?php
 
-#namespace Doctrine::DBAL::Id;
+#namespace Doctrine::ORM::Id;
 
 /**
  * Enter description here...
@@ -9,6 +9,8 @@
  */
 abstract class Doctrine_Id_AbstractIdGenerator
 {
+    const POST_INSERT_INDICATOR = 'POST_INSERT_INDICATOR';
+    
     protected $_em;
     
     public function __construct(Doctrine_EntityManager $em)
@@ -16,9 +18,7 @@ abstract class Doctrine_Id_AbstractIdGenerator
         $this->_em = $em;
     }
     
-    abstract public function configureForClass(Doctrine_ClassMetadata $class);
-    
-    abstract public function generate();
+    abstract public function generate(Doctrine_Entity $entity);
 }
 
 ?>

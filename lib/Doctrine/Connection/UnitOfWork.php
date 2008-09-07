@@ -182,6 +182,11 @@ class Doctrine_Connection_UnitOfWork
         $this->_deletedEntities = array();
     }
 
+    /**
+     * Executes all entity insertions for entities of the specified type.
+     *
+     * @param Doctrine::ORM::Mapping::ClassMetadata $class
+     */
     private function _executeInserts($class)
     {
         //TODO: Maybe $persister->addInsert($entity) in the loop and
@@ -193,10 +198,18 @@ class Doctrine_Connection_UnitOfWork
         foreach ($this->_newEntities as $entity) {
             if ($entity->getClass()->getClassName() == $className) {
                 $persister->insert($entity);
+                if ($class->isIdGeneratorIdentity()) {
+                    $entity->_assignIdentifier($class->getIdGenerator()->getPostInsertId());
+                }
             }
         }
     }
 
+    /**
+     * Executes all entity updates for entities of the specified type.
+     *
+     * @param Doctrine::ORM::Mapping::ClassMetadata $class
+     */
     private function _executeUpdates($class)
     {
         $className = $class->getClassName();
@@ -208,6 +221,11 @@ class Doctrine_Connection_UnitOfWork
         }
     }
 
+    /**
+     * Executes all entity deletions for entities of the specified type.
+     *
+     * @param Doctrine::ORM::Mapping::ClassMetadata $class
+     */
     private function _executeDeletions($class)
     {
         $className = $class->getClassName();
@@ -224,7 +242,7 @@ class Doctrine_Connection_UnitOfWork
      *
      * @return array
      */
-    private function _getCommitOrder()
+    private function _getCommitOrder(array $entityChangeSet = null)
     {
         //TODO: Once these 3 arrays are indexed by classname we can do this:
         // Either way... do we need to care about duplicates?
@@ -233,8 +251,10 @@ class Doctrine_Connection_UnitOfWork
             array_keys($this->_dirtyEntities),
             array_keys($this->_deletedEntities)
         );*/
-
-        $entityChangeSet = array_merge($this->_newEntities, $this->_dirtyEntities, $this->_deletedEntities);
+        
+        if (is_null($entityChangeSet)) {
+            $entityChangeSet = array_merge($this->_newEntities, $this->_dirtyEntities, $this->_deletedEntities);
+        }
         
         /* if (count($entityChangeSet) == 1) {
          *     return array($entityChangeSet[0]->getClass());
@@ -383,10 +403,10 @@ class Doctrine_Connection_UnitOfWork
             unset($this->_newEntities[$oid]);
             return; // entity has not been persisted yet, so nothing more to do.
         }
-        /* Seems unnecessary since _dirtyEntities is filled & cleared on commit, not earlier
-         if (isset($this->_dirtyEntities[$oid])) {
-         unset($this->_dirtyEntities[$oid]);
-         }*/
+
+        if (isset($this->_dirtyEntities[$oid])) {
+            unset($this->_dirtyEntities[$oid]);
+        }
         if ( ! isset($this->_deletedEntities[$oid])) {
             $this->_deletedEntities[$oid] = $entity;
         }
@@ -430,7 +450,7 @@ class Doctrine_Connection_UnitOfWork
     {
         $oid = $entity->getOid();
         return isset($this->_newEntities[$oid]) ||
-                //isset($this->_dirtyEntities[$oid]) ||
+                isset($this->_dirtyEntities[$oid]) ||
                 isset($this->_deletedEntities[$oid]) ||
                 $this->isInIdentityMap($entity);
     }
@@ -584,18 +604,14 @@ class Doctrine_Connection_UnitOfWork
         $visited = array();
         $this->_doSave($entity, $visited, $insertNow);
         if ( ! empty($insertNow)) {
-            // We have no choice. This means that there are either new entities
-            // with an IDENTITY key generation or with a natural identifier.
-            // In both cases we must commit the inserts instantly.
-            //TODO: Isnt it enough to only execute the inserts instead of full flush?
-            $this->commit();
-            /* The following may be better:
+            // We have no choice. This means that there are new entities
+            // with an IDENTITY column key generation.
             $commitOrder = $this->_getCommitOrder($insertNow);
             foreach ($commitOrder as $class) {
                 $this->_executeInserts($class);
             }
-            //... remove them from _newEntities, or dont store them there in the first place
-            */
+            // remove them from _newEntities
+            $this->_newEntities = array_diff_key($this->_newEntities, $insertNow);
         }
     }
 
@@ -621,22 +637,13 @@ class Doctrine_Connection_UnitOfWork
                 // nothing to do for $entity
                 break;
             case Doctrine_Entity::STATE_NEW:
-                if ($class->isIdGeneratorIdentity()) {
+                $result = $class->getIdGenerator()->generate($entity);
+                if ($result == Doctrine_Id_AbstractIdGenerator::POST_INSERT_INDICATOR) {
                     $insertNow[$entity->getOid()] = $entity;
-                    $this->_newEntities[$entity->getOid()] = $entity;
-                } else if ( ! $class->usesIdGenerator()) {
-                    $insertNow[$entity->getOid()] = $entity;
-                    $this->_newEntities[$entity->getOid()] = $entity;
-                    //...
-                } else if ($class->isIdGeneratorSequence()) {
-                    // Get the next sequence number
-                    //TODO: sequence name?
-                    $id = $this->_em->getConnection()->getSequenceManager()->nextId("foo");
-                    $entity->set($class->getSingleIdentifierFieldName(), $id);
-                    $this->registerNew($entity);
                 } else {
-                    throw new Doctrine_Exception("Unable to handle ID generation of new entity.");
+                    $entity->_assignIdentifier($result);
                 }
+                $this->registerNew($entity);
                 break;
             case Doctrine_Entity::STATE_DETACHED:
                 //exception?
@@ -670,6 +677,12 @@ class Doctrine_Connection_UnitOfWork
         $this->_doDelete($entity, array());
     }
 
+    /**
+     * Enter description here...
+     *
+     * @param Doctrine_Entity $entity
+     * @param array $visited
+     */
     private function _doDelete(Doctrine_Entity $entity, array &$visited)
     {
         if (isset($visited[$entity->getOid()])) {

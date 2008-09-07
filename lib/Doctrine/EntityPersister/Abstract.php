@@ -107,6 +107,7 @@ abstract class Doctrine_EntityPersister_Abstract
                 //TODO: What if both join columns (local/foreign) are just db-only
                 // columns (no fields in models) ? Currently we assume the foreign column
                 // is mapped to a field in the foreign entity.
+                //TODO: throw exc if field not set
                 $insertData[$sourceColumn] = $new->_internalGetField(
                         $new->getClass()->getFieldName($targetColumn)
                         );
@@ -118,14 +119,6 @@ abstract class Doctrine_EntityPersister_Abstract
         
         //TODO: perform insert
         $this->_conn->insert($class->getTableName(), $insertData);
-        
-        //TODO: if IDENTITY pk, assign it
-        if ($class->isIdGeneratorIdentity()) {
-            //TODO: Postgres IDENTITY columns (SERIAL) use a sequence, so we need to pass the
-            // sequence name to lastInsertId().
-            //TODO: $this->_em->getIdGenerator($class)->generate();
-            $entity->_assignIdentifier($this->_conn->lastInsertId());
-        }
     }
     
     /*protected function _fillJoinColumns($entity, array &$data)

@@ -62,6 +62,14 @@ class Doctrine_EntityManager
     const FLUSHMODE_MANUAL = 'manual';
     
     /**
+     * The currently active EntityManager. Only one EntityManager can be active
+     * at any time.
+     *
+     * @var Doctrine::ORM::EntityManager
+     */
+    private static $_activeEm;
+    
+    /**
      * The unique name of the EntityManager. The name is used to bind entity classes
      * to certain EntityManagers.
      *
@@ -132,16 +140,21 @@ class Doctrine_EntityManager
      */
     private $_tmpEntityData = array();
     
+    private $_closed = false;
+    
     /**
      * Creates a new EntityManager that operates on the given database connection.
      *
      * @param Doctrine_Connection $conn
      * @param string $name
      */
-    public function __construct(Doctrine_Connection $conn, $name = null)
+    protected function __construct(Doctrine_Connection $conn, $name, Doctrine_Configuration $config,
+            Doctrine_EventManager $eventManager)
     {
         $this->_conn = $conn;
         $this->_name = $name;
+        $this->_config = $config;
+        $this->_eventManager = $eventManager;
         $this->_metadataFactory = new Doctrine_ClassMetadata_Factory(
                 $this, new Doctrine_ClassMetadata_CodeDriver());
         $this->_unitOfWork = new Doctrine_Connection_UnitOfWork($this);
@@ -156,6 +169,16 @@ class Doctrine_EntityManager
     public function getConnection()
     {
         return $this->_conn;
+    }
+    
+    /**
+     * Gets the name of the EntityManager.
+     *
+     * @return string The name of the EntityManager.
+     */
+    public function getName()
+    {
+        return $this->_name;
     }
     
     /**
@@ -302,6 +325,7 @@ class Doctrine_EntityManager
      */
     public function flush()
     {
+        $this->_errorIfNotActiveOrClosed();
         $this->_unitOfWork->commit();
     }
     
@@ -365,12 +389,12 @@ class Doctrine_EntityManager
     }
     
     /**
-     * Releases the EntityManager.
+     * Closes the EntityManager.
      *
      */
     public function close()
     {
-        //Doctrine_EntityManagerFactory::releaseManager($this);
+        $this->_closed = true;
     }
     
     /**
@@ -409,6 +433,7 @@ class Doctrine_EntityManager
      */
     public function save(Doctrine_Entity $entity)
     {
+        $this->_errorIfNotActiveOrClosed();
         $this->_unitOfWork->save($entity);
         if ($this->_flushMode == self::FLUSHMODE_IMMEDIATE) {
             $this->flush();
@@ -423,6 +448,7 @@ class Doctrine_EntityManager
      */
     public function delete(Doctrine_Entity $entity)
     {
+        $this->_errorIfNotActiveOrClosed();
         $this->_unitOfWork->delete($entity);
         if ($this->_flushMode == self::FLUSHMODE_IMMEDIATE) {
             $this->flush();
@@ -488,6 +514,8 @@ class Doctrine_EntityManager
      */
     public function createEntity($className, array $data)
     {
+        $this->_errorIfNotActiveOrClosed();
+        
         $this->_tmpEntityData = $data;
         $className = $this->_inferCorrectClassName($data, $className);
         $classMetadata = $this->getClassMetadata($className);
@@ -612,28 +640,6 @@ class Doctrine_EntityManager
     }
     
     /**
-     * Sets the EventManager used by the EntityManager.
-     *
-     * @param Doctrine::Common::EventManager $eventManager
-     * @return void
-     */
-    public function setEventManager(Doctrine_EventManager $eventManager)
-    {
-        $this->_eventManager = $eventManager;
-    }
-    
-    /**
-     * Sets the Configuration used by the EntityManager.
-     *
-     * @param Doctrine::Common::Configuration $config
-     * @return void
-     */
-    public function setConfiguration(Doctrine_Configuration $config)
-    {
-        $this->_config = $config;
-    }
-    
-    /**
      * Gets the Configuration used by the EntityManager.
      *
      * @return Doctrine::Common::Configuration
@@ -641,6 +647,13 @@ class Doctrine_EntityManager
     public function getConfiguration()
     {
         return $this->_config;
+    }
+    
+    private function _errorIfNotActiveOrClosed()
+    {
+        if ( ! $this->isActive() || $this->_closed) {
+            throw Doctrine_EntityManagerException::notActiveOrClosed($this->_name);
+        }
     }
     
     /**
@@ -654,34 +667,69 @@ class Doctrine_EntityManager
     }
     
     /**
-     * Enter description here...
+     * Checks whether this EntityManager is the currently active one.
      *
-     * @param unknown_type $type
-     * @param unknown_type $class
+     * @return boolean
      */
-    /*public function getIdGenerator($class)
+    public function isActive()
     {
-        $type = $class->getIdGeneratorType();
-        if ($type == Doctrine_ClassMetadata::GENERATOR_TYPE_IDENTITY) {
-            if ( ! isset($this->_idGenerators[$type])) {
-                $this->_idGenerators[$type] = new Doctrine_Id_IdentityGenerator($this);
-            }
-        } else if ($type == Doctrine_ClassMetadata::GENERATOR_TYPE_SEQUENCE) {
-            if ( ! isset($this->_idGenerators[$type])) {
-                $this->_idGenerators[$type] = new Doctrine_Id_SequenceGenerator($this);
-            }
-        } else if ($type == Doctrine_ClassMetadata::GENERATOR_TYPE_TABLE) {
-            if ( ! isset($this->_idGenerators[$type])) {
-                $this->_idGenerators[$type] = new Doctrine_Id_TableGenerator($this);
-            }
+        return self::$_activeEm === $this;
+    }
+    
+    /**
+     * Makes this EntityManager the currently active one.
+     *
+     * @return void
+     */
+    public function activate()
+    {
+        self::$_activeEm = $this;
+    }
+    
+    /**
+     * Factory method to create EntityManager instances.
+     * A newly created EntityManager is immediately activated, making it the
+     * currently active EntityManager.
+     *
+     * @param mixed $conn An array with the connection parameters or an existing
+     *                    Doctrine::DBAL::Connection instance.
+     * @param string $name
+     * @param Doctrine::Common::Configuration $config The Configuration instance to use.
+     * @param Doctrine::Common::EventManager $eventManager The EventManager instance to use.
+     * @return Doctrine::ORM::EntityManager The created EntityManager.
+     */
+    public static function create($conn, $name, Doctrine_Configuration $config = null,
+            Doctrine_EventManager $eventManager = null)
+    {
+        if (is_array($conn)) {
+            $connFactory = new Doctrine_ConnectionFactory();
+            $conn = $connFactory->createConnection($conn, $config, $eventManager);
+        } else if ( ! $conn instanceof Doctrine_Connection) {
+            throw new Doctrine_Exception("Invalid parameter '$conn'.");
         }
         
-        $generator = $this->_idGenerators[$type];
-        $generator->configureForClass($class);
+        if (is_null($config)) {
+            $config = new Doctrine_Configuration();
+        }
+        if (is_null($eventManager)) {
+            $eventManager = new Doctrine_EventManager();
+        }
         
-        return $generator;
-    }*/
+        $em = new Doctrine_EntityManager($conn, $name, $config, $eventManager);
+        $em->activate();
+        
+        return $em;
+    }
     
+    /**
+     * Gets the currently active EntityManager.
+     *
+     * @return Doctrine::ORM::EntityManager
+     */
+    public static function getActiveEntityManager()
+    {
+        return self::$_activeEm;
+    }
 }
 
 ?>

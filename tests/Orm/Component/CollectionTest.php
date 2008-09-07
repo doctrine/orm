@@ -40,7 +40,6 @@ class Orm_Component_CollectionTest extends Doctrine_OrmTestCase
     public function setUp()
     {
         parent::setUp();
-        $em = new Doctrine_EntityManager(new Doctrine_Connection_Mock());
         
         $this->coll = new Doctrine_Collection('ForumUser');
 

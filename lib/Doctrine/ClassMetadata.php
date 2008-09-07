@@ -169,6 +169,13 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
     protected $_generatorType = self::GENERATOR_TYPE_NONE;
     
     /**
+     * The Id generator.
+     *
+     * @var Doctrine::ORM::Id::IdGenerator
+     */
+    protected $_idGenerator;
+    
+    /**
      * The field mappings of the class.
      * Keys are field names and values are mapping definitions.
      *
@@ -601,6 +608,17 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
     {
         return $this->_associationMappings;
     }
+    
+    /**
+     * Gets all association mappings of the class.
+     * Alias for getAssociationMappings().
+     *
+     * @return array
+     */
+    public function getAssociations()
+    {
+        return $this->_associationMappings;
+    }
 
     /**
      * Gets the field name for a column name.
@@ -689,19 +707,6 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
     }
     
     /**
-     * Overrides an existant field mapping.
-     * Used i.e. by Entity classes deriving from another Entity class that acts
-     * as a mapped superclass to refine the basic mapping.
-     *
-     * @param array $newMapping
-     * @todo Implementation.
-     */
-    public function overrideFieldMapping(array $newMapping)
-    {
-        //...
-    }
-    
-    /**
      * Validates & completes the field mapping. Default values are applied here.
      *
      * @param array $mapping  The field mapping to validated & complete.
@@ -755,6 +760,46 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
         }
         
         return $mapping;
+    }
+    
+    /**
+     * @todo Implementation of Optimistic Locking.
+     */
+    public function mapVersionField(array $mapping)
+    {
+        //...
+    }
+    
+    /**
+     * Overrides an existant field mapping.
+     * Used i.e. by Entity classes deriving from another Entity class that acts
+     * as a mapped superclass to refine the basic mapping.
+     *
+     * @param array $newMapping
+     * @todo Implementation.
+     */
+    public function overrideFieldMapping(array $newMapping)
+    {
+        //...
+    }
+    
+    /**
+     * Used to lazily create the id generator.
+     *
+     * @param string $generatorType
+     * @return void
+     */
+    protected function _createIdGenerator()
+    {
+        if ($this->_generatorType == self::GENERATOR_TYPE_IDENTITY) {
+            $this->_idGenerator = new Doctrine_Id_IdentityGenerator($this->_em);
+        } else if ($this->_generatorType == self::GENERATOR_TYPE_SEQUENCE) {
+            $this->_idGenerator = new Doctrine_Id_SequenceGenerator($this->_em);
+        } else if ($this->_generatorType == self::GENERATOR_TYPE_TABLE) {
+            $this->_idGenerator = new Doctrine_Id_TableGenerator($this->_em);
+        } else {
+            $this->_idGenerator = new Doctrine_Id_Assigned($this->_em);
+        }
     }
     
     /**
@@ -1620,6 +1665,19 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
     {
          return $this->_customRepositoryClassName;
     }
+    
+    /**
+     * Gets the Id generator used by the class.
+     *
+     * @return Doctrine::ORM::Id::AbstractIdGenerator
+     */
+    public function getIdGenerator()
+    {
+        if (is_null($this->_idGenerator)) {
+            $this->_createIdGenerator();
+        }
+        return $this->_idGenerator;
+    }
 
     /**
      * @todo Thoughts & Implementation.
@@ -1724,15 +1782,22 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
     }
     
     /**
-     * Completes the identifier mapping of the class.
+     * INTERNAL: Completes the identifier mapping of the class.
      * NOTE: Should only be called by the ClassMetadataFactory!
      * 
      * @return void
      */
     public function completeIdentifierMapping()
     {
-        if ($this->getIdGeneratorType() == self::GENERATOR_TYPE_AUTO) {
+        if ($this->_generatorType == self::GENERATOR_TYPE_AUTO) {
             $platform = $this->_em->getConnection()->getDatabasePlatform();
+            if ($platform === null) {
+                try {
+                    throw new Exception();
+                } catch (Exception $e) {
+                    echo $e->getTraceAsString();
+                }
+            }
             if ($platform->prefersSequences()) {
                 $this->_generatorType = self::GENERATOR_TYPE_SEQUENCE;
             } else if ($platform->prefersIdentityColumns()) {

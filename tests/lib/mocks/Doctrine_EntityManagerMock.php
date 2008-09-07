@@ -23,6 +23,28 @@ class Doctrine_EntityManagerMock extends Doctrine_EntityManager
     {
         $this->_persisterMock = $persister;
     }
+    
+    /**
+     * Mock factory method.
+     *
+     * @param unknown_type $conn
+     * @param unknown_type $name
+     * @param Doctrine_Configuration $config
+     * @param Doctrine_EventManager $eventManager
+     * @return unknown
+     */
+    public static function create($conn, $name, Doctrine_Configuration $config = null,
+            Doctrine_EventManager $eventManager = null)
+    {
+        if (is_null($config)) {
+            $config = new Doctrine_Configuration();
+        }
+        if (is_null($eventManager)) {
+            $eventManager = new Doctrine_EventManager();
+        }
+        
+        return new Doctrine_EntityManagerMock($conn, $name, $config, $eventManager);   
+    }
 }
 
 ?>
