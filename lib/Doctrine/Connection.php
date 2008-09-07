@@ -196,16 +196,6 @@ abstract class Doctrine_Connection
     }
     
     /**
-     * Sets the Configuration used by the Connection.
-     *
-     * @param Doctrine::Common::Configuration $config
-     */
-    public function setConfiguration(Doctrine_Configuration $config)
-    {
-        $this->_config = $config;
-    }
-    
-    /**
      * Gets the Configuration used by the Connection.
      *
      * @return Configuration
@@ -216,16 +206,6 @@ abstract class Doctrine_Connection
             $this->_config = new Doctrine_Configuration();
         }
         return $this->_config;
-    }
-    
-    /**
-     * Sets the EventManager used by the Connection.
-     *
-     * @param Doctrine::Common::EventManager $eventManager
-     */
-    public function setEventManager(Doctrine_EventManager $eventManager)
-    {
-        $this->_eventManager = $eventManager;
     }
     
     /**
