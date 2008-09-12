@@ -26,7 +26,7 @@
  *
  * @since 2.0
  */
-class Doctrine_MappingException extends Doctrine_Exception
+class Doctrine_ORM_Exceptions_MappingException extends Doctrine_ORM_Exceptions_ORMException
 {
     public static function identifierRequired($entityName)
     {
