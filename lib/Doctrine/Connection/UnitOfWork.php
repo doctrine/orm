@@ -124,7 +124,7 @@ class Doctrine_Connection_UnitOfWork
     {
         $this->_em = $em;
         //TODO: any benefit with lazy init?
-        $this->_commitOrderCalculator = new Doctrine_Internal_CommitOrderCalculator();
+        $this->_commitOrderCalculator = new Doctrine_ORM_Internal_CommitOrderCalculator();
     }
 
     /**

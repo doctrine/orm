@@ -29,7 +29,7 @@
  * @todo Rename to: CommitOrderCalculator
  * @author Roman Borschel <roman@code-factory.org> 
  */
-class Doctrine_Internal_CommitOrderCalculator
+class Doctrine_ORM_Internal_CommitOrderCalculator
 {
     private $_currentTime;
     
@@ -95,7 +95,7 @@ class Doctrine_Internal_CommitOrderCalculator
     
     public function addNodeWithItem($key, $item)
     {
-        $this->_nodes[$key] = new Doctrine_Internal_CommitOrderNode($item, $this);
+        $this->_nodes[$key] = new Doctrine_ORM_Internal_CommitOrderNode($item, $this);
     }
     
     public function getNodeForKey($key)

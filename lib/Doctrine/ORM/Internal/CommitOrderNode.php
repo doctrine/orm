@@ -28,7 +28,7 @@
  * @since 2.0
  * @author Roman Borschel <roman@code-factory.org>
  */
-class Doctrine_Internal_CommitOrderNode
+class Doctrine_ORM_Internal_CommitOrderNode
 {
     const NOT_VISITED = 1;
     const IN_PROGRESS = 2;
@@ -47,7 +47,7 @@ class Doctrine_Internal_CommitOrderNode
     private $_relationEdges = array();
     
     
-    public function __construct($wrappedObj, Doctrine_Internal_CommitOrderCalculator $calc)
+    public function __construct($wrappedObj, Doctrine_ORM_Internal_CommitOrderCalculator $calc)
     {
         $this->_wrappedObj = $wrappedObj;
         $this->_calculator = $calc;
@@ -144,7 +144,7 @@ class Doctrine_Internal_CommitOrderNode
      *
      * @param Doctrine_Internal_CommitOrderNode $node
      */
-    public function before(Doctrine_Internal_CommitOrderNode $node)
+    public function before(Doctrine_ORM_Internal_CommitOrderNode $node)
     {
         $this->_relatedNodes[] = $node;
     }
