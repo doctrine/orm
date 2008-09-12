@@ -33,7 +33,7 @@
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  * @todo Remove.
  */
-class Doctrine_Manager implements Doctrine_Configurable, Countable, IteratorAggregate
+class Doctrine_Manager implements Doctrine_Common_Configurable, Countable, IteratorAggregate
 {
     /**
      * @var array $connections          an array containing all the opened connections
