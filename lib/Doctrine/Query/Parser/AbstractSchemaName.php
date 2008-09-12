@@ -64,13 +64,6 @@ class Doctrine_Query_Parser_AbstractSchemaName extends Doctrine_Query_ParserRule
     
     protected function _isDoctrineEntity($componentName)
     {
-        if (class_exists($componentName)) {
-            $reflectionClass = new ReflectionClass($componentName);
-            $dctrnEntityReflectionClass = new ReflectionClass('Doctrine_ORM_Entity');
-
-            return $reflectionClass->isSubclassOf($dctrnEntityReflectionClass);
-        }
-
-        return false;
+        return class_exists($componentName) && is_subclass_of($componentName, 'Doctrine_ORM_Entity');
     }
 }
