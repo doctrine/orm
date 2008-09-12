@@ -134,7 +134,7 @@ class Doctrine_Collection implements Countable, IteratorAggregate, Serializable,
 
         if ($keyField !== null) {
             if ( ! $this->_em->getClassMetadata($entityBaseType)->hasField($keyField)) {
-                throw new Doctrine_Collection_Exception("Invalid field '$keyField' can't be uses as key.");
+                throw new Doctrine_Exception("Invalid field '$keyField' can't be uses as key.");
             }
             $this->_keyField = $keyField;
         }

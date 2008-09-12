@@ -76,7 +76,7 @@ class Orm_Component_CollectionTest extends Doctrine_OrmTestCase
      * possible to set this to something that is not valid. 
      *
      * @test 
-     * @expectedException Doctrine_Collection_Exception
+     * @expectedException Doctrine_Exception
      */
     public function shouldThrowExceptionIfNonValidFieldSetAsKey()
     {
