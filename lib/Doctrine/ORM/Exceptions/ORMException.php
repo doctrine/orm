@@ -32,26 +32,8 @@
  * @version     $Revision: 4776 $
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  * @author      Roman Borschel <roman@code-factory.org>
- * @todo Rename to DoctrineException
  */
-class Doctrine_ORM_Exceptions_ORMException extends Exception
-{ 
-    private $_innerException;
-    
-    public function __construct($message = "", Exception $innerException = null)
-    {
-        parent::__construct($message);
-        $this->_innerException = $innerException;
-    }
-    
-    public function getInnerException()
-    {
-        return $this->_innerException;
-    }
-    
-    public static function notYetImplemented($method, $class)
-    {
-        return new self("The method '$method' is not implemented in the class '$class'.");
-    }
+class Doctrine_ORM_Exceptions_ORMException extends Doctrine_Shared_Exceptions_DoctrineException
+{
 
 }
