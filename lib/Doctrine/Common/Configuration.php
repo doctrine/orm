@@ -59,7 +59,7 @@ class Doctrine_Common_Configuration
      */
     public function __construct()
     {
-        $this->_nullObject = Doctrine_ORM_Internal_Null::$INSTANCE;
+        $this->_nullObject = new stdClass();
         $this->_initAttributes();
     }
     
