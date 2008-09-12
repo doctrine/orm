@@ -1552,7 +1552,7 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
      * @param Doctrine_Association $assoc
      * @param unknown_type $fieldName
      */
-    private function _registerCustomAssociationAccessors(Doctrine_Association $assoc, $fieldName)
+    private function _registerCustomAssociationAccessors(Doctrine_ORM_Mapping_AssociationMapping $assoc, $fieldName)
     {
         if ($acc = $assoc->getCustomAccessor()) {
             $this->_customAssociationAccessors[$fieldName] = $acc;
@@ -1570,7 +1570,7 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
     public function mapOneToOne(array $mapping)
     {
         $mapping = $this->_completeAssociationMapping($mapping);
-        $oneToOneMapping = new Doctrine_Association_OneToOne($mapping);
+        $oneToOneMapping = new Doctrine_ORM_Mapping_OneToOneMapping($mapping);
         $this->_storeAssociationMapping($oneToOneMapping);
         
         /*if ($oneToOneMapping->isInverseSide()) {
@@ -1583,7 +1583,7 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
         }*/
     }
     
-    private function _registerMappingIfInverse(Doctrine_Association $assoc)
+    private function _registerMappingIfInverse(Doctrine_ORM_Mapping_AssociationMapping $assoc)
     {
         if ($assoc->isInverseSide()) {
             $this->_inverseMappings[$assoc->getMappedByFieldName()] = $assoc;
@@ -1598,7 +1598,7 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
     public function mapOneToMany(array $mapping)
     {
         $mapping = $this->_completeAssociationMapping($mapping);
-        $oneToManyMapping = new Doctrine_Association_OneToMany($mapping);
+        $oneToManyMapping = new Doctrine_ORM_Mapping_OneToManyMapping($mapping);
         $this->_storeAssociationMapping($oneToManyMapping);
     }
 
@@ -1621,7 +1621,7 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
     public function mapManyToMany(array $mapping)
     {
         $mapping = $this->_completeAssociationMapping($mapping);
-        $manyToManyMapping = new Doctrine_Association_ManyToManyMapping($mapping);
+        $manyToManyMapping = new Doctrine_ORM_Mapping_ManyToManyMapping($mapping);
         $this->_storeAssociationMapping($manyToManyMapping);
     }
     
@@ -1630,7 +1630,7 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
      *
      * @param Doctrine_Association $assocMapping
      */
-    private function _storeAssociationMapping(Doctrine_Association $assocMapping)
+    private function _storeAssociationMapping(Doctrine_ORM_Mapping_AssociationMapping $assocMapping)
     {
         $sourceFieldName = $assocMapping->getSourceFieldName();
         if (isset($this->_associationMappings[$sourceFieldName])) {

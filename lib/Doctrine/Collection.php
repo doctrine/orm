@@ -229,7 +229,7 @@ class Doctrine_Collection implements Countable, IteratorAggregate, Serializable,
      *
      * @return void
      */
-    public function _setOwner(Doctrine_Entity $entity, Doctrine_Association $relation)
+    public function _setOwner(Doctrine_Entity $entity, Doctrine_ORM_Mapping_AssociationMapping $relation)
     {
         $this->_owner = $entity;
         $this->_association = $relation;
