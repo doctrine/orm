@@ -1,6 +1,6 @@
 <?php
 /*
- *  $Id$
+ *  $Id: Array.php 4910 2008-09-12 08:51:56Z romanb $
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -20,28 +20,35 @@
  */
 
 /**
- * Doctrine_Cache_Interface
+ * Array cache driver.
  *
- * @package     Doctrine
- * @subpackage  Cache
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @link        www.phpdoctrine.org
  * @since       1.0
- * @version     $Revision$
+ * @version     $Revision: 4910 $
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  */
-interface Doctrine_Cache_Interface 
+class Doctrine_Cache_Array implements Doctrine_Cache_Interface
 {
     /**
-     * Test if a cache entry is available for the given id and (if yes) return it (false else).
-     * 
-     * Note : return value is always "string" (unserialization is done by the core not by the backend)
+     * @var array $data         an array of cached data
+     */
+    protected $data;
+
+    /**
+     * Test if a cache is available for the given id and (if yes) return it (false else).
      * 
      * @param string $id cache id
      * @param boolean $testCacheValidity        if set to false, the cache validity won't be tested
      * @return string cached datas (or false)
      */
-    public function fetch($id, $testCacheValidity = true);
+    public function fetch($id, $testCacheValidity = true) 
+    {
+        if (isset($this->data[$id])) {
+            return $this->data[$id];
+        }
+        return false;
+    }
 
     /**
      * Test if a cache is available or not (for the given id)
@@ -49,7 +56,10 @@ interface Doctrine_Cache_Interface
      * @param string $id cache id
      * @return mixed false (a cache is not available) or "last modified" timestamp (int) of the available cache record
      */
-    public function contains($id);
+    public function contains($id)
+    {
+        return isset($this->data[$id]);
+    }
 
     /**
      * Save some string datas into a cache record
@@ -61,7 +71,10 @@ interface Doctrine_Cache_Interface
      * @param int $lifeTime     if != false, set a specific lifetime for this cache record (null => infinite lifeTime)
      * @return boolean true if no problem
      */
-    public function save($data, $id, $lifeTime = false);
+    public function save($id, $data, $lifeTime = false)
+    {
+        $this->data[$id] = $data;
+    }
 
     /**
      * Remove a cache record
@@ -69,5 +82,28 @@ interface Doctrine_Cache_Interface
      * @param string $id cache id
      * @return boolean true if no problem
      */
-    public function delete($id);
+    public function delete($id)
+    {
+        unset($this->data[$id]);
+    }
+
+    /**
+     * Remove all cache record
+     * 
+     * @return boolean true if no problem
+     */
+    public function deleteAll()
+    {
+        $this->data = array();
+    }
+
+    /**
+     * count
+     *
+     * @return integer
+     */
+    public function count() 
+    {
+        return count($this->data);
+    }
 }
