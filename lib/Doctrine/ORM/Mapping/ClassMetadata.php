@@ -32,7 +32,7 @@
  * @since 2.0
  * @todo Rename to ClassDescriptor.
  */
-class Doctrine_ClassMetadata implements Doctrine_Common_Configurable, Serializable
+class Doctrine_ORM_Mapping_ClassMetadata implements Doctrine_Common_Configurable, Serializable
 {
     /* The inheritance mapping types */
     /**

@@ -1,6 +1,6 @@
 <?php
 
-class Doctrine_ClassMetadataMock extends Doctrine_ClassMetadata
+class Doctrine_ClassMetadataMock extends Doctrine_ORM_Mapping_ClassMetadata
 {
     
     

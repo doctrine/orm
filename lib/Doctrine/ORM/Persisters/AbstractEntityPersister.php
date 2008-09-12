@@ -74,7 +74,7 @@ abstract class Doctrine_ORM_Persisters_AbstractEntityPersister
     /**
      * Constructs a new EntityPersister.
      */
-    public function __construct(Doctrine_ORM_EntityManager $em, Doctrine_ClassMetadata $classMetadata)
+    public function __construct(Doctrine_ORM_EntityManager $em, Doctrine_ORM_Mapping_ClassMetadata $classMetadata)
     {
         $this->_em = $em;
         $this->_entityName = $classMetadata->getClassName();

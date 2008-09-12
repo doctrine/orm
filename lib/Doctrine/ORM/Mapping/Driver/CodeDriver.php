@@ -32,7 +32,7 @@
  * @link        www.phpdoctrine.org
  * @since       2.0
  */
-class Doctrine_ClassMetadata_CodeDriver
+class Doctrine_ORM_Mapping_Driver_CodeDriver
 {
     /**
      * Name of the callback method.
@@ -44,7 +44,7 @@ class Doctrine_ClassMetadata_CodeDriver
     /**
      * Loads the metadata for the specified class into the provided container.
      */
-    public function loadMetadataForClass($className, Doctrine_ClassMetadata $metadata)
+    public function loadMetadataForClass($className, Doctrine_ORM_Mapping_ClassMetadata $metadata)
     {
         if ( ! method_exists($className, self::CALLBACK_METHOD)) {
             throw new Doctrine_ClassMetadata_Exception("Unable to load metadata for class"

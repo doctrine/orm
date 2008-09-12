@@ -45,7 +45,7 @@ class Orm_Query_IdentifierRecognitionTest extends Doctrine_OrmTestCase
 
         $decl = $parserResult->getQueryComponent('u');
 
-        $this->assertTrue($decl['metadata'] instanceof Doctrine_ClassMetadata);
+        $this->assertTrue($decl['metadata'] instanceof Doctrine_ORM_Mapping_ClassMetadata);
         $this->assertEquals(null, $decl['relation']);
         $this->assertEquals(null, $decl['parent']);
         $this->assertEquals(null, $decl['scalar']);
@@ -60,7 +60,7 @@ class Orm_Query_IdentifierRecognitionTest extends Doctrine_OrmTestCase
 
         $decl = $parserResult->getQueryComponent('u');
 
-        $this->assertTrue($decl['metadata'] instanceof Doctrine_ClassMetadata);
+        $this->assertTrue($decl['metadata'] instanceof Doctrine_ORM_Mapping_ClassMetadata);
         $this->assertEquals(null, $decl['relation']);
         $this->assertEquals(null, $decl['parent']);
         $this->assertEquals(null, $decl['scalar']);

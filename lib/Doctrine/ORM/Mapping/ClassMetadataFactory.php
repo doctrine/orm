@@ -33,7 +33,7 @@
  * @since       2.0
  * @todo Rename to ClassDescriptorFactory.
  */
-class Doctrine_ClassMetadata_Factory
+class Doctrine_ORM_Mapping_ClassMetadataFactory
 {
     protected $_em;
     protected $_driver;
@@ -102,7 +102,7 @@ class Doctrine_ClassMetadata_Factory
             $class = $classes[$loadedParentClass];
         } else {
             $rootClassOfHierarchy = count($parentClasses) > 0 ? array_shift($parentClasses) : $name;
-            $class = new Doctrine_ClassMetadata($rootClassOfHierarchy, $this->_em);
+            $class = new Doctrine_ORM_Mapping_ClassMetadata($rootClassOfHierarchy, $this->_em);
             $this->_loadMetadata($class, $rootClassOfHierarchy);
             $classes[$rootClassOfHierarchy] = $class;
         }
@@ -117,7 +117,7 @@ class Doctrine_ClassMetadata_Factory
         // Move down the hierarchy of parent classes, starting from the topmost class
         $parent = $class;
         foreach ($parentClasses as $subclassName) {
-            $subClass = new Doctrine_ClassMetadata($subclassName, $this->_em);
+            $subClass = new Doctrine_ORM_Mapping_ClassMetadata($subclassName, $this->_em);
             $subClass->setInheritanceType($parent->getInheritanceType(), $parent->getInheritanceOptions());
             $this->_addInheritedFields($subClass, $parent);
             $this->_addInheritedRelations($subClass, $parent);
@@ -166,7 +166,7 @@ class Doctrine_ClassMetadata_Factory
      * @param Doctrine_ClassMetadata $class  The container for the metadata.
      * @param string $name  The name of the class for which the metadata will be loaded.
      */
-    protected function _loadMetadata(Doctrine_ClassMetadata $class, $name)
+    protected function _loadMetadata(Doctrine_ORM_Mapping_ClassMetadata $class, $name)
     {
         if ( ! class_exists($name) || empty($name)) {
             throw new Doctrine_Exception("Couldn't find class " . $name . ".");
