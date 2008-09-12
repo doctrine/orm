@@ -19,6 +19,8 @@
  * <http://www.phpdoctrine.org>.
  */
 
+#namespace Doctrine::ORM::Internal::Hydration;
+
 /**
  * Base class for all hydrators (ok, we got only 1 currently).
  *
@@ -29,7 +31,7 @@
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  * @author      Roman Borschel <roman@code-factory.org>
  */
-abstract class Doctrine_Hydrator_Abstract
+abstract class Doctrine_ORM_Internal_Hydration_AbstractHydrator
 {
     /**
      * @var array $_queryComponents

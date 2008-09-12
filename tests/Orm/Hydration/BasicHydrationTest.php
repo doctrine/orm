@@ -71,7 +71,7 @@ class Orm_Hydration_BasicHydrationTest extends Doctrine_OrmTestCase
         
             
         $stmt = new Doctrine_HydratorMockStatement($resultSet);
-        $hydrator = new Doctrine_HydratorNew($this->_em);
+        $hydrator = new Doctrine_ORM_Internal_Hydration_StandardHydrator($this->_em);
         
         $result = $hydrator->hydrateResultSet($this->_createParserResult(
                 $stmt, $queryComponents, $tableAliasMap, $hydrationMode));
@@ -158,7 +158,7 @@ class Orm_Hydration_BasicHydrationTest extends Doctrine_OrmTestCase
             );
             
         $stmt = new Doctrine_HydratorMockStatement($resultSet);
-        $hydrator = new Doctrine_HydratorNew($this->_em);
+        $hydrator = new Doctrine_ORM_Internal_Hydration_StandardHydrator($this->_em);
         
         $result = $hydrator->hydrateResultSet($this->_createParserResult(
                 $stmt, $queryComponents, $tableAliasMap, $hydrationMode, true));
@@ -254,7 +254,7 @@ class Orm_Hydration_BasicHydrationTest extends Doctrine_OrmTestCase
             );
             
         $stmt = new Doctrine_HydratorMockStatement($resultSet);
-        $hydrator = new Doctrine_HydratorNew($this->_em);
+        $hydrator = new Doctrine_ORM_Internal_Hydration_StandardHydrator($this->_em);
         
         $result = $hydrator->hydrateResultSet($this->_createParserResult(
                 $stmt, $queryComponents, $tableAliasMap, $hydrationMode, true));
@@ -347,7 +347,7 @@ class Orm_Hydration_BasicHydrationTest extends Doctrine_OrmTestCase
         
             
         $stmt = new Doctrine_HydratorMockStatement($resultSet);
-        $hydrator = new Doctrine_HydratorNew($this->_em);
+        $hydrator = new Doctrine_ORM_Internal_Hydration_StandardHydrator($this->_em);
         
         $result = $hydrator->hydrateResultSet($this->_createParserResult(
                 $stmt, $queryComponents, $tableAliasMap, $hydrationMode, true));
@@ -487,7 +487,7 @@ class Orm_Hydration_BasicHydrationTest extends Doctrine_OrmTestCase
             );
             
         $stmt = new Doctrine_HydratorMockStatement($resultSet);
-        $hydrator = new Doctrine_HydratorNew($this->_em);
+        $hydrator = new Doctrine_ORM_Internal_Hydration_StandardHydrator($this->_em);
         
         $result = $hydrator->hydrateResultSet($this->_createParserResult(
                 $stmt, $queryComponents, $tableAliasMap, $hydrationMode, true));
@@ -662,7 +662,7 @@ class Orm_Hydration_BasicHydrationTest extends Doctrine_OrmTestCase
             );
             
         $stmt = new Doctrine_HydratorMockStatement($resultSet);
-        $hydrator = new Doctrine_HydratorNew($this->_em);
+        $hydrator = new Doctrine_ORM_Internal_Hydration_StandardHydrator($this->_em);
         
         $result = $hydrator->hydrateResultSet($this->_createParserResult(
                 $stmt, $queryComponents, $tableAliasMap, $hydrationMode, true));
@@ -827,7 +827,7 @@ class Orm_Hydration_BasicHydrationTest extends Doctrine_OrmTestCase
             );
             
         $stmt = new Doctrine_HydratorMockStatement($resultSet);
-        $hydrator = new Doctrine_HydratorNew($this->_em);
+        $hydrator = new Doctrine_ORM_Internal_Hydration_StandardHydrator($this->_em);
         
         $result = $hydrator->hydrateResultSet($this->_createParserResult(
                 $stmt, $queryComponents, $tableAliasMap, $hydrationMode));
@@ -918,7 +918,7 @@ class Orm_Hydration_BasicHydrationTest extends Doctrine_OrmTestCase
             );
             
         $stmt = new Doctrine_HydratorMockStatement($resultSet);
-        $hydrator = new Doctrine_HydratorNew($this->_em);
+        $hydrator = new Doctrine_ORM_Internal_Hydration_StandardHydrator($this->_em);
         
         if ($name == 'result1') {
             $result = $hydrator->hydrateResultSet($this->_createParserResult(
@@ -933,7 +933,7 @@ class Orm_Hydration_BasicHydrationTest extends Doctrine_OrmTestCase
                 $result = $hydrator->hydrateResultSet($this->_createParserResult(
                     $stmt, $queryComponents, $tableAliasMap, Doctrine::HYDRATE_SINGLE_SCALAR));
                 $this->fail();
-            } catch (Doctrine_Hydrator_Exception $ex) {}
+            } catch (Doctrine_ORM_Exceptions_HydrationException $ex) {}
         }
         
     }

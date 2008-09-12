@@ -19,7 +19,7 @@
  * <http://www.phpdoctrine.org>.
  */
 
-#namespace Doctrine::ORM::Internal;
+#namespace Doctrine::ORM::Internal::Hydration;
 
 /**
  * Defines an array hydration strategy.
@@ -31,7 +31,7 @@
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  * @author      Roman Borschel <roman@code-factory.org>
  */
-class Doctrine_Hydrator_ArrayDriver
+class Doctrine_ORM_Internal_Hydration_ArrayDriver
 {
     
     /**

@@ -30,7 +30,7 @@
  * @author      Roman Borschel <roman@code-factory.org>
  * @todo Rename to ObjectDriver
  */
-class Doctrine_Hydrator_RecordDriver
+class Doctrine_ORM_Internal_Hydration_ObjectDriver
 {
     /** Collections initialized by the driver */
     protected $_collections = array();

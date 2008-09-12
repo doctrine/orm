@@ -96,7 +96,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract
     public function __construct(Doctrine_EntityManager $entityManager)
     {
         $this->_entityManager = $entityManager;
-        $this->_hydrator = new Doctrine_Hydrator($entityManager);
+        $this->_hydrator = new Doctrine_ORM_Internal_Hydration_StandardHydrator($entityManager);
 
         $this->free();
     }

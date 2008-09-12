@@ -19,7 +19,7 @@
  * <http://www.phpdoctrine.org>.
  */
 
-#namespace Doctrine::ORM::Internal;
+#namespace Doctrine::ORM::Internal::Hydration;
 
 /**
  * The hydrator has the tedious to process result sets returned by the database
@@ -56,7 +56,7 @@
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  * @author      Roman Borschel <roman@code-factory.org>
  */
-class Doctrine_HydratorNew extends Doctrine_Hydrator_Abstract
+class Doctrine_ORM_Internal_Hydration_StandardHydrator extends Doctrine_ORM_Internal_Hydration_AbstractHydrator
 {    
     /**
      * Parses the data returned by statement object.
@@ -97,9 +97,9 @@ class Doctrine_HydratorNew extends Doctrine_Hydrator_Abstract
         $this->_queryComponents = $parserResult->getQueryComponents();
 
         if ($hydrationMode == Doctrine::HYDRATE_ARRAY) {
-            $driver = new Doctrine_Hydrator_ArrayDriver();
+            $driver = new Doctrine_ORM_Internal_Hydration_ArrayDriver();
         } else {
-            $driver = new Doctrine_Hydrator_RecordDriver($this->_em);
+            $driver = new Doctrine_ORM_Internal_Hydration_ObjectDriver($this->_em);
         }
 
         $s = microtime(true);
@@ -148,7 +148,7 @@ class Doctrine_HydratorNew extends Doctrine_Hydrator_Abstract
         if ($hydrationMode == Doctrine::HYDRATE_SINGLE_SCALAR) {
             $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
             if (count($result) > 1 || count($result[0]) > 1) {
-                throw Doctrine_Hydrator_Exception::nonUniqueResult();
+                throw Doctrine_ORM_Exceptions_HydrationException::nonUniqueResult();
             }
             return array_shift($this->_gatherScalarRowData($result[0], $cache)); 
         }
