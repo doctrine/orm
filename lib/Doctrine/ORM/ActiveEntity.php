@@ -10,7 +10,7 @@
  *
  * @since 2.0
  */
-class Doctrine_ActiveEntity extends Doctrine_ORM_Entity
+class Doctrine_ORM_ActiveEntity extends Doctrine_ORM_Entity
 {
     /**
      * Saves the current state of the entity into the database.
