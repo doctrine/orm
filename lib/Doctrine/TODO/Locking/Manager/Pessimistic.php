@@ -1,6 +1,6 @@
 <?php
 /*
- *  $Id$
+ *  $Id: Pessimistic.php 4364 2008-05-13 21:20:34Z romanb $
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -32,7 +32,7 @@
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @since       1.0
- * @version     $Revision$
+ * @version     $Revision: 4364 $
  */
 class Doctrine_Locking_Manager_Pessimistic
 {
