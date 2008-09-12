@@ -360,6 +360,37 @@ class Doctrine_DBAL_Platforms_SqlitePlatform extends Doctrine_DBAL_Platforms_Abs
                      'unsigned' => $unsigned,
                      'fixed'    => $fixed);
     }
+    
+    /**
+     * Enter description here...
+     *
+     * @param unknown_type $level
+     * @override
+     */
+    protected function _getTransactionIsolationLevelSql($level)
+    {
+        switch ($level) {
+            case Doctrine_DBAL_Connection::TRANSACTION_READ_UNCOMMITTED:
+                return 0;
+            case Doctrine_DBAL_Connection::TRANSACTION_READ_COMMITTED:
+            case Doctrine_DBAL_Connection::TRANSACTION_REPEATABLE_READ:
+            case Doctrine_DBAL_Connection::TRANSACTION_SERIALIZABLE:
+                return 1;
+            default:
+                return parent::_getTransactionIsolationLevelSql($level);
+        }
+    }
+    
+    /**
+     * Enter description here...
+     *
+     * @param unknown_type $level
+     * @override
+     */
+    public function getSetTransactionIsolationSql($level)
+    {
+        return 'PRAGMA read_uncommitted = ' . $this->_getTransactionIsolationLevelSql($level);
+    }
 }
 
 ?>

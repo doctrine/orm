@@ -1234,6 +1234,17 @@ class Doctrine_DBAL_Platforms_MySqlPlatform extends Doctrine_DBAL_Platforms_Abst
         $table  = $this->quoteIdentifier($table, true);
         return 'DROP TABLE ' . $table;
     }
+    
+    /**
+     * Enter description here...
+     *
+     * @param unknown_type $level
+     * @override
+     */
+    public function getSetTransactionIsolationSql($level)
+    {
+        return 'SET SESSION TRANSACTION ISOLATION LEVEL ' . $this->_getTransactionIsolationLevelSql($level);
+    }
 }
 
 ?>

@@ -9,7 +9,11 @@ class Doctrine_DBAL_Driver_PDOSqlite_Driver implements Doctrine_DBAL_Driver
     
     public function connect(array $params, $username = null, $password = null, array $driverOptions = array())
     {
-        return new PDO($this->_constructPdoDsn($params), $username, $password, $driverOptions);
+        return new Doctrine_DBAL_Driver_PDOConnection(
+                $this->_constructPdoDsn($params),
+                $username,
+                $password,
+                $driverOptions);
     }
     
     /**
@@ -32,12 +36,12 @@ class Doctrine_DBAL_Driver_PDOSqlite_Driver implements Doctrine_DBAL_Driver
     
     public function getDatabasePlatform()
     {
-        return new Doctrine_DatabasePlatform_SqlitePlatform();
+        return new Doctrine_DBAL_Platforms_SqlitePlatform();
     }
     
-    public function getSchemaManager(Doctrine_Connection $conn)
+    public function getSchemaManager(Doctrine_DBAL_Connection $conn)
     {
-        return new Doctrine_Schema_SqliteSchemaManager($conn);
+        return new Doctrine_DBAL_Schema_SqliteSchemaManager($conn);
     }
     
 }

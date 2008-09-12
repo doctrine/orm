@@ -344,6 +344,37 @@ class Doctrine_DBAL_Platforms_OraclePlatform extends Doctrine_DBAL_Platforms_Abs
     {
         return 'SELECT ' . $this->quoteIdentifier($sequenceName) . '.nextval FROM DUAL';
     }
+    
+    /**
+     * Enter description here...
+     *
+     * @param unknown_type $level
+     * @override
+     */
+    public function getSetTransactionIsolationSql($level)
+    {
+        return 'ALTER SESSION ISOLATION LEVEL ' . $this->_getTransactionIsolationLevelSql($level);
+    }
+    
+    /**
+     * Enter description here...
+     *
+     * @param unknown_type $level
+     * @override
+     */
+    protected function _getTransactionIsolationLevelSql($level)
+    {
+        switch ($level) {
+            case Doctrine_DBAL_Connection::TRANSACTION_READ_UNCOMMITTED:
+                return 'READ COMMITTED';
+            case Doctrine_DBAL_Connection::TRANSACTION_READ_COMMITTED:
+            case Doctrine_DBAL_Connection::TRANSACTION_REPEATABLE_READ:
+            case Doctrine_DBAL_Connection::TRANSACTION_SERIALIZABLE:
+                return 'SERIALIZABLE';
+            default:
+                return parent::_getTransactionIsolationLevelSql($level);
+        }
+    }
 }
 
 ?>

@@ -9,7 +9,11 @@ class Doctrine_DBAL_Driver_PDOMsSql_Driver implements Doctrine_DBAL_Driver
     
     public function connect(array $params, $username = null, $password = null, array $driverOptions = array())
     {
-        return new PDO($this->_constructPdoDsn($params), $username, $password, $driverOptions);
+        return new Doctrine_DBAL_Driver_MsSql_Connection(
+                $this->_constructPdoDsn($params),
+                $username,
+                $password,
+                $driverOptions);
     }
     
     /**

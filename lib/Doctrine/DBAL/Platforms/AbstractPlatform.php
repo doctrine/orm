@@ -1774,6 +1774,48 @@ abstract class Doctrine_DBAL_Platforms_AbstractPlatform
         return 'SET NAMES ' . $this->quote($charset);
     }
     
+    /**
+     * Enter description here...
+     *
+     * @param unknown_type $level
+     */
+    protected function _getTransactionIsolationLevelSql($level)
+    {
+        switch ($level) {
+            case Doctrine_DBAL_Connection::TRANSACTION_READ_UNCOMMITTED:
+                return 'READ UNCOMMITTED';
+            case Doctrine_DBAL_Connection::TRANSACTION_READ_COMMITTED:
+                return 'READ COMMITTED';
+            case Doctrine_DBAL_Connection::TRANSACTION_REPEATABLE_READ:
+                return 'REPEATABLE READ';
+            case Doctrine_DBAL_Connection::TRANSACTION_SERIALIZABLE:
+                return 'SERIALIZABLE';
+            default:
+                throw new Doctrine_Common_Exceptions_DoctrineException('isolation level is not supported: ' . $isolation);
+        } 
+    }
+    
+    /**
+     * Enter description here...
+     *
+     * @param unknown_type $level
+     */
+    public function getSetTransactionIsolationSql($level)
+    {
+        throw new Doctrine_Export_Exception('Set transaction isolation not supported by this platform.');
+    }
+    
+    /**
+     * Gets the default transaction isolation level of the platform.
+     *
+     * @return integer The default isolation level.
+     * @see Doctrine::DBAL::Connection::TRANSACTION_* constants.
+     */
+    public function getDefaultTransactionIsolationLevel()
+    {
+        return Doctrine_DBAL_Connection::TRANSACTION_READ_COMMITTED;
+    }
+    
     
     /* supports*() metods */
     

@@ -13,7 +13,8 @@ class Doctrine_OrmTestSuite extends Doctrine_TestSuite
         $config = new Doctrine_Common_Configuration();
         $eventManager = new Doctrine_Common_EventManager();
         $connectionOptions = array(
-            'driverClass' => 'Doctrine_ConnectionMock',
+            'driverClass' => 'Doctrine_DriverMock',
+            'wrapperClass' => 'Doctrine_ConnectionMock',
             'user' => 'john',
             'password' => 'wayne'      
         );      

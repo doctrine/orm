@@ -19,14 +19,13 @@
  * <http://www.phpdoctrine.org>.
  */
 
-#namespace Doctrine::DBAL;
+#namespace Doctrine::DBAL::Driver;
 
 /**
  * Statement interface.
  * Drivers must implement this interface.
  * 
- * This includes the full PDOStatement interface as well as custom extensions of
- * Doctrine's DBAL.
+ * This resembles the PDOStatement interface.
  * 
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  * @author      Roman Borschel <roman@code-factory.org>
@@ -35,7 +34,7 @@
  * @since       2.0
  * @version     $Revision$
  */
-interface Doctrine_DBAL_Statement
+interface Doctrine_DBAL_Driver_Statement
 {    
     /**
      * Bind a column to a PHP variable

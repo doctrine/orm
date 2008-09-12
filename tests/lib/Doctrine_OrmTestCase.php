@@ -1,6 +1,6 @@
 <?php
 
-require_once 'lib/mocks/Doctrine_ConnectionMock.php';
+require_once 'lib/mocks/Doctrine_DriverMock.php';
 
 /**
  * Base testcase class for all orm testcases.
@@ -18,7 +18,8 @@ class Doctrine_OrmTestCase extends Doctrine_TestCase
             $config = new Doctrine_Configuration();
             $eventManager = new Doctrine_EventManager();
             $connectionOptions = array(
-                'driverClass' => 'Doctrine_ConnectionMock',
+                'driverClass' => 'Doctrine_DriverMock',
+                'wrapperClass' => 'Doctrine_ConnectionMock',
                 'user' => 'john',
                 'password' => 'wayne'      
             );

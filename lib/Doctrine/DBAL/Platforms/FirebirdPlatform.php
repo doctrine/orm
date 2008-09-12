@@ -257,6 +257,39 @@ class Doctrine_DBAL_Platforms_FirebirdPlatform extends Doctrine_DBAL_Platforms_A
         return 'SELECT GEN_ID(' . $this->quoteIdentifier($sequenceName) . ', 1) FROM RDB$DATABASE';
     }
     
+    /**
+     * Enter description here...
+     *
+     * @param unknown_type $level
+     * @override
+     */
+    protected function _getTransactionIsolationLevelSql($level)
+    {
+        switch ($level) {
+            case Doctrine_DBAL_Connection::TRANSACTION_READ_UNCOMMITTED:
+                return 'READ COMMITTED RECORD_VERSION';
+            case Doctrine_DBAL_Connection::TRANSACTION_READ_COMMITTED:
+                return 'READ COMMITTED NO RECORD_VERSION';
+            case Doctrine_DBAL_Connection::TRANSACTION_REPEATABLE_READ:
+                return 'SNAPSHOT';
+            case Doctrine_DBAL_Connection::TRANSACTION_SERIALIZABLE:
+                return 'SNAPSHOT TABLE STABILITY';
+            default:
+                return parent::_getTransactionIsolationLevelSql($level);
+        }
+    }
+    
+    /**
+     * Enter description here...
+     *
+     * @param unknown_type $level
+     * @override
+     */
+    public function getSetTransactionIsolationSql($level)
+    {
+        return 'SET TRANSACTION ISOLATION LEVEL ' . $this->_getTransactionIsolationLevelSql($level);
+    }
+    
 }
 
 ?>

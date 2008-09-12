@@ -21,7 +21,10 @@
  */
 
 /**
- * Base class of each Sql Builder object
+ * The SqlBuilder. Creates SQL out of an AST.
+ * 
+ * INTERNAL: For platform-specific SQL, the platform of the connection should be used.
+ * ($this->_connection->getDatabasePlatform())
  *
  * @package     Doctrine
  * @subpackage  Query
@@ -32,27 +35,16 @@
  * @since       2.0
  * @version     $Revision$
  */
-abstract class Doctrine_Query_SqlBuilder
+class Doctrine_Query_SqlBuilder
 {
-    /**
-     * The Connection object.
-     *
-     * @var Doctrine_Connection
-     */
-    protected $_connection;
+    protected $_em;
+    protected $_conn;
 
-
-    public static function fromConnection(Doctrine_ORM_EntityManager $entityManager)
+    public function __construct(Doctrine_ORM_EntityManager $em)
     {
-        $connection = $entityManager->getConnection();
-
-        $className = "Doctrine_Query_SqlBuilder_" . $connection->getDriverName();
-        $sqlBuilder = new $className();
-        $sqlBuilder->_connection = $connection;
-
-        return $sqlBuilder;
+        $this->_em = $em;
+        $this->_conn = $this->_em->getConnection();
     }
-
 
     /**
      * Retrieves the assocated Doctrine_Connection to this object.
@@ -64,23 +56,12 @@ abstract class Doctrine_Query_SqlBuilder
         return $this->_connection;
     }
 
-
     /**
      * @nodoc
      */
     public function quoteIdentifier($identifier)
     {
-        return $this->_connection->quoteIdentifier($identifier);
+        return $this->_conn->quoteIdentifier($identifier);
     }
-
-
-
-    // Start Common SQL generations
-    // Here we follow the SQL-99 specifications available at:
-    // http://savage.net.au/SQL/sql-99.bnf
-
-
-
-    // End of Common SQL generations
  
 }

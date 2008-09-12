@@ -19,7 +19,7 @@ class Doctrine_TestUtil
             //return Doctrine_Manager::connection($dsn, 'testconn');
         } else {
             $params = array(
-                'driver' => 'sqlite',
+                'driver' => 'pdo_sqlite',
                 'memory' => true
             );
         }

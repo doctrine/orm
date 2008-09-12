@@ -3,16 +3,15 @@
 require_once 'lib/mocks/Doctrine_SequenceMock.php';
 require_once 'lib/mocks/Doctrine_DatabasePlatformMock.php';
 
-class Doctrine_ConnectionMock extends Doctrine_Connection
+class Doctrine_ConnectionMock extends Doctrine_DBAL_Connection
 {
-    protected $_driverName = 'Mysql';
     private $_platformMock;
     private $_lastInsertId = 0;
     private $_inserts = array();
     
-    public function __construct(array $params)
-    {
-        parent::__construct($params);
+    public function __construct() {
+        $this->_platformMock = new Doctrine_DatabasePlatformMock();
+        $this->_platform = $this->_platformMock;
     }
     
     /**
@@ -20,9 +19,6 @@ class Doctrine_ConnectionMock extends Doctrine_Connection
      */
     public function getDatabasePlatform()
     {
-        if ( ! $this->_platformMock) {
-            $this->_platformMock = new Doctrine_DatabasePlatformMock();
-        }
         return $this->_platformMock;
     }
     

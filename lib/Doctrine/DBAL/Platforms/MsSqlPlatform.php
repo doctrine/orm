@@ -311,6 +311,17 @@ class Doctrine_DBAL_Platforms_MsSqlPlatform extends Doctrine_DBAL_Platforms_Abst
         return '[' . str_replace(']', ']]', $identifier) . ']';
     }
     
+    /**
+     * Enter description here...
+     *
+     * @param unknown_type $level
+     * @override
+     */
+    public function getSetTransactionIsolationSql($level)
+    {
+        return 'SET TRANSACTION ISOLATION LEVEL ' . $this->_getTransactionIsolationLevelSql($level);
+    }
+    
 }
 
 ?>

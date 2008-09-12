@@ -32,7 +32,7 @@ interface Doctrine_DBAL_Driver
      *
      * @return Doctrine::DBAL::SchemaManager
      */
-    public function getSchemaManager();
+    public function getSchemaManager(Doctrine_DBAL_Connection $conn);
 }
 
 ?>

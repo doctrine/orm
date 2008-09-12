@@ -130,7 +130,7 @@ class Doctrine_Query_Parser
         $this->_em = $query->getEntityManager();
         $this->_input = $query->getDql();
         $this->_scanner = new Doctrine_Query_Scanner($this->_input);
-        $this->_sqlBuilder = Doctrine_Query_SqlBuilder::fromConnection($this->_em);
+        $this->_sqlBuilder = new Doctrine_Query_SqlBuilder($this->_em);
         $this->_keywordTable = new Doctrine_Query_Token();
 
         $this->_parserResult = new Doctrine_Query_ParserResult(

@@ -148,7 +148,7 @@ class Doctrine_ORM_EntityManager
      * @param Doctrine_Connection $conn
      * @param string $name
      */
-    protected function __construct(Doctrine_Connection $conn, $name, Doctrine_Common_Configuration $config,
+    protected function __construct(Doctrine_DBAL_Connection $conn, $name, Doctrine_Common_Configuration $config,
             Doctrine_Common_EventManager $eventManager)
     {
         $this->_conn = $conn;
@@ -157,7 +157,7 @@ class Doctrine_ORM_EntityManager
         $this->_eventManager = $eventManager;
         $this->_metadataFactory = new Doctrine_ClassMetadata_Factory(
                 $this, new Doctrine_ClassMetadata_CodeDriver());
-        $this->_unitOfWork = new Doctrine_Connection_UnitOfWork($this);
+        $this->_unitOfWork = new Doctrine_ORM_UnitOfWork($this);
         $this->_nullObject = Doctrine_ORM_Internal_Null::$INSTANCE;
     }
     

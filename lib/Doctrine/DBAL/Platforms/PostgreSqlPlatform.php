@@ -989,6 +989,18 @@ class Doctrine_DBAL_Platforms_PostgreSqlPlatform extends Doctrine_DBAL_Platforms
     {
         return "SELECT NEXTVAL('" . $sequenceName . "')";
     }
+    
+    /**
+     * Enter description here...
+     *
+     * @param unknown_type $level
+     * @override
+     */
+    public function getSetTransactionIsolationSql($level)
+    {
+        return 'SET SESSION CHARACTERISTICS AS TRANSACTION ISOLATION LEVEL '
+                . $this->_getTransactionIsolationLevelSql($level);
+    }
 }
 
 ?>
