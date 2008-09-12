@@ -1,7 +1,8 @@
 <?php
 
+#namespace Doctrine::DBAL::Platforms;
 
-class Doctrine_DatabasePlatform_PostgreSqlPlatform extends Doctrine_DatabasePlatform
+class Doctrine_DBAL_Platforms_PostgreSqlPlatform extends Doctrine_DBAL_Platforms_AbstractPlatform
 {
     /**
      * The reserved keywords by pgsql. Ordered alphabetically.

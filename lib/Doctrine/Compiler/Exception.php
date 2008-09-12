@@ -29,6 +29,7 @@
  * @link        www.phpdoctrine.org
  * @since       1.0
  * @version     $Revision$
+ * @deprecated
  */
 class Doctrine_Compiler_Exception extends Doctrine_Exception
 { }

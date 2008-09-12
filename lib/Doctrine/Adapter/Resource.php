@@ -29,6 +29,8 @@
  * @link        www.phpdoctrine.org
  * @since       1.0
  * @version     $Revision: 2702 $
+ * @deprecated
+ * @todo Remove
  */
 class Doctrine_Adapter_Resource implements Doctrine_Adapter_Interface 
 {

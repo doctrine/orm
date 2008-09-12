@@ -18,7 +18,7 @@
  * and is licensed under the LGPL. For more information, see
  * <http://www.phpdoctrine.org>.
  */
-Doctrine::autoload('Doctrine_Overloadable');
+
 /**
  * Doctrine_Connection_Profiler
  *
@@ -29,6 +29,8 @@ Doctrine::autoload('Doctrine_Overloadable');
  * @link        www.phpdoctrine.org
  * @since       1.0
  * @version     $Revision$
+ * @deprecated
+ * @todo remove
  */
 class Doctrine_Connection_Profiler implements Doctrine_Overloadable, IteratorAggregate, Countable
 {

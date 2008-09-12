@@ -29,6 +29,7 @@
  * @since       1.0
  * @version     $Revision$
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
+ * @deprecated
  */
 class Doctrine_Collection_Offset extends Doctrine_Collection
 {

@@ -5,7 +5,7 @@
  *
  * @since 2.0
  */
-class Doctrine_DataType_TextType extends Doctrine_DataType
+class Doctrine_DBAL_Types_TextType extends Doctrine_DBAL_Types_Type
 {
     /**
      * Enter description here...

@@ -19,19 +19,16 @@
  * <http://www.phpdoctrine.org>.
  */
 
-#namespace Doctrine::Common::Cache;
+#namespace Doctrine::ORM::Cache;
 
 /**
- * Doctrine_Cache_Apc
+ * APC cache driver.
  *
- * @package     Doctrine
- * @subpackage  Cache
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @link        www.phpdoctrine.org
  * @since       1.0
  * @version     $Revision$
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
- * @todo Rename to ApcCache
  */
 class Doctrine_Cache_Apc extends Doctrine_Cache_Driver
 {

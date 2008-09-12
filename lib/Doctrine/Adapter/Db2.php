@@ -18,7 +18,7 @@
  * and is licensed under the LGPL. For more information, see
  * <http://www.phpdoctrine.org>.
  */
-Doctrine::autoload('Doctrine_Adapter');
+
 /**
  * Doctrine_Adapter_Db2
  * IBM DB2 Adapter  [BORROWED FROM ZEND FRAMEWORK]
@@ -30,6 +30,7 @@ Doctrine::autoload('Doctrine_Adapter');
  * @link        www.phpdoctrine.org
  * @since       1.0
  * @version     $Revision: 1080 $
+ * @deprecated
  */
 class Doctrine_Adapter_Db2 extends Doctrine_Adapter
 {

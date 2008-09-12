@@ -19,6 +19,8 @@
  * <http://www.phpdoctrine.org>.
  */
 
+#namespace Doctrine::ORM::Internal;
+
 /**
  * Defines an array hydration strategy.
  *

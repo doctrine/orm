@@ -31,6 +31,7 @@
  * @link        www.phpdoctrine.org
  * @since       1.0
  * @version     $Revision$
+ * @deprecated
  */
 class Doctrine_Transaction extends Doctrine_Connection_Module
 {
@@ -110,29 +111,17 @@ class Doctrine_Transaction extends Doctrine_Connection_Module
     public function begin($savepoint = null)
     {
         $this->conn->connect();
-        //$listener = $this->conn->getAttribute(Doctrine::ATTR_LISTENER);
 
         if ( ! is_null($savepoint)) {
             $this->savePoints[] = $savepoint;
-            //$event = new Doctrine_Event($this, Doctrine_Event::SAVEPOINT_CREATE);
-            //$listener->preSavepointCreate($event);
-            //if ( ! $event->skipOperation) {
-                $this->createSavePoint($savepoint);
-            //}
-            //$listener->postSavepointCreate($event);
+            $this->createSavePoint($savepoint);
         } else {
             if ($this->_nestingLevel == 0) {
-                //$event = new Doctrine_Event($this, Doctrine_Event::TX_BEGIN);
-                //$listener->preTransactionBegin($event);
-
-                //if ( ! $event->skipOperation) {
-                    try {
-                        $this->_doBeginTransaction();
-                    } catch (Exception $e) {
-                        throw new Doctrine_Transaction_Exception($e->getMessage());
-                    }
-                //}
-                //$listener->postTransactionBegin($event);
+                try {
+                    $this->_doBeginTransaction();
+                } catch (Exception $e) {
+                    throw new Doctrine_Transaction_Exception($e->getMessage());
+                }
             }
         }
 
@@ -161,24 +150,12 @@ class Doctrine_Transaction extends Doctrine_Connection_Module
         
         $this->conn->connect();
 
-        //$listener = $this->conn->getAttribute(Doctrine::ATTR_LISTENER);
-
         if ( ! is_null($savepoint)) {
             $this->_nestingLevel -= $this->removeSavePoints($savepoint);
-            //$event = new Doctrine_Event($this, Doctrine_Event::SAVEPOINT_COMMIT);
-            //$listener->preSavepointCommit($event);
-            //if ( ! $event->skipOperation) {
-                $this->releaseSavePoint($savepoint);
-            //}
-            //$listener->postSavepointCommit($event);
+            $this->releaseSavePoint($savepoint);
         } else {   
             if ($this->_nestingLevel == 1) {
-                //$event = new Doctrine_Event($this, Doctrine_Event::TX_COMMIT);
-                //$listener->preTransactionCommit($event);
-                //if ( ! $event->skipOperation) {
-                    $this->_doCommit();
-                //}
-                //$listener->postTransactionCommit($event);
+                $this->_doCommit();
             }
             
             if ($this->_nestingLevel > 0) {
@@ -219,24 +196,14 @@ class Doctrine_Transaction extends Doctrine_Connection_Module
 
         if ( ! is_null($savepoint)) {
             $this->_nestingLevel -= $this->removeSavePoints($savepoint);
-            //$event = new Doctrine_Event($this, Doctrine_Event::SAVEPOINT_ROLLBACK);
-            //$listener->preSavepointRollback($event);
-            //if ( ! $event->skipOperation) {
-                $this->rollbackSavePoint($savepoint);
-            //}
-            //$listener->postSavepointRollback($event);
+            $this->rollbackSavePoint($savepoint);
         } else {
-            //$event = new Doctrine_Event($this, Doctrine_Event::TX_ROLLBACK);
-            //$listener->preTransactionRollback($event);
-            //if ( ! $event->skipOperation) {
-                $this->_nestingLevel = 0;
-                try {
-                    $this->_doRollback();
-                } catch (Exception $e) {
-                    throw new Doctrine_Transaction_Exception($e->getMessage());
-                }
-            //}
-            //$listener->postTransactionRollback($event);
+            $this->_nestingLevel = 0;
+            try {
+                $this->_doRollback();
+            } catch (Exception $e) {
+                throw new Doctrine_Transaction_Exception($e->getMessage());
+            }
         }
 
         return true;

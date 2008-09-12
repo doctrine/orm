@@ -1,6 +1,8 @@
 <?php
 
-class Doctrine_DatabasePlatform_MsSqlPlatform extends Doctrine_DatabasePlatform
+#namespace Doctrine::DBAL::Platforms;
+
+class Doctrine_DBAL_Platforms_MsSqlPlatform extends Doctrine_DBAL_Platforms_AbstractPlatform
 { 
     /**
      * the constructor
@@ -277,6 +279,36 @@ class Doctrine_DatabasePlatform_MsSqlPlatform extends Doctrine_DatabasePlatform
                      'length'   => $length,
                      'unsigned' => $unsigned,
                      'fixed'    => $fixed);
+    }
+    
+    /**
+     * Quote a string so it can be safely used as a table / column name
+     *
+     * Quoting style depends on which database driver is being used.
+     *
+     * @param string $identifier    identifier name to be quoted
+     * @param bool   $checkOption   check the 'quote_identifier' option
+     *
+     * @return string  quoted identifier string
+     * @override
+     */
+    public function quoteIdentifier($identifier, $checkOption = false)
+    {
+        if ($checkOption && ! $this->getAttribute(Doctrine::ATTR_QUOTE_IDENTIFIER)) {
+            return $identifier;
+        }
+        
+        if (strpos($identifier, '.') !== false) { 
+            $parts = explode('.', $identifier); 
+            $quotedParts = array(); 
+            foreach ($parts as $p) { 
+                $quotedParts[] = $this->quoteIdentifier($p); 
+            }
+            
+            return implode('.', $quotedParts); 
+        }
+        
+        return '[' . str_replace(']', ']]', $identifier) . ']';
     }
     
 }

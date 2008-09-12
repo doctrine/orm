@@ -29,6 +29,7 @@
  * @link        www.phpdoctrine.org
  * @since       1.0
  * @version     $Revision$
+ * @deprecated
  */
 interface Doctrine_Adapter_Statement_Interface
 {    

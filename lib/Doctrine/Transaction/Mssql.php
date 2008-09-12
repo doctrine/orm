@@ -29,6 +29,7 @@
  * @link        www.phpdoctrine.org
  * @since       1.0
  * @version     $Revision$
+ * @todo remove
  */
 class Doctrine_Transaction_Mssql extends Doctrine_Transaction
 {

@@ -18,7 +18,7 @@
  * and is licensed under the LGPL. For more information, see
  * <http://www.phpdoctrine.org>.
  */
-Doctrine::autoload('Doctrine_Connection_Profiler_Exception');
+
 /**
  * Doctrine_Connection_Profiler_Exception
  *
@@ -29,6 +29,7 @@ Doctrine::autoload('Doctrine_Connection_Profiler_Exception');
  * @since       1.0
  * @version     $Revision: 1345 $
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
+ * @deprecated
  */
 class Doctrine_Connection_Profiler_Exception extends Doctrine_Exception
 {

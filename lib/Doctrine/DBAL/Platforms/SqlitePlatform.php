@@ -7,7 +7,7 @@
  *
  * @since 2.0
  */
-class Doctrine_DatabasePlatform_SqlitePlatform extends Doctrine_DatabasePlatform
+class Doctrine_DBAL_Platforms_SqlitePlatform extends Doctrine_DBAL_Platforms_AbstractPlatform
 {
     
     /**

@@ -19,7 +19,7 @@
  * <http://www.phpdoctrine.org>.
  */
 
-#namespace Doctrine::ORM::Internal;
+#namespace Doctrine::ORM;
 
 #use Doctrine::ORM::Entity;
 #use Doctrine::ORM::EntityManager;
@@ -36,7 +36,7 @@
  * @version     $Revision$
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  * @author      Roman Borschel <roman@code-factory.org>
- * @todo Rename: Doctrine::ORM::(Internal::)UnitOfWork.
+ * @todo Rename: Doctrine::ORM::UnitOfWork.
  * @todo Turn connection exceptions into UnitOfWorkExceptions.
  */
 class Doctrine_Connection_UnitOfWork

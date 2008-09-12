@@ -30,6 +30,7 @@
  * @version     $Revision$
  * @link        www.phpdoctrine.org
  * @since       1.0
+ * @deprecated
  */
 class Doctrine_Connection_Mssql extends Doctrine_Connection
 {

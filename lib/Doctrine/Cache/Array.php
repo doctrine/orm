@@ -20,17 +20,15 @@
  */
 
 /**
- * Doctrine_Cache_Interface
+ * Array cache driver.
  *
- * @package     Doctrine
- * @subpackage  Cache
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @link        www.phpdoctrine.org
  * @since       1.0
  * @version     $Revision$
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  */
-class Doctrine_Cache_Array implements Countable, Doctrine_Cache_Interface
+class Doctrine_Cache_Array implements Doctrine_Cache_Interface
 {
     /**
      * @var array $data         an array of cached data

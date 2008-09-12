@@ -7,7 +7,7 @@
  *
  * @since 2.0
  */
-class Doctrine_DataType_StringType extends Doctrine_DataType
+class Doctrine_DBAL_Types_StringType extends Doctrine_DBAL_Types_Type
 {
     public function getSqlDeclaration(array $fieldDeclaration, Doctrine_DatabasePlatform $platform)
     {

@@ -19,27 +19,15 @@
  * <http://www.phpdoctrine.org>.
  */
 
-#namespace Doctrine::DBAL::Connections;
+#namespace Doctrine::DBAL;
 
 #use Doctrine::Common::Configuration;
 #use Doctrine::Common::EventManager;
 #use Doctrine::DBAL::Exceptions::ConnectionException;
 
 /**
- * A thin wrapper on top of the PDO class.
- *
- * 1. Event listeners
- *    An easy to use, pluggable eventlistener architecture. Aspects such as
- *    logging, query profiling and caching can be easily implemented through
- *    the use of these listeners
- *
- * 2. Lazy-connecting
- *    Creating an instance of Doctrine_Connection does not connect
- *    to database. Connecting to database is only invoked when actually needed
- *    (for example when query() is being called)
- *
- * 3. Convenience methods
- *    Doctrine_Connection provides many convenience methods such as fetchAll(), fetchOne() etc.
+ * A wrapper around a Doctrine::DBAL::Connection that adds features like
+ * events, configuration, emulated transaction nesting and more.
  *
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @since       1.0
@@ -64,8 +52,9 @@
  * 
  * Doctrine::DBAL could ship with a simple standard broker that uses a primitive
  * round-robin approach to distribution. User can provide its own brokers.
+ * @todo Rename to ConnectionWrapper
  */
-abstract class Doctrine_Connection
+class Doctrine_Connection
 {
     /**
      * The PDO database handle. 
@@ -113,6 +102,13 @@ abstract class Doctrine_Connection
      * @var array
      */
     protected $_serverInfo = array();
+    
+    /**
+     * The transaction nesting level.
+     *
+     * @var integer
+     */
+    protected $_transactionNestingLevel = 0;
     
     /**
      * The parameters used during creation of the Connection.
@@ -183,9 +179,31 @@ abstract class Doctrine_Connection
         }
         
         // create platform
-        $class = "Doctrine_DatabasePlatform_" . $this->_driverName . "Platform";
+        $class = "Doctrine_DBAL_Platforms_" . $this->_driverName . "Platform";
         $this->_platform = new $class();
         $this->_platform->setQuoteIdentifiers($this->_config->getQuoteIdentifiers());
+    }
+    
+    public function __construct2(array $params, Doctrine_DBAL_Driver $driver,
+            Doctrine_Configuration $config = null, Doctrine_EventManager $eventManager = null)
+    {
+        $this->_driver = $driver;
+        $this->_params = $params;
+        
+        if (isset($params['pdo'])) {
+            $this->_pdo = $params['pdo'];
+            $this->_isConnected = true;
+        }
+        
+        // Create default config and event manager if none given
+        if ( ! $config) {
+            $this->_config = new Doctrine_Configuration();
+        }
+        if ( ! $eventManager) {
+            $this->_eventManager = new Doctrine_EventManager();
+        }
+        
+        $this->_platform = $driver->getDatabasePlatform();
     }
     
     /**
@@ -232,27 +250,6 @@ abstract class Doctrine_Connection
     {
         return PDO::getAvailableDrivers();
     }
-    
-    /**
-     * returns the name of this driver
-     *
-     * @return string           the name of this driver
-     */
-    public function getName()
-    {
-        return $this->_name;
-    }
-    
-    /**
-     * Sets the name of the connection
-     *
-     * @param string $name 
-     * @return void
-     */
-    public function setName($name)
-    {
-        $this->_name = $name;
-    }
 
     /**
      * Gets the name of the instance driver
@@ -286,9 +283,6 @@ abstract class Doctrine_Connection
             return false;
         }
 
-        //$event = new Doctrine_Event($this, Doctrine_Event::CONN_CONNECT);
-        //$this->getListener()->preConnect($event);
-
         // TODO: the extension_loaded check can happen earlier, maybe in the factory
         if ( ! extension_loaded('pdo')) {
             throw new Doctrine_Connection_Exception("Couldn't locate driver named " . $e[0]);
@@ -309,18 +303,36 @@ abstract class Doctrine_Connection
         $this->_pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         $this->_pdo->setAttribute(PDO::ATTR_CASE, PDO::CASE_LOWER);
 
-        // attach the pending attributes to adapter
-        /*foreach($this->pendingAttributes as $attr => $value) {
-            // some drivers don't support setting this so we just skip it
-            if ($attr == Doctrine::ATTR_DRIVER_NAME) {
-                continue;
-            }
-            $this->_pdo->setAttribute($attr, $value);
-        }*/
+        $this->_isConnected = true;
+
+        return true;
+    }
+    
+    /**
+     * Establishes the connection with the database.
+     *
+     * @return boolean
+     */
+    public function connect2()
+    {
+        if ($this->_isConnected) {
+            return false;
+        }
+        
+        $driverOptions = isset($this->_params['driverOptions']) ?
+                $this->_params['driverOptions'] : array();
+        $user = isset($this->_params['user']) ?
+                $this->_params['user'] : null;
+        $password = isset($this->_params['password']) ?
+                $this->_params['password'] : null;
+                
+        $this->_pdo = $this->_driver->connect($this->_params, $user, $password, $driverOptions);
+        
+        $this->_pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        $this->_pdo->setAttribute(PDO::ATTR_CASE, PDO::CASE_LOWER);
 
         $this->_isConnected = true;
 
-        //$this->getListener()->postConnect($event);
         return true;
     }
     
@@ -336,70 +348,6 @@ abstract class Doctrine_Connection
     protected function _constructPdoDsn()
     {
         throw Doctrine_Exception::notImplemented('_constructPdoDsn', get_class($this));
-    }
-    
-    /**
-     * Execute a SQL REPLACE query. A REPLACE query is identical to a INSERT
-     * query, except that if there is already a row in the table with the same
-     * key field values, the REPLACE query just updates its values instead of
-     * inserting a new row.
-     *
-     * The REPLACE type of query does not make part of the SQL standards. Since
-     * practically only MySQL and SQLite implement it natively, this type of
-     * query is emulated through this method for other DBMS using standard types
-     * of queries inside a transaction to assure the atomicity of the operation.
-     *
-     * @param                   string  name of the table on which the REPLACE query will
-     *                          be executed.
-     *
-     * @param   array           an associative array that describes the fields and the
-     *                          values that will be inserted or updated in the specified table. The
-     *                          indexes of the array are the names of all the fields of the table.
-     *
-     *                          The values of the array are values to be assigned to the specified field.
-     *
-     * @param array $keys       an array containing all key fields (primary key fields
-     *                          or unique index fields) for this table
-     *
-     *                          the uniqueness of a row will be determined according to
-     *                          the provided key fields
-     *
-     *                          this method will fail if no key fields are specified
-     *
-     * @throws Doctrine_Connection_Exception        if this driver doesn't support replace
-     * @throws Doctrine_Connection_Exception        if some of the key values was null
-     * @throws Doctrine_Connection_Exception        if there were no key fields
-     * @throws PDOException                         if something fails at PDO level
-     * @return integer                              number of rows affected
-     */
-    public function replace($tableName, array $data, array $keys)
-    {
-        if (empty($keys)) {
-            throw new Doctrine_Connection_Exception('Not specified which fields are keys');
-        }
-        $condition = $values = array();
-
-        foreach ($data as $columnName => $value) {
-            $values[$columnName] = $value;
-
-            if (in_array($columnName, $keys)) {
-                if ($value === null)
-                    throw new Doctrine_Connection_Exception('key value '.$columnName.' may not be null');
-
-                $condition[] = $columnName . ' = ?';
-                $conditionValues[] = $value;
-            }
-        }
-
-        $query = 'DELETE FROM ' . $this->quoteIdentifier($tableName)
-                . ' WHERE ' . implode(' AND ', $condition);
-        $affectedRows = $this->exec($query, $conditionValues);
-
-        $this->insert($table, $values);
-
-        $affectedRows++;
-
-        return $affectedRows;
     }
 
     /**
@@ -502,7 +450,7 @@ abstract class Doctrine_Connection
      */
     public function setCharset($charset)
     {
-        return true;
+        $this->exec($this->_platform->getSetCharsetSql($charset));
     }
 
     /**
@@ -541,52 +489,7 @@ abstract class Doctrine_Connection
      */
     public function quoteIdentifier($str)
     {
-        /*if (is_null($this->_quoteIdentifiers)) {
-            $this->_quoteIdentifiers = $this->_config->get('quoteIdentifiers');
-        }
-        if ( ! $this->_quoteIdentifiers) {
-            return $str;
-        }
-
-        // quick fix for the identifiers that contain a dot
-        if (strpos($str, '.')) {
-            $e = explode('.', $str);
-            return $this->quoteIdentifier($e[0])
-                    . '.'
-                    . $this->quoteIdentifier($e[1]);
-        }
-
-        $c = $this->_platform->getIdentifierQuoteCharacter();
-        $str = str_replace($c, $c . $c, $str);
-
-        return $c . $str . $c;*/
-        return $this->getDatabasePlatform()->quoteIdentifier($str);
-    }
-
-    /**
-     * Some drivers need the boolean values to be converted into integers
-     * when using DQL API.
-     *
-     * This method takes care of that conversion
-     *
-     * @param array $item
-     * @return void
-     * @deprecated Moved to DatabasePlatform
-     */
-    public function convertBooleans($item)
-    {
-        if (is_array($item)) {
-            foreach ($item as $k => $value) {
-                if (is_bool($value)) {
-                    $item[$k] = (int) $value;
-                }
-            }
-        } else {
-            if (is_bool($item)) {
-                $item = (int) $item;
-            }
-        }
-        return $item;
+        return $this->_platform->quoteIdentifier($str);
     }
 
     /**
@@ -599,17 +502,6 @@ abstract class Doctrine_Connection
     public function quote($input, $type = null)
     {
         return $this->_pdo->quote($input, $type);
-    }
-
-    /**
-     * Set the date/time format for the current connection
-     *
-     * @param string    time format
-     *
-     * @return void
-     */
-    public function setDateFormat($format = null)
-    {
     }
 
     /**
@@ -706,19 +598,8 @@ abstract class Doctrine_Connection
     public function prepare($statement)
     {
         $this->connect();
-
         try {
-            //$event = new Doctrine_Event($this, Doctrine_Event::CONN_PREPARE, $statement);
-            //$this->getAttribute(Doctrine::ATTR_LISTENER)->prePrepare($event);
-
-            $stmt = false;
-    
-            //if ( ! $event->skipOperation) {
-                $stmt = $this->_pdo->prepare($statement);
-            //}
-    
-            //$this->getAttribute(Doctrine::ATTR_LISTENER)->postPrepare($event);
-            
+            $stmt = $this->_pdo->prepare($statement);
             return new Doctrine_Connection_Statement($this, $stmt);
         } catch (PDOException $e) {
             $this->rethrowException($e, $this);
@@ -743,19 +624,6 @@ abstract class Doctrine_Connection
     }
 
     /**
-     * standaloneQuery
-     *
-     * @param string $query     sql query
-     * @param array $params     query parameters
-     *
-     * @return PDOStatement|Doctrine_Adapter_Statement
-     */
-    public function standaloneQuery($query, $params = array())
-    {
-        return $this->execute($query, $params);
-    }
-
-    /**
      * Executes an SQL SELECT query with the given parameters.
      * 
      * @param string $query     sql query
@@ -766,22 +634,14 @@ abstract class Doctrine_Connection
     public function execute($query, array $params = array())
     {
         $this->connect();
-
         try {
             if ( ! empty($params)) {
                 $stmt = $this->prepare($query);
                 $stmt->execute($params);
                 return $stmt;
             } else {
-                //$event = new Doctrine_Event($this, Doctrine_Event::CONN_QUERY, $query, $params);
-                //$this->getAttribute(Doctrine::ATTR_LISTENER)->preQuery($event);
-
-                //if ( ! $event->skipOperation) {
-                    $stmt = $this->_pdo->query($query);
-                    $this->_queryCount++;
-                //}
-                //$this->getAttribute(Doctrine::ATTR_LISTENER)->postQuery($event);
-
+                $stmt = $this->_pdo->query($query);
+                $this->_queryCount++;
                 return $stmt;
             }
         } catch (PDOException $e) {
@@ -800,23 +660,14 @@ abstract class Doctrine_Connection
      */
     public function exec($query, array $params = array()) {
         $this->connect();
-
         try {
             if ( ! empty($params)) {
                 $stmt = $this->prepare($query);
                 $stmt->execute($params);
-                
                 return $stmt->rowCount();
             } else {
-                //$event = new Doctrine_Event($this, Doctrine_Event::CONN_EXEC, $query, $params);
-                //$this->getAttribute(Doctrine::ATTR_LISTENER)->preExec($event);
-
-                //if ( ! $event->skipOperation) {
-                    $count = $this->_pdo->exec($query);
-                    $this->_queryCount++;
-                //}
-                //$this->getAttribute(Doctrine::ATTR_LISTENER)->postExec($event);
-
+                $count = $this->_pdo->exec($query);
+                $this->_queryCount++;
                 return $count;
             }
         } catch (PDOException $e) {
@@ -830,13 +681,7 @@ abstract class Doctrine_Connection
      * @throws Doctrine_Connection_Exception
      */
     public function rethrowException(Exception $e, $invoker)
-    {        
-        $name = 'Doctrine_Connection_' . $this->_driverName . '_Exception';
-        $exc = new $name($e->getMessage(), (int) $e->getCode());
-        if ( ! is_array($e->errorInfo)) {
-            $e->errorInfo = array(null, null, null, null);
-        }
-        $exc->processErrorInfo($e->errorInfo);
+    {
         throw $exc;
     }
     
@@ -858,14 +703,9 @@ abstract class Doctrine_Connection
      */
     public function close()
     {
-        //$event = new Doctrine_Event($this, Doctrine_Event::CONN_CLOSE);
-        //this->getAttribute(Doctrine::ATTR_LISTENER)->preClose($event);
-
         $this->clear();
         unset($this->_pdo);
         $this->_isConnected = false;
-
-        //$this->getAttribute(Doctrine::ATTR_LISTENER)->postClose($event);
     }
 
     /**
@@ -875,7 +715,7 @@ abstract class Doctrine_Connection
      */
     public function getTransactionLevel()
     {
-        return $this->transaction->getTransactionLevel();
+        return $this->_transaction->getTransactionLevel();
     }
     
     /**
@@ -886,7 +726,6 @@ abstract class Doctrine_Connection
     public function errorCode()
     {
         $this->connect();
-        
         return $this->_pdo->errorCode();
     }
 
@@ -898,7 +737,6 @@ abstract class Doctrine_Connection
     public function errorInfo()
     {
         $this->connect();
-        
         return $this->_pdo->errorInfo();
     }
     
@@ -921,17 +759,19 @@ abstract class Doctrine_Connection
      * Start a transaction or set a savepoint.
      *
      * if trying to set a savepoint and there is no active transaction
-     * a new transaction is being started
-     *
-     * Listeners: onPreTransactionBegin, onTransactionBegin
+     * a new transaction is being started.
      *
      * @param string $savepoint                 name of a savepoint to set
      * @throws Doctrine_Transaction_Exception   if the transaction fails at database level
      * @return integer                          current transaction nesting level
      */
-    public function beginTransaction($savepoint = null)
+    public function beginTransaction()
     {
-        return $this->_transaction->beginTransaction($savepoint);
+        if ($this->_transactionNestingLevel == 0) {
+            return $this->_pdo->beginTransaction();
+        }
+        ++$this->_transactionNestingLevel;
+        return true;
     }
     
     /**
@@ -939,16 +779,25 @@ abstract class Doctrine_Connection
      * progress or release a savepoint. This function may only be called when
      * auto-committing is disabled, otherwise it will fail.
      *
-     * Listeners: onPreTransactionCommit, onTransactionCommit
-     *
      * @param string $savepoint                 name of a savepoint to release
      * @throws Doctrine_Transaction_Exception   if the transaction fails at PDO level
      * @throws Doctrine_Validator_Exception     if the transaction fails due to record validations
      * @return boolean                          false if commit couldn't be performed, true otherwise
      */
-    public function commit($savepoint = null)
+    public function commit()
     {
-        return $this->_transaction->commit($savepoint);
+        if ($this->_transactionNestingLevel == 0) {
+            throw new Doctrine_Exception("Commit failed. There is no active transaction.");
+        }
+        
+        $this->connect();
+
+        if ($this->_transactionNestingLevel == 1) {
+            return $this->_pdo->commit();
+        }
+        --$this->_transactionNestingLevel;
+        
+        return true;
     }
 
     /**
@@ -964,73 +813,22 @@ abstract class Doctrine_Connection
      * @throws Doctrine_Transaction_Exception   If the rollback operation fails at database level.
      * @return boolean                          FALSE if rollback couldn't be performed, TRUE otherwise.
      */
-    public function rollback($savepoint = null)
+    public function rollback()
     {
-        $this->_transaction->rollback($savepoint);
-    }
-
-    /**
-     * Creates the database for the connection instance.
-     *
-     * @return mixed Will return an instance of the exception thrown if the
-     *               create database fails, otherwise it returns a string
-     *               detailing the success.
-     */
-    public function createDatabase()
-    {
-        try {
-            if ( ! $dsn = $this->getOption('dsn')) {
-                throw new Doctrine_Connection_Exception('You must create your Doctrine_Connection by using a valid Doctrine style dsn in order to use the create/drop database functionality');
-            }
-
-            $manager = $this->getManager();
-
-            $info = $manager->parsePdoDsn($dsn);
-            $username = $this->getOption('username');
-            $password = $this->getOption('password');
-
-            // Make connection without database specified so we can create it
-            $connect = $manager->openConnection(new PDO($info['scheme'] . ':host=' . $info['host'], $username, $password), 'tmp_connection', false);
-
-            // Create database
-            $connect->export->createDatabase($info['dbname']);
-
-            // Close the tmp connection with no database
-            $manager->closeConnection($connect);
-
-            // Close original connection
-            $manager->closeConnection($this);
-
-            // Reopen original connection with newly created database
-            $manager->openConnection(new PDO($info['dsn'], $username, $password), $this->getName(), true);
-
-            return 'Successfully created database for connection "' . $this->getName() . '" named "' . $info['dbname'] . '"';
-        } catch (Exception $e) {
-            return $e;
+        if ($this->_transactionNestingLevel == 0) {
+            throw new Doctrine_Exception("Rollback failed. There is no active transaction.");
         }
-    }
+        
+        $this->connect();
 
-    /**
-     * Method for dropping the database for the connection instance
-     *
-     * @return mixed Will return an instance of the exception thrown if the drop
-     *               database fails, otherwise it returns a string detailing the success.
-     */
-    public function dropDatabase()
-    {
-      try {
-          if ( ! $dsn = $this->getOption('dsn')) {
-              throw new Doctrine_Connection_Exception('You must create your Doctrine_Connection by using a valid Doctrine style dsn in order to use the create/drop database functionality');
-          }
-
-          $info = $this->getManager()->parsePdoDsn($dsn);
-
-          $this->export->dropDatabase($info['dbname']);
-
-          return 'Successfully dropped database for connection "' . $this->getName() . '" named "' . $info['dbname'] . '"';
-      } catch (Exception $e) {
-          return $e;
-      }
+        if ($this->_transactionNestingLevel == 1) {
+            $this->_transactionNestingLevel = 0;
+            return $this->_pdo->rollback();
+            
+        }
+        --$this->_transactionNestingLevel;
+        
+        return true;
     }
     
     /**
@@ -1048,19 +846,6 @@ abstract class Doctrine_Connection
     protected function _escapePattern($text)
     {
         return $text;
-        /*if ( ! $this->string_quoting['escape_pattern']) {
-            return $text;
-        }
-        $tmp = $this->conn->string_quoting;
-
-        $text = str_replace($tmp['escape_pattern'], 
-            $tmp['escape_pattern'] .
-            $tmp['escape_pattern'], $text);
-
-        foreach ($this->wildcards as $wildcard) {
-            $text = str_replace($wildcard, $tmp['escape_pattern'] . $wildcard, $text);
-        }
-        return $text;*/
     }
 
     /**
@@ -1154,6 +939,14 @@ abstract class Doctrine_Connection
         if ( ! $this->_schemaManager) {
             $class = "Doctrine_Schema_" . $this->_driverName . "SchemaManager";
             $this->_schemaManager = new $class($this);
+        }
+        return $this->_schemaManager;
+    }
+    
+    public function getSchemaManager2()
+    {
+        if ( ! $this->_schemaManager) {
+            $this->_schemaManager = $this->_driver->getSchemaManager();
         }
         return $this->_schemaManager;
     }

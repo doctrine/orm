@@ -29,6 +29,7 @@ Doctrine::autoload('Doctrine_Exception');
  * @since       1.0
  * @version     $Revision$
  * @link        www.phpdoctrine.org
+ * @todo remove
  */
 class Doctrine_Transaction_Exception extends Doctrine_Exception
 { }

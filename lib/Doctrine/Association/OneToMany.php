@@ -19,7 +19,7 @@
  * <http://www.phpdoctrine.org>.
  */
 
-#namespace Doctrine::ORM::Mappings;
+#namespace Doctrine::ORM::Mapping;
 
 /**
  * Represents a one-to-many mapping.

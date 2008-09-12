@@ -31,16 +31,7 @@
  * @since       2.0
  */
 class Doctrine_Schema_MySqlSchemaManager extends Doctrine_Schema_SchemaManager
-{
-    /*protected $_sql  = array(
-                            'showDatabases'   => 'SHOW DATABASES',
-                            'listTableFields' => 'DESCRIBE %s',
-                            'listSequences'   => 'SHOW TABLES',
-                            'listTables'      => 'SHOW TABLES',
-                            'listUsers'       => 'SELECT DISTINCT USER FROM USER',
-                            'listViews'       => "SHOW FULL TABLES %s WHERE Table_type = 'VIEW'",
-                            );*/
-    
+{    
     public function __construct(Doctrine_Connection $conn)
     {
         $this->_conn = $conn;

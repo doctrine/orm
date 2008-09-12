@@ -7,7 +7,7 @@
  *
  * @since 2.0
  */
-class Doctrine_DatabasePlatform_InformixPlatform extends Doctrine_DatabasePlatform
+class Doctrine_DBAL_Platforms_InformixPlatform extends Doctrine_DBAL_Platforms_AbstractPlatform
 {
 
     public function __construct()

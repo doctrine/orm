@@ -4,7 +4,7 @@
  * Type that maps an SQL INT/MEDIUMINT/BIGINT to a PHP integer.
  *
  */
-class Doctrine_DataType_IntegerType extends Doctrine_DataType
+class Doctrine_DBAL_Types_IntegerType extends Doctrine_DBAL_Types_Type
 {
     
     

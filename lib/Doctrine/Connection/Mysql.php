@@ -30,6 +30,7 @@
  * @version     $Revision$
  * @link        www.phpdoctrine.org
  * @since       1.0
+ * @deprecated
  */
 class Doctrine_Connection_Mysql extends Doctrine_Connection_Common
 {

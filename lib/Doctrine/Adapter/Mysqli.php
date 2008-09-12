@@ -30,6 +30,7 @@
  * @link        www.phpdoctrine.org
  * @since       1.0
  * @version     $Revision: 1080 $
+ * @deprecated
  */
 class Doctrine_Adapter_Mysqli extends Doctrine_Adapter
 {

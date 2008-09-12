@@ -19,14 +19,14 @@
  * <http://www.phpdoctrine.org>.
  */
 
+#namespace Doctrine::ORM::Internal;
+
 /**
  * The code metadata driver loads the metadata of the classes through invoking
  * a static callback method that needs to be implemented when using this driver.
  *
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  * @author      Roman Borschel <roman@code-factory.org>
- * @package     Doctrine
- * @subpackage  ClassMetadata
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @version     $Revision$
  * @link        www.phpdoctrine.org

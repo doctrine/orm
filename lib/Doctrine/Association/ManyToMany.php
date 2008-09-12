@@ -1,6 +1,6 @@
 <?php
 
-#namespace Doctrine::ORM::Mappings;
+#namespace Doctrine::ORM::Mapping;
 
 /**
  * A many-to-many mapping describes the mapping between two collections of

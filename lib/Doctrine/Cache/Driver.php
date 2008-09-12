@@ -20,10 +20,8 @@
  */
 
 /**
- * Doctrine_Cache_Driver
+ * Base class for cache drivers.
  *
- * @package     Doctrine
- * @subpackage  Cache
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @link        www.phpdoctrine.org
  * @since       1.0

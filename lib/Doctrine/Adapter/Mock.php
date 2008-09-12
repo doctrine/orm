@@ -30,6 +30,7 @@
  * @link        www.phpdoctrine.org
  * @since       1.0
  * @version     $Revision$
+ * @deprecated
  */
 class Doctrine_Adapter_Mock implements Doctrine_Adapter_Interface, Countable
 {

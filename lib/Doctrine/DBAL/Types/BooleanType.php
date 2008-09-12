@@ -1,34 +1,32 @@
 <?php
 
 /**
- * Type that maps an SQL DATETIME to a PHP DateTime object.
+ * Type that maps an SQL boolean to a PHP boolean.
  *
- * @since 2.0
  */
-class Doctrine_DataType_DateTimeType extends Doctrine_DataType
+class Doctrine_DBAL_Types_BooleanType extends Doctrine_DBAL_Types_Type
 {
     /**
      * Enter description here...
      *
      * @param unknown_type $value
-     * @param Doctrine_DatabasePlatform $platform
      * @override
      */
     public function convertToDatabaseValue($value, Doctrine_DatabasePlatform $platform)
     {
-        //TODO: howto? dbms specific? delegate to platform?
+        return $platform->convertBooleans($value);
     }
     
     /**
      * Enter description here...
      *
-     * @param string $value
-     * @return DateTime
+     * @param unknown_type $value
+     * @return unknown
      * @override
      */
     public function convertToObjectValue($value)
     {
-        return new DateTime($value);
+        return (bool)$value;
     }
 }
 

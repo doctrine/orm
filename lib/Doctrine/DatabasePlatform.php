@@ -1762,6 +1762,18 @@ abstract class Doctrine_DatabasePlatform
         }
         return $item;
     }
+
+    /**
+     * Enter description here...
+     *
+     * @param unknown_type $charset
+     * @return string
+     */
+    public function getSetCharsetSql($charset)
+    {
+        return 'SET NAMES ' . $this->quote($charset);
+    }
+    
     
     /* supports*() metods */
     

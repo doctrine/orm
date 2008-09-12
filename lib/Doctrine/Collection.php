@@ -22,7 +22,7 @@
 #namespace Doctrine::ORM;
 
 /**
- * A persistent collection of entities.
+ * A persistent collection.
  * 
  * A collection object is strongly typed in the sense that it can only contain
  * entities of a specific type or one of it's subtypes. A collection object is

@@ -31,6 +31,7 @@ Doctrine::autoload('Doctrine_Transaction');
  * @link        www.phpdoctrine.org
  * @since       1.0
  * @version     $Revision$
+ * @todo remove
  */
 class Doctrine_Transaction_Mock extends Doctrine_Transaction
 { }

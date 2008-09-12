@@ -19,6 +19,8 @@
  * <http://www.phpdoctrine.org>.
  */
 
+#namespace Doctrine::DBAL;
+
 /**
  * A thin wrapper around PDOStatement.
  *
