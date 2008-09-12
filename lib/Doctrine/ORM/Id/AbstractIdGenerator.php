@@ -7,7 +7,7 @@
  *
  * @todo Rename to AbstractIdGenerator
  */
-abstract class Doctrine_Id_AbstractIdGenerator
+abstract class Doctrine_ORM_Id_AbstractIdGenerator
 {
     const POST_INSERT_INDICATOR = 'POST_INSERT_INDICATOR';
     

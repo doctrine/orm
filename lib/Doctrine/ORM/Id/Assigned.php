@@ -5,7 +5,7 @@
  *
  * @since 2.0
  */
-class Doctrine_Id_Assigned extends Doctrine_Id_AbstractIdGenerator
+class Doctrine_ORM_Id_Assigned extends Doctrine_ORM_Id_AbstractIdGenerator
 {
     /**
      * Enter description here...

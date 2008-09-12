@@ -638,7 +638,7 @@ class Doctrine_Connection_UnitOfWork
                 break;
             case Doctrine_Entity::STATE_NEW:
                 $result = $class->getIdGenerator()->generate($entity);
-                if ($result == Doctrine_Id_AbstractIdGenerator::POST_INSERT_INDICATOR) {
+                if ($result == Doctrine_ORM_Id_AbstractIdGenerator::POST_INSERT_INDICATOR) {
                     $insertNow[$entity->getOid()] = $entity;
                 } else {
                     $entity->_assignIdentifier($result);

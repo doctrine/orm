@@ -1,6 +1,6 @@
 <?php
 
-class Doctrine_Id_SequenceIdentityGenerator extends Doctrine_Id_IdentityGenerator
+class Doctrine_ORM_Id_SequenceIdentityGenerator extends Doctrine_ORM_Id_IdentityGenerator
 {
     private $_sequenceName;
     

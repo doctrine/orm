@@ -1,6 +1,6 @@
 <?php
 
-class Doctrine_SequenceMock extends Doctrine_Id_SequenceGenerator
+class Doctrine_SequenceMock extends Doctrine_ORM_Id_SequenceGenerator
 {
     private $_sequenceNumber = 0;
     

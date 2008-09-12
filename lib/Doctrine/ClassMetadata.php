@@ -792,13 +792,13 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
     protected function _createIdGenerator()
     {
         if ($this->_generatorType == self::GENERATOR_TYPE_IDENTITY) {
-            $this->_idGenerator = new Doctrine_Id_IdentityGenerator($this->_em);
+            $this->_idGenerator = new Doctrine_ORM_Id_IdentityGenerator($this->_em);
         } else if ($this->_generatorType == self::GENERATOR_TYPE_SEQUENCE) {
-            $this->_idGenerator = new Doctrine_Id_SequenceGenerator($this->_em);
+            $this->_idGenerator = new Doctrine_ORM_Id_SequenceGenerator($this->_em);
         } else if ($this->_generatorType == self::GENERATOR_TYPE_TABLE) {
-            $this->_idGenerator = new Doctrine_Id_TableGenerator($this->_em);
+            $this->_idGenerator = new Doctrine_ORM_Id_TableGenerator($this->_em);
         } else {
-            $this->_idGenerator = new Doctrine_Id_Assigned($this->_em);
+            $this->_idGenerator = new Doctrine_ORM_Id_Assigned($this->_em);
         }
     }
     
