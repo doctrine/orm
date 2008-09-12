@@ -303,7 +303,7 @@ class Doctrine_Connection_UnitOfWork
      * 
      * @todo Rename to scheduleForInsert().
      */
-    public function registerNew(Doctrine_Entity $entity)
+    public function registerNew(Doctrine_ORM_Entity $entity)
     {
         $oid = $entity->getOid();
 
@@ -329,11 +329,11 @@ class Doctrine_Connection_UnitOfWork
     /**
      * Checks whether an entity is registered as new on the unit of work.
      *
-     * @param Doctrine_Entity $entity
+     * @param Doctrine_ORM_Entity $entity
      * @return boolean
      * @todo Rename to isScheduledForInsert().
      */
-    public function isRegisteredNew(Doctrine_Entity $entity)
+    public function isRegisteredNew(Doctrine_ORM_Entity $entity)
     {
         return isset($this->_newEntities[$entity->getOid()]);
     }
@@ -344,7 +344,7 @@ class Doctrine_Connection_UnitOfWork
      *
      * @param Doctrine::ORM::Entity $entity
      */
-    public function registerClean(Doctrine_Entity $entity)
+    public function registerClean(Doctrine_ORM_Entity $entity)
     {
         $this->addToIdentityMap($entity);
     }
@@ -355,7 +355,7 @@ class Doctrine_Connection_UnitOfWork
      * @param Doctrine::ORM::Entity $entity
      * @todo Rename to scheduleForUpdate().
      */
-    public function registerDirty(Doctrine_Entity $entity)
+    public function registerDirty(Doctrine_ORM_Entity $entity)
     {
         $oid = $entity->getOid();
         if ( ! $entity->_identifier()) {
@@ -380,7 +380,7 @@ class Doctrine_Connection_UnitOfWork
      * @return boolean
      * @todo Rename to isScheduledForUpdate().
      */
-    public function isRegisteredDirty(Doctrine_Entity $entity)
+    public function isRegisteredDirty(Doctrine_ORM_Entity $entity)
     {
         return isset($this->_dirtyEntities[$entity->getOid()]);
     }
@@ -390,7 +390,7 @@ class Doctrine_Connection_UnitOfWork
      * 
      * @todo Rename to scheduleForDelete().
      */
-    public function registerDeleted(Doctrine_Entity $entity)
+    public function registerDeleted(Doctrine_ORM_Entity $entity)
     {
         $oid = $entity->getOid();
         if ( ! $this->isInIdentityMap($entity)) {
@@ -420,7 +420,7 @@ class Doctrine_Connection_UnitOfWork
      * @return boolean
      * @todo Rename to isScheduledForDelete().
      */
-    public function isRegisteredRemoved(Doctrine_Entity $entity)
+    public function isRegisteredRemoved(Doctrine_ORM_Entity $entity)
     {
         return isset($this->_deletedEntities[$entity->getOid()]);
     }
@@ -432,7 +432,7 @@ class Doctrine_Connection_UnitOfWork
      * @param integer $oid                  object identifier
      * @return boolean                      whether ot not the operation was successful
      */
-    public function detach(Doctrine_Entity $entity)
+    public function detach(Doctrine_ORM_Entity $entity)
     {
         if ($this->isInIdentityMap($entity)) {
             $this->removeFromIdentityMap($entity);
@@ -442,11 +442,11 @@ class Doctrine_Connection_UnitOfWork
     /**
      * Enter description here...
      *
-     * @param Doctrine_Entity $entity
+     * @param Doctrine_ORM_Entity $entity
      * @return unknown
      * @todo Rename to isScheduled()
      */
-    public function isEntityRegistered(Doctrine_Entity $entity)
+    public function isEntityRegistered(Doctrine_ORM_Entity $entity)
     {
         $oid = $entity->getOid();
         return isset($this->_newEntities[$oid]) ||
@@ -488,7 +488,7 @@ class Doctrine_Connection_UnitOfWork
      * @return boolean  TRUE if the registration was successful, FALSE if the identity of
      *                  the entity in question is already managed.
      */
-    public function addToIdentityMap(Doctrine_Entity $entity)
+    public function addToIdentityMap(Doctrine_ORM_Entity $entity)
     {
         $idHash = $this->getIdentifierHash($entity->_identifier());
         if ($idHash === '') {
@@ -500,17 +500,17 @@ class Doctrine_Connection_UnitOfWork
             return false;
         }
         $this->_identityMap[$className][$idHash] = $entity;
-        $entity->_state(Doctrine_Entity::STATE_MANAGED);
+        $entity->_state(Doctrine_ORM_Entity::STATE_MANAGED);
         return true;
     }
 
     /**
      * Removes an entity from the identity map.
      *
-     * @param Doctrine_Entity $entity
+     * @param Doctrine_ORM_Entity $entity
      * @return unknown
      */
-    public function removeFromIdentityMap(Doctrine_Entity $entity)
+    public function removeFromIdentityMap(Doctrine_ORM_Entity $entity)
     {
         $idHash = $this->getIdentifierHash($entity->_identifier());
         if ($idHash === '') {
@@ -565,10 +565,10 @@ class Doctrine_Connection_UnitOfWork
      * Checks whether an entity is registered in the identity map of the
      * UnitOfWork.
      *
-     * @param Doctrine_Entity $entity
+     * @param Doctrine_ORM_Entity $entity
      * @return boolean
      */
-    public function isInIdentityMap(Doctrine_Entity $entity)
+    public function isInIdentityMap(Doctrine_ORM_Entity $entity)
     {
         $idHash = $this->getIdentifierHash($entity->_identifier());        
         if ($idHash === '') {
@@ -596,9 +596,9 @@ class Doctrine_Connection_UnitOfWork
     /**
      * Saves an entity as part of the current unit of work.
      *
-     * @param Doctrine_Entity $entity  The entity to save.
+     * @param Doctrine_ORM_Entity $entity  The entity to save.
      */
-    public function save(Doctrine_Entity $entity)
+    public function save(Doctrine_ORM_Entity $entity)
     {
         $insertNow = array();
         $visited = array();
@@ -620,10 +620,10 @@ class Doctrine_Connection_UnitOfWork
      * This method is internally called during save() cascades as it tracks
      * the already visited entities to prevent infinite recursions.
      *
-     * @param Doctrine_Entity $entity  The entity to save.
+     * @param Doctrine_ORM_Entity $entity  The entity to save.
      * @param array $visited  The already visited entities.
      */
-    private function _doSave(Doctrine_Entity $entity, array &$visited, array &$insertNow)
+    private function _doSave(Doctrine_ORM_Entity $entity, array &$visited, array &$insertNow)
     {
         if (isset($visited[$entity->getOid()])) {
             return; // Prevent infinite recursion
@@ -633,10 +633,10 @@ class Doctrine_Connection_UnitOfWork
 
         $class = $entity->getClass();
         switch ($entity->_state()) {
-            case Doctrine_Entity::STATE_MANAGED:
+            case Doctrine_ORM_Entity::STATE_MANAGED:
                 // nothing to do for $entity
                 break;
-            case Doctrine_Entity::STATE_NEW:
+            case Doctrine_ORM_Entity::STATE_NEW:
                 $result = $class->getIdGenerator()->generate($entity);
                 if ($result == Doctrine_ORM_Id_AbstractIdGenerator::POST_INSERT_INDICATOR) {
                     $insertNow[$entity->getOid()] = $entity;
@@ -645,11 +645,11 @@ class Doctrine_Connection_UnitOfWork
                 }
                 $this->registerNew($entity);
                 break;
-            case Doctrine_Entity::STATE_DETACHED:
+            case Doctrine_ORM_Entity::STATE_DETACHED:
                 //exception?
                 throw new Doctrine_Exception("Behavior of save() for a detached entity "
                         . "is not yet defined.");
-            case Doctrine_Entity::STATE_DELETED:
+            case Doctrine_ORM_Entity::STATE_DELETED:
                 // $entity becomes managed again
                 if ($this->isRegisteredRemoved($entity)) {
                     //TODO: better a method for this?
@@ -670,9 +670,9 @@ class Doctrine_Connection_UnitOfWork
     /**
      * Deletes an entity as part of the current unit of work.
      *
-     * @param Doctrine_Entity $entity
+     * @param Doctrine_ORM_Entity $entity
      */
-    public function delete(Doctrine_Entity $entity)
+    public function delete(Doctrine_ORM_Entity $entity)
     {
         $this->_doDelete($entity, array());
     }
@@ -680,10 +680,10 @@ class Doctrine_Connection_UnitOfWork
     /**
      * Enter description here...
      *
-     * @param Doctrine_Entity $entity
+     * @param Doctrine_ORM_Entity $entity
      * @param array $visited
      */
-    private function _doDelete(Doctrine_Entity $entity, array &$visited)
+    private function _doDelete(Doctrine_ORM_Entity $entity, array &$visited)
     {
         if (isset($visited[$entity->getOid()])) {
             return; // Prevent infinite recursion
@@ -693,14 +693,14 @@ class Doctrine_Connection_UnitOfWork
 
         $class = $entity->getClass();
         switch ($entity->_state()) {
-            case Doctrine_Entity::STATE_NEW:
-            case Doctrine_Entity::STATE_DELETED:
+            case Doctrine_ORM_Entity::STATE_NEW:
+            case Doctrine_ORM_Entity::STATE_DELETED:
                 // nothing to do for $entity
                 break;
-            case Doctrine_Entity::STATE_MANAGED:
+            case Doctrine_ORM_Entity::STATE_MANAGED:
                 $this->registerDeleted($entity);
                 break;
-            case Doctrine_Entity::STATE_DETACHED:
+            case Doctrine_ORM_Entity::STATE_DETACHED:
                 //exception?
                 throw new Doctrine_Exception("A detached entity can't be deleted.");
             default:
@@ -714,17 +714,17 @@ class Doctrine_Connection_UnitOfWork
     /**
      * Cascades the save operation to associated entities.
      *
-     * @param Doctrine_Entity $entity
+     * @param Doctrine_ORM_Entity $entity
      * @param array $visited
      */
-    private function _cascadeSave(Doctrine_Entity $entity, array &$visited, array &$insertNow)
+    private function _cascadeSave(Doctrine_ORM_Entity $entity, array &$visited, array &$insertNow)
     {
         foreach ($entity->getClass()->getAssociationMappings() as $assocMapping) {
             if ( ! $assocMapping->isCascadeSave()) {
                 continue;
             }
             $relatedEntities = $entity->get($assocMapping->getSourceFieldName());
-            if ($relatedEntities instanceof Doctrine_Entity) {
+            if ($relatedEntities instanceof Doctrine_ORM_Entity) {
                 $this->_doSave($relatedEntities, $visited, $insertNow);
             } else if ($relatedEntities instanceof Doctrine_Collection &&
                     count($relatedEntities) > 0) {
@@ -735,7 +735,7 @@ class Doctrine_Connection_UnitOfWork
         }
     }
 
-    private function _cascadeDelete(Doctrine_Entity $entity)
+    private function _cascadeDelete(Doctrine_ORM_Entity $entity)
     {
 
     }

@@ -86,7 +86,7 @@ class Doctrine_ClassMetadata_Factory
         $parentClasses = array();
         $loadedParentClass = false;
         while ($parentClass = get_parent_class($parentClass)) {
-            if ($parentClass == 'Doctrine_Entity') {
+            if ($parentClass == 'Doctrine_ORM_Entity') {
                 break;
             }
             if (isset($classes[$parentClass])) {
@@ -177,7 +177,7 @@ class Doctrine_ClassMetadata_Factory
         // get parent classes
         //TODO: Skip Entity types MappedSuperclass/Transient
         do {
-            if ($className === 'Doctrine_Entity') {
+            if ($className === 'Doctrine_ORM_Entity') {
                 break;
             } else if ($className == $name) {
                 continue;

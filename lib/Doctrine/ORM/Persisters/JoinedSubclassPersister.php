@@ -38,7 +38,7 @@ class Doctrine_ORM_Persisters_JoinedSubclassPersister extends Doctrine_ORM_Persi
      * @return boolean
      * @override
      */
-    public function insert(Doctrine_Entity $entity)
+    public function insert(Doctrine_ORM_Entity $entity)
     {
         $class = $entity->getClass();
         
@@ -88,7 +88,7 @@ class Doctrine_ORM_Persisters_JoinedSubclassPersister extends Doctrine_ORM_Persi
      * @param Doctrine_Entity $record   record to be updated
      * @return boolean                  whether or not the update was successful
      */
-    protected function _doUpdate(Doctrine_Entity $record)
+    protected function _doUpdate(Doctrine_ORM_Entity $record)
     {
         $conn = $this->_conn;
         $classMetadata = $this->_classMetadata;
@@ -99,7 +99,7 @@ class Doctrine_ORM_Persisters_JoinedSubclassPersister extends Doctrine_ORM_Persi
         array_unshift($classes, $component);
 
         foreach ($record as $field => $value) {
-            if ($value instanceof Doctrine_Entity) {
+            if ($value instanceof Doctrine_ORM_Entity) {
                 if ( ! $value->exists()) {
                     $value->save();
                 }
@@ -122,7 +122,7 @@ class Doctrine_ORM_Persisters_JoinedSubclassPersister extends Doctrine_ORM_Persi
      * Deletes an entity that is part of a Class Table Inheritance hierarchy.
      *
      */
-    protected function _doDelete(Doctrine_Entity $record)
+    protected function _doDelete(Doctrine_ORM_Entity $record)
     {
         $conn = $this->_conn;
         try {
@@ -130,7 +130,7 @@ class Doctrine_ORM_Persisters_JoinedSubclassPersister extends Doctrine_ORM_Persi
             $conn->beginInternalTransaction();
             $this->_deleteComposites($record);
 
-            $record->_state(Doctrine_Entity::STATE_TDIRTY);
+            $record->_state(Doctrine_ORM_Entity::STATE_TDIRTY);
 
             $identifier = $this->_convertFieldToColumnNames($record->identifier(), $class);
             
@@ -141,7 +141,7 @@ class Doctrine_ORM_Persisters_JoinedSubclassPersister extends Doctrine_ORM_Persi
                 $this->_deleteRow($parentClass->getTableName(), $identifier);
             }
             
-            $record->_state(Doctrine_Entity::STATE_TCLEAN);
+            $record->_state(Doctrine_ORM_Entity::STATE_TCLEAN);
 
             $this->removeRecord($record); // @todo should be done in the unitofwork
             $conn->commit();

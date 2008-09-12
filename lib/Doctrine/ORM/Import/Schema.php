@@ -44,7 +44,7 @@ class Doctrine_Import_Schema
                                 'packagesPath'          =>  '',
                                 'generateBaseClasses'   =>  true,
                                 'baseClassesDirectory'  =>  'generated',
-                                'baseClassName'         =>  'Doctrine_Entity',
+                                'baseClassName'         =>  'Doctrine_ORM_Entity',
                                 'suffix'                =>  '.php');
     
     /**

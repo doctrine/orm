@@ -229,7 +229,7 @@ class Doctrine_Collection implements Countable, IteratorAggregate, Serializable,
      *
      * @return void
      */
-    public function _setOwner(Doctrine_Entity $entity, Doctrine_ORM_Mapping_AssociationMapping $relation)
+    public function _setOwner(Doctrine_ORM_Entity $entity, Doctrine_ORM_Mapping_AssociationMapping $relation)
     {
         $this->_owner = $entity;
         $this->_association = $relation;
@@ -392,7 +392,7 @@ class Doctrine_Collection implements Countable, IteratorAggregate, Serializable,
     /**
      *
      */
-    public function search(Doctrine_Entity $record)
+    public function search(Doctrine_ORM_Entity $record)
     {
         return array_search($record, $this->_data, true);
     }
@@ -457,7 +457,7 @@ class Doctrine_Collection implements Countable, IteratorAggregate, Serializable,
      */
     public function set($key, $value)
     {
-        if ( ! $value instanceof Doctrine_Entity) {
+        if ( ! $value instanceof Doctrine_ORM_Entity) {
             throw new Doctrine_Collection_Exception('Value variable in set is not an instance of Doctrine_Entity');
         }
         $this->_data[$key] = $value;
@@ -475,7 +475,7 @@ class Doctrine_Collection implements Countable, IteratorAggregate, Serializable,
     public function add($value, $key = null)
     {
         //TODO: really only allow entities?
-        if ( ! $value instanceof Doctrine_Entity) {
+        if ( ! $value instanceof Doctrine_ORM_Entity) {
             throw new Doctrine_Record_Exception('Value variable in collection is not an instance of Doctrine_Entity.');
         }
         

@@ -40,7 +40,7 @@
  * @since       2.0
  * @version     $Revision: 4342 $
  */
-abstract class Doctrine_Entity implements ArrayAccess, Serializable
+abstract class Doctrine_ORM_Entity implements ArrayAccess, Serializable
 {
     /**
      * MANAGED
@@ -276,7 +276,7 @@ abstract class Doctrine_Entity implements ArrayAccess, Serializable
         $this->_data = array_merge($this->_data, $this->_id);
 
         foreach ($this->_data as $k => $v) {
-            if ($v instanceof Doctrine_Entity && $this->_class->getTypeOfField($k) != 'object') {
+            if ($v instanceof Doctrine_ORM_Entity && $this->_class->getTypeOfField($k) != 'object') {
                 unset($vars['_data'][$k]);
             } else if ($v === Doctrine_Null::$INSTANCE) {
                 unset($vars['_data'][$k]);
@@ -541,7 +541,7 @@ abstract class Doctrine_Entity implements ArrayAccess, Serializable
 
         $rel = $this->_class->getAssociationMapping($name);
 
-        if ($rel->isOneToOne() && ! $value instanceof Doctrine_Entity) {
+        if ($rel->isOneToOne() && ! $value instanceof Doctrine_ORM_Entity) {
             throw Doctrine_Entity_Exception::invalidValueForOneToOneReference();
         } else if (($rel->isOneToMany() || $rel->isManyToMany()) && ! $value instanceof Doctrine_Collection) {
             throw Doctrine_Entity_Exception::invalidValueForOneToManyReference();

@@ -4,7 +4,7 @@
 
 #use Doctrine::ORM::Entity;
 
-class CmsUser extends Doctrine_Entity
+class CmsUser extends Doctrine_ORM_Entity
 {
     #protected $id;
     #protected $status;

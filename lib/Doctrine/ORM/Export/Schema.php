@@ -52,7 +52,7 @@ class Doctrine_Export_Schema
 
         $array = array();
         
-        $parent = new ReflectionClass('Doctrine_Entity');
+        $parent = new ReflectionClass('Doctrine_ORM_Entity');
 
         $sql = array();
         $fks = array();

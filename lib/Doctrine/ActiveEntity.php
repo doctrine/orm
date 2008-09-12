@@ -10,7 +10,7 @@
  *
  * @since 2.0
  */
-class Doctrine_ActiveEntity extends Doctrine_Entity
+class Doctrine_ActiveEntity extends Doctrine_ORM_Entity
 {
     /**
      * Saves the current state of the entity into the database.
@@ -90,7 +90,7 @@ class Doctrine_ActiveEntity extends Doctrine_Entity
 
         // [FIX] Prevent mapped Doctrine_Entitys from being displayed fully
         foreach ($this->_values as $key => $value) {
-            if ($value instanceof Doctrine_Entity) {
+            if ($value instanceof Doctrine_ORM_Entity) {
                 $a[$key] = $value->toArray($deep, $prefixKey);
             } else {
                 $a[$key] = $value;
@@ -434,7 +434,7 @@ class Doctrine_ActiveEntity extends Doctrine_Entity
 
         $this->_extractIdentifier();
 
-        $this->_state = Doctrine_Entity::STATE_CLEAN;
+        $this->_state = Doctrine_ORM_Entity::STATE_CLEAN;
 
         return $this;
     }

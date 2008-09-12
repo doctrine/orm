@@ -12,10 +12,10 @@ class Doctrine_ORM_Id_SequenceGenerator extends Doctrine_ORM_Id_AbstractIdGenera
     /**
      * Enter description here...
      *
-     * @param Doctrine_Entity $entity
+     * @param Doctrine_ORM_Entity $entity
      * @override
      */
-    public function generate(Doctrine_Entity $entity)
+    public function generate(Doctrine_ORM_Entity $entity)
     {
         $conn = $this->_em->getConnection();
         $sql = $conn->getDatabasePlatform()->getSequenceNextValSql($this->_sequenceName);

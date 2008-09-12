@@ -1,6 +1,6 @@
 <?php
 
-class ForumAvatar extends Doctrine_Entity
+class ForumAvatar extends Doctrine_ORM_Entity
 {
     
     public static function initMetadata($mapping) 

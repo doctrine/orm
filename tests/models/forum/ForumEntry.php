@@ -4,7 +4,7 @@
 
 #use Doctrine::ORM::Entity;
 
-class ForumEntry extends Doctrine_Entity
+class ForumEntry extends Doctrine_ORM_Entity
 {
     #protected $id;
     #protected $topic;

@@ -1,5 +1,5 @@
 <?php
-class CmsPhonenumber extends Doctrine_Entity
+class CmsPhonenumber extends Doctrine_ORM_Entity
 {
     #protected $user_id;
     #protected $phonenumber;

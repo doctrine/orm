@@ -1708,7 +1708,7 @@ class Doctrine_ClassMetadata implements Doctrine_Configurable, Serializable
      * @param string $event  The lifecycle event.
      * @param Entity $entity  The Entity on which the event occured.
      */
-    public function invokeLifecycleCallbacks($lifecycleEvent, Doctrine_Entity $entity)
+    public function invokeLifecycleCallbacks($lifecycleEvent, Doctrine_ORM_Entity $entity)
     {
         foreach ($this->getLifecycleCallbacks($lifecycleEvent) as $callback) {
             $entity->$callback();

@@ -67,7 +67,7 @@ class Doctrine_ORM_Internal_Hydration_ObjectDriver
         }
     }
     
-    public function initRelatedCollection(Doctrine_Entity $entity, $name)
+    public function initRelatedCollection(Doctrine_ORM_Entity $entity, $name)
     {
         if ( ! isset($this->_initializedRelations[$entity->getOid()][$name])) {
             $relation = $entity->getClass()->getAssociationMapping($name);
@@ -95,39 +95,39 @@ class Doctrine_ORM_Internal_Hydration_ObjectDriver
         return $this->_em->createEntity($className, $data);
     }
     
-    public function addRelatedIndexedElement(Doctrine_Entity $entity1, $property,
-            Doctrine_Entity $entity2, $indexField)
+    public function addRelatedIndexedElement(Doctrine_ORM_Entity $entity1, $property,
+            Doctrine_ORM_Entity $entity2, $indexField)
     {
         $entity1->_internalGetReference($property)->add($entity2, $entity2->_internalGetField($indexField));
     }
     
-    public function addRelatedElement(Doctrine_Entity $entity1, $property,
-            Doctrine_Entity $entity2)
+    public function addRelatedElement(Doctrine_ORM_Entity $entity1, $property,
+            Doctrine_ORM_Entity $entity2)
     {
         $entity1->_internalGetReference($property)->add($entity2);       
     }
     
-    public function setRelatedElement(Doctrine_Entity $entity1, $property, $entity2)
+    public function setRelatedElement(Doctrine_ORM_Entity $entity1, $property, $entity2)
     {
         $entity1->_internalSetReference($property, $entity2, true);
     }
     
-    public function isIndexKeyInUse(Doctrine_Entity $entity, $assocField, $indexField)
+    public function isIndexKeyInUse(Doctrine_ORM_Entity $entity, $assocField, $indexField)
     {
         return $entity->_internalGetReference($assocField)->contains($indexField);
     }
     
-    public function isFieldSet(Doctrine_Entity $entity, $field)
+    public function isFieldSet(Doctrine_ORM_Entity $entity, $field)
     {
         return $entity->contains($field);
     }
     
-    public function getFieldValue(Doctrine_Entity $entity, $field)
+    public function getFieldValue(Doctrine_ORM_Entity $entity, $field)
     {
         return $entity->_internalGetField($field);
     }
     
-    public function getReferenceValue(Doctrine_Entity $entity, $field)
+    public function getReferenceValue(Doctrine_ORM_Entity $entity, $field)
     {
         return $entity->_internalGetReference($field);
     }

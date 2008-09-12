@@ -1,5 +1,5 @@
 <?php
-class ForumCategory extends Doctrine_Entity
+class ForumCategory extends Doctrine_ORM_Entity
 {
     
     public static function initMetadata($mapping)

@@ -11,7 +11,7 @@ class Orm_Entity_ConstructorTest extends Doctrine_OrmTestCase
     }
 }
 
-class ConstructorTestEntity1 extends Doctrine_Entity
+class ConstructorTestEntity1 extends Doctrine_ORM_Entity
 {
     public function __construct($username = null)
     {

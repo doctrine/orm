@@ -4,7 +4,7 @@
 
 #use Doctrine::ORM::Entity;
 
-class CmsArticle extends Doctrine_Entity
+class CmsArticle extends Doctrine_ORM_Entity
 {
     #protected $id;
     #protected $topic;

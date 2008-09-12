@@ -280,7 +280,7 @@ class Doctrine_EntityManager
      * @param Doctrine_Entity $entity
      * @return unknown
      */
-    public function detach(Doctrine_Entity $entity)
+    public function detach(Doctrine_ORM_Entity $entity)
     {
         return $this->_unitOfWork->removeFromIdentityMap($entity);
     }
@@ -431,7 +431,7 @@ class Doctrine_EntityManager
      * @param Doctrine::ORM::Entity $entity
      * @return void
      */
-    public function save(Doctrine_Entity $entity)
+    public function save(Doctrine_ORM_Entity $entity)
     {
         $this->_errorIfNotActiveOrClosed();
         $this->_unitOfWork->save($entity);
@@ -446,7 +446,7 @@ class Doctrine_EntityManager
      * @param Doctrine::ORM::Entity $entity
      * @return void
      */
-    public function delete(Doctrine_Entity $entity)
+    public function delete(Doctrine_ORM_Entity $entity)
     {
         $this->_errorIfNotActiveOrClosed();
         $this->_unitOfWork->delete($entity);
@@ -463,7 +463,7 @@ class Doctrine_EntityManager
      * @return void
      * @todo FIX Impl
      */
-    public function refresh(Doctrine_Entity $entity)
+    public function refresh(Doctrine_ORM_Entity $entity)
     {
         $this->_mergeData($entity, $entity->getRepository()->find(
                 $entity->identifier(), Doctrine_Query::HYDRATE_ARRAY),
@@ -476,7 +476,7 @@ class Doctrine_EntityManager
      * @param Doctrine::ORM::Entity $entity  The entity to copy.
      * @return Doctrine::ORM::Entity  The new entity.
      */
-    public function copy(Doctrine_Entity $entity, $deep = false)
+    public function copy(Doctrine_ORM_Entity $entity, $deep = false)
     {
         //...
     }
@@ -560,7 +560,7 @@ class Doctrine_EntityManager
      * @param boolean $overrideLocalChanges
      * @return void
      */
-    private function _mergeData(Doctrine_Entity $entity, array $data, $overrideLocalChanges = false) {
+    private function _mergeData(Doctrine_ORM_Entity $entity, array $data, $overrideLocalChanges = false) {
         if ($overrideLocalChanges) {
             foreach ($data as $field => $value) {
                 $entity->_internalSetField($field, $value);
@@ -582,7 +582,7 @@ class Doctrine_EntityManager
      * @return boolean TRUE if this EntityManager currently manages the given entity
      *                 (and has it in the identity map), FALSE otherwise.
      */
-    public function contains(Doctrine_Entity $entity)
+    public function contains(Doctrine_ORM_Entity $entity)
     {
         return $this->_unitOfWork->isInIdentityMap($entity) &&
                 ! $this->_unitOfWork->isRegisteredRemoved($entity);

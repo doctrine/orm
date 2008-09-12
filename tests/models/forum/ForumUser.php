@@ -4,7 +4,7 @@
 
 #use Doctrine::ORM::Entity;
 
-class ForumUser extends Doctrine_Entity
+class ForumUser extends Doctrine_ORM_Entity
 {
     #protected $id;
     #protected $username;

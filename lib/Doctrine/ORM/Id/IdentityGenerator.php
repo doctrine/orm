@@ -5,11 +5,11 @@ class Doctrine_ORM_Id_IdentityGenerator extends Doctrine_ORM_Id_AbstractIdGenera
     /**
      * Enter description here...
      *
-     * @param Doctrine_Entity $entity
+     * @param Doctrine_ORM_Entity $entity
      * @return unknown
      * @override
      */
-    public function generate(Doctrine_Entity $entity)
+    public function generate(Doctrine_ORM_Entity $entity)
     {
         return self::POST_INSERT_INDICATOR;
     }

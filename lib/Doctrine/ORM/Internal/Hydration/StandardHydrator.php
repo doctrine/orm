@@ -317,7 +317,7 @@ class Doctrine_ORM_Internal_Hydration_StandardHydrator extends Doctrine_ORM_Inte
                 end($coll);
                 $resultPointers[$dqlAlias] =& $coll[key($coll)];
             }
-        } else if ($coll instanceof Doctrine_Entity) {
+        } else if ($coll instanceof Doctrine_ORM_Entity) {
             $resultPointers[$dqlAlias] = $coll;
         } else if (count($coll) > 0) {
             $resultPointers[$dqlAlias] = $coll->getLast();

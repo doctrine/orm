@@ -85,7 +85,7 @@ class Orm_UnitOfWorkTest extends Doctrine_OrmTestCase
     
     public function testRegisterDirty()
     {
-        $this->assertEquals(Doctrine_Entity::STATE_NEW, $this->_user->_state());
+        $this->assertEquals(Doctrine_ORM_Entity::STATE_NEW, $this->_user->_state());
         $this->assertFalse($this->_unitOfWork->isInIdentityMap($this->_user));
         $this->_unitOfWork->registerDirty($this->_user);
         $this->assertTrue($this->_unitOfWork->isRegisteredDirty($this->_user));
@@ -105,7 +105,7 @@ class Orm_UnitOfWorkTest extends Doctrine_OrmTestCase
     
     public function testSavingSingleEntityWithIdentityColumnForcesInsert()
     {
-        $this->assertEquals(Doctrine_Entity::STATE_NEW, $this->_user->_state());
+        $this->assertEquals(Doctrine_ORM_Entity::STATE_NEW, $this->_user->_state());
         
         $this->_unitOfWork->save($this->_user);
         
@@ -114,7 +114,7 @@ class Orm_UnitOfWorkTest extends Doctrine_OrmTestCase
         $this->assertEquals(0, count($this->_persisterMock->getDeletes()));
         
         $this->assertTrue($this->_unitOfWork->isInIdentityMap($this->_user));
-        $this->assertEquals(Doctrine_Entity::STATE_MANAGED, $this->_user->_state());
+        $this->assertEquals(Doctrine_ORM_Entity::STATE_MANAGED, $this->_user->_state());
         
         // should no longer be scheduled for insert
         $this->assertFalse($this->_unitOfWork->isRegisteredNew($this->_user));        

@@ -34,7 +34,7 @@ class Doctrine_ORM_Persisters_StandardEntityPersister extends Doctrine_ORM_Persi
     /**
      * Deletes an entity.
      */
-    protected function _doDelete(Doctrine_Entity $record)
+    protected function _doDelete(Doctrine_ORM_Entity $record)
     {
         $conn = $this->_conn;
         $metadata = $this->_classMetadata;
@@ -42,11 +42,11 @@ class Doctrine_ORM_Persisters_StandardEntityPersister extends Doctrine_ORM_Persi
             $conn->beginInternalTransaction();
             $this->_deleteComposites($record);
 
-            $record->_state(Doctrine_Entity::STATE_TDIRTY);
+            $record->_state(Doctrine_ORM_Entity::STATE_TDIRTY);
             
             $identifier = $this->_convertFieldToColumnNames($record->identifier(), $metadata);
             $this->_deleteRow($metadata->getTableName(), $identifier);
-            $record->_state(Doctrine_Entity::STATE_TCLEAN);
+            $record->_state(Doctrine_ORM_Entity::STATE_TCLEAN);
 
             $this->removeRecord($record);
             $conn->commit();
@@ -61,7 +61,7 @@ class Doctrine_ORM_Persisters_StandardEntityPersister extends Doctrine_ORM_Persi
      *
      * @param Doctrine_Entity $record   The entity to insert.
      */
-    protected function _doInsert(Doctrine_Entity $record)
+    protected function _doInsert(Doctrine_ORM_Entity $record)
     {
         $conn = $this->_conn;
         
@@ -105,7 +105,7 @@ class Doctrine_ORM_Persisters_StandardEntityPersister extends Doctrine_ORM_Persi
     /**
      * Updates an entity.
      */
-    protected function _doUpdate(Doctrine_Entity $record)
+    protected function _doUpdate(Doctrine_ORM_Entity $record)
     {
         $conn = $this->_conn;
         $classMetadata = $this->_classMetadata;

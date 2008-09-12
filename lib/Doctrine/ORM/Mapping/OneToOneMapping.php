@@ -133,7 +133,7 @@ class Doctrine_ORM_Mapping_OneToOneMapping extends Doctrine_ORM_Mapping_Associat
      * @param Doctrine::ORM::Entity $entity
      * @return void
      */
-    public function lazyLoadFor(Doctrine_Entity $entity)
+    public function lazyLoadFor(Doctrine_ORM_Entity $entity)
     {
         if ($entity->getClassName() != $this->_sourceClass->getClassName()) {
             //error?

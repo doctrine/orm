@@ -18,7 +18,7 @@ class Orm_Entity_AccessorTest extends Doctrine_OrmTestCase
 
 /* Local test classes */
 
-class CustomAccessorMutatorTestEntity extends Doctrine_Entity
+class CustomAccessorMutatorTestEntity extends Doctrine_ORM_Entity
 {
     public static function initMetadata($mapping) 
     {
@@ -48,7 +48,7 @@ class CustomAccessorMutatorTestEntity extends Doctrine_Entity
     }
 }
 
-class MagicAccessorMutatorTestEntity extends Doctrine_Entity
+class MagicAccessorMutatorTestEntity extends Doctrine_ORM_Entity
 {
     public static function initMetadata($mapping) 
     {

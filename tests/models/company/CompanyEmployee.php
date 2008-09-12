@@ -1,6 +1,6 @@
 <?php
 
-class CompanyEmployee extends Doctrine_Entity
+class CompanyEmployee extends Doctrine_ORM_Entity
 {
     #protected $id;
     #protected $salary;

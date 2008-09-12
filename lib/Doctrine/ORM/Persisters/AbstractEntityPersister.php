@@ -89,7 +89,7 @@ abstract class Doctrine_ORM_Persisters_AbstractEntityPersister
      * @param Doctrine::ORM::Entity $entity The entity to insert.
      * @return void
      */
-    public function insert(Doctrine_Entity $entity)
+    public function insert(Doctrine_ORM_Entity $entity)
     {
         $insertData = array();
         $class = $entity->getClass();
@@ -149,7 +149,7 @@ abstract class Doctrine_ORM_Persisters_AbstractEntityPersister
      * @param Doctrine::ORM::Entity $entity The entity to update.
      * @return void
      */
-    public function update(Doctrine_Entity $entity)
+    public function update(Doctrine_ORM_Entity $entity)
     {
         $dataChangeSet = $entity->_getDataChangeSet();
         $referenceChangeSet = $entity->_getReferenceChangeSet();
@@ -175,7 +175,7 @@ abstract class Doctrine_ORM_Persisters_AbstractEntityPersister
      * @param Doctrine::ORM::Entity $entity The entity to delete.
      * @return void
      */
-    public function delete(Doctrine_Entity $entity)
+    public function delete(Doctrine_ORM_Entity $entity)
     {
         //TODO: perform delete
     }
@@ -334,14 +334,14 @@ abstract class Doctrine_ORM_Persisters_AbstractEntityPersister
      * @throws PDOException         if something went wrong at database level
      * @return void
      */
-    protected function _deleteComposites(Doctrine_Entity $record)
+    protected function _deleteComposites(Doctrine_ORM_Entity $record)
     {
         $classMetadata = $this->_classMetadata;
         foreach ($classMetadata->getRelations() as $fk) {
             if ($fk->isComposite()) {
                 $obj = $record->get($fk->getAlias());
-                if ($obj instanceof Doctrine_Entity && 
-                        $obj->_state() != Doctrine_Entity::STATE_LOCKED)  {
+                if ($obj instanceof Doctrine_ORM_Entity && 
+                        $obj->_state() != Doctrine_ORM_Entity::STATE_LOCKED)  {
                     $obj->delete($this->_mapper->getConnection());
                 }
             }
@@ -381,7 +381,7 @@ abstract class Doctrine_ORM_Persisters_AbstractEntityPersister
      * @param Doctrine_Connection $conn  The connection to use. Will default to the mapper's
      *                                   connection.
      */
-    public function save(Doctrine_Entity $record)
+    public function save(Doctrine_ORM_Entity $record)
     {
         if ( ! ($record instanceof $this->_domainClassName)) {
             throw new Doctrine_Mapper_Exception("Mapper of type " . $this->_domainClassName . " 
@@ -393,11 +393,11 @@ abstract class Doctrine_ORM_Persisters_AbstractEntityPersister
         }
 
         $state = $record->_state();
-        if ($state === Doctrine_Entity::STATE_LOCKED) {
+        if ($state === Doctrine_ORM_Entity::STATE_LOCKED) {
             return false;
         }
         
-        $record->_state(Doctrine_Entity::STATE_LOCKED);
+        $record->_state(Doctrine_ORM_Entity::STATE_LOCKED);
         
         try {
             $conn->beginInternalTransaction();
@@ -412,7 +412,7 @@ abstract class Doctrine_ORM_Persisters_AbstractEntityPersister
             }
 
             $state = $record->_state();
-            $record->_state(Doctrine_Entity::STATE_LOCKED);
+            $record->_state(Doctrine_ORM_Entity::STATE_LOCKED);
 
             foreach ($saveLater as $fk) {
                 $alias = $fk->getAlias();
@@ -443,21 +443,21 @@ abstract class Doctrine_ORM_Persisters_AbstractEntityPersister
      *
      * @param Doctrine_Entity $record  The entity to insert/update.
      */
-    protected function _insertOrUpdate(Doctrine_Entity $record)
+    protected function _insertOrUpdate(Doctrine_ORM_Entity $record)
     {
         //$record->preSave();
         //$this->notifyEntityListeners($record, 'preSave', Doctrine_Event::RECORD_SAVE);
         
         switch ($record->_state()) {
-            case Doctrine_Entity::STATE_TDIRTY:
+            case Doctrine_ORM_Entity::STATE_TDIRTY:
                 $this->_insert($record);
                 break;
-            case Doctrine_Entity::STATE_DIRTY:
-            case Doctrine_Entity::STATE_PROXY:
+            case Doctrine_ORM_Entity::STATE_DIRTY:
+            case Doctrine_ORM_Entity::STATE_PROXY:
                 $this->_update($record);
                 break;
-            case Doctrine_Entity::STATE_CLEAN:
-            case Doctrine_Entity::STATE_TCLEAN:
+            case Doctrine_ORM_Entity::STATE_CLEAN:
+            case Doctrine_ORM_Entity::STATE_TCLEAN:
                 // do nothing
                 break;
         }
@@ -472,7 +472,7 @@ abstract class Doctrine_ORM_Persisters_AbstractEntityPersister
      * @param Doctrine_Entity $record
      * @return void
      */
-    public function saveSingleRecord(Doctrine_Entity $record)
+    public function saveSingleRecord(Doctrine_ORM_Entity $record)
     {
         $this->_insertOrUpdate($record);
     }
@@ -483,7 +483,7 @@ abstract class Doctrine_ORM_Persisters_AbstractEntityPersister
      * @throws PDOException         if something went wrong at database level
      * @param Doctrine_Entity $record
      */
-    protected function _saveRelated(Doctrine_Entity $record)
+    protected function _saveRelated(Doctrine_ORM_Entity $record)
     {
         $saveLater = array();
         foreach ($record->_getReferences() as $k => $v) {
@@ -499,7 +499,7 @@ abstract class Doctrine_ORM_Persisters_AbstractEntityPersister
                 $obj = $record->get($rel->getAlias());
 
                 // Protection against infinite function recursion before attempting to save
-                if ($obj instanceof Doctrine_Entity && $obj->isModified()) {
+                if ($obj instanceof Doctrine_ORM_Entity && $obj->isModified()) {
                     $obj->save();
                     
                     /** Can this be removed?
@@ -531,7 +531,7 @@ abstract class Doctrine_ORM_Persisters_AbstractEntityPersister
      * @param Doctrine_Entity $record
      * @return void
      */
-    public function saveAssociations(Doctrine_Entity $record)
+    public function saveAssociations(Doctrine_ORM_Entity $record)
     {
         foreach ($record->_getReferences() as $relationName => $relatedObject) {
             if ($relatedObject === Doctrine_Null::$INSTANCE) {
@@ -573,7 +573,7 @@ abstract class Doctrine_ORM_Persisters_AbstractEntityPersister
      * @return boolean                  whether or not the update was successful
      * @todo Move to Doctrine_Table (which will become Doctrine_Mapper).
      */
-    protected function _update(Doctrine_Entity $record)
+    protected function _update(Doctrine_ORM_Entity $record)
     {
         $record->preUpdate();
         $this->notifyEntityListeners($record, 'preUpdate', Doctrine_Event::RECORD_UPDATE);
@@ -587,7 +587,7 @@ abstract class Doctrine_ORM_Persisters_AbstractEntityPersister
         return true;
     }
     
-    abstract protected function _doUpdate(Doctrine_Entity $entity);
+    abstract protected function _doUpdate(Doctrine_ORM_Entity $entity);
     
     /**
      * Inserts an entity.
@@ -595,7 +595,7 @@ abstract class Doctrine_ORM_Persisters_AbstractEntityPersister
      * @param Doctrine_Entity $record   record to be inserted
      * @return boolean
      */
-    protected function _insert(Doctrine_Entity $record)
+    protected function _insert(Doctrine_ORM_Entity $record)
     {
         $record->preInsert();
         $this->notifyEntityListeners($record, 'preInsert', Doctrine_Event::RECORD_INSERT);
@@ -609,7 +609,7 @@ abstract class Doctrine_ORM_Persisters_AbstractEntityPersister
         return true;
     }
     
-    abstract protected function _doInsert(Doctrine_Entity $entity);
+    abstract protected function _doInsert(Doctrine_ORM_Entity $entity);
     
     /**
      * Deletes given entity and all it's related entities.
@@ -619,7 +619,7 @@ abstract class Doctrine_ORM_Persisters_AbstractEntityPersister
      * @return boolean      true on success, false on failure
      * @throws Doctrine_Mapper_Exception
      */
-    public function delete_old(Doctrine_Entity $record)
+    public function delete_old(Doctrine_ORM_Entity $record)
     {
         if ( ! $record->exists()) {
             return false;
@@ -640,7 +640,7 @@ abstract class Doctrine_ORM_Persisters_AbstractEntityPersister
         $table = $this->_classMetadata;
 
         $state = $record->_state();
-        $record->_state(Doctrine_Entity::STATE_LOCKED);
+        $record->_state(Doctrine_ORM_Entity::STATE_LOCKED);
         
         $this->_doDelete($record);
         
