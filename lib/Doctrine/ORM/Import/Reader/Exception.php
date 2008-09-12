@@ -1,6 +1,6 @@
 <?php
 /*
- *  $Id$
+ *  $Id: Exception.php 3882 2008-02-22 18:11:35Z jwage $
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -18,19 +18,19 @@
  * and is licensed under the LGPL. For more information, see
  * <http://www.phpdoctrine.org>.
  */
-Doctrine::autoload('Doctrine_Import_Reader');
+
 /**
- * class Doctrine_Import_Reader_Xml_Propel
+ * class Doctrine_Import_Reader_Exception
  *
  * @package     Doctrine
  * @subpackage  Import
  * @link        www.phpdoctrine.org
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @since       1.0
- * @version     $Revision$
+ * @version     $Revision: 3882 $
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  */
-class Doctrine_Import_Reader_Xml_Propel extends Doctrine_Import_Reader
+class Doctrine_Import_Reader_Exception
 {
 
     /** Aggregations: */
@@ -39,21 +39,4 @@ class Doctrine_Import_Reader_Xml_Propel extends Doctrine_Import_Reader
 
      /*** Attributes: ***/
 
-    /**
-     * @access private
-     */
-    private $xml;
-
-    /**
-     *
-     * @param string xml      * @return
-     * @access public
-     */
-    public function setXml( $xml )
-    {
-
-    } // end of member function setXml
-
-    public function read()
-    { }
 }
