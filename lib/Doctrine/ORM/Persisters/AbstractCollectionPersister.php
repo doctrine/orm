@@ -1,6 +1,6 @@
 <?php
 
-class Doctrine_CollectionPersister_Abstract
+class Doctrine_ORM_Persisters_AbstractCollectionPersister
 {
     
     public function recreate(Doctrine_Collection $coll)
