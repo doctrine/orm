@@ -33,11 +33,11 @@ class Doctrine_EntityManagerMock extends Doctrine_EntityManager
      * @param Doctrine_EventManager $eventManager
      * @return unknown
      */
-    public static function create($conn, $name, Doctrine_Configuration $config = null,
+    public static function create($conn, $name, Doctrine_Common_Configuration $config = null,
             Doctrine_Common_EventManager $eventManager = null)
     {
         if (is_null($config)) {
-            $config = new Doctrine_Configuration();
+            $config = new Doctrine_Common_Configuration();
         }
         if (is_null($eventManager)) {
             $eventManager = new Doctrine_Common_EventManager();

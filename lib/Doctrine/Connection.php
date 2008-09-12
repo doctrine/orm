@@ -172,7 +172,7 @@ class Doctrine_Connection
         
         // Create default config and event manager if none given
         if ( ! $config) {
-            $this->_config = new Doctrine_Configuration();
+            $this->_config = new Doctrine_Common_Configuration();
         }
         if ( ! $eventManager) {
             $this->_eventManager = new Doctrine_Common_EventManager();

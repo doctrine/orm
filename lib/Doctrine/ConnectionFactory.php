@@ -58,12 +58,12 @@ class Doctrine_ConnectionFactory
      * @param array $params
      * @return Connection
      */
-    public function createConnection(array $params, Doctrine_Configuration $config = null,
+    public function createConnection(array $params, Doctrine_Common_Configuration $config = null,
             Doctrine_Common_EventManager $eventManager = null)
     {
         // create default config and event manager, if not set
         if ( ! $config) {
-            $config = new Doctrine_Configuration();
+            $config = new Doctrine_Common_Configuration();
         }
         if ( ! $eventManager) {
             $eventManager = new Doctrine_Common_EventManager();
