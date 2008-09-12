@@ -23,7 +23,7 @@ class Orm_EntityPersisterTest extends Doctrine_OrmTestCase
         $this->_classMetadataMock = new Doctrine_ClassMetadataMock("ForumUser", $this->_emMock);
         $this->_classMetadataMock->setIdGenerator($this->_idGenMock);
         $this->_connMock->setDatabasePlatform(new Doctrine_DatabasePlatformMock());        
-        $this->_persister = new Doctrine_EntityPersister_Standard(
+        $this->_persister = new Doctrine_ORM_Persisters_StandardEntityPersister(
                 $this->_emMock, $this->_emMock->getClassMetadata("ForumUser"));
                 
         $this->_emMock->activate();

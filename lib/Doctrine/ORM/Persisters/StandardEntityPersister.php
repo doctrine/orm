@@ -29,7 +29,7 @@
  * @link        www.phpdoctrine.org
  * @since       2.0
  */
-class Doctrine_EntityPersister_Standard extends Doctrine_EntityPersister_Abstract
+class Doctrine_ORM_Persisters_StandardEntityPersister extends Doctrine_ORM_Persisters_AbstractEntityPersister
 {
     /**
      * Deletes an entity.

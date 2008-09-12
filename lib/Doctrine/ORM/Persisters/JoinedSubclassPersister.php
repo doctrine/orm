@@ -29,7 +29,7 @@
  * @link        www.phpdoctrine.org
  * @since       2.0
  */
-class Doctrine_EntityPersister_JoinedSubclass extends Doctrine_EntityPersister_Abstract
+class Doctrine_ORM_Persisters_JoinedSubclassPersister extends Doctrine_ORM_Persisters_AbstractEntityPersister
 {    
     /**
      * Inserts an entity that is part of a Class Table Inheritance hierarchy.

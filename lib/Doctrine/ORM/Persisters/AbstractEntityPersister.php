@@ -31,7 +31,7 @@
  * @since       2.0
  * @todo Rename to AbstractEntityPersister
  */
-abstract class Doctrine_EntityPersister_Abstract
+abstract class Doctrine_ORM_Persisters_AbstractEntityPersister
 {
     /**
      * The names of all the fields that are available on entities. 

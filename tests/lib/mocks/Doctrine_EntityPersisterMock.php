@@ -1,6 +1,6 @@
 <?php
 
-class Doctrine_EntityPersisterMock extends Doctrine_EntityPersister_Standard
+class Doctrine_EntityPersisterMock extends Doctrine_ORM_Persisters_StandardEntityPersister
 {
     private $_inserts = array();
     private $_updates = array();
