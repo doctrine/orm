@@ -30,7 +30,7 @@
  * @version     $Revision$
  * @since       2.0
  */
-class Doctrine_Schema_SqliteSchemaManager extends Doctrine_Schema_SchemaManager
+class Doctrine_DBAL_Schema_SqliteSchemaManager extends Doctrine_DBAL_Schema_AbstractSchemaManager
 {
     public function __construct(Doctrine_Connection_Sqlite $conn)
     {

@@ -30,18 +30,53 @@
  * @version     $Revision$
  * @since       2.0
  */
-class Doctrine_Schema_PostgreSqlSchemaManager extends Doctrine_Schema_SchemaManager
-{    
-    /**
-     * Enter description here...
-     *
-     * @param Doctrine_Connection_Pgsql $conn
-     */   
-    public function __construct(Doctrine_Connection_Pgsql $conn)
+class Doctrine_DBAL_Schema_MsSqlSchemaManager extends Doctrine_DBAL_Schema_AbstractSchemaManager
+{
+    public function __construct(Doctrine_Connection_Mssql $conn)
     {
         $this->_conn = $conn;
     }
+    
+    /**
+     * create a new database
+     *
+     * @param string $name name of the database that should be created
+     * @return void
+     */
+    public function createDatabase($name)
+    {
+        $name = $this->conn->quoteIdentifier($name, true);
+        $query = "CREATE DATABASE $name";
+        if ($this->conn->options['database_device']) {
+            $query.= ' ON '.$this->conn->options['database_device'];
+            $query.= $this->conn->options['database_size'] ? '=' .
+                     $this->conn->options['database_size'] : '';
+        }
+        return $this->conn->standaloneQuery($query, null, true);
+    }
 
+    /**
+     * drop an existing database
+     *
+     * @param string $name name of the database that should be dropped
+     * @return void
+     */
+    public function dropDatabase($name)
+    {
+        $name = $this->conn->quoteIdentifier($name, true);
+        return $this->conn->standaloneQuery('DROP DATABASE ' . $name, null, true);
+    }
+
+    /**
+     * Override the parent method.
+     *
+     * @return string The string required to be placed between "CREATE" and "TABLE"
+     *                to generate a temporary table, if possible.
+     */
+    public function getTemporaryTableQuery()
+    {
+        return '';
+    }  
     /**
      * alter an existing table
      *
@@ -128,41 +163,112 @@ class Doctrine_Schema_PostgreSqlSchemaManager extends Doctrine_Schema_SchemaMana
      * @param boolean $check     indicates whether the function should just check if the DBMS driver
      *                             can perform the requested table alterations if the value is true or
      *                             actually perform them otherwise.
-     * @throws Doctrine_Connection_Exception
-     * @return boolean
+     * @return void
      */
     public function alterTable($name, array $changes, $check = false)
     {
-        $sql = $this->alterTableSql($name, $changes, $check);
-        foreach ($sql as $query) {
-            $this->_conn->exec($query);
+        foreach ($changes as $changeName => $change) {
+            switch ($changeName) {
+                case 'add':
+                    break;
+                case 'remove':
+                    break;
+                case 'name':
+                case 'rename':
+                case 'change':
+                default:
+                    throw new Doctrine_Export_Exception('alterTable: change type "' . $changeName . '" not yet supported');
+            }
+        }
+
+        $query = '';
+        if ( ! empty($changes['add']) && is_array($changes['add'])) {
+            foreach ($changes['add'] as $fieldName => $field) {
+                if ($query) {
+                    $query .= ', ';
+                }
+                $query .= 'ADD ' . $this->getDeclaration($fieldName, $field);
+            }
+        }
+
+        if ( ! empty($changes['remove']) && is_array($changes['remove'])) {
+            foreach ($changes['remove'] as $fieldName => $field) {
+                if ($query) {
+                    $query .= ', ';
+                }
+                $field_name = $this->conn->quoteIdentifier($fieldName, true);
+                $query .= 'DROP COLUMN ' . $fieldName;
+            }
+        }
+
+        if ( ! $query) {
+            return false;
+        }
+
+        $name = $this->conn->quoteIdentifier($name, true);
+        return $this->conn->exec('ALTER TABLE ' . $name . ' ' . $query);
+    }
+
+    /**
+     * create sequence
+     *
+     * @param string $seqName name of the sequence to be created
+     * @param string $start start value of the sequence; default is 1
+     * @param array     $options  An associative array of table options:
+     *                          array(
+     *                              'comment' => 'Foo',
+     *                              'charset' => 'utf8',
+     *                              'collate' => 'utf8_unicode_ci',
+     *                          );
+     * @return string
+     */
+    public function createSequence($seqName, $start = 1, array $options = array())
+    {
+        $sequenceName = $this->conn->quoteIdentifier($this->conn->getSequenceName($seqName), true);
+        $seqcolName = $this->conn->quoteIdentifier($this->conn->options['seqcol_name'], true);
+        $query = 'CREATE TABLE ' . $sequenceName . ' (' . $seqcolName .
+                 ' INT PRIMARY KEY CLUSTERED IDENTITY(' . $start . ', 1) NOT NULL)';
+
+        $res = $this->conn->exec($query);
+
+        if ($start == 1) {
+            return true;
+        }
+
+        try {
+            $query = 'SET IDENTITY_INSERT ' . $sequenceName . ' ON ' .
+                     'INSERT INTO ' . $sequenceName . ' (' . $seqcolName . ') VALUES ( ' . $start . ')';
+            $res = $this->conn->exec($query);
+        } catch (Exception $e) {
+            $result = $this->conn->exec('DROP TABLE ' . $sequenceName);
         }
         return true;
     }
+
+    /**
+     * This function drops an existing sequence
+     *
+     * @param string $seqName      name of the sequence to be dropped
+     * @return void
+     */
+    public function dropSequenceSql($seqName)
+    {
+        $sequenceName = $this->conn->quoteIdentifier($this->conn->getSequenceName($seqName), true);
+        return 'DROP TABLE ' . $sequenceName;
+    }
     
     /**
-     * lists all database triggers
+     * lists all database sequences
      *
      * @param string|null $database
      * @return array
      */
-    public function listTriggers($database = null)
+    public function listSequences($database = null)
     {
+        $query = "SELECT name FROM sysobjects WHERE xtype = 'U'";
+        $tableNames = $this->conn->fetchColumn($query);
 
-    }
-
-    /**
-     * lists table constraints
-     *
-     * @param string $table     database table name
-     * @return array
-     */
-    public function listTableConstraints($table)
-    {
-        $table = $this->conn->quote($table);
-        $query = sprintf($this->sql['listTableConstraints'], $table);
-
-        return $this->conn->fetchColumn($query);
+        return array_map(array($this->conn->formatter, 'fixSequenceName'), $tableNames);
     }
 
     /**
@@ -173,61 +279,55 @@ class Doctrine_Schema_PostgreSqlSchemaManager extends Doctrine_Schema_SchemaMana
      */
     public function listTableColumns($table)
     {
-        $table = $this->conn->quote($table);
-        $query = sprintf($this->sql['listTableColumns'], $table);
-        $result = $this->conn->fetchAssoc($query);
+        $sql     = 'EXEC sp_columns @table_name = ' . $this->conn->quoteIdentifier($table, true);
+        $result  = $this->conn->fetchAssoc($sql);
+        $columns = array();
 
-        $columns     = array();
         foreach ($result as $key => $val) {
             $val = array_change_key_case($val, CASE_LOWER);
 
-            if (strtolower($val['type']) === 'varchar') {
-                // get length from varchar definition
-                $length = preg_replace('~.*\(([0-9]*)\).*~', '$1', $val['complete_type']);
-                $val['length'] = $length;
+            if (strstr($val['type_name'], ' ')) {
+                list($type, $identity) = explode(' ', $val['type_name']);
+            } else {
+                $type = $val['type_name'];
+                $identity = '';
             }
-            
-            $decl = $this->_conn->getDatabasePlatform()->getPortableDeclaration($val);
 
-            $description = array(
-                'name'      => $val['field'],
-                'ntype'     => $val['type'],
+            if ($type == 'varchar') {
+                $type .= '(' . $val['length'] . ')';
+            }
+
+            $val['type'] = $type;
+            $val['identity'] = $identity;
+            $decl = $this->conn->getDatabasePlatform()->getPortableDeclaration($val);
+
+            $description  = array(
+                'name'      => $val['column_name'],
+                'ntype'     => $type,
                 'type'      => $decl['type'][0],
                 'alltypes'  => $decl['type'],
                 'length'    => $decl['length'],
                 'fixed'     => $decl['fixed'],
                 'unsigned'  => $decl['unsigned'],
-                'notnull'   => ($val['isnotnull'] == true),
-                'default'   => $val['default'],
-                'primary'   => ($val['pri'] == 't'),
+                'notnull'   => (bool) (trim($val['is_nullable']) === 'NO'),
+                'default'   => $val['column_def'],
+                'primary'   => (strtolower($identity) == 'identity'),
             );
-            
-            $matches = array(); 
-
-            if (preg_match("/^nextval\('(.*)'(::.*)?\)$/", $description['default'], $matches)) { 
-     
-                $description['sequence'] = $this->_conn->formatter->fixSequenceName($matches[1]); 
-                $description['default'] = null; 
-            } 
-            
-            $columns[$val['field']] = $description;
+            $columns[$val['column_name']] = $description;
         }
-        
+
         return $columns;
     }
 
     /**
-     * list all indexes in a table
+     * lists table constraints
      *
      * @param string $table     database table name
      * @return array
      */
     public function listTableIndexes($table)
     {
-        $table = $this->_conn->quote($table);
-        $query = sprintf($this->sql['listTableIndexes'], $table);
 
-        return $this->_conn->fetchColumn($query);
     }
 
     /**
@@ -238,7 +338,23 @@ class Doctrine_Schema_PostgreSqlSchemaManager extends Doctrine_Schema_SchemaMana
      */
     public function listTables($database = null)
     {
-        return $this->_conn->fetchColumn($this->sql['listTables']);
+        $sql = "SELECT name FROM sysobjects WHERE type = 'U' AND name <> 'dtproperties' ORDER BY name";
+
+        return $this->conn->fetchColumn($sql);
+    }
+
+    /**
+     * lists all triggers
+     *
+     * @return array
+     */
+    public function listTriggers($database = null)
+    {
+        $query = "SELECT name FROM sysobjects WHERE xtype = 'TR'";
+
+        $result = $this->conn->fetchColumn($query);
+
+        return $result;
     }
 
     /**
@@ -249,27 +365,64 @@ class Doctrine_Schema_PostgreSqlSchemaManager extends Doctrine_Schema_SchemaMana
      */
     public function listTableTriggers($table)
     {
-        $query = 'SELECT trg.tgname AS trigger_name
-                    FROM pg_trigger trg,
-                         pg_class tbl
-                   WHERE trg.tgrelid = tbl.oid';
-        if ($table !== null) {
-            $table = $this->_conn->quote(strtoupper($table), 'string');
-            $query .= " AND tbl.relname = $table";
-        }
-        return $this->_conn->fetchColumn($query);
+        $table = $this->conn->quote($table, 'text');
+        $query = "SELECT name FROM sysobjects WHERE xtype = 'TR' AND object_name(parent_obj) = " . $table;
+
+        $result = $this->conn->fetchColumn($query);
+
+        return $result;
     }
 
     /**
-     * list the views in the database that reference a given table
+     * lists table views
      *
      * @param string $table     database table name
      * @return array
      */
     public function listTableViews($table)
     {
-        return $this->_conn->fetchColumn($query);
+        $keyName = 'INDEX_NAME';
+        $pkName = 'PK_NAME';
+        if ($this->conn->getAttribute(Doctrine::ATTR_PORTABILITY) & Doctrine::PORTABILITY_FIX_CASE) {
+            if ($this->conn->getAttribute(Doctrine::ATTR_FIELD_CASE) == CASE_LOWER) {
+                $keyName = strtolower($keyName);
+                $pkName  = strtolower($pkName);
+            } else {
+                $keyName = strtoupper($keyName);
+                $pkName  = strtoupper($pkName);
+            }
+        }
+        $table = $this->conn->quote($table, 'text');
+        $query = 'EXEC sp_statistics @table_name = ' . $table;
+        $indexes = $this->conn->fetchColumn($query, $keyName);
+
+        $query = 'EXEC sp_pkeys @table_name = ' . $table;
+        $pkAll = $this->conn->fetchColumn($query, $pkName);
+
+        $result = array();
+
+        foreach ($indexes as $index) {
+            if ( ! in_array($index, $pkAll) && $index != null) {
+                $result[] = $this->conn->formatter->fixIndexName($index);
+            }
+        }
+
+        return $result;
     }
+
+    /**
+     * lists database views
+     *
+     * @param string|null $database
+     * @return array
+     */
+    public function listViews($database = null)
+    {
+        $query = "SELECT name FROM sysobjects WHERE xtype = 'V'";
+
+        return $this->conn->fetchColumn($query);
+    }
+    
 }
 
 ?>

@@ -31,7 +31,7 @@
  * @version     $Revision$
  * @since       2.0
  */
-class Doctrine_Schema_InformixSchemaManager extends Doctrine_Schema_SchemaManager
+class Doctrine_DBAL_Schema_InformixSchemaManager extends Doctrine_DBAL_Schema_AbstractSchemaManager
 {
     protected $sql = array(
                     'listTables'          => "SELECT tabname,tabtype FROM systables WHERE tabtype IN ('T','V') AND owner != 'informix'",

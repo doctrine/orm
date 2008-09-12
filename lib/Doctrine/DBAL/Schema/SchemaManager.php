@@ -32,7 +32,7 @@
  * @since       2.0
  * @todo Rename to AbstractSchemaManager
  */
-abstract class Doctrine_Schema_SchemaManager
+abstract class Doctrine_DBAL_Schema_AbstractSchemaManager
 {
     protected $_conn;
 
