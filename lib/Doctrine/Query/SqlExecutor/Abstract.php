@@ -1,4 +1,4 @@
-<?php 
+<?php
 /*
  *  $Id$
  *
@@ -35,7 +35,7 @@ abstract class Doctrine_Query_SqlExecutor_Abstract implements Serializable
 
     protected $_sqlStatements;
 
-    public function __construct(Doctrine_Query_Production $AST)
+    public function __construct(Doctrine_Query_AST $AST)
     {
         // [TODO] Remove me later!
         //$this->AST = $AST;
@@ -66,10 +66,10 @@ abstract class Doctrine_Query_SqlExecutor_Abstract implements Serializable
      * @param Doctrine_Query_Production $AST  The root node of the AST.
      * @return Doctrine_Query_SqlExecutor_Abstract  The executor that is suitable for the given AST.
      */
-    public static function create(Doctrine_Query_Production $AST)
+    public static function create(Doctrine_Query_AST $AST)
     {
-        $isDeleteStatement = $AST instanceof Doctrine_Query_Production_DeleteStatement;
-        $isUpdateStatement = $AST instanceof Doctrine_Query_Production_UpdateStatement;
+        $isDeleteStatement = $AST instanceof Doctrine_Query_AST_DeleteStatement;
+        $isUpdateStatement = $AST instanceof Doctrine_Query_AST_UpdateStatement;
 
         if ($isUpdateStatement || $isDeleteStatement) {
             // TODO: Inspect the $AST and create the proper executor like so (pseudo-code):

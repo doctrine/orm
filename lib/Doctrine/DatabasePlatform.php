@@ -944,7 +944,7 @@ abstract class Doctrine_DatabasePlatform
      *
      * @todo Throw exception by default?
      */
-    public function getDropIndexSql($index)
+    public function getDropIndexSql($index, $name)
     {
         return 'DROP INDEX ' . $index;
     }
@@ -982,7 +982,7 @@ abstract class Doctrine_DatabasePlatform
      *
      * @todo Throw exception by default?
      */
-    public function getCreateTableSql($table, array $columns, array $options)
+    public function getCreateTableSql($table, array $columns, array $options = array())
     {
         if ( ! $table) {
             throw new Doctrine_Export_Exception('no valid table name specified');

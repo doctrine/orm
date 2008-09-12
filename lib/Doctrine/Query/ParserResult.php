@@ -34,6 +34,13 @@
 class Doctrine_Query_ParserResult extends Doctrine_Query_AbstractResult
 {
     /**
+     * The EntityManager.
+     *
+     * @var Doctrine_EntityManager
+     */
+    protected $_em;
+
+    /**
      * A simple array keys representing table aliases and values table alias
      * seeds. The seeds are used for generating short table aliases.
      *
@@ -47,6 +54,28 @@ class Doctrine_Query_ParserResult extends Doctrine_Query_AbstractResult
      * @var array $_queryFields
      */
     protected $_queryFields = array();
+    
+    
+    /**
+     * Sets the Entity Manager.
+     *
+     * @param Doctrine_EntityManager $em The Entity Manager.
+     */
+    public function setEntityManager($em)
+    {
+        $this->_em = $em;
+    }
+
+
+    /**
+     * Gets the Entity Manager.
+     *
+     * @return Doctrine_EntityManager
+     */
+    public function getEntityManager()
+    {
+        return $this->_em;
+    }
 
 
     /**

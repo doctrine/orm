@@ -32,7 +32,7 @@
  */
 class Doctrine_Query_SqlExecutor_SingleTableDeleteUpdate extends Doctrine_Query_SqlExecutor_Abstract
 {
-    public function __construct(Doctrine_Query_Production $AST)
+    public function __construct(Doctrine_Query_AST $AST)
     {
         parent::__construct($AST);        
         $this->_sqlStatements = $AST->buildSql();

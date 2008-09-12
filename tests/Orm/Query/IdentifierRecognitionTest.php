@@ -55,7 +55,7 @@ class Orm_Query_IdentifierRecognitionTest extends Doctrine_OrmTestCase
     public function testSingleAliasDeclarationWithIndexByIsSupported()
     {
         $entityManager = $this->_em;
-        $query = $entityManager->createQuery('SELECT u.* FROM CmsUser u INDEX BY id');
+        $query = $entityManager->createQuery('SELECT u.* FROM CmsUser u INDEX BY u.id');
         $parserResult = $query->parse();
 
         $decl = $parserResult->getQueryComponent('u');

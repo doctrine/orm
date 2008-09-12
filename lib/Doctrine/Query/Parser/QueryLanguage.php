@@ -1,5 +1,4 @@
 <?php
-
 /*
  *  $Id$
  *
@@ -21,7 +20,7 @@
  */
 
 /**
- * Production variables holder
+ * QueryLanguage ::= SelectStatement | UpdateStatement | DeleteStatement
  *
  * @package     Doctrine
  * @subpackage  Query
@@ -32,58 +31,27 @@
  * @since       2.0
  * @version     $Revision$
  */
-class Doctrine_Query_ProductionParamHolder
+class Doctrine_Query_Parser_QueryLanguage extends Doctrine_Query_ParserRule
 {
-    protected static $_instance;
-
-    protected $_data;
-
-
-    protected function __construct()
+    public function syntax($paramHolder)
     {
-        $this->free();
-    }
+        // QueryLanguage ::= SelectStatement | UpdateStatement | DeleteStatement
+        switch ($this->_parser->lookahead['type']) {
+            case Doctrine_Query_Token::T_SELECT:
+                return $this->parse('SelectStatement', $paramHolder);
+            break;
 
+            case Doctrine_Query_Token::T_UPDATE:
+                return $this->parse('UpdateStatement', $paramHolder);
+            break;
 
-    public static function create()
-    {
-        if ( ! isset(self::$_instance)) {
-            self::$_instance = new self;
-        }
+            case Doctrine_Query_Token::T_DELETE:
+                return $this->parse('DeleteStatement', $paramHolder);
+            break;
 
-        return self::$_instance;
-    }
-
-
-    public function free()
-    {
-        $this->_data = array();
-    }
-
-
-    public function set($offset, $value)
-    {
-        $this->_data[$offset] = $value;
-    }
-
-
-    public function get($offset)
-    {
-        return isset($this->_data[$offset]) ? $this->_data[$offset] : null;
-    }
-
-
-    public function has($offset)
-    {
-        return isset($this->_data[$offset]);
-    }
-
-
-    public function remove($offset)
-    {
-        if ($this->has($offset)) {
-            $this->_data[$offset] = null;
-            unset($this->_data[$offset]);
+            default:
+                $this->_parser->syntaxError('SELECT, UPDATE or DELETE');
+            break;
         }
     }
 }

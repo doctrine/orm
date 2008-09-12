@@ -32,7 +32,7 @@
  * @since       2.0
  * @version     $Revision$
  */
-abstract class Doctrine_Query_Production
+abstract class Doctrine_Query_ParserRule
 {
     /**
      * @nodoc
@@ -97,27 +97,27 @@ abstract class Doctrine_Query_Production
 
 
     /**
-     * Executes the production AST using the specified parameters.
+     * Executes the grammar rule using the specified parameters.
      *
-     * @param string $AstName Production AST name
+     * @param string $RuleName BNF Grammar Rule name
      * @param array $paramHolder Production parameter holder
-     * @return Doctrine_Query_Production
+     * @return Doctrine_Query_ParserRule
      */
-    public function AST($AstName, $paramHolder)
+    public function parse($RuleName, $paramHolder)
     {
-        $AST = $this->_getProduction($AstName);
+        $BNFGrammarRule = $this->_getGrammarRule($RuleName);
 
-        //echo "Processing class: " . get_class($AST) . "...\n";
+        //echo "Processing class: " . get_class($BNFGrammarRule) . "...\n";
         //echo "Params: " . var_export($paramHolder, true) . "\n";
 
         // Syntax check
         if ( ! $paramHolder->has('syntaxCheck') || $paramHolder->get('syntaxCheck') === true) {
-            //echo "Processing syntax checks of " . $AstName . "...\n";
+            //echo "Processing syntax checks of " . $RuleName . "...\n";
 
-            $return = $AST->syntax($paramHolder);
+            $return = $BNFGrammarRule->syntax($paramHolder);
 
             if ($return !== null) {
-                //echo "Returning AST class: " . (is_object($return) ? get_class($return) : $return) . "...\n";
+                //echo "Returning Gramma Rule class: " . (is_object($return) ? get_class($return) : $return) . "...\n";
 
                 return $return;
             }
@@ -125,86 +125,63 @@ abstract class Doctrine_Query_Production
 
         // Semantical check
         if ( ! $paramHolder->has('semanticalCheck') || $paramHolder->get('semanticalCheck') === true) {
-            //echo "Processing semantical checks of " . $AstName . "...\n";
+            //echo "Processing semantical checks of " . $RuleName . "...\n";
 
-            $return = $AST->semantical($paramHolder);
+            $return = $BNFGrammarRule->semantical($paramHolder);
 
             if ($return !== null) {
-                //echo "Returning AST class: " . (is_object($return) ? get_class($return) : $return) . "...\n";
+                //echo "Returning Gramma Rule class: " . (is_object($return) ? get_class($return) : $return) . "...\n";
 
                 return $return;
             }
         }
 
-        //echo "Returning AST class: " . get_class($AST) . "...\n";
-
-        return $AST;
+        return $BNFGrammarRule;
     }
 
 
     /**
-     * Returns a production object with the given name.
+     * Returns a grammar rule object with the given name.
      *
-     * @param string $name production name
-     * @return Doctrine_Query_Production
+     * @param string $name grammar rule name
+     * @return Doctrine_Query_ParserRule
      */
-    protected function _getProduction($name)
+    protected function _getGrammarRule($name)
     {
-        $class = 'Doctrine_Query_Production_' . $name;
+        $class = 'Doctrine_Query_Parser_' . $name;
+
+        //echo $class . "\r\n";
+
+        if ( ! class_exists($class)) {
+            throw new Doctrine_Query_Parser_Exception(
+                "Unknown Grammar Rule '$name'. Could not find related compiler class."
+            );
+        }
 
         return new $class($this->_parser);
     }
-
+    
+    
     /**
-     * Executes this production using the specified parameters.
+     * Creates an AST node with the given name.
      *
-     * @param array $paramHolder Production parameter holder
-     * @return Doctrine_Query_Production
+     * @param string $AstName AST node name
+     * @return Doctrine_Query_AST
      */
-    public function execute($paramHolder)
+    public function AST($AstName)
     {
-        //echo "Processing class: " . get_class($this) . " params: \n" . var_export($paramHolder, true) . "\n";
+        $class = 'Doctrine_Query_AST_' . $AstName;
 
-        // Syntax check
-        if ( ! $paramHolder->has('syntaxCheck') || $paramHolder->get('syntaxCheck') === true) {
-            //echo "Processing syntax checks of " . get_class($this) . "...\n";
+        //echo $class . "\r\n";
 
-            $return = $this->syntax($paramHolder);
-
-            if ($return !== null) {
-                return $return;
-            }
+        if ( ! class_exists($class)) {
+            throw new Doctrine_Query_Parser_Exception(
+                "Unknown AST node '" . $AstName . "'. Could not find related compiler class."
+            );
         }
 
-        // Semantical check
-        if ( ! $paramHolder->has('semanticalCheck') || $paramHolder->get('semanticalCheck') === true) {
-            //echo "Processing semantical checks of " . get_class($this) . "...\n";
-
-            $return = $this->semantical($paramHolder);
-
-            if ($return !== null) {
-                return $return;
-            }
-        }
-
-        // Return AST instance
-        return $this;
+        return new $class($this->_parser->getParserResult());
     }
-
-
-    /**
-     * Executes this sql builder using the specified parameters.
-     *
-     * @return string Sql piece
-     */
-    /*public function buildSql()
-    {
-        $className = get_class($this);
-        $methodName = substr($className, strrpos($className, '_'));
-
-        $this->_sqlBuilder->$methodName($this);
-    }*/
-
 
     /**
      * @nodoc

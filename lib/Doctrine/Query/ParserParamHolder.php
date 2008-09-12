@@ -1,4 +1,5 @@
 <?php
+
 /*
  *  $Id$
  *
@@ -20,35 +21,69 @@
  */
 
 /**
- * Executes the SQL statements for bulk DQL UPDATE statements on classes in
- * Class Table Inheritance (JOINED).
+ * Production variables holder
  *
- * @author      Roman Borschel <roman@code-factory.org>
+ * @package     Doctrine
+ * @subpackage  Query
+ * @author      Guilherme Blanco <guilhermeblanco@hotmail.com>
+ * @author      Janne Vanhala <jpvanhal@cc.hut.fi>
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @link        http://www.phpdoctrine.org
  * @since       2.0
  * @version     $Revision$
- * @todo For a good implementation that uses temporary tables see the Hibernate sources:
- *       (org.hibernate.hql.ast.exec.MultiTableUpdateExecutor).
- * @todo Rename to MultiTableUpdateExecutor
  */
-class Doctrine_Query_SqlExecutor_MultiTableUpdate extends Doctrine_Query_SqlExecutor_Abstract
+class Doctrine_Query_ParserParamHolder
 {
-    public function __construct(Doctrine_Query_AST $AST)
+    protected static $_instance;
+
+    protected $_data;
+
+
+    protected function __construct()
     {
-        // TODO: Inspect the AST, create the necessary SQL queries and store them
-        // in $this->_sqlStatements
+        $this->free();
     }
-    
-    /**
-     * Executes all sql statements.
-     *
-     * @param Doctrine_Connection $conn  The database connection that is used to execute the queries.
-     * @param array $params  The parameters.
-     * @override
-     */
-    public function execute(Doctrine_Connection $conn, array $params)
+
+
+    public static function create()
     {
-        //...
+        if ( ! isset(self::$_instance)) {
+            self::$_instance = new self;
+        }
+
+        return self::$_instance;
+    }
+
+
+    public function free()
+    {
+        $this->_data = array();
+    }
+
+
+    public function set($offset, $value)
+    {
+        $this->_data[$offset] = $value;
+    }
+
+
+    public function get($offset)
+    {
+        return isset($this->_data[$offset]) ? $this->_data[$offset] : null;
+    }
+
+
+    public function has($offset)
+    {
+        return isset($this->_data[$offset]);
+    }
+
+
+    public function remove($offset)
+    {
+        if ($this->has($offset)) {
+            $this->_data[$offset] = null;
+            unset($this->_data[$offset]);
+        }
     }
 }

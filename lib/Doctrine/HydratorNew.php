@@ -347,10 +347,10 @@ class Doctrine_HydratorNew extends Doctrine_Hydrator_Abstract
                 if ($this->_isIgnoredName($key)) continue;
                 
                 // Cache general information like the column name <-> field name mapping
-                $e = explode(Doctrine_Query_Production::SQLALIAS_SEPARATOR, $key);
+                $e = explode(Doctrine_Query_ParserRule::SQLALIAS_SEPARATOR, $key);
                 $columnName = array_pop($e);                
                 $cache[$key]['dqlAlias'] = $this->_tableAliases[
-                        implode(Doctrine_Query_Production::SQLALIAS_SEPARATOR, $e)
+                        implode(Doctrine_Query_ParserRule::SQLALIAS_SEPARATOR, $e)
                         ];
                 $classMetadata = $this->_queryComponents[$cache[$key]['dqlAlias']]['metadata'];
                 // check whether it's an aggregate value or a regular field
@@ -432,10 +432,10 @@ class Doctrine_HydratorNew extends Doctrine_Hydrator_Abstract
                 if ($this->_isIgnoredName($key)) continue;
                 
                 // cache general information like the column name <-> field name mapping
-                $e = explode(Doctrine_Query_Production::SQLALIAS_SEPARATOR, $key);
+                $e = explode(Doctrine_Query_ParserRule::SQLALIAS_SEPARATOR, $key);
                 $columnName = array_pop($e);              
                 $cache[$key]['dqlAlias'] = $this->_tableAliases[
-                        implode(Doctrine_Query_Production::SQLALIAS_SEPARATOR, $e)
+                        implode(Doctrine_Query_ParserRule::SQLALIAS_SEPARATOR, $e)
                         ];
                 $classMetadata = $this->_queryComponents[$cache[$key]['dqlAlias']]['metadata'];
                 // check whether it's an aggregate value or a regular field

@@ -8,7 +8,7 @@ class Doctrine_EntityPersisterMock extends Doctrine_EntityPersister_Standard
     
     private $_identityColumnValueCounter = 0;
     
-    public function insert($entity)
+    public function insert(Doctrine_Entity $entity)
     {
         if ($entity->getClass()->isIdGeneratorIdentity()) {    
             $entity->_assignIdentifier($this->_identityColumnValueCounter++);
@@ -18,12 +18,12 @@ class Doctrine_EntityPersisterMock extends Doctrine_EntityPersister_Standard
         $this->_inserts[] = $entity;
     }
     
-    public function update($entity)
+    public function update(Doctrine_Entity $entity)
     {
         $this->_updates[] = $entity;
     }
     
-    public function delete($entity)
+    public function delete(Doctrine_Entity $entity)
     {
         $this->_deletes[] = $entity;
     }

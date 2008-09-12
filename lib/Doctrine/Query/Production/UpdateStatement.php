@@ -70,7 +70,6 @@ class Doctrine_Query_Production_UpdateStatement extends Doctrine_Query_Productio
     }
     
     /* Getters */
-    
     public function getUpdateClause()
     {
         return $this->_updateClause;

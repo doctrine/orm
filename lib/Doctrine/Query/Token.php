@@ -146,6 +146,8 @@ final class Doctrine_Query_Token
 
     public function getLiteral($token)
     {
-        return isset($this->_keywordsTable[$token]) ? $this->_keywordsTable[$token] : '';
+        return isset($this->_keywordsTable[$token]) 
+            ? $this->_keywordsTable[$token] 
+            : (is_string($token) ? $token : '');
     }
 }

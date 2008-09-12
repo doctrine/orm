@@ -104,7 +104,7 @@ class Doctrine_ConnectionFactory
         
         // driver
         if ( isset($params['driver']) && ! isset($this->_drivers[$params['driver']])) {
-            throw Doctrine_ConnectionFactory_Exception::unknownDriver($driverName);
+            throw Doctrine_ConnectionFactory_Exception::unknownDriver($params['driver']);
         }
     }
 }

@@ -1,4 +1,4 @@
-<?php 
+<?php
 /*
  *  $Id$
  *
@@ -39,7 +39,7 @@ class Doctrine_Query_SqlExecutor_MultiTableDelete extends Doctrine_Query_SqlExec
      *
      * @param Doctrine_Query_Production $AST
      */
-    public function __construct(Doctrine_Query_Production $AST)
+    public function __construct(Doctrine_Query_AST $AST)
     {
         // TODO: Inspect the AST, create the necessary SQL queries and store them
         // in $this->_sqlStatements

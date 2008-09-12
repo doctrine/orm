@@ -51,6 +51,13 @@ class Doctrine_Query_Parser
      * @var Doctrine_Query_SqlBuilder
      */
     protected $_sqlbuilder;
+    
+    /**
+     * DQL string.
+     *
+     * @var string
+     */
+    protected $_input;
 
     /**
      * A scanner object.
@@ -121,7 +128,8 @@ class Doctrine_Query_Parser
     public function __construct(Doctrine_Query $query)
     {
         $this->_em = $query->getEntityManager();
-        $this->_scanner = new Doctrine_Query_Scanner($query->getDql());
+        $this->_input = $query->getDql();
+        $this->_scanner = new Doctrine_Query_Scanner($this->_input);
         $this->_sqlBuilder = Doctrine_Query_SqlBuilder::fromConnection($this->_em);
         $this->_keywordTable = new Doctrine_Query_Token();
 
@@ -140,6 +148,8 @@ class Doctrine_Query_Parser
                 'dctrn' => 'dctrn',
             )
         );
+        
+        $this->_parserResult->setEntityManager($this->_em);
 
         $this->free(true);
     }
@@ -225,8 +235,8 @@ class Doctrine_Query_Parser
 
         // Building the Abstract Syntax Tree
         // We have to double the call of QueryLanguage to allow it to work correctly... =\
-        $AST = new Doctrine_Query_Production_QueryLanguage($this);
-        $AST = $AST->AST('QueryLanguage', Doctrine_Query_ProductionParamHolder::create());
+        $DQL = new Doctrine_Query_Parser_QueryLanguage($this);
+        $AST = $DQL->parse('QueryLanguage', Doctrine_Query_ParserParamHolder::create());
 
         // Check for end of string
         if ($this->lookahead !== null) {
@@ -351,5 +361,20 @@ class Doctrine_Query_Parser
     public function getEntityManager()
     {
         return $this->_em;
+    }
+    
+
+    /**
+     * Retrieve the piece of DQL string given the token position
+     *
+     * @param array $token Token that it was processing.
+     * @return string Piece of DQL string.
+     */
+    public function getQueryPiece($token, $previousChars = 10, $nextChars = 10)
+    {
+        $start = max(0, $token['position'] - $previousChars);
+        $end = max($token['position'] + $nextChars, strlen($this->_input));
+        
+        return substr($this->_input, $start, $end);
     }
 }

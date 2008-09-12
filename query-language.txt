@@ -44,7 +44,12 @@ DeleteStatement ::= DeleteClause [WhereClause]
 /*
  * IDENTIFIERS
  */
+ 
+/* Alias Identification usage */
 IdentificationVariable ::= identifier
+
+/* Alias Identification declaration */
+AliasIdentificationVariable :: = identifier
 
 /* identifier that must be a class name */
 AbstractSchemaName ::= identifier
@@ -73,10 +78,12 @@ JoinCollectionValuedPathExpression        ::= IdentificationVariable "." Collect
 JoinSingleValuedAssociationPathExpression ::= IdentificationVariable "." SingleValuedAssociationField
 AssociationPathExpression                 ::= CollectionValuedPathExpression | SingleValuedAssociationPathExpression
 SingleValuedPathExpression                ::= StateFieldPathExpression | SingleValuedAssociationPathExpression
-StateFieldPathExpression                  ::= {IdentificationVariable | SingleValuedAssociationPathExpression} "." StateField
+StateFieldPathExpression                  ::= SimpleStateFieldPathExpression | SimpleStateFieldAssociationPathExpression
 SingleValuedAssociationPathExpression     ::= IdentificationVariable "." {SingleValuedAssociationField "."}* SingleValuedAssociationField
 CollectionValuedPathExpression            ::= IdentificationVariable "." {SingleValuedAssociationField "."}* CollectionValuedAssociationField
 StateField                                ::= {EmbeddedClassStateField "."}* SimpleStateField
+SimpleStateFieldPathExpression            ::= IdentificationVariable "." SimpleStateField
+SimpleStateFieldAssociationPathExpression ::= SingleValuedAssociationPathExpression "." StateField
 
 
 /*
@@ -84,7 +91,7 @@ StateField                                ::= {EmbeddedClassStateField "."}* Sim
  */
 SelectClause        ::= "SELECT" ["ALL" | "DISTINCT"] SelectExpression {"," SelectExpression}*
 SimpleSelectClause  ::= "SELECT" ["ALL" | "DISTINCT"] SimpleSelectExpression
-DeleteClause        ::= "DELETE" ["FROM"] AbstractSchemaName [["AS"] IdentificationVariable]
+DeleteClause        ::= "DELETE" ["FROM"] AbstractSchemaName [["AS"] AliasIdentificationVariable]
 WhereClause         ::= "WHERE" ConditionalExpression
 FromClause          ::= "FROM" IdentificationVariableDeclaration {"," IdentificationVariableDeclaration}*
 SubselectFromClause ::= "FROM" SubselectIdentificationVariableDeclaration {"," SubselectIdentificationVariableDeclaration}*
@@ -93,7 +100,7 @@ GroupByClause       ::= "GROUP" "BY" GroupByItem {"," GroupByItem}*
 OrderByClause       ::= "ORDER" "BY" OrderByItem {"," OrderByItem}*
 LimitClause         ::= "LIMIT" integer
 OffsetClause        ::= "OFFSET" integer
-UpdateClause        ::= "UPDATE" AbstractSchemaName [["AS"] IdentificationVariable] "SET" UpdateItem {"," UpdateItem}*
+UpdateClause        ::= "UPDATE" AbstractSchemaName [["AS"] AliasIdentificationVariable] "SET" UpdateItem {"," UpdateItem}*
 Subselect           ::= SimpleSelectClause SubselectFromClause [WhereClause] [GroupByClause] [HavingClause] [OrderByClause]
 
 
@@ -112,12 +119,12 @@ NewValue    ::= SimpleArithmeticExpression | StringPrimary | DatetimePrimary | B
  */
 IdentificationVariableDeclaration          ::= RangeVariableDeclaration [IndexBy] {JoinVariableDeclaration}*
 SubselectIdentificationVariableDeclaration ::= IdentificationVariableDeclaration | AssociationPathExpression 
-                                               ["AS"] IdentificationVariable
+                                               ["AS"] AliasIdentificationVariable
 JoinVariableDeclaration                    ::= Join [IndexBy]
-RangeVariableDeclaration                   ::= AbstractSchemaName ["AS"] IdentificationVariable
+RangeVariableDeclaration                   ::= AbstractSchemaName ["AS"] AliasIdentificationVariable
 Join                                       ::= ["LEFT" ["OUTER"] | "INNER"] "JOIN" JoinAssociationPathExpression 
-                                               ["AS"] IdentificationVariable [("ON" | "WITH") ConditionalExpression]
-IndexBy                                    ::= "INDEX" "BY" StateFieldPathExpression
+                                               ["AS"] AliasIdentificationVariable [("ON" | "WITH") ConditionalExpression]
+IndexBy                                    ::= "INDEX" "BY" SimpleStateFieldPathExpression
 
 
 /* 
@@ -202,8 +209,8 @@ QuantifiedExpression     ::= ("ALL" | "ANY" | "SOME") "(" Subselect ")"
 BetweenExpression        ::= ArithmeticExpression ["NOT"] "BETWEEN" ArithmeticExpression "AND" ArithmeticExpression
 ComparisonExpression     ::= ArithmeticExpression ComparisonOperator ( QuantifiedExpression | ArithmeticExpression ) |
                              StringExpression ComparisonOperator (StringExpression | QuantifiedExpression) |
-                             BooleanExpression ("=" | "<>") (BooleanExpression | QuantifiedExpression) |
-                             EnumExpression ("=" | "<>") (EnumExpression | QuantifiedExpression) |
+                             BooleanExpression ("=" | "<>" | "!=") (BooleanExpression | QuantifiedExpression) |
+                             EnumExpression ("=" | "<>" | "!=") (EnumExpression | QuantifiedExpression) |
                              DatetimeExpression ComparisonOperator (DatetimeExpression | QuantifiedExpression) |
                              EntityExpression ("=" | "<>") (EntityExpression | QuantifiedExpression)
 InExpression             ::= StateFieldPathExpression ["NOT"] "IN" "(" (Literal {"," Literal}* | Subselect) ")"
