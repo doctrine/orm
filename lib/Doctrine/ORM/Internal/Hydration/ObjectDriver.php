@@ -49,7 +49,7 @@ class Doctrine_ORM_Internal_Hydration_ObjectDriver
 
     public function getElementCollection($component)
     {
-        $coll = new Doctrine_Collection($component);
+        $coll = new Doctrine_ORM_Collection($component);
         $this->_collections[] = $coll;
 
         return $coll;
@@ -80,7 +80,7 @@ class Doctrine_ORM_Internal_Hydration_ObjectDriver
         }
     }
     
-    public function registerCollection(Doctrine_Collection $coll)
+    public function registerCollection(Doctrine_ORM_Collection $coll)
     {
         $this->_collections[] = $coll;
     }

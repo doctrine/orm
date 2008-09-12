@@ -698,8 +698,8 @@ class Doctrine_EntityManager
      * @param Doctrine::Common::EventManager $eventManager The EventManager instance to use.
      * @return Doctrine::ORM::EntityManager The created EntityManager.
      */
-    public static function create($conn, $name, Doctrine_Configuration $config = null,
-            Doctrine_EventManager $eventManager = null)
+    public static function create($conn, $name, Doctrine_Common_Configuration $config = null,
+            Doctrine_Common_EventManager $eventManager = null)
     {
         if (is_array($conn)) {
             $connFactory = new Doctrine_DBAL_DriverManager();
@@ -709,10 +709,10 @@ class Doctrine_EntityManager
         }
         
         if (is_null($config)) {
-            $config = new Doctrine_Configuration();
+            $config = new Doctrine_Common_Configuration();
         }
         if (is_null($eventManager)) {
-            $eventManager = new Doctrine_EventManager();
+            $eventManager = new Doctrine_Common_EventManager();
         }
         
         $em = new Doctrine_EntityManager($conn, $name, $config, $eventManager);

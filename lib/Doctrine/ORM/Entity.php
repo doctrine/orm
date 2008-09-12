@@ -543,7 +543,7 @@ abstract class Doctrine_ORM_Entity implements ArrayAccess, Serializable
 
         if ($rel->isOneToOne() && ! $value instanceof Doctrine_ORM_Entity) {
             throw Doctrine_Entity_Exception::invalidValueForOneToOneReference();
-        } else if (($rel->isOneToMany() || $rel->isManyToMany()) && ! $value instanceof Doctrine_Collection) {
+        } else if (($rel->isOneToMany() || $rel->isManyToMany()) && ! $value instanceof Doctrine_ORM_Collection) {
             throw Doctrine_Entity_Exception::invalidValueForOneToManyReference();
         }
 

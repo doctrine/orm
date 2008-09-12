@@ -1,6 +1,6 @@
 <?php
 /*
- *  $Id$
+ *  $Id: Collection.php 4930 2008-09-12 10:40:23Z romanb $
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -41,12 +41,12 @@
  *
  * @license   http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @since     1.0
- * @version   $Revision$
+ * @version   $Revision: 4930 $
  * @author    Konsta Vesterinen <kvesteri@cc.hut.fi>
  * @author    Roman Borschel <roman@code-factory.org>
  * @todo Add more typical Collection methods.
  */
-class Doctrine_Collection implements Countable, IteratorAggregate, Serializable, ArrayAccess
+class Doctrine_ORM_Collection implements Countable, IteratorAggregate, Serializable, ArrayAccess
 {   
     /**
      * The base type of the collection.

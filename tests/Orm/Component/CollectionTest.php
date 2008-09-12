@@ -41,10 +41,10 @@ class Orm_Component_CollectionTest extends Doctrine_OrmTestCase
     {
         parent::setUp();
         
-        $this->coll = new Doctrine_Collection('ForumUser');
+        $this->coll = new Doctrine_ORM_Collection('ForumUser');
 
         //we create a CmsUser with username as key column and add a user to it
-        $cmsColl = new Doctrine_Collection('CmsUser', 'username');
+        $cmsColl = new Doctrine_ORM_Collection('CmsUser', 'username');
         $user = new CmsUser();
         $user->username ='test';
         $cmsColl[] = $user;
@@ -67,7 +67,7 @@ class Orm_Component_CollectionTest extends Doctrine_OrmTestCase
      */
     public function shouldUseSpecifiedKeyColumn()
     {
-        $coll = new Doctrine_Collection('ForumUser', 'id');
+        $coll = new Doctrine_ORM_Collection('ForumUser', 'id');
         $this->assertEquals('id', $coll->getKeyField());
     }
 
@@ -80,7 +80,7 @@ class Orm_Component_CollectionTest extends Doctrine_OrmTestCase
      */
     public function shouldThrowExceptionIfNonValidFieldSetAsKey()
     {
-        $coll = new Doctrine_Collection('ForumUser', 'xxNonValidFieldxx');
+        $coll = new Doctrine_ORM_Collection('ForumUser', 'xxNonValidFieldxx');
     }
 
     /**
@@ -99,7 +99,7 @@ class Orm_Component_CollectionTest extends Doctrine_OrmTestCase
     {
         $serialized = serialize($this->coll);
         $coll = unserialize($serialized);
-        $this->assertEquals('Doctrine_Collection', get_class($coll));
+        $this->assertEquals('Doctrine_ORM_Collection', get_class($coll));
     }
 
     /**
