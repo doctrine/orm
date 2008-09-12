@@ -702,8 +702,8 @@ class Doctrine_EntityManager
             Doctrine_EventManager $eventManager = null)
     {
         if (is_array($conn)) {
-            $connFactory = new Doctrine_ConnectionFactory();
-            $conn = $connFactory->createConnection($conn, $config, $eventManager);
+            $connFactory = new Doctrine_DBAL_DriverManager();
+            $conn = $connFactory->getConnection($conn, $config, $eventManager);
         } else if ( ! $conn instanceof Doctrine_Connection) {
             throw new Doctrine_Exception("Invalid parameter '$conn'.");
         }
