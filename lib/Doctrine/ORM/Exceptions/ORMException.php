@@ -33,7 +33,7 @@
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  * @author      Roman Borschel <roman@code-factory.org>
  */
-class Doctrine_ORM_Exceptions_ORMException extends Doctrine_Shared_Exceptions_DoctrineException
+class Doctrine_ORM_Exceptions_ORMException extends Doctrine_Common_Exceptions_DoctrineException
 {
 
 }
