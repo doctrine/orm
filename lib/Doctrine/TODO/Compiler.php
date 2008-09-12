@@ -1,6 +1,6 @@
 <?php
 /*
- *  $Id$
+ *  $Id: Compiler.php 4718 2008-07-27 19:38:56Z romanb $
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -31,7 +31,7 @@
  * @license     http://www.opensource.org/licenses/lgpllicense.php LGPL
  * @link        www.phpdoctrine.
  * @since       1.0
- * @version     $Revision$
+ * @version     $Revision: 4718 $
  * @todo Remove or put in a separate package and look for a maintainer.
  */
 class Doctrine_Compiler
