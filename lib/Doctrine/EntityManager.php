@@ -158,7 +158,7 @@ class Doctrine_EntityManager
         $this->_metadataFactory = new Doctrine_ClassMetadata_Factory(
                 $this, new Doctrine_ClassMetadata_CodeDriver());
         $this->_unitOfWork = new Doctrine_Connection_UnitOfWork($this);
-        $this->_nullObject = Doctrine_Null::$INSTANCE;
+        $this->_nullObject = Doctrine_ORM_Internal_Null::$INSTANCE;
     }
     
     /**

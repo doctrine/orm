@@ -67,7 +67,7 @@ abstract class Doctrine_Hydrator_Abstract
     public function __construct(Doctrine_EntityManager $em)
     {
         $this->_em = $em;
-        $this->_nullObject = Doctrine_Null::$INSTANCE;
+        $this->_nullObject = Doctrine_ORM_Internal_Null::$INSTANCE;
     }
 
     /**

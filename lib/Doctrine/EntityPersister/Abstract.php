@@ -80,7 +80,7 @@ abstract class Doctrine_EntityPersister_Abstract
         $this->_entityName = $classMetadata->getClassName();
         $this->_conn = $em->getConnection();
         $this->_classMetadata = $classMetadata;
-        $this->_nullObject = Doctrine_Null::$INSTANCE;
+        $this->_nullObject = Doctrine_ORM_Internal_Null::$INSTANCE;
     }
     
     /**
@@ -287,7 +287,7 @@ abstract class Doctrine_EntityPersister_Abstract
             $type = $entity->getClass()->getTypeOfField($field);
             $columnName = $entity->getClass()->getColumnName($field);
 
-            if ($newVal === Doctrine_Null::$INSTANCE) {
+            if ($newVal === Doctrine_ORM_Internal_Null::$INSTANCE) {
                 $result[$columnName] = null;
                 continue;
             }

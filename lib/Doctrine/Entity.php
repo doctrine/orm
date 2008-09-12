@@ -238,7 +238,7 @@ abstract class Doctrine_Entity implements ArrayAccess, Serializable
             // Single field identifier
             $name = $this->_class->getIdentifier();
             $name = $name[0];
-            if (isset($this->_data[$name]) && $this->_data[$name] !== Doctrine_Null::$INSTANCE) {
+            if (isset($this->_data[$name]) && $this->_data[$name] !== Doctrine_ORM_Internal_Null::$INSTANCE) {
                 $this->_id[$name] = $this->_data[$name];
             }
         } else {
@@ -391,7 +391,7 @@ abstract class Doctrine_Entity implements ArrayAccess, Serializable
      */
     final protected function _get($fieldName)
     {
-        $nullObj = Doctrine_Null::$INSTANCE;
+        $nullObj = Doctrine_ORM_Internal_Null::$INSTANCE;
         if (isset($this->_data[$fieldName])) {
             return $this->_data[$fieldName] !== $nullObj ?
                     $this->_data[$fieldName] : null;
@@ -481,7 +481,7 @@ abstract class Doctrine_Entity implements ArrayAccess, Serializable
      */
     final public function _internalGetField($fieldName)
     {
-        if ($this->_data[$fieldName] === Doctrine_Null::$INSTANCE) {
+        if ($this->_data[$fieldName] === Doctrine_ORM_Internal_Null::$INSTANCE) {
             return null;
         }
         return $this->_data[$fieldName];
@@ -514,7 +514,7 @@ abstract class Doctrine_Entity implements ArrayAccess, Serializable
      */
     final public function _internalGetReference($fieldName)
     {
-        if ($this->_references[$fieldName] === Doctrine_Null::$INSTANCE) {
+        if ($this->_references[$fieldName] === Doctrine_ORM_Internal_Null::$INSTANCE) {
             return null;
         }
         return $this->_references[$fieldName];
@@ -534,7 +534,7 @@ abstract class Doctrine_Entity implements ArrayAccess, Serializable
      */
     final public function _internalSetReference($name, $value, $completeBidirectional = false)
     {
-        if (is_null($value) || $value === Doctrine_Null::$INSTANCE) {
+        if (is_null($value) || $value === Doctrine_ORM_Internal_Null::$INSTANCE) {
             $this->_references[$name] = $value;
             return; // early exit!
         }
@@ -678,7 +678,7 @@ abstract class Doctrine_Entity implements ArrayAccess, Serializable
     private function _contains($fieldName)
     {
         if (isset($this->_data[$fieldName])) {
-            if ($this->_data[$fieldName] === Doctrine_Null::$INSTANCE) {
+            if ($this->_data[$fieldName] === Doctrine_ORM_Internal_Null::$INSTANCE) {
                 return false;
             }
             return true;
@@ -687,7 +687,7 @@ abstract class Doctrine_Entity implements ArrayAccess, Serializable
             return true;
         }
         if (isset($this->_references[$fieldName]) &&
-                $this->_references[$fieldName] !== Doctrine_Null::$INSTANCE) {
+                $this->_references[$fieldName] !== Doctrine_ORM_Internal_Null::$INSTANCE) {
             return true;
         }
         return false;

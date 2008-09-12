@@ -1,6 +1,6 @@
 <?php
 
-class Doctrine_DatabasePlatformMock extends Doctrine_DatabasePlatform
+class Doctrine_DatabasePlatformMock extends Doctrine_DBAL_Platforms_AbstractPlatform
 {
     private $_prefersIdentityColumns = false;
     

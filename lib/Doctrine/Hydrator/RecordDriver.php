@@ -43,7 +43,7 @@ class Doctrine_Hydrator_RecordDriver
     
     public function __construct(Doctrine_EntityManager $em)
     {
-        $this->_nullObject = Doctrine_Null::$INSTANCE;
+        $this->_nullObject = Doctrine_ORM_Internal_Null::$INSTANCE;
         $this->_em = $em;
     }
 

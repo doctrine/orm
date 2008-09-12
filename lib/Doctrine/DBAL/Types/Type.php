@@ -2,7 +2,7 @@
 
 #namespace Doctrine::DBAL::Types;
 
-abstract class Doctrine_DataType
+abstract class Doctrine_DBAL_Types_Type
 {
     private static $_typeObjects = array();
     private static $_typesMap = array(
