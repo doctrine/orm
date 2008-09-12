@@ -14,7 +14,7 @@ class Orm_EntityManagerTest extends Doctrine_OrmTestCase
         try {
             $this->_em->setFlushMode('foobar');
             $this->fail("Setting invalid flushmode did not trigger exception.");
-        } catch (Doctrine_EntityManager_Exception $expected) {}
+        } catch (Doctrine_ORM_Exceptions_EntityManagerException $expected) {}
         $this->_em->setFlushMode($prev);
     }    
 }

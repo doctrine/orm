@@ -350,7 +350,7 @@ class Doctrine_EntityManager
     public function setFlushMode($flushMode)
     {
         if ( ! $this->_isFlushMode($flushMode)) {
-            throw Doctrine_EntityManager_Exception::invalidFlushMode();
+            throw Doctrine_ORM_Exceptions_EntityManagerException::invalidFlushMode();
         }
         $this->_flushMode = $flushMode;
     }

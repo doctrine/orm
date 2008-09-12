@@ -453,7 +453,7 @@ abstract class Doctrine_Entity implements ArrayAccess, Serializable
                 }
             }
         } else {
-            throw Doctrine_Entity_Exception::invalidField($fieldName);
+            throw Doctrine_ORM_Exceptions_EntityException::invalidField($fieldName);
         }
     }
     

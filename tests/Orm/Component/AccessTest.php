@@ -96,7 +96,7 @@ class Orm_Component_AccessTest extends Doctrine_OrmTestCase
 
     /**
      * @test 
-     * @expectedException Doctrine_Entity_Exception
+     * @expectedException Doctrine_ORM_Exceptions_EntityException
      */
     public function shouldNotBeAbleToSetNonExistantField()
     {
@@ -105,7 +105,7 @@ class Orm_Component_AccessTest extends Doctrine_OrmTestCase
 
     /**
      * @test 
-     * @expectedException Doctrine_Entity_Exception
+     * @expectedException Doctrine_ORM_Exceptions_EntityException
      */
     public function shouldNotBeAbleToSetNonExistantFieldWithOffset()
     {
