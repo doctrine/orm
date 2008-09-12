@@ -59,14 +59,14 @@ class Doctrine_ConnectionFactory
      * @return Connection
      */
     public function createConnection(array $params, Doctrine_Configuration $config = null,
-            Doctrine_EventManager $eventManager = null)
+            Doctrine_Common_EventManager $eventManager = null)
     {
         // create default config and event manager, if not set
         if ( ! $config) {
             $config = new Doctrine_Configuration();
         }
         if ( ! $eventManager) {
-            $eventManager = new Doctrine_EventManager();
+            $eventManager = new Doctrine_Common_EventManager();
         }
         
         // check for existing pdo object

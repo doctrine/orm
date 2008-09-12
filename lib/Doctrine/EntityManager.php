@@ -149,7 +149,7 @@ class Doctrine_EntityManager
      * @param string $name
      */
     protected function __construct(Doctrine_Connection $conn, $name, Doctrine_Configuration $config,
-            Doctrine_EventManager $eventManager)
+            Doctrine_Common_EventManager $eventManager)
     {
         $this->_conn = $conn;
         $this->_name = $name;

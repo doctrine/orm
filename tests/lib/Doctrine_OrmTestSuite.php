@@ -11,7 +11,7 @@ class Doctrine_OrmTestSuite extends Doctrine_TestSuite
     protected function setUp()
     {
         $config = new Doctrine_Configuration();
-        $eventManager = new Doctrine_EventManager();
+        $eventManager = new Doctrine_Common_EventManager();
         $connectionOptions = array(
             'driverClass' => 'Doctrine_ConnectionMock',
             'user' => 'john',

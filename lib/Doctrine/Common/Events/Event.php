@@ -19,7 +19,7 @@
  * <http://www.phpdoctrine.org>.
  */
 
-#namespace Doctrine::ORM::Events;
+#namespace Doctrine::Common::Events;
 
 /**
  * Doctrine_Event
@@ -32,7 +32,7 @@
  * @since       2.0
  * @version     $Revision$
  */
-class Doctrine_Event
+class Doctrine_Common_Events_Event
 {
     /* Event callback constants */
     const preDelete = 'preDelete';

@@ -175,7 +175,7 @@ class Doctrine_Connection
             $this->_config = new Doctrine_Configuration();
         }
         if ( ! $eventManager) {
-            $this->_eventManager = new Doctrine_EventManager();
+            $this->_eventManager = new Doctrine_Common_EventManager();
         }
         
         // create platform

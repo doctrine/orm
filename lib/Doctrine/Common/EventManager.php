@@ -19,7 +19,7 @@
  * <http://www.phpdoctrine.org>.
  */
 
-#namespace Doctrine::Common::Event;
+#namespace Doctrine::Common;
 
 /**
  * The EventManager is the central point of Doctrine's event listener system.
@@ -30,7 +30,7 @@
  * @author Guilherme Blanco <guilhermeblanco@hotmail.com>
  * @since 2.0
  */
-class Doctrine_EventManager
+class Doctrine_Common_EventManager
 {
     /**
      * Map of registered listeners.
@@ -107,7 +107,7 @@ class Doctrine_EventManager
      * 
      * @param Doctrine::Common::Event::EventSubscriber $subscriber  The subscriber.
      */
-    public function addEventSubscriber(Doctrine_EventSubscriber $subscriber)
+    public function addEventSubscriber(Doctrine_Common_EventSubscriber $subscriber)
     {
         $this->addEventListener($subscriber->getSubscribedEvents(), $subscriber);
     }
