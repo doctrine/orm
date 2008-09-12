@@ -36,7 +36,7 @@
  * @version     $Revision: 3189 $
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  */
-class Doctrine_Inflector
+class Doctrine_TODO_Inflector
 {
     /**
     * pluralize
@@ -207,7 +207,7 @@ class Doctrine_Inflector
      */
     public static function classify($word)
     {
-        return preg_replace_callback('~(_?)(_)([\w])~', array("Doctrine_Inflector", "classifyCallback"), ucfirst(strtolower($word)));
+        return preg_replace_callback('~(_?)(_)([\w])~', array("Doctrine_TODO_Inflector", "classifyCallback"), ucfirst(strtolower($word)));
     }
 
     /**

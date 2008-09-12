@@ -1162,7 +1162,7 @@ final class Doctrine
      */
     public static function tableize($className)
     {
-         return Doctrine_Inflector::tableize($className);
+         return Doctrine_TODO_Inflector::tableize($className);
     }
 
     /**
@@ -1175,6 +1175,6 @@ final class Doctrine
      */
     public static function classify($tableName)
     {
-        return Doctrine_Inflector::classify($tableName);
+        return Doctrine_TODO_Inflector::classify($tableName);
     }
 }

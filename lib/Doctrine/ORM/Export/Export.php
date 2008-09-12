@@ -1,6 +1,6 @@
 <?php
 /*
- *  $Id$
+ *  $Id: Export.php 4805 2008-08-25 19:11:58Z subzero2000 $
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -31,7 +31,7 @@
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @link        www.phpdoctrine.org
  * @since       1.0
- * @version     $Revision$
+ * @version     $Revision: 4805 $
  * @todo Rename to ExportManager. Subclasses: MySqlExportManager, PgSqlExportManager etc.
  */
 class Doctrine_Export extends Doctrine_Connection_Module

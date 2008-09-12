@@ -1,6 +1,6 @@
 <?php
 /*
- *  $Id$
+ *  $Id: Tree.php 4699 2008-07-20 20:13:24Z romanb $
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -26,7 +26,7 @@
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @link        www.phpdoctrine.org
  * @since       1.0
- * @version     $Revision$
+ * @version     $Revision: 4699 $
  * @author      Joe Simms <joe.simms@websites4.com>
  * @todo Move to NestedSet behavior.
  */
