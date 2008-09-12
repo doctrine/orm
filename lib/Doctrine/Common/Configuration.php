@@ -28,19 +28,16 @@
  * It combines all configuration options from DBAL & ORM.
  * 
  * INTERNAL: When adding a new configuration option just write a getter/setter
- * combination and add the option to the _attributes array with a proper default value.
+ * pair and add the option to the _attributes array with a proper default value.
  *
  * @author Roman Borschel <roman@code-factory.org>
  * @since 2.0
  */
 class Doctrine_Common_Configuration
 {
-    private $_nullObject;
-    
     /**
      * The attributes that are contained in the configuration.
-     * Values are default values. PHP null is replaced by a reference to the Null
-     * object on instantiation in order to use isset() instead of array_key_exists().
+     * Values are default values.
      *
      * @var array
      */
@@ -58,37 +55,7 @@ class Doctrine_Common_Configuration
      * Creates a new configuration that can be used for Doctrine.
      */
     public function __construct()
-    {
-        $this->_nullObject = new stdClass();
-        $this->_initAttributes();
-    }
-    
-    /**
-     * Initializes the attributes.
-     * Changes null default values to references to the Null object to allow
-     * fast isset() checks instead of array_key_exists().
-     * 
-     * @return void
-     */
-    private function _initAttributes()
-    {
-        foreach ($this->_attributes as $key => $value) {
-            if ($value === null) {
-                $this->_attributes[$key] = $this->_nullObject;
-            }
-        }
-    }
-    
-    /**
-     * Checks whether the configuration contains/supports an attribute.
-     *
-     * @param string $name
-     * @return boolean
-     */
-    public function has($name)
-    {
-        return isset($this->_attributes[$name]);
-    }
+    {}
     
     public function getQuoteIdentifiers()
     {
