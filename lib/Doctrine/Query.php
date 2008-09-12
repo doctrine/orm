@@ -93,7 +93,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract
     // End of Caching Stuff
 
 
-    public function __construct(Doctrine_EntityManager $entityManager)
+    public function __construct(Doctrine_ORM_EntityManager $entityManager)
     {
         $this->_entityManager = $entityManager;
         $this->_hydrator = new Doctrine_ORM_Internal_Hydration_StandardHydrator($entityManager);

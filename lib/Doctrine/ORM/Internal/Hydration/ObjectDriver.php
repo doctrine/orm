@@ -41,7 +41,7 @@ class Doctrine_ORM_Internal_Hydration_ObjectDriver
     /** The EntityManager */
     private $_em;
     
-    public function __construct(Doctrine_EntityManager $em)
+    public function __construct(Doctrine_ORM_EntityManager $em)
     {
         $this->_nullObject = Doctrine_ORM_Internal_Null::$INSTANCE;
         $this->_em = $em;

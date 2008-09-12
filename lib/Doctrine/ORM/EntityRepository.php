@@ -33,9 +33,8 @@
  * @since       2.0
  * @version     $Revision$
  * @author      Roman Borschel <roman@code-factory.org>
- * @todo package:orm
  */
-class Doctrine_EntityRepository
+class Doctrine_ORM_EntityRepository
 {
     protected $_entityName;
     protected $_em;

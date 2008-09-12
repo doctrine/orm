@@ -42,7 +42,7 @@ abstract class Doctrine_Query_SqlBuilder
     protected $_connection;
 
 
-    public static function fromConnection(Doctrine_EntityManager $entityManager)
+    public static function fromConnection(Doctrine_ORM_EntityManager $entityManager)
     {
         $connection = $entityManager->getConnection();
 

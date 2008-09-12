@@ -17,7 +17,7 @@ class Doctrine_OrmTestSuite extends Doctrine_TestSuite
             'user' => 'john',
             'password' => 'wayne'      
         );      
-        $em = Doctrine_EntityManager::create($connectionOptions, 'mockEM', $config, $eventManager);
+        $em = Doctrine_ORM_EntityManager::create($connectionOptions, 'mockEM', $config, $eventManager);
         $this->sharedFixture['em'] = $em;
     }
     

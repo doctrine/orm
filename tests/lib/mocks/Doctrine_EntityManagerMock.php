@@ -2,7 +2,7 @@
 
 require_once 'lib/mocks/Doctrine_EntityPersisterMock.php';
 
-class Doctrine_EntityManagerMock extends Doctrine_EntityManager
+class Doctrine_EntityManagerMock extends Doctrine_ORM_EntityManager
 {
     private $_persisterMock;
     

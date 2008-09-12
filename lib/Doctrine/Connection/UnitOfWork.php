@@ -120,7 +120,7 @@ class Doctrine_Connection_UnitOfWork
      *
      * @param Doctrine_EntityManager $em
      */
-    public function __construct(Doctrine_EntityManager $em)
+    public function __construct(Doctrine_ORM_EntityManager $em)
     {
         $this->_em = $em;
         //TODO: any benefit with lazy init?

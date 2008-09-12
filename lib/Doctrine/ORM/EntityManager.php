@@ -38,7 +38,7 @@
  * @version     $Revision$
  * @author      Roman Borschel <roman@code-factory.org>
  */
-class Doctrine_EntityManager
+class Doctrine_ORM_EntityManager
 {
     /**
      * IMMEDIATE: Flush occurs automatically after each operation that issues database
@@ -498,7 +498,7 @@ class Doctrine_EntityManager
         if ($customRepositoryClassName !== null) {
             $repository = new $customRepositoryClassName($entityName, $metadata);
         } else {
-            $repository = new Doctrine_EntityRepository($entityName, $metadata);
+            $repository = new Doctrine_ORM_EntityRepository($entityName, $metadata);
         }
         $this->_repositories[$entityName] = $repository;
 
@@ -715,7 +715,7 @@ class Doctrine_EntityManager
             $eventManager = new Doctrine_Common_EventManager();
         }
         
-        $em = new Doctrine_EntityManager($conn, $name, $config, $eventManager);
+        $em = new Doctrine_ORM_EntityManager($conn, $name, $config, $eventManager);
         $em->activate();
         
         return $em;

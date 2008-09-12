@@ -22,7 +22,7 @@ class Doctrine_OrmTestCase extends Doctrine_TestCase
                 'user' => 'john',
                 'password' => 'wayne'      
             );
-            $em = Doctrine_EntityManager::create($connectionOptions, 'mockEM', $config, $eventManager);
+            $em = Doctrine_ORM_EntityManager::create($connectionOptions, 'mockEM', $config, $eventManager);
             $this->_em = $em;
         }
         $this->_em->activate();

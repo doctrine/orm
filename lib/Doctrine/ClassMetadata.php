@@ -356,7 +356,7 @@ class Doctrine_ClassMetadata implements Doctrine_Common_Configurable, Serializab
      * @param string $entityName  Name of the entity class the metadata info is used for.
      * @param Doctrine::ORM::Entitymanager $em
      */
-    public function __construct($entityName, Doctrine_EntityManager $em)
+    public function __construct($entityName, Doctrine_ORM_EntityManager $em)
     {
         $this->_entityName = $entityName;
         $this->_rootEntityName = $entityName;

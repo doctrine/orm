@@ -13,7 +13,7 @@ abstract class Doctrine_ORM_Id_AbstractIdGenerator
     
     protected $_em;
     
-    public function __construct(Doctrine_EntityManager $em)
+    public function __construct(Doctrine_ORM_EntityManager $em)
     {
         $this->_em = $em;
     }

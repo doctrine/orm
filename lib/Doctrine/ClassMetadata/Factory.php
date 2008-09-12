@@ -51,7 +51,7 @@ class Doctrine_ClassMetadata_Factory
      * @param $conn    The connection to use.
      * @param $driver  The metadata driver to use.
      */
-    public function __construct(Doctrine_EntityManager $em, $driver)
+    public function __construct(Doctrine_ORM_EntityManager $em, $driver)
     {
         $this->_em = $em;
         $this->_driver = $driver;

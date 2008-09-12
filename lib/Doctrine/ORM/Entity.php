@@ -204,7 +204,7 @@ abstract class Doctrine_ORM_Entity implements ArrayAccess, Serializable
     public function __construct()
     {
         $this->_entityName = get_class($this);
-        $this->_em = Doctrine_EntityManager::getActiveEntityManager();
+        $this->_em = Doctrine_ORM_EntityManager::getActiveEntityManager();
         $this->_class = $this->_em->getClassMetadata($this->_entityName);
         $this->_oid = self::$_index++;
         $this->_data = $this->_em->_getTmpEntityData();
