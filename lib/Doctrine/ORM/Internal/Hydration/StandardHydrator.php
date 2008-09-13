@@ -266,16 +266,16 @@ class Doctrine_ORM_Internal_Hydration_StandardHydrator extends Doctrine_ORM_Inte
                                 $driver->getElement($data, $entityName));
                     }
                 }
+                
                 if ($hydrationMode == Doctrine_Query::HYDRATE_ARRAY) {
-                    if (($coll =& $driver->getReferenceValue($baseElement, $relationAlias)) !== null) {
-                        $this->_updateResultPointer($resultPointers, $coll, $index, $dqlAlias, $oneToOne);   
-                    }
+                    $coll =& $driver->getReferenceValue($baseElement, $relationAlias);
                 } else {
-                    if (($coll = $driver->getReferenceValue($baseElement, $relationAlias)) !== null) {
-                        $this->_updateResultPointer($resultPointers, $coll, $index, $dqlAlias, $oneToOne);   
-                    }
+                    $coll = $driver->getReferenceValue($baseElement, $relationAlias);
                 }
-
+                
+                if ($coll !== null) {
+                    $this->_updateResultPointer($resultPointers, $coll, $index, $dqlAlias, $oneToOne); 
+                }
             }
             
             // append scalar values to mixed result sets
