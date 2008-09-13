@@ -1,5 +1,10 @@
 <?php
+
 require_once 'lib/mocks/Doctrine_DriverConnectionMock.php';
+require_once 'lib/mocks/Doctrine_DatabasePlatformMock.php';
+
+// THIS FILE DOES NOT EXIST YET!!!!
+//require_once 'lib/mocks/Doctrine_SchemaManagerMock.php';
 
 class Doctrine_DriverMock implements Doctrine_DBAL_Driver
 {

@@ -70,7 +70,7 @@ class Orm_Query_IdentifierRecognitionTest extends Doctrine_OrmTestCase
     public function testQueryParserSupportsMultipleAliasDeclarations()
     {
         $entityManager = $this->_em;
-        $query = $entityManager->createQuery('SELECT u.* FROM CmsUser u INDEX BY id LEFT JOIN u.phonenumbers p');
+        $query = $entityManager->createQuery('SELECT u.* FROM CmsUser u INDEX BY u.id LEFT JOIN u.phonenumbers p');
         $parserResult = $query->parse();
 
         $decl = $parserResult->getQueryComponent('u');
@@ -94,7 +94,7 @@ class Orm_Query_IdentifierRecognitionTest extends Doctrine_OrmTestCase
     public function testQueryParserSupportsMultipleAliasDeclarationsWithIndexBy()
     {
         $entityManager = $this->_em;
-        $query = $entityManager->createQuery('SELECT u.* FROM CmsUser u INDEX BY id LEFT JOIN u.articles a INNER JOIN u.phonenumbers pn INDEX BY phonenumber');
+        $query = $entityManager->createQuery('SELECT u.* FROM CmsUser u INDEX BY u.id LEFT JOIN u.articles a INNER JOIN u.phonenumbers pn INDEX BY pn.phonenumber');
         $parserResult = $query->parse();
 
         $decl = $parserResult->getQueryComponent('u');
