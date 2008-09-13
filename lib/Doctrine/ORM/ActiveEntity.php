@@ -21,34 +21,7 @@ class Doctrine_ORM_ActiveEntity extends Doctrine_ORM_Entity
      */
     public function save()
     {
-        // TODO: Forward to EntityManager. There: registerNew() OR registerDirty() on UnitOfWork.
         $this->_em->save($this);
-    }
-    
-    /**
-     * Execute a SQL REPLACE query. A REPLACE query is identical to a INSERT
-     * query, except that if there is already a row in the table with the same
-     * key field values, the REPLACE query just updates its values instead of
-     * inserting a new row.
-     *
-     * The REPLACE type of query does not make part of the SQL standards. Since
-     * practically only MySQL and SQLIte implement it natively, this type of
-     * query isemulated through this method for other DBMS using standard types
-     * of queries inside a transaction to assure the atomicity of the operation.
-     *
-     * @param Doctrine_Connection $conn             optional connection parameter
-     * @throws Doctrine_Connection_Exception        if some of the key values was null
-     * @throws Doctrine_Connection_Exception        if there were no key fields
-     * @throws Doctrine_Connection_Exception        if something fails at database level
-     * @return integer                              number of rows affected
-     * @todo ActiveEntity method.
-     */
-    public function replace()
-    {
-        return $this->_em->replace(
-                $this->_class,
-                $this->getPrepared(),
-                $this->_id);
     }
     
     /**
@@ -213,11 +186,9 @@ class Doctrine_ORM_ActiveEntity extends Doctrine_ORM_Entity
      * Deletes the persistent state of the entity.
      *
      * @return boolean  TRUE on success, FALSE on failure.
-     * @todo ActiveRecord method.
      */
     public function delete()
     {
-        // TODO: Forward to EntityManager. There: registerRemoved() on UnitOfWork
         return $this->_em->remove($this);
     }
     
@@ -268,7 +239,6 @@ class Doctrine_ORM_ActiveEntity extends Doctrine_ORM_Entity
      * @param string $alias     related component alias
      * @param array $ids        the identifiers of the related records
      * @return Doctrine_Entity  this object
-     * @todo ActiveEntity method.
      */
     public function unlink($alias, $ids = array())
     {
@@ -322,7 +292,6 @@ class Doctrine_ORM_ActiveEntity extends Doctrine_ORM_Entity
      * @param string $alias     related component alias
      * @param array $ids        the identifiers of the related records
      * @return Doctrine_Entity  this object
-     * @todo ActiveEntity method.
      */
     public function link($alias, array $ids)
     {

@@ -26,10 +26,8 @@
  * Base class for all custom user-defined repositories.
  * Provides basic finder methods, common to all repositories.
  *
- * @package     Doctrine
- * @subpackage  EntityRepository
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
- * @link        www.phpdoctrine.org
+ * @link        www.doctrine-project.org
  * @since       2.0
  * @version     $Revision$
  * @author      Roman Borschel <roman@code-factory.org>
@@ -40,7 +38,7 @@ class Doctrine_ORM_EntityRepository
     protected $_em;
     protected $_classMetadata;
     
-    public function __construct($entityName, Doctrine_ClassMetadata $classMetadata)
+    public function __construct($entityName, Doctrine_ORM_Mapping_ClassMetadata $classMetadata)
     {
         $this->_entityName = $entityName;
         $this->_em = $classMetadata->getConnection();
@@ -70,7 +68,7 @@ class Doctrine_ORM_EntityRepository
      */
     public function clear()
     {
-        $this->_em->unitOfWork->clearIdentitiesForEntity($this->_classMetadata->getRootClassName());
+        $this->_em->getUnitOfWork()->clearIdentitiesForEntity($this->_classMetadata->getRootClassName());
     }
     
     /**
@@ -185,7 +183,7 @@ class Doctrine_ORM_EntityRepository
      * findById, findByContactId, etc.
      *
      * @return void
-     * @throws Doctrine_Mapper_Exception  If the method called is an invalid find* method
+     * @throws BadMethodCallException  If the method called is an invalid find* method
      *                                    or no find* method at all and therefore an invalid
      *                                    method call.
      */
@@ -198,7 +196,7 @@ class Doctrine_ORM_EntityRepository
             $by = substr($method, 9, strlen($method));
             $method = 'findOneBy';
         } else {
-            throw new Doctrine_Mapper_Exception("Undefined method '$method'.");
+            throw new BadMethodCallException("Undefined method '$method'.");
         }
         
         if (isset($by)) {
