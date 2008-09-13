@@ -150,7 +150,8 @@ class Doctrine_ORM_Internal_Hydration_StandardHydrator extends Doctrine_ORM_Inte
             if (count($result) > 1 || count($result[0]) > 1) {
                 throw Doctrine_ORM_Exceptions_HydrationException::nonUniqueResult();
             }
-            return array_shift($this->_gatherScalarRowData($result[0], $cache)); 
+            $result = $this->_gatherScalarRowData($result[0], $cache);
+            return array_shift($result);
         }
         
         // Process result set
@@ -245,8 +246,13 @@ class Doctrine_ORM_Internal_Hydration_StandardHydrator extends Doctrine_ORM_Inte
                                     $driver->getReferenceValue($baseElement, $relationAlias));
                         }
                     } else if ( ! isset($baseElement[$relationAlias])) {
-                        $driver->setRelatedElement($baseElement, $relationAlias,
-                                $driver->getElementCollection($entityName));
+                        if ($hydrationMode == Doctrine_Query::HYDRATE_ARRAY) {
+                            $array = array();
+                            $driver->setRelatedElement($baseElement, $relationAlias, $array);
+                        } else {
+                            $driver->setRelatedElement($baseElement, $relationAlias,
+                                    $driver->getElementCollection($entityName));
+                        }
                     }
                 } else {
                     // x-1 relation
@@ -260,9 +266,16 @@ class Doctrine_ORM_Internal_Hydration_StandardHydrator extends Doctrine_ORM_Inte
                                 $driver->getElement($data, $entityName));
                     }
                 }
-                if (($coll =& $driver->getReferenceValue($baseElement, $relationAlias)) !== null) {
-                    $this->_updateResultPointer($resultPointers, $coll, $index, $dqlAlias, $oneToOne);   
+                if ($hydrationMode == Doctrine_Query::HYDRATE_ARRAY) {
+                    if (($coll =& $driver->getReferenceValue($baseElement, $relationAlias)) !== null) {
+                        $this->_updateResultPointer($resultPointers, $coll, $index, $dqlAlias, $oneToOne);   
+                    }
+                } else {
+                    if (($coll = $driver->getReferenceValue($baseElement, $relationAlias)) !== null) {
+                        $this->_updateResultPointer($resultPointers, $coll, $index, $dqlAlias, $oneToOne);   
+                    }
                 }
+
             }
             
             // append scalar values to mixed result sets
