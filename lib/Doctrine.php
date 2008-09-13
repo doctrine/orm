@@ -31,7 +31,8 @@
  * @since       1.0
  * @version     $Revision$
  * @todo Remove all the constants, attributes to the new attribute system,
- *       All methods to separate classes.
+ *       All methods to appropriate classes.
+ *       Finally remove this class.
  */
 final class Doctrine
 {

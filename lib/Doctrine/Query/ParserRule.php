@@ -151,7 +151,8 @@ abstract class Doctrine_Query_ParserRule
         $class = 'Doctrine_Query_Parser_' . $name;
 
         //echo $class . "\r\n";
-
+        //TODO: This expensive check is not necessary. Should be removed at the end.
+        //      "new $class" will throw an error anyway if the class is not found.
         if ( ! class_exists($class)) {
             throw new Doctrine_Query_Parser_Exception(
                 "Unknown Grammar Rule '$name'. Could not find related compiler class."

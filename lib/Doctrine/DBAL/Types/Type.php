@@ -29,7 +29,8 @@ abstract class Doctrine_DBAL_Types_Type
     abstract public function getName();
     
     /**
-     * Factory method.
+     * Factory method to create type instances.
+     * Type instances are implemented as flyweights.
      *
      * @param string $name The name of the type (as returned by getName()).
      * @return Doctrine::DBAL::Types::Type

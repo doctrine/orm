@@ -16,9 +16,9 @@ class Orm_Hydration_BasicHydrationTest extends Doctrine_OrmTestCase
     public static function hydrationModeProvider()
     {
         return array(
-          array('hydrationMode' => Doctrine::HYDRATE_RECORD),
-          array('hydrationMode' => Doctrine::HYDRATE_ARRAY),
-          array('hydrationMode' => Doctrine::HYDRATE_SCALAR)
+          array('hydrationMode' => Doctrine_Query::HYDRATE_OBJECT),
+          array('hydrationMode' => Doctrine_Query::HYDRATE_ARRAY),
+          array('hydrationMode' => Doctrine_Query::HYDRATE_SCALAR)
         );
     }
     
@@ -76,7 +76,7 @@ class Orm_Hydration_BasicHydrationTest extends Doctrine_OrmTestCase
         $result = $hydrator->hydrateResultSet($this->_createParserResult(
                 $stmt, $queryComponents, $tableAliasMap, $hydrationMode));
         
-        if ($hydrationMode == Doctrine::HYDRATE_ARRAY || $hydrationMode == Doctrine::HYDRATE_RECORD) {
+        if ($hydrationMode == Doctrine_Query::HYDRATE_ARRAY || $hydrationMode == Doctrine_Query::HYDRATE_OBJECT) {
             $this->assertEquals(2, count($result));
             $this->assertEquals(1, $result[0]['id']);
             $this->assertEquals('romanb', $result[0]['name']);
@@ -84,13 +84,13 @@ class Orm_Hydration_BasicHydrationTest extends Doctrine_OrmTestCase
             $this->assertEquals('jwage', $result[1]['name']);
         }
           
-        if ($hydrationMode == Doctrine::HYDRATE_RECORD) {
+        if ($hydrationMode == Doctrine_Query::HYDRATE_OBJECT) {
             $this->assertTrue($result instanceof Doctrine_ORM_Collection);
             $this->assertTrue($result[0] instanceof Doctrine_ORM_Entity);
             $this->assertTrue($result[1] instanceof Doctrine_ORM_Entity);
-        } else if ($hydrationMode == Doctrine::HYDRATE_ARRAY) {
+        } else if ($hydrationMode == Doctrine_Query::HYDRATE_ARRAY) {
             $this->assertTrue(is_array($result));
-        } else if ($hydrationMode == Doctrine::HYDRATE_SCALAR) {
+        } else if ($hydrationMode == Doctrine_Query::HYDRATE_SCALAR) {
             $this->assertTrue(is_array($result));
             $this->assertEquals(2, count($result));
             $this->assertEquals('romanb', $result[0]['u_name']);
@@ -163,11 +163,11 @@ class Orm_Hydration_BasicHydrationTest extends Doctrine_OrmTestCase
         $result = $hydrator->hydrateResultSet($this->_createParserResult(
                 $stmt, $queryComponents, $tableAliasMap, $hydrationMode, true));
                 
-        if ($hydrationMode == Doctrine::HYDRATE_ARRAY) {
+        if ($hydrationMode == Doctrine_Query::HYDRATE_ARRAY) {
             //var_dump($result);
         }
         
-        if ($hydrationMode == Doctrine::HYDRATE_ARRAY || $hydrationMode == Doctrine::HYDRATE_RECORD) {
+        if ($hydrationMode == Doctrine_Query::HYDRATE_ARRAY || $hydrationMode == Doctrine_Query::HYDRATE_OBJECT) {
             $this->assertEquals(2, count($result));
             $this->assertTrue(is_array($result));
             $this->assertTrue(is_array($result[0]));
@@ -185,14 +185,14 @@ class Orm_Hydration_BasicHydrationTest extends Doctrine_OrmTestCase
             $this->assertEquals(91, $result[1][0]['phonenumbers'][0]['phonenumber']);
         }
         
-        if ($hydrationMode == Doctrine::HYDRATE_RECORD) {
+        if ($hydrationMode == Doctrine_Query::HYDRATE_OBJECT) {
             $this->assertTrue($result[0][0] instanceof Doctrine_ORM_Entity);
             $this->assertTrue($result[0][0]['phonenumbers'] instanceof Doctrine_ORM_Collection);
             $this->assertTrue($result[0][0]['phonenumbers'][0] instanceof Doctrine_ORM_Entity);
             $this->assertTrue($result[0][0]['phonenumbers'][1] instanceof Doctrine_ORM_Entity);
             $this->assertTrue($result[1][0] instanceof Doctrine_ORM_Entity);
             $this->assertTrue($result[1][0]['phonenumbers'] instanceof Doctrine_ORM_Collection);
-        } else if ($hydrationMode == Doctrine::HYDRATE_SCALAR) {
+        } else if ($hydrationMode == Doctrine_Query::HYDRATE_SCALAR) {
             $this->assertTrue(is_array($result));
             $this->assertEquals(3, count($result));
             $this->assertEquals(1, $result[0]['u_id']);
@@ -260,7 +260,7 @@ class Orm_Hydration_BasicHydrationTest extends Doctrine_OrmTestCase
                 $stmt, $queryComponents, $tableAliasMap, $hydrationMode, true));
         //var_dump($result);
         
-        if ($hydrationMode == Doctrine::HYDRATE_ARRAY || $hydrationMode == Doctrine::HYDRATE_RECORD) {
+        if ($hydrationMode == Doctrine_Query::HYDRATE_ARRAY || $hydrationMode == Doctrine_Query::HYDRATE_OBJECT) {
             $this->assertEquals(2, count($result));
             $this->assertTrue(is_array($result));
             $this->assertTrue(is_array($result[0]));
@@ -272,10 +272,10 @@ class Orm_Hydration_BasicHydrationTest extends Doctrine_OrmTestCase
             $this->assertEquals(1, $result[1]['numPhones']);
         }
         
-        if ($hydrationMode == Doctrine::HYDRATE_RECORD) {
+        if ($hydrationMode == Doctrine_Query::HYDRATE_OBJECT) {
             $this->assertTrue($result[0][0] instanceof Doctrine_ORM_Entity);
             $this->assertTrue($result[1][0] instanceof Doctrine_ORM_Entity);
-        } else if ($hydrationMode == Doctrine::HYDRATE_SCALAR) {
+        } else if ($hydrationMode == Doctrine_Query::HYDRATE_SCALAR) {
             $this->assertEquals(2, count($result));
             
             $this->assertEquals(1, $result[0]['u_id']);
@@ -355,7 +355,7 @@ class Orm_Hydration_BasicHydrationTest extends Doctrine_OrmTestCase
             //var_dump($result);
         }
         
-        if ($hydrationMode == Doctrine::HYDRATE_ARRAY || $hydrationMode == Doctrine::HYDRATE_RECORD) {
+        if ($hydrationMode == Doctrine_Query::HYDRATE_ARRAY || $hydrationMode == Doctrine_Query::HYDRATE_OBJECT) {
             $this->assertEquals(2, count($result));
             $this->assertTrue(is_array($result));
             $this->assertTrue(is_array($result[0]));
@@ -376,12 +376,12 @@ class Orm_Hydration_BasicHydrationTest extends Doctrine_OrmTestCase
             $this->assertEquals('JWAGE', $result[1]['nameUpper']);
         }
 
-        if ($hydrationMode == Doctrine::HYDRATE_RECORD) {
+        if ($hydrationMode == Doctrine_Query::HYDRATE_OBJECT) {
             $this->assertTrue($result[0]['1'] instanceof Doctrine_ORM_Entity);
             $this->assertTrue($result[1]['2'] instanceof Doctrine_ORM_Entity);
             $this->assertTrue($result[0]['1']['phonenumbers'] instanceof Doctrine_ORM_Collection);
             $this->assertEquals(2, count($result[0]['1']['phonenumbers']));
-        } else if ($hydrationMode == Doctrine::HYDRATE_SCALAR) {
+        } else if ($hydrationMode == Doctrine_Query::HYDRATE_SCALAR) {
             // NOTE: Indexing has no effect with HYDRATE_SCALAR
             //... asserts to come
         }
@@ -491,11 +491,11 @@ class Orm_Hydration_BasicHydrationTest extends Doctrine_OrmTestCase
         
         $result = $hydrator->hydrateResultSet($this->_createParserResult(
                 $stmt, $queryComponents, $tableAliasMap, $hydrationMode, true));
-        if ($hydrationMode == Doctrine::HYDRATE_ARRAY) {
+        if ($hydrationMode == Doctrine_Query::HYDRATE_ARRAY) {
             //var_dump($result);
         }
         
-        if ($hydrationMode == Doctrine::HYDRATE_ARRAY || $hydrationMode == Doctrine::HYDRATE_RECORD) {
+        if ($hydrationMode == Doctrine_Query::HYDRATE_ARRAY || $hydrationMode == Doctrine_Query::HYDRATE_OBJECT) {
             $this->assertEquals(2, count($result));
             $this->assertTrue(is_array($result));
             $this->assertTrue(is_array($result[0]));
@@ -520,7 +520,7 @@ class Orm_Hydration_BasicHydrationTest extends Doctrine_OrmTestCase
             $this->assertEquals('PHP6', $result[1][0]['articles'][1]['topic']);
         }
         
-        if ($hydrationMode == Doctrine::HYDRATE_RECORD) {
+        if ($hydrationMode == Doctrine_Query::HYDRATE_OBJECT) {
             $this->assertTrue($result[0][0] instanceof Doctrine_ORM_Entity);
             $this->assertTrue($result[0][0]['phonenumbers'] instanceof Doctrine_ORM_Collection);
             $this->assertTrue($result[0][0]['phonenumbers'][0] instanceof Doctrine_ORM_Entity);
@@ -533,7 +533,7 @@ class Orm_Hydration_BasicHydrationTest extends Doctrine_OrmTestCase
             $this->assertTrue($result[1][0]['phonenumbers'][0] instanceof Doctrine_ORM_Entity);
             $this->assertTrue($result[1][0]['articles'][0] instanceof Doctrine_ORM_Entity);
             $this->assertTrue($result[1][0]['articles'][1] instanceof Doctrine_ORM_Entity);
-        } else if ($hydrationMode == Doctrine::HYDRATE_SCALAR) {
+        } else if ($hydrationMode == Doctrine_Query::HYDRATE_SCALAR) {
             //...
             $this->assertEquals(6, count($result));
             //var_dump($result);
@@ -666,11 +666,11 @@ class Orm_Hydration_BasicHydrationTest extends Doctrine_OrmTestCase
         
         $result = $hydrator->hydrateResultSet($this->_createParserResult(
                 $stmt, $queryComponents, $tableAliasMap, $hydrationMode, true));
-        if ($hydrationMode == Doctrine::HYDRATE_ARRAY) {
+        if ($hydrationMode == Doctrine_Query::HYDRATE_ARRAY) {
             //var_dump($result);
         }
         
-        if ($hydrationMode == Doctrine::HYDRATE_ARRAY || $hydrationMode == Doctrine::HYDRATE_RECORD) {
+        if ($hydrationMode == Doctrine_Query::HYDRATE_ARRAY || $hydrationMode == Doctrine_Query::HYDRATE_OBJECT) {
             $this->assertEquals(2, count($result));
             $this->assertTrue(is_array($result));
             $this->assertTrue(is_array($result[0]));
@@ -704,7 +704,7 @@ class Orm_Hydration_BasicHydrationTest extends Doctrine_OrmTestCase
             $this->assertTrue(isset($result[1][0]['articles'][1]['comments']));
         }
 
-        if ($hydrationMode == Doctrine::HYDRATE_RECORD) {
+        if ($hydrationMode == Doctrine_Query::HYDRATE_OBJECT) {
             $this->assertTrue($result[0][0] instanceof Doctrine_ORM_Entity);
             $this->assertTrue($result[1][0] instanceof Doctrine_ORM_Entity);
             // phonenumbers
@@ -729,9 +729,9 @@ class Orm_Hydration_BasicHydrationTest extends Doctrine_OrmTestCase
             $this->assertEquals(0, count($result[1][0]['articles'][0]['comments']));
             $this->assertTrue($result[1][0]['articles'][1]['comments'] instanceof Doctrine_ORM_Collection);
             $this->assertEquals(0, count($result[1][0]['articles'][1]['comments']));
-        } else if ($hydrationMode == Doctrine::HYDRATE_SCALAR) {
+        } else if ($hydrationMode == Doctrine_Query::HYDRATE_SCALAR) {
             //...
-        } else if ($hydrationMode == Doctrine::HYDRATE_ARRAY) {
+        } else if ($hydrationMode == Doctrine_Query::HYDRATE_ARRAY) {
             //...
             
             // empty comment collections
@@ -831,11 +831,11 @@ class Orm_Hydration_BasicHydrationTest extends Doctrine_OrmTestCase
         
         $result = $hydrator->hydrateResultSet($this->_createParserResult(
                 $stmt, $queryComponents, $tableAliasMap, $hydrationMode));
-        if ($hydrationMode == Doctrine::HYDRATE_ARRAY) {
+        if ($hydrationMode == Doctrine_Query::HYDRATE_ARRAY) {
             //var_dump($result);
         }
         
-        if ($hydrationMode == Doctrine::HYDRATE_ARRAY || $hydrationMode == Doctrine::HYDRATE_RECORD) {
+        if ($hydrationMode == Doctrine_Query::HYDRATE_ARRAY || $hydrationMode == Doctrine_Query::HYDRATE_OBJECT) {
             $this->assertEquals(2, count($result));
             $this->assertTrue(isset($result[0]['boards']));
             $this->assertEquals(3, count($result[0]['boards']));
@@ -843,15 +843,15 @@ class Orm_Hydration_BasicHydrationTest extends Doctrine_OrmTestCase
             $this->assertEquals(1, count($result[1]['boards']));
         }
         
-        if ($hydrationMode == Doctrine::HYDRATE_ARRAY) {
+        if ($hydrationMode == Doctrine_Query::HYDRATE_ARRAY) {
             $this->assertTrue(is_array($result));
             $this->assertTrue(is_array($result[0]));
             $this->assertTrue(is_array($result[1]));
-        } else if ($hydrationMode == Doctrine::HYDRATE_RECORD) {
+        } else if ($hydrationMode == Doctrine_Query::HYDRATE_OBJECT) {
             $this->assertTrue($result instanceof Doctrine_ORM_Collection);
             $this->assertTrue($result[0] instanceof Doctrine_ORM_Entity);
             $this->assertTrue($result[1] instanceof Doctrine_ORM_Entity);
-        } else if ($hydrationMode == Doctrine::HYDRATE_SCALAR) {
+        } else if ($hydrationMode == Doctrine_Query::HYDRATE_SCALAR) {
             //...
         }
 
@@ -922,16 +922,16 @@ class Orm_Hydration_BasicHydrationTest extends Doctrine_OrmTestCase
         
         if ($name == 'result1') {
             $result = $hydrator->hydrateResultSet($this->_createParserResult(
-                $stmt, $queryComponents, $tableAliasMap, Doctrine::HYDRATE_SINGLE_SCALAR));
+                $stmt, $queryComponents, $tableAliasMap, Doctrine_Query::HYDRATE_SINGLE_SCALAR));
             $this->assertEquals('romanb', $result);
         } else if ($name == 'result2') {
             $result = $hydrator->hydrateResultSet($this->_createParserResult(
-                $stmt, $queryComponents, $tableAliasMap, Doctrine::HYDRATE_SINGLE_SCALAR));
+                $stmt, $queryComponents, $tableAliasMap, Doctrine_Query::HYDRATE_SINGLE_SCALAR));
             $this->assertEquals(1, $result);
         } else if ($name == 'result3' || $name == 'result4') {
             try {
                 $result = $hydrator->hydrateResultSet($this->_createParserResult(
-                    $stmt, $queryComponents, $tableAliasMap, Doctrine::HYDRATE_SINGLE_SCALAR));
+                    $stmt, $queryComponents, $tableAliasMap, Doctrine_Query::HYDRATE_SINGLE_SCALAR));
                 $this->fail();
             } catch (Doctrine_ORM_Exceptions_HydrationException $ex) {}
         }

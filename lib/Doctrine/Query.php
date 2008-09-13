@@ -20,6 +20,8 @@
  * <http://www.phpdoctrine.org>.
  */
 
+#namespace Doctrine::ORM;
+
 /**
  * A Doctrine_Query object represents a DQL query. It is used to query databases for
  * data in an object-oriented fashion. A DQL query understands relations and inheritance
@@ -36,6 +38,28 @@
  */
 class Doctrine_Query extends Doctrine_Query_Abstract
 {
+    /* Hydration mode constants */
+    /**
+     * Hydrates an object graph. This is the default behavior.
+     */
+    const HYDRATE_OBJECT = 1;
+    /**
+     * Hydrates an array graph.
+     */
+    const HYDRATE_ARRAY = 2;
+    /**
+     * Hydrates a flat, rectangular result set with scalar values.
+     */
+    const HYDRATE_SCALAR = 3;
+    /**
+     * Hydrates a single scalar value.
+     */
+    const HYDRATE_SINGLE_SCALAR = 4;
+    /**
+     * Hydrates nothing.
+     */
+    const HYDRATE_NONE = 5;
+    
     /**
      * @var Doctrine_EntityManager The entity manager used by this query object.
      */
@@ -54,7 +78,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract
     /**
      * @var string $_sql Cached SQL query.
      */
-    protected $_sql = null;
+    protected $_sql;
 
 
     // Caching Stuff

@@ -89,14 +89,14 @@ class Doctrine_ORM_Internal_Hydration_StandardHydrator extends Doctrine_ORM_Inte
         
         $stmt = $parserResult->getDatabaseStatement();
         
-        if ($hydrationMode == Doctrine::HYDRATE_NONE) {
+        if ($hydrationMode == Doctrine_Query::HYDRATE_NONE) {
             return $stmt->fetchAll(PDO::FETCH_NUM);
         }
         
         $this->_tableAliases = $parserResult->getTableToClassAliasMap();
         $this->_queryComponents = $parserResult->getQueryComponents();
 
-        if ($hydrationMode == Doctrine::HYDRATE_ARRAY) {
+        if ($hydrationMode == Doctrine_Query::HYDRATE_ARRAY) {
             $driver = new Doctrine_ORM_Internal_Hydration_ArrayDriver();
         } else {
             $driver = new Doctrine_ORM_Internal_Hydration_ObjectDriver($this->_em);
@@ -123,7 +123,7 @@ class Doctrine_ORM_Internal_Hydration_StandardHydrator extends Doctrine_ORM_Inte
         $idTemplate = array();
         
         // Holds the resulting hydrated data structure
-        if ($parserResult->isMixedQuery() || $hydrationMode == Doctrine::HYDRATE_SCALAR) {
+        if ($parserResult->isMixedQuery() || $hydrationMode == Doctrine_Query::HYDRATE_SCALAR) {
             $result = array();
         } else {
             $result = $driver->getElementCollection($rootEntityName);
@@ -145,7 +145,7 @@ class Doctrine_ORM_Internal_Hydration_StandardHydrator extends Doctrine_ORM_Inte
         
         $cache = array();
         // Evaluate HYDRATE_SINGLE_SCALAR
-        if ($hydrationMode == Doctrine::HYDRATE_SINGLE_SCALAR) {
+        if ($hydrationMode == Doctrine_Query::HYDRATE_SINGLE_SCALAR) {
             $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
             if (count($result) > 1 || count($result[0]) > 1) {
                 throw Doctrine_ORM_Exceptions_HydrationException::nonUniqueResult();
@@ -154,9 +154,9 @@ class Doctrine_ORM_Internal_Hydration_StandardHydrator extends Doctrine_ORM_Inte
         }
         
         // Process result set
-        while ($data = $stmt->fetch(Doctrine::FETCH_ASSOC)) {
+        while ($data = $stmt->fetch(PDO::FETCH_ASSOC)) {
             // Evaluate HYDRATE_SCALAR
-            if ($hydrationMode == Doctrine::HYDRATE_SCALAR) {
+            if ($hydrationMode == Doctrine_Query::HYDRATE_SCALAR) {
                 $result[] = $this->_gatherScalarRowData($data, $cache);
                 continue;      
             }

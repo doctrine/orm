@@ -54,7 +54,7 @@ abstract class Doctrine_ORM_Internal_Hydration_AbstractHydrator
     /**
      * The current hydration mode.
      */
-    protected $_hydrationMode = Doctrine::HYDRATE_RECORD;
+    protected $_hydrationMode = Doctrine_Query::HYDRATE_OBJECT;
     
     protected $_nullObject;
     
