@@ -247,8 +247,7 @@ class Doctrine_ORM_Internal_Hydration_StandardHydrator extends Doctrine_ORM_Inte
                         }
                     } else if ( ! isset($baseElement[$relationAlias])) {
                         if ($hydrationMode == Doctrine_Query::HYDRATE_ARRAY) {
-                            $array = array();
-                            $driver->setRelatedElement($baseElement, $relationAlias, $array);
+                            $baseElement[$relationAlias] = array();
                         } else {
                             $driver->setRelatedElement($baseElement, $relationAlias,
                                     $driver->getElementCollection($entityName));
@@ -268,9 +267,9 @@ class Doctrine_ORM_Internal_Hydration_StandardHydrator extends Doctrine_ORM_Inte
                 }
                 
                 if ($hydrationMode == Doctrine_Query::HYDRATE_ARRAY) {
-                    $coll =& $driver->getReferenceValue($baseElement, $relationAlias);
+                    $coll =& $baseElement[$relationAlias];
                 } else {
-                    $coll = $driver->getReferenceValue($baseElement, $relationAlias);
+                    $coll = $baseElement->_internalGetReference($relationAlias);
                 }
                 
                 if ($coll !== null) {
