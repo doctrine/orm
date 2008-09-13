@@ -23,8 +23,7 @@
 
 #use Doctrine::Common::Configuration;
 #use Doctrine::Common::EventManager;
-#use Doctrine::Common::NullObject;
-#use Doctrine::DBAL::Connections::Connection;
+#use Doctrine::DBAL::Connection;
 #use Doctrine::ORM::Exceptions::EntityManagerException;
 #use Doctrine::ORM::Internal::UnitOfWork;
 #use Doctrine::ORM::Mapping::ClassMetadata;
@@ -355,6 +354,12 @@ class Doctrine_ORM_EntityManager
         $this->_flushMode = $flushMode;
     }
     
+    /**
+     * Checks whether the given value is a valid flush mode.
+     *
+     * @param string $value
+     * @return boolean
+     */
     private function _isFlushMode($value)
     {
         return $value == self::FLUSHMODE_AUTO ||
@@ -395,34 +400,6 @@ class Doctrine_ORM_EntityManager
     public function close()
     {
         $this->_closed = true;
-    }
-    
-    /**
-     * Gets the result cache driver used by the EntityManager.
-     *
-     * @return Doctrine::ORM::Cache::CacheDriver The cache driver.
-     */
-    public function getResultCacheDriver()
-    {
-        if ( ! $this->getAttribute(Doctrine::ATTR_RESULT_CACHE)) {
-            throw new Doctrine_Exception('Result Cache driver not initialized.');
-        }
-        
-        return $this->getAttribute(Doctrine::ATTR_RESULT_CACHE);
-    }
-
-    /**
-     * getQueryCacheDriver
-     *
-     * @return Doctrine_Cache_Interface
-     */
-    public function getQueryCacheDriver()
-    {
-        if ( ! $this->getAttribute(Doctrine::ATTR_QUERY_CACHE)) {
-            throw new Doctrine_Exception('Query Cache driver not initialized.');
-        }
-        
-        return $this->getAttribute(Doctrine::ATTR_QUERY_CACHE);
     }
     
     /**
@@ -649,6 +626,9 @@ class Doctrine_ORM_EntityManager
         return $this->_config;
     }
     
+    /**
+     * Throws an exception if the EntityManager is closed or currently not active.
+     */
     private function _errorIfNotActiveOrClosed()
     {
         if ( ! $this->isActive() || $this->_closed) {
@@ -702,9 +682,8 @@ class Doctrine_ORM_EntityManager
             Doctrine_Common_EventManager $eventManager = null)
     {
         if (is_array($conn)) {
-            $connFactory = new Doctrine_DBAL_DriverManager();
-            $conn = $connFactory->getConnection($conn, $config, $eventManager);
-        } else if ( ! $conn instanceof Doctrine_Connection) {
+            $conn = Doctrine_DBAL_DriverManager::getConnection($conn, $config, $eventManager);
+        } else if ( ! $conn instanceof Doctrine_DBAL_Connection) {
             throw new Doctrine_Exception("Invalid parameter '$conn'.");
         }
         
@@ -722,7 +701,9 @@ class Doctrine_ORM_EntityManager
     }
     
     /**
-     * Gets the currently active EntityManager.
+     * Static lookup to get the currently active EntityManager.
+     * This is used in the Entity constructor as well as unserialize() to connect
+     * the Entity with an EntityManager.
      *
      * @return Doctrine::ORM::EntityManager
      */

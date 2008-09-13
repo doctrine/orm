@@ -26,7 +26,6 @@
  * correct order in which changes to entities need to be persisted.
  *
  * @since 2.0
- * @todo Rename to: CommitOrderCalculator
  * @author Roman Borschel <roman@code-factory.org> 
  */
 class Doctrine_ORM_Internal_CommitOrderCalculator
@@ -88,16 +87,34 @@ class Doctrine_ORM_Internal_CommitOrderCalculator
         return $this->_sorted;
     }
     
+    /**
+     * Adds a node to consider when ordering.
+     *
+     * @param mixed $key Somme arbitrary key for the node (must be unique!).
+     * @param unknown_type $node
+     */
     public function addNode($key, $node)
     {
         $this->_nodes[$key] = $node;
     }
     
+    /**
+     * Enter description here...
+     *
+     * @param unknown_type $key
+     * @param unknown_type $item
+     */
     public function addNodeWithItem($key, $item)
     {
         $this->_nodes[$key] = new Doctrine_ORM_Internal_CommitOrderNode($item, $this);
     }
     
+    /**
+     * Enter description here...
+     *
+     * @param unknown_type $key
+     * @return unknown
+     */
     public function getNodeForKey($key)
     {
         return $this->_nodes[$key];
@@ -108,12 +125,16 @@ class Doctrine_ORM_Internal_CommitOrderCalculator
         return isset($this->_nodes[$key]);
     }
     
+    /**
+     * Clears the current graph and the last result.
+     *
+     * @return void
+     */
     public function clear()
     {
         $this->_nodes = array();
         $this->_sorted = array();
     }
-    
     
     public function getNextTime()
     {

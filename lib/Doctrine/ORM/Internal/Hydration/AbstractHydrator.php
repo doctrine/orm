@@ -62,9 +62,9 @@ abstract class Doctrine_ORM_Internal_Hydration_AbstractHydrator
 
 
     /**
-     * constructor
+     * Constructor.
      *
-     * @param Doctrine_Connection|null $connection
+     * @param Doctrine::ORM::EntityManager $em The EntityManager to use during hydration.
      */
     public function __construct(Doctrine_ORM_EntityManager $em)
     {
@@ -134,20 +134,14 @@ abstract class Doctrine_ORM_Internal_Hydration_AbstractHydrator
     }
 
     /**
-     * hydrateResultSet
-     *
      * Processes data returned by statement object.
      *
-     * This is method defines the core of Doctrine object population algorithm
-     * hence this method strives to be as fast as possible.
-     *
-     * The key idea is the loop over the rowset only once doing all the needed operations
-     * within this massive loop.
+     * This is method defines the core of Doctrine object/array population algorithm.
      *
      * @param mixed $stmt PDOStatement
      * @param integer $hydrationMode Doctrine processing mode to be used during hydration process.
      *                               One of the Doctrine::HYDRATE_* constants.
-     * @return mixed Doctrine_Collection|array
+     * @return mixed
      */
     abstract public function hydrateResultSet($parserResult);
 }

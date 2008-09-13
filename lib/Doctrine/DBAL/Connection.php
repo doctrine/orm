@@ -26,9 +26,9 @@
 #use Doctrine::DBAL::Exceptions::ConnectionException;
 
 /**
- * A wrapper around a Doctrine::DBAL::Connection that adds features like
- * events, transaction isolation levels, configuration, emulated transaction nesting
- * and more.
+ * A wrapper around a Doctrine::DBAL::Driver::Connection that adds features like
+ * events, transaction isolation levels, configuration, emulated transaction nesting,
+ * lazy connecting and more.
  *
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @since       1.0
@@ -53,13 +53,24 @@
  * 
  * Doctrine::DBAL could ship with a simple standard broker that uses a primitive
  * round-robin approach to distribution. User can provide its own brokers.
- * @todo Rename to ConnectionWrapper
  */
 class Doctrine_DBAL_Connection
 {
+    /**
+     * Constant for transaction isolation level READ UNCOMMITTED.
+     */
     const TRANSACTION_READ_UNCOMMITTED = 1;
+    /**
+     * Constant for transaction isolation level READ COMMITTED.
+     */
     const TRANSACTION_READ_COMMITTED = 2;
+    /**
+     * Constant for transaction isolation level REPEATABLE READ.
+     */
     const TRANSACTION_REPEATABLE_READ = 3;
+    /**
+     * Constant for transaction isolation level SERIALIZABLE.
+     */
     const TRANSACTION_SERIALIZABLE = 4;
     
     /**
@@ -84,30 +95,11 @@ class Doctrine_DBAL_Connection
     protected $_eventManager;
     
     /**
-     * The name of this connection driver.
-     *
-     * @var string $driverName                  
-     */
-    protected $_driverName;
-    
-    /**
      * Whether or not a connection has been established.
      *
      * @var boolean               
      */
     protected $_isConnected = false;
-    
-    /**
-     * Boolean flag that indicates whether identifiers should get quoted.
-     *
-     * @var boolean
-     */
-    protected $_quoteIdentifiers;
-    
-    /**
-     * @var array
-     */
-    protected $_serverInfo = array();
     
     /**
      * The transaction nesting level.
@@ -131,16 +123,6 @@ class Doctrine_DBAL_Connection
     protected $_params = array();
     
     /**
-     * List of all available drivers.
-     * 
-     * @var array $availableDrivers
-     * @todo Move elsewhere.       
-     */
-    private static $_availableDrivers = array(
-            'Mysql', 'Pgsql', 'Oracle', 'Informix', 'Mssql', 'Sqlite', 'Firebird'
-            );
-    
-    /**
      * The query count. Represents the number of executed database queries by the connection.
      *
      * @var integer
@@ -154,13 +136,6 @@ class Doctrine_DBAL_Connection
      * @var Doctrine::DBAL::Platforms::DatabasePlatform
      */
     protected $_platform;
-
-    /**
-     * The transaction object.
-     *
-     * @var Doctrine::DBAL::Transaction
-     */
-    protected $_transaction;
     
     /**
      * The schema manager.
@@ -168,6 +143,13 @@ class Doctrine_DBAL_Connection
      * @var Doctrine::DBAL::Schema::SchemaManager
      */
     protected $_schemaManager;
+    
+    /**
+     * The used DBAL driver.
+     *
+     * @var Doctrine::DBAL::Driver
+     */
+    protected $_driver;
     
     /**
      * Constructor.
@@ -229,36 +211,6 @@ class Doctrine_DBAL_Connection
     }
     
     /**
-     * Returns an array of available PDO drivers
-     * @todo Move elsewhere.
-     */
-    public static function getAvailableDrivers()
-    {
-        return PDO::getAvailableDrivers();
-    }
-
-    /**
-     * Gets the name of the instance driver
-     *
-     * @return void
-     */
-    public function getDriverName()
-    {
-        return $this->_driverName;
-    }
-    
-    /**
-     * Gets the PDO handle used by the connection.
-     *
-     * @return PDO
-     */
-    public function getPdo()
-    {
-        $this->connect();
-        return $this->_conn;
-    }
-    
-    /**
      * Establishes the connection with the database.
      *
      * @return boolean
@@ -268,11 +220,6 @@ class Doctrine_DBAL_Connection
         if ($this->_isConnected) {
             return false;
         }
-
-        // TODO: the extension_loaded check can happen earlier, maybe in the factory
-        if ( ! extension_loaded('pdo')) {
-            throw new Doctrine_Connection_Exception("Couldn't locate driver named " . $e[0]);
-        }
         
         $driverOptions = isset($this->_params['driverOptions']) ?
                 $this->_params['driverOptions'] : array();
@@ -280,14 +227,13 @@ class Doctrine_DBAL_Connection
                 $this->_params['user'] : null;
         $password = isset($this->_params['password']) ?
                 $this->_params['password'] : null;
-        $this->_conn = new PDO(
-                $this->_constructPdoDsn(),
+        
+        $this->_conn = $this->_driver->connect(
+                $this->_params,
                 $user,
                 $password,
                 $driverOptions
                 );
-        $this->_conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-        $this->_conn->setAttribute(PDO::ATTR_CASE, PDO::CASE_LOWER);
 
         $this->_isConnected = true;
 
@@ -295,45 +241,13 @@ class Doctrine_DBAL_Connection
     }
     
     /**
-     * Establishes the connection with the database.
+     * Whether an actual connection to the database is established.
      *
      * @return boolean
      */
-    public function connect2()
+    public function isConnected()
     {
-        if ($this->_isConnected) {
-            return false;
-        }
-        
-        $driverOptions = isset($this->_params['driverOptions']) ?
-                $this->_params['driverOptions'] : array();
-        $user = isset($this->_params['user']) ?
-                $this->_params['user'] : null;
-        $password = isset($this->_params['password']) ?
-                $this->_params['password'] : null;
-                
-        $this->_conn = $this->_driver->connect($this->_params, $user, $password, $driverOptions);
-        
-        $this->_conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-        $this->_conn->setAttribute(PDO::ATTR_CASE, PDO::CASE_LOWER);
-
-        $this->_isConnected = true;
-
-        return true;
-    }
-    
-    /**
-     * Constructs the PDO DSN for use in the PDO constructor.
-     * Concrete connection implementations override this implementation to
-     * create the proper DSN.
-     * 
-     * @return string
-     * @todo make abstract, implement in subclasses.
-     * @todo throw different exception?
-     */
-    protected function _constructPdoDsn()
-    {
-        throw Doctrine_Exception::notImplemented('_constructPdoDsn', get_class($this));
+        return $this->_isConnected;
     }
 
     /**
@@ -463,15 +377,10 @@ class Doctrine_DBAL_Connection
      *   + pgsql
      *   + sqlite
      *
-     * InterBase doesn't seem to be able to use delimited identifiers
-     * via PHP 4.  They work fine under PHP 5.
-     *
      * @param string $str           identifier name to be quoted
      * @param bool $checkOption     check the 'quote_identifier' option
      *
      * @return string               quoted identifier string
-     * @todo Moved to DatabasePlatform
-     * @deprecated
      */
     public function quoteIdentifier($str)
     {
@@ -479,7 +388,7 @@ class Doctrine_DBAL_Connection
     }
 
     /**
-     * Quotes given input parameter.
+     * Quotes a given input parameter.
      *
      * @param mixed $input  Parameter to be quoted.
      * @param string $type  Type of the parameter.
@@ -577,9 +486,10 @@ class Doctrine_DBAL_Connection
     }
     
     /**
-     * prepare
+     * Prepares an SQL statement.
      *
      * @param string $statement
+     * @return Doctrine::DBAL::Statement
      */
     public function prepare($statement)
     {
@@ -675,7 +585,6 @@ class Doctrine_DBAL_Connection
      * Returns the number of queries executed by the connection.
      *
      * @return integer
-     * @todo Better name: getQueryCount()
      */
     public function getQueryCount()
     {
@@ -701,26 +610,8 @@ class Doctrine_DBAL_Connection
      */
     public function setTransactionIsolation($level)
     {
-        $sql = "";
-        switch ($level) {
-            case Doctrine_DBAL_Connection::TRANSACTION_READ_UNCOMMITTED:
-                $sql = $this->_platform->getSetTransactionIsolationReadUncommittedSql();
-                break;
-            case Doctrine_DBAL_Connection::TRANSACTION_READ_COMMITTED:
-                $sql = $this->_platform->getSetTransactionIsolationReadCommittedSql();
-                break;
-            case Doctrine_DBAL_Connection::TRANSACTION_REPEATABLE_READ:
-                $sql = $this->_platform->getSetTransactionIsolationRepeatableReadSql();
-                break;
-            case Doctrine_DBAL_Connection::TRANSACTION_SERIALIZABLE:
-                $sql = $this->_platform->getSetTransactionIsolationSerializableSql();
-                break;
-            default:
-                throw new Doctrine_Common_Exceptions_DoctrineException('isolation level is not supported: ' . $isolation);
-        }
         $this->_transactionIsolationLevel = $level;
-        
-        return $this->exec($sql);
+        return $this->exec($this->_platform->getSetTransactionIsolationSql($level));
     }
     
     /**
@@ -734,7 +625,7 @@ class Doctrine_DBAL_Connection
     }
 
     /**
-     * Returns the current total transaction nesting level.
+     * Returns the current transaction nesting level.
      *
      * @return integer  The nesting level. A value of 0 means theres no active transaction.
      */
@@ -785,10 +676,8 @@ class Doctrine_DBAL_Connection
      *
      * if trying to set a savepoint and there is no active transaction
      * a new transaction is being started.
-     *
-     * @param string $savepoint                 name of a savepoint to set
-     * @throws Doctrine_Transaction_Exception   if the transaction fails at database level
-     * @return integer                          current transaction nesting level
+     * 
+     * @return boolean
      */
     public function beginTransaction()
     {
@@ -804,10 +693,7 @@ class Doctrine_DBAL_Connection
      * progress or release a savepoint. This function may only be called when
      * auto-committing is disabled, otherwise it will fail.
      *
-     * @param string $savepoint                 name of a savepoint to release
-     * @throws Doctrine_Transaction_Exception   if the transaction fails at PDO level
-     * @throws Doctrine_Validator_Exception     if the transaction fails due to record validations
-     * @return boolean                          false if commit couldn't be performed, true otherwise
+     * @return boolean FALSE if commit couldn't be performed, TRUE otherwise
      */
     public function commit()
     {
@@ -972,7 +858,7 @@ class Doctrine_DBAL_Connection
     public function getSchemaManager()
     {
         if ( ! $this->_schemaManager) {
-            $this->_schemaManager = $this->_driver->getSchemaManager();
+            $this->_schemaManager = $this->_driver->getSchemaManager($this);
         }
         return $this->_schemaManager;
     }

@@ -126,7 +126,6 @@ class Doctrine_ORM_Internal_Hydration_ArrayDriver
     public function getLastKey(&$data)
     {
         end($data);
-        
         return key($data);
     }
     

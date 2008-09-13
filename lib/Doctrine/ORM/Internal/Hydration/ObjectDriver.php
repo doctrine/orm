@@ -19,6 +19,8 @@
  * <http://www.phpdoctrine.org>.
  */
 
+#namespace Doctrine::ORM::Internal::Hydration;
+
 /**
  * Hydration strategy used for creating graphs of entities.
  *
@@ -28,7 +30,6 @@
  * @version     $Revision$
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  * @author      Roman Borschel <roman@code-factory.org>
- * @todo Rename to ObjectDriver
  */
 class Doctrine_ORM_Internal_Hydration_ObjectDriver
 {

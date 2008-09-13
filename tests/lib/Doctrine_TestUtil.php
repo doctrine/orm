@@ -4,8 +4,6 @@ class Doctrine_TestUtil
 {    
     public static function getConnection()
     {
-        $connFactory = new Doctrine_DBAL_DriverManager();
-        
         if (isset($GLOBALS['db_type'], $GLOBALS['db_username'], $GLOBALS['db_password'],
                 $GLOBALS['db_host'], $GLOBALS['db_name'])) {
             $params = array(
@@ -24,7 +22,7 @@ class Doctrine_TestUtil
             );
         }
         
-        return $connFactory->getConnection($params);
+        return Doctrine_DBAL_DriverManager::getConnection($params);
     }
     /*
     public static function autoloadModel($className)

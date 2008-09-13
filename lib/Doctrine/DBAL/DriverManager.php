@@ -22,19 +22,19 @@
 #namespace Doctrine::DBAL;
 
 /**
- * Factory for creating dbms-specific Connection instances.
+ * Factory for creating Doctrine::DBAL::Connection instances.
  *
  * @author Roman Borschel <roman@code-factory.org>
  * @since 2.0
  */
-class Doctrine_DBAL_DriverManager
+final class Doctrine_DBAL_DriverManager
 {
     /**
      * List of supported drivers and their mappings to the driver class.
      *
      * @var array
      */
-     private $_drivers = array(
+     private static $_driverMap = array(
             'pdo_mysql'  => 'Doctrine_DBAL_Driver_PDOMySql_Driver',
             'pdo_sqlite' => 'Doctrine_DBAL_Driver_PDOSqlite_Driver',
             'pdo_pgsql'  => 'Doctrine_DBAL_Driver_PDOPgSql_Driver',
@@ -44,18 +44,53 @@ class Doctrine_DBAL_DriverManager
             'pdo_informix' => 'Doctrine_DBAL_Driver_PDOInformix_Driver',
             );
     
-    public function __construct()
-    {
-        
-    }
-    
+    private function __construct() {}
+            
     /**
-     * Creates a connection object with the specified parameters.
+     * Creates a connection object based on the specified parameters.
+     * This method returns a Doctrine::DBAL::Connection which wraps the underlying
+     * driver connection.
      *
-     * @param array $params
-     * @return Connection
+     * $params must contain at least one of the following.
+     * 
+     * Either 'driver' with one of the following values:
+     *     pdo_mysql
+     *     pdo_sqlite
+     *     pdo_pgsql
+     *     pdo_oracle
+     *     pdo_mssql
+     *     pdo_firebird
+     *     pdo_informix
+     * 
+     * OR 'driverClass' that contains the full class name (with namespace) of the
+     * driver class to instantiate.
+     * 
+     * Other (optional) parameters:
+     * 
+     * <b>user (string)</b>:
+     * The username to use when connecting. 
+     * 
+     * <b>password (string)</b>:
+     * The password to use when connecting.
+     * 
+     * <b>driverOptions (array)</b>:
+     * Any additional driver-specific options for the driver. These are just passed
+     * through to the driver.
+     * 
+     * <b>pdo</b>:
+     * You can pass an existing PDO instance through this parameter. The PDO
+     * instance will be wrapped in a Doctrine::DBAL::Connection.
+     * 
+     * <b>wrapperClass</b>:
+     * You may specify a custom wrapper class through the 'wrapperClass'
+     * parameter but this class MUST inherit from Doctrine::DBAL::Connection.
+     * 
+     * @param array $params The parameters.
+     * @param Doctrine::Common::Configuration The configuration to use.
+     * @param Doctrine::Common::EventManager The event manager to use.
+     * @return Doctrine::DBAL::Connection
      */
-    public function getConnection(array $params, Doctrine_Common_Configuration $config = null,
+    public static function getConnection(array $params, Doctrine_Common_Configuration $config = null,
             Doctrine_Common_EventManager $eventManager = null)
     {
         // create default config and event manager, if not set
@@ -72,18 +107,18 @@ class Doctrine_DBAL_DriverManager
         } else if (isset($params['pdo'])) {
             $params['driver'] = $params['pdo']->getAttribute(PDO::ATTR_DRIVER_NAME);
         } else {
-            $this->_checkParams($params);
+            self::_checkParams($params);
         }
         if (isset($params['driverClass'])) {
             $className = $params['driverClass'];
         } else {
-            $className = $this->_drivers[$params['driver']];
+            $className = self::$_driverMap[$params['driver']];
         }
         
         $driver = new $className();
         
         $wrapperClass = 'Doctrine_DBAL_Connection';
-        if (isset($params['wrapperClass'])) {
+        if (isset($params['wrapperClass']) && is_subclass_of($params['wrapperClass'], $wrapperClass)) {
             $wrapperClass = $params['wrapperClass'];
         }
         
@@ -95,7 +130,7 @@ class Doctrine_DBAL_DriverManager
      *
      * @param array $params
      */
-    private function _checkParams(array $params)
+    private static function _checkParams(array $params)
     {        
         // check existance of mandatory parameters
         
@@ -107,7 +142,7 @@ class Doctrine_DBAL_DriverManager
         // check validity of parameters
         
         // driver
-        if ( isset($params['driver']) && ! isset($this->_drivers[$params['driver']])) {
+        if ( isset($params['driver']) && ! isset(self::$_driverMap[$params['driver']])) {
             throw Doctrine_DBAL_Exceptions_DBALException::unknownDriver($params['driver']);
         }
     }
