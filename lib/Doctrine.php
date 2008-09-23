@@ -755,7 +755,7 @@ final class Doctrine
     /**
      * isValidModelClass
      *
-     * Checks if what is passed is a valid Doctrine_Entity
+     * Checks if what is passed is a valid Doctrine_ORM_Entity
      * Will load class in to memory in order to inflect it and find out information about the class
      *
      * @param   mixed   $class Can be a string named after the class, an instance of the class, or an instance of the class reflected
@@ -763,7 +763,7 @@ final class Doctrine
      */
     public static function isValidModelClass($class)
     {
-        if ($class instanceof Doctrine_Entity) {
+        if ($class instanceof Doctrine_ORM_Entity) {
             $class = get_class($class);
         }
 
@@ -774,10 +774,10 @@ final class Doctrine
         if ($class instanceof ReflectionClass) {
             // Skip the following classes
             // - abstract classes
-            // - not a subclass of Doctrine_Entity
+            // - not a subclass of Doctrine_ORM_Entity
             // - don't have a setTableDefinition method
             if (!$class->isAbstract() &&
-                $class->isSubClassOf('Doctrine_Entity')) {
+                $class->isSubClassOf('Doctrine_ORM_Entity')) {
 
                 return true;
             }

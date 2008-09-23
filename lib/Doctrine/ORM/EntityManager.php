@@ -243,7 +243,7 @@ class Doctrine_ORM_EntityManager
      */
     public function createQuery($dql = "")
     {
-        $query = new Doctrine_Query($this);
+        $query = new Doctrine_ORM_Query($this);
         if ( ! empty($dql)) {
             $query->setDql($dql);
         }

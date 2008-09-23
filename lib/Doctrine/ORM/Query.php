@@ -23,12 +23,10 @@
 #namespace Doctrine::ORM;
 
 /**
- * A Doctrine_Query object represents a DQL query. It is used to query databases for
+ * A Doctrine_ORM_Query object represents a DQL query. It is used to query databases for
  * data in an object-oriented fashion. A DQL query understands relations and inheritance
  * and is dbms independant.
  *
- * @package     Doctrine
- * @subpackage  Query
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @link        www.phpdoctrine.org
  * @since       1.0
@@ -36,7 +34,7 @@
  * @author      Guilherme Blanco <guilhermeblanco@hotmail.com>
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  */
-class Doctrine_Query extends Doctrine_Query_Abstract
+class Doctrine_ORM_Query extends Doctrine_ORM_Query_Abstract
 {
     /* Hydration mode constants */
     /**
@@ -61,17 +59,17 @@ class Doctrine_Query extends Doctrine_Query_Abstract
     const HYDRATE_NONE = 5;
     
     /**
-     * @var Doctrine_EntityManager The entity manager used by this query object.
+     * @var Doctrine_ORM_EntityManager The entity manager used by this query object.
      */
     protected $_entityManager;
 
     /**
-     * @var Doctrine_Hydrator   The hydrator object used to hydrate query results.
+     * @var Doctrine_ORM_Internal_Hydration   The hydrator object used to hydrate query results.
      */
     protected $_hydrator;
 
     /**
-     * @var Doctrine_Query_ParserResult  The parser result that holds DQL => SQL information.
+     * @var Doctrine_ORM_Query_ParserResult  The parser result that holds DQL => SQL information.
      */
     protected $_parserResult;
 
@@ -127,10 +125,10 @@ class Doctrine_Query extends Doctrine_Query_Abstract
 
 
     /**
-     * Returns a new Doctrine_Query object
+     * Returns a new Doctrine_ORM_Query object
      *
      * @param Doctrine_Connection $conn     optional connection parameter
-     * @return Doctrine_Query
+     * @return Doctrine_ORM_Query
      */
     public static function create($conn = null)
     {
@@ -139,7 +137,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract
 
 
     /**
-     * Retrieves the assocated Doctrine_EntityManager to this Doctrine_Query
+     * Retrieves the assocated Doctrine_EntityManager to this Doctrine_ORM_Query
      *
      * @return Doctrine_EntityManager
      */
@@ -152,7 +150,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract
     /**
      * Returns the hydrator associated with this query object
      *
-     * @return Doctrine_Hydrator The hydrator associated with this query object
+     * @return Doctrine_ORM_Internal_Hydration The hydrator associated with this query object
      */
     public function getHydrator()
     {
@@ -167,7 +165,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract
      * @return array
      */
     public function fetchArray($params = array()) {
-        return $this->execute($params, Doctrine::HYDRATE_ARRAY);
+        return $this->execute($params, self::HYDRATE_ARRAY);
     }
 
 
@@ -187,7 +185,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract
             return false;
         }
 
-        if ($collection instanceof Doctrine_Collection) {
+        if ($collection instanceof Doctrine_ORM_Collection) {
             return $collection->getFirst();
         } else if (is_array($collection)) {
             return array_shift($collection);
@@ -228,12 +226,12 @@ class Doctrine_Query extends Doctrine_Query_Abstract
     /**
      * Parses the DQL query, if necessary, and stores the parser result.
      *
-     * @return Doctrine_Query_ParserResult
+     * @return Doctrine_ORM_Query_ParserResult
      */
     public function parse()
     {
         if ($this->_state === self::STATE_DIRTY) {
-            $parser = new Doctrine_Query_Parser($this);
+            $parser = new Doctrine_ORM_Query_Parser($this);
             $this->_parserResult = $parser->parse();
             $this->_state = self::STATE_CLEAN;
         }
@@ -264,14 +262,14 @@ class Doctrine_Query extends Doctrine_Query_Abstract
 
             if ($cached === false) {
                 // Cache does not exist, we have to create it.
-                $result = $this->_execute($params, Doctrine::HYDRATE_ARRAY);
-                $queryResult = Doctrine_Query_CacheHandler::fromResultSet($this, $result);
+                $result = $this->_execute($params, self::HYDRATE_ARRAY);
+                $queryResult = Doctrine_ORM_Query_CacheHandler::fromResultSet($this, $result);
                 $cacheDriver->save($hash, $queryResult->toCachedForm(), $this->_resultCacheTTL);
 
                 return $result;
             } else {
                 // Cache exists, recover it and return the results.
-                $queryResult = Doctrine_Query_CacheHandler::fromCachedResult($this, $cached);
+                $queryResult = Doctrine_ORM_Query_CacheHandler::fromCachedResult($this, $cached);
 
                 return $queryResult->getResultSet();
             }
@@ -331,7 +329,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract
                 $cacheDriver->save($hash, $this->_parserResult->toCachedForm(), $this->_queryCacheTTL);
             } else {
                 // Cache exists, recover it and return the results.
-                $this->_parserResult = Doctrine_Query_CacheHandler::fromCachedQuery($this, $cached);
+                $this->_parserResult = Doctrine_ORM_Query_CacheHandler::fromCachedQuery($this, $cached);
 
                 $executor = $this->_parserResult->getSqlExecutor();
             }
@@ -348,7 +346,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract
         $params = $this->_prepareParams($params);
 
         // Double the params if we are using limit-subquery algorithm
-        // We always have an instance of Doctrine_Query_ParserResult on hands...
+        // We always have an instance of Doctrine_ORM_Query_ParserResult on hands...
         if ($this->_parserResult->isLimitSubqueryUsed() &&
             $this->_entityManager->getConnection()->getAttribute(Doctrine::ATTR_DRIVER_NAME) !== 'mysql') {
             $params = array_merge($params, $params);
@@ -376,12 +374,12 @@ class Doctrine_Query extends Doctrine_Query_Abstract
      * Defines a cache driver to be used for caching result sets.
      *
      * @param Doctrine_Cache_Interface|null $driver Cache driver
-     * @return Doctrine_Query
+     * @return Doctrine_ORM_Query
      */
     public function setResultCache($resultCache)
     {
         if ($resultCache !== null && ! ($resultCache instanceof Doctrine_Cache_Interface)) {
-            throw new Doctrine_Query_Exception(
+            throw new Doctrine_ORM_Query_Exception(
                 'Method setResultCache() accepts only an instance of Doctrine_Cache_Interface or null.'
             );
         }
@@ -399,7 +397,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract
      */
     public function getResultCache()
     {
-        if ($this->_resultCache instanceof Doctrine_Cache_Interface) {
+        if ($this->_resultCache instanceof Doctrine_ORM_Cache_Interface) {
             return $this->_resultCache;
         } else {
             return $this->_entityManager->getConnection()->getResultCacheDriver();
@@ -411,7 +409,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract
      * Defines how long the result cache will be active before expire.
      *
      * @param integer $timeToLive How long the cache entry is valid
-     * @return Doctrine_Query
+     * @return Doctrine_ORM_Query
      */
     public function setResultCacheLifetime($timeToLive)
     {
@@ -440,7 +438,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract
      * Defines if the resultset cache is active or not.
      *
      * @param boolean $expire Whether or not to force resultset cache expiration.
-     * @return Doctrine_Query
+     * @return Doctrine_ORM_Query
      */
     public function setExpireResultCache($expire = true)
     {
@@ -465,13 +463,13 @@ class Doctrine_Query extends Doctrine_Query_Abstract
      * Defines a cache driver to be used for caching queries.
      *
      * @param Doctrine_Cache_Interface|null $driver Cache driver
-     * @return Doctrine_Query
+     * @return Doctrine_ORM_Query
      */
     public function setQueryCache($queryCache)
     {
-        if ($queryCache !== null && ! ($queryCache instanceof Doctrine_Cache_Interface)) {
-            throw new Doctrine_Query_Exception(
-                'Method setResultCache() accepts only an instance of Doctrine_Cache_Interface or null.'
+        if ($queryCache !== null && ! ($queryCache instanceof Doctrine_ORM_Cache_Interface)) {
+            throw new Doctrine_ORM_Query_Exception(
+                'Method setResultCache() accepts only an instance of Doctrine_ORM_Cache_Interface or null.'
             );
         }
 
@@ -488,7 +486,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract
      */
     public function getQueryCache()
     {
-        if ($this->_queryCache instanceof Doctrine_Cache_Interface) {
+        if ($this->_queryCache instanceof Doctrine_ORM_Cache_Interface) {
             return $this->_queryCache;
         } else {
             return $this->_entityManager->getConnection()->getQueryCacheDriver();
@@ -500,7 +498,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract
      * Defines how long the query cache will be active before expire.
      *
      * @param integer $timeToLive How long the cache entry is valid
-     * @return Doctrine_Query
+     * @return Doctrine_ORM_Query
      */
     public function setQueryCacheLifetime($timeToLive)
     {
@@ -529,7 +527,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract
      * Defines if the query cache is active or not.
      *
      * @param boolean $expire Whether or not to force query cache expiration.
-     * @return Doctrine_Query
+     * @return Doctrine_ORM_Query
      */
     public function setExpireQueryCache($expire = true)
     {
@@ -555,7 +553,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract
      *
      * @param integer $hydrationMode Doctrine processing mode to be used during hydration process.
      *                               One of the Doctrine::HYDRATE_* constants.
-     * @return Doctrine_Query
+     * @return Doctrine_ORM_Query
      */
     public function setHydrationMode($hydrationMode)
     {
@@ -616,7 +614,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract
     {
         $result = $this->execute(array(), $hydrationMode);
         if (count($result) > 1) {
-            throw Doctrine_Query_Exception::nonUniqueResult();
+            throw Doctrine_ORM_Query_Exception::nonUniqueResult();
         }
         
         return is_array($result) ? array_shift($result) : $result->getFirst();
