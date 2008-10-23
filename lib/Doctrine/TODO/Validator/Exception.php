@@ -79,7 +79,7 @@ class Doctrine_Validator_Exception extends Doctrine_Exception implements Countab
     {
         $message = "";
         foreach ($this->invalid as $record) {
-           $message .= "Validaton error in class " . get_class($record) . " ";
+           $message .= "Validation error in class " . get_class($record) . " ";
         }
         return $message;
     }
