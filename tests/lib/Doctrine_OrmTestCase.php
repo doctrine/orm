@@ -15,7 +15,7 @@ class Doctrine_OrmTestCase extends Doctrine_TestCase
         if (isset($this->sharedFixture['em'])) {
             $this->_em = $this->sharedFixture['em'];
         } else {
-            $config = new Doctrine_Common_Configuration();
+            $config = new Doctrine_ORM_Configuration();
             $eventManager = new Doctrine_Common_EventManager();
             $connectionOptions = array(
                 'driverClass' => 'Doctrine_DriverMock',

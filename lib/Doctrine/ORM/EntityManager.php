@@ -151,7 +151,7 @@ class Doctrine_ORM_EntityManager
      * @param Doctrine_Connection $conn
      * @param string $name
      */
-    protected function __construct(Doctrine_DBAL_Connection $conn, $name, Doctrine_Common_Configuration $config,
+    protected function __construct(Doctrine_DBAL_Connection $conn, $name, Doctrine_ORM_Configuration $config,
             Doctrine_Common_EventManager $eventManager)
     {
         $this->_conn = $conn;
@@ -722,7 +722,7 @@ class Doctrine_ORM_EntityManager
      * @param EventManager $eventManager The EventManager instance to use.
      * @return EntityManager The created EntityManager.
      */
-    public static function create($conn, $name, Doctrine_Common_Configuration $config = null,
+    public static function create($conn, $name, Doctrine_ORM_Configuration $config = null,
             Doctrine_Common_EventManager $eventManager = null)
     {
         if (is_array($conn)) {
@@ -732,7 +732,7 @@ class Doctrine_ORM_EntityManager
         }
         
         if (is_null($config)) {
-            $config = new Doctrine_Common_Configuration();
+            $config = new Doctrine_ORM_Configuration();
         }
         if (is_null($eventManager)) {
             $eventManager = new Doctrine_Common_EventManager();

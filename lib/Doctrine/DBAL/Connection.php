@@ -21,7 +21,6 @@
 
 #namespace Doctrine\DBAL;
 
-#use Doctrine\Common\Configuration;
 #use Doctrine\Common\EventManager;
 #use Doctrine\DBAL\Exceptions\ConnectionException;
 
@@ -83,7 +82,7 @@ class Doctrine_DBAL_Connection
     /**
      * The Configuration.
      *
-     * @var Doctrine\Common\Configuration
+     * @var Doctrine\DBAL\Configuration
      */
     protected $_config;
     
@@ -157,7 +156,7 @@ class Doctrine_DBAL_Connection
      * @param array $params  The connection parameters.
      */
     public function __construct(array $params, Doctrine_DBAL_Driver $driver,
-            Doctrine_Common_Configuration $config = null,
+            Doctrine_DBAL_Configuration $config = null,
             Doctrine_Common_EventManager $eventManager = null)
     {
         $this->_driver = $driver;
@@ -170,7 +169,7 @@ class Doctrine_DBAL_Connection
         
         // Create default config and event manager if none given
         if ( ! $config) {
-            $this->_config = new Doctrine_Common_Configuration();
+            $this->_config = new Doctrine_DBAL_Configuration();
         }
         if ( ! $eventManager) {
             $this->_eventManager = new Doctrine_Common_EventManager();

@@ -19,9 +19,7 @@
  * <http://www.phpdoctrine.org>.
  */
 
-#namespace Doctrine::Common;
-
-#use Doctrine::Common::NullObject;
+#namespace Doctrine\DBAL;
 
 /**
  * The Configuration is the container for all configuration options of Doctrine.
@@ -33,7 +31,7 @@
  * @author Roman Borschel <roman@code-factory.org>
  * @since 2.0
  */
-class Doctrine_Common_Configuration
+class Doctrine_DBAL_Configuration
 {
     /**
      * The attributes that are contained in the configuration.
@@ -41,21 +39,20 @@ class Doctrine_Common_Configuration
      *
      * @var array
      */
-    private $_attributes = array(
-            'quoteIdentifiers' => false,
-            'indexNameFormat' => '%s_idx',
-            'sequenceNameFormat' => '%s_seq',
-            'tableNameFormat' => '%s',
-            'resultCacheImpl' => null,
-            'queryCacheImpl' => null,
-            'metadataCacheImpl' => null,
-        );
+    protected $_attributes = array();
     
     /**
      * Creates a new configuration that can be used for Doctrine.
      */
     public function __construct()
-    {}
+    {
+        $this->_attributes = array(
+            'quoteIdentifiers' => false,
+            'indexNameFormat' => '%s_idx',
+            'sequenceNameFormat' => '%s_seq',
+            'tableNameFormat' => '%s'
+        );
+    }
     
     public function getQuoteIdentifiers()
     {
@@ -100,40 +97,10 @@ class Doctrine_Common_Configuration
         $this->_attributes['tableNameFormat'] = $format;
     }
     
-    public function getResultCacheImpl()
-    {
-        return $this->_attributes['resultCacheImpl'];
-    }
-    
-    public function setResultCacheImpl(Doctrine_Cache_Interface $cacheImpl)
-    {
-        $this->_attributes['resultCacheImpl'] = $cacheImpl;
-    }
-    
-    public function getQueryCacheImpl()
-    {
-        return $this->_attributes['queryCacheImpl'];
-    }
-    
-    public function setQueryCacheImpl(Doctrine_Cache_Interface $cacheImpl)
-    {
-        $this->_attributes['queryCacheImpl'] = $cacheImpl;
-    }
-    
-    public function getMetadataCacheImpl()
-    {
-        return $this->_attributes['metadataCacheImpl'];
-    }
-    
-    public function setMetadataCacheImpl(Doctrine_Cache_Interface $cacheImpl)
-    {
-        $this->_attributes['metadataCacheImpl'] = $cacheImpl;
-    }
-    
     public function setCustomTypes(array $types)
     {
         foreach ($types as $name => $typeClassName) {
-            Doctrine_DataType::addCustomType($name, $typeClassName);
+            Doctrine_DBAL_Types_Type::addCustomType($name, $typeClassName);
         }
     }
     
