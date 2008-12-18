@@ -33,6 +33,7 @@
  * @version     $Revision: 3938 $
  * @author      Guilherme Blanco <guilhermeblanco@hotmail.com>
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
+ * @author      Roman Borschel <roman@code-factory.org>
  */
 class Doctrine_ORM_Query extends Doctrine_ORM_Query_Abstract
 {
@@ -74,9 +75,11 @@ class Doctrine_ORM_Query extends Doctrine_ORM_Query_Abstract
     protected $_parserResult;
 
     /**
-     * @var string $_sql Cached SQL query.
+     * A set of query hints.
+     *
+     * @var array
      */
-    protected $_sql;
+    protected $_hints = array();
 
 
     // Caching Stuff
@@ -114,7 +117,11 @@ class Doctrine_ORM_Query extends Doctrine_ORM_Query_Abstract
 
     // End of Caching Stuff
 
-
+    /**
+     * Initializes a new instance of the Query class.
+     *
+     * @param EntityManager $entityManager
+     */
     public function __construct(Doctrine_ORM_EntityManager $entityManager)
     {
         $this->_entityManager = $entityManager;
@@ -123,21 +130,8 @@ class Doctrine_ORM_Query extends Doctrine_ORM_Query_Abstract
         $this->free();
     }
 
-
     /**
-     * Returns a new Doctrine_ORM_Query object
-     *
-     * @param Doctrine_Connection $conn     optional connection parameter
-     * @return Doctrine_ORM_Query
-     */
-    public static function create($conn = null)
-    {
-        return new self($conn);
-    }
-
-
-    /**
-     * Retrieves the assocated Doctrine_EntityManager to this Doctrine_ORM_Query
+     * Retrieves the assocated EntityManager to this Doctrine_ORM_Query
      *
      * @return Doctrine_EntityManager
      */
@@ -145,7 +139,6 @@ class Doctrine_ORM_Query extends Doctrine_ORM_Query_Abstract
     {
         return $this->_entityManager;
     }
-
 
     /**
      * Returns the hydrator associated with this query object
@@ -157,7 +150,6 @@ class Doctrine_ORM_Query extends Doctrine_ORM_Query_Abstract
         return $this->_hydrator;
     }
 
-
     /**
      * Convenience method to execute using array fetching as hydration mode.
      *
@@ -167,7 +159,6 @@ class Doctrine_ORM_Query extends Doctrine_ORM_Query_Abstract
     public function fetchArray($params = array()) {
         return $this->execute($params, self::HYDRATE_ARRAY);
     }
-
 
     /**
      * Convenience method to execute the query and return the first item
@@ -194,7 +185,6 @@ class Doctrine_ORM_Query extends Doctrine_ORM_Query_Abstract
         return false;
     }
 
-
     /**
      * Query the database with DQL (Doctrine Query Language).
      *
@@ -210,7 +200,6 @@ class Doctrine_ORM_Query extends Doctrine_ORM_Query_Abstract
         return $this->execute($params, $hydrationMode);
     }
 
-
     /**
      * Builds the sql query from the given parameters and applies things such as
      * column aggregation inheritance and limit subqueries if needed
@@ -221,7 +210,6 @@ class Doctrine_ORM_Query extends Doctrine_ORM_Query_Abstract
     {
         return $this->parse()->getSqlExecutor()->getSqlStatements();
     }
-
 
     /**
      * Parses the DQL query, if necessary, and stores the parser result.
@@ -238,7 +226,6 @@ class Doctrine_ORM_Query extends Doctrine_ORM_Query_Abstract
 
         return $this->_parserResult;
     }
-
 
     /**
      * Executes the query and populates the data set.
@@ -278,7 +265,6 @@ class Doctrine_ORM_Query extends Doctrine_ORM_Query_Abstract
         return $this->_execute($params, $hydrationMode);
     }
 
-
     /**
      * _execute
      *
@@ -303,7 +289,6 @@ class Doctrine_ORM_Query extends Doctrine_ORM_Query_Abstract
 
         return $this->_hydrator->hydrateResultSet($stmt, $hydrationMode);
     }
-
 
     /**
      * _execute2
@@ -356,7 +341,6 @@ class Doctrine_ORM_Query extends Doctrine_ORM_Query_Abstract
         return $executor->execute($this->_conn, $params);
     }
 
-
     /**
      * @nodoc
      */
@@ -368,7 +352,6 @@ class Doctrine_ORM_Query extends Doctrine_ORM_Query_Abstract
         // Convert enum params
         return $this->convertEnums($params);
     }
-
 
     /**
      * Defines a cache driver to be used for caching result sets.
@@ -389,7 +372,6 @@ class Doctrine_ORM_Query extends Doctrine_ORM_Query_Abstract
         return $this;
     }
 
-
     /**
      * Returns the cache driver used for caching result sets.
      *
@@ -403,7 +385,6 @@ class Doctrine_ORM_Query extends Doctrine_ORM_Query_Abstract
             return $this->_entityManager->getConnection()->getResultCacheDriver();
         }
     }
-
 
     /**
      * Defines how long the result cache will be active before expire.
@@ -422,7 +403,6 @@ class Doctrine_ORM_Query extends Doctrine_ORM_Query_Abstract
         return $this;
     }
 
-
     /**
      * Retrieves the lifetime of resultset cache.
      *
@@ -432,7 +412,6 @@ class Doctrine_ORM_Query extends Doctrine_ORM_Query_Abstract
     {
         return $this->_resultCacheTTL;
     }
-
 
     /**
      * Defines if the resultset cache is active or not.
@@ -447,7 +426,6 @@ class Doctrine_ORM_Query extends Doctrine_ORM_Query_Abstract
         return $this;
     }
 
-
     /**
      * Retrieves if the resultset cache is active or not.
      *
@@ -457,7 +435,6 @@ class Doctrine_ORM_Query extends Doctrine_ORM_Query_Abstract
     {
         return $this->_expireResultCache;
     }
-
 
     /**
      * Defines a cache driver to be used for caching queries.
@@ -478,7 +455,6 @@ class Doctrine_ORM_Query extends Doctrine_ORM_Query_Abstract
         return $this;
     }
 
-
     /**
      * Returns the cache driver used for caching queries.
      *
@@ -492,7 +468,6 @@ class Doctrine_ORM_Query extends Doctrine_ORM_Query_Abstract
             return $this->_entityManager->getConnection()->getQueryCacheDriver();
         }
     }
-
 
     /**
      * Defines how long the query cache will be active before expire.
@@ -511,7 +486,6 @@ class Doctrine_ORM_Query extends Doctrine_ORM_Query_Abstract
         return $this;
     }
 
-
     /**
      * Retrieves the lifetime of resultset cache.
      *
@@ -521,7 +495,6 @@ class Doctrine_ORM_Query extends Doctrine_ORM_Query_Abstract
     {
         return $this->_queryCacheTTL;
     }
-
 
     /**
      * Defines if the query cache is active or not.
@@ -536,7 +509,6 @@ class Doctrine_ORM_Query extends Doctrine_ORM_Query_Abstract
         return $this;
     }
 
-
     /**
      * Retrieves if the query cache is active or not.
      *
@@ -546,7 +518,6 @@ class Doctrine_ORM_Query extends Doctrine_ORM_Query_Abstract
     {
         return $this->_expireQueryCache;
     }
-
 
     /**
      * Defines the processing mode to be used during hydration process.
@@ -618,6 +589,29 @@ class Doctrine_ORM_Query extends Doctrine_ORM_Query_Abstract
         }
         
         return is_array($result) ? array_shift($result) : $result->getFirst();
+    }
+
+    /**
+     * Sets an implementation-specific hint. If the hint name is not recognized,
+     * it is silently ignored.
+     *
+     * @param string $name The name of the hint.
+     * @param mixed $value The value of the hint.
+     */
+    public function setHint($name, $value)
+    {
+        $this->_hints[$name] = $value;
+    }
+
+    /**
+     * Gets an implementation-specific hint. If the hint name is not recognized,
+     * FALSE is returned.
+     *
+     * @param string $name The name of the hint.
+     */
+    public function getHint($name)
+    {
+        return isset($this->_hints[$name]) ? $this->_hints[$name] : false;
     }
 
     /**

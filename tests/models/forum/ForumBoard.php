@@ -1,19 +1,15 @@
 <?php
-class ForumBoard extends Doctrine_ORM_Entity
+class ForumBoard
 {
+    public $id;
+    public $position;
+    public $category;
+
     public static function initMetadata($mapping)
     {
-        /*$metadata->mapField(array(
-            'fieldName' => 'id',
-            'id' => true,
-            'type' => 'integer',
-            'length' => 4
-            ));
-        */
         $mapping->mapField(array(
             'fieldName' => 'id',
             'type' => 'integer',
-            'length' => 4,
             'id' => true
         ));
         $mapping->mapField(array(

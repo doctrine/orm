@@ -6,9 +6,10 @@
  * Usage recommendation:
  * 1) Use only 1 class loader instance.
  * 2) Prepend the base paths to your class libraries (including Doctrine's) to your include path.
- * 3) DO NOT setCheckFileExists(true). Doing so is expensive.
+ * 3) DO NOT setCheckFileExists(true). Doing so is expensive in terms of performance.
  * 
  * @since 2.0
+ * @author romanb <roman@code-factory.org>
  */
 class Doctrine_Common_ClassLoader
 {    
@@ -79,12 +80,13 @@ class Doctrine_Common_ClassLoader
     
     /**
      * Registers this class loader using spl_autoload_register().
+     * 
+     * @return void
      */
     public function register()
     {
         spl_autoload_register(array($this, 'loadClass'));
     }
-    
 }
 
 

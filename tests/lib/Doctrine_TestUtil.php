@@ -13,8 +13,6 @@ class Doctrine_TestUtil
                 'host' => $GLOBALS['db_host'],
                 'database' => $GLOBALS['db_name']
             );
-            //$dsn = "{$GLOBALS['db_type']}://{$GLOBALS['db_username']}:{$GLOBALS['db_password']}@{$GLOBALS['db_host']}/{$GLOBALS['db_name']}";
-            //return Doctrine_Manager::connection($dsn, 'testconn');
         } else {
             $params = array(
                 'driver' => 'pdo_sqlite',
@@ -24,13 +22,4 @@ class Doctrine_TestUtil
         
         return Doctrine_DBAL_DriverManager::getConnection($params);
     }
-    /*
-    public static function autoloadModel($className)
-    {
-        $modelDir = dirname(__CLASS__) . '/../models/';
-        $fileName = $modelDir . str_replace('_', DIRECTORY_SEPARATOR, $className) . '.php';
-        if (file_exists($fileName)) {
-            require $fileName;
-        }
-    }*/
 }

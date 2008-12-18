@@ -19,9 +19,10 @@
  * <http://www.phpdoctrine.org>.
  */
 
-#namespace Doctrine::ORM::Mapping;
+#namespace Doctrine\ORM\Mapping;
 
-#use Doctrine::ORM::EntityManager;
+#use \Serializable;
+#use Doctrine\Common\ClassMetadata;
 
 /**
  * A <tt>ClassMetadata</tt> instance holds all the information (metadata) of an entity and
@@ -32,7 +33,8 @@
  * @since 2.0
  * @todo Rename to ClassDescriptor.
  */
-class Doctrine_ORM_Mapping_ClassMetadata implements Doctrine_Common_Configurable, Serializable
+class Doctrine_ORM_Mapping_ClassMetadata extends Doctrine_Common_ClassMetadata
+        implements Doctrine_Common_Configurable, Serializable
 {
     /* The inheritance mapping types */
     /**
@@ -100,13 +102,6 @@ class Doctrine_ORM_Mapping_ClassMetadata implements Doctrine_Common_Configurable
      * field & association mappings are inherited by subclasses.
      */
     const ENTITY_TYPE_MAPPED_SUPERCLASS = 'mappedSuperclass';
-    
-    /**
-     * The name of the entity class.
-     *
-     * @var string
-     */
-    protected $_entityName;
 
     /**
      * The name of the entity class that is at the root of the entity inheritance
@@ -118,19 +113,12 @@ class Doctrine_ORM_Mapping_ClassMetadata implements Doctrine_Common_Configurable
     protected $_rootEntityName;
 
     /**
-     * The name of the custom mapper class used for the entity class.
+     * The name of the custom repository class used for the entity class.
      * (Optional).
      *
      * @var string
      */
     protected $_customRepositoryClassName;
-
-    /**
-     * The EntityManager.
-     * 
-     * @var Doctrine::ORM::EntityManager
-     */
-    protected $_em;
 
     /**
      * The names of the parent classes (ancestors).
@@ -167,13 +155,6 @@ class Doctrine_ORM_Mapping_ClassMetadata implements Doctrine_Common_Configurable
      * @var string
      */
     protected $_generatorType = self::GENERATOR_TYPE_NONE;
-    
-    /**
-     * The Id generator.
-     *
-     * @var Doctrine::ORM::Id::IdGenerator
-     */
-    protected $_idGenerator;
     
     /**
      * The field mappings of the class.
@@ -234,21 +215,6 @@ class Doctrine_ORM_Mapping_ClassMetadata implements Doctrine_Common_Configurable
     protected $_fieldMappings = array();
     
     /**
-     * The mapped embedded values (value objects).
-     *
-     * @var array
-     * @TODO Implementation (Value Object support)
-     */
-    //protected $_embeddedValueMappings = array();
-
-    /**
-     * Enter description here...
-     *
-     * @var array
-     */
-    protected $_attributes = array('loadReferences' => true);
-    
-    /**
      * An array of field names. used to look up field names from column names.
      * Keys are column names and values are field names.
      * This is the reverse lookup map of $_columnNames.
@@ -298,10 +264,10 @@ class Doctrine_ORM_Mapping_ClassMetadata implements Doctrine_Common_Configurable
      *      -- collate                    collation attribute
      */
     protected $_tableOptions = array(
-            'tableName' => null,
-            'type' => null,
-            'charset' => null,
-            'collate' => null
+        'tableName' => null,
+        'type' => null,
+        'charset' => null,
+        'collate' => null
     );
     
     /**
@@ -346,31 +312,41 @@ class Doctrine_ORM_Mapping_ClassMetadata implements Doctrine_Common_Configurable
      * @var boolean
      */
     protected $_isIdentifierComposite = false;
-    
-    protected $_customAssociationAccessors = array();
-    protected $_customAssociationMutators = array();
+
+    protected $_reflectionClass;
+    protected $_reflectionProperties;
 
     /**
      * Constructs a new ClassMetadata instance.
      *
      * @param string $entityName  Name of the entity class the metadata info is used for.
-     * @param Doctrine::ORM::Entitymanager $em
      */
-    public function __construct($entityName, Doctrine_ORM_EntityManager $em)
+    public function __construct($entityName)
     {
-        $this->_entityName = $entityName;
+        parent::__construct($entityName);
         $this->_rootEntityName = $entityName;
-        $this->_em = $em;
+        $this->_reflectionClass = new ReflectionClass($entityName);
+        $reflectionProps = $this->_reflectionClass->getProperties();
+        foreach ($reflectionProps as $prop) {
+            $prop->setAccessible(true);
+            $this->_reflectionProperties[$prop->getName()] = $prop;
+        }
+        //$this->_isVirtualPropertyObject = is_subclass_of($entityName, 'Doctrine\Common\VirtualPropertyObject');
     }
-    
-    /**
-     * Gets the EntityManager that holds this ClassMetadata.
-     *
-     * @return Doctrine::ORM::EntityManager
-     */
-    public function getEntityManager()
+
+    public function getReflectionClass()
     {
-        return $this->_em;
+        return $this->_reflectionClass;
+    }
+
+    public function getReflectionProperties()
+    {
+        return $this->_reflectionProperties;
+    }
+
+    public function getReflectionProperty($name)
+    {
+        return $this->_reflectionProperties[$name];
     }
 
     /**
@@ -447,37 +423,8 @@ class Doctrine_ORM_Mapping_ClassMetadata implements Doctrine_Common_Configurable
     public function isNotNull($fieldName)
     {
         $mapping = $this->getFieldMapping($fieldName);
-
         if ($mapping !== false) {
             return isset($mapping['notnull']) && $mapping['notnull'] == true;
-        }
-
-        return false;
-    }
-
-    /**
-     * adds an index to this table
-     *
-     * @return void
-     * @deprecated
-     * @todo Should be done through setTableOption().
-     */
-    public function addIndex($index, array $definition)
-    {
-        $this->_tableOptions['indexes'][$index] = $definition;
-    }
-
-    /**
-     * getIndex
-     *
-     * @return array|boolean        array on success, FALSE on failure
-     * @todo Should be done through getTableOption().
-     * @deprecated
-     */
-    public function getIndex($index)
-    {
-        if (isset($this->_tableOptions['indexes'][$index])) {
-            return $this->_tableOptions['indexes'][$index];
         }
 
         return false;
@@ -547,11 +494,6 @@ class Doctrine_ORM_Mapping_ClassMetadata implements Doctrine_Common_Configurable
         return $this->_fieldMappings[$fieldName];
     }
     
-    public function addFieldMapping($fieldName, array $mapping)
-    {
-        $this->_fieldMappings[$fieldName] = $mapping;
-    }
-    
     /**
      * Gets the mapping of an association.
      *
@@ -562,7 +504,7 @@ class Doctrine_ORM_Mapping_ClassMetadata implements Doctrine_Common_Configurable
     public function getAssociationMapping($fieldName)
     {
         if ( ! isset($this->_associationMappings[$fieldName])) {
-            throw Doctrine_MappingException::mappingNotFound($fieldName);
+            throw new Doctrine_Exception("Mapping not found: $fieldName");
         }
         
         return $this->_associationMappings[$fieldName];
@@ -579,7 +521,6 @@ class Doctrine_ORM_Mapping_ClassMetadata implements Doctrine_Common_Configurable
         if ( ! isset($this->_associationMappings[$fieldName])) {
             throw Doctrine_MappingException::mappingNotFound($fieldName);
         }
-        
         return $this->_inverseMappings[$mappedByFieldName];
     }
     
@@ -592,11 +533,6 @@ class Doctrine_ORM_Mapping_ClassMetadata implements Doctrine_Common_Configurable
     public function hasInverseAssociationMapping($mappedByFieldName)
     {
         return isset($this->_inverseMappings[$mappedByFieldName]);
-    }
-    
-    public function addAssociationMapping($fieldName, Doctrine_Association $assoc)
-    {
-        $this->_associationMappings[$fieldName] = $assoc;
     }
     
     /**
@@ -646,50 +582,15 @@ class Doctrine_ORM_Mapping_ClassMetadata implements Doctrine_Common_Configurable
         return isset($this->_lcColumnToFieldNames[$lcColumnName]) ?
                 $this->_lcColumnToFieldNames[$lcColumnName] : $lcColumnName;
     }
-    
+
+    /**
+     *
+     * @param <type> $lcColumnName
+     * @return <type> 
+     */
     public function hasLowerColumn($lcColumnName)
     {
         return isset($this->_lcColumnToFieldNames[$lcColumnName]);
-    }
-    
-    /**
-     * Looks up the field name for a (lowercased) column name.
-     * 
-     * This is mostly used during hydration, because we want to make the
-     * conversion to field names while iterating over the result set for best
-     * performance. By doing this at that point, we can avoid re-iterating over
-     * the data just to convert the column names to field names.
-     * 
-     * However, when this is happening, we don't know the real
-     * class name to instantiate yet (the row data may target a sub-type), hence
-     * this method looks up the field name in the subclass mappings if it's not
-     * found on this class mapping.
-     * This lookup on subclasses is costly but happens only *once* for a column
-     * during hydration because the hydrator caches effectively.
-     * 
-     * @return string  The field name.
-     * @throws Doctrine::ORM::Exceptions::ClassMetadataException If the field name could
-     *         not be found.
-     */
-    public function lookupFieldName($lcColumnName)
-    {
-        if (isset($this->_lcColumnToFieldNames[$lcColumnName])) {
-            return $this->_lcColumnToFieldNames[$lcColumnName];
-        }/* else if (isset($this->_subclassFieldNames[$lcColumnName])) {
-            return $this->_subclassFieldNames[$lcColumnName];
-        }*/
-        
-        foreach ($this->getSubclasses() as $subClass) {
-            $subClassMetadata = $this->_em->getClassMetadata($subClass);
-            if ($subClassMetadata->hasLowerColumn($lcColumnName)) {
-                /*$this->_subclassFieldNames[$lcColumnName] = $subClassMetadata->
-                        getFieldNameForLowerColumnName($lcColumnName);
-                return $this->_subclassFieldNames[$lcColumnName];*/
-                return $subClassMetadata->getFieldNameForLowerColumnName($lcColumnName);
-            }
-        }
-
-        throw new Doctrine_ClassMetadata_Exception("No field name found for column name '$lcColumnName' during lookup.");
     }
     
     /**
@@ -731,11 +632,6 @@ class Doctrine_ORM_Mapping_ClassMetadata implements Doctrine_Common_Configurable
         $this->_columnNames[$mapping['fieldName']] = $mapping['columnName'];
         $this->_fieldNames[$mapping['columnName']] = $mapping['fieldName'];
         $this->_lcColumnToFieldNames[$lcColumnName] = $mapping['fieldName'];
-        
-        // Complete length mapping
-        if ( ! isset($mapping['length'])) {
-            $mapping['length'] = $this->_getDefaultLength($mapping['type']);
-        }
         
         // Complete id mapping
         if (isset($mapping['id']) && $mapping['id'] === true) {
@@ -784,58 +680,6 @@ class Doctrine_ORM_Mapping_ClassMetadata implements Doctrine_Common_Configurable
     }
     
     /**
-     * Used to lazily create the id generator.
-     *
-     * @param string $generatorType
-     * @return void
-     */
-    protected function _createIdGenerator()
-    {
-        if ($this->_generatorType == self::GENERATOR_TYPE_IDENTITY) {
-            $this->_idGenerator = new Doctrine_ORM_Id_IdentityGenerator($this->_em);
-        } else if ($this->_generatorType == self::GENERATOR_TYPE_SEQUENCE) {
-            $this->_idGenerator = new Doctrine_ORM_Id_SequenceGenerator($this->_em);
-        } else if ($this->_generatorType == self::GENERATOR_TYPE_TABLE) {
-            $this->_idGenerator = new Doctrine_ORM_Id_TableGenerator($this->_em);
-        } else {
-            $this->_idGenerator = new Doctrine_ORM_Id_Assigned($this->_em);
-        }
-    }
-    
-    /**
-     * Gets the default length for a column type.
-     *
-     * @param string $type
-     * @return mixed
-     */
-    private function _getDefaultLength($type)
-    {
-        switch ($type) {
-            case 'string':
-            case 'clob':
-            case 'float':
-            case 'integer':
-            case 'array':
-            case 'object':
-            case 'blob':
-            case 'gzip':
-                // use php int max
-                return 2147483647;
-            case 'boolean':
-                return 1;
-            case 'date':
-                // YYYY-MM-DD ISO 8601
-                return 10;
-            case 'time':
-                // HH:NN:SS+00:00 ISO 8601
-                return 14;
-            case 'timestamp':
-                // YYYY-MM-DDTHH:MM:SS+00:00 ISO 8601
-                return 25;
-        }
-    }
-    
-    /**
      * Maps an embedded value object.
      *
      * @todo Implementation.
@@ -843,6 +687,59 @@ class Doctrine_ORM_Mapping_ClassMetadata implements Doctrine_Common_Configurable
     public function mapEmbeddedValue()
     {
         //...
+    }
+
+    private $_entityIdentifiers = array();
+    /**
+     * Gets the identifier of an entity.
+     *
+     * @param object $entity
+     * @return array Map of identifier field names to values.
+     */
+    public function getEntityIdentifier($entity)
+    {
+        $oid = spl_object_id($entity);
+        if ( ! isset($this->_entityIdentifiers[$oid])) {
+            if ( ! $this->isIdentifierComposite()) {
+                $idField = $this->_identifier[0];
+                $idValue = $this->_reflectionProperties[$idField]->getValue($entity);
+                if (isset($idValue)) {
+                    //return array($idField => $idValue);
+                    $this->_entityIdentifiers[$oid] = array($idField => $idValue);
+                } else {
+                    return false;
+                }
+                //$this->_entityIdentifiers[$oid] = false;
+            } else {
+                $id = array();
+                foreach ($this->getIdentifierFieldNames() as $idFieldName) {
+                    $idValue = $this->_reflectionProperties[$idFieldName]->getValue($entity);
+                    if (isset($idValue)) {
+                        $id[$idFieldName] = $idValue;
+                    }
+                }
+                //return $id;
+                $this->_entityIdentifiers[$oid] = $id;
+            }
+        }
+        return $this->_entityIdentifiers[$oid];
+    }
+
+    /**
+     * 
+     *
+     * @param <type> $entity
+     * @param <type> $identifier
+     */
+    public function setEntityIdentifier($entity, $identifier)
+    {
+        if (is_array($identifier)) {
+            foreach ($identifier as $fieldName => $value) {
+                $this->_reflectionProperties[$fieldName]->setValue($entity, $value);
+            }
+        } else {
+            $this->_reflectionProperties[$this->_identifier[0]]->setValue($entity, $identifier);
+        }
     }
 
     /**
@@ -894,38 +791,6 @@ class Doctrine_ORM_Mapping_ClassMetadata implements Doctrine_Common_Configurable
     public function hasField($fieldName)
     {
         return isset($this->_columnNames[$fieldName]);
-    }
-
-    /**
-     * Gets the custom accessor of a field.
-     * 
-     * @return string  The name of the accessor (getter) method or NULL if the field does
-     *                 not have a custom accessor.
-     */
-    public function getCustomAccessor($fieldName)
-    {
-        if (isset($this->_fieldMappings[$fieldName]['accessor'])) {
-            return $this->_fieldMappings[$fieldName]['accessor'];
-        } else if (isset($this->_customAssociationAccessors[$fieldName])) {
-            return $this->_customAssociationAccessors[$fieldName];
-        }
-        return null;
-    }
-
-    /**
-     * Gets the custom mutator of a field.
-     * 
-     * @return string  The name of the mutator (setter) method or NULL if the field does
-     *                 not have a custom mutator.
-     */
-    public function getCustomMutator($fieldName)
-    {
-        if (isset($this->_fieldMappings[$fieldName]['mutator'])) {
-            return $this->_fieldMappings[$fieldName]['mutator'];
-        } else if (isset($this->_customAssociationMutators[$fieldName])) {
-            return $this->_customAssociationMutators[$fieldName];
-        }
-        return null;
     }
     
     /**
@@ -985,6 +850,14 @@ class Doctrine_ORM_Mapping_ClassMetadata implements Doctrine_Common_Configurable
     {
         return $this->_generatorType;
     }
+
+    /**
+     * Sets the type of Id generator to use for this class.
+     */
+    public function setIdGeneratorType($generatorType)
+    {
+        $this->_generatorType = $generatorType;
+    }
     
     /**
      * Checks whether the class uses an Id generator.
@@ -995,17 +868,44 @@ class Doctrine_ORM_Mapping_ClassMetadata implements Doctrine_Common_Configurable
     {
         return $this->_generatorType != self::GENERATOR_TYPE_NONE;
     }
+
+    /**
+     *
+     * @return <type> 
+     */
+    public function isInheritanceTypeNone()
+    {
+        return $this->_inheritanceType == self::INHERITANCE_TYPE_NONE;
+    }
     
+    /**
+     * Checks whether the mapped class uses the JOINED inheritance mapping strategy.
+     *
+     * @return boolean TRUE if the class participates in a JOINED inheritance mapping,
+     *                 FALSE otherwise.
+     */
     public function isInheritanceTypeJoined()
     {
         return $this->_inheritanceType == self::INHERITANCE_TYPE_JOINED;
     }
     
+    /**
+     * Checks whether the mapped class uses the SINGLE_TABLE inheritance mapping strategy.
+     *
+     * @return boolean TRUE if the class participates in a SINGLE_TABLE inheritance mapping,
+     *                 FALSE otherwise.
+     */
     public function isInheritanceTypeSingleTable()
     {
         return $this->_inheritanceType == self::INHERITANCE_TYPE_SINGLE_TABLE;
     }
     
+    /**
+     * Checks whether the mapped class uses the TABLE_PER_CLASS inheritance mapping strategy.
+     *
+     * @return boolean TRUE if the class participates in a TABLE_PER_CLASS inheritance mapping,
+     *                 FALSE otherwise.
+     */
     public function isInheritanceTypeTablePerClass()
     {
         return $this->_inheritanceType == self::INHERITANCE_TYPE_TABLE_PER_CLASS;
@@ -1110,9 +1010,9 @@ class Doctrine_ORM_Mapping_ClassMetadata implements Doctrine_Common_Configurable
     }
 
     /**
-     * Gets the inheritance type used by the class.
+     * Gets the inheritance mapping type used by the class.
      *
-     * @return integer
+     * @return string
      */
     public function getInheritanceType()
     {
@@ -1139,29 +1039,6 @@ class Doctrine_ORM_Mapping_ClassMetadata implements Doctrine_Common_Configurable
     public function getSubclasses()
     {
         return $this->_subClasses;
-    }
-    
-    /**
-     * Gets the name of the class in the entity hierarchy that owns the field with
-     * the given name. The owning class is the one that defines the field.
-     *
-     * @param string $fieldName
-     * @return string
-     * @todo Consider using 'inherited' => 'ClassName' to make the lookup simpler.
-     */
-    public function getOwningClass($fieldName)
-    {
-        if ($this->_inheritanceType == self::INHERITANCE_TYPE_NONE) {
-            return $this;
-        } else {
-            foreach ($this->_parentClasses as $parentClass) {
-                if ( ! $this->_em->getClassMetadata($parentClass)->isInheritedField($fieldName)) {
-                    return $parentClass;
-                }
-            }
-        }
-        
-        throw new Doctrine_ClassMetadata_Exception("Unable to find defining class of field '$fieldName'.");
     }
 
     /**
@@ -1259,9 +1136,9 @@ class Doctrine_ORM_Mapping_ClassMetadata implements Doctrine_Common_Configurable
      */
     public function getInheritanceOption($name)
     {
-        if ( ! array_key_exists($name, $this->_inheritanceOptions)) {
+        /*if ( ! array_key_exists($name, $this->_inheritanceOptions)) {
             throw new Doctrine_ClassMetadata_Exception("Unknown inheritance option: '$name'.");
-        }
+        }*/
 
         return $this->_inheritanceOptions[$name];
     }
@@ -1317,7 +1194,6 @@ class Doctrine_ORM_Mapping_ClassMetadata implements Doctrine_Common_Configurable
      */
     public function export()
     {
-        //$this->_em->export->exportTable($this);
     }
 
     /**
@@ -1329,7 +1205,7 @@ class Doctrine_ORM_Mapping_ClassMetadata implements Doctrine_Common_Configurable
      */
     public function getExportableFormat($parseForeignKeys = true)
     {
-        $columns = array();
+        /*$columns = array();
         $primary = array();
         $allColumns = $this->getColumns();
 
@@ -1338,13 +1214,13 @@ class Doctrine_ORM_Mapping_ClassMetadata implements Doctrine_Common_Configurable
         if ($this->_inheritanceType == self::INHERITANCE_TYPE_SINGLE_TABLE) {
             $parents = $this->getParentClasses();
             if ($parents) {
-                $rootClass = $this->_em->getClassMetadata(array_pop($parents));
+                $rootClass = $this->_classFactory->getClassMetadata(array_pop($parents));
             } else {
                 $rootClass = $this;
             }
             $subClasses = $rootClass->getSubclasses();
             foreach ($subClasses as $subClass) {
-                $subClassMetadata = $this->_em->getClassMetadata($subClass);
+                $subClassMetadata = $this->_classFactory->getClassMetadata($subClass);
                 $allColumns = array_merge($allColumns, $subClassMetadata->getColumns());
             }
         } else if ($this->_inheritanceType == self::INHERITANCE_TYPE_JOINED) {
@@ -1440,6 +1316,8 @@ class Doctrine_ORM_Mapping_ClassMetadata implements Doctrine_Common_Configurable
         return array('tableName' => $this->getTableOption('tableName'),
                      'columns'   => $columns,
                      'options'   => array_merge($options, $this->getTableOptions()));
+
+         */
     }
 
     /**
@@ -1546,23 +1424,6 @@ class Doctrine_ORM_Mapping_ClassMetadata implements Doctrine_Common_Configurable
     }
     
     /**
-     * Registers any custom accessors/mutators in the given association mapping in
-     * an internal cache for fast lookup.
-     *
-     * @param Doctrine_Association $assoc
-     * @param unknown_type $fieldName
-     */
-    private function _registerCustomAssociationAccessors(Doctrine_ORM_Mapping_AssociationMapping $assoc, $fieldName)
-    {
-        if ($acc = $assoc->getCustomAccessor()) {
-            $this->_customAssociationAccessors[$fieldName] = $acc;
-        }
-        if ($mut = $assoc->getCustomMutator()) {
-            $this->_customAssociationMutators[$fieldName] = $mut;
-        }
-    }
-    
-    /**
      * Adds a one-to-one mapping.
      * 
      * @param array $mapping The mapping.
@@ -1572,17 +1433,15 @@ class Doctrine_ORM_Mapping_ClassMetadata implements Doctrine_Common_Configurable
         $mapping = $this->_completeAssociationMapping($mapping);
         $oneToOneMapping = new Doctrine_ORM_Mapping_OneToOneMapping($mapping);
         $this->_storeAssociationMapping($oneToOneMapping);
-        
-        /*if ($oneToOneMapping->isInverseSide()) {
-            //FIXME: infinite recursion possible?
-            // Alternative: Store inverse side mappings indexed by mappedBy fieldname
-            // ($this->_inverseMappings). Then look it up.            
-            $owningClass = $this->_em->getClassMetadata($oneToOneMapping->getTargetEntityName());
-            $owningClass->getAssociationMapping($oneToOneMapping->getMappedByFieldName())
-                    ->setBidirectional($oneToOneMapping->getSourceFieldName());
-        }*/
     }
-    
+
+    /**
+     * Registers the mapping as an inverse mapping, if it is a mapping on the
+     * inverse side of an association mapping.
+     *
+     * @param AssociationMapping The mapping to register as inverse if it is a mapping
+     *      for the inverse side of an association.
+     */
     private function _registerMappingIfInverse(Doctrine_ORM_Mapping_AssociationMapping $assoc)
     {
         if ($assoc->isInverseSide()) {
@@ -1637,7 +1496,6 @@ class Doctrine_ORM_Mapping_ClassMetadata implements Doctrine_Common_Configurable
             throw Doctrine_MappingException::duplicateFieldMapping();
         }
         $this->_associationMappings[$sourceFieldName] = $assocMapping;
-        $this->_registerCustomAssociationAccessors($assocMapping, $sourceFieldName);
         $this->_registerMappingIfInverse($assocMapping);
     }
     
@@ -1664,19 +1522,6 @@ class Doctrine_ORM_Mapping_ClassMetadata implements Doctrine_Common_Configurable
     public function getCustomRepositoryClass()
     {
          return $this->_customRepositoryClassName;
-    }
-    
-    /**
-     * Gets the Id generator used by the class.
-     *
-     * @return Doctrine::ORM::Id::AbstractIdGenerator
-     */
-    public function getIdGenerator()
-    {
-        if (is_null($this->_idGenerator)) {
-            $this->_createIdGenerator();
-        }
-        return $this->_idGenerator;
     }
 
     /**
@@ -1746,7 +1591,7 @@ class Doctrine_ORM_Mapping_ClassMetadata implements Doctrine_Common_Configurable
     }
     
     /**
-     * Adds a lifecycle listener for Entities this class.
+     * Adds a lifecycle listener for Entities of this class.
      * 
      * Note: If the same listener class is registered more than once, the old
      * one will be overridden.
@@ -1779,33 +1624,6 @@ class Doctrine_ORM_Mapping_ClassMetadata implements Doctrine_Common_Configurable
         if ( ! in_array($callback, $this->_lifecycleCallbacks[$event])) {
             $this->_lifecycleCallbacks[$event][$callback] = $callback;
         } 
-    }
-    
-    /**
-     * INTERNAL: Completes the identifier mapping of the class.
-     * NOTE: Should only be called by the ClassMetadataFactory!
-     * 
-     * @return void
-     */
-    public function completeIdentifierMapping()
-    {
-        if ($this->_generatorType == self::GENERATOR_TYPE_AUTO) {
-            $platform = $this->_em->getConnection()->getDatabasePlatform();
-            if ($platform === null) {
-                try {
-                    throw new Exception();
-                } catch (Exception $e) {
-                    echo $e->getTraceAsString();
-                }
-            }
-            if ($platform->prefersSequences()) {
-                $this->_generatorType = self::GENERATOR_TYPE_SEQUENCE;
-            } else if ($platform->prefersIdentityColumns()) {
-                $this->_generatorType = self::GENERATOR_TYPE_IDENTITY;
-            } else {
-                $this->_generatorType = self::GENERATOR_TYPE_TABLE;
-            }
-        }
     }
 
     /**

@@ -10,7 +10,6 @@ require_once 'lib/mocks/Doctrine_ConnectionMock.php';
 class Doctrine_OrmTestCase extends Doctrine_TestCase
 {
     protected $_em;
-    protected $_emf;
 
     protected function setUp() {
         if (isset($this->sharedFixture['em'])) {

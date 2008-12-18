@@ -6,15 +6,19 @@
 
 class ForumEntry extends Doctrine_ORM_Entity
 {
-    #protected $id;
-    #protected $topic;
+    public $id;
+    public $topic;
+
+    static function construct() {
+        Doctrine_Common_VirtualPropertySystem::register(__CLASS__, 'id', 'int');
+        Doctrine_Common_VirtualPropertySystem::register(__CLASS__, 'topic', 'string');
+    }
     
     public static function initMetadata($mapping) 
     {
         $mapping->mapField(array(
                 'fieldName' => 'id',
                 'type' => 'integer',
-                'length' => 4,
                 'id' => true,
                 'idGenerator' => 'auto'
                 ));

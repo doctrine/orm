@@ -1,6 +1,8 @@
 <?php
 
-#namespace Doctrine::DBAL::Types;
+#namespace Doctrine\DBAL\Types;
+
+#use Doctrine\DBAL\Platforms\AbstractDatabasePlatform;
 
 abstract class Doctrine_DBAL_Types_Type
 {
@@ -14,7 +16,7 @@ abstract class Doctrine_DBAL_Types_Type
         'double' => 'Doctrine_DataType_DoubleType'
     );
     
-    public function convertToDatabaseValue($value, Doctrine_DatabasePlatform $platform)
+    public function convertToDatabaseValue($value, Doctrine_DBAL_Platforms_AbstractDatabasePlatform $platform)
     {
         return $value;
     }
@@ -24,8 +26,8 @@ abstract class Doctrine_DBAL_Types_Type
         return $value;
     }
     
-    abstract public function getDefaultLength(Doctrine_DatabasePlatform $platform);
-    abstract public function getSqlDeclaration(array $fieldDeclaration, Doctrine_DatabasePlatform $platform);
+    abstract public function getDefaultLength(Doctrine_DBAL_Platforms_AbstractDatabasePlatform $platform);
+    abstract public function getSqlDeclaration(array $fieldDeclaration, Doctrine_DBAL_Platforms_AbstractDatabasePlatform $platform);
     abstract public function getName();
     
     /**

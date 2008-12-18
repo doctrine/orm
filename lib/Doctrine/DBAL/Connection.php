@@ -19,14 +19,14 @@
  * <http://www.phpdoctrine.org>.
  */
 
-#namespace Doctrine::DBAL;
+#namespace Doctrine\DBAL;
 
-#use Doctrine::Common::Configuration;
-#use Doctrine::Common::EventManager;
-#use Doctrine::DBAL::Exceptions::ConnectionException;
+#use Doctrine\Common\Configuration;
+#use Doctrine\Common\EventManager;
+#use Doctrine\DBAL\Exceptions\ConnectionException;
 
 /**
- * A wrapper around a Doctrine::DBAL::Driver::Connection that adds features like
+ * A wrapper around a Doctrine\DBAL\Driver\Connection that adds features like
  * events, transaction isolation levels, configuration, emulated transaction nesting,
  * lazy connecting and more.
  *
@@ -51,7 +51,7 @@
  *       'masters' => array(...),
  *       'masterConnectionResolver' => new MyMasterConnectionResolver()
  * 
- * Doctrine::DBAL could ship with a simple standard broker that uses a primitive
+ * Doctrine\DBAL could ship with a simple standard broker that uses a primitive
  * round-robin approach to distribution. User can provide its own brokers.
  */
 class Doctrine_DBAL_Connection
@@ -76,21 +76,21 @@ class Doctrine_DBAL_Connection
     /**
      * The wrapped driver connection. 
      *
-     * @var Doctrine::DBAL::Driver::Connection          
+     * @var Doctrine\DBAL\Driver\Connection
      */
     protected $_conn;
     
     /**
      * The Configuration.
      *
-     * @var Doctrine::Common::Configuration
+     * @var Doctrine\Common\Configuration
      */
     protected $_config;
     
     /**
      * The EventManager.
      *
-     * @var Doctrine::Commom::EventManager
+     * @var Doctrine\Common\EventManager
      */
     protected $_eventManager;
     
@@ -116,7 +116,7 @@ class Doctrine_DBAL_Connection
     protected $_transactionIsolationLevel;
     
     /**
-     * The parameters used during creation of the Connection.
+     * The parameters used during creation of the Connection instance.
      * 
      * @var array
      */
@@ -133,32 +133,32 @@ class Doctrine_DBAL_Connection
      * The DatabasePlatform object that provides information about the
      * database platform used by the connection.
      *
-     * @var Doctrine::DBAL::Platforms::DatabasePlatform
+     * @var Doctrine\DBAL\Platforms\AbstractPlatform
      */
     protected $_platform;
     
     /**
      * The schema manager.
      *
-     * @var Doctrine::DBAL::Schema::SchemaManager
+     * @var Doctrine\DBAL\Schema\SchemaManager
      */
     protected $_schemaManager;
     
     /**
      * The used DBAL driver.
      *
-     * @var Doctrine::DBAL::Driver
+     * @var Doctrine\DBAL\Driver
      */
     protected $_driver;
     
     /**
-     * Constructor.
-     * Creates a new Connection.
+     * Initializes a new instance of the Connection class.
      *
      * @param array $params  The connection parameters.
      */
     public function __construct(array $params, Doctrine_DBAL_Driver $driver,
-            Doctrine_Common_Configuration $config = null, Doctrine_Common_EventManager $eventManager = null)
+            Doctrine_Common_Configuration $config = null,
+            Doctrine_Common_EventManager $eventManager = null)
     {
         $this->_driver = $driver;
         $this->_params = $params;
@@ -193,7 +193,7 @@ class Doctrine_DBAL_Connection
     /**
      * Gets the EventManager used by the Connection.
      *
-     * @return Doctrine::Common::EventManager
+     * @return Doctrine\Common\EventManager
      */
     public function getEventManager()
     {
@@ -203,7 +203,7 @@ class Doctrine_DBAL_Connection
     /**
      * Gets the DatabasePlatform for the connection.
      *
-     * @return Doctrine::DBAL::Platforms::DatabasePlatform
+     * @return Doctrine\DBAL\Platforms\AbstractPlatform
      */
     public function getDatabasePlatform()
     {
@@ -842,7 +842,7 @@ class Doctrine_DBAL_Connection
     /**
      * Gets the wrapped driver connection.
      *
-     * @return Doctrine::DBAL::Driver::Connection
+     * @return Doctrine\DBAL\Driver\Connection
      */
     public function getWrappedConnection()
     {
@@ -853,7 +853,7 @@ class Doctrine_DBAL_Connection
      * Gets the SchemaManager that can be used to inspect or change the 
      * database schema through the connection.
      *
-     * @return Doctrine::DBAL::Schema::SchemaManager
+     * @return Doctrine\DBAL\Schema\SchemaManager
      */
     public function getSchemaManager()
     {

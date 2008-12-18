@@ -17,7 +17,7 @@ class Doctrine_Common_Exceptions_DoctrineException extends Exception
     
     public static function notImplemented($method, $class)
     {
-        return new self("The method '$method' is not implemented in the class '$class'.");
+        return new self("The method '$method' is not implemented in class '$class'.");
     }
 }
 

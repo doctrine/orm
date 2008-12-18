@@ -14,11 +14,12 @@ class Doctrine_ORM_Id_Assigned extends Doctrine_ORM_Id_AbstractIdGenerator
      * @return unknown
      * @override
      */
-    public function generate(Doctrine_ORM_Entity $entity)
+    public function generate($entity)
     {
         if ( ! $entity->_identifier()) {
-            throw Doctrine_IdException::missingAssignedId($entity);
+            throw new Doctrine_Exception("Entity '$entity' is missing an assigned Id");
         }
+        return $entity->_identifier();
     }
 }
 

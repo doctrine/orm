@@ -18,8 +18,14 @@ class Orm_Entity_AccessorTest extends Doctrine_OrmTestCase
 
 /* Local test classes */
 
-class CustomAccessorMutatorTestEntity extends Doctrine_ORM_Entity
+class CustomAccessorMutatorTestEntity extends Doctrine_Common_VirtualPropertyObject
 {
+    static function construct() {
+        Doctrine_Common_VirtualPropertySystem::register(__CLASS__, 'id', 'int');
+        Doctrine_Common_VirtualPropertySystem::register(__CLASS__,
+                'username', 'string', 'getUsernameCustom', 'setUsernameCustom');
+    }
+
     public static function initMetadata($mapping) 
     {
         $mapping->mapField(array(
@@ -31,9 +37,7 @@ class CustomAccessorMutatorTestEntity extends Doctrine_ORM_Entity
         $mapping->mapField(array(
             'fieldName' => 'username',
             'type' => 'string',
-            'length' => 50,
-            'accessor' => 'getUsernameCustom',
-            'mutator' => 'setUsernameCustom'
+            'length' => 50
         ));
     }
     
@@ -48,8 +52,13 @@ class CustomAccessorMutatorTestEntity extends Doctrine_ORM_Entity
     }
 }
 
-class MagicAccessorMutatorTestEntity extends Doctrine_ORM_Entity
+class MagicAccessorMutatorTestEntity extends Doctrine_Common_VirtualPropertyObject
 {
+    static function construct() {
+        Doctrine_Common_VirtualPropertySystem::register(__CLASS__, 'id', 'int');
+        Doctrine_Common_VirtualPropertySystem::register(__CLASS__, 'username', 'string');
+    }
+
     public static function initMetadata($mapping) 
     {
         $mapping->mapField(array(

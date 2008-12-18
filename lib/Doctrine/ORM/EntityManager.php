@@ -19,14 +19,14 @@
  * <http://www.phpdoctrine.org>.
  */
 
-#namespace Doctrine::ORM;
+#namespace Doctrine\ORM;
 
-#use Doctrine::Common::Configuration;
-#use Doctrine::Common::EventManager;
-#use Doctrine::DBAL::Connection;
-#use Doctrine::ORM::Exceptions::EntityManagerException;
-#use Doctrine::ORM::Internal::UnitOfWork;
-#use Doctrine::ORM::Mapping::ClassMetadata;
+#use Doctrine\Common\Configuration;
+#use Doctrine\Common\EventManager;
+#use Doctrine\DBAL\Connection;
+#use Doctrine\ORM\Exceptions\EntityManagerException;
+#use Doctrine\ORM\Internal\UnitOfWork;
+#use Doctrine\ORM\Mapping\ClassMetadata;
 
 /**
  * The EntityManager is the central access point to ORM functionality.
@@ -138,8 +138,12 @@ class Doctrine_ORM_EntityManager
      * @var array
      */
     private $_tmpEntityData = array();
+
+    private $_idGenerators = array();
     
     private $_closed = false;
+
+    private $_originalEntityData = array();
     
     /**
      * Creates a new EntityManager that operates on the given database connection.
@@ -155,7 +159,8 @@ class Doctrine_ORM_EntityManager
         $this->_config = $config;
         $this->_eventManager = $eventManager;
         $this->_metadataFactory = new Doctrine_ORM_Mapping_ClassMetadataFactory(
-                $this, new Doctrine_ORM_Mapping_Driver_CodeDriver());
+                new Doctrine_ORM_Mapping_Driver_CodeDriver(),
+                $this->_conn->getDatabasePlatform());
         $this->_unitOfWork = new Doctrine_ORM_UnitOfWork($this);
         $this->_nullObject = Doctrine_ORM_Internal_Null::$INSTANCE;
     }
@@ -169,6 +174,14 @@ class Doctrine_ORM_EntityManager
     {
         return $this->_conn;
     }
+
+    /**
+     * Gets the metadata factory used to gather the metadata of classes.
+     */
+    public function getMetadataFactory()
+    {
+        return $this->_metadataFactory;
+    }
     
     /**
      * Gets the name of the EntityManager.
@@ -178,16 +191,6 @@ class Doctrine_ORM_EntityManager
     public function getName()
     {
         return $this->_name;
-    }
-    
-    /**
-     * Gets the metadata for a class. Alias for getClassMetadata().
-     *
-     * @return Doctrine_Metadata
-     */
-    public function getMetadata($className)
-    {
-        return $this->getClassMetadata($className);
     }
     
     /**
@@ -222,20 +225,41 @@ class Doctrine_ORM_EntityManager
     {        
         return $this->_metadataFactory->getMetadataFor($className);
     }
-    
+
     /**
-     * Sets the driver that is used to obtain metadata mapping information
-     * about Entities.
-     *
-     * @param $driver  The driver to use.
+     * Gets an IdGenerator that can be used to generate identifiers for the specified
+     * class.
      */
-    public function setClassMetadataDriver($driver)
+    public function getIdGenerator($className)
     {
-        $this->_metadataFactory->setDriver($driver);
+        if (!isset($this->_idGenerators[$className])) {
+            $this->_idGenerators[$className] = $this->_createIdGenerator(
+                    $this->getClassMetadata($className)->getIdGeneratorType());
+        }
+        return $this->_idGenerators[$className];
+    }
+
+    /**
+     * Used to lazily create the id generator.
+     *
+     * @param string $generatorType
+     * @return void
+     */
+    protected function _createIdGenerator($generatorType)
+    {
+        if ($generatorType == Doctrine_ORM_Mapping_ClassMetadata::GENERATOR_TYPE_IDENTITY) {
+            return new Doctrine_ORM_Id_IdentityGenerator($this);
+        } else if ($generatorType == Doctrine_ORM_Mapping_ClassMetadata::GENERATOR_TYPE_SEQUENCE) {
+            return new Doctrine_ORM_Id_SequenceGenerator($this);
+        } else if ($generatorType == Doctrine_ORM_Mapping_ClassMetadata::GENERATOR_TYPE_TABLE) {
+            return new Doctrine_ORM_Id_TableGenerator($this);
+        } else {
+            return new Doctrine_ORM_Id_Assigned($this);
+        }
     }
     
     /**
-     * Creates a new Doctrine_Query object that operates on this connection.
+     * Creates a new Query object.
      * 
      * @param string  The DQL string.
      * @return Doctrine::ORM::Query
@@ -405,7 +429,7 @@ class Doctrine_ORM_EntityManager
     /**
      * Saves the given entity, persisting it's state.
      * 
-     * @param Doctrine::ORM::Entity $entity
+     * @param Doctrine\ORM\Entity $entity
      * @return void
      */
     public function save(Doctrine_ORM_Entity $entity)
@@ -487,12 +511,12 @@ class Doctrine_ORM_EntityManager
      *
      * @param string $className  The name of the entity class.
      * @param array $data  The data for the entity. 
-     * @return Doctrine::ORM::Entity
+     * @return Doctrine\ORM\Entity
      */
-    public function createEntity($className, array $data)
+    public function createEntity($className, array $data, Doctrine_Query $query = null)
     {
         $this->_errorIfNotActiveOrClosed();
-        
+
         $this->_tmpEntityData = $data;
         $className = $this->_inferCorrectClassName($data, $className);
         $classMetadata = $this->getClassMetadata($className);
@@ -512,9 +536,9 @@ class Doctrine_ORM_EntityManager
                 $entity = new $className;
             } else {
                 $idHash = $this->_unitOfWork->getIdentifierHash($id);
-                if ($entity = $this->_unitOfWork->tryGetByIdHash($idHash,
-                        $classMetadata->getRootClassName())) {
-                    $this->_mergeData($entity, $data);
+                $entity = $this->_unitOfWork->tryGetByIdHash($idHash, $classMetadata->getRootClassName());
+                if ($entity) {
+                    $this->_mergeData($entity, $data/*, $classMetadata, $query->getHint('doctrine.refresh')*/);
                     return $entity;
                 } else {
                     $entity = new $className;
@@ -525,6 +549,8 @@ class Doctrine_ORM_EntityManager
             $entity = new $className;
         }
 
+        //$this->_originalEntityData[$entity->getOid()] = $data;
+
         return $entity;
     }
     
@@ -532,12 +558,12 @@ class Doctrine_ORM_EntityManager
      * Merges the given data into the given entity, optionally overriding
      * local changes.
      *
-     * @param Doctrine::ORM::Entity $entity
+     * @param Doctrine\ORM\Entity $entity
      * @param array $data
      * @param boolean $overrideLocalChanges
      * @return void
      */
-    private function _mergeData(Doctrine_ORM_Entity $entity, array $data, $overrideLocalChanges = false) {
+    private function _mergeData(Doctrine_ORM_Entity $entity, /*$class,*/ array $data, $overrideLocalChanges = false) {
         if ($overrideLocalChanges) {
             foreach ($data as $field => $value) {
                 $entity->_internalSetField($field, $value);
@@ -550,6 +576,21 @@ class Doctrine_ORM_EntityManager
                 }
             }
         }
+
+        // NEW
+        /*if ($overrideLocalChanges) {
+            foreach ($data as $field => $value) {
+                $class->getReflectionProperty($field)->setValue($entity, $value);
+            }
+        } else {
+            foreach ($data as $field => $value) {
+                $currentValue = $class->getReflectionProperty($field)->getValue($entity);
+                if ( ! isset($this->_originalEntityData[$entity->getOid()]) ||
+                        $currentValue == $this->_originalEntityData[$entity->getOid()]) {
+                    $class->getReflectionProperty($field)->setValue($entity, $value);
+                }
+            }
+        }*/
     }
     
     /**
@@ -628,6 +669,8 @@ class Doctrine_ORM_EntityManager
     
     /**
      * Throws an exception if the EntityManager is closed or currently not active.
+     *
+     * @throws EntityManagerException If the EntityManager is closed or not active.
      */
     private function _errorIfNotActiveOrClosed()
     {
@@ -668,15 +711,16 @@ class Doctrine_ORM_EntityManager
     
     /**
      * Factory method to create EntityManager instances.
+     *
      * A newly created EntityManager is immediately activated, making it the
      * currently active EntityManager.
      *
      * @param mixed $conn An array with the connection parameters or an existing
-     *                    Doctrine::DBAL::Connection instance.
-     * @param string $name
-     * @param Doctrine::Common::Configuration $config The Configuration instance to use.
-     * @param Doctrine::Common::EventManager $eventManager The EventManager instance to use.
-     * @return Doctrine::ORM::EntityManager The created EntityManager.
+     *      Connection instance.
+     * @param string $name The name of the EntityManager.
+     * @param Configuration $config The Configuration instance to use.
+     * @param EventManager $eventManager The EventManager instance to use.
+     * @return EntityManager The created EntityManager.
      */
     public static function create($conn, $name, Doctrine_Common_Configuration $config = null,
             Doctrine_Common_EventManager $eventManager = null)
@@ -702,8 +746,6 @@ class Doctrine_ORM_EntityManager
     
     /**
      * Static lookup to get the currently active EntityManager.
-     * This is used in the Entity constructor as well as unserialize() to connect
-     * the Entity with an EntityManager.
      *
      * @return Doctrine::ORM::EntityManager
      */

@@ -18,7 +18,7 @@ abstract class Doctrine_ORM_Id_AbstractIdGenerator
         $this->_em = $em;
     }
     
-    abstract public function generate(Doctrine_ORM_Entity $entity);
+    abstract public function generate($entity);
 }
 
 ?>

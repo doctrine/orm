@@ -9,7 +9,7 @@ class Doctrine_ORM_Id_IdentityGenerator extends Doctrine_ORM_Id_AbstractIdGenera
      * @return unknown
      * @override
      */
-    public function generate(Doctrine_ORM_Entity $entity)
+    public function generate($entity)
     {
         return self::POST_INSERT_INDICATOR;
     }

@@ -19,7 +19,7 @@
  * <http://www.phpdoctrine.org>.
  */
 
-#namespace Doctrine::ORM::Internal::Hydration;
+#namespace Doctrine\ORM\Internal\Hydration;
 
 /**
  * The hydrator has the tedious to process result sets returned by the database
@@ -104,7 +104,6 @@ class Doctrine_ORM_Internal_Hydration_StandardHydrator extends Doctrine_ORM_Inte
 
         $s = microtime(true);
         
-        // Used variables during hydration
         reset($this->_queryComponents);
         $rootAlias = key($this->_queryComponents);
         $rootEntityName = $this->_queryComponents[$rootAlias]['metadata']->getClassName();
@@ -136,8 +135,7 @@ class Doctrine_ORM_Internal_Hydration_StandardHydrator extends Doctrine_ORM_Inte
         // Initialize
         foreach ($this->_queryComponents as $dqlAlias => $component) {
             // disable lazy-loading of related elements during hydration
-            $component['metadata']->setAttribute('loadReferences', false);
-            $entityName = $component['metadata']->getClassName();
+            //$component['metadata']->setAttribute('loadReferences', false);
             $identifierMap[$dqlAlias] = array();
             $resultPointers[$dqlAlias] = array();
             $idTemplate[$dqlAlias] = '';
@@ -147,6 +145,7 @@ class Doctrine_ORM_Internal_Hydration_StandardHydrator extends Doctrine_ORM_Inte
         // Evaluate HYDRATE_SINGLE_SCALAR
         if ($hydrationMode == Doctrine_ORM_Query::HYDRATE_SINGLE_SCALAR) {
             $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            //TODO: Let this exception be raised by Query as QueryException
             if (count($result) > 1 || count($result[0]) > 1) {
                 throw Doctrine_ORM_Exceptions_HydrationException::nonUniqueResult();
             }
@@ -193,7 +192,7 @@ class Doctrine_ORM_Internal_Hydration_StandardHydrator extends Doctrine_ORM_Inte
             } else {
                 $index = $identifierMap[$rootAlias][$id[$rootAlias]];
             }
-            $this->_updateResultPointer($resultPointers, $result, $index, $rootAlias, false);
+            $driver->updateResultPointer($resultPointers, $result, $index, $rootAlias, false);
             unset($rowData[$rootAlias]);
             // end hydrate data of the root component for the current row
             
@@ -211,10 +210,11 @@ class Doctrine_ORM_Internal_Hydration_StandardHydrator extends Doctrine_ORM_Inte
                 $entityName = $map['metadata']->getClassName();
                 $parent = $map['parent'];
                 $relation = $map['relation'];
-                $relationAlias = $relation->getSourceFieldName();//$relation->getAlias();
+                $relationAlias = $relation->getSourceFieldName();
                 $path = $parent . '.' . $dqlAlias;
                 
-                // pick the right element that will get the associated element attached
+                // Get a reference to the right element in the result tree.
+                // This element will get the associated element attached.
                 if ($parserResult->isMixedQuery() && $parent == $rootAlias) {
                     $key = key(reset($resultPointers));
                     // TODO: Exception if $key === null ?
@@ -228,13 +228,13 @@ class Doctrine_ORM_Internal_Hydration_StandardHydrator extends Doctrine_ORM_Inte
 
                 // check the type of the relation (many or single-valued)
                 if ( ! $relation->isOneToOne()) {
-                    // x-many relation
+                    // x-to-many relation
                     $oneToOne = false;
                     if (isset($nonemptyComponents[$dqlAlias])) {
                         $driver->initRelatedCollection($baseElement, $relationAlias);
                         $indexExists = isset($identifierMap[$path][$id[$parent]][$id[$dqlAlias]]);
                         $index = $indexExists ? $identifierMap[$path][$id[$parent]][$id[$dqlAlias]] : false;
-                        $indexIsValid = $index !== false ? isset($baseElement[$relationAlias][$index]) : false;
+                        $indexIsValid = $index !== false ? $driver->isIndexKeyInUse($baseElement, $relationAlias, $index) : false;
                         if ( ! $indexExists || ! $indexIsValid) {
                             $element = $driver->getElement($data, $entityName);
                             if ($field = $this->_getCustomIndexField($dqlAlias)) {
@@ -245,7 +245,7 @@ class Doctrine_ORM_Internal_Hydration_StandardHydrator extends Doctrine_ORM_Inte
                             $identifierMap[$path][$id[$parent]][$id[$dqlAlias]] = $driver->getLastKey(
                                     $driver->getReferenceValue($baseElement, $relationAlias));
                         }
-                    } else if ( ! isset($baseElement[$relationAlias])) {
+                    } else if ( ! $driver->isFieldSet($baseElement, $relationAlias)) {
                         if ($hydrationMode == Doctrine_ORM_Query::HYDRATE_ARRAY) {
                             $baseElement[$relationAlias] = array();
                         } else {
@@ -254,7 +254,7 @@ class Doctrine_ORM_Internal_Hydration_StandardHydrator extends Doctrine_ORM_Inte
                         }
                     }
                 } else {
-                    // x-1 relation
+                    // x-to-one relation
                     $oneToOne = true;
                     if ( ! isset($nonemptyComponents[$dqlAlias]) &&
                             ! $driver->isFieldSet($baseElement, $relationAlias)) {
@@ -269,15 +269,17 @@ class Doctrine_ORM_Internal_Hydration_StandardHydrator extends Doctrine_ORM_Inte
                 if ($hydrationMode == Doctrine_ORM_Query::HYDRATE_ARRAY) {
                     $coll =& $baseElement[$relationAlias];
                 } else {
-                    $coll = $baseElement->_internalGetReference($relationAlias);
+                    $coll = $driver->getReferenceValue($baseElement, $relationAlias);
+                    //$baseElement->_internalGetReference($relationAlias);
                 }
                 
                 if ($coll !== null) {
-                    $this->_updateResultPointer($resultPointers, $coll, $index, $dqlAlias, $oneToOne); 
+                    $driver->updateResultPointer($resultPointers, $coll, $index, $dqlAlias, $oneToOne); 
                 }
             }
             
-            // append scalar values to mixed result sets
+            // Append scalar values to mixed result sets
+            //TODO: we dont need to count every time here, instead count with the loop
             if (isset($scalars)) {
                 $rowNumber = count($result) - 1;
                 foreach ($scalars as $name => $value) {
@@ -289,51 +291,15 @@ class Doctrine_ORM_Internal_Hydration_StandardHydrator extends Doctrine_ORM_Inte
         $stmt->closeCursor(); 
         $driver->flush();
         
-        // re-enable lazy loading
+        /*// re-enable lazy loading
         foreach ($this->_queryComponents as $dqlAlias => $data) {
             $data['metadata']->setAttribute('loadReferences', true);
-        }
+        }*/
         
         $e = microtime(true);
-        echo 'Hydration took: ' . ($e - $s) . ' for '.count($result).' records' . PHP_EOL;
+        echo 'Hydration took: ' . ($e - $s) . PHP_EOL;
 
         return $result;
-    }
-
-    /**
-     * Updates the result pointer for an Entity. The result pointers point to the
-     * last seen instance of each Entity type. This is used for graph construction.
-     *
-     * @param array $resultPointers  The result pointers.
-     * @param array|Collection $coll  The element.
-     * @param boolean|integer $index  Index of the element in the collection.
-     * @param string $dqlAlias
-     * @param boolean $oneToOne  Whether it is a single-valued association or not.
-     */
-    protected function _updateResultPointer(&$resultPointers, &$coll, $index, $dqlAlias, $oneToOne)
-    {
-        if ($coll === $this->_nullObject || $coll === null) {
-            unset($resultPointers[$dqlAlias]); // Ticket #1228
-            return;
-        }
-        
-        if ($index !== false) {
-            $resultPointers[$dqlAlias] =& $coll[$index];
-            return;
-        }
-        
-        if (is_array($coll) && $coll) {
-            if ($oneToOne) {
-                $resultPointers[$dqlAlias] =& $coll;
-            } else {
-                end($coll);
-                $resultPointers[$dqlAlias] =& $coll[key($coll)];
-            }
-        } else if ($coll instanceof Doctrine_ORM_Entity) {
-            $resultPointers[$dqlAlias] = $coll;
-        } else if (count($coll) > 0) {
-            $resultPointers[$dqlAlias] = $coll->getLast();
-        }
     }
     
     /**
@@ -370,7 +336,7 @@ class Doctrine_ORM_Internal_Hydration_StandardHydrator extends Doctrine_ORM_Inte
                     $fieldName = $this->_queryComponents[$cache[$key]['dqlAlias']]['agg'][$columnName];
                     $cache[$key]['isScalar'] = true;
                 } else {
-                    $fieldName = $classMetadata->lookupFieldName($columnName);
+                    $fieldName = $this->_lookupFieldName($classMetadata, $columnName);
                     $cache[$key]['isScalar'] = false;
                 }
                 
@@ -455,7 +421,7 @@ class Doctrine_ORM_Internal_Hydration_StandardHydrator extends Doctrine_ORM_Inte
                     $fieldName = $this->_queryComponents[$cache[$key]['dqlAlias']]['agg'][$columnName];
                     $cache[$key]['isScalar'] = true;
                 } else {
-                    $fieldName = $classMetadata->lookupFieldName($columnName);
+                    $fieldName = $this->_lookupFieldName($classMetadata, $columnName);
                     $cache[$key]['isScalar'] = false;
                 }
                 
@@ -509,6 +475,42 @@ class Doctrine_ORM_Internal_Hydration_StandardHydrator extends Doctrine_ORM_Inte
     private function _isIgnoredName($name)
     {
         return $name == 'doctrine_rownum';
+    }
+
+    /**
+     * Looks up the field name for a (lowercased) column name.
+     *
+     * This is mostly used during hydration, because we want to make the
+     * conversion to field names while iterating over the result set for best
+     * performance. By doing this at that point, we can avoid re-iterating over
+     * the data just to convert the column names to field names.
+     *
+     * However, when this is happening, we don't know the real
+     * class name to instantiate yet (the row data may target a sub-type), hence
+     * this method looks up the field name in the subclass mappings if it's not
+     * found on this class mapping.
+     * This lookup on subclasses is costly but happens only *once* for a column
+     * during hydration because the hydrator caches effectively.
+     *
+     * @return string  The field name.
+     * @throws Doctrine::ORM::Exceptions::ClassMetadataException If the field name could
+     *         not be found.
+     */
+    private function _lookupFieldName($class, $lcColumnName)
+    {
+        if ($class->hasLowerColumn($lcColumnName)) {
+            return $class->getFieldNameForLowerColumnName($lcColumnName);
+        }
+
+        foreach ($class->getSubclasses() as $subClass) {
+            $subClassMetadata = Doctrine_ORM_Mapping_ClassMetadataFactory::getInstance()
+                    ->getMetadataFor($subClass);
+            if ($subClassMetadata->hasLowerColumn($lcColumnName)) {
+                return $subClassMetadata->getFieldNameForLowerColumnName($lcColumnName);
+            }
+        }
+
+        throw new Doctrine_Exception("No field name found for column name '$lcColumnName' during hydration.");
     }
     
     /**

@@ -1,13 +1,20 @@
 <?php
-class ForumCategory extends Doctrine_ORM_Entity
+class ForumCategory
 {
-    
+    private $id;
+    public $position;
+    public $name;
+    public $boards;
+
+    public function getId() {
+        return $this->id;
+    }
+
     public static function initMetadata($mapping)
     {
         $mapping->mapField(array(
             'fieldName' => 'id',
             'type' => 'integer',
-            'length' => 4,
             'id' => true
         ));
         $mapping->mapField(array(

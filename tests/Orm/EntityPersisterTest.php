@@ -3,50 +3,57 @@ require_once 'lib/DoctrineTestInit.php';
 require_once 'lib/mocks/Doctrine_EntityManagerMock.php';
 require_once 'lib/mocks/Doctrine_ConnectionMock.php';
 require_once 'lib/mocks/Doctrine_ClassMetadataMock.php';
+require_once 'lib/mocks/Doctrine_UnitOfWorkMock.php';
 
 /**
  * EntityPersister tests.
  */
 class Orm_EntityPersisterTest extends Doctrine_OrmTestCase
 {
-    private $_persister; // SUT
     private $_connMock;
     private $_emMock;
     private $_idGenMock;
-    private $classMetadataMock;
+    private $_uowMock;
     
     protected function setUp() {
         parent::setUp();
         $this->_connMock = new Doctrine_ConnectionMock(array());
         $this->_emMock = Doctrine_EntityManagerMock::create($this->_connMock, 'persisterMockEM');
+        $this->_uowMock = new Doctrine_UnitOfWorkMock($this->_emMock);
+        $this->_emMock->setUnitOfWork($this->_uowMock);
         $this->_idGenMock = new Doctrine_SequenceMock($this->_emMock);
-        $this->_classMetadataMock = new Doctrine_ClassMetadataMock("ForumUser", $this->_emMock);
-        $this->_classMetadataMock->setIdGenerator($this->_idGenMock);
-        $this->_connMock->setDatabasePlatform(new Doctrine_DatabasePlatformMock());        
-        $this->_persister = new Doctrine_ORM_Persisters_StandardEntityPersister(
-                $this->_emMock, $this->_emMock->getClassMetadata("ForumUser"));
+        $this->_emMock->setIdGenerator('ForumUser', $this->_idGenMock);
                 
         $this->_emMock->activate();
     }
     
-    public function testInsert() {
+    public function testSimpleInsert() {
+        $userPersister = new Doctrine_ORM_Persisters_StandardEntityPersister(
+                $this->_emMock, $this->_emMock->getClassMetadata("ForumUser"));
+        $avatarPersister = new Doctrine_ORM_Persisters_StandardEntityPersister(
+                $this->_emMock, $this->_emMock->getClassMetadata("ForumAvatar"));
+
         $user = new ForumUser();
         $user->username = "romanb";
         $user->avatar = new ForumAvatar();
-        
+
+        $this->_uowMock->setDataChangeSet($user, array(
+                'username' => array('' => 'romanb'),
+                'avatar' => array('' => $user->avatar)));
+
+
         //insert
-        $this->_persister->insert($user->avatar);
+        $avatarPersister->insert($user->avatar);
         $inserts = $this->_connMock->getInserts();
         //check
         $this->assertEquals(1, count($inserts));
-        $this->assertEquals(null, $user->avatar->id);
-        $user->avatar->id = 0; // fake we got id
         $this->assertTrue(isset($inserts['forum_avatar']));
         $this->assertEquals(1, count($inserts['forum_avatar']));
-        $this->assertTrue(empty($inserts['forum_avatar'][0]));
-        
+        $this->assertEquals(null, $user->avatar->id);
+        $user->avatar->id = 0; // Fake that we got an id
+
         //insert
-        $this->_persister->insert($user);
+        $userPersister->insert($user);
         $inserts = $this->_connMock->getInserts();
         //check
         $this->assertEquals(2, count($inserts));

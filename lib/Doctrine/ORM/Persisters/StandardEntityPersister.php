@@ -19,6 +19,10 @@
  * <http://www.phpdoctrine.org>.
  */
 
+#namespace Doctrine\ORM\Persisters;
+
+#use Doctrine\ORM\Entity;
+
 /**
  * The default persister strategy maps a single entity instance to a single database table,
  * as is the case in Single Table Inheritance & Concrete Table Inheritance.

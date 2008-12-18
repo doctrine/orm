@@ -130,6 +130,38 @@ class Doctrine_ORM_Internal_Hydration_ArrayDriver
     }
     
     /**
+     * Updates the result pointer for an Entity. The result pointers point to the
+     * last seen instance of each Entity type. This is used for graph construction.
+     *
+     * @param array $resultPointers  The result pointers.
+     * @param array|Collection $coll  The element.
+     * @param boolean|integer $index  Index of the element in the collection.
+     * @param string $dqlAlias
+     * @param boolean $oneToOne  Whether it is a single-valued association or not.
+     */
+    public function updateResultPointer(&$resultPointers, &$coll, $index, $dqlAlias, $oneToOne)
+    {
+        if ($coll === null) {
+            unset($resultPointers[$dqlAlias]); // Ticket #1228
+            return;
+        }
+        
+        if ($index !== false) {
+            $resultPointers[$dqlAlias] =& $coll[$index];
+            return;
+        }
+        
+        if ($coll) {
+            if ($oneToOne) {
+                $resultPointers[$dqlAlias] =& $coll;
+            } else {
+                end($coll);
+                $resultPointers[$dqlAlias] =& $coll[key($coll)];
+            }
+        }
+    }
+    
+    /**
      *
      */
     public function flush()

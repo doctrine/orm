@@ -19,7 +19,7 @@
  * <http://www.phpdoctrine.org>.
  */
 
-#namespace Doctrine::ORM::Internal::Hydration;
+#namespace Doctrine\ORM\Internal\Hydration;
 
 /**
  * Hydration strategy used for creating graphs of entities.
@@ -41,6 +41,7 @@ class Doctrine_ORM_Internal_Hydration_ObjectDriver
     private $_nullObject;
     /** The EntityManager */
     private $_em;
+    private $_metadataMap = array();
     
     public function __construct(Doctrine_ORM_EntityManager $em)
     {
@@ -52,32 +53,36 @@ class Doctrine_ORM_Internal_Hydration_ObjectDriver
     {
         $coll = new Doctrine_ORM_Collection($component);
         $this->_collections[] = $coll;
-
         return $coll;
     }
 
     public function getLastKey($coll) 
     {
-        // check needed because of mixed results
-        if (is_array($coll)) {
+        // check needed because of mixed results.
+        // is_object instead of is_array because is_array is slow.
+        if (is_object($coll)) {
+            $coll->end();
+            return $coll->key();
+        } else {
             end($coll);
             return key($coll);
-        } else {
-            $coll->end();
-            return $coll->key(); 
         }
     }
     
-    public function initRelatedCollection(Doctrine_ORM_Entity $entity, $name)
+    public function initRelatedCollection($entity, $name)
     {
-        if ( ! isset($this->_initializedRelations[$entity->getOid()][$name])) {
-            $relation = $entity->getClass()->getAssociationMapping($name);
+        //$class = get_class($entity);
+        $oid = spl_object_id($entity);
+        $classMetadata = $this->_metadataMap[$oid];
+        //$classMetadata = $this->_em->getClassMetadata(get_class($entity));
+        if ( ! isset($this->_initializedRelations[$oid][$name])) {
+            $relation = $classMetadata->getAssociationMapping($name);
             $relatedClass = $this->_em->getClassMetadata($relation->getTargetEntityName());
             $coll = $this->getElementCollection($relatedClass->getClassName());
             $coll->_setOwner($entity, $relation);
             $coll->_setHydrationFlag(true);
-            $entity->_internalSetReference($name, $coll, true);
-            $this->_initializedRelations[$entity->getOid()][$name] = true;
+            $classMetadata->getReflectionProperty($name)->setValue($entity, $coll);
+            $this->_initializedRelations[$oid][$name] = true;
         }
     }
     
@@ -93,54 +98,130 @@ class Doctrine_ORM_Internal_Hydration_ObjectDriver
     
     public function getElement(array $data, $className)
     {
-        return $this->_em->createEntity($className, $data);
+        $entity = $this->_em->getUnitOfWork()->createEntity($className, $data);
+
+        $this->_metadataMap[spl_object_id($entity)] = $this->_em->getClassMetadata($className);
+
+        return $entity;
     }
     
-    public function addRelatedIndexedElement(Doctrine_ORM_Entity $entity1, $property,
-            Doctrine_ORM_Entity $entity2, $indexField)
+    public function addRelatedIndexedElement($entity1, $property, $entity2, $indexField)
     {
-        $entity1->_internalGetReference($property)->add($entity2, $entity2->_internalGetField($indexField));
+        $classMetadata1 = $this->_metadataMap[spl_object_id($entity1)];
+        $classMetadata2 = $this->_metadataMap[spl_object_id($entity2)];
+        //$classMetadata1 = $this->_em->getClassMetadata(get_class($entity1));
+        //$classMetadata2 = $this->_em->getClassMetadata(get_class($entity2));
+        $indexValue = $classMetadata2->getReflectionProperty($indexField)->getValue($entity2);
+        $classMetadata1->getReflectionProperty($property)->getValue($entity1)->add($entity2, $indexValue);
     }
     
-    public function addRelatedElement(Doctrine_ORM_Entity $entity1, $property,
-            Doctrine_ORM_Entity $entity2)
+    public function addRelatedElement($entity1, $property, $entity2)
     {
-        $entity1->_internalGetReference($property)->add($entity2);       
+        $classMetadata1 = $this->_metadataMap[spl_object_id($entity1)];
+        //$classMetadata1 = $this->_em->getClassMetadata(get_class($entity1));
+        $classMetadata1->getReflectionProperty($property)
+                ->getValue($entity1)->add($entity2);    
     }
     
-    public function setRelatedElement(Doctrine_ORM_Entity $entity1, $property, $entity2)
+    public function setRelatedElement($entity1, $property, $entity2)
     {
-        $entity1->_internalSetReference($property, $entity2, true);
+        $classMetadata1 = $this->_metadataMap[spl_object_id($entity1)];
+        //$classMetadata1 = $this->_em->getClassMetadata(get_class($entity1));
+        $classMetadata1->getReflectionProperty($property)
+                ->setValue($entity1, $entity2);
+        $relation = $classMetadata1->getAssociationMapping($property);
+        if ($relation->isOneToOne()) {
+            $targetClass = $this->_em->getClassMetadata($relation->getTargetEntityName());
+            if ($relation->isOwningSide()) {
+                // If there is an inverse mapping on the target class its bidirectional
+                if ($targetClass->hasInverseAssociationMapping($property)) {
+                    $refProp = $targetClass->getReflectionProperty(
+                            $targetClass->getInverseAssociationMapping($fieldName)
+                                    ->getSourceFieldName());
+                    $refProp->setValue($entity2, $entity1);
+                }
+            } else {
+                // for sure bidirectional, as there is no inverse side in unidirectional
+                $targetClass->getReflectionProperty($relation->getMappedByFieldName())
+                        ->setValue($entity2, $entity1);
+            }
+        }
     }
     
-    public function isIndexKeyInUse(Doctrine_ORM_Entity $entity, $assocField, $indexField)
+    public function isIndexKeyInUse($entity, $assocField, $indexField)
     {
-        return $entity->_internalGetReference($assocField)->contains($indexField);
+        return $this->_metadataMap[spl_object_id($entity)]->getReflectionProperty($assocField)
+                ->getValue($entity)->containsKey($indexField);
+        /*return $this->_em->getClassMetadata(get_class($entity))->getReflectionProperty($assocField)
+                ->getValue($entity)->containsKey($indexField);*/
     }
     
-    public function isFieldSet(Doctrine_ORM_Entity $entity, $field)
+    public function isFieldSet($entity, $field)
     {
-        return $entity->contains($field);
+        return $this->_metadataMap[spl_object_id($entity)]->getReflectionProperty($field)
+                ->getValue($entity) !== null;
+        /*return $this->_em->getClassMetadata(get_class($entity))->getReflectionProperty($field)
+                ->getValue($entity) !== null;*/
     }
     
-    public function getFieldValue(Doctrine_ORM_Entity $entity, $field)
+    public function getFieldValue($entity, $field)
     {
-        return $entity->_internalGetField($field);
+        return $this->_metadataMap[spl_object_id($entity)]->getReflectionProperty($field)
+                ->getValue($entity);
+        /*return $this->_em->getClassMetadata(get_class($entity))->getReflectionProperty($field)
+                ->getValue($entity);*/
     }
     
-    public function getReferenceValue(Doctrine_ORM_Entity $entity, $field)
+    public function getReferenceValue($entity, $field)
     {
-        return $entity->_internalGetReference($field);
+        return $this->_metadataMap[spl_object_id($entity)]->getReflectionProperty($field)
+                ->getValue($entity);
+        /*return $this->_em->getClassMetadata(get_class($entity))->getReflectionProperty($field)
+                ->getValue($entity);*/
     }
     
     public function addElementToIndexedCollection($coll, $entity, $keyField)
     {
-        $coll->add($entity, $entity->_internalGetField($keyField));
+        $coll->add($entity, $this->getFieldValue($entity, $keyField));
     }
     
     public function addElementToCollection($coll, $entity)
     {
         $coll->add($entity);
+    }
+    
+    /**
+     * Updates the result pointer for an Entity. The result pointers point to the
+     * last seen instance of each Entity type. This is used for graph construction.
+     *
+     * @param array $resultPointers  The result pointers.
+     * @param array|Collection $coll  The element.
+     * @param boolean|integer $index  Index of the element in the collection.
+     * @param string $dqlAlias
+     * @param boolean $oneToOne  Whether it is a single-valued association or not.
+     */
+    public function updateResultPointer(&$resultPointers, &$coll, $index, $dqlAlias, $oneToOne)
+    {
+        if ($coll === $this->_nullObject) {
+            unset($resultPointers[$dqlAlias]); // Ticket #1228
+            return;
+        }
+        
+        if ($index !== false) {
+            $resultPointers[$dqlAlias] = $coll[$index];
+            return;
+        }
+
+        if ( ! is_object($coll)) {
+            end($coll);
+            $resultPointers[$dqlAlias] =& $coll[key($coll)];
+        } else if ($coll instanceof Doctrine_ORM_Collection) {
+            if (count($coll) > 0) {
+                $resultPointers[$dqlAlias] = $coll->getLast();
+            }
+        } else {
+            $resultPointers[$dqlAlias] = $coll;
+        }
     }
     
     public function flush()
@@ -152,6 +233,7 @@ class Doctrine_ORM_Internal_Hydration_ObjectDriver
         }
         $this->_collections = array();
         $this->_initializedRelations = array();
+        $this->_metadataMap = array();
     }
     
 }

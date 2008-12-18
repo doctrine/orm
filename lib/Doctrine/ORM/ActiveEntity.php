@@ -10,8 +10,45 @@
  *
  * @since 2.0
  */
-class Doctrine_ORM_ActiveEntity extends Doctrine_ORM_Entity
+class Doctrine_ORM_ActiveEntity extends Doctrine_Common_VirtualPropertyObject implements Doctrine_ORM_Entity
 {
+    /**
+     * The class descriptor.
+     *
+     * @var Doctrine::ORM::ClassMetadata
+     */
+    private $_class;
+
+    /**
+     * The changes that happened to fields of a managed entity.
+     * Keys are field names, values oldValue => newValue tuples.
+     *
+     * @var array
+     */
+    private $_dataChangeSet = array();
+
+    /**
+     * The EntityManager that is responsible for the persistent state of the entity.
+     * Only managed entities have an associated EntityManager.
+     *
+     * @var Doctrine\ORM\EntityManager
+     */
+    private $_em;
+
+    /**
+     * Initializes a new instance of a class derived from ActiveEntity.
+     */
+    public function __construct() {
+        parent::__construct();
+        $this->_oid = self::$_index++;
+        $this->_em = Doctrine_ORM_EntityManager::getActiveEntityManager();
+        if (is_null($this->_em)) {
+            throw new Doctrine_Exception("No EntityManager found. ActiveEntity instances "
+                    . "can only be instantiated within the context of an active EntityManager.");
+        }
+        $this->_class = $this->_em->getClassMetadata($this->_entityName);
+    }
+
     /**
      * Saves the current state of the entity into the database.
      *
@@ -419,6 +456,270 @@ class Doctrine_ORM_ActiveEntity extends Doctrine_ORM_Entity
         $this->_data = array_merge($this->_data, $data);
         $this->_extractIdentifier();
     }
+
+
+    /**
+     * Helps freeing the memory occupied by the entity.
+     * Cuts all references the entity has to other entities and removes the entity
+     * from the instance pool.
+     * Note: The entity is no longer useable after free() has been called. Any operations
+     * done with the entity afterwards can lead to unpredictable results.
+     *
+     * @param boolean $deep Whether to cascade the free() call to (loaded) associated entities.
+     */
+    public function free($deep = false)
+    {
+        if ($this->_state != self::STATE_LOCKED) {
+            if ($this->_state == self::STATE_MANAGED) {
+                $this->_em->detach($this);
+            }
+            if ($deep) {
+                foreach ($this->_data as $name => $value) {
+                    if ($value instanceof Doctrine_ORM_Entity || $value instanceof Doctrine_ORM_Collection) {
+                        $value->free($deep);
+                    }
+                }
+            }
+            $this->_data = array();
+        }
+    }
+
+    /**
+     * Returns a string representation of this object.
+     */
+    public function __toString()
+    {
+        return (string)$this->_oid;
+    }
+
+    /**
+     * Checks whether the entity is new.
+     *
+     * @return boolean  TRUE if the entity is new, FALSE otherwise.
+     */
+    final public function isNew()
+    {
+        return $this->_state == self::STATE_NEW;
+    }
+
+    /**
+     * Checks whether the entity has been modified since it was last synchronized
+     * with the database.
+     *
+     * @return boolean  TRUE if the object has been modified, FALSE otherwise.
+     */
+    final public function isModified()
+    {
+        return count($this->_dataChangeSet) > 0;
+    }
+
+    /**
+     * Gets the ClassMetadata object that describes the entity class.
+     *
+     * @return Doctrine::ORM::Mapping::ClassMetadata
+     */
+    final public function getClass()
+    {
+        return $this->_class;
+    }
+
+    /**
+     * Gets the EntityManager that is responsible for the persistence of
+     * this entity.
+     *
+     * @return Doctrine::ORM::EntityManager
+     */
+    final public function getEntityManager()
+    {
+        return $this->_em;
+    }
+
+    /**
+     * Gets the EntityRepository of the Entity.
+     *
+     * @return Doctrine::ORM::EntityRepository
+     */
+    final public function getRepository()
+    {
+        return $this->_em->getRepository($this->_entityName);
+    }
+
+
+    /**
+     * Checks whether a field is set (not null).
+     *
+     * @param string $name
+     * @return boolean
+     * @override
+     */
+    final protected function _contains($fieldName)
+    {
+        if (isset($this->_data[$fieldName])) {
+            if ($this->_data[$fieldName] === Doctrine_ORM_Internal_Null::$INSTANCE) {
+                return false;
+            }
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Clears the value of a field.
+     *
+     * @param string $name
+     * @return void
+     * @override
+     */
+    final protected function _unset($fieldName)
+    {
+        if (isset($this->_data[$fieldName])) {
+            if ($this->_state == self::STATE_MANAGED && $this->_class->hasAssociation($fieldName)) {
+                $assoc = $this->_class->getAssociationMapping($fieldName);
+                if ($assoc->isOneToOne() && $assoc->shouldDeleteOrphans()) {
+                    $this->_em->delete($this->_references[$fieldName]);
+                } else if ($assoc->isOneToMany() && $assoc->shouldDeleteOrphans()) {
+                    foreach ($this->_references[$fieldName] as $entity) {
+                        $this->_em->delete($entity);
+                    }
+                }
+            }
+            $this->_data[$fieldName] = null;
+        }
+    }
+
+
+    /**
+     * Registers the entity as dirty with the UnitOfWork.
+     * Note: The Entity is only registered dirty if it is MANAGED and not yet
+     * registered as dirty.
+     */
+    private function _registerDirty()
+    {
+        if ($this->_state == self::STATE_MANAGED &&
+                ! $this->_em->getUnitOfWork()->isRegisteredDirty($this)) {
+            $this->_em->getUnitOfWork()->registerDirty($this);
+        }
+    }
+
+    /**
+     * Gets the entity class name.
+     *
+     * @return string
+     */
+    final public function getClassName()
+    {
+        return $this->_entityName;
+    }
+
+    /**
+     * Gets the data of the Entity.
+     *
+     * @return array  The fields and their values.
+     */
+    final public function getData()
+    {
+        return $this->_data;
+    }
+
+    /**
+     * Gets the value of a field (regular field or reference).
+     *
+     * @param $name  Name of the field.
+     * @return mixed  Value of the field.
+     * @throws Doctrine::ORM::Exceptions::EntityException  If trying to get an unknown field.
+     * @override
+     */
+    final protected function _get($fieldName)
+    {
+        $nullObj = Doctrine_ORM_Internal_Null::$INSTANCE;
+        if (isset($this->_data[$fieldName])) {
+            return $this->_data[$fieldName] !== $nullObj ?
+                    $this->_data[$fieldName] : null;
+        } else {
+            if ($this->_state == self::STATE_MANAGED && $this->_class->hasAssociation($fieldName)) {
+                $rel = $this->_class->getAssociationMapping($fieldName);
+                if ($rel->isLazilyFetched()) {
+                    $this->_data[$fieldName] = $rel->lazyLoadFor($this);
+                    return $this->_data[$fieldName] !== $nullObj ?
+                            $this->_data[$fieldName] : null;
+                } else {
+                    return null;
+                }
+            } else {
+                return null;
+            }
+        }
+    }
+
+    /**
+     * Sets the value of a field (regular field or reference).
+     *
+     * @param $fieldName The name of the field.
+     * @param $value The value of the field.
+     * @return void
+     * @throws Doctrine::ORM::Exceptions::EntityException
+     * @override
+     */
+    final protected function _set($fieldName, $value)
+    {
+        $old = isset($this->_data[$fieldName]) ? $this->_data[$fieldName] : null;
+        if ( ! is_object($value)) {
+            // NOTE: Common case: $old != $value. Special case: null == 0 (TRUE), which
+            // is addressed by xor.
+            if ($old != $value || (is_null($old) xor is_null($value))) {
+                $this->_data[$fieldName] = $value;
+                $this->_dataChangeSet[$fieldName] = array($old => $value);
+                $this->_registerDirty();
+            }
+        } else {
+            if ($old !== $value) {
+                $this->_internalSetReference($fieldName, $value);
+                $this->_dataChangeSet[$fieldName] = array($old => $value);
+                $this->_registerDirty();
+                if ($this->_state == self::STATE_MANAGED) {
+                    //TODO: Allow arrays in $value. Wrap them in a Collection transparently.
+                    if ($old instanceof Doctrine_ORM_Collection) {
+                        $this->_em->getUnitOfWork()->scheduleCollectionDeletion($old);
+                    }
+                    if ($value instanceof Doctrine_ORM_Collection) {
+                        $this->_em->getUnitOfWork()->scheduleCollectionRecreation($value);
+                    }
+                }
+            }
+        }
+    }
+
+    /* Serializable implementation */
+
+    /**
+     * Serializes the entity.
+     * This method is automatically called when the entity is serialized.
+     *
+     * Part of the implementation of the Serializable interface.
+     *
+     * @return string
+     * @todo Reimplement
+     */
+    public function serialize()
+    {
+        return "";
+    }
+
+    /**
+     * Reconstructs the entity from it's serialized form.
+     * This method is automatically called everytime the entity is unserialized.
+     *
+     * @param string $serialized                Doctrine_Entity as serialized string
+     * @throws Doctrine_Record_Exception        if the cleanData operation fails somehow
+     * @return void
+     * @todo Reimplement.
+     */
+    public function unserialize($serialized)
+    {
+        ;
+    }
+
+    /* END of Serializable implementation */
 }
 
 ?>

@@ -4,19 +4,28 @@
 
 #use Doctrine::ORM::Entity;
 
-class CmsArticle extends Doctrine_ORM_Entity
+class CmsArticle
 {
-    #protected $id;
-    #protected $topic;
-    #protected $text;
-    #protected $user_id;
+    public $id;
+    public $topic;
+    public $text;
+    public $user;
+    public $comments;
+
+    /*static function construct() {
+        Doctrine_Common_VirtualPropertySystem::register(__CLASS__, 'id', 'int');
+        Doctrine_Common_VirtualPropertySystem::register(__CLASS__, 'topic', 'string');
+        Doctrine_Common_VirtualPropertySystem::register(__CLASS__, 'text', 'string');
+        Doctrine_Common_VirtualPropertySystem::register(__CLASS__, 'user_id', 'int');
+        Doctrine_Common_VirtualPropertySystem::register(__CLASS__, 'user', 'CmsUser');
+        Doctrine_Common_VirtualPropertySystem::register(__CLASS__, 'comments', 'collection');
+    }*/
     
     public static function initMetadata($mapping) 
     {
         $mapping->mapField(array(
             'fieldName' => 'id',
             'type' => 'integer',
-            'length' => 4,
             'id' => true,
             'idGenerator' => 'auto'
         ));
@@ -31,10 +40,8 @@ class CmsArticle extends Doctrine_ORM_Entity
         ));
         $mapping->mapField(array(
             'fieldName' => 'user_id',
-            'type' => 'integer',
-            'length' => 4
+            'type' => 'integer'
         ));
-        
         
         $mapping->mapOneToMany(array(
             'fieldName' => 'comments',

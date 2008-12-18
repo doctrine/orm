@@ -20,7 +20,7 @@ class Orm_Entity_AllTests
     {
         $suite = new Doctrine_TestSuite('Doctrine Orm Entity Tests');
 
-        $suite->addTestSuite('Orm_Entity_AccessorTest');
+        //$suite->addTestSuite('Orm_Entity_AccessorTest');
         $suite->addTestSuite('Orm_Entity_ConstructorTest');
         
         return $suite;

@@ -23,24 +23,6 @@ class Doctrine_OrmFunctionalTestCase extends Doctrine_OrmTestCase
     private static $_exportedTables = array();
     
     /**
-     * setUp()
-     *
-     * Note: This setUp() and the one of DbalTestCase currently look identical. However,
-     * please dont pull this method up. In the future with a separation of Dbal/Orm
-     * this setUp() will take care of a ORM connection/session/manager initialization
-     * and the DBAL setUp() will take care of just a DBAL connection.
-     */
-    protected function setUp()
-    {
-        // Setup a db connection if there is none, yet. This makes it possible
-        // to run tests that use a connection standalone.
-        if ( ! isset($this->sharedFixture['em'])) {
-            $this->sharedFixture['em'] = new Doctrine_EntityManager(
-                    Doctrine_TestUtil::getConnection());
-        }
-    }
-    
-    /**
      * Loads a data fixture into the database. This method must only be called
      * from within the setUp() method of testcases. The database will then be
      * populated with fresh data of all loaded fixtures for each test method.
@@ -78,7 +60,7 @@ class Doctrine_OrmFunctionalTestCase extends Doctrine_OrmTestCase
         $tableName = $classMetadata->getTableName();
         
         if ( ! in_array($tableName, self::$_exportedTables)) {
-            $em->getConnection()->export->exportClasses(array($fixture['model']));
+            $em->getConnection()->getSchemaManager()->exportClasses(array($fixture['model']));
             self::$_exportedTables[] = $tableName;
         }
         

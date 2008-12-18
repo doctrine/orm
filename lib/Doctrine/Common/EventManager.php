@@ -92,11 +92,7 @@ class Doctrine_Common_EventManager
     public function addEventListener($events, $listener)
     {
         // TODO: maybe check for duplicate registrations?
-        if ( ! is_array($events)) {
-            $events = array($events);
-        }
-
-        foreach ($events as $event) {
+        foreach ((array)$events as $event) {
             $this->_listeners[$event] = $listener;
         }
     }

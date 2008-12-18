@@ -22,7 +22,7 @@
 #namespace Doctrine::Common;
 
 /**
- * An EventSubscriber knows itself what events it is interested in.
+ * An EventSubscriber knows himself what events he is interested in.
  * If an EventSubscriber is added to an EventManager, the manager invokes
  * getSubscribedEvents() and registers the subscriber as a listener for all
  * returned events.

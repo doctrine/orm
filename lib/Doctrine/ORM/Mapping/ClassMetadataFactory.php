@@ -19,11 +19,14 @@
  * <http://www.phpdoctrine.org>.
  */
 
-#namespace Doctrine::ORM::Internal;
+#namespace Doctrine\ORM\Mapping;
+
+#use Doctrine\DBAL\Platforms\AbstractPlatform;
 
 /**
  * The metadata factory is used to create ClassMetadata objects that contain all the
- * metadata mapping informations of a class.
+ * metadata mapping informations of a class which describes how a class should be mapped
+ * to a relational database.
  *
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  * @author      Roman Borschel <roman@code-factory.org>
@@ -33,44 +36,21 @@
  * @since       2.0
  * @todo Rename to ClassDescriptorFactory.
  */
-class Doctrine_ORM_Mapping_ClassMetadataFactory
+class Doctrine_ORM_Mapping_ClassMetadataFactory extends Doctrine_Common_ClassMetadataFactory
 {
-    protected $_em;
-    protected $_driver;
-    
-    /**
-     * The already loaded metadata objects.
-     */
-    protected $_loadedMetadata = array();
+    /** The targeted database platform. */
+    private $_targetPlatform;
     
     /**
      * Constructor.
-     * Creates a new factory instance that uses the given EntityManager and metadata driver
-     * implementations.
+     * Creates a new factory instance that uses the given metadata driver implementation.
      *
-     * @param $conn    The connection to use.
      * @param $driver  The metadata driver to use.
      */
-    public function __construct(Doctrine_ORM_EntityManager $em, $driver)
+    public function __construct($driver, Doctrine_DBAL_Platforms_AbstractPlatform $targetPlatform)
     {
-        $this->_em = $em;
-        $this->_driver = $driver;
-    }
-    
-    /**
-     * Returns the metadata object for a class.
-     *
-     * @param string $className  The name of the class.
-     * @return Doctrine_Metadata
-     */
-    public function getMetadataFor($className)
-    {        
-        if (isset($this->_loadedMetadata[$className])) {
-            return $this->_loadedMetadata[$className];
-        }
-        $this->_loadClasses($className, $this->_loadedMetadata);
-        
-        return $this->_loadedMetadata[$className];
+        parent::__construct($driver);
+        $this->_targetPlatform = $targetPlatform;
     }
     
     /**
@@ -79,17 +59,16 @@ class Doctrine_ORM_Mapping_ClassMetadataFactory
      *
      * @param string $name   The name of the class for which the metadata should get loaded.
      * @param array  $tables The metadata collection to which the loaded metadata is added.
+     * @override
      */
-    protected function _loadClasses($name, array &$classes)
+    protected function _loadMetadata($name)
     {
+
         $parentClass = $name;
         $parentClasses = array();
         $loadedParentClass = false;
         while ($parentClass = get_parent_class($parentClass)) {
-            if ($parentClass == 'Doctrine_ORM_Entity') {
-                break;
-            }
-            if (isset($classes[$parentClass])) {
+            if (isset($this->_loadedMetadata[$parentClass])) {
                 $loadedParentClass = $parentClass;
                 break;
             }
@@ -99,12 +78,12 @@ class Doctrine_ORM_Mapping_ClassMetadataFactory
         $parentClasses[] = $name;
         
         if ($loadedParentClass) {
-            $class = $classes[$loadedParentClass];
+            $class = $this->_loadedMetadata[$loadedParentClass];
         } else {
             $rootClassOfHierarchy = count($parentClasses) > 0 ? array_shift($parentClasses) : $name;
-            $class = new Doctrine_ORM_Mapping_ClassMetadata($rootClassOfHierarchy, $this->_em);
-            $this->_loadMetadata($class, $rootClassOfHierarchy);
-            $classes[$rootClassOfHierarchy] = $class;
+            $class = new Doctrine_ORM_Mapping_ClassMetadata($rootClassOfHierarchy);
+            $this->_loadClassMetadata($class, $rootClassOfHierarchy);
+            $this->_loadedMetadata[$rootClassOfHierarchy] = $class;
         }
         
         if (count($parentClasses) == 0) {
@@ -117,15 +96,15 @@ class Doctrine_ORM_Mapping_ClassMetadataFactory
         // Move down the hierarchy of parent classes, starting from the topmost class
         $parent = $class;
         foreach ($parentClasses as $subclassName) {
-            $subClass = new Doctrine_ORM_Mapping_ClassMetadata($subclassName, $this->_em);
+            $subClass = new Doctrine_ORM_Mapping_ClassMetadata($subclassName);
             $subClass->setInheritanceType($parent->getInheritanceType(), $parent->getInheritanceOptions());
             $this->_addInheritedFields($subClass, $parent);
             $this->_addInheritedRelations($subClass, $parent);
-            $this->_loadMetadata($subClass, $subclassName);
+            $this->_loadClassMetadata($subClass, $subclassName);
             if ($parent->isInheritanceTypeSingleTable()) {
                 $subClass->setTableName($parent->getTableName());
             }
-            $classes[$subclassName] = $subClass;
+            $this->_loadedMetadata[$subclassName] = $subClass;
             $parent = $subClass;
         }
     }
@@ -137,7 +116,7 @@ class Doctrine_ORM_Mapping_ClassMetadataFactory
      * @param Doctrine::ORM::Mapping::ClassMetadata $parentClass
      * @return void
      */
-    protected function _addInheritedFields($subClass, $parentClass)
+    private function _addInheritedFields($subClass, $parentClass)
     {
         foreach ($parentClass->getFieldMappings() as $fieldName => $mapping) {
             if ( ! isset($mapping['inherited'])) {
@@ -153,7 +132,7 @@ class Doctrine_ORM_Mapping_ClassMetadataFactory
      * @param unknown_type $subClass
      * @param unknown_type $parentClass
      */
-    protected function _addInheritedRelations($subClass, $parentClass) 
+    private function _addInheritedRelations($subClass, $parentClass)
     {
         foreach ($parentClass->getAssociationMappings() as $fieldName => $mapping) {
             $subClass->addAssociationMapping($name, $mapping);
@@ -166,7 +145,7 @@ class Doctrine_ORM_Mapping_ClassMetadataFactory
      * @param Doctrine_ClassMetadata $class  The container for the metadata.
      * @param string $name  The name of the class for which the metadata will be loaded.
      */
-    protected function _loadMetadata(Doctrine_ORM_Mapping_ClassMetadata $class, $name)
+    private function _loadClassMetadata(Doctrine_ORM_Mapping_ClassMetadata $class, $name)
     {
         if ( ! class_exists($name) || empty($name)) {
             throw new Doctrine_Exception("Couldn't find class " . $name . ".");
@@ -177,17 +156,15 @@ class Doctrine_ORM_Mapping_ClassMetadataFactory
         // get parent classes
         //TODO: Skip Entity types MappedSuperclass/Transient
         do {
-            if ($className === 'Doctrine_ORM_Entity') {
-                break;
-            } else if ($className == $name) {
+            if ($className == $name) {
                 continue;
             }
             $names[] = $className;
         } while ($className = get_parent_class($className));
 
-        if ($className === false) {
-            throw new Doctrine_ClassMetadata_Factory_Exception("Unknown component '$className'.");
-        }
+        /*if ($className === false) {
+            throw new Doctrine_Exception("Unknown component '$className'.");
+        }*/
 
         // save parents
         $class->setParentClasses($names);
@@ -200,12 +177,21 @@ class Doctrine_ORM_Mapping_ClassMetadataFactory
         if ( ! isset($tableName)) {
             $class->setTableName(Doctrine::tableize($class->getClassName()));
         }
-        
-        $class->completeIdentifierMapping();
+
+        // Complete Id generator mapping. If AUTO is specified we choose the generator
+        // most appropriate for the target platform.
+        if ($class->getIdGeneratorType() == Doctrine_ORM_Mapping_ClassMetadata::GENERATOR_TYPE_AUTO) {
+            if ($this->_targetPlatform->prefersSequences()) {
+                $class->setIdGeneratorType(Doctrine_ORM_Mapping_ClassMetadata::GENERATOR_TYPE_SEQUENCE);
+            } else if ($this->_targetPlatform->prefersIdentityColumns()) {
+                $class->setIdGeneratorType(Doctrine_ORM_Mapping_ClassMetadata::GENERATOR_TYPE_IDENTITY);
+            } else {
+                $class->setIdGeneratorType(Doctrine_ORM_Mapping_ClassMetadata::GENERATOR_TYPE_TABLE);
+            }
+        }
         
         return $class;
     }
-    
 }
 
 

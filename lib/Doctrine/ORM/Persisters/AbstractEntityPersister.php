@@ -19,7 +19,7 @@
  * <http://www.phpdoctrine.org>.
  */
 
-#namespace Doctrine::ORM::Persisters;
+#namespace Doctrine\ORM\Persisters;
 
 /**
  * Base class for all EntityPersisters.
@@ -89,59 +89,12 @@ abstract class Doctrine_ORM_Persisters_AbstractEntityPersister
      * @param Doctrine::ORM::Entity $entity The entity to insert.
      * @return void
      */
-    public function insert(Doctrine_ORM_Entity $entity)
+    public function insert($entity)
     {
         $insertData = array();
-        $class = $entity->getClass();
-        
-        $referenceChangeSet = $entity->_getReferenceChangeSet();
-        foreach ($referenceChangeSet as $field => $change) {
-            list($old, $new) = each($change);
-            $assocMapping = $class->getAssociationMapping($field);
-            if ( ! $assocMapping->isOneToOne() || $assocMapping->isInverseSide()) {
-                //echo "NOT TO-ONE OR INVERSE!";
-                continue;
-            }
-
-            foreach ($assocMapping->getSourceToTargetKeyColumns() as $sourceColumn => $targetColumn) {
-                //TODO: What if both join columns (local/foreign) are just db-only
-                // columns (no fields in models) ? Currently we assume the foreign column
-                // is mapped to a field in the foreign entity.
-                //TODO: throw exc if field not set
-                $insertData[$sourceColumn] = $new->_internalGetField(
-                        $new->getClass()->getFieldName($targetColumn)
-                        );
-            }
-            //...
-        }
-        
         $this->_prepareData($entity, $insertData, true);
-        
-        //TODO: perform insert
-        $this->_conn->insert($class->getTableName(), $insertData);
+        $this->_conn->insert($this->_classMetadata->getTableName(), $insertData);
     }
-    
-    /*protected function _fillJoinColumns($entity, array &$data)
-    {
-        $referenceChangeSet = $entity->_getReferenceChangeSet();
-        foreach ($referenceChangeSet as $field => $change) {
-            list($old, $new) = each($change);
-            $assocMapping = $entity->getClass()->getAssociationMapping($field);
-            if ( ! $assocMapping->isOneToOne() || $assocMapping->isInverseSide()) {
-                //echo "NOT TO-ONE OR INVERSE!";
-                continue;
-            }
-
-            foreach ($assocMapping->getSourceToTargetKeyColumns() as $sourceColumn => $targetColumn) {
-                //TODO: What if both join columns (local/foreign) are just db-only
-                // columns (no fields in models) ? Currently we assume the foreign column
-                // is mapped to a field in the foreign entity.
-                $insertData[$sourceColumn] = $new->_internalGetField(
-                        $new->getClass()->getFieldName($targetColumn)
-                        );
-            }
-        }
-    }*/
     
     /**
      * Updates an entity.
@@ -229,13 +182,29 @@ abstract class Doctrine_ORM_Persisters_AbstractEntityPersister
         $this->_fieldNames = $this->_classMetadata->getFieldNames();
         return $this->_fieldNames;
     }
-    
+
     /**
-     * @todo Move to ClassMetadata?
+     * Gets the name of the class in the entity hierarchy that owns the field with
+     * the given name. The owning class is the one that defines the field.
+     *
+     * @param string $fieldName
+     * @return string
+     * @todo Consider using 'inherited' => 'ClassName' to make the lookup simpler.
      */
     public function getOwningClass($fieldName)
     {
-        return $this->_classMetadata;
+        if ($this->_classMetadata->isInheritanceTypeNone()) {
+            return $this->_classMetadata;
+        } else {
+            foreach ($this->_classMetadata->getParentClasses() as $parentClass) {
+                $parentClassMetadata = Doctrine_ORM_Mapping_ClassMetadataFactory::getInstance()
+                        ->getMetadataFor($parentClass);
+                if ( ! $parentClassMetadata->isInheritedField($fieldName)) {
+                    return $parentClassMetadata;
+                }
+            }
+        }
+        throw new Doctrine_Exception("Unable to find defining class of field '$fieldName'.");
     }
     
     /**
@@ -278,44 +247,57 @@ abstract class Doctrine_ORM_Persisters_AbstractEntityPersister
      *
      * @param array $array
      * @return void
-     * @todo Move to EntityPersister. There call _getChangeSet() and apply this logic.
      */
     protected function _prepareData($entity, array &$result, $isInsert = false)
     {
-        foreach ($entity->_getDataChangeSet() as $field => $change) {
+        foreach ($this->_em->getUnitOfWork()->getDataChangeSet($entity) as $field => $change) {
             list ($oldVal, $newVal) = each($change);
-            $type = $entity->getClass()->getTypeOfField($field);
-            $columnName = $entity->getClass()->getColumnName($field);
+            $type = $this->_classMetadata->getTypeOfField($field);
+            $columnName = $this->_classMetadata->getColumnName($field);
 
             if ($newVal === Doctrine_ORM_Internal_Null::$INSTANCE) {
                 $result[$columnName] = null;
-                continue;
-            }
+            } else if (is_object($newVal)) {
+                $assocMapping = $this->_classMetadata->getAssociationMapping($field);
+                if ( ! $assocMapping->isOneToOne() || $assocMapping->isInverseSide()) {
+                    //echo "NOT TO-ONE OR INVERSE!";
+                    continue;
+                }
 
-            switch ($type) {
-                case 'array':
-                case 'object':
-                    $result[$columnName] = serialize($newVal);
+                foreach ($assocMapping->getSourceToTargetKeyColumns() as $sourceColumn => $targetColumn) {
+                    //TODO: What if both join columns (local/foreign) are just db-only
+                    // columns (no fields in models) ? Currently we assume the foreign column
+                    // is mapped to a field in the foreign entity.
+                    //TODO: throw exc if field not set
+                    $otherClass = $this->_em->getClassMetadata($assocMapping->getTargetEntityName());
+                    $result[$sourceColumn] = $otherClass->getReflectionProperty(
+                            $otherClass->getFieldName($targetColumn))->getValue($newVal);
+                }
+            } else {
+                switch ($type) {
+                    case 'array':
+                    case 'object':
+                        $result[$columnName] = serialize($newVal);
+                        break;
+                    case 'gzip':
+                        $result[$columnName] = gzcompress($newVal, 5);
+                        break;
+                    case 'boolean':
+                        $result[$columnName] = $this->_em->getConnection()->convertBooleans($newVal);
                     break;
-                case 'gzip':
-                    $result[$columnName] = gzcompress($newVal, 5);
-                    break;
-                case 'boolean':
-                    $result[$columnName] = $this->_em->getConnection()->convertBooleans($newVal);
-                break;
-                default:
-                    $result[$columnName] = $newVal;
+                    default:
+                        $result[$columnName] = $newVal;
+                }
             }
             /*$result[$columnName] = $type->convertToDatabaseValue(
                     $newVal, $this->_em->getConnection()->getDatabasePlatform());*/
         }
         
-        // @todo Cleanup
         // populates the discriminator column on insert in Single & Class Table Inheritance
-        if ($isInsert && ($entity->getClass()->isInheritanceTypeJoined() ||
-                $entity->getClass()->isInheritanceTypeSingleTable())) {
-            $discColumn = $entity->getClass()->getInheritanceOption('discriminatorColumn');
-            $discMap = $entity->getClass()->getInheritanceOption('discriminatorMap');
+        if ($isInsert && ($this->_classMetadata->isInheritanceTypeJoined() ||
+                $this->_classMetadata->isInheritanceTypeSingleTable())) {
+            $discColumn = $this->_classMetadata->getInheritanceOption('discriminatorColumn');
+            $discMap = $this->_classMetadata->getInheritanceOption('discriminatorMap');
             $result[$discColumn] = array_search($this->_entityName, $discMap);
         }
     }
@@ -597,14 +579,14 @@ abstract class Doctrine_ORM_Persisters_AbstractEntityPersister
      */
     protected function _insert(Doctrine_ORM_Entity $record)
     {
-        $record->preInsert();
-        $this->notifyEntityListeners($record, 'preInsert', Doctrine_Event::RECORD_INSERT);
+        //$record->preInsert();
+        //$this->notifyEntityListeners($record, 'preInsert', Doctrine_Event::RECORD_INSERT);
 
         $this->_doInsert($record);
         $this->addRecord($record);
         
-        $record->postInsert();
-        $this->notifyEntityListeners($record, 'postInsert', Doctrine_Event::RECORD_INSERT);
+        //$record->postInsert();
+        //$this->notifyEntityListeners($record, 'postInsert', Doctrine_Event::RECORD_INSERT);
         
         return true;
     }

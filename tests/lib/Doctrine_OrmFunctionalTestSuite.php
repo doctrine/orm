@@ -10,8 +10,6 @@ class Doctrine_OrmFunctionalTestSuite extends Doctrine_OrmTestSuite
 {
     protected function setUp()
     {
-        $this->sharedFixture['em'] = new Doctrine_EntityManager(
-                Doctrine_TestUtil::getConnection());
     }
     
     protected function tearDown()

@@ -45,6 +45,7 @@
  * @author    Konsta Vesterinen <kvesteri@cc.hut.fi>
  * @author    Roman Borschel <roman@code-factory.org>
  * @todo Add more typical Collection methods.
+ * @todo Rename to PersistentCollection
  */
 class Doctrine_ORM_Collection implements Countable, IteratorAggregate, Serializable, ArrayAccess
 {   
@@ -74,7 +75,7 @@ class Doctrine_ORM_Collection implements Countable, IteratorAggregate, Serializa
     /**
      * This entity that owns this collection.
      * 
-     * @var Doctrine::ORM::Entity
+     * @var Doctrine\ORM\Entity
      */
     protected $_owner;
 
@@ -82,7 +83,7 @@ class Doctrine_ORM_Collection implements Countable, IteratorAggregate, Serializa
      * The association mapping the collection belongs to.
      * This is currently either a OneToManyMapping or a ManyToManyMapping.
      *
-     * @var Doctrine::ORM::Mapping::AssociationMapping             
+     * @var Doctrine\ORM\Mapping\AssociationMapping
      */
     protected $_association;
 
@@ -92,18 +93,11 @@ class Doctrine_ORM_Collection implements Countable, IteratorAggregate, Serializa
      * @var string
      */
     protected $_keyField;
-
-    /**
-     * Helper variable. Used for fast null value testing.
-     *
-     * @var Doctrine_Null
-     */
-    //protected static $null;
     
     /**
      * The EntityManager that manages the persistence of the collection.
      *
-     * @var Doctrine::ORM::EntityManager
+     * @var Doctrine\ORM\EntityManager
      */
     protected $_em;
     
@@ -124,7 +118,6 @@ class Doctrine_ORM_Collection implements Countable, IteratorAggregate, Serializa
     protected $_hydrationFlag;
 
     /**
-     * Constructor.
      * Creates a new persistent collection.
      */
     public function __construct($entityBaseType, $keyField = null)
@@ -174,9 +167,9 @@ class Doctrine_ORM_Collection implements Countable, IteratorAggregate, Serializa
     }
 
     /**
-     * returns all the records as an array
+     * Unwraps the array contained in the Collection instance.
      *
-     * @return array
+     * @return array The wrapped array.
      */
     public function unwrap()
     {
@@ -229,7 +222,7 @@ class Doctrine_ORM_Collection implements Countable, IteratorAggregate, Serializa
      *
      * @return void
      */
-    public function _setOwner(Doctrine_ORM_Entity $entity, Doctrine_ORM_Mapping_AssociationMapping $relation)
+    public function _setOwner($entity, Doctrine_ORM_Mapping_AssociationMapping $relation)
     {
         $this->_owner = $entity;
         $this->_association = $relation;
@@ -248,9 +241,9 @@ class Doctrine_ORM_Collection implements Countable, IteratorAggregate, Serializa
 
     /**
      * INTERNAL:
-     * getReference
+     * Gets the collection owner.
      *
-     * @return mixed
+     * @return Doctrine\ORM\Entity
      */
     public function _getOwner()
     {
@@ -474,8 +467,7 @@ class Doctrine_ORM_Collection implements Countable, IteratorAggregate, Serializa
      */
     public function add($value, $key = null)
     {
-        //TODO: really only allow entities?
-        if ( ! $value instanceof Doctrine_ORM_Entity) {
+        if ( ! $value instanceof $this->_entityBaseType) {
             throw new Doctrine_Record_Exception('Value variable in collection is not an instance of Doctrine_Entity.');
         }
         
@@ -496,7 +488,8 @@ class Doctrine_ORM_Collection implements Countable, IteratorAggregate, Serializa
         if ($this->_hydrationFlag) {
             if ($this->_backRefFieldName) {
                 // set back reference to owner
-                $value->_internalSetReference($this->_backRefFieldName, $this->_owner);
+                $this->_em->getClassMetadata($this->_entityBaseType)->getReflectionProperty(
+                        $this->_backRefFieldName)->setValue($value, $this->_owner);
             }
         } else {
             //TODO: Register collection as dirty with the UoW if necessary
@@ -721,7 +714,8 @@ class Doctrine_ORM_Collection implements Countable, IteratorAggregate, Serializa
      */
     public function isEmpty()
     {
-        return $this->count() == 0;
+        // Note: Little "trick". Empty arrays evaluate to FALSE. No need to count().
+        return ! (bool)$this->_data;
     }
 
     /**
@@ -766,40 +760,6 @@ class Doctrine_ORM_Collection implements Countable, IteratorAggregate, Serializa
     }
 
     /**
-     * Export a Doctrine_Collection to one of the supported Doctrine_Parser formats
-     *
-     * @param string $type 
-     * @param string $deep 
-     * @return void
-     * @todo Move elsewhere.
-     */
-    /*public function exportTo($type, $deep = false)
-    {
-        if ($type == 'array') {
-            return $this->toArray($deep);
-        } else {
-            return Doctrine_Parser::dump($this->toArray($deep, true), $type);
-        }
-    }*/
-
-    /**
-     * Import data to a Doctrine_Collection from one of the supported Doctrine_Parser formats
-     *
-     * @param string $type 
-     * @param string $data 
-     * @return void
-     * @todo Move elsewhere.
-     */
-    /*public function importFrom($type, $data)
-    {
-        if ($type == 'array') {
-            return $this->fromArray($data);
-        } else {
-            return $this->fromArray(Doctrine_Parser::load($data, $type));
-        }
-    }*/
-
-    /**
      * INTERNAL: getDeleteDiff
      *
      * @return array
@@ -833,62 +793,9 @@ class Doctrine_ORM_Collection implements Countable, IteratorAggregate, Serializa
     }
 
     /**
-     * Saves all records of this collection and processes the 
-     * difference of the last snapshot and the current data.
      *
-     * @param Doctrine_Connection $conn     optional connection parameter
-     * @return Doctrine_Collection
+     * @param <type> $deep
      */
-    /*public function save()
-    {
-        $conn = $this->_mapper->getConnection();
-        
-        try {
-            $conn->beginInternalTransaction();
-            
-            $conn->transaction->addCollection($this);
-            $this->processDiff();
-            foreach ($this->getData() as $key => $record) {
-                $record->save($conn);
-            }
-            
-            $conn->commit();
-        } catch (Exception $e) {
-            $conn->rollback();
-            throw $e;
-        }
-
-        return $this;
-    }*/
-
-    /**
-     * Deletes all records from the collection.
-     * Shorthand for calling delete() for all entities in the collection.
-     *
-     * @return void
-     */
-    /*public function delete()
-    {  
-        $conn = $this->_mapper->getConnection();
-
-        try {
-            $conn->beginInternalTransaction();
-            
-            $conn->transaction->addCollection($this);
-            foreach ($this as $key => $record) {
-                $record->delete($conn);
-            }
-
-            $conn->commit();            
-        } catch (Exception $e) {
-            $conn->rollback();
-            throw $e;
-        }
-        
-        $this->clear();
-    }*/
-
-
     public function free($deep = false)
     {
         foreach ($this->getData() as $key => $record) {

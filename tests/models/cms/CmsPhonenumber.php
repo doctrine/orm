@@ -1,15 +1,20 @@
 <?php
-class CmsPhonenumber extends Doctrine_ORM_Entity
+class CmsPhonenumber
 {
-    #protected $user_id;
-    #protected $phonenumber;
+    public $phonenumber;
+    public $user;
+
+    /*static function construct() {
+        Doctrine_Common_VirtualPropertySystem::register(__CLASS__, 'user_id', 'int');
+        Doctrine_Common_VirtualPropertySystem::register(__CLASS__, 'phonenumber', 'string');
+        Doctrine_Common_VirtualPropertySystem::register(__CLASS__, 'user', 'CmsUser');
+    }*/
     
     public static function initMetadata($mapping)
     {
         $mapping->mapField(array(
             'fieldName' => 'user_id',
-            'type' => 'integer',
-            'length' => 4
+            'type' => 'integer'
         ));
         $mapping->mapField(array(
             'fieldName' => 'phonenumber',

@@ -51,7 +51,7 @@ class Doctrine_ORM_Query_Parser_AbstractSchemaName extends Doctrine_ORM_Query_Pa
         // Check if we are dealing with a real Doctrine_Entity or not
         if ( ! $this->_isDoctrineEntity($componentName)) {
             $this->_parser->semanticalError(
-                "Defined entity '" . $companyName . "' is not a valid Doctrine_Entity."
+                "Defined entity '" . $componentName . "' is not a valid entity."
             );
         }
 
@@ -62,6 +62,6 @@ class Doctrine_ORM_Query_Parser_AbstractSchemaName extends Doctrine_ORM_Query_Pa
     
     protected function _isDoctrineEntity($componentName)
     {
-        return class_exists($componentName) && is_subclass_of($componentName, 'Doctrine_ORM_Entity');
+        return class_exists($componentName)/* && is_subclass_of($componentName, 'Doctrine_ORM_Entity')*/;
     }
 }

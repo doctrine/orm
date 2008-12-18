@@ -140,7 +140,7 @@ class Doctrine_Common_Configuration
     public function setTypeOverrides(array $overrides)
     {
         foreach ($override as $name => $typeClassName) {
-            Doctrine_DataType::overrideType($name, $typeClassName);
+            Doctrine_DBAL_Types_Type::overrideType($name, $typeClassName);
         }
     }
 }

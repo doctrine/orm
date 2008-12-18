@@ -39,7 +39,6 @@ class Doctrine_Common_Events_Event
     const postDelete = 'postDelete';
     //...more
 
-
     protected $_type;
     protected $_target;
     protected $_defaultPrevented;

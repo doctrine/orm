@@ -8,10 +8,11 @@ class Doctrine_EntityPersisterMock extends Doctrine_ORM_Persisters_StandardEntit
     
     private $_identityColumnValueCounter = 0;
     
-    public function insert(Doctrine_ORM_Entity $entity)
+    public function insert($entity)
     {
-        if ($entity->getClass()->isIdGeneratorIdentity()) {    
-            $entity->_assignIdentifier($this->_identityColumnValueCounter++);
+        $class = $this->_em->getClassMetadata(get_class($entity));
+        if ($class->isIdGeneratorIdentity()) {
+            $class->setEntityIdentifier($entity, $this->_identityColumnValueCounter++);
             $this->_em->getUnitOfWork()->addToIdentityMap($entity);
         }
         

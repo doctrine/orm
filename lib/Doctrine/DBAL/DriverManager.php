@@ -90,7 +90,8 @@ final class Doctrine_DBAL_DriverManager
      * @param Doctrine::Common::EventManager The event manager to use.
      * @return Doctrine::DBAL::Connection
      */
-    public static function getConnection(array $params, Doctrine_Common_Configuration $config = null,
+    public static function getConnection(array $params,
+            Doctrine_Common_Configuration $config = null,
             Doctrine_Common_EventManager $eventManager = null)
     {
         // create default config and event manager, if not set

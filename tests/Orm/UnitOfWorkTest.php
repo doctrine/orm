@@ -24,21 +24,15 @@ class Orm_UnitOfWorkTest extends Doctrine_OrmTestCase
     private $_persisterMock;
     // The EntityManager mock that provides the mock persister
     private $_emMock;
-    private $_platformMock;
-    private $_classMetadataMock;
     
     protected function setUp() {
         parent::setUp();
 
         $this->_connectionMock = new Doctrine_ConnectionMock(array());
-        $this->_platformMock = new Doctrine_DatabasePlatformMock();
-        $this->_platformMock->setPrefersIdentityColumns(true);
         $this->_emMock = Doctrine_EntityManagerMock::create($this->_connectionMock, "uowMockEm");
         $this->_idGeneratorMock = new Doctrine_SequenceMock($this->_emMock);
-        $this->_connectionMock->setDatabasePlatform($this->_platformMock);
-        
-        $this->_classMetadataMock = new Doctrine_ClassMetadataMock("ForumUser", $this->_emMock);
-        $this->_classMetadataMock->setIdGenerator($this->_idGeneratorMock);
+        $this->_emMock->setIdGenerator('ForumUser', $this->_idGeneratorMock);
+        $this->_emMock->setIdGenerator('ForumAvatar', $this->_idGeneratorMock);
         
         $this->_persisterMock = new Doctrine_EntityPersisterMock(
                 $this->_emMock, $this->_emMock->getClassMetadata("ForumUser"));
@@ -55,7 +49,7 @@ class Orm_UnitOfWorkTest extends Doctrine_OrmTestCase
     }
     
     protected function tearDown() {
-        $this->_user->free();
+        //$this->_user->free();
     }
     
     /* Basic registration tests */
@@ -83,16 +77,6 @@ class Orm_UnitOfWorkTest extends Doctrine_OrmTestCase
         echo $e - $s . " seconds" . PHP_EOL;
     }*/
     
-    public function testRegisterDirty()
-    {
-        $this->assertEquals(Doctrine_ORM_Entity::STATE_NEW, $this->_user->_state());
-        $this->assertFalse($this->_unitOfWork->isInIdentityMap($this->_user));
-        $this->_unitOfWork->registerDirty($this->_user);
-        $this->assertTrue($this->_unitOfWork->isRegisteredDirty($this->_user));
-        $this->assertFalse($this->_unitOfWork->isRegisteredNew($this->_user));
-        $this->assertFalse($this->_unitOfWork->isRegisteredRemoved($this->_user));
-    }
-    
     public function testRegisterRemovedOnNewEntityIsIgnored()
     {
         $this->assertFalse($this->_unitOfWork->isRegisteredRemoved($this->_user));
@@ -104,9 +88,7 @@ class Orm_UnitOfWorkTest extends Doctrine_OrmTestCase
     /* Operational tests */
     
     public function testSavingSingleEntityWithIdentityColumnForcesInsert()
-    {
-        $this->assertEquals(Doctrine_ORM_Entity::STATE_NEW, $this->_user->_state());
-        
+    {        
         $this->_unitOfWork->save($this->_user);
         
         $this->assertEquals(1, count($this->_persisterMock->getInserts())); // insert forced
@@ -114,7 +96,6 @@ class Orm_UnitOfWorkTest extends Doctrine_OrmTestCase
         $this->assertEquals(0, count($this->_persisterMock->getDeletes()));
         
         $this->assertTrue($this->_unitOfWork->isInIdentityMap($this->_user));
-        $this->assertEquals(Doctrine_ORM_Entity::STATE_MANAGED, $this->_user->_state());
         
         // should no longer be scheduled for insert
         $this->assertFalse($this->_unitOfWork->isRegisteredNew($this->_user));        
@@ -149,7 +130,7 @@ class Orm_UnitOfWorkTest extends Doctrine_OrmTestCase
         
         //...
     }
-    
+    /*
     public function testSavingSingleEntityWithSequenceIdGeneratorSchedulesInsert()
     {
         //...
@@ -189,5 +170,5 @@ class Orm_UnitOfWorkTest extends Doctrine_OrmTestCase
     {
         //...
     }
-    
+    */
 }

@@ -1,14 +1,15 @@
 <?php
 
-#namespace Doctrine::Tests::ORM::Models::Forum;
+#namespace Doctrine\Tests\ORM\Models\Forum;
 
-#use Doctrine::ORM::Entity;
+#use Doctrine\ORM\Entity;
+#use Doctrine\Common\VirtualPropertySystem;
 
-class ForumUser extends Doctrine_ORM_Entity
+class ForumUser
 {
-    #protected $id;
-    #protected $username;
-    #protected $avatar;
+    public $id;
+    public $username;
+    public $avatar;
     
     public static function initMetadata($mapping) 
     {
@@ -26,7 +27,6 @@ class ForumUser extends Doctrine_ORM_Entity
         $mapping->mapField(array(
             'fieldName' => 'id',
             'type' => 'integer',
-            'length' => 4,
             'id' => true,
             'idGenerator' => 'auto'
         ));
@@ -41,8 +41,6 @@ class ForumUser extends Doctrine_ORM_Entity
             'targetEntity' => 'ForumAvatar',
             'joinColumns' => array('avatar_id' => 'id'),
             'cascade' => array('save')
-        ));
-        
+        ));   
     }
-    
 }

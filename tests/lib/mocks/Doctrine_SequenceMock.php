@@ -10,7 +10,7 @@ class Doctrine_SequenceMock extends Doctrine_ORM_Id_SequenceGenerator
      * @param Doctrine_Entity $entity
      * @override
      */
-    public function generate(Doctrine_ORM_Entity $entity)
+    public function generate($entity)
     {
         return $this->_sequenceNumber++;
     }

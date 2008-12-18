@@ -19,7 +19,7 @@
  * <http://www.phpdoctrine.org>.
  */
 
-#namespace Doctrine::ORM::Mapping;
+#namespace Doctrine\ORM\Mapping;
 
 /**
  * Base class for association mappings.

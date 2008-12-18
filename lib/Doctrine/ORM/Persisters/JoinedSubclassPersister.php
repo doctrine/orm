@@ -219,7 +219,7 @@ class Doctrine_ORM_Persisters_JoinedSubclassPersister extends Doctrine_ORM_Persi
      * 
      * @todo Looks like this better belongs into the ClassMetadata class.
      */
-    public function getOwningClass($fieldName)
+    /*public function getOwningClass($fieldName)
     {
         $conn = $this->_conn;
         $classMetadata = $this->_classMetadata;
@@ -242,7 +242,7 @@ class Doctrine_ORM_Persisters_JoinedSubclassPersister extends Doctrine_ORM_Persi
         }
         
         throw new Doctrine_Mapper_Exception("Unable to find defining class of field '$fieldName'.");
-    }
+    }*/
     
     /**
      * Analyzes the fields of the entity and creates a map in which the field names
