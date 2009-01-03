@@ -23,10 +23,8 @@ class Orm_UnitOfWorkTest extends Doctrine_OrmTestCase
     
     protected function setUp() {
         parent::setUp();
-
         $this->_connectionMock = new Doctrine_ConnectionMock(array());
         $this->_emMock = Doctrine_EntityManagerMock::create($this->_connectionMock, "uowMockEm");
-        $this->_emMock->activate();
         
         // SUT
         $this->_unitOfWork = new Doctrine_UnitOfWorkMock($this->_emMock);
@@ -135,6 +133,7 @@ class Orm_UnitOfWorkTest extends Doctrine_OrmTestCase
         $user2 = new ForumUser();
         $user2->id = 2;
         $user2->username = "jwage";
+        // Fake managed state
         $this->_unitOfWork->setEntityState($user2, Doctrine_ORM_UnitOfWork::STATE_MANAGED);
 
         $this->_unitOfWork->setOriginalEntityData($user1, array(
