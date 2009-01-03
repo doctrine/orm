@@ -4,23 +4,43 @@
  * Special generator for application-assigned identifiers (doesnt really generate anything).
  *
  * @since 2.0
+ * @author Roman Borschel <roman@code-factory.org>
  */
 class Doctrine_ORM_Id_Assigned extends Doctrine_ORM_Id_AbstractIdGenerator
 {
     /**
-     * Enter description here...
+     * Returns the identifier assigned to the given entity.
      *
-     * @param Doctrine_ORM_Entity $entity
-     * @return unknown
+     * @param Doctrine\ORM\Entity $entity
+     * @return mixed
      * @override
      */
     public function generate($entity)
     {
-        if ( ! $entity->_identifier()) {
-            throw new Doctrine_Exception("Entity '$entity' is missing an assigned Id");
+        $class = $this->_em->getClassMetadata(get_class($entity));
+        if ($class->isIdentifierComposite()) {
+            $identifier = array();
+            $idFields = $class->getIdentifierFieldNames();
+            foreach ($idFields as $idField) {
+                $identifier[] =
+                $value = $class->getReflectionProperty($idField)->getValue($entity);
+                if (isset($value)) {
+                    $identifier[] = $value;
+                }
+            }
+        } else {
+            $value = $class->getReflectionProperty($class->getSingleIdentifierFieldName())
+                    ->getValue($entity);
+            if (isset($value)) {
+                $identifier = array($value);
+            }
         }
-        return $entity->_identifier();
+
+        if ( ! $identifier) {
+            throw new Doctrine_Exception("Entity '$entity' is missing an assigned ID.");
+        }
+        
+        return $identifier;
     }
 }
 
-?>

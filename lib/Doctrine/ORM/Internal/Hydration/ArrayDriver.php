@@ -19,7 +19,7 @@
  * <http://www.phpdoctrine.org>.
  */
 
-#namespace Doctrine::ORM::Internal::Hydration;
+#namespace Doctrine\ORM\Internal\Hydration;
 
 /**
  * Defines an array hydration strategy.
@@ -32,8 +32,7 @@
  * @author      Roman Borschel <roman@code-factory.org>
  */
 class Doctrine_ORM_Internal_Hydration_ArrayDriver
-{
-    
+{   
     /**
      *
      */
@@ -66,8 +65,7 @@ class Doctrine_ORM_Internal_Hydration_ArrayDriver
         }
     }
     
-    public function addRelatedIndexedElement(array &$entity1, $property, array &$entity2,
-            $indexField)
+    public function addRelatedIndexedElement(array &$entity1, $property, array &$entity2, $indexField)
     {
         $entity1[$property][$entity2[$indexField]] = $entity2;
     }
@@ -134,7 +132,7 @@ class Doctrine_ORM_Internal_Hydration_ArrayDriver
      * last seen instance of each Entity type. This is used for graph construction.
      *
      * @param array $resultPointers  The result pointers.
-     * @param array|Collection $coll  The element.
+     * @param array $coll  The element.
      * @param boolean|integer $index  Index of the element in the collection.
      * @param string $dqlAlias
      * @param boolean $oneToOne  Whether it is a single-valued association or not.

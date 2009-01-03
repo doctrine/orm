@@ -2,7 +2,8 @@
 require_once 'lib/DoctrineTestInit.php';
 require_once 'lib/mocks/Doctrine_EntityManagerMock.php';
 require_once 'lib/mocks/Doctrine_ConnectionMock.php';
-require_once 'lib/mocks/Doctrine_ClassMetadataMock.php';
+require_once 'lib/mocks/Doctrine_UnitOfWorkMock.php';
+require_once 'lib/mocks/Doctrine_IdentityIdGeneratorMock.php';
 
 /**
  * UnitOfWork tests.
@@ -12,16 +13,11 @@ require_once 'lib/mocks/Doctrine_ClassMetadataMock.php';
 class Orm_UnitOfWorkTest extends Doctrine_OrmTestCase
 {
     private $_unitOfWork;
-    private $_user;
     
     // Mocks
     
     // Provides a sequence mock to the UnitOfWork
     private $_connectionMock;
-    // The sequence mock
-    private $_idGeneratorMock;
-    // The persister mock used by the UnitOfWork
-    private $_persisterMock;
     // The EntityManager mock that provides the mock persister
     private $_emMock;
     
@@ -30,106 +26,141 @@ class Orm_UnitOfWorkTest extends Doctrine_OrmTestCase
 
         $this->_connectionMock = new Doctrine_ConnectionMock(array());
         $this->_emMock = Doctrine_EntityManagerMock::create($this->_connectionMock, "uowMockEm");
-        $this->_idGeneratorMock = new Doctrine_SequenceMock($this->_emMock);
-        $this->_emMock->setIdGenerator('ForumUser', $this->_idGeneratorMock);
-        $this->_emMock->setIdGenerator('ForumAvatar', $this->_idGeneratorMock);
-        
-        $this->_persisterMock = new Doctrine_EntityPersisterMock(
-                $this->_emMock, $this->_emMock->getClassMetadata("ForumUser"));
-        $this->_emMock->setEntityPersister($this->_persisterMock);
-        
         $this->_emMock->activate();
         
         // SUT
-        $this->_unitOfWork = $this->_emMock->getUnitOfWork();
-        
-        $this->_user = new ForumUser();
-        $this->_user->id = 1;
-        $this->_user->username = 'romanb';
+        $this->_unitOfWork = new Doctrine_UnitOfWorkMock($this->_emMock);
+        $this->_emMock->setUnitOfWork($this->_unitOfWork);
     }
     
     protected function tearDown() {
-        //$this->_user->free();
     }
-    
-    /* Basic registration tests */
-    
-    public function testRegisterNew()
-    {
-        // registerNew() is normally called in save()/persist()
-        $this->_unitOfWork->registerNew($this->_user);
-        $this->assertTrue($this->_unitOfWork->isRegisteredNew($this->_user));
-        $this->assertTrue($this->_unitOfWork->isInIdentityMap($this->_user));
-        $this->assertFalse($this->_unitOfWork->isRegisteredDirty($this->_user));
-        $this->assertFalse($this->_unitOfWork->isRegisteredRemoved($this->_user));
-    }
-    
-    /*public function testRegisterNewPerf() {
-        $s = microtime(true);
-
-        for ($i=1; $i<40000; $i++) {
-            $user = new ForumUser();
-            $user->id = $i;
-            $this->_unitOfWork->registerNew($user);
-        }
-        $e = microtime(true);
-        
-        echo $e - $s . " seconds" . PHP_EOL;
-    }*/
     
     public function testRegisterRemovedOnNewEntityIsIgnored()
     {
-        $this->assertFalse($this->_unitOfWork->isRegisteredRemoved($this->_user));
-        $this->_unitOfWork->registerDeleted($this->_user);
-        $this->assertFalse($this->_unitOfWork->isRegisteredRemoved($this->_user));        
+        $user = new ForumUser();
+        $user->username = 'romanb';
+        $this->assertFalse($this->_unitOfWork->isRegisteredRemoved($user));
+        $this->_unitOfWork->registerDeleted($user);
+        $this->assertFalse($this->_unitOfWork->isRegisteredRemoved($user));        
     }
     
     
     /* Operational tests */
     
     public function testSavingSingleEntityWithIdentityColumnForcesInsert()
-    {        
-        $this->_unitOfWork->save($this->_user);
-        
-        $this->assertEquals(1, count($this->_persisterMock->getInserts())); // insert forced
-        $this->assertEquals(0, count($this->_persisterMock->getUpdates()));
-        $this->assertEquals(0, count($this->_persisterMock->getDeletes()));
-        
-        $this->assertTrue($this->_unitOfWork->isInIdentityMap($this->_user));
-        
+    {
+        // Setup fake persister and id generator for identity generation
+        $userPersister = new Doctrine_EntityPersisterMock($this->_emMock, $this->_emMock->getClassMetadata("ForumUser"));
+        $this->_emMock->setEntityPersister('ForumUser', $userPersister);
+        $idGeneratorMock = new Doctrine_IdentityIdGeneratorMock($this->_emMock);
+        $this->_emMock->setIdGenerator('ForumUser', $idGeneratorMock);
+        $userPersister->setMockIdGeneratorType(Doctrine_ORM_Mapping_ClassMetadata::GENERATOR_TYPE_IDENTITY);
+
+        // Test
+        $user = new ForumUser();
+        $user->username = 'romanb';
+        $this->_unitOfWork->save($user);
+
+        // Check
+        $this->assertEquals(1, count($userPersister->getInserts())); // insert forced
+        $this->assertEquals(0, count($userPersister->getUpdates()));
+        $this->assertEquals(0, count($userPersister->getDeletes()));   
+        $this->assertTrue($this->_unitOfWork->isInIdentityMap($user));
         // should no longer be scheduled for insert
-        $this->assertFalse($this->_unitOfWork->isRegisteredNew($this->_user));        
+        $this->assertFalse($this->_unitOfWork->isRegisteredNew($user));        
         // should have an id
-        $this->assertTrue(is_numeric($this->_user->id));
+        $this->assertTrue(is_numeric($user->id));
         
         // Now lets check whether a subsequent commit() does anything
-        
-        $this->_persisterMock->reset();
-        
+        $userPersister->reset();
+
+        // Test
         $this->_unitOfWork->commit(); // shouldnt do anything
         
-        // verify that nothing happened
-        $this->assertEquals(0, count($this->_persisterMock->getInserts()));
-        $this->assertEquals(0, count($this->_persisterMock->getUpdates()));
-        $this->assertEquals(0, count($this->_persisterMock->getDeletes()));
+        // Check. Verify that nothing happened.
+        $this->assertEquals(0, count($userPersister->getInserts()));
+        $this->assertEquals(0, count($userPersister->getUpdates()));
+        $this->assertEquals(0, count($userPersister->getDeletes()));
     }
-    
-    public function testCommitOrder()
+
+    /**
+     * Tests a scenario where a save() operation is cascaded from a ForumUser
+     * to its associated ForumAvatar, both entities using IDENTITY id generation.
+     */
+    public function testCascadedIdentityColumnInsert()
     {
+        // Setup fake persister and id generator for identity generation
+        //ForumUser
+        $userPersister = new Doctrine_EntityPersisterMock($this->_emMock, $this->_emMock->getClassMetadata("ForumUser"));
+        $this->_emMock->setEntityPersister('ForumUser', $userPersister);  
+        $userIdGeneratorMock = new Doctrine_IdentityIdGeneratorMock($this->_emMock);
+        $this->_emMock->setIdGenerator('ForumUser', $userIdGeneratorMock);
+        $userPersister->setMockIdGeneratorType(Doctrine_ORM_Mapping_ClassMetadata::GENERATOR_TYPE_IDENTITY);
+        // ForumAvatar
+        $avatarPersister = new Doctrine_EntityPersisterMock($this->_emMock, $this->_emMock->getClassMetadata("ForumAvatar"));
+        $this->_emMock->setEntityPersister('ForumAvatar', $avatarPersister);
+        $avatarIdGeneratorMock = new Doctrine_IdentityIdGeneratorMock($this->_emMock);
+        $this->_emMock->setIdGenerator('ForumAvatar', $avatarIdGeneratorMock);
+        $avatarPersister->setMockIdGeneratorType(Doctrine_ORM_Mapping_ClassMetadata::GENERATOR_TYPE_IDENTITY);
+
+        // Test
+        $user = new ForumUser();
+        $user->username = 'romanb';
         $avatar = new ForumAvatar();
-        $this->_user->avatar = $avatar;
-        $this->_unitOfWork->save($this->_user); // save cascaded to avatar
-        
-        $this->assertEquals(2, count($this->_persisterMock->getInserts())); // insert forced
-        $this->assertEquals(0, count($this->_persisterMock->getUpdates()));
-        $this->assertEquals(0, count($this->_persisterMock->getDeletes()));
-        // verify order of inserts()s
-        $inserts = $this->_persisterMock->getInserts();
-        $this->assertSame($avatar, $inserts[0]);
-        $this->assertSame($this->_user, $inserts[1]);
-        
-        //...
+        $user->avatar = $avatar;
+        $this->_unitOfWork->save($user); // save cascaded to avatar
+
+        $this->assertTrue(is_numeric($user->id));
+        $this->assertTrue(is_numeric($avatar->id));
+
+        $this->assertEquals(1, count($userPersister->getInserts())); // insert forced
+        $this->assertEquals(0, count($userPersister->getUpdates()));
+        $this->assertEquals(0, count($userPersister->getDeletes()));
+
+        $this->assertEquals(1, count($avatarPersister->getInserts())); // insert forced
+        $this->assertEquals(0, count($avatarPersister->getUpdates()));
+        $this->assertEquals(0, count($avatarPersister->getDeletes()));
     }
+
+    public function testComputeDataChangeSet()
+    {
+        $user1 = new ForumUser();
+        $user1->id = 1;
+        $user1->username = "romanb";
+        $user1->avatar = new ForumAvatar();
+        // Fake managed state
+        $this->_unitOfWork->setEntityState($user1, Doctrine_ORM_UnitOfWork::STATE_MANAGED);
+
+        $user2 = new ForumUser();
+        $user2->id = 2;
+        $user2->username = "jwage";
+        $this->_unitOfWork->setEntityState($user2, Doctrine_ORM_UnitOfWork::STATE_MANAGED);
+
+        $this->_unitOfWork->setOriginalEntityData($user1, array(
+            'id' => 1, 'username' => 'roman'
+        ));
+        $this->_unitOfWork->setOriginalEntityData($user2, array(
+            'id' => 2, 'username' => 'jon'
+        ));
+
+        $this->_unitOfWork->computeDataChangeSet(array($user1, $user2));
+
+        $user1ChangeSet = $this->_unitOfWork->getDataChangeSet($user1);
+        $this->assertTrue(is_array($user1ChangeSet));
+        $this->assertEquals(2, count($user1ChangeSet));
+        $this->assertTrue(isset($user1ChangeSet['username']));
+        $this->assertEquals(array('roman' => 'romanb'), $user1ChangeSet['username']);
+        $this->assertTrue(isset($user1ChangeSet['avatar']));
+        $this->assertSame(array(null => $user1->avatar), $user1ChangeSet['avatar']);
+
+        $user2ChangeSet = $this->_unitOfWork->getDataChangeSet($user2);
+        $this->assertTrue(is_array($user2ChangeSet));
+        $this->assertEquals(1, count($user2ChangeSet));
+        $this->assertTrue(isset($user2ChangeSet['username']));
+        $this->assertEquals(array('jon' => 'jwage'), $user2ChangeSet['username']);
+    }
+
     /*
     public function testSavingSingleEntityWithSequenceIdGeneratorSchedulesInsert()
     {

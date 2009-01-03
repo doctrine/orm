@@ -19,10 +19,10 @@
  * <http://www.phpdoctrine.org>.
  */
 
-#namespace Doctrine::ORM;
+#namespace Doctrine\ORM;
 
 /**
- * A persistent collection.
+ * A persistent collection wrapper.
  * 
  * A collection object is strongly typed in the sense that it can only contain
  * entities of a specific type or one of it's subtypes. A collection object is
@@ -73,7 +73,7 @@ class Doctrine_ORM_Collection implements Countable, IteratorAggregate, Serializa
     protected $_snapshot = array();
 
     /**
-     * This entity that owns this collection.
+     * The entity that owns this collection.
      * 
      * @var Doctrine\ORM\Entity
      */
@@ -468,7 +468,7 @@ class Doctrine_ORM_Collection implements Countable, IteratorAggregate, Serializa
     public function add($value, $key = null)
     {
         if ( ! $value instanceof $this->_entityBaseType) {
-            throw new Doctrine_Record_Exception('Value variable in collection is not an instance of Doctrine_Entity.');
+            throw new Doctrine_Exception('Invalid instance.');
         }
         
         // TODO: Really prohibit duplicates?
@@ -511,121 +511,6 @@ class Doctrine_ORM_Collection implements Countable, IteratorAggregate, Serializa
         //TODO: Register collection as dirty with the UoW if necessary
         //$this->_changed();
     }
-
-    /**
-     * INTERNAL:
-     * loadRelated
-     *
-     * @param mixed $name
-     * @return boolean
-     * @todo New implementation & maybe move elsewhere.
-     */
-    /*public function loadRelated($name = null)
-    {
-        $list = array();
-        $query = new Doctrine_Query($this->_mapper->getConnection());
-
-        if ( ! isset($name)) {
-            foreach ($this->_data as $record) {
-                // FIXME: composite key support
-                $ids = $record->identifier();
-                $value = count($ids) > 0 ? array_pop($ids) : null;
-                if ($value !== null) {
-                    $list[] = $value;
-                }
-            }
-            $query->from($this->_mapper->getComponentName()
-                    . '(' . implode(", ",$this->_mapper->getTable()->getPrimaryKeys()) . ')');
-            $query->where($this->_mapper->getComponentName()
-                    . '.id IN (' . substr(str_repeat("?, ", count($list)),0,-2) . ')');
-
-            return $query;
-        }
-
-        $rel = $this->_mapper->getTable()->getRelation($name);
-
-        if ($rel instanceof Doctrine_Relation_LocalKey || $rel instanceof Doctrine_Relation_ForeignKey) {
-            foreach ($this->_data as $record) {
-                $list[] = $record[$rel->getLocal()];
-            }
-        } else {
-            foreach ($this->_data as $record) {
-                $ids = $record->identifier();
-                $value = count($ids) > 0 ? array_pop($ids) : null;
-                if ($value !== null) {
-                    $list[] = $value;
-                }
-            }
-        }
-
-        $dql = $rel->getRelationDql(count($list), 'collection');
-        $coll = $query->query($dql, $list);
-
-        $this->populateRelated($name, $coll);
-    }*/
-
-    /**
-     * INTERNAL:
-     * populateRelated
-     *
-     * @param string $name
-     * @param Doctrine_Collection $coll
-     * @return void
-     * @todo New implementation & maybe move elsewhere.
-     */
-    /*protected function populateRelated($name, Doctrine_Collection $coll)
-    {
-        $rel     = $this->_mapper->getTable()->getRelation($name);
-        $table   = $rel->getTable();
-        $foreign = $rel->getForeign();
-        $local   = $rel->getLocal();
-
-        if ($rel instanceof Doctrine_Relation_LocalKey) {
-            foreach ($this->_data as $key => $record) {
-                foreach ($coll as $k => $related) {
-                    if ($related[$foreign] == $record[$local]) {
-                        $this->_data[$key]->_setRelated($name, $related);
-                    }
-                }
-            }
-        } else if ($rel instanceof Doctrine_Relation_ForeignKey) {
-            foreach ($this->_data as $key => $record) {
-                if ( ! $record->exists()) {
-                    continue;
-                }
-                $sub = new Doctrine_Collection($rel->getForeignComponentName());
-
-                foreach ($coll as $k => $related) {
-                    if ($related[$foreign] == $record[$local]) {
-                        $sub->add($related);
-                        $coll->remove($k);
-                    }
-                }
-
-                $this->_data[$key]->_setRelated($name, $sub);
-            }
-        } else if ($rel instanceof Doctrine_Relation_Association) {
-            // @TODO composite key support
-            $identifier = (array)$this->_mapper->getClassMetadata()->getIdentifier();
-            $asf        = $rel->getAssociationFactory();
-            $name       = $table->getComponentName();
-
-            foreach ($this->_data as $key => $record) {
-                if ( ! $record->exists()) {
-                    continue;
-                }
-                $sub = new Doctrine_Collection($rel->getForeignComponentName());
-                foreach ($coll as $k => $related) {
-                    $idField = $identifier[0];
-                    if ($related->get($local) == $record[$idField]) {
-                        $sub->add($related->get($name));
-                    }
-                }
-                $this->_data[$key]->_setRelated($name, $sub);
-
-            }
-        }
-    }*/
     
     /**
      * INTERNAL:
@@ -661,7 +546,8 @@ class Doctrine_ORM_Collection implements Countable, IteratorAggregate, Serializa
     }
 
     /**
-     * INTERNAL: Returns the data of the last snapshot.
+     * INTERNAL:
+     * Returns the data of the last snapshot.
      *
      * @return array    returns the data in last snapshot
      */
@@ -671,7 +557,8 @@ class Doctrine_ORM_Collection implements Countable, IteratorAggregate, Serializa
     }
 
     /**
-     * INTERNAL: Processes the difference of the last snapshot and the current data.
+     * INTERNAL:
+     * Processes the difference of the last snapshot and the current data.
      *
      * an example:
      * Snapshot with the objects 1, 2 and 4
@@ -719,7 +606,7 @@ class Doctrine_ORM_Collection implements Countable, IteratorAggregate, Serializa
     }
 
     /**
-     * Populate a Doctrine_Collection from an array of data.
+     * Populate a Collection from an array of data.
      *
      * @param string $array 
      * @return void
@@ -733,7 +620,7 @@ class Doctrine_ORM_Collection implements Countable, IteratorAggregate, Serializa
     }
 
     /**
-     * Synchronizes a Doctrine_Collection with data from an array.
+     * Synchronizes a Collection with data from an array.
      *
      * it expects an array representation of a Doctrine_Collection similar to the return
      * value of the toArray() method. It will create Dectrine_Records that don't exist
@@ -760,7 +647,8 @@ class Doctrine_ORM_Collection implements Countable, IteratorAggregate, Serializa
     }
 
     /**
-     * INTERNAL: getDeleteDiff
+     * INTERNAL:
+     * getDeleteDiff
      *
      * @return array
      */
@@ -786,17 +674,17 @@ class Doctrine_ORM_Collection implements Countable, IteratorAggregate, Serializa
      */
     protected function _compareRecords($a, $b)
     {
-        if ($a->getOid() == $b->getOid()) {
+        if ($a === $b) {
             return 0;
         }
-        return ($a->getOid() > $b->getOid()) ? 1 : -1;
+        return 1;
     }
 
     /**
      *
      * @param <type> $deep
      */
-    public function free($deep = false)
+    /*public function free($deep = false)
     {
         foreach ($this->getData() as $key => $record) {
             if ( ! ($record instanceof Doctrine_Null)) {
@@ -810,8 +698,7 @@ class Doctrine_ORM_Collection implements Countable, IteratorAggregate, Serializa
             $this->_owner->free($deep);
             $this->_owner = null;
         }
-    }
-
+    }*/
 
     /**
      * getIterator

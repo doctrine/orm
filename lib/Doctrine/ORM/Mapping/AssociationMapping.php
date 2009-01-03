@@ -28,7 +28,7 @@
  * @since 2.0
  * @todo Rename to AssociationMapping.
  */
-class Doctrine_ORM_Mapping_AssociationMapping implements Serializable
+abstract class Doctrine_ORM_Mapping_AssociationMapping implements Serializable
 {
     const FETCH_MANUAL = 1;
     const FETCH_LAZY = 2;
@@ -443,6 +443,8 @@ class Doctrine_ORM_Mapping_AssociationMapping implements Serializable
     {
         return false;
     }
+
+    abstract public function lazyLoadFor($entity);
     
     /* Serializable implementation */
     

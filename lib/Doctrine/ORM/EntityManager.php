@@ -86,14 +86,14 @@ class Doctrine_ORM_EntityManager
     /**
      * The database connection used by the EntityManager.
      *
-     * @var Doctrine_Connection
+     * @var Connection
      */
     private $_conn;
     
     /**
      * The metadata factory, used to retrieve the metadata of entity classes.
      *
-     * @var Doctrine::ORM::Mapping::ClassMetadataFactory
+     * @var Doctrine\ORM\Mapping\ClassMetadataFactory
      */
     private $_metadataFactory;
     
@@ -131,19 +131,8 @@ class Doctrine_ORM_EntityManager
      * @var EventManager
      */
     private $_eventManager;
-    
-    /**
-     * Container that is used temporarily during hydration.
-     *
-     * @var array
-     */
-    private $_tmpEntityData = array();
-
     private $_idGenerators = array();
-    
     private $_closed = false;
-
-    private $_originalEntityData = array();
     
     /**
      * Creates a new EntityManager that operates on the given database connection.
@@ -220,6 +209,7 @@ class Doctrine_ORM_EntityManager
      * Returns the metadata for a class.
      *
      * @return Doctrine_Metadata
+     * @internal Performance-sensitive method.
      */
     public function getClassMetadata($className)
     {        
@@ -262,8 +252,7 @@ class Doctrine_ORM_EntityManager
      * Creates a new Query object.
      * 
      * @param string  The DQL string.
-     * @return Doctrine::ORM::Query
-     * @todo package:orm
+     * @return Doctrine\ORM\Query
      */
     public function createQuery($dql = "")
     {
@@ -271,7 +260,6 @@ class Doctrine_ORM_EntityManager
         if ( ! empty($dql)) {
             $query->setDql($dql);
         }
-        
         return $query;
     }
     
@@ -281,16 +269,16 @@ class Doctrine_ORM_EntityManager
      * This is usually not of interest for users, mainly for internal use.
      *
      * @param string $entityName  The name of the Entity.
-     * @return Doctrine::ORM::Internal::EntityPersister
+     * @return Doctrine\ORM\Persister\AbstractEntityPersister
      */
     public function getEntityPersister($entityName)
     {
         if ( ! isset($this->_persisters[$entityName])) {
             $class = $this->getClassMetadata($entityName);
-            if ($class->getInheritanceType() == Doctrine::INHERITANCE_TYPE_JOINED) {
+            if ($class->getInheritanceType() == Doctrine_ORM_Mapping_ClassMetadata::INHERITANCE_TYPE_JOINED) {
                 $persister = new Doctrine_EntityPersister_JoinedSubclass($this, $class);
             } else {
-                $persister = new Doctrine_EntityPersister_Standard($this, $class);
+                $persister = new Doctrine_ORM_Persisters_StandardEntityPersister($this, $class);
             }
             $this->_persisters[$entityName] = $persister;
         }
@@ -444,7 +432,7 @@ class Doctrine_ORM_EntityManager
     /**
      * Removes the given entity from the persistent store.
      * 
-     * @param Doctrine::ORM::Entity $entity
+     * @param Doctrine\ORM\Entity $entity
      * @return void
      */
     public function delete(Doctrine_ORM_Entity $entity)
@@ -507,93 +495,6 @@ class Doctrine_ORM_EntityManager
     }
     
     /**
-     * Creates an entity. Used for reconstitution as well as initial creation.
-     *
-     * @param string $className  The name of the entity class.
-     * @param array $data  The data for the entity. 
-     * @return Doctrine\ORM\Entity
-     */
-    public function createEntity($className, array $data, Doctrine_Query $query = null)
-    {
-        $this->_errorIfNotActiveOrClosed();
-
-        $this->_tmpEntityData = $data;
-        $className = $this->_inferCorrectClassName($data, $className);
-        $classMetadata = $this->getClassMetadata($className);
-        if ( ! empty($data)) {
-            $identifierFieldNames = $classMetadata->getIdentifier();
-            $isNew = false;
-            foreach ($identifierFieldNames as $fieldName) {
-                if ( ! isset($data[$fieldName])) {
-                    // id field not found return new entity
-                    $isNew = true;
-                    break;
-                }
-                $id[] = $data[$fieldName];
-            }
-            
-            if ($isNew) {
-                $entity = new $className;
-            } else {
-                $idHash = $this->_unitOfWork->getIdentifierHash($id);
-                $entity = $this->_unitOfWork->tryGetByIdHash($idHash, $classMetadata->getRootClassName());
-                if ($entity) {
-                    $this->_mergeData($entity, $data/*, $classMetadata, $query->getHint('doctrine.refresh')*/);
-                    return $entity;
-                } else {
-                    $entity = new $className;
-                    $this->_unitOfWork->addToIdentityMap($entity);
-                }
-            }
-        } else {
-            $entity = new $className;
-        }
-
-        //$this->_originalEntityData[$entity->getOid()] = $data;
-
-        return $entity;
-    }
-    
-    /**
-     * Merges the given data into the given entity, optionally overriding
-     * local changes.
-     *
-     * @param Doctrine\ORM\Entity $entity
-     * @param array $data
-     * @param boolean $overrideLocalChanges
-     * @return void
-     */
-    private function _mergeData(Doctrine_ORM_Entity $entity, /*$class,*/ array $data, $overrideLocalChanges = false) {
-        if ($overrideLocalChanges) {
-            foreach ($data as $field => $value) {
-                $entity->_internalSetField($field, $value);
-            }
-        } else {
-            foreach ($data as $field => $value) {
-                $currentValue = $entity->get($field);
-                if ( ! isset($currentValue) || $entity->_internalGetField($field) === null) {
-                    $entity->_internalSetField($field, $value);    
-                }
-            }
-        }
-
-        // NEW
-        /*if ($overrideLocalChanges) {
-            foreach ($data as $field => $value) {
-                $class->getReflectionProperty($field)->setValue($entity, $value);
-            }
-        } else {
-            foreach ($data as $field => $value) {
-                $currentValue = $class->getReflectionProperty($field)->getValue($entity);
-                if ( ! isset($this->_originalEntityData[$entity->getOid()]) ||
-                        $currentValue == $this->_originalEntityData[$entity->getOid()]) {
-                    $class->getReflectionProperty($field)->setValue($entity, $value);
-                }
-            }
-        }*/
-    }
-    
-    /**
      * Checks if the instance is managed by the EntityManager.
      * 
      * @param Doctrine::ORM::Entity $entity
@@ -607,50 +508,9 @@ class Doctrine_ORM_EntityManager
     }
     
     /**
-     * INTERNAL: For internal hydration purposes only.
-     * 
-     * Gets the temporarily stored entity data.
-     * 
-     * @return array
-     */
-    public function _getTmpEntityData()
-    {
-        $data = $this->_tmpEntityData;
-        $this->_tmpEntityData = array();
-        return $data;
-    }
-    
-    /**
-     * Check the dataset for a discriminator column to determine the correct
-     * class to instantiate. If no discriminator column is found, the given
-     * classname will be returned.
-     *
-     * @param array $data
-     * @param string $className
-     * @return string The name of the class to instantiate.
-     */
-    private function _inferCorrectClassName(array $data, $className)
-    {
-        $class = $this->getClassMetadata($className);
-
-        $discCol = $class->getInheritanceOption('discriminatorColumn');
-        if ( ! $discCol) {
-            return $className;
-        }
-        
-        $discMap = $class->getInheritanceOption('discriminatorMap');
-        
-        if (isset($data[$discCol], $discMap[$data[$discCol]])) {
-            return $discMap[$data[$discCol]];
-        } else {
-            return $className;
-        }
-    }
-    
-    /**
      * Gets the EventManager used by the EntityManager.
      *
-     * @return Doctrine::Common::EventManager
+     * @return Doctrine\Common\EventManager
      */
     public function getEventManager()
     {
@@ -660,7 +520,7 @@ class Doctrine_ORM_EntityManager
     /**
      * Gets the Configuration used by the EntityManager.
      *
-     * @return Doctrine::Common::Configuration
+     * @return Doctrine\ORM\Configuration
      */
     public function getConfiguration()
     {
@@ -682,7 +542,7 @@ class Doctrine_ORM_EntityManager
     /**
      * Gets the UnitOfWork used by the EntityManager to coordinate operations.
      *
-     * @return Doctrine::ORM::UnitOfWork
+     * @return Doctrine\ORM\UnitOfWork
      */
     public function getUnitOfWork()
     {
@@ -747,7 +607,7 @@ class Doctrine_ORM_EntityManager
     /**
      * Static lookup to get the currently active EntityManager.
      *
-     * @return Doctrine::ORM::EntityManager
+     * @return Doctrine\ORM\EntityManager
      */
     public static function getActiveEntityManager()
     {

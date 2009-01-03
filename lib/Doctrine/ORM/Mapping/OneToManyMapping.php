@@ -19,7 +19,7 @@
  * <http://www.phpdoctrine.org>.
  */
 
-#namespace Doctrine::ORM::Mapping;
+#namespace Doctrine\ORM\Mapping;
 
 /**
  * Represents a one-to-many mapping.
@@ -66,7 +66,7 @@ class Doctrine_ORM_Mapping_OneToManyMapping extends Doctrine_ORM_Mapping_Associa
     }
     
     /**
-     * Validates and completed the mapping.
+     * Validates and completes the mapping.
      *
      * @param array $mapping The mapping to validate and complete.
      * @return array The validated and completed mapping.
@@ -106,6 +106,15 @@ class Doctrine_ORM_Mapping_OneToManyMapping extends Doctrine_ORM_Mapping_Associa
         return true;
     }
     
+    /**
+     *
+     * @param <type> $entity 
+     * @override
+     */
+    public function lazyLoadFor($entity)
+    {
+
+    }
     
 }
 

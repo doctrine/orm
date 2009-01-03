@@ -19,7 +19,7 @@
  * <http://www.phpdoctrine.org>.
  */
 
-#namespace Doctrine::ORM::Internal;
+#namespace Doctrine\ORM\Internal;
 
 /**
  * Null class representing a null value that has been fetched from
@@ -39,6 +39,7 @@
  * @since       1.0
  * @version     $Revision: 4723 $
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
+ * @todo No longer needed?
  */
 // static initializer
 Doctrine_ORM_Internal_Null::$INSTANCE = new Doctrine_ORM_Internal_Null();

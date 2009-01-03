@@ -13,6 +13,18 @@ class ForumUser
     
     public static function initMetadata($mapping) 
     {
+        /*$mapping->setClassMetadata(array(
+            'doctrine.inheritanceType' => 'joined',
+            'doctrine.discriminatorColumn' => 'dtype',
+            'doctrine.discriminatorMap' => array('user' => 'ForumUser', 'admin' => 'ForumAdministrator'),
+            'doctrine.subclasses' => array('ForumAdministrator')
+        ));
+        $mapping->setFieldMetadata('id', array(
+            'doctrine.type' => 'integer',
+            'doctrine.id' => true,
+            'doctrine.idGenerator' => 'auto'
+        ));*/
+
         // inheritance mapping
         $mapping->setInheritanceType('joined', array(
                 'discriminatorColumn' => 'dtype',

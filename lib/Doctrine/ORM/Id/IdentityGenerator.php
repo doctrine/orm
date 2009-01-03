@@ -11,13 +11,15 @@ class Doctrine_ORM_Id_IdentityGenerator extends Doctrine_ORM_Id_AbstractIdGenera
      */
     public function generate($entity)
     {
-        return self::POST_INSERT_INDICATOR;
-    }
-    
-    public function getPostInsertId()
-    {
         return $this->_em->getConnection()->lastInsertId();
+    }
+
+    /**
+     * @return boolean
+     * @override
+     */
+    public function isPostInsertGenerator() {
+        return true;
     }
 }
 
-?>

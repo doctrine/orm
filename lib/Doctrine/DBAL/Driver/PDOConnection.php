@@ -1,5 +1,4 @@
 <?php
-
 /**
  * PDO implementation of the driver Connection interface.
  * Used by all PDO-based drivers.
@@ -16,5 +15,3 @@ class Doctrine_DBAL_Driver_PDOConnection extends PDO implements Doctrine_DBAL_Dr
         $this->setAttribute(PDO::ATTR_CASE, PDO::CASE_LOWER);
     }
 }
-
-?>

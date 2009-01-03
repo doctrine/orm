@@ -871,6 +871,7 @@ class Orm_Hydration_BasicHydrationTest extends Doctrine_OrmTestCase
             $this->assertEquals(3, count($result[0]->boards));
             $this->assertTrue(isset($result[1]->boards));
             $this->assertEquals(1, count($result[1]->boards));
+
         } else if ($hydrationMode == Doctrine_ORM_Query::HYDRATE_SCALAR) {
             //...
         }

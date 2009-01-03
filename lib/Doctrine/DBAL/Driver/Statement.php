@@ -19,7 +19,7 @@
  * <http://www.phpdoctrine.org>.
  */
 
-#namespace Doctrine::DBAL::Driver;
+#namespace Doctrine\DBAL\Driver;
 
 /**
  * Statement interface.

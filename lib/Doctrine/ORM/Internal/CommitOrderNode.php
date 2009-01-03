@@ -19,11 +19,11 @@
  * <http://www.phpdoctrine.org>.
  */
 
-#namespace Doctrine::ORM::Internal;
+#namespace Doctrine\ORM\Internal;
 
 /**
  * A CommitOrderNode is a temporary wrapper around ClassMetadata instances
- * that is used to sort the order of commits.
+ * that is used to sort the order of commits in a UnitOfWork.
  * 
  * @since 2.0
  * @author Roman Borschel <roman@code-factory.org>
@@ -53,7 +53,7 @@ class Doctrine_ORM_Internal_CommitOrderNode
      * Creates a new node.
      *
      * @param mixed $wrappedObj The object to wrap.
-     * @param Doctrine::ORM::Internal::CommitOrderCalculator $calc The calculator.
+     * @param Doctrine\ORM\Internal\CommitOrderCalculator $calc The calculator.
      */
     public function __construct($wrappedObj, Doctrine_ORM_Internal_CommitOrderCalculator $calc)
     {
@@ -155,7 +155,7 @@ class Doctrine_ORM_Internal_CommitOrderNode
     /**
      * Adds a directed dependency (an edge on the graph). "$this -before-> $other".
      *
-     * @param Doctrine::ORM::Internal::CommitOrderNode $node
+     * @param Doctrine\ORM\Internal\CommitOrderNode $node
      */
     public function before(Doctrine_ORM_Internal_CommitOrderNode $node)
     {
@@ -163,4 +163,3 @@ class Doctrine_ORM_Internal_CommitOrderNode
     }
 }
 
-?>

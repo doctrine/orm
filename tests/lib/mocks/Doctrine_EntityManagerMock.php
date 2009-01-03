@@ -2,6 +2,9 @@
 
 require_once 'lib/mocks/Doctrine_EntityPersisterMock.php';
 
+/**
+ * Special EntityManager mock used for testing purposes.
+ */
 class Doctrine_EntityManagerMock extends Doctrine_ORM_EntityManager
 {
     private $_persisterMock;
@@ -13,8 +16,8 @@ class Doctrine_EntityManagerMock extends Doctrine_ORM_EntityManager
      */
     public function getEntityPersister($entityName)
     {
-        return isset($this->_persisterMock) ? $this->_persisterMock :
-                parent::getEntityPersister($entityName);
+        return isset($this->_persisterMock[$entityName]) ?
+                $this->_persisterMock[$entityName] : parent::getEntityPersister($entityName);
     }
 
     /**
@@ -27,24 +30,36 @@ class Doctrine_EntityManagerMock extends Doctrine_ORM_EntityManager
     
     /* Mock API */
 
+    /**
+     * Sets a (mock) UnitOfWork that will be returned when getUnitOfWork() is called.
+     *
+     * @param <type> $uow
+     */
     public function setUnitOfWork($uow)
     {
         $this->_uowMock = $uow;
     }
 
-    public function setEntityPersister($persister)
+    /**
+     * Sets a (mock) persister for an entity class that will be returned when
+     * getEntityPersister() is invoked for that class.
+     *
+     * @param <type> $entityName
+     * @param <type> $persister
+     */
+    public function setEntityPersister($entityName, $persister)
     {
-        $this->_persisterMock = $persister;
+        $this->_persisterMock[$entityName] = $persister;
     }
     
     /**
-     * Mock factory method.
+     * Mock factory method to create an EntityManager.
      *
      * @param unknown_type $conn
      * @param unknown_type $name
      * @param Doctrine_Configuration $config
      * @param Doctrine_EventManager $eventManager
-     * @return unknown
+     * @return Doctrine\ORM\EntityManager
      */
     public static function create($conn, $name, Doctrine_ORM_Configuration $config = null,
             Doctrine_Common_EventManager $eventManager = null)

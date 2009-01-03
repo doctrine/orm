@@ -1,8 +1,8 @@
 <?php
 
-#namespace Doctrine::DBAL::Driver::PDOMySql;
+#namespace Doctrine\DBAL\Driver\PDOMySql;
 
-#use Doctrine::DBAL::Driver;
+#use Doctrine\DBAL\Driver;
 
 class Doctrine_DBAL_Driver_PDOMySql_Driver implements Doctrine_DBAL_Driver
 {

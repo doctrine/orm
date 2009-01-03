@@ -22,8 +22,7 @@
 #namespace Doctrine\DBAL;
 
 /**
- * The Configuration is the container for all configuration options of Doctrine.
- * It combines all configuration options from DBAL & ORM.
+ * Configuration container for the Doctrine DBAL.
  * 
  * INTERNAL: When adding a new configuration option just write a getter/setter
  * pair and add the option to the _attributes array with a proper default value.

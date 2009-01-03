@@ -22,7 +22,7 @@
 #namespace Doctrine\ORM\Internal\Hydration;
 
 /**
- * The hydrator has the tedious to process result sets returned by the database
+ * The hydrator has the tedious task to process result sets returned by the database
  * and turn them into useable structures.
  * 
  * Runtime complexity: The following gives the overall number of iterations
@@ -63,10 +63,6 @@ class Doctrine_ORM_Internal_Hydration_StandardHydrator extends Doctrine_ORM_Inte
      *
      * This is method defines the core of Doctrine's object population algorithm.
      *
-     * @todo: Detailed documentation. Refactor (too long & nesting level).
-     *
-     * @param mixed $stmt
-     * @param array $tableAliases  Array that maps table aliases (SQL alias => DQL alias)
      * @param array $aliasMap  Array that maps DQL aliases to their components
      *                         (DQL alias => array(
      *                              'metadata' => Table object,
@@ -134,8 +130,6 @@ class Doctrine_ORM_Internal_Hydration_StandardHydrator extends Doctrine_ORM_Inte
 
         // Initialize
         foreach ($this->_queryComponents as $dqlAlias => $component) {
-            // disable lazy-loading of related elements during hydration
-            //$component['metadata']->setAttribute('loadReferences', false);
             $identifierMap[$dqlAlias] = array();
             $resultPointers[$dqlAlias] = array();
             $idTemplate[$dqlAlias] = '';
@@ -152,7 +146,8 @@ class Doctrine_ORM_Internal_Hydration_StandardHydrator extends Doctrine_ORM_Inte
             $result = $this->_gatherScalarRowData($result[0], $cache);
             return array_shift($result);
         }
-        
+
+        $resultCounter = 0;
         // Process result set
         while ($data = $stmt->fetch(PDO::FETCH_ASSOC)) {
             // Evaluate HYDRATE_SCALAR
@@ -178,12 +173,14 @@ class Doctrine_ORM_Internal_Hydration_StandardHydrator extends Doctrine_ORM_Inte
                         $result[] = array(
                             $driver->getFieldValue($element, $field) => $element
                         );
+                        ++$resultCounter;
                     } else {
                         $driver->addElementToIndexedCollection($result, $element, $field);
                     }
                 } else {
                     if ($parserResult->isMixedQuery()) {
                         $result[] = array($element);
+                        ++$resultCounter;
                     } else {
                         $driver->addElementToCollection($result, $element);
                     }
@@ -226,7 +223,7 @@ class Doctrine_ORM_Internal_Hydration_StandardHydrator extends Doctrine_ORM_Inte
                     continue;
                 }
 
-                // check the type of the relation (many or single-valued)
+                // Check the type of the relation (many or single-valued)
                 if ( ! $relation->isOneToOne()) {
                     // x-to-many relation
                     $oneToOne = false;
@@ -270,7 +267,6 @@ class Doctrine_ORM_Internal_Hydration_StandardHydrator extends Doctrine_ORM_Inte
                     $coll =& $baseElement[$relationAlias];
                 } else {
                     $coll = $driver->getReferenceValue($baseElement, $relationAlias);
-                    //$baseElement->_internalGetReference($relationAlias);
                 }
                 
                 if ($coll !== null) {
@@ -279,22 +275,15 @@ class Doctrine_ORM_Internal_Hydration_StandardHydrator extends Doctrine_ORM_Inte
             }
             
             // Append scalar values to mixed result sets
-            //TODO: we dont need to count every time here, instead count with the loop
             if (isset($scalars)) {
-                $rowNumber = count($result) - 1;
                 foreach ($scalars as $name => $value) {
-                    $result[$rowNumber][$name] = $value;
+                    $result[$resultCounter - 1][$name] = $value;
                 }
             }
         }
 
         $stmt->closeCursor(); 
         $driver->flush();
-        
-        /*// re-enable lazy loading
-        foreach ($this->_queryComponents as $dqlAlias => $data) {
-            $data['metadata']->setAttribute('loadReferences', true);
-        }*/
         
         $e = microtime(true);
         echo 'Hydration took: ' . ($e - $s) . PHP_EOL;
@@ -514,7 +503,6 @@ class Doctrine_ORM_Internal_Hydration_StandardHydrator extends Doctrine_ORM_Inte
     }
     
     /**
-     * prepareValue
      * this method performs special data preparation depending on
      * the type of the given column
      *
@@ -536,6 +524,7 @@ class Doctrine_ORM_Internal_Hydration_StandardHydrator extends Doctrine_ORM_Inte
      *                          for the field can be skipped. Used i.e. during hydration to
      *                          improve performance on large and/or complex results.
      * @return mixed            prepared value
+     * @todo Remove. Should be handled by the Type classes. No need for this switch stuff.
      */
     public function prepareValue(Doctrine_ClassMetadata $class, $fieldName, $value, $typeHint = null)
     {

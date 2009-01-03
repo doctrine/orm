@@ -30,7 +30,7 @@
  * @author      Roman Borschel <roman@code-factory.org>
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @version     $Revision$
- * @link        www.phpdoctrine.org
+ * @link        www.doctrine-project.org
  * @since       2.0
  */
 class Doctrine_ORM_Persisters_StandardEntityPersister extends Doctrine_ORM_Persisters_AbstractEntityPersister
@@ -40,10 +40,8 @@ class Doctrine_ORM_Persisters_StandardEntityPersister extends Doctrine_ORM_Persi
      */
     protected function _doDelete(Doctrine_ORM_Entity $record)
     {
-        $conn = $this->_conn;
-        $metadata = $this->_classMetadata;
-        try {
-            $conn->beginInternalTransaction();
+        /*try {
+            $this->_conn->beginInternalTransaction();
             $this->_deleteComposites($record);
 
             $record->_state(Doctrine_ORM_Entity::STATE_TDIRTY);
@@ -57,18 +55,16 @@ class Doctrine_ORM_Persisters_StandardEntityPersister extends Doctrine_ORM_Persi
         } catch (Exception $e) {
             $conn->rollback();
             throw $e;
-        }
+        }*/
     }
     
     /**
-     * Inserts a single entity into the database, without any related entities.
+     * Inserts a single entity into the database.
      *
-     * @param Doctrine_Entity $record   The entity to insert.
+     * @param Doctrine\ORM\Entity $entity The entity to insert.
      */
     protected function _doInsert(Doctrine_ORM_Entity $record)
     {
-        $conn = $this->_conn;
-        
         $fields = $record->getPrepared();
         if (empty($fields)) {
             return false;

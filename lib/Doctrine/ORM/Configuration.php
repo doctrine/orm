@@ -24,7 +24,7 @@
 #use Doctrine\DBAL\Configuration;
 
 /**
- * The Configuration is the container for all configuration options of Doctrine.
+ * Configuration container for all configuration options of Doctrine.
  * It combines all configuration options from DBAL & ORM.
  * 
  * INTERNAL: When adding a new configuration option just write a getter/setter
@@ -72,7 +72,7 @@ class Doctrine_ORM_Configuration extends Doctrine_DBAL_Configuration
         return $this->_attributes['metadataCacheImpl'];
     }
     
-    public function setMetadataCacheImpl(Doctrine_Cache_Interface $cacheImpl)
+    public function setMetadataCacheImpl($cacheImpl)
     {
         $this->_attributes['metadataCacheImpl'] = $cacheImpl;
     }

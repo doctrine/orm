@@ -19,7 +19,7 @@
  * <http://www.phpdoctrine.org>.
  */
 
-#namespace Doctrine::ORM;
+#namespace Doctrine\ORM;
 
 /**
  * A repository provides the illusion of an in-memory Entity store. 

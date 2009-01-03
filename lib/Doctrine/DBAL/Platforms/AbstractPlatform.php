@@ -19,7 +19,7 @@
  * <http://www.phpdoctrine.org>.
  */
 
-#namespace Doctrine::DBAL::Platforms;
+#namespace Doctrine\DBAL\Platforms;
 
 /**
  * Base class for all DatabasePlatforms. The DatabasePlatforms are the central

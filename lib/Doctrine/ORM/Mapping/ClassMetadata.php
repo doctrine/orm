@@ -31,10 +31,8 @@
  *
  * @author Roman Borschel <roman@code-factory.org>
  * @since 2.0
- * @todo Rename to ClassDescriptor.
  */
-class Doctrine_ORM_Mapping_ClassMetadata extends Doctrine_Common_ClassMetadata
-        implements Doctrine_Common_Configurable, Serializable
+class Doctrine_ORM_Mapping_ClassMetadata extends Doctrine_Common_ClassMetadata implements Serializable
 {
     /* The inheritance mapping types */
     /**
@@ -136,7 +134,7 @@ class Doctrine_ORM_Mapping_ClassMetadata extends Doctrine_Common_ClassMetadata
 
     /**
      * The field names of all fields that are part of the identifier/primary key
-     * of the described entity class.
+     * of the mapped entity class.
      *
      * @var array
      */
@@ -331,26 +329,49 @@ class Doctrine_ORM_Mapping_ClassMetadata extends Doctrine_Common_ClassMetadata
             $prop->setAccessible(true);
             $this->_reflectionProperties[$prop->getName()] = $prop;
         }
-        //$this->_isVirtualPropertyObject = is_subclass_of($entityName, 'Doctrine\Common\VirtualPropertyObject');
     }
 
+    /**
+     * Gets the ReflectionClass instance of the mapped class.
+     *
+     * @return ReflectionClass
+     */
     public function getReflectionClass()
     {
         return $this->_reflectionClass;
     }
 
+    /**
+     * Gets the ReflectionPropertys of the mapped class.
+     *
+     * @return array An array of ReflectionProperty instances.
+     */
     public function getReflectionProperties()
     {
         return $this->_reflectionProperties;
     }
 
+    /**
+     * Gets a ReflectionProperty for a specific field of the mapped class.
+     *
+     * @param string $name
+     * @return ReflectionProperty
+     */
     public function getReflectionProperty($name)
     {
         return $this->_reflectionProperties[$name];
     }
 
+    public function getSingleIdReflectionProperty()
+    {
+        if ($this->_isIdentifierComposite) {
+            throw new Doctrine_Exception("getSingleIdReflectionProperty called on entity with composite key.");
+        }
+        return $this->_reflectionProperties[$this->_identifier[0]];
+    }
+
     /**
-     * getComponentName
+     * Gets the name of the mapped class.
      *
      * @return string
      */
@@ -360,11 +381,11 @@ class Doctrine_ORM_Mapping_ClassMetadata extends Doctrine_Common_ClassMetadata
     }
 
     /**
-     * Gets the name of the root class of the entity hierarchy. If the entity described
-     * by the ClassMetadata is not participating in a hierarchy, this is the same as the
+     * Gets the name of the root class of the mapped entity hierarchy. If the entity described
+     * by this ClassMetadata instance is not participating in a hierarchy, this is the same as the
      * name returned by {@link getClassName()}.
      *
-     * @return string
+     * @return string The name of the root class of the entity hierarchy.
      */
     public function getRootClassName()
     {
@@ -387,7 +408,7 @@ class Doctrine_ORM_Mapping_ClassMetadata extends Doctrine_Common_ClassMetadata
     }
 
     /**
-     * Check if the class has a composite identifier.
+     * Checks if the class has a composite identifier.
      *
      * @param string $fieldName  The field name
      * @return boolean  TRUE if the identifier is composite, FALSE otherwise.
@@ -449,12 +470,10 @@ class Doctrine_ORM_Mapping_ClassMetadata extends Doctrine_Common_ClassMetadata
         if ( ! array_key_exists($name, $this->_tableOptions)) {
             throw new Doctrine_ClassMetadata_Exception("Unknown table option: '$name'.");
         }
-
         return $this->_tableOptions[$name];
     }
 
     /**
-     * getTableOptions
      * returns all table options.
      *
      * @return array    all options and their values
@@ -469,7 +488,7 @@ class Doctrine_ORM_Mapping_ClassMetadata extends Doctrine_Common_ClassMetadata
      * If the column name for the field cannot be found, the given field name
      * is returned.
      *
-     * @param string $alias  The field name.
+     * @param string $fieldName The field name.
      * @return string  The column name.
      */
     public function getColumnName($fieldName)
@@ -479,7 +498,7 @@ class Doctrine_ORM_Mapping_ClassMetadata extends Doctrine_Common_ClassMetadata
     }
 
     /**
-     * Gets the mapping of a (regular) fields that holds some data but not a
+     * Gets the mapping of a (regular) field that holds some data but not a
      * reference to another object.
      *
      * @param string $fieldName  The field name.
@@ -490,7 +509,6 @@ class Doctrine_ORM_Mapping_ClassMetadata extends Doctrine_Common_ClassMetadata
         if ( ! isset($this->_fieldMappings[$fieldName])) {
             throw Doctrine_MappingException::mappingNotFound($fieldName);
         }
-        
         return $this->_fieldMappings[$fieldName];
     }
     
@@ -499,14 +517,13 @@ class Doctrine_ORM_Mapping_ClassMetadata extends Doctrine_Common_ClassMetadata
      *
      * @param string $fieldName  The field name that represents the association in
      *                           the object model.
-     * @return Doctrine::ORM::Mapping::AssociationMapping  The mapping.
+     * @return Doctrine\ORM\Mapping\AssociationMapping  The mapping.
      */
     public function getAssociationMapping($fieldName)
     {
         if ( ! isset($this->_associationMappings[$fieldName])) {
             throw new Doctrine_Exception("Mapping not found: $fieldName");
         }
-        
         return $this->_associationMappings[$fieldName];
     }
     
@@ -514,7 +531,7 @@ class Doctrine_ORM_Mapping_ClassMetadata extends Doctrine_Common_ClassMetadata
      * Gets the inverse association mapping for the given fieldname.
      *
      * @param string $mappedByFieldName
-     * @return Doctrine::ORM::Mapping::AssociationMapping The mapping.
+     * @return Doctrine\ORM\Mapping\AssociationMapping The mapping.
      */
     public function getInverseAssociationMapping($mappedByFieldName)
     {
@@ -608,7 +625,7 @@ class Doctrine_ORM_Mapping_ClassMetadata extends Doctrine_Common_ClassMetadata
     }
     
     /**
-     * Validates & completes the field mapping. Default values are applied here.
+     * Validates & completes the field mapping.
      *
      * @param array $mapping  The field mapping to validated & complete.
      * @return array  The validated and completed field mapping.
@@ -687,59 +704,6 @@ class Doctrine_ORM_Mapping_ClassMetadata extends Doctrine_Common_ClassMetadata
     public function mapEmbeddedValue()
     {
         //...
-    }
-
-    private $_entityIdentifiers = array();
-    /**
-     * Gets the identifier of an entity.
-     *
-     * @param object $entity
-     * @return array Map of identifier field names to values.
-     */
-    public function getEntityIdentifier($entity)
-    {
-        $oid = spl_object_id($entity);
-        if ( ! isset($this->_entityIdentifiers[$oid])) {
-            if ( ! $this->isIdentifierComposite()) {
-                $idField = $this->_identifier[0];
-                $idValue = $this->_reflectionProperties[$idField]->getValue($entity);
-                if (isset($idValue)) {
-                    //return array($idField => $idValue);
-                    $this->_entityIdentifiers[$oid] = array($idField => $idValue);
-                } else {
-                    return false;
-                }
-                //$this->_entityIdentifiers[$oid] = false;
-            } else {
-                $id = array();
-                foreach ($this->getIdentifierFieldNames() as $idFieldName) {
-                    $idValue = $this->_reflectionProperties[$idFieldName]->getValue($entity);
-                    if (isset($idValue)) {
-                        $id[$idFieldName] = $idValue;
-                    }
-                }
-                //return $id;
-                $this->_entityIdentifiers[$oid] = $id;
-            }
-        }
-        return $this->_entityIdentifiers[$oid];
-    }
-
-    /**
-     * 
-     *
-     * @param <type> $entity
-     * @param <type> $identifier
-     */
-    public function setEntityIdentifier($entity, $identifier)
-    {
-        if (is_array($identifier)) {
-            foreach ($identifier as $fieldName => $value) {
-                $this->_reflectionProperties[$fieldName]->setValue($entity, $value);
-            }
-        } else {
-            $this->_reflectionProperties[$this->_identifier[0]]->setValue($entity, $identifier);
-        }
     }
 
     /**
@@ -852,7 +816,7 @@ class Doctrine_ORM_Mapping_ClassMetadata extends Doctrine_Common_ClassMetadata
     }
 
     /**
-     * Sets the type of Id generator to use for this class.
+     * Sets the type of Id generator to use for the mapped class.
      */
     public function setIdGeneratorType($generatorType)
     {
@@ -860,9 +824,9 @@ class Doctrine_ORM_Mapping_ClassMetadata extends Doctrine_Common_ClassMetadata
     }
     
     /**
-     * Checks whether the class uses an Id generator.
+     * Checks whether the mapped class uses an Id generator.
      *
-     * @return boolean  TRUE if the class uses an Id generator, FALSE otherwise.
+     * @return boolean  TRUE if the mapped class uses an Id generator, FALSE otherwise.
      */
     public function usesIdGenerator()
     {
@@ -1010,7 +974,7 @@ class Doctrine_ORM_Mapping_ClassMetadata extends Doctrine_Common_ClassMetadata
     }
 
     /**
-     * Gets the inheritance mapping type used by the class.
+     * Gets the inheritance mapping type used by the mapped class.
      *
      * @return string
      */
@@ -1020,7 +984,7 @@ class Doctrine_ORM_Mapping_ClassMetadata extends Doctrine_Common_ClassMetadata
     }
 
     /**
-     * Sets the subclasses of the class.
+     * Sets the subclasses of the mapped class.
      * All entity classes that participate in a hierarchy and have subclasses
      * need to declare them this way.
      *
@@ -1136,10 +1100,6 @@ class Doctrine_ORM_Mapping_ClassMetadata extends Doctrine_Common_ClassMetadata
      */
     public function getInheritanceOption($name)
     {
-        /*if ( ! array_key_exists($name, $this->_inheritanceOptions)) {
-            throw new Doctrine_ClassMetadata_Exception("Unknown inheritance option: '$name'.");
-        }*/
-
         return $this->_inheritanceOptions[$name];
     }
 
@@ -1179,7 +1139,6 @@ class Doctrine_ORM_Mapping_ClassMetadata extends Doctrine_Common_ClassMetadata
                     throw Doctrine_MappingException::invalidInheritanceOption($name);
             }
         }
-
         $this->_inheritanceOptions[$name] = $value;
     }
 
@@ -1350,7 +1309,6 @@ class Doctrine_ORM_Mapping_ClassMetadata extends Doctrine_Common_ClassMetadata
     public function serialize()
     {
         //$contents = get_object_vars($this);
-        /* @TODO How to handle $this->_em and $this->_parser ? */
         //return serialize($contents);
         return "";
     }
@@ -1506,7 +1464,7 @@ class Doctrine_ORM_Mapping_ClassMetadata extends Doctrine_Common_ClassMetadata
      */
     public function setCustomRepositoryClass($repositoryClassName)
     {
-        if ( ! is_subclass_of($repositoryClassName, 'Doctrine_EntityRepository')) {
+        if ( ! is_subclass_of($repositoryClassName, 'Doctrine\ORM\EntityRepository')) {
             throw new Doctrine_ClassMetadata_Exception("The custom repository must be a subclass"
                     . " of Doctrine_EntityRepository.");
         }
@@ -1640,37 +1598,15 @@ class Doctrine_ORM_Mapping_ClassMetadata extends Doctrine_Common_ClassMetadata
     {
         return $columnName === $this->_inheritanceOptions['discriminatorColumn'];
     }
-
-    public function hasAttribute($name)
-    {
-        return isset($this->_attributes[$name]);
-    }
-    
-    public function getAttribute($name)
-    {
-        if ($this->hasAttribute($name)) {
-            return $this->_attributes[$name];
-        }
-    }
-    
-    public function setAttribute($name, $value)
-    {
-        if ($this->hasAttribute($name)) {
-            $this->_attributes[$name] = $value;
-        }
-    }
     
     public function hasAssociation($fieldName)
     {
         return isset($this->_associationMappings[$fieldName]);
     }
 
-    /**
-     *
-     */
     public function __toString()
     {
-        return spl_object_hash($this);
+        return __CLASS__ . '@' . spl_object_hash($this);
     }
 }
 

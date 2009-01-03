@@ -17,7 +17,7 @@ class Doctrine_UnitOfWorkMock extends Doctrine_ORM_UnitOfWork {
      * @override
      */
     public function getDataChangeSet($entity) {
-        $oid = spl_object_id($entity);
+        $oid = spl_object_hash($entity);
         return isset($this->_mockDataChangeSets[$oid]) ?
                 $this->_mockDataChangeSets[$oid] : parent::getDataChangeSet($entity);
     }
@@ -25,7 +25,17 @@ class Doctrine_UnitOfWorkMock extends Doctrine_ORM_UnitOfWork {
     /* MOCK API */
 
     public function setDataChangeSet($entity, array $mockChangeSet) {
-        $this->_mockDataChangeSets[spl_object_id($entity)] = $mockChangeSet;
+        $this->_mockDataChangeSets[spl_object_hash($entity)] = $mockChangeSet;
+    }
+
+    public function setEntityState($entity, $state)
+    {
+        $this->_entityStates[spl_object_hash($entity)] = $state;
+    }
+
+    public function setOriginalEntityData($entity, array $originalData)
+    {
+        $this->_originalEntityData[spl_object_hash($entity)] = $originalData;
     }
 }
 

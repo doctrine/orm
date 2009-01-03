@@ -21,8 +21,6 @@
 
 #namespace Doctrine\ORM;
 
-#use \Serializable;
-
 /**
  * Entity marker interface.
  *

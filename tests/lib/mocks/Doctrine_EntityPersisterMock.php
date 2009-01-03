@@ -1,22 +1,32 @@
 <?php
-
+/**
+ * EntityPersister implementation used for mocking during tests.
+ */
 class Doctrine_EntityPersisterMock extends Doctrine_ORM_Persisters_StandardEntityPersister
 {
     private $_inserts = array();
     private $_updates = array();
     private $_deletes = array();
-    
     private $_identityColumnValueCounter = 0;
-    
+    private $_mockIdGeneratorType;
+
+    /**
+     * @param <type> $entity
+     * @return <type>
+     * @override
+     */
     public function insert($entity)
     {
-        $class = $this->_em->getClassMetadata(get_class($entity));
-        if ($class->isIdGeneratorIdentity()) {
-            $class->setEntityIdentifier($entity, $this->_identityColumnValueCounter++);
-            $this->_em->getUnitOfWork()->addToIdentityMap($entity);
-        }
-        
         $this->_inserts[] = $entity;
+        if ( ! is_null($this->_mockIdGeneratorType) && $this->_mockIdGeneratorType == Doctrine_ORM_Mapping_ClassMetadata::GENERATOR_TYPE_IDENTITY
+                || $this->_classMetadata->isIdGeneratorIdentity()) {
+            return $this->_identityColumnValueCounter++;
+        }
+        return null;
+    }
+
+    public function setMockIdGeneratorType($genType) {
+        $this->_mockIdGeneratorType = $genType;
     }
     
     public function update(Doctrine_ORM_Entity $entity)
@@ -51,7 +61,5 @@ class Doctrine_EntityPersisterMock extends Doctrine_ORM_Persisters_StandardEntit
         $this->_updates = array();
         $this->_deletes = array();
     }
-    
 }
 
-?>

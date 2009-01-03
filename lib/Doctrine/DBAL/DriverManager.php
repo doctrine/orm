@@ -19,10 +19,10 @@
  * <http://www.phpdoctrine.org>.
  */
 
-#namespace Doctrine::DBAL;
+#namespace Doctrine\DBAL;
 
 /**
- * Factory for creating Doctrine::DBAL::Connection instances.
+ * Factory for creating Doctrine\DBAL\Connection instances.
  *
  * @author Roman Borschel <roman@code-factory.org>
  * @since 2.0
@@ -43,12 +43,13 @@ final class Doctrine_DBAL_DriverManager
             'pdo_firebird' => 'Doctrine_DBAL_Driver_PDOFirebird_Driver',
             'pdo_informix' => 'Doctrine_DBAL_Driver_PDOInformix_Driver',
             );
-    
+
+    /** Private constructor. This class cannot be instantiated. */
     private function __construct() {}
             
     /**
      * Creates a connection object based on the specified parameters.
-     * This method returns a Doctrine::DBAL::Connection which wraps the underlying
+     * This method returns a Doctrine\DBAL\Connection which wraps the underlying
      * driver connection.
      *
      * $params must contain at least one of the following.
@@ -79,16 +80,16 @@ final class Doctrine_DBAL_DriverManager
      * 
      * <b>pdo</b>:
      * You can pass an existing PDO instance through this parameter. The PDO
-     * instance will be wrapped in a Doctrine::DBAL::Connection.
+     * instance will be wrapped in a Doctrine\DBAL\Connection.
      * 
      * <b>wrapperClass</b>:
      * You may specify a custom wrapper class through the 'wrapperClass'
-     * parameter but this class MUST inherit from Doctrine::DBAL::Connection.
+     * parameter but this class MUST inherit from Doctrine\DBAL\Connection.
      * 
      * @param array $params The parameters.
-     * @param Doctrine::Common::Configuration The configuration to use.
-     * @param Doctrine::Common::EventManager The event manager to use.
-     * @return Doctrine::DBAL::Connection
+     * @param Doctrine\DBAL\Configuration The configuration to use.
+     * @param Doctrine\Common\EventManager The event manager to use.
+     * @return Doctrine\DBAL\Connection
      */
     public static function getConnection(array $params,
             Doctrine_DBAL_Configuration $config = null,

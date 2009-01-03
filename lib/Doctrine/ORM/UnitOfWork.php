@@ -32,11 +32,8 @@
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @link        www.phpdoctrine.org
  * @since       2.0
- * @version     $Revision: 4947 $
- * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
+ * @version     $Revision$
  * @author      Roman Borschel <roman@code-factory.org>
- * @todo Rename: Doctrine::ORM::UnitOfWork.
- * @todo Turn connection exceptions into UnitOfWorkExceptions.
  */
 class Doctrine_ORM_UnitOfWork
 {
@@ -88,6 +85,13 @@ class Doctrine_ORM_UnitOfWork
      * @var array
      */
     protected $_identityMap = array();
+
+    /**
+     * Map of all identifiers. Keys are object ids.
+     *
+     * @var array
+     */
+    private $_entityIdentifiers = array();
 
     /**
      * Map of the original entity data of entities fetched from the database.
@@ -199,7 +203,7 @@ class Doctrine_ORM_UnitOfWork
     public function commit()
     {
         // Compute changes in managed entities
-        $this->_computeDataChangeSet();
+        $this->computeDataChangeSet();
 
         if (empty($this->_newEntities) &&
                 empty($this->_deletedEntities) &&
@@ -244,7 +248,7 @@ class Doctrine_ORM_UnitOfWork
      */
     public function getDataChangeSet($entity)
     {
-        $oid = spl_object_id($entity);
+        $oid = spl_object_hash($entity);
         if (isset($this->_dataChangeSets[$oid])) {
             return $this->_dataChangeSets[$oid];
         }
@@ -261,7 +265,7 @@ class Doctrine_ORM_UnitOfWork
      *          map are computed.
      * @return void
      */
-    private function _computeDataChangeSet(array $entities = null)
+    public function computeDataChangeSet(array $entities = null)
     {
         $entitySet = array();
         if ( ! is_null($entities)) {
@@ -279,7 +283,7 @@ class Doctrine_ORM_UnitOfWork
         foreach ($entitySet as $className => $entities) {
             $class = $this->_em->getClassMetadata($className);
             foreach ($entities as $entity) {
-                $oid = spl_object_id($entity);
+                $oid = spl_object_hash($entity);
                 if ($this->getEntityState($entity) == self::STATE_MANAGED) {
                     if ( ! $class->isInheritanceTypeNone()) {
                         $class = $this->_em->getClassMetadata(get_class($entity));
@@ -317,7 +321,7 @@ class Doctrine_ORM_UnitOfWork
     /**
      * Executes all entity insertions for entities of the specified type.
      *
-     * @param Doctrine::ORM::Mapping::ClassMetadata $class
+     * @param Doctrine\ORM\Mapping\ClassMetadata $class
      */
     private function _executeInserts($class)
     {
@@ -329,11 +333,14 @@ class Doctrine_ORM_UnitOfWork
         $persister = $this->_em->getEntityPersister($className);
         foreach ($this->_newEntities as $entity) {
             if (get_class($entity) == $className) {
-                $persister->insert($entity);
-                if ($class->isIdGeneratorIdentity()) {
-                    $id = $this->_em->getIdGenerator($class->getIdGeneratorType());
-                    $class->setEntityIdentifier($entity, $id);
-                    $this->_entityStates[spl_object_id($oid)] = self::STATE_MANAGED;
+                $returnVal = $persister->insert($entity);
+                if ( ! is_null($returnVal)) {
+                    $oid = spl_object_hash($entity);
+                    $class->getReflectionProperty($class->getSingleIdentifierFieldName())
+                            ->setValue($entity, $returnVal);
+                    $this->_entityIdentifiers[$oid] = array($returnVal);
+                    $this->_entityStates[$oid] = self::STATE_MANAGED;
+                    $this->addToIdentityMap($entity);
                 }
             }
         }
@@ -342,7 +349,7 @@ class Doctrine_ORM_UnitOfWork
     /**
      * Executes all entity updates for entities of the specified type.
      *
-     * @param Doctrine::ORM::Mapping::ClassMetadata $class
+     * @param Doctrine\ORM\Mapping\ClassMetadata $class
      */
     private function _executeUpdates($class)
     {
@@ -358,7 +365,7 @@ class Doctrine_ORM_UnitOfWork
     /**
      * Executes all entity deletions for entities of the specified type.
      *
-     * @param Doctrine::ORM::Mapping::ClassMetadata $class
+     * @param Doctrine\ORM\Mapping\ClassMetadata $class
      */
     private function _executeDeletions($class)
     {
@@ -441,11 +448,8 @@ class Doctrine_ORM_UnitOfWork
      */
     public function registerNew($entity)
     {
-        $oid = spl_object_id($entity);
+        $oid = spl_object_hash($entity);
 
-        /*if ( ! $entity->_identifier()) {
-         throw new Doctrine_Connection_Exception("Entity without identity cant be registered as new.");
-         }*/
         if (isset($this->_dirtyEntities[$oid])) {
             throw new Doctrine_Connection_Exception("Dirty object can't be registered as new.");
         }
@@ -457,7 +461,7 @@ class Doctrine_ORM_UnitOfWork
         }
 
         $this->_newEntities[$oid] = $entity;
-        if ($this->_em->getClassMetadata(get_class($entity))->getEntityIdentifier($entity)) {
+        if (isset($this->_entityIdentifiers[$oid])) {
             $this->addToIdentityMap($entity);
         }
     }
@@ -465,36 +469,25 @@ class Doctrine_ORM_UnitOfWork
     /**
      * Checks whether an entity is registered as new on the unit of work.
      *
-     * @param Doctrine_ORM_Entity $entity
+     * @param Doctrine\ORM\Entity $entity
      * @return boolean
      * @todo Rename to isScheduledForInsert().
      */
     public function isRegisteredNew($entity)
     {
-        return isset($this->_newEntities[spl_object_id($entity)]);
-    }
-
-    /**
-     * Registers a clean entity.
-     * The entity is simply put into the identity map.
-     *
-     * @param object $entity
-     */
-    public function registerClean($entity)
-    {
-        $this->addToIdentityMap($entity);
+        return isset($this->_newEntities[spl_object_hash($entity)]);
     }
 
     /**
      * Registers a dirty entity.
      *
-     * @param Doctrine::ORM::Entity $entity
+     * @param Doctrine\ORM\Entity $entity
      * @todo Rename to scheduleForUpdate().
      */
     public function registerDirty($entity)
     {
-        $oid = spl_object_id($entity);
-        if ( ! $entity->_identifier()) {
+        $oid = spl_object_hash($entity);
+        if ( ! isset($this->_entityIdentifiers[$oid])) {
             throw new Doctrine_Exception("Entity without identity "
                     . "can't be registered as dirty.");
         }
@@ -518,7 +511,7 @@ class Doctrine_ORM_UnitOfWork
      */
     public function isRegisteredDirty($entity)
     {
-        return isset($this->_dirtyEntities[spl_object_id($entity)]);
+        return isset($this->_dirtyEntities[spl_object_hash($entity)]);
     }
 
     /**
@@ -528,12 +521,13 @@ class Doctrine_ORM_UnitOfWork
      */
     public function registerDeleted($entity)
     {
-        $oid = spl_object_id($entity);
+        $oid = spl_object_hash($entity);
         if ( ! $this->isInIdentityMap($entity)) {
             return;
         }
 
         $this->removeFromIdentityMap($entity);
+        $className = get_class($entity);
 
         if (isset($this->_newEntities[$oid])) {
             unset($this->_newEntities[$oid]);
@@ -552,13 +546,13 @@ class Doctrine_ORM_UnitOfWork
      * Checks whether an entity is registered as removed/deleted with the unit
      * of work.
      *
-     * @param Doctrine::ORM::Entity $entity
+     * @param Doctrine\ORM\Entity $entity
      * @return boolean
      * @todo Rename to isScheduledForDelete().
      */
     public function isRegisteredRemoved($entity)
     {
-        return isset($this->_deletedEntities[spl_object_id($entity)]);
+        return isset($this->_deletedEntities[spl_object_hash($entity)]);
     }
 
     /**
@@ -570,25 +564,26 @@ class Doctrine_ORM_UnitOfWork
      */
     public function detach($entity)
     {
-        if ($this->isInIdentityMap($entity)) {
-            $this->removeFromIdentityMap($entity);
-        }
+        $oid = spl_object_hash($entity);
+        $this->removeFromIdentityMap($entity);
+        unset($this->_newEntities[$oid], $this->_dirtyEntities[$oid],
+                $this->_deletedEntities[$oid], $this->_entityIdentifiers[$oid],
+                $this->_entityStates[$oid]);
     }
 
     /**
      * Enter description here...
      *
-     * @param Doctrine_ORM_Entity $entity
+     * @param Doctrine\ORM\Entity $entity
      * @return unknown
      * @todo Rename to isScheduled()
      */
     public function isEntityRegistered($entity)
     {
-        $oid = spl_object_id($entity);
+        $oid = spl_object_hash($entity);
         return isset($this->_newEntities[$oid]) ||
                 isset($this->_dirtyEntities[$oid]) ||
-                isset($this->_deletedEntities[$oid]) ||
-                $this->isInIdentityMap($entity);
+                isset($this->_deletedEntities[$oid]);
     }
 
     /**
@@ -606,10 +601,16 @@ class Doctrine_ORM_UnitOfWork
         $numDetached = 0;
         if ($entityName !== null && isset($this->_identityMap[$entityName])) {
             $numDetached = count($this->_identityMap[$entityName]);
+            foreach ($this->_identityMap[$entityName] as $entity) {
+                $this->detach($entity);
+            }
             $this->_identityMap[$entityName] = array();
         } else {
             $numDetached = count($this->_identityMap);
             $this->_identityMap = array();
+            $this->_newEntities = array();
+            $this->_dirtyEntities = array();
+            $this->_deletedEntities = array();
         }
 
         return $numDetached;
@@ -627,9 +628,9 @@ class Doctrine_ORM_UnitOfWork
     public function addToIdentityMap($entity)
     {
         $classMetadata = $this->_em->getClassMetadata(get_class($entity));
-        $idHash = $this->getIdentifierHash($classMetadata->getEntityIdentifier($entity));
+        $idHash = $this->getIdentifierHash($this->_entityIdentifiers[spl_object_hash($entity)]);
         if ($idHash === '') {
-            throw new Doctrine_Exception("Entity with oid '" . spl_object_id($entity)
+            throw new Doctrine_Exception("Entity with oid '" . spl_object_hash($entity)
                     . "' has no identity and therefore can't be added to the identity map.");
         }
         $className = $classMetadata->getRootClassName();
@@ -648,23 +649,22 @@ class Doctrine_ORM_UnitOfWork
      */
     public function getEntityState($entity)
     {
-        $oid = spl_object_id($entity);
-        return isset($this->_entityStates[$oid]) ? $this->_entityStates[$oid] :
-                self::STATE_NEW;
+        $oid = spl_object_hash($entity);
+        return isset($this->_entityStates[$oid]) ? $this->_entityStates[$oid] : self::STATE_NEW;
     }
 
     /**
      * Removes an entity from the identity map.
      *
-     * @param Doctrine_ORM_Entity $entity
-     * @return unknown
+     * @param Doctrine\ORM\Entity $entity
+     * @return boolean
      */
     public function removeFromIdentityMap($entity)
     {
         $classMetadata = $this->_em->getClassMetadata(get_class($entity));
-        $idHash = $this->getIdentifierHash($classMetadata->getEntityIdentifier($entity));
+        $idHash = $this->getIdentifierHash($this->_entityIdentifiers[spl_object_hash($entity)]);
         if ($idHash === '') {
-            throw new Doctrine_Exception("Entity with oid '" . spl_object_id($entity)
+            throw new Doctrine_Exception("Entity with oid '" . spl_object_hash($entity)
                     . "' has no identity and therefore can't be removed from the identity map.");
         }
         $className = $classMetadata->getRootClassName();
@@ -681,7 +681,7 @@ class Doctrine_ORM_UnitOfWork
      *
      * @param string $idHash
      * @param string $rootClassName
-     * @return Doctrine::ORM::Entity
+     * @return Doctrine\ORM\Entity
      */
     public function getByIdHash($idHash, $rootClassName)
     {
@@ -729,8 +729,12 @@ class Doctrine_ORM_UnitOfWork
      */
     public function isInIdentityMap($entity)
     {
+        $oid = spl_object_hash($entity);
+        if ( ! isset($this->_entityIdentifiers[$oid])) {
+            return false;
+        }
         $classMetadata = $this->_em->getClassMetadata(get_class($entity));
-        $idHash = $this->getIdentifierHash($classMetadata->getEntityIdentifier($entity));     
+        $idHash = $this->getIdentifierHash($this->_entityIdentifiers[$oid]);
         if ($idHash === '') {
             return false;
         }
@@ -765,15 +769,15 @@ class Doctrine_ORM_UnitOfWork
         $this->_doSave($entity, $visited, $insertNow);
         if ( ! empty($insertNow)) {
             // We have no choice. This means that there are new entities
-            // with an IDENTITY column key generation.
-            $this->_computeDataChangeSet($insertNow);
+            // with an IDENTITY column key generation strategy.
+            $this->computeDataChangeSet($insertNow);
             $commitOrder = $this->_getCommitOrder($insertNow);
             foreach ($commitOrder as $class) {
                 $this->_executeInserts($class);
             }
             // remove them from _newEntities
             $this->_newEntities = array_diff_key($this->_newEntities, $insertNow);
-            $this->_dataChangeSets = array();
+            $this->_dataChangeSets = array_diff_key($this->_dataChangeSets, $insertNow);
         }
     }
 
@@ -787,7 +791,7 @@ class Doctrine_ORM_UnitOfWork
      */
     private function _doSave($entity, array &$visited, array &$insertNow)
     {
-        $oid = spl_object_id($entity);
+        $oid = spl_object_hash($entity);
         if (isset($visited[$oid])) {
             return; // Prevent infinite recursion
         }
@@ -800,12 +804,16 @@ class Doctrine_ORM_UnitOfWork
                 // nothing to do
                 break;
             case self::STATE_NEW:
-                $result = $this->_em->getIdGenerator($class->getClassName())->generate($entity);
-                if ($result == Doctrine_ORM_Id_AbstractIdGenerator::POST_INSERT_INDICATOR) {
+                $idGen = $this->_em->getIdGenerator($class->getClassName());
+                if ($idGen->isPostInsertGenerator()) {
                     $insertNow[$oid] = $entity;
                 } else {
-                    $class->setEntityIdentifier($entity, $result);
+                    $idValue = $idGen->generate($entity);
+                    $this->_entityIdentifiers[$oid] = array($idValue);
                     $this->_entityStates[$oid] = self::STATE_MANAGED;
+                    if ( ! $idGen instanceof Doctrine_ORM_Id_Assigned) {
+                        $class->getSingleIdReflectionProperty()->setValue($entity, $idValue);
+                    }
                 }
                 $this->registerNew($entity);
                 break;
@@ -844,19 +852,18 @@ class Doctrine_ORM_UnitOfWork
     /**
      * Enter description here...
      *
-     * @param Doctrine_ORM_Entity $entity
+     * @param Doctrine\ORM\Entity $entity
      * @param array $visited
      */
     private function _doDelete($entity, array &$visited)
     {
-        $oid = spl_object_id($entity);
+        $oid = spl_object_hash($entity);
         if (isset($visited[$oid])) {
             return; // Prevent infinite recursion
         }
 
         $visited[$oid] = $entity; // mark visited
 
-        //$class = $entity->getClass();
         switch ($this->getEntityState($entity)) {
             case self::STATE_NEW:
             case self::STATE_DELETED:
@@ -951,47 +958,43 @@ class Doctrine_ORM_UnitOfWork
     }
 
     /**
-     * Creates an entity. Used for reconstitution as well as initial creation.
+     * Creates an entity. Used for reconstitution of entities during hydration.
      *
      * @param string $className  The name of the entity class.
      * @param array $data  The data for the entity.
      * @return Doctrine\ORM\Entity
+     * @internal Performance-sensitive method.
      */
-    public function createEntity($className, array $data, Doctrine_Query $query = null)
+    public function createEntity($className, array $data, $query = null)
     {
         $className = $this->_inferCorrectClassName($data, $className);
         $classMetadata = $this->_em->getClassMetadata($className);
-        if ( ! empty($data)) {
+
+        $id = array();
+        if ($classMetadata->isIdentifierComposite()) {
             $identifierFieldNames = $classMetadata->getIdentifier();
-            $isNew = false;
             foreach ($identifierFieldNames as $fieldName) {
-                if ( ! isset($data[$fieldName])) {
-                    // id field not found return new entity
-                    $isNew = true;
-                    break;
-                }
                 $id[] = $data[$fieldName];
             }
-
-            if ($isNew) {
-                $entity = new $className;
-            } else {
-                $idHash = $this->getIdentifierHash($id);
-                $entity = $this->tryGetByIdHash($idHash, $classMetadata->getRootClassName());
-                if ($entity) {
-                    $this->_mergeData($entity, $data, $classMetadata/*, $query->getHint('doctrine.refresh')*/);
-                    return $entity;
-                } else {
-                    $entity = new $className;
-                    $this->_mergeData($entity, $data, $classMetadata, true);
-                    $this->addToIdentityMap($entity);
-                }
-            }
+            $idHash = $this->getIdentifierHash($id);
+        } else {
+            $id = array($data[$classMetadata->getSingleIdentifierFieldName()]);
+            $idHash = $id[0];
+        }
+        $entity = $this->tryGetByIdHash($idHash, $classMetadata->getRootClassName());
+        if ($entity) {
+            $oid = spl_object_hash($entity);
+            $this->_mergeData($entity, $data, $classMetadata/*, $query->getHint('doctrine.refresh')*/);
+            return $entity;
         } else {
             $entity = new $className;
+            $oid = spl_object_hash($entity);
+            $this->_mergeData($entity, $data, $classMetadata, true);
+            $this->_entityIdentifiers[$oid] = $id;
+            $this->addToIdentityMap($entity);
         }
 
-        $this->_originalEntityData[spl_object_id($entity)] = $data;
+        $this->_originalEntityData[$oid] = $data;
 
         return $entity;
     }
@@ -1011,11 +1014,11 @@ class Doctrine_ORM_UnitOfWork
                 $class->getReflectionProperty($field)->setValue($entity, $value);
             }
         } else {
-            $oid = spl_object_id($entity);
+            $oid = spl_object_hash($entity);
             foreach ($data as $field => $value) {
                 $currentValue = $class->getReflectionProperty($field)->getValue($entity);
-                if ( ! isset($this->_originalEntityData[$oid]) ||
-                        $currentValue == $this->_originalEntityData[$oid]) {
+                if ( ! isset($this->_originalEntityData[$oid][$field]) ||
+                        $currentValue == $this->_originalEntityData[$oid][$field]) {
                     $class->getReflectionProperty($field)->setValue($entity, $value);
                 }
             }
@@ -1057,6 +1060,61 @@ class Doctrine_ORM_UnitOfWork
     public function getIdentityMap()
     {
         return $this->_identityMap;
+    }
+
+    /**
+     * Gets the original data of an entity. The original data is the data that was
+     * present at the time the entity was reconstituted from the database.
+     *
+     * @param object $entity
+     * @return array
+     */
+    public function getOriginalEntityData($entity)
+    {
+        $oid = spl_object_hash($entity);
+        if (isset($this->_originalEntityData[$oid])) {
+            return $this->_originalEntityData[$oid];
+        }
+        return array();
+    }
+
+    /**
+     * INTERNAL:
+     * For hydration purposes only.
+     *
+     * Sets a property of the original data array of an entity.
+     *
+     * @param string $oid
+     * @param string $property
+     * @param mixed $value
+     */
+    public function setOriginalEntityProperty($oid, $property, $value)
+    {
+        $this->_originalEntityData[$oid][$property] = $value;
+    }
+
+    /**
+     * INTERNAL:
+     * For hydration purposes only.
+     *
+     * Adds a managed collection to the UnitOfWork.
+     *
+     * @param Doctrine\ORM\Collection $coll
+     */
+    public function addManagedCollection(Doctrine_ORM_Collection $coll)
+    {
+        
+    }
+
+    /**
+     * Gets the identifier of an entity.
+     *
+     * @param object $entity
+     * @return array The identifier values.
+     */
+    public function getEntityIdentifier($entity)
+    {
+        return $this->_entityIdentifiers[spl_object_hash($entity)];
     }
 }
 

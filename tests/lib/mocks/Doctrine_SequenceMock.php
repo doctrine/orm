@@ -15,8 +15,6 @@ class Doctrine_SequenceMock extends Doctrine_ORM_Id_SequenceGenerator
         return $this->_sequenceNumber++;
     }
     
-    
-    
     /**
      * @override
      */

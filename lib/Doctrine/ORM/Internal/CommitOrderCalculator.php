@@ -19,7 +19,7 @@
  * <http://www.phpdoctrine.org>.
  */
 
-#namespace Doctrine::ORM::Internal;
+#namespace Doctrine\ORM\Internal;
 
 /**
  * The CommitOrderCalculator is used by the UnitOfWork to sort out the

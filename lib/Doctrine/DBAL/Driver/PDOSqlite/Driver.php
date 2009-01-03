@@ -58,8 +58,8 @@ class Doctrine_DBAL_Driver_PDOSqlite_Driver implements Doctrine_DBAL_Driver
     /**
      * Gets the schema manager that is relevant for this driver.
      *
-     * @param Doctrine::DBAL::Connection $conn
-     * @return Doctrine::DBAL::Schema::AbstractSchemaManager
+     * @param Doctrine\DBAL\Connection $conn
+     * @return Doctrine\DBAL\Schema\AbstractSchemaManager
      */
     public function getSchemaManager(Doctrine_DBAL_Connection $conn)
     {
