@@ -1,5 +1,9 @@
 <?php
 
+#namespace Doctrine\Tests\Mocks;
+
+#use Doctrine\DBAL\Connection;
+
 require_once 'lib/mocks/Doctrine_SequenceMock.php';
 require_once 'lib/mocks/Doctrine_DatabasePlatformMock.php';
 
@@ -73,4 +77,3 @@ class Doctrine_ConnectionMock extends Doctrine_DBAL_Connection
     }
 }
 
-?>

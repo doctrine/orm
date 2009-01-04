@@ -6,10 +6,13 @@ require_once 'lib/DoctrineTestInit.php';
 require_once 'lib/mocks/Doctrine_HydratorMockStatement.php';
  
 class Orm_Hydration_BasicHydrationTest extends Doctrine_OrmTestCase
-{    
+{
+    private $_em;
+
     protected function setUp()
     {
         parent::setUp();
+        $this->_em = $this->_getTestEntityManager();
     }
     
     /** Getter for the hydration mode dataProvider */

@@ -1,5 +1,7 @@
 <?php
 
+#namespace Doctrine\Tests\Mocks;
+
 require_once 'lib/mocks/Doctrine_EntityPersisterMock.php';
 
 /**
@@ -88,4 +90,3 @@ class Doctrine_EntityManagerMock extends Doctrine_ORM_EntityManager
     }
 }
 
-?>

@@ -36,6 +36,12 @@ require_once 'lib/DoctrineTestInit.php';
  */
 class Orm_Query_IdentifierRecognitionTest extends Doctrine_OrmTestCase
 {
+    private $_em;
+
+    protected function setUp() {
+        parent::setUp();
+        $this->_em = $this->_getTestEntityManager();
+    }
 
     public function testSingleAliasDeclarationIsSupported()
     {

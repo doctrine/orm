@@ -18,7 +18,7 @@
  *
  * @author robo
  */
-class Doctrine_Common_Collection implements Countable, IteratorAggregate, Serializable, ArrayAccess {
+class Doctrine_Common_Collections_Collection implements Countable, IteratorAggregate, Serializable, ArrayAccess {
     /**
      * An array containing the entries of this collection.
      * This is the wrapped php array.
@@ -205,7 +205,7 @@ class Doctrine_Common_Collection implements Countable, IteratorAggregate, Serial
     /**
      *
      */
-    public function search(Doctrine_ORM_Entity $record)
+    public function search($record)
     {
         return array_search($record, $this->_data, true);
     }
@@ -287,11 +287,6 @@ class Doctrine_Common_Collection implements Countable, IteratorAggregate, Serial
      */
     public function add($value, $key = null)
     {
-        //TODO: really only allow entities?
-        if ( ! $value instanceof Doctrine_ORM_Entity) {
-            throw new Doctrine_Record_Exception('Value variable in collection is not an instance of Doctrine_Entity.');
-        }
-
         // TODO: Really prohibit duplicates?
         if (in_array($value, $this->_data, true)) {
             return false;
@@ -304,16 +299,6 @@ class Doctrine_Common_Collection implements Countable, IteratorAggregate, Serial
             $this->_data[$key] = $value;
         } else {
             $this->_data[] = $value;
-        }
-
-        if ($this->_hydrationFlag) {
-            if ($this->_backRefFieldName) {
-                // set back reference to owner
-                $value->_internalSetReference($this->_backRefFieldName, $this->_owner);
-            }
-        } else {
-            //TODO: Register collection as dirty with the UoW if necessary
-            $this->_changed();
         }
 
         return true;
@@ -352,11 +337,35 @@ class Doctrine_Common_Collection implements Countable, IteratorAggregate, Serial
     }
 
     /**
+     * @todo Experiment. Waiting for 5.3 closures.
+     * Example usage:
+     *
+     * $map = $coll->mapElements(function($key, $entity) {
+     *     return array($entity->id, $entity->name);
+     * });
+     *
+     * or:
+     *
+     * $map = $coll->mapElements(function($key, $entity) {
+     *     return array($entity->name, strtoupper($entity->name));
+     * });
+     *
+     */
+    public function mapElements($lambda) {
+        $result = array();
+        foreach ($this->_data as $key => $entity) {
+            list($key, $value) = each($lambda($key, $entity));
+            $result[$key] = $value;
+        }
+        return $result;
+    }
+
+    /**
      * returns a string representation of this object
      */
     public function __toString()
     {
-        return Doctrine_Lib::getCollectionAsString($this);
+        return __CLASS__ . '@' . spl_object_hash($this);
     }
 
     /**
@@ -368,5 +377,39 @@ class Doctrine_Common_Collection implements Countable, IteratorAggregate, Serial
     {
         $this->_data = array();
     }
+
+    /* Serializable implementation */
+
+    /**
+     * Serializes the collection.
+     * This method is automatically called when the Collection is serialized.
+     *
+     * Part of the implementation of the Serializable interface.
+     *
+     * @return array
+     */
+    public function serialize()
+    {
+        $vars = get_object_vars($this);
+
+        //TODO
+
+        return serialize($vars);
+    }
+
+    /**
+     * Reconstitutes the collection object from it's serialized form.
+     * This method is automatically called everytime the Collection object is unserialized.
+     *
+     * Part of the implementation of the Serializable interface.
+     *
+     * @param string $serialized The serialized data
+     *
+     * @return void
+     */
+    public function unserialize($serialized)
+    {
+        //TODO
+    }
 }
-?>
+

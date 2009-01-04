@@ -1,6 +1,6 @@
 <?php 
 
-#namespace Doctrine::ORM;
+#namespace Doctrine\ORM;
 
 /**
  * @todo Migrate the old RawSql to NativeQuery.

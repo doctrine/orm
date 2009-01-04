@@ -1,5 +1,7 @@
 <?php
 
+#namespace Doctrine\Tests\Models\Forum;
+
 class ForumAdministrator extends ForumUser
 {
     public $accessLevel;

@@ -131,16 +131,28 @@ class Doctrine_ORM_EntityManager
      * @var EventManager
      */
     private $_eventManager;
+
+    /**
+     * The maintained (cached) Id generators.
+     *
+     * @var <type>
+     */
     private $_idGenerators = array();
+
+    /** Whether the EntityManager is closed or not. */
     private $_closed = false;
     
     /**
-     * Creates a new EntityManager that operates on the given database connection.
+     * Creates a new EntityManager that operates on the given database connection
+     * and uses the given Configuration and EventManager implementations.
      *
-     * @param Doctrine_Connection $conn
+     * @param Doctrine\DBAL\Connection $conn
      * @param string $name
      */
-    protected function __construct(Doctrine_DBAL_Connection $conn, $name, Doctrine_ORM_Configuration $config,
+    protected function __construct(
+            Doctrine_DBAL_Connection $conn,
+            $name,
+            Doctrine_ORM_Configuration $config,
             Doctrine_Common_EventManager $eventManager)
     {
         $this->_conn = $conn;
@@ -183,7 +195,7 @@ class Doctrine_ORM_EntityManager
     }
     
     /**
-     * Starts a database transaction.
+     * Starts a transaction on the underlying connection.
      */
     public function beginTransaction()
     {
@@ -191,11 +203,11 @@ class Doctrine_ORM_EntityManager
     }
     
     /**
-     * Commits a running database transaction.
+     * Commits a running transaction.
      * This causes a flush() of the EntityManager if the flush mode is set to
      * AUTO or COMMIT.
      *
-     * @return unknown
+     * @return boolean
      */
     public function commit()
     {
@@ -275,7 +287,7 @@ class Doctrine_ORM_EntityManager
     {
         if ( ! isset($this->_persisters[$entityName])) {
             $class = $this->getClassMetadata($entityName);
-            if ($class->getInheritanceType() == Doctrine_ORM_Mapping_ClassMetadata::INHERITANCE_TYPE_JOINED) {
+            if ($class->isInheritanceTypeJoined()) {
                 $persister = new Doctrine_EntityPersister_JoinedSubclass($this, $class);
             } else {
                 $persister = new Doctrine_ORM_Persisters_StandardEntityPersister($this, $class);
@@ -288,8 +300,8 @@ class Doctrine_ORM_EntityManager
     /**
      * Detaches an entity from the manager. It's lifecycle is no longer managed.
      *
-     * @param Doctrine_Entity $entity
-     * @return unknown
+     * @param Doctrine\ORM\Entity $entity
+     * @return boolean
      */
     public function detach(Doctrine_ORM_Entity $entity)
     {
@@ -342,11 +354,11 @@ class Doctrine_ORM_EntityManager
     
     /**
      * Finds an Entity by its identifier.
-     * This is just a convenient shortcut for getRepository()->find().
+     * This is just a convenient shortcut for getRepository($entityName)->find($id).
      *
      * @param string $entityName
      * @param mixed $identifier
-     * @return Doctrine::ORM::Entity
+     * @return Doctrine\ORM\Entity
      */
     public function find($entityName, $identifier)
     {
@@ -391,23 +403,19 @@ class Doctrine_ORM_EntityManager
     }
     
     /**
-     * Clears the persistence context, detaching all entities.
-     *
-     * @return void
-     * @todo package:orm
+     * Clears the persistence context, effectively detaching all managed entities.
      */
     public function clear($entityName = null)
     {
         if ($entityName === null) {
             $this->_unitOfWork->detachAll();
         } else {
-            //... 
+            //TODO
         }
     }
     
     /**
      * Closes the EntityManager.
-     *
      */
     public function close()
     {
@@ -418,7 +426,6 @@ class Doctrine_ORM_EntityManager
      * Saves the given entity, persisting it's state.
      * 
      * @param Doctrine\ORM\Entity $entity
-     * @return void
      */
     public function save(Doctrine_ORM_Entity $entity)
     {
@@ -430,10 +437,9 @@ class Doctrine_ORM_EntityManager
     }
     
     /**
-     * Removes the given entity from the persistent store.
+     * Deletes the persistent state of the given entity.
      * 
      * @param Doctrine\ORM\Entity $entity
-     * @return void
      */
     public function delete(Doctrine_ORM_Entity $entity)
     {
@@ -448,8 +454,7 @@ class Doctrine_ORM_EntityManager
      * Refreshes the persistent state of the entity from the database,
      * overriding any local changes that have not yet been persisted.
      *
-     * @param Doctrine::ORM::Entity $entity
-     * @return void
+     * @param Doctrine\ORM\Entity $entity
      * @todo FIX Impl
      */
     public function refresh(Doctrine_ORM_Entity $entity)
@@ -462,8 +467,8 @@ class Doctrine_ORM_EntityManager
     /**
      * Creates a copy of the given entity. Can create a shallow or a deep copy.
      *
-     * @param Doctrine::ORM::Entity $entity  The entity to copy.
-     * @return Doctrine::ORM::Entity  The new entity.
+     * @param Doctrine\ORM\Entity $entity  The entity to copy.
+     * @return Doctrine\ORM\Entity  The new entity.
      */
     public function copy(Doctrine_ORM_Entity $entity, $deep = false)
     {
@@ -474,7 +479,7 @@ class Doctrine_ORM_EntityManager
      * Gets the repository for an Entity.
      *
      * @param string $entityName  The name of the Entity.
-     * @return Doctrine::ORM::EntityRepository  The repository.
+     * @return Doctrine\ORM\EntityRepository  The repository.
      */
     public function getRepository($entityName)
     {
@@ -497,7 +502,7 @@ class Doctrine_ORM_EntityManager
     /**
      * Checks if the instance is managed by the EntityManager.
      * 
-     * @param Doctrine::ORM::Entity $entity
+     * @param Doctrine\ORM\Entity $entity
      * @return boolean TRUE if this EntityManager currently manages the given entity
      *                 (and has it in the identity map), FALSE otherwise.
      */
@@ -552,6 +557,8 @@ class Doctrine_ORM_EntityManager
     /**
      * Checks whether this EntityManager is the currently active one.
      *
+     * Note:This is only useful in scenarios where {@link ActiveEntity}s are used.
+     *
      * @return boolean
      */
     public function isActive()
@@ -562,7 +569,7 @@ class Doctrine_ORM_EntityManager
     /**
      * Makes this EntityManager the currently active one.
      *
-     * @return void
+     * Note: This is only useful in scenarios where {@link ActiveEntity}s are used.
      */
     public function activate()
     {
@@ -582,7 +589,10 @@ class Doctrine_ORM_EntityManager
      * @param EventManager $eventManager The EventManager instance to use.
      * @return EntityManager The created EntityManager.
      */
-    public static function create($conn, $name, Doctrine_ORM_Configuration $config = null,
+    public static function create(
+            $conn,
+            $name,
+            Doctrine_ORM_Configuration $config = null,
             Doctrine_Common_EventManager $eventManager = null)
     {
         if (is_array($conn)) {
@@ -607,6 +617,8 @@ class Doctrine_ORM_EntityManager
     /**
      * Static lookup to get the currently active EntityManager.
      *
+     * Note: Used by {@link ActiveEntity}s to actively lookup an EntityManager.
+     * 
      * @return Doctrine\ORM\EntityManager
      */
     public static function getActiveEntityManager()

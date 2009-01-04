@@ -1,4 +1,7 @@
 <?php
+
+#namespace Doctrine\Tests\ORM;
+
 require_once 'lib/DoctrineTestInit.php';
 require_once 'lib/mocks/Doctrine_EntityManagerMock.php';
 require_once 'lib/mocks/Doctrine_ConnectionMock.php';
@@ -7,25 +10,20 @@ require_once 'lib/mocks/Doctrine_IdentityIdGeneratorMock.php';
 
 /**
  * UnitOfWork tests.
- * These tests run without a database through mocking the
- * persister/connection/sequence used by the UnitOfWork.
  */
 class Orm_UnitOfWorkTest extends Doctrine_OrmTestCase
 {
+    // SUT
     private $_unitOfWork;
-    
-    // Mocks
-    
     // Provides a sequence mock to the UnitOfWork
     private $_connectionMock;
-    // The EntityManager mock that provides the mock persister
+    // The EntityManager mock that provides the mock persisters
     private $_emMock;
     
     protected function setUp() {
         parent::setUp();
         $this->_connectionMock = new Doctrine_ConnectionMock(array());
         $this->_emMock = Doctrine_EntityManagerMock::create($this->_connectionMock, "uowMockEm");
-        
         // SUT
         $this->_unitOfWork = new Doctrine_UnitOfWorkMock($this->_emMock);
         $this->_emMock->setUnitOfWork($this->_unitOfWork);
@@ -136,6 +134,7 @@ class Orm_UnitOfWorkTest extends Doctrine_OrmTestCase
         // Fake managed state
         $this->_unitOfWork->setEntityState($user2, Doctrine_ORM_UnitOfWork::STATE_MANAGED);
 
+        // Fake original entity date
         $this->_unitOfWork->setOriginalEntityData($user1, array(
             'id' => 1, 'username' => 'roman'
         ));
@@ -143,8 +142,10 @@ class Orm_UnitOfWorkTest extends Doctrine_OrmTestCase
             'id' => 2, 'username' => 'jon'
         ));
 
+        // Go
         $this->_unitOfWork->computeDataChangeSet(array($user1, $user2));
 
+        // Verify
         $user1ChangeSet = $this->_unitOfWork->getDataChangeSet($user1);
         $this->assertTrue(is_array($user1ChangeSet));
         $this->assertEquals(2, count($user1ChangeSet));

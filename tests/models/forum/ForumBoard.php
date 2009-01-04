@@ -1,4 +1,7 @@
 <?php
+
+#namespace Doctrine\Tests\Models\Forum;
+
 class ForumBoard
 {
     public $id;

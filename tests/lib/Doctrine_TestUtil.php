@@ -1,5 +1,7 @@
 <?php 
 
+#namespace Doctrine\Tests;
+
 class Doctrine_TestUtil
 {    
     public static function getConnection()

@@ -1,9 +1,8 @@
 <?php
 
-#namespace Doctrine\Tests\ORM\Models\Forum;
+#namespace Doctrine\Tests\Models\Forum;
 
 #use Doctrine\ORM\Entity;
-#use Doctrine\Common\VirtualPropertySystem;
 
 class ForumUser
 {

@@ -1,5 +1,7 @@
 <?php
 
+#namespace Doctrine\Tests\Mocks;
+
 require_once 'lib/mocks/Doctrine_DriverConnectionMock.php';
 require_once 'lib/mocks/Doctrine_DatabasePlatformMock.php';
 

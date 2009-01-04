@@ -1,8 +1,10 @@
 <?php
+/*
+ * This file bootstraps the test environment.
+ */
+
 require_once 'PHPUnit/Framework.php';
 require_once 'PHPUnit/TextUI/TestRunner.php';
-
-//require_once '../lib/Doctrine.php';
 require_once '../lib/Doctrine/Common/ClassLoader.php';
 
 $classLoader = new Doctrine_Common_ClassLoader();

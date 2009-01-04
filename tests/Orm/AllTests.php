@@ -6,7 +6,6 @@ if (!defined('PHPUnit_MAIN_METHOD')) {
 require_once 'lib/DoctrineTestInit.php';
 
 // Suites
-require_once 'Orm/Component/AllTests.php';
 require_once 'Orm/Query/AllTests.php';
 require_once 'Orm/Hydration/AllTests.php';
 require_once 'Orm/Ticket/AllTests.php';
@@ -17,6 +16,7 @@ require_once 'Orm/Associations/AllTests.php';
 require_once 'Orm/UnitOfWorkTest.php';
 require_once 'Orm/EntityManagerTest.php';
 require_once 'Orm/EntityPersisterTest.php';
+require_once 'Orm/CommitOrderCalculatorTest.php';
 
 class Orm_AllTests
 {
@@ -32,8 +32,8 @@ class Orm_AllTests
         $suite->addTestSuite('Orm_UnitOfWorkTest');
         $suite->addTestSuite('Orm_EntityManagerTest');
         $suite->addTestSuite('Orm_EntityPersisterTest');
+        $suite->addTestSuite('Orm_CommitOrderCalculatorTest');
         
-        $suite->addTest(Orm_Component_AllTests::suite());
         $suite->addTest(Orm_Query_AllTests::suite());
         $suite->addTest(Orm_Hydration_AllTests::suite());
         $suite->addTest(Orm_Entity_AllTests::suite());

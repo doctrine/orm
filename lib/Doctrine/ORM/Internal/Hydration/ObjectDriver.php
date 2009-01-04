@@ -55,7 +55,7 @@ class Doctrine_ORM_Internal_Hydration_ObjectDriver
 
     public function getElementCollection($component)
     {
-        $coll = new Doctrine_ORM_Collection($component);
+        $coll = new Doctrine_ORM_Collection($this->_em, $component);
         $this->_collections[] = $coll;
         return $coll;
     }

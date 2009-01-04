@@ -1,5 +1,7 @@
 <?php
 
+#namespace Doctrine\Tests\Mocks;
+
 class Doctrine_SequenceMock extends Doctrine_ORM_Id_SequenceGenerator
 {
     private $_sequenceNumber = 0;
@@ -52,4 +54,3 @@ class Doctrine_SequenceMock extends Doctrine_ORM_Id_SequenceGenerator
     }
 }
 
-?>

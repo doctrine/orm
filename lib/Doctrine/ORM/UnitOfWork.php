@@ -650,19 +650,28 @@ class Doctrine_ORM_UnitOfWork
     public function getEntityState($entity)
     {
         $oid = spl_object_hash($entity);
-        return isset($this->_entityStates[$oid]) ? $this->_entityStates[$oid] : self::STATE_NEW;
+        if ( ! isset($this->_entityStates[$oid])) {
+            if (isset($this->_entityIdentifiers[$oid])) {
+                $this->_entityStates[$oid] = self::STATE_DETACHED;
+            } else {
+                $this->_entityStates[$oid] = self::STATE_NEW;
+            }
+        }
+        return $this->_entityStates[$oid];
     }
 
     /**
-     * Removes an entity from the identity map.
+     * Removes an entity from the identity map. This effectively detaches the
+     * entity from the persistence management of Doctrine.
      *
      * @param Doctrine\ORM\Entity $entity
      * @return boolean
      */
     public function removeFromIdentityMap($entity)
     {
+        $oid = spl_object_hash($entity);
         $classMetadata = $this->_em->getClassMetadata(get_class($entity));
-        $idHash = $this->getIdentifierHash($this->_entityIdentifiers[spl_object_hash($entity)]);
+        $idHash = $this->getIdentifierHash($this->_entityIdentifiers[$oid]);
         if ($idHash === '') {
             throw new Doctrine_Exception("Entity with oid '" . spl_object_hash($entity)
                     . "' has no identity and therefore can't be removed from the identity map.");
@@ -670,6 +679,7 @@ class Doctrine_ORM_UnitOfWork
         $className = $classMetadata->getRootClassName();
         if (isset($this->_identityMap[$className][$idHash])) {
             unset($this->_identityMap[$className][$idHash]);
+            $this->_entityStates[$oid] = self::STATE_DETACHED;
             return true;
         }
 
@@ -677,7 +687,7 @@ class Doctrine_ORM_UnitOfWork
     }
 
     /**
-     * Finds an entity in the identity map by its identifier hash.
+     * Gets an entity in the identity map by its identifier hash.
      *
      * @param string $idHash
      * @param string $rootClassName
@@ -692,8 +702,8 @@ class Doctrine_ORM_UnitOfWork
      * Tries to get an entity by its identifier hash. If no entity is found for
      * the given hash, FALSE is returned.
      *
-     * @param <type> $idHash
-     * @param <type> $rootClassName
+     * @param string $idHash
+     * @param string $rootClassName
      * @return mixed The found entity or FALSE.
      */
     public function tryGetByIdHash($idHash, $rootClassName)
@@ -760,7 +770,7 @@ class Doctrine_ORM_UnitOfWork
     /**
      * Saves an entity as part of the current unit of work.
      *
-     * @param Doctrine_ORM_Entity $entity  The entity to save.
+     * @param Doctrine\ORM\Entity $entity The entity to save.
      */
     public function save($entity)
     {
@@ -775,7 +785,7 @@ class Doctrine_ORM_UnitOfWork
             foreach ($commitOrder as $class) {
                 $this->_executeInserts($class);
             }
-            // remove them from _newEntities
+            // remove them from _newEntities and _dataChangeSets
             $this->_newEntities = array_diff_key($this->_newEntities, $insertNow);
             $this->_dataChangeSets = array_diff_key($this->_dataChangeSets, $insertNow);
         }
@@ -786,8 +796,8 @@ class Doctrine_ORM_UnitOfWork
      * This method is internally called during save() cascades as it tracks
      * the already visited entities to prevent infinite recursions.
      *
-     * @param Doctrine_ORM_Entity $entity  The entity to save.
-     * @param array $visited  The already visited entities.
+     * @param Doctrine\ORM\Entity $entity The entity to save.
+     * @param array $visited The already visited entities.
      */
     private function _doSave($entity, array &$visited, array &$insertNow)
     {
@@ -909,33 +919,61 @@ class Doctrine_ORM_UnitOfWork
         }
     }
 
+    /**
+     * Cascades the delete operation to associated entities.
+     *
+     * @param Doctrine\ORM\Entity $entity
+     */
     private function _cascadeDelete($entity)
     {
-
+        $class = $this->_em->getClassMetadata(get_class($entity));
+        foreach ($class->getAssociationMappings() as $assocMapping) {
+            if ( ! $assocMapping->isCascadeDelete()) {
+                continue;
+            }
+            $relatedEntities = $class->getReflectionProperty($assocMapping->getSourceFieldName())
+                    ->getValue($entity);
+            if ($relatedEntities instanceof Doctrine_ORM_Collection &&
+                    count($relatedEntities) > 0) {
+                foreach ($relatedEntities as $relatedEntity) {
+                    $this->_doDelete($relatedEntity, $visited, $insertNow);
+                }
+            } else if (is_object($relatedEntities)) {
+                $this->_doDelete($relatedEntities, $visited, $insertNow);
+            }
+        }
     }
-    
+
+    /**
+     * Gets the CommitOrderCalculator used by the UnitOfWork to order commits.
+     *
+     * @return Doctrine\ORM\Internal\CommitOrderCalculator
+     */
     public function getCommitOrderCalculator()
     {
         return $this->_commitOrderCalculator;
     }
 
+    /**
+     * Closes the UnitOfWork.
+     */
     public function close()
     {
         //...        
         $this->_commitOrderCalculator->clear();
     }
     
-    public function scheduleCollectionUpdate(Doctrine_Collection $coll)
+    public function scheduleCollectionUpdate(Doctrine_ORM_Collection $coll)
     {
         $this->_collectionUpdates[] = $coll;
     }
     
-    public function isCollectionScheduledForUpdate(Doctrine_Collection $coll)
+    public function isCollectionScheduledForUpdate(Doctrine_ORM_Collection $coll)
     {
         //...
     }
     
-    public function scheduleCollectionDeletion(Doctrine_Collection $coll)
+    public function scheduleCollectionDeletion(Doctrine_ORM_Collection $coll)
     {
         //TODO: if $coll is already scheduled for recreation ... what to do?
         // Just remove $coll from the scheduled recreations?
@@ -1097,7 +1135,9 @@ class Doctrine_ORM_UnitOfWork
      * INTERNAL:
      * For hydration purposes only.
      *
-     * Adds a managed collection to the UnitOfWork.
+     * Adds a managed collection to the UnitOfWork. On commit time, the UnitOfWork
+     * checks all these managed collections for modifications and then initiates
+     * the appropriate database synchronization.
      *
      * @param Doctrine\ORM\Collection $coll
      */

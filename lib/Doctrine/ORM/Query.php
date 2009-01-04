@@ -20,7 +20,7 @@
  * <http://www.phpdoctrine.org>.
  */
 
-#namespace Doctrine::ORM;
+#namespace Doctrine\ORM;
 
 /**
  * A Doctrine_ORM_Query object represents a DQL query. It is used to query databases for
@@ -28,7 +28,7 @@
  * and is dbms independant.
  *
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
- * @link        www.phpdoctrine.org
+ * @link        www.doctrine-project.org
  * @since       1.0
  * @version     $Revision: 3938 $
  * @author      Guilherme Blanco <guilhermeblanco@hotmail.com>
@@ -60,17 +60,17 @@ class Doctrine_ORM_Query extends Doctrine_ORM_Query_Abstract
     const HYDRATE_NONE = 5;
     
     /**
-     * @var Doctrine_ORM_EntityManager The entity manager used by this query object.
+     * @var Doctrine\ORM\EntityManager The entity manager used by this query object.
      */
     protected $_entityManager;
 
     /**
-     * @var Doctrine_ORM_Internal_Hydration   The hydrator object used to hydrate query results.
+     * @var Doctrine\ORM\Internal\Hydrator   The hydrator object used to hydrate query results.
      */
     protected $_hydrator;
 
     /**
-     * @var Doctrine_ORM_Query_ParserResult  The parser result that holds DQL => SQL information.
+     * @var Doctrine\ORM\Query\ParserResult  The parser result that holds DQL => SQL information.
      */
     protected $_parserResult;
 
@@ -120,20 +120,19 @@ class Doctrine_ORM_Query extends Doctrine_ORM_Query_Abstract
     /**
      * Initializes a new instance of the Query class.
      *
-     * @param EntityManager $entityManager
+     * @param Doctrine\ORM\EntityManager $entityManager
      */
     public function __construct(Doctrine_ORM_EntityManager $entityManager)
     {
         $this->_entityManager = $entityManager;
         $this->_hydrator = new Doctrine_ORM_Internal_Hydration_StandardHydrator($entityManager);
-
         $this->free();
     }
 
     /**
      * Retrieves the assocated EntityManager to this Doctrine_ORM_Query
      *
-     * @return Doctrine_EntityManager
+     * @return Doctrine\ORM\EntityManager
      */
     public function getEntityManager()
     {
@@ -143,7 +142,7 @@ class Doctrine_ORM_Query extends Doctrine_ORM_Query_Abstract
     /**
      * Returns the hydrator associated with this query object
      *
-     * @return Doctrine_ORM_Internal_Hydration The hydrator associated with this query object
+     * @return Doctrine\ORM\Internal\StandardHydrator The hydrator associated with this query object
      */
     public function getHydrator()
     {
@@ -166,7 +165,7 @@ class Doctrine_ORM_Query extends Doctrine_ORM_Query_Abstract
      *
      * @param string $params Parameters
      * @param int $hydrationMode Hydration mode
-     * @return mixed Array or Doctrine_Collection or false if no result.
+     * @return mixed Array or Doctrine\Common\Collection or false if no result.
      */
     public function fetchOne($params = array(), $hydrationMode = null)
     {
@@ -191,7 +190,6 @@ class Doctrine_ORM_Query extends Doctrine_ORM_Query_Abstract
      * @param string $query      DQL query
      * @param array $params      prepared statement parameters
      * @param int $hydrationMode Doctrine::FETCH_ARRAY or Doctrine::FETCH_RECORD
-     * @see Doctrine::FETCH_* constants
      * @return mixed
      */
     public function query($query, $params = array(), $hydrationMode = null)

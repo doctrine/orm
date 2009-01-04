@@ -12,7 +12,7 @@ class Orm_Entity_ConstructorTest extends Doctrine_OrmTestCase
 
 class ConstructorTestEntity1
 {
-    public $id;
+    private $id;
     public $username;
 
     public function __construct($username = null)
@@ -45,4 +45,3 @@ class ConstructorTestEntity1
     }
 }
 
-?>

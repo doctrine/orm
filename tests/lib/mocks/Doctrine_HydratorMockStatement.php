@@ -1,4 +1,6 @@
-<?php 
+<?php
+
+#namespace Doctrine\Tests\Mocks;
 
 /**
  * This class is a mock of the PDOStatement class that can be passed in to the Hydrator

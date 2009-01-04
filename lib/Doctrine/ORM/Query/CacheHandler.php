@@ -1,5 +1,4 @@
 <?php
-
 /*
  *  $Id: Cache.php 3938 2008-03-06 19:36:50Z romanb $
  *
@@ -20,12 +19,14 @@
  * <http://www.phpdoctrine.org>.
  */
 
+#namespace Doctrine\ORM\Query;
+
 /**
  * Doctrine_ORM_Query_CacheHandler
  *
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
- * @link        www.phpdoctrine.com
- * @since       1.0
+ * @link        www.doctrine-project.com
+ * @since       2.0
  * @version     $Revision: 1393 $
  * @author      Guilherme Blanco <guilhermeblanco@hotmail.com>
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>

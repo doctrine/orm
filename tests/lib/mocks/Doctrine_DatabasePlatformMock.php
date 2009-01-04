@@ -1,5 +1,9 @@
 <?php
 
+#namespace Doctrine\Tests\Mocks;
+
+#use Doctrine\DBAL\Platforms\AbstractPlatform;
+
 class Doctrine_DatabasePlatformMock extends Doctrine_DBAL_Platforms_AbstractPlatform
 {
     private $_prefersIdentityColumns = false;
@@ -30,4 +34,3 @@ class Doctrine_DatabasePlatformMock extends Doctrine_DBAL_Platforms_AbstractPlat
     
 }
 
-?>

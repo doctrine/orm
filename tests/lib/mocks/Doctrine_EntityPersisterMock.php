@@ -1,4 +1,7 @@
 <?php
+
+#namespace Doctrine\Tests\Mocks;
+
 /**
  * EntityPersister implementation used for mocking during tests.
  */

@@ -40,14 +40,13 @@
  * mapping.
  *
  * @license   http://www.opensource.org/licenses/lgpl-license.php LGPL
- * @since     1.0
+ * @since     2.0
  * @version   $Revision: 4930 $
  * @author    Konsta Vesterinen <kvesteri@cc.hut.fi>
  * @author    Roman Borschel <roman@code-factory.org>
- * @todo Add more typical Collection methods.
  * @todo Rename to PersistentCollection
  */
-class Doctrine_ORM_Collection implements Countable, IteratorAggregate, Serializable, ArrayAccess
+class Doctrine_ORM_Collection extends Doctrine_Common_Collections_Collection
 {   
     /**
      * The base type of the collection.
@@ -55,14 +54,6 @@ class Doctrine_ORM_Collection implements Countable, IteratorAggregate, Serializa
      * @var string
      */
     protected $_entityBaseType;
-    
-    /**
-     * An array containing the entries of this collection.
-     * This is the wrapped php array.
-     *
-     * @var array 
-     */
-    protected $_data = array();
 
     /**
      * A snapshot of the collection at the moment it was fetched from the database.
@@ -120,10 +111,10 @@ class Doctrine_ORM_Collection implements Countable, IteratorAggregate, Serializa
     /**
      * Creates a new persistent collection.
      */
-    public function __construct($entityBaseType, $keyField = null)
+    public function __construct(Doctrine_ORM_EntityManager $em, $entityBaseType, $keyField = null)
     {
         $this->_entityBaseType = $entityBaseType;
-        $this->_em = Doctrine_ORM_EntityManager::getActiveEntityManager();
+        $this->_em = $em;
 
         if ($keyField !== null) {
             if ( ! $this->_em->getClassMetadata($entityBaseType)->hasField($keyField)) {
@@ -164,56 +155,6 @@ class Doctrine_ORM_Collection implements Countable, IteratorAggregate, Serializa
     public function getKeyField()
     {
         return $this->_keyField;
-    }
-
-    /**
-     * Unwraps the array contained in the Collection instance.
-     *
-     * @return array The wrapped array.
-     */
-    public function unwrap()
-    {
-        return $this->_data;
-    }
-
-    /**
-     * returns the first record in the collection
-     *
-     * @return mixed
-     */
-    public function getFirst()
-    {
-        return reset($this->_data);
-    }
-
-    /**
-     * returns the last record in the collection
-     *
-     * @return mixed
-     */
-    public function getLast()
-    {
-        return end($this->_data);
-    }
-    
-    /**
-     * returns the last record in the collection
-     *
-     * @return mixed
-     */
-    public function end()
-    {
-        return end($this->_data);
-    }
-    
-    /**
-     * returns the current key
-     *
-     * @return mixed
-     */
-    public function key()
-    {
-        return key($this->_data);
     }
     
     /**
@@ -258,8 +199,6 @@ class Doctrine_ORM_Collection implements Countable, IteratorAggregate, Serializa
      */
     public function remove($key)
     {
-        $removed = $this->_data[$key];
-        unset($this->_data[$key]);
         //TODO: Register collection as dirty with the UoW if necessary
         //$this->_em->getUnitOfWork()->scheduleCollectionUpdate($this);
         //TODO: delete entity if shouldDeleteOrphans
@@ -267,177 +206,7 @@ class Doctrine_ORM_Collection implements Countable, IteratorAggregate, Serializa
             $this->_em->delete($removed);
         }*/
         
-        return $removed;
-    }
-    
-    /**
-     * __isset()
-     *
-     * @param string $name
-     * @return boolean          whether or not this object contains $name
-     */
-    public function __isset($key)
-    {
-        return $this->containsKey($key);
-    }
-    
-    /**
-     * __unset()
-     *
-     * @param string $name
-     * @since 1.0
-     * @return mixed
-     */
-    public function __unset($key)
-    {
-        return $this->remove($key);
-    }
-    
-    /**
-     * Check if an offsetExists.
-     * 
-     * Part of the ArrayAccess implementation.
-     *
-     * @param mixed $offset
-     * @return boolean          whether or not this object contains $offset
-     */
-    public function offsetExists($offset)
-    {
-        return $this->containsKey($offset);
-    }
-
-    /**
-     * offsetGet    an alias of get()
-     * 
-     * Part of the ArrayAccess implementation.
-     *
-     * @see get,  __get
-     * @param mixed $offset
-     * @return mixed
-     */
-    public function offsetGet($offset)
-    {
-        return $this->get($offset);
-    }
-
-    /**
-     * Part of the ArrayAccess implementation.
-     * 
-     * sets $offset to $value
-     * @see set,  __set
-     * @param mixed $offset
-     * @param mixed $value
-     * @return void
-     */
-    public function offsetSet($offset, $value)
-    {
-        if ( ! isset($offset)) {
-            return $this->add($value);
-        }
-        return $this->set($offset, $value);
-    }
-
-    /**
-     * Part of the ArrayAccess implementation.
-     * 
-     * unset a given offset
-     * @see set, offsetSet, __set
-     * @param mixed $offset
-     */
-    public function offsetUnset($offset)
-    {
-        return $this->remove($offset);
-    }
-
-    /**
-     * Checks whether the collection contains an entity.
-     *
-     * @param mixed $key                    the key of the element
-     * @return boolean
-     */
-    public function containsKey($key)
-    {
-        return isset($this->_data[$key]);
-    }
-    
-    /**
-     * Enter description here...
-     *
-     * @param unknown_type $entity
-     * @return unknown
-     */
-    public function contains($entity)
-    {
-        return in_array($entity, $this->_data, true);
-    }
-    
-    /**
-     * Enter description here...
-     *
-     * @param unknown_type $otherColl
-     * @todo Impl
-     */
-    public function containsAll($otherColl)
-    {
-        //...
-    }
-    
-    /**
-     *
-     */
-    public function search(Doctrine_ORM_Entity $record)
-    {
-        return array_search($record, $this->_data, true);
-    }
-
-    /**
-     * returns a record for given key
-     *
-     * Collection also maps referential information to newly created records
-     *
-     * @param mixed $key                    the key of the element
-     * @return Doctrine_Entity              return a specified record
-     */
-    public function get($key)
-    {
-        if (isset($this->_data[$key])) {
-            return $this->_data[$key];
-        }
-        return null;
-    }
-
-    /**
-     * Gets all keys.
-     * (Map method)
-     * 
-     * @return array
-     */
-    public function getKeys()
-    {
-        return array_keys($this->_data);
-    }
-    
-    /**
-     * Gets all values.
-     * (Map method)
-     *
-     * @return array
-     */
-    public function getValues()
-    {
-        return array_values($this->_data);
-    }
-
-    /**
-     * Returns the number of records in this collection.
-     *
-     * Implementation of the Countable interface.
-     *
-     * @return integer  The number of records in the collection.
-     */
-    public function count()
-    {
-        return count($this->_data);
+        return parent::remove($key);
     }
 
     /**
@@ -450,10 +219,7 @@ class Doctrine_ORM_Collection implements Countable, IteratorAggregate, Serializa
      */
     public function set($key, $value)
     {
-        if ( ! $value instanceof Doctrine_ORM_Entity) {
-            throw new Doctrine_Collection_Exception('Value variable in set is not an instance of Doctrine_Entity');
-        }
-        $this->_data[$key] = $value;
+        parent::set($key, $value);
         //TODO: Register collection as dirty with the UoW if necessary
         $this->_changed();
     }
@@ -467,23 +233,8 @@ class Doctrine_ORM_Collection implements Countable, IteratorAggregate, Serializa
      */
     public function add($value, $key = null)
     {
-        if ( ! $value instanceof $this->_entityBaseType) {
-            throw new Doctrine_Exception('Invalid instance.');
-        }
-        
-        // TODO: Really prohibit duplicates?
-        if (in_array($value, $this->_data, true)) {
-            return false;
-        }
-
-        if (isset($key)) {
-            if (isset($this->_data[$key])) {
-                return false;
-            }
-            $this->_data[$key] = $value;
-        } else {
-            $this->_data[] = $value;
-        }
+        $result = parent::add($value, $key);
+        if ( ! $result) return $result; // EARLY EXIT
         
         if ($this->_hydrationFlag) {
             if ($this->_backRefFieldName) {
@@ -507,6 +258,7 @@ class Doctrine_ORM_Collection implements Countable, IteratorAggregate, Serializa
      */
     public function addAll($otherCollection)
     {
+        parent::addAll($otherCollection);
         //...
         //TODO: Register collection as dirty with the UoW if necessary
         //$this->_changed();
@@ -578,75 +330,6 @@ class Doctrine_ORM_Collection implements Countable, IteratorAggregate, Serializa
     }
 
     /**
-     * Creates an array representation of the collection.
-     *
-     * @param boolean $deep
-     * @return array
-     */
-    public function toArray($deep = false, $prefixKey = false)
-    {
-        $data = array();
-        foreach ($this as $key => $record) {
-            $key = $prefixKey ? get_class($record) . '_' .$key:$key;
-            $data[$key] = $record->toArray($deep, $prefixKey);
-        }
-        
-        return $data;
-    }
-    
-    /**
-     * Checks whether the collection is empty.
-     *
-     * @return boolean TRUE if the collection is empty, FALSE otherwise.
-     */
-    public function isEmpty()
-    {
-        // Note: Little "trick". Empty arrays evaluate to FALSE. No need to count().
-        return ! (bool)$this->_data;
-    }
-
-    /**
-     * Populate a Collection from an array of data.
-     *
-     * @param string $array 
-     * @return void
-     */
-    public function fromArray($array, $deep = true)
-    {
-        $data = array();
-        foreach ($array as $rowKey => $row) {
-            $this[$rowKey]->fromArray($row, $deep);
-        }
-    }
-
-    /**
-     * Synchronizes a Collection with data from an array.
-     *
-     * it expects an array representation of a Doctrine_Collection similar to the return
-     * value of the toArray() method. It will create Dectrine_Records that don't exist
-     * on the collection, update the ones that do and remove the ones missing in the $array
-     *
-     * @param array $array representation of a Doctrine_Collection
-     */
-    public function synchronizeFromArray(array $array)
-    {
-        foreach ($this as $key => $record) {
-            if (isset($array[$key])) {
-                $record->synchronizeFromArray($array[$key]);
-                unset($array[$key]);
-            } else {
-                // remove records that don't exist in the array
-                $this->remove($key);
-            }
-        }
-
-        // create new records for each new row in the array
-        foreach ($array as $rowKey => $row) {
-            $this[$rowKey]->fromArray($row);
-        }
-    }
-
-    /**
      * INTERNAL:
      * getDeleteDiff
      *
@@ -679,45 +362,6 @@ class Doctrine_ORM_Collection implements Countable, IteratorAggregate, Serializa
         }
         return 1;
     }
-
-    /**
-     *
-     * @param <type> $deep
-     */
-    /*public function free($deep = false)
-    {
-        foreach ($this->getData() as $key => $record) {
-            if ( ! ($record instanceof Doctrine_Null)) {
-                $record->free($deep);
-            }
-        }
-
-        $this->_data = array();
-
-        if ($this->_owner) {
-            $this->_owner->free($deep);
-            $this->_owner = null;
-        }
-    }*/
-
-    /**
-     * getIterator
-     * 
-     * @return object ArrayIterator
-     */
-    public function getIterator()
-    {
-        $data = $this->_data;
-        return new ArrayIterator($data);
-    }
-
-    /**
-     * returns a string representation of this object
-     */
-    public function __toString()
-    {
-        return Doctrine_Lib::getCollectionAsString($this);
-    }
     
     /**
      * INTERNAL: Gets the association mapping of the collection.
@@ -727,30 +371,6 @@ class Doctrine_ORM_Collection implements Countable, IteratorAggregate, Serializa
     public function getMapping()
     {
         return $this->relation;
-    }
-    
-    /**
-     * @todo Experiment. Waiting for 5.3 closures.
-     * Example usage:
-     * 
-     * $map = $coll->mapElements(function($key, $entity) {
-     *     return array($entity->id, $entity->name);
-     * });
-     * 
-     * or:
-     * 
-     * $map = $coll->mapElements(function($key, $entity) {
-     *     return array($entity->name, strtoupper($entity->name));
-     * });
-     * 
-     */
-    public function mapElements($lambda) {
-        $result = array();
-        foreach ($this->_data as $key => $entity) {
-            list($key, $value) = each($lambda($key, $entity));
-            $result[$key] = $value;
-        }
-        return $result;
     }
     
     /**
@@ -767,7 +387,7 @@ class Doctrine_ORM_Collection implements Countable, IteratorAggregate, Serializa
                 $this->_em->delete($entity);
             }
         }*/
-        $this->_data = array();
+        parent::clear();
     }
     
     private function _changed()
@@ -775,56 +395,5 @@ class Doctrine_ORM_Collection implements Countable, IteratorAggregate, Serializa
         /*if ( ! $this->_em->getUnitOfWork()->isCollectionScheduledForUpdate($this)) {
             $this->_em->getUnitOfWork()->scheduleCollectionUpdate($this);
         }*/  
-    }
-    
-    /* Serializable implementation */
-    
-    /**
-     * Serializes the collection.
-     * This method is automatically called when the Collection is serialized.
-     *
-     * Part of the implementation of the Serializable interface.
-     *
-     * @return array
-     */
-    public function serialize()
-    {
-        $vars = get_object_vars($this);
-
-        unset($vars['reference']);
-        unset($vars['relation']);
-        unset($vars['expandable']);
-        unset($vars['expanded']);
-        unset($vars['generator']);
-
-        return serialize($vars);
-    }
-
-    /**
-     * Reconstitutes the collection object from it's serialized form.
-     * This method is automatically called everytime the Collection object is unserialized.
-     *
-     * Part of the implementation of the Serializable interface.
-     *
-     * @param string $serialized The serialized data
-     *
-     * @return void
-     */
-    public function unserialize($serialized)
-    {
-        $manager = Doctrine_ORM_EntityManager::getActiveEntityManager();
-        $connection = $manager->getConnection();
-        
-        $array = unserialize($serialized);
-
-        foreach ($array as $name => $values) {
-            $this->$name = $values;
-        }
-
-        $keyColumn = isset($array['keyField']) ? $array['keyField'] : null;
-
-        if ($keyColumn !== null) {
-            $this->_keyField = $keyColumn;
-        }
     }
 }

@@ -1,5 +1,7 @@
 <?php
 
+#namespace Doctrine\Tests\Mocks;
+
 class Doctrine_ClassMetadataMock extends Doctrine_ORM_Mapping_ClassMetadata
 {
     /* Mock API */
@@ -10,4 +12,3 @@ class Doctrine_ClassMetadataMock extends Doctrine_ORM_Mapping_ClassMetadata
     
 }
 
-?>

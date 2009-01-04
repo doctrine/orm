@@ -8,20 +8,21 @@ require_once 'lib/DoctrineTestInit.php';
  * can have many valid orderings, so you may want to build a graph that has only
  * 1 valid order to simplify your tests.
  */
-class Orm_Internal_CommitOrderCalculatorTest extends Doctrine_OrmTestCase
+class Orm_CommitOrderCalculatorTest extends Doctrine_OrmTestCase
 {
     private $_calc;
     
     protected function setUp()
     {
-        $this->_calc = new Doctrine_Internal_CommitOrderCalculator();
+        $this->_calc = new Doctrine_ORM_Internal_CommitOrderCalculator();
     }
-    
+
+    /** Helper to create an array of nodes */
     private function _createNodes(array $names)
     {
         $nodes = array();
         foreach ($names as $name) {
-            $node = new Doctrine_Internal_CommitOrderNode($name, $this->_calc);
+            $node = new Doctrine_ORM_Internal_CommitOrderNode($name, $this->_calc);
             $nodes[$name] = $node;
             $this->_calc->addNode($node->getClass(), $node);
         }
@@ -46,6 +47,4 @@ class Orm_Internal_CommitOrderCalculatorTest extends Doctrine_OrmTestCase
         $this->assertSame($correctOrder, $sorted);
         
     }
-    
-    
 }

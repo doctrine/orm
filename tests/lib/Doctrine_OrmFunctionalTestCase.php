@@ -1,4 +1,7 @@
 <?php
+
+#namespace Doctrine\Tests;
+
 /**
  * Base testcase class for all orm testcases.
  *

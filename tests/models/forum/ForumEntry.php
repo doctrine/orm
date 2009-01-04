@@ -1,19 +1,14 @@
 <?php
 
-#namespace Doctrine::Test::ORM::Models;
+#namespace Doctrine\Tests\Models\Forum;
 
-#use Doctrine::ORM::Entity;
+#use Doctrine\ORM\Entity;
 
-class ForumEntry extends Doctrine_ORM_Entity
+class ForumEntry implements Doctrine_ORM_Entity
 {
     public $id;
     public $topic;
 
-    static function construct() {
-        Doctrine_Common_VirtualPropertySystem::register(__CLASS__, 'id', 'int');
-        Doctrine_Common_VirtualPropertySystem::register(__CLASS__, 'topic', 'string');
-    }
-    
     public static function initMetadata($mapping) 
     {
         $mapping->mapField(array(
@@ -33,4 +28,3 @@ class ForumEntry extends Doctrine_ORM_Entity
     
 }
 
-?>

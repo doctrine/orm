@@ -1,4 +1,5 @@
 <?php
+/* CURRENTLY NOT USED */
 require_once 'lib/DoctrineTestInit.php';
  
 class Orm_Entity_AccessorTest extends Doctrine_OrmTestCase

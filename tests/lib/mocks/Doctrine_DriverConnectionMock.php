@@ -1,5 +1,7 @@
 <?php
 
+#namespace Doctrine\Tests\Mocks;
+
 class Doctrine_DriverConnectionMock implements Doctrine_DBAL_Driver_Connection
 {
     public function prepare($prepareString) {}
@@ -14,4 +16,3 @@ class Doctrine_DriverConnectionMock implements Doctrine_DBAL_Driver_Connection
     public function errorInfo() {}
 }
 
-?>
