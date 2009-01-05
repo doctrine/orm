@@ -282,9 +282,9 @@ abstract class Doctrine_ORM_Persisters_AbstractEntityPersister
         // Populate the discriminator column on insert in Single & Class Table Inheritance
         if ($isInsert && ($this->_classMetadata->isInheritanceTypeJoined() ||
                 $this->_classMetadata->isInheritanceTypeSingleTable())) {
-            $discColumn = $this->_classMetadata->getInheritanceOption('discriminatorColumn');
-            $discMap = $this->_classMetadata->getInheritanceOption('discriminatorMap');
-            $result[$discColumn] = array_search($this->_entityName, $discMap);
+            $discColumn = $this->_classMetadata->getDiscriminatorColumn();
+            $discMap = $this->_classMetadata->getDiscriminatorMap();
+            $result[$discColumn['name']] = array_search($this->_entityName, $discMap);
         }
     }
     

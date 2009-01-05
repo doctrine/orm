@@ -84,7 +84,7 @@ class Doctrine_ORM_Mapping_OneToOneMapping extends Doctrine_ORM_Mapping_Associat
         
         if ($this->isOwningSide()) {
             if ( ! isset($mapping['joinColumns'])) {
-                throw Doctrine_MappingException::invalidMapping($this->_sourceFieldName);
+                throw Doctrine_ORM_Exceptions_MappingException::invalidMapping($this->_sourceFieldName);
             }
             $this->_sourceToTargetKeyColumns = $mapping['joinColumns'];
             $this->_targetToSourceKeyColumns = array_flip($this->_sourceToTargetKeyColumns);

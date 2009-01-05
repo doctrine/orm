@@ -190,13 +190,13 @@ class Doctrine_ORM_Persisters_JoinedSubclassPersister extends Doctrine_ORM_Persi
     {
         $classMetadata = $this->_classMetadata;
         $conn = $this->_conn;
-        $fields = array($classMetadata->getInheritanceOption('discriminatorColumn'));
+        $discrColumn = $classMetadata->getDiscriminatorColumn();
+        $fields = array($discrColumn['name']);
         if ($classMetadata->getSubclasses()) {
             foreach ($classMetadata->getSubclasses() as $subClass) {
                 $fields = array_merge($conn->getClassMetadata($subClass)->getFieldNames(), $fields);
             }
         }
-        
         return array_unique($fields);
     }
     

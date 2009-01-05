@@ -22,7 +22,6 @@
 #namespace Doctrine\ORM\Mapping;
 
 #use \Serializable;
-#use Doctrine\Common\ClassMetadata;
 
 /**
  * A <tt>ClassMetadata</tt> instance holds all the information (metadata) of an entity and
@@ -32,7 +31,7 @@
  * @author Roman Borschel <roman@code-factory.org>
  * @since 2.0
  */
-class Doctrine_ORM_Mapping_ClassMetadata implements Serializable
+class Doctrine_ORM_Mapping_ClassMetadata
 {
     /* The inheritance mapping types */
     /**
@@ -243,33 +242,37 @@ class Doctrine_ORM_Mapping_ClassMetadata implements Serializable
     protected $_lcColumnToFieldNames = array();
 
     /**
-     * Inheritance options.
+     * Whether to automatically OUTER JOIN subtypes when a basetype is queried.
+     * This does only apply to the JOINED inheritance mapping strategy.
+     *
+     * @var boolean
      */
-    protected $_inheritanceOptions = array(
-        // JOINED & TABLE_PER_CLASS options
-            'discriminatorColumn' => null,
-            'discriminatorMap'    => array(),
-        // JOINED options
-            'joinSubclasses'      => true
-    );
+    protected $_joinSubclasses = true;
 
     /**
-     * Specific options that can be set for the database table the class is mapped to.
-     * Some of them are dbms specific and they are only used if the table is generated
-     * by Doctrine (NOT when using Migrations).
+     * A map that maps discriminator values to class names.
+     * This does only apply to the JOINED and SINGLE_TABLE inheritance mapping strategies
+     * where a discriminator column is used.
      *
-     *      -- type                         table type (mysql example: INNODB)
-     *
-     *      -- charset                      character set
-     *
-     *      -- collate                    collation attribute
+     * @var array
+     * @see _discriminatorColumn
      */
-    protected $_tableOptions = array(
-        'tableName' => null,
-        'type' => null,
-        'charset' => null,
-        'collate' => null
-    );
+    protected $_discriminatorMap = array();
+
+    /**
+     * The definition of the descriminator column used in JOINED and SINGLE_TABLE
+     * inheritance mappings.
+     *
+     * @var array
+     */
+    protected $_discriminatorColumn;
+
+    /**
+     * The name of the primary table.
+     *
+     * @var string
+     */
+    protected $_tableName;
     
     /**
      * The cached lifecycle listeners. There is only one instance of each
@@ -314,13 +317,25 @@ class Doctrine_ORM_Mapping_ClassMetadata implements Serializable
      */
     protected $_isIdentifierComposite = false;
 
+    /**
+     * The ReflectionClass instance of the mapped class.
+     *
+     * @var ReflectionClass
+     */
     protected $_reflectionClass;
+
+    /**
+     * The ReflectionProperty instances of the mapped class.
+     *
+     * @var array
+     */
     protected $_reflectionProperties;
 
     /**
-     * Constructs a new ClassMetadata instance.
+     * Initializes a new ClassMetadata instance that will hold the ORM metadata
+     * of the class with the given name.
      *
-     * @param string $entityName  Name of the entity class the metadata info is used for.
+     * @param string $entityName  Name of the entity class the new instance is used for.
      */
     public function __construct($entityName)
     {
@@ -434,7 +449,6 @@ class Doctrine_ORM_Mapping_ClassMetadata implements Serializable
     public function isUniqueField($fieldName)
     {
         $mapping = $this->getFieldMapping($fieldName);
-
         if ($mapping !== false) {
             return isset($mapping['unique']) && $mapping['unique'] == true;
         }
@@ -511,7 +525,7 @@ class Doctrine_ORM_Mapping_ClassMetadata implements Serializable
     public function getInverseAssociationMapping($mappedByFieldName)
     {
         if ( ! isset($this->_associationMappings[$fieldName])) {
-            throw Doctrine_MappingException::mappingNotFound($fieldName);
+            throw new Doctrine_Exception("Mapping not found: " . $fieldName);
         }
         return $this->_inverseMappings[$mappedByFieldName];
     }
@@ -576,9 +590,10 @@ class Doctrine_ORM_Mapping_ClassMetadata implements Serializable
     }
 
     /**
+     * Checks whether a specified column name (all lowercase) exists in this class.
      *
-     * @param <type> $lcColumnName
-     * @return <type> 
+     * @param string $lcColumnName
+     * @return boolean
      */
     public function hasLowerColumn($lcColumnName)
     {
@@ -595,10 +610,10 @@ class Doctrine_ORM_Mapping_ClassMetadata implements Serializable
     {
         // Check mandatory fields
         if ( ! isset($mapping['fieldName'])) {
-            throw Doctrine_MappingException::missingFieldName();
+            throw Doctrine_ORM_Exceptions_MappingException::missingFieldName();
         }
         if ( ! isset($mapping['type'])) {
-            throw Doctrine_MappingException::missingType();
+            throw Doctrine_ORM_Exceptions_MappingException::missingType();
         }
         
         // Complete fieldName and columnName mapping
@@ -729,7 +744,7 @@ class Doctrine_ORM_Mapping_ClassMetadata implements Serializable
      */
     public function getFieldMappings()
     {
-        return $this->_fieldMetadata;
+        return $this->_fieldMappings;
     }
 
     /**
@@ -918,7 +933,7 @@ class Doctrine_ORM_Mapping_ClassMetadata implements Serializable
      */
     public function getTableName()
     {
-        return $this->_tableOptions['tableName'];
+        return $this->_tableName;
     }
 
     public function getInheritedFields()
@@ -1018,7 +1033,7 @@ class Doctrine_ORM_Mapping_ClassMetadata implements Serializable
      *
      * @param integer $type
      */
-    public function setInheritanceType($type, array $options = array())
+    public function setInheritanceType($type)
     {
         if ($parentClassNames = $this->getParentClasses()) {
             throw new Doctrine_MappingException("All classes in an inheritance hierarchy"
@@ -1028,83 +1043,7 @@ class Doctrine_ORM_Mapping_ClassMetadata implements Serializable
         if ( ! $this->_isInheritanceType($type)) {
             throw Doctrine_MappingException::invalidInheritanceType($type);
         }
-        
-        if ($type == self::INHERITANCE_TYPE_SINGLE_TABLE ||
-                $type == self::INHERITANCE_TYPE_JOINED) {
-            $this->_checkRequiredDiscriminatorOptions($options);
-        }
-
         $this->_inheritanceType = $type;
-        foreach ($options as $name => $value) {
-            $this->setInheritanceOption($name, $value);
-        }
-    }
-
-    /**
-     * Checks if the 2 options 'discriminatorColumn' and 'discriminatorMap' are present.
-     * If either of them is missing an exception is thrown.
-     *
-     * @param array $options  The options.
-     * @throws Doctrine_ClassMetadata_Exception  If at least one of the required discriminator
-     *                                           options is missing.
-     */
-    private function _checkRequiredDiscriminatorOptions(array $options)
-    {
-        /*if ( ! isset($options['discriminatorColumn'])) {
-            throw new Doctrine_Exception("Missing option 'discriminatorColumn'."
-            . " Inheritance types JOINED and SINGLE_TABLE require this option.");
-        } else if ( ! isset($options['discriminatorMap'])) {
-            throw new Doctrine_ClassMetadata_Exception("Missing option 'discriminatorMap'."
-            . " Inheritance types JOINED and SINGLE_TABLE require this option.");
-        }*/
-    }
-
-    /**
-     * Gets an inheritance option.
-     *
-     */
-    public function getInheritanceOption($name)
-    {
-        return $this->_inheritanceOptions[$name];
-    }
-
-    /**
-     * Gets all inheritance options.
-     */
-    public function getInheritanceOptions()
-    {
-        return $this->_inheritanceOptions;
-    }
-
-    /**
-     * Sets an inheritance option.
-     */
-    public function setInheritanceOption($name, $value)
-    {
-        if ( ! array_key_exists($name, $this->_inheritanceOptions)) {
-            throw new Doctrine_ClassMetadata_Exception("Unknown inheritance option: '$name'.");
-        }
-
-        if ($this->_inheritanceType == 'joined' || $this->_inheritanceType == 'singleTable') {
-            switch ($name) {
-                case 'discriminatorColumn':
-                    if ($value !== null && ! is_string($value)) {
-                        throw new Doctrine_ClassMetadata_Exception("Invalid value '$value' for option"
-                        . " 'discriminatorColumn'.");
-                    }
-                    break;
-                case 'discriminatorMap':
-                    if ( ! is_array($value)) {
-                        throw new Doctrine_ClassMetadata_Exception("Value for option 'discriminatorMap'"
-                        . " must be an array.");
-                    }
-                    break;
-                    // ... further validation checks as needed
-                default:
-                    throw Doctrine_MappingException::invalidInheritanceOption($name);
-            }
-        }
-        $this->_inheritanceOptions[$name] = $value;
     }
 
     /**
@@ -1129,119 +1068,6 @@ class Doctrine_ORM_Mapping_ClassMetadata implements Serializable
      */
     public function getExportableFormat($parseForeignKeys = true)
     {
-        /*$columns = array();
-        $primary = array();
-        $allColumns = $this->getColumns();
-
-        // If the class is part of a Single Table Inheritance hierarchy, collect the fields
-        // of all classes in the hierarchy.
-        if ($this->_inheritanceType == self::INHERITANCE_TYPE_SINGLE_TABLE) {
-            $parents = $this->getParentClasses();
-            if ($parents) {
-                $rootClass = $this->_classFactory->getClassMetadata(array_pop($parents));
-            } else {
-                $rootClass = $this;
-            }
-            $subClasses = $rootClass->getSubclasses();
-            foreach ($subClasses as $subClass) {
-                $subClassMetadata = $this->_classFactory->getClassMetadata($subClass);
-                $allColumns = array_merge($allColumns, $subClassMetadata->getColumns());
-            }
-        } else if ($this->_inheritanceType == self::INHERITANCE_TYPE_JOINED) {
-            // Remove inherited, non-pk fields. They're not in the table of this class
-            foreach ($allColumns as $name => $definition) {
-                if (isset($definition['id']) && $definition['id'] === true) {
-                    if ($this->getParentClasses() && isset($definition['autoincrement'])) {
-                        unset($allColumns[$name]['autoincrement']);
-                    }
-                    continue;
-                }
-                if (isset($definition['inherited']) && $definition['inherited'] === true) {
-                    unset($allColumns[$name]);
-                }
-            }
-        } else if ($this->_inheritanceType == self::INHERITANCE_TYPE_TABLE_PER_CLASS) {
-            // If this is a subclass, just remove existing autoincrement options on the pk
-            if ($this->getParentClasses()) {
-                foreach ($allColumns as $name => $definition) {
-                    if (isset($definition['id']) && $definition['id'] === true) {
-                        if (isset($definition['autoincrement'])) {
-                            unset($allColumns[$name]['autoincrement']);
-                        }
-                    }
-                }
-            }
-        }
-
-        // Convert enum & boolean default values
-        foreach ($allColumns as $name => $definition) {
-            switch ($definition['type']) {
-                case 'enum':
-                    if (isset($definition['default'])) {
-                        $definition['default'] = $this->enumIndex($name, $definition['default']);
-                    }
-                    break;
-                case 'boolean':
-                    if (isset($definition['default'])) {
-                        $definition['default'] = $this->_em->convertBooleans($definition['default']);
-                    }
-                    break;
-            }
-            $columns[$name] = $definition;
-
-            if (isset($definition['id']) && $definition['id']) {
-                $primary[] = $name;
-            }
-        }
-
-        // Collect foreign keys from the relations
-        $options['foreignKeys'] = array();
-        if ($parseForeignKeys && $this->getAttribute(Doctrine::ATTR_EXPORT)
-                & Doctrine::EXPORT_CONSTRAINTS) {
-            $constraints = array();
-            $emptyIntegrity = array('onUpdate' => null, 'onDelete' => null);
-            foreach ($this->getRelations() as $name => $relation) {
-                $fk = $relation->toArray();
-                $fk['foreignTable'] = $relation->getTable()->getTableName();
-
-                if ($relation->getTable() === $this && in_array($relation->getLocal(), $primary)) {
-                    if ($relation->hasConstraint()) {
-                        throw new Doctrine_Table_Exception("Badly constructed integrity constraints.");
-                    }
-                    continue;
-                }
-
-                $integrity = array('onUpdate' => $fk['onUpdate'],
-                                   'onDelete' => $fk['onDelete']);
-
-                if ($relation instanceof Doctrine_Relation_LocalKey) {
-                    $def = array('local'        => $relation->getLocal(),
-                                 'foreign'      => $relation->getForeign(),
-                                 'foreignTable' => $relation->getTable()->getTableName());
-
-                    if (($key = array_search($def, $options['foreignKeys'])) === false) {
-                        $options['foreignKeys'][] = $def;
-                        $constraints[] = $integrity;
-                    } else {
-                        if ($integrity !== $emptyIntegrity) {
-                            $constraints[$key] = $integrity;
-                        }
-                    }
-                }
-            }
-
-            foreach ($constraints as $k => $def) {
-                $options['foreignKeys'][$k] = array_merge($options['foreignKeys'][$k], $def);
-            }
-        }
-
-        $options['primary'] = $primary;
-
-        return array('tableName' => $this->getTableOption('tableName'),
-                     'columns'   => $columns,
-                     'options'   => array_merge($options, $this->getTableOptions()));
-
-         */
     }
 
     /**
@@ -1261,7 +1087,7 @@ class Doctrine_ORM_Mapping_ClassMetadata implements Serializable
      */
     public function setTableName($tableName)
     {
-        $this->_tableOptions['tableName'] = $tableName;
+        $this->_tableName = $tableName;
     }
 
     /**
@@ -1271,12 +1097,12 @@ class Doctrine_ORM_Mapping_ClassMetadata implements Serializable
      *
      * @return string  The serialized metadata.
      */
-    public function serialize()
+   /* public function serialize()
     {
         //$contents = get_object_vars($this);
         //return serialize($contents);
         return "";
-    }
+    }*/
 
     /**
      * Reconstructs the metadata class from it's serialized representation.
@@ -1285,10 +1111,10 @@ class Doctrine_ORM_Mapping_ClassMetadata implements Serializable
      *
      * @param string $serialized  The serialized metadata class.
      */
-    public function unserialize($serialized)
+    /*public function unserialize($serialized)
     {
         return true;
-    }
+    }*/
     
     /**
      * Checks whether the given type identifies an entity type.
@@ -1355,7 +1181,7 @@ class Doctrine_ORM_Mapping_ClassMetadata implements Serializable
     {
         $this->_validateAndCompleteFieldMapping($mapping);
         if (isset($this->_fieldMappings[$mapping['fieldName']])) {
-            throw Doctrine_MappingException::duplicateFieldMapping();
+            throw Doctrine_ORM_Exceptions_MappingException::duplicateFieldMapping();
         }
         $this->_fieldMappings[$mapping['fieldName']] = $mapping;
     }
@@ -1458,26 +1284,42 @@ class Doctrine_ORM_Mapping_ClassMetadata implements Serializable
     }
 
     /**
-     * @todo Thoughts & Implementation.
+     * Sets whether sub classes should be automatically OUTER JOINed when a base
+     * class is queried in a class hierarchy that uses the JOINED inheritance mapping
+     * strategy.
+     *
+     * This options does only apply to the JOINED inheritance mapping strategy.
+     *
+     * @param boolean $bool
+     * @see getJoinSubClasses()
+     */
+    public function setJoinSubClasses($bool)
+    {
+        $this->_joinSubclasses = (bool)$bool;
+    }
+
+    /**
+     * Gets whether the class mapped by this instance should OUTER JOIN sub classes
+     * when a base class is queried.
+     *
+     * @return <type>
+     * @see setJoinSubClasses()
+     */
+    public function getJoinSubClasses()
+    {
+        return $this->_joinSubclasses;
+    }
+
+    /**
+     * @todo Implementation.
      */
     public function setEntityType($type)
     {
         //Entity::TYPE_ENTITY
         //Entity::TYPE_MAPPED_SUPERCLASS
         //Entity::TYPE_TRANSIENT
+        throw new Doctrine_Exception("Not yet implemented.");
     }
-
-    /**
-     * Binds the entity instances of this class to a specific EntityManager.
-     * 
-     * @todo Implementation. Replaces the bindComponent() methods on the old Doctrine_Manager.
-     *       Binding an Entity to a specific EntityManager in 2.0 is the same as binding
-     *       it to a Connection in 1.0.
-     */
-    /*public function bindToEntityManager($emName)
-    {
-
-    }*/
     
     /**
      * Dispatches the lifecycle event of the given Entity to the registered
@@ -1560,35 +1402,79 @@ class Doctrine_ORM_Mapping_ClassMetadata implements Serializable
     }
 
     /**
-     * @todo Implementation. Immutable entities can not be updated or deleted once
-     *       they are created. This means the entity can only be modified as long as it's
-     *       new (STATE_NEW).
+     * Sets the discriminator column definition.
+     *
+     * @param array $columnDef
+     * @see getDiscriminatorColumn()
      */
-    public function isImmutable()
-    {
-        return false;
-    }
-
     public function setDiscriminatorColumn($columnDef)
     {
-        $this->_inheritanceOptions['discriminatorColumn'] = $columnDef;
+        $this->_discriminatorColumn = $columnDef;
     }
 
+    /**
+     * Gets the discriminator column definition.
+     *
+     * The discriminator column definition is an array with the following keys:
+     * name: The name of the column
+     * type: The type of the column (only integer and string supported)
+     * length: The length of the column (applies only if type is string)
+     *
+     * A discriminator column is used for JOINED and SINGLE_TABLE inheritance mappings.
+     *
+     * @return array
+     * @see setDiscriminatorColumn()
+     */
+    public function getDiscriminatorColumn()
+    {
+        return $this->_discriminatorColumn;
+    }
+
+    /**
+     * Sets the dsicriminator map used for mapping discriminator values to class names.
+     * Used for JOINED and SINGLE_TABLE inheritance mapping strategies.
+     *
+     * @param array $map
+     */
     public function setDiscriminatorMap(array $map)
     {
-        $this->_inheritanceOptions['discriminatorMap'] = $map;
+        $this->_discriminatorMap = $map;
     }
 
+    /**
+     * Gets the discriminator map that maps discriminator values to class names.
+     * Used for JOINED and SINGLE_TABLE inheritance mapping strategies.
+     *
+     * @return array
+     */
+    public function getDiscriminatorMap()
+    {
+        return $this->_discriminatorMap;
+    }
+
+    /**
+     * Checks whether the given column name is the discriminator column.
+     *
+     * @param string $columnName
+     * @return boolean
+     */
     public function isDiscriminatorColumn($columnName)
     {
-        return $columnName === $this->_inheritanceOptions['discriminatorColumn'];
+        return $columnName === $this->_discriminatorColumn['name'];
     }
-    
+
+    /**
+     * Checks whether the class has a mapped association with the given field name.
+     *
+     * @param string $fieldName
+     * @return boolean
+     */
     public function hasAssociation($fieldName)
     {
         return isset($this->_associationMappings[$fieldName]);
     }
 
+    /** Creates a string representation of the instance. */
     public function __toString()
     {
         return __CLASS__ . '@' . spl_object_hash($this);

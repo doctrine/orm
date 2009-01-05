@@ -109,7 +109,9 @@ class Doctrine_ORM_Mapping_ClassMetadataFactory
         $parent = $class;
         foreach ($parentClasses as $subclassName) {
             $subClass = new Doctrine_ORM_Mapping_ClassMetadata($subclassName);
-            $subClass->setInheritanceType($parent->getInheritanceType(), $parent->getInheritanceOptions());
+            $subClass->setInheritanceType($parent->getInheritanceType());
+            $subClass->setDiscriminatorMap($parent->getDiscriminatorMap());
+            $subClass->setDiscriminatorColumn($parent->getDiscriminatorColumn());
             $this->_addInheritedFields($subClass, $parent);
             $this->_addInheritedRelations($subClass, $parent);
             $this->_loadClassMetadata($subClass, $subclassName);

@@ -1077,15 +1077,15 @@ class Doctrine_ORM_UnitOfWork
     {
         $class = $this->_em->getClassMetadata($className);
 
-        $discCol = $class->getInheritanceOption('discriminatorColumn');
+        $discCol = $class->getDiscriminatorColumn();
         if ( ! $discCol) {
             return $className;
         }
 
-        $discMap = $class->getInheritanceOption('discriminatorMap');
+        $discMap = $class->getDiscriminatorMap();
 
-        if (isset($data[$discCol], $discMap[$data[$discCol]])) {
-            return $discMap[$data[$discCol]];
+        if (isset($data[$discCol['name']], $discMap[$data[$discCol['name']]])) {
+            return $discMap[$data[$discCol['name']]];
         } else {
             return $className;
         }

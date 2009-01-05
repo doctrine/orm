@@ -19,7 +19,7 @@
  * <http://www.phpdoctrine.org>.
  */
 
-#namespace Doctrine::ORM::Exceptions;
+#namespace Doctrine\ORM\Exceptions;
 
 /**
  * A MappingException indicates that something is wrong with the mapping setup.
@@ -37,11 +37,6 @@ class Doctrine_ORM_Exceptions_MappingException extends Doctrine_ORM_Exceptions_O
     public static function invalidInheritanceType($type)
     {
         return new self("The inheritance type '$type' does not exist.");
-    }
-    
-    public static function invalidInheritanceOption($name)
-    {
-        return new self("The inheritance option '$name' does not exist.");
     }
     
     public static function generatorNotAllowedWithCompositeId()
