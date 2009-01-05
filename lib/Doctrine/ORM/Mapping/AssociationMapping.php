@@ -177,7 +177,7 @@ abstract class Doctrine_ORM_Mapping_AssociationMapping implements Serializable
         $this->_sourceEntityName = $mapping['sourceEntity'];
         
         if ( ! isset($mapping['targetEntity'])) {
-            throw Doctrine_MappingException::missingTargetEntity($mapping['fieldName']);
+            throw Doctrine_ORM_Exceptions_MappingException::missingTargetEntity($mapping['fieldName']);
         }
         $this->_targetEntityName = $mapping['targetEntity'];
         

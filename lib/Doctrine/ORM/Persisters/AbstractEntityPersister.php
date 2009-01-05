@@ -82,7 +82,6 @@ abstract class Doctrine_ORM_Persisters_AbstractEntityPersister
         $this->_entityName = $classMetadata->getClassName();
         $this->_conn = $em->getConnection();
         $this->_classMetadata = $classMetadata;
-        //$this->_nullObject = Doctrine_ORM_Internal_Null::$INSTANCE;
     }
     
     /**
@@ -251,7 +250,6 @@ abstract class Doctrine_ORM_Persisters_AbstractEntityPersister
                     //echo "NOT TO-ONE OR INVERSE!";
                     continue;
                 }
-
                 foreach ($assocMapping->getSourceToTargetKeyColumns() as $sourceColumn => $targetColumn) {
                     //TODO: What if both join columns (local/foreign) are just db-only
                     // columns (no fields in models) ? Currently we assume the foreign column
@@ -281,7 +279,7 @@ abstract class Doctrine_ORM_Persisters_AbstractEntityPersister
                     $newVal, $this->_em->getConnection()->getDatabasePlatform());*/
         }
         
-        // populates the discriminator column on insert in Single & Class Table Inheritance
+        // Populate the discriminator column on insert in Single & Class Table Inheritance
         if ($isInsert && ($this->_classMetadata->isInheritanceTypeJoined() ||
                 $this->_classMetadata->isInheritanceTypeSingleTable())) {
             $discColumn = $this->_classMetadata->getInheritanceOption('discriminatorColumn');

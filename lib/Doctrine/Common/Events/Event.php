@@ -19,7 +19,7 @@
  * <http://www.phpdoctrine.org>.
  */
 
-#namespace Doctrine::Common::Events;
+#namespace Doctrine\Common\Events;
 
 /**
  * Doctrine_Event

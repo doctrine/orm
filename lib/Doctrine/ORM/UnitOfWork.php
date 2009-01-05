@@ -904,6 +904,7 @@ class Doctrine_ORM_UnitOfWork
         $class = $this->_em->getClassMetadata(get_class($entity));
         foreach ($class->getAssociationMappings() as $assocMapping) {
             if ( ! $assocMapping->isCascadeSave()) {
+                echo "NOT cascade " . $assocMapping->getSourceFieldName();
                 continue;
             }
             $relatedEntities = $class->getReflectionProperty($assocMapping->getSourceFieldName())

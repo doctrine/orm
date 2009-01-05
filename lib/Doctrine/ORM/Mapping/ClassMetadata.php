@@ -32,7 +32,7 @@
  * @author Roman Borschel <roman@code-factory.org>
  * @since 2.0
  */
-class Doctrine_ORM_Mapping_ClassMetadata extends Doctrine_Common_ClassMetadata implements Serializable
+class Doctrine_ORM_Mapping_ClassMetadata implements Serializable
 {
     /* The inheritance mapping types */
     /**
@@ -100,6 +100,9 @@ class Doctrine_ORM_Mapping_ClassMetadata extends Doctrine_Common_ClassMetadata i
      * field & association mappings are inherited by subclasses.
      */
     const ENTITY_TYPE_MAPPED_SUPERCLASS = 'mappedSuperclass';
+
+    /** The name of the entity class. */
+    protected $_entityName;
 
     /**
      * The name of the entity class that is at the root of the entity inheritance
@@ -243,10 +246,10 @@ class Doctrine_ORM_Mapping_ClassMetadata extends Doctrine_Common_ClassMetadata i
      * Inheritance options.
      */
     protected $_inheritanceOptions = array(
-    // JOINED & TABLE_PER_CLASS options
+        // JOINED & TABLE_PER_CLASS options
             'discriminatorColumn' => null,
             'discriminatorMap'    => array(),
-    // JOINED options
+        // JOINED options
             'joinSubclasses'      => true
     );
 
@@ -321,7 +324,7 @@ class Doctrine_ORM_Mapping_ClassMetadata extends Doctrine_Common_ClassMetadata i
      */
     public function __construct($entityName)
     {
-        parent::__construct($entityName);
+        $this->_entityName = $entityName;
         $this->_rootEntityName = $entityName;
         $this->_reflectionClass = new ReflectionClass($entityName);
         $reflectionProps = $this->_reflectionClass->getProperties();
@@ -362,6 +365,10 @@ class Doctrine_ORM_Mapping_ClassMetadata extends Doctrine_Common_ClassMetadata i
         return $this->_reflectionProperties[$name];
     }
 
+    /**
+     *
+     * @return <type>
+     */
     public function getSingleIdReflectionProperty()
     {
         if ($this->_isIdentifierComposite) {
@@ -449,38 +456,6 @@ class Doctrine_ORM_Mapping_ClassMetadata extends Doctrine_Common_ClassMetadata i
         }
 
         return false;
-    }
-
-    /**
-     * Sets a table option.
-     */
-    public function setTableOption($name, $value)
-    {
-        if ( ! array_key_exists($name, $this->_tableOptions)) {
-            throw new Doctrine_ClassMetadata_Exception("Unknown table option: '$name'.");
-        }
-        $this->_tableOptions[$name] = $value;
-    }
-
-    /**
-     * Gets a table option.
-     */
-    public function getTableOption($name)
-    {
-        if ( ! array_key_exists($name, $this->_tableOptions)) {
-            throw new Doctrine_ClassMetadata_Exception("Unknown table option: '$name'.");
-        }
-        return $this->_tableOptions[$name];
-    }
-
-    /**
-     * returns all table options.
-     *
-     * @return array    all options and their values
-     */
-    public function getTableOptions()
-    {
-        return $this->_tableOptions;
     }
 
     /**
@@ -611,26 +586,12 @@ class Doctrine_ORM_Mapping_ClassMetadata extends Doctrine_Common_ClassMetadata i
     }
     
     /**
-     * Adds a field mapping.
-     *
-     * @param array $mapping
-     */
-    public function mapField(array $mapping)
-    {
-        $mapping = $this->_validateAndCompleteFieldMapping($mapping);
-        if (isset($this->_fieldMappings[$mapping['fieldName']])) {
-            throw Doctrine_MappingException::duplicateFieldMapping();
-        }
-        $this->_fieldMappings[$mapping['fieldName']] = $mapping;
-    }
-    
-    /**
      * Validates & completes the field mapping.
      *
      * @param array $mapping  The field mapping to validated & complete.
      * @return array  The validated and completed field mapping.
      */
-    private function _validateAndCompleteFieldMapping(array $mapping)
+    private function _validateAndCompleteFieldMapping(array &$mapping)
     {
         // Check mandatory fields
         if ( ! isset($mapping['fieldName'])) {
@@ -658,7 +619,7 @@ class Doctrine_ORM_Mapping_ClassMetadata extends Doctrine_Common_ClassMetadata i
             if (isset($mapping['idGenerator'])) {
                 if ( ! $this->_isIdGeneratorType($mapping['idGenerator'])) {
                     //TODO: check if the idGenerator specifies an existing generator by name
-                    throw Doctrine_MappingException::invalidGeneratorType($mapping['generatorType']);
+                    throw Doctrine_MappingException::invalidGeneratorType($mapping['idGenerator']);
                 } else if (count($this->_identifier) > 1) {
                     throw Doctrine_MappingException::generatorNotAllowedWithCompositeId();
                 }
@@ -671,8 +632,11 @@ class Doctrine_ORM_Mapping_ClassMetadata extends Doctrine_Common_ClassMetadata i
                 $this->_isIdentifierComposite = true;
             }
         }
+    }
+
+    private function _validateAndCompleteClassMapping(array &$mapping)
+    {
         
-        return $mapping;
     }
     
     /**
@@ -761,10 +725,11 @@ class Doctrine_ORM_Mapping_ClassMetadata extends Doctrine_Common_ClassMetadata i
      * Gets all field mappings.
      *
      * @return array
+     * @deprecated
      */
     public function getFieldMappings()
     {
-        return $this->_fieldMappings;
+        return $this->_fieldMetadata;
     }
 
     /**
@@ -953,7 +918,7 @@ class Doctrine_ORM_Mapping_ClassMetadata extends Doctrine_Common_ClassMetadata i
      */
     public function getTableName()
     {
-        return $this->getTableOption('tableName');
+        return $this->_tableOptions['tableName'];
     }
 
     public function getInheritedFields()
@@ -1085,13 +1050,13 @@ class Doctrine_ORM_Mapping_ClassMetadata extends Doctrine_Common_ClassMetadata i
      */
     private function _checkRequiredDiscriminatorOptions(array $options)
     {
-        if ( ! isset($options['discriminatorColumn'])) {
-            throw new Doctrine_ClassMetadata_Exception("Missing option 'discriminatorColumn'."
+        /*if ( ! isset($options['discriminatorColumn'])) {
+            throw new Doctrine_Exception("Missing option 'discriminatorColumn'."
             . " Inheritance types JOINED and SINGLE_TABLE require this option.");
         } else if ( ! isset($options['discriminatorMap'])) {
             throw new Doctrine_ClassMetadata_Exception("Missing option 'discriminatorMap'."
             . " Inheritance types JOINED and SINGLE_TABLE require this option.");
-        }
+        }*/
     }
 
     /**
@@ -1296,7 +1261,7 @@ class Doctrine_ORM_Mapping_ClassMetadata extends Doctrine_Common_ClassMetadata i
      */
     public function setTableName($tableName)
     {
-        $this->setTableOption('tableName', $tableName);
+        $this->_tableOptions['tableName'] = $tableName;
     }
 
     /**
@@ -1379,6 +1344,20 @@ class Doctrine_ORM_Mapping_ClassMetadata extends Doctrine_Common_ClassMetadata i
     {
         $mapping['sourceEntity'] = $this->_entityName;
         return $mapping;
+    }
+
+    /**
+     * Adds a field mapping.
+     *
+     * @param array $mapping
+     */
+    public function mapField(array $mapping)
+    {
+        $this->_validateAndCompleteFieldMapping($mapping);
+        if (isset($this->_fieldMappings[$mapping['fieldName']])) {
+            throw Doctrine_MappingException::duplicateFieldMapping();
+        }
+        $this->_fieldMappings[$mapping['fieldName']] = $mapping;
     }
     
     /**
@@ -1464,10 +1443,6 @@ class Doctrine_ORM_Mapping_ClassMetadata extends Doctrine_Common_ClassMetadata i
      */
     public function setCustomRepositoryClass($repositoryClassName)
     {
-        if ( ! is_subclass_of($repositoryClassName, 'Doctrine\ORM\EntityRepository')) {
-            throw new Doctrine_ClassMetadata_Exception("The custom repository must be a subclass"
-                    . " of Doctrine_EntityRepository.");
-        }
         $this->_customRepositoryClassName = $repositoryClassName;
     }
     
@@ -1499,10 +1474,10 @@ class Doctrine_ORM_Mapping_ClassMetadata extends Doctrine_Common_ClassMetadata i
      *       Binding an Entity to a specific EntityManager in 2.0 is the same as binding
      *       it to a Connection in 1.0.
      */
-    public function bindToEntityManager($emName)
+    /*public function bindToEntityManager($emName)
     {
 
-    }
+    }*/
     
     /**
      * Dispatches the lifecycle event of the given Entity to the registered
@@ -1592,6 +1567,16 @@ class Doctrine_ORM_Mapping_ClassMetadata extends Doctrine_Common_ClassMetadata i
     public function isImmutable()
     {
         return false;
+    }
+
+    public function setDiscriminatorColumn($columnDef)
+    {
+        $this->_inheritanceOptions['discriminatorColumn'] = $columnDef;
+    }
+
+    public function setDiscriminatorMap(array $map)
+    {
+        $this->_inheritanceOptions['discriminatorMap'] = $map;
     }
 
     public function isDiscriminatorColumn($columnName)

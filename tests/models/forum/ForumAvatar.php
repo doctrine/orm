@@ -2,22 +2,15 @@
 
 #namespace Doctrine\Tests\Models\Forum;
 
-#use Doctrine\ORM\Entity;
-
+/**
+ * @DoctrineEntity
+ */
 class ForumAvatar
 {
+    /**
+     * @DoctrineId
+     * @DoctrineColumn(type="integer")
+     * @DoctrineIdGenerator("auto")
+     */
     public $id;
-
-    public static function initMetadata($mapping) 
-    {
-        $mapping->mapField(array(
-            'fieldName' => 'id',
-            'type' => 'integer',
-            'id' => true,
-            'idGenerator' => 'auto'
-        ));
-    }
 }
-
-
-?>

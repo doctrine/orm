@@ -160,7 +160,7 @@ class Doctrine_ORM_EntityManager
         $this->_config = $config;
         $this->_eventManager = $eventManager;
         $this->_metadataFactory = new Doctrine_ORM_Mapping_ClassMetadataFactory(
-                new Doctrine_ORM_Mapping_Driver_CodeDriver(),
+                new Doctrine_ORM_Mapping_Driver_AnnotationDriver(),
                 $this->_conn->getDatabasePlatform());
         $this->_unitOfWork = new Doctrine_ORM_UnitOfWork($this);
         $this->_nullObject = Doctrine_ORM_Internal_Null::$INSTANCE;

@@ -2,32 +2,25 @@
 
 #namespace Doctrine\Tests\Models\Forum;
 
+/**
+ * Represents a board in a forum.
+ *
+ * @author robo
+ * @DoctrineEntity
+ */
 class ForumBoard
 {
+    /**
+     * @DoctrineId
+     * @DoctrineColumn(type="integer")
+     */
     public $id;
+    /**
+     * @DoctrineColumn(type="integer")
+     */
     public $position;
+    /**
+     * @DoctrineManyToOne(targetEntity="ForumCategory", joinColumns={"category_id" = "id"})
+     */
     public $category;
-
-    public static function initMetadata($mapping)
-    {
-        $mapping->mapField(array(
-            'fieldName' => 'id',
-            'type' => 'integer',
-            'id' => true
-        ));
-        $mapping->mapField(array(
-            'fieldName' => 'position',
-            'type' => 'integer'
-        ));
-        $mapping->mapField(array(
-            'fieldName' => 'category_id',
-            'type' => 'integer'
-        ));
-               
-        $mapping->mapManyToOne(array(
-            'fieldName' => 'category',
-            'targetEntity' => 'ForumCategory',
-            'joinColumns' => array('category_id' => 'id')
-        ));
-    }
 }

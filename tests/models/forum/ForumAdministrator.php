@@ -2,16 +2,13 @@
 
 #namespace Doctrine\Tests\Models\Forum;
 
+/**
+ * @DoctrineEntity
+ */
 class ForumAdministrator extends ForumUser
 {
+    /**
+     * @DoctrineColumn(type="integer", name="access_level")
+     */
     public $accessLevel;
-
-    public static function initMetadata($mapping) 
-    {
-        $mapping->mapField(array(
-            'fieldName' => 'accessLevel',
-            'columnName' => 'access_level',
-            'type' => 'integer'
-        ));
-    }
 }

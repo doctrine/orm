@@ -32,14 +32,14 @@
  * @author      Roman Borschel <roman@code-factory.org>
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @version     $Revision$
- * @link        www.phpdoctrine.org
+ * @link        www.doctrine-project.org
  * @since       2.0
- * @todo Rename to ClassDescriptorFactory.
  */
-class Doctrine_ORM_Mapping_ClassMetadataFactory extends Doctrine_Common_ClassMetadataFactory
+class Doctrine_ORM_Mapping_ClassMetadataFactory
 {
     /** The targeted database platform. */
     private $_targetPlatform;
+    private $_driver;
     
     /**
      * Constructor.
@@ -49,8 +49,22 @@ class Doctrine_ORM_Mapping_ClassMetadataFactory extends Doctrine_Common_ClassMet
      */
     public function __construct($driver, Doctrine_DBAL_Platforms_AbstractPlatform $targetPlatform)
     {
-        parent::__construct($driver);
+        $this->_driver = $driver;
         $this->_targetPlatform = $targetPlatform;
+    }
+
+    /**
+     * Returns the metadata object for a class.
+     *
+     * @param string $className  The name of the class.
+     * @return Doctrine_Metadata
+     */
+    public function getMetadataFor($className)
+    {
+        if ( ! isset($this->_loadedMetadata[$className])) {
+            $this->_loadMetadata($className);
+        }
+        return $this->_loadedMetadata[$className];
     }
     
     /**
@@ -59,11 +73,9 @@ class Doctrine_ORM_Mapping_ClassMetadataFactory extends Doctrine_Common_ClassMet
      *
      * @param string $name   The name of the class for which the metadata should get loaded.
      * @param array  $tables The metadata collection to which the loaded metadata is added.
-     * @override
      */
     protected function _loadMetadata($name)
     {
-
         $parentClass = $name;
         $parentClasses = array();
         $loadedParentClass = false;
@@ -114,7 +126,6 @@ class Doctrine_ORM_Mapping_ClassMetadataFactory extends Doctrine_Common_ClassMet
      *
      * @param Doctrine::ORM::Mapping::ClassMetadata $subClass
      * @param Doctrine::ORM::Mapping::ClassMetadata $parentClass
-     * @return void
      */
     private function _addInheritedFields($subClass, $parentClass)
     {
@@ -161,10 +172,6 @@ class Doctrine_ORM_Mapping_ClassMetadataFactory extends Doctrine_Common_ClassMet
             }
             $names[] = $className;
         } while ($className = get_parent_class($className));
-
-        /*if ($className === false) {
-            throw new Doctrine_Exception("Unknown component '$className'.");
-        }*/
 
         // save parents
         $class->setParentClasses($names);
