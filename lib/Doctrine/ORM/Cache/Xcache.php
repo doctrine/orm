@@ -28,20 +28,16 @@
  * @version     $Revision: $
  * @author      Dmitry Bakaleinik (dima@snaiper.net)
  */
-class Doctrine_Cache_Xcache extends Doctrine_Cache_Driver
+class Doctrine_ORM_Cache_XcacheCache implements Doctrine_ORM_Cache_Cache
 {
     /**
      * constructor
-     * 
-     * @param array $options        associative array of cache driver options
      */
-    public function __construct($options = array())
+    public function __construct()
     {      
         if ( ! extension_loaded('xcache')) {
-            throw new Doctrine_Cache_Exception('In order to use Xcache driver, the xcache extension must be loaded.');
+            throw new Doctrine_Exception('In order to use Xcache driver, the xcache extension must be loaded.');
         }
-        
-        parent::__construct($options);
     }
 
     /**

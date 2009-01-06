@@ -19,18 +19,19 @@
  * <http://www.phpdoctrine.org>.
  */
 
+#namespace Doctrine\ORM\Cache;
+
 /**
- * Doctrine_Cache_Interface
+ * Interface for cache drivers.
  *
- * @package     Doctrine
- * @subpackage  Cache
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
- * @link        www.phpdoctrine.org
+ * @link        www.doctrine-project.org
  * @since       1.0
  * @version     $Revision: 3931 $
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
+ * @author      Roman Borschel <roman@code-factory.org>
  */
-interface Doctrine_Cache_Interface 
+interface Doctrine_ORM_Cache_Cache
 {
     /**
      * Test if a cache entry is available for the given id and (if yes) return it (false else).

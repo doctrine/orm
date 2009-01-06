@@ -28,45 +28,43 @@
  * @version     $Revision: 4910 $
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  */
-class Doctrine_Cache_Memcache extends Doctrine_Cache_Driver
+class Doctrine_ORM_Cache_MemcacheCache implements Doctrine_ORM_Cache_Cache
 {
     /**
      * @var Memcache $_memcache     memcache object
      */
-    protected $_memcache = null;
+    private $_memcache;
 
     /**
      * constructor
      * 
      * @param array $options        associative array of cache driver options
      */
-    public function __construct($options = array())
+    public function __construct()
     {      
         if ( ! extension_loaded('memcache')) {
             throw new Doctrine_Cache_Exception('In order to use Memcache driver, the memcache extension must be loaded.');
         }
-        parent::__construct($options);
+    }
 
-        if (isset($options['servers'])) {
-            $value= $options['servers'];
-            if (isset($value['host'])) {
-                // in this case, $value seems to be a simple associative array (one server only)
-                $value = array(0 => $value); // let's transform it into a classical array of associative arrays
-            }
-            $this->setOption('servers', $value);
-        }
-        
-        $this->_memcache = new Memcache;
+    /**
+     * Sets the memcache instance to use.
+     *
+     * @param Memcache $memcache
+     */
+    public function setMemcache(Memcache $memcache)
+    {
+        $this->_memcache = $memcache;
+    }
 
-        foreach ($this->_options['servers'] as $server) {
-            if ( ! array_key_exists('persistent', $server)) {
-                $server['persistent'] = true;
-            }
-            if ( ! array_key_exists('port', $server)) {
-                $server['port'] = 11211;
-            }
-            $this->_memcache->addServer($server['host'], $server['port'], $server['persistent']);
-        }
+    /**
+     * Gets the memcache instance used by the cache.
+     *
+     * @return Memcache
+     */
+    public function getMemcache()
+    {
+        return $this->_memcache;
     }
 
     /**
@@ -104,13 +102,7 @@ class Doctrine_Cache_Memcache extends Doctrine_Cache_Driver
      */
     public function save($id, $data, $lifeTime = false)
     {
-        if ($this->_options['compression']) {
-            $flag = MEMCACHE_COMPRESSED;
-        } else {
-            $flag = 0;
-        }
-
-        $result = $this->_memcache->set($id, $data, $flag, $lifeTime);
+        return $this->_memcache->set($id, $data, 0, $lifeTime);
     }
 
     /**

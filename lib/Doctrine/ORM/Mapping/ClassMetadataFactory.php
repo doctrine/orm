@@ -43,7 +43,6 @@ class Doctrine_ORM_Mapping_ClassMetadataFactory
     private $_cacheDriver;
     
     /**
-     * Constructor.
      * Creates a new factory instance that uses the given metadata driver implementation.
      *
      * @param $driver  The metadata driver to use.
@@ -54,11 +53,21 @@ class Doctrine_ORM_Mapping_ClassMetadataFactory
         $this->_targetPlatform = $targetPlatform;
     }
 
+    /**
+     * Sets the cache driver used by the factory to cache ClassMetadata instances.
+     *
+     * @param object $cacheDriver
+     */
     public function setCacheDriver($cacheDriver)
     {
         $this->_cacheDriver = $cacheDriver;
     }
 
+    /**
+     * Gets the cache driver used by the factory to cache ClassMetadata instances.
+     *
+     * @return object
+     */
     public function getCacheDriver()
     {
         return $this->_cacheDriver;
@@ -75,10 +84,10 @@ class Doctrine_ORM_Mapping_ClassMetadataFactory
         if ( ! isset($this->_loadedMetadata[$className])) {
             if ($this->_cacheDriver) {
                 if ($this->_cacheDriver->contains("$className\$CLASSMETADATA")) {
-                    $this->_loadedMetadata[$className] = $this->_cacheDriver->get("$className\$CLASSMETADATA");
+                    $this->_loadedMetadata[$className] = $this->_cacheDriver->fetch("$className\$CLASSMETADATA");
                 } else {
                     $this->_loadMetadata($className);
-                    $this->_cacheDriver->put("$className\$CLASSMETADATA", $this->_loadedMetadata[$className]);
+                    $this->_cacheDriver->save($this->_loadedMetadata[$className], "$className\$CLASSMETADATA", null);
                 }
             } else {
                 $this->_loadMetadata($className);
@@ -144,6 +153,12 @@ class Doctrine_ORM_Mapping_ClassMetadataFactory
         }
     }
 
+    /**
+     * Creates a new ClassMetadata instance for the given class name.
+     *
+     * @param string $className
+     * @return Doctrine\ORM\Mapping\ClassMetadata
+     */
     protected function _newClassMetadataInstance($className)
     {
         return new Doctrine_ORM_Mapping_ClassMetadata($className);

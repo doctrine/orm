@@ -121,25 +121,7 @@ abstract class Doctrine_ORM_Mapping_AssociationMapping
      */
     public function __construct(array $mapping)
     {
-        //$this->_initMappingArray();
-        //$mapping = $this->_validateAndCompleteMapping($mapping);
-        //$this->_mapping = array_merge($this->_mapping, $mapping);*/
-        
         $this->_validateAndCompleteMapping($mapping);
-    }
-    
-    protected function _initMappingArray()
-    {
-        $this->_mapping = array(
-            'fieldName' => null,
-            'sourceEntity' => null,
-            'targetEntity' => null,
-            'mappedBy' => null,
-            'joinColumns' => null,
-            'joinTable' => null,
-            'optional' => true,
-            'cascades' => array()
-        );
     }
     
     /**

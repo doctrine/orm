@@ -52,7 +52,6 @@ class Doctrine_ORM_Mapping_OneToOneMapping extends Doctrine_ORM_Mapping_Associat
     protected $_deleteOrphans = false;
     
     /**
-     * Constructor.
      * Creates a new OneToOneMapping.
      *
      * @param array $mapping  The mapping info.
@@ -60,17 +59,6 @@ class Doctrine_ORM_Mapping_OneToOneMapping extends Doctrine_ORM_Mapping_Associat
     public function __construct(array $mapping)
     {
         parent::__construct($mapping);
-    }
-
-    /**
-     * {@inheritdoc}
-     *
-     * @override
-     */
-    protected function _initMappingArray()
-    {
-        parent::_initMappingArray();
-        $this->_mapping['deleteOrphans'] = false;
     }
     
     /**

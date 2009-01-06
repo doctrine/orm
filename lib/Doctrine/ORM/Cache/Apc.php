@@ -19,30 +19,30 @@
  * <http://www.phpdoctrine.org>.
  */
 
-#namespace Doctrine::ORM::Cache;
+#namespace Doctrine\ORM\Cache;
 
 /**
  * APC cache driver.
  *
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
- * @link        www.phpdoctrine.org
+ * @link        www.doctrine-project.org
  * @since       1.0
  * @version     $Revision: 4910 $
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
+ * @author      Roman Borschel <roman@code-factory.org>
  */
-class Doctrine_Cache_Apc extends Doctrine_Cache_Driver
+class Doctrine_ORM_Cache_ApcCache implements Doctrine_ORM_Cache_Cache
 {
     /**
      * constructor
      * 
      * @param array $options    associative array of cache driver options
      */
-    public function __construct($options = array())
+    public function __construct()
     {      
         if ( ! extension_loaded('apc')) {
             throw new Doctrine_Cache_Exception('The apc extension must be loaded for using this backend !');
         }
-        parent::__construct($options);
     }
 
     /**

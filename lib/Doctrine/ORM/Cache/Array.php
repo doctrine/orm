@@ -28,7 +28,7 @@
  * @version     $Revision: 4910 $
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  */
-class Doctrine_Cache_Array implements Doctrine_Cache_Interface
+class Doctrine_ORM_Cache_ArrayCache implements Doctrine_ORM_Cache_Cache
 {
     /**
      * @var array $data         an array of cached data
