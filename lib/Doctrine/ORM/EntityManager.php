@@ -135,7 +135,7 @@ class Doctrine_ORM_EntityManager
     /**
      * The maintained (cached) Id generators.
      *
-     * @var <type>
+     * @var array
      */
     private $_idGenerators = array();
 
@@ -148,6 +148,8 @@ class Doctrine_ORM_EntityManager
      *
      * @param Doctrine\DBAL\Connection $conn
      * @param string $name
+     * @param Doctrine\ORM\Configuration $config
+     * @param Doctrine\Common\EventManager $eventManager
      */
     protected function __construct(
             Doctrine_DBAL_Connection $conn,
@@ -160,16 +162,16 @@ class Doctrine_ORM_EntityManager
         $this->_config = $config;
         $this->_eventManager = $eventManager;
         $this->_metadataFactory = new Doctrine_ORM_Mapping_ClassMetadataFactory(
-                new Doctrine_ORM_Mapping_Driver_AnnotationDriver(),
+                $this->_config->getMetadataDriverImpl(),
                 $this->_conn->getDatabasePlatform());
+        $this->_metadataFactory->setCacheDriver($this->_config->getMetadataCacheImpl());
         $this->_unitOfWork = new Doctrine_ORM_UnitOfWork($this);
-        $this->_nullObject = Doctrine_ORM_Internal_Null::$INSTANCE;
     }
     
     /**
      * Gets the database connection object used by the EntityManager.
      *
-     * @return Doctrine_Connection
+     * @return Doctrine\DBAL\Connection
      */
     public function getConnection()
     {
@@ -178,6 +180,8 @@ class Doctrine_ORM_EntityManager
 
     /**
      * Gets the metadata factory used to gather the metadata of classes.
+     *
+     * @return Doctrine\ORM\Mapping\ClassMetadataFactory
      */
     public function getMetadataFactory()
     {
@@ -609,7 +613,6 @@ class Doctrine_ORM_EntityManager
         }
         
         $em = new Doctrine_ORM_EntityManager($conn, $name, $config, $eventManager);
-        $em->activate();
         
         return $em;
     }

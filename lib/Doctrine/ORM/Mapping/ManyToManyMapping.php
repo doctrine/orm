@@ -85,4 +85,3 @@ class Doctrine_ORM_Mapping_ManyToManyMapping extends Doctrine_ORM_Mapping_Associ
     }
 }
 
-?>

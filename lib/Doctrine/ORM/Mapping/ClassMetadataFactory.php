@@ -40,6 +40,7 @@ class Doctrine_ORM_Mapping_ClassMetadataFactory
     /** The targeted database platform. */
     private $_targetPlatform;
     private $_driver;
+    private $_cacheDriver;
     
     /**
      * Constructor.
@@ -53,16 +54,35 @@ class Doctrine_ORM_Mapping_ClassMetadataFactory
         $this->_targetPlatform = $targetPlatform;
     }
 
+    public function setCacheDriver($cacheDriver)
+    {
+        $this->_cacheDriver = $cacheDriver;
+    }
+
+    public function getCacheDriver()
+    {
+        return $this->_cacheDriver;
+    }
+
     /**
      * Returns the metadata object for a class.
      *
      * @param string $className  The name of the class.
-     * @return Doctrine_Metadata
+     * @return Doctrine\ORM\Mapping\ClassMetadata
      */
     public function getMetadataFor($className)
     {
         if ( ! isset($this->_loadedMetadata[$className])) {
-            $this->_loadMetadata($className);
+            if ($this->_cacheDriver) {
+                if ($this->_cacheDriver->contains("$className\$CLASSMETADATA")) {
+                    $this->_loadedMetadata[$className] = $this->_cacheDriver->get("$className\$CLASSMETADATA");
+                } else {
+                    $this->_loadMetadata($className);
+                    $this->_cacheDriver->put("$className\$CLASSMETADATA", $this->_loadedMetadata[$className]);
+                }
+            } else {
+                $this->_loadMetadata($className);
+            }
         }
         return $this->_loadedMetadata[$className];
     }
@@ -93,7 +113,7 @@ class Doctrine_ORM_Mapping_ClassMetadataFactory
             $class = $this->_loadedMetadata[$loadedParentClass];
         } else {
             $rootClassOfHierarchy = count($parentClasses) > 0 ? array_shift($parentClasses) : $name;
-            $class = new Doctrine_ORM_Mapping_ClassMetadata($rootClassOfHierarchy);
+            $class = $this->_newClassMetadataInstance($rootClassOfHierarchy);
             $this->_loadClassMetadata($class, $rootClassOfHierarchy);
             $this->_loadedMetadata[$rootClassOfHierarchy] = $class;
         }
@@ -108,7 +128,7 @@ class Doctrine_ORM_Mapping_ClassMetadataFactory
         // Move down the hierarchy of parent classes, starting from the topmost class
         $parent = $class;
         foreach ($parentClasses as $subclassName) {
-            $subClass = new Doctrine_ORM_Mapping_ClassMetadata($subclassName);
+            $subClass = $this->_newClassMetadataInstance($subclassName);
             $subClass->setInheritanceType($parent->getInheritanceType());
             $subClass->setDiscriminatorMap($parent->getDiscriminatorMap());
             $subClass->setDiscriminatorColumn($parent->getDiscriminatorColumn());
@@ -122,12 +142,17 @@ class Doctrine_ORM_Mapping_ClassMetadataFactory
             $parent = $subClass;
         }
     }
+
+    protected function _newClassMetadataInstance($className)
+    {
+        return new Doctrine_ORM_Mapping_ClassMetadata($className);
+    }
     
     /**
      * Adds inherited fields to the subclass mapping.
      *
-     * @param Doctrine::ORM::Mapping::ClassMetadata $subClass
-     * @param Doctrine::ORM::Mapping::ClassMetadata $parentClass
+     * @param Doctrine\ORM\Mapping\ClassMetadata $subClass
+     * @param Doctrine\ORM\Mapping\ClassMetadata $parentClass
      */
     private function _addInheritedFields($subClass, $parentClass)
     {
@@ -135,20 +160,20 @@ class Doctrine_ORM_Mapping_ClassMetadataFactory
             if ( ! isset($mapping['inherited'])) {
                 $mapping['inherited'] = $parentClass->getClassName();
             }
-            $subClass->addFieldMapping($fieldName, $mapping);
+            $subClass->mapField($mapping);
         }
     }
     
     /**
      * Adds inherited associations to the subclass mapping.
      *
-     * @param unknown_type $subClass
-     * @param unknown_type $parentClass
+     * @param Doctrine\ORM\Mapping\ClassMetadata $subClass
+     * @param Doctrine\ORM\Mapping\ClassMetadata $parentClass
      */
     private function _addInheritedRelations($subClass, $parentClass)
     {
-        foreach ($parentClass->getAssociationMappings() as $fieldName => $mapping) {
-            $subClass->addAssociationMapping($name, $mapping);
+        foreach ($parentClass->getAssociationMappings() as $mapping) {
+            $subClass->addAssociationMapping($mapping);
         }
     }
     

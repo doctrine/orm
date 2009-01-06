@@ -19,9 +19,7 @@
  * <http://www.phpdoctrine.org>.
  */
 
-#namespace Doctrine::ORM::Mappings;
-
-#use Doctrine::ORM::Entity;
+#namespace Doctrine\ORM\Mappings;
 
 /**
  * A one-to-one mapping describes a uni-directional mapping from one entity 
@@ -29,7 +27,6 @@
  *
  * @since 2.0
  * @author Roman Borschel <roman@code-factory.org>
- * @todo Rename to OneToOneMapping
  */
 class Doctrine_ORM_Mapping_OneToOneMapping extends Doctrine_ORM_Mapping_AssociationMapping
 {
@@ -64,7 +61,12 @@ class Doctrine_ORM_Mapping_OneToOneMapping extends Doctrine_ORM_Mapping_Associat
     {
         parent::__construct($mapping);
     }
-    
+
+    /**
+     * {@inheritdoc}
+     *
+     * @override
+     */
     protected function _initMappingArray()
     {
         parent::_initMappingArray();
@@ -72,7 +74,7 @@ class Doctrine_ORM_Mapping_OneToOneMapping extends Doctrine_ORM_Mapping_Associat
     }
     
     /**
-     * Validates & completes the mapping. Mapping defaults are applied here.
+     * {@inheritdoc}
      *
      * @param array $mapping  The mapping to validate & complete.
      * @return array  The validated & completed mapping.
@@ -99,7 +101,7 @@ class Doctrine_ORM_Mapping_OneToOneMapping extends Doctrine_ORM_Mapping_Associat
     /**
      * Gets the source-to-target key column mapping.
      *
-     * @return unknown
+     * @return array
      */
     public function getSourceToTargetKeyColumns()
     {
@@ -109,7 +111,7 @@ class Doctrine_ORM_Mapping_OneToOneMapping extends Doctrine_ORM_Mapping_Associat
     /**
      * Gets the target-to-source key column mapping.
      *
-     * @return unknown
+     * @return array
      */
     public function getTargetToSourceKeyColumns()
     {
@@ -117,7 +119,7 @@ class Doctrine_ORM_Mapping_OneToOneMapping extends Doctrine_ORM_Mapping_Associat
     }
     
     /**
-     * Whether the association is one-to-one.
+     * {@inheritdoc}
      *
      * @return boolean
      * @override
@@ -128,37 +130,33 @@ class Doctrine_ORM_Mapping_OneToOneMapping extends Doctrine_ORM_Mapping_Associat
     }
     
     /**
-     * Lazy-loads the associated entity for a given entity.
+     * {@inheritdoc}
      *
      * @param Doctrine\ORM\Entity $entity
      * @return void
      */
-    public function lazyLoadFor($entity)
+    public function lazyLoadFor($entity, $entityManager)
     {
-        if ($entity->getClassName() != $this->_sourceClass->getClassName()) {
-            //error?
-        }
-        
-        $dql = 'SELECT t.* FROM ' . $this->_targetClass->getClassName() . ' t WHERE ';
+        $sourceClass = $entityManager->getClassMetadata($this->_sourceEntityName);
+        $targetClass = $entityManager->getClassMetadata($this->_targetEntityName);
+
+        $dql = 'SELECT t.* FROM ' . $targetClass->getClassName() . ' t WHERE ';
         $params = array();
         foreach ($this->_sourceToTargetKeyFields as $sourceKeyField => $targetKeyField) {
             if ($params) {
                 $dql .= " AND ";
             }
             $dql .= "t.$targetKeyField = ?";
-            $params[] = $entity->_rawGetField($sourceKeyField);
+            $params[] = $sourceClass->getReflectionProperty($sourceKeyField)->getValue($entity);
         }
         
-        $otherEntity = $this->_targetClass->getEntityManager()
-                ->query($dql, $params)
-                ->getFirst();
+        $otherEntity = $entityManager->query($dql, $params)->getFirst();
             
         if ( ! $otherEntity) {
-            $otherEntity = Doctrine_Null::$INSTANCE;
+            $otherEntity = null;
         }
-        $entity->_internalSetReference($this->_sourceFieldName, $otherEntity);
+        $sourceClass->getReflectionProperty($this->_sourceFieldName)->setValue($entity, $otherEntity);
     }
     
 }
 
-?>

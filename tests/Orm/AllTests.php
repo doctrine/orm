@@ -11,13 +11,13 @@ require_once 'Orm/Hydration/AllTests.php';
 require_once 'Orm/Ticket/AllTests.php';
 require_once 'Orm/Entity/AllTests.php';
 require_once 'Orm/Associations/AllTests.php';
+require_once 'Orm/Mapping/AllTests.php';
 
 // Tests
 require_once 'Orm/UnitOfWorkTest.php';
 require_once 'Orm/EntityManagerTest.php';
 require_once 'Orm/EntityPersisterTest.php';
 require_once 'Orm/CommitOrderCalculatorTest.php';
-require_once 'Orm/ClassMetadataTest.php';
 
 class Orm_AllTests
 {
@@ -34,13 +34,13 @@ class Orm_AllTests
         $suite->addTestSuite('Orm_EntityManagerTest');
         $suite->addTestSuite('Orm_EntityPersisterTest');
         $suite->addTestSuite('Orm_CommitOrderCalculatorTest');
-        $suite->addTestSuite('Orm_ClassMetadataTest');
         
         $suite->addTest(Orm_Query_AllTests::suite());
         $suite->addTest(Orm_Hydration_AllTests::suite());
         $suite->addTest(Orm_Entity_AllTests::suite());
         $suite->addTest(Orm_Ticket_AllTests::suite());
         $suite->addTest(Orm_Associations_AllTests::suite());
+        $suite->addTest(Orm_Mapping_AllTests::suite());
 
         return $suite;
     }

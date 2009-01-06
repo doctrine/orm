@@ -22,6 +22,7 @@
 #namespace Doctrine\ORM;
 
 #use Doctrine\DBAL\Configuration;
+#use Doctrine\ORM\Mapping\Driver\AnnotationDriver;
 
 /**
  * Configuration container for all configuration options of Doctrine.
@@ -43,8 +44,19 @@ class Doctrine_ORM_Configuration extends Doctrine_DBAL_Configuration
         $this->_attributes = array_merge($this->_attributes, array(
             'resultCacheImpl' => null,
             'queryCacheImpl' => null,
-            'metadataCacheImpl' => null
+            'metadataCacheImpl' => null,
+            'metadataDriverImpl' => new Doctrine_ORM_Mapping_Driver_AnnotationDriver()
             ));
+    }
+
+    public function setMetadataDriverImpl($driverImpl)
+    {
+        $this->_attributes['metadataDriverImpl'] = $driverImpl;
+    }
+
+    public function getMetadataDriverImpl()
+    {
+        return $this->_attributes['metadataDriverImpl'];
     }
     
     public function getResultCacheImpl()

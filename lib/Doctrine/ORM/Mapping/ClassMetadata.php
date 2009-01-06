@@ -1185,7 +1185,12 @@ class Doctrine_ORM_Mapping_ClassMetadata
         }
         $this->_fieldMappings[$mapping['fieldName']] = $mapping;
     }
-    
+
+    public function addAssociationMapping(Doctrine_ORM_Mapping_AssociationMapping $mapping)
+    {
+        $this->_storeAssociationMapping($mapping);
+    }
+
     /**
      * Adds a one-to-one mapping.
      * 
@@ -1256,7 +1261,7 @@ class Doctrine_ORM_Mapping_ClassMetadata
     {
         $sourceFieldName = $assocMapping->getSourceFieldName();
         if (isset($this->_associationMappings[$sourceFieldName])) {
-            throw Doctrine_MappingException::duplicateFieldMapping();
+            throw Doctrine_ORM_Exceptions_MappingException::duplicateFieldMapping();
         }
         $this->_associationMappings[$sourceFieldName] = $assocMapping;
         $this->_registerMappingIfInverse($assocMapping);
@@ -1411,6 +1416,16 @@ class Doctrine_ORM_Mapping_ClassMetadata
     {
         $this->_discriminatorColumn = $columnDef;
     }
+
+    /**
+     *
+     * @param <type> $fieldName
+     * @param <type> $mapping
+     */
+    /*public function addFieldMapping($fieldName, array $mapping)
+    {
+        $this->_fieldMappings[$fieldName] = $mapping;
+    }*/
 
     /**
      * Gets the discriminator column definition.

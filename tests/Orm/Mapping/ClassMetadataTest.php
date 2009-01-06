@@ -1,16 +1,11 @@
 <?php
+
+#namespace Doctrine\Tests\ORM\Mapping;
+
 require_once 'lib/DoctrineTestInit.php';
  
-class Orm_ClassMetadataTest extends Doctrine_OrmTestCase
-{    
-    protected function setUp() {
-        ;
-    }
-    
-    protected function tearDown() {
-        ;
-    }
-
+class Orm_Mapping_ClassMetadataTest extends Doctrine_OrmTestCase
+{
     public function testClassMetadataInstanceSerialization() {
         $cm = new Doctrine_ORM_Mapping_ClassMetadata('CmsUser');
 
@@ -50,8 +45,4 @@ class Orm_ClassMetadataTest extends Doctrine_OrmTestCase
         $this->assertEquals('Bar', $oneOneMapping->getTargetEntityName());
     }
     
-    public function testTransientEntityIsManaged()
-    {
-        ;
-    }
 }

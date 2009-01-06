@@ -52,9 +52,6 @@ abstract class Doctrine_ORM_Mapping_AssociationMapping
     protected $_isCascadeSave;
     protected $_isCascadeRefresh;
     
-    protected $_customAccessor;
-    protected $_customMutator;
-    
     /**
      * The fetch mode used for the association.
      *
@@ -111,25 +108,14 @@ abstract class Doctrine_ORM_Mapping_AssociationMapping
     protected $_mappedByFieldName;
     
     /**
-     * Identifies the field on the inverse side of a bidirectional association.
-     * This is only set on the owning side of an association.
-     *
-     * @var string
-     */
-    //protected $_inverseSideFieldName;
-    
-    /**
      * The name of the join table, if any.
      *
      * @var string
      */
     protected $_joinTable;
     
-    //protected $_mapping = array();
-    
     /**
-     * Constructor.
-     * Creates a new AssociationMapping.
+     * Initializes a new instance of a class derived from AssociationMapping.
      *
      * @param array $mapping  The mapping definition.
      */
@@ -151,8 +137,6 @@ abstract class Doctrine_ORM_Mapping_AssociationMapping
             'mappedBy' => null,
             'joinColumns' => null,
             'joinTable' => null,
-            'accessor' => null,
-            'mutator' => null,
             'optional' => true,
             'cascades' => array()
         );
@@ -193,12 +177,6 @@ abstract class Doctrine_ORM_Mapping_AssociationMapping
         }
         
         // Optional attributes for both sides
-        if (isset($mapping['accessor'])) {
-            $this->_customAccessor = $mapping['accessor'];
-        }
-        if (isset($mapping['mutator'])) {
-            $this->_customMutator = $mapping['mutator'];
-        }
         $this->_isOptional = isset($mapping['optional']) ?
                 (bool)$mapping['optional'] : true;
         $this->_cascades = isset($mapping['cascade']) ?
@@ -387,48 +365,6 @@ abstract class Doctrine_ORM_Mapping_AssociationMapping
         return $this->_mappedByFieldName || $this->_inverseSideFieldName;
     }*/
     
-    /**
-     * Whether the source field of the association has a custom accessor.
-     *
-     * @return boolean TRUE if the source field of the association has a custom accessor,
-     *                 FALSE otherwise.
-     */
-    public function hasCustomAccessor()
-    {
-        return isset($this->_customAccessor);
-    }
-    
-    /**
-     * Gets the name of the custom accessor method of the source field.
-     *
-     * @return string The name of the accessor method or NULL.
-     */
-    public function getCustomAccessor()
-    {
-        return $this->_customAccessor;
-    }
-    
-    /**
-     * Whether the source field of the association has a custom mutator.
-     *
-     * @return boolean TRUE if the source field of the association has a custom mutator,
-     *                 FALSE otherwise.
-     */
-    public function hasCustomMutator()
-    {
-        return isset($this->_customMutator);
-    }
-    
-    /**
-     * Gets the name of the custom mutator method of the source field.
-     *
-     * @return string The name of the mutator method or NULL.
-     */
-    public function getCustomMutator()
-    {
-        return $this->_customMutator;
-    }
-    
     public function isOneToOne()
     {
         return false;
@@ -444,6 +380,6 @@ abstract class Doctrine_ORM_Mapping_AssociationMapping
         return false;
     }
 
-    abstract public function lazyLoadFor($entity);
+    abstract public function lazyLoadFor($entity, $entityManager);
 }
 
