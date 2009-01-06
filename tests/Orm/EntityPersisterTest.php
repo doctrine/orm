@@ -47,8 +47,8 @@ class Orm_EntityPersisterTest extends Doctrine_OrmTestCase
         $inserts = $this->_connMock->getInserts();
         //check
         $this->assertEquals(1, count($inserts));
-        $this->assertTrue(isset($inserts['forum_avatar']));
-        $this->assertEquals(1, count($inserts['forum_avatar']));
+        $this->assertTrue(isset($inserts['ForumAvatar']));
+        $this->assertEquals(1, count($inserts['ForumAvatar']));
         $this->assertEquals(null, $user->avatar->id);
         $user->avatar->id = 0; // Fake that we got an id
 
@@ -58,18 +58,18 @@ class Orm_EntityPersisterTest extends Doctrine_OrmTestCase
         //check
         $this->assertEquals(2, count($inserts));
         $this->assertEquals(null, $user->id);
-        $this->assertTrue(isset($inserts['forum_user']));
-        $this->assertEquals(1, count($inserts['forum_user']));
-        $this->assertEquals(3, count($inserts['forum_user'][0]));
+        $this->assertTrue(isset($inserts['ForumUser']));
+        $this->assertEquals(1, count($inserts['ForumUser']));
+        $this->assertEquals(3, count($inserts['ForumUser'][0]));
         //username column
-        $this->assertTrue(isset($inserts['forum_user'][0]['username']));
-        $this->assertEquals('romanb', $inserts['forum_user'][0]['username']);
+        $this->assertTrue(isset($inserts['ForumUser'][0]['username']));
+        $this->assertEquals('romanb', $inserts['ForumUser'][0]['username']);
         //avatar_id join column
-        $this->assertTrue(isset($inserts['forum_user'][0]['avatar_id']));
-        $this->assertEquals(0, $inserts['forum_user'][0]['avatar_id']);
+        $this->assertTrue(isset($inserts['ForumUser'][0]['avatar_id']));
+        $this->assertEquals(0, $inserts['ForumUser'][0]['avatar_id']);
         //dtype discriminator column
-        $this->assertTrue(isset($inserts['forum_user'][0]['dtype']));
-        $this->assertEquals('user', $inserts['forum_user'][0]['dtype']);
+        $this->assertTrue(isset($inserts['ForumUser'][0]['dtype']));
+        $this->assertEquals('user', $inserts['ForumUser'][0]['dtype']);
     }
     
 }

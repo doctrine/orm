@@ -132,6 +132,7 @@ class Doctrine_ORM_Mapping_ClassMetadataFactory
             $subClass->setInheritanceType($parent->getInheritanceType());
             $subClass->setDiscriminatorMap($parent->getDiscriminatorMap());
             $subClass->setDiscriminatorColumn($parent->getDiscriminatorColumn());
+            $subClass->setIdGeneratorType($parent->getIdGeneratorType());
             $this->_addInheritedFields($subClass, $parent);
             $this->_addInheritedRelations($subClass, $parent);
             $this->_loadClassMetadata($subClass, $subclassName);
@@ -205,12 +206,6 @@ class Doctrine_ORM_Mapping_ClassMetadataFactory
 
         // load user-specified mapping metadata through the driver
         $this->_driver->loadMetadataForClass($name, $class);
-        
-        // set default table name, if necessary
-        $tableName = $class->getTableName();
-        if ( ! isset($tableName)) {
-            $class->setTableName(Doctrine::tableize($class->getClassName()));
-        }
 
         // Complete Id generator mapping. If AUTO is specified we choose the generator
         // most appropriate for the target platform.

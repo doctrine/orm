@@ -13,12 +13,43 @@ require_once 'lib/mocks/Doctrine_MetadataDriverMock.php';
  * @author robo
  */
 class Orm_Mapping_ClassMetadataFactoryTest extends Doctrine_OrmTestCase {
+
     public function testGetMetadataForSingleClass() {
-        //TODO
+        $mockPlatform = new Doctrine_DatabasePlatformMock();
+        $mockDriver = new Doctrine_MetadataDriverMock();
+
+        // Self-made metadata
+        $cm1 = new Doctrine_ORM_Mapping_ClassMetadata('CMFTest_Entity1');
+        // Add a mapped field
+        $cm1->mapField(array('fieldName' => 'name', 'type' => 'string'));
+        // and a mapped association
+        $cm1->mapOneToOne(array('fieldName' => 'other', 'targetEntity' => 'Other', 'mappedBy' => 'this'));
+        // and an id generator type
+        $cm1->setIdGeneratorType('auto');
+
+        // SUT
+        $cmf = new ClassMetadataFactoryTestSubject($mockDriver, $mockPlatform);
+        $cmf->setMetadataForClass('CMFTest_Entity1', $cm1);
+
+        // Prechecks
+        $this->assertEquals(array(), $cm1->getParentClasses());
+        $this->assertEquals('none', $cm1->getInheritanceType());
+        $this->assertTrue($cm1->hasField('name'));
+        $this->assertEquals(1, count($cm1->getAssociationMappings()));
+        $this->assertEquals('auto', $cm1->getIdGeneratorType());
+
+        // Go
+        $cm1 = $cmf->getMetadataFor('CMFTest_Entity1');
+
+        $this->assertEquals(array(), $cm1->getParentClasses());
+        $this->assertTrue($cm1->hasField('name'));
+        // The default fallback for id generation is the table strategy
+        $this->assertEquals('table', $cm1->getIdGeneratorType());
     }
 
     public function testGetMetadataForClassInHierarchy() {
         $mockPlatform = new Doctrine_DatabasePlatformMock();
+        $mockPlatform->setPrefersIdentityColumns(true);
         $mockDriver = new Doctrine_MetadataDriverMock();
 
         // Self-made metadata
@@ -28,6 +59,9 @@ class Orm_Mapping_ClassMetadataFactoryTest extends Doctrine_OrmTestCase {
         $cm1->mapField(array('fieldName' => 'name', 'type' => 'string'));
         // and a mapped association
         $cm1->mapOneToOne(array('fieldName' => 'other', 'targetEntity' => 'Other', 'mappedBy' => 'this'));
+        // and an id generator type
+        $cm1->setIdGeneratorType('auto');
+
         $cm2 = new Doctrine_ORM_Mapping_ClassMetadata('CMFTest_Entity2');
         $cm3 = new Doctrine_ORM_Mapping_ClassMetadata('CMFTest_Entity3');
 
@@ -48,6 +82,8 @@ class Orm_Mapping_ClassMetadataFactoryTest extends Doctrine_OrmTestCase {
         $this->assertEquals(1, count($cm1->getAssociationMappings()));
         $this->assertEquals(0, count($cm2->getAssociationMappings()));
         $this->assertEquals(0, count($cm3->getAssociationMappings()));
+        $this->assertEquals('none', $cm2->getIdGeneratorType());
+        $this->assertEquals('none', $cm3->getIdGeneratorType());
 
         // Go
         $cm3 = $cmf->getMetadataFor('CMFTest_Entity3');
@@ -70,6 +106,11 @@ class Orm_Mapping_ClassMetadataFactoryTest extends Doctrine_OrmTestCase {
         $this->assertEquals(1, count($cm3->getAssociationMappings()));
         $this->assertTrue($cm2->hasAssociation('other'));
         $this->assertTrue($cm3->hasAssociation('other'));
+        // Id generator 'auto' should have been resolved to 'identity' as preferred by our
+        // mock platform (see above). And it should be inherited.
+        $this->assertEquals('identity', $cm1->getIdGeneratorType());
+        $this->assertEquals('identity', $cm2->getIdGeneratorType());
+        $this->assertEquals('identity', $cm3->getIdGeneratorType());
     }
 }
 

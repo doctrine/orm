@@ -340,6 +340,7 @@ class Doctrine_ORM_Mapping_ClassMetadata
     public function __construct($entityName)
     {
         $this->_entityName = $entityName;
+        $this->_tableName = $this->_entityName;
         $this->_rootEntityName = $entityName;
         $this->_reflectionClass = new ReflectionClass($entityName);
         $reflectionProps = $this->_reflectionClass->getProperties();

@@ -28,7 +28,9 @@ class Doctrine_ORM_Mapping_Driver_AnnotationDriver {
             throw new Doctrine_ORM_Exceptions_MappingException("$className is no entity.");
         }
 
-        $metadata->setTableName($entityAnnot->tableName);
+        if ($entityAnnot->tableName) {
+            $metadata->setTableName($entityAnnot->tableName);
+        }
         $metadata->setCustomRepositoryClass($entityAnnot->repositoryClass);
 
         if ($inheritanceTypeAnnot = $annotClass->getAnnotation('DoctrineInheritanceType')) {
