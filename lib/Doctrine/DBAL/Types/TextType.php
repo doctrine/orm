@@ -7,14 +7,7 @@
  */
 class Doctrine_DBAL_Types_TextType extends Doctrine_DBAL_Types_Type
 {
-    /**
-     * Enter description here...
-     *
-     * @param array $fieldDeclaration
-     * @param Doctrine_DatabasePlatform $platform
-     * @return unknown
-     * @override
-     */
+    /** @override */
     public function getSqlDeclaration(array $fieldDeclaration, Doctrine_DatabasePlatform $platform)
     {
         return $platform->getClobDeclarationSql($fieldDeclaration);
@@ -22,4 +15,3 @@ class Doctrine_DBAL_Types_TextType extends Doctrine_DBAL_Types_Type
     
 }
 
-?>

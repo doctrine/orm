@@ -6,7 +6,7 @@
 class CmsPhonenumber implements Doctrine_ORM_Entity
 {
     /**
-     * @DoctrineColumn(type="string", length=50)
+     * @DoctrineColumn(type="varchar", length=50)
      * @DoctrineId
      */
     public $phonenumber;

@@ -14,7 +14,7 @@ class ForumEntry
      */
     public $id;
     /**
-     * @DoctrineColumn(type="string", length=50)
+     * @DoctrineColumn(type="varchar", length=50)
      */
     public $topic;
 }

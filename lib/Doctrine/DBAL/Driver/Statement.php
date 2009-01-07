@@ -46,7 +46,7 @@ interface Doctrine_DBAL_Driver_Statement
      * @param integer $type         Data type of the parameter, specified by the Doctrine::PARAM_* constants.
      * @return boolean              Returns TRUE on success or FALSE on failure
      */
-    public function bindColumn($column, $param, $type = null);
+    public function bindColumn($column, &$param, $type = null);
 
     /**
      * bindValue
@@ -292,5 +292,5 @@ interface Doctrine_DBAL_Driver_Statement
      * @param integer $mode                 The fetch mode must be one of the Doctrine::FETCH_* constants.
      * @return boolean                      Returns 1 on success or FALSE on failure.
      */
-    public function setFetchMode($mode, $arg1 = null, $arg2 = null);
+    public function setFetchMode($mode, $arg1);
 }

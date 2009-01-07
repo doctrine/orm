@@ -8,26 +8,35 @@ abstract class Doctrine_DBAL_Types_Type
 {
     private static $_typeObjects = array();
     private static $_typesMap = array(
-        'integer' => 'Doctrine_DataType_IntegerType',
-        'string' => 'Doctrine_DataType_StringType',
-        'text' => 'Doctrine_DataType_TextType',
-        'datetime' => 'Doctrine_DataType_DateTimeType',
-        'decimal' => 'Doctrine_DataType_DecimalType',
-        'double' => 'Doctrine_DataType_DoubleType'
+        'integer' => 'Doctrine_DBAL_Types_IntegerType',
+        'int' => 'Doctrine_DBAL_Types_IntegerType',
+        'tinyint' => 'Doctrine_DBAL_Types_TinyIntType',
+        'smallint' => 'Doctrine_DBAL_Types_SmallIntType',
+        'mediumint' => 'Doctrine_DBAL_Types_MediumIntType',
+        'bigint' => 'Doctrine_DBAL_Types_BigIntType',
+        'varchar' => 'Doctrine_DBAL_Types_VarcharType',
+        'text' => 'Doctrine_DBAL_Types_TextType',
+        'datetime' => 'Doctrine_DBAL_Types_DateTimeType',
+        'decimal' => 'Doctrine_DBAL_Types_DecimalType',
+        'double' => 'Doctrine_DBAL_Types_DoubleType'
     );
     
-    public function convertToDatabaseValue($value, Doctrine_DBAL_Platforms_AbstractDatabasePlatform $platform)
+    public function convertToDatabaseValue($value, Doctrine_DBAL_Platforms_AbstractPlatform $platform)
+    {
+        return $value;
+    }
+
+    public function convertToPHPValue($value)
     {
         return $value;
     }
     
-    public function convertToObjectValue($value)
+    public function getDefaultLength(Doctrine_DBAL_Platforms_AbstractPlatform $platform)
     {
-        return $value;
+        return null;
     }
-    
-    abstract public function getDefaultLength(Doctrine_DBAL_Platforms_AbstractDatabasePlatform $platform);
-    abstract public function getSqlDeclaration(array $fieldDeclaration, Doctrine_DBAL_Platforms_AbstractDatabasePlatform $platform);
+
+    abstract public function getSqlDeclaration(array $fieldDeclaration, Doctrine_DBAL_Platforms_AbstractPlatform $platform);
     abstract public function getName();
     
     /**
@@ -35,7 +44,7 @@ abstract class Doctrine_DBAL_Types_Type
      * Type instances are implemented as flyweights.
      *
      * @param string $name The name of the type (as returned by getName()).
-     * @return Doctrine::DBAL::Types::Type
+     * @return Doctrine\DBAL\Types\Type
      */
     public static function getType($name)
     {

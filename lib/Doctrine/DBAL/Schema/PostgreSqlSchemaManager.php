@@ -19,7 +19,7 @@
  * <http://www.phpdoctrine.org>.
  */
 
-#namespace Doctrine::DBAL::Schema;
+#namespace Doctrine\DBAL\Schema;
 
 /**
  * xxx
@@ -31,17 +31,7 @@
  * @since       2.0
  */
 class Doctrine_DBAL_Schema_PostgreSqlSchemaManager extends Doctrine_DBAL_Schema_AbstractSchemaManager
-{    
-    /**
-     * Enter description here...
-     *
-     * @param Doctrine_Connection_Pgsql $conn
-     */   
-    public function __construct(Doctrine_Connection_Pgsql $conn)
-    {
-        $this->_conn = $conn;
-    }
-
+{
     /**
      * alter an existing table
      *

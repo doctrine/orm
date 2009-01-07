@@ -19,7 +19,7 @@
  * <http://www.phpdoctrine.org>.
  */
 
-#namespace Doctrine::DBAL::Schema;
+#namespace Doctrine\DBAL\Schema;
 
 /**
  * xxx
@@ -31,12 +31,7 @@
  * @since       2.0
  */
 class Doctrine_DBAL_Schema_SqliteSchemaManager extends Doctrine_DBAL_Schema_AbstractSchemaManager
-{
-    public function __construct(Doctrine_Connection_Sqlite $conn)
-    {
-        $this->_conn = $conn;
-    }
-    
+{    
     /**
      * lists all databases
      *
@@ -44,11 +39,11 @@ class Doctrine_DBAL_Schema_SqliteSchemaManager extends Doctrine_DBAL_Schema_Abst
      */
     public function listDatabases()
     {
-
+        
     }
 
     /**
-     * lists all availible database functions
+     * lists all available database functions
      *
      * @return array
      */
@@ -369,123 +364,6 @@ class Doctrine_DBAL_Schema_SqliteSchemaManager extends Doctrine_DBAL_Schema_Abst
             $declFields[] = $fieldString;
         }
         return implode(', ', $declFields);
-    }
-
-    /**
-     * create a new table
-     *
-     * @param string $name   Name of the database that should be created
-     * @param array $fields  Associative array that contains the definition of each field of the new table
-     *                       The indexes of the array entries are the names of the fields of the table an
-     *                       the array entry values are associative arrays like those that are meant to be
-     *                       passed with the field definitions to get[Type]Declaration() functions.
-     *                          array(
-     *                              'id' => array(
-     *                                  'type' => 'integer',
-     *                                  'unsigned' => 1
-     *                                  'notnull' => 1
-     *                                  'default' => 0
-     *                              ),
-     *                              'name' => array(
-     *                                  'type' => 'text',
-     *                                  'length' => 12
-     *                              ),
-     *                              'password' => array(
-     *                                  'type' => 'text',
-     *                                  'length' => 12
-     *                              )
-     *                          );
-     * @param array $options  An associative array of table options:
-     *
-     * @return void
-     */
-    public function createTableSql($name, array $fields, array $options = array())
-    {
-        if ( ! $name) {
-            throw new Doctrine_Export_Exception('no valid table name specified');
-        }
-
-        if (empty($fields)) {
-            throw new Doctrine_Export_Exception('no fields specified for table '.$name);
-        }
-        $queryFields = $this->getFieldDeclarationList($fields);
-
-        $autoinc = false;
-        foreach($fields as $field) {
-            if (isset($field['autoincrement']) && $field['autoincrement'] ||
-              (isset($field['autoinc']) && $field['autoinc'])) {
-                $autoinc = true;
-                break;
-            }
-        }
-
-        if ( ! $autoinc && isset($options['primary']) && ! empty($options['primary'])) {
-            $keyColumns = array_values($options['primary']);
-            $keyColumns = array_map(array($this->_conn, 'quoteIdentifier'), $keyColumns);
-            $queryFields.= ', PRIMARY KEY('.implode(', ', $keyColumns).')';
-        }
-
-        $name  = $this->_conn->quoteIdentifier($name, true);
-        $sql   = 'CREATE TABLE ' . $name . ' (' . $queryFields;
-
-        if ($check = $this->getCheckDeclaration($fields)) {
-            $sql .= ', ' . $check;
-        }
-
-        if (isset($options['checks']) && $check = $this->getCheckDeclaration($options['checks'])) {
-            $sql .= ', ' . $check;
-        }
-
-        $sql .= ')';
-
-        $query[] = $sql;
-
-        if (isset($options['indexes']) && ! empty($options['indexes'])) {
-            foreach ($options['indexes'] as $index => $definition) {
-                $query[] = $this->createIndexSql($name, $index, $definition);
-            }
-        }
-        return $query;
-
-
-        /**
-        try {
-
-            if ( ! empty($fk)) {
-                $this->_conn->beginTransaction();
-            }
-
-            $ret   = $this->_conn->exec($query);
-
-            if ( ! empty($fk)) {
-                foreach ($fk as $definition) {
-
-                    $query = 'CREATE TRIGGER doctrine_' . $name . '_cscd_delete '
-                           . 'AFTER DELETE ON ' . $name . ' FOR EACH ROW '
-                           . 'BEGIN '
-                           . 'DELETE FROM ' . $definition['foreignTable'] . ' WHERE ';
-
-                    $local = (array) $definition['local'];
-                    foreach((array) $definition['foreign'] as $k => $field) {
-                        $query .= $field . ' = old.' . $local[$k] . ';';
-                    }
-
-                    $query .= 'END;';
-
-                    $this->_conn->exec($query);
-                }
-
-                $this->_conn->commit();
-            }
-
-
-        } catch(Doctrine_Exception $e) {
-
-            $this->_conn->rollback();
-
-            throw $e;
-        }
-        */
     }
 
     /**

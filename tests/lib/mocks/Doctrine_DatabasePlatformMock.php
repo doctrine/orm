@@ -24,6 +24,27 @@ class Doctrine_DatabasePlatformMock extends Doctrine_DBAL_Platforms_AbstractPlat
     public function prefersIdentityColumns() {
         return $this->_prefersIdentityColumns;
     }
+
+    /** @override */
+    public function getIntegerTypeDeclarationSql(array $field) {}
+
+    /** @override */
+    public function getBigIntTypeDeclarationSql(array $field) {}
+
+    /** @override */
+    public function getTinyIntTypeDeclarationSql(array $field) {}
+
+    /** @override */
+    public function getSmallIntTypeDeclarationSql(array $field) {}
+
+    /** @override */
+    public function getMediumIntTypeDeclarationSql(array $field) {}
+
+    /** @override */
+    protected function _getCommonIntegerTypeDeclarationSql(array $columnDef) {}
+
+    /** @override */
+    public function getVarcharDeclarationSql(array $field) {}
     
     /* MOCK API */
     

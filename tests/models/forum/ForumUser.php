@@ -7,7 +7,7 @@
 /**
  * @DoctrineEntity
  * @DoctrineInheritanceType("joined")
- * @DoctrineDiscriminatorColumn(name="dtype", type="string", length=20)
+ * @DoctrineDiscriminatorColumn(name="dtype", type="varchar", length=20)
  * @DoctrineDiscriminatorMap({"user" = "ForumUser", "admin" = "ForumAdministrator"})
  * @DoctrineSubclasses({"ForumAdministrator"})
  */
@@ -20,7 +20,7 @@ class ForumUser
      */
     public $id;
     /**
-     * @DoctrineColumn(type="string", length=50)
+     * @DoctrineColumn(type="varchar", length=50)
      */
     public $username;
     /**

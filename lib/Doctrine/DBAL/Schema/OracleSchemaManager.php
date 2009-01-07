@@ -19,7 +19,7 @@
  * <http://www.phpdoctrine.org>.
  */
 
-#namespace Doctrine::DBAL::Schema;
+#namespace Doctrine\DBAL\Schema;
 
 /**
  * xxx
@@ -31,12 +31,7 @@
  * @since       2.0
  */
 class Doctrine_DBAL_Schema_OracleSchemaManager extends Doctrine_DBAL_Schema_AbstractSchemaManager
-{
-    public function __construct(Doctrine_Connection_Oracle $conn)
-    {
-        $this->_conn = $conn;
-    }
-    
+{    
     /**
      * create a new database
      *

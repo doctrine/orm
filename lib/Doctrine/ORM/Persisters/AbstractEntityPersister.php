@@ -65,11 +65,6 @@ abstract class Doctrine_ORM_Persisters_AbstractEntityPersister
      * @var Doctrine\ORM\EntityManager
      */
     protected $_em;
-    
-    /**
-     * Null object.
-     */
-    //private $_nullObject;
 
     /**
      * Initializes a new instance of a class derived from AbstractEntityPersister
@@ -238,48 +233,36 @@ abstract class Doctrine_ORM_Persisters_AbstractEntityPersister
     protected function _prepareData($entity, array &$result, $isInsert = false)
     {
         foreach ($this->_em->getUnitOfWork()->getDataChangeSet($entity) as $field => $change) {
-            list ($oldVal, $newVal) = each($change);
+            if (is_array($change)) {
+                list ($oldVal, $newVal) = each($change);
+            } else {
+                $oldVal = null;
+                $newVal = $change;
+            }
+            
             $type = $this->_classMetadata->getTypeOfField($field);
             $columnName = $this->_classMetadata->getColumnName($field);
 
-            if (is_null($newVal)) {
-                $result[$columnName] = null;
-            } else if (is_object($newVal)) {
+            if ($this->_classMetadata->hasAssociation($field)) {
                 $assocMapping = $this->_classMetadata->getAssociationMapping($field);
                 if ( ! $assocMapping->isOneToOne() || $assocMapping->isInverseSide()) {
                     //echo "NOT TO-ONE OR INVERSE!";
                     continue;
                 }
                 foreach ($assocMapping->getSourceToTargetKeyColumns() as $sourceColumn => $targetColumn) {
-                    //TODO: What if both join columns (local/foreign) are just db-only
-                    // columns (no fields in models) ? Currently we assume the foreign column
-                    // is mapped to a field in the foreign entity.
                     //TODO: throw exc if field not set
                     $otherClass = $this->_em->getClassMetadata($assocMapping->getTargetEntityName());
                     $result[$sourceColumn] = $otherClass->getReflectionProperty(
                             $otherClass->getFieldName($targetColumn))->getValue($newVal);
                 }
+            } else if (is_null($newVal)) {
+                $result[$columnName] = null;
             } else {
-                switch ($type) {
-                    case 'array':
-                    case 'object':
-                        $result[$columnName] = serialize($newVal);
-                        break;
-                    case 'gzip':
-                        $result[$columnName] = gzcompress($newVal, 5);
-                        break;
-                    case 'boolean':
-                        $result[$columnName] = $this->_em->getConnection()->convertBooleans($newVal);
-                    break;
-                    default:
-                        $result[$columnName] = $newVal;
-                }
+                $result[$columnName] = $type->convertToDatabaseValue($newVal, $this->_conn->getDatabasePlatform());
             }
-            /*$result[$columnName] = $type->convertToDatabaseValue(
-                    $newVal, $this->_em->getConnection()->getDatabasePlatform());*/
         }
         
-        // Populate the discriminator column on insert in Single & Class Table Inheritance
+        // Populate the discriminator column on insert in JOINED & SINGLE_TABLE inheritance
         if ($isInsert && ($this->_classMetadata->isInheritanceTypeJoined() ||
                 $this->_classMetadata->isInheritanceTypeSingleTable())) {
             $discColumn = $this->_classMetadata->getDiscriminatorColumn();

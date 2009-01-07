@@ -230,7 +230,9 @@ class Doctrine_DBAL_Platforms_MySqlPlatform extends Doctrine_DBAL_Platforms_Abst
     }
     
     /**
-     * @TEST
+     * Gets the SQL snippet used to declare a VARCHAR column on the MySql platform.
+     *
+     * @params array $field
      */
     public function getVarcharDeclarationSql(array $field)
     {
@@ -243,7 +245,7 @@ class Doctrine_DBAL_Platforms_MySqlPlatform extends Doctrine_DBAL_Platforms_Abst
         }
 
         $length = ($field['length'] <= $this->getVarcharMaxLength()) ? $field['length'] : false;
-        $fixed  = (isset($field['fixed'])) ? $field['fixed'] : false;
+        $fixed = (isset($field['fixed'])) ? $field['fixed'] : false;
 
         return $fixed ? ($length ? 'CHAR(' . $length . ')' : 'CHAR(255)')
                 : ($length ? 'VARCHAR(' . $length . ')' : 'TEXT');
@@ -1037,7 +1039,37 @@ class Doctrine_DBAL_Platforms_MySqlPlatform extends Doctrine_DBAL_Platforms_Abst
      *                 declare the specified field.
      * @override
      */
-    public function getIntegerDeclarationSql($name, $field)
+    public function getIntegerTypeDeclarationSql(array $field)
+    {
+        return 'INT ' . $this->_getCommonIntegerTypeDeclarationSql($field);
+    }
+
+    /** @override */
+    public function getBigIntTypeDeclarationSql(array $field)
+    {
+        return 'BIGINT ' . $this->_getCommonIntegerTypeDeclarationSql($field);
+    }
+
+    /** @override */
+    public function getTinyIntTypeDeclarationSql(array $field)
+    {
+        return 'TINYINT ' . $this->_getCommonIntegerTypeDeclarationSql($field);
+    }
+
+    /** @override */
+    public function getSmallIntDeclarationSql(array $field)
+    {
+        return 'SMALLINT ' . $this->_getCommonIntegerTypeDeclarationSql($field);
+    }
+
+    /** @override */
+    public function getMediumIntDeclarationSql(array $field)
+    {
+        return 'MEDIUMINT ' . $this->_getCommonIntegerTypeDeclarationSql($field);
+    }
+
+    /** @override */
+    protected function _getCommonIntegerTypeDeclarationSql(array $columnDef)
     {
         $default = $autoinc = '';
         if ( ! empty($field['autoincrement'])) {
@@ -1058,9 +1090,7 @@ class Doctrine_DBAL_Platforms_MySqlPlatform extends Doctrine_DBAL_Platforms_Abst
         $notnull  = (isset($field['notnull'])  && $field['notnull'])  ? ' NOT NULL' : '';
         $unsigned = (isset($field['unsigned']) && $field['unsigned']) ? ' UNSIGNED' : '';
 
-        $name = $this->quoteIdentifier($name, true);
-
-        return $name . ' ' . $this->getNativeDeclaration($field) . $unsigned . $default . $notnull . $autoinc;
+        return $unsigned . $default . $notnull . $autoinc;
     }
     
     /**

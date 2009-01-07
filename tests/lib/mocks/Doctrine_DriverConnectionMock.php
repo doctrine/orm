@@ -5,7 +5,7 @@
 class Doctrine_DriverConnectionMock implements Doctrine_DBAL_Driver_Connection
 {
     public function prepare($prepareString) {}
-    public function query($queryString) {}
+    public function query() {}
     public function quote($input) {}
     public function exec($statement) {}
     public function lastInsertId() {}

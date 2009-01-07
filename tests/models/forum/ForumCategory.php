@@ -17,7 +17,7 @@ class ForumCategory
      */
     public $position;
     /**
-     * @DoctrineColumn(type="string", length=255)
+     * @DoctrineColumn(type="varchar", length=255)
      */
     public $name;
     /**

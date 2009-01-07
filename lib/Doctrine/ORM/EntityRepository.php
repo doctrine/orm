@@ -38,10 +38,10 @@ class Doctrine_ORM_EntityRepository
     protected $_em;
     protected $_classMetadata;
     
-    public function __construct($entityName, Doctrine_ORM_Mapping_ClassMetadata $classMetadata)
+    public function __construct($em, Doctrine_ORM_Mapping_ClassMetadata $classMetadata)
     {
-        $this->_entityName = $entityName;
-        $this->_em = $classMetadata->getConnection();
+        $this->_entityName = $classMetadata->getClassName();
+        $this->_em = $em;
         $this->_classMetadata = $classMetadata;
     }
     
@@ -77,7 +77,6 @@ class Doctrine_ORM_EntityRepository
      * @param $id                       The identifier.
      * @param int $hydrationMode        The hydration mode to use.
      * @return mixed                    Array or Doctrine_Entity or false if no result
-     * @todo Remove. Move to EntityRepository.
      */
     public function find($id, $hydrationMode = null)
     {
@@ -94,7 +93,10 @@ class Doctrine_ORM_EntityRepository
             $keys = $this->_classMetadata->getIdentifier();
         }
         
-        //TODO: check identity map?
+        // Check identity map first
+        if ($entity = $this->_em->getUnitOfWork()->tryGetById($id, $this->_classMetadata->getRootClassName())) {
+            return $entity; // Hit!
+        }
 
         return $this->_createQuery()
                 ->where(implode(' = ? AND ', $keys) . ' = ?')

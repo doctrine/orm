@@ -56,19 +56,18 @@ class Doctrine_OrmFunctionalTestCase extends Doctrine_OrmTestCase
         }
         
         $fixture = self::$_fixtures[$uniqueName];
-        $this->_loadedFixtures[] = $fixture['model'];
+        $this->_loadedFixtures[] = $fixture['table'];
         
-        $em = $this->sharedFixture['em'];
-        $classMetadata = $em->getClassMetadata($fixture['model']);
-        $tableName = $classMetadata->getTableName();
+        $conn = $this->sharedFixture['conn'];
+        $tableName = $fixture['table'];
         
         if ( ! in_array($tableName, self::$_exportedTables)) {
-            $em->getConnection()->getSchemaManager()->exportClasses(array($fixture['model']));
+            $conn->getSchemaManager()->exportClasses(array($fixture['model']));
             self::$_exportedTables[] = $tableName;
         }
         
         foreach ($fixture['rows'] as $row) {
-            $em->getConnection()->insert($tableName, $row);
+            $conn->insert($tableName, $row);
         }
     }
     
@@ -100,9 +99,23 @@ class Doctrine_OrmFunctionalTestCase extends Doctrine_OrmTestCase
      */
     protected function tearDown()
     {
-        $em = $this->sharedFixture['em'];
-        foreach (array_reverse($this->_loadedFixtures) as $model) {
-            $conn->exec("DELETE FROM " . $em->getClassMetadata($model)->getTableName());
+        $conn = $this->sharedFixture['conn'];
+        foreach (array_reverse($this->_loadedFixtures) as $table) {
+            $conn->exec("DELETE FROM " . $table);
         }
+    }
+
+    protected function setUp()
+    {
+        if ( ! isset($this->sharedFixture['conn'])) {
+            $this->sharedFixture['conn'] = Doctrine_TestUtil::getConnection();
+        }
+    }
+
+    protected function _getEntityManager($config = null, $eventManager = null) {
+        $config = new Doctrine_ORM_Configuration();
+        $eventManager = new Doctrine_Common_EventManager();
+        $conn = $this->sharedFixture['conn'];
+        return Doctrine_ORM_EntityManager::create($conn, 'em', $config, $eventManager);
     }
 }

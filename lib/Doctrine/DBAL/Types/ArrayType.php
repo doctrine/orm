@@ -11,8 +11,7 @@ class Doctrine_DBAL_Types_ArrayType extends Doctrine_DBAL_Types_Type
     
     public function getName()
     {
-        return 'array';
+        return 'Array';
     }
 }
 
-?>

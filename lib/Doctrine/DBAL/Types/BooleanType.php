@@ -30,4 +30,3 @@ class Doctrine_DBAL_Types_BooleanType extends Doctrine_DBAL_Types_Type
     }
 }
 
-?>

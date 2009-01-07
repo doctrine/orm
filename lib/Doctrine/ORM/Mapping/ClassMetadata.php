@@ -616,7 +616,9 @@ class Doctrine_ORM_Mapping_ClassMetadata
         if ( ! isset($mapping['type'])) {
             throw Doctrine_ORM_Exceptions_MappingException::missingType();
         }
-        
+
+        $mapping['type'] = Doctrine_DBAL_Types_Type::getType($mapping['type']);
+
         // Complete fieldName and columnName mapping
         if ( ! isset($mapping['columnName'])) {
             $mapping['columnName'] = $mapping['fieldName'];

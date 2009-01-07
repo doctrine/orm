@@ -216,9 +216,7 @@ class Doctrine_DBAL_Connection
      */
     public function connect()
     {
-        if ($this->_isConnected) {
-            return false;
-        }
+        if ($this->_isConnected) return false;
         
         $driverOptions = isset($this->_params['driverOptions']) ?
                 $this->_params['driverOptions'] : array();
@@ -259,6 +257,7 @@ class Doctrine_DBAL_Connection
      */
     public function delete($tableName, array $identifier)
     {
+        $this->connect();
         $criteria = array();
         foreach (array_keys($identifier) as $id) {
             $criteria[] = $this->quoteIdentifier($id) . ' = ?';
@@ -282,6 +281,7 @@ class Doctrine_DBAL_Connection
      */
     public function update($tableName, array $data, array $identifier)
     {
+        $this->connect();
         if (empty($data)) {
             return false;
         }
@@ -316,6 +316,7 @@ class Doctrine_DBAL_Connection
      */
     public function insert($tableName, array $data)
     {
+        $this->connect();
         if (empty($data)) {
             return false;
         }
@@ -326,7 +327,7 @@ class Doctrine_DBAL_Connection
         $a = array();
         foreach ($data as $columnName => $value) {
             $cols[] = $this->quoteIdentifier($columnName);
-            if ($value instanceof Doctrine_Expression) {
+            if ($value instanceof Doctrine_DBAL_Expression) {
                 $a[] = $value->getSql();
                 unset($data[$columnName]);
             } else {
@@ -395,6 +396,7 @@ class Doctrine_DBAL_Connection
      */
     public function quote($input, $type = null)
     {
+        $this->connect();
         return $this->_conn->quote($input, $type);
     }
 
@@ -492,10 +494,10 @@ class Doctrine_DBAL_Connection
      */
     public function prepare($statement)
     {
+        echo $statement;
         $this->connect();
         try {
-            $stmt = $this->_conn->prepare($statement);
-            return new Doctrine_DBAL_Statement($this, $stmt);
+            return $this->_conn->prepare($statement);
         } catch (PDOException $e) {
             $this->rethrowException($e, $this);
         }
@@ -530,6 +532,7 @@ class Doctrine_DBAL_Connection
     {
         $this->connect();
         try {
+            echo $query . PHP_EOL;
             if ( ! empty($params)) {
                 $stmt = $this->prepare($query);
                 $stmt->execute($params);
@@ -566,7 +569,7 @@ class Doctrine_DBAL_Connection
                 return $count;
             }
         } catch (PDOException $e) {
-            $this->rethrowException($e, $this);
+            throw $e;
         }
     }
 
@@ -577,7 +580,7 @@ class Doctrine_DBAL_Connection
      */
     public function rethrowException(Exception $e, $invoker)
     {
-        throw $exc;
+        throw $e;
     }
     
     /**
@@ -667,6 +670,7 @@ class Doctrine_DBAL_Connection
      */
     public function lastInsertId($seqName = null)
     {
+        $this->connect();
         return $this->_conn->lastInsertId($seqName);
     }
 
@@ -680,6 +684,7 @@ class Doctrine_DBAL_Connection
      */
     public function beginTransaction()
     {
+        $this->connect();
         if ($this->_transactionNestingLevel == 0) {
             return $this->_conn->beginTransaction();
         }

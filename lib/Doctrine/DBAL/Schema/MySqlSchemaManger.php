@@ -19,7 +19,7 @@
  * <http://www.phpdoctrine.org>.
  */
 
-#namespace Doctrine::DBAL::Schema;
+#namespace Doctrine\DBAL\Schema;
 
 /**
  * xxx
@@ -31,12 +31,7 @@
  * @since       2.0
  */
 class Doctrine_DBAL_Schema_MySqlSchemaManager extends Doctrine_DBAL_Schema_AbstractSchemaManager
-{    
-    public function __construct(Doctrine_Connection $conn)
-    {
-        $this->_conn = $conn;
-    }
-
+{
     /**
      * lists all database sequences
      *

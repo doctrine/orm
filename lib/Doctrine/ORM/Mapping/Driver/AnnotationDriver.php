@@ -2,14 +2,10 @@
 
 #namespace Doctrine\ORM\Mapping\Driver;
 
-/* Addendum annotation API */
-require_once dirname(__FILE__) . '/addendum/annotations.php';
-Addendum::setRawMode(false);
-Addendum::setParsedAnnotations(array('DoctrineEntity', 'DoctrineInheritanceType',
-        'DoctrineDiscriminatorColumn', 'DoctrineDiscriminatorMap',
-        'DoctrineSubClasses', 'DoctrineTransient', 'DoctrineId',
-        'DoctrineIdGenerator', 'DoctrineColumn', 'DoctrineOneToOne',
-        'DoctrineOneToMany', 'DoctrineManyToOne', 'DoctrineManyToMany'));
+/* Addendum annotation reflection extensions */
+if ( ! class_exists('Addendum', false)) {
+    require_once dirname(__FILE__) . '/addendum/annotations.php';
+}
 
 /**
  * The AnnotationDriver reads the mapping metadata from docblock annotations.
@@ -122,7 +118,7 @@ final class DoctrineColumn extends Annotation {
     public $type;
     public $length;
     public $unique;
-    public $notnull;
+    public $nullable;
 }
 final class DoctrineOneToOne extends Annotation {
     public $targetEntity;

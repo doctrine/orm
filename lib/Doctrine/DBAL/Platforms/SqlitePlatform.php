@@ -391,6 +391,162 @@ class Doctrine_DBAL_Platforms_SqlitePlatform extends Doctrine_DBAL_Platforms_Abs
     {
         return 'PRAGMA read_uncommitted = ' . $this->_getTransactionIsolationLevelSql($level);
     }
+
+    /** @override */
+    public function prefersIdentityColumns() {
+        return true;
+    }
+
+    /** @override */
+    public function getIntegerTypeDeclarationSql(array $field)
+    {
+        return 'INT ' . $this->_getCommonIntegerTypeDeclarationSql($field);
+    }
+
+    /** @override */
+    public function getBigIntTypeDeclarationSql(array $field)
+    {
+        return 'BIGINT ' . $this->_getCommonIntegerTypeDeclarationSql($field);
+    }
+
+    /** @override */
+    public function getTinyIntTypeDeclarationSql(array $field)
+    {
+        return 'TINYINT ' . $this->_getCommonIntegerTypeDeclarationSql($field);
+    }
+
+    /** @override */
+    public function getSmallIntTypeDeclarationSql(array $field)
+    {
+        return 'SMALLINT ' . $this->_getCommonIntegerTypeDeclarationSql($field);
+    }
+
+    /** @override */
+    public function getMediumIntTypeDeclarationSql(array $field)
+    {
+        return 'MEDIUMINT ' . $this->_getCommonIntegerTypeDeclarationSql($field);
+    }
+
+    /** @override */
+    protected function _getCommonIntegerTypeDeclarationSql(array $columnDef)
+    {
+        $default = $autoinc = '';
+        if ( ! empty($columnDef['autoincrement'])) {
+            $autoinc = ' AUTO_INCREMENT';
+        } else if (array_key_exists('default', $columnDef)) {
+            if ($field['default'] === '') {
+                $field['default'] = empty($columnDef['notnull']) ? null : 0;
+            }
+            if (is_null($columnDef['default'])) {
+                $default = ' DEFAULT NULL';
+            } else {
+                $default = ' DEFAULT ' . $this->quote($columnDef['default']);
+            }
+        } else if (empty($columnDef['notnull'])) {
+            $default = ' DEFAULT NULL';
+        }
+
+        $notnull  = (isset($columnDef['notnull'])  && $columnDef['notnull'])  ? ' NOT NULL' : '';
+        $unsigned = (isset($columnDef['unsigned']) && $columnDef['unsigned']) ? ' UNSIGNED' : '';
+
+        return $unsigned . $default . $notnull . $autoinc;
+    }
+
+    /**
+     * create a new table
+     *
+     * @param string $name   Name of the database that should be created
+     * @param array $fields  Associative array that contains the definition of each field of the new table
+     *                       The indexes of the array entries are the names of the fields of the table an
+     *                       the array entry values are associative arrays like those that are meant to be
+     *                       passed with the field definitions to get[Type]Declaration() functions.
+     *                          array(
+     *                              'id' => array(
+     *                                  'type' => 'integer',
+     *                                  'unsigned' => 1
+     *                                  'notnull' => 1
+     *                                  'default' => 0
+     *                              ),
+     *                              'name' => array(
+     *                                  'type' => 'text',
+     *                                  'length' => 12
+     *                              ),
+     *                              'password' => array(
+     *                                  'type' => 'text',
+     *                                  'length' => 12
+     *                              )
+     *                          );
+     * @param array $options  An associative array of table options:
+     *
+     * @return void
+     * @override
+     */
+    public function getCreateTableSql($name, array $fields, array $options = array())
+    {
+        if ( ! $name) {
+            throw new Doctrine_Exception('no valid table name specified');
+        }
+
+        if (empty($fields)) {
+            throw new Doctrine_Exception('no fields specified for table '.$name);
+        }
+        $queryFields = $this->getFieldDeclarationListSql($fields);
+
+        $autoinc = false;
+        foreach($fields as $field) {
+            if (isset($field['autoincrement']) && $field['autoincrement'] ||
+              (isset($field['autoinc']) && $field['autoinc'])) {
+                $autoinc = true;
+                break;
+            }
+        }
+
+        if ( ! $autoinc && isset($options['primary']) && ! empty($options['primary'])) {
+            $keyColumns = array_values($options['primary']);
+            $keyColumns = array_map(array($this->_conn, 'quoteIdentifier'), $keyColumns);
+            $queryFields.= ', PRIMARY KEY('.implode(', ', $keyColumns).')';
+        }
+
+        $name  = $this->quoteIdentifier($name, true);
+        $sql   = 'CREATE TABLE ' . $name . ' (' . $queryFields;
+
+        if ($check = $this->getCheckDeclarationSql($fields)) {
+            $sql .= ', ' . $check;
+        }
+
+        if (isset($options['checks']) && $check = $this->getCheckDeclarationSql($options['checks'])) {
+            $sql .= ', ' . $check;
+        }
+
+        $sql .= ')';
+
+        $query[] = $sql;
+
+        if (isset($options['indexes']) && ! empty($options['indexes'])) {
+            foreach ($options['indexes'] as $index => $definition) {
+                $query[] = $this->createIndexSql($name, $index, $definition);
+            }
+        }
+        return $query;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getVarcharDeclarationSql(array $field)
+    {
+        if ( ! isset($field['length'])) {
+            if (array_key_exists('default', $field)) {
+                $field['length'] = $this->getVarcharMaxLength();
+            } else {
+                $field['length'] = false;
+            }
+        }
+        $length = ($field['length'] <= $this->getVarcharMaxLength()) ? $field['length'] : false;
+        $fixed = (isset($field['fixed'])) ? $field['fixed'] : false;
+
+        return $fixed ? ($length ? 'CHAR(' . $length . ')' : 'CHAR(255)')
+                : ($length ? 'VARCHAR(' . $length . ')' : 'TEXT');
+    }
 }
 
-?>

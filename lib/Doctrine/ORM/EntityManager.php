@@ -429,12 +429,12 @@ class Doctrine_ORM_EntityManager
     /**
      * Saves the given entity, persisting it's state.
      * 
-     * @param Doctrine\ORM\Entity $entity
+     * @param object $object
      */
-    public function save(Doctrine_ORM_Entity $entity)
+    public function save($object)
     {
         $this->_errorIfNotActiveOrClosed();
-        $this->_unitOfWork->save($entity);
+        $this->_unitOfWork->save($object);
         if ($this->_flushMode == self::FLUSHMODE_IMMEDIATE) {
             $this->flush();
         }
@@ -496,7 +496,7 @@ class Doctrine_ORM_EntityManager
         if ($customRepositoryClassName !== null) {
             $repository = new $customRepositoryClassName($entityName, $metadata);
         } else {
-            $repository = new Doctrine_ORM_EntityRepository($entityName, $metadata);
+            $repository = new Doctrine_ORM_EntityRepository($this, $metadata);
         }
         $this->_repositories[$entityName] = $repository;
 
@@ -506,11 +506,11 @@ class Doctrine_ORM_EntityManager
     /**
      * Checks if the instance is managed by the EntityManager.
      * 
-     * @param Doctrine\ORM\Entity $entity
+     * @param object $entity
      * @return boolean TRUE if this EntityManager currently manages the given entity
      *                 (and has it in the identity map), FALSE otherwise.
      */
-    public function contains(Doctrine_ORM_Entity $entity)
+    public function contains($entity)
     {
         return $this->_unitOfWork->isInIdentityMap($entity) &&
                 ! $this->_unitOfWork->isRegisteredRemoved($entity);
@@ -543,8 +543,8 @@ class Doctrine_ORM_EntityManager
      */
     private function _errorIfNotActiveOrClosed()
     {
-        if ( ! $this->isActive() || $this->_closed) {
-            throw Doctrine_EntityManagerException::notActiveOrClosed($this->_name);
+        if ($this->_closed) {
+            throw Doctrine_ORM_Exceptions_EntityManagerException::notActiveOrClosed($this->_name);
         }
     }
     

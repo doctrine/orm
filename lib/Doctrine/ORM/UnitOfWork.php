@@ -279,12 +279,13 @@ class Doctrine_ORM_UnitOfWork
         } else {
             $entitySet = $this->_identityMap;
         }
-        
+
         foreach ($entitySet as $className => $entities) {
             $class = $this->_em->getClassMetadata($className);
             foreach ($entities as $entity) {
                 $oid = spl_object_hash($entity);
-                if ($this->getEntityState($entity) == self::STATE_MANAGED) {
+                $state = $this->getEntityState($entity);
+                if ($state == self::STATE_MANAGED || $state == self::STATE_NEW) {
                     if ( ! $class->isInheritanceTypeNone()) {
                         $class = $this->_em->getClassMetadata(get_class($entity));
                     }
@@ -294,7 +295,7 @@ class Doctrine_ORM_UnitOfWork
                         $actualData[$name] = $refProp->getValue($entity);
                     }
 
-                    if ( ! isset($this->_originalEntityData[$oid])) {
+                    if ($state == self::STATE_NEW) {
                         $this->_dataChangeSets[$oid] = $actualData;
                     } else {
                         $originalData = $this->_originalEntityData[$oid];
@@ -904,7 +905,6 @@ class Doctrine_ORM_UnitOfWork
         $class = $this->_em->getClassMetadata(get_class($entity));
         foreach ($class->getAssociationMappings() as $assocMapping) {
             if ( ! $assocMapping->isCascadeSave()) {
-                echo "NOT cascade " . $assocMapping->getSourceFieldName();
                 continue;
             }
             $relatedEntities = $class->getReflectionProperty($assocMapping->getSourceFieldName())
@@ -1156,6 +1156,18 @@ class Doctrine_ORM_UnitOfWork
     public function getEntityIdentifier($entity)
     {
         return $this->_entityIdentifiers[spl_object_hash($entity)];
+    }
+
+    /**
+     *
+     */
+    public function tryGetById($id, $rootClassName)
+    {
+        $idHash = $this->getIdentifierHash((array)$id);
+        if (isset($this->_identityMap[$rootClassName][$idHash])) {
+            return $this->_identityMap[$rootClassName][$idHash];
+        }
+        return false;
     }
 }
 

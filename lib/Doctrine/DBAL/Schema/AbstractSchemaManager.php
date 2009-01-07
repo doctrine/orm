@@ -19,7 +19,7 @@
  * <http://www.phpdoctrine.org>.
  */
 
-#namespace Doctrine::DBAL::Schema;
+#namespace Doctrine\DBAL\Schema;
 
 /**
  * Base class for schema managers. Schema managers are used to inspect and/or
@@ -28,13 +28,18 @@
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  * @author      Lukas Smith <smith@pooteeweet.org> (PEAR MDB2 library)
+ * @author      Roman Borschel <roman@code-factory.org>
  * @version     $Revision$
  * @since       2.0
- * @todo Rename to AbstractSchemaManager
  */
 abstract class Doctrine_DBAL_Schema_AbstractSchemaManager
 {
     protected $_conn;
+
+    public function __construct(Doctrine_DBAL_Connection $conn)
+    {
+        $this->_conn = $conn;
+    }
 
     /**
      * lists all databases

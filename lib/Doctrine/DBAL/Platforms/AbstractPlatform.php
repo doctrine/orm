@@ -991,7 +991,7 @@ abstract class Doctrine_DBAL_Platforms_AbstractPlatform
             throw new Doctrine_Export_Exception('no fields specified for table ' . $name);
         }
 
-        $queryFields = $this->getFieldDeclarationList($columns);
+        $queryFields = $this->getFieldDeclarationListSql($columns);
 
         if (isset($options['primary']) && ! empty($options['primary'])) {
             $queryFields .= ', PRIMARY KEY(' . implode(', ', array_values($options['primary'])) . ')';
@@ -1193,7 +1193,7 @@ abstract class Doctrine_DBAL_Platforms_AbstractPlatform
     }
     
     /**
-     * Get declaration of a number of field in bulk
+     * Get declaration of a number of fields in bulk
      *
      * @param array $fields  a multidimensional associative array.
      *      The first dimension determines the field name, while the second
@@ -1223,9 +1223,9 @@ abstract class Doctrine_DBAL_Platforms_AbstractPlatform
      */
     public function getFieldDeclarationListSql(array $fields)
     {
+        $queryFields = array();
         foreach ($fields as $fieldName => $field) {
             $query = $this->getDeclarationSql($fieldName, $field);
-
             $queryFields[] = $query;
         }
         return implode(', ', $queryFields);
@@ -1265,32 +1265,63 @@ abstract class Doctrine_DBAL_Platforms_AbstractPlatform
      */
     public function getDeclarationSql($name, array $field)
     {
-        $default   = $this->getDefaultFieldDeclarationSql($field);
-
-        $charset   = (isset($field['charset']) && $field['charset']) ?
-                    ' ' . $this->getCharsetFieldDeclarationSql($field['charset']) : '';
-
+        $default = $this->getDefaultFieldDeclarationSql($field);
+        $charset = (isset($field['charset']) && $field['charset']) ?
+                ' ' . $this->getCharsetFieldDeclarationSql($field['charset']) : '';
         $collation = (isset($field['collation']) && $field['collation']) ?
-                    ' ' . $this->getCollationFieldDeclarationSql($field['collation']) : '';
+                ' ' . $this->getCollationFieldDeclarationSql($field['collation']) : '';
+        $notnull = (isset($field['notnull']) && $field['notnull']) ? ' NOT NULL' : '';
+        $unique = (isset($field['unique']) && $field['unique']) ?
+                ' ' . $this->getUniqueFieldDeclarationSql() : '';
+        $check = (isset($field['check']) && $field['check']) ?
+                ' ' . $field['check'] : '';
 
-        $notnull   = (isset($field['notnull']) && $field['notnull']) ? ' NOT NULL' : '';
-
-        $unique    = (isset($field['unique']) && $field['unique']) ?
-                    ' ' . $this->getUniqueFieldDeclarationSql() : '';
-
-        $check     = (isset($field['check']) && $field['check']) ?
-                    ' ' . $field['check'] : '';
-
-        $method = 'get' . $field['type'] . 'Declaration';
-
-        if (method_exists($this, $method)) {
-            return $this->$method($name, $field);
-        } else {
-            $dec = $this->getNativeDeclaration($field);
-        }
-        
-        return $this->quoteIdentifier($name, true) . ' ' . $dec . $charset . $default . $notnull . $unique . $check . $collation;
+        $typeDecl = $field['type']->getSqlDeclaration($field, $this);
+ 
+        return $this->quoteIdentifier($name, true) . ' ' . $typeDecl . $charset . $default . $notnull . $unique . $check . $collation;
     }
+
+    /**
+     *
+     * @param <type> $name
+     * @param <type> $field
+     */
+    abstract public function getIntegerTypeDeclarationSql(array $columnDef);
+
+    /**
+     * Gets the SQL snippet that declares a BIGINT column.
+     *
+     * @return string
+     */
+    abstract public function getBigIntTypeDeclarationSql(array $columnDef);
+
+    /**
+     * Gets the SQL snippet that declares a TINYINT column.
+     *
+     * @return string
+     */
+    abstract public function getTinyIntTypeDeclarationSql(array $columnDef);
+
+    /**
+     * Gets the SQL snippet that declares a SMALLINT column.
+     *
+     * @return string
+     */
+    abstract public function getSmallIntTypeDeclarationSql(array $columnDef);
+
+    /**
+     * Gets the SQL snippet that declares a MEDIUMINT column.
+     *
+     * @return string
+     */
+    abstract public function getMediumIntTypeDeclarationSql(array $columnDef);
+
+    /**
+     * Gets the SQL snippet that declares common properties of an integer column.
+     *
+     * @return string
+     */
+    abstract protected function _getCommonIntegerTypeDeclarationSql(array $columnDef);
 
     /**
      * getDefaultDeclaration
@@ -1858,7 +1889,18 @@ abstract class Doctrine_DBAL_Platforms_AbstractPlatform
     {
         return true;
     }
+
+    public function getIdentityColumnNullInsertSql()
+    {
+        return "";
+    }
+
+    /**
+     * Gets the SQL snippet used to declare a VARCHAR column on the MySql platform.
+     *
+     * @params array $field
+     */
+    abstract public function getVarcharDeclarationSql(array $field);
 }
 
 
-?>

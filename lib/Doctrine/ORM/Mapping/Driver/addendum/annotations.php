@@ -75,7 +75,7 @@ class AnnotationsBuilder {
         $data = $this->parse($targetReflection);
         $annotations = array();
         foreach($data as $class => $parameters) {
-            if(Addendum::parses($class)) {
+            if(is_subclass_of($class, 'Annotation')) {
                 foreach($parameters as $params) {
                     $annotationReflection = new ReflectionClass($class);
                     $annotations[$class][] = $annotationReflection->newInstance($params, $targetReflection);
@@ -296,7 +296,7 @@ class ReflectionAnnotatedProperty extends ReflectionProperty {
 
 class Addendum {
     private static $rawMode;
-    private static $parsedAnnotations;
+    private static $ignored;
 
     public static function getDocComment($reflection) {
         if(self::checkRawDocCommentParsingNeeded()) {
@@ -324,12 +324,12 @@ class Addendum {
         self::$rawMode = $enabled;
     }
 
-    public static function setParsedAnnotations(array $annotations) {
-        self::$parsedAnnotations = array_combine($annotations, array_fill(0, count($annotations), true));
+    public static function ignore(array $annotations) {
+        self::$ignored = array_combine($annotations, array_fill(0, count($annotations), true));
     }
 
-    public static function parses($annotation) {
-        return isset(self::$parsedAnnotations[$annotation]);
+    public static function ignores($annotation) {
+        return isset(self::$ignored[$annotation]);
     }
 }
 
