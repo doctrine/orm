@@ -501,9 +501,9 @@ class Doctrine_DBAL_Platforms_SqlitePlatform extends Doctrine_DBAL_Platforms_Abs
             }
         }
 
-        if ( ! $autoinc && isset($options['primary']) && ! empty($options['primary'])) {
+        if (isset($options['primary']) && ! empty($options['primary'])) {
             $keyColumns = array_values($options['primary']);
-            $keyColumns = array_map(array($this->_conn, 'quoteIdentifier'), $keyColumns);
+            $keyColumns = array_map(array($this, 'quoteIdentifier'), $keyColumns);
             $queryFields.= ', PRIMARY KEY('.implode(', ', $keyColumns).')';
         }
 

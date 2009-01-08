@@ -21,7 +21,7 @@ class Orm_Mapping_ClassMetadataFactoryTest extends Doctrine_OrmTestCase {
         // Self-made metadata
         $cm1 = new Doctrine_ORM_Mapping_ClassMetadata('CMFTest_Entity1');
         // Add a mapped field
-        $cm1->mapField(array('fieldName' => 'name', 'type' => 'string'));
+        $cm1->mapField(array('fieldName' => 'name', 'type' => 'varchar'));
         // and a mapped association
         $cm1->mapOneToOne(array('fieldName' => 'other', 'targetEntity' => 'Other', 'mappedBy' => 'this'));
         // and an id generator type
@@ -56,7 +56,7 @@ class Orm_Mapping_ClassMetadataFactoryTest extends Doctrine_OrmTestCase {
         $cm1 = new Doctrine_ORM_Mapping_ClassMetadata('CMFTest_Entity1');
         $cm1->setInheritanceType('singleTable');
         // Add a mapped field
-        $cm1->mapField(array('fieldName' => 'name', 'type' => 'string'));
+        $cm1->mapField(array('fieldName' => 'name', 'type' => 'varchar'));
         // and a mapped association
         $cm1->mapOneToOne(array('fieldName' => 'other', 'targetEntity' => 'Other', 'mappedBy' => 'this'));
         // and an id generator type

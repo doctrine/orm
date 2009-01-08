@@ -257,13 +257,12 @@ class Doctrine_ORM_UnitOfWork
 
     /**
      * Computes all the changes that have been done to entities in the identity map
-     * and stores these changes in _dataChangeSet temporarily for access by the
-     * peristers, until the UoW commit is finished.
+     * since the last commit and stores these changes in _dataChangeSet temporarily
+     * for access by the persisters, until the UoW commit is finished.
      *
      * @param array $entities The entities for which to compute the changesets. If this
      *          parameter is not specified, the changesets of all entities in the identity
      *          map are computed.
-     * @return void
      */
     public function computeDataChangeSet(array $entities = null)
     {
@@ -297,6 +296,7 @@ class Doctrine_ORM_UnitOfWork
 
                     if ($state == self::STATE_NEW) {
                         $this->_dataChangeSets[$oid] = $actualData;
+                        $this->_originalEntityData[$oid] = $actualData;
                     } else {
                         $originalData = $this->_originalEntityData[$oid];
                         $changeSet = array();
@@ -308,12 +308,12 @@ class Doctrine_ORM_UnitOfWork
                                 $changeSet[$propName] = array($orgValue => $actualValue);
                             }
                         }
-                        $this->_dirtyEntities[$oid] = $entity;
-                        $this->_dataChangeSets[$oid] = $changeSet;
+                        if ($changeSet) {
+                            $this->_dirtyEntities[$oid] = $entity;
+                            $this->_dataChangeSets[$oid] = $changeSet;
+                            $this->_originalEntityData[$oid] = $actualData;
+                        }
                     }
-                }
-                if (isset($this->_dirtyEntities[$oid])) {
-                    $this->_originalEntityData[$oid] = $actualData;
                 }
             }
         }
@@ -337,10 +337,11 @@ class Doctrine_ORM_UnitOfWork
                 $returnVal = $persister->insert($entity);
                 if ( ! is_null($returnVal)) {
                     $oid = spl_object_hash($entity);
-                    $class->getReflectionProperty($class->getSingleIdentifierFieldName())
-                            ->setValue($entity, $returnVal);
+                    $idField = $class->getSingleIdentifierFieldName();
+                    $class->getReflectionProperty($idField)->setValue($entity, $returnVal);
                     $this->_entityIdentifiers[$oid] = array($returnVal);
                     $this->_entityStates[$oid] = self::STATE_MANAGED;
+                    $this->_originalEntityData[$oid][$idField] = $returnVal;
                     $this->addToIdentityMap($entity);
                 }
             }
@@ -354,6 +355,7 @@ class Doctrine_ORM_UnitOfWork
      */
     private function _executeUpdates($class)
     {
+        try { throw new Exception(); } catch (Exception $e) { echo $e->getTraceAsString(); }
         $className = $class->getClassName();
         $persister = $this->_em->getEntityPersister($className);
         foreach ($this->_dirtyEntities as $entity) {

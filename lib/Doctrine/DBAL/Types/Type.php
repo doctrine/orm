@@ -48,9 +48,14 @@ abstract class Doctrine_DBAL_Types_Type
      */
     public static function getType($name)
     {
+        if (is_object($name)) {
+            try { throw new Exception(); }
+            catch (Exception $e) { echo $e->getTraceAsString(); }
+            die();
+        }
         if ( ! isset(self::$_typeObjects[$name])) {
             if ( ! isset(self::$_typesMap[$name])) {
-                throw Doctrine_Exception::unknownType($name);
+                throw new Doctrine_Exception("Unknown type: $name");
             }
             self::$_typeObjects[$name] = new self::$_typesMap[$name]();
         }

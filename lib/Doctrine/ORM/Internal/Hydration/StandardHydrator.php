@@ -327,6 +327,8 @@ class Doctrine_ORM_Internal_Hydration_StandardHydrator extends Doctrine_ORM_Inte
                 } else {
                     $fieldName = $this->_lookupFieldName($classMetadata, $columnName);
                     $cache[$key]['isScalar'] = false;
+                    // cache type information
+                    $cache[$key]['type'] = $classMetadata->getTypeOfColumn($columnName);
                 }
                 
                 $cache[$key]['fieldName'] = $fieldName;
@@ -336,15 +338,6 @@ class Doctrine_ORM_Internal_Hydration_StandardHydrator extends Doctrine_ORM_Inte
                     $cache[$key]['isIdentifier'] = true;
                 } else {
                     $cache[$key]['isIdentifier'] = false;
-                }
-                
-                // cache type information
-                $type = $classMetadata->getTypeOfColumn($columnName);
-                if ($type == 'integer' || $type == 'string') {
-                    $cache[$key]['isSimpleType'] = true;
-                } else {
-                    $cache[$key]['type'] = $type;
-                    $cache[$key]['isSimpleType'] = false;
                 }
             }
 
@@ -361,13 +354,11 @@ class Doctrine_ORM_Internal_Hydration_StandardHydrator extends Doctrine_ORM_Inte
                 $id[$dqlAlias] .= '|' . $value;
             }
 
-            if ($cache[$key]['isSimpleType']) {
+            if ($cache[$key]['isScalar']) {
                 $rowData[$dqlAlias][$fieldName] = $value;
             } else {
-                $rowData[$dqlAlias][$fieldName] = $this->prepareValue(
-                        $class, $fieldName, $value, $cache[$key]['type']);
+                $rowData[$dqlAlias][$fieldName] = $cache[$key]['type']->convertToPHPValue($value);
             }
-            //$rowData[$dqlAlias][$fieldName] = $cache[$key]['type']->convertToObjectValue($value);
 
             if ( ! isset($nonemptyComponents[$dqlAlias]) && $value !== null) {
                 $nonemptyComponents[$dqlAlias] = true;
@@ -412,31 +403,21 @@ class Doctrine_ORM_Internal_Hydration_StandardHydrator extends Doctrine_ORM_Inte
                 } else {
                     $fieldName = $this->_lookupFieldName($classMetadata, $columnName);
                     $cache[$key]['isScalar'] = false;
+                    // cache type information
+                    $cache[$key]['type'] = $classMetadata->getTypeOfColumn($columnName);
                 }
-                
                 $cache[$key]['fieldName'] = $fieldName;
-                
-                // cache type information
-                $type = $classMetadata->getTypeOfColumn($columnName);
-                if ($type == 'integer' || $type == 'string') {
-                    $cache[$key]['isSimpleType'] = true;
-                } else {
-                    $cache[$key]['type'] = $type;
-                    $cache[$key]['isSimpleType'] = false;
-                }
             }
 
             $class = $this->_queryComponents[$cache[$key]['dqlAlias']]['metadata'];
             $dqlAlias = $cache[$key]['dqlAlias'];
             $fieldName = $cache[$key]['fieldName'];
 
-            if ($cache[$key]['isSimpleType'] || $cache[$key]['isScalar']) {
+            if ($cache[$key]['isScalar']) {
                 $rowData[$dqlAlias . '_' . $fieldName] = $value;
             } else {
-                $rowData[$dqlAlias . '_' . $fieldName] = $this->prepareValue(
-                        $class, $fieldName, $value, $cache[$key]['type']);
+                $rowData[$dqlAlias . '_' . $fieldName] = $cache[$key]['type']->convertToPHPValue($value);
             }
-            //$rowData[$dqlAlias . '_' . $fieldName] = $cache[$key]['type']->convertToObjectValue($value);
         }
         
         return $rowData;
@@ -526,7 +507,7 @@ class Doctrine_ORM_Internal_Hydration_StandardHydrator extends Doctrine_ORM_Inte
      * @return mixed            prepared value
      * @todo Remove. Should be handled by the Type classes. No need for this switch stuff.
      */
-    public function prepareValue(Doctrine_ClassMetadata $class, $fieldName, $value, $typeHint = null)
+    public function prepareValue(Doctrine_ORM_Mapping_ClassMetadata $class, $fieldName, $value, $typeHint = null)
     {
         if ($value === $this->_nullObject) {
             return $this->_nullObject;

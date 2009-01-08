@@ -26,7 +26,7 @@ class CmsUser
      */
     public $name;
     /**
-     * @DoctrineOneToMany(targetEntity="CmsPhonenumber", mappedBy="user")
+     * @DoctrineOneToMany(targetEntity="CmsPhonenumber", mappedBy="user", cascade={"save"})
      */
     public $phonenumbers;
     /**

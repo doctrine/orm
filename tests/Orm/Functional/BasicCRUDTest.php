@@ -12,7 +12,10 @@ class Orm_Functional_BasicCRUDTest extends Doctrine_OrmFunctionalTestCase {
         $em = $this->_getEntityManager();
 
         $exporter = new Doctrine_ORM_Export_ClassExporter($em);
-        $exporter->exportClasses(array($em->getClassMetadata('CmsUser')));
+        $exporter->exportClasses(array(
+                $em->getClassMetadata('CmsUser'),
+                $em->getClassMetadata('CmsPhonenumber')
+            ));
 
         // Create
         $user = new CmsUser;
@@ -33,6 +36,13 @@ class Orm_Functional_BasicCRUDTest extends Doctrine_OrmFunctionalTestCase {
 
         $user4 = $em->find('CmsUser', $user2->id);
         $this->assertTrue($user2 === $user4);
+
+        $ph = new CmsPhonenumber;
+        $ph->phonenumber = "12345";
+
+        $user->phonenumbers[] = $ph;
+
+        //var_dump($em->getUnitOfWork())
     }
 }
 

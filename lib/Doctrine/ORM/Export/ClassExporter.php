@@ -71,6 +71,7 @@ class Doctrine_ORM_Export_ClassExporter
                 $column['length'] = $mapping['length'];
 
                 if ($class->isIdentifier($fieldName)) {
+                    $column['primary'] = true;
                     if ($class->isIdGeneratorIdentity()) {
                         $column['autoincrement'] = true;
                     }
