@@ -100,11 +100,17 @@ abstract class Doctrine_ORM_Persisters_AbstractEntityPersister
     /**
      * Updates an entity.
      *
-     * @param Doctrine\ORM\Entity $entity The entity to update.
+     * @param object $entity The entity to update.
      * @return void
      */
-    public function update(Doctrine_ORM_Entity $entity)
+    public function update($entity)
     {
+        $updateData = array();
+        $this->_prepareData($entity, $updateData);
+        $id = array_combine($this->_classMetadata->getIdentifierFieldNames(),
+                $this->_em->getUnitOfWork()->getEntityIdentifier($entity));
+        $this->_conn->update($this->_classMetadata->getTableName(), $updateData, $id);
+
         /*$dataChangeSet = $entity->_getDataChangeSet();
         $referenceChangeSet = $entity->_getReferenceChangeSet();
         
@@ -126,12 +132,14 @@ abstract class Doctrine_ORM_Persisters_AbstractEntityPersister
     /**
      * Deletes an entity.
      *
-     * @param Doctrine\ORM\Entity $entity The entity to delete.
+     * @param object $entity The entity to delete.
      * @return void
      */
-    public function delete(Doctrine_ORM_Entity $entity)
+    public function delete($entity)
     {
-        //TODO: perform delete
+        $id = array_combine($this->_classMetadata->getIdentifierFieldNames(),
+                $this->_em->getUnitOfWork()->getEntityIdentifier($entity));
+        $this->_conn->delete($this->_classMetadata->getTableName(), $id);
     }
     
     /**
@@ -232,7 +240,7 @@ abstract class Doctrine_ORM_Persisters_AbstractEntityPersister
      */
     protected function _prepareData($entity, array &$result, $isInsert = false)
     {
-        foreach ($this->_em->getUnitOfWork()->getDataChangeSet($entity) as $field => $change) {
+        foreach ($this->_em->getUnitOfWork()->getEntityChangeSet($entity) as $field => $change) {
             if (is_array($change)) {
                 list ($oldVal, $newVal) = each($change);
             } else {
@@ -244,16 +252,21 @@ abstract class Doctrine_ORM_Persisters_AbstractEntityPersister
             $columnName = $this->_classMetadata->getColumnName($field);
 
             if ($this->_classMetadata->hasAssociation($field)) {
-                $assocMapping = $this->_classMetadata->getAssociationMapping($field);
-                if ( ! $assocMapping->isOneToOne() || $assocMapping->isInverseSide()) {
-                    //echo "NOT TO-ONE OR INVERSE!";
-                    continue;
-                }
-                foreach ($assocMapping->getSourceToTargetKeyColumns() as $sourceColumn => $targetColumn) {
-                    //TODO: throw exc if field not set
-                    $otherClass = $this->_em->getClassMetadata($assocMapping->getTargetEntityName());
-                    $result[$sourceColumn] = $otherClass->getReflectionProperty(
-                            $otherClass->getFieldName($targetColumn))->getValue($newVal);
+                if ($newVal !== null) {
+                    $assocMapping = $this->_classMetadata->getAssociationMapping($field);
+                    if ( ! $assocMapping->isOneToOne() || $assocMapping->isInverseSide()) {
+                        //echo "NOT TO-ONE OR INVERSE!";
+                        continue;
+                    }
+                    //echo "HERE!!!";
+                    foreach ($assocMapping->getSourceToTargetKeyColumns() as $sourceColumn => $targetColumn) {
+                        //TODO: throw exc if field not set
+                        $otherClass = $this->_em->getClassMetadata($assocMapping->getTargetEntityName());
+                        $result[$sourceColumn] = $otherClass->getReflectionProperty(
+                                $otherClass->getFieldName($targetColumn))->getValue($newVal);
+                    }
+                } else if ( ! $isInsert) {
+                    echo "NO INSERT AND NEWVAL NULL ON 1-1 ASSOC, OWNING SIDE";
                 }
             } else if (is_null($newVal)) {
                 $result[$columnName] = null;

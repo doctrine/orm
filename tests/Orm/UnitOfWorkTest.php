@@ -119,15 +119,21 @@ class Orm_UnitOfWorkTest extends Doctrine_OrmTestCase
         $this->assertEquals(0, count($avatarPersister->getDeletes()));
     }
 
-    public function testComputeDataChangeSet()
+    public function testComputeEntityChangeSets()
     {
+        // We need an ID generator for ForumAvatar, because we attach a NEW ForumAvatar
+        // to a (faked) MANAGED instance. During changeset computation this will result
+        // in the UnitOfWork requesting the Id generator of ForumAvatar.
+        $avatarIdGeneratorMock = new Doctrine_IdentityIdGeneratorMock($this->_emMock);
+        $this->_emMock->setIdGenerator('ForumAvatar', $avatarIdGeneratorMock);
+
         $user1 = new ForumUser();
         $user1->id = 1;
         $user1->username = "romanb";
         $user1->avatar = new ForumAvatar();
         // Fake managed state
         $this->_unitOfWork->setEntityState($user1, Doctrine_ORM_UnitOfWork::STATE_MANAGED);
-
+        
         $user2 = new ForumUser();
         $user2->id = 2;
         $user2->username = "jwage";
@@ -143,10 +149,10 @@ class Orm_UnitOfWorkTest extends Doctrine_OrmTestCase
         ));
 
         // Go
-        $this->_unitOfWork->computeDataChangeSet(array($user1, $user2));
+        $this->_unitOfWork->computeEntityChangeSets(array($user1, $user2));
 
         // Verify
-        $user1ChangeSet = $this->_unitOfWork->getDataChangeSet($user1);
+        $user1ChangeSet = $this->_unitOfWork->getEntityChangeSet($user1);
         $this->assertTrue(is_array($user1ChangeSet));
         $this->assertEquals(2, count($user1ChangeSet));
         $this->assertTrue(isset($user1ChangeSet['username']));
@@ -154,7 +160,7 @@ class Orm_UnitOfWorkTest extends Doctrine_OrmTestCase
         $this->assertTrue(isset($user1ChangeSet['avatar']));
         $this->assertSame(array(null => $user1->avatar), $user1ChangeSet['avatar']);
 
-        $user2ChangeSet = $this->_unitOfWork->getDataChangeSet($user2);
+        $user2ChangeSet = $this->_unitOfWork->getEntityChangeSet($user2);
         $this->assertTrue(is_array($user2ChangeSet));
         $this->assertEquals(1, count($user2ChangeSet));
         $this->assertTrue(isset($user2ChangeSet['username']));

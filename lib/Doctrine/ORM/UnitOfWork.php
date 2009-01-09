@@ -60,7 +60,7 @@ class Doctrine_ORM_UnitOfWork
      * @todo Not sure this is a good idea. It is a problematic solution because
      * it hides the original state while the locked state is active.
      */
-    const STATE_LOCKED = 6;
+    //const STATE_LOCKED = 6;
 
     /**
      * A detached Entity is an instance with a persistent identity that is not
@@ -109,7 +109,7 @@ class Doctrine_ORM_UnitOfWork
      *
      * @var array
      */
-    protected $_dataChangeSets = array();
+    protected $_entityChangeSets = array();
 
     /**
      * The states of entities in this UnitOfWork.
@@ -167,7 +167,7 @@ class Doctrine_ORM_UnitOfWork
     protected $_collectionUpdates = array();
 
     /**
-     * The EntityManager the UnitOfWork belongs to.
+     * The EntityManager that "owns" this UnitOfWork instance.
      *
      * @var Doctrine\ORM\EntityManager
      */
@@ -182,8 +182,7 @@ class Doctrine_ORM_UnitOfWork
     protected $_commitOrderCalculator;
 
     /**
-     * Constructor.
-     * Creates a new UnitOfWork.
+     * Initializes a new UnitOfWork instance, bound to the given EntityManager.
      *
      * @param Doctrine\ORM\EntityManager $em
      */
@@ -203,7 +202,7 @@ class Doctrine_ORM_UnitOfWork
     public function commit()
     {
         // Compute changes in managed entities
-        $this->computeDataChangeSet();
+        $this->computeEntityChangeSets();
 
         if (empty($this->_newEntities) &&
                 empty($this->_deletedEntities) &&
@@ -238,42 +237,38 @@ class Doctrine_ORM_UnitOfWork
         $this->_newEntities = array();
         $this->_dirtyEntities = array();
         $this->_deletedEntities = array();
-        $this->_dataChangeSets = array();
+        $this->_entityChangeSets = array();
     }
 
     /**
-     * Gets the data changeset for an entity.
+     * Gets the changeset for an entity.
      *
      * @return array
      */
-    public function getDataChangeSet($entity)
+    public function getEntityChangeSet($entity)
     {
         $oid = spl_object_hash($entity);
-        if (isset($this->_dataChangeSets[$oid])) {
-            return $this->_dataChangeSets[$oid];
+        if (isset($this->_entityChangeSets[$oid])) {
+            return $this->_entityChangeSets[$oid];
         }
         return array();
     }
 
     /**
-     * Computes all the changes that have been done to entities in the identity map
-     * since the last commit and stores these changes in _dataChangeSet temporarily
-     * for access by the persisters, until the UoW commit is finished.
+     * Computes all the changes that have been done to entities
+     * since the last commit and stores these changes in the _entityChangeSet map
+     * temporarily for access by the persisters, until the UoW commit is finished.
      *
      * @param array $entities The entities for which to compute the changesets. If this
      *          parameter is not specified, the changesets of all entities in the identity
      *          map are computed.
      */
-    public function computeDataChangeSet(array $entities = null)
+    public function computeEntityChangeSets(array $entities = null)
     {
         $entitySet = array();
         if ( ! is_null($entities)) {
             foreach ($entities as $entity) {
-                $className = get_class($entity);
-                if ( ! isset($entitySet[$className])) {
-                    $entitySet[$className] = array();
-                }
-                $entitySet[$className][] = $entity;
+                $entitySet[get_class($entity)][] = $entity;
             }
         } else {
             $entitySet = $this->_identityMap;
@@ -294,29 +289,100 @@ class Doctrine_ORM_UnitOfWork
                         $actualData[$name] = $refProp->getValue($entity);
                     }
 
-                    if ($state == self::STATE_NEW) {
-                        $this->_dataChangeSets[$oid] = $actualData;
+                    if ( ! isset($this->_originalEntityData[$oid])) {
+                        // Entity is either NEW or MANAGED but not yet fully persisted
+                        // (only has an id). These result in an INSERT.
+                        $this->_entityChangeSets[$oid] = $actualData;
                         $this->_originalEntityData[$oid] = $actualData;
                     } else {
+                        // Entity is "fully" MANAGED: it was already fully persisted before
+                        // and we have a copy of the original data
                         $originalData = $this->_originalEntityData[$oid];
                         $changeSet = array();
+                        $entityIsDirty = false;
                         foreach ($actualData as $propName => $actualValue) {
-                            $orgValue = isset($originalData[$propName]) ? $originalData[$propName] : null;
+                            $orgValue = isset($originalData[$propName]) ? $originalData[$propName] : null;                            
                             if (is_object($orgValue) && $orgValue !== $actualValue) {
                                 $changeSet[$propName] = array($orgValue => $actualValue);
                             } else if ($orgValue != $actualValue || (is_null($orgValue) xor is_null($actualValue))) {
                                 $changeSet[$propName] = array($orgValue => $actualValue);
                             }
+
+                            if (isset($changeSet[$propName])) {
+                                if ($class->hasAssociation($propName)) {
+                                    $assoc = $class->getAssociationMapping($propName);
+                                    if ($assoc->isOneToOne() && $assoc->isOwningSide()) {
+                                        $entityIsDirty = true;
+                                    }
+                                    $this->_handleAssociationValueChanged($assoc, $actualValue);
+                                } else {
+                                    $entityIsDirty = true;
+                                }
+                            }                            
                         }
                         if ($changeSet) {
-                            $this->_dirtyEntities[$oid] = $entity;
-                            $this->_dataChangeSets[$oid] = $changeSet;
+                            if ($entityIsDirty) {
+                                $this->_dirtyEntities[$oid] = $entity;
+                            }
+                            $this->_entityChangeSets[$oid] = $changeSet;
                             $this->_originalEntityData[$oid] = $actualData;
                         }
                     }
                 }
             }
         }
+    }
+
+    /**
+     * Handles the case during changeset computation where an association value
+     * has changed. For a to-one association this means a new associated instance
+     * has been set. For a to-many association this means a new associated collection/array
+     * of entities has been set.
+     *
+     * @param <type> $assoc
+     * @param <type> $value
+     */
+    private function _handleAssociationValueChanged($assoc, $value)
+    {
+        if ($assoc->isOneToOne()) {
+            $value = array($value);
+        }
+
+        $targetClass = $this->_em->getClassMetadata($assoc->getTargetEntityName());
+        foreach ($value as $entry) {
+            $state = $this->getEntityState($entry);
+            $oid = spl_object_hash($entry);
+            if ($state == self::STATE_NEW) {
+                // Get identifier, if possible (not post-insert)
+                $idGen = $this->_em->getIdGenerator($targetClass->getClassName());
+                if ( ! $idGen->isPostInsertGenerator()) {
+                    $idValue = $idGen->generate($entry);
+                    $this->_entityStates[$oid] = self::STATE_MANAGED;
+                    if ( ! $idGen instanceof Doctrine_ORM_Id_Assigned) {
+                        $this->_entityIdentifiers[$oid] = array($idValue);
+                        $targetClass->getSingleIdReflectionProperty()->setValue($entry, $idValue);
+                    } else {
+                        $this->_entityIdentifiers[$oid] = $idValue;
+                    }
+                    $this->addToIdentityMap($entry);
+                }
+
+                // NEW entities are INSERTed within the current unit of work.
+                $data = array();
+                foreach ($targetClass->getReflectionProperties() as $name => $refProp) {
+                    $data[$name] = $refProp->getValue($entry);
+                }
+                $oid = spl_object_hash($entry);
+                $this->_newEntities[$oid] = $entry;
+                $this->_entityChangeSets[$oid] = $data;
+                $this->_originalEntityData[$oid] = $data;
+            } else if ($state == self::STATE_DELETED) {
+                throw new Doctrine_Exception("Deleted entity in collection detected during flush.");
+            }
+            // MANAGED associated entities are already taken into account
+            // during changeset calculation anyway, since they are in the identity map.
+        }
+
     }
 
     /**
@@ -355,11 +421,10 @@ class Doctrine_ORM_UnitOfWork
      */
     private function _executeUpdates($class)
     {
-        try { throw new Exception(); } catch (Exception $e) { echo $e->getTraceAsString(); }
         $className = $class->getClassName();
         $persister = $this->_em->getEntityPersister($className);
         foreach ($this->_dirtyEntities as $entity) {
-            if ($entity->getClass()->getClassName() == $className) {
+            if (get_class($entity) == $className) {
                 $persister->update($entity);
             }
         }
@@ -375,7 +440,7 @@ class Doctrine_ORM_UnitOfWork
         $className = $class->getClassName();
         $persister = $this->_em->getEntityPersister($className);
         foreach ($this->_deletedEntities as $entity) {
-            if ($entity->getClass()->getClassName() == $className) {
+            if (get_class($entity) == $className) {
                 $persister->delete($entity);
             }
         }
@@ -454,13 +519,13 @@ class Doctrine_ORM_UnitOfWork
         $oid = spl_object_hash($entity);
 
         if (isset($this->_dirtyEntities[$oid])) {
-            throw new Doctrine_Connection_Exception("Dirty object can't be registered as new.");
+            throw new Doctrine_Exception("Dirty object can't be registered as new.");
         }
         if (isset($this->_deletedEntities[$oid])) {
-            throw new Doctrine_Connection_Exception("Removed object can't be registered as new.");
+            throw new Doctrine_Exception("Removed object can't be registered as new.");
         }
         if (isset($this->_newEntities[$oid])) {
-            throw new Doctrine_Connection_Exception("Object already registered as new. Can't register twice.");
+            throw new Doctrine_Exception("Object already registered as new. Can't register twice.");
         }
 
         $this->_newEntities[$oid] = $entity;
@@ -783,14 +848,14 @@ class Doctrine_ORM_UnitOfWork
         if ( ! empty($insertNow)) {
             // We have no choice. This means that there are new entities
             // with an IDENTITY column key generation strategy.
-            $this->computeDataChangeSet($insertNow);
+            $this->computeEntityChangeSets($insertNow);
             $commitOrder = $this->_getCommitOrder($insertNow);
             foreach ($commitOrder as $class) {
                 $this->_executeInserts($class);
             }
-            // remove them from _newEntities and _dataChangeSets
+            // remove them from _newEntities and _entityChangeSets
             $this->_newEntities = array_diff_key($this->_newEntities, $insertNow);
-            $this->_dataChangeSets = array_diff_key($this->_dataChangeSets, $insertNow);
+            $this->_entityChangeSets = array_diff_key($this->_entityChangeSets, $insertNow);
         }
     }
 
@@ -799,7 +864,7 @@ class Doctrine_ORM_UnitOfWork
      * This method is internally called during save() cascades as it tracks
      * the already visited entities to prevent infinite recursions.
      *
-     * @param Doctrine\ORM\Entity $entity The entity to save.
+     * @param object $entity The entity to save.
      * @param array $visited The already visited entities.
      */
     private function _doSave($entity, array &$visited, array &$insertNow)
@@ -822,10 +887,12 @@ class Doctrine_ORM_UnitOfWork
                     $insertNow[$oid] = $entity;
                 } else {
                     $idValue = $idGen->generate($entity);
-                    $this->_entityIdentifiers[$oid] = array($idValue);
                     $this->_entityStates[$oid] = self::STATE_MANAGED;
                     if ( ! $idGen instanceof Doctrine_ORM_Id_Assigned) {
+                        $this->_entityIdentifiers[$oid] = array($idValue);
                         $class->getSingleIdReflectionProperty()->setValue($entity, $idValue);
+                    } else {
+                        $this->_entityIdentifiers[$oid] = $idValue;
                     }
                 }
                 $this->registerNew($entity);
@@ -835,7 +902,7 @@ class Doctrine_ORM_UnitOfWork
                 throw new Doctrine_Exception("Behavior of save() for a detached entity "
                         . "is not yet defined.");
             case self::STATE_DELETED:
-                // $entity becomes managed again
+                // entity becomes managed again
                 if ($this->isRegisteredRemoved($entity)) {
                     //TODO: better a method for this?
                     unset($this->_deletedEntities[$oid]);
@@ -855,11 +922,12 @@ class Doctrine_ORM_UnitOfWork
     /**
      * Deletes an entity as part of the current unit of work.
      *
-     * @param Doctrine_ORM_Entity $entity
+     * @param object $entity
      */
     public function delete($entity)
     {
-        $this->_doDelete($entity, array());
+        $visited = array();
+        $this->_doDelete($entity, $visited);
     }
 
     /**
@@ -911,8 +979,8 @@ class Doctrine_ORM_UnitOfWork
             }
             $relatedEntities = $class->getReflectionProperty($assocMapping->getSourceFieldName())
                     ->getValue($entity);
-            if ($relatedEntities instanceof Doctrine_ORM_Collection &&
-                    count($relatedEntities) > 0) {
+            if (($relatedEntities instanceof Doctrine_ORM_Collection || is_array($relatedEntities))
+                    && count($relatedEntities) > 0) {
                 foreach ($relatedEntities as $relatedEntity) {
                     $this->_doSave($relatedEntity, $visited, $insertNow);
                 }
@@ -1151,6 +1219,9 @@ class Doctrine_ORM_UnitOfWork
 
     /**
      * Gets the identifier of an entity.
+     * The returned value is always an array of identifier values. If the entity
+     * has a composite primary key then the identifier values are in the same
+     * order as the identifier field names as returned by ClassMetadata#getIdentifierFieldNames().
      *
      * @param object $entity
      * @return array The identifier values.

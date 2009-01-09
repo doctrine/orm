@@ -8,14 +8,14 @@ require_once 'lib/DoctrineTestInit.php';
  * @author robo
  */
 class Orm_Functional_BasicCRUDTest extends Doctrine_OrmFunctionalTestCase {
-    public function testFoo() {
+    public function testSingleEntityCRUD() {
         $em = $this->_getEntityManager();
 
         $exporter = new Doctrine_ORM_Export_ClassExporter($em);
         $exporter->exportClasses(array(
-                $em->getClassMetadata('CmsUser'),
-                $em->getClassMetadata('CmsPhonenumber')
-            ));
+            $em->getClassMetadata('CmsUser'),
+            $em->getClassMetadata('CmsPhonenumber')
+        ));
 
         // Create
         $user = new CmsUser;
@@ -24,25 +24,33 @@ class Orm_Functional_BasicCRUDTest extends Doctrine_OrmFunctionalTestCase {
         $this->assertTrue(is_numeric($user->id));
         $this->assertTrue($em->contains($user));
 
-        $user2 = new CmsUser;
-        $user2->name = 'jwage';
-        $em->save($user2);
-        $this->assertTrue(is_numeric($user2->id));
-        $this->assertTrue($em->contains($user2));
-
         // Read
-        $user3 = $em->find('CmsUser', $user->id);
-        $this->assertTrue($user === $user3);
+        $user2 = $em->find('CmsUser', $user->id);
+        $this->assertTrue($user === $user2);
 
-        $user4 = $em->find('CmsUser', $user2->id);
-        $this->assertTrue($user2 === $user4);
-
+        // Add a phonenumber
         $ph = new CmsPhonenumber;
         $ph->phonenumber = "12345";
+        $user->addPhonenumber($ph);
+        $em->flush();
+        $this->assertTrue($em->contains($ph));
+        $this->assertTrue($em->contains($user));
 
-        $user->phonenumbers[] = $ph;
+        // Update
+        $user->name = 'guilherme';
+        $em->flush();
+        $this->assertEquals('guilherme', $user->name);
 
-        //var_dump($em->getUnitOfWork())
+        // Delete
+        $em->delete($user);
+        $this->assertTrue($em->getUnitOfWork()->isRegisteredRemoved($user));
+        $em->flush();
+        $this->assertFalse($em->getUnitOfWork()->isRegisteredRemoved($user));
+
+    }
+
+    public function testMore() {
+        
     }
 }
 

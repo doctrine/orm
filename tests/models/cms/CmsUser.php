@@ -33,4 +33,14 @@ class CmsUser
      * @DoctrineOneToMany(targetEntity="CmsArticle", mappedBy="user")
      */
     public $articles;
+
+    /**
+     * Adds a phonenumber to the user.
+     *
+     * @param <type> $phone
+     */
+    public function addPhonenumber(CmsPhonenumber $phone) {
+        $this->phonenumbers[] = $phone;
+        $phone->user = $this;
+    }
 }

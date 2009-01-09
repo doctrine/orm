@@ -14,10 +14,10 @@ class Doctrine_UnitOfWorkMock extends Doctrine_ORM_UnitOfWork {
      * @param <type> $entity
      * @override
      */
-    public function getDataChangeSet($entity) {
+    public function getEntityChangeSet($entity) {
         $oid = spl_object_hash($entity);
         return isset($this->_mockDataChangeSets[$oid]) ?
-                $this->_mockDataChangeSets[$oid] : parent::getDataChangeSet($entity);
+                $this->_mockDataChangeSets[$oid] : parent::getEntityChangeSet($entity);
     }
 
     /* MOCK API */

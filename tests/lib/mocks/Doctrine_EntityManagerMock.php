@@ -81,6 +81,7 @@ class Doctrine_EntityManagerMock extends Doctrine_ORM_EntityManager
         $this->_idGenerators[$className] = $generator;
     }
 
+    /** @override */
     public function getIdGenerator($className)
     {
         if (isset($this->_idGenerators[$className])) {

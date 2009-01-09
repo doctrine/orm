@@ -443,9 +443,9 @@ class Doctrine_ORM_EntityManager
     /**
      * Deletes the persistent state of the given entity.
      * 
-     * @param Doctrine\ORM\Entity $entity
+     * @param object $entity
      */
-    public function delete(Doctrine_ORM_Entity $entity)
+    public function delete($entity)
     {
         $this->_errorIfNotActiveOrClosed();
         $this->_unitOfWork->delete($entity);

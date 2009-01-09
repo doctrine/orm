@@ -26,7 +26,6 @@
  *
  * @author Roman Borschel <roman@code-factory.org>
  * @since 2.0
- * @todo Rename to AssociationMapping.
  */
 abstract class Doctrine_ORM_Mapping_AssociationMapping
 {
@@ -360,6 +359,11 @@ abstract class Doctrine_ORM_Mapping_AssociationMapping
     public function isManyToMany()
     {
         return false;
+    }
+
+    public function usesJoinTable()
+    {
+        return (bool)$this->_joinTable;
     }
 
     abstract public function lazyLoadFor($entity, $entityManager);

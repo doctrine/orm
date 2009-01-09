@@ -77,6 +77,7 @@ class Doctrine_ORM_Mapping_Driver_AnnotationDriver {
             } else if ($oneToManyAnnot = $property->getAnnotation('DoctrineOneToMany')) {
                 $mapping['mappedBy'] = $oneToManyAnnot->mappedBy;
                 $mapping['targetEntity'] = $oneToManyAnnot->targetEntity;
+                $mapping['cascade'] = $oneToManyAnnot->cascade;
                 $metadata->mapOneToMany($mapping);
             } else if ($manyToOneAnnot = $property->getAnnotation('DoctrineManyToOne')) {
                 $mapping['joinColumns'] = $manyToOneAnnot->joinColumns;

@@ -80,6 +80,23 @@ class Doctrine_ORM_Export_ClassExporter
                 $columns[$mapping['columnName']] = $column;
             }
 
+            foreach ($class->getAssociationMappings() as $mapping) {
+                if ($mapping->isOneToOne() && $mapping->isOwningSide()) {
+                    foreach ($mapping->getSourceToTargetKeyColumns() as $sourceColumn => $targetColumn) {
+                        $column = array();
+                        $column['name'] = $sourceColumn;
+                        $column['type'] = $this->_em->getClassMetadata($mapping->getTargetEntityName())
+                                ->getTypeOfColumn($targetColumn);
+                        $columns[$sourceColumn] = $column;
+                    }
+                } else if ($mapping->isOneToMany() && $mapping->usesJoinTable()) {
+                    //... create join table, one-many through join table supported later
+                    throw new Doctrine_Exception("Not yet implemented.");
+                } else if ($mapping->isManyToMany() && $mapping->isOwningSide()) {
+                    //... create join table
+                }
+            }
+
             $this->_sm->createTable($class->getTableName(), $columns, $options);
         }
     }
