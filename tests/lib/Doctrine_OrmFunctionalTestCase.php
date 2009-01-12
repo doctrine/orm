@@ -8,6 +8,8 @@
  */
 class Doctrine_OrmFunctionalTestCase extends Doctrine_OrmTestCase
 {
+    protected $_em;
+
     /**
      * The currently loaded model names of the fixtures for the testcase.
      */
@@ -103,12 +105,17 @@ class Doctrine_OrmFunctionalTestCase extends Doctrine_OrmTestCase
         foreach (array_reverse($this->_loadedFixtures) as $table) {
             $conn->exec("DELETE FROM " . $table);
         }
+        $this->_em->clear();
     }
 
     protected function setUp()
     {
         if ( ! isset($this->sharedFixture['conn'])) {
+            echo " --- CREATE CONNECTION ----";
             $this->sharedFixture['conn'] = Doctrine_TestUtil::getConnection();
+        }
+        if ( ! $this->_em) {
+            $this->_em = $this->_getEntityManager();
         }
     }
 

@@ -12,6 +12,7 @@ require_once 'Orm/Ticket/AllTests.php';
 require_once 'Orm/Entity/AllTests.php';
 require_once 'Orm/Associations/AllTests.php';
 require_once 'Orm/Mapping/AllTests.php';
+require_once 'Orm/Functional/AllTests.php';
 
 // Tests
 require_once 'Orm/UnitOfWorkTest.php';
@@ -41,6 +42,7 @@ class Orm_AllTests
         $suite->addTest(Orm_Ticket_AllTests::suite());
         $suite->addTest(Orm_Associations_AllTests::suite());
         $suite->addTest(Orm_Mapping_AllTests::suite());
+        $suite->addTest(Orm_Functional_AllTests::suite());
 
         return $suite;
     }

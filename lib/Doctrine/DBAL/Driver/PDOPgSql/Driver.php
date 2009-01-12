@@ -31,12 +31,12 @@ class Doctrine_DBAL_Driver_PDOPgSql_Driver implements Doctrine_DBAL_Driver
     
     public function getDatabasePlatform()
     {
-        return new Doctrine_DatabasePlatform_PostgreSqlPlatform();
+        return new Doctrine_DBAL_Platforms_PostgreSqlPlatform();
     }
     
-    public function getSchemaManager(Doctrine_Connection $conn)
+    public function getSchemaManager(Doctrine_DBAL_Connection $conn)
     {
-        return new Doctrine_Schema_PostgreSqlSchemaManager($conn);
+        return new Doctrine_DBAL_Schema_PostgreSqlSchemaManager($conn);
     }
     
 }

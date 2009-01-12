@@ -44,12 +44,12 @@ class Doctrine_DBAL_Driver_PDOMySql_Driver implements Doctrine_DBAL_Driver
     
     public function getDatabasePlatform()
     {
-        return new Doctrine_DatabasePlatform_MySqlPlatform();
+        return new Doctrine_DBAL_Platforms_MySqlPlatform();
     }
     
-    public function getSchemaManager(Doctrine_Connection $conn)
+    public function getSchemaManager(Doctrine_DBAL_Connection $conn)
     {
-        return new Doctrine_Schema_MySqlSchemaManager($conn);
+        return new Doctrine_DBAL_Schema_MySqlSchemaManager($conn);
     }
     
 }

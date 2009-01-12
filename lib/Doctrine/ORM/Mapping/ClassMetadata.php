@@ -343,11 +343,6 @@ class Doctrine_ORM_Mapping_ClassMetadata
         $this->_tableName = $this->_entityName;
         $this->_rootEntityName = $entityName;
         $this->_reflectionClass = new ReflectionClass($entityName);
-        $reflectionProps = $this->_reflectionClass->getProperties();
-        foreach ($reflectionProps as $prop) {
-            $prop->setAccessible(true);
-            $this->_reflectionProperties[$prop->getName()] = $prop;
-        }
     }
 
     /**
@@ -652,6 +647,11 @@ class Doctrine_ORM_Mapping_ClassMetadata
                 $this->_isIdentifierComposite = true;
             }
         }
+
+        // Store ReflectionProperty of mapped field
+        $refProp = $this->_reflectionClass->getProperty($mapping['fieldName']);
+        $refProp->setAccessible(true);
+        $this->_reflectionProperties[$mapping['fieldName']] = $refProp;
     }
 
     private function _validateAndCompleteClassMapping(array &$mapping)
@@ -1270,6 +1270,11 @@ class Doctrine_ORM_Mapping_ClassMetadata
         }
         $this->_associationMappings[$sourceFieldName] = $assocMapping;
         $this->_registerMappingIfInverse($assocMapping);
+
+        // Store ReflectionProperty of mapped field
+        $refProp = $this->_reflectionClass->getProperty($sourceFieldName);
+        $refProp->setAccessible(true);
+        $this->_reflectionProperties[$sourceFieldName] = $refProp;
     }
     
     /**

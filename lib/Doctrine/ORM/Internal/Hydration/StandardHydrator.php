@@ -105,19 +105,18 @@ class Doctrine_ORM_Internal_Hydration_StandardHydrator extends Doctrine_ORM_Inte
         $rootEntityName = $this->_queryComponents[$rootAlias]['metadata']->getClassName();
         // if only one class is involved we can make our lives easier
         $isSimpleQuery = count($this->_queryComponents) <= 1;
-        // Lookup map to quickly discover/lookup existing records in the result
+        // Lookup map to quickly discover/lookup existing entities in the result
         // It's the identifier "memory"
         $identifierMap = array();
         // Holds for each class a pointer to the last previously seen element in the result set
         $resultPointers = array();
-        // holds the values of the identifier/primary key fields of components,
-        // separated by a pipe '|' and grouped by component alias (r, u, i, ... whatever)
-        // the $idTemplate is a prepared template. $id is set to a fresh template when
+        // Holds the values of the identifier/primary key fields of entities,
+        // separated by a pipe '|' and grouped by DQL class alias (r, u, i, ... whatever)
+        // The $idTemplate is a prepared template. $id is set to a fresh template when
         // starting to process a row.
         $id = array();
         $idTemplate = array();
         
-        // Holds the resulting hydrated data structure
         if ($parserResult->isMixedQuery() || $hydrationMode == Doctrine_ORM_Query::HYDRATE_SCALAR) {
             $result = array();
         } else {

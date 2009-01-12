@@ -7,6 +7,7 @@ if (!defined('PHPUnit_MAIN_METHOD')) {
 require_once 'lib/DoctrineTestInit.php';
 
 // Suites
+require_once 'Common/AllTests.php';
 require_once 'Dbal/AllTests.php';
 require_once 'Orm/AllTests.php';
 
@@ -21,6 +22,7 @@ class AllTests
     {
         $suite = new Doctrine_TestSuite('Doctrine Tests');
 
+        $suite->addTest(Common_AllTests::suite());
         $suite->addTest(Dbal_AllTests::suite());
         $suite->addTest(Orm_AllTests::suite());
 

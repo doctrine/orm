@@ -10,7 +10,7 @@ class Orm_Mapping_ClassMetadataTest extends Doctrine_OrmTestCase
         $cm = new Doctrine_ORM_Mapping_ClassMetadata('CmsUser');
 
         // Test initial state
-        $this->assertTrue(count($cm->getReflectionProperties()) > 0);
+        $this->assertTrue(count($cm->getReflectionProperties()) == 0);
         $this->assertTrue($cm->getReflectionClass() instanceof ReflectionClass);
         $this->assertEquals('CmsUser', $cm->getClassName());
         $this->assertEquals('CmsUser', $cm->getRootClassName());
@@ -22,8 +22,8 @@ class Orm_Mapping_ClassMetadataTest extends Doctrine_OrmTestCase
         $cm->setParentClasses(array("UserParent"));
         $cm->setCustomRepositoryClass("UserRepository");
         $cm->setDiscriminatorColumn(array('name' => 'disc', 'type' => 'integer'));
-        $cm->mapOneToOne(array('fieldName' => 'foo', 'targetEntity' => 'Bar', 'mappedBy' => 'foo'));
-        $this->assertTrue($cm->getAssociationMapping('foo') instanceof Doctrine_ORM_Mapping_OneToOneMapping);
+        $cm->mapOneToOne(array('fieldName' => 'phonenumbers', 'targetEntity' => 'Bar', 'mappedBy' => 'foo'));
+        $this->assertTrue($cm->getAssociationMapping('phonenumbers') instanceof Doctrine_ORM_Mapping_OneToOneMapping);
         $this->assertEquals(1, count($cm->getAssociationMappings()));
 
         $serialized = serialize($cm);
@@ -38,10 +38,10 @@ class Orm_Mapping_ClassMetadataTest extends Doctrine_OrmTestCase
         $this->assertEquals(array('UserParent'), $cm->getParentClasses());
         $this->assertEquals('UserRepository', $cm->getCustomRepositoryClass());
         $this->assertEquals(array('name' => 'disc', 'type' => 'integer'), $cm->getDiscriminatorColumn());
-        $this->assertTrue($cm->getAssociationMapping('foo') instanceof Doctrine_ORM_Mapping_OneToOneMapping);
+        $this->assertTrue($cm->getAssociationMapping('phonenumbers') instanceof Doctrine_ORM_Mapping_OneToOneMapping);
         $this->assertEquals(1, count($cm->getAssociationMappings()));
-        $oneOneMapping = $cm->getAssociationMapping('foo');
-        $this->assertEquals('foo', $oneOneMapping->getSourceFieldName());
+        $oneOneMapping = $cm->getAssociationMapping('phonenumbers');
+        $this->assertEquals('phonenumbers', $oneOneMapping->getSourceFieldName());
         $this->assertEquals('Bar', $oneOneMapping->getTargetEntityName());
     }
     

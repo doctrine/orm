@@ -50,9 +50,6 @@ class Doctrine_ORM_Mapping_Driver_AnnotationDriver {
         }
 
         foreach ($annotClass->getProperties() as $property) {
-            if ($property->hasAnnotation('DoctrineTransient')) {
-                continue;
-            }
             $mapping = array();
             $mapping['fieldName'] = $property->getName();
             if ($columnAnnot = $property->getAnnotation('DoctrineColumn')) {
@@ -90,8 +87,6 @@ class Doctrine_ORM_Mapping_Driver_AnnotationDriver {
                 $mapping['joinTable'] = $manyToManyAnnot->joinTable;
                 $mapping['mappedBy'] = $manyToManyAnnot->mappedBy;
                 $metadata->mapManyToMany($mapping);
-            } else {
-                throw new Doctrine_ORM_Exceptions_MappingException($className);
             }
         }
     }
@@ -112,9 +107,16 @@ final class DoctrineDiscriminatorColumn extends Annotation {
 }
 final class DoctrineDiscriminatorMap extends Annotation {}
 final class DoctrineSubClasses extends Annotation {}
-final class DoctrineTransient extends Annotation {}
 final class DoctrineId extends Annotation {}
 final class DoctrineIdGenerator extends Annotation {}
+final class DoctrineVersion extends Annotation {}
+final class DoctrineJoinColumn extends Annotation {
+    public $name;
+    public $type;
+    public $length;
+    public $onDelete;
+    public $onUpdate;
+}
 final class DoctrineColumn extends Annotation {
     public $type;
     public $length;

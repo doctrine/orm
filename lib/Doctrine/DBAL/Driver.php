@@ -30,7 +30,7 @@ interface Doctrine_DBAL_Driver
      * Gets the SchemaManager that can be used to inspect and change the underlying
      * database schema of the platform this driver connects to.
      *
-     * @return Doctrine::DBAL::SchemaManager
+     * @return Doctrine\DBAL\SchemaManager
      */
     public function getSchemaManager(Doctrine_DBAL_Connection $conn);
 }

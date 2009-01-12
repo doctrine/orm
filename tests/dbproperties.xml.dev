@@ -18,5 +18,6 @@
     <var name="db_username" value="foo" />
     <var name="db_password" value="bar" />
     <var name="db_name" value="doctrinetests" />
+    <var name="db_port" value="3306"/>
   </php>
 </phpunit>

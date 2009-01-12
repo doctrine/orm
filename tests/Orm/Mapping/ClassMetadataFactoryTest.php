@@ -134,7 +134,10 @@ class ClassMetadataFactoryTestSubject extends Doctrine_ORM_Mapping_ClassMetadata
 
 /* Test classes */
 
-class CMFTest_Entity1 {}
+class CMFTest_Entity1 {
+    protected $name;
+    protected $other;
+}
 class CMFTest_Entity2 extends CMFTest_Entity1 {}
 class CMFTest_Entity3 extends CMFTest_Entity2 {}
 

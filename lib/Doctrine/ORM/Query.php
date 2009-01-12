@@ -226,12 +226,12 @@ class Doctrine_ORM_Query extends Doctrine_ORM_Query_Abstract
     }
 
     /**
-     * Executes the query and populates the data set.
+     * Executes the query.
      *
      * @param string $params Parameters to be sent to query.
      * @param integer $hydrationMode Doctrine processing mode to be used during hydration process.
      *                               One of the Doctrine::HYDRATE_* constants.
-     * @return Doctrine_Collection The root collection
+     * @return mixed
      */
     public function execute($params = array(), $hydrationMode = null)
     {
@@ -331,7 +331,7 @@ class Doctrine_ORM_Query extends Doctrine_ORM_Query_Abstract
         // Double the params if we are using limit-subquery algorithm
         // We always have an instance of Doctrine_ORM_Query_ParserResult on hands...
         if ($this->_parserResult->isLimitSubqueryUsed() &&
-            $this->_entityManager->getConnection()->getAttribute(Doctrine::ATTR_DRIVER_NAME) !== 'mysql') {
+                $this->_entityManager->getConnection()->getAttribute(Doctrine::ATTR_DRIVER_NAME) !== 'mysql') {
             $params = array_merge($params, $params);
         }
 

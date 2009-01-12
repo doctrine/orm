@@ -2,7 +2,7 @@
 
 /**
  * This class is just an intermediate implementation for refactoring purposes
- * and will be replaced by the ParserResult class of the new DQL parser branch.
+ * and will be replaced by the ParserResult class of the new DQL parser.
  *
  */
 class Doctrine_ORM_Query_ParserResultDummy

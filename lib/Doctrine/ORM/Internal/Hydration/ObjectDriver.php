@@ -65,7 +65,7 @@ class Doctrine_ORM_Internal_Hydration_ObjectDriver
         // check needed because of mixed results.
         // is_object instead of is_array because is_array is slow on large arrays.
         if (is_object($coll)) {
-            $coll->end();
+            $coll->last();
             return $coll->key();
         } else {
             end($coll);
@@ -121,7 +121,7 @@ class Doctrine_ORM_Internal_Hydration_ObjectDriver
         $classMetadata1 = $this->_metadataMap[spl_object_hash($entity1)];
         $classMetadata2 = $this->_metadataMap[spl_object_hash($entity2)];
         $indexValue = $classMetadata2->getReflectionProperty($indexField)->getValue($entity2);
-        $classMetadata1->getReflectionProperty($property)->getValue($entity1)->add($entity2, $indexValue);
+        $classMetadata1->getReflectionProperty($property)->getValue($entity1)->set($indexValue, $entity2);
     }
 
     /**
@@ -196,7 +196,7 @@ class Doctrine_ORM_Internal_Hydration_ObjectDriver
     
     public function addElementToIndexedCollection($coll, $entity, $keyField)
     {
-        $coll->add($entity, $this->getFieldValue($entity, $keyField));
+        $coll->set($entity, $this->getFieldValue($keyField, $entity));
     }
     
     public function addElementToCollection($coll, $entity)
@@ -216,7 +216,7 @@ class Doctrine_ORM_Internal_Hydration_ObjectDriver
      */
     public function updateResultPointer(&$resultPointers, &$coll, $index, $dqlAlias, $oneToOne)
     {
-        if ($coll === /*$this->_nullObject*/null) {
+        if ($coll === null) {
             echo "HERE!";
             unset($resultPointers[$dqlAlias]); // Ticket #1228
             return;
@@ -232,7 +232,7 @@ class Doctrine_ORM_Internal_Hydration_ObjectDriver
             $resultPointers[$dqlAlias] =& $coll[key($coll)];
         } else if ($coll instanceof Doctrine_ORM_Collection) {
             if (count($coll) > 0) {
-                $resultPointers[$dqlAlias] = $coll->getLast();
+                $resultPointers[$dqlAlias] = $coll->last();
             }
         } else {
             $resultPointers[$dqlAlias] = $coll;

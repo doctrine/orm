@@ -172,7 +172,6 @@ abstract class Doctrine_DBAL_Schema_AbstractSchemaManager
     }
 
     /**
-     * dropTable
      * drop an existing table
      *
      * @param string $table           name of table that should be dropped from the database

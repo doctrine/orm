@@ -724,7 +724,7 @@ class Doctrine_DBAL_Platforms_MySqlPlatform extends Doctrine_DBAL_Platforms_Abst
         // attach all primary keys
         if (isset($options['primary']) && ! empty($options['primary'])) {
             $keyColumns = array_values($options['primary']);
-            $keyColumns = array_map(array($this->_conn, 'quoteIdentifier'), $keyColumns);
+            $keyColumns = array_map(array($this, 'quoteIdentifier'), $keyColumns);
             $queryFields .= ', PRIMARY KEY(' . implode(', ', $keyColumns) . ')';
         }
 
@@ -751,9 +751,9 @@ class Doctrine_DBAL_Platforms_MySqlPlatform extends Doctrine_DBAL_Platforms_Abst
         // get the type of the table
         if (isset($options['type'])) {
             $type = $options['type'];
-        } else {
+        }/* else {
             $type = $this->getAttribute(Doctrine::ATTR_DEFAULT_TABLE_TYPE);
-        }
+        }*/
 
         if ($type) {
             $optionStrings[] = 'ENGINE = ' . $type;
@@ -1057,13 +1057,13 @@ class Doctrine_DBAL_Platforms_MySqlPlatform extends Doctrine_DBAL_Platforms_Abst
     }
 
     /** @override */
-    public function getSmallIntDeclarationSql(array $field)
+    public function getSmallIntTypeDeclarationSql(array $field)
     {
         return 'SMALLINT ' . $this->_getCommonIntegerTypeDeclarationSql($field);
     }
 
     /** @override */
-    public function getMediumIntDeclarationSql(array $field)
+    public function getMediumIntTypeDeclarationSql(array $field)
     {
         return 'MEDIUMINT ' . $this->_getCommonIntegerTypeDeclarationSql($field);
     }
@@ -1072,23 +1072,23 @@ class Doctrine_DBAL_Platforms_MySqlPlatform extends Doctrine_DBAL_Platforms_Abst
     protected function _getCommonIntegerTypeDeclarationSql(array $columnDef)
     {
         $default = $autoinc = '';
-        if ( ! empty($field['autoincrement'])) {
+        if ( ! empty($columnDef['autoincrement'])) {
             $autoinc = ' AUTO_INCREMENT';
-        } elseif (array_key_exists('default', $field)) {
-            if ($field['default'] === '') {
-                $field['default'] = empty($field['notnull']) ? null : 0;
+        } elseif (array_key_exists('default', $columnDef)) {
+            if ($columnDef['default'] === '') {
+                $columnDef['default'] = empty($columnDef['notnull']) ? null : 0;
             }
-            if (is_null($field['default'])) {
+            if (is_null($columnDef['default'])) {
                 $default = ' DEFAULT NULL';
             } else {
-                $default = ' DEFAULT '.$this->quote($field['default']);
+                $default = ' DEFAULT '.$this->quote($columnDef['default']);
             }
-        } elseif (empty($field['notnull'])) {
+        } elseif (empty($columnDef['notnull'])) {
             $default = ' DEFAULT NULL';
         }
 
-        $notnull  = (isset($field['notnull'])  && $field['notnull'])  ? ' NOT NULL' : '';
-        $unsigned = (isset($field['unsigned']) && $field['unsigned']) ? ' UNSIGNED' : '';
+        $notnull  = (isset($columnDef['notnull'])  && $columnDef['notnull'])  ? ' NOT NULL' : '';
+        $unsigned = (isset($columnDef['unsigned']) && $columnDef['unsigned']) ? ' UNSIGNED' : '';
 
         return $unsigned . $default . $notnull . $autoinc;
     }

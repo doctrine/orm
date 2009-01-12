@@ -452,23 +452,21 @@ class Doctrine_ORM_UnitOfWork
      * @return array
      */
     private function _getCommitOrder(array $entityChangeSet = null)
-    {
-        //TODO: Once these 3 arrays are indexed by classname we can do this:
-        // Either way... do we need to care about duplicates?
-        /*$classesInChangeSet = array_merge(
-            array_keys($this->_newEntities),
-            array_keys($this->_dirtyEntities),
-            array_keys($this->_deletedEntities)
-        );*/
-        
+    {        
         if (is_null($entityChangeSet)) {
-            $entityChangeSet = array_merge($this->_newEntities, $this->_dirtyEntities, $this->_deletedEntities);
+            $entityChangeSet = array_merge(
+                    $this->_newEntities,
+                    $this->_dirtyEntities,
+                    $this->_deletedEntities);
         }
         
         /* if (count($entityChangeSet) == 1) {
          *     return array($entityChangeSet[0]->getClass());
          * }
          */
+
+        // TODO: We can cache computed commit orders in the metadata cache!
+        // Check cache at this point here!
         
         // See if there are any new classes in the changeset, that are not in the
         // commit order graph yet (dont have a node).
@@ -1241,6 +1239,17 @@ class Doctrine_ORM_UnitOfWork
             return $this->_identityMap[$rootClassName][$idHash];
         }
         return false;
+    }
+
+    /**
+     * Calculates the size of the UnitOfWork. The size of the UnitOfWork is the
+     * number of entities in the identity map.
+     */
+    public function size()
+    {
+        $count = 0;
+        foreach ($this->_identityMap as $entitySet) $count += count($entitySet);
+        return $count;
     }
 }
 

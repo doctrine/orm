@@ -8,13 +8,14 @@ require_once 'lib/DoctrineTestInit.php';
  * @author robo
  */
 class Orm_Functional_BasicCRUDTest extends Doctrine_OrmFunctionalTestCase {
-    public function testSingleEntityCRUD() {
-        $em = $this->_getEntityManager();
 
-        $exporter = new Doctrine_ORM_Export_ClassExporter($em);
+    public function testSingleEntityCRUD() {
+        $em = $this->_em;
+
+        $exporter = new Doctrine_ORM_Export_ClassExporter($this->_em);
         $exporter->exportClasses(array(
-            $em->getClassMetadata('CmsUser'),
-            $em->getClassMetadata('CmsPhonenumber')
+            $this->_em->getClassMetadata('CmsUser'),
+            $this->_em->getClassMetadata('CmsPhonenumber')
         ));
 
         // Create
@@ -46,11 +47,20 @@ class Orm_Functional_BasicCRUDTest extends Doctrine_OrmFunctionalTestCase {
         $this->assertTrue($em->getUnitOfWork()->isRegisteredRemoved($user));
         $em->flush();
         $this->assertFalse($em->getUnitOfWork()->isRegisteredRemoved($user));
-
     }
 
     public function testMore() {
-        
+        echo PHP_EOL . "SECOND" . PHP_EOL;
+        /*$user = new CmsUser;
+        $user->name = 'jon';
+        $user->*/
+
+        $ph = new CmsPhonenumber;
+        $ph->phonenumber = 123456;
+
+        $this->_em->save($ph);
+
+        $this->_em->flush();
     }
 }
 

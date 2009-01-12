@@ -101,7 +101,6 @@ abstract class Doctrine_ORM_Persisters_AbstractEntityPersister
      * Updates an entity.
      *
      * @param object $entity The entity to update.
-     * @return void
      */
     public function update($entity)
     {
@@ -110,30 +109,12 @@ abstract class Doctrine_ORM_Persisters_AbstractEntityPersister
         $id = array_combine($this->_classMetadata->getIdentifierFieldNames(),
                 $this->_em->getUnitOfWork()->getEntityIdentifier($entity));
         $this->_conn->update($this->_classMetadata->getTableName(), $updateData, $id);
-
-        /*$dataChangeSet = $entity->_getDataChangeSet();
-        $referenceChangeSet = $entity->_getReferenceChangeSet();
-        
-        foreach ($referenceChangeSet as $field => $change) {
-            $assocMapping = $entity->getClass()->getAssociationMapping($field);
-            if ($assocMapping instanceof Doctrine_Association_OneToOneMapping) {
-                if ($assocMapping->isInverseSide()) {
-                    continue; // ignore inverse side
-                }
-                // ... null out the foreign key
-                
-            }
-            //...
-        }
-        */
-        //TODO: perform update
     }
     
     /**
      * Deletes an entity.
      *
      * @param object $entity The entity to delete.
-     * @return void
      */
     public function delete($entity)
     {
@@ -141,40 +122,11 @@ abstract class Doctrine_ORM_Persisters_AbstractEntityPersister
                 $this->_em->getUnitOfWork()->getEntityIdentifier($entity));
         $this->_conn->delete($this->_classMetadata->getTableName(), $id);
     }
-    
+
     /**
-     * Inserts a row into a table.
      *
-     * @todo This method could be used to allow mapping to secondary table(s).
-     * @see http://www.oracle.com/technology/products/ias/toplink/jpa/resources/toplink-jpa-annotations.html#SecondaryTable
+     * @return <type>
      */
-    protected function _insertRow($tableName, array $data)
-    {
-        $this->_conn->insert($tableName, $data);
-    }
-    
-    /**
-     * Deletes rows of a table.
-     *
-     * @todo This method could be used to allow mapping to secondary table(s).
-     * @see http://www.oracle.com/technology/products/ias/toplink/jpa/resources/toplink-jpa-annotations.html#SecondaryTable
-     */
-    protected function _deleteRow($tableName, array $identifierToMatch)
-    {
-        $this->_conn->delete($tableName, $identifierToMatch);
-    }
-    
-    /**
-     * Deletes rows of a table.
-     *
-     * @todo This method could be used to allow mapping to secondary table(s).
-     * @see http://www.oracle.com/technology/products/ias/toplink/jpa/resources/toplink-jpa-annotations.html#SecondaryTable
-     */
-    protected function _updateRow($tableName, array $data, array $identifierToMatch)
-    {
-        $this->_conn->update($tableName, $data, $identifierToMatch);
-    }
-    
     public function getClassMetadata()
     {
         return $this->_classMetadata;
@@ -258,7 +210,6 @@ abstract class Doctrine_ORM_Persisters_AbstractEntityPersister
                         //echo "NOT TO-ONE OR INVERSE!";
                         continue;
                     }
-                    //echo "HERE!!!";
                     foreach ($assocMapping->getSourceToTargetKeyColumns() as $sourceColumn => $targetColumn) {
                         //TODO: throw exc if field not set
                         $otherClass = $this->_em->getClassMetadata($assocMapping->getTargetEntityName());
@@ -283,7 +234,4 @@ abstract class Doctrine_ORM_Persisters_AbstractEntityPersister
             $result[$discColumn['name']] = array_search($this->_entityName, $discMap);
         }
     }
-    
-    abstract protected function _doUpdate(Doctrine_ORM_Entity $entity);
-    abstract protected function _doInsert(Doctrine_ORM_Entity $entity);
 }

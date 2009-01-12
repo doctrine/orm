@@ -57,13 +57,13 @@ abstract class Doctrine_ORM_Query_SqlExecutor_Abstract implements Serializable
      * @param Doctrine_Connection $conn  The database connection that is used to execute the queries.
      * @param array $params  The parameters.
      */
-    abstract public function execute(Doctrine_Connection $conn, array $params);
+    abstract public function execute(Doctrine_DBAL_Connection $conn, array $params);
 
     /**
      * Factory method.
      * Creates an appropriate sql executor for the given AST.
      *
-     * @param Doctrine_ORM_Query_Production $AST  The root node of the AST.
+     * @param Doctrine_ORM_Query_AST $AST  The root node of the AST.
      * @return Doctrine_ORM_Query_SqlExecutor_Abstract  The executor that is suitable for the given AST.
      */
     public static function create(Doctrine_ORM_Query_AST $AST)

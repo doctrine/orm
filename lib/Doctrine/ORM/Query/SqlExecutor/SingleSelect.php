@@ -25,7 +25,7 @@
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @author      Roman Borschel <roman@code-factory.org>
  * @version     $Revision$
- * @link        www.phpdoctrine.org
+ * @link        www.doctrine-project.org
  * @since       2.0
  */
 class Doctrine_ORM_Query_SqlExecutor_SingleSelect extends Doctrine_ORM_Query_SqlExecutor_Abstract
@@ -36,7 +36,7 @@ class Doctrine_ORM_Query_SqlExecutor_SingleSelect extends Doctrine_ORM_Query_Sql
         $this->_sqlStatements = $AST->buildSql();
     }
     
-    public function execute(Doctrine_Connection $conn, array $params)
+    public function execute(Doctrine_DBAL_Connection $conn, array $params)
     {
         return $conn->execute($this->_sqlStatements, $params);
     }

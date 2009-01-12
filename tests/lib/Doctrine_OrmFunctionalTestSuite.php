@@ -13,8 +13,13 @@ class Doctrine_OrmFunctionalTestSuite extends Doctrine_OrmTestSuite
 {
     protected function setUp()
     {
+        if ( ! isset($this->sharedFixture['conn'])) {
+            $this->sharedFixture['conn'] = Doctrine_TestUtil::getConnection();
+        }
     }
     
     protected function tearDown()
-    {} 
+    {
+        $this->sharedFixture = null;
+    }
 }
