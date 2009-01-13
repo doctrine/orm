@@ -45,44 +45,71 @@ DeleteStatement ::= DeleteClause [WhereClause]
  * IDENTIFIERS
  */
  
-/* Alias Identification usage */
+/* Alias Identification usage (the "u" of "u.name") */
 IdentificationVariable ::= identifier
 
-/* Alias Identification declaration */
+/* Alias Identification declaration (the "u" of "FROM User u") */
 AliasIdentificationVariable :: = identifier
 
-/* identifier that must be a class name */
+/* identifier that must be a class name (the "User" of "FROM User u") */
 AbstractSchemaName ::= identifier
 
-/* identifier that must be a field */
+/* identifier that must be a field (the "name" of "u.name") */
+/* This is responsable to know if the field exists in Object, no matter if it's a relation or a simple field */
 FieldIdentificationVariable ::= identifier
 
-/* identifier that must be a collection-valued association field (to-many) */
+/* identifier that must be a collection-valued association field (to-many) (the "Phonenumbers" of "u.Phonenumbers") */
 CollectionValuedAssociationField ::= FieldIdentificationVariable
 
-/* identifier that must be a single-valued association field (to-one) */
+/* identifier that must be a single-valued association field (to-one) (the "Group" of "u.Group") */
 SingleValuedAssociationField ::= FieldIdentificationVariable
 
 /* identifier that must be an embedded class state field (for the future) */
 EmbeddedClassStateField ::= FieldIdentificationVariable
 
-/* identifier that must be a simple state field (name, email, ...) */
+/* identifier that must be a simple state field (name, email, ...) (the "name" of "u.name") */
+/* The difference between this and FieldIdentificationVariable is only semantical, because it points to a single field (not mapping to a relation) */
 SimpleStateField ::= FieldIdentificationVariable
+
+/* identifier that must be unique among other mapped field aliases (the "total" of "COUNT(*) AS total")*/
+FieldAliasIdentificationVariable = identifier
 
 
 /*
  * PATH EXPRESSIONS
  */
+
+/* "u.Group" or "u.Phonenumbers" declarations */
 JoinAssociationPathExpression             ::= JoinCollectionValuedPathExpression | JoinSingleValuedAssociationPathExpression
+
+/* "u.Phonenumbers" */
 JoinCollectionValuedPathExpression        ::= IdentificationVariable "." CollectionValuedAssociationField
+
+/* "u.Group" */
 JoinSingleValuedAssociationPathExpression ::= IdentificationVariable "." SingleValuedAssociationField
+
+/* "u.Group" or "u.Phonenumbers" usages */
 AssociationPathExpression                 ::= CollectionValuedPathExpression | SingleValuedAssociationPathExpression
+
+/* "u.name" or "u.Group" */
 SingleValuedPathExpression                ::= StateFieldPathExpression | SingleValuedAssociationPathExpression
+
+/* "u.name" or "u.Group.name" */
 StateFieldPathExpression                  ::= SimpleStateFieldPathExpression | SimpleStateFieldAssociationPathExpression
+
+/* "u.Group" */
 SingleValuedAssociationPathExpression     ::= IdentificationVariable "." {SingleValuedAssociationField "."}* SingleValuedAssociationField
+
+/* "u.Group.Permissions" */
 CollectionValuedPathExpression            ::= IdentificationVariable "." {SingleValuedAssociationField "."}* CollectionValuedAssociationField
+
+/* "name" */
 StateField                                ::= {EmbeddedClassStateField "."}* SimpleStateField
+
+/* "u.name" */
 SimpleStateFieldPathExpression            ::= IdentificationVariable "." SimpleStateField
+
+/* "u.Group.name" */
 SimpleStateFieldAssociationPathExpression ::= SingleValuedAssociationPathExpression "." StateField
 
 
@@ -109,7 +136,7 @@ Subselect           ::= SimpleSelectClause SubselectFromClause [WhereClause] [Gr
  */
 OrderByItem ::= StateFieldPathExpression ["ASC" | "DESC"]
 GroupByItem ::= SingleValuedPathExpression
-UpdateItem  ::= [IdentificationVariable"."]{StateField | SingleValuedAssociationField} "=" NewValue
+UpdateItem  ::= [IdentificationVariable "."] {StateField | SingleValuedAssociationField} "=" NewValue
 NewValue    ::= SimpleArithmeticExpression | StringPrimary | DatetimePrimary | BooleanPrimary |
                 EnumPrimary | SimpleEntityExpression | "NULL"
 
@@ -118,8 +145,7 @@ NewValue    ::= SimpleArithmeticExpression | StringPrimary | DatetimePrimary | B
  * FROM/JOIN/INDEX BY
  */
 IdentificationVariableDeclaration          ::= RangeVariableDeclaration [IndexBy] {JoinVariableDeclaration}*
-SubselectIdentificationVariableDeclaration ::= IdentificationVariableDeclaration | AssociationPathExpression 
-                                               ["AS"] AliasIdentificationVariable
+SubselectIdentificationVariableDeclaration ::= IdentificationVariableDeclaration | (AssociationPathExpression ["AS"] AliasIdentificationVariable)
 JoinVariableDeclaration                    ::= Join [IndexBy]
 RangeVariableDeclaration                   ::= AbstractSchemaName ["AS"] AliasIdentificationVariable
 Join                                       ::= ["LEFT" ["OUTER"] | "INNER"] "JOIN" JoinAssociationPathExpression 
@@ -130,9 +156,8 @@ IndexBy                                    ::= "INDEX" "BY" SimpleStateFieldPath
 /* 
  * SELECT EXPRESSION
  */
-SelectExpression       ::= IdentificationVariable ["." "*"] |
-                           (StateFieldPathExpression | AggregateExpression |
-                           "(" Subselect ")" ) [["AS"] FieldIdentificationVariable]
+SelectExpression       ::= IdentificationVariable ["." "*"] | StateFieldPathExpression |
+                           (AggregateExpression | "(" Subselect ")") [["AS"] FieldAliasIdentificationVariable]
 SimpleSelectExpression ::= SingleValuedPathExpression | IdentificationVariable | AggregateExpression
 
 
