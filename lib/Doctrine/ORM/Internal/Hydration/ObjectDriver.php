@@ -159,13 +159,13 @@ class Doctrine_ORM_Internal_Hydration_ObjectDriver
                     $oid2 = spl_object_hash($entity2);
                     $sourceProp = $targetClass->getInverseAssociationMapping($fieldName)->getSourceFieldName();
                     $targetClass->getReflectionProperty($sourceProp)->setValue($entity2, $entity1);
-                    $this->_entityData[$oid2][$sourceProp] = $entity1;
+                    //$this->_entityData[$oid2][$sourceProp] = $entity1;
                 }
             } else {
                 // for sure bidirectional, as there is no inverse side in unidirectional
                 $mappedByProp = $relation->getMappedByFieldName();
                 $targetClass->getReflectionProperty($mappedByProp)->setValue($entity2, $entity1);
-                $this->_entityData[spl_object_hash($entity2)][$mappedByProp] = $entity1;
+                //$this->_entityData[spl_object_hash($entity2)][$mappedByProp] = $entity1;
             }
         }
     }
@@ -217,7 +217,6 @@ class Doctrine_ORM_Internal_Hydration_ObjectDriver
     public function updateResultPointer(&$resultPointers, &$coll, $index, $dqlAlias, $oneToOne)
     {
         if ($coll === null) {
-            echo "HERE!";
             unset($resultPointers[$dqlAlias]); // Ticket #1228
             return;
         }

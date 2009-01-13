@@ -686,7 +686,7 @@ class Orm_Hydration_BasicHydrationTest extends Doctrine_OrmTestCase
             
         $stmt = new Doctrine_HydratorMockStatement($resultSet);
         $hydrator = new Doctrine_ORM_Internal_Hydration_StandardHydrator($this->_em);
-        
+
         $result = $hydrator->hydrateResultSet($this->_createParserResult(
                 $stmt, $queryComponents, $tableAliasMap, $hydrationMode, true));
         if ($hydrationMode == Doctrine_ORM_Query::HYDRATE_ARRAY) {

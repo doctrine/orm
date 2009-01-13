@@ -19,14 +19,14 @@
  * <http://www.phpdoctrine.org>.
  */
 
-#namespace Doctrine::ORM::Internal::Hydration;
+#namespace Doctrine\ORM\Internal\Hydration;
 
 /**
  * Base class for all hydrators (ok, we got only 1 currently).
  *
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
- * @link        www.phpdoctrine.org
- * @since       1.0
+ * @link        www.doctrine-project.org
+ * @since       2.0
  * @version     $Revision: 3192 $
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  * @author      Roman Borschel <roman@code-factory.org>
@@ -46,102 +46,318 @@ abstract class Doctrine_ORM_Internal_Hydration_AbstractHydrator
      */
     protected $_queryComponents = array();
 
-    /**
-     * @var array Table alias map. Keys are SQL aliases and values DQL aliases.
-     */
-    protected $_tableAliasMap = array();
+    /** @var array Table alias map. Keys are SQL aliases and values DQL aliases. */
+    protected $_tableAliases = array();
 
-    /**
-     * The current hydration mode.
-     */
-    protected $_hydrationMode = Doctrine_ORM_Query::HYDRATE_OBJECT;
-    
-    protected $_nullObject;
-    
+    /** @var EntityManager The EntityManager instance. */
     protected $_em;
 
+    /** @var UnitOfWork The UnitOfWork of the associated EntityManager. */
+    protected $_uow;
+
+    /** @var array The cache used during row-by-row hydration. */
+    protected $_cache = array();
+
+    /** @var Statement The statement that provides the data to hydrate. */
+    protected $_stmt;
+
+    /** @var object The ParserResult instance that holds the necessary information for hydration. */
+    protected $_parserResult;
 
     /**
-     * Constructor.
+     * Initializes a new instance of a class derived from AbstractHydrator.
      *
-     * @param Doctrine::ORM::EntityManager $em The EntityManager to use during hydration.
+     * @param Doctrine\ORM\EntityManager $em The EntityManager to use.
      */
     public function __construct(Doctrine_ORM_EntityManager $em)
     {
         $this->_em = $em;
-        $this->_nullObject = Doctrine_ORM_Internal_Null::$INSTANCE;
+        $this->_uow = $em->getUnitOfWork();
     }
 
     /**
-     * setHydrationMode
+     * Initiates a row-by-row hydration.
      *
-     * Defines the hydration process mode.
-     *
-     * @param integer $hydrationMode Doctrine processing mode to be used during hydration process.
-     *                               One of the Doctrine::HYDRATE_* constants.
+     * @param object $stmt
+     * @param object $parserResult
+     * @return IterableResult
      */
-    public function setHydrationMode($hydrationMode)
+    public function iterate($stmt, $parserResult)
     {
-        $this->_hydrationMode = $hydrationMode;
+        $this->_stmt = $stmt;
+        $this->_prepare($parserResult);
+        return new Doctrine_ORM_Internal_Hydration_IterableResult($this);
     }
 
     /**
-     * setQueryComponents
+     * Hydrates all rows returned by the passed statement instance at once.
      *
-     * Defines the mapping components.
-     *
-     * @param array $queryComponents Query components.
-     */
-    public function setQueryComponents(array $queryComponents)
-    {
-        $this->_queryComponents = $queryComponents;
-    }
-
-    /**
-     * getQueryComponents
-     *
-     * Gets the mapping components.
-     *
-     * @return array Query components.
-     */
-    public function getQueryComponents()
-    {
-        return $this->_queryComponents;
-    }
-
-    /**
-     * setTableAliasMap
-     *
-     * Defines the table aliases.
-     *
-     * @param array $tableAliasMap Table aliases.
-     */
-    public function setTableAliasMap(array $tableAliasMap)
-    {
-        $this->_tableAliasMap = $tableAliasMap;
-    }
-
-    /**
-     * getTableAliasMap
-     *
-     * Returns all table aliases.
-     *
-     * @return array Table aliases as an array.
-     */
-    public function getTableAliasMap()
-    {
-        return $this->_tableAliasMap;
-    }
-
-    /**
-     * Processes data returned by statement object.
-     *
-     * This is method defines the core of Doctrine object/array population algorithm.
-     *
-     * @param mixed $stmt PDOStatement
-     * @param integer $hydrationMode Doctrine processing mode to be used during hydration process.
-     *                               One of the Doctrine::HYDRATE_* constants.
+     * @param object $stmt
+     * @param object $parserResult
      * @return mixed
      */
-    abstract public function hydrateResultSet($parserResult);
+    public function hydrateAll($stmt, $parserResult)
+    {
+        $this->_stmt = $stmt;
+        $this->_prepare($parserResult);
+        $result = $this->_hydrateAll($parserResult);
+        $this->_cleanup();
+        return $result;
+    }
+
+    /**
+     * Hydrates a single row returned by the current statement instance during
+     * row-by-row hydration with {@link iterate()}.
+     *
+     * @return mixed
+     */
+    public function hydrateRow()
+    {
+        $row = $this->_stmt->fetch(PDO::FETCH_ASSOC);
+        if ( ! $row) {
+            $this->_cleanup();
+            return false;
+        }
+        $result = $this->_getRowContainer();
+        $this->_hydrateRow($row, $this->_cache, $result);
+        return $result;
+    }
+
+    /**
+     * Excutes one-time preparation tasks once each time hydration is started
+     * through {@link hydrateAll} or {@link iterate()}.
+     *
+     * @param object $parserResult
+     */
+    protected function _prepare($parserResult)
+    {
+        $this->_queryComponents = $parserResult->getQueryComponents();
+        $this->_tableAliases = $parserResult->getTableAliasMap();
+        $this->_parserResult = $parserResult;
+    }
+
+    /**
+     * Excutes one-time cleanup tasks at the end of a hydration that was initiated
+     * through {@link hydrateAll} or {@link iterate()}.
+     */
+    protected function _cleanup()
+    {
+        $this->_parserResult = null;
+        $this->_stmt->closeCursor();
+        $this->_stmt = null;
+    }
+
+    /**
+     * Hydrates a single row from the current statement instance.
+     *
+     * Template method.
+     *
+     * @param array $data The row data.
+     * @param array $cache The cache to use.
+     * @param mixed $result The result to fill.
+     */
+    protected function _hydrateRow(array &$data, array &$cache, &$result)
+    {}
+
+    /**
+     * Hydrates all rows from the current statement instance at once.
+     *
+     * @param object $parserResult
+     */
+    abstract protected function _hydrateAll($parserResult);
+
+    /**
+     * Gets the row container used during row-by-row hydration through {@link iterate()}.
+     */
+    abstract protected function _getRowContainer();
+
+    /**
+     * Processes a row of the result set.
+     * Used for identity hydration (HYDRATE_IDENTITY_OBJECT and HYDRATE_IDENTITY_ARRAY).
+     * Puts the elements of a result row into a new array, grouped by the class
+     * they belong to. The column names in the result set are mapped to their
+     * field names during this procedure as well as any necessary conversions on
+     * the values applied.
+     *
+     * @return array  An array with all the fields (name => value) of the data row,
+     *                grouped by their component (alias).
+     */
+    protected function _gatherRowData(&$data, &$cache, &$id, &$nonemptyComponents)
+    {
+        $rowData = array();
+
+        foreach ($data as $key => $value) {
+            // Parse each column name only once. Cache the results.
+            if ( ! isset($cache[$key])) {
+                if ($this->_isIgnoredName($key)) continue;
+
+                // Cache general information like the column name <-> field name mapping
+                $e = explode(Doctrine_ORM_Query_ParserRule::SQLALIAS_SEPARATOR, $key);
+                $columnName = array_pop($e);
+                $cache[$key]['dqlAlias'] = $this->_tableAliases[
+                        implode(Doctrine_ORM_Query_ParserRule::SQLALIAS_SEPARATOR, $e)
+                        ];
+                $classMetadata = $this->_queryComponents[$cache[$key]['dqlAlias']]['metadata'];
+                // check whether it's an aggregate value or a regular field
+                if (isset($this->_queryComponents[$cache[$key]['dqlAlias']]['agg'][$columnName])) {
+                    $fieldName = $this->_queryComponents[$cache[$key]['dqlAlias']]['agg'][$columnName];
+                    $cache[$key]['isScalar'] = true;
+                } else {
+                    $fieldName = $this->_lookupFieldName($classMetadata, $columnName);
+                    $cache[$key]['isScalar'] = false;
+                    $cache[$key]['type'] = $classMetadata->getTypeOfColumn($columnName);
+                }
+
+                $cache[$key]['fieldName'] = $fieldName;
+
+                // Cache identifier information
+                if ($classMetadata->isIdentifier($fieldName)) {
+                    $cache[$key]['isIdentifier'] = true;
+                } else {
+                    $cache[$key]['isIdentifier'] = false;
+                }
+            }
+
+            $class = $this->_queryComponents[$cache[$key]['dqlAlias']]['metadata'];
+            $dqlAlias = $cache[$key]['dqlAlias'];
+            $fieldName = $cache[$key]['fieldName'];
+
+            if ($cache[$key]['isScalar']) {
+                $rowData['scalars'][$fieldName] = $value;
+                continue;
+            }
+
+            if ($cache[$key]['isIdentifier']) {
+                $id[$dqlAlias] .= '|' . $value;
+            }
+
+            $rowData[$dqlAlias][$fieldName] = $cache[$key]['type']->convertToPHPValue($value);
+
+            if ( ! isset($nonemptyComponents[$dqlAlias]) && $value !== null) {
+                $nonemptyComponents[$dqlAlias] = true;
+            }
+        }
+
+        return $rowData;
+    }
+
+    /**
+     * Processes a row of the result set.
+     * Used for HYDRATE_SCALAR. This is a variant of _gatherRowData() that
+     * simply converts column names to field names and properly prepares the
+     * values. The resulting row has the same number of elements as before.
+     *
+     * @param array $data
+     * @param array $cache
+     * @return array The processed row.
+     */
+    protected function _gatherScalarRowData(&$data, &$cache)
+    {
+        $rowData = array();
+
+        foreach ($data as $key => $value) {
+            // Parse each column name only once. Cache the results.
+            if ( ! isset($cache[$key])) {
+                if ($this->_isIgnoredName($key)) continue;
+
+                // cache general information like the column name <-> field name mapping
+                $e = explode(Doctrine_ORM_Query_ParserRule::SQLALIAS_SEPARATOR, $key);
+                $columnName = array_pop($e);
+                $cache[$key]['dqlAlias'] = $this->_tableAliases[
+                        implode(Doctrine_ORM_Query_ParserRule::SQLALIAS_SEPARATOR, $e)
+                        ];
+                $classMetadata = $this->_queryComponents[$cache[$key]['dqlAlias']]['metadata'];
+                // check whether it's an aggregate value or a regular field
+                if (isset($this->_queryComponents[$cache[$key]['dqlAlias']]['agg'][$columnName])) {
+                    $fieldName = $this->_queryComponents[$cache[$key]['dqlAlias']]['agg'][$columnName];
+                    $cache[$key]['isScalar'] = true;
+                } else {
+                    $fieldName = $this->_lookupFieldName($classMetadata, $columnName);
+                    $cache[$key]['isScalar'] = false;
+                    // cache type information
+                    $cache[$key]['type'] = $classMetadata->getTypeOfColumn($columnName);
+                }
+                $cache[$key]['fieldName'] = $fieldName;
+            }
+
+            $class = $this->_queryComponents[$cache[$key]['dqlAlias']]['metadata'];
+            $dqlAlias = $cache[$key]['dqlAlias'];
+            $fieldName = $cache[$key]['fieldName'];
+
+            if ($cache[$key]['isScalar']) {
+                $rowData[$dqlAlias . '_' . $fieldName] = $value;
+            } else {
+                $rowData[$dqlAlias . '_' . $fieldName] = $cache[$key]['type']->convertToPHPValue($value);
+            }
+        }
+
+        return $rowData;
+    }
+
+    /**
+     * Gets the custom field used for indexing for the specified DQL alias.
+     *
+     * @return string  The field name of the field used for indexing or NULL
+     *                 if the component does not use any custom field indices.
+     */
+    protected function _getCustomIndexField($alias)
+    {
+        return isset($this->_queryComponents[$alias]['map']) ? $this->_queryComponents[$alias]['map'] : null;
+    }
+
+    /**
+     * Checks whether a name is ignored. Used during result set parsing to skip
+     * certain elements in the result set that do not have any meaning for the result.
+     * (I.e. ORACLE limit/offset emulation adds doctrine_rownum to the result set).
+     *
+     * @param string $name
+     * @return boolean
+     */
+    private function _isIgnoredName($name)
+    {
+        return $name == 'doctrine_rownum';
+    }
+
+    /**
+     * Looks up the field name for a (lowercased) column name.
+     *
+     * This is mostly used during hydration, because we want to make the
+     * conversion to field names while iterating over the result set for best
+     * performance. By doing this at that point, we can avoid re-iterating over
+     * the data just to convert the column names to field names.
+     *
+     * However, when this is happening, we don't know the real
+     * class name to instantiate yet (the row data may target a sub-type), hence
+     * this method looks up the field name in the subclass mappings if it's not
+     * found on this class mapping.
+     * This lookup on subclasses is costly but happens only *once* for a column
+     * during hydration because the hydrator caches effectively.
+     *
+     * @return string  The field name.
+     * @throws Doctrine::ORM::Exceptions::ClassMetadataException If the field name could
+     *         not be found.
+     */
+    private function _lookupFieldName($class, $lcColumnName)
+    {
+        if ($class->hasLowerColumn($lcColumnName)) {
+            return $class->getFieldNameForLowerColumnName($lcColumnName);
+        }
+
+        foreach ($class->getSubclasses() as $subClass) {
+            $subClassMetadata = Doctrine_ORM_Mapping_ClassMetadataFactory::getInstance()
+                    ->getMetadataFor($subClass);
+            if ($subClassMetadata->hasLowerColumn($lcColumnName)) {
+                return $subClassMetadata->getFieldNameForLowerColumnName($lcColumnName);
+            }
+        }
+
+        throw new Doctrine_Exception("No field name found for column name '$lcColumnName' during hydration.");
+    }
+
+    /** Needed only temporarily until the new parser is ready */
+    private $_isResultMixed = false;
+    public function setResultMixed($bool)
+    {
+        $this->_isResultMixed = $bool;
+    }
 }

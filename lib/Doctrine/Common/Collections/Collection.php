@@ -8,7 +8,6 @@
 
 #use \Countable;
 #use \IteratorAggregate;
-#use \Serializable;
 #use \ArrayAccess;
 
 /**
@@ -17,7 +16,8 @@
  *
  * @author robo
  */
-class Doctrine_Common_Collections_Collection implements Countable, IteratorAggregate, Serializable, ArrayAccess {
+class Doctrine_Common_Collections_Collection implements Countable, IteratorAggregate, ArrayAccess
+{
     /**
      * An array containing the entries of this collection.
      * This is the wrapped php array.
@@ -89,10 +89,7 @@ class Doctrine_Common_Collections_Collection implements Countable, IteratorAggre
     }
 
     /**
-     * __isset()
-     *
-     * @param string $name
-     * @return boolean          whether or not this object contains $name
+     * @see containsKey()
      */
     public function __isset($key)
     {
@@ -100,10 +97,7 @@ class Doctrine_Common_Collections_Collection implements Countable, IteratorAggre
     }
 
     /**
-     * __unset()
-     *
-     * @param string $key
-     * @return mixed
+     * @see remove()
      */
     public function __unset($key)
     {
@@ -113,10 +107,7 @@ class Doctrine_Common_Collections_Collection implements Countable, IteratorAggre
     /* ArrayAccess implementation */
 
     /**
-     * Check if an offset exists.
-     *
-     * @param mixed $offset
-     * @return boolean Whether or not this object contains $offset
+     * @see containsKey()
      */
     public function offsetExists($offset)
     {
@@ -124,12 +115,7 @@ class Doctrine_Common_Collections_Collection implements Countable, IteratorAggre
     }
 
     /**
-     * Gets the element with the given key.
-     *
-     * Part of the ArrayAccess implementation.
-     *
-     * @param mixed $offset
-     * @return mixed
+     * @see get()
      */
     public function offsetGet($offset)
     {
@@ -137,13 +123,8 @@ class Doctrine_Common_Collections_Collection implements Countable, IteratorAggre
     }
 
     /**
-     * Part of the ArrayAccess implementation.
-     *
-     * sets $offset to $value
-     * @see set,  __set
-     * @param mixed $offset
-     * @param mixed $value
-     * @return void
+     * @see add()
+     * @see set()
      */
     public function offsetSet($offset, $value)
     {
@@ -154,11 +135,7 @@ class Doctrine_Common_Collections_Collection implements Countable, IteratorAggre
     }
 
     /**
-     * Part of the ArrayAccess implementation.
-     *
-     * unset a given offset
-     * @see set, offsetSet, __set
-     * @param mixed $offset
+     * @see remove()
      */
     public function offsetUnset($offset)
     {
@@ -171,7 +148,7 @@ class Doctrine_Common_Collections_Collection implements Countable, IteratorAggre
      * Checks whether the collection contains a specific key/index.
      *
      * @param mixed $key The key to check for.
-     * @return boolean
+     * @return boolean TRUE if the given key/index exists, FALSE otherwise.
      */
     public function containsKey($key)
     {
@@ -185,7 +162,8 @@ class Doctrine_Common_Collections_Collection implements Countable, IteratorAggre
      * For objects this means reference equality.
      *
      * @param mixed $element
-     * @return boolean
+     * @return boolean TRUE if the given element is contained in the collection,
+     *          FALSE otherwise.
      */
     public function contains($element)
     {
@@ -196,9 +174,9 @@ class Doctrine_Common_Collections_Collection implements Countable, IteratorAggre
      * Tests for the existance of an element that satisfies the given predicate.
      *
      * @param function $func
-     * @return boolean
+     * @return boolean TRUE if the predicate is TRUE for at least one element, FALSe otherwise.
      */
-    public function exists($func) {
+    public function exists(Closure $func) {
         foreach ($this->_data as $key => $element)
             if ($func($key, $element))
                 return true;
@@ -213,7 +191,7 @@ class Doctrine_Common_Collections_Collection implements Countable, IteratorAggre
      */
     public function containsAll($otherColl)
     {
-        //...
+        throw new Doctrine_Exception("Not yet implemented.");
     }
 
     /**
@@ -343,7 +321,7 @@ class Doctrine_Common_Collections_Collection implements Countable, IteratorAggre
      *
      * @param function $func
      */
-    public function map($func)
+    public function map(Closure $func)
     {
         return new Doctrine_Common_Collections_Collection(array_map($func, $this->_data));
     }
@@ -354,7 +332,7 @@ class Doctrine_Common_Collections_Collection implements Countable, IteratorAggre
      *
      * @param function $func
      */
-    public function filter($func)
+    public function filter(Closure $func)
     {
         return new Doctrine_Common_Collections_Collection(array_filter($this->_data, $func));
     }
@@ -375,40 +353,6 @@ class Doctrine_Common_Collections_Collection implements Countable, IteratorAggre
     public function clear()
     {
         $this->_data = array();
-    }
-
-    /* Serializable implementation */
-
-    /**
-     * Serializes the collection.
-     * This method is automatically called when the Collection is serialized.
-     *
-     * Part of the implementation of the Serializable interface.
-     *
-     * @return array
-     */
-    public function serialize()
-    {
-        $vars = get_object_vars($this);
-
-        //TODO
-
-        return serialize($vars);
-    }
-
-    /**
-     * Reconstitutes the collection object from it's serialized form.
-     * This method is automatically called everytime the Collection object is unserialized.
-     *
-     * Part of the implementation of the Serializable interface.
-     *
-     * @param string $serialized The serialized data
-     *
-     * @return void
-     */
-    public function unserialize($serialized)
-    {
-        //TODO
     }
 }
 

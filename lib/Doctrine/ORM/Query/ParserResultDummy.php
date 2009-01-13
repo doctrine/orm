@@ -54,6 +54,11 @@ class Doctrine_ORM_Query_ParserResultDummy
     {
         return $this->_tableToClassAliasMap;
     }
+
+    public function getTableAliasMap()
+    {
+        return $this->_tableToClassAliasMap;
+    }
     
     public function setTableToClassAliasMap(array $map)
     {

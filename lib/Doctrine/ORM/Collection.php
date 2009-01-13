@@ -24,12 +24,8 @@
 /**
  * A persistent collection wrapper.
  * 
- * A collection object is strongly typed in the sense that it can only contain
- * entities of a specific type or one of it's subtypes. A collection object is
- * basically a wrapper around an ordinary php array and just like a php array
- * it can have List or Map semantics.
- * 
- * A collection of entities represents only the associations (links) to those entities.
+ * A PersistentCollection represents a collection of entities. Collections of
+ * entities represent only the associations (links) to those entities.
  * That means, if the collection is part of a many-many mapping and you remove
  * entities from the collection, only the links in the xref table are removed (on flush).
  * Similarly, if you remove entities from a collection that is part of a one-many
@@ -46,14 +42,14 @@
  * @author    Roman Borschel <roman@code-factory.org>
  * @todo Rename to PersistentCollection
  */
-class Doctrine_ORM_Collection extends Doctrine_Common_Collections_Collection
+final class Doctrine_ORM_Collection extends Doctrine_Common_Collections_Collection
 {   
     /**
      * The base type of the collection.
      *
      * @var string
      */
-    protected $_entityBaseType;
+    private $_entityBaseType;
 
     /**
      * A snapshot of the collection at the moment it was fetched from the database.
@@ -61,14 +57,14 @@ class Doctrine_ORM_Collection extends Doctrine_Common_Collections_Collection
      *
      * @var array
      */
-    protected $_snapshot = array();
+    private $_snapshot = array();
 
     /**
      * The entity that owns this collection.
      * 
-     * @var Doctrine\ORM\Entity
+     * @var object
      */
-    protected $_owner;
+    private $_owner;
 
     /**
      * The association mapping the collection belongs to.
@@ -76,21 +72,21 @@ class Doctrine_ORM_Collection extends Doctrine_Common_Collections_Collection
      *
      * @var Doctrine\ORM\Mapping\AssociationMapping
      */
-    protected $_association;
+    private $_association;
 
     /**
      * The name of the field that is used for collection key mapping.
      *
      * @var string
      */
-    protected $_keyField;
+    private $_keyField;
     
     /**
      * The EntityManager that manages the persistence of the collection.
      *
      * @var Doctrine\ORM\EntityManager
      */
-    protected $_em;
+    private $_em;
     
     /**
      * The name of the field on the target entities that points to the owner
@@ -98,7 +94,7 @@ class Doctrine_ORM_Collection extends Doctrine_Common_Collections_Collection
      *
      * @var string
      */
-    protected $_backRefFieldName;
+    private $_backRefFieldName;
     
     /**
      * Hydration flag.
@@ -106,7 +102,7 @@ class Doctrine_ORM_Collection extends Doctrine_Common_Collections_Collection
      * @var boolean
      * @see _setHydrationFlag()
      */
-    protected $_hydrationFlag;
+    private $_hydrationFlag;
 
     /**
      * Creates a new persistent collection.
@@ -115,24 +111,12 @@ class Doctrine_ORM_Collection extends Doctrine_Common_Collections_Collection
     {
         $this->_entityBaseType = $entityBaseType;
         $this->_em = $em;
-
         if ($keyField !== null) {
             if ( ! $this->_em->getClassMetadata($entityBaseType)->hasField($keyField)) {
                 throw new Doctrine_Exception("Invalid field '$keyField' can't be uses as key.");
             }
             $this->_keyField = $keyField;
         }
-    }
-
-    /**
-     * setData
-     *
-     * @param array $data
-     * @todo Remove?
-     */
-    public function setData(array $data) 
-    {
-        $this->_data = $data;
     }
 
     /**
@@ -161,7 +145,8 @@ class Doctrine_ORM_Collection extends Doctrine_Common_Collections_Collection
      * INTERNAL:
      * Sets the collection owner. Used (only?) during hydration.
      *
-     * @return void
+     * @param object $entity
+     * @param AssociationMapping $relation
      */
     public function _setOwner($entity, Doctrine_ORM_Mapping_AssociationMapping $relation)
     {
@@ -184,7 +169,7 @@ class Doctrine_ORM_Collection extends Doctrine_Common_Collections_Collection
      * INTERNAL:
      * Gets the collection owner.
      *
-     * @return Doctrine\ORM\Entity
+     * @return object
      */
     public function _getOwner()
     {
@@ -196,6 +181,7 @@ class Doctrine_ORM_Collection extends Doctrine_Common_Collections_Collection
      *
      * @param mixed $key
      * @return boolean
+     * @override
      */
     public function remove($key)
     {
@@ -205,8 +191,9 @@ class Doctrine_ORM_Collection extends Doctrine_Common_Collections_Collection
         /*if ($this->_association->isOneToMany() && $this->_association->shouldDeleteOrphans()) {
             $this->_em->delete($removed);
         }*/
-        
-        return parent::remove($key);
+        $removed = parent::remove($key);
+        $this->_changed();
+        return $removed;
     }
 
     /**
@@ -215,13 +202,13 @@ class Doctrine_ORM_Collection extends Doctrine_Common_Collections_Collection
      * 
      * @param integer $key
      * @param mixed $value
-     * @return void
+     * @override
      */
     public function set($key, $value)
     {
         parent::set($key, $value);
         //TODO: Register collection as dirty with the UoW if necessary
-        $this->_changed();
+        if ( ! $this->_hydrationFlag) $this->_changed();
     }
 
     /**
@@ -230,10 +217,11 @@ class Doctrine_ORM_Collection extends Doctrine_Common_Collections_Collection
      * @param mixed $value
      * @param string $key 
      * @return boolean
+     * @override
      */
-    public function add($value, $key = null)
+    public function add($value)
     {
-        $result = parent::add($value, $key);
+        $result = parent::add($value);
         if ( ! $result) return $result; // EARLY EXIT
         
         if ($this->_hydrationFlag) {
@@ -287,10 +275,6 @@ class Doctrine_ORM_Collection extends Doctrine_Common_Collections_Collection
      * Snapshots are used for diff processing, for example
      * when a fetched collection has three elements, then two of those
      * are being removed the diff would contain one element.
-     *
-     * Collection::save() attaches the diff with the help of last snapshot.
-     * 
-     * @return void
      */
     public function _takeSnapshot()
     {
@@ -299,9 +283,9 @@ class Doctrine_ORM_Collection extends Doctrine_Common_Collections_Collection
 
     /**
      * INTERNAL:
-     * Returns the data of the last snapshot.
+     * Returns the last snapshot of the elements in the collection.
      *
-     * @return array    returns the data in last snapshot
+     * @return array The last snapshot of the elements.
      */
     public function _getSnapshot()
     {
@@ -366,7 +350,7 @@ class Doctrine_ORM_Collection extends Doctrine_Common_Collections_Collection
     /**
      * INTERNAL: Gets the association mapping of the collection.
      * 
-     * @return Doctrine::ORM::Mapping::AssociationMapping
+     * @return Doctrine\ORM\Mapping\AssociationMapping
      */
     public function getMapping()
     {
@@ -375,8 +359,6 @@ class Doctrine_ORM_Collection extends Doctrine_Common_Collections_Collection
     
     /**
      * Clears the collection.
-     *
-     * @return void
      */
     public function clear()
     {

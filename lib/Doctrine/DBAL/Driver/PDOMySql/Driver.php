@@ -6,14 +6,24 @@
 
 class Doctrine_DBAL_Driver_PDOMySql_Driver implements Doctrine_DBAL_Driver
 {
-    
+    /**
+     * Attempts to establish a connection with the underlying driver.
+     *
+     * @param array $params
+     * @param string $username
+     * @param string $password
+     * @param array $driverOptions
+     * @return Doctrine\DBAL\Driver\Connection
+     */
     public function connect(array $params, $username = null, $password = null, array $driverOptions = array())
     {
-        return new Doctrine_DBAL_Driver_PDOConnection(
+        $conn = new Doctrine_DBAL_Driver_PDOConnection(
                 $this->_constructPdoDsn($params),
                 $username,
                 $password,
                 $driverOptions);
+        $conn->setAttribute(PDO::ATTR_AUTOCOMMIT, false);
+        return $conn;
     }
     
     /**
@@ -54,4 +64,3 @@ class Doctrine_DBAL_Driver_PDOMySql_Driver implements Doctrine_DBAL_Driver
     
 }
 
-?>

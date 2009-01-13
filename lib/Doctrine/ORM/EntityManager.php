@@ -64,13 +64,12 @@ class Doctrine_ORM_EntityManager
      * The currently active EntityManager. Only one EntityManager can be active
      * at any time.
      *
-     * @var Doctrine::ORM::EntityManager
+     * @var Doctrine\ORM\EntityManager
      */
     private static $_activeEm;
     
     /**
-     * The unique name of the EntityManager. The name is used to bind entity classes
-     * to certain EntityManagers.
+     * The unique name of the EntityManager.
      *
      * @var string
      */
@@ -79,14 +78,14 @@ class Doctrine_ORM_EntityManager
     /**
      * The used Configuration.
      *
-     * @var Configuration
+     * @var Doctrine\ORM\Configuration
      */
     private $_config;
     
     /**
      * The database connection used by the EntityManager.
      *
-     * @var Connection
+     * @var Doctrine\DBAL\Connection
      */
     private $_conn;
     
@@ -98,7 +97,7 @@ class Doctrine_ORM_EntityManager
     private $_metadataFactory;
     
     /**
-     * The EntityPersister instances.
+     * The EntityPersister instances used to persist entity instances.
      *
      * @var array
      */
@@ -119,16 +118,16 @@ class Doctrine_ORM_EntityManager
     private $_flushMode = 'commit';
     
     /**
-     * The unit of work used to coordinate object-level transactions.
+     * The UnitOfWork used to coordinate object-level transactions.
      *
-     * @var UnitOfWork
+     * @var Doctrine\ORM\UnitOfWork
      */
     private $_unitOfWork;
     
     /**
      * The event manager that is the central point of the event system.
      *
-     * @var EventManager
+     * @var Doctrine\Common\EventManager
      */
     private $_eventManager;
 
@@ -138,6 +137,13 @@ class Doctrine_ORM_EntityManager
      * @var array
      */
     private $_idGenerators = array();
+
+    /**
+     * The maintained (cached) hydrators. One instance per type.
+     *
+     * @var array
+     */
+    private $_hydrators = array();
 
     /** Whether the EntityManager is closed or not. */
     private $_closed = false;
@@ -224,7 +230,7 @@ class Doctrine_ORM_EntityManager
     /**
      * Returns the metadata for a class.
      *
-     * @return Doctrine_Metadata
+     * @return Doctrine\ORM\Mapping\ClassMetadata
      * @internal Performance-sensitive method.
      */
     public function getClassMetadata($className)
@@ -249,7 +255,7 @@ class Doctrine_ORM_EntityManager
      * Used to lazily create the id generator.
      *
      * @param string $generatorType
-     * @return void
+     * @return object
      */
     protected function _createIdGenerator($generatorType)
     {
@@ -349,6 +355,8 @@ class Doctrine_ORM_EntityManager
     
     /**
      * Flushes all changes to objects that have been queued up to now to the database.
+     * This effectively synchronizes the in-memory state of managed objects with the
+     * database.
      */
     public function flush()
     {
@@ -362,7 +370,7 @@ class Doctrine_ORM_EntityManager
      *
      * @param string $entityName
      * @param mixed $identifier
-     * @return Doctrine\ORM\Entity
+     * @return object
      */
     public function find($entityName, $identifier)
     {
@@ -569,6 +577,49 @@ class Doctrine_ORM_EntityManager
     {
         return self::$_activeEm === $this;
     }
+
+    /**
+     * Gets a hydrator for the given hydration mode.
+     *
+     * @param  $hydrationMode
+     */
+    public function getHydrator($hydrationMode)
+    {
+        if ( ! isset($this->_hydrators[$hydrationMode])) {
+            switch ($hydrationMode) {
+                case Doctrine_ORM_Query::HYDRATE_OBJECT:
+                    $this->_hydrators[$hydrationMode] = new Doctrine_ORM_Internal_Hydration_ObjectHydrator($this);
+                    break;
+                case Doctrine_ORM_Query::HYDRATE_ARRAY:
+                    $this->_hydrators[$hydrationMode] = new Doctrine_ORM_Internal_Hydration_ArrayHydrator($this);
+                    break;
+                case Doctrine_ORM_Query::HYDRATE_SCALAR:
+                case Doctrine_ORM_Query::HYDRATE_SINGLE_SCALAR:
+                    $this->_hydrators[$hydrationMode] = new Doctrine_ORM_Internal_Hydration_ScalarHydrator($this);
+                    break;
+                case Doctrine_ORM_Query::HYDRATE_NONE:
+                    $this->_hydrators[$hydrationMode] = new Doctrine_ORM_Internal_Hydration_NoneHydrator($this);
+                    break;
+                default:
+                    throw new Doctrine_Exception("No hydrator found for hydration mode '$hydrationMode'.");
+            }
+        } else if ($this->_hydrators[$hydrationMode] instanceof Closure) {
+            $this->_hydrators[$hydrationMode] = $this->_hydrators[$hydrationMode]($this);
+        }
+        return $this->_hydrators[$hydrationMode];
+    }
+
+    /**
+     * Sets a hydrator for a hydration mode.
+     *
+     * @param mixed $hydrationMode
+     * @param object $hydrator Either a hydrator instance or a closure that creates a
+     *          hydrator instance.
+     */
+    public function setHydrator($hydrationMode, $hydrator)
+    {
+        $this->_hydrators[$hydrationMode] = $hydrator;
+    }
     
     /**
      * Makes this EntityManager the currently active one.
@@ -630,4 +681,3 @@ class Doctrine_ORM_EntityManager
     }
 }
 
-?>

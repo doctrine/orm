@@ -68,4 +68,4 @@ class Doctrine_ORM_VirtualProxy
         unset($realInstance->$prop);
     }
 }
-?>
+
