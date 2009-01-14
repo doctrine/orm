@@ -32,12 +32,12 @@ class Doctrine_EntityPersisterMock extends Doctrine_ORM_Persisters_StandardEntit
         $this->_mockIdGeneratorType = $genType;
     }
     
-    public function update(Doctrine_ORM_Entity $entity)
+    public function update($entity)
     {
         $this->_updates[] = $entity;
     }
     
-    public function delete(Doctrine_ORM_Entity $entity)
+    public function delete($entity)
     {
         $this->_deletes[] = $entity;
     }

@@ -34,20 +34,20 @@ class Doctrine_ORM_Query_Parser_SimpleStateFieldPathExpression extends Doctrine_
     protected $_AST = null;
     
  
-    public function syntax($paramHolder)
+    public function syntax()
     {
         // SimpleStateFieldPathExpression ::= IdentificationVariable "." SimpleStateField
         $this->_AST = $this->AST('SimpleStateFieldPathExpression');
         
-        $this->_AST->setIdentificationVariable($this->parse('IdentificationVariable', $paramHolder));
+        $this->_AST->setIdentificationVariable($this->parse('IdentificationVariable'));
 
         $this->_parser->match('.');
         
-        $this->_AST->setSimpleStateField($this->parse('SimpleStateField', $paramHolder));
+        $this->_AST->setSimpleStateField($this->parse('SimpleStateField'));
     }
 
     
-    public function semantical($paramHolder)
+    public function semantical()
     {
         $parserResult = $this->_parser->getParserResult();
         $componentAlias = $this->_AST->getIdentificationVariable()->getComponentAlias();

@@ -34,9 +34,9 @@ class Doctrine_ORM_Query_Parser_SimpleStateField extends Doctrine_ORM_Query_Pars
     protected $_AST = null;
     
  
-    public function syntax($paramHolder)
+    public function syntax()
     {
         // SimpleStateField ::= FieldIdentificationVariable
-        return $this->parse('FieldIdentificationVariable', $paramHolder);
+        return $this->parse('FieldIdentificationVariable');
     }
 }

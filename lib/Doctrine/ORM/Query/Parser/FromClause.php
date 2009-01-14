@@ -34,7 +34,7 @@ class Doctrine_ORM_Query_Parser_FromClause extends Doctrine_ORM_Query_ParserRule
     protected $_AST = null;
     
 
-    public function syntax($paramHolder)
+    public function syntax()
     {
         // FromClause ::= "FROM" IdentificationVariableDeclaration {"," IdentificationVariableDeclaration}
         $this->_AST = $this->AST('FromClause');
@@ -42,14 +42,14 @@ class Doctrine_ORM_Query_Parser_FromClause extends Doctrine_ORM_Query_ParserRule
         $this->_parser->match(Doctrine_ORM_Query_Token::T_FROM);
 
         $this->_AST->addIdentificationVariableDeclaration(
-            $this->parse('IdentificationVariableDeclaration', $paramHolder)
+            $this->parse('IdentificationVariableDeclaration')
         );
 
         while ($this->_isNextToken(',')) {
             $this->_parser->match(',');
 
             $this->_AST->addIdentificationVariableDeclaration(
-                $this->parse('IdentificationVariableDeclaration', $paramHolder)
+                $this->parse('IdentificationVariableDeclaration')
             );
         }
         

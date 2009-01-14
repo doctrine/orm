@@ -34,7 +34,7 @@ class Doctrine_ORM_Query_Parser_FieldIdentificationVariable extends Doctrine_ORM
     protected $_AST = null;
     
     
-    public function syntax($paramHolder)
+    public function syntax()
     {
         // FieldIdentificationVariable ::= identifier
         $this->_AST = $this->AST('FieldIdentificationVariable');
@@ -47,7 +47,7 @@ class Doctrine_ORM_Query_Parser_FieldIdentificationVariable extends Doctrine_ORM
     }
 
 
-    public function semantical($paramHolder)
+    public function semantical()
     {
         $parserResult = $this->_parser->getParserResult();
 

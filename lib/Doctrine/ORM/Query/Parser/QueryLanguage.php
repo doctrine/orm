@@ -33,20 +33,20 @@
  */
 class Doctrine_ORM_Query_Parser_QueryLanguage extends Doctrine_ORM_Query_ParserRule
 {
-    public function syntax($paramHolder)
+    public function syntax()
     {
         // QueryLanguage ::= SelectStatement | UpdateStatement | DeleteStatement
         switch ($this->_parser->lookahead['type']) {
             case Doctrine_ORM_Query_Token::T_SELECT:
-                return $this->parse('SelectStatement', $paramHolder);
+                return $this->parse('SelectStatement');
             break;
 
             case Doctrine_ORM_Query_Token::T_UPDATE:
-                return $this->parse('UpdateStatement', $paramHolder);
+                return $this->parse('UpdateStatement');
             break;
 
             case Doctrine_ORM_Query_Token::T_DELETE:
-                return $this->parse('DeleteStatement', $paramHolder);
+                return $this->parse('DeleteStatement');
             break;
 
             default:

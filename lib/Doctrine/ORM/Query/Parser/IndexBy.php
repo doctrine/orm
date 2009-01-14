@@ -34,7 +34,7 @@ class Doctrine_ORM_Query_Parser_IndexBy extends Doctrine_ORM_Query_ParserRule
     protected $_AST = null;
     
 
-    public function syntax($paramHolder)
+    public function syntax()
     {
         // IndexBy ::= "INDEX" "BY" SimpleStateFieldPathExpression
         $this->_AST = $this->AST('IndexBy');
@@ -42,11 +42,11 @@ class Doctrine_ORM_Query_Parser_IndexBy extends Doctrine_ORM_Query_ParserRule
         $this->_parser->match(Doctrine_ORM_Query_Token::T_INDEX);
         $this->_parser->match(Doctrine_ORM_Query_Token::T_BY);
 
-        $this->_AST->setSimpleStateFieldPathExpression($this->parse('SimpleStateFieldPathExpression', $paramHolder));
+        $this->_AST->setSimpleStateFieldPathExpression($this->parse('SimpleStateFieldPathExpression'));
     }
     
     
-    public function semantical($paramHolder)
+    public function semantical()
     {
         // Retrieving required information
         $parserResult = $this->_parser->getParserResult();

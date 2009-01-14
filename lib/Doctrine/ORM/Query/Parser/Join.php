@@ -34,7 +34,7 @@ class Doctrine_ORM_Query_Parser_Join extends Doctrine_ORM_Query_ParserRule
     protected $_AST = null;
     
 
-    public function syntax($paramHolder)
+    public function syntax()
     {
         //  Join ::= ["LEFT" ["OUTER"] | "INNER"] "JOIN" JoinAssociationPathExpression
         //           ["AS"] AliasIdentificationVariable [("ON" | "WITH") ConditionalExpression]
@@ -59,13 +59,13 @@ class Doctrine_ORM_Query_Parser_Join extends Doctrine_ORM_Query_ParserRule
 
         $this->_parser->match(Doctrine_ORM_Query_Token::T_JOIN);
         
-        $this->_AST->setJoinAssociationPathExpression($this->parse('JoinAssociationPathExpression', $paramHolder));
+        $this->_AST->setJoinAssociationPathExpression($this->parse('JoinAssociationPathExpression'));
         
         if ($this->_isNextToken(Doctrine_ORM_Query_Token::T_AS)) {
             $this->_parser->match(Doctrine_ORM_Query_Token::T_AS);
         }
         
-        $this->_AST->setAliasIdentificationVariable($this->parse('AliasIdentificationVariable', $paramHolder));
+        $this->_AST->setAliasIdentificationVariable($this->parse('AliasIdentificationVariable'));
         
         // Check Join where type
         if (
@@ -82,7 +82,7 @@ class Doctrine_ORM_Query_Parser_Join extends Doctrine_ORM_Query_ParserRule
                 $this->_parser->match(Doctrine_ORM_Query_Token::T_WITH);
             }
 
-            $this->_AST->setConditionalExpression($this->parse('ConditionalExpression', $paramHolder));
+            $this->_AST->setConditionalExpression($this->parse('ConditionalExpression'));
         }
 
         // Return AST node

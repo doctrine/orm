@@ -30,7 +30,7 @@
  * @since       2.0
  * @version     $Revision$
  */
-class Doctrine_ORM_Query_ParserParamHolder
+class Doctrine_ORM_Query_ParserDataHolder
 {
     protected static $_instance;
 

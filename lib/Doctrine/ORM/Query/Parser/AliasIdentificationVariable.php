@@ -34,7 +34,7 @@ class Doctrine_ORM_Query_Parser_AliasIdentificationVariable extends Doctrine_ORM
     protected $_AST = null;
     
     
-    public function syntax($paramHolder)
+    public function syntax()
     {
         // AliasIdentificationVariable = identifier
         $this->_AST = $this->AST('AliasIdentificationVariable');
@@ -44,7 +44,7 @@ class Doctrine_ORM_Query_Parser_AliasIdentificationVariable extends Doctrine_ORM
     }
 
 
-    public function semantical($paramHolder)
+    public function semantical()
     {
         $parserResult = $this->_parser->getParserResult();
 

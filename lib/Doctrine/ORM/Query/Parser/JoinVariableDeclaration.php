@@ -34,20 +34,20 @@ class Doctrine_ORM_Query_Parser_JoinVariableDeclaration extends Doctrine_ORM_Que
     protected $_AST = null;
     
     
-    public function syntax($paramHolder)
+    public function syntax()
     {
         // JoinVariableDeclaration ::= Join [IndexBy]
         $this->_AST = $this->AST('JoinVariableDeclaration');
         
-        $this->_AST->setJoin($this->parse('Join', $paramHolder));
+        $this->_AST->setJoin($this->parse('Join'));
 
         if ($this->_isNextToken(Doctrine_ORM_Query_Token::T_INDEX)) {
-            $this->_AST->setIndexBy($this->parse('IndexBy', $paramHolder));
+            $this->_AST->setIndexBy($this->parse('IndexBy'));
         }
     }
 
 
-    public function semantical($paramHolder)
+    public function semantical()
     {
         // If we have an INDEX BY JoinVariableDeclaration
         if ($this->_AST->getIndexby() !== null) {

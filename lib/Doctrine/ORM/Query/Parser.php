@@ -130,11 +130,13 @@ class Doctrine_ORM_Query_Parser
         $this->_scanner = new Doctrine_ORM_Query_Scanner($this->_input);
         $this->_sqlBuilder = new Doctrine_ORM_Query_SqlBuilder($this->_em);
         $this->_keywordTable = new Doctrine_ORM_Query_Token();
+        
+        $defaultQueryComponent = Doctrine_ORM_Query_ParserRule::DEFAULT_QUERYCOMPONENT;
 
         $this->_parserResult = new Doctrine_ORM_Query_ParserResult(
             '',
             array( // queryComponent
-                'dctrn' => array(
+                $defaultQueryComponent => array(
                     'metadata' => null,
                     'parent'   => null,
                     'relation' => null,
@@ -143,7 +145,7 @@ class Doctrine_ORM_Query_Parser
                 ),
             ),
             array( // tableAliasMap
-                'dctrn' => 'dctrn',
+                $defaultQueryComponent => $defaultQueryComponent,
             )
         );
         
@@ -234,7 +236,7 @@ class Doctrine_ORM_Query_Parser
         // Building the Abstract Syntax Tree
         // We have to double the call of QueryLanguage to allow it to work correctly... =\
         $DQL = new Doctrine_ORM_Query_Parser_QueryLanguage($this);
-        $AST = $DQL->parse('QueryLanguage', Doctrine_ORM_Query_ParserParamHolder::create());
+        $AST = $DQL->parse('QueryLanguage');
 
         // Check for end of string
         if ($this->lookahead !== null) {

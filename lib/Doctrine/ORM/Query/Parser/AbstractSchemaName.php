@@ -34,7 +34,7 @@ class Doctrine_ORM_Query_Parser_AbstractSchemaName extends Doctrine_ORM_Query_Pa
     protected $_AST = null;
     
     
-    public function syntax($paramHolder)
+    public function syntax()
     {
         // AbstractSchemaName ::= identifier
         $this->_AST = $this->AST('AbstractSchemaName');
@@ -44,7 +44,7 @@ class Doctrine_ORM_Query_Parser_AbstractSchemaName extends Doctrine_ORM_Query_Pa
     }
 
 
-    public function semantical($paramHolder)
+    public function semantical()
     {
         $componentName = $this->_AST->getComponentName();
 
@@ -62,6 +62,6 @@ class Doctrine_ORM_Query_Parser_AbstractSchemaName extends Doctrine_ORM_Query_Pa
     
     protected function _isDoctrineEntity($componentName)
     {
-        return class_exists($componentName)/* && is_subclass_of($componentName, 'Doctrine_ORM_Entity')*/;
+        return class_exists($componentName)/* && class_implements($componentName, 'Doctrine_ORM_Entity')*/;
     }
 }

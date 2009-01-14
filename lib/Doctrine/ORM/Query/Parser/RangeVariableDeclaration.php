@@ -34,22 +34,22 @@ class Doctrine_ORM_Query_Parser_RangeVariableDeclaration extends Doctrine_ORM_Qu
     protected $_AST = null;
     
 
-    public function syntax($paramHolder)
+    public function syntax()
     {
         // RangeVariableDeclaration ::= AbstractSchemaName ["AS"] AliasIdentificationVariable
         $this->_AST = $this->AST('RangeVariableDeclaration');
         
-        $this->_AST->setAbstractSchemaName($this->parse('AbstractSchemaName', $paramHolder));
+        $this->_AST->setAbstractSchemaName($this->parse('AbstractSchemaName'));
         
         if ($this->_isNextToken(Doctrine_ORM_Query_Token::T_AS)) {
             $this->_parser->match(Doctrine_ORM_Query_Token::T_AS);
         }
 
-        $this->_AST->setAliasIdentificationVariable($this->parse('AliasIdentificationVariable', $paramHolder));
+        $this->_AST->setAliasIdentificationVariable($this->parse('AliasIdentificationVariable'));
     }
     
     
-    public function semantical($paramHolder)
+    public function semantical()
     {
         $parserResult = $this->_parser->getParserResult();
         $componentName = $this->_AST->getAbstractSchemaName()->getComponentName();

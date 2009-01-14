@@ -34,15 +34,15 @@ class Doctrine_ORM_Query_Parser_IdentificationVariableDeclaration extends Doctri
     protected $_AST = null;
     
 
-    public function syntax($paramHolder)
+    public function syntax()
     {
         // IdentificationVariableDeclaration ::= RangeVariableDeclaration [IndexBy] {JoinVariableDeclaration}*
         $this->_AST = $this->AST('IdentificationVariableDeclaration');
         
-        $this->_AST->setRangeVariableDeclaration($this->parse('RangeVariableDeclaration', $paramHolder));
+        $this->_AST->setRangeVariableDeclaration($this->parse('RangeVariableDeclaration'));
 
         if ($this->_isNextToken(Doctrine_ORM_Query_Token::T_INDEX)) {
-            $this->_AST->setIndexBy($this->parse('IndexBy', $paramHolder));
+            $this->_AST->setIndexBy($this->parse('IndexBy'));
         }
 
         while (
@@ -50,12 +50,12 @@ class Doctrine_ORM_Query_Parser_IdentificationVariableDeclaration extends Doctri
             $this->_isNextToken(Doctrine_ORM_Query_Token::T_INNER) ||
             $this->_isNextToken(Doctrine_ORM_Query_Token::T_JOIN)
         ) {
-            $this->_AST->addJoinVariableDeclaration($this->parse('JoinVariableDeclaration', $paramHolder));
+            $this->_AST->addJoinVariableDeclaration($this->parse('JoinVariableDeclaration'));
         }
     }
     
     
-    public function semantical($paramHolder)
+    public function semantical()
     {
         // If we have an INDEX BY RangeVariableDeclaration
         if ($this->_AST->getIndexby() !== null) {

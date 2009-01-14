@@ -34,15 +34,15 @@ class Doctrine_ORM_Query_Parser_UpdateStatement extends Doctrine_ORM_Query_Parse
     protected $_AST = null;
 
 
-    public function syntax($paramHolder)
+    public function syntax()
     {
         // UpdateStatement ::= UpdateClause [WhereClause]
         $this->_AST = $this->AST('UpdateStatement');
 
-        $this->_AST->setUpdateClause($this->parse('UpdateClause', $paramHolder));
+        $this->_AST->setUpdateClause($this->parse('UpdateClause'));
 
         if ($this->_isNextToken(Doctrine_ORM_Query_Token::T_WHERE)) {
-            $this->_AST->setWhereClause($this->parse('WhereClause', $paramHolder));
+            $this->_AST->setWhereClause($this->parse('WhereClause'));
         }
         
         // Return AST node

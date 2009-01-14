@@ -36,7 +36,7 @@ class Doctrine_ORM_Query_Parser_SelectClause extends Doctrine_ORM_Query_ParserRu
     protected $_selectExpressions = array();
 
 
-    public function syntax($paramHolder)
+    public function syntax()
     {
         // SelectClause ::= "SELECT" ["DISTINCT"] SelectExpression {"," SelectExpression}
         $this->_AST = $this->AST('SelectClause');
@@ -51,21 +51,21 @@ class Doctrine_ORM_Query_Parser_SelectClause extends Doctrine_ORM_Query_ParserRu
         }
 
         // Process SelectExpressions (1..N)
-        $this->_selectExpressions[] = $this->parse('SelectExpression', $paramHolder);
+        $this->_selectExpressions[] = $this->parse('SelectExpression');
 
         while ($this->_isNextToken(',')) {
             $this->_parser->match(',');
             
-            $this->_selectExpressions[] = $this->parse('SelectExpression', $paramHolder);
+            $this->_selectExpressions[] = $this->parse('SelectExpression');
         }
     }
 
 
-    public function semantical($paramHolder)
+    public function semantical()
     {
         // We need to validate each SelectExpression
         for ($i = 0, $l = count($this->_selectExpressions); $i < $l; $i++) {
-             $this->_AST->addSelectExpression($this->_selectExpressions[$i]->semantical($paramHolder));
+             $this->_AST->addSelectExpression($this->_selectExpressions[$i]->semantical());
         }
         
         // Return AST node

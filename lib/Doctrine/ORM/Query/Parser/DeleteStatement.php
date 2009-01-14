@@ -34,15 +34,15 @@ class Doctrine_ORM_Query_Parser_DeleteStatement extends Doctrine_ORM_Query_Parse
     protected $_AST = null;
 
 
-    public function syntax($paramHolder)
+    public function syntax()
     {
         // DeleteStatement ::= DeleteClause [WhereClause]
         $this->_AST = $this->AST('DeleteStatement');
 
-        $this->_AST->setDeleteClause($this->parse('DeleteClause', $paramHolder));
+        $this->_AST->setDeleteClause($this->parse('DeleteClause'));
 
         if ($this->_isNextToken(Doctrine_ORM_Query_Token::T_WHERE)) {
-            $this->_AST->setWhereClause($this->parse('WhereClause', $paramHolder));
+            $this->_AST->setWhereClause($this->parse('WhereClause'));
         }
         
         // Return AST node

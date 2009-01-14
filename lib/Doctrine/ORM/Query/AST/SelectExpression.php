@@ -20,43 +20,41 @@
  */
 
 /**
- * IdentificationVariable ::= identifier
+ * SelectClause = "SELECT" ["DISTINCT"] SelectExpression {"," SelectExpression}
  *
  * @author      Guilherme Blanco <guilhermeblanco@hotmail.com>
- * @author      Janne Vanhala <jpvanhal@cc.hut.fi>
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @link        http://www.phpdoctrine.org
  * @since       2.0
  * @version     $Revision$
  */
-class Doctrine_ORM_Query_Parser_IdentificationVariable extends Doctrine_ORM_Query_ParserRule
+class Doctrine_ORM_Query_AST_SelectExpression extends Doctrine_ORM_Query_AST
 {
-    protected $_AST = null;
-    
-    
-    public function syntax()
-    {
-        // IdentificationVariable ::= identifier
-        $this->_AST = $this->AST('IdentificationVariable');
+    protected $_expression;
 
-        $this->_parser->match(Doctrine_ORM_Query_Token::T_IDENTIFIER);
-        $this->_AST->setComponentAlias($this->_parser->token['value']);
+    protected $_fieldIdentificationVariable;
+    
+
+    /* Setters */
+    public function setExpression($expression)
+    {
+        $this->_expression = $expression;
     }
-
-
-    public function semantical()
+    
+    public function setFieldIdentificationVariable($fieldIdentificationVariable)
     {
-        $parserResult = $this->_parser->getParserResult();
-
-        if ( ! $parserResult->hasQueryComponent($this->_AST->getComponentAlias())) {
-            // We should throw semantical error if we cannot find the component alias
-            $message  = "No entity related to declared alias '" . $this->_AST->getComponentAlias() 
-                      . "' near '" . $this->_parser->getQueryPiece($this->_parser->token) . "'.";
-
-            $this->_parser->semanticalError($message);
-        }
-
-        // Return AST node
-        return $this->_AST;
+        $this->_fieldIdentificationVariable = $fieldIdentificationVariable;
+    }
+    
+    
+    /* Getters */
+    public function getExpression()
+    {
+        return $this->_expression;
+    }
+    
+    public function getFieldIdentificationVariable()
+    {
+        return $this->_fieldIdentificationVariable;
     }
 }

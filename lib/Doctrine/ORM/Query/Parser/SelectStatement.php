@@ -36,7 +36,7 @@ class Doctrine_ORM_Query_Parser_SelectStatement extends Doctrine_ORM_Query_Parse
     protected $_selectClause = null;
 
 
-    public function syntax($paramHolder)
+    public function syntax()
     {
         // SelectStatement ::= SelectClause FromClause [WhereClause] [GroupByClause] [HavingClause] [OrderByClause]
         $this->_AST = $this->AST('SelectStatement');
@@ -44,36 +44,36 @@ class Doctrine_ORM_Query_Parser_SelectStatement extends Doctrine_ORM_Query_Parse
         // Disable the semantical check for SelectClause now. This is needed
         // since we dont know the query components yet (will be known only
         // when the FROM and WHERE clause are processed).
-        $paramHolder->set('semanticalCheck', false);
-        $this->_selectClause = $this->parse('SelectClause', $paramHolder);
-        $paramHolder->remove('semanticalCheck');
+        $this->_dataHolder->set('semanticalCheck', false);
+        $this->_selectClause = $this->parse('SelectClause');
+        $this->_dataHolder->remove('semanticalCheck');
         
-        $this->_AST->setFromClause($this->parse('FromClause', $paramHolder));
+        $this->_AST->setFromClause($this->parse('FromClause'));
 
         if ($this->_isNextToken(Doctrine_ORM_Query_Token::T_WHERE)) {
-            $this->_AST->setWhereClause($this->parse('WhereClause', $paramHolder));
+            $this->_AST->setWhereClause($this->parse('WhereClause'));
         }
 
         if ($this->_isNextToken(Doctrine_ORM_Query_Token::T_GROUP)) {
-            $this->_AST->setGroupByClause($this->parse('GroupByClause', $paramHolder));
+            $this->_AST->setGroupByClause($this->parse('GroupByClause'));
         }
 
         if ($this->_isNextToken(Doctrine_ORM_Query_Token::T_HAVING)) {
-            $this->_AST->setHavingClause($this->parse('HavingClause', $paramHolder));
+            $this->_AST->setHavingClause($this->parse('HavingClause'));
         }
 
         if ($this->_isNextToken(Doctrine_ORM_Query_Token::T_ORDER)) {
-            $this->_AST->setOrderByClause($this->parse('OrderByClause', $paramHolder));
+            $this->_AST->setOrderByClause($this->parse('OrderByClause'));
         }
     }
 
 
-    public function semantical($paramHolder)
+    public function semantical()
     {
         // We need to invoke the semantical check of SelectClause here, since
         // it was not yet checked.
         // The semantical checks will be forwarded to all SelectClause dependant grammar rules
-        $this->_AST->setSelectClause($this->_selectClause->semantical($paramHolder));
+        $this->_AST->setSelectClause($this->_selectClause->semantical());
         
         // Return AST node
         return $this->_AST;

@@ -57,6 +57,13 @@ abstract class Doctrine_ORM_Query_ParserRule
      * @var EntityManager
      */
     protected $_em;
+    
+    /**
+     * The Parser Data Holder.
+     *
+     * @var ParserDataHolder
+     */
+    protected $_dataHolder;
 
 
     /**
@@ -68,6 +75,7 @@ abstract class Doctrine_ORM_Query_ParserRule
     {
         $this->_parser = $parser;
         $this->_em = $this->_parser->getEntityManager();
+        $this->_dataHolder = Doctrine_ORM_Query_ParserDataHolder::create();
     }
 
 
@@ -101,7 +109,7 @@ abstract class Doctrine_ORM_Query_ParserRule
      * @param array $paramHolder Production parameter holder
      * @return Doctrine_ORM_Query_ParserRule
      */
-    public function parse($RuleName, $paramHolder)
+    public function parse($RuleName)
     {
         $BNFGrammarRule = $this->_getGrammarRule($RuleName);
 
@@ -109,10 +117,10 @@ abstract class Doctrine_ORM_Query_ParserRule
         //echo "Params: " . var_export($paramHolder, true) . "\n";
 
         // Syntax check
-        if ( ! $paramHolder->has('syntaxCheck') || $paramHolder->get('syntaxCheck') === true) {
+        if ( ! $this->_dataHolder->has('syntaxCheck') || $this->_dataHolder->get('syntaxCheck') === true) {
             //echo "Processing syntax checks of " . $RuleName . "...\n";
 
-            $return = $BNFGrammarRule->syntax($paramHolder);
+            $return = $BNFGrammarRule->syntax();
 
             if ($return !== null) {
                 //echo "Returning Gramma Rule class: " . (is_object($return) ? get_class($return) : $return) . "...\n";
@@ -122,10 +130,10 @@ abstract class Doctrine_ORM_Query_ParserRule
         }
 
         // Semantical check
-        if ( ! $paramHolder->has('semanticalCheck') || $paramHolder->get('semanticalCheck') === true) {
+        if ( ! $this->_dataHolder->has('semanticalCheck') || $this->_dataHolder->get('semanticalCheck') === true) {
             //echo "Processing semantical checks of " . $RuleName . "...\n";
 
-            $return = $BNFGrammarRule->semantical($paramHolder);
+            $return = $BNFGrammarRule->semantical();
 
             if ($return !== null) {
                 //echo "Returning Gramma Rule class: " . (is_object($return) ? get_class($return) : $return) . "...\n";
@@ -185,18 +193,23 @@ abstract class Doctrine_ORM_Query_ParserRule
     /**
      * @nodoc
      */
-    abstract public function syntax($paramHolder);
+    abstract public function syntax();
 
 
     /**
      * @nodoc
      */
-    public function semantical($paramHolder)
+    public function semantical()
     {
     }
-    
+
     public function getParser()
     {
         return $this->_parser;
+    }
+    
+    public function getDataHolder()
+    {
+        return $this->_dataHolder;
     }
 }
