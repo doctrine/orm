@@ -20,29 +20,14 @@
  */
 
 /**
- * AliasIdentificationVariable ::= identifier
+ * SingleValuedAssociationField ::= FieldIdentificationVariable
  *
  * @author      Guilherme Blanco <guilhermeblanco@hotmail.com>
+ * @author      Janne Vanhala <jpvanhal@cc.hut.fi>
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @link        http://www.phpdoctrine.org
  * @since       2.0
  * @version     $Revision$
  */
-class Doctrine_ORM_Query_AST_AliasIdentificationVariable extends Doctrine_ORM_Query_AST
-{
-    protected $_componentAlias;
-    
-    
-    /* Setters */
-    public function setComponentAlias($componentAlias)
-    {
-        $this->_componentAlias = $componentAlias;
-    }
-    
-    
-    /* Getters */
-    public function getComponentAlias()
-    {
-        return $this->_componentAlias;
-    }
-}
+class Doctrine_ORM_Query_Parser_SingleValuedAssociationField extends Doctrine_ORM_Query_Parser_FieldIdentificationVariable
+{ }

@@ -31,16 +31,14 @@
  */
 class Doctrine_ORM_Query_Parser_AliasIdentificationVariable extends Doctrine_ORM_Query_ParserRule
 {
-    protected $_AST = null;
+    protected $_componentAlias = null;
     
     
     public function syntax()
     {
         // AliasIdentificationVariable = identifier
-        $this->_AST = $this->AST('AliasIdentificationVariable');
-
         $this->_parser->match(Doctrine_ORM_Query_Token::T_IDENTIFIER);
-        $this->_AST->setComponentAlias($this->_parser->token['value']);
+        $this->_componentAlias = $this->_parser->token['value'];
     }
 
 
@@ -48,17 +46,17 @@ class Doctrine_ORM_Query_Parser_AliasIdentificationVariable extends Doctrine_ORM
     {
         $parserResult = $this->_parser->getParserResult();
 
-        if ($parserResult->hasQueryComponent($this->_AST->getComponentAlias())) {
+        if ($parserResult->hasQueryComponent($this->_componentAlias)) {
             // We should throw semantical error if there's already a component for this alias
-            $queryComponent = $parserResult->getQueryComponent($this->_AST->getComponentAlias());
+            $queryComponent = $parserResult->getQueryComponent($this->_componentAlias);
             $componentName = $queryComponent['metadata']->getClassName();
 
-            $message  = "Cannot re-declare component alias '" . $this->_AST->getComponentAlias() . "'. "
+            $message  = "Cannot re-declare component alias '" . $this->_componentAlias . "'. "
                       . "It was already declared for component '" . $componentName . "'.";
 
             $this->_parser->semanticalError($message);
         }
 
-        return $this->_AST;
+        return $this->_componentAlias;
     }
 }

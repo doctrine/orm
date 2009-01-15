@@ -86,6 +86,6 @@ class Doctrine_ORM_Query_AST_SelectClause extends Doctrine_ORM_Query_AST
 
     protected function _mapSelectExpression($value)
     {
-        return $value->buildSql();
+        return is_object($value) ? $value->buildSql() : $value;
     }
 }

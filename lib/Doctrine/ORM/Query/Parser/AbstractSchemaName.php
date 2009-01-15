@@ -31,32 +31,28 @@
  */
 class Doctrine_ORM_Query_Parser_AbstractSchemaName extends Doctrine_ORM_Query_ParserRule
 {
-    protected $_AST = null;
+    protected $_componentName = null;
     
     
     public function syntax()
     {
         // AbstractSchemaName ::= identifier
-        $this->_AST = $this->AST('AbstractSchemaName');
-
         $this->_parser->match(Doctrine_ORM_Query_Token::T_IDENTIFIER);
-        $this->_AST->setComponentName($this->_parser->token['value']);
+        $this->_componentName = $this->_parser->token['value'];
     }
 
 
     public function semantical()
     {
-        $componentName = $this->_AST->getComponentName();
-
         // Check if we are dealing with a real Doctrine_Entity or not
-        if ( ! $this->_isDoctrineEntity($componentName)) {
+        if ( ! $this->_isDoctrineEntity($this->_componentName)) {
             $this->_parser->semanticalError(
-                "Defined entity '" . $componentName . "' is not a valid entity."
+                "Defined entity '" . $this->_componentName . "' is not a valid entity."
             );
         }
 
-        // Return AST node
-        return $this->_AST;
+        // Return Component Name identifier
+        return $this->_componentName;
     }
     
     

@@ -20,29 +20,39 @@
  */
 
 /**
- * AbstractSchemaName ::= identifier
+ * FieldAliasIdentificationVariable ::= identifier
  *
  * @author      Guilherme Blanco <guilhermeblanco@hotmail.com>
+ * @author      Janne Vanhala <jpvanhal@cc.hut.fi>
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @link        http://www.phpdoctrine.org
  * @since       2.0
  * @version     $Revision$
  */
-class Doctrine_ORM_Query_AST_AbstractSchemaName extends Doctrine_ORM_Query_AST
+class Doctrine_ORM_Query_Parser_FieldAliasIdentificationVariable extends Doctrine_ORM_Query_Parser
 {
-    protected $_componentName;
+    protected $_fieldAlias = null;
     
     
-    /* Setters */
-    public function setComponentName($componentName)
+    public function syntax()
     {
-        $this->_componentName = $componentName;
+        // AliasIdentificationVariable = identifier
+        $this->_parser->match(Doctrine_ORM_Query_Token::T_IDENTIFIER);
+        $this->_fieldAlias = $this->_parser->token['value'];
     }
-    
-    
-    /* Getters */
-    public function getComponentName()
+
+
+    public function semantical()
     {
-        return $this->_componentName;
+        $parserResult = $this->_parser->getParserResult();
+    
+        if ($parserResult->hasFieldAlias($this->_fieldAlias)) {
+            // We should throw semantical error if there's already a field for this alias
+            $message  = "Cannot re-declare field alias '" . $this->_fieldAlias . "'.";
+
+            $this->_parser->semanticalError($message);
+        }
+
+        return $this->_fieldAlias;
     }
 }

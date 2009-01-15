@@ -29,14 +29,5 @@
  * @since       2.0
  * @version     $Revision$
  */
-class Doctrine_ORM_Query_Parser_SimpleStateField extends Doctrine_ORM_Query_ParserRule
-{
-    protected $_AST = null;
-    
- 
-    public function syntax()
-    {
-        // SimpleStateField ::= FieldIdentificationVariable
-        return $this->parse('FieldIdentificationVariable');
-    }
-}
+class Doctrine_ORM_Query_Parser_SimpleStateField extends Doctrine_ORM_Query_Parser_FieldIdentificationVariable
+{ }

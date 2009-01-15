@@ -31,16 +31,14 @@
  */
 class Doctrine_ORM_Query_Parser_IdentificationVariable extends Doctrine_ORM_Query_ParserRule
 {
-    protected $_AST = null;
+    protected $_componentAlias = null;
     
     
     public function syntax()
     {
         // IdentificationVariable ::= identifier
-        $this->_AST = $this->AST('IdentificationVariable');
-
         $this->_parser->match(Doctrine_ORM_Query_Token::T_IDENTIFIER);
-        $this->_AST->setComponentAlias($this->_parser->token['value']);
+        $this->_componentAlias = $this->_parser->token['value'];
     }
 
 
@@ -48,15 +46,15 @@ class Doctrine_ORM_Query_Parser_IdentificationVariable extends Doctrine_ORM_Quer
     {
         $parserResult = $this->_parser->getParserResult();
 
-        if ( ! $parserResult->hasQueryComponent($this->_AST->getComponentAlias())) {
+        if ( ! $parserResult->hasQueryComponent($this->_componentAlias)) {
             // We should throw semantical error if we cannot find the component alias
-            $message  = "No entity related to declared alias '" . $this->_AST->getComponentAlias() 
+            $message  = "No entity related to declared alias '" . $this->_componentAlias
                       . "' near '" . $this->_parser->getQueryPiece($this->_parser->token) . "'.";
 
             $this->_parser->semanticalError($message);
         }
 
-        // Return AST node
-        return $this->_AST;
+        // Return Component Alias identifier
+        return $this->_componentAlias;
     }
 }

@@ -69,7 +69,7 @@ class Doctrine_ORM_Query_AST_RangeVariableDeclaration extends Doctrine_ORM_Query
         $conn = $this->_parserResult->getEntityManager()->getConnection();
         
         // Component alias
-        $componentAlias = $this->_aliasIdentificationVariable->getComponentAlias();
+        $componentAlias = $this->_aliasIdentificationVariable;
 
         // Retrieving required information
         try {

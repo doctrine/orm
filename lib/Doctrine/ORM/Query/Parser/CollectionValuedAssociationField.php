@@ -20,29 +20,14 @@
  */
 
 /**
- * FieldIdentificationVariable ::= identifier
+ * CollectionValuedAssociationField ::= FieldIdentificationVariable
  *
  * @author      Guilherme Blanco <guilhermeblanco@hotmail.com>
+ * @author      Janne Vanhala <jpvanhal@cc.hut.fi>
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @link        http://www.phpdoctrine.org
  * @since       2.0
  * @version     $Revision$
  */
-class Doctrine_ORM_Query_AST_FieldIdentificationVariable extends Doctrine_ORM_Query_AST
-{
-    protected $_fieldName;
-
-
-    /* Setters */
-    public function setFieldName($fieldName)
-    {
-        $this->_fieldName = $fieldName;
-    }
-
-    
-    /* Getters */
-    public function getFieldName()
-    {
-        return $this->_fieldName;
-    }
-}
+class Doctrine_ORM_Query_Parser_CollectionValuedAssociationField extends Doctrine_ORM_Query_Parser_FieldIdentificationVariable
+{ }

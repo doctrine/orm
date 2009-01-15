@@ -52,8 +52,8 @@ class Doctrine_ORM_Query_Parser_RangeVariableDeclaration extends Doctrine_ORM_Qu
     public function semantical()
     {
         $parserResult = $this->_parser->getParserResult();
-        $componentName = $this->_AST->getAbstractSchemaName()->getComponentName();
-        $componentAlias = $this->_AST->getAliasIdentificationVariable()->getComponentAlias();
+        $componentName = $this->_AST->getAbstractSchemaName();
+        $componentAlias = $this->_AST->getAliasIdentificationVariable();
 
         // Check if we already have a component defined without an alias
         if ($componentAlias === null && $parserResult->hasQueryComponent($componentName)) {

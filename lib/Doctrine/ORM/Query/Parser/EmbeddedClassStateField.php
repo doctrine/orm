@@ -20,41 +20,14 @@
  */
 
 /**
- * IdentificationVariable ::= identifier
+ * EmbeddedClassStateField ::= FieldIdentificationVariable
  *
  * @author      Guilherme Blanco <guilhermeblanco@hotmail.com>
+ * @author      Janne Vanhala <jpvanhal@cc.hut.fi>
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @link        http://www.phpdoctrine.org
  * @since       2.0
  * @version     $Revision$
  */
-class Doctrine_ORM_Query_AST_IdentificationVariable extends Doctrine_ORM_Query_AST
-{
-    protected $_componentAlias;
-    
-    
-    /* Setters */
-    public function setComponentAlias($componentAlias)
-    {
-        $this->_componentAlias = $componentAlias;
-    }
-    
-    
-    /* Getters */
-    public function getComponentAlias()
-    {
-        return $this->_componentAlias;
-    }
-    
-    
-    /* REMOVE ME LATER. COPIED METHODS FROM SPLIT OF PRODUCTION INTO "AST" AND "PARSER" */
-    
-    public function buildSql()
-    {
-        $conn = $this->_parserResult->getEntityManager()->getConnection();
-
-        return $conn->quoteIdentifier(
-            $this->_parserResult->getTableAliasFromComponentAlias($this->_componentAlias)
-        );
-    }
-}
+class Doctrine_ORM_Query_Parser_EmbeddedClassStateField extends Doctrine_ORM_Query_Parser_FieldIdentificationVariable
+{ }

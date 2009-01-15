@@ -52,10 +52,8 @@ class Doctrine_ORM_Query_Parser_IndexBy extends Doctrine_ORM_Query_ParserRule
         $parserResult = $this->_parser->getParserResult();
         
         // Grab INDEX BY information
-        $componentAlias = $this->_AST->getSimpleStateFieldPathExpression()
-            ->getIdentificationVariable()->getComponentAlias();
-        $componentFieldName = $this->_AST->getSimpleStateFieldPathExpression()
-            ->getSimpleStateField()->getFieldName();
+        $componentAlias = $this->_AST->getSimpleStateFieldPathExpression()->getIdentificationVariable();
+        $componentFieldName = $this->_AST->getSimpleStateFieldPathExpression()->getSimpleStateField();
 
         // Trying to retrieve related query component
         try {

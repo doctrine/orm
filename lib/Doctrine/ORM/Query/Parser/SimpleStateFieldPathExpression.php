@@ -50,8 +50,8 @@ class Doctrine_ORM_Query_Parser_SimpleStateFieldPathExpression extends Doctrine_
     public function semantical()
     {
         $parserResult = $this->_parser->getParserResult();
-        $componentAlias = $this->_AST->getIdentificationVariable()->getComponentAlias();
-        $componentFieldName = $this->_AST->getSimpleStateField()->getFieldName();
+        $componentAlias = $this->_AST->getIdentificationVariable();
+        $componentFieldName = $this->_AST->getSimpleStateField();
 
         // We need to make sure field exists
         try {

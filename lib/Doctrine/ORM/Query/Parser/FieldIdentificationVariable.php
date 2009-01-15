@@ -31,29 +31,10 @@
  */
 class Doctrine_ORM_Query_Parser_FieldIdentificationVariable extends Doctrine_ORM_Query_ParserRule
 {
-    protected $_AST = null;
-    
-    
     public function syntax()
     {
-        // FieldIdentificationVariable ::= identifier
-        $this->_AST = $this->AST('FieldIdentificationVariable');
-
         $this->_parser->match(Doctrine_ORM_Query_Token::T_IDENTIFIER);
-        $this->_AST->setFieldName($this->_parser->token['value']);
         
-        // Return AST node
-        return $this->_AST;
-    }
-
-
-    public function semantical()
-    {
-        $parserResult = $this->_parser->getParserResult();
-
-        // [TODO] Check for field existance somewhere
-
-        // Return AST node
-        return $this->_AST;
+        return $this->_parser->token['value'];
     }
 }

@@ -60,12 +60,11 @@ class Doctrine_ORM_Query_Parser_IdentificationVariableDeclaration extends Doctri
         // If we have an INDEX BY RangeVariableDeclaration
         if ($this->_AST->getIndexby() !== null) {
             // Grab Range component alias
-            $rangeComponentAlias = $this->_AST->getRangeVariableDeclaration()
-                ->getAliasIdentificationVariable()->getComponentAlias();
-                
+            $rangeComponentAlias = $this->_AST->getRangeVariableDeclaration()->getAliasIdentificationVariable();
+
             // Grab IndexBy component alias
-            $indexComponentAlias = $this->_AST->getIndexBy()
-                ->getSimpleStateFieldPathExpression()->getIdentificationVariable()->getComponentAlias();
+            $indexComponentAlias = $this->_AST->getIndexBy()->getSimpleStateFieldPathExpression()
+                ->getIdentificationVariable();
 
             // Check if we have same component being used in index
             if ($rangeComponentAlias !== $indexComponentAlias) {
