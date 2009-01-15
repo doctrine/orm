@@ -53,8 +53,8 @@ class Doctrine_ORM_Query_Parser_SelectClause extends Doctrine_ORM_Query_ParserRu
         // Process SelectExpressions (1..N)
         $this->_selectExpressions[] = $this->parse('SelectExpression');
 
-        while ($this->_isNextToken(',')) {
-            $this->_parser->match(',');
+        while ($this->_isNextToken(Doctrine_ORM_Query_Token::T_COMMA)) {
+            $this->_parser->match(Doctrine_ORM_Query_Token::T_COMMA);
             
             $this->_selectExpressions[] = $this->parse('SelectExpression');
         }

@@ -59,17 +59,8 @@ class Doctrine_ORM_Query_Parser_JoinCollectionValuedPathExpression extends Doctr
             $this->_parser->semanticalError($message);
         }
 
-        if ( ! $queryComponent['metadata']->hasAssociation($fieldName)) {
-            $componentName = $queryComponent['metadata']->getClassName();
-
-            $message = "Field '" . $fieldName . "' is not an association in component '" . $componentName . "'.";
-
-            $this->_parser->semanticalError($message);
-        }
-
-        $mapping = $queryComponent['metadata']->getAssociation($fieldName);
-
-        if ($mapping instanceof Doctrine_ORM_Mapping_OneToOneMapping) {
+        if ( ! ($queryComponent['metadata']->hasAssociation($fieldName) &&
+            $queryComponent['metadata']->getAssociation($fieldName)->isOneToTone())) {
             $componentName = $queryComponent['metadata']->getClassName();
 
             $message = "Field '" . $fieldName . "' does not map to a collection valued association in component '" 

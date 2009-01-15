@@ -48,7 +48,8 @@ class Doctrine_ORM_Query_Parser_FieldAliasIdentificationVariable extends Doctrin
     
         if ($parserResult->hasFieldAlias($this->_fieldAlias)) {
             // We should throw semantical error if there's already a field for this alias
-            $message  = "Cannot re-declare field alias '" . $this->_fieldAlias . "'.";
+            $message  = "Cannot re-declare field alias '" . $this->_fieldAlias 
+                      . "' near '" . $this->_parser->getQueryPiece($this->_parser->token) . "'.";
 
             $this->_parser->semanticalError($message);
         }

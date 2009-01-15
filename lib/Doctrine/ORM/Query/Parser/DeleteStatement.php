@@ -29,23 +29,20 @@
  * @since       2.0
  * @version     $Revision$
  */
-class Doctrine_ORM_Query_Parser_DeleteStatement extends Doctrine_ORM_Query_Parser
+class Doctrine_ORM_Query_Parser_DeleteStatement extends Doctrine_ORM_Query_ParserRule
 {
-    protected $_AST = null;
-
-
     public function syntax()
     {
         // DeleteStatement ::= DeleteClause [WhereClause]
-        $this->_AST = $this->AST('DeleteStatement');
+        $AST = $this->AST('DeleteStatement');
 
-        $this->_AST->setDeleteClause($this->parse('DeleteClause'));
+        $AST->setDeleteClause($this->parse('DeleteClause'));
 
         if ($this->_isNextToken(Doctrine_ORM_Query_Token::T_WHERE)) {
-            $this->_AST->setWhereClause($this->parse('WhereClause'));
+            $AST->setWhereClause($this->parse('WhereClause'));
         }
         
         // Return AST node
-        return $this->_AST;
+        return $AST;
     }
 }

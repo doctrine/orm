@@ -29,23 +29,20 @@
  * @since       2.0
  * @version     $Revision$
  */
-class Doctrine_ORM_Query_Parser_UpdateStatement extends Doctrine_ORM_Query_Parser
+class Doctrine_ORM_Query_Parser_UpdateStatement extends Doctrine_ORM_Query_ParserRule
 {
-    protected $_AST = null;
-
-
     public function syntax()
     {
         // UpdateStatement ::= UpdateClause [WhereClause]
-        $this->_AST = $this->AST('UpdateStatement');
+        $AST = $this->AST('UpdateStatement');
 
-        $this->_AST->setUpdateClause($this->parse('UpdateClause'));
+        $AST->setUpdateClause($this->parse('UpdateClause'));
 
         if ($this->_isNextToken(Doctrine_ORM_Query_Token::T_WHERE)) {
-            $this->_AST->setWhereClause($this->parse('WhereClause'));
+            $AST->setWhereClause($this->parse('WhereClause'));
         }
         
         // Return AST node
-        return $this->_AST;
+        return $AST;
     }
 }

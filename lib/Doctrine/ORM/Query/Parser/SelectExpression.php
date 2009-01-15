@@ -20,9 +20,8 @@
  */
 
 /**
- * SelectExpression ::= IdentificationVariable ["." "*"] |
- *                      (StateFieldPathExpression | AggregateExpression | "(" Subselect ")" )
- *                      [["AS"] FieldIdentificationVariable]
+ * 	SelectExpression ::= IdentificationVariable ["." "*"] | StateFieldPathExpression |
+ *                       (AggregateExpression | "(" Subselect ")") [["AS"] FieldAliasIdentificationVariable]
  *
  * @author      Guilherme Blanco <guilhermeblanco@hotmail.com>
  * @author      Janne Vanhala <jpvanhal@cc.hut.fi>
@@ -43,7 +42,8 @@ class Doctrine_ORM_Query_Parser_SelectExpression extends Doctrine_ORM_Query_Pars
     public function syntax()
     {
         // SelectExpression ::= IdentificationVariable ["." "*"] | StateFieldPathExpression | 
-        //                      ( ( AggregateExpression | "(" Subselect ")" ) ["AS"] FieldIdentificationVariable )
+        //                      (AggregateExpression | "(" Subselect ")") [["AS"] FieldAliasIdentificationVariable]
+        $this->_AST = $this->AST('SelectExpression');
 
         // First we recognize for an IdentificationVariable (Component alias)
         if ($this->_isIdentificationVariable()) {
@@ -54,16 +54,16 @@ class Doctrine_ORM_Query_Parser_SelectExpression extends Doctrine_ORM_Query_Pars
                 $this->_parser->match('.');
                 $this->_parser->match('*');
             }
-        } else if ($this->_isFunction() || $this->_isSubselect()) {
-            $this->_expression = $this->parse(
-                $this->_isFunction() ? 'AggregateExpression' : 'Subselect'
-            );
+        } else if (($isFunction = $this->_isFunction()) !== false || $this->_isSubselect()) {
+            $this->_expression = $this->parse($isFunction ? 'AggregateExpression' : 'Subselect');
 
             if ($this->_isNextToken(Doctrine_ORM_Query_Token::T_AS)) {
                 $this->_parser->match(Doctrine_ORM_Query_Token::T_AS);
-            }
 
-            $this->_fieldIdentificationVariable = $this->parse('FieldIdentificationVariable');
+                $this->_fieldIdentificationVariable = $this->parse('FieldAliasIdentificationVariable');
+            } elseif ($this->_isNextToken(Doctrine_ORM_Query_Token::T_IDENTIFIER)) {
+                $this->_fieldIdentificationVariable = $this->parse('FieldAliasIdentificationVariable');
+            }
         } else {
             $this->_expression = $this->parse('StateFieldPathExpression');
         }
@@ -72,17 +72,14 @@ class Doctrine_ORM_Query_Parser_SelectExpression extends Doctrine_ORM_Query_Pars
 
     public function semantical()
     {
-        $expression = $this->_expression->semantical();
+        $this->_AST->setExpression($this->_expression->semantical());
         
         if ($this->_fieldIdentificationVariable !== null) {
-            $expr = $expression;
-            
-            $expression = $this->AST('SelectExpression');
-            $expression->setExpression($expr);
-            $expression->setFieldIdentificationVariable($this->_fieldIdentificationVariable->semantical());
+            $this->_AST->setFieldIdentificationVariable($this->_fieldIdentificationVariable->semantical());
         }
 
-        return $expression;
+        // Return AST node
+        return $this->_AST;
     }
     
     
@@ -97,7 +94,7 @@ class Doctrine_ORM_Query_Parser_SelectExpression extends Doctrine_ORM_Query_Pars
             $token = $this->_parser->getScanner()->peek();
 
             // If we have a dot ".", then next char must be the "*"
-            if ($token['value'] === '.') {
+            if ($token['type'] === Doctrine_ORM_Query_Token::T_DOT) {
                 $token = $this->_parser->getScanner()->peek();
 
                 return $token['value'] === '*';
