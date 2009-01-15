@@ -29,6 +29,7 @@
  * @link        www.doctrine-project.org
  * @since       2.0
  * @version     $Revision: 4342 $
+ * @DEPRECATED
  */
 interface Doctrine_ORM_Entity
 {}

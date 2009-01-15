@@ -23,7 +23,6 @@ class Orm_Hydration_AllTests
     {
         $suite = new Doctrine_TestSuite('Doctrine Orm Hydration');
 
-        //$suite->addTestSuite('Orm_Hydration_BasicHydrationTest');
         $suite->addTestSuite('Orm_Hydration_ObjectHydratorTest');
         $suite->addTestSuite('Orm_Hydration_ArrayHydratorTest');
         $suite->addTestSuite('Orm_Hydration_ScalarHydratorTest');

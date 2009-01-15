@@ -74,16 +74,16 @@ class Orm_Hydration_SingleScalarHydratorTest extends Orm_Hydration_HydrationTest
 
         if ($name == 'result1') {
             $result = $hydrator->hydrateAll($stmt, $this->_createParserResult(
-                $stmt, $queryComponents, $tableAliasMap, Doctrine_ORM_Query::HYDRATE_SINGLE_SCALAR));
+                    $queryComponents, $tableAliasMap));
             $this->assertEquals('romanb', $result);
         } else if ($name == 'result2') {
             $result = $hydrator->hydrateAll($stmt, $this->_createParserResult(
-                $stmt, $queryComponents, $tableAliasMap, Doctrine_ORM_Query::HYDRATE_SINGLE_SCALAR));
+                    $queryComponents, $tableAliasMap));
             $this->assertEquals(1, $result);
         } else if ($name == 'result3' || $name == 'result4') {
             try {
                 $result = $hydrator->hydrateall($stmt, $this->_createParserResult(
-                    $stmt, $queryComponents, $tableAliasMap, Doctrine_ORM_Query::HYDRATE_SINGLE_SCALAR));
+                        $queryComponents, $tableAliasMap));
                 $this->fail();
             } catch (Doctrine_ORM_Exceptions_HydrationException $ex) {}
         }

@@ -46,7 +46,7 @@ class Orm_Hydration_ObjectHydratorTest extends Orm_Hydration_HydrationTest
         $hydrator = new Doctrine_ORM_Internal_Hydration_ObjectHydrator($this->_em);
 
         $result = $hydrator->hydrateAll($stmt, $this->_createParserResult(
-                $stmt, $queryComponents, $tableAliasMap, Doctrine_ORM_Query::HYDRATE_OBJECT));
+                $queryComponents, $tableAliasMap));
 
         $this->assertEquals(2, count($result));
         $this->assertTrue($result instanceof Doctrine_ORM_Collection);
@@ -117,7 +117,7 @@ class Orm_Hydration_ObjectHydratorTest extends Orm_Hydration_HydrationTest
         $hydrator = new Doctrine_ORM_Internal_Hydration_ObjectHydrator($this->_em);
 
         $result = $hydrator->hydrateAll($stmt, $this->_createParserResult(
-                $stmt, $queryComponents, $tableAliasMap, Doctrine_ORM_Query::HYDRATE_OBJECT, true));
+                $queryComponents, $tableAliasMap, true));
 
         $this->assertEquals(2, count($result));
         $this->assertTrue(is_array($result));
@@ -194,7 +194,7 @@ class Orm_Hydration_ObjectHydratorTest extends Orm_Hydration_HydrationTest
         $hydrator = new Doctrine_ORM_Internal_Hydration_ObjectHydrator($this->_em);
 
         $result = $hydrator->hydrateAll($stmt, $this->_createParserResult(
-                $stmt, $queryComponents, $tableAliasMap, Doctrine_ORM_Query::HYDRATE_OBJECT, true));
+                $queryComponents, $tableAliasMap, true));
 
         $this->assertEquals(2, count($result));
         $this->assertTrue(is_array($result));
@@ -268,7 +268,7 @@ class Orm_Hydration_ObjectHydratorTest extends Orm_Hydration_HydrationTest
         $hydrator = new Doctrine_ORM_Internal_Hydration_ObjectHydrator($this->_em);
 
         $result = $hydrator->hydrateAll($stmt, $this->_createParserResult(
-                $stmt, $queryComponents, $tableAliasMap, Doctrine_ORM_Query::HYDRATE_OBJECT, true));
+                $queryComponents, $tableAliasMap, true));
 
         $this->assertEquals(2, count($result));
         $this->assertTrue(is_array($result));
@@ -392,7 +392,7 @@ class Orm_Hydration_ObjectHydratorTest extends Orm_Hydration_HydrationTest
         $hydrator = new Doctrine_ORM_Internal_Hydration_ObjectHydrator($this->_em);
 
         $result = $hydrator->hydrateAll($stmt, $this->_createParserResult(
-                $stmt, $queryComponents, $tableAliasMap, Doctrine_ORM_Query::HYDRATE_OBJECT, true));
+                $queryComponents, $tableAliasMap, true));
 
         $this->assertEquals(2, count($result));
         $this->assertTrue(is_array($result));
@@ -536,7 +536,7 @@ class Orm_Hydration_ObjectHydratorTest extends Orm_Hydration_HydrationTest
         $hydrator = new Doctrine_ORM_Internal_Hydration_ObjectHydrator($this->_em);
 
         $result = $hydrator->hydrateAll($stmt, $this->_createParserResult(
-                $stmt, $queryComponents, $tableAliasMap, Doctrine_ORM_Query::HYDRATE_OBJECT, true));
+                $queryComponents, $tableAliasMap, true));
 
         $this->assertEquals(2, count($result));
         $this->assertTrue(is_array($result));
@@ -652,7 +652,7 @@ class Orm_Hydration_ObjectHydratorTest extends Orm_Hydration_HydrationTest
         $hydrator = new Doctrine_ORM_Internal_Hydration_ObjectHydrator($this->_em);
 
         $result = $hydrator->hydrateAll($stmt, $this->_createParserResult(
-                $stmt, $queryComponents, $tableAliasMap, Doctrine_ORM_Query::HYDRATE_OBJECT));
+                $queryComponents, $tableAliasMap));
 
         $this->assertEquals(2, count($result));
         $this->assertTrue($result instanceof Doctrine_ORM_Collection);
@@ -700,7 +700,7 @@ class Orm_Hydration_ObjectHydratorTest extends Orm_Hydration_HydrationTest
         $hydrator = new Doctrine_ORM_Internal_Hydration_ObjectHydrator($this->_em);
 
         $iterableResult = $hydrator->iterate($stmt, $this->_createParserResult(
-                $stmt, $queryComponents, $tableAliasMap, Doctrine_ORM_Query::HYDRATE_OBJECT));
+                $queryComponents, $tableAliasMap));
 
         $rowNum = 0;
         while (($row = $iterableResult->next()) !== false) {
@@ -716,5 +716,78 @@ class Orm_Hydration_ObjectHydratorTest extends Orm_Hydration_HydrationTest
             ++$rowNum;
         }
     }
+
+    /**
+     * select u.id, u.status, p.phonenumber, upper(u.name) nameUpper from User u
+     * join u.phonenumbers p
+     * =
+     * select u.id, u.status, p.phonenumber, upper(u.name) as u__0 from USERS u
+     * INNER JOIN PHONENUMBERS p ON u.id = p.user_id
+     *
+     * @dataProvider hydrationModeProvider
+     */
+    /*public function testNewHydrationMixedQueryFetchJoinPerformance()
+    {
+        // Faked query components
+        $queryComponents = array(
+            'u' => array(
+                'metadata' => $this->_em->getClassMetadata('CmsUser'),
+                'parent' => null,
+                'relation' => null,
+                'map' => null,
+                'agg' => array('0' => 'nameUpper')
+                ),
+            'p' => array(
+                'metadata' => $this->_em->getClassMetadata('CmsPhonenumber'),
+                'parent' => 'u',
+                'relation' => $this->_em->getClassMetadata('CmsUser')->getAssociationMapping('phonenumbers'),
+                'map' => null
+                )
+            );
+
+        // Faked table alias map
+        $tableAliasMap = array(
+            'u' => 'u',
+            'p' => 'p'
+            );
+
+        // Faked result set
+        $resultSet = array(
+            //row1
+            array(
+                'u__id' => '1',
+                'u__status' => 'developer',
+                'u__0' => 'ROMANB',
+                'p__phonenumber' => '42',
+                ),
+            array(
+                'u__id' => '1',
+                'u__status' => 'developer',
+                'u__0' => 'ROMANB',
+                'p__phonenumber' => '43',
+                ),
+            array(
+                'u__id' => '2',
+                'u__status' => 'developer',
+                'u__0' => 'JWAGE',
+                'p__phonenumber' => '91'
+                )
+            );
+        for ($i=4; $i<300; $i++) {
+            $resultSet[] = array(
+                'u__id' => $i,
+                'u__status' => 'developer',
+                'u__0' => 'JWAGE' . $i,
+                'p__phonenumber' => '91'
+            );
+        }
+
+        $stmt = new Doctrine_HydratorMockStatement($resultSet);
+        $hydrator = new Doctrine_ORM_Internal_Hydration_ObjectHydrator($this->_em);
+
+        $result = $hydrator->hydrateAll($stmt, $this->_createParserResult(
+                $queryComponents, $tableAliasMap, true));
+
+    }*/
 }
 

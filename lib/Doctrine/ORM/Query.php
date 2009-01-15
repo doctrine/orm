@@ -304,10 +304,10 @@ class Doctrine_ORM_Query extends Doctrine_ORM_Query_Abstract
 
         // Double the params if we are using limit-subquery algorithm
         // We always have an instance of Doctrine_ORM_Query_ParserResult on hands...
-        if ($this->_parserResult->isLimitSubqueryUsed() &&
+        /*if ($this->_parserResult->isLimitSubqueryUsed() &&
                 $this->_entityManager->getConnection()->getAttribute(Doctrine::ATTR_DRIVER_NAME) !== 'mysql') {
             $params = array_merge($params, $params);
-        }
+        }*/
 
         // Executing the query and returning statement
         return $executor->execute($this->_conn, $params);

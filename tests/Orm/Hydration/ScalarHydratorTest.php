@@ -46,7 +46,7 @@ class Orm_Hydration_ScalarHydratorTest extends Orm_Hydration_HydrationTest
         $hydrator = new Doctrine_ORM_Internal_Hydration_ScalarHydrator($this->_em);
 
         $result = $hydrator->hydrateAll($stmt, $this->_createParserResult(
-                $stmt, $queryComponents, $tableAliasMap, Doctrine_ORM_Query::HYDRATE_SCALAR));
+                $queryComponents, $tableAliasMap));
 
         $this->assertTrue(is_array($result));
         $this->assertEquals(2, count($result));

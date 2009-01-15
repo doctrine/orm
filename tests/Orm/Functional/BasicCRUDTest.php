@@ -50,7 +50,7 @@ class Orm_Functional_BasicCRUDTest extends Doctrine_OrmFunctionalTestCase {
     }
 
     public function testMore() {
-        echo PHP_EOL . "SECOND" . PHP_EOL;
+        #echo PHP_EOL . "SECOND" . PHP_EOL;
         /*$user = new CmsUser;
         $user->name = 'jon';
         $user->*/

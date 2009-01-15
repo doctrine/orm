@@ -1113,7 +1113,6 @@ class Doctrine_ORM_UnitOfWork
      * @param Doctrine\ORM\Entity $entity
      * @param array $data
      * @param boolean $overrideLocalChanges
-     * @return void
      */
     private function _mergeData($entity, array $data, $class, $overrideLocalChanges = false) {
         if ($overrideLocalChanges) {

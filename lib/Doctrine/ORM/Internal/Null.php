@@ -40,6 +40,7 @@
  * @version     $Revision: 4723 $
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  * @todo No longer needed?
+ * @DEPRECATED
  */
 // static initializer
 Doctrine_ORM_Internal_Null::$INSTANCE = new Doctrine_ORM_Internal_Null();

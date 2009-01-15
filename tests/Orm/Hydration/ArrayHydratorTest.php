@@ -46,7 +46,7 @@ class Orm_Hydration_ArrayHydratorTest extends Orm_Hydration_HydrationTest
         $hydrator = new Doctrine_ORM_Internal_Hydration_ArrayHydrator($this->_em);
 
         $result = $hydrator->hydrateAll($stmt, $this->_createParserResult(
-                $stmt, $queryComponents, $tableAliasMap, Doctrine_ORM_Query::HYDRATE_ARRAY));
+                $queryComponents, $tableAliasMap));
 
         $this->assertEquals(2, count($result));
         $this->assertTrue(is_array($result));
@@ -115,7 +115,7 @@ class Orm_Hydration_ArrayHydratorTest extends Orm_Hydration_HydrationTest
         $hydrator = new Doctrine_ORM_Internal_Hydration_ArrayHydrator($this->_em);
 
         $result = $hydrator->hydrateAll($stmt, $this->_createParserResult(
-                $stmt, $queryComponents, $tableAliasMap, Doctrine_ORM_Query::HYDRATE_ARRAY, true));
+                $queryComponents, $tableAliasMap, true));
 
         $this->assertEquals(2, count($result));
         $this->assertTrue(is_array($result));
@@ -185,7 +185,7 @@ class Orm_Hydration_ArrayHydratorTest extends Orm_Hydration_HydrationTest
         $hydrator = new Doctrine_ORM_Internal_Hydration_ArrayHydrator($this->_em);
 
         $result = $hydrator->hydrateAll($stmt, $this->_createParserResult(
-                $stmt, $queryComponents, $tableAliasMap, Doctrine_ORM_Query::HYDRATE_ARRAY, true));
+                $queryComponents, $tableAliasMap, true));
 
         $this->assertEquals(2, count($result));
         $this->assertTrue(is_array($result));
@@ -257,7 +257,7 @@ class Orm_Hydration_ArrayHydratorTest extends Orm_Hydration_HydrationTest
         $hydrator = new Doctrine_ORM_Internal_Hydration_ArrayHydrator($this->_em);
 
         $result = $hydrator->hydrateAll($stmt, $this->_createParserResult(
-                $stmt, $queryComponents, $tableAliasMap, Doctrine_ORM_Query::HYDRATE_ARRAY, true));
+                $queryComponents, $tableAliasMap, true));
 
         $this->assertEquals(2, count($result));
         $this->assertTrue(is_array($result));
@@ -377,7 +377,7 @@ class Orm_Hydration_ArrayHydratorTest extends Orm_Hydration_HydrationTest
         $hydrator = new Doctrine_ORM_Internal_Hydration_ArrayHydrator($this->_em);
 
         $result = $hydrator->hydrateAll($stmt, $this->_createParserResult(
-                $stmt, $queryComponents, $tableAliasMap, Doctrine_ORM_Query::HYDRATE_ARRAY, true));
+                $queryComponents, $tableAliasMap, true));
 
         $this->assertEquals(2, count($result));
         $this->assertTrue(is_array($result));
@@ -525,7 +525,7 @@ class Orm_Hydration_ArrayHydratorTest extends Orm_Hydration_HydrationTest
         $hydrator = new Doctrine_ORM_Internal_Hydration_ArrayHydrator($this->_em);
 
         $result = $hydrator->hydrateAll($stmt, $this->_createParserResult(
-                $stmt, $queryComponents, $tableAliasMap, Doctrine_ORM_Query::HYDRATE_ARRAY, true));
+                $queryComponents, $tableAliasMap, true));
 
         $this->assertEquals(2, count($result));
         $this->assertTrue(is_array($result));
@@ -647,7 +647,7 @@ class Orm_Hydration_ArrayHydratorTest extends Orm_Hydration_HydrationTest
         $hydrator = new Doctrine_ORM_Internal_Hydration_ArrayHydrator($this->_em);
 
         $result = $hydrator->hydrateAll($stmt, $this->_createParserResult(
-                $stmt, $queryComponents, $tableAliasMap, Doctrine_ORM_Query::HYDRATE_ARRAY));
+                $queryComponents, $tableAliasMap));
 
         $this->assertEquals(2, count($result));
         $this->assertTrue(is_array($result));
@@ -692,7 +692,7 @@ class Orm_Hydration_ArrayHydratorTest extends Orm_Hydration_HydrationTest
         $hydrator = new Doctrine_ORM_Internal_Hydration_ArrayHydrator($this->_em);
 
         $iterableResult = $hydrator->iterate($stmt, $this->_createParserResult(
-                $stmt, $queryComponents, $tableAliasMap, Doctrine_ORM_Query::HYDRATE_ARRAY));
+                $queryComponents, $tableAliasMap));
 
         $rowNum = 0;
         while (($row = $iterableResult->next()) !== false) {

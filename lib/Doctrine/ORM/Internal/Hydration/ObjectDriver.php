@@ -31,6 +31,7 @@
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  * @author      Roman Borschel <roman@code-factory.org>
  * @internal All the methods in this class are performance-sentitive.
+ * @DEPRECATED
  */
 class Doctrine_ORM_Internal_Hydration_ObjectDriver
 {

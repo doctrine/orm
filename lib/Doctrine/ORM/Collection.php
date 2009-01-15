@@ -104,6 +104,8 @@ final class Doctrine_ORM_Collection extends Doctrine_Common_Collections_Collecti
      */
     private $_hydrationFlag;
 
+    private $_ownerClass;
+
     /**
      * Creates a new persistent collection.
      */
@@ -111,8 +113,9 @@ final class Doctrine_ORM_Collection extends Doctrine_Common_Collections_Collecti
     {
         $this->_entityBaseType = $entityBaseType;
         $this->_em = $em;
+        $this->_ownerClass = $em->getClassMetadata($entityBaseType);
         if ($keyField !== null) {
-            if ( ! $this->_em->getClassMetadata($entityBaseType)->hasField($keyField)) {
+            if ( ! $this->_ownerClass->hasField($keyField)) {
                 throw new Doctrine_Exception("Invalid field '$keyField' can't be uses as key.");
             }
             $this->_keyField = $keyField;
@@ -227,7 +230,7 @@ final class Doctrine_ORM_Collection extends Doctrine_Common_Collections_Collecti
         if ($this->_hydrationFlag) {
             if ($this->_backRefFieldName) {
                 // set back reference to owner
-                $this->_em->getClassMetadata($this->_entityBaseType)->getReflectionProperty(
+                $this->_ownerClass->getReflectionProperty(
                         $this->_backRefFieldName)->setValue($value, $this->_owner);
             }
         } else {

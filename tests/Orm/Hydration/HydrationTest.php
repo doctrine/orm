@@ -19,12 +19,9 @@ class Orm_Hydration_HydrationTest extends Doctrine_OrmTestCase
     }
 
     /** Helper method */
-    protected function _createParserResult($stmt, $queryComponents, $tableToClassAliasMap,
-            $hydrationMode, $isMixedQuery = false)
+    protected function _createParserResult($queryComponents, $tableToClassAliasMap, $isMixedQuery = false)
     {
         $parserResult = new Doctrine_ORM_Query_ParserResultDummy();
-        $parserResult->setDatabaseStatement($stmt);
-        $parserResult->setHydrationMode($hydrationMode);
         $parserResult->setQueryComponents($queryComponents);
         $parserResult->setTableToClassAliasMap($tableToClassAliasMap);
         $parserResult->setMixedQuery($isMixedQuery);

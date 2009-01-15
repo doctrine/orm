@@ -30,6 +30,7 @@
  * @version     $Revision$
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  * @author      Roman Borschel <roman@code-factory.org>
+ * @DEPRECATED
  */
 class Doctrine_ORM_Internal_Hydration_ArrayDriver
 {   

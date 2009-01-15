@@ -12,7 +12,7 @@
 class Doctrine_ORM_Internal_Hydration_SingleScalarHydrator extends Doctrine_ORM_Internal_Hydration_AbstractHydrator
 {
     /** @override */
-    protected function _hydrateAll($parserResult)
+    protected function _hydrateAll()
     {
         $cache = array();
         $result = $this->_stmt->fetchAll(PDO::FETCH_ASSOC);

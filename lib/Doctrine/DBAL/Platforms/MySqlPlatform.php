@@ -19,7 +19,7 @@
  * <http://www.phpdoctrine.org>.
  */
 
-#namespace Doctrine::DBAL::Platforms;
+#namespace Doctrine\DBAL\Platforms;
 
 /**
  * The MySqlPlatform provides the behavior, features and SQL dialect of the

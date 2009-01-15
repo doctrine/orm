@@ -38,11 +38,11 @@ abstract class Doctrine_ORM_Internal_Hydration_AbstractHydrator
      *
      * Two dimensional array containing the map for query aliases. Main keys are component aliases.
      *
-     * table    Table object associated with given alias.
+     * metadata  ClassMetadata object associated with given alias.
      * relation Relation object owned by the parent.
      * parent   Alias of the parent.
      * agg      Aggregates of this component.
-     * map      Name of the column / aggregate value this component is mapped to a collection.
+     * map      Name of the column / aggregate value this component is mapped to in a collection.
      */
     protected $_queryComponents = array();
 
@@ -100,7 +100,7 @@ abstract class Doctrine_ORM_Internal_Hydration_AbstractHydrator
     {
         $this->_stmt = $stmt;
         $this->_prepare($parserResult);
-        $result = $this->_hydrateAll($parserResult);
+        $result = $this->_hydrateAll();
         $this->_cleanup();
         return $result;
     }
@@ -164,7 +164,7 @@ abstract class Doctrine_ORM_Internal_Hydration_AbstractHydrator
      *
      * @param object $parserResult
      */
-    abstract protected function _hydrateAll($parserResult);
+    abstract protected function _hydrateAll();
 
     /**
      * Gets the row container used during row-by-row hydration through {@link iterate()}.

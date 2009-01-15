@@ -39,7 +39,7 @@ class Doctrine_ORM_Internal_Hydration_ArrayHydrator extends Doctrine_ORM_Interna
     }
 
     /** @override */
-    protected function _hydrateAll($parserResult)
+    protected function _hydrateAll()
     {
         $s = microtime(true);
 
@@ -61,7 +61,7 @@ class Doctrine_ORM_Internal_Hydration_ArrayHydrator extends Doctrine_ORM_Interna
         // 1) Initialize
         $id = $this->_idTemplate; // initialize the id-memory
         $nonemptyComponents = array();
-        $rowData = parent::_gatherRowData($data, $cache, $id, $nonemptyComponents);
+        $rowData = $this->_gatherRowData($data, $cache, $id, $nonemptyComponents);
         $rootAlias = $this->_rootAlias;
 
         // 2) Hydrate the data of the root entity from the current row

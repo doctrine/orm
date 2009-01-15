@@ -1,8 +1,5 @@
 <?php
-/* 
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
+
 
 /**
  * Description of ObjectHydrator
@@ -11,7 +8,7 @@
  */
 class Doctrine_ORM_Internal_Hydration_ObjectHydrator extends Doctrine_ORM_Internal_Hydration_AbstractHydrator
 {
-    /** Collections initialized by the driver */
+    /** Collections initialized by the hydrator */
     private $_collections = array();
     /** Memory for initialized relations */
     private $_initializedRelations = array();
@@ -42,8 +39,12 @@ class Doctrine_ORM_Internal_Hydration_ObjectHydrator extends Doctrine_ORM_Intern
         }
     }
 
-    /** @override */
-    protected function _hydrateAll($parserResult)
+    /**
+     * {@inheritdoc}
+     *
+     * @override
+     */
+    protected function _hydrateAll()
     {
         $s = microtime(true);
         
@@ -54,7 +55,6 @@ class Doctrine_ORM_Internal_Hydration_ObjectHydrator extends Doctrine_ORM_Intern
         }
 
         $cache = array();
-        // Process result set
         while ($data = $this->_stmt->fetch(PDO::FETCH_ASSOC)) {
             $this->_hydrateRow($data, $cache, $result);
         }
@@ -111,7 +111,7 @@ class Doctrine_ORM_Internal_Hydration_ObjectHydrator extends Doctrine_ORM_Intern
         }
     }
 
-    private function getElementCollection($component)
+    private function getCollection($component)
     {
         $coll = new Doctrine_ORM_Collection($this->_em, $component);
         $this->_collections[] = $coll;
@@ -125,7 +125,7 @@ class Doctrine_ORM_Internal_Hydration_ObjectHydrator extends Doctrine_ORM_Intern
         if ( ! isset($this->_initializedRelations[$oid][$name])) {
             $relation = $classMetadata->getAssociationMapping($name);
             $relatedClass = $this->_em->getClassMetadata($relation->getTargetEntityName());
-            $coll = $this->getElementCollection($relatedClass->getClassName());
+            $coll = $this->getCollection($relatedClass->getClassName());
             $coll->_setOwner($entity, $relation);
             $coll->_setHydrationFlag(true);
             $classMetadata->getReflectionProperty($name)->setValue($entity, $coll);
@@ -142,7 +142,7 @@ class Doctrine_ORM_Internal_Hydration_ObjectHydrator extends Doctrine_ORM_Intern
 
     private function getLastKey($coll)
     {
-        // check needed because of mixed results.
+        // Check needed because of mixed results.
         // is_object instead of is_array because is_array is slow on large arrays.
         if (is_object($coll)) {
             $coll->last();
@@ -153,9 +153,9 @@ class Doctrine_ORM_Internal_Hydration_ObjectHydrator extends Doctrine_ORM_Intern
         }
     }
 
-    private function getElement(array $data, $className)
+    private function getEntity(array $data, $className)
     {
-        $entity = $this->_em->getUnitOfWork()->createEntity($className, $data);
+        $entity = $this->_uow->createEntity($className, $data);
         $oid = spl_object_hash($entity);
         $this->_metadataMap[$oid] = $this->_em->getClassMetadata($className);
         return $entity;
@@ -169,7 +169,7 @@ class Doctrine_ORM_Internal_Hydration_ObjectHydrator extends Doctrine_ORM_Intern
      * @param <type> $entity2
      * @param <type> $indexField
      */
-    private function addRelatedIndexedElement($entity1, $property, $entity2, $indexField)
+    private function addRelatedIndexedEntity($entity1, $property, $entity2, $indexField)
     {
         $classMetadata1 = $this->_metadataMap[spl_object_hash($entity1)];
         $classMetadata2 = $this->_metadataMap[spl_object_hash($entity2)];
@@ -184,15 +184,23 @@ class Doctrine_ORM_Internal_Hydration_ObjectHydrator extends Doctrine_ORM_Intern
      * @param <type> $property
      * @param <type> $entity2
      */
-    private function addRelatedElement($entity1, $property, $entity2)
+    private function addRelatedEntity($entity1, $property, $entity2)
     {
         $classMetadata1 = $this->_metadataMap[spl_object_hash($entity1)];
         $classMetadata1->getReflectionProperty($property)->getValue($entity1)->add($entity2);
     }
 
+    /**
+     * Checks whether a field on an entity has a non-null value.
+     *
+     * @param object $entity
+     * @param string $field
+     * @return boolean
+     */
     private function isFieldSet($entity, $field)
     {
-        return $this->_metadataMap[spl_object_hash($entity)]->getReflectionProperty($field)
+        return $this->_metadataMap[spl_object_hash($entity)]
+                ->getReflectionProperty($field)
                 ->getValue($entity) !== null;
     }
 
@@ -220,7 +228,7 @@ class Doctrine_ORM_Internal_Hydration_ObjectHydrator extends Doctrine_ORM_Intern
                     $targetClass->getReflectionProperty($sourceProp)->setValue($entity2, $entity1);
                 }
             } else {
-                // for sure bidirectional, as there is no inverse side in unidirectional
+                // For sure bidirectional, as there is no inverse side in unidirectional
                 $mappedByProp = $relation->getMappedByFieldName();
                 $targetClass->getReflectionProperty($mappedByProp)->setValue($entity2, $entity1);
             }
@@ -228,11 +236,8 @@ class Doctrine_ORM_Internal_Hydration_ObjectHydrator extends Doctrine_ORM_Intern
     }
 
     /**
-     * Hydrates a single row.
-     *
-     * @param <type> $data The row data.
-     * @param <type> $cache The cache to use.
-     * @param <type> $result The result to append to.
+     * {@inheritdoc}
+     * 
      * @override
      */
     protected function _hydrateRow(array &$data, array &$cache, &$result)
@@ -240,7 +245,7 @@ class Doctrine_ORM_Internal_Hydration_ObjectHydrator extends Doctrine_ORM_Intern
         // 1) Initialize
         $id = $this->_idTemplate; // initialize the id-memory
         $nonemptyComponents = array();
-        $rowData = parent::_gatherRowData($data, $cache, $id, $nonemptyComponents);
+        $rowData = $this->_gatherRowData($data, $cache, $id, $nonemptyComponents);
         $rootAlias = $this->_rootAlias;
 
         // 2) Hydrate the data of the root entity from the current row
@@ -318,11 +323,11 @@ class Doctrine_ORM_Internal_Hydration_ObjectHydrator extends Doctrine_ORM_Intern
                     $index = $indexExists ? $this->_identifierMap[$path][$id[$parent]][$id[$dqlAlias]] : false;
                     $indexIsValid = $index !== false ? $this->isIndexKeyInUse($baseElement, $relationAlias, $index) : false;
                     if ( ! $indexExists || ! $indexIsValid) {
-                        $element = $this->getElement($data, $entityName);
+                        $element = $this->getEntity($data, $entityName);
                         if ($field = $this->_getCustomIndexField($dqlAlias)) {
-                            $this->addRelatedIndexedElement($baseElement, $relationAlias, $element, $field);
+                            $this->addRelatedIndexedEntity($baseElement, $relationAlias, $element, $field);
                         } else {
-                            $this->addRelatedElement($baseElement, $relationAlias, $element);
+                            $this->addRelatedEntity($baseElement, $relationAlias, $element);
                         }
                         $this->_identifierMap[$path][$id[$parent]][$id[$dqlAlias]] = $this->getLastKey(
                             $this->_metadataMap[$oid]
@@ -341,7 +346,7 @@ class Doctrine_ORM_Internal_Hydration_ObjectHydrator extends Doctrine_ORM_Intern
                     $this->setRelatedElement($baseElement, $relationAlias, null);
                 } else if ( ! $this->isFieldSet($baseElement, $relationAlias)) {
                     $this->setRelatedElement($baseElement, $relationAlias,
-                            $this->getElement($data, $entityName));
+                            $this->getEntity($data, $entityName));
                 }
             }
 

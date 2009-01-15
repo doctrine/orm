@@ -594,8 +594,10 @@ class Doctrine_ORM_EntityManager
                     $this->_hydrators[$hydrationMode] = new Doctrine_ORM_Internal_Hydration_ArrayHydrator($this);
                     break;
                 case Doctrine_ORM_Query::HYDRATE_SCALAR:
-                case Doctrine_ORM_Query::HYDRATE_SINGLE_SCALAR:
                     $this->_hydrators[$hydrationMode] = new Doctrine_ORM_Internal_Hydration_ScalarHydrator($this);
+                    break;
+                case Doctrine_ORM_Query::HYDRATE_SINGLE_SCALAR:
+                    $this->_hydrators[$hydrationMode] = new Doctrine_ORM_Internal_Hydration_SingleScalarHydrator($this);
                     break;
                 case Doctrine_ORM_Query::HYDRATE_NONE:
                     $this->_hydrators[$hydrationMode] = new Doctrine_ORM_Internal_Hydration_NoneHydrator($this);

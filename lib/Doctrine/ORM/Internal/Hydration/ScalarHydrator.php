@@ -11,7 +11,7 @@
 class Doctrine_ORM_Internal_Hydration_ScalarHydrator extends Doctrine_ORM_Internal_Hydration_AbstractHydrator
 {
     /** @override */
-    protected function _hydrateAll($parserResult)
+    protected function _hydrateAll()
     {
         $result = array();
         $cache = array();
