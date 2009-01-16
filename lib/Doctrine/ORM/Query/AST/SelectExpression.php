@@ -20,7 +20,8 @@
  */
 
 /**
- * SelectClause = "SELECT" ["DISTINCT"] SelectExpression {"," SelectExpression}
+ * SelectExpression ::= IdentificationVariable ["." "*"] | StateFieldPathExpression |
+ *	                    (AggregateExpression | "(" Subselect ")") [["AS"] FieldAliasIdentificationVariable]
  *
  * @author      Guilherme Blanco <guilhermeblanco@hotmail.com>
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
