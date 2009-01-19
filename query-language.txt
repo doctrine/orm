@@ -200,7 +200,7 @@ NamedParameter      ::= ":" string
  */
 ArithmeticExpression       ::= SimpleArithmeticExpression | "(" Subselect ")"
 SimpleArithmeticExpression ::= ArithmeticTerm {("+" | "-") ArithmeticTerm}*
-ArithmeticTerm             ::= ArithmeticFactor {("*" |"/") ArithmeticFactor}*
+ArithmeticTerm             ::= ArithmeticFactor {("*" | "/") ArithmeticFactor}*
 ArithmeticFactor           ::= [("+" | "-")] ArithmeticPrimary
 ArithmeticPrimary          ::= StateFieldPathExpression | Literal | "(" SimpleArithmeticExpression ")" | Function | AggregateExpression
 

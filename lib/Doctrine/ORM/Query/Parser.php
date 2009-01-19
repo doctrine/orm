@@ -957,11 +957,10 @@ class Doctrine_ORM_Query_Parser
     }
 
     /**
-     * SimpleConditionalExpression ::= ExistsExpression |
-     *          (SimpleStateFieldPathExpression (ComparisonExpression | BetweenExpression | LikeExpression |
-     *           InExpression | NullComparisonExpression)) |
-     *          (CollectionValuedPathExpression EmptyCollectionComparisonExpression) |
-     *          (EntityExpression CollectionMemberExpression)
+     * SimpleConditionalExpression ::=
+     *      ComparisonExpression | BetweenExpression | LikeExpression |
+     *      InExpression | NullComparisonExpression | ExistsExpression |
+     *      EmptyCollectionComparisonExpression | CollectionMemberExpression
      */
     private function _SimpleConditionalExpression()
     {
