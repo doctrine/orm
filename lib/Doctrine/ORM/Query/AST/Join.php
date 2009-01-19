@@ -52,23 +52,15 @@ class Doctrine_ORM_Query_AST_Join extends Doctrine_ORM_Query_AST
     protected $_whereType = self::JOIN_WHERE_WITH;
     
     protected $_conditionalExpression = null;
-    
-    
-    /* Setters */
-    public function setJoinType($joinType)
+
+    public function __construct($joinType, $joinAssocPathExpr, $aliasIdentVar)
     {
         $this->_joinType = $joinType;
+        $this->_joinAssociationPathExpression = $joinAssocPathExpr;
+        $this->_aliasIdentificationVariable = $aliasIdentVar;
     }
     
-    public function setJoinAssociationPathExpression($joinAssociationPathExpression)
-    {
-        $this->_joinAssociationPathExpression = $joinAssociationPathExpression;
-    }
-    
-    public function setAliasIdentificationVariable($aliasIdentificationVariable)
-    {
-        $this->_aliasIdentificationVariable = $aliasIdentificationVariable;
-    }
+    /* Setters */
     
     public function setWhereType($whereType)
     {

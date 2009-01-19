@@ -34,19 +34,12 @@ class Doctrine_ORM_Query_AST_SelectExpression extends Doctrine_ORM_Query_AST
     protected $_expression;
 
     protected $_fieldIdentificationVariable;
-    
 
-    /* Setters */
-    public function setExpression($expression)
+    public function __construct($expression, $fieldIdentificationVariable)
     {
         $this->_expression = $expression;
-    }
-    
-    public function setFieldIdentificationVariable($fieldIdentificationVariable)
-    {
         $this->_fieldIdentificationVariable = $fieldIdentificationVariable;
-    }
-    
+    }    
     
     /* Getters */
     public function getExpression()

@@ -33,20 +33,12 @@ class Doctrine_ORM_Query_AST_SimpleStateFieldPathExpression extends Doctrine_ORM
     protected $_identificationVariable = null;
 
     protected $_simpleStateField = null;
-    
-    
-    /* Setters */
-    public function setIdentificationVariable($identificationVariable)
+
+    public function __construct($identificationVariable, $simpleStateField)
     {
         $this->_identificationVariable = $identificationVariable;
-    }
-
-
-    public function setSimpleStateField($simpleStateField)
-    {
         $this->_simpleStateField = $simpleStateField;
-    }
-    
+    }    
     
     /* Getters */
     public function getIdentificationVariable()

@@ -39,14 +39,6 @@ class Doctrine_ORM_Query_ParserResult extends Doctrine_ORM_Query_AbstractResult
     protected $_em;
 
     /**
-     * A simple array keys representing table aliases and values table alias
-     * seeds. The seeds are used for generating short table aliases.
-     *
-     * @var array $_tableAliasSeeds
-     */
-    protected $_tableAliasSeeds = array();
-
-    /**
      * Simple array of keys representing the fields used in query.
      *
      * @var array $_queryFields
@@ -153,34 +145,5 @@ class Doctrine_ORM_Query_ParserResult extends Doctrine_ORM_Query_AbstractResult
     public function hasQueryField($fieldAlias)
     {
         return isset($this->_queryFields[$fieldAlias]);
-    }
-
-
-    /**
-     * Generates a table alias from given table name and associates 
-     * it with given component alias
-     *
-     * @param string $componentName Component name to be associated with generated table alias
-     * @return string               Generated table alias
-     */
-    public function generateTableAlias($componentName)
-    {
-        $baseAlias = strtolower(preg_replace('/[^A-Z]/', '\\1', $componentName));
-
-        // We may have a situation where we have all chars are lowercased
-        if ( $baseAlias == '' ) {
-            // We simply grab the first 2 chars of component name
-            $baseAlias = substr($componentNam, 0, 2);
-        }
-
-        $alias = $baseAlias;
-
-        if ( ! isset($this->_tableAliasSeeds[$baseAlias])) {
-            $this->_tableAliasSeeds[$baseAlias] = 1;
-        } else {
-            $alias .= $this->_tableAliasSeeds[$baseAlias]++;
-        }
-
-        return $alias;
     }
 }

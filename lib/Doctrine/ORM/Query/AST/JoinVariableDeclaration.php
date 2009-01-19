@@ -34,19 +34,11 @@ class Doctrine_ORM_Query_AST_JoinVariableDeclaration extends Doctrine_ORM_Query_
     
     protected $_indexBy = null;
 
-
-    /* Setters */
-    public function setJoin($join)
+    public function __construct($join, $indexBy)
     {
         $this->_join = $join;
-    }
-
-
-    public function setIndexBy($indexBy)
-    {
         $this->_indexBy = $indexBy;
     }
-
     
     /* Getters */
     public function getJoin()

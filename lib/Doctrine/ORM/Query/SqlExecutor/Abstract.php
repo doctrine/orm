@@ -30,15 +30,10 @@
  */
 abstract class Doctrine_ORM_Query_SqlExecutor_Abstract implements Serializable
 {
-    // [TODO] Remove me later!
-    //public $AST;
-
     protected $_sqlStatements;
 
-    public function __construct(Doctrine_ORM_Query_AST $AST)
+    public function __construct(Doctrine_ORM_Query_AST $AST, $sqlWalker)
     {
-        // [TODO] Remove me later!
-        //$this->AST = $AST;
     }
 
     /**
@@ -66,7 +61,7 @@ abstract class Doctrine_ORM_Query_SqlExecutor_Abstract implements Serializable
      * @param Doctrine_ORM_Query_AST $AST  The root node of the AST.
      * @return Doctrine_ORM_Query_SqlExecutor_Abstract  The executor that is suitable for the given AST.
      */
-    public static function create(Doctrine_ORM_Query_AST $AST)
+    public static function create(Doctrine_ORM_Query_AST $AST, $sqlWalker)
     {
         $isDeleteStatement = $AST instanceof Doctrine_ORM_Query_AST_DeleteStatement;
         $isUpdateStatement = $AST instanceof Doctrine_ORM_Query_AST_UpdateStatement;
@@ -84,7 +79,7 @@ abstract class Doctrine_ORM_Query_SqlExecutor_Abstract implements Serializable
             */
             return new Doctrine_ORM_Query_SqlExecutor_SingleTableDeleteUpdate($AST);
         } else {
-            return new Doctrine_ORM_Query_SqlExecutor_SingleSelect($AST);
+            return new Doctrine_ORM_Query_SqlExecutor_SingleSelect($AST, $sqlWalker);
         }
     }
 

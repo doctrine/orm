@@ -106,8 +106,8 @@ CollectionValuedPathExpression            ::= IdentificationVariable "." {Single
 /* "name" */
 StateField                                ::= {EmbeddedClassStateField "."}* SimpleStateField
 
-/* "u.name" */
-SimpleStateFieldPathExpression            ::= IdentificationVariable "." SimpleStateField
+/* "u.name" or "u.address.zip" (address = EmbeddedClassStateField) */
+SimpleStateFieldPathExpression            ::= IdentificationVariable "." StateField
 
 /* "u.Group.name" */
 SimpleStateFieldAssociationPathExpression ::= SingleValuedAssociationPathExpression "." StateField
@@ -156,7 +156,7 @@ IndexBy                                    ::= "INDEX" "BY" SimpleStateFieldPath
 /* 
  * SELECT EXPRESSION
  */
-SelectExpression       ::= IdentificationVariable ["." "*"] | StateFieldPathExpression |
+SelectExpression       ::= IdentificationVariable | StateFieldPathExpression |
                            (AggregateExpression | "(" Subselect ")") [["AS"] FieldAliasIdentificationVariable]
 SimpleSelectExpression ::= SingleValuedPathExpression | IdentificationVariable | AggregateExpression
 
@@ -164,21 +164,23 @@ SimpleSelectExpression ::= SingleValuedPathExpression | IdentificationVariable |
 /*
  * CONDITIONAL EXPRESSIONS
  */
-ConditionalExpression       ::= ConditionalTerm | ConditionalExpression "OR" ConditionalTerm
-ConditionalTerm             ::= ConditionalFactor | ConditionalTerm "AND" ConditionalFactor
+ConditionalExpression       ::= ConditionalTerm {"OR" ConditionalTerm}*
+ConditionalTerm             ::= ConditionalFactor {"AND" ConditionalFactor}*
 ConditionalFactor           ::= ["NOT"] ConditionalPrimary
 ConditionalPrimary          ::= SimpleConditionalExpression | "(" ConditionalExpression ")"
-SimpleConditionalExpression ::= ComparisonExpression | BetweenExpression | LikeExpression |
-                                InExpression | NullComparisonExpression | ExistsExpression |
-                                EmptyCollectionComparisonExpression | CollectionMemberExpression
+SimpleConditionalExpression ::= ExistsExpression |
+                                (SimpleStateFieldPathExpression (ComparisonExpression | BetweenExpression | LikeExpression |
+                                InExpression | NullComparisonExpression)) |
+                                (CollectionValuedPathExpression EmptyCollectionComparisonExpression) |
+                                (EntityExpression CollectionMemberExpression)
 /* EmptyCollectionComparisonExpression and CollectionMemberExpression are for the future */
 
 
 /*
  * COLLECTION EXPRESSIONS (FOR THE FUTURE)
  */
-EmptyCollectionComparisonExpression ::= CollectionValuedPathExpression "IS" ["NOT"] "EMPTY"
-CollectionMemberExpression          ::= EntityExpression ["NOT"] "MEMBER" ["OF"] CollectionValuedPathExpression
+EmptyCollectionComparisonExpression ::= "IS" ["NOT"] "EMPTY"
+CollectionMemberExpression          ::= ["NOT"] "MEMBER" ["OF"] CollectionValuedPathExpression
 
 
 /*
@@ -199,8 +201,8 @@ NamedParameter      ::= ":" string
  * ARITHMETIC EXPRESSIONS
  */
 ArithmeticExpression       ::= SimpleArithmeticExpression | "(" Subselect ")"
-SimpleArithmeticExpression ::= ArithmeticTerm | SimpleArithmeticExpression ("+"|"-") ArithmeticTerm
-ArithmeticTerm             ::= ArithmeticFactor | ArithmeticTerm ("*" |"/") ArithmeticFactor
+SimpleArithmeticExpression ::= ArithmeticTerm {("+" | "-") ArithmeticTerm}*
+ArithmeticTerm             ::= ArithmeticFactor {("*" |"/") ArithmeticFactor}*
 ArithmeticFactor           ::= [("+" | "-")] ArithmeticPrimary
 ArithmeticPrimary          ::= StateFieldPathExpression | Literal | "(" SimpleArithmeticExpression ")" | Function | AggregateExpression
 

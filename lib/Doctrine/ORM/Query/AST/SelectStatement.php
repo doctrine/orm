@@ -31,54 +31,21 @@
 class Doctrine_ORM_Query_AST_SelectStatement extends Doctrine_ORM_Query_AST
 {
     protected $_selectClause;
-
     protected $_fromClause;
-
     protected $_whereClause;
-
     protected $_groupByClause;
-
     protected $_havingClause;
-
     protected $_orderByClause;
-    
-    
-    /* Setters */
-    public function setSelectClause($selectClause)
-    {
+
+    public function __construct($selectClause, $fromClause, $whereClause, $groupByClause,
+            $havingClause, $orderByClause) {
         $this->_selectClause = $selectClause;
-    }
-
-
-    public function setFromClause($fromClause)
-    {
         $this->_fromClause = $fromClause;
-    }
-
-
-    public function setWhereClause($whereClause)
-    {
         $this->_whereClause = $whereClause;
-    }
-
-
-    public function setGroupByClause($groupByClause)
-    {
         $this->_groupByClause = $groupByClause;
-    }
-
-
-    public function setHavingClause($havingClause)
-    {
         $this->_havingClause = $havingClause;
-    }
-
-
-    public function setOrderByClause($orderByClause)
-    {
         $this->_orderByClause = $orderByClause;
-    }
-    
+    }    
     
     /* Getters */
     public function getSelectClause()
@@ -122,7 +89,7 @@ class Doctrine_ORM_Query_AST_SelectStatement extends Doctrine_ORM_Query_AST
     public function buildSql()
     {
         return $this->_selectClause->buildSql() . ' ' . $this->_fromClause->buildSql()
-             . (($this->_whereClause !== null) ? ' ' . $this->_whereClause->buildSql() : ' WHERE 1 = 1')
+             . (($this->_whereClause !== null) ? ' ' . $this->_whereClause->buildSql() : '')
              . (($this->_groupByClause !== null) ? ' ' . $this->_groupByClause->buildSql() : '')
              . (($this->_havingClause !== null) ? ' ' . $this->_havingClause->buildSql() : '')
              . (($this->_orderByClause !== null) ? ' ' . $this->_orderByClause->buildSql() : '');

@@ -30,23 +30,16 @@
  */
 class Doctrine_ORM_Query_AST_RangeVariableDeclaration extends Doctrine_ORM_Query_AST
 {
-    protected $_abstractSchemaName = null;
-    
-    protected $_aliasIdentificationVariable = null;
-    
-    
-    /* Setters */
-    public function setAbstractSchemaName($abstractSchemaName)
-    {
-        $this->_abstractSchemaName = $abstractSchemaName;
-    }
+    private $_classMetadata;
+    private $_abstractSchemaName;
+    private $_aliasIdentificationVariable;
 
-
-    public function setAliasIdentificationVariable($aliasIdentificationVariable)
+    public function __construct($classMetadata, $aliasIdentificationVar)
     {
-        $this->_aliasIdentificationVariable = $aliasIdentificationVariable;
-    }
-    
+        $this->_classMetadata = $classMetadata;
+        $this->_abstractSchemaName = $classMetadata->getClassName();
+        $this->_aliasIdentificationVariable = $aliasIdentificationVar;
+    }    
     
     /* Getters */
     public function getAbstractSchemaName()
@@ -54,10 +47,14 @@ class Doctrine_ORM_Query_AST_RangeVariableDeclaration extends Doctrine_ORM_Query
         return $this->_abstractSchemaName;
     }
 
-
     public function getAliasIdentificationVariable()
     {
         return $this->_aliasIdentificationVariable;
+    }
+
+    public function getClassMetadata()
+    {
+        return $this->_classMetadata;
     }
     
     

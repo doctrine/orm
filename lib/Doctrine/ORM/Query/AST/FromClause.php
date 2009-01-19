@@ -31,22 +31,11 @@
 class Doctrine_ORM_Query_AST_FromClause extends Doctrine_ORM_Query_AST
 {
     protected $_identificationVariableDeclarations = array();
-    
 
-    /* Setters */
-    public function addIdentificationVariableDeclaration($identificationVariableDeclaration)
+    public function __construct(array $identificationVariableDeclarations)
     {
-        $this->_identificationVariableDeclarations[] = $identificationVariableDeclaration;
-    }
-
-
-    public function setIdentificationVariableDeclarations($identificationVariableDeclarations, $append = false)
-    {
-        $this->_selectExpressions = ($append === true)
-            ? array_merge($this->_identificationVariableDeclarations, $identificationVariableDeclarations)
-            : $identificationVariableDeclarations;
-    }
-    
+        $this->_identificationVariableDeclarations = $identificationVariableDeclarations;
+    }    
     
     /* Getters */
     public function getIdentificationVariableDeclarations()

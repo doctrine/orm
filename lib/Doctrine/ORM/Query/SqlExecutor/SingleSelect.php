@@ -30,10 +30,10 @@
  */
 class Doctrine_ORM_Query_SqlExecutor_SingleSelect extends Doctrine_ORM_Query_SqlExecutor_Abstract
 {    
-    public function __construct(Doctrine_ORM_Query_AST $AST)
+    public function __construct(Doctrine_ORM_Query_AST_SelectStatement $AST, $sqlWalker)
     {
-        parent::__construct($AST);
-        $this->_sqlStatements = $AST->buildSql();
+        parent::__construct($AST, $sqlWalker);
+        $this->_sqlStatements = $sqlWalker->walkSelectStatement($AST);
     }
     
     public function execute(Doctrine_DBAL_Connection $conn, array $params)

@@ -28,7 +28,7 @@
  * @author      Guilherme Blanco <guilhermeblanco@hotmail.com>
  * @author      Janne Vanhala <jpvanhal@cc.hut.fi>
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
- * @link        http://www.phpdoctrine.org
+ * @link        http://www.doctrine-project.org
  * @since       2.0
  * @version     $Revision$
  */
@@ -42,13 +42,13 @@ class Doctrine_ORM_Query_Parser
      */
     const MIN_ERROR_DISTANCE = 2;
 
-
     /**
-     * The Sql Builder object.
+     * Path expressions that were encountered during parsing of SelectExpressions
+     * and still need to be validated.
      *
-     * @var Doctrine_ORM_Query_SqlBuilder
+     * @var array
      */
-    protected $_sqlbuilder;
+    private $_pendingPathExpressionsInSelect = array();
     
     /**
      * DQL string.
@@ -128,7 +128,6 @@ class Doctrine_ORM_Query_Parser
         $this->_em = $query->getEntityManager();
         $this->_input = $query->getDql();
         $this->_scanner = new Doctrine_ORM_Query_Scanner($this->_input);
-        $this->_sqlBuilder = new Doctrine_ORM_Query_SqlBuilder($this->_em);
         $this->_keywordTable = new Doctrine_ORM_Query_Token();
         
         $defaultQueryComponent = Doctrine_ORM_Query_ParserRule::DEFAULT_QUERYCOMPONENT;
@@ -231,12 +230,8 @@ class Doctrine_ORM_Query_Parser
      */
     public function parse()
     {
-        $this->lookahead = $this->_scanner->next();
-
-        // Building the Abstract Syntax Tree
-        // We have to double the call of QueryLanguage to allow it to work correctly... =\
-        $DQL = new Doctrine_ORM_Query_Parser_QueryLanguage($this);
-        $AST = $DQL->parse('QueryLanguage');
+        // Parse & build AST
+        $AST = $this->_QueryLanguage();
 
         // Check for end of string
         if ($this->lookahead !== null) {
@@ -245,26 +240,17 @@ class Doctrine_ORM_Query_Parser
 
         // Check for semantical errors
         if (count($this->_errors) > 0) {
-            throw new Doctrine_ORM_Query_Parser_Exception(implode("\r\n", $this->_errors));
+            throw new Doctrine_ORM_Query_Exception(implode("\r\n", $this->_errors));
         }
 
+        // Create SqlWalker who creates the SQL from the AST
+        $sqlWalker = new Doctrine_ORM_Query_SqlWalker($this->_em, $this->_parserResult);
+
         // Assign the executor in parser result
-        $this->_parserResult->setSqlExecutor(Doctrine_ORM_Query_SqlExecutor_Abstract::create($AST));
+        $this->_parserResult->setSqlExecutor(Doctrine_ORM_Query_SqlExecutor_Abstract::create($AST, $sqlWalker));
 
         return $this->_parserResult;
     }
-
-
-    /**
-     * Retrieves the assocated Doctrine_ORM_Query_SqlBuilder to this object.
-     *
-     * @return Doctrine_ORM_Query_SqlBuilder
-     */
-    public function getSqlBuilder()
-    {
-        return $this->_sqlBuilder;
-    }
-
 
     /**
      * Returns the scanner object associated with this object.
@@ -276,7 +262,6 @@ class Doctrine_ORM_Query_Parser
         return $this->_scanner;
     }
 
-
     /**
      * Returns the parser result associated with this object.
      *
@@ -286,7 +271,6 @@ class Doctrine_ORM_Query_Parser
     {
         return $this->_parserResult;
     }
-
 
     /**
      * Generates a new syntax error.
@@ -315,9 +299,8 @@ class Doctrine_ORM_Query_Parser
             $message .= "'{$this->lookahead['value']}'";
         }
 
-        throw new Doctrine_ORM_Query_Parser_Exception($message);
+        throw new Doctrine_ORM_Query_Exception($message);
     }
-
 
     /**
      * Generates a new semantical error.
@@ -335,7 +318,6 @@ class Doctrine_ORM_Query_Parser
 
         $this->_logError('Warning: ' . $message, $token);
     }
-
 
     /**
      * Logs new error entry.
@@ -361,8 +343,7 @@ class Doctrine_ORM_Query_Parser
     public function getEntityManager()
     {
         return $this->_em;
-    }
-    
+    }    
 
     /**
      * Retrieve the piece of DQL string given the token position
@@ -370,11 +351,677 @@ class Doctrine_ORM_Query_Parser
      * @param array $token Token that it was processing.
      * @return string Piece of DQL string.
      */
-    public function getQueryPiece($token, $previousChars = 10, $nextChars = 10)
+    /*public function getQueryPiece($token, $previousChars = 10, $nextChars = 10)
     {
         $start = max(0, $token['position'] - $previousChars);
         $end = max($token['position'] + $nextChars, strlen($this->_input));
         
         return substr($this->_input, $start, $end);
+    }*/
+
+    private function _isNextToken($token)
+    {
+        $la = $this->lookahead;
+        return ($la['type'] === $token || $la['value'] === $token);
+    }
+
+    /**
+     * Checks if the next-next (after lookahead) token start a function.
+     *
+     * @return boolean
+     */
+    private function _isFunction()
+    {
+        $next = $this->_scanner->peek();
+        $this->_scanner->resetPeek();
+        return ($next['value'] === '(');
+    }
+
+    /**
+     * Checks whether the next 2 tokens start a subselect.
+     *
+     * @return boolean TRUE if the next 2 tokens start a subselect, FALSE otherwise.
+     */
+    private function _isSubselect()
+    {
+        $la = $this->lookahead;
+        $next = $this->_scanner->peek();
+        $this->_scanner->resetPeek();
+        return ($la['value'] === '(' && $next['type'] === Doctrine_ORM_Query_Token::T_SELECT);
+    }
+
+    /* Parse methods */
+
+    /**
+     * QueryLanguage ::= SelectStatement | UpdateStatement | DeleteStatement
+     *
+     * @return <type>
+     */
+    private function _QueryLanguage()
+    {
+        $this->lookahead = $this->_scanner->next();
+        switch ($this->lookahead['type']) {
+            case Doctrine_ORM_Query_Token::T_SELECT:
+                return $this->_SelectStatement();
+                break;
+
+            case Doctrine_ORM_Query_Token::T_UPDATE:
+                return $this->_UpdateStatement();
+                break;
+
+            case Doctrine_ORM_Query_Token::T_DELETE:
+                return $this->_DeleteStatement();
+                break;
+
+            default:
+                $this->syntaxError('SELECT, UPDATE or DELETE');
+                break;
+        }
+    }
+
+    /**
+     * SelectStatement ::= SelectClause FromClause [WhereClause] [GroupByClause] [HavingClause] [OrderByClause]
+     *
+     * @return <type> 
+     */
+    private function _SelectStatement()
+    {
+        $selectClause = $this->_SelectClause();
+        $fromClause = $this->_FromClause();
+        $this->_processPendingPathExpressionsInSelect();
+
+        $whereClause = $this->_isNextToken(Doctrine_ORM_Query_Token::T_WHERE) ?
+                $this->_WhereClause() : null;
+
+        $groupByClause = $this->_isNextToken(Doctrine_ORM_Query_Token::T_GROUP) ?
+                $this->_GroupByClause() : null;
+
+        $havingClause = $this->_isNextToken(Doctrine_ORM_Query_Token::T_HAVING) ?
+                $this->_HavingClause() : null;
+
+        $orderByClause = $this->_isNextToken(Doctrine_ORM_Query_Token::T_ORDER) ?
+                $this->_OrderByClause() : null;
+
+        return new Doctrine_ORM_Query_AST_SelectStatement(
+            $selectClause, $fromClause, $whereClause, $groupByClause, $havingClause, $orderByClause
+        );
+    }
+
+    /**
+     * Processes pending path expressions that were encountered while parsing
+     * select expressions. These will be validated to make sure they are indeed
+     * valid <tt>StateFieldPathExpression</tt>s and additional information
+     * is attached to their AST nodes.
+     */
+    private function _processPendingPathExpressionsInSelect()
+    {
+        $qComps = $this->_parserResult->getQueryComponents();
+        foreach ($this->_pendingPathExpressionsInSelect as $expr) {
+            $parts = $expr->getParts();
+            $numParts = count($parts);
+            $dqlAlias = $parts[0];
+            if (count($parts) == 2) {
+                $expr->setIsSimpleStateFieldPathExpression(true);
+                if ( ! $qComps[$dqlAlias]['metadata']->hasField($parts[1])) {
+                    $this->syntaxError();
+                }
+            } else {
+                $embeddedClassFieldSeen = false;
+                $assocSeen = false;
+                for ($i = 1; $i < $numParts - 1; ++$i) {
+                    if ($qComps[$dqlAlias]['metadata']->hasAssociation($parts[$i])) {
+                        if ($embeddedClassFieldSeen) {
+                            $this->semanticalError('Invalid navigation path.');
+                        }
+                        // Indirect join
+                        $assoc = $qComps[$dqlAlias]['metadata']->getAssociationMapping($parts[$i]);
+                        if ( ! $assoc->isOneToOne()) {
+                            $this->semanticalError('Single-valued association expected.');
+                        }
+                        $expr->setIsSingleValuedAssociationPart($parts[$i]);
+                        //TODO...
+                        $assocSeen = true;
+                    } else if ($qComps[$dqlAlias]['metadata']->hasEmbeddedClassField($parts[$i])) {
+                        //TODO...
+                        $expr->setIsEmbeddedClassPart($parts[$i]);
+                        $this->syntaxError();
+                    } else {
+                        $this->syntaxError();
+                    }
+                }
+                if ( ! $assocSeen) {
+                    $expr->setIsSimpleStateFieldPathExpression(true);
+                } else {
+                    $expr->setIsSimpleStateFieldAssociationPathExpression(true);
+                }
+                // Last part MUST be a simple state field
+                if ( ! $qComps[$dqlAlias]['metadata']->hasField($parts[$numParts-1])) {
+                    $this->syntaxError();
+                }
+            }
+        }
+    }
+
+    private function _UpdateStatement()
+    {
+        //TODO
+    }
+
+    private function _DeleteStatement()
+    {
+        //TODO
+    }
+
+    /**
+     * SelectClause ::= "SELECT" ["DISTINCT"] SelectExpression {"," SelectExpression}
+     */
+    private function _SelectClause()
+    {
+        $isDistinct = false;
+        $this->match(Doctrine_ORM_Query_Token::T_SELECT);
+
+        // Inspecting if we are in a DISTINCT query
+        if ($this->_isNextToken(Doctrine_ORM_Query_Token::T_DISTINCT)) {
+            $this->match(Doctrine_ORM_Query_Token::T_DISTINCT);
+            $isDistinct = true;
+        }
+
+        // Process SelectExpressions (1..N)
+        $selectExpressions = array();
+        $selectExpressions[] = $this->_SelectExpression();
+        while ($this->_isNextToken(',')) {
+            $this->match(',');
+            $selectExpressions[] = $this->_SelectExpression();
+        }
+
+        return new Doctrine_ORM_Query_AST_SelectClause($selectExpressions, $isDistinct);
+    }
+
+    /**
+     * FromClause ::= "FROM" IdentificationVariableDeclaration {"," IdentificationVariableDeclaration}
+     */
+    private function _FromClause()
+    {
+        $this->match(Doctrine_ORM_Query_Token::T_FROM);
+        $identificationVariableDeclarations = array();
+        $identificationVariableDeclarations[] = $this->_IdentificationVariableDeclaration();
+        while ($this->_isNextToken(',')) {
+            $this->match(',');
+            $identificationVariableDeclarations[] = $this->_IdentificationVariableDeclaration();
+        }
+
+        return new Doctrine_ORM_Query_AST_FromClause($identificationVariableDeclarations);
+    }
+
+    /**
+     * SelectExpression ::=
+     *      IdentificationVariable | StateFieldPathExpression |
+     *      (AggregateExpression | "(" Subselect ")") [["AS"] FieldAliasIdentificationVariable]
+     */
+    private function _SelectExpression()
+    {
+        $expression = null;
+        $fieldIdentificationVariable = null;
+        $peek = $this->_scanner->peek();
+        $this->_scanner->resetPeek();
+        // First we recognize for an IdentificationVariable (DQL class alias)
+        if ($peek['value'] != '.' && $this->lookahead['type'] === Doctrine_ORM_Query_Token::T_IDENTIFIER) {
+            $expression = $this->_IdentificationVariable();
+        } else if (($isFunction = $this->_isFunction()) !== false || $this->_isSubselect()) {
+            $expression = $isFunction ? $this->_AggregateExpression() : $this->_Subselect();
+            if ($this->_isNextToken(Doctrine_ORM_Query_Token::T_AS)) {
+                $this->match(Doctrine_ORM_Query_Token::T_AS);
+                $fieldIdentificationVariable = $this->_FieldAliasIdentificationVariable();
+            } elseif ($this->_isNextToken(Doctrine_ORM_Query_Token::T_IDENTIFIER)) {
+                $fieldIdentificationVariable = $this->_FieldAliasIdentificationVariable();
+            }
+        } else {
+            $expression = $this->_PathExpressionInSelect();
+        }
+
+        return new Doctrine_ORM_Query_AST_SelectExpression($expression, $fieldIdentificationVariable);
+    }
+
+    /**
+     * IdentificationVariable ::= identifier
+     */
+    private function _IdentificationVariable()
+    {
+        $this->match(Doctrine_ORM_Query_Token::T_IDENTIFIER);
+        return $this->token['value'];
+    }
+
+    /**
+     * IdentificationVariableDeclaration ::= RangeVariableDeclaration [IndexBy] {JoinVariableDeclaration}*
+     */
+    private function _IdentificationVariableDeclaration()
+    {
+        $rangeVariableDeclaration = $this->_RangeVariableDeclaration();
+        $indexBy = $this->_isNextToken(Doctrine_ORM_Query_Token::T_INDEX) ?
+                $this->_IndexBy() : null;
+        $joinVariableDeclarations = array();
+        while (
+            $this->_isNextToken(Doctrine_ORM_Query_Token::T_LEFT) ||
+            $this->_isNextToken(Doctrine_ORM_Query_Token::T_INNER) ||
+            $this->_isNextToken(Doctrine_ORM_Query_Token::T_JOIN)
+        ) {
+            $joinVariableDeclarations[] = $this->_JoinVariableDeclaration();
+        }
+
+        return new Doctrine_ORM_Query_AST_IdentificationVariableDeclaration(
+            $rangeVariableDeclaration, $indexBy, $joinVariableDeclarations
+        );
+    }
+
+    /**
+     * RangeVariableDeclaration ::= AbstractSchemaName ["AS"] AliasIdentificationVariable
+     */
+    private function _RangeVariableDeclaration()
+    {
+        $abstractSchemaName = $this->_AbstractSchemaName();
+
+        if ($this->_isNextToken(Doctrine_ORM_Query_Token::T_AS)) {
+            $this->match(Doctrine_ORM_Query_Token::T_AS);
+        }
+        $aliasIdentificationVariable = $this->_AliasIdentificationVariable();
+        $classMetadata = $this->_em->getClassMetadata($abstractSchemaName);
+
+        // Building queryComponent
+        $queryComponent = array(
+            'metadata' => $classMetadata,
+            'parent'   => null,
+            'relation' => null,
+            'map'      => null,
+            'scalar'   => null,
+        );
+        $this->_parserResult->setQueryComponent($aliasIdentificationVariable, $queryComponent);
+
+        return new Doctrine_ORM_Query_AST_RangeVariableDeclaration(
+            $classMetadata, $aliasIdentificationVariable
+        );
+    }
+
+    /**
+     * AbstractSchemaName ::= identifier
+     */
+    private function _AbstractSchemaName()
+    {
+        $this->match(Doctrine_ORM_Query_Token::T_IDENTIFIER);
+        return $this->token['value'];
+    }
+
+    /**
+     * AliasIdentificationVariable = identifier
+     */
+    private function _AliasIdentificationVariable()
+    {
+        $this->match(Doctrine_ORM_Query_Token::T_IDENTIFIER);
+        return $this->token['value'];
+    }
+
+    /**
+     * Special rule that acceps all kinds of path expressions.
+     */
+    private function _PathExpression()
+    {
+        $this->match(Doctrine_ORM_Query_Token::T_IDENTIFIER);
+        $parts = array($this->token['value']);
+        while ($this->_isNextToken('.')) {
+            $this->match('.');
+            $this->match(Doctrine_ORM_Query_Token::T_IDENTIFIER);
+            $parts[] = $this->token['value'];
+        }
+        $pathExpression = new Doctrine_ORM_Query_AST_PathExpression($parts);
+
+        return $pathExpression;
+    }
+
+    /**
+     * Special rule that acceps all kinds of path expressions. and defers their
+     * semantical checking until the FROM part has been parsed completely (joins inclusive).
+     * Mainly used for path expressions in the SelectExpressions.
+     */
+    private function _PathExpressionInSelect()
+    {
+        $expr = $this->_PathExpression();
+        $this->_pendingPathExpressionsInSelect[] = $expr;
+        return $expr;
+    }
+
+    /**
+     * JoinVariableDeclaration ::= Join [IndexBy]
+     */
+    private function _JoinVariableDeclaration()
+    {
+        $join = $this->_Join();
+        $indexBy = $this->_isNextToken(Doctrine_ORM_Query_Token::T_INDEX) ?
+                $this->_IndexBy() : null;
+        return new Doctrine_ORM_Query_AST_JoinVariableDeclaration($join, $indexBy);
+    }
+
+    /**
+     * Join ::= ["LEFT" ["OUTER"] | "INNER"] "JOIN" JoinAssociationPathExpression
+     *          ["AS"] AliasIdentificationVariable [("ON" | "WITH") ConditionalExpression]
+     */
+    private function _Join()
+    {
+        // Check Join type
+        $joinType = Doctrine_ORM_Query_AST_Join::JOIN_TYPE_INNER;
+        if ($this->_isNextToken(Doctrine_ORM_Query_Token::T_LEFT)) {
+            $this->match(Doctrine_ORM_Query_Token::T_LEFT);
+            // Possible LEFT OUTER join
+            if ($this->_isNextToken(Doctrine_ORM_Query_Token::T_OUTER)) {
+                $this->match(Doctrine_ORM_Query_Token::T_OUTER);
+                $joinType = Doctrine_ORM_Query_AST_Join::JOIN_TYPE_LEFTOUTER;
+            } else {
+                $joinType = Doctrine_ORM_Query_AST_Join::JOIN_TYPE_LEFT;
+            }
+        } else if ($this->_isNextToken(Doctrine_ORM_Query_Token::T_INNER)) {
+            $this->match(Doctrine_ORM_Query_Token::T_INNER);
+        }
+
+        $this->match(Doctrine_ORM_Query_Token::T_JOIN);
+
+        $joinPathExpression = $this->_JoinPathExpression();
+        if ($this->_isNextToken(Doctrine_ORM_Query_Token::T_AS)) {
+            $this->match(Doctrine_ORM_Query_Token::T_AS);
+        }
+
+        $aliasIdentificationVariable = $this->_AliasIdentificationVariable();
+
+        // Verify that the association exists, if yes update the ParserResult
+        // with the new component.
+        $parentComp = $this->_parserResult->getQueryComponent($joinPathExpression->getIdentificationVariable());
+        $parentClass = $parentComp['metadata'];
+        $assocField = $joinPathExpression->getAssociationField();
+        if ( ! $parentClass->hasAssociation($assocField)) {
+            $this->semanticalError("Class " . $parentClass->getClassName() .
+                    " has no association named '$assocField'.");
+        }
+        $targetClassName = $parentClass->getAssociationMapping($assocField)->getTargetEntityName();
+
+        // Building queryComponent
+        $joinQueryComponent = array(
+            'metadata' => $this->_em->getClassMetadata($targetClassName),
+            'parent'   => $joinPathExpression->getIdentificationVariable(),
+            'relation' => $parentClass->getAssociationMapping($assocField),
+            'map'      => null,
+            'scalar'   => null,
+        );
+        $this->_parserResult->setQueryComponent($aliasIdentificationVariable, $joinQueryComponent);
+
+        // Create AST node
+        $join = new Doctrine_ORM_Query_AST_Join($joinType, $joinPathExpression, $aliasIdentificationVariable);
+
+        // Check Join where type
+        if (
+            $this->_isNextToken(Doctrine_ORM_Query_Token::T_ON) ||
+            $this->_isNextToken(Doctrine_ORM_Query_Token::T_WITH)
+        ) {
+            if ($this->_isNextToken(Doctrine_ORM_Query_Token::T_ON)) {
+                $this->match(Doctrine_ORM_Query_Token::T_ON);
+                $join->setWhereType(Doctrine_ORM_Query_AST_Join::JOIN_WHERE_ON);
+            } else {
+                $this->match(Doctrine_ORM_Query_Token::T_WITH);
+            }
+            $join->setConditionalExpression($this->_ConditionalExpression());
+        }
+
+        return $join;
+    }
+
+    /*private function _JoinAssociationPathExpression() {
+        if ($this->_isSingleValuedPathExpression()) {
+            return $this->_JoinSingleValuedAssociationPathExpression();
+        } else {
+            return $this->_JoinCollectionValuedPathExpression();
+        }
+    }*/
+
+    /*private function _isSingleValuedPathExpression()
+    {
+        $parserResult = $this->_parserResult;
+
+        // Trying to recoginize this grammar:
+        // IdentificationVariable "." (CollectionValuedAssociationField | SingleValuedAssociationField)
+        $token = $this->lookahead;
+        $this->_scanner->resetPeek();
+        if ($parserResult->hasQueryComponent($token['value'])) {
+            $queryComponent = $parserResult->getQueryComponent($token['value']);
+            $peek = $this->_scanner->peek();
+            if ($peek['value'] === '.') {
+                $peek2 = $this->_scanner->peek();
+                if ($queryComponent['metadata']->hasAssociation($peek2['value']) &&
+                        $queryComponent['metadata']->getAssociationMapping($peek2['value'])->isOneToOne()) {
+	                return true;
+	            }
+            }
+        }
+        return false;
+    }*/
+
+    /**
+     * JoinPathExpression ::= IdentificationVariable "." (CollectionValuedAssociationField | SingleValuedAssociationField)
+     */
+    private function _JoinPathExpression()
+    {
+        $identificationVariable = $this->_IdentificationVariable();
+        $this->match('.');
+        $this->match(Doctrine_ORM_Query_Token::T_IDENTIFIER);
+        $assocField = $this->token['value'];
+        return new Doctrine_ORM_Query_AST_JoinPathExpression(
+            $identificationVariable, $assocField
+        );
+    }
+
+    /**
+     * IndexBy ::= "INDEX" "BY" SimpleStateFieldPathExpression
+     */
+    private function _IndexBy()
+    {
+        $this->match(Doctrine_ORM_Query_Token::T_INDEX);
+        $this->match(Doctrine_ORM_Query_Token::T_BY);
+        $pathExp = $this->_SimpleStateFieldPathExpression();
+        // Add the INDEX BY info to the query component
+        $qComp = $this->_parserResult->getQueryComponent($pathExp->getIdentificationVariable());
+        $qComp['map'] = $pathExp->getSimpleStateField();
+        $this->_parserResult->setQueryComponent($pathExp->getIdentificationVariable(), $qComp);
+        return $pathExp;
+    }
+
+    /**
+     * SimpleStateFieldPathExpression ::= IdentificationVariable "." StateField
+     */
+    private function _SimpleStateFieldPathExpression()
+    {
+        $identificationVariable = $this->_IdentificationVariable();
+        $this->match('.');
+        $this->match(Doctrine_ORM_Query_Token::T_IDENTIFIER);
+        $simpleStateField = $this->token['value'];
+        return new Doctrine_ORM_Query_AST_SimpleStateFieldPathExpression($identificationVariable, $simpleStateField);
+    }
+
+    /**
+     * AggregateExpression ::=
+     *  ("AVG" | "MAX" | "MIN" | "SUM") "(" ["DISTINCT"] StateFieldPathExpression ")" |
+     *  "COUNT" "(" ["DISTINCT"] (IdentificationVariable | SingleValuedAssociationPathExpression | StateFieldPathExpression) ")"
+     */
+    private function _AggregateExpression()
+    {
+        $isDistinct = false;
+        $functionName = '';
+        if ($this->_isNextToken(Doctrine_ORM_Query_Token::T_COUNT)) {
+            $this->match(Doctrine_ORM_Query_Token::T_COUNT);
+            $functionName = $this->token['value'];
+            $this->match('(');
+            if ($this->_isNextToken(Doctrine_ORM_Query_Token::T_DISTINCT)) {
+                $this->match(Doctrine_ORM_Query_Token::T_DISTINCT);
+                $isDistinct = true;
+            }
+            // For now we only support a PathExpression here...
+            $pathExp = $this->_PathExpression();
+            $this->match(')');
+        } else if ($this->_isNextToken(Doctrine_ORM_Query_Token::T_AVG)) {
+            $this->match(Doctrine_ORM_Query_Token::T_AVG);
+            $functionName = $this->token['value'];
+            $this->match('(');
+            //...
+        } else {
+            $this->syntaxError('One of: MAX, MIN, AVG, SUM, COUNT');
+        }
+        return new Doctrine_ORM_Query_AST_AggregateExpression($functionName, $pathExp, $isDistinct);
+    }
+
+    /**
+     * GroupByClause ::= "GROUP" "BY" GroupByItem {"," GroupByItem}*
+     * GroupByItem ::= SingleValuedPathExpression
+     */
+    private function _GroupByClause()
+    {
+        $this->match(Doctrine_ORM_Query_Token::T_GROUP);
+        $this->match(Doctrine_ORM_Query_Token::T_BY);
+        $groupByItems = array();
+        $groupByItems[] = $this->_PathExpression();
+        while ($this->_isNextToken(',')) {
+            $this->match(',');
+            $groupByItems[] = $this->_PathExpression();
+        }
+        return new Doctrine_ORM_Query_AST_GroupByClause($groupByItems);
+    }
+
+    /**
+     * WhereClause ::= "WHERE" ConditionalExpression
+     */
+    private function _WhereClause()
+    {
+        $this->match(Doctrine_ORM_Query_Token::T_WHERE);
+        return new Doctrine_ORM_Query_AST_WhereClause($this->_ConditionalExpression());
+    }
+
+    /**
+     * ConditionalExpression ::= ConditionalTerm {"OR" ConditionalTerm}*
+     */
+    private function _ConditionalExpression()
+    {
+        $conditionalTerms = array();
+        $conditionalTerms[] = $this->_ConditionalTerm();
+        while ($this->_isNextToken(Doctrine_ORM_Query_Token::T_OR)) {
+            $this->match(Doctrine_ORM_Query_Token::T_OR);
+            $conditionalTerms[] = $this->_ConditionalTerm();
+        }
+        return new Doctrine_ORM_Query_AST_ConditionalExpression($conditionalTerms);
+    }
+
+    /**
+     * ConditionalTerm ::= ConditionalFactor {"AND" ConditionalFactor}*
+     */
+    private function _ConditionalTerm()
+    {
+        $conditionalFactors = array();
+        $conditionalFactors[] = $this->_ConditionalFactor();
+        while ($this->_isNextToken(Doctrine_ORM_Query_Token::T_AND)) {
+            $this->match(Doctrine_ORM_Query_Token::T_AND);
+            $conditionalFactors[] = $this->_ConditionalFactor();
+        }
+        return new Doctrine_ORM_Query_AST_ConditionalTerm($conditionalFactors);
+    }
+
+    /**
+     * ConditionalFactor ::= ["NOT"] ConditionalPrimary
+     */
+    private function _ConditionalFactor()
+    {
+        $not = false;
+        if ($this->_isNextToken(Doctrine_ORM_Query_Token::T_NOT)) {
+            $this->match(Doctrine_ORM_Query_Token::T_NOT);
+            $not = true;
+        }
+        return new Doctrine_ORM_Query_AST_ConditionalFactor($this->_ConditionalPrimary(), $not);
+    }
+
+    /**
+     * ConditionalPrimary ::= SimpleConditionalExpression | "(" ConditionalExpression ")"
+     */
+    private function _ConditionalPrimary()
+    {
+        $condPrimary = new Doctrine_ORM_Query_AST_ConditionalPrimary;
+        if ($this->_isNextToken('(')) {
+            $this->match('(');
+            $conditionalExpression = $this->_ConditionalExpression();
+            $this->match(')');
+            $condPrimary->setConditionalExpression($conditionalExpression);
+        } else {
+            $condPrimary->setSimpleConditionalExpression($this->_SimpleConditionalExpression());
+        }
+        return $condPrimary;
+    }
+
+    /**
+     * SimpleConditionalExpression ::= ExistsExpression |
+     *          (SimpleStateFieldPathExpression (ComparisonExpression | BetweenExpression | LikeExpression |
+     *           InExpression | NullComparisonExpression)) |
+     *          (CollectionValuedPathExpression EmptyCollectionComparisonExpression) |
+     *          (EntityExpression CollectionMemberExpression)
+     */
+    private function _SimpleConditionalExpression()
+    {
+        if ($this->_getExpressionType() === Doctrine_ORM_Query_Token::T_EXISTS) {
+            return $this->_ExistsExpression();
+        }
+
+        // For now... just SimpleStateFieldPathExpression
+        $leftExpression = $this->_SimpleStateFieldPathExpression();
+
+        switch ($this->_getExpressionType()) {
+            case Doctrine_ORM_Query_Token::T_NONE:
+                // [TODO] Check out ticket #935 to understand what will be done with enumParams
+                $rightExpression = $this->_ComparisonExpression();
+                break;
+            case Doctrine_ORM_Query_Token::T_BETWEEN:
+                $rightExpression = $this->_BetweenExpression();
+                break;
+
+            case Doctrine_ORM_Query_Token::T_LIKE:
+                $rightExpression = $this->_LikeExpression();
+                break;
+
+            case Doctrine_ORM_Query_Token::T_IN:
+                $rightExpression = $this->_InExpression();
+                break;
+
+            case Doctrine_ORM_Query_Token::T_IS:
+                $rightExpression = $this->_NullComparisonExpression();
+                break;
+
+            case Doctrine_ORM_Query_Token::T_ALL:
+            case Doctrine_ORM_Query_Token::T_ANY:
+            case Doctrine_ORM_Query_Token::T_SOME:
+                $rightExpression = $this->_QuantifiedExpression();
+                break;
+
+            default:
+                $message = "BETWEEN, LIKE, IN, IS, quantified (ALL, ANY or SOME) "
+                         . "or comparison (=, <, <=, <>, >, >=, !=)";
+                $this->syntaxError($message);
+                break;
+        }
+
+        
+    }
+
+    private function _getExpressionType()
+    {
+        if ($this->_isNextToken(Doctrine_ORM_Query_Token::T_NOT)) {
+            $token = $this->_scanner->peek();
+            $this->_scanner->resetPeek();
+        } else {
+            $token = $this->lookahead;
+        }
+        return $token['type'];
+    }
+
+    private function _ComparisonExpression()
+    {
+        var_dump($this->lookahead);
     }
 }

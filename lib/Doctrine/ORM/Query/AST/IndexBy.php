@@ -31,14 +31,11 @@
 class Doctrine_ORM_Query_AST_IndexBy extends Doctrine_ORM_Query_AST
 {
     protected $_simpleStateFieldPathExpression = null;
-    
-    
-    /* Setters */
-    public function setSimpleStateFieldPathExpression($simpleStateFieldPathExpression)
+
+    public function __construct($simpleStateFieldPathExpression)
     {
         $this->_simpleStateFieldPathExpression = $simpleStateFieldPathExpression;
-    }
-    
+    }    
     
     /* Getters */
     public function getSimpleStateFieldPathExpression()

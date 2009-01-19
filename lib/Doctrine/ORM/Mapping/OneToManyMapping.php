@@ -118,4 +118,3 @@ class Doctrine_ORM_Mapping_OneToManyMapping extends Doctrine_ORM_Mapping_Associa
     
 }
 
-?>

@@ -44,9 +44,9 @@ class Doctrine_ORM_Query_Parser_SelectStatement extends Doctrine_ORM_Query_Parse
         // Disable the semantical check for SelectClause now. This is needed
         // since we dont know the query components yet (will be known only
         // when the FROM and WHERE clause are processed).
-        $this->_dataHolder->set('semanticalCheck', false);
+        //$this->_dataHolder->set('semanticalCheck', false);
         $this->_selectClause = $this->parse('SelectClause');
-        $this->_dataHolder->remove('semanticalCheck');
+        //$this->_dataHolder->remove('semanticalCheck');
         
         $this->_AST->setFromClause($this->parse('FromClause'));
 

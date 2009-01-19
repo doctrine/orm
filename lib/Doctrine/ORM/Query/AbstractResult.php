@@ -121,7 +121,7 @@ abstract class Doctrine_ORM_Query_AbstractResult
      */
     public function getQueryComponent($componentAlias)
     {
-        if ( ! array_key_exists($componentAlias, $this->_queryComponents)) {
+        if ( ! isset($this->_queryComponents[$componentAlias])) {
             throw new Doctrine_ORM_Query_Exception('Unknown query component ' . $componentAlias);
         }
 
@@ -188,7 +188,7 @@ abstract class Doctrine_ORM_Query_AbstractResult
 
 
     /**
-     * Get component alias associated with given table alias.
+     * Get DQL alias associated with given SQL table alias.
      *
      * @param string $tableAlias SQL table alias that identifies the component alias
      * @return string Component alias
@@ -272,5 +272,4 @@ abstract class Doctrine_ORM_Query_AbstractResult
             $this->getEnumParams()
         ));
     }
-
 }

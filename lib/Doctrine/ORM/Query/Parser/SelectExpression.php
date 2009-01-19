@@ -91,14 +91,7 @@ class Doctrine_ORM_Query_Parser_SelectExpression extends Doctrine_ORM_Query_Pars
 
         // We have an identifier here
         if ($token['type'] === Doctrine_ORM_Query_Token::T_IDENTIFIER) {
-            $token = $this->_parser->getScanner()->peek();
-
-            // If we have a dot ".", then next char must be the "*"
-            if ($token['type'] === Doctrine_ORM_Query_Token::T_DOT) {
-                $token = $this->_parser->getScanner()->peek();
-
-                return $token['value'] === '*';
-            }
+            return true;
         }
         
         return false;

@@ -25,12 +25,13 @@ class Orm_Query_AllTests
         $suite = new Doctrine_TestSuite('Doctrine Orm Query');
 
         $suite->addTestSuite('Orm_Query_IdentifierRecognitionTest');
-        /*$suite->addTestSuite('Orm_Query_LanguageRecognitionTest');
+        $suite->addTestSuite('Orm_Query_SelectSqlGenerationTest');
+        /*
+        $suite->addTestSuite('Orm_Query_LanguageRecognitionTest');
         $suite->addTestSuite('Orm_Query_ScannerTest');
         $suite->addTestSuite('Orm_Query_DqlGenerationTest');
         $suite->addTestSuite('Orm_Query_DeleteSqlGenerationTest');
-        $suite->addTestSuite('Orm_Query_UpdateSqlGenerationTest');
-        $suite->addTestSuite('Orm_Query_SelectSqlGenerationTest');*/
+        $suite->addTestSuite('Orm_Query_UpdateSqlGenerationTest');*/
 
         return $suite;
     }

@@ -33,28 +33,12 @@ class Doctrine_ORM_Query_AST_SelectClause extends Doctrine_ORM_Query_AST
     protected $_isDistinct;
 
     protected $_selectExpressions = array();
-    
-    
-    /* Setters */
-    public function setIsDistinct($value)
-    {
-        $this->_isDistinct = $value;
-    }
-    
-    
-    public function addSelectExpression($expression)
-    {
-        $this->_selectExpressions[] = $expression;
-    }
 
-
-    public function setSelectExpressions($expressions, $append = false)
+    public function __construct(array $selectExpressions, $isDistinct)
     {
-        $this->_selectExpressions = ($append === true)
-            ? array_merge($this->_selectExpressions, $expressions)
-            : $expressions;
+        $this->_isDistinct = $isDistinct;
+        $this->_selectExpressions = $selectExpressions;
     }
-
     
     /* Getters */
     public function isDistinct()

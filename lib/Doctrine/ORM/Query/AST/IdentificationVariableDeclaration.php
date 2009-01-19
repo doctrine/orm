@@ -35,34 +35,13 @@ class Doctrine_ORM_Query_AST_IdentificationVariableDeclaration extends Doctrine_
     protected $_indexBy = null;
 
     protected $_joinVariableDeclarations = array();
-    
 
-    /* Setters */
-    public function setRangeVariableDeclaration($rangeVariableDeclaration)
+    public function __construct($rangeVariableDecl, $indexBy, array $joinVariableDecls)
     {
-        $this->_rangeVariableDeclaration = $rangeVariableDeclaration;
-    }
-
-
-    public function setIndexBy($indexBy)
-    {
+        $this->_rangeVariableDeclaration = $rangeVariableDecl;
         $this->_indexBy = $indexBy;
+        $this->_joinVariableDeclarations = $joinVariableDecls;
     }
-
-
-    public function addJoinVariableDeclaration($joinVariableDeclaration)
-    {
-        $this->_joinVariableDeclarations[] = $joinVariableDeclaration;
-    }
-
-
-    public function setJoinVariableDeclarations($joinVariableDeclarations, $append = false)
-    {
-        $this->_joinVariableDeclarations = ($append === true)
-            ? array_merge($this->_joinVariableDeclarations, $joinVariableDeclarations)
-            : $joinVariableDeclarations;
-    }
-
     
     /* Getters */
     public function getRangeVariableDeclaration()

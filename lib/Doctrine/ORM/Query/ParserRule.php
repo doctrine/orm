@@ -107,40 +107,35 @@ abstract class Doctrine_ORM_Query_ParserRule
      *
      * @param string $RuleName BNF Grammar Rule name
      * @param array $paramHolder Production parameter holder
-     * @return Doctrine_ORM_Query_ParserRule
+     * @return Doctrine_ORM_Query_AST The constructed subtree during parsing.
      */
-    public function parse($RuleName)
+    public function parse($ruleName)
     {
-        $BNFGrammarRule = $this->_getGrammarRule($RuleName);
-
-        //echo "Processing class: " . get_class($BNFGrammarRule) . "...\n";
-        //echo "Params: " . var_export($paramHolder, true) . "\n";
+        echo $ruleName . PHP_EOL;
+        return $this->_getGrammarRule($ruleName)->syntax();
 
         // Syntax check
-        if ( ! $this->_dataHolder->has('syntaxCheck') || $this->_dataHolder->get('syntaxCheck') === true) {
+        /*if ( ! $this->_dataHolder->has('syntaxCheck') || $this->_dataHolder->get('syntaxCheck') === true) {
             //echo "Processing syntax checks of " . $RuleName . "...\n";
-
-            $return = $BNFGrammarRule->syntax();
-
-            if ($return !== null) {
-                //echo "Returning Gramma Rule class: " . (is_object($return) ? get_class($return) : $return) . "...\n";
-
-                return $return;
+            $ASTNode = $BNFGrammarRule->syntax();
+            if ($ASTNode !== null) {
+                //echo "Returning Grammar Rule class: " . (is_object($ASTNode) ? get_class($ASTNode) : $ASTNode) . "...\n";
+                return $ASTNode;
             }
-        }
+        }*/
 
         // Semantical check
-        if ( ! $this->_dataHolder->has('semanticalCheck') || $this->_dataHolder->get('semanticalCheck') === true) {
-            //echo "Processing semantical checks of " . $RuleName . "...\n";
+        /*if ( ! $this->_dataHolder->has('semanticalCheck') || $this->_dataHolder->get('semanticalCheck') === true) {
+            echo "Processing semantical checks of " . $RuleName . "...\n";
 
             $return = $BNFGrammarRule->semantical();
 
             if ($return !== null) {
-                //echo "Returning Gramma Rule class: " . (is_object($return) ? get_class($return) : $return) . "...\n";
+                echo "Returning Grammar Rule class: " . (is_object($return) ? get_class($return) : $return) . "...\n";
 
                 return $return;
             }
-        }
+        }*/
 
         return $BNFGrammarRule;
     }
@@ -178,15 +173,6 @@ abstract class Doctrine_ORM_Query_ParserRule
     public function AST($AstName)
     {
         $class = 'Doctrine_ORM_Query_AST_' . $AstName;
-
-        //echo $class . "\r\n";
-
-        if ( ! class_exists($class)) {
-            throw new Doctrine_ORM_Query_Parser_Exception(
-                "Unknown AST node '" . $AstName . "'. Could not find related compiler class."
-            );
-        }
-
         return new $class($this->_parser->getParserResult());
     }
 

@@ -24,8 +24,6 @@ require_once 'lib/DoctrineTestInit.php';
 /**
  * Test case for testing the saving and referencing of query identifiers.
  *
- * @package     Doctrine
- * @subpackage  Query
  * @author      Guilherme Blanco <guilhermeblanco@hotmail.com>
  * @author      Janne Vanhala <jpvanhal@cc.hut.fi>
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
@@ -46,7 +44,7 @@ class Orm_Query_IdentifierRecognitionTest extends Doctrine_OrmTestCase
     public function testSingleAliasDeclarationIsSupported()
     {
         $entityManager = $this->_em;
-        $query = $entityManager->createQuery('SELECT u.* FROM CmsUser u');
+        $query = $entityManager->createQuery('SELECT u FROM CmsUser u');
         $parserResult = $query->parse();
 
         $decl = $parserResult->getQueryComponent('u');
@@ -61,7 +59,7 @@ class Orm_Query_IdentifierRecognitionTest extends Doctrine_OrmTestCase
     public function testSingleAliasDeclarationWithIndexByIsSupported()
     {
         $entityManager = $this->_em;
-        $query = $entityManager->createQuery('SELECT u.* FROM CmsUser u INDEX BY u.id');
+        $query = $entityManager->createQuery('SELECT u FROM CmsUser u INDEX BY u.id');
         $parserResult = $query->parse();
 
         $decl = $parserResult->getQueryComponent('u');
@@ -76,12 +74,12 @@ class Orm_Query_IdentifierRecognitionTest extends Doctrine_OrmTestCase
     public function testQueryParserSupportsMultipleAliasDeclarations()
     {
         $entityManager = $this->_em;
-        $query = $entityManager->createQuery('SELECT u.* FROM CmsUser u INDEX BY u.id LEFT JOIN u.phonenumbers p');
+        $query = $entityManager->createQuery('SELECT u FROM CmsUser u INDEX BY u.id LEFT JOIN u.phonenumbers p');
         $parserResult = $query->parse();
 
         $decl = $parserResult->getQueryComponent('u');
 
-        $this->assertTrue($decl['metadata'] instanceof Doctrine_ClassMetadata);
+        $this->assertTrue($decl['metadata'] instanceof Doctrine_ORM_Mapping_ClassMetadata);
         $this->assertEquals(null, $decl['relation']);
         $this->assertEquals(null, $decl['parent']);
         $this->assertEquals(null, $decl['scalar']);
@@ -89,8 +87,8 @@ class Orm_Query_IdentifierRecognitionTest extends Doctrine_OrmTestCase
 
         $decl = $parserResult->getQueryComponent('p');
 
-        $this->assertTrue($decl['metadata'] instanceof Doctrine_ClassMetadata);
-        $this->assertTrue($decl['relation'] instanceof Doctrine_Association);
+        $this->assertTrue($decl['metadata'] instanceof Doctrine_ORM_Mapping_ClassMetadata);
+        $this->assertTrue($decl['relation'] instanceof Doctrine_ORM_Mapping_AssociationMapping);
         $this->assertEquals('u', $decl['parent']);
         $this->assertEquals(null, $decl['scalar']);
         $this->assertEquals(null, $decl['map']);
@@ -100,12 +98,12 @@ class Orm_Query_IdentifierRecognitionTest extends Doctrine_OrmTestCase
     public function testQueryParserSupportsMultipleAliasDeclarationsWithIndexBy()
     {
         $entityManager = $this->_em;
-        $query = $entityManager->createQuery('SELECT u.* FROM CmsUser u INDEX BY u.id LEFT JOIN u.articles a INNER JOIN u.phonenumbers pn INDEX BY pn.phonenumber');
+        $query = $entityManager->createQuery('SELECT u FROM CmsUser u INDEX BY u.id LEFT JOIN u.articles a INNER JOIN u.phonenumbers pn INDEX BY pn.phonenumber');
         $parserResult = $query->parse();
 
         $decl = $parserResult->getQueryComponent('u');
 
-        $this->assertTrue($decl['metadata'] instanceof Doctrine_ClassMetadata);
+        $this->assertTrue($decl['metadata'] instanceof Doctrine_ORM_Mapping_ClassMetadata);
         $this->assertEquals(null, $decl['relation']);
         $this->assertEquals(null, $decl['parent']);
         $this->assertEquals(null, $decl['scalar']);
@@ -113,16 +111,16 @@ class Orm_Query_IdentifierRecognitionTest extends Doctrine_OrmTestCase
 
         $decl = $parserResult->getQueryComponent('a');
 
-        $this->assertTrue($decl['metadata'] instanceof Doctrine_ClassMetadata);
-        $this->assertTrue($decl['relation'] instanceof Doctrine_Association);
+        $this->assertTrue($decl['metadata'] instanceof Doctrine_ORM_Mapping_ClassMetadata);
+        $this->assertTrue($decl['relation'] instanceof Doctrine_ORM_Mapping_AssociationMapping);
         $this->assertEquals('u', $decl['parent']);
         $this->assertEquals(null, $decl['scalar']);
         $this->assertEquals(null, $decl['map']);
 
         $decl = $parserResult->getQueryComponent('pn');
 
-        $this->assertTrue($decl['metadata'] instanceof Doctrine_ClassMetadata);
-        $this->assertTrue($decl['relation'] instanceof Doctrine_Association);
+        $this->assertTrue($decl['metadata'] instanceof Doctrine_ORM_Mapping_ClassMetadata);
+        $this->assertTrue($decl['relation'] instanceof Doctrine_ORM_Mapping_AssociationMapping);
         $this->assertEquals('u', $decl['parent']);
         $this->assertEquals(null, $decl['scalar']);
         $this->assertEquals('phonenumber', $decl['map']);

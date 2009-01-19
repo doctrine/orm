@@ -31,11 +31,4 @@
  */
 abstract class Doctrine_ORM_Query_AST
 {
-    protected $_parserResult = null;
-    
-    
-    public function __construct(Doctrine_ORM_Query_ParserResult $parserResult)
-    {
-        $this->_parserResult = $parserResult;
-    }
 }

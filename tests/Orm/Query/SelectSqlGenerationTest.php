@@ -37,18 +37,20 @@ require_once 'lib/DoctrineTestInit.php';
  */
 class Orm_Query_SelectSqlGenerationTest extends Doctrine_OrmTestCase
 {
+    private $_em;
+
+    protected function setUp() {
+        $this->_em = $this->_getTestEntityManager();
+    }
+
     public function assertSqlGeneration($dqlToBeTested, $sqlToBeConfirmed)
     {
         try {
-            $entityManager = $this->_em;
-            $query = $entityManager->createQuery($dqlToBeTested);
-            //echo print_r($query->parse()->getQueryFields(), true) . "\n";
-
+            $query = $this->_em->createQuery($dqlToBeTested);
             parent::assertEquals($sqlToBeConfirmed, $query->getSql());
-            //echo $query->getSql() . "\n";
-
             $query->free();
         } catch (Doctrine_Exception $e) {
+            echo $e->getTraceAsString(); die();
             $this->fail($e->getMessage());
         }
     }
@@ -57,71 +59,65 @@ class Orm_Query_SelectSqlGenerationTest extends Doctrine_OrmTestCase
     public function testPlainFromClauseWithoutAlias()
     {
         $this->assertSqlGeneration(
-            'SELECT * FROM CmsUser',
-            'SELECT cu.id AS cu__id, cu.status AS cu__status, cu.username AS cu__username, cu.name AS cu__name FROM cms_user cu WHERE 1 = 1'
+            'SELECT u FROM CmsUser u',
+            'SELECT cu.id AS cu__id, cu.status AS cu__status, cu.username AS cu__username, cu.name AS cu__name FROM CmsUser cu'
         );
 
         $this->assertSqlGeneration(
-            'SELECT id FROM CmsUser',
-            'SELECT cu.id AS cu__id FROM cms_user cu WHERE 1 = 1'
+            'SELECT u.id FROM CmsUser u',
+            'SELECT cu.id AS cu__id FROM CmsUser cu'
         );
     }
-
-
-    public function testPlainFromClauseWithAlias()
-    {
-        $this->assertSqlGeneration(
-            'SELECT u.id FROM CmsUser u', 
-            'SELECT cu.id AS cu__id FROM cms_user cu WHERE 1 = 1'
-        );
-    }
-
-
-    public function testSelectSingleComponentWithAsterisk()
-    {
-        $this->assertSqlGeneration(
-            'SELECT u.* FROM CmsUser u', 
-            'SELECT cu.id AS cu__id, cu.status AS cu__status, cu.username AS cu__username, cu.name AS cu__name FROM cms_user cu WHERE 1 = 1'
-        );
-    }
-
 
     public function testSelectSingleComponentWithMultipleColumns()
     {
         $this->assertSqlGeneration(
             'SELECT u.username, u.name FROM CmsUser u', 
-            'SELECT cu.username AS cu__username, cu.name AS cu__name FROM cms_user cu WHERE 1 = 1'
+            'SELECT cu.username AS cu__username, cu.name AS cu__name FROM CmsUser cu'
         );
     }
 
-
-    public function testSelectMultipleComponentsWithAsterisk()
+    public function testSelectWithCollectionAssociationJoin()
     {
         $this->assertSqlGeneration(
-            'SELECT u.*, p.* FROM CmsUser u, u.phonenumbers p',
-            'SELECT cu.id AS cu__id, cu.status AS cu__status, cu.username AS cu__username, cu.name AS cu__name, cp.user_id AS cp__user_id, cp.phonenumber AS cp__phonenumber FROM cms_user cu, cms_phonenumber cp WHERE 1 = 1'
+            'SELECT u, p FROM CmsUser u JOIN u.phonenumbers p',
+            'SELECT cu.id AS cu__id, cu.status AS cu__status, cu.username AS cu__username, cu.name AS cu__name, cp.phonenumber AS cp__phonenumber FROM CmsUser cu INNER JOIN CmsPhonenumber cp ON cu.id = cp.user_id'
         );
     }
 
+    public function testSelectWithSingleValuedAssociationJoin()
+    {
+        $this->assertSqlGeneration(
+            'SELECT u, a FROM ForumUser u JOIN u.avatar a',
+            'SELECT fu.id AS fu__id, fu.username AS fu__username, fa.id AS fa__id FROM ForumUser fu INNER JOIN ForumAvatar fa ON fu.avatar_id = fa.id'
+        );
+    }
 
     public function testSelectDistinctIsSupported()
     {
         $this->assertSqlGeneration(
             'SELECT DISTINCT u.name FROM CmsUser u',
-            'SELECT DISTINCT cu.name AS cu__name FROM cms_user cu WHERE 1 = 1'
+            'SELECT DISTINCT cu.name AS cu__name FROM CmsUser cu'
         );
     }
-
 
     public function testAggregateFunctionInSelect()
     {
         $this->assertSqlGeneration(
             'SELECT COUNT(u.id) FROM CmsUser u GROUP BY u.id',
-            'SELECT COUNT(cu.id) AS dctrn__0 FROM cms_user cu WHERE 1 = 1 GROUP BY cu.id'
+            'SELECT COUNT(cu.id) AS dctrn__0 FROM CmsUser cu GROUP BY cu.id'
         );
     }
 
-    public function testAggregateFunctionWithDistinctInSelect()
+ /*   public function testWhereClauseInSelect()
+    {
+        $this->assertSqlGeneration(
+            'select u from ForumUser u where u.id = ?',
+            'SELECT fu.id AS fu__id, fu.username AS fu__username FROM ForumUser fu WHERE fu.id = ?'
+        );
+    }
+*/
+/*    public function testAggregateFunctionWithDistinctInSelect()
     {
         $this->assertSqlGeneration(
             'SELECT COUNT(DISTINCT u.name) FROM CmsUser u',
@@ -209,5 +205,5 @@ class Orm_Query_SelectSqlGenerationTest extends Doctrine_OrmTestCase
             'SELECT cu.id AS cu__id, ca.id AS ca__id FROM cms_user cu INNER JOIN cms_article ca ON cu.id = ca.user_id WHERE 1 = 1'
         );
     }
-
+*/
 }
