@@ -109,14 +109,14 @@ class Orm_Query_SelectSqlGenerationTest extends Doctrine_OrmTestCase
         );
     }
 
- /*   public function testWhereClauseInSelect()
+    public function testWhereClauseInSelect()
     {
         $this->assertSqlGeneration(
             'select u from ForumUser u where u.id = ?',
             'SELECT fu.id AS fu__id, fu.username AS fu__username FROM ForumUser fu WHERE fu.id = ?'
         );
     }
-*/
+
 /*    public function testAggregateFunctionWithDistinctInSelect()
     {
         $this->assertSqlGeneration(

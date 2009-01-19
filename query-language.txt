@@ -168,19 +168,17 @@ ConditionalExpression       ::= ConditionalTerm {"OR" ConditionalTerm}*
 ConditionalTerm             ::= ConditionalFactor {"AND" ConditionalFactor}*
 ConditionalFactor           ::= ["NOT"] ConditionalPrimary
 ConditionalPrimary          ::= SimpleConditionalExpression | "(" ConditionalExpression ")"
-SimpleConditionalExpression ::= ExistsExpression |
-                                (SimpleStateFieldPathExpression (ComparisonExpression | BetweenExpression | LikeExpression |
-                                InExpression | NullComparisonExpression)) |
-                                (CollectionValuedPathExpression EmptyCollectionComparisonExpression) |
-                                (EntityExpression CollectionMemberExpression)
+SimpleConditionalExpression ::= ComparisonExpression | BetweenExpression | LikeExpression |
+                                InExpression | NullComparisonExpression | ExistsExpression |
+                                EmptyCollectionComparisonExpression | CollectionMemberExpression
 /* EmptyCollectionComparisonExpression and CollectionMemberExpression are for the future */
 
 
 /*
  * COLLECTION EXPRESSIONS (FOR THE FUTURE)
  */
-EmptyCollectionComparisonExpression ::= "IS" ["NOT"] "EMPTY"
-CollectionMemberExpression          ::= ["NOT"] "MEMBER" ["OF"] CollectionValuedPathExpression
+EmptyCollectionComparisonExpression ::= CollectionValuedPathExpression "IS" ["NOT"] "EMPTY"
+CollectionMemberExpression          ::= EntityExpression ["NOT"] "MEMBER" ["OF"] CollectionValuedPathExpression
 
 
 /*
