@@ -44,7 +44,9 @@ class Doctrine_ORM_Query_SqlWalker
     {
         $sql = $this->walkSelectClause($AST->getSelectClause());
         $sql .= $this->walkFromClause($AST->getFromClause());
+        $sql .= $AST->getWhereClause() ? $this->walkWhereClause($AST->getWhereClause()) : '';
         $sql .= $AST->getGroupByClause() ? $this->walkGroupByClause($AST->getGroupByClause()) : '';
+
         //... more clauses
         return $sql;
     }
@@ -221,6 +223,122 @@ class Doctrine_ORM_Query_SqlWalker
     public function walkDeleteStatement(Doctrine_ORM_Query_AST_DeleteStatement $AST)
     {
 
+    }
+
+    public function walkWhereClause($whereClause)
+    {
+        $sql = ' WHERE ';
+        $condExpr = $whereClause->getConditionalExpression();
+        foreach ($condExpr->getConditionalTerms() as $term) {
+            $sql .= $this->walkConditionalTerm($term);
+        }
+        return $sql;
+    }
+
+    public function walkConditionalTerm($condTerm)
+    {
+        $sql = '';
+        foreach ($condTerm->getConditionalFactors() as $factor) {
+            $sql .= $this->walkConditionalFactor($factor);
+        }
+        return $sql;
+    }
+
+    public function walkConditionalFactor($factor)
+    {
+        $sql = '';
+        if ($factor->isNot()) $sql .= ' NOT ';
+        $primary = $factor->getConditionalPrimary();
+        if ($primary->isSimpleConditionalExpression()) {
+            $simpleCond = $primary->getSimpleConditionalExpression();
+            if ($simpleCond instanceof Doctrine_ORM_Query_AST_ComparisonExpression) {
+                $sql .= $this->walkComparisonExpression($simpleCond);
+            }
+            // else if ...
+        }
+
+        return $sql;
+    }
+
+    public function walkComparisonExpression($compExpr)
+    {
+        $sql = '';
+        if ($compExpr->getLeftExpression() instanceof Doctrine_ORM_Query_AST_ArithmeticExpression) {
+            $sql .= $this->walkArithmeticExpression($compExpr->getLeftExpression());
+        } // else...
+        $sql .= ' ' . $compExpr->getOperator() . ' ';
+        if ($compExpr->getRightExpression() instanceof Doctrine_ORM_Query_AST_ArithmeticExpression) {
+            $sql .= $this->walkArithmeticExpression($compExpr->getRightExpression());
+        }
+        return $sql;
+    }
+
+    public function walkArithmeticExpression($arithmeticExpr)
+    {
+        $sql = '';
+        if ($arithmeticExpr->isSimpleArithmeticExpression()) {
+            foreach ($arithmeticExpr->getSimpleArithmeticExpression()->getArithmeticTerms() as $term) {
+                $sql .= $this->walkArithmeticTerm($term);
+            }
+        } else {
+            $sql .= $this->walkSubselect($arithmeticExpr->getSubselect());
+        }
+        return $sql;
+    }
+
+    public function walkArithmeticTerm($term)
+    {
+        $sql = '';
+        foreach ($term->getArithmeticFactors() as $factor) {
+            $sql .= $this->walkArithmeticFactor($factor);
+        }
+        return $sql;
+    }
+
+    public function walkArithmeticFactor($factor)
+    {
+        $sql = '';
+        $primary = $factor->getArithmeticPrimary();
+        if ($primary instanceof Doctrine_ORM_Query_AST_PathExpression) {
+            $sql .= $this->walkPathExpression($primary);
+        } else if ($primary instanceof Doctrine_ORM_Query_AST_InputParameter) {
+            if ($primary->isNamed()) {
+                $sql .= ':' . $primary->getName();
+            } else {
+                $sql .= '?';
+            }
+        }
+         
+        // else...
+
+        return $sql;
+    }
+
+    public function walkPathExpression($pathExpr)
+    {
+        $sql = '';
+        if ($pathExpr->isSimpleStateFieldPathExpression()) {
+            $parts = $pathExpr->getParts();
+            $numParts = count($parts);
+            $dqlAlias = $parts[0];
+            $fieldName = $parts[$numParts-1];
+            $qComp = $this->_parserResult->getQueryComponent($dqlAlias);
+            $class = $qComp['metadata'];
+
+            if ($numParts > 2) {
+                for ($i = 1; $i < $numParts-1; ++$i) {
+                    //TODO
+                }
+            }
+
+            $sqlTableAlias = $this->_dqlToSqlAliasMap[$dqlAlias];
+            $sql .= $sqlTableAlias . '.' . $class->getColumnName($fieldName);
+        } else if ($pathExpr->isSimpleStateFieldAssociationPathExpression()) {
+            throw new Doctrine_Exception("Not yet implemented.");
+        } else {
+            throw new Doctrine_ORM_Query_Exception("Encountered invalid PathExpression during SQL construction.");
+        }
+        return $sql;
     }
 
     /**

@@ -17,6 +17,7 @@ class Doctrine_ORM_Query_AST_PathExpression
     private $_isSimpleStateFieldAssociationPathExpression = false;
     private $_embeddedClassFields = array();
     private $_singleValuedAssociationFields = array();
+    private $_collectionValuedAssociationFields = array();
 
     public function __construct(array $parts)
     {
@@ -61,6 +62,11 @@ class Doctrine_ORM_Query_AST_PathExpression
         return isset($this->_singleValuedAssociationFields[$part]);
     }
 
+    public function isPartCollectionValuedAssociationField($part)
+    {
+        return isset($this->_collectionValuedAssociationFields[$part]);
+    }
+
     /* Setters to attach semantical information during semantical analysis. */
 
     public function setIsSimpleStateFieldPathExpression($bool)
@@ -81,6 +87,11 @@ class Doctrine_ORM_Query_AST_PathExpression
     public function setIsSingleValuedAssociationPart($part)
     {
         $this->_singleValuedAssociationFields[$part] = true;
+    }
+
+    public function setIsCollectionValuedAssociationPart($part)
+    {
+        $this->_collectionValuedAssociationFields[$part] = true;
     }
 }
 

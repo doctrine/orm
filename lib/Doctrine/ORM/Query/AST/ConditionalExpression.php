@@ -20,7 +20,7 @@ class Doctrine_ORM_Query_AST_ConditionalExpression extends Doctrine_ORM_Query_AS
 
     public function getConditionalTerms()
     {
-        return $this->_conditionalTerm;
+        return $this->_conditionalTerms;
     }
 }
 

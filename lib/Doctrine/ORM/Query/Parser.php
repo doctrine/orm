@@ -842,6 +842,55 @@ class Doctrine_ORM_Query_Parser
     }
 
     /**
+     * StateFieldPathExpression ::= SimpleStateFieldPathExpression | SimpleStateFieldAssociationPathExpression
+     */
+    private function _StateFieldPathExpression()
+    {
+        $parts = array();
+        $stateFieldSeen = false;
+        $assocSeen = false;
+
+        $identificationVariable = $this->_IdentificationVariable();
+        if ( ! $this->_parserResult->hasQueryComponent($identificationVariable)) {
+            $this->syntaxError("Identification variable.");
+        }
+        $qComp = $this->_parserResult->getQueryComponent($identificationVariable);
+        $parts[] = $identificationVariable;
+
+        $class = $qComp['metadata'];
+
+        if ( ! $this->_isNextToken('.')) {
+            $this->syntaxError();
+        }
+        
+        while ($this->_isNextToken('.')) {
+            if ($stateFieldSeen) $this->syntaxError();
+            $this->match('.');
+            $part = $this->_IdentificationVariable();
+            if ($class->hasField($part)) {
+                $stateFieldSeen = true;
+            } else if ($class->hasAssociation($part)) {
+                $assoc = $class->getAssociationMapping($part);
+                $class = $this->_em->getClassMetadata($assoc->getTargetEntityName());
+                $assocSeen = true;
+            } else {
+                $this->syntaxError();
+            }
+            $parts[] = $part;
+        }
+
+        $pathExpr = new Doctrine_ORM_Query_AST_PathExpression($parts);
+
+        if ($assocSeen) {
+            $pathExpr->setIsSimpleStateFieldAssociationPathExpression(true);
+        } else {
+            $pathExpr->setIsSimpleStateFieldPathExpression(true);
+        }
+
+        return $pathExpr;
+    }
+
+    /**
      * AggregateExpression ::=
      *  ("AVG" | "MAX" | "MIN" | "SUM") "(" ["DISTINCT"] StateFieldPathExpression ")" |
      *  "COUNT" "(" ["DISTINCT"] (IdentificationVariable | SingleValuedAssociationPathExpression | StateFieldPathExpression) ")"
@@ -964,63 +1013,189 @@ class Doctrine_ORM_Query_Parser
      */
     private function _SimpleConditionalExpression()
     {
-        if ($this->_getExpressionType() === Doctrine_ORM_Query_Token::T_EXISTS) {
-            return $this->_ExistsExpression();
-        }
-
-        // For now... just SimpleStateFieldPathExpression
-        $leftExpression = $this->_SimpleStateFieldPathExpression();
-
-        switch ($this->_getExpressionType()) {
-            case Doctrine_ORM_Query_Token::T_NONE:
-                // [TODO] Check out ticket #935 to understand what will be done with enumParams
-                $rightExpression = $this->_ComparisonExpression();
-                break;
-            case Doctrine_ORM_Query_Token::T_BETWEEN:
-                $rightExpression = $this->_BetweenExpression();
-                break;
-
-            case Doctrine_ORM_Query_Token::T_LIKE:
-                $rightExpression = $this->_LikeExpression();
-                break;
-
-            case Doctrine_ORM_Query_Token::T_IN:
-                $rightExpression = $this->_InExpression();
-                break;
-
-            case Doctrine_ORM_Query_Token::T_IS:
-                $rightExpression = $this->_NullComparisonExpression();
-                break;
-
-            case Doctrine_ORM_Query_Token::T_ALL:
-            case Doctrine_ORM_Query_Token::T_ANY:
-            case Doctrine_ORM_Query_Token::T_SOME:
-                $rightExpression = $this->_QuantifiedExpression();
-                break;
-
-            default:
-                $message = "BETWEEN, LIKE, IN, IS, quantified (ALL, ANY or SOME) "
-                         . "or comparison (=, <, <=, <>, >, >=, !=)";
-                $this->syntaxError($message);
-                break;
-        }
-
-        
-    }
-
-    private function _getExpressionType()
-    {
         if ($this->_isNextToken(Doctrine_ORM_Query_Token::T_NOT)) {
             $token = $this->_scanner->peek();
             $this->_scanner->resetPeek();
         } else {
             $token = $this->lookahead;
         }
-        return $token['type'];
+        if ($token['type'] === Doctrine_ORM_Query_Token::T_EXISTS) {
+            return $this->_ExistsExpression();
+        }
+
+        $stateFieldPathExpr = false;
+        if ($token['type'] === Doctrine_ORM_Query_Token::T_IDENTIFIER) {
+            // Peek beyond the PathExpression
+            $stateFieldPathExpr = true;
+            $peek = $this->_scanner->peek();
+            while ($peek['value'] === '.') {
+                $this->_scanner->peek();
+                $peek = $this->_scanner->peek();
+            }
+            $this->_scanner->resetPeek();
+            $token = $peek;
+        }
+
+        if ($stateFieldPathExpr) {
+            switch ($token['type']) {
+                case Doctrine_ORM_Query_Token::T_BETWEEN:
+                    return $this->_BetweenExpression();
+                case Doctrine_ORM_Query_Token::T_LIKE:
+                    return $this->_LikeExpression();
+                case Doctrine_ORM_Query_Token::T_IN:
+                    return $this->_InExpression();
+                case Doctrine_ORM_Query_Token::T_IS:
+                    return $this->_NullComparisonExpression();
+                case Doctrine_ORM_Query_Token::T_NONE:
+                    return $this->_ComparisonExpression();
+                default:
+                    $this->syntaxError();
+            }
+        } else {
+            switch ($token['type']) {
+                case Doctrine_ORM_Query_Token::T_INTEGER:
+                    // IF it turns out its a ComparisonExpression, then it MUST be ArithmeticExpression
+                    break;
+                case Doctrine_ORM_Query_Token::T_STRING:
+                    // IF it turns out its a ComparisonExpression, then it MUST be StringExpression
+                    break;
+                default:
+                    $this->syntaxError();
+            }
+        }
     }
 
+    /**
+     * SIMPLIFIED FROM BNF FOR NOW
+     * ComparisonExpression ::= ArithmeticExpression ComparisonOperator ( QuantifiedExpression | ArithmeticExpression )
+     */
     private function _ComparisonExpression()
     {
-        var_dump($this->lookahead);
+        $leftExpr = $this->_ArithmeticExpression();
+        $operator = $this->_ComparisonOperator();
+        if ($this->lookahead['type'] === Doctrine_ORM_Query_Token::T_ALL ||
+                $this->lookahead['type'] === Doctrine_ORM_Query_Token::T_ANY ||
+                $this->lookahead['type'] === Doctrine_ORM_Query_Token::T_SOME) {
+            $rightExpr = $this->_QuantifiedExpression();
+        } else {
+            $rightExpr = $this->_ArithmeticExpression();
+        }
+        return new Doctrine_ORM_Query_AST_ComparisonExpression($leftExpr, $operator, $rightExpr);
+    }
+
+    /**
+     * ArithmeticExpression ::= SimpleArithmeticExpression | "(" Subselect ")"
+     */
+    private function _ArithmeticExpression()
+    {
+        $expr = new Doctrine_ORM_Query_AST_ArithmeticExpression;
+        if ($this->lookahead['value'] === '(') {
+            $peek = $this->_scanner->peek();
+            $this->_scanner->resetPeek();
+            if ($peek['type'] === Doctrine_ORM_Query_Token::T_SELECT) {
+                $expr->setSubselect($this->_Subselect());
+                return $expr;
+            }
+        }
+        $expr->setSimpleArithmeticExpression($this->_SimpleArithmeticExpression());
+        return $expr;
+    }
+
+    /**
+     * SimpleArithmeticExpression ::= ArithmeticTerm {("+" | "-") ArithmeticTerm}*
+     */
+    private function _SimpleArithmeticExpression()
+    {
+        $terms = array();
+        $terms[] = $this->_ArithmeticTerm();
+        while ($this->lookahead['value'] == '+' || $this->lookahead['value'] == '-') {
+            $terms[] = $this->_ArithmeticTerm();
+        }
+        return new Doctrine_ORM_Query_AST_SimpleArithmeticExpression($terms);
+    }
+
+    /**
+     * ArithmeticTerm ::= ArithmeticFactor {("*" | "/") ArithmeticFactor}*
+     */
+    private function _ArithmeticTerm()
+    {
+        $factors = array();
+        $factors[] = $this->_ArithmeticFactor();
+        while ($this->lookahead['value'] == '*' || $this->lookahead['value'] == '/') {
+            $factors[] = $this->_ArithmeticFactor();
+        }
+        return new Doctrine_ORM_Query_AST_ArithmeticTerm($factors);
+    }
+
+    /**
+     * ArithmeticFactor ::= [("+" | "-")] ArithmeticPrimary
+     */
+    private function _ArithmeticFactor()
+    {
+        $pSign = $nSign = false;
+        if ($this->lookahead['value'] == '+') {
+            $this->match('+');
+            $pSign = true;
+        } else if ($this->lookahead['value'] == '-') {
+            $this->match('-');
+            $nSign = true;
+        }
+        return new Doctrine_ORM_Query_AST_ArithmeticFactor($this->_ArithmeticPrimary(), $pSign, $nSign);
+    }
+
+    /**
+     * ArithmeticPrimary ::= StateFieldPathExpression | Literal | "(" SimpleArithmeticExpression ")" | Function | AggregateExpression
+     */
+    private function _ArithmeticPrimary()
+    {
+        if ($this->lookahead['type'] === Doctrine_ORM_Query_Token::T_IDENTIFIER) {
+            return $this->_StateFieldPathExpression();
+        }
+        if ($this->lookahead['value'] === '(') {
+            return $this->_SimpleArithmeticExpression();
+        }
+        if ($this->lookahead['type'] === Doctrine_ORM_Query_Token::T_INPUT_PARAMETER) {
+            $this->match($this->lookahead['value']);
+            return new Doctrine_ORM_Query_AST_InputParameter($this->token['value']);
+        }
+        //TODO...
+    }
+
+    /**
+     * ComparisonOperator ::= "=" | "<" | "<=" | "<>" | ">" | ">=" | "!="
+     */
+    private function _ComparisonOperator()
+    {
+        switch ($this->lookahead['value']) {
+            case '=':
+                $this->match('=');
+                return '=';
+            case '<':
+                $this->match('<');
+                $operator = '<';
+                if ($this->_isNextToken('=')) {
+                    $this->match('=');
+                    $operator .= '=';
+                } else if ($this->_isNextToken('>')) {
+                    $this->match('>');
+                    $operator .= '>';
+                }
+                return $operator;
+            case '>':
+                $this->match('>');
+                $operator = '>';
+                if ($this->_isNextToken('=')) {
+                    $this->match('=');
+                    $operator .= '=';
+                }
+                return $operator;
+            case '!':
+                $this->match('!');
+                $this->match('=');
+                return '<>';
+            default:
+                $this->_parser->syntaxError('=, <, <=, <>, >, >=, !=');
+                break;
+        }
     }
 }

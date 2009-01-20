@@ -33,5 +33,15 @@ class Doctrine_ORM_Query_AST_ConditionalPrimary extends Doctrine_ORM_Query_AST
     {
         return $this->_conditionalExpression;
     }
+
+    public function isSimpleConditionalExpression()
+    {
+        return (bool)$this->_simpleConditionalExpression;
+    }
+
+    public function isConditionalExpression()
+    {
+        return (bool)$this->_conditionalExpression;
+    }
 }
 

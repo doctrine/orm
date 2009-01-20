@@ -50,6 +50,7 @@ class Orm_Query_SelectSqlGenerationTest extends Doctrine_OrmTestCase
             parent::assertEquals($sqlToBeConfirmed, $query->getSql());
             $query->free();
         } catch (Doctrine_Exception $e) {
+            echo $e->getMessage();
             echo $e->getTraceAsString(); die();
             $this->fail($e->getMessage());
         }
@@ -112,7 +113,7 @@ class Orm_Query_SelectSqlGenerationTest extends Doctrine_OrmTestCase
     public function testWhereClauseInSelect()
     {
         $this->assertSqlGeneration(
-            'select u from ForumUser u where u.id = ?',
+            'select u from ForumUser u where u.id = ?1',
             'SELECT fu.id AS fu__id, fu.username AS fu__username FROM ForumUser fu WHERE fu.id = ?'
         );
     }
