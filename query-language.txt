@@ -239,7 +239,7 @@ ComparisonExpression     ::= ArithmeticExpression ComparisonOperator ( Quantifie
                              DatetimeExpression ComparisonOperator (DatetimeExpression | QuantifiedExpression) |
                              EntityExpression ("=" | "<>") (EntityExpression | QuantifiedExpression)
 InExpression             ::= StateFieldPathExpression ["NOT"] "IN" "(" (Literal {"," Literal}* | Subselect) ")"
-LikeExpression           ::= ["NOT"] "LIKE" string ["ESCAPE" char]
+LikeExpression           ::= StringExpression ["NOT"] "LIKE" string ["ESCAPE" char]
 NullComparisonExpression ::= (SingleValuedPathExpression | InputParameter) "IS" ["NOT"] "NULL"
 ExistsExpression         ::= ["NOT"] "EXISTS" "(" Subselect ")"
 ComparisonOperator       ::= "=" | "<" | "<=" | "<>" | ">" | ">=" | "!="

@@ -232,9 +232,10 @@ class Doctrine_ORM_Query_Parser
     {
         // Parse & build AST
         $AST = $this->_QueryLanguage();
-
+        
         // Check for end of string
         if ($this->lookahead !== null) {
+            var_dump($this->lookahead);
             $this->syntaxError('end of string');
         }
 
@@ -995,10 +996,29 @@ class Doctrine_ORM_Query_Parser
     {
         $condPrimary = new Doctrine_ORM_Query_AST_ConditionalPrimary;
         if ($this->_isNextToken('(')) {
-            $this->match('(');
-            $conditionalExpression = $this->_ConditionalExpression();
-            $this->match(')');
-            $condPrimary->setConditionalExpression($conditionalExpression);
+            $numUnmatched = 1;
+            $peek = $this->_scanner->peek();
+            while ($numUnmatched > 0) {
+                if ($peek['value'] == ')') {
+                    --$numUnmatched;
+                } else if ($peek['value'] == '(') {
+                    ++$numUnmatched;
+                }
+                $peek = $this->_scanner->peek();
+            }
+            $this->_scanner->resetPeek();
+
+            //TODO: This is not complete, what about LIKE/BETWEEN/...etc?
+            $comparisonOps = array("=",  "<", "<=", "<>", ">", ">=", "!=");
+
+            if (in_array($peek['value'], $comparisonOps)) {
+                $condPrimary->setSimpleConditionalExpression($this->_SimpleConditionalExpression());
+            } else {
+                $this->match('(');
+                $conditionalExpression = $this->_ConditionalExpression();
+                $this->match(')');
+                $condPrimary->setConditionalExpression($conditionalExpression);
+            }
         } else {
             $condPrimary->setSimpleConditionalExpression($this->_SimpleConditionalExpression());
         }
@@ -1014,8 +1034,7 @@ class Doctrine_ORM_Query_Parser
     private function _SimpleConditionalExpression()
     {
         if ($this->_isNextToken(Doctrine_ORM_Query_Token::T_NOT)) {
-            $token = $this->_scanner->peek();
-            $this->_scanner->resetPeek();
+            $token = $this->_scanner->glimpse();
         } else {
             $token = $this->lookahead;
         }
@@ -1051,6 +1070,8 @@ class Doctrine_ORM_Query_Parser
                 default:
                     $this->syntaxError();
             }
+        } else if ($token['value'] == '(') {
+            return $this->_ComparisonExpression();
         } else {
             switch ($token['type']) {
                 case Doctrine_ORM_Query_Token::T_INTEGER:
@@ -1109,6 +1130,12 @@ class Doctrine_ORM_Query_Parser
         $terms = array();
         $terms[] = $this->_ArithmeticTerm();
         while ($this->lookahead['value'] == '+' || $this->lookahead['value'] == '-') {
+            if ($this->lookahead['value'] == '+') {
+                $this->match('+');
+            } else {
+                $this->match('-');
+            }
+            $terms[] = $this->token['value'];
             $terms[] = $this->_ArithmeticTerm();
         }
         return new Doctrine_ORM_Query_AST_SimpleArithmeticExpression($terms);
@@ -1122,6 +1149,12 @@ class Doctrine_ORM_Query_Parser
         $factors = array();
         $factors[] = $this->_ArithmeticFactor();
         while ($this->lookahead['value'] == '*' || $this->lookahead['value'] == '/') {
+            if ($this->lookahead['value'] == '*') {
+                $this->match('*');
+            } else {
+                $this->match('/');
+            }
+            $factors[] = $this->token['value'];
             $factors[] = $this->_ArithmeticFactor();
         }
         return new Doctrine_ORM_Query_AST_ArithmeticTerm($factors);
@@ -1148,16 +1181,27 @@ class Doctrine_ORM_Query_Parser
      */
     private function _ArithmeticPrimary()
     {
-        if ($this->lookahead['type'] === Doctrine_ORM_Query_Token::T_IDENTIFIER) {
-            return $this->_StateFieldPathExpression();
-        }
         if ($this->lookahead['value'] === '(') {
-            return $this->_SimpleArithmeticExpression();
+            $this->match('(');
+            $expr = $this->_SimpleArithmeticExpression();
+            $this->match(')');
+            return $expr;
         }
-        if ($this->lookahead['type'] === Doctrine_ORM_Query_Token::T_INPUT_PARAMETER) {
-            $this->match($this->lookahead['value']);
-            return new Doctrine_ORM_Query_AST_InputParameter($this->token['value']);
+        switch ($this->lookahead['type']) {
+            case Doctrine_ORM_Query_Token::T_IDENTIFIER:
+                return $this->_StateFieldPathExpression();
+            case Doctrine_ORM_Query_Token::T_INPUT_PARAMETER:
+                $this->match($this->lookahead['value']);
+                return new Doctrine_ORM_Query_AST_InputParameter($this->token['value']);
+            case Doctrine_ORM_Query_Token::T_STRING:
+            case Doctrine_ORM_Query_Token::T_INTEGER:
+            case Doctrine_ORM_Query_Token::T_FLOAT:
+                $this->match($this->lookahead['value']);
+                return $this->token['value'];
+            default:
+                $this->syntaxError();
         }
+        throw new Doctrine_Exception("Not yet implemented.");
         //TODO...
     }
 
@@ -1194,8 +1238,71 @@ class Doctrine_ORM_Query_Parser
                 $this->match('=');
                 return '<>';
             default:
-                $this->_parser->syntaxError('=, <, <=, <>, >, >=, !=');
+                $this->syntaxError('=, <, <=, <>, >, >=, !=');
                 break;
+        }
+    }
+
+    /**
+     * LikeExpression ::= StringExpression ["NOT"] "LIKE" string ["ESCAPE" char]
+     */
+    private function _LikeExpression()
+    {
+        $stringExpr = $this->_StringExpression();
+        $isNot = false;
+        if ($this->lookahead['type'] === Doctrine_ORM_Query_Token::T_NOT) {
+            $this->match(Doctrine_ORM_Query_Token::T_NOT);
+            $isNot = true;
+        }
+        $this->match(Doctrine_ORM_Query_Token::T_LIKE);
+        $this->match(Doctrine_ORM_Query_Token::T_STRING);
+        $stringPattern = $this->token['value'];
+        $escapeChar = null;
+        if ($this->lookahead['type'] === Doctrine_ORM_Query_Token::T_ESCAPE) {
+            $this->match(Doctrine_ORM_Query_Token::T_ESCAPE);
+            var_dump($this->lookahead);
+            //$this->match(Doctrine_ORM_Query_Token::T_)
+            //$escapeChar =
+        }
+        return new Doctrine_ORM_Query_AST_LikeExpression($stringExpr, $stringPattern, $isNot, $escapeChar);
+    }
+
+    /**
+     * StringExpression ::= StringPrimary | "(" Subselect ")"
+     */
+    private function _StringExpression()
+    {
+        if ($this->lookahead['value'] === '(') {
+            $peek = $this->_scanner->peek();
+            $this->_scanner->resetPeek();
+            if ($peek['type'] === Doctrine_ORM_Query_Token::T_SELECT) {
+                return $this->_Subselect();
+            }
+        }
+        return $this->_StringPrimary();
+    }
+
+    /**
+     * StringPrimary ::= StateFieldPathExpression | string | InputParameter | FunctionsReturningStrings | AggregateExpression
+     */
+    private function _StringPrimary()
+    {
+        if ($this->lookahead['type'] === Doctrine_ORM_Query_Token::T_IDENTIFIER) {
+            $peek = $this->_scanner->peek();
+            $this->_scanner->resetPeek();
+            if ($peek['value'] == '.') {
+                return $this->_StateFieldPathExpression();
+            } else if ($peek['value'] == '(') {
+                //TODO... FunctionsReturningStrings or AggregateExpression
+            } else {
+                $this->syntaxError("'.' or '('");
+            }
+        } else if ($this->lookahead['type'] === Doctrine_ORM_Query_Token::T_STRING) {
+            //TODO...
+        } else if ($this->lookahead['type'] === Doctrine_ORM_Query_Token::T_INPUT_PARAMETER) {
+            //TODO...
+        } else {
+            $this->syntaxError('StateFieldPathExpression | string | InputParameter | FunctionsReturningStrings | AggregateExpression');
         }
     }
 }

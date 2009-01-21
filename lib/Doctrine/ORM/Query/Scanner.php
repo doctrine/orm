@@ -91,7 +91,7 @@ class Doctrine_ORM_Query_Scanner
                 '[a-z_][a-z0-9_]*',
                 '(?:[0-9]+(?:[,\.][0-9]+)*)(?:e[+-]?[0-9]+)?',
                 "'(?:[^']|'')*'",
-                '\?[0-9]+|:[a-z]+'
+                '\?[0-9]+|:[a-z][a-z0-9_]+'
             );
             $regex = '/(' . implode(')|(', $patterns) . ')|\s+|(.)/i';
         }
@@ -179,7 +179,9 @@ class Doctrine_ORM_Query_Scanner
     }
 
     /**
-     * @todo Doc
+     * Moves the lookahead token forward.
+     *
+     * @return array|null The next token or NULL if there are no more tokens ahead.
      */
     public function peek()
     {
@@ -188,6 +190,18 @@ class Doctrine_ORM_Query_Scanner
         } else {
             return null;
         }
+    }
+
+    /**
+     * Peeks at the next token, returns it and immediately resets the peek.
+     *
+     * @return array|null The next token or NULL if there are no more tokens ahead.
+     */
+    public function glimpse()
+    {
+        $peek = $this->peek();
+        $this->_peek = 0;
+        return $peek;
     }
 
     /**
@@ -212,7 +226,6 @@ class Doctrine_ORM_Query_Scanner
     public function next()
     {
         $this->_peek = 0;
-
         if (isset($this->_tokens[$this->_position])) {
             return $this->_tokens[$this->_position++];
         } else {

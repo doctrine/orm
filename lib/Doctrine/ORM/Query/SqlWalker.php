@@ -153,7 +153,7 @@ class Doctrine_ORM_Query_SqlWalker
                 $sql .= $sqlTableAlias . '.' . $class->getColumnName($fieldName) .
                         ' AS ' . $sqlTableAlias . '__' . $class->getColumnName($fieldName);
             } else if ($pathExpression->isSimpleStateFieldAssociationPathExpression()) {
-                echo "HERE!!";
+                throw new Doctrine_Exception("Not yet implemented.");
             } else {
                 throw new Doctrine_ORM_Query_Exception("Encountered invalid PathExpression during SQL construction.");
             }
@@ -175,6 +175,7 @@ class Doctrine_ORM_Query_SqlWalker
             $columnName = $qComp['metadata']->getColumnName($fieldName);
             
             $sql .= $aggExpr->getFunctionName() . '(';
+            if ($aggExpr->isDistinct()) $sql .= 'DISTINCT ';
             $sql .= $this->_dqlToSqlAliasMap[$dqlAlias] . '.' . $columnName;
             $sql .= ') AS dctrn__' . $alias;
         }
@@ -229,18 +230,16 @@ class Doctrine_ORM_Query_SqlWalker
     {
         $sql = ' WHERE ';
         $condExpr = $whereClause->getConditionalExpression();
-        foreach ($condExpr->getConditionalTerms() as $term) {
-            $sql .= $this->walkConditionalTerm($term);
-        }
+        $sql .= implode(' OR ', array_map(array(&$this, 'walkConditionalTerm'),
+                $condExpr->getConditionalTerms()));
         return $sql;
     }
 
     public function walkConditionalTerm($condTerm)
     {
         $sql = '';
-        foreach ($condTerm->getConditionalFactors() as $factor) {
-            $sql .= $this->walkConditionalFactor($factor);
-        }
+        $sql .= implode(' AND ', array_map(array(&$this, 'walkConditionalFactor'),
+                $condTerm->getConditionalFactors()));
         return $sql;
     }
 
@@ -254,9 +253,25 @@ class Doctrine_ORM_Query_SqlWalker
             if ($simpleCond instanceof Doctrine_ORM_Query_AST_ComparisonExpression) {
                 $sql .= $this->walkComparisonExpression($simpleCond);
             }
+            else if ($simpleCond instanceof Doctrine_ORM_Query_AST_LikeExpression) {
+                $sql .= $this->walkLikeExpression($simpleCond);
+            }
             // else if ...
+        } else if ($primary->isConditionalExpression()) {
+            $sql .= '(' . implode(' OR ', array_map(array(&$this, 'walkConditionalTerm'),
+                    $primary->getConditionalExpression()->getConditionalTerms())) . ')';
         }
+        return $sql;
+    }
 
+    public function walkLikeExpression($likeExpr)
+    {
+        $sql = '';
+        $stringExpr = $likeExpr->getStringExpression();
+        if ($stringExpr instanceof Doctrine_ORM_Query_AST_PathExpression) {
+            $sql .= $this->walkPathExpression($stringExpr);
+        } //TODO else...
+        $sql .= ' LIKE ' . $likeExpr->getStringPattern();
         return $sql;
     }
 
@@ -288,18 +303,19 @@ class Doctrine_ORM_Query_SqlWalker
 
     public function walkArithmeticTerm($term)
     {
-        $sql = '';
-        foreach ($term->getArithmeticFactors() as $factor) {
-            $sql .= $this->walkArithmeticFactor($factor);
-        }
-        return $sql;
+        if (is_string($term)) return $term;
+        return implode(' ', array_map(array(&$this, 'walkArithmeticFactor'),
+                $term->getArithmeticFactors()));
     }
 
     public function walkArithmeticFactor($factor)
     {
+        if (is_string($factor)) return $factor;
         $sql = '';
         $primary = $factor->getArithmeticPrimary();
-        if ($primary instanceof Doctrine_ORM_Query_AST_PathExpression) {
+        if (is_numeric($primary)) {
+            $sql .= $primary;
+        } else if ($primary instanceof Doctrine_ORM_Query_AST_PathExpression) {
             $sql .= $this->walkPathExpression($primary);
         } else if ($primary instanceof Doctrine_ORM_Query_AST_InputParameter) {
             if ($primary->isNamed()) {
@@ -307,11 +323,19 @@ class Doctrine_ORM_Query_SqlWalker
             } else {
                 $sql .= '?';
             }
+        } else if ($primary instanceof Doctrine_ORM_Query_AST_SimpleArithmeticExpression) {
+            $sql .= '(' . $this->walkSimpleArithmeticExpression($primary) . ')';
         }
          
         // else...
 
         return $sql;
+    }
+
+    public function walkSimpleArithmeticExpression($simpleArithmeticExpr)
+    {
+        return implode(' ', array_map(array(&$this, 'walkArithmeticTerm'),
+                $simpleArithmeticExpr->getArithmeticTerms()));
     }
 
     public function walkPathExpression($pathExpr)

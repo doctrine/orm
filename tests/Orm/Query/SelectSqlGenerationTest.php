@@ -110,7 +110,7 @@ class Orm_Query_SelectSqlGenerationTest extends Doctrine_OrmTestCase
         );
     }
 
-    public function testWhereClauseInSelect()
+    public function testWhereClauseInSelectWithPositionalParameter()
     {
         $this->assertSqlGeneration(
             'select u from ForumUser u where u.id = ?1',
@@ -118,15 +118,76 @@ class Orm_Query_SelectSqlGenerationTest extends Doctrine_OrmTestCase
         );
     }
 
-/*    public function testAggregateFunctionWithDistinctInSelect()
+    public function testWhereClauseInSelectWithNamedParameter()
     {
         $this->assertSqlGeneration(
-            'SELECT COUNT(DISTINCT u.name) FROM CmsUser u',
-            'SELECT COUNT(DISTINCT cu.name) AS dctrn__0 FROM cms_user cu WHERE 1 = 1'
+            'select u from ForumUser u where u.username = :name',
+            'SELECT fu.id AS fu__id, fu.username AS fu__username FROM ForumUser fu WHERE fu.username = :name'
         );
     }
 
+    public function testWhereANDClauseInSelectWithNamedParameter()
+    {
+        $this->assertSqlGeneration(
+            'select u from ForumUser u where u.username = :name and u.username = :name2',
+            'SELECT fu.id AS fu__id, fu.username AS fu__username FROM ForumUser fu WHERE fu.username = :name AND fu.username = :name2'
+        );
+    }
 
+    public function testCombinedWhereClauseInSelectWithNamedParameter()
+    {
+        $this->assertSqlGeneration(
+            'select u from ForumUser u where (u.username = :name OR u.username = :name2) AND u.id = :id',
+            'SELECT fu.id AS fu__id, fu.username AS fu__username FROM ForumUser fu WHERE (fu.username = :name OR fu.username = :name2) AND fu.id = :id'
+        );
+    }
+
+    public function testAggregateFunctionWithDistinctInSelect()
+    {
+        $this->assertSqlGeneration(
+            'SELECT COUNT(DISTINCT u.name) FROM CmsUser u',
+            'SELECT COUNT(DISTINCT cu.name) AS dctrn__0 FROM CmsUser cu'
+        );
+    }
+
+    // Ticket #668
+    public function testKeywordUsageInStringParam()
+    {
+        $this->assertSqlGeneration(
+            "SELECT u.name FROM CmsUser u WHERE u.name LIKE '%foo OR bar%'",
+            "SELECT cu.name AS cu__name FROM CmsUser cu WHERE cu.name LIKE '%foo OR bar%'"
+        );
+    }
+
+    public function testArithmeticExpressionsSupportedInWherePart()
+    {
+        $this->assertSqlGeneration(
+            'SELECT u FROM CmsUser u WHERE ((u.id + 5000) * u.id + 3) < 10000000',
+            'SELECT cu.id AS cu__id, cu.status AS cu__status, cu.username AS cu__username, cu.name AS cu__name FROM CmsUser cu WHERE ((cu.id + 5000) * cu.id + 3) < 10000000'
+        );
+    }
+
+    public function testPlainJoinWithoutClause()
+    {
+        $this->assertSqlGeneration(
+            'SELECT u.id, a.id from CmsUser u LEFT JOIN u.articles a',
+            'SELECT cu.id AS cu__id, ca.id AS ca__id FROM CmsUser cu LEFT JOIN CmsArticle ca ON cu.id = ca.user_id'
+        );
+        $this->assertSqlGeneration(
+            'SELECT u.id, a.id from CmsUser u JOIN u.articles a',
+            'SELECT cu.id AS cu__id, ca.id AS ca__id FROM CmsUser cu INNER JOIN CmsArticle ca ON cu.id = ca.user_id'
+        );
+    }
+
+    public function testDeepJoin()
+    {
+        $this->assertSqlGeneration(
+            'SELECT u.id, a.id, p, c.id from CmsUser u JOIN u.articles a JOIN u.phonenumbers p JOIN a.comments c',
+            'SELECT cu.id AS cu__id, ca.id AS ca__id, cp.phonenumber AS cp__phonenumber, cc.id AS cc__id FROM CmsUser cu INNER JOIN CmsArticle ca ON cu.id = ca.user_id INNER JOIN CmsPhonenumber cp ON cu.id = cp.user_id INNER JOIN CmsComment cc ON ca.id = cc.article_id'
+        );
+    }
+
+/*
     public function testFunctionalExpressionsSupportedInWherePart()
     {
         $this->assertSqlGeneration(
@@ -136,18 +197,9 @@ class Orm_Query_SelectSqlGenerationTest extends Doctrine_OrmTestCase
             "SELECT cu.name AS cu__name FROM cms_user cu WHERE TRIM(cu.name) = 'someone'"
         );
     }
+*/
 
-
-    // Ticket #668
-    public function testKeywordUsageInStringParam()
-    {
-        $this->assertSqlGeneration(
-            "SELECT u.name FROM CmsUser u WHERE u.name LIKE '%foo OR bar%'",
-            "SELECT cu.name AS cu__name FROM cms_user cu WHERE cu.name LIKE '%foo OR bar%'"
-        );
-    }
-
-
+/*
     // Ticket #973
     public function testSingleInValueWithoutSpace()
     {
@@ -164,15 +216,6 @@ class Orm_Query_SelectSqlGenerationTest extends Doctrine_OrmTestCase
         $this->assertSqlGeneration(
             "SELECT u.name FROM CmsUser u WHERE u.id BETWEEN ? AND ?",
             "SELECT cu.name AS cu__name FROM cms_user cu WHERE cu.id BETWEEN ? AND ?"
-        );
-    }
-
-
-    public function testArithmeticExpressionsSupportedInWherePart()
-    {
-        $this->assertSqlGeneration(
-            'SELECT u.* FROM CmsUser u WHERE ((u.id + 5000) * u.id + 3) < 10000000',
-            'SELECT cu.id AS cu__id, cu.status AS cu__status, cu.username AS cu__username, cu.name AS cu__name FROM cms_user cu WHERE ((cu.id + 5000) * cu.id + 3) < 10000000'
         );
     }
 
@@ -194,17 +237,5 @@ class Orm_Query_SelectSqlGenerationTest extends Doctrine_OrmTestCase
         );
     }
 
-
-    public function testPlainJoinWithoutClause()
-    {
-        $this->assertSqlGeneration(
-            'SELECT u.id, a.id from CmsUser u LEFT JOIN u.articles a',
-            'SELECT cu.id AS cu__id, ca.id AS ca__id FROM cms_user cu LEFT JOIN cms_article ca ON cu.id = ca.user_id WHERE 1 = 1'
-        );
-        $this->assertSqlGeneration(
-            'SELECT u.id, a.id from CmsUser u JOIN u.articles a',
-            'SELECT cu.id AS cu__id, ca.id AS ca__id FROM cms_user cu INNER JOIN cms_article ca ON cu.id = ca.user_id WHERE 1 = 1'
-        );
-    }
 */
 }
