@@ -75,8 +75,6 @@ class ClassLoader
             $class .= $this->_basePaths[$prefix] . DIRECTORY_SEPARATOR;
         }
 
-        if ($className[0] == '\\') $className = substr($className, 1);
-
         $class .= str_replace(array($this->_namespaceSeparator, '_'), DIRECTORY_SEPARATOR, $className)
                 . $this->_fileExtension;
 
@@ -85,21 +83,6 @@ class ClassLoader
                 return false;
             }
             @fclose($fh);
-        }
-
-        if ($class == 'ForumAvatar.php' || $class == 'ForumUser.php') {
-            echo $class . PHP_EOL;
-            try {
-                throw new \Exception();
-            } catch (\Exception $e) {
-                echo $e->getTraceAsString();
-            }
-        } else if ($class == 'Doctrine/Common/Exceptions/DoctrineException.php') {
-            try {
-                throw new \Exception();
-            } catch (\Exception $e) {
-                echo $e->getTraceAsString();
-            }
         }
 
         require $class;
