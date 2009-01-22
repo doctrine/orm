@@ -19,6 +19,8 @@
  * <http://www.phpdoctrine.org>.
  */
 
+namespace Doctrine\ORM\Query\AST;
+
 /**
  * ComparisonOperator = "=" | "<" | "<=" | "<>" | ">" | ">=" | "!="
  *
@@ -31,7 +33,7 @@
  * @since       2.0
  * @version     $Revision$
  */
-class Doctrine_ORM_Query_AST_ComparisonOperator extends Doctrine_ORM_Query_AST
+class ComparisonOperator extends Node
 {
 
 }

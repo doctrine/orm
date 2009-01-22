@@ -1,8 +1,8 @@
 <?php
 
-#namespace Doctrine::DBAL::Platforms;
+namespace Doctrine\DBAL\Platforms;
 
-class Doctrine_DBAL_Platforms_MsSqlPlatform extends Doctrine_DBAL_Platforms_AbstractPlatform
+class MsSqlPlatform extends AbstractPlatform
 { 
     /**
      * the constructor

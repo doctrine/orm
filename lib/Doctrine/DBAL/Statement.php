@@ -19,7 +19,7 @@
  * <http://www.phpdoctrine.org>.
  */
 
-#namespace Doctrine::DBAL;
+namespace Doctrine\DBAL;
 
 /**
  * A thin wrapper around PDOStatement.
@@ -31,7 +31,7 @@
  * @version     $Revision: 1532 $
  * @todo Do we seriously need this wrapper?
  */
-class Doctrine_DBAL_Statement
+class Statement
 {
     /**
      * @var Doctrine_Connection $conn       Doctrine_Connection object, every connection
@@ -51,13 +51,13 @@ class Doctrine_DBAL_Statement
      *                                      statement holds an instance of Doctrine_Connection
      * @param mixed $stmt
      */
-    public function __construct(Doctrine_Connection $conn, $stmt)
+    public function __construct(Connection $conn, $stmt)
     {
         $this->_conn = $conn;
         $this->_stmt = $stmt;
 
         if ($stmt === false) {
-            throw new Doctrine_Exception('Unknown statement object given.');
+            throw new DoctrineException('Unknown statement object given.');
         }
     }
 

@@ -1,11 +1,13 @@
 <?php
 
+namespace Doctrine\DBAL\Types;
+
 /**
  * Type that maps an SQL DATETIME to a PHP DateTime object.
  *
  * @since 2.0
  */
-class Doctrine_DBAL_Types_DateTimeType extends Doctrine_DBAL_Types_Type
+class DateTimeType extends Type
 {
     /**
      * Enter description here...

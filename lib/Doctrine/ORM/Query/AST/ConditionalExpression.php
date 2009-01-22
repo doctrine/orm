@@ -4,12 +4,14 @@
  * and open the template in the editor.
  */
 
+namespace Doctrine\ORM\Query\AST;
+
 /**
  * ConditionalExpression ::= ConditionalTerm {"OR" ConditionalTerm}*
  *
  * @author robo
  */
-class Doctrine_ORM_Query_AST_ConditionalExpression extends Doctrine_ORM_Query_AST
+class ConditionalExpression extends Node
 {
     private $_conditionalTerms = array();
 

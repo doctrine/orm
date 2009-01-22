@@ -4,12 +4,14 @@
  * and open the template in the editor.
  */
 
+namespace Doctrine\ORM\Query\AST;
+
 /**
  * Description of AggregateExpression
  *
  * @author robo
  */
-class Doctrine_ORM_Query_AST_AggregateExpression extends Doctrine_ORM_Query_AST
+class AggregateExpression extends Node
 {
     private $_functionName;
     private $_pathExpression;

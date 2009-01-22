@@ -1,15 +1,13 @@
 <?php
-/* 
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
+
+namespace Doctrine\DBAL\Types;
 
 /**
  * Type that maps a database BIGINT to a PHP string.
  *
  * @author robo
  */
-class Doctrine_DBAL_Types_BigIntType extends Doctrine_DBAL_Types_Type
+class BigIntType extends Type
 {
     //put your code here
 }

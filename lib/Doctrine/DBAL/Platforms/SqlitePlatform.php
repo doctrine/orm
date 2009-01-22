@@ -1,13 +1,13 @@
 <?php
 
-#namespace Doctrine::DBAL::Platforms;
+namespace Doctrine\DBAL\Platforms;
 
 /**
  * Enter description here...
  *
  * @since 2.0
  */
-class Doctrine_DBAL_Platforms_SqlitePlatform extends Doctrine_DBAL_Platforms_AbstractPlatform
+class SqlitePlatform extends AbstractPlatform
 {
     
     /**

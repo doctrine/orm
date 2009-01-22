@@ -19,6 +19,8 @@
  * <http://www.phpdoctrine.org>.
  */
 
+namespace Doctrine\ORM\Query;
+
 /**
  * An abstract base class for the productions of the Doctrine Query Language
  * context-free grammar.
@@ -30,7 +32,7 @@
  * @since       2.0
  * @version     $Revision$
  */
-abstract class Doctrine_ORM_Query_ParserRule
+abstract class ParserRule
 {
     /**
      * @nodoc

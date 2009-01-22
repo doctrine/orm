@@ -19,9 +19,9 @@
  * <http://www.phpdoctrine.org>.
  */
 
-#namespace Doctrine\ORM\Mapping;
+namespace Doctrine\ORM\Mapping;
 
-#use Doctrine\DBAL\Platforms\AbstractPlatform;
+use Doctrine\DBAL\Platforms\AbstractPlatform;
 
 /**
  * The metadata factory is used to create ClassMetadata objects that contain all the
@@ -35,7 +35,7 @@
  * @link        www.doctrine-project.org
  * @since       2.0
  */
-class Doctrine_ORM_Mapping_ClassMetadataFactory
+class ClassMetadataFactory
 {
     /** The targeted database platform. */
     private $_targetPlatform;
@@ -47,7 +47,7 @@ class Doctrine_ORM_Mapping_ClassMetadataFactory
      *
      * @param $driver  The metadata driver to use.
      */
-    public function __construct($driver, Doctrine_DBAL_Platforms_AbstractPlatform $targetPlatform)
+    public function __construct($driver, AbstractPlatform $targetPlatform)
     {
         $this->_driver = $driver;
         $this->_targetPlatform = $targetPlatform;
@@ -161,7 +161,7 @@ class Doctrine_ORM_Mapping_ClassMetadataFactory
      */
     protected function _newClassMetadataInstance($className)
     {
-        return new Doctrine_ORM_Mapping_ClassMetadata($className);
+        return new ClassMetadata($className);
     }
     
     /**
@@ -199,10 +199,10 @@ class Doctrine_ORM_Mapping_ClassMetadataFactory
      * @param Doctrine_ClassMetadata $class  The container for the metadata.
      * @param string $name  The name of the class for which the metadata will be loaded.
      */
-    private function _loadClassMetadata(Doctrine_ORM_Mapping_ClassMetadata $class, $name)
+    private function _loadClassMetadata(ClassMetadata $class, $name)
     {
         if ( ! class_exists($name) || empty($name)) {
-            throw new Doctrine_Exception("Couldn't find class " . $name . ".");
+            throw new DoctrineException("Couldn't find class " . $name . ".");
         }
 
         $names = array();
@@ -224,13 +224,13 @@ class Doctrine_ORM_Mapping_ClassMetadataFactory
 
         // Complete Id generator mapping. If AUTO is specified we choose the generator
         // most appropriate for the target platform.
-        if ($class->getIdGeneratorType() == Doctrine_ORM_Mapping_ClassMetadata::GENERATOR_TYPE_AUTO) {
+        if ($class->getIdGeneratorType() == \Doctrine\ORM\Mapping\ClassMetadata::GENERATOR_TYPE_AUTO) {
             if ($this->_targetPlatform->prefersSequences()) {
-                $class->setIdGeneratorType(Doctrine_ORM_Mapping_ClassMetadata::GENERATOR_TYPE_SEQUENCE);
+                $class->setIdGeneratorType(\Doctrine\ORM\Mapping\ClassMetadata::GENERATOR_TYPE_SEQUENCE);
             } else if ($this->_targetPlatform->prefersIdentityColumns()) {
-                $class->setIdGeneratorType(Doctrine_ORM_Mapping_ClassMetadata::GENERATOR_TYPE_IDENTITY);
+                $class->setIdGeneratorType(\Doctrine\ORM\Mapping\ClassMetadata::GENERATOR_TYPE_IDENTITY);
             } else {
-                $class->setIdGeneratorType(Doctrine_ORM_Mapping_ClassMetadata::GENERATOR_TYPE_TABLE);
+                $class->setIdGeneratorType(\Doctrine\ORM\Mapping\ClassMetadata::GENERATOR_TYPE_TABLE);
             }
         }
         

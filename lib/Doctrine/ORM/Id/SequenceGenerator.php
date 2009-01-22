@@ -1,6 +1,8 @@
 <?php
 
-class Doctrine_ORM_Id_SequenceGenerator extends Doctrine_ORM_Id_AbstractIdGenerator
+namespace Doctrine\ORM\Id;
+
+class SequenceGenerator extends AbstractIdGenerator
 {
     private $_sequenceName;
     
@@ -23,4 +25,3 @@ class Doctrine_ORM_Id_SequenceGenerator extends Doctrine_ORM_Id_AbstractIdGenera
     }
 }
 
-?>

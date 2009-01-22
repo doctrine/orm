@@ -19,7 +19,9 @@
  * <http://www.phpdoctrine.org>.
  */
 
-#namespace Doctrine\Common;
+namespace Doctrine\Common;
+
+use Doctrine\Common\Events\Event;
 
 /**
  * The EventManager is the central point of Doctrine's event listener system.
@@ -30,7 +32,7 @@
  * @author Guilherme Blanco <guilhermeblanco@hotmail.com>
  * @since 2.0
  */
-class Doctrine_Common_EventManager
+class EventManager
 {
     /**
      * Map of registered listeners.
@@ -52,7 +54,7 @@ class Doctrine_Common_EventManager
         $callback = $argIsCallback ? $event : $event->getType();
 
         if (isset($this->_listeners[$callback])) {
-            $event = $argIsCallback ? new Doctrine_Event($event) : $event;
+            $event = $argIsCallback ? new Event($event) : $event;
             foreach ($this->_listeners[$callback] as $listener) {
                 $listener->$callback($event);
             }
@@ -103,10 +105,9 @@ class Doctrine_Common_EventManager
      * 
      * @param Doctrine\Common\EventSubscriber $subscriber  The subscriber.
      */
-    public function addEventSubscriber(Doctrine_Common_EventSubscriber $subscriber)
+    public function addEventSubscriber(EventSubscriber $subscriber)
     {
         $this->addEventListener($subscriber->getSubscribedEvents(), $subscriber);
     }
 }
 
-?>

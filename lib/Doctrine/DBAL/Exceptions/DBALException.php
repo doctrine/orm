@@ -1,5 +1,9 @@
 <?php
 
+namespace Doctrine\DBAL\Exceptions;
+
+use Doctrine\Common\DoctrineException;
+
 /**
  * 
  *
@@ -11,7 +15,7 @@
  * @version     $Revision: 1080 $
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  */
-class Doctrine_DBAL_Exceptions_DBALException extends Exception
+class DBALException extends DoctrineException
 {
     public static function invalidPDOInstance()
     {

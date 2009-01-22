@@ -19,7 +19,7 @@
  * <http://www.phpdoctrine.org>.
  */
 
-#namespace Doctrine\DBAL\Schema;
+namespace Doctrine\DBAL\Schema;
 
 /**
  * xxx
@@ -30,7 +30,7 @@
  * @version     $Revision$
  * @since       2.0
  */
-class Doctrine_DBAL_Schema_PostgreSqlSchemaManager extends Doctrine_DBAL_Schema_AbstractSchemaManager
+class PostgreSqlSchemaManager extends AbstractSchemaManager
 {
     /**
      * alter an existing table

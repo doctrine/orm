@@ -19,6 +19,8 @@
  * <http://www.phpdoctrine.org>.
  */
 
+namespace Doctrine\ORM\Query\AST;
+
 /**
  * UpdateStatement = UpdateClause [WhereClause]
  *
@@ -28,7 +30,7 @@
  * @since       2.0
  * @version     $Revision$
  */
-class Doctrine_ORM_Query_AST_UpdateStatement extends Doctrine_ORM_Query_AST
+class UpdateStatement extends Node
 {
     protected $_updateClause;
 

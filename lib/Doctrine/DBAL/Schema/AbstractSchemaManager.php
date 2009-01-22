@@ -19,7 +19,7 @@
  * <http://www.phpdoctrine.org>.
  */
 
-#namespace Doctrine\DBAL\Schema;
+namespace Doctrine\DBAL\Schema;
 
 /**
  * Base class for schema managers. Schema managers are used to inspect and/or
@@ -32,11 +32,11 @@
  * @version     $Revision$
  * @since       2.0
  */
-abstract class Doctrine_DBAL_Schema_AbstractSchemaManager
+abstract class AbstractSchemaManager
 {
     protected $_conn;
 
-    public function __construct(Doctrine_DBAL_Connection $conn)
+    public function __construct(\Doctrine\DBAL\Connection $conn)
     {
         $this->_conn = $conn;
     }

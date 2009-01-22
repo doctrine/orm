@@ -19,7 +19,7 @@
  * <http://www.phpdoctrine.org>.
  */
 
-#namespace Doctrine::Common;
+namespace Doctrine\Common;
 
 /**
  * An EventSubscriber knows himself what events he is interested in.
@@ -33,7 +33,7 @@
  * @since       2.0
  * @version     $Revision: 4653 $
  */
-interface Doctrine_Common_EventSubscriber
+interface EventSubscriber
 {
     public function getSubscribedEvents();
 }

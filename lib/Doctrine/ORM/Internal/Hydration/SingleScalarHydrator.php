@@ -4,12 +4,17 @@
  * and open the template in the editor.
  */
 
+namespace Doctrine\ORM\Internal\Hydration;
+
+use \PDO;
+use Doctrine\ORM\Exceptions\HydrationException;
+
 /**
  * Description of SingleScalarHydrator
  *
  * @author robo
  */
-class Doctrine_ORM_Internal_Hydration_SingleScalarHydrator extends Doctrine_ORM_Internal_Hydration_AbstractHydrator
+class SingleScalarHydrator extends AbstractHydrator
 {
     /** @override */
     protected function _hydrateAll()
@@ -18,7 +23,7 @@ class Doctrine_ORM_Internal_Hydration_SingleScalarHydrator extends Doctrine_ORM_
         $result = $this->_stmt->fetchAll(PDO::FETCH_ASSOC);
         //TODO: Let this exception be raised by Query as QueryException
         if (count($result) > 1 || count($result[0]) > 1) {
-            throw Doctrine_ORM_Exceptions_HydrationException::nonUniqueResult();
+            throw HydrationException::nonUniqueResult();
         }
         $result = $this->_gatherScalarRowData($result[0], $cache);
         return array_shift($result);

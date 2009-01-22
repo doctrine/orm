@@ -1,15 +1,13 @@
 <?php
 
-#namespace Doctrine::DBAL::Driver::PDOMySql;
+namespace Doctrine\DBAL\Driver\PDOMsSql;
 
-#use Doctrine::DBAL::Driver;
-
-class Doctrine_DBAL_Driver_PDOMsSql_Driver implements Doctrine_DBAL_Driver
+class Driver implements \Doctrine\DBAL\Driver
 {
     
     public function connect(array $params, $username = null, $password = null, array $driverOptions = array())
     {
-        return new Doctrine_DBAL_Driver_MsSql_Connection(
+        return new Connection(
                 $this->_constructPdoDsn($params),
                 $username,
                 $password,
@@ -40,4 +38,3 @@ class Doctrine_DBAL_Driver_PDOMsSql_Driver implements Doctrine_DBAL_Driver
     
 }
 
-?>

@@ -4,12 +4,14 @@
  * and open the template in the editor.
  */
 
+namespace Doctrine\ORM\Query\AST;
+
 /**
  * ConditionalPrimary ::= SimpleConditionalExpression | "(" ConditionalExpression ")"
  *
  * @author robo
  */
-class Doctrine_ORM_Query_AST_ConditionalPrimary extends Doctrine_ORM_Query_AST
+class ConditionalPrimary extends Node
 {
     private $_simpleConditionalExpression;
     private $_conditionalExpression;

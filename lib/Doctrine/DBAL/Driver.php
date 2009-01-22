@@ -1,11 +1,14 @@
 <?php
+
+namespace Doctrine\DBAL;
+
 /**
  * Driver interface.
  * Interface that all DBAL drivers must implement.
  *
  * @since 2.0
  */
-interface Doctrine_DBAL_Driver
+interface Driver
 {
     /**
      * Attempts to create a connection with the database.
@@ -32,7 +35,6 @@ interface Doctrine_DBAL_Driver
      *
      * @return Doctrine\DBAL\SchemaManager
      */
-    public function getSchemaManager(Doctrine_DBAL_Connection $conn);
+    public function getSchemaManager(Connection $conn);
 }
 
-?>

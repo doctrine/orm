@@ -4,12 +4,14 @@
  * and open the template in the editor.
  */
 
+namespace Doctrine\ORM\Query\AST;
+
 /**
  * ArithmeticFactor ::= [("+" | "-")] ArithmeticPrimary
  *
  * @author robo
  */
-class Doctrine_ORM_Query_AST_ArithmeticFactor extends Doctrine_ORM_Query_AST
+class ArithmeticFactor extends Node
 {
     private $_arithmeticPrimary;
     private $_pSigned;

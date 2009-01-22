@@ -19,6 +19,8 @@
  * <http://www.phpdoctrine.org>.
  */
 
+namespace Doctrine\ORM\Query\AST;
+
 /**
  * Join ::= ["LEFT" ["OUTER"] | "INNER"] "JOIN" JoinAssociationPathExpression
  *          ["AS"] AliasIdentificationVariable [("ON" | "WITH") ConditionalExpression]
@@ -29,7 +31,7 @@
  * @since       2.0
  * @version     $Revision$
  */
-class Doctrine_ORM_Query_AST_Join extends Doctrine_ORM_Query_AST
+class Join extends Node
 {
     const JOIN_TYPE_LEFT = 1;
 

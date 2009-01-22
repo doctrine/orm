@@ -19,7 +19,7 @@
  * <http://www.phpdoctrine.org>.
  */
 
-#namespace Doctrine\ORM;
+namespace Doctrine\ORM;
 
 /**
  * A persistent collection wrapper.
@@ -42,7 +42,7 @@
  * @author    Roman Borschel <roman@code-factory.org>
  * @todo Rename to PersistentCollection
  */
-final class Doctrine_ORM_Collection extends Doctrine_Common_Collections_Collection
+final class Collection extends \Doctrine\Common\Collections\Collection
 {   
     /**
      * The base type of the collection.
@@ -109,7 +109,7 @@ final class Doctrine_ORM_Collection extends Doctrine_Common_Collections_Collecti
     /**
      * Creates a new persistent collection.
      */
-    public function __construct(Doctrine_ORM_EntityManager $em, $entityBaseType, $keyField = null)
+    public function __construct(EntityManager $em, $entityBaseType, $keyField = null)
     {
         $this->_entityBaseType = $entityBaseType;
         $this->_em = $em;
@@ -151,7 +151,7 @@ final class Doctrine_ORM_Collection extends Doctrine_Common_Collections_Collecti
      * @param object $entity
      * @param AssociationMapping $relation
      */
-    public function _setOwner($entity, Doctrine_ORM_Mapping_AssociationMapping $relation)
+    public function _setOwner($entity, \Doctrine\ORM\Mapping\AssociationMapping $relation)
     {
         $this->_owner = $entity;
         $this->_association = $relation;

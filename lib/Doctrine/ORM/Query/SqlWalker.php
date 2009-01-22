@@ -4,12 +4,16 @@
  * and open the template in the editor.
  */
 
+namespace Doctrine\ORM\Query;
+
+use Doctrine\ORM\Query\AST;
+
 /**
  * Description of SqlWalker
  *
  * @author robo
  */
-class Doctrine_ORM_Query_SqlWalker
+class SqlWalker
 {
     /**
      * A simple array keys representing table aliases and values table alias
@@ -30,7 +34,7 @@ class Doctrine_ORM_Query_SqlWalker
         $sqlToDqlAliasMap = array();
         foreach ($parserResult->getQueryComponents() as $dqlAlias => $qComp) {
             if ($dqlAlias != 'dctrn') {
-                $sqlAlias = $this->generateTableAlias($qComp['metadata']->getClassName());
+                $sqlAlias = $this->generateTableAlias($qComp['metadata']->getTableName());
                 $sqlToDqlAliasMap[$sqlAlias] = $dqlAlias;
             }
         }
@@ -40,7 +44,7 @@ class Doctrine_ORM_Query_SqlWalker
         $this->_dqlToSqlAliasMap = array_flip($sqlToDqlAliasMap);
     }
 
-    public function walkSelectStatement(Doctrine_ORM_Query_AST_SelectStatement $AST)
+    public function walkSelectStatement(AST\SelectStatement $AST)
     {
         $sql = $this->walkSelectClause($AST->getSelectClause());
         $sql .= $this->walkFromClause($AST->getFromClause());
@@ -84,8 +88,8 @@ class Doctrine_ORM_Query_SqlWalker
     {
         $join = $joinVarDecl->getJoin();
         $joinType = $join->getJoinType();
-        if ($joinType == Doctrine_ORM_Query_AST_Join::JOIN_TYPE_LEFT ||
-                $joinType == Doctrine_ORM_Query_AST_Join::JOIN_TYPE_LEFTOUTER) {
+        if ($joinType == AST\Join::JOIN_TYPE_LEFT ||
+                $joinType == AST\Join::JOIN_TYPE_LEFTOUTER) {
             $sql = ' LEFT JOIN ';
         } else {
             $sql = ' INNER JOIN ';
@@ -133,7 +137,7 @@ class Doctrine_ORM_Query_SqlWalker
     public function walkSelectExpression($selectExpression)
     {
         $sql = '';
-        if ($selectExpression->getExpression() instanceof Doctrine_ORM_Query_AST_PathExpression) {
+        if ($selectExpression->getExpression() instanceof AST\PathExpression) {
             $pathExpression = $selectExpression->getExpression();
             if ($pathExpression->isSimpleStateFieldPathExpression()) {
                 $parts = $pathExpression->getParts();
@@ -158,7 +162,7 @@ class Doctrine_ORM_Query_SqlWalker
                 throw new Doctrine_ORM_Query_Exception("Encountered invalid PathExpression during SQL construction.");
             }
         }
-        else if ($selectExpression->getExpression() instanceof Doctrine_ORM_Query_AST_AggregateExpression) {
+        else if ($selectExpression->getExpression() instanceof AST\AggregateExpression) {
             $aggExpr = $selectExpression->getExpression();
 
             if ( ! $selectExpression->getFieldIdentificationVariable()) {
@@ -216,12 +220,12 @@ class Doctrine_ORM_Query_SqlWalker
         return $this->_dqlToSqlAliasMap[$parts[0]] . '.' . $columnName;
     }
 
-    public function walkUpdateStatement(Doctrine_ORM_Query_AST_UpdateStatement $AST)
+    public function walkUpdateStatement(AST\UpdateStatement $AST)
     {
 
     }
 
-    public function walkDeleteStatement(Doctrine_ORM_Query_AST_DeleteStatement $AST)
+    public function walkDeleteStatement(AST\DeleteStatement $AST)
     {
 
     }
@@ -237,10 +241,8 @@ class Doctrine_ORM_Query_SqlWalker
 
     public function walkConditionalTerm($condTerm)
     {
-        $sql = '';
-        $sql .= implode(' AND ', array_map(array(&$this, 'walkConditionalFactor'),
+        return implode(' AND ', array_map(array(&$this, 'walkConditionalFactor'),
                 $condTerm->getConditionalFactors()));
-        return $sql;
     }
 
     public function walkConditionalFactor($factor)
@@ -250,10 +252,10 @@ class Doctrine_ORM_Query_SqlWalker
         $primary = $factor->getConditionalPrimary();
         if ($primary->isSimpleConditionalExpression()) {
             $simpleCond = $primary->getSimpleConditionalExpression();
-            if ($simpleCond instanceof Doctrine_ORM_Query_AST_ComparisonExpression) {
+            if ($simpleCond instanceof AST\ComparisonExpression) {
                 $sql .= $this->walkComparisonExpression($simpleCond);
             }
-            else if ($simpleCond instanceof Doctrine_ORM_Query_AST_LikeExpression) {
+            else if ($simpleCond instanceof AST\LikeExpression) {
                 $sql .= $this->walkLikeExpression($simpleCond);
             }
             // else if ...
@@ -268,7 +270,7 @@ class Doctrine_ORM_Query_SqlWalker
     {
         $sql = '';
         $stringExpr = $likeExpr->getStringExpression();
-        if ($stringExpr instanceof Doctrine_ORM_Query_AST_PathExpression) {
+        if ($stringExpr instanceof AST\PathExpression) {
             $sql .= $this->walkPathExpression($stringExpr);
         } //TODO else...
         $sql .= ' LIKE ' . $likeExpr->getStringPattern();
@@ -278,11 +280,11 @@ class Doctrine_ORM_Query_SqlWalker
     public function walkComparisonExpression($compExpr)
     {
         $sql = '';
-        if ($compExpr->getLeftExpression() instanceof Doctrine_ORM_Query_AST_ArithmeticExpression) {
+        if ($compExpr->getLeftExpression() instanceof AST\ArithmeticExpression) {
             $sql .= $this->walkArithmeticExpression($compExpr->getLeftExpression());
         } // else...
         $sql .= ' ' . $compExpr->getOperator() . ' ';
-        if ($compExpr->getRightExpression() instanceof Doctrine_ORM_Query_AST_ArithmeticExpression) {
+        if ($compExpr->getRightExpression() instanceof AST\ArithmeticExpression) {
             $sql .= $this->walkArithmeticExpression($compExpr->getRightExpression());
         }
         return $sql;
@@ -315,15 +317,18 @@ class Doctrine_ORM_Query_SqlWalker
         $primary = $factor->getArithmeticPrimary();
         if (is_numeric($primary)) {
             $sql .= $primary;
-        } else if ($primary instanceof Doctrine_ORM_Query_AST_PathExpression) {
+        } else if (is_string($primary)) {
+            //TODO: quote string according to platform
+            $sql .= $primary;
+        } else if ($primary instanceof AST\PathExpression) {
             $sql .= $this->walkPathExpression($primary);
-        } else if ($primary instanceof Doctrine_ORM_Query_AST_InputParameter) {
+        } else if ($primary instanceof AST\InputParameter) {
             if ($primary->isNamed()) {
                 $sql .= ':' . $primary->getName();
             } else {
                 $sql .= '?';
             }
-        } else if ($primary instanceof Doctrine_ORM_Query_AST_SimpleArithmeticExpression) {
+        } else if ($primary instanceof AST\SimpleArithmeticExpression) {
             $sql .= '(' . $this->walkSimpleArithmeticExpression($primary) . ')';
         }
          
@@ -379,7 +384,7 @@ class Doctrine_ORM_Query_SqlWalker
         // We may have a situation where we have all chars are lowercased
         if ($baseAlias == '') {
             // We simply grab the first 2 chars of component name
-            $baseAlias = substr($componentNam, 0, 2);
+            $baseAlias = substr($componentName, 0, 2);
         }
 
         $alias = $baseAlias;

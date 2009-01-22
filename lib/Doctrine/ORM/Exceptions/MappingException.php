@@ -19,14 +19,14 @@
  * <http://www.phpdoctrine.org>.
  */
 
-#namespace Doctrine\ORM\Exceptions;
+namespace Doctrine\ORM\Exceptions;
 
 /**
  * A MappingException indicates that something is wrong with the mapping setup.
  *
  * @since 2.0
  */
-class Doctrine_ORM_Exceptions_MappingException extends Doctrine_ORM_Exceptions_ORMException
+class MappingException extends \Doctrine\Common\DoctrineException
 {
     public static function identifierRequired($entityName)
     {

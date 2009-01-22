@@ -1,5 +1,7 @@
 <?php
 
+namespace Doctrine\DBAL\Driver;
+
 /**
  * Connection interface.
  * Drivers must implement this interface.
@@ -8,7 +10,7 @@
  * 
  * @since 2.0
  */
-interface Doctrine_DBAL_Driver_Connection
+interface Connection
 {
     public function prepare($prepareString);
     public function query();

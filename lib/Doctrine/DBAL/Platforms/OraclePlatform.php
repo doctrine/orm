@@ -19,7 +19,7 @@
  * <http://www.phpdoctrine.org>.
  */
 
-#namespace Doctrine::DBAL::Platforms;
+namespace Doctrine\DBAL\Platforms;
 
 /**
  * Base class for all DatabasePlatforms. The DatabasePlatforms are the central
@@ -30,7 +30,7 @@
  * @author Roman Borschel <roman@code-factory.org>
  * @author Lukas Smith <smith@pooteeweet.org> (PEAR MDB2 library)
  */
-class Doctrine_DBAL_Platforms_OraclePlatform extends Doctrine_DBAL_Platforms_AbstractPlatform
+class OraclePlatform extends AbstractPlatform
 {
     /**
      * Constructor.

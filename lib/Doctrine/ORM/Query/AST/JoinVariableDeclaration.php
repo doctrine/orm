@@ -19,6 +19,8 @@
  * <http://www.phpdoctrine.org>.
  */
 
+namespace Doctrine\ORM\Query\AST;
+
 /**
  * JoinVariableDeclaration ::= Join [IndexBy]
  *
@@ -28,7 +30,7 @@
  * @since       2.0
  * @version     $Revision$
  */
-class Doctrine_ORM_Query_AST_JoinVariableDeclaration extends Doctrine_ORM_Query_AST
+class JoinVariableDeclaration extends Node
 {
     protected $_join = null;
     

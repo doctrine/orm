@@ -1,5 +1,9 @@
 <?php
 
+namespace Doctrine\ORM\Internal\Hydration;
+
+use \PDO;
+
 /**
  * Hydrator that produces flat, rectangular results of scalar data.
  * The created result is almost the same as a regular SQL result set, except
@@ -8,7 +12,7 @@
  * @author robo
  * @since 2.0
  */
-class Doctrine_ORM_Internal_Hydration_ScalarHydrator extends Doctrine_ORM_Internal_Hydration_AbstractHydrator
+class ScalarHydrator extends AbstractHydrator
 {
     /** @override */
     protected function _hydrateAll()

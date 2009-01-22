@@ -19,6 +19,8 @@
  * <http://www.phpdoctrine.org>.
  */
 
+namespace Doctrine\ORM\Query;
+
 /**
  * Doctrine_ORM_Query_ParserResult
  *
@@ -29,7 +31,7 @@
  * @since       2.0
  * @version     $Revision$
  */
-class Doctrine_ORM_Query_ParserResult extends Doctrine_ORM_Query_AbstractResult
+class ParserResult extends AbstractResult
 {
     /**
      * The EntityManager.
@@ -71,7 +73,7 @@ class Doctrine_ORM_Query_ParserResult extends Doctrine_ORM_Query_AbstractResult
     /**
      * @nodoc
      */
-    public function setSqlExecutor(Doctrine_ORM_Query_SqlExecutor_Abstract $executor)
+    public function setSqlExecutor(\Doctrine\ORM\Query\Exec\AbstractExecutor $executor)
     {
         $this->_data = $executor;
     }

@@ -4,12 +4,14 @@
  * and open the template in the editor.
  */
 
+namespace Doctrine\ORM\Query\AST;
+
 /**
  * Description of JoinCollectionValuedPathExpression
  *
  * @author robo
  */
-class Doctrine_ORM_Query_AST_JoinPathExpression extends Doctrine_ORM_Query_AST
+class JoinPathExpression extends Node
 {
     private $_identificationVariable;
     private $_assocField;

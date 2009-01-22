@@ -20,12 +20,14 @@
  * <http://www.phpdoctrine.org>.
  */
 
-#namespace Doctrine\ORM;
+namespace Doctrine\ORM;
+
+use Doctrine\ORM\Query\Parser;
 
 /**
  * A Doctrine_ORM_Query object represents a DQL query. It is used to query databases for
  * data in an object-oriented fashion. A DQL query understands relations and inheritance
- * and is dbms independant.
+ * and is to a large degree dbms independant.
  *
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @link        www.doctrine-project.org
@@ -35,7 +37,7 @@
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  * @author      Roman Borschel <roman@code-factory.org>
  */
-class Doctrine_ORM_Query extends Doctrine_ORM_Query_Abstract
+class Query extends AbstractQuery
 {
     /* Hydration mode constants */
     /**
@@ -122,7 +124,7 @@ class Doctrine_ORM_Query extends Doctrine_ORM_Query_Abstract
      *
      * @param Doctrine\ORM\EntityManager $entityManager
      */
-    public function __construct(Doctrine_ORM_EntityManager $entityManager)
+    public function __construct(EntityManager $entityManager)
     {
         $this->_entityManager = $entityManager;
         $this->free();
@@ -165,7 +167,7 @@ class Doctrine_ORM_Query extends Doctrine_ORM_Query_Abstract
             return false;
         }
 
-        if ($collection instanceof Doctrine_ORM_Collection) {
+        if ($collection instanceof Collection) {
             return $collection->getFirst();
         } else if (is_array($collection)) {
             return array_shift($collection);
@@ -208,7 +210,7 @@ class Doctrine_ORM_Query extends Doctrine_ORM_Query_Abstract
     public function parse()
     {
         if ($this->_state === self::STATE_DIRTY) {
-            $parser = new Doctrine_ORM_Query_Parser($this);
+            $parser = new Parser($this);
             $this->_parserResult = $parser->parse();
             $this->_state = self::STATE_CLEAN;
         }
@@ -243,13 +245,13 @@ class Doctrine_ORM_Query extends Doctrine_ORM_Query_Abstract
             if ($cached === false) {
                 // Cache does not exist, we have to create it.
                 $result = $this->_execute($params, self::HYDRATE_ARRAY);
-                $queryResult = Doctrine_ORM_Query_CacheHandler::fromResultSet($this, $result);
+                $queryResult = \Doctrine\ORM\Query\CacheHandler::fromResultSet($this, $result);
                 $cacheDriver->save($hash, $queryResult->toCachedForm(), $this->_resultCacheTTL);
 
                 return $result;
             } else {
                 // Cache exists, recover it and return the results.
-                $queryResult = Doctrine_ORM_Query_CacheHandler::fromCachedResult($this, $cached);
+                $queryResult = \Doctrine\ORM\Query\CacheHandler::fromCachedResult($this, $cached);
 
                 return $queryResult->getResultSet();
             }
@@ -288,7 +290,7 @@ class Doctrine_ORM_Query extends Doctrine_ORM_Query_Abstract
                 $cacheDriver->save($hash, $this->_parserResult->toCachedForm(), $this->_queryCacheTTL);
             } else {
                 // Cache exists, recover it and return the results.
-                $this->_parserResult = Doctrine_ORM_Query_CacheHandler::fromCachedQuery($this, $cached);
+                $this->_parserResult = Doctrine\ORM\Query\CacheHandler::fromCachedQuery($this, $cached);
 
                 $executor = $this->_parserResult->getSqlExecutor();
             }
@@ -333,8 +335,8 @@ class Doctrine_ORM_Query extends Doctrine_ORM_Query_Abstract
      */
     public function setResultCache($resultCache)
     {
-        if ($resultCache !== null && ! ($resultCache instanceof Doctrine_ORM_Cache_Cache)) {
-            throw new Doctrine_ORM_Query_Exception(
+        if ($resultCache !== null && ! ($resultCache instanceof \Doctrine\ORM\Cache\Cache)) {
+            throw new DoctrineException(
                 'Method setResultCache() accepts only an instance of Doctrine_Cache_Interface or null.'
             );
         }
@@ -350,7 +352,7 @@ class Doctrine_ORM_Query extends Doctrine_ORM_Query_Abstract
      */
     public function getResultCache()
     {
-        if ($this->_resultCache instanceof Doctrine_ORM_Cache_Cache) {
+        if ($this->_resultCache instanceof \Doctrine\ORM\Cache\Cache) {
             return $this->_resultCache;
         } else {
             return $this->_entityManager->getConnection()->getResultCacheDriver();
@@ -415,8 +417,8 @@ class Doctrine_ORM_Query extends Doctrine_ORM_Query_Abstract
      */
     public function setQueryCache($queryCache)
     {
-        if ($queryCache !== null && ! ($queryCache instanceof Doctrine_ORM_Cache_Cache)) {
-            throw new Doctrine_ORM_Query_Exception(
+        if ($queryCache !== null && ! ($queryCache instanceof \Doctrine\ORM\Cache\Cache)) {
+            throw new DoctrineException(
                 'Method setResultCache() accepts only an instance of Doctrine_ORM_Cache_Interface or null.'
             );
         }
@@ -433,7 +435,7 @@ class Doctrine_ORM_Query extends Doctrine_ORM_Query_Abstract
      */
     public function getQueryCache()
     {
-        if ($this->_queryCache instanceof Doctrine_ORM_Cache_Cache) {
+        if ($this->_queryCache instanceof \Doctrine\ORM\Cache\Cache) {
             return $this->_queryCache;
         } else {
             return $this->_entityManager->getConnection()->getQueryCacheDriver();
@@ -529,7 +531,7 @@ class Doctrine_ORM_Query extends Doctrine_ORM_Query_Abstract
     {
         $result = $this->execute(array(), $hydrationMode);
         if (count($result) > 1) {
-            throw Doctrine_ORM_Query_Exception::nonUniqueResult();
+            throw QueryException::nonUniqueResult();
         }
         
         return is_array($result) ? array_shift($result) : $result->getFirst();

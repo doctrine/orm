@@ -19,7 +19,7 @@
  * <http://www.phpdoctrine.org>.
  */
 
-#namespace Doctrine\ORM\Mappings;
+namespace Doctrine\ORM\Mapping;
 
 /**
  * A one-to-one mapping describes a uni-directional mapping from one entity 
@@ -28,7 +28,7 @@
  * @since 2.0
  * @author Roman Borschel <roman@code-factory.org>
  */
-class Doctrine_ORM_Mapping_OneToOneMapping extends Doctrine_ORM_Mapping_AssociationMapping
+class OneToOneMapping extends AssociationMapping
 {
     /**
      * Maps the source foreign/primary key columns to the target primary/foreign key columns.

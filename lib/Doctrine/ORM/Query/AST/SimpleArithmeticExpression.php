@@ -4,12 +4,14 @@
  * and open the template in the editor.
  */
 
+namespace Doctrine\ORM\Query\AST;
+
 /**
  * SimpleArithmeticExpression ::= ArithmeticTerm {("+" | "-") ArithmeticTerm}*
  *
  * @author robo
  */
-class Doctrine_ORM_Query_AST_SimpleArithmeticExpression extends Doctrine_ORM_Query_AST
+class SimpleArithmeticExpression extends Node
 {
     private $_terms;
 

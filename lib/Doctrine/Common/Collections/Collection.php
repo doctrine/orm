@@ -4,11 +4,11 @@
  * and open the template in the editor.
  */
 
-#namespace Doctrine\Common\Collections;
+namespace Doctrine\Common\Collections;
 
-#use \Countable;
-#use \IteratorAggregate;
-#use \ArrayAccess;
+use \Countable;
+use \IteratorAggregate;
+use \ArrayAccess;
 
 /**
  * A Collection is a wrapper around a php array and just like a php array a
@@ -16,7 +16,7 @@
  *
  * @author robo
  */
-class Doctrine_Common_Collections_Collection implements Countable, IteratorAggregate, ArrayAccess
+class Collection implements Countable, IteratorAggregate, ArrayAccess
 {
     /**
      * An array containing the entries of this collection.
@@ -323,7 +323,7 @@ class Doctrine_Common_Collections_Collection implements Countable, IteratorAggre
      */
     public function map(Closure $func)
     {
-        return new Doctrine_Common_Collections_Collection(array_map($func, $this->_data));
+        return new Collection(array_map($func, $this->_data));
     }
 
     /**
@@ -334,7 +334,7 @@ class Doctrine_Common_Collections_Collection implements Countable, IteratorAggre
      */
     public function filter(Closure $func)
     {
-        return new Doctrine_Common_Collections_Collection(array_filter($this->_data, $func));
+        return new Collection(array_filter($this->_data, $func));
     }
 
     /**

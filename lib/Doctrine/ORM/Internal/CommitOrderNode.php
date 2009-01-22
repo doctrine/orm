@@ -19,7 +19,7 @@
  * <http://www.phpdoctrine.org>.
  */
 
-#namespace Doctrine\ORM\Internal;
+namespace Doctrine\ORM\Internal;
 
 /**
  * A CommitOrderNode is a temporary wrapper around ClassMetadata instances
@@ -28,7 +28,7 @@
  * @since 2.0
  * @author Roman Borschel <roman@code-factory.org>
  */
-class Doctrine_ORM_Internal_CommitOrderNode
+class CommitOrderNode
 {
     const NOT_VISITED = 1;
     const IN_PROGRESS = 2;
@@ -55,7 +55,7 @@ class Doctrine_ORM_Internal_CommitOrderNode
      * @param mixed $wrappedObj The object to wrap.
      * @param Doctrine\ORM\Internal\CommitOrderCalculator $calc The calculator.
      */
-    public function __construct($wrappedObj, Doctrine_ORM_Internal_CommitOrderCalculator $calc)
+    public function __construct($wrappedObj, CommitOrderCalculator $calc)
     {
         $this->_wrappedObj = $wrappedObj;
         $this->_calculator = $calc;
@@ -157,7 +157,7 @@ class Doctrine_ORM_Internal_CommitOrderNode
      *
      * @param Doctrine\ORM\Internal\CommitOrderNode $node
      */
-    public function before(Doctrine_ORM_Internal_CommitOrderNode $node)
+    public function before(CommitOrderNode $node)
     {
         $this->_relatedNodes[] = $node;
     }

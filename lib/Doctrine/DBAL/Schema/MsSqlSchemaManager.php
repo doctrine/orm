@@ -19,7 +19,7 @@
  * <http://www.phpdoctrine.org>.
  */
 
-#namespace Doctrine::DBAL::Schema;
+namespace Doctrine\DBAL\Schema;
 
 /**
  * xxx
@@ -30,13 +30,8 @@
  * @version     $Revision$
  * @since       2.0
  */
-class Doctrine_DBAL_Schema_MsSqlSchemaManager extends Doctrine_DBAL_Schema_AbstractSchemaManager
-{
-    public function __construct(Doctrine_Connection_Mssql $conn)
-    {
-        $this->_conn = $conn;
-    }
-    
+class MsSqlSchemaManager extends AbstractSchemaManager
+{    
     /**
      * create a new database
      *

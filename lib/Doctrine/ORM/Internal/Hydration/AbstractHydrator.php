@@ -19,7 +19,9 @@
  * <http://www.phpdoctrine.org>.
  */
 
-#namespace Doctrine\ORM\Internal\Hydration;
+namespace Doctrine\ORM\Internal\Hydration;
+
+use \PDO;
 
 /**
  * Base class for all hydrators (ok, we got only 1 currently).
@@ -31,7 +33,7 @@
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  * @author      Roman Borschel <roman@code-factory.org>
  */
-abstract class Doctrine_ORM_Internal_Hydration_AbstractHydrator
+abstract class AbstractHydrator
 {
     /**
      * @var array $_queryComponents
@@ -69,7 +71,7 @@ abstract class Doctrine_ORM_Internal_Hydration_AbstractHydrator
      *
      * @param Doctrine\ORM\EntityManager $em The EntityManager to use.
      */
-    public function __construct(Doctrine_ORM_EntityManager $em)
+    public function __construct(\Doctrine\ORM\EntityManager $em)
     {
         $this->_em = $em;
         $this->_uow = $em->getUnitOfWork();
@@ -86,7 +88,7 @@ abstract class Doctrine_ORM_Internal_Hydration_AbstractHydrator
     {
         $this->_stmt = $stmt;
         $this->_prepare($parserResult);
-        return new Doctrine_ORM_Internal_Hydration_IterableResult($this);
+        return new IterableResult($this);
     }
 
     /**
@@ -192,10 +194,10 @@ abstract class Doctrine_ORM_Internal_Hydration_AbstractHydrator
                 if ($this->_isIgnoredName($key)) continue;
 
                 // Cache general information like the column name <-> field name mapping
-                $e = explode(Doctrine_ORM_Query_ParserRule::SQLALIAS_SEPARATOR, $key);
+                $e = explode(\Doctrine\ORM\Query\ParserRule::SQLALIAS_SEPARATOR, $key);
                 $columnName = array_pop($e);
                 $cache[$key]['dqlAlias'] = $this->_tableAliases[
-                        implode(Doctrine_ORM_Query_ParserRule::SQLALIAS_SEPARATOR, $e)
+                        implode(\Doctrine\ORM\Query\ParserRule::SQLALIAS_SEPARATOR, $e)
                         ];
                 $classMetadata = $this->_queryComponents[$cache[$key]['dqlAlias']]['metadata'];
                 // check whether it's an aggregate value or a regular field
@@ -261,10 +263,10 @@ abstract class Doctrine_ORM_Internal_Hydration_AbstractHydrator
                 if ($this->_isIgnoredName($key)) continue;
 
                 // cache general information like the column name <-> field name mapping
-                $e = explode(Doctrine_ORM_Query_ParserRule::SQLALIAS_SEPARATOR, $key);
+                $e = explode(\Doctrine\ORM\Query\ParserRule::SQLALIAS_SEPARATOR, $key);
                 $columnName = array_pop($e);
                 $cache[$key]['dqlAlias'] = $this->_tableAliases[
-                        implode(Doctrine_ORM_Query_ParserRule::SQLALIAS_SEPARATOR, $e)
+                        implode(\Doctrine\ORM\Query\ParserRule::SQLALIAS_SEPARATOR, $e)
                         ];
                 $classMetadata = $this->_queryComponents[$cache[$key]['dqlAlias']]['metadata'];
                 // check whether it's an aggregate value or a regular field

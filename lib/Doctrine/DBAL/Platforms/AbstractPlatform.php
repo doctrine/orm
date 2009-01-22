@@ -19,7 +19,9 @@
  * <http://www.phpdoctrine.org>.
  */
 
-#namespace Doctrine\DBAL\Platforms;
+namespace Doctrine\DBAL\Platforms;
+
+use Doctrine\DBAL\Connection;
 
 /**
  * Base class for all DatabasePlatforms. The DatabasePlatforms are the central
@@ -30,7 +32,7 @@
  * @author Roman Borschel <roman@code-factory.org>
  * @author Lukas Smith <smith@pooteeweet.org> (PEAR MDB2 library)
  */
-abstract class Doctrine_DBAL_Platforms_AbstractPlatform
+abstract class AbstractPlatform
 {
     protected $_quoteIdentifiers = false;
     
@@ -1766,7 +1768,7 @@ abstract class Doctrine_DBAL_Platforms_AbstractPlatform
     public function getProperty($name)
     {
         if ( ! isset($this->_properties[$name])) {
-            throw Doctrine_Connection_Exception::unknownProperty($name);
+            throw DoctrineException::unknownProperty($name);
         }
         return $this->_properties[$name];
     }
@@ -1813,13 +1815,13 @@ abstract class Doctrine_DBAL_Platforms_AbstractPlatform
     protected function _getTransactionIsolationLevelSql($level)
     {
         switch ($level) {
-            case Doctrine_DBAL_Connection::TRANSACTION_READ_UNCOMMITTED:
+            case Connection::TRANSACTION_READ_UNCOMMITTED:
                 return 'READ UNCOMMITTED';
-            case Doctrine_DBAL_Connection::TRANSACTION_READ_COMMITTED:
+            case Connection::TRANSACTION_READ_COMMITTED:
                 return 'READ COMMITTED';
-            case Doctrine_DBAL_Connection::TRANSACTION_REPEATABLE_READ:
+            case Connection::TRANSACTION_REPEATABLE_READ:
                 return 'REPEATABLE READ';
-            case Doctrine_DBAL_Connection::TRANSACTION_SERIALIZABLE:
+            case Connection::TRANSACTION_SERIALIZABLE:
                 return 'SERIALIZABLE';
             default:
                 throw new Doctrine_Common_Exceptions_DoctrineException('isolation level is not supported: ' . $isolation);
@@ -1833,7 +1835,7 @@ abstract class Doctrine_DBAL_Platforms_AbstractPlatform
      */
     public function getSetTransactionIsolationSql($level)
     {
-        throw new Doctrine_Export_Exception('Set transaction isolation not supported by this platform.');
+        throw new DoctrineException('Set transaction isolation not supported by this platform.');
     }
     
     /**
@@ -1844,7 +1846,7 @@ abstract class Doctrine_DBAL_Platforms_AbstractPlatform
      */
     public function getDefaultTransactionIsolationLevel()
     {
-        return Doctrine_DBAL_Connection::TRANSACTION_READ_COMMITTED;
+        return Connection::TRANSACTION_READ_COMMITTED;
     }
     
     

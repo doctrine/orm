@@ -19,7 +19,7 @@
  * <http://www.phpdoctrine.org>.
  */
 
-#namespace Doctrine\ORM\Mapping;
+namespace Doctrine\ORM\Mapping;
 
 /**
  * Represents a one-to-many mapping.
@@ -31,9 +31,8 @@
  *
  * @author Roman Borschel <roman@code-factory.org>
  * @since 2.0
- * @todo Rename to OneToManyMapping
  */
-class Doctrine_ORM_Mapping_OneToManyMapping extends Doctrine_ORM_Mapping_AssociationMapping
+class OneToManyMapping extends AssociationMapping
 {
     /** The target foreign key columns that reference the sourceKeyColumns. */
     /* NOTE: Currently not used because uni-directional one-many not supported atm.  */

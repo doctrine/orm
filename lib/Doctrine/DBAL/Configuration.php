@@ -19,7 +19,9 @@
  * <http://www.phpdoctrine.org>.
  */
 
-#namespace Doctrine\DBAL;
+namespace Doctrine\DBAL;
+
+use Doctrine\DBAL\Types\Type;
 
 /**
  * Configuration container for the Doctrine DBAL.
@@ -30,7 +32,7 @@
  * @author Roman Borschel <roman@code-factory.org>
  * @since 2.0
  */
-class Doctrine_DBAL_Configuration
+class Configuration
 {
     /**
      * The attributes that are contained in the configuration.
@@ -99,14 +101,14 @@ class Doctrine_DBAL_Configuration
     public function setCustomTypes(array $types)
     {
         foreach ($types as $name => $typeClassName) {
-            Doctrine_DBAL_Types_Type::addCustomType($name, $typeClassName);
+            Type::addCustomType($name, $typeClassName);
         }
     }
     
     public function setTypeOverrides(array $overrides)
     {
         foreach ($override as $name => $typeClassName) {
-            Doctrine_DBAL_Types_Type::overrideType($name, $typeClassName);
+            Type::overrideType($name, $typeClassName);
         }
     }
 }

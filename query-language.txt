@@ -202,7 +202,7 @@ ArithmeticExpression       ::= SimpleArithmeticExpression | "(" Subselect ")"
 SimpleArithmeticExpression ::= ArithmeticTerm {("+" | "-") ArithmeticTerm}*
 ArithmeticTerm             ::= ArithmeticFactor {("*" | "/") ArithmeticFactor}*
 ArithmeticFactor           ::= [("+" | "-")] ArithmeticPrimary
-ArithmeticPrimary          ::= StateFieldPathExpression | Literal | "(" SimpleArithmeticExpression ")" | Function | AggregateExpression
+ArithmeticPrimary          ::= StateFieldPathExpression | Literal | "(" SimpleArithmeticExpression ")" | FunctionsReturningStrings | AggregateExpression
 
 
 /*

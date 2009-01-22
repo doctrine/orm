@@ -19,9 +19,9 @@
  * <http://www.phpdoctrine.org>.
  */
 
-#namespace Doctrine\ORM\Mapping;
+namespace Doctrine\ORM\Mapping;
 
-#use \Serializable;
+use \ReflectionClass;
 
 /**
  * A <tt>ClassMetadata</tt> instance holds all the information (metadata) of an entity and
@@ -31,7 +31,7 @@
  * @author Roman Borschel <roman@code-factory.org>
  * @since 2.0
  */
-class Doctrine_ORM_Mapping_ClassMetadata
+class ClassMetadata
 {
     /* The inheritance mapping types */
     /**
@@ -613,7 +613,7 @@ class Doctrine_ORM_Mapping_ClassMetadata
         }
 
         if ( ! is_object($mapping['type'])) {
-            $mapping['type'] = Doctrine_DBAL_Types_Type::getType($mapping['type']);
+            $mapping['type'] = \Doctrine\DBAL\Types\Type::getType($mapping['type']);
         }
 
         // Complete fieldName and columnName mapping
@@ -1186,12 +1186,12 @@ class Doctrine_ORM_Mapping_ClassMetadata
     {
         $this->_validateAndCompleteFieldMapping($mapping);
         if (isset($this->_fieldMappings[$mapping['fieldName']])) {
-            throw Doctrine_ORM_Exceptions_MappingException::duplicateFieldMapping();
+            throw MappingException::duplicateFieldMapping();
         }
         $this->_fieldMappings[$mapping['fieldName']] = $mapping;
     }
 
-    public function addAssociationMapping(Doctrine_ORM_Mapping_AssociationMapping $mapping)
+    public function addAssociationMapping(AssociationMapping $mapping)
     {
         $this->_storeAssociationMapping($mapping);
     }
@@ -1204,7 +1204,7 @@ class Doctrine_ORM_Mapping_ClassMetadata
     public function mapOneToOne(array $mapping)
     {
         $mapping = $this->_completeAssociationMapping($mapping);
-        $oneToOneMapping = new Doctrine_ORM_Mapping_OneToOneMapping($mapping);
+        $oneToOneMapping = new OneToOneMapping($mapping);
         $this->_storeAssociationMapping($oneToOneMapping);
     }
 
@@ -1215,7 +1215,7 @@ class Doctrine_ORM_Mapping_ClassMetadata
      * @param AssociationMapping The mapping to register as inverse if it is a mapping
      *      for the inverse side of an association.
      */
-    private function _registerMappingIfInverse(Doctrine_ORM_Mapping_AssociationMapping $assoc)
+    private function _registerMappingIfInverse(AssociationMapping $assoc)
     {
         if ($assoc->isInverseSide()) {
             $this->_inverseMappings[$assoc->getMappedByFieldName()] = $assoc;
@@ -1230,7 +1230,7 @@ class Doctrine_ORM_Mapping_ClassMetadata
     public function mapOneToMany(array $mapping)
     {
         $mapping = $this->_completeAssociationMapping($mapping);
-        $oneToManyMapping = new Doctrine_ORM_Mapping_OneToManyMapping($mapping);
+        $oneToManyMapping = new OneToManyMapping($mapping);
         $this->_storeAssociationMapping($oneToManyMapping);
     }
 
@@ -1253,7 +1253,7 @@ class Doctrine_ORM_Mapping_ClassMetadata
     public function mapManyToMany(array $mapping)
     {
         $mapping = $this->_completeAssociationMapping($mapping);
-        $manyToManyMapping = new Doctrine_ORM_Mapping_ManyToManyMapping($mapping);
+        $manyToManyMapping = new ManyToManyMapping($mapping);
         $this->_storeAssociationMapping($manyToManyMapping);
     }
     
@@ -1262,11 +1262,11 @@ class Doctrine_ORM_Mapping_ClassMetadata
      *
      * @param Doctrine_Association $assocMapping
      */
-    private function _storeAssociationMapping(Doctrine_ORM_Mapping_AssociationMapping $assocMapping)
+    private function _storeAssociationMapping(AssociationMapping $assocMapping)
     {
         $sourceFieldName = $assocMapping->getSourceFieldName();
         if (isset($this->_associationMappings[$sourceFieldName])) {
-            throw Doctrine_ORM_Exceptions_MappingException::duplicateFieldMapping();
+            throw MappingException::duplicateFieldMapping();
         }
         $this->_associationMappings[$sourceFieldName] = $assocMapping;
         $this->_registerMappingIfInverse($assocMapping);
@@ -1343,7 +1343,7 @@ class Doctrine_ORM_Mapping_ClassMetadata
      * @param string $event  The lifecycle event.
      * @param Entity $entity  The Entity on which the event occured.
      */
-    public function invokeLifecycleCallbacks($lifecycleEvent, Doctrine_ORM_Entity $entity)
+    public function invokeLifecycleCallbacks($lifecycleEvent, $entity)
     {
         foreach ($this->getLifecycleCallbacks($lifecycleEvent) as $callback) {
             $entity->$callback();

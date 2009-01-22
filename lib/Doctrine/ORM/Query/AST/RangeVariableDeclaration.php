@@ -19,6 +19,8 @@
  * <http://www.phpdoctrine.org>.
  */
 
+namespace Doctrine\ORM\Query\AST;
+
 /**
  * RangeVariableDeclaration ::= AbstractSchemaName ["AS"] AliasIdentificationVariable
  *
@@ -28,7 +30,7 @@
  * @since       2.0
  * @version     $Revision$
  */
-class Doctrine_ORM_Query_AST_RangeVariableDeclaration extends Doctrine_ORM_Query_AST
+class RangeVariableDeclaration extends Node
 {
     private $_classMetadata;
     private $_abstractSchemaName;

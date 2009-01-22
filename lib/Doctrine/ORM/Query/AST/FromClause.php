@@ -19,6 +19,8 @@
  * <http://www.phpdoctrine.org>.
  */
 
+namespace Doctrine\ORM\Query\AST;
+
 /**
  * FromClause ::= "FROM" IdentificationVariableDeclaration {"," IdentificationVariableDeclaration}
  *
@@ -28,7 +30,7 @@
  * @since       2.0
  * @version     $Revision$
  */
-class Doctrine_ORM_Query_AST_FromClause extends Doctrine_ORM_Query_AST
+class FromClause extends Node
 {
     protected $_identificationVariableDeclarations = array();
 

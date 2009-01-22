@@ -20,6 +20,12 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  **/
 
+namespace Addendum;
+
+use \ReflectionClass;
+use \ReflectionMethod;
+use \ReflectionProperty;
+
 require_once(dirname(__FILE__).'/annotations/annotation_parser.php');
 
 class Annotation {
@@ -75,7 +81,7 @@ class AnnotationsBuilder {
         $data = $this->parse($targetReflection);
         $annotations = array();
         foreach($data as $class => $parameters) {
-            if(is_subclass_of($class, 'Annotation')) {
+            if(is_subclass_of($class, '\Addendum\Annotation')) {
                 foreach($parameters as $params) {
                     $annotationReflection = new ReflectionClass($class);
                     $annotations[$class][] = $annotationReflection->newInstance($params, $targetReflection);
@@ -310,7 +316,7 @@ class Addendum {
         /** Raw mode test */
     private static function checkRawDocCommentParsingNeeded() {
         if(self::$rawMode === null) {
-            $reflection = new ReflectionClass('Addendum');
+            $reflection = new ReflectionClass('\Addendum\Addendum');
             $method = $reflection->getMethod('checkRawDocCommentParsingNeeded');
             self::setRawMode($method->getDocComment() === false);
         }

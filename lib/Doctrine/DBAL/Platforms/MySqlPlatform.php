@@ -19,7 +19,7 @@
  * <http://www.phpdoctrine.org>.
  */
 
-#namespace Doctrine\DBAL\Platforms;
+namespace Doctrine\DBAL\Platforms;
 
 /**
  * The MySqlPlatform provides the behavior, features and SQL dialect of the
@@ -28,7 +28,7 @@
  * @since 2.0
  * @author Roman Borschel <roman@code-factory.org>
  */
-class Doctrine_DBAL_Platforms_MySqlPlatform extends Doctrine_DBAL_Platforms_AbstractPlatform
+class MySqlPlatform extends AbstractPlatform
 {
     /**
      * MySql reserved words.

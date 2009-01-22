@@ -1,15 +1,13 @@
 <?php
 
-#namespace Doctrine::DBAL::Driver::PDOOracle;
+namespace Doctrine\DBAL\Driver\PDOOracle;
 
-#use Doctrine::DBAL::Driver;
-
-class Doctrine_DBAL_Driver_PDOOracle_Driver implements Doctrine_DBAL_Driver
+class Driver implements \Doctrine\DBAL\Driver
 {
     
     public function connect(array $params, $username = null, $password = null, array $driverOptions = array())
     {
-        return new Doctrine_DBAL_Driver_PDOConnection(
+        return new \Doctrine\DBAL\Driver\PDOConnection(
                 $this->_constructPdoDsn($params),
                 $username,
                 $password,
@@ -28,14 +26,13 @@ class Doctrine_DBAL_Driver_PDOOracle_Driver implements Doctrine_DBAL_Driver
     
     public function getDatabasePlatform()
     {
-        return new Doctrine_DatabasePlatform_OraclePlatform();
+        return new \Doctrine\DBAL\Platforms\OraclePlatform();
     }
     
-    public function getSchemaManager(Doctrine_Connection $conn)
+    public function getSchemaManager(\Doctrine\DBAL\Connection $conn)
     {
-        return new Doctrine_Schema_OracleSchemaManager($conn);
+        return new \Doctrine\DBAL\Schema\OracleSchemaManager($conn);
     }
     
 }
 
-?>

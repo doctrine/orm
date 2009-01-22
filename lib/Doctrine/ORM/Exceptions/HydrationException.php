@@ -1,6 +1,8 @@
 <?php
 
-class Doctrine_ORM_Exceptions_HydrationException extends Doctrine_ORM_Exceptions_ORMException
+namespace Doctrine\ORM\Exceptions;
+
+class HydrationException extends \Doctrine\Common\DoctrineException
 {
     
     public static function nonUniqueResult()
@@ -10,4 +12,3 @@ class Doctrine_ORM_Exceptions_HydrationException extends Doctrine_ORM_Exceptions
     
 }
 
-?>

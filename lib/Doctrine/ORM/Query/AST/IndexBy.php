@@ -19,6 +19,8 @@
  * <http://www.phpdoctrine.org>.
  */
 
+namespace Doctrine\ORM\Query\AST;
+
 /**
  * IndexBy ::= "INDEX" "BY" SimpleStateFieldPathExpression
  *
@@ -28,7 +30,7 @@
  * @since       2.0
  * @version     $Revision$
  */
-class Doctrine_ORM_Query_AST_IndexBy extends Doctrine_ORM_Query_AST
+class IndexBy extends Node
 {
     protected $_simpleStateFieldPathExpression = null;
 

@@ -19,10 +19,12 @@
  * <http://www.phpdoctrine.org>.
  */
 
-#namespace Doctrine\ORM;
+namespace Doctrine\ORM;
 
-#use Doctrine\ORM\EntityManager;
-#use Doctrine\ORM\Exceptions\UnitOfWorkException;
+use Doctrine\ORM\Internal\CommitOrderCalculator;
+use Doctrine\ORM\Internal\CommitOrderNode;
+use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\Exceptions\UnitOfWorkException;
 
 /**
  * The UnitOfWork is responsible for tracking changes to objects during an
@@ -30,12 +32,12 @@
  * in the correct order.
  *
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
- * @link        www.phpdoctrine.org
+ * @link        www.doctrine-project.org
  * @since       2.0
  * @version     $Revision$
  * @author      Roman Borschel <roman@code-factory.org>
  */
-class Doctrine_ORM_UnitOfWork
+class UnitOfWork
 {
     /**
      * An Entity is in managed state when it has a primary key/identifier (and
@@ -51,16 +53,6 @@ class Doctrine_ORM_UnitOfWork
      * and is not (yet) managed by an EntityManager.
      */
     const STATE_NEW = 2;
-
-    /**
-     * An Entity is temporarily locked during deletes and saves.
-     *
-     * This state is used internally to ensure that circular deletes
-     * and saves will not cause infinite loops.
-     * @todo Not sure this is a good idea. It is a problematic solution because
-     * it hides the original state while the locked state is active.
-     */
-    //const STATE_LOCKED = 6;
 
     /**
      * A detached Entity is an instance with a persistent identity that is not
@@ -186,11 +178,11 @@ class Doctrine_ORM_UnitOfWork
      *
      * @param Doctrine\ORM\EntityManager $em
      */
-    public function __construct(Doctrine_ORM_EntityManager $em)
+    public function __construct(EntityManager $em)
     {
         $this->_em = $em;
         //TODO: any benefit with lazy init?
-        $this->_commitOrderCalculator = new Doctrine_ORM_Internal_CommitOrderCalculator();
+        $this->_commitOrderCalculator = new CommitOrderCalculator();
     }
 
     /**
@@ -358,7 +350,7 @@ class Doctrine_ORM_UnitOfWork
                 if ( ! $idGen->isPostInsertGenerator()) {
                     $idValue = $idGen->generate($entry);
                     $this->_entityStates[$oid] = self::STATE_MANAGED;
-                    if ( ! $idGen instanceof Doctrine_ORM_Id_Assigned) {
+                    if ( ! $idGen instanceof \Doctrine\ORM\Id\Assigned) {
                         $this->_entityIdentifiers[$oid] = array($idValue);
                         $targetClass->getSingleIdReflectionProperty()->setValue($entry, $idValue);
                     } else {
@@ -377,7 +369,7 @@ class Doctrine_ORM_UnitOfWork
                 $this->_entityChangeSets[$oid] = $data;
                 $this->_originalEntityData[$oid] = $data;
             } else if ($state == self::STATE_DELETED) {
-                throw new Doctrine_Exception("Deleted entity in collection detected during flush.");
+                throw new DoctrineException("Deleted entity in collection detected during flush.");
             }
             // MANAGED associated entities are already taken into account
             // during changeset calculation anyway, since they are in the identity map.
@@ -554,11 +546,11 @@ class Doctrine_ORM_UnitOfWork
     {
         $oid = spl_object_hash($entity);
         if ( ! isset($this->_entityIdentifiers[$oid])) {
-            throw new Doctrine_Exception("Entity without identity "
+            throw new DoctrineException("Entity without identity "
                     . "can't be registered as dirty.");
         }
         if (isset($this->_deletedEntities[$oid])) {
-            throw new Doctrine_Exception("Removed object can't be registered as dirty.");
+            throw new DoctrineException("Removed object can't be registered as dirty.");
         }
 
         if ( ! isset($this->_dirtyEntities[$oid]) && ! isset($this->_newEntities[$oid])) {
@@ -696,7 +688,7 @@ class Doctrine_ORM_UnitOfWork
         $classMetadata = $this->_em->getClassMetadata(get_class($entity));
         $idHash = $this->getIdentifierHash($this->_entityIdentifiers[spl_object_hash($entity)]);
         if ($idHash === '') {
-            throw new Doctrine_Exception("Entity with oid '" . spl_object_hash($entity)
+            throw new DoctrineException("Entity with oid '" . spl_object_hash($entity)
                     . "' has no identity and therefore can't be added to the identity map.");
         }
         $className = $classMetadata->getRootClassName();
@@ -739,7 +731,7 @@ class Doctrine_ORM_UnitOfWork
         $classMetadata = $this->_em->getClassMetadata(get_class($entity));
         $idHash = $this->getIdentifierHash($this->_entityIdentifiers[$oid]);
         if ($idHash === '') {
-            throw new Doctrine_Exception("Entity with oid '" . spl_object_hash($entity)
+            throw new DoctrineException("Entity with oid '" . spl_object_hash($entity)
                     . "' has no identity and therefore can't be removed from the identity map.");
         }
         $className = $classMetadata->getRootClassName();
@@ -886,7 +878,7 @@ class Doctrine_ORM_UnitOfWork
                 } else {
                     $idValue = $idGen->generate($entity);
                     $this->_entityStates[$oid] = self::STATE_MANAGED;
-                    if ( ! $idGen instanceof Doctrine_ORM_Id_Assigned) {
+                    if ( ! $idGen instanceof \Doctrine\ORM\Id\Assigned) {
                         $this->_entityIdentifiers[$oid] = array($idValue);
                         $class->getSingleIdReflectionProperty()->setValue($entity, $idValue);
                     } else {
@@ -953,10 +945,10 @@ class Doctrine_ORM_UnitOfWork
                 break;
             case self::STATE_DETACHED:
                 //exception?
-                throw new Doctrine_Exception("A detached entity can't be deleted.");
+                throw new DoctrineException("A detached entity can't be deleted.");
             default:
                 //TODO: throw UnitOfWorkException::invalidEntityState()
-                throw new Doctrine_Exception("Encountered invalid entity state.");
+                throw new DoctrineException("Encountered invalid entity state.");
         }
 
         $this->_cascadeDelete($entity, $visited);
@@ -1002,7 +994,7 @@ class Doctrine_ORM_UnitOfWork
             }
             $relatedEntities = $class->getReflectionProperty($assocMapping->getSourceFieldName())
                     ->getValue($entity);
-            if ($relatedEntities instanceof Doctrine_ORM_Collection &&
+            if ($relatedEntities instanceof \Doctrine\ORM\Collection &&
                     count($relatedEntities) > 0) {
                 foreach ($relatedEntities as $relatedEntity) {
                     $this->_doDelete($relatedEntity, $visited, $insertNow);
@@ -1032,34 +1024,34 @@ class Doctrine_ORM_UnitOfWork
         $this->_commitOrderCalculator->clear();
     }
     
-    public function scheduleCollectionUpdate(Doctrine_ORM_Collection $coll)
+    public function scheduleCollectionUpdate(Doctrine\ORM\Collection $coll)
     {
         $this->_collectionUpdates[] = $coll;
     }
     
-    public function isCollectionScheduledForUpdate(Doctrine_ORM_Collection $coll)
+    public function isCollectionScheduledForUpdate(Doctrine\ORM\Collection $coll)
     {
         //...
     }
     
-    public function scheduleCollectionDeletion(Doctrine_ORM_Collection $coll)
+    public function scheduleCollectionDeletion(Doctrine\ORM\Collection $coll)
     {
         //TODO: if $coll is already scheduled for recreation ... what to do?
         // Just remove $coll from the scheduled recreations?
         $this->_collectionDeletions[] = $coll;
     }
     
-    public function isCollectionScheduledForDeletion(Doctrine_Collection $coll)
+    public function isCollectionScheduledForDeletion(Doctrine\ORM\Collection $coll)
     {
         //...
     }
     
-    public function scheduleCollectionRecreation(Doctrine_Collection $coll)
+    public function scheduleCollectionRecreation(Doctrine\ORM\Collection $coll)
     {
         $this->_collectionRecreations[] = $coll;
     }
     
-    public function isCollectionScheduledForRecreation(Doctrine_Collection $coll)
+    public function isCollectionScheduledForRecreation(Doctrine\ORM\Collection $coll)
     {
         //...
     }
@@ -1209,7 +1201,7 @@ class Doctrine_ORM_UnitOfWork
      *
      * @param Doctrine\ORM\Collection $coll
      */
-    public function addManagedCollection(Doctrine_ORM_Collection $coll)
+    public function addManagedCollection(\Doctrine\ORM\Collection $coll)
     {
         
     }

@@ -19,7 +19,7 @@
  * <http://www.phpdoctrine.org>.
  */
 
-#namespace Doctrine\ORM\Mapping;
+namespace Doctrine\ORM\Mapping;
 
 /**
  * Base class for association mappings.
@@ -27,7 +27,7 @@
  * @author Roman Borschel <roman@code-factory.org>
  * @since 2.0
  */
-abstract class Doctrine_ORM_Mapping_AssociationMapping
+abstract class AssociationMapping
 {
     const FETCH_MANUAL = 1;
     const FETCH_LAZY = 2;

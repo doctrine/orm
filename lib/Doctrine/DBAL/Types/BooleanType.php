@@ -1,10 +1,12 @@
 <?php
 
+namespace Doctrine\DBAL\Types;
+
 /**
  * Type that maps an SQL boolean to a PHP boolean.
  *
  */
-class Doctrine_DBAL_Types_BooleanType extends Doctrine_DBAL_Types_Type
+class BooleanType extends Type
 {
     /**
      * Enter description here...

@@ -1,15 +1,17 @@
 <?php
 
+namespace Doctrine\DBAL\Types;
+
 /**
  * Type that maps an SQL INT to a PHP integer.
  *
  */
-class Doctrine_DBAL_Types_IntegerType extends Doctrine_DBAL_Types_Type
+class IntegerType extends Type
 {
 
     public function getName() { return "Integer"; }
 
-    public function getSqlDeclaration(array $fieldDeclaration, Doctrine_DBAL_Platforms_AbstractPlatform $platform)
+    public function getSqlDeclaration(array $fieldDeclaration, \Doctrine\DBAL\Platforms\AbstractPlatform $platform)
     {
         return $platform->getIntegerTypeDeclarationSql($fieldDeclaration);
     }

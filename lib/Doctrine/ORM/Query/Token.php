@@ -19,6 +19,8 @@
  * <http://www.phpdoctrine.org>.
  */
 
+namespace Doctrine\ORM\Query;
+
 /**
  * Container for token type constants of Doctrine Query Language.
  *
@@ -29,7 +31,7 @@
  * @since       2.0
  * @version     $Revision$
  */
-final class Doctrine_ORM_Query_Token
+final class Token
 {
     const T_NONE                = 1;
     const T_IDENTIFIER          = 2;

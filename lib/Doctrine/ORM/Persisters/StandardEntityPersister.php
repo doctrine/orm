@@ -19,9 +19,7 @@
  * <http://www.phpdoctrine.org>.
  */
 
-#namespace Doctrine\ORM\Persisters;
-
-#use Doctrine\ORM\Entity;
+namespace Doctrine\ORM\Persisters;
 
 /**
  * The default persister strategy maps a single entity instance to a single database table,
@@ -33,12 +31,12 @@
  * @link        www.doctrine-project.org
  * @since       2.0
  */
-class Doctrine_ORM_Persisters_StandardEntityPersister extends Doctrine_ORM_Persisters_AbstractEntityPersister
+class StandardEntityPersister extends AbstractEntityPersister
 {
     /**
      * Deletes an entity.
      */
-    protected function _doDelete(Doctrine_ORM_Entity $record)
+    protected function _doDelete($record)
     {
         /*try {
             $this->_conn->beginInternalTransaction();

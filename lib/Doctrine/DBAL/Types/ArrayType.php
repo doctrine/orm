@@ -1,11 +1,13 @@
 <?php
 
+namespace Doctrine\DBAL\Types;
+
 /**
  * Type that maps PHP arrays to VARCHAR SQL type.
  *
  * @since 2.0
  */
-class Doctrine_DBAL_Types_ArrayType extends Doctrine_DBAL_Types_Type
+class ArrayType extends Type
 {
     
     

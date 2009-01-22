@@ -1,27 +1,31 @@
 <?php
 
-#namespace Doctrine\ORM\Mapping\Driver;
+namespace Doctrine\ORM\Mapping\Driver;
+
+use Doctrine\ORM\Exceptions\MappingException;
 
 /* Addendum annotation reflection extensions */
-if ( ! class_exists('Addendum', false)) {
-    require_once dirname(__FILE__) . '/addendum/annotations.php';
+if ( ! class_exists('\Addendum', false)) {
+    require dirname(__FILE__) . '/addendum/annotations.php';
 }
+require dirname(__FILE__) . '/DoctrineAnnotations.php';
 
 /**
  * The AnnotationDriver reads the mapping metadata from docblock annotations.
  *
  * @author robo
  */
-class Doctrine_ORM_Mapping_Driver_AnnotationDriver {
+class AnnotationDriver
+{
     /**
      * Loads the metadata for the specified class into the provided container.
      */
-    public function loadMetadataForClass($className, Doctrine_ORM_Mapping_ClassMetadata $metadata)
+    public function loadMetadataForClass($className, \Doctrine\ORM\Mapping\ClassMetadata $metadata)
     {
-        $annotClass = new ReflectionAnnotatedClass($className);
+        $annotClass = new \Addendum\ReflectionAnnotatedClass($className);
 
         if (($entityAnnot = $annotClass->getAnnotation('DoctrineEntity')) === false) {
-            throw new Doctrine_ORM_Exceptions_MappingException("$className is no entity.");
+            throw new MappingException("$className is no entity.");
         }
 
         if ($entityAnnot->tableName) {
@@ -54,7 +58,7 @@ class Doctrine_ORM_Mapping_Driver_AnnotationDriver {
             $mapping['fieldName'] = $property->getName();
             if ($columnAnnot = $property->getAnnotation('DoctrineColumn')) {
                 if ($columnAnnot->type == null) {
-                    throw new Doctrine_ORM_Exceptions_MappingException("Missing type on property " . $property->getName());
+                    throw new MappingException("Missing type on property " . $property->getName());
                 }
                 $mapping['type'] = $columnAnnot->type;
                 $mapping['length'] = $columnAnnot->length;
@@ -90,60 +94,4 @@ class Doctrine_ORM_Mapping_Driver_AnnotationDriver {
             }
         }
     }
-}
-
-/* Annotations */
-
-final class DoctrineEntity extends Annotation {
-    public $tableName;
-    public $repositoryClass;
-    public $inheritanceType;
-}
-final class DoctrineInheritanceType extends Annotation {}
-final class DoctrineDiscriminatorColumn extends Annotation {
-    public $name;
-    public $type;
-    public $length;
-}
-final class DoctrineDiscriminatorMap extends Annotation {}
-final class DoctrineSubClasses extends Annotation {}
-final class DoctrineId extends Annotation {}
-final class DoctrineIdGenerator extends Annotation {}
-final class DoctrineVersion extends Annotation {}
-final class DoctrineJoinColumn extends Annotation {
-    public $name;
-    public $type;
-    public $length;
-    public $onDelete;
-    public $onUpdate;
-}
-final class DoctrineColumn extends Annotation {
-    public $type;
-    public $length;
-    public $unique;
-    public $nullable;
-}
-final class DoctrineOneToOne extends Annotation {
-    public $targetEntity;
-    public $mappedBy;
-    public $joinColumns;
-    public $cascade;
-}
-final class DoctrineOneToMany extends Annotation {
-    public $mappedBy;
-    public $targetEntity;
-    public $cascade;
-}
-final class DoctrineManyToOne extends Annotation {
-    public $targetEntity;
-    public $joinColumns;
-    public $cascade;
-}
-final class DoctrineManyToMany extends Annotation {
-    public $targetEntity;
-    public $joinColumns;
-    public $inverseJoinColumns;
-    public $joinTable;
-    public $mappedBy;
-    public $cascade;
 }

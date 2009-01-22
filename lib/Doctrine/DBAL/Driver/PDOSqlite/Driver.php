@@ -1,6 +1,6 @@
 <?php
 
-#namespace Doctrine::DBAL::Driver::PDOOracle;
+namespace Doctrine\DBAL\Driver\PDOSqlite;
 
 #use Doctrine::DBAL::Driver;
 
@@ -9,7 +9,7 @@
  *
  * @since 2.0
  */
-class Doctrine_DBAL_Driver_PDOSqlite_Driver implements Doctrine_DBAL_Driver
+class Driver implements \Doctrine\DBAL\Driver
 {
     /**
      * Tries to establish a database connection to SQLite.
@@ -22,7 +22,7 @@ class Doctrine_DBAL_Driver_PDOSqlite_Driver implements Doctrine_DBAL_Driver
      */
     public function connect(array $params, $username = null, $password = null, array $driverOptions = array())
     {
-        return new Doctrine_DBAL_Driver_PDOConnection(
+        return new \Doctrine\DBAL\Driver\PDOConnection(
                 $this->_constructPdoDsn($params),
                 $username,
                 $password,
@@ -52,7 +52,7 @@ class Doctrine_DBAL_Driver_PDOSqlite_Driver implements Doctrine_DBAL_Driver
      */
     public function getDatabasePlatform()
     {
-        return new Doctrine_DBAL_Platforms_SqlitePlatform();
+        return new \Doctrine\DBAL\Platforms\SqlitePlatform();
     }
     
     /**
@@ -61,9 +61,9 @@ class Doctrine_DBAL_Driver_PDOSqlite_Driver implements Doctrine_DBAL_Driver
      * @param Doctrine\DBAL\Connection $conn
      * @return Doctrine\DBAL\Schema\SqliteSchemaManager
      */
-    public function getSchemaManager(Doctrine_DBAL_Connection $conn)
+    public function getSchemaManager(\Doctrine\DBAL\Connection $conn)
     {
-        return new Doctrine_DBAL_Schema_SqliteSchemaManager($conn);
+        return new \Doctrine\DBAL\Schema\SqliteSchemaManager($conn);
     }
     
 }

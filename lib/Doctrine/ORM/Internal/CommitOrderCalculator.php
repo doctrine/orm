@@ -19,7 +19,7 @@
  * <http://www.phpdoctrine.org>.
  */
 
-#namespace Doctrine\ORM\Internal;
+namespace Doctrine\ORM\Internal;
 
 /**
  * The CommitOrderCalculator is used by the UnitOfWork to sort out the
@@ -28,7 +28,7 @@
  * @since 2.0
  * @author Roman Borschel <roman@code-factory.org> 
  */
-class Doctrine_ORM_Internal_CommitOrderCalculator
+class CommitOrderCalculator
 {
     private $_currentTime;
     
@@ -106,7 +106,7 @@ class Doctrine_ORM_Internal_CommitOrderCalculator
      */
     public function addNodeWithItem($key, $item)
     {
-        $this->_nodes[$key] = new Doctrine_ORM_Internal_CommitOrderNode($item, $this);
+        $this->_nodes[$key] = new CommitOrderNode($item, $this);
     }
     
     /**

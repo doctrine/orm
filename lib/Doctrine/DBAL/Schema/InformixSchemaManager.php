@@ -19,7 +19,7 @@
  * <http://www.phpdoctrine.org>.
  */
 
-#namespace Doctrine::DBAL::Schema;
+namespace Doctrine\DBAL\Schema;
 
 /**
  * xxx
@@ -31,7 +31,7 @@
  * @version     $Revision$
  * @since       2.0
  */
-class Doctrine_DBAL_Schema_InformixSchemaManager extends Doctrine_DBAL_Schema_AbstractSchemaManager
+class InformixSchemaManager extends AbstractSchemaManager
 {
     protected $sql = array(
                     'listTables'          => "SELECT tabname,tabtype FROM systables WHERE tabtype IN ('T','V') AND owner != 'informix'",
@@ -54,12 +54,8 @@ class Doctrine_DBAL_Schema_InformixSchemaManager extends Doctrine_DBAL_Schema_Ab
                                               and s2.constrid=r.primary and i2.idxname=s2.idxname",
                                         );
     
-    public function __construct(Doctrine_Connection_Informix $conn)
-    {
-        $this->_conn = $conn;
-    }
+
     
     
 }
 
-?>

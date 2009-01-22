@@ -19,7 +19,7 @@
  * <http://www.phpdoctrine.org>.
  */
 
-#namespace Doctrine::ORM::Exceptions;
+namespace Doctrine\ORM\Exceptions;
 
 /**
  * Doctrine_EntityManager_Exception
@@ -31,7 +31,7 @@
  * @since       2.0
  * @version     $Revision$
  */
-class Doctrine_ORM_Exceptions_EntityManagerException extends Doctrine_ORM_Exceptions_ORMException
+class EntityManagerException extends \Doctrine\Common\DoctrineException
 {
     public static function invalidFlushMode()
     {

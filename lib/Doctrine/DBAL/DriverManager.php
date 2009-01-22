@@ -19,7 +19,9 @@
  * <http://www.phpdoctrine.org>.
  */
 
-#namespace Doctrine\DBAL;
+namespace Doctrine\DBAL;
+
+use Doctrine\Common\EventManager;
 
 /**
  * Factory for creating Doctrine\DBAL\Connection instances.
@@ -27,7 +29,7 @@
  * @author Roman Borschel <roman@code-factory.org>
  * @since 2.0
  */
-final class Doctrine_DBAL_DriverManager
+final class DriverManager
 {
     /**
      * List of supported drivers and their mappings to the driver class.
@@ -35,13 +37,13 @@ final class Doctrine_DBAL_DriverManager
      * @var array
      */
      private static $_driverMap = array(
-            'pdo_mysql'  => 'Doctrine_DBAL_Driver_PDOMySql_Driver',
-            'pdo_sqlite' => 'Doctrine_DBAL_Driver_PDOSqlite_Driver',
-            'pdo_pgsql'  => 'Doctrine_DBAL_Driver_PDOPgSql_Driver',
-            'pdo_oracle' => 'Doctrine_DBAL_Driver_PDOOracle_Driver',
-            'pdo_mssql'  => 'Doctrine_DBAL_Driver_PDOMsSql_Driver',
-            'pdo_firebird' => 'Doctrine_DBAL_Driver_PDOFirebird_Driver',
-            'pdo_informix' => 'Doctrine_DBAL_Driver_PDOInformix_Driver',
+            'pdo_mysql'  => 'Doctrine\DBAL\Driver\PDOMySql\Driver',
+            'pdo_sqlite' => 'Doctrine\DBAL\Driver\PDOSqlite\Driver',
+            'pdo_pgsql'  => 'Doctrine\DBAL\Driver\PDOPgSql\Driver',
+            'pdo_oracle' => 'Doctrine\DBAL\Driver\PDOOracle\Driver',
+            'pdo_mssql'  => 'Doctrine\DBAL\Driver\PDOMsSql\Driver',
+            'pdo_firebird' => 'Doctrine\DBAL\Driver\PDOFirebird\Driver',
+            'pdo_informix' => 'Doctrine\DBAL\Driver\PDOInformix\Driver',
             );
 
     /** Private constructor. This class cannot be instantiated. */
@@ -92,20 +94,20 @@ final class Doctrine_DBAL_DriverManager
      * @return Doctrine\DBAL\Connection
      */
     public static function getConnection(array $params,
-            Doctrine_DBAL_Configuration $config = null,
-            Doctrine_Common_EventManager $eventManager = null)
+            Configuration $config = null,
+            EventManager $eventManager = null)
     {
         // create default config and event manager, if not set
         if ( ! $config) {
-            $config = new Doctrine_DBAL_Configuration();
+            $config = new Configuration();
         }
         if ( ! $eventManager) {
-            $eventManager = new Doctrine_Common_EventManager();
+            $eventManager = new EventManager();
         }
         
         // check for existing pdo object
         if (isset($params['pdo']) && ! $params['pdo'] instanceof PDO) {
-            throw Doctrine_DBAL_Exceptions_DBALException::invalidPDOInstance();
+            throw DBALException::invalidPDOInstance();
         } else if (isset($params['pdo'])) {
             $params['driver'] = $params['pdo']->getAttribute(PDO::ATTR_DRIVER_NAME);
         } else {
@@ -119,7 +121,7 @@ final class Doctrine_DBAL_DriverManager
         
         $driver = new $className();
         
-        $wrapperClass = 'Doctrine_DBAL_Connection';
+        $wrapperClass = 'Doctrine\DBAL\Connection';
         if (isset($params['wrapperClass']) && is_subclass_of($params['wrapperClass'], $wrapperClass)) {
             $wrapperClass = $params['wrapperClass'];
         }
@@ -138,16 +140,15 @@ final class Doctrine_DBAL_DriverManager
         
         // driver
         if ( ! isset($params['driver']) && ! isset($params['driverClass'])) {
-            throw Doctrine_ConnectionFactory_Exception::driverRequired();
+            throw DBALException::driverRequired();
         }
         
         // check validity of parameters
         
         // driver
         if ( isset($params['driver']) && ! isset(self::$_driverMap[$params['driver']])) {
-            throw Doctrine_DBAL_Exceptions_DBALException::unknownDriver($params['driver']);
+            throw DBALException::unknownDriver($params['driver']);
         }
     }
 }
 
-?>

@@ -1,6 +1,8 @@
 <?php
 
-class Doctrine_DBAL_Driver_PDOStatement extends PDOStatement implements Doctrine_DBAL_Driver_Statement
+namespace Doctrine\DBAL\Driver;
+
+class PDOStatement extends \PDOStatement implements \Doctrine\DBAL\Driver\Statement
 {
     private function __construct() {}
 }

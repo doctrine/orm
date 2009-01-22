@@ -19,25 +19,25 @@
  * <http://www.phpdoctrine.org>.
  */
 
-#namespace Doctrine\ORM;
+namespace Doctrine\ORM;
 
 #use Doctrine\Common\Configuration;
-#use Doctrine\Common\EventManager;
-#use Doctrine\DBAL\Connection;
-#use Doctrine\ORM\Exceptions\EntityManagerException;
-#use Doctrine\ORM\Internal\UnitOfWork;
-#use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\Common\EventManager;
+use Doctrine\Common\DoctrineException;
+use Doctrine\DBAL\Connection;
+use Doctrine\ORM\Exceptions\EntityManagerException;
+use Doctrine\ORM\Mapping\ClassMetadata;
 
 /**
  * The EntityManager is the central access point to ORM functionality.
  *
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
- * @link        www.phpdoctrine.org
+ * @link        www.doctrine-project.org
  * @since       2.0
  * @version     $Revision$
  * @author      Roman Borschel <roman@code-factory.org>
  */
-class Doctrine_ORM_EntityManager
+class EntityManager
 {
     /**
      * IMMEDIATE: Flush occurs automatically after each operation that issues database
@@ -158,20 +158,20 @@ class Doctrine_ORM_EntityManager
      * @param Doctrine\Common\EventManager $eventManager
      */
     protected function __construct(
-            Doctrine_DBAL_Connection $conn,
+            Connection $conn,
             $name,
-            Doctrine_ORM_Configuration $config,
-            Doctrine_Common_EventManager $eventManager)
+            Configuration $config,
+            EventManager $eventManager)
     {
         $this->_conn = $conn;
         $this->_name = $name;
         $this->_config = $config;
         $this->_eventManager = $eventManager;
-        $this->_metadataFactory = new Doctrine_ORM_Mapping_ClassMetadataFactory(
+        $this->_metadataFactory = new \Doctrine\ORM\Mapping\ClassMetadataFactory(
                 $this->_config->getMetadataDriverImpl(),
                 $this->_conn->getDatabasePlatform());
         $this->_metadataFactory->setCacheDriver($this->_config->getMetadataCacheImpl());
-        $this->_unitOfWork = new Doctrine_ORM_UnitOfWork($this);
+        $this->_unitOfWork = new UnitOfWork($this);
     }
     
     /**
@@ -259,14 +259,14 @@ class Doctrine_ORM_EntityManager
      */
     protected function _createIdGenerator($generatorType)
     {
-        if ($generatorType == Doctrine_ORM_Mapping_ClassMetadata::GENERATOR_TYPE_IDENTITY) {
-            return new Doctrine_ORM_Id_IdentityGenerator($this);
-        } else if ($generatorType == Doctrine_ORM_Mapping_ClassMetadata::GENERATOR_TYPE_SEQUENCE) {
-            return new Doctrine_ORM_Id_SequenceGenerator($this);
-        } else if ($generatorType == Doctrine_ORM_Mapping_ClassMetadata::GENERATOR_TYPE_TABLE) {
-            return new Doctrine_ORM_Id_TableGenerator($this);
+        if ($generatorType == ClassMetadata::GENERATOR_TYPE_IDENTITY) {
+            return new \Doctrine\ORM\Id\IdentityGenerator($this);
+        } else if ($generatorType == ClassMetadata::GENERATOR_TYPE_SEQUENCE) {
+            return new \Doctrine\ORM\Id\SequenceGenerator($this);
+        } else if ($generatorType == ClassMetadata::GENERATOR_TYPE_TABLE) {
+            return new \Doctrine\ORM\Id\TableGenerator($this);
         } else {
-            return new Doctrine_ORM_Id_Assigned($this);
+            return new \Doctrine\ORM\Id\Assigned($this);
         }
     }
     
@@ -278,7 +278,7 @@ class Doctrine_ORM_EntityManager
      */
     public function createQuery($dql = "")
     {
-        $query = new Doctrine_ORM_Query($this);
+        $query = new Query($this);
         if ( ! empty($dql)) {
             $query->setDql($dql);
         }
@@ -298,9 +298,9 @@ class Doctrine_ORM_EntityManager
         if ( ! isset($this->_persisters[$entityName])) {
             $class = $this->getClassMetadata($entityName);
             if ($class->isInheritanceTypeJoined()) {
-                $persister = new Doctrine_EntityPersister_JoinedSubclass($this, $class);
+                $persister = new \Doctrine\ORM\Persisters\JoinedSubclassPersister($this, $class);
             } else {
-                $persister = new Doctrine_ORM_Persisters_StandardEntityPersister($this, $class);
+                $persister = new \Doctrine\ORM\Persisters\StandardEntityPersister($this, $class);
             }
             $this->_persisters[$entityName] = $persister;
         }
@@ -313,7 +313,7 @@ class Doctrine_ORM_EntityManager
      * @param Doctrine\ORM\Entity $entity
      * @return boolean
      */
-    public function detach(Doctrine_ORM_Entity $entity)
+    public function detach($entity)
     {
         return $this->_unitOfWork->removeFromIdentityMap($entity);
     }
@@ -385,7 +385,7 @@ class Doctrine_ORM_EntityManager
     public function setFlushMode($flushMode)
     {
         if ( ! $this->_isFlushMode($flushMode)) {
-            throw Doctrine_ORM_Exceptions_EntityManagerException::invalidFlushMode();
+            throw EntityManagerException::invalidFlushMode();
         }
         $this->_flushMode = $flushMode;
     }
@@ -472,7 +472,7 @@ class Doctrine_ORM_EntityManager
     public function refresh(Doctrine_ORM_Entity $entity)
     {
         $this->_mergeData($entity, $entity->getRepository()->find(
-                $entity->identifier(), Doctrine_Query::HYDRATE_ARRAY),
+                $entity->identifier(), Query::HYDRATE_ARRAY),
                 true);
     }
     
@@ -482,7 +482,7 @@ class Doctrine_ORM_EntityManager
      * @param Doctrine\ORM\Entity $entity  The entity to copy.
      * @return Doctrine\ORM\Entity  The new entity.
      */
-    public function copy(Doctrine_ORM_Entity $entity, $deep = false)
+    public function copy($entity, $deep = false)
     {
         //...
     }
@@ -504,7 +504,7 @@ class Doctrine_ORM_EntityManager
         if ($customRepositoryClassName !== null) {
             $repository = new $customRepositoryClassName($entityName, $metadata);
         } else {
-            $repository = new Doctrine_ORM_EntityRepository($this, $metadata);
+            $repository = new \Doctrine\ORM\EntityRepository($this, $metadata);
         }
         $this->_repositories[$entityName] = $repository;
 
@@ -552,7 +552,7 @@ class Doctrine_ORM_EntityManager
     private function _errorIfNotActiveOrClosed()
     {
         if ($this->_closed) {
-            throw Doctrine_ORM_Exceptions_EntityManagerException::notActiveOrClosed($this->_name);
+            throw EntityManagerException::notActiveOrClosed($this->_name);
         }
     }
     
@@ -587,23 +587,23 @@ class Doctrine_ORM_EntityManager
     {
         if ( ! isset($this->_hydrators[$hydrationMode])) {
             switch ($hydrationMode) {
-                case Doctrine_ORM_Query::HYDRATE_OBJECT:
-                    $this->_hydrators[$hydrationMode] = new Doctrine_ORM_Internal_Hydration_ObjectHydrator($this);
+                case Query::HYDRATE_OBJECT:
+                    $this->_hydrators[$hydrationMode] = new \Doctrine\ORM\Internal\Hydration\ObjectHydrator($this);
                     break;
                 case Doctrine_ORM_Query::HYDRATE_ARRAY:
-                    $this->_hydrators[$hydrationMode] = new Doctrine_ORM_Internal_Hydration_ArrayHydrator($this);
+                    $this->_hydrators[$hydrationMode] = new \Doctrine\ORM\Internal\Hydration\ArrayHydrator($this);
                     break;
                 case Doctrine_ORM_Query::HYDRATE_SCALAR:
-                    $this->_hydrators[$hydrationMode] = new Doctrine_ORM_Internal_Hydration_ScalarHydrator($this);
+                    $this->_hydrators[$hydrationMode] = new \Doctrine\ORM\Internal\Hydration\ScalarHydrator($this);
                     break;
                 case Doctrine_ORM_Query::HYDRATE_SINGLE_SCALAR:
-                    $this->_hydrators[$hydrationMode] = new Doctrine_ORM_Internal_Hydration_SingleScalarHydrator($this);
+                    $this->_hydrators[$hydrationMode] = new \Doctrine\ORM\Internal\Hydration\SingleScalarHydrator($this);
                     break;
                 case Doctrine_ORM_Query::HYDRATE_NONE:
-                    $this->_hydrators[$hydrationMode] = new Doctrine_ORM_Internal_Hydration_NoneHydrator($this);
+                    $this->_hydrators[$hydrationMode] = new \Doctrine\ORM\Internal\Hydration\NoneHydrator($this);
                     break;
                 default:
-                    throw new Doctrine_Exception("No hydrator found for hydration mode '$hydrationMode'.");
+                    throw new DoctrineException("No hydrator found for hydration mode '$hydrationMode'.");
             }
         } else if ($this->_hydrators[$hydrationMode] instanceof Closure) {
             $this->_hydrators[$hydrationMode] = $this->_hydrators[$hydrationMode]($this);
@@ -649,23 +649,23 @@ class Doctrine_ORM_EntityManager
     public static function create(
             $conn,
             $name,
-            Doctrine_ORM_Configuration $config = null,
-            Doctrine_Common_EventManager $eventManager = null)
+            Configuration $config = null,
+            EventManager $eventManager = null)
     {
         if (is_array($conn)) {
-            $conn = Doctrine_DBAL_DriverManager::getConnection($conn, $config, $eventManager);
-        } else if ( ! $conn instanceof Doctrine_DBAL_Connection) {
-            throw new Doctrine_Exception("Invalid parameter '$conn'.");
+            $conn = \Doctrine\DBAL\DriverManager::getConnection($conn, $config, $eventManager);
+        } else if ( ! $conn instanceof Connection) {
+            throw new DoctrineException("Invalid parameter '$conn'.");
         }
         
         if (is_null($config)) {
-            $config = new Doctrine_ORM_Configuration();
+            $config = new Configuration();
         }
         if (is_null($eventManager)) {
-            $eventManager = new Doctrine_Common_EventManager();
+            $eventManager = new EventManager();
         }
         
-        $em = new Doctrine_ORM_EntityManager($conn, $name, $config, $eventManager);
+        $em = new EntityManager($conn, $name, $config, $eventManager);
         
         return $em;
     }

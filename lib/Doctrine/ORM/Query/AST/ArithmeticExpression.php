@@ -4,12 +4,14 @@
  * and open the template in the editor.
  */
 
+namespace Doctrine\ORM\Query\AST;
+
 /**
  * ArithmeticExpression ::= SimpleArithmeticExpression | "(" Subselect ")"
  *
  * @author robo
  */
-class Doctrine_ORM_Query_AST_ArithmeticExpression extends Doctrine_ORM_Query_AST
+class ArithmeticExpression extends Node
 {
     private $_simpleArithmeticExpression;
     private $_subselect;

@@ -1,13 +1,13 @@
 <?php
 
-#namespace Doctrine::DBAL::Driver::PDOMsSql;
+namespace Doctrine\DBAL\Driver\PDOMsSql;
 
 /**
  * MsSql Connection implementation.
  *
  * @since 2.0
  */
-class Doctrine_DBAL_Driver_PDOMsSql_Connection extends PDO implements Doctrine_DBAL_Driver_Connection
+class Connection extends PDO implements \Doctrine\DBAL\Driver\Connection
 {
     /**
      * Performs the rollback.
@@ -40,4 +40,3 @@ class Doctrine_DBAL_Driver_PDOMsSql_Connection extends PDO implements Doctrine_D
     }
 }
 
-?>

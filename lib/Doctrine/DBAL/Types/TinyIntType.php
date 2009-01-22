@@ -1,15 +1,14 @@
 <?php
-/* 
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
+
+namespace Doctrine\DBAL\Types;
 
 /**
  * Description of TinyIntType
  *
  * @author robo
  */
-class TinyIntType {
+class TinyIntType
+{
     //put your code here
 }
 

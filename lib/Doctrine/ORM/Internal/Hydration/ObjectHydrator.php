@@ -1,12 +1,15 @@
 <?php
 
+namespace Doctrine\ORM\Internal\Hydration;
+
+use \PDO;
 
 /**
  * Description of ObjectHydrator
  *
  * @author robo
  */
-class Doctrine_ORM_Internal_Hydration_ObjectHydrator extends Doctrine_ORM_Internal_Hydration_AbstractHydrator
+class ObjectHydrator extends AbstractHydrator
 {
     /** Collections initialized by the hydrator */
     private $_collections = array();
@@ -51,7 +54,7 @@ class Doctrine_ORM_Internal_Hydration_ObjectHydrator extends Doctrine_ORM_Intern
         if ($this->_parserResult->isMixedQuery()) {
             $result = array();
         } else {
-            $result = new Doctrine_ORM_Collection($this->_em, $this->_rootEntityName);
+            $result = new \Doctrine\ORM\Collection($this->_em, $this->_rootEntityName);
         }
 
         $cache = array();
@@ -102,7 +105,7 @@ class Doctrine_ORM_Internal_Hydration_ObjectHydrator extends Doctrine_ORM_Intern
         if ( ! is_object($coll)) {
             end($coll);
             $this->_resultPointers[$dqlAlias] =& $coll[key($coll)];
-        } else if ($coll instanceof Doctrine_ORM_Collection) {
+        } else if ($coll instanceof \Doctrine\ORM\Collection) {
             if (count($coll) > 0) {
                 $this->_resultPointers[$dqlAlias] = $coll->last();
             }
@@ -113,7 +116,7 @@ class Doctrine_ORM_Internal_Hydration_ObjectHydrator extends Doctrine_ORM_Intern
 
     private function getCollection($component)
     {
-        $coll = new Doctrine_ORM_Collection($this->_em, $component);
+        $coll = new \Doctrine\ORM\Collection($this->_em, $component);
         $this->_collections[] = $coll;
         return $coll;
     }
@@ -335,7 +338,7 @@ class Doctrine_ORM_Internal_Hydration_ObjectHydrator extends Doctrine_ORM_Intern
                                     ->getValue($baseElement));
                     }
                 } else if ( ! $this->isFieldSet($baseElement, $relationAlias)) {
-                    $coll = new Doctrine_ORM_Collection($this->_em, $entityName);
+                    $coll = new \Doctrine\ORM\Collection($this->_em, $entityName);
                     $this->_collections[] = $coll;
                     $this->setRelatedElement($baseElement, $relationAlias, $coll);
                 }
@@ -370,7 +373,7 @@ class Doctrine_ORM_Internal_Hydration_ObjectHydrator extends Doctrine_ORM_Intern
     /** {@inheritdoc} */
     protected function _getRowContainer()
     {
-        return new Doctrine_Common_Collections_Collection;
+        return new \Doctrine\Common\Collections\Collection;
     }
 }
 

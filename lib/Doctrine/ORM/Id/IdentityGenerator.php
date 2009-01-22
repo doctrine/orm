@@ -1,6 +1,8 @@
 <?php
 
-class Doctrine_ORM_Id_IdentityGenerator extends Doctrine_ORM_Id_AbstractIdGenerator
+namespace Doctrine\ORM\Id;
+
+class IdentityGenerator extends AbstractIdGenerator
 {
     /**
      * Enter description here...

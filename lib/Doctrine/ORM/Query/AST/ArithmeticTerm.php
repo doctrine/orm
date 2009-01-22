@@ -4,12 +4,14 @@
  * and open the template in the editor.
  */
 
+namespace Doctrine\ORM\Query\AST;
+
 /**
  * ArithmeticTerm ::= ArithmeticFactor {("*" | "/") ArithmeticFactor}*
  *
  * @author robo
  */
-class Doctrine_ORM_Query_AST_ArithmeticTerm extends Doctrine_ORM_Query_AST
+class ArithmeticTerm extends Node
 {
     private $_factors;
 

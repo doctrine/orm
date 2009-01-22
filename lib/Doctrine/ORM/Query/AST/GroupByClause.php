@@ -4,12 +4,14 @@
  * and open the template in the editor.
  */
 
+namespace Doctrine\ORM\Query\AST;
+
 /**
  * Description of GroupByClause
  *
  * @author robo
  */
-class Doctrine_ORM_Query_AST_GroupByClause extends Doctrine_ORM_Query_AST
+class GroupByClause extends Node
 {
     private $_groupByItems = array();
 

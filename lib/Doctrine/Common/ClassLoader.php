@@ -1,4 +1,7 @@
 <?php
+
+namespace Doctrine\Common;
+
 /**
  * A class loader used to load class files on demand.
  *
@@ -17,9 +20,9 @@
  * @since 2.0
  * @author romanb <roman@code-factory.org>
  */
-class Doctrine_Common_ClassLoader
+class ClassLoader
 {    
-    private $_namespaceSeparator = '_';
+    private $_namespaceSeparator = '\\';
     private $_fileExtension = '.php';
     private $_checkFileExists = false;
     private $_basePaths = array();
@@ -71,7 +74,10 @@ class Doctrine_Common_ClassLoader
         if (isset($this->_basePaths[$prefix])) {
             $class .= $this->_basePaths[$prefix] . DIRECTORY_SEPARATOR;
         }
-        $class .= str_replace($this->_namespaceSeparator, DIRECTORY_SEPARATOR, $className)
+
+        if ($className[0] == '\\') $className = substr($className, 1);
+
+        $class .= str_replace(array($this->_namespaceSeparator, '_'), DIRECTORY_SEPARATOR, $className)
                 . $this->_fileExtension;
 
         if ($this->_checkFileExists) {
@@ -79,6 +85,21 @@ class Doctrine_Common_ClassLoader
                 return false;
             }
             @fclose($fh);
+        }
+
+        if ($class == 'ForumAvatar.php' || $class == 'ForumUser.php') {
+            echo $class . PHP_EOL;
+            try {
+                throw new \Exception();
+            } catch (\Exception $e) {
+                echo $e->getTraceAsString();
+            }
+        } else if ($class == 'Doctrine/Common/Exceptions/DoctrineException.php') {
+            try {
+                throw new \Exception();
+            } catch (\Exception $e) {
+                echo $e->getTraceAsString();
+            }
         }
 
         require $class;

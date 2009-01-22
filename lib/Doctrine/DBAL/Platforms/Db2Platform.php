@@ -1,8 +1,8 @@
 <?php
 
-#namespace Doctrine::DBAL::Platforms;
+namespace Doctrine\DBAL\Platforms;
 
-class Doctrine_DBAL_Platforms_Db2Platform extends Doctrine_DBAL_Platforms_AbstractPlatform
+class Db2Platform extends AbstractPlatform
 {
     
     public function getSequenceNextValSql($sequenceName) {
@@ -12,4 +12,3 @@ class Doctrine_DBAL_Platforms_Db2Platform extends Doctrine_DBAL_Platforms_Abstra
     
 }
 
-?>

@@ -4,12 +4,14 @@
  * and open the template in the editor.
  */
 
+namespace Doctrine\ORM\Query\AST;
+
 /**
  * LikeExpression ::= StringExpression ["NOT"] "LIKE" string ["ESCAPE" char]
  *
  * @author robo
  */
-class Doctrine_ORM_Query_AST_LikeExpression extends Doctrine_ORM_Query_AST
+class LikeExpression extends Node
 {
     private $_stringExpr;
     private $_isNot;

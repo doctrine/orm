@@ -19,7 +19,7 @@
  * <http://www.phpdoctrine.org>.
  */
 
-#namespace Doctrine\ORM;
+namespace Doctrine\ORM;
 
 /**
  * A repository provides the illusion of an in-memory Entity store. 
@@ -32,13 +32,13 @@
  * @version     $Revision$
  * @author      Roman Borschel <roman@code-factory.org>
  */
-class Doctrine_ORM_EntityRepository
+class EntityRepository
 {
     protected $_entityName;
     protected $_em;
     protected $_classMetadata;
     
-    public function __construct($em, Doctrine_ORM_Mapping_ClassMetadata $classMetadata)
+    public function __construct($em, \Doctrine\ORM\Mapping\ClassMetadata $classMetadata)
     {
         $this->_entityName = $classMetadata->getClassName();
         $this->_em = $em;

@@ -19,10 +19,9 @@
  * <http://www.phpdoctrine.org>.
  */
 
-#namespace Doctrine\ORM;
+namespace Doctrine\ORM;
 
-#use Doctrine\DBAL\Configuration;
-#use Doctrine\ORM\Mapping\Driver\AnnotationDriver;
+use Doctrine\ORM\Mapping\Driver\AnnotationDriver;
 
 /**
  * Configuration container for all configuration options of Doctrine.
@@ -34,7 +33,7 @@
  * @author Roman Borschel <roman@code-factory.org>
  * @since 2.0
  */
-class Doctrine_ORM_Configuration extends Doctrine_DBAL_Configuration
+class Configuration extends \Doctrine\DBAL\Configuration
 {    
     /**
      * Creates a new configuration that can be used for Doctrine.
@@ -45,7 +44,7 @@ class Doctrine_ORM_Configuration extends Doctrine_DBAL_Configuration
             'resultCacheImpl' => null,
             'queryCacheImpl' => null,
             'metadataCacheImpl' => null,
-            'metadataDriverImpl' => new Doctrine_ORM_Mapping_Driver_AnnotationDriver()
+            'metadataDriverImpl' => new AnnotationDriver()
             ));
     }
 

@@ -1,11 +1,13 @@
 <?php
 
+namespace Doctrine\ORM\Query;
+
 /**
  * This class is just an intermediate implementation for refactoring purposes
  * and will be replaced by the ParserResult class of the new DQL parser.
  *
  */
-class Doctrine_ORM_Query_ParserResultDummy
+class ParserResultDummy
 {
     private $_isMixedQuery;
     private $_dbStatement;

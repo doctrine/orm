@@ -19,7 +19,7 @@
  * <http://www.phpdoctrine.org>.
  */
 
-#namespace Doctrine\ORM\Export;
+namespace Doctrine\ORM\Export;
 
 /**
  * The ClassExporter can generate database schemas/structures from ClassMetadata
@@ -35,14 +35,14 @@
  * @since       2.0
  * @version     $Revision: 4805 $
  */
-class Doctrine_ORM_Export_ClassExporter
+class ClassExporter
 {
     /** The SchemaManager */
     private $_sm;
     /** The EntityManager */
     private $_em;
 
-    public function __construct(Doctrine_ORM_EntityManager $em)
+    public function __construct(\Doctrine\ORM\EntityManager $em)
     {
         $this->_em = $em;
         $this->_sm = $em->getConnection()->getSchemaManager();

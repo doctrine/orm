@@ -20,6 +20,8 @@
  * <http://www.phpdoctrine.org>.
  */
 
+namespace Doctrine\ORM\Query;
+
 /**
  * Doctrine_ORM_Query_AbstractResult
  *
@@ -30,7 +32,7 @@
  * @author      Guilherme Blanco <guilhermeblanco@hotmail.com>
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  */
-abstract class Doctrine_ORM_Query_AbstractResult
+abstract class AbstractResult
 {
     /**
      * @var mixed $_data The actual data to be stored. Can be an array, a string or an integer.

@@ -4,12 +4,14 @@
  * and open the template in the editor.
  */
 
+namespace Doctrine\ORM\Query\AST;
+
 /**
  * Description of InputParameter
  *
  * @author robo
  */
-class Doctrine_ORM_Query_AST_InputParameter extends Doctrine_ORM_Query_AST
+class InputParameter extends Node
 {
     private $_isNamed;
     private $_position;

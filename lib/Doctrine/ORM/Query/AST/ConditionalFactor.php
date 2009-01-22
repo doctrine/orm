@@ -4,12 +4,14 @@
  * and open the template in the editor.
  */
 
+namespace Doctrine\ORM\Query\AST;
+
 /**
  * ConditionalFactor ::= ["NOT"] ConditionalPrimary
  *
  * @author robo
  */
-class Doctrine_ORM_Query_AST_ConditionalFactor extends Doctrine_ORM_Query_AST
+class ConditionalFactor extends Node
 {
     private $_not = false;
     private $_conditionalPrimary;

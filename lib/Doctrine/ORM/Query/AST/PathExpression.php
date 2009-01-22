@@ -4,12 +4,14 @@
  * and open the template in the editor.
  */
 
+namespace Doctrine\ORM\Query\AST;
+
 /**
  * Description of PathExpression
  *
  * @author robo
  */
-class Doctrine_ORM_Query_AST_PathExpression
+class PathExpression extends Node
 {
     private $_parts;
     // Information that is attached during semantical analysis.

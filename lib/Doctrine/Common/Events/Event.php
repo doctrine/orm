@@ -19,20 +19,18 @@
  * <http://www.phpdoctrine.org>.
  */
 
-#namespace Doctrine\Common\Events;
+namespace Doctrine\Common\Events;
 
 /**
  * Doctrine_Event
  *
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
- * @package     Doctrine
- * @subpackage  Event
  * @link        www.phpdoctrine.org
  * @since       2.0
  * @version     $Revision$
  */
-class Doctrine_Common_Events_Event
+class Event
 {
     /* Event callback constants */
     const preDelete = 'preDelete';

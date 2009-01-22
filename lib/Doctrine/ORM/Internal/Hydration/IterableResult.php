@@ -1,4 +1,7 @@
 <?php
+
+namespace Doctrine\ORM\Internal\Hydration;
+
 /**
  * Represents a result structure that can be iterated over, hydrating row-by-row
  * during the iteration. An IterableResult is obtained by AbstractHydrator#iterate().
@@ -6,7 +9,7 @@
  * @author robo
  * @since 2.0
  */
-class Doctrine_ORM_Internal_Hydration_IterableResult
+class IterableResult
 {
     private $_hydrator;
 

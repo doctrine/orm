@@ -1,18 +1,19 @@
 <?php
 
+namespace Doctrine\ORM\Id;
+
 /**
  * Id generator that uses a single-row database table and a hi/lo algorithm.  
  *
  * @since 2.0
  */
-class Doctrine_ORM_Id_TableGenerator extends Doctrine_ORM_Id_AbstractIdGenerator
+class TableGenerator extends AbstractIdGenerator
 {
     
     public function generate($entity)
     {
-        throw new Exception("Not implemented");
+        throw new \Exception("Not implemented");
     }
     
 }
 
-?>

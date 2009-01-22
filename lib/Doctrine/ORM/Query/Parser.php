@@ -20,19 +20,25 @@
  * <http://www.phpdoctrine.org>.
  */
 
+namespace Doctrine\ORM\Query;
+
+use Doctrine\ORM\Query\AST;
+use Doctrine\ORM\Exceptions\QueryException;
+use Doctrine\ORM\Query\Exec;
+
 /**
- * An LL(k) parser for the context-free grammar of Doctrine Query Language.
- * Parses a DQL query, reports any errors in it, and generates the corresponding
- * SQL.
+ * An LL(*) parser for the context-free grammar of Doctrine Query Language.
+ * Parses a DQL query, reports any errors in it, and generates an AST.
  *
  * @author      Guilherme Blanco <guilhermeblanco@hotmail.com>
  * @author      Janne Vanhala <jpvanhal@cc.hut.fi>
+ * @author      Roman Borschel <roman@code-factory.org>
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @link        http://www.doctrine-project.org
  * @since       2.0
  * @version     $Revision$
  */
-class Doctrine_ORM_Query_Parser
+class Parser
 {
     /**
      * The minimum number of tokens read after last detected error before
@@ -40,7 +46,7 @@ class Doctrine_ORM_Query_Parser
      *
      * @var int
      */
-    const MIN_ERROR_DISTANCE = 2;
+    //const MIN_ERROR_DISTANCE = 2;
 
     /**
      * Path expressions that were encountered during parsing of SelectExpressions
@@ -49,20 +55,13 @@ class Doctrine_ORM_Query_Parser
      * @var array
      */
     private $_pendingPathExpressionsInSelect = array();
-    
-    /**
-     * DQL string.
-     *
-     * @var string
-     */
-    protected $_input;
 
     /**
      * A scanner object.
      *
      * @var Doctrine_ORM_Query_Scanner
      */
-    protected $_scanner;
+    protected $_lexer;
 
     /**
      * The Parser Result object.
@@ -74,38 +73,9 @@ class Doctrine_ORM_Query_Parser
     /**
      * Keyword symbol table
      *
-     * @var Doctrine_ORM_Query_Token
+     * @var Token
      */
     protected $_keywordTable;
-
-    // Scanner Stuff
-
-    /**
-     * @var array The next token in the query string.
-     */
-    public $lookahead;
-
-    /**
-     * @var array The last matched token.
-     */
-    public $token;
-
-    // End of Scanner Stuff
-
-
-    // Error management stuff
-
-    /**
-     * Array containing errors detected in the query string during parsing process.
-     *
-     * @var array
-     */
-    protected $_errors;
-
-    /**
-     * @var int The number of tokens read since last error in the input string.
-     */
-    protected $_errorDistance;
     
     /**
      * The EntityManager.
@@ -114,25 +84,21 @@ class Doctrine_ORM_Query_Parser
      */
     protected $_em;
 
-    // End of Error management stuff
-
-
     /**
      * Creates a new query parser object.
      *
      * @param string $dql DQL to be parsed.
      * @param Doctrine_Connection $connection The connection to use
      */
-    public function __construct(Doctrine_ORM_Query $query)
+    public function __construct(\Doctrine\ORM\Query $query)
     {
         $this->_em = $query->getEntityManager();
-        $this->_input = $query->getDql();
-        $this->_scanner = new Doctrine_ORM_Query_Scanner($this->_input);
-        $this->_keywordTable = new Doctrine_ORM_Query_Token();
+        $this->_lexer = new Lexer($query->getDql());
+        $this->_keywordTable = new Token();
         
-        $defaultQueryComponent = Doctrine_ORM_Query_ParserRule::DEFAULT_QUERYCOMPONENT;
+        $defaultQueryComponent = ParserRule::DEFAULT_QUERYCOMPONENT;
 
-        $this->_parserResult = new Doctrine_ORM_Query_ParserResult(
+        $this->_parserResult = new ParserResult(
             '',
             array( // queryComponent
                 $defaultQueryComponent => array(
@@ -149,7 +115,6 @@ class Doctrine_ORM_Query_Parser
         );
         
         $this->_parserResult->setEntityManager($this->_em);
-
         $this->free(true);
     }
 
@@ -166,9 +131,9 @@ class Doctrine_ORM_Query_Parser
     public function match($token)
     {
         if (is_string($token)) {
-            $isMatch = ($this->lookahead['value'] === $token);
+            $isMatch = ($this->_lexer->lookahead['value'] === $token);
         } else {
-            $isMatch = ($this->lookahead['type'] === $token);
+            $isMatch = ($this->_lexer->lookahead['type'] === $token);
         }
 
         if ( ! $isMatch) {
@@ -176,29 +141,14 @@ class Doctrine_ORM_Query_Parser
             $this->syntaxError($this->_keywordTable->getLiteral($token));
         }
 
-        $this->next();
+        $this->_lexer->next();
         return true;
     }
 
-
-    /**
-     * Moves the parser scanner to next token
-     *
-     * @return void
-     */
-    public function next()
-    {
-        $this->token = $this->lookahead;
-        $this->lookahead = $this->_scanner->next();
-        $this->_errorDistance++;
-    }
-
-
     public function isA($value, $token)
     {
-        return $this->_scanner->isA($value, $token);
+        return $this->_lexer->isA($value, $token);
     }
-
 
     /**
      * Free this parser enabling it to be reused 
@@ -210,18 +160,18 @@ class Doctrine_ORM_Query_Parser
     public function free($deep = false, $position = 0)
     {
         // WARNING! Use this method with care. It resets the scanner!
-        $this->_scanner->resetPosition($position);
+        $this->_lexer->resetPosition($position);
 
         // Deep = true cleans peek and also any previously defined errors
         if ($deep) {
-            $this->_scanner->resetPeek();
-            $this->_errors = array();
+            $this->_lexer->resetPeek();
+            //$this->_errors = array();
         }
 
-        $this->token = null;
-        $this->lookahead = null;
+        $this->_lexer->token = null;
+        $this->_lexer->lookahead = null;
 
-        $this->_errorDistance = self::MIN_ERROR_DISTANCE;
+        //$this->_errorDistance = self::MIN_ERROR_DISTANCE;
     }
 
 
@@ -234,21 +184,16 @@ class Doctrine_ORM_Query_Parser
         $AST = $this->_QueryLanguage();
         
         // Check for end of string
-        if ($this->lookahead !== null) {
-            var_dump($this->lookahead);
+        if ($this->_lexer->lookahead !== null) {
+            var_dump($this->_lexer->lookahead);
             $this->syntaxError('end of string');
         }
 
-        // Check for semantical errors
-        if (count($this->_errors) > 0) {
-            throw new Doctrine_ORM_Query_Exception(implode("\r\n", $this->_errors));
-        }
-
         // Create SqlWalker who creates the SQL from the AST
-        $sqlWalker = new Doctrine_ORM_Query_SqlWalker($this->_em, $this->_parserResult);
+        $sqlWalker = new SqlWalker($this->_em, $this->_parserResult);
 
         // Assign the executor in parser result
-        $this->_parserResult->setSqlExecutor(Doctrine_ORM_Query_SqlExecutor_Abstract::create($AST, $sqlWalker));
+        $this->_parserResult->setSqlExecutor(Exec\AbstractExecutor::create($AST, $sqlWalker));
 
         return $this->_parserResult;
     }
@@ -256,11 +201,11 @@ class Doctrine_ORM_Query_Parser
     /**
      * Returns the scanner object associated with this object.
      *
-     * @return Doctrine_ORM_Query_Scanner
+     * @return Doctrine_ORM_Query_Lexer
      */
-    public function getScanner()
+    public function getLexer()
     {
-        return $this->_scanner;
+        return $this->_lexer;
     }
 
     /**
@@ -282,7 +227,7 @@ class Doctrine_ORM_Query_Parser
     public function syntaxError($expected = '', $token = null)
     {
         if ($token === null) {
-            $token = $this->lookahead;
+            $token = $this->_lexer->lookahead;
         }
 
         // Formatting message
@@ -294,13 +239,13 @@ class Doctrine_ORM_Query_Parser
             $message .= 'Unexpected ';
         }
 
-        if ($this->lookahead === null) {
+        if ($this->_lexer->lookahead === null) {
             $message .= 'end of string.';
         } else {
-            $message .= "'{$this->lookahead['value']}'";
+            $message .= "'{$this->_lexer->lookahead['value']}'";
         }
 
-        throw new Doctrine_ORM_Query_Exception($message);
+        throw new QueryException($message);
     }
 
     /**
@@ -311,13 +256,11 @@ class Doctrine_ORM_Query_Parser
      */
     public function semanticalError($message = '', $token = null)
     {
-        $this->_semanticalErrorCount++;
-
         if ($token === null) {
-            $token = $this->token;
+            $token = $this->_lexer->token;
         }
-
-        $this->_logError('Warning: ' . $message, $token);
+        //TODO: Include $token in $message
+        throw new QueryException($message);
     }
 
     /**
@@ -326,7 +269,7 @@ class Doctrine_ORM_Query_Parser
      * @param string $message Message to log.
      * @param array $token Token that it was processing.
      */
-    protected function _logError($message = '', $token)
+    /*protected function _logError($message = '', $token)
     {
         if ($this->_errorDistance >= self::MIN_ERROR_DISTANCE) {
             $message = 'line 0, col ' . $token['position'] . ': ' . $message;
@@ -334,7 +277,7 @@ class Doctrine_ORM_Query_Parser
         }
 
         $this->_errorDistance = 0;
-    }
+    }*/
     
     /**
      * Gets the EntityManager used by the parser.
@@ -360,12 +303,6 @@ class Doctrine_ORM_Query_Parser
         return substr($this->_input, $start, $end);
     }*/
 
-    private function _isNextToken($token)
-    {
-        $la = $this->lookahead;
-        return ($la['type'] === $token || $la['value'] === $token);
-    }
-
     /**
      * Checks if the next-next (after lookahead) token start a function.
      *
@@ -373,8 +310,7 @@ class Doctrine_ORM_Query_Parser
      */
     private function _isFunction()
     {
-        $next = $this->_scanner->peek();
-        $this->_scanner->resetPeek();
+        $next = $this->_lexer->glimpse();
         return ($next['value'] === '(');
     }
 
@@ -385,10 +321,9 @@ class Doctrine_ORM_Query_Parser
      */
     private function _isSubselect()
     {
-        $la = $this->lookahead;
-        $next = $this->_scanner->peek();
-        $this->_scanner->resetPeek();
-        return ($la['value'] === '(' && $next['type'] === Doctrine_ORM_Query_Token::T_SELECT);
+        $la = $this->_lexer->lookahead;
+        $next = $this->_lexer->glimpse();
+        return ($la['value'] === '(' && $next['type'] === Token::T_SELECT);
     }
 
     /* Parse methods */
@@ -400,17 +335,17 @@ class Doctrine_ORM_Query_Parser
      */
     private function _QueryLanguage()
     {
-        $this->lookahead = $this->_scanner->next();
-        switch ($this->lookahead['type']) {
-            case Doctrine_ORM_Query_Token::T_SELECT:
+        $this->_lexer->next();
+        switch ($this->_lexer->lookahead['type']) {
+            case Token::T_SELECT:
                 return $this->_SelectStatement();
                 break;
 
-            case Doctrine_ORM_Query_Token::T_UPDATE:
+            case Token::T_UPDATE:
                 return $this->_UpdateStatement();
                 break;
 
-            case Doctrine_ORM_Query_Token::T_DELETE:
+            case Token::T_DELETE:
                 return $this->_DeleteStatement();
                 break;
 
@@ -431,19 +366,19 @@ class Doctrine_ORM_Query_Parser
         $fromClause = $this->_FromClause();
         $this->_processPendingPathExpressionsInSelect();
 
-        $whereClause = $this->_isNextToken(Doctrine_ORM_Query_Token::T_WHERE) ?
+        $whereClause = $this->_lexer->isNextToken(Token::T_WHERE) ?
                 $this->_WhereClause() : null;
 
-        $groupByClause = $this->_isNextToken(Doctrine_ORM_Query_Token::T_GROUP) ?
+        $groupByClause = $this->_lexer->isNextToken(Token::T_GROUP) ?
                 $this->_GroupByClause() : null;
 
-        $havingClause = $this->_isNextToken(Doctrine_ORM_Query_Token::T_HAVING) ?
+        $havingClause = $this->_lexer->isNextToken(Token::T_HAVING) ?
                 $this->_HavingClause() : null;
 
-        $orderByClause = $this->_isNextToken(Doctrine_ORM_Query_Token::T_ORDER) ?
+        $orderByClause = $this->_lexer->isNextToken(Token::T_ORDER) ?
                 $this->_OrderByClause() : null;
 
-        return new Doctrine_ORM_Query_AST_SelectStatement(
+        return new AST\SelectStatement(
             $selectClause, $fromClause, $whereClause, $groupByClause, $havingClause, $orderByClause
         );
     }
@@ -519,23 +454,23 @@ class Doctrine_ORM_Query_Parser
     private function _SelectClause()
     {
         $isDistinct = false;
-        $this->match(Doctrine_ORM_Query_Token::T_SELECT);
+        $this->match(Token::T_SELECT);
 
         // Inspecting if we are in a DISTINCT query
-        if ($this->_isNextToken(Doctrine_ORM_Query_Token::T_DISTINCT)) {
-            $this->match(Doctrine_ORM_Query_Token::T_DISTINCT);
+        if ($this->_lexer->isNextToken(Token::T_DISTINCT)) {
+            $this->match(Token::T_DISTINCT);
             $isDistinct = true;
         }
 
         // Process SelectExpressions (1..N)
         $selectExpressions = array();
         $selectExpressions[] = $this->_SelectExpression();
-        while ($this->_isNextToken(',')) {
+        while ($this->_lexer->isNextToken(',')) {
             $this->match(',');
             $selectExpressions[] = $this->_SelectExpression();
         }
 
-        return new Doctrine_ORM_Query_AST_SelectClause($selectExpressions, $isDistinct);
+        return new AST\SelectClause($selectExpressions, $isDistinct);
     }
 
     /**
@@ -543,15 +478,15 @@ class Doctrine_ORM_Query_Parser
      */
     private function _FromClause()
     {
-        $this->match(Doctrine_ORM_Query_Token::T_FROM);
+        $this->match(Token::T_FROM);
         $identificationVariableDeclarations = array();
         $identificationVariableDeclarations[] = $this->_IdentificationVariableDeclaration();
-        while ($this->_isNextToken(',')) {
+        while ($this->_lexer->isNextToken(',')) {
             $this->match(',');
             $identificationVariableDeclarations[] = $this->_IdentificationVariableDeclaration();
         }
 
-        return new Doctrine_ORM_Query_AST_FromClause($identificationVariableDeclarations);
+        return new AST\FromClause($identificationVariableDeclarations);
     }
 
     /**
@@ -563,24 +498,23 @@ class Doctrine_ORM_Query_Parser
     {
         $expression = null;
         $fieldIdentificationVariable = null;
-        $peek = $this->_scanner->peek();
-        $this->_scanner->resetPeek();
+        $peek = $this->_lexer->glimpse();
         // First we recognize for an IdentificationVariable (DQL class alias)
-        if ($peek['value'] != '.' && $this->lookahead['type'] === Doctrine_ORM_Query_Token::T_IDENTIFIER) {
+        if ($peek['value'] != '.' && $this->_lexer->lookahead['type'] === Token::T_IDENTIFIER) {
             $expression = $this->_IdentificationVariable();
         } else if (($isFunction = $this->_isFunction()) !== false || $this->_isSubselect()) {
             $expression = $isFunction ? $this->_AggregateExpression() : $this->_Subselect();
-            if ($this->_isNextToken(Doctrine_ORM_Query_Token::T_AS)) {
-                $this->match(Doctrine_ORM_Query_Token::T_AS);
+            if ($this->_lexer->isNextToken(Token::T_AS)) {
+                $this->match(Token::T_AS);
                 $fieldIdentificationVariable = $this->_FieldAliasIdentificationVariable();
-            } elseif ($this->_isNextToken(Doctrine_ORM_Query_Token::T_IDENTIFIER)) {
+            } elseif ($this->_lexer->isNextToken(Token::T_IDENTIFIER)) {
                 $fieldIdentificationVariable = $this->_FieldAliasIdentificationVariable();
             }
         } else {
             $expression = $this->_PathExpressionInSelect();
         }
 
-        return new Doctrine_ORM_Query_AST_SelectExpression($expression, $fieldIdentificationVariable);
+        return new AST\SelectExpression($expression, $fieldIdentificationVariable);
     }
 
     /**
@@ -588,8 +522,8 @@ class Doctrine_ORM_Query_Parser
      */
     private function _IdentificationVariable()
     {
-        $this->match(Doctrine_ORM_Query_Token::T_IDENTIFIER);
-        return $this->token['value'];
+        $this->match(Token::T_IDENTIFIER);
+        return $this->_lexer->token['value'];
     }
 
     /**
@@ -598,18 +532,18 @@ class Doctrine_ORM_Query_Parser
     private function _IdentificationVariableDeclaration()
     {
         $rangeVariableDeclaration = $this->_RangeVariableDeclaration();
-        $indexBy = $this->_isNextToken(Doctrine_ORM_Query_Token::T_INDEX) ?
+        $indexBy = $this->_lexer->isNextToken(Token::T_INDEX) ?
                 $this->_IndexBy() : null;
         $joinVariableDeclarations = array();
         while (
-            $this->_isNextToken(Doctrine_ORM_Query_Token::T_LEFT) ||
-            $this->_isNextToken(Doctrine_ORM_Query_Token::T_INNER) ||
-            $this->_isNextToken(Doctrine_ORM_Query_Token::T_JOIN)
+            $this->_lexer->isNextToken(Token::T_LEFT) ||
+            $this->_lexer->isNextToken(Token::T_INNER) ||
+            $this->_lexer->isNextToken(Token::T_JOIN)
         ) {
             $joinVariableDeclarations[] = $this->_JoinVariableDeclaration();
         }
 
-        return new Doctrine_ORM_Query_AST_IdentificationVariableDeclaration(
+        return new AST\IdentificationVariableDeclaration(
             $rangeVariableDeclaration, $indexBy, $joinVariableDeclarations
         );
     }
@@ -621,8 +555,8 @@ class Doctrine_ORM_Query_Parser
     {
         $abstractSchemaName = $this->_AbstractSchemaName();
 
-        if ($this->_isNextToken(Doctrine_ORM_Query_Token::T_AS)) {
-            $this->match(Doctrine_ORM_Query_Token::T_AS);
+        if ($this->_lexer->isNextToken(Token::T_AS)) {
+            $this->match(Token::T_AS);
         }
         $aliasIdentificationVariable = $this->_AliasIdentificationVariable();
         $classMetadata = $this->_em->getClassMetadata($abstractSchemaName);
@@ -637,7 +571,7 @@ class Doctrine_ORM_Query_Parser
         );
         $this->_parserResult->setQueryComponent($aliasIdentificationVariable, $queryComponent);
 
-        return new Doctrine_ORM_Query_AST_RangeVariableDeclaration(
+        return new AST\RangeVariableDeclaration(
             $classMetadata, $aliasIdentificationVariable
         );
     }
@@ -647,8 +581,8 @@ class Doctrine_ORM_Query_Parser
      */
     private function _AbstractSchemaName()
     {
-        $this->match(Doctrine_ORM_Query_Token::T_IDENTIFIER);
-        return $this->token['value'];
+        $this->match(Token::T_IDENTIFIER);
+        return $this->_lexer->token['value'];
     }
 
     /**
@@ -656,8 +590,8 @@ class Doctrine_ORM_Query_Parser
      */
     private function _AliasIdentificationVariable()
     {
-        $this->match(Doctrine_ORM_Query_Token::T_IDENTIFIER);
-        return $this->token['value'];
+        $this->match(Token::T_IDENTIFIER);
+        return $this->_lexer->token['value'];
     }
 
     /**
@@ -665,15 +599,14 @@ class Doctrine_ORM_Query_Parser
      */
     private function _PathExpression()
     {
-        $this->match(Doctrine_ORM_Query_Token::T_IDENTIFIER);
-        $parts = array($this->token['value']);
-        while ($this->_isNextToken('.')) {
+        $this->match(Token::T_IDENTIFIER);
+        $parts = array($this->_lexer->token['value']);
+        while ($this->_lexer->isNextToken('.')) {
             $this->match('.');
-            $this->match(Doctrine_ORM_Query_Token::T_IDENTIFIER);
-            $parts[] = $this->token['value'];
+            $this->match(Token::T_IDENTIFIER);
+            $parts[] = $this->_lexer->token['value'];
         }
-        $pathExpression = new Doctrine_ORM_Query_AST_PathExpression($parts);
-
+        $pathExpression = new AST\PathExpression($parts);
         return $pathExpression;
     }
 
@@ -695,9 +628,9 @@ class Doctrine_ORM_Query_Parser
     private function _JoinVariableDeclaration()
     {
         $join = $this->_Join();
-        $indexBy = $this->_isNextToken(Doctrine_ORM_Query_Token::T_INDEX) ?
+        $indexBy = $this->_lexer->isNextToken(Token::T_INDEX) ?
                 $this->_IndexBy() : null;
-        return new Doctrine_ORM_Query_AST_JoinVariableDeclaration($join, $indexBy);
+        return new AST\JoinVariableDeclaration($join, $indexBy);
     }
 
     /**
@@ -707,25 +640,25 @@ class Doctrine_ORM_Query_Parser
     private function _Join()
     {
         // Check Join type
-        $joinType = Doctrine_ORM_Query_AST_Join::JOIN_TYPE_INNER;
-        if ($this->_isNextToken(Doctrine_ORM_Query_Token::T_LEFT)) {
-            $this->match(Doctrine_ORM_Query_Token::T_LEFT);
+        $joinType = AST\Join::JOIN_TYPE_INNER;
+        if ($this->_lexer->isNextToken(Token::T_LEFT)) {
+            $this->match(Token::T_LEFT);
             // Possible LEFT OUTER join
-            if ($this->_isNextToken(Doctrine_ORM_Query_Token::T_OUTER)) {
-                $this->match(Doctrine_ORM_Query_Token::T_OUTER);
-                $joinType = Doctrine_ORM_Query_AST_Join::JOIN_TYPE_LEFTOUTER;
+            if ($this->_lexer->isNextToken(Token::T_OUTER)) {
+                $this->match(Token::T_OUTER);
+                $joinType = AST\Join::JOIN_TYPE_LEFTOUTER;
             } else {
-                $joinType = Doctrine_ORM_Query_AST_Join::JOIN_TYPE_LEFT;
+                $joinType = AST\Join::JOIN_TYPE_LEFT;
             }
-        } else if ($this->_isNextToken(Doctrine_ORM_Query_Token::T_INNER)) {
-            $this->match(Doctrine_ORM_Query_Token::T_INNER);
+        } else if ($this->_lexer->isNextToken(Token::T_INNER)) {
+            $this->match(Token::T_INNER);
         }
 
-        $this->match(Doctrine_ORM_Query_Token::T_JOIN);
+        $this->match(Token::T_JOIN);
 
         $joinPathExpression = $this->_JoinPathExpression();
-        if ($this->_isNextToken(Doctrine_ORM_Query_Token::T_AS)) {
-            $this->match(Doctrine_ORM_Query_Token::T_AS);
+        if ($this->_lexer->isNextToken(Token::T_AS)) {
+            $this->match(Token::T_AS);
         }
 
         $aliasIdentificationVariable = $this->_AliasIdentificationVariable();
@@ -752,18 +685,18 @@ class Doctrine_ORM_Query_Parser
         $this->_parserResult->setQueryComponent($aliasIdentificationVariable, $joinQueryComponent);
 
         // Create AST node
-        $join = new Doctrine_ORM_Query_AST_Join($joinType, $joinPathExpression, $aliasIdentificationVariable);
+        $join = new AST\Join($joinType, $joinPathExpression, $aliasIdentificationVariable);
 
         // Check Join where type
         if (
-            $this->_isNextToken(Doctrine_ORM_Query_Token::T_ON) ||
-            $this->_isNextToken(Doctrine_ORM_Query_Token::T_WITH)
+            $this->_lexer->isNextToken(Token::T_ON) ||
+            $this->_lexer->isNextToken(Token::T_WITH)
         ) {
-            if ($this->_isNextToken(Doctrine_ORM_Query_Token::T_ON)) {
-                $this->match(Doctrine_ORM_Query_Token::T_ON);
-                $join->setWhereType(Doctrine_ORM_Query_AST_Join::JOIN_WHERE_ON);
+            if ($this->_lexer->isNextToken(Token::T_ON)) {
+                $this->match(Token::T_ON);
+                $join->setWhereType(AST\Join::JOIN_WHERE_ON);
             } else {
-                $this->match(Doctrine_ORM_Query_Token::T_WITH);
+                $this->match(Token::T_WITH);
             }
             $join->setConditionalExpression($this->_ConditionalExpression());
         }
@@ -808,9 +741,9 @@ class Doctrine_ORM_Query_Parser
     {
         $identificationVariable = $this->_IdentificationVariable();
         $this->match('.');
-        $this->match(Doctrine_ORM_Query_Token::T_IDENTIFIER);
-        $assocField = $this->token['value'];
-        return new Doctrine_ORM_Query_AST_JoinPathExpression(
+        $this->match(Token::T_IDENTIFIER);
+        $assocField = $this->_lexer->token['value'];
+        return new AST\JoinPathExpression(
             $identificationVariable, $assocField
         );
     }
@@ -820,8 +753,8 @@ class Doctrine_ORM_Query_Parser
      */
     private function _IndexBy()
     {
-        $this->match(Doctrine_ORM_Query_Token::T_INDEX);
-        $this->match(Doctrine_ORM_Query_Token::T_BY);
+        $this->match(Token::T_INDEX);
+        $this->match(Token::T_BY);
         $pathExp = $this->_SimpleStateFieldPathExpression();
         // Add the INDEX BY info to the query component
         $qComp = $this->_parserResult->getQueryComponent($pathExp->getIdentificationVariable());
@@ -837,9 +770,9 @@ class Doctrine_ORM_Query_Parser
     {
         $identificationVariable = $this->_IdentificationVariable();
         $this->match('.');
-        $this->match(Doctrine_ORM_Query_Token::T_IDENTIFIER);
-        $simpleStateField = $this->token['value'];
-        return new Doctrine_ORM_Query_AST_SimpleStateFieldPathExpression($identificationVariable, $simpleStateField);
+        $this->match(Token::T_IDENTIFIER);
+        $simpleStateField = $this->_lexer->token['value'];
+        return new AST\SimpleStateFieldPathExpression($identificationVariable, $simpleStateField);
     }
 
     /**
@@ -860,11 +793,11 @@ class Doctrine_ORM_Query_Parser
 
         $class = $qComp['metadata'];
 
-        if ( ! $this->_isNextToken('.')) {
+        if ( ! $this->_lexer->isNextToken('.')) {
             $this->syntaxError();
         }
         
-        while ($this->_isNextToken('.')) {
+        while ($this->_lexer->isNextToken('.')) {
             if ($stateFieldSeen) $this->syntaxError();
             $this->match('.');
             $part = $this->_IdentificationVariable();
@@ -880,7 +813,7 @@ class Doctrine_ORM_Query_Parser
             $parts[] = $part;
         }
 
-        $pathExpr = new Doctrine_ORM_Query_AST_PathExpression($parts);
+        $pathExpr = new AST\PathExpression($parts);
 
         if ($assocSeen) {
             $pathExpr->setIsSimpleStateFieldAssociationPathExpression(true);
@@ -900,26 +833,26 @@ class Doctrine_ORM_Query_Parser
     {
         $isDistinct = false;
         $functionName = '';
-        if ($this->_isNextToken(Doctrine_ORM_Query_Token::T_COUNT)) {
-            $this->match(Doctrine_ORM_Query_Token::T_COUNT);
-            $functionName = $this->token['value'];
+        if ($this->_lexer->isNextToken(Token::T_COUNT)) {
+            $this->match(Token::T_COUNT);
+            $functionName = $this->_lexer->token['value'];
             $this->match('(');
-            if ($this->_isNextToken(Doctrine_ORM_Query_Token::T_DISTINCT)) {
-                $this->match(Doctrine_ORM_Query_Token::T_DISTINCT);
+            if ($this->_lexer->isNextToken(Token::T_DISTINCT)) {
+                $this->match(Token::T_DISTINCT);
                 $isDistinct = true;
             }
             // For now we only support a PathExpression here...
             $pathExp = $this->_PathExpression();
             $this->match(')');
-        } else if ($this->_isNextToken(Doctrine_ORM_Query_Token::T_AVG)) {
-            $this->match(Doctrine_ORM_Query_Token::T_AVG);
-            $functionName = $this->token['value'];
+        } else if ($this->_lexer->isNextToken(Token::T_AVG)) {
+            $this->match(Token::T_AVG);
+            $functionName = $this->_lexer->token['value'];
             $this->match('(');
             //...
         } else {
             $this->syntaxError('One of: MAX, MIN, AVG, SUM, COUNT');
         }
-        return new Doctrine_ORM_Query_AST_AggregateExpression($functionName, $pathExp, $isDistinct);
+        return new AST\AggregateExpression($functionName, $pathExp, $isDistinct);
     }
 
     /**
@@ -928,15 +861,15 @@ class Doctrine_ORM_Query_Parser
      */
     private function _GroupByClause()
     {
-        $this->match(Doctrine_ORM_Query_Token::T_GROUP);
-        $this->match(Doctrine_ORM_Query_Token::T_BY);
+        $this->match(Token::T_GROUP);
+        $this->match(Token::T_BY);
         $groupByItems = array();
         $groupByItems[] = $this->_PathExpression();
-        while ($this->_isNextToken(',')) {
+        while ($this->_lexer->isNextToken(',')) {
             $this->match(',');
             $groupByItems[] = $this->_PathExpression();
         }
-        return new Doctrine_ORM_Query_AST_GroupByClause($groupByItems);
+        return new AST\GroupByClause($groupByItems);
     }
 
     /**
@@ -944,8 +877,8 @@ class Doctrine_ORM_Query_Parser
      */
     private function _WhereClause()
     {
-        $this->match(Doctrine_ORM_Query_Token::T_WHERE);
-        return new Doctrine_ORM_Query_AST_WhereClause($this->_ConditionalExpression());
+        $this->match(Token::T_WHERE);
+        return new AST\WhereClause($this->_ConditionalExpression());
     }
 
     /**
@@ -955,11 +888,11 @@ class Doctrine_ORM_Query_Parser
     {
         $conditionalTerms = array();
         $conditionalTerms[] = $this->_ConditionalTerm();
-        while ($this->_isNextToken(Doctrine_ORM_Query_Token::T_OR)) {
-            $this->match(Doctrine_ORM_Query_Token::T_OR);
+        while ($this->_lexer->isNextToken(Token::T_OR)) {
+            $this->match(Token::T_OR);
             $conditionalTerms[] = $this->_ConditionalTerm();
         }
-        return new Doctrine_ORM_Query_AST_ConditionalExpression($conditionalTerms);
+        return new AST\ConditionalExpression($conditionalTerms);
     }
 
     /**
@@ -969,11 +902,11 @@ class Doctrine_ORM_Query_Parser
     {
         $conditionalFactors = array();
         $conditionalFactors[] = $this->_ConditionalFactor();
-        while ($this->_isNextToken(Doctrine_ORM_Query_Token::T_AND)) {
-            $this->match(Doctrine_ORM_Query_Token::T_AND);
+        while ($this->_lexer->isNextToken(Token::T_AND)) {
+            $this->match(Token::T_AND);
             $conditionalFactors[] = $this->_ConditionalFactor();
         }
-        return new Doctrine_ORM_Query_AST_ConditionalTerm($conditionalFactors);
+        return new AST\ConditionalTerm($conditionalFactors);
     }
 
     /**
@@ -982,11 +915,11 @@ class Doctrine_ORM_Query_Parser
     private function _ConditionalFactor()
     {
         $not = false;
-        if ($this->_isNextToken(Doctrine_ORM_Query_Token::T_NOT)) {
-            $this->match(Doctrine_ORM_Query_Token::T_NOT);
+        if ($this->_lexer->isNextToken(Token::T_NOT)) {
+            $this->match(Token::T_NOT);
             $not = true;
         }
-        return new Doctrine_ORM_Query_AST_ConditionalFactor($this->_ConditionalPrimary(), $not);
+        return new AST\ConditionalFactor($this->_ConditionalPrimary(), $not);
     }
 
     /**
@@ -994,19 +927,19 @@ class Doctrine_ORM_Query_Parser
      */
     private function _ConditionalPrimary()
     {
-        $condPrimary = new Doctrine_ORM_Query_AST_ConditionalPrimary;
-        if ($this->_isNextToken('(')) {
+        $condPrimary = new AST\ConditionalPrimary;
+        if ($this->_lexer->isNextToken('(')) {
             $numUnmatched = 1;
-            $peek = $this->_scanner->peek();
+            $peek = $this->_lexer->peek();
             while ($numUnmatched > 0) {
                 if ($peek['value'] == ')') {
                     --$numUnmatched;
                 } else if ($peek['value'] == '(') {
                     ++$numUnmatched;
                 }
-                $peek = $this->_scanner->peek();
+                $peek = $this->_lexer->peek();
             }
-            $this->_scanner->resetPeek();
+            $this->_lexer->resetPeek();
 
             //TODO: This is not complete, what about LIKE/BETWEEN/...etc?
             $comparisonOps = array("=",  "<", "<=", "<>", ">", ">=", "!=");
@@ -1033,39 +966,39 @@ class Doctrine_ORM_Query_Parser
      */
     private function _SimpleConditionalExpression()
     {
-        if ($this->_isNextToken(Doctrine_ORM_Query_Token::T_NOT)) {
-            $token = $this->_scanner->glimpse();
+        if ($this->_lexer->isNextToken(Token::T_NOT)) {
+            $token = $this->_lexer->glimpse();
         } else {
-            $token = $this->lookahead;
+            $token = $this->_lexer->lookahead;
         }
-        if ($token['type'] === Doctrine_ORM_Query_Token::T_EXISTS) {
+        if ($token['type'] === Token::T_EXISTS) {
             return $this->_ExistsExpression();
         }
 
         $stateFieldPathExpr = false;
-        if ($token['type'] === Doctrine_ORM_Query_Token::T_IDENTIFIER) {
+        if ($token['type'] === Token::T_IDENTIFIER) {
             // Peek beyond the PathExpression
             $stateFieldPathExpr = true;
-            $peek = $this->_scanner->peek();
+            $peek = $this->_lexer->peek();
             while ($peek['value'] === '.') {
-                $this->_scanner->peek();
-                $peek = $this->_scanner->peek();
+                $this->_lexer->peek();
+                $peek = $this->_lexer->peek();
             }
-            $this->_scanner->resetPeek();
+            $this->_lexer->resetPeek();
             $token = $peek;
         }
 
         if ($stateFieldPathExpr) {
             switch ($token['type']) {
-                case Doctrine_ORM_Query_Token::T_BETWEEN:
+                case Token::T_BETWEEN:
                     return $this->_BetweenExpression();
-                case Doctrine_ORM_Query_Token::T_LIKE:
+                case Token::T_LIKE:
                     return $this->_LikeExpression();
-                case Doctrine_ORM_Query_Token::T_IN:
+                case Token::T_IN:
                     return $this->_InExpression();
-                case Doctrine_ORM_Query_Token::T_IS:
+                case Token::T_IS:
                     return $this->_NullComparisonExpression();
-                case Doctrine_ORM_Query_Token::T_NONE:
+                case Token::T_NONE:
                     return $this->_ComparisonExpression();
                 default:
                     $this->syntaxError();
@@ -1074,10 +1007,10 @@ class Doctrine_ORM_Query_Parser
             return $this->_ComparisonExpression();
         } else {
             switch ($token['type']) {
-                case Doctrine_ORM_Query_Token::T_INTEGER:
+                case Token::T_INTEGER:
                     // IF it turns out its a ComparisonExpression, then it MUST be ArithmeticExpression
                     break;
-                case Doctrine_ORM_Query_Token::T_STRING:
+                case Token::T_STRING:
                     // IF it turns out its a ComparisonExpression, then it MUST be StringExpression
                     break;
                 default:
@@ -1094,14 +1027,14 @@ class Doctrine_ORM_Query_Parser
     {
         $leftExpr = $this->_ArithmeticExpression();
         $operator = $this->_ComparisonOperator();
-        if ($this->lookahead['type'] === Doctrine_ORM_Query_Token::T_ALL ||
-                $this->lookahead['type'] === Doctrine_ORM_Query_Token::T_ANY ||
-                $this->lookahead['type'] === Doctrine_ORM_Query_Token::T_SOME) {
+        if ($this->_lexer->lookahead['type'] === Token::T_ALL ||
+                $this->_lexer->lookahead['type'] === Token::T_ANY ||
+                $this->_lexer->lookahead['type'] === Token::T_SOME) {
             $rightExpr = $this->_QuantifiedExpression();
         } else {
             $rightExpr = $this->_ArithmeticExpression();
         }
-        return new Doctrine_ORM_Query_AST_ComparisonExpression($leftExpr, $operator, $rightExpr);
+        return new AST\ComparisonExpression($leftExpr, $operator, $rightExpr);
     }
 
     /**
@@ -1109,11 +1042,10 @@ class Doctrine_ORM_Query_Parser
      */
     private function _ArithmeticExpression()
     {
-        $expr = new Doctrine_ORM_Query_AST_ArithmeticExpression;
-        if ($this->lookahead['value'] === '(') {
-            $peek = $this->_scanner->peek();
-            $this->_scanner->resetPeek();
-            if ($peek['type'] === Doctrine_ORM_Query_Token::T_SELECT) {
+        $expr = new AST\ArithmeticExpression;
+        if ($this->_lexer->lookahead['value'] === '(') {
+            $peek = $this->_lexer->glimpse();
+            if ($peek['type'] === Token::T_SELECT) {
                 $expr->setSubselect($this->_Subselect());
                 return $expr;
             }
@@ -1129,16 +1061,16 @@ class Doctrine_ORM_Query_Parser
     {
         $terms = array();
         $terms[] = $this->_ArithmeticTerm();
-        while ($this->lookahead['value'] == '+' || $this->lookahead['value'] == '-') {
-            if ($this->lookahead['value'] == '+') {
+        while ($this->_lexer->lookahead['value'] == '+' || $this->_lexer->lookahead['value'] == '-') {
+            if ($this->_lexer->lookahead['value'] == '+') {
                 $this->match('+');
             } else {
                 $this->match('-');
             }
-            $terms[] = $this->token['value'];
+            $terms[] = $this->_lexer->token['value'];
             $terms[] = $this->_ArithmeticTerm();
         }
-        return new Doctrine_ORM_Query_AST_SimpleArithmeticExpression($terms);
+        return new AST\SimpleArithmeticExpression($terms);
     }
 
     /**
@@ -1148,16 +1080,16 @@ class Doctrine_ORM_Query_Parser
     {
         $factors = array();
         $factors[] = $this->_ArithmeticFactor();
-        while ($this->lookahead['value'] == '*' || $this->lookahead['value'] == '/') {
-            if ($this->lookahead['value'] == '*') {
+        while ($this->_lexer->lookahead['value'] == '*' || $this->_lexer->lookahead['value'] == '/') {
+            if ($this->_lexer->lookahead['value'] == '*') {
                 $this->match('*');
             } else {
                 $this->match('/');
             }
-            $factors[] = $this->token['value'];
+            $factors[] = $this->_lexer->token['value'];
             $factors[] = $this->_ArithmeticFactor();
         }
-        return new Doctrine_ORM_Query_AST_ArithmeticTerm($factors);
+        return new AST\ArithmeticTerm($factors);
     }
 
     /**
@@ -1166,14 +1098,14 @@ class Doctrine_ORM_Query_Parser
     private function _ArithmeticFactor()
     {
         $pSign = $nSign = false;
-        if ($this->lookahead['value'] == '+') {
+        if ($this->_lexer->lookahead['value'] == '+') {
             $this->match('+');
             $pSign = true;
-        } else if ($this->lookahead['value'] == '-') {
+        } else if ($this->_lexer->lookahead['value'] == '-') {
             $this->match('-');
             $nSign = true;
         }
-        return new Doctrine_ORM_Query_AST_ArithmeticFactor($this->_ArithmeticPrimary(), $pSign, $nSign);
+        return new AST\ArithmeticFactor($this->_ArithmeticPrimary(), $pSign, $nSign);
     }
 
     /**
@@ -1181,23 +1113,30 @@ class Doctrine_ORM_Query_Parser
      */
     private function _ArithmeticPrimary()
     {
-        if ($this->lookahead['value'] === '(') {
+        if ($this->_lexer->lookahead['value'] === '(') {
             $this->match('(');
             $expr = $this->_SimpleArithmeticExpression();
             $this->match(')');
             return $expr;
         }
-        switch ($this->lookahead['type']) {
-            case Doctrine_ORM_Query_Token::T_IDENTIFIER:
+        switch ($this->_lexer->lookahead['type']) {
+            case Token::T_IDENTIFIER:
+                $peek = $this->_lexer->glimpse();
+                if ($peek['value'] == '(') {
+                    if ($this->_isAggregateFunction($peek['type'])) {
+                        return $this->_AggregateExpression();
+                    }
+                    return $this->_FunctionsReturningStrings();
+                }
                 return $this->_StateFieldPathExpression();
-            case Doctrine_ORM_Query_Token::T_INPUT_PARAMETER:
-                $this->match($this->lookahead['value']);
-                return new Doctrine_ORM_Query_AST_InputParameter($this->token['value']);
-            case Doctrine_ORM_Query_Token::T_STRING:
-            case Doctrine_ORM_Query_Token::T_INTEGER:
-            case Doctrine_ORM_Query_Token::T_FLOAT:
-                $this->match($this->lookahead['value']);
-                return $this->token['value'];
+            case Token::T_INPUT_PARAMETER:
+                $this->match($this->_lexer->lookahead['value']);
+                return new AST\InputParameter($this->_lexer->token['value']);
+            case Token::T_STRING:
+            case Token::T_INTEGER:
+            case Token::T_FLOAT:
+                $this->match($this->_lexer->lookahead['value']);
+                return $this->_lexer->token['value'];
             default:
                 $this->syntaxError();
         }
@@ -1206,21 +1145,68 @@ class Doctrine_ORM_Query_Parser
     }
 
     /**
+     * PortableFunctionsReturningStrings ::=
+     *   "CONCAT" "(" StringPrimary "," StringPrimary ")" |
+     *   "SUBSTRING" "(" StringPrimary "," SimpleArithmeticExpression "," SimpleArithmeticExpression ")" |
+     *   "TRIM" "(" [["LEADING" | "TRAILING" | "BOTH"] [char] "FROM"] StringPrimary ")" |
+     *   "LOWER" "(" StringPrimary ")" |
+     *   "UPPER" "(" StringPrimary ")"
+     */
+    private function _FunctionsReturningStrings()
+    {
+        switch (strtoupper($this->_lexer->lookahead['value'])) {
+            case 'CONCAT':
+                
+                break;
+            case 'SUBSTRING':
+
+                break;
+            case 'TRIM':
+                $this->match($this->_lexer->lookahead['value']);
+                $this->match('(');
+                //TODO: This is not complete! See BNF
+                $this->_StringPrimary();
+                break;
+            case 'LOWER':
+
+                break;
+            case 'UPPER':
+
+            default:
+                $this->syntaxError('CONCAT, SUBSTRING, TRIM or UPPER');
+        }
+    }
+
+    private function _isAggregateFunction($tokenType)
+    {
+        switch ($tokenType) {
+            case Token::T_AVG:
+            case Token::T_MIN:
+            case Token::T_MAX:
+            case Token::T_SUM:
+            case Token::T_COUNT:
+                return true;
+            default:
+                return false;
+        }
+    }
+
+    /**
      * ComparisonOperator ::= "=" | "<" | "<=" | "<>" | ">" | ">=" | "!="
      */
     private function _ComparisonOperator()
     {
-        switch ($this->lookahead['value']) {
+        switch ($this->_lexer->lookahead['value']) {
             case '=':
                 $this->match('=');
                 return '=';
             case '<':
                 $this->match('<');
                 $operator = '<';
-                if ($this->_isNextToken('=')) {
+                if ($this->_lexer->isNextToken('=')) {
                     $this->match('=');
                     $operator .= '=';
-                } else if ($this->_isNextToken('>')) {
+                } else if ($this->_lexer->isNextToken('>')) {
                     $this->match('>');
                     $operator .= '>';
                 }
@@ -1228,7 +1214,7 @@ class Doctrine_ORM_Query_Parser
             case '>':
                 $this->match('>');
                 $operator = '>';
-                if ($this->_isNextToken('=')) {
+                if ($this->_lexer->isNextToken('=')) {
                     $this->match('=');
                     $operator .= '=';
                 }
@@ -1250,21 +1236,21 @@ class Doctrine_ORM_Query_Parser
     {
         $stringExpr = $this->_StringExpression();
         $isNot = false;
-        if ($this->lookahead['type'] === Doctrine_ORM_Query_Token::T_NOT) {
-            $this->match(Doctrine_ORM_Query_Token::T_NOT);
+        if ($this->_lexer->lookahead['type'] === Token::T_NOT) {
+            $this->match(Token::T_NOT);
             $isNot = true;
         }
-        $this->match(Doctrine_ORM_Query_Token::T_LIKE);
-        $this->match(Doctrine_ORM_Query_Token::T_STRING);
-        $stringPattern = $this->token['value'];
+        $this->match(Token::T_LIKE);
+        $this->match(Token::T_STRING);
+        $stringPattern = $this->_lexer->token['value'];
         $escapeChar = null;
-        if ($this->lookahead['type'] === Doctrine_ORM_Query_Token::T_ESCAPE) {
-            $this->match(Doctrine_ORM_Query_Token::T_ESCAPE);
-            var_dump($this->lookahead);
-            //$this->match(Doctrine_ORM_Query_Token::T_)
+        if ($this->_lexer->lookahead['type'] === Token::T_ESCAPE) {
+            $this->match(Token::T_ESCAPE);
+            var_dump($this->_lexer->lookahead);
+            //$this->match(Token::T_)
             //$escapeChar =
         }
-        return new Doctrine_ORM_Query_AST_LikeExpression($stringExpr, $stringPattern, $isNot, $escapeChar);
+        return new AST\LikeExpression($stringExpr, $stringPattern, $isNot, $escapeChar);
     }
 
     /**
@@ -1272,10 +1258,9 @@ class Doctrine_ORM_Query_Parser
      */
     private function _StringExpression()
     {
-        if ($this->lookahead['value'] === '(') {
-            $peek = $this->_scanner->peek();
-            $this->_scanner->resetPeek();
-            if ($peek['type'] === Doctrine_ORM_Query_Token::T_SELECT) {
+        if ($this->_lexer->lookahead['value'] === '(') {
+            $peek = $this->_lexer->glimpse();
+            if ($peek['type'] === Token::T_SELECT) {
                 return $this->_Subselect();
             }
         }
@@ -1287,9 +1272,8 @@ class Doctrine_ORM_Query_Parser
      */
     private function _StringPrimary()
     {
-        if ($this->lookahead['type'] === Doctrine_ORM_Query_Token::T_IDENTIFIER) {
-            $peek = $this->_scanner->peek();
-            $this->_scanner->resetPeek();
+        if ($this->_lexer->lookahead['type'] === Token::T_IDENTIFIER) {
+            $peek = $this->_lexer->glimpse();
             if ($peek['value'] == '.') {
                 return $this->_StateFieldPathExpression();
             } else if ($peek['value'] == '(') {
@@ -1297,9 +1281,9 @@ class Doctrine_ORM_Query_Parser
             } else {
                 $this->syntaxError("'.' or '('");
             }
-        } else if ($this->lookahead['type'] === Doctrine_ORM_Query_Token::T_STRING) {
+        } else if ($this->_lexer->lookahead['type'] === Token::T_STRING) {
             //TODO...
-        } else if ($this->lookahead['type'] === Doctrine_ORM_Query_Token::T_INPUT_PARAMETER) {
+        } else if ($this->_lexer->lookahead['type'] === Token::T_INPUT_PARAMETER) {
             //TODO...
         } else {
             $this->syntaxError('StateFieldPathExpression | string | InputParameter | FunctionsReturningStrings | AggregateExpression');

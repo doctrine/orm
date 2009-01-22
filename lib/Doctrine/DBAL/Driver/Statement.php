@@ -19,7 +19,7 @@
  * <http://www.phpdoctrine.org>.
  */
 
-#namespace Doctrine\DBAL\Driver;
+namespace Doctrine\DBAL\Driver;
 
 /**
  * Statement interface.
@@ -34,7 +34,7 @@
  * @since       2.0
  * @version     $Revision$
  */
-interface Doctrine_DBAL_Driver_Statement
+interface Statement
 {    
     /**
      * Bind a column to a PHP variable

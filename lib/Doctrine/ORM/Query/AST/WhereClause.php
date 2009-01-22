@@ -4,12 +4,14 @@
  * and open the template in the editor.
  */
 
+namespace Doctrine\ORM\Query\AST;
+
 /**
  * Description of WhereClause
  *
  * @author robo
  */
-class Doctrine_ORM_Query_AST_WhereClause extends Doctrine_ORM_Query_AST
+class WhereClause extends Node
 {
     private $_conditionalExpression;
 

@@ -19,9 +19,10 @@
  * <http://www.phpdoctrine.org>.
  */
 
-#namespace Doctrine\DBAL;
+namespace Doctrine\DBAL;
 
-#use Doctrine\Common\EventManager;
+use Doctrine\Common\EventManager;
+use Doctrine\Common\DoctrineException;
 #use Doctrine\DBAL\Exceptions\ConnectionException;
 
 /**
@@ -53,7 +54,7 @@
  * Doctrine\DBAL could ship with a simple standard broker that uses a primitive
  * round-robin approach to distribution. User can provide its own brokers.
  */
-class Doctrine_DBAL_Connection
+class Connection
 {
     /**
      * Constant for transaction isolation level READ UNCOMMITTED.
@@ -155,9 +156,9 @@ class Doctrine_DBAL_Connection
      *
      * @param array $params  The connection parameters.
      */
-    public function __construct(array $params, Doctrine_DBAL_Driver $driver,
-            Doctrine_DBAL_Configuration $config = null,
-            Doctrine_Common_EventManager $eventManager = null)
+    public function __construct(array $params, Driver $driver,
+            Configuration $config = null,
+            EventManager $eventManager = null)
     {
         $this->_driver = $driver;
         $this->_params = $params;
@@ -169,10 +170,10 @@ class Doctrine_DBAL_Connection
         
         // Create default config and event manager if none given
         if ( ! $config) {
-            $this->_config = new Doctrine_DBAL_Configuration();
+            $this->_config = new Configuration();
         }
         if ( ! $eventManager) {
-            $this->_eventManager = new Doctrine_Common_EventManager();
+            $this->_eventManager = new EventManager();
         }
 
         $this->_platform = $driver->getDatabasePlatform();
@@ -702,7 +703,7 @@ class Doctrine_DBAL_Connection
     public function commit()
     {
         if ($this->_transactionNestingLevel == 0) {
-            throw new Doctrine_Exception("Commit failed. There is no active transaction.");
+            throw new DoctrineException("Commit failed. There is no active transaction.");
         }
         
         $this->connect();

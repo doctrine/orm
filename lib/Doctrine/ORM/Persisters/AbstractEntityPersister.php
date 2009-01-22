@@ -19,7 +19,7 @@
  * <http://www.phpdoctrine.org>.
  */
 
-#namespace Doctrine\ORM\Persisters;
+namespace Doctrine\ORM\Persisters;
 
 /**
  * Base class for all EntityPersisters.
@@ -27,11 +27,10 @@
  * @author      Roman Borschel <roman@code-factory.org>
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @version     $Revision: 3406 $
- * @link        www.phpdoctrine.org
+ * @link        www.doctrine-project.org
  * @since       2.0
- * @todo Rename to AbstractEntityPersister
  */
-abstract class Doctrine_ORM_Persisters_AbstractEntityPersister
+abstract class AbstractEntityPersister
 {
     /**
      * The names of all the fields that are available on entities. 
@@ -71,7 +70,7 @@ abstract class Doctrine_ORM_Persisters_AbstractEntityPersister
      * that uses the given EntityManager and persists instances of the class described
      * by the given class metadata descriptor.
      */
-    public function __construct(Doctrine_ORM_EntityManager $em, Doctrine_ORM_Mapping_ClassMetadata $classMetadata)
+    public function __construct(\Doctrine\ORM\EntityManager $em, \Doctrine\ORM\Mapping\ClassMetadata $classMetadata)
     {
         $this->_em = $em;
         $this->_entityName = $classMetadata->getClassName();

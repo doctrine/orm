@@ -4,6 +4,8 @@
  * and open the template in the editor.
  */
 
+namespace Doctrine\ORM\Query\AST;
+
 /**
  * ComparisonExpression ::= ArithmeticExpression ComparisonOperator ( QuantifiedExpression | ArithmeticExpression ) |
  *                          StringExpression ComparisonOperator (StringExpression | QuantifiedExpression) |
@@ -14,7 +16,7 @@
  *
  * @author robo
  */
-class Doctrine_ORM_Query_AST_ComparisonExpression extends Doctrine_ORM_Query_AST
+class ComparisonExpression extends Node
 {
     private $_leftExpr;
     private $_rightExpr;

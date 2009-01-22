@@ -4,12 +4,14 @@
  * and open the template in the editor.
  */
 
+namespace Doctrine\ORM\Query\AST;
+
 /**
  * ConditionalTerm ::= ConditionalFactor {"AND" ConditionalFactor}*
  *
  * @author robo
  */
-class Doctrine_ORM_Query_AST_ConditionalTerm extends Doctrine_ORM_Query_AST
+class ConditionalTerm extends Node
 {
     private $_conditionalFactors = array();
 

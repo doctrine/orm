@@ -1,12 +1,14 @@
 <?php
 
+namespace Doctrine\ORM\Id;
+
 /**
  * Special generator for application-assigned identifiers (doesnt really generate anything).
  *
  * @since 2.0
  * @author Roman Borschel <roman@code-factory.org>
  */
-class Doctrine_ORM_Id_Assigned extends Doctrine_ORM_Id_AbstractIdGenerator
+class Assigned extends AbstractIdGenerator
 {
     /**
      * Returns the identifier assigned to the given entity.

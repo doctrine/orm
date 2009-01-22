@@ -19,6 +19,8 @@
  * <http://www.phpdoctrine.org>.
  */
 
+namespace Doctrine\ORM\Query\AST;
+
 /**
  * SelectClause = "SELECT" ["DISTINCT"] SelectExpression {"," SelectExpression}
  *
@@ -28,7 +30,7 @@
  * @since       2.0
  * @version     $Revision$
  */
-class Doctrine_ORM_Query_AST_SelectClause extends Doctrine_ORM_Query_AST
+class SelectClause extends Node
 {
     protected $_isDistinct;
 

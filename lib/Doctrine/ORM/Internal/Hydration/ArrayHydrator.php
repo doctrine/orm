@@ -4,12 +4,16 @@
  * and open the template in the editor.
  */
 
+namespace Doctrine\ORM\Internal\Hydration;
+
+use \PDO;
+
 /**
  * Description of ArrayHydrator
  *
  * @author robo
  */
-class Doctrine_ORM_Internal_Hydration_ArrayHydrator extends Doctrine_ORM_Internal_Hydration_AbstractHydrator
+class ArrayHydrator extends AbstractHydrator
 {
     private $_rootAlias;
     private $_rootEntityName;
