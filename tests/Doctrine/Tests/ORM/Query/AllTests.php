@@ -8,7 +8,7 @@ if (!defined('PHPUnit_MAIN_METHOD')) {
     define('PHPUnit_MAIN_METHOD', 'Orm_Query_AllTests::main');
 }
 
-require_once dirname(__FILE__) . '/../../TestInit.php';
+require_once __DIR__ . '/../../TestInit.php';
 
 #require_once 'IdentifierRecognitionTest.php';
 /*require_once 'ScannerTest.php';

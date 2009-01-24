@@ -6,7 +6,7 @@ if (!defined('PHPUnit_MAIN_METHOD')) {
     define('PHPUnit_MAIN_METHOD', 'Ticket_AllTests::main');
 }
 
-require_once dirname(__FILE__) . '/../../TestInit.php';
+require_once __DIR__ . '/../../TestInit.php';
 
 // Tests
 #require_once 'Dbal/Ticket/1Test.php';

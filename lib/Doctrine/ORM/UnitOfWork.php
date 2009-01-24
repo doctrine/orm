@@ -262,6 +262,8 @@ class UnitOfWork
             foreach ($entities as $entity) {
                 $entitySet[get_class($entity)][] = $entity;
             }
+        } else if ( ! $this->_em->getConfiguration()->getAutomaticDirtyChecking()) {
+            //TODO
         } else {
             $entitySet = $this->_identityMap;
         }

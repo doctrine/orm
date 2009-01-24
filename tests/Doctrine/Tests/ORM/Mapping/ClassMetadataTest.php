@@ -4,7 +4,7 @@ namespace Doctrine\Tests\ORM\Mapping;
 
 use Doctrine\ORM\Mapping\ClassMetadata;
 
-require_once dirname(__FILE__) . '/../../TestInit.php';
+require_once __DIR__ . '/../../TestInit.php';
  
 class ClassMetadataTest extends \Doctrine\Tests\OrmTestCase
 {

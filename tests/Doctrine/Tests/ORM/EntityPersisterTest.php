@@ -10,7 +10,7 @@ use Doctrine\Tests\Mocks\SequenceMock;
 use Doctrine\Tests\Models\Forum\ForumUser;
 use Doctrine\Tests\Models\Forum\ForumAvatar;
 
-require_once dirname(__FILE__) . '/../TestInit.php';
+require_once __DIR__ . '/../TestInit.php';
 
 #require_once 'lib/mocks/Doctrine_EntityManagerMock.php';
 #require_once 'lib/mocks/Doctrine_ConnectionMock.php';

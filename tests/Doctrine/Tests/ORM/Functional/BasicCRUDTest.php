@@ -6,7 +6,7 @@ use Doctrine\ORM\Export\ClassExporter;
 use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\Models\CMS\CmsPhonenumber;
 
-require_once dirname(__FILE__) . '/../../TestInit.php';
+require_once __DIR__ . '/../../TestInit.php';
 
 /**
  * Description of BasicCRUDTest

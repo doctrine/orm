@@ -21,7 +21,7 @@
 
 namespace Doctrine\Tests\ORM\Query;
 
-require_once dirname(__FILE__) . '/../../TestInit.php';
+require_once __DIR__ . '/../../TestInit.php';
 
 /**
  * Test case for testing the saving and referencing of query identifiers.

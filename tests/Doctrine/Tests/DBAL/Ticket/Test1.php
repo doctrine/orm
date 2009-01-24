@@ -2,7 +2,7 @@
 
 namespace Doctrine\Tests\DBAL\Ticket;
 
-require_once dirname(__FILE__) . '/../../TestInit.php';
+require_once __DIR__ . '/../../TestInit.php';
  
 class Test1 extends \Doctrine\Tests\DbalTestCase
 {

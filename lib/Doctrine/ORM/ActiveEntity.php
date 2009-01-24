@@ -10,7 +10,7 @@
  *
  * @since 2.0
  */
-class Doctrine_ORM_ActiveEntity extends Doctrine_Common_VirtualPropertyObject implements Doctrine_ORM_Entity
+class Doctrine_ORM_ActiveEntity
 {
     /**
      * The class descriptor.

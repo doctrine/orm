@@ -10,7 +10,7 @@ use Doctrine\Tests\Mocks\MetadataDriverMock;
 use Doctrine\Tests\Mocks\DatabasePlatformMock;
 use Doctrine\ORM\Mapping\ClassMetadata;
 
-require_once dirname(__FILE__) . '/../../TestInit.php';
+require_once __DIR__ . '/../../TestInit.php';
 
 /**
  * Description of ClassMetadataFactoryTest

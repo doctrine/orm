@@ -2,7 +2,7 @@
 
 namespace Doctrine\Tests\ORM;
 
-require_once dirname(__FILE__) . '/../TestInit.php';
+require_once __DIR__ . '/../TestInit.php';
 
 /**
  * Tests of the commit order calculation.

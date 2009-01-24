@@ -2,7 +2,7 @@
 
 namespace Doctrine\Tests\ORM\Associations;
 
-require_once dirname(__FILE__) . '/../../TestInit.php';
+require_once __DIR__ . '/../../TestInit.php';
  
 class OneToOneMappingTest extends \Doctrine\Tests\OrmTestCase
 {    

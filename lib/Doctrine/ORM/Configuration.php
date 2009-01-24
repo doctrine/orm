@@ -44,8 +44,19 @@ class Configuration extends \Doctrine\DBAL\Configuration
             'resultCacheImpl' => null,
             'queryCacheImpl' => null,
             'metadataCacheImpl' => null,
-            'metadataDriverImpl' => new AnnotationDriver()
+            'metadataDriverImpl' => new AnnotationDriver(),
+            'automaticDirtyChecking' => true
             ));
+    }
+
+    public function setAutomaticDirtyChecking($bool)
+    {
+        $this->_attributes['automaticDirtyChecking'] = $bool;
+    }
+
+    public function getAutomaticDirtyChecking()
+    {
+        return $this->_attributes['automaticDirtyChecking'];
     }
 
     public function setMetadataDriverImpl($driverImpl)
