@@ -9,6 +9,7 @@ namespace Doctrine\Common\Collections;
 use \Countable;
 use \IteratorAggregate;
 use \ArrayAccess;
+use \ArrayIterator;
 
 /**
  * A Collection is a wrapper around a php array and just like a php array a
@@ -86,6 +87,22 @@ class Collection implements Countable, IteratorAggregate, ArrayAccess
         $removed = $this->_data[$key];
         unset($this->_data[$key]);
         return $removed;
+    }
+
+    /**
+     * Removes the specified element from the collection, if it is found.
+     *
+     * @param mixed $element
+     * @return boolean
+     */
+    public function removeElement($element)
+    {
+        $key = array_search($element, $this->_data, true);
+        if ($key !== false) {
+            unset($this->_data[$key]);
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -174,7 +191,7 @@ class Collection implements Countable, IteratorAggregate, ArrayAccess
      * Tests for the existance of an element that satisfies the given predicate.
      *
      * @param function $func
-     * @return boolean TRUE if the predicate is TRUE for at least one element, FALSe otherwise.
+     * @return boolean TRUE if the predicate is TRUE for at least one element, FALSE otherwise.
      */
     public function exists(Closure $func) {
         foreach ($this->_data as $key => $element)
@@ -191,7 +208,7 @@ class Collection implements Countable, IteratorAggregate, ArrayAccess
      */
     public function containsAll($otherColl)
     {
-        throw new Doctrine_Exception("Not yet implemented.");
+        throw new DoctrineException("Not yet implemented.");
     }
 
     /**

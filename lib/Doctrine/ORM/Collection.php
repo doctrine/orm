@@ -21,11 +21,13 @@
 
 namespace Doctrine\ORM;
 
+use Doctrine\ORM\Mapping\AssociationMapping;
+
 /**
  * A persistent collection wrapper.
  * 
- * A PersistentCollection represents a collection of entities. Collections of
- * entities represent only the associations (links) to those entities.
+ * A PersistentCollection represents a collection of elements that have persistent state.
+ * Collections of entities represent only the associations (links) to those entities.
  * That means, if the collection is part of a many-many mapping and you remove
  * entities from the collection, only the links in the xref table are removed (on flush).
  * Similarly, if you remove entities from a collection that is part of a one-many
@@ -104,13 +106,17 @@ final class Collection extends \Doctrine\Common\Collections\Collection
      */
     private $_hydrationFlag;
 
+    /**
+     * The class descriptor of the owning entity.
+     */
     private $_ownerClass;
 
     /**
      * Creates a new persistent collection.
      */
-    public function __construct(EntityManager $em, $entityBaseType, $keyField = null)
+    public function __construct(EntityManager $em, $entityBaseType, array $data = array(), $keyField = null)
     {
+        parent::__construct($data);
         $this->_entityBaseType = $entityBaseType;
         $this->_em = $em;
         $this->_ownerClass = $em->getClassMetadata($entityBaseType);
@@ -151,7 +157,7 @@ final class Collection extends \Doctrine\Common\Collections\Collection
      * @param object $entity
      * @param AssociationMapping $relation
      */
-    public function _setOwner($entity, \Doctrine\ORM\Mapping\AssociationMapping $relation)
+    public function _setOwner($entity, AssociationMapping $relation)
     {
         $this->_owner = $entity;
         $this->_association = $relation;
@@ -180,7 +186,7 @@ final class Collection extends \Doctrine\Common\Collections\Collection
     }
 
     /**
-     * Removes an entity from the collection.
+     * Removes an element from the collection.
      *
      * @param mixed $key
      * @return boolean
@@ -215,23 +221,23 @@ final class Collection extends \Doctrine\Common\Collections\Collection
     }
 
     /**
-     * Adds an entry to the collection.
+     * Adds an element to the collection.
      * 
      * @param mixed $value
      * @param string $key 
-     * @return boolean
+     * @return TRUE
      * @override
      */
     public function add($value)
     {
         $result = parent::add($value);
         if ( ! $result) return $result; // EARLY EXIT
-        
+
         if ($this->_hydrationFlag) {
             if ($this->_backRefFieldName) {
                 // set back reference to owner
-                $this->_ownerClass->getReflectionProperty(
-                        $this->_backRefFieldName)->setValue($value, $this->_owner);
+                $this->_ownerClass->getReflectionProperty($this->_backRefFieldName)
+                        ->setValue($value, $this->_owner);
             }
         } else {
             //TODO: Register collection as dirty with the UoW if necessary
@@ -297,34 +303,13 @@ final class Collection extends \Doctrine\Common\Collections\Collection
 
     /**
      * INTERNAL:
-     * Processes the difference of the last snapshot and the current data.
-     *
-     * an example:
-     * Snapshot with the objects 1, 2 and 4
-     * Current data with objects 2, 3 and 5
-     *
-     * The process would remove objects 1 and 4
-     *
-     * @return Doctrine_Collection
-     * @todo Move elsewhere
-     */
-    public function processDiff() 
-    {
-        foreach (array_udiff($this->_snapshot, $this->_data, array($this, "_compareRecords")) as $record) {
-            $record->delete();
-        }
-        return $this;
-    }
-
-    /**
-     * INTERNAL:
      * getDeleteDiff
      *
      * @return array
      */
     public function getDeleteDiff()
     {
-        return array_udiff($this->_snapshot, $this->_data, array($this, "_compareRecords"));
+        return array_udiff($this->_snapshot, $this->_data, array($this, '_compareRecords'));
     }
 
     /**
@@ -334,7 +319,7 @@ final class Collection extends \Doctrine\Common\Collections\Collection
      */
     public function getInsertDiff()
     {
-        return array_udiff($this->_data, $this->_snapshot, array($this, "_compareRecords"));
+        return array_udiff($this->_data, $this->_snapshot, array($this, '_compareRecords'));
     }
 
     /**
@@ -377,8 +362,10 @@ final class Collection extends \Doctrine\Common\Collections\Collection
     
     private function _changed()
     {
-        /*if ( ! $this->_em->getUnitOfWork()->isCollectionScheduledForUpdate($this)) {
-            $this->_em->getUnitOfWork()->scheduleCollectionUpdate($this);
-        }*/  
+        if ( ! $this->_em->getUnitOfWork()->isCollectionScheduledForUpdate($this)) {
+            //var_dump(get_class($this->_snapshot[0]));
+            //echo "NOT!";
+            //$this->_em->getUnitOfWork()->scheduleCollectionUpdate($this);
+        }  
     }
 }

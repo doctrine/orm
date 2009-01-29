@@ -27,7 +27,7 @@ class CmsUser
     public $name;
     /**
      * @DoctrineOneToMany(targetEntity="Doctrine\Tests\Models\CMS\CmsPhonenumber",
-            mappedBy="user", cascade={"save"})
+            mappedBy="user", cascade={"save", "delete"})
      */
     public $phonenumbers;
     /**
@@ -43,5 +43,15 @@ class CmsUser
     public function addPhonenumber(CmsPhonenumber $phone) {
         $this->phonenumbers[] = $phone;
         $phone->user = $this;
+    }
+
+    public function removePhonenumber($index) {
+        if (isset($this->phonenumbers[$index])) {
+            $ph = $this->phonenumbers[$index];
+            unset($this->phonenumbers[$index]);
+            $ph->user = null;
+            return true;
+        }
+        return false;
     }
 }

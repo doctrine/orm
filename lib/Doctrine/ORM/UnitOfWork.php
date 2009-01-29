@@ -23,6 +23,7 @@ namespace Doctrine\ORM;
 
 use Doctrine\ORM\Internal\CommitOrderCalculator;
 use Doctrine\ORM\Internal\CommitOrderNode;
+use Doctrine\ORM\Collection;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Exceptions\UnitOfWorkException;
 
@@ -111,6 +112,12 @@ class UnitOfWork
     protected $_entityStates = array();
 
     /**
+     * Map of entities that are scheduled for dirty checking at commit time.
+     * This is only used if automatic dirty checking is disabled.
+     */
+    protected $_scheduledForDirtyCheck = array();
+
+    /**
      * A list of all new entities that need to be INSERTed.
      *
      * @var array
@@ -186,15 +193,19 @@ class UnitOfWork
     }
 
     /**
-     * Commits the unit of work, executing all operations that have been postponed
+     * Commits the UnitOfWork, executing all operations that have been postponed
      * up to this point.
-     *
-     * @return void
      */
     public function commit()
     {
         // Compute changes in managed entities
-        $this->computeEntityChangeSets();
+        $this->computeChangeSets();
+
+        /*foreach ($this->_managedCollections as $coll) {
+            if ($coll->isDirty()) {
+                
+            }
+        }*/
 
         if (empty($this->_newEntities) &&
                 empty($this->_deletedEntities) &&
@@ -214,18 +225,18 @@ class UnitOfWork
             $this->_executeUpdates($class);
         }
         
-        //TODO: collection deletions
-        //TODO: collection updates (deleteRows, updateRows, insertRows)
-        //TODO: collection recreations
+        //TODO: collection deletions (deletions of complete collections)
+        //TODO: collection updates (deleteRows, updateRows, insertRows on join tables)
+        //TODO: collection recreations (insertions of complete collections)
 
         // Entity deletions come last and need to be in reverse commit order
-        for ($count = count($commitOrder), $i = $count - 1; $i >= 0; $i--) {
+        for ($count = count($commitOrder), $i = $count - 1; $i >= 0; --$i) {
             $this->_executeDeletions($commitOrder[$i]);
         }
 
         //TODO: commit transaction here?
 
-        // clear up
+        // Clear up
         $this->_newEntities = array();
         $this->_dirtyEntities = array();
         $this->_deletedEntities = array();
@@ -253,9 +264,11 @@ class UnitOfWork
      *
      * @param array $entities The entities for which to compute the changesets. If this
      *          parameter is not specified, the changesets of all entities in the identity
-     *          map are computed.
+     *          map are computed if automatic dirty checking is enabled (the default).
+     *          If automatic dirty checking is disabled, only those changesets will be
+     *          computed that have been scheduled through scheduleForDirtyCheck().
      */
-    public function computeEntityChangeSets(array $entities = null)
+    public function computeChangeSets(array $entities = null)
     {
         $entitySet = array();
         if ( ! is_null($entities)) {
@@ -263,21 +276,20 @@ class UnitOfWork
                 $entitySet[get_class($entity)][] = $entity;
             }
         } else if ( ! $this->_em->getConfiguration()->getAutomaticDirtyChecking()) {
-            //TODO
+            $entitySet = $this->_scheduledForDirtyCheck;
         } else {
             $entitySet = $this->_identityMap;
         }
 
         foreach ($entitySet as $className => $entities) {
             $class = $this->_em->getClassMetadata($className);
+            if ( ! $class->isInheritanceTypeNone() && count($entities) > 0) {
+                $class = $this->_em->getClassMetadata(get_class($entities[0]));
+            }
             foreach ($entities as $entity) {
                 $oid = spl_object_hash($entity);
                 $state = $this->getEntityState($entity);
                 if ($state == self::STATE_MANAGED || $state == self::STATE_NEW) {
-                    if ( ! $class->isInheritanceTypeNone()) {
-                        $class = $this->_em->getClassMetadata(get_class($entity));
-                    }
-
                     $actualData = array();
                     foreach ($class->getReflectionProperties() as $name => $refProp) {
                         $actualData[$name] = $refProp->getValue($entity);
@@ -294,6 +306,7 @@ class UnitOfWork
                         $originalData = $this->_originalEntityData[$oid];
                         $changeSet = array();
                         $entityIsDirty = false;
+
                         foreach ($actualData as $propName => $actualValue) {
                             $orgValue = isset($originalData[$propName]) ? $originalData[$propName] : null;                            
                             if (is_object($orgValue) && $orgValue !== $actualValue) {
@@ -307,8 +320,16 @@ class UnitOfWork
                                     $assoc = $class->getAssociationMapping($propName);
                                     if ($assoc->isOneToOne() && $assoc->isOwningSide()) {
                                         $entityIsDirty = true;
+                                    } else if ( ! $assoc->isOneToOne()) {
+                                        if ( ! $actualValue instanceof Collection) {
+                                            // Inject PersistentCollection
+                                            $coll = new Collection($this->_em, $assoc->getTargetEntityName(), $actualValue);
+                                            //$coll->_takeSnapshot();
+                                            $class->getReflectionProperty($propName)->setValue($entity, $coll);
+                                            $actualData[$propName] = $coll;
+                                        }
                                     }
-                                    $this->_handleAssociationValueChanged($assoc, $actualValue);
+                                    //$this->_handleAssociationValueChanged($assoc, $actualValue);
                                 } else {
                                     $entityIsDirty = true;
                                 }
@@ -320,6 +341,16 @@ class UnitOfWork
                             }
                             $this->_entityChangeSets[$oid] = $changeSet;
                             $this->_originalEntityData[$oid] = $actualData;
+                        }
+                    }
+
+                    // Look for changes in associations
+                    if ($state == self::STATE_MANAGED) {
+                        foreach ($class->getAssociationMappings() as $assoc) {
+                            $val = $actualData[$assoc->getSourceFieldName()];
+                            if ( ! is_null($val)) {
+                                $this->_computeAssociationChanges($assoc, $val);
+                            }
                         }
                     }
                 }
@@ -336,7 +367,7 @@ class UnitOfWork
      * @param <type> $assoc
      * @param <type> $value
      */
-    private function _handleAssociationValueChanged($assoc, $value)
+    private function _computeAssociationChanges($assoc, $value)
     {
         if ($assoc->isOneToOne()) {
             $value = array($value);
@@ -376,7 +407,6 @@ class UnitOfWork
             // MANAGED associated entities are already taken into account
             // during changeset calculation anyway, since they are in the identity map.
         }
-
     }
 
     /**
@@ -396,6 +426,7 @@ class UnitOfWork
             if (get_class($entity) == $className) {
                 $returnVal = $persister->insert($entity);
                 if ( ! is_null($returnVal)) {
+                    // Persister returned a post-insert ID
                     $oid = spl_object_hash($entity);
                     $idField = $class->getSingleIdentifierFieldName();
                     $class->getReflectionProperty($idField)->setValue($entity, $returnVal);
@@ -453,11 +484,6 @@ class UnitOfWork
                     $this->_dirtyEntities,
                     $this->_deletedEntities);
         }
-        
-        /* if (count($entityChangeSet) == 1) {
-         *     return array($entityChangeSet[0]->getClass());
-         * }
-         */
 
         // TODO: We can cache computed commit orders in the metadata cache!
         // Check cache at this point here!
@@ -830,7 +856,7 @@ class UnitOfWork
     /**
      * Saves an entity as part of the current unit of work.
      *
-     * @param Doctrine\ORM\Entity $entity The entity to save.
+     * @param object $entity The entity to save.
      */
     public function save($entity)
     {
@@ -839,8 +865,8 @@ class UnitOfWork
         $this->_doSave($entity, $visited, $insertNow);
         if ( ! empty($insertNow)) {
             // We have no choice. This means that there are new entities
-            // with an IDENTITY column key generation strategy.
-            $this->computeEntityChangeSets($insertNow);
+            // with a post-insert ID generation strategy.
+            $this->computeChangeSets($insertNow);
             $commitOrder = $this->_getCommitOrder($insertNow);
             foreach ($commitOrder as $class) {
                 $this->_executeInserts($class);
@@ -858,6 +884,8 @@ class UnitOfWork
      *
      * @param object $entity The entity to save.
      * @param array $visited The already visited entities.
+     * @param array $insertNow The entities that must be immediately inserted because of
+     *                         post-insert ID generation.
      */
     private function _doSave($entity, array &$visited, array &$insertNow)
     {
@@ -871,7 +899,10 @@ class UnitOfWork
         $class = $this->_em->getClassMetadata(get_class($entity));
         switch ($this->getEntityState($entity)) {
             case self::STATE_MANAGED:
-                // nothing to do
+                // nothing to do, except if automatic dirty checking is disabled
+                if ( ! $this->_em->getConfiguration()->getAutomaticDirtyChecking()) {
+                    $this->scheduleForDirtyCheck($entity);
+                }
                 break;
             case self::STATE_NEW:
                 $idGen = $this->_em->getIdGenerator($class->getClassName());
@@ -907,7 +938,6 @@ class UnitOfWork
                 //TODO: throw UnitOfWorkException::invalidEntityState()
                 throw new Doctrine_Exception("Encountered invalid entity state.");
         }
-        
         $this->_cascadeSave($entity, $visited, $insertNow);
     }
 
@@ -923,9 +953,11 @@ class UnitOfWork
     }
 
     /**
-     * Enter description here...
+     * Deletes an entity as part of the current unit of work.
+     * This method is internally called during delete() cascades as it tracks
+     * the already visited entities to prevent infinite recursions.
      *
-     * @param Doctrine\ORM\Entity $entity
+     * @param object $entity
      * @param array $visited
      */
     private function _doDelete($entity, array &$visited)
@@ -940,26 +972,23 @@ class UnitOfWork
         switch ($this->getEntityState($entity)) {
             case self::STATE_NEW:
             case self::STATE_DELETED:
-                // nothing to do for $entity
+                // nothing to do
                 break;
             case self::STATE_MANAGED:
                 $this->registerDeleted($entity);
                 break;
             case self::STATE_DETACHED:
-                //exception?
                 throw new DoctrineException("A detached entity can't be deleted.");
             default:
-                //TODO: throw UnitOfWorkException::invalidEntityState()
                 throw new DoctrineException("Encountered invalid entity state.");
         }
-
         $this->_cascadeDelete($entity, $visited);
     }
 
     /**
      * Cascades the save operation to associated entities.
      *
-     * @param Doctrine\ORM\Entity $entity
+     * @param object $entity
      * @param array $visited
      */
     private function _cascadeSave($entity, array &$visited, array &$insertNow)
@@ -971,7 +1000,7 @@ class UnitOfWork
             }
             $relatedEntities = $class->getReflectionProperty($assocMapping->getSourceFieldName())
                     ->getValue($entity);
-            if (($relatedEntities instanceof Doctrine_ORM_Collection || is_array($relatedEntities))
+            if (($relatedEntities instanceof \Doctrine\Common\Collections\Collection || is_array($relatedEntities))
                     && count($relatedEntities) > 0) {
                 foreach ($relatedEntities as $relatedEntity) {
                     $this->_doSave($relatedEntity, $visited, $insertNow);
@@ -985,9 +1014,9 @@ class UnitOfWork
     /**
      * Cascades the delete operation to associated entities.
      *
-     * @param Doctrine\ORM\Entity $entity
+     * @param object $entity
      */
-    private function _cascadeDelete($entity)
+    private function _cascadeDelete($entity, array &$visited)
     {
         $class = $this->_em->getClassMetadata(get_class($entity));
         foreach ($class->getAssociationMappings() as $assocMapping) {
@@ -996,13 +1025,13 @@ class UnitOfWork
             }
             $relatedEntities = $class->getReflectionProperty($assocMapping->getSourceFieldName())
                     ->getValue($entity);
-            if ($relatedEntities instanceof \Doctrine\ORM\Collection &&
+            if ($relatedEntities instanceof \Doctrine\Common\Collections\Collection &&
                     count($relatedEntities) > 0) {
                 foreach ($relatedEntities as $relatedEntity) {
-                    $this->_doDelete($relatedEntity, $visited, $insertNow);
+                    $this->_doDelete($relatedEntity, $visited);
                 }
             } else if (is_object($relatedEntities)) {
-                $this->_doDelete($relatedEntities, $visited, $insertNow);
+                $this->_doDelete($relatedEntities, $visited);
             }
         }
     }
@@ -1026,34 +1055,34 @@ class UnitOfWork
         $this->_commitOrderCalculator->clear();
     }
     
-    public function scheduleCollectionUpdate(Doctrine\ORM\Collection $coll)
+    public function scheduleCollectionUpdate(Collection $coll)
     {
         $this->_collectionUpdates[] = $coll;
     }
     
-    public function isCollectionScheduledForUpdate(Doctrine\ORM\Collection $coll)
+    public function isCollectionScheduledForUpdate(Collection $coll)
     {
         //...
     }
     
-    public function scheduleCollectionDeletion(Doctrine\ORM\Collection $coll)
+    public function scheduleCollectionDeletion(Collection $coll)
     {
         //TODO: if $coll is already scheduled for recreation ... what to do?
         // Just remove $coll from the scheduled recreations?
         $this->_collectionDeletions[] = $coll;
     }
     
-    public function isCollectionScheduledForDeletion(Doctrine\ORM\Collection $coll)
+    public function isCollectionScheduledForDeletion(Collection $coll)
     {
         //...
     }
     
-    public function scheduleCollectionRecreation(Doctrine\ORM\Collection $coll)
+    public function scheduleCollectionRecreation(Collection $coll)
     {
         $this->_collectionRecreations[] = $coll;
     }
     
-    public function isCollectionScheduledForRecreation(Doctrine\ORM\Collection $coll)
+    public function isCollectionScheduledForRecreation(Collection $coll)
     {
         //...
     }
@@ -1063,7 +1092,7 @@ class UnitOfWork
      *
      * @param string $className  The name of the entity class.
      * @param array $data  The data for the entity.
-     * @return Doctrine\ORM\Entity
+     * @return object
      * @internal Performance-sensitive method.
      */
     public function createEntity($className, array $data, $query = null)
@@ -1104,7 +1133,7 @@ class UnitOfWork
      * Merges the given data into the given entity, optionally overriding
      * local changes.
      *
-     * @param Doctrine\ORM\Entity $entity
+     * @param object $entity
      * @param array $data
      * @param boolean $overrideLocalChanges
      */
@@ -1137,14 +1166,11 @@ class UnitOfWork
     private function _inferCorrectClassName(array $data, $className)
     {
         $class = $this->_em->getClassMetadata($className);
-
         $discCol = $class->getDiscriminatorColumn();
         if ( ! $discCol) {
             return $className;
         }
-
         $discMap = $class->getDiscriminatorMap();
-
         if (isset($data[$discCol['name']], $discMap[$data[$discCol['name']]])) {
             return $discMap[$data[$discCol['name']]];
         } else {
@@ -1203,10 +1229,10 @@ class UnitOfWork
      *
      * @param Doctrine\ORM\Collection $coll
      */
-    public function addManagedCollection(\Doctrine\ORM\Collection $coll)
+    /*public function addManagedCollection(Collection $coll)
     {
         
-    }
+    }*/
 
     /**
      * Gets the identifier of an entity.
@@ -1234,9 +1260,17 @@ class UnitOfWork
         return false;
     }
 
+    public function scheduleForDirtyCheck($entity)
+    {
+        $rootClassName = $this->_em->getClassMetadata(get_class($entity))->getRootClassName();
+        $this->_scheduledForDirtyCheck[$rootClassName] = $entity;
+    }
+
     /**
      * Calculates the size of the UnitOfWork. The size of the UnitOfWork is the
      * number of entities in the identity map.
+     *
+     * @return integer
      */
     public function size()
     {

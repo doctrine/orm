@@ -159,7 +159,7 @@ class UnitOfWorkTest extends \Doctrine\Tests\OrmTestCase
         ));
 
         // Go
-        $this->_unitOfWork->computeEntityChangeSets(array($user1, $user2));
+        $this->_unitOfWork->computeChangeSets(array($user1, $user2));
 
         // Verify
         $user1ChangeSet = $this->_unitOfWork->getEntityChangeSet($user1);

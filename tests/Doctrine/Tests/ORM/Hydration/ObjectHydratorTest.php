@@ -53,7 +53,6 @@ class ObjectHydratorTest extends HydrationTest
                 $queryComponents, $tableAliasMap));
 
         $this->assertEquals(2, count($result));
-        $this->assertTrue($result instanceof \Doctrine\ORM\Collection);
         $this->assertTrue($result[0] instanceof \Doctrine\Tests\Models\CMS\CmsUser);
         $this->assertTrue($result[1] instanceof \Doctrine\Tests\Models\CMS\CmsUser);
         $this->assertEquals(1, $result[0]->id);
@@ -659,7 +658,6 @@ class ObjectHydratorTest extends HydrationTest
                 $queryComponents, $tableAliasMap));
 
         $this->assertEquals(2, count($result));
-        $this->assertTrue($result instanceof \Doctrine\ORM\Collection);
         $this->assertTrue($result[0] instanceof \Doctrine\Tests\Models\Forum\ForumCategory);
         $this->assertTrue($result[1] instanceof \Doctrine\Tests\Models\Forum\ForumCategory);
         $this->assertEquals(1, $result[0]->getId());

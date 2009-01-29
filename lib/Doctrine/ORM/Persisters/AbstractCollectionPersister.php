@@ -1,6 +1,10 @@
 <?php
 
-class Doctrine_ORM_Persisters_AbstractCollectionPersister
+namespace Doctrine\ORM\Persisters;
+
+use Doctrine\ORM\Collection;
+
+class AbstractCollectionPersister
 {
     
     public function recreate(Doctrine_Collection $coll)
@@ -8,7 +12,6 @@ class Doctrine_ORM_Persisters_AbstractCollectionPersister
         if ($coll->getRelation()->isInverseSide()) {
             return;
         }
-        
         //...
     }
     
@@ -17,32 +20,39 @@ class Doctrine_ORM_Persisters_AbstractCollectionPersister
         if ($coll->getRelation()->isInverseSide()) {
             return;
         }
-        
         //...
-        if ($coll->getRelation() instanceof Doctrine_Association_OneToManyMapping) {
-            //...
-        } else if ($coll->getRelation() instanceof Doctrine_Association_ManyToManyMapping) {
-            //...
-        }
     }
     
     /* collection update actions */
     
-    public function deleteRows()
+    public function deleteRows(Collection $coll)
+    {
+        //$collection->getDeleteDiff();
+    }
+    
+    public function updateRows(Collection $coll)
     {
         
     }
     
-    public function updateRows()
+    public function insertRows(Collection $coll)
+    {
+        //$collection->getInsertDiff();
+    }
+
+    protected function _getDeleteRowSql()
     {
         
     }
-    
-    public function insertRows()
+
+    protected function _getUpdateRowSql()
     {
         
     }
-    
+
+    protected function _getDeleteRowSql()
+    {
+        
+    }
 }
 
-?>

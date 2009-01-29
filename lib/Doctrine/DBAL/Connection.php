@@ -495,7 +495,7 @@ class Connection
      */
     public function prepare($statement)
     {
-        echo $statement;
+        echo $statement . PHP_EOL;
         $this->connect();
         try {
             return $this->_conn->prepare($statement);
@@ -561,6 +561,7 @@ class Connection
         $this->connect();
         try {
             if ( ! empty($params)) {
+                //var_dump($params);
                 $stmt = $this->prepare($query);
                 $stmt->execute($params);
                 return $stmt->rowCount();

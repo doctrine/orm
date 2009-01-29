@@ -31,14 +31,9 @@ namespace Doctrine\ORM\Persisters;
  * @since       2.0
  */
 abstract class AbstractEntityPersister
-{
+{    
     /**
-     * The names of all the fields that are available on entities. 
-     */
-    protected $_fieldNames = array();
-    
-    /**
-     * Metadata object that descibes the mapping of the mapped entity class.
+     * Metadata object that describes the mapping of the mapped entity class.
      *
      * @var Doctrine\ORM\Mapping\ClassMetadata
      */
@@ -124,23 +119,11 @@ abstract class AbstractEntityPersister
 
     /**
      *
-     * @return <type>
+     * @return Doctrine\ORM\ClassMetadata
      */
     public function getClassMetadata()
     {
         return $this->_classMetadata;
-    }
-    
-    /**
-     * @todo Move to ClassMetadata?
-     */
-    public function getFieldNames()
-    {
-        if ($this->_fieldNames) {
-            return $this->_fieldNames;
-        }
-        $this->_fieldNames = $this->_classMetadata->getFieldNames();
-        return $this->_fieldNames;
     }
 
     /**
@@ -156,15 +139,10 @@ abstract class AbstractEntityPersister
         if ($this->_classMetadata->isInheritanceTypeNone()) {
             return $this->_classMetadata;
         } else {
-            foreach ($this->_classMetadata->getParentClasses() as $parentClass) {
-                $parentClassMetadata = Doctrine_ORM_Mapping_ClassMetadataFactory::getInstance()
-                        ->getMetadataFor($parentClass);
-                if ( ! $parentClassMetadata->isInheritedField($fieldName)) {
-                    return $parentClassMetadata;
-                }
-            }
+            $mapping = $this->_classMetadata->getFieldMapping($fieldName);
+            return $mapping['inherited'];
         }
-        throw new Doctrine_Exception("Unable to find defining class of field '$fieldName'.");
+        throw new DoctrineException("Unable to find defining class of field '$fieldName'.");
     }
     
     /**
@@ -186,8 +164,9 @@ abstract class AbstractEntityPersister
     /**
      * Prepares all the entity data for insertion into the database.
      *
+     * @param object $entity
      * @param array $array
-     * @return void
+     * @param boolean $isInsert
      */
     protected function _prepareData($entity, array &$result, $isInsert = false)
     {

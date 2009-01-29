@@ -54,7 +54,7 @@ class ObjectHydrator extends AbstractHydrator
         if ($this->_parserResult->isMixedQuery()) {
             $result = array();
         } else {
-            $result = new \Doctrine\ORM\Collection($this->_em, $this->_rootEntityName);
+            $result = new \Doctrine\Common\Collections\Collection;
         }
 
         $cache = array();
@@ -66,7 +66,7 @@ class ObjectHydrator extends AbstractHydrator
         foreach ($this->_collections as $coll) {
             $coll->_takeSnapshot();
             $coll->_setHydrationFlag(false);
-            $this->_uow->addManagedCollection($coll);
+            //$this->_uow->addManagedCollection($coll);
         }
         
         // Clean up
@@ -105,7 +105,7 @@ class ObjectHydrator extends AbstractHydrator
         if ( ! is_object($coll)) {
             end($coll);
             $this->_resultPointers[$dqlAlias] =& $coll[key($coll)];
-        } else if ($coll instanceof \Doctrine\ORM\Collection) {
+        } else if ($coll instanceof \Doctrine\Common\Collections\Collection) {
             if (count($coll) > 0) {
                 $this->_resultPointers[$dqlAlias] = $coll->last();
             }

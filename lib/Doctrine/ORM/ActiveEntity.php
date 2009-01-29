@@ -9,6 +9,7 @@
  * most method calls to the EntityManager.
  *
  * @since 2.0
+ * @todo Any takers for this one? Needs a rewrite.
  */
 class Doctrine_ORM_ActiveEntity
 {

@@ -42,24 +42,32 @@ class BasicCRUDTest extends \Doctrine\Tests\OrmFunctionalTestCase {
         $em->flush();
         $this->assertTrue($em->contains($ph));
         $this->assertTrue($em->contains($user));
+        $this->assertTrue($user->phonenumbers instanceof \Doctrine\ORM\Collection);
 
-        // Update
+        // Update name
         $user->name = 'guilherme';
         $em->flush();
         $this->assertEquals('guilherme', $user->name);
 
+        // Add another phonenumber
+        $ph2 = new CmsPhonenumber;
+        $ph2->phonenumber = "6789";
+        $user->addPhonenumber($ph2);
+        $em->flush();
+        $this->assertTrue($em->contains($ph2));
+
         // Delete
         $em->delete($user);
         $this->assertTrue($em->getUnitOfWork()->isRegisteredRemoved($user));
+        $this->assertTrue($em->getUnitOfWork()->isRegisteredRemoved($ph));
+        $this->assertTrue($em->getUnitOfWork()->isRegisteredRemoved($ph2));
         $em->flush();
         $this->assertFalse($em->getUnitOfWork()->isRegisteredRemoved($user));
+        $this->assertFalse($em->getUnitOfWork()->isRegisteredRemoved($ph));
+        $this->assertFalse($em->getUnitOfWork()->isRegisteredRemoved($ph2));
     }
 
-    public function testMore() {
-        #echo PHP_EOL . "SECOND" . PHP_EOL;
-        /*$user = new CmsUser;
-        $user->name = 'jon';
-        $user->*/
+    /*public function testMore() {
 
         $ph = new CmsPhonenumber;
         $ph->phonenumber = 123456;
@@ -67,6 +75,6 @@ class BasicCRUDTest extends \Doctrine\Tests\OrmFunctionalTestCase {
         $this->_em->save($ph);
 
         $this->_em->flush();
-    }
+    }*/
 }
 
