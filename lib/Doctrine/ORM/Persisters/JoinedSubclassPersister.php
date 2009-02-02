@@ -19,6 +19,8 @@
  * <http://www.phpdoctrine.org>.
  */
 
+namespace Doctrine\ORM\Persisters;
+
 /**
  * The joined subclass persister maps a single entity instance to several tables in the
  * database as it is defined by <tt>Class Table Inheritance</tt>.
@@ -26,19 +28,19 @@
  * @author      Roman Borschel <roman@code-factory.org>
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @version     $Revision$
- * @link        www.phpdoctrine.org
+ * @link        www.doctrine-project.org
  * @since       2.0
  */
-class Doctrine_ORM_Persisters_JoinedSubclassPersister extends Doctrine_ORM_Persisters_AbstractEntityPersister
+class JoinedSubclassPersister extends AbstractEntityPersister
 {    
     /**
      * Inserts an entity that is part of a Class Table Inheritance hierarchy.
      *
-     * @param Doctrine_Entity $record   record to be inserted
+     * @param object $record   record to be inserted
      * @return boolean
      * @override
      */
-    public function insert(Doctrine_ORM_Entity $entity)
+    public function insert($entity)
     {
         $class = $entity->getClass();
         
@@ -88,7 +90,7 @@ class Doctrine_ORM_Persisters_JoinedSubclassPersister extends Doctrine_ORM_Persi
      * @param Doctrine_Entity $record   record to be updated
      * @return boolean                  whether or not the update was successful
      */
-    protected function _doUpdate(Doctrine_ORM_Entity $record)
+    protected function _doUpdate($entity)
     {
         $conn = $this->_conn;
         $classMetadata = $this->_classMetadata;

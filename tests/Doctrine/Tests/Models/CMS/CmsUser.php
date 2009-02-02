@@ -34,11 +34,16 @@ class CmsUser
      * @DoctrineOneToMany(targetEntity="Doctrine\Tests\Models\CMS\CmsArticle", mappedBy="user")
      */
     public $articles;
+    /**
+     * @DoctrineOneToOne(targetEntity="Doctrine\Tests\Models\CMS\CmsAddress", mappedBy="user",
+                cascade={"save"})
+     */
+    public $address;
 
     /**
      * Adds a phonenumber to the user.
      *
-     * @param <type> $phone
+     * @param CmsPhonenumber $phone
      */
     public function addPhonenumber(CmsPhonenumber $phone) {
         $this->phonenumbers[] = $phone;

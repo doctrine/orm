@@ -172,7 +172,8 @@ abstract class AbstractEntityPersister
     {
         foreach ($this->_em->getUnitOfWork()->getEntityChangeSet($entity) as $field => $change) {
             if (is_array($change)) {
-                list ($oldVal, $newVal) = each($change);
+                $oldVal = $change[0];
+                $newVal = $change[1];
             } else {
                 $oldVal = null;
                 $newVal = $change;
@@ -182,20 +183,21 @@ abstract class AbstractEntityPersister
             $columnName = $this->_classMetadata->getColumnName($field);
 
             if ($this->_classMetadata->hasAssociation($field)) {
-                if ($newVal !== null) {
-                    $assocMapping = $this->_classMetadata->getAssociationMapping($field);
-                    if ( ! $assocMapping->isOneToOne() || $assocMapping->isInverseSide()) {
-                        //echo "NOT TO-ONE OR INVERSE!";
-                        continue;
-                    }
-                    foreach ($assocMapping->getSourceToTargetKeyColumns() as $sourceColumn => $targetColumn) {
-                        //TODO: throw exc if field not set
-                        $otherClass = $this->_em->getClassMetadata($assocMapping->getTargetEntityName());
+                $assocMapping = $this->_classMetadata->getAssociationMapping($field);
+                if ( ! $assocMapping->isOneToOne() || $assocMapping->isInverseSide()) {
+                    //echo "NOT TO-ONE OR INVERSE!";
+                    continue;
+                }
+                foreach ($assocMapping->getSourceToTargetKeyColumns() as $sourceColumn => $targetColumn) {
+                    //TODO: throw exc if field not set
+                    $otherClass = $this->_em->getClassMetadata($assocMapping->getTargetEntityName());
+                    if (is_null($newVal)) {
+                        $result[$sourceColumn] = null;
+                    } else {
                         $result[$sourceColumn] = $otherClass->getReflectionProperty(
-                                $otherClass->getFieldName($targetColumn))->getValue($newVal);
+                            $otherClass->getFieldName($targetColumn))->getValue($newVal);
                     }
-                } else if ( ! $isInsert) {
-                    echo "NO INSERT AND NEWVAL NULL ON 1-1 ASSOC, OWNING SIDE";
+
                 }
             } else if (is_null($newVal)) {
                 $result[$columnName] = null;

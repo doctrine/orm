@@ -508,14 +508,38 @@ class Query extends AbstractQuery
     /**
      * Gets the list of results for the query.
      *
-     * Alias for execute(array(), $hydrationMode).
+     * Alias for execute(array(), HYDRATE_OBJECT).
      *
-     * @param integer $hydrationMode
-     * @return mixed
+     * @return Collection
      */
-    public function getResultList($hydrationMode = null)
+    public function getResultList()
     {
-        return $this->execute(array(), $hydrationMode);
+        return $this->execute(array(), self::HYDRATE_OBJECT);
+    }
+
+    /**
+     * Gets the array of results for the query.
+     * Object graphs are represented as nested array structures.
+     *
+     * Alias for execute(array(), HYDRATE_ARRAY).
+     *
+     * @return array
+     */
+    public function getResultArray()
+    {
+        return $this->execute(array(), self::HYDRATE_ARRAY);
+    }
+
+    /**
+     * Gets the scalar results for the query.
+     *
+     * Alias for execute(array(), HYDRATE_SCALAR).
+     *
+     * @return array
+     */
+    public function getScalarResult()
+    {
+        return $this->execute(array(), self::HYDRATE_SCALAR);
     }
     
     /**
@@ -532,8 +556,7 @@ class Query extends AbstractQuery
         $result = $this->execute(array(), $hydrationMode);
         if (count($result) > 1) {
             throw QueryException::nonUniqueResult();
-        }
-        
+        }   
         return is_array($result) ? array_shift($result) : $result->getFirst();
     }
 

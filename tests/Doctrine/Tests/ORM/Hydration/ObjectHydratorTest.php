@@ -128,11 +128,11 @@ class ObjectHydratorTest extends HydrationTest
         $this->assertTrue(is_array($result[1]));
 
         $this->assertTrue($result[0][0] instanceof \Doctrine\Tests\Models\CMS\CmsUser);
-        $this->assertTrue($result[0][0]->phonenumbers instanceof \Doctrine\ORM\Collection);
+        $this->assertTrue($result[0][0]->phonenumbers instanceof \Doctrine\ORM\PersistentCollection);
         $this->assertTrue($result[0][0]->phonenumbers[0] instanceof \Doctrine\Tests\Models\CMS\CmsPhonenumber);
         $this->assertTrue($result[0][0]->phonenumbers[1] instanceof \Doctrine\Tests\Models\CMS\CmsPhonenumber);
         $this->assertTrue($result[1][0] instanceof \Doctrine\Tests\Models\CMS\CmsUser);
-        $this->assertTrue($result[1][0]->phonenumbers instanceof \Doctrine\ORM\Collection);
+        $this->assertTrue($result[1][0]->phonenumbers instanceof \Doctrine\ORM\PersistentCollection);
 
         // first user => 2 phonenumbers
         $this->assertEquals(2, count($result[0][0]->phonenumbers));
@@ -284,7 +284,7 @@ class ObjectHydratorTest extends HydrationTest
 
         $this->assertTrue($result[0]['1'] instanceof \Doctrine\Tests\Models\CMS\CmsUser);
         $this->assertTrue($result[1]['2'] instanceof \Doctrine\Tests\Models\CMS\CmsUser);
-        $this->assertTrue($result[0]['1']->phonenumbers instanceof \Doctrine\ORM\Collection);
+        $this->assertTrue($result[0]['1']->phonenumbers instanceof \Doctrine\ORM\PersistentCollection);
         // first user => 2 phonenumbers. notice the custom indexing by user id
         $this->assertEquals(2, count($result[0]['1']->phonenumbers));
         // second user => 1 phonenumber. notice the custom indexing by user id
@@ -403,14 +403,14 @@ class ObjectHydratorTest extends HydrationTest
         $this->assertTrue(is_array($result[1]));
 
         $this->assertTrue($result[0][0] instanceof \Doctrine\Tests\Models\CMS\CmsUser);
-        $this->assertTrue($result[0][0]->phonenumbers instanceof \Doctrine\ORM\Collection);
+        $this->assertTrue($result[0][0]->phonenumbers instanceof \Doctrine\ORM\PersistentCollection);
         $this->assertTrue($result[0][0]->phonenumbers[0] instanceof \Doctrine\Tests\Models\CMS\CmsPhonenumber);
         $this->assertTrue($result[0][0]->phonenumbers[1] instanceof \Doctrine\Tests\Models\CMS\CmsPhonenumber);
-        $this->assertTrue($result[0][0]->articles instanceof \Doctrine\ORM\Collection);
+        $this->assertTrue($result[0][0]->articles instanceof \Doctrine\ORM\PersistentCollection);
         $this->assertTrue($result[0][0]->articles[0] instanceof \Doctrine\Tests\Models\CMS\CmsArticle);
         $this->assertTrue($result[0][0]->articles[1] instanceof \Doctrine\Tests\Models\CMS\CmsArticle);
         $this->assertTrue($result[1][0] instanceof \Doctrine\Tests\Models\CMS\CmsUser);
-        $this->assertTrue($result[1][0]->phonenumbers instanceof \Doctrine\ORM\Collection);
+        $this->assertTrue($result[1][0]->phonenumbers instanceof \Doctrine\ORM\PersistentCollection);
         $this->assertTrue($result[1][0]->phonenumbers[0] instanceof \Doctrine\Tests\Models\CMS\CmsPhonenumber);
         $this->assertTrue($result[1][0]->articles[0] instanceof \Doctrine\Tests\Models\CMS\CmsArticle);
         $this->assertTrue($result[1][0]->articles[1] instanceof \Doctrine\Tests\Models\CMS\CmsArticle);
@@ -549,26 +549,26 @@ class ObjectHydratorTest extends HydrationTest
         $this->assertTrue($result[0][0] instanceof \Doctrine\Tests\Models\CMS\CmsUser);
         $this->assertTrue($result[1][0] instanceof \Doctrine\Tests\Models\CMS\CmsUser);
         // phonenumbers
-        $this->assertTrue($result[0][0]->phonenumbers instanceof \Doctrine\ORM\Collection);
+        $this->assertTrue($result[0][0]->phonenumbers instanceof \Doctrine\ORM\PersistentCollection);
         $this->assertTrue($result[0][0]->phonenumbers[0] instanceof \Doctrine\Tests\Models\CMS\CmsPhonenumber);
         $this->assertTrue($result[0][0]->phonenumbers[1] instanceof \Doctrine\Tests\Models\CMS\CmsPhonenumber);
-        $this->assertTrue($result[1][0]->phonenumbers instanceof \Doctrine\ORM\Collection);
+        $this->assertTrue($result[1][0]->phonenumbers instanceof \Doctrine\ORM\PersistentCollection);
         $this->assertTrue($result[1][0]->phonenumbers[0] instanceof \Doctrine\Tests\Models\CMS\CmsPhonenumber);
         // articles
-        $this->assertTrue($result[0][0]->articles instanceof \Doctrine\ORM\Collection);
+        $this->assertTrue($result[0][0]->articles instanceof \Doctrine\ORM\PersistentCollection);
         $this->assertTrue($result[0][0]->articles[0] instanceof \Doctrine\Tests\Models\CMS\CmsArticle);
         $this->assertTrue($result[0][0]->articles[1] instanceof \Doctrine\Tests\Models\CMS\CmsArticle);
         $this->assertTrue($result[1][0]->articles[0] instanceof \Doctrine\Tests\Models\CMS\CmsArticle);
         $this->assertTrue($result[1][0]->articles[1] instanceof \Doctrine\Tests\Models\CMS\CmsArticle);
         // article comments
-        $this->assertTrue($result[0][0]->articles[0]->comments instanceof \Doctrine\ORM\Collection);
+        $this->assertTrue($result[0][0]->articles[0]->comments instanceof \Doctrine\ORM\PersistentCollection);
         $this->assertTrue($result[0][0]->articles[0]->comments[0] instanceof \Doctrine\Tests\Models\CMS\CmsComment);
         // empty comment collections
-        $this->assertTrue($result[0][0]->articles[1]->comments instanceof \Doctrine\ORM\Collection);
+        $this->assertTrue($result[0][0]->articles[1]->comments instanceof \Doctrine\ORM\PersistentCollection);
         $this->assertEquals(0, count($result[0][0]->articles[1]->comments));
-        $this->assertTrue($result[1][0]->articles[0]->comments instanceof \Doctrine\ORM\Collection);
+        $this->assertTrue($result[1][0]->articles[0]->comments instanceof \Doctrine\ORM\PersistentCollection);
         $this->assertEquals(0, count($result[1][0]->articles[0]->comments));
-        $this->assertTrue($result[1][0]->articles[1]->comments instanceof \Doctrine\ORM\Collection);
+        $this->assertTrue($result[1][0]->articles[1]->comments instanceof \Doctrine\ORM\PersistentCollection);
         $this->assertEquals(0, count($result[1][0]->articles[1]->comments));
     }
 

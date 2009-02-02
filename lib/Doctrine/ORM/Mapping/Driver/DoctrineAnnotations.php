@@ -32,8 +32,8 @@ final class DoctrineJoinColumn extends \Addendum\Annotation {
 final class DoctrineColumn extends \Addendum\Annotation {
     public $type;
     public $length;
-    public $unique;
-    public $nullable;
+    public $unique = false;
+    public $nullable = false;
 }
 final class DoctrineOneToOne extends \Addendum\Annotation {
     public $targetEntity;

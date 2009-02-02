@@ -2,12 +2,21 @@
 
 namespace Doctrine\ORM\Persisters;
 
-use Doctrine\ORM\Collection;
+use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\PersistentCollection;
 
-class AbstractCollectionPersister
+abstract class AbstractCollectionPersister
 {
-    
-    public function recreate(Doctrine_Collection $coll)
+    protected $_em;
+    protected $_conn;
+
+    public function __construct(EntityManager $em)
+    {
+        $this->_em = $em;
+        $this->_conn = $em->getConnection();
+    }
+
+    public function recreate(PersistentCollection $coll)
     {
         if ($coll->getRelation()->isInverseSide()) {
             return;
@@ -15,44 +24,75 @@ class AbstractCollectionPersister
         //...
     }
     
-    public function delete(Doctrine_Collection $coll)
+    public function delete(PersistentCollection $coll)
     {
         if ($coll->getRelation()->isInverseSide()) {
             return;
         }
         //...
+    }
+
+    public function update(PersistentCollection $coll)
+    {
+        $this->deleteRows($coll);
+        $this->updateRows($coll);
+        $this->insertRows($coll);
     }
     
     /* collection update actions */
     
-    public function deleteRows(Collection $coll)
+    public function deleteRows(PersistentCollection $coll)
     {
-        //$collection->getDeleteDiff();
+        if ($coll->getMapping()->isInverseSide()) {
+            return; // ignore inverse side
+        }
+        
+        $deleteDiff = $coll->getDeleteDiff();
+        $sql = $this->_getDeleteRowSql($coll);
+        $uow = $this->_em->getUnitOfWork();
+        foreach ($deleteDiff as $element) {
+            $this->_conn->exec($sql, $uow->getEntityIdentifier($element));
+        }
     }
     
-    public function updateRows(Collection $coll)
+    public function updateRows(PersistentCollection $coll)
     {
         
     }
     
-    public function insertRows(Collection $coll)
+    public function insertRows(PersistentCollection $coll)
     {
-        //$collection->getInsertDiff();
+        if ($coll->getMapping()->isInverseSide()) {
+            return; // ignore inverse side
+        }
+
+        $insertDiff = $coll->getInsertDiff();
+        $sql = $this->_getInsertRowSql($coll);
+        $uow = $this->_em->getUnitOfWork();
+        foreach ($insertDiff as $element) {
+            $this->_conn->exec($sql/*, $uow->getEntityIdentifier($element)*/);
+        }
     }
 
-    protected function _getDeleteRowSql()
-    {
-        
-    }
+    /**
+     * Gets the SQL statement used for deleting a row from the collection.
+     * 
+     * @param PersistentCollection $coll
+     */
+    abstract protected function _getDeleteRowSql(PersistentCollection $coll);
 
-    protected function _getUpdateRowSql()
-    {
-        
-    }
+    /**
+     * Gets the SQL statement used for updating a row in the collection.
+     *
+     * @param PersistentCollection $coll
+     */
+    abstract protected function _getUpdateRowSql();
 
-    protected function _getDeleteRowSql()
-    {
-        
-    }
+    /**
+     * Gets the SQL statement used for inserting a row from to the collection.
+     *
+     * @param PersistentCollection $coll
+     */
+    abstract protected function _getInsertRowSql();
 }
 

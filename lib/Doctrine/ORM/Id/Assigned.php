@@ -2,6 +2,8 @@
 
 namespace Doctrine\ORM\Id;
 
+use Doctrine\Common\DoctrineException;
+
 /**
  * Special generator for application-assigned identifiers (doesnt really generate anything).
  *
@@ -20,6 +22,7 @@ class Assigned extends AbstractIdGenerator
     public function generate($entity)
     {
         $class = $this->_em->getClassMetadata(get_class($entity));
+        $identifier = null;
         if ($class->isIdentifierComposite()) {
             $identifier = array();
             $idFields = $class->getIdentifierFieldNames();
@@ -39,7 +42,7 @@ class Assigned extends AbstractIdGenerator
         }
 
         if ( ! $identifier) {
-            throw new Doctrine_Exception("Entity '$entity' is missing an assigned ID.");
+            throw new DoctrineException("Entity of type '" . get_class($entity) . "' is missing an assigned ID.");
         }
         
         return $identifier;

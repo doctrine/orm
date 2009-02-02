@@ -21,12 +21,12 @@
 
 namespace Doctrine\ORM;
 
-#use Doctrine\Common\Configuration;
 use Doctrine\Common\EventManager;
 use Doctrine\Common\DoctrineException;
 use Doctrine\DBAL\Connection;
 use Doctrine\ORM\Exceptions\EntityManagerException;
 use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Mapping\ClassMetadataFactory;
 
 /**
  * The EntityManager is the central access point to ORM functionality.
@@ -97,13 +97,6 @@ class EntityManager
     private $_metadataFactory;
     
     /**
-     * The EntityPersister instances used to persist entity instances.
-     *
-     * @var array
-     */
-    private $_persisters = array();
-    
-    /**
      * The EntityRepository instances.
      *
      * @var array
@@ -167,7 +160,7 @@ class EntityManager
         $this->_name = $name;
         $this->_config = $config;
         $this->_eventManager = $eventManager;
-        $this->_metadataFactory = new \Doctrine\ORM\Mapping\ClassMetadataFactory(
+        $this->_metadataFactory = new ClassMetadataFactory(
                 $this->_config->getMetadataDriverImpl(),
                 $this->_conn->getDatabasePlatform());
         $this->_metadataFactory->setCacheDriver($this->_config->getMetadataCacheImpl());
@@ -283,28 +276,6 @@ class EntityManager
             $query->setDql($dql);
         }
         return $query;
-    }
-    
-    /**
-     * Gets the EntityPersister for an Entity.
-     * 
-     * This is usually not of interest for users, mainly for internal use.
-     *
-     * @param string $entityName  The name of the Entity.
-     * @return Doctrine\ORM\Persister\AbstractEntityPersister
-     */
-    public function getEntityPersister($entityName)
-    {
-        if ( ! isset($this->_persisters[$entityName])) {
-            $class = $this->getClassMetadata($entityName);
-            if ($class->isInheritanceTypeJoined()) {
-                $persister = new \Doctrine\ORM\Persisters\JoinedSubclassPersister($this, $class);
-            } else {
-                $persister = new \Doctrine\ORM\Persisters\StandardEntityPersister($this, $class);
-            }
-            $this->_persisters[$entityName] = $persister;
-        }
-        return $this->_persisters[$entityName];
     }
     
     /**

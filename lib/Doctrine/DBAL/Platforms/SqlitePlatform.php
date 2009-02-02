@@ -400,56 +400,42 @@ class SqlitePlatform extends AbstractPlatform
     /** @override */
     public function getIntegerTypeDeclarationSql(array $field)
     {
-        return 'INT ' . $this->_getCommonIntegerTypeDeclarationSql($field);
+        return $this->_getCommonIntegerTypeDeclarationSql($field);
     }
 
     /** @override */
     public function getBigIntTypeDeclarationSql(array $field)
     {
-        return 'BIGINT ' . $this->_getCommonIntegerTypeDeclarationSql($field);
+        return $this->_getCommonIntegerTypeDeclarationSql($field);
     }
 
     /** @override */
     public function getTinyIntTypeDeclarationSql(array $field)
     {
-        return 'TINYINT ' . $this->_getCommonIntegerTypeDeclarationSql($field);
+        return $this->_getCommonIntegerTypeDeclarationSql($field);
     }
 
     /** @override */
     public function getSmallIntTypeDeclarationSql(array $field)
     {
-        return 'SMALLINT ' . $this->_getCommonIntegerTypeDeclarationSql($field);
+        return $this->_getCommonIntegerTypeDeclarationSql($field);
     }
 
     /** @override */
     public function getMediumIntTypeDeclarationSql(array $field)
     {
-        return 'MEDIUMINT ' . $this->_getCommonIntegerTypeDeclarationSql($field);
+        return $this->_getCommonIntegerTypeDeclarationSql($field);
     }
 
     /** @override */
     protected function _getCommonIntegerTypeDeclarationSql(array $columnDef)
     {
-        $default = $autoinc = '';
-        if ( ! empty($columnDef['autoincrement'])) {
-            $autoinc = ' AUTO_INCREMENT';
-        } else if (array_key_exists('default', $columnDef)) {
-            if ($field['default'] === '') {
-                $field['default'] = empty($columnDef['notnull']) ? null : 0;
-            }
-            if (is_null($columnDef['default'])) {
-                $default = ' DEFAULT NULL';
-            } else {
-                $default = ' DEFAULT ' . $this->quote($columnDef['default']);
-            }
-        } else if (empty($columnDef['notnull'])) {
-            $default = ' DEFAULT NULL';
-        }
+        $autoinc = ! empty($columnDef['autoincrement']) ? 'AUTOINCREMENT' : '';
+        $pk = ! empty($columnDef['primary']) ? 'PRIMARY KEY' : '';
 
-        $notnull  = (isset($columnDef['notnull'])  && $columnDef['notnull'])  ? ' NOT NULL' : '';
-        $unsigned = (isset($columnDef['unsigned']) && $columnDef['unsigned']) ? ' UNSIGNED' : '';
+        //$unsigned = (isset($columnDef['unsigned']) && $columnDef['unsigned']) ? ' UNSIGNED' : '';
 
-        return $unsigned . $default . $notnull . $autoinc;
+        return "INTEGER $pk $autoinc";
     }
 
     /**
@@ -494,14 +480,13 @@ class SqlitePlatform extends AbstractPlatform
 
         $autoinc = false;
         foreach($fields as $field) {
-            if (isset($field['autoincrement']) && $field['autoincrement'] ||
-              (isset($field['autoinc']) && $field['autoinc'])) {
+            if (isset($field['autoincrement']) && $field['autoincrement']) {
                 $autoinc = true;
                 break;
             }
         }
 
-        if (isset($options['primary']) && ! empty($options['primary'])) {
+        if ( ! $autoinc && isset($options['primary']) && ! empty($options['primary'])) {
             $keyColumns = array_values($options['primary']);
             $keyColumns = array_map(array($this, 'quoteIdentifier'), $keyColumns);
             $queryFields.= ', PRIMARY KEY('.implode(', ', $keyColumns).')';

@@ -23,7 +23,6 @@ namespace Doctrine\DBAL;
 
 use Doctrine\Common\EventManager;
 use Doctrine\Common\DoctrineException;
-#use Doctrine\DBAL\Exceptions\ConnectionException;
 
 /**
  * A wrapper around a Doctrine\DBAL\Driver\Connection that adds features like
@@ -251,7 +250,6 @@ class Connection
     /**
      * Deletes table row(s) matching the specified identifier.
      *
-     * @throws Doctrine_Connection_Exception    if something went wrong at the database level
      * @param string $table         The table to delete data from
      * @param array $identifier     An associateve array containing identifier fieldname-value pairs.
      * @return integer              The number of affected rows
@@ -289,12 +287,7 @@ class Connection
 
         $set = array();
         foreach ($data as $columnName => $value) {
-            if ($value instanceof Doctrine_Expression) {
-                $set[] = $this->quoteIdentifier($columnName) . ' = ' . $value->getSql();
-                unset($data[$columnName]);
-            } else {
-                $set[] = $this->quoteIdentifier($columnName) . ' = ?';
-            }
+            $set[] = $this->quoteIdentifier($columnName) . ' = ?';
         }
 
         $params = array_merge(array_values($data), array_values($identifier));
@@ -328,12 +321,7 @@ class Connection
         $a = array();
         foreach ($data as $columnName => $value) {
             $cols[] = $this->quoteIdentifier($columnName);
-            if ($value instanceof Doctrine_DBAL_Expression) {
-                $a[] = $value->getSql();
-                unset($data[$columnName]);
-            } else {
-                $a[] = '?';
-            }
+            $a[] = '?';
         }
 
         $query = 'INSERT INTO ' . $this->quoteIdentifier($tableName)
@@ -495,13 +483,8 @@ class Connection
      */
     public function prepare($statement)
     {
-        echo $statement . PHP_EOL;
         $this->connect();
-        try {
-            return $this->_conn->prepare($statement);
-        } catch (PDOException $e) {
-            $this->rethrowException($e, $this);
-        }
+        return $this->_conn->prepare($statement);
     }
     
     /**
@@ -571,6 +554,7 @@ class Connection
                 return $count;
             }
         } catch (PDOException $e) {
+            //TODO: Wrap
             throw $e;
         }
     }
@@ -688,7 +672,7 @@ class Connection
     {
         $this->connect();
         if ($this->_transactionNestingLevel == 0) {
-            return $this->_conn->beginTransaction();
+            $this->_conn->beginTransaction();
         }
         ++$this->_transactionNestingLevel;
         return true;
@@ -710,7 +694,7 @@ class Connection
         $this->connect();
 
         if ($this->_transactionNestingLevel == 1) {
-            return $this->_conn->commit();
+            $this->_conn->commit();
         }
         --$this->_transactionNestingLevel;
         
@@ -740,7 +724,7 @@ class Connection
 
         if ($this->_transactionNestingLevel == 1) {
             $this->_transactionNestingLevel = 0;
-            return $this->_conn->rollback();
+            $this->_conn->rollback();
             
         }
         --$this->_transactionNestingLevel;
@@ -807,7 +791,7 @@ class Connection
     protected function _getSequenceName($sqn)
     {
         return sprintf($this->conn->getAttribute(Doctrine::ATTR_SEQNAME_FORMAT),
-            preg_replace('/[^a-z0-9_\$.]/i', '_', $sqn));
+                preg_replace('/[^a-z0-9_\$.]/i', '_', $sqn));
     }
 
     /**
@@ -819,7 +803,7 @@ class Connection
     protected function _getIndexName($idx)
     {
         return sprintf($this->conn->getAttribute(Doctrine::ATTR_IDXNAME_FORMAT),
-            preg_replace('/[^a-z0-9_\$]/i', '_', $idx));
+                preg_replace('/[^a-z0-9_\$]/i', '_', $idx));
     }
 
     /**
@@ -834,15 +818,6 @@ class Connection
         /*
         return sprintf($this->conn->getAttribute(Doctrine::ATTR_TBLNAME_FORMAT),
                 $table);*/
-    }
-
-    /**
-     * returns a string representation of this object
-     * @return string
-     */
-    public function __toString()
-    {
-        return Doctrine_Lib::getConnectionAsString($this);
     }
     
     /**

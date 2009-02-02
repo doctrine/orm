@@ -589,4 +589,3 @@ class SqliteSchemaManager extends AbstractSchemaManager
     }
 }
 
-?>

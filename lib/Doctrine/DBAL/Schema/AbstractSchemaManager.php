@@ -269,7 +269,7 @@ abstract class AbstractSchemaManager
                 if ($count == 0) {
                     $options['primary'] = array();
                 }
-                $count++;
+                ++$count;
                 $options['primary'][] = $columnName;
             }
         }

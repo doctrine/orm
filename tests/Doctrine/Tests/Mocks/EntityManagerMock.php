@@ -7,18 +7,8 @@ namespace Doctrine\Tests\Mocks;
  */
 class EntityManagerMock extends \Doctrine\ORM\EntityManager
 {
-    private $_persisterMock;
     private $_uowMock;
     private $_idGenerators = array();
-    
-    /**
-     * @override
-     */
-    public function getEntityPersister($entityName)
-    {
-        return isset($this->_persisterMock[$entityName]) ?
-                $this->_persisterMock[$entityName] : parent::getEntityPersister($entityName);
-    }
 
     /**
      * @override
@@ -38,18 +28,6 @@ class EntityManagerMock extends \Doctrine\ORM\EntityManager
     public function setUnitOfWork($uow)
     {
         $this->_uowMock = $uow;
-    }
-
-    /**
-     * Sets a (mock) persister for an entity class that will be returned when
-     * getEntityPersister() is invoked for that class.
-     *
-     * @param <type> $entityName
-     * @param <type> $persister
-     */
-    public function setEntityPersister($entityName, $persister)
-    {
-        $this->_persisterMock[$entityName] = $persister;
     }
     
     /**

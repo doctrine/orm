@@ -42,9 +42,8 @@ use Doctrine\ORM\Mapping\AssociationMapping;
  * @version   $Revision: 4930 $
  * @author    Konsta Vesterinen <kvesteri@cc.hut.fi>
  * @author    Roman Borschel <roman@code-factory.org>
- * @todo Rename to PersistentCollection
  */
-final class Collection extends \Doctrine\Common\Collections\Collection
+final class PersistentCollection extends \Doctrine\Common\Collections\Collection
 {   
     /**
      * The base type of the collection.
@@ -111,6 +110,8 @@ final class Collection extends \Doctrine\Common\Collections\Collection
      */
     private $_ownerClass;
 
+    private $_isDirty = false;
+
     /**
      * Creates a new persistent collection.
      */
@@ -122,7 +123,7 @@ final class Collection extends \Doctrine\Common\Collections\Collection
         $this->_ownerClass = $em->getClassMetadata($entityBaseType);
         if ($keyField !== null) {
             if ( ! $this->_ownerClass->hasField($keyField)) {
-                throw new Doctrine_Exception("Invalid field '$keyField' can't be uses as key.");
+                throw new DoctrineException("Invalid field '$keyField' can't be used as key.");
             }
             $this->_keyField = $keyField;
         }
@@ -155,21 +156,21 @@ final class Collection extends \Doctrine\Common\Collections\Collection
      * Sets the collection owner. Used (only?) during hydration.
      *
      * @param object $entity
-     * @param AssociationMapping $relation
+     * @param AssociationMapping $assoc
      */
-    public function _setOwner($entity, AssociationMapping $relation)
+    public function _setOwner($entity, AssociationMapping $assoc)
     {
         $this->_owner = $entity;
-        $this->_association = $relation;
-        if ($relation->isInverseSide()) {
+        $this->_association = $assoc;
+        if ($assoc->isInverseSide()) {
             // for sure bidirectional
-            $this->_backRefFieldName = $relation->getMappedByFieldName();
+            $this->_backRefFieldName = $assoc->getMappedByFieldName();
         } else {
-            $targetClass = $this->_em->getClassMetadata($relation->getTargetEntityName());
-            if ($targetClass->hasInverseAssociationMapping($relation->getSourceFieldName())) {
+            $targetClass = $this->_em->getClassMetadata($assoc->getTargetEntityName());
+            if ($targetClass->hasInverseAssociationMapping($assoc->getSourceFieldName())) {
                 // bidirectional
                 $this->_backRefFieldName = $targetClass->getInverseAssociationMapping(
-                        $relation->getSourceFieldName())->getSourceFieldName();
+                        $assoc->getSourceFieldName())->getSourceFieldName();
             }
         }
     }
@@ -327,7 +328,7 @@ final class Collection extends \Doctrine\Common\Collections\Collection
      * 
      * @return integer
      */
-    protected function _compareRecords($a, $b)
+    private function _compareRecords($a, $b)
     {
         if ($a === $b) {
             return 0;
@@ -342,7 +343,7 @@ final class Collection extends \Doctrine\Common\Collections\Collection
      */
     public function getMapping()
     {
-        return $this->relation;
+        return $this->_association;
     }
     
     /**
@@ -362,10 +363,21 @@ final class Collection extends \Doctrine\Common\Collections\Collection
     
     private function _changed()
     {
-        if ( ! $this->_em->getUnitOfWork()->isCollectionScheduledForUpdate($this)) {
+        $this->_isDirty = true;
+        /*if ( ! $this->_em->getUnitOfWork()->isCollectionScheduledForUpdate($this)) {
             //var_dump(get_class($this->_snapshot[0]));
             //echo "NOT!";
             //$this->_em->getUnitOfWork()->scheduleCollectionUpdate($this);
-        }  
+        }*/
+    }
+    
+    public function isDirty()
+    {
+        return $this->_isDirty;
+    }
+    
+    public function setDirty($dirty)
+    {
+        $this->_isDirty = $dirty;
     }
 }

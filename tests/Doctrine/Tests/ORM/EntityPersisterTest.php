@@ -50,8 +50,8 @@ class EntityPersisterTest extends \Doctrine\Tests\OrmTestCase
         $user->avatar = new ForumAvatar();
 
         $this->_uowMock->setDataChangeSet($user, array(
-                'username' => array('' => 'romanb'),
-                'avatar' => array('' => $user->avatar)));
+                'username' => array('', 'romanb'),
+                'avatar' => array('', $user->avatar)));
 
 
         //insert

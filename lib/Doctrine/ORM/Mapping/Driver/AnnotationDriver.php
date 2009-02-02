@@ -62,6 +62,7 @@ class AnnotationDriver
                 }
                 $mapping['type'] = $columnAnnot->type;
                 $mapping['length'] = $columnAnnot->length;
+                $mapping['nullable'] = $columnAnnot->nullable;
                 if ($idAnnot = $property->getAnnotation('DoctrineId')) {
                     $mapping['id'] = true;
                 }

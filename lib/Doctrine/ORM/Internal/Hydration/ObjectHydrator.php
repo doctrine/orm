@@ -66,7 +66,6 @@ class ObjectHydrator extends AbstractHydrator
         foreach ($this->_collections as $coll) {
             $coll->_takeSnapshot();
             $coll->_setHydrationFlag(false);
-            //$this->_uow->addManagedCollection($coll);
         }
         
         // Clean up
@@ -116,7 +115,7 @@ class ObjectHydrator extends AbstractHydrator
 
     private function getCollection($component)
     {
-        $coll = new \Doctrine\ORM\Collection($this->_em, $component);
+        $coll = new \Doctrine\ORM\PersistentCollection($this->_em, $component);
         $this->_collections[] = $coll;
         return $coll;
     }
@@ -338,7 +337,7 @@ class ObjectHydrator extends AbstractHydrator
                                     ->getValue($baseElement));
                     }
                 } else if ( ! $this->isFieldSet($baseElement, $relationAlias)) {
-                    $coll = new \Doctrine\ORM\Collection($this->_em, $entityName);
+                    $coll = new \Doctrine\ORM\PersistentCollection($this->_em, $entityName);
                     $this->_collections[] = $coll;
                     $this->setRelatedElement($baseElement, $relationAlias, $coll);
                 }

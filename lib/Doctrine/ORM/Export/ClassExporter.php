@@ -69,6 +69,7 @@ class ClassExporter
                 $column['name'] = $mapping['columnName'];
                 $column['type'] = $mapping['type'];
                 $column['length'] = $mapping['length'];
+                $column['notnull'] = ! $mapping['nullable'];
 
                 if ($class->isIdentifier($fieldName)) {
                     $column['primary'] = true;

@@ -111,7 +111,7 @@ class OrmFunctionalTestCase extends OrmTestCase
     protected function setUp()
     {
         if ( ! isset($this->sharedFixture['conn'])) {
-            echo " --- CREATE CONNECTION ----";
+            echo PHP_EOL . " --- CREATE CONNECTION ----" . PHP_EOL;
             $this->sharedFixture['conn'] = TestUtil::getConnection();
         }
         if ( ! $this->_em) {

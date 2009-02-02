@@ -128,12 +128,10 @@ class OneToOneMapping extends AssociationMapping
         $sourceClass = $entityManager->getClassMetadata($this->_sourceEntityName);
         $targetClass = $entityManager->getClassMetadata($this->_targetEntityName);
 
-        $dql = 'SELECT t.* FROM ' . $targetClass->getClassName() . ' t WHERE ';
+        $dql = 'SELECT t FROM ' . $targetClass->getClassName() . ' t WHERE ';
         $params = array();
         foreach ($this->_sourceToTargetKeyFields as $sourceKeyField => $targetKeyField) {
-            if ($params) {
-                $dql .= " AND ";
-            }
+            if ($params) $dql .= " AND ";
             $dql .= "t.$targetKeyField = ?";
             $params[] = $sourceClass->getReflectionProperty($sourceKeyField)->getValue($entity);
         }
