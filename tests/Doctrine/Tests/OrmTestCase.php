@@ -7,6 +7,9 @@ namespace Doctrine\Tests;
  */
 class OrmTestCase extends DoctrineTestCase
 {
+    /** The metadata cache that is shared between all ORM tests (except functional tests). */
+    private static $_metadataCacheImpl = null;
+
     /**
      * Creates an EntityManager for testing purposes.
      *
@@ -14,6 +17,7 @@ class OrmTestCase extends DoctrineTestCase
      */
     protected function _getTestEntityManager($conf = null, $eventManager = null) {
         $config = new \Doctrine\ORM\Configuration();
+        $config->setMetadataCacheImpl(self::getSharedMetadataCacheImpl());
         $eventManager = new \Doctrine\Common\EventManager();
         $connectionOptions = array(
                 'driverClass' => 'Doctrine\Tests\Mocks\DriverMock',
@@ -22,5 +26,13 @@ class OrmTestCase extends DoctrineTestCase
                 'password' => 'wayne'
         );
         return \Doctrine\ORM\EntityManager::create($connectionOptions, 'mockEM', $config, $eventManager);
+    }
+
+    private static function getSharedMetadataCacheImpl()
+    {
+        if (is_null(self::$_metadataCacheImpl)) {
+            self::$_metadataCacheImpl = new \Doctrine\ORM\Cache\ArrayCache;
+        }
+        return self::$_metadataCacheImpl;
     }
 }

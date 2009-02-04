@@ -16,22 +16,24 @@
  *
  * This software consists of voluntary contributions made by many individuals
  * and is licensed under the LGPL. For more information, see
- * <http://www.phpdoctrine.org>.
+ * <http://www.doctrine-project.org>.
  */
+
+namespace Doctrine\ORM\Cache;
 
 /**
  * Xcache cache driver.
  *
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
- * @link        www.phpdoctrine.org
+ * @link        www.doctrine-project.org
  * @since       1.0
  * @version     $Revision: $
  * @author      Dmitry Bakaleinik (dima@snaiper.net)
  */
-class Doctrine_ORM_Cache_XcacheCache implements Doctrine_ORM_Cache_Cache
+class XcacheCache implements Cache
 {
     /**
-     * constructor
+     * {@inheritdoc}
      */
     public function __construct()
     {      
@@ -41,22 +43,15 @@ class Doctrine_ORM_Cache_XcacheCache implements Doctrine_ORM_Cache_Cache
     }
 
     /**
-     * Test if a cache entry is available for the given id and (if yes) return it (false else).
-     * 
-     * @param string $id cache id
-     * @param boolean $testCacheValidity        if set to false, the cache validity won't be tested
-     * @return string cached datas (or false)
+     * {@inheritdoc}
      */
-    public function fetch($id, $testCacheValidity = true) 
+    public function fetch($id) 
     {
         return $this->contains($id) ? xcache_get($id) : false;
     }
 
     /**
-     * Test if a cache is available or not (for the given id)
-     *
-     * @param string $id cache id
-     * @return mixed false (a cache is not available) or "last modified" timestamp (int) of the available cache record
+     * {@inheritdoc}
      */
     public function contains($id) 
     {
@@ -64,14 +59,7 @@ class Doctrine_ORM_Cache_XcacheCache implements Doctrine_ORM_Cache_Cache
     }
 
     /**
-     * Save some string datas into a cache record
-     *
-     * Note : $data is always saved as a string
-     *
-     * @param string $data      data to cache
-     * @param string $id        cache id
-     * @param int $lifeTime     if != false, set a specific lifetime for this cache record (null => infinite lifeTime)
-     * @return boolean true if no problem
+     * {@inheritdoc}
      */
     public function save($id, $data, $lifeTime = false)
     {
@@ -79,10 +67,7 @@ class Doctrine_ORM_Cache_XcacheCache implements Doctrine_ORM_Cache_Cache
     }
 
     /**
-     * Remove a cache record
-     * 
-     * @param string $id cache id
-     * @return boolean true if no problem
+     * {@inheritdoc}
      */
     public function delete($id) 
     {

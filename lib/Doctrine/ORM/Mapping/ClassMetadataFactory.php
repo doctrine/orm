@@ -39,7 +39,9 @@ class ClassMetadataFactory
 {
     /** The targeted database platform. */
     private $_targetPlatform;
+    /** The used metadata driver. */
     private $_driver;
+    /** The used cache driver. */
     private $_cacheDriver;
     
     /**
@@ -82,12 +84,13 @@ class ClassMetadataFactory
     public function getMetadataFor($className)
     {
         if ( ! isset($this->_loadedMetadata[$className])) {
+            $cacheKey = "$className\$CLASSMETADATA";
             if ($this->_cacheDriver) {
-                if ($this->_cacheDriver->contains("$className\$CLASSMETADATA")) {
-                    $this->_loadedMetadata[$className] = $this->_cacheDriver->fetch("$className\$CLASSMETADATA");
+                if ($this->_cacheDriver->contains($cacheKey)) {
+                    $this->_loadedMetadata[$className] = $this->_cacheDriver->fetch($cacheKey);
                 } else {
                     $this->_loadMetadata($className);
-                    $this->_cacheDriver->save($this->_loadedMetadata[$className], "$className\$CLASSMETADATA", null);
+                    $this->_cacheDriver->save($cacheKey, $this->_loadedMetadata[$className], null);
                 }
             } else {
                 $this->_loadMetadata($className);

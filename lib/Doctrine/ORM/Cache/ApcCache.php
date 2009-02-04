@@ -16,10 +16,10 @@
  *
  * This software consists of voluntary contributions made by many individuals
  * and is licensed under the LGPL. For more information, see
- * <http://www.phpdoctrine.org>.
+ * <http://www.doctrine-project.org>.
  */
 
-#namespace Doctrine\ORM\Cache;
+namespace Doctrine\ORM\Cache;
 
 /**
  * APC cache driver.
@@ -31,37 +31,28 @@
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  * @author      Roman Borschel <roman@code-factory.org>
  */
-class Doctrine_ORM_Cache_ApcCache implements Doctrine_ORM_Cache_Cache
+class ApcCache implements Cache
 {
     /**
-     * constructor
-     * 
-     * @param array $options    associative array of cache driver options
+     * {@inheritdoc}
      */
     public function __construct()
     {      
         if ( ! extension_loaded('apc')) {
-            throw new Doctrine_Cache_Exception('The apc extension must be loaded for using this backend !');
+            throw new DoctrineException('The apc extension must be loaded in order to use the ApcCache.');
         }
     }
 
     /**
-     * Test if a cache is available for the given id and (if yes) return it (false else).
-     * 
-     * @param string $id cache id
-     * @param boolean $testCacheValidity        if set to false, the cache validity won't be tested
-     * @return string cached datas (or false)
+     * {@inheritdoc}
      */
-    public function fetch($id, $testCacheValidity = true) 
+    public function fetch($id) 
     {
         return apc_fetch($id);
     }
 
     /**
-     * Test if a cache is available or not (for the given id)
-     *
-     * @param string $id cache id
-     * @return mixed false (a cache is not available) or "last modified" timestamp (int) of the available cache record
+     * {@inheritdoc}
      */
     public function contains($id) 
     {
@@ -69,14 +60,7 @@ class Doctrine_ORM_Cache_ApcCache implements Doctrine_ORM_Cache_Cache
     }
 
     /**
-     * Save some string datas into a cache record
-     *
-     * Note : $data is always saved as a string
-     *
-     * @param string $data      data to cache
-     * @param string $id        cache id
-     * @param int $lifeTime     if != false, set a specific lifetime for this cache record (null => infinite lifeTime)
-     * @return boolean true if no problem
+     * {@inheritdoc}
      */
     public function save($id, $data, $lifeTime = false)
     {
@@ -84,10 +68,7 @@ class Doctrine_ORM_Cache_ApcCache implements Doctrine_ORM_Cache_Cache
     }
 
     /**
-     * Remove a cache record
-     * 
-     * @param string $id cache id
-     * @return boolean true if no problem
+     * {@inheritdoc}
      */
     public function delete($id) 
     {

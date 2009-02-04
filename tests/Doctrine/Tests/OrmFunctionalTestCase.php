@@ -5,9 +5,14 @@ namespace Doctrine\Tests;
 /**
  * Base testcase class for all orm testcases.
  *
+ * @since 2.0
  */
 class OrmFunctionalTestCase extends OrmTestCase
 {
+    /* The metadata cache shared between all functional tests. */
+    private static $_metadataCacheImpl = null;
+
+    /** The EntityManager for this testcase. */
     protected $_em;
 
     /**
@@ -97,7 +102,7 @@ class OrmFunctionalTestCase extends OrmTestCase
     }
     
     /**
-     * Sweeps the database tables of all used fixtures.
+     * Sweeps the database tables of all used fixtures and clears the EntityManager.
      */
     protected function tearDown()
     {
@@ -120,7 +125,14 @@ class OrmFunctionalTestCase extends OrmTestCase
     }
 
     protected function _getEntityManager($config = null, $eventManager = null) {
+        // NOTE: Functional tests use their own shared metadata cache, because
+        // the actual database platform used during execution has effect on some
+        // metadata mapping behaviors (like the choice of the ID generation).
+        if (is_null(self::$_metadataCacheImpl)) {
+            self::$_metadataCacheImpl = new \Doctrine\ORM\Cache\ArrayCache;
+        }
         $config = new \Doctrine\ORM\Configuration();
+        $config->setMetadataCacheImpl(self::$_metadataCacheImpl);
         $eventManager = new \Doctrine\Common\EventManager();
         $conn = $this->sharedFixture['conn'];
         return \Doctrine\ORM\EntityManager::create($conn, 'em', $config, $eventManager);
