@@ -16,7 +16,7 @@
  *
  * This software consists of voluntary contributions made by many individuals
  * and is licensed under the LGPL. For more information, see
- * <http://www.phpdoctrine.org>.
+ * <http://www.doctrine-project.org>.
  */
 
 namespace Doctrine\ORM;
@@ -584,13 +584,13 @@ class UnitOfWork
         $oid = spl_object_hash($entity);
 
         if (isset($this->_dirtyEntities[$oid])) {
-            throw new Doctrine_Exception("Dirty object can't be registered as new.");
+            throw new DoctrineException("Dirty object can't be registered as new.");
         }
         if (isset($this->_deletedEntities[$oid])) {
-            throw new Doctrine_Exception("Removed object can't be registered as new.");
+            throw new DoctrineException("Removed object can't be registered as new.");
         }
         if (isset($this->_newEntities[$oid])) {
-            throw new Doctrine_Exception("Object already registered as new. Can't register twice.");
+            throw new DoctrineException("Object already registered as new. Can't register twice.");
         }
 
         $this->_newEntities[$oid] = $entity;
@@ -968,8 +968,7 @@ class UnitOfWork
                 $this->registerNew($entity);
                 break;
             case self::STATE_DETACHED:
-                //exception?
-                throw new Doctrine_Exception("Behavior of save() for a detached entity "
+                throw new DoctrineException("Behavior of save() for a detached entity "
                         . "is not yet defined.");
             case self::STATE_DELETED:
                 // entity becomes managed again
@@ -983,7 +982,7 @@ class UnitOfWork
                 break;
             default:
                 //TODO: throw UnitOfWorkException::invalidEntityState()
-                throw new Doctrine_Exception("Encountered invalid entity state.");
+                throw new DoctrineException("Encountered invalid entity state.");
         }
         $this->_cascadeSave($entity, $visited, $insertNow);
     }

@@ -4,6 +4,7 @@ namespace Doctrine\Tests\Models\Forum;
 
 /**
  * @DoctrineEntity
+ * @DoctrineTable(name="forum_categories")
  */
 class ForumCategory
 {
@@ -21,7 +22,7 @@ class ForumCategory
      */
     public $name;
     /**
-     * @DoctrineOneToMany(targetEntity="Doctrine\Tests\Models\Forum\ForumBoard", mappedBy="category")
+     * @DoctrineOneToMany(targetEntity="ForumBoard", mappedBy="category")
      */
     public $boards;
 

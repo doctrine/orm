@@ -431,9 +431,7 @@ class SqlitePlatform extends AbstractPlatform
     protected function _getCommonIntegerTypeDeclarationSql(array $columnDef)
     {
         $autoinc = ! empty($columnDef['autoincrement']) ? 'AUTOINCREMENT' : '';
-        $pk = ! empty($columnDef['primary']) ? 'PRIMARY KEY' : '';
-
-        //$unsigned = (isset($columnDef['unsigned']) && $columnDef['unsigned']) ? ' UNSIGNED' : '';
+        $pk = ! empty($columnDef['primary']) && ! empty($autoinc) ? 'PRIMARY KEY' : '';
 
         return "INTEGER $pk $autoinc";
     }
@@ -532,6 +530,19 @@ class SqlitePlatform extends AbstractPlatform
 
         return $fixed ? ($length ? 'CHAR(' . $length . ')' : 'CHAR(255)')
                 : ($length ? 'VARCHAR(' . $length . ')' : 'TEXT');
+    }
+
+    /**
+     * SQLite does support foreign key constraints, but only in CREATE TABLE statements...
+     * This really limits their usefulness and requires SQLite specific handling, so
+     * we simply say that SQLite does NOT support foreign keys for now...
+     *
+     * @return boolean
+     * @override
+     */
+    public function supportsForeignKeyConstraints()
+    {
+        return false;
     }
 }
 

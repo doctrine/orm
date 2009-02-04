@@ -44,7 +44,6 @@ class ClassMetadataTest extends \Doctrine\Tests\OrmTestCase
         $this->assertEquals(1, count($cm->getAssociationMappings()));
         $oneOneMapping = $cm->getAssociationMapping('phonenumbers');
         $this->assertEquals('phonenumbers', $oneOneMapping->getSourceFieldName());
-        $this->assertEquals('Bar', $oneOneMapping->getTargetEntityName());
+        $this->assertEquals('Doctrine\Tests\Models\CMS\Bar', $oneOneMapping->getTargetEntityName());
     }
-    
 }

@@ -3,7 +3,8 @@
 namespace Doctrine\Tests\Models\CMS;
 
 /**
- * @DoctrineEntity(tableName="cms_articles")
+ * @DoctrineEntity
+ * @DoctrineTable(name="cms_articles")
  */
 class CmsArticle
 {
@@ -22,12 +23,12 @@ class CmsArticle
      */
     public $text;
     /**
-     * @DoctrineManyToOne(targetEntity="Doctrine\Tests\Models\CMS\CmsUser",
-            joinColumns={"user_id" = "id"})
+     * @DoctrineManyToOne(targetEntity="CmsUser")
+     * @DoctrineJoinColumn(name="user_id", referencedColumnName="id")
      */
     public $user;
     /**
-     * @DoctrineOneToMany(targetEntity="Doctrine\Tests\Models\CMS\CmsComment", mappedBy="article")
+     * @DoctrineOneToMany(targetEntity="CmsComment", mappedBy="article")
      */
     public $comments;
 }

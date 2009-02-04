@@ -3,7 +3,8 @@
 namespace Doctrine\Tests\Models\Forum;
 
 /**
- * @DoctrineEntity(tableName="forum_users")
+ * @DoctrineEntity
+ * @DoctrineTable(name="forum_users")
  * @DoctrineInheritanceType("joined")
  * @DoctrineDiscriminatorColumn(name="dtype", type="varchar", length=20)
  * @DoctrineDiscriminatorMap({
@@ -24,10 +25,8 @@ class ForumUser
      */
     public $username;
     /**
-     * @DoctrineOneToOne(
-           targetEntity="Doctrine\Tests\Models\Forum\ForumAvatar",
-           joinColumns={"avatar_id" = "id"},
-           cascade={"save"})
+     * @DoctrineOneToOne(targetEntity="ForumAvatar", cascade={"save"})
+     * @DoctrineJoinColumn(name="avatar_id", referencedColumnName="id")
      */
     public $avatar;
 }

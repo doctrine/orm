@@ -21,6 +21,8 @@
 
 namespace Doctrine\ORM\Mapping;
 
+use Doctrine\ORM\Exceptions\MappingException;
+
 /**
  * Base class for association mappings.
  *
@@ -107,11 +109,11 @@ abstract class AssociationMapping
     protected $_mappedByFieldName;
     
     /**
-     * The name of the join table, if any.
+     * The join table definition, if any.
      *
-     * @var string
+     * @var array
      */
-    protected $_joinTable;
+    protected $_joinTable = array();
     
     /**
      * Initializes a new instance of a class derived from AssociationMapping.
@@ -132,17 +134,17 @@ abstract class AssociationMapping
     {        
         // Mandatory attributes for both sides
         if ( ! isset($mapping['fieldName'])) {
-            throw Doctrine_MappingException::missingFieldName();
+            throw MappingException::missingFieldName();
         }
         $this->_sourceFieldName = $mapping['fieldName'];
         
         if ( ! isset($mapping['sourceEntity'])) {
-            throw Doctrine_MappingException::missingSourceEntity($mapping['fieldName']);
+            throw MappingException::missingSourceEntity($mapping['fieldName']);
         }
         $this->_sourceEntityName = $mapping['sourceEntity'];
         
         if ( ! isset($mapping['targetEntity'])) {
-            throw Doctrine_ORM_Exceptions_MappingException::missingTargetEntity($mapping['fieldName']);
+            throw MappingException::missingTargetEntity($mapping['fieldName']);
         }
         $this->_targetEntityName = $mapping['targetEntity'];
         
@@ -287,9 +289,9 @@ abstract class AssociationMapping
     }
     
     /**
-     * Gets the name of the join table.
+     * Gets the join table definition, if any.
      *
-     * @return string
+     * @return array
      */
     public function getJoinTable()
     {
@@ -315,36 +317,6 @@ abstract class AssociationMapping
     {
         return $this->_mappedByFieldName;
     }
-    
-    /*public function getInverseSideFieldName()
-    {
-        return $this->_inverseSideFieldName;
-    }*/
-    /**
-     * Marks the association as bidirectional, specifying the field name of
-     * the inverse side.
-     * This is called on the owning side, when an inverse side is discovered.
-     * This does only make sense to call on the owning side.
-     *
-     * @param string $inverseSideFieldName
-     */
-    /*public function setBidirectional($inverseSideFieldName)
-    {
-        if ( ! $this->_isOwningSide) {
-            return; //TODO: exception?
-        }
-        $this->_inverseSideFieldName = $inverseSideFieldName;
-    }*/
-    
-    /**
-     * Whether the association is bidirectional.
-     *
-     * @return boolean
-     */
-    /*public function isBidirectional()
-    {
-        return $this->_mappedByFieldName || $this->_inverseSideFieldName;
-    }*/
     
     public function isOneToOne()
     {

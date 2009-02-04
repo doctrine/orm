@@ -16,7 +16,7 @@
  *
  * This software consists of voluntary contributions made by many individuals
  * and is licensed under the LGPL. For more information, see
- * <http://www.phpdoctrine.org>.
+ * <http://www.doctrine-project.org>.
  */
 
 namespace Doctrine\ORM;
@@ -138,7 +138,9 @@ class EntityManager
      */
     private $_hydrators = array();
 
-    /** Whether the EntityManager is closed or not. */
+    /**
+     * Whether the EntityManager is closed or not.
+     */
     private $_closed = false;
     
     /**
@@ -150,11 +152,7 @@ class EntityManager
      * @param Doctrine\ORM\Configuration $config
      * @param Doctrine\Common\EventManager $eventManager
      */
-    protected function __construct(
-            Connection $conn,
-            $name,
-            Configuration $config,
-            EventManager $eventManager)
+    protected function __construct(Connection $conn, $name, Configuration $config, EventManager $eventManager)
     {
         $this->_conn = $conn;
         $this->_name = $name;
@@ -207,6 +205,7 @@ class EntityManager
     
     /**
      * Commits a running transaction.
+     * 
      * This causes a flush() of the EntityManager if the flush mode is set to
      * AUTO or COMMIT.
      *
@@ -245,7 +244,7 @@ class EntityManager
     }
 
     /**
-     * Used to lazily create the id generator.
+     * Used to lazily create an ID generator.
      *
      * @param string $generatorType
      * @return object
@@ -281,7 +280,7 @@ class EntityManager
     /**
      * Detaches an entity from the manager. It's lifecycle is no longer managed.
      *
-     * @param Doctrine\ORM\Entity $entity
+     * @param object $entity
      * @return boolean
      */
     public function detach($entity)
@@ -337,6 +336,7 @@ class EntityManager
     
     /**
      * Finds an Entity by its identifier.
+     *
      * This is just a convenient shortcut for getRepository($entityName)->find($id).
      *
      * @param string $entityName
@@ -349,7 +349,7 @@ class EntityManager
     }
     
     /**
-     * Sets the flush mode.
+     * Sets the flush mode to use.
      *
      * @param string $flushMode
      */
@@ -437,21 +437,21 @@ class EntityManager
      * Refreshes the persistent state of the entity from the database,
      * overriding any local changes that have not yet been persisted.
      *
-     * @param Doctrine\ORM\Entity $entity
+     * @param object $entity
      * @todo FIX Impl
      */
-    public function refresh(Doctrine_ORM_Entity $entity)
+    public function refresh($entity)
     {
-        $this->_mergeData($entity, $entity->getRepository()->find(
+        /*$this->_mergeData($entity, $this->getRepository(get_class($entity))->find(
                 $entity->identifier(), Query::HYDRATE_ARRAY),
-                true);
+                true);*/
     }
     
     /**
      * Creates a copy of the given entity. Can create a shallow or a deep copy.
      *
-     * @param Doctrine\ORM\Entity $entity  The entity to copy.
-     * @return Doctrine\ORM\Entity  The new entity.
+     * @param object $entity  The entity to copy.
+     * @return object  The new entity.
      */
     public function copy($entity, $deep = false)
     {
@@ -561,16 +561,16 @@ class EntityManager
                 case Query::HYDRATE_OBJECT:
                     $this->_hydrators[$hydrationMode] = new \Doctrine\ORM\Internal\Hydration\ObjectHydrator($this);
                     break;
-                case Doctrine_ORM_Query::HYDRATE_ARRAY:
+                case Query::HYDRATE_ARRAY:
                     $this->_hydrators[$hydrationMode] = new \Doctrine\ORM\Internal\Hydration\ArrayHydrator($this);
                     break;
-                case Doctrine_ORM_Query::HYDRATE_SCALAR:
+                case Query::HYDRATE_SCALAR:
                     $this->_hydrators[$hydrationMode] = new \Doctrine\ORM\Internal\Hydration\ScalarHydrator($this);
                     break;
-                case Doctrine_ORM_Query::HYDRATE_SINGLE_SCALAR:
+                case Query::HYDRATE_SINGLE_SCALAR:
                     $this->_hydrators[$hydrationMode] = new \Doctrine\ORM\Internal\Hydration\SingleScalarHydrator($this);
                     break;
-                case Doctrine_ORM_Query::HYDRATE_NONE:
+                case Query::HYDRATE_NONE:
                     $this->_hydrators[$hydrationMode] = new \Doctrine\ORM\Internal\Hydration\NoneHydrator($this);
                     break;
                 default:
@@ -617,10 +617,7 @@ class EntityManager
      * @param EventManager $eventManager The EventManager instance to use.
      * @return EntityManager The created EntityManager.
      */
-    public static function create(
-            $conn,
-            $name,
-            Configuration $config = null,
+    public static function create($conn, $name, Configuration $config = null,
             EventManager $eventManager = null)
     {
         if (is_array($conn)) {

@@ -3,7 +3,8 @@
 namespace Doctrine\Tests\Models\Forum;
 
 /**
- * @DoctrineEntity(tableName="forum_avatars")
+ * @DoctrineEntity
+ * @DoctrineTable(name="forum_avatars")
  */
 class ForumAvatar
 {

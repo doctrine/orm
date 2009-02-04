@@ -1,6 +1,6 @@
 <?php
 /*
- *  $Id: Collection.php 4930 2008-09-12 10:40:23Z romanb $
+ *  $Id$
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -16,7 +16,7 @@
  *
  * This software consists of voluntary contributions made by many individuals
  * and is licensed under the LGPL. For more information, see
- * <http://www.phpdoctrine.org>.
+ * <http://www.doctrine-project.org>.
  */
 
 namespace Doctrine\ORM;
@@ -110,6 +110,12 @@ final class PersistentCollection extends \Doctrine\Common\Collections\Collection
      */
     private $_ownerClass;
 
+    /**
+     * Whether the collection is dirty and needs to be synchronized with the database
+     * when the UnitOfWork that manages its persistent state commits.
+     *
+     * @var boolean
+     */
     private $_isDirty = false;
 
     /**
@@ -181,9 +187,19 @@ final class PersistentCollection extends \Doctrine\Common\Collections\Collection
      *
      * @return object
      */
-    public function _getOwner()
+    public function getOwner()
     {
         return $this->_owner;
+    }
+
+    /**
+     * Gets the class descriptor for the owning entity class.
+     *
+     * @return Doctrine\ORM\Mapping\ClassMetadata
+     */
+    public function getOwnerClass()
+    {
+        return $this->_ownerClass;
     }
 
     /**
@@ -251,8 +267,9 @@ final class PersistentCollection extends \Doctrine\Common\Collections\Collection
     /**
      * Adds all entities of the other collection to this collection.
      *
-     * @param unknown_type $otherCollection
+     * @param object $otherCollection
      * @todo Impl
+     * @override
      */
     public function addAll($otherCollection)
     {

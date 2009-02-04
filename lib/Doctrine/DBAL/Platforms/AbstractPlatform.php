@@ -16,7 +16,7 @@
  *
  * This software consists of voluntary contributions made by many individuals
  * and is licensed under the LGPL. For more information, see
- * <http://www.phpdoctrine.org>.
+ * <http://www.doctrine-project.org>.
  */
 
 namespace Doctrine\DBAL\Platforms;
@@ -1591,7 +1591,7 @@ abstract class AbstractPlatform
 
         $sql .= implode(', ', array_map(array($this, 'quoteIdentifier'), $definition['local']))
               . ') REFERENCES '
-              . $this->_conn->quoteIdentifier($definition['foreignTable']) . '('
+              . $this->quoteIdentifier($definition['foreignTable']) . '('
               . implode(', ', array_map(array($this, 'quoteIdentifier'), $definition['foreign'])) . ')';
 
         return $sql;

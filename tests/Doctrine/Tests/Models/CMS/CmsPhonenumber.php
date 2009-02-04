@@ -3,7 +3,8 @@
 namespace Doctrine\Tests\Models\CMS;
 
 /**
- * @DoctrineEntity(tableName="cms_phonenumbers")
+ * @DoctrineEntity
+ * @DoctrineTable(name="cms_phonenumbers")
  */
 class CmsPhonenumber
 {
@@ -13,8 +14,8 @@ class CmsPhonenumber
      */
     public $phonenumber;
     /**
-     * @DoctrineManyToOne(targetEntity="Doctrine\Tests\Models\CMS\CmsUser",
-            joinColumns={"user_id" = "id"})
+     * @DoctrineManyToOne(targetEntity="CmsUser")
+     * @DoctrineJoinColumn(name="user_id", referencedColumnName="id")
      */
     public $user;
 

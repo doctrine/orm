@@ -7,6 +7,7 @@ namespace Doctrine\Tests\Models\Forum;
  *
  * @author robo
  * @DoctrineEntity
+ * @DoctrineTable(name="forum_boards")
  */
 class ForumBoard
 {
@@ -20,8 +21,8 @@ class ForumBoard
      */
     public $position;
     /**
-     * @DoctrineManyToOne(targetEntity="Doctrine\Tests\Models\Forum\ForumCategory",
-            joinColumns={"category_id" = "id"})
+     * @DoctrineManyToOne(targetEntity="ForumCategory")
+     * @DoctrineJoinColumn(name="category_id", referencedColumnName="id")
      */
     public $category;
 }

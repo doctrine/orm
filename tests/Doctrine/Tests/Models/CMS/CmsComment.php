@@ -3,7 +3,8 @@
 namespace Doctrine\Tests\Models\CMS;
 
 /**
- * @DoctrineEntity(tableName="cms_comments")
+ * @DoctrineEntity
+ * @DoctrineTable(name="cms_comments")
  */
 class CmsComment
 {
@@ -22,8 +23,8 @@ class CmsComment
      */
     public $text;
     /**
-     * @DoctrineManyToOne(targetEntity="Doctrine\Tests\Models\CMS\CmsArticle",
-            joinColumns={"article_id" = "id"})
+     * @DoctrineManyToOne(targetEntity="CmsArticle")
+     * @DoctrineJoinColumn(name="article_id", referencedColumnName="id")
      */
     public $article;
 }

@@ -21,6 +21,8 @@
 
 namespace Doctrine\ORM\Export;
 
+use Doctrine\ORM\EntityManager;
+
 /**
  * The ClassExporter can generate database schemas/structures from ClassMetadata
  * class descriptors.
@@ -41,25 +43,32 @@ class ClassExporter
     private $_sm;
     /** The EntityManager */
     private $_em;
+    /** The DatabasePlatform */
+    private $_platform;
 
-    public function __construct(\Doctrine\ORM\EntityManager $em)
+    /**
+     * Initializes a new ClassExporter instance that uses the connection of the
+     * provided EntityManager.
+     *
+     * @param Doctrine\ORM\EntityManager $em
+     */
+    public function __construct(EntityManager $em)
     {
         $this->_em = $em;
         $this->_sm = $em->getConnection()->getSchemaManager();
+        $this->_platform = $em->getConnection()->getDatabasePlatform();
     }
 
     /**
-     * Exports entity classes to a schema.
-     *
-     * FIXME: This method is a big huge hack. The sql needs to be executed in the correct order. I have some stupid logic to 
-     * make sure they are in the right order.
+     * Exports entity classes to a database, according to the specified mappings.
      *
      * @param array $classes
-     * @return void
      */
     public function exportClasses(array $classes)
     {
-        //TODO: order them
+        $foreignKeyConstraints = array();
+
+        // First we create the tables
         foreach ($classes as $class) {
             $columns = array();
             $options = array();
@@ -70,92 +79,84 @@ class ClassExporter
                 $column['type'] = $mapping['type'];
                 $column['length'] = $mapping['length'];
                 $column['notnull'] = ! $mapping['nullable'];
-
                 if ($class->isIdentifier($fieldName)) {
                     $column['primary'] = true;
                     if ($class->isIdGeneratorIdentity()) {
                         $column['autoincrement'] = true;
                     }
                 }
-
                 $columns[$mapping['columnName']] = $column;
             }
 
             foreach ($class->getAssociationMappings() as $mapping) {
+                $foreignClass = $this->_em->getClassMetadata($mapping->getTargetEntityName());
                 if ($mapping->isOneToOne() && $mapping->isOwningSide()) {
-                    foreach ($mapping->getSourceToTargetKeyColumns() as $sourceColumn => $targetColumn) {
+                    $constraint = array();
+                    $constraint['tableName'] = $class->getTableName();
+                    $constraint['foreignTable'] = $foreignClass->getTableName();
+                    $constraint['local'] = array();
+                    $constraint['foreign'] = array();
+                    foreach ($mapping->getJoinColumns() as $joinColumn) {
                         $column = array();
-                        $column['name'] = $sourceColumn;
-                        $column['type'] = $this->_em->getClassMetadata($mapping->getTargetEntityName())
-                                ->getTypeOfColumn($targetColumn);
-                        $columns[$sourceColumn] = $column;
+                        $column['name'] = $joinColumn['name'];
+                        $column['type'] = $foreignClass->getTypeOfColumn($joinColumn['referencedColumnName']);
+                        $columns[$joinColumn['name']] = $column;
+                        $constraint['local'][] = $joinColumn['name'];
+                        $constraint['foreign'][] = $joinColumn['referencedColumnName'];
                     }
-                } else if ($mapping->isOneToMany() && $mapping->usesJoinTable()) {
+                    $foreignKeyConstraints[] = $constraint;
+                } else if ($mapping->isOneToMany() && $mapping->isOwningSide()) {
                     //... create join table, one-many through join table supported later
-                    throw new Doctrine_Exception("Not yet implemented.");
+                    throw new DoctrineException("Not yet implemented.");
                 } else if ($mapping->isManyToMany() && $mapping->isOwningSide()) {
                     //... create join table
+                    $joinTableColumns = array();
+                    $joinTable = $mapping->getJoinTable();
+                    $constraint1 = array();
+                    $constraint1['tableName'] = $joinTable['name'];
+                    $constraint1['foreignTable'] = $class->getTableName();
+                    $constraint1['local'] = array();
+                    $constraint1['foreign'] = array();
+                    foreach ($joinTable['joinColumns'] as $joinColumn) {
+                        $column = array();
+                        $column['primary'] = true;
+                        $column['name'] = $joinColumn['name'];
+                        $column['type'] = $class->getTypeOfColumn($joinColumn['referencedColumnName']);
+                        $joinTableColumns[$joinColumn['name']] = $column;
+                        $constraint1['local'][] = $joinColumn['name'];
+                        $constraint1['foreign'][] = $joinColumn['referencedColumnName'];
+                    }
+                    $foreignKeyConstraints[] = $constraint1;
+
+                    $constraint2 = array();
+                    $constraint2['tableName'] = $joinTable['name'];
+                    $constraint2['foreignTable'] = $foreignClass->getTableName();
+                    $constraint2['local'] = array();
+                    $constraint2['foreign'] = array();
+                    foreach ($joinTable['inverseJoinColumns'] as $inverseJoinColumn) {
+                        $column = array();
+                        $column['primary'] = true;
+                        $column['name'] = $inverseJoinColumn['name'];
+                        $column['type'] = $this->_em->getClassMetadata($mapping->getTargetEntityName())
+                                ->getTypeOfColumn($inverseJoinColumn['referencedColumnName']);
+                        $joinTableColumns[$inverseJoinColumn['name']] = $column;
+                        $constraint2['local'][] = $inverseJoinColumn['name'];
+                        $constraint2['foreign'][] = $inverseJoinColumn['referencedColumnName'];
+                    }
+                    $foreignKeyConstraints[] = $constraint2;
+
+                    $this->_sm->createTable($joinTable['name'], $joinTableColumns, array());
                 }
             }
 
             $this->_sm->createTable($class->getTableName(), $columns, $options);
         }
-    }
 
-    /**
-     * exportClassesSql
-     * method for exporting entity classes to a schema
-     *
-     * @throws Doctrine_Connection_Exception    if some error other than Doctrine::ERR_ALREADY_EXISTS
-     *                                          occurred during the create table operation
-     * @param array $classes
-     * @return void
-     */
-    public function exportClassesSql(array $classes)
-    {
-        $models = Doctrine::filterInvalidModels($classes);
-
-        $sql = array();
-        $finishedClasses = array();
-        
-        foreach ($models as $name) {
-            if (in_array($name, $finishedClasses)) {
-                continue;
-            }
-            
-            $classMetadata = $this->conn->getClassMetadata($name);
-            
-            // In Class Table Inheritance we have to make sure that ALL tables of parent classes
-            // are exported, too as soon as ONE table is exported, because the data of one class is stored
-            // across many tables.
-            if ($classMetadata->getInheritanceType() == Doctrine::INHERITANCE_TYPE_JOINED) {
-                $parents = $classMetadata->getParentClasses();
-                foreach ($parents as $parent) {
-                    $data = $classMetadata->getConnection()->getClassMetadata($parent)->getExportableFormat();
-                    $query = $this->conn->export->createTableSql($data['tableName'], $data['columns'], $data['options']);
-                    $sql = array_merge($sql, (array) $query);
-                    $finishedClasses[] = $parent;
-                }
-            }
-            
-            $data = $classMetadata->getExportableFormat();
-            $query = $this->conn->export->createTableSql($data['tableName'], $data['columns'], $data['options']);
-
-            if (is_array($query)) {
-                $sql = array_merge($sql, $query);
-            } else {
-                $sql[] = $query;
-            }
-
-            if ($classMetadata->getAttribute(Doctrine::ATTR_EXPORT) & Doctrine::EXPORT_PLUGINS) {
-                $sql = array_merge($sql, $this->exportGeneratorsSql($classMetadata));
+        // Now create the foreign key constraints
+        if ($this->_platform->supportsForeignKeyConstraints()) {
+            foreach ($foreignKeyConstraints as $fkConstraint) {
+                $this->_sm->createForeignKey($fkConstraint['tableName'], $fkConstraint);
             }
         }
-
-        $sql = array_unique($sql);
-
-        rsort($sql);
-
-        return $sql;
     }
 }

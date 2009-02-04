@@ -16,7 +16,7 @@
  *
  * This software consists of voluntary contributions made by many individuals
  * and is licensed under the LGPL. For more information, see
- * <http://www.phpdoctrine.org>.
+ * <http://www.doctrine-project.org>.
  */
 
 namespace Doctrine\DBAL;
@@ -317,7 +317,6 @@ class Connection
 
         // column names are specified as array keys
         $cols = array();
-        // the query VALUES will contain either expressions (eg 'NOW()') or ?
         $a = array();
         foreach ($data as $columnName => $value) {
             $cols[] = $this->quoteIdentifier($columnName);

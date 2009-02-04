@@ -4,6 +4,7 @@ namespace Doctrine\Tests\Models\Forum;
 
 /**
  * @DoctrineEntity
+ * @DoctrineTable(name="forum_entries")
  */
 class ForumEntry
 {

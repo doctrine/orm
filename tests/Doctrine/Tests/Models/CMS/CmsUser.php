@@ -3,7 +3,8 @@
 namespace Doctrine\Tests\Models\CMS;
 
 /**
- * @DoctrineEntity(tableName="cms_users")
+ * @DoctrineEntity
+ * @DoctrineTable(name="cms_users")
  */
 class CmsUser
 {
@@ -26,19 +27,24 @@ class CmsUser
      */
     public $name;
     /**
-     * @DoctrineOneToMany(targetEntity="Doctrine\Tests\Models\CMS\CmsPhonenumber",
-            mappedBy="user", cascade={"save", "delete"})
+     * @DoctrineOneToMany(targetEntity="CmsPhonenumber", mappedBy="user", cascade={"save", "delete"})
      */
     public $phonenumbers;
     /**
-     * @DoctrineOneToMany(targetEntity="Doctrine\Tests\Models\CMS\CmsArticle", mappedBy="user")
+     * @DoctrineOneToMany(targetEntity="CmsArticle", mappedBy="user")
      */
     public $articles;
     /**
-     * @DoctrineOneToOne(targetEntity="Doctrine\Tests\Models\CMS\CmsAddress", mappedBy="user",
-                cascade={"save"})
+     * @DoctrineOneToOne(targetEntity="CmsAddress", mappedBy="user", cascade={"save"})
      */
     public $address;
+    /**
+     * @DoctrineManyToMany(targetEntity="CmsGroup")
+     * @DoctrineJoinTable(name="cms_users_groups",
+            joinColumns={{"name"="user_id", "referencedColumnName"="id"}},
+            inverseJoinColumns={{"name"="group_id", "referencedColumnName"="id"}})
+     */
+    public $groups;
 
     /**
      * Adds a phonenumber to the user.

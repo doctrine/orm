@@ -10,7 +10,8 @@ namespace Doctrine\Tests\Models\CMS;
  * Description of CmsAddress
  *
  * @author robo
- * @DoctrineEntity(tableName="cms_addresses")
+ * @DoctrineEntity
+ * @DoctrineTable(name="cms_addresses")
  */
 class CmsAddress
 {
@@ -33,9 +34,8 @@ class CmsAddress
      */
     public $city;
     /**
-     * @DoctrineOneToOne(
-            targetEntity="Doctrine\Tests\Models\CMS\CmsUser",
-            joinColumns={"user_id" = "id"})
+     * @DoctrineOneToOne(targetEntity="CmsUser")
+     * @DoctrineJoinColumn(name="user_id", referencedColumnName="id")
      */
     public $user;
 }

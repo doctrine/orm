@@ -16,7 +16,7 @@
  *
  * This software consists of voluntary contributions made by many individuals
  * and is licensed under the LGPL. For more information, see
- * <http://www.phpdoctrine.org>.
+ * <http://www.doctrine-project.org>.
  */
 
 namespace Doctrine\ORM\Mapping;
@@ -54,10 +54,9 @@ class OneToManyMapping extends AssociationMapping
     protected $_deleteOrphans = false;
     
     /**
-     * Constructor.
-     * Creates a new OneToManyMapping.
+     * Initializes a new OneToManyMapping.
      *
-     * @param array $mapping  The mapping info.
+     * @param array $mapping  The mapping information.
      */
     public function __construct(array $mapping)
     {

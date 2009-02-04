@@ -11,7 +11,7 @@ class OneToOneMappingTest extends \Doctrine\Tests\OrmTestCase
         $owningSideMapping = array(
             'fieldName' => 'address',
             'targetEntity' => 'Address',
-            'joinColumns' => array('address_id' => 'id'),
+            'joinColumns' => array(array('name' => 'address_id', 'referencedColumnName' => 'id')),
             'sourceEntity' => 'Person', // This is normally filled by ClassMetadata
         );
         

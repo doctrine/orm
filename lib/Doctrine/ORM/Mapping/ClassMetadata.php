@@ -22,6 +22,7 @@
 namespace Doctrine\ORM\Mapping;
 
 use \ReflectionClass;
+use Doctrine\Common\DoctrineException;
 
 /**
  * A <tt>ClassMetadata</tt> instance holds all the information (metadata) of an entity and
@@ -100,8 +101,17 @@ class ClassMetadata
      */
     const ENTITY_TYPE_MAPPED_SUPERCLASS = 'mappedSuperclass';
 
-    /** The name of the entity class. */
+    /**
+     * The name of the entity class.
+     */
     protected $_entityName;
+
+    /**
+     * The namespace the entity class is contained in.
+     *
+     * @var string
+     */
+    protected $_namespace;
 
     /**
      * The name of the entity class that is at the root of the entity inheritance
@@ -268,11 +278,16 @@ class ClassMetadata
     protected $_discriminatorColumn;
 
     /**
-     * The name of the primary table.
+     * The primary table definition. The definition is an array with the
+     * following entries:
      *
-     * @var string
+     * name => <tableName>
+     * schema => <schemaName>
+     * catalog => <catalogName>
+     *
+     * @var array
      */
-    protected $_tableName;
+    protected $_primaryTable;
     
     /**
      * The cached lifecycle listeners. There is only one instance of each
@@ -332,15 +347,16 @@ class ClassMetadata
     protected $_reflectionProperties;
 
     /**
-     * Initializes a new ClassMetadata instance that will hold the ORM metadata
-     * of the class with the given name.
+     * Initializes a new ClassMetadata instance that will hold the object-relational mapping
+     * metadata of the class with the given name.
      *
      * @param string $entityName  Name of the entity class the new instance is used for.
      */
     public function __construct($entityName)
     {
         $this->_entityName = $entityName;
-        $this->_tableName = $this->_entityName;
+        $this->_namespace = substr($entityName, 0, strrpos($entityName, '\\'));
+        $this->_primaryTable['name'] = str_replace($this->_namespace . '\\', '', $this->_entityName);
         $this->_rootEntityName = $entityName;
         $this->_reflectionClass = new ReflectionClass($entityName);
     }
@@ -383,7 +399,7 @@ class ClassMetadata
     public function getSingleIdReflectionProperty()
     {
         if ($this->_isIdentifierComposite) {
-            throw new Doctrine_Exception("getSingleIdReflectionProperty called on entity with composite key.");
+            throw new DoctrineException("getSingleIdReflectionProperty called on entity with composite key.");
         }
         return $this->_reflectionProperties[$this->_identifier[0]];
     }
@@ -448,7 +464,6 @@ class ClassMetadata
         if ($mapping !== false) {
             return isset($mapping['unique']) && $mapping['unique'] == true;
         }
-
         return false;
     }
 
@@ -464,7 +479,6 @@ class ClassMetadata
         if ($mapping !== false) {
             return isset($mapping['notnull']) && $mapping['notnull'] == true;
         }
-
         return false;
     }
 
@@ -520,8 +534,8 @@ class ClassMetadata
      */
     public function getInverseAssociationMapping($mappedByFieldName)
     {
-        if ( ! isset($this->_associationMappings[$fieldName])) {
-            throw new Doctrine_Exception("Mapping not found: " . $fieldName);
+        if ( ! isset($this->_inverseMappings[$mappedByFieldName])) {
+            throw new DoctrineException("Mapping not found: " . $mappedByFieldName);
         }
         return $this->_inverseMappings[$mappedByFieldName];
     }
@@ -932,13 +946,13 @@ class ClassMetadata
     }
 
     /**
-     * getTableName
+     * Gets the name of the primary table.
      *
-     * @return void
+     * @return string
      */
     public function getTableName()
     {
-        return $this->_tableName;
+        return $this->_primaryTable['name'];
     }
 
     public function getInheritedFields()
@@ -1092,34 +1106,34 @@ class ClassMetadata
      */
     public function setTableName($tableName)
     {
-        $this->_tableName = $tableName;
+        $this->_primaryTable['name'] = $tableName;
     }
 
     /**
-     * Serializes the metadata.
+     * Sets the primary table definition. The provided array must have th
+     * following structure:
      *
-     * Part of the implementation of the Serializable interface.
+     * name => <tableName>
+     * schema => <schemaName>
+     * catalog => <catalogName>
      *
-     * @return string  The serialized metadata.
+     * @param array $primaryTableDefinition
      */
-   /* public function serialize()
+    public function setPrimaryTable(array $primaryTableDefinition)
     {
-        //$contents = get_object_vars($this);
-        //return serialize($contents);
-        return "";
-    }*/
+        $this->_primaryTable = $primaryTableDefinition;
+    }
 
     /**
-     * Reconstructs the metadata class from it's serialized representation.
+     * Gets the primary table definition.
      *
-     * Part of the implementation of the Serializable interface.
-     *
-     * @param string $serialized  The serialized metadata class.
+     * @see setPrimaryTable()
+     * @return array
      */
-    /*public function unserialize($serialized)
+    public function getPrimaryTable()
     {
-        return true;
-    }*/
+        return $this->_primaryTable;
+    }
     
     /**
      * Checks whether the given type identifies an entity type.
@@ -1168,12 +1182,14 @@ class ClassMetadata
      * easier for the user.
      *
      * @param array $mapping
-     * @return unknown
      * @todo Pass param by ref?
      */
     private function _completeAssociationMapping(array $mapping)
     {
         $mapping['sourceEntity'] = $this->_entityName;
+        if (isset($mapping['targetEntity']) && strpos($mapping['targetEntity'], '\\') === false) {
+            $mapping['targetEntity'] = $this->_namespace . '\\' . $mapping['targetEntity'];
+        }
         return $mapping;
     }
 
@@ -1260,7 +1276,7 @@ class ClassMetadata
     /**
      * Stores the association mapping.
      *
-     * @param Doctrine_Association $assocMapping
+     * @param AssociationMapping $assocMapping
      */
     private function _storeAssociationMapping(AssociationMapping $assocMapping)
     {
@@ -1278,7 +1294,7 @@ class ClassMetadata
     }
     
     /**
-     * Registers a custom mapper for the entity class.
+     * Registers a custom repository class for the entity class.
      *
      * @param string $mapperClassName  The class name of the custom mapper.
      */
@@ -1333,11 +1349,11 @@ class ClassMetadata
         //Entity::TYPE_ENTITY
         //Entity::TYPE_MAPPED_SUPERCLASS
         //Entity::TYPE_TRANSIENT
-        throw new Doctrine_Exception("Not yet implemented.");
+        throw new DoctrineException("Not yet implemented.");
     }
     
     /**
-     * Dispatches the lifecycle event of the given Entity to the registered
+     * Dispatches the lifecycle event of the given entity to the registered
      * lifecycle callbacks and lifecycle listeners.
      *
      * @param string $event  The lifecycle event.
@@ -1381,7 +1397,7 @@ class ClassMetadata
     }
     
     /**
-     * Adds a lifecycle listener for Entities of this class.
+     * Adds a lifecycle listener for entities of this class.
      * 
      * Note: If the same listener class is registered more than once, the old
      * one will be overridden.

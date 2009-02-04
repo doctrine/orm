@@ -9,7 +9,13 @@ use Doctrine\ORM\PersistentCollection;
  */
 class OneToManyPersister extends AbstractCollectionPersister
 {
-    
+    /**
+     * {@inheritdoc}
+     *
+     * @param <type> $coll
+     * @return <type>
+     * @override
+     */
     protected function _getDeleteRowSql(PersistentCollection $coll)
     {
         $mapping = $coll->getMapping();
@@ -31,6 +37,18 @@ class OneToManyPersister extends AbstractCollectionPersister
         }
 
         return "UPDATE $table SET $setClause WHERE $whereClause";
+    }
+
+    /**
+     * {@inheritdoc}
+     *
+     * @param <type> $element
+     * @return <type>
+     * @override
+     */
+    protected function _getDeleteRowSqlParameters(PersistentCollection $coll, $element)
+    {
+        return $this->_uow->getEntityIdentifier($element);
     }
 
     protected function _getInsertRowSql()
