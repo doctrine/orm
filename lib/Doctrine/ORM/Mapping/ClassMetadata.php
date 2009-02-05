@@ -23,6 +23,7 @@ namespace Doctrine\ORM\Mapping;
 
 use \ReflectionClass;
 use Doctrine\Common\DoctrineException;
+use Doctrine\ORM\Exceptions\MappingException;
 
 /**
  * A <tt>ClassMetadata</tt> instance holds all the information (metadata) of an entity and
@@ -506,7 +507,7 @@ class ClassMetadata
     public function getFieldMapping($fieldName)
     {
         if ( ! isset($this->_fieldMappings[$fieldName])) {
-            throw Doctrine_MappingException::mappingNotFound($fieldName);
+            throw MappingException::mappingNotFound($fieldName);
         }
         return $this->_fieldMappings[$fieldName];
     }
@@ -620,10 +621,10 @@ class ClassMetadata
     {
         // Check mandatory fields
         if ( ! isset($mapping['fieldName'])) {
-            throw Doctrine_ORM_Exceptions_MappingException::missingFieldName();
+            throw MappingException::missingFieldName();
         }
         if ( ! isset($mapping['type'])) {
-            throw Doctrine_ORM_Exceptions_MappingException::missingType();
+            throw MappingException::missingType();
         }
 
         if ( ! is_object($mapping['type'])) {
@@ -648,9 +649,9 @@ class ClassMetadata
             if (isset($mapping['idGenerator'])) {
                 if ( ! $this->_isIdGeneratorType($mapping['idGenerator'])) {
                     //TODO: check if the idGenerator specifies an existing generator by name
-                    throw Doctrine_MappingException::invalidGeneratorType($mapping['idGenerator']);
+                    throw MappingException::invalidGeneratorType($mapping['idGenerator']);
                 } else if (count($this->_identifier) > 1) {
-                    throw Doctrine_MappingException::generatorNotAllowedWithCompositeId();
+                    throw MappingException::generatorNotAllowedWithCompositeId();
                 }
                 $this->_generatorType = $mapping['idGenerator'];
             }
@@ -1055,12 +1056,12 @@ class ClassMetadata
     public function setInheritanceType($type)
     {
         if ($parentClassNames = $this->getParentClasses()) {
-            throw new Doctrine_MappingException("All classes in an inheritance hierarchy"
+            throw new MappingException("All classes in an inheritance hierarchy"
                 . " must share the same inheritance mapping type and this type must be set"
                 . " in the root class of the hierarchy.");
         }
         if ( ! $this->_isInheritanceType($type)) {
-            throw Doctrine_MappingException::invalidInheritanceType($type);
+            throw MappingException::invalidInheritanceType($type);
         }
         $this->_inheritanceType = $type;
     }

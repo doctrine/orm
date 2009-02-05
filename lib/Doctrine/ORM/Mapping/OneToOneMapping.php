@@ -21,6 +21,8 @@
 
 namespace Doctrine\ORM\Mapping;
 
+use Doctrine\ORM\Exceptions\MappingException;
+
 /**
  * A one-to-one mapping describes a uni-directional mapping from one entity 
  * to another entity.

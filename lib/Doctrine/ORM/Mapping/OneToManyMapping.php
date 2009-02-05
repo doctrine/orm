@@ -21,6 +21,8 @@
 
 namespace Doctrine\ORM\Mapping;
 
+use Doctrine\ORM\Exceptions\MappingException;
+
 /**
  * Represents a one-to-many mapping.
  * 
@@ -76,7 +78,7 @@ class OneToManyMapping extends AssociationMapping
         
         // one-side MUST be inverse (must have mappedBy)
         if ( ! isset($mapping['mappedBy'])) {
-            throw Doctrine_MappingException::oneToManyRequiresMappedBy($mapping['fieldName']);
+            throw MappingException::oneToManyRequiresMappedBy($mapping['fieldName']);
         }
         
         $this->_deleteOrphans = isset($mapping['deleteOrphans']) ?

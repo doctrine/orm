@@ -24,8 +24,6 @@ namespace Doctrine\ORM;
 use Doctrine\ORM\Mapping\AssociationMapping;
 
 /**
- * A persistent collection wrapper.
- * 
  * A PersistentCollection represents a collection of elements that have persistent state.
  * Collections of entities represent only the associations (links) to those entities.
  * That means, if the collection is part of a many-many mapping and you remove

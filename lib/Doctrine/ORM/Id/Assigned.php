@@ -34,7 +34,7 @@ class Assigned extends AbstractIdGenerator
     /**
      * Returns the identifier assigned to the given entity.
      *
-     * @param Doctrine\ORM\Entity $entity
+     * @param object $entity
      * @return mixed
      * @override
      */

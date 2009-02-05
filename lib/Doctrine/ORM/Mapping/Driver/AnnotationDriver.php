@@ -153,4 +153,20 @@ class AnnotationDriver
             
         }
     }
+
+    /**
+     * Whether the class with the specified name should have its metadata loaded.
+     * This is only the case if it is annotated with either @DoctrineEntity or
+     * @DoctrineMappedSuperclass in the class doc block.
+     *
+     * @param string $className
+     * @return boolean
+     */
+    public function isTransient($className)
+    {
+        $refClass = new \ReflectionClass($className);
+        $docComment = $refClass->getDocComment();
+        return strpos($docComment, '@DoctrineEntity') === false &&
+                strpos($docComment, '@DoctrineMappedSuperclass') === false;
+    }
 }

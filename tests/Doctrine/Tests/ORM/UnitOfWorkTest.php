@@ -13,11 +13,6 @@ use Doctrine\Tests\Models\Forum\ForumAvatar;
 
 require_once __DIR__ . '/../TestInit.php';
 
-#require_once 'lib/mocks/Doctrine_EntityManagerMock.php';
-#require_once 'lib/mocks/Doctrine_ConnectionMock.php';
-#require_once 'lib/mocks/Doctrine_UnitOfWorkMock.php';
-#require_once 'lib/mocks/Doctrine_IdentityIdGeneratorMock.php';
-
 /**
  * UnitOfWork tests.
  */

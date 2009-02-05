@@ -1,6 +1,6 @@
 <?php
 /*
- *  $Id: Export.php 4805 2008-08-25 19:11:58Z subzero2000 $
+ *  $Id$
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -16,7 +16,7 @@
  *
  * This software consists of voluntary contributions made by many individuals
  * and is licensed under the LGPL. For more information, see
- * <http://www.phpdoctrine.org>.
+ * <http://www.doctrine-project.org>.
  */
 
 namespace Doctrine\ORM\Export;
@@ -27,8 +27,6 @@ use Doctrine\ORM\EntityManager;
  * The ClassExporter can generate database schemas/structures from ClassMetadata
  * class descriptors.
  *
- * @package     Doctrine
- * @subpackage  Export
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  * @author      Lukas Smith <smith@pooteeweet.org> (PEAR MDB2 library)
  * @author      Roman Borschel <roman@code-factory.org>

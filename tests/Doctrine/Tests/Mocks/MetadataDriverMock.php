@@ -11,9 +11,13 @@ namespace Doctrine\Tests\Mocks;
  *
  * @author robo
  */
-class MetadataDriverMock {
+class MetadataDriverMock
+{
     public function loadMetadataForClass($className, \Doctrine\ORM\Mapping\ClassMetadata $metadata) {
         return;
+    }
+    public function isTransient($className) {
+        return false;
     }
 }
 

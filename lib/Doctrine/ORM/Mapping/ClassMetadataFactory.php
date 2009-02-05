@@ -16,7 +16,7 @@
  *
  * This software consists of voluntary contributions made by many individuals
  * and is licensed under the LGPL. For more information, see
- * <http://www.phpdoctrine.org>.
+ * <http://www.doctrine-project.org>.
  */
 
 namespace Doctrine\ORM\Mapping;
@@ -28,7 +28,6 @@ use Doctrine\DBAL\Platforms\AbstractPlatform;
  * metadata mapping informations of a class which describes how a class should be mapped
  * to a relational database.
  *
- * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  * @author      Roman Borschel <roman@code-factory.org>
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @version     $Revision$
@@ -58,7 +57,7 @@ class ClassMetadataFactory
     /**
      * Sets the cache driver used by the factory to cache ClassMetadata instances.
      *
-     * @param object $cacheDriver
+     * @param Doctrine\ORM\Cache\Cache $cacheDriver
      */
     public function setCacheDriver($cacheDriver)
     {
@@ -68,7 +67,7 @@ class ClassMetadataFactory
     /**
      * Gets the cache driver used by the factory to cache ClassMetadata instances.
      *
-     * @return object
+     * @return Doctrine\ORM\Cache\Cache
      */
     public function getCacheDriver()
     {
@@ -108,51 +107,43 @@ class ClassMetadataFactory
      */
     protected function _loadMetadata($name)
     {
+        // Collect parent classes, ignoring transient (not-mapped) classes.
         $parentClass = $name;
         $parentClasses = array();
-        $loadedParentClass = false;
         while ($parentClass = get_parent_class($parentClass)) {
-            if (isset($this->_loadedMetadata[$parentClass])) {
-                $loadedParentClass = $parentClass;
-                break;
+            if ( ! $this->_driver->isTransient($parentClass)) {
+                $parentClasses[] = $parentClass;
             }
-            $parentClasses[] = $parentClass;
         }
         $parentClasses = array_reverse($parentClasses);
         $parentClasses[] = $name;
         
-        if ($loadedParentClass) {
-            $class = $this->_loadedMetadata[$loadedParentClass];
-        } else {
-            $rootClassOfHierarchy = count($parentClasses) > 0 ? array_shift($parentClasses) : $name;
-            $class = $this->_newClassMetadataInstance($rootClassOfHierarchy);
-            $this->_loadClassMetadata($class, $rootClassOfHierarchy);
-            $this->_loadedMetadata[$rootClassOfHierarchy] = $class;
-        }
-        
-        if (count($parentClasses) == 0) {
-            return $class;
-        }
-        
-        // load metadata of subclasses
-        // -> child1 -> child2 -> $name
-        
         // Move down the hierarchy of parent classes, starting from the topmost class
-        $parent = $class;
-        foreach ($parentClasses as $subclassName) {
-            $subClass = $this->_newClassMetadataInstance($subclassName);
-            $subClass->setInheritanceType($parent->getInheritanceType());
-            $subClass->setDiscriminatorMap($parent->getDiscriminatorMap());
-            $subClass->setDiscriminatorColumn($parent->getDiscriminatorColumn());
-            $subClass->setIdGeneratorType($parent->getIdGeneratorType());
-            $this->_addInheritedFields($subClass, $parent);
-            $this->_addInheritedRelations($subClass, $parent);
-            $this->_loadClassMetadata($subClass, $subclassName);
-            if ($parent->isInheritanceTypeSingleTable()) {
-                $subClass->setTableName($parent->getTableName());
+        $parent = null;
+        $visited = array();
+        foreach ($parentClasses as $className) {
+            $class = $this->_newClassMetadataInstance($className);
+            if ($parent) {
+                $class->setInheritanceType($parent->getInheritanceType());
+                $class->setDiscriminatorMap($parent->getDiscriminatorMap());
+                $class->setDiscriminatorColumn($parent->getDiscriminatorColumn());
+                $class->setIdGeneratorType($parent->getIdGeneratorType());
+                $this->_addInheritedFields($class, $parent);
+                $this->_addInheritedRelations($class, $parent);
             }
-            $this->_loadedMetadata[$subclassName] = $subClass;
-            $parent = $subClass;
+            
+            // Invoke driver
+            $this->_driver->loadMetadataForClass($className, $class);
+            $this->_completeIdGeneratorMapping($class);
+            
+            if ($parent && $parent->isInheritanceTypeSingleTable()) {
+                $class->setTableName($parent->getTableName());
+            }
+            
+            $this->_loadedMetadata[$className] = $class;
+            $parent = $class;
+            $class->setParentClasses($visited);
+            array_unshift($visited, $className);
         }
     }
 
@@ -173,7 +164,7 @@ class ClassMetadataFactory
      * @param Doctrine\ORM\Mapping\ClassMetadata $subClass
      * @param Doctrine\ORM\Mapping\ClassMetadata $parentClass
      */
-    private function _addInheritedFields($subClass, $parentClass)
+    private function _addInheritedFields(ClassMetadata $subClass, ClassMetadata $parentClass)
     {
         foreach ($parentClass->getFieldMappings() as $fieldName => $mapping) {
             if ( ! isset($mapping['inherited'])) {
@@ -189,55 +180,30 @@ class ClassMetadataFactory
      * @param Doctrine\ORM\Mapping\ClassMetadata $subClass
      * @param Doctrine\ORM\Mapping\ClassMetadata $parentClass
      */
-    private function _addInheritedRelations($subClass, $parentClass)
+    private function _addInheritedRelations(ClassMetadata $subClass, ClassMetadata $parentClass)
     {
         foreach ($parentClass->getAssociationMappings() as $mapping) {
             $subClass->addAssociationMapping($mapping);
         }
     }
-    
+
     /**
-     * Loads the metadata of a specified class.
+     * Completes the ID generator mapping. If "auto" is specified we choose the generator
+     * most appropriate for the targeted database platform.
      *
-     * @param Doctrine_ClassMetadata $class  The container for the metadata.
-     * @param string $name  The name of the class for which the metadata will be loaded.
+     * @param Doctrine\ORM\Mapping\ClassMetadata $class
      */
-    private function _loadClassMetadata(ClassMetadata $class, $name)
+    private function _completeIdGeneratorMapping(ClassMetadata $class)
     {
-        if ( ! class_exists($name) || empty($name)) {
-            throw new DoctrineException("Couldn't find class " . $name . ".");
-        }
-
-        $names = array();
-        $className = $name;
-        // get parent classes
-        //TODO: Skip Entity types MappedSuperclass/Transient
-        do {
-            if ($className == $name) {
-                continue;
-            }
-            $names[] = $className;
-        } while ($className = get_parent_class($className));
-
-        // save parents
-        $class->setParentClasses($names);
-
-        // load user-specified mapping metadata through the driver
-        $this->_driver->loadMetadataForClass($name, $class);
-
-        // Complete Id generator mapping. If AUTO is specified we choose the generator
-        // most appropriate for the target platform.
-        if ($class->getIdGeneratorType() == \Doctrine\ORM\Mapping\ClassMetadata::GENERATOR_TYPE_AUTO) {
+        if ($class->getIdGeneratorType() == ClassMetadata::GENERATOR_TYPE_AUTO) {
             if ($this->_targetPlatform->prefersSequences()) {
-                $class->setIdGeneratorType(\Doctrine\ORM\Mapping\ClassMetadata::GENERATOR_TYPE_SEQUENCE);
+                $class->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_SEQUENCE);
             } else if ($this->_targetPlatform->prefersIdentityColumns()) {
-                $class->setIdGeneratorType(\Doctrine\ORM\Mapping\ClassMetadata::GENERATOR_TYPE_IDENTITY);
+                $class->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_IDENTITY);
             } else {
-                $class->setIdGeneratorType(\Doctrine\ORM\Mapping\ClassMetadata::GENERATOR_TYPE_TABLE);
+                $class->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_TABLE);
             }
         }
-        
-        return $class;
     }
 }
 

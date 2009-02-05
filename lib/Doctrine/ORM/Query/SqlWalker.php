@@ -9,9 +9,13 @@ namespace Doctrine\ORM\Query;
 use Doctrine\ORM\Query\AST;
 
 /**
- * Description of SqlWalker
+ * The SqlWalker walks over an AST that represents a DQL query and constructs
+ * the corresponding SQL. The walking can start at any node, not only at some root
+ * node. Therefore it is possible to only generate SQL parts by simply walking over
+ * certain subtrees of the AST.
  *
  * @author robo
+ * @since 2.0
  */
 class SqlWalker
 {
@@ -27,6 +31,9 @@ class SqlWalker
     private $_dqlToSqlAliasMap = array();
     private $_scalarAliasCounter = 0;
 
+    /**
+     * Initializes a new SqlWalker instance.
+     */
     public function __construct($em, $parserResult)
     {
         $this->_em = $em;
@@ -157,9 +164,9 @@ class SqlWalker
                 $sql .= $sqlTableAlias . '.' . $class->getColumnName($fieldName) .
                         ' AS ' . $sqlTableAlias . '__' . $class->getColumnName($fieldName);
             } else if ($pathExpression->isSimpleStateFieldAssociationPathExpression()) {
-                throw new Doctrine_Exception("Not yet implemented.");
+                throw new DoctrineException("Not yet implemented.");
             } else {
-                throw new Doctrine_ORM_Query_Exception("Encountered invalid PathExpression during SQL construction.");
+                throw new DoctrineException("Encountered invalid PathExpression during SQL construction.");
             }
         }
         else if ($selectExpression->getExpression() instanceof AST\AggregateExpression) {

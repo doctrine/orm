@@ -54,12 +54,20 @@ abstract class AbstractPlatform
      * Constructor.
      */
     public function __construct() {}
-    
+
+    /**
+     * Sets whether to quote identifiers.
+     */
     public function setQuoteIdentifiers($bool)
     {
         $this->_quoteIdentifiers = (bool)$bool;
     }
-    
+
+    /**
+     * Gets whether to quote identifiers.
+     *
+     * @return boolean
+     */
     public function getQuoteIdentifiers()
     {
         return $this->_quoteIdentifiers;
@@ -1752,7 +1760,7 @@ abstract class AbstractPlatform
      * @return string
      * @todo Remove the ORM dependency
      */
-    public function writeLimitClauseInSubquery(Doctrine_ClassMetadata $rootClass,
+    public function writeLimitClauseInSubquery(\Doctrine\ORM\Mapping\ClassMetadata $rootClass,
             $query, $limit = false, $offset = false)
     {
         return $this->modifyLimitQuery($query, $limit, $offset);
@@ -1778,7 +1786,6 @@ abstract class AbstractPlatform
      * Default conversion defined here converts to integers.
      *
      * @param array $item
-     * @return void
      */
     public function convertBooleans($item)
     {
@@ -1797,9 +1804,9 @@ abstract class AbstractPlatform
     }
 
     /**
-     * Enter description here...
+     * Gets the SQL statement specific for the platform to set the charset.
      *
-     * @param unknown_type $charset
+     * @param string $charset
      * @return string
      */
     public function getSetCharsetSql($charset)
@@ -1810,7 +1817,7 @@ abstract class AbstractPlatform
     /**
      * Enter description here...
      *
-     * @param unknown_type $level
+     * @param integer $level
      */
     protected function _getTransactionIsolationLevelSql($level)
     {
@@ -1831,7 +1838,7 @@ abstract class AbstractPlatform
     /**
      * Enter description here...
      *
-     * @param unknown_type $level
+     * @param integer $level
      */
     public function getSetTransactionIsolationSql($level)
     {
@@ -1842,7 +1849,7 @@ abstract class AbstractPlatform
      * Gets the default transaction isolation level of the platform.
      *
      * @return integer The default isolation level.
-     * @see Doctrine::DBAL::Connection::TRANSACTION_* constants.
+     * @see Doctrine\DBAL\Connection\TRANSACTION_* constants.
      */
     public function getDefaultTransactionIsolationLevel()
     {
@@ -1851,42 +1858,85 @@ abstract class AbstractPlatform
     
     
     /* supports*() metods */
-    
+
+    /**
+     * Whether the platform supports sequences.
+     *
+     * @return boolean
+     */
     public function supportsSequences()
     {
         return false;
     }
-    
+
+    /**
+     * Whether the platform supports identity columns.
+     * Identity columns are columns that recieve an auto-generated value from the
+     * database on insert of a row.
+     *
+     * @return boolean
+     */
     public function supportsIdentityColumns()
     {
         return false;
     }
-    
+
+    /**
+     * Whether the platform supports indexes.
+     *
+     * @return boolean
+     */
     public function supportsIndexes()
     {
         return true;
     }
-    
+
+    /**
+     * Whether the platform supports transactions.
+     *
+     * @return boolean
+     */
     public function supportsTransactions()
     {
         return true;
     }
-    
+
+    /**
+     * Whether the platform supports savepoints.
+     *
+     * @return boolean
+     */
     public function supportsSavepoints()
     {
         return true;
     }
-    
+
+    /**
+     * Whether the platform supports primary key constraints.
+     *
+     * @return boolean
+     */
     public function supportsPrimaryConstraints()
     {
         return true;
     }
-    
+
+    /**
+     * Whether the platform supports foreign key constraints.
+     *
+     * @return boolean
+     */
     public function supportsForeignKeyConstraints()
     {
         return true;
     }
-    
+
+    /**
+     * Whether the platform supports getting the affected rows or a recent
+     * update/delete type query.
+     *
+     * @return boolean
+     */
     public function supportsGettingAffectedRows()
     {
         return true;
