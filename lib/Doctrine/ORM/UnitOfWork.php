@@ -24,6 +24,8 @@ namespace Doctrine\ORM;
 use Doctrine\ORM\Internal\CommitOrderCalculator;
 use Doctrine\ORM\Internal\CommitOrderNode;
 use Doctrine\ORM\PersistentCollection;
+use Doctrine\ORM\Mapping;
+use Doctrine\ORM\Persisters;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Exceptions\UnitOfWorkException;
 
@@ -227,7 +229,8 @@ class UnitOfWork
         if (empty($this->_newEntities) &&
                 empty($this->_deletedEntities) &&
                 empty($this->_dirtyEntities) &&
-                empty($this->_collectionUpdates)) {
+                empty($this->_collectionUpdates) &&
+                empty($this->_collectionDeletions)) {
             return; // Nothing to do.
         }
 
@@ -243,8 +246,12 @@ class UnitOfWork
             $this->_executeUpdates($class);
         }
         
-        //TODO: collection deletions (deletions of complete collections)
-        //TODO: collection updates (deleteRows, updateRows, insertRows)
+        // Collection deletions (deletions of complete collections)
+        foreach ($this->_collectionDeletions as $collectionToDelete) {
+            $this->getCollectionPersister($collectionToDelete->getMapping())
+                    ->delete($collectionToDelete);
+        }
+        // Collection updates (deleteRows, updateRows, insertRows)
         foreach ($this->_collectionUpdates as $collectionToUpdate) {
             $this->getCollectionPersister($collectionToUpdate->getMapping())
                     ->update($collectionToUpdate);
@@ -269,6 +276,7 @@ class UnitOfWork
         $this->_deletedEntities = array();
         $this->_entityChangeSets = array();
         $this->_collectionUpdates = array();
+        $this->_collectionDeletions = array();
         $this->_visitedCollections = array();
     }
 
@@ -328,24 +336,31 @@ class UnitOfWork
                             $actualData[$name] = $refProp->getValue($entity);
                         }
                         
-                        if ($class->isCollectionValuedAssociation($name) && ! ($actualData[$name] instanceof PersistentCollection)) {
-                            // Inject PersistentCollection
+                        if ($class->isCollectionValuedAssociation($name)
+                                && ! is_null($actualData[$name])
+                                && ! ($actualData[$name] instanceof PersistentCollection)) {
                             //TODO: If $actualData[$name] is Collection then unwrap the array
                             $assoc = $class->getAssociationMapping($name);
-                            $coll = new PersistentCollection($this->_em, $assoc->getTargetEntityName(),
+                            if ($assoc->isOwningSide()) {
+                                // Inject PersistentCollection
+                                $coll = new PersistentCollection($this->_em, $assoc->getTargetEntityName(),
                                     $actualData[$name] ? $actualData[$name] : array());
-                            $coll->_setOwner($entity, $assoc);
-                            if ( ! $coll->isEmpty()) $coll->setDirty(true);
-                            $class->getReflectionProperty($name)->setValue($entity, $coll);
-                            $actualData[$name] = $coll;
+                                $coll->_setOwner($entity, $assoc);
+                                if ( ! $coll->isEmpty()) $coll->setDirty(true);
+                                $class->getReflectionProperty($name)->setValue($entity, $coll);
+                                $actualData[$name] = $coll;
+                            }
                         }
                     }
 
                     if ( ! isset($this->_originalEntityData[$oid])) {
                         // Entity is either NEW or MANAGED but not yet fully persisted
                         // (only has an id). These result in an INSERT.
-                        $this->_entityChangeSets[$oid] = $actualData;
                         $this->_originalEntityData[$oid] = $actualData;
+                        $this->_entityChangeSets[$oid] = array_map(
+                            function($e) { return array(null, $e); },
+                            $actualData
+                        );
                     } else {
                         // Entity is "fully" MANAGED: it was already fully persisted before
                         // and we have a copy of the original data
@@ -366,11 +381,16 @@ class UnitOfWork
                                     $assoc = $class->getAssociationMapping($propName);
                                     if ($assoc->isOneToOne() && $assoc->isOwningSide()) {
                                         $entityIsDirty = true;
+                                    } else if (/*is_null($actualValue) && */$orgValue instanceof PersistentCollection) {
+                                        // A PersistentCollection was de-referenced, so delete it.
+                                        if  ( ! in_array($orgValue, $this->_collectionDeletions, true)) {
+                                            $this->_collectionDeletions[] = $orgValue;
+                                        }
                                     }
                                 } else {
                                     $entityIsDirty = true;
                                 }
-                            }                            
+                            }
                         }
                         if ($changeSet) {
                             if ($entityIsDirty) {
@@ -403,6 +423,10 @@ class UnitOfWork
      */
     private function _computeAssociationChanges($assoc, $value)
     {
+        /*if ( ! $assoc->isCascadeSave()) {
+            return; // "Persistence by reachability" only if save cascade enabled
+        }*/
+
         if ($assoc->isOneToOne()) {
             $value = array($value);
         }
@@ -428,13 +452,27 @@ class UnitOfWork
 
                 // NEW entities are INSERTed within the current unit of work.
                 $data = array();
+                $changeSet = array();
                 foreach ($targetClass->getReflectionProperties() as $name => $refProp) {
                     $data[$name] = $refProp->getValue($entry);
+                    $changeSet[$name] = array(null, $data[$name]);
+                    // --
+                    /*if ($targetClass->isCollectionValuedAssociation($name) && ! ($data[$name] instanceof PersistentCollection)) {
+                        // Inject PersistentCollection
+                        //TODO: If $actualData[$name] is Collection then unwrap the array
+                        $assoc = $targetClass->getAssociationMapping($name);
+                        $coll = new PersistentCollection($this->_em, $assoc->getTargetEntityName(),
+                                $data[$name] ? $data[$name] : array());
+                        $coll->_setOwner($entry, $assoc);
+                        if ( ! $coll->isEmpty()) $coll->setDirty(true);
+                        $targetClass->getReflectionProperty($name)->setValue($entry, $coll);
+                        $data[$name] = $coll;
+                    }*/
+                    //--
                 }
 
-                $oid = spl_object_hash($entry);
                 $this->_newEntities[$oid] = $entry;
-                $this->_entityChangeSets[$oid] = $data;
+                $this->_entityChangeSets[$oid] = $changeSet;
                 $this->_originalEntityData[$oid] = $data;
             } else if ($state == self::STATE_DELETED) {
                 throw new DoctrineException("Deleted entity in collection detected during flush.");
@@ -479,11 +517,6 @@ class UnitOfWork
                 }
             }
         }
-    }
-
-    private function _executeCollectionUpdate($collectionToUpdate)
-    {
-        //...
     }
 
     /**
@@ -784,7 +817,7 @@ class UnitOfWork
     {
         $oid = spl_object_hash($entity);
         if ( ! isset($this->_entityStates[$oid])) {
-            if (isset($this->_entityIdentifiers[$oid])) {
+            if (isset($this->_entityIdentifiers[$oid]) && ! isset($this->_newEntities[$oid])) {
                 $this->_entityStates[$oid] = self::STATE_DETACHED;
             } else {
                 $this->_entityStates[$oid] = self::STATE_NEW;
@@ -824,7 +857,7 @@ class UnitOfWork
      *
      * @param string $idHash
      * @param string $rootClassName
-     * @return Doctrine\ORM\Entity
+     * @return object
      */
     public function getByIdHash($idHash, $rootClassName)
     {
@@ -1071,8 +1104,8 @@ class UnitOfWork
             }
             $relatedEntities = $class->getReflectionProperty($assocMapping->getSourceFieldName())
                     ->getValue($entity);
-            if ($relatedEntities instanceof \Doctrine\Common\Collections\Collection &&
-                    count($relatedEntities) > 0) {
+            if ($relatedEntities instanceof \Doctrine\Common\Collections\Collection || is_array($relatedEntities)
+                    && count($relatedEntities) > 0) {
                 foreach ($relatedEntities as $relatedEntity) {
                     $this->_doDelete($relatedEntity, $visited);
                 }
@@ -1323,23 +1356,29 @@ class UnitOfWork
         if ( ! isset($this->_persisters[$entityName])) {
             $class = $this->_em->getClassMetadata($entityName);
             if ($class->isInheritanceTypeJoined()) {
-                $persister = new \Doctrine\ORM\Persisters\JoinedSubclassPersister($this->_em, $class);
+                $persister = new Persisters\JoinedSubclassPersister($this->_em, $class);
             } else {
-                $persister = new \Doctrine\ORM\Persisters\StandardEntityPersister($this->_em, $class);
+                $persister = new Persisters\StandardEntityPersister($this->_em, $class);
             }
             $this->_persisters[$entityName] = $persister;
         }
         return $this->_persisters[$entityName];
     }
 
+    /**
+     * Gets a collection persister for a collection-valued association.
+     *
+     * @param AssociationMapping $association
+     * @return AbstractCollectionPersister
+     */
     public function getCollectionPersister($association)
     {
         $type = get_class($association);
         if ( ! isset($this->_collectionPersisters[$type])) {
-            if ($association instanceof \Doctrine\ORM\Mapping\OneToManyMapping) {
-                $persister = new \Doctrine\ORM\Persisters\OneToManyPersister($this->_em);
-            } else if ($association instanceof \Doctrine\ORM\Mapping\ManyToManyMapping) {
-                $persister = new \Doctrine\ORM\Persisters\ManyToManyPersister($this->_em);
+            if ($association instanceof Mapping\OneToManyMapping) {
+                $persister = new Persisters\OneToManyPersister($this->_em);
+            } else if ($association instanceof Mapping\ManyToManyMapping) {
+                $persister = new Persisters\ManyToManyPersister($this->_em);
             }
             $this->_collectionPersisters[$type] = $persister;
         }

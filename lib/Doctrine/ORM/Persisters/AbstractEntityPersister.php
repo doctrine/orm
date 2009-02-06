@@ -171,13 +171,8 @@ abstract class AbstractEntityPersister
     protected function _prepareData($entity, array &$result, $isInsert = false)
     {
         foreach ($this->_em->getUnitOfWork()->getEntityChangeSet($entity) as $field => $change) {
-            if (is_array($change)) {
-                $oldVal = $change[0];
-                $newVal = $change[1];
-            } else {
-                $oldVal = null;
-                $newVal = $change;
-            }
+            $oldVal = $change[0];
+            $newVal = $change[1];
             
             $type = $this->_classMetadata->getTypeOfField($field);
             $columnName = $this->_classMetadata->getColumnName($field);

@@ -21,40 +21,112 @@
 
 namespace Doctrine\ORM\Persisters;
 
+use Doctrine\ORM\PersistentCollection;
+
 /**
  * Persister for many-to-many collections.
  *
  * @author robo
+ * @since 2.0
  */
 class ManyToManyPersister extends AbstractCollectionPersister
 {
     /**
+     * {@inheritdoc}
      *
-     * @param <type> $coll
      * @override
-     * @todo Identifier quoting.
-     * @see _getDeleteRowSqlParameters()
      */
     protected function _getDeleteRowSql(PersistentCollection $coll)
     {
         $mapping = $coll->getMapping();
         $joinTable = $mapping->getJoinTable();
-        $columns = array_merge($mapping->getSourceKeyColumns(), $mapping->getTargetKeyColumns());
-        return "DELETE FROM $joinTable WHERE " . implode(' = ?, ', $columns) . ' = ?';
+        $columns = $mapping->getJoinTableColumns();
+        return "DELETE FROM {$joinTable['name']} WHERE " . implode(' = ? AND ', $columns) . ' = ?';
     }
 
     /**
+     * {@inheritdoc}
      *
-     * @param <type> $element
      * @override
-     * @see _getDeleteRowSql()
      */
     protected function _getDeleteRowSqlParameters(PersistentCollection $coll, $element)
     {
-        $owner = $coll->getOwner();
+        $params = array_merge(
+                $this->_uow->getEntityIdentifier($coll->getOwner()),
+                $this->_uow->getEntityIdentifier($element)
+                );
+        //var_dump($params);
+        return $params;
+    }
 
+    /**
+     * {@inheritdoc}
+     *
+     * @override
+     */
+    protected function _getUpdateRowSql(PersistentCollection $coll)
+    {
         
-        
+    }
+
+    /**
+     * {@inheritdoc}
+     *
+     * @override
+     */
+    protected function _getInsertRowSql(PersistentCollection $coll)
+    {
+        $mapping = $coll->getMapping();
+        $joinTable = $mapping->getJoinTable();
+        $columns = $mapping->getJoinTableColumns();
+        return "INSERT INTO {$joinTable['name']} (" . implode(', ', $columns) . ")"
+                . " VALUES (" . implode(', ', array_fill(0, count($columns), '?')) . ')';
+    }
+
+    /**
+     * {@inheritdoc}
+     *
+     * @override
+     */
+    protected function _getInsertRowSqlParameters(PersistentCollection $coll, $element)
+    {
+        //FIXME: This is still problematic for composite keys because we silently
+        // rely on a specific ordering of the columns.
+        $params = array_merge(
+                $this->_uow->getEntityIdentifier($coll->getOwner()),
+                $this->_uow->getEntityIdentifier($element)
+                );
+        var_dump($params);
+        return $params;
+    }
+
+    /**
+     * {@inheritdoc}
+     *
+     * @override
+     */
+    protected function _getDeleteSql(PersistentCollection $coll)
+    {
+        $mapping = $coll->getMapping();
+        $joinTable = $mapping->getJoinTable();
+        $whereClause = '';
+        foreach ($mapping->getSourceToRelationKeyColumns() as $relationColumn) {
+            if ($whereClause !== '') $whereClause .= ' AND ';
+            $whereClause .= "$relationColumn = ?";
+        }
+        return "DELETE FROM {$joinTable['name']} WHERE $whereClause";
+    }
+
+    /**
+     * {@inheritdoc}
+     *
+     * @override
+     */
+    protected function _getDeleteSqlParameters(PersistentCollection $coll)
+    {
+        //FIXME: This is still problematic for composite keys because we silently
+        // rely on a specific ordering of the columns.
+        return $this->_uow->getEntityIdentifier($coll->getOwner());
     }
 }
 

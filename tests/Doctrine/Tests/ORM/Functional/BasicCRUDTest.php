@@ -6,8 +6,7 @@ use Doctrine\ORM\Export\ClassExporter;
 use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\Models\CMS\CmsPhonenumber;
 use Doctrine\Tests\Models\CMS\CmsAddress;
-use Doctrine\Tests\Models\Forum\ForumUser;
-use Doctrine\Tests\Models\Forum\ForumAvatar;
+use Doctrine\Tests\Models\CMS\CmsGroup;
 
 require_once __DIR__ . '/../../TestInit.php';
 
@@ -25,7 +24,8 @@ class BasicCRUDTest extends \Doctrine\Tests\OrmFunctionalTestCase {
         $exporter->exportClasses(array(
             $this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsUser'),
             $this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsPhonenumber'),
-            $this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsAddress')
+            $this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsAddress'),
+            $this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsGroup')
         ));
 
         // Create
@@ -48,7 +48,7 @@ class BasicCRUDTest extends \Doctrine\Tests\OrmFunctionalTestCase {
         $em->flush();
         $this->assertTrue($em->contains($ph));
         $this->assertTrue($em->contains($user));
-        $this->assertTrue($user->phonenumbers instanceof \Doctrine\ORM\PersistentCollection);
+        //$this->assertTrue($user->phonenumbers instanceof \Doctrine\ORM\PersistentCollection);
 
         // Update name
         $user->name = 'guilherme';
@@ -90,7 +90,7 @@ class BasicCRUDTest extends \Doctrine\Tests\OrmFunctionalTestCase {
         $this->_em->save($user);
         $this->_em->flush();
 
-        $this->assertTrue($user->phonenumbers instanceof \Doctrine\ORM\PersistentCollection);
+        //$this->assertTrue($user->phonenumbers instanceof \Doctrine\ORM\PersistentCollection);
 
         // Remove the first element from the collection
         unset($user->phonenumbers[0]);
@@ -124,6 +124,64 @@ class BasicCRUDTest extends \Doctrine\Tests\OrmFunctionalTestCase {
         $userId = $this->_em->getConnection()->execute("SELECT user_id FROM cms_addresses WHERE id=?",
                 array($address->id))->fetchColumn();
         $this->assertTrue(is_numeric($userId));
+    }
+
+    public function testBasicManyToMany()
+    {
+        $user = new CmsUser;
+        $user->name = 'Guilherme';
+        $user->username = 'gblanco';
+        $user->status = 'developer';
+
+        $group = new CmsGroup;
+        $group->name = 'Developers';
+
+        $user->groups[] = $group;
+        $group->users[] = $user;
+
+        $this->_em->save($user);
+        $this->_em->save($group);
+
+        $this->_em->flush();
+
+        unset($group->users[0]); // inverse side
+        unset($user->groups[0]); // owning side!
+
+        $this->_em->flush();
+
+        // Check that the link in the association table has been deleted
+        $count = $this->_em->getConnection()->execute("SELECT COUNT(*) FROM cms_users_groups",
+                array())->fetchColumn();
+        $this->assertEquals(0, $count);
+    }
+
+    public function testManyToManyCollectionClearing()
+    {
+        $user = new CmsUser;
+        $user->name = 'Guilherme';
+        $user->username = 'gblanco';
+        $user->status = 'developer';
+
+        for ($i=0; $i<10; ++$i) {
+            $group = new CmsGroup;
+            $group->name = 'Developers_' . $i;
+            $user->groups[] = $group;
+            $group->users[] = $user;
+        }
+
+        $this->_em->save($user); // Saves the user, cause of post-insert ID
+
+        $this->_em->flush(); // Saves the groups, cause they're attached to a persistent entity ($user)
+
+        //$user->groups->clear();
+        unset($user->groups);
+
+        $this->_em->flush();
+
+        // Check that the links in the association table have been deleted
+        $count = $this->_em->getConnection()->execute("SELECT COUNT(*) FROM cms_users_groups",
+                array())->fetchColumn();
+        $this->assertEquals(0, $count);
     }
 }
 

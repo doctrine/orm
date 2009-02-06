@@ -31,9 +31,11 @@ if ( ! class_exists('\Addendum', false)) {
 require __DIR__ . '/DoctrineAnnotations.php';
 
 /**
- * The AnnotationDriver reads the mapping metadata from docblock annotations.
+ * The AnnotationDriver reads the mapping metadata from docblock annotations
+ * with the help of the Addendum reflection extensions.
  *
  * @author robo
+ * @since 2.0
  */
 class AnnotationDriver
 {

@@ -55,54 +55,54 @@ abstract class AbstractCollectionPersister
         }
         //...
     }
-    
-    public function delete(PersistentCollection $coll)
-    {
-        if ($coll->getRelation()->isInverseSide()) {
-            return;
-        }
-        //...
-    }
 
-    public function update(PersistentCollection $coll)
-    {
-        $this->deleteRows($coll);
-        $this->updateRows($coll);
-        $this->insertRows($coll);
-    }
-    
-    /* collection update actions */
-    
-    public function deleteRows(PersistentCollection $coll)
+    /**
+     * Deletes the persistent state represented by the given collection.
+     *
+     * @param PersistentCollection $coll
+     */
+    public function delete(PersistentCollection $coll)
     {
         if ($coll->getMapping()->isInverseSide()) {
             return; // ignore inverse side
         }
-        
+
+        $sql = $this->_getDeleteSql($coll);
+        $this->_conn->exec($sql, $this->_getDeleteSqlParameters($coll));
+    }
+
+    abstract protected function _getDeleteSql(PersistentCollection $coll);
+    abstract protected function _getDeleteSqlParameters(PersistentCollection $coll);
+
+    public function update(PersistentCollection $coll)
+    {
+        if ($coll->getMapping()->isInverseSide()) {
+            return; // ignore inverse side
+        }
+
+        $this->deleteRows($coll);
+        //$this->updateRows($coll);
+        $this->insertRows($coll);
+    }
+    
+    public function deleteRows(PersistentCollection $coll)
+    {        
         $deleteDiff = $coll->getDeleteDiff();
         $sql = $this->_getDeleteRowSql($coll);
-        $uow = $this->_em->getUnitOfWork();
         foreach ($deleteDiff as $element) {
-            $this->_conn->exec($sql, $this->_getDeleteRowSqlParameters($element));
+            $this->_conn->exec($sql, $this->_getDeleteRowSqlParameters($coll, $element));
         }
     }
     
     public function updateRows(PersistentCollection $coll)
-    {
-        
-    }
+    {}
     
     public function insertRows(PersistentCollection $coll)
     {
-        if ($coll->getMapping()->isInverseSide()) {
-            return; // ignore inverse side
-        }
-
         $insertDiff = $coll->getInsertDiff();
         $sql = $this->_getInsertRowSql($coll);
-        $uow = $this->_em->getUnitOfWork();
         foreach ($insertDiff as $element) {
-            $this->_conn->exec($sql/*, $uow->getEntityIdentifier($element)*/);
+            $this->_conn->exec($sql, $this->_getInsertRowSqlParameters($coll, $element));
         }
     }
 
@@ -120,13 +120,15 @@ abstract class AbstractCollectionPersister
      *
      * @param PersistentCollection $coll
      */
-    abstract protected function _getUpdateRowSql();
+    abstract protected function _getUpdateRowSql(PersistentCollection $coll);
 
     /**
      * Gets the SQL statement used for inserting a row from to the collection.
      *
      * @param PersistentCollection $coll
      */
-    abstract protected function _getInsertRowSql();
+    abstract protected function _getInsertRowSql(PersistentCollection $coll);
+    
+    abstract protected function _getInsertRowSqlParameters(PersistentCollection $coll, $element);
 }
 

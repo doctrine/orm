@@ -51,6 +51,11 @@ class ManyToManyMapping extends AssociationMapping
      * Maps the columns in the target table to the columns in the relation table.
      */
     private $_targetToRelationKeyColumns = array();
+
+    /**
+     * The columns on the join table.
+     */
+    private $_joinTableColumns = array();
     
     /**
      * Initializes a new ManyToManyMapping.
@@ -76,23 +81,32 @@ class ManyToManyMapping extends AssociationMapping
             if ( ! isset($mapping['joinTable'])) {
                 throw MappingException::joinTableRequired($mapping['fieldName']);
             }
+
             // owning side MUST specify joinColumns
             if ( ! isset($mapping['joinTable']['joinColumns'])) {
                 throw MappingException::invalidMapping($this->_sourceFieldName);
             }
             foreach ($mapping['joinTable']['joinColumns'] as $joinColumn) {
                 $this->_sourceToRelationKeyColumns[$joinColumn['referencedColumnName']] = $joinColumn['name'];
+                $this->_joinTableColumns[] = $joinColumn['name'];
             }
             $this->_sourceKeyColumns = array_keys($this->_sourceToRelationKeyColumns);
+
             // owning side MUST specify inverseJoinColumns
             if ( ! isset($mapping['joinTable']['inverseJoinColumns'])) {
                 throw MappingException::invalidMapping($this->_sourceFieldName);
             }
             foreach ($mapping['joinTable']['inverseJoinColumns'] as $inverseJoinColumn) {
                 $this->_targetToRelationKeyColumns[$inverseJoinColumn['referencedColumnName']] = $inverseJoinColumn['name'];
+                $this->_joinTableColumns[] = $inverseJoinColumn['name'];
             }
             $this->_targetKeyColumns = array_keys($this->_targetToRelationKeyColumns);
         }
+    }
+
+    public function getJoinTableColumns()
+    {
+        return $this->_joinTableColumns;
     }
 
     public function getSourceToRelationKeyColumns()

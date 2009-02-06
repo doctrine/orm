@@ -25,8 +25,11 @@ use Doctrine\ORM\PersistentCollection;
 
 /**
  * Persister for one-to-many collections.
+ * 
+ * This persister is only used for uni-directional one-to-many mappings.
  *
  * @since 2.0
+ * @author Roman Borschel <roman@code-factory.org>
  */
 class OneToManyPersister extends AbstractCollectionPersister
 {
@@ -57,19 +60,7 @@ class OneToManyPersister extends AbstractCollectionPersister
             $whereClause .= "$idColumn = ?";
         }
 
-        return "UPDATE $table SET $setClause WHERE $whereClause";
-    }
-
-    /**
-     * {@inheritdoc}
-     *
-     * @param <type> $element
-     * @return <type>
-     * @override
-     */
-    protected function _getDeleteRowSqlParameters(PersistentCollection $coll, $element)
-    {
-        return $this->_uow->getEntityIdentifier($element);
+        return array("UPDATE $table SET $setClause WHERE $whereClause", $this->_uow->getEntityIdentifier($element));
     }
 
     protected function _getInsertRowSql()
