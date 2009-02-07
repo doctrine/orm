@@ -7,7 +7,6 @@
 namespace Doctrine\ORM\Internal\Hydration;
 
 use \PDO;
-use Doctrine\ORM\Exceptions\HydrationException;
 
 /**
  * Description of SingleScalarHydrator

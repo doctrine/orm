@@ -157,6 +157,8 @@ class BasicCRUDTest extends \Doctrine\Tests\OrmFunctionalTestCase {
 
     public function testManyToManyCollectionClearing()
     {
+        echo PHP_EOL . "MANY-MANY" . PHP_EOL;
+
         $user = new CmsUser;
         $user->name = 'Guilherme';
         $user->username = 'gblanco';
@@ -171,11 +173,17 @@ class BasicCRUDTest extends \Doctrine\Tests\OrmFunctionalTestCase {
 
         $this->_em->save($user); // Saves the user, cause of post-insert ID
 
-        $this->_em->flush(); // Saves the groups, cause they're attached to a persistent entity ($user)
+        $this->_em->flush();
+
+        // Check that there are indeed 10 links in the association table
+        $count = $this->_em->getConnection()->execute("SELECT COUNT(*) FROM cms_users_groups",
+                array())->fetchColumn();
+        $this->assertEquals(10, $count);
 
         //$user->groups->clear();
         unset($user->groups);
 
+        echo PHP_EOL . "FINAL FLUSH" . PHP_EOL;
         $this->_em->flush();
 
         // Check that the links in the association table have been deleted

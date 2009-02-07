@@ -16,7 +16,7 @@
  *
  * This software consists of voluntary contributions made by many individuals
  * and is licensed under the LGPL. For more information, see
- * <http://www.phpdoctrine.org>.
+ * <http://www.doctrine-project.org>.
  */
 
 namespace Doctrine\Common;
@@ -45,20 +45,20 @@ class EventManager
     /**
      * Dispatches an event to all registered listeners.
      *
-     * @param string|Event $event  The name of the event or the event object.
+     * @param string $eventName  The name of the event to dispatch. The name of the event is
+     *                           the name of the method that is invoked on listeners.
+     * @param EventArgs $eventArgs The event arguments to pass to the event handlers/listeners.
+     *                             If not supplied, the single empty EventArgs instance is used.
      * @return boolean
      */
-    public function dispatchEvent($event)
+    public function dispatchEvent($eventName, EventArgs $eventArgs = null)
     {
-        $argIsCallback = is_string($event);
-        $callback = $argIsCallback ? $event : $event->getType();
-
-        if (isset($this->_listeners[$callback])) {
-            $event = $argIsCallback ? new Event($event) : $event;
-            foreach ($this->_listeners[$callback] as $listener) {
-                $listener->$callback($event);
+        if (isset($this->_listeners[$eventName])) {
+            $eventArgs = is_null($eventArgs) ? EventArgs::getEmptyInstance() : $eventArgs;
+            foreach ($this->_listeners[$eventName] as $listener) {
+                $listener->$eventName($eventArgs);
             }
-            return ! $event->getDefaultPrevented();
+            return ! $eventArgs->getDefaultPrevented();
         }
         return true;
     }
@@ -95,7 +95,7 @@ class EventManager
     {
         // TODO: maybe check for duplicate registrations?
         foreach ((array)$events as $event) {
-            $this->_listeners[$event] = $listener;
+            $this->_listeners[$event][] = $listener;
         }
     }
     
@@ -110,4 +110,3 @@ class EventManager
         $this->addEventListener($subscriber->getSubscribedEvents(), $subscriber);
     }
 }
-

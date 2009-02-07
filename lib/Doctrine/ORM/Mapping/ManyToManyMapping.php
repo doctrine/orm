@@ -21,8 +21,6 @@
 
 namespace Doctrine\ORM\Mapping;
 
-use Doctrine\ORM\Exceptions\MappingException;
-
 /**
  * A many-to-many mapping describes the mapping between two collections of
  * entities.

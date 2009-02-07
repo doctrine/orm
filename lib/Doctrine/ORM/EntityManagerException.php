@@ -16,10 +16,10 @@
  *
  * This software consists of voluntary contributions made by many individuals
  * and is licensed under the LGPL. For more information, see
- * <http://www.phpdoctrine.org>.
+ * <http://www.doctrine-project.org>.
  */
 
-namespace Doctrine\ORM\Exceptions;
+namespace Doctrine\ORM;
 
 /**
  * Doctrine_EntityManager_Exception
@@ -27,7 +27,7 @@ namespace Doctrine\ORM\Exceptions;
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  * @author      Roman Borschel <roman@code-factory.org>
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
- * @link        www.phpdoctrine.org
+ * @link        www.doctrine-project.org
  * @since       2.0
  * @version     $Revision$
  */

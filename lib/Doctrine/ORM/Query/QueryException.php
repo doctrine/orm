@@ -4,7 +4,7 @@
  * and open the template in the editor.
  */
 
-namespace Doctrine\ORM\Exceptions;
+namespace Doctrine\ORM\Query;
 
 /**
  * Description of QueryException

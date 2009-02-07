@@ -1,6 +1,6 @@
 <?php
 
-namespace Doctrine\ORM\Exceptions;
+namespace Doctrine\ORM\Internal\Hydration;
 
 class HydrationException extends \Doctrine\Common\DoctrineException
 {

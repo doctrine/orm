@@ -39,7 +39,7 @@ class CmsUser
      */
     public $address;
     /**
-     * @DoctrineManyToMany(targetEntity="CmsGroup")
+     * @DoctrineManyToMany(targetEntity="CmsGroup", cascade={"save"})
      * @DoctrineJoinTable(name="cms_users_groups",
             joinColumns={{"name"="user_id", "referencedColumnName"="id"}},
             inverseJoinColumns={{"name"="group_id", "referencedColumnName"="id"}})

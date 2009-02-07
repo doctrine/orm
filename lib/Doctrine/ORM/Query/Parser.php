@@ -23,7 +23,6 @@
 namespace Doctrine\ORM\Query;
 
 use Doctrine\ORM\Query\AST;
-use Doctrine\ORM\Exceptions\QueryException;
 use Doctrine\ORM\Query\Exec;
 
 /**

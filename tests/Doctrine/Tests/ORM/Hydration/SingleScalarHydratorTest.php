@@ -89,7 +89,7 @@ class SingleScalarHydratorTest extends HydrationTest
                 $result = $hydrator->hydrateall($stmt, $this->_createParserResult(
                         $queryComponents, $tableAliasMap));
                 $this->fail();
-            } catch (\Doctrine\ORM\Exceptions\HydrationException $ex) {}
+            } catch (\Doctrine\ORM\Internal\Hydration\HydrationException $ex) {}
         }
 
     }

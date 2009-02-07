@@ -154,9 +154,11 @@ class Connection
      * Initializes a new instance of the Connection class.
      *
      * @param array $params  The connection parameters.
+     * @param Driver $driver
+     * @param Configuration $config
+     * @param EventManager $eventManager
      */
-    public function __construct(array $params, Driver $driver,
-            Configuration $config = null,
+    public function __construct(array $params, Driver $driver, Configuration $config = null,
             EventManager $eventManager = null)
     {
         $this->_driver = $driver;
@@ -182,7 +184,7 @@ class Connection
     /**
      * Gets the Configuration used by the Connection.
      *
-     * @return Configuration
+     * @return Doctrine\DBAL\Configuration
      */
     public function getConfiguration()
     {
@@ -389,23 +391,23 @@ class Connection
     }
 
     /**
-     * fetchAll
+     * Convenience method for PDO::query("...") followed by $stmt->fetchAll(PDO::FETCH_ASSOC).
      *
-     * @param string $statement         sql query to be executed
-     * @param array $params             prepared statement params
+     * @param string $sql The SQL query.
+     * @param array $params The query parameters.
      * @return array
      */
-    public function fetchAll($statement, array $params = array())
+    public function fetchAll($sql, array $params = array())
     {
-        return $this->execute($statement, $params)->fetchAll(PDO::FETCH_ASSOC);
+        return $this->execute($sql, $params)->fetchAll(PDO::FETCH_ASSOC);
     }
 
     /**
-     * fetchOne
+     * Convenience method for PDO::query("...") followed by $stmt->fetchColumn().
      *
-     * @param string $statement         sql query to be executed
-     * @param array $params             prepared statement params
-     * @param int $colnum               0-indexed column number to retrieve
+     * @param string $statement The SQL query.
+     * @param array $params The query parameters.
+     * @param int $colnum 0-indexed column number to retrieve
      * @return mixed
      */
     public function fetchOne($statement, array $params = array(), $colnum = 0)
@@ -414,10 +416,10 @@ class Connection
     }
 
     /**
-     * fetchRow
+     * Convenience method for PDO::query("...") followed by $stmt->fetch(PDO::FETCH_ASSOC).
      *
-     * @param string $statement         sql query to be executed
-     * @param array $params             prepared statement params
+     * @param string $statement The SQL query.
+     * @param array $params The query parameters.
      * @return array
      */
     public function fetchRow($statement, array $params = array())
@@ -426,7 +428,7 @@ class Connection
     }
 
     /**
-     * fetchArray
+     * Convenience method for PDO::query("...") followed by $stmt->fetch(PDO::FETCH_NUM).
      *
      * @param string $statement         sql query to be executed
      * @param array $params             prepared statement params
@@ -438,7 +440,7 @@ class Connection
     }
 
     /**
-     * fetchColumn
+     * Convenience method for PDO::query("...") followed by $stmt->fetchAll(PDO::FETCH_COLUMN, ...).
      *
      * @param string $statement         sql query to be executed
      * @param array $params             prepared statement params
@@ -451,19 +453,7 @@ class Connection
     }
 
     /**
-     * fetchAssoc
-     *
-     * @param string $statement         sql query to be executed
-     * @param array $params             prepared statement params
-     * @return array
-     */
-    public function fetchAssoc($statement, array $params = array())
-    {
-        return $this->execute($statement, $params)->fetchAll(PDO::FETCH_ASSOC);
-    }
-
-    /**
-     * fetchBoth
+     * Convenience method for PDO::query("...") followed by $stmt->fetchAll(PDO::FETCH_BOTH).
      *
      * @param string $statement         sql query to be executed
      * @param array $params             prepared statement params
@@ -478,7 +468,7 @@ class Connection
      * Prepares an SQL statement.
      *
      * @param string $statement
-     * @return Doctrine::DBAL::Statement
+     * @return PDOStatement
      */
     public function prepare($statement)
     {
@@ -487,13 +477,13 @@ class Connection
     }
     
     /**
-     * Queries the database with limit and offset
-     * added to the query and returns a Doctrine_Connection_Statement object
+     * Queries the database with limit and offset added to the query and returns
+     * a Statement object.
      *
      * @param string $query
      * @param integer $limit
      * @param integer $offset
-     * @return Doctrine_Connection_Statement
+     * @return Statement
      */
     public function select($query, $limit = 0, $offset = 0)
     {

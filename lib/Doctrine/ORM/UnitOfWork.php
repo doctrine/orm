@@ -120,41 +120,35 @@ class UnitOfWork
     private $_scheduledForDirtyCheck = array();
 
     /**
-     * A list of all new entities that need to be INSERTed.
+     * A list of all pending entity insertions.
      *
      * @var array
-     * @todo Index by class name.
-     * @todo Rename to _inserts?
      */
-    private $_newEntities = array();
+    private $_entityInsertions = array();
 
     /**
-     * A list of all dirty entities that need to be UPDATEd.
+     * A list of all pending entity updates.
      *
      * @var array
-     * @todo Rename to _updates?
      */
-    private $_dirtyEntities = array();
+    private $_entityUpdates = array();
 
     /**
-     * A list of all deleted entities.
-     * Removed entities are entities that are "scheduled for removal" but have
-     * not yet been removed from the database.
+     * A list of all pending entity deletions.
      *
      * @var array
-     * @todo Rename to _deletions?
      */
-    private $_deletedEntities = array();
+    private $_entityDeletions = array();
     
     /**
-     * All collection deletions.
+     * All pending collection deletions.
      *
      * @var array
      */
     private $_collectionDeletions = array();
     
     /**
-     * All collection creations.
+     * All pending collection creations.
      *
      * @var array
      */
@@ -226,9 +220,9 @@ class UnitOfWork
         // Compute changes done since last commit
         $this->computeChangeSets();
 
-        if (empty($this->_newEntities) &&
-                empty($this->_deletedEntities) &&
-                empty($this->_dirtyEntities) &&
+        if (empty($this->_entityInsertions) &&
+                empty($this->_entityDeletions) &&
+                empty($this->_entityUpdates) &&
                 empty($this->_collectionUpdates) &&
                 empty($this->_collectionDeletions)) {
             return; // Nothing to do.
@@ -267,13 +261,13 @@ class UnitOfWork
 
         // Take new snapshots from visited collections
         foreach ($this->_visitedCollections as $coll) {
-            $coll->_takeSnapshot();
+            $coll->takeSnapshot();
         }
 
         // Clear up
-        $this->_newEntities = array();
-        $this->_dirtyEntities = array();
-        $this->_deletedEntities = array();
+        $this->_entityInsertions = array();
+        $this->_entityUpdates = array();
+        $this->_entityDeletions = array();
         $this->_entityChangeSets = array();
         $this->_collectionUpdates = array();
         $this->_collectionDeletions = array();
@@ -341,15 +335,14 @@ class UnitOfWork
                                 && ! ($actualData[$name] instanceof PersistentCollection)) {
                             //TODO: If $actualData[$name] is Collection then unwrap the array
                             $assoc = $class->getAssociationMapping($name);
-                            if ($assoc->isOwningSide()) {
-                                // Inject PersistentCollection
-                                $coll = new PersistentCollection($this->_em, $assoc->getTargetEntityName(),
-                                    $actualData[$name] ? $actualData[$name] : array());
-                                $coll->_setOwner($entity, $assoc);
-                                if ( ! $coll->isEmpty()) $coll->setDirty(true);
-                                $class->getReflectionProperty($name)->setValue($entity, $coll);
-                                $actualData[$name] = $coll;
-                            }
+                            echo PHP_EOL . "INJECTING PCOLL into $name" . PHP_EOL;
+                            // Inject PersistentCollection
+                            $coll = new PersistentCollection($this->_em, $assoc->getTargetEntityName(),
+                                $actualData[$name] ? $actualData[$name] : array());
+                            $coll->setOwner($entity, $assoc);
+                            if ( ! $coll->isEmpty()) $coll->setDirty(true);
+                            $class->getReflectionProperty($name)->setValue($entity, $coll);
+                            $actualData[$name] = $coll;
                         }
                     }
 
@@ -381,7 +374,7 @@ class UnitOfWork
                                     $assoc = $class->getAssociationMapping($propName);
                                     if ($assoc->isOneToOne() && $assoc->isOwningSide()) {
                                         $entityIsDirty = true;
-                                    } else if (/*is_null($actualValue) && */$orgValue instanceof PersistentCollection) {
+                                    } else if ($orgValue instanceof PersistentCollection) {
                                         // A PersistentCollection was de-referenced, so delete it.
                                         if  ( ! in_array($orgValue, $this->_collectionDeletions, true)) {
                                             $this->_collectionDeletions[] = $orgValue;
@@ -394,7 +387,7 @@ class UnitOfWork
                         }
                         if ($changeSet) {
                             if ($entityIsDirty) {
-                                $this->_dirtyEntities[$oid] = $entity;
+                                $this->_entityUpdates[$oid] = $entity;
                             }
                             $this->_entityChangeSets[$oid] = $changeSet;
                             $this->_originalEntityData[$oid] = $actualData;
@@ -418,19 +411,28 @@ class UnitOfWork
     /**
      * Computes the changes of an association.
      *
-     * @param <type> $assoc
-     * @param <type> $value
+     * @param AssociationMapping $assoc
+     * @param mixed $value The value of the association.
      */
     private function _computeAssociationChanges($assoc, $value)
     {
-        /*if ( ! $assoc->isCascadeSave()) {
-            return; // "Persistence by reachability" only if save cascade enabled
-        }*/
+        if ($value instanceof PersistentCollection && $value->isDirty()) {
+            if ($assoc->isOwningSide()) {
+                $this->_collectionUpdates[] = $value;
+            }
+            $this->_visitedCollections[] = $value;
+        }
 
+        if ( ! $assoc->isCascadeSave()) {
+            echo "NOT CASCADING INTO " . $assoc->getSourceFieldName() . PHP_EOL;
+            return; // "Persistence by reachability" only if save cascade specified
+        }
+
+        // Look through the entities, and in any of their associations, for transient
+        // enities, recursively. ("Persistence by reachability")
         if ($assoc->isOneToOne()) {
             $value = array($value);
         }
-
         $targetClass = $this->_em->getClassMetadata($assoc->getTargetEntityName());
         foreach ($value as $entry) {
             $state = $this->getEntityState($entry);
@@ -450,28 +452,21 @@ class UnitOfWork
                     $this->addToIdentityMap($entry);
                 }
 
-                // NEW entities are INSERTed within the current unit of work.
+                // Collect the original data and changeset, recursing into associations.
                 $data = array();
                 $changeSet = array();
                 foreach ($targetClass->getReflectionProperties() as $name => $refProp) {
                     $data[$name] = $refProp->getValue($entry);
                     $changeSet[$name] = array(null, $data[$name]);
-                    // --
-                    /*if ($targetClass->isCollectionValuedAssociation($name) && ! ($data[$name] instanceof PersistentCollection)) {
-                        // Inject PersistentCollection
-                        //TODO: If $actualData[$name] is Collection then unwrap the array
-                        $assoc = $targetClass->getAssociationMapping($name);
-                        $coll = new PersistentCollection($this->_em, $assoc->getTargetEntityName(),
-                                $data[$name] ? $data[$name] : array());
-                        $coll->_setOwner($entry, $assoc);
-                        if ( ! $coll->isEmpty()) $coll->setDirty(true);
-                        $targetClass->getReflectionProperty($name)->setValue($entry, $coll);
-                        $data[$name] = $coll;
-                    }*/
-                    //--
+                    if ($targetClass->hasAssociation($name)) {
+                        //echo "RECURSING INTO $name" . PHP_EOL;
+                        //TODO: Prevent infinite recursion
+                        $this->_computeAssociationChanges($targetClass->getAssociationMapping($name), $data[$name]);
+                    }
                 }
 
-                $this->_newEntities[$oid] = $entry;
+                // NEW entities are INSERTed within the current unit of work.
+                $this->_entityInsertions[$oid] = $entry;
                 $this->_entityChangeSets[$oid] = $changeSet;
                 $this->_originalEntityData[$oid] = $data;
             } else if ($state == self::STATE_DELETED) {
@@ -479,13 +474,6 @@ class UnitOfWork
             }
             // MANAGED associated entities are already taken into account
             // during changeset calculation anyway, since they are in the identity map.
-        }
-
-        if ($value instanceof PersistentCollection && $value->isDirty()) {
-            if ($assoc->isOwningSide()) {
-                $this->_collectionUpdates[] = $value;
-            }
-            $this->_visitedCollections[] = $value;
         }
     }
 
@@ -502,7 +490,7 @@ class UnitOfWork
         // Same for update/delete.
         $className = $class->getClassName();
         $persister = $this->getEntityPersister($className);
-        foreach ($this->_newEntities as $entity) {
+        foreach ($this->_entityInsertions as $entity) {
             if (get_class($entity) == $className) {
                 $returnVal = $persister->insert($entity);
                 if ( ! is_null($returnVal)) {
@@ -528,7 +516,7 @@ class UnitOfWork
     {
         $className = $class->getClassName();
         $persister = $this->getEntityPersister($className);
-        foreach ($this->_dirtyEntities as $entity) {
+        foreach ($this->_entityUpdates as $entity) {
             if (get_class($entity) == $className) {
                 $persister->update($entity);
             }
@@ -544,7 +532,7 @@ class UnitOfWork
     {
         $className = $class->getClassName();
         $persister = $this->getEntityPersister($className);
-        foreach ($this->_deletedEntities as $entity) {
+        foreach ($this->_entityDeletions as $entity) {
             if (get_class($entity) == $className) {
                 $persister->delete($entity);
             }
@@ -557,12 +545,12 @@ class UnitOfWork
      * @return array
      */
     private function _getCommitOrder(array $entityChangeSet = null)
-    {        
+    {
         if (is_null($entityChangeSet)) {
             $entityChangeSet = array_merge(
-                    $this->_newEntities,
-                    $this->_dirtyEntities,
-                    $this->_deletedEntities);
+                    $this->_entityInsertions,
+                    $this->_entityUpdates,
+                    $this->_entityDeletions);
         }
 
         // TODO: We can cache computed commit orders in the metadata cache!
@@ -590,7 +578,7 @@ class UnitOfWork
                 if ($assocMapping->isOwningSide()) {
                     $targetClass = $this->_em->getClassMetadata($assocMapping->getTargetEntityName());
                     $targetClassName = $targetClass->getClassName();
-                    // if the target class does not yet have a node, create it
+                    // If the target class does not yet have a node, create it
                     if ( ! $this->_commitOrderCalculator->hasNodeWithKey($targetClassName)) {
                         $this->_commitOrderCalculator->addNodeWithItem(
                                 $targetClassName, // index/key
@@ -616,17 +604,17 @@ class UnitOfWork
     {
         $oid = spl_object_hash($entity);
 
-        if (isset($this->_dirtyEntities[$oid])) {
+        if (isset($this->_entityUpdates[$oid])) {
             throw new DoctrineException("Dirty object can't be registered as new.");
         }
-        if (isset($this->_deletedEntities[$oid])) {
+        if (isset($this->_entityDeletions[$oid])) {
             throw new DoctrineException("Removed object can't be registered as new.");
         }
-        if (isset($this->_newEntities[$oid])) {
+        if (isset($this->_entityInsertions[$oid])) {
             throw new DoctrineException("Object already registered as new. Can't register twice.");
         }
 
-        $this->_newEntities[$oid] = $entity;
+        $this->_entityInsertions[$oid] = $entity;
         if (isset($this->_entityIdentifiers[$oid])) {
             $this->addToIdentityMap($entity);
         }
@@ -641,7 +629,7 @@ class UnitOfWork
      */
     public function isRegisteredNew($entity)
     {
-        return isset($this->_newEntities[spl_object_hash($entity)]);
+        return isset($this->_entityInsertions[spl_object_hash($entity)]);
     }
 
     /**
@@ -657,12 +645,12 @@ class UnitOfWork
             throw new DoctrineException("Entity without identity "
                     . "can't be registered as dirty.");
         }
-        if (isset($this->_deletedEntities[$oid])) {
+        if (isset($this->_entityDeletions[$oid])) {
             throw new DoctrineException("Removed object can't be registered as dirty.");
         }
 
-        if ( ! isset($this->_dirtyEntities[$oid]) && ! isset($this->_newEntities[$oid])) {
-            $this->_dirtyEntities[$oid] = $entity;
+        if ( ! isset($this->_entityUpdates[$oid]) && ! isset($this->_entityInsertions[$oid])) {
+            $this->_entityUpdates[$oid] = $entity;
         }
     }
 
@@ -677,7 +665,7 @@ class UnitOfWork
      */
     public function isRegisteredDirty($entity)
     {
-        return isset($this->_dirtyEntities[spl_object_hash($entity)]);
+        return isset($this->_entityUpdates[spl_object_hash($entity)]);
     }
 
     /**
@@ -695,16 +683,16 @@ class UnitOfWork
         $this->removeFromIdentityMap($entity);
         $className = get_class($entity);
 
-        if (isset($this->_newEntities[$oid])) {
-            unset($this->_newEntities[$oid]);
+        if (isset($this->_entityInsertions[$oid])) {
+            unset($this->_entityInsertions[$oid]);
             return; // entity has not been persisted yet, so nothing more to do.
         }
 
-        if (isset($this->_dirtyEntities[$oid])) {
-            unset($this->_dirtyEntities[$oid]);
+        if (isset($this->_entityUpdates[$oid])) {
+            unset($this->_entityUpdates[$oid]);
         }
-        if ( ! isset($this->_deletedEntities[$oid])) {
-            $this->_deletedEntities[$oid] = $entity;
+        if ( ! isset($this->_entityDeletions[$oid])) {
+            $this->_entityDeletions[$oid] = $entity;
         }
     }
 
@@ -718,7 +706,7 @@ class UnitOfWork
      */
     public function isRegisteredRemoved($entity)
     {
-        return isset($this->_deletedEntities[spl_object_hash($entity)]);
+        return isset($this->_entityDeletions[spl_object_hash($entity)]);
     }
 
     /**
@@ -732,8 +720,8 @@ class UnitOfWork
     {
         $oid = spl_object_hash($entity);
         $this->removeFromIdentityMap($entity);
-        unset($this->_newEntities[$oid], $this->_dirtyEntities[$oid],
-                $this->_deletedEntities[$oid], $this->_entityIdentifiers[$oid],
+        unset($this->_entityInsertions[$oid], $this->_entityUpdates[$oid],
+                $this->_entityDeletions[$oid], $this->_entityIdentifiers[$oid],
                 $this->_entityStates[$oid]);
     }
 
@@ -747,9 +735,9 @@ class UnitOfWork
     public function isEntityRegistered($entity)
     {
         $oid = spl_object_hash($entity);
-        return isset($this->_newEntities[$oid]) ||
-                isset($this->_dirtyEntities[$oid]) ||
-                isset($this->_deletedEntities[$oid]);
+        return isset($this->_entityInsertions[$oid]) ||
+                isset($this->_entityUpdates[$oid]) ||
+                isset($this->_entityDeletions[$oid]);
     }
 
     /**
@@ -774,9 +762,9 @@ class UnitOfWork
         } else {
             $numDetached = count($this->_identityMap);
             $this->_identityMap = array();
-            $this->_newEntities = array();
-            $this->_dirtyEntities = array();
-            $this->_deletedEntities = array();
+            $this->_entityInsertions = array();
+            $this->_entityUpdates = array();
+            $this->_entityDeletions = array();
         }
 
         return $numDetached;
@@ -817,7 +805,7 @@ class UnitOfWork
     {
         $oid = spl_object_hash($entity);
         if ( ! isset($this->_entityStates[$oid])) {
-            if (isset($this->_entityIdentifiers[$oid]) && ! isset($this->_newEntities[$oid])) {
+            if (isset($this->_entityIdentifiers[$oid]) && ! isset($this->_entityInsertions[$oid])) {
                 $this->_entityStates[$oid] = self::STATE_DETACHED;
             } else {
                 $this->_entityStates[$oid] = self::STATE_NEW;
@@ -951,8 +939,8 @@ class UnitOfWork
             foreach ($commitOrder as $class) {
                 $this->_executeInserts($class);
             }
-            // remove them from _newEntities and _entityChangeSets
-            $this->_newEntities = array_diff_key($this->_newEntities, $insertNow);
+            // remove them from _entityInsertions and _entityChangeSets
+            $this->_entityInsertions = array_diff_key($this->_entityInsertions, $insertNow);
             $this->_entityChangeSets = array_diff_key($this->_entityChangeSets, $insertNow);
         }
     }
@@ -1007,7 +995,7 @@ class UnitOfWork
                 // entity becomes managed again
                 if ($this->isRegisteredRemoved($entity)) {
                     //TODO: better a method for this?
-                    unset($this->_deletedEntities[$oid]);
+                    unset($this->_entityDeletions[$oid]);
                 } else {
                     //FIXME: There's more to think of here...
                     $this->registerNew($entity);
@@ -1385,7 +1373,3 @@ class UnitOfWork
         return $this->_collectionPersisters[$type];
     }
 }
-
-
-
-

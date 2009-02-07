@@ -19,7 +19,7 @@
  * <http://www.phpdoctrine.org>.
  */
 
-namespace Doctrine\ORM\Exceptions;
+namespace Doctrine\ORM\Mapping;
 
 /**
  * A MappingException indicates that something is wrong with the mapping setup.

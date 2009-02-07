@@ -22,7 +22,7 @@
 namespace Doctrine\ORM\Mapping\Driver;
 
 use Doctrine\ORM\Mapping\ClassMetadata;
-use Doctrine\ORM\Exceptions\MappingException;
+use Doctrine\ORM\Mapping\MappingException;
 
 /* Addendum annotation reflection extensions */
 if ( ! class_exists('\Addendum', false)) {
@@ -134,6 +134,7 @@ class AnnotationDriver
                 $metadata->mapOneToMany($mapping);
             } else if ($manyToOneAnnot = $property->getAnnotation('DoctrineManyToOne')) {
                 $mapping['joinColumns'] = $joinColumns;
+                $mapping['cascade'] = $manyToOneAnnot->cascade;
                 $mapping['targetEntity'] = $manyToOneAnnot->targetEntity;
                 $metadata->mapManyToOne($mapping);
             } else if ($manyToManyAnnot = $property->getAnnotation('DoctrineManyToMany')) {
@@ -150,6 +151,7 @@ class AnnotationDriver
                 $mapping['joinTable'] = $joinTable;
                 $mapping['targetEntity'] = $manyToManyAnnot->targetEntity;
                 $mapping['mappedBy'] = $manyToManyAnnot->mappedBy;
+                $mapping['cascade'] = $manyToManyAnnot->cascade;
                 $metadata->mapManyToMany($mapping);
             }
             

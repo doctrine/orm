@@ -65,9 +65,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
      * @override
      */
     protected function _getUpdateRowSql(PersistentCollection $coll)
-    {
-        
-    }
+    {}
 
     /**
      * {@inheritdoc}
@@ -96,7 +94,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
                 $this->_uow->getEntityIdentifier($coll->getOwner()),
                 $this->_uow->getEntityIdentifier($element)
                 );
-        var_dump($params);
+        //var_dump($params);
         return $params;
     }
 

@@ -17,23 +17,21 @@
  *
  * This software consists of voluntary contributions made by many individuals
  * and is licensed under the LGPL. For more information, see
- * <http://www.phpdoctrine.org>.
+ * <http://www.doctrine-project.org>.
  */
 
 namespace Doctrine\ORM;
 
 /**
- * Doctrine_ORM_Query_Abstract
+ * Base class for Query and NativeQuery.
  *
- * @package     Doctrine
- * @subpackage  Query
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
- * @link        www.phpdoctrine.com
+ * @link        www.doctrine-project.com
  * @since       1.0
  * @version     $Revision: 1393 $
  * @author      Guilherme Blanco <guilhermeblanco@hotmail.com>
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
- * @todo        See {@link Doctrine_ORM_Query}
+ * @author      Roman Borschel <roman@code-factory.org>
  */
 abstract class AbstractQuery
 {
@@ -101,7 +99,7 @@ abstract class AbstractQuery
     /**
      * @var integer $type Query type.
      *
-     * @see Doctrine_ORM_Query::* constants
+     * @see Query::* constants
      */
     protected $_type = self::SELECT;
 
@@ -112,19 +110,19 @@ abstract class AbstractQuery
 
     /**
      * @var array $params Parameters of this query.
-     * @see Doctrine_ORM_Query::free that initializes this property
+     * @see Query::free that initializes this property
      */
     protected $_params = array();
 
     /**
      * @var array $_enumParams Array containing the keys of the parameters that should be enumerated.
-     * @see Doctrine_ORM_Query::free that initializes this property
+     * @see Query::free that initializes this property
      */
     protected $_enumParams = array();
 
     /**
      * @var array $_dqlParts An array containing all DQL query parts.
-     * @see Doctrine_ORM_Query::free that initializes this property
+     * @see Query::free that initializes this property
      */
     protected $_dqlParts = array();
 

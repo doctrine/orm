@@ -10,9 +10,6 @@ if (!defined('PHPUnit_MAIN_METHOD')) {
 
 require_once __DIR__ . '/../TestInit.php';
 
-// Suites
-#require_once 'Common/Collections/AllTests.php';
-
 class AllTests
 {
     public static function main()
@@ -23,6 +20,8 @@ class AllTests
     public static function suite()
     {
         $suite = new \Doctrine\Tests\DoctrineTestSuite('Doctrine Common Tests');
+
+        $suite->addTestSuite('Doctrine\Tests\Common\EventManagerTest');
 
         $suite->addTest(Collections\AllTests::suite());
         

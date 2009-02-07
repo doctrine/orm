@@ -21,8 +21,6 @@
 
 namespace Doctrine\ORM\Mapping;
 
-use Doctrine\ORM\Exceptions\MappingException;
-
 /**
  * Base class for association mappings.
  *

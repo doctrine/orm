@@ -24,7 +24,6 @@ namespace Doctrine\ORM;
 use Doctrine\Common\EventManager;
 use Doctrine\Common\DoctrineException;
 use Doctrine\DBAL\Connection;
-use Doctrine\ORM\Exceptions\EntityManagerException;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
 
@@ -90,7 +89,7 @@ class EntityManager
     private $_conn;
     
     /**
-     * The metadata factory, used to retrieve the metadata of entity classes.
+     * The metadata factory, used to retrieve the ORM metadata of entity classes.
      *
      * @var Doctrine\ORM\Mapping\ClassMetadataFactory
      */
@@ -330,7 +329,7 @@ class EntityManager
      */
     public function flush()
     {
-        $this->_errorIfNotActiveOrClosed();
+        $this->_errorIfClosed();
         $this->_unitOfWork->commit();
     }
     
@@ -412,7 +411,7 @@ class EntityManager
      */
     public function save($object)
     {
-        $this->_errorIfNotActiveOrClosed();
+        $this->_errorIfClosed();
         $this->_unitOfWork->save($object);
         if ($this->_flushMode == self::FLUSHMODE_IMMEDIATE) {
             $this->flush();
@@ -426,7 +425,7 @@ class EntityManager
      */
     public function delete($entity)
     {
-        $this->_errorIfNotActiveOrClosed();
+        $this->_errorIfClosed();
         $this->_unitOfWork->delete($entity);
         if ($this->_flushMode == self::FLUSHMODE_IMMEDIATE) {
             $this->flush();
@@ -459,7 +458,7 @@ class EntityManager
     }
     
     /**
-     * Gets the repository for an Entity.
+     * Gets the repository for an entity class.
      *
      * @param string $entityName  The name of the Entity.
      * @return Doctrine\ORM\EntityRepository  The repository.
@@ -520,7 +519,7 @@ class EntityManager
      *
      * @throws EntityManagerException If the EntityManager is closed or not active.
      */
-    private function _errorIfNotActiveOrClosed()
+    private function _errorIfClosed()
     {
         if ($this->_closed) {
             throw EntityManagerException::notActiveOrClosed($this->_name);

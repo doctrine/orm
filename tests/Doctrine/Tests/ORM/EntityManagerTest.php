@@ -22,7 +22,7 @@ class EntityManagerTest extends \Doctrine\Tests\OrmTestCase
         try {
             $this->_em->setFlushMode('foobar');
             $this->fail("Setting invalid flushmode did not trigger exception.");
-        } catch (\Doctrine\ORM\Exceptions\EntityManagerException $expected) {}
+        } catch (\Doctrine\ORM\EntityManagerException $expected) {}
         $this->_em->setFlushMode($prev);
     }    
 }

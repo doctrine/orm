@@ -1,7 +1,22 @@
 <?php
-/* 
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+/*
+ *  $Id$
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+ * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+ * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+ * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+ * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+ * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ * This software consists of voluntary contributions made by many individuals
+ * and is licensed under the LGPL. For more information, see
+ * <http://www.doctrine-project.org>.
  */
 
 namespace Doctrine\Common\Collections;
@@ -12,10 +27,11 @@ use \ArrayAccess;
 use \ArrayIterator;
 
 /**
- * A Collection is a wrapper around a php array and just like a php array a
- * collection instance can be a list, a set or a map, depending on how it is used.
+ * A Collection is a thin wrapper around a php array. Think of it as an OO version
+ * of a plain array.
  *
  * @author robo
+ * @since 2.0
  */
 class Collection implements Countable, IteratorAggregate, ArrayAccess
 {
@@ -25,7 +41,7 @@ class Collection implements Countable, IteratorAggregate, ArrayAccess
      *
      * @var array
      */
-    protected $_data = array();
+    protected $_elements = array();
 
     /**
      *
@@ -33,7 +49,7 @@ class Collection implements Countable, IteratorAggregate, ArrayAccess
      */
     public function __construct(array $elements = array())
     {
-        $this->_data = $elements;
+        $this->_elements = $elements;
     }
 
     /**
@@ -43,49 +59,49 @@ class Collection implements Countable, IteratorAggregate, ArrayAccess
      */
     public function unwrap()
     {
-        return $this->_data;
+        return $this->_elements;
     }
 
     /**
-     * returns the first entry in the collection
+     * Gets the first element in the collection.
      *
      * @return mixed
      */
     public function first()
     {
-        return reset($this->_data);
+        return reset($this->_elements);
     }
 
     /**
-     * returns the last record in the collection
+     * Gets the last element in the collection.
      *
      * @return mixed
      */
     public function last()
     {
-        return end($this->_data);
+        return end($this->_elements);
     }
 
     /**
-     * returns the current key
+     * Gets the current key.
      *
      * @return mixed
      */
     public function key()
     {
-        return key($this->_data);
+        return key($this->_elements);
     }
 
     /**
-     * Removes an entry with a specific key from the collection.
+     * Removes an element with a specific key from the collection.
      *
      * @param mixed $key
      * @return mixed
      */
     public function remove($key)
     {
-        $removed = $this->_data[$key];
-        unset($this->_data[$key]);
+        $removed = $this->_elements[$key];
+        unset($this->_elements[$key]);
         return $removed;
     }
 
@@ -97,9 +113,9 @@ class Collection implements Countable, IteratorAggregate, ArrayAccess
      */
     public function removeElement($element)
     {
-        $key = array_search($element, $this->_data, true);
+        $key = array_search($element, $this->_elements, true);
         if ($key !== false) {
-            unset($this->_data[$key]);
+            unset($this->_elements[$key]);
             return true;
         }
         return false;
@@ -169,7 +185,7 @@ class Collection implements Countable, IteratorAggregate, ArrayAccess
      */
     public function containsKey($key)
     {
-        return isset($this->_data[$key]);
+        return isset($this->_elements[$key]);
     }
 
     /**
@@ -184,24 +200,23 @@ class Collection implements Countable, IteratorAggregate, ArrayAccess
      */
     public function contains($element)
     {
-        return in_array($element, $this->_data, true);
+        return in_array($element, $this->_elements, true);
     }
 
     /**
      * Tests for the existance of an element that satisfies the given predicate.
      *
-     * @param function $func
+     * @param Closure $p The predicate.
      * @return boolean TRUE if the predicate is TRUE for at least one element, FALSE otherwise.
      */
-    public function exists(Closure $func) {
-        foreach ($this->_data as $key => $element)
-            if ($func($key, $element))
-                return true;
+    public function exists(Closure $p) {
+        foreach ($this->_elements as $key => $element)
+            if ($p($key, $element)) return true;
         return false;
     }
 
     /**
-     * Enter description here...
+     * TODO
      *
      * @param unknown_type $otherColl
      * @todo Impl
@@ -222,7 +237,7 @@ class Collection implements Countable, IteratorAggregate, ArrayAccess
      */
     public function search($element)
     {
-        return array_search($element, $this->_data, true);
+        return array_search($element, $this->_elements, true);
     }
 
     /**
@@ -233,20 +248,20 @@ class Collection implements Countable, IteratorAggregate, ArrayAccess
      */
     public function get($key)
     {
-        if (isset($this->_data[$key])) {
-            return $this->_data[$key];
+        if (isset($this->_elements[$key])) {
+            return $this->_elements[$key];
         }
         return null;
     }
 
     /**
-     * Gets all keys/indexes.
+     * Gets all keys/indexes of the collection elements.
      *
      * @return array
      */
     public function getKeys()
     {
-        return array_keys($this->_data);
+        return array_keys($this->_elements);
     }
 
     /**
@@ -256,7 +271,7 @@ class Collection implements Countable, IteratorAggregate, ArrayAccess
      */
     public function getElements()
     {
-        return array_values($this->_data);
+        return array_values($this->_elements);
     }
 
     /**
@@ -268,7 +283,7 @@ class Collection implements Countable, IteratorAggregate, ArrayAccess
      */
     public function count()
     {
-        return count($this->_data);
+        return count($this->_elements);
     }
 
     /**
@@ -277,24 +292,23 @@ class Collection implements Countable, IteratorAggregate, ArrayAccess
      * When the collection is a Map this is like put(key,value)/add(key,value).
      * When the collection is a List this is like add(position,value).
      *
-     * @param integer $key
+     * @param mixed $key
      * @param mixed $value
      */
     public function set($key, $value)
     {
-        $this->_data[$key] = $value;
+        $this->_elements[$key] = $value;
     }
 
     /**
      * Adds an element to the collection.
      *
      * @param mixed $value
-     * @param string $key
-     * @return boolean Always returns TRUE.
+     * @return boolean Always TRUE.
      */
     public function add($value)
     {
-        $this->_data[] = $value;
+        $this->_elements[] = $value;
         return true;
     }
 
@@ -317,45 +331,80 @@ class Collection implements Countable, IteratorAggregate, ArrayAccess
     public function isEmpty()
     {
         // Note: Little "trick". Empty arrays evaluate to FALSE. No need to count().
-        return ! (bool)$this->_data;
+        return ! (bool)$this->_elements;
     }
 
     /**
-     * Gets an iterator that enables foreach() iteration over the elements in
-     * the collection.
+     * Gets an iterator for iterating over the elements in the collection.
      *
      * @return ArrayIterator
      */
     public function getIterator()
     {
-        $data = $this->_data;
-        return new ArrayIterator($data);
+        return new ArrayIterator($this->_elements);
     }
 
     /**
      * Applies the given function to each element in the collection and returns
-     * a new collection with the modified values.
+     * a new collection with the elements returned by the function.
      *
-     * @param function $func
+     * @param Closure $func
      */
     public function map(Closure $func)
     {
-        return new Collection(array_map($func, $this->_data));
+        return new Collection(array_map($func, $this->_elements));
     }
 
     /**
-     * Applies the given function to each element in the collection and returns
-     * a new collection with the new values.
+     * Returns all the elements of this collection that satisfy the predicate p.
+     * The order of the elements is preserved.
      *
-     * @param function $func
+     * @param Closure $p The predicate used for filtering.
+     * @return Collection A collection with the results of the filter operation.
      */
-    public function filter(Closure $func)
+    public function filter(Closure $p)
     {
-        return new Collection(array_filter($this->_data, $func));
+        return new Collection(array_filter($this->_elements, $p));
     }
 
     /**
-     * returns a string representation of this object
+     * Applies the given predicate p to all elements of this collection,
+     * returning true, if the predicate yields true for all elements.
+     *
+     * @param Closure $p The predicate.
+     * @return boolean TRUE, if the predicate yields TRUE for all elements, FALSE otherwise.
+     */
+    public function forall(Closure $p)
+    {
+        foreach ($this->_elements as $key => $element)
+            if ( ! $p($key, $element)) return false;
+        return true;
+    }
+
+    /**
+     * Partitions this collection in two collections according to a predicate.
+     * Keys are preserved in the resulting collections.
+     *
+     * @param Closure $p The predicate on which to partition.
+     * @return array An array with two elements. The first element contains the collection
+     *               of elements where the predicate returned TRUE, the second element
+     *               contains the collection of elements where the predicate returned FALSE.
+     */
+    public function partition(Closure $p)
+    {
+        $coll1 = $coll2 = array();
+        foreach ($this->_elements as $key => $element) {
+            if ($p($key, $element)) {
+                $coll1[$key] = $element;
+            } else {
+                $coll2[$key] = $element;
+            }
+        }
+        return array(new Collection($coll1), new Collection($coll2));
+    }
+
+    /**
+     * Returns a string representation of this object.
      */
     public function __toString()
     {
@@ -364,12 +413,10 @@ class Collection implements Countable, IteratorAggregate, ArrayAccess
 
     /**
      * Clears the collection.
-     *
-     * @return void
      */
     public function clear()
     {
-        $this->_data = array();
+        $this->_elements = array();
     }
 }
 

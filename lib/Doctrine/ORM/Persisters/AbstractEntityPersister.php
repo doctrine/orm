@@ -21,6 +21,9 @@
 
 namespace Doctrine\ORM\Persisters;
 
+use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\Mapping\ClassMetadata;
+
 /**
  * Base class for all EntityPersisters.
  *
@@ -65,7 +68,7 @@ abstract class AbstractEntityPersister
      * that uses the given EntityManager and persists instances of the class described
      * by the given class metadata descriptor.
      */
-    public function __construct(\Doctrine\ORM\EntityManager $em, \Doctrine\ORM\Mapping\ClassMetadata $classMetadata)
+    public function __construct(EntityManager $em, ClassMetadata $classMetadata)
     {
         $this->_em = $em;
         $this->_entityName = $classMetadata->getClassName();
@@ -112,8 +115,10 @@ abstract class AbstractEntityPersister
      */
     public function delete($entity)
     {
-        $id = array_combine($this->_classMetadata->getIdentifierFieldNames(),
-                $this->_em->getUnitOfWork()->getEntityIdentifier($entity));
+        $id = array_combine(
+                $this->_classMetadata->getIdentifierFieldNames(),
+                $this->_em->getUnitOfWork()->getEntityIdentifier($entity)
+              );
         $this->_conn->delete($this->_classMetadata->getTableName(), $id);
     }
 
@@ -132,7 +137,7 @@ abstract class AbstractEntityPersister
      *
      * @param string $fieldName
      * @return string
-     * @todo Consider using 'inherited' => 'ClassName' to make the lookup simpler.
+     * @todo Move to ClassMetadata?
      */
     public function getOwningClass($fieldName)
     {
@@ -180,11 +185,9 @@ abstract class AbstractEntityPersister
             if ($this->_classMetadata->hasAssociation($field)) {
                 $assocMapping = $this->_classMetadata->getAssociationMapping($field);
                 if ( ! $assocMapping->isOneToOne() || $assocMapping->isInverseSide()) {
-                    //echo "NOT TO-ONE OR INVERSE!";
                     continue;
                 }
                 foreach ($assocMapping->getSourceToTargetKeyColumns() as $sourceColumn => $targetColumn) {
-                    //TODO: throw exc if field not set
                     $otherClass = $this->_em->getClassMetadata($assocMapping->getTargetEntityName());
                     if (is_null($newVal)) {
                         $result[$sourceColumn] = null;
@@ -192,7 +195,6 @@ abstract class AbstractEntityPersister
                         $result[$sourceColumn] = $otherClass->getReflectionProperty(
                             $otherClass->getFieldName($targetColumn))->getValue($newVal);
                     }
-
                 }
             } else if (is_null($newVal)) {
                 $result[$columnName] = null;

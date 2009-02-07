@@ -16,19 +16,17 @@
  *
  * This software consists of voluntary contributions made by many individuals
  * and is licensed under the LGPL. For more information, see
- * <http://www.phpdoctrine.org>.
+ * <http://www.doctrine-project.org>.
  */
 
 namespace Doctrine\ORM\Mapping;
 
 use \ReflectionClass;
 use Doctrine\Common\DoctrineException;
-use Doctrine\ORM\Exceptions\MappingException;
 
 /**
- * A <tt>ClassMetadata</tt> instance holds all the information (metadata) of an entity and
- * it's associations and how they're mapped to a relational database.
- * It is the backbone of Doctrine's metadata mapping.
+ * A <tt>ClassMetadata</tt> instance holds all the ORM metadata of an entity and
+ * it's associations. It is the backbone of Doctrine's metadata mapping.
  *
  * @author Roman Borschel <roman@code-factory.org>
  * @since 2.0
@@ -176,8 +174,8 @@ class ClassMetadata
      * - <b>fieldName</b> (string)
      * The name of the field in the Entity. 
      * 
-     * - <b>type</b> (object Doctrine::DBAL::Types::* or custom type)
-     * The database type of the column. Can be one of Doctrine's portable types
+     * - <b>type</b> (object Doctrine\DBAL\Types\* or custom type)
+     * The type of the column. Can be one of Doctrine's portable types
      * or a custom type.
      * 
      * - <b>columnName</b> (string, optional)
@@ -198,7 +196,7 @@ class ClassMetadata
      * therefore cant be used as a generator name!
      * 
      * - <b>nullable</b> (boolean, optional)
-     * Whether the column is nullable. Defaults to TRUE.
+     * Whether the column is nullable. Defaults to FALSE.
      * 
      * - <b>columnDefinition</b> (string, optional, schema-only)
      * The SQL fragment that is used when generating the DDL for the column.
@@ -226,7 +224,7 @@ class ClassMetadata
     protected $_fieldMappings = array();
     
     /**
-     * An array of field names. used to look up field names from column names.
+     * An array of field names. Used to look up field names from column names.
      * Keys are column names and values are field names.
      * This is the reverse lookup map of $_columnNames.
      *
@@ -244,7 +242,7 @@ class ClassMetadata
     protected $_columnNames = array();
     
     /**
-     * Map that maps lowercased column names to field names.
+     * Map that maps lowercased column names (keys) to field names (values).
      * Mainly used during hydration because Doctrine enforces PDO_CASE_LOWER
      * for portability.
      *
@@ -254,7 +252,8 @@ class ClassMetadata
 
     /**
      * Whether to automatically OUTER JOIN subtypes when a basetype is queried.
-     * This does only apply to the JOINED inheritance mapping strategy.
+     *
+     * <b>This does only apply to the JOINED inheritance mapping strategy.</b>
      *
      * @var boolean
      */
@@ -262,8 +261,9 @@ class ClassMetadata
 
     /**
      * A map that maps discriminator values to class names.
-     * This does only apply to the JOINED and SINGLE_TABLE inheritance mapping strategies
-     * where a discriminator column is used.
+     *
+     * <b>This does only apply to the JOINED and SINGLE_TABLE inheritance mapping strategies
+     * where a discriminator column is used.</b>
      *
      * @var array
      * @see _discriminatorColumn
@@ -299,14 +299,14 @@ class ClassMetadata
     protected $_lifecycleListenerInstances = array();
 
     /**
-     * The registered lifecycle callbacks for Entities of this class.
+     * The registered lifecycle callbacks for entities of this class.
      *
      * @var array
      */
     protected $_lifecycleCallbacks = array();
     
     /**
-     * The registered lifecycle listeners for Entities of this class.
+     * The registered lifecycle listeners for entities of this class.
      *
      * @var array
      */
@@ -394,8 +394,10 @@ class ClassMetadata
     }
 
     /**
+     * Gets the ReflectionProperty for the single identifier field.
      *
-     * @return <type>
+     * @return ReflectionProperty
+     * @throws DoctrineException If the class has a composite identifier.
      */
     public function getSingleIdReflectionProperty()
     {
@@ -478,7 +480,7 @@ class ClassMetadata
     {
         $mapping = $this->getFieldMapping($fieldName);
         if ($mapping !== false) {
-            return isset($mapping['notnull']) && $mapping['notnull'] == true;
+            return isset($mapping['nullable']) && $mapping['nullable'] == false;
         }
         return false;
     }
@@ -502,7 +504,7 @@ class ClassMetadata
      * reference to another object.
      *
      * @param string $fieldName  The field name.
-     * @return array  The mapping.
+     * @return array  The field mapping.
      */
     public function getFieldMapping($fieldName)
     {
@@ -522,7 +524,7 @@ class ClassMetadata
     public function getAssociationMapping($fieldName)
     {
         if ( ! isset($this->_associationMappings[$fieldName])) {
-            throw new Doctrine_Exception("Mapping not found: $fieldName");
+            throw MappingException::mappingNotFound($fieldName);
         }
         return $this->_associationMappings[$fieldName];
     }
@@ -536,7 +538,7 @@ class ClassMetadata
     public function getInverseAssociationMapping($mappedByFieldName)
     {
         if ( ! isset($this->_inverseMappings[$mappedByFieldName])) {
-            throw new DoctrineException("Mapping not found: " . $mappedByFieldName);
+            throw MappingException::mappingNotFound($mappedByFieldName);
         }
         return $this->_inverseMappings[$mappedByFieldName];
     }
@@ -564,6 +566,7 @@ class ClassMetadata
     
     /**
      * Gets all association mappings of the class.
+     * 
      * Alias for getAssociationMappings().
      *
      * @return array
@@ -590,9 +593,8 @@ class ClassMetadata
      * Gets the field name for a completely lowercased column name.
      * Mainly used during hydration.
      *
-     * @param string $lcColumnName
-     * @return string
-     * @todo Better name.
+     * @param string $lcColumnName The all-lowercase column name.
+     * @return string The field name.
      */
     public function getFieldNameForLowerColumnName($lcColumnName)
     {
@@ -612,7 +614,7 @@ class ClassMetadata
     }
     
     /**
-     * Validates & completes the field mapping.
+     * Validates & completes the given field mapping.
      *
      * @param array $mapping  The field mapping to validated & complete.
      * @return array  The validated and completed field mapping.
@@ -667,11 +669,6 @@ class ClassMetadata
         $refProp = $this->_reflectionClass->getProperty($mapping['fieldName']);
         $refProp->setAccessible(true);
         $this->_reflectionProperties[$mapping['fieldName']] = $refProp;
-    }
-
-    private function _validateAndCompleteClassMapping(array &$mapping)
-    {
-        
     }
     
     /**
@@ -760,7 +757,6 @@ class ClassMetadata
      * Gets all field mappings.
      *
      * @return array
-     * @deprecated
      */
     public function getFieldMappings()
     {
@@ -792,7 +788,7 @@ class ClassMetadata
      */
     public function getIdentifierColumnNames()
     {
-        return $this->getColumnNames((array) $this->getIdentifier());
+        return $this->getColumnNames((array)$this->getIdentifierFieldNames());
     }
 
     /**
@@ -920,18 +916,18 @@ class ClassMetadata
      * Gets the type of a field.
      *
      * @param string $fieldName
-     * @return string
+     * @return Doctrine\DBAL\Types\Type
      */
     public function getTypeOfField($fieldName)
     {
         return isset($this->_fieldMappings[$fieldName]) ?
-                $this->_fieldMappings[$fieldName]['type'] : false;
+                $this->_fieldMappings[$fieldName]['type'] : null;
     }
 
     /**
-     * getTypeOfColumn
+     * Gets the type of a column.
      *
-     * @return mixed  The column type or FALSE if the type cant be determined.
+     * @return Doctrine\DBAL\Types\Type
      */
     public function getTypeOfColumn($columnName)
     {
@@ -985,8 +981,9 @@ class ClassMetadata
 
     /**
      * Sets the subclasses of the mapped class.
-     * All entity classes that participate in a hierarchy and have subclasses
-     * need to declare them this way.
+     * 
+     * <b>All entity classes that participate in a hierarchy and have subclasses
+     * need to declare them this way.</b>
      *
      * @param array $subclasses  The names of all subclasses.
      */
@@ -1055,11 +1052,6 @@ class ClassMetadata
      */
     public function setInheritanceType($type)
     {
-        if ($parentClassNames = $this->getParentClasses()) {
-            throw new MappingException("All classes in an inheritance hierarchy"
-                . " must share the same inheritance mapping type and this type must be set"
-                . " in the root class of the hierarchy.");
-        }
         if ( ! $this->_isInheritanceType($type)) {
             throw MappingException::invalidInheritanceType($type);
         }
@@ -1067,31 +1059,7 @@ class ClassMetadata
     }
 
     /**
-     * exports this class to the database based on its mapping.
-     *
-     * @throws Doctrine_Connection_Exception    If some error other than Doctrine::ERR_ALREADY_EXISTS
-     *                                          occurred during the create table operation.
-     * @return boolean                          Whether or not the export operation was successful
-     *                                          false if table already existed in the database.
-     * @todo Reimpl. & Placement.
-     */
-    public function export()
-    {
-    }
-
-    /**
-     * Returns an array with all the information needed to create the main database table
-     * for the class.
-     *
-     * @return array
-     * @todo Reimpl. & placement.
-     */
-    public function getExportableFormat($parseForeignKeys = true)
-    {
-    }
-
-    /**
-     * Checks whether a persistent field is inherited from a superclass.
+     * Checks whether a mapped field is inherited from a superclass.
      *
      * @return boolean TRUE if the field is inherited, FALSE otherwise.
      */
@@ -1104,6 +1072,7 @@ class ClassMetadata
      * Sets the name of the primary table the class is mapped to.
      *
      * @param string $tableName  The table name.
+     * @deprecated
      */
     public function setTableName($tableName)
     {
@@ -1208,6 +1177,13 @@ class ClassMetadata
         $this->_fieldMappings[$mapping['fieldName']] = $mapping;
     }
 
+    /**
+     * INTERNAL:
+     * Adds an association mapping without completing/validating it.
+     * This is mainly used to add inherited association mappings to derived classes.
+     *
+     * @param AssociationMapping $mapping
+     */
     public function addAssociationMapping(AssociationMapping $mapping)
     {
         $this->_storeAssociationMapping($mapping);
@@ -1320,7 +1296,7 @@ class ClassMetadata
      * class is queried in a class hierarchy that uses the JOINED inheritance mapping
      * strategy.
      *
-     * This options does only apply to the JOINED inheritance mapping strategy.
+     * <b>This options does only apply to the JOINED inheritance mapping strategy.</b>
      *
      * @param boolean $bool
      * @see getJoinSubClasses()
@@ -1415,7 +1391,7 @@ class ClassMetadata
     }
     
     /**
-     * Adds a lifecycle callback for Entities of this class.
+     * Adds a lifecycle callback for entities of this class.
      *
      * Note: If the same callback is registered more than once, the old one
      * will be overridden.
@@ -1443,16 +1419,6 @@ class ClassMetadata
     {
         $this->_discriminatorColumn = $columnDef;
     }
-
-    /**
-     *
-     * @param <type> $fieldName
-     * @param <type> $mapping
-     */
-    /*public function addFieldMapping($fieldName, array $mapping)
-    {
-        $this->_fieldMappings[$fieldName] = $mapping;
-    }*/
 
     /**
      * Gets the discriminator column definition.

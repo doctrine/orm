@@ -16,60 +16,51 @@
  *
  * This software consists of voluntary contributions made by many individuals
  * and is licensed under the LGPL. For more information, see
- * <http://www.phpdoctrine.org>.
+ * <http://www.doctrine-project.org>.
  */
 
-namespace Doctrine\Common\Events;
+namespace Doctrine\Common;
 
 /**
- * Doctrine_Event
+ * EventArgs is the base class for classes containing event data.
+ *
+ * This class contains no event data and cannot be instantiated.
+ * It is used by events that do not pass state information to an event handler
+ * when an event is raised. The single empty EventArgs instance can be obtained
+ * through {@link getEmptyInstance()}.
  *
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
+ * @author      Roman Borschel
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
- * @link        www.phpdoctrine.org
+ * @link        www.doctrine-project.org
  * @since       2.0
  * @version     $Revision$
  */
-class Event
+class EventArgs
 {
-    /* Event callback constants */
-    const preDelete = 'preDelete';
-    const postDelete = 'postDelete';
-    //...more
+    private static $_emptyEventArgsInstance;
+    private $_defaultPrevented;
 
-    protected $_type;
-    protected $_target;
-    protected $_defaultPrevented;
-
-
-    public function __construct($type, $target = null)
+    protected function __construct()
     {
-        $this->_type = $type;
-        $this->_target = $target;
         $this->_defaultPrevented = false;
     }
-
-
-    public function getType()
-    {
-        return $this->_type;
-    }
-
 
     public function preventDefault()
     {
         $this->_defaultPrevented = true;
     }
 
-
     public function getDefaultPrevented()
     {
         return $this->_defaultPrevented;
     }
 
-
-    public function getTarget()
+    public static function getEmptyInstance()
     {
-        return $this->_target;
+        if ( ! self::$_emptyEventArgsInstance) {
+            self::$_emptyEventArgsInstance = new EventArgs;
+        }
+        return self::$_emptyEventArgsInstance;
     }
 }  

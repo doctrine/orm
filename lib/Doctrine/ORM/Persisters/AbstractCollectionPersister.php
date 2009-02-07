@@ -66,20 +66,36 @@ abstract class AbstractCollectionPersister
         if ($coll->getMapping()->isInverseSide()) {
             return; // ignore inverse side
         }
-
         $sql = $this->_getDeleteSql($coll);
         $this->_conn->exec($sql, $this->_getDeleteSqlParameters($coll));
     }
 
+    /**
+     * Gets the SQL statement for deleting the given collection.
+     *
+     * @param PersistentCollection $coll
+     */
     abstract protected function _getDeleteSql(PersistentCollection $coll);
+
+    /**
+     * Gets the SQL parameters for the corresponding SQL statement to delete
+     * the given collection.
+     *
+     * @param PersistentCollection $coll
+     */
     abstract protected function _getDeleteSqlParameters(PersistentCollection $coll);
 
+    /**
+     * Updates the given collection, synchronizing it's state with the database
+     * by inserting, updating and deleting individual elements.
+     *
+     * @param PersistentCollection $coll
+     */
     public function update(PersistentCollection $coll)
     {
         if ($coll->getMapping()->isInverseSide()) {
             return; // ignore inverse side
         }
-
         $this->deleteRows($coll);
         //$this->updateRows($coll);
         $this->insertRows($coll);
@@ -113,6 +129,13 @@ abstract class AbstractCollectionPersister
      */
     abstract protected function _getDeleteRowSql(PersistentCollection $coll);
 
+    /**
+     * Gets the SQL parameters for the corresponding SQL statement to delete the given
+     * element from the given collection.
+     *
+     * @param PersistentCollection $coll
+     * @param mixed $element
+     */
     abstract protected function _getDeleteRowSqlParameters(PersistentCollection $coll, $element);
 
     /**
@@ -128,7 +151,14 @@ abstract class AbstractCollectionPersister
      * @param PersistentCollection $coll
      */
     abstract protected function _getInsertRowSql(PersistentCollection $coll);
-    
+
+    /**
+     * Gets the SQL parameters for the corresponding SQL statement to insert the given
+     * element of the given collection into the database.
+     *
+     * @param PersistentCollection $coll
+     * @param mixed $element
+     */
     abstract protected function _getInsertRowSqlParameters(PersistentCollection $coll, $element);
 }
 

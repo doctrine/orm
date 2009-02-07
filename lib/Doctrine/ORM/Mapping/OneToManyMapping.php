@@ -21,8 +21,6 @@
 
 namespace Doctrine\ORM\Mapping;
 
-use Doctrine\ORM\Exceptions\MappingException;
-
 /**
  * Represents a one-to-many mapping.
  * 
@@ -53,7 +51,7 @@ class OneToManyMapping extends AssociationMapping
     //protected $_sourceKeysToTargetForeignKeys;
     
     /** Whether to delete orphaned elements (removed from the collection) */
-    protected $_deleteOrphans = false;
+    private $_deleteOrphans = false;
     
     /**
      * Initializes a new OneToManyMapping.
@@ -96,9 +94,8 @@ class OneToManyMapping extends AssociationMapping
     }
     
     /**
-     * Whether the association is one-to-many.
+     * {@inheritdoc}
      *
-     * @return boolean TRUE if the association is one-to-many, FALSE otherwise.
      * @override
      */
     public function isOneToMany()

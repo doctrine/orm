@@ -48,7 +48,7 @@ final class PersistentCollection extends \Doctrine\Common\Collections\Collection
      *
      * @var string
      */
-    private $_entityBaseType;
+    private $_type;
 
     /**
      * A snapshot of the collection at the moment it was fetched from the database.
@@ -99,7 +99,7 @@ final class PersistentCollection extends \Doctrine\Common\Collections\Collection
      * Hydration flag.
      *
      * @var boolean
-     * @see _setHydrationFlag()
+     * @see setHydrationFlag()
      */
     private $_hydrationFlag;
 
@@ -119,12 +119,12 @@ final class PersistentCollection extends \Doctrine\Common\Collections\Collection
     /**
      * Creates a new persistent collection.
      */
-    public function __construct(EntityManager $em, $entityBaseType, array $data = array(), $keyField = null)
+    public function __construct(EntityManager $em, $type, array $data = array(), $keyField = null)
     {
         parent::__construct($data);
-        $this->_entityBaseType = $entityBaseType;
+        $this->_type = $type;
         $this->_em = $em;
-        $this->_ownerClass = $em->getClassMetadata($entityBaseType);
+        $this->_ownerClass = $em->getClassMetadata($type);
         if ($keyField !== null) {
             if ( ! $this->_ownerClass->hasField($keyField)) {
                 throw new DoctrineException("Invalid field '$keyField' can't be used as key.");
@@ -162,7 +162,7 @@ final class PersistentCollection extends \Doctrine\Common\Collections\Collection
      * @param object $entity
      * @param AssociationMapping $assoc
      */
-    public function _setOwner($entity, AssociationMapping $assoc)
+    public function setOwner($entity, AssociationMapping $assoc)
     {
         $this->_owner = $entity;
         $this->_association = $assoc;
@@ -289,7 +289,7 @@ final class PersistentCollection extends \Doctrine\Common\Collections\Collection
      *
      * @param boolean $bool
      */
-    public function _setHydrationFlag($bool)
+    public function setHydrationFlag($bool)
     {
         $this->_hydrationFlag = $bool;
     }
@@ -301,9 +301,9 @@ final class PersistentCollection extends \Doctrine\Common\Collections\Collection
      * when a fetched collection has three elements, then two of those
      * are being removed the diff would contain one element.
      */
-    public function _takeSnapshot()
+    public function takeSnapshot()
     {
-        $this->_snapshot = $this->_data;
+        $this->_snapshot = $this->_elements;
     }
 
     /**
@@ -312,7 +312,7 @@ final class PersistentCollection extends \Doctrine\Common\Collections\Collection
      *
      * @return array The last snapshot of the elements.
      */
-    public function _getSnapshot()
+    public function getSnapshot()
     {
         return $this->_snapshot;
     }
@@ -325,7 +325,7 @@ final class PersistentCollection extends \Doctrine\Common\Collections\Collection
      */
     public function getDeleteDiff()
     {
-        return array_udiff($this->_snapshot, $this->_data, array($this, '_compareRecords'));
+        return array_udiff($this->_snapshot, $this->_elements, array($this, '_compareRecords'));
     }
 
     /**
@@ -335,7 +335,7 @@ final class PersistentCollection extends \Doctrine\Common\Collections\Collection
      */
     public function getInsertDiff()
     {
-        return array_udiff($this->_data, $this->_snapshot, array($this, '_compareRecords'));
+        return array_udiff($this->_elements, $this->_snapshot, array($this, '_compareRecords'));
     }
 
     /**
