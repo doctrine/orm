@@ -1,9 +1,0 @@
-+++ Introduction
-
-+++ Working with pager
-
-+++ Controlling range styles
-
-+++ Advanced layouts with pager
-
-+++ Customizing pager layout

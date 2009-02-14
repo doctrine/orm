@@ -1,4 +1,0 @@
-In real world applications, display content from database tables is a commom task. Also, imagine that this content is a search result containing thousands of items. Undoubtely, it will be a huge listing, memory expensive and hard for users to find the right item. That is where some organization of this content display is needed and pagination comes in rescue.
-
-Doctrine implements a highly flexible pager package, allowing you to not only split listing in pages, but also enabling you to control the layout of page links. 
-In this chapter, we'll learn how to create pager objects, control pager styles and at the end, overview the pager layout object - a powerful page links displayer of Doctrine.

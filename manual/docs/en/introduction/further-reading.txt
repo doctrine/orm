@@ -1,7 +1,0 @@
-For people new to object-relational mapping and (object-oriented) domain models we recommend the following literature:
-
-[http://www.martinfowler.com/books.html Patterns of Enterprise Application Architecture]
-Covers a lot of the basic ORM terminology, the different approaches of modeling business logic and the patterns involved.
-
-[http://domaindrivendesign.org/books/#DDD Domain-Driven Design]
-Though serious Domain-Driven Design is currently not possible with Doctrine, this is an excellent resource for good domain modeling, especially in complex business domains, and the terminology around domain models that is pretty widespread nowadays is explained in depth (Entities, Value Objects, Repositories, ...).

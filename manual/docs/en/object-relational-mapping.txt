@@ -1,7 +1,0 @@
-++ Introduction
-++ Table and class naming
-++ Table options
-++ Columns
-++ Constraints and validators
-++ Record identifiers
-++ Indexes

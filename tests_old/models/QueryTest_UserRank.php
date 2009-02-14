@@ -1,9 +1,0 @@
-<?php
-class QueryTest_UserRank extends Doctrine_Entity
-{
-    public static function initMetadata($class)
-    {        
-        $class->setColumn('rankId', 'integer', 4, array('primary'));
-        $class->setColumn('userId', 'integer', 4, array('primary'));
-    }
-}

@@ -1,5 +1,0 @@
-++ Introduction
-++ Adjacency list
-++ Nested set
-++ Materialized path
-++ Examples

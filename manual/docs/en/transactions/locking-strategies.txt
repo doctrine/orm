@@ -1,2 +1,0 @@
-+++ Pessimistic locking
-+++ Optimistic locking

@@ -1,4 +1,0 @@
-Performance is a very important aspect of all medium to large sized applications. Doctrine is a large
-abstraction  library that provides a database abstraction layer as well as object-relational mapping.
-While this provides a lot of benefits like portability and ease of development it's inevitable that this
-leads to drawbacks in terms of performance. This chapter tries to help you to get the best performance out of Doctrine.

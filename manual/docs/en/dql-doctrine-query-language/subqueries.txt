@@ -1,8 +1,0 @@
-+++ Introduction
-+++ Comparisons using subqueries
-+++ Conditional expressions
-++++ ANY, IN and SOME
-++++ ALL
-++++ EXISTS and NOT EXISTS
-+++ Correlated subqueries
-+++ Subqueries in FROM clause

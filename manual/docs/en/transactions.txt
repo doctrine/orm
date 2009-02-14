@@ -1,8 +1,0 @@
-++ Introduction
-++ Unit of work
-++ Nesting
-++ Savepoints
-++ Locking strategies
-++ Lock modes
-++ Isolation levels
-++ Deadlocks

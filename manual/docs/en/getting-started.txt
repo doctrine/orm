@@ -1,6 +1,0 @@
-++ Requirements
-Doctrine requires PHP >= 5.2. it doesn't require any external libraries. For database function call abstraction Doctrine uses PDO which is bundled with php by default.
-++ Installation
-++ Starting new project
-++ Working with existing databases
-++ Exporting classes
