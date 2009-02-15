@@ -18,7 +18,7 @@
  * and is licensed under the LGPL. For more information, see
  * <http://www.phpdoctrine.org>.
  */
-Doctrine::autoload('Doctrine_Import_Reader');
+
 /**
  * class Doctrine_Import_Reader_Db
  * Reads a database using the given PDO connection and constructs a database
