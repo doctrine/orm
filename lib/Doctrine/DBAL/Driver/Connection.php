@@ -23,4 +23,3 @@ interface Connection
     public function errorCode();
     public function errorInfo();
 }
-

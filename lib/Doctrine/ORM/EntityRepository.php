@@ -149,7 +149,7 @@ class EntityRepository
      *
      * @param string $dql               DQL after WHERE clause
      * @param array $params             query parameters
-     * @param int $hydrationMode        Doctrine::FETCH_ARRAY or Doctrine::FETCH_RECORD
+     * @param int $hydrationMode        Query::HYDRATE_ARRAY or Query::HYDRATE_RECORD
      * @return Doctrine_Collection
      * 
      * @todo This actually takes DQL, not SQL, but it requires column names 
@@ -167,7 +167,7 @@ class EntityRepository
      *
      * @param string $dql               DQL after WHERE clause
      * @param array $params             query parameters
-     * @param int $hydrationMode        Doctrine::FETCH_ARRAY or Doctrine::FETCH_RECORD
+     * @param int $hydrationMode        Query::HYDRATE_ARRAY or Query::HYDRATE_RECORD
      * @return Doctrine_Collection
      */
     public function findByDql($dql, array $params = array(), $hydrationMode = null)

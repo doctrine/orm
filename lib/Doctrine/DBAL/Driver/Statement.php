@@ -43,7 +43,7 @@ interface Statement
      *                              If using the column name, be aware that the name should match
      *                              the case of the column, as returned by the driver.
      * @param string $param         Name of the PHP variable to which the column will be bound.
-     * @param integer $type         Data type of the parameter, specified by the Doctrine::PARAM_* constants.
+     * @param integer $type         Data type of the parameter, specified by the PDO::PARAM_* constants.
      * @return boolean              Returns TRUE on success or FALSE on failure
      */
     public function bindColumn($column, &$param, $type = null);
@@ -58,7 +58,7 @@ interface Statement
      *                              using question mark placeholders, this will be the 1-indexed position of the parameter
      *
      * @param mixed $value          The value to bind to the parameter.
-     * @param integer $type         Explicit data type for the parameter using the Doctrine::PARAM_* constants.
+     * @param integer $type         Explicit data type for the parameter using the PDO::PARAM_* constants.
      *
      * @return boolean              Returns TRUE on success or FALSE on failure.
      */
@@ -82,9 +82,9 @@ interface Statement
      *
      * @param mixed $variable       Name of the PHP variable to bind to the SQL statement parameter.
      *
-     * @param integer $type         Explicit data type for the parameter using the Doctrine::PARAM_* constants. To return
+     * @param integer $type         Explicit data type for the parameter using the PDO::PARAM_* constants. To return
      *                              an INOUT parameter from a stored procedure, use the bitwise OR operator to set the
-     *                              Doctrine::PARAM_INPUT_OUTPUT bits for the data_type parameter.
+     *                              PDO::PARAM_INPUT_OUTPUT bits for the data_type parameter.
      *
      * @param integer $length       Length of the data type. To indicate that a parameter is an OUT parameter
      *                              from a stored procedure, you must explicitly set the length.
@@ -148,32 +148,32 @@ interface Statement
     /**
      * fetch
      *
-     * @see Doctrine::FETCH_* constants
+     * @see Query::HYDRATE_* constants
      * @param integer $fetchStyle           Controls how the next row will be returned to the caller.
-     *                                      This value must be one of the Doctrine::FETCH_* constants,
-     *                                      defaulting to Doctrine::FETCH_BOTH
+     *                                      This value must be one of the Query::HYDRATE_* constants,
+     *                                      defaulting to Query::HYDRATE_BOTH
      *
      * @param integer $cursorOrientation    For a PDOStatement object representing a scrollable cursor, 
      *                                      this value determines which row will be returned to the caller. 
-     *                                      This value must be one of the Doctrine::FETCH_ORI_* constants, defaulting to
-     *                                      Doctrine::FETCH_ORI_NEXT. To request a scrollable cursor for your 
+     *                                      This value must be one of the Query::HYDRATE_ORI_* constants, defaulting to
+     *                                      Query::HYDRATE_ORI_NEXT. To request a scrollable cursor for your 
      *                                      Doctrine_Adapter_Statement_Interface object,
-     *                                      you must set the Doctrine::ATTR_CURSOR attribute to Doctrine::CURSOR_SCROLL when you
+     *                                      you must set the PDO::ATTR_CURSOR attribute to Doctrine::CURSOR_SCROLL when you
      *                                      prepare the SQL statement with Doctrine_Adapter_Interface->prepare().
      *
      * @param integer $cursorOffset         For a Doctrine_Adapter_Statement_Interface object representing a scrollable cursor for which the
-     *                                      $cursorOrientation parameter is set to Doctrine::FETCH_ORI_ABS, this value specifies
+     *                                      $cursorOrientation parameter is set to Query::HYDRATE_ORI_ABS, this value specifies
      *                                      the absolute number of the row in the result set that shall be fetched.
      *                                      
      *                                      For a Doctrine_Adapter_Statement_Interface object representing a scrollable cursor for 
-     *                                      which the $cursorOrientation parameter is set to Doctrine::FETCH_ORI_REL, this value 
+     *                                      which the $cursorOrientation parameter is set to Query::HYDRATE_ORI_REL, this value 
      *                                      specifies the row to fetch relative to the cursor position before 
      *                                      Doctrine_Adapter_Statement_Interface->fetch() was called.
      *
      * @return mixed
      */
-    public function fetch($fetchStyle = Doctrine::FETCH_BOTH,
-                          $cursorOrientation = Doctrine::FETCH_ORI_NEXT,
+    public function fetch($fetchStyle = Query::HYDRATE_BOTH,
+                          $cursorOrientation = Query::HYDRATE_ORI_NEXT,
                           $cursorOffset = null);
 
     /**
@@ -181,15 +181,15 @@ interface Statement
      * Returns an array containing all of the result set rows
      *
      * @param integer $fetchStyle           Controls how the next row will be returned to the caller.
-     *                                      This value must be one of the Doctrine::FETCH_* constants,
-     *                                      defaulting to Doctrine::FETCH_BOTH
+     *                                      This value must be one of the Query::HYDRATE_* constants,
+     *                                      defaulting to Query::HYDRATE_BOTH
      *
      * @param integer $columnIndex          Returns the indicated 0-indexed column when the value of $fetchStyle is
-     *                                      Doctrine::FETCH_COLUMN. Defaults to 0.
+     *                                      Query::HYDRATE_COLUMN. Defaults to 0.
      *
      * @return array
      */
-    public function fetchAll($fetchStyle = Doctrine::FETCH_BOTH);
+    public function fetchAll($fetchStyle = Query::HYDRATE_BOTH);
 
     /**
      * fetchColumn
@@ -209,7 +209,7 @@ interface Statement
      * Fetches the next row and returns it as an object.
      *
      * Fetches the next row and returns it as an object. This function is an alternative to 
-     * Doctrine_Adapter_Statement_Interface->fetch() with Doctrine::FETCH_CLASS or Doctrine::FETCH_OBJ style.
+     * Doctrine_Adapter_Statement_Interface->fetch() with Query::HYDRATE_CLASS or Query::HYDRATE_OBJ style.
      *
      * @param string $className             Name of the created class, defaults to stdClass. 
      * @param array $args                   Elements of this array are passed to the constructor.
@@ -288,7 +288,7 @@ interface Statement
      * setFetchMode
      * Set the default fetch mode for this statement 
      *
-     * @param integer $mode                 The fetch mode must be one of the Doctrine::FETCH_* constants.
+     * @param integer $mode                 The fetch mode must be one of the Query::HYDRATE_* constants.
      * @return boolean                      Returns 1 on success or FALSE on failure.
      */
     public function setFetchMode($mode, $arg1);

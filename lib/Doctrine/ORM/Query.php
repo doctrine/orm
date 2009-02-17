@@ -63,7 +63,7 @@ class Query extends AbstractQuery
     /**
      * @var Doctrine\ORM\EntityManager The entity manager used by this query object.
      */
-    protected $_entityManager;
+    protected $_em;
 
     /**
      * @var integer The hydration mode.
@@ -125,7 +125,7 @@ class Query extends AbstractQuery
      */
     public function __construct(EntityManager $entityManager)
     {
-        $this->_entityManager = $entityManager;
+        $this->_em = $entityManager;
         $this->free();
     }
 
@@ -136,7 +136,7 @@ class Query extends AbstractQuery
      */
     public function getEntityManager()
     {
-        return $this->_entityManager;
+        return $this->_em;
     }
 
     /**
@@ -222,7 +222,7 @@ class Query extends AbstractQuery
      *
      * @param string $params Parameters to be sent to query.
      * @param integer $hydrationMode Doctrine processing mode to be used during hydration process.
-     *                               One of the Doctrine::HYDRATE_* constants.
+     *                               One of the Query::HYDRATE_* constants.
      * @return mixed
      */
     public function execute($params = array(), $hydrationMode = null)
@@ -274,7 +274,7 @@ class Query extends AbstractQuery
     protected function _execute(array $params)
     {
         // If there is a CacheDriver associated to cache queries...
-        if ($this->_queryCache || $this->_entityManager->getConnection()->getAttribute(Doctrine::ATTR_QUERY_CACHE)) {
+        if ($this->_queryCache || $this->_em->getConfiguration()->getQueryCacheImpl()) {
             $queryCacheDriver = $this->getQueryCacheDriver();
 
             // Calculate hash for dql query.
@@ -303,13 +303,6 @@ class Query extends AbstractQuery
         // Converting parameters
         $params = $this->_prepareParams($params);
 
-        // Double the params if we are using limit-subquery algorithm
-        // We always have an instance of Doctrine_ORM_Query_ParserResult on hands...
-        /*if ($this->_parserResult->isLimitSubqueryUsed() &&
-                $this->_entityManager->getConnection()->getAttribute(Doctrine::ATTR_DRIVER_NAME) !== 'mysql') {
-            $params = array_merge($params, $params);
-        }*/
-
         // Executing the query and returning statement
         return $executor->execute($this->_conn, $params);
     }
@@ -320,7 +313,7 @@ class Query extends AbstractQuery
     protected function _prepareParams(array $params)
     {
         // Convert boolean params
-        $params = $this->_entityManager->getConnection()->convertBooleans($params);
+        $params = $this->_em->getConnection()->convertBooleans($params);
 
         // Convert enum params
         return $this->convertEnums($params);
@@ -354,7 +347,7 @@ class Query extends AbstractQuery
         if ($this->_resultCache instanceof \Doctrine\ORM\Cache\Cache) {
             return $this->_resultCache;
         } else {
-            return $this->_entityManager->getConnection()->getResultCacheDriver();
+            return $this->_em->getConnection()->getResultCacheDriver();
         }
     }
 
@@ -437,7 +430,7 @@ class Query extends AbstractQuery
         if ($this->_queryCache instanceof \Doctrine\ORM\Cache\Cache) {
             return $this->_queryCache;
         } else {
-            return $this->_entityManager->getConnection()->getQueryCacheDriver();
+            return $this->_em->getConnection()->getQueryCacheDriver();
         }
     }
 
@@ -495,7 +488,7 @@ class Query extends AbstractQuery
      * Defines the processing mode to be used during hydration process.
      *
      * @param integer $hydrationMode Doctrine processing mode to be used during hydration process.
-     *                               One of the Doctrine::HYDRATE_* constants.
+     *                               One of the Query::HYDRATE_* constants.
      * @return Doctrine\ORM\Query
      */
     public function setHydrationMode($hydrationMode)
