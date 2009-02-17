@@ -24,9 +24,10 @@ class AllTests
 
     public static function suite()
     {
-        $suite = new \Doctrine\Tests\DbalTestSuite('Doctrine Dbal');
+        $suite = new \Doctrine\Tests\DbalTestSuite('Doctrine DBAL');
 
-        $suite->addTest(Component\AllTests::suite());
+        $suite->addTestSuite('Doctrine\Tests\DBAL\Platforms\AbstractPlatformTest');
+
         $suite->addTest(Ticket\AllTests::suite());
         
         return $suite;
