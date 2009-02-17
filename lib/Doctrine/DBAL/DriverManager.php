@@ -107,7 +107,7 @@ final class DriverManager
         
         // check for existing pdo object
         if (isset($params['pdo']) && ! $params['pdo'] instanceof PDO) {
-            throw DBALException::invalidPDOInstance();
+            throw Exceptions\DBALException::invalidPDOInstance();
         } else if (isset($params['pdo'])) {
             $params['driver'] = $params['pdo']->getAttribute(PDO::ATTR_DRIVER_NAME);
         } else {
@@ -140,14 +140,14 @@ final class DriverManager
         
         // driver
         if ( ! isset($params['driver']) && ! isset($params['driverClass'])) {
-            throw DBALException::driverRequired();
+            throw Exceptions\DBALException::driverRequired();
         }
         
         // check validity of parameters
         
         // driver
         if ( isset($params['driver']) && ! isset(self::$_driverMap[$params['driver']])) {
-            throw DBALException::unknownDriver($params['driver']);
+            throw Exceptions\DBALException::unknownDriver($params['driver']);
         }
     }
 }

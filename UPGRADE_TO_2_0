@@ -52,8 +52,8 @@ Then, when trying to load the class Doctrine\ORM\EntityManager, for example the 
     $config->setMetadataCacheImpl(new \Doctrine\ORM\Cache\ArrayCache);
     $eventManager = new \Doctrine\Common\EventManager();
     $connectionOptions = array(
-            'user' => 'john',
-            'password' => 'wayne'
+            'driver' => 'pdo_sqlite',
+            'path' => 'database.sqlite'
     );
     $em = \Doctrine\ORM\EntityManager::create($connectionOptions, 'doctrine', $config, $eventManager);
 

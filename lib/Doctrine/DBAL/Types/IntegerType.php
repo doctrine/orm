@@ -9,7 +9,10 @@ namespace Doctrine\DBAL\Types;
 class IntegerType extends Type
 {
 
-    public function getName() { return "Integer"; }
+    public function getName()
+    {
+        return "Integer";
+    }
 
     public function getSqlDeclaration(array $fieldDeclaration, \Doctrine\DBAL\Platforms\AbstractPlatform $platform)
     {
@@ -18,7 +21,6 @@ class IntegerType extends Type
 
     public function convertToPHPValue($value)
     {
-        return (int)$value;
+        return (int) $value;
     }
 }
-

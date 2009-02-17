@@ -448,7 +448,33 @@ class EntityManager
     {
         //...
     }
-    
+
+/*
+    public function toArray($entity, $deep = false)
+    {
+        $array = array();
+        foreach ($entity as $key => $value) {
+            if ($deep && is_object($value)) {
+                $array[$key] = $this->toArray($value, $deep);
+            } else if ( ! is_object($value)) {
+                $array[$key] = $value;
+            }
+        }
+        return $array;
+    }
+
+    public function fromArray($entity, array $array, $deep = false)
+    {
+        foreach ($array as $key => $value) {
+            if ($deep && is_array($value)) {
+                $entity->$key = $this->fromArray($entity, $value, $deep);
+            } else if ( ! is_array($value)) {
+                $entity->$key = $value;
+            }
+        }
+    }
+*/
+
     /**
      * Gets the repository for an entity class.
      *
