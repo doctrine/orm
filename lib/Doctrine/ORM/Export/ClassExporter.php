@@ -58,12 +58,27 @@ class ClassExporter
     }
 
     /**
-     * Exports entity classes to a database, according to the specified mappings.
+     * Exports an array of class meta data instances to your database
      *
      * @param array $classes
      */
     public function exportClasses(array $classes)
     {
+        $exportClassesSql = $this->getExportClassesSql($classes);
+        foreach ($exportClassesSql as $sql) {
+            $this->_em->getConnection()->execute($sql);
+        }
+    }
+
+    /**
+     * Get an array of sql statements for the specified array of class meta data instances
+     *
+     * @param array $classes
+     * @return array $sql
+     */
+    public function getExportClassesSql(array $classes)
+    {
+        $sql = array();
         $foreignKeyConstraints = array();
 
         // First we create the tables
@@ -143,18 +158,20 @@ class ClassExporter
                     }
                     $foreignKeyConstraints[] = $constraint2;
 
-                    $this->_sm->createTable($joinTable['name'], $joinTableColumns, array());
+                    $sql = array_merge($sql, $this->_platform->getCreateTableSql($joinTable['name'], $joinTableColumns, array()));
                 }
             }
 
-            $this->_sm->createTable($class->getTableName(), $columns, $options);
+            $sql = array_merge($sql, $this->_platform->getCreateTableSql($class->getTableName(), $columns, $options));
         }
 
         // Now create the foreign key constraints
         if ($this->_platform->supportsForeignKeyConstraints()) {
             foreach ($foreignKeyConstraints as $fkConstraint) {
-                $this->_sm->createForeignKey($fkConstraint['tableName'], $fkConstraint);
+                $sql = array_merge($sql, $this->_platform->getCreateForeignKeySql($fkConstraint['tableName'], $fkConstraint));
             }
         }
+
+        return $sql;
     }
 }
