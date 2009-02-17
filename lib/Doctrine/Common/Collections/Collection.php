@@ -21,6 +21,7 @@
 
 namespace Doctrine\Common\Collections;
 
+use \Closure;
 use \Countable;
 use \IteratorAggregate;
 use \ArrayAccess;

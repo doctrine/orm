@@ -63,6 +63,8 @@ abstract class AbstractEntityPersister
      */
     protected $_em;
 
+    protected $_queuedInserts = array();
+
     /**
      * Initializes a new instance of a class derived from AbstractEntityPersister
      * that uses the given EntityManager and persists instances of the class described
@@ -79,7 +81,7 @@ abstract class AbstractEntityPersister
     /**
      * Inserts an entity.
      *
-     * @param Doctrine\ORM\Entity $entity The entity to insert.
+     * @param object $entity The entity to insert.
      * @return mixed
      */
     public function insert($entity)
@@ -92,6 +94,30 @@ abstract class AbstractEntityPersister
             return $idGen->generate($entity);
         }
         return null;
+    }
+
+    /**
+     * Adds an entity to the queued inserts.
+     *
+     * @param object $entity
+     */
+    public function addInsert($entity)
+    {
+        $insertData = array();
+        $this->_prepareData($entity, $insertData, true);
+        $this->_queuedInserts[] = $insertData;
+    }
+
+    /**
+     * Executes all queued inserts.
+     */
+    public function executeInserts()
+    {
+        $tableName = $this->_classMetadata->getTableName();
+        $stmt = $this->_conn->prepare($this->_classMetadata->getInsertSql());
+        foreach ($this->_queuedInserts as $insertData) {
+            $stmt->execute(array_values($insertData));
+        }
     }
     
     /**
@@ -167,7 +193,7 @@ abstract class AbstractEntityPersister
     }
     
     /**
-     * Prepares all the entity data for insertion into the database.
+     * Prepares the data of an entity for an insert/update operation.
      *
      * @param object $entity
      * @param array $array

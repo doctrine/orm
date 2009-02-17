@@ -31,7 +31,7 @@ use Doctrine\Common\DoctrineException;
  * @author Roman Borschel <roman@code-factory.org>
  * @since 2.0
  */
-class ClassMetadata
+final class ClassMetadata
 {
     /* The inheritance mapping types */
     /**
@@ -84,33 +84,18 @@ class ClassMetadata
      * must have a natural id.
      */
     const GENERATOR_TYPE_NONE = 'none';
-    
-    /* The Entity types */
-    /**
-     * A regular entity is assumed to have persistent state that Doctrine should manage.
-     */
-    const ENTITY_TYPE_REGULAR = 'regular';
-    /**
-     * A transient entity is ignored by Doctrine (so ... it's not an entity really).
-     */
-    const ENTITY_TYPE_TRANSIENT = 'transient';
-    /**
-     * A mapped superclass entity is itself not persisted by Doctrine but it's
-     * field & association mappings are inherited by subclasses.
-     */
-    const ENTITY_TYPE_MAPPED_SUPERCLASS = 'mappedSuperclass';
 
     /**
      * The name of the entity class.
      */
-    protected $_entityName;
+    private $_entityName;
 
     /**
      * The namespace the entity class is contained in.
      *
      * @var string
      */
-    protected $_namespace;
+    private $_namespace;
 
     /**
      * The name of the entity class that is at the root of the entity inheritance
@@ -119,7 +104,7 @@ class ClassMetadata
      *
      * @var string
      */
-    protected $_rootEntityName;
+    private $_rootEntityName;
 
     /**
      * The name of the custom repository class used for the entity class.
@@ -127,21 +112,21 @@ class ClassMetadata
      *
      * @var string
      */
-    protected $_customRepositoryClassName;
+    private $_customRepositoryClassName;
 
     /**
      * The names of the parent classes (ancestors).
      * 
      * @var array
      */
-    protected $_parentClasses = array();
+    private $_parentClasses = array();
 
     /**
      * The names of all subclasses.
      * 
      * @var array
      */
-    protected $_subClasses = array();
+    private $_subClasses = array();
 
     /**
      * The field names of all fields that are part of the identifier/primary key
@@ -149,21 +134,21 @@ class ClassMetadata
      *
      * @var array
      */
-    protected $_identifier = array();
+    private $_identifier = array();
     
     /**
      * The inheritance mapping type used by the class.
      *
      * @var integer
      */
-    protected $_inheritanceType = self::INHERITANCE_TYPE_NONE;
+    private $_inheritanceType = self::INHERITANCE_TYPE_NONE;
     
     /**
      * The Id generator type used by the class.
      *
      * @var string
      */
-    protected $_generatorType = self::GENERATOR_TYPE_NONE;
+    private $_generatorType = self::GENERATOR_TYPE_NONE;
     
     /**
      * The field mappings of the class.
@@ -221,7 +206,7 @@ class ClassMetadata
      *
      * @var array
      */    
-    protected $_fieldMappings = array();
+    private $_fieldMappings = array();
     
     /**
      * An array of field names. Used to look up field names from column names.
@@ -230,7 +215,7 @@ class ClassMetadata
      *
      * @var array
      */
-    protected $_fieldNames = array();
+    private $_fieldNames = array();
 
     /**
      * An array of column names. Keys are field names and values column names.
@@ -239,7 +224,7 @@ class ClassMetadata
      *
      * @var array
      */
-    protected $_columnNames = array();
+    private $_columnNames = array();
     
     /**
      * Map that maps lowercased column names (keys) to field names (values).
@@ -248,7 +233,7 @@ class ClassMetadata
      *
      * @var array
      */
-    protected $_lcColumnToFieldNames = array();
+    private $_lcColumnToFieldNames = array();
 
     /**
      * Whether to automatically OUTER JOIN subtypes when a basetype is queried.
@@ -257,7 +242,7 @@ class ClassMetadata
      *
      * @var boolean
      */
-    protected $_joinSubclasses = true;
+    private $_joinSubclasses = true;
 
     /**
      * A map that maps discriminator values to class names.
@@ -268,7 +253,7 @@ class ClassMetadata
      * @var array
      * @see _discriminatorColumn
      */
-    protected $_discriminatorMap = array();
+    private $_discriminatorMap = array();
 
     /**
      * The definition of the descriminator column used in JOINED and SINGLE_TABLE
@@ -276,7 +261,7 @@ class ClassMetadata
      *
      * @var array
      */
-    protected $_discriminatorColumn;
+    private $_discriminatorColumn;
 
     /**
      * The primary table definition. The definition is an array with the
@@ -288,7 +273,7 @@ class ClassMetadata
      *
      * @var array
      */
-    protected $_primaryTable;
+    private $_primaryTable;
     
     /**
      * The cached lifecycle listeners. There is only one instance of each
@@ -296,56 +281,58 @@ class ClassMetadata
      *
      * @var array
      */
-    protected $_lifecycleListenerInstances = array();
+    private $_lifecycleListenerInstances = array();
 
     /**
      * The registered lifecycle callbacks for entities of this class.
      *
      * @var array
      */
-    protected $_lifecycleCallbacks = array();
+    private $_lifecycleCallbacks = array();
     
     /**
      * The registered lifecycle listeners for entities of this class.
      *
      * @var array
      */
-    protected $_lifecycleListeners = array();
+    private $_lifecycleListeners = array();
     
     /**
      * The association mappings. All mappings, inverse and owning side.
      *
      * @var array
      */
-    protected $_associationMappings = array();
+    private $_associationMappings = array();
     
     /**
      * List of inverse association mappings, indexed by mappedBy field name.
      *
      * @var array
      */
-    protected $_inverseMappings = array();
+    private $_inverseMappings = array();
     
     /**
      * Flag indicating whether the identifier/primary key of the class is composite.
      *
      * @var boolean
      */
-    protected $_isIdentifierComposite = false;
+    private $_isIdentifierComposite = false;
 
     /**
      * The ReflectionClass instance of the mapped class.
      *
      * @var ReflectionClass
      */
-    protected $_reflectionClass;
+    private $_reflectionClass;
 
     /**
      * The ReflectionProperty instances of the mapped class.
      *
      * @var array
      */
-    protected $_reflectionProperties;
+    private $_reflectionProperties;
+
+    //private $_insertSql;
 
     /**
      * Initializes a new ClassMetadata instance that will hold the object-relational mapping
@@ -1106,19 +1093,6 @@ class ClassMetadata
     }
     
     /**
-     * Checks whether the given type identifies an entity type.
-     *
-     * @param string $type
-     * @return boolean
-     */
-    private function _isEntityType($type)
-    {
-        return $type == self::ENTITY_TYPE_REGULAR ||
-                $type == self::ENTITY_TYPE_MAPPED_SUPERCLASS ||
-                $type == self::ENTITY_TYPE_TRANSIENT;
-    }
-    
-    /**
      * Checks whether the given type identifies an inheritance type.
      *
      * @param string $type
@@ -1316,17 +1290,6 @@ class ClassMetadata
     public function getJoinSubClasses()
     {
         return $this->_joinSubclasses;
-    }
-
-    /**
-     * @todo Implementation.
-     */
-    public function setEntityType($type)
-    {
-        //Entity::TYPE_ENTITY
-        //Entity::TYPE_MAPPED_SUPERCLASS
-        //Entity::TYPE_TRANSIENT
-        throw new DoctrineException("Not yet implemented.");
     }
     
     /**

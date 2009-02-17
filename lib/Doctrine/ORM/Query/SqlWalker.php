@@ -1,7 +1,22 @@
 <?php
-/* 
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+/*
+ *  $Id$
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+ * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+ * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+ * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+ * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+ * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ * This software consists of voluntary contributions made by many individuals
+ * and is licensed under the LGPL. For more information, see
+ * <http://www.doctrine-project.org>.
  */
 
 namespace Doctrine\ORM\Query;
@@ -19,13 +34,7 @@ use Doctrine\ORM\Query\AST;
  */
 class SqlWalker
 {
-    /**
-     * A simple array keys representing table aliases and values table alias
-     * seeds. The seeds are used for generating short SQL table aliases.
-     *
-     * @var array $_tableAliasSeeds
-     */
-    private $_tableAliasSeeds = array();
+    private $_tableAliasCounter = 0;
     private $_parserResult;
     private $_em;
     private $_dqlToSqlAliasMap = array();
@@ -41,7 +50,7 @@ class SqlWalker
         $sqlToDqlAliasMap = array();
         foreach ($parserResult->getQueryComponents() as $dqlAlias => $qComp) {
             if ($dqlAlias != 'dctrn') {
-                $sqlAlias = $this->generateTableAlias($qComp['metadata']->getTableName());
+                $sqlAlias = $this->generateSqlTableAlias($qComp['metadata']->getTableName());
                 $sqlToDqlAliasMap[$sqlAlias] = $dqlAlias;
             }
         }
@@ -378,31 +387,14 @@ class SqlWalker
     }
 
     /**
-     * Generates an SQL table alias from given table name and associates
-     * it with given component alias
+     * Generates a unique, short SQL table alias.
      *
-     * @param string $componentName Component name to be associated with generated table alias
-     * @return string               Generated table alias
+     * @param string $tableName Table name.
+     * @return string Generated table alias.
      */
-    public function generateTableAlias($componentName)
+    public function generateSqlTableAlias($tableName)
     {
-        $baseAlias = strtolower(preg_replace('/[^A-Z]/', '\\1', $componentName));
-
-        // We may have a situation where we have all chars are lowercased
-        if ($baseAlias == '') {
-            // We simply grab the first 2 chars of component name
-            $baseAlias = substr($componentName, 0, 2);
-        }
-
-        $alias = $baseAlias;
-
-        if ( ! isset($this->_tableAliasSeeds[$baseAlias])) {
-            $this->_tableAliasSeeds[$baseAlias] = 1;
-        } else {
-            $alias .= $this->_tableAliasSeeds[$baseAlias]++;
-        }
-
-        return $alias;
+        return strtolower(substr($tableName, 0, 1)) . $this->_tableAliasCounter++;
     }
 }
 

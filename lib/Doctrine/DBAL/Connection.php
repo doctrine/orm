@@ -468,7 +468,7 @@ class Connection
      * Prepares an SQL statement.
      *
      * @param string $statement
-     * @return PDOStatement
+     * @return Statement
      */
     public function prepare($statement)
     {

@@ -22,6 +22,7 @@
 namespace Doctrine\ORM\Internal\Hydration;
 
 use \PDO;
+use Doctrine\ORM\PersistentCollection;
 
 /**
  * The ObjectHydrator constructs an object graph out of an SQL result set.
@@ -135,7 +136,7 @@ class ObjectHydrator extends AbstractHydrator
 
     private function getCollection($component)
     {
-        $coll = new \Doctrine\ORM\PersistentCollection($this->_em, $component);
+        $coll = new PersistentCollection($this->_em, $component);
         $this->_collections[] = $coll;
         return $coll;
     }
@@ -357,7 +358,7 @@ class ObjectHydrator extends AbstractHydrator
                                     ->getValue($baseElement));
                     }
                 } else if ( ! $this->isFieldSet($baseElement, $relationAlias)) {
-                    $coll = new \Doctrine\ORM\PersistentCollection($this->_em, $entityName);
+                    $coll = new PersistentCollection($this->_em, $entityName);
                     $this->_collections[] = $coll;
                     $this->setRelatedElement($baseElement, $relationAlias, $coll);
                 }

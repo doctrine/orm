@@ -16,7 +16,7 @@
  *
  * This software consists of voluntary contributions made by many individuals
  * and is licensed under the LGPL. For more information, see
- * <http://www.phpdoctrine.org>.
+ * <http://www.doctrine-project.org>.
  */
 
 namespace Doctrine\ORM\Mapping;
@@ -112,6 +112,8 @@ abstract class AssociationMapping
      * @var array
      */
     protected $_joinTable = array();
+
+    //protected $_joinTableInsertSql;
     
     /**
      * Initializes a new instance of a class derived from AssociationMapping.

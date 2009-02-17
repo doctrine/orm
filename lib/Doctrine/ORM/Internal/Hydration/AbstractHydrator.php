@@ -16,7 +16,7 @@
  *
  * This software consists of voluntary contributions made by many individuals
  * and is licensed under the LGPL. For more information, see
- * <http://www.phpdoctrine.org>.
+ * <http://www.doctrine-project.org>.
  */
 
 namespace Doctrine\ORM\Internal\Hydration;
@@ -213,11 +213,12 @@ abstract class AbstractHydrator
                 $cache[$key]['fieldName'] = $fieldName;
 
                 // Cache identifier information
-                if ($classMetadata->isIdentifier($fieldName)) {
+                $cache[$key]['isIdentifier'] = $classMetadata->isIdentifier($fieldName);
+                /*if ($classMetadata->isIdentifier($fieldName)) {
                     $cache[$key]['isIdentifier'] = true;
                 } else {
                     $cache[$key]['isIdentifier'] = false;
-                }
+                }*/
             }
 
             $class = $this->_queryComponents[$cache[$key]['dqlAlias']]['metadata'];
@@ -336,8 +337,7 @@ abstract class AbstractHydrator
      * during hydration because the hydrator caches effectively.
      *
      * @return string  The field name.
-     * @throws Doctrine::ORM::Exceptions::ClassMetadataException If the field name could
-     *         not be found.
+     * @throws DoctrineException If the field name could not be found.
      */
     private function _lookupFieldName($class, $lcColumnName)
     {
@@ -353,7 +353,7 @@ abstract class AbstractHydrator
             }
         }
 
-        throw new Doctrine_Exception("No field name found for column name '$lcColumnName' during hydration.");
+        throw new DoctrineException("No field name found for column name '$lcColumnName' during hydration.");
     }
 
     /** Needed only temporarily until the new parser is ready */

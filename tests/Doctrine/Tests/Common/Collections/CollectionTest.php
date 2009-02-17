@@ -19,7 +19,7 @@ class CollectionTest extends \Doctrine\Tests\DoctrineTestCase {
         $this->_coll = new \Doctrine\Common\Collections\Collection;
     }
 
-    /*public function testExists() {
+    public function testExists() {
         $this->_coll->add("one");
         $this->_coll->add("two");
         $exists = $this->_coll->exists(function($key, $element) { return $element == "one"; });
@@ -41,6 +41,6 @@ class CollectionTest extends \Doctrine\Tests\DoctrineTestCase {
         $this->_coll->add(3);
         $res = $this->_coll->filter(function ($e) { return is_numeric($e); });
         $this->assertEquals(array(0 => 1, 2 => 3), $res->unwrap());
-    }*/
+    }
 }
 

@@ -1165,28 +1165,35 @@ class UnitOfWork
     public function createEntity($className, array $data, $query = null)
     {
         $className = $this->_inferCorrectClassName($data, $className);
-        $classMetadata = $this->_em->getClassMetadata($className);
+        $class = $this->_em->getClassMetadata($className);
 
         $id = array();
-        if ($classMetadata->isIdentifierComposite()) {
-            $identifierFieldNames = $classMetadata->getIdentifier();
+        if ($class->isIdentifierComposite()) {
+            $identifierFieldNames = $class->getIdentifier();
             foreach ($identifierFieldNames as $fieldName) {
                 $id[] = $data[$fieldName];
             }
             $idHash = $this->getIdentifierHash($id);
         } else {
-            $id = array($data[$classMetadata->getSingleIdentifierFieldName()]);
+            $id = array($data[$class->getSingleIdentifierFieldName()]);
             $idHash = $id[0];
         }
-        $entity = $this->tryGetByIdHash($idHash, $classMetadata->getRootClassName());
+        $entity = $this->tryGetByIdHash($idHash, $class->getRootClassName());
         if ($entity) {
             $oid = spl_object_hash($entity);
-            $this->_mergeData($entity, $data, $classMetadata/*, $query->getHint('doctrine.refresh')*/);
+            $this->_mergeData($entity, $data, $class/*, $query->getHint('doctrine.refresh')*/);
             return $entity;
         } else {
             $entity = new $className;
             $oid = spl_object_hash($entity);
-            $this->_mergeData($entity, $data, $classMetadata, true);
+            /*if ($class->hasLazySingleValuedAssociations()) {
+                foreach ($class->getLazyAssociations() as $lazyAssoc) {
+                    // Inject VirtualProxy
+                    $prop = $class->getReflectionProperty($lazyAssoc->getSourceFieldName());
+                    $prop->setValue($entity, new \Doctrine\ORM\VirtualProxy($entity, $lazyAssoc, $prop));
+                }
+            }*/
+            $this->_mergeData($entity, $data, $class, true);
             $this->_entityIdentifiers[$oid] = $id;
             $this->addToIdentityMap($entity);
         }
@@ -1203,6 +1210,7 @@ class UnitOfWork
      * @param object $entity
      * @param array $data
      * @param boolean $overrideLocalChanges
+     * @todo Consider moving to ClassMetadata for a little performance improvement.
      */
     private function _mergeData($entity, array $data, $class, $overrideLocalChanges = false) {
         if ($overrideLocalChanges) {
