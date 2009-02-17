@@ -114,7 +114,6 @@ class MySqlPlatform extends AbstractPlatform
                           );*/
     
     /**
-     * Constructor.
      * Creates a new MySqlPlatform instance.
      */
     public function __construct()
@@ -1041,56 +1040,43 @@ class MySqlPlatform extends AbstractPlatform
      */
     public function getIntegerTypeDeclarationSql(array $field)
     {
-        return 'INT ' . $this->_getCommonIntegerTypeDeclarationSql($field);
+        return 'INT' . $this->_getCommonIntegerTypeDeclarationSql($field);
     }
 
     /** @override */
     public function getBigIntTypeDeclarationSql(array $field)
     {
-        return 'BIGINT ' . $this->_getCommonIntegerTypeDeclarationSql($field);
+        return 'BIGINT' . $this->_getCommonIntegerTypeDeclarationSql($field);
     }
 
     /** @override */
     public function getTinyIntTypeDeclarationSql(array $field)
     {
-        return 'TINYINT ' . $this->_getCommonIntegerTypeDeclarationSql($field);
+        return 'TINYINT' . $this->_getCommonIntegerTypeDeclarationSql($field);
     }
 
     /** @override */
     public function getSmallIntTypeDeclarationSql(array $field)
     {
-        return 'SMALLINT ' . $this->_getCommonIntegerTypeDeclarationSql($field);
+        return 'SMALLINT' . $this->_getCommonIntegerTypeDeclarationSql($field);
     }
 
     /** @override */
     public function getMediumIntTypeDeclarationSql(array $field)
     {
-        return 'MEDIUMINT ' . $this->_getCommonIntegerTypeDeclarationSql($field);
+        return 'MEDIUMINT' . $this->_getCommonIntegerTypeDeclarationSql($field);
     }
 
     /** @override */
     protected function _getCommonIntegerTypeDeclarationSql(array $columnDef)
     {
-        $default = $autoinc = '';
+        $autoinc = '';
         if ( ! empty($columnDef['autoincrement'])) {
             $autoinc = ' AUTO_INCREMENT';
-        } elseif (array_key_exists('default', $columnDef)) {
-            if ($columnDef['default'] === '') {
-                $columnDef['default'] = empty($columnDef['notnull']) ? null : 0;
-            }
-            if (is_null($columnDef['default'])) {
-                $default = ' DEFAULT NULL';
-            } else {
-                $default = ' DEFAULT '.$this->quote($columnDef['default']);
-            }
-        } elseif (empty($columnDef['notnull'])) {
-            $default = ' DEFAULT NULL';
         }
-
-        $notnull  = (isset($columnDef['notnull'])  && $columnDef['notnull'])  ? ' NOT NULL' : '';
         $unsigned = (isset($columnDef['unsigned']) && $columnDef['unsigned']) ? ' UNSIGNED' : '';
 
-        return $unsigned . $default . $notnull . $autoinc;
+        return $unsigned . $autoinc;
     }
     
     /**
@@ -1104,33 +1090,31 @@ class MySqlPlatform extends AbstractPlatform
      */
     public function getDefaultFieldDeclarationSql($field)
     {
-        $default = empty($field['notnull']) && !in_array($field['type'], array('clob', 'blob'))
-            ? ' DEFAULT NULL' : '';
+        $default = empty($field['notnull']) ? ' DEFAULT NULL' : '';
 
         if (isset($field['default']) && ( ! isset($field['length']) || $field['length'] <= 255)) {
             if ($field['default'] === '') {
                 $field['default'] = null;
-                if (! empty($field['notnull']) && array_key_exists($field['type'], $this->valid_default_values)) {
+                /*if ( ! empty($field['notnull']) && array_key_exists($field['type'], $this->valid_default_values)) {
                    $field['default'] = $this->valid_default_values[$field['type']];
                 }
-
                 if ($field['default'] === ''
                     && ($this->_conn->getAttribute(Doctrine::ATTR_PORTABILITY) & Doctrine::PORTABILITY_EMPTY_TO_NULL)
                 ) {
                     $field['default'] = ' ';
-                }
+                }*/
             }
 
-            if ($field['type'] == 'enum' && $this->_conn->getAttribute(Doctrine::ATTR_USE_NATIVE_ENUM)) {
+            /*if ($field['type'] == 'enum' && $this->_conn->getAttribute(Doctrine::ATTR_USE_NATIVE_ENUM)) {
                 $fieldType = 'varchar';
             } else {
                if ($field['type'] === 'boolean') {
                    $fields['default'] = $this->convertBooleans($field['default']);
                }
                 $fieldType = $field['type'];
-            }
+            }*/
 
-            $default = ' DEFAULT ' . $this->quote($field['default'], $fieldType);
+            $default = ' DEFAULT ' . $this->quote($field['default'], $field['type']);
         }
         return $default;
     }

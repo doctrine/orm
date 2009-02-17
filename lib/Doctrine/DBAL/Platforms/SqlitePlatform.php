@@ -450,10 +450,10 @@ class SqlitePlatform extends AbstractPlatform
     /** @override */
     protected function _getCommonIntegerTypeDeclarationSql(array $columnDef)
     {
-        $autoinc = ! empty($columnDef['autoincrement']) ? 'AUTOINCREMENT' : '';
-        $pk = ! empty($columnDef['primary']) && ! empty($autoinc) ? 'PRIMARY KEY' : '';
+        $autoinc = ! empty($columnDef['autoincrement']) ? ' AUTOINCREMENT' : '';
+        $pk = ! empty($columnDef['primary']) && ! empty($autoinc) ? ' PRIMARY KEY' : '';
 
-        return "INTEGER $pk $autoinc";
+        return "INTEGER" . $pk . $autoinc;
     }
 
     /**
@@ -513,13 +513,13 @@ class SqlitePlatform extends AbstractPlatform
         $name  = $this->quoteIdentifier($name, true);
         $sql   = 'CREATE TABLE ' . $name . ' (' . $queryFields;
 
-        if ($check = $this->getCheckDeclarationSql($fields)) {
+        /*if ($check = $this->getCheckDeclarationSql($fields)) {
             $sql .= ', ' . $check;
         }
 
         if (isset($options['checks']) && $check = $this->getCheckDeclarationSql($options['checks'])) {
             $sql .= ', ' . $check;
-        }
+        }*/
 
         $sql .= ')';
 
@@ -527,7 +527,7 @@ class SqlitePlatform extends AbstractPlatform
 
         if (isset($options['indexes']) && ! empty($options['indexes'])) {
             foreach ($options['indexes'] as $index => $definition) {
-                $query[] = $this->createIndexSql($name, $index, $definition);
+                $query[] = $this->getCreateIndexSql($name, $index, $definition);
             }
         }
         return $query;

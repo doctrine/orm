@@ -24,7 +24,7 @@ class EntityPersisterTest extends \Doctrine\Tests\OrmTestCase
     
     protected function setUp() {
         parent::setUp();
-        $this->_connMock = new ConnectionMock(array());
+        $this->_connMock = new ConnectionMock(array(), new \Doctrine\Tests\Mocks\DriverMock());
         $this->_emMock = EntityManagerMock::create($this->_connMock);
         $this->_uowMock = new UnitOfWorkMock($this->_emMock);
         $this->_emMock->setUnitOfWork($this->_uowMock);

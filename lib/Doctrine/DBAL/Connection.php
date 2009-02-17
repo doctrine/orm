@@ -180,6 +180,16 @@ class Connection
         $this->_platform = $driver->getDatabasePlatform();
         $this->_transactionIsolationLevel = $this->_platform->getDefaultTransactionIsolationLevel();
     }
+
+    /**
+     * Gets the DBAL driver instance.
+     *
+     * @return Doctrine\DBAL\Driver
+     */
+    public function getDriver()
+    {
+        return $this->_driver;
+    }
     
     /**
      * Gets the Configuration used by the Connection.

@@ -1013,13 +1013,13 @@ abstract class AbstractPlatform
             }
         }
 
-        $query = 'CREATE TABLE ' . $this->conn->quoteIdentifier($name, true) . ' (' . $queryFields;
+        $query = 'CREATE TABLE ' . $this->quoteIdentifier($table, true) . ' (' . $queryFields;
         
-        $check = $this->getCheckDeclaration($columns);
+        /*$check = $this->getCheckDeclaration($columns);
 
         if ( ! empty($check)) {
             $query .= ', ' . $check;
-        }
+        }*/
 
         $query .= ')';
 

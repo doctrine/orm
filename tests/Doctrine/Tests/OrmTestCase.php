@@ -15,18 +15,20 @@ class OrmTestCase extends DoctrineTestCase
      *
      * @return Doctrine\ORM\EntityManager
      */
-    protected function _getTestEntityManager($conf = null, $eventManager = null)
+    protected function _getTestEntityManager($conn = null, $conf = null, $eventManager = null)
     {
         $config = new \Doctrine\ORM\Configuration();
         $config->setMetadataCacheImpl(self::getSharedMetadataCacheImpl());
         $eventManager = new \Doctrine\Common\EventManager();
-        $connectionOptions = array(
+        if (is_null($conn)) {
+            $conn = array(
                 'driverClass' => 'Doctrine\Tests\Mocks\DriverMock',
                 'wrapperClass' => 'Doctrine\Tests\Mocks\ConnectionMock',
                 'user' => 'john',
                 'password' => 'wayne'
-        );
-        return \Doctrine\ORM\EntityManager::create($connectionOptions, $config, $eventManager);
+            );
+        }
+        return \Doctrine\ORM\EntityManager::create($conn, $config, $eventManager);
     }
 
     private static function getSharedMetadataCacheImpl()

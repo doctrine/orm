@@ -3,11 +3,10 @@
 namespace Doctrine\Tests\Mocks;
 
 
-// THIS FILE DOES NOT EXIST YET!!!!
-//require_once 'lib/mocks/Doctrine_SchemaManagerMock.php';
-
 class DriverMock implements \Doctrine\DBAL\Driver
 {
+    private $_platformMock;
+
     public function connect(array $params, $username = null, $password = null, array $driverOptions = array())
     {
         return new DriverConnectionMock();
@@ -23,15 +22,31 @@ class DriverMock implements \Doctrine\DBAL\Driver
     {
         return "";
     }
-    
+
+    /**
+     * @override
+     */
     public function getDatabasePlatform()
     {
-        return new DatabasePlatformMock();
+        if ( ! $this->_platformMock) {
+            $this->_platformMock = new DatabasePlatformMock;
+        }
+        return $this->_platformMock;
     }
-    
+
+    /**
+     * @override
+     */
     public function getSchemaManager(\Doctrine\DBAL\Connection $conn)
     {
         return new SchemaManagerMock($conn);
+    }
+
+    /* MOCK API */
+
+    public function setDatabasePlatform(\Doctrine\DBAL\Platforms\AbstractPlatform $platform)
+    {
+        $this->_platformMock = $platform;
     }
 }
 

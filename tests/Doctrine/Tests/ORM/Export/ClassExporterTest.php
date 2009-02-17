@@ -16,7 +16,7 @@
  *
  * This software consists of voluntary contributions made by many individuals
  * and is licensed under the LGPL. For more information, see
- * <http://www.phpdoctrine.org>.
+ * <http://www.doctrine-project.org>.
  */
 
 namespace Doctrine\Tests\ORM\Export;
@@ -40,15 +40,22 @@ class ClassExporterTest extends \Doctrine\Tests\OrmTestCase
 {
     public function testTest()
     {
-        /*
-        $em = $this->_getTestEntityManager();
+        // DDL is platform dependant. We can inject the platform to test into the driver mock.
+        $driver = new \Doctrine\Tests\Mocks\DriverMock;
+        $conn = new \Doctrine\Tests\Mocks\ConnectionMock(array(), $driver);
+        //$conn->setDatabasePlatform(new \Doctrine\DBAL\Platforms\SqlitePlatform());
+        $conn->setDatabasePlatform(new \Doctrine\DBAL\Platforms\MySqlPlatform());
 
-        $classes = array($em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsUser'), $em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsPhonenumber'));
+        $em = $this->_getTestEntityManager($conn);
+
+        $classes = array(
+            $em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsUser'),
+            $em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsPhonenumber')
+        );
 
         $exporter = new ClassExporter($em);
         $sql = $exporter->getExportClassesSql($classes);
         print_r($sql);
-        exit('test');
-        */
+        
     }
 }

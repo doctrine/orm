@@ -94,6 +94,7 @@ class ClassExporter
                 $column['notnull'] = ! $mapping['nullable'];
                 if ($class->isIdentifier($fieldName)) {
                     $column['primary'] = true;
+                    $options['primary'][] = $mapping['columnName'];
                     if ($class->isIdGeneratorIdentity()) {
                         $column['autoincrement'] = true;
                     }
@@ -124,6 +125,7 @@ class ClassExporter
                 } else if ($mapping->isManyToMany() && $mapping->isOwningSide()) {
                     //... create join table
                     $joinTableColumns = array();
+                    $joinTableOptions = array();
                     $joinTable = $mapping->getJoinTable();
                     $constraint1 = array();
                     $constraint1['tableName'] = $joinTable['name'];
@@ -133,6 +135,7 @@ class ClassExporter
                     foreach ($joinTable['joinColumns'] as $joinColumn) {
                         $column = array();
                         $column['primary'] = true;
+                        $joinTableOptions['primary'][] = $joinColumn['name'];
                         $column['name'] = $joinColumn['name'];
                         $column['type'] = $class->getTypeOfColumn($joinColumn['referencedColumnName']);
                         $joinTableColumns[$joinColumn['name']] = $column;
@@ -149,6 +152,7 @@ class ClassExporter
                     foreach ($joinTable['inverseJoinColumns'] as $inverseJoinColumn) {
                         $column = array();
                         $column['primary'] = true;
+                        $joinTableOptions['primary'][] = $inverseJoinColumn['name'];
                         $column['name'] = $inverseJoinColumn['name'];
                         $column['type'] = $this->_em->getClassMetadata($mapping->getTargetEntityName())
                                 ->getTypeOfColumn($inverseJoinColumn['referencedColumnName']);
@@ -158,7 +162,8 @@ class ClassExporter
                     }
                     $foreignKeyConstraints[] = $constraint2;
 
-                    $sql = array_merge($sql, $this->_platform->getCreateTableSql($joinTable['name'], $joinTableColumns, array()));
+                    $sql = array_merge($sql, $this->_platform->getCreateTableSql(
+                            $joinTable['name'], $joinTableColumns, $joinTableOptions));
                 }
             }
 
@@ -168,7 +173,7 @@ class ClassExporter
         // Now create the foreign key constraints
         if ($this->_platform->supportsForeignKeyConstraints()) {
             foreach ($foreignKeyConstraints as $fkConstraint) {
-                $sql = array_merge($sql, $this->_platform->getCreateForeignKeySql($fkConstraint['tableName'], $fkConstraint));
+                $sql = array_merge($sql, (array)$this->_platform->getCreateForeignKeySql($fkConstraint['tableName'], $fkConstraint));
             }
         }
 

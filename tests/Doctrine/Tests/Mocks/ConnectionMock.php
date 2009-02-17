@@ -8,7 +8,8 @@ class ConnectionMock extends \Doctrine\DBAL\Connection
     private $_lastInsertId = 0;
     private $_inserts = array();
     
-    public function __construct() {
+    public function __construct(array $params, $driver, $config = null, $eventManager = null) {
+        parent::__construct($params, $driver, $config, $eventManager);
         $this->_platformMock = new DatabasePlatformMock();
         $this->_platform = $this->_platformMock;
     }
