@@ -31,7 +31,7 @@ use \ArrayIterator;
  * A Collection is a thin wrapper around a php array. Think of it as an OO version
  * of a plain array.
  *
- * @author robo
+ * @author Roman S. Borschel
  * @since 2.0
  */
 class Collection implements Countable, IteratorAggregate, ArrayAccess
@@ -45,8 +45,9 @@ class Collection implements Countable, IteratorAggregate, ArrayAccess
     protected $_elements = array();
 
     /**
+     * Constructor accepts an array of $elements
      *
-     * @param <type> $elements
+     * @param array $elements
      */
     public function __construct(array $elements = array())
     {
@@ -210,21 +211,11 @@ class Collection implements Countable, IteratorAggregate, ArrayAccess
      * @param Closure $p The predicate.
      * @return boolean TRUE if the predicate is TRUE for at least one element, FALSE otherwise.
      */
-    public function exists(Closure $p) {
+    public function exists(Closure $p)
+    {
         foreach ($this->_elements as $key => $element)
             if ($p($key, $element)) return true;
         return false;
-    }
-
-    /**
-     * TODO
-     *
-     * @param unknown_type $otherColl
-     * @todo Impl
-     */
-    public function containsAll($otherColl)
-    {
-        throw new DoctrineException("Not yet implemented.");
     }
 
     /**
@@ -314,16 +305,6 @@ class Collection implements Countable, IteratorAggregate, ArrayAccess
     }
 
     /**
-     * Adds all entities of the other collection to this collection.
-     *
-     * @param unknown_type $otherCollection
-     * @todo Impl
-     */
-    public function addAll($otherCollection)
-    {
-    }
-
-    /**
      * Checks whether the collection is empty.
      * Note: This is preferrable over count() == 0.
      *
@@ -332,7 +313,7 @@ class Collection implements Countable, IteratorAggregate, ArrayAccess
     public function isEmpty()
     {
         // Note: Little "trick". Empty arrays evaluate to FALSE. No need to count().
-        return ! (bool)$this->_elements;
+        return ! (bool) $this->_elements;
     }
 
     /**
@@ -375,10 +356,13 @@ class Collection implements Countable, IteratorAggregate, ArrayAccess
      * @param Closure $p The predicate.
      * @return boolean TRUE, if the predicate yields TRUE for all elements, FALSE otherwise.
      */
-    public function forall(Closure $p)
+    public function forAll(Closure $p)
     {
-        foreach ($this->_elements as $key => $element)
-            if ( ! $p($key, $element)) return false;
+        foreach ($this->_elements as $key => $element) {
+            if ( ! $p($key, $element)) {
+                return false;
+            }
+        }
         return true;
     }
 
@@ -420,4 +404,3 @@ class Collection implements Countable, IteratorAggregate, ArrayAccess
         $this->_elements = array();
     }
 }
-
