@@ -135,6 +135,6 @@ class OrmFunctionalTestCase extends OrmTestCase
         $config->setMetadataCacheImpl(self::$_metadataCacheImpl);
         $eventManager = new \Doctrine\Common\EventManager();
         $conn = $this->sharedFixture['conn'];
-        return \Doctrine\ORM\EntityManager::create($conn, 'em', $config, $eventManager);
+        return \Doctrine\ORM\EntityManager::create($conn, $config, $eventManager);
     }
 }

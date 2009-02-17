@@ -26,7 +26,7 @@ class OrmTestCase extends DoctrineTestCase
                 'user' => 'john',
                 'password' => 'wayne'
         );
-        return \Doctrine\ORM\EntityManager::create($connectionOptions, 'mockEM', $config, $eventManager);
+        return \Doctrine\ORM\EntityManager::create($connectionOptions, $config, $eventManager);
     }
 
     private static function getSharedMetadataCacheImpl()

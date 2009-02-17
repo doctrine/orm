@@ -12,11 +12,6 @@ use Doctrine\Tests\Models\Forum\ForumAvatar;
 
 require_once __DIR__ . '/../TestInit.php';
 
-#require_once 'lib/mocks/Doctrine_EntityManagerMock.php';
-#require_once 'lib/mocks/Doctrine_ConnectionMock.php';
-#require_once 'lib/mocks/Doctrine_ClassMetadataMock.php';
-#require_once 'lib/mocks/Doctrine_UnitOfWorkMock.php';
-
 /**
  * EntityPersister tests.
  */
@@ -30,7 +25,7 @@ class EntityPersisterTest extends \Doctrine\Tests\OrmTestCase
     protected function setUp() {
         parent::setUp();
         $this->_connMock = new ConnectionMock(array());
-        $this->_emMock = EntityManagerMock::create($this->_connMock, 'persisterMockEM');
+        $this->_emMock = EntityManagerMock::create($this->_connMock);
         $this->_uowMock = new UnitOfWorkMock($this->_emMock);
         $this->_emMock->setUnitOfWork($this->_uowMock);
         $this->_idGenMock = new SequenceMock($this->_emMock);

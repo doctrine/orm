@@ -58,8 +58,8 @@ class EntityManagerMock extends \Doctrine\ORM\EntityManager
      * @param Doctrine_EventManager $eventManager
      * @return Doctrine\ORM\EntityManager
      */
-    public static function create($conn, $name, \Doctrine\ORM\Configuration $config = null,
-            Doctrine_Common_EventManager $eventManager = null)
+    public static function create($conn, \Doctrine\ORM\Configuration $config = null,
+            \Doctrine\Common\EventManager $eventManager = null)
     {
         if (is_null($config)) {
             $config = new \Doctrine\ORM\Configuration();
@@ -68,7 +68,7 @@ class EntityManagerMock extends \Doctrine\ORM\EntityManager
             $eventManager = new \Doctrine\Common\EventManager();
         }
         
-        return new EntityManagerMock($conn, $name, $config, $eventManager);   
+        return new EntityManagerMock($conn, $config, $eventManager);   
     }
 
     public function setIdGenerator($className, $generator)

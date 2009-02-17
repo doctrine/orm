@@ -28,7 +28,7 @@ class UnitOfWorkTest extends \Doctrine\Tests\OrmTestCase
     protected function setUp() {
         parent::setUp();
         $this->_connectionMock = new ConnectionMock(array());
-        $this->_emMock = EntityManagerMock::create($this->_connectionMock, "uowMockEm");
+        $this->_emMock = EntityManagerMock::create($this->_connectionMock);
         // SUT
         $this->_unitOfWork = new UnitOfWorkMock($this->_emMock);
         $this->_emMock->setUnitOfWork($this->_unitOfWork);

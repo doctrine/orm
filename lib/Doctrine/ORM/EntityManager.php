@@ -60,13 +60,6 @@ class EntityManager
     const FLUSHMODE_MANUAL = 'manual';
     
     /**
-     * The unique name of the EntityManager.
-     *
-     * @var string
-     */
-    private $_name;
-    
-    /**
      * The used Configuration.
      *
      * @var Doctrine\ORM\Configuration
@@ -143,10 +136,9 @@ class EntityManager
      * @param Doctrine\ORM\Configuration $config
      * @param Doctrine\Common\EventManager $eventManager
      */
-    protected function __construct(Connection $conn, $name, Configuration $config, EventManager $eventManager)
+    protected function __construct(Connection $conn, Configuration $config, EventManager $eventManager)
     {
         $this->_conn = $conn;
-        $this->_name = $name;
         $this->_config = $config;
         $this->_eventManager = $eventManager;
         $this->_metadataFactory = new ClassMetadataFactory(
@@ -174,16 +166,6 @@ class EntityManager
     public function getMetadataFactory()
     {
         return $this->_metadataFactory;
-    }
-    
-    /**
-     * Gets the name of the EntityManager.
-     *
-     * @return string The name of the EntityManager.
-     */
-    public function getName()
-    {
-        return $this->_name;
     }
     
     /**
@@ -540,7 +522,7 @@ class EntityManager
     private function _errorIfClosed()
     {
         if ($this->_closed) {
-            throw EntityManagerException::notActiveOrClosed($this->_name);
+            throw EntityManagerException::notActiveOrClosed();
         }
     }
     
@@ -602,9 +584,6 @@ class EntityManager
     /**
      * Factory method to create EntityManager instances.
      *
-     * A newly created EntityManager is immediately activated, making it the
-     * currently active EntityManager.
-     *
      * @param mixed $conn An array with the connection parameters or an existing
      *      Connection instance.
      * @param string $name The name of the EntityManager.
@@ -612,8 +591,7 @@ class EntityManager
      * @param EventManager $eventManager The EventManager instance to use.
      * @return EntityManager The created EntityManager.
      */
-    public static function create($conn, $name, Configuration $config = null,
-            EventManager $eventManager = null)
+    public static function create($conn, Configuration $config = null, EventManager $eventManager = null)
     {
         if (is_array($conn)) {
             $conn = \Doctrine\DBAL\DriverManager::getConnection($conn, $config, $eventManager);
@@ -628,7 +606,7 @@ class EntityManager
             $eventManager = new EventManager();
         }
         
-        $em = new EntityManager($conn, $name, $config, $eventManager);
+        $em = new EntityManager($conn, $config, $eventManager);
         
         return $em;
     }
