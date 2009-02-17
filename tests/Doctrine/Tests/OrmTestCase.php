@@ -15,7 +15,8 @@ class OrmTestCase extends DoctrineTestCase
      *
      * @return Doctrine\ORM\EntityManager
      */
-    protected function _getTestEntityManager($conf = null, $eventManager = null) {
+    protected function _getTestEntityManager($conf = null, $eventManager = null)
+    {
         $config = new \Doctrine\ORM\Configuration();
         $config->setMetadataCacheImpl(self::getSharedMetadataCacheImpl());
         $eventManager = new \Doctrine\Common\EventManager();

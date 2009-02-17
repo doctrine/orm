@@ -60,14 +60,6 @@ class EntityManager
     const FLUSHMODE_MANUAL = 'manual';
     
     /**
-     * The currently active EntityManager. Only one EntityManager can be active
-     * at any time.
-     *
-     * @var Doctrine\ORM\EntityManager
-     */
-    private static $_activeEm;
-    
-    /**
      * The unique name of the EntityManager.
      *
      * @var string
@@ -537,18 +529,6 @@ class EntityManager
     }
     
     /**
-     * Checks whether this EntityManager is the currently active one.
-     *
-     * Note:This is only useful in scenarios where {@link ActiveEntity}s are used.
-     *
-     * @return boolean
-     */
-    public function isActive()
-    {
-        return self::$_activeEm === $this;
-    }
-
-    /**
      * Gets a hydrator for the given hydration mode.
      *
      * @param  $hydrationMode
@@ -594,16 +574,6 @@ class EntityManager
     }
     
     /**
-     * Makes this EntityManager the currently active one.
-     *
-     * Note: This is only useful in scenarios where {@link ActiveEntity}s are used.
-     */
-    public function activate()
-    {
-        self::$_activeEm = $this;
-    }
-    
-    /**
      * Factory method to create EntityManager instances.
      *
      * A newly created EntityManager is immediately activated, making it the
@@ -636,17 +606,4 @@ class EntityManager
         
         return $em;
     }
-    
-    /**
-     * Static lookup to get the currently active EntityManager.
-     *
-     * Note: Used by {@link ActiveEntity}s to actively lookup an EntityManager.
-     * 
-     * @return Doctrine\ORM\EntityManager
-     */
-    public static function getActiveEntityManager()
-    {
-        return self::$_activeEm;
-    }
 }
-
