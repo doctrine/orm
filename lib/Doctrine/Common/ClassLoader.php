@@ -16,47 +16,71 @@ namespace Doctrine\Common;
  *
  * 3) DO NOT setCheckFileExists(true). Doing so is expensive in terms of performance.
  * 4) Use an opcode-cache (i.e. APC) (STRONGLY RECOMMENDED).
- * 
+ *
  * @since 2.0
- * @author romanb <roman@code-factory.org>
+ * @author Roman S. Borschel <roman@code-factory.org>
  */
 class ClassLoader
-{    
-    private $_namespaceSeparator = '\\';
-    private $_fileExtension = '.php';
-    private $_checkFileExists = false;
-    private $_basePaths = array();
-    
+{
+    private
+        $_namespaceSeparator = '\\',
+        $_fileExtension = '.php',
+        $_checkFileExists = false,
+        $_basePaths = array();
+
+    /**
+     * Constructor registers the autoloader automatically
+     */
     public function __construct()
     {
+        spl_autoload_register(array($this, 'loadClass'));
     }
-    
+
+    /**
+     * Set check file exists
+     *
+     * @param boolean $bool
+     * @return void
+     */
     public function setCheckFileExists($bool)
     {
         $this->_checkFileExists = $bool;
     }
-    
+
+    /**
+     * Set class file extension
+     *
+     * @param string $extension 
+     * @return void
+     */
     public function setClassFileExtension($extension)
     {
         $this->_fileExtension = $extension;
     }
-    
+
+    /**
+     * Set namespace separator
+     *
+     * @param string $separator 
+     * @return void
+     */
     public function setNamespaceSeparator($separator)
     {
         $this->_namespaceSeparator = $separator;
     }
-    
+
     /**
      * Sets a static base path for classes with a certain prefix that is prepended
      * to the path derived from the class itself.
      *
+     * @param string $classPrefix
      * @param string $basePath
      */
     public function setBasePath($classPrefix, $basePath)
     {
         $this->_basePaths[$classPrefix] = $basePath;
     }
-    
+
     /**
      * Loads the given class or interface.
      *
@@ -86,20 +110,7 @@ class ClassLoader
         }
 
         require $class;
-        
+
         return true;
     }
-    
-    /**
-     * Registers this class loader using spl_autoload_register().
-     * 
-     * @return void
-     */
-    public function register()
-    {
-        spl_autoload_register(array($this, 'loadClass'));
-    }
 }
-
-
-?>

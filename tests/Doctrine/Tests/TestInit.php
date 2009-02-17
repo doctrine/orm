@@ -9,9 +9,6 @@ require_once 'PHPUnit/TextUI/TestRunner.php';
 require_once '../lib/Doctrine/Common/ClassLoader.php';
 
 $classLoader = new \Doctrine\Common\ClassLoader();
-// checking for existance should not be necessary, remove as soon as possible
-//$classLoader->setCheckFileExists(true);
-$classLoader->register();
 
 $modelDir = __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'models';
 set_include_path(
