@@ -48,63 +48,27 @@ class Configuration
     public function __construct()
     {
         $this->_attributes = array(
-            'quoteIdentifiers' => false,
-            'indexNameFormat' => '%s_idx',
-            'sequenceNameFormat' => '%s_seq',
-            'tableNameFormat' => '%s'
+            'quoteIdentifiers' => false
         );
     }
-    
+
     public function getQuoteIdentifiers()
     {
         return $this->_attributes['quoteIdentifiers'];
     }
-    
+
     public function setQuoteIdentifiers($bool)
     {
-        $this->_attributes['quoteIdentifiers'] = (bool)$bool;
+        $this->_attributes['quoteIdentifiers'] = (bool) $bool;
     }
-    
-    public function getIndexNameFormat()
-    {
-        return $this->_attributes['indexNameFormat'];
-    }
-    
-    public function setIndexNameFormat($format)
-    {
-        //TODO: check format?
-        $this->_attributes['indexNameFormat'] = $format;
-    }
-    
-    public function getSequenceNameFormat()
-    {
-        return $this->_attributes['sequenceNameFormat'];
-    }
-    
-    public function setSequenceNameFormat($format)
-    {
-        //TODO: check format?
-        $this->_attributes['sequenceNameFormat'] = $format;
-    }
-    
-    public function getTableNameFormat()
-    {
-        return $this->_attributes['tableNameFormat'];
-    }
-    
-    public function setTableNameFormat($format)
-    {
-        //TODO: check format?
-        $this->_attributes['tableNameFormat'] = $format;
-    }
-    
+
     public function setCustomTypes(array $types)
     {
         foreach ($types as $name => $typeClassName) {
             Type::addCustomType($name, $typeClassName);
         }
     }
-    
+
     public function setTypeOverrides(array $overrides)
     {
         foreach ($override as $name => $typeClassName) {
