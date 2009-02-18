@@ -6,11 +6,6 @@ use Doctrine\Tests\Mocks\HydratorMockStatement;
 
 require_once __DIR__ . '/../../TestInit.php';
 
-/**
- * Description of ObjectHydratorTest
- *
- * @author robo
- */
 class ObjectHydratorTest extends HydrationTest
 {
     /**
@@ -669,7 +664,8 @@ class ObjectHydratorTest extends HydrationTest
 
     }
 
-    public function testResultIteration() {
+    public function testResultIteration()
+    {
         // Faked query components
         $queryComponents = array(
             'u' => array(
@@ -728,7 +724,7 @@ class ObjectHydratorTest extends HydrationTest
      *
      * @dataProvider hydrationModeProvider
      */
-    /*public function testNewHydrationMixedQueryFetchJoinPerformance()
+    public function testNewHydrationMixedQueryFetchJoinPerformance()
     {
         // Faked query components
         $queryComponents = array(
@@ -738,20 +734,20 @@ class ObjectHydratorTest extends HydrationTest
                 'relation' => null,
                 'map' => null,
                 'agg' => array('0' => 'nameUpper')
-                ),
+            ),
             'p' => array(
-                'metadata' => $this->_em->getClassMetadata('CmsPhonenumber'),
+                'metadata' => $this->_em->getClassMetadata('\Doctrine\Tests\Models\CMS\CmsPhonenumber'),
                 'parent' => 'u',
                 'relation' => $this->_em->getClassMetadata('\Doctrine\Tests\Models\CMS\CmsUser')->getAssociationMapping('phonenumbers'),
                 'map' => null
-                )
-            );
+            )
+        );
 
         // Faked table alias map
         $tableAliasMap = array(
             'u' => 'u',
             'p' => 'p'
-            );
+        );
 
         // Faked result set
         $resultSet = array(
@@ -761,21 +757,22 @@ class ObjectHydratorTest extends HydrationTest
                 'u__status' => 'developer',
                 'u__0' => 'ROMANB',
                 'p__phonenumber' => '42',
-                ),
+            ),
             array(
                 'u__id' => '1',
                 'u__status' => 'developer',
                 'u__0' => 'ROMANB',
                 'p__phonenumber' => '43',
-                ),
+            ),
             array(
                 'u__id' => '2',
                 'u__status' => 'developer',
                 'u__0' => 'JWAGE',
                 'p__phonenumber' => '91'
-                )
-            );
-        for ($i=4; $i<300; $i++) {
+            )
+        );
+
+        for ($i = 4; $i < 300; $i++) {
             $resultSet[] = array(
                 'u__id' => $i,
                 'u__status' => 'developer',
@@ -784,12 +781,10 @@ class ObjectHydratorTest extends HydrationTest
             );
         }
 
-        $stmt = new Doctrine_HydratorMockStatement($resultSet);
-        $hydrator = new Doctrine_ORM_Internal_Hydration_ObjectHydrator($this->_em);
+        $stmt = new HydratorMockStatement($resultSet);
+        $hydrator = new \Doctrine\ORM\Internal\Hydration\ObjectHydrator($this->_em);
 
         $result = $hydrator->hydrateAll($stmt, $this->_createParserResult(
                 $queryComponents, $tableAliasMap, true));
-
-    }*/
+    }
 }
-

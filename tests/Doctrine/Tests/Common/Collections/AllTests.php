@@ -8,9 +8,6 @@ if (!defined('PHPUnit_MAIN_METHOD')) {
 
 require_once __DIR__ . '/../../TestInit.php';
 
-// Tests
-#require_once 'Common/Collections/CollectionTest.php';
-
 class AllTests
 {
     public static function main()

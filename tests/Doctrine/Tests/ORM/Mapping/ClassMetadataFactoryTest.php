@@ -1,8 +1,4 @@
 <?php
-/* 
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 
 namespace Doctrine\Tests\ORM\Mapping;
 
@@ -12,14 +8,11 @@ use Doctrine\ORM\Mapping\ClassMetadata;
 
 require_once __DIR__ . '/../../TestInit.php';
 
-/**
- * Description of ClassMetadataFactoryTest
- *
- * @author robo
- */
-class ClassMetadataFactoryTest extends \Doctrine\Tests\OrmTestCase {
+class ClassMetadataFactoryTest extends \Doctrine\Tests\OrmTestCase
+{
 
-    public function testGetMetadataForSingleClass() {
+    public function testGetMetadataForSingleClass()
+    {
         $mockPlatform = new DatabasePlatformMock();
         $mockDriver = new MetadataDriverMock();
 
@@ -52,7 +45,8 @@ class ClassMetadataFactoryTest extends \Doctrine\Tests\OrmTestCase {
         $this->assertEquals('table', $cm1->getIdGeneratorType());
     }
 
-    public function testGetMetadataForClassInHierarchy() {
+    public function testGetMetadataForClassInHierarchy()
+    {
         $mockPlatform = new DatabasePlatformMock();
         $mockPlatform->setPrefersIdentityColumns(true);
         $mockDriver = new MetadataDriverMock();
@@ -120,29 +114,39 @@ class ClassMetadataFactoryTest extends \Doctrine\Tests\OrmTestCase {
 }
 
 /* Test subject class with overriden factory method for mocking purposes */
-class ClassMetadataFactoryTestSubject extends \Doctrine\ORM\Mapping\ClassMetadataFactory {
+class ClassMetadataFactoryTestSubject extends \Doctrine\ORM\Mapping\ClassMetadataFactory
+{
     private $_mockMetadata = array();
     private $_requestedClasses = array();
+
     /** @override */
-    protected function _newClassMetadataInstance($className) {
+    protected function _newClassMetadataInstance($className)
+    {
         $this->_requestedClasses[] = $className;
         if ( ! isset($this->_mockMetadata[$className])) {
             throw new InvalidArgumentException("No mock metadata found for class $className.");
         }
         return $this->_mockMetadata[$className];
     }
-    public function setMetadataForClass($className, $metadata) {
+
+    public function setMetadataForClass($className, $metadata)
+    {
         $this->_mockMetadata[$className] = $metadata;
     }
-    public function getRequestedClasses() { return $this->_requestedClasses; }
+
+    public function getRequestedClasses()
+    {
+        return $this->_requestedClasses;
+    }
 }
 
 /* Test classes */
 
-class TestEntity1 {
+class TestEntity1
+{
     protected $name;
     protected $other;
 }
+
 class TestEntity2 extends TestEntity1 {}
 class TestEntity3 extends TestEntity2 {}
-

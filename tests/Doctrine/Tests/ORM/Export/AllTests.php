@@ -10,14 +10,6 @@ if (!defined('PHPUnit_MAIN_METHOD')) {
 
 require_once __DIR__ . '/../../TestInit.php';
 
-#require_once 'IdentifierRecognitionTest.php';
-/*require_once 'ScannerTest.php';
-require_once 'DqlGenerationTest.php';
-require_once 'DeleteSqlGenerationTest.php';
-require_once 'UpdateSqlGenerationTest.php';
-require_once 'SelectSqlGenerationTest.php';
-require_once 'LanguageRecognitionTest.php';*/
-
 class AllTests
 {
     public static function main()

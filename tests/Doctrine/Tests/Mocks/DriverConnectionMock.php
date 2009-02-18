@@ -15,4 +15,3 @@ class DriverConnectionMock implements \Doctrine\DBAL\Driver\Connection
     public function errorCode() {}
     public function errorInfo() {}
 }
-

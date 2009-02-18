@@ -1,19 +1,10 @@
 <?php
-/* 
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 
 namespace Doctrine\Tests\Common;
 
 use Doctrine\Common\EventManager;
 use Doctrine\Common\EventArgs;
 
-/**
- * Description of EventManagerTest
- *
- * @author robo
- */
 class EventManagerTest extends \Doctrine\Tests\DoctrineTestCase
 {
     /* Some pseudo events */
@@ -25,7 +16,8 @@ class EventManagerTest extends \Doctrine\Tests\DoctrineTestCase
 
     private $_eventManager;
 
-    protected function setUp() {
+    protected function setUp()
+    {
         $this->_eventManager = new EventManager;
         $this->_preFooInvoked = false;
         $this->_postFooInvoked = false;
@@ -56,7 +48,6 @@ class EventManagerTest extends \Doctrine\Tests\DoctrineTestCase
         $this->assertFalse($this->_postFooInvoked);
     }
 
-
     /* Listener methods */
 
     public function preFoo(EventArgs $e)
@@ -69,4 +60,3 @@ class EventManagerTest extends \Doctrine\Tests\DoctrineTestCase
         $this->_postFooInvoked = true;
     }
 }
-

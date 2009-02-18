@@ -20,7 +20,6 @@ class AllTests
     {
         $suite = new \Doctrine\Tests\DoctrineTestSuite('Doctrine Orm Entity Tests');
 
-        //$suite->addTestSuite('Orm_Entity_AccessorTest');
         $suite->addTestSuite('Doctrine\Tests\ORM\Entity\ConstructorTest');
         
         return $suite;

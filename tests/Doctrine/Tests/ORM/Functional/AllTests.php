@@ -21,8 +21,6 @@ class AllTests
 
         $suite->addTestSuite('Doctrine\Tests\ORM\Functional\BasicCRUDTest');
 
-        //$suite->addTest(Orm_Functional_Ticket_AllTests::suite());
-        
         return $suite;
     }
 }

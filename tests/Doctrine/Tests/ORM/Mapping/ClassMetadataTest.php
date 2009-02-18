@@ -8,7 +8,8 @@ require_once __DIR__ . '/../../TestInit.php';
  
 class ClassMetadataTest extends \Doctrine\Tests\OrmTestCase
 {
-    public function testClassMetadataInstanceSerialization() {
+    public function testClassMetadataInstanceSerialization()
+    {
         $cm = new ClassMetadata('Doctrine\Tests\Models\CMS\CmsUser');
 
         // Test initial state

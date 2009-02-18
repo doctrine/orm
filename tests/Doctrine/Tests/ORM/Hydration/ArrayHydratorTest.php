@@ -6,11 +6,6 @@ use Doctrine\Tests\Mocks\HydratorMockStatement;
 
 require_once __DIR__ . '/../../TestInit.php';
 
-/**
- * Description of ArrayHydratorTest
- *
- * @author robo
- */
 class ArrayHydratorTest extends HydrationTest
 {
     /**
@@ -663,7 +658,8 @@ class ArrayHydratorTest extends HydrationTest
         $this->assertEquals(1, count($result[1]['boards']));
     }
 
-    public function testResultIteration() {
+    public function testResultIteration()
+    {
         // Faked query components
         $queryComponents = array(
             'u' => array(
@@ -713,4 +709,3 @@ class ArrayHydratorTest extends HydrationTest
         }
     }
 }
-

@@ -1,14 +1,14 @@
 <?php
 
+namespace Doctrine\Tests\Models\Company;
+
+/**
+ * @DoctrineEntity
+ */
 class CompanyManager extends CompanyEmployee
 {
-    public static function initMetadata($mapping)
-    {
-        $mapping->mapColumn(array(
-            'fieldName' => 'title',
-            'type' => 'string'
-        ));
-    }
+    /*
+     * @DoctrineColumn(type="varchar", length="255")
+     */
+    public $title;
 }
-
-?>

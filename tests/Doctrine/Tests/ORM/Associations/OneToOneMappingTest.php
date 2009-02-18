@@ -3,7 +3,7 @@
 namespace Doctrine\Tests\ORM\Associations;
 
 require_once __DIR__ . '/../../TestInit.php';
- 
+
 class OneToOneMappingTest extends \Doctrine\Tests\OrmTestCase
 {    
     public function testCorrectOneToOneBidirectionalMapping()
@@ -23,8 +23,7 @@ class OneToOneMappingTest extends \Doctrine\Tests\OrmTestCase
         $this->assertEquals('Person', $oneToOneMapping->getSourceEntityName());
         $this->assertEquals('address', $oneToOneMapping->getSourceFieldName());
         $this->assertTrue($oneToOneMapping->isOwningSide());
-        
-        
+
         $inverseSideMapping = array(
             'fieldName' => 'person',
             'sourceEntity' => 'Address',
@@ -37,7 +36,5 @@ class OneToOneMappingTest extends \Doctrine\Tests\OrmTestCase
         $this->assertEquals('Address', $oneToOneMapping->getSourceEntityName());
         $this->assertEquals('Person', $oneToOneMapping->getTargetEntityName());
         $this->assertTrue($oneToOneMapping->isInverseSide());
-        
     }
-    
 }

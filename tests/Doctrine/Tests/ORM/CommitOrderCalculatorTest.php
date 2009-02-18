@@ -48,6 +48,5 @@ class CommitOrderCalculatorTest extends \Doctrine\Tests\OrmTestCase
         // There is only 1 valid ordering for this constellation
         $correctOrder = array("node5", "node1", "node2", "node3", "node4");
         $this->assertSame($correctOrder, $sorted);
-        
     }
 }

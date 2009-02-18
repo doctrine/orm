@@ -12,9 +12,6 @@ use Doctrine\Tests\Models\Forum\ForumAvatar;
 
 require_once __DIR__ . '/../TestInit.php';
 
-/**
- * EntityPersister tests.
- */
 class EntityPersisterTest extends \Doctrine\Tests\OrmTestCase
 {
     private $_connMock;
@@ -22,7 +19,8 @@ class EntityPersisterTest extends \Doctrine\Tests\OrmTestCase
     private $_idGenMock;
     private $_uowMock;
     
-    protected function setUp() {
+    protected function setUp()
+    {
         parent::setUp();
         $this->_connMock = new ConnectionMock(array(), new \Doctrine\Tests\Mocks\DriverMock());
         $this->_emMock = EntityManagerMock::create($this->_connMock);
@@ -32,7 +30,8 @@ class EntityPersisterTest extends \Doctrine\Tests\OrmTestCase
         $this->_emMock->setIdGenerator('Doctrine\Tests\Models\Forum\ForumUser', $this->_idGenMock);
     }
     
-    public function testSimpleInsert() {
+    public function testSimpleInsert()
+    {
         $userPersister = new \Doctrine\ORM\Persisters\StandardEntityPersister(
                 $this->_emMock, $this->_emMock->getClassMetadata("Doctrine\Tests\Models\Forum\ForumUser"));
         $avatarPersister = new \Doctrine\ORM\Persisters\StandardEntityPersister(
@@ -45,7 +44,6 @@ class EntityPersisterTest extends \Doctrine\Tests\OrmTestCase
         $this->_uowMock->setDataChangeSet($user, array(
                 'username' => array('', 'romanb'),
                 'avatar' => array('', $user->avatar)));
-
 
         //insert
         $avatarPersister->insert($user->avatar);
@@ -76,5 +74,4 @@ class EntityPersisterTest extends \Doctrine\Tests\OrmTestCase
         $this->assertTrue(isset($inserts['forum_users'][0]['dtype']));
         $this->assertEquals('user', $inserts['forum_users'][0]['dtype']);
     }
-    
 }

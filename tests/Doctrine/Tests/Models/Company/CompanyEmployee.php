@@ -1,41 +1,33 @@
 <?php
 
+namespace Doctrine\Tests\Models\Company;
+
+/**
+ * @DoctrineEntity
+ * @DoctrineTable(name="company_employee")
+ * @DoctrineInheritanceType("joined")
+ * @DoctrineDiscriminatorColumn(name="dtype", type="varchar", length=20)
+ * @DoctrineDiscriminatorMap({
+        "emp" = "Doctrine\Tests\Models\Company\CompanyEmployee",
+        "man" = "Doctrine\Tests\Models\Company\CompanyManager"})
+ * @DoctrineSubclasses({"Doctrine\Tests\Models\Company\CompanyManager"})
+ */
 class CompanyEmployee
 {
-    #protected $id;
-    #protected $salary;
-    #protected $department;
-    
-    public static function initMetadata($mapping)
-    {
-        // inheritance mapping
-        $mapping->setInheritanceType('joined', array(
-                'discriminatorColumn' => 'dtype',
-                'discriminatorMap' => array(
-                        'emp' => 'CompanyEmployee',
-                        'man' => 'CompanyManager')
-                ));
-        // register subclasses
-        $mapping->setSubclasses(array('CompanyManager'));
-        
-        $mapping->mapField(array(
-            'fieldName' => 'id',
-            'type' => 'integer',
-            'length' => 4,
-            'id' => true,
-            'idGenerator' => 'auto'
-        ));
-        $mapping->mapField(array(
-            'fieldName' => 'salary',
-            'type' => 'double'
-        ));
-        //TODO: make department an entity
-        $mapping->mapField(array(
-            'fieldName' => 'department',
-            'type' => 'string'
-        ));
-    }
-    
-}
+    /**
+     * @DoctrineId
+     * @DoctrineColumn(type="integer")
+     * @DoctrineIdGenerator("auto")
+     */
+    public $id;
 
-?>
+    /**
+     * @DoctrineColumn(type="double")
+     */
+    public $salary;
+
+    /**
+     * @DoctrineColumn(type="varchar", length=255)
+     */
+    public $department;
+}

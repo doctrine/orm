@@ -87,4 +87,3 @@ class EntityManagerMock extends \Doctrine\ORM\EntityManager
         return parent::getIdGenerator($className);
     }
 }
-

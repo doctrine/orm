@@ -4,11 +4,6 @@ namespace Doctrine\Tests\ORM\Hydration;
 
 require_once __DIR__ . '/../../TestInit.php';
 
-/**
- * Description of HydrationTest
- *
- * @author robo
- */
 class HydrationTest extends \Doctrine\Tests\OrmTestCase
 {
     protected $_em;
@@ -29,4 +24,3 @@ class HydrationTest extends \Doctrine\Tests\OrmTestCase
         return $parserResult;
     }
 }
-

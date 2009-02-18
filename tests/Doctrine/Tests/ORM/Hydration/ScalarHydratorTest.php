@@ -6,11 +6,6 @@ use Doctrine\Tests\Mocks\HydratorMockStatement;
 
 require_once __DIR__ . '/../../TestInit.php';
 
-/**
- * Description of ScalarHydratorTest
- *
- * @author robo
- */
 class ScalarHydratorTest extends HydrationTest
 {
     /**
@@ -60,4 +55,3 @@ class ScalarHydratorTest extends HydrationTest
         $this->assertEquals(2, $result[1]['u_id']);
     }
 }
-

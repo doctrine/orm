@@ -28,7 +28,8 @@ class EntityPersisterMock extends \Doctrine\ORM\Persisters\StandardEntityPersist
         return null;
     }
 
-    public function setMockIdGeneratorType($genType) {
+    public function setMockIdGeneratorType($genType)
+    {
         $this->_mockIdGeneratorType = $genType;
     }
     
@@ -65,4 +66,3 @@ class EntityPersisterMock extends \Doctrine\ORM\Persisters\StandardEntityPersist
         $this->_deletes = array();
     }
 }
-

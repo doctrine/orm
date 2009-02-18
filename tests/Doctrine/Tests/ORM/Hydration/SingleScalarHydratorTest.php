@@ -6,11 +6,6 @@ use Doctrine\Tests\Mocks\HydratorMockStatement;
 
 require_once __DIR__ . '/../../TestInit.php';
 
-/**
- * Description of SingleScalarHydratorTest
- *
- * @author robo
- */
 class SingleScalarHydratorTest extends HydrationTest
 {
     /** Result set provider for the HYDRATE_SINGLE_SCALAR tests */
@@ -91,7 +86,5 @@ class SingleScalarHydratorTest extends HydrationTest
                 $this->fail();
             } catch (\Doctrine\ORM\Internal\Hydration\HydrationException $ex) {}
         }
-
     }
 }
-

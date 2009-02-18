@@ -19,7 +19,8 @@ class DatabasePlatformMock extends \Doctrine\DBAL\Platforms\AbstractPlatform
     /**
      * @override
      */
-    public function prefersIdentityColumns() {
+    public function prefersIdentityColumns()
+    {
         return $this->_prefersIdentityColumns;
     }
 
@@ -50,6 +51,4 @@ class DatabasePlatformMock extends \Doctrine\DBAL\Platforms\AbstractPlatform
     {
         $this->_prefersIdentityColumns = (bool)$bool;
     }
-    
 }
-

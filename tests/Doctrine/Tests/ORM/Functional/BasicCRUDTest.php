@@ -10,14 +10,10 @@ use Doctrine\Tests\Models\CMS\CmsGroup;
 
 require_once __DIR__ . '/../../TestInit.php';
 
-/**
- * Description of BasicCRUDTest
- *
- * @author robo
- */
-class BasicCRUDTest extends \Doctrine\Tests\OrmFunctionalTestCase {
-
-    public function testBasicUnitsOfWorkWithOneToManyAssociation() {
+class BasicCRUDTest extends \Doctrine\Tests\OrmFunctionalTestCase
+{
+    public function testBasicUnitsOfWorkWithOneToManyAssociation()
+    {
         $em = $this->_em;
 
         $exporter = new ClassExporter($this->_em);
@@ -73,7 +69,8 @@ class BasicCRUDTest extends \Doctrine\Tests\OrmFunctionalTestCase {
         $this->assertFalse($em->getUnitOfWork()->isRegisteredRemoved($ph2));
     }
 
-    public function testOneToManyAssociationModification() {
+    public function testOneToManyAssociationModification()
+    {
         $user = new CmsUser;
         $user->name = 'Roman';
         $user->username = 'romanb';
@@ -192,4 +189,3 @@ class BasicCRUDTest extends \Doctrine\Tests\OrmFunctionalTestCase {
         $this->assertEquals(0, $count);
     }
 }
-

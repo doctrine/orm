@@ -4,14 +4,12 @@ namespace Doctrine\Tests\ORM;
 
 require_once __DIR__ . '/../TestInit.php';
 
-/**
- * EntityManager tests.
- */
 class EntityManagerTest extends \Doctrine\Tests\OrmTestCase
 {
     private $_em;
 
-    function setUp() {
+    function setUp()
+    {
         parent::setUp();
         $this->_em = $this->_getTestEntityManager();
     }

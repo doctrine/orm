@@ -11,10 +11,6 @@ if (!defined('PHPUnit_MAIN_METHOD')) {
 
 require_once __DIR__ . '/../TestInit.php';
 
-// Suites
-#require_once 'Dbal/Component/AllTests.php';
-#require_once 'Dbal/Ticket/AllTests.php';
-
 class AllTests
 {
     public static function main()
@@ -27,8 +23,6 @@ class AllTests
         $suite = new \Doctrine\Tests\DbalTestSuite('Doctrine DBAL');
 
         $suite->addTestSuite('Doctrine\Tests\DBAL\Platforms\AbstractPlatformTest');
-
-        $suite->addTest(Ticket\AllTests::suite());
         
         return $suite;
     }

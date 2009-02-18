@@ -12,11 +12,6 @@ if (!defined('PHPUnit_MAIN_METHOD')) {
 
 require_once __DIR__ . '/TestInit.php';
 
-// Suites
-#require_once 'Common/AllTests.php';
-#require_once 'Dbal/AllTests.php';
-#require_once 'Orm/AllTests.php';
-
 class AllTests
 {
     public static function main()

@@ -6,12 +6,6 @@ use Doctrine\Tests;
 
 require_once __DIR__ . '/../../TestInit.php';
 
-/**
- * Collection tests.
- *
- * @author robo
- * @since 2.0
- */
 class CollectionTest extends \Doctrine\Tests\DoctrineTestCase
 {
     private $_coll;
