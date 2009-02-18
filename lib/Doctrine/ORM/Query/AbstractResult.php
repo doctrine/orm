@@ -124,7 +124,7 @@ abstract class AbstractResult
     public function getQueryComponent($componentAlias)
     {
         if ( ! isset($this->_queryComponents[$componentAlias])) {
-            throw new Doctrine_ORM_Query_Exception('Unknown query component ' . $componentAlias);
+            throw new \Doctrine\Common\DoctrineException('Unknown query component ' . $componentAlias);
         }
 
         return $this->_queryComponents[$componentAlias];

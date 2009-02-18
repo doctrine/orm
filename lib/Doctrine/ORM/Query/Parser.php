@@ -1139,7 +1139,7 @@ class Parser
             default:
                 $this->syntaxError();
         }
-        throw new Doctrine_Exception("Not yet implemented.");
+        throw new QueryException("Not yet implemented.");
         //TODO...
     }
 

@@ -22,6 +22,7 @@
 namespace Doctrine\ORM\Query;
 
 use Doctrine\ORM\Query\AST;
+use Doctrine\Common\DoctrineException;
 
 /**
  * The SqlWalker walks over an AST that represents a DQL query and constructs
@@ -379,9 +380,9 @@ class SqlWalker
             $sqlTableAlias = $this->_dqlToSqlAliasMap[$dqlAlias];
             $sql .= $sqlTableAlias . '.' . $class->getColumnName($fieldName);
         } else if ($pathExpr->isSimpleStateFieldAssociationPathExpression()) {
-            throw new Doctrine_Exception("Not yet implemented.");
+            throw new DoctrineException("Not yet implemented.");
         } else {
-            throw new Doctrine_ORM_Query_Exception("Encountered invalid PathExpression during SQL construction.");
+            throw new DoctrineException("Encountered invalid PathExpression during SQL construction.");
         }
         return $sql;
     }
