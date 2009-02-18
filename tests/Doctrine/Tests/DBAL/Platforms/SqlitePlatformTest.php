@@ -2,23 +2,17 @@
 
 namespace Doctrine\Tests\DBAL\Platforms;
 
+use Doctrine\DBAL\Platforms\SqlitePlatform;
+
 require_once __DIR__ . '/../../TestInit.php';
  
-class AbstractPlatformTest extends \Doctrine\Tests\DbalTestCase
+class SqlitePlatformTest extends \Doctrine\Tests\DbalTestCase
 {
-    private $_conn;
+    private $_platform;
 
     public function setUp()
     {
-        $this->_config = new \Doctrine\DBAL\Configuration;
-        $this->_eventManager = new \Doctrine\Common\EventManager;
-        $options = array(
-            'driver' => 'pdo_sqlite',
-            'memory' => true
-        );
-        $this->_conn = \Doctrine\DBAL\DriverManager::getConnection($options, $this->_config, $this->_eventManager);
-        $this->_platform = $this->_conn->getDatabasePlatform();
-        $this->_sm = $this->_conn->getSchemaManager();
+        $this->_platform = new SqlitePlatform;
     }
 
     public function testGetCreateTableSql()
