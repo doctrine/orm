@@ -43,7 +43,7 @@ class OracleSchemaManager extends AbstractSchemaManager
     public function createDatabase($name)
     {
         if ( ! $this->conn->getAttribute(Doctrine::ATTR_EMULATE_DATABASE))
-            throw new Doctrine_Export_Exception('database creation is only supported if the "emulate_database" attribute is enabled');
+            throw \Doctrine\Common\DoctrineException::updateMe('database creation is only supported if the "emulate_database" attribute is enabled');
 
         $username   = sprintf($this->conn->getAttribute(Doctrine::ATTR_DB_NAME_FORMAT), $name);
         $password   = $this->conn->dsn['password'] ? $this->conn->dsn['password'] : $name;
@@ -75,7 +75,7 @@ class OracleSchemaManager extends AbstractSchemaManager
     public function dropDatabase($name)
     {
         if ( ! $this->conn->getAttribute(Doctrine::ATTR_EMULATE_DATABASE))
-            throw new Doctrine_Export_Exception('database dropping is only supported if the
+            throw \Doctrine\Common\DoctrineException::updateMe('database dropping is only supported if the
                                                        "emulate_database" option is enabled');
 
         $username = sprintf($this->conn->getAttribute(Doctrine::ATTR_DB_NAME_FORMAT), $name);
@@ -415,7 +415,7 @@ END;
                 case 'rename':
                     break;
                 default:
-                    throw new Doctrine_Export_Exception('change type "' . $changeName . '" not yet supported');
+                    throw \Doctrine\Common\DoctrineException::updateMe('change type "' . $changeName . '" not yet supported');
             }
         }
 
@@ -506,7 +506,7 @@ END;
     public function listDatabases()
     {
         if ( ! $this->_conn->getAttribute(Doctrine::ATTR_EMULATE_DATABASE)) {
-            throw new Doctrine_Import_Exception('database listing is only supported if the "emulate_database" option is enabled');
+            throw \Doctrine\Common\DoctrineException::updateMe('database listing is only supported if the "emulate_database" option is enabled');
         }
         /**
         if ($this->_conn->options['database_name_prefix']) {

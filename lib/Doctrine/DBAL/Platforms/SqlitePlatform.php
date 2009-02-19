@@ -195,7 +195,7 @@ class SqlitePlatform extends AbstractPlatform
     public function getNativeDeclaration(array $field)
     {
         if ( ! isset($field['type'])) {
-            throw new Doctrine_DataDict_Exception('Missing column type.');
+            throw \Doctrine\Common\DoctrineException::updateMe('Missing column type.');
         }
         switch ($field['type']) {
             case 'text':
@@ -255,7 +255,7 @@ class SqlitePlatform extends AbstractPlatform
                 $scale = !empty($field['scale']) ? $field['scale'] : $this->conn->getAttribute(Doctrine::ATTR_DECIMAL_PLACES);
                 return 'DECIMAL('.$length.','.$scale.')';
         }
-        throw new Doctrine_DataDict_Exception('Unknown field type \'' . $field['type'] .  '\'.');
+        throw \Doctrine\Common\DoctrineException::updateMe('Unknown field type \'' . $field['type'] .  '\'.');
     }
 
     /**
@@ -372,7 +372,7 @@ class SqlitePlatform extends AbstractPlatform
                 $length = null;
                 break;
             default:
-                throw new Doctrine_DataDict_Exception('unknown database attribute type: '.$dbType);
+                throw \Doctrine\Common\DoctrineException::updateMe('unknown database attribute type: '.$dbType);
         }
 
         return array('type'     => $type,
@@ -488,11 +488,11 @@ class SqlitePlatform extends AbstractPlatform
     public function getCreateTableSql($name, array $fields, array $options = array())
     {
         if ( ! $name) {
-            throw new Doctrine_Exception('no valid table name specified');
+            throw ConnectionException::invalidTableName($name);
         }
 
         if (empty($fields)) {
-            throw new Doctrine_Exception('no fields specified for table '.$name);
+            throw ConnectionException::noFieldsSpecifiedForTable($name);
         }
         $queryFields = $this->getFieldDeclarationListSql($fields);
 

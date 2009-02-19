@@ -70,7 +70,7 @@ class JoinedSubclassPersister extends AbstractEntityPersister
                         $this->_insertRow($parentClass->getTableName(), $dataSet[$parent]);
                     }
                 } else {
-                    throw new Doctrine_Mapper_Exception("Unsupported identifier type '$identifierType'.");
+                    throw \Doctrine\Common\DoctrineException::updateMe("Unsupported identifier type '$identifierType'.");
                 }
                 $entity->_assignIdentifier($identifier);
             } else {
@@ -243,7 +243,7 @@ class JoinedSubclassPersister extends AbstractEntityPersister
             }
         }
         
-        throw new Doctrine_Mapper_Exception("Unable to find defining class of field '$fieldName'.");
+        throw \Doctrine\Common\DoctrineException::updateMe("Unable to find defining class of field '$fieldName'.");
     }*/
     
     /**

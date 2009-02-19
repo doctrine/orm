@@ -42,7 +42,7 @@ class InformixPlatform extends AbstractPlatform
     public function getNativeDeclaration($field)
     {
         if ( ! isset($field['type'])) {
-            throw new Doctrine_DataDict_Exception('Missing column type.');
+            throw \Doctrine\Common\DoctrineException::updateMe('Missing column type.');
         }
         switch ($field['type']) {
             case 'char':
@@ -90,7 +90,7 @@ class InformixPlatform extends AbstractPlatform
             case 'decimal':
                 return 'DECIMAL';
         }
-        throw new Doctrine_DataDict_Exception('Unknown field type \'' . $field['type'] .  '\'.');
+        throw \Doctrine\Common\DoctrineException::updateMe('Unknown field type \'' . $field['type'] .  '\'.');
     }
     
 }

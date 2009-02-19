@@ -185,7 +185,7 @@ class MySqlPlatform extends AbstractPlatform
                     $match = $field.'LIKE BINARY ';
                     break;
                 default:
-                    throw new Doctrine_Expression_Mysql_Exception('not a supported operator type:'. $operator);
+                    throw \Doctrine\Common\DoctrineException::updateMe('not a supported operator type:'. $operator);
             }
         }
         $match.= "'";
@@ -297,7 +297,7 @@ class MySqlPlatform extends AbstractPlatform
     public function getNativeDeclaration(array $field)
     {
         if ( ! isset($field['type'])) {
-            throw new Doctrine_DataDict_Exception('Missing column type.');
+            throw \Doctrine\Common\DoctrineException::updateMe('Missing column type.');
         }
 
         switch ($field['type']) {
@@ -367,7 +367,7 @@ class MySqlPlatform extends AbstractPlatform
                 $scale = !empty($field['scale']) ? $field['scale'] : $this->conn->getAttribute(Doctrine::ATTR_DECIMAL_PLACES);
                 return 'DECIMAL('.$length.','.$scale.')';
         }
-        throw new Doctrine_DataDict_Exception('Unknown field type \'' . $field['type'] .  '\'.');
+        throw \Doctrine\Common\DoctrineException::updateMe('Unknown field type \'' . $field['type'] .  '\'.');
     }
 
     /**
@@ -520,7 +520,7 @@ class MySqlPlatform extends AbstractPlatform
                 $length = null;
             break;
             default:
-                throw new Doctrine_DataDict_Exception('unknown database attribute type: ' . $dbType);
+                throw \Doctrine\Common\DoctrineException::updateMe('unknown database attribute type: ' . $dbType);
         }
 
         $length = ((int) $length == 0) ? null : (int) $length;
@@ -678,10 +678,10 @@ class MySqlPlatform extends AbstractPlatform
     public function getCreateTableSql($name, array $fields, array $options = array())
     {
         if ( ! $name) {
-            throw new Doctrine_Export_Exception('no valid table name specified');
+            throw \Doctrine\Common\DoctrineException::updateMe('no valid table name specified');
         }
         if (empty($fields)) {
-            throw new Doctrine_Export_Exception('no fields specified for table "'.$name.'"');
+            throw \Doctrine\Common\DoctrineException::updateMe('no fields specified for table "'.$name.'"');
         }
         $queryFields = $this->getFieldDeclarationListSql($fields);
 
@@ -866,7 +866,7 @@ class MySqlPlatform extends AbstractPlatform
     public function getAlterTableSql($name, array $changes, $check = false)
     {
         if ( ! $name) {
-            throw new Doctrine_Export_Exception('no valid table name specified');
+            throw \Doctrine\Common\DoctrineException::updateMe('no valid table name specified');
         }
         foreach ($changes as $changeName => $change) {
             switch ($changeName) {
@@ -877,7 +877,7 @@ class MySqlPlatform extends AbstractPlatform
                 case 'name':
                     break;
                 default:
-                    throw new Doctrine_Export_Exception('change type "' . $changeName . '" not yet supported');
+                    throw \Doctrine\Common\DoctrineException::updateMe('change type "' . $changeName . '" not yet supported');
             }
         }
 
@@ -1003,7 +1003,7 @@ class MySqlPlatform extends AbstractPlatform
                     $type = strtoupper($definition['type']) . ' ';
                 break;
                 default:
-                    throw new Doctrine_Export_Exception('Unknown index type ' . $definition['type']);
+                    throw \Doctrine\Common\DoctrineException::updateMe('Unknown index type ' . $definition['type']);
             }
         }
         $query  = 'CREATE ' . $type . 'INDEX ' . $name . ' ON ' . $table;
@@ -1139,12 +1139,12 @@ class MySqlPlatform extends AbstractPlatform
                     $type = strtoupper($definition['type']) . ' ';
                 break;
                 default:
-                    throw new Doctrine_Export_Exception('Unknown index type ' . $definition['type']);
+                    throw \Doctrine\Common\DoctrineException::updateMe('Unknown index type ' . $definition['type']);
             }
         }
 
         if ( ! isset($definition['fields'])) {
-            throw new Doctrine_Export_Exception('No index columns given.');
+            throw \Doctrine\Common\DoctrineException::updateMe('No index columns given.');
         }
         if ( ! is_array($definition['fields'])) {
             $definition['fields'] = array($definition['fields']);
@@ -1185,7 +1185,7 @@ class MySqlPlatform extends AbstractPlatform
                             $fieldString .= ' ' . $sort;
                             break;
                         default:
-                            throw new Doctrine_Export_Exception('Unknown index sorting option given.');
+                            throw \Doctrine\Common\DoctrineException::updateMe('Unknown index sorting option given.');
                     }
                 }
             } else {

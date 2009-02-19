@@ -86,7 +86,7 @@ class FirebirdPlatform extends AbstractPlatform
     public function getNativeDeclaration($field)
     {
         if ( ! isset($field['type'])) {
-            throw new Doctrine_DataDict_Exception('Missing column type.');
+            throw \Doctrine\Common\DoctrineException::updateMe('Missing column type.');
         }
         switch ($field['type']) {
             case 'varchar':
@@ -126,7 +126,7 @@ class FirebirdPlatform extends AbstractPlatform
                 return 'DECIMAL('.$length.','.$scale.')';
         }
 
-        throw new Doctrine_DataDict_Exception('Unknown field type \'' . $field['type'] .  '\'.');
+        throw \Doctrine\Common\DoctrineException::updateMe('Unknown field type \'' . $field['type'] .  '\'.');
     }
 
     /**
@@ -211,7 +211,7 @@ class FirebirdPlatform extends AbstractPlatform
                 $length = null;
                 break;
             default:
-                throw new Doctrine_DataDict_Exception('unknown database attribute type: '.$dbType);
+                throw \Doctrine\Common\DoctrineException::updateMe('unknown database attribute type: '.$dbType);
         }
 
         return array('type'     => $type,

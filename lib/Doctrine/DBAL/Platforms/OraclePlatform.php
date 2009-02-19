@@ -95,7 +95,7 @@ class OraclePlatform extends AbstractPlatform
         // NOTE: no composite key support
         $columnNames = $rootClass->getIdentifierColumnNames();
         if (count($columnNames) > 1) {
-            throw new Doctrine_Connection_Exception("Composite keys in LIMIT queries are "
+            throw \Doctrine\Common\DoctrineException::updateMe("Composite keys in LIMIT queries are "
                     . "currently not supported.");
         }
         $column = $columnNames[0];
@@ -191,7 +191,7 @@ class OraclePlatform extends AbstractPlatform
     public function getNativeDeclaration(array $field)
     {
         if ( ! isset($field['type'])) {
-            throw new Doctrine_DataDict_Exception('Missing column type.');
+            throw \Doctrine\Common\DoctrineException::updateMe('Missing column type.');
         }
         switch ($field['type']) {
             case 'string':
@@ -231,7 +231,7 @@ class OraclePlatform extends AbstractPlatform
                 return 'NUMBER(*,'.$scale.')';
             default:
         }
-        throw new Doctrine_DataDict_Exception('Unknown field type \'' . $field['type'] .  '\'.');
+        throw \Doctrine\Common\DoctrineException::updateMe('Unknown field type \'' . $field['type'] .  '\'.');
     }
 
     /**
@@ -245,7 +245,7 @@ class OraclePlatform extends AbstractPlatform
     public function getPortableDeclaration(array $field)
     {
         if ( ! isset($field['data_type'])) {
-            throw new Doctrine_DataDict_Exception('Native oracle definition must have a data_type key specified');
+            throw \Doctrine\Common\DoctrineException::updateMe('Native oracle definition must have a data_type key specified');
         }
         
         $dbType = strtolower($field['data_type']);
@@ -325,7 +325,7 @@ class OraclePlatform extends AbstractPlatform
             case 'rowid':
             case 'urowid':
             default:
-                throw new Doctrine_DataDict_Exception('unknown database attribute type: ' . $dbType);
+                throw \Doctrine\Common\DoctrineException::updateMe('unknown database attribute type: ' . $dbType);
         }
 
         return array('type'     => $type,

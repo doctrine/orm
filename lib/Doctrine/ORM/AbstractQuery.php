@@ -463,7 +463,7 @@ abstract class AbstractQuery
             }
 
             if ($value === null) {
-                throw new Doctrine_ORM_Query_Exception( 'Cannot try to set \''.$key.'\' without a value.' );
+                throw \Doctrine\Common\DoctrineException::updateMe( 'Cannot try to set \''.$key.'\' without a value.' );
             }
 
             return $this->_addDqlQueryPart('set', $key . ' = ' . $value, true);
@@ -891,7 +891,7 @@ abstract class AbstractQuery
     public function getDqlQueryPart($queryPartName)
     {
         if ( ! isset($this->_dqlParts[$queryPartName])) {
-            throw new Doctrine_ORM_Query_Exception('Unknown DQL query part \'' . $queryPartName . '\'');
+            throw \Doctrine\Common\DoctrineException::updateMe('Unknown DQL query part \'' . $queryPartName . '\'');
         }
 
         return $this->_dqlParts[$queryPartName];

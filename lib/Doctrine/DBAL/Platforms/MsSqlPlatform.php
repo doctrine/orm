@@ -30,7 +30,7 @@ class MsSqlPlatform extends AbstractPlatform
 
             $offset = intval($offset);
             if ($offset < 0) {
-                throw new Doctrine_Connection_Exception("LIMIT argument offset=$offset is not valid");
+                throw \Doctrine\Common\DoctrineException::updateMe("LIMIT argument offset=$offset is not valid");
             }
     
             $orderby = stristr($query, 'ORDER BY');
@@ -147,7 +147,7 @@ class MsSqlPlatform extends AbstractPlatform
     public function getNativeDeclaration($field)
     {
         if ( ! isset($field['type'])) {
-            throw new Doctrine_DataDict_Exception('Missing column type.');
+            throw \Doctrine\Common\DoctrineException::updateMe('Missing column type.');
         }
         switch ($field['type']) {
             case 'array':
@@ -200,7 +200,7 @@ class MsSqlPlatform extends AbstractPlatform
                 return 'DECIMAL('.$length.','.$scale.')';
         }
 
-        throw new Doctrine_DataDict_Exception('Unknown field type \'' . $field['type'] .  '\'.');
+        throw \Doctrine\Common\DoctrineException::updateMe('Unknown field type \'' . $field['type'] .  '\'.');
     }
 
     /**
@@ -272,7 +272,7 @@ class MsSqlPlatform extends AbstractPlatform
                 $length = null;
             break;
             default:
-                throw new Doctrine_DataDict_Exception('unknown database attribute type: '.$db_type);
+                throw \Doctrine\Common\DoctrineException::updateMe('unknown database attribute type: '.$db_type);
         }
 
         return array('type'     => $type,

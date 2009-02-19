@@ -267,13 +267,13 @@ class SqliteSchemaManager extends AbstractSchemaManager
     public function dropDatabase($databaseFile)
     {
         if ( ! @file_exists($databaseFile)) {
-            throw new Doctrine_Export_Exception('database does not exist');
+            throw \Doctrine\Common\DoctrineException::updateMe('database does not exist');
         }
 
         $result = @unlink($databaseFile);
 
         if ( ! $result) {
-            throw new Doctrine_Export_Exception('could not remove the database file');
+            throw \Doctrine\Common\DoctrineException::updateMe('could not remove the database file');
         }
     }
 
@@ -355,7 +355,7 @@ class SqliteSchemaManager extends AbstractSchemaManager
                             $fieldString .= ' ' . $sort;
                             break;
                         default:
-                            throw new Doctrine_Export_Exception('Unknown index sorting option given.');
+                            throw \Doctrine\Common\DoctrineException::updateMe('Unknown index sorting option given.');
                     }
                 }
             } else {
@@ -434,10 +434,10 @@ class SqliteSchemaManager extends AbstractSchemaManager
             try {
                 $result = $db->exec('DROP TABLE ' . $sequenceName);
             } catch(Doctrine_Connection_Exception $e) {
-                throw new Doctrine_Export_Exception('could not drop inconsistent sequence table');
+                throw \Doctrine\Common\DoctrineException::updateMe('could not drop inconsistent sequence table');
             }
         }
-        throw new Doctrine_Export_Exception('could not create sequence table');
+        throw \Doctrine\Common\DoctrineException::updateMe('could not create sequence table');
     }
 
     /**
@@ -456,7 +456,7 @@ class SqliteSchemaManager extends AbstractSchemaManager
     public function alterTableSql($name, array $changes, $check = false)
     {
         if ( ! $name) {
-            throw new Doctrine_Export_Exception('no valid table name specified');
+            throw \Doctrine\Common\DoctrineException::updateMe('no valid table name specified');
         }
         foreach ($changes as $changeName => $change) {
             switch ($changeName) {
@@ -466,7 +466,7 @@ class SqliteSchemaManager extends AbstractSchemaManager
                 case 'name':
                     break;
                 default:
-                    throw new Doctrine_Export_Exception('change type "' . $changeName . '" not yet supported');
+                    throw \Doctrine\Common\DoctrineException::updateMe('change type "' . $changeName . '" not yet supported');
             }
         }
 

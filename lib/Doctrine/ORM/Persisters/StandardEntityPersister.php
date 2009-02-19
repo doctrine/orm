@@ -91,7 +91,7 @@ class StandardEntityPersister extends AbstractEntityPersister
             $id = $conn->sequence->lastInsertId($seq);
 
             if ( ! $id) {
-                throw new Doctrine_Mapper_Exception("Couldn't get last insert identifier.");
+                throw \Doctrine\Common\DoctrineException::updateMe("Couldn't get last insert identifier.");
             }
 
             $record->assignIdentifier($id);

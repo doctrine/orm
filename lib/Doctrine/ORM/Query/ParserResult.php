@@ -131,7 +131,7 @@ class ParserResult extends AbstractResult
     public function getQueryField($fieldAlias)
     {
         if ( ! isset($this->_queryFields[$fieldAlias])) {
-            throw new Doctrine_ORM_Query_Exception('Unknown query field ' . $fieldAlias);
+            throw \Doctrine\Common\DoctrineException::updateMe('Unknown query field ' . $fieldAlias);
         }
 
         return $this->_queryFields[$fieldAlias];

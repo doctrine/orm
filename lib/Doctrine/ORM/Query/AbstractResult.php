@@ -198,7 +198,7 @@ abstract class AbstractResult
     public function getTableAlias($tableAlias)
     {
         if ( ! isset($this->_tableAliasMap[$tableAlias])) {
-            throw new Doctrine_ORM_Query_Exception('Unknown table alias ' . $tableAlias);
+            throw \Doctrine\Common\DoctrineException::updateMe('Unknown table alias ' . $tableAlias);
         }
 
         return $this->_tableAliasMap[$tableAlias];

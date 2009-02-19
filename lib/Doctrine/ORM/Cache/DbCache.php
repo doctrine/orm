@@ -43,13 +43,13 @@ class DbCache implements Cache, \Countable
         if ( ! isset($options['connection']) || 
              ! ($options['connection'] instanceof Doctrine_DBAL_Connection)) {
 
-            throw new Doctrine_Exception('Connection option not set.');
+            throw \Doctrine\Common\DoctrineException::updateMe('Connection option not set.');
         }
         
         if ( ! isset($options['tableName']) ||
              ! is_string($options['tableName'])) {
              
-             throw new Doctrine_Exception('Table name option not set.');
+             throw \Doctrine\Common\DoctrineException::updateMe('Table name option not set.');
         }
 
         $this->_options = $options;

@@ -203,7 +203,7 @@ class EntityRepository
         
         if (isset($by)) {
             if ( ! isset($arguments[0])) {
-                throw new Doctrine_Mapper_Exception('You must specify the value to findBy.');
+                throw \Doctrine\Common\DoctrineException::updateMe('You must specify the value to findBy.');
             }
             
             $fieldName = Doctrine::tableize($by);
@@ -214,11 +214,11 @@ class EntityRepository
             } else if ($this->_classMetadata->hasRelation($by)) {
                 $relation = $this->_classMetadata->getRelation($by);
                 if ($relation['type'] === Doctrine_Relation::MANY) {
-                    throw new Doctrine_Mapper_Exception('Cannot findBy many relationship.');
+                    throw \Doctrine\Common\DoctrineException::updateMe('Cannot findBy many relationship.');
                 }
                 return $this->$method($relation['local'], $arguments[0], $hydrationMode);
             } else {
-                throw new Doctrine_Mapper_Exception('Cannot find by: ' . $by . '. Invalid field or relationship alias.');
+                throw \Doctrine\Common\DoctrineException::updateMe('Cannot find by: ' . $by . '. Invalid field or relationship alias.');
             }
         }
     }

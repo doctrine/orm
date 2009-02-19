@@ -688,7 +688,7 @@ class Connection
     public function commit()
     {
         if ($this->_transactionNestingLevel == 0) {
-            throw new DoctrineException("Commit failed. There is no active transaction.");
+            throw ConnectionException::commitFailedNoActiveTransaction();
         }
         
         $this->connect();
@@ -717,7 +717,7 @@ class Connection
     public function rollback()
     {
         if ($this->_transactionNestingLevel == 0) {
-            throw new Doctrine_Exception("Rollback failed. There is no active transaction.");
+            throw ConnectionException::rollbackFailedNoActiveTransaction();
         }
         
         $this->connect();

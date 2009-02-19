@@ -21,11 +21,12 @@ class AllTests
     {
         $suite = new \Doctrine\Tests\DoctrineTestSuite('Doctrine Common Tests');
 
-        $suite->addTestSuite('Doctrine\Tests\Common\EventManagerTest');
+        $suite->addTestSuite('Doctrine\Tests\Common\DoctrineExceptionTest');
         $suite->addTestSuite('Doctrine\Tests\Common\ClassLoaderTest');
+        $suite->addTestSuite('Doctrine\Tests\Common\EventManagerTest');
 
         $suite->addTest(Collections\AllTests::suite());
-        
+
         return $suite;
     }
 }

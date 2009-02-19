@@ -130,7 +130,7 @@ abstract class AbstractPlatform
      */
     public function getRegexpExpression()
     {
-        throw new Doctrine_Expression_Exception('Regular expression operator is not supported by this database driver.');
+        throw \Doctrine\Common\DoctrineException::updateMe('Regular expression operator is not supported by this database driver.');
     }
 
     /**
@@ -350,7 +350,7 @@ abstract class AbstractPlatform
      */
     public function getSoundexExpression($value)
     {
-        throw new Doctrine_Expression_Exception('SQL soundex function not supported by this driver.');
+        throw \Doctrine\Common\DoctrineException::updateMe('SQL soundex function not supported by this driver.');
     }
 
     /**
@@ -700,7 +700,7 @@ abstract class AbstractPlatform
         $column = $this->getIdentifier($column);
 
         if (count($values) == 0) {
-            throw new Doctrine_Expression_Exception('Values array for IN operator should not be empty.');
+            throw \Doctrine\Common\DoctrineException::updateMe('Values array for IN operator should not be empty.');
         }
         return $column . ' IN (' . implode(', ', $values) . ')';
     }
@@ -783,7 +783,7 @@ abstract class AbstractPlatform
      */
     public function getGuidExpression()
     {
-        throw new Doctrine_Expression_Exception('method not implemented');
+        throw \Doctrine\Common\DoctrineException::updateMe('method not implemented');
     }
 
     /**
@@ -846,7 +846,7 @@ abstract class AbstractPlatform
      */
     public function getListDatabasesSql()
     {
-        throw new Doctrine_Export_Exception('List databases not supported by this driver.');
+        throw \Doctrine\Common\DoctrineException::updateMe('List databases not supported by this driver.');
     }
     
     /**
@@ -856,7 +856,7 @@ abstract class AbstractPlatform
      */
     public function getListFunctionsSql()
     {
-        throw new Doctrine_Export_Exception('List functions not supported by this driver.');
+        throw \Doctrine\Common\DoctrineException::updateMe('List functions not supported by this driver.');
     }
     
     /**
@@ -866,7 +866,7 @@ abstract class AbstractPlatform
      */
     public function getListTriggersSql()
     {
-        throw new Doctrine_Export_Exception('List triggers not supported by this driver.');
+        throw \Doctrine\Common\DoctrineException::updateMe('List triggers not supported by this driver.');
     }
     
     /**
@@ -876,7 +876,7 @@ abstract class AbstractPlatform
      */
     public function getListSequencesSql()
     {
-        throw new Doctrine_Export_Exception('List sequences not supported by this driver.');
+        throw \Doctrine\Common\DoctrineException::updateMe('List sequences not supported by this driver.');
     }
     
     /**
@@ -886,7 +886,7 @@ abstract class AbstractPlatform
      */
     public function getListTableConstraintsSql()
     {
-        throw new Doctrine_Export_Exception('List table constraints not supported by this driver.');
+        throw \Doctrine\Common\DoctrineException::updateMe('List table constraints not supported by this driver.');
     }
     
     /**
@@ -896,7 +896,7 @@ abstract class AbstractPlatform
      */
     public function getListTableColumnsSql()
     {
-        throw new Doctrine_Export_Exception('List table columns not supported by this driver.');
+        throw \Doctrine\Common\DoctrineException::updateMe('List table columns not supported by this driver.');
     }
     
     /**
@@ -906,7 +906,7 @@ abstract class AbstractPlatform
      */
     public function getListTablesSql()
     {
-        throw new Doctrine_Export_Exception('List tables not supported by this driver.');
+        throw \Doctrine\Common\DoctrineException::updateMe('List tables not supported by this driver.');
     }
     
     /**
@@ -916,7 +916,7 @@ abstract class AbstractPlatform
      */
     public function getListUsersSql()
     {
-        throw new Doctrine_Export_Exception('List users not supported by this driver.');
+        throw \Doctrine\Common\DoctrineException::updateMe('List users not supported by this driver.');
     }
     
     /**
@@ -926,7 +926,7 @@ abstract class AbstractPlatform
      */
     public function getListViewsSql()
     {
-        throw new Doctrine_Export_Exception('List views not supported by this driver.');
+        throw \Doctrine\Common\DoctrineException::updateMe('List views not supported by this driver.');
     }
     
     /**
@@ -966,7 +966,7 @@ abstract class AbstractPlatform
      */
     public function getDropSequenceSql()
     {
-        throw new Doctrine_Export_Exception('Drop sequence not supported by this driver.');
+        throw \Doctrine\Common\DoctrineException::updateMe('Drop sequence not supported by this driver.');
     }
     
     /**
@@ -974,7 +974,7 @@ abstract class AbstractPlatform
      */
     public function getSequenceNextValSql($sequenceName)
     {
-        throw new Doctrine_Export_Exception('Sequences not supported by this driver.');
+        throw \Doctrine\Common\DoctrineException::updateMe('Sequences not supported by this driver.');
     }
     
     /**
@@ -984,7 +984,7 @@ abstract class AbstractPlatform
      */
     public function getCreateDatabaseSql($database)
     {
-        throw new Doctrine_Export_Exception('Create database not supported by this driver.');
+        throw \Doctrine\Common\DoctrineException::updateMe('Create database not supported by this driver.');
     }
     
     /**
@@ -995,10 +995,10 @@ abstract class AbstractPlatform
     public function getCreateTableSql($table, array $columns, array $options = array())
     {
         if ( ! $table) {
-            throw new Doctrine_Export_Exception('no valid table name specified');
+            throw \Doctrine\Common\DoctrineException::updateMe('no valid table name specified');
         }
         if (empty($columns)) {
-            throw new Doctrine_Export_Exception('no fields specified for table ' . $name);
+            throw \Doctrine\Common\DoctrineException::updateMe('no fields specified for table ' . $name);
         }
 
         $queryFields = $this->getFieldDeclarationListSql($columns);
@@ -1042,7 +1042,7 @@ abstract class AbstractPlatform
      */
     public function getCreateSequenceSql($sequenceName, $start = 1, array $options)
     {
-        throw new Doctrine_Export_Exception('Create sequence not supported by this driver.');
+        throw \Doctrine\Common\DoctrineException::updateMe('Create sequence not supported by this driver.');
     }
     
     /**
@@ -1103,7 +1103,7 @@ abstract class AbstractPlatform
                     $type = strtoupper($definition['type']) . ' ';
                 break;
                 default:
-                    throw new Doctrine_Export_Exception('Unknown index type ' . $definition['type']);
+                    throw \Doctrine\Common\DoctrineException::updateMe('Unknown index type ' . $definition['type']);
             }
         }
 
@@ -1199,7 +1199,7 @@ abstract class AbstractPlatform
      */
     public function getAlterTableSql($name, array $changes, $check = false)
     {
-        throw new Doctrine_Export_Exception('Alter table not supported by this driver.');
+        throw \Doctrine\Common\DoctrineException::updateMe('Alter table not supported by this driver.');
     }
     
     /**
@@ -1407,12 +1407,12 @@ abstract class AbstractPlatform
             if (strtolower($definition['type']) == 'unique') {
                 $type = strtoupper($definition['type']) . ' ';
             } else {
-                throw new Doctrine_Export_Exception('Unknown index type ' . $definition['type']);
+                throw \Doctrine\Common\DoctrineException::updateMe('Unknown index type ' . $definition['type']);
             }
         }
 
         if ( ! isset($definition['fields']) || ! is_array($definition['fields'])) {
-            throw new Doctrine_Export_Exception('No index columns given.');
+            throw \Doctrine\Common\DoctrineException::updateMe('No index columns given.');
         }
 
         $query = $type . 'INDEX ' . $name;
@@ -1468,7 +1468,7 @@ abstract class AbstractPlatform
      */
     public function getShowDatabasesSql()
     {
-        throw new Doctrine_Export_Exception('Show databases not supported by this driver.');
+        throw \Doctrine\Common\DoctrineException::updateMe('Show databases not supported by this driver.');
     }
     
     /**
@@ -1561,7 +1561,7 @@ abstract class AbstractPlatform
                 return $upper;
             break;
             default:
-                throw new Doctrine_Export_Exception('Unknown foreign key referential action \'' . $upper . '\' given.');
+                throw \Doctrine\Common\DoctrineException::updateMe('Unknown foreign key referential action \'' . $upper . '\' given.');
         }
     }
 
@@ -1581,13 +1581,13 @@ abstract class AbstractPlatform
         $sql .= 'FOREIGN KEY (';
 
         if ( ! isset($definition['local'])) {
-            throw new Doctrine_Export_Exception('Local reference field missing from definition.');
+            throw \Doctrine\Common\DoctrineException::updateMe('Local reference field missing from definition.');
         }
         if ( ! isset($definition['foreign'])) {
-            throw new Doctrine_Export_Exception('Foreign reference field missing from definition.');
+            throw \Doctrine\Common\DoctrineException::updateMe('Foreign reference field missing from definition.');
         }
         if ( ! isset($definition['foreignTable'])) {
-            throw new Doctrine_Export_Exception('Foreign reference table missing from definition.');
+            throw \Doctrine\Common\DoctrineException::updateMe('Foreign reference table missing from definition.');
         }
 
         if ( ! is_array($definition['local'])) {
@@ -1662,7 +1662,7 @@ abstract class AbstractPlatform
      */
     public function getMatchPatternExpression($pattern, $operator = null, $field = null)
     {
-        throw new Doctrine_Expression_Exception("Method not implemented.");
+        throw \Doctrine\Common\DoctrineException::updateMe("Method not implemented.");
     }
     
     /**

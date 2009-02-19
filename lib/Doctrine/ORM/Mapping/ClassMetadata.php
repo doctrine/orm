@@ -719,7 +719,7 @@ final class ClassMetadata
     public function getSingleIdentifierFieldName()
     {
         if ($this->_isIdentifierComposite) {
-            throw new Doctrine_Exception("Calling getSingleIdentifierFieldName "
+            throw \Doctrine\Common\DoctrineException::updateMe("Calling getSingleIdentifierFieldName "
                     . "on a class that uses a composite identifier is not allowed.");
         }
         return $this->_identifier[0];

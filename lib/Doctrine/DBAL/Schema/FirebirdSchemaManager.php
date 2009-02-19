@@ -135,7 +135,7 @@ class FirebirdSchemaManager extends AbstractSchemaManager
      */
     public function createDatabase($name)
     {
-        throw new Doctrine_Export_Exception(
+        throw \Doctrine\Common\DoctrineException::updateMe(
                 'PHP Interbase API does not support direct queries. You have to ' .
                 'create the db manually by using isql command or a similar program');
     }
@@ -148,7 +148,7 @@ class FirebirdSchemaManager extends AbstractSchemaManager
      */
     public  function dropDatabase($name)
     {
-        throw new Doctrine_Export_Exception(
+        throw \Doctrine\Common\DoctrineException::updateMe(
                 'PHP Interbase API does not support direct queries. You have ' .
                 'to drop the db manually by using isql command or a similar program');
     }
@@ -275,20 +275,17 @@ class FirebirdSchemaManager extends AbstractSchemaManager
         foreach ($changes as $change_name => $change) {
             switch ($change_name) {
                 case 'notnull':
-                    throw new Doctrine_DataDict_Exception('it is not supported changes to field not null constraint');
+                    throw \Doctrine\Common\DoctrineException::updateMe('it is not supported changes to field not null constraint');
                 case 'default':
-                    throw new Doctrine_DataDict_Exception('it is not supported changes to field default value');
+                    throw \Doctrine\Common\DoctrineException::updateMe('it is not supported changes to field default value');
                 case 'length':
-                    /*
-                    return throw new Doctrine_DataDict_Firebird_Exception('it is not supported changes to field default length');
-                    */
                 case 'unsigned':
                 case 'type':
                 case 'declaration':
                 case 'definition':
                     break;
                 default:
-                    throw new Doctrine_DataDict_Exception('it is not supported change of type' . $change_name);
+                    throw \Doctrine\Common\DoctrineException::updateMe('it is not supported change of type' . $change_name);
             }
         }
         return true;
@@ -413,7 +410,7 @@ class FirebirdSchemaManager extends AbstractSchemaManager
                     }
                     break;
                 default:
-                    throw new Doctrine_DataDict_Exception('change type ' . $changeName . ' not yet supported');
+                    throw \Doctrine\Common\DoctrineException::updateMe('change type ' . $changeName . ' not yet supported');
             }
         }
         if ($check) {
@@ -621,10 +618,10 @@ class FirebirdSchemaManager extends AbstractSchemaManager
             try {
                 $this->dropSequence($seqName);
             } catch(Doctrine_Connection_Exception $e) {
-                throw new Doctrine_Export_Exception('Could not drop inconsistent sequence table');
+                throw \Doctrine\Common\DoctrineException::updateMe('Could not drop inconsistent sequence table');
             }
         }
-        throw new Doctrine_Export_Exception('could not create sequence table');
+        throw \Doctrine\Common\DoctrineException::updateMe('could not create sequence table');
     }
 
     /**

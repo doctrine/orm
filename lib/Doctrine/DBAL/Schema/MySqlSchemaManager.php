@@ -280,7 +280,7 @@ class MySqlSchemaManager extends AbstractSchemaManager
 
             $res    = $this->_conn->exec($query);
         } catch(Doctrine_Connection_Exception $e) {
-            throw new Doctrine_Export_Exception('could not create sequence table');
+            throw \Doctrine\Common\DoctrineException::updateMe('could not create sequence table');
         }
 
         if ($start == 1) {
@@ -296,7 +296,7 @@ class MySqlSchemaManager extends AbstractSchemaManager
       try {
           $res = $this->_conn->exec('DROP TABLE ' . $sequenceName);
       } catch(Doctrine_Connection_Exception $e) {
-          throw new Doctrine_Export_Exception('could not drop inconsistent sequence table');
+          throw \Doctrine\Common\DoctrineException::updateMe('could not drop inconsistent sequence table');
       }
 
       return $res;

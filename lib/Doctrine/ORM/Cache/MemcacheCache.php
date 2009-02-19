@@ -43,7 +43,7 @@ class MemcacheCache implements Cache
     public function __construct()
     {      
         if ( ! extension_loaded('memcache')) {
-            throw new Doctrine_Cache_Exception('In order to use Memcache driver, the memcache extension must be loaded.');
+            throw \Doctrine\Common\DoctrineException::updateMe('In order to use Memcache driver, the memcache extension must be loaded.');
         }
     }
 
