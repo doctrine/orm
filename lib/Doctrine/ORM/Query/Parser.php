@@ -244,7 +244,7 @@ class Parser
             $message .= "'{$this->_lexer->lookahead['value']}'";
         }
 
-        throw new QueryException($message);
+        throw \Doctrine\Common\DoctrineException::updateMe($message);
     }
 
     /**
@@ -259,7 +259,7 @@ class Parser
             $token = $this->_lexer->token;
         }
         //TODO: Include $token in $message
-        throw new QueryException($message);
+        throw \Doctrine\Common\DoctrineException::updateMe($message);
     }
 
     /**
@@ -1139,7 +1139,7 @@ class Parser
             default:
                 $this->syntaxError();
         }
-        throw new QueryException("Not yet implemented.");
+        throw \Doctrine\Common\DoctrineException::updateMe("Not yet implemented.");
         //TODO...
     }
 

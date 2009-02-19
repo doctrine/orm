@@ -48,7 +48,7 @@ class AnnotationDriver
 
         // Evaluate DoctrineEntity annotation
         if (($entityAnnot = $annotClass->getAnnotation('DoctrineEntity')) === false) {
-            throw new MappingException("$className is no entity.");
+            throw \Doctrine\Common\DoctrineException::updateMe("$className is no entity.");
         }
         $metadata->setCustomRepositoryClass($entityAnnot->repositoryClass);
 
@@ -109,7 +109,7 @@ class AnnotationDriver
             // DoctrineOneToOne, DoctrineOneToMany, DoctrineManyToOne, DoctrineManyToMany
             if ($columnAnnot = $property->getAnnotation('DoctrineColumn')) {
                 if ($columnAnnot->type == null) {
-                    throw new MappingException("Missing type on property " . $property->getName());
+                    throw \Doctrine\Common\DoctrineException::updateMe("Missing type on property " . $property->getName());
                 }
                 $mapping['type'] = $columnAnnot->type;
                 $mapping['length'] = $columnAnnot->length;

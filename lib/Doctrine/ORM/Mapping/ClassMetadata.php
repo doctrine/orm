@@ -389,7 +389,7 @@ final class ClassMetadata
     public function getSingleIdReflectionProperty()
     {
         if ($this->_isIdentifierComposite) {
-            throw new DoctrineException("getSingleIdReflectionProperty called on entity with composite key.");
+            \Doctrine\Common\DoctrineException::updateMe("getSingleIdReflectionProperty called on entity with composite key.");
         }
         return $this->_reflectionProperties[$this->_identifier[0]];
     }

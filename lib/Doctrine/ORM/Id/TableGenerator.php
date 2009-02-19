@@ -12,7 +12,7 @@ class TableGenerator extends AbstractIdGenerator
     
     public function generate($entity)
     {
-        throw new \Exception("Not implemented");
+        throw \Doctrine\Common\DoctrineException::updateMe("Not implemented");
     }
     
 }

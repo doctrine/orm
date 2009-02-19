@@ -57,7 +57,7 @@ class Statement
         $this->_stmt = $stmt;
 
         if ($stmt === false) {
-            throw new DoctrineException('Unknown statement object given.');
+            throw \Doctrine\Common\DoctrineException::updateMe('Unknown statement object given.');
         }
     }
 

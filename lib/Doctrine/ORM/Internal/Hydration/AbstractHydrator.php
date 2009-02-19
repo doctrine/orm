@@ -353,7 +353,7 @@ abstract class AbstractHydrator
             }
         }
 
-        throw new DoctrineException("No field name found for column name '$lcColumnName' during hydration.");
+        \Doctrine\Common\DoctrineException::updateMe("No field name found for column name '$lcColumnName' during hydration.");
     }
 
     /** Needed only temporarily until the new parser is ready */

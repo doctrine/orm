@@ -55,7 +55,7 @@ abstract class Type
         }
         if ( ! isset(self::$_typeObjects[$name])) {
             if ( ! isset(self::$_typesMap[$name])) {
-                throw new DoctrineException("Unknown type: $name");
+                \Doctrine\Common\DoctrineException::updateMe("Unknown type: $name");
             }
             self::$_typeObjects[$name] = new self::$_typesMap[$name]();
         }

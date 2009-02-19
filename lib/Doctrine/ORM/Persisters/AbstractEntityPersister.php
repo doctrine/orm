@@ -173,7 +173,7 @@ abstract class AbstractEntityPersister
             $mapping = $this->_classMetadata->getFieldMapping($fieldName);
             return $mapping['inherited'];
         }
-        throw new DoctrineException("Unable to find defining class of field '$fieldName'.");
+        \Doctrine\Common\DoctrineException::updateMe("Unable to find defining class of field '$fieldName'.");
     }
     
     /**

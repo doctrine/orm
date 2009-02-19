@@ -127,7 +127,7 @@ final class PersistentCollection extends \Doctrine\Common\Collections\Collection
         $this->_ownerClass = $em->getClassMetadata($type);
         if ($keyField !== null) {
             if ( ! $this->_ownerClass->hasField($keyField)) {
-                throw new DoctrineException("Invalid field '$keyField' can't be used as key.");
+                \Doctrine\Common\DoctrineException::updateMe("Invalid field '$keyField' can't be used as key.");
             }
             $this->_keyField = $keyField;
         }

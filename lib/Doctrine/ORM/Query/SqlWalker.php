@@ -174,9 +174,9 @@ class SqlWalker
                 $sql .= $sqlTableAlias . '.' . $class->getColumnName($fieldName) .
                         ' AS ' . $sqlTableAlias . '__' . $class->getColumnName($fieldName);
             } else if ($pathExpression->isSimpleStateFieldAssociationPathExpression()) {
-                throw new DoctrineException("Not yet implemented.");
+                \Doctrine\Common\DoctrineException::updateMe("Not yet implemented.");
             } else {
-                throw new DoctrineException("Encountered invalid PathExpression during SQL construction.");
+                \Doctrine\Common\DoctrineException::updateMe("Encountered invalid PathExpression during SQL construction.");
             }
         }
         else if ($selectExpression->getExpression() instanceof AST\AggregateExpression) {
@@ -380,9 +380,9 @@ class SqlWalker
             $sqlTableAlias = $this->_dqlToSqlAliasMap[$dqlAlias];
             $sql .= $sqlTableAlias . '.' . $class->getColumnName($fieldName);
         } else if ($pathExpr->isSimpleStateFieldAssociationPathExpression()) {
-            throw new DoctrineException("Not yet implemented.");
+            \Doctrine\Common\DoctrineException::updateMe("Not yet implemented.");
         } else {
-            throw new DoctrineException("Encountered invalid PathExpression during SQL construction.");
+            \Doctrine\Common\DoctrineException::updateMe("Encountered invalid PathExpression during SQL construction.");
         }
         return $sql;
     }

@@ -561,7 +561,7 @@ class EntityManager
                     $this->_hydrators[$hydrationMode] = new \Doctrine\ORM\Internal\Hydration\NoneHydrator($this);
                     break;
                 default:
-                    throw new DoctrineException("No hydrator found for hydration mode '$hydrationMode'.");
+                    \Doctrine\Common\DoctrineException::updateMe("No hydrator found for hydration mode '$hydrationMode'.");
             }
         } else if ($this->_hydrators[$hydrationMode] instanceof Closure) {
             $this->_hydrators[$hydrationMode] = $this->_hydrators[$hydrationMode]($this);
@@ -596,7 +596,7 @@ class EntityManager
         if (is_array($conn)) {
             $conn = \Doctrine\DBAL\DriverManager::getConnection($conn, $config, $eventManager);
         } else if ( ! $conn instanceof Connection) {
-            throw new DoctrineException("Invalid parameter '$conn'.");
+            \Doctrine\Common\DoctrineException::updateMe("Invalid parameter '$conn'.");
         }
         
         if (is_null($config)) {

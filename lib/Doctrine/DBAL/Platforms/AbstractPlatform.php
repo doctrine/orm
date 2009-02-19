@@ -1831,7 +1831,7 @@ abstract class AbstractPlatform
             case Connection::TRANSACTION_SERIALIZABLE:
                 return 'SERIALIZABLE';
             default:
-                throw new Doctrine_Common_Exceptions_DoctrineException('isolation level is not supported: ' . $isolation);
+                throw \Doctrine\Common\DoctrineException::updateMe('isolation level is not supported: ' . $isolation);
         } 
     }
     
@@ -1842,7 +1842,7 @@ abstract class AbstractPlatform
      */
     public function getSetTransactionIsolationSql($level)
     {
-        throw new DoctrineException('Set transaction isolation not supported by this platform.');
+        throw \Doctrine\Common\DoctrineException::updateMe('Set transaction isolation not supported by this platform.');
     }
     
     /**

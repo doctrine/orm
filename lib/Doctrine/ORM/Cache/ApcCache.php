@@ -39,7 +39,7 @@ class ApcCache implements Cache
     public function __construct()
     {      
         if ( ! extension_loaded('apc')) {
-            throw new DoctrineException('The apc extension must be loaded in order to use the ApcCache.');
+            \Doctrine\Common\DoctrineException::updateMe('The apc extension must be loaded in order to use the ApcCache.');
         }
     }
 

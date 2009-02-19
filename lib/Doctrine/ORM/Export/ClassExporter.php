@@ -121,7 +121,7 @@ class ClassExporter
                     $foreignKeyConstraints[] = $constraint;
                 } else if ($mapping->isOneToMany() && $mapping->isOwningSide()) {
                     //... create join table, one-many through join table supported later
-                    throw new DoctrineException("Not yet implemented.");
+                    \Doctrine\Common\DoctrineException::updateMe("Not yet implemented.");
                 } else if ($mapping->isManyToMany() && $mapping->isOwningSide()) {
                     //... create join table
                     $joinTableColumns = array();

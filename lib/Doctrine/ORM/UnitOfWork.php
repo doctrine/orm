@@ -470,7 +470,7 @@ class UnitOfWork
                 $this->_entityChangeSets[$oid] = $changeSet;
                 $this->_originalEntityData[$oid] = $data;
             } else if ($state == self::STATE_DELETED) {
-                throw new DoctrineException("Deleted entity in collection detected during flush.");
+                \Doctrine\Common\DoctrineException::updateMe("Deleted entity in collection detected during flush.");
             }
             // MANAGED associated entities are already taken into account
             // during changeset calculation anyway, since they are in the identity map.
@@ -605,13 +605,13 @@ class UnitOfWork
         $oid = spl_object_hash($entity);
 
         if (isset($this->_entityUpdates[$oid])) {
-            throw new DoctrineException("Dirty object can't be registered as new.");
+            \Doctrine\Common\DoctrineException::updateMe("Dirty object can't be registered as new.");
         }
         if (isset($this->_entityDeletions[$oid])) {
-            throw new DoctrineException("Removed object can't be registered as new.");
+            \Doctrine\Common\DoctrineException::updateMe("Removed object can't be registered as new.");
         }
         if (isset($this->_entityInsertions[$oid])) {
-            throw new DoctrineException("Object already registered as new. Can't register twice.");
+            \Doctrine\Common\DoctrineException::updateMe("Object already registered as new. Can't register twice.");
         }
 
         $this->_entityInsertions[$oid] = $entity;
@@ -642,11 +642,11 @@ class UnitOfWork
     {
         $oid = spl_object_hash($entity);
         if ( ! isset($this->_entityIdentifiers[$oid])) {
-            throw new DoctrineException("Entity without identity "
+            \Doctrine\Common\DoctrineException::updateMe("Entity without identity "
                     . "can't be registered as dirty.");
         }
         if (isset($this->_entityDeletions[$oid])) {
-            throw new DoctrineException("Removed object can't be registered as dirty.");
+            \Doctrine\Common\DoctrineException::updateMe("Removed object can't be registered as dirty.");
         }
 
         if ( ! isset($this->_entityUpdates[$oid]) && ! isset($this->_entityInsertions[$oid])) {
@@ -784,7 +784,7 @@ class UnitOfWork
         $classMetadata = $this->_em->getClassMetadata(get_class($entity));
         $idHash = $this->getIdentifierHash($this->_entityIdentifiers[spl_object_hash($entity)]);
         if ($idHash === '') {
-            throw new DoctrineException("Entity with oid '" . spl_object_hash($entity)
+            \Doctrine\Common\DoctrineException::updateMe("Entity with oid '" . spl_object_hash($entity)
                     . "' has no identity and therefore can't be added to the identity map.");
         }
         $className = $classMetadata->getRootClassName();
@@ -827,7 +827,7 @@ class UnitOfWork
         $classMetadata = $this->_em->getClassMetadata(get_class($entity));
         $idHash = $this->getIdentifierHash($this->_entityIdentifiers[$oid]);
         if ($idHash === '') {
-            throw new DoctrineException("Entity with oid '" . spl_object_hash($entity)
+            \Doctrine\Common\DoctrineException::updateMe("Entity with oid '" . spl_object_hash($entity)
                     . "' has no identity and therefore can't be removed from the identity map.");
         }
         $className = $classMetadata->getRootClassName();
@@ -989,7 +989,7 @@ class UnitOfWork
                 $this->registerNew($entity);
                 break;
             case self::STATE_DETACHED:
-                throw new DoctrineException("Behavior of save() for a detached entity "
+                \Doctrine\Common\DoctrineException::updateMe("Behavior of save() for a detached entity "
                         . "is not yet defined.");
             case self::STATE_DELETED:
                 // entity becomes managed again
@@ -1003,7 +1003,7 @@ class UnitOfWork
                 break;
             default:
                 //TODO: throw UnitOfWorkException::invalidEntityState()
-                throw new DoctrineException("Encountered invalid entity state.");
+                \Doctrine\Common\DoctrineException::updateMe("Encountered invalid entity state.");
         }
         $this->_cascadeSave($entity, $visited, $insertNow);
     }
@@ -1045,9 +1045,9 @@ class UnitOfWork
                 $this->registerDeleted($entity);
                 break;
             case self::STATE_DETACHED:
-                throw new DoctrineException("A detached entity can't be deleted.");
+                \Doctrine\Common\DoctrineException::updateMe("A detached entity can't be deleted.");
             default:
-                throw new DoctrineException("Encountered invalid entity state.");
+                \Doctrine\Common\DoctrineException::updateMe("Encountered invalid entity state.");
         }
         $this->_cascadeDelete($entity, $visited);
     }

@@ -328,7 +328,7 @@ class Query extends AbstractQuery
     public function setResultCache($resultCache)
     {
         if ($resultCache !== null && ! ($resultCache instanceof \Doctrine\ORM\Cache\Cache)) {
-            throw new DoctrineException(
+            \Doctrine\Common\DoctrineException::updateMe(
                 'Method setResultCache() accepts only an instance of Doctrine_Cache_Interface or null.'
             );
         }
@@ -410,7 +410,7 @@ class Query extends AbstractQuery
     public function setQueryCache($queryCache)
     {
         if ($queryCache !== null && ! ($queryCache instanceof \Doctrine\ORM\Cache\Cache)) {
-            throw new DoctrineException(
+            \Doctrine\Common\DoctrineException::updateMe(
                 'Method setResultCache() accepts only an instance of Doctrine_ORM_Cache_Interface or null.'
             );
         }

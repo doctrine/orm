@@ -18,13 +18,13 @@ class ArithmeticExpression extends Node
 
     public function setSimpleArithmeticExpression($simpleArithmeticExpr)
     {
-        if ($this->_subselect) throw new Doctrine_Exception;
+        if ($this->_subselect) throw \Doctrine\Common\DoctrineException::updateMe();
         $this->_simpleArithmeticExpression = $simpleArithmeticExpr;
     }
 
     public function setSubselect($subselect)
     {
-        if ($this->_simpleArithmeticExpression) throw new Doctrine_Exception;
+        if ($this->_simpleArithmeticExpression) throw \Doctrine\Common\DoctrineException::updateMe();
         $this->_subselect = $subselect;
     }
 
