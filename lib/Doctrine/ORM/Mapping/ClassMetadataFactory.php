@@ -206,6 +206,3 @@ class ClassMetadataFactory
         }
     }
 }
-
-
-

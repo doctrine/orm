@@ -19,6 +19,8 @@
  * <http://www.phpdoctrine.org>.
  */
 
+namespace Doctrine\ORM\Query;
+
 /**
  * A parse tree printer for Doctrine Query Language parser.
  *
@@ -28,7 +30,7 @@
  * @since       2.0
  * @version     $Revision$
  */
-class Doctrine_ORM_Query_Printer
+class Printer
 {
     /**
      * Current indentation level

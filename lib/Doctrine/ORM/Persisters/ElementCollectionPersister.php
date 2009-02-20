@@ -30,4 +30,3 @@ class ElementCollectionPersister extends AbstractCollectionPersister
 {
     //put your code here
 }
-

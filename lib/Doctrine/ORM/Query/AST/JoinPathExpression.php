@@ -32,4 +32,3 @@ class JoinPathExpression extends Node
         return $this->_assocField;
     }
 }
-

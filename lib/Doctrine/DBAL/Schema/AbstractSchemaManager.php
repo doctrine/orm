@@ -228,7 +228,7 @@ abstract class AbstractSchemaManager
      * drop existing sequence
      * (this method is implemented by the drivers)
      *
-     * @throws Doctrine_Connection_Exception     if something fails at database level
+     * @throws Doctrine\DBAL\ConnectionException     if something fails at database level
      * @param string $sequenceName      name of the sequence to be dropped
      * @return void
      */
@@ -285,7 +285,7 @@ abstract class AbstractSchemaManager
     /**
      * create sequence
      *
-     * @throws Doctrine_Connection_Exception     if something fails at database level
+     * @throws Doctrine\DBAL\ConnectionException     if something fails at database level
      * @param string    $seqName        name of the sequence to be created
      * @param string    $start          start value of the sequence; default is 1
      * @param array     $options  An associative array of table options:
@@ -477,5 +477,3 @@ abstract class AbstractSchemaManager
         }
     }
 }
-
-?>

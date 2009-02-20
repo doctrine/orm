@@ -142,4 +142,3 @@ class ManyToManyMapping extends AssociationMapping
         return true;
     }
 }
-

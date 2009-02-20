@@ -19,6 +19,8 @@
  * <http://www.phpdoctrine.org>.
  */
 
+namespace Doctrine\ORM\Query\Parser;
+
 /**
  * 	SelectExpression ::= IdentificationVariable ["." "*"] | StateFieldPathExpression |
  *                       (AggregateExpression | "(" Subselect ")") [["AS"] FieldAliasIdentificationVariable]
@@ -30,15 +32,12 @@
  * @since       1.0
  * @version     $Revision$
  */
-class Doctrine_ORM_Query_Parser_SelectExpression extends Doctrine_ORM_Query_ParserRule
+class SelectExpression extends \Doctrine\ORM\Query\ParserRule
 {
     protected $_AST = null;
-    
     protected $_expression = null;
-    
     protected $_fieldIdentificationVariable = null;
     
-
     public function syntax()
     {
         // SelectExpression ::= IdentificationVariable ["." "*"] | StateFieldPathExpression | 
@@ -57,18 +56,17 @@ class Doctrine_ORM_Query_Parser_SelectExpression extends Doctrine_ORM_Query_Pars
         } else if (($isFunction = $this->_isFunction()) !== false || $this->_isSubselect()) {
             $this->_expression = $this->parse($isFunction ? 'AggregateExpression' : 'Subselect');
 
-            if ($this->_isNextToken(Doctrine_ORM_Query_Token::T_AS)) {
-                $this->_parser->match(Doctrine_ORM_Query_Token::T_AS);
+            if ($this->_isNextToken(\Doctrine\ORM\Query\Token::T_AS)) {
+                $this->_parser->match(\Doctrine\ORM\Query\Token::T_AS);
 
                 $this->_fieldIdentificationVariable = $this->parse('FieldAliasIdentificationVariable');
-            } elseif ($this->_isNextToken(Doctrine_ORM_Query_Token::T_IDENTIFIER)) {
+            } elseif ($this->_isNextToken(\Doctrine\ORM\Query\Token::T_IDENTIFIER)) {
                 $this->_fieldIdentificationVariable = $this->parse('FieldAliasIdentificationVariable');
             }
         } else {
             $this->_expression = $this->parse('StateFieldPathExpression');
         }
     }
-
 
     public function semantical()
     {
@@ -82,7 +80,6 @@ class Doctrine_ORM_Query_Parser_SelectExpression extends Doctrine_ORM_Query_Pars
         return $this->_AST;
     }
     
-    
     protected function _isIdentificationVariable()
     {
         // Trying to recoginize this grammar: IdentificationVariable ["." "*"]
@@ -90,7 +87,7 @@ class Doctrine_ORM_Query_Parser_SelectExpression extends Doctrine_ORM_Query_Pars
         $this->_parser->getScanner()->resetPeek();
 
         // We have an identifier here
-        if ($token['type'] === Doctrine_ORM_Query_Token::T_IDENTIFIER) {
+        if ($token['type'] === \Doctrine\ORM\Query\Token::T_IDENTIFIER) {
             return true;
         }
         

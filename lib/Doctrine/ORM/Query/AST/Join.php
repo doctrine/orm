@@ -34,25 +34,15 @@ namespace Doctrine\ORM\Query\AST;
 class Join extends Node
 {
     const JOIN_TYPE_LEFT = 1;
-
     const JOIN_TYPE_LEFTOUTER = 2;
-
     const JOIN_TYPE_INNER = 3;
-
-
     const JOIN_WHERE_ON = 1;
-
     const JOIN_WHERE_WITH = 2;
 
-
-    protected $_joinType = self::JOIN_TYPE_INNER;
-    
+    protected $_joinType = self::JOIN_TYPE_INNER;    
     protected $_joinAssociationPathExpression = null;
-    
     protected $_aliasIdentificationVariable = null;
-
     protected $_whereType = self::JOIN_WHERE_WITH;
-    
     protected $_conditionalExpression = null;
 
     public function __construct($joinType, $joinAssocPathExpr, $aliasIdentVar)
@@ -73,7 +63,6 @@ class Join extends Node
     {
         $this->_conditionalExpression = $conditionalExpression;
     }
-    
     
     /* Getters */
     public function getJoinType()
@@ -100,7 +89,6 @@ class Join extends Node
     {
         return $this->_conditionalExpression;
     }
-    
     
     /* REMOVE ME LATER. COPIED METHODS FROM SPLIT OF PRODUCTION INTO "AST" AND "PARSER" */
     

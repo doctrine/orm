@@ -20,8 +20,8 @@ class IdentityGenerator extends AbstractIdGenerator
      * @return boolean
      * @override
      */
-    public function isPostInsertGenerator() {
+    public function isPostInsertGenerator()
+    {
         return true;
     }
 }
-

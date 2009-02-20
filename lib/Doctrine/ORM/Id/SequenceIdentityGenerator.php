@@ -21,6 +21,4 @@ class SequenceIdentityGenerator extends IdentityGenerator
     {
         return $this->_em->getConnection()->lastInsertId($this->_sequenceName);
     }
-    
 }
-

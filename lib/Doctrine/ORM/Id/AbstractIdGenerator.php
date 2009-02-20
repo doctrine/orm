@@ -31,8 +31,8 @@ abstract class AbstractIdGenerator
      *
      * @return boolean
      */
-    public function isPostInsertGenerator() {
+    public function isPostInsertGenerator()
+    {
         return false;
     }
 }
-

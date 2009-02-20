@@ -22,6 +22,8 @@ class VarcharType extends Type
     }
 
     /** @override */
-    public function getName() { return 'Varchar'; }
+    public function getName()
+    {
+        return 'Varchar';
+    }
 }
-

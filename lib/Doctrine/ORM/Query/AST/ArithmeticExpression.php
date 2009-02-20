@@ -18,13 +18,17 @@ class ArithmeticExpression extends Node
 
     public function setSimpleArithmeticExpression($simpleArithmeticExpr)
     {
-        if ($this->_subselect) throw \Doctrine\Common\DoctrineException::updateMe();
+        if ($this->_subselect) {
+            throw \Doctrine\Common\DoctrineException::updateMe();
+        }
         $this->_simpleArithmeticExpression = $simpleArithmeticExpr;
     }
 
     public function setSubselect($subselect)
     {
-        if ($this->_simpleArithmeticExpression) throw \Doctrine\Common\DoctrineException::updateMe();
+        if ($this->_simpleArithmeticExpression){
+            throw \Doctrine\Common\DoctrineException::updateMe();
+        }
         $this->_subselect = $subselect;
     }
 
@@ -40,12 +44,11 @@ class ArithmeticExpression extends Node
 
     public function isSimpleArithmeticExpression()
     {
-        return (bool)$this->_simpleArithmeticExpression;
+        return (bool) $this->_simpleArithmeticExpression;
     }
 
     public function isSubselect()
     {
-        return (bool)$this->_subselect;
+        return (bool) $this->_subselect;
     }
 }
-

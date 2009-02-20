@@ -398,4 +398,3 @@ class SqlWalker
         return strtolower(substr($tableName, 0, 1)) . $this->_tableAliasCounter++;
     }
 }
-

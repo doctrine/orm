@@ -85,24 +85,19 @@ final class Token
     const T_UPDATE              = 143;
     const T_WHERE               = 144;
     const T_WITH                = 145;
-
     const T_TRUE                = 146;
     const T_FALSE               = 147;
 
-
     protected $_keywordsTable;
-
 
     public function __construct()
     {
     }
 
-
     protected function addKeyword($token, $value)
     {
         $this->_keywordsTable[$token] = $value;
     }
-
 
     public function getLiteral($token)
     {

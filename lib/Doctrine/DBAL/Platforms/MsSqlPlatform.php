@@ -323,5 +323,3 @@ class MsSqlPlatform extends AbstractPlatform
     }
     
 }
-
-?>

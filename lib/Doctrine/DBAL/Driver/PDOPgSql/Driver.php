@@ -1,24 +1,26 @@
 <?php
 
-#namespace Doctrine::DBAL::Driver::PDOPgSql;
+namespace Doctrine\DBAL\Driver\PDOPgSql;
+
+use Doctrine\DBAL\Platforms;
 
 /**
  * Driver that connects through pdo_pgsql.
  *
  * @since 2.0
  */
-class Doctrine_DBAL_Driver_PDOPgSql_Driver implements Doctrine_DBAL_Driver
+class Driver implements \Doctrine\DBAL\Driver
 {
-    
     public function connect(array $params, $username = null, $password = null, array $driverOptions = array())
     {
-        return new Doctrine_DBAL_Driver_PDOConnection(
-                $this->_constructPdoDsn($params),
-                $username,
-                $password,
-                $driverOptions);
+        return new \Doctrine\DBAL\Driver\PDOConnection(
+            $this->_constructPdoDsn($params),
+            $username,
+            $password,
+            $driverOptions
+        );
     }
-    
+
     /**
      * Constructs the Postgres PDO DSN.
      *
@@ -28,17 +30,14 @@ class Doctrine_DBAL_Driver_PDOPgSql_Driver implements Doctrine_DBAL_Driver
     {
         //TODO
     }
-    
+
     public function getDatabasePlatform()
     {
-        return new Doctrine_DBAL_Platforms_PostgreSqlPlatform();
+        return new \Doctrine\DBAL\Platforms\PostgreSqlPlatform();
     }
-    
-    public function getSchemaManager(Doctrine_DBAL_Connection $conn)
-    {
-        return new Doctrine_DBAL_Schema_PostgreSqlSchemaManager($conn);
-    }
-    
-}
 
-?>
+    public function getSchemaManager(\Doctrine\DBAL\Connection $conn)
+    {
+        return new \Doctrine\DBAL\Schema\PostgreSqlSchemaManager($conn);
+    }
+}

@@ -19,6 +19,8 @@
  * <http://www.phpdoctrine.org>.
  */
 
+namespace Doctrine\ORM\Query\Parser;
+
 /**
  * RangeVariableDeclaration ::= AbstractSchemaName ["AS"] AliasIdentificationVariable
  *
@@ -29,11 +31,10 @@
  * @since       1.0
  * @version     $Revision$
  */
-class Doctrine_ORM_Query_Parser_RangeVariableDeclaration extends Doctrine_ORM_Query_ParserRule
+class RangeVariableDeclaration extends \Doctrine\ORM\Query\ParserRule
 {
     protected $_AST = null;
     
-
     public function syntax()
     {
         // RangeVariableDeclaration ::= AbstractSchemaName ["AS"] AliasIdentificationVariable
@@ -41,13 +42,12 @@ class Doctrine_ORM_Query_Parser_RangeVariableDeclaration extends Doctrine_ORM_Qu
         
         $this->_AST->setAbstractSchemaName($this->parse('AbstractSchemaName'));
         
-        if ($this->_isNextToken(Doctrine_ORM_Query_Token::T_AS)) {
-            $this->_parser->match(Doctrine_ORM_Query_Token::T_AS);
+        if ($this->_isNextToken(\Doctrine\ORM\Query\Token::T_AS)) {
+            $this->_parser->match(\Doctrine\ORM\Query\Token::T_AS);
         }
 
         $this->_AST->setAliasIdentificationVariable($this->parse('AliasIdentificationVariable'));
     }
-    
     
     public function semantical()
     {

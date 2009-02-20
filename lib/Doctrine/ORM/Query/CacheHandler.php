@@ -19,10 +19,10 @@
  * <http://www.phpdoctrine.org>.
  */
 
-#namespace Doctrine\ORM\Query;
+namespace Doctrine\ORM\Query;
 
 /**
- * Doctrine_ORM_Query_CacheHandler
+ * Doctrine\ORM\Query\CacheHandler
  *
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @link        www.doctrine-project.com
@@ -33,7 +33,7 @@
  *
  * @todo Re-document this class
  */
-abstract class Doctrine_ORM_Query_CacheHandler
+abstract class CacheHandler
 {
     /**
      * Static factory method. Receives a Doctrine_ORM_Query object and generates
@@ -64,15 +64,13 @@ abstract class Doctrine_ORM_Query_CacheHandler
             }
         }
 
-        return new Doctrine_ORM_Query_QueryResult(
+        return new QueryResult(
             $result,
             $queryComponents,
             $parserResult->getTableAliasMap(),
             $parserResult->getEnumParams()
         );
     }
-
-
 
     /**
      * Static factory method. Receives a Doctrine_ORM_Query object and a cached data.
@@ -86,14 +84,13 @@ abstract class Doctrine_ORM_Query_CacheHandler
     {
         $cached = unserialize($cached);
 
-        return new Doctrine_ORM_Query_QueryResult(
+        return new QueryResult(
             $cached[0],
             self::_getQueryComponents($cached[1]),
             $cached[2],
             $cached[3]
         );
     }
-
 
     /**
      * Static factory method. Receives a Doctrine_ORM_Query object and a cached data.
@@ -107,14 +104,13 @@ abstract class Doctrine_ORM_Query_CacheHandler
     {
         $cached = unserialize($cached);
 
-        return new Doctrine_ORM_Query_ParserResult(
+        return new ParserResult(
             $cached[0],
             self::_getQueryComponents($cached[1]),
             $cached[2],
             $cached[3]
         );
     }
-
 
     /**
      * @nodoc
@@ -147,5 +143,4 @@ abstract class Doctrine_ORM_Query_CacheHandler
 
         return $queryComponents;
     }
-
 }

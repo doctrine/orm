@@ -279,7 +279,7 @@ class MySqlSchemaManager extends AbstractSchemaManager
             }
 
             $res    = $this->_conn->exec($query);
-        } catch(Doctrine_Connection_Exception $e) {
+        } catch(Doctrine\DBAL\ConnectionException $e) {
             throw \Doctrine\Common\DoctrineException::updateMe('could not create sequence table');
         }
 
@@ -295,7 +295,7 @@ class MySqlSchemaManager extends AbstractSchemaManager
       // Handle error
       try {
           $res = $this->_conn->exec('DROP TABLE ' . $sequenceName);
-      } catch(Doctrine_Connection_Exception $e) {
+      } catch(Doctrine\DBAL\ConnectionException $e) {
           throw \Doctrine\Common\DoctrineException::updateMe('could not drop inconsistent sequence table');
       }
 
@@ -316,7 +316,4 @@ class MySqlSchemaManager extends AbstractSchemaManager
         $name  = $this->_conn->quoteIdentifier($name);
         return $this->_conn->exec('ALTER TABLE ' . $table . ' DROP FOREIGN KEY ' . $name);
     }
-    
 }
-
-?>

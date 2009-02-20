@@ -19,6 +19,8 @@
  * <http://www.phpdoctrine.org>.
  */
 
+namespace Doctrine\ORM\Query;
+
 /**
  * Doctrine_ORM_Query_QueryResult
  *
@@ -29,7 +31,7 @@
  * @since       2.0
  * @version     $Revision$
  */
-class Doctrine_ORM_Query_QueryResult extends Doctrine_ORM_Query_AbstractResult
+class QueryResult extends AbstractResult
 {
     /**
      * Returns cached resultset.
@@ -40,5 +42,4 @@ class Doctrine_ORM_Query_QueryResult extends Doctrine_ORM_Query_AbstractResult
     {
         return $this->_data;
     }
-
 }

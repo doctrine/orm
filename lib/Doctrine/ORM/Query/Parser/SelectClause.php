@@ -32,20 +32,18 @@
 class Doctrine_ORM_Query_Parser_SelectClause extends Doctrine_ORM_Query_ParserRule
 {
     protected $_AST = null;
-    
     protected $_selectExpressions = array();
-
 
     public function syntax()
     {
         // SelectClause ::= "SELECT" ["DISTINCT"] SelectExpression {"," SelectExpression}
         $this->_AST = $this->AST('SelectClause');
 
-        $this->_parser->match(Doctrine_ORM_Query_Token::T_SELECT);
+        $this->_parser->match(\Doctrine\ORM\Query\Token::T_SELECT);
 
         // Inspecting if we are in a DISTINCT query
-        if ($this->_isNextToken(Doctrine_ORM_Query_Token::T_DISTINCT)) {
-            $this->_parser->match(Doctrine_ORM_Query_Token::T_DISTINCT);
+        if ($this->_isNextToken(\Doctrine\ORM\Query\Token::T_DISTINCT)) {
+            $this->_parser->match(\Doctrine\ORM\Query\Token::T_DISTINCT);
 
             $this->_AST->setIsDistinct(true);
         }
@@ -53,13 +51,12 @@ class Doctrine_ORM_Query_Parser_SelectClause extends Doctrine_ORM_Query_ParserRu
         // Process SelectExpressions (1..N)
         $this->_selectExpressions[] = $this->parse('SelectExpression');
 
-        while ($this->_isNextToken(Doctrine_ORM_Query_Token::T_COMMA)) {
-            $this->_parser->match(Doctrine_ORM_Query_Token::T_COMMA);
+        while ($this->_isNextToken(\Doctrine\ORM\Query\Token::T_COMMA)) {
+            $this->_parser->match(\Doctrine\ORM\Query\Token::T_COMMA);
             
             $this->_selectExpressions[] = $this->parse('SelectExpression');
         }
     }
-
 
     public function semantical()
     {

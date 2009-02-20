@@ -146,5 +146,3 @@ class CommitOrderCalculator
         array_unshift($this->_sorted, $node->getClass());
     }
 }
-
-?>

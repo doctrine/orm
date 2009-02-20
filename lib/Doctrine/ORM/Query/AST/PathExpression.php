@@ -96,4 +96,3 @@ class PathExpression extends Node
         $this->_collectionValuedAssociationFields[$part] = true;
     }
 }
-

@@ -19,6 +19,10 @@
  * <http://www.phpdoctrine.org>.
  */
 
+namespace Doctrine\ORM\Query\Production;
+
+use \Doctrine\ORM\Query\Token;
+
 /**
  * AggregateExpression = ("AVG" | "MAX" | "MIN" | "SUM" | "COUNT") "(" ["DISTINCT"] Expression ")"
  *
@@ -31,14 +35,11 @@
  * @since       2.0
  * @version     $Revision$
  */
-class Doctrine_Query_Production_AggregateExpression extends Doctrine_Query_Production
+class AggregateExpression extends Doctrine_Query_Production
 {
     protected $_functionName;
-
     protected $_isDistinct;
-
     protected $_expression;
-
 
     public function syntax($paramHolder)
     {
@@ -47,11 +48,11 @@ class Doctrine_Query_Production_AggregateExpression extends Doctrine_Query_Produ
         $token = $this->_parser->lookahead;
 
         switch ($token['type']) {
-            case Doctrine_Query_Token::T_AVG:
-            case Doctrine_Query_Token::T_MAX:
-            case Doctrine_Query_Token::T_MIN:
-            case Doctrine_Query_Token::T_SUM:
-            case Doctrine_Query_Token::T_COUNT:
+            case Token::T_AVG:
+            case Token::T_MAX:
+            case Token::T_MIN:
+            case Token::T_SUM:
+            case Token::T_COUNT:
                 $this->_parser->match($token['type']);
                 $this->_functionName = strtoupper($token['value']);
             break;
@@ -63,8 +64,8 @@ class Doctrine_Query_Production_AggregateExpression extends Doctrine_Query_Produ
 
         $this->_parser->match('(');
 
-        if ($this->_isNextToken(Doctrine_Query_Token::T_DISTINCT)) {
-            $this->_parser->match(Doctrine_Query_Token::T_DISTINCT);
+        if ($this->_isNextToken(Token::T_DISTINCT)) {
+            $this->_parser->match(Token::T_DISTINCT);
             $this->_isDistinct = true;
         }
 

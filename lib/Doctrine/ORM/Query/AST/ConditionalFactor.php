@@ -32,4 +32,3 @@ class ConditionalFactor extends Node
         return $this->_conditionalPrimary;
     }
 }
-

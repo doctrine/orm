@@ -11,4 +11,3 @@ class BigIntType extends Type
 {
     //put your code here
 }
-

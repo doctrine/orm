@@ -19,6 +19,8 @@
  * <http://www.phpdoctrine.org>.
  */
 
+namespace Doctrine\ORM\Query\Parser;
+
 /**
  * AliasIdentificationVariable = identifier
  *
@@ -29,15 +31,14 @@
  * @since       2.0
  * @version     $Revision$
  */
-class Doctrine_ORM_Query_Parser_AliasIdentificationVariable extends Doctrine_ORM_Query_ParserRule
+class AliasIdentificationVariable extends \Doctrine\ORM\Query\ParserRule
 {
     protected $_componentAlias = null;
-    
     
     public function syntax()
     {
         // AliasIdentificationVariable = identifier
-        $this->_parser->match(Doctrine_ORM_Query_Token::T_IDENTIFIER);
+        $this->_parser->match(\Doctrine\ORM\Query\Token::T_IDENTIFIER);
         $this->_componentAlias = $this->_parser->token['value'];
     }
 

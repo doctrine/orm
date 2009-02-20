@@ -11,4 +11,3 @@ class MediumIntType
 {
     //put your code here
 }
-

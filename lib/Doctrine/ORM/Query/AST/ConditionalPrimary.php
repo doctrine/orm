@@ -38,12 +38,11 @@ class ConditionalPrimary extends Node
 
     public function isSimpleConditionalExpression()
     {
-        return (bool)$this->_simpleConditionalExpression;
+        return (bool) $this->_simpleConditionalExpression;
     }
 
     public function isConditionalExpression()
     {
-        return (bool)$this->_conditionalExpression;
+        return (bool) $this->_conditionalExpression;
     }
 }
-

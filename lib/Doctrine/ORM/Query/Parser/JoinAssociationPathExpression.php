@@ -19,6 +19,8 @@
  * <http://www.phpdoctrine.org>.
  */
 
+namespace Doctrine\ORM\Query\Parser;
+
 /**
  * JoinAssociationPathExpression ::= JoinCollectionValuedPathExpression | JoinSingleValuedAssociationPathExpression
  *
@@ -29,7 +31,7 @@
  * @since       2.0
  * @version     $Revision$
  */
-class Doctrine_ORM_Query_Parser_JoinAssociationPathExpression extends Doctrine_ORM_Query_ParserRule
+class JoinAssociationPathExpression extends \Doctrine\ORM\Query\ParserRule
 {
     public function syntax()
     {
@@ -39,7 +41,6 @@ class Doctrine_ORM_Query_Parser_JoinAssociationPathExpression extends Doctrine_O
             : 'JoinCollectionValuedPathExpression'
         );
     }
-
 
     private function _isSingleValuedPathExpression()
     {
@@ -55,7 +56,7 @@ class Doctrine_ORM_Query_Parser_JoinAssociationPathExpression extends Doctrine_O
             $token = $this->_parser->getScanner()->peek();
 
             // If we have a dot ".", then next char must be the "*"
-            if ($token['type'] === Doctrine_ORM_Query_Token::T_DOT) {
+            if ($token['type'] === \Doctrine\ORM\Query\Token::T_DOT) {
                 $token = $this->_parser->getScanner()->peek();
 
                 if ( ! ($queryComponent['metadata']->hasAssociation($token['value']) &&

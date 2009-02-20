@@ -9,7 +9,6 @@ namespace Doctrine\DBAL\Platforms;
  */
 class FirebirdPlatform extends AbstractPlatform
 {
-    
     /**
      * Constructor.
      */
@@ -289,7 +288,4 @@ class FirebirdPlatform extends AbstractPlatform
     {
         return 'SET TRANSACTION ISOLATION LEVEL ' . $this->_getTransactionIsolationLevelSql($level);
     }
-    
 }
-
-?>

@@ -14,7 +14,4 @@ namespace Doctrine\ORM\Query\AST;
 class FunctionNode extends Node
 {
     private $_name;
-
-    
 }
-

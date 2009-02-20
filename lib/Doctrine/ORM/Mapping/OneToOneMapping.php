@@ -163,6 +163,4 @@ class OneToOneMapping extends AssociationMapping
         }
         $sourceClass->getReflectionProperty($this->_sourceFieldName)->setValue($entity, $otherEntity);
     }
-    
 }
-

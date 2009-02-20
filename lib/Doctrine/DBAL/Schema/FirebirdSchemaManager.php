@@ -614,10 +614,10 @@ class FirebirdSchemaManager extends AbstractSchemaManager
             $this->_conn->exec('SET GENERATOR ' . $sequenceName . ' TO ' . ($start-1));
             
             return true;
-        } catch (Doctrine_Connection_Exception $e) {
+        } catch (Doctrine\DBAL\ConnectionException $e) {
             try {
                 $this->dropSequence($seqName);
-            } catch(Doctrine_Connection_Exception $e) {
+            } catch(Doctrine\DBAL\ConnectionException $e) {
                 throw \Doctrine\Common\DoctrineException::updateMe('Could not drop inconsistent sequence table');
             }
         }
@@ -638,7 +638,4 @@ class FirebirdSchemaManager extends AbstractSchemaManager
         
         return $query;
     }
-    
 }
-
-?>

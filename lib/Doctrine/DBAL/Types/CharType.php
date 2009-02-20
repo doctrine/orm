@@ -11,4 +11,3 @@ class CharType
 {
     //put your code here
 }
-

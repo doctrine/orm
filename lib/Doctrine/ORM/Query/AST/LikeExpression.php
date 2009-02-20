@@ -46,4 +46,3 @@ class LikeExpression extends Node
         return $this->_escapeChar;
     }
 }
-

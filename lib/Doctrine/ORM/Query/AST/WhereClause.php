@@ -25,4 +25,3 @@ class WhereClause extends Node
         return $this->_conditionalExpression;
     }
 }
-

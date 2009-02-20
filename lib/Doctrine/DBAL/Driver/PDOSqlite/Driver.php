@@ -2,8 +2,6 @@
 
 namespace Doctrine\DBAL\Driver\PDOSqlite;
 
-#use Doctrine::DBAL::Driver;
-
 /**
  * The PDO Sqlite driver.
  *
@@ -23,12 +21,13 @@ class Driver implements \Doctrine\DBAL\Driver
     public function connect(array $params, $username = null, $password = null, array $driverOptions = array())
     {
         return new \Doctrine\DBAL\Driver\PDOConnection(
-                $this->_constructPdoDsn($params),
-                $username,
-                $password,
-                $driverOptions);
+            $this->_constructPdoDsn($params),
+            $username,
+            $password,
+            $driverOptions
+        );
     }
-    
+
     /**
      * Constructs the Sqlite PDO DSN.
      *
@@ -46,7 +45,7 @@ class Driver implements \Doctrine\DBAL\Driver
         
         return $dsn;
     }
-    
+
     /**
      * Gets the database platform that is relevant for this driver.
      */
@@ -54,7 +53,7 @@ class Driver implements \Doctrine\DBAL\Driver
     {
         return new \Doctrine\DBAL\Platforms\SqlitePlatform();
     }
-    
+
     /**
      * Gets the schema manager that is relevant for this driver.
      *
@@ -65,7 +64,4 @@ class Driver implements \Doctrine\DBAL\Driver
     {
         return new \Doctrine\DBAL\Schema\SqliteSchemaManager($conn);
     }
-    
 }
-
-?>

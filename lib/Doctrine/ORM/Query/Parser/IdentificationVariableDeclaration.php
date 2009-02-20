@@ -19,6 +19,8 @@
  * <http://www.phpdoctrine.org>.
  */
 
+namespace Doctrine\ORM\Query\Parser;
+
 /**
  * IdentificationVariableDeclaration ::= RangeVariableDeclaration [IndexBy] {JoinVariableDeclaration}*
  *
@@ -29,7 +31,7 @@
  * @since       1.0
  * @version     $Revision$
  */
-class Doctrine_ORM_Query_Parser_IdentificationVariableDeclaration extends Doctrine_ORM_Query_ParserRule
+class IdentificationVariableDeclaration extends \Doctrine\ORM\Query\ParserRule
 {
     protected $_AST = null;
     
@@ -41,14 +43,14 @@ class Doctrine_ORM_Query_Parser_IdentificationVariableDeclaration extends Doctri
         
         $this->_AST->setRangeVariableDeclaration($this->parse('RangeVariableDeclaration'));
 
-        if ($this->_isNextToken(Doctrine_ORM_Query_Token::T_INDEX)) {
+        if ($this->_isNextToken(\Doctrine\ORM\Query\Token::T_INDEX)) {
             $this->_AST->setIndexBy($this->parse('IndexBy'));
         }
 
         while (
-            $this->_isNextToken(Doctrine_ORM_Query_Token::T_LEFT) ||
-            $this->_isNextToken(Doctrine_ORM_Query_Token::T_INNER) ||
-            $this->_isNextToken(Doctrine_ORM_Query_Token::T_JOIN)
+            $this->_isNextToken(\Doctrine\ORM\Query\Token::T_LEFT) ||
+            $this->_isNextToken(\Doctrine\ORM\Query\Token::T_INNER) ||
+            $this->_isNextToken(\Doctrine\ORM\Query\Token::T_JOIN)
         ) {
             $this->_AST->addJoinVariableDeclaration($this->parse('JoinVariableDeclaration'));
         }

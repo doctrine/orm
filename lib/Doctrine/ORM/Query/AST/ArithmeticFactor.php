@@ -39,4 +39,3 @@ class ArithmeticFactor extends Node
         return $this->_nSigned;
     }
 }
-

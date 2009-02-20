@@ -278,4 +278,3 @@ class JoinedSubclassPersister extends AbstractEntityPersister
         return $dataSet;
     }
 }
-

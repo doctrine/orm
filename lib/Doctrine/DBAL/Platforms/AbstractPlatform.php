@@ -1954,5 +1954,3 @@ abstract class AbstractPlatform
      */
     abstract public function getVarcharDeclarationSql(array $field);
 }
-
-

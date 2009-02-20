@@ -19,6 +19,8 @@
  * <http://www.phpdoctrine.org>.
  */
 
+namespace Doctrine\ORM\Query\Parser;
+
 /**
  * FieldAliasIdentificationVariable ::= identifier
  *
@@ -29,7 +31,7 @@
  * @since       2.0
  * @version     $Revision$
  */
-class Doctrine_ORM_Query_Parser_FieldAliasIdentificationVariable extends Doctrine_ORM_Query_Parser
+class FieldAliasIdentificationVariable extends \Doctrine\ORM\Query\Parser
 {
     protected $_fieldAlias = null;
     
@@ -37,7 +39,7 @@ class Doctrine_ORM_Query_Parser_FieldAliasIdentificationVariable extends Doctrin
     public function syntax()
     {
         // AliasIdentificationVariable = identifier
-        $this->_parser->match(Doctrine_ORM_Query_Token::T_IDENTIFIER);
+        $this->_parser->match(\Doctrine\ORM\Query\Token::T_IDENTIFIER);
         $this->_fieldAlias = $this->_parser->token['value'];
     }
 

@@ -19,6 +19,8 @@
  * <http://www.phpdoctrine.org>.
  */
 
+namespace Doctrine\ORM\Query\Parser;
+
 /**
  * FieldIdentificationVariable ::= identifier
  *
@@ -29,11 +31,11 @@
  * @since       2.0
  * @version     $Revision$
  */
-class Doctrine_ORM_Query_Parser_FieldIdentificationVariable extends Doctrine_ORM_Query_ParserRule
+class FieldIdentificationVariable extends \Doctrine\ORM\Query\ParserRule
 {
     public function syntax()
     {
-        $this->_parser->match(Doctrine_ORM_Query_Token::T_IDENTIFIER);
+        $this->_parser->match(\Doctrine\ORM\Query\Token::T_IDENTIFIER);
         
         return $this->_parser->token['value'];
     }

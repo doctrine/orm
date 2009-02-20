@@ -33,7 +33,6 @@ namespace Doctrine\ORM\Query\AST;
 class JoinVariableDeclaration extends Node
 {
     protected $_join = null;
-    
     protected $_indexBy = null;
 
     public function __construct($join, $indexBy)
@@ -48,15 +47,12 @@ class JoinVariableDeclaration extends Node
         return $this->_join;
     }
 
-
     public function getIndexBy()
     {
         return $this->_indexBy;
     }
 
-
     /* REMOVE ME LATER. COPIED METHODS FROM SPLIT OF PRODUCTION INTO "AST" AND "PARSER" */
-    
     public function buildSql()
     {
         return $this->_join->buildSql() . (isset($this->_indexby) ? $this->_indexby->buildSql() . ' ' : '');

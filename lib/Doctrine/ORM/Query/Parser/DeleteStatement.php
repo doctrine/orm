@@ -19,6 +19,8 @@
  * <http://www.phpdoctrine.org>.
  */
 
+namespace Doctrine\ORM\Query\Parser;
+
 /**
  * DeleteStatement ::= DeleteClause [WhereClause]
  *
@@ -29,7 +31,7 @@
  * @since       2.0
  * @version     $Revision$
  */
-class Doctrine_ORM_Query_Parser_DeleteStatement extends Doctrine_ORM_Query_ParserRule
+class DeleteStatement extends \Doctrine\ORM\Query\ParserRule
 {
     public function syntax()
     {
@@ -38,7 +40,7 @@ class Doctrine_ORM_Query_Parser_DeleteStatement extends Doctrine_ORM_Query_Parse
 
         $AST->setDeleteClause($this->parse('DeleteClause'));
 
-        if ($this->_isNextToken(Doctrine_ORM_Query_Token::T_WHERE)) {
+        if ($this->_isNextToken(\Doctrine\ORM\Query\Token::T_WHERE)) {
             $AST->setWhereClause($this->parse('WhereClause'));
         }
         

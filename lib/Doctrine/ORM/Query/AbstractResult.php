@@ -62,7 +62,6 @@ abstract class AbstractResult
      */
     protected $_enumParams;
 
-
     /**
      * Cannot be called directly, factory methods handle this job.
      *
@@ -80,7 +79,6 @@ abstract class AbstractResult
         $this->_enumParams = $enumParams;
     }
 
-
     /**
      * Defines the mapping components.
      *
@@ -90,7 +88,6 @@ abstract class AbstractResult
     {
         $this->_queryComponents = $queryComponents;
     }
-
 
     /**
      * Sets the declaration for given component alias.
@@ -103,7 +100,6 @@ abstract class AbstractResult
         $this->_queryComponents[$componentAlias] = $queryComponent;
     }
 
-
     /**
      * Gets the mapping components.
      *
@@ -113,7 +109,6 @@ abstract class AbstractResult
     {
         return $this->_queryComponents;
     }
-
 
     /**
      * Get the declaration for given component alias.
@@ -130,7 +125,6 @@ abstract class AbstractResult
         return $this->_queryComponents[$componentAlias];
     }
 
-
     /**
      * Get the component alias for a given query component
      *
@@ -141,7 +135,6 @@ abstract class AbstractResult
     {
         return array_search($queryComponent, $this->_queryComponents);;
     }
-
 
     /**
      * Whether or not this object has a declaration for given component alias.
@@ -154,7 +147,6 @@ abstract class AbstractResult
         return isset($this->_queryComponents[$componentAlias]);
     }
 
-
     /**
      * Defines the table aliases.
      *
@@ -164,7 +156,6 @@ abstract class AbstractResult
     {
         $this->_tableAliasMap = $tableAliasMap;
     }
-
 
     /**
      * Adds an SQL table alias and associates it a component alias
@@ -177,7 +168,6 @@ abstract class AbstractResult
         $this->_tableAliasMap[$tableAlias] = $componentAlias;
     }
 
-
     /**
      * Returns all table aliases.
      *
@@ -187,7 +177,6 @@ abstract class AbstractResult
     {
         return $this->_tableAliasMap;
     }
-
 
     /**
      * Get DQL alias associated with given SQL table alias.
@@ -204,7 +193,6 @@ abstract class AbstractResult
         return $this->_tableAliasMap[$tableAlias];
     }
 
-
     /**
      * Get table alias associated with given component alias.
      *
@@ -215,7 +203,6 @@ abstract class AbstractResult
     {
         return array_search($componentAlias, $this->_tableAliasMap);
     }
-
 
     /**
      * Whether or not this object has given tableAlias.
@@ -228,7 +215,6 @@ abstract class AbstractResult
         return (isset($this->_tableAliasMap[$tableAlias]));
     }
 
-
     /**
      * Returns the enum parameters.
      *
@@ -238,7 +224,6 @@ abstract class AbstractResult
     {
         return $this->_enumParams;
     }
-
 
     /**
      * Sets input parameter as an enumerated parameter
@@ -258,7 +243,6 @@ abstract class AbstractResult
 
         return $this;
     }
-
 
     /**
      * Returns this object in serialized format, revertable using fromCached*.

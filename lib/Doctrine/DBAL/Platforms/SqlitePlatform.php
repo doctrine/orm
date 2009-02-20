@@ -29,7 +29,6 @@ namespace Doctrine\DBAL\Platforms;
  */
 class SqlitePlatform extends AbstractPlatform
 {
-    
     /**
      * the constructor
      */
@@ -565,4 +564,3 @@ class SqlitePlatform extends AbstractPlatform
         return false;
     }
 }
-

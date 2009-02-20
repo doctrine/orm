@@ -85,7 +85,6 @@ abstract class AbstractExecutor implements \Serializable
         }
     }
 
-
     /**
      * Serializes the sql statements of the executor.
      *
@@ -95,7 +94,6 @@ abstract class AbstractExecutor implements \Serializable
     {
         return serialize($this->_sqlStatements);
     }
-
 
     /**
      * Reconstructs the executor with it's sql statements.

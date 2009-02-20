@@ -117,7 +117,6 @@ class Parser
         $this->free(true);
     }
 
-
     /**
      * Attempts to match the given token with the current lookahead token.
      *
@@ -172,7 +171,6 @@ class Parser
 
         //$this->_errorDistance = self::MIN_ERROR_DISTANCE;
     }
-
 
     /**
      * Parses a query string.

@@ -90,4 +90,3 @@ class VirtualProxy
         unset($realInstance->$prop);
     }
 }
-

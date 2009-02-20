@@ -2,7 +2,7 @@
 
 namespace Doctrine\DBAL\Types;
 
-#use Doctrine\DBAL\Platforms\AbstractDatabasePlatform;
+use Doctrine\DBAL\Platforms\AbstractPlatform;
 
 abstract class Type
 {
@@ -91,4 +91,3 @@ abstract class Type
         self::$_typesMap[$name] = $className;
     }
 }
-

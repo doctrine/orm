@@ -34,4 +34,3 @@ class SingleScalarHydrator extends AbstractHydrator
         return array();
     }
 }
-

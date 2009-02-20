@@ -33,15 +33,12 @@
 class Doctrine_ORM_Query_ParserDataHolder
 {
     protected static $_instance;
-
     protected $_data;
-
 
     protected function __construct()
     {
         $this->free();
     }
-
 
     public static function create()
     {
@@ -52,30 +49,25 @@ class Doctrine_ORM_Query_ParserDataHolder
         return self::$_instance;
     }
 
-
     public function free()
     {
         $this->_data = array();
     }
-
 
     public function set($offset, $value)
     {
         $this->_data[$offset] = $value;
     }
 
-
     public function get($offset)
     {
         return isset($this->_data[$offset]) ? $this->_data[$offset] : null;
     }
 
-
     public function has($offset)
     {
         return isset($this->_data[$offset]);
     }
-
 
     public function remove($offset)
     {

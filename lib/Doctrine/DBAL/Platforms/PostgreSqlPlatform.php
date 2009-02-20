@@ -833,7 +833,7 @@ class PostgreSqlPlatform extends AbstractPlatform
     /**
      * return RDBMS specific create sequence statement
      *
-     * @throws Doctrine_Connection_Exception     if something fails at database level
+     * @throws Doctrine\DBAL\ConnectionException     if something fails at database level
      * @param string    $seqName        name of the sequence to be created
      * @param string    $start          start value of the sequence; default is 1
      * @param array     $options  An associative array of table options:
@@ -1002,5 +1002,3 @@ class PostgreSqlPlatform extends AbstractPlatform
                 . $this->_getTransactionIsolationLevelSql($level);
     }
 }
-
-?>

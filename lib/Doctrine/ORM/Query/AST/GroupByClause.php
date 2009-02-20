@@ -25,4 +25,3 @@ class GroupByClause extends Node
         return $this->_groupByItems;
     }
 }
-

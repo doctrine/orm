@@ -8,7 +8,6 @@ namespace Doctrine\DBAL\Types;
  */
 class IntegerType extends Type
 {
-
     public function getName()
     {
         return "Integer";

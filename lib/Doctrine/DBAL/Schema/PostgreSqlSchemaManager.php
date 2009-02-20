@@ -118,7 +118,7 @@ class PostgreSqlSchemaManager extends AbstractSchemaManager
      * @param boolean $check     indicates whether the function should just check if the DBMS driver
      *                             can perform the requested table alterations if the value is true or
      *                             actually perform them otherwise.
-     * @throws Doctrine_Connection_Exception
+     * @throws Doctrine\DBAL\ConnectionException
      * @return boolean
      */
     public function alterTable($name, array $changes, $check = false)
@@ -261,5 +261,3 @@ class PostgreSqlSchemaManager extends AbstractSchemaManager
         return $this->_conn->fetchColumn($query);
     }
 }
-
-?>

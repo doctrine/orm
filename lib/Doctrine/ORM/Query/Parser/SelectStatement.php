@@ -19,6 +19,8 @@
  * <http://www.phpdoctrine.org>.
  */
 
+namespace Doctrine\ORM\Query\Parser;
+
 /**
  * SelectStatement ::= SelectClause FromClause [WhereClause] [GroupByClause] [HavingClause] [OrderByClause]
  *
@@ -29,12 +31,10 @@
  * @since       2.0
  * @version     $Revision$
  */
-class Doctrine_ORM_Query_Parser_SelectStatement extends Doctrine_ORM_Query_ParserRule
+class SelectStatement extends \Doctrine\ORM\Query\ParserRule
 {
     protected $_AST = null;
-    
     protected $_selectClause = null;
-
 
     public function syntax()
     {
@@ -50,23 +50,22 @@ class Doctrine_ORM_Query_Parser_SelectStatement extends Doctrine_ORM_Query_Parse
         
         $this->_AST->setFromClause($this->parse('FromClause'));
 
-        if ($this->_isNextToken(Doctrine_ORM_Query_Token::T_WHERE)) {
+        if ($this->_isNextToken(\Doctrine\ORM\Query\Token::T_WHERE)) {
             $this->_AST->setWhereClause($this->parse('WhereClause'));
         }
 
-        if ($this->_isNextToken(Doctrine_ORM_Query_Token::T_GROUP)) {
+        if ($this->_isNextToken(\Doctrine\ORM\Query\Token::T_GROUP)) {
             $this->_AST->setGroupByClause($this->parse('GroupByClause'));
         }
 
-        if ($this->_isNextToken(Doctrine_ORM_Query_Token::T_HAVING)) {
+        if ($this->_isNextToken(\Doctrine\ORM\Query\Token::T_HAVING)) {
             $this->_AST->setHavingClause($this->parse('HavingClause'));
         }
 
-        if ($this->_isNextToken(Doctrine_ORM_Query_Token::T_ORDER)) {
+        if ($this->_isNextToken(\Doctrine\ORM\Query\Token::T_ORDER)) {
             $this->_AST->setOrderByClause($this->parse('OrderByClause'));
         }
     }
-
 
     public function semantical()
     {

@@ -396,4 +396,3 @@ class ObjectHydrator extends AbstractHydrator
         return new \Doctrine\Common\Collections\Collection;
     }
 }
-

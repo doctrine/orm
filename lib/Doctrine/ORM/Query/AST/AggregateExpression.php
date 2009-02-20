@@ -39,4 +39,3 @@ class AggregateExpression extends Node
         return $this->_functionName;
     }
 }
-

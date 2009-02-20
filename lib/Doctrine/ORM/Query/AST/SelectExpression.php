@@ -34,7 +34,6 @@ namespace Doctrine\ORM\Query\AST;
 class SelectExpression extends Node
 {
     protected $_expression;
-
     protected $_fieldIdentificationVariable;
 
     public function __construct($expression, $fieldIdentificationVariable)

@@ -417,7 +417,4 @@ class MsSqlSchemaManager extends AbstractSchemaManager
 
         return $this->conn->fetchColumn($query);
     }
-    
 }
-
-?>

@@ -33,5 +33,3 @@ class DateTimeType extends Type
         return new DateTime($value);
     }
 }
-
-?>

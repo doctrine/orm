@@ -48,4 +48,3 @@ class InputParameter extends Node
         return $this->_position;
     }
 }
-

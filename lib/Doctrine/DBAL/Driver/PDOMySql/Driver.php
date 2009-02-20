@@ -40,14 +40,15 @@ class Driver implements \Doctrine\DBAL\Driver
     public function connect(array $params, $username = null, $password = null, array $driverOptions = array())
     {
         $conn = new \Doctrine\DBAL\Driver\PDOConnection(
-                $this->_constructPdoDsn($params),
-                $username,
-                $password,
-                $driverOptions);
+            $this->_constructPdoDsn($params),
+            $username,
+            $password,
+            $driverOptions
+        );
         $conn->setAttribute(\PDO::ATTR_AUTOCOMMIT, false);
         return $conn;
     }
-    
+
     /**
      * Constructs the MySql PDO DSN.
      * 
@@ -73,16 +74,14 @@ class Driver implements \Doctrine\DBAL\Driver
         
         return $dsn;
     }
-    
+
     public function getDatabasePlatform()
     {
         return new \Doctrine\DBAL\Platforms\MySqlPlatform();
     }
-    
+
     public function getSchemaManager(\Doctrine\DBAL\Connection $conn)
     {
         return new \Doctrine\DBAL\Schema\MySqlSchemaManager($conn);
     }
-    
 }
-

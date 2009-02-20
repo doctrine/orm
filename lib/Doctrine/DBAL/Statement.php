@@ -125,9 +125,9 @@ class Statement
 
     /**
      * Binds a PHP variable to a corresponding named or question mark placeholder in the
-     * SQL statement that was use to prepare the statement. Unlike Doctrine_Adapter_Statement_Interface->bindValue(),
+     * SQL statement that was use to prepare the statement. Unlike PDOStatement->bindValue(),
      * the variable is bound as a reference and will only be evaluated at the time
-     * that Doctrine_Adapter_Statement_Interface->execute() is called.
+     * that PDOStatement->execute() is called.
      *
      * Most parameters are input parameters, that is, parameters that are
      * used in a read-only fashion to build up the query. Some drivers support the invocation
@@ -172,7 +172,7 @@ class Statement
      * Returns the number of columns in the result set
      *
      * @return integer              Returns the number of columns in the result set represented
-     *                              by the Doctrine_Adapter_Statement_Interface object. If there is no result set,
+     *                              by the PDOStatement object. If there is no result set,
      *                              this method should return 0.
      */
     public function columnCount()
@@ -250,18 +250,18 @@ class Statement
      *                                      this value determines which row will be returned to the caller.
      *                                      This value must be one of the Query::HYDRATE_ORI_* constants, defaulting to
      *                                      Query::HYDRATE_ORI_NEXT. To request a scrollable cursor for your
-     *                                      Doctrine_Adapter_Statement_Interface object,
+     *                                      PDOStatement object,
      *                                      you must set the PDO::ATTR_CURSOR attribute to Doctrine::CURSOR_SCROLL when you
      *                                      prepare the SQL statement with Doctrine_Adapter_Interface->prepare().
      *
-     * @param integer $cursorOffset         For a Doctrine_Adapter_Statement_Interface object representing a scrollable cursor for which the
+     * @param integer $cursorOffset         For a PDOStatement object representing a scrollable cursor for which the
      *                                      $cursorOrientation parameter is set to Query::HYDRATE_ORI_ABS, this value specifies
      *                                      the absolute number of the row in the result set that shall be fetched.
      *
-     *                                      For a Doctrine_Adapter_Statement_Interface object representing a scrollable cursor for
+     *                                      For a PDOStatement object representing a scrollable cursor for
      *                                      which the $cursorOrientation parameter is set to Query::HYDRATE_ORI_REL, this value
      *                                      specifies the row to fetch relative to the cursor position before
-     *                                      Doctrine_Adapter_Statement_Interface->fetch() was called.
+     *                                      PDOStatement->fetch() was called.
      *
      * @return mixed
      */
@@ -323,7 +323,7 @@ class Statement
      * result set or FALSE if there are no more rows.
      *
      * @param integer $columnIndex          0-indexed number of the column you wish to retrieve from the row. If no
-     *                                      value is supplied, Doctrine_Adapter_Statement_Interface->fetchColumn()
+     *                                      value is supplied, PDOStatement->fetchColumn()
      *                                      fetches the first column.
      *
      * @return string                       returns a single column in the next row of a result set.
@@ -337,7 +337,7 @@ class Statement
      * Fetches the next row and returns it as an object.
      *
      * Fetches the next row and returns it as an object. This function is an alternative to
-     * Doctrine_Adapter_Statement_Interface->fetch() with Query::HYDRATE_CLASS or Query::HYDRATE_OBJ style.
+     * PDOStatement->fetch() with Query::HYDRATE_CLASS or Query::HYDRATE_OBJ style.
      *
      * @param string $className             Name of the created class, defaults to stdClass.
      * @param array $args                   Elements of this array are passed to the constructor.

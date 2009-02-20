@@ -33,22 +33,18 @@ namespace Doctrine\ORM\Query\AST;
 class DeleteStatement extends Node
 {
     protected $_deleteClause;
-
     protected $_whereClause;
-    
     
     /* Setters */
     public function setDeleteClause($deleteClause)
     {
         $this->_deleteClause = $deleteClause;
     }
-
     
     public function setWhereClause($whereClause)
     {
         $this->_whereClause = $whereClause;
     }
-    
     
     /* Getters */
     public function getDeleteClause()
@@ -56,12 +52,10 @@ class DeleteStatement extends Node
         return $this->_deleteClause;
     }
 
-    
     public function getWhereClause()
     {
         return $this->_whereClause;
     }
-    
     
     /* REMOVE ME LATER. COPIED METHODS FROM SPLIT OF PRODUCTION INTO "AST" AND "PARSER" */
     
@@ -72,4 +66,4 @@ class DeleteStatement extends Node
         return $this->_deleteClause->buildSql() . (($this->_whereClause !== null)
              ? ' ' . $this->_whereClause->buildSql() : ' WHERE 1 = 1');
     }
-}    
+}

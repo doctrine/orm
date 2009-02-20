@@ -84,5 +84,3 @@ class MappingException extends \Doctrine\Common\DoctrineException
         return new self("The mapping of field '$fieldName' is invalid.");
     }
 }
-
-?>

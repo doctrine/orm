@@ -45,9 +45,7 @@ class FromClause extends Node
         return $this->_identificationVariableDeclarations;
     }
     
-    
     /* REMOVE ME LATER. COPIED METHODS FROM SPLIT OF PRODUCTION INTO "AST" AND "PARSER" */
-    
     public function buildSql()
     {
         //echo "FromClause:\n";
@@ -60,14 +58,12 @@ class FromClause extends Node
         return 'FROM ' . implode(', ', $this->_mapIdentificationVariableDeclarations());
     }
 
-
     protected function _mapIdentificationVariableDeclarations()
     {
         return array_map(
             array(&$this, '_mapIdentificationVariableDeclaration'), $this->_identificationVariableDeclarations
         );
     }
-
 
     protected function _mapIdentificationVariableDeclaration($value)
     {

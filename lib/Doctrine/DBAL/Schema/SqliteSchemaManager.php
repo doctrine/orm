@@ -428,12 +428,12 @@ class SqliteSchemaManager extends AbstractSchemaManager
         try {
             $this->_conn->exec('INSERT INTO ' . $sequenceName . ' (' . $seqcolName . ') VALUES (' . ($start-1) . ')');
             return true;
-        } catch(Doctrine_Connection_Exception $e) {
+        } catch(Doctrine\DBAL\ConnectionException $e) {
             // Handle error
 
             try {
                 $result = $db->exec('DROP TABLE ' . $sequenceName);
-            } catch(Doctrine_Connection_Exception $e) {
+            } catch(Doctrine\DBAL\ConnectionException $e) {
                 throw \Doctrine\Common\DoctrineException::updateMe('could not drop inconsistent sequence table');
             }
         }
@@ -588,4 +588,3 @@ class SqliteSchemaManager extends AbstractSchemaManager
         return $name . ' ' . $type . $unsigned . $default . $notnull . $autoinc;
     }
 }
-

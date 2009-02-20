@@ -55,36 +55,30 @@ class SelectStatement extends Node
         return $this->_selectClause;
     }
 
-
     public function getFromClause()
     {
         return $this->_fromClause;
     }
-
 
     public function getWhereClause()
     {
         return $this->_whereClause;
     }
 
-
     public function getGroupByClause()
     {
         return $this->_groupByClause;
     }
-
 
     public function getHavingClause()
     {
         return $this->_havingClause;
     }
 
-
     public function getOrderByClause()
     {
         return $this->_orderByClause;
     }
-    
     
     /* REMOVE ME LATER. COPIED METHODS FROM SPLIT OF PRODUCTION INTO "AST" AND "PARSER" */
     

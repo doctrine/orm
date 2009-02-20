@@ -25,4 +25,3 @@ class ArithmeticTerm extends Node
         return $this->_factors;
     }
 }
-

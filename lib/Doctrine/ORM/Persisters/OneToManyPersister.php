@@ -73,6 +73,4 @@ class OneToManyPersister extends AbstractCollectionPersister
     {
         return;
     }
-    
 }
-

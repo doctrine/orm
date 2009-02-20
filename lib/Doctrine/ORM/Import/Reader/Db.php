@@ -19,6 +19,8 @@
  * <http://www.phpdoctrine.org>.
  */
 
+namespace Doctrine\ORM\Import\Reader;
+
 /**
  * class Doctrine_Import_Reader_Db
  * Reads a database using the given PDO connection and constructs a database
@@ -32,14 +34,8 @@
  * @version     $Revision: 3882 $
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  */
-class Doctrine_Import_Reader_Db extends Doctrine_Import_Reader
+class Db extends AbstractReader
 {
-    /** Aggregations: */
-
-    /** Compositions: */
-
-     /*** Attributes: ***/
-
     /**
      * @access private
      */

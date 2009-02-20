@@ -162,4 +162,3 @@ class CommitOrderNode
         $this->_relatedNodes[] = $node;
     }
 }
-

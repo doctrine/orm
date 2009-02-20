@@ -7,7 +7,7 @@ namespace Doctrine\DBAL\Driver\PDOMsSql;
  *
  * @since 2.0
  */
-class Connection extends PDO implements \Doctrine\DBAL\Driver\Connection
+class Connection extends PDO implements \Doctrine\DBAL\Driver\PDOConnection
 {
     /**
      * Performs the rollback.
@@ -18,7 +18,7 @@ class Connection extends PDO implements \Doctrine\DBAL\Driver\Connection
     {
         $this->exec('ROLLBACK TRANSACTION');
     }
-    
+
     /**
      * Performs the commit.
      * 
@@ -28,7 +28,7 @@ class Connection extends PDO implements \Doctrine\DBAL\Driver\Connection
     {
         $this->exec('COMMIT TRANSACTION');
     }
-    
+
     /**
      * Begins a database transaction.
      * 
@@ -39,4 +39,3 @@ class Connection extends PDO implements \Doctrine\DBAL\Driver\Connection
         $this->exec('BEGIN TRANSACTION');
     }
 }
-

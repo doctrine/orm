@@ -19,6 +19,8 @@
  * <http://www.phpdoctrine.org>.
  */
 
+namespace Doctrine\ORM\Query\Parser;
+
 /**
  * AbstractSchemaName ::= identifier
  *
@@ -29,18 +31,16 @@
  * @since       2.0
  * @version     $Revision$
  */
-class Doctrine_ORM_Query_Parser_AbstractSchemaName extends Doctrine_ORM_Query_ParserRule
+class AbstractSchemaName extends \Doctrine\ORM\Query\ParserRule
 {
     protected $_componentName = null;
-    
-    
+
     public function syntax()
     {
         // AbstractSchemaName ::= identifier
-        $this->_parser->match(Doctrine_ORM_Query_Token::T_IDENTIFIER);
+        $this->_parser->match(\Doctrine\ORM\Query\Token::T_IDENTIFIER);
         $this->_componentName = $this->_parser->token['value'];
     }
-
 
     public function semantical()
     {
@@ -55,9 +55,8 @@ class Doctrine_ORM_Query_Parser_AbstractSchemaName extends Doctrine_ORM_Query_Pa
         return $this->_componentName;
     }
     
-    
     protected function _isDoctrineEntity($componentName)
     {
-        return class_exists($componentName)/* && class_implements($componentName, 'Doctrine_ORM_Entity')*/;
+        return class_exists($componentName);
     }
 }

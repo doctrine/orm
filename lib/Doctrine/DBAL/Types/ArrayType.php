@@ -9,11 +9,8 @@ namespace Doctrine\DBAL\Types;
  */
 class ArrayType extends Type
 {
-    
-    
     public function getName()
     {
         return 'Array';
     }
 }
-

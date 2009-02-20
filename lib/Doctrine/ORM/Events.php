@@ -37,6 +37,4 @@ final class Events
     const postDelete = 'postDelete';
     const preSave = 'preSave';
     const postSave = 'postSave';
-    
 }
-

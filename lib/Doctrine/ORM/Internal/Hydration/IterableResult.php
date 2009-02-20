@@ -47,4 +47,3 @@ class IterableResult
         return $this->_hydrator->hydrateRow();
     }
 }
-

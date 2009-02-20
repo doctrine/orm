@@ -19,6 +19,8 @@
  * <http://www.phpdoctrine.org>.
  */
 
+namespace Doctrine\ORM\Query\Parser;
+
 /**
  * JoinCollectionValuedPathExpression ::= IdentificationVariable "." CollectionValuedAssociationField
  *
@@ -29,10 +31,9 @@
  * @since       2.0
  * @version     $Revision$
  */
-class Doctrine_ORM_Query_Parser_JoinCollectionValuedPathExpression extends Doctrine_ORM_Query_ParserRule
+class JoinCollectionValuedPathExpression extends \Doctrine\ORM\Query\ParserRule
 {
     protected $_AST = null;
-    
     
     public function syntax()
     {
@@ -40,10 +41,9 @@ class Doctrine_ORM_Query_Parser_JoinCollectionValuedPathExpression extends Doctr
         $this->_AST = $this->AST('JoinCollectionValuedPathExpression');
         
         $this->_AST->setIdentificationVariable($this->parse('IdentificationVariable'));
-        $this->_parser->match(Doctrine_ORM_Query_Token::T_DOT);
+        $this->_parser->match(\Doctrine\ORM\Query\Token::T_DOT);
         $this->_AST->setCollectionValuedAssociationField($this->parse('CollectionValuedAssociationField'));
     }
-
 
     public function semantical()
     {

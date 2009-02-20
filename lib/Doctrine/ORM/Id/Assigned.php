@@ -67,4 +67,3 @@ class Assigned extends AbstractIdGenerator
         return $identifier;
     }
 }
-

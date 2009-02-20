@@ -59,9 +59,7 @@ class RangeVariableDeclaration extends Node
         return $this->_classMetadata;
     }
     
-    
     /* REMOVE ME LATER. COPIED METHODS FROM SPLIT OF PRODUCTION INTO "AST" AND "PARSER" */
-    
     public function buildSql()
     {
         // Retrieving connection

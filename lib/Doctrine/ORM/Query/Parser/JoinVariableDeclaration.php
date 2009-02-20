@@ -19,6 +19,8 @@
  * <http://www.phpdoctrine.org>.
  */
 
+namespace Doctrine\ORM\Query\Parser;
+
 /**
  * JoinVariableDeclaration ::= Join [IndexBy]
  *
@@ -29,10 +31,9 @@
  * @since       1.0
  * @version     $Revision$
  */
-class Doctrine_ORM_Query_Parser_JoinVariableDeclaration extends Doctrine_ORM_Query_ParserRule
+class JoinVariableDeclaration extends \Doctrine\ORM\Query\ParserRule
 {
     protected $_AST = null;
-    
     
     public function syntax()
     {
@@ -41,11 +42,10 @@ class Doctrine_ORM_Query_Parser_JoinVariableDeclaration extends Doctrine_ORM_Que
         
         $this->_AST->setJoin($this->parse('Join'));
 
-        if ($this->_isNextToken(Doctrine_ORM_Query_Token::T_INDEX)) {
+        if ($this->_isNextToken(\Doctrine\ORM\Query\Token::T_INDEX)) {
             $this->_AST->setIndexBy($this->parse('IndexBy'));
         }
     }
-
 
     public function semantical()
     {

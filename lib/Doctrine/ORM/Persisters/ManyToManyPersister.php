@@ -127,4 +127,3 @@ class ManyToManyPersister extends AbstractCollectionPersister
         return $this->_uow->getEntityIdentifier($coll->getOwner());
     }
 }
-

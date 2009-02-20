@@ -11,4 +11,3 @@ class SmallIntType
 {
     //put your code here
 }
-

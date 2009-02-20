@@ -19,6 +19,8 @@
  * <http://www.phpdoctrine.org>.
  */
 
+namespace Doctrine\ORM\Query\Parser;
+
 /**
  * SimpleStateFieldPathExpression ::= IdentificationVariable "." SimpleStateField
  *
@@ -29,11 +31,10 @@
  * @since       2.0
  * @version     $Revision$
  */
-class Doctrine_ORM_Query_Parser_SimpleStateFieldPathExpression extends Doctrine_ORM_Query_ParserRule
+class SimpleStateFieldPathExpression extends \Doctrine\ORM\Query\ParserRule
 {
     protected $_AST = null;
-    
- 
+
     public function syntax()
     {
         // SimpleStateFieldPathExpression ::= IdentificationVariable "." SimpleStateField
@@ -46,7 +47,6 @@ class Doctrine_ORM_Query_Parser_SimpleStateFieldPathExpression extends Doctrine_
         $this->_AST->setSimpleStateField($this->parse('SimpleStateField'));
     }
 
-    
     public function semantical()
     {
         $parserResult = $this->_parser->getParserResult();
@@ -63,7 +63,7 @@ class Doctrine_ORM_Query_Parser_SimpleStateFieldPathExpression extends Doctrine_
             return;
         }
 
-        if ($classMetadata instanceof Doctrine_ClassMetadata && ! $classMetadata->hasField($componentFieldName)) {
+        if ($classMetadata instanceof \Doctrine\ORM\Mapping\ClassMetadata && ! $classMetadata->hasField($componentFieldName)) {
             $this->_parser->semanticalError(
                 "Cannot use key mapping. Field '" . $componentFieldName . "' " .
                 "does not exist in component '" . $classMetadata->getClassName() . "'.",

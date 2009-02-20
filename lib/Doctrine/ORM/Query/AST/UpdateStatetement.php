@@ -33,9 +33,7 @@ namespace Doctrine\ORM\Query\AST;
 class UpdateStatement extends Node
 {
     protected $_updateClause;
-
     protected $_whereClause;
-    
     
     /* Setters */
     public function setUpdateClause($updateClause)
@@ -43,12 +41,10 @@ class UpdateStatement extends Node
         $this->_updateClause = $updateClause;
     }
 
-    
     public function setWhereClause($whereClause)
     {
         $this->_whereClause = $whereClause;
     }
-
     
     /* Getters */
     public function getUpdateClause()
@@ -56,15 +52,12 @@ class UpdateStatement extends Node
         return $this->_updateClause;
     }
 
-    
     public function getWhereClause()
     {
         return $this->_whereClause;
     }
     
-    
     /* REMOVE ME LATER. COPIED METHODS FROM SPLIT OF PRODUCTION INTO "AST" AND "PARSER" */
-    
     public function buildSql()
     {
         // The 1=1 is needed to workaround the affected_rows in MySQL.

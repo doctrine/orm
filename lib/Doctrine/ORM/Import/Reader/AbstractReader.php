@@ -1,6 +1,6 @@
 <?php
 /*
- *  $Id: Exception.php 3882 2008-02-22 18:11:35Z jwage $
+ *  $Id: Reader.php 3882 2008-02-22 18:11:35Z jwage $
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -19,8 +19,12 @@
  * <http://www.phpdoctrine.org>.
  */
 
+namespace Doctrine\ORM\Import\Reader;
+
 /**
- * class Doctrine_Import_Exception
+ * class Doctrine_Import_Reader
+ * Is responsible of reading a database definitions from a source and costructing a
+ * database schema
  *
  * @package     Doctrine
  * @subpackage  Import
@@ -30,5 +34,7 @@
  * @version     $Revision: 3882 $
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  */
-class Doctrine_Import_Exception extends Doctrine_Exception
-{ }
+abstract class AbstractRader
+{
+    abstract public function read();
+}

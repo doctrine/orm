@@ -340,4 +340,3 @@ abstract class AssociationMapping
 
     abstract public function lazyLoadFor($entity, $entityManager);
 }
-

@@ -161,4 +161,3 @@ abstract class AbstractCollectionPersister
      */
     abstract protected function _getInsertRowSqlParameters(PersistentCollection $coll, $element);
 }
-

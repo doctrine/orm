@@ -18,7 +18,9 @@
  * and is licensed under the LGPL. For more information, see
  * <http://www.phpdoctrine.org>.
  */
-Doctrine::autoload('Doctrine_Import_Reader');
+
+namespace Doctrine\ORM\Import\Reader;
+
 /**
  * class Doctrine_Import_Reader_Xml_Propel
  *
@@ -30,15 +32,8 @@ Doctrine::autoload('Doctrine_Import_Reader');
  * @version     $Revision: 3882 $
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  */
-class Doctrine_Import_Reader_Xml_Propel extends Doctrine_Import_Reader
+class Propel extends AbstractReader
 {
-
-    /** Aggregations: */
-
-    /** Compositions: */
-
-     /*** Attributes: ***/
-
     /**
      * @access private
      */

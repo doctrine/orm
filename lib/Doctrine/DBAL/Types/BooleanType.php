@@ -31,4 +31,3 @@ class BooleanType extends Type
         return (bool)$value;
     }
 }
-

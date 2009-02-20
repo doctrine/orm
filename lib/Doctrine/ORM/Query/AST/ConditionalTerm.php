@@ -25,4 +25,3 @@ class ConditionalTerm extends Node
         return $this->_conditionalFactors;
     }
 }
-

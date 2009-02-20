@@ -16,7 +16,6 @@ class ParserResultDummy
     private $_tableToClassAliasMap;
     private $_queryComponents;
     
-    
     public function isMixedQuery()
     {
         return $this->_isMixedQuery;
@@ -77,6 +76,3 @@ class ParserResultDummy
         return $this->_queryComponents;
     }
 }
-
-
-?>

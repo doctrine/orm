@@ -19,6 +19,8 @@
  * <http://www.phpdoctrine.org>.
  */
 
+namespace Doctrine\ORM\Query\Parser;
+
 /**
  * SingleValuedAssociationField ::= FieldIdentificationVariable
  *
@@ -29,5 +31,6 @@
  * @since       2.0
  * @version     $Revision$
  */
-class Doctrine_ORM_Query_Parser_SingleValuedAssociationField extends Doctrine_ORM_Query_Parser_FieldIdentificationVariable
-{ }
+class SingleValuedAssociationField extends \Doctrine\ORM\Query\Parser\FieldIdentificationVariable
+{
+}

@@ -19,6 +19,8 @@
  * <http://www.phpdoctrine.org>.
  */
 
+namespace Doctrine\ORM\Query\Parser;
+
 /**
  * FromClause ::= "FROM" IdentificationVariableDeclaration {"," IdentificationVariableDeclaration}
  *
@@ -29,17 +31,16 @@
  * @since       1.0
  * @version     $Revision$
  */
-class Doctrine_ORM_Query_Parser_FromClause extends Doctrine_ORM_Query_ParserRule
+class FromClause extends \Doctrine\ORM\Query\ParserRule
 {
     protected $_AST = null;
     
-
     public function syntax()
     {
         // FromClause ::= "FROM" IdentificationVariableDeclaration {"," IdentificationVariableDeclaration}
         $this->_AST = $this->AST('FromClause');
         
-        $this->_parser->match(Doctrine_ORM_Query_Token::T_FROM);
+        $this->_parser->match(\Doctrine\ORM\Query\Token::T_FROM);
 
         $this->_AST->addIdentificationVariableDeclaration(
             $this->parse('IdentificationVariableDeclaration')

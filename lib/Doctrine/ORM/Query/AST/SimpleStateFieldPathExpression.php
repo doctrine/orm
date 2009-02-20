@@ -33,7 +33,6 @@ namespace Doctrine\ORM\Query\AST;
 class SimpleStateFieldPathExpression extends Node
 {
     protected $_identificationVariable = null;
-
     protected $_simpleStateField = null;
 
     public function __construct($identificationVariable, $simpleStateField)
@@ -47,7 +46,6 @@ class SimpleStateFieldPathExpression extends Node
     {
         return $this->_identificationVariable;
     }
-
 
     public function getSimpleStateField()
     {

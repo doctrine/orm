@@ -19,6 +19,8 @@
  * <http://www.phpdoctrine.org>.
  */
 
+namespace Doctrine\ORM\Query\Parser;
+
 /**
  * IdentificationVariable ::= identifier
  *
@@ -29,10 +31,9 @@
  * @since       2.0
  * @version     $Revision$
  */
-class Doctrine_ORM_Query_Parser_IdentificationVariable extends Doctrine_ORM_Query_ParserRule
+class IdentificationVariable extends \Doctrine\ORM\Query\ParserRule
 {
     protected $_componentAlias = null;
-    
     
     public function syntax()
     {
@@ -40,7 +41,6 @@ class Doctrine_ORM_Query_Parser_IdentificationVariable extends Doctrine_ORM_Quer
         $this->_parser->match(Doctrine_ORM_Query_Token::T_IDENTIFIER);
         $this->_componentAlias = $this->_parser->token['value'];
     }
-
 
     public function semantical()
     {

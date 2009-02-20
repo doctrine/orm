@@ -19,6 +19,8 @@
  * <http://www.phpdoctrine.org>.
  */
 
+namespace Doctrine\ORM\Query\Parser;
+
 /**
  * JoinSingleValuedAssociationPathExpression ::= IdentificationVariable "." SingleValuedAssociationField
  *
@@ -29,10 +31,9 @@
  * @since       2.0
  * @version     $Revision$
  */
-class Doctrine_ORM_Query_Parser_JoinSingleValuedAssociationPathExpression extends Doctrine_ORM_Query_ParserRule
+class JoinSingleValuedAssociationPathExpression extends \Doctrine\ORM\Query\ParserRule
 {
     protected $_AST = null;
-    
     
     public function syntax()
     {
@@ -40,10 +41,9 @@ class Doctrine_ORM_Query_Parser_JoinSingleValuedAssociationPathExpression extend
         $this->_AST = $this->AST('JoinSingleValuedAssociationPathExpression');
         
         $this->_AST->setIdentificationVariable($this->parse('IdentificationVariable'));
-        $this->_parser->match(Doctrine_ORM_Query_Token::T_DOT);
+        $this->_parser->match(\Doctrine\ORM\Query\Token::T_DOT);
         $this->_AST->setSingleValuedAssociationField($this->parse('SingleValuedAssociationField'));
     }
-
 
     public function semantical()
     {

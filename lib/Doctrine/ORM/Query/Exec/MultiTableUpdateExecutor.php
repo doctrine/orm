@@ -19,6 +19,8 @@
  * <http://www.phpdoctrine.org>.
  */
 
+namespace Doctrine\ORM\Query\Exec;
+
 /**
  * Executes the SQL statements for bulk DQL UPDATE statements on classes in
  * Class Table Inheritance (JOINED).
@@ -32,9 +34,9 @@
  *       (org.hibernate.hql.ast.exec.MultiTableUpdateExecutor).
  * @todo Rename to MultiTableUpdateExecutor
  */
-class Doctrine_ORM_Query_SqlExecutor_MultiTableUpdate extends Doctrine_ORM_Query_SqlExecutor_Abstract
+class MultiTableUpdateExecutor extends AbstractExecutor
 {
-    public function __construct(Doctrine_ORM_Query_AST $AST)
+    public function __construct(\Doctrine\ORM\Query\AST $AST)
     {
         // TODO: Inspect the AST, create the necessary SQL queries and store them
         // in $this->_sqlStatements
@@ -47,7 +49,7 @@ class Doctrine_ORM_Query_SqlExecutor_MultiTableUpdate extends Doctrine_ORM_Query
      * @param array $params  The parameters.
      * @override
      */
-    public function execute(Doctrine_Connection $conn, array $params)
+    public function execute(\Doctrine\DBAL\Connection $conn, array $params)
     {
         //...
     }

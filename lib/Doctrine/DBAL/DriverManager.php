@@ -48,7 +48,7 @@ final class DriverManager
 
     /** Private constructor. This class cannot be instantiated. */
     private function __construct() {}
-            
+
     /**
      * Creates a connection object based on the specified parameters.
      * This method returns a Doctrine\DBAL\Connection which wraps the underlying
@@ -128,7 +128,7 @@ final class DriverManager
         
         return new $wrapperClass($params, $driver, $config, $eventManager);
     }
-    
+
     /**
      * Checks the list of parameters.
      *
@@ -151,4 +151,3 @@ final class DriverManager
         }
     }
 }
-

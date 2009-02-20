@@ -24,4 +24,3 @@ class SequenceGenerator extends AbstractIdGenerator
         return $conn->fetchOne($sql);
     }
 }
-

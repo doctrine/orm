@@ -1477,4 +1477,3 @@ final class ClassMetadata
         return __CLASS__ . '@' . spl_object_hash($this);
     }
 }
-

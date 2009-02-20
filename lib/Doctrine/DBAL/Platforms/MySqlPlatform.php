@@ -1260,5 +1260,3 @@ class MySqlPlatform extends AbstractPlatform
         return 'SET SESSION TRANSACTION ISOLATION LEVEL ' . $this->_getTransactionIsolationLevelSql($level);
     }
 }
-
-?>

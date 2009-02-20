@@ -284,7 +284,7 @@ class Connection
     /**
      * Updates table row(s) with specified data
      *
-     * @throws Doctrine_Connection_Exception    if something went wrong at the database level
+     * @throws Doctrine\DBAL\ConnectionException    if something went wrong at the database level
      * @param string $table     The table to insert data into
      * @param array $values     An associateve array containing column-value pairs.
      * @return mixed            boolean false if empty value array was given,
@@ -509,7 +509,7 @@ class Connection
      * @param string $query     sql query
      * @param array $params     query parameters
      *
-     * @return PDOStatement|Doctrine_Adapter_Statement
+     * @return PDOStatement
      */
     public function execute($query, array $params = array())
     {
@@ -536,7 +536,7 @@ class Connection
      * @param string $query     sql query
      * @param array $params     query parameters
      *
-     * @return PDOStatement|Doctrine_Adapter_Statement
+     * @return PDOStatement
      * @todo Rename to executeUpdate().
      */
     public function exec($query, array $params = array()) {
@@ -562,7 +562,7 @@ class Connection
     /**
      * Wraps the given exception into a driver-specific exception and rethrows it.
      *
-     * @throws Doctrine_Connection_Exception
+     * @throws Doctrine\DBAL\ConnectionException
      */
     public function rethrowException(Exception $e, $invoker)
     {
@@ -711,7 +711,7 @@ class Connection
      * eventlistener methods
      *
      * @param string $savepoint                 Name of a savepoint to rollback to.
-     * @throws Doctrine_Transaction_Exception   If the rollback operation fails at database level.
+     * @throws Doctrine\DBAL\ConnectionException   If the rollback operation fails at database level.
      * @return boolean                          FALSE if rollback couldn't be performed, TRUE otherwise.
      */
     public function rollback()

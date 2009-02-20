@@ -48,27 +48,22 @@ class SelectClause extends Node
         return $this->_isDistinct;
     }
 
-
     public function getSelectExpressions()
     {
         return $this->_selectExpressions;
     }
     
-    
     /* REMOVE ME LATER. COPIED METHODS FROM SPLIT OF PRODUCTION INTO "AST" AND "PARSER" */
-    
     public function buildSql()
     {
         return 'SELECT ' . (($this->_isDistinct) ? 'DISTINCT ' : '')
              . implode(', ', $this->_mapSelectExpressions());
     }
 
-
     protected function _mapSelectExpressions()
     {
         return array_map(array(&$this, '_mapSelectExpression'), $this->_selectExpressions);
     }
-
 
     protected function _mapSelectExpression($value)
     {

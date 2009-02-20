@@ -4,16 +4,16 @@ namespace Doctrine\DBAL\Driver\PDOMsSql;
 
 class Driver implements \Doctrine\DBAL\Driver
 {
-    
     public function connect(array $params, $username = null, $password = null, array $driverOptions = array())
     {
         return new Connection(
-                $this->_constructPdoDsn($params),
-                $username,
-                $password,
-                $driverOptions);
+            $this->_constructPdoDsn($params),
+            $username,
+            $password,
+            $driverOptions
+        );
     }
-    
+
     /**
      * Constructs the MySql PDO DSN.
      * 
@@ -25,16 +25,14 @@ class Driver implements \Doctrine\DBAL\Driver
     {
         //TODO
     }
-    
+
     public function getDatabasePlatform()
     {
-        return new Doctrine_DatabasePlatform_MySqlPlatform();
+        return new \Doctrine\DBAL\Platforms\MsSqlPlatform();
     }
-    
-    public function getSchemaManager(Doctrine_Connection $conn)
-    {
-        return new Doctrine_Schema_MySqlSchemaManager($conn);
-    }
-    
-}
 
+    public function getSchemaManager(\Doctrine\DBAL\Connection $conn)
+    {
+        return new \Doctrine\DBAL\Schema\MsSqlSchemaManager($conn);
+    }
+}

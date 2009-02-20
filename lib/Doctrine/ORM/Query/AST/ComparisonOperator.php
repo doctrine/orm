@@ -35,5 +35,4 @@ namespace Doctrine\ORM\Query\AST;
  */
 class ComparisonOperator extends Node
 {
-
 }

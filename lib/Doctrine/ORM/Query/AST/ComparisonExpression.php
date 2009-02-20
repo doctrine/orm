@@ -44,4 +44,3 @@ class ComparisonExpression extends Node
         return $this->_operator;
     }
 }
-

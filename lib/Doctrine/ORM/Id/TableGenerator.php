@@ -9,11 +9,8 @@ namespace Doctrine\ORM\Id;
  */
 class TableGenerator extends AbstractIdGenerator
 {
-    
     public function generate($entity)
     {
         throw \Doctrine\Common\DoctrineException::updateMe("Not implemented");
     }
-    
 }
-

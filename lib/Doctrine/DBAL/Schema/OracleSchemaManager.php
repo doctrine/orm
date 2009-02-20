@@ -704,7 +704,4 @@ END;
         $query = 'SELECT view_name FROM sys.user_views';
         return $this->_conn->fetchColumn($query);
     }
-    
 }
-
-?>

@@ -25,4 +25,3 @@ class SimpleArithmeticExpression extends Node
         return $this->_terms;
     }
 }
-

@@ -39,12 +39,10 @@ abstract class ParserRule
      */
     const SQLALIAS_SEPARATOR = '__';
 
-
     /**
      * @nodoc
      */
     const DEFAULT_QUERYCOMPONENT = 'dctrn';
-
 
     /**
      * Parser object
@@ -67,7 +65,6 @@ abstract class ParserRule
      */
     protected $_dataHolder;
 
-
     /**
      * Creates a new production object.
      *
@@ -80,13 +77,11 @@ abstract class ParserRule
         $this->_dataHolder = Doctrine_ORM_Query_ParserDataHolder::create();
     }
 
-
     protected function _isNextToken($token)
     {
         $la = $this->_parser->lookahead;
         return ($la['type'] === $token || $la['value'] === $token);
     }
-
 
     protected function _isFunction()
     {
@@ -95,14 +90,12 @@ abstract class ParserRule
         return ($la['type'] === Doctrine_ORM_Query_Token::T_IDENTIFIER && $next['value'] === '(');
     }
 
-
     protected function _isSubselect()
     {
         $la = $this->_parser->lookahead;
         $next = $this->_parser->getScanner()->peek();
         return ($la['value'] === '(' && $next['type'] === Doctrine_ORM_Query_Token::T_SELECT);
     }
-
 
     /**
      * Executes the grammar rule using the specified parameters.
@@ -142,7 +135,6 @@ abstract class ParserRule
         return $BNFGrammarRule;
     }
 
-
     /**
      * Returns a grammar rule object with the given name.
      *
@@ -164,8 +156,7 @@ abstract class ParserRule
 
         return new $class($this->_parser);
     }
-    
-    
+        
     /**
      * Creates an AST node with the given name.
      *
@@ -182,7 +173,6 @@ abstract class ParserRule
      * @nodoc
      */
     abstract public function syntax();
-
 
     /**
      * @nodoc

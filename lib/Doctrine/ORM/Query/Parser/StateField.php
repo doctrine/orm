@@ -19,6 +19,8 @@
  * <http://www.phpdoctrine.org>.
  */
 
+namespace Doctrine\ORM\Query\Parser;
+
 /**
  * StateField ::= {EmbeddedClassStateField "."}* SimpleStateField
  *
@@ -29,20 +31,19 @@
  * @since       2.0
  * @version     $Revision$
  */
-class Doctrine_ORM_Query_Parser_StateField extends Doctrine_ORM_Query_ParserRule
+class StateField extends \Doctrine\ORM\Query\ParserRule
 {
     protected $_AST = null;
-    
     
     public function syntax()
     {
         // StateField ::= {EmbeddedClassStateField "."}* SimpleStateField
         $this->_AST = $this->AST('StateField');
 
-        while ($this->_parser->lookahead['type'] == Doctrine_ORM_Query_Token::T_IDENTIFIER && 
-               $this->_isNextToken(Doctrine_ORM_Query_Token::T_DOT)) {
+        while ($this->_parser->lookahead['type'] == \Doctrine\ORM\Query\Token::T_IDENTIFIER && 
+               $this->_isNextToken(\Doctrine\ORM\Query\Token::T_DOT)) {
             $this->_AST->addEmbeddedClassStateField($this->parse('EmbeddedClassStateField'));
-            $this->_parser->match(Doctrine_ORM_Query_Token::T_DOT); 
+            $this->_parser->match(\Doctrine\ORM\Query\Token::T_DOT); 
         }
         
         $this->_AST->setSimpleStateField($this->parse('SimpleStateField'));

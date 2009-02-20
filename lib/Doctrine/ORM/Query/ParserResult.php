@@ -47,7 +47,6 @@ class ParserResult extends AbstractResult
      */
     protected $_queryFields = array();
     
-    
     /**
      * Sets the Entity Manager.
      *
@@ -57,7 +56,6 @@ class ParserResult extends AbstractResult
     {
         $this->_em = $em;
     }
-
 
     /**
      * Gets the Entity Manager.
@@ -69,7 +67,6 @@ class ParserResult extends AbstractResult
         return $this->_em;
     }
 
-
     /**
      * @nodoc
      */
@@ -78,7 +75,6 @@ class ParserResult extends AbstractResult
         $this->_data = $executor;
     }
 
-
     /**
      * @nodoc
      */
@@ -86,7 +82,6 @@ class ParserResult extends AbstractResult
     {
         return $this->_data;
     }
-
 
     /**
      * Defines the mapping fields.
@@ -97,7 +92,6 @@ class ParserResult extends AbstractResult
     {
         $this->_queryFields = $queryFields;
     }
-
 
     /**
      * Sets the declaration for given field alias.
@@ -110,7 +104,6 @@ class ParserResult extends AbstractResult
         $this->_queryFields[$fieldAlias] = $queryField;
     }
 
-
     /**
      * Gets the mapping fields.
      *
@@ -120,7 +113,6 @@ class ParserResult extends AbstractResult
     {
         return $this->_queryFields;
     }
-
 
     /**
      * Get the declaration for given field alias.
@@ -136,7 +128,6 @@ class ParserResult extends AbstractResult
 
         return $this->_queryFields[$fieldAlias];
     }
-
 
     /**
      * Whether or not this object has a declaration for given field alias.

@@ -10,4 +10,3 @@ class DecimalType extends Type
 {
     
 }
-

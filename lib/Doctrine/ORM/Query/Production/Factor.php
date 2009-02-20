@@ -19,6 +19,8 @@
  * <http://www.phpdoctrine.org>.
  */
 
+namespace Doctrine\Query\Production;
+
 /**
  * Factor = [("+" | "-")] Primary
  *
@@ -31,12 +33,11 @@
  * @since       2.0
  * @version     $Revision$
  */
-class Doctrine_Query_Production_Factor extends Doctrine_Query_Production
+class Factor extends \Doctrine\Query\Production
 {
     protected $_type;
 
     protected $_primary;
-
 
     public function syntax($paramHolder)
     {
@@ -57,12 +58,10 @@ class Doctrine_Query_Production_Factor extends Doctrine_Query_Production
         }
     }
 
-
     public function semantical($paramHolder)
     {
         $this->_primary->semantical($paramHolder);
     }
-
 
     public function buildSql()
     {

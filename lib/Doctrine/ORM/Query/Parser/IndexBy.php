@@ -19,6 +19,8 @@
  * <http://www.phpdoctrine.org>.
  */
 
+namespace Doctrine\ORM\Query\Parser;
+
 /**
  * IndexBy ::= "INDEX" "BY" SimpleStateFieldPathExpression
  *
@@ -29,22 +31,20 @@
  * @since       2.0
  * @version     $Revision$
  */
-class Doctrine_ORM_Query_Parser_IndexBy extends Doctrine_ORM_Query_ParserRule
+class IndexBy extends \Doctrine\ORM\Query\ParserRule
 {
     protected $_AST = null;
     
-
     public function syntax()
     {
         // IndexBy ::= "INDEX" "BY" SimpleStateFieldPathExpression
         $this->_AST = $this->AST('IndexBy');
         
-        $this->_parser->match(Doctrine_ORM_Query_Token::T_INDEX);
-        $this->_parser->match(Doctrine_ORM_Query_Token::T_BY);
+        $this->_parser->match(\Doctrine\ORM\Query\Token::T_INDEX);
+        $this->_parser->match(\Doctrine\ORM\Query\Token::T_BY);
 
         $this->_AST->setSimpleStateFieldPathExpression($this->parse('SimpleStateFieldPathExpression'));
     }
-    
     
     public function semantical()
     {

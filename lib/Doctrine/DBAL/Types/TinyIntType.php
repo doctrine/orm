@@ -11,4 +11,3 @@ class TinyIntType
 {
     //put your code here
 }
-

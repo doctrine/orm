@@ -9,7 +9,6 @@ namespace Doctrine\DBAL\Platforms;
  */
 class InformixPlatform extends AbstractPlatform
 {
-
     public function __construct()
     {
         parent::__construct();
@@ -92,7 +91,4 @@ class InformixPlatform extends AbstractPlatform
         }
         throw \Doctrine\Common\DoctrineException::updateMe('Unknown field type \'' . $field['type'] .  '\'.');
     }
-    
 }
-
-?>

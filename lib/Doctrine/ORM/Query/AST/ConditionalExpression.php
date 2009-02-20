@@ -25,4 +25,3 @@ class ConditionalExpression extends Node
         return $this->_conditionalTerms;
     }
 }
-

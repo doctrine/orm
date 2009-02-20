@@ -63,7 +63,6 @@ class IdentificationVariableDeclaration extends Node
         return $this->_joinVariableDeclarations;
     }
 
-
     /* REMOVE ME LATER. COPIED METHODS FROM SPLIT OF PRODUCTION INTO "AST" AND "PARSER" */
     
     public function buildSql()
