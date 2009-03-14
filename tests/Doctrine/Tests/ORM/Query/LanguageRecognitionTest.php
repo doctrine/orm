@@ -87,17 +87,17 @@ class LanguageRecognitionTest extends \Doctrine\Tests\OrmTestCase
     {
         $this->assertValidDql('SELECT COUNT(DISTINCT u.name) FROM Doctrine\Tests\Models\CMS\CmsUser u');
     }
-/*
+
     public function testFunctionalExpressionsSupportedInWherePart()
     {
         $this->assertValidDql("SELECT u.name FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE TRIM(u.name) = 'someone'");
     }
-*/
+
     public function testArithmeticExpressionsSupportedInWherePart()
     {
         $this->assertValidDql('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE ((u.id + 5000) * u.id + 3) < 10000000');
     }
-/*
+ 
     public function testInExpressionSupportedInWherePart()
     {
         $this->assertValidDql('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.id IN (1, 2)');
@@ -107,8 +107,8 @@ class LanguageRecognitionTest extends \Doctrine\Tests\OrmTestCase
     {
         $this->assertValidDql('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.id NOT IN (1)');
     }
-*/
-    /*public function testExistsExpressionSupportedInWherePart()
+/*
+    public function testExistsExpressionSupportedInWherePart()
     {
         $this->assertValidDql('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE EXISTS (SELECT p.user_id FROM Doctrine\Tests\Models\CMS\CmsPhonenumber p WHERE p.user_id = u.id)');
     }

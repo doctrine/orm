@@ -319,8 +319,6 @@ class Parser
 
     /**
      * QueryLanguage ::= SelectStatement | UpdateStatement | DeleteStatement
-     *
-     * @return <type>
      */
     private function _QueryLanguage()
     {
@@ -346,8 +344,6 @@ class Parser
 
     /**
      * SelectStatement ::= SelectClause FromClause [WhereClause] [GroupByClause] [HavingClause] [OrderByClause]
-     *
-     * @return <type> 
      */
     private function _SelectStatement()
     {
@@ -427,11 +423,17 @@ class Parser
         }
     }
 
+    /**
+     * UpdateStatement ::= UpdateClause [WhereClause]
+     */
     private function _UpdateStatement()
     {
         //TODO
     }
 
+    /**
+     * DeleteStatement ::= DeleteClause [WhereClause]
+     */
     private function _DeleteStatement()
     {
         //TODO
@@ -496,7 +498,7 @@ class Parser
             if ($this->_lexer->isNextToken(Lexer::T_AS)) {
                 $this->match(Lexer::T_AS);
                 $fieldIdentificationVariable = $this->_FieldAliasIdentificationVariable();
-            } elseif ($this->_lexer->isNextToken(Lexer::T_IDENTIFIER)) {
+            } else if ($this->_lexer->isNextToken(Lexer::T_IDENTIFIER)) {
                 $fieldIdentificationVariable = $this->_FieldAliasIdentificationVariable();
             }
         } else {
@@ -677,10 +679,7 @@ class Parser
         $join = new AST\Join($joinType, $joinPathExpression, $aliasIdentificationVariable);
 
         // Check Join where type
-        if (
-            $this->_lexer->isNextToken(Lexer::T_ON) ||
-            $this->_lexer->isNextToken(Lexer::T_WITH)
-        ) {
+        if ($this->_lexer->isNextToken(Lexer::T_ON) || $this->_lexer->isNextToken(Lexer::T_WITH)) {
             if ($this->_lexer->isNextToken(Lexer::T_ON)) {
                 $this->match(Lexer::T_ON);
                 $join->setWhereType(AST\Join::JOIN_WHERE_ON);
@@ -973,6 +972,12 @@ class Parser
                 $this->_lexer->peek();
                 $peek = $this->_lexer->peek();
             }
+
+            // Also peek beyond a NOT if there is one
+            if ($peek['type'] === Lexer::T_NOT) {
+                $peek = $this->_lexer->peek();
+            }
+
             $this->_lexer->resetPeek();
             $token = $peek;
         }
@@ -1098,6 +1103,52 @@ class Parser
     }
 
     /**
+     * InExpression ::= StateFieldPathExpression ["NOT"] "IN" "(" (Literal {"," Literal}* | Subselect) ")"
+     */
+    private function _InExpression()
+    {
+        $inExpression = new AST\InExpression($this->_PathExpression());
+        if ($this->_lexer->isNextToken(Lexer::T_NOT)) {
+            $this->match(Lexer::T_NOT);
+            $inExpression->setNot(true);
+        }
+        $this->match(Lexer::T_IN);
+        $this->match('(');
+        if ($this->_lexer->isNextToken(Lexer::T_SELECT)) {
+            $inExpression->setSubselect($this->_Subselect());
+        } else {
+            $literals = array();
+            $literals[] = $this->_Literal();
+            while ($this->_lexer->isNextToken(',')) {
+                $this->match(',');
+                $literals[] = $this->_Literal();
+            }
+        }
+        $this->match(')');
+
+        return $inExpression;
+    }
+
+    /**
+     * Literal ::= string | char | integer | float | boolean | InputParameter
+     */
+    private function _Literal()
+    {
+        switch ($this->_lexer->lookahead['type']) {
+            case Lexer::T_INPUT_PARAMETER:
+                $this->match($this->_lexer->lookahead['value']);
+                return new AST\InputParameter($this->_lexer->token['value']);
+            case Lexer::T_STRING:
+            case Lexer::T_INTEGER:
+            case Lexer::T_FLOAT:
+                $this->match($this->_lexer->lookahead['value']);
+                return $this->_lexer->token['value'];
+            default:
+                $this->syntaxError();
+        }
+    }
+
+    /**
      * ArithmeticPrimary ::= StateFieldPathExpression | Literal | "(" SimpleArithmeticExpression ")" | Function | AggregateExpression
      */
     private function _ArithmeticPrimary()
@@ -1151,11 +1202,12 @@ class Parser
 
                 break;
             case 'TRIM':
+                //TODO: This is not complete! See BNF
                 $this->match($this->_lexer->lookahead['value']);
                 $this->match('(');
-                //TODO: This is not complete! See BNF
-                $this->_StringPrimary();
-                break;
+                $func = $this->_StringPrimary();
+                $this->match(')');
+                return $func;
             case 'LOWER':
 
                 break;

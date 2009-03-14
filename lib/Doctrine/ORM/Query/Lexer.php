@@ -16,7 +16,7 @@
  *
  * This software consists of voluntary contributions made by many individuals
  * and is licensed under the LGPL. For more information, see
- * <http://www.phpdoctrine.org>.
+ * <http://www.doctrine-project.org>.
  */
 
 namespace Doctrine\ORM\Query;
@@ -28,7 +28,7 @@ namespace Doctrine\ORM\Query;
  * @author      Janne Vanhala <jpvanhal@cc.hut.fi>
  * @author      Roman Borschel <roman@code-factory.org>
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
- * @link        www.phpdoctrine.org
+ * @link        www.doctrine-project.org
  * @since       2.0
  * @version     $Revision$
  */
@@ -174,7 +174,6 @@ class Lexer
 
         if (defined($name)) {
             $type = constant($name);
-
             if ($type > 100) {
                 return $type;
             }
@@ -319,68 +318,64 @@ class Lexer
     }
 
     /**
-     * @todo Doc
+     * Resets the lexer position on the input to the given position.
      */
     public function resetPosition($position = 0)
     {
         $this->_position = $position;
     }
 
-    private function _addKeyword($token, $value)
-    {
-        $this->_keywordsTable[$token] = $value;
-    }
-
     public function getLiteral($token)
     {
         if ( ! $this->_keywordsTable) {
-            $this->_addKeyword(self::T_ALL, "ALL");
-            $this->_addKeyword(self::T_AND, "AND");
-            $this->_addKeyword(self::T_ANY, "ANY");
-            $this->_addKeyword(self::T_AS, "AS");
-            $this->_addKeyword(self::T_ASC, "ASC");
-            $this->_addKeyword(self::T_AVG, "AVG");
-            $this->_addKeyword(self::T_BETWEEN, "BETWEEN");
-            $this->_addKeyword(self::T_BY, "BY");
-            $this->_addKeyword(self::T_COMMA, ",");
-            $this->_addKeyword(self::T_COUNT, "COUNT");
-            $this->_addKeyword(self::T_DELETE, "DELETE");
-            $this->_addKeyword(self::T_DESC, "DESC");
-            $this->_addKeyword(self::T_DISTINCT, "DISTINCT");
-            $this->_addKeyword(self::T_DOT, ".");
-            $this->_addKeyword(self::T_ESCAPE, "ESPACE");
-            $this->_addKeyword(self::T_EXISTS, "EXISTS");
-            $this->_addKeyword(self::T_FALSE, "FALSE");
-            $this->_addKeyword(self::T_FROM, "FROM");
-            $this->_addKeyword(self::T_GROUP, "GROUP");
-            $this->_addKeyword(self::T_HAVING, "HAVING");
-            $this->_addKeyword(self::T_IN, "IN");
-            $this->_addKeyword(self::T_INDEX, "INDEX");
-            $this->_addKeyword(self::T_INNER, "INNER");
-            $this->_addKeyword(self::T_IS, "IS");
-            $this->_addKeyword(self::T_JOIN, "JOIN");
-            $this->_addKeyword(self::T_LEFT, "LEFT");
-            $this->_addKeyword(self::T_LIKE, "LIKE");
-            $this->_addKeyword(self::T_LIMIT, "LIMIT");
-            $this->_addKeyword(self::T_MAX, "MAX");
-            $this->_addKeyword(self::T_MIN, "MIN");
-            $this->_addKeyword(self::T_MOD, "MOD");
-            $this->_addKeyword(self::T_NOT, "NOT");
-            $this->_addKeyword(self::T_NULL, "NULL");
-            $this->_addKeyword(self::T_OFFSET, "OFFSET");
-            $this->_addKeyword(self::T_ON, "ON");
-            $this->_addKeyword(self::T_OR, "OR");
-            $this->_addKeyword(self::T_ORDER, "ORDER");
-            $this->_addKeyword(self::T_OUTER, "OUTER");
-            $this->_addKeyword(self::T_SELECT, "SELECT");
-            $this->_addKeyword(self::T_SET, "SET");
-            $this->_addKeyword(self::T_SIZE, "SIZE");
-            $this->_addKeyword(self::T_SOME, "SOME");
-            $this->_addKeyword(self::T_SUM, "SUM");
-            $this->_addKeyword(self::T_TRUE, "TRUE");
-            $this->_addKeyword(self::T_UPDATE, "UPDATE");
-            $this->_addKeyword(self::T_WHERE, "WHERE");
-            $this->_addKeyword(self::T_WITH, "WITH");
+            $this->_keywordsTable = array(
+                self::T_ALL => "ALL",
+                self::T_AND => "AND",
+                self::T_ANY => "ANY",
+                self::T_AS => "AS",
+                self::T_ASC => "ASC",
+                self::T_AVG => "AVG",
+                self::T_BETWEEN => "BETWEEN",
+                self::T_BY => "BY",
+                self::T_COMMA => ",",
+                self::T_COUNT => "COUNT",
+                self::T_DELETE => "DELETE",
+                self::T_DESC => "DESC",
+                self::T_DISTINCT => "DISTINCT",
+                self::T_DOT => ".",
+                self::T_ESCAPE => "ESCAPE",
+                self::T_EXISTS => "EXISTS",
+                self::T_FALSE => "FALSE",
+                self::T_FROM => "FROM",
+                self::T_GROUP => "GROUP",
+                self::T_HAVING => "HAVING",
+                self::T_IN => "IN",
+                self::T_INDEX => "INDEX",
+                self::T_INNER => "INNER",
+                self::T_IS => "IS",
+                self::T_JOIN => "JOIN",
+                self::T_LEFT => "LEFT",
+                self::T_LIKE => "LIKE",
+                self::T_LIMIT => "LIMIT",
+                self::T_MAX => "MAX",
+                self::T_MIN => "MIN",
+                self::T_MOD => "MOD",
+                self::T_NOT => "NOT",
+                self::T_NULL => "NULL",
+                self::T_OFFSET => "OFFSET",
+                self::T_ON => "ON",
+                self::T_OR => "OR",
+                self::T_ORDER => "ORDER",
+                self::T_OUTER => "OUTER",
+                self::T_SELECT => "SELECT",
+                self::T_SET => "SET",
+                self::T_SIZE => "SIZE",
+                self::T_SOME => "SOME",
+                self::T_SUM => "SUM",
+                self::T_TRUE => "TRUE",
+                self::T_UPDATE => "UPDATE",
+                self::T_WHERE => "WHERE",
+                self::T_WITH => "WITH");
         }
         return isset($this->_keywordsTable[$token])
                 ? $this->_keywordsTable[$token]
