@@ -163,27 +163,6 @@ class Lexer
     }
 
     /**
-     * Returns the next token in the input string.
-     *
-     * A token is an associative array containing three items:
-     *  - 'value'    : the string value of the token in the input string
-     *  - 'type'     : the type of the token (identifier, numeric, string, input
-     *                 parameter, none)
-     *  - 'position' : the position of the token in the input string
-     *
-     * @return array|null the next token; null if there is no more tokens left
-     */
-    /*public function next()
-    {
-        $this->_peek = 0;
-        if (isset($this->_tokens[$this->_position])) {
-            return $this->_tokens[$this->_position++];
-        } else {
-            return null;
-        }
-    }*/
-
-    /**
      * Checks if an identifier is a keyword and returns its correct type.
      *
      * @param string $identifier identifier name
@@ -209,7 +188,7 @@ class Lexer
      *
      * @param string $input a query string
      */
-    protected function _scan($input)
+    private function _scan($input)
     {
         static $regex;
 
@@ -240,7 +219,7 @@ class Lexer
     /**
      * @todo Doc
      */
-    protected function _getType(&$value)
+    private function _getType(&$value)
     {
         // $value is referenced because it can be changed if it is numeric.
         // [TODO] Revisit the _isNumeric and _getNumeric methods to reduce overhead.
@@ -269,7 +248,7 @@ class Lexer
     /**
      * @todo Doc
      */
-    protected function _getNumeric($value)
+    private function _getNumeric($value)
     {
         if ( ! is_scalar($value)) {
             return false;
