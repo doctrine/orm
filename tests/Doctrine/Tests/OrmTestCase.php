@@ -12,6 +12,11 @@ class OrmTestCase extends DoctrineTestCase
 
     /**
      * Creates an EntityManager for testing purposes.
+     * 
+     * NOTE: The created EntityManager will have its dependant DBAL parts completely
+     * mocked out using a DriverMock, ConnectionMock, etc. These mocks can then
+     * be configured in the tests to simulate the DBAL behavior that is desired
+     * for a particular test,
      *
      * @return Doctrine\ORM\EntityManager
      */
@@ -20,7 +25,7 @@ class OrmTestCase extends DoctrineTestCase
         $config = new \Doctrine\ORM\Configuration();
         $config->setMetadataCacheImpl(self::getSharedMetadataCacheImpl());
         $eventManager = new \Doctrine\Common\EventManager();
-        if (is_null($conn)) {
+        if ($conn === null) {
             $conn = array(
                 'driverClass' => 'Doctrine\Tests\Mocks\DriverMock',
                 'wrapperClass' => 'Doctrine\Tests\Mocks\ConnectionMock',
@@ -33,7 +38,7 @@ class OrmTestCase extends DoctrineTestCase
 
     private static function getSharedMetadataCacheImpl()
     {
-        if (is_null(self::$_metadataCacheImpl)) {
+        if (self::$_metadataCacheImpl === null) {
             self::$_metadataCacheImpl = new \Doctrine\ORM\Cache\ArrayCache;
         }
         return self::$_metadataCacheImpl;

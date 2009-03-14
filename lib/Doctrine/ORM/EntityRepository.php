@@ -80,7 +80,7 @@ class EntityRepository
      */
     public function find($id, $hydrationMode = null)
     {
-        if (is_null($id)) {
+        if ($id === null) {
             return false;
         }
         

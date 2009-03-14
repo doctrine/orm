@@ -4,6 +4,7 @@ namespace Doctrine\Tests\Mocks;
 
 class ConnectionMock extends \Doctrine\DBAL\Connection
 {
+    private $_fetchOneResult;
     private $_platformMock;
     private $_lastInsertId = 0;
     private $_inserts = array();
@@ -38,6 +39,14 @@ class ConnectionMock extends \Doctrine\DBAL\Connection
     {
         return $this->_lastInsertId;
     }
+
+    /**
+     * @override
+     */
+    public function fetchOne($sql)
+    {
+        return $this->_fetchOneResult;
+    }
     
     /**
      * @override
@@ -51,6 +60,11 @@ class ConnectionMock extends \Doctrine\DBAL\Connection
     }
     
     /* Mock API */
+
+    public function setFetchOneResult($fetchOneResult)
+    {
+        $this->_fetchOneResult = $fetchOneResult;
+    }
     
     public function setDatabasePlatform($platform)
     {

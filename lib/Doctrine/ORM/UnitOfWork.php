@@ -302,7 +302,7 @@ class UnitOfWork
     public function computeChangeSets(array $entities = null)
     {
         $entitySet = array();
-        if ( ! is_null($entities)) {
+        if ($entities !== null) {
             foreach ($entities as $entity) {
                 $entitySet[get_class($entity)][] = $entity;
             }
@@ -331,7 +331,7 @@ class UnitOfWork
                         }
                         
                         if ($class->isCollectionValuedAssociation($name)
-                                && ! is_null($actualData[$name])
+                                && $actualData[$name] !== null
                                 && ! ($actualData[$name] instanceof PersistentCollection)) {
                             //TODO: If $actualData[$name] is Collection then unwrap the array
                             $assoc = $class->getAssociationMapping($name);
@@ -365,7 +365,7 @@ class UnitOfWork
                             $orgValue = isset($originalData[$propName]) ? $originalData[$propName] : null;
                             if (is_object($orgValue) && $orgValue !== $actualValue) {
                                 $changeSet[$propName] = array($orgValue, $actualValue);
-                            } else if ($orgValue != $actualValue || (is_null($orgValue) xor is_null($actualValue))) {
+                            } else if ($orgValue != $actualValue || ($orgValue === null xor $actualValue === null)) {
                                 $changeSet[$propName] = array($orgValue, $actualValue);
                             }
 
@@ -398,7 +398,7 @@ class UnitOfWork
                     if ($state == self::STATE_MANAGED) {
                         foreach ($class->getAssociationMappings() as $assoc) {
                             $val = $actualData[$assoc->getSourceFieldName()];
-                            if ( ! is_null($val)) {
+                            if ($val !== null) {
                                 $this->_computeAssociationChanges($assoc, $val);
                             }
                         }
@@ -493,7 +493,7 @@ class UnitOfWork
         foreach ($this->_entityInsertions as $entity) {
             if (get_class($entity) == $className) {
                 $returnVal = $persister->insert($entity);
-                if ( ! is_null($returnVal)) {
+                if ($returnVal !== null) {
                     // Persister returned a post-insert ID
                     $oid = spl_object_hash($entity);
                     $idField = $class->getSingleIdentifierFieldName();
@@ -546,7 +546,7 @@ class UnitOfWork
      */
     private function _getCommitOrder(array $entityChangeSet = null)
     {
-        if (is_null($entityChangeSet)) {
+        if ($entityChangeSet === null) {
             $entityChangeSet = array_merge(
                     $this->_entityInsertions,
                     $this->_entityUpdates,

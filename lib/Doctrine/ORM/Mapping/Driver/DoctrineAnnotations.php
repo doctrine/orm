@@ -84,3 +84,8 @@ final class DoctrineJoinTable extends \Addendum\Annotation {
     public $joinColumns;
     public $inverseJoinColumns;
 }
+final class DoctrineSequenceGenerator extends \Addendum\Annotation {
+    public $name;
+    public $allocationSize = 20;
+    public $initialValue;
+}

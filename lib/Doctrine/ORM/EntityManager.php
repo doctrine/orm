@@ -599,10 +599,10 @@ class EntityManager
             \Doctrine\Common\DoctrineException::updateMe("Invalid parameter '$conn'.");
         }
         
-        if (is_null($config)) {
+        if ($config === null) {
             $config = new Configuration();
         }
-        if (is_null($eventManager)) {
+        if ($eventManager === null) {
             $eventManager = new EventManager();
         }
         

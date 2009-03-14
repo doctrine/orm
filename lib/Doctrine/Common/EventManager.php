@@ -54,20 +54,18 @@ class EventManager
     public function dispatchEvent($eventName, EventArgs $eventArgs = null)
     {
         if (isset($this->_listeners[$eventName])) {
-            $eventArgs = is_null($eventArgs) ? EventArgs::getEmptyInstance() : $eventArgs;
+            $eventArgs = $eventArgs === null ? EventArgs::getEmptyInstance() : $eventArgs;
             foreach ($this->_listeners[$eventName] as $listener) {
                 $listener->$eventName($eventArgs);
             }
-            return ! $eventArgs->getDefaultPrevented();
         }
-        return true;
     }
 
     /**
      * Gets the listeners of a specific event or all listeners.
      *
      * @param string $event  The name of the event.
-     * @return 
+     * @return The event listeners for the specified event, or all event listeners.
      */
     public function getListeners($event = null)
     {
@@ -78,7 +76,7 @@ class EventManager
      * Checks whether an event has any registered listeners.
      *
      * @param string $event
-     * @return boolean
+     * @return boolean TRUE if the specified event has any listeners, FALSE otherwise.
      */
     public function hasListeners($event)
     {

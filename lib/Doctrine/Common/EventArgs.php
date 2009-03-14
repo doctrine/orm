@@ -24,10 +24,9 @@ namespace Doctrine\Common;
 /**
  * EventArgs is the base class for classes containing event data.
  *
- * This class contains no event data and cannot be instantiated.
- * It is used by events that do not pass state information to an event handler
- * when an event is raised. The single empty EventArgs instance can be obtained
- * through {@link getEmptyInstance()}.
+ * This class contains no event data. It is used by events that do not pass state
+ * information to an event handler when an event is raised. The single empty EventArgs
+ * instance can be obtained through {@link getEmptyInstance()}.
  *
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  * @author      Roman Borschel
@@ -39,22 +38,6 @@ namespace Doctrine\Common;
 class EventArgs
 {
     private static $_emptyEventArgsInstance;
-    private $_defaultPrevented;
-
-    protected function __construct()
-    {
-        $this->_defaultPrevented = false;
-    }
-
-    public function preventDefault()
-    {
-        $this->_defaultPrevented = true;
-    }
-
-    public function getDefaultPrevented()
-    {
-        return $this->_defaultPrevented;
-    }
 
     public static function getEmptyInstance()
     {

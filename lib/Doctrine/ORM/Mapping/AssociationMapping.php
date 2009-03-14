@@ -174,7 +174,7 @@ abstract class AssociationMapping
      */
     public function isCascadeDelete()
     {
-        if (is_null($this->_isCascadeDelete)) {
+        if ($this->_isCascadeDelete === null) {
             $this->_isCascadeDelete = in_array('delete', $this->_cascades);
         }
         return $this->_isCascadeDelete;
@@ -188,7 +188,7 @@ abstract class AssociationMapping
      */
     public function isCascadeSave()
     {
-        if (is_null($this->_isCascadeSave)) {
+        if ($this->_isCascadeSave === null) {
             $this->_isCascadeSave = in_array('save', $this->_cascades);
         }
         return $this->_isCascadeSave;
@@ -202,7 +202,7 @@ abstract class AssociationMapping
      */
     public function isCascadeRefresh()
     {
-        if (is_null($this->_isCascadeRefresh)) {
+        if ($this->_isCascadeRefresh === null) {
             $this->_isCascadeRefresh = in_array('refresh', $this->_cascades);
         }
         return $this->_isCascadeRefresh;

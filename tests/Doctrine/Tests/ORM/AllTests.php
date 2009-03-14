@@ -40,6 +40,7 @@ class AllTests
         $suite->addTest(Associations\AllTests::suite());
         $suite->addTest(Mapping\AllTests::suite());
         $suite->addTest(Functional\AllTests::suite());
+        $suite->addTest(Id\AllTests::suite());
 
         return $suite;
     }

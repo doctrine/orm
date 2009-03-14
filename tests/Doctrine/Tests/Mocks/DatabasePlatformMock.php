@@ -4,6 +4,7 @@ namespace Doctrine\Tests\Mocks;
 
 class DatabasePlatformMock extends \Doctrine\DBAL\Platforms\AbstractPlatform
 {
+    private $_sequenceNextValSql = "";
     private $_prefersIdentityColumns = false;
     
     /**
@@ -22,6 +23,12 @@ class DatabasePlatformMock extends \Doctrine\DBAL\Platforms\AbstractPlatform
     public function prefersIdentityColumns()
     {
         return $this->_prefersIdentityColumns;
+    }
+
+    /** @override */
+    public function getSequenceNextValSql($sequenceName)
+    {
+        return $this->_sequenceNextValSql;
     }
 
     /** @override */
@@ -50,5 +57,10 @@ class DatabasePlatformMock extends \Doctrine\DBAL\Platforms\AbstractPlatform
     public function setPrefersIdentityColumns($bool)
     {
         $this->_prefersIdentityColumns = (bool)$bool;
+    }
+
+    public function setSequenceNextValSql($sql)
+    {
+        $this->_sequenceNextValSql = $sql;
     }
 }

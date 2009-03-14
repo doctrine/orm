@@ -40,10 +40,12 @@ class Lexer
      * @var array
      */
     private $_tokens = array();
+
     /**
      * @todo Doc
      */
     private $_position = 0;
+
     /**
      * @todo Doc
      */
@@ -69,6 +71,12 @@ class Lexer
         $this->_scan($input);
     }
 
+    /**
+     * Checks whether a given token matches the current lookahead.
+     *
+     * @param <type> $token
+     * @return <type>
+     */
     public function isNextToken($token)
     {
         $la = $this->lookahead;

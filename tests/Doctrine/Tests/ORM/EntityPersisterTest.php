@@ -26,7 +26,7 @@ class EntityPersisterTest extends \Doctrine\Tests\OrmTestCase
         $this->_emMock = EntityManagerMock::create($this->_connMock);
         $this->_uowMock = new UnitOfWorkMock($this->_emMock);
         $this->_emMock->setUnitOfWork($this->_uowMock);
-        $this->_idGenMock = new SequenceMock($this->_emMock);
+        $this->_idGenMock = new SequenceMock($this->_emMock, 'seq');
         $this->_emMock->setIdGenerator('Doctrine\Tests\Models\Forum\ForumUser', $this->_idGenMock);
     }
     

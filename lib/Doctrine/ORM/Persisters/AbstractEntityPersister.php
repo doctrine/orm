@@ -215,14 +215,14 @@ abstract class AbstractEntityPersister
                 }
                 foreach ($assocMapping->getSourceToTargetKeyColumns() as $sourceColumn => $targetColumn) {
                     $otherClass = $this->_em->getClassMetadata($assocMapping->getTargetEntityName());
-                    if (is_null($newVal)) {
+                    if ($newVal === null) {
                         $result[$sourceColumn] = null;
                     } else {
                         $result[$sourceColumn] = $otherClass->getReflectionProperty(
                             $otherClass->getFieldName($targetColumn))->getValue($newVal);
                     }
                 }
-            } else if (is_null($newVal)) {
+            } else if ($newVal === null) {
                 $result[$columnName] = null;
             } else {
                 $result[$columnName] = $type->convertToDatabaseValue($newVal, $this->_conn->getDatabasePlatform());

@@ -21,6 +21,7 @@
 
 namespace Doctrine\DBAL\Platforms;
 
+use Doctrine\Common\DoctrineException;
 use Doctrine\DBAL\Connection;
 
 /**
