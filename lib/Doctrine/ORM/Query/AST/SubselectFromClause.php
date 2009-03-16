@@ -16,23 +16,23 @@
  *
  * This software consists of voluntary contributions made by many individuals
  * and is licensed under the LGPL. For more information, see
- * <http://www.phpdoctrine.org>.
+ * <http://www.doctrine-project.org>.
  */
 
 namespace Doctrine\ORM\Query\AST;
 
 /**
- * FromClause ::= "FROM" IdentificationVariableDeclaration {"," IdentificationVariableDeclaration}
+ * SubselectFromClause ::= "FROM" SubselectIdentificationVariableDeclaration {"," SubselectIdentificationVariableDeclaration}*
  *
  * @author      Guilherme Blanco <guilhermeblanco@hotmail.com>
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
- * @link        http://www.phpdoctrine.org
+ * @link        http://www.doctrine-project.org
  * @since       2.0
  * @version     $Revision$
  */
-class FromClause extends Node
+class SubselectFromClause extends Node
 {
-    protected $_identificationVariableDeclarations = array();
+    private $_identificationVariableDeclarations = array();
 
     public function __construct(array $identificationVariableDeclarations)
     {
@@ -40,7 +40,7 @@ class FromClause extends Node
     }    
     
     /* Getters */
-    public function getIdentificationVariableDeclarations()
+    public function geSubselectIdentificationVariableDeclarations()
     {
         return $this->_identificationVariableDeclarations;
     }

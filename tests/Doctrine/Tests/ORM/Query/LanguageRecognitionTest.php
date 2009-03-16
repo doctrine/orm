@@ -107,12 +107,12 @@ class LanguageRecognitionTest extends \Doctrine\Tests\OrmTestCase
     {
         $this->assertValidDql('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.id NOT IN (1)');
     }
-/*
+
     public function testExistsExpressionSupportedInWherePart()
     {
-        $this->assertValidDql('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE EXISTS (SELECT p.user_id FROM Doctrine\Tests\Models\CMS\CmsPhonenumber p WHERE p.user_id = u.id)');
+        $this->assertValidDql('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE EXISTS (SELECT p.id FROM Doctrine\Tests\Models\CMS\CmsPhonenumber p WHERE p.phonenumber = 1234)');
     }
-
+/*
     public function testNotExistsExpressionSupportedInWherePart()
     {
         $this->assertValidDql('SELECT u.* FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE NOT EXISTS (SELECT p.user_id FROM Doctrine\Tests\Models\CMS\CmsPhonenumber p WHERE p.user_id = u.id)');

@@ -384,7 +384,8 @@ class Parser
             if (count($parts) == 2) {
                 $expr->setIsSimpleStateFieldPathExpression(true);
                 if ( ! $qComps[$dqlAlias]['metadata']->hasField($parts[1])) {
-                    $this->syntaxError();
+                    $this->semanticalError('The class ' . $qComps[$dqlAlias]['metadata']->getClassName()
+                            . ' has no simple state field named ' . $parts[1]);
                 }
             } else {
                 $embeddedClassFieldSeen = false;
@@ -417,7 +418,8 @@ class Parser
                 }
                 // Last part MUST be a simple state field
                 if ( ! $qComps[$dqlAlias]['metadata']->hasField($parts[$numParts-1])) {
-                    $this->syntaxError();
+                    $this->semanticalError('The class ' . $qComps[$dqlAlias]['metadata']->getClassName()
+                            . ' has no simple state field named ' . $parts[$numParts-1]);
                 }
             }
         }
@@ -796,7 +798,8 @@ class Parser
                 $class = $this->_em->getClassMetadata($assoc->getTargetEntityName());
                 $assocSeen = true;
             } else {
-                $this->syntaxError();
+                $this->semanticalError('The class ' . $class->getClassName() .
+                        ' has no field or association named ' . $part);
             }
             $parts[] = $part;
         }
@@ -1127,6 +1130,118 @@ class Parser
         $this->match(')');
 
         return $inExpression;
+    }
+
+    /**
+     * ExistsExpression ::= ["NOT"] "EXISTS" "(" Subselect ")"
+     */
+    private function _ExistsExpression()
+    {
+        $not = false;
+        if ($this->_lexer->isNextToken(Lexer::T_NOT)) {
+            $this->match(Lexer::T_NOT);
+            $not = true;
+        }
+        $this->match(Lexer::T_EXISTS);
+        $this->match('(');
+        $existsExpression = new AST\ExistsExpression($this->_Subselect());
+        $this->match(')');
+        $existsExpression->setNot($not);
+        return $existsExpression;
+    }
+
+    /**
+     * 	Subselect ::= SimpleSelectClause SubselectFromClause [WhereClause] [GroupByClause] [HavingClause] [OrderByClause]
+     */
+    private function _Subselect()
+    {
+        $subselect = new AST\Subselect($this->_SimpleSelectClause(), $this->_SubselectFromClause());
+
+        $subselect->setWhereClause(
+                $this->_lexer->isNextToken(Lexer::T_WHERE) ? $this->_WhereClause() : null
+                );
+
+        $subselect->setGroupByClause(
+                $this->_lexer->isNextToken(Lexer::T_GROUP) ? $this->_GroupByClause() : null
+                );
+
+        $subselect->setHavingClause(
+                $this->_lexer->isNextToken(Lexer::T_HAVING) ? $this->_HavingClause() : null
+                );
+
+        $subselect->setOrderByClause(
+                $this->_lexer->isNextToken(Lexer::T_ORDER) ? $this->_OrderByClause() : null
+                );
+
+        return $subselect;
+    }
+
+    /**
+     * SimpleSelectClause ::= "SELECT" ["DISTINCT"] SimpleSelectExpression
+     */
+    private function _SimpleSelectClause()
+    {
+        $distinct = false;
+        $this->match(Lexer::T_SELECT);
+        if ($this->_lexer->isNextToken(Lexer::T_DISTINCT)) {
+            $this->match(Lexer::T_DISTINCT);
+            $distinct = true;
+        }
+        $simpleSelectClause = new AST\SimpleSelectClause($this->_SimpleSelectExpression());
+        $simpleSelectClause->setDistinct($distinct);
+        return $simpleSelectClause;
+    }
+
+    /**
+     * SubselectFromClause ::= "FROM" SubselectIdentificationVariableDeclaration {"," SubselectIdentificationVariableDeclaration}*
+     */
+    private function _SubselectFromClause()
+    {
+        $this->match(Lexer::T_FROM);
+        $identificationVariables = array();
+        $identificationVariables[] = $this->_SubselectIdentificationVariableDeclaration();
+        while ($this->_lexer->isNextToken(',')) {
+            $this->match(',');
+            $identificationVariables[] = $this->_SubselectIdentificationVariableDeclaration();
+        }
+        return new AST\SubselectFromClause($identificationVariables);
+    }
+
+    /**
+     * SubselectIdentificationVariableDeclaration ::= IdentificationVariableDeclaration | (AssociationPathExpression ["AS"] AliasIdentificationVariable)
+     */
+    private function _SubselectIdentificationVariableDeclaration()
+    {
+        $peek = $this->_lexer->glimpse();
+        if ($peek['value'] == '.') {
+            $subselectIdentificationVarDecl = new AST\SubselectIdentificationVariableDeclaration;
+            $subselectIdentificationVarDecl->setAssociationPathExpression($this->_AssociationPathExpression());
+            $this->match(Lexer::T_AS);
+            $this->match(Lexer::T_IDENTIFIER);
+            $subselectIdentificationVarDecl->setAliasIdentificationVariable($this->_lexer->token['value']);
+            return $subselectIdentificationVarDecl;
+        } else {
+            return $this->_IdentificationVariableDeclaration();
+        }
+    }
+
+    /**
+     * SimpleSelectExpression ::= SingleValuedPathExpression | IdentificationVariable | AggregateExpression
+     */
+    private function _SimpleSelectExpression()
+    {
+        if ($this->_lexer->isNextToken(Lexer::T_IDENTIFIER)) {
+            // SingleValuedPathExpression | IdentificationVariable
+            $peek = $this->_lexer->glimpse();
+            if ($peek['value'] == '.') {
+                return $this->_PathExpressionInSelect();
+            } else {
+                $this->match($this->_lexer->lookahead['value']);
+                return $this->_lexer->token['value'];
+            }
+        } else {
+            return $this->_AggregateExpression();
+        }
     }
 
     /**
