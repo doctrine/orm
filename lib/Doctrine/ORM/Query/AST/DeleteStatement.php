@@ -32,11 +32,10 @@ namespace Doctrine\ORM\Query\AST;
  */
 class DeleteStatement extends Node
 {
-    protected $_deleteClause;
-    protected $_whereClause;
-    
-    /* Setters */
-    public function setDeleteClause($deleteClause)
+    private $_deleteClause;
+    private $_whereClause;
+
+    public function __construct($deleteClause)
     {
         $this->_deleteClause = $deleteClause;
     }
@@ -46,7 +45,6 @@ class DeleteStatement extends Node
         $this->_whereClause = $whereClause;
     }
     
-    /* Getters */
     public function getDeleteClause()
     {
         return $this->_deleteClause;
@@ -55,15 +53,5 @@ class DeleteStatement extends Node
     public function getWhereClause()
     {
         return $this->_whereClause;
-    }
-    
-    /* REMOVE ME LATER. COPIED METHODS FROM SPLIT OF PRODUCTION INTO "AST" AND "PARSER" */
-    
-    public function buildSql()
-    {
-        // The 1=1 is needed to workaround the affected_rows in MySQL.
-        // Simple "DELETE FROM table_name" gives 0 affected rows.
-        return $this->_deleteClause->buildSql() . (($this->_whereClause !== null)
-             ? ' ' . $this->_whereClause->buildSql() : ' WHERE 1 = 1');
     }
 }

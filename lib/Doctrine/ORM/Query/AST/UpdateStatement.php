@@ -22,7 +22,7 @@
 namespace Doctrine\ORM\Query\AST;
 
 /**
- * SelectClause = "SELECT" ["DISTINCT"] SelectExpression {"," SelectExpression}
+ * UpdateStatement = UpdateClause [WhereClause]
  *
  * @author      Guilherme Blanco <guilhermeblanco@hotmail.com>
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
@@ -30,43 +30,28 @@ namespace Doctrine\ORM\Query\AST;
  * @since       2.0
  * @version     $Revision$
  */
-class SelectClause extends Node
+class UpdateStatement extends Node
 {
-    protected $_isDistinct;
+    private $_updateClause;
+    private $_whereClause;
 
-    protected $_selectExpressions = array();
-
-    public function __construct(array $selectExpressions, $isDistinct)
+    public function __construct($updateClause)
     {
-        $this->_isDistinct = $isDistinct;
-        $this->_selectExpressions = $selectExpressions;
+        $this->_updateClause = $updateClause;
+    }
+
+    public function setWhereClause($whereClause)
+    {
+        $this->_whereClause = $whereClause;
     }
     
-    /* Getters */
-    public function isDistinct()
+    public function getUpdateClause()
     {
-        return $this->_isDistinct;
+        return $this->_updateClause;
     }
 
-    public function getSelectExpressions()
+    public function getWhereClause()
     {
-        return $this->_selectExpressions;
+        return $this->_whereClause;
     }
-    
-    /* REMOVE ME LATER. COPIED METHODS FROM SPLIT OF PRODUCTION INTO "AST" AND "PARSER" */
-    public function buildSql()
-    {
-        return 'SELECT ' . (($this->_isDistinct) ? 'DISTINCT ' : '')
-             . implode(', ', $this->_mapSelectExpressions());
-    }
-
-    protected function _mapSelectExpressions()
-    {
-        return array_map(array(&$this, '_mapSelectExpression'), $this->_selectExpressions);
-    }
-
-    protected function _mapSelectExpression($value)
-    {
-        return is_object($value) ? $value->buildSql() : $value;
-    }
-}
+}    

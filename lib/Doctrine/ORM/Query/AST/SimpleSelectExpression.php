@@ -16,53 +16,43 @@
  *
  * This software consists of voluntary contributions made by many individuals
  * and is licensed under the LGPL. For more information, see
- * <http://www.phpdoctrine.org>.
+ * <http://www.doctrine-project.org>.
  */
 
 namespace Doctrine\ORM\Query\AST;
 
 /**
- * UpdateStatement = UpdateClause [WhereClause]
+ * SimpleSelectExpression ::= StateFieldPathExpression | IdentificationVariable
+ *      | (AggregateExpression [["AS"] FieldAliasIdentificationVariable])
  *
  * @author      Guilherme Blanco <guilhermeblanco@hotmail.com>
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
- * @link        http://www.phpdoctrine.org
+ * @link        http://www.doctrine-project.org
  * @since       2.0
  * @version     $Revision$
  */
-class UpdateStatement extends Node
+class SimpleSelectExpression extends Node
 {
-    protected $_updateClause;
-    protected $_whereClause;
-    
-    /* Setters */
-    public function setUpdateClause($updateClause)
+    private $_expression;
+    private $_fieldIdentificationVariable;
+
+    public function __construct($expression)
     {
-        $this->_updateClause = $updateClause;
+        $this->_expression = $expression;
+    }    
+    
+    public function getExpression()
+    {
+        return $this->_expression;
+    }
+    
+    public function getFieldIdentificationVariable()
+    {
+        return $this->_fieldIdentificationVariable;
     }
 
-    public function setWhereClause($whereClause)
+    public function setFieldIdentificationVariable($fieldAlias)
     {
-        $this->_whereClause = $whereClause;
+        $this->_fieldIdentificationVariable = $fieldAlias;
     }
-    
-    /* Getters */
-    public function getUpdateClause()
-    {
-        return $this->_updateClause;
-    }
-
-    public function getWhereClause()
-    {
-        return $this->_whereClause;
-    }
-    
-    /* REMOVE ME LATER. COPIED METHODS FROM SPLIT OF PRODUCTION INTO "AST" AND "PARSER" */
-    public function buildSql()
-    {
-        // The 1=1 is needed to workaround the affected_rows in MySQL.
-        // Simple "UPDATE table_name SET column_name = value" gives 0 affected rows.
-        return $this->_updateClause->buildSql() . (($this->_whereClause !== null)
-             ? ' ' . $this->_whereClause->buildSql() : ' WHERE 1 = 1');
-    }
-}    
+}

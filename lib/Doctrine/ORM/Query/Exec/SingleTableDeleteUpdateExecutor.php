@@ -16,10 +16,12 @@
  *
  * This software consists of voluntary contributions made by many individuals
  * and is licensed under the LGPL. For more information, see
- * <http://www.phpdoctrine.org>.
+ * <http://www.doctrine-project.org>.
  */
 
 namespace Doctrine\ORM\Query\Exec;
+
+use Doctrine\ORM\Query\AST;
 
 /**
  * Executor that executes the SQL statements for DQL DELETE/UPDATE statements on classes
@@ -28,16 +30,20 @@ namespace Doctrine\ORM\Query\Exec;
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @author      Roman Borschel <roman@code-factory.org>
  * @version     $Revision$
- * @link        www.phpdoctrine.org
+ * @link        www.doctrine-project.org
  * @since       2.0
  * @todo This is exactly the same as SingleSelectExecutor. Unify in SingleStatementExecutor. 
  */
 class SingleTableDeleteUpdateExecutor extends AbstractExecutor
 {
-    public function __construct(\Doctrine\ORM\Query\AST\Node $AST)
+    public function __construct(AST\Node $AST, $sqlWalker)
     {
-        parent::__construct($AST);        
-        $this->_sqlStatements = $AST->buildSql();
+        parent::__construct($AST, $sqlWalker);
+        if ($AST instanceof AST\UpdateStatement) {
+            $this->_sqlStatements = $sqlWalker->walkUpdateStatement($AST);
+        } else if ($AST instanceof AST\DeleteStatement) {
+            $this->_sqlStatements = $sqlWalker->walkDeleteStatement($AST);
+        }
     }
     
     public function execute(\Doctrine\DBAL\Connection $conn, array $params)

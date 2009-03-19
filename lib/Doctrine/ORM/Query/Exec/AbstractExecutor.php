@@ -79,7 +79,7 @@ abstract class AbstractExecutor implements \Serializable
                    }
             } else ...
             */
-            return new SingleTableDeleteUpdateExecutor($AST);
+            return new SingleTableDeleteUpdateExecutor($AST, $sqlWalker);
         } else {
             return new SingleSelectExecutor($AST, $sqlWalker);
         }

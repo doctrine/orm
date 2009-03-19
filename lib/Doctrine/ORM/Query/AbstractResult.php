@@ -17,7 +17,7 @@
  *
  * This software consists of voluntary contributions made by many individuals
  * and is licensed under the LGPL. For more information, see
- * <http://www.phpdoctrine.org>.
+ * <http://www.doctrine-project.org>.
  */
 
 namespace Doctrine\ORM\Query;
@@ -26,7 +26,7 @@ namespace Doctrine\ORM\Query;
  * Doctrine_ORM_Query_AbstractResult
  *
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
- * @link        www.phpdoctrine.com
+ * @link        www.doctrine-project.com
  * @since       2.0
  * @version     $Revision: 1393 $
  * @author      Guilherme Blanco <guilhermeblanco@hotmail.com>

@@ -181,27 +181,16 @@ class SqlWalker
         }
         else if ($selectExpression->getExpression() instanceof AST\AggregateExpression) {
             $aggExpr = $selectExpression->getExpression();
-
             if ( ! $selectExpression->getFieldIdentificationVariable()) {
                 $alias = $this->_scalarAliasCounter++;
             } else {
                 $alias = $selectExpression->getFieldIdentificationVariable();
             }
-
-            $parts = $aggExpr->getPathExpression()->getParts();
-            $dqlAlias = $parts[0];
-            $fieldName = $parts[1];
-
-            $qComp = $this->_parserResult->getQueryComponent($dqlAlias);
-            $columnName = $qComp['metadata']->getColumnName($fieldName);
-            
-            $sql .= $aggExpr->getFunctionName() . '(';
-            if ($aggExpr->isDistinct()) $sql .= 'DISTINCT ';
-            $sql .= $this->_dqlToSqlAliasMap[$dqlAlias] . '.' . $columnName;
-            $sql .= ') AS dctrn__' . $alias;
+            $sql .= $this->walkAggregateExpression($aggExpr) . ' AS dctrn__' . $alias;
         }
-        //TODO: else if Subselect
-        else {
+        else if ($selectExpression->getExpression() instanceof AST\Subselect) {
+            $sql .= $this->walkSubselect($selectExpression->getExpression());
+        } else {
             $dqlAlias = $selectExpression->getExpression();
             $queryComp = $this->_parserResult->getQueryComponent($dqlAlias);
             $class = $queryComp['metadata'];
@@ -218,6 +207,80 @@ class SqlWalker
                         ' AS ' . $sqlTableAlias . '__' . $fieldMapping['columnName'];
             }
         }
+        return $sql;
+    }
+
+    public function walkSubselect($subselect)
+    {
+        $sql = $this->walkSimpleSelectClause($subselect->getSimpleSelectClause());
+        $sql .= $this->walkSubselectFromClause($subselect->getSubselectFromClause());
+        $sql .= $subselect->getWhereClause() ? $this->walkWhereClause($subselect->getWhereClause()) : '';
+        $sql .= $subselect->getGroupByClause() ? $this->walkGroupByClause($subselect->getGroupByClause()) : '';
+
+        //... more clauses
+        return $sql;
+    }
+
+    public function walkSubselectFromClause($subselectFromClause)
+    {
+        $sql = ' FROM ';
+        $identificationVarDecls = $subselectFromClause->getSubselectIdentificationVariableDeclarations();
+        $firstIdentificationVarDecl = $identificationVarDecls[0];
+        $rangeDecl = $firstIdentificationVarDecl->getRangeVariableDeclaration();
+        $sql .= $rangeDecl->getClassMetadata()->getTableName() . ' '
+                . $this->_dqlToSqlAliasMap[$rangeDecl->getAliasIdentificationVariable()];
+
+        foreach ($firstIdentificationVarDecl->getJoinVariableDeclarations() as $joinVarDecl) {
+            $sql .= $this->walkJoinVariableDeclaration($joinVarDecl);
+        }
+
+        return $sql;
+    }
+
+    public function walkSimpleSelectClause($simpleSelectClause)
+    {
+        $sql = 'SELECT';
+        if ($simpleSelectClause->isDistinct()) {
+            $sql .= ' DISTINCT';
+        }
+        $sql .= $this->walkSimpleSelectExpression($simpleSelectClause->getSimpleSelectExpression());
+        return $sql;
+    }
+
+    public function walkSimpleSelectExpression($simpleSelectExpression)
+    {
+        $sql = '';
+        $expr = $simpleSelectExpression->getExpression();
+        if ($expr instanceof AST\PathExpression) {
+            //...
+        } else if ($expr instanceof AST\AggregateExpression) {
+            if ( ! $simpleSelectExpression->getFieldIdentificationVariable()) {
+                $alias = $this->_scalarAliasCounter++;
+            } else {
+                $alias = $simpleSelectExpression->getFieldIdentificationVariable();
+            }
+            $sql .= $this->walkAggregateExpression($expr) . ' AS dctrn__' . $alias;
+        } else {
+            // $expr is IdentificationVariable
+            //...
+        }
+        return $sql;
+    }
+
+    public function walkAggregateExpression($aggExpression)
+    {
+        $sql = '';
+        $parts = $aggExpression->getPathExpression()->getParts();
+        $dqlAlias = $parts[0];
+        $fieldName = $parts[1];
+
+        $qComp = $this->_parserResult->getQueryComponent($dqlAlias);
+        $columnName = $qComp['metadata']->getColumnName($fieldName);
+
+        $sql .= $aggExpression->getFunctionName() . '(';
+        if ($aggExpression->isDistinct()) $sql .= 'DISTINCT ';
+        $sql .= $this->_dqlToSqlAliasMap[$dqlAlias] . '.' . $columnName;
+        $sql .= ')';
         return $sql;
     }
 

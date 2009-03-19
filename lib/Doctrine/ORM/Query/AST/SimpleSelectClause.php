@@ -22,7 +22,7 @@
 namespace Doctrine\ORM\Query\AST;
 
 /**
- * SimpleSelectClause  ::= "SELECT" [DISTINCT"] SimpleSelectExpression
+ * SimpleSelectClause  ::= "SELECT" ["DISTINCT"] SimpleSelectExpression
  *
  * @author      Guilherme Blanco <guilhermeblanco@hotmail.com>
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL

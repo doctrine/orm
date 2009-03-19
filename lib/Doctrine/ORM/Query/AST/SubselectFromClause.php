@@ -40,7 +40,7 @@ class SubselectFromClause extends Node
     }    
     
     /* Getters */
-    public function geSubselectIdentificationVariableDeclarations()
+    public function getSubselectIdentificationVariableDeclarations()
     {
         return $this->_identificationVariableDeclarations;
     }
