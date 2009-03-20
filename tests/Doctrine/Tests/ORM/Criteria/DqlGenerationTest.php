@@ -16,30 +16,30 @@
  *
  * This software consists of voluntary contributions made by many individuals
  * and is licensed under the LGPL. For more information, see
- * <http://www.phpdoctrine.org>.
+ * <http://www.doctrine-project.org>.
  */
+
+namespace Doctrine\Tests\ORM\Query;
+
+require_once __DIR__ . '/../../TestInit.php';
 
 /**
  * Test case for testing the saving and referencing of query identifiers.
  *
- * @package     Doctrine
- * @subpackage  Query
  * @author      Guilherme Blanco <guilhermeblanco@hotmail.com>
  * @author      Janne Vanhala <jpvanhal@cc.hut.fi>
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
- * @link        http://www.phpdoctrine.org
+ * @link        http://www.doctrine-project.org
  * @since       2.0
  * @version     $Revision$
  */
-class Orm_Query_DqlGenerationTest extends Doctrine_OrmTestCase
+class DqlGenerationTest extends \Doctrine\Tests\OrmTestCase
 {
     protected function createQuery()
     {
-        $entityManager = $this->_em;
-        return $entityManager->createQuery();
+        return $this->_em->createQuery();
     }
-
 
     public function testSelect()
     {

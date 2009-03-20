@@ -23,11 +23,9 @@ class AllTests
         $suite->addTestSuite('Doctrine\Tests\ORM\Query\SelectSqlGenerationTest');
         $suite->addTestSuite('Doctrine\Tests\ORM\Query\LanguageRecognitionTest');
         $suite->addTestSuite('Doctrine\Tests\ORM\Query\LexerTest');
+        $suite->addTestSuite('Doctrine\Tests\ORM\Query\DeleteSqlGenerationTest');
         
         /*
-        
-        $suite->addTestSuite('Orm_Query_DqlGenerationTest');
-        $suite->addTestSuite('Orm_Query_DeleteSqlGenerationTest');
         $suite->addTestSuite('Orm_Query_UpdateSqlGenerationTest');*/
 
         return $suite;

@@ -307,7 +307,20 @@ class SqlWalker
 
     public function walkDeleteStatement(AST\DeleteStatement $AST)
     {
+        $sql = $this->walkDeleteClause($AST->getDeleteClause());
+        $sql .= $AST->getWhereClause() ? $this->walkWhereClause($AST->getWhereClause()) : '';
+        return $sql;
+    }
 
+    public function walkDeleteClause(AST\DeleteClause $deleteClause)
+    {
+        $sql = 'DELETE FROM ';
+        $class = $this->_em->getClassMetadata($deleteClause->getAbstractSchemaName());
+        $sql .= $class->getTableName();
+        if ($deleteClause->getAliasIdentificationVariable()) {
+            $sql .= ' ' . $this->_dqlToSqlAliasMap[$deleteClause->getAliasIdentificationVariable()];
+        }
+        return $sql;
     }
 
     public function walkWhereClause($whereClause)
@@ -328,7 +341,7 @@ class SqlWalker
     public function walkConditionalFactor($factor)
     {
         $sql = '';
-        if ($factor->isNot()) $sql .= ' NOT ';
+        if ($factor->isNot()) $sql .= 'NOT ';
         $primary = $factor->getConditionalPrimary();
         if ($primary->isSimpleConditionalExpression()) {
             $simpleCond = $primary->getSimpleConditionalExpression();
