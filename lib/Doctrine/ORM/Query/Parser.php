@@ -60,21 +60,21 @@ class Parser
      *
      * @var Doctrine_ORM_Query_Scanner
      */
-    protected $_lexer;
+    private $_lexer;
 
     /**
      * The Parser Result object.
      *
      * @var Doctrine_ORM_Query_ParserResult
      */
-    protected $_parserResult;
+    private $_parserResult;
     
     /**
      * The EntityManager.
      *
      * @var EnityManager
      */
-    protected $_em;
+    private $_em;
 
     /**
      * Creates a new query parser object.
@@ -131,8 +131,7 @@ class Parser
             $this->syntaxError($this->_lexer->getLiteral($token));
         }
 
-        $this->_lexer->next();
-        return true;
+        $this->_lexer->moveNext();
     }
 
     public function isA($value, $token)
@@ -322,7 +321,7 @@ class Parser
      */
     private function _QueryLanguage()
     {
-        $this->_lexer->next();
+        $this->_lexer->moveNext();
         switch ($this->_lexer->lookahead['type']) {
             case Lexer::T_SELECT:
                 return $this->_SelectStatement();

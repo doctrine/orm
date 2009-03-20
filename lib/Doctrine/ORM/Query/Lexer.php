@@ -114,7 +114,7 @@ class Lexer
     public $lookahead;
 
     /**
-     * @var array The last matched token.
+     * @var array The last matched/seen token.
      */
     public $token;
 
@@ -151,16 +151,42 @@ class Lexer
      *
      * @return array|null the next token; null if there is no more tokens left
      */
-    public function next()
+    public function moveNext()
     {
         $this->token = $this->lookahead;
         $this->_peek = 0;
         if (isset($this->_tokens[$this->_position])) {
             $this->lookahead = $this->_tokens[$this->_position++];
+            return true;
         } else {
             $this->lookahead = null;
+            return false;
         }
     }
+
+    /**
+     * Attempts to match the given token with the current lookahead token.
+     *
+     * If they match, the lexer moves on to the next token, otherwise a syntax error
+     * is raised.
+     *
+     * @param int|string token type or value
+     * @return bool True, if tokens match; false otherwise.
+     */
+    /*public function match($token)
+    {
+        if (is_string($token)) {
+            $isMatch = ($this->lookahead['value'] === $token);
+        } else {
+            $isMatch = ($this->lookahead['type'] === $token);
+        }
+
+        if ( ! $isMatch) {
+            $this->syntaxError($this->getLiteral($token));
+        }
+
+        $this->moveNext();
+    }*/
 
     /**
      * Checks if an identifier is a keyword and returns its correct type.
