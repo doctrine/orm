@@ -43,8 +43,8 @@ class MultiTableDeleteExecutor extends AbstractExecutor
      */
     public function __construct(\Doctrine\ORM\Query\AST $AST)
     {
-        // 1. Create a INSERT ... SELECT statement where the SELECT statement
-        // selects the identifiers from the temporary ID table and uses the WhereClause of the $AST.
+        // 1. Create a INSERT INTO temptable ... VALUES ( SELECT statement where the SELECT statement
+        // selects the identifiers and uses the WhereClause of the $AST.
 
         // 2. Create ID subselect statement used in DELETE .... WHERE ... IN (subselect)
 
