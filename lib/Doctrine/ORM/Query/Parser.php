@@ -38,6 +38,8 @@ use Doctrine\ORM\Query\Exec;
  */
 class Parser
 {
+    const SCALAR_QUERYCOMPONENT_ALIAS = 'dctrn';
+
     /**
      * The minimum number of tokens read after last detected error before
      * another error can be reported.
@@ -85,13 +87,11 @@ class Parser
     {
         $this->_em = $query->getEntityManager();
         $this->_lexer = new Lexer($query->getDql());
-        
-        $defaultQueryComponent = ParserRule::DEFAULT_QUERYCOMPONENT;
 
         $this->_parserResult = new ParserResult(
             '',
             array( // queryComponent
-                $defaultQueryComponent => array(
+                self::SCALAR_QUERYCOMPONENT_ALIAS => array(
                     'metadata' => null,
                     'parent'   => null,
                     'relation' => null,
@@ -100,7 +100,7 @@ class Parser
                 ),
             ),
             array( // tableAliasMap
-                $defaultQueryComponent => $defaultQueryComponent,
+                self::SCALAR_QUERYCOMPONENT_ALIAS => self::SCALAR_QUERYCOMPONENT_ALIAS,
             )
         );
         
@@ -215,7 +215,6 @@ class Parser
             $token = $this->_lexer->lookahead;
         }
 
-        // Formatting message
         $message = 'line 0, col ' . (isset($token['position']) ? $token['position'] : '-1') . ': Error: ';
 
         if ($expected !== '') {
@@ -272,21 +271,7 @@ class Parser
     public function getEntityManager()
     {
         return $this->_em;
-    }    
-
-    /**
-     * Retrieve the piece of DQL string given the token position
-     *
-     * @param array $token Token that it was processing.
-     * @return string Piece of DQL string.
-     */
-    /*public function getQueryPiece($token, $previousChars = 10, $nextChars = 10)
-    {
-        $start = max(0, $token['position'] - $previousChars);
-        $end = max($token['position'] + $nextChars, strlen($this->_input));
-        
-        return substr($this->_input, $start, $end);
-    }*/
+    }
 
     /**
      * Checks if the next-next (after lookahead) token start a function.
@@ -296,7 +281,7 @@ class Parser
     private function _isFunction()
     {
         $next = $this->_lexer->glimpse();
-        return ($next['value'] === '(');
+        return $next['value'] === '(';
     }
 
     /**
@@ -360,7 +345,7 @@ class Parser
     }
 
     /**
-     * 
+     * Begins a new stack of deferred path expressions.
      */
     private function _beginDeferredPathExpressionStack()
     {
@@ -368,8 +353,8 @@ class Parser
     }
 
     /**
-     * Processes pending path expressions that were encountered while parsing
-     * select expressions. These will be validated to make sure they are indeed
+     * Processes the topmost stack of deferred path expressions.
+     * These will be validated to make sure they are indeed
      * valid <tt>StateFieldPathExpression</tt>s and additional information
      * is attached to their AST nodes.
      */
@@ -451,6 +436,8 @@ class Parser
         if ($this->_lexer->isNextToken(Lexer::T_IDENTIFIER)) {
             $this->match(Lexer::T_IDENTIFIER);
             $aliasIdentificationVariable = $this->_lexer->token['value'];
+        } else {
+            $aliasIdentificationVariable = $abstractSchemaName;
         }
         $this->match(Lexer::T_SET);
         $updateItems = array();
@@ -460,18 +447,17 @@ class Parser
             $updateItems[] = $this->_UpdateItem();
         }
 
-        if ($aliasIdentificationVariable) {
-            $classMetadata = $this->_em->getClassMetadata($abstractSchemaName);
-            // Building queryComponent
-            $queryComponent = array(
-                'metadata' => $classMetadata,
-                'parent'   => null,
-                'relation' => null,
-                'map'      => null,
-                'scalar'   => null,
-            );
-            $this->_parserResult->setQueryComponent($aliasIdentificationVariable, $queryComponent);
-        }
+        $classMetadata = $this->_em->getClassMetadata($abstractSchemaName);
+        // Building queryComponent
+        $queryComponent = array(
+            'metadata' => $classMetadata,
+            'parent'   => null,
+            'relation' => null,
+            'map'      => null,
+            'scalar'   => null,
+        );
+        $this->_parserResult->setQueryComponent($aliasIdentificationVariable, $queryComponent);
+        $this->_parserResult->setDefaultQueryComponentAlias($aliasIdentificationVariable);
 
         $updateClause = new AST\UpdateClause($abstractSchemaName, $updateItems);
         $updateClause->setAliasIdentificationVariable($aliasIdentificationVariable);
@@ -490,6 +476,8 @@ class Parser
             $this->match(Lexer::T_IDENTIFIER);
             $identVariable = $this->_lexer->token['value'];
             $this->match('.');
+        } else {
+            $identVariable = $this->_parserResult->getDefaultQueryComponentAlias();
         }
         $this->match(Lexer::T_IDENTIFIER);
         $field = $this->_lexer->token['value'];
@@ -551,18 +539,22 @@ class Parser
         if ($this->_lexer->isNextToken(Lexer::T_IDENTIFIER)) {
             $this->match(Lexer::T_IDENTIFIER);
             $deleteClause->setAliasIdentificationVariable($this->_lexer->token['value']);
-
-            $classMetadata = $this->_em->getClassMetadata($deleteClause->getAbstractSchemaName());
-            // Building queryComponent
-            $queryComponent = array(
-                'metadata' => $classMetadata,
-                'parent'   => null,
-                'relation' => null,
-                'map'      => null,
-                'scalar'   => null,
-            );
-            $this->_parserResult->setQueryComponent($this->_lexer->token['value'], $queryComponent);
+        } else {
+            $deleteClause->setAliasIdentificationVariable($deleteClause->getAbstractSchemaName());
         }
+
+        $classMetadata = $this->_em->getClassMetadata($deleteClause->getAbstractSchemaName());
+        $queryComponent = array(
+            'metadata' => $classMetadata,
+            'parent'   => null,
+            'relation' => null,
+            'map'      => null,
+            'scalar'   => null,
+        );
+        $this->_parserResult->setQueryComponent($deleteClause->getAliasIdentificationVariable(),
+                $queryComponent);
+        $this->_parserResult->setDefaultQueryComponentAlias($deleteClause->getAliasIdentificationVariable());
+
         return $deleteClause;
     }
 
@@ -599,6 +591,9 @@ class Parser
         $this->match(Lexer::T_FROM);
         $identificationVariableDeclarations = array();
         $identificationVariableDeclarations[] = $this->_IdentificationVariableDeclaration();
+        $this->_parserResult->setDefaultQueryComponentAlias(
+            $identificationVariableDeclarations[0]->getRangeVariableDeclaration()->getAbstractSchemaName()
+        );
         while ($this->_lexer->isNextToken(',')) {
             $this->match(',');
             $identificationVariableDeclarations[] = $this->_IdentificationVariableDeclaration();
@@ -1345,6 +1340,7 @@ class Parser
                 $this->match(',');
                 $literals[] = $this->_Literal();
             }
+            $inExpression->setLiterals($literals);
         }
         $this->match(')');
 

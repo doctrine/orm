@@ -16,14 +16,16 @@
  *
  * This software consists of voluntary contributions made by many individuals
  * and is licensed under the LGPL. For more information, see
- * <http://www.phpdoctrine.org>.
+ * <http://www.doctrine-project.org>.
  */
+
+namespace Doctrine\Tests\ORM\Query;
+
+require_once __DIR__ . '/../../TestInit.php';
 
 /**
  * Test case for testing the saving and referencing of query identifiers.
  *
- * @package     Doctrine
- * @subpackage  Query
  * @author      Guilherme Blanco <guilhermeblanco@hotmail.com>
  * @author      Janne Vanhala <jpvanhal@cc.hut.fi>
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
@@ -35,34 +37,36 @@
  *              testcases later since we'll have a lot of them and we might want to have special SQL
  *              generation tests for some dbms specific SQL syntaxes.
  */
-class Orm_Query_UpdateSqlGenerationTest extends Doctrine_OrmTestCase
+class UpdateSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
 {
+    private $_em;
+
+    protected function setUp() {
+        $this->_em = $this->_getTestEntityManager();
+    }
+
     public function assertSqlGeneration($dqlToBeTested, $sqlToBeConfirmed)
     {
         try {
-            $entityManager = $this->_em;
-            $query = $entityManager->createQuery($dqlToBeTested);
-
+            $query = $this->_em->createQuery($dqlToBeTested);
             parent::assertEquals($sqlToBeConfirmed, $query->getSql());
-
             $query->free();
-        } catch (Doctrine_Exception $e) {
+        } catch (\Exception $e) {
             $this->fail($e->getMessage());
         }
     }
 
-
     public function testWithoutWhere()
     {
-        // NO WhereClause
         $this->assertSqlGeneration(
-            'UPDATE CmsUser u SET name = ?', 
-            'UPDATE cms_user cu SET cu.name = ? WHERE 1 = 1'
+            'UPDATE Doctrine\Tests\Models\CMS\CmsUser u SET u.name = ?1',
+            'UPDATE cms_users c0 SET c0.name = ?'
         );
 
         $this->assertSqlGeneration(
-            'UPDATE CmsUser u SET name = ?, username = ?', 
-            'UPDATE cms_user cu SET cu.name = ?, cu.username = ? WHERE 1 = 1'
+            'UPDATE Doctrine\Tests\Models\CMS\CmsUser u SET u.name = ?1, u.username = ?2',
+            'UPDATE cms_users c0 SET c0.name = ?, c0.username = ?'
         );
     }
+ 
 }

@@ -218,19 +218,17 @@ class DeleteSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
         );
     }
 
-/*
     public function testWithExprAndIn()
     {
-        // "WHERE" Expression InExpression
         $this->assertSqlGeneration(
-            'DELETE Doctrine\Tests\Models\CMS\CmsUser u WHERE u.id IN ( ?, ?, ?, ? )',
+            'DELETE Doctrine\Tests\Models\CMS\CmsUser u WHERE u.id IN ( ?1, ?2, ?3, ?4 )',
             'DELETE FROM cms_users c0 WHERE c0.id IN (?, ?, ?, ?)'
         );
 
         $this->assertSqlGeneration(
-            'DELETE Doctrine\Tests\Models\CMS\CmsUser u WHERE u.id NOT IN ( ?, ? )',
+            'DELETE Doctrine\Tests\Models\CMS\CmsUser u WHERE u.id NOT IN ( ?1, ?2 )',
             'DELETE FROM cms_users c0 WHERE c0.id NOT IN (?, ?)'
         );
     }
- */
+ 
 }

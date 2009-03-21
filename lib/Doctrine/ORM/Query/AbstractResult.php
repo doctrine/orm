@@ -62,6 +62,8 @@ abstract class AbstractResult
      */
     protected $_enumParams;
 
+    protected $_defaultQueryComponentAlias;
+
     /**
      * Cannot be called directly, factory methods handle this job.
      *
@@ -108,6 +110,24 @@ abstract class AbstractResult
     public function getQueryComponents()
     {
         return $this->_queryComponents;
+    }
+
+    /**
+     *
+     */
+    public function getDefaultQueryComponentAlias()
+    {
+        return $this->_defaultQueryComponentAlias;
+    }
+
+    /**
+     * 
+     *
+     * @param <type> $alias
+     */
+    public function setDefaultQueryComponentAlias($alias)
+    {
+        $this->_defaultQueryComponentAlias = $alias;
     }
 
     /**

@@ -181,13 +181,12 @@ class LanguageRecognitionTest extends \Doctrine\Tests\OrmTestCase
 
     public function testSubselectInSelectPart()
     {
-        // Semantical error: Unknown query component u (probably in subselect)
         $this->assertValidDql("SELECT u.name, (SELECT COUNT(p.phonenumber) FROM Doctrine\Tests\Models\CMS\CmsPhonenumber p WHERE p.phonenumber = 1234) pcount FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.name = 'jon'");
     }
 
     public function testPositionalInputParameter()
     {
-        $this->assertValidDql('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.id = ?');
+        $this->assertValidDql('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.id = ?1');
     }
 
     public function testNamedInputParameter()

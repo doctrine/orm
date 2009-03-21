@@ -19,6 +19,10 @@ class InputParameter extends Node
 
     public function __construct($value)
     {
+        if (strlen($value) == 1) {
+            throw new \InvalidArgumentException("Invalid parameter format.");
+        }
+
         $param = substr($value, 1);
         $this->_isNamed = ! is_numeric($param);
         if ($this->_isNamed) {

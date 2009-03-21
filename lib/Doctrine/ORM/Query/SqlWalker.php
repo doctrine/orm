@@ -21,6 +21,7 @@
 
 namespace Doctrine\ORM\Query;
 
+use Doctrine\ORM\Query\Parser;
 use Doctrine\ORM\Query\AST;
 use Doctrine\Common\DoctrineException;
 
@@ -35,6 +36,8 @@ use Doctrine\Common\DoctrineException;
  */
 class SqlWalker
 {
+    const SQLALIAS_SEPARATOR = '__';
+
     private $_tableAliasCounter = 0;
     private $_parserResult;
     private $_em;
@@ -50,7 +53,7 @@ class SqlWalker
         $this->_parserResult = $parserResult;
         $sqlToDqlAliasMap = array();
         foreach ($parserResult->getQueryComponents() as $dqlAlias => $qComp) {
-            if ($dqlAlias != 'dctrn') {
+            if ($dqlAlias != Parser::SCALAR_QUERYCOMPONENT_ALIAS) {
                 $sqlAlias = $this->generateSqlTableAlias($qComp['metadata']->getTableName());
                 $sqlToDqlAliasMap[$sqlAlias] = $dqlAlias;
             }
@@ -302,7 +305,9 @@ class SqlWalker
 
     public function walkUpdateStatement(AST\UpdateStatement $AST)
     {
-
+        $sql = $this->walkUpdateClause($AST->getUpdateClause());
+        $sql .= $AST->getWhereClause() ? $this->walkWhereClause($AST->getWhereClause()) : '';
+        return $sql;
     }
 
     public function walkDeleteStatement(AST\DeleteStatement $AST)
@@ -320,6 +325,40 @@ class SqlWalker
         if ($deleteClause->getAliasIdentificationVariable()) {
             $sql .= ' ' . $this->_dqlToSqlAliasMap[$deleteClause->getAliasIdentificationVariable()];
         }
+        return $sql;
+    }
+
+    public function walkUpdateClause($updateClause)
+    {
+        $sql = 'UPDATE ';
+        $class = $this->_em->getClassMetadata($updateClause->getAbstractSchemaName());
+        $sql .= $class->getTableName();
+        if ($updateClause->getAliasIdentificationVariable()) {
+            $sql .= ' ' . $this->_dqlToSqlAliasMap[$updateClause->getAliasIdentificationVariable()];
+        }
+        $sql .= ' SET ' . implode(', ', array_map(array($this, 'walkUpdateItem'),
+                $updateClause->getUpdateItems()));
+        
+        return $sql;
+    }
+
+    public function walkUpdateItem($updateItem)
+    {
+        $sql = '';
+        $dqlAlias = $updateItem->getIdentificationVariable() ?
+                $updateItem->getIdentificationVariable() :
+                $this->_parserResult->getDefaultQueryComponentAlias();
+        $qComp = $this->_parserResult->getQueryComponent($dqlAlias);
+
+        $sql .= $this->_dqlToSqlAliasMap[$dqlAlias] . '.'
+                . $qComp['metadata']->getColumnName($updateItem->getField())
+                . ' = ';
+
+        $newValue = $updateItem->getNewValue();
+        if ($newValue instanceof AST\InputParameter) {
+            $sql .= $newValue->isNamed() ? ':' . $newValue->getName() : '?';
+        } // TODO: else if ...
+
         return $sql;
     }
 
@@ -388,10 +427,19 @@ class SqlWalker
         if ($inExpr->getSubselect()) {
             $sql .= $this->walkSubselect($inExpr->getSubselect());
         } else {
-            //$sql .= implode(', ', array_map(array($this, 'walkLiteral'), $inExpr->getLiterals()));
+            $sql .= implode(', ', array_map(array($this, 'walkLiteral'), $inExpr->getLiterals()));
         }
         $sql .= ')';
         return $sql;
+    }
+
+    public function walkLiteral($literal)
+    {
+        if ($literal instanceof AST\InputParameter) {
+            return ($literal->isNamed() ? ':' . $literal->getName() : '?');
+        } else {
+            return $literal;
+        }
     }
 
     public function walkBetweenExpression($betweenExpr)
@@ -433,7 +481,7 @@ class SqlWalker
         $sql .= ' ' . $compExpr->getOperator() . ' ';
         if ($compExpr->getRightExpression() instanceof AST\ArithmeticExpression) {
             $sql .= $this->walkArithmeticExpression($compExpr->getRightExpression());
-        }
+        } // else...
         return $sql;
     }
 
