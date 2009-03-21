@@ -1,5 +1,4 @@
 <?php
-
 /*
  *  $Id$
  *
@@ -53,7 +52,7 @@ class Parser
      *
      * @var array
      */
-    private $_pendingPathExpressionsInSelect = array();
+    private $_deferredPathExpressionStacks = array();
 
     /**
      * A scanner object.
@@ -127,7 +126,6 @@ class Parser
         }
 
         if ( ! $isMatch) {
-            // No definition for value checking.
             $this->syntaxError($this->_lexer->getLiteral($token));
         }
 
@@ -159,7 +157,6 @@ class Parser
 
         $this->_lexer->token = null;
         $this->_lexer->lookahead = null;
-
         //$this->_errorDistance = self::MIN_ERROR_DISTANCE;
     }
 
@@ -340,9 +337,10 @@ class Parser
      */
     private function _SelectStatement()
     {
+        $this->_beginDeferredPathExpressionStack();
         $selectClause = $this->_SelectClause();
         $fromClause = $this->_FromClause();
-        $this->_processPendingPathExpressionsInSelect();
+        $this->_processDeferredPathExpressionStack();
 
         $whereClause = $this->_lexer->isNextToken(Lexer::T_WHERE) ?
                 $this->_WhereClause() : null;
@@ -362,15 +360,24 @@ class Parser
     }
 
     /**
+     * 
+     */
+    private function _beginDeferredPathExpressionStack()
+    {
+        $this->_deferredPathExpressionStacks[] = array();
+    }
+
+    /**
      * Processes pending path expressions that were encountered while parsing
      * select expressions. These will be validated to make sure they are indeed
      * valid <tt>StateFieldPathExpression</tt>s and additional information
      * is attached to their AST nodes.
      */
-    private function _processPendingPathExpressionsInSelect()
+    private function _processDeferredPathExpressionStack()
     {
+        $exprStack = array_pop($this->_deferredPathExpressionStacks);
         $qComps = $this->_parserResult->getQueryComponents();
-        foreach ($this->_pendingPathExpressionsInSelect as $expr) {
+        foreach ($exprStack as $expr) {
             $parts = $expr->getParts();
             $numParts = count($parts);
             $dqlAlias = $parts[0];
@@ -511,7 +518,7 @@ class Parser
             //TODO: Can be StringPrimary or EnumPrimary
             return $this->_StringPrimary();
         } else {
-            $this->syntaxError('Not yet implemented.');
+            $this->syntaxError('Not yet implemented-1.');
             //echo "UH OH ...";
         }
     }
@@ -629,7 +636,7 @@ class Parser
                 $fieldIdentificationVariable = $this->_lexer->token['value'];
             }
         } else {
-            $expression = $this->_PathExpressionInSelect();
+            $expression = $this->_StateFieldPathExpression();
         }
         return new AST\SelectExpression($expression, $fieldIdentificationVariable);
     }
@@ -714,7 +721,7 @@ class Parser
     /**
      * Special rule that acceps all kinds of path expressions.
      */
-    private function _PathExpression()
+    /*private function _StateFieldPathExpression()
     {
         $this->match(Lexer::T_IDENTIFIER);
         $parts = array($this->_lexer->token['value']);
@@ -723,21 +730,28 @@ class Parser
             $this->match(Lexer::T_IDENTIFIER);
             $parts[] = $this->_lexer->token['value'];
         }
-        $pathExpression = new AST\PathExpression($parts);
+        $pathExpression = new AST\StateFieldPathExpression($parts);
         return $pathExpression;
-    }
+    }*/
 
     /**
      * Special rule that acceps all kinds of path expressions. and defers their
      * semantical checking until the FROM part has been parsed completely (joins inclusive).
      * Mainly used for path expressions in the SelectExpressions.
      */
-    private function _PathExpressionInSelect()
+    /*private function _PathExpressionInSelect()
     {
-        $expr = $this->_PathExpression();
+        $this->match(Lexer::T_IDENTIFIER);
+        $parts = array($this->_lexer->token['value']);
+        while ($this->_lexer->isNextToken('.')) {
+            $this->match('.');
+            $this->match(Lexer::T_IDENTIFIER);
+            $parts[] = $this->_lexer->token['value'];
+        }
+        $expr = new AST\StateFieldPathExpression($parts);
         $this->_pendingPathExpressionsInSelect[] = $expr;
         return $expr;
-    }
+    }*/
 
     /**
      * JoinVariableDeclaration ::= Join [IndexBy]
@@ -818,14 +832,6 @@ class Parser
         return $join;
     }
 
-    /*private function _JoinAssociationPathExpression() {
-        if ($this->_isSingleValuedPathExpression()) {
-            return $this->_JoinSingleValuedAssociationPathExpression();
-        } else {
-            return $this->_JoinCollectionValuedPathExpression();
-        }
-    }*/
-
     /*private function _isSingleValuedPathExpression()
     {
         $parserResult = $this->_parserResult;
@@ -894,6 +900,21 @@ class Parser
      */
     private function _StateFieldPathExpression()
     {
+        if ( ! empty($this->_deferredPathExpressionStacks)) {
+            $exprStack = array_pop($this->_deferredPathExpressionStacks);
+            $this->match(Lexer::T_IDENTIFIER);
+            $parts = array($this->_lexer->token['value']);
+            while ($this->_lexer->isNextToken('.')) {
+                $this->match('.');
+                $this->match(Lexer::T_IDENTIFIER);
+                $parts[] = $this->_lexer->token['value'];
+            }
+            $expr = new AST\StateFieldPathExpression($parts);
+            $exprStack[] = $expr;
+            array_push($this->_deferredPathExpressionStacks, $exprStack);
+            return $expr; // EARLY EXIT!
+        }
+
         $parts = array();
         $stateFieldSeen = false;
         $assocSeen = false;
@@ -928,7 +949,7 @@ class Parser
             $parts[] = $part;
         }
 
-        $pathExpr = new AST\PathExpression($parts);
+        $pathExpr = new AST\StateFieldPathExpression($parts);
 
         if ($assocSeen) {
             $pathExpr->setIsSimpleStateFieldAssociationPathExpression(true);
@@ -937,6 +958,28 @@ class Parser
         }
 
         return $pathExpr;
+    }
+
+    /**
+     * NullComparisonExpression ::= (SingleValuedPathExpression | InputParameter) "IS" ["NOT"] "NULL"
+     */
+    private function _NullComparisonExpression()
+    {
+        if ($this->_lexer->isNextToken(Lexer::T_INPUT_PARAMETER)) {
+            $this->match(Lexer::T_INPUT_PARAMETER);
+            $expr = new AST\InputParameter($this->_lexer->token['value']);
+        } else {
+            //TODO: Support SingleValuedAssociationPathExpression
+            $expr = $this->_StateFieldPathExpression();
+        }
+        $nullCompExpr = new AST\NullComparisonExpression($expr);
+        $this->match(Lexer::T_IS);
+        if ($this->_lexer->isNextToken(Lexer::T_NOT)) {
+            $this->match(Lexer::T_NOT);
+            $nullCompExpr->setNot(true);
+        }
+        $this->match(Lexer::T_NULL);
+        return $nullCompExpr;
     }
 
     /**
@@ -957,7 +1000,7 @@ class Parser
                 $isDistinct = true;
             }
             // For now we only support a PathExpression here...
-            $pathExp = $this->_PathExpression();
+            $pathExp = $this->_StateFieldPathExpression();
             $this->match(')');
         } else {
             if ($this->_lexer->isNextToken(Lexer::T_AVG)) {
@@ -988,10 +1031,10 @@ class Parser
         $this->match(Lexer::T_GROUP);
         $this->match(Lexer::T_BY);
         $groupByItems = array();
-        $groupByItems[] = $this->_PathExpression();
+        $groupByItems[] = $this->_StateFieldPathExpression();
         while ($this->_lexer->isNextToken(',')) {
             $this->match(',');
-            $groupByItems[] = $this->_PathExpression();
+            $groupByItems[] = $this->_StateFieldPathExpression();
         }
         return new AST\GroupByClause($groupByItems);
     }
@@ -1286,7 +1329,7 @@ class Parser
      */
     private function _InExpression()
     {
-        $inExpression = new AST\InExpression($this->_PathExpression());
+        $inExpression = new AST\InExpression($this->_StateFieldPathExpression());
         if ($this->_lexer->isNextToken(Lexer::T_NOT)) {
             $this->match(Lexer::T_NOT);
             $inExpression->setNot(true);
@@ -1331,7 +1374,9 @@ class Parser
      */
     private function _Subselect()
     {
+        $this->_beginDeferredPathExpressionStack();
         $subselect = new AST\Subselect($this->_SimpleSelectClause(), $this->_SubselectFromClause());
+        $this->_processDeferredPathExpressionStack();
 
         $subselect->setWhereClause(
                 $this->_lexer->isNextToken(Lexer::T_WHERE) ? $this->_WhereClause() : null
@@ -1410,7 +1455,7 @@ class Parser
             // SingleValuedPathExpression | IdentificationVariable
             $peek = $this->_lexer->glimpse();
             if ($peek['value'] == '.') {
-                return new AST\SimpleSelectExpression($this->_PathExpressionInSelect());
+                return new AST\SimpleSelectExpression($this->_StateFieldPathExpression());
             } else {
                 $this->match($this->_lexer->lookahead['value']);
                 return new AST\SimpleSelectExpression($this->_lexer->token['value']);
@@ -1507,7 +1552,7 @@ class Parser
                     $this->syntaxError();
                 }
         }
-        throw \Doctrine\Common\DoctrineException::updateMe("Not yet implemented.");
+        throw \Doctrine\Common\DoctrineException::updateMe("Not yet implemented2.");
         //TODO...
     }
 
@@ -1598,7 +1643,7 @@ class Parser
     }
 
     /**
-     * LikeExpression ::= StringExpression ["NOT"] "LIKE" string ["ESCAPE" char]
+     * LikeExpression ::= StringExpression ["NOT"] "LIKE" (string | input_parameter) ["ESCAPE" char]
      */
     private function _LikeExpression()
     {
@@ -1609,8 +1654,13 @@ class Parser
             $isNot = true;
         }
         $this->match(Lexer::T_LIKE);
-        $this->match(Lexer::T_STRING);
-        $stringPattern = $this->_lexer->token['value'];
+        if ($this->_lexer->isNextToken(Lexer::T_INPUT_PARAMETER)) {
+            $this->match(Lexer::T_INPUT_PARAMETER);
+            $stringPattern = new AST\InputParameter($this->_lexer->token['value']);
+        } else {
+            $this->match(Lexer::T_STRING);
+            $stringPattern = $this->_lexer->token['value'];
+        }
         $escapeChar = null;
         if ($this->_lexer->lookahead['type'] === Lexer::T_ESCAPE) {
             $this->match(Lexer::T_ESCAPE);

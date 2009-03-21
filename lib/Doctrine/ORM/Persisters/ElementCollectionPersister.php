@@ -22,7 +22,7 @@
 namespace Doctrine\ORM\Persisters;
 
 /**
- * Persister for collections of basic elements / value objects.
+ * Persister for collections of basic elements / value types.
  *
  * @author robo
  */

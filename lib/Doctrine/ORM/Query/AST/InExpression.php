@@ -48,9 +48,14 @@ class InExpression extends Node
         $this->_not = $bool;
     }
 
-    public function getNot()
+    public function isNot()
     {
         return $this->_not;
+    }
+
+    public function getPathExpression()
+    {
+        return $this->_pathExpression;
     }
 }
 

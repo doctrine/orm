@@ -43,7 +43,16 @@ class MultiTableDeleteExecutor extends AbstractExecutor
      */
     public function __construct(\Doctrine\ORM\Query\AST $AST)
     {
-        // TODO: Inspect the AST, create the necessary SQL queries and store them
+        // 1. Create a INSERT ... SELECT statement where the SELECT statement
+        // selects the identifiers from the temporary ID table and uses the WhereClause of the $AST.
+
+        // 2. Create ID subselect statement used in DELETE .... WHERE ... IN (subselect)
+
+        // 3. Create and store DELETE statements
+        /*$subselect = 'SELECT id1, id2 FROM temptable';
+        foreach ($tableNames as $tableName) {
+            $this->_sqlStatements[] = 'DELETE FROM ' . $tableName . ' WHERE (id1, id2) IN (subselect)';
+        }*/
         // in $this->_sqlStatements
     }
     
@@ -56,6 +65,8 @@ class MultiTableDeleteExecutor extends AbstractExecutor
      */
     public function execute(\Doctrine\DBAL\Connection $conn, array $params)
     {
+        // 1. Create temporary id table if necessary
+
         //...
     }   
 }

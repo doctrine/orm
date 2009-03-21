@@ -154,7 +154,7 @@ class SqlWalker
     public function walkSelectExpression($selectExpression)
     {
         $sql = '';
-        if ($selectExpression->getExpression() instanceof AST\PathExpression) {
+        if ($selectExpression->getExpression() instanceof AST\StateFieldPathExpression) {
             $pathExpression = $selectExpression->getExpression();
             if ($pathExpression->isSimpleStateFieldPathExpression()) {
                 $parts = $pathExpression->getParts();
@@ -251,7 +251,7 @@ class SqlWalker
     {
         $sql = '';
         $expr = $simpleSelectExpression->getExpression();
-        if ($expr instanceof AST\PathExpression) {
+        if ($expr instanceof AST\StateFieldPathExpression) {
             //...
         } else if ($expr instanceof AST\AggregateExpression) {
             if ( ! $simpleSelectExpression->getFieldIdentificationVariable()) {
@@ -351,6 +351,14 @@ class SqlWalker
             else if ($simpleCond instanceof AST\LikeExpression) {
                 $sql .= $this->walkLikeExpression($simpleCond);
             }
+            else if ($simpleCond instanceof AST\BetweenExpression) {
+                $sql .= $this->walkBetweenExpression($simpleCond);
+            }
+            else if ($simpleCond instanceof AST\InExpression) {
+                $sql .= $this->walkInExpression($simpleCond);
+            } else if ($simpleCond instanceof AST\NullComparisonExpression) {
+                $sql .= $this->walkNullComparisonExpression($simpleCond);
+            }
             // else if ...
         } else if ($primary->isConditionalExpression()) {
             $sql .= '(' . implode(' OR ', array_map(array(&$this, 'walkConditionalTerm'),
@@ -359,14 +367,60 @@ class SqlWalker
         return $sql;
     }
 
+    public function walkNullComparisonExpression($nullCompExpr)
+    {
+        $sql = '';
+        if ($nullCompExpr->getExpression() instanceof AST\InputParameter) {
+            $inputParam = $nullCompExpr->getExpression();
+            $sql .= ' ' . ($inputParam->isNamed() ? ':' . $inputParam->getName() : '?');
+        } else {
+            $sql .= $this->walkPathExpression($nullCompExpr->getExpression());
+        }
+        $sql .= ' IS' . ($nullCompExpr->isNot() ? ' NOT' : '') . ' NULL';
+        return $sql;
+    }
+
+    public function walkInExpression($inExpr)
+    {
+        $sql = $this->walkPathExpression($inExpr->getPathExpression());
+        if ($inExpr->isNot()) $sql .= ' NOT';
+        $sql .= ' IN (';
+        if ($inExpr->getSubselect()) {
+            $sql .= $this->walkSubselect($inExpr->getSubselect());
+        } else {
+            //$sql .= implode(', ', array_map(array($this, 'walkLiteral'), $inExpr->getLiterals()));
+        }
+        $sql .= ')';
+        return $sql;
+    }
+
+    public function walkBetweenExpression($betweenExpr)
+    {
+        $sql = $this->walkArithmeticExpression($betweenExpr->getBaseExpression());
+        if ($betweenExpr->getNot()) $sql .= ' NOT';
+        $sql .= ' BETWEEN ' . $this->walkArithmeticExpression($betweenExpr->getLeftBetweenExpression())
+                . ' AND ' . $this->walkArithmeticExpression($betweenExpr->getRightBetweenExpression());
+        return $sql;
+    }
+
     public function walkLikeExpression($likeExpr)
     {
         $sql = '';
         $stringExpr = $likeExpr->getStringExpression();
-        if ($stringExpr instanceof AST\PathExpression) {
+        if ($stringExpr instanceof AST\StateFieldPathExpression) {
             $sql .= $this->walkPathExpression($stringExpr);
         } //TODO else...
-        $sql .= ' LIKE ' . $likeExpr->getStringPattern();
+        if ($likeExpr->isNot()) $sql .= ' NOT';
+        $sql .= ' LIKE ';
+        if ($likeExpr->getStringPattern() instanceof AST\InputParameter) {
+            $inputParam = $likeExpr->getStringPattern();
+            $sql .= $inputParam->isNamed() ? ':' . $inputParam->getName() : '?';
+        } else {
+            $sql .= $likeExpr->getStringPattern();
+        }
+        if ($likeExpr->getEscapeChar()) {
+            $sql .= ' ESCAPE ' . $likeExpr->getEscapeChar();
+        }
         return $sql;
     }
 
@@ -413,7 +467,7 @@ class SqlWalker
         } else if (is_string($primary)) {
             //TODO: quote string according to platform
             $sql .= $primary;
-        } else if ($primary instanceof AST\PathExpression) {
+        } else if ($primary instanceof AST\StateFieldPathExpression) {
             $sql .= $this->walkPathExpression($primary);
         } else if ($primary instanceof AST\InputParameter) {
             if ($primary->isNamed()) {
@@ -456,9 +510,9 @@ class SqlWalker
             $sqlTableAlias = $this->_dqlToSqlAliasMap[$dqlAlias];
             $sql .= $sqlTableAlias . '.' . $class->getColumnName($fieldName);
         } else if ($pathExpr->isSimpleStateFieldAssociationPathExpression()) {
-            \Doctrine\Common\DoctrineException::updateMe("Not yet implemented.");
+            throw \Doctrine\Common\DoctrineException::updateMe("Not yet implemented.");
         } else {
-            \Doctrine\Common\DoctrineException::updateMe("Encountered invalid PathExpression during SQL construction.");
+            throw \Doctrine\Common\DoctrineException::updateMe("Encountered invalid PathExpression during SQL construction.");
         }
         return $sql;
     }

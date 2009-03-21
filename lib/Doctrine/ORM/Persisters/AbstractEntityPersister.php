@@ -63,6 +63,11 @@ abstract class AbstractEntityPersister
      */
     protected $_em;
 
+    /**
+     * Queued inserts.
+     *
+     * @var array
+     */
     protected $_queuedInserts = array();
 
     /**
@@ -150,11 +155,19 @@ abstract class AbstractEntityPersister
 
     /**
      *
-     * @return Doctrine\ORM\ClassMetadata
+     * @return Doctrine\ORM\Mapping\ClassMetadata
      */
     public function getClassMetadata()
     {
         return $this->_classMetadata;
+    }
+
+    /**
+     * Gets the table name to use for temporary identifier tables.
+     */
+    public function getTemporaryIdTableName()
+    {
+        //...
     }
 
     /**

@@ -110,12 +110,12 @@ class LanguageRecognitionTest extends \Doctrine\Tests\OrmTestCase
 
     public function testExistsExpressionSupportedInWherePart()
     {
-        $this->assertValidDql('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE EXISTS (SELECT p.id FROM Doctrine\Tests\Models\CMS\CmsPhonenumber p WHERE p.phonenumber = 1234)');
+        $this->assertValidDql('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE EXISTS (SELECT p.phonenumber FROM Doctrine\Tests\Models\CMS\CmsPhonenumber p WHERE p.phonenumber = 1234)');
     }
 
     public function testNotExistsExpressionSupportedInWherePart()
     {
-        $this->assertValidDql('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE NOT EXISTS (SELECT p.id FROM Doctrine\Tests\Models\CMS\CmsPhonenumber p WHERE p.phonenumber = 1234)');
+        $this->assertValidDql('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE NOT EXISTS (SELECT p.phonenumber FROM Doctrine\Tests\Models\CMS\CmsPhonenumber p WHERE p.phonenumber = 1234)');
     }
 
     public function testAggregateFunctionInHavingClause()
@@ -239,14 +239,14 @@ class LanguageRecognitionTest extends \Doctrine\Tests\OrmTestCase
     {
         $this->assertValidDql("SELECT u.id FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.name LIKE 'z|%' ESCAPE '|'");
     }
-
+/*
     public function testImplicitJoinInWhereOnSingleValuedAssociationPathExpression()
     {
         // This should be allowed because avatar is a single-value association.
         // SQL: SELECT ... FROM forum_user fu INNER JOIN forum_avatar fa ON fu.avatar_id = fa.id WHERE fa.id = ?
         $this->assertValidDql("SELECT u FROM Doctrine\Tests\Models\Forum\ForumUser u WHERE u.avatar.id = ?");
     }
-
+*/
     public function testImplicitJoinInWhereOnCollectionValuedPathExpression()
     {
         // This should be forbidden, because articles is a collection

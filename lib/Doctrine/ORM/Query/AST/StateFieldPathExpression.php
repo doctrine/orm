@@ -7,11 +7,11 @@
 namespace Doctrine\ORM\Query\AST;
 
 /**
- * Description of PathExpression
+ * 	StateFieldPathExpression ::= SimpleStateFieldPathExpression | SimpleStateFieldAssociationPathExpression
  *
  * @author robo
  */
-class PathExpression extends Node
+class StateFieldPathExpression extends Node
 {
     private $_parts;
     // Information that is attached during semantical analysis.

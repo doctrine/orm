@@ -88,10 +88,10 @@ class DeleteSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
             'DELETE FROM cms_users c0 WHERE c0.id = ? OR (c0.username = ? OR c0.name = ?)'
         );
 
-        /*$this->assertSqlGeneration(
-            'DELETE FROM Doctrine\Tests\Models\CMS\CmsUser WHERE id = ?1',
-            'DELETE FROM cms_users WHERE id = ?'
-        );*/
+        //$this->assertSqlGeneration(
+        //    'DELETE FROM Doctrine\Tests\Models\CMS\CmsUser WHERE id = ?1',
+        //    'DELETE FROM cms_users WHERE id = ?'
+        //);
     }
 
     public function testParserIsCaseAgnostic()
@@ -163,7 +163,7 @@ class DeleteSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
             "DELETE FROM cms_users c0 WHERE c0.id <> ?"
         );
     }
-/*
+
     public function testWithExprAndBetween()
     {
         $this->assertSqlGeneration(
@@ -181,60 +181,55 @@ class DeleteSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
     {
         // "WHERE" Expression LikeExpression
         $this->assertSqlGeneration(
-            'DELETE CmsUser u WHERE u.username NOT LIKE ?',
-            'DELETE FROM cms_user cu WHERE cu.username NOT LIKE ?'
+            'DELETE Doctrine\Tests\Models\CMS\CmsUser u WHERE u.username NOT LIKE ?1',
+            'DELETE FROM cms_users c0 WHERE c0.username NOT LIKE ?'
         );
 
         $this->assertSqlGeneration(
-            "DELETE CmsUser u WHERE u.username LIKE ? ESCAPE '\\'",
-            "DELETE FROM cms_user cu WHERE cu.username LIKE ? ESCAPE '\\'"
+            "DELETE Doctrine\Tests\Models\CMS\CmsUser u WHERE u.username LIKE ?1 ESCAPE '\\'",
+            "DELETE FROM cms_users c0 WHERE c0.username LIKE ? ESCAPE '\\'"
         );
     }
-
-
-    public function testWithExprAndIn()
-    {
-        // "WHERE" Expression InExpression
-        $this->assertSqlGeneration(
-            'DELETE CmsUser u WHERE u.id IN ( ?, ?, ?, ? )',
-            'DELETE FROM cms_user cu WHERE cu.id IN (?, ?, ?, ?)'
-        );
-
-        $this->assertSqlGeneration(
-            'DELETE CmsUser u WHERE u.id NOT IN ( ?, ? )',
-            'DELETE FROM cms_user cu WHERE cu.id NOT IN (?, ?)'
-        );
-    }
-
 
     public function testWithExprAndNull()
     {
         // "WHERE" Expression NullComparisonExpression
         $this->assertSqlGeneration(
-            'DELETE CmsUser u WHERE u.name IS NULL',
-            'DELETE FROM cms_user cu WHERE cu.name IS NULL'
+            'DELETE Doctrine\Tests\Models\CMS\CmsUser u WHERE u.name IS NULL',
+            'DELETE FROM cms_users c0 WHERE c0.name IS NULL'
         );
 
         $this->assertSqlGeneration(
-            'DELETE CmsUser u WHERE u.name IS NOT NULL',
-            'DELETE FROM cms_user cu WHERE cu.name IS NOT NULL'
+            'DELETE Doctrine\Tests\Models\CMS\CmsUser u WHERE u.name IS NOT NULL',
+            'DELETE FROM cms_users c0 WHERE c0.name IS NOT NULL'
         );
     }
 
-
-    // All previously defined tests used Primary as PathExpression. No need to check it again.
-
     public function testWithPrimaryAsAtom()
     {
-        // Atom = string | integer | float | boolean | input_parameter
         $this->assertSqlGeneration(
-            'DELETE CmsUser u WHERE 1 = 1',
-            'DELETE FROM cms_user cu WHERE 1 = 1'
+            'DELETE Doctrine\Tests\Models\CMS\CmsUser u WHERE 1 = 1',
+            'DELETE FROM cms_users c0 WHERE 1 = 1'
         );
 
         $this->assertSqlGeneration(
-            'DELETE CmsUser u WHERE ? = 1',
-            'DELETE FROM cms_user cu WHERE ? = 1'
+            'DELETE Doctrine\Tests\Models\CMS\CmsUser u WHERE ?1 = 1',
+            'DELETE FROM cms_users c0 WHERE ? = 1'
+        );
+    }
+
+/*
+    public function testWithExprAndIn()
+    {
+        // "WHERE" Expression InExpression
+        $this->assertSqlGeneration(
+            'DELETE Doctrine\Tests\Models\CMS\CmsUser u WHERE u.id IN ( ?, ?, ?, ? )',
+            'DELETE FROM cms_users c0 WHERE c0.id IN (?, ?, ?, ?)'
+        );
+
+        $this->assertSqlGeneration(
+            'DELETE Doctrine\Tests\Models\CMS\CmsUser u WHERE u.id NOT IN ( ?, ? )',
+            'DELETE FROM cms_users c0 WHERE c0.id NOT IN (?, ?)'
         );
     }
  */

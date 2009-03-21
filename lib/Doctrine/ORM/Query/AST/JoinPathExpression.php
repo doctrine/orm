@@ -10,6 +10,7 @@ namespace Doctrine\ORM\Query\AST;
  * Description of JoinCollectionValuedPathExpression
  *
  * @author robo
+ * @todo Rename: JoinAssociationPathExpression
  */
 class JoinPathExpression extends Node
 {
