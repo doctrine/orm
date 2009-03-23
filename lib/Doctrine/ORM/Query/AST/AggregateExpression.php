@@ -38,4 +38,9 @@ class AggregateExpression extends Node
     {
         return $this->_functionName;
     }
+
+    public function dispatch($sqlWalker)
+    {
+        return $sqlWalker->walkAggregateExpression($this);
+    }
 }

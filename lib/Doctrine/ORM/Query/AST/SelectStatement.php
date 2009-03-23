@@ -80,14 +80,8 @@ class SelectStatement extends Node
         return $this->_orderByClause;
     }
     
-    /* REMOVE ME LATER. COPIED METHODS FROM SPLIT OF PRODUCTION INTO "AST" AND "PARSER" */
-    
-    public function buildSql()
+    public function dispatch($sqlWalker)
     {
-        return $this->_selectClause->buildSql() . ' ' . $this->_fromClause->buildSql()
-             . (($this->_whereClause !== null) ? ' ' . $this->_whereClause->buildSql() : '')
-             . (($this->_groupByClause !== null) ? ' ' . $this->_groupByClause->buildSql() : '')
-             . (($this->_havingClause !== null) ? ' ' . $this->_havingClause->buildSql() : '')
-             . (($this->_orderByClause !== null) ? ' ' . $this->_orderByClause->buildSql() : '');
+        return $sqlWalker->walkSelectStatement($this);
     }
 }

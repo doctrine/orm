@@ -24,4 +24,9 @@ class OrderByClause extends Node
     {
         return $this->_orderByItems;
     }
+
+    public function dispatch($sqlWalker)
+    {
+        return $sqlWalker->walkOrderByClause($this);
+    }
 }

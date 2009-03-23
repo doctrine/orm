@@ -40,5 +40,10 @@ class UpdateClause extends Node
     {
         return $this->_updateItems;
     }
+
+    public function dispatch($sqlWalker)
+    {
+        return $sqlWalker->walkUpdateClause($this);
+    }
 }
 

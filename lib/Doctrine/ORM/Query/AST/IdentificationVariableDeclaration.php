@@ -63,16 +63,8 @@ class IdentificationVariableDeclaration extends Node
         return $this->_joinVariableDeclarations;
     }
 
-    /* REMOVE ME LATER. COPIED METHODS FROM SPLIT OF PRODUCTION INTO "AST" AND "PARSER" */
-    
-    public function buildSql()
+    public function dispatch($sqlWalker)
     {
-        $str = $this->_rangeVariableDeclaration->buildSql();
-
-        for ($i = 0, $l = count($this->_joinVariableDeclarations); $i < $l; $i++) {
-            $str .= ' ' . $this->_joinVariableDeclarations[$i]->buildSql();
-        }
-
-        return $str;
+        return $sqlWalker->walkIdentificationVariableDeclaration($this);
     }
 }

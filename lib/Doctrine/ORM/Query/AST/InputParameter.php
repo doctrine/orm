@@ -51,4 +51,9 @@ class InputParameter extends Node
     {
         return $this->_position;
     }
+
+    public function dispatch($sqlWalker)
+    {
+        return $sqlWalker->walkInputParameter($this);
+    }
 }

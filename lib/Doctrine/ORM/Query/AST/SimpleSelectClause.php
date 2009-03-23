@@ -55,4 +55,9 @@ class SimpleSelectClause extends Node
     {
         return $this->_simpleSelectExpression;
     }
+
+    public function dispatch($sqlWalker)
+    {
+        return $sqlWalker->walkSimpleSelectClause($this);
+    }
 }

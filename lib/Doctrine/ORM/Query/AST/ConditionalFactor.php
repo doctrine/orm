@@ -31,4 +31,9 @@ class ConditionalFactor extends Node
     {
         return $this->_conditionalPrimary;
     }
+
+    public function dispatch($sqlWalker)
+    {
+        return $sqlWalker->walkConditionalFactor($this);
+    }
 }

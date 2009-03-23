@@ -21,6 +21,7 @@
 
 namespace Doctrine\ORM\Query;
 
+use Doctrine\Common\DoctrineException;
 use Doctrine\ORM\Query\AST;
 use Doctrine\ORM\Query\Exec;
 
@@ -39,6 +40,32 @@ use Doctrine\ORM\Query\Exec;
 class Parser
 {
     const SCALAR_QUERYCOMPONENT_ALIAS = 'dctrn';
+
+    /** Maps registered string function names to class names. */
+    private static $_STRING_FUNCTIONS = array(
+        'concat' => 'Doctrine\ORM\Query\AST\Functions\ConcatFunction',
+        'substring' => 'Doctrine\ORM\Query\AST\Functions\SubstringFunction',
+        'trim' => 'Doctrine\ORM\Query\AST\Functions\TrimFunction',
+        'lower' => 'Doctrine\ORM\Query\AST\Functions\LowerFunction',
+        'upper' => 'Doctrine\ORM\Query\AST\Functions\UpperFunction'
+    );
+
+    /** Maps registered numeric function names to class names. */
+    private static $_NUMERIC_FUNCTIONS = array(
+        'length' => 'Doctrine\ORM\Query\AST\Functions\LengthFunction',
+        'locate' => 'Doctrine\ORM\Query\AST\Functions\LocateFunction',
+        'abs' => 'Doctrine\ORM\Query\AST\Functions\AbsFunction',
+        'sqrt' => 'Doctrine\ORM\Query\AST\Functions\SqrtFunction',
+        'mod' => 'Doctrine\ORM\Query\AST\Functions\ModFunction',
+        'size' => 'Doctrine\ORM\Query\AST\Functions\SizeFunction'
+    );
+
+    /** Maps registered datetime function names to class names. */
+    private static $_DATETIME_FUNCTIONS = array(
+        'current_date' => 'Doctrine\ORM\Query\AST\Functions\CurrentDateFunction',
+        'current_time' => 'Doctrine\ORM\Query\AST\Functions\CurrentTimeFunction',
+        'current_timestamp' => 'Doctrine\ORM\Query\AST\Functions\CurrentTimestampFunction'
+    );
 
     /**
      * The minimum number of tokens read after last detected error before
@@ -714,41 +741,6 @@ class Parser
     }
 
     /**
-     * Special rule that acceps all kinds of path expressions.
-     */
-    /*private function _StateFieldPathExpression()
-    {
-        $this->match(Lexer::T_IDENTIFIER);
-        $parts = array($this->_lexer->token['value']);
-        while ($this->_lexer->isNextToken('.')) {
-            $this->match('.');
-            $this->match(Lexer::T_IDENTIFIER);
-            $parts[] = $this->_lexer->token['value'];
-        }
-        $pathExpression = new AST\StateFieldPathExpression($parts);
-        return $pathExpression;
-    }*/
-
-    /**
-     * Special rule that acceps all kinds of path expressions. and defers their
-     * semantical checking until the FROM part has been parsed completely (joins inclusive).
-     * Mainly used for path expressions in the SelectExpressions.
-     */
-    /*private function _PathExpressionInSelect()
-    {
-        $this->match(Lexer::T_IDENTIFIER);
-        $parts = array($this->_lexer->token['value']);
-        while ($this->_lexer->isNextToken('.')) {
-            $this->match('.');
-            $this->match(Lexer::T_IDENTIFIER);
-            $parts[] = $this->_lexer->token['value'];
-        }
-        $expr = new AST\StateFieldPathExpression($parts);
-        $this->_pendingPathExpressionsInSelect[] = $expr;
-        return $expr;
-    }*/
-
-    /**
      * JoinVariableDeclaration ::= Join [IndexBy]
      */
     private function _JoinVariableDeclaration()
@@ -1231,21 +1223,136 @@ class Parser
     }
 
     /**
-     * SIMPLIFIED FROM BNF FOR NOW
-     * ComparisonExpression ::= ArithmeticExpression ComparisonOperator ( QuantifiedExpression | ArithmeticExpression )
+     * ComparisonExpression ::=
+     *          ArithmeticExpression ComparisonOperator (QuantifiedExpression | ArithmeticExpression) |
+     *          StringExpression ComparisonOperator (StringExpression | QuantifiedExpression) |
+     *          BooleanExpression ("=" | "<>" | "!=") (BooleanExpression | QuantifiedExpression) |
+     *          EnumExpression ("=" | "<>" | "!=") (EnumExpression | QuantifiedExpression) |
+     *          DatetimeExpression ComparisonOperator (DatetimeExpression | QuantifiedExpression) |
+     *          EntityExpression ("=" | "<>") (EntityExpression | QuantifiedExpression)
      */
     private function _ComparisonExpression()
     {
-        $leftExpr = $this->_ArithmeticExpression();
-        $operator = $this->_ComparisonOperator();
-        if ($this->_lexer->lookahead['type'] === Lexer::T_ALL ||
-                $this->_lexer->lookahead['type'] === Lexer::T_ANY ||
-                $this->_lexer->lookahead['type'] === Lexer::T_SOME) {
-            $rightExpr = $this->_QuantifiedExpression();
-        } else {
+        $peek = $this->_lexer->glimpse();
+
+        if ($this->_lexer->isNextToken(Lexer::T_INPUT_PARAMETER)) {
+            if ($this->_isComparisonOperator($peek)) {
+                $this->match(Lexer::T_INPUT_PARAMETER);
+                $leftExpr = new AST\InputParameter($this->_lexer->token['value']);
+            } else {
+                $leftExpr = $this->_ArithmeticExpression();
+            }
+            $operator = $this->_ComparisonOperator();
             $rightExpr = $this->_ArithmeticExpression();
+            //...
         }
+        else if ($this->_lexer->isNextToken('(') && $peek['type'] == Lexer::T_SELECT) {
+            $leftExpr = $this->_Subselect();
+            //...
+        }
+        else if ($this->_lexer->isNextToken(Lexer::T_IDENTIFIER) && $peek['value'] == '(') {
+            $peek2 = $this->_peekBeyond(')');
+            if ($this->_isComparisonOperator($peek2)) {
+                if ($this->_isStringFunction($this->_lexer->lookahead['value'])) {
+                    $leftExpr = $this->_FunctionsReturningStrings();
+                    $operator = $this->_ComparisonOperator();
+                    if ($this->_lexer->lookahead['type'] === Lexer::T_ALL ||
+                            $this->_lexer->lookahead['type'] === Lexer::T_ANY ||
+                            $this->_lexer->lookahead['type'] === Lexer::T_SOME) {
+                        $rightExpr = $this->_QuantifiedExpression();
+                    } else {
+                        $rightExpr = $this->_StringPrimary();
+                    }
+                } else if ($this->_isNumericFunction($this->_lexer->lookahead['value'])) {
+                    $leftExpr = $this->_FunctionsReturningNumerics();
+                    $operator = $this->_ComparisonOperator();
+                    if ($this->_lexer->lookahead['type'] === Lexer::T_ALL ||
+                            $this->_lexer->lookahead['type'] === Lexer::T_ANY ||
+                            $this->_lexer->lookahead['type'] === Lexer::T_SOME) {
+                        $rightExpr = $this->_QuantifiedExpression();
+                    } else {
+                        $rightExpr = $this->_ArithmeticExpression();
+                    }
+                } else {
+                    $leftExpr = $this->_FunctionsReturningDatetime();
+                    $operator = $this->_ComparisonOperator();
+                    if ($this->_lexer->lookahead['type'] === Lexer::T_ALL ||
+                            $this->_lexer->lookahead['type'] === Lexer::T_ANY ||
+                            $this->_lexer->lookahead['type'] === Lexer::T_SOME) {
+                        $rightExpr = $this->_QuantifiedExpression();
+                    } else {
+                        $rightExpr = $this->_DatetimePrimary();
+                    }
+                }
+            } else {
+                $leftExpr = $this->_ArithmeticExpression();
+                $operator = $this->_ComparisonOperator();
+                if ($this->_lexer->lookahead['type'] === Lexer::T_ALL ||
+                        $this->_lexer->lookahead['type'] === Lexer::T_ANY ||
+                        $this->_lexer->lookahead['type'] === Lexer::T_SOME) {
+                    $rightExpr = $this->_QuantifiedExpression();
+                } else {
+                    $rightExpr = $this->_StringExpression();
+                }
+            }
+        }
+        else if ($this->_isAggregateFunction($this->_lexer->lookahead)) {
+            $leftExpr = $this->_StringExpression();
+            $operator = $this->_ComparisonOperator();
+            if ($this->_lexer->lookahead['type'] === Lexer::T_ALL ||
+                    $this->_lexer->lookahead['type'] === Lexer::T_ANY ||
+                    $this->_lexer->lookahead['type'] === Lexer::T_SOME) {
+                $rightExpr = $this->_QuantifiedExpression();
+            } else {
+                $rightExpr = $this->_StringExpression();
+            }
+        }
+        else {
+            $leftExpr = $this->_ArithmeticExpression();
+            $operator = $this->_ComparisonOperator();
+            if ($this->_lexer->lookahead['type'] === Lexer::T_ALL ||
+                    $this->_lexer->lookahead['type'] === Lexer::T_ANY ||
+                    $this->_lexer->lookahead['type'] === Lexer::T_SOME) {
+                $rightExpr = $this->_QuantifiedExpression();
+            } else {
+                $rightExpr = $this->_ArithmeticExpression();
+            }
+        }
+
         return new AST\ComparisonExpression($leftExpr, $operator, $rightExpr);
+    }
+
+    private function _isStringFunction($funcName)
+    {
+        return isset(self::$_STRING_FUNCTIONS[strtolower($funcName)]);
+    }
+
+    private function _isNumericFunction($funcName)
+    {
+        return isset(self::$_NUMERIC_FUNCTIONS[strtolower($funcName)]);
+    }
+
+    private function _isDatetimeFunction($funcName)
+    {
+        return isset(self::$_DATETIME_FUNCTIONS[strtolower($funcName)]);
+    }
+
+    private function _peekBeyond($token)
+    {
+        $peek = $this->_lexer->peek();
+        while ($peek['value'] != $token) {
+            $peek = $this->_lexer->peek();
+        }
+        $peek = $this->_lexer->peek();
+        $this->_lexer->resetPeek();
+        return $peek;
+    }
+
+    private function _isComparisonOperator($token)
+    {
+        $value = $token['value'];
+        return $value == '=' || $value == '<' || $value == '<=' || $value == '<>' ||
+                $value == '>' || $value == '>=' || $value == '!=';
     }
 
     /**
@@ -1257,7 +1364,9 @@ class Parser
         if ($this->_lexer->lookahead['value'] === '(') {
             $peek = $this->_lexer->glimpse();
             if ($peek['type'] === Lexer::T_SELECT) {
+                $this->match('(');
                 $expr->setSubselect($this->_Subselect());
+                $this->match(')');
                 return $expr;
             }
         }
@@ -1526,7 +1635,7 @@ class Parser
             case Lexer::T_IDENTIFIER:
                 $peek = $this->_lexer->glimpse();
                 if ($peek['value'] == '(') {
-                    return $this->_FunctionsReturningStrings();
+                    return $this->_FunctionsReturningNumerics();
                 }
                 return $this->_StateFieldPathExpression();
             case Lexer::T_INPUT_PARAMETER:
@@ -1548,7 +1657,7 @@ class Parser
                     $this->syntaxError();
                 }
         }
-        throw \Doctrine\Common\DoctrineException::updateMe("Not yet implemented2.");
+        throw DoctrineException::updateMe("Not yet implemented2.");
         //TODO...
     }
 
@@ -1562,42 +1671,51 @@ class Parser
      */
     private function _FunctionsReturningStrings()
     {
-        switch (strtoupper($this->_lexer->lookahead['value'])) {
-            case 'CONCAT':
-                
-                break;
-            case 'SUBSTRING':
-
-                break;
-            case 'TRIM':
-                //TODO: This is not complete! See BNF
-                $this->match($this->_lexer->lookahead['value']);
-                $this->match('(');
-                $func = $this->_StringPrimary();
-                $this->match(')');
-                return $func;
-            case 'LOWER':
-
-                break;
-            case 'UPPER':
-
-            default:
-                $this->syntaxError('CONCAT, SUBSTRING, TRIM or UPPER');
-        }
+        $funcNameLower = strtolower($this->_lexer->lookahead['value']);
+        $funcClass = self::$_STRING_FUNCTIONS[$funcNameLower];
+        $function = new $funcClass($funcNameLower);
+        $function->parse($this);
+        return $function;
     }
 
+    /**
+     * PortableFunctionsReturningNumerics ::=
+     *      "LENGTH" "(" StringPrimary ")" |
+     *      "LOCATE" "(" StringPrimary "," StringPrimary ["," SimpleArithmeticExpression]")" |
+     *      "ABS" "(" SimpleArithmeticExpression ")" |
+     *      "SQRT" "(" SimpleArithmeticExpression ")" |
+     *      "MOD" "(" SimpleArithmeticExpression "," SimpleArithmeticExpression ")" |
+     *      "SIZE" "(" CollectionValuedPathExpression ")"
+     */
+    private function _FunctionsReturningNumerics()
+    {
+        $funcNameLower = strtolower($this->_lexer->lookahead['value']);
+        $funcClass = self::$_NUMERIC_FUNCTIONS[$funcNameLower];
+        $function = new $funcClass($funcNameLower);
+        $function->parse($this);
+        return $function;
+    }
+
+    /**
+     * PortableFunctionsReturningDateTime ::= "CURRENT_DATE" | "CURRENT_TIME" | "CURRENT_TIMESTAMP"
+     */
+    public function _FunctionsReturningDatetime()
+    {
+        $funcNameLower = strtolower($this->_lexer->lookahead['value']);
+        $funcClass = self::$_DATETIME_FUNCTIONS[$funcNameLower];
+        $function = new $funcClass($funcNameLower);
+        $function->parse($this);
+        return $function;
+    }
+
+    /**
+     * Checks whether the given token type indicates an aggregate function.
+     */
     private function _isAggregateFunction($tokenType)
     {
-        switch ($tokenType) {
-            case Lexer::T_AVG:
-            case Lexer::T_MIN:
-            case Lexer::T_MAX:
-            case Lexer::T_SUM:
-            case Lexer::T_COUNT:
-                return true;
-            default:
-                return false;
-        }
+        return $tokenType == Lexer::T_AVG || $tokenType == Lexer::T_MIN ||
+                $tokenType == Lexer::T_MAX || $tokenType == Lexer::T_SUM ||
+                $tokenType == Lexer::T_COUNT;
     }
 
     /**
@@ -1674,7 +1792,10 @@ class Parser
         if ($this->_lexer->lookahead['value'] === '(') {
             $peek = $this->_lexer->glimpse();
             if ($peek['type'] === Lexer::T_SELECT) {
-                return $this->_Subselect();
+                $this->match('(');
+                $expr = $this->_Subselect();
+                $this->match(')');
+                return $expr;
             }
         }
         return $this->_StringPrimary();
@@ -1683,7 +1804,7 @@ class Parser
     /**
      * StringPrimary ::= StateFieldPathExpression | string | InputParameter | FunctionsReturningStrings | AggregateExpression
      */
-    private function _StringPrimary()
+    public function _StringPrimary()
     {
         if ($this->_lexer->lookahead['type'] === Lexer::T_IDENTIFIER) {
             $peek = $this->_lexer->glimpse();
@@ -1703,5 +1824,20 @@ class Parser
         } else {
             $this->syntaxError('StateFieldPathExpression | string | InputParameter | FunctionsReturningStrings | AggregateExpression');
         }
+    }
+
+    public static function registerStringFunction($name, $class)
+    {
+        self::$_STRING_FUNCTIONS[$name] = $class;
+    }
+
+    public static function registerNumericFunction($name, $class)
+    {
+        self::$_NUMERIC_FUNCTIONS[$name] = $class;
+    }
+
+    public static function registerDatetimeFunction($name, $class)
+    {
+        self::$_DATETIME_FUNCTIONS[$name] = $class;
     }
 }

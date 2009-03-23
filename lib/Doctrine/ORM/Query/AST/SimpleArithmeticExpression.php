@@ -24,4 +24,9 @@ class SimpleArithmeticExpression extends Node
     {
         return $this->_terms;
     }
+
+    public function dispatch($sqlWalker)
+    {
+        return $sqlWalker->walkSimpleArithmeticExpression($this);
+    }
 }

@@ -24,4 +24,9 @@ class HavingClause extends Node
     {
         return $this->_conditionalExpression;
     }
+
+    public function dispatch($sqlWalker)
+    {
+        return $sqlWalker->walkHavingClause($this);
+    }
 }

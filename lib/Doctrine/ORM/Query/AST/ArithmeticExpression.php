@@ -51,4 +51,9 @@ class ArithmeticExpression extends Node
     {
         return (bool) $this->_subselect;
     }
+
+    public function dispatch($sqlWalker)
+    {
+        return $sqlWalker->walkArithmeticExpression($this);
+    }
 }

@@ -44,4 +44,9 @@ class FromClause extends Node
     {
         return $this->_identificationVariableDeclarations;
     }
+
+    public function dispatch($sqlWalker)
+    {
+        return $sqlWalker->walkFromClause($this);
+    }
 }

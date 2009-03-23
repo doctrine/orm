@@ -57,5 +57,10 @@ class InExpression extends Node
     {
         return $this->_pathExpression;
     }
+
+    public function dispatch($sqlWalker)
+    {
+        return $sqlWalker->walkInExpression($this);
+    }
 }
 

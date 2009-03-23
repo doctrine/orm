@@ -51,4 +51,9 @@ class SimpleStateFieldPathExpression extends Node
     {
         return $this->_simpleStateField;
     }
+
+    public function dispatch($sqlWalker)
+    {
+        return $sqlWalker->walkSimpleStateFieldPathExpression($this);
+    }
 }

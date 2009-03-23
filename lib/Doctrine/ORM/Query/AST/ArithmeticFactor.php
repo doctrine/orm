@@ -38,4 +38,9 @@ class ArithmeticFactor extends Node
     {
         return $this->_nSigned;
     }
+
+    public function dispatch($sqlWalker)
+    {
+        return $sqlWalker->walkArithmeticFactor($this);
+    }
 }

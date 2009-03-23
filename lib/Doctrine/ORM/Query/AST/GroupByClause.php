@@ -24,4 +24,9 @@ class GroupByClause extends Node
     {
         return $this->_groupByItems;
     }
+
+    public function dispatch($sqlWalker)
+    {
+        return $sqlWalker->walkGroupByClause($this);
+    }
 }

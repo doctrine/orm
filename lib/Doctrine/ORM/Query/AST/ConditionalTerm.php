@@ -24,4 +24,9 @@ class ConditionalTerm extends Node
     {
         return $this->_conditionalFactors;
     }
+
+    public function dispatch($sqlWalker)
+    {
+        return $sqlWalker->walkConditionalTerm($this);
+    }
 }

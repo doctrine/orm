@@ -35,5 +35,10 @@ class NullComparisonExpression extends Node
     {
         return $this->_not;
     }
+
+    public function dispatch($sqlWalker)
+    {
+        return $sqlWalker->walkNullComparisonExpression($this);
+    }
 }
 

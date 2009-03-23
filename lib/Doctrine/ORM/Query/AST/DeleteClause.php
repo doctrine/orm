@@ -48,5 +48,10 @@ class DeleteClause extends Node
     {
         $this->_aliasIdentificationVariable = $alias;
     }
+
+    public function dispatch($sqlWalker)
+    {
+        return $sqlWalker->walkDeleteClause($this);
+    }
 }
 

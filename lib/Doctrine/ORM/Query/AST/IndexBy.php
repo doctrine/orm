@@ -44,4 +44,9 @@ class IndexBy extends Node
     {
         return $this->_simpleStateFieldPathExpression;
     }
+
+    public function dispatch($sqlWalker)
+    {
+        return $sqlWalker->walkIndexBy($this);
+    }
 }

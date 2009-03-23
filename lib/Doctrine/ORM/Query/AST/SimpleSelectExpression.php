@@ -55,4 +55,9 @@ class SimpleSelectExpression extends Node
     {
         $this->_fieldIdentificationVariable = $fieldAlias;
     }
+
+    public function dispatch($sqlWalker)
+    {
+        return $sqlWalker->walkSimpleSelectExpression($this);
+    }
 }

@@ -69,4 +69,9 @@ class SelectClause extends Node
     {
         return is_object($value) ? $value->buildSql() : $value;
     }
+
+    public function dispatch($sqlWalker)
+    {
+        return $sqlWalker->walkSelectClause($this);
+    }
 }

@@ -44,4 +44,9 @@ class SubselectFromClause extends Node
     {
         return $this->_identificationVariableDeclarations;
     }
+
+    public function dispatch($sqlWalker)
+    {
+        return $sqlWalker->walkSubselectFromClause($this);
+    }
 }

@@ -49,5 +49,10 @@ class BetweenExpression extends Node
     {
         return $this->_not;
     }
+
+    public function dispatch($sqlWalker)
+    {
+        return $sqlWalker->walkBetweenExpression($this);
+    }
 }
 

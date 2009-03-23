@@ -52,4 +52,9 @@ class SelectExpression extends Node
     {
         return $this->_fieldIdentificationVariable;
     }
+
+    public function dispatch($sqlWalker)
+    {
+        return $sqlWalker->walkSelectExpression($this);
+    }
 }

@@ -32,4 +32,9 @@ class JoinPathExpression extends Node
     {
         return $this->_assocField;
     }
+
+    public function dispatch($sqlWalker)
+    {
+        return $sqlWalker->walkJoinPathExpression($this);
+    }
 }

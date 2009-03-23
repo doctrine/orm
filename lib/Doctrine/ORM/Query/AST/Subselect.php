@@ -95,4 +95,9 @@ class Subselect extends Node
     {
         $this->_orderByClause = $orderByClause;
     }
+
+    public function dispatch($sqlWalker)
+    {
+        return $sqlWalker->walkSubselect($this);
+    }
 }

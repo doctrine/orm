@@ -45,4 +45,9 @@ class ConditionalPrimary extends Node
     {
         return (bool) $this->_conditionalExpression;
     }
+
+    public function dispatch($sqlWalker)
+    {
+        return $sqlWalker->walkConditionalPrimary($this);
+    }
 }

@@ -54,4 +54,9 @@ class UpdateStatement extends Node
     {
         return $this->_whereClause;
     }
+
+    public function dispatch($sqlWalker)
+    {
+        return $sqlWalker->walkUpdateStatement($this);
+    }
 }    

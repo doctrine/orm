@@ -16,27 +16,51 @@
  *
  * This software consists of voluntary contributions made by many individuals
  * and is licensed under the LGPL. For more information, see
- * <http://www.phpdoctrine.org>.
+ * <http://www.doctrine-project.org>.
  */
 
-namespace Doctrine\ORM\Query\AST;
+namespace Doctrine\ORM\Query\AST\Functions;
+
+use Doctrine\ORM\Query\AST\Node;
 
 /**
- * ComparisonOperator = "=" | "<" | "<=" | "<>" | ">" | ">=" | "!="
+ * Description of Function
  *
- * @package     Doctrine
- * @subpackage  Query
- * @author      Guilherme Blanco <guilhermeblanco@hotmail.com>
- * @author      Janne Vanhala <jpvanhal@cc.hut.fi>
- * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
- * @link        http://www.phpdoctrine.org
- * @since       2.0
- * @version     $Revision$
+ * @author robo
  */
-class ComparisonOperator extends Node
+abstract class FunctionNode extends Node
 {
+    private $_name;
+    //private $_expressions = array();
+
+    public function __construct($name)
+    {
+        $this->_name = $name;
+    }
+
+    public function getName()
+    {
+        return $this->_name;
+    }
+
+    abstract public function getSql(\Doctrine\ORM\Query\SqlWalker $sqlWalker);
+
     public function dispatch($sqlWalker)
     {
-        ;
+        return $sqlWalker->walkFunction($this);
     }
+
+    //abstract public function parse(\Doctrine\ORM\Query\Parser $parser);
+
+/*
+    public function getExpressions()
+    {
+        return $this->_expressions;
+    }
+
+    public function setExpressions(array $expressions)
+    {
+        $this->_expressions = $expressions;
+    }
+ */
 }

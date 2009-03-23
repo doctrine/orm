@@ -95,4 +95,9 @@ class StateFieldPathExpression extends Node
     {
         $this->_collectionValuedAssociationFields[$part] = true;
     }
+
+    public function dispatch($sqlWalker)
+    {
+        return $sqlWalker->walkStateFieldPathExpression($this);
+    }
 }

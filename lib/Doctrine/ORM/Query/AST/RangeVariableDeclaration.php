@@ -16,7 +16,7 @@
  *
  * This software consists of voluntary contributions made by many individuals
  * and is licensed under the LGPL. For more information, see
- * <http://www.phpdoctrine.org>.
+ * <http://www.doctrine-project.org>.
  */
 
 namespace Doctrine\ORM\Query\AST;
@@ -26,7 +26,7 @@ namespace Doctrine\ORM\Query\AST;
  *
  * @author      Guilherme Blanco <guilhermeblanco@hotmail.com>
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
- * @link        http://www.phpdoctrine.org
+ * @link        http://www.doctrine-project.org
  * @since       2.0
  * @version     $Revision$
  */
@@ -58,27 +58,9 @@ class RangeVariableDeclaration extends Node
     {
         return $this->_classMetadata;
     }
-    
-    /* REMOVE ME LATER. COPIED METHODS FROM SPLIT OF PRODUCTION INTO "AST" AND "PARSER" */
-    public function buildSql()
+
+    public function dispatch($sqlWalker)
     {
-        // Retrieving connection
-        $conn = $this->_parserResult->getEntityManager()->getConnection();
-        
-        // Component alias
-        $componentAlias = $this->_aliasIdentificationVariable;
-
-        // Retrieving required information
-        try {
-            $queryComponent = $this->_parserResult->getQueryComponent($componentAlias);
-            $classMetadata = $queryComponent['metadata'];
-        } catch (Doctrine_Exception $e) {
-            $this->_parser->semanticalError($e->getMessage());
-
-            return;
-        }
-
-        return $conn->quoteIdentifier($classMetadata->getTableName()) . ' '
-             . $conn->quoteIdentifier($this->_parserResult->getTableAliasFromComponentAlias($componentAlias));
+        return $sqlWalker->walkRangeVariableDeclaration($this);
     }
 }

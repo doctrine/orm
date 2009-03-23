@@ -45,4 +45,9 @@ class LikeExpression extends Node
     {
         return $this->_escapeChar;
     }
+
+    public function dispatch($sqlWalker)
+    {
+        return $sqlWalker->walkLikeExpression($this);
+    }
 }

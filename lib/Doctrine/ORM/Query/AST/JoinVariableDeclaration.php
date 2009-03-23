@@ -52,9 +52,8 @@ class JoinVariableDeclaration extends Node
         return $this->_indexBy;
     }
 
-    /* REMOVE ME LATER. COPIED METHODS FROM SPLIT OF PRODUCTION INTO "AST" AND "PARSER" */
-    public function buildSql()
+    public function dispatch($sqlWalker)
     {
-        return $this->_join->buildSql() . (isset($this->_indexby) ? $this->_indexby->buildSql() . ' ' : '');
+        return $sqlWalker->walkJoinVariableDeclaration($this);
     }
 }

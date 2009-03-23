@@ -24,4 +24,9 @@ class ArithmeticTerm extends Node
     {
         return $this->_factors;
     }
+
+    public function dispatch($sqlWalker)
+    {
+        return $sqlWalker->walkArithmeticTerm($this);
+    }
 }

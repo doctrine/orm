@@ -54,4 +54,9 @@ class DeleteStatement extends Node
     {
         return $this->_whereClause;
     }
+
+    public function dispatch($sqlWalker)
+    {
+        return $sqlWalker->walkDeleteStatement($this);
+    }
 }

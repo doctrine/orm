@@ -26,9 +26,19 @@ class ExistsExpression extends Node
         $this->_not = $bool;
     }
 
-    public function getNot()
+    public function isNot()
     {
         return $this->_not;
+    }
+
+    public function getSubselect()
+    {
+        return $this->_subselect;
+    }
+
+    public function dispatch($sqlWalker)
+    {
+        return $sqlWalker->walkExistsExpression($this);
     }
 }
 

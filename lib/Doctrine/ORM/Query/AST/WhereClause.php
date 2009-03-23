@@ -24,4 +24,9 @@ class WhereClause extends Node
     {
         return $this->_conditionalExpression;
     }
+
+    public function dispatch($sqlWalker)
+    {
+        return $sqlWalker->walkWhereClause($this);
+    }
 }

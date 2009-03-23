@@ -46,4 +46,9 @@ class OrderByItem extends Node
     {
         return $this->_desc;
     }
+
+    public function dispatch($sqlWalker)
+    {
+        return $sqlWalker->walkOrderByItem($this);
+    }
 }

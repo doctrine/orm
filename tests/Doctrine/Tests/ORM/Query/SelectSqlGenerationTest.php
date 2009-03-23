@@ -156,6 +156,14 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
             'SELECT c0.id AS c0__id, c1.id AS c1__id, c2.phonenumber AS c2__phonenumber, c3.id AS c3__id FROM cms_users c0 INNER JOIN cms_articles c1 ON c0.id = c1.user_id INNER JOIN cms_phonenumbers c2 ON c0.id = c2.user_id INNER JOIN cms_comments c3 ON c1.id = c3.article_id'
         );
     }
+    
+    public function testTrimFunction()
+    {
+        $this->assertSqlGeneration(
+            "SELECT u.name FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE TRIM(TRAILING ' ' FROM u.name) = 'someone'",
+            "SELECT c0.name AS c0__name FROM cms_users c0 WHERE TRIM(TRAILING ' ' FROM c0.name) = 'someone'"
+        );
+    }
 
     /*public function testFunctionalExpressionsSupportedInWherePart()
     {
