@@ -626,7 +626,8 @@ class Parser
     /**
      * SelectExpression ::=
      *      IdentificationVariable | StateFieldPathExpression |
-     *      (AggregateExpression | "(" Subselect ")") [["AS"] FieldAliasIdentificationVariable]
+     *      (AggregateExpression | "(" Subselect ")") [["AS"] FieldAliasIdentificationVariable] |
+     *      Function
      */
     public function _SelectExpression()
     {
@@ -634,11 +635,15 @@ class Parser
         $fieldIdentificationVariable = null;
         $peek = $this->_lexer->glimpse();
         // First we recognize for an IdentificationVariable (DQL class alias)
-        if ($peek['value'] != '.' && $this->_lexer->lookahead['type'] === Lexer::T_IDENTIFIER) {
+        if ($peek['value'] != '.' && $peek['value'] != '(' && $this->_lexer->lookahead['type'] === Lexer::T_IDENTIFIER) {
             $expression = $this->_IdentificationVariable();
         } else if (($isFunction = $this->_isFunction()) !== false || $this->_isSubselect()) {
             if ($isFunction) {
-                $expression = $this->_AggregateExpression();
+                if ($this->_isAggregateFunction($this->_lexer->lookahead['type'])) {
+                    $expression = $this->_AggregateExpression();
+                } else {
+                    $expression = $this->_Function();
+                }
             } else {
                 $this->match('(');
                 $expression = $this->_Subselect();
@@ -1290,7 +1295,7 @@ class Parser
                 }
             }
         }
-        else if ($this->_isAggregateFunction($this->_lexer->lookahead)) {
+        /*else if ($this->_isAggregateFunction($this->_lexer->lookahead['type'])) {
             $leftExpr = $this->_StringExpression();
             $operator = $this->_ComparisonOperator();
             if ($this->_lexer->lookahead['type'] === Lexer::T_ALL ||
@@ -1300,7 +1305,7 @@ class Parser
             } else {
                 $rightExpr = $this->_StringExpression();
             }
-        }
+        }*/
         else {
             $leftExpr = $this->_ArithmeticExpression();
             $operator = $this->_ComparisonOperator();
@@ -1314,6 +1319,20 @@ class Parser
         }
 
         return new AST\ComparisonExpression($leftExpr, $operator, $rightExpr);
+    }
+
+    public function _Function()
+    {
+        $funcName = $this->_lexer->lookahead['value'];
+        if ($this->_isStringFunction($funcName)) {
+            return $this->_FunctionsReturningStrings();
+        } else if ($this->_isNumericFunction($funcName)) {
+            return $this->_FunctionsReturningNumerics();
+        } else if ($this->_isDatetimeFunction($funcName)) {
+            return $this->_FunctionsReturningDatetime();
+        } else {
+            $this->syntaxError('Known function.');
+        }
     }
 
     public function _isStringFunction($funcName)
@@ -1466,6 +1485,33 @@ class Parser
         $this->match(')');
         $existsExpression->setNot($not);
         return $existsExpression;
+    }
+
+    /**
+     * QuantifiedExpression ::= ("ALL" | "ANY" | "SOME") "(" Subselect ")"
+     */
+    public function _QuantifiedExpression()
+    {
+        $all = $any = $some = false;
+        if ($this->_lexer->isNextToken(Lexer::T_ALL)) {
+            $this->match(Lexer::T_ALL);
+            $all = true;
+        } else if ($this->_lexer->isNextToken(Lexer::T_ANY)) {
+            $this->match(Lexer::T_ANY);
+            $any = true;
+        } else if ($this->_lexer->isNextToken(Lexer::T_SOME)) {
+            $this->match(Lexer::T_SOME);
+            $some = true;
+        } else {
+            $this->syntaxError('ALL, ANY or SOME');
+        }
+        $this->match('(');
+        $qExpr = new AST\QuantifiedExpression($this->_Subselect());
+        $this->match(')');
+        $qExpr->setAll($all);
+        $qExpr->setAny($any);
+        $qExpr->setSome($some);
+        return $qExpr;
     }
 
     /**
@@ -1805,7 +1851,7 @@ class Parser
             if ($peek['value'] == '.') {
                 return $this->_StateFieldPathExpression();
             } else if ($peek['value'] == '(') {
-                //TODO... FunctionsReturningStrings or AggregateExpression
+                return $this->_FunctionsReturningStrings();
             } else {
                 $this->syntaxError("'.' or '('");
             }
@@ -1815,6 +1861,8 @@ class Parser
         } else if ($this->_lexer->lookahead['type'] === Lexer::T_INPUT_PARAMETER) {
             $this->match(Lexer::T_INPUT_PARAMETER);
             return new AST\InputParameter($this->_lexer->token['value']);
+        } else if ($this->_isAggregateFunction($this->_lexer->lookahead['type'])) {
+            return $this->_AggregateExpression();
         } else {
             $this->syntaxError('StateFieldPathExpression | string | InputParameter | FunctionsReturningStrings | AggregateExpression');
         }

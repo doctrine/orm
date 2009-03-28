@@ -31,13 +31,18 @@ class ConcatFunction extends FunctionNode
      */
     public function getSql(\Doctrine\ORM\Query\SqlWalker $sqlWalker)
     {
-        //TODO: Use platform to get SQL
+        $platform = $sqlWalker->getConnection()->getDatabasePlatform();
+        return $platform->getConcatExpression(
+            $sqlWalker->walkStringPrimary($this->_firstStringPrimary),
+            $sqlWalker->walkStringPrimary($this->_secondStringPrimary)
+        );
+        /*
         $sql = 'CONCAT(' .
                 $sqlWalker->walkStringPrimary($this->_firstStringPrimary)
                 . ', ' .
                 $sqlWalker->walkStringPrimary($this->_secondStringPrimary)
                 . ')';
-        return $sql;
+        return $sql;*/
     }
 
     /**

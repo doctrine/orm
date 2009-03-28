@@ -26,7 +26,6 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
         }
     }
 
-
     public function testPlainFromClauseWithoutAlias()
     {
         $this->assertSqlGeneration(
@@ -165,54 +164,75 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
         );
     }
 
-    /*public function testFunctionalExpressionsSupportedInWherePart()
-    {
-        $this->assertSqlGeneration(
-            "SELECT u.name FROM CmsUser u WHERE TRIM(u.name) = 'someone'",
-            // String quoting in the SQL usually depends on the database platform.
-            // This test works with a mock connection which uses ' for string quoting.
-            "SELECT cu.name AS cu__name FROM CmsUser cu WHERE TRIM(cu.name) = 'someone'"
-        );
-    }*/
-
-
-/*
-    // Ticket #973
-    public function testSingleInValueWithoutSpace()
-    {
-        $this->assertSqlGeneration(
-            "SELECT u.name FROM CmsUser u WHERE u.id IN(46)",
-            "SELECT cu.name AS cu__name FROM cms_user cu WHERE cu.id IN (46)"
-        );
-    }
-
-
     // Ticket 894
     public function testBetweenDeclarationWithInputParameter()
     {
         $this->assertSqlGeneration(
-            "SELECT u.name FROM CmsUser u WHERE u.id BETWEEN ? AND ?",
-            "SELECT cu.name AS cu__name FROM cms_user cu WHERE cu.id BETWEEN ? AND ?"
+            "SELECT u.name FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.id BETWEEN ?1 AND ?2",
+            "SELECT c0.name AS c0__name FROM cms_users c0 WHERE c0.id BETWEEN ? AND ?"
         );
     }
 
+    public function testFunctionalExpressionsSupportedInWherePart()
+    {
+        $this->assertSqlGeneration(
+            "SELECT u.name FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE TRIM(u.name) = 'someone'",
+            // String quoting in the SQL usually depends on the database platform.
+            // This test works with a mock connection which uses ' for string quoting.
+            "SELECT c0.name AS c0__name FROM cms_users c0 WHERE TRIM(FROM c0.name) = 'someone'"
+        );
+    }
+
+    // Ticket #973
+    public function testSingleInValueWithoutSpace()
+    {
+        $this->assertSqlGeneration(
+            "SELECT u.name FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.id IN(46)",
+            "SELECT c0.name AS c0__name FROM cms_users c0 WHERE c0.id IN (46)"
+        );
+    }
 
     public function testInExpressionSupportedInWherePart()
     {
         $this->assertSqlGeneration(
-            'SELECT * FROM CmsUser WHERE CmsUser.id IN (1, 2)',
-            'SELECT cu.id AS cu__id, cu.status AS cu__status, cu.username AS cu__username, cu.name AS cu__name FROM cms_user cu WHERE cu.id IN (1, 2)'
+            'SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.id IN (1, 2)',
+            'SELECT c0.id AS c0__id, c0.status AS c0__status, c0.username AS c0__username, c0.name AS c0__name FROM cms_users c0 WHERE c0.id IN (1, 2)'
         );
     }
-
 
     public function testNotInExpressionSupportedInWherePart()
     {
         $this->assertSqlGeneration(
-            'SELECT * FROM CmsUser WHERE CmsUser.id NOT IN (1)',
-            'SELECT cu.id AS cu__id, cu.status AS cu__status, cu.username AS cu__username, cu.name AS cu__name FROM cms_user cu WHERE cu.id NOT IN (1)'
+            'SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.id NOT IN (1)',
+            'SELECT c0.id AS c0__id, c0.status AS c0__status, c0.username AS c0__username, c0.name AS c0__name FROM cms_users c0 WHERE c0.id NOT IN (1)'
         );
     }
 
-*/
+    public function testConcatFunction()
+    {
+        $connMock = $this->_em->getConnection();
+        $orgPlatform = $connMock->getDatabasePlatform();
+
+        $connMock->setDatabasePlatform(new \Doctrine\DBAL\Platforms\MySqlPlatform);
+        $this->assertSqlGeneration(
+            "SELECT u.id FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE CONCAT(u.name, 's') = ?1",
+            "SELECT c0.id AS c0__id FROM cms_users c0 WHERE CONCAT(c0.name, 's') = ?"
+        );
+        $this->assertSqlGeneration(
+            "SELECT CONCAT(u.id, u.name) FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.id = ?1",
+            "SELECT CONCAT(c0.id, c0.name) AS dctrn__0 FROM cms_users c0 WHERE c0.id = ?"
+        );
+
+        $connMock->setDatabasePlatform(new \Doctrine\DBAL\Platforms\PostgreSqlPlatform);
+        $this->assertSqlGeneration(
+            "SELECT u.id FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE CONCAT(u.name, 's') = ?1",
+            "SELECT c0.id AS c0__id FROM cms_users c0 WHERE c0.name || 's' = ?"
+        );
+        $this->assertSqlGeneration(
+            "SELECT CONCAT(u.id, u.name) FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.id = ?1",
+            "SELECT c0.id || c0.name AS dctrn__0 FROM cms_users c0 WHERE c0.id = ?"
+        );
+
+        $connMock->setDatabasePlatform($orgPlatform);
+    }
 }

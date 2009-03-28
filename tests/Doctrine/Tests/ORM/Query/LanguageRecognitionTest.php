@@ -89,7 +89,7 @@ class LanguageRecognitionTest extends \Doctrine\Tests\OrmTestCase
 
     public function testFunctionalExpressionsSupportedInWherePart()
     {
-        //$this->assertValidDql("SELECT u.name FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE TRIM(u.name) = 'someone'");
+        $this->assertValidDql("SELECT u.name FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE TRIM(u.name) = 'someone'");
     }
 
     public function testArithmeticExpressionsSupportedInWherePart()
@@ -300,29 +300,23 @@ class LanguageRecognitionTest extends \Doctrine\Tests\OrmTestCase
         $this->assertValidDql("SELECT u, a FROM Doctrine\Tests\Models\CMS\CmsUser u, Doctrine\Tests\Models\CMS\CmsArticle a WHERE u.name = a.topic");
     }
 
-/*
+    public function testAllExpressionWithCorrelatedSubquery()
+    {
+        $this->assertValidDql('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.id > ALL (SELECT u2.id FROM Doctrine\Tests\Models\CMS\CmsUser u2 WHERE u2.name = u.name)');
+    }
+
     public function testCustomJoinsAndWithKeywordSupported()
     {
-        // We need existant classes here, otherwise semantical will always fail
-        $this->assertValidDql('SELECT c.*, c2.*, d.* FROM Record_Country c INNER JOIN c.City c2 WITH c2.id = 2 WHERE c.id = 1');
-    }
-*/
-/*    public function testAllExpressionWithCorrelatedSubquery()
-    {
-        // We need existant classes here, otherwise semantical will always fail
-        $this->assertValidDql('SELECT * FROM CompanyEmployee e WHERE e.salary > ALL (SELECT m.salary FROM CompanyManager m WHERE m.department = e.department)', true);
+        $this->assertValidDql('SELECT u, p FROM Doctrine\Tests\Models\CMS\CmsUser u INNER JOIN u.phonenumbers p WITH p.phonenumber = 123 WHERE u.id = 1');
     }
 
     public function testAnyExpressionWithCorrelatedSubquery()
     {
-        // We need existant classes here, otherwise semantical will always fail
-        $this->assertValidDql('SELECT * FROM Employee e WHERE e.salary > ANY (SELECT m.salary FROM Manager m WHERE m.department = e.department)');
+        $this->assertValidDql('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.id > ANY (SELECT u2.id FROM Doctrine\Tests\Models\CMS\CmsUser u2 WHERE u2.name = u.name)');
     }
 
     public function testSomeExpressionWithCorrelatedSubquery()
     {
-        // We need existant classes here, otherwise semantical will always fail
-        $this->assertValidDql('SELECT * FROM Employee e WHERE e.salary > SOME (SELECT m.salary FROM Manager m WHERE m.department = e.department)');
+        $this->assertValidDql('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.id > SOME (SELECT u2.id FROM Doctrine\Tests\Models\CMS\CmsUser u2 WHERE u2.name = u.name)');
     }
-*/
 }

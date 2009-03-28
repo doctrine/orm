@@ -101,7 +101,7 @@ class PostgreSqlPlatform extends AbstractPlatform
     public function getNativeDeclaration(array $field)
     {
         if ( ! isset($field['type'])) {
-            throw \Doctrine\Common\DoctrineException::updateMe('Missing column type.');
+            throw DoctrineException::updateMe('Missing column type.');
         }
         switch ($field['type']) {
             case 'char':
@@ -161,7 +161,7 @@ class PostgreSqlPlatform extends AbstractPlatform
                 $scale = !empty($field['scale']) ? $field['scale'] : $this->conn->getAttribute(Doctrine::ATTR_DECIMAL_PLACES);
                 return 'NUMERIC('.$length.','.$scale.')';
         }
-        throw \Doctrine\Common\DoctrineException::updateMe('Unknown field type \'' . $field['type'] .  '\'.');
+        throw DoctrineException::updateMe('Unknown field type \'' . $field['type'] .  '\'.');
     }
 
     /**
@@ -293,7 +293,7 @@ class PostgreSqlPlatform extends AbstractPlatform
                 $length = null;
                 break;
             default:
-                throw \Doctrine\Common\DoctrineException::updateMe('unknown database attribute type: '.$dbType);
+                throw DoctrineException::updateMe('unknown database attribute type: '.$dbType);
         }
 
         return array('type'     => $type,
@@ -461,7 +461,7 @@ class PostgreSqlPlatform extends AbstractPlatform
                 $match = $field.'LIKE ';
                 break;
             default:
-                throw \Doctrine\Common\DoctrineException::updateMe('not a supported operator type:'. $operator);
+                throw DoctrineException::updateMe('not a supported operator type:'. $operator);
             }
         }
         $match.= "'";
@@ -766,7 +766,7 @@ class PostgreSqlPlatform extends AbstractPlatform
                 case 'rename':
                     break;
                 default:
-                    throw \Doctrine\Common\DoctrineException::updateMe('change type "' . $changeName . '\" not yet supported');
+                    throw DoctrineException::updateMe('change type "' . $changeName . '\" not yet supported');
             }
         }
 
@@ -798,7 +798,7 @@ class PostgreSqlPlatform extends AbstractPlatform
                     $serverInfo = $this->getServerVersion();
 
                     if (is_array($serverInfo) && $serverInfo['major'] < 8) {
-                        throw \Doctrine\Common\DoctrineException::updateMe('changing column type for "'.$field['type'].'\" requires PostgreSQL 8.0 or above');
+                        throw DoctrineException::updateMe('changing column type for "'.$field['type'].'\" requires PostgreSQL 8.0 or above');
                     }
                     $query = 'ALTER ' . $fieldName . ' TYPE ' . $this->getTypeDeclarationSql($field['definition']);
                     $sql[] = 'ALTER TABLE ' . $name . ' ' . $query;
@@ -875,10 +875,10 @@ class PostgreSqlPlatform extends AbstractPlatform
     public function getCreateTableSql($name, array $fields, array $options = array())
     {
         if ( ! $name) {
-            throw \Doctrine\Common\DoctrineException::updateMe('no valid table name specified');
+            throw DoctrineException::updateMe('no valid table name specified');
         }
         if (empty($fields)) {
-            throw \Doctrine\Common\DoctrineException::updateMe('no fields specified for table ' . $name);
+            throw DoctrineException::updateMe('no fields specified for table ' . $name);
         }
 
         $queryFields = $this->getFieldDeclarationListSql($fields);
@@ -1000,5 +1000,66 @@ class PostgreSqlPlatform extends AbstractPlatform
     {
         return 'SET SESSION CHARACTERISTICS AS TRANSACTION ISOLATION LEVEL '
                 . $this->_getTransactionIsolationLevelSql($level);
+    }
+
+    /**
+     * @override
+     */
+    public function getIntegerTypeDeclarationSql(array $field)
+    {
+        if ( ! empty($field['autoincrement'])) {
+            return 'SERIAL';
+        }
+        return 'INT';
+    }
+
+    /**
+     * @override
+     */
+    public function getBigIntTypeDeclarationSql(array $field)
+    {
+        if ( ! empty($field['autoincrement'])) {
+            return 'BIGSERIAL';
+        }
+        return 'BIGINT';
+    }
+
+    /**
+     * @override
+     */
+    public function getSmallIntTypeDeclarationSql(array $field)
+    {
+        return 'SMALLINT';
+    }
+
+    /**
+     * @override
+     */
+    protected function _getCommonIntegerTypeDeclarationSql(array $columnDef)
+    {
+        return '';
+    }
+
+    /**
+     * Gets the SQL snippet used to declare a VARCHAR column on the MySql platform.
+     *
+     * @params array $field
+     * @override
+     */
+    public function getVarcharDeclarationSql(array $field)
+    {
+        if ( ! isset($field['length'])) {
+            if (array_key_exists('default', $field)) {
+                $field['length'] = $this->getVarcharMaxLength();
+            } else {
+                $field['length'] = false;
+            }
+        }
+
+        $length = ($field['length'] <= $this->getVarcharMaxLength()) ? $field['length'] : false;
+        $fixed = (isset($field['fixed'])) ? $field['fixed'] : false;
+
+        return $fixed ? ($length ? 'CHAR(' . $length . ')' : 'CHAR(255)')
+                : ($length ? 'VARCHAR(' . $length . ')' : 'TEXT');
     }
 }

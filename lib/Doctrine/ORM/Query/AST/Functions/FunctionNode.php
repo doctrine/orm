@@ -50,17 +50,5 @@ abstract class FunctionNode extends Node
         return $sqlWalker->walkFunction($this);
     }
 
-    //abstract public function parse(\Doctrine\ORM\Query\Parser $parser);
-
-/*
-    public function getExpressions()
-    {
-        return $this->_expressions;
-    }
-
-    public function setExpressions(array $expressions)
-    {
-        $this->_expressions = $expressions;
-    }
- */
+    abstract public function parse(\Doctrine\ORM\Query\Parser $parser);
 }

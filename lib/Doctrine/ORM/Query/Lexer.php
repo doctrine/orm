@@ -336,7 +336,7 @@ class Lexer
     }
 
     /**
-     * @todo Doc
+     * Resets the peek pointer to 0.
      */
     public function resetPeek()
     {
@@ -351,6 +351,12 @@ class Lexer
         $this->_position = $position;
     }
 
+    /**
+     * Gets the literal for a given token.
+     *
+     * @param mixed $token
+     * @return string
+     */
     public function getLiteral($token)
     {
         if ( ! $this->_keywordsTable) {

@@ -16,7 +16,7 @@
  *
  * This software consists of voluntary contributions made by many individuals
  * and is licensed under the LGPL. For more information, see
- * <http://www.phpdoctrine.org>.
+ * <http://www.doctrine-project.org>.
  */
 
 namespace Doctrine\DBAL\Platforms;
@@ -185,7 +185,7 @@ class MySqlPlatform extends AbstractPlatform
                     $match = $field.'LIKE BINARY ';
                     break;
                 default:
-                    throw \Doctrine\Common\DoctrineException::updateMe('not a supported operator type:'. $operator);
+                    throw DoctrineException::updateMe('not a supported operator type:'. $operator);
             }
         }
         $match.= "'";
@@ -520,7 +520,7 @@ class MySqlPlatform extends AbstractPlatform
                 $length = null;
             break;
             default:
-                throw \Doctrine\Common\DoctrineException::updateMe('unknown database attribute type: ' . $dbType);
+                throw DoctrineException::updateMe('unknown database attribute type: ' . $dbType);
         }
 
         $length = ((int) $length == 0) ? null : (int) $length;
@@ -678,10 +678,10 @@ class MySqlPlatform extends AbstractPlatform
     public function getCreateTableSql($name, array $fields, array $options = array())
     {
         if ( ! $name) {
-            throw \Doctrine\Common\DoctrineException::updateMe('no valid table name specified');
+            throw DoctrineException::updateMe('no valid table name specified');
         }
         if (empty($fields)) {
-            throw \Doctrine\Common\DoctrineException::updateMe('no fields specified for table "'.$name.'"');
+            throw DoctrineException::updateMe('no fields specified for table "'.$name.'"');
         }
         $queryFields = $this->getFieldDeclarationListSql($fields);
 
@@ -866,7 +866,7 @@ class MySqlPlatform extends AbstractPlatform
     public function getAlterTableSql($name, array $changes, $check = false)
     {
         if ( ! $name) {
-            throw \Doctrine\Common\DoctrineException::updateMe('no valid table name specified');
+            throw DoctrineException::updateMe('no valid table name specified');
         }
         foreach ($changes as $changeName => $change) {
             switch ($changeName) {
@@ -877,7 +877,7 @@ class MySqlPlatform extends AbstractPlatform
                 case 'name':
                     break;
                 default:
-                    throw \Doctrine\Common\DoctrineException::updateMe('change type "' . $changeName . '" not yet supported');
+                    throw DoctrineException::updateMe('change type "' . $changeName . '" not yet supported');
             }
         }
 
@@ -1003,7 +1003,7 @@ class MySqlPlatform extends AbstractPlatform
                     $type = strtoupper($definition['type']) . ' ';
                 break;
                 default:
-                    throw \Doctrine\Common\DoctrineException::updateMe('Unknown index type ' . $definition['type']);
+                    throw DoctrineException::updateMe('Unknown index type ' . $definition['type']);
             }
         }
         $query  = 'CREATE ' . $type . 'INDEX ' . $name . ' ON ' . $table;
@@ -1050,10 +1050,10 @@ class MySqlPlatform extends AbstractPlatform
     }
 
     /** @override */
-    public function getTinyIntTypeDeclarationSql(array $field)
+    /*public function getTinyIntTypeDeclarationSql(array $field)
     {
         return 'TINYINT' . $this->_getCommonIntegerTypeDeclarationSql($field);
-    }
+    }*/
 
     /** @override */
     public function getSmallIntTypeDeclarationSql(array $field)
@@ -1062,10 +1062,10 @@ class MySqlPlatform extends AbstractPlatform
     }
 
     /** @override */
-    public function getMediumIntTypeDeclarationSql(array $field)
+    /*public function getMediumIntTypeDeclarationSql(array $field)
     {
         return 'MEDIUMINT' . $this->_getCommonIntegerTypeDeclarationSql($field);
-    }
+    }*/
 
     /** @override */
     protected function _getCommonIntegerTypeDeclarationSql(array $columnDef)

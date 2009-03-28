@@ -194,7 +194,7 @@ class SqlitePlatform extends AbstractPlatform
     public function getNativeDeclaration(array $field)
     {
         if ( ! isset($field['type'])) {
-            throw \Doctrine\Common\DoctrineException::updateMe('Missing column type.');
+            throw DoctrineException::updateMe('Missing column type.');
         }
         switch ($field['type']) {
             case 'text':
@@ -254,7 +254,7 @@ class SqlitePlatform extends AbstractPlatform
                 $scale = !empty($field['scale']) ? $field['scale'] : $this->conn->getAttribute(Doctrine::ATTR_DECIMAL_PLACES);
                 return 'DECIMAL('.$length.','.$scale.')';
         }
-        throw \Doctrine\Common\DoctrineException::updateMe('Unknown field type \'' . $field['type'] .  '\'.');
+        throw DoctrineException::updateMe('Unknown field type \'' . $field['type'] .  '\'.');
     }
 
     /**
@@ -371,7 +371,7 @@ class SqlitePlatform extends AbstractPlatform
                 $length = null;
                 break;
             default:
-                throw \Doctrine\Common\DoctrineException::updateMe('unknown database attribute type: '.$dbType);
+                throw DoctrineException::updateMe('unknown database attribute type: '.$dbType);
         }
 
         return array('type'     => $type,

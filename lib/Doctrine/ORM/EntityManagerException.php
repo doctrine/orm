@@ -22,7 +22,7 @@
 namespace Doctrine\ORM;
 
 /**
- * Doctrine_EntityManager_Exception
+ * EntityManagerException
  *
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  * @author      Roman Borschel <roman@code-factory.org>
