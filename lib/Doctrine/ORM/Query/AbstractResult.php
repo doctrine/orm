@@ -21,6 +21,8 @@
 
 namespace Doctrine\ORM\Query;
 
+use Doctrine\Common\DoctrineException;
+
 /**
  * Doctrine_ORM_Query_AbstractResult
  *
@@ -61,7 +63,15 @@ abstract class AbstractResult
      */
     protected $_enumParams;
 
+    /**
+     * @var string
+     */
     protected $_defaultQueryComponentAlias;
+
+    /**
+     * @var boolean
+     */
+    protected $_isMixedQuery = false;
 
     /**
      * Cannot be called directly, factory methods handle this job.
@@ -138,7 +148,7 @@ abstract class AbstractResult
     public function getQueryComponent($componentAlias)
     {
         if ( ! isset($this->_queryComponents[$componentAlias])) {
-            throw new \Doctrine\Common\DoctrineException('Unknown query component ' . $componentAlias);
+            throw new DoctrineException('Unknown query component ' . $componentAlias);
         }
 
         return $this->_queryComponents[$componentAlias];
@@ -206,7 +216,7 @@ abstract class AbstractResult
     public function getTableAlias($tableAlias)
     {
         if ( ! isset($this->_tableAliasMap[$tableAlias])) {
-            throw \Doctrine\Common\DoctrineException::updateMe('Unknown table alias ' . $tableAlias);
+            throw DoctrineException::updateMe('Unknown table alias ' . $tableAlias);
         }
 
         return $this->_tableAliasMap[$tableAlias];
@@ -232,6 +242,26 @@ abstract class AbstractResult
     public function hasTableAlias($tableAlias)
     {
         return (isset($this->_tableAliasMap[$tableAlias]));
+    }
+
+    /**
+     * Gets whether the parsed query selects objects/arrays and scalar values
+     * at the same time.
+     *
+     * @return boolean
+     */
+    public function isMixedQuery()
+    {
+        return $this->_isMixedQuery;
+    }
+
+    /**
+     * Sets whether the parsed query selects objects/arrays and scalar values
+     * at the same time.
+     */
+    public function setMixedQuery($bool)
+    {
+        $this->_isMixedQuery = $bool;
     }
 
     /**

@@ -612,9 +612,14 @@ class Parser
         $this->match(Lexer::T_FROM);
         $identificationVariableDeclarations = array();
         $identificationVariableDeclarations[] = $this->_IdentificationVariableDeclaration();
-        $this->_parserResult->setDefaultQueryComponentAlias(
-            $identificationVariableDeclarations[0]->getRangeVariableDeclaration()->getAbstractSchemaName()
-        );
+
+        $firstRangeDecl = $identificationVariableDeclarations[0]->getRangeVariableDeclaration();
+        if ($firstRangeDecl->getAliasIdentificationVariable()) {
+            $this->_parserResult->setDefaultQueryComponentAlias($firstRangeDecl->getAliasIdentificationVariable());
+        } else {
+            $this->_parserResult->setDefaultQueryComponentAlias($firstRangeDecl->getAbstractSchemaName());
+        }
+
         while ($this->_lexer->isNextToken(',')) {
             $this->match(',');
             $identificationVariableDeclarations[] = $this->_IdentificationVariableDeclaration();
@@ -1294,19 +1299,7 @@ class Parser
                     $rightExpr = $this->_StringExpression();
                 }
             }
-        }
-        /*else if ($this->_isAggregateFunction($this->_lexer->lookahead['type'])) {
-            $leftExpr = $this->_StringExpression();
-            $operator = $this->_ComparisonOperator();
-            if ($this->_lexer->lookahead['type'] === Lexer::T_ALL ||
-                    $this->_lexer->lookahead['type'] === Lexer::T_ANY ||
-                    $this->_lexer->lookahead['type'] === Lexer::T_SOME) {
-                $rightExpr = $this->_QuantifiedExpression();
-            } else {
-                $rightExpr = $this->_StringExpression();
-            }
-        }*/
-        else {
+        } else {
             $leftExpr = $this->_ArithmeticExpression();
             $operator = $this->_ComparisonOperator();
             if ($this->_lexer->lookahead['type'] === Lexer::T_ALL ||
@@ -1321,6 +1314,9 @@ class Parser
         return new AST\ComparisonExpression($leftExpr, $operator, $rightExpr);
     }
 
+    /**
+     * Function ::= FunctionsReturningStrings | FunctionsReturningNumerics | FunctionsReturningDatetime
+     */
     public function _Function()
     {
         $funcName = $this->_lexer->lookahead['value'];
@@ -1335,21 +1331,36 @@ class Parser
         }
     }
 
+    /**
+     * Checks whether the function with the given name is a string function
+     * (a function that returns strings).
+     */
     public function _isStringFunction($funcName)
     {
         return isset(self::$_STRING_FUNCTIONS[strtolower($funcName)]);
     }
 
+    /**
+     * Checks whether the function with the given name is a numeric function
+     * (a function that returns numerics).
+     */
     public function _isNumericFunction($funcName)
     {
         return isset(self::$_NUMERIC_FUNCTIONS[strtolower($funcName)]);
     }
 
+    /**
+     * Checks whether the function with the given name is a datetime function
+     * (a function that returns date/time values).
+     */
     public function _isDatetimeFunction($funcName)
     {
         return isset(self::$_DATETIME_FUNCTIONS[strtolower($funcName)]);
     }
 
+    /**
+     * Peeks beyond the specified token and returns the first token after that one.
+     */
     private function _peekBeyond($token)
     {
         $peek = $this->_lexer->peek();
@@ -1361,6 +1372,9 @@ class Parser
         return $peek;
     }
 
+    /**
+     * Checks whether the given token is a comparison operator.
+     */
     public function _isComparisonOperator($token)
     {
         $value = $token['value'];

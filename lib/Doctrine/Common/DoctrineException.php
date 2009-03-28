@@ -31,8 +31,8 @@ class DoctrineException extends \Exception
             unset($arguments[count($arguments) - 1]);
         }
 
-        if (isset(self::$_messages[$method])) {
-            $message = sprintf(self::$_messages[$method], $arguments);
+        if ($message = self::getExceptionMessage($method)) {
+            $message = sprintf($message, $arguments);
         } else {
             $message  = strtolower(preg_replace('~(?<=\\w)([A-Z])~', '_$1', $method));
             $message  = ucfirst(str_replace('_', ' ', $message));
@@ -42,6 +42,23 @@ class DoctrineException extends \Exception
             }
             $message .= ' (' . implode(', ', $args) . ')';
         }
-        return new self($message);
+        $class = get_called_class();
+        return new $class($message);
+    }
+
+    public static function getExceptionMessage($method)
+    {
+        if ( ! self::$_messages) {
+            self::$_messages = array(
+                'partialObjectsAreDangerous' =>
+                        "Loading partial objects is dangerous. Fetch full objects or consider " .
+                        "using a different fetch mode. If you really want partial objects, " .
+                        "set the doctrine.forcePartialLoad query hint to TRUE."
+            );
+        }
+        if (isset(self::$_messages[$method])) {
+            return self::$_messages[$method];
+        }
+        return false;
     }
 }

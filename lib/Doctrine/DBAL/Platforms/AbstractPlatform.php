@@ -1293,6 +1293,7 @@ abstract class AbstractPlatform
     }
 
     /**
+     * Gets the SQL snippet that declares a 4 byte integer column.
      *
      * @param <type> $name
      * @param <type> $field
@@ -1300,32 +1301,18 @@ abstract class AbstractPlatform
     abstract public function getIntegerTypeDeclarationSql(array $columnDef);
 
     /**
-     * Gets the SQL snippet that declares a BIGINT column.
+     * Gets the SQL snippet that declares an 8 byte integer column.
      *
      * @return string
      */
     abstract public function getBigIntTypeDeclarationSql(array $columnDef);
 
     /**
-     * Gets the SQL snippet that declares a TINYINT column.
-     *
-     * @return string
-     */
-    //abstract public function getTinyIntTypeDeclarationSql(array $columnDef);
-
-    /**
-     * Gets the SQL snippet that declares a SMALLINT column.
+     * Gets the SQL snippet that declares a 2 byte integer column.
      *
      * @return string
      */
     abstract public function getSmallIntTypeDeclarationSql(array $columnDef);
-
-    /**
-     * Gets the SQL snippet that declares a MEDIUMINT column.
-     *
-     * @return string
-     */
-    //abstract public function getMediumIntTypeDeclarationSql(array $columnDef);
 
     /**
      * Gets the SQL snippet that declares common properties of an integer column.

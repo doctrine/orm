@@ -4,6 +4,9 @@ namespace Doctrine\Tests\ORM\Hydration;
 
 require_once __DIR__ . '/../../TestInit.php';
 
+use Doctrine\ORM\Query\ParserResult;
+use Doctrine\ORM\Query\Parser;
+
 class HydrationTest extends \Doctrine\Tests\OrmTestCase
 {
     protected $_em;
@@ -17,9 +20,16 @@ class HydrationTest extends \Doctrine\Tests\OrmTestCase
     /** Helper method */
     protected function _createParserResult($queryComponents, $tableToClassAliasMap, $isMixedQuery = false)
     {
-        $parserResult = new \Doctrine\ORM\Query\ParserResultDummy();
+        $parserResult = new ParserResult(
+            '',
+            array(/*queryComponent*/),
+            array(/*tableAliasMap*/)
+        );
+
+        //$parserResult = new \Doctrine\ORM\Query\ParserResult();
         $parserResult->setQueryComponents($queryComponents);
-        $parserResult->setTableToClassAliasMap($tableToClassAliasMap);
+        $parserResult->setDefaultQueryComponentAlias(key($queryComponents));
+        $parserResult->setTableAliasMap($tableToClassAliasMap);
         $parserResult->setMixedQuery($isMixedQuery);
         return $parserResult;
     }

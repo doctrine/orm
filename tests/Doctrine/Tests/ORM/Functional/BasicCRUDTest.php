@@ -12,12 +12,19 @@ require_once __DIR__ . '/../../TestInit.php';
 
 class BasicCRUDTest extends \Doctrine\Tests\OrmFunctionalTestCase
 {
+    protected function tearDown()
+    {
+        $conn = $this->_em->getConnection();
+        $conn->exec('DELETE FROM cms_users_groups');
+        $conn->exec('DELETE FROM cms_groups');
+        $conn->exec('DELETE FROM cms_addresses');
+        $conn->exec('DELETE FROM cms_phonenumbers');
+        $conn->exec('DELETE FROM cms_users');
+    }
+
     public function testBasicUnitsOfWorkWithOneToManyAssociation()
     {
-        $em = $this->_em;
-
-        $exporter = new ClassExporter($this->_em);
-        $exporter->exportClasses(array(
+        $this->_exporter->exportClasses(array(
             $this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsUser'),
             $this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsPhonenumber'),
             $this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsAddress'),
@@ -29,44 +36,44 @@ class BasicCRUDTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $user->name = 'Roman';
         $user->username = 'romanb';
         $user->status = 'developer';
-        $em->save($user);
+        $this->_em->save($user);
         $this->assertTrue(is_numeric($user->id));
-        $this->assertTrue($em->contains($user));
+        $this->assertTrue($this->_em->contains($user));
 
         // Read
-        $user2 = $em->find('Doctrine\Tests\Models\CMS\CmsUser', $user->id);
+        $user2 = $this->_em->find('Doctrine\Tests\Models\CMS\CmsUser', $user->id);
         $this->assertTrue($user === $user2);
 
         // Add a phonenumber
         $ph = new CmsPhonenumber;
         $ph->phonenumber = "12345";
         $user->addPhonenumber($ph);
-        $em->flush();
-        $this->assertTrue($em->contains($ph));
-        $this->assertTrue($em->contains($user));
+        $this->_em->flush();
+        $this->assertTrue($this->_em->contains($ph));
+        $this->assertTrue($this->_em->contains($user));
         //$this->assertTrue($user->phonenumbers instanceof \Doctrine\ORM\PersistentCollection);
 
         // Update name
         $user->name = 'guilherme';
-        $em->flush();
+        $this->_em->flush();
         $this->assertEquals('guilherme', $user->name);
 
         // Add another phonenumber
         $ph2 = new CmsPhonenumber;
         $ph2->phonenumber = "6789";
         $user->addPhonenumber($ph2);
-        $em->flush();
-        $this->assertTrue($em->contains($ph2));
+        $this->_em->flush();
+        $this->assertTrue($this->_em->contains($ph2));
 
         // Delete
-        $em->delete($user);
-        $this->assertTrue($em->getUnitOfWork()->isRegisteredRemoved($user));
-        $this->assertTrue($em->getUnitOfWork()->isRegisteredRemoved($ph));
-        $this->assertTrue($em->getUnitOfWork()->isRegisteredRemoved($ph2));
-        $em->flush();
-        $this->assertFalse($em->getUnitOfWork()->isRegisteredRemoved($user));
-        $this->assertFalse($em->getUnitOfWork()->isRegisteredRemoved($ph));
-        $this->assertFalse($em->getUnitOfWork()->isRegisteredRemoved($ph2));
+        $this->_em->delete($user);
+        $this->assertTrue($this->_em->getUnitOfWork()->isRegisteredRemoved($user));
+        $this->assertTrue($this->_em->getUnitOfWork()->isRegisteredRemoved($ph));
+        $this->assertTrue($this->_em->getUnitOfWork()->isRegisteredRemoved($ph2));
+        $this->_em->flush();
+        $this->assertFalse($this->_em->getUnitOfWork()->isRegisteredRemoved($user));
+        $this->assertFalse($this->_em->getUnitOfWork()->isRegisteredRemoved($ph));
+        $this->assertFalse($this->_em->getUnitOfWork()->isRegisteredRemoved($ph2));
     }
 
     public function testOneToManyAssociationModification()
@@ -187,5 +194,64 @@ class BasicCRUDTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $count = $this->_em->getConnection()->execute("SELECT COUNT(*) FROM cms_users_groups",
                 array())->fetchColumn();
         $this->assertEquals(0, $count);
+    }
+
+    public function testBasicQuery()
+    {
+        $user = new CmsUser;
+        $user->name = 'Guilherme';
+        $user->username = 'gblanco';
+        $user->status = 'developer';
+        $this->_em->save($user);
+        $this->_em->flush();
+
+        $query = $this->_em->createQuery("select u from Doctrine\Tests\Models\CMS\CmsUser u");
+
+        $users = $query->getResultList();
+
+        $this->assertEquals(1, $users->count());
+        $this->assertEquals('Guilherme', $users[0]->name);
+        $this->assertEquals('gblanco', $users[0]->username);
+        $this->assertEquals('developer', $users[0]->status);
+        $this->assertNull($users[0]->phonenumbers);
+        $this->assertNull($users[0]->articles);
+    }
+
+    public function testBasicInnerJoin()
+    {
+        $user = new CmsUser;
+        $user->name = 'Guilherme';
+        $user->username = 'gblanco';
+        $user->status = 'developer';
+        $this->_em->save($user);
+        $this->_em->flush();
+
+        $query = $this->_em->createQuery("select u from Doctrine\Tests\Models\CMS\CmsUser u join u.phonenumbers p");
+
+        $users = $query->getResultList();
+
+        $this->assertEquals(0, $users->count());
+    }
+
+    public function testBasicLeftJoin()
+    {
+        $user = new CmsUser;
+        $user->name = 'Guilherme';
+        $user->username = 'gblanco';
+        $user->status = 'developer';
+        $this->_em->save($user);
+        $this->_em->flush();
+
+        $query = $this->_em->createQuery("select u,p from Doctrine\Tests\Models\CMS\CmsUser u left join u.phonenumbers p");
+
+        $users = $query->getResultList();
+
+        $this->assertEquals(1, $users->count());
+        $this->assertEquals('Guilherme', $users[0]->name);
+        $this->assertEquals('gblanco', $users[0]->username);
+        $this->assertEquals('developer', $users[0]->status);
+        $this->assertTrue($users[0]->phonenumbers instanceof \Doctrine\ORM\PersistentCollection);
+        $this->assertEquals(0, $users[0]->phonenumbers->count());
+        $this->assertNull($users[0]->articles);
     }
 }

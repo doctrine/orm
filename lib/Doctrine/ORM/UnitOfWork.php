@@ -21,6 +21,7 @@
 
 namespace Doctrine\ORM;
 
+use Doctrine\Common\DoctrineException;
 use Doctrine\ORM\Internal\CommitOrderCalculator;
 use Doctrine\ORM\Internal\CommitOrderNode;
 use Doctrine\ORM\PersistentCollection;
@@ -424,7 +425,7 @@ class UnitOfWork
         }
 
         if ( ! $assoc->isCascadeSave()) {
-            echo "NOT CASCADING INTO " . $assoc->getSourceFieldName() . PHP_EOL;
+            //echo "NOT CASCADING INTO " . $assoc->getSourceFieldName() . PHP_EOL;
             return; // "Persistence by reachability" only if save cascade specified
         }
 
@@ -470,7 +471,7 @@ class UnitOfWork
                 $this->_entityChangeSets[$oid] = $changeSet;
                 $this->_originalEntityData[$oid] = $data;
             } else if ($state == self::STATE_DELETED) {
-                \Doctrine\Common\DoctrineException::updateMe("Deleted entity in collection detected during flush.");
+                throw DoctrineException::updateMe("Deleted entity in collection detected during flush.");
             }
             // MANAGED associated entities are already taken into account
             // during changeset calculation anyway, since they are in the identity map.
@@ -605,13 +606,13 @@ class UnitOfWork
         $oid = spl_object_hash($entity);
 
         if (isset($this->_entityUpdates[$oid])) {
-            \Doctrine\Common\DoctrineException::updateMe("Dirty object can't be registered as new.");
+            throw DoctrineException::updateMe("Dirty object can't be registered as new.");
         }
         if (isset($this->_entityDeletions[$oid])) {
-            \Doctrine\Common\DoctrineException::updateMe("Removed object can't be registered as new.");
+            throw DoctrineException::updateMe("Removed object can't be registered as new.");
         }
         if (isset($this->_entityInsertions[$oid])) {
-            \Doctrine\Common\DoctrineException::updateMe("Object already registered as new. Can't register twice.");
+            throw DoctrineException::updateMe("Object already registered as new. Can't register twice.");
         }
 
         $this->_entityInsertions[$oid] = $entity;
@@ -642,11 +643,11 @@ class UnitOfWork
     {
         $oid = spl_object_hash($entity);
         if ( ! isset($this->_entityIdentifiers[$oid])) {
-            \Doctrine\Common\DoctrineException::updateMe("Entity without identity "
+            throw DoctrineException::updateMe("Entity without identity "
                     . "can't be registered as dirty.");
         }
         if (isset($this->_entityDeletions[$oid])) {
-            \Doctrine\Common\DoctrineException::updateMe("Removed object can't be registered as dirty.");
+            throw DoctrineException::updateMe("Removed object can't be registered as dirty.");
         }
 
         if ( ! isset($this->_entityUpdates[$oid]) && ! isset($this->_entityInsertions[$oid])) {
@@ -784,7 +785,7 @@ class UnitOfWork
         $classMetadata = $this->_em->getClassMetadata(get_class($entity));
         $idHash = $this->getIdentifierHash($this->_entityIdentifiers[spl_object_hash($entity)]);
         if ($idHash === '') {
-            \Doctrine\Common\DoctrineException::updateMe("Entity with oid '" . spl_object_hash($entity)
+            throw DoctrineException::updateMe("Entity with oid '" . spl_object_hash($entity)
                     . "' has no identity and therefore can't be added to the identity map.");
         }
         $className = $classMetadata->getRootClassName();

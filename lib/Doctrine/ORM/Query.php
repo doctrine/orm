@@ -22,11 +22,10 @@
 namespace Doctrine\ORM;
 
 use Doctrine\ORM\Query\Parser;
+use Doctrine\ORM\Query\QueryException;
 
 /**
- * A Doctrine_ORM_Query object represents a DQL query. It is used to query databases for
- * data in an object-oriented fashion. A DQL query understands relations and inheritance
- * and is to a large degree dbms independant.
+ * A Query object represents a DQL query.
  *
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @link        www.doctrine-project.org
@@ -304,7 +303,7 @@ class Query extends AbstractQuery
         $params = $this->_prepareParams($params);
 
         // Executing the query and returning statement
-        return $executor->execute($this->_conn, $params);
+        return $executor->execute($this->_em->getConnection(), $params);
     }
 
     /**
@@ -313,7 +312,7 @@ class Query extends AbstractQuery
     protected function _prepareParams(array $params)
     {
         // Convert boolean params
-        $params = $this->_em->getConnection()->convertBooleans($params);
+        $params = $this->_em->getConnection()->getDatabasePlatform()->convertBooleans($params);
 
         // Convert enum params
         return $this->convertEnums($params);

@@ -15,6 +15,9 @@ class OrmFunctionalTestCase extends OrmTestCase
     /** The EntityManager for this testcase. */
     protected $_em;
 
+    /** The ClassExporter for this testcase. */
+    protected $_exporter;
+
     /**
      * The currently loaded model names of the fixtures for the testcase.
      */
@@ -121,6 +124,7 @@ class OrmFunctionalTestCase extends OrmTestCase
         }
         if ( ! $this->_em) {
             $this->_em = $this->_getEntityManager();
+            $this->_exporter = new \Doctrine\ORM\Export\ClassExporter($this->_em);
         }
     }
 

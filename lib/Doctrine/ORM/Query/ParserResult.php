@@ -123,7 +123,7 @@ class ParserResult extends AbstractResult
     public function getQueryField($fieldAlias)
     {
         if ( ! isset($this->_queryFields[$fieldAlias])) {
-            throw \Doctrine\Common\DoctrineException::updateMe('Unknown query field ' . $fieldAlias);
+            throw DoctrineException::updateMe('Unknown query field ' . $fieldAlias);
         }
 
         return $this->_queryFields[$fieldAlias];

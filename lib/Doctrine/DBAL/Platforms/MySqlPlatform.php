@@ -21,6 +21,8 @@
 
 namespace Doctrine\DBAL\Platforms;
 
+use Doctrine\Common\DoctrineException;
+
 /**
  * The MySqlPlatform provides the behavior, features and SQL dialect of the
  * MySQL database platform.
@@ -29,90 +31,7 @@ namespace Doctrine\DBAL\Platforms;
  * @author Roman Borschel <roman@code-factory.org>
  */
 class MySqlPlatform extends AbstractPlatform
-{
-    /**
-     * MySql reserved words.
-     *
-     * @var array
-     * @todo Needed? What about lazy initialization?
-     */
-    /*protected static $_reservedKeywords = array(
-                          'ADD', 'ALL', 'ALTER',
-                          'ANALYZE', 'AND', 'AS',
-                          'ASC', 'ASENSITIVE', 'BEFORE',
-                          'BETWEEN', 'BIGINT', 'BINARY',
-                          'BLOB', 'BOTH', 'BY',
-                          'CALL', 'CASCADE', 'CASE',
-                          'CHANGE', 'CHAR', 'CHARACTER',
-                          'CHECK', 'COLLATE', 'COLUMN',
-                          'CONDITION', 'CONNECTION', 'CONSTRAINT',
-                          'CONTINUE', 'CONVERT', 'CREATE',
-                          'CROSS', 'CURRENT_DATE', 'CURRENT_TIME',
-                          'CURRENT_TIMESTAMP', 'CURRENT_USER', 'CURSOR',
-                          'DATABASE', 'DATABASES', 'DAY_HOUR',
-                          'DAY_MICROSECOND', 'DAY_MINUTE', 'DAY_SECOND',
-                          'DEC', 'DECIMAL', 'DECLARE',
-                          'DEFAULT', 'DELAYED', 'DELETE',
-                          'DESC', 'DESCRIBE', 'DETERMINISTIC',
-                          'DISTINCT', 'DISTINCTROW', 'DIV',
-                          'DOUBLE', 'DROP', 'DUAL',
-                          'EACH', 'ELSE', 'ELSEIF',
-                          'ENCLOSED', 'ESCAPED', 'EXISTS',
-                          'EXIT', 'EXPLAIN', 'FALSE',
-                          'FETCH', 'FLOAT', 'FLOAT4',
-                          'FLOAT8', 'FOR', 'FORCE',
-                          'FOREIGN', 'FROM', 'FULLTEXT',
-                          'GRANT', 'GROUP', 'HAVING',
-                          'HIGH_PRIORITY', 'HOUR_MICROSECOND', 'HOUR_MINUTE',
-                          'HOUR_SECOND', 'IF', 'IGNORE',
-                          'IN', 'INDEX', 'INFILE',
-                          'INNER', 'INOUT', 'INSENSITIVE',
-                          'INSERT', 'INT', 'INT1',
-                          'INT2', 'INT3', 'INT4',
-                          'INT8', 'INTEGER', 'INTERVAL',
-                          'INTO', 'IS', 'ITERATE',
-                          'JOIN', 'KEY', 'KEYS',
-                          'KILL', 'LEADING', 'LEAVE',
-                          'LEFT', 'LIKE', 'LIMIT',
-                          'LINES', 'LOAD', 'LOCALTIME',
-                          'LOCALTIMESTAMP', 'LOCK', 'LONG',
-                          'LONGBLOB', 'LONGTEXT', 'LOOP',
-                          'LOW_PRIORITY', 'MATCH', 'MEDIUMBLOB',
-                          'MEDIUMINT', 'MEDIUMTEXT', 'MIDDLEINT',
-                          'MINUTE_MICROSECOND', 'MINUTE_SECOND', 'MOD',
-                          'MODIFIES', 'NATURAL', 'NOT',
-                          'NO_WRITE_TO_BINLOG', 'NULL', 'NUMERIC',
-                          'ON', 'OPTIMIZE', 'OPTION',
-                          'OPTIONALLY', 'OR', 'ORDER',
-                          'OUT', 'OUTER', 'OUTFILE',
-                          'PRECISION', 'PRIMARY', 'PROCEDURE',
-                          'PURGE', 'RAID0', 'READ',
-                          'READS', 'REAL', 'REFERENCES',
-                          'REGEXP', 'RELEASE', 'RENAME',
-                          'REPEAT', 'REPLACE', 'REQUIRE',
-                          'RESTRICT', 'RETURN', 'REVOKE',
-                          'RIGHT', 'RLIKE', 'SCHEMA',
-                          'SCHEMAS', 'SECOND_MICROSECOND', 'SELECT',
-                          'SENSITIVE', 'SEPARATOR', 'SET',
-                          'SHOW', 'SMALLINT', 'SONAME',
-                          'SPATIAL', 'SPECIFIC', 'SQL',
-                          'SQLEXCEPTION', 'SQLSTATE', 'SQLWARNING',
-                          'SQL_BIG_RESULT', 'SQL_CALC_FOUND_ROWS', 'SQL_SMALL_RESULT',
-                          'SSL', 'STARTING', 'STRAIGHT_JOIN',
-                          'TABLE', 'TERMINATED', 'THEN',
-                          'TINYBLOB', 'TINYINT', 'TINYTEXT',
-                          'TO', 'TRAILING', 'TRIGGER',
-                          'TRUE', 'UNDO', 'UNION',
-                          'UNIQUE', 'UNLOCK', 'UNSIGNED',
-                          'UPDATE', 'USAGE', 'USE',
-                          'USING', 'UTC_DATE', 'UTC_TIME',
-                          'UTC_TIMESTAMP', 'VALUES', 'VARBINARY',
-                          'VARCHAR', 'VARCHARACTER', 'VARYING',
-                          'WHEN', 'WHERE', 'WHILE',
-                          'WITH', 'WRITE', 'X509',
-                          'XOR', 'YEAR_MONTH', 'ZEROFILL'
-                          );*/
-    
+{    
     /**
      * Creates a new MySqlPlatform instance.
      */
@@ -1080,7 +999,6 @@ class MySqlPlatform extends AbstractPlatform
     }
     
     /**
-     * getDefaultDeclaration
      * Obtain DBMS specific SQL code portion needed to set a default value
      * declaration to be used in statements like CREATE TABLE.
      *
@@ -1095,25 +1013,7 @@ class MySqlPlatform extends AbstractPlatform
         if (isset($field['default']) && ( ! isset($field['length']) || $field['length'] <= 255)) {
             if ($field['default'] === '') {
                 $field['default'] = null;
-                /*if ( ! empty($field['notnull']) && array_key_exists($field['type'], $this->valid_default_values)) {
-                   $field['default'] = $this->valid_default_values[$field['type']];
-                }
-                if ($field['default'] === ''
-                    && ($this->_conn->getAttribute(Doctrine::ATTR_PORTABILITY) & Doctrine::PORTABILITY_EMPTY_TO_NULL)
-                ) {
-                    $field['default'] = ' ';
-                }*/
             }
-
-            /*if ($field['type'] == 'enum' && $this->_conn->getAttribute(Doctrine::ATTR_USE_NATIVE_ENUM)) {
-                $fieldType = 'varchar';
-            } else {
-               if ($field['type'] === 'boolean') {
-                   $fields['default'] = $this->convertBooleans($field['default']);
-               }
-                $fieldType = $field['type'];
-            }*/
-
             $default = ' DEFAULT ' . $this->quote($field['default'], $field['type']);
         }
         return $default;
@@ -1139,12 +1039,12 @@ class MySqlPlatform extends AbstractPlatform
                     $type = strtoupper($definition['type']) . ' ';
                 break;
                 default:
-                    throw \Doctrine\Common\DoctrineException::updateMe('Unknown index type ' . $definition['type']);
+                    throw DoctrineException::updateMe('Unknown index type ' . $definition['type']);
             }
         }
 
         if ( ! isset($definition['fields'])) {
-            throw \Doctrine\Common\DoctrineException::updateMe('No index columns given.');
+            throw DoctrineException::updateMe('No index columns given.');
         }
         if ( ! is_array($definition['fields'])) {
             $definition['fields'] = array($definition['fields']);
@@ -1185,7 +1085,7 @@ class MySqlPlatform extends AbstractPlatform
                             $fieldString .= ' ' . $sort;
                             break;
                         default:
-                            throw \Doctrine\Common\DoctrineException::updateMe('Unknown index sorting option given.');
+                            throw DoctrineException::updateMe('Unknown index sorting option given.');
                     }
                 }
             } else {
