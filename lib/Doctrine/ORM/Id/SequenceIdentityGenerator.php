@@ -2,6 +2,8 @@
 
 namespace Doctrine\ORM\Id;
 
+use Doctrine\ORM\EntityManager;
+
 class SequenceIdentityGenerator extends IdentityGenerator
 {
     private $_sequenceName;
@@ -10,15 +12,18 @@ class SequenceIdentityGenerator extends IdentityGenerator
     {
         $this->_sequenceName = $sequenceName;
     }
+
+    public function generate(EntityManager $em, $entity)
+    {
+        return $em->getConnection()->lastInsertId($this->_sequenceName);
+    }
     
     /**
-     * Enter description here...
-     *
-     * @param Doctrine_Connection $conn
+     * @return boolean
      * @override
      */
-    public function getPostInsertId()
+    public function isPostInsertGenerator()
     {
-        return $this->_em->getConnection()->lastInsertId($this->_sequenceName);
+        return true;
     }
 }

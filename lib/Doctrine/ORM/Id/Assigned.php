@@ -21,6 +21,7 @@
 
 namespace Doctrine\ORM\Id;
 
+use Doctrine\ORM\EntityManager;
 use Doctrine\Common\DoctrineException;
 
 /**
@@ -38,9 +39,9 @@ class Assigned extends AbstractIdGenerator
      * @return mixed
      * @override
      */
-    public function generate($entity)
+    public function generate(EntityManager $em, $entity)
     {
-        $class = $this->_em->getClassMetadata(get_class($entity));
+        $class = $em->getClassMetadata(get_class($entity));
         $identifier = null;
         if ($class->isIdentifierComposite()) {
             $identifier = array();
@@ -61,7 +62,7 @@ class Assigned extends AbstractIdGenerator
         }
 
         if ( ! $identifier) {
-            \Doctrine\Common\DoctrineException::updateMe("Entity of type '" . get_class($entity) . "' is missing an assigned ID.");
+            throw DoctrineException::updateMe("Entity of type '" . get_class($entity) . "' is missing an assigned ID.");
         }
         
         return $identifier;

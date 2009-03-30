@@ -2,18 +2,20 @@
 
 namespace Doctrine\ORM\Id;
 
+use Doctrine\ORM\EntityManager;
+
 class IdentityGenerator extends AbstractIdGenerator
 {
     /**
-     * Enter description here...
+     * Generates an ID for the given entity.
      *
-     * @param Doctrine_ORM_Entity $entity
-     * @return unknown
+     * @param object $entity
+     * @return integer|float
      * @override
      */
-    public function generate($entity)
+    public function generate(EntityManager $em, $entity)
     {
-        return $this->_em->getConnection()->lastInsertId();
+        return $em->getConnection()->lastInsertId();
     }
 
     /**

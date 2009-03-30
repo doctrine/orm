@@ -2,6 +2,8 @@
 
 namespace Doctrine\ORM\Id;
 
+use Doctrine\ORM\EntityManager;
+
 /**
  * Id generator that uses a single-row database table and a hi/lo algorithm.  
  *
@@ -9,7 +11,7 @@ namespace Doctrine\ORM\Id;
  */
 class TableGenerator extends AbstractIdGenerator
 {
-    public function generate($entity)
+    public function generate(EntityManager $em, $entity)
     {
         throw \Doctrine\Common\DoctrineException::updateMe("Not implemented");
     }

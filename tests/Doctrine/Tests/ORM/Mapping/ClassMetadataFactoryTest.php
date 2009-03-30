@@ -15,11 +15,15 @@ class ClassMetadataFactoryTest extends \Doctrine\Tests\OrmTestCase
     {
         $mockPlatform = new DatabasePlatformMock();
         $mockDriver = new MetadataDriverMock();
+        $mockPlatform->setPrefersSequences(true);
+        $mockPlatform->setPrefersIdentityColumns(false);
 
         // Self-made metadata
         $cm1 = new ClassMetadata('Doctrine\Tests\ORM\Mapping\TestEntity1');
         // Add a mapped field
         $cm1->mapField(array('fieldName' => 'name', 'type' => 'varchar'));
+        // Add a mapped field
+        $cm1->mapField(array('fieldName' => 'id', 'type' => 'integer', 'id' => true));
         // and a mapped association
         $cm1->mapOneToOne(array('fieldName' => 'other', 'targetEntity' => 'Other', 'mappedBy' => 'this'));
         // and an id generator type
@@ -41,8 +45,7 @@ class ClassMetadataFactoryTest extends \Doctrine\Tests\OrmTestCase
 
         $this->assertEquals(array(), $cm1->getParentClasses());
         $this->assertTrue($cm1->hasField('name'));
-        // The default fallback for id generation is the table strategy
-        $this->assertEquals('table', $cm1->getIdGeneratorType());
+        $this->assertEquals('sequence', $cm1->getIdGeneratorType());
     }
 
     public function testGetMetadataForClassInHierarchy()
@@ -56,6 +59,8 @@ class ClassMetadataFactoryTest extends \Doctrine\Tests\OrmTestCase
         $cm1->setInheritanceType('singleTable');
         // Add a mapped field
         $cm1->mapField(array('fieldName' => 'name', 'type' => 'varchar'));
+        // Add a mapped field
+        $cm1->mapField(array('fieldName' => 'id', 'type' => 'integer', 'id' => true));
         // and a mapped association
         $cm1->mapOneToOne(array('fieldName' => 'other', 'targetEntity' => 'Other', 'mappedBy' => 'this'));
         // and an id generator type
@@ -144,6 +149,7 @@ class ClassMetadataFactoryTestSubject extends \Doctrine\ORM\Mapping\ClassMetadat
 
 class TestEntity1
 {
+    protected $id;
     protected $name;
     protected $other;
 }

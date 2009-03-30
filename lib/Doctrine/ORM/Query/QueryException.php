@@ -11,10 +11,4 @@ namespace Doctrine\ORM\Query;
  *
  * @author robo
  */
-class QueryException extends \Doctrine\Common\DoctrineException
-{
-    public static function nonUniqueResult()
-    {
-        return new self("The query contains more than one result.");   
-    }
-}
+class QueryException extends \Doctrine\Common\DoctrineException {}

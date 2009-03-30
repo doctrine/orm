@@ -3,7 +3,7 @@
 namespace Doctrine\Tests;
 
 /**
- * Base testcase class for all orm testcases.
+ * Base testcase class for all functional ORM testcases.
  *
  * @since 2.0
  */
@@ -15,119 +15,88 @@ class OrmFunctionalTestCase extends OrmTestCase
     /** The EntityManager for this testcase. */
     protected $_em;
 
-    /** The ClassExporter for this testcase. */
-    protected $_exporter;
+    /** The SchemaTool. */
+    protected $_schemaTool;
 
-    /**
-     * The currently loaded model names of the fixtures for the testcase.
-     */
-    private $_loadedFixtures = array();
-    
-    /**
-     * All loaded fixtures during test execution. Common fixture cache.
-     */
-    private static $_fixtures = array();
-    
-    /**
-     * The names of all tables that were already exported. Each table is exported
-     * only once. Then it's just filled & erased for each testmethod in a testcase
-     * that uses one or more fixtures.
-     */
-    private static $_exportedTables = array();
-    
-    /**
-     * Loads a data fixture into the database. This method must only be called
-     * from within the setUp() method of testcases. The database will then be
-     * populated with fresh data of all loaded fixtures for each test method.
-     *
-     * WARNING: A single testcase should never load fixtures from different scenarios of
-     * the same package as the concistency and uniqueness of keys is not guaranteed.
-     *
-     * @param string $package  The package name. Must be one of Doctrine's test model packages
-     *                         (forum, cms or ecommerce).
-     * @param string $scenario The fixture scenario. A model package can have many fixture
-     *                         scenarios. Within a scenario all primary keys and foreign keys
-     *                         of fixtures are consistent and unique.
-     * @param string $name     The name of the fixture to load from the specified package.
-     */
-    protected function loadFixture($package, $scenario, $name)
+    /** The names of the model sets used in this testcase. */
+    private $_usedModelSets = array();
+
+    /** Whether the database schema has already been created. */
+    private static $_tablesCreated = array();
+
+    /** List of model sets and their classes. */
+    private static $_modelSets = array(
+        'cms' => array(
+            'Doctrine\Tests\Models\CMS\CmsUser',
+            'Doctrine\Tests\Models\CMS\CmsPhonenumber',
+            'Doctrine\Tests\Models\CMS\CmsAddress',
+            'Doctrine\Tests\Models\CMS\CmsGroup'
+        ),
+        'forum' => array(),
+        'company' => array(),
+        'ecommerce' => array()
+    );
+
+    protected function useModelSet($setName)
     {
-        $uniqueName = $package . '/' . $scenario . '/' . $name;
-        
-        if ( ! isset(self::$_fixtures[$uniqueName])) {
-            // load fixture file
-            $fixtureFile = 'fixtures'
-                    . DIRECTORY_SEPARATOR . $package
-                    . DIRECTORY_SEPARATOR . $scenario
-                    . DIRECTORY_SEPARATOR . $name
-                    . '.php';
-            require $fixtureFile;
-            self::$_fixtures[$uniqueName] = $fixture;
-        }
-        
-        $fixture = self::$_fixtures[$uniqueName];
-        $this->_loadedFixtures[] = $fixture['table'];
-        
-        $conn = $this->sharedFixture['conn'];
-        $tableName = $fixture['table'];
-        
-        if ( ! in_array($tableName, self::$_exportedTables)) {
-            $conn->getSchemaManager()->exportClasses(array($fixture['model']));
-            self::$_exportedTables[] = $tableName;
-        }
-        
-        foreach ($fixture['rows'] as $row) {
-            $conn->insert($tableName, $row);
-        }
+        $this->_usedModelSets[] = $setName;
     }
     
     /**
-     * Loads multiple fixtures of the same package and scenario.
-     * This method must only be called from within the setUp() method of testcases.
-     * The database will then be populated with fresh data of all loaded fixtures for each
-     * test method.
-     *
-     * WARNING: A single testcase should never load fixtures from different scenarios of
-     * the same package as the concistency and uniqueness of keys is not guaranteed.
-     *
-     * @param string $package  The package name. Must be one of Doctrine's test model packages
-     *                         (forum, cms or ecommerce).
-     * @param string $scenario The fixture scenario. A model package can have many fixture
-     *                         scenarios. Within a scenario all primary keys and foreign keys
-     *                         of fixtures are consistent and unique.
-     * @param array $names     The names of the fixtures to load from the specified package.
-     */
-    protected function loadFixtures($package, $scenario, array $names)
-    {
-        foreach ($names as $name) {
-            $this->loadFixture($package, $scenario, $name);
-        }
-    }
-    
-    /**
-     * Sweeps the database tables of all used fixtures and clears the EntityManager.
+     * Sweeps the database tables and clears the EntityManager.
      */
     protected function tearDown()
     {
         $conn = $this->sharedFixture['conn'];
-        foreach (array_reverse($this->_loadedFixtures) as $table) {
-            $conn->exec("DELETE FROM " . $table);
+        if (in_array('cms', $this->_usedModelSets)) {
+            $conn->exec('DELETE FROM cms_users_groups');
+            $conn->exec('DELETE FROM cms_groups');
+            $conn->exec('DELETE FROM cms_addresses');
+            $conn->exec('DELETE FROM cms_phonenumbers');
+            $conn->exec('DELETE FROM cms_users');
         }
         $this->_em->clear();
     }
 
+    /**
+     * Creates a connection to the test database, if there is none yet, and
+     * creates the necessary tables.
+     */
     protected function setUp()
     {
+        $forceCreateTables = false;
         if ( ! isset($this->sharedFixture['conn'])) {
-            echo PHP_EOL . " --- CREATE CONNECTION ----" . PHP_EOL;
             $this->sharedFixture['conn'] = TestUtil::getConnection();
+            if ($this->sharedFixture['conn']->getDriver() instanceof \Doctrine\DBAL\Driver\PDOSqlite\Driver) {
+                $forceCreateTables = true;
+            }
         }
         if ( ! $this->_em) {
             $this->_em = $this->_getEntityManager();
-            $this->_exporter = new \Doctrine\ORM\Export\ClassExporter($this->_em);
+            $this->_schemaTool = new \Doctrine\ORM\Tools\SchemaTool($this->_em);
+        }
+
+        $classes = array();
+        foreach ($this->_usedModelSets as $setName) {
+            if ( ! isset(self::$_tablesCreated[$setName]) || $forceCreateTables) {
+                foreach (self::$_modelSets[$setName] as $className) {
+                    $classes[] = $this->_em->getClassMetadata($className);
+                }
+                self::$_tablesCreated[$setName] = true;
+            }
+        }
+        if ($classes) {
+            $this->_schemaTool->createSchema($classes);
         }
     }
 
+    /**
+     * Gets an EntityManager for testing purposes.
+     *
+     * @param Configuration $config The Configuration to pass to the EntityManager.
+     * @param EventManager $eventManager The EventManager to pass to the EntityManager.
+     * @return EntityManager
+     */
     protected function _getEntityManager($config = null, $eventManager = null) {
         // NOTE: Functional tests use their own shared metadata cache, because
         // the actual database platform used during execution has effect on some

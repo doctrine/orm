@@ -5,7 +5,8 @@ namespace Doctrine\Tests\Mocks;
 class DatabasePlatformMock extends \Doctrine\DBAL\Platforms\AbstractPlatform
 {
     private $_sequenceNextValSql = "";
-    private $_prefersIdentityColumns = false;
+    private $_prefersIdentityColumns = true;
+    private $_prefersSequences = false;
     
     /**
      * @override
@@ -25,6 +26,14 @@ class DatabasePlatformMock extends \Doctrine\DBAL\Platforms\AbstractPlatform
         return $this->_prefersIdentityColumns;
     }
 
+    /**
+     * @override
+     */
+    public function prefersSequences()
+    {
+        return $this->_prefersSequences;
+    }
+
     /** @override */
     public function getSequenceNextValSql($sequenceName)
     {
@@ -38,13 +47,7 @@ class DatabasePlatformMock extends \Doctrine\DBAL\Platforms\AbstractPlatform
     public function getBigIntTypeDeclarationSql(array $field) {}
 
     /** @override */
-    public function getTinyIntTypeDeclarationSql(array $field) {}
-
-    /** @override */
     public function getSmallIntTypeDeclarationSql(array $field) {}
-
-    /** @override */
-    public function getMediumIntTypeDeclarationSql(array $field) {}
 
     /** @override */
     protected function _getCommonIntegerTypeDeclarationSql(array $columnDef) {}
@@ -56,7 +59,12 @@ class DatabasePlatformMock extends \Doctrine\DBAL\Platforms\AbstractPlatform
     
     public function setPrefersIdentityColumns($bool)
     {
-        $this->_prefersIdentityColumns = (bool)$bool;
+        $this->_prefersIdentityColumns = $bool;
+    }
+
+    public function setPrefersSequences($bool)
+    {
+        $this->_prefersSequences = $bool;
     }
 
     public function setSequenceNextValSql($sql)

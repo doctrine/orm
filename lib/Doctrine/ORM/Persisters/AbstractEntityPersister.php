@@ -94,9 +94,9 @@ abstract class AbstractEntityPersister
         $insertData = array();
         $this->_prepareData($entity, $insertData, true);
         $this->_conn->insert($this->_classMetadata->getTableName(), $insertData);
-        $idGen = $this->_em->getIdGenerator($this->_classMetadata->getClassName());
+        $idGen = $this->_classMetadata->getIdGenerator();
         if ($idGen->isPostInsertGenerator()) {
-            return $idGen->generate($entity);
+            return $idGen->generate($this->_em, $entity);
         }
         return null;
     }

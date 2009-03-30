@@ -18,7 +18,7 @@ class CmsGroup
     /**
      * @DoctrineId
      * @DoctrineColumn(type="integer")
-     * @DoctrineIdGenerator("auto")
+     * @DoctrineGeneratedValue(strategy="auto")
      */
     public $id;
     /**

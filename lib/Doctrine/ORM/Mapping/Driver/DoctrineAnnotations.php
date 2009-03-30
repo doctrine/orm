@@ -33,7 +33,10 @@ final class DoctrineDiscriminatorColumn extends \Addendum\Annotation {
 final class DoctrineDiscriminatorMap extends \Addendum\Annotation {}
 final class DoctrineSubClasses extends \Addendum\Annotation {}
 final class DoctrineId extends \Addendum\Annotation {}
-final class DoctrineIdGenerator extends \Addendum\Annotation {}
+final class DoctrineGeneratedValue extends \Addendum\Annotation {
+    public $strategy;
+    //public $generator;
+}
 final class DoctrineVersion extends \Addendum\Annotation {}
 final class DoctrineJoinColumn extends \Addendum\Annotation {
     public $name;
@@ -85,7 +88,10 @@ final class DoctrineJoinTable extends \Addendum\Annotation {
     public $inverseJoinColumns;
 }
 final class DoctrineSequenceGenerator extends \Addendum\Annotation {
-    public $name;
+    //public $name;
+    public $sequenceName;
     public $allocationSize = 20;
-    public $initialValue;
+    public $initialValue = 1;
+    /** The name of the class that defines the generator. */
+    //public $definingClass;
 }

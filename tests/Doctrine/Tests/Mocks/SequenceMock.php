@@ -2,6 +2,8 @@
 
 namespace Doctrine\Tests\Mocks;
 
+use Doctrine\ORM\EntityManager;
+
 class SequenceMock extends \Doctrine\ORM\Id\SequenceGenerator
 {
     private $_sequenceNumber = 0;
@@ -9,10 +11,10 @@ class SequenceMock extends \Doctrine\ORM\Id\SequenceGenerator
     /**
      * Enter description here...
      *
-     * @param Doctrine_Entity $entity
+     * @param object $entity
      * @override
      */
-    public function generate($entity)
+    public function generate(EntityManager $em, $entity)
     {
         return $this->_sequenceNumber++;
     }

@@ -19,7 +19,7 @@ class AllTests
     {
         $suite = new \Doctrine\Tests\OrmFunctionalTestSuite('Doctrine Orm Functional');
 
-        $suite->addTestSuite('Doctrine\Tests\ORM\Functional\BasicCRUDTest');
+        $suite->addTestSuite('Doctrine\Tests\ORM\Functional\BasicFunctionalTest');
 
         return $suite;
     }

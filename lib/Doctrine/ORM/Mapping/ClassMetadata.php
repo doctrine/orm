@@ -333,6 +333,36 @@ final class ClassMetadata
     private $_reflectionProperties;
 
     //private $_insertSql;
+    /**
+     * The name of the ID generator used for this class. Only used for SEQUENCE
+     * and TABLE generation strategies.
+     *
+     * @var string
+     */
+    //private $_idGeneratorName;
+
+    /**
+     * The ID generator used for generating IDs for this class.
+     *
+     * @var AbstractIdGenerator
+     */
+    private $_idGenerator;
+
+    /**
+     * The definition of the sequence generator of this class. Only used for the
+     * SEQUENCE generation strategy.
+     *
+     * @var array
+     */
+    private $_sequenceGeneratorDefinition;
+
+    /**
+     * The definition of the table generator of this class. Only used for the
+     * TABLE generation strategy.
+     *
+     * @var array
+     */
+    //private $_tableGeneratorDefinition;
 
     /**
      * Initializes a new ClassMetadata instance that will hold the object-relational mapping
@@ -389,7 +419,7 @@ final class ClassMetadata
     public function getSingleIdReflectionProperty()
     {
         if ($this->_isIdentifierComposite) {
-            \Doctrine\Common\DoctrineException::updateMe("getSingleIdReflectionProperty called on entity with composite key.");
+            throw DoctrineException::updateMe("getSingleIdReflectionProperty called on entity with composite key.");
         }
         return $this->_reflectionProperties[$this->_identifier[0]];
     }
@@ -635,17 +665,6 @@ final class ClassMetadata
             if ( ! in_array($mapping['fieldName'], $this->_identifier)) {
                 $this->_identifier[] = $mapping['fieldName'];
             }
-            if (isset($mapping['idGenerator'])) {
-                if ( ! $this->_isIdGeneratorType($mapping['idGenerator'])) {
-                    //TODO: check if the idGenerator specifies an existing generator by name
-                    throw MappingException::invalidGeneratorType($mapping['idGenerator']);
-                } else if (count($this->_identifier) > 1) {
-                    throw MappingException::generatorNotAllowedWithCompositeId();
-                }
-                $this->_generatorType = $mapping['idGenerator'];
-            }
-            // TODO: validate/complete 'tableGenerator' and 'sequenceGenerator' mappings
-            
             // Check for composite key
             if ( ! $this->_isIdentifierComposite && count($this->_identifier) > 1) {
                 $this->_isIdentifierComposite = true;
@@ -719,10 +738,21 @@ final class ClassMetadata
     public function getSingleIdentifierFieldName()
     {
         if ($this->_isIdentifierComposite) {
-            throw \Doctrine\Common\DoctrineException::updateMe("Calling getSingleIdentifierFieldName "
+            throw DoctrineException::updateMe("Calling getSingleIdentifierFieldName "
                     . "on a class that uses a composite identifier is not allowed.");
         }
         return $this->_identifier[0];
+    }
+
+    /**
+     * Gets the column name of the single id column. Note that this only works on
+     * entity classes that have a single-field pk.
+     *
+     * @return string
+     */
+    public function getSingleIdentifierColumnName()
+    {
+        return $this->getColumnName($this->getSingleIdentifierFieldName());
     }
 
     public function setIdentifier(array $identifier)
@@ -1067,7 +1097,7 @@ final class ClassMetadata
     }
 
     /**
-     * Sets the primary table definition. The provided array must have th
+     * Sets the primary table definition. The provided array must have the
      * following structure:
      *
      * name => <tableName>
@@ -1471,7 +1501,82 @@ final class ClassMetadata
                 ! $this->_associationMappings[$fieldName]->isOneToOne();
     }
 
-    /** Creates a string representation of the instance. */
+    /**
+     * Gets the name of the ID generator used for this class.
+     * Only classes that use a SEQUENCE or TABLE ID generation strategy have a generator name.
+     *
+     * @return string|null The name of the ID generator or NULL if this class does not
+     *                     use a named ID generator.
+     */
+    /*public function getIdGeneratorName()
+    {
+        return $this->_idGeneratorName;
+    }*/
+
+    /**
+     * Sets the ID generator used to generate IDs for instances of this class.
+     *
+     * @param AbstractIdGenerator $generator
+     */
+    public function setIdGenerator($generator)
+    {
+        $this->_idGenerator = $generator;
+    }
+
+    /**
+     * Gets the ID generator used to generate IDs for instances of this class.
+     *
+     * @return AbstractIdGenerator
+     */
+    public function getIdGenerator()
+    {
+        return $this->_idGenerator;
+    }
+
+    /**
+     * Gets the definition of the sequence ID generator for this class.
+     *
+     * The definition has the following structure:
+     * <code>
+     * array(
+     *     'sequenceName' => 'name',
+     *     'allocationSize' => 20,
+     *     'initialValue' => 1
+     * )
+     * </code>
+     * 
+     * @return array|null An array with the generator definition or NULL if this class
+     *                    has no sequence generator definition.
+     */
+    public function getSequenceGeneratorDefinition()
+    {
+        return $this->_sequenceGeneratorDefinition;
+    }
+
+    /**
+     * Sets the definition of the sequence ID generator for this class.
+     *
+     * The definition must have the following structure:
+     * <code>
+     * array(
+     *     'sequenceName' => 'name',
+     *     'allocationSize' => 20,
+     *     'initialValue' => 1
+     * )
+     * </code>
+     *
+     * @param array $definition
+     */
+    public function setSequenceGeneratorDefinition(array $definition)
+    {
+        $this->_sequenceGeneratorDefinition = $definition;
+    }
+
+    /**
+     * Creates a string representation of this instance.
+     *
+     * @return string The string representation of this instance.
+     */
     public function __toString()
     {
         return __CLASS__ . '@' . spl_object_hash($this);

@@ -21,6 +21,7 @@
 
 namespace Doctrine\ORM;
 
+use Doctrine\ORM\Query\CacheHandler;
 use Doctrine\ORM\Query\Parser;
 use Doctrine\ORM\Query\QueryException;
 
@@ -129,7 +130,7 @@ class Query extends AbstractQuery
     }
 
     /**
-     * Retrieves the assocated EntityManager to this Query instance.
+     * Retrieves the associated EntityManager of this Query instance.
      *
      * @return Doctrine\ORM\EntityManager
      */
@@ -243,13 +244,13 @@ class Query extends AbstractQuery
             if ($cached === false) {
                 // Cache does not exist, we have to create it.
                 $result = $this->_execute($params, self::HYDRATE_ARRAY);
-                $queryResult = \Doctrine\ORM\Query\CacheHandler::fromResultSet($this, $result);
+                $queryResult = CacheHandler::fromResultSet($this, $result);
                 $cacheDriver->save($hash, $queryResult->toCachedForm(), $this->_resultCacheTTL);
 
                 return $result;
             } else {
                 // Cache exists, recover it and return the results.
-                $queryResult = \Doctrine\ORM\Query\CacheHandler::fromCachedResult($this, $cached);
+                $queryResult = CacheHandler::fromCachedResult($this, $cached);
 
                 return $queryResult->getResultSet();
             }
@@ -288,7 +289,7 @@ class Query extends AbstractQuery
                 $cacheDriver->save($hash, $this->_parserResult->toCachedForm(), $this->_queryCacheTTL);
             } else {
                 // Cache exists, recover it and return the results.
-                $this->_parserResult = Doctrine\ORM\Query\CacheHandler::fromCachedQuery($this, $cached);
+                $this->_parserResult = CacheHandler::fromCachedQuery($this, $cached);
 
                 $executor = $this->_parserResult->getSqlExecutor();
             }
@@ -327,7 +328,7 @@ class Query extends AbstractQuery
     public function setResultCache($resultCache)
     {
         if ($resultCache !== null && ! ($resultCache instanceof \Doctrine\ORM\Cache\Cache)) {
-            \Doctrine\Common\DoctrineException::updateMe(
+            throw DoctrineException::updateMe(
                 'Method setResultCache() accepts only an instance of Doctrine_Cache_Interface or null.'
             );
         }
@@ -409,7 +410,7 @@ class Query extends AbstractQuery
     public function setQueryCache($queryCache)
     {
         if ($queryCache !== null && ! ($queryCache instanceof \Doctrine\ORM\Cache\Cache)) {
-            \Doctrine\Common\DoctrineException::updateMe(
+            throw DoctrineException::updateMe(
                 'Method setResultCache() accepts only an instance of Doctrine_ORM_Cache_Interface or null.'
             );
         }
@@ -510,7 +511,6 @@ class Query extends AbstractQuery
 
     /**
      * Gets the array of results for the query.
-     * Object graphs are represented as nested array structures.
      *
      * Alias for execute(array(), HYDRATE_ARRAY).
      *
@@ -575,9 +575,11 @@ class Query extends AbstractQuery
     }
 
     /**
-     * Executes the query and returns an IterableResult that can be iterated over.
-     * Objects in the result are initialized on-demand.
+     * Executes the query and returns an IterableResult that can be used to incrementally
+     * iterated over the result.
      *
+     * @param array $params The query parameters.
+     * @param integer $hydrationMode The hydratio mode to use.
      * @return IterableResult
      */
     public function iterate(array $params = array(), $hydrationMode = self::HYDRATE_OBJECT)

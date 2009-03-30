@@ -28,7 +28,6 @@ use Doctrine\ORM\PersistentCollection;
 use Doctrine\ORM\Mapping;
 use Doctrine\ORM\Persisters;
 use Doctrine\ORM\EntityManager;
-use Doctrine\ORM\Exceptions\UnitOfWorkException;
 
 /**
  * The UnitOfWork is responsible for tracking changes to objects during an
@@ -440,9 +439,9 @@ class UnitOfWork
             $oid = spl_object_hash($entry);
             if ($state == self::STATE_NEW) {
                 // Get identifier, if possible (not post-insert)
-                $idGen = $this->_em->getIdGenerator($targetClass->getClassName());
+                $idGen = $targetClass->getIdGenerator();
                 if ( ! $idGen->isPostInsertGenerator()) {
-                    $idValue = $idGen->generate($entry);
+                    $idValue = $idGen->generate($this->_em, $entry);
                     $this->_entityStates[$oid] = self::STATE_MANAGED;
                     if ( ! $idGen instanceof \Doctrine\ORM\Id\Assigned) {
                         $this->_entityIdentifiers[$oid] = array($idValue);
@@ -828,7 +827,7 @@ class UnitOfWork
         $classMetadata = $this->_em->getClassMetadata(get_class($entity));
         $idHash = $this->getIdentifierHash($this->_entityIdentifiers[$oid]);
         if ($idHash === '') {
-            \Doctrine\Common\DoctrineException::updateMe("Entity with oid '" . spl_object_hash($entity)
+            throw DoctrineException::updateMe("Entity with oid '" . spl_object_hash($entity)
                     . "' has no identity and therefore can't be removed from the identity map.");
         }
         $className = $classMetadata->getRootClassName();
@@ -974,11 +973,11 @@ class UnitOfWork
                 }
                 break;
             case self::STATE_NEW:
-                $idGen = $this->_em->getIdGenerator($class->getClassName());
+                $idGen = $class->getIdGenerator();
                 if ($idGen->isPostInsertGenerator()) {
                     $insertNow[$oid] = $entity;
                 } else {
-                    $idValue = $idGen->generate($entity);
+                    $idValue = $idGen->generate($this->_em, $entity);
                     $this->_entityStates[$oid] = self::STATE_MANAGED;
                     if ( ! $idGen instanceof \Doctrine\ORM\Id\Assigned) {
                         $this->_entityIdentifiers[$oid] = array($idValue);
@@ -990,7 +989,7 @@ class UnitOfWork
                 $this->registerNew($entity);
                 break;
             case self::STATE_DETACHED:
-                \Doctrine\Common\DoctrineException::updateMe("Behavior of save() for a detached entity "
+                throw DoctrineException::updateMe("Behavior of save() for a detached entity "
                         . "is not yet defined.");
             case self::STATE_DELETED:
                 // entity becomes managed again
@@ -1004,7 +1003,7 @@ class UnitOfWork
                 break;
             default:
                 //TODO: throw UnitOfWorkException::invalidEntityState()
-                \Doctrine\Common\DoctrineException::updateMe("Encountered invalid entity state.");
+                throw DoctrineException::updateMe("Encountered invalid entity state.");
         }
         $this->_cascadeSave($entity, $visited, $insertNow);
     }
@@ -1046,9 +1045,9 @@ class UnitOfWork
                 $this->registerDeleted($entity);
                 break;
             case self::STATE_DETACHED:
-                \Doctrine\Common\DoctrineException::updateMe("A detached entity can't be deleted.");
+                throw DoctrineException::updateMe("A detached entity can't be deleted.");
             default:
-                \Doctrine\Common\DoctrineException::updateMe("Encountered invalid entity state.");
+                throw DoctrineException::updateMe("Encountered invalid entity state.");
         }
         $this->_cascadeDelete($entity, $visited);
     }
@@ -1298,7 +1297,7 @@ class UnitOfWork
     /**
      * Gets the identifier of an entity.
      * The returned value is always an array of identifier values. If the entity
-     * has a composite primary key then the identifier values are in the same
+     * has a composite identifier then the identifier values are in the same
      * order as the identifier field names as returned by ClassMetadata#getIdentifierFieldNames().
      *
      * @param object $entity
@@ -1342,8 +1341,6 @@ class UnitOfWork
 
     /**
      * Gets the EntityPersister for an Entity.
-     *
-     * This is usually not of interest for users, mainly for internal use.
      *
      * @param string $entityName  The name of the Entity.
      * @return Doctrine\ORM\Persister\AbstractEntityPersister

@@ -109,13 +109,6 @@ class EntityManager
     private $_eventManager;
 
     /**
-     * The maintained (cached) Id generators.
-     *
-     * @var array
-     */
-    private $_idGenerators = array();
-
-    /**
      * The maintained (cached) hydrators. One instance per type.
      *
      * @var array
@@ -202,38 +195,6 @@ class EntityManager
     {        
         return $this->_metadataFactory->getMetadataFor($className);
     }
-
-    /**
-     * Gets an IdGenerator that can be used to generate identifiers for the specified
-     * class.
-     */
-    public function getIdGenerator($className)
-    {
-        if (!isset($this->_idGenerators[$className])) {
-            $this->_idGenerators[$className] = $this->_createIdGenerator(
-                    $this->getClassMetadata($className)->getIdGeneratorType());
-        }
-        return $this->_idGenerators[$className];
-    }
-
-    /**
-     * Used to lazily create an ID generator.
-     *
-     * @param string $generatorType
-     * @return object
-     */
-    protected function _createIdGenerator($generatorType)
-    {
-        if ($generatorType == ClassMetadata::GENERATOR_TYPE_IDENTITY) {
-            return new \Doctrine\ORM\Id\IdentityGenerator($this);
-        } else if ($generatorType == ClassMetadata::GENERATOR_TYPE_SEQUENCE) {
-            return new \Doctrine\ORM\Id\SequenceGenerator($this);
-        } else if ($generatorType == ClassMetadata::GENERATOR_TYPE_TABLE) {
-            return new \Doctrine\ORM\Id\TableGenerator($this);
-        } else {
-            return new \Doctrine\ORM\Id\Assigned($this);
-        }
-    }
     
     /**
      * Creates a new Query object.
@@ -265,7 +226,7 @@ class EntityManager
      * Creates a query with the specified name.
      *
      * @todo Implementation.
-     * @throws SomeException  If there is no query registered with the given name.
+     * @throws DoctrineException  If there is no query registered with the given name.
      */
     public function createNamedQuery($name)
     {

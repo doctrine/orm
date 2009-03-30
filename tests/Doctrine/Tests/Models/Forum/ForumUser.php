@@ -17,7 +17,7 @@ class ForumUser
     /**
      * @DoctrineColumn(type="integer")
      * @DoctrineId
-     * @DoctrineIdGenerator("auto")
+     * @DoctrineGeneratedValue(strategy="auto")
      */
     public $id;
     /**

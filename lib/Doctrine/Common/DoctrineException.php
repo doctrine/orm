@@ -25,13 +25,16 @@ class DoctrineException extends \Exception
 
     public static function __callStatic($method, $arguments)
     {
+        $class = get_called_class();
+        $messageKey = substr($class, strrpos($class, '\\') + 1) . "#$method";
+
         $end = end($arguments);
         if ($end instanceof Exception) {
             $this->_innerException = $end;
             unset($arguments[count($arguments) - 1]);
         }
 
-        if ($message = self::getExceptionMessage($method)) {
+        if ($message = self::getExceptionMessage($messageKey)) {
             $message = sprintf($message, $arguments);
         } else {
             $message  = strtolower(preg_replace('~(?<=\\w)([A-Z])~', '_$1', $method));
@@ -42,22 +45,25 @@ class DoctrineException extends \Exception
             }
             $message .= ' (' . implode(', ', $args) . ')';
         }
-        $class = get_called_class();
+        
         return new $class($message);
     }
 
-    public static function getExceptionMessage($method)
+    public static function getExceptionMessage($messageKey)
     {
         if ( ! self::$_messages) {
+            // Lazy-init messages
             self::$_messages = array(
-                'partialObjectsAreDangerous' =>
+                'DoctrineException#partialObjectsAreDangerous' =>
                         "Loading partial objects is dangerous. Fetch full objects or consider " .
                         "using a different fetch mode. If you really want partial objects, " .
-                        "set the doctrine.forcePartialLoad query hint to TRUE."
+                        "set the doctrine.forcePartialLoad query hint to TRUE.",
+                'QueryException#nonUniqueResult' =>
+                        "The query contains more than one result."
             );
         }
-        if (isset(self::$_messages[$method])) {
-            return self::$_messages[$method];
+        if (isset(self::$_messages[$messageKey])) {
+            return self::$_messages[$messageKey];
         }
         return false;
     }

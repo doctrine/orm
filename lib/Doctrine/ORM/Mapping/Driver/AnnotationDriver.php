@@ -21,6 +21,7 @@
 
 namespace Doctrine\ORM\Mapping\Driver;
 
+use Doctrine\Common\DoctrineException;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\MappingException;
 
@@ -48,7 +49,7 @@ class AnnotationDriver
 
         // Evaluate DoctrineEntity annotation
         if (($entityAnnot = $annotClass->getAnnotation('DoctrineEntity')) === false) {
-            throw \Doctrine\Common\DoctrineException::updateMe("$className is no entity.");
+            throw DoctrineException::updateMe("$className is no entity.");
         }
         $metadata->setCustomRepositoryClass($entityAnnot->repositoryClass);
 
@@ -109,7 +110,7 @@ class AnnotationDriver
             // DoctrineOneToOne, DoctrineOneToMany, DoctrineManyToOne, DoctrineManyToMany
             if ($columnAnnot = $property->getAnnotation('DoctrineColumn')) {
                 if ($columnAnnot->type == null) {
-                    throw \Doctrine\Common\DoctrineException::updateMe("Missing type on property " . $property->getName());
+                    throw DoctrineException::updateMe("Missing type on property " . $property->getName());
                 }
                 $mapping['type'] = $columnAnnot->type;
                 $mapping['length'] = $columnAnnot->length;
@@ -117,10 +118,22 @@ class AnnotationDriver
                 if ($idAnnot = $property->getAnnotation('DoctrineId')) {
                     $mapping['id'] = true;
                 }
-                if ($idGeneratorAnnot = $property->getAnnotation('DoctrineIdGenerator')) {
-                    $mapping['idGenerator'] = $idGeneratorAnnot->value;
+                if ($generatedValueAnnot = $property->getAnnotation('DoctrineGeneratedValue')) {
+                    $metadata->setIdGeneratorType($generatedValueAnnot->strategy);
                 }
                 $metadata->mapField($mapping);
+
+                // Check for SequenceGenerator/TableGenerator definition
+                if ($seqGeneratorAnnot = $property->getAnnotation('DoctrineSequenceGenerator')) {
+                    $metadata->setSequenceGeneratorDefinition(array(
+                        'sequenceName' => $seqGeneratorAnnot->sequenceName,
+                        'allocationSize' => $seqGeneratorAnnot->allocationSize,
+                        'initialValue' => $seqGeneratorAnnot->initialValue
+                    ));
+                } else if ($tblGeneratorAnnot = $property->getAnnotation('DoctrineTableGenerator')) {
+                    throw new DoctrineException("DoctrineTableGenerator not yet implemented.");
+                }
+                
             } else if ($oneToOneAnnot = $property->getAnnotation('DoctrineOneToOne')) {
                 $mapping['targetEntity'] = $oneToOneAnnot->targetEntity;
                 $mapping['joinColumns'] = $joinColumns;

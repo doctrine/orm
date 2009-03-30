@@ -2,7 +2,7 @@
 
 namespace Doctrine\Tests\ORM\Functional;
 
-use Doctrine\ORM\Export\ClassExporter;
+use Doctrine\ORM\Tools\SchemaTool;
 use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\Models\CMS\CmsPhonenumber;
 use Doctrine\Tests\Models\CMS\CmsAddress;
@@ -10,27 +10,16 @@ use Doctrine\Tests\Models\CMS\CmsGroup;
 
 require_once __DIR__ . '/../../TestInit.php';
 
-class BasicCRUDTest extends \Doctrine\Tests\OrmFunctionalTestCase
+class BasicFunctionalTest extends \Doctrine\Tests\OrmFunctionalTestCase
 {
-    protected function tearDown()
+    protected function setUp()
     {
-        $conn = $this->_em->getConnection();
-        $conn->exec('DELETE FROM cms_users_groups');
-        $conn->exec('DELETE FROM cms_groups');
-        $conn->exec('DELETE FROM cms_addresses');
-        $conn->exec('DELETE FROM cms_phonenumbers');
-        $conn->exec('DELETE FROM cms_users');
+        $this->useModelSet('cms');
+        parent::setUp();
     }
 
     public function testBasicUnitsOfWorkWithOneToManyAssociation()
     {
-        $this->_exporter->exportClasses(array(
-            $this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsUser'),
-            $this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsPhonenumber'),
-            $this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsAddress'),
-            $this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsGroup')
-        ));
-
         // Create
         $user = new CmsUser;
         $user->name = 'Roman';
@@ -175,7 +164,7 @@ class BasicCRUDTest extends \Doctrine\Tests\OrmFunctionalTestCase
             $group->users[] = $user;
         }
 
-        $this->_em->save($user); // Saves the user, cause of post-insert ID
+        $this->_em->save($user); // Saves the user, 'cause of post-insert ID
 
         $this->_em->flush();
 
@@ -215,6 +204,22 @@ class BasicCRUDTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertEquals('developer', $users[0]->status);
         $this->assertNull($users[0]->phonenumbers);
         $this->assertNull($users[0]->articles);
+
+        $usersArray = $query->getResultArray();
+
+        $this->assertTrue(is_array($usersArray));
+        $this->assertEquals(1, count($usersArray));
+        $this->assertEquals('Guilherme', $usersArray[0]['name']);
+        $this->assertEquals('gblanco', $usersArray[0]['username']);
+        $this->assertEquals('developer', $usersArray[0]['status']);
+
+        $usersScalar = $query->getScalarResult();
+
+        $this->assertTrue(is_array($usersScalar));
+        $this->assertEquals(1, count($usersScalar));
+        $this->assertEquals('Guilherme', $usersScalar[0]['u_name']);
+        $this->assertEquals('gblanco', $usersScalar[0]['u_username']);
+        $this->assertEquals('developer', $usersScalar[0]['u_status']);
     }
 
     public function testBasicInnerJoin()

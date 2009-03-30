@@ -21,6 +21,7 @@
 
 namespace Doctrine\ORM\Mapping;
 
+use Doctrine\Common\DoctrineException;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 
 /**
@@ -134,6 +135,11 @@ class ClassMetadataFactory
             
             // Invoke driver
             $this->_driver->loadMetadataForClass($className, $class);
+
+            // Verify & complete identifier mapping
+            if ( ! $class->getIdentifier()) {
+                throw MappingException::identifierRequired($className);
+            }
             $this->_completeIdGeneratorMapping($class);
             
             if ($parent && $parent->isInheritanceTypeSingleTable()) {
@@ -195,7 +201,8 @@ class ClassMetadataFactory
      */
     private function _completeIdGeneratorMapping(ClassMetadata $class)
     {
-        if ($class->getIdGeneratorType() == ClassMetadata::GENERATOR_TYPE_AUTO) {
+        $idGenType = $class->getIdGeneratorType();
+        if ($idGenType == ClassMetadata::GENERATOR_TYPE_AUTO) {
             if ($this->_targetPlatform->prefersSequences()) {
                 $class->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_SEQUENCE);
             } else if ($this->_targetPlatform->prefersIdentityColumns()) {
@@ -203,6 +210,36 @@ class ClassMetadataFactory
             } else {
                 $class->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_TABLE);
             }
+        }
+
+        // Create & assign an appropriate ID generator instance
+        switch ($class->getIdGeneratorType()) {
+            case ClassMetadata::GENERATOR_TYPE_IDENTITY:
+                $class->setIdGenerator(new \Doctrine\ORM\Id\IdentityGenerator());
+                break;
+            case ClassMetadata::GENERATOR_TYPE_SEQUENCE:
+                // If there is no sequence definition yet, create a default definition
+                $definition = $class->getSequenceGeneratorDefinition();
+                if ( ! $definition) {
+                    $definition['sequenceName'] = $class->getTableName() . '_' . $class->getSingleIdentifierColumnName() . '_seq';
+                    $definition['allocationSize'] = 20;
+                    $definition['initialValue'] = 1;
+                    $class->setSequenceGeneratorDefinition($definition);
+                }
+                $sequenceGenerator = new \Doctrine\ORM\Id\SequenceGenerator(
+                    $definition['sequenceName'],
+                    $definition['allocationSize']
+                );
+                $class->setIdGenerator($sequenceGenerator);
+                break;
+            case ClassMetadata::GENERATOR_TYPE_NONE:
+                $class->setIdGenerator(new \Doctrine\ORM\Id\Assigned());
+                break;
+            case ClassMetadata::GENERATOR_TYPE_TABLE:
+                throw new DoctrineException("DoctrineTableGenerator not yet implemented.");
+                break;
+            default:
+                throw new DoctrineException("Unexhaustive match.");
         }
     }
 }

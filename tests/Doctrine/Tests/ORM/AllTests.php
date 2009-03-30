@@ -36,7 +36,7 @@ class AllTests
         $suite->addTest(Query\AllTests::suite());
         $suite->addTest(Hydration\AllTests::suite());
         $suite->addTest(Entity\AllTests::suite());
-        $suite->addTest(Export\AllTests::suite());
+        $suite->addTest(Tools\AllTests::suite());
         $suite->addTest(Associations\AllTests::suite());
         $suite->addTest(Mapping\AllTests::suite());
         $suite->addTest(Functional\AllTests::suite());

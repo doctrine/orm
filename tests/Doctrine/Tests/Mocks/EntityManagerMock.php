@@ -70,14 +70,14 @@ class EntityManagerMock extends \Doctrine\ORM\EntityManager
         
         return new EntityManagerMock($conn, $config, $eventManager);   
     }
-
+/*
     public function setIdGenerator($className, $generator)
     {
         $this->_idGenerators[$className] = $generator;
     }
-
+*/
     /** @override */
-    public function getIdGenerator($className)
+/*    public function getIdGenerator($className)
     {
 
         if (isset($this->_idGenerators[$className])) {
@@ -86,4 +86,5 @@ class EntityManagerMock extends \Doctrine\ORM\EntityManager
                 
         return parent::getIdGenerator($className);
     }
+ */
 }

@@ -32,6 +32,7 @@ use Doctrine\Common\DoctrineException;
  * @version     $Revision: 1393 $
  * @author      Guilherme Blanco <guilhermeblanco@hotmail.com>
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
+ * @author      Roman Borschel <roman@code-factory.org>
  */
 abstract class AbstractResult
 {
