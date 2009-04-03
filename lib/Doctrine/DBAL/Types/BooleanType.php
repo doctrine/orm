@@ -5,13 +5,13 @@ namespace Doctrine\DBAL\Types;
 /**
  * Type that maps an SQL boolean to a PHP boolean.
  *
+ * @since 2.0
  */
 class BooleanType extends Type
 {
     /**
-     * Enter description here...
+     * {@inheritdoc}
      *
-     * @param unknown_type $value
      * @override
      */
     public function convertToDatabaseValue($value, Doctrine_DatabasePlatform $platform)
@@ -20,14 +20,12 @@ class BooleanType extends Type
     }
     
     /**
-     * Enter description here...
+     * {@inheritdoc}
      *
-     * @param unknown_type $value
-     * @return unknown
      * @override
      */
     public function convertToObjectValue($value)
     {
-        return (bool)$value;
+        return (bool) $value;
     }
 }

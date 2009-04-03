@@ -3,7 +3,7 @@
 namespace Doctrine\DBAL\Types;
 
 /**
- * Type that maps PHP arrays to VARCHAR SQL type.
+ * Type that maps a PHP array to a VARCHAR SQL type.
  *
  * @since 2.0
  */

@@ -10,26 +10,31 @@ namespace Doctrine\DBAL\Types;
 class DateTimeType extends Type
 {
     /**
-     * Enter description here...
+     * {@inheritdoc}
+     */
+    public function getSqlDeclaration(array $fieldDeclaration, \Doctrine\DBAL\Platforms\AbstractPlatform $platform)
+    {
+        return $platform->getDateTimeTypeDeclarationSql($fieldDeclaration);
+    }
+
+    /**
+     * {@inheritdoc}
      *
-     * @param unknown_type $value
-     * @param Doctrine_DatabasePlatform $platform
      * @override
      */
-    public function convertToDatabaseValue($value, Doctrine_DatabasePlatform $platform)
+    public function convertToDatabaseValue($value, \Doctrine\DBAL\Platforms\AbstractPlatform $platform)
     {
         //TODO: howto? dbms specific? delegate to platform?
+        return $value;
     }
     
     /**
-     * Enter description here...
+     * {@inheritdoc}
      *
-     * @param string $value
-     * @return DateTime
      * @override
      */
     public function convertToObjectValue($value)
     {
-        return new DateTime($value);
+        return new \DateTime($value);
     }
 }

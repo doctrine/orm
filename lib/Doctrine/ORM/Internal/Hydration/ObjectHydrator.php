@@ -48,15 +48,9 @@ class ObjectHydrator extends AbstractHydrator
     protected function _prepare($parserResult)
     {
         parent::_prepare($parserResult);
-        //reset($this->_queryComponents);
-        //$this->_rootAlias = key($this->_queryComponents);
         $this->_rootAlias = $parserResult->getDefaultQueryComponentAlias();
         $this->_rootEntityName = $this->_queryComponents[$this->_rootAlias]['metadata']->getClassName();
-        if (isset($this->_queryComponents['dctrn'])) {
-            $this->_isSimpleQuery = count($this->_queryComponents) <= 2;
-        } else {
-            $this->_isSimpleQuery = count($this->_queryComponents) <= 1;
-        }
+        $this->_isSimpleQuery = count($this->_queryComponents) <= 1;
         $this->_identifierMap = array();
         $this->_resultPointers = array();
         $this->_idTemplate = array();

@@ -2,6 +2,7 @@
 
 namespace Doctrine\DBAL\Types;
 
+use Doctrine\Common\DoctrineException;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 
 abstract class Type
@@ -9,16 +10,14 @@ abstract class Type
     private static $_typeObjects = array();
     private static $_typesMap = array(
         'integer' => 'Doctrine\DBAL\Types\IntegerType',
-        'int' => '\Doctrine\DBAL\Types\IntegerType',
-        'tinyint' => '\Doctrine\DBAL\Types\TinyIntType',
-        'smallint' => '\Doctrine\DBAL\Types\SmallIntType',
-        'mediumint' => '\Doctrine\DBAL\Types\MediumIntType',
-        'bigint' => '\Doctrine\DBAL\Types\BigIntType',
+        'int' => 'Doctrine\DBAL\Types\IntegerType',
+        'smallint' => 'Doctrine\DBAL\Types\SmallIntType',
+        'bigint' => 'Doctrine\DBAL\Types\BigIntType',
         'varchar' => 'Doctrine\DBAL\Types\VarcharType',
-        'text' => '\Doctrine\DBAL\Types\TextType',
-        'datetime' => '\Doctrine\DBAL\Types\DateTimeType',
-        'decimal' => '\Doctrine\DBAL\Types\DecimalType',
-        'double' => '\Doctrine\DBAL\Types\DoubleType'
+        'text' => 'Doctrine\DBAL\Types\TextType',
+        'datetime' => 'Doctrine\DBAL\Types\DateTimeType',
+        'decimal' => 'Doctrine\DBAL\Types\DecimalType',
+        'double' => 'Doctrine\DBAL\Types\DoubleType'
     );
     
     public function convertToDatabaseValue($value, \Doctrine\DBAL\Platforms\AbstractPlatform $platform)
@@ -55,7 +54,7 @@ abstract class Type
         }
         if ( ! isset(self::$_typeObjects[$name])) {
             if ( ! isset(self::$_typesMap[$name])) {
-                \Doctrine\Common\DoctrineException::updateMe("Unknown type: $name");
+                throw DoctrineException::updateMe("Unknown type: $name");
             }
             self::$_typeObjects[$name] = new self::$_typesMap[$name]();
         }
@@ -72,7 +71,7 @@ abstract class Type
     public static function addCustomType($name, $className)
     {
         if (isset(self::$_typesMap[$name])) {
-            throw Doctrine_Exception::typeExists($name);
+            throw DoctrineException::typeExists($name);
         }
         self::$_typesMap[$name] = $className;
     }

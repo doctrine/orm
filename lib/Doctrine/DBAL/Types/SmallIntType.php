@@ -3,11 +3,24 @@
 namespace Doctrine\DBAL\Types;
 
 /**
- * Description of SmallIntType
+ * Type that maps a database SMALLINT to a PHP integer.
  *
  * @author robo
  */
 class SmallIntType
 {
-    //put your code here
+    public function getName()
+    {
+        return "SmallInteger";
+    }
+
+    public function getSqlDeclaration(array $fieldDeclaration, \Doctrine\DBAL\Platforms\AbstractPlatform $platform)
+    {
+        return $platform->getSmallIntTypeDeclarationSql($fieldDeclaration);
+    }
+
+    public function convertToPHPValue($value)
+    {
+        return (int) $value;
+    }
 }

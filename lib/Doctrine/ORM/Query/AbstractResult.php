@@ -46,23 +46,22 @@ abstract class AbstractResult
      *
      * Two dimensional array containing the map for query aliases. Main keys are component aliases.
      *
-     * table    Table object associated with given alias.
+     * metadata    Table object associated with given alias.
      * relation Relation object owned by the parent.
      * parent   Alias of the parent.
-     * agg      Aggregates of this component.
      * map      Name of the column / aggregate value this component is mapped to a collection.
      */
-    protected $_queryComponents;
+    protected $_queryComponents = array();
 
     /**
      * @var array Table alias map. Keys are SQL aliases and values DQL aliases.
      */
-    protected $_tableAliasMap;
+    protected $_tableAliasMap = array();
 
     /**
      * @var array Enum params.
      */
-    protected $_enumParams;
+    protected $_enumParams = array();
 
     /**
      * @var string
@@ -73,23 +72,6 @@ abstract class AbstractResult
      * @var boolean
      */
     protected $_isMixedQuery = false;
-
-    /**
-     * Cannot be called directly, factory methods handle this job.
-     *
-     * @param mixed $data Data to be stored.
-     * @param array $queryComponents Query components.
-     * @param array $tableAliasMap Table aliases.
-     * @param array $enumParams Enum params.
-     * @return Doctrine_ORM_Query_CacheHandler
-     */
-    public function __construct($data = '', $queryComponents = array(), $tableAliasMap = array(), $enumParams = array())
-    {
-        $this->_data = $data;
-        $this->_queryComponents = $queryComponents;
-        $this->_tableAliasMap = $tableAliasMap;
-        $this->_enumParams = $enumParams;
-    }
 
     /**
      * Defines the mapping components.

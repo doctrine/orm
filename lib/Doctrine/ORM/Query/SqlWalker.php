@@ -51,17 +51,20 @@ class SqlWalker
     {
         $this->_em = $em;
         $this->_parserResult = $parserResult;
-        $sqlToDqlAliasMap = array();
+        $sqlToDqlAliasMap = array(Parser::SCALAR_QUERYCOMPONENT_ALIAS => Parser::SCALAR_QUERYCOMPONENT_ALIAS);
         foreach ($parserResult->getQueryComponents() as $dqlAlias => $qComp) {
-            if ($dqlAlias != Parser::SCALAR_QUERYCOMPONENT_ALIAS) {
-                $sqlAlias = $this->generateSqlTableAlias($qComp['metadata']->getTableName());
-                $sqlToDqlAliasMap[$sqlAlias] = $dqlAlias;
-            }
+            $sqlAlias = $this->generateSqlTableAlias($qComp['metadata']->getTableName());
+            $sqlToDqlAliasMap[$sqlAlias] = $dqlAlias;
         }
         // SQL => DQL alias stored in ParserResult, needed for hydration.
         $parserResult->setTableAliasMap($sqlToDqlAliasMap);
         // DQL => SQL alias stored only locally, needed for SQL construction.
         $this->_dqlToSqlAliasMap = array_flip($sqlToDqlAliasMap);
+        // In a mixed query we start alias counting for scalars with 1 since
+        // index 0 will hold the object.
+        if ($parserResult->isMixedQuery()) {
+            $this->_scalarAliasCounter = 1;
+        }
     }
 
     public function getConnection()
@@ -233,8 +236,9 @@ class SqlWalker
     public function walkSelectExpression($selectExpression)
     {
         $sql = '';
-        if ($selectExpression->getExpression() instanceof AST\StateFieldPathExpression) {
-            $pathExpression = $selectExpression->getExpression();
+        $expr = $selectExpression->getExpression();
+        if ($expr instanceof AST\StateFieldPathExpression) {
+            $pathExpression = $expr;
             if ($pathExpression->isSimpleStateFieldPathExpression()) {
                 $parts = $pathExpression->getParts();
                 $numParts = count($parts);
@@ -258,8 +262,8 @@ class SqlWalker
                 throw DoctrineException::updateMe("Encountered invalid PathExpression during SQL construction.");
             }
         }
-        else if ($selectExpression->getExpression() instanceof AST\AggregateExpression) {
-            $aggExpr = $selectExpression->getExpression();
+        else if ($expr instanceof AST\AggregateExpression) {
+            $aggExpr = $expr;
             if ( ! $selectExpression->getFieldIdentificationVariable()) {
                 $alias = $this->_scalarAliasCounter++;
             } else {
@@ -267,18 +271,17 @@ class SqlWalker
             }
             $sql .= $this->walkAggregateExpression($aggExpr) . ' AS dctrn__' . $alias;
         }
-        else if ($selectExpression->getExpression() instanceof AST\Subselect) {
-            $sql .= $this->walkSubselect($selectExpression->getExpression());
-        } else if ($selectExpression->getExpression() instanceof AST\Functions\FunctionNode) {
-            $funcExpr = $selectExpression->getExpression();
+        else if ($expr instanceof AST\Subselect) {
+            $sql .= $this->walkSubselect($expr);
+        } else if ($expr instanceof AST\Functions\FunctionNode) {
             if ( ! $selectExpression->getFieldIdentificationVariable()) {
                 $alias = $this->_scalarAliasCounter++;
             } else {
                 $alias = $selectExpression->getFieldIdentificationVariable();
             }
-            $sql .= $this->walkFunction($selectExpression->getExpression()) . ' AS dctrn__' . $alias;
+            $sql .= $this->walkFunction($expr) . ' AS dctrn__' . $alias;
         } else {
-            $dqlAlias = $selectExpression->getExpression();
+            $dqlAlias = $expr;
             $queryComp = $this->_parserResult->getQueryComponent($dqlAlias);
             $class = $queryComp['metadata'];
 

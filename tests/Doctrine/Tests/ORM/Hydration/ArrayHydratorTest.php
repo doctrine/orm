@@ -70,8 +70,7 @@ class ArrayHydratorTest extends HydrationTest
                 'metadata' => $this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsUser'),
                 'parent' => null,
                 'relation' => null,
-                'map' => null,
-                'agg' => array('0' => 'nameUpper')
+                'map' => null
                 ),
             'p' => array(
                 'metadata' => $this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsPhonenumber'),
@@ -83,6 +82,7 @@ class ArrayHydratorTest extends HydrationTest
 
         // Faked table alias map
         $tableAliasMap = array(
+            'dctrn' => 'dctrn',
             'u' => 'u',
             'p' => 'p'
             );
@@ -93,19 +93,19 @@ class ArrayHydratorTest extends HydrationTest
             array(
                 'u__id' => '1',
                 'u__status' => 'developer',
-                'u__0' => 'ROMANB',
+                'dctrn__nameUpper' => 'ROMANB',
                 'p__phonenumber' => '42',
                 ),
             array(
                 'u__id' => '1',
                 'u__status' => 'developer',
-                'u__0' => 'ROMANB',
+                'dctrn__nameUpper' => 'ROMANB',
                 'p__phonenumber' => '43',
                 ),
             array(
                 'u__id' => '2',
                 'u__status' => 'developer',
-                'u__0' => 'JWAGE',
+                'dctrn__nameUpper' => 'JWAGE',
                 'p__phonenumber' => '91'
                 )
             );
@@ -154,13 +154,13 @@ class ArrayHydratorTest extends HydrationTest
                 'metadata' => $this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsPhonenumber'),
                 'parent' => 'u',
                 'relation' => $this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsUser')->getAssociationMapping('phonenumbers'),
-                'map' => null,
-                'agg' => array('0' => 'numPhones')
+                'map' => null
                 )
             );
 
         // Faked table alias map
         $tableAliasMap = array(
+            'dctrn' => 'dctrn',
             'u' => 'u',
             'p' => 'p'
             );
@@ -171,12 +171,12 @@ class ArrayHydratorTest extends HydrationTest
             array(
                 'u__id' => '1',
                 'u__status' => 'developer',
-                'p__0' => '2',
+                'dctrn__numPhones' => '2',
                 ),
             array(
                 'u__id' => '2',
                 'u__status' => 'developer',
-                'p__0' => '1',
+                'dctrn__numPhones' => '1',
                 )
             );
 
@@ -211,7 +211,6 @@ class ArrayHydratorTest extends HydrationTest
                 'metadata' => $this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsUser'),
                 'parent' => null,
                 'relation' => null,
-                'agg' => array('0' => 'nameUpper'),
                 'map' => 'id'
                 ),
             'p' => array(
@@ -224,6 +223,7 @@ class ArrayHydratorTest extends HydrationTest
 
         // Faked table alias map
         $tableAliasMap = array(
+            'dctrn' => 'dctrn',
             'u' => 'u',
             'p' => 'p'
             );
@@ -234,19 +234,19 @@ class ArrayHydratorTest extends HydrationTest
             array(
                 'u__id' => '1',
                 'u__status' => 'developer',
-                'u__0' => 'ROMANB',
+                'dctrn__nameUpper' => 'ROMANB',
                 'p__phonenumber' => '42',
                 ),
             array(
                 'u__id' => '1',
                 'u__status' => 'developer',
-                'u__0' => 'ROMANB',
+                'dctrn__nameUpper' => 'ROMANB',
                 'p__phonenumber' => '43',
                 ),
             array(
                 'u__id' => '2',
                 'u__status' => 'developer',
-                'u__0' => 'JWAGE',
+                'dctrn__nameUpper' => 'JWAGE',
                 'p__phonenumber' => '91'
                 )
             );
@@ -295,8 +295,7 @@ class ArrayHydratorTest extends HydrationTest
                 'metadata' => $this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsUser'),
                 'parent' => null,
                 'relation' => null,
-                'map' => null,
-                'agg' => array('0' => 'nameUpper')
+                'map' => null
                 ),
             'p' => array(
                 'metadata' => $this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsPhonenumber'),
@@ -314,6 +313,7 @@ class ArrayHydratorTest extends HydrationTest
 
         // Faked table alias map
         $tableAliasMap = array(
+            'dctrn' => 'dctrn',
             'u' => 'u',
             'p' => 'p',
             'a' => 'a'
@@ -325,7 +325,7 @@ class ArrayHydratorTest extends HydrationTest
             array(
                 'u__id' => '1',
                 'u__status' => 'developer',
-                'u__0' => 'ROMANB',
+                'dctrn__nameUpper' => 'ROMANB',
                 'p__phonenumber' => '42',
                 'a__id' => '1',
                 'a__topic' => 'Getting things done!'
@@ -333,7 +333,7 @@ class ArrayHydratorTest extends HydrationTest
            array(
                 'u__id' => '1',
                 'u__status' => 'developer',
-                'u__0' => 'ROMANB',
+                'dctrn__nameUpper' => 'ROMANB',
                 'p__phonenumber' => '43',
                 'a__id' => '1',
                 'a__topic' => 'Getting things done!'
@@ -341,7 +341,7 @@ class ArrayHydratorTest extends HydrationTest
             array(
                 'u__id' => '1',
                 'u__status' => 'developer',
-                'u__0' => 'ROMANB',
+                'dctrn__nameUpper' => 'ROMANB',
                 'p__phonenumber' => '42',
                 'a__id' => '2',
                 'a__topic' => 'ZendCon'
@@ -349,7 +349,7 @@ class ArrayHydratorTest extends HydrationTest
            array(
                 'u__id' => '1',
                 'u__status' => 'developer',
-                'u__0' => 'ROMANB',
+                'dctrn__nameUpper' => 'ROMANB',
                 'p__phonenumber' => '43',
                 'a__id' => '2',
                 'a__topic' => 'ZendCon'
@@ -357,7 +357,7 @@ class ArrayHydratorTest extends HydrationTest
             array(
                 'u__id' => '2',
                 'u__status' => 'developer',
-                'u__0' => 'JWAGE',
+                'dctrn__nameUpper' => 'JWAGE',
                 'p__phonenumber' => '91',
                 'a__id' => '3',
                 'a__topic' => 'LINQ'
@@ -365,7 +365,7 @@ class ArrayHydratorTest extends HydrationTest
            array(
                 'u__id' => '2',
                 'u__status' => 'developer',
-                'u__0' => 'JWAGE',
+                'dctrn__nameUpper' => 'JWAGE',
                 'p__phonenumber' => '91',
                 'a__id' => '4',
                 'a__topic' => 'PHP6'
@@ -424,8 +424,7 @@ class ArrayHydratorTest extends HydrationTest
                 'metadata' => $this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsUser'),
                 'parent' => null,
                 'relation' => null,
-                'map' => null,
-                'agg' => array('0' => 'nameUpper')
+                'map' => null
                 ),
             'p' => array(
                 'metadata' => $this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsPhonenumber'),
@@ -449,6 +448,7 @@ class ArrayHydratorTest extends HydrationTest
 
         // Faked table alias map
         $tableAliasMap = array(
+            'dctrn' => 'dctrn',
             'u' => 'u',
             'p' => 'p',
             'a' => 'a',
@@ -461,7 +461,7 @@ class ArrayHydratorTest extends HydrationTest
             array(
                 'u__id' => '1',
                 'u__status' => 'developer',
-                'u__0' => 'ROMANB',
+                'dctrn__nameUpper' => 'ROMANB',
                 'p__phonenumber' => '42',
                 'a__id' => '1',
                 'a__topic' => 'Getting things done!',
@@ -471,7 +471,7 @@ class ArrayHydratorTest extends HydrationTest
            array(
                 'u__id' => '1',
                 'u__status' => 'developer',
-                'u__0' => 'ROMANB',
+                'dctrn__nameUpper' => 'ROMANB',
                 'p__phonenumber' => '43',
                 'a__id' => '1',
                 'a__topic' => 'Getting things done!',
@@ -481,7 +481,7 @@ class ArrayHydratorTest extends HydrationTest
             array(
                 'u__id' => '1',
                 'u__status' => 'developer',
-                'u__0' => 'ROMANB',
+                'dctrn__nameUpper' => 'ROMANB',
                 'p__phonenumber' => '42',
                 'a__id' => '2',
                 'a__topic' => 'ZendCon',
@@ -491,7 +491,7 @@ class ArrayHydratorTest extends HydrationTest
            array(
                 'u__id' => '1',
                 'u__status' => 'developer',
-                'u__0' => 'ROMANB',
+                'dctrn__nameUpper' => 'ROMANB',
                 'p__phonenumber' => '43',
                 'a__id' => '2',
                 'a__topic' => 'ZendCon',
@@ -501,7 +501,7 @@ class ArrayHydratorTest extends HydrationTest
             array(
                 'u__id' => '2',
                 'u__status' => 'developer',
-                'u__0' => 'JWAGE',
+                'dctrn__nameUpper' => 'JWAGE',
                 'p__phonenumber' => '91',
                 'a__id' => '3',
                 'a__topic' => 'LINQ',
@@ -511,7 +511,7 @@ class ArrayHydratorTest extends HydrationTest
            array(
                 'u__id' => '2',
                 'u__status' => 'developer',
-                'u__0' => 'JWAGE',
+                'dctrn__nameUpper' => 'JWAGE',
                 'p__phonenumber' => '91',
                 'a__id' => '4',
                 'a__topic' => 'PHP6',

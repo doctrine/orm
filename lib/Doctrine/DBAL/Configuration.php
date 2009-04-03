@@ -16,7 +16,7 @@
  *
  * This software consists of voluntary contributions made by many individuals
  * and is licensed under the LGPL. For more information, see
- * <http://www.phpdoctrine.org>.
+ * <http://www.doctrine-project.org>.
  */
 
 namespace Doctrine\DBAL;
@@ -25,12 +25,11 @@ use Doctrine\DBAL\Types\Type;
 
 /**
  * Configuration container for the Doctrine DBAL.
- * 
- * INTERNAL: When adding a new configuration option just write a getter/setter
- * pair and add the option to the _attributes array with a proper default value.
  *
  * @author Roman Borschel <roman@code-factory.org>
  * @since 2.0
+ * @internal When adding a new configuration option just write a getter/setter
+ *           pair and add the option to the _attributes array with a proper default value.
  */
 class Configuration
 {

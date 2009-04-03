@@ -175,7 +175,7 @@ abstract class AbstractHydrator
 
     /**
      * Processes a row of the result set.
-     * Used for identity hydration (HYDRATE_IDENTITY_OBJECT and HYDRATE_IDENTITY_ARRAY).
+     * Used for identity-based hydration (HYDRATE_OBJECT and HYDRATE_ARRAY).
      * Puts the elements of a result row into a new array, grouped by the class
      * they belong to. The column names in the result set are mapped to their
      * field names during this procedure as well as any necessary conversions on
@@ -199,36 +199,29 @@ abstract class AbstractHydrator
                 $cache[$key]['dqlAlias'] = $this->_tableAliases[
                         implode(\Doctrine\ORM\Query\SqlWalker::SQLALIAS_SEPARATOR, $e)
                         ];
-                $classMetadata = $this->_queryComponents[$cache[$key]['dqlAlias']]['metadata'];
                 // check whether it's an aggregate value or a regular field
-                if (isset($this->_queryComponents[$cache[$key]['dqlAlias']]['agg'][$columnName])) {
-                    $fieldName = $this->_queryComponents[$cache[$key]['dqlAlias']]['agg'][$columnName];
+                if ($cache[$key]['dqlAlias'] == 'dctrn') {
+                    $cache[$key]['fieldName'] = $columnName;
                     $cache[$key]['isScalar'] = true;
                 } else {
+                    $classMetadata = $this->_queryComponents[$cache[$key]['dqlAlias']]['metadata'];
                     $fieldName = $this->_lookupFieldName($classMetadata, $columnName);
+                    $cache[$key]['fieldName'] = $fieldName;
                     $cache[$key]['isScalar'] = false;
                     $cache[$key]['type'] = $classMetadata->getTypeOfColumn($columnName);
+                    // Cache identifier information
+                    $cache[$key]['isIdentifier'] = $classMetadata->isIdentifier($fieldName);
                 }
-
-                $cache[$key]['fieldName'] = $fieldName;
-
-                // Cache identifier information
-                $cache[$key]['isIdentifier'] = $classMetadata->isIdentifier($fieldName);
-                /*if ($classMetadata->isIdentifier($fieldName)) {
-                    $cache[$key]['isIdentifier'] = true;
-                } else {
-                    $cache[$key]['isIdentifier'] = false;
-                }*/
             }
 
-            $class = $this->_queryComponents[$cache[$key]['dqlAlias']]['metadata'];
-            $dqlAlias = $cache[$key]['dqlAlias'];
             $fieldName = $cache[$key]['fieldName'];
 
             if ($cache[$key]['isScalar']) {
                 $rowData['scalars'][$fieldName] = $value;
                 continue;
             }
+
+            $dqlAlias = $cache[$key]['dqlAlias'];
 
             if ($cache[$key]['isIdentifier']) {
                 $id[$dqlAlias] .= '|' . $value;
@@ -239,6 +232,11 @@ abstract class AbstractHydrator
             if ( ! isset($nonemptyComponents[$dqlAlias]) && $value !== null) {
                 $nonemptyComponents[$dqlAlias] = true;
             }
+
+            /* TODO: Consider this instead of the above 4 lines. */
+            /*if ($value !== null) {
+                $rowData[$dqlAlias][$fieldName] = $cache[$key]['type']->convertToPHPValue($value);
+            }*/
         }
 
         return $rowData;
@@ -266,24 +264,22 @@ abstract class AbstractHydrator
                 // cache general information like the column name <-> field name mapping
                 $e = explode(\Doctrine\ORM\Query\SqlWalker::SQLALIAS_SEPARATOR, $key);
                 $columnName = array_pop($e);
-                $cache[$key]['dqlAlias'] = $this->_tableAliases[
-                        implode(\Doctrine\ORM\Query\SqlWalker::SQLALIAS_SEPARATOR, $e)
-                        ];
-                $classMetadata = $this->_queryComponents[$cache[$key]['dqlAlias']]['metadata'];
-                // check whether it's an aggregate value or a regular field
-                if (isset($this->_queryComponents[$cache[$key]['dqlAlias']]['agg'][$columnName])) {
-                    $fieldName = $this->_queryComponents[$cache[$key]['dqlAlias']]['agg'][$columnName];
+                $sqlAlias = implode(\Doctrine\ORM\Query\SqlWalker::SQLALIAS_SEPARATOR, $e);
+                $cache[$key]['dqlAlias'] = $this->_tableAliases[$sqlAlias];
+                // check whether it's a scalar value or a regular field
+                if ($cache[$key]['dqlAlias'] == 'dctrn') {
+                    $cache[$key]['fieldName'] = $columnName;
                     $cache[$key]['isScalar'] = true;
                 } else {
+                    $classMetadata = $this->_queryComponents[$cache[$key]['dqlAlias']]['metadata'];
                     $fieldName = $this->_lookupFieldName($classMetadata, $columnName);
+                    $cache[$key]['fieldName'] = $fieldName;
                     $cache[$key]['isScalar'] = false;
                     // cache type information
                     $cache[$key]['type'] = $classMetadata->getTypeOfColumn($columnName);
                 }
-                $cache[$key]['fieldName'] = $fieldName;
             }
 
-            $class = $this->_queryComponents[$cache[$key]['dqlAlias']]['metadata'];
             $dqlAlias = $cache[$key]['dqlAlias'];
             $fieldName = $cache[$key]['fieldName'];
 
@@ -353,13 +349,6 @@ abstract class AbstractHydrator
             }
         }
 
-        \Doctrine\Common\DoctrineException::updateMe("No field name found for column name '$lcColumnName' during hydration.");
-    }
-
-    /** Needed only temporarily until the new parser is ready */
-    private $_isResultMixed = false;
-    public function setResultMixed($bool)
-    {
-        $this->_isResultMixed = $bool;
+        throw DoctrineException::updateMe("No field name found for column name '$lcColumnName' during hydration.");
     }
 }

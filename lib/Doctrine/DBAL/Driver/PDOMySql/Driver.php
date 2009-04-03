@@ -51,8 +51,6 @@ class Driver implements \Doctrine\DBAL\Driver
 
     /**
      * Constructs the MySql PDO DSN.
-     * 
-     * Overrides Connection#_constructPdoDsn().
      *
      * @return string  The DSN.
      */

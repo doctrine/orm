@@ -10,7 +10,7 @@ namespace Doctrine\DBAL\Types;
 class TextType extends Type
 {
     /** @override */
-    public function getSqlDeclaration(array $fieldDeclaration, Doctrine_DatabasePlatform $platform)
+    public function getSqlDeclaration(array $fieldDeclaration, \Doctrine\DBAL\Platforms\AbstractPlatform $platform)
     {
         return $platform->getClobDeclarationSql($fieldDeclaration);
     }

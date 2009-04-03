@@ -545,10 +545,31 @@ class Query extends AbstractQuery
     public function getSingleResult($hydrationMode = null)
     {
         $result = $this->execute(array(), $hydrationMode);
-        if (count($result) > 1) {
-            throw QueryException::nonUniqueResult();
-        }   
-        return is_array($result) ? array_shift($result) : $result->getFirst();
+        if (is_array($result)) {
+            if (count($result) > 1) {
+                throw QueryException::nonUniqueResult();
+            }
+            return array_shift($result);
+        } else if (is_object($result)) {
+            if (count($result) > 1) {
+                throw QueryException::nonUniqueResult();
+            }
+            return $result->getFirst();
+        }
+        return $result;
+    }
+
+    /**
+     * Gets the single scalar result of the query.
+     *
+     * Alias for getSingleResult(HYDRATE_SINGLE_SCALAR).
+     *
+     * @return mixed
+     * @throws QueryException  If the query result is not unique.
+     */
+    public function getSingleScalarResult()
+    {
+        return $this->getSingleResult(self::HYDRATE_SINGLE_SCALAR);
     }
 
     /**

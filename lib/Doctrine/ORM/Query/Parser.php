@@ -22,6 +22,7 @@
 namespace Doctrine\ORM\Query;
 
 use Doctrine\Common\DoctrineException;
+use Doctrine\ORM\Query;
 use Doctrine\ORM\Query\AST;
 use Doctrine\ORM\Query\Exec;
 
@@ -105,34 +106,41 @@ class Parser
     private $_em;
 
     /**
+     * The Query to parse.
+     *
+     * @var Query
+     */
+    private $_query;
+
+    /**
+     * Whether the query is a SELECT query and contains scalar values in the result list
+     * as defined by the SelectExpressions.
+     *
+     * @var boolean
+     */
+    private $_resultContainsScalars = false;
+
+    /**
+     * Whether the query is a SELECT query and contains objects in the result list
+     * as defined by the SelectExpressions.
+     *
+     * @var boolean
+     */
+    private $_resultContainsObjects = false;
+
+    /**
      * Creates a new query parser object.
      *
-     * @param string $dql DQL to be parsed.
-     * @param Doctrine_Connection $connection The connection to use
+     * @param Query $query The Query to parse.
      */
-    public function __construct(\Doctrine\ORM\Query $query)
+    public function __construct(Query $query)
     {
+        $this->_query = $query;
         $this->_em = $query->getEntityManager();
         $this->_lexer = new Lexer($query->getDql());
-
-        $this->_parserResult = new ParserResult(
-            '',
-            array( // queryComponent
-                self::SCALAR_QUERYCOMPONENT_ALIAS => array(
-                    'metadata' => null,
-                    'parent'   => null,
-                    'relation' => null,
-                    'map'      => null,
-                    'scalar'   => null,
-                ),
-            ),
-            array( // tableAliasMap
-                self::SCALAR_QUERYCOMPONENT_ALIAS => self::SCALAR_QUERYCOMPONENT_ALIAS,
-            )
-        );
-        
+        $this->_parserResult = new ParserResult;
         $this->_parserResult->setEntityManager($this->_em);
-        $this->free(true);
+        //$this->free(true);
     }
 
     /**
@@ -205,9 +213,9 @@ class Parser
     }
 
     /**
-     * Returns the scanner object associated with this object.
+     * Gets the lexer used by the parser.
      *
-     * @return Doctrine_ORM_Query_Lexer
+     * @return Doctrine\ORM\Query\Lexer
      */
     public function getLexer()
     {
@@ -215,9 +223,9 @@ class Parser
     }
 
     /**
-     * Returns the parser result associated with this object.
+     * Gets the ParserResult that is being filled with information during parsing.
      *
-     * @return Doctrine_ORM_Query_ParserResult
+     * @return Doctrine\ORM\Query\ParserResult
      */
     public function getParserResult()
     {
@@ -250,7 +258,7 @@ class Parser
             $message .= "'{$this->_lexer->lookahead['value']}'";
         }
 
-        throw \Doctrine\Common\DoctrineException::updateMe($message);
+        throw DoctrineException::updateMe($message);
     }
 
     /**
@@ -265,7 +273,7 @@ class Parser
             $token = $this->_lexer->token;
         }
         //TODO: Include $token in $message
-        throw \Doctrine\Common\DoctrineException::updateMe($message);
+        throw DoctrineException::updateMe($message);
     }
 
     /**
@@ -317,12 +325,10 @@ class Parser
         return ($la['value'] === '(' && $next['type'] === Lexer::T_SELECT);
     }
 
-    /* Parse methods */
-
     /**
      * QueryLanguage ::= SelectStatement | UpdateStatement | DeleteStatement
      */
-    private function _QueryLanguage()
+    public function _QueryLanguage()
     {
         $this->_lexer->moveNext();
         switch ($this->_lexer->lookahead['type']) {
@@ -641,6 +647,10 @@ class Parser
         $peek = $this->_lexer->glimpse();
         // First we recognize for an IdentificationVariable (DQL class alias)
         if ($peek['value'] != '.' && $peek['value'] != '(' && $this->_lexer->lookahead['type'] === Lexer::T_IDENTIFIER) {
+            $this->_resultContainsObjects = true;
+            if ($this->_resultContainsScalars) {
+                $this->_parserResult->setMixedQuery(true);
+            }
             $expression = $this->_IdentificationVariable();
         } else if (($isFunction = $this->_isFunction()) !== false || $this->_isSubselect()) {
             if ($isFunction) {
@@ -661,7 +671,17 @@ class Parser
                 $this->match(Lexer::T_IDENTIFIER);
                 $fieldIdentificationVariable = $this->_lexer->token['value'];
             }
+            $this->_resultContainsScalars = true;
+            if ($this->_resultContainsObjects) {
+                $this->_parserResult->setMixedQuery(true);
+            }
         } else {
+            $this->_resultContainsObjects = true;
+            if ($this->_resultContainsScalars) {
+                $this->_parserResult->setMixedQuery(true);
+            }
+            //TODO: If hydration mode is OBJECT throw an exception ("partial object dangerous...")
+            // unless the doctrine.forcePartialLoad query hint is set
             $expression = $this->_StateFieldPathExpression();
         }
         return new AST\SelectExpression($expression, $fieldIdentificationVariable);
@@ -822,28 +842,6 @@ class Parser
 
         return $join;
     }
-
-    /*private function _isSingleValuedPathExpression()
-    {
-        $parserResult = $this->_parserResult;
-
-        // Trying to recoginize this grammar:
-        // IdentificationVariable "." (CollectionValuedAssociationField | SingleValuedAssociationField)
-        $token = $this->lookahead;
-        $this->_scanner->resetPeek();
-        if ($parserResult->hasQueryComponent($token['value'])) {
-            $queryComponent = $parserResult->getQueryComponent($token['value']);
-            $peek = $this->_scanner->peek();
-            if ($peek['value'] === '.') {
-                $peek2 = $this->_scanner->peek();
-                if ($queryComponent['metadata']->hasAssociation($peek2['value']) &&
-                        $queryComponent['metadata']->getAssociationMapping($peek2['value'])->isOneToOne()) {
-	                return true;
-	            }
-            }
-        }
-        return false;
-    }*/
 
     /**
      * JoinPathExpression ::= IdentificationVariable "." (CollectionValuedAssociationField | SingleValuedAssociationField)
