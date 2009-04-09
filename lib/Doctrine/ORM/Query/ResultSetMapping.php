@@ -192,14 +192,5 @@ class ResultSetMapping
     {
         return count($this->_aliasMap);
     }
-
-
-    
-    /* TEMP */
-    public function getRootAlias()
-    {
-        reset($this->_aliasMap);
-        return key($this->_aliasMap);
-    }
 }
 
