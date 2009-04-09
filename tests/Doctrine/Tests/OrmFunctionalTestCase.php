@@ -30,7 +30,8 @@ class OrmFunctionalTestCase extends OrmTestCase
             'Doctrine\Tests\Models\CMS\CmsUser',
             'Doctrine\Tests\Models\CMS\CmsPhonenumber',
             'Doctrine\Tests\Models\CMS\CmsAddress',
-            'Doctrine\Tests\Models\CMS\CmsGroup'
+            'Doctrine\Tests\Models\CMS\CmsGroup',
+            'Doctrine\Tests\Models\CMS\CmsArticle'
         ),
         'forum' => array(),
         'company' => array(),
@@ -53,6 +54,7 @@ class OrmFunctionalTestCase extends OrmTestCase
             $conn->exec('DELETE FROM cms_groups');
             $conn->exec('DELETE FROM cms_addresses');
             $conn->exec('DELETE FROM cms_phonenumbers');
+            $conn->exec('DELETE FROM cms_articles');
             $conn->exec('DELETE FROM cms_users');
         }
         $this->_em->clear();

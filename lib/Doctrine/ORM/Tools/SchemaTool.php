@@ -21,6 +21,7 @@
 
 namespace Doctrine\ORM\Tools;
 
+use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\EntityManager;
 
 /**
@@ -76,29 +77,18 @@ class SchemaTool
      */
     public function getCreateSchemaSql(array $classes)
     {
+        $processedClasses = array();
         $sql = array();
         $foreignKeyConstraints = array();
 
         // First we create the tables
         foreach ($classes as $class) {
-            $columns = array(); // table columns
-            $options = array(); // table options
-
-            foreach ($class->getFieldMappings() as $fieldName => $mapping) {
-                $column = array();
-                $column['name'] = $mapping['columnName'];
-                $column['type'] = $mapping['type'];
-                $column['length'] = $mapping['length'];
-                $column['notnull'] = ! $mapping['nullable'];
-                if ($class->isIdentifier($fieldName)) {
-                    $column['primary'] = true;
-                    $options['primary'][] = $mapping['columnName'];
-                    if ($class->isIdGeneratorIdentity()) {
-                        $column['autoincrement'] = true;
-                    }
-                }
-                $columns[$mapping['columnName']] = $column;
+            if (isset($processedClasses[$class->getClassName()])) {
+                continue;
             }
+
+            $columns = $this->_gatherColumns($class); // table columns
+            $options = array(); // table options
 
             foreach ($class->getAssociationMappings() as $mapping) {
                 $foreignClass = $this->_em->getClassMetadata($mapping->getTargetEntityName());
@@ -165,7 +155,28 @@ class SchemaTool
                 }
             }
 
+            if ($class->isInheritanceTypeSingleTable()) {
+                // Add the discriminator column
+                $discrColumnDef = $this->_getDiscriminatorColumnDefinition($class);
+                $columns[$discrColumnDef['name']] = $discrColumnDef;
+
+                // Aggregate all the information from all classes in the hierarchy
+                foreach ($class->getParentClasses() as $parentClassName) {
+                    // Parent class information is already contained in this class
+                    $processedClasses[$parentClassName] = true;
+                }
+                foreach ($class->getSubclasses() as $subClassName) {
+                    $columns = array_merge($columns, $this->_gatherColumns($this->_em->getClassMetadata($subClassName)));
+                    $processedClasses[$subClassName] = true;
+                }
+            } else if ($class->isInheritanceTypeJoined()) {
+                //TODO
+            } else if ($class->isInheritanceTypeTablePerClass()) {
+                //TODO
+            }
+
             $sql = array_merge($sql, $this->_platform->getCreateTableSql($class->getTableName(), $columns, $options));
+            $processedClasses[$class->getClassName()] = true;
         }
 
         // Now create the foreign key constraints
@@ -176,6 +187,38 @@ class SchemaTool
         }
 
         return $sql;
+    }
+
+    private function _getDiscriminatorColumnDefinition($class)
+    {
+        $discrColumn = $class->getDiscriminatorColumn();
+        return array(
+            'name' => $discrColumn['name'],
+            'type' => Type::getType($discrColumn['type']),
+            'length' => $discrColumn['length'],
+            'notnull' => true
+        );
+    }
+
+    private function _gatherColumns($class)
+    {
+        $columns = array();
+        foreach ($class->getFieldMappings() as $fieldName => $mapping) {
+            $column = array();
+            $column['name'] = $mapping['columnName'];
+            $column['type'] = $mapping['type'];
+            $column['length'] = $mapping['length'];
+            $column['notnull'] = ! $mapping['nullable'];
+            if ($class->isIdentifier($fieldName)) {
+                $column['primary'] = true;
+                $options['primary'][] = $mapping['columnName'];
+                if ($class->isIdGeneratorIdentity()) {
+                    $column['autoincrement'] = true;
+                }
+            }
+            $columns[$mapping['columnName']] = $column;
+        }
+        return $columns;
     }
 
     public function dropSchema(array $classes)

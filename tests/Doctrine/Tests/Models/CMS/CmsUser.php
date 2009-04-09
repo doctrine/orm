@@ -56,6 +56,11 @@ class CmsUser
         $phone->user = $this;
     }
 
+    public function addArticle(CmsArticle $article) {
+        $this->articles[] = $article;
+        $article->user = $this;
+    }
+
     public function removePhonenumber($index) {
         if (isset($this->phonenumbers[$index])) {
             $ph = $this->phonenumbers[$index];

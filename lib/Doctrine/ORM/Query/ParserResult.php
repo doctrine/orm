@@ -45,7 +45,35 @@ class ParserResult extends AbstractResult
      *
      * @var array $_queryFields
      */
-    protected $_queryFields = array();
+    //protected $_queryFields = array();
+
+    protected $_resultSetMapping;
+
+    public function __construct()
+    {
+        $this->_resultSetMapping = new ResultSetMapping;
+    }
+
+    /**
+     * Gets the ResultSetMapping for the parsed query.
+     * 
+     * @return ResultSetMapping The result set mapping of the parsed query or NULL
+     *                          if the query is not a SELECT query.
+     */
+    public function getResultSetMapping()
+    {
+        return $this->_resultSetMapping;
+    }
+
+    /**
+     * Sets the ResultSetMapping of the parsed query.
+     *
+     * @param ResultSetMapping $rsm
+     */
+    public function setResultSetMapping(ResultSetMapping $rsm)
+    {
+        $this->_resultSetMapping = $rsm;
+    }
     
     /**
      * Sets the Entity Manager.
@@ -88,10 +116,10 @@ class ParserResult extends AbstractResult
      *
      * @param array $queryFields Query fields.
      */
-    public function setQueryFields(array $queryFields)
+    /*public function setQueryFields(array $queryFields)
     {
         $this->_queryFields = $queryFields;
-    }
+    }*/
 
     /**
      * Sets the declaration for given field alias.
@@ -99,20 +127,20 @@ class ParserResult extends AbstractResult
      * @param string $fieldAlias The field alias to set the declaration to.
      * @param string $queryField Alias declaration.
      */
-    public function setQueryField($fieldAlias, $queryField)
+    /*public function setQueryField($fieldAlias, $queryField)
     {
         $this->_queryFields[$fieldAlias] = $queryField;
-    }
+    }*/
 
     /**
      * Gets the mapping fields.
      *
      * @return array Query fields.
      */
-    public function getQueryFields()
+    /*public function getQueryFields()
     {
         return $this->_queryFields;
-    }
+    }*/
 
     /**
      * Get the declaration for given field alias.
@@ -120,14 +148,14 @@ class ParserResult extends AbstractResult
      * @param string $fieldAlias The field alias the retrieve the declaration from.
      * @return array Alias declaration.
      */
-    public function getQueryField($fieldAlias)
+    /*public function getQueryField($fieldAlias)
     {
         if ( ! isset($this->_queryFields[$fieldAlias])) {
             throw DoctrineException::updateMe('Unknown query field ' . $fieldAlias);
         }
 
         return $this->_queryFields[$fieldAlias];
-    }
+    }*/
 
     /**
      * Whether or not this object has a declaration for given field alias.
@@ -135,8 +163,8 @@ class ParserResult extends AbstractResult
      * @param string $fieldAlias Field alias the retrieve the declaration from.
      * @return boolean True if this object has given alias, otherwise false.
      */
-    public function hasQueryField($fieldAlias)
+    /*public function hasQueryField($fieldAlias)
     {
         return isset($this->_queryFields[$fieldAlias]);
-    }
+    }*/
 }

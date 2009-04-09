@@ -43,7 +43,7 @@ abstract class AbstractEntityPersister
     protected $_classMetadata;
     
     /**
-     * The name of the Entity the persister is used for.
+     * The name of the entity the persister is used for.
      * 
      * @var string
      */
@@ -123,6 +123,7 @@ abstract class AbstractEntityPersister
         foreach ($this->_queuedInserts as $insertData) {
             $stmt->execute(array_values($insertData));
         }
+        $this->_queuedInserts = array();
     }
     
     /**
@@ -153,7 +154,18 @@ abstract class AbstractEntityPersister
         $this->_conn->delete($this->_classMetadata->getTableName(), $id);
     }
 
+    public function addDelete($entity)
+    {
+        
+    }
+
+    public function executeDeletions()
+    {
+        
+    }
+
     /**
+     * Gets the ClassMetadata instance of the entity class this persister is used for.
      *
      * @return Doctrine\ORM\Mapping\ClassMetadata
      */
@@ -168,25 +180,6 @@ abstract class AbstractEntityPersister
     public function getTemporaryIdTableName()
     {
         //...
-    }
-
-    /**
-     * Gets the name of the class in the entity hierarchy that owns the field with
-     * the given name. The owning class is the one that defines the field.
-     *
-     * @param string $fieldName
-     * @return string
-     * @todo Move to ClassMetadata?
-     */
-    public function getOwningClass($fieldName)
-    {
-        if ($this->_classMetadata->isInheritanceTypeNone()) {
-            return $this->_classMetadata;
-        } else {
-            $mapping = $this->_classMetadata->getFieldMapping($fieldName);
-            return $mapping['inherited'];
-        }
-        \Doctrine\Common\DoctrineException::updateMe("Unable to find defining class of field '$fieldName'.");
     }
     
     /**
@@ -203,6 +196,16 @@ abstract class AbstractEntityPersister
     public function getCustomFields()
     {
         return array();
+    }
+
+    /**
+     * Gets all field mappings of the entire entity hierarchy.
+     *
+     * @return array
+     */
+    public function getAllFieldMappingsInHierarchy()
+    {
+        return $this->_classMetadata->getFieldMappings();
     }
     
     /**
@@ -241,13 +244,13 @@ abstract class AbstractEntityPersister
                 $result[$columnName] = $type->convertToDatabaseValue($newVal, $this->_conn->getDatabasePlatform());
             }
         }
-        
+        /*
         // Populate the discriminator column on insert in JOINED & SINGLE_TABLE inheritance
         if ($isInsert && ($this->_classMetadata->isInheritanceTypeJoined() ||
                 $this->_classMetadata->isInheritanceTypeSingleTable())) {
             $discColumn = $this->_classMetadata->getDiscriminatorColumn();
             $discMap = $this->_classMetadata->getDiscriminatorMap();
             $result[$discColumn['name']] = array_search($this->_entityName, $discMap);
-        }
+        }*/
     }
 }

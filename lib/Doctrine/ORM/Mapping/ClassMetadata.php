@@ -84,6 +84,26 @@ final class ClassMetadata
      * must have a natural id.
      */
     const GENERATOR_TYPE_NONE = 'none';
+    /**
+     * DEFERRED_IMPLICIT means that changes of entities are calculated at commit-time
+     * by doing a property-by-property comparison with the original data. This will
+     * be done for all entities that are in MANAGED state at commit-time.
+     *
+     * This is the default change tracking policy.
+     */
+    const CHANGETRACKING_DEFERRED_IMPLICIT = 1;
+    /**
+     * DEFERRED_EXPLICIT means that changes of entities are calculated at commit-time
+     * by doing a property-by-property comparison with the original data. This will
+     * be done only for entities that were explicitly saved (through save() or cascade).
+     */
+    const CHANGETRACKING_DEFERRED_EXPLICIT = 2;
+    /**
+     * NOTIFY means that Doctrine relies on the entities sending out notifications
+     * when their properties change. Such entity classes must implement
+     * the <tt>NotifyPropertyChanged</tt> interface.
+     */
+    const CHANGETRACKING_NOTIFY = 3;
 
     /**
      * The name of the entity class.
@@ -333,13 +353,6 @@ final class ClassMetadata
     private $_reflectionProperties;
 
     //private $_insertSql;
-    /**
-     * The name of the ID generator used for this class. Only used for SEQUENCE
-     * and TABLE generation strategies.
-     *
-     * @var string
-     */
-    //private $_idGeneratorName;
 
     /**
      * The ID generator used for generating IDs for this class.
@@ -363,6 +376,13 @@ final class ClassMetadata
      * @var array
      */
     //private $_tableGeneratorDefinition;
+
+    /**
+     * The policy used for change-tracking on entities of this class.
+     *
+     * @var integer
+     */
+    //private $_changeTrackingPolicy;
 
     /**
      * Initializes a new ClassMetadata instance that will hold the object-relational mapping
@@ -400,6 +420,18 @@ final class ClassMetadata
     }
 
     /**
+     * INTERNAL:
+     * Adds a reflection property. Usually only used by the ClassMetadataFactory
+     * while processing inheritance mappings.
+     *
+     * @param array $props
+     */
+    public function addReflectionProperty($propName, \ReflectionProperty $property)
+    {
+        $this->_reflectionProperties[$propName] = $property;
+    }
+
+    /**
      * Gets a ReflectionProperty for a specific field of the mapped class.
      *
      * @param string $name
@@ -432,6 +464,23 @@ final class ClassMetadata
     public function getClassName()
     {
         return $this->_entityName;
+    }
+
+    /**
+     * Gets the name of the class in the entity hierarchy that owns the field with
+     * the given name. The owning class is the one that defines the field.
+     *
+     * @param string $fieldName
+     * @return string
+     */
+    public function getOwningClass($fieldName)
+    {
+        if ($this->_inheritanceType == self::INHERITANCE_TYPE_NONE) {
+            return $this->_entityName;
+        } else {
+            $mapping = $this->getFieldMapping($fieldName);
+            return $mapping['inherited'];
+        }
     }
 
     /**
@@ -755,6 +804,13 @@ final class ClassMetadata
         return $this->getColumnName($this->getSingleIdentifierFieldName());
     }
 
+    /**
+     * INTERNAL:
+     * Sets the mapped identifier/primary key fields of this class.
+     * Mainly used by the ClassMetadataFactory to assign inherited identifiers.
+     *
+     * @param array $identifier
+     */
     public function setIdentifier(array $identifier)
     {
         $this->_identifier = $identifier;
@@ -1176,7 +1232,7 @@ final class ClassMetadata
     {
         $this->_validateAndCompleteFieldMapping($mapping);
         if (isset($this->_fieldMappings[$mapping['fieldName']])) {
-            throw MappingException::duplicateFieldMapping();
+            throw MappingException::duplicateFieldMapping($mapping['fieldName']);
         }
         $this->_fieldMappings[$mapping['fieldName']] = $mapping;
     }
@@ -1191,6 +1247,18 @@ final class ClassMetadata
     public function addAssociationMapping(AssociationMapping $mapping)
     {
         $this->_storeAssociationMapping($mapping);
+    }
+
+    /**
+     * INTERNAL:
+     * Adds an association mapping without completing/validating it.
+     * This is mainly used to add inherited field mappings to derived classes.
+     *
+     * @param array $mapping
+     */
+    public function addFieldMapping(array $fieldMapping)
+    {
+        $this->_fieldMappings[$fieldMapping['fieldName']] = $fieldMapping;
     }
 
     /**

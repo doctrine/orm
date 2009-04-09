@@ -3,6 +3,7 @@
 namespace Doctrine\Tests\ORM\Hydration;
 
 use Doctrine\Tests\Mocks\HydratorMockStatement;
+use Doctrine\ORM\Query\ResultSetMapping;
 
 require_once __DIR__ . '/../../TestInit.php';
 
@@ -53,36 +54,23 @@ class SingleScalarHydratorTest extends HydrationTest
      */
     public function testHydrateSingleScalar($name, $resultSet)
     {
-        // Faked query components
-        $queryComponents = array(
-            'u' => array(
-                'metadata' => $this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsUser'),
-                'parent' => null,
-                'relation' => null,
-                'map' => null
-                )
-            );
-
-        // Faked table alias map
-        $tableAliasMap = array(
-            'u' => 'u'
-            );
+        $rsm = new ResultSetMapping;
+        $rsm->addEntityResult($this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsUser'), 'u');
+        $rsm->addFieldResult('u', 'u__id', 'id');
+        $rsm->addFieldResult('u', 'u__name', 'name');
 
         $stmt = new HydratorMockStatement($resultSet);
         $hydrator = new \Doctrine\ORM\Internal\Hydration\SingleScalarHydrator($this->_em);
 
         if ($name == 'result1') {
-            $result = $hydrator->hydrateAll($stmt, $this->_createParserResult(
-                    $queryComponents, $tableAliasMap));
+            $result = $hydrator->hydrateAll($stmt, $this->_createParserResult($rsm));
             $this->assertEquals('romanb', $result);
         } else if ($name == 'result2') {
-            $result = $hydrator->hydrateAll($stmt, $this->_createParserResult(
-                    $queryComponents, $tableAliasMap));
+            $result = $hydrator->hydrateAll($stmt, $this->_createParserResult($rsm));
             $this->assertEquals(1, $result);
         } else if ($name == 'result3' || $name == 'result4') {
             try {
-                $result = $hydrator->hydrateall($stmt, $this->_createParserResult(
-                        $queryComponents, $tableAliasMap));
+                $result = $hydrator->hydrateall($stmt, $this->_createParserResult($rsm));
                 $this->fail();
             } catch (\Doctrine\ORM\Internal\Hydration\HydrationException $ex) {}
         }

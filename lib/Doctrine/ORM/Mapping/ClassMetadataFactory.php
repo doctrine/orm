@@ -131,6 +131,7 @@ class ClassMetadataFactory
                 $class->setIdGeneratorType($parent->getIdGeneratorType());
                 $this->_addInheritedFields($class, $parent);
                 $this->_addInheritedRelations($class, $parent);
+                $class->setIdentifier($parent->getIdentifier());
             }
             
             // Invoke driver
@@ -176,7 +177,8 @@ class ClassMetadataFactory
             if ( ! isset($mapping['inherited'])) {
                 $mapping['inherited'] = $parentClass->getClassName();
             }
-            $subClass->mapField($mapping);
+            $subClass->addFieldMapping($mapping);
+            $subClass->addReflectionProperty($fieldName, $parentClass->getReflectionProperty($fieldName));
         }
     }
     

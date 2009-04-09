@@ -35,21 +35,8 @@ use \PDO;
  */
 abstract class AbstractHydrator
 {
-    /**
-     * @var array $_queryComponents
-     *
-     * Two dimensional array containing the map for query aliases. Main keys are component aliases.
-     *
-     * metadata  ClassMetadata object associated with given alias.
-     * relation Relation object owned by the parent.
-     * parent   Alias of the parent.
-     * agg      Aggregates of this component.
-     * map      Name of the column / aggregate value this component is mapped to in a collection.
-     */
-    protected $_queryComponents = array();
-
-    /** @var array Table alias map. Keys are SQL aliases and values DQL aliases. */
-    protected $_tableAliases = array();
+    /** The ResultSetMapping. */
+    protected $_resultSetMapping;
 
     /** @var EntityManager The EntityManager instance. */
     protected $_em;
@@ -133,8 +120,7 @@ abstract class AbstractHydrator
      */
     protected function _prepare($parserResult)
     {
-        $this->_queryComponents = $parserResult->getQueryComponents();
-        $this->_tableAliases = $parserResult->getTableAliasMap();
+        $this->_resultSetMapping = $parserResult->getResultSetMapping();
         $this->_parserResult = $parserResult;
     }
 
@@ -144,6 +130,7 @@ abstract class AbstractHydrator
      */
     protected function _cleanup()
     {
+        $this->_resultSetMapping = null;
         $this->_parserResult = null;
         $this->_stmt->closeCursor();
         $this->_stmt = null;
@@ -159,7 +146,9 @@ abstract class AbstractHydrator
      * @param mixed $result The result to fill.
      */
     protected function _hydrateRow(array &$data, array &$cache, &$result)
-    {}
+    {
+        throw new Exception("_hydrateRow() not implemented for this hydrator.");
+    }
 
     /**
      * Hydrates all rows from the current statement instance at once.
@@ -193,24 +182,19 @@ abstract class AbstractHydrator
             if ( ! isset($cache[$key])) {
                 if ($this->_isIgnoredName($key)) continue;
 
-                // Cache general information like the column name <-> field name mapping
-                $e = explode(\Doctrine\ORM\Query\SqlWalker::SQLALIAS_SEPARATOR, $key);
-                $columnName = array_pop($e);
-                $cache[$key]['dqlAlias'] = $this->_tableAliases[
-                        implode(\Doctrine\ORM\Query\SqlWalker::SQLALIAS_SEPARATOR, $e)
-                        ];
-                // check whether it's an aggregate value or a regular field
-                if ($cache[$key]['dqlAlias'] == 'dctrn') {
-                    $cache[$key]['fieldName'] = $columnName;
+                if ($this->_resultSetMapping->isScalarResult($key)) {
+                    $cache[$key]['fieldName'] = $this->_resultSetMapping->getScalarAlias($key);
                     $cache[$key]['isScalar'] = true;
                 } else {
-                    $classMetadata = $this->_queryComponents[$cache[$key]['dqlAlias']]['metadata'];
-                    $fieldName = $this->_lookupFieldName($classMetadata, $columnName);
+                    $classMetadata = $this->_resultSetMapping->getOwningClass($key);
+                    $fieldName = $this->_resultSetMapping->getFieldName($key);
+                    $classMetadata = $this->_lookupDeclaringClass($classMetadata, $fieldName);
+                    //$fieldName = $classMetadata->getFieldNameForLowerColumnName($columnName);
                     $cache[$key]['fieldName'] = $fieldName;
                     $cache[$key]['isScalar'] = false;
-                    $cache[$key]['type'] = $classMetadata->getTypeOfColumn($columnName);
-                    // Cache identifier information
+                    $cache[$key]['type'] = $classMetadata->getTypeOfField($fieldName);
                     $cache[$key]['isIdentifier'] = $classMetadata->isIdentifier($fieldName);
+                    $cache[$key]['dqlAlias'] = $this->_resultSetMapping->getEntityAlias($key);
                 }
             }
 
@@ -261,31 +245,27 @@ abstract class AbstractHydrator
             if ( ! isset($cache[$key])) {
                 if ($this->_isIgnoredName($key)) continue;
 
-                // cache general information like the column name <-> field name mapping
-                $e = explode(\Doctrine\ORM\Query\SqlWalker::SQLALIAS_SEPARATOR, $key);
-                $columnName = array_pop($e);
-                $sqlAlias = implode(\Doctrine\ORM\Query\SqlWalker::SQLALIAS_SEPARATOR, $e);
-                $cache[$key]['dqlAlias'] = $this->_tableAliases[$sqlAlias];
-                // check whether it's a scalar value or a regular field
-                if ($cache[$key]['dqlAlias'] == 'dctrn') {
-                    $cache[$key]['fieldName'] = $columnName;
+                if ($this->_resultSetMapping->isScalarResult($key)) {
+                    $cache[$key]['fieldName'] = $this->_resultSetMapping->getScalarAlias($key);
                     $cache[$key]['isScalar'] = true;
                 } else {
-                    $classMetadata = $this->_queryComponents[$cache[$key]['dqlAlias']]['metadata'];
-                    $fieldName = $this->_lookupFieldName($classMetadata, $columnName);
+                    $classMetadata = $this->_resultSetMapping->getOwningClass($key);
+                    $fieldName = $this->_resultSetMapping->getFieldName($key);
+                    $classMetadata = $this->_lookupDeclaringClass($classMetadata, $fieldName);
+                    //$fieldName = $classMetadata->getFieldNameForLowerColumnName($columnName);
                     $cache[$key]['fieldName'] = $fieldName;
                     $cache[$key]['isScalar'] = false;
-                    // cache type information
-                    $cache[$key]['type'] = $classMetadata->getTypeOfColumn($columnName);
+                    $cache[$key]['type'] = $classMetadata->getTypeOfField($fieldName);
+                    $cache[$key]['dqlAlias'] = $this->_resultSetMapping->getEntityAlias($key);
                 }
             }
-
-            $dqlAlias = $cache[$key]['dqlAlias'];
+            
             $fieldName = $cache[$key]['fieldName'];
 
             if ($cache[$key]['isScalar']) {
-                $rowData[$dqlAlias . '_' . $fieldName] = $value;
+                $rowData[/*$dqlAlias . '_' . */$fieldName] = $value;
             } else {
+                $dqlAlias = $cache[$key]['dqlAlias'];
                 $rowData[$dqlAlias . '_' . $fieldName] = $cache[$key]['type']->convertToPHPValue($value);
             }
         }
@@ -301,7 +281,8 @@ abstract class AbstractHydrator
      */
     protected function _getCustomIndexField($alias)
     {
-        return isset($this->_queryComponents[$alias]['map']) ? $this->_queryComponents[$alias]['map'] : null;
+        return $this->_resultSetMapping->hasIndexBy($alias) ?
+                $this->_resultSetMapping->getIndexByField($alias) : null;
     }
 
     /**
@@ -335,20 +316,21 @@ abstract class AbstractHydrator
      * @return string  The field name.
      * @throws DoctrineException If the field name could not be found.
      */
-    private function _lookupFieldName($class, $lcColumnName)
+    private function _lookupDeclaringClass($class, $fieldName)
     {
-        if ($class->hasLowerColumn($lcColumnName)) {
-            return $class->getFieldNameForLowerColumnName($lcColumnName);
+        if ($class->hasField($fieldName)) {
+            //return $class->getFieldNameForLowerColumnName($lcColumnName);
+            return $class;
         }
-
+        
         foreach ($class->getSubclasses() as $subClass) {
-            $subClassMetadata = Doctrine_ORM_Mapping_ClassMetadataFactory::getInstance()
-                    ->getMetadataFor($subClass);
-            if ($subClassMetadata->hasLowerColumn($lcColumnName)) {
-                return $subClassMetadata->getFieldNameForLowerColumnName($lcColumnName);
+            $subClassMetadata = $this->_em->getClassMetadata($subClass);
+            if ($subClassMetadata->hasField($fieldName)) {
+                //return $subClassMetadata->getFieldNameForLowerColumnName($lcColumnName);
+                return $subClassMetadata;
             }
         }
 
-        throw DoctrineException::updateMe("No field name found for column name '$lcColumnName' during hydration.");
+        throw DoctrineException::updateMe("No owner found for field '$fieldName' during hydration.");
     }
 }

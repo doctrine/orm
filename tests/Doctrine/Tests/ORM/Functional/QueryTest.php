@@ -3,6 +3,7 @@
 namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\Tests\Models\CMS\CmsUser;
+use Doctrine\Tests\Models\CMS\CmsArticle;
 
 require_once __DIR__ . '/../../TestInit.php';
 
@@ -57,6 +58,39 @@ class QueryTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $query = $this->_em->createQuery("select upper(u.name) from Doctrine\Tests\Models\CMS\CmsUser u where u.username = 'gblanco'");
         $this->assertEquals('GUILHERME', $query->getSingleScalarResult());
+    }
+
+    public function testJoinQueries()
+    {
+        $user = new CmsUser;
+        $user->name = 'Guilherme';
+        $user->username = 'gblanco';
+        $user->status = 'developer';
+
+        $article1 = new CmsArticle;
+        $article1->topic = "Doctrine 2";
+        $article1->text = "This is an introduction to Doctrine 2.";
+        $user->addArticle($article1);
+
+        $article2 = new CmsArticle;
+        $article2->topic = "Symfony 2";
+        $article2->text = "This is an introduction to Symfony 2.";
+        $user->addArticle($article2);
+
+        $this->_em->save($user);
+        $this->_em->save($article1);
+        $this->_em->save($article2);
+
+        $this->_em->flush();
+        $this->_em->clear();
+
+        $query = $this->_em->createQuery("select u, a from Doctrine\Tests\Models\CMS\CmsUser u join u.articles a");
+        $users = $query->getResultList();
+        $this->assertEquals(1, count($users));
+        $this->assertTrue($users[0] instanceof CmsUser);
+        $this->assertEquals(2, count($users[0]->articles));
+        $this->assertEquals('Doctrine 2', $users[0]->articles[0]->topic);
+        $this->assertEquals('Symfony 2', $users[0]->articles[1]->topic);
     }
 
 }

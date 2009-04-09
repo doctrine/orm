@@ -3,6 +3,7 @@
 namespace Doctrine\Tests\ORM\Hydration;
 
 use Doctrine\Tests\Mocks\HydratorMockStatement;
+use Doctrine\ORM\Query\ResultSetMapping;
 
 require_once __DIR__ . '/../../TestInit.php';
 
@@ -13,20 +14,10 @@ class ScalarHydratorTest extends HydrationTest
      */
     public function testNewHydrationSimpleEntityQuery()
     {
-        // Faked query components
-        $queryComponents = array(
-            'u' => array(
-                'metadata' => $this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsUser'),
-                'parent' => null,
-                'relation' => null,
-                'map' => null
-                )
-            );
-
-        // Faked table alias map
-        $tableAliasMap = array(
-            'u' => 'u'
-            );
+        $rsm = new ResultSetMapping;
+        $rsm->addEntityResult($this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsUser'), 'u');
+        $rsm->addFieldResult('u', 'u__id', 'id');
+        $rsm->addFieldResult('u', 'u__name', 'name');
 
         // Faked result set
         $resultSet = array(
@@ -44,8 +35,7 @@ class ScalarHydratorTest extends HydrationTest
         $stmt = new HydratorMockStatement($resultSet);
         $hydrator = new \Doctrine\ORM\Internal\Hydration\ScalarHydrator($this->_em);
 
-        $result = $hydrator->hydrateAll($stmt, $this->_createParserResult(
-                $queryComponents, $tableAliasMap));
+        $result = $hydrator->hydrateAll($stmt, $this->_createParserResult($rsm));
 
         $this->assertTrue(is_array($result));
         $this->assertEquals(2, count($result));

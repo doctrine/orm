@@ -77,8 +77,8 @@ class AnnotationDriver
         }
 
         // Evaluate DoctrineDiscriminatorMap annotation
-        if ($discrValueAnnot = $annotClass->getAnnotation('DoctrineDiscriminatorMap')) {
-            $metadata->setDiscriminatorMap((array)$discrValueAnnot->value);
+        if ($discrMapAnnot = $annotClass->getAnnotation('DoctrineDiscriminatorMap')) {
+            $metadata->setDiscriminatorMap((array)$discrMapAnnot->value);
         }
 
         // Evaluate DoctrineSubClasses annotation
@@ -88,6 +88,10 @@ class AnnotationDriver
 
         // Evaluate annotations on properties/fields
         foreach ($annotClass->getProperties() as $property) {
+            if ($metadata->hasField($property->getName())) {
+                continue;
+            }
+
             $mapping = array();
             $mapping['fieldName'] = $property->getName();
 

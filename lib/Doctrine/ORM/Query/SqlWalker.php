@@ -36,34 +36,47 @@ use Doctrine\Common\DoctrineException;
  */
 class SqlWalker
 {
-    const SQLALIAS_SEPARATOR = '__';
+    //const SQLALIAS_SEPARATOR = '__';
 
+    private $_resultSetMapping;
+    private $_aliasCounter = 0;
     private $_tableAliasCounter = 0;
+    private $_scalarResultCounter = 0;
     private $_parserResult;
     private $_em;
+    private $_query;
     private $_dqlToSqlAliasMap = array();
-    private $_scalarAliasCounter = 0;
+    /** Map of all components/classes that appear in the DQL query. */
+    private $_queryComponents = array();
+    /** A list of classes that appear in non-scalar SelectExpressions. */
+    private $_selectedClasses = array();
 
     /**
-     * Initializes a new SqlWalker instance.
+     * Initializes a new SqlWalker instance with the given Query and ParserResult.
+     *
+     * @param Query $query The parsed Query.
+     * @param ParserResult $parserResult The result of the parsing process.
      */
-    public function __construct($em, $parserResult)
+    public function __construct($query, $parserResult, array $queryComponents)
     {
-        $this->_em = $em;
+        $this->_resultSetMapping = $parserResult->getResultSetMapping();
+        $this->_query = $query;
+        $this->_em = $query->getEntityManager();
         $this->_parserResult = $parserResult;
-        $sqlToDqlAliasMap = array(Parser::SCALAR_QUERYCOMPONENT_ALIAS => Parser::SCALAR_QUERYCOMPONENT_ALIAS);
+        $this->_queryComponents = $queryComponents;
+        /*$sqlToDqlAliasMap = array(Parser::SCALAR_QUERYCOMPONENT_ALIAS => Parser::SCALAR_QUERYCOMPONENT_ALIAS);
         foreach ($parserResult->getQueryComponents() as $dqlAlias => $qComp) {
             $sqlAlias = $this->generateSqlTableAlias($qComp['metadata']->getTableName());
             $sqlToDqlAliasMap[$sqlAlias] = $dqlAlias;
         }
         // SQL => DQL alias stored in ParserResult, needed for hydration.
-        $parserResult->setTableAliasMap($sqlToDqlAliasMap);
+        $parserResult->setTableAliasMap($sqlToDqlAliasMap);*/
         // DQL => SQL alias stored only locally, needed for SQL construction.
-        $this->_dqlToSqlAliasMap = array_flip($sqlToDqlAliasMap);
+        //$this->_dqlToSqlAliasMap = array_flip($sqlToDqlAliasMap);
         // In a mixed query we start alias counting for scalars with 1 since
         // index 0 will hold the object.
         if ($parserResult->isMixedQuery()) {
-            $this->_scalarAliasCounter = 1;
+            $this->_scalarResultCounter = 1;
         }
     }
 
@@ -97,9 +110,33 @@ class SqlWalker
      */
     public function walkSelectClause($selectClause)
     {
-        return 'SELECT ' . (($selectClause->isDistinct()) ? 'DISTINCT ' : '')
+        $sql = 'SELECT ' . (($selectClause->isDistinct()) ? 'DISTINCT ' : '')
                 . implode(', ', array_map(array($this, 'walkSelectExpression'),
                         $selectClause->getSelectExpressions()));
+        // Append discriminator columns
+        /*if ($this->_query->getHydrationMode() == \Doctrine\ORM\Query::HYDRATE_OBJECT) {
+            foreach ($this->_selectedClasses as $dqlAlias => $class) {
+                if ($class->isInheritanceTypeSingleTable() || $class->isInheritanceTypeJoined()) {
+                    $tblAlias = $this->_dqlToSqlAliasMap[$dqlAlias];
+                    $discrColumn = $class->getDiscriminatorColumn();
+                    $sql .= ", $tblAlias." . $discrColumn['name'] . ' AS discr__' . $discrColumn['name'];
+                }
+            }
+        }*/
+
+        foreach ($this->_selectedClasses as $dqlAlias => $class) {
+            if ($this->_queryComponents[$dqlAlias]['relation'] === null) {
+                $this->_resultSetMapping->addEntityResult($class, $dqlAlias);
+            } else {
+                $this->_resultSetMapping->addJoinedEntityResult(
+                    $class, $dqlAlias,
+                    $this->_queryComponents[$dqlAlias]['parent'],
+                    $this->_queryComponents[$dqlAlias]['relation']
+                );
+            }
+        }
+
+        return $sql;
     }
 
     /**
@@ -113,8 +150,10 @@ class SqlWalker
         $identificationVarDecls = $fromClause->getIdentificationVariableDeclarations();
         $firstIdentificationVarDecl = $identificationVarDecls[0];
         $rangeDecl = $firstIdentificationVarDecl->getRangeVariableDeclaration();
+        $dqlAlias = $rangeDecl->getAliasIdentificationVariable();
+
         $sql .= $rangeDecl->getClassMetadata()->getTableName() . ' '
-                . $this->_dqlToSqlAliasMap[$rangeDecl->getAliasIdentificationVariable()];
+                . $this->getSqlTableAlias($rangeDecl->getClassMetadata()->getTableName());
 
         foreach ($firstIdentificationVarDecl->getJoinVariableDeclarations() as $joinVarDecl) {
             $sql .= $this->walkJoinVariableDeclaration($joinVarDecl);
@@ -158,9 +197,9 @@ class SqlWalker
         //TODO: support general SingleValuedPathExpression, not just state field
         $pathExpr = $orderByItem->getStateFieldPathExpression();
         $parts = $pathExpr->getParts();
-        $qComp = $this->_parserResult->getQueryComponent($parts[0]);
+        $qComp = $this->_queryComponents[$parts[0]];
         $columnName = $qComp['metadata']->getColumnName($parts[1]);
-        $sql = $this->_dqlToSqlAliasMap[$parts[0]] . '.' . $columnName;
+        $sql = $this->getSqlTableAlias($qComp['metadata']->getTableName()) . '.' . $columnName;
         $sql .= $orderByItem->isAsc() ? ' ASC' : ' DESC';
         return $sql;
     }
@@ -195,11 +234,13 @@ class SqlWalker
         }
 
         $joinAssocPathExpr = $join->getJoinAssociationPathExpression();
-        $sourceQComp = $this->_parserResult->getQueryComponent($joinAssocPathExpr->getIdentificationVariable());
-        $targetQComp = $this->_parserResult->getQueryComponent($join->getAliasIdentificationVariable());
+        $joinedDqlAlias = $join->getAliasIdentificationVariable();
+        $sourceQComp = $this->_queryComponents[$joinAssocPathExpr->getIdentificationVariable()];
+        $targetQComp = $this->_queryComponents[$joinedDqlAlias];
+        
         $targetTableName = $targetQComp['metadata']->getTableName();
-        $targetTableAlias = $this->_dqlToSqlAliasMap[$join->getAliasIdentificationVariable()];
-        $sourceTableAlias = $this->_dqlToSqlAliasMap[$joinAssocPathExpr->getIdentificationVariable()];
+        $targetTableAlias = $this->getSqlTableAlias($targetTableName);
+        $sourceTableAlias = $this->getSqlTableAlias($sourceQComp['metadata']->getTableName());
 
         $sql .= $targetTableName . ' ' . $targetTableAlias . ' ON ';
 
@@ -238,14 +279,17 @@ class SqlWalker
         $sql = '';
         $expr = $selectExpression->getExpression();
         if ($expr instanceof AST\StateFieldPathExpression) {
-            $pathExpression = $expr;
-            if ($pathExpression->isSimpleStateFieldPathExpression()) {
-                $parts = $pathExpression->getParts();
+            if ($expr->isSimpleStateFieldPathExpression()) {
+                $parts = $expr->getParts();
                 $numParts = count($parts);
                 $dqlAlias = $parts[0];
                 $fieldName = $parts[$numParts-1];
-                $qComp = $this->_parserResult->getQueryComponent($dqlAlias);
+                $qComp = $this->_queryComponents[$dqlAlias];
                 $class = $qComp['metadata'];
+
+                if ( ! isset($this->_selectedClasses[$dqlAlias])) {
+                    $this->_selectedClasses[$dqlAlias] = $class;
+                }
 
                 if ($numParts > 2) {
                     for ($i = 1; $i < $numParts-1; ++$i) {
@@ -253,48 +297,69 @@ class SqlWalker
                     }
                 }
 
-                $sqlTableAlias = $this->_dqlToSqlAliasMap[$dqlAlias];
-                $sql .= $sqlTableAlias . '.' . $class->getColumnName($fieldName) .
-                        ' AS ' . $sqlTableAlias . '__' . $class->getColumnName($fieldName);
-            } else if ($pathExpression->isSimpleStateFieldAssociationPathExpression()) {
+                $sqlTableAlias = $this->getSqlTableAlias($class->getTableName());
+                $columnName = $class->getColumnName($fieldName);
+                $columnAlias = $this->getSqlColumnAlias($columnName);
+                $sql .= $sqlTableAlias . '.' . $columnName . ' AS ' . $columnAlias;
+                    
+                // Register column in ResultSetMapping
+                $this->_resultSetMapping->addFieldResult($dqlAlias, $columnAlias, $fieldName);
+                
+            } else if ($expr->isSimpleStateFieldAssociationPathExpression()) {
                 throw DoctrineException::updateMe("Not yet implemented.");
             } else {
                 throw DoctrineException::updateMe("Encountered invalid PathExpression during SQL construction.");
             }
-        }
-        else if ($expr instanceof AST\AggregateExpression) {
-            $aggExpr = $expr;
+        } else if ($expr instanceof AST\AggregateExpression) {
             if ( ! $selectExpression->getFieldIdentificationVariable()) {
-                $alias = $this->_scalarAliasCounter++;
+                $resultAlias = $this->_scalarResultCounter++;
             } else {
-                $alias = $selectExpression->getFieldIdentificationVariable();
+                $resultAlias = $selectExpression->getFieldIdentificationVariable();
             }
-            $sql .= $this->walkAggregateExpression($aggExpr) . ' AS dctrn__' . $alias;
-        }
-        else if ($expr instanceof AST\Subselect) {
+            $columnAlias = 'sclr' . $this->_aliasCounter++;
+            $sql .= $this->walkAggregateExpression($expr) . ' AS ' . $columnAlias;
+            $this->_resultSetMapping->addScalarResult($columnAlias, $resultAlias);
+        } else if ($expr instanceof AST\Subselect) {
             $sql .= $this->walkSubselect($expr);
         } else if ($expr instanceof AST\Functions\FunctionNode) {
             if ( ! $selectExpression->getFieldIdentificationVariable()) {
-                $alias = $this->_scalarAliasCounter++;
+                $resultAlias = $this->_scalarResultCounter++;
             } else {
-                $alias = $selectExpression->getFieldIdentificationVariable();
+                $resultAlias = $selectExpression->getFieldIdentificationVariable();
             }
-            $sql .= $this->walkFunction($expr) . ' AS dctrn__' . $alias;
+            $columnAlias = 'sclr' . $this->_aliasCounter++;
+            $sql .= $this->walkFunction($expr) . ' AS ' . $columnAlias;
+            $this->_resultSetMapping->addScalarResult($columnAlias, $resultAlias);
         } else {
             $dqlAlias = $expr;
-            $queryComp = $this->_parserResult->getQueryComponent($dqlAlias);
+            $queryComp = $this->_queryComponents[$dqlAlias];
             $class = $queryComp['metadata'];
 
-            $sqlTableAlias = $this->_dqlToSqlAliasMap[$dqlAlias];
+            if ( ! isset($this->_selectedClasses[$dqlAlias])) {
+                $this->_selectedClasses[$dqlAlias] = $class;
+            }
+
+            $sqlTableAlias = $this->getSqlTableAlias($class->getTableName());
+
+            $fieldMappings = $class->getFieldMappings();
+            foreach ($class->getSubclasses() as $subclassName) {
+                $fieldMappings = array_merge(
+                        $fieldMappings,
+                        $this->_em->getClassMetadata($subclassName)->getFieldMappings()
+                        );
+            }
+            
             $beginning = true;
-            foreach ($class->getFieldMappings() as $fieldName => $fieldMapping) {
+            foreach ($fieldMappings as $fieldName => $fieldMapping) {
                 if ($beginning) {
                     $beginning = false;
                 } else {
                     $sql .= ', ';
                 }
-                $sql .= $sqlTableAlias . '.' . $fieldMapping['columnName'] .
-                        ' AS ' . $sqlTableAlias . '__' . $fieldMapping['columnName'];
+                $columnAlias = $this->getSqlColumnAlias($fieldMapping['columnName']);
+                $sql .= $sqlTableAlias . '.' . $fieldMapping['columnName'] . ' AS ' . $columnAlias;
+                
+                $this->_resultSetMapping->addFieldResult($dqlAlias, $columnAlias, $fieldName);
             }
         }
         return $sql;
@@ -346,7 +411,7 @@ class SqlWalker
         $firstIdentificationVarDecl = $identificationVarDecls[0];
         $rangeDecl = $firstIdentificationVarDecl->getRangeVariableDeclaration();
         $sql .= $rangeDecl->getClassMetadata()->getTableName() . ' '
-                . $this->_dqlToSqlAliasMap[$rangeDecl->getAliasIdentificationVariable()];
+                . $this->getSqlTableAlias($rangeDecl->getClassMetadata()->getTableName());
 
         foreach ($firstIdentificationVarDecl->getJoinVariableDeclarations() as $joinVarDecl) {
             $sql .= $this->walkJoinVariableDeclaration($joinVarDecl);
@@ -411,12 +476,12 @@ class SqlWalker
         $dqlAlias = $parts[0];
         $fieldName = $parts[1];
 
-        $qComp = $this->_parserResult->getQueryComponent($dqlAlias);
+        $qComp = $this->_queryComponents[$dqlAlias];
         $columnName = $qComp['metadata']->getColumnName($fieldName);
 
         $sql .= $aggExpression->getFunctionName() . '(';
         if ($aggExpression->isDistinct()) $sql .= 'DISTINCT ';
-        $sql .= $this->_dqlToSqlAliasMap[$dqlAlias] . '.' . $columnName;
+        $sql .= $this->getSqlTableAlias($qComp['metadata']->getTableName()) . '.' . $columnName;
         $sql .= ')';
         return $sql;
     }
@@ -444,9 +509,9 @@ class SqlWalker
     {
         //TODO: support general SingleValuedPathExpression, not just state field
         $parts = $pathExpr->getParts();
-        $qComp = $this->_parserResult->getQueryComponent($parts[0]);
+        $qComp = $this->_queryComponents[$parts[0]];
         $columnName = $qComp['metadata']->getColumnName($parts[1]);
-        return $this->_dqlToSqlAliasMap[$parts[0]] . '.' . $columnName;
+        return $this->getSqlTableAlias($qComp['metadata']->getTableName()) . '.' . $columnName;
     }
 
     /**
@@ -487,7 +552,7 @@ class SqlWalker
         $class = $this->_em->getClassMetadata($deleteClause->getAbstractSchemaName());
         $sql .= $class->getTableName();
         if ($deleteClause->getAliasIdentificationVariable()) {
-            $sql .= ' ' . $this->_dqlToSqlAliasMap[$deleteClause->getAliasIdentificationVariable()];
+            $sql .= ' ' . $this->getSqlTableAlias($class->getTableName());
         }
         return $sql;
     }
@@ -504,7 +569,7 @@ class SqlWalker
         $class = $this->_em->getClassMetadata($updateClause->getAbstractSchemaName());
         $sql .= $class->getTableName();
         if ($updateClause->getAliasIdentificationVariable()) {
-            $sql .= ' ' . $this->_dqlToSqlAliasMap[$updateClause->getAliasIdentificationVariable()];
+            $sql .= ' ' . $this->getSqlTableAlias($class->getTableName());
         }
         $sql .= ' SET ' . implode(', ', array_map(array($this, 'walkUpdateItem'),
                 $updateClause->getUpdateItems()));
@@ -524,9 +589,9 @@ class SqlWalker
         $dqlAlias = $updateItem->getIdentificationVariable() ?
                 $updateItem->getIdentificationVariable() :
                 $this->_parserResult->getDefaultQueryComponentAlias();
-        $qComp = $this->_parserResult->getQueryComponent($dqlAlias);
+        $qComp = $this->_queryComponents[$dqlAlias];
 
-        $sql .= $this->_dqlToSqlAliasMap[$dqlAlias] . '.'
+        $sql .= $this->getSqlTableAlias($qComp['metadata']->getTableName()) . '.'
                 . $qComp['metadata']->getColumnName($updateItem->getField())
                 . ' = ';
 
@@ -854,7 +919,7 @@ class SqlWalker
             $numParts = count($parts);
             $dqlAlias = $parts[0];
             $fieldName = $parts[$numParts-1];
-            $qComp = $this->_parserResult->getQueryComponent($dqlAlias);
+            $qComp = $this->_queryComponents[$dqlAlias];
             $class = $qComp['metadata'];
 
             if ($numParts > 2) {
@@ -863,7 +928,7 @@ class SqlWalker
                 }
             }
 
-            $sqlTableAlias = $this->_dqlToSqlAliasMap[$dqlAlias];
+            $sqlTableAlias = $this->getSqlTableAlias($class->getTableName());
             $sql .= $sqlTableAlias . '.' . $class->getColumnName($fieldName);
         } else if ($pathExpr->isSimpleStateFieldAssociationPathExpression()) {
             throw DoctrineException::updateMe("Not yet implemented.");
@@ -876,11 +941,19 @@ class SqlWalker
     /**
      * Generates a unique, short SQL table alias.
      *
-     * @param string $tableName Table name.
+     * @param string $dqlAlias The DQL alias.
      * @return string Generated table alias.
      */
-    public function generateSqlTableAlias($tableName)
+    public function getSqlTableAlias($tableName)
     {
-        return strtolower(substr($tableName, 0, 1)) . $this->_tableAliasCounter++;
+        if ( ! isset($this->_dqlToSqlAliasMap[$tableName])) {
+            $this->_dqlToSqlAliasMap[$tableName] = strtolower(substr($tableName, 0, 1)) . $this->_tableAliasCounter++ . '_';
+        }
+        return $this->_dqlToSqlAliasMap[$tableName];
+    }
+
+    public function getSqlColumnAlias($columnName)
+    {
+        return $columnName . $this->_aliasCounter++;
     }
 }

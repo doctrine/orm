@@ -121,12 +121,22 @@ class Parser
     private $_resultContainsScalars = false;
 
     /**
-     * Whether the query is a SELECT query and contains objects in the result list
+     * Whether the query is a SELECT query and contains properties in the result list
      * as defined by the SelectExpressions.
      *
      * @var boolean
      */
-    private $_resultContainsObjects = false;
+    private $_resultContainsProperties = false;
+
+    /**
+     * Map of declared classes in the parsed query.
+     * Maps the declared DQL alias (key) to the class name (value).
+     *
+     * @var array
+     */
+    //private $_declaredClasses = array();
+
+    private $_queryComponents = array();
 
     /**
      * Creates a new query parser object.
@@ -204,7 +214,7 @@ class Parser
         }
 
         // Create SqlWalker who creates the SQL from the AST
-        $sqlWalker = new SqlWalker($this->_em, $this->_parserResult);
+        $sqlWalker = new SqlWalker($this->_query, $this->_parserResult, $this->_queryComponents);
 
         // Assign an SQL executor to the parser result
         $this->_parserResult->setSqlExecutor(Exec\AbstractExecutor::create($AST, $sqlWalker));
@@ -388,7 +398,7 @@ class Parser
     private function _processDeferredPathExpressionStack()
     {
         $exprStack = array_pop($this->_deferredPathExpressionStacks);
-        $qComps = $this->_parserResult->getQueryComponents();
+        $qComps = $this->_queryComponents;
         foreach ($exprStack as $expr) {
             $parts = $expr->getParts();
             $numParts = count($parts);
@@ -483,8 +493,7 @@ class Parser
             'map'      => null,
             'scalar'   => null,
         );
-        $this->_parserResult->setQueryComponent($aliasIdentificationVariable, $queryComponent);
-        $this->_parserResult->setDefaultQueryComponentAlias($aliasIdentificationVariable);
+        $this->_queryComponents[$aliasIdentificationVariable] = $queryComponent;
 
         $updateClause = new AST\UpdateClause($abstractSchemaName, $updateItems);
         $updateClause->setAliasIdentificationVariable($aliasIdentificationVariable);
@@ -504,7 +513,8 @@ class Parser
             $identVariable = $this->_lexer->token['value'];
             $this->match('.');
         } else {
-            $identVariable = $this->_parserResult->getDefaultQueryComponentAlias();
+            //$identVariable = $this->_parserResult->getDefaultQueryComponentAlias();
+            throw new DoctrineException("Missing alias qualifier.");
         }
         $this->match(Lexer::T_IDENTIFIER);
         $field = $this->_lexer->token['value'];
@@ -578,10 +588,9 @@ class Parser
             'map'      => null,
             'scalar'   => null,
         );
-        $this->_parserResult->setQueryComponent($deleteClause->getAliasIdentificationVariable(),
-                $queryComponent);
-        $this->_parserResult->setDefaultQueryComponentAlias($deleteClause->getAliasIdentificationVariable());
-
+        $this->_queryComponents[$deleteClause->getAliasIdentificationVariable()] = $queryComponent;
+        //$this->_parserResult->setDefaultQueryComponentAlias($deleteClause->getAliasIdentificationVariable());
+        //$this->_declaredClasses[$deleteClause->getAliasIdentificationVariable()] = $classMetadata;
         return $deleteClause;
     }
 
@@ -620,11 +629,11 @@ class Parser
         $identificationVariableDeclarations[] = $this->_IdentificationVariableDeclaration();
 
         $firstRangeDecl = $identificationVariableDeclarations[0]->getRangeVariableDeclaration();
-        if ($firstRangeDecl->getAliasIdentificationVariable()) {
+        /*if ($firstRangeDecl->getAliasIdentificationVariable()) {
             $this->_parserResult->setDefaultQueryComponentAlias($firstRangeDecl->getAliasIdentificationVariable());
         } else {
             $this->_parserResult->setDefaultQueryComponentAlias($firstRangeDecl->getAbstractSchemaName());
-        }
+        }*/
 
         while ($this->_lexer->isNextToken(',')) {
             $this->match(',');
@@ -647,7 +656,7 @@ class Parser
         $peek = $this->_lexer->glimpse();
         // First we recognize for an IdentificationVariable (DQL class alias)
         if ($peek['value'] != '.' && $peek['value'] != '(' && $this->_lexer->lookahead['type'] === Lexer::T_IDENTIFIER) {
-            $this->_resultContainsObjects = true;
+            $this->_resultContainsProperties = true;
             if ($this->_resultContainsScalars) {
                 $this->_parserResult->setMixedQuery(true);
             }
@@ -672,11 +681,11 @@ class Parser
                 $fieldIdentificationVariable = $this->_lexer->token['value'];
             }
             $this->_resultContainsScalars = true;
-            if ($this->_resultContainsObjects) {
+            if ($this->_resultContainsProperties) {
                 $this->_parserResult->setMixedQuery(true);
             }
         } else {
-            $this->_resultContainsObjects = true;
+            $this->_resultContainsProperties = true;
             if ($this->_resultContainsScalars) {
                 $this->_parserResult->setMixedQuery(true);
             }
@@ -739,7 +748,8 @@ class Parser
             'map'      => null,
             'scalar'   => null,
         );
-        $this->_parserResult->setQueryComponent($aliasIdentificationVariable, $queryComponent);
+        $this->_queryComponents[$aliasIdentificationVariable] = $queryComponent;
+        //$this->_declaredClasses[$aliasIdentificationVariable] = $classMetadata;
 
         return new AST\RangeVariableDeclaration(
             $classMetadata, $aliasIdentificationVariable
@@ -807,8 +817,8 @@ class Parser
 
         // Verify that the association exists, if yes update the ParserResult
         // with the new component.
-        $parentComp = $this->_parserResult->getQueryComponent($joinPathExpression->getIdentificationVariable());
-        $parentClass = $parentComp['metadata'];
+        //$parentComp = $this->_parserResult->getQueryComponent($joinPathExpression->getIdentificationVariable());
+        $parentClass = $this->_queryComponents[$joinPathExpression->getIdentificationVariable()]['metadata'];
         $assocField = $joinPathExpression->getAssociationField();
         if ( ! $parentClass->hasAssociation($assocField)) {
             $this->semanticalError("Class " . $parentClass->getClassName() .
@@ -824,7 +834,8 @@ class Parser
             'map'      => null,
             'scalar'   => null,
         );
-        $this->_parserResult->setQueryComponent($aliasIdentificationVariable, $joinQueryComponent);
+        $this->_queryComponents[$aliasIdentificationVariable] = $joinQueryComponent;
+        //$this->_declaredClasses[$aliasIdentificationVariable] = $this->_em->getClassMetadata($targetClassName);
 
         // Create AST node
         $join = new AST\Join($joinType, $joinPathExpression, $aliasIdentificationVariable);
@@ -866,9 +877,7 @@ class Parser
         $this->match(Lexer::T_BY);
         $pathExp = $this->_SimpleStateFieldPathExpression();
         // Add the INDEX BY info to the query component
-        $qComp = $this->_parserResult->getQueryComponent($pathExp->getIdentificationVariable());
-        $qComp['map'] = $pathExp->getSimpleStateField();
-        $this->_parserResult->setQueryComponent($pathExp->getIdentificationVariable(), $qComp);
+        $this->_queryComponents[$pathExp->getIdentificationVariable()]['map'] = $pathExp->getSimpleStateField();
         return $pathExp;
     }
 
@@ -909,10 +918,10 @@ class Parser
         $assocSeen = false;
 
         $identificationVariable = $this->_IdentificationVariable();
-        if ( ! $this->_parserResult->hasQueryComponent($identificationVariable)) {
+        if ( ! isset($this->_queryComponents[$identificationVariable])) {
             $this->syntaxError("Identification variable.");
         }
-        $qComp = $this->_parserResult->getQueryComponent($identificationVariable);
+        $qComp = $this->_queryComponents[$identificationVariable];
         $parts[] = $identificationVariable;
 
         $class = $qComp['metadata'];

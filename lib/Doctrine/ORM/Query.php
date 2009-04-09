@@ -227,6 +227,10 @@ class Query extends AbstractQuery
      */
     public function execute($params = array(), $hydrationMode = null)
     {
+        if ($this->_em->getUnitOfWork()->hasPendingInsertions()) {
+            $this->_em->flush();
+        }
+
         if ($hydrationMode !== null) {
             $this->_hydrationMode = $hydrationMode;
         }
@@ -495,6 +499,16 @@ class Query extends AbstractQuery
     {
         $this->_hydrationMode = $hydrationMode;
         return $this;
+    }
+
+    /**
+     * Gets the hydration mode currently used by the query.
+     *
+     * @return integer
+     */
+    public function getHydrationMode()
+    {
+        return $this->_hydrationMode;
     }
     
     /**

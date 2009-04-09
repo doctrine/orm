@@ -19,40 +19,17 @@
  * <http://www.doctrine-project.org>.
  */
 
-namespace Doctrine\ORM\Persisters;
+namespace Doctrine\Common;
 
 /**
- * The default persister strategy maps a single entity instance to a single database table,
- * as is the case in Single Table Inheritance & Concrete Table Inheritance.
+ * Contract for classes that are potential listeners of a <tt>NotifyPropertyChanged</tt>
+ * implementor.
  *
- * @author      Roman Borschel <roman@code-factory.org>
- * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
- * @version     $Revision$
- * @link        www.doctrine-project.org
- * @since       2.0
+ * @author robo
+ * @since 2.0
  */
-class StandardEntityPersister extends AbstractEntityPersister
+interface PropertyChangedListener
 {
-    /**
-     * Deletes an entity.
-     */
-    protected function _doDelete($record)
-    {
-    }
-    
-    /**
-     * Inserts a single entity into the database.
-     *
-     * @param Doctrine\ORM\Entity $entity The entity to insert.
-     */
-    protected function _doInsert(Doctrine_ORM_Entity $record)
-    {
-    }
-    
-    /**
-     * Updates an entity.
-     */
-    protected function _doUpdate(Doctrine_ORM_Entity $record)
-    {
-    }
+    public function propertyChanged($sender, $propertyName, $oldValue, $newValue);
 }
+

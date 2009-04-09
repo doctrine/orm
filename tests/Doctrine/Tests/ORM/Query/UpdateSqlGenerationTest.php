@@ -60,11 +60,11 @@ class UpdateSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
     {
         $this->assertSqlGeneration(
             'UPDATE Doctrine\Tests\Models\CMS\CmsUser u SET u.name = ?1',
-            'UPDATE cms_users c0 SET c0.name = ?'
+            'UPDATE cms_users c0_ SET c0_.name = ?'
         );
         $this->assertSqlGeneration(
             'UPDATE Doctrine\Tests\Models\CMS\CmsUser u SET u.name = ?1, u.username = ?2',
-            'UPDATE cms_users c0 SET c0.name = ?, c0.username = ?'
+            'UPDATE cms_users c0_ SET c0_.name = ?, c0_.username = ?'
         );
     }
  

@@ -21,7 +21,9 @@
 
 namespace Doctrine\ORM;
 
+use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\DoctrineException;
+use Doctrine\Common\PropertyChangedListener;
 use Doctrine\ORM\Internal\CommitOrderCalculator;
 use Doctrine\ORM\Internal\CommitOrderNode;
 use Doctrine\ORM\PersistentCollection;
@@ -40,7 +42,7 @@ use Doctrine\ORM\EntityManager;
  * @version     $Revision$
  * @author      Roman Borschel <roman@code-factory.org>
  */
-class UnitOfWork
+class UnitOfWork implements PropertyChangedListener
 {
     /**
      * An Entity is in managed state when it has a primary key/identifier (and
@@ -217,7 +219,8 @@ class UnitOfWork
      */
     public function commit()
     {
-        // Compute changes done since last commit
+        // Compute changes done since last commit.
+        // This populates _entityUpdates and _collectionUpdates.
         $this->computeChangeSets();
 
         if (empty($this->_entityInsertions) &&
@@ -315,11 +318,24 @@ class UnitOfWork
         foreach ($entitySet as $className => $entities) {
             $class = $this->_em->getClassMetadata($className);
             if ( ! $class->isInheritanceTypeNone() && count($entities) > 0) {
-                $class = $this->_em->getClassMetadata(get_class($entities[0]));
+                $class = $this->_em->getClassMetadata(get_class($entities[key($entities)]));
             }
+
+            /*
+            if ($class->isChangeTrackingNotify()) {
+                continue;
+            }
+            $entitiesToProcess = $class->isChangeTrackingDeferredExplicit() ?
+                    $this->_scheduledForDirtyCheck[$className] : $entities;
+             */
+
             foreach ($entities as $entity) {
                 $oid = spl_object_hash($entity);
                 $state = $this->getEntityState($entity);
+
+                if ($state == self::STATE_MANAGED && ($entity instanceof \Doctrine\Common\NotifyPropertyChanged)) {
+                    continue; // entity notifies us, no need to calculate changes
+                }
 
                 // Look for changes in the entity itself by comparing against the
                 // original data we have.
@@ -596,7 +612,7 @@ class UnitOfWork
     }
 
     /**
-     * Register a new entity.
+     * Registers a new entity.
      * 
      * @todo Rename to scheduleForInsert().
      */
@@ -782,7 +798,7 @@ class UnitOfWork
     public function addToIdentityMap($entity)
     {
         $classMetadata = $this->_em->getClassMetadata(get_class($entity));
-        $idHash = $this->getIdentifierHash($this->_entityIdentifiers[spl_object_hash($entity)]);
+        $idHash = implode(' ', $this->_entityIdentifiers[spl_object_hash($entity)]);
         if ($idHash === '') {
             throw DoctrineException::updateMe("Entity with oid '" . spl_object_hash($entity)
                     . "' has no identity and therefore can't be added to the identity map.");
@@ -792,6 +808,9 @@ class UnitOfWork
             return false;
         }
         $this->_identityMap[$className][$idHash] = $entity;
+        if ($entity instanceof \Doctrine\Common\NotifyPropertyChanged) {
+            $entity->addPropertyChangedListener($this);
+        }
         return true;
     }
 
@@ -825,7 +844,7 @@ class UnitOfWork
     {
         $oid = spl_object_hash($entity);
         $classMetadata = $this->_em->getClassMetadata(get_class($entity));
-        $idHash = $this->getIdentifierHash($this->_entityIdentifiers[$oid]);
+        $idHash = implode(' ', $this->_entityIdentifiers[$oid]);
         if ($idHash === '') {
             throw DoctrineException::updateMe("Entity with oid '" . spl_object_hash($entity)
                     . "' has no identity and therefore can't be removed from the identity map.");
@@ -869,22 +888,6 @@ class UnitOfWork
     }
 
     /**
-     * Gets the identifier hash for a set of identifier values.
-     * The hash is just a concatenation of the identifier values.
-     * The identifiers are concatenated with a space.
-     * 
-     * Note that this method always returns a string. If the given array is
-     * empty, an empty string is returned.
-     *
-     * @param array $id
-     * @return string  The hash.
-     */
-    public function getIdentifierHash(array $id)
-    {
-        return implode(' ', $id);
-    }
-
-    /**
      * Checks whether an entity is registered in the identity map of the
      * UnitOfWork.
      *
@@ -898,7 +901,7 @@ class UnitOfWork
             return false;
         }
         $classMetadata = $this->_em->getClassMetadata(get_class($entity));
-        $idHash = $this->getIdentifierHash($this->_entityIdentifiers[$oid]);
+        $idHash = implode(' ', $this->_entityIdentifiers[$oid]);
         if ($idHash === '') {
             return false;
         }
@@ -968,11 +971,15 @@ class UnitOfWork
         switch ($this->getEntityState($entity)) {
             case self::STATE_MANAGED:
                 // nothing to do, except if automatic dirty checking is disabled
+                /*if ($class->isChangeTrackingDeferredExplicit()) {
+                    $this->scheduleForDirtyCheck($entity);
+                }*/
                 if ( ! $this->_em->getConfiguration()->getAutomaticDirtyChecking()) {
                     $this->scheduleForDirtyCheck($entity);
                 }
                 break;
             case self::STATE_NEW:
+                //TODO: Better defer insert for post-insert ID generators also.
                 $idGen = $class->getIdGenerator();
                 if ($idGen->isPostInsertGenerator()) {
                     $insertNow[$oid] = $entity;
@@ -986,6 +993,8 @@ class UnitOfWork
                         $this->_entityIdentifiers[$oid] = $idValue;
                     }
                 }
+                //TODO: Calculate changeSet now instead of later to allow some optimizations
+                //      in calculateChangeSets() (ie no need to consider NEW objects) ?
                 $this->registerNew($entity);
                 break;
             case self::STATE_DETACHED:
@@ -1002,7 +1011,6 @@ class UnitOfWork
                 }
                 break;
             default:
-                //TODO: throw UnitOfWorkException::invalidEntityState()
                 throw DoctrineException::updateMe("Encountered invalid entity state.");
         }
         $this->_cascadeSave($entity, $visited, $insertNow);
@@ -1021,11 +1029,12 @@ class UnitOfWork
 
     /**
      * Deletes an entity as part of the current unit of work.
+     * 
      * This method is internally called during delete() cascades as it tracks
      * the already visited entities to prevent infinite recursions.
      *
-     * @param object $entity
-     * @param array $visited
+     * @param object $entity The entity to delete.
+     * @param array $visited The map of the already visited entities.
      */
     private function _doDelete($entity, array &$visited)
     {
@@ -1067,7 +1076,7 @@ class UnitOfWork
             }
             $relatedEntities = $class->getReflectionProperty($assocMapping->getSourceFieldName())
                     ->getValue($entity);
-            if (($relatedEntities instanceof \Doctrine\Common\Collections\Collection || is_array($relatedEntities))
+            if (($relatedEntities instanceof Collection || is_array($relatedEntities))
                     && count($relatedEntities) > 0) {
                 foreach ($relatedEntities as $relatedEntity) {
                     $this->_doSave($relatedEntity, $visited, $insertNow);
@@ -1092,7 +1101,7 @@ class UnitOfWork
             }
             $relatedEntities = $class->getReflectionProperty($assocMapping->getSourceFieldName())
                     ->getValue($entity);
-            if ($relatedEntities instanceof \Doctrine\Common\Collections\Collection || is_array($relatedEntities)
+            if ($relatedEntities instanceof Collection || is_array($relatedEntities)
                     && count($relatedEntities) > 0) {
                 foreach ($relatedEntities as $relatedEntity) {
                     $this->_doDelete($relatedEntity, $visited);
@@ -1164,7 +1173,15 @@ class UnitOfWork
      */
     public function createEntity($className, array $data, $query = null)
     {
-        $className = $this->_inferCorrectClassName($data, $className);
+        // Infer the correct class to instantiate
+        $class = $this->_em->getClassMetadata($className);
+        $discCol = $class->getDiscriminatorColumn();
+        if ($discCol) {
+            $discMap = $class->getDiscriminatorMap();
+            if (isset($data[$discCol['name']], $discMap[$data[$discCol['name']]])) {
+                $className = $discMap[$data[$discCol['name']]];
+            }
+        }
         $class = $this->_em->getClassMetadata($className);
 
         $id = array();
@@ -1173,7 +1190,7 @@ class UnitOfWork
             foreach ($identifierFieldNames as $fieldName) {
                 $id[] = $data[$fieldName];
             }
-            $idHash = $this->getIdentifierHash($id);
+            $idHash = implode(' ', $id);
         } else {
             $id = array($data[$class->getSingleIdentifierFieldName()]);
             $idHash = $id[0];
@@ -1226,30 +1243,6 @@ class UnitOfWork
                     $class->getReflectionProperty($field)->setValue($entity, $value);
                 }
             }
-        }
-    }
-
-    /**
-     * Check the dataset for a discriminator column to determine the correct
-     * class to instantiate. If no discriminator column is found, the given
-     * classname will be returned.
-     *
-     * @param array $data
-     * @param string $className
-     * @return string The name of the class to instantiate.
-     */
-    private function _inferCorrectClassName(array $data, $className)
-    {
-        $class = $this->_em->getClassMetadata($className);
-        $discCol = $class->getDiscriminatorColumn();
-        if ( ! $discCol) {
-            return $className;
-        }
-        $discMap = $class->getDiscriminatorMap();
-        if (isset($data[$discCol['name']], $discMap[$data[$discCol['name']]])) {
-            return $discMap[$data[$discCol['name']]];
-        } else {
-            return $className;
         }
     }
 
@@ -1313,17 +1306,32 @@ class UnitOfWork
      */
     public function tryGetById($id, $rootClassName)
     {
-        $idHash = $this->getIdentifierHash((array)$id);
+        $idHash = implode(' ', (array)$id);
         if (isset($this->_identityMap[$rootClassName][$idHash])) {
             return $this->_identityMap[$rootClassName][$idHash];
         }
         return false;
     }
 
+    /**
+     * Schedules an entity for dirty-checking at commit-time.
+     *
+     * @param object $entity The entity to schedule for dirty-checking.
+     */
     public function scheduleForDirtyCheck($entity)
     {
         $rootClassName = $this->_em->getClassMetadata(get_class($entity))->getRootClassName();
         $this->_scheduledForDirtyCheck[$rootClassName] = $entity;
+    }
+
+    /**
+     * Checks whether the UnitOfWork has any pending insertions.
+     *
+     * @return boolean TRUE if this UnitOfWork has pending insertions, FALSE otherwise.
+     */
+    public function hasPendingInsertions()
+    {
+        return ! empty($this->_entityInsertions);
     }
 
     /**
@@ -1349,10 +1357,14 @@ class UnitOfWork
     {
         if ( ! isset($this->_persisters[$entityName])) {
             $class = $this->_em->getClassMetadata($entityName);
-            if ($class->isInheritanceTypeJoined()) {
+            if ($class->isInheritanceTypeNone()) {
+                $persister = new Persisters\StandardEntityPersister($this->_em, $class);
+            } else if ($class->isInheritanceTypeSingleTable()) {
+                $persister = new Persisters\SingleTablePersister($this->_em, $class);
+            } else if ($class->isInheritanceTypeJoined()) {
                 $persister = new Persisters\JoinedSubclassPersister($this->_em, $class);
             } else {
-                $persister = new Persisters\StandardEntityPersister($this->_em, $class);
+                $persister = new Persisters\UnionSubclassPersister($this->_em, $class);
             }
             $this->_persisters[$entityName] = $persister;
         }
@@ -1377,5 +1389,37 @@ class UnitOfWork
             $this->_collectionPersisters[$type] = $persister;
         }
         return $this->_collectionPersisters[$type];
+    }
+
+    /* PropertyChangedListener implementation */
+
+    /**
+     * Notifies this UnitOfWork of a property change in an entity.
+     *
+     * @param object $entity The entity that owns the property.
+     * @param string $propertyName The name of the property that changed.
+     * @param mixed $oldValue The old value of the property.
+     * @param mixed $newValue The new value of the property.
+     */
+    public function propertyChanged($entity, $propertyName, $oldValue, $newValue)
+    {
+        $oid = spl_object_hash($entity);
+        $class = $this->_em->getClassMetadata(get_class($entity));
+        
+        $this->_entityChangeSets[$oid][$propertyName] = array($oldValue => $newValue);
+
+        if ($class->hasAssociation($propertyName)) {
+            $assoc = $class->getAssociationMapping($name);
+            if ($assoc->isOneToOne() && $assoc->isOwningSide()) {
+                $this->_entityUpdates[$oid] = $entity;
+            } else if ($oldValue instanceof PersistentCollection) {
+                // A PersistentCollection was de-referenced, so delete it.
+                if  ( ! in_array($orgValue, $this->_collectionDeletions, true)) {
+                    $this->_collectionDeletions[] = $orgValue;
+                }
+            }
+        } else {
+            $this->_entityUpdates[$oid] = $entity;
+        }
     }
 }

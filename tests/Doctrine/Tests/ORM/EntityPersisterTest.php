@@ -32,7 +32,7 @@ class EntityPersisterTest extends \Doctrine\Tests\OrmTestCase
     
     public function testSimpleInsert()
     {
-        $userPersister = new \Doctrine\ORM\Persisters\StandardEntityPersister(
+        $userPersister = new \Doctrine\ORM\Persisters\SingleTablePersister(
                 $this->_emMock, $this->_emMock->getClassMetadata("Doctrine\Tests\Models\Forum\ForumUser"));
         $avatarPersister = new \Doctrine\ORM\Persisters\StandardEntityPersister(
                 $this->_emMock, $this->_emMock->getClassMetadata("Doctrine\Tests\Models\Forum\ForumAvatar"));

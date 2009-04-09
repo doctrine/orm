@@ -18,18 +18,12 @@ class HydrationTest extends \Doctrine\Tests\OrmTestCase
     }
 
     /** Helper method */
-    protected function _createParserResult($queryComponents, $tableToClassAliasMap, $isMixedQuery = false)
+    protected function _createParserResult($resultSetMapping, $isMixedQuery = false)
     {
-        $parserResult = new ParserResult(
-            '',
-            array(/*queryComponent*/),
-            array(/*tableAliasMap*/)
-        );
-
-        //$parserResult = new \Doctrine\ORM\Query\ParserResult();
-        $parserResult->setQueryComponents($queryComponents);
-        $parserResult->setDefaultQueryComponentAlias(key($queryComponents));
-        $parserResult->setTableAliasMap($tableToClassAliasMap);
+        $parserResult = new ParserResult;
+        $parserResult->setResultSetMapping($resultSetMapping);
+        //$parserResult->setDefaultQueryComponentAlias(key($queryComponents));
+        //$parserResult->setTableAliasMap($tableToClassAliasMap);
         $parserResult->setMixedQuery($isMixedQuery);
         return $parserResult;
     }

@@ -3,6 +3,7 @@
 namespace Doctrine\Tests\ORM\Hydration;
 
 use Doctrine\Tests\Mocks\HydratorMockStatement;
+use Doctrine\ORM\Query\ResultSetMapping;
 
 require_once __DIR__ . '/../../TestInit.php';
 
@@ -13,20 +14,10 @@ class ObjectHydratorTest extends HydrationTest
      */
     public function testNewHydrationSimpleEntityQuery()
     {
-        // Faked query components
-        $queryComponents = array(
-            'u' => array(
-                'metadata' => $this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsUser'),
-                'parent' => null,
-                'relation' => null,
-                'map' => null
-                )
-            );
-
-        // Faked table alias map
-        $tableAliasMap = array(
-            'u' => 'u'
-            );
+        $rsm = new ResultSetMapping;
+        $rsm->addEntityResult($this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsUser'), 'u');
+        $rsm->addFieldResult('u', 'u__id', 'id');
+        $rsm->addFieldResult('u', 'u__name', 'name');
 
         // Faked result set
         $resultSet = array(
@@ -44,8 +35,7 @@ class ObjectHydratorTest extends HydrationTest
         $stmt = new HydratorMockStatement($resultSet);
         $hydrator = new \Doctrine\ORM\Internal\Hydration\ObjectHydrator($this->_em);
 
-        $result = $hydrator->hydrateAll($stmt, $this->_createParserResult(
-                $queryComponents, $tableAliasMap));
+        $result = $hydrator->hydrateAll($stmt, $this->_createParserResult($rsm));
 
         $this->assertEquals(2, count($result));
         $this->assertTrue($result[0] instanceof \Doctrine\Tests\Models\CMS\CmsUser);
@@ -57,6 +47,58 @@ class ObjectHydratorTest extends HydrationTest
     }
 
     /**
+     * Select u.id, u.name from \Doctrine\Tests\Models\CMS\CmsUser u
+     */
+    public function testNewHydrationSimpleMultipleRootEntityQuery()
+    {
+        $rsm = new ResultSetMapping;
+        $rsm->addEntityResult($this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsUser'), 'u');
+        $rsm->addEntityResult($this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsArticle'), 'a');
+        $rsm->addFieldResult('u', 'u__id', 'id');
+        $rsm->addFieldResult('u', 'u__name', 'name');
+        $rsm->addFieldResult('a', 'a__id', 'id');
+        $rsm->addFieldResult('a', 'a__topic', 'topic');
+
+        // Faked result set
+        $resultSet = array(
+            array(
+                'u__id' => '1',
+                'u__name' => 'romanb',
+                'a__id' => '1',
+                'a__topic' => 'Cool things.'
+                ),
+            array(
+                'u__id' => '2',
+                'u__name' => 'jwage',
+                'a__id' => '2',
+                'a__topic' => 'Cool things II.'
+                )
+            );
+
+
+        $stmt = new HydratorMockStatement($resultSet);
+        $hydrator = new \Doctrine\ORM\Internal\Hydration\ObjectHydrator($this->_em);
+
+        $result = $hydrator->hydrateAll($stmt, $this->_createParserResult($rsm));
+
+        $this->assertEquals(4, count($result));
+        
+        $this->assertTrue($result[0] instanceof \Doctrine\Tests\Models\CMS\CmsUser);
+        $this->assertTrue($result[1] instanceof \Doctrine\Tests\Models\CMS\CmsArticle);
+        $this->assertTrue($result[2] instanceof \Doctrine\Tests\Models\CMS\CmsUser);
+        $this->assertTrue($result[3] instanceof \Doctrine\Tests\Models\CMS\CmsArticle);
+
+        $this->assertEquals(1, $result[0]->id);
+        $this->assertEquals('romanb', $result[0]->name);
+        $this->assertEquals(1, $result[1]->id);
+        $this->assertEquals('Cool things.', $result[1]->topic);
+        $this->assertEquals(2, $result[2]->id);
+        $this->assertEquals('jwage', $result[2]->name);
+        $this->assertEquals(2, $result[3]->id);
+        $this->assertEquals('Cool things II.', $result[3]->topic);
+    }
+
+    /**
      * select u.id, u.status, p.phonenumber, upper(u.name) nameUpper from User u
      * join u.phonenumbers p
      * =
@@ -65,28 +107,18 @@ class ObjectHydratorTest extends HydrationTest
      */
     public function testNewHydrationMixedQueryFetchJoin()
     {
-        // Faked query components
-        $queryComponents = array(
-            'u' => array(
-                'metadata' => $this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsUser'),
-                'parent' => null,
-                'relation' => null,
-                'map' => null
-                ),
-            'p' => array(
-                'metadata' => $this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsPhonenumber'),
-                'parent' => 'u',
-                'relation' => $this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsUser')->getAssociationMapping('phonenumbers'),
-                'map' => null
-                )
-            );
-
-        // Faked table alias map
-        $tableAliasMap = array(
-            'dctrn' => 'dctrn',
-            'u' => 'u',
-            'p' => 'p'
-            );
+        $rsm = new ResultSetMapping;
+        $rsm->addEntityResult($this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsUser'), 'u');
+        $rsm->addJoinedEntityResult(
+                $this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsPhonenumber'),
+                'p',
+                'u',
+                $this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsUser')->getAssociationMapping('phonenumbers')
+        );
+        $rsm->addFieldResult('u', 'u__id', 'id');
+        $rsm->addFieldResult('u', 'u__status', 'status');
+        $rsm->addScalarResult('sclr0', 'nameUpper');
+        $rsm->addFieldResult('p', 'p__phonenumber', 'phonenumber');
 
         // Faked result set
         $resultSet = array(
@@ -94,19 +126,19 @@ class ObjectHydratorTest extends HydrationTest
             array(
                 'u__id' => '1',
                 'u__status' => 'developer',
-                'dctrn__nameUpper' => 'ROMANB',
+                'sclr0' => 'ROMANB',
                 'p__phonenumber' => '42',
                 ),
             array(
                 'u__id' => '1',
                 'u__status' => 'developer',
-                'dctrn__nameUpper' => 'ROMANB',
+                'sclr0' => 'ROMANB',
                 'p__phonenumber' => '43',
                 ),
             array(
                 'u__id' => '2',
                 'u__status' => 'developer',
-                'dctrn__nameUpper' => 'JWAGE',
+                'sclr0' => 'JWAGE',
                 'p__phonenumber' => '91'
                 )
             );
@@ -114,8 +146,7 @@ class ObjectHydratorTest extends HydrationTest
         $stmt = new HydratorMockStatement($resultSet);
         $hydrator = new \Doctrine\ORM\Internal\Hydration\ObjectHydrator($this->_em);
 
-        $result = $hydrator->hydrateAll($stmt, $this->_createParserResult(
-                $queryComponents, $tableAliasMap, true));
+        $result = $hydrator->hydrateAll($stmt, $this->_createParserResult($rsm, true));
 
         $this->assertEquals(2, count($result));
         $this->assertTrue(is_array($result));
@@ -150,28 +181,11 @@ class ObjectHydratorTest extends HydrationTest
      */
     public function testNewHydrationMixedQueryNormalJoin()
     {
-        // Faked query components
-        $queryComponents = array(
-            'u' => array(
-                'metadata' => $this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsUser'),
-                'parent' => null,
-                'relation' => null,
-                'map' => null
-                ),
-            'p' => array(
-                'metadata' => $this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsPhonenumber'),
-                'parent' => 'u',
-                'relation' => $this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsUser')->getAssociationMapping('phonenumbers'),
-                'map' => null
-                )
-            );
-
-        // Faked table alias map
-        $tableAliasMap = array(
-            'dctrn' => 'dctrn',
-            'u' => 'u',
-            'p' => 'p'
-            );
+        $rsm = new ResultSetMapping;
+        $rsm->addEntityResult($this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsUser'), 'u');
+        $rsm->addFieldResult('u', 'u__id', 'id');
+        $rsm->addFieldResult('u', 'u__status', 'status');
+        $rsm->addScalarResult('sclr0', 'numPhones');
 
         // Faked result set
         $resultSet = array(
@@ -179,20 +193,19 @@ class ObjectHydratorTest extends HydrationTest
             array(
                 'u__id' => '1',
                 'u__status' => 'developer',
-                'dctrn__numPhones' => '2',
+                'sclr0' => '2',
                 ),
             array(
                 'u__id' => '2',
                 'u__status' => 'developer',
-                'dctrn__numPhones' => '1',
+                'sclr0' => '1',
                 )
             );
 
         $stmt = new HydratorMockStatement($resultSet);
         $hydrator = new \Doctrine\ORM\Internal\Hydration\ObjectHydrator($this->_em);
 
-        $result = $hydrator->hydrateAll($stmt, $this->_createParserResult(
-                $queryComponents, $tableAliasMap, true));
+        $result = $hydrator->hydrateAll($stmt, $this->_createParserResult($rsm, true));
 
         $this->assertEquals(2, count($result));
         $this->assertTrue(is_array($result));
@@ -215,28 +228,20 @@ class ObjectHydratorTest extends HydrationTest
      */
     public function testNewHydrationMixedQueryFetchJoinCustomIndex()
     {
-        // Faked query components
-        $queryComponents = array(
-            'u' => array(
-                'metadata' => $this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsUser'),
-                'parent' => null,
-                'relation' => null,
-                'map' => 'id'
-                ),
-            'p' => array(
-                'metadata' => $this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsPhonenumber'),
-                'parent' => 'u',
-                'relation' => $this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsUser')->getAssociationMapping('phonenumbers'),
-                'map' => 'phonenumber'
-                )
-            );
-
-        // Faked table alias map
-        $tableAliasMap = array(
-            'dctrn' => 'dctrn',
-            'u' => 'u',
-            'p' => 'p'
-            );
+        $rsm = new ResultSetMapping;
+        $rsm->addEntityResult($this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsUser'), 'u');
+        $rsm->addJoinedEntityResult(
+                $this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsPhonenumber'),
+                'p',
+                'u',
+                $this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsUser')->getAssociationMapping('phonenumbers')
+        );
+        $rsm->addFieldResult('u', 'u__id', 'id');
+        $rsm->addFieldResult('u', 'u__status', 'status');
+        $rsm->addScalarResult('sclr0', 'nameUpper');
+        $rsm->addFieldResult('p', 'p__phonenumber', 'phonenumber');
+        $rsm->addIndexBy('u', 'id');
+        $rsm->addIndexBy('p', 'phonenumber');
 
         // Faked result set
         $resultSet = array(
@@ -244,19 +249,19 @@ class ObjectHydratorTest extends HydrationTest
             array(
                 'u__id' => '1',
                 'u__status' => 'developer',
-                'dctrn__nameUpper' => 'ROMANB',
+                'sclr0' => 'ROMANB',
                 'p__phonenumber' => '42',
                 ),
             array(
                 'u__id' => '1',
                 'u__status' => 'developer',
-                'dctrn__nameUpper' => 'ROMANB',
+                'sclr0' => 'ROMANB',
                 'p__phonenumber' => '43',
                 ),
             array(
                 'u__id' => '2',
                 'u__status' => 'developer',
-                'dctrn__nameUpper' => 'JWAGE',
+                'sclr0' => 'JWAGE',
                 'p__phonenumber' => '91'
                 )
             );
@@ -265,8 +270,7 @@ class ObjectHydratorTest extends HydrationTest
         $stmt = new HydratorMockStatement($resultSet);
         $hydrator = new \Doctrine\ORM\Internal\Hydration\ObjectHydrator($this->_em);
 
-        $result = $hydrator->hydrateAll($stmt, $this->_createParserResult(
-                $queryComponents, $tableAliasMap, true));
+        $result = $hydrator->hydrateAll($stmt, $this->_createParserResult($rsm, true));
 
         $this->assertEquals(2, count($result));
         $this->assertTrue(is_array($result));
@@ -303,35 +307,26 @@ class ObjectHydratorTest extends HydrationTest
      */
     public function testNewHydrationMixedQueryMultipleFetchJoin()
     {
-        // Faked query components
-        $queryComponents = array(
-            'u' => array(
-                'metadata' => $this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsUser'),
-                'parent' => null,
-                'relation' => null,
-                'map' => null
-                ),
-            'p' => array(
-                'metadata' => $this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsPhonenumber'),
-                'parent' => 'u',
-                'relation' => $this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsUser')->getAssociationMapping('phonenumbers'),
-                'map' => null
-                ),
-            'a' => array(
-                'metadata' => $this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsArticle'),
-                'parent' => 'u',
-                'relation' => $this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsUser')->getAssociationMapping('articles'),
-                'map' => null
-                ),
-            );
-
-        // Faked table alias map
-        $tableAliasMap = array(
-            'dctrn' => 'dctrn',
-            'u' => 'u',
-            'p' => 'p',
-            'a' => 'a'
-            );
+        $rsm = new ResultSetMapping;
+        $rsm->addEntityResult($this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsUser'), 'u');
+        $rsm->addJoinedEntityResult(
+                $this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsPhonenumber'),
+                'p',
+                'u',
+                $this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsUser')->getAssociationMapping('phonenumbers')
+        );
+        $rsm->addJoinedEntityResult(
+                $this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsArticle'),
+                'a',
+                'u',
+                $this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsUser')->getAssociationMapping('articles')
+        );
+        $rsm->addFieldResult('u', 'u__id', 'id');
+        $rsm->addFieldResult('u', 'u__status', 'status');
+        $rsm->addScalarResult('sclr0', 'nameUpper');
+        $rsm->addFieldResult('p', 'p__phonenumber', 'phonenumber');
+        $rsm->addFieldResult('a', 'a__id', 'id');
+        $rsm->addFieldResult('a', 'a__topic', 'topic');
 
         // Faked result set
         $resultSet = array(
@@ -339,7 +334,7 @@ class ObjectHydratorTest extends HydrationTest
             array(
                 'u__id' => '1',
                 'u__status' => 'developer',
-                'dctrn__nameUpper' => 'ROMANB',
+                'sclr0' => 'ROMANB',
                 'p__phonenumber' => '42',
                 'a__id' => '1',
                 'a__topic' => 'Getting things done!'
@@ -347,7 +342,7 @@ class ObjectHydratorTest extends HydrationTest
            array(
                 'u__id' => '1',
                 'u__status' => 'developer',
-                'dctrn__nameUpper' => 'ROMANB',
+                'sclr0' => 'ROMANB',
                 'p__phonenumber' => '43',
                 'a__id' => '1',
                 'a__topic' => 'Getting things done!'
@@ -355,7 +350,7 @@ class ObjectHydratorTest extends HydrationTest
             array(
                 'u__id' => '1',
                 'u__status' => 'developer',
-                'dctrn__nameUpper' => 'ROMANB',
+                'sclr0' => 'ROMANB',
                 'p__phonenumber' => '42',
                 'a__id' => '2',
                 'a__topic' => 'ZendCon'
@@ -363,7 +358,7 @@ class ObjectHydratorTest extends HydrationTest
            array(
                 'u__id' => '1',
                 'u__status' => 'developer',
-                'dctrn__nameUpper' => 'ROMANB',
+                'sclr0' => 'ROMANB',
                 'p__phonenumber' => '43',
                 'a__id' => '2',
                 'a__topic' => 'ZendCon'
@@ -371,7 +366,7 @@ class ObjectHydratorTest extends HydrationTest
             array(
                 'u__id' => '2',
                 'u__status' => 'developer',
-                'dctrn__nameUpper' => 'JWAGE',
+                'sclr0' => 'JWAGE',
                 'p__phonenumber' => '91',
                 'a__id' => '3',
                 'a__topic' => 'LINQ'
@@ -379,7 +374,7 @@ class ObjectHydratorTest extends HydrationTest
            array(
                 'u__id' => '2',
                 'u__status' => 'developer',
-                'dctrn__nameUpper' => 'JWAGE',
+                'sclr0' => 'JWAGE',
                 'p__phonenumber' => '91',
                 'a__id' => '4',
                 'a__topic' => 'PHP6'
@@ -389,8 +384,7 @@ class ObjectHydratorTest extends HydrationTest
         $stmt = new HydratorMockStatement($resultSet);
         $hydrator = new \Doctrine\ORM\Internal\Hydration\ObjectHydrator($this->_em);
 
-        $result = $hydrator->hydrateAll($stmt, $this->_createParserResult(
-                $queryComponents, $tableAliasMap, true));
+        $result = $hydrator->hydrateAll($stmt, $this->_createParserResult($rsm, true));
 
         $this->assertEquals(2, count($result));
         $this->assertTrue(is_array($result));
@@ -428,42 +422,34 @@ class ObjectHydratorTest extends HydrationTest
      */
     public function testNewHydrationMixedQueryMultipleDeepMixedFetchJoin()
     {
-        // Faked query components
-        $queryComponents = array(
-            'u' => array(
-                'metadata' => $this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsUser'),
-                'parent' => null,
-                'relation' => null,
-                'map' => null
-                ),
-            'p' => array(
-                'metadata' => $this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsPhonenumber'),
-                'parent' => 'u',
-                'relation' => $this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsUser')->getAssociationMapping('phonenumbers'),
-                'map' => null
-                ),
-            'a' => array(
-                'metadata' => $this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsArticle'),
-                'parent' => 'u',
-                'relation' => $this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsUser')->getAssociationMapping('articles'),
-                'map' => null
-                ),
-            'c' => array(
-                'metadata' => $this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsComment'),
-                'parent' => 'a',
-                'relation' => $this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsArticle')->getAssociationMapping('comments'),
-                'map' => null
-                ),
-            );
-
-        // Faked table alias map
-        $tableAliasMap = array(
-            'dctrn' => 'dctrn',
-            'u' => 'u',
-            'p' => 'p',
-            'a' => 'a',
-            'c' => 'c'
-            );
+        $rsm = new ResultSetMapping;
+        $rsm->addEntityResult($this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsUser'), 'u');
+        $rsm->addJoinedEntityResult(
+                $this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsPhonenumber'),
+                'p',
+                'u',
+                $this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsUser')->getAssociationMapping('phonenumbers')
+        );
+        $rsm->addJoinedEntityResult(
+                $this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsArticle'),
+                'a',
+                'u',
+                $this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsUser')->getAssociationMapping('articles')
+        );
+        $rsm->addJoinedEntityResult(
+                $this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsComment'),
+                'c',
+                'a',
+                $this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsArticle')->getAssociationMapping('comments')
+        );
+        $rsm->addFieldResult('u', 'u__id', 'id');
+        $rsm->addFieldResult('u', 'u__status', 'status');
+        $rsm->addScalarResult('sclr0', 'nameUpper');
+        $rsm->addFieldResult('p', 'p__phonenumber', 'phonenumber');
+        $rsm->addFieldResult('a', 'a__id', 'id');
+        $rsm->addFieldResult('a', 'a__topic', 'topic');
+        $rsm->addFieldResult('c', 'c__id', 'id');
+        $rsm->addFieldResult('c', 'c__topic', 'topic');
 
         // Faked result set
         $resultSet = array(
@@ -471,7 +457,7 @@ class ObjectHydratorTest extends HydrationTest
             array(
                 'u__id' => '1',
                 'u__status' => 'developer',
-                'dctrn__nameUpper' => 'ROMANB',
+                'sclr0' => 'ROMANB',
                 'p__phonenumber' => '42',
                 'a__id' => '1',
                 'a__topic' => 'Getting things done!',
@@ -481,7 +467,7 @@ class ObjectHydratorTest extends HydrationTest
            array(
                 'u__id' => '1',
                 'u__status' => 'developer',
-                'dctrn__nameUpper' => 'ROMANB',
+                'sclr0' => 'ROMANB',
                 'p__phonenumber' => '43',
                 'a__id' => '1',
                 'a__topic' => 'Getting things done!',
@@ -491,7 +477,7 @@ class ObjectHydratorTest extends HydrationTest
             array(
                 'u__id' => '1',
                 'u__status' => 'developer',
-                'dctrn__nameUpper' => 'ROMANB',
+                'sclr0' => 'ROMANB',
                 'p__phonenumber' => '42',
                 'a__id' => '2',
                 'a__topic' => 'ZendCon',
@@ -501,7 +487,7 @@ class ObjectHydratorTest extends HydrationTest
            array(
                 'u__id' => '1',
                 'u__status' => 'developer',
-                'dctrn__nameUpper' => 'ROMANB',
+                'sclr0' => 'ROMANB',
                 'p__phonenumber' => '43',
                 'a__id' => '2',
                 'a__topic' => 'ZendCon',
@@ -511,7 +497,7 @@ class ObjectHydratorTest extends HydrationTest
             array(
                 'u__id' => '2',
                 'u__status' => 'developer',
-                'dctrn__nameUpper' => 'JWAGE',
+                'sclr0' => 'JWAGE',
                 'p__phonenumber' => '91',
                 'a__id' => '3',
                 'a__topic' => 'LINQ',
@@ -521,7 +507,7 @@ class ObjectHydratorTest extends HydrationTest
            array(
                 'u__id' => '2',
                 'u__status' => 'developer',
-                'dctrn__nameUpper' => 'JWAGE',
+                'sclr0' => 'JWAGE',
                 'p__phonenumber' => '91',
                 'a__id' => '4',
                 'a__topic' => 'PHP6',
@@ -533,8 +519,7 @@ class ObjectHydratorTest extends HydrationTest
         $stmt = new HydratorMockStatement($resultSet);
         $hydrator = new \Doctrine\ORM\Internal\Hydration\ObjectHydrator($this->_em);
 
-        $result = $hydrator->hydrateAll($stmt, $this->_createParserResult(
-                $queryComponents, $tableAliasMap, true));
+        $result = $hydrator->hydrateAll($stmt, $this->_createParserResult($rsm, true));
 
         $this->assertEquals(2, count($result));
         $this->assertTrue(is_array($result));
@@ -588,27 +573,19 @@ class ObjectHydratorTest extends HydrationTest
      */
     public function testNewHydrationEntityQueryCustomResultSetOrder()
     {
-        // Faked query components
-        $queryComponents = array(
-            'c' => array(
-                'metadata' => $this->_em->getClassMetadata('Doctrine\Tests\Models\Forum\ForumCategory'),
-                'parent' => null,
-                'relation' => null,
-                'map' => null
-                ),
-            'b' => array(
-                'metadata' => $this->_em->getClassMetadata('Doctrine\Tests\Models\Forum\ForumBoard'),
-                'parent' => 'c',
-                'relation' => $this->_em->getClassMetadata('Doctrine\Tests\Models\Forum\ForumCategory')->getAssociationMapping('boards'),
-                'map' => null
-                ),
-            );
-
-        // Faked table alias map
-        $tableAliasMap = array(
-            'c' => 'c',
-            'b' => 'b'
-            );
+        $rsm = new ResultSetMapping;
+        $rsm->addEntityResult($this->_em->getClassMetadata('Doctrine\Tests\Models\Forum\ForumCategory'), 'c');
+        $rsm->addJoinedEntityResult(
+                $this->_em->getClassMetadata('Doctrine\Tests\Models\Forum\ForumBoard'),
+                'b',
+                'c',
+                $this->_em->getClassMetadata('Doctrine\Tests\Models\Forum\ForumCategory')->getAssociationMapping('boards')
+        );
+        $rsm->addFieldResult('c', 'c__id', 'id');
+        $rsm->addFieldResult('c', 'c__position', 'position');
+        $rsm->addFieldResult('c', 'c__name', 'name');
+        $rsm->addFieldResult('b', 'b__id', 'id');
+        $rsm->addFieldResult('b', 'b__position', 'position');
 
         // Faked result set
         $resultSet = array(
@@ -649,8 +626,7 @@ class ObjectHydratorTest extends HydrationTest
         $stmt = new HydratorMockStatement($resultSet);
         $hydrator = new \Doctrine\ORM\Internal\Hydration\ObjectHydrator($this->_em);
 
-        $result = $hydrator->hydrateAll($stmt, $this->_createParserResult(
-                $queryComponents, $tableAliasMap));
+        $result = $hydrator->hydrateAll($stmt, $this->_createParserResult($rsm));
 
         $this->assertEquals(2, count($result));
         $this->assertTrue($result[0] instanceof \Doctrine\Tests\Models\Forum\ForumCategory);
@@ -666,20 +642,10 @@ class ObjectHydratorTest extends HydrationTest
 
     public function testResultIteration()
     {
-        // Faked query components
-        $queryComponents = array(
-            'u' => array(
-                'metadata' => $this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsUser'),
-                'parent' => null,
-                'relation' => null,
-                'map' => null
-                )
-            );
-
-        // Faked table alias map
-        $tableAliasMap = array(
-            'u' => 'u'
-            );
+        $rsm = new ResultSetMapping;
+        $rsm->addEntityResult($this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsUser'), 'u');
+        $rsm->addFieldResult('u', 'u__id', 'id');
+        $rsm->addFieldResult('u', 'u__name', 'name');
 
         // Faked result set
         $resultSet = array(
@@ -697,8 +663,7 @@ class ObjectHydratorTest extends HydrationTest
         $stmt = new HydratorMockStatement($resultSet);
         $hydrator = new \Doctrine\ORM\Internal\Hydration\ObjectHydrator($this->_em);
 
-        $iterableResult = $hydrator->iterate($stmt, $this->_createParserResult(
-                $queryComponents, $tableAliasMap));
+        $iterableResult = $hydrator->iterate($stmt, $this->_createParserResult($rsm));
 
         $rowNum = 0;
         while (($row = $iterableResult->next()) !== false) {
@@ -726,28 +691,18 @@ class ObjectHydratorTest extends HydrationTest
      */
     public function testNewHydrationMixedQueryFetchJoinPerformance()
     {
-        // Faked query components
-        $queryComponents = array(
-            'u' => array(
-                'metadata' => $this->_em->getClassMetadata('\Doctrine\Tests\Models\CMS\CmsUser'),
-                'parent' => null,
-                'relation' => null,
-                'map' => null
-            ),
-            'p' => array(
-                'metadata' => $this->_em->getClassMetadata('\Doctrine\Tests\Models\CMS\CmsPhonenumber'),
-                'parent' => 'u',
-                'relation' => $this->_em->getClassMetadata('\Doctrine\Tests\Models\CMS\CmsUser')->getAssociationMapping('phonenumbers'),
-                'map' => null
-            )
+        $rsm = new ResultSetMapping;
+        $rsm->addEntityResult($this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsUser'), 'u');
+        $rsm->addJoinedEntityResult(
+                $this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsPhonenumber'),
+                'p',
+                'u',
+                $this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsUser')->getAssociationMapping('phonenumbers')
         );
-
-        // Faked table alias map
-        $tableAliasMap = array(
-            'dctrn' => 'dctrn',
-            'u' => 'u',
-            'p' => 'p'
-        );
+        $rsm->addFieldResult('u', 'u__id', 'id');
+        $rsm->addFieldResult('u', 'u__status', 'status');
+        $rsm->addScalarResult('sclr0', 'nameUpper');
+        $rsm->addFieldResult('p', 'p__phonenumber', 'phonenumber');
 
         // Faked result set
         $resultSet = array(
@@ -755,19 +710,19 @@ class ObjectHydratorTest extends HydrationTest
             array(
                 'u__id' => '1',
                 'u__status' => 'developer',
-                'dctrn__nameUpper' => 'ROMANB',
+                'sclr0' => 'ROMANB',
                 'p__phonenumber' => '42',
             ),
             array(
                 'u__id' => '1',
                 'u__status' => 'developer',
-                'dctrn__nameUpper' => 'ROMANB',
+                'sclr0' => 'ROMANB',
                 'p__phonenumber' => '43',
             ),
             array(
                 'u__id' => '2',
                 'u__status' => 'developer',
-                'dctrn__nameUpper' => 'JWAGE',
+                'sclr0' => 'JWAGE',
                 'p__phonenumber' => '91'
             )
         );
@@ -776,7 +731,7 @@ class ObjectHydratorTest extends HydrationTest
             $resultSet[] = array(
                 'u__id' => $i,
                 'u__status' => 'developer',
-                'dctrn__nameUpper' => 'JWAGE' . $i,
+                'sclr0' => 'JWAGE' . $i,
                 'p__phonenumber' => '91'
             );
         }
@@ -784,7 +739,6 @@ class ObjectHydratorTest extends HydrationTest
         $stmt = new HydratorMockStatement($resultSet);
         $hydrator = new \Doctrine\ORM\Internal\Hydration\ObjectHydrator($this->_em);
 
-        $result = $hydrator->hydrateAll($stmt, $this->_createParserResult(
-                $queryComponents, $tableAliasMap, true));
+        $result = $hydrator->hydrateAll($stmt, $this->_createParserResult($rsm, true));
     }
 }
