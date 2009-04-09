@@ -42,190 +42,14 @@ abstract class AbstractResult
     protected $_data;
 
     /**
-     * @var array $_queryComponents
-     *
-     * Two dimensional array containing the map for query aliases. Main keys are component aliases.
-     *
-     * metadata    Table object associated with given alias.
-     * relation Relation object owned by the parent.
-     * parent   Alias of the parent.
-     * map      Name of the column / aggregate value this component is mapped to a collection.
-     */
-    //protected $_queryComponents = array();
-
-    /**
-     * @var array Table alias map. Keys are SQL aliases and values DQL aliases.
-     */
-    //protected $_tableAliasMap = array();
-
-    /**
      * @var array Enum params.
      */
     protected $_enumParams = array();
 
     /**
-     * @var string
-     */
-    //protected $_defaultQueryComponentAlias;
-
-    /**
      * @var boolean
      */
     protected $_isMixedQuery = false;
-
-    /**
-     * Defines the mapping components.
-     *
-     * @param array $queryComponents Query components.
-     */
-    /*public function setQueryComponents(array $queryComponents)
-    {
-        $this->_queryComponents = $queryComponents;
-    }*/
-
-    /**
-     * Sets the declaration for given component alias.
-     *
-     * @param string $componentAlias The component alias to set the declaration to.
-     * @param string $queryComponent Alias declaration.
-     */
-    /*public function setQueryComponent($componentAlias, array $queryComponent)
-    {
-        $this->_queryComponents[$componentAlias] = $queryComponent;
-    }*/
-
-    /**
-     * Gets the mapping components.
-     *
-     * @return array Query components.
-     */
-    /*public function getQueryComponents()
-    {
-        return $this->_queryComponents;
-    }*/
-
-    /**
-     *
-     */
-    /*public function getDefaultQueryComponentAlias()
-    {
-        return $this->_defaultQueryComponentAlias;
-    }*/
-
-    /**
-     * 
-     *
-     * @param <type> $alias
-     */
-    /*public function setDefaultQueryComponentAlias($alias)
-    {
-        $this->_defaultQueryComponentAlias = $alias;
-    }*/
-
-    /**
-     * Get the declaration for given component alias.
-     *
-     * @param string $componentAlias The component alias the retrieve the declaration from.
-     * @return array Alias declaration.
-     */
-    /*public function getQueryComponent($componentAlias)
-    {
-        if ( ! isset($this->_queryComponents[$componentAlias])) {
-            throw new DoctrineException('Unknown query component ' . $componentAlias);
-        }
-
-        return $this->_queryComponents[$componentAlias];
-    }*/
-
-    /**
-     * Get the component alias for a given query component
-     *
-     * @param array $queryComponent The query component
-     * @param string Component alias
-     */
-    /*public function getComponentAlias($queryComponent)
-    {
-        return array_search($queryComponent, $this->_queryComponents);;
-    }*/
-
-    /**
-     * Whether or not this object has a declaration for given component alias.
-     *
-     * @param string $componentAlias Component alias the retrieve the declaration from.
-     * @return boolean True if this object has given alias, otherwise false.
-     */
-    /*public function hasQueryComponent($componentAlias)
-    {
-        return isset($this->_queryComponents[$componentAlias]);
-    }*/
-
-    /**
-     * Defines the table aliases.
-     *
-     * @param array $tableAliasMap Table aliases.
-     */
-    /*public function setTableAliasMap(array $tableAliasMap)
-    {
-        $this->_tableAliasMap = $tableAliasMap;
-    }*/
-
-    /**
-     * Adds an SQL table alias and associates it a component alias
-     *
-     * @param string $tableAlias Table alias to be added.
-     * @param string $componentAlias Alias for the query component associated with given tableAlias.
-     */
-    /*public function setTableAlias($tableAlias, $componentAlias)
-    {
-        $this->_tableAliasMap[$tableAlias] = $componentAlias;
-    }*/
-
-    /**
-     * Returns all table aliases.
-     *
-     * @return array Table aliases as an array.
-     */
-    /*public function getTableAliasMap()
-    {
-        return $this->_tableAliasMap;
-    }*/
-
-    /**
-     * Get DQL alias associated with given SQL table alias.
-     *
-     * @param string $tableAlias SQL table alias that identifies the component alias
-     * @return string Component alias
-     */
-    /*public function getTableAlias($tableAlias)
-    {
-        if ( ! isset($this->_tableAliasMap[$tableAlias])) {
-            throw DoctrineException::updateMe('Unknown table alias ' . $tableAlias);
-        }
-
-        return $this->_tableAliasMap[$tableAlias];
-    }*/
-
-    /**
-     * Get table alias associated with given component alias.
-     *
-     * @param string $componentAlias Component alias that identifies the table alias
-     * @return string Component alias
-     */
-    /*public function getTableAliasFromComponentAlias($componentAlias)
-    {
-        return array_search($componentAlias, $this->_tableAliasMap);
-    }*/
-
-    /**
-     * Whether or not this object has given tableAlias.
-     *
-     * @param string $tableAlias Table alias to be checked.
-     * @return boolean True if this object has given alias, otherwise false.
-     */
-    /*public function hasTableAlias($tableAlias)
-    {
-        return (isset($this->_tableAliasMap[$tableAlias]));
-    }*/
 
     /**
      * Gets whether the parsed query selects objects/arrays and scalar values
@@ -256,25 +80,6 @@ abstract class AbstractResult
     {
         return $this->_enumParams;
     }
-
-    /**
-     * Sets input parameter as an enumerated parameter
-     *
-     * @param string $key The key of the input parameter
-     * @return Doctrine_ORM_Query_AbstractResult
-     */
-    /*public function addEnumParam($key, $table = null, $column = null)
-    {
-        $array = (isset($table) || isset($column)) ? array($table, $column) : array();
-
-        if ($key === '?') {
-            $this->_enumParams[] = $array;
-        } else {
-            $this->_enumParams[$key] = $array;
-        }
-
-        return $this;
-    }*/
 
     /**
      * Returns this object in serialized format, revertable using fromCached*.

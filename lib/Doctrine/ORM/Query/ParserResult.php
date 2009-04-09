@@ -40,13 +40,6 @@ class ParserResult extends AbstractResult
      */
     protected $_em;
 
-    /**
-     * Simple array of keys representing the fields used in query.
-     *
-     * @var array $_queryFields
-     */
-    //protected $_queryFields = array();
-
     protected $_resultSetMapping;
 
     public function __construct()
@@ -110,61 +103,4 @@ class ParserResult extends AbstractResult
     {
         return $this->_data;
     }
-
-    /**
-     * Defines the mapping fields.
-     *
-     * @param array $queryFields Query fields.
-     */
-    /*public function setQueryFields(array $queryFields)
-    {
-        $this->_queryFields = $queryFields;
-    }*/
-
-    /**
-     * Sets the declaration for given field alias.
-     *
-     * @param string $fieldAlias The field alias to set the declaration to.
-     * @param string $queryField Alias declaration.
-     */
-    /*public function setQueryField($fieldAlias, $queryField)
-    {
-        $this->_queryFields[$fieldAlias] = $queryField;
-    }*/
-
-    /**
-     * Gets the mapping fields.
-     *
-     * @return array Query fields.
-     */
-    /*public function getQueryFields()
-    {
-        return $this->_queryFields;
-    }*/
-
-    /**
-     * Get the declaration for given field alias.
-     *
-     * @param string $fieldAlias The field alias the retrieve the declaration from.
-     * @return array Alias declaration.
-     */
-    /*public function getQueryField($fieldAlias)
-    {
-        if ( ! isset($this->_queryFields[$fieldAlias])) {
-            throw DoctrineException::updateMe('Unknown query field ' . $fieldAlias);
-        }
-
-        return $this->_queryFields[$fieldAlias];
-    }*/
-
-    /**
-     * Whether or not this object has a declaration for given field alias.
-     *
-     * @param string $fieldAlias Field alias the retrieve the declaration from.
-     * @return boolean True if this object has given alias, otherwise false.
-     */
-    /*public function hasQueryField($fieldAlias)
-    {
-        return isset($this->_queryFields[$fieldAlias]);
-    }*/
 }

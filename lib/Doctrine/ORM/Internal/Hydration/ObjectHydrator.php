@@ -23,6 +23,7 @@ namespace Doctrine\ORM\Internal\Hydration;
 
 use \PDO;
 use Doctrine\ORM\PersistentCollection;
+use Doctrine\Common\Collections\Collection;
 
 /**
  * The ObjectHydrator constructs an object graph out of an SQL result set.
@@ -72,7 +73,7 @@ class ObjectHydrator extends AbstractHydrator
         if ($this->_parserResult->isMixedQuery()) {
             $result = array();
         } else {
-            $result = new \Doctrine\Common\Collections\Collection;
+            $result = new Collection;
         }
 
         $cache = array();
@@ -122,7 +123,7 @@ class ObjectHydrator extends AbstractHydrator
         if ( ! is_object($coll)) {
             end($coll);
             $this->_resultPointers[$dqlAlias] =& $coll[key($coll)];
-        } else if ($coll instanceof \Doctrine\Common\Collections\Collection) {
+        } else if ($coll instanceof Collection) {
             if (count($coll) > 0) {
                 $this->_resultPointers[$dqlAlias] = $coll->last();
             }
