@@ -827,14 +827,13 @@ final class ClassMetadata
         return isset($this->_columnNames[$fieldName]);
     }
 
+    /**
+     *
+     * @param <type> $entity
+     * @param <type> $field
+     * @param <type> $value 
+     */
     public function setValue($entity, $field, $value)
-    {
-        if (isset($this->_reflectionProperties[$field])) {
-            $this->_reflectionProperties[$field]->setValue($entity, $value);
-        }
-    }
-
-    public function setValueIfChanged($entity, $field, $value)
     {
         if (isset($this->_reflectionProperties[$field])) {
             $this->_reflectionProperties[$field]->setValue($entity, $value);
