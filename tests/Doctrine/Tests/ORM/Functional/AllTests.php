@@ -20,6 +20,8 @@ class AllTests
         $suite = new \Doctrine\Tests\OrmFunctionalTestSuite('Doctrine Orm Functional');
 
         $suite->addTestSuite('Doctrine\Tests\ORM\Functional\BasicFunctionalTest');
+        $suite->addTestSuite('Doctrine\Tests\ORM\Functional\NativeQueryTest');
+        $suite->addTestSuite('Doctrine\Tests\ORM\Functional\SingleTableInheritanceTest');
 
         return $suite;
     }

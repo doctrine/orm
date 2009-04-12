@@ -63,14 +63,14 @@ class SingleScalarHydratorTest extends HydrationTest
         $hydrator = new \Doctrine\ORM\Internal\Hydration\SingleScalarHydrator($this->_em);
 
         if ($name == 'result1') {
-            $result = $hydrator->hydrateAll($stmt, $this->_createParserResult($rsm));
+            $result = $hydrator->hydrateAll($stmt, $rsm);
             $this->assertEquals('romanb', $result);
         } else if ($name == 'result2') {
-            $result = $hydrator->hydrateAll($stmt, $this->_createParserResult($rsm));
+            $result = $hydrator->hydrateAll($stmt, $rsm);
             $this->assertEquals(1, $result);
         } else if ($name == 'result3' || $name == 'result4') {
             try {
-                $result = $hydrator->hydrateall($stmt, $this->_createParserResult($rsm));
+                $result = $hydrator->hydrateall($stmt, $rsm);
                 $this->fail();
             } catch (\Doctrine\ORM\Internal\Hydration\HydrationException $ex) {}
         }

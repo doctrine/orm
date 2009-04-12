@@ -126,7 +126,7 @@ class ClassMetadataFactory
             $class = $this->_newClassMetadataInstance($className);
             if ($parent) {
                 $class->setInheritanceType($parent->getInheritanceType());
-                $class->setDiscriminatorMap($parent->getDiscriminatorMap());
+                //$class->setDiscriminatorMap($parent->getDiscriminatorMap());
                 $class->setDiscriminatorColumn($parent->getDiscriminatorColumn());
                 $class->setIdGeneratorType($parent->getIdGeneratorType());
                 $this->_addInheritedFields($class, $parent);

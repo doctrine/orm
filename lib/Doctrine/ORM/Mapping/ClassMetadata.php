@@ -273,7 +273,8 @@ final class ClassMetadata
      * @var array
      * @see _discriminatorColumn
      */
-    private $_discriminatorMap = array();
+    //private $_discriminatorMap = array();
+    private $_discriminatorValue;
 
     /**
      * The definition of the descriminator column used in JOINED and SINGLE_TABLE
@@ -824,6 +825,20 @@ final class ClassMetadata
     public function hasField($fieldName)
     {
         return isset($this->_columnNames[$fieldName]);
+    }
+
+    public function setValue($entity, $field, $value)
+    {
+        if (isset($this->_reflectionProperties[$field])) {
+            $this->_reflectionProperties[$field]->setValue($entity, $value);
+        }
+    }
+
+    public function setValueIfChanged($entity, $field, $value)
+    {
+        if (isset($this->_reflectionProperties[$field])) {
+            $this->_reflectionProperties[$field]->setValue($entity, $value);
+        }
     }
     
     /**
@@ -1500,25 +1515,25 @@ final class ClassMetadata
     }
 
     /**
-     * Sets the dsicriminator map used for mapping discriminator values to class names.
+     * Sets the dsicriminator value used by this class.
      * Used for JOINED and SINGLE_TABLE inheritance mapping strategies.
      *
      * @param array $map
      */
-    public function setDiscriminatorMap(array $map)
+    public function setDiscriminatorValue($value)
     {
-        $this->_discriminatorMap = $map;
+        $this->_discriminatorValue = $value;
     }
 
     /**
-     * Gets the discriminator map that maps discriminator values to class names.
+     * Gets the discriminator value of this class.
      * Used for JOINED and SINGLE_TABLE inheritance mapping strategies.
      *
      * @return array
      */
-    public function getDiscriminatorMap()
+    public function getDiscriminatorValue()
     {
-        return $this->_discriminatorMap;
+        return $this->_discriminatorValue;
     }
 
     /**

@@ -223,7 +223,7 @@ class EntityManager
     }
     
     /**
-     * Creates a query with the specified name.
+     * Creates a DQL query with the specified name.
      *
      * @todo Implementation.
      * @throws DoctrineException  If there is no query registered with the given name.
@@ -234,11 +234,17 @@ class EntityManager
     }
     
     /**
-     * @todo Implementation.
+     * Creates a native SQL query.
+     *
+     * @param string $sql
+     * @return Query
      */
-    public function createNativeQuery($sql = "")
+    public function createNativeQuery($sql, \Doctrine\ORM\Query\ResultSetMapping $rsm)
     {
-        //...
+        $query = new NativeQuery($this);
+        $query->setSql($sql);
+        $query->setResultSetMapping($rsm);
+        return $query;
     }
     
     /**

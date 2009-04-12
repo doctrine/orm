@@ -244,13 +244,5 @@ abstract class AbstractEntityPersister
                 $result[$columnName] = $type->convertToDatabaseValue($newVal, $this->_conn->getDatabasePlatform());
             }
         }
-        /*
-        // Populate the discriminator column on insert in JOINED & SINGLE_TABLE inheritance
-        if ($isInsert && ($this->_classMetadata->isInheritanceTypeJoined() ||
-                $this->_classMetadata->isInheritanceTypeSingleTable())) {
-            $discColumn = $this->_classMetadata->getDiscriminatorColumn();
-            $discMap = $this->_classMetadata->getDiscriminatorMap();
-            $result[$discColumn['name']] = array_search($this->_entityName, $discMap);
-        }*/
     }
 }

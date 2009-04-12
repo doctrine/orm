@@ -70,8 +70,5 @@ class EntityPersisterTest extends \Doctrine\Tests\OrmTestCase
         //avatar_id join column
         $this->assertTrue(isset($inserts['forum_users'][0]['avatar_id']));
         $this->assertEquals(0, $inserts['forum_users'][0]['avatar_id']);
-        //dtype discriminator column
-        $this->assertTrue(isset($inserts['forum_users'][0]['dtype']));
-        $this->assertEquals('user', $inserts['forum_users'][0]['dtype']);
     }
 }

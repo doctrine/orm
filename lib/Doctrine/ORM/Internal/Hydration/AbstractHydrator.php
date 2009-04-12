@@ -24,7 +24,8 @@ namespace Doctrine\ORM\Internal\Hydration;
 use \PDO;
 
 /**
- * Base class for all hydrators (ok, we got only 1 currently).
+ * Base class for all hydrators. A hydrator is a class that provides some form
+ * of transformation of an SQL result set into another structure.
  *
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @link        www.doctrine-project.org
@@ -50,11 +51,8 @@ abstract class AbstractHydrator
     /** @var Statement The statement that provides the data to hydrate. */
     protected $_stmt;
 
-    /** @var object The ParserResult instance that holds the necessary information for hydration. */
-    protected $_parserResult;
-
     /**
-     * Initializes a new instance of a class derived from AbstractHydrator.
+     * Initializes a new instance of a class derived from <tt>AbstractHydrator</tt>.
      *
      * @param Doctrine\ORM\EntityManager $em The EntityManager to use.
      */
@@ -68,13 +66,14 @@ abstract class AbstractHydrator
      * Initiates a row-by-row hydration.
      *
      * @param object $stmt
-     * @param object $parserResult
+     * @param object $resultSetMapping
      * @return IterableResult
      */
-    public function iterate($stmt, $parserResult)
+    public function iterate($stmt, $resultSetMapping)
     {
         $this->_stmt = $stmt;
-        $this->_prepare($parserResult);
+        $this->_resultSetMapping = $resultSetMapping;
+        $this->_prepare();
         return new IterableResult($this);
     }
 
@@ -82,13 +81,14 @@ abstract class AbstractHydrator
      * Hydrates all rows returned by the passed statement instance at once.
      *
      * @param object $stmt
-     * @param object $parserResult
+     * @param object $resultSetMapping
      * @return mixed
      */
-    public function hydrateAll($stmt, $parserResult)
+    public function hydrateAll($stmt, $resultSetMapping)
     {
         $this->_stmt = $stmt;
-        $this->_prepare($parserResult);
+        $this->_resultSetMapping = $resultSetMapping;
+        $this->_prepare();
         $result = $this->_hydrateAll();
         $this->_cleanup();
         return $result;
@@ -115,14 +115,9 @@ abstract class AbstractHydrator
     /**
      * Excutes one-time preparation tasks once each time hydration is started
      * through {@link hydrateAll} or {@link iterate()}.
-     *
-     * @param object $parserResult
      */
-    protected function _prepare($parserResult)
-    {
-        $this->_resultSetMapping = $parserResult->getResultSetMapping();
-        $this->_parserResult = $parserResult;
-    }
+    protected function _prepare()
+    {}
 
     /**
      * Excutes one-time cleanup tasks at the end of a hydration that was initiated
@@ -131,7 +126,6 @@ abstract class AbstractHydrator
     protected function _cleanup()
     {
         $this->_resultSetMapping = null;
-        $this->_parserResult = null;
         $this->_stmt->closeCursor();
         $this->_stmt = null;
     }
@@ -152,8 +146,6 @@ abstract class AbstractHydrator
 
     /**
      * Hydrates all rows from the current statement instance at once.
-     *
-     * @param object $parserResult
      */
     abstract protected function _hydrateAll();
 
@@ -180,20 +172,25 @@ abstract class AbstractHydrator
         foreach ($data as $key => $value) {
             // Parse each column name only once. Cache the results.
             if ( ! isset($cache[$key])) {
-                if ($this->_isIgnoredName($key)) continue;
-
-                if ($this->_resultSetMapping->isScalarResult($key)) {
+                if ($this->_resultSetMapping->isIgnoredColumn($key)) {
+                    $cache[$key] = false;
+                } else if ($this->_resultSetMapping->isScalarResult($key)) {
                     $cache[$key]['fieldName'] = $this->_resultSetMapping->getScalarAlias($key);
                     $cache[$key]['isScalar'] = true;
-                } else {
+                } else if ($this->_resultSetMapping->isFieldResult($key)) {
                     $classMetadata = $this->_resultSetMapping->getOwningClass($key);
                     $fieldName = $this->_resultSetMapping->getFieldName($key);
                     $classMetadata = $this->_lookupDeclaringClass($classMetadata, $fieldName);
-                    //$fieldName = $classMetadata->getFieldNameForLowerColumnName($columnName);
                     $cache[$key]['fieldName'] = $fieldName;
                     $cache[$key]['isScalar'] = false;
                     $cache[$key]['type'] = $classMetadata->getTypeOfField($fieldName);
                     $cache[$key]['isIdentifier'] = $classMetadata->isIdentifier($fieldName);
+                    $cache[$key]['dqlAlias'] = $this->_resultSetMapping->getEntityAlias($key);
+                } else {
+                    // Discriminator column
+                    $cache[$key]['isDiscriminator'] = true;
+                    $cache[$key]['isScalar'] = false;
+                    $cache[$key]['fieldName'] = $key;
                     $cache[$key]['dqlAlias'] = $this->_resultSetMapping->getEntityAlias($key);
                 }
             }
@@ -206,6 +203,11 @@ abstract class AbstractHydrator
             }
 
             $dqlAlias = $cache[$key]['dqlAlias'];
+
+            if (isset($cache[$key]['isDiscriminator'])) {
+                $rowData[$dqlAlias][$fieldName] = $value;
+                continue;
+            }
 
             if ($cache[$key]['isIdentifier']) {
                 $id[$dqlAlias] .= '|' . $value;
@@ -243,9 +245,10 @@ abstract class AbstractHydrator
         foreach ($data as $key => $value) {
             // Parse each column name only once. Cache the results.
             if ( ! isset($cache[$key])) {
-                if ($this->_isIgnoredName($key)) continue;
-
-                if ($this->_resultSetMapping->isScalarResult($key)) {
+                if ($this->_resultSetMapping->isIgnoredColumn($key)) {
+                    $cache[$key] = false;
+                    continue;
+                } else if ($this->_resultSetMapping->isScalarResult($key)) {
                     $cache[$key]['fieldName'] = $this->_resultSetMapping->getScalarAlias($key);
                     $cache[$key]['isScalar'] = true;
                 } else {
@@ -286,19 +289,6 @@ abstract class AbstractHydrator
     }
 
     /**
-     * Checks whether a name is ignored. Used during result set parsing to skip
-     * certain elements in the result set that do not have any meaning for the result.
-     * (I.e. ORACLE limit/offset emulation adds doctrine_rownum to the result set).
-     *
-     * @param string $name
-     * @return boolean
-     */
-    private function _isIgnoredName($name)
-    {
-        return $name == 'doctrine_rownum';
-    }
-
-    /**
      * Looks up the field name for a (lowercased) column name.
      *
      * This is mostly used during hydration, because we want to make the
@@ -319,14 +309,12 @@ abstract class AbstractHydrator
     private function _lookupDeclaringClass($class, $fieldName)
     {
         if ($class->hasField($fieldName)) {
-            //return $class->getFieldNameForLowerColumnName($lcColumnName);
             return $class;
         }
         
         foreach ($class->getSubclasses() as $subClass) {
             $subClassMetadata = $this->_em->getClassMetadata($subClass);
             if ($subClassMetadata->hasField($fieldName)) {
-                //return $subClassMetadata->getFieldNameForLowerColumnName($lcColumnName);
                 return $subClassMetadata;
             }
         }

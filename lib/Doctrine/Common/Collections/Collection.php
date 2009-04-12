@@ -31,8 +31,9 @@ use \ArrayIterator;
  * A Collection is a thin wrapper around a php array. Think of it as an OO version
  * of a plain array.
  *
- * @author Roman S. Borschel
+ * @author Roman S. Borschel <roman@code-factory.org>
  * @since 2.0
+ * @todo Consider extending ArrayObject
  */
 class Collection implements Countable, IteratorAggregate, ArrayAccess
 {

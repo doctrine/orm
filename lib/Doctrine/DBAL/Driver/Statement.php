@@ -49,9 +49,8 @@ interface Statement
     public function bindColumn($column, &$param, $type = null);
 
     /**
-     * bindValue
-     * Binds a value to a corresponding named or question mark 
-     * placeholder in the SQL statement that was use to prepare the statement.
+     * Binds a value to a corresponding named or positional
+     * placeholder in the SQL statement that was used to prepare the statement.
      *
      * @param mixed $param          Parameter identifier. For a prepared statement using named placeholders,
      *                              this will be a parameter name of the form :name. For a prepared statement
@@ -65,7 +64,6 @@ interface Statement
     public function bindValue($param, $value, $type = null);
 
     /**
-     * bindParam
      * Binds a PHP variable to a corresponding named or question mark placeholder in the 
      * SQL statement that was use to prepare the statement. Unlike PDOStatement->bindValue(),
      * the variable is bound as a reference and will only be evaluated at the time 

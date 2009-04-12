@@ -47,31 +47,6 @@ abstract class AbstractResult
     protected $_enumParams = array();
 
     /**
-     * @var boolean
-     */
-    protected $_isMixedQuery = false;
-
-    /**
-     * Gets whether the parsed query selects objects/arrays and scalar values
-     * at the same time.
-     *
-     * @return boolean
-     */
-    public function isMixedQuery()
-    {
-        return $this->_isMixedQuery;
-    }
-
-    /**
-     * Sets whether the parsed query selects objects/arrays and scalar values
-     * at the same time.
-     */
-    public function setMixedQuery($bool)
-    {
-        $this->_isMixedQuery = $bool;
-    }
-
-    /**
      * Returns the enum parameters.
      *
      * @return mixed Enum parameters.

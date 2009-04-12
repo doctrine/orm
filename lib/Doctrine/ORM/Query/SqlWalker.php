@@ -64,20 +64,12 @@ class SqlWalker
         $this->_em = $query->getEntityManager();
         $this->_parserResult = $parserResult;
         $this->_queryComponents = $queryComponents;
-        /*$sqlToDqlAliasMap = array(Parser::SCALAR_QUERYCOMPONENT_ALIAS => Parser::SCALAR_QUERYCOMPONENT_ALIAS);
-        foreach ($parserResult->getQueryComponents() as $dqlAlias => $qComp) {
-            $sqlAlias = $this->generateSqlTableAlias($qComp['metadata']->getTableName());
-            $sqlToDqlAliasMap[$sqlAlias] = $dqlAlias;
-        }
-        // SQL => DQL alias stored in ParserResult, needed for hydration.
-        $parserResult->setTableAliasMap($sqlToDqlAliasMap);*/
-        // DQL => SQL alias stored only locally, needed for SQL construction.
-        //$this->_dqlToSqlAliasMap = array_flip($sqlToDqlAliasMap);
+        
         // In a mixed query we start alias counting for scalars with 1 since
         // index 0 will hold the object.
-        if ($parserResult->isMixedQuery()) {
+        /*if ($parserResult->isMixedQuery()) {
             $this->_scalarResultCounter = 1;
-        }
+        }*/
     }
 
     public function getConnection()
@@ -99,7 +91,6 @@ class SqlWalker
         $sql .= $AST->getHavingClause() ? $this->walkHavingClause($AST->getHavingClause()) : '';
         $sql .= $AST->getOrderByClause() ? $this->walkOrderByClause($AST->getOrderByClause()) : '';
 
-        //... more clauses
         return $sql;
     }
 
@@ -113,16 +104,6 @@ class SqlWalker
         $sql = 'SELECT ' . (($selectClause->isDistinct()) ? 'DISTINCT ' : '')
                 . implode(', ', array_map(array($this, 'walkSelectExpression'),
                         $selectClause->getSelectExpressions()));
-        // Append discriminator columns
-        /*if ($this->_query->getHydrationMode() == \Doctrine\ORM\Query::HYDRATE_OBJECT) {
-            foreach ($this->_selectedClasses as $dqlAlias => $class) {
-                if ($class->isInheritanceTypeSingleTable() || $class->isInheritanceTypeJoined()) {
-                    $tblAlias = $this->_dqlToSqlAliasMap[$dqlAlias];
-                    $discrColumn = $class->getDiscriminatorColumn();
-                    $sql .= ", $tblAlias." . $discrColumn['name'] . ' AS discr__' . $discrColumn['name'];
-                }
-            }
-        }*/
 
         foreach ($this->_selectedClasses as $dqlAlias => $class) {
             if ($this->_queryComponents[$dqlAlias]['relation'] === null) {
@@ -134,6 +115,15 @@ class SqlWalker
                     $this->_queryComponents[$dqlAlias]['relation']
                 );
             }
+            //if ($this->_query->getHydrationMode() == \Doctrine\ORM\Query::HYDRATE_OBJECT) {
+            if ($class->isInheritanceTypeSingleTable() || $class->isInheritanceTypeJoined()) {
+                $tblAlias = $this->getSqlTableAlias($class->getTableName());
+                $discrColumn = $class->getDiscriminatorColumn();
+                $columnAlias = $this->getSqlColumnAlias($discrColumn['name']);
+                $sql .= ", $tblAlias." . $discrColumn['name'] . ' AS ' . $columnAlias;
+                $this->_resultSetMapping->setDiscriminatorColumn($class->getClassName(), $dqlAlias, $columnAlias);
+            }
+            //}
         }
 
         return $sql;

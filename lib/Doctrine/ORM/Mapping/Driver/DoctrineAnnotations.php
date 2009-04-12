@@ -31,6 +31,7 @@ final class DoctrineDiscriminatorColumn extends \Addendum\Annotation {
     public $length;
 }
 final class DoctrineDiscriminatorMap extends \Addendum\Annotation {}
+final class DoctrineDiscriminatorValue extends \Addendum\Annotation {}
 final class DoctrineSubClasses extends \Addendum\Annotation {}
 final class DoctrineId extends \Addendum\Annotation {}
 final class DoctrineGeneratedValue extends \Addendum\Annotation {

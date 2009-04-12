@@ -29,6 +29,8 @@ namespace Doctrine\ORM\Query;
  */
 class ResultSetMapping
 {
+    /** Whether the result is mixed (contains scalar values together with field values). */
+    private $_isMixed = false;
     /** Maps alias names to ClassMetadata descriptors. */
     private $_aliasMap = array();
     /** Maps alias names to related association mappings. */
@@ -41,10 +43,12 @@ class ResultSetMapping
     private $_scalarMappings = array();
     /** Maps column names in the result set to the alias they belong to. */
     private $_columnOwnerMap = array();
-    /** Maps discriminator columns in the result set to the class they represent. */
-    private $_discriminatorMap = array();
+    /** List of columns in the result set that are used as discriminator columns. */
+    private $_discriminatorColumns = array();
     /** Maps alias names to field names that should be used for indexing. */
     private $_indexByMap = array();
+    /** A list of columns that should be ignored/skipped during hydration. */
+    private $_ignoredColumns = array();
 
     /**
      *
@@ -52,12 +56,21 @@ class ResultSetMapping
      * @param <type> $alias The alias for this class. The alias must be unique within this ResultSetMapping.
      * @param <type> $discriminatorColumn
      */
-    public function addEntityResult($class, $alias, $discriminatorColumn = null)
+    public function addEntityResult($class, $alias)
     {
         $this->_aliasMap[$alias] = $class;
-        if ($discriminatorColumn !== null) {
-            $this->_discriminatorMap[$discriminatorColumn] = $class;
-        }
+    }
+
+    public function setDiscriminatorColumn($className, $alias, $discrColumn)
+    {
+        $this->_discriminatorColumns[$className] = $discrColumn;
+        $this->_columnOwnerMap[$discrColumn] = $alias;
+    }
+
+    public function getDiscriminatorColumn($className)
+    {
+        return isset($this->_discriminatorColumns[$className]) ?
+                $this->_discriminatorColumns[$className] : null;
     }
 
     public function addIndexBy($alias, $fieldName)
@@ -75,30 +88,38 @@ class ResultSetMapping
         return $this->_indexByMap[$alias];
     }
 
+    public function isFieldResult($columnName)
+    {
+        return isset($this->_fieldMappings[$columnName]);
+    }
+
     public function addFieldResult($alias, $columnName, $fieldName)
     {
         $this->_fieldMappings[$columnName] = $fieldName;
         $this->_columnOwnerMap[$columnName] = $alias;
+        if ( ! $this->_isMixed && $this->_scalarMappings) {
+            $this->_isMixed = true;
+        }
     }
 
-    public function addJoinedEntityResult($class, $alias, $parentAlias, $relation, $discriminatorColumn = null)
+    public function addJoinedEntityResult($class, $alias, $parentAlias, $relation)
     {
         $this->_aliasMap[$alias] = $class;
         $this->_parentAliasMap[$alias] = $parentAlias;
         $this->_relationMap[$alias] = $relation;
-        if ($discriminatorColumn !== null) {
-            $this->_discriminatorMap[$discriminatorColumn] = $class;
-        }
     }
 
-    public function isDiscriminatorColumn($columnName)
+    /*public function isDiscriminatorColumn($columnName)
     {
         return isset($this->_discriminatorMap[$columnName]);
-    }
+    }*/
 
     public function addScalarResult($columnName, $alias)
     {
         $this->_scalarMappings[$columnName] = $alias;
+        if ( ! $this->_isMixed && $this->_fieldMappings) {
+            $this->_isMixed = true;
+        }
     }    
 
     /**
@@ -115,9 +136,6 @@ class ResultSetMapping
      */
     public function getClass($alias)
     {
-        if ( ! isset($this->_aliasMap[$alias])) {
-            var_dump($alias); die();
-        }
         return $this->_aliasMap[$alias];
     }
 
@@ -191,6 +209,21 @@ class ResultSetMapping
     public function getEntityResultCount()
     {
         return count($this->_aliasMap);
+    }
+
+    public function isMixedResult()
+    {
+        return $this->_isMixed;
+    }
+
+    public function addIgnoredColumn($columnName)
+    {
+        $this->_ignoredColumns[$columnName] = true;
+    }
+
+    public function isIgnoredColumn($columnName)
+    {
+        return isset($this->_ignoredColumns[$columnName]);
     }
 }
 

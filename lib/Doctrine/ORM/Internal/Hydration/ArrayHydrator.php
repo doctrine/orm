@@ -38,9 +38,8 @@ class ArrayHydrator extends AbstractHydrator
     private $_resultCounter = 0;
 
     /** @override */
-    protected function _prepare($parserResult)
+    protected function _prepare()
     {
-        parent::_prepare($parserResult);
         $this->_isSimpleQuery = $this->_resultSetMapping->getEntityResultCount() <= 1;
         $this->_identifierMap = array();
         $this->_resultPointers = array();
@@ -98,7 +97,7 @@ class ArrayHydrator extends AbstractHydrator
 
                 // Get a reference to the right element in the result tree.
                 // This element will get the associated element attached.
-                if ($this->_parserResult->isMixedQuery() && isset($this->_rootAliases[$parent])) {
+                if ($this->_resultSetMapping->isMixedResult() && isset($this->_rootAliases[$parent])) {
                     $key = key(reset($this->_resultPointers));
                     // TODO: Exception if $key === null ?
                     $baseElement =& $this->_resultPointers[$parent][$key];
@@ -155,14 +154,14 @@ class ArrayHydrator extends AbstractHydrator
                 if ($this->_isSimpleQuery || ! isset($this->_identifierMap[$dqlAlias][$id[$dqlAlias]])) {
                     $element = $rowData[$dqlAlias];
                     if ($field = $this->_getCustomIndexField($dqlAlias)) {
-                        if ($this->_parserResult->isMixedQuery()) {
+                        if ($this->_resultSetMapping->isMixedResult()) {
                             $result[] = array($element[$field] => $element);
                             ++$this->_resultCounter;
                         } else {
                             $result[$element[$field]] = $element;
                         }
                     } else {
-                        if ($this->_parserResult->isMixedQuery()) {
+                        if ($this->_resultSetMapping->isMixedResult()) {
                             $result[] = array($element);
                             ++$this->_resultCounter;
                         } else {

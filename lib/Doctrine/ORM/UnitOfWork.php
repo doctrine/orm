@@ -1173,15 +1173,6 @@ class UnitOfWork implements PropertyChangedListener
      */
     public function createEntity($className, array $data, $query = null)
     {
-        // Infer the correct class to instantiate
-        $class = $this->_em->getClassMetadata($className);
-        $discCol = $class->getDiscriminatorColumn();
-        if ($discCol) {
-            $discMap = $class->getDiscriminatorMap();
-            if (isset($data[$discCol['name']], $discMap[$data[$discCol['name']]])) {
-                $className = $discMap[$data[$discCol['name']]];
-            }
-        }
         $class = $this->_em->getClassMetadata($className);
 
         $id = array();
@@ -1232,15 +1223,17 @@ class UnitOfWork implements PropertyChangedListener
     private function _mergeData($entity, array $data, $class, $overrideLocalChanges = false) {
         if ($overrideLocalChanges) {
             foreach ($data as $field => $value) {
-                $class->getReflectionProperty($field)->setValue($entity, $value);
+                $class->setValue($entity, $field, $value);
             }
         } else {
             $oid = spl_object_hash($entity);
             foreach ($data as $field => $value) {
-                $currentValue = $class->getReflectionProperty($field)->getValue($entity);
-                if ( ! isset($this->_originalEntityData[$oid][$field]) ||
+                if ($class->hasField($field)) {
+                    $currentValue = $class->getReflectionProperty($field)->getValue($entity);
+                    if ( ! isset($this->_originalEntityData[$oid][$field]) ||
                         $currentValue == $this->_originalEntityData[$oid][$field]) {
-                    $class->getReflectionProperty($field)->setValue($entity, $value);
+                        $class->getReflectionProperty($field)->setValue($entity, $value);
+                    }
                 }
             }
         }

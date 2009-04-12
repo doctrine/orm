@@ -35,7 +35,7 @@ class ScalarHydratorTest extends HydrationTest
         $stmt = new HydratorMockStatement($resultSet);
         $hydrator = new \Doctrine\ORM\Internal\Hydration\ScalarHydrator($this->_em);
 
-        $result = $hydrator->hydrateAll($stmt, $this->_createParserResult($rsm));
+        $result = $hydrator->hydrateAll($stmt, $rsm);
 
         $this->assertTrue(is_array($result));
         $this->assertEquals(2, count($result));

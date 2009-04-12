@@ -36,7 +36,10 @@ abstract class Type
     }
 
     abstract public function getSqlDeclaration(array $fieldDeclaration, \Doctrine\DBAL\Platforms\AbstractPlatform $platform);
+
     abstract public function getName();
+
+    //abstract public function getTypeCode();
     
     /**
      * Factory method to create type instances.

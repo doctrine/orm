@@ -5,12 +5,6 @@ namespace Doctrine\Tests\Models\Forum;
 /**
  * @DoctrineEntity
  * @DoctrineTable(name="forum_users")
- * @DoctrineInheritanceType("joined")
- * @DoctrineDiscriminatorColumn(name="dtype", type="varchar", length=20)
- * @DoctrineDiscriminatorMap({
-        "user" = "Doctrine\Tests\Models\Forum\ForumUser",
-        "admin" = "Doctrine\Tests\Models\Forum\ForumAdministrator"})
- * @DoctrineSubclasses({"Doctrine\Tests\Models\Forum\ForumAdministrator"})
  */
 class ForumUser
 {

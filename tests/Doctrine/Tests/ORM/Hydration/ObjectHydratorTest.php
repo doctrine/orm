@@ -35,7 +35,7 @@ class ObjectHydratorTest extends HydrationTest
         $stmt = new HydratorMockStatement($resultSet);
         $hydrator = new \Doctrine\ORM\Internal\Hydration\ObjectHydrator($this->_em);
 
-        $result = $hydrator->hydrateAll($stmt, $this->_createParserResult($rsm));
+        $result = $hydrator->hydrateAll($stmt, $rsm);
 
         $this->assertEquals(2, count($result));
         $this->assertTrue($result[0] instanceof \Doctrine\Tests\Models\CMS\CmsUser);
@@ -79,7 +79,7 @@ class ObjectHydratorTest extends HydrationTest
         $stmt = new HydratorMockStatement($resultSet);
         $hydrator = new \Doctrine\ORM\Internal\Hydration\ObjectHydrator($this->_em);
 
-        $result = $hydrator->hydrateAll($stmt, $this->_createParserResult($rsm));
+        $result = $hydrator->hydrateAll($stmt, $rsm);
 
         $this->assertEquals(4, count($result));
         
@@ -146,7 +146,7 @@ class ObjectHydratorTest extends HydrationTest
         $stmt = new HydratorMockStatement($resultSet);
         $hydrator = new \Doctrine\ORM\Internal\Hydration\ObjectHydrator($this->_em);
 
-        $result = $hydrator->hydrateAll($stmt, $this->_createParserResult($rsm, true));
+        $result = $hydrator->hydrateAll($stmt, $rsm);
 
         $this->assertEquals(2, count($result));
         $this->assertTrue(is_array($result));
@@ -205,7 +205,7 @@ class ObjectHydratorTest extends HydrationTest
         $stmt = new HydratorMockStatement($resultSet);
         $hydrator = new \Doctrine\ORM\Internal\Hydration\ObjectHydrator($this->_em);
 
-        $result = $hydrator->hydrateAll($stmt, $this->_createParserResult($rsm, true));
+        $result = $hydrator->hydrateAll($stmt, $rsm);
 
         $this->assertEquals(2, count($result));
         $this->assertTrue(is_array($result));
@@ -270,7 +270,7 @@ class ObjectHydratorTest extends HydrationTest
         $stmt = new HydratorMockStatement($resultSet);
         $hydrator = new \Doctrine\ORM\Internal\Hydration\ObjectHydrator($this->_em);
 
-        $result = $hydrator->hydrateAll($stmt, $this->_createParserResult($rsm, true));
+        $result = $hydrator->hydrateAll($stmt, $rsm);
 
         $this->assertEquals(2, count($result));
         $this->assertTrue(is_array($result));
@@ -384,7 +384,7 @@ class ObjectHydratorTest extends HydrationTest
         $stmt = new HydratorMockStatement($resultSet);
         $hydrator = new \Doctrine\ORM\Internal\Hydration\ObjectHydrator($this->_em);
 
-        $result = $hydrator->hydrateAll($stmt, $this->_createParserResult($rsm, true));
+        $result = $hydrator->hydrateAll($stmt, $rsm);
 
         $this->assertEquals(2, count($result));
         $this->assertTrue(is_array($result));
@@ -519,7 +519,7 @@ class ObjectHydratorTest extends HydrationTest
         $stmt = new HydratorMockStatement($resultSet);
         $hydrator = new \Doctrine\ORM\Internal\Hydration\ObjectHydrator($this->_em);
 
-        $result = $hydrator->hydrateAll($stmt, $this->_createParserResult($rsm, true));
+        $result = $hydrator->hydrateAll($stmt, $rsm);
 
         $this->assertEquals(2, count($result));
         $this->assertTrue(is_array($result));
@@ -626,7 +626,7 @@ class ObjectHydratorTest extends HydrationTest
         $stmt = new HydratorMockStatement($resultSet);
         $hydrator = new \Doctrine\ORM\Internal\Hydration\ObjectHydrator($this->_em);
 
-        $result = $hydrator->hydrateAll($stmt, $this->_createParserResult($rsm));
+        $result = $hydrator->hydrateAll($stmt, $rsm);
 
         $this->assertEquals(2, count($result));
         $this->assertTrue($result[0] instanceof \Doctrine\Tests\Models\Forum\ForumCategory);
@@ -663,7 +663,7 @@ class ObjectHydratorTest extends HydrationTest
         $stmt = new HydratorMockStatement($resultSet);
         $hydrator = new \Doctrine\ORM\Internal\Hydration\ObjectHydrator($this->_em);
 
-        $iterableResult = $hydrator->iterate($stmt, $this->_createParserResult($rsm));
+        $iterableResult = $hydrator->iterate($stmt, $rsm);
 
         $rowNum = 0;
         while (($row = $iterableResult->next()) !== false) {
@@ -739,6 +739,6 @@ class ObjectHydratorTest extends HydrationTest
         $stmt = new HydratorMockStatement($resultSet);
         $hydrator = new \Doctrine\ORM\Internal\Hydration\ObjectHydrator($this->_em);
 
-        $result = $hydrator->hydrateAll($stmt, $this->_createParserResult($rsm, true));
+        $result = $hydrator->hydrateAll($stmt, $rsm);
     }
 }

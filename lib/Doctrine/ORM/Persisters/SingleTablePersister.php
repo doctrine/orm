@@ -18,8 +18,8 @@ class SingleTablePersister extends AbstractEntityPersister
         // Populate the discriminator column
         if ($isInsert) {
             $discColumn = $this->_classMetadata->getDiscriminatorColumn();
-            $discMap = $this->_classMetadata->getDiscriminatorMap();
-            $result[$discColumn['name']] = array_search($this->_entityName, $discMap);
+            //$discMap = $this->_classMetadata->getDiscriminatorMap();
+            $result[$discColumn['name']] = $this->_classMetadata->getDiscriminatorValue(); //array_search($this->_entityName, $discMap);
         }
     }
 

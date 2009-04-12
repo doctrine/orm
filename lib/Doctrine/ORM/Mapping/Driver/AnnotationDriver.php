@@ -75,10 +75,15 @@ class AnnotationDriver
                 'length' => $discrColumnAnnot->length
             ));
         }
-
+/*
         // Evaluate DoctrineDiscriminatorMap annotation
         if ($discrMapAnnot = $annotClass->getAnnotation('DoctrineDiscriminatorMap')) {
             $metadata->setDiscriminatorMap((array)$discrMapAnnot->value);
+        }
+*/
+        // Evaluate DoctrineDiscriminatorMap annotation
+        if ($discrValueAnnot = $annotClass->getAnnotation('DoctrineDiscriminatorValue')) {
+            $metadata->setDiscriminatorValue($discrValueAnnot->value);
         }
 
         // Evaluate DoctrineSubClasses annotation

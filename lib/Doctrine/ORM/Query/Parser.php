@@ -113,29 +113,11 @@ class Parser
     private $_query;
 
     /**
-     * Whether the query is a SELECT query and contains scalar values in the result list
-     * as defined by the SelectExpressions.
-     *
-     * @var boolean
-     */
-    private $_resultContainsScalars = false;
-
-    /**
-     * Whether the query is a SELECT query and contains properties in the result list
-     * as defined by the SelectExpressions.
-     *
-     * @var boolean
-     */
-    private $_resultContainsProperties = false;
-
-    /**
      * Map of declared classes in the parsed query.
      * Maps the declared DQL alias (key) to the class name (value).
      *
      * @var array
      */
-    //private $_declaredClasses = array();
-
     private $_queryComponents = array();
 
     /**
@@ -656,10 +638,6 @@ class Parser
         $peek = $this->_lexer->glimpse();
         // First we recognize for an IdentificationVariable (DQL class alias)
         if ($peek['value'] != '.' && $peek['value'] != '(' && $this->_lexer->lookahead['type'] === Lexer::T_IDENTIFIER) {
-            $this->_resultContainsProperties = true;
-            if ($this->_resultContainsScalars) {
-                $this->_parserResult->setMixedQuery(true);
-            }
             $expression = $this->_IdentificationVariable();
         } else if (($isFunction = $this->_isFunction()) !== false || $this->_isSubselect()) {
             if ($isFunction) {
@@ -680,15 +658,7 @@ class Parser
                 $this->match(Lexer::T_IDENTIFIER);
                 $fieldIdentificationVariable = $this->_lexer->token['value'];
             }
-            $this->_resultContainsScalars = true;
-            if ($this->_resultContainsProperties) {
-                $this->_parserResult->setMixedQuery(true);
-            }
         } else {
-            $this->_resultContainsProperties = true;
-            if ($this->_resultContainsScalars) {
-                $this->_parserResult->setMixedQuery(true);
-            }
             //TODO: If hydration mode is OBJECT throw an exception ("partial object dangerous...")
             // unless the doctrine.forcePartialLoad query hint is set
             $expression = $this->_StateFieldPathExpression();
