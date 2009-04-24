@@ -309,27 +309,27 @@ class UnitOfWork implements PropertyChangedListener
             foreach ($entities as $entity) {
                 $entitySet[get_class($entity)][] = $entity;
             }
-        } else if ( ! $this->_em->getConfiguration()->getAutomaticDirtyChecking()) {
-            $entitySet = $this->_scheduledForDirtyCheck;
         } else {
             $entitySet = $this->_identityMap;
         }
 
         foreach ($entitySet as $className => $entities) {
             $class = $this->_em->getClassMetadata($className);
-            if ( ! $class->isInheritanceTypeNone() && count($entities) > 0) {
-                $class = $this->_em->getClassMetadata(get_class($entities[key($entities)]));
-            }
 
-            /*
+            // Skip class if change tracking happens through notification
             if ($class->isChangeTrackingNotify()) {
                 continue;
             }
+
+            // If change tracking is explicit, then only compute changes on explicitly saved entities
             $entitiesToProcess = $class->isChangeTrackingDeferredExplicit() ?
                     $this->_scheduledForDirtyCheck[$className] : $entities;
-             */
 
-            foreach ($entities as $entity) {
+            if ( ! $class->isInheritanceTypeNone() && count($entitiesToProcess) > 0) {
+                $class = $this->_em->getClassMetadata(get_class($entitiesToProcess[key($entitiesToProcess)]));
+            }
+
+            foreach ($entitiesToProcess as $entity) {
                 $oid = spl_object_hash($entity);
                 $state = $this->getEntityState($entity);
 
@@ -970,11 +970,8 @@ class UnitOfWork implements PropertyChangedListener
         $class = $this->_em->getClassMetadata(get_class($entity));
         switch ($this->getEntityState($entity)) {
             case self::STATE_MANAGED:
-                // nothing to do, except if automatic dirty checking is disabled
-                /*if ($class->isChangeTrackingDeferredExplicit()) {
-                    $this->scheduleForDirtyCheck($entity);
-                }*/
-                if ( ! $this->_em->getConfiguration()->getAutomaticDirtyChecking()) {
+                // nothing to do, except if policy is "deferred explicit"
+                if ($class->isChangeTrackingDeferredExplicit()) {
                     $this->scheduleForDirtyCheck($entity);
                 }
                 break;
@@ -1399,7 +1396,7 @@ class UnitOfWork implements PropertyChangedListener
         $oid = spl_object_hash($entity);
         $class = $this->_em->getClassMetadata(get_class($entity));
         
-        $this->_entityChangeSets[$oid][$propertyName] = array($oldValue => $newValue);
+        $this->_entityChangeSets[$oid][$propertyName] = array($oldValue, $newValue);
 
         if ($class->hasAssociation($propertyName)) {
             $assoc = $class->getAssociationMapping($name);

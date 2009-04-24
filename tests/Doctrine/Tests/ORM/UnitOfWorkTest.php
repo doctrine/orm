@@ -7,7 +7,6 @@ use Doctrine\Tests\Mocks\EntityManagerMock;
 use Doctrine\Tests\Mocks\UnitOfWorkMock;
 use Doctrine\Tests\Mocks\EntityPersisterMock;
 use Doctrine\Tests\Mocks\IdentityIdGeneratorMock;
-
 use Doctrine\Tests\Models\Forum\ForumUser;
 use Doctrine\Tests\Models\Forum\ForumAvatar;
 
@@ -124,54 +123,21 @@ class UnitOfWorkTest extends \Doctrine\Tests\OrmTestCase
         $this->assertEquals(0, count($avatarPersister->getDeletes()));
     }
 
-    /*public function testComputeEntityChangeSets()
+    public function testChangeTrackingNotify()
     {
-        // We need an ID generator for ForumAvatar, because we attach a NEW ForumAvatar
-        // to a (faked) MANAGED instance. During changeset computation this will result
-        // in the UnitOfWork requesting the Id generator of ForumAvatar.
-        $avatarIdGeneratorMock = new IdentityIdGeneratorMock($this->_emMock);
-        $this->_emMock->setIdGenerator('Doctrine\Tests\Models\Forum\ForumAvatar', $avatarIdGeneratorMock);
+        $entity = new NotifyChangedEntity;
+        $entity->setData('thedata');
+        $this->_unitOfWork->save($entity);
 
-        $user1 = new ForumUser();
-        $user1->id = 1;
-        $user1->username = "romanb";
-        $user1->avatar = new ForumAvatar();
-        // Fake managed state
-        $this->_unitOfWork->setEntityState($user1, \Doctrine\ORM\UnitOfWork::STATE_MANAGED);
-        
-        $user2 = new ForumUser();
-        $user2->id = 2;
-        $user2->username = "jwage";
-        // Fake managed state
-        $this->_unitOfWork->setEntityState($user2, \Doctrine\ORM\UnitOfWork::STATE_MANAGED);
+        $this->assertTrue($this->_unitOfWork->isInIdentityMap($entity));
 
-        // Fake original entity date
-        $this->_unitOfWork->setOriginalEntityData($user1, array(
-            'id' => 1, 'username' => 'roman'
-        ));
-        $this->_unitOfWork->setOriginalEntityData($user2, array(
-            'id' => 2, 'username' => 'jon'
-        ));
+        $entity->setData('newdata');
 
-        // Go
-        $this->_unitOfWork->computeChangeSets(array($user1, $user2));
+        $this->assertTrue($this->_unitOfWork->isRegisteredDirty($entity));
 
-        // Verify
-        $user1ChangeSet = $this->_unitOfWork->getEntityChangeSet($user1);
-        $this->assertTrue(is_array($user1ChangeSet));
-        $this->assertEquals(2, count($user1ChangeSet));
-        $this->assertTrue(isset($user1ChangeSet['username']));
-        $this->assertEquals(array('roman' => 'romanb'), $user1ChangeSet['username']);
-        $this->assertTrue(isset($user1ChangeSet['avatar']));
-        $this->assertSame(array(null => $user1->avatar), $user1ChangeSet['avatar']);
-
-        $user2ChangeSet = $this->_unitOfWork->getEntityChangeSet($user2);
-        $this->assertTrue(is_array($user2ChangeSet));
-        $this->assertEquals(1, count($user2ChangeSet));
-        $this->assertTrue(isset($user2ChangeSet['username']));
-        $this->assertEquals(array('jon' => 'jwage'), $user2ChangeSet['username']);
+        $this->assertEquals(array('data' => array('thedata', 'newdata')), $this->_unitOfWork->getEntityChangeSet($entity));
     }
-    */
+
     /*
     public function testSavingSingleEntityWithSequenceIdGeneratorSchedulesInsert()
     {
@@ -213,4 +179,50 @@ class UnitOfWorkTest extends \Doctrine\Tests\OrmTestCase
         //...
     }
     */
+}
+
+/**
+ * @DoctrineEntity
+ */
+class NotifyChangedEntity implements \Doctrine\Common\NotifyPropertyChanged
+{
+    private $_listeners = array();
+    /**
+     * @DoctrineId
+     * @DoctrineColumn(type="integer")
+     * @DoctrineGeneratedValue(strategy="auto")
+     */
+    private $id;
+    /**
+     * @DoctrineColumn(type="varchar")
+     */
+    private $data;
+
+    public function getId() {
+        return $this->id;
+    }
+
+    public function getData() {
+        return $this->data;
+    }
+
+    public function setData($data) {
+        if ($data != $this->data) {
+            $this->_onPropertyChanged('data', $this->data, $data);
+            $this->data = $data;
+        }
+    }
+
+    public function addPropertyChangedListener(\Doctrine\Common\PropertyChangedListener $listener)
+    {
+        $this->_listeners[] = $listener;
+    }
+
+    protected function _onPropertyChanged($propName, $oldValue, $newValue) {
+        if ($this->_listeners) {
+            foreach ($this->_listeners as $listener) {
+                $listener->propertyChanged($this, $propName, $oldValue, $newValue);
+            }
+        }
+    }
 }

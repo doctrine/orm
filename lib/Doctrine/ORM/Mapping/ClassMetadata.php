@@ -383,7 +383,7 @@ final class ClassMetadata
      *
      * @var integer
      */
-    //private $_changeTrackingPolicy;
+    private $_changeTrackingPolicy = self::CHANGETRACKING_DEFERRED_IMPLICIT;
 
     /**
      * Initializes a new ClassMetadata instance that will hold the object-relational mapping
@@ -418,6 +418,51 @@ final class ClassMetadata
     public function getReflectionProperties()
     {
         return $this->_reflectionProperties;
+    }
+
+    /**
+     *
+     * @return integer
+     */
+    public function getChangeTrackingPolicy()
+    {
+        return $this->_changeTrackingPolicy;
+    }
+
+    /**
+     *
+     * @param integer $policy
+     */
+    public function setChangeTrackingPolicy($policy)
+    {
+        $this->_changeTrackingPolicy = $policy;
+    }
+
+    /**
+     *
+     * @return boolean
+     */
+    public function isChangeTrackingDeferredExplicit()
+    {
+        return $this->_changeTrackingPolicy == self::CHANGETRACKING_DEFERRED_EXPLICIT;
+    }
+
+    /**
+     *
+     * @return boolean
+     */
+    public function isChangeTrackingPolicyDeferredImplicit()
+    {
+        return $this->_changeTrackingPolicy == self::CHANGETRACKING_DEFERRED_IMPLICIT;
+    }
+
+    /**
+     *
+     * @return boolean
+     */
+    public function isChangeTrackingNotify()
+    {
+        return $this->_changeTrackingPolicy == self::CHANGETRACKING_NOTIFY;
     }
 
     /**
