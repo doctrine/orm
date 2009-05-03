@@ -1005,7 +1005,7 @@ abstract class AbstractPlatform
         $queryFields = $this->getFieldDeclarationListSql($columns);
 
         if (isset($options['primary']) && ! empty($options['primary'])) {
-            $queryFields .= ', PRIMARY KEY(' . implode(', ', array_values($options['primary'])) . ')';
+            $queryFields .= ', PRIMARY KEY(' . implode(', ', array_unique(array_values($options['primary']))) . ')';
         }
 
         if (isset($options['indexes']) && ! empty($options['indexes'])) {

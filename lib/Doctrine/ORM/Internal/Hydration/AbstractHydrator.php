@@ -21,6 +21,7 @@
 
 namespace Doctrine\ORM\Internal\Hydration;
 
+use Doctrine\Common\DoctrineException;
 use \PDO;
 
 /**

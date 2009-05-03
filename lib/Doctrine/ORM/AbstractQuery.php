@@ -131,11 +131,7 @@ abstract class AbstractQuery
     }
 
     /**
-     * Frees the resources used by the query object. It especially breaks a
-     * cyclic reference between the query object and it's parsers. This enables
-     * PHP's current GC to reclaim the memory.
-     * This method can therefore be used to reduce memory usage when creating a lot
-     * of query objects during a request.
+     * Frees the resources used by the query object.
      */
     public function free()
     {
@@ -413,7 +409,7 @@ abstract class AbstractQuery
      * Alias for getSingleResult(HYDRATE_SINGLE_SCALAR).
      *
      * @return mixed
-     * @throws QueryException  If the query result is not unique.
+     * @throws QueryException If the query result is not unique.
      */
     public function getSingleScalarResult()
     {
@@ -462,9 +458,8 @@ abstract class AbstractQuery
     /**
      * Executes the query.
      *
-     * @param string $params Parameters to be sent to query.
-     * @param integer $hydrationMode Doctrine processing mode to be used during hydration process.
-     *                               One of the Query::HYDRATE_* constants.
+     * @param string $params Any additional query parameters.
+     * @param integer $hydrationMode Processing mode to be used during the hydration process.
      * @return mixed
      */
     public function execute($params = array(), $hydrationMode = null)

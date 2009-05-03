@@ -87,74 +87,11 @@ class SchemaTool
                 continue;
             }
 
-            $columns = $this->_gatherColumns($class); // table columns
             $options = array(); // table options
+            $columns = $this->_gatherColumns($class, $options); // table columns
 
-            foreach ($class->getAssociationMappings() as $mapping) {
-                $foreignClass = $this->_em->getClassMetadata($mapping->getTargetEntityName());
-                if ($mapping->isOneToOne() && $mapping->isOwningSide()) {
-                    $constraint = array();
-                    $constraint['tableName'] = $class->getTableName();
-                    $constraint['foreignTable'] = $foreignClass->getTableName();
-                    $constraint['local'] = array();
-                    $constraint['foreign'] = array();
-                    foreach ($mapping->getJoinColumns() as $joinColumn) {
-                        $column = array();
-                        $column['name'] = $joinColumn['name'];
-                        $column['type'] = $foreignClass->getTypeOfColumn($joinColumn['referencedColumnName']);
-                        $columns[$joinColumn['name']] = $column;
-                        $constraint['local'][] = $joinColumn['name'];
-                        $constraint['foreign'][] = $joinColumn['referencedColumnName'];
-                    }
-                    $foreignKeyConstraints[] = $constraint;
-                } else if ($mapping->isOneToMany() && $mapping->isOwningSide()) {
-                    //... create join table, one-many through join table supported later
-                    throw DoctrineException::updateMe("Not yet implemented.");
-                } else if ($mapping->isManyToMany() && $mapping->isOwningSide()) {
-                    // create join table
-                    $joinTableColumns = array();
-                    $joinTableOptions = array();
-                    $joinTable = $mapping->getJoinTable();
-                    $constraint1 = array();
-                    $constraint1['tableName'] = $joinTable['name'];
-                    $constraint1['foreignTable'] = $class->getTableName();
-                    $constraint1['local'] = array();
-                    $constraint1['foreign'] = array();
-                    foreach ($joinTable['joinColumns'] as $joinColumn) {
-                        $column = array();
-                        $column['primary'] = true;
-                        $joinTableOptions['primary'][] = $joinColumn['name'];
-                        $column['name'] = $joinColumn['name'];
-                        $column['type'] = $class->getTypeOfColumn($joinColumn['referencedColumnName']);
-                        $joinTableColumns[$joinColumn['name']] = $column;
-                        $constraint1['local'][] = $joinColumn['name'];
-                        $constraint1['foreign'][] = $joinColumn['referencedColumnName'];
-                    }
-                    $foreignKeyConstraints[] = $constraint1;
-
-                    $constraint2 = array();
-                    $constraint2['tableName'] = $joinTable['name'];
-                    $constraint2['foreignTable'] = $foreignClass->getTableName();
-                    $constraint2['local'] = array();
-                    $constraint2['foreign'] = array();
-                    foreach ($joinTable['inverseJoinColumns'] as $inverseJoinColumn) {
-                        $column = array();
-                        $column['primary'] = true;
-                        $joinTableOptions['primary'][] = $inverseJoinColumn['name'];
-                        $column['name'] = $inverseJoinColumn['name'];
-                        $column['type'] = $this->_em->getClassMetadata($mapping->getTargetEntityName())
-                                ->getTypeOfColumn($inverseJoinColumn['referencedColumnName']);
-                        $joinTableColumns[$inverseJoinColumn['name']] = $column;
-                        $constraint2['local'][] = $inverseJoinColumn['name'];
-                        $constraint2['foreign'][] = $inverseJoinColumn['referencedColumnName'];
-                    }
-                    $foreignKeyConstraints[] = $constraint2;
-
-                    $sql = array_merge($sql, $this->_platform->getCreateTableSql(
-                            $joinTable['name'], $joinTableColumns, $joinTableOptions));
-                }
-            }
-
+            $this->_gatherRelationsSql($class, $sql, $columns, $foreignKeyConstraints);
+            
             if ($class->isInheritanceTypeSingleTable()) {
                 // Add the discriminator column
                 $discrColumnDef = $this->_getDiscriminatorColumnDefinition($class);
@@ -166,7 +103,9 @@ class SchemaTool
                     $processedClasses[$parentClassName] = true;
                 }
                 foreach ($class->getSubclasses() as $subClassName) {
-                    $columns = array_merge($columns, $this->_gatherColumns($this->_em->getClassMetadata($subClassName)));
+                    $subClass = $this->_em->getClassMetadata($subClassName);
+                    $columns = array_merge($columns, $this->_gatherColumns($subClass, $options));
+                    $this->_gatherRelationsSql($subClass, $sql, $columns, $foreignKeyConstraints);
                     $processedClasses[$subClassName] = true;
                 }
             } else if ($class->isInheritanceTypeJoined()) {
@@ -200,7 +139,7 @@ class SchemaTool
         );
     }
 
-    private function _gatherColumns($class)
+    private function _gatherColumns($class, array &$options)
     {
         $columns = array();
         foreach ($class->getFieldMappings() as $fieldName => $mapping) {
@@ -218,7 +157,76 @@ class SchemaTool
             }
             $columns[$mapping['columnName']] = $column;
         }
+        
         return $columns;
+    }
+
+    private function _gatherRelationsSql($class, array &$sql, array &$columns, array &$constraints)
+    {
+        foreach ($class->getAssociationMappings() as $mapping) {
+            $foreignClass = $this->_em->getClassMetadata($mapping->getTargetEntityName());
+            if ($mapping->isOneToOne() && $mapping->isOwningSide()) {
+                $constraint = array();
+                $constraint['tableName'] = $class->getTableName();
+                $constraint['foreignTable'] = $foreignClass->getTableName();
+                $constraint['local'] = array();
+                $constraint['foreign'] = array();
+                foreach ($mapping->getJoinColumns() as $joinColumn) {
+                    $column = array();
+                    $column['name'] = $joinColumn['name'];
+                    $column['type'] = $foreignClass->getTypeOfColumn($joinColumn['referencedColumnName']);
+                    $columns[$joinColumn['name']] = $column;
+                    $constraint['local'][] = $joinColumn['name'];
+                    $constraint['foreign'][] = $joinColumn['referencedColumnName'];
+                }
+                $constraints[] = $constraint;
+            } else if ($mapping->isOneToMany() && $mapping->isOwningSide()) {
+                //... create join table, one-many through join table supported later
+                throw DoctrineException::updateMe("Not yet implemented.");
+            } else if ($mapping->isManyToMany() && $mapping->isOwningSide()) {
+                // create join table
+                $joinTableColumns = array();
+                $joinTableOptions = array();
+                $joinTable = $mapping->getJoinTable();
+                $constraint1 = array();
+                $constraint1['tableName'] = $joinTable['name'];
+                $constraint1['foreignTable'] = $class->getTableName();
+                $constraint1['local'] = array();
+                $constraint1['foreign'] = array();
+                foreach ($joinTable['joinColumns'] as $joinColumn) {
+                    $column = array();
+                    $column['primary'] = true;
+                    $joinTableOptions['primary'][] = $joinColumn['name'];
+                    $column['name'] = $joinColumn['name'];
+                    $column['type'] = $class->getTypeOfColumn($joinColumn['referencedColumnName']);
+                    $joinTableColumns[$joinColumn['name']] = $column;
+                    $constraint1['local'][] = $joinColumn['name'];
+                    $constraint1['foreign'][] = $joinColumn['referencedColumnName'];
+                }
+                $constraints[] = $constraint1;
+
+                $constraint2 = array();
+                $constraint2['tableName'] = $joinTable['name'];
+                $constraint2['foreignTable'] = $foreignClass->getTableName();
+                $constraint2['local'] = array();
+                $constraint2['foreign'] = array();
+                foreach ($joinTable['inverseJoinColumns'] as $inverseJoinColumn) {
+                    $column = array();
+                    $column['primary'] = true;
+                    $joinTableOptions['primary'][] = $inverseJoinColumn['name'];
+                    $column['name'] = $inverseJoinColumn['name'];
+                    $column['type'] = $this->_em->getClassMetadata($mapping->getTargetEntityName())
+                            ->getTypeOfColumn($inverseJoinColumn['referencedColumnName']);
+                    $joinTableColumns[$inverseJoinColumn['name']] = $column;
+                    $constraint2['local'][] = $inverseJoinColumn['name'];
+                    $constraint2['foreign'][] = $inverseJoinColumn['referencedColumnName'];
+                }
+                $constraints[] = $constraint2;
+
+                $sql = array_merge($sql, $this->_platform->getCreateTableSql(
+                        $joinTable['name'], $joinTableColumns, $joinTableOptions));
+            }
+        }
     }
 
     public function dropSchema(array $classes)

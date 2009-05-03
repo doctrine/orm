@@ -641,7 +641,7 @@ class MySqlPlatform extends AbstractPlatform
 
         // attach all primary keys
         if (isset($options['primary']) && ! empty($options['primary'])) {
-            $keyColumns = array_values($options['primary']);
+            $keyColumns = array_unique(array_values($options['primary']));
             $keyColumns = array_map(array($this, 'quoteIdentifier'), $keyColumns);
             $queryFields .= ', PRIMARY KEY(' . implode(', ', $keyColumns) . ')';
         }

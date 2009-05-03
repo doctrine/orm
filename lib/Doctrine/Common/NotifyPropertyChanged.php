@@ -30,6 +30,11 @@ namespace Doctrine\Common;
  */
 interface NotifyPropertyChanged
 {
+    /**
+     * Adds a listener that wants to be notified about property changes.
+     *
+     * @param PropertyChangedListener $listener
+     */
     public function addPropertyChangedListener(PropertyChangedListener $listener);
 }
 

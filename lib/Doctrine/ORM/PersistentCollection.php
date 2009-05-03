@@ -21,6 +21,7 @@
 
 namespace Doctrine\ORM;
 
+use Doctrine\Common\DoctrineException;
 use Doctrine\ORM\Mapping\AssociationMapping;
 
 /**
@@ -127,7 +128,7 @@ final class PersistentCollection extends \Doctrine\Common\Collections\Collection
         $this->_ownerClass = $em->getClassMetadata($type);
         if ($keyField !== null) {
             if ( ! $this->_ownerClass->hasField($keyField)) {
-                \Doctrine\Common\DoctrineException::updateMe("Invalid field '$keyField' can't be used as key.");
+                throw DoctrineException::updateMe("Invalid field '$keyField' can't be used as key.");
             }
             $this->_keyField = $keyField;
         }
@@ -167,12 +168,12 @@ final class PersistentCollection extends \Doctrine\Common\Collections\Collection
         $this->_owner = $entity;
         $this->_association = $assoc;
         if ($assoc->isInverseSide()) {
-            // for sure bidirectional
+            // for sure bi-directional
             $this->_backRefFieldName = $assoc->getMappedByFieldName();
         } else {
             $targetClass = $this->_em->getClassMetadata($assoc->getTargetEntityName());
             if ($targetClass->hasInverseAssociationMapping($assoc->getSourceFieldName())) {
-                // bidirectional
+                // bi-directional
                 $this->_backRefFieldName = $targetClass->getInverseAssociationMapping(
                         $assoc->getSourceFieldName())->getSourceFieldName();
             }
@@ -240,7 +241,7 @@ final class PersistentCollection extends \Doctrine\Common\Collections\Collection
      * 
      * @param mixed $value
      * @param string $key 
-     * @return TRUE
+     * @return boolean Always TRUE.
      * @override
      */
     public function add($value)
@@ -255,7 +256,6 @@ final class PersistentCollection extends \Doctrine\Common\Collections\Collection
                         ->setValue($value, $this->_owner);
             }
         } else {
-            //TODO: Register collection as dirty with the UoW if necessary
             $this->_changed();
         }
         
@@ -263,7 +263,7 @@ final class PersistentCollection extends \Doctrine\Common\Collections\Collection
     }
     
     /**
-     * Adds all entities of the other collection to this collection.
+     * Adds all elements of the other collection to this collection.
      *
      * @param object $otherCollection
      * @todo Impl
@@ -280,11 +280,13 @@ final class PersistentCollection extends \Doctrine\Common\Collections\Collection
     /**
      * INTERNAL:
      * Sets a flag that indicates whether the collection is currently being hydrated.
-     * This has the following consequences:
+     *
+     * If the flag is set to TRUE, this has the following consequences:
+     * 
      * 1) During hydration, bidirectional associations are completed automatically
      *    by setting the back reference.
      * 2) During hydration no change notifications are reported to the UnitOfWork.
-     *    I.e. that means add() etc. do not cause the collection to be scheduled
+     *    That means add() etc. do not cause the collection to be scheduled
      *    for an update.
      *
      * @param boolean $bool
@@ -295,11 +297,8 @@ final class PersistentCollection extends \Doctrine\Common\Collections\Collection
     }
 
     /**
-     * INTERNAL: Takes a snapshot from this collection.
-     *
-     * Snapshots are used for diff processing, for example
-     * when a fetched collection has three elements, then two of those
-     * are being removed the diff would contain one element.
+     * INTERNAL:
+     * Tells this collection to take a snapshot of its current state.
      */
     public function takeSnapshot()
     {
@@ -385,12 +384,23 @@ final class PersistentCollection extends \Doctrine\Common\Collections\Collection
             //$this->_em->getUnitOfWork()->scheduleCollectionUpdate($this);
         }*/
     }
-    
+
+    /**
+     * Gets a boolean flag indicating whether this colleciton is dirty which means
+     * its state needs to be synchronized with the database.
+     *
+     * @return boolean TRUE if the collection is dirty, FALSE otherwise.
+     */
     public function isDirty()
     {
         return $this->_isDirty;
     }
-    
+
+    /**
+     * Sets a boolean flag, indicating whether this collection is dirty.
+     *
+     * @param boolean $dirty Whether the collection should be marked dirty or not.
+     */
     public function setDirty($dirty)
     {
         $this->_isDirty = $dirty;

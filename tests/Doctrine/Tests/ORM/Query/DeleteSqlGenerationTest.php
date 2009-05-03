@@ -60,11 +60,11 @@ class DeleteSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
     {
         $this->assertSqlGeneration(
             'DELETE Doctrine\Tests\Models\CMS\CmsUser u',
-            'DELETE FROM cms_users c0_'
+            'DELETE FROM cms_users'
         );
         $this->assertSqlGeneration(
             'DELETE FROM Doctrine\Tests\Models\CMS\CmsUser u',
-            'DELETE FROM cms_users c0_'
+            'DELETE FROM cms_users'
         );
     }
 
@@ -72,7 +72,7 @@ class DeleteSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
     {
         $this->assertSqlGeneration(
             'DELETE Doctrine\Tests\Models\CMS\CmsUser u WHERE u.id = ?1',
-            'DELETE FROM cms_users c0_ WHERE c0_.id = ?'
+            'DELETE FROM cms_users WHERE id = ?'
         );
     }
 
@@ -80,12 +80,12 @@ class DeleteSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
     {
         $this->assertSqlGeneration(
             'DELETE Doctrine\Tests\Models\CMS\CmsUser u WHERE u.username = ?1 OR u.name = ?2',
-            'DELETE FROM cms_users c0_ WHERE c0_.username = ? OR c0_.name = ?'
+            'DELETE FROM cms_users WHERE username = ? OR name = ?'
         );
 
         $this->assertSqlGeneration(
             'DELETE Doctrine\Tests\Models\CMS\CmsUser u WHERE u.id = ?1 OR ( u.username = ?2 OR u.name = ?3)',
-            'DELETE FROM cms_users c0_ WHERE c0_.id = ? OR (c0_.username = ? OR c0_.name = ?)'
+            'DELETE FROM cms_users WHERE id = ? OR (username = ? OR name = ?)'
         );
 
         //$this->assertSqlGeneration(
@@ -98,7 +98,7 @@ class DeleteSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
     {
         $this->assertSqlGeneration(
             "delete from Doctrine\Tests\Models\CMS\CmsUser u where u.username = ?1",
-            "DELETE FROM cms_users c0_ WHERE c0_.username = ?"
+            "DELETE FROM cms_users WHERE username = ?"
         );
     }
 
@@ -106,7 +106,7 @@ class DeleteSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
     {
         $this->assertSqlGeneration(
             "DELETE Doctrine\Tests\Models\CMS\CmsUser u WHERE u.username = ?1 AND u.name = ?2",
-            "DELETE FROM cms_users c0_ WHERE c0_.username = ? AND c0_.name = ?"
+            "DELETE FROM cms_users WHERE username = ? AND name = ?"
         );
     }
 
@@ -114,17 +114,17 @@ class DeleteSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
     {
         $this->assertSqlGeneration(
             "DELETE Doctrine\Tests\Models\CMS\CmsUser u WHERE NOT u.id != ?1",
-            "DELETE FROM cms_users c0_ WHERE NOT c0_.id <> ?"
+            "DELETE FROM cms_users WHERE NOT id <> ?"
         );
 
         $this->assertSqlGeneration(
             "DELETE Doctrine\Tests\Models\CMS\CmsUser u WHERE NOT ( u.id != ?1 )",
-            "DELETE FROM cms_users c0_ WHERE NOT (c0_.id <> ?)"
+            "DELETE FROM cms_users WHERE NOT (id <> ?)"
         );
 
         $this->assertSqlGeneration(
             "DELETE Doctrine\Tests\Models\CMS\CmsUser u WHERE NOT ( u.id != ?1 AND u.username = ?2 )",
-            "DELETE FROM cms_users c0_ WHERE NOT (c0_.id <> ? AND c0_.username = ?)"
+            "DELETE FROM cms_users WHERE NOT (id <> ? AND username = ?)"
         );
     }
 
@@ -135,32 +135,32 @@ class DeleteSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
         // id = ? was already tested (see testDeleteWithWhere())
         $this->assertSqlGeneration(
             "DELETE Doctrine\Tests\Models\CMS\CmsUser u WHERE u.id > ?1",
-            "DELETE FROM cms_users c0_ WHERE c0_.id > ?"
+            "DELETE FROM cms_users WHERE id > ?"
         );
 
         $this->assertSqlGeneration(
             "DELETE Doctrine\Tests\Models\CMS\CmsUser u WHERE u.id >= ?1",
-            "DELETE FROM cms_users c0_ WHERE c0_.id >= ?"
+            "DELETE FROM cms_users WHERE id >= ?"
         );
 
         $this->assertSqlGeneration(
             "DELETE Doctrine\Tests\Models\CMS\CmsUser u WHERE u.id < ?1",
-            "DELETE FROM cms_users c0_ WHERE c0_.id < ?"
+            "DELETE FROM cms_users WHERE id < ?"
         );
 
         $this->assertSqlGeneration(
             "DELETE Doctrine\Tests\Models\CMS\CmsUser u WHERE u.id <= ?1",
-            "DELETE FROM cms_users c0_ WHERE c0_.id <= ?"
+            "DELETE FROM cms_users WHERE id <= ?"
         );
 
         $this->assertSqlGeneration(
             "DELETE Doctrine\Tests\Models\CMS\CmsUser u WHERE u.id <> ?1",
-            "DELETE FROM cms_users c0_ WHERE c0_.id <> ?"
+            "DELETE FROM cms_users WHERE id <> ?"
         );
 
         $this->assertSqlGeneration(
             "DELETE Doctrine\Tests\Models\CMS\CmsUser u WHERE u.id != ?1",
-            "DELETE FROM cms_users c0_ WHERE c0_.id <> ?"
+            "DELETE FROM cms_users WHERE id <> ?"
         );
     }
 
@@ -168,12 +168,12 @@ class DeleteSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
     {
         $this->assertSqlGeneration(
             "DELETE Doctrine\Tests\Models\CMS\CmsUser u WHERE u.id NOT BETWEEN ?1 AND ?2",
-            "DELETE FROM cms_users c0_ WHERE c0_.id NOT BETWEEN ? AND ?"
+            "DELETE FROM cms_users WHERE id NOT BETWEEN ? AND ?"
         );
 
         $this->assertSqlGeneration(
             "DELETE Doctrine\Tests\Models\CMS\CmsUser u WHERE u.id BETWEEN ?1 AND ?2 AND u.username != ?3",
-            "DELETE FROM cms_users c0_ WHERE c0_.id BETWEEN ? AND ? AND c0_.username <> ?"
+            "DELETE FROM cms_users WHERE id BETWEEN ? AND ? AND username <> ?"
         );
     }
 
@@ -182,12 +182,12 @@ class DeleteSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
         // "WHERE" Expression LikeExpression
         $this->assertSqlGeneration(
             'DELETE Doctrine\Tests\Models\CMS\CmsUser u WHERE u.username NOT LIKE ?1',
-            'DELETE FROM cms_users c0_ WHERE c0_.username NOT LIKE ?'
+            'DELETE FROM cms_users WHERE username NOT LIKE ?'
         );
 
         $this->assertSqlGeneration(
             "DELETE Doctrine\Tests\Models\CMS\CmsUser u WHERE u.username LIKE ?1 ESCAPE '\\'",
-            "DELETE FROM cms_users c0_ WHERE c0_.username LIKE ? ESCAPE '\\'"
+            "DELETE FROM cms_users WHERE username LIKE ? ESCAPE '\\'"
         );
     }
 
@@ -196,12 +196,12 @@ class DeleteSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
         // "WHERE" Expression NullComparisonExpression
         $this->assertSqlGeneration(
             'DELETE Doctrine\Tests\Models\CMS\CmsUser u WHERE u.name IS NULL',
-            'DELETE FROM cms_users c0_ WHERE c0_.name IS NULL'
+            'DELETE FROM cms_users WHERE name IS NULL'
         );
 
         $this->assertSqlGeneration(
             'DELETE Doctrine\Tests\Models\CMS\CmsUser u WHERE u.name IS NOT NULL',
-            'DELETE FROM cms_users c0_ WHERE c0_.name IS NOT NULL'
+            'DELETE FROM cms_users WHERE name IS NOT NULL'
         );
     }
 
@@ -209,12 +209,12 @@ class DeleteSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
     {
         $this->assertSqlGeneration(
             'DELETE Doctrine\Tests\Models\CMS\CmsUser u WHERE 1 = 1',
-            'DELETE FROM cms_users c0_ WHERE 1 = 1'
+            'DELETE FROM cms_users WHERE 1 = 1'
         );
 
         $this->assertSqlGeneration(
             'DELETE Doctrine\Tests\Models\CMS\CmsUser u WHERE ?1 = 1',
-            'DELETE FROM cms_users c0_ WHERE ? = 1'
+            'DELETE FROM cms_users WHERE ? = 1'
         );
     }
 
@@ -222,12 +222,12 @@ class DeleteSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
     {
         $this->assertSqlGeneration(
             'DELETE Doctrine\Tests\Models\CMS\CmsUser u WHERE u.id IN ( ?1, ?2, ?3, ?4 )',
-            'DELETE FROM cms_users c0_ WHERE c0_.id IN (?, ?, ?, ?)'
+            'DELETE FROM cms_users WHERE id IN (?, ?, ?, ?)'
         );
 
         $this->assertSqlGeneration(
             'DELETE Doctrine\Tests\Models\CMS\CmsUser u WHERE u.id NOT IN ( ?1, ?2 )',
-            'DELETE FROM cms_users c0_ WHERE c0_.id NOT IN (?, ?)'
+            'DELETE FROM cms_users WHERE id NOT IN (?, ?)'
         );
     }
  

@@ -869,7 +869,7 @@ final class ClassMetadata
      */
     public function hasField($fieldName)
     {
-        return isset($this->_columnNames[$fieldName]);
+        return isset($this->_reflectionProperties[$fieldName]);
     }
 
     /**

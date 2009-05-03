@@ -53,7 +53,7 @@ class NativeQuery extends AbstractQuery
     }
 
     /**
-     * Gets the SQL query/queries that correspond to this DQL query.
+     * Gets the SQL query.
      *
      * @return mixed The built sql query or an array of all sql queries.
      * @override
@@ -64,7 +64,7 @@ class NativeQuery extends AbstractQuery
     }
 
     /**
-     * Executed the query.
+     * Executes the query.
      *
      * @param array $params
      * @return Statement  The Statement handle.

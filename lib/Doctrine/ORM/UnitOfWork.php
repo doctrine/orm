@@ -333,10 +333,6 @@ class UnitOfWork implements PropertyChangedListener
                 $oid = spl_object_hash($entity);
                 $state = $this->getEntityState($entity);
 
-                if ($state == self::STATE_MANAGED && ($entity instanceof \Doctrine\Common\NotifyPropertyChanged)) {
-                    continue; // entity notifies us, no need to calculate changes
-                }
-
                 // Look for changes in the entity itself by comparing against the
                 // original data we have.
                 if ($state == self::STATE_MANAGED || $state == self::STATE_NEW) {

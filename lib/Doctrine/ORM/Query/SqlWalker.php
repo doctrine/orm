@@ -36,8 +36,6 @@ use Doctrine\Common\DoctrineException;
  */
 class SqlWalker
 {
-    //const SQLALIAS_SEPARATOR = '__';
-
     private $_resultSetMapping;
     private $_aliasCounter = 0;
     private $_tableAliasCounter = 0;
@@ -47,9 +45,16 @@ class SqlWalker
     private $_query;
     private $_dqlToSqlAliasMap = array();
     /** Map of all components/classes that appear in the DQL query. */
-    private $_queryComponents = array();
+    private $_queryComponents;
     /** A list of classes that appear in non-scalar SelectExpressions. */
     private $_selectedClasses = array();
+    /**
+     * The DQL alias of the root class of the currently traversed query.
+     * TODO: May need to be turned into a stack for usage in subqueries
+     */
+    private $_currentRootAlias;
+    /** Flag that indicates whether to generate SQL table aliases in the SQL. */
+    private $_useSqlTableAliases = true;
 
     /**
      * Initializes a new SqlWalker instance with the given Query and ParserResult.
@@ -72,6 +77,9 @@ class SqlWalker
         }*/
     }
 
+    /**
+     * @return Connection
+     */
     public function getConnection()
     {
         return $this->_em->getConnection();
@@ -86,7 +94,12 @@ class SqlWalker
     {
         $sql = $this->walkSelectClause($AST->getSelectClause());
         $sql .= $this->walkFromClause($AST->getFromClause());
-        $sql .= $AST->getWhereClause() ? $this->walkWhereClause($AST->getWhereClause()) : '';
+        if ($whereClause = $AST->getWhereClause()) {
+            $sql .= $this->walkWhereClause($whereClause);
+        } else if ($discSql = $this->_generateDiscriminatorColumnConditionSql($this->_currentRootAlias)) {
+            $sql .= ' WHERE ' . $discSql;
+        }
+        //$sql .= $AST->getWhereClause() ? $this->walkWhereClause($AST->getWhereClause()) : '';
         $sql .= $AST->getGroupByClause() ? $this->walkGroupByClause($AST->getGroupByClause()) : '';
         $sql .= $AST->getHavingClause() ? $this->walkHavingClause($AST->getHavingClause()) : '';
         $sql .= $AST->getOrderByClause() ? $this->walkOrderByClause($AST->getOrderByClause()) : '';
@@ -141,6 +154,8 @@ class SqlWalker
         $firstIdentificationVarDecl = $identificationVarDecls[0];
         $rangeDecl = $firstIdentificationVarDecl->getRangeVariableDeclaration();
         $dqlAlias = $rangeDecl->getAliasIdentificationVariable();
+
+        $this->_currentRootAlias = $dqlAlias;
 
         $sql .= $rangeDecl->getClassMetadata()->getTableName() . ' '
                 . $this->getSqlTableAlias($rangeDecl->getClassMetadata()->getTableName());
@@ -254,6 +269,11 @@ class SqlWalker
         } else { // ManyToMany
             //TODO
         }
+
+        $discrSql = $this->_generateDiscriminatorColumnConditionSql($joinedDqlAlias);
+        if ($discrSql) {
+            $sql .= ' AND ' . $discrSql;
+        }
         
         return $sql;
     }
@@ -291,8 +311,7 @@ class SqlWalker
                 $columnName = $class->getColumnName($fieldName);
                 $columnAlias = $this->getSqlColumnAlias($columnName);
                 $sql .= $sqlTableAlias . '.' . $columnName . ' AS ' . $columnAlias;
-                    
-                // Register column in ResultSetMapping
+                
                 $this->_resultSetMapping->addFieldResult($dqlAlias, $columnAlias, $fieldName);
                 
             } else if ($expr->isSimpleStateFieldAssociationPathExpression()) {
@@ -321,6 +340,8 @@ class SqlWalker
             $sql .= $this->walkFunction($expr) . ' AS ' . $columnAlias;
             $this->_resultSetMapping->addScalarResult($columnAlias, $resultAlias);
         } else {
+            // $expr is an IdentificationVariable
+
             $dqlAlias = $expr;
             $queryComp = $this->_queryComponents[$dqlAlias];
             $class = $queryComp['metadata'];
@@ -331,6 +352,7 @@ class SqlWalker
 
             $sqlTableAlias = $this->getSqlTableAlias($class->getTableName());
 
+            // Gather all fields
             $fieldMappings = $class->getFieldMappings();
             foreach ($class->getSubclasses() as $subclassName) {
                 $fieldMappings = array_merge(
@@ -348,7 +370,6 @@ class SqlWalker
                 }
                 $columnAlias = $this->getSqlColumnAlias($fieldMapping['columnName']);
                 $sql .= $sqlTableAlias . '.' . $fieldMapping['columnName'] . ' AS ' . $columnAlias;
-                
                 $this->_resultSetMapping->addFieldResult($dqlAlias, $columnAlias, $fieldName);
             }
         }
@@ -378,12 +399,15 @@ class SqlWalker
      */
     public function walkSubselect($subselect)
     {
+        $useAliasesBefore = $this->_useSqlTableAliases;
+        $this->_useSqlTableAliases = true;
         $sql = $this->walkSimpleSelectClause($subselect->getSimpleSelectClause());
         $sql .= $this->walkSubselectFromClause($subselect->getSubselectFromClause());
         $sql .= $subselect->getWhereClause() ? $this->walkWhereClause($subselect->getWhereClause()) : '';
         $sql .= $subselect->getGroupByClause() ? $this->walkGroupByClause($subselect->getGroupByClause()) : '';
         $sql .= $subselect->getHavingClause() ? $this->walkHavingClause($subselect->getHavingClause()) : '';
         $sql .= $subselect->getOrderByClause() ? $this->walkOrderByClause($subselect->getOrderByClause()) : '';
+        $this->_useSqlTableAliases = $useAliasesBefore;
 
         return $sql;
     }
@@ -512,8 +536,13 @@ class SqlWalker
      */
     public function walkUpdateStatement(AST\UpdateStatement $AST)
     {
+        $this->_useSqlTableAliases = false; // TODO: Ask platform instead?
         $sql = $this->walkUpdateClause($AST->getUpdateClause());
-        $sql .= $AST->getWhereClause() ? $this->walkWhereClause($AST->getWhereClause()) : '';
+        if ($whereClause = $AST->getWhereClause()) {
+            $sql .= $this->walkWhereClause($whereClause);
+        } else if ($discSql = $this->_generateDiscriminatorColumnConditionSql($this->_currentRootAlias)) {
+            $sql .= ' WHERE ' . $discSql;
+        }
         return $sql;
     }
 
@@ -525,8 +554,13 @@ class SqlWalker
      */
     public function walkDeleteStatement(AST\DeleteStatement $AST)
     {
+        $this->_useSqlTableAliases = false; // TODO: Ask platform instead?
         $sql = $this->walkDeleteClause($AST->getDeleteClause());
-        $sql .= $AST->getWhereClause() ? $this->walkWhereClause($AST->getWhereClause()) : '';
+        if ($whereClause = $AST->getWhereClause()) {
+            $sql .= $this->walkWhereClause($whereClause);
+        } else if ($discSql = $this->_generateDiscriminatorColumnConditionSql($this->_currentRootAlias)) {
+            $sql .= ' WHERE ' . $discSql;
+        }
         return $sql;
     }
 
@@ -541,9 +575,11 @@ class SqlWalker
         $sql = 'DELETE FROM ';
         $class = $this->_em->getClassMetadata($deleteClause->getAbstractSchemaName());
         $sql .= $class->getTableName();
-        if ($deleteClause->getAliasIdentificationVariable()) {
+        if ($this->_useSqlTableAliases) {
             $sql .= ' ' . $this->getSqlTableAlias($class->getTableName());
         }
+        $this->_currentRootAlias = $deleteClause->getAliasIdentificationVariable();
+
         return $sql;
     }
 
@@ -558,9 +594,11 @@ class SqlWalker
         $sql = 'UPDATE ';
         $class = $this->_em->getClassMetadata($updateClause->getAbstractSchemaName());
         $sql .= $class->getTableName();
-        if ($updateClause->getAliasIdentificationVariable()) {
+        if ($this->_useSqlTableAliases) {
             $sql .= ' ' . $this->getSqlTableAlias($class->getTableName());
         }
+        $this->_currentRootAlias = $updateClause->getAliasIdentificationVariable();
+
         $sql .= ' SET ' . implode(', ', array_map(array($this, 'walkUpdateItem'),
                 $updateClause->getUpdateItems()));
         
@@ -581,9 +619,10 @@ class SqlWalker
                 $this->_parserResult->getDefaultQueryComponentAlias();
         $qComp = $this->_queryComponents[$dqlAlias];
 
-        $sql .= $this->getSqlTableAlias($qComp['metadata']->getTableName()) . '.'
-                . $qComp['metadata']->getColumnName($updateItem->getField())
-                . ' = ';
+        if ($this->_useSqlTableAliases) {
+            $sql .= $this->getSqlTableAlias($qComp['metadata']->getTableName()) . '.';
+        }
+        $sql .= $qComp['metadata']->getColumnName($updateItem->getField()) . ' = ';
 
         $newValue = $updateItem->getNewValue();
 
@@ -610,8 +649,38 @@ class SqlWalker
     {
         $sql = ' WHERE ';
         $condExpr = $whereClause->getConditionalExpression();
+        
         $sql .= implode(' OR ', array_map(array($this, 'walkConditionalTerm'),
                 $condExpr->getConditionalTerms()));
+
+        $discrSql = $this->_generateDiscriminatorColumnConditionSql($this->_currentRootAlias);
+        if ($discrSql) {
+            $sql .= ' AND ' . $discrSql;
+        }
+
+        return $sql;
+    }
+
+    private function _generateDiscriminatorColumnConditionSql($dqlAlias)
+    {
+        $sql = '';
+        if ($dqlAlias) {
+            $class = $this->_queryComponents[$dqlAlias]['metadata'];
+            if ($class->isInheritanceTypeSingleTable()) {
+                $conn = $this->_em->getConnection();
+                $values = array($conn->quote($class->getDiscriminatorValue()));
+                foreach ($class->getSubclasses() as $subclassName) {
+                    $values[] = $conn->quote($this->_em->getClassMetadata($subclassName)->getDiscriminatorValue());
+                }
+                $discrColumn = $class->getDiscriminatorColumn();
+                if ($this->_useSqlTableAliases) {
+                    $sql .= $this->getSqlTableAlias($class->getTableName()) . '.';
+                }
+                $sql .= $discrColumn['name'] . ' IN (' . implode(', ', $values) . ')';
+            } else if ($class->isInheritanceTypeJoined()) {
+                //TODO
+            }
+        }
         return $sql;
     }
 
@@ -918,8 +987,11 @@ class SqlWalker
                 }
             }
 
-            $sqlTableAlias = $this->getSqlTableAlias($class->getTableName());
-            $sql .= $sqlTableAlias . '.' . $class->getColumnName($fieldName);
+            if ($this->_useSqlTableAliases) {
+                $sql .= $this->getSqlTableAlias($class->getTableName()) . '.';
+            }
+            
+            $sql .= $class->getColumnName($fieldName);
         } else if ($pathExpr->isSimpleStateFieldAssociationPathExpression()) {
             throw DoctrineException::updateMe("Not yet implemented.");
         } else {
