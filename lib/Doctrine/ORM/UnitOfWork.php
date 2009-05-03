@@ -325,13 +325,13 @@ class UnitOfWork implements PropertyChangedListener
             $entitiesToProcess = $class->isChangeTrackingDeferredExplicit() ?
                     $this->_scheduledForDirtyCheck[$className] : $entities;
 
-            if ( ! $class->isInheritanceTypeNone() && count($entitiesToProcess) > 0) {
-                $class = $this->_em->getClassMetadata(get_class($entitiesToProcess[key($entitiesToProcess)]));
-            }
-
             foreach ($entitiesToProcess as $entity) {
                 $oid = spl_object_hash($entity);
                 $state = $this->getEntityState($entity);
+
+                if ( ! $class->isInheritanceTypeNone()) {
+                    $class = $this->_em->getClassMetadata(get_class($entity));
+                }
 
                 // Look for changes in the entity itself by comparing against the
                 // original data we have.

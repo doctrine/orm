@@ -16,7 +16,7 @@
  *
  * This software consists of voluntary contributions made by many individuals
  * and is licensed under the LGPL. For more information, see
- * <http://www.phpdoctrine.org>.
+ * <http://www.doctrine-project.org>.
  */
 
 namespace Doctrine\ORM\Persisters;
@@ -30,6 +30,7 @@ namespace Doctrine\ORM\Persisters;
  * @version     $Revision$
  * @link        www.doctrine-project.org
  * @since       2.0
+ * @todo Reimplement.
  */
 class JoinedSubclassPersister extends AbstractEntityPersister
 {    

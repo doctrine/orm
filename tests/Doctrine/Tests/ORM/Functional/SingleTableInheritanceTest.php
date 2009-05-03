@@ -28,17 +28,18 @@ class SingleTableInheritanceTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $this->_em->save($parent);
 
-        $relatedEntity = new RelatedEntity;
-        $relatedEntity->setName('theRelatedOne');
-
-        $this->_em->save($relatedEntity);
-
         $child = new ChildEntity;
         $child->setData('thedata');
         $child->setNumber(1234);
-        $child->setRelatedEntity($relatedEntity);
+        //$child->setRelatedEntity($relatedEntity);
 
         $this->_em->save($child);
+
+        $relatedEntity = new RelatedEntity;
+        $relatedEntity->setName('theRelatedOne');
+        $relatedEntity->setOwner($child);
+
+        $this->_em->save($relatedEntity);
         
         $this->_em->flush();
         $this->_em->clear();

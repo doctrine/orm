@@ -87,7 +87,8 @@ abstract class AbstractEntityPersister
      * Inserts an entity.
      *
      * @param object $entity The entity to insert.
-     * @return mixed
+     * @return mixed If the entity uses a post-insert ID generator, the generated
+     *               ID is returned, NULL otherwise.
      */
     public function insert($entity)
     {
@@ -118,7 +119,7 @@ abstract class AbstractEntityPersister
      */
     public function executeInserts()
     {
-        $tableName = $this->_classMetadata->getTableName();
+        //$tableName = $this->_classMetadata->getTableName();
         $stmt = $this->_conn->prepare($this->_classMetadata->getInsertSql());
         foreach ($this->_queuedInserts as $insertData) {
             $stmt->execute(array_values($insertData));
@@ -154,11 +155,21 @@ abstract class AbstractEntityPersister
         $this->_conn->delete($this->_classMetadata->getTableName(), $id);
     }
 
+    /**
+     * Adds an entity to delete.
+     *
+     * @param object $entity
+     */
     public function addDelete($entity)
     {
         
     }
 
+    /**
+     * Executes all pending entity deletions.
+     * 
+     * @see addDelete()
+     */
     public function executeDeletions()
     {
         
@@ -197,22 +208,12 @@ abstract class AbstractEntityPersister
     {
         return array();
     }
-
-    /**
-     * Gets all field mappings of the entire entity hierarchy.
-     *
-     * @return array
-     */
-    public function getAllFieldMappingsInHierarchy()
-    {
-        return $this->_classMetadata->getFieldMappings();
-    }
     
     /**
      * Prepares the data of an entity for an insert/update operation.
      *
      * @param object $entity
-     * @param array $array
+     * @param array $result The reference to the data array.
      * @param boolean $isInsert
      */
     protected function _prepareData($entity, array &$result, $isInsert = false)

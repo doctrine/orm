@@ -32,7 +32,7 @@ use Doctrine\Common\EventManager;
 final class DriverManager
 {
     /**
-     * List of supported drivers and their mappings to the driver class.
+     * List of supported drivers and their mappings to the driver classes.
      *
      * @var array
      */

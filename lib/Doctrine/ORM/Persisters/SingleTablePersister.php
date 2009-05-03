@@ -1,11 +1,38 @@
 <?php
+/*
+ *  $Id$
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+ * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+ * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+ * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+ * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+ * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ * This software consists of voluntary contributions made by many individuals
+ * and is licensed under the LGPL. For more information, see
+ * <http://www.doctrine-project.org>.
+ */
 
 namespace Doctrine\ORM\Persisters;
 
+/**
+ * Persister for entities that participate in a hierarchy mapped with the
+ * SINGLE_TABLE strategy.
+ *
+ * @author      Roman Borschel <roman@code-factory.org>
+ * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
+ * @version     $Revision: 3406 $
+ * @link        www.doctrine-project.org
+ * @since       2.0
+ */
 class SingleTablePersister extends AbstractEntityPersister
 {
-    //private $_selectColumnList = array();
-
     public function insert($entity)
     {
         return parent::insert($entity);
@@ -18,23 +45,7 @@ class SingleTablePersister extends AbstractEntityPersister
         // Populate the discriminator column
         if ($isInsert) {
             $discColumn = $this->_classMetadata->getDiscriminatorColumn();
-            //$discMap = $this->_classMetadata->getDiscriminatorMap();
-            $result[$discColumn['name']] = $this->_classMetadata->getDiscriminatorValue(); //array_search($this->_entityName, $discMap);
+            $result[$discColumn['name']] = $this->_classMetadata->getDiscriminatorValue();
         }
     }
-
-    /**
-     * {@inheritdoc}
-     */
-    /*public function getAllFieldMappingsInHierarchy()
-    {
-        $fieldMappings = $this->_classMetadata->getFieldMappings();
-        foreach ($this->_classMetadata->getSubclasses() as $subclassName) {
-            $fieldMappings = array_merge(
-                    $fieldMappings,
-                    $this->_em->getClassMetadata($subclassName)->getFieldMappings()
-                    );
-        }
-        return $fieldMappings;
-    }*/
 }
