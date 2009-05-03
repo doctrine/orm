@@ -26,6 +26,7 @@ namespace Doctrine\DBAL\Platforms;
  * database platform.
  *
  * @since 2.0
+ * @author Roman Borschel <roman@code-factory.org>
  */
 class SqlitePlatform extends AbstractPlatform
 {
@@ -73,18 +74,22 @@ class SqlitePlatform extends AbstractPlatform
     {
         return strpos($str, $substr);
     }
+
     public static function sha1Impl($str)
     {
         return sha1($str);
     }
+
     public static function ltrimImpl($str)
     {
         return ltrim($str);
     }
+
     public static function rtrimImpl($str)
     {
         return rtrim($str);
     }
+
     public static function trimImpl($str)
     {
         return trim($str);
@@ -193,7 +198,7 @@ class SqlitePlatform extends AbstractPlatform
      */
     public function getNativeDeclaration(array $field)
     {
-        if ( ! isset($field['type'])) {
+        /*if ( ! isset($field['type'])) {
             throw DoctrineException::updateMe('Missing column type.');
         }
         switch ($field['type']) {
@@ -253,7 +258,7 @@ class SqlitePlatform extends AbstractPlatform
                 $length = !empty($field['length']) ? $field['length'] : 18;
                 $scale = !empty($field['scale']) ? $field['scale'] : $this->conn->getAttribute(Doctrine::ATTR_DECIMAL_PLACES);
                 return 'DECIMAL('.$length.','.$scale.')';
-        }
+        }*/
         throw DoctrineException::updateMe('Unknown field type \'' . $field['type'] .  '\'.');
     }
 
@@ -266,7 +271,7 @@ class SqlitePlatform extends AbstractPlatform
      */
     public function getPortableDeclaration(array $field)
     {
-        $dbType = strtolower($field['type']);
+        /*$dbType = strtolower($field['type']);
         $length = (isset($field['length'])) ? $field['length'] : null;
         $unsigned = (isset($field['unsigned'])) ? $field['unsigned'] : null;
         $fixed = null;
@@ -377,7 +382,7 @@ class SqlitePlatform extends AbstractPlatform
         return array('type'     => $type,
                      'length'   => $length,
                      'unsigned' => $unsigned,
-                     'fixed'    => $fixed);
+                     'fixed'    => $fixed);*/
     }
     
     /**
@@ -389,11 +394,11 @@ class SqlitePlatform extends AbstractPlatform
     protected function _getTransactionIsolationLevelSql($level)
     {
         switch ($level) {
-            case Doctrine_DBAL_Connection::TRANSACTION_READ_UNCOMMITTED:
+            case \Doctrine\DBAL\Connection::TRANSACTION_READ_UNCOMMITTED:
                 return 0;
-            case Doctrine_DBAL_Connection::TRANSACTION_READ_COMMITTED:
-            case Doctrine_DBAL_Connection::TRANSACTION_REPEATABLE_READ:
-            case Doctrine_DBAL_Connection::TRANSACTION_SERIALIZABLE:
+            case \Doctrine\DBAL\Connection::TRANSACTION_READ_COMMITTED:
+            case \Doctrine\DBAL\Connection::TRANSACTION_REPEATABLE_READ:
+            case \Doctrine\DBAL\Connection::TRANSACTION_SERIALIZABLE:
                 return 1;
             default:
                 return parent::_getTransactionIsolationLevelSql($level);
@@ -493,7 +498,7 @@ class SqlitePlatform extends AbstractPlatform
         if (empty($fields)) {
             throw ConnectionException::noFieldsSpecifiedForTable($name);
         }
-        $queryFields = $this->getFieldDeclarationListSql($fields);
+        $queryFields = $this->getColumnDeclarationListSql($fields);
 
         $autoinc = false;
         foreach($fields as $field) {
@@ -535,7 +540,7 @@ class SqlitePlatform extends AbstractPlatform
     /**
      * {@inheritdoc}
      */
-    public function getVarcharDeclarationSql(array $field)
+    public function getVarcharTypeDeclarationSql(array $field)
     {
         if ( ! isset($field['length'])) {
             if (array_key_exists('default', $field)) {

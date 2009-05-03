@@ -23,6 +23,8 @@ class AllTests
         $suite = new \Doctrine\Tests\DbalTestSuite('Doctrine DBAL');
 
         $suite->addTestSuite('Doctrine\Tests\DBAL\Platforms\SqlitePlatformTest');
+        $suite->addTestSuite('Doctrine\Tests\DBAL\Platforms\MySqlPlatformTest');
+        $suite->addTestSuite('Doctrine\Tests\DBAL\Platforms\PostgreSqlPlatformTest');
         
         return $suite;
     }

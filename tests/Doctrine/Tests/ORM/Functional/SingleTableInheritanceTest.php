@@ -22,7 +22,6 @@ class SingleTableInheritanceTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
     public function testCRUD()
     {
-        
         $parent = new ParentEntity;
         $parent->setData('foobar');
 
@@ -31,7 +30,6 @@ class SingleTableInheritanceTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $child = new ChildEntity;
         $child->setData('thedata');
         $child->setNumber(1234);
-        //$child->setRelatedEntity($relatedEntity);
 
         $this->_em->save($child);
 

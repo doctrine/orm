@@ -75,7 +75,7 @@ final class PersistentCollection extends \Doctrine\Common\Collections\Collection
     private $_association;
 
     /**
-     * The name of the field that is used for collection key mapping.
+     * The name of the field that is used for collection indexing.
      *
      * @var string
      */
@@ -90,7 +90,7 @@ final class PersistentCollection extends \Doctrine\Common\Collections\Collection
     
     /**
      * The name of the field on the target entities that points to the owner
-     * of the collection. This is only set if the association is bidirectional.
+     * of the collection. This is only set if the association is bi-directional.
      *
      * @var string
      */
@@ -102,7 +102,7 @@ final class PersistentCollection extends \Doctrine\Common\Collections\Collection
      * @var boolean
      * @see setHydrationFlag()
      */
-    private $_hydrationFlag;
+    private $_hydrationFlag = false;
 
     /**
      * The class descriptor of the owning entity.

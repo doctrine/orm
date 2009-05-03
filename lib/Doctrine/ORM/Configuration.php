@@ -16,7 +16,7 @@
  *
  * This software consists of voluntary contributions made by many individuals
  * and is licensed under the LGPL. For more information, see
- * <http://www.phpdoctrine.org>.
+ * <http://www.doctrine-project.org>.
  */
 
 namespace Doctrine\ORM;
@@ -26,12 +26,11 @@ use Doctrine\ORM\Mapping\Driver\AnnotationDriver;
 /**
  * Configuration container for all configuration options of Doctrine.
  * It combines all configuration options from DBAL & ORM.
- * 
- * INTERNAL: When adding a new configuration option just write a getter/setter
- * pair and add the option to the _attributes array with a proper default value.
  *
  * @author Roman Borschel <roman@code-factory.org>
  * @since 2.0
+ * @internal When adding a new configuration option just write a getter/setter
+ * pair and add the option to the _attributes array with a proper default value.
  */
 class Configuration extends \Doctrine\DBAL\Configuration
 {    
@@ -44,8 +43,19 @@ class Configuration extends \Doctrine\DBAL\Configuration
             'resultCacheImpl' => null,
             'queryCacheImpl' => null,
             'metadataCacheImpl' => null,
-            'metadataDriverImpl' => new AnnotationDriver()
+            'metadataDriverImpl' => new AnnotationDriver(),
+            'dqlClassAliasMap' => array()
             ));
+    }
+
+    public function getDqlClassAliasMap()
+    {
+        return $this->_attributes['dqlClassAliasMap'];
+    }
+
+    public function setDqlClassAliasMap(array $map)
+    {
+        $this->_attributes['dqlClassAliasMap'] = $map;
     }
 
     public function setMetadataDriverImpl($driverImpl)

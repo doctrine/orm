@@ -53,7 +53,7 @@ class DatabasePlatformMock extends \Doctrine\DBAL\Platforms\AbstractPlatform
     protected function _getCommonIntegerTypeDeclarationSql(array $columnDef) {}
 
     /** @override */
-    public function getVarcharDeclarationSql(array $field) {}
+    public function getVarcharTypeDeclarationSql(array $field) {}
     
     /* MOCK API */
     

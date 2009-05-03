@@ -1,63 +1,35 @@
 <?php
+/*
+ *  $Id$
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+ * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+ * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+ * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+ * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+ * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ * This software consists of voluntary contributions made by many individuals
+ * and is licensed under the LGPL. For more information, see
+ * <http://www.doctrine-project.org>.
+ */
 
 namespace Doctrine\DBAL\Platforms;
 
+/**
+ * PostgreSqlPlatform.
+ *
+ * @since 2.0
+ * @author Roman Borschel <roman@code-factory.org>
+ * @author Lukas Smith <smith@pooteeweet.org> (PEAR MDB2 library)
+ */
 class PostgreSqlPlatform extends AbstractPlatform
 {
-    /**
-     * The reserved keywords by pgsql. Ordered alphabetically.
-     * 
-     * @param array
-     * @todo Nedded? What about lazy initialization?
-     */
-    /*protected static $_reservedKeywords = array(
-            'abort', 'absolute', 'access', 'action', 'add', 'after', 'aggregate',
-            'all', 'alter', 'analyse', 'analyze', 'and', 'any', 'as', 'asc',
-            'assertion', 'assignment', 'at', 'authorization', 'backward', 'before',
-            'begin', 'between', 'bigint', 'binary', 'bit', 'boolean', 'both',
-            'by', 'cache', 'called', 'cascade', 'case', 'cast', 'chain', 'char',
-            'character', 'characteristics', 'check', 'checkpoint', 'class',
-            'close', 'cluster', 'coalesce', 'collate', 'column', 'comment',
-            'commit', 'committed', 'constraint', 'constraints', 'conversion',
-            'convert', 'copy', 'create', 'createdb', 'createuser', 'cross',
-            'current_date', 'current_time', 'current_timestamp', 'current_user',
-            'cursor', 'cycle', 'database', 'day', 'deallocate', 'dec', 'decimal',
-            'declare', 'default', 'deferrable', 'deferred', 'definer', 'delete',
-            'delimiter', 'delimiters', 'desc', 'distinct', 'do', 'domain', 'double',
-            'drop', 'each', 'else', 'encoding', 'encrypted', 'end', 'escape',
-            'except', 'exclusive', 'execute', 'exists', 'explain', 'external',
-            'extract', 'false', 'fetch', 'float', 'for', 'force', 'foreign',
-            'forward', 'freeze', 'from', 'full', 'function', 'get', 'global',
-            'grant', 'group', 'handler', 'having', 'hour', 'ilike', 'immediate',
-            'immutable', 'implicit', 'in', 'increment', 'index', 'inherits',
-            'initially', 'inner', 'inout', 'input', 'insensitive', 'insert',
-            'instead', 'int', 'integer', 'intersect', 'interval', 'into', 'invoker',
-            'is', 'isnull', 'isolation', 'join', 'key', 'lancompiler', 'language',
-            'leading', 'left', 'level', 'like', 'limit', 'listen', 'load', 'local',
-            'localtime', 'localtimestamp', 'location', 'lock', 'match', 'maxvalue',
-            'minute', 'minvalue', 'mode', 'month', 'move', 'names', 'national',
-            'natural', 'nchar', 'new', 'next', 'no', 'nocreatedb', 'nocreateuser',
-            'none', 'not', 'nothing', 'notify', 'notnull', 'null', 'nullif',
-            'numeric', 'of', 'off', 'offset', 'oids', 'old', 'on', 'only', 'operator',
-            'option', 'or', 'order', 'out', 'outer', 'overlaps', 'overlay',
-            'owner', 'partial', 'password', 'path', 'pendant', 'placing', 'position',
-            'precision', 'prepare', 'primary', 'prior', 'privileges', 'procedural',
-            'procedure', 'read', 'real', 'recheck', 'references', 'reindex',
-            'relative', 'rename', 'replace', 'reset', 'restrict', 'returns',
-            'revoke', 'right', 'rollback', 'row', 'rule', 'schema', 'scroll',
-            'second', 'security', 'select', 'sequence', 'serializable', 'session',
-            'session_user', 'set', 'setof', 'share', 'show', 'similar', 'simple',
-            'smallint', 'some', 'stable', 'start', 'statement', 'statistics',
-            'stdin', 'stdout', 'storage', 'strict', 'substring', 'sysid', 'table',
-            'temp', 'template', 'temporary', 'then', 'time', 'timestamp', 'to',
-            'toast', 'trailing', 'transaction', 'treat', 'trigger', 'trim', 'true',
-            'truncate', 'trusted', 'type', 'unencrypted', 'union', 'unique',
-            'unknown', 'unlisten', 'until', 'update', 'usage', 'user', 'using',
-            'vacuum', 'valid', 'validator', 'values', 'varchar', 'varying',
-            'verbose', 'version', 'view', 'volatile', 'when', 'where', 'with',
-            'without', 'work', 'write', 'year','zone');*/
-    
-    
     /**
      * Constructor.
      * Creates a new PostgreSqlPlatform.
@@ -65,13 +37,6 @@ class PostgreSqlPlatform extends AbstractPlatform
     public function __construct()
     {
         parent::__construct();
-        $this->_properties['string_quoting'] = array('start' => "'",
-                                                    'end' => "'",
-                                                    'escape' => "'",
-                                                    'escape_pattern' => '\\');
-        $this->_properties['identifier_quoting'] = array('start' => '"',
-                                                        'end' => '"',
-                                                        'escape' => '"');
     }
     
     /**
@@ -98,7 +63,7 @@ class PostgreSqlPlatform extends AbstractPlatform
      *      declare the specified field.
      * @override
      */
-    public function getNativeDeclaration(array $field)
+    /*public function getNativeDeclaration(array $field)
     {
         if ( ! isset($field['type'])) {
             throw DoctrineException::updateMe('Missing column type.');
@@ -162,7 +127,7 @@ class PostgreSqlPlatform extends AbstractPlatform
                 return 'NUMERIC('.$length.','.$scale.')';
         }
         throw DoctrineException::updateMe('Unknown field type \'' . $field['type'] .  '\'.');
-    }
+    }*/
 
     /**
      * Maps a native array description of a field to a portable Doctrine datatype and length
@@ -172,9 +137,8 @@ class PostgreSqlPlatform extends AbstractPlatform
      * @return array containing the various possible types, length, sign, fixed
      * @override
      */
-    public function getPortableDeclaration(array $field)
+    /*public function getPortableDeclaration(array $field)
     {
-
         $length = (isset($field['length'])) ? $field['length'] : null;
         if ($length == '-1' && isset($field['atttypmod'])) {
             $length = $field['atttypmod'] - 4;
@@ -300,7 +264,7 @@ class PostgreSqlPlatform extends AbstractPlatform
                      'length'   => $length,
                      'unsigned' => $unsigned,
                      'fixed'    => $fixed);
-    }
+    }*/
 
     /**
      * Returns the md5 sum of a field.
@@ -323,7 +287,7 @@ class PostgreSqlPlatform extends AbstractPlatform
      */
     public function getMd5Expression($column)
     {
-        $column = $this->getIdentifier($column);
+        $column = $this->quoteIdentifier($column);
 
         if ($this->_version > 7) {
             return 'MD5(' . $column . ')';
@@ -345,10 +309,10 @@ class PostgreSqlPlatform extends AbstractPlatform
      */
     public function getSubstringExpression($value, $from, $len = null)
     {
-        $value = $this->getIdentifier($value);
+        $value = $this->quoteIdentifier($value);
 
         if ($len === null) {
-            $len = $this->getIdentifier($len);
+            $len = $this->quoteIdentifier($len);
             return 'SUBSTR(' . $value . ', ' . $from . ')';
         } else {
             return 'SUBSTR(' . $value . ', ' . $from . ', ' . $len . ')';
@@ -778,7 +742,7 @@ class PostgreSqlPlatform extends AbstractPlatform
 
         if (isset($changes['add']) && is_array($changes['add'])) {
             foreach ($changes['add'] as $fieldName => $field) {
-                $query = 'ADD ' . $this->getDeclarationSql($fieldName, $field);
+                $query = 'ADD ' . $this->getColumnDeclarationSql($fieldName, $field);
                 $sql[] = 'ALTER TABLE ' . $name . ' ' . $query;
             }
         }
@@ -845,11 +809,10 @@ class PostgreSqlPlatform extends AbstractPlatform
      * @return string
      * @override
      */
-    public function getCreateSequenceSql($sequenceName, $start = 1, array $options = array())
+    public function getCreateSequenceSql($sequenceName, $start = 1, $allocationSize = 1)
     {
-        $sequenceName = $this->quoteIdentifier($this->formatter->getSequenceName($sequenceName), true);
-        return 'CREATE SEQUENCE ' . $sequenceName . ' INCREMENT 1' .
-                ($start < 1 ? ' MINVALUE ' . $start : '') . ' START ' . $start;
+        return 'CREATE SEQUENCE ' . $this->quoteIdentifier($sequenceName)
+                . ' INCREMENT BY ' . $allocationSize . ' START ' . $start;
     }
     
     /**
@@ -860,8 +823,7 @@ class PostgreSqlPlatform extends AbstractPlatform
      */
     public function getDropSequenceSql($sequenceName)
     {
-        $sequenceName = $this->quoteIdentifier($this->formatter->getSequenceName($sequenceName), true);
-        return 'DROP SEQUENCE ' . $sequenceName;
+        return 'DROP SEQUENCE ' . $this->quoteIdentifier($sequenceName);
     }
     
     /**
@@ -881,7 +843,7 @@ class PostgreSqlPlatform extends AbstractPlatform
             throw DoctrineException::updateMe('no fields specified for table ' . $name);
         }
 
-        $queryFields = $this->getFieldDeclarationListSql($fields);
+        $queryFields = $this->getColumnDeclarationListSql($fields);
 
         if (isset($options['primary']) && ! empty($options['primary'])) {
             $keyColumns = array_values($options['primary']);
@@ -912,55 +874,9 @@ class PostgreSqlPlatform extends AbstractPlatform
     }
     
     /**
-     * Obtain DBMS specific SQL code portion needed to declare an integer type
-     * field to be used in statements like CREATE TABLE.
-     *
-     * @param string $name name the field to be declared.
-     * @param array $field associative array with the name of the properties
-     *       of the field being declared as array indexes. Currently, the types
-     *       of supported field properties are as follows:
-     *
-     *       unsigned
-     *           Boolean flag that indicates whether the field should be
-     *           declared as unsigned integer if possible.
-     *
-     *       default
-     *           Integer value to be used as default for this field.
-     *
-     *       notnull
-     *           Boolean flag that indicates whether this field is constrained
-     *           to not be set to null.
-     * @return string DBMS specific SQL code portion that should be used to
-     *       declare the specified field.
-     */
-    public function getIntegerDeclarationSql($name, $field)
-    {
-        if ( ! empty($field['autoincrement'])) {
-            $name = $this->quoteIdentifier($name, true);
-            return $name . ' ' . $this->getNativeDeclaration($field);
-        }
-
-        $default = '';
-        if (array_key_exists('default', $field)) {
-            if ($field['default'] === '') {
-                $field['default'] = empty($field['notnull']) ? null : 0;
-            }
-            $default = ' DEFAULT '.$this->quote($field['default'], $field['type']);
-        } elseif (empty($field['notnull'])) {
-            $default = ' DEFAULT NULL';
-        }
-
-        $notnull = empty($field['notnull']) ? '' : ' NOT NULL';
-        $name = $this->quoteIdentifier($name, true);
-        
-        return $name . ' ' . $this->getNativeDeclaration($field) . $default . $notnull;
-    }
-    
-    /**
      * Postgres wants boolean values converted to the strings 'true'/'false'.
      *
      * @param array $item
-     * @return void
      * @override
      */
     public function convertBooleans($item)
@@ -1046,7 +962,7 @@ class PostgreSqlPlatform extends AbstractPlatform
      * @params array $field
      * @override
      */
-    public function getVarcharDeclarationSql(array $field)
+    public function getVarcharTypeDeclarationSql(array $field)
     {
         if ( ! isset($field['length'])) {
             if (array_key_exists('default', $field)) {

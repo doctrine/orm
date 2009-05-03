@@ -152,7 +152,7 @@ class MySqlPlatform extends AbstractPlatform
      *
      * @params array $field
      */
-    public function getVarcharDeclarationSql(array $field)
+    public function getVarcharTypeDeclarationSql(array $field)
     {
         if ( ! isset($field['length'])) {
             if (array_key_exists('default', $field)) {
@@ -215,8 +215,8 @@ class MySqlPlatform extends AbstractPlatform
      */
     public function getNativeDeclaration(array $field)
     {
-        if ( ! isset($field['type'])) {
-            throw \Doctrine\Common\DoctrineException::updateMe('Missing column type.');
+        /*if ( ! isset($field['type'])) {
+            throw DoctrineException::updateMe('Missing column type.');
         }
 
         switch ($field['type']) {
@@ -229,7 +229,7 @@ class MySqlPlatform extends AbstractPlatform
             case 'object':
             case 'string':
             case 'gzip':
-                return $this->getVarcharDeclarationSql($field);
+                return $this->getVarcharTypeDeclarationSql($field);
             case 'clob':
                 return $this->getClobDeclarationSql($field);
             case 'blob':
@@ -285,8 +285,8 @@ class MySqlPlatform extends AbstractPlatform
                 $length = !empty($field['length']) ? $field['length'] : 18;
                 $scale = !empty($field['scale']) ? $field['scale'] : $this->conn->getAttribute(Doctrine::ATTR_DECIMAL_PLACES);
                 return 'DECIMAL('.$length.','.$scale.')';
-        }
-        throw \Doctrine\Common\DoctrineException::updateMe('Unknown field type \'' . $field['type'] .  '\'.');
+        }*/
+        throw DoctrineException::updateMe('Unknown field type \'' . $field['type'] .  '\'.');
     }
 
     /**
@@ -298,7 +298,7 @@ class MySqlPlatform extends AbstractPlatform
      */
     public function getPortableDeclaration(array $field)
     {
-        $dbType = strtolower($field['type']);
+        /*$dbType = strtolower($field['type']);
         $dbType = strtok($dbType, '(), ');
         if ($dbType == 'national') {
             $dbType = strtok('(), ');
@@ -448,7 +448,7 @@ class MySqlPlatform extends AbstractPlatform
             return array('type' => $type, 'length' => $length, 'unsigned' => $unsigned, 'fixed' => $fixed);
         } else {
             return array('type' => $type, 'length' => $length, 'unsigned' => $unsigned, 'fixed' => $fixed, 'values' => $values);
-        }
+        }*/
     }
     
     /**
@@ -602,7 +602,7 @@ class MySqlPlatform extends AbstractPlatform
         if (empty($fields)) {
             throw DoctrineException::updateMe('no fields specified for table "'.$name.'"');
         }
-        $queryFields = $this->getFieldDeclarationListSql($fields);
+        $queryFields = $this->getColumnDeclarationListSql($fields);
 
         // build indexes for all foreign key fields (needed in MySQL!!)
         if (isset($options['foreignKeys'])) {
@@ -694,10 +694,10 @@ class MySqlPlatform extends AbstractPlatform
     }
     
     /**
-     * alter an existing table
+     * Gets the SQL to alter an existing table.
      *
-     * @param string $name         name of the table that is intended to be changed.
-     * @param array $changes     associative array that contains the details of each type
+     * @param string $name The name of the table that is intended to be changed.
+     * @param array $changes Associative array that contains the details of each type
      *                             of change that is intended to be performed. The types of
      *                             changes that are currently supported are defined as follows:
      *
@@ -815,7 +815,7 @@ class MySqlPlatform extends AbstractPlatform
                 if ($query) {
                     $query.= ', ';
                 }
-                $query.= 'ADD ' . $this->getDeclarationSql($fieldName, $field);
+                $query.= 'ADD ' . $this->getColumnDeclarationSql($fieldName, $field);
             }
         }
 
@@ -849,7 +849,7 @@ class MySqlPlatform extends AbstractPlatform
                 }
                 $oldFieldName = $this->quoteIdentifier($oldFieldName, true);
                 $query .= 'CHANGE ' . $oldFieldName . ' '
-                        . $this->getDeclarationSql($fieldName, $field['definition']);
+                        . $this->getColumnDeclarationSql($fieldName, $field['definition']);
             }
         }
 
@@ -861,7 +861,7 @@ class MySqlPlatform extends AbstractPlatform
                 $field = $changes['rename'][$renamedField];
                 $renamedField = $this->quoteIdentifier($renamedField, true);
                 $query .= 'CHANGE ' . $renamedField . ' '
-                        . $this->getDeclarationSql($field['name'], $field['definition']);
+                        . $this->getColumnDeclarationSql($field['name'], $field['definition']);
             }
         }
 
@@ -912,7 +912,6 @@ class MySqlPlatform extends AbstractPlatform
     public function getCreateIndexSql($table, $name, array $definition)
     {
         $table = $table;
-        $name = $this->formatter->getIndexName($name);
         $name = $this->quoteIdentifier($name);
         $type = '';
         if (isset($definition['type'])) {
@@ -969,22 +968,10 @@ class MySqlPlatform extends AbstractPlatform
     }
 
     /** @override */
-    /*public function getTinyIntTypeDeclarationSql(array $field)
-    {
-        return 'TINYINT' . $this->_getCommonIntegerTypeDeclarationSql($field);
-    }*/
-
-    /** @override */
     public function getSmallIntTypeDeclarationSql(array $field)
     {
         return 'SMALLINT' . $this->_getCommonIntegerTypeDeclarationSql($field);
     }
-
-    /** @override */
-    /*public function getMediumIntTypeDeclarationSql(array $field)
-    {
-        return 'MEDIUMINT' . $this->_getCommonIntegerTypeDeclarationSql($field);
-    }*/
 
     /** @override */
     protected function _getCommonIntegerTypeDeclarationSql(array $columnDef)
@@ -996,27 +983,6 @@ class MySqlPlatform extends AbstractPlatform
         $unsigned = (isset($columnDef['unsigned']) && $columnDef['unsigned']) ? ' UNSIGNED' : '';
 
         return $unsigned . $autoinc;
-    }
-    
-    /**
-     * Obtain DBMS specific SQL code portion needed to set a default value
-     * declaration to be used in statements like CREATE TABLE.
-     *
-     * @param array $field      field definition array
-     * @return string           DBMS specific SQL code portion needed to set a default value
-     * @override
-     */
-    public function getDefaultFieldDeclarationSql($field)
-    {
-        $default = empty($field['notnull']) ? ' DEFAULT NULL' : '';
-
-        if (isset($field['default']) && ( ! isset($field['length']) || $field['length'] <= 255)) {
-            if ($field['default'] === '') {
-                $field['default'] = null;
-            }
-            $default = ' DEFAULT ' . $this->quote($field['default'], $field['type']);
-        }
-        return $default;
     }
     
     /**
@@ -1097,7 +1063,6 @@ class MySqlPlatform extends AbstractPlatform
     }
     
     /**
-     * getAdvancedForeignKeyOptions
      * Return the FOREIGN KEY query section dealing with non-standard options
      * as MATCH, INITIALLY DEFERRED, ON UPDATE, ...
      *
@@ -1121,32 +1086,28 @@ class MySqlPlatform extends AbstractPlatform
     }
     
     /**
-     * drop existing index
+     * Gets the SQL to drop an index of a table.
      *
      * @param string    $table          name of table that should be used in method
      * @param string    $name           name of the index to be dropped
-     * @return void
      * @override
      */
     public function getDropIndexSql($table, $name)
     {
-        $table  = $this->quoteIdentifier($table, true);
-        $name   = $this->quoteIdentifier($this->formatter->getIndexName($name), true);
+        $table = $this->quoteIdentifier($table);
+        $name = $this->quoteIdentifier($name);
         return 'DROP INDEX ' . $name . ' ON ' . $table;
     }
     
     /**
-     * dropTable
+     * Gets the SQL to drop a table.
      *
-     * @param string    $table          name of table that should be dropped from the database
-     * @throws PDOException
-     * @return void
+     * @param string $table The name of table to drop.
      * @override
      */
     public function getDropTableSql($table)
     {
-        $table  = $this->quoteIdentifier($table, true);
-        return 'DROP TABLE ' . $table;
+        return 'DROP TABLE ' . $this->quoteIdentifier($table);
     }
     
     /**

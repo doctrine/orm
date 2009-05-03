@@ -65,9 +65,9 @@ abstract class AbstractPlatform
     }
 
     /**
-     * Gets whether to quote identifiers.
+     * Gets whether the platform instance currently quotes identifiers in generated SQL.
      *
-     * @return boolean
+     * @return boolean TRUE
      */
     public function getQuoteIdentifiers()
     {
@@ -95,7 +95,7 @@ abstract class AbstractPlatform
     }
     
     /**
-     * Gets the string portion that starts an SQL comment.
+     * Gets the string portion that ends an SQL comment.
      *
      * @return string
      */
@@ -142,7 +142,7 @@ abstract class AbstractPlatform
      */
     public function getAvgExpression($column)
     {
-        $column = $this->getIdentifier($column);
+        $column = $this->quoteIdentifier($column);
         return 'AVG(' .  $column . ')';
     }
 
@@ -157,7 +157,7 @@ abstract class AbstractPlatform
      */
     public function getCountExpression($column)
     {
-        $column = $this->getIdentifier($column);
+        $column = $this->quoteIdentifier($column);
         return 'COUNT(' . $column . ')';
     }
 
@@ -169,7 +169,7 @@ abstract class AbstractPlatform
      */
     public function getMaxExpression($column)
     {
-        $column = $this->getIdentifier($column);
+        $column = $this->quoteIdentifier($column);
         return 'MAX(' . $column . ')';
     }
 
@@ -181,7 +181,7 @@ abstract class AbstractPlatform
      */
     public function getMinExpression($column)
     {
-        $column = $this->getIdentifier($column);
+        $column = $this->quoteIdentifier($column);
         return 'MIN(' . $column . ')';
     }
 
@@ -193,7 +193,7 @@ abstract class AbstractPlatform
      */
     public function getSumExpression($column)
     {
-        $column = $this->getIdentifier($column);
+        $column = $this->quoteIdentifier($column);
         return 'SUM(' . $column . ')';
     }
 
@@ -208,7 +208,7 @@ abstract class AbstractPlatform
      */
     public function getMd5Expression($column)
     {
-        $column = $this->getIdentifier($column);
+        $column = $this->quoteIdentifier($column);
         return 'MD5(' . $column . ')';
     }
 
@@ -221,7 +221,7 @@ abstract class AbstractPlatform
      */
     public function getLengthExpression($column)
     {
-        $column = $this->getIdentifier($column);
+        $column = $this->quoteIdentifier($column);
         return 'LENGTH(' . $column . ')';
     }
 
@@ -234,7 +234,7 @@ abstract class AbstractPlatform
      */
     public function getRoundExpression($column, $decimals = 0)
     {
-        $column = $this->getIdentifier($column);
+        $column = $this->quoteIdentifier($column);
 
         return 'ROUND(' . $column . ', ' . $decimals . ')';
     }
@@ -249,8 +249,8 @@ abstract class AbstractPlatform
      */
     public function getModExpression($expression1, $expression2)
     {
-        $expression1 = $this->getIdentifier($expression1);
-        $expression2 = $this->getIdentifier($expression2);
+        $expression1 = $this->quoteIdentifier($expression1);
+        $expression2 = $this->quoteIdentifier($expression2);
         return 'MOD(' . $expression1 . ', ' . $expression2 . ')';
     }
 
@@ -349,10 +349,10 @@ abstract class AbstractPlatform
      * @param string $value
      * @return string   SQL soundex function with given parameter
      */
-    public function getSoundexExpression($value)
+    /*public function getSoundexExpression($value)
     {
         throw DoctrineException::updateMe('SQL soundex function not supported by this driver.');
-    }
+    }*/
 
     /**
      * return string to call a function to get a substring inside an SQL statement
@@ -368,11 +368,11 @@ abstract class AbstractPlatform
      */
     public function getSubstringExpression($value, $from, $len = null)
     {
-        $value = $this->getIdentifier($value);
+        $value = $this->quoteIdentifier($value);
         if ($len === null)
             return 'SUBSTRING(' . $value . ' FROM ' . $from . ')';
         else {
-            $len = $this->getIdentifier($len);
+            $len = $this->quoteIdentifier($len);
             return 'SUBSTRING(' . $value . ' FROM ' . $from . ' FOR ' . $len . ')';
         }
     }
@@ -388,9 +388,7 @@ abstract class AbstractPlatform
      */
     public function getConcatExpression()
     {
-        $args = func_get_args();
-
-        return join(' || ' , $args);
+        return join(' || ' , func_get_args());
     }
 
     /**
@@ -408,8 +406,7 @@ abstract class AbstractPlatform
      */
     public function getNotExpression($expression)
     {
-        $expression = $this->getIdentifier($expression);
-        return 'NOT(' . $expression . ')';
+        return 'NOT(' . $this->quoteIdentifier($expression) . ')';
     }
 
     /**
@@ -424,7 +421,7 @@ abstract class AbstractPlatform
      * @param string|array(string)
      * @return string an expression
      */
-    private function getBasicMathExpression($type, array $args)
+    /*private function _getBasicMathExpression($type, array $args)
     {
         $elements = $this->getIdentifiers($args);
         if (count($elements) < 1) {
@@ -435,7 +432,7 @@ abstract class AbstractPlatform
         } else {
             return '(' . implode(' ' . $type . ' ', $elements) . ')';
         }
-    }
+    }*/
 
     /**
      * Returns the SQL to add values or expressions together.
@@ -457,10 +454,10 @@ abstract class AbstractPlatform
      * @param string|array(string)
      * @return string an expression
      */
-    public function getAddExpression(array $args)
+    /*public function getAddExpression(array $args)
     {
         return $this->basicMath('+', $args);
-    }
+    }*/
 
     /**
      * Returns the SQL to subtract values or expressions from eachother.
@@ -482,10 +479,10 @@ abstract class AbstractPlatform
      * @param string|array(string)
      * @return string an expression
      */
-    public function getSubExpression(array $args)
+    /*public function getSubExpression(array $args)
     {
         return $this->basicMath('-', $args );
-    }
+    }*/
 
     /**
      * Returns the SQL to multiply values or expressions by eachother.
@@ -507,10 +504,10 @@ abstract class AbstractPlatform
      * @param string|array(string)
      * @return string an expression
      */
-    public function getMulExpression(array $args)
+    /*public function getMulExpression(array $args)
     {
         return $this->basicMath('*', $args);
-    }
+    }*/
 
     /**
      * Returns the SQL to divide values or expressions by eachother.
@@ -532,10 +529,10 @@ abstract class AbstractPlatform
      * @param string|array(string)
      * @return string an expression
      */
-    public function getDivExpression(array $args)
+    /*public function getDivExpression(array $args)
     {
         return $this->basicMath('/', $args);
-    }
+    }*/
 
     /**
      * Returns the SQL to check if two values are equal.
@@ -552,12 +549,12 @@ abstract class AbstractPlatform
      * @param string $value2 logical expression to compare with
      * @return string logical expression
      */
-    public function getEqExpression($value1, $value2)
+    /*public function getEqExpression($value1, $value2)
     {
-        $value1 = $this->getIdentifier($value1);
-        $value2 = $this->getIdentifier($value2);
+        $value1 = $this->quoteIdentifier($value1);
+        $value2 = $this->quoteIdentifier($value2);
         return $value1 . ' = ' . $value2;
-    }
+    }*/
 
     /**
      * Returns the SQL to check if two values are unequal.
@@ -574,12 +571,12 @@ abstract class AbstractPlatform
      * @param string $value2 logical expression to compare with
      * @return string logical expression
      */
-    public function getNeqExpression($value1, $value2)
+    /*public function getNeqExpression($value1, $value2)
     {
-        $value1 = $this->getIdentifier($value1);
-        $value2 = $this->getIdentifier($value2);
+        $value1 = $this->quoteIdentifier($value1);
+        $value2 = $this->quoteIdentifier($value2);
         return $value1 . ' <> ' . $value2;
-    }
+    }*/
 
     /**
      * Returns the SQL to check if one value is greater than another value.
@@ -596,12 +593,12 @@ abstract class AbstractPlatform
      * @param string $value2 logical expression to compare with
      * @return string logical expression
      */
-    public function getGtExpression($value1, $value2)
+    /*public function getGtExpression($value1, $value2)
     {
-        $value1 = $this->getIdentifier($value1);
-        $value2 = $this->getIdentifier($value2);
+        $value1 = $this->quoteIdentifier($value1);
+        $value2 = $this->quoteIdentifier($value2);
         return $value1 . ' > ' . $value2;
-    }
+    }*/
 
     /**
      * Returns the SQL to check if one value is greater than or equal to
@@ -619,12 +616,12 @@ abstract class AbstractPlatform
      * @param string $value2 logical expression to compare with
      * @return string logical expression
      */
-    public function getGteExpression($value1, $value2)
+    /*public function getGteExpression($value1, $value2)
     {
-        $value1 = $this->getIdentifier($value1);
-        $value2 = $this->getIdentifier($value2);
+        $value1 = $this->quoteIdentifier($value1);
+        $value2 = $this->quoteIdentifier($value2);
         return $value1 . ' >= ' . $value2;
-    }
+    }*/
 
     /**
      * Returns the SQL to check if one value is less than another value.
@@ -641,12 +638,12 @@ abstract class AbstractPlatform
      * @param string $value2        logical expression to compare with
      * @return string logical expression
      */
-    public function getLtExpression($value1, $value2)
+    /*public function getLtExpression($value1, $value2)
     {
-        $value1 = $this->getIdentifier($value1);
-        $value2 = $this->getIdentifier($value2);
+        $value1 = $this->quoteIdentifier($value1);
+        $value2 = $this->quoteIdentifier($value2);
         return $value1 . ' < ' . $value2;
-    }
+    }*/
 
     /**
      * Returns the SQL to check if one value is less than or equal to
@@ -664,16 +661,16 @@ abstract class AbstractPlatform
      * @param string $value2        logical expression to compare with
      * @return string logical expression
      */
-    public function getLteExpression($value1, $value2)
+    /*public function getLteExpression($value1, $value2)
     {
-        $value1 = $this->getIdentifier($value1);
-        $value2 = $this->getIdentifier($value2);
+        $value1 = $this->quoteIdentifier($value1);
+        $value2 = $this->quoteIdentifier($value2);
         return $value1 . ' <= ' . $value2;
-    }
+    }*/
 
     /**
      * Returns the SQL to check if a value is one in a set of
-     * given values..
+     * given values.
      *
      * in() accepts an arbitrary number of parameters. The first parameter
      * must always specify the value that should be matched against. Successive
@@ -698,7 +695,7 @@ abstract class AbstractPlatform
             $values = array($values);
         }
         $values = $this->getIdentifiers($values);
-        $column = $this->getIdentifier($column);
+        $column = $this->quoteIdentifier($column);
 
         if (count($values) == 0) {
             throw DoctrineException::updateMe('Values array for IN operator should not be empty.');
@@ -722,7 +719,7 @@ abstract class AbstractPlatform
      */
     public function getIsNullExpression($expression)
     {
-        $expression = $this->getIdentifier($expression);
+        $expression = $this->quoteIdentifier($expression);
         return $expression . ' IS NULL';
     }
 
@@ -742,7 +739,7 @@ abstract class AbstractPlatform
      */
     public function getIsNotNullExpression($expression)
     {
-        $expression = $this->getIdentifier($expression);
+        $expression = $this->quoteIdentifier($expression);
         return $expression . ' IS NOT NULL';
     }
 
@@ -771,9 +768,9 @@ abstract class AbstractPlatform
      */
     public function getBetweenExpression($expression, $value1, $value2)
     {
-        $expression = $this->getIdentifier($expression);
-        $value1 = $this->getIdentifier($value1);
-        $value2 = $this->getIdentifier($value2);
+        $expression = $this->quoteIdentifier($expression);
+        $value1 = $this->quoteIdentifier($value1);
+        $value2 = $this->quoteIdentifier($value2);
         return $expression . ' BETWEEN ' .$value1 . ' AND ' . $value2;
     }
 
@@ -782,10 +779,10 @@ abstract class AbstractPlatform
      *
      * @return string to get global unique identifier
      */
-    public function getGuidExpression()
+    /*public function getGuidExpression()
     {
         throw DoctrineException::updateMe('method not implemented');
-    }
+    }*/
 
     /**
      * returns arcus cosine SQL string
@@ -1002,7 +999,7 @@ abstract class AbstractPlatform
             throw DoctrineException::updateMe('no fields specified for table ' . $name);
         }
 
-        $queryFields = $this->getFieldDeclarationListSql($columns);
+        $queryFields = $this->getColumnDeclarationListSql($columns);
 
         if (isset($options['primary']) && ! empty($options['primary'])) {
             $queryFields .= ', PRIMARY KEY(' . implode(', ', array_unique(array_values($options['primary']))) . ')';
@@ -1041,13 +1038,13 @@ abstract class AbstractPlatform
      *
      * @todo Throw exception by default?
      */
-    public function getCreateSequenceSql($sequenceName, $start = 1, array $options)
+    public function getCreateSequenceSql($sequenceName, $start = 1, $allocationSize = 1)
     {
         throw DoctrineException::updateMe('Create sequence not supported by this driver.');
     }
     
     /**
-     * create a constraint on a table
+     * Creates a constraint on a table.
      *
      * @param string    $table         name of the table on which the constraint is to be created
      * @param string    $name          name of the constraint to be created
@@ -1065,7 +1062,6 @@ abstract class AbstractPlatform
      *                                            'last_login' => array()
      *                                        )
      *                                    )
-     * @return void
      */
     public function getCreateConstraintSql($table, $name, $definition)
     {
@@ -1134,21 +1130,8 @@ abstract class AbstractPlatform
      *   + double quote (<kbd>"</kbd>) -- due to Oracle
      *   + brackets (<kbd>[</kbd> or <kbd>]</kbd>) -- due to Access
      *
-     * Delimited identifiers are known to generally work correctly under
-     * the following drivers:
-     *   + mssql
-     *   + mysql
-     *   + mysqli
-     *   + oci8
-     *   + pgsql
-     *   + sqlite
-     *
-     * InterBase doesn't seem to be able to use delimited identifiers
-     * via PHP 4.  They work fine under PHP 5.
-     *
      * @param string $str           identifier name to be quoted
      * @param bool $checkOption     check the 'quote_identifier' option
-     *
      * @return string               quoted identifier string
      */
     public function quoteIdentifier($str)
@@ -1187,7 +1170,7 @@ abstract class AbstractPlatform
     }
     
     /**
-     * generates the sql for altering an existing table
+     * Gets the sql for altering an existing table.
      * (this method is implemented by the drivers)
      *
      * @param string $name          name of the table that is intended to be changed.
@@ -1195,7 +1178,6 @@ abstract class AbstractPlatform
      * @param boolean $check        indicates whether the function should just check if the DBMS driver
      *                              can perform the requested table alterations if the value is true or
      *                              actually perform them otherwise.
-     * @see Doctrine_Export::alterTable()
      * @return string
      */
     public function getAlterTableSql($name, array $changes, $check = false)
@@ -1232,11 +1214,11 @@ abstract class AbstractPlatform
      *
      * @return string
      */
-    public function getFieldDeclarationListSql(array $fields)
+    public function getColumnDeclarationListSql(array $fields)
     {
         $queryFields = array();
         foreach ($fields as $fieldName => $field) {
-            $query = $this->getDeclarationSql($fieldName, $field);
+            $query = $this->getColumnDeclarationSql($fieldName, $field);
             $queryFields[] = $query;
         }
         return implode(', ', $queryFields);
@@ -1271,25 +1253,29 @@ abstract class AbstractPlatform
      *      check
      *          column check constraint
      *
-     * @return string  DBMS specific SQL code portion that should be used to
-     *      declare the specified field.
+     * @return string  DBMS specific SQL code portion that should be used to declare the column.
      */
-    public function getDeclarationSql($name, array $field)
+    public function getColumnDeclarationSql($name, array $field)
     {
-        $default = $this->getDefaultFieldDeclarationSql($field);
+        $default = $this->getDefaultValueDeclarationSql($field);
+
         $charset = (isset($field['charset']) && $field['charset']) ?
-                ' ' . $this->getCharsetFieldDeclarationSql($field['charset']) : '';
+                ' ' . $this->getColumnCharsetDeclarationSql($field['charset']) : '';
+
         $collation = (isset($field['collation']) && $field['collation']) ?
-                ' ' . $this->getCollationFieldDeclarationSql($field['collation']) : '';
+                ' ' . $this->getColumnCollationDeclarationSql($field['collation']) : '';
+
         $notnull = (isset($field['notnull']) && $field['notnull']) ? ' NOT NULL' : '';
+
         $unique = (isset($field['unique']) && $field['unique']) ?
                 ' ' . $this->getUniqueFieldDeclarationSql() : '';
+        
         $check = (isset($field['check']) && $field['check']) ?
                 ' ' . $field['check'] : '';
 
         $typeDecl = $field['type']->getSqlDeclaration($field, $this);
  
-        return $this->quoteIdentifier($name, true) . ' ' . $typeDecl . $charset . $default . $notnull . $unique . $check . $collation;
+        return $this->quoteIdentifier($name) . ' ' . $typeDecl . $charset . $default . $notnull . $unique . $check . $collation;
     }
 
     /**
@@ -1322,30 +1308,17 @@ abstract class AbstractPlatform
     abstract protected function _getCommonIntegerTypeDeclarationSql(array $columnDef);
 
     /**
-     * getDefaultDeclaration
      * Obtain DBMS specific SQL code portion needed to set a default value
      * declaration to be used in statements like CREATE TABLE.
      *
      * @param array $field      field definition array
      * @return string           DBMS specific SQL code portion needed to set a default value
      */
-    public function getDefaultFieldDeclarationSql($field)
+    public function getDefaultValueDeclarationSql($field)
     {
-        $default = '';
+        $default = empty($field['notnull']) ? ' DEFAULT NULL' : '';
+
         if (isset($field['default'])) {
-            if ($field['default'] === '') {
-                $field['default'] = empty($field['notnull'])
-                    ? null : $this->valid_default_values[$field['type']];
-
-                if ($field['default'] === '' &&
-                   ($this->_conn->getAttribute(Doctrine::ATTR_PORTABILITY) & Doctrine::PORTABILITY_EMPTY_TO_NULL)) {
-                    $field['default'] = null;
-                }
-            }
-
-            if ($field['type'] === 'boolean') {
-                $field['default'] = $this->convertBooleans($field['default']);
-            }
             $default = ' DEFAULT ' . $this->quote($field['default'], $field['type']);
         }
         return $default;
@@ -1510,7 +1483,6 @@ abstract class AbstractPlatform
     }
 
     /**
-     * getAdvancedForeignKeyOptions
      * Return the FOREIGN KEY query section dealing with non-standard options
      * as MATCH, INITIALLY DEFERRED, ON UPDATE, ...
      *
@@ -1613,7 +1585,7 @@ abstract class AbstractPlatform
      * @return string  DBMS specific SQL code portion needed to set the CHARACTER SET
      *                 of a field declaration.
      */
-    public function getCharsetFieldDeclarationSql($charset)
+    public function getColumnCharsetDeclarationSql($charset)
     {
         return '';
     }
@@ -1626,7 +1598,7 @@ abstract class AbstractPlatform
      * @return string  DBMS specific SQL code portion needed to set the COLLATION
      *                 of a field declaration.
      */
-    public function getCollationFieldDeclarationSql($collation)
+    public function getColumnCollationDeclarationSql($collation)
     {
         return '';
     }
@@ -1652,39 +1624,6 @@ abstract class AbstractPlatform
     {
         throw DoctrineException::updateMe("Method not implemented.");
     }
-    
-    /**
-     * Obtain DBMS specific SQL code portion needed to declare an text type
-     * field to be used in statements like CREATE TABLE.
-     *
-     * @param array $field  associative array with the name of the properties
-     *      of the field being declared as array indexes. Currently, the types
-     *      of supported field properties are as follows:
-     *
-     *      length
-     *          Integer value that determines the maximum length of the text
-     *          field. If this argument is missing the field should be
-     *          declared to have the longest length allowed by the DBMS.
-     *
-     *      default
-     *          Text value to be used as default for this field.
-     *
-     *      notnull
-     *          Boolean flag that indicates whether this field is constrained
-     *          to not be set to null.
-     *
-     * @return string  DBMS specific SQL code portion that should be used to
-     *      declare the specified field.
-     */
-    abstract public function getNativeDeclaration(array $field);
-    
-    /**
-     * Maps a native array description of a field to a Doctrine datatype and length
-     *
-     * @param array  $field native field description
-     * @return array containing the various possible types, length, sign, fixed
-     */
-    abstract public function getPortableDeclaration(array $field);
     
     /**
      * Whether the platform prefers sequences for ID generation.
@@ -1733,40 +1672,6 @@ abstract class AbstractPlatform
         }
 
         return $query;
-    }
-    
-    /**
-     * Creates DBMS specific LIMIT/OFFSET SQL for the subqueries that are used in the
-     * context of the limit-subquery construction.
-     * This default implementation uses the normal LIMIT/OFFSET creation of the
-     * platform as provided by {@see modifyLimitQuery()}. This means LIMIT/OFFSET
-     * in subqueries don't get any special treatment. Most of the time this is not
-     * sufficient (eg. MySql does not allow LIMIT in subqueries) and the concrete
-     * platforms should provide their own implementation.
-     *
-     * @param string $query  The SQL string to write to / append to.
-     * @return string
-     * @todo Remove the ORM dependency
-     */
-    public function writeLimitClauseInSubquery(\Doctrine\ORM\Mapping\ClassMetadata $rootClass,
-            $query, $limit = false, $offset = false)
-    {
-        return $this->modifyLimitQuery($query, $limit, $offset);
-    }
-    
-    /**
-     * Enter description here...
-     *
-     * @param unknown_type $name
-     * @return unknown
-     * @todo Remove. Move properties to DatabasePlatform.
-     */
-    public function getProperty($name)
-    {
-        if ( ! isset($this->_properties[$name])) {
-            throw DoctrineException::unknownProperty($name);
-        }
-        return $this->_properties[$name];
     }
     
     /**
@@ -1844,7 +1749,6 @@ abstract class AbstractPlatform
         return Connection::TRANSACTION_READ_COMMITTED;
     }
     
-    
     /* supports*() metods */
 
     /**
@@ -1920,7 +1824,7 @@ abstract class AbstractPlatform
     }
 
     /**
-     * Whether the platform supports getting the affected rows or a recent
+     * Whether the platform supports getting the affected rows of a recent
      * update/delete type query.
      *
      * @return boolean
@@ -1936,9 +1840,9 @@ abstract class AbstractPlatform
     }
 
     /**
-     * Gets the SQL snippet used to declare a VARCHAR column on the MySql platform.
+     * Gets the SQL snippet used to declare a VARCHAR column type.
      *
      * @params array $field
      */
-    abstract public function getVarcharDeclarationSql(array $field);
+    abstract public function getVarcharTypeDeclarationSql(array $field);
 }

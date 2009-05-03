@@ -661,6 +661,12 @@ class SqlWalker
         return $sql;
     }
 
+    /**
+     * Generates a discriminator column SQL condition for the class with the given DQL alias.
+     *
+     * @param string $dqlAlias
+     * @return string
+     */
     private function _generateDiscriminatorColumnConditionSql($dqlAlias)
     {
         $sql = '';

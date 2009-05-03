@@ -12,7 +12,7 @@ class VarcharType extends Type
     /** @override */
     public function getSqlDeclaration(array $fieldDeclaration, \Doctrine\DBAL\Platforms\AbstractPlatform $platform)
     {
-        return $platform->getVarcharDeclarationSql($fieldDeclaration);
+        return $platform->getVarcharTypeDeclarationSql($fieldDeclaration);
     }
 
     /** @override */
