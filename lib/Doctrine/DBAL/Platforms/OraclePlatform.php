@@ -351,4 +351,14 @@ class OraclePlatform extends AbstractPlatform
                 return parent::_getTransactionIsolationLevelSql($level);
         }
     }
+
+    /**
+     * Whether the platform prefers sequences for ID generation.
+     *
+     * @return boolean
+     */
+    public function prefersSequences()
+    {
+        return true;
+    }
 }

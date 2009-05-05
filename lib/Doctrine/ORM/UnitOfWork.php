@@ -305,16 +305,23 @@ class UnitOfWork implements PropertyChangedListener
     public function computeChangeSets(array $entities = null)
     {
         $entitySet = array();
+        $newEntities = array();
         if ($entities !== null) {
             foreach ($entities as $entity) {
                 $entitySet[get_class($entity)][] = $entity;
             }
+            $newEntities = $entities;
         } else {
             $entitySet = $this->_identityMap;
+            $newEntities = $this->_entityInsertions;
         }
 
-        //TODO: Compute changesets for NEW entities first here
+        // Compute changes for NEW entities first. This must always happen.
+        foreach ($newEntities as $entity) {
+            $this->_computeEntityChanges($this->_em->getClassMetadata(get_class($entity)), $entity);
+        }
 
+        // Compute changes for MANAGED entities. Change tracking policies take effect here.
         foreach ($entitySet as $className => $entities) {
             $class = $this->_em->getClassMetadata($className);
 
@@ -328,96 +335,125 @@ class UnitOfWork implements PropertyChangedListener
                     $this->_scheduledForDirtyCheck[$className] : $entities;
 
             foreach ($entitiesToProcess as $entity) {
-                $oid = spl_object_hash($entity);
-                $state = $this->getEntityState($entity);
-
-                if ( ! $class->isInheritanceTypeNone()) {
-                    $class = $this->_em->getClassMetadata(get_class($entity));
-                }
-
-                // Look for changes in the entity itself by comparing against the
-                // original data we have.
-                if ($state == self::STATE_MANAGED || $state == self::STATE_NEW) {
-                    $actualData = array();
-                    foreach ($class->getReflectionProperties() as $name => $refProp) {
-                        if ( ! $class->isIdentifier($name) || ! $class->isIdGeneratorIdentity()) {
-                            $actualData[$name] = $refProp->getValue($entity);
-                        }
-                        
-                        if ($class->isCollectionValuedAssociation($name)
-                                && $actualData[$name] !== null
-                                && ! ($actualData[$name] instanceof PersistentCollection)) {
-                            //TODO: If $actualData[$name] is Collection then unwrap the array
-                            $assoc = $class->getAssociationMapping($name);
-                            echo PHP_EOL . "INJECTING PCOLL into $name" . PHP_EOL;
-                            // Inject PersistentCollection
-                            $coll = new PersistentCollection($this->_em, $assoc->getTargetEntityName(),
-                                $actualData[$name] ? $actualData[$name] : array());
-                            $coll->setOwner($entity, $assoc);
-                            if ( ! $coll->isEmpty()) $coll->setDirty(true);
-                            $class->getReflectionProperty($name)->setValue($entity, $coll);
-                            $actualData[$name] = $coll;
-                        }
-                    }
-
-                    if ( ! isset($this->_originalEntityData[$oid])) {
-                        // Entity is either NEW or MANAGED but not yet fully persisted
-                        // (only has an id). These result in an INSERT.
-                        $this->_originalEntityData[$oid] = $actualData;
-                        $this->_entityChangeSets[$oid] = array_map(
-                            function($e) { return array(null, $e); },
-                            $actualData
-                        );
-                    } else {
-                        // Entity is "fully" MANAGED: it was already fully persisted before
-                        // and we have a copy of the original data
-                        $originalData = $this->_originalEntityData[$oid];
-                        $changeSet = array();
-                        $entityIsDirty = false;
-
-                        foreach ($actualData as $propName => $actualValue) {
-                            $orgValue = isset($originalData[$propName]) ? $originalData[$propName] : null;
-                            if (is_object($orgValue) && $orgValue !== $actualValue) {
-                                $changeSet[$propName] = array($orgValue, $actualValue);
-                            } else if ($orgValue != $actualValue || ($orgValue === null xor $actualValue === null)) {
-                                $changeSet[$propName] = array($orgValue, $actualValue);
-                            }
-
-                            if (isset($changeSet[$propName])) {
-                                if ($class->hasAssociation($propName)) {
-                                    $assoc = $class->getAssociationMapping($propName);
-                                    if ($assoc->isOneToOne() && $assoc->isOwningSide()) {
-                                        $entityIsDirty = true;
-                                    } else if ($orgValue instanceof PersistentCollection) {
-                                        // A PersistentCollection was de-referenced, so delete it.
-                                        if  ( ! in_array($orgValue, $this->_collectionDeletions, true)) {
-                                            $this->_collectionDeletions[] = $orgValue;
-                                        }
-                                    }
-                                } else {
-                                    $entityIsDirty = true;
-                                }
-                            }
-                        }
-                        if ($changeSet) {
-                            if ($entityIsDirty) {
-                                $this->_entityUpdates[$oid] = $entity;
-                            }
-                            $this->_entityChangeSets[$oid] = $changeSet;
-                            $this->_originalEntityData[$oid] = $actualData;
-                        }
-                    }
-
+                // Only MANAGED entities are processed here.
+                if ($this->getEntityState($entity) == self::STATE_MANAGED) {
+                    $this->_computeEntityChanges($class, $entity);
                     // Look for changes in associations of the entity
-                    if ($state == self::STATE_MANAGED) {
-                        foreach ($class->getAssociationMappings() as $assoc) {
-                            $val = $actualData[$assoc->getSourceFieldName()];
-                            if ($val !== null) {
-                                $this->_computeAssociationChanges($assoc, $val);
-                            }
+                    foreach ($class->getAssociationMappings() as $assoc) {
+                        $val = $class->getReflectionProperty($assoc->getSourceFieldName())->getValue($entity);
+                        if ($val !== null) {
+                            $this->_computeAssociationChanges($assoc, $val);
                         }
                     }
                 }
+            }
+        }
+    }
+
+    /**
+     * Computes the changes done to a single entity.
+     *
+     * Modifies/populates the following properties:
+     *
+     * {@link _originalEntityData}
+     * If the entity is NEW or MANAGED but not yet fully persisted (only has an id)
+     * then it was not fetched from the database and therefore we have no original
+     * entity data yet. All of the current entity data is stored as the original entity data.
+     *
+     * {@link _entityChangeSets}
+     * The changes detected on all properties of the entity are stored there.
+     * A change is a tuple array where the first entry is the old value and the second
+     * entry is the new value of the property. Changesets are used by persisters
+     * to INSERT/UPDATE the persistent entity state.
+     *
+     * {@link _entityUpdates}
+     * If the entity is already fully MANAGED (has been fetched from the database before)
+     * and any changes to its properties are detected, then a reference to the entity is stored
+     * there to mark it for an update.
+     *
+     * {@link _collectionDeletions}
+     * If a PersistentCollection has been de-referenced in a fully MANAGED entity,
+     * then this collection is marked for deletion.
+     *
+     * @param ClassMetadata $class The class descriptor of the entity.
+     * @param object $entity The entity for which to compute the changes.
+     */
+    private function _computeEntityChanges($class, $entity)
+    {
+        $oid = spl_object_hash($entity);
+            
+        if ( ! $class->isInheritanceTypeNone()) {
+            $class = $this->_em->getClassMetadata(get_class($entity));
+        }
+        
+        $actualData = array();
+        foreach ($class->getReflectionProperties() as $name => $refProp) {
+            if ( ! $class->isIdentifier($name) || ! $class->isIdGeneratorIdentity()) {
+                $actualData[$name] = $refProp->getValue($entity);
+            }
+
+            if ($class->isCollectionValuedAssociation($name)
+                    && $actualData[$name] !== null
+                    && ! ($actualData[$name] instanceof PersistentCollection)
+                ) {
+                //TODO: If $actualData[$name] is Collection then unwrap the array
+                $assoc = $class->getAssociationMapping($name);
+                echo PHP_EOL . "INJECTING PCOLL into $name" . PHP_EOL;
+                // Inject PersistentCollection
+                $coll = new PersistentCollection($this->_em, $assoc->getTargetEntityName(),
+                    $actualData[$name] ? $actualData[$name] : array());
+                $coll->setOwner($entity, $assoc);
+                if ( ! $coll->isEmpty()) $coll->setDirty(true);
+                $class->getReflectionProperty($name)->setValue($entity, $coll);
+                $actualData[$name] = $coll;
+            }
+        }
+
+        if ( ! isset($this->_originalEntityData[$oid])) {
+            // Entity is either NEW or MANAGED but not yet fully persisted
+            // (only has an id). These result in an INSERT.
+            $this->_originalEntityData[$oid] = $actualData;
+            $this->_entityChangeSets[$oid] = array_map(
+                function($e) { return array(null, $e); },
+                $actualData
+            );
+        } else {
+            // Entity is "fully" MANAGED: it was already fully persisted before
+            // and we have a copy of the original data
+            $originalData = $this->_originalEntityData[$oid];
+            $changeSet = array();
+            $entityIsDirty = false;
+
+            foreach ($actualData as $propName => $actualValue) {
+                $orgValue = isset($originalData[$propName]) ? $originalData[$propName] : null;
+                if (is_object($orgValue) && $orgValue !== $actualValue) {
+                    $changeSet[$propName] = array($orgValue, $actualValue);
+                } else if ($orgValue != $actualValue || ($orgValue === null xor $actualValue === null)) {
+                    $changeSet[$propName] = array($orgValue, $actualValue);
+                }
+
+                if (isset($changeSet[$propName])) {
+                    if ($class->hasAssociation($propName)) {
+                        $assoc = $class->getAssociationMapping($propName);
+                        if ($assoc->isOneToOne() && $assoc->isOwningSide()) {
+                            $entityIsDirty = true;
+                        } else if ($orgValue instanceof PersistentCollection) {
+                            // A PersistentCollection was de-referenced, so delete it.
+                            if  ( ! in_array($orgValue, $this->_collectionDeletions, true)) {
+                                $this->_collectionDeletions[] = $orgValue;
+                            }
+                        }
+                    } else {
+                        $entityIsDirty = true;
+                    }
+                }
+            }
+            if ($changeSet) {
+                if ($entityIsDirty) {
+                    $this->_entityUpdates[$oid] = $entity;
+                }
+                $this->_entityChangeSets[$oid] = $changeSet;
+                $this->_originalEntityData[$oid] = $actualData;
             }
         }
     }
