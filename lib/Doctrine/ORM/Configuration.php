@@ -39,6 +39,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
      */
     public function __construct()
     {
+        parent::__construct();
         $this->_attributes = array_merge($this->_attributes, array(
             'resultCacheImpl' => null,
             'queryCacheImpl' => null,

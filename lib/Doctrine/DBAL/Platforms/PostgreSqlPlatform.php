@@ -288,7 +288,6 @@ class PostgreSqlPlatform extends AbstractPlatform
     public function getMd5Expression($column)
     {
         $column = $this->quoteIdentifier($column);
-
         if ($this->_version > 7) {
             return 'MD5(' . $column . ')';
         } else {
@@ -795,17 +794,8 @@ class PostgreSqlPlatform extends AbstractPlatform
     }
     
     /**
-     * return RDBMS specific create sequence statement
-     *
-     * @throws Doctrine\DBAL\ConnectionException     if something fails at database level
-     * @param string    $seqName        name of the sequence to be created
-     * @param string    $start          start value of the sequence; default is 1
-     * @param array     $options  An associative array of table options:
-     *                          array(
-     *                              'comment' => 'Foo',
-     *                              'charset' => 'utf8',
-     *                              'collate' => 'utf8_unicode_ci',
-     *                          );
+     * {@inheritdoc}
+     * 
      * @return string
      * @override
      */
@@ -836,22 +826,15 @@ class PostgreSqlPlatform extends AbstractPlatform
      */
     public function getCreateTableSql($name, array $fields, array $options = array())
     {
-        if ( ! $name) {
-            throw DoctrineException::updateMe('no valid table name specified');
-        }
-        if (empty($fields)) {
-            throw DoctrineException::updateMe('no fields specified for table ' . $name);
-        }
-
         $queryFields = $this->getColumnDeclarationListSql($fields);
 
         if (isset($options['primary']) && ! empty($options['primary'])) {
-            $keyColumns = array_values($options['primary']);
+            $keyColumns = array_unique(array_values($options['primary']));
             $keyColumns = array_map(array($this, 'quoteIdentifier'), $keyColumns);
             $queryFields .= ', PRIMARY KEY(' . implode(', ', $keyColumns) . ')';
         }
 
-        $query = 'CREATE TABLE ' . $this->quoteIdentifier($name, true) . ' (' . $queryFields . ')';
+        $query = 'CREATE TABLE ' . $this->quoteIdentifier($name) . ' (' . $queryFields . ')';
 
         $sql[] = $query;
 

@@ -42,7 +42,7 @@ class SingleTableInheritanceTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
 
-        $query = $this->_em->createQuery("select e from Doctrine\Tests\ORM\Functional\ParentEntity e");
+        $query = $this->_em->createQuery("select e from Doctrine\Tests\ORM\Functional\ParentEntity e order by e.id asc");
 
         $entities = $query->getResultList();
 

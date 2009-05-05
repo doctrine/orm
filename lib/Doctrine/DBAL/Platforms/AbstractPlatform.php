@@ -35,21 +35,7 @@ use Doctrine\DBAL\Connection;
  */
 abstract class AbstractPlatform
 {
-    protected $_quoteIdentifiers = false;
-    
-    protected $valid_default_values = array(
-        'text'      => '',
-        'boolean'   => true,
-        'integer'   => 0,
-        'decimal'   => 0.0,
-        'float'     => 0.0,
-        'timestamp' => '1970-01-01 00:00:00',
-        'time'      => '00:00:00',
-        'date'      => '1970-01-01',
-        'clob'      => '',
-        'blob'      => '',
-        'string'    => ''
-    );
+    private $_quoteIdentifiers = false;
     
     /**
      * Constructor.
@@ -61,7 +47,7 @@ abstract class AbstractPlatform
      */
     public function setQuoteIdentifiers($bool)
     {
-        $this->_quoteIdentifiers = (bool)$bool;
+        $this->_quoteIdentifiers = $bool;
     }
 
     /**
@@ -986,39 +972,34 @@ abstract class AbstractPlatform
     }
     
     /**
-     * Enter description here...
+     * Gets the SQL statement(s) to create a table with the specified name, columns and options
+     * on this platform.
      *
-     * @todo Throw exception by default?
+     * @param string $table
+     * @param array $columns
+     * @param array $options
+     * @return array 
      */
     public function getCreateTableSql($table, array $columns, array $options = array())
     {
-        if ( ! $table) {
-            throw DoctrineException::updateMe('no valid table name specified');
-        }
-        if (empty($columns)) {
-            throw DoctrineException::updateMe('no fields specified for table ' . $name);
-        }
-
-        $queryFields = $this->getColumnDeclarationListSql($columns);
+        $columnListSql = $this->getColumnDeclarationListSql($columns);
 
         if (isset($options['primary']) && ! empty($options['primary'])) {
-            $queryFields .= ', PRIMARY KEY(' . implode(', ', array_unique(array_values($options['primary']))) . ')';
+            $columnListSql .= ', PRIMARY KEY(' . implode(', ', array_unique(array_values($options['primary']))) . ')';
         }
 
         if (isset($options['indexes']) && ! empty($options['indexes'])) {
             foreach($options['indexes'] as $index => $definition) {
-                $queryFields .= ', ' . $this->getIndexDeclaration($index, $definition);
+                $columnListSql .= ', ' . $this->getIndexDeclarationSql($index, $definition);
             }
         }
 
-        $query = 'CREATE TABLE ' . $this->quoteIdentifier($table, true) . ' (' . $queryFields;
+        $query = 'CREATE TABLE ' . $this->quoteIdentifier($table, true) . ' (' . $columnListSql;
         
-        /*$check = $this->getCheckDeclaration($columns);
-
+        $check = $this->getCheckDeclarationSql($columns);
         if ( ! empty($check)) {
             $query .= ', ' . $check;
-        }*/
-
+        }
         $query .= ')';
 
         $sql[] = $query;
@@ -1030,13 +1011,18 @@ abstract class AbstractPlatform
                 }
             }
         }
+        
         return $sql;
     }
     
     /**
-     * Enter description here...
+     * Gets the SQL to create a sequence on this platform.
      *
-     * @todo Throw exception by default?
+     * @param string $sequenceName
+     * @param integer $start
+     * @param integer $allocationSize
+     * @return string
+     * @throws DoctrineException
      */
     public function getCreateSequenceSql($sequenceName, $start = 1, $allocationSize = 1)
     {
@@ -1044,7 +1030,7 @@ abstract class AbstractPlatform
     }
     
     /**
-     * Creates a constraint on a table.
+     * Gets the SQL to create a constraint on a table on this platform.
      *
      * @param string    $table         name of the table on which the constraint is to be created
      * @param string    $name          name of the constraint to be created
@@ -1062,6 +1048,7 @@ abstract class AbstractPlatform
      *                                            'last_login' => array()
      *                                        )
      *                                    )
+     * @return string
      */
     public function getCreateConstraintSql($table, $name, $definition)
     {
@@ -1083,12 +1070,11 @@ abstract class AbstractPlatform
     }
     
     /**
-     * Get the stucture of a field into an array
+     * Gets the SQL to create an index on a table on this platform.
      *
      * @param string    $table         name of the table on which the index is to be created
      * @param string    $name          name of the index to be created
      * @param array     $definition    associative array that defines properties of the index to be created.
-     * @see Doctrine_Export::createIndex()
      * @return string
      */
     public function getCreateIndexSql($table, $name, array $definition)
@@ -1116,22 +1102,14 @@ abstract class AbstractPlatform
     }
     
     /**
-     * Quote a string so it can be safely used as a table or column name.
+     * Quotes a string so that it can be safely used as a table or column name,
+     * even if it is a reserved word of the platform.
      *
-     * Delimiting style depends on which database driver is being used.
-     *
-     * NOTE: just because you CAN use delimited identifiers doesn't mean
+     * NOTE: Just because you CAN use quoted identifiers doesn't mean
      * you SHOULD use them.  In general, they end up causing way more
      * problems than they solve.
      *
-     * Portability is broken by using the following characters inside
-     * delimited identifiers:
-     *   + backtick (<kbd>`</kbd>) -- due to MySQL
-     *   + double quote (<kbd>"</kbd>) -- due to Oracle
-     *   + brackets (<kbd>[</kbd> or <kbd>]</kbd>) -- due to Access
-     *
      * @param string $str           identifier name to be quoted
-     * @param bool $checkOption     check the 'quote_identifier' option
      * @return string               quoted identifier string
      */
     public function quoteIdentifier($str)

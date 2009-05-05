@@ -62,8 +62,8 @@ class SequenceGenerator extends AbstractIdGenerator implements \Serializable
             // Allocate new values
             $conn = $em->getConnection();
             $sql = $conn->getDatabasePlatform()->getSequenceNextValSql($this->_sequenceName);
-            $this->_maxValue = $conn->fetchOne($sql);
-            $this->_nextValue = $this->_maxValue - $this->_allocationSize;
+            $this->_nextValue = $conn->fetchOne($sql);
+            $this->_maxValue = $this->_nextValue + $this->_allocationSize;
         }
         return $this->_nextValue++;
     }

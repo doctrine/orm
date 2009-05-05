@@ -42,7 +42,27 @@ class Driver implements \Doctrine\DBAL\Driver
      */
     private function _constructPdoDsn(array $params)
     {
-        //TODO
+        $dsn = 'oci:';
+        if (isset($params['host'])) {
+            $dsn .= 'dbname=(DESCRIPTION=(ADDRESS_LIST=(ADDRESS=(PROTOCOL=TCP)' .
+                   '(HOST=' . $params['host'] . ')';
+
+            if (isset($params['port'])) {
+                $dsn .= '(PORT=' . $params['port'] . ')';
+            } else {
+                $dsn .= '(PORT=1521)';
+            }
+
+            $dsn .= '))(CONNECT_DATA=(SID=' . $params['dbname'] . ')))';
+        } else {
+            $dsn .= 'dbname=' . $params['dbname'];
+        }
+
+        if (isset($params['charset'])) {
+            $dsn .= ';charset=' . $params['charset'];
+        }
+
+        return $dsn;
     }
 
     public function getDatabasePlatform()

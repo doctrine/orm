@@ -313,6 +313,8 @@ class UnitOfWork implements PropertyChangedListener
             $entitySet = $this->_identityMap;
         }
 
+        //TODO: Compute changesets for NEW entities first here
+
         foreach ($entitySet as $className => $entities) {
             $class = $this->_em->getClassMetadata($className);
 
@@ -338,7 +340,7 @@ class UnitOfWork implements PropertyChangedListener
                 if ($state == self::STATE_MANAGED || $state == self::STATE_NEW) {
                     $actualData = array();
                     foreach ($class->getReflectionProperties() as $name => $refProp) {
-                        if ( ! $class->isIdentifier($name) || $class->isIdentifierNatural()) {
+                        if ( ! $class->isIdentifier($name) || ! $class->isIdGeneratorIdentity()) {
                             $actualData[$name] = $refProp->getValue($entity);
                         }
                         

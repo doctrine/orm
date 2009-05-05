@@ -873,10 +873,11 @@ final class ClassMetadata
     }
 
     /**
+     * Sets the value of a field on an entity of the mapped class.
      *
-     * @param <type> $entity
-     * @param <type> $field
-     * @param <type> $value 
+     * @param object $entity
+     * @param string $field
+     * @param mixed $value
      */
     public function setValue($entity, $field, $value)
     {

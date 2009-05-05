@@ -77,9 +77,10 @@ class SchemaTool
      */
     public function getCreateSchemaSql(array $classes)
     {
-        $processedClasses = array();
-        $sql = array();
-        $foreignKeyConstraints = array();
+        $sql = array(); // All SQL statements
+        $processedClasses = array(); // Reminder for processed classes, used for hierarchies
+        $foreignKeyConstraints = array(); // FK SQL statements. Appended to $sql at the end.
+        $sequences = array(); // Sequence SQL statements. Appended to $sql at the end.
 
         // First we create the tables
         foreach ($classes as $class) {
@@ -116,14 +117,26 @@ class SchemaTool
 
             $sql = array_merge($sql, $this->_platform->getCreateTableSql($class->getTableName(), $columns, $options));
             $processedClasses[$class->getClassName()] = true;
+
+            if ($class->isIdGeneratorSequence()) {
+                $seqDef = $class->getSequenceGeneratorDefinition();
+                $sequences[] = $this->_platform->getCreateSequenceSql(
+                    $seqDef['sequenceName'],
+                    $seqDef['initialValue'],
+                    $seqDef['allocationSize']
+                );
+            }
         }
 
-        // Now create the foreign key constraints
+        // Append the foreign key constraints SQL
         if ($this->_platform->supportsForeignKeyConstraints()) {
             foreach ($foreignKeyConstraints as $fkConstraint) {
                 $sql = array_merge($sql, (array)$this->_platform->getCreateForeignKeySql($fkConstraint['tableName'], $fkConstraint));
             }
         }
+
+        // Append the sequence SQL
+        $sql = array_merge($sql, $sequences);
 
         return $sql;
     }

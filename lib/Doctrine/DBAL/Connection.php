@@ -149,6 +149,13 @@ class Connection
      * @var Doctrine\DBAL\Driver
      */
     protected $_driver;
+
+    /**
+     * Whether to quote identifiers. Read from the configuration upon construction.
+     *
+     * @var boolean
+     */
+    protected $_quoteIdentifiers = false;
     
     /**
      * Initializes a new instance of the Connection class.
@@ -171,14 +178,18 @@ class Connection
         
         // Create default config and event manager if none given
         if ( ! $config) {
-            $this->_config = new Configuration();
+            $config = new Configuration();
         }
         if ( ! $eventManager) {
-            $this->_eventManager = new EventManager();
+            $eventManager = new EventManager();
         }
 
+        $this->_config = $config;
+        $this->_eventManager = $eventManager;
         $this->_platform = $driver->getDatabasePlatform();
         $this->_transactionIsolationLevel = $this->_platform->getDefaultTransactionIsolationLevel();
+        $this->_quoteIdentifiers = $config->getQuoteIdentifiers();
+        $this->_platform->setQuoteIdentifiers($this->_quoteIdentifiers);
     }
 
     /**
@@ -354,28 +365,14 @@ class Connection
     }
 
     /**
-     * Quote a string so it can be safely used as a table or column name.
+     * Quote a string so it can be safely used as a table or column name, even if
+     * it is a reserved name.
      *
-     * Delimiting style depends on which database driver is being used.
+     * Delimiting style depends on the underlying database platform that is being used.
      *
-     * NOTE: just because you CAN use delimited identifiers doesn't mean
+     * NOTE: Just because you CAN use delimited identifiers doesn't mean
      * you SHOULD use them.  In general, they end up causing way more
      * problems than they solve.
-     *
-     * Portability is broken by using the following characters inside
-     * delimited identifiers:
-     *   + backtick (<kbd>`</kbd>) -- due to MySQL
-     *   + double quote (<kbd>"</kbd>) -- due to Oracle
-     *   + brackets (<kbd>[</kbd> or <kbd>]</kbd>) -- due to Access
-     *
-     * Delimited identifiers are known to generally work correctly under
-     * the following drivers:
-     *   + mssql
-     *   + mysql
-     *   + mysqli
-     *   + oci8
-     *   + pgsql
-     *   + sqlite
      *
      * @param string $str           identifier name to be quoted
      * @param bool $checkOption     check the 'quote_identifier' option
@@ -384,7 +381,10 @@ class Connection
      */
     public function quoteIdentifier($str)
     {
-        return $this->_platform->quoteIdentifier($str);
+        if ($this->_quoteIdentifiers) {
+            return $this->_platform->quoteIdentifier($str);
+        }
+        return $str;
     }
 
     /**

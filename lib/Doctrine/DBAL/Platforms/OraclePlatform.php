@@ -16,15 +16,13 @@
  *
  * This software consists of voluntary contributions made by many individuals
  * and is licensed under the LGPL. For more information, see
- * <http://www.phpdoctrine.org>.
+ * <http://www.doctrine-project.org>.
  */
 
 namespace Doctrine\DBAL\Platforms;
 
 /**
- * Base class for all DatabasePlatforms. The DatabasePlatforms are the central
- * point of abstraction of platform-specific behaviors, features and SQL dialects.
- * They are a passive source of information.
+ * OraclePlatform.
  *
  * @since 2.0
  * @author Roman Borschel <roman@code-factory.org>
@@ -41,23 +39,9 @@ class OraclePlatform extends AbstractPlatform
     }
     
     /**
-     * Adds an driver-specific LIMIT clause to the query
-     *
-     * @param string $query         query to modify
-     * @param integer $limit        limit the number of rows
-     * @param integer $offset       start reading from given offset
-     * @return string               the modified query
-     * @override
-     */
-    public function writeLimitClause($query, $limit = false, $offset = false)
-    {
-        return $this->_createLimitSubquery($query, $limit, $offset);
-    }
-    
-    /**
      * @todo Doc
      */
-    private function _createLimitSubquery($query, $limit, $offset, $column = null)
+    /*private function _createLimitSubquery($query, $limit, $offset, $column = null)
     {
         $limit = (int) $limit;
         $offset = (int) $offset;
@@ -81,27 +65,7 @@ class OraclePlatform extends AbstractPlatform
             }
         }
         return $query;
-    }
-    
-    /**
-     * Creates the SQL for Oracle that can be used in the subquery for the limit-subquery
-     * algorithm.
-     * 
-     * @override
-     */
-    public function writeLimitClauseInSubquery(Doctrine_ClassMetadata $rootClass,
-            $query, $limit = false, $offset = false)
-    {
-        // NOTE: no composite key support
-        $columnNames = $rootClass->getIdentifierColumnNames();
-        if (count($columnNames) > 1) {
-            throw \Doctrine\Common\DoctrineException::updateMe("Composite keys in LIMIT queries are "
-                    . "currently not supported.");
-        }
-        $column = $columnNames[0];
-        
-        return $this->_createLimitSubquery($query, $limit, $offset, $column);
-    }
+    }*/
     
     /**
      * return string to call a function to get a substring inside an SQL statement
@@ -188,7 +152,7 @@ class OraclePlatform extends AbstractPlatform
      *      declare the specified field.
      * @override
      */
-    public function getNativeDeclaration(array $field)
+    /*public function getNativeDeclaration(array $field)
     {
         if ( ! isset($field['type'])) {
             throw \Doctrine\Common\DoctrineException::updateMe('Missing column type.');
@@ -232,7 +196,7 @@ class OraclePlatform extends AbstractPlatform
             default:
         }
         throw \Doctrine\Common\DoctrineException::updateMe('Unknown field type \'' . $field['type'] .  '\'.');
-    }
+    }*/
 
     /**
      * Maps a native array description of a field to a doctrine datatype and length
@@ -242,7 +206,7 @@ class OraclePlatform extends AbstractPlatform
      * @throws Doctrine_DataDict_Oracle_Exception
      * @override
      */
-    public function getPortableDeclaration(array $field)
+    /*public function getPortableDeclaration(array $field)
     {
         if ( ! isset($field['data_type'])) {
             throw \Doctrine\Common\DoctrineException::updateMe('Native oracle definition must have a data_type key specified');
@@ -332,12 +296,24 @@ class OraclePlatform extends AbstractPlatform
                      'length'   => $length,
                      'unsigned' => $unsigned,
                      'fixed'    => $fixed);
+    }*/
+
+    /**
+     * {@inheritdoc}
+     *
+     * @return string
+     * @override
+     */
+    public function getCreateSequenceSql($sequenceName, $start = 1, $allocationSize = 1)
+    {
+        return 'CREATE SEQUENCE ' . $this->quoteIdentifier($sequenceName)
+                . ' START WITH ' . $start . ' INCREMENT BY ' . $allocationSize;
     }
     
     /**
-     * Enter description here...
+     * {@inheritdoc}
      *
-     * @param unknown_type $sequenceName
+     * @param string $sequenceName
      * @override
      */
     public function getSequenceNextValSql($sequenceName)
@@ -346,9 +322,9 @@ class OraclePlatform extends AbstractPlatform
     }
     
     /**
-     * Enter description here...
+     * {@inheritdoc}
      *
-     * @param unknown_type $level
+     * @param integer $level
      * @override
      */
     public function getSetTransactionIsolationSql($level)
@@ -359,7 +335,7 @@ class OraclePlatform extends AbstractPlatform
     /**
      * Enter description here...
      *
-     * @param unknown_type $level
+     * @param integer $level
      * @override
      */
     protected function _getTransactionIsolationLevelSql($level)

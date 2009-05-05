@@ -96,3 +96,4 @@ final class DoctrineSequenceGenerator extends \Addendum\Annotation {
     /** The name of the class that defines the generator. */
     //public $definingClass;
 }
+final class DoctrineChangeTrackingPolicy {}

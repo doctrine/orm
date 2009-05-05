@@ -26,7 +26,7 @@ class SequenceGeneratorTest extends \Doctrine\Tests\OrmTestCase
     {
         for ($i=0; $i < 42; ++$i) {
             if ($i % 10 == 0) {
-                $this->_em->getConnection()->setFetchOneResult((int)($i / 10) * 10 + 10);
+                $this->_em->getConnection()->setFetchOneResult((int)($i / 10) * 10);
             }
             $id = $this->_seqGen->generate($this->_em, null);
             $this->assertEquals($i, $id);

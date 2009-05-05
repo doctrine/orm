@@ -141,7 +141,17 @@ class ClassMetadataFactory
             if ( ! $class->getIdentifier()) {
                 throw MappingException::identifierRequired($className);
             }
-            $this->_completeIdGeneratorMapping($class);
+            if ($parent) {
+                if ($parent->isIdGeneratorSequence()) {
+                    $class->setSequenceGeneratorDefinition($parent->getSequenceGeneratorDefinition());
+                } else if ($parent->isIdGeneratorTable()) {
+                    $class->getTableGeneratorDefinition($parent->getTableGeneratorDefinition());
+                }
+                $class->setIdGeneratorType($parent->getIdGeneratorType());
+                $class->setidGenerator($parent->getIdGenerator());
+            } else {
+                $this->_completeIdGeneratorMapping($class);
+            }
             
             if ($parent && $parent->isInheritanceTypeSingleTable()) {
                 $class->setTableName($parent->getTableName());
