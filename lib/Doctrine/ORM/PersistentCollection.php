@@ -117,8 +117,6 @@ final class PersistentCollection extends \Doctrine\Common\Collections\Collection
      */
     private $_isDirty = false;
 
-    private $_isSerializing = false;
-
     /**
      * Creates a new persistent collection.
      */
