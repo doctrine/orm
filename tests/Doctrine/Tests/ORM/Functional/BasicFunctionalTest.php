@@ -291,5 +291,20 @@ class BasicFunctionalTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertEquals(1, $result[0]->getGroups()->count());
         $groups = $result[0]->getGroups();
         $this->assertEquals('Doctrine Developers', $groups[0]->getName());
+
+        $this->assertEquals(\Doctrine\ORM\UnitOfWork::STATE_MANAGED, $this->_em->getUnitOfWork()->getEntityState($result[0]));
+        $this->assertEquals(\Doctrine\ORM\UnitOfWork::STATE_MANAGED, $this->_em->getUnitOfWork()->getEntityState($groups[0]));
+
+        $this->assertTrue($groups instanceof \Doctrine\ORM\PersistentCollection);
+        $this->assertTrue($groups[0]->getUsers() instanceof \Doctrine\ORM\PersistentCollection);
+
+        $groups[0]->getUsers()->clear();
+        $groups->clear();
+
+        $this->_em->flush();
+        $this->_em->clear();
+
+        $query = $this->_em->createQuery("select u, g from Doctrine\Tests\Models\CMS\CmsUser u inner join u.groups g");
+        $this->assertEquals(0, count($query->getResultList()));
     }
 }

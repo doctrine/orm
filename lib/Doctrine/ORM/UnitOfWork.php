@@ -520,7 +520,8 @@ class UnitOfWork implements PropertyChangedListener
                 $this->_entityChangeSets[$oid] = $changeSet;
                 $this->_originalEntityData[$oid] = $data;
             } else if ($state == self::STATE_DELETED) {
-                throw DoctrineException::updateMe("Deleted entity in collection detected during flush.");
+                throw DoctrineException::updateMe("Deleted entity in collection detected during flush."
+                        . " Make sure you properly remove deleted entities from collections.");
             }
             // MANAGED associated entities are already taken into account
             // during changeset calculation anyway, since they are in the identity map.
@@ -1234,6 +1235,7 @@ class UnitOfWork implements PropertyChangedListener
             }*/
             $this->_mergeData($entity, $data, $class, true);
             $this->_entityIdentifiers[$oid] = $id;
+            $this->_entityStates[$oid] = self::STATE_MANAGED;
             $this->addToIdentityMap($entity);
         }
 

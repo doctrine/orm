@@ -41,5 +41,9 @@ class CmsGroup
     public function addUser(CmsUser $user) {
         $this->users[] = $user;
     }
+
+    public function getUsers() {
+        return $this->users;
+    }
 }
 

@@ -310,6 +310,8 @@ abstract class AssociationMapping
     
     /**
      * Gets the field name of the owning side in a bi-directional association.
+     * This is only set on the inverse side. When invoked on the owning side,
+     * NULL is returned.
      *
      * @return string
      */

@@ -251,9 +251,15 @@ final class PersistentCollection extends \Doctrine\Common\Collections\Collection
 
         if ($this->_hydrationFlag) {
             if ($this->_backRefFieldName) {
-                // set back reference to owner
-                $this->_ownerClass->getReflectionProperty($this->_backRefFieldName)
-                        ->setValue($value, $this->_owner);
+                // Set back reference to owner
+                if ($this->_association->isOneToMany()) {
+                    $this->_ownerClass->getReflectionProperty($this->_backRefFieldName)
+                            ->setValue($value, $this->_owner);
+                } else {
+                    // ManyToMany
+                    $this->_ownerClass->getReflectionProperty($this->_backRefFieldName)
+                            ->getValue($value)->add($this->_owner);
+                }
             }
         } else {
             $this->_changed();
@@ -388,6 +394,7 @@ final class PersistentCollection extends \Doctrine\Common\Collections\Collection
             }
         }*/
         parent::clear();
+        $this->_changed();
     }
     
     private function _changed()
