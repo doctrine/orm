@@ -29,5 +29,17 @@ class CmsGroup
      * @DoctrineManyToMany(targetEntity="CmsUser", mappedBy="groups")
      */
     public $users;
+
+    public function setName($name) {
+        $this->name = $name;
+    }
+
+    public function getName() {
+        return $this->name;
+    }
+
+    public function addUser(CmsUser $user) {
+        $this->users[] = $user;
+    }
 }
 

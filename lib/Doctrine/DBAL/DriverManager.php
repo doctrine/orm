@@ -21,6 +21,7 @@
 
 namespace Doctrine\DBAL;
 
+use Doctrine\Common\DoctrineException;
 use Doctrine\Common\EventManager;
 
 /**
@@ -40,7 +41,7 @@ final class DriverManager
             'pdo_mysql'  => 'Doctrine\DBAL\Driver\PDOMySql\Driver',
             'pdo_sqlite' => 'Doctrine\DBAL\Driver\PDOSqlite\Driver',
             'pdo_pgsql'  => 'Doctrine\DBAL\Driver\PDOPgSql\Driver',
-            'pdo_oracle' => 'Doctrine\DBAL\Driver\PDOOracle\Driver',
+            'pdo_oci' => 'Doctrine\DBAL\Driver\PDOOracle\Driver',
             'pdo_mssql'  => 'Doctrine\DBAL\Driver\PDOMsSql\Driver',
             'pdo_firebird' => 'Doctrine\DBAL\Driver\PDOFirebird\Driver',
             'pdo_informix' => 'Doctrine\DBAL\Driver\PDOInformix\Driver',
@@ -107,7 +108,7 @@ final class DriverManager
         
         // check for existing pdo object
         if (isset($params['pdo']) && ! $params['pdo'] instanceof PDO) {
-            throw Exceptions\DBALException::invalidPDOInstance();
+            throw DoctrineException::invalidPDOInstance();
         } else if (isset($params['pdo'])) {
             $params['driver'] = $params['pdo']->getAttribute(PDO::ATTR_DRIVER_NAME);
         } else {
@@ -140,14 +141,14 @@ final class DriverManager
         
         // driver
         if ( ! isset($params['driver']) && ! isset($params['driverClass'])) {
-            throw Exceptions\DBALException::driverRequired();
+            throw DoctrineException::driverRequired();
         }
         
         // check validity of parameters
         
         // driver
         if ( isset($params['driver']) && ! isset(self::$_driverMap[$params['driver']])) {
-            throw Exceptions\DBALException::unknownDriver($params['driver']);
+            throw DoctrineException::unknownDriver($params['driver']);
         }
     }
 }

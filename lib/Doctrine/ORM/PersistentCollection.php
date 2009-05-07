@@ -276,6 +276,21 @@ final class PersistentCollection extends \Doctrine\Common\Collections\Collection
         //TODO: Register collection as dirty with the UoW if necessary
         //$this->_changed();
     }
+
+    public function contains($element)
+    {
+        //TODO: Probably need to hit the database here...?
+        /*if ( ! $this->_initialized) {
+            return $this->_checkElementExistence($element);
+        }
+        return parent::contains($element);*/
+        return parent::contains($element);
+    }
+
+    private function _checkElementExistence($element)
+    {
+        
+    }
     
     /**
      * INTERNAL:

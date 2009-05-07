@@ -353,6 +353,61 @@ class OraclePlatform extends AbstractPlatform
     }
 
     /**
+     * @override
+     */
+    public function getIntegerTypeDeclarationSql(array $field)
+    {
+        return 'NUMBER(10)';
+    }
+
+    /**
+     * @override
+     */
+    public function getBigIntTypeDeclarationSql(array $field)
+    {
+        return 'NUMBER(20)';
+    }
+
+    /**
+     * @override
+     */
+    public function getSmallIntTypeDeclarationSql(array $field)
+    {
+        return 'NUMBER(5)';
+    }
+
+    /**
+     * @override
+     */
+    protected function _getCommonIntegerTypeDeclarationSql(array $columnDef)
+    {
+        return '';
+    }
+
+    /**
+     * Gets the SQL snippet used to declare a VARCHAR column on the Oracle platform.
+     *
+     * @params array $field
+     * @override
+     */
+    public function getVarcharTypeDeclarationSql(array $field)
+    {
+        if ( ! isset($field['length'])) {
+            if (array_key_exists('default', $field)) {
+                $field['length'] = $this->getVarcharMaxLength();
+            } else {
+                $field['length'] = false;
+            }
+        }
+
+        $length = ($field['length'] <= $this->getVarcharMaxLength()) ? $field['length'] : false;
+        $fixed = (isset($field['fixed'])) ? $field['fixed'] : false;
+
+        return $fixed ? ($length ? 'CHAR(' . $length . ')' : 'CHAR(2000)')
+                : ($length ? 'VARCHAR2(' . $length . ')' : 'VARCHAR2(4000)');
+    }
+
+    /**
      * Whether the platform prefers sequences for ID generation.
      *
      * @return boolean

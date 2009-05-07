@@ -99,7 +99,7 @@ class SqlWalker
         } else if ($discSql = $this->_generateDiscriminatorColumnConditionSql($this->_currentRootAlias)) {
             $sql .= ' WHERE ' . $discSql;
         }
-        //$sql .= $AST->getWhereClause() ? $this->walkWhereClause($AST->getWhereClause()) : '';
+
         $sql .= $AST->getGroupByClause() ? $this->walkGroupByClause($AST->getGroupByClause()) : '';
         $sql .= $AST->getHavingClause() ? $this->walkHavingClause($AST->getHavingClause()) : '';
         $sql .= $AST->getOrderByClause() ? $this->walkOrderByClause($AST->getOrderByClause()) : '';
@@ -247,27 +247,66 @@ class SqlWalker
         $targetTableAlias = $this->getSqlTableAlias($targetTableName);
         $sourceTableAlias = $this->getSqlTableAlias($sourceQComp['metadata']->getTableName());
 
-        $sql .= $targetTableName . ' ' . $targetTableAlias . ' ON ';
-
+        // Ensure we got the owning side, since it has all mapping info
         if ( ! $targetQComp['relation']->isOwningSide()) {
             $assoc = $targetQComp['metadata']->getAssociationMapping($targetQComp['relation']->getMappedByFieldName());
         } else {
             $assoc = $targetQComp['relation'];
         }
 
-        if ($targetQComp['relation']->isOneToOne() || $targetQComp['relation']->isOneToMany()) {
+        if ($assoc->isOneToOne()/* || $assoc->isOneToMany()*/) {
+            $sql .= $targetTableName . ' ' . $targetTableAlias . ' ON ';
             $joinColumns = $assoc->getSourceToTargetKeyColumns();
             $first = true;
             foreach ($joinColumns as $sourceColumn => $targetColumn) {
-                if ( ! $first) $sql .= ' AND ';
+                if ( ! $first) {
+                    $sql .= ' AND ';
+                } else {
+                    $first = false;
+                }
                 if ($targetQComp['relation']->isOwningSide()) {
                     $sql .= "$sourceTableAlias.$sourceColumn = $targetTableAlias.$targetColumn";
                 } else {
                     $sql .= "$sourceTableAlias.$targetColumn = $targetTableAlias.$sourceColumn";
                 }
             }
-        } else { // ManyToMany
-            //TODO
+        } else if ($assoc->isManyToMany()) {
+            // Join relation table
+            $joinTable = $assoc->getJoinTable();
+            $joinTableAlias = $this->getSqlTableAlias($joinTable['name']);
+            $sql .= $joinTable['name'] . ' ' . $joinTableAlias . ' ON ';
+            if ($targetQComp['relation']->isOwningSide()) {
+                $sourceToRelationJoinColumns = $assoc->getSourceToRelationKeyColumns();
+                foreach ($sourceToRelationJoinColumns as $sourceColumn => $relationColumn) {
+                    $sql .= "$sourceTableAlias.$sourceColumn = $joinTableAlias.$relationColumn";
+                }
+            } else {
+                $targetToRelationJoinColumns = $assoc->getTargetToRelationKeyColumns();
+                foreach ($targetToRelationJoinColumns as $targetColumn => $relationColumn) {
+                    $sql .= "$sourceTableAlias.$targetColumn = $joinTableAlias.$relationColumn";
+                }
+            }
+
+            // Join target table
+            if ($joinType == AST\Join::JOIN_TYPE_LEFT || $joinType == AST\Join::JOIN_TYPE_LEFTOUTER) {
+                $sql .= ' LEFT JOIN ';
+            } else {
+                $sql .= ' INNER JOIN ';
+            }
+
+            $sql .= $targetTableName . ' ' . $targetTableAlias . ' ON ';
+
+            if ($targetQComp['relation']->isOwningSide()) {
+                $targetToRelationJoinColumns = $assoc->getTargetToRelationKeyColumns();
+                foreach ($targetToRelationJoinColumns as $targetColumn => $relationColumn) {
+                    $sql .= "$targetTableAlias.$targetColumn = $joinTableAlias.$relationColumn";
+                }
+            } else {
+                $sourceToRelationJoinColumns = $assoc->getSourceToRelationKeyColumns();
+                foreach ($sourceToRelationJoinColumns as $sourceColumn => $relationColumn) {
+                    $sql .= "$targetTableAlias.$sourceColumn = $joinTableAlias.$relationColumn";
+                }
+            }
         }
 
         $discrSql = $this->_generateDiscriminatorColumnConditionSql($joinedDqlAlias);

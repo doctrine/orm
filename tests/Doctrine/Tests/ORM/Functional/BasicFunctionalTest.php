@@ -222,7 +222,7 @@ class BasicFunctionalTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertEquals('developer', $usersScalar[0]['u_status']);
     }
 
-    public function testBasicInnerJoin()
+    public function testBasicOneToManyInnerJoin()
     {
         $user = new CmsUser;
         $user->name = 'Guilherme';
@@ -238,7 +238,7 @@ class BasicFunctionalTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertEquals(0, $users->count());
     }
 
-    public function testBasicLeftJoin()
+    public function testBasicOneToManyLeftJoin()
     {
         $user = new CmsUser;
         $user->name = 'Guilherme';
@@ -258,5 +258,38 @@ class BasicFunctionalTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertTrue($users[0]->phonenumbers instanceof \Doctrine\ORM\PersistentCollection);
         $this->assertEquals(0, $users[0]->phonenumbers->count());
         $this->assertNull($users[0]->articles);
+    }
+
+    public function testBasicManyToManyJoin()
+    {
+        $user = new CmsUser;
+        $user->name = 'Guilherme';
+        $user->username = 'gblanco';
+        $user->status = 'developer';
+
+        $group1 = new CmsGroup;
+        $group1->setName('Doctrine Developers');
+
+        $user->addGroup($group1);
+
+        $this->_em->save($user);
+        $this->_em->save($group1);
+
+        
+        $this->_em->flush();
+        $this->_em->clear();
+
+        $this->assertEquals(0, $this->_em->getUnitOfWork()->size());
+
+        $query = $this->_em->createQuery("select u, g from Doctrine\Tests\Models\CMS\CmsUser u join u.groups g");
+
+        $result = $query->getResultList();
+        
+        $this->assertEquals(2, $this->_em->getUnitOfWork()->size());
+        $this->assertTrue($result[0] instanceof CmsUser);
+        $this->assertEquals('Guilherme', $result[0]->name);
+        $this->assertEquals(1, $result[0]->getGroups()->count());
+        $groups = $result[0]->getGroups();
+        $this->assertEquals('Doctrine Developers', $groups[0]->getName());
     }
 }

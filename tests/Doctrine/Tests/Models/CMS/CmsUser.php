@@ -53,12 +53,25 @@ class CmsUser
      */
     public function addPhonenumber(CmsPhonenumber $phone) {
         $this->phonenumbers[] = $phone;
-        $phone->user = $this;
+        if ($phone->user !== $this) {
+            $phone->user = $this;
+        }
     }
 
     public function addArticle(CmsArticle $article) {
         $this->articles[] = $article;
-        $article->user = $this;
+        if ($article->user !== $this) {
+            $article->user = $this;
+        }
+    }
+
+    public function addGroup(CmsGroup $group) {
+        $this->groups[] = $group;
+        $group->addUser($this);
+    }
+
+    public function getGroups() {
+        return $this->groups;
     }
 
     public function removePhonenumber($index) {
