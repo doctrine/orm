@@ -45,8 +45,19 @@ class Configuration extends \Doctrine\DBAL\Configuration
             'queryCacheImpl' => null,
             'metadataCacheImpl' => null,
             'metadataDriverImpl' => new AnnotationDriver(),
-            'dqlClassAliasMap' => array()
+            'dqlClassAliasMap' => array(),
+            'cacheDir' => null
             ));
+    }
+
+    public function setCacheDir($dir)
+    {
+        $this->_attributes['cacheDir'] = $dir;
+    }
+
+    public function getCacheDir()
+    {
+        return $this->_attributes['cacheDir'];
     }
 
     public function getDqlClassAliasMap()

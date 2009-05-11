@@ -58,20 +58,26 @@ final class DoctrineOneToOne extends \Addendum\Annotation {
     public $targetEntity;
     public $mappedBy;
     public $cascade;
+    public $fetch;
+    public $optional;
 }
 final class DoctrineOneToMany extends \Addendum\Annotation {
     public $mappedBy;
     public $targetEntity;
     public $cascade;
+    public $fetch;
 }
 final class DoctrineManyToOne extends \Addendum\Annotation {
     public $targetEntity;
     public $cascade;
+    public $fetch;
+    public $optional;
 }
 final class DoctrineManyToMany extends \Addendum\Annotation {
     public $targetEntity;
     public $mappedBy;
     public $cascade;
+    public $fetch;
 }
 final class DoctrineElementCollection extends \Addendum\Annotation {
     public $tableName;

@@ -42,22 +42,22 @@ class EntityManager
      * IMMEDIATE: Flush occurs automatically after each operation that issues database
      * queries. No operations are queued.
      */ 
-    const FLUSHMODE_IMMEDIATE = 'immediate';
+    const FLUSHMODE_IMMEDIATE = 1;
     /**
      * AUTO: Flush occurs automatically in the following situations:
      * - Before any query executions (to prevent getting stale data)
      * - On EntityManager#commit()
      */
-    const FLUSHMODE_AUTO = 'auto';
+    const FLUSHMODE_AUTO = 2;
     /**
      * COMMIT: Flush occurs automatically only on EntityManager#commit().
      */
-    const FLUSHMODE_COMMIT = 'commit';
+    const FLUSHMODE_COMMIT = 3;
     /**
      * MANUAL: Flush occurs never automatically. The only way to flush is
      * through EntityManager#flush().
      */
-    const FLUSHMODE_MANUAL = 'manual';
+    const FLUSHMODE_MANUAL = 4;
     
     /**
      * The used Configuration.
@@ -92,7 +92,7 @@ class EntityManager
      *
      * @var string
      */
-    private $_flushMode = 'commit';
+    private $_flushMode = self::FLUSHMODE_COMMIT;
     
     /**
      * The UnitOfWork used to coordinate object-level transactions.
@@ -114,6 +114,13 @@ class EntityManager
      * @var array
      */
     private $_hydrators = array();
+
+    /**
+     * The proxy generator.
+     *
+     * @var DynamicProxyGenerator
+     */
+    private $_proxyGenerator;
 
     /**
      * Whether the EntityManager is closed or not.
@@ -212,17 +219,6 @@ class EntityManager
     }
     
     /**
-     * Detaches an entity from the manager. It's lifecycle is no longer managed.
-     *
-     * @param object $entity
-     * @return boolean
-     */
-    public function detach($entity)
-    {
-        return $this->_unitOfWork->removeFromIdentityMap($entity);
-    }
-    
-    /**
      * Creates a DQL query with the specified name.
      *
      * @todo Implementation.
@@ -237,6 +233,7 @@ class EntityManager
      * Creates a native SQL query.
      *
      * @param string $sql
+     * @param ResultSetMapping $rsm The ResultSetMapping to use.
      * @return Query
      */
     public function createNativeQuery($sql, \Doctrine\ORM\Query\ResultSetMapping $rsm)
@@ -287,6 +284,23 @@ class EntityManager
     {
         return $this->getRepository($entityName)->find($identifier);
     }
+
+    /**
+     * Gets a reference to the entity identified by the given type and identifier
+     * without actually loading it. Only the identifier of the returned entity
+     * will be populated.
+     *
+     * NOTE: There is currently no magic proxying in place, that means the full state
+     * of the entity will not be loaded upon accessing it.
+     *
+     * @return object The entity reference.
+     */
+    public function getReference($entityName, $identifier)
+    {
+        $entity = new $entityName;
+        $this->getClassMetadata($entityName)->setEntityIdentifier($entity, $identifier);
+        return $entity;
+    }
     
     /**
      * Sets the flush mode to use.
@@ -309,10 +323,7 @@ class EntityManager
      */
     private function _isFlushMode($value)
     {
-        return $value == self::FLUSHMODE_AUTO ||
-                $value == self::FLUSHMODE_COMMIT ||
-                $value == self::FLUSHMODE_IMMEDIATE ||
-                $value == self::FLUSHMODE_MANUAL;
+        return $value >= 1 && $value <= 4;
     }
     
     /**
@@ -326,7 +337,10 @@ class EntityManager
     }
     
     /**
-     * Clears the persistence context, effectively detaching all managed entities.
+     * Clears the EntityManager. All entities that are currently managed
+     * by this EntityManager become detached.
+     *
+     * @param string $entityName
      */
     public function clear($entityName = null)
     {
@@ -334,14 +348,18 @@ class EntityManager
             $this->_unitOfWork->detachAll();
         } else {
             //TODO
+            throw DoctrineException::notImplemented();
         }
     }
     
     /**
-     * Closes the EntityManager.
+     * Closes the EntityManager. All entities that are currently managed
+     * by this EntityManager become detached. The EntityManager may no longer
+     * be used after it is closed.
      */
     public function close()
     {
+        $this->clear();
         $this->_closed = true;
     }
     
@@ -378,13 +396,37 @@ class EntityManager
      * overriding any local changes that have not yet been persisted.
      *
      * @param object $entity
-     * @todo FIX Impl
+     * @todo Implemntation
      */
     public function refresh($entity)
     {
+        throw DoctrineException::notImplemented();
         /*$this->_mergeData($entity, $this->getRepository(get_class($entity))->find(
                 $entity->identifier(), Query::HYDRATE_ARRAY),
                 true);*/
+    }
+
+    /**
+     * Detaches an entity from the EntityManager. Its lifecycle is no longer managed.
+     *
+     * @param object $entity The entity to detach.
+     * @return boolean
+     */
+    public function detach($entity)
+    {
+        return $this->_unitOfWork->removeFromIdentityMap($entity);
+    }
+
+    /**
+     * Merges the state of a detached entity into the persistence context
+     * of this EntityManager.
+     *
+     * @param object $entity The entity to merge into the persistence context.
+     * @return object The managed copy of the entity.
+     */
+    public function merge($entity)
+    {
+        return $this->_unitOfWork->merge($entity);
     }
     
     /**
@@ -392,37 +434,12 @@ class EntityManager
      *
      * @param object $entity  The entity to copy.
      * @return object  The new entity.
+     * @todo Implementation or remove.
      */
     public function copy($entity, $deep = false)
     {
-        //...
+        throw DoctrineException::notImplemented();
     }
-
-/*
-    public function toArray($entity, $deep = false)
-    {
-        $array = array();
-        foreach ($entity as $key => $value) {
-            if ($deep && is_object($value)) {
-                $array[$key] = $this->toArray($value, $deep);
-            } else if ( ! is_object($value)) {
-                $array[$key] = $value;
-            }
-        }
-        return $array;
-    }
-
-    public function fromArray($entity, array $array, $deep = false)
-    {
-        foreach ($array as $key => $value) {
-            if ($deep && is_array($value)) {
-                $entity->$key = $this->fromArray($entity, $value, $deep);
-            } else if ( ! is_array($value)) {
-                $entity->$key = $value;
-            }
-        }
-    }
-*/
 
     /**
      * Gets the repository for an entity class.
@@ -528,11 +545,11 @@ class EntityManager
                     $this->_hydrators[$hydrationMode] = new \Doctrine\ORM\Internal\Hydration\NoneHydrator($this);
                     break;
                 default:
-                    \Doctrine\Common\DoctrineException::updateMe("No hydrator found for hydration mode '$hydrationMode'.");
+                    throw DoctrineException::updateMe("No hydrator found for hydration mode '$hydrationMode'.");
             }
-        } else if ($this->_hydrators[$hydrationMode] instanceof Closure) {
+        }/* else if ($this->_hydrators[$hydrationMode] instanceof Closure) {
             $this->_hydrators[$hydrationMode] = $this->_hydrators[$hydrationMode]($this);
-        }
+        }*/
         return $this->_hydrators[$hydrationMode];
     }
 
@@ -540,13 +557,13 @@ class EntityManager
      * Sets a hydrator for a hydration mode.
      *
      * @param mixed $hydrationMode
-     * @param object $hydrator Either a hydrator instance or a closure that creates a
+     * @param object $hydrator Either a hydrator instance or a Closure that creates a
      *          hydrator instance.
      */
-    public function setHydrator($hydrationMode, $hydrator)
+    /*public function setHydrator($hydrationMode, $hydrator)
     {
         $this->_hydrators[$hydrationMode] = $hydrator;
-    }
+    }*/
     
     /**
      * Factory method to create EntityManager instances.
@@ -563,7 +580,7 @@ class EntityManager
         if (is_array($conn)) {
             $conn = \Doctrine\DBAL\DriverManager::getConnection($conn, $config, $eventManager);
         } else if ( ! $conn instanceof Connection) {
-            \Doctrine\Common\DoctrineException::updateMe("Invalid parameter '$conn'.");
+            throw DoctrineException::updateMe("Invalid parameter '$conn'.");
         }
         
         if ($config === null) {

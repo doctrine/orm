@@ -693,16 +693,18 @@ class ObjectHydratorTest extends HydrationTest
     {
         $rsm = new ResultSetMapping;
         $rsm->addEntityResult($this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsUser'), 'u');
-        $rsm->addJoinedEntityResult(
+        /*$rsm->addJoinedEntityResult(
                 $this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsPhonenumber'),
                 'p',
                 'u',
                 $this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsUser')->getAssociationMapping('phonenumbers')
-        );
+        );*/
         $rsm->addFieldResult('u', 'u__id', 'id');
         $rsm->addFieldResult('u', 'u__status', 'status');
-        $rsm->addScalarResult('sclr0', 'nameUpper');
-        $rsm->addFieldResult('p', 'p__phonenumber', 'phonenumber');
+        $rsm->addFieldResult('u', 'u__username', 'username');
+        $rsm->addFieldResult('u', 'u__name', 'name');
+        //$rsm->addScalarResult('sclr0', 'nameUpper');
+        //$rsm->addFieldResult('p', 'p__phonenumber', 'phonenumber');
 
         // Faked result set
         $resultSet = array(
@@ -710,29 +712,37 @@ class ObjectHydratorTest extends HydrationTest
             array(
                 'u__id' => '1',
                 'u__status' => 'developer',
-                'sclr0' => 'ROMANB',
-                'p__phonenumber' => '42',
+                'u__username' => 'romanb',
+                'u__name' => 'Roman',
+                //'sclr0' => 'ROMANB',
+                //'p__phonenumber' => '42',
             ),
             array(
                 'u__id' => '1',
                 'u__status' => 'developer',
-                'sclr0' => 'ROMANB',
-                'p__phonenumber' => '43',
+                'u__username' => 'romanb',
+                'u__name' => 'Roman',
+                //'sclr0' => 'ROMANB',
+                //'p__phonenumber' => '43',
             ),
             array(
                 'u__id' => '2',
                 'u__status' => 'developer',
-                'sclr0' => 'JWAGE',
-                'p__phonenumber' => '91'
+                'u__username' => 'romanb',
+                'u__name' => 'Roman',
+                //'sclr0' => 'JWAGE',
+                //'p__phonenumber' => '91'
             )
         );
 
-        for ($i = 4; $i < 300; $i++) {
+        for ($i = 4; $i < 1000; ++$i) {
             $resultSet[] = array(
                 'u__id' => $i,
                 'u__status' => 'developer',
-                'sclr0' => 'JWAGE' . $i,
-                'p__phonenumber' => '91'
+                'u__username' => 'jwage',
+                'u__name' => 'Jonathan',
+                //'sclr0' => 'JWAGE' . $i,
+                //'p__phonenumber' => '91'
             );
         }
 

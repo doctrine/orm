@@ -26,7 +26,7 @@ use Doctrine\ORM\Mapping\AssociationMapping;
 /**
  * Represents a virtual proxy that is used for lazy to-one associations.
  *
- * @author robo
+ * @author Roman Borschel <roman@code-factory.org>
  * @since 2.0
  */
 class VirtualProxy

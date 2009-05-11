@@ -46,6 +46,22 @@ class CmsUser
      */
     public $groups;
 
+    public function getId() {
+        return $this->id;
+    }
+
+    public function getStatus() {
+        return $this->status;
+    }
+
+    public function getUsername() {
+        return $this->username;
+    }
+
+    public function getName() {
+        return $this->name;
+    }
+
     /**
      * Adds a phonenumber to the user.
      *
@@ -56,6 +72,10 @@ class CmsUser
         if ($phone->user !== $this) {
             $phone->user = $this;
         }
+    }
+
+    public function getPhonenumbers() {
+        return $this->phonenumbers;
     }
 
     public function addArticle(CmsArticle $article) {

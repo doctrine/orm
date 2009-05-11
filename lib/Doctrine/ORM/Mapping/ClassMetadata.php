@@ -885,6 +885,45 @@ final class ClassMetadata
             $this->_reflectionProperties[$field]->setValue($entity, $value);
         }
     }
+
+    /**
+     * Extracts the identifier values of an entity of this class.
+     *
+     * @param object $entity
+     * @return mixed
+     */
+    public function getIdentifierValues($entity)
+    {
+        if ($this->_isIdentifierComposite) {
+            $id = array();
+            foreach ($this->_identifier as $idField) {
+                $value = $this->_reflectionProperties[$idField]->getValue($entity);
+                if ($value !== null) {
+                    $id[] = $value;
+                }
+            }
+            return $id;
+        } else {
+            return $this->_reflectionProperties[$this->_identifier[0]]->getValue($entity);
+        }
+    }
+
+    /**
+     * Populates the entity identifier of an entity.
+     *
+     * @param object $entity
+     * @param mixed $id
+     */
+    public function setIdentifierValues($entity, $id)
+    {
+        if ($this->_isIdentifierComposite) {
+            foreach ((array)$id as $idField => $idValue) {
+                $this->_reflectionProperties[$idField]->setValue($entity, $idValue);
+            }
+        } else {
+            $this->_reflectionProperties[$this->_identifier[0]]->setValue($entity, $id);
+        }
+    }
     
     /**
      * Gets all field mappings.

@@ -95,6 +95,7 @@ class ClassLoader
 
         $prefix = substr($className, 0, strpos($className, $this->_namespaceSeparator));
         $class = '';
+
         if (isset($this->_basePaths[$prefix])) {
             $class .= $this->_basePaths[$prefix] . DIRECTORY_SEPARATOR;
         }

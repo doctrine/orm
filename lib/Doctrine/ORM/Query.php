@@ -919,7 +919,7 @@ class Query extends AbstractQuery
             $this->_dqlParts[$queryPartName] = array($queryPart);
         }
 
-        $this->_state = Doctrine_ORM_Query::STATE_DIRTY;
+        $this->_state = self::STATE_DIRTY;
         return $this;
     }
 

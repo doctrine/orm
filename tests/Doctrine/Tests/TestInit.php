@@ -20,13 +20,3 @@ set_include_path(
     . PATH_SEPARATOR . $modelDir . DIRECTORY_SEPARATOR . 'forum'
 );
 
-// Some of these classes depend on Doctrine_* classes
-/*require_once 'DoctrineTestCase.php';
-require_once 'TestUtil.php';
-require_once 'DbalTestCase.php';
-require_once 'OrmTestCase.php';
-require_once 'OrmFunctionalTestCase.php';
-require_once 'DoctrineTestSuite.php';
-require_once 'OrmTestSuite.php';
-require_once 'OrmFunctionalTestSuite.php';
-require_once 'DbalTestSuite.php';*/

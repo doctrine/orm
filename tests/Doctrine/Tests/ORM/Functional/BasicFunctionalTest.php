@@ -306,5 +306,14 @@ class BasicFunctionalTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $query = $this->_em->createQuery("select u, g from Doctrine\Tests\Models\CMS\CmsUser u inner join u.groups g");
         $this->assertEquals(0, count($query->getResultList()));
+
+        /* RB: TEST
+        \Doctrine\ORM\DynamicProxyGenerator::configure($this->_em);
+        $proxy = \Doctrine\ORM\DynamicProxyGenerator::getReferenceProxy('Doctrine\Tests\Models\CMS\CmsUser', 1);
+        echo $proxy->getId();
+        var_dump(serialize($proxy));
+        */
+        
+        
     }
 }

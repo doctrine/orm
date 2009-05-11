@@ -398,7 +398,7 @@ abstract class AbstractQuery
             if (count($result) > 1) {
                 throw QueryException::nonUniqueResult();
             }
-            return $result->getFirst();
+            return $result->first();
         }
         return $result;
     }

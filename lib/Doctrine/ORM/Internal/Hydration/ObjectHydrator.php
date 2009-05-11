@@ -103,6 +103,7 @@ class ObjectHydrator extends AbstractHydrator
         $this->_classMetadatas = array();
 
         $e = microtime(true);
+
         echo 'Hydration took: ' . ($e - $s) . PHP_EOL;
 
         return $result;

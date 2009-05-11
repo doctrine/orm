@@ -16,7 +16,7 @@
  *
  * This software consists of voluntary contributions made by many individuals
  * and is licensed under the LGPL. For more information, see
- * <http://www.phpdoctrine.org>.
+ * <http://www.doctrine-project.org>.
  */
 
 namespace Doctrine\ORM;
@@ -80,10 +80,6 @@ class EntityRepository
      */
     public function find($id, $hydrationMode = null)
     {
-        if ($id === null) {
-            return false;
-        }
-        
         if (is_array($id) && count($id) > 1) {
             // it's a composite key. keys = field names, values = values.
             $values = array_values($id);
@@ -98,9 +94,21 @@ class EntityRepository
             return $entity; // Hit!
         }
 
-        return $this->_createQuery()
-                ->where(implode(' = ? AND ', $keys) . ' = ?')
-                ->fetchOne($values, $hydrationMode);
+        $dql = 'select e from ' . $this->_classMetadata->getClassName() . ' e where ';
+        $conditionDql = '';
+        $paramIndex = 1;
+        foreach ($keys as $key) {
+            if ($conditionDql != '') $conditionDql .= ' and ';
+            $conditionDql .= 'e.' . $key . ' = ?' . $paramIndex++;
+        }
+        $dql .= $conditionDql;
+
+        $q = $this->_em->createQuery($dql);
+        foreach ($values as $index => $value) {
+            $q->setParameter($index, $value);
+        }
+
+        return $q->getSingleResult($hydrationMode);
     }
 
     /**
@@ -172,7 +180,7 @@ class EntityRepository
      */
     public function findByDql($dql, array $params = array(), $hydrationMode = null)
     {
-        $query = new Doctrine_Query($this->_em);
+        $query = new Query($this->_em);
         $component = $this->getComponentName();
         $dql = 'FROM ' . $component . ' WHERE ' . $dql;
 

@@ -146,7 +146,7 @@ abstract class AbstractCollectionPersister
     abstract protected function _getUpdateRowSql(PersistentCollection $coll);
 
     /**
-     * Gets the SQL statement used for inserting a row from to the collection.
+     * Gets the SQL statement used for inserting a row in the collection.
      *
      * @param PersistentCollection $coll
      */

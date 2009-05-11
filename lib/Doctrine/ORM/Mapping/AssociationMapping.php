@@ -50,6 +50,7 @@ abstract class AssociationMapping
     protected $_isCascadeDelete;
     protected $_isCascadeSave;
     protected $_isCascadeRefresh;
+    protected $_isCascadeMerge;
     
     /**
      * The fetch mode used for the association.
@@ -207,6 +208,20 @@ abstract class AssociationMapping
         }
         return $this->_isCascadeRefresh;
     }
+
+    /**
+     * Whether the association cascades merge() operations from the source entity
+     * to the target entity/entities.
+     *
+     * @return boolean
+     */
+    public function isCascadeMerge()
+    {
+        if ($this->_isCascadeMerge === null) {
+            $this->_isCascadeMerge = in_array('merge', $this->_cascades);
+        }
+        return $this->_isCascadeMerge;
+    }
     
     /**
      * Whether the target entity/entities of the association are eagerly fetched.
@@ -262,6 +277,7 @@ abstract class AssociationMapping
      * Whether the association is optional (0..X), or not (1..X).
      *
      * @return boolean TRUE if the association is optional, FALSE otherwise.
+     * @todo Only applicable to OneToOne. Move there.
      */
     public function isOptional()
     {
@@ -319,26 +335,51 @@ abstract class AssociationMapping
     {
         return $this->_mappedByFieldName;
     }
-    
+
+    /**
+     * Whether the association is a one-to-one association.
+     *
+     * @return boolean
+     */
     public function isOneToOne()
     {
         return false;
     }
-    
+
+    /**
+     * Whether the association is a one-to-many association.
+     *
+     * @return boolean
+     */
     public function isOneToMany()
     {
         return false;
     }
-    
+
+    /**
+     * Whether the association is a many-to-many association.
+     *
+     * @return boolean
+     */
     public function isManyToMany()
     {
         return false;
     }
 
+    /**
+     * Whether the association uses a join table for the mapping.
+     *
+     * @return boolean
+     */
     public function usesJoinTable()
     {
         return (bool)$this->_joinTable;
     }
 
+    /**
+     *
+     * @param <type> $entity
+     * @param <type> $entityManager 
+     */
     abstract public function lazyLoadFor($entity, $entityManager);
 }
