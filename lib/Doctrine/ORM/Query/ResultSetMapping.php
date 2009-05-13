@@ -165,6 +165,11 @@ class ResultSetMapping
         return $this->_relationMap[$alias];
     }
 
+    public function isRelation($alias)
+    {
+        return isset($this->_relationMap[$alias]);
+    }
+
     /**
      *
      * @param <type> $columnName

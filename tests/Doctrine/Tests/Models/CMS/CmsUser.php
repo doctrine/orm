@@ -15,15 +15,15 @@ class CmsUser
      */
     public $id;
     /**
-     * @DoctrineColumn(type="varchar", length=50)
+     * @DoctrineColumn(type="string", length=50)
      */
     public $status;
     /**
-     * @DoctrineColumn(type="varchar", length=255)
+     * @DoctrineColumn(type="string", length=255)
      */
     public $username;
     /**
-     * @DoctrineColumn(type="varchar", length=255)
+     * @DoctrineColumn(type="string", length=255)
      */
     public $name;
     /**

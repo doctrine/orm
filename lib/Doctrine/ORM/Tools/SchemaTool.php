@@ -158,7 +158,7 @@ class SchemaTool
         foreach ($class->getFieldMappings() as $fieldName => $mapping) {
             $column = array();
             $column['name'] = $mapping['columnName'];
-            $column['type'] = $mapping['type'];
+            $column['type'] = Type::getType($mapping['type']);
             $column['length'] = $mapping['length'];
             $column['notnull'] = ! $mapping['nullable'];
             if ($class->isIdentifier($fieldName)) {
@@ -187,7 +187,7 @@ class SchemaTool
                 foreach ($mapping->getJoinColumns() as $joinColumn) {
                     $column = array();
                     $column['name'] = $joinColumn['name'];
-                    $column['type'] = $foreignClass->getTypeOfColumn($joinColumn['referencedColumnName']);
+                    $column['type'] = Type::getType($foreignClass->getTypeOfColumn($joinColumn['referencedColumnName']));
                     $columns[$joinColumn['name']] = $column;
                     $constraint['local'][] = $joinColumn['name'];
                     $constraint['foreign'][] = $joinColumn['referencedColumnName'];
@@ -211,7 +211,7 @@ class SchemaTool
                     $column['primary'] = true;
                     $joinTableOptions['primary'][] = $joinColumn['name'];
                     $column['name'] = $joinColumn['name'];
-                    $column['type'] = $class->getTypeOfColumn($joinColumn['referencedColumnName']);
+                    $column['type'] = Type::getType($class->getTypeOfColumn($joinColumn['referencedColumnName']));
                     $joinTableColumns[$joinColumn['name']] = $column;
                     $constraint1['local'][] = $joinColumn['name'];
                     $constraint1['foreign'][] = $joinColumn['referencedColumnName'];
@@ -228,8 +228,8 @@ class SchemaTool
                     $column['primary'] = true;
                     $joinTableOptions['primary'][] = $inverseJoinColumn['name'];
                     $column['name'] = $inverseJoinColumn['name'];
-                    $column['type'] = $this->_em->getClassMetadata($mapping->getTargetEntityName())
-                            ->getTypeOfColumn($inverseJoinColumn['referencedColumnName']);
+                    $column['type'] = Type::getType($this->_em->getClassMetadata($mapping->getTargetEntityName())
+                            ->getTypeOfColumn($inverseJoinColumn['referencedColumnName']));
                     $joinTableColumns[$inverseJoinColumn['name']] = $column;
                     $constraint2['local'][] = $inverseJoinColumn['name'];
                     $constraint2['foreign'][] = $inverseJoinColumn['referencedColumnName'];

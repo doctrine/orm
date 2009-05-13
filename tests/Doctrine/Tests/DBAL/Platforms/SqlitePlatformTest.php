@@ -25,7 +25,7 @@ class SqlitePlatformTest extends \Doctrine\Tests\DbalTestCase
                 'notnull' => true
             ),
             'test' => array(
-                'type' => new \Doctrine\DBAL\Types\VarcharType,
+                'type' => new \Doctrine\DBAL\Types\StringType,
                 'length' => 255
             )
         );

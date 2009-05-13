@@ -8,7 +8,7 @@ namespace Doctrine\Tests\Models\Company;
 class CompanyManager extends CompanyEmployee
 {
     /*
-     * @DoctrineColumn(type="varchar", length="255")
+     * @DoctrineColumn(type="string", length="255")
      */
     public $title;
 }

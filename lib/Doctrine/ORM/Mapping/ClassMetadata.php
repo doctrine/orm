@@ -421,6 +421,7 @@ final class ClassMetadata
     }
 
     /**
+     * Gets the change tracking policy used by this class.
      *
      * @return integer
      */
@@ -430,6 +431,7 @@ final class ClassMetadata
     }
 
     /**
+     * Sets the change tracking policy used by this class.
      *
      * @param integer $policy
      */
@@ -439,6 +441,7 @@ final class ClassMetadata
     }
 
     /**
+     * Whether the change tracking policy of this class is "deferred explicit".
      *
      * @return boolean
      */
@@ -448,6 +451,7 @@ final class ClassMetadata
     }
 
     /**
+     * Whether the change tracking policy of this class is "deferred implicit".
      *
      * @return boolean
      */
@@ -457,6 +461,7 @@ final class ClassMetadata
     }
 
     /**
+     * Whether the change tracking policy of this class is "notify".
      *
      * @return boolean
      */
@@ -649,10 +654,8 @@ final class ClassMetadata
      */
     public function getInverseAssociationMapping($mappedByFieldName)
     {
-        if ( ! isset($this->_inverseMappings[$mappedByFieldName])) {
-            throw MappingException::mappingNotFound($mappedByFieldName);
-        }
-        return $this->_inverseMappings[$mappedByFieldName];
+        return isset($this->_inverseMappings[$mappedByFieldName]) ?
+                $this->_inverseMappings[$mappedByFieldName] : null;
     }
     
     /**
@@ -741,9 +744,9 @@ final class ClassMetadata
             throw MappingException::missingType();
         }
 
-        if ( ! is_object($mapping['type'])) {
+        /*if ( ! is_object($mapping['type'])) {
             $mapping['type'] = \Doctrine\DBAL\Types\Type::getType($mapping['type']);
-        }
+        }*/
 
         // Complete fieldName and columnName mapping
         if ( ! isset($mapping['columnName'])) {
@@ -879,12 +882,12 @@ final class ClassMetadata
      * @param string $field
      * @param mixed $value
      */
-    public function setValue($entity, $field, $value)
+    /*public function setValue($entity, $field, $value)
     {
         if (isset($this->_reflectionProperties[$field])) {
             $this->_reflectionProperties[$field]->setValue($entity, $value);
         }
-    }
+    }*/
 
     /**
      * Extracts the identifier values of an entity of this class.
@@ -913,6 +916,7 @@ final class ClassMetadata
      *
      * @param object $entity
      * @param mixed $id
+     * @todo Rename to assignIdentifier()
      */
     public function setIdentifierValues($entity, $id)
     {
@@ -923,6 +927,30 @@ final class ClassMetadata
         } else {
             $this->_reflectionProperties[$this->_identifier[0]]->setValue($entity, $id);
         }
+    }
+
+    /**
+     * Sets the specified field to the specified value on the given entity.
+     *
+     * @param object $entity
+     * @param string $field
+     * @param mixed $value
+     */
+    public function setFieldValue($entity, $field, $value)
+    {
+        $this->_reflectionProperties[$field]->setValue($entity, $value);
+    }
+
+    /**
+     * Sets the field mapped to the specified column to the specified value on the given entity.
+     *
+     * @param object $entity
+     * @param string $field
+     * @param mixed $value
+     */
+    public function setColumnValue($entity, $column, $value)
+    {
+        $this->_reflectionProperties[$this->_fieldNames[$column]]->setValue($entity, $value);
     }
     
     /**

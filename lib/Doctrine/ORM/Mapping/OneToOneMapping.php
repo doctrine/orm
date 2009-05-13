@@ -16,7 +16,7 @@
  *
  * This software consists of voluntary contributions made by many individuals
  * and is licensed under the LGPL. For more information, see
- * <http://www.phpdoctrine.org>.
+ * <http://www.doctrine-project.org>.
  */
 
 namespace Doctrine\ORM\Mapping;
@@ -140,27 +140,37 @@ class OneToOneMapping extends AssociationMapping
     /**
      * {@inheritdoc}
      *
-     * @param Doctrine\ORM\Entity $entity
-     * @return void
+     * @param object $owningEntity
+     * @param object $targetEntity
+     * @param EntityManager $em
      */
-    public function lazyLoadFor($entity, $entityManager)
+    public function load($owningEntity, $targetEntity, $em)
     {
-        $sourceClass = $entityManager->getClassMetadata($this->_sourceEntityName);
-        $targetClass = $entityManager->getClassMetadata($this->_targetEntityName);
-
-        $dql = 'SELECT t FROM ' . $targetClass->getClassName() . ' t WHERE ';
-        $params = array();
-        foreach ($this->_sourceToTargetKeyFields as $sourceKeyField => $targetKeyField) {
-            if ($params) $dql .= " AND ";
-            $dql .= "t.$targetKeyField = ?";
-            $params[] = $sourceClass->getReflectionProperty($sourceKeyField)->getValue($entity);
-        }
+        $sourceClass = $em->getClassMetadata($this->_sourceEntityName);
+        $targetClass = $em->getClassMetadata($this->_targetEntityName);
         
-        $otherEntity = $entityManager->query($dql, $params)->getFirst();
-            
-        if ( ! $otherEntity) {
-            $otherEntity = null;
+        $conditions = array();
+
+        if ($this->_isOwningSide) {
+            foreach ($this->_sourceToTargetKeyColumns as $sourceKeyColumn => $targetKeyColumn) {
+                $conditions[$targetKeyColumn] = $sourceClass->getReflectionProperty(
+                    $sourceClass->getFieldName($sourceKeyColumn))->getValue($owningEntity);
+            }
+            if ($targetClass->hasInverseAssociation($this->_sourceFieldName)) {
+                $targetClass->setFieldValue(
+                        $targetEntity,
+                        $targetClass->getInverseAssociationMapping($this->_sourceFieldName)->getSourceFieldName(),
+                        $owningEntity);
+            }
+        } else {
+            $owningAssoc = $em->getClassMetadata($this->_targetEntityName)->getAssociationMapping($this->_mappedByFieldName);
+            foreach ($owningAssoc->getTargetToSourceKeyColumns() as $targetKeyColumn => $sourceKeyColumn) {
+                $conditions[$sourceKeyColumn] = $sourceClass->getReflectionProperty(
+                    $sourceClass->getFieldName($targetKeyColumn))->getValue($owningEntity);
+            }
+            $targetClass->setFieldValue($targetEntity, $this->_mappedByFieldName, $owningEntity);
         }
-        $sourceClass->getReflectionProperty($this->_sourceFieldName)->setValue($entity, $otherEntity);
+
+        $em->getUnitOfWork()->getEntityPersister($this->_targetEntityName)->load($conditions, $targetEntity);
     }
 }

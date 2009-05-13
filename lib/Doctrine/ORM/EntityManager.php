@@ -146,6 +146,7 @@ class EntityManager
                 $this->_conn->getDatabasePlatform());
         $this->_metadataFactory->setCacheDriver($this->_config->getMetadataCacheImpl());
         $this->_unitOfWork = new UnitOfWork($this);
+        $this->_proxyGenerator = new DynamicProxyGenerator($this, '/Users/robo/dev/php/tmp/gen/');
     }
     
     /**
@@ -401,9 +402,6 @@ class EntityManager
     public function refresh($entity)
     {
         throw DoctrineException::notImplemented();
-        /*$this->_mergeData($entity, $this->getRepository(get_class($entity))->find(
-                $entity->identifier(), Query::HYDRATE_ARRAY),
-                true);*/
     }
 
     /**
@@ -445,7 +443,7 @@ class EntityManager
      * Gets the repository for an entity class.
      *
      * @param string $entityName  The name of the Entity.
-     * @return Doctrine\ORM\EntityRepository  The repository.
+     * @return EntityRepository  The repository.
      */
     public function getRepository($entityName)
     {
@@ -458,7 +456,7 @@ class EntityManager
         if ($customRepositoryClassName !== null) {
             $repository = new $customRepositoryClassName($entityName, $metadata);
         } else {
-            $repository = new \Doctrine\ORM\EntityRepository($this, $metadata);
+            $repository = new EntityRepository($this, $metadata);
         }
         $this->_repositories[$entityName] = $repository;
 
@@ -547,23 +545,17 @@ class EntityManager
                 default:
                     throw DoctrineException::updateMe("No hydrator found for hydration mode '$hydrationMode'.");
             }
-        }/* else if ($this->_hydrators[$hydrationMode] instanceof Closure) {
-            $this->_hydrators[$hydrationMode] = $this->_hydrators[$hydrationMode]($this);
-        }*/
+        }
         return $this->_hydrators[$hydrationMode];
     }
 
     /**
-     * Sets a hydrator for a hydration mode.
-     *
-     * @param mixed $hydrationMode
-     * @param object $hydrator Either a hydrator instance or a Closure that creates a
-     *          hydrator instance.
+     * 
      */
-    /*public function setHydrator($hydrationMode, $hydrator)
+    public function getProxyGenerator()
     {
-        $this->_hydrators[$hydrationMode] = $hydrator;
-    }*/
+        return $this->_proxyGenerator;
+    }
     
     /**
      * Factory method to create EntityManager instances.

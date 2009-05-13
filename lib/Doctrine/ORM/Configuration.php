@@ -46,15 +46,52 @@ class Configuration extends \Doctrine\DBAL\Configuration
             'metadataCacheImpl' => null,
             'metadataDriverImpl' => new AnnotationDriver(),
             'dqlClassAliasMap' => array(),
-            'cacheDir' => null
+            'cacheDir' => null,
+            'allowPartialObjects' => true
             ));
     }
 
+    /**
+     * Gets a boolean flag that specifies whether partial objects are allowed.
+     *
+     * If partial objects are allowed, Doctrine will never use proxies or lazy loading
+     * and you always only get what you explicitly query for.
+     *
+     * @return boolean Whether partial objects are allowed.
+     */
+    public function getAllowPartialObjects()
+    {
+        return $this->_attributes['allowPartialObjects'];
+    }
+
+    /**
+     * Sets a boolean flag that specifies whether partial objects are allowed.
+     *
+     * If partial objects are allowed, Doctrine will never use proxies or lazy loading
+     * and you always only get what you explicitly query for.
+     *
+     * @param boolean $allowed Whether partial objects are allowed.
+     */
+    public function setAllowPartialObjects($allowed)
+    {
+        $this->_attributes['allowPartialObjects'] = $allowed;
+    }
+
+    /**
+     * Sets the directory where Doctrine writes any necessary cache files.
+     *
+     * @param string $dir
+     */
     public function setCacheDir($dir)
     {
         $this->_attributes['cacheDir'] = $dir;
     }
 
+    /**
+     * Gets the directory where Doctrine writes any necessary cache files.
+     *
+     * @return string
+     */
     public function getCacheDir()
     {
         return $this->_attributes['cacheDir'];
@@ -70,41 +107,81 @@ class Configuration extends \Doctrine\DBAL\Configuration
         $this->_attributes['dqlClassAliasMap'] = $map;
     }
 
+    /**
+     * Sets the cache driver implementation that is used for metadata caching.
+     *
+     * @param object $driverImpl
+     */
     public function setMetadataDriverImpl($driverImpl)
     {
         $this->_attributes['metadataDriverImpl'] = $driverImpl;
     }
 
+    /**
+     * Gets the cache driver implementation that is used for the mapping metadata.
+     *
+     * @return object
+     */
     public function getMetadataDriverImpl()
     {
         return $this->_attributes['metadataDriverImpl'];
     }
-    
+
+    /**
+     * Gets the cache driver implementation that is used for query result caching.
+     *
+     * @return object
+     */
     public function getResultCacheImpl()
     {
         return $this->_attributes['resultCacheImpl'];
     }
-    
+
+    /**
+     * Sets the cache driver implementation that is used for query result caching.
+     *
+     * @param object $cacheImpl
+     */
     public function setResultCacheImpl($cacheImpl)
     {
         $this->_attributes['resultCacheImpl'] = $cacheImpl;
     }
-    
+
+    /**
+     * Gets the cache driver implementation that is used for the query cache (SQL cache).
+     *
+     * @return object
+     */
     public function getQueryCacheImpl()
     {
         return $this->_attributes['queryCacheImpl'];
     }
-    
+
+    /**
+     * Sets the cache driver implementation that is used for the query cache (SQL cache).
+     *
+     * @param object $cacheImpl
+     */
     public function setQueryCacheImpl($cacheImpl)
     {
         $this->_attributes['queryCacheImpl'] = $cacheImpl;
     }
-    
+
+    /**
+     * Gets the cache driver implementation that is used for metadata caching.
+     *
+     * @return object
+     */
     public function getMetadataCacheImpl()
     {
         return $this->_attributes['metadataCacheImpl'];
     }
-    
+
+    /**
+     * Sets the cache driver implementation that is used for metadata caching.
+     *
+     * @param object $cacheImpl
+     */
     public function setMetadataCacheImpl($cacheImpl)
     {
         $this->_attributes['metadataCacheImpl'] = $cacheImpl;

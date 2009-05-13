@@ -98,6 +98,16 @@ class ClassMetadataFactory
         }
         return $this->_loadedMetadata[$className];
     }
+
+    /**
+     *
+     * @param <type> $className
+     * @param <type> $class 
+     */
+    public function setMetadataFor($className, $class)
+    {
+        $this->_loadedMetadata[$className] = $class;
+    }
     
     /**
      * Loads the metadata of the class in question and all it's ancestors whose metadata

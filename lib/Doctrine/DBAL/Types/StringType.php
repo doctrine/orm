@@ -7,7 +7,7 @@ namespace Doctrine\DBAL\Types;
  *
  * @since 2.0
  */
-class VarcharType extends Type
+class StringType extends Type
 {
     /** @override */
     public function getSqlDeclaration(array $fieldDeclaration, \Doctrine\DBAL\Platforms\AbstractPlatform $platform)
@@ -24,6 +24,6 @@ class VarcharType extends Type
     /** @override */
     public function getName()
     {
-        return 'Varchar';
+        return 'string';
     }
 }

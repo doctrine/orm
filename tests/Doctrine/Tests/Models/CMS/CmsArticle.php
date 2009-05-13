@@ -15,11 +15,11 @@ class CmsArticle
      */
     public $id;
     /**
-     * @DoctrineColumn(type="varchar", length=255)
+     * @DoctrineColumn(type="string", length=255)
      */
     public $topic;
     /**
-     * @DoctrineColumn(type="varchar")
+     * @DoctrineColumn(type="string")
      */
     public $text;
     /**

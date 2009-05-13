@@ -26,9 +26,11 @@ namespace Doctrine\ORM;
  * For that purpose he generates proxy class files on the fly as needed.
  *
  * @author Roman Borschel <roman@code-factory.org>
+ * @since 2.0
  */
 class DynamicProxyGenerator
 {
+    private static $_ns = 'Doctrine\Generated\Proxies\\';
     private $_cacheDir = '/Users/robo/dev/php/tmp/gen/';
     private $_em;
 
@@ -36,77 +38,65 @@ class DynamicProxyGenerator
     {
         $this->_em = $em;
         if ($cacheDir === null) {
-            $cacheDir = sys_get_tmp_dir();
+            $cacheDir = sys_get_temp_dir();
         }
         $this->_cacheDir = $cacheDir;
     }
 
     /**
-     * 
+     * Gets a reference proxy instance.
      *
-     * @param <type> $className
-     * @param <type> $identifier
-     * @return <type>
+     * @param string $className
+     * @param mixed $identifier
+     * @return object
      */
-    public function getProxy($className, $identifier)
+    public function getReferenceProxy($className, $identifier)
     {
-        $proxyClassName = str_replace('\\', '_', $className) . 'Proxy';
+        $class = $this->_em->getClassMetadata($className);
+        $proxyClassName = str_replace('\\', '_', $className) . 'RProxy';
         if ( ! class_exists($proxyClassName, false)) {
+            $this->_em->getMetadataFactory()->setMetadataFor(self::$_ns . $proxyClassName, $class);
             $fileName = $this->_cacheDir . $proxyClassName . '.g.php';
             if ( ! file_exists($fileName)) {
-                $this->_generateProxyClass($className, $identifier, $proxyClassName, $fileName);
+                $this->_generateReferenceProxyClass($className, $identifier, $proxyClassName, $fileName);
             }
             require $fileName;
         }
-        $proxyClassName = '\Doctrine\Generated\Proxies\\' . $proxyClassName;
-        return new $proxyClassName($this->_em, $this->_em->getClassMetadata($className), $identifier);
+        $proxyClassName = '\\' . self::$_ns . $proxyClassName;
+        return new $proxyClassName($this->_em, $class, $identifier);
+    }
+
+    /**
+     * Gets an association proxy instance.
+     */
+    public function getAssociationProxy($owner, \Doctrine\ORM\Mapping\AssociationMapping $assoc)
+    {
+        $proxyClassName = str_replace('\\', '_', $assoc->getTargetEntityName()) . 'AProxy';
+        if ( ! class_exists($proxyClassName, false)) {
+            //die("$proxyClassName!");
+            $this->_em->getMetadataFactory()->setMetadataFor(self::$_ns . $proxyClassName, $this->_em->getClassMetadata($assoc->getTargetEntityName()));
+            $fileName = $this->_cacheDir . $proxyClassName . '.g.php';
+            if ( ! file_exists($fileName)) {
+                $this->_generateAssociationProxyClass($assoc->getTargetEntityName(), $proxyClassName, $fileName);
+            }
+            require $fileName;
+        }
+        $proxyClassName = '\\' . self::$_ns . $proxyClassName;
+        return new $proxyClassName($this->_em, $assoc, $owner);
     }
 
     /**
      * Generates a proxy class.
      *
-     * @param <type> $className
-     * @param <type> $id
-     * @param <type> $proxyClassName
-     * @param <type> $fileName 
+     * @param string $className
+     * @param mixed $id
+     * @param string $proxyClassName
+     * @param string $fileName
      */
-    private function _generateProxyClass($className, $id, $proxyClassName, $fileName)
+    private function _generateReferenceProxyClass($className, $id, $proxyClassName, $fileName)
     {
         $class = $this->_em->getClassMetadata($className);
         $file = self::$_proxyClassTemplate;
-
-        if (is_array($id) && count($id) > 1) {
-            // it's a composite key. keys = field names, values = values.
-            $values = array_values($id);
-            $keys = array_keys($id);
-        } else {
-            $values = is_array($id) ? array_values($id) : array($id);
-            $keys = $class->getIdentifierFieldNames();
-        }
-        $paramIndex = 1;
-        $identifierCondition = 'prx.' . $keys[0] . ' = ?' . $paramIndex++;
-        for ($i=1, $c=count($keys); $i < $c; ++$i) {
-            $identifierCondition .= ' AND prx.' . $keys[$i] . ' = ?' . $paramIndex++;
-        }
-
-        $parameters = 'array(';
-        $first = true;
-        foreach ($values as $value) {
-            if ($first) {
-                $first = false;
-            } else {
-                $parameters = ', ';
-            }
-            $parameters .= "'" . $value . "'";
-        }
-        $parameters .= ')';
-
-        $hydrationSetters = '';
-        foreach ($class->getReflectionProperties() as $name => $prop) {
-            if ( ! $class->hasAssociation($name)) {
-                $hydrationSetters .= '$this->_class->setValue($this, \'' . $name . '\', $scalar[0][\'prx_' . $name . '\']);' . PHP_EOL;
-            }
-        }
 
         $methods = '';
         foreach ($class->getReflectionClass()->getMethods() as $method) {
@@ -147,16 +137,79 @@ class DynamicProxyGenerator
         }
 
         $placeholders = array(
-            '<proxyClassName>', '<className>', '<identifierCondition>',
-            '<parameters>', '<hydrationSetters>', '<methods>', '<sleepImpl>'
+            '<proxyClassName>', '<className>',
+            '<methods>', '<sleepImpl>'
         );
         $replacements = array(
-            $proxyClassName, $className, $identifierCondition, $parameters,
-            $hydrationSetters, $methods, $sleepImpl
+            $proxyClassName, $className, $methods, $sleepImpl
         );
         
         $file = str_replace($placeholders, $replacements, $file);
         
+        file_put_contents($fileName, $file);
+    }
+
+    /**
+     * Generates a proxy class.
+     *
+     * @param string $className
+     * @param mixed $id
+     * @param string $proxyClassName
+     * @param string $fileName
+     */
+    private function _generateAssociationProxyClass($className, $proxyClassName, $fileName)
+    {
+        $class = $this->_em->getClassMetadata($className);
+        $file = self::$_assocProxyClassTemplate;
+
+        $methods = '';
+        foreach ($class->getReflectionClass()->getMethods() as $method) {
+            if ($method->isPublic() && ! $method->isFinal()) {
+                $methods .= PHP_EOL . 'public function ' . $method->getName() . '(';
+                $firstParam = true;
+                $parameterString = '';
+                foreach ($method->getParameters() as $param) {
+                    if ($firstParam) {
+                        $firstParam = false;
+                    } else {
+                        $parameterString .= ', ';
+                    }
+                    $parameterString .= '$' . $param->getName();
+                }
+                $methods .= $parameterString . ') {' . PHP_EOL;
+                $methods .= '$this->_load();' . PHP_EOL;
+                $methods .= 'return parent::' . $method->getName() . '(' . $parameterString . ');';
+                $methods .= '}' . PHP_EOL;
+            }
+        }
+
+        $sleepImpl = '';
+        if ($class->getReflectionClass()->hasMethod('__sleep')) {
+            $sleepImpl .= 'return parent::__sleep();';
+        } else {
+            $sleepImpl .= 'return array(';
+            $first = true;
+            foreach ($class->getReflectionProperties() as $name => $prop) {
+                if ($first) {
+                    $first = false;
+                } else {
+                    $sleepImpl .= ', ';
+                }
+                $sleepImpl .= "'" . $name . "'";
+            }
+            $sleepImpl .= ');';
+        }
+
+        $placeholders = array(
+            '<proxyClassName>', '<className>',
+            '<methods>', '<sleepImpl>'
+        );
+        $replacements = array(
+            $proxyClassName, $className, $methods, $sleepImpl
+        );
+
+        $file = str_replace($placeholders, $replacements, $file);
+
         file_put_contents($fileName, $file);
     }
 
@@ -176,10 +229,44 @@ namespace Doctrine\Generated\Proxies {
         }
         private function _load() {
             if ( ! $this->_loaded) {
-                $scalar = $this->_em->createQuery(\'select prx from <className> prx where <identifierCondition>\')->execute(<parameters>, \Doctrine\ORM\Query::HYDRATE_SCALAR);
-                <hydrationSetters>
+                $this->_em->getUnitOfWork()->getEntityPersister($this->_class->getClassName())->load($this->_identifier, $this);
                 unset($this->_em);
                 unset($this->_class);
+                $this->_loaded = true;
+            }
+        }
+
+        <methods>
+
+        public function __sleep() {
+            if (!$this->_loaded) {
+                throw new RuntimeException("Not fully loaded proxy can not be serialized.");
+            }
+            <sleepImpl>
+        }
+    }
+}';
+
+    private static $_assocProxyClassTemplate =
+'<?php
+/** This class was generated by the Doctrine ORM. DO NOT EDIT THIS FILE. */
+namespace Doctrine\Generated\Proxies {
+    class <proxyClassName> extends \<className> {
+        private $_em;
+        private $_assoc;
+        private $_owner;
+        private $_loaded = false;
+        public function __construct($em, $assoc, $owner) {
+            $this->_em = $em;
+            $this->_assoc = $assoc;
+            $this->_owner = $owner;
+        }
+        private function _load() {
+            if ( ! $this->_loaded) {
+                $this->_assoc->load($this->_owner, $this, $this->_em);
+                unset($this->_em);
+                unset($this->_owner);
+                unset($this->_assoc);
                 $this->_loaded = true;
             }
         }

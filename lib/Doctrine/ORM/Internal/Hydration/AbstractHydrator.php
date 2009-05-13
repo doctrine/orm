@@ -21,6 +21,7 @@
 
 namespace Doctrine\ORM\Internal\Hydration;
 
+use Doctrine\DBAL\Types\Type;
 use Doctrine\Common\DoctrineException;
 use \PDO;
 
@@ -184,7 +185,7 @@ abstract class AbstractHydrator
                     $classMetadata = $this->_lookupDeclaringClass($classMetadata, $fieldName);
                     $cache[$key]['fieldName'] = $fieldName;
                     $cache[$key]['isScalar'] = false;
-                    $cache[$key]['type'] = $classMetadata->getTypeOfField($fieldName);
+                    $cache[$key]['type'] = Type::getType($classMetadata->getTypeOfField($fieldName));
                     $cache[$key]['isIdentifier'] = $classMetadata->isIdentifier($fieldName);
                     $cache[$key]['dqlAlias'] = $this->_resultSetMapping->getEntityAlias($key);
                 } else {
@@ -196,17 +197,15 @@ abstract class AbstractHydrator
                 }
             }
 
-            $fieldName = $cache[$key]['fieldName'];
-
             if ($cache[$key]['isScalar']) {
-                $rowData['scalars'][$fieldName] = $value;
+                $rowData['scalars'][$cache[$key]['fieldName']] = $value;
                 continue;
             }
 
             $dqlAlias = $cache[$key]['dqlAlias'];
 
             if (isset($cache[$key]['isDiscriminator'])) {
-                $rowData[$dqlAlias][$fieldName] = $value;
+                $rowData[$dqlAlias][$cache[$key]['fieldName']] = $value;
                 continue;
             }
 
@@ -214,7 +213,7 @@ abstract class AbstractHydrator
                 $id[$dqlAlias] .= '|' . $value;
             }
 
-            $rowData[$dqlAlias][$fieldName] = $cache[$key]['type']->convertToPHPValue($value);
+            $rowData[$dqlAlias][$cache[$key]['fieldName']] = $cache[$key]['type']->convertToPHPValue($value);
 
             if ( ! isset($nonemptyComponents[$dqlAlias]) && $value !== null) {
                 $nonemptyComponents[$dqlAlias] = true;
@@ -259,7 +258,7 @@ abstract class AbstractHydrator
                     //$fieldName = $classMetadata->getFieldNameForLowerColumnName($columnName);
                     $cache[$key]['fieldName'] = $fieldName;
                     $cache[$key]['isScalar'] = false;
-                    $cache[$key]['type'] = $classMetadata->getTypeOfField($fieldName);
+                    $cache[$key]['type'] = Type::getType($classMetadata->getTypeOfField($fieldName));
                     $cache[$key]['dqlAlias'] = $this->_resultSetMapping->getEntityAlias($key);
                 }
             }

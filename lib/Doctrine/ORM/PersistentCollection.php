@@ -120,18 +120,12 @@ final class PersistentCollection extends \Doctrine\Common\Collections\Collection
     /**
      * Creates a new persistent collection.
      */
-    public function __construct(EntityManager $em, $type, array $data = array(), $keyField = null)
+    public function __construct(EntityManager $em, $class, array $data = array())
     {
         parent::__construct($data);
-        $this->_type = $type;
+        $this->_type = $class->getClassName();
         $this->_em = $em;
-        $this->_ownerClass = $em->getClassMetadata($type);
-        if ($keyField !== null) {
-            if ( ! $this->_ownerClass->hasField($keyField)) {
-                throw DoctrineException::updateMe("Invalid field '$keyField' can't be used as key.");
-            }
-            $this->_keyField = $keyField;
-        }
+        $this->_ownerClass = $class;
     }
 
     /**

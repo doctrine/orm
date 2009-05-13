@@ -63,8 +63,6 @@ class EntityRepository
     
     /**
      * Clears the repository, causing all managed entities to become detached.
-     *
-     * @return void
      */
     public function clear()
     {
@@ -80,35 +78,17 @@ class EntityRepository
      */
     public function find($id, $hydrationMode = null)
     {
-        if (is_array($id) && count($id) > 1) {
-            // it's a composite key. keys = field names, values = values.
-            $values = array_values($id);
-            $keys = array_keys($id);
-        } else {
-            $values = is_array($id) ? array_values($id) : array($id);
-            $keys = $this->_classMetadata->getIdentifier();
-        }
-        
         // Check identity map first
         if ($entity = $this->_em->getUnitOfWork()->tryGetById($id, $this->_classMetadata->getRootClassName())) {
             return $entity; // Hit!
         }
 
-        $dql = 'select e from ' . $this->_classMetadata->getClassName() . ' e where ';
-        $conditionDql = '';
-        $paramIndex = 1;
-        foreach ($keys as $key) {
-            if ($conditionDql != '') $conditionDql .= ' and ';
-            $conditionDql .= 'e.' . $key . ' = ?' . $paramIndex++;
-        }
-        $dql .= $conditionDql;
-
-        $q = $this->_em->createQuery($dql);
-        foreach ($values as $index => $value) {
-            $q->setParameter($index, $value);
+        if ( ! is_array($id) || count($id) <= 1) {
+            $value = is_array($id) ? array_values($id) : array($id);
+            $id = array_combine($this->_classMetadata->getIdentifier(), $value);
         }
 
-        return $q->getSingleResult($hydrationMode);
+        return $this->_em->getUnitOfWork()->getEntityPersister($this->_entityName)->load($id);
     }
 
     /**
@@ -151,43 +131,6 @@ class EntityRepository
     }
     
     /**
-     * findBySql
-     * finds records with given SQL where clause
-     * returns a collection of records
-     *
-     * @param string $dql               DQL after WHERE clause
-     * @param array $params             query parameters
-     * @param int $hydrationMode        Query::HYDRATE_ARRAY or Query::HYDRATE_RECORD
-     * @return Doctrine_Collection
-     * 
-     * @todo This actually takes DQL, not SQL, but it requires column names 
-     *       instead of field names. This should be fixed to use raw SQL instead.
-     */
-    public function findBySql($dql, array $params = array(), $hydrationMode = null)
-    {
-        return $this->_createQuery()->where($dql)->execute($params, $hydrationMode);
-    }
-
-    /**
-     * findByDql
-     * finds records with given DQL where clause
-     * returns a collection of records
-     *
-     * @param string $dql               DQL after WHERE clause
-     * @param array $params             query parameters
-     * @param int $hydrationMode        Query::HYDRATE_ARRAY or Query::HYDRATE_RECORD
-     * @return Doctrine_Collection
-     */
-    public function findByDql($dql, array $params = array(), $hydrationMode = null)
-    {
-        $query = new Query($this->_em);
-        $component = $this->getComponentName();
-        $dql = 'FROM ' . $component . ' WHERE ' . $dql;
-
-        return $query->query($dql, $params, $hydrationMode);        
-    }
-    
-    /**
      * Adds support for magic finders.
      * findByColumnName, findByRelationAlias
      * findById, findByContactId, etc.
@@ -211,7 +154,7 @@ class EntityRepository
         
         if (isset($by)) {
             if ( ! isset($arguments[0])) {
-                throw \Doctrine\Common\DoctrineException::updateMe('You must specify the value to findBy.');
+                throw DoctrineException::updateMe('You must specify the value to findBy.');
             }
             
             $fieldName = Doctrine::tableize($by);
@@ -222,11 +165,11 @@ class EntityRepository
             } else if ($this->_classMetadata->hasRelation($by)) {
                 $relation = $this->_classMetadata->getRelation($by);
                 if ($relation['type'] === Doctrine_Relation::MANY) {
-                    throw \Doctrine\Common\DoctrineException::updateMe('Cannot findBy many relationship.');
+                    throw DoctrineException::updateMe('Cannot findBy many relationship.');
                 }
                 return $this->$method($relation['local'], $arguments[0], $hydrationMode);
             } else {
-                throw \Doctrine\Common\DoctrineException::updateMe('Cannot find by: ' . $by . '. Invalid field or relationship alias.');
+                throw DoctrineException::updateMe('Cannot find by: ' . $by . '. Invalid field or relationship alias.');
             }
         }
     }

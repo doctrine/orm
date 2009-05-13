@@ -400,7 +400,7 @@ class UnitOfWork implements PropertyChangedListener
                 $assoc = $class->getAssociationMapping($name);
                 //echo PHP_EOL . "INJECTING PCOLL into $name" . PHP_EOL;
                 // Inject PersistentCollection
-                $coll = new PersistentCollection($this->_em, $assoc->getTargetEntityName(),
+                $coll = new PersistentCollection($this->_em, $this->_em->getClassMetadata($assoc->getTargetEntityName()),
                     $actualData[$name] ? $actualData[$name] : array());
                 $coll->setOwner($entity, $assoc);
                 if ( ! $coll->isEmpty()) {
@@ -1298,6 +1298,7 @@ class UnitOfWork implements PropertyChangedListener
     }
 
     /**
+     * INTERNAL:
      * Creates an entity. Used for reconstitution of entities during hydration.
      *
      * @param string $className  The name of the entity class.
@@ -1328,13 +1329,6 @@ class UnitOfWork implements PropertyChangedListener
         } else {
             $entity = new $className;
             $oid = spl_object_hash($entity);
-            /*if ($class->hasLazySingleValuedAssociations()) {
-                foreach ($class->getLazyAssociations() as $lazyAssoc) {
-                    // Inject VirtualProxy
-                    $prop = $class->getReflectionProperty($lazyAssoc->getSourceFieldName());
-                    $prop->setValue($entity, new \Doctrine\ORM\VirtualProxy($entity, $lazyAssoc, $prop));
-                }
-            }*/
             $this->_entityIdentifiers[$oid] = $id;
             $this->_entityStates[$oid] = self::STATE_MANAGED;
             $this->_originalEntityData[$oid] = $data;
@@ -1344,7 +1338,9 @@ class UnitOfWork implements PropertyChangedListener
 
         if ($overrideLocalChanges) {
             foreach ($data as $field => $value) {
-                $class->setValue($entity, $field, $value);
+                if ($class->hasField($field)) {
+                    $class->setFieldValue($entity, $field, $value);
+                }
             }
         } else {
             foreach ($data as $field => $value) {
@@ -1510,6 +1506,23 @@ class UnitOfWork implements PropertyChangedListener
             $this->_collectionPersisters[$type] = $persister;
         }
         return $this->_collectionPersisters[$type];
+    }
+
+    /**
+     * INTERNAL:
+     * Registers an entity as managed.
+     *
+     * @param object $entity The entity.
+     * @param array $id The identifier values.
+     * @param array $data The original entity data.
+     */
+    public function registerManaged($entity, $id, $data)
+    {
+        $oid = spl_object_hash($entity);
+        $this->_entityIdentifiers[$oid] = $id;
+        $this->_entityStates[$oid] = self::STATE_MANAGED;
+        $this->_originalEntityData[$oid] = $data;
+        $this->addToIdentityMap($entity);
     }
 
     /* PropertyChangedListener implementation */

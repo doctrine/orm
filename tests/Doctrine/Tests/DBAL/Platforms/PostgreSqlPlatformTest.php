@@ -26,7 +26,7 @@ class PostgreSqlPlatformTest extends \Doctrine\Tests\DbalTestCase
                 'notnull' => true
             ),
             'test' => array(
-                'type' => Type::getType('varchar'),
+                'type' => Type::getType('string'),
                 'length' => 255,
                 'notnull' => true
             )

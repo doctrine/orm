@@ -26,7 +26,7 @@ use Doctrine\ORM\PersistentCollection;
 /**
  * Persister for many-to-many collections.
  *
- * @author robo
+ * @author Roman Borschel <roman@code-factory.org>
  * @since 2.0
  */
 class ManyToManyPersister extends AbstractCollectionPersister
@@ -41,7 +41,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
         $mapping = $coll->getMapping();
         $joinTable = $mapping->getJoinTable();
         $columns = $mapping->getJoinTableColumns();
-        return "DELETE FROM {$joinTable['name']} WHERE " . implode(' = ? AND ', $columns) . ' = ?';
+        return 'DELETE FROM ' . $joinTable['name'] . ' WHERE ' . implode(' = ? AND ', $columns) . ' = ?';
     }
 
     /**
@@ -77,8 +77,8 @@ class ManyToManyPersister extends AbstractCollectionPersister
         $mapping = $coll->getMapping();
         $joinTable = $mapping->getJoinTable();
         $columns = $mapping->getJoinTableColumns();
-        return "INSERT INTO {$joinTable['name']} (" . implode(', ', $columns) . ")"
-                . " VALUES (" . implode(', ', array_fill(0, count($columns), '?')) . ')';
+        return 'INSERT INTO ' . $joinTable['name'] . ' (' . implode(', ', $columns) . ')'
+                . ' VALUES (' . implode(', ', array_fill(0, count($columns), '?')) . ')';
     }
 
     /**
@@ -88,7 +88,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
      */
     protected function _getInsertRowSqlParameters(PersistentCollection $coll, $element)
     {
-        //FIXME: This is still problematic for composite keys because we silently
+        // FIXME: This is still problematic for composite keys because we silently
         // rely on a specific ordering of the columns.
         $params = array_merge(
                 $this->_uow->getEntityIdentifier($coll->getOwner()),
@@ -112,7 +112,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
             if ($whereClause !== '') $whereClause .= ' AND ';
             $whereClause .= "$relationColumn = ?";
         }
-        return "DELETE FROM {$joinTable['name']} WHERE $whereClause";
+        return 'DELETE FROM ' . $joinTable['name'] . ' WHERE ' . $whereClause;
     }
 
     /**

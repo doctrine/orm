@@ -53,7 +53,7 @@ class VirtualProxy
 
     private function _load()
     {
-        $realInstance = $tis->_assoc->lazyLoadFor($this->_owner);
+        $realInstance = $this->_assoc->lazyLoadFor($this->_owner);
         $this->_refProp->setValue($this->_owner, $realInstance);
         return $realInstance;
     }

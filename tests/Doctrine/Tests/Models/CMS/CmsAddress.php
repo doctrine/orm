@@ -19,17 +19,17 @@ class CmsAddress
     public $id;
 
     /**
-     * @DoctrineColumn(type="varchar", length=50)
+     * @DoctrineColumn(type="string", length=50)
      */
     public $country;
 
     /**
-     * @DoctrineColumn(type="varchar", length=50)
+     * @DoctrineColumn(type="string", length=50)
      */
     public $zip;
 
     /**
-     * @DoctrineColumn(type="varchar", length=50)
+     * @DoctrineColumn(type="string", length=50)
      */
     public $city;
 
@@ -38,4 +38,20 @@ class CmsAddress
      * @DoctrineJoinColumn(name="user_id", referencedColumnName="id")
      */
     public $user;
+
+    public function getId() {
+        return $this->id;
+    }
+
+    public function getCountry() {
+        return $this->country;
+    }
+
+    public function getZipCode() {
+        return $this->zip;
+    }
+
+    public function getCity() {
+        return $this->city;
+    }
 }

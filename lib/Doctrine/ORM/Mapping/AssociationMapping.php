@@ -43,7 +43,8 @@ abstract class AssociationMapping
         'none',
         'save',
         'delete',
-        'refresh'
+        'refresh',
+        'merge'
     );
     
     protected $_cascades = array();
@@ -381,5 +382,5 @@ abstract class AssociationMapping
      * @param <type> $entity
      * @param <type> $entityManager 
      */
-    abstract public function lazyLoadFor($entity, $entityManager);
+    /*abstract*/ public function load($entity, $em) {}
 }

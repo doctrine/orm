@@ -21,7 +21,9 @@
 
 namespace Doctrine\ORM\Persisters;
 
+use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\PersistentCollection;
 use Doctrine\ORM\Mapping\ClassMetadata;
 
 /**
@@ -40,7 +42,7 @@ abstract class AbstractEntityPersister
      *
      * @var Doctrine\ORM\Mapping\ClassMetadata
      */
-    protected $_classMetadata;
+    protected $_class;
     
     /**
      * The name of the entity the persister is used for.
@@ -75,12 +77,12 @@ abstract class AbstractEntityPersister
      * that uses the given EntityManager and persists instances of the class described
      * by the given class metadata descriptor.
      */
-    public function __construct(EntityManager $em, ClassMetadata $classMetadata)
+    public function __construct(EntityManager $em, ClassMetadata $class)
     {
         $this->_em = $em;
-        $this->_entityName = $classMetadata->getClassName();
+        $this->_entityName = $class->getClassName();
         $this->_conn = $em->getConnection();
-        $this->_classMetadata = $classMetadata;
+        $this->_class = $class;
     }
     
     /**
@@ -94,8 +96,8 @@ abstract class AbstractEntityPersister
     {
         $insertData = array();
         $this->_prepareData($entity, $insertData, true);
-        $this->_conn->insert($this->_classMetadata->getTableName(), $insertData);
-        $idGen = $this->_classMetadata->getIdGenerator();
+        $this->_conn->insert($this->_class->getTableName(), $insertData);
+        $idGen = $this->_class->getIdGenerator();
         if ($idGen->isPostInsertGenerator()) {
             return $idGen->generate($this->_em, $entity);
         }
@@ -119,8 +121,8 @@ abstract class AbstractEntityPersister
      */
     public function executeInserts()
     {
-        //$tableName = $this->_classMetadata->getTableName();
-        $stmt = $this->_conn->prepare($this->_classMetadata->getInsertSql());
+        //$tableName = $this->_class->getTableName();
+        $stmt = $this->_conn->prepare($this->_class->getInsertSql());
         foreach ($this->_queuedInserts as $insertData) {
             $stmt->execute(array_values($insertData));
         }
@@ -136,9 +138,9 @@ abstract class AbstractEntityPersister
     {
         $updateData = array();
         $this->_prepareData($entity, $updateData);
-        $id = array_combine($this->_classMetadata->getIdentifierFieldNames(),
+        $id = array_combine($this->_class->getIdentifierFieldNames(),
                 $this->_em->getUnitOfWork()->getEntityIdentifier($entity));
-        $this->_conn->update($this->_classMetadata->getTableName(), $updateData, $id);
+        $this->_conn->update($this->_class->getTableName(), $updateData, $id);
     }
     
     /**
@@ -149,10 +151,10 @@ abstract class AbstractEntityPersister
     public function delete($entity)
     {
         $id = array_combine(
-                $this->_classMetadata->getIdentifierFieldNames(),
+                $this->_class->getIdentifierFieldNames(),
                 $this->_em->getUnitOfWork()->getEntityIdentifier($entity)
               );
-        $this->_conn->delete($this->_classMetadata->getTableName(), $id);
+        $this->_conn->delete($this->_class->getTableName(), $id);
     }
 
     /**
@@ -182,7 +184,7 @@ abstract class AbstractEntityPersister
      */
     public function getClassMetadata()
     {
-        return $this->_classMetadata;
+        return $this->_class;
     }
 
     /**
@@ -221,12 +223,11 @@ abstract class AbstractEntityPersister
         foreach ($this->_em->getUnitOfWork()->getEntityChangeSet($entity) as $field => $change) {
             $oldVal = $change[0];
             $newVal = $change[1];
-            
-            $type = $this->_classMetadata->getTypeOfField($field);
-            $columnName = $this->_classMetadata->getColumnName($field);
 
-            if ($this->_classMetadata->hasAssociation($field)) {
-                $assocMapping = $this->_classMetadata->getAssociationMapping($field);
+            $columnName = $this->_class->getColumnName($field);
+
+            if ($this->_class->hasAssociation($field)) {
+                $assocMapping = $this->_class->getAssociationMapping($field);
                 if ( ! $assocMapping->isOneToOne() || $assocMapping->isInverseSide()) {
                     continue;
                 }
@@ -242,8 +243,94 @@ abstract class AbstractEntityPersister
             } else if ($newVal === null) {
                 $result[$columnName] = null;
             } else {
-                $result[$columnName] = $type->convertToDatabaseValue($newVal, $this->_conn->getDatabasePlatform());
+                $result[$columnName] = Type::getType($this->_class->getTypeOfField($field))
+                        ->convertToDatabaseValue($newVal, $this->_conn->getDatabasePlatform());
             }
         }
+    }
+
+    /**
+     * Loads an entity by a list of field criteria.
+     *
+     * @param array $criteria The criteria by which to load the entity.
+     * @param object $entity The entity to load the data into. If not specified,
+     *                       a new entity is created.
+     */
+    public function load(array $criteria, $entity = null)
+    {
+        $stmt = $this->_conn->prepare($this->_getSelectSingleEntitySql($criteria));
+        $stmt->execute(array_values($criteria));
+        $data = array();
+        foreach ($stmt->fetch(\PDO::FETCH_ASSOC) as $column => $value) {
+            $fieldName = $this->_class->getFieldNameForLowerColumnName($column);
+            $data[$fieldName] = Type::getType($this->_class->getTypeOfField($fieldName))
+                    ->convertToPHPValue($value);
+        }
+        $stmt->closeCursor();
+
+        if ($entity === null) {
+            $entity = $this->_em->getUnitOfWork()->createEntity($this->_entityName, $data);
+        } else {
+            foreach ($data as $field => $value) {
+                $this->_class->setFieldValue($entity, $field, $value);
+            }
+            $id = array();
+            if ($this->_class->isIdentifierComposite()) {
+                $identifierFieldNames = $this->_class->getIdentifier();
+                foreach ($identifierFieldNames as $fieldName) {
+                    $id[] = $data[$fieldName];
+                }
+            } else {
+                $id = array($data[$this->_class->getSingleIdentifierFieldName()]);
+            }
+            $this->_em->getUnitOfWork()->registerManaged($entity, $id, $data);
+        }
+
+        if ( ! $this->_em->getConfiguration()->getAllowPartialObjects()) {
+            foreach ($this->_class->getAssociationMappings() as $field => $assoc) {
+                if ($assoc->isOneToOne()) {
+                    if ($assoc->isLazilyFetched()) {
+                        // Inject proxy
+                        $proxy = $this->_em->getProxyGenerator()->getAssociationProxy($entity, $assoc);
+                        $this->_class->setFieldValue($entity, $field, $proxy);
+                    } else {
+                        //TODO: Eager fetch?
+                    }
+                } else {
+                    // Inject collection
+                    $this->_class->getReflectionProperty($field)
+                        ->setValue($entity, new PersistentCollection($this->_em,
+                            $this->_em->getClassMetadata($assoc->getTargetEntityName())
+                        ));
+                }
+            }
+        }
+
+        return $entity;
+    }
+
+    /**
+     * Gets the SELECT SQL to select a single entity by a set of field criteria.
+     *
+     * @param array $criteria
+     * @return string
+     */
+    protected function _getSelectSingleEntitySql(array $criteria)
+    {
+        $columnList = '';
+        $columnNames = $this->_class->getColumnNames();
+        foreach ($columnNames as $column) {
+            if ($columnList != '') $columnList .= ', ';
+            $columnList .= $column;
+        }
+
+        $conditionSql = '';
+        foreach ($criteria as $field => $value) {
+            if ($conditionSql != '') $conditionSql .= ' AND ';
+            $conditionSql .= $this->_class->getColumnName($field) . ' = ?';
+        }
+
+        return 'SELECT ' . $columnList . ' FROM ' . $this->_class->getTableName()
+                . ' WHERE ' . $conditionSql;
     }
 }

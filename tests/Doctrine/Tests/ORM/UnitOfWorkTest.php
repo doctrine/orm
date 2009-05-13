@@ -194,7 +194,7 @@ class NotifyChangedEntity implements \Doctrine\Common\NotifyPropertyChanged
      */
     private $id;
     /**
-     * @DoctrineColumn(type="varchar")
+     * @DoctrineColumn(type="string")
      */
     private $data;
 

@@ -100,7 +100,7 @@ class ClassLoader
             $class .= $this->_basePaths[$prefix] . DIRECTORY_SEPARATOR;
         }
 
-        $class .= str_replace(array($this->_namespaceSeparator, '_'), DIRECTORY_SEPARATOR, $className)
+        $class .= str_replace($this->_namespaceSeparator, DIRECTORY_SEPARATOR, $className)
                 . $this->_fileExtension;
 
         if ($this->_checkFileExists) {

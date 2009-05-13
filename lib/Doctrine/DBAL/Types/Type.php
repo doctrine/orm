@@ -13,7 +13,7 @@ abstract class Type
         'int' => 'Doctrine\DBAL\Types\IntegerType',
         'smallint' => 'Doctrine\DBAL\Types\SmallIntType',
         'bigint' => 'Doctrine\DBAL\Types\BigIntType',
-        'varchar' => 'Doctrine\DBAL\Types\VarcharType',
+        'string' => 'Doctrine\DBAL\Types\StringType',
         'text' => 'Doctrine\DBAL\Types\TextType',
         'datetime' => 'Doctrine\DBAL\Types\DateTimeType',
         'decimal' => 'Doctrine\DBAL\Types\DecimalType',

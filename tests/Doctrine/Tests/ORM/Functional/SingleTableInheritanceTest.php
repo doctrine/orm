@@ -94,7 +94,7 @@ class SingleTableInheritanceTest extends \Doctrine\Tests\OrmFunctionalTestCase
 /**
  * @DoctrineEntity
  * @DoctrineInheritanceType("singleTable")
- * @DoctrineDiscriminatorColumn(name="discr", type="varchar")
+ * @DoctrineDiscriminatorColumn(name="discr", type="string")
  * @DoctrineSubClasses({"Doctrine\Tests\ORM\Functional\ChildEntity"})
  * @DoctrineDiscriminatorValue("parent")
  */
@@ -107,7 +107,7 @@ class ParentEntity {
     private $id;
 
     /**
-     * @DoctrineColumn(type="varchar")
+     * @DoctrineColumn(type="string")
      */
     private $data;
 
@@ -168,7 +168,7 @@ class RelatedEntity {
      */
     private $id;
     /**
-     * @DoctrineColumn(type="varchar", length=50)
+     * @DoctrineColumn(type="string", length=50)
      */
     private $name;
     /**

@@ -9,7 +9,7 @@ namespace Doctrine\Tests\Models\CMS;
 class CmsPhonenumber
 {
     /**
-     * @DoctrineColumn(type="varchar", length=50)
+     * @DoctrineColumn(type="string", length=50)
      * @DoctrineId
      */
     public $phonenumber;

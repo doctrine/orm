@@ -33,19 +33,14 @@ namespace Doctrine\ORM\Persisters;
  */
 class SingleTablePersister extends AbstractEntityPersister
 {
-    public function insert($entity)
-    {
-        return parent::insert($entity);
-    }
-
     /** @override */
     protected function _prepareData($entity, array &$result, $isInsert = false)
     {
         parent::_prepareData($entity, $result, $isInsert);
         // Populate the discriminator column
         if ($isInsert) {
-            $discColumn = $this->_classMetadata->getDiscriminatorColumn();
-            $result[$discColumn['name']] = $this->_classMetadata->getDiscriminatorValue();
+            $discColumn = $this->_class->getDiscriminatorColumn();
+            $result[$discColumn['name']] = $this->_class->getDiscriminatorValue();
         }
     }
 }
