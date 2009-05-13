@@ -73,7 +73,6 @@ class DynamicProxyGenerator
     {
         $proxyClassName = str_replace('\\', '_', $assoc->getTargetEntityName()) . 'AProxy';
         if ( ! class_exists($proxyClassName, false)) {
-            //die("$proxyClassName!");
             $this->_em->getMetadataFactory()->setMetadataFor(self::$_ns . $proxyClassName, $this->_em->getClassMetadata($assoc->getTargetEntityName()));
             $fileName = $this->_cacheDir . $proxyClassName . '.g.php';
             if ( ! file_exists($fileName)) {

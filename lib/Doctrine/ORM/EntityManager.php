@@ -146,7 +146,7 @@ class EntityManager
                 $this->_conn->getDatabasePlatform());
         $this->_metadataFactory->setCacheDriver($this->_config->getMetadataCacheImpl());
         $this->_unitOfWork = new UnitOfWork($this);
-        $this->_proxyGenerator = new DynamicProxyGenerator($this, '/Users/robo/dev/php/tmp/gen/');
+        $this->_proxyGenerator = new DynamicProxyGenerator($this, $this->_config->getCacheDir());
     }
     
     /**
