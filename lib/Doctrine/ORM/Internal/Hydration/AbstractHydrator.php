@@ -39,7 +39,7 @@ use \PDO;
 abstract class AbstractHydrator
 {
     /** The ResultSetMapping. */
-    protected $_resultSetMapping;
+    protected $_rsm;
 
     /** @var EntityManager The EntityManager instance. */
     protected $_em;
@@ -74,7 +74,7 @@ abstract class AbstractHydrator
     public function iterate($stmt, $resultSetMapping)
     {
         $this->_stmt = $stmt;
-        $this->_resultSetMapping = $resultSetMapping;
+        $this->_rsm = $resultSetMapping;
         $this->_prepare();
         return new IterableResult($this);
     }
@@ -89,7 +89,7 @@ abstract class AbstractHydrator
     public function hydrateAll($stmt, $resultSetMapping)
     {
         $this->_stmt = $stmt;
-        $this->_resultSetMapping = $resultSetMapping;
+        $this->_rsm = $resultSetMapping;
         $this->_prepare();
         $result = $this->_hydrateAll();
         $this->_cleanup();
@@ -127,7 +127,7 @@ abstract class AbstractHydrator
      */
     protected function _cleanup()
     {
-        $this->_resultSetMapping = null;
+        $this->_rsm = null;
         $this->_stmt->closeCursor();
         $this->_stmt = null;
     }
@@ -174,26 +174,26 @@ abstract class AbstractHydrator
         foreach ($data as $key => $value) {
             // Parse each column name only once. Cache the results.
             if ( ! isset($cache[$key])) {
-                if (isset($this->_resultSetMapping->ignoredColumns[$key])) {
+                if (isset($this->_rsm->ignoredColumns[$key])) {
                     $cache[$key] = false;
-                } else if (isset($this->_resultSetMapping->scalarMappings[$key])) {
-                    $cache[$key]['fieldName'] = $this->_resultSetMapping->getScalarAlias($key);
+                } else if (isset($this->_rsm->scalarMappings[$key])) {
+                    $cache[$key]['fieldName'] = $this->_rsm->getScalarAlias($key);
                     $cache[$key]['isScalar'] = true;
-                } else if (isset($this->_resultSetMapping->fieldMappings[$key])) {
-                    $classMetadata = $this->_resultSetMapping->getOwningClass($key);
-                    $fieldName = $this->_resultSetMapping->fieldMappings[$key];
+                } else if (isset($this->_rsm->fieldMappings[$key])) {
+                    $classMetadata = $this->_rsm->getOwningClass($key);
+                    $fieldName = $this->_rsm->fieldMappings[$key];
                     $classMetadata = $this->_lookupDeclaringClass($classMetadata, $fieldName);
                     $cache[$key]['fieldName'] = $fieldName;
                     $cache[$key]['isScalar'] = false;
                     $cache[$key]['type'] = Type::getType($classMetadata->getTypeOfField($fieldName));
                     $cache[$key]['isIdentifier'] = $classMetadata->isIdentifier($fieldName);
-                    $cache[$key]['dqlAlias'] = $this->_resultSetMapping->columnOwnerMap[$key];
+                    $cache[$key]['dqlAlias'] = $this->_rsm->columnOwnerMap[$key];
                 } else {
                     // Discriminator column
                     $cache[$key]['isDiscriminator'] = true;
                     $cache[$key]['isScalar'] = false;
                     $cache[$key]['fieldName'] = $key;
-                    $cache[$key]['dqlAlias'] = $this->_resultSetMapping->columnOwnerMap[$key];
+                    $cache[$key]['dqlAlias'] = $this->_rsm->columnOwnerMap[$key];
                 }
             }
 
@@ -245,20 +245,20 @@ abstract class AbstractHydrator
         foreach ($data as $key => $value) {
             // Parse each column name only once. Cache the results.
             if ( ! isset($cache[$key])) {
-                if (isset($this->_resultSetMapping->ignoredColumns[$key])) {
+                if (isset($this->_rsm->ignoredColumns[$key])) {
                     $cache[$key] = false;
                     continue;
-                } else if (isset($this->_resultSetMapping->scalarMappings[$key])) {
-                    $cache[$key]['fieldName'] = $this->_resultSetMapping->scalarMappings[$key];
+                } else if (isset($this->_rsm->scalarMappings[$key])) {
+                    $cache[$key]['fieldName'] = $this->_rsm->scalarMappings[$key];
                     $cache[$key]['isScalar'] = true;
                 } else {
-                    $classMetadata = $this->_resultSetMapping->getOwningClass($key);
-                    $fieldName = $this->_resultSetMapping->fieldMappings[$key];
+                    $classMetadata = $this->_rsm->getOwningClass($key);
+                    $fieldName = $this->_rsm->fieldMappings[$key];
                     $classMetadata = $this->_lookupDeclaringClass($classMetadata, $fieldName);
                     $cache[$key]['fieldName'] = $fieldName;
                     $cache[$key]['isScalar'] = false;
                     $cache[$key]['type'] = Type::getType($classMetadata->getTypeOfField($fieldName));
-                    $cache[$key]['dqlAlias'] = $this->_resultSetMapping->columnOwnerMap[$key];
+                    $cache[$key]['dqlAlias'] = $this->_rsm->columnOwnerMap[$key];
                 }
             }
             
@@ -283,8 +283,8 @@ abstract class AbstractHydrator
      */
     protected function _getCustomIndexField($alias)
     {
-        return isset($this->_resultSetMapping->indexByMap[$alias]) ?
-                $this->_resultSetMapping->indexByMap[$alias] : null;
+        return isset($this->_rsm->indexByMap[$alias]) ?
+                $this->_rsm->indexByMap[$alias] : null;
     }
 
     /**

@@ -40,12 +40,12 @@ class ArrayHydrator extends AbstractHydrator
     /** @override */
     protected function _prepare()
     {
-        $this->_isSimpleQuery = $this->_resultSetMapping->getEntityResultCount() <= 1;
+        $this->_isSimpleQuery = $this->_rsm->getEntityResultCount() <= 1;
         $this->_identifierMap = array();
         $this->_resultPointers = array();
         $this->_idTemplate = array();
         $this->_resultCounter = 0;
-        foreach ($this->_resultSetMapping->getAliasMap() as $dqlAlias => $class) {
+        foreach ($this->_rsm->getAliasMap() as $dqlAlias => $class) {
             $this->_identifierMap[$dqlAlias] = array();
             $this->_resultPointers[$dqlAlias] = array();
             $this->_idTemplate[$dqlAlias] = '';
@@ -88,17 +88,17 @@ class ArrayHydrator extends AbstractHydrator
         foreach ($rowData as $dqlAlias => $data) {
             $index = false;
 
-            if (isset($this->_resultSetMapping->parentAliasMap[$dqlAlias])) {
+            if (isset($this->_rsm->parentAliasMap[$dqlAlias])) {
                 // It's a joined result
 
-                $parent = $this->_resultSetMapping->parentAliasMap[$dqlAlias];
-                $relation = $this->_resultSetMapping->relationMap[$dqlAlias];
+                $parent = $this->_rsm->parentAliasMap[$dqlAlias];
+                $relation = $this->_rsm->relationMap[$dqlAlias];
                 $relationAlias = $relation->getSourceFieldName();
                 $path = $parent . '.' . $dqlAlias;
 
                 // Get a reference to the right element in the result tree.
                 // This element will get the associated element attached.
-                if ($this->_resultSetMapping->isMixed && isset($this->_rootAliases[$parent])) {
+                if ($this->_rsm->isMixed && isset($this->_rootAliases[$parent])) {
                     $key = key(reset($this->_resultPointers));
                     // TODO: Exception if $key === null ?
                     $baseElement =& $this->_resultPointers[$parent][$key];
@@ -155,14 +155,14 @@ class ArrayHydrator extends AbstractHydrator
                 if ($this->_isSimpleQuery || ! isset($this->_identifierMap[$dqlAlias][$id[$dqlAlias]])) {
                     $element = $rowData[$dqlAlias];
                     if ($field = $this->_getCustomIndexField($dqlAlias)) {
-                        if ($this->_resultSetMapping->isMixed) {
+                        if ($this->_rsm->isMixed) {
                             $result[] = array($element[$field] => $element);
                             ++$this->_resultCounter;
                         } else {
                             $result[$element[$field]] = $element;
                         }
                     } else {
-                        if ($this->_resultSetMapping->isMixed) {
+                        if ($this->_rsm->isMixed) {
                             $result[] = array($element);
                             ++$this->_resultCounter;
                         } else {

@@ -36,8 +36,6 @@ use Doctrine\Common\DoctrineException;
  *    get the whole class name, namespace inclusive, prepended to every property in
  *    the serialized representation).
  *
- * !! Do NOT write/modify the public properties directly. Go through the public API. !!
- *
  * @author Roman Borschel <roman@code-factory.org>
  * @since 2.0
  */

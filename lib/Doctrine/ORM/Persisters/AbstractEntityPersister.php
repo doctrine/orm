@@ -272,12 +272,11 @@ abstract class AbstractEntityPersister
             $entity = $this->_em->getUnitOfWork()->createEntity($this->_entityName, $data);
         } else {
             foreach ($data as $field => $value) {
-                $this->_class->setFieldValue($entity, $field, $value);
+                $this->_class->reflFields[$field]->setValue($entity, $value);
             }
             $id = array();
             if ($this->_class->isIdentifierComposite()) {
-                $identifierFieldNames = $this->_class->identifier;
-                foreach ($identifierFieldNames as $fieldName) {
+                foreach ($this->_class->identifier as $fieldName) {
                     $id[] = $data[$fieldName];
                 }
             } else {
@@ -292,15 +291,15 @@ abstract class AbstractEntityPersister
                     if ($assoc->isLazilyFetched()) {
                         // Inject proxy
                         $proxy = $this->_em->getProxyGenerator()->getAssociationProxy($entity, $assoc);
-                        $this->_class->setFieldValue($entity, $field, $proxy);
+                        $this->_class->reflFields[$field]->setValue($entity, $proxy);
                     } else {
                         //TODO: Eager fetch?
                     }
                 } else {
                     // Inject collection
-                    $this->_class->getReflectionProperty($field)
-                        ->setValue($entity, new PersistentCollection($this->_em,
-                            $this->_em->getClassMetadata($assoc->getTargetEntityName())
+                    $this->_class->reflFields[$field]->setValue(
+                            $entity, new PersistentCollection($this->_em,
+                            $this->_em->getClassMetadata($assoc->targetEntityName)
                         ));
                 }
             }
@@ -318,8 +317,7 @@ abstract class AbstractEntityPersister
     protected function _getSelectSingleEntitySql(array $criteria)
     {
         $columnList = '';
-        $columnNames = $this->_class->getColumnNames();
-        foreach ($columnNames as $column) {
+        foreach ($this->_class->columnNames as $column) {
             if ($columnList != '') $columnList .= ', ';
             $columnList .= $column;
         }
@@ -327,7 +325,7 @@ abstract class AbstractEntityPersister
         $conditionSql = '';
         foreach ($criteria as $field => $value) {
             if ($conditionSql != '') $conditionSql .= ' AND ';
-            $conditionSql .= $this->_class->getColumnName($field) . ' = ?';
+            $conditionSql .= $this->_class->columnNames[$field] . ' = ?';
         }
 
         return 'SELECT ' . $columnList . ' FROM ' . $this->_class->getTableName()

@@ -24,6 +24,14 @@ namespace Doctrine\ORM\Mapping;
 /**
  * Base class for association mappings.
  *
+ * <b>IMPORTANT NOTE:</b>
+ *
+ * The fields of this class are only public for 2 reasons:
+ * 1) To allow fast, internal READ access.
+ * 2) To drastically reduce the size of a serialized instance (private/protected members
+ *    get the whole class name, namespace inclusive, prepended to every property in
+ *    the serialized representation).
+ *
  * @author Roman Borschel <roman@code-factory.org>
  * @since 2.0
  */
@@ -47,18 +55,18 @@ abstract class AssociationMapping
         'merge'
     );
     
-    protected $_cascades = array();
-    protected $_isCascadeDelete;
-    protected $_isCascadeSave;
-    protected $_isCascadeRefresh;
-    protected $_isCascadeMerge;
+    public $cascades = array();
+    public $isCascadeDelete;
+    public $isCascadeSave;
+    public $isCascadeRefresh;
+    public $isCascadeMerge;
     
     /**
      * The fetch mode used for the association.
      *
      * @var integer
      */
-    protected $_fetchMode = self::FETCH_MANUAL;
+    public $fetchMode = self::FETCH_MANUAL;
     
     /**
      * Flag that indicates whether the class that defines this mapping is
@@ -66,7 +74,7 @@ abstract class AssociationMapping
      *
      * @var boolean
      */
-    protected $_isOwningSide = true;
+    public $isOwningSide = true;
     
     /**
      * Whether the association is optional (0..X) or not (1..X).
@@ -74,14 +82,14 @@ abstract class AssociationMapping
      *
      * @var boolean
      */
-    protected $_isOptional = true;
+    public $isOptional = true;
     
     /**
      * The name of the source Entity (the Entity that defines this mapping).
      *
      * @var string
      */
-    protected $_sourceEntityName;
+    public $sourceEntityName;
     
     /**
      * The name of the target Entity (the Enitity that is the target of the
@@ -89,7 +97,7 @@ abstract class AssociationMapping
      *
      * @var string
      */
-    protected $_targetEntityName;
+    public $targetEntityName;
     
     /**
      * Identifies the field on the source class (the class this AssociationMapping
@@ -98,7 +106,7 @@ abstract class AssociationMapping
      *
      * @var string
      */
-    protected $_sourceFieldName;
+    public $sourceFieldName;
     
     /**
      * Identifies the field on the owning side that controls the mapping for the
@@ -106,14 +114,14 @@ abstract class AssociationMapping
      *
      * @var string
      */
-    protected $_mappedByFieldName;
+    public $mappedByFieldName;
     
     /**
      * The join table definition, if any.
      *
      * @var array
      */
-    protected $_joinTable = array();
+    public $joinTable = array();
 
     //protected $_joinTableInsertSql;
     
@@ -138,34 +146,38 @@ abstract class AssociationMapping
         if ( ! isset($mapping['fieldName'])) {
             throw MappingException::missingFieldName();
         }
-        $this->_sourceFieldName = $mapping['fieldName'];
+        $this->sourceFieldName = $mapping['fieldName'];
         
         if ( ! isset($mapping['sourceEntity'])) {
             throw MappingException::missingSourceEntity($mapping['fieldName']);
         }
-        $this->_sourceEntityName = $mapping['sourceEntity'];
+        $this->sourceEntityName = $mapping['sourceEntity'];
         
         if ( ! isset($mapping['targetEntity'])) {
             throw MappingException::missingTargetEntity($mapping['fieldName']);
         }
-        $this->_targetEntityName = $mapping['targetEntity'];
+        $this->targetEntityName = $mapping['targetEntity'];
         
         // Mandatory and optional attributes for either side
         if ( ! isset($mapping['mappedBy'])) {            
             // Optional
             if (isset($mapping['joinTable'])) {
-                $this->_joinTable = $mapping['joinTable'];   
+                $this->joinTable = $mapping['joinTable'];   
             }
         } else {
-            $this->_isOwningSide = false;
-            $this->_mappedByFieldName = $mapping['mappedBy'];
+            $this->isOwningSide = false;
+            $this->mappedByFieldName = $mapping['mappedBy'];
         }
         
         // Optional attributes for both sides
-        $this->_isOptional = isset($mapping['optional']) ?
+        $this->isOptional = isset($mapping['optional']) ?
                 (bool)$mapping['optional'] : true;
-        $this->_cascades = isset($mapping['cascade']) ?
+        $this->cascades = isset($mapping['cascade']) ?
                 (array)$mapping['cascade'] : array();
+        $this->isCascadeDelete = in_array('delete', $this->cascades);
+        $this->isCascadeSave = in_array('save', $this->cascades);
+        $this->isCascadeRefresh = in_array('refresh', $this->cascades);
+        $this->isCascadeMerge = in_array('merge', $this->cascades);
     }
     
     /**
@@ -176,10 +188,7 @@ abstract class AssociationMapping
      */
     public function isCascadeDelete()
     {
-        if ($this->_isCascadeDelete === null) {
-            $this->_isCascadeDelete = in_array('delete', $this->_cascades);
-        }
-        return $this->_isCascadeDelete;
+        return $this->isCascadeDelete;
     }
     
     /**
@@ -190,10 +199,7 @@ abstract class AssociationMapping
      */
     public function isCascadeSave()
     {
-        if ($this->_isCascadeSave === null) {
-            $this->_isCascadeSave = in_array('save', $this->_cascades);
-        }
-        return $this->_isCascadeSave;
+        return $this->isCascadeSave;
     }
     
     /**
@@ -204,10 +210,7 @@ abstract class AssociationMapping
      */
     public function isCascadeRefresh()
     {
-        if ($this->_isCascadeRefresh === null) {
-            $this->_isCascadeRefresh = in_array('refresh', $this->_cascades);
-        }
-        return $this->_isCascadeRefresh;
+        return $this->isCascadeRefresh;
     }
 
     /**
@@ -218,10 +221,7 @@ abstract class AssociationMapping
      */
     public function isCascadeMerge()
     {
-        if ($this->_isCascadeMerge === null) {
-            $this->_isCascadeMerge = in_array('merge', $this->_cascades);
-        }
-        return $this->_isCascadeMerge;
+        return $this->isCascadeMerge;
     }
     
     /**
@@ -231,7 +231,7 @@ abstract class AssociationMapping
      */
     public function isEagerlyFetched()
     {
-        return $this->_fetchMode == self::FETCH_EAGER;
+        return $this->fetchMode == self::FETCH_EAGER;
     }
     
     /**
@@ -241,7 +241,7 @@ abstract class AssociationMapping
      */
     public function isLazilyFetched()
     {
-        return $this->_fetchMode == self::FETCH_LAZY;
+        return $this->fetchMode == self::FETCH_LAZY;
     }
     
     /**
@@ -251,7 +251,7 @@ abstract class AssociationMapping
      */
     public function isManuallyFetched()
     {
-        return $this->_fetchMode == self::FETCH_MANUAL;
+        return $this->fetchMode == self::FETCH_MANUAL;
     }
     
     /**
@@ -261,7 +261,7 @@ abstract class AssociationMapping
      */
     public function isOwningSide()
     {
-        return $this->_isOwningSide;
+        return $this->isOwningSide;
     }
     
     /**
@@ -271,7 +271,7 @@ abstract class AssociationMapping
      */
     public function isInverseSide()
     {
-        return ! $this->_isOwningSide;
+        return ! $this->isOwningSide;
     }
     
     /**
@@ -282,7 +282,7 @@ abstract class AssociationMapping
      */
     public function isOptional()
     {
-        return $this->_isOptional;
+        return $this->isOptional;
     }
     
     /**
@@ -292,7 +292,7 @@ abstract class AssociationMapping
      */
     public function getSourceEntityName()
     {
-        return $this->_sourceEntityName;
+        return $this->sourceEntityName;
     }
     
     /**
@@ -302,7 +302,7 @@ abstract class AssociationMapping
      */
     public function getTargetEntityName()
     {
-        return $this->_targetEntityName;
+        return $this->targetEntityName;
     }
     
     /**
@@ -312,7 +312,7 @@ abstract class AssociationMapping
      */
     public function getJoinTable()
     {
-        return $this->_joinTable;
+        return $this->joinTable;
     }
     
     /**
@@ -322,7 +322,7 @@ abstract class AssociationMapping
      */
     public function getSourceFieldName()
     {
-        return $this->_sourceFieldName;
+        return $this->sourceFieldName;
     }
     
     /**
@@ -334,7 +334,7 @@ abstract class AssociationMapping
      */
     public function getMappedByFieldName()
     {
-        return $this->_mappedByFieldName;
+        return $this->mappedByFieldName;
     }
 
     /**
@@ -374,7 +374,7 @@ abstract class AssociationMapping
      */
     public function usesJoinTable()
     {
-        return (bool)$this->_joinTable;
+        return (bool)$this->joinTable;
     }
 
     /**

@@ -25,6 +25,14 @@ namespace Doctrine\ORM\Mapping;
  * A many-to-many mapping describes the mapping between two collections of
  * entities.
  *
+ * <b>IMPORTANT NOTE:</b>
+ *
+ * The fields of this class are only public for 2 reasons:
+ * 1) To allow fast, internal READ access.
+ * 2) To drastically reduce the size of a serialized instance (private/protected members
+ *    get the whole class name, namespace inclusive, prepended to every property in
+ *    the serialized representation).
+ *
  * @since 2.0
  * @author Roman Borschel <roman@code-factory.org>
  */
@@ -33,27 +41,27 @@ class ManyToManyMapping extends AssociationMapping
     /**
      * The key columns of the source table.
      */
-    private $_sourceKeyColumns = array();
+    public $sourceKeyColumns = array();
 
     /**
      * The key columns of the target table.
      */
-    private $_targetKeyColumns = array();
+    public $targetKeyColumns = array();
 
     /**
      * Maps the columns in the source table to the columns in the relation table.
      */
-    private $_sourceToRelationKeyColumns = array();
+    public $sourceToRelationKeyColumns = array();
 
     /**
      * Maps the columns in the target table to the columns in the relation table.
      */
-    private $_targetToRelationKeyColumns = array();
+    public $targetToRelationKeyColumns = array();
 
     /**
      * The columns on the join table.
      */
-    private $_joinTableColumns = array();
+    public $joinTableColumns = array();
     
     /**
      * Initializes a new ManyToManyMapping.
@@ -85,46 +93,46 @@ class ManyToManyMapping extends AssociationMapping
                 throw MappingException::invalidMapping($this->_sourceFieldName);
             }
             foreach ($mapping['joinTable']['joinColumns'] as $joinColumn) {
-                $this->_sourceToRelationKeyColumns[$joinColumn['referencedColumnName']] = $joinColumn['name'];
-                $this->_joinTableColumns[] = $joinColumn['name'];
+                $this->sourceToRelationKeyColumns[$joinColumn['referencedColumnName']] = $joinColumn['name'];
+                $this->joinTableColumns[] = $joinColumn['name'];
             }
-            $this->_sourceKeyColumns = array_keys($this->_sourceToRelationKeyColumns);
+            $this->sourceKeyColumns = array_keys($this->sourceToRelationKeyColumns);
 
             // owning side MUST specify inverseJoinColumns
             if ( ! isset($mapping['joinTable']['inverseJoinColumns'])) {
                 throw MappingException::invalidMapping($this->_sourceFieldName);
             }
             foreach ($mapping['joinTable']['inverseJoinColumns'] as $inverseJoinColumn) {
-                $this->_targetToRelationKeyColumns[$inverseJoinColumn['referencedColumnName']] = $inverseJoinColumn['name'];
-                $this->_joinTableColumns[] = $inverseJoinColumn['name'];
+                $this->targetToRelationKeyColumns[$inverseJoinColumn['referencedColumnName']] = $inverseJoinColumn['name'];
+                $this->joinTableColumns[] = $inverseJoinColumn['name'];
             }
-            $this->_targetKeyColumns = array_keys($this->_targetToRelationKeyColumns);
+            $this->targetKeyColumns = array_keys($this->targetToRelationKeyColumns);
         }
     }
 
     public function getJoinTableColumns()
     {
-        return $this->_joinTableColumns;
+        return $this->joinTableColumns;
     }
 
     public function getSourceToRelationKeyColumns()
     {
-        return $this->_sourceToRelationKeyColumns;
+        return $this->sourceToRelationKeyColumns;
     }
 
     public function getTargetToRelationKeyColumns()
     {
-        return $this->_targetToRelationKeyColumns;
+        return $this->targetToRelationKeyColumns;
     }
 
     public function getSourceKeyColumns()
     {
-        return $this->_sourceKeyColumns;
+        return $this->sourceKeyColumns;
     }
 
     public function getTargetKeyColumns()
     {
-        return $this->_targetKeyColumns;
+        return $this->targetKeyColumns;
     }
 
     public function lazyLoadFor($entity, $entityManager)

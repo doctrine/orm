@@ -144,9 +144,9 @@ class HydrationPerformanceTest extends \Doctrine\Tests\OrmPerformanceTestCase
     }
 
     /**
-     * [romanb: 10000 rows => 3.4 seconds]
+     * [romanb: 10000 rows => 3.8 seconds]
      *
-     * MAXIMUM TIME: 4 seconds
+     * MAXIMUM TIME: 5 seconds
      */
     public function testSimpleQueryObjectHydrationPerformance()
     {
@@ -192,7 +192,7 @@ class HydrationPerformanceTest extends \Doctrine\Tests\OrmPerformanceTestCase
         $stmt = new HydratorMockStatement($resultSet);
         $hydrator = new \Doctrine\ORM\Internal\Hydration\ObjectHydrator($this->_em);
 
-        $this->setMaxRunningTime(4);
+        $this->setMaxRunningTime(5);
         $result = $hydrator->hydrateAll($stmt, $rsm);
     }
 

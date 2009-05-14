@@ -65,38 +65,75 @@ class ResultSetMapping
         $this->aliasMap[$alias] = $class;
     }
 
+    /**
+     *
+     * @param <type> $className
+     * @param <type> $alias
+     * @param <type> $discrColumn
+     */
     public function setDiscriminatorColumn($className, $alias, $discrColumn)
     {
         $this->discriminatorColumns[$className] = $discrColumn;
         $this->columnOwnerMap[$discrColumn] = $alias;
     }
 
+    /**
+     *
+     * @param string $className
+     * @return string
+     */
     public function getDiscriminatorColumn($className)
     {
         return isset($this->discriminatorColumns[$className]) ?
                 $this->discriminatorColumns[$className] : null;
     }
 
+    /**
+     *
+     * @param string $alias
+     * @param string $fieldName
+     */
     public function addIndexBy($alias, $fieldName)
     {
         $this->indexByMap[$alias] = $fieldName;
     }
 
+    /**
+     *
+     * @param string $alias
+     * @return boolean
+     */
     public function hasIndexBy($alias)
     {
         return isset($this->indexByMap[$alias]);
     }
 
+    /**
+     *
+     * @param string $alias
+     * @return string
+     */
     public function getIndexByField($alias)
     {
         return $this->indexByMap[$alias];
     }
 
+    /**
+     *
+     * @param string $columnName
+     * @return boolean
+     */
     public function isFieldResult($columnName)
     {
         return isset($this->fieldMappings[$columnName]);
     }
 
+    /**
+     *
+     * @param <type> $alias
+     * @param <type> $columnName
+     * @param <type> $fieldName 
+     */
     public function addFieldResult($alias, $columnName, $fieldName)
     {
         $this->fieldMappings[$columnName] = $fieldName;
@@ -106,6 +143,13 @@ class ResultSetMapping
         }
     }
 
+    /**
+     *
+     * @param <type> $class
+     * @param <type> $alias
+     * @param <type> $parentAlias
+     * @param <type> $relation
+     */
     public function addJoinedEntityResult($class, $alias, $parentAlias, $relation)
     {
         $this->aliasMap[$alias] = $class;
@@ -164,11 +208,21 @@ class ResultSetMapping
         return $this->aliasMap[$this->columnOwnerMap[$columnName]];
     }
 
+    /**
+     *
+     * @param string $alias
+     * @return AssociationMapping
+     */
     public function getRelation($alias)
     {
         return $this->relationMap[$alias];
     }
 
+    /**
+     *
+     * @param string $alias
+     * @return boolean
+     */
     public function isRelation($alias)
     {
         return isset($this->relationMap[$alias]);
@@ -186,50 +240,77 @@ class ResultSetMapping
 
     /**
      *
-     * @param <type> $alias
-     * @return <type> 
+     * @param string $alias
+     * @return string
      */
     public function getParentAlias($alias)
     {
         return $this->parentAliasMap[$alias];
     }
 
+    /**
+     *
+     * @param string $alias
+     * @return boolean
+     */
     public function hasParentAlias($alias)
     {
         return isset($this->parentAliasMap[$alias]);
     }
 
     /**
+     * Gets the field name for a column name.
      *
-     * @param <type> $className
-     * @param <type> $columnName
-     * @return <type> 
+     * @param string $columnName
+     * @return string
      */
     public function getFieldName($columnName)
     {
         return $this->fieldMappings[$columnName];
     }
 
+    /**
+     *
+     * @return array
+     */
     public function getAliasMap()
     {
         return $this->aliasMap;
     }
 
+    /**
+     *
+     * @return integer
+     */
     public function getEntityResultCount()
     {
         return count($this->aliasMap);
     }
 
+    /**
+     *
+     * @return boolean
+     */
     public function isMixedResult()
     {
         return $this->isMixed;
     }
 
+    /**
+     * Adds a column name that will be ignored during hydration.
+     *
+     * @param string $columnName
+     */
     public function addIgnoredColumn($columnName)
     {
         $this->ignoredColumns[$columnName] = true;
     }
 
+    /**
+     *
+     * @param string $columnName
+     * @return boolean
+     */
     public function isIgnoredColumn($columnName)
     {
         return isset($this->ignoredColumns[$columnName]);

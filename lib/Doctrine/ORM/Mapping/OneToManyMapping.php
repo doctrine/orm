@@ -29,6 +29,14 @@ namespace Doctrine\ORM\Mapping;
  * In other words, the many-side MUST be the owning side and the one-side MUST be
  * the inverse side.
  *
+ * <b>IMPORTANT NOTE:</b>
+ *
+ * The fields of this class are only public for 2 reasons:
+ * 1) To allow fast, internal READ access.
+ * 2) To drastically reduce the size of a serialized instance (private/protected members
+ *    get the whole class name, namespace inclusive, prepended to every property in
+ *    the serialized representation).
+ *
  * @author Roman Borschel <roman@code-factory.org>
  * @since 2.0
  */
@@ -51,7 +59,7 @@ class OneToManyMapping extends AssociationMapping
     //protected $_sourceKeysToTargetForeignKeys;
     
     /** Whether to delete orphaned elements (removed from the collection) */
-    private $_deleteOrphans = false;
+    public $deleteOrphans = false;
     
     /**
      * Initializes a new OneToManyMapping.
@@ -79,7 +87,7 @@ class OneToManyMapping extends AssociationMapping
             throw MappingException::oneToManyRequiresMappedBy($mapping['fieldName']);
         }
         
-        $this->_deleteOrphans = isset($mapping['deleteOrphans']) ?
+        $this->deleteOrphans = isset($mapping['deleteOrphans']) ?
                 (bool)$mapping['deleteOrphans'] : false;
     }
     
@@ -90,7 +98,7 @@ class OneToManyMapping extends AssociationMapping
      */
     public function shouldDeleteOrphans()
     {
-        return $this->_deleteOrphans;
+        return $this->deleteOrphans;
     }
     
     /**

@@ -25,6 +25,14 @@ namespace Doctrine\ORM\Mapping;
  * A one-to-one mapping describes a uni-directional mapping from one entity 
  * to another entity.
  *
+ * <b>IMPORTANT NOTE:</b>
+ *
+ * The fields of this class are only public for 2 reasons:
+ * 1) To allow fast, internal READ access.
+ * 2) To drastically reduce the size of a serialized instance (private/protected members
+ *    get the whole class name, namespace inclusive, prepended to every property in
+ *    the serialized representation).
+ *
  * @since 2.0
  * @author Roman Borschel <roman@code-factory.org>
  */
@@ -35,28 +43,28 @@ class OneToOneMapping extends AssociationMapping
      * i.e. source.id (pk) => target.user_id (fk).
      * Reverse mapping of _targetToSourceKeyColumns.
      */
-    private $_sourceToTargetKeyColumns = array();
+    public $sourceToTargetKeyColumns = array();
 
     /**
      * Maps the target primary/foreign key columns to the source foreign/primary key columns.
      * i.e. target.user_id (fk) => source.id (pk).
      * Reverse mapping of _sourceToTargetKeyColumns.
      */
-    private $_targetToSourceKeyColumns = array();
+    public $targetToSourceKeyColumns = array();
     
     /**
      * Whether to delete orphaned elements (when nulled out, i.e. $foo->other = null)
      * 
      * @var boolean
      */
-    private $_deleteOrphans = false;
+    public $deleteOrphans = false;
 
     /**
      * The join column definitions.
      *
      * @var array
      */
-    private $_joinColumns = array();
+    public $joinColumns = array();
     
     /**
      * Creates a new OneToOneMapping.
@@ -83,14 +91,14 @@ class OneToOneMapping extends AssociationMapping
             if ( ! isset($mapping['joinColumns'])) {
                 throw MappingException::invalidMapping($this->_sourceFieldName);
             }
-            $this->_joinColumns = $mapping['joinColumns'];
+            $this->joinColumns = $mapping['joinColumns'];
             foreach ($mapping['joinColumns'] as $joinColumn) {
-                $this->_sourceToTargetKeyColumns[$joinColumn['name']] = $joinColumn['referencedColumnName'];
+                $this->sourceToTargetKeyColumns[$joinColumn['name']] = $joinColumn['referencedColumnName'];
             }
-            $this->_targetToSourceKeyColumns = array_flip($this->_sourceToTargetKeyColumns);
+            $this->targetToSourceKeyColumns = array_flip($this->sourceToTargetKeyColumns);
         }
         
-        $this->_deleteOrphans = isset($mapping['deleteOrphans']) ?
+        $this->deleteOrphans = isset($mapping['deleteOrphans']) ?
                 (bool)$mapping['deleteOrphans'] : false;
         
         return $mapping;
@@ -103,7 +111,7 @@ class OneToOneMapping extends AssociationMapping
      */
     public function getJoinColumns()
     {
-        return $this->_joinColumns;
+        return $this->joinColumns;
     }
     
     /**
@@ -113,7 +121,7 @@ class OneToOneMapping extends AssociationMapping
      */
     public function getSourceToTargetKeyColumns()
     {
-        return $this->_sourceToTargetKeyColumns;
+        return $this->sourceToTargetKeyColumns;
     }
     
     /**
@@ -123,7 +131,7 @@ class OneToOneMapping extends AssociationMapping
      */
     public function getTargetToSourceKeyColumns()
     {
-        return $this->_targetToSourceKeyColumns;
+        return $this->targetToSourceKeyColumns;
     }
     
     /**
@@ -146,31 +154,31 @@ class OneToOneMapping extends AssociationMapping
      */
     public function load($owningEntity, $targetEntity, $em)
     {
-        $sourceClass = $em->getClassMetadata($this->_sourceEntityName);
-        $targetClass = $em->getClassMetadata($this->_targetEntityName);
+        $sourceClass = $em->getClassMetadata($this->sourceEntityName);
+        $targetClass = $em->getClassMetadata($this->targetEntityName);
         
         $conditions = array();
 
-        if ($this->_isOwningSide) {
-            foreach ($this->_sourceToTargetKeyColumns as $sourceKeyColumn => $targetKeyColumn) {
+        if ($this->isOwningSide) {
+            foreach ($this->sourceToTargetKeyColumns as $sourceKeyColumn => $targetKeyColumn) {
                 $conditions[$targetKeyColumn] = $sourceClass->getReflectionProperty(
                     $sourceClass->getFieldName($sourceKeyColumn))->getValue($owningEntity);
             }
-            if ($targetClass->hasInverseAssociation($this->_sourceFieldName)) {
+            if ($targetClass->hasInverseAssociation($this->sourceFieldName)) {
                 $targetClass->setFieldValue(
                         $targetEntity,
                         $targetClass->inverseMappings[$this->_sourceFieldName]->getSourceFieldName(),
                         $owningEntity);
             }
         } else {
-            $owningAssoc = $em->getClassMetadata($this->_targetEntityName)->getAssociationMapping($this->_mappedByFieldName);
+            $owningAssoc = $em->getClassMetadata($this->targetEntityName)->getAssociationMapping($this->mappedByFieldName);
             foreach ($owningAssoc->getTargetToSourceKeyColumns() as $targetKeyColumn => $sourceKeyColumn) {
                 $conditions[$sourceKeyColumn] = $sourceClass->getReflectionProperty(
                     $sourceClass->getFieldName($targetKeyColumn))->getValue($owningEntity);
             }
-            $targetClass->setFieldValue($targetEntity, $this->_mappedByFieldName, $owningEntity);
+            $targetClass->setFieldValue($targetEntity, $this->mappedByFieldName, $owningEntity);
         }
 
-        $em->getUnitOfWork()->getEntityPersister($this->_targetEntityName)->load($conditions, $targetEntity);
+        $em->getUnitOfWork()->getEntityPersister($this->targetEntityName)->load($conditions, $targetEntity);
     }
 }
