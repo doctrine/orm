@@ -131,10 +131,10 @@ class SqlWalker
             //if ($this->_query->getHydrationMode() == \Doctrine\ORM\Query::HYDRATE_OBJECT) {
             if ($class->isInheritanceTypeSingleTable() || $class->isInheritanceTypeJoined()) {
                 $tblAlias = $this->getSqlTableAlias($class->getTableName());
-                $discrColumn = $class->getDiscriminatorColumn();
+                $discrColumn = $class->discriminatorColumn;
                 $columnAlias = $this->getSqlColumnAlias($discrColumn['name']);
                 $sql .= ", $tblAlias." . $discrColumn['name'] . ' AS ' . $columnAlias;
-                $this->_resultSetMapping->setDiscriminatorColumn($class->getClassName(), $dqlAlias, $columnAlias);
+                $this->_resultSetMapping->setDiscriminatorColumn($class->name, $dqlAlias, $columnAlias);
             }
             //}
         }
@@ -392,11 +392,11 @@ class SqlWalker
             $sqlTableAlias = $this->getSqlTableAlias($class->getTableName());
 
             // Gather all fields
-            $fieldMappings = $class->getFieldMappings();
-            foreach ($class->getSubclasses() as $subclassName) {
+            $fieldMappings = $class->fieldMappings;
+            foreach ($class->subClasses as $subclassName) {
                 $fieldMappings = array_merge(
                         $fieldMappings,
-                        $this->_em->getClassMetadata($subclassName)->getFieldMappings()
+                        $this->_em->getClassMetadata($subclassName)->fieldMappings
                         );
             }
             
@@ -713,11 +713,11 @@ class SqlWalker
             $class = $this->_queryComponents[$dqlAlias]['metadata'];
             if ($class->isInheritanceTypeSingleTable()) {
                 $conn = $this->_em->getConnection();
-                $values = array($conn->quote($class->getDiscriminatorValue()));
-                foreach ($class->getSubclasses() as $subclassName) {
-                    $values[] = $conn->quote($this->_em->getClassMetadata($subclassName)->getDiscriminatorValue());
+                $values = array($conn->quote($class->discriminatorValue));
+                foreach ($class->subClasses as $subclassName) {
+                    $values[] = $conn->quote($this->_em->getClassMetadata($subclassName)->discriminatorValue);
                 }
-                $discrColumn = $class->getDiscriminatorColumn();
+                $discrColumn = $class->discriminatorColumn;
                 if ($this->_useSqlTableAliases) {
                     $sql .= $this->getSqlTableAlias($class->getTableName()) . '.';
                 }

@@ -45,7 +45,7 @@ class ResultSetMappingTest extends \Doctrine\Tests\OrmTestCase
         $this->assertTrue($this->_rsm->getClass('u') instanceof ClassMetadata);
         $class = $this->_rsm->getOwningClass('id');
         $this->assertTrue($class instanceof ClassMetadata);
-        $this->assertEquals('Doctrine\Tests\Models\CMS\CmsUser', $class->getClassName());
+        $this->assertEquals('Doctrine\Tests\Models\CMS\CmsUser', $class->name);
 
         $this->assertEquals('u', $this->_rsm->getEntityAlias('id'));
         $this->assertEquals('u', $this->_rsm->getEntityAlias('status'));

@@ -388,7 +388,7 @@ class Parser
             if (count($parts) == 2) {
                 $expr->setIsSimpleStateFieldPathExpression(true);
                 if ( ! $qComps[$dqlAlias]['metadata']->hasField($parts[1])) {
-                    $this->semanticalError('The class ' . $qComps[$dqlAlias]['metadata']->getClassName()
+                    $this->semanticalError('The class ' . $qComps[$dqlAlias]['metadata']->name
                             . ' has no simple state field named ' . $parts[1]);
                 }
             } else {
@@ -422,7 +422,7 @@ class Parser
                 }
                 // Last part MUST be a simple state field
                 if ( ! $qComps[$dqlAlias]['metadata']->hasField($parts[$numParts-1])) {
-                    $this->semanticalError('The class ' . $qComps[$dqlAlias]['metadata']->getClassName()
+                    $this->semanticalError('The class ' . $qComps[$dqlAlias]['metadata']->name
                             . ' has no simple state field named ' . $parts[$numParts-1]);
                 }
             }
@@ -791,7 +791,7 @@ class Parser
         $parentClass = $this->_queryComponents[$joinPathExpression->getIdentificationVariable()]['metadata'];
         $assocField = $joinPathExpression->getAssociationField();
         if ( ! $parentClass->hasAssociation($assocField)) {
-            $this->semanticalError("Class " . $parentClass->getClassName() .
+            $this->semanticalError("Class " . $parentClass->name .
                     " has no association named '$assocField'.");
         }
         $targetClassName = $parentClass->getAssociationMapping($assocField)->getTargetEntityName();
@@ -911,7 +911,7 @@ class Parser
                 $class = $this->_em->getClassMetadata($assoc->getTargetEntityName());
                 $assocSeen = true;
             } else {
-                $this->semanticalError('The class ' . $class->getClassName() .
+                $this->semanticalError('The class ' . $class->name .
                         ' has no field or association named ' . $part);
             }
             $parts[] = $part;

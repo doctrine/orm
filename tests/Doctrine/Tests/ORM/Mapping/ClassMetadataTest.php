@@ -14,11 +14,11 @@ class ClassMetadataTest extends \Doctrine\Tests\OrmTestCase
 
         // Test initial state
         $this->assertTrue(count($cm->getReflectionProperties()) == 0);
-        $this->assertTrue($cm->getReflectionClass() instanceof \ReflectionClass);
-        $this->assertEquals('Doctrine\Tests\Models\CMS\CmsUser', $cm->getClassName());
-        $this->assertEquals('Doctrine\Tests\Models\CMS\CmsUser', $cm->getRootClassName());
-        $this->assertEquals(array(), $cm->getSubclasses());
-        $this->assertEquals(array(), $cm->getParentClasses());
+        $this->assertTrue($cm->reflClass instanceof \ReflectionClass);
+        $this->assertEquals('Doctrine\Tests\Models\CMS\CmsUser', $cm->name);
+        $this->assertEquals('Doctrine\Tests\Models\CMS\CmsUser', $cm->rootEntityName);
+        $this->assertEquals(array(), $cm->subClasses);
+        $this->assertEquals(array(), $cm->parentClasses);
 
         // Customize state
         $cm->setSubclasses(array("One", "Two", "Three"));
@@ -27,22 +27,22 @@ class ClassMetadataTest extends \Doctrine\Tests\OrmTestCase
         $cm->setDiscriminatorColumn(array('name' => 'disc', 'type' => 'integer'));
         $cm->mapOneToOne(array('fieldName' => 'phonenumbers', 'targetEntity' => 'Bar', 'mappedBy' => 'foo'));
         $this->assertTrue($cm->getAssociationMapping('phonenumbers') instanceof \Doctrine\ORM\Mapping\OneToOneMapping);
-        $this->assertEquals(1, count($cm->getAssociationMappings()));
+        $this->assertEquals(1, count($cm->associationMappings));
 
         $serialized = serialize($cm);
         $cm = unserialize($serialized);
 
         // Check state
         $this->assertTrue(count($cm->getReflectionProperties()) > 0);
-        $this->assertTrue($cm->getReflectionClass() instanceof \ReflectionClass);
-        $this->assertEquals('Doctrine\Tests\Models\CMS\CmsUser', $cm->getClassName());
-        $this->assertEquals('UserParent', $cm->getRootClassName());
-        $this->assertEquals(array('One', 'Two', 'Three'), $cm->getSubclasses());
-        $this->assertEquals(array('UserParent'), $cm->getParentClasses());
+        $this->assertTrue($cm->reflClass instanceof \ReflectionClass);
+        $this->assertEquals('Doctrine\Tests\Models\CMS\CmsUser', $cm->name);
+        $this->assertEquals('UserParent', $cm->rootEntityName);
+        $this->assertEquals(array('One', 'Two', 'Three'), $cm->subClasses);
+        $this->assertEquals(array('UserParent'), $cm->parentClasses);
         $this->assertEquals('UserRepository', $cm->getCustomRepositoryClass());
-        $this->assertEquals(array('name' => 'disc', 'type' => 'integer'), $cm->getDiscriminatorColumn());
+        $this->assertEquals(array('name' => 'disc', 'type' => 'integer'), $cm->discriminatorColumn);
         $this->assertTrue($cm->getAssociationMapping('phonenumbers') instanceof \Doctrine\ORM\Mapping\OneToOneMapping);
-        $this->assertEquals(1, count($cm->getAssociationMappings()));
+        $this->assertEquals(1, count($cm->associationMappings));
         $oneOneMapping = $cm->getAssociationMapping('phonenumbers');
         $this->assertEquals('phonenumbers', $oneOneMapping->getSourceFieldName());
         $this->assertEquals('Doctrine\Tests\Models\CMS\Bar', $oneOneMapping->getTargetEntityName());

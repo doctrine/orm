@@ -564,7 +564,7 @@ class Connection
      *
      * @throws Doctrine\DBAL\ConnectionException
      */
-    public function rethrowException(Exception $e, $invoker)
+    public function rethrowException(\Exception $e, $invoker)
     {
         throw $e;
     }

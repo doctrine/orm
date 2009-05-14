@@ -21,6 +21,8 @@
 
 namespace Doctrine\ORM\Persisters;
 
+use Doctrine\Common\DoctrineException;
+
 /**
  * The joined subclass persister maps a single entity instance to several tables in the
  * database as it is defined by <tt>Class Table Inheritance</tt>.
@@ -41,7 +43,7 @@ class JoinedSubclassPersister extends AbstractEntityPersister
      * @return boolean
      * @override
      */
-    public function insert($entity)
+    /*public function insert($entity)
     {
         $class = $entity->getClass();
         
@@ -51,8 +53,8 @@ class JoinedSubclassPersister extends AbstractEntityPersister
         
         $dataSet = $this->_groupFieldsByDefiningClass($class, $dataSet);
         
-        $component = $class->getClassName();
-        $classes = $class->getParentClasses();
+        $component = $class->name;
+        $classes = $class->parentClasses;
         array_unshift($classes, $component);
         
         $identifier = null;
@@ -66,12 +68,12 @@ class JoinedSubclassPersister extends AbstractEntityPersister
                     $seq = $entity->getClassMetadata()->getTableOption('sequenceName');
                     if ( ! empty($seq)) {
                         $id = $this->_conn->getSequenceManager()->nextId($seq);
-                        $identifierFields = $parentClass->getIdentifier();
+                        $identifierFields = $parentClass->identifier;
                         $dataSet[$parent][$identifierFields[0]] = $id;
                         $this->_insertRow($parentClass->getTableName(), $dataSet[$parent]);
                     }
                 } else {
-                    throw \Doctrine\Common\DoctrineException::updateMe("Unsupported identifier type '$identifierType'.");
+                    throw DoctrineException::updateMe("Unsupported identifier type '$identifierType'.");
                 }
                 $entity->_assignIdentifier($identifier);
             } else {
@@ -83,7 +85,7 @@ class JoinedSubclassPersister extends AbstractEntityPersister
         }
 
         return true;
-    }
+    }*/
     
     /**
      * Updates an entity that is part of a Class Table Inheritance hierarchy.
@@ -91,14 +93,14 @@ class JoinedSubclassPersister extends AbstractEntityPersister
      * @param Doctrine_Entity $record   record to be updated
      * @return boolean                  whether or not the update was successful
      */
-    protected function _doUpdate($entity)
+    /*protected function _doUpdate($entity)
     {
         $conn = $this->_conn;
         $classMetadata = $this->_classMetadata;
         $identifier = $this->_convertFieldToColumnNames($record->identifier(), $classMetadata);
         $dataSet = $this->_groupFieldsByDefiningClass($record);
-        $component = $classMetadata->getClassName();
-        $classes = $classMetadata->getParentClasses();
+        $component = $classMetadata->name;
+        $classes = $classMetadata->parentClasses;
         array_unshift($classes, $component);
 
         foreach ($record as $field => $value) {
@@ -119,13 +121,13 @@ class JoinedSubclassPersister extends AbstractEntityPersister
         $record->assignIdentifier(true);
 
         return true;
-    }
+    }*/
     
     /**
      * Deletes an entity that is part of a Class Table Inheritance hierarchy.
      *
      */
-    protected function _doDelete(Doctrine_ORM_Entity $record)
+    /*protected function _doDelete(Doctrine_ORM_Entity $record)
     {
         $conn = $this->_conn;
         try {
@@ -139,7 +141,7 @@ class JoinedSubclassPersister extends AbstractEntityPersister
             
             // run deletions, starting from the class, upwards the hierarchy
             $conn->delete($class->getTableName(), $identifier);
-            foreach ($class->getParentClasses() as $parent) {
+            foreach ($class->parentClasses as $parent) {
                 $parentClass = $conn->getClassMetadata($parent);
                 $this->_deleteRow($parentClass->getTableName(), $identifier);
             }
@@ -154,7 +156,7 @@ class JoinedSubclassPersister extends AbstractEntityPersister
         }
 
         return true;
-    }
+    }*/
     
     /**
      * Adds all parent classes as INNER JOINs and subclasses as OUTER JOINs
@@ -164,21 +166,21 @@ class JoinedSubclassPersister extends AbstractEntityPersister
      *
      * @return array  The custom joins in the format <className> => <joinType>
      */
-    public function getCustomJoins()
+    /*public function getCustomJoins()
     {
         $customJoins = array();
         $classMetadata = $this->_classMetadata;
-        foreach ($classMetadata->getParentClasses() as $parentClass) {
+        foreach ($classMetadata->parentClasses as $parentClass) {
             $customJoins[$parentClass] = 'INNER';
         }
-        foreach ($classMetadata->getSubclasses() as $subClass) {
+        foreach ($classMetadata->subClasses as $subClass) {
             if ($subClass != $this->getComponentName()) {
                 $customJoins[$subClass] = 'LEFT';
             }
         }
         
         return $customJoins;
-    }
+    }*/
     
     /**
      * Adds the discriminator column to the selected fields in a query as well as
@@ -189,34 +191,34 @@ class JoinedSubclassPersister extends AbstractEntityPersister
      *
      * @return array  An array with the field names that will get added to the query.
      */
-    public function getCustomFields()
+    /*public function getCustomFields()
     {
         $classMetadata = $this->_classMetadata;
         $conn = $this->_conn;
-        $discrColumn = $classMetadata->getDiscriminatorColumn();
+        $discrColumn = $classMetadata->discriminatorColumn;
         $fields = array($discrColumn['name']);
-        if ($classMetadata->getSubclasses()) {
-            foreach ($classMetadata->getSubclasses() as $subClass) {
-                $fields = array_merge($conn->getClassMetadata($subClass)->getFieldNames(), $fields);
+        if ($classMetadata->subClasses) {
+            foreach ($classMetadata->subClasses as $subClass) {
+                $fields = array_merge($conn->getClassMetadata($subClass)->fieldNames, $fields);
             }
         }
         return array_unique($fields);
-    }
+    }*/
     
     /**
      *
      */
-    public function getFieldNames()
+    /*public function getFieldNames()
     {
         if ($this->_fieldNames) {
             return $this->_fieldNames;
         }
         
-        $fieldNames = $this->_classMetadata->getFieldNames();
+        $fieldNames = $this->_classMetadata->fieldNames;
         $this->_fieldNames = array_unique($fieldNames);
         
         return $fieldNames;
-    }
+    }*/
     
     /**
      * 
@@ -230,14 +232,14 @@ class JoinedSubclassPersister extends AbstractEntityPersister
             return $classMetadata;
         }
         
-        foreach ($classMetadata->getParentClasses() as $parentClass) {
+        foreach ($classMetadata->parentClasses as $parentClass) {
             $parentTable = $conn->getClassMetadata($parentClass);
             if ($parentTable->hasField($fieldName) && ! $parentTable->isInheritedField($fieldName)) {
                 return $parentTable;
             }
         }
         
-        foreach ((array)$classMetadata->getSubclasses() as $subClass) {
+        foreach ((array)$classMetadata->subClasses as $subClass) {
             $subTable = $conn->getClassMetadata($subClass);
             if ($subTable->hasField($fieldName) && ! $subTable->isInheritedField($fieldName)) {
                 return $subTable;
@@ -253,17 +255,17 @@ class JoinedSubclassPersister extends AbstractEntityPersister
      *
      * @return array
      */
-    protected function _groupFieldsByDefiningClass(Doctrine_ClassMetadata $class, array $fields)
+    /*protected function _groupFieldsByDefiningClass(Doctrine_ClassMetadata $class, array $fields)
     {
         $dataSet = array();
-        $component = $class->getClassName();
+        $component = $class->name;
         
-        $classes = array_merge(array($component), $class->getParentClasses());
+        $classes = array_merge(array($component), $class->parentClasses);
         
         foreach ($classes as $class) {
             $dataSet[$class] = array();            
             $parentClassMetadata = $this->_em->getClassMetadata($class);
-            foreach ($parentClassMetadata->getFieldMappings() as $fieldName => $mapping) {
+            foreach ($parentClassMetadata->fieldMappings as $fieldName => $mapping) {
                 if ((isset($mapping['id']) && $mapping['id'] === true) ||
                         (isset($mapping['inherited']) && $mapping['inherited'] === true)) {
                     continue;
@@ -277,5 +279,5 @@ class JoinedSubclassPersister extends AbstractEntityPersister
         }
         
         return $dataSet;
-    }
+    }*/
 }

@@ -34,18 +34,18 @@ class ClassMetadataFactoryTest extends \Doctrine\Tests\OrmTestCase
         $cmf->setMetadataForClass('Doctrine\Tests\ORM\Mapping\TestEntity1', $cm1);
 
         // Prechecks
-        $this->assertEquals(array(), $cm1->getParentClasses());
-        $this->assertEquals('none', $cm1->getInheritanceType());
+        $this->assertEquals(array(), $cm1->parentClasses);
+        $this->assertEquals('none', $cm1->inheritanceType);
         $this->assertTrue($cm1->hasField('name'));
-        $this->assertEquals(1, count($cm1->getAssociationMappings()));
-        $this->assertEquals('auto', $cm1->getIdGeneratorType());
+        $this->assertEquals(1, count($cm1->associationMappings));
+        $this->assertEquals('auto', $cm1->generatorType);
 
         // Go
         $cm1 = $cmf->getMetadataFor('Doctrine\Tests\ORM\Mapping\TestEntity1');
 
-        $this->assertEquals(array(), $cm1->getParentClasses());
+        $this->assertEquals(array(), $cm1->parentClasses);
         $this->assertTrue($cm1->hasField('name'));
-        $this->assertEquals('sequence', $cm1->getIdGeneratorType());
+        $this->assertEquals('sequence', $cm1->generatorType);
     }
 }
 

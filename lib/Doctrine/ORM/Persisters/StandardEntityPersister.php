@@ -36,23 +36,23 @@ class StandardEntityPersister extends AbstractEntityPersister
     /**
      * Deletes an entity.
      */
-    protected function _doDelete($record)
+    /*protected function _doDelete($record)
     {
-    }
+    }*/
     
     /**
      * Inserts a single entity into the database.
      *
      * @param Doctrine\ORM\Entity $entity The entity to insert.
      */
-    protected function _doInsert(Doctrine_ORM_Entity $record)
+    /*protected function _doInsert(Doctrine_ORM_Entity $record)
     {
-    }
+    }*/
     
     /**
      * Updates an entity.
      */
-    protected function _doUpdate(Doctrine_ORM_Entity $record)
+    /*protected function _doUpdate(Doctrine_ORM_Entity $record)
     {
-    }
+    }*/
 }

@@ -7,7 +7,7 @@ class DoctrineException extends \Exception
     private $_innerException;
     private static $_messages = array();
 
-    public function __construct($message = "", Exception $innerException = null)
+    public function __construct($message = "", \Exception $innerException = null)
     {
         parent::__construct($message);
         $this->_innerException = $innerException;
@@ -29,7 +29,7 @@ class DoctrineException extends \Exception
         $messageKey = substr($class, strrpos($class, '\\') + 1) . "#$method";
 
         $end = end($arguments);
-        if ($end instanceof Exception) {
+        if ($end instanceof \Exception) {
             $this->_innerException = $end;
             unset($arguments[count($arguments) - 1]);
         }

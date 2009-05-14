@@ -80,7 +80,7 @@ abstract class AbstractEntityPersister
     public function __construct(EntityManager $em, ClassMetadata $class)
     {
         $this->_em = $em;
-        $this->_entityName = $class->getClassName();
+        $this->_entityName = $class->name;
         $this->_conn = $em->getConnection();
         $this->_class = $class;
     }
@@ -262,7 +262,7 @@ abstract class AbstractEntityPersister
         $stmt->execute(array_values($criteria));
         $data = array();
         foreach ($stmt->fetch(\PDO::FETCH_ASSOC) as $column => $value) {
-            $fieldName = $this->_class->getFieldNameForLowerColumnName($column);
+            $fieldName = $this->_class->lcColumnToFieldNames[$column];
             $data[$fieldName] = Type::getType($this->_class->getTypeOfField($fieldName))
                     ->convertToPHPValue($value);
         }
@@ -276,7 +276,7 @@ abstract class AbstractEntityPersister
             }
             $id = array();
             if ($this->_class->isIdentifierComposite()) {
-                $identifierFieldNames = $this->_class->getIdentifier();
+                $identifierFieldNames = $this->_class->identifier;
                 foreach ($identifierFieldNames as $fieldName) {
                     $id[] = $data[$fieldName];
                 }
@@ -287,7 +287,7 @@ abstract class AbstractEntityPersister
         }
 
         if ( ! $this->_em->getConfiguration()->getAllowPartialObjects()) {
-            foreach ($this->_class->getAssociationMappings() as $field => $assoc) {
+            foreach ($this->_class->associationMappings as $field => $assoc) {
                 if ($assoc->isOneToOne()) {
                     if ($assoc->isLazilyFetched()) {
                         // Inject proxy

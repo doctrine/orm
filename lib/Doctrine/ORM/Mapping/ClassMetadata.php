@@ -28,6 +28,16 @@ use Doctrine\Common\DoctrineException;
  * A <tt>ClassMetadata</tt> instance holds all the ORM metadata of an entity and
  * it's associations. It is the backbone of Doctrine's metadata mapping.
  *
+ * <b>IMPORTANT NOTE:</b>
+ *
+ * The fields of this class are only public for 2 reasons:
+ * 1) To allow fast READ access.
+ * 2) To drastically reduce the size of a serialized instance (private/protected members
+ *    get the whole class name, namespace inclusive, prepended to every property in
+ *    the serialized representation).
+ *
+ * !! Do NOT write/modify the public properties directly. Go through the public API. !!
+ *
  * @author Roman Borschel <roman@code-factory.org>
  * @since 2.0
  */
@@ -108,14 +118,14 @@ final class ClassMetadata
     /**
      * The name of the entity class.
      */
-    private $_entityName;
+    public $name;
 
     /**
      * The namespace the entity class is contained in.
      *
      * @var string
      */
-    private $_namespace;
+    public $namespace;
 
     /**
      * The name of the entity class that is at the root of the entity inheritance
@@ -124,7 +134,7 @@ final class ClassMetadata
      *
      * @var string
      */
-    private $_rootEntityName;
+    public $rootEntityName;
 
     /**
      * The name of the custom repository class used for the entity class.
@@ -132,21 +142,21 @@ final class ClassMetadata
      *
      * @var string
      */
-    private $_customRepositoryClassName;
+    public $customRepositoryClassName;
 
     /**
      * The names of the parent classes (ancestors).
      * 
      * @var array
      */
-    private $_parentClasses = array();
+    public $parentClasses = array();
 
     /**
      * The names of all subclasses.
      * 
      * @var array
      */
-    private $_subClasses = array();
+    public $subClasses = array();
 
     /**
      * The field names of all fields that are part of the identifier/primary key
@@ -154,21 +164,21 @@ final class ClassMetadata
      *
      * @var array
      */
-    private $_identifier = array();
+    public $identifier = array();
     
     /**
      * The inheritance mapping type used by the class.
      *
      * @var integer
      */
-    private $_inheritanceType = self::INHERITANCE_TYPE_NONE;
+    public $inheritanceType = self::INHERITANCE_TYPE_NONE;
     
     /**
      * The Id generator type used by the class.
      *
      * @var string
      */
-    private $_generatorType = self::GENERATOR_TYPE_NONE;
+    public $generatorType = self::GENERATOR_TYPE_NONE;
     
     /**
      * The field mappings of the class.
@@ -226,7 +236,7 @@ final class ClassMetadata
      *
      * @var array
      */    
-    private $_fieldMappings = array();
+    public $fieldMappings = array();
     
     /**
      * An array of field names. Used to look up field names from column names.
@@ -235,7 +245,7 @@ final class ClassMetadata
      *
      * @var array
      */
-    private $_fieldNames = array();
+    public $fieldNames = array();
 
     /**
      * An array of column names. Keys are field names and values column names.
@@ -244,7 +254,7 @@ final class ClassMetadata
      *
      * @var array
      */
-    private $_columnNames = array();
+    public $columnNames = array();
     
     /**
      * Map that maps lowercased column names (keys) to field names (values).
@@ -253,7 +263,7 @@ final class ClassMetadata
      *
      * @var array
      */
-    private $_lcColumnToFieldNames = array();
+    public $lcColumnToFieldNames = array();
 
     /**
      * Whether to automatically OUTER JOIN subtypes when a basetype is queried.
@@ -262,19 +272,18 @@ final class ClassMetadata
      *
      * @var boolean
      */
-    private $_joinSubclasses = true;
+    public $joinSubclasses = true;
 
     /**
-     * A map that maps discriminator values to class names.
+     * The discriminator value of this class.
      *
      * <b>This does only apply to the JOINED and SINGLE_TABLE inheritance mapping strategies
      * where a discriminator column is used.</b>
      *
-     * @var array
+     * @var mixed
      * @see _discriminatorColumn
      */
-    //private $_discriminatorMap = array();
-    private $_discriminatorValue;
+    public $discriminatorValue;
 
     /**
      * The definition of the descriminator column used in JOINED and SINGLE_TABLE
@@ -282,7 +291,7 @@ final class ClassMetadata
      *
      * @var array
      */
-    private $_discriminatorColumn;
+    public $discriminatorColumn;
 
     /**
      * The primary table definition. The definition is an array with the
@@ -294,7 +303,7 @@ final class ClassMetadata
      *
      * @var array
      */
-    private $_primaryTable;
+    public $primaryTable;
     
     /**
      * The cached lifecycle listeners. There is only one instance of each
@@ -302,56 +311,56 @@ final class ClassMetadata
      *
      * @var array
      */
-    private $_lifecycleListenerInstances = array();
+    public $lifecycleListenerInstances = array();
 
     /**
      * The registered lifecycle callbacks for entities of this class.
      *
      * @var array
      */
-    private $_lifecycleCallbacks = array();
+    public $lifecycleCallbacks = array();
     
     /**
      * The registered lifecycle listeners for entities of this class.
      *
      * @var array
      */
-    private $_lifecycleListeners = array();
+    public $lifecycleListeners = array();
     
     /**
      * The association mappings. All mappings, inverse and owning side.
      *
      * @var array
      */
-    private $_associationMappings = array();
+    public $associationMappings = array();
     
     /**
      * List of inverse association mappings, indexed by mappedBy field name.
      *
      * @var array
      */
-    private $_inverseMappings = array();
+    public $inverseMappings = array();
     
     /**
      * Flag indicating whether the identifier/primary key of the class is composite.
      *
      * @var boolean
      */
-    private $_isIdentifierComposite = false;
+    public $isIdentifierComposite = false;
 
     /**
      * The ReflectionClass instance of the mapped class.
      *
      * @var ReflectionClass
      */
-    private $_reflectionClass;
+    public $reflClass;
 
     /**
      * The ReflectionProperty instances of the mapped class.
      *
      * @var array
      */
-    private $_reflectionProperties;
+    public $reflFields;
 
     //private $_insertSql;
 
@@ -360,7 +369,7 @@ final class ClassMetadata
      *
      * @var AbstractIdGenerator
      */
-    private $_idGenerator;
+    public $idGenerator;
 
     /**
      * The definition of the sequence generator of this class. Only used for the
@@ -368,7 +377,7 @@ final class ClassMetadata
      *
      * @var array
      */
-    private $_sequenceGeneratorDefinition;
+    public $sequenceGeneratorDefinition;
 
     /**
      * The definition of the table generator of this class. Only used for the
@@ -383,7 +392,7 @@ final class ClassMetadata
      *
      * @var integer
      */
-    private $_changeTrackingPolicy = self::CHANGETRACKING_DEFERRED_IMPLICIT;
+    public $changeTrackingPolicy = self::CHANGETRACKING_DEFERRED_IMPLICIT;
 
     /**
      * Initializes a new ClassMetadata instance that will hold the object-relational mapping
@@ -393,11 +402,11 @@ final class ClassMetadata
      */
     public function __construct($entityName)
     {
-        $this->_entityName = $entityName;
-        $this->_namespace = substr($entityName, 0, strrpos($entityName, '\\'));
-        $this->_primaryTable['name'] = str_replace($this->_namespace . '\\', '', $this->_entityName);
-        $this->_rootEntityName = $entityName;
-        $this->_reflectionClass = new ReflectionClass($entityName);
+        $this->name = $entityName;
+        $this->namespace = substr($entityName, 0, strrpos($entityName, '\\'));
+        $this->primaryTable['name'] = str_replace($this->namespace . '\\', '', $this->name);
+        $this->rootEntityName = $entityName;
+        $this->reflClass = new ReflectionClass($entityName);
     }
 
     /**
@@ -407,7 +416,7 @@ final class ClassMetadata
      */
     public function getReflectionClass()
     {
-        return $this->_reflectionClass;
+        return $this->reflClass;
     }
 
     /**
@@ -417,7 +426,7 @@ final class ClassMetadata
      */
     public function getReflectionProperties()
     {
-        return $this->_reflectionProperties;
+        return $this->reflFields;
     }
 
     /**
@@ -427,7 +436,7 @@ final class ClassMetadata
      */
     public function getChangeTrackingPolicy()
     {
-        return $this->_changeTrackingPolicy;
+        return $this->changeTrackingPolicy;
     }
 
     /**
@@ -437,7 +446,7 @@ final class ClassMetadata
      */
     public function setChangeTrackingPolicy($policy)
     {
-        $this->_changeTrackingPolicy = $policy;
+        $this->changeTrackingPolicy = $policy;
     }
 
     /**
@@ -447,7 +456,7 @@ final class ClassMetadata
      */
     public function isChangeTrackingDeferredExplicit()
     {
-        return $this->_changeTrackingPolicy == self::CHANGETRACKING_DEFERRED_EXPLICIT;
+        return $this->changeTrackingPolicy == self::CHANGETRACKING_DEFERRED_EXPLICIT;
     }
 
     /**
@@ -455,9 +464,9 @@ final class ClassMetadata
      *
      * @return boolean
      */
-    public function isChangeTrackingPolicyDeferredImplicit()
+    public function isChangeTrackingDeferredImplicit()
     {
-        return $this->_changeTrackingPolicy == self::CHANGETRACKING_DEFERRED_IMPLICIT;
+        return $this->changeTrackingPolicy == self::CHANGETRACKING_DEFERRED_IMPLICIT;
     }
 
     /**
@@ -467,7 +476,7 @@ final class ClassMetadata
      */
     public function isChangeTrackingNotify()
     {
-        return $this->_changeTrackingPolicy == self::CHANGETRACKING_NOTIFY;
+        return $this->changeTrackingPolicy == self::CHANGETRACKING_NOTIFY;
     }
 
     /**
@@ -479,7 +488,7 @@ final class ClassMetadata
      */
     public function addReflectionProperty($propName, \ReflectionProperty $property)
     {
-        $this->_reflectionProperties[$propName] = $property;
+        $this->reflFields[$propName] = $property;
     }
 
     /**
@@ -490,7 +499,7 @@ final class ClassMetadata
      */
     public function getReflectionProperty($name)
     {
-        return $this->_reflectionProperties[$name];
+        return $this->reflFields[$name];
     }
 
     /**
@@ -501,10 +510,10 @@ final class ClassMetadata
      */
     public function getSingleIdReflectionProperty()
     {
-        if ($this->_isIdentifierComposite) {
+        if ($this->isIdentifierComposite) {
             throw DoctrineException::updateMe("getSingleIdReflectionProperty called on entity with composite key.");
         }
-        return $this->_reflectionProperties[$this->_identifier[0]];
+        return $this->reflFields[$this->identifier[0]];
     }
 
     /**
@@ -514,7 +523,7 @@ final class ClassMetadata
      */
     public function getClassName()
     {
-        return $this->_entityName;
+        return $this->name;
     }
 
     /**
@@ -526,8 +535,8 @@ final class ClassMetadata
      */
     public function getOwningClass($fieldName)
     {
-        if ($this->_inheritanceType == self::INHERITANCE_TYPE_NONE) {
-            return $this->_entityName;
+        if ($this->inheritanceType == self::INHERITANCE_TYPE_NONE) {
+            return $this->name;
         } else {
             $mapping = $this->getFieldMapping($fieldName);
             return $mapping['inherited'];
@@ -543,7 +552,7 @@ final class ClassMetadata
      */
     public function getRootClassName()
     {
-        return $this->_rootEntityName;
+        return $this->rootEntityName;
     }
 
     /**
@@ -555,10 +564,10 @@ final class ClassMetadata
      */
     public function isIdentifier($fieldName)
     {
-        if ( ! $this->_isIdentifierComposite) {
-            return $fieldName === $this->_identifier[0];
+        if ( ! $this->isIdentifierComposite) {
+            return $fieldName === $this->identifier[0];
         }
-        return in_array($fieldName, $this->_identifier);
+        return in_array($fieldName, $this->identifier);
     }
 
     /**
@@ -569,7 +578,7 @@ final class ClassMetadata
      */
     public function isIdentifierComposite()
     {
-        return $this->_isIdentifierComposite;
+        return $this->isIdentifierComposite;
     }
 
     /**
@@ -612,8 +621,8 @@ final class ClassMetadata
      */
     public function getColumnName($fieldName)
     {
-        return isset($this->_columnNames[$fieldName]) ?
-                $this->_columnNames[$fieldName] : $fieldName;
+        return isset($this->columnNames[$fieldName]) ?
+                $this->columnNames[$fieldName] : $fieldName;
     }
 
     /**
@@ -625,10 +634,10 @@ final class ClassMetadata
      */
     public function getFieldMapping($fieldName)
     {
-        if ( ! isset($this->_fieldMappings[$fieldName])) {
+        if ( ! isset($this->fieldMappings[$fieldName])) {
             throw MappingException::mappingNotFound($fieldName);
         }
-        return $this->_fieldMappings[$fieldName];
+        return $this->fieldMappings[$fieldName];
     }
     
     /**
@@ -640,10 +649,10 @@ final class ClassMetadata
      */
     public function getAssociationMapping($fieldName)
     {
-        if ( ! isset($this->_associationMappings[$fieldName])) {
+        if ( ! isset($this->associationMappings[$fieldName])) {
             throw MappingException::mappingNotFound($fieldName);
         }
-        return $this->_associationMappings[$fieldName];
+        return $this->associationMappings[$fieldName];
     }
     
     /**
@@ -654,8 +663,7 @@ final class ClassMetadata
      */
     public function getInverseAssociationMapping($mappedByFieldName)
     {
-        return isset($this->_inverseMappings[$mappedByFieldName]) ?
-                $this->_inverseMappings[$mappedByFieldName] : null;
+        return $this->inverseMappings[$mappedByFieldName];
     }
     
     /**
@@ -666,7 +674,7 @@ final class ClassMetadata
      */
     public function hasInverseAssociationMapping($mappedByFieldName)
     {
-        return isset($this->_inverseMappings[$mappedByFieldName]);
+        return isset($this->inverseMappings[$mappedByFieldName]);
     }
     
     /**
@@ -676,7 +684,7 @@ final class ClassMetadata
      */
     public function getAssociationMappings()
     {
-        return $this->_associationMappings;
+        return $this->associationMappings;
     }
     
     /**
@@ -688,7 +696,7 @@ final class ClassMetadata
      */
     public function getAssociations()
     {
-        return $this->_associationMappings;
+        return $this->associationMappings;
     }
 
     /**
@@ -700,8 +708,8 @@ final class ClassMetadata
      */
     public function getFieldName($columnName)
     {
-        return isset($this->_fieldNames[$columnName]) ?
-                $this->_fieldNames[$columnName] : $columnName;
+        return isset($this->fieldNames[$columnName]) ?
+                $this->fieldNames[$columnName] : $columnName;
     }
     
     /**
@@ -713,8 +721,7 @@ final class ClassMetadata
      */
     public function getFieldNameForLowerColumnName($lcColumnName)
     {
-        return isset($this->_lcColumnToFieldNames[$lcColumnName]) ?
-                $this->_lcColumnToFieldNames[$lcColumnName] : $lcColumnName;
+        return $this->lcColumnToFieldNames[$lcColumnName];
     }
 
     /**
@@ -725,7 +732,7 @@ final class ClassMetadata
      */
     public function hasLowerColumn($lcColumnName)
     {
-        return isset($this->_lcColumnToFieldNames[$lcColumnName]);
+        return isset($this->lcColumnToFieldNames[$lcColumnName]);
     }
     
     /**
@@ -744,35 +751,31 @@ final class ClassMetadata
             throw MappingException::missingType();
         }
 
-        /*if ( ! is_object($mapping['type'])) {
-            $mapping['type'] = \Doctrine\DBAL\Types\Type::getType($mapping['type']);
-        }*/
-
         // Complete fieldName and columnName mapping
         if ( ! isset($mapping['columnName'])) {
             $mapping['columnName'] = $mapping['fieldName'];
         }
         $lcColumnName = strtolower($mapping['columnName']);
 
-        $this->_columnNames[$mapping['fieldName']] = $mapping['columnName'];
-        $this->_fieldNames[$mapping['columnName']] = $mapping['fieldName'];
-        $this->_lcColumnToFieldNames[$lcColumnName] = $mapping['fieldName'];
+        $this->columnNames[$mapping['fieldName']] = $mapping['columnName'];
+        $this->fieldNames[$mapping['columnName']] = $mapping['fieldName'];
+        $this->lcColumnToFieldNames[$lcColumnName] = $mapping['fieldName'];
         
         // Complete id mapping
         if (isset($mapping['id']) && $mapping['id'] === true) {
-            if ( ! in_array($mapping['fieldName'], $this->_identifier)) {
-                $this->_identifier[] = $mapping['fieldName'];
+            if ( ! in_array($mapping['fieldName'], $this->identifier)) {
+                $this->identifier[] = $mapping['fieldName'];
             }
             // Check for composite key
-            if ( ! $this->_isIdentifierComposite && count($this->_identifier) > 1) {
-                $this->_isIdentifierComposite = true;
+            if ( ! $this->isIdentifierComposite && count($this->identifier) > 1) {
+                $this->isIdentifierComposite = true;
             }
         }
 
         // Store ReflectionProperty of mapped field
-        $refProp = $this->_reflectionClass->getProperty($mapping['fieldName']);
+        $refProp = $this->reflClass->getProperty($mapping['fieldName']);
         $refProp->setAccessible(true);
-        $this->_reflectionProperties[$mapping['fieldName']] = $refProp;
+        $this->reflFields[$mapping['fieldName']] = $refProp;
     }
     
     /**
@@ -814,7 +817,7 @@ final class ClassMetadata
      */
     public function getIdentifier()
     {
-        return $this->_identifier;
+        return $this->identifier;
     }
 
     /**
@@ -824,7 +827,7 @@ final class ClassMetadata
      */
     public function getIdentifierFieldNames()
     {
-        return $this->_identifier;
+        return $this->identifier;
     }
     
     /**
@@ -835,11 +838,11 @@ final class ClassMetadata
      */
     public function getSingleIdentifierFieldName()
     {
-        if ($this->_isIdentifierComposite) {
+        if ($this->isIdentifierComposite) {
             throw DoctrineException::updateMe("Calling getSingleIdentifierFieldName "
                     . "on a class that uses a composite identifier is not allowed.");
         }
-        return $this->_identifier[0];
+        return $this->identifier[0];
     }
 
     /**
@@ -862,7 +865,7 @@ final class ClassMetadata
      */
     public function setIdentifier(array $identifier)
     {
-        $this->_identifier = $identifier;
+        $this->identifier = $identifier;
     }
 
     /**
@@ -872,22 +875,8 @@ final class ClassMetadata
      */
     public function hasField($fieldName)
     {
-        return isset($this->_reflectionProperties[$fieldName]);
+        return isset($this->reflFields[$fieldName]);
     }
-
-    /**
-     * Sets the value of a field on an entity of the mapped class.
-     *
-     * @param object $entity
-     * @param string $field
-     * @param mixed $value
-     */
-    /*public function setValue($entity, $field, $value)
-    {
-        if (isset($this->_reflectionProperties[$field])) {
-            $this->_reflectionProperties[$field]->setValue($entity, $value);
-        }
-    }*/
 
     /**
      * Extracts the identifier values of an entity of this class.
@@ -897,17 +886,17 @@ final class ClassMetadata
      */
     public function getIdentifierValues($entity)
     {
-        if ($this->_isIdentifierComposite) {
+        if ($this->isIdentifierComposite) {
             $id = array();
-            foreach ($this->_identifier as $idField) {
-                $value = $this->_reflectionProperties[$idField]->getValue($entity);
+            foreach ($this->identifier as $idField) {
+                $value = $this->reflFields[$idField]->getValue($entity);
                 if ($value !== null) {
                     $id[] = $value;
                 }
             }
             return $id;
         } else {
-            return $this->_reflectionProperties[$this->_identifier[0]]->getValue($entity);
+            return $this->reflFields[$this->identifier[0]]->getValue($entity);
         }
     }
 
@@ -920,12 +909,12 @@ final class ClassMetadata
      */
     public function setIdentifierValues($entity, $id)
     {
-        if ($this->_isIdentifierComposite) {
+        if ($this->isIdentifierComposite) {
             foreach ((array)$id as $idField => $idValue) {
-                $this->_reflectionProperties[$idField]->setValue($entity, $idValue);
+                $this->reflFields[$idField]->setValue($entity, $idValue);
             }
         } else {
-            $this->_reflectionProperties[$this->_identifier[0]]->setValue($entity, $id);
+            $this->reflFields[$this->identifier[0]]->setValue($entity, $id);
         }
     }
 
@@ -938,7 +927,7 @@ final class ClassMetadata
      */
     public function setFieldValue($entity, $field, $value)
     {
-        $this->_reflectionProperties[$field]->setValue($entity, $value);
+        $this->reflFields[$field]->setValue($entity, $value);
     }
 
     /**
@@ -950,7 +939,7 @@ final class ClassMetadata
      */
     public function setColumnValue($entity, $column, $value)
     {
-        $this->_reflectionProperties[$this->_fieldNames[$column]]->setValue($entity, $value);
+        $this->reflFields[$this->fieldNames[$column]]->setValue($entity, $value);
     }
     
     /**
@@ -960,7 +949,7 @@ final class ClassMetadata
      */
     public function getFieldMappings()
     {
-        return $this->_fieldMappings;
+        return $this->fieldMappings;
     }
 
     /**
@@ -971,7 +960,7 @@ final class ClassMetadata
     public function getColumnNames(array $fieldNames = null)
     {
         if ($fieldNames === null) {
-            return array_keys($this->_fieldNames);
+            return array_keys($this->fieldNames);
         } else {
             $columnNames = array();
             foreach ($fieldNames as $fieldName) {
@@ -998,7 +987,7 @@ final class ClassMetadata
      */
     public function getFieldNames()
     {
-        return array_values($this->_fieldNames);
+        return array_values($this->fieldNames);
     }
     
     /**
@@ -1008,7 +997,7 @@ final class ClassMetadata
      */
     public function getIdGeneratorType()
     {
-        return $this->_generatorType;
+        return $this->generatorType;
     }
 
     /**
@@ -1016,7 +1005,7 @@ final class ClassMetadata
      */
     public function setIdGeneratorType($generatorType)
     {
-        $this->_generatorType = $generatorType;
+        $this->generatorType = $generatorType;
     }
     
     /**
@@ -1026,7 +1015,7 @@ final class ClassMetadata
      */
     public function usesIdGenerator()
     {
-        return $this->_generatorType != self::GENERATOR_TYPE_NONE;
+        return $this->generatorType != self::GENERATOR_TYPE_NONE;
     }
 
     /**
@@ -1035,7 +1024,7 @@ final class ClassMetadata
      */
     public function isInheritanceTypeNone()
     {
-        return $this->_inheritanceType == self::INHERITANCE_TYPE_NONE;
+        return $this->inheritanceType == self::INHERITANCE_TYPE_NONE;
     }
     
     /**
@@ -1046,7 +1035,7 @@ final class ClassMetadata
      */
     public function isInheritanceTypeJoined()
     {
-        return $this->_inheritanceType == self::INHERITANCE_TYPE_JOINED;
+        return $this->inheritanceType == self::INHERITANCE_TYPE_JOINED;
     }
     
     /**
@@ -1057,7 +1046,7 @@ final class ClassMetadata
      */
     public function isInheritanceTypeSingleTable()
     {
-        return $this->_inheritanceType == self::INHERITANCE_TYPE_SINGLE_TABLE;
+        return $this->inheritanceType == self::INHERITANCE_TYPE_SINGLE_TABLE;
     }
     
     /**
@@ -1068,7 +1057,7 @@ final class ClassMetadata
      */
     public function isInheritanceTypeTablePerClass()
     {
-        return $this->_inheritanceType == self::INHERITANCE_TYPE_TABLE_PER_CLASS;
+        return $this->inheritanceType == self::INHERITANCE_TYPE_TABLE_PER_CLASS;
     }
     
     /**
@@ -1078,7 +1067,7 @@ final class ClassMetadata
      */
     public function isIdGeneratorIdentity()
     {
-        return $this->_generatorType == self::GENERATOR_TYPE_IDENTITY;
+        return $this->generatorType == self::GENERATOR_TYPE_IDENTITY;
     }
     
     /**
@@ -1088,7 +1077,7 @@ final class ClassMetadata
      */
     public function isIdGeneratorSequence()
     {
-        return $this->_generatorType == self::GENERATOR_TYPE_SEQUENCE;
+        return $this->generatorType == self::GENERATOR_TYPE_SEQUENCE;
     }
     
     /**
@@ -1098,7 +1087,7 @@ final class ClassMetadata
      */
     public function isIdGeneratorTable()
     {
-        $this->_generatorType == self::GENERATOR_TYPE_TABLE;
+        $this->generatorType == self::GENERATOR_TYPE_TABLE;
     }
     
     /**
@@ -1109,7 +1098,7 @@ final class ClassMetadata
      */
     public function isIdentifierNatural()
     {
-        return $this->_generatorType == self::GENERATOR_TYPE_NONE;
+        return $this->generatorType == self::GENERATOR_TYPE_NONE;
     }
     
     /**
@@ -1120,8 +1109,8 @@ final class ClassMetadata
      */
     public function getTypeOfField($fieldName)
     {
-        return isset($this->_fieldMappings[$fieldName]) ?
-                $this->_fieldMappings[$fieldName]['type'] : null;
+        return isset($this->fieldMappings[$fieldName]) ?
+                $this->fieldMappings[$fieldName]['type'] : null;
     }
 
     /**
@@ -1139,7 +1128,7 @@ final class ClassMetadata
      */
     public function getFieldLength($fieldName)
     {
-        return $this->_fieldMappings[$fieldName]['length'];
+        return $this->fieldMappings[$fieldName]['length'];
     }
 
     /**
@@ -1149,7 +1138,7 @@ final class ClassMetadata
      */
     public function getTableName()
     {
-        return $this->_primaryTable['name'];
+        return $this->primaryTable['name'];
     }
 
     public function getInheritedFields()
@@ -1176,7 +1165,7 @@ final class ClassMetadata
      */
     public function getInheritanceType()
     {
-        return $this->_inheritanceType;
+        return $this->inheritanceType;
     }
 
     /**
@@ -1189,7 +1178,7 @@ final class ClassMetadata
      */
     public function setSubclasses(array $subclasses)
     {
-        $this->_subClasses = $subclasses;
+        $this->subClasses = $subclasses;
     }
 
     /**
@@ -1199,7 +1188,7 @@ final class ClassMetadata
      */
     public function getSubclasses()
     {
-        return $this->_subClasses;
+        return $this->subClasses;
     }
 
     /**
@@ -1209,7 +1198,7 @@ final class ClassMetadata
      */
     public function hasSubclasses()
     {
-        return ! $this->_subClasses;
+        return ! $this->subClasses;
     }
 
     /**
@@ -1219,7 +1208,7 @@ final class ClassMetadata
      */
     public function getParentClasses()
     {
-        return $this->_parentClasses;
+        return $this->parentClasses;
     }
 
     /**
@@ -1229,9 +1218,9 @@ final class ClassMetadata
      */
     public function setParentClasses(array $classNames)
     {
-        $this->_parentClasses = $classNames;
+        $this->parentClasses = $classNames;
         if (count($classNames) > 0) {
-            $this->_rootEntityName = array_pop($classNames);
+            $this->rootEntityName = array_pop($classNames);
         }
     }
 
@@ -1242,7 +1231,7 @@ final class ClassMetadata
      */
     public function hasParentClasses()
     {
-        return ! $this->_parentClasses;
+        return ! $this->parentClasses;
     }
 
     /**
@@ -1255,7 +1244,7 @@ final class ClassMetadata
         if ( ! $this->_isInheritanceType($type)) {
             throw MappingException::invalidInheritanceType($type);
         }
-        $this->_inheritanceType = $type;
+        $this->inheritanceType = $type;
     }
 
     /**
@@ -1265,7 +1254,7 @@ final class ClassMetadata
      */
     public function isInheritedField($fieldName)
     {
-        return isset($this->_fieldMappings[$fieldName]['inherited']);
+        return isset($this->fieldMappings[$fieldName]['inherited']);
     }
 
     /**
@@ -1276,7 +1265,7 @@ final class ClassMetadata
      */
     public function setTableName($tableName)
     {
-        $this->_primaryTable['name'] = $tableName;
+        $this->primaryTable['name'] = $tableName;
     }
 
     /**
@@ -1291,7 +1280,7 @@ final class ClassMetadata
      */
     public function setPrimaryTable(array $primaryTableDefinition)
     {
-        $this->_primaryTable = $primaryTableDefinition;
+        $this->primaryTable = $primaryTableDefinition;
     }
 
     /**
@@ -1302,7 +1291,7 @@ final class ClassMetadata
      */
     public function getPrimaryTable()
     {
-        return $this->_primaryTable;
+        return $this->primaryTable;
     }
     
     /**
@@ -1343,9 +1332,9 @@ final class ClassMetadata
      */
     private function _completeAssociationMapping(array $mapping)
     {
-        $mapping['sourceEntity'] = $this->_entityName;
+        $mapping['sourceEntity'] = $this->name;
         if (isset($mapping['targetEntity']) && strpos($mapping['targetEntity'], '\\') === false) {
-            $mapping['targetEntity'] = $this->_namespace . '\\' . $mapping['targetEntity'];
+            $mapping['targetEntity'] = $this->namespace . '\\' . $mapping['targetEntity'];
         }
         return $mapping;
     }
@@ -1358,10 +1347,10 @@ final class ClassMetadata
     public function mapField(array $mapping)
     {
         $this->_validateAndCompleteFieldMapping($mapping);
-        if (isset($this->_fieldMappings[$mapping['fieldName']])) {
+        if (isset($this->fieldMappings[$mapping['fieldName']])) {
             throw MappingException::duplicateFieldMapping($mapping['fieldName']);
         }
-        $this->_fieldMappings[$mapping['fieldName']] = $mapping;
+        $this->fieldMappings[$mapping['fieldName']] = $mapping;
     }
 
     /**
@@ -1385,7 +1374,7 @@ final class ClassMetadata
      */
     public function addFieldMapping(array $fieldMapping)
     {
-        $this->_fieldMappings[$fieldMapping['fieldName']] = $fieldMapping;
+        $this->fieldMappings[$fieldMapping['fieldName']] = $fieldMapping;
     }
 
     /**
@@ -1410,7 +1399,7 @@ final class ClassMetadata
     private function _registerMappingIfInverse(AssociationMapping $assoc)
     {
         if ($assoc->isInverseSide()) {
-            $this->_inverseMappings[$assoc->getMappedByFieldName()] = $assoc;
+            $this->inverseMappings[$assoc->getMappedByFieldName()] = $assoc;
         }
     }
 
@@ -1457,16 +1446,16 @@ final class ClassMetadata
     private function _storeAssociationMapping(AssociationMapping $assocMapping)
     {
         $sourceFieldName = $assocMapping->getSourceFieldName();
-        if (isset($this->_associationMappings[$sourceFieldName])) {
+        if (isset($this->associationMappings[$sourceFieldName])) {
             throw MappingException::duplicateFieldMapping();
         }
-        $this->_associationMappings[$sourceFieldName] = $assocMapping;
+        $this->associationMappings[$sourceFieldName] = $assocMapping;
         $this->_registerMappingIfInverse($assocMapping);
 
         // Store ReflectionProperty of mapped field
-        $refProp = $this->_reflectionClass->getProperty($sourceFieldName);
+        $refProp = $this->reflClass->getProperty($sourceFieldName);
         $refProp->setAccessible(true);
-        $this->_reflectionProperties[$sourceFieldName] = $refProp;
+        $this->reflFields[$sourceFieldName] = $refProp;
     }
     
     /**
@@ -1476,7 +1465,7 @@ final class ClassMetadata
      */
     public function setCustomRepositoryClass($repositoryClassName)
     {
-        $this->_customRepositoryClassName = $repositoryClassName;
+        $this->customRepositoryClassName = $repositoryClassName;
     }
     
     /**
@@ -1487,7 +1476,7 @@ final class ClassMetadata
      */
     public function getCustomRepositoryClass()
     {
-         return $this->_customRepositoryClassName;
+         return $this->customRepositoryClassName;
     }
 
     /**
@@ -1502,7 +1491,7 @@ final class ClassMetadata
      */
     public function setJoinSubClasses($bool)
     {
-        $this->_joinSubclasses = (bool)$bool;
+        $this->joinSubclasses = (bool)$bool;
     }
 
     /**
@@ -1514,7 +1503,7 @@ final class ClassMetadata
      */
     public function getJoinSubClasses()
     {
-        return $this->_joinSubclasses;
+        return $this->joinSubclasses;
     }
     
     /**
@@ -1530,10 +1519,10 @@ final class ClassMetadata
             $entity->$callback();
         }
         foreach ($this->getLifecycleListeners($lifecycleEvent) as $className => $callback) {
-            if ( ! isset($this->_lifecycleListenerInstances[$className])) {
-                $this->_lifecycleListenerInstances[$className] = new $className;
+            if ( ! isset($this->lifecycleListenerInstances[$className])) {
+                $this->lifecycleListenerInstances[$className] = new $className;
             }
-            $this->_lifecycleListenerInstances[$className]->$callback($entity);
+            $this->lifecycleListenerInstances[$className]->$callback($entity);
         }
     }
     
@@ -1545,8 +1534,8 @@ final class ClassMetadata
      */
     public function getLifecycleCallbacks($event)
     {
-        return isset($this->_lifecycleCallbacks[$event]) ?
-                $this->_lifecycleCallbacks[$event] : array();
+        return isset($this->lifecycleCallbacks[$event]) ?
+                $this->lifecycleCallbacks[$event] : array();
     }
     
     /**
@@ -1557,8 +1546,8 @@ final class ClassMetadata
      */
     public function getLifecycleListeners($event)
     {
-        return isset($this->_lifecycleListeners[$event]) ?
-                $this->_lifecycleListeners[$event] : array();
+        return isset($this->lifecycleListeners[$event]) ?
+                $this->lifecycleListeners[$event] : array();
     }
     
     /**
@@ -1572,9 +1561,9 @@ final class ClassMetadata
      */
     public function addLifecycleListener($listenerClass, array $callbacks)
     {
-        $this->_lifecycleListeners[$event][$listenerClass] = array();
+        $this->lifecycleListeners[$event][$listenerClass] = array();
         foreach ($callbacks as $method => $event) {
-            $this->_lifecycleListeners[$event][$listenerClass][] = $method;
+            $this->lifecycleListeners[$event][$listenerClass][] = $method;
         }
     }
     
@@ -1589,11 +1578,11 @@ final class ClassMetadata
      */
     public function addLifecycleCallback($callback, $event)
     {
-        if ( ! isset($this->_lifecycleCallbacks[$event])) {
-            $this->_lifecycleCallbacks[$event] = array();
+        if ( ! isset($this->lifecycleCallbacks[$event])) {
+            $this->lifecycleCallbacks[$event] = array();
         }
-        if ( ! in_array($callback, $this->_lifecycleCallbacks[$event])) {
-            $this->_lifecycleCallbacks[$event][$callback] = $callback;
+        if ( ! in_array($callback, $this->lifecycleCallbacks[$event])) {
+            $this->lifecycleCallbacks[$event][$callback] = $callback;
         } 
     }
 
@@ -1605,7 +1594,7 @@ final class ClassMetadata
      */
     public function setDiscriminatorColumn($columnDef)
     {
-        $this->_discriminatorColumn = $columnDef;
+        $this->discriminatorColumn = $columnDef;
     }
 
     /**
@@ -1623,7 +1612,7 @@ final class ClassMetadata
      */
     public function getDiscriminatorColumn()
     {
-        return $this->_discriminatorColumn;
+        return $this->discriminatorColumn;
     }
 
     /**
@@ -1634,7 +1623,7 @@ final class ClassMetadata
      */
     public function setDiscriminatorValue($value)
     {
-        $this->_discriminatorValue = $value;
+        $this->discriminatorValue = $value;
     }
 
     /**
@@ -1645,7 +1634,7 @@ final class ClassMetadata
      */
     public function getDiscriminatorValue()
     {
-        return $this->_discriminatorValue;
+        return $this->discriminatorValue;
     }
 
     /**
@@ -1656,7 +1645,7 @@ final class ClassMetadata
      */
     public function isDiscriminatorColumn($columnName)
     {
-        return $columnName === $this->_discriminatorColumn['name'];
+        return $columnName === $this->discriminatorColumn['name'];
     }
 
     /**
@@ -1667,7 +1656,7 @@ final class ClassMetadata
      */
     public function hasAssociation($fieldName)
     {
-        return isset($this->_associationMappings[$fieldName]);
+        return isset($this->associationMappings[$fieldName]);
     }
 
     /**
@@ -1679,8 +1668,8 @@ final class ClassMetadata
      */
     public function isSingleValuedAssociation($fieldName)
     {
-        return isset($this->_associationMappings[$fieldName]) &&
-                $this->_associationMappings[$fieldName]->isOneToOne();
+        return isset($this->associationMappings[$fieldName]) &&
+                $this->associationMappings[$fieldName]->isOneToOne();
     }
 
     /**
@@ -1692,8 +1681,8 @@ final class ClassMetadata
      */
     public function isCollectionValuedAssociation($fieldName)
     {
-        return isset($this->_associationMappings[$fieldName]) &&
-                ! $this->_associationMappings[$fieldName]->isOneToOne();
+        return isset($this->associationMappings[$fieldName]) &&
+                ! $this->associationMappings[$fieldName]->isOneToOne();
     }
 
     /**
@@ -1705,7 +1694,7 @@ final class ClassMetadata
      */
     /*public function getIdGeneratorName()
     {
-        return $this->_idGeneratorName;
+        return $this->idGeneratorName;
     }*/
 
     /**
@@ -1715,7 +1704,7 @@ final class ClassMetadata
      */
     public function setIdGenerator($generator)
     {
-        $this->_idGenerator = $generator;
+        $this->idGenerator = $generator;
     }
 
     /**
@@ -1725,7 +1714,7 @@ final class ClassMetadata
      */
     public function getIdGenerator()
     {
-        return $this->_idGenerator;
+        return $this->idGenerator;
     }
 
     /**
@@ -1745,7 +1734,7 @@ final class ClassMetadata
      */
     public function getSequenceGeneratorDefinition()
     {
-        return $this->_sequenceGeneratorDefinition;
+        return $this->sequenceGeneratorDefinition;
     }
 
     /**
@@ -1764,7 +1753,7 @@ final class ClassMetadata
      */
     public function setSequenceGeneratorDefinition(array $definition)
     {
-        $this->_sequenceGeneratorDefinition = $definition;
+        $this->sequenceGeneratorDefinition = $definition;
     }
 
     /**

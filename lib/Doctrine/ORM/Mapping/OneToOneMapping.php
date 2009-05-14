@@ -159,7 +159,7 @@ class OneToOneMapping extends AssociationMapping
             if ($targetClass->hasInverseAssociation($this->_sourceFieldName)) {
                 $targetClass->setFieldValue(
                         $targetEntity,
-                        $targetClass->getInverseAssociationMapping($this->_sourceFieldName)->getSourceFieldName(),
+                        $targetClass->inverseMappings[$this->_sourceFieldName]->getSourceFieldName(),
                         $owningEntity);
             }
         } else {

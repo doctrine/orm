@@ -143,7 +143,7 @@ abstract class AbstractHydrator
      */
     protected function _hydrateRow(array &$data, array &$cache, &$result)
     {
-        throw new Exception("_hydrateRow() not implemented for this hydrator.");
+        throw new DoctrineException("_hydrateRow() not implemented for this hydrator.");
     }
 
     /**
@@ -312,7 +312,7 @@ abstract class AbstractHydrator
             return $class;
         }
         
-        foreach ($class->getSubclasses() as $subClass) {
+        foreach ($class->subClasses as $subClass) {
             $subClassMetadata = $this->_em->getClassMetadata($subClass);
             if ($subClassMetadata->hasField($fieldName)) {
                 return $subClassMetadata;

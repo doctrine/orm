@@ -84,7 +84,7 @@ class SchemaTool
 
         // First we create the tables
         foreach ($classes as $class) {
-            if (isset($processedClasses[$class->getClassName()])) {
+            if (isset($processedClasses[$class->name])) {
                 continue;
             }
 
@@ -99,11 +99,11 @@ class SchemaTool
                 $columns[$discrColumnDef['name']] = $discrColumnDef;
 
                 // Aggregate all the information from all classes in the hierarchy
-                foreach ($class->getParentClasses() as $parentClassName) {
+                foreach ($class->parentClasses as $parentClassName) {
                     // Parent class information is already contained in this class
                     $processedClasses[$parentClassName] = true;
                 }
-                foreach ($class->getSubclasses() as $subClassName) {
+                foreach ($class->subClasses as $subClassName) {
                     $subClass = $this->_em->getClassMetadata($subClassName);
                     $columns = array_merge($columns, $this->_gatherColumns($subClass, $options));
                     $this->_gatherRelationsSql($subClass, $sql, $columns, $foreignKeyConstraints);
@@ -116,7 +116,7 @@ class SchemaTool
             }
 
             $sql = array_merge($sql, $this->_platform->getCreateTableSql($class->getTableName(), $columns, $options));
-            $processedClasses[$class->getClassName()] = true;
+            $processedClasses[$class->name] = true;
 
             if ($class->isIdGeneratorSequence()) {
                 $seqDef = $class->getSequenceGeneratorDefinition();
@@ -143,7 +143,7 @@ class SchemaTool
 
     private function _getDiscriminatorColumnDefinition($class)
     {
-        $discrColumn = $class->getDiscriminatorColumn();
+        $discrColumn = $class->discriminatorColumn;
         return array(
             'name' => $discrColumn['name'],
             'type' => Type::getType($discrColumn['type']),
@@ -155,7 +155,7 @@ class SchemaTool
     private function _gatherColumns($class, array &$options)
     {
         $columns = array();
-        foreach ($class->getFieldMappings() as $fieldName => $mapping) {
+        foreach ($class->fieldMappings as $fieldName => $mapping) {
             $column = array();
             $column['name'] = $mapping['columnName'];
             $column['type'] = Type::getType($mapping['type']);
@@ -176,7 +176,7 @@ class SchemaTool
 
     private function _gatherRelationsSql($class, array &$sql, array &$columns, array &$constraints)
     {
-        foreach ($class->getAssociationMappings() as $mapping) {
+        foreach ($class->associationMappings as $mapping) {
             $foreignClass = $this->_em->getClassMetadata($mapping->getTargetEntityName());
             if ($mapping->isOneToOne() && $mapping->isOwningSide()) {
                 $constraint = array();

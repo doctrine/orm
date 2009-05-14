@@ -98,7 +98,7 @@ class DynamicProxyGenerator
         $file = self::$_proxyClassTemplate;
 
         $methods = '';
-        foreach ($class->getReflectionClass()->getMethods() as $method) {
+        foreach ($class->reflClass->getMethods() as $method) {
             if ($method->isPublic() && ! $method->isFinal()) {
                 $methods .= PHP_EOL . 'public function ' . $method->getName() . '(';
                 $firstParam = true;
@@ -119,7 +119,7 @@ class DynamicProxyGenerator
         }
 
         $sleepImpl = '';
-        if ($class->getReflectionClass()->hasMethod('__sleep')) {
+        if ($class->reflClass->hasMethod('__sleep')) {
             $sleepImpl .= 'return parent::__sleep();';
         } else {
             $sleepImpl .= 'return array(';
@@ -162,7 +162,7 @@ class DynamicProxyGenerator
         $file = self::$_assocProxyClassTemplate;
 
         $methods = '';
-        foreach ($class->getReflectionClass()->getMethods() as $method) {
+        foreach ($class->reflClass->getMethods() as $method) {
             if ($method->isPublic() && ! $method->isFinal()) {
                 $methods .= PHP_EOL . 'public function ' . $method->getName() . '(';
                 $firstParam = true;
@@ -183,7 +183,7 @@ class DynamicProxyGenerator
         }
 
         $sleepImpl = '';
-        if ($class->getReflectionClass()->hasMethod('__sleep')) {
+        if ($class->reflClass->hasMethod('__sleep')) {
             $sleepImpl .= 'return parent::__sleep();';
         } else {
             $sleepImpl .= 'return array(';
@@ -228,7 +228,7 @@ namespace Doctrine\Generated\Proxies {
         }
         private function _load() {
             if ( ! $this->_loaded) {
-                $this->_em->getUnitOfWork()->getEntityPersister($this->_class->getClassName())->load($this->_identifier, $this);
+                $this->_em->getUnitOfWork()->getEntityPersister($this->_class->name)->load($this->_identifier, $this);
                 unset($this->_em);
                 unset($this->_class);
                 $this->_loaded = true;

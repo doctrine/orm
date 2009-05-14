@@ -735,7 +735,7 @@ class ObjectHydratorTest extends HydrationTest
             )
         );
 
-        for ($i = 4; $i < 1000; ++$i) {
+        for ($i = 4; $i < 10000; ++$i) {
             $resultSet[] = array(
                 'u__id' => $i,
                 'u__status' => 'developer',

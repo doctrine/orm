@@ -39,8 +39,8 @@ class SingleTablePersister extends AbstractEntityPersister
         parent::_prepareData($entity, $result, $isInsert);
         // Populate the discriminator column
         if ($isInsert) {
-            $discColumn = $this->_class->getDiscriminatorColumn();
-            $result[$discColumn['name']] = $this->_class->getDiscriminatorValue();
+            $discColumn = $this->_class->discriminatorColumn;
+            $result[$discColumn['name']] = $this->_class->discriminatorValue;
         }
     }
 }

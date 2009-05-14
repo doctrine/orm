@@ -40,7 +40,7 @@ class EntityRepository
     
     public function __construct($em, \Doctrine\ORM\Mapping\ClassMetadata $classMetadata)
     {
-        $this->_entityName = $classMetadata->getClassName();
+        $this->_entityName = $classMetadata->name;
         $this->_em = $em;
         $this->_classMetadata = $classMetadata;
     }
@@ -66,7 +66,7 @@ class EntityRepository
      */
     public function clear()
     {
-        $this->_em->getUnitOfWork()->clearIdentitiesForEntity($this->_classMetadata->getRootClassName());
+        $this->_em->getUnitOfWork()->clearIdentitiesForEntity($this->_classMetadata->rootEntityName);
     }
     
     /**
@@ -79,13 +79,13 @@ class EntityRepository
     public function find($id, $hydrationMode = null)
     {
         // Check identity map first
-        if ($entity = $this->_em->getUnitOfWork()->tryGetById($id, $this->_classMetadata->getRootClassName())) {
+        if ($entity = $this->_em->getUnitOfWork()->tryGetById($id, $this->_classMetadata->rootEntityName)) {
             return $entity; // Hit!
         }
 
         if ( ! is_array($id) || count($id) <= 1) {
             $value = is_array($id) ? array_values($id) : array($id);
-            $id = array_combine($this->_classMetadata->getIdentifier(), $value);
+            $id = array_combine($this->_classMetadata->identifier, $value);
         }
 
         return $this->_em->getUnitOfWork()->getEntityPersister($this->_entityName)->load($id);

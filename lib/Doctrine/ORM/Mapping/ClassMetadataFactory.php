@@ -135,20 +135,20 @@ class ClassMetadataFactory
         foreach ($parentClasses as $className) {
             $class = $this->_newClassMetadataInstance($className);
             if ($parent) {
-                $class->setInheritanceType($parent->getInheritanceType());
+                $class->setInheritanceType($parent->inheritanceType);
                 //$class->setDiscriminatorMap($parent->getDiscriminatorMap());
-                $class->setDiscriminatorColumn($parent->getDiscriminatorColumn());
-                $class->setIdGeneratorType($parent->getIdGeneratorType());
+                $class->setDiscriminatorColumn($parent->discriminatorColumn);
+                $class->setIdGeneratorType($parent->generatorType);
                 $this->_addInheritedFields($class, $parent);
                 $this->_addInheritedRelations($class, $parent);
-                $class->setIdentifier($parent->getIdentifier());
+                $class->setIdentifier($parent->identifier);
             }
             
             // Invoke driver
             $this->_driver->loadMetadataForClass($className, $class);
 
             // Verify & complete identifier mapping
-            if ( ! $class->getIdentifier()) {
+            if ( ! $class->identifier) {
                 throw MappingException::identifierRequired($className);
             }
             if ($parent) {
@@ -157,7 +157,7 @@ class ClassMetadataFactory
                 } else if ($parent->isIdGeneratorTable()) {
                     $class->getTableGeneratorDefinition($parent->getTableGeneratorDefinition());
                 }
-                $class->setIdGeneratorType($parent->getIdGeneratorType());
+                $class->setIdGeneratorType($parent->generatorType);
                 $class->setidGenerator($parent->getIdGenerator());
             } else {
                 $this->_completeIdGeneratorMapping($class);
@@ -193,9 +193,9 @@ class ClassMetadataFactory
      */
     private function _addInheritedFields(ClassMetadata $subClass, ClassMetadata $parentClass)
     {
-        foreach ($parentClass->getFieldMappings() as $fieldName => $mapping) {
+        foreach ($parentClass->fieldMappings as $fieldName => $mapping) {
             if ( ! isset($mapping['inherited'])) {
-                $mapping['inherited'] = $parentClass->getClassName();
+                $mapping['inherited'] = $parentClass->name;
             }
             $subClass->addFieldMapping($mapping);
             $subClass->addReflectionProperty($fieldName, $parentClass->getReflectionProperty($fieldName));
@@ -210,7 +210,7 @@ class ClassMetadataFactory
      */
     private function _addInheritedRelations(ClassMetadata $subClass, ClassMetadata $parentClass)
     {
-        foreach ($parentClass->getAssociationMappings() as $mapping) {
+        foreach ($parentClass->associationMappings as $mapping) {
             $subClass->addAssociationMapping($mapping);
         }
     }
@@ -223,7 +223,7 @@ class ClassMetadataFactory
      */
     private function _completeIdGeneratorMapping(ClassMetadata $class)
     {
-        $idGenType = $class->getIdGeneratorType();
+        $idGenType = $class->generatorType;
         if ($idGenType == ClassMetadata::GENERATOR_TYPE_AUTO) {
             if ($this->_targetPlatform->prefersSequences()) {
                 $class->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_SEQUENCE);
@@ -235,7 +235,7 @@ class ClassMetadataFactory
         }
 
         // Create & assign an appropriate ID generator instance
-        switch ($class->getIdGeneratorType()) {
+        switch ($class->generatorType) {
             case ClassMetadata::GENERATOR_TYPE_IDENTITY:
                 $class->setIdGenerator(new \Doctrine\ORM\Id\IdentityGenerator());
                 break;

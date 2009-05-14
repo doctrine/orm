@@ -123,7 +123,7 @@ final class PersistentCollection extends \Doctrine\Common\Collections\Collection
     public function __construct(EntityManager $em, $class, array $data = array())
     {
         parent::__construct($data);
-        $this->_type = $class->getClassName();
+        $this->_type = $class->name;
         $this->_em = $em;
         $this->_ownerClass = $class;
     }
@@ -168,8 +168,8 @@ final class PersistentCollection extends \Doctrine\Common\Collections\Collection
             $targetClass = $this->_em->getClassMetadata($assoc->getTargetEntityName());
             if ($targetClass->hasInverseAssociationMapping($assoc->getSourceFieldName())) {
                 // bi-directional
-                $this->_backRefFieldName = $targetClass->getInverseAssociationMapping(
-                        $assoc->getSourceFieldName())->getSourceFieldName();
+                $this->_backRefFieldName = $targetClass->inverseMappings[
+                        $assoc->getSourceFieldName()]->getSourceFieldName();
             }
         }
     }

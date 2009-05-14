@@ -39,7 +39,7 @@ class RangeVariableDeclaration extends Node
     public function __construct($classMetadata, $aliasIdentificationVar)
     {
         $this->_classMetadata = $classMetadata;
-        $this->_abstractSchemaName = $classMetadata->getClassName();
+        $this->_abstractSchemaName = $classMetadata->name;
         $this->_aliasIdentificationVariable = $aliasIdentificationVar;
     }    
     
