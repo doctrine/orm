@@ -88,16 +88,17 @@ class ArrayHydrator extends AbstractHydrator
         foreach ($rowData as $dqlAlias => $data) {
             $index = false;
 
-            if ($this->_resultSetMapping->hasParentAlias($dqlAlias)) {
+            if (isset($this->_resultSetMapping->parentAliasMap[$dqlAlias])) {
+                // It's a joined result
 
-                $parent = $this->_resultSetMapping->getParentAlias($dqlAlias);
-                $relation = $this->_resultSetMapping->getRelation($dqlAlias);
+                $parent = $this->_resultSetMapping->parentAliasMap[$dqlAlias];
+                $relation = $this->_resultSetMapping->relationMap[$dqlAlias];
                 $relationAlias = $relation->getSourceFieldName();
                 $path = $parent . '.' . $dqlAlias;
 
                 // Get a reference to the right element in the result tree.
                 // This element will get the associated element attached.
-                if ($this->_resultSetMapping->isMixedResult() && isset($this->_rootAliases[$parent])) {
+                if ($this->_resultSetMapping->isMixed && isset($this->_rootAliases[$parent])) {
                     $key = key(reset($this->_resultPointers));
                     // TODO: Exception if $key === null ?
                     $baseElement =& $this->_resultPointers[$parent][$key];
@@ -154,14 +155,14 @@ class ArrayHydrator extends AbstractHydrator
                 if ($this->_isSimpleQuery || ! isset($this->_identifierMap[$dqlAlias][$id[$dqlAlias]])) {
                     $element = $rowData[$dqlAlias];
                     if ($field = $this->_getCustomIndexField($dqlAlias)) {
-                        if ($this->_resultSetMapping->isMixedResult()) {
+                        if ($this->_resultSetMapping->isMixed) {
                             $result[] = array($element[$field] => $element);
                             ++$this->_resultCounter;
                         } else {
                             $result[$element[$field]] = $element;
                         }
                     } else {
-                        if ($this->_resultSetMapping->isMixedResult()) {
+                        if ($this->_resultSetMapping->isMixed) {
                             $result[] = array($element);
                             ++$this->_resultCounter;
                         } else {

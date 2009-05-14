@@ -24,31 +24,35 @@ namespace Doctrine\ORM\Query;
 /**
  * A ResultSetMapping describes how a result set of an SQL query maps to a Doctrine result.
  *
+ * IMPORTANT NOTE:
+ * The properties of this class are only public for fast internal READ access.
+ * Users should use the public methods.
+ *
  * @author Roman Borschel <roman@code-factory.org>
  * @since 2.0
  */
 class ResultSetMapping
 {
     /** Whether the result is mixed (contains scalar values together with field values). */
-    private $_isMixed = false;
+    public $isMixed = false;
     /** Maps alias names to ClassMetadata descriptors. */
-    private $_aliasMap = array();
+    public $aliasMap = array();
     /** Maps alias names to related association mappings. */
-    private $_relationMap = array();
+    public $relationMap = array();
     /** Maps alias names to parent alias names. */
-    private $_parentAliasMap = array();
+    public $parentAliasMap = array();
     /** Maps column names in the result set to field names for each class. */
-    private $_fieldMappings = array();
+    public $fieldMappings = array();
     /** Maps column names in the result set to the alias to use in the mapped result. */
-    private $_scalarMappings = array();
+    public $scalarMappings = array();
     /** Maps column names in the result set to the alias they belong to. */
-    private $_columnOwnerMap = array();
+    public $columnOwnerMap = array();
     /** List of columns in the result set that are used as discriminator columns. */
-    private $_discriminatorColumns = array();
+    public $discriminatorColumns = array();
     /** Maps alias names to field names that should be used for indexing. */
-    private $_indexByMap = array();
+    public $indexByMap = array();
     /** A list of columns that should be ignored/skipped during hydration. */
-    private $_ignoredColumns = array();
+    public $ignoredColumns = array();
 
     /**
      *
@@ -58,55 +62,55 @@ class ResultSetMapping
      */
     public function addEntityResult($class, $alias)
     {
-        $this->_aliasMap[$alias] = $class;
+        $this->aliasMap[$alias] = $class;
     }
 
     public function setDiscriminatorColumn($className, $alias, $discrColumn)
     {
-        $this->_discriminatorColumns[$className] = $discrColumn;
-        $this->_columnOwnerMap[$discrColumn] = $alias;
+        $this->discriminatorColumns[$className] = $discrColumn;
+        $this->columnOwnerMap[$discrColumn] = $alias;
     }
 
     public function getDiscriminatorColumn($className)
     {
-        return isset($this->_discriminatorColumns[$className]) ?
-                $this->_discriminatorColumns[$className] : null;
+        return isset($this->discriminatorColumns[$className]) ?
+                $this->discriminatorColumns[$className] : null;
     }
 
     public function addIndexBy($alias, $fieldName)
     {
-        $this->_indexByMap[$alias] = $fieldName;
+        $this->indexByMap[$alias] = $fieldName;
     }
 
     public function hasIndexBy($alias)
     {
-        return isset($this->_indexByMap[$alias]);
+        return isset($this->indexByMap[$alias]);
     }
 
     public function getIndexByField($alias)
     {
-        return $this->_indexByMap[$alias];
+        return $this->indexByMap[$alias];
     }
 
     public function isFieldResult($columnName)
     {
-        return isset($this->_fieldMappings[$columnName]);
+        return isset($this->fieldMappings[$columnName]);
     }
 
     public function addFieldResult($alias, $columnName, $fieldName)
     {
-        $this->_fieldMappings[$columnName] = $fieldName;
-        $this->_columnOwnerMap[$columnName] = $alias;
-        if ( ! $this->_isMixed && $this->_scalarMappings) {
-            $this->_isMixed = true;
+        $this->fieldMappings[$columnName] = $fieldName;
+        $this->columnOwnerMap[$columnName] = $alias;
+        if ( ! $this->isMixed && $this->scalarMappings) {
+            $this->isMixed = true;
         }
     }
 
     public function addJoinedEntityResult($class, $alias, $parentAlias, $relation)
     {
-        $this->_aliasMap[$alias] = $class;
-        $this->_parentAliasMap[$alias] = $parentAlias;
-        $this->_relationMap[$alias] = $relation;
+        $this->aliasMap[$alias] = $class;
+        $this->parentAliasMap[$alias] = $parentAlias;
+        $this->relationMap[$alias] = $relation;
     }
 
     /*public function isDiscriminatorColumn($columnName)
@@ -116,9 +120,9 @@ class ResultSetMapping
 
     public function addScalarResult($columnName, $alias)
     {
-        $this->_scalarMappings[$columnName] = $alias;
-        if ( ! $this->_isMixed && $this->_fieldMappings) {
-            $this->_isMixed = true;
+        $this->scalarMappings[$columnName] = $alias;
+        if ( ! $this->isMixed && $this->fieldMappings) {
+            $this->isMixed = true;
         }
     }    
 
@@ -127,7 +131,7 @@ class ResultSetMapping
      */
     public function isScalarResult($columnName)
     {
-        return isset($this->_scalarMappings[$columnName]);
+        return isset($this->scalarMappings[$columnName]);
     }
 
     /**
@@ -136,7 +140,7 @@ class ResultSetMapping
      */
     public function getClass($alias)
     {
-        return $this->_aliasMap[$alias];
+        return $this->aliasMap[$alias];
     }
 
     /**
@@ -147,7 +151,7 @@ class ResultSetMapping
      */
     public function getScalarAlias($columnName)
     {
-        return $this->_scalarMappings[$columnName];
+        return $this->scalarMappings[$columnName];
     }
 
     /**
@@ -157,17 +161,17 @@ class ResultSetMapping
      */
     public function getOwningClass($columnName)
     {
-        return $this->_aliasMap[$this->_columnOwnerMap[$columnName]];
+        return $this->aliasMap[$this->columnOwnerMap[$columnName]];
     }
 
     public function getRelation($alias)
     {
-        return $this->_relationMap[$alias];
+        return $this->relationMap[$alias];
     }
 
     public function isRelation($alias)
     {
-        return isset($this->_relationMap[$alias]);
+        return isset($this->relationMap[$alias]);
     }
 
     /**
@@ -177,7 +181,7 @@ class ResultSetMapping
      */
     public function getEntityAlias($columnName)
     {
-        return $this->_columnOwnerMap[$columnName];
+        return $this->columnOwnerMap[$columnName];
     }
 
     /**
@@ -187,12 +191,12 @@ class ResultSetMapping
      */
     public function getParentAlias($alias)
     {
-        return $this->_parentAliasMap[$alias];
+        return $this->parentAliasMap[$alias];
     }
 
     public function hasParentAlias($alias)
     {
-        return isset($this->_parentAliasMap[$alias]);
+        return isset($this->parentAliasMap[$alias]);
     }
 
     /**
@@ -203,32 +207,32 @@ class ResultSetMapping
      */
     public function getFieldName($columnName)
     {
-        return $this->_fieldMappings[$columnName];
+        return $this->fieldMappings[$columnName];
     }
 
     public function getAliasMap()
     {
-        return $this->_aliasMap;
+        return $this->aliasMap;
     }
 
     public function getEntityResultCount()
     {
-        return count($this->_aliasMap);
+        return count($this->aliasMap);
     }
 
     public function isMixedResult()
     {
-        return $this->_isMixed;
+        return $this->isMixed;
     }
 
     public function addIgnoredColumn($columnName)
     {
-        $this->_ignoredColumns[$columnName] = true;
+        $this->ignoredColumns[$columnName] = true;
     }
 
     public function isIgnoredColumn($columnName)
     {
-        return isset($this->_ignoredColumns[$columnName]);
+        return isset($this->ignoredColumns[$columnName]);
     }
 }
 

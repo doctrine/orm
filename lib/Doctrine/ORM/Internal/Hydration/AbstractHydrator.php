@@ -174,26 +174,26 @@ abstract class AbstractHydrator
         foreach ($data as $key => $value) {
             // Parse each column name only once. Cache the results.
             if ( ! isset($cache[$key])) {
-                if ($this->_resultSetMapping->isIgnoredColumn($key)) {
+                if (isset($this->_resultSetMapping->ignoredColumns[$key])) {
                     $cache[$key] = false;
-                } else if ($this->_resultSetMapping->isScalarResult($key)) {
+                } else if (isset($this->_resultSetMapping->scalarMappings[$key])) {
                     $cache[$key]['fieldName'] = $this->_resultSetMapping->getScalarAlias($key);
                     $cache[$key]['isScalar'] = true;
-                } else if ($this->_resultSetMapping->isFieldResult($key)) {
+                } else if (isset($this->_resultSetMapping->fieldMappings[$key])) {
                     $classMetadata = $this->_resultSetMapping->getOwningClass($key);
-                    $fieldName = $this->_resultSetMapping->getFieldName($key);
+                    $fieldName = $this->_resultSetMapping->fieldMappings[$key];
                     $classMetadata = $this->_lookupDeclaringClass($classMetadata, $fieldName);
                     $cache[$key]['fieldName'] = $fieldName;
                     $cache[$key]['isScalar'] = false;
                     $cache[$key]['type'] = Type::getType($classMetadata->getTypeOfField($fieldName));
                     $cache[$key]['isIdentifier'] = $classMetadata->isIdentifier($fieldName);
-                    $cache[$key]['dqlAlias'] = $this->_resultSetMapping->getEntityAlias($key);
+                    $cache[$key]['dqlAlias'] = $this->_resultSetMapping->columnOwnerMap[$key];
                 } else {
                     // Discriminator column
                     $cache[$key]['isDiscriminator'] = true;
                     $cache[$key]['isScalar'] = false;
                     $cache[$key]['fieldName'] = $key;
-                    $cache[$key]['dqlAlias'] = $this->_resultSetMapping->getEntityAlias($key);
+                    $cache[$key]['dqlAlias'] = $this->_resultSetMapping->columnOwnerMap[$key];
                 }
             }
 
@@ -245,21 +245,20 @@ abstract class AbstractHydrator
         foreach ($data as $key => $value) {
             // Parse each column name only once. Cache the results.
             if ( ! isset($cache[$key])) {
-                if ($this->_resultSetMapping->isIgnoredColumn($key)) {
+                if (isset($this->_resultSetMapping->ignoredColumns[$key])) {
                     $cache[$key] = false;
                     continue;
-                } else if ($this->_resultSetMapping->isScalarResult($key)) {
-                    $cache[$key]['fieldName'] = $this->_resultSetMapping->getScalarAlias($key);
+                } else if (isset($this->_resultSetMapping->scalarMappings[$key])) {
+                    $cache[$key]['fieldName'] = $this->_resultSetMapping->scalarMappings[$key];
                     $cache[$key]['isScalar'] = true;
                 } else {
                     $classMetadata = $this->_resultSetMapping->getOwningClass($key);
-                    $fieldName = $this->_resultSetMapping->getFieldName($key);
+                    $fieldName = $this->_resultSetMapping->fieldMappings[$key];
                     $classMetadata = $this->_lookupDeclaringClass($classMetadata, $fieldName);
-                    //$fieldName = $classMetadata->getFieldNameForLowerColumnName($columnName);
                     $cache[$key]['fieldName'] = $fieldName;
                     $cache[$key]['isScalar'] = false;
                     $cache[$key]['type'] = Type::getType($classMetadata->getTypeOfField($fieldName));
-                    $cache[$key]['dqlAlias'] = $this->_resultSetMapping->getEntityAlias($key);
+                    $cache[$key]['dqlAlias'] = $this->_resultSetMapping->columnOwnerMap[$key];
                 }
             }
             
@@ -284,8 +283,8 @@ abstract class AbstractHydrator
      */
     protected function _getCustomIndexField($alias)
     {
-        return $this->_resultSetMapping->hasIndexBy($alias) ?
-                $this->_resultSetMapping->getIndexByField($alias) : null;
+        return isset($this->_resultSetMapping->indexByMap[$alias]) ?
+                $this->_resultSetMapping->indexByMap[$alias] : null;
     }
 
     /**
