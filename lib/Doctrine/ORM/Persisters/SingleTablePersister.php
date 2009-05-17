@@ -31,7 +31,7 @@ namespace Doctrine\ORM\Persisters;
  * @link        www.doctrine-project.org
  * @since       2.0
  */
-class SingleTablePersister extends AbstractEntityPersister
+class SingleTablePersister extends StandardEntityPersister
 {
     /** @override */
     protected function _prepareData($entity, array &$result, $isInsert = false)
