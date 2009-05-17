@@ -41,6 +41,8 @@ use Doctrine\ORM\EntityManager;
  * @since       2.0
  * @version     $Revision$
  * @author      Roman Borschel <roman@code-factory.org>
+ * @internal    This class contains performance-critical code. Work with care and
+ *              regularly run the ORM performance tests.
  */
 class UnitOfWork implements PropertyChangedListener
 {
@@ -93,8 +95,7 @@ class UnitOfWork implements PropertyChangedListener
     /**
      * Map of the original entity data of entities fetched from the database.
      * Keys are object ids. This is used for calculating changesets at commit time.
-     * Note that PHPs "copy-on-write" behavior helps a lot with the potentially
-     * high memory usage.
+     * Note that PHPs "copy-on-write" behavior helps a lot with memory usage.
      *
      * @var array
      */
@@ -102,7 +103,7 @@ class UnitOfWork implements PropertyChangedListener
 
     /**
      * Map of data changes. Keys are object ids.
-     * Filled at the beginning of a commit() of the UnitOfWork and cleaned at the end.
+     * Filled at the beginning of a commit of the UnitOfWork and cleaned at the end.
      *
      * @var array
      */
@@ -1304,21 +1305,21 @@ class UnitOfWork implements PropertyChangedListener
      * @param string $className  The name of the entity class.
      * @param array $data  The data for the entity.
      * @return object
-     * @internal Performance-sensitive method.
+     * @internal Performance-sensitive method. Run the performance test suites when
+     *           making modifications.
      */
-    public function createEntity($className, array $data, $query = null)
+    public function createEntity($className, array $data, $hints = array())
     {
         $class = $this->_em->getClassMetadata($className);
 
-        $id = array();
-        if ($class->isIdentifierComposite()) {
-            $identifierFieldNames = $class->identifier;
-            foreach ($identifierFieldNames as $fieldName) {
+        if ($class->isIdentifierComposite) {
+            $id = array();
+            foreach ($class->identifier as $fieldName) {
                 $id[] = $data[$fieldName];
             }
             $idHash = implode(' ', $id);
         } else {
-            $id = array($data[$class->getSingleIdentifierFieldName()]);
+            $id = array($data[$class->identifier[0]]);
             $idHash = $id[0];
         }
         $entity = $this->tryGetByIdHash($idHash, $class->rootEntityName);
@@ -1347,7 +1348,7 @@ class UnitOfWork implements PropertyChangedListener
                 if (isset($class->reflFields[$field])) {
                     $currentValue = $class->reflFields[$field]->getValue($entity);
                     if ( ! isset($this->_originalEntityData[$oid][$field]) ||
-                        $currentValue == $this->_originalEntityData[$oid][$field]) {
+                            $currentValue == $this->_originalEntityData[$oid][$field]) {
                         $class->reflFields[$field]->setValue($entity, $value);
                     }
                 }

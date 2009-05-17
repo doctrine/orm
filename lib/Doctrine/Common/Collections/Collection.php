@@ -96,16 +96,19 @@ class Collection implements Countable, IteratorAggregate, ArrayAccess
     }
 
     /**
-     * Removes an element with a specific key from the collection.
+     * Removes an element with a specific key/index from the collection.
      *
      * @param mixed $key
      * @return mixed
      */
     public function remove($key)
     {
-        $removed = $this->_elements[$key];
-        unset($this->_elements[$key]);
-        return $removed;
+        if (isset($this->_elements[$key])) {
+            $removed = $this->_elements[$key];
+            unset($this->_elements[$key]);
+            return $removed;
+        }
+        return null;
     }
 
     /**

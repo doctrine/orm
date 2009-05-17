@@ -889,15 +889,19 @@ class Parser
 
         $identificationVariable = $this->_IdentificationVariable();
         if ( ! isset($this->_queryComponents[$identificationVariable])) {
-            $this->syntaxError("Identification variable.");
+            $this->syntaxError("Identification variable '$identificationVariable' was not declared.");
         }
+
         $qComp = $this->_queryComponents[$identificationVariable];
         $parts[] = $identificationVariable;
 
         $class = $qComp['metadata'];
 
         if ( ! $this->_lexer->isNextToken('.')) {
-            $this->syntaxError();
+            if ($class->isIdentifierComposite) {
+                $this->syntaxError();
+            }
+            $parts[] = $class->identifier[0];
         }
         
         while ($this->_lexer->isNextToken('.')) {
@@ -916,6 +920,11 @@ class Parser
             }
             $parts[] = $part;
         }
+
+        /*$lastPart = $parts[count($parts) - 1];
+        if ($class->hasAssociation($lastPart)) {
+            
+        }*/
 
         $pathExpr = new AST\StateFieldPathExpression($parts);
 

@@ -36,7 +36,8 @@ class ObjectHydrator extends AbstractHydrator
     /*
      * These two properties maintain their values between hydration runs.
      */
-    private $_classMetadatas = array();
+    /* Class entries */
+    private $_ce = array();
     private $_discriminatorMap = array();
 
     /*
@@ -72,16 +73,17 @@ class ObjectHydrator extends AbstractHydrator
             $this->_resultPointers[$dqlAlias] = array();
             $this->_idTemplate[$dqlAlias] = '';
 
-            if ( ! isset($this->_classMetadatas[$class->name])) {
-                $this->_classMetadatas[$class->name] = $class;
+            if ( ! isset($this->_ce[$class->name])) {
+                $this->_ce[$class->name] = $class;
                 // Gather class descriptors and discriminator values of subclasses, if necessary
                 if ($class->isInheritanceTypeSingleTable() || $class->isInheritanceTypeJoined()) {
                     $this->_discriminatorMap[$class->name][$class->discriminatorValue] = $class->name;
                     foreach (array_merge($class->parentClasses, $class->subClasses) as $className) {
                         $otherClass = $this->_em->getClassMetadata($className);
                         $value = $otherClass->discriminatorValue;
-                        $this->_classMetadatas[$className] = $otherClass;
+                        $this->_ce[$className] = $otherClass;
                         $this->_discriminatorMap[$class->name][$value] = $className;
+                        $this->_discriminatorMap[$className][$value] = $className;
                     }
                 }
             }
@@ -89,14 +91,12 @@ class ObjectHydrator extends AbstractHydrator
             // Remember which classes are "fetch joined"
             if (isset($this->_rsm->relationMap[$dqlAlias])) {
                 $assoc = $this->_rsm->relationMap[$dqlAlias];
-                $this->_fetchedAssociations[$assoc->getSourceEntityName()][$assoc->sourceFieldName] = true;
-                if ($mappedByField = $assoc->mappedByFieldName) {
-                    $this->_fetchedAssociations[$assoc->targetEntityName][$mappedByField] = true;
+                $this->_fetchedAssociations[$assoc->sourceEntityName][$assoc->sourceFieldName] = true;
+                if ($assoc->mappedByFieldName) {
+                    $this->_fetchedAssociations[$assoc->targetEntityName][$assoc->mappedByFieldName] = true;
                 } else if ($inverseAssoc = $this->_em->getClassMetadata($assoc->targetEntityName)
                         ->inverseMappings[$assoc->sourceFieldName]) {
-                    $this->_fetchedAssociations[$assoc->targetEntityName][
-                        $inverseAssoc->sourceFieldName
-                    ] = true;
+                    $this->_fetchedAssociations[$assoc->targetEntityName][$inverseAssoc->sourceFieldName] = true;
                 }
             }
         }
@@ -110,12 +110,8 @@ class ObjectHydrator extends AbstractHydrator
     protected function _hydrateAll()
     {
         $s = microtime(true);
-        
-        if ($this->_rsm->isMixed) {
-            $result = array();
-        } else {
-            $result = new Collection;
-        }
+
+        $result = $this->_rsm->isMixed ? array() : new Collection;
 
         $cache = array();
         while ($data = $this->_stmt->fetch(PDO::FETCH_ASSOC)) {
@@ -131,11 +127,10 @@ class ObjectHydrator extends AbstractHydrator
         // Clean up
         $this->_collections = array();
         $this->_initializedRelations = array();
-        $this->_classMetadatas = array();
 
         $e = microtime(true);
 
-        echo 'Hydration took: ' . ($e - $s) . PHP_EOL;
+        echo 'Hydration took: ' . ($e - $s) . ' for '.count($result).' records' . PHP_EOL;
 
         return $result;
     }
@@ -148,6 +143,8 @@ class ObjectHydrator extends AbstractHydrator
      * @param Collection $coll  The element.
      * @param boolean|integer $index  Index of the element in the collection.
      * @param string $dqlAlias
+     * @todo May be worth to try to inline this method (through first reducing the
+     *       calls of this method to 1).
      */
     private function updateResultPointer(&$coll, $index, $dqlAlias)
     {
@@ -175,19 +172,6 @@ class ObjectHydrator extends AbstractHydrator
 
     /**
      *
-     * @param string $component
-     * @return PersistentCollection
-     * @todo Consider inlining this method.
-     */
-    private function getCollection($component)
-    {
-        $coll = new PersistentCollection($this->_em, $component);
-        $this->_collections[] = $coll;
-        return $coll;
-    }
-
-    /**
-     *
      * @param object $entity
      * @param string $name
      * @todo Consider inlining this method.
@@ -195,11 +179,12 @@ class ObjectHydrator extends AbstractHydrator
     private function initRelatedCollection($entity, $name)
     {
         $oid = spl_object_hash($entity);
-        $classMetadata = $this->_classMetadatas[get_class($entity)];
+        $classMetadata = $this->_ce[get_class($entity)];
 
-        $relation = $classMetadata->getAssociationMapping($name);
+        $relation = $classMetadata->associationMappings[$name];
         $relatedClass = $this->_em->getClassMetadata($relation->targetEntityName);
-        $coll = $this->getCollection($relatedClass);
+        $coll = new PersistentCollection($this->_em, $relatedClass);
+        $this->_collections[] = $coll;
         $coll->setOwner($entity, $relation);
 
         $classMetadata->reflFields[$name]->setValue($entity, $coll);
@@ -219,12 +204,18 @@ class ObjectHydrator extends AbstractHydrator
      */
     private function isIndexKeyInUse($entity, $assocField, $indexField)
     {
-        return $this->_classMetadatas[get_class($entity)]
+        return $this->_ce[get_class($entity)]
                 ->reflFields[$assocField]
                 ->getValue($entity)
                 ->containsKey($indexField);
     }
 
+    /**
+     *
+     * @param <type> $coll
+     * @return <type>
+     * @todo Consider inlining this method, introducing $coll->lastKey().
+     */
     private function getLastKey($coll)
     {
         // Check needed because of mixed results.
@@ -249,19 +240,19 @@ class ObjectHydrator extends AbstractHydrator
 
         // Properly initialize any unfetched associations, if partial objects are not allowed.
         if ( ! $this->_allowPartialObjects) {
-            foreach ($this->_classMetadatas[$className]->associationMappings as $field => $assoc) {
+            foreach ($this->_ce[$className]->associationMappings as $field => $assoc) {
                 if ( ! isset($this->_fetchedAssociations[$className][$field])) {
                     if ($assoc->isOneToOne()) {
                         if ($assoc->isLazilyFetched()) {
                             // Inject proxy
                             $proxy = $this->_em->getProxyGenerator()->getAssociationProxy($entity, $assoc);
-                            $this->_classMetadatas[$className]->reflFields[$field]->setValue($entity, $proxy);
+                            $this->_ce[$className]->reflFields[$field]->setValue($entity, $proxy);
                         } else {
-                            //TODO: Schedule for eager fetching?
+                            //TODO: Schedule for eager fetching
                         }
                     } else {
                         // Inject collection
-                        $this->_classMetadatas[$className]->reflFields[$field]
+                        $this->_ce[$className]->reflFields[$field]
                             ->setValue($entity, new PersistentCollection(
                                 $this->_em,
                                 $this->_em->getClassMetadata($assoc->targetEntityName)
@@ -275,20 +266,6 @@ class ObjectHydrator extends AbstractHydrator
     }
 
     /**
-     * Checks whether a field on an entity has a non-null value.
-     *
-     * @param object $entity
-     * @param string $field
-     * @return boolean
-     */
-    private function isFieldSet($entity, $field)
-    {
-        return $this->_classMetadatas[get_class($entity)]
-                ->reflFields[$field]
-                ->getValue($entity) !== null;
-    }
-
-    /**
      * Sets a related element.
      *
      * @param object $entity1
@@ -297,13 +274,13 @@ class ObjectHydrator extends AbstractHydrator
      */
     private function setRelatedElement($entity1, $property, $entity2)
     {
-        $classMetadata1 = $this->_classMetadatas[get_class($entity1)];
+        $classMetadata1 = $this->_ce[get_class($entity1)];
         $classMetadata1->reflFields[$property]->setValue($entity1, $entity2);
         $this->_uow->setOriginalEntityProperty(spl_object_hash($entity1), $property, $entity2);
-        $relation = $classMetadata1->getAssociationMapping($property);
+        $relation = $classMetadata1->associationMappings[$property];
         if ($relation->isOneToOne()) {
-            $targetClass = $this->_classMetadatas[$relation->targetEntityName];
-            if ($relation->isOwningSide()) {
+            $targetClass = $this->_ce[$relation->targetEntityName];
+            if ($relation->isOwningSide) {
                 // If there is an inverse mapping on the target class its bidirectional
                 if (isset($targetClass->inverseMappings[$property])) {
                     $sourceProp = $targetClass->inverseMappings[$fieldName]->sourceFieldName;
@@ -351,9 +328,9 @@ class ObjectHydrator extends AbstractHydrator
                 if ($this->_rsm->isMixed && isset($this->_rootAliases[$parent])) {
                     $key = key(reset($this->_resultPointers));
                     // TODO: Exception if $key === null ?
-                    $baseElement =& $this->_resultPointers[$parent][$key];
+                    $baseElement = $this->_resultPointers[$parent][$key];
                 } else if (isset($this->_resultPointers[$parent])) {
-                    $baseElement =& $this->_resultPointers[$parent];
+                    $baseElement = $this->_resultPointers[$parent];
                 } else {
                     unset($this->_resultPointers[$dqlAlias]); // Ticket #1228
                     continue;
@@ -377,50 +354,50 @@ class ObjectHydrator extends AbstractHydrator
 
                             // If it's a bi-directional many-to-many, also initialize the reverse collection.
                             if ($relation->isManyToMany()) {
-                                if ($relation->isOwningSide()) {
-                                    $reverseAssoc = $this->_classMetadatas[$entityName]->inverseMappings[$relationAlias];
-                                    if ($reverseAssoc) {
-                                        $this->initRelatedCollection($element, $reverseAssoc->sourceFieldName);
-                                    }
-                                } else if ($mappedByField = $relation->mappedByFieldName) {
-                                    $this->initRelatedCollection($element, $mappedByField);
+                                if ($relation->isOwningSide && isset($this->_ce[$entityName]->inverseMappings[$relationAlias])) {
+                                    $this->initRelatedCollection($element, $this->_ce[$entityName]
+                                            ->inverseMappings[$relationAlias]->sourceFieldName);
+                                } else if ($relation->mappedByFieldName) {
+                                    $this->initRelatedCollection($element, $relation->mappedByFieldName);
                                 }
                             }
 
                             if ($field = $this->_getCustomIndexField($dqlAlias)) {
-                                $indexValue = $this->_classMetadatas[$entityName]
+                                $indexValue = $this->_ce[$entityName]
                                     ->reflFields[$field]
                                     ->getValue($element);
-                                $this->_classMetadatas[$parentClass]
+                                $this->_ce[$parentClass]
                                     ->reflFields[$relationAlias]
                                     ->getValue($baseElement)
                                     ->set($indexValue, $element);
                             } else {
-                                $this->_classMetadatas[$parentClass]
+                                $this->_ce[$parentClass]
                                     ->reflFields[$relationAlias]
                                     ->getValue($baseElement)
                                     ->add($element);
                             }
                             $this->_identifierMap[$path][$id[$parent]][$id[$dqlAlias]] = $this->getLastKey(
-                                    $this->_classMetadatas[$parentClass]
+                                    $this->_ce[$parentClass]
                                         ->reflFields[$relationAlias]
                                         ->getValue($baseElement)
                                     );
                         }
-                    } else if ( ! $this->isFieldSet($baseElement, $relationAlias)) {
-                        $coll = new PersistentCollection($this->_em, $this->_classMetadatas[$entityName]);
+                    } else if ( ! $this->_ce[$parentClass]->reflFields[$relationAlias]->getValue($baseElement)) {
+                        $coll = new PersistentCollection($this->_em, $this->_ce[$entityName]);
                         $this->_collections[] = $coll;
                         $this->setRelatedElement($baseElement, $relationAlias, $coll);
                     }
                 } else {
-                    if ( ! isset($nonemptyComponents[$dqlAlias]) && ! $this->isFieldSet($baseElement, $relationAlias)) {
-                        $this->setRelatedElement($baseElement, $relationAlias, null);
-                    } else if ( ! $this->isFieldSet($baseElement, $relationAlias)) {
-                        $this->setRelatedElement($baseElement, $relationAlias, $this->getEntity($data, $entityName));
+                    if ( ! $this->_ce[$parentClass]->reflFields[$relationAlias]->getValue($baseElement)) {
+                        if ( ! isset($nonemptyComponents[$dqlAlias])) {
+                            //$this->setRelatedElement($baseElement, $relationAlias, null);
+                        } else {
+                            $this->setRelatedElement($baseElement, $relationAlias, $this->getEntity($data, $entityName));
+                        }
                     }
                 }
 
-                $coll = $this->_classMetadatas[$parentClass]
+                $coll = $this->_ce[$parentClass]
                         ->reflFields[$relationAlias]
                         ->getValue($baseElement);
 
@@ -437,13 +414,13 @@ class ObjectHydrator extends AbstractHydrator
                     if ($field = $this->_getCustomIndexField($dqlAlias)) {
                         if ($this->_rsm->isMixed) {
                             $result[] = array(
-                                $this->_classMetadatas[$entityName]
+                                $this->_ce[$entityName]
                                         ->reflFields[$field]
                                         ->getValue($element) => $element
                             );
                             ++$this->_resultCounter;
                         } else {
-                            $result->set($element, $this->_classMetadatas[$entityName]
+                            $result->set($element, $this->_ce[$entityName]
                                     ->reflFields[$field]
                                     ->getValue($element));
                         }

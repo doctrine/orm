@@ -329,7 +329,7 @@ class OraclePlatform extends AbstractPlatform
      */
     public function getSetTransactionIsolationSql($level)
     {
-        return 'ALTER SESSION ISOLATION LEVEL ' . $this->_getTransactionIsolationLevelSql($level);
+        return 'SET TRANSACTION ISOLATION LEVEL ' . $this->_getTransactionIsolationLevelSql($level);
     }
     
     /**
@@ -342,8 +342,8 @@ class OraclePlatform extends AbstractPlatform
     {
         switch ($level) {
             case Doctrine_DBAL_Connection::TRANSACTION_READ_UNCOMMITTED:
-                return 'READ COMMITTED';
             case Doctrine_DBAL_Connection::TRANSACTION_READ_COMMITTED:
+                return 'READ COMMITTED';
             case Doctrine_DBAL_Connection::TRANSACTION_REPEATABLE_READ:
             case Doctrine_DBAL_Connection::TRANSACTION_SERIALIZABLE:
                 return 'SERIALIZABLE';

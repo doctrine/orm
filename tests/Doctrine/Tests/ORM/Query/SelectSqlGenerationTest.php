@@ -235,4 +235,31 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
 
         $connMock->setDatabasePlatform($orgPlatform);
     }
+
+    public function testExistsExpressionInWhereWithCorrelatedSubquery()
+    {
+        $this->assertSqlGeneration(
+            'SELECT u.id FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE EXISTS (SELECT p.phonenumber FROM Doctrine\Tests\Models\CMS\CmsPhonenumber p WHERE p.phonenumber = u.id)',
+            'SELECT c0_.id AS id0 FROM cms_users c0_ WHERE EXISTS (SELECT c1_.phonenumber FROM cms_phonenumbers c1_ WHERE c1_.phonenumber = c0_.id)'
+        );
+    }
+
+    public function testExistsExpressionInWhereCorrelatedSubqueryAssocCondition()
+    {
+        $this->assertSqlGeneration(
+            // DQL
+            // The result of this query consists of all employees whose spouses are also employees.
+            'SELECT DISTINCT emp FROM Doctrine\Tests\Models\CMS\CmsEmployee emp
+                WHERE EXISTS (
+                    SELECT spouseEmp
+                    FROM Doctrine\Tests\Models\CMS\CmsEmployee spouseEmp
+                    WHERE spouseEmp = emp.spouse)',
+            // SQL
+            'SELECT DISTINCT c0_.id AS id0, c0_.name AS name1 FROM cms_employees c0_'
+                . ' WHERE EXISTS ('
+                    . 'SELECT c1_.id FROM cms_employees c1_ WHERE c1_.id = c0_.spouse_id'
+                    . ')'
+
+        );
+    }
 }

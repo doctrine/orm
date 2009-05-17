@@ -165,7 +165,7 @@ abstract class AbstractHydrator
      * the values applied.
      *
      * @return array  An array with all the fields (name => value) of the data row,
-     *                grouped by their component (alias).
+     *                grouped by their component alias.
      */
     protected function _gatherRowData(&$data, &$cache, &$id, &$nonemptyComponents)
     {
@@ -177,7 +177,7 @@ abstract class AbstractHydrator
                 if (isset($this->_rsm->ignoredColumns[$key])) {
                     $cache[$key] = false;
                 } else if (isset($this->_rsm->scalarMappings[$key])) {
-                    $cache[$key]['fieldName'] = $this->_rsm->getScalarAlias($key);
+                    $cache[$key]['fieldName'] = $this->_rsm->scalarMappings[$key];
                     $cache[$key]['isScalar'] = true;
                 } else if (isset($this->_rsm->fieldMappings[$key])) {
                     $classMetadata = $this->_rsm->getOwningClass($key);
@@ -283,8 +283,7 @@ abstract class AbstractHydrator
      */
     protected function _getCustomIndexField($alias)
     {
-        return isset($this->_rsm->indexByMap[$alias]) ?
-                $this->_rsm->indexByMap[$alias] : null;
+        return isset($this->_rsm->indexByMap[$alias]) ? $this->_rsm->indexByMap[$alias] : null;
     }
 
     /**

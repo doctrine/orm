@@ -130,7 +130,7 @@ class SqlWalker
             }
             //if ($this->_query->getHydrationMode() == \Doctrine\ORM\Query::HYDRATE_OBJECT) {
             if ($class->isInheritanceTypeSingleTable() || $class->isInheritanceTypeJoined()) {
-                $tblAlias = $this->getSqlTableAlias($class->getTableName());
+                $tblAlias = $this->getSqlTableAlias($class->getTableName() . $dqlAlias);
                 $discrColumn = $class->discriminatorColumn;
                 $columnAlias = $this->getSqlColumnAlias($discrColumn['name']);
                 $sql .= ", $tblAlias." . $discrColumn['name'] . ' AS ' . $columnAlias;
@@ -158,7 +158,7 @@ class SqlWalker
         $this->_currentRootAlias = $dqlAlias;
 
         $sql .= $rangeDecl->getClassMetadata()->getTableName() . ' '
-                . $this->getSqlTableAlias($rangeDecl->getClassMetadata()->getTableName());
+                . $this->getSqlTableAlias($rangeDecl->getClassMetadata()->getTableName() . $dqlAlias);
 
         foreach ($firstIdentificationVarDecl->getJoinVariableDeclarations() as $joinVarDecl) {
             $sql .= $this->walkJoinVariableDeclaration($joinVarDecl);
@@ -204,7 +204,7 @@ class SqlWalker
         $parts = $pathExpr->getParts();
         $qComp = $this->_queryComponents[$parts[0]];
         $columnName = $qComp['metadata']->getColumnName($parts[1]);
-        $sql = $this->getSqlTableAlias($qComp['metadata']->getTableName()) . '.' . $columnName;
+        $sql = $this->getSqlTableAlias($qComp['metadata']->getTableName() . $parts[0]) . '.' . $columnName;
         $sql .= $orderByItem->isAsc() ? ' ASC' : ' DESC';
         return $sql;
     }
@@ -244,8 +244,8 @@ class SqlWalker
         $targetQComp = $this->_queryComponents[$joinedDqlAlias];
         
         $targetTableName = $targetQComp['metadata']->getTableName();
-        $targetTableAlias = $this->getSqlTableAlias($targetTableName);
-        $sourceTableAlias = $this->getSqlTableAlias($sourceQComp['metadata']->getTableName());
+        $targetTableAlias = $this->getSqlTableAlias($targetTableName . $joinedDqlAlias);
+        $sourceTableAlias = $this->getSqlTableAlias($sourceQComp['metadata']->getTableName() . $joinAssocPathExpr->getIdentificationVariable());
 
         // Ensure we got the owning side, since it has all mapping info
         if ( ! $targetQComp['relation']->isOwningSide()) {
@@ -346,7 +346,7 @@ class SqlWalker
                     }
                 }
 
-                $sqlTableAlias = $this->getSqlTableAlias($class->getTableName());
+                $sqlTableAlias = $this->getSqlTableAlias($class->getTableName() . $dqlAlias);
                 $columnName = $class->getColumnName($fieldName);
                 $columnAlias = $this->getSqlColumnAlias($columnName);
                 $sql .= $sqlTableAlias . '.' . $columnName . ' AS ' . $columnAlias;
@@ -389,7 +389,7 @@ class SqlWalker
                 $this->_selectedClasses[$dqlAlias] = $class;
             }
 
-            $sqlTableAlias = $this->getSqlTableAlias($class->getTableName());
+            $sqlTableAlias = $this->getSqlTableAlias($class->getTableName() . $dqlAlias);
 
             // Gather all fields
             $fieldMappings = $class->fieldMappings;
@@ -464,7 +464,7 @@ class SqlWalker
         $firstIdentificationVarDecl = $identificationVarDecls[0];
         $rangeDecl = $firstIdentificationVarDecl->getRangeVariableDeclaration();
         $sql .= $rangeDecl->getClassMetadata()->getTableName() . ' '
-                . $this->getSqlTableAlias($rangeDecl->getClassMetadata()->getTableName());
+                . $this->getSqlTableAlias($rangeDecl->getClassMetadata()->getTableName() . $rangeDecl->getAliasIdentificationVariable());
 
         foreach ($firstIdentificationVarDecl->getJoinVariableDeclarations() as $joinVarDecl) {
             $sql .= $this->walkJoinVariableDeclaration($joinVarDecl);
@@ -510,8 +510,12 @@ class SqlWalker
             }
             $sql .= $this->walkAggregateExpression($expr) . ' AS dctrn__' . $alias;
         } else {
-            // $expr is IdentificationVariable
-            //...
+            // IdentificationVariable
+            // FIXME: Composite key support, or select all columns? Does that make
+            //       in a subquery?
+            $class = $this->_queryComponents[$expr]['metadata'];
+            $sql .= ' ' . $this->getSqlTableAlias($class->getTableName() . $expr) . '.';
+            $sql .= $class->getColumnName($class->identifier[0]);
         }
         return $sql;
     }
@@ -534,7 +538,7 @@ class SqlWalker
 
         $sql .= $aggExpression->getFunctionName() . '(';
         if ($aggExpression->isDistinct()) $sql .= 'DISTINCT ';
-        $sql .= $this->getSqlTableAlias($qComp['metadata']->getTableName()) . '.' . $columnName;
+        $sql .= $this->getSqlTableAlias($qComp['metadata']->getTableName() . $dqlAlias) . '.' . $columnName;
         $sql .= ')';
         return $sql;
     }
@@ -564,7 +568,7 @@ class SqlWalker
         $parts = $pathExpr->getParts();
         $qComp = $this->_queryComponents[$parts[0]];
         $columnName = $qComp['metadata']->getColumnName($parts[1]);
-        return $this->getSqlTableAlias($qComp['metadata']->getTableName()) . '.' . $columnName;
+        return $this->getSqlTableAlias($qComp['metadata']->getTableName() . $parts[0]) . '.' . $columnName;
     }
 
     /**
@@ -694,7 +698,8 @@ class SqlWalker
 
         $discrSql = $this->_generateDiscriminatorColumnConditionSql($this->_currentRootAlias);
         if ($discrSql) {
-            $sql .= ' AND ' . $discrSql;
+            if ($termsSql) $sql .= ' AND';
+            $sql .= ' ' . $discrSql;
         }
 
         return $sql;
@@ -719,7 +724,7 @@ class SqlWalker
                 }
                 $discrColumn = $class->discriminatorColumn;
                 if ($this->_useSqlTableAliases) {
-                    $sql .= $this->getSqlTableAlias($class->getTableName()) . '.';
+                    $sql .= $this->getSqlTableAlias($class->getTableName() . $dqlAlias) . '.';
                 }
                 $sql .= $discrColumn['name'] . ' IN (' . implode(', ', $values) . ')';
             } else if ($class->isInheritanceTypeJoined()) {
@@ -771,7 +776,7 @@ class SqlWalker
     {
         $sql = '';
         if ($existsExpr->isNot()) $sql .= ' NOT';
-        $sql .= ' EXISTS (' . $this->walkSubselect($existsExpr->getSubselect()) . ')';
+        $sql .= 'EXISTS (' . $this->walkSubselect($existsExpr->getSubselect()) . ')';
         return $sql;
     }
 
@@ -1033,10 +1038,16 @@ class SqlWalker
             }
 
             if ($this->_useSqlTableAliases) {
-                $sql .= $this->getSqlTableAlias($class->getTableName()) . '.';
+                $sql .= $this->getSqlTableAlias($class->getTableName() . $dqlAlias) . '.';
+            }
+
+            if (isset($class->associationMappings[$fieldName])) {
+                //FIXME: Composite key support, inverse side support
+                $sql .= $class->associationMappings[$fieldName]->joinColumns[0]['name'];
+            } else {
+                $sql .= $class->getColumnName($fieldName);
             }
             
-            $sql .= $class->getColumnName($fieldName);
         } else if ($pathExpr->isSimpleStateFieldAssociationPathExpression()) {
             throw DoctrineException::updateMe("Not yet implemented.");
         } else {

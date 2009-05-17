@@ -107,7 +107,7 @@ final class PersistentCollection extends \Doctrine\Common\Collections\Collection
     /**
      * The class descriptor of the owning entity.
      */
-    private $_ownerClass;
+    private $_typeClass;
 
     /**
      * Whether the collection is dirty and needs to be synchronized with the database
@@ -117,6 +117,8 @@ final class PersistentCollection extends \Doctrine\Common\Collections\Collection
      */
     private $_isDirty = false;
 
+    private $_initialized = false;
+
     /**
      * Creates a new persistent collection.
      */
@@ -125,7 +127,7 @@ final class PersistentCollection extends \Doctrine\Common\Collections\Collection
         parent::__construct($data);
         $this->_type = $class->name;
         $this->_em = $em;
-        $this->_ownerClass = $class;
+        $this->_typeClass = $class;
     }
 
     /**
@@ -137,7 +139,6 @@ final class PersistentCollection extends \Doctrine\Common\Collections\Collection
     public function setKeyField($fieldName)
     {
         $this->_keyField = $fieldName;
-        return $this;
     }
 
     /**
@@ -162,14 +163,14 @@ final class PersistentCollection extends \Doctrine\Common\Collections\Collection
         $this->_owner = $entity;
         $this->_association = $assoc;
         if ($assoc->isInverseSide()) {
-            // for sure bi-directional
-            $this->_backRefFieldName = $assoc->getMappedByFieldName();
+            // For sure bi-directional
+            $this->_backRefFieldName = $assoc->mappedByFieldName;
         } else {
-            $targetClass = $this->_em->getClassMetadata($assoc->getTargetEntityName());
-            if ($targetClass->hasInverseAssociationMapping($assoc->getSourceFieldName())) {
-                // bi-directional
-                $this->_backRefFieldName = $targetClass->inverseMappings[
-                        $assoc->getSourceFieldName()]->getSourceFieldName();
+            $targetClass = $this->_em->getClassMetadata($assoc->targetEntityName);
+            if (isset($targetClass->inverseMappings[$assoc->sourceFieldName])) {
+                // Bi-directional
+                $this->_backRefFieldName = $targetClass->inverseMappings[$assoc->sourceFieldName]
+                        ->sourceFieldName;
             }
         }
     }
@@ -192,7 +193,7 @@ final class PersistentCollection extends \Doctrine\Common\Collections\Collection
      */
     public function getOwnerClass()
     {
-        return $this->_ownerClass;
+        return $this->_typeClass;
     }
 
     /**
@@ -204,14 +205,14 @@ final class PersistentCollection extends \Doctrine\Common\Collections\Collection
      */
     public function remove($key)
     {
-        //TODO: Register collection as dirty with the UoW if necessary
-        //$this->_em->getUnitOfWork()->scheduleCollectionUpdate($this);
         //TODO: delete entity if shouldDeleteOrphans
         /*if ($this->_association->isOneToMany() && $this->_association->shouldDeleteOrphans()) {
             $this->_em->delete($removed);
         }*/
         $removed = parent::remove($key);
-        $this->_changed();
+        if ($removed) {
+            $this->_changed();
+        }
         return $removed;
     }
 
@@ -226,8 +227,9 @@ final class PersistentCollection extends \Doctrine\Common\Collections\Collection
     public function set($key, $value)
     {
         parent::set($key, $value);
-        //TODO: Register collection as dirty with the UoW if necessary
-        if ( ! $this->_hydrationFlag) $this->_changed();
+        if ( ! $this->_hydrationFlag) {
+            $this->_changed();
+        }
     }
 
     /**
@@ -240,18 +242,17 @@ final class PersistentCollection extends \Doctrine\Common\Collections\Collection
      */
     public function add($value)
     {
-        $result = parent::add($value);
-        if ( ! $result) return $result; // EARLY EXIT
+        parent::add($value);
 
         if ($this->_hydrationFlag) {
             if ($this->_backRefFieldName) {
                 // Set back reference to owner
                 if ($this->_association->isOneToMany()) {
-                    $this->_ownerClass->getReflectionProperty($this->_backRefFieldName)
+                    $this->_typeClass->getReflectionProperty($this->_backRefFieldName)
                             ->setValue($value, $this->_owner);
                 } else {
                     // ManyToMany
-                    $this->_ownerClass->getReflectionProperty($this->_backRefFieldName)
+                    $this->_typeClass->getReflectionProperty($this->_backRefFieldName)
                             ->getValue($value)->add($this->_owner);
                 }
             }
@@ -277,17 +278,37 @@ final class PersistentCollection extends \Doctrine\Common\Collections\Collection
         //$this->_changed();
     }
 
+    /**
+     * Checks whether an element is contained in the collection.
+     * This is an O(n) operation.
+     */
     public function contains($element)
     {
-        //TODO: Probably need to hit the database here...?
-        /*if ( ! $this->_initialized) {
-            return $this->_checkElementExistence($element);
+        
+        if ( ! $this->_initialized) {
+            //TODO: Probably need to hit the database here...?
+            //return $this->_checkElementExistence($element);
         }
-        return parent::contains($element);*/
         return parent::contains($element);
     }
 
+    /**
+     * @override
+     */
+    public function count()
+    {
+        if ( ! $this->_initialized) {
+            //TODO: Initialize
+        }
+        return parent::count();
+    }
+
     private function _checkElementExistence($element)
+    {
+        
+    }
+
+    private function _initialize()
     {
         
     }
@@ -359,10 +380,7 @@ final class PersistentCollection extends \Doctrine\Common\Collections\Collection
      */
     private function _compareRecords($a, $b)
     {
-        if ($a === $b) {
-            return 0;
-        }
-        return 1;
+        return $a === $b ? 0 : 1;
     }
     
     /**
@@ -394,11 +412,6 @@ final class PersistentCollection extends \Doctrine\Common\Collections\Collection
     private function _changed()
     {
         $this->_isDirty = true;
-        /*if ( ! $this->_em->getUnitOfWork()->isCollectionScheduledForUpdate($this)) {
-            //var_dump(get_class($this->_snapshot[0]));
-            //echo "NOT!";
-            //$this->_em->getUnitOfWork()->scheduleCollectionUpdate($this);
-        }*/
     }
 
     /**

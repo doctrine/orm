@@ -58,13 +58,11 @@ abstract class AbstractQuery
 
     /**
      * @var array $params Parameters of this query.
-     * @see Query::free that initializes this property
      */
     protected $_params = array();
 
     /**
      * @var array $_enumParams Array containing the keys of the parameters that should be enumerated.
-     * @see Query::free that initializes this property
      */
     protected $_enumParams = array();
 
@@ -117,7 +115,6 @@ abstract class AbstractQuery
     public function __construct(EntityManager $entityManager)
     {
         $this->_em = $entityManager;
-        $this->free();
     }
 
     /**
@@ -207,8 +204,8 @@ abstract class AbstractQuery
     /**
      * Sets a query parameter.
      *
-     * @param string|integer $key
-     * @param mixed $value
+     * @param string|integer $key The parameter position or name.
+     * @param mixed $value The parameter value.
      */
     public function setParameter($key, $value)
     {
@@ -319,7 +316,7 @@ abstract class AbstractQuery
     }
 
     /**
-     * Defines the processing mode to be used during hydration process.
+     * Defines the processing mode to be used during hydration.
      *
      * @param integer $hydrationMode Doctrine processing mode to be used during hydration process.
      *                               One of the Query::HYDRATE_* constants.
@@ -521,7 +518,7 @@ abstract class AbstractQuery
     /**
      * Executes the query and returns a reference to the resulting Statement object.
      *
-     * @param <type> $params 
+     * @param array $params
      */
     abstract protected function _doExecute(array $params);
 }
