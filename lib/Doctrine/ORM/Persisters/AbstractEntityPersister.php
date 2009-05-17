@@ -35,7 +35,7 @@ use Doctrine\ORM\Mapping\ClassMetadata;
  * @link        www.doctrine-project.org
  * @since       2.0
  */
-abstract class AbstractEntityPersister
+class AbstractEntityPersister
 {    
     /**
      * Metadata object that describes the mapping of the mapped entity class.

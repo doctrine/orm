@@ -1042,7 +1042,8 @@ class SqlWalker
             }
 
             if (isset($class->associationMappings[$fieldName])) {
-                //FIXME: Composite key support, inverse side support
+                //FIXME: Inverse side support
+                //FIXME: Throw exception on composite key
                 $sql .= $class->associationMappings[$fieldName]->joinColumns[0]['name'];
             } else {
                 $sql .= $class->getColumnName($fieldName);
