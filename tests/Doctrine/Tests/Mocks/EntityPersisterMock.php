@@ -12,6 +12,7 @@ class EntityPersisterMock extends \Doctrine\ORM\Persisters\StandardEntityPersist
     private $_deletes = array();
     private $_identityColumnValueCounter = 0;
     private $_mockIdGeneratorType;
+    private $_postInsertIds = array();
 
     /**
      * @param <type> $entity
@@ -22,10 +23,29 @@ class EntityPersisterMock extends \Doctrine\ORM\Persisters\StandardEntityPersist
     {
         $this->_inserts[] = $entity;
         if ( ! is_null($this->_mockIdGeneratorType) && $this->_mockIdGeneratorType == \Doctrine\ORM\Mapping\ClassMetadata::GENERATOR_TYPE_IDENTITY
-                || $this->_classMetadata->isIdGeneratorIdentity()) {
-            return $this->_identityColumnValueCounter++;
+                || $this->_class->isIdGeneratorIdentity()) {
+            $id = $this->_identityColumnValueCounter++;
+            $this->_postInsertIds[$id] = $entity;
+            return $id;
         }
         return null;
+    }
+
+    public function addInsert($entity)
+    {
+        $this->_inserts[] = $entity;
+        if ( ! is_null($this->_mockIdGeneratorType) && $this->_mockIdGeneratorType == \Doctrine\ORM\Mapping\ClassMetadata::GENERATOR_TYPE_IDENTITY
+                || $this->_class->isIdGeneratorIdentity()) {
+            $id = $this->_identityColumnValueCounter++;
+            $this->_postInsertIds[$id] = $entity;
+            return $id;
+        }
+        return null;
+    }
+
+    public function executeInserts()
+    {
+        return $this->_postInsertIds;
     }
 
     public function setMockIdGeneratorType($genType)

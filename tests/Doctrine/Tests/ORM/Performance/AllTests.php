@@ -21,6 +21,7 @@ class AllTests
         $suite = new \Doctrine\Tests\DoctrineTestSuite('Doctrine Orm Performance');
 
         $suite->addTestSuite('Doctrine\Tests\ORM\Performance\HydrationPerformanceTest');
+        $suite->addTestSuite('Doctrine\Tests\ORM\Performance\InsertPerformanceTest');
 
         return $suite;
     }

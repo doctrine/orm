@@ -235,30 +235,38 @@ class UnitOfWork implements PropertyChangedListener
         // Now we need a commit order to maintain referential integrity
         $commitOrder = $this->_getCommitOrder();
 
-        //TODO: begin transaction here?
+        $conn = $this->_em->getConnection();
+        try {
+            $conn->beginTransaction();
 
-        foreach ($commitOrder as $class) {
-            $this->_executeInserts($class);
-        }
-        foreach ($commitOrder as $class) {
-            $this->_executeUpdates($class);
-        }
-        
-        // Collection deletions (deletions of complete collections)
-        foreach ($this->_collectionDeletions as $collectionToDelete) {
-            $this->getCollectionPersister($collectionToDelete->getMapping())
-                    ->delete($collectionToDelete);
-        }
-        // Collection updates (deleteRows, updateRows, insertRows)
-        foreach ($this->_collectionUpdates as $collectionToUpdate) {
-            $this->getCollectionPersister($collectionToUpdate->getMapping())
-                    ->update($collectionToUpdate);
-        }
-        //TODO: collection recreations (insertions of complete collections)
+            foreach ($commitOrder as $class) {
+                $this->_executeInserts($class);
+            }
+            foreach ($commitOrder as $class) {
+                $this->_executeUpdates($class);
+            }
 
-        // Entity deletions come last and need to be in reverse commit order
-        for ($count = count($commitOrder), $i = $count - 1; $i >= 0; --$i) {
-            $this->_executeDeletions($commitOrder[$i]);
+            // Collection deletions (deletions of complete collections)
+            foreach ($this->_collectionDeletions as $collectionToDelete) {
+                $this->getCollectionPersister($collectionToDelete->getMapping())
+                        ->delete($collectionToDelete);
+            }
+            // Collection updates (deleteRows, updateRows, insertRows)
+            foreach ($this->_collectionUpdates as $collectionToUpdate) {
+                $this->getCollectionPersister($collectionToUpdate->getMapping())
+                        ->update($collectionToUpdate);
+            }
+            //TODO: collection recreations (insertions of complete collections)
+
+            // Entity deletions come last and need to be in reverse commit order
+            for ($count = count($commitOrder), $i = $count - 1; $i >= 0; --$i) {
+                $this->_executeDeletions($commitOrder[$i]);
+            }
+
+            $conn->commit();
+        } catch (\Exception $e) {
+            $conn->rollback();
+            throw $e;
         }
 
         //TODO: commit transaction here?
@@ -401,7 +409,7 @@ class UnitOfWork implements PropertyChangedListener
                 $assoc = $class->getAssociationMapping($name);
                 //echo PHP_EOL . "INJECTING PCOLL into $name" . PHP_EOL;
                 // Inject PersistentCollection
-                $coll = new PersistentCollection($this->_em, $this->_em->getClassMetadata($assoc->getTargetEntityName()),
+                $coll = new PersistentCollection($this->_em, $this->_em->getClassMetadata($assoc->targetEntityName),
                     $actualData[$name] ? $actualData[$name] : array());
                 $coll->setOwner($entity, $assoc);
                 if ( ! $coll->isEmpty()) {
@@ -438,7 +446,7 @@ class UnitOfWork implements PropertyChangedListener
                 if (isset($changeSet[$propName])) {
                     if ($class->hasAssociation($propName)) {
                         $assoc = $class->getAssociationMapping($propName);
-                        if ($assoc->isOneToOne() && $assoc->isOwningSide()) {
+                        if ($assoc->isOneToOne() && $assoc->isOwningSide) {
                             $entityIsDirty = true;
                         } else if ($orgValue instanceof PersistentCollection) {
                             // A PersistentCollection was de-referenced, so delete it.
@@ -538,25 +546,24 @@ class UnitOfWork implements PropertyChangedListener
      */
     private function _executeInserts($class)
     {
-        //TODO: Maybe $persister->addInsert($entity) in the loop and
-        // $persister->executeInserts() at the end to allow easy prepared
-        // statement reuse and maybe bulk operations in the persister.
-        // Same for update/delete.
         $className = $class->name;
         $persister = $this->getEntityPersister($className);
         foreach ($this->_entityInsertions as $entity) {
             if (get_class($entity) == $className) {
-                $returnVal = $persister->insert($entity);
-                if ($returnVal !== null) {
-                    // Persister returned a post-insert ID
-                    $oid = spl_object_hash($entity);
-                    $idField = $class->getSingleIdentifierFieldName();
-                    $class->reflFields[$idField]->setValue($entity, $returnVal);
-                    $this->_entityIdentifiers[$oid] = array($returnVal);
-                    $this->_entityStates[$oid] = self::STATE_MANAGED;
-                    $this->_originalEntityData[$oid][$idField] = $returnVal;
-                    $this->addToIdentityMap($entity);
-                }
+                $persister->addInsert($entity);
+            }
+        }
+        $postInsertIds = $persister->executeInserts();
+        if ($postInsertIds) {
+            foreach ($postInsertIds as $id => $entity) {
+                // Persister returned a post-insert ID
+                $oid = spl_object_hash($entity);
+                $idField = $class->identifier[0];
+                $class->reflFields[$idField]->setValue($entity, $id);
+                $this->_entityIdentifiers[$oid] = array($id);
+                $this->_entityStates[$oid] = self::STATE_MANAGED;
+                $this->_originalEntityData[$oid][$idField] = $id;
+                $this->addToIdentityMap($entity);
             }
         }
     }

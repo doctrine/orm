@@ -125,6 +125,9 @@ class UnitOfWorkTest extends \Doctrine\Tests\OrmTestCase
 
     public function testChangeTrackingNotify()
     {
+        $persister = new EntityPersisterMock($this->_emMock, $this->_emMock->getClassMetadata("Doctrine\Tests\ORM\NotifyChangedEntity"));
+        $this->_unitOfWork->setEntityPersister('Doctrine\Tests\ORM\NotifyChangedEntity', $persister);
+
         $entity = new NotifyChangedEntity;
         $entity->setData('thedata');
         $this->_unitOfWork->save($entity);

@@ -30,7 +30,7 @@ class AllTests
 
         $suite->addTestSuite('Doctrine\Tests\ORM\UnitOfWorkTest');
         $suite->addTestSuite('Doctrine\Tests\ORM\EntityManagerTest');
-        $suite->addTestSuite('Doctrine\Tests\ORM\EntityPersisterTest');
+        //$suite->addTestSuite('Doctrine\Tests\ORM\EntityPersisterTest');
         $suite->addTestSuite('Doctrine\Tests\ORM\CommitOrderCalculatorTest');
 
         $suite->addTest(Query\AllTests::suite());

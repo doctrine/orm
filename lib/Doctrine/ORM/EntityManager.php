@@ -346,7 +346,7 @@ class EntityManager
     public function clear($entityName = null)
     {
         if ($entityName === null) {
-            $this->_unitOfWork->detachAll();
+            $this->_unitOfWork->clear();
         } else {
             //TODO
             throw DoctrineException::notImplemented();

@@ -7,16 +7,8 @@ namespace Doctrine\Tests;
  *
  * @author robo
  */
-class OrmPerformanceTestCase extends OrmTestCase
+class OrmPerformanceTestCase extends OrmFunctionalTestCase
 {
-    protected $_em;
-
-    protected function setUp()
-    {
-        parent::setUp();
-        $this->_em = $this->_getTestEntityManager();
-    }
-
     /**
      * @var    integer
      */

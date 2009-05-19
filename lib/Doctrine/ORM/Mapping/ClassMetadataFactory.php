@@ -136,7 +136,6 @@ class ClassMetadataFactory
             $class = $this->_newClassMetadataInstance($className);
             if ($parent) {
                 $class->setInheritanceType($parent->inheritanceType);
-                //$class->setDiscriminatorMap($parent->getDiscriminatorMap());
                 $class->setDiscriminatorColumn($parent->discriminatorColumn);
                 $class->setIdGeneratorType($parent->generatorType);
                 $this->_addInheritedFields($class, $parent);
@@ -166,10 +165,13 @@ class ClassMetadataFactory
             if ($parent && $parent->isInheritanceTypeSingleTable()) {
                 $class->setTableName($parent->getTableName());
             }
+
+            $class->setParentClasses($visited);
+            $class->finishMapping();
             
             $this->_loadedMetadata[$className] = $class;
+            
             $parent = $class;
-            $class->setParentClasses($visited);
             array_unshift($visited, $className);
         }
     }

@@ -96,7 +96,11 @@ class StandardEntityPersister
     {
         $insertData = array();
         $this->_prepareData($entity, $insertData, true);
-        $this->_conn->insert($this->_class->getTableName(), $insertData);
+
+        $stmt = $this->_conn->prepare($this->_class->insertSql);
+        $stmt->execute(array_values($insertData));
+        $stmt->closeCursor();
+
         $idGen = $this->_class->getIdGenerator();
         if ($idGen->isPostInsertGenerator()) {
             return $idGen->generate($this->_em, $entity);
@@ -111,9 +115,7 @@ class StandardEntityPersister
      */
     public function addInsert($entity)
     {
-        $insertData = array();
-        $this->_prepareData($entity, $insertData, true);
-        $this->_queuedInserts[] = $insertData;
+        $this->_queuedInserts[] = $entity;
     }
 
     /**
@@ -121,12 +123,27 @@ class StandardEntityPersister
      */
     public function executeInserts()
     {
-        //$tableName = $this->_class->getTableName();
-        $stmt = $this->_conn->prepare($this->_class->getInsertSql());
-        foreach ($this->_queuedInserts as $insertData) {
-            $stmt->execute(array_values($insertData));
+        if ( ! $this->_queuedInserts) {
+            return;
         }
+        
+        $postInsertIds = array();
+        $idGen = $this->_class->getIdGenerator();
+        $isPostInsertId = $idGen->isPostInsertGenerator();
+
+        $stmt = $this->_conn->prepare($this->_class->insertSql);
+        foreach ($this->_queuedInserts as $entity) {
+            $insertData = array();
+            $this->_prepareData($entity, $insertData, true);
+            $stmt->execute(array_values($insertData));
+            if ($isPostInsertId) {
+                $postInsertIds[$idGen->generate($this->_em, $entity)] = $entity;
+            }
+        }
+        $stmt->closeCursor();
         $this->_queuedInserts = array();
+
+        return $postInsertIds;
     }
     
     /**
@@ -226,13 +243,13 @@ class StandardEntityPersister
 
             $columnName = $this->_class->getColumnName($field);
 
-            if ($this->_class->hasAssociation($field)) {
-                $assocMapping = $this->_class->getAssociationMapping($field);
+            if (isset($this->_class->associationMappings[$field])) {
+                $assocMapping = $this->_class->associationMappings[$field];
                 if ( ! $assocMapping->isOneToOne() || $assocMapping->isInverseSide()) {
                     continue;
                 }
-                foreach ($assocMapping->getSourceToTargetKeyColumns() as $sourceColumn => $targetColumn) {
-                    $otherClass = $this->_em->getClassMetadata($assocMapping->getTargetEntityName());
+                foreach ($assocMapping->sourceToTargetKeyColumns as $sourceColumn => $targetColumn) {
+                    $otherClass = $this->_em->getClassMetadata($assocMapping->targetEntityName);
                     if ($newVal === null) {
                         $result[$sourceColumn] = null;
                     } else {
