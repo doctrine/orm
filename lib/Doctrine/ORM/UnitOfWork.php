@@ -349,7 +349,7 @@ class UnitOfWork implements PropertyChangedListener
                     $this->_computeEntityChanges($class, $entity);
                     // Look for changes in associations of the entity
                     foreach ($class->associationMappings as $assoc) {
-                        $val = $class->reflFields[$assoc->getSourceFieldName()]->getValue($entity);
+                        $val = $class->reflFields[$assoc->sourceFieldName]->getValue($entity);
                         if ($val !== null) {
                             $this->_computeAssociationChanges($assoc, $val);
                         }
@@ -396,7 +396,7 @@ class UnitOfWork implements PropertyChangedListener
         }
         
         $actualData = array();
-        foreach ($class->getReflectionProperties() as $name => $refProp) {
+        foreach ($class->reflFields as $name => $refProp) {
             if ( ! $class->isIdentifier($name) || ! $class->isIdGeneratorIdentity()) {
                 $actualData[$name] = $refProp->getValue($entity);
             }
@@ -406,7 +406,7 @@ class UnitOfWork implements PropertyChangedListener
                     && ! ($actualData[$name] instanceof PersistentCollection)
                 ) {
                 //TODO: If $actualData[$name] is Collection then unwrap the array
-                $assoc = $class->getAssociationMapping($name);
+                $assoc = $class->associationMappings[$name];
                 //echo PHP_EOL . "INJECTING PCOLL into $name" . PHP_EOL;
                 // Inject PersistentCollection
                 $coll = new PersistentCollection($this->_em, $this->_em->getClassMetadata($assoc->targetEntityName),
@@ -444,8 +444,8 @@ class UnitOfWork implements PropertyChangedListener
                 }
 
                 if (isset($changeSet[$propName])) {
-                    if ($class->hasAssociation($propName)) {
-                        $assoc = $class->getAssociationMapping($propName);
+                    if (isset($class->associationMappings[$propName])) {
+                        $assoc = $class->associationMappings[$propName];
                         if ($assoc->isOneToOne() && $assoc->isOwningSide) {
                             $entityIsDirty = true;
                         } else if ($orgValue instanceof PersistentCollection) {
@@ -478,13 +478,13 @@ class UnitOfWork implements PropertyChangedListener
     private function _computeAssociationChanges($assoc, $value)
     {
         if ($value instanceof PersistentCollection && $value->isDirty()) {
-            if ($assoc->isOwningSide()) {
+            if ($assoc->isOwningSide) {
                 $this->_collectionUpdates[] = $value;
             }
             $this->_visitedCollections[] = $value;
         }
 
-        if ( ! $assoc->isCascadeSave()) {
+        if ( ! $assoc->isCascadeSave) {
             //echo "NOT CASCADING INTO " . $assoc->getSourceFieldName() . PHP_EOL;
             return; // "Persistence by reachability" only if save cascade specified
         }
@@ -494,7 +494,7 @@ class UnitOfWork implements PropertyChangedListener
         if ($assoc->isOneToOne()) {
             $value = array($value);
         }
-        $targetClass = $this->_em->getClassMetadata($assoc->getTargetEntityName());
+        $targetClass = $this->_em->getClassMetadata($assoc->targetEntityName);
         foreach ($value as $entry) {
             $state = $this->getEntityState($entry);
             $oid = spl_object_hash($entry);
@@ -516,13 +516,13 @@ class UnitOfWork implements PropertyChangedListener
                 // Collect the original data and changeset, recursing into associations.
                 $data = array();
                 $changeSet = array();
-                foreach ($targetClass->getReflectionProperties() as $name => $refProp) {
+                foreach ($targetClass->reflFields as $name => $refProp) {
                     $data[$name] = $refProp->getValue($entry);
                     $changeSet[$name] = array(null, $data[$name]);
-                    if ($targetClass->hasAssociation($name)) {
+                    if (isset($targetClass->associationMappings[$name])) {
                         //echo "RECURSING INTO $name" . PHP_EOL;
                         //TODO: Prevent infinite recursion
-                        $this->_computeAssociationChanges($targetClass->getAssociationMapping($name), $data[$name]);
+                        $this->_computeAssociationChanges($targetClass->associationMappings[$name], $data[$name]);
                     }
                 }
 
@@ -636,8 +636,8 @@ class UnitOfWork implements PropertyChangedListener
             $class = $node->getClass();
             foreach ($class->associationMappings as $assocMapping) {
                 //TODO: should skip target classes that are not in the changeset.
-                if ($assocMapping->isOwningSide()) {
-                    $targetClass = $this->_em->getClassMetadata($assocMapping->getTargetEntityName());
+                if ($assocMapping->isOwningSide) {
+                    $targetClass = $this->_em->getClassMetadata($assocMapping->targetEntityName);
                     $targetClassName = $targetClass->name;
                     // If the target class does not yet have a node, create it
                     if ( ! $this->_commitOrderCalculator->hasNodeWithKey($targetClassName)) {
@@ -1027,7 +1027,7 @@ class UnitOfWork implements PropertyChangedListener
                 break;
             case self::STATE_NEW:
                 //TODO: Better defer insert for post-insert ID generators also?
-                $idGen = $class->getIdGenerator();
+                $idGen = $class->idGenerator;
                 if ($idGen->isPostInsertGenerator()) {
                     $insertNow[$oid] = $entity;
                 } else {
@@ -1143,8 +1143,8 @@ class UnitOfWork implements PropertyChangedListener
         }
 
         // Merge state of $entity into existing (managed) entity
-        foreach ($class->getReflectionProperties() as $name => $prop) {
-            if ( ! $class->hasAssociation($name)) {
+        foreach ($class->reflFields as $name => $prop) {
+            if ( ! isset($class->associationMappings[$name])) {
                 $prop->setValue($managedCopy, $prop->getValue($entity));
             }
             if ($class->isChangeTrackingNotify()) {
@@ -1156,7 +1156,7 @@ class UnitOfWork implements PropertyChangedListener
         }
 
         if ($prevManagedCopy !== null) {
-            $assocField = $assoc->getSourceFieldName();
+            $assocField = $assoc->sourceFieldName;
             $prevClass = $this->_em->getClassMetadata(get_class($prevManagedCopy));
             if ($assoc->isOneToOne()) {
                 $prevClass->reflFields[$assocField]->setValue($prevManagedCopy, $managedCopy);
@@ -1177,7 +1177,7 @@ class UnitOfWork implements PropertyChangedListener
     {
         $class = $this->_em->getClassMetadata(get_class($entity));
         foreach ($class->associationMappings as $assocMapping) {
-            if ( ! $assocMapping->isCascadeMerge()) {
+            if ( ! $assocMapping->isCascadeMerge) {
                 continue;
             }
             $relatedEntities = $class->reflFields[$assocMapping->getSourceFieldName()]
@@ -1202,11 +1202,10 @@ class UnitOfWork implements PropertyChangedListener
     {
         $class = $this->_em->getClassMetadata(get_class($entity));
         foreach ($class->associationMappings as $assocMapping) {
-            if ( ! $assocMapping->isCascadeSave()) {
+            if ( ! $assocMapping->isCascadeSave) {
                 continue;
             }
-            $relatedEntities = $class->reflFields[$assocMapping->getSourceFieldName()]
-                    ->getValue($entity);
+            $relatedEntities = $class->reflFields[$assocMapping->sourceFieldName]->getValue($entity);
             if (($relatedEntities instanceof Collection || is_array($relatedEntities))
                     && count($relatedEntities) > 0) {
                 foreach ($relatedEntities as $relatedEntity) {
@@ -1227,10 +1226,10 @@ class UnitOfWork implements PropertyChangedListener
     {
         $class = $this->_em->getClassMetadata(get_class($entity));
         foreach ($class->associationMappings as $assocMapping) {
-            if ( ! $assocMapping->isCascadeDelete()) {
+            if ( ! $assocMapping->isCascadeDelete) {
                 continue;
             }
-            $relatedEntities = $class->reflFields[$assocMapping->getSourceFieldName()]
+            $relatedEntities = $class->reflFields[$assocMapping->sourceFieldName]
                     ->getValue($entity);
             if ($relatedEntities instanceof Collection || is_array($relatedEntities)
                     && count($relatedEntities) > 0) {
@@ -1551,9 +1550,9 @@ class UnitOfWork implements PropertyChangedListener
 
             $this->_entityChangeSets[$oid][$propertyName] = array($oldValue, $newValue);
 
-            if ($class->hasAssociation($propertyName)) {
-                $assoc = $class->getAssociationMapping($name);
-                if ($assoc->isOneToOne() && $assoc->isOwningSide()) {
+            if (isset($class->associationMappings[$propertyName])) {
+                $assoc = $class->associationMappings[$name];
+                if ($assoc->isOneToOne() && $assoc->isOwningSide) {
                     $this->_entityUpdates[$oid] = $entity;
                 } else if ($oldValue instanceof PersistentCollection) {
                     // A PersistentCollection was de-referenced, so delete it.

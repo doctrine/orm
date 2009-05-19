@@ -31,14 +31,14 @@ class InsertPerformanceTest extends \Doctrine\Tests\OrmPerformanceTestCase
 
         //$mem = memory_get_usage();
         //echo "Memory usage before: " . ($mem / 1024) . " KB" . PHP_EOL;
-
+        $batchSize = 20;
         for ($i=0; $i<10000; ++$i) {
             $user = new CmsUser;
             $user->status = 'user';
             $user->username = 'user' . $i;
             $user->name = 'Mr.Smith-' . $i;
             $this->_em->save($user);
-            if (($i % 20) == 0) {
+            if (($i % $batchSize) == 0) {
                 $this->_em->flush();
                 $this->_em->clear();
             }
@@ -49,7 +49,7 @@ class InsertPerformanceTest extends \Doctrine\Tests\OrmPerformanceTestCase
 
         $e = microtime(true);
 
-        echo ' Inserted 10000 records in ' . ($e - $s) . ' seconds' . PHP_EOL;
+        echo ' Inserted 10000 objects in ' . ($e - $s) . ' seconds' . PHP_EOL;
     }
 }
 
