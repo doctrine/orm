@@ -34,129 +34,169 @@ use Doctrine\Common\DoctrineException;
  * @since       2.0
  * @todo Reimplement.
  */
-class JoinedSubclassPersister extends AbstractEntityPersister
-{    
+class JoinedSubclassPersister extends StandardEntityPersister
+{
+    /** Map that maps column names to the table names that own them.
+     *  This is mainly a temporary cache, used during a single request.
+     */
+    private $_owningTableMap = array();
+
     /**
-     * Inserts an entity that is part of a Class Table Inheritance hierarchy.
+     * {@inheritdoc}
      *
-     * @param object $record   record to be inserted
-     * @return boolean
      * @override
      */
-    /*public function insert($entity)
+    protected function _prepareData($entity, array &$result, $isInsert = false)
     {
-        $class = $entity->getClass();
-        
-        $dataSet = array();
-        
-        $this->_prepareData($entity, $dataSet, true);
-        
-        $dataSet = $this->_groupFieldsByDefiningClass($class, $dataSet);
-        
-        $component = $class->name;
-        $classes = $class->parentClasses;
-        array_unshift($classes, $component);
-        
-        $identifier = null;
-        foreach (array_reverse($classes) as $k => $parent) {
-            $parentClass = $this->_em->getClassMetadata($parent);
-            if ($k == 0) {
-                if ($parentClass->isIdGeneratorIdentity()) {
-                    $this->_insertRow($parentClass->getTableName(), $dataSet[$parent]);
-                    $identifier = $this->_conn->lastInsertId();
-                } else if ($parentClass->isIdGeneratorSequence()) {
-                    $seq = $entity->getClassMetadata()->getTableOption('sequenceName');
-                    if ( ! empty($seq)) {
-                        $id = $this->_conn->getSequenceManager()->nextId($seq);
-                        $identifierFields = $parentClass->identifier;
-                        $dataSet[$parent][$identifierFields[0]] = $id;
-                        $this->_insertRow($parentClass->getTableName(), $dataSet[$parent]);
-                    }
+        parent::_prepareData($entity, $result, $isInsert);
+        // Populate the discriminator column
+        if ($isInsert) {
+            $discColumn = $this->_class->discriminatorColumn;
+            $rootClass = $this->_em->getClassMetadata($this->_class->rootEntityName);
+            $result[$rootClass->primaryTable['name']][$discColumn['name']] =
+                    $this->_class->discriminatorValue;
+        }
+    }
+
+    /**
+     * {@inheritdoc}
+     *
+     * @override
+     */
+    public function getOwningTable($fieldName)
+    {
+        if ( ! isset($this->_owningTableMap[$fieldName])) {
+            if (isset($this->_class->associationMappings[$fieldName])) {
+                if (isset($this->_class->inheritedAssociationFields[$fieldName])) {
+                    $this->_owningTableMap[$fieldName] = $this->_em->getClassMetadata(
+                            $this->_class->inheritedAssociationFields[$fieldName])->primaryTable['name'];
                 } else {
-                    throw DoctrineException::updateMe("Unsupported identifier type '$identifierType'.");
+                    $this->_owningTableMap[$fieldName] = $this->_class->primaryTable['name'];
                 }
-                $entity->_assignIdentifier($identifier);
+            } else if (isset($this->_class->fieldMappings[$fieldName]['inherited'])) {
+                $this->_owningTableMap[$fieldName] = $this->_em->getClassMetadata(
+                        $this->_class->fieldMappings[$fieldName]['inherited'])->primaryTable['name'];
             } else {
-                foreach ($entity->_identifier() as $id => $value) {
-                    $dataSet[$parent][$parentClass->getColumnName($id)] = $value;
-                }
-                $this->_insertRow($parentClass->getTableName(), $dataSet[$parent]);
+                $this->_owningTableMap[$fieldName] = $this->_class->primaryTable['name'];
             }
         }
+        return $this->_owningTableMap[$fieldName];
+    }
 
-        return true;
-    }*/
-    
     /**
-     * Updates an entity that is part of a Class Table Inheritance hierarchy.
+     * {@inheritdoc}
      *
-     * @param Doctrine_Entity $record   record to be updated
-     * @return boolean                  whether or not the update was successful
+     * @override
      */
-    /*protected function _doUpdate($entity)
+    public function executeInserts()
     {
-        $conn = $this->_conn;
-        $classMetadata = $this->_classMetadata;
-        $identifier = $this->_convertFieldToColumnNames($record->identifier(), $classMetadata);
-        $dataSet = $this->_groupFieldsByDefiningClass($record);
-        $component = $classMetadata->name;
-        $classes = $classMetadata->parentClasses;
-        array_unshift($classes, $component);
+        if ( ! $this->_queuedInserts) {
+            return;
+        }
 
-        foreach ($record as $field => $value) {
-            if ($value instanceof Doctrine_ORM_Entity) {
-                if ( ! $value->exists()) {
-                    $value->save();
+        $postInsertIds = array();
+        $idGen = $this->_class->idGenerator;
+        $isPostInsertId = $idGen->isPostInsertGenerator();
+
+        // Prepare statements for all tables
+        $stmts = $classes = array();
+        $stmts[$this->_class->primaryTable['name']] = $this->_conn->prepare($this->_class->insertSql);
+        $classes[$this->_class->name] = $this->_class;
+        foreach ($this->_class->parentClasses as $parentClass) {
+            $classes[$parentClass] = $this->_em->getClassMetadata($parentClass);
+            $stmts[$classes[$parentClass]->primaryTable['name']] = $this->_conn->prepare($classes[$parentClass]->insertSql);
+        }
+        $rootTableName = $classes[$this->_class->rootEntityName]->primaryTable['name'];
+
+        foreach ($this->_queuedInserts as $entity) {
+            $insertData = array();
+            $this->_prepareData($entity, $insertData, true);
+            
+            // Execute insert on root table
+            $paramIndex = 1;
+            $stmt = $stmts[$rootTableName];
+            foreach ($insertData[$rootTableName] as $columnName => $value) {
+                $stmt->bindValue($paramIndex++, $value/*, TODO: TYPE*/);
+            }
+            $stmt->execute();
+            unset($insertData[$rootTableName]);
+
+            if ($isPostInsertId) {
+                $id = $idGen->generate($this->_em, $entity);
+                $postInsertIds[$id] = $entity;
+            } else {
+                $id = $this->_em->getUnitOfWork()->getEntityIdentifier($entity);
+            }
+
+            // Execute inserts on subtables
+            foreach ($insertData as $tableName => $data) {
+                $stmt = $stmts[$tableName];
+                $paramIndex = 1;
+                foreach ((array)$id as $idVal) {
+                    $stmt->bindValue($paramIndex++, $idVal/*, TODO: TYPE*/);
                 }
-                $idValues = $value->identifier();
-                $record->set($field, $idValues[0]);
+                foreach ($data as $columnName => $value) {
+                    $stmt->bindValue($paramIndex++, $value/*, TODO: TYPE*/);
+                }
+                $stmt->execute();
             }
         }
 
-        foreach (array_reverse($classes) as $class) {
-            $parentTable = $conn->getClassMetadata($class);
-            $this->_updateRow($parentTable->getTableName(), $dataSet[$class], $identifier);
-        }
-        
-        $record->assignIdentifier(true);
+        foreach ($stmts as $stmt)
+            $stmt->closeCursor();
 
-        return true;
-    }*/
-    
-    /**
-     * Deletes an entity that is part of a Class Table Inheritance hierarchy.
+        $this->_queuedInserts = array();
+
+        return $postInsertIds;
+    }
+
+     /**
+     * Updates an entity.
      *
+     * @param object $entity The entity to update.
+     * @override
      */
-    /*protected function _doDelete(Doctrine_ORM_Entity $record)
+    public function update($entity)
     {
-        $conn = $this->_conn;
-        try {
-            $class = $this->_classMetadata;
-            $conn->beginInternalTransaction();
-            $this->_deleteComposites($record);
+        $updateData = array();
+        $this->_prepareData($entity, $updateData);
 
-            $record->_state(Doctrine_ORM_Entity::STATE_TDIRTY);
+        $id = array_combine(
+                $this->_class->getIdentifierFieldNames(),
+                $this->_em->getUnitOfWork()->getEntityIdentifier($entity)
+                );
 
-            $identifier = $this->_convertFieldToColumnNames($record->identifier(), $class);
-            
-            // run deletions, starting from the class, upwards the hierarchy
-            $conn->delete($class->getTableName(), $identifier);
-            foreach ($class->parentClasses as $parent) {
-                $parentClass = $conn->getClassMetadata($parent);
-                $this->_deleteRow($parentClass->getTableName(), $identifier);
-            }
-            
-            $record->_state(Doctrine_ORM_Entity::STATE_TCLEAN);
-
-            $this->removeRecord($record); // @todo should be done in the unitofwork
-            $conn->commit();
-        } catch (Exception $e) {
-            $conn->rollback();
-            throw $e;
+        foreach ($updateData as $tableName => $data) {
+            $this->_conn->update($tableName, $updateData[$tableName], $id);
         }
+    }
 
-        return true;
-    }*/
+    /**
+     * Deletes an entity.
+     *
+     * @param object $entity The entity to delete.
+     * @override
+     */
+    public function delete($entity)
+    {
+        $id = array_combine(
+                $this->_class->getIdentifierFieldNames(),
+                $this->_em->getUnitOfWork()->getEntityIdentifier($entity)
+                );
+
+        // If the database platform supports FKs, just
+        // delete the row from the root table. Cascades do the rest.
+        if ($this->_conn->getDatabasePlatform()->supportsForeignKeyConstraints()) {
+            $this->_conn->delete($this->_em->getClassMetadata($this->_class->rootEntityName)
+                    ->primaryTable['name'], $id);
+        } else {
+            // Delete the parent tables, starting from this class' table up to the root table
+            $this->_conn->delete($this->_class->primaryTable['name'], $id);
+            foreach ($this->_class->parentClasses as $parentClass) {
+                $this->_conn->delete($this->_em->getClassMetadata($parentClass)->primaryTable['name'], $id);
+            }
+        }
+    }
     
     /**
      * Adds all parent classes as INNER JOINs and subclasses as OUTER JOINs
@@ -206,21 +246,6 @@ class JoinedSubclassPersister extends AbstractEntityPersister
     }*/
     
     /**
-     *
-     */
-    /*public function getFieldNames()
-    {
-        if ($this->_fieldNames) {
-            return $this->_fieldNames;
-        }
-        
-        $fieldNames = $this->_classMetadata->fieldNames;
-        $this->_fieldNames = array_unique($fieldNames);
-        
-        return $fieldNames;
-    }*/
-    
-    /**
      * 
      * @todo Looks like this better belongs into the ClassMetadata class.
      */
@@ -247,37 +272,5 @@ class JoinedSubclassPersister extends AbstractEntityPersister
         }
         
         throw \Doctrine\Common\DoctrineException::updateMe("Unable to find defining class of field '$fieldName'.");
-    }*/
-    
-    /**
-     * Analyzes the fields of the entity and creates a map in which the field names
-     * are grouped by the class names they belong to. 
-     *
-     * @return array
-     */
-    /*protected function _groupFieldsByDefiningClass(Doctrine_ClassMetadata $class, array $fields)
-    {
-        $dataSet = array();
-        $component = $class->name;
-        
-        $classes = array_merge(array($component), $class->parentClasses);
-        
-        foreach ($classes as $class) {
-            $dataSet[$class] = array();            
-            $parentClassMetadata = $this->_em->getClassMetadata($class);
-            foreach ($parentClassMetadata->fieldMappings as $fieldName => $mapping) {
-                if ((isset($mapping['id']) && $mapping['id'] === true) ||
-                        (isset($mapping['inherited']) && $mapping['inherited'] === true)) {
-                    continue;
-                }
-                if ( ! array_key_exists($fieldName, $fields)) {
-                    continue;
-                }
-                $columnName = $parentClassMetadata->getColumnName($fieldName);
-                $dataSet[$class][$columnName] = $fields[$fieldName];
-            }
-        }
-        
-        return $dataSet;
     }*/
 }

@@ -4,30 +4,35 @@ namespace Doctrine\Tests\Models\Company;
 
 /**
  * @DoctrineEntity
- * @DoctrineTable(name="company_employee")
- * @DoctrineInheritanceType("joined")
- * @DoctrineDiscriminatorColumn(name="dtype", type="string", length=20)
- * @DoctrineDiscriminatorMap({
-        "emp" = "Doctrine\Tests\Models\Company\CompanyEmployee",
-        "man" = "Doctrine\Tests\Models\Company\CompanyManager"})
- * @DoctrineSubclasses({"Doctrine\Tests\Models\Company\CompanyManager"})
+ * @DoctrineTable(name="company_employees")
+ * @DoctrineDiscriminatorValue("employee")
+ * @DoctrineSubClasses({"Doctrine\Tests\Models\Company\CompanyManager"})
  */
-class CompanyEmployee
+class CompanyEmployee extends CompanyPerson
 {
     /**
-     * @DoctrineId
      * @DoctrineColumn(type="integer")
-     * @DoctrineGeneratedValue(strategy="auto")
      */
-    public $id;
-
-    /**
-     * @DoctrineColumn(type="double")
-     */
-    public $salary;
+    private $salary;
 
     /**
      * @DoctrineColumn(type="string", length=255)
      */
-    public $department;
+    private $department;
+
+    public function getSalary() {
+        return $this->salary;
+    }
+
+    public function setSalary($salary) {
+        $this->salary = $salary;
+    }
+
+    public function getDepartment() {
+        return $this->department;
+    }
+
+    public function setDepartment($dep) {
+        $this->department = $dep;
+    }
 }

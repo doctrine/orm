@@ -50,11 +50,6 @@ abstract class Type
      */
     public static function getType($name)
     {
-        if (is_object($name)) {
-            try { throw new \Exception(); }
-            catch (\Exception $e) { echo $e->getTraceAsString(); }
-            die();
-        }
         if ( ! isset(self::$_typeObjects[$name])) {
             if ( ! isset(self::$_typesMap[$name])) {
                 throw DoctrineException::updateMe("Unknown type: $name");

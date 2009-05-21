@@ -34,13 +34,17 @@ class OrmFunctionalTestCase extends OrmTestCase
             'Doctrine\Tests\Models\CMS\CmsArticle'
         ),
         'forum' => array(),
-        'company' => array(),
+        'company' => array(
+            'Doctrine\Tests\Models\Company\CompanyPerson',
+            'Doctrine\Tests\Models\Company\CompanyEmployee',
+            'Doctrine\Tests\Models\Company\CompanyManager'
+        ),
         'ecommerce' => array()
     );
 
     protected function useModelSet($setName)
     {
-        $this->_usedModelSets[] = $setName;
+        $this->_usedModelSets[$setName] = true;
     }
     
     /**
@@ -49,7 +53,7 @@ class OrmFunctionalTestCase extends OrmTestCase
     protected function tearDown()
     {
         $conn = $this->sharedFixture['conn'];
-        if (in_array('cms', $this->_usedModelSets)) {
+        if (isset($this->_usedModelSets['cms'])) {
             $conn->exec('DELETE FROM cms_users_groups');
             $conn->exec('DELETE FROM cms_groups');
             $conn->exec('DELETE FROM cms_addresses');
@@ -57,6 +61,12 @@ class OrmFunctionalTestCase extends OrmTestCase
             $conn->exec('DELETE FROM cms_articles');
             $conn->exec('DELETE FROM cms_users');
         }
+        if (isset($this->_usedModelSets['company'])) {
+            $conn->exec('DELETE FROM company_managers');
+            $conn->exec('DELETE FROM company_employees');
+            $conn->exec('DELETE FROM company_persons');
+        }
+
         $this->_em->clear();
     }
 
@@ -79,7 +89,7 @@ class OrmFunctionalTestCase extends OrmTestCase
         }
 
         $classes = array();
-        foreach ($this->_usedModelSets as $setName) {
+        foreach ($this->_usedModelSets as $setName => $bool) {
             if ( ! isset(self::$_tablesCreated[$setName]) || $forceCreateTables) {
                 foreach (self::$_modelSets[$setName] as $className) {
                     $classes[] = $this->_em->getClassMetadata($className);
@@ -88,7 +98,14 @@ class OrmFunctionalTestCase extends OrmTestCase
             }
         }
         if ($classes) {
-            $this->_schemaTool->createSchema($classes);
+            try {
+                $this->_schemaTool->createSchema($classes);
+            } catch (\Exception $e) {
+                // Suppress "xxx already exists" messages
+                if (stripos($e->getMessage(), 'already exists') === false) {
+                    throw $e;
+                }
+            }
         }
     }
 

@@ -34,6 +34,7 @@ use Doctrine\DBAL\Platforms\AbstractPlatform;
  * @version     $Revision$
  * @link        www.doctrine-project.org
  * @since       2.0
+ * @todo Support for mapped superclasses (@DoctrineMappedSuperclass)
  */
 class ClassMetadataFactory
 {
@@ -43,6 +44,7 @@ class ClassMetadataFactory
     private $_driver;
     /** The used cache driver. */
     private $_cacheDriver;
+    private $_loadedMetadata = array();
     
     /**
      * Creates a new factory instance that uses the given metadata driver implementation.
@@ -100,9 +102,11 @@ class ClassMetadataFactory
     }
 
     /**
+     * Sets the metadata descriptor for a specific class.
+     * This is only useful in very special cases, like when generating proxy classes.
      *
-     * @param <type> $className
-     * @param <type> $class 
+     * @param string $className
+     * @param ClassMetadata $class
      */
     public function setMetadataFor($className, $class)
     {
@@ -113,7 +117,7 @@ class ClassMetadataFactory
      * Loads the metadata of the class in question and all it's ancestors whose metadata
      * is still not loaded.
      *
-     * @param string $name   The name of the class for which the metadata should get loaded.
+     * @param string $name The name of the class for which the metadata should get loaded.
      * @param array  $tables The metadata collection to which the loaded metadata is added.
      */
     protected function _loadMetadata($name)
@@ -133,6 +137,12 @@ class ClassMetadataFactory
         $parent = null;
         $visited = array();
         foreach ($parentClasses as $className) {
+            if (isset($this->_loadedMetadata[$className])) {
+                $parent = $this->_loadedMetadata[$className];
+                array_unshift($visited, $className);
+                continue;
+            }
+
             $class = $this->_newClassMetadataInstance($className);
             if ($parent) {
                 $class->setInheritanceType($parent->inheritanceType);
@@ -167,7 +177,8 @@ class ClassMetadataFactory
             }
 
             $class->setParentClasses($visited);
-            $class->finishMapping();
+
+            $this->_generateStaticSql($class);
             
             $this->_loadedMetadata[$className] = $class;
             
@@ -200,7 +211,9 @@ class ClassMetadataFactory
                 $mapping['inherited'] = $parentClass->name;
             }
             $subClass->addFieldMapping($mapping);
-            $subClass->addReflectionProperty($fieldName, $parentClass->getReflectionProperty($fieldName));
+        }
+        foreach ($parentClass->reflFields as $name => $field) {
+            $subClass->reflFields[$name] = $field;
         }
     }
     
@@ -213,8 +226,70 @@ class ClassMetadataFactory
     private function _addInheritedRelations(ClassMetadata $subClass, ClassMetadata $parentClass)
     {
         foreach ($parentClass->associationMappings as $mapping) {
-            $subClass->addAssociationMapping($mapping);
+            if (isset($parentClass->inheritedAssociationFields[$mapping->sourceFieldName])) {
+                // parent class also inherited that one
+                $subClass->addAssociationMapping($mapping, $parentClass->inheritedAssociationFields[$mapping->sourceFieldName]);
+            } else {
+                // parent class defined that one
+                $subClass->addAssociationMapping($mapping, $parentClass->name);
+            }
         }
+    }
+
+    /**
+     * Generates any static SQL strings for a class and stores them in the descriptor.
+     *
+     * @param ClassMetadata $class
+     */
+    private function _generateStaticSql($class)
+    {
+        // Generate INSERT SQL
+        $columns = $values = array();
+        if ($class->inheritanceType == ClassMetadata::INHERITANCE_TYPE_JOINED) {
+            foreach ($class->reflFields as $name => $field) {
+                if (isset($class->fieldMappings[$name]['inherited']) && ! isset($class->fieldMappings[$name]['id'])
+                        || isset($class->inheritedAssociationFields[$name])) {
+                    continue;
+                }
+
+                if (isset($class->associationMappings[$name])) {
+                    $assoc = $class->associationMappings[$name];
+                    if ($assoc->isOneToOne() && $assoc->isOwningSide) {
+                        foreach ($assoc->targetToSourceKeyColumns as $sourceCol) {
+                            $columns[] = $this->_targetPlatform->quoteIdentifier($sourceCol);
+                            $values[] = '?';
+                        }
+                    }
+                } else if ($class->name != $class->rootEntityName || ! $class->isIdGeneratorIdentity() || $class->identifier[0] != $name) {
+                    $columns[] = $this->_targetPlatform->quoteIdentifier($class->columnNames[$name]);
+                    $values[] = '?';
+                }
+            }
+        } else {
+            foreach ($class->reflFields as $name => $field) {
+                if (isset($class->associationMappings[$name])) {
+                    $assoc = $class->associationMappings[$name];
+                    if ($assoc->isOwningSide && $assoc->isOneToOne()) {
+                        foreach ($assoc->targetToSourceKeyColumns as $sourceCol) {
+                            $columns[] = $this->_targetPlatform->quoteIdentifier($sourceCol);
+                            $values[] = '?';
+                        }
+                    }
+                } else if ($class->generatorType != ClassMetadata::GENERATOR_TYPE_IDENTITY ||  $class->identifier[0] != $name) {
+                    $columns[] = $this->_targetPlatform->quoteIdentifier($class->columnNames[$name]);
+                    $values[] = '?';
+                }
+            }
+        }
+        if ($class->isInheritanceTypeSingleTable() || $class->isInheritanceTypeJoined() && $class->name == $class->rootEntityName) {
+            $columns[] = $class->discriminatorColumn['name'];
+            $values[] = '?';
+        }
+
+        $class->insertSql = 'INSERT INTO ' .
+                $this->_targetPlatform->quoteIdentifier($class->primaryTable['name'])
+               . ' (' . implode(', ', $columns) . ') '
+               . 'VALUES (' . implode(', ', $values) . ')';
     }
 
     /**

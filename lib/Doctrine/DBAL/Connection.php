@@ -515,7 +515,7 @@ class Connection
     {
         $this->connect();
         try {
-            //echo "DBAL:" . $query . PHP_EOL;
+            echo "DBAL:" . $query . PHP_EOL;
             if ( ! empty($params)) {
                 $stmt = $this->prepare($query);
                 $stmt->execute($params);
@@ -542,9 +542,9 @@ class Connection
     public function exec($query, array $params = array()) {
         $this->connect();
         try {
-            //echo $query . PHP_EOL;
+            echo "DBAL:" . $query . PHP_EOL;
             if ( ! empty($params)) {
-                //var_dump($params);
+                var_dump($params);
                 $stmt = $this->prepare($query);
                 $stmt->execute($params);
                 return $stmt->rowCount();

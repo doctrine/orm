@@ -297,7 +297,7 @@ final class ClassMetadata
      *
      * name => <tableName>
      * schema => <schemaName>
-     * catalog => <catalogName>
+     * catalog => <catalogName> //TODO: remove catalog? needed?
      *
      * @var array
      */
@@ -396,6 +396,15 @@ final class ClassMetadata
      * @var string
      */
     public $insertSql;
+
+    /**
+     * A map of field names to class names, where the field names are association
+     * fields that have been inherited from another class and values are the names
+     * of the classes that define the association.
+     *
+     * @var array
+     */
+    public $inheritedAssociationFields = array();
 
     /**
      * Initializes a new ClassMetadata instance that will hold the object-relational mapping
@@ -1362,10 +1371,18 @@ final class ClassMetadata
      * This is mainly used to add inherited association mappings to derived classes.
      *
      * @param AssociationMapping $mapping
+     * @param string $owningClassName The name of the class that defined this mapping.
+     * @todo Rename: addInheritedAssociationMapping
      */
-    public function addAssociationMapping(AssociationMapping $mapping)
+    public function addAssociationMapping(AssociationMapping $mapping, $owningClassName)
     {
-        $this->_storeAssociationMapping($mapping);
+        $sourceFieldName = $mapping->sourceFieldName;
+        if (isset($this->associationMappings[$sourceFieldName])) {
+            throw MappingException::duplicateFieldMapping();
+        }
+        $this->associationMappings[$sourceFieldName] = $mapping;
+        $this->inheritedAssociationFields[$sourceFieldName] = $owningClassName;
+        $this->_registerMappingIfInverse($mapping);
     }
 
     /**
@@ -1374,6 +1391,7 @@ final class ClassMetadata
      * This is mainly used to add inherited field mappings to derived classes.
      *
      * @param array $mapping
+     * @todo Rename: addInheritedFieldMapping
      */
     public function addFieldMapping(array $fieldMapping)
     {
@@ -1759,46 +1777,6 @@ final class ClassMetadata
     public function setSequenceGeneratorDefinition(array $definition)
     {
         $this->sequenceGeneratorDefinition = $definition;
-    }
-
-    /**
-     * INTERNAL: Called by ClassMetadataFactory.
-     * 
-     * Tells this class descriptor to finish the mapping definition, making any
-     * final adjustments, i.e. generating some SQL strings.
-     */
-    public function finishMapping()
-    {
-        $columns = $values = array();
-
-        if ($this->inheritanceType == self::INHERITANCE_TYPE_JOINED) {
-            //TODO
-        } else {
-            foreach ($this->reflFields as $name => $field) {
-                if (isset($this->associationMappings[$name])) {
-                    $assoc = $this->associationMappings[$name];
-                    if ($assoc->isOwningSide && $assoc->isOneToOne()) {
-                        foreach ($assoc->targetToSourceKeyColumns as $sourceCol) {
-                            $columns[] = $sourceCol;
-                            $values[] = '?';
-                        }
-                    }
-                } else if ($this->generatorType != self::GENERATOR_TYPE_IDENTITY ||  $this->identifier[0] != $name) {
-                    $columns[] = $this->columnNames[$name];
-                    $values[] = '?';
-                }
-            }
-        }
-
-        if ($this->discriminatorColumn) {
-            $columns[] = $this->discriminatorColumn['name'];
-            $values[] = '?';
-        }
-
-        $this->insertSql = 'INSERT INTO ' . $this->primaryTable['name']
-               . ' (' . implode(', ', $columns) . ') '
-               . 'VALUES (' . implode(', ', $values) . ')';
-
     }
 
     /**

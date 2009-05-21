@@ -22,6 +22,7 @@ class AllTests
         $suite->addTestSuite('Doctrine\Tests\ORM\Functional\BasicFunctionalTest');
         $suite->addTestSuite('Doctrine\Tests\ORM\Functional\NativeQueryTest');
         $suite->addTestSuite('Doctrine\Tests\ORM\Functional\SingleTableInheritanceTest');
+        $suite->addTestSuite('Doctrine\Tests\ORM\Functional\ClassTableInheritanceTest');
         $suite->addTestSuite('Doctrine\Tests\ORM\Functional\DetachedEntityTest');
 
         return $suite;

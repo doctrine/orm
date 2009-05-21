@@ -40,7 +40,8 @@ class SingleTablePersister extends StandardEntityPersister
         // Populate the discriminator column
         if ($isInsert) {
             $discColumn = $this->_class->discriminatorColumn;
-            $result[$discColumn['name']] = $this->_class->discriminatorValue;
+            $result[$this->_class->primaryTable['name']][$discColumn['name']] =
+                    $this->_class->discriminatorValue;
         }
     }
 }

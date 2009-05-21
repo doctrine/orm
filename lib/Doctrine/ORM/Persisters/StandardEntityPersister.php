@@ -84,29 +84,6 @@ class StandardEntityPersister
         $this->_conn = $em->getConnection();
         $this->_class = $class;
     }
-    
-    /**
-     * Inserts an entity.
-     *
-     * @param object $entity The entity to insert.
-     * @return mixed If the entity uses a post-insert ID generator, the generated
-     *               ID is returned, NULL otherwise.
-     */
-    public function insert($entity)
-    {
-        $insertData = array();
-        $this->_prepareData($entity, $insertData, true);
-
-        $stmt = $this->_conn->prepare($this->_class->insertSql);
-        $stmt->execute(array_values($insertData));
-        $stmt->closeCursor();
-
-        $idGen = $this->_class->getIdGenerator();
-        if ($idGen->isPostInsertGenerator()) {
-            return $idGen->generate($this->_em, $entity);
-        }
-        return null;
-    }
 
     /**
      * Adds an entity to the queued inserts.
@@ -120,6 +97,8 @@ class StandardEntityPersister
 
     /**
      * Executes all queued inserts.
+     *
+     * @return array An array of any generated post-insert IDs.
      */
     public function executeInserts()
     {
@@ -128,14 +107,21 @@ class StandardEntityPersister
         }
         
         $postInsertIds = array();
-        $idGen = $this->_class->getIdGenerator();
+        $idGen = $this->_class->idGenerator;
         $isPostInsertId = $idGen->isPostInsertGenerator();
 
         $stmt = $this->_conn->prepare($this->_class->insertSql);
+        $primaryTableName = $this->_class->primaryTable['name'];
         foreach ($this->_queuedInserts as $entity) {
             $insertData = array();
             $this->_prepareData($entity, $insertData, true);
-            $stmt->execute(array_values($insertData));
+
+            $paramIndex = 1;
+            foreach ($insertData[$primaryTableName] as $value) {
+                $stmt->bindValue($paramIndex++, $value/*, TODO: TYPE */);
+            }
+            $stmt->execute();
+
             if ($isPostInsertId) {
                 $postInsertIds[$idGen->generate($this->_em, $entity)] = $entity;
             }
@@ -157,7 +143,8 @@ class StandardEntityPersister
         $this->_prepareData($entity, $updateData);
         $id = array_combine($this->_class->getIdentifierFieldNames(),
                 $this->_em->getUnitOfWork()->getEntityIdentifier($entity));
-        $this->_conn->update($this->_class->getTableName(), $updateData, $id);
+        $tableName = $this->_class->primaryTable['name'];
+        $this->_conn->update($tableName, $updateData[$tableName], $id);
     }
     
     /**
@@ -171,7 +158,7 @@ class StandardEntityPersister
                 $this->_class->getIdentifierFieldNames(),
                 $this->_em->getUnitOfWork()->getEntityIdentifier($entity)
               );
-        $this->_conn->delete($this->_class->getTableName(), $id);
+        $this->_conn->delete($this->_class->primaryTable['name'], $id);
     }
 
     /**
@@ -229,7 +216,9 @@ class StandardEntityPersister
     }
     
     /**
-     * Prepares the data of an entity for an insert/update operation.
+     * Prepares the data changeset of an entity for database insertion.
+     * The array that is passed as the second parameter is filled with
+     * <columnName> => <value> pairs during this preparation.
      *
      * @param object $entity
      * @param array $result The reference to the data array.
@@ -237,6 +226,7 @@ class StandardEntityPersister
      */
     protected function _prepareData($entity, array &$result, $isInsert = false)
     {
+        $platform = $this->_conn->getDatabasePlatform();
         foreach ($this->_em->getUnitOfWork()->getEntityChangeSet($entity) as $field => $change) {
             $oldVal = $change[0];
             $newVal = $change[1];
@@ -245,25 +235,39 @@ class StandardEntityPersister
 
             if (isset($this->_class->associationMappings[$field])) {
                 $assocMapping = $this->_class->associationMappings[$field];
+                // Only owning side of 1-1 associations can have a FK column.
                 if ( ! $assocMapping->isOneToOne() || $assocMapping->isInverseSide()) {
                     continue;
                 }
                 foreach ($assocMapping->sourceToTargetKeyColumns as $sourceColumn => $targetColumn) {
                     $otherClass = $this->_em->getClassMetadata($assocMapping->targetEntityName);
                     if ($newVal === null) {
-                        $result[$sourceColumn] = null;
+                        $result[$this->getOwningTable($field)][$sourceColumn] = null;
                     } else {
-                        $result[$sourceColumn] = $otherClass->getReflectionProperty(
-                            $otherClass->getFieldName($targetColumn))->getValue($newVal);
+                        $result[$this->getOwningTable($field)][$sourceColumn] =
+                                $otherClass->reflFields[$otherClass->fieldNames[$targetColumn]]
+                                        ->getValue($newVal);
                     }
                 }
             } else if ($newVal === null) {
-                $result[$columnName] = null;
+                $result[$this->getOwningTable($field)][$columnName] = null;
             } else {
-                $result[$columnName] = Type::getType($this->_class->getTypeOfField($field))
-                        ->convertToDatabaseValue($newVal, $this->_conn->getDatabasePlatform());
+                $result[$this->getOwningTable($field)][$columnName] = Type::getType(
+                        $this->_class->fieldMappings[$field]['type'])
+                                ->convertToDatabaseValue($newVal, $platform);
             }
         }
+    }
+
+    /**
+     * Gets the name of the table that owns the column the given field is mapped to.
+     *
+     * @param string $fieldName
+     * @return string
+     */
+    public function getOwningTable($fieldName)
+    {
+        return $this->_class->primaryTable['name'];
     }
 
     /**
@@ -292,7 +296,7 @@ class StandardEntityPersister
                 $this->_class->reflFields[$field]->setValue($entity, $value);
             }
             $id = array();
-            if ($this->_class->isIdentifierComposite()) {
+            if ($this->_class->isIdentifierComposite) {
                 foreach ($this->_class->identifier as $fieldName) {
                     $id[] = $data[$fieldName];
                 }
@@ -329,7 +333,8 @@ class StandardEntityPersister
      * Gets the SELECT SQL to select a single entity by a set of field criteria.
      *
      * @param array $criteria
-     * @return string
+     * @return string The SQL.
+     * @todo Quote identifier.
      */
     protected function _getSelectSingleEntitySql(array $criteria)
     {
