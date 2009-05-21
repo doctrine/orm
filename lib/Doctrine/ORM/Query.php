@@ -66,19 +66,19 @@ class Query extends AbstractQuery
     protected $_parserResult;
 
     /**
-     * @var Doctrine_Cache_Interface  The cache driver used for caching queries.
+     * @var CacheDriver  The cache driver used for caching queries.
      */
-    //protected $_queryCache;
+    protected $_queryCache;
 
     /**
      * @var boolean Boolean value that indicates whether or not expire the query cache.
      */
-    //protected $_expireQueryCache = false;
+    protected $_expireQueryCache = false;
 
     /**
      * @var int Query Cache lifetime.
      */
-    //protected $_queryCacheTTL;
+    protected $_queryCacheTTL;
 
     // End of Caching Stuff
 
@@ -130,7 +130,7 @@ class Query extends AbstractQuery
     protected function _doExecute(array $params)
     {
         // If there is a CacheDriver associated to cache queries...
-        if ($queryCache = $this->_em->getConfiguration()->getQueryCacheImpl()) {
+        if ($queryCache = $this->getQueryCacheDriver()) {
             // Calculate hash for dql query.
             $hash = md5($this->getDql() . 'DOCTRINE_QUERY_CACHE_SALT');
             $cached = ($this->_expireQueryCache) ? false : $queryCache->fetch($hash);
@@ -138,10 +138,10 @@ class Query extends AbstractQuery
             if ($cached === false) {
                 // Cache miss.
                 $executor = $this->parse()->getSqlExecutor();
-                $queryCache->save($hash, $this->_parserResult->toCachedForm(), null);
+                $queryCache->save($hash, serialize($this->_parserResult), null);
             } else {
                 // Cache hit.
-                $this->_parserResult = CacheHandler::fromCachedQuery($this, $cached);
+                $this->_parserResult = unserialize($cached);
                 $executor = $this->_parserResult->getSqlExecutor();
             }
         } else {
@@ -149,7 +149,7 @@ class Query extends AbstractQuery
         }
 
         // Assignments for Enums
-        $this->_setEnumParams($this->_parserResult->getEnumParams());
+        //$this->_setEnumParams($this->_parserResult->getEnumParams());
 
         // Converting parameters
         $params = $this->_prepareParams($params);
@@ -168,32 +168,26 @@ class Query extends AbstractQuery
      * @param Doctrine_Cache_Interface|null $driver Cache driver
      * @return Doctrine_ORM_Query
      */
-    /*public function setQueryCache($queryCache)
+    public function setQueryCacheDriver($queryCache)
     {
-        if ($queryCache !== null && ! ($queryCache instanceof \Doctrine\ORM\Cache\Cache)) {
-            throw DoctrineException::updateMe(
-                'Method setResultCache() accepts only an instance of Doctrine_ORM_Cache_Interface or null.'
-            );
-        }
-
         $this->_queryCache = $queryCache;
-
         return $this;
-    }*/
+    }
 
     /**
-     * Returns the cache driver used for caching queries.
+     * Returns the cache driver used for query caching.
      *
-     * @return Doctrine_Cache_Interface Cache driver
+     * @return CacheDriver The cache driver used for query caching or NULL, if this
+     * 					   Query does not use query caching.
      */
-    /*public function getQueryCache()
+    public function getQueryCacheDriver()
     {
-        if ($this->_queryCache instanceof \Doctrine\ORM\Cache\Cache) {
+        if ($this->_queryCache) {
             return $this->_queryCache;
         } else {
-            return $this->_em->getConnection()->getQueryCacheDriver();
+            return $this->_em->getConfiguration()->getQueryCacheImpl();
         }
-    }*/
+    }
 
     /**
      * Defines how long the query cache will be active before expire.
@@ -201,26 +195,25 @@ class Query extends AbstractQuery
      * @param integer $timeToLive How long the cache entry is valid
      * @return Doctrine_ORM_Query
      */
-    /*public function setQueryCacheLifetime($timeToLive)
+    public function setQueryCacheLifetime($timeToLive)
     {
         if ($timeToLive !== null) {
             $timeToLive = (int) $timeToLive;
         }
-
         $this->_queryCacheTTL = $timeToLive;
 
         return $this;
-    }*/
+    }
 
     /**
      * Retrieves the lifetime of resultset cache.
      *
      * @return int
      */
-    /*public function getQueryCacheLifetime()
+    public function getQueryCacheLifetime()
     {
         return $this->_queryCacheTTL;
-    }*/
+    }
 
     /**
      * Defines if the query cache is active or not.
@@ -228,22 +221,22 @@ class Query extends AbstractQuery
      * @param boolean $expire Whether or not to force query cache expiration.
      * @return Doctrine_ORM_Query
      */
-    /*public function setExpireQueryCache($expire = true)
+    public function setExpireQueryCache($expire = true)
     {
-        $this->_expireQueryCache = (bool) $expire;
+        $this->_expireQueryCache = $expire;
 
         return $this;
-    }*/
+    }
 
     /**
      * Retrieves if the query cache is active or not.
      *
      * @return bool
      */
-    /*public function getExpireQueryCache()
+    public function getExpireQueryCache()
     {
         return $this->_expireQueryCache;
-    }*/
+    }
 
     /**
      * @override

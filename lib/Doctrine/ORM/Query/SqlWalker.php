@@ -69,12 +69,6 @@ class SqlWalker
         $this->_em = $query->getEntityManager();
         $this->_parserResult = $parserResult;
         $this->_queryComponents = $queryComponents;
-        
-        // In a mixed query we start alias counting for scalars with 1 since
-        // index 0 will hold the object.
-        /*if ($parserResult->isMixedQuery()) {
-            $this->_scalarResultCounter = 1;
-        }*/
     }
 
     /**
@@ -120,10 +114,10 @@ class SqlWalker
 
         foreach ($this->_selectedClasses as $dqlAlias => $class) {
             if ($this->_queryComponents[$dqlAlias]['relation'] === null) {
-                $this->_resultSetMapping->addEntityResult($class, $dqlAlias);
+                $this->_resultSetMapping->addEntityResult($class->name, $dqlAlias);
             } else {
                 $this->_resultSetMapping->addJoinedEntityResult(
-                    $class, $dqlAlias,
+                    $class->name, $dqlAlias,
                     $this->_queryComponents[$dqlAlias]['parent'],
                     $this->_queryComponents[$dqlAlias]['relation']
                 );
@@ -691,9 +685,7 @@ class SqlWalker
     public function walkUpdateItem($updateItem)
     {
         $sql = '';
-        $dqlAlias = $updateItem->getIdentificationVariable() ?
-                $updateItem->getIdentificationVariable() :
-                $this->_parserResult->getDefaultQueryComponentAlias();
+        $dqlAlias = $updateItem->getIdentificationVariable();
         $qComp = $this->_queryComponents[$dqlAlias];
 
         if ($this->_useSqlTableAliases) {

@@ -15,7 +15,7 @@ class ObjectHydratorTest extends HydrationTest
     public function testNewHydrationSimpleEntityQuery()
     {
         $rsm = new ResultSetMapping;
-        $rsm->addEntityResult($this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsUser'), 'u');
+        $rsm->addEntityResult('Doctrine\Tests\Models\CMS\CmsUser', 'u');
         $rsm->addFieldResult('u', 'u__id', 'id');
         $rsm->addFieldResult('u', 'u__name', 'name');
 
@@ -52,8 +52,8 @@ class ObjectHydratorTest extends HydrationTest
     public function testNewHydrationSimpleMultipleRootEntityQuery()
     {
         $rsm = new ResultSetMapping;
-        $rsm->addEntityResult($this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsUser'), 'u');
-        $rsm->addEntityResult($this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsArticle'), 'a');
+        $rsm->addEntityResult('Doctrine\Tests\Models\CMS\CmsUser', 'u');
+        $rsm->addEntityResult('Doctrine\Tests\Models\CMS\CmsArticle', 'a');
         $rsm->addFieldResult('u', 'u__id', 'id');
         $rsm->addFieldResult('u', 'u__name', 'name');
         $rsm->addFieldResult('a', 'a__id', 'id');
@@ -108,9 +108,9 @@ class ObjectHydratorTest extends HydrationTest
     public function testNewHydrationMixedQueryFetchJoin()
     {
         $rsm = new ResultSetMapping;
-        $rsm->addEntityResult($this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsUser'), 'u');
+        $rsm->addEntityResult('Doctrine\Tests\Models\CMS\CmsUser', 'u');
         $rsm->addJoinedEntityResult(
-                $this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsPhonenumber'),
+                'Doctrine\Tests\Models\CMS\CmsPhonenumber',
                 'p',
                 'u',
                 $this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsUser')->getAssociationMapping('phonenumbers')
@@ -182,7 +182,7 @@ class ObjectHydratorTest extends HydrationTest
     public function testNewHydrationMixedQueryNormalJoin()
     {
         $rsm = new ResultSetMapping;
-        $rsm->addEntityResult($this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsUser'), 'u');
+        $rsm->addEntityResult('Doctrine\Tests\Models\CMS\CmsUser', 'u');
         $rsm->addFieldResult('u', 'u__id', 'id');
         $rsm->addFieldResult('u', 'u__status', 'status');
         $rsm->addScalarResult('sclr0', 'numPhones');
@@ -229,9 +229,9 @@ class ObjectHydratorTest extends HydrationTest
     public function testNewHydrationMixedQueryFetchJoinCustomIndex()
     {
         $rsm = new ResultSetMapping;
-        $rsm->addEntityResult($this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsUser'), 'u');
+        $rsm->addEntityResult('Doctrine\Tests\Models\CMS\CmsUser', 'u');
         $rsm->addJoinedEntityResult(
-                $this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsPhonenumber'),
+                'Doctrine\Tests\Models\CMS\CmsPhonenumber',
                 'p',
                 'u',
                 $this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsUser')->getAssociationMapping('phonenumbers')
@@ -308,15 +308,15 @@ class ObjectHydratorTest extends HydrationTest
     public function testNewHydrationMixedQueryMultipleFetchJoin()
     {
         $rsm = new ResultSetMapping;
-        $rsm->addEntityResult($this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsUser'), 'u');
+        $rsm->addEntityResult('Doctrine\Tests\Models\CMS\CmsUser', 'u');
         $rsm->addJoinedEntityResult(
-                $this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsPhonenumber'),
+                'Doctrine\Tests\Models\CMS\CmsPhonenumber',
                 'p',
                 'u',
                 $this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsUser')->getAssociationMapping('phonenumbers')
         );
         $rsm->addJoinedEntityResult(
-                $this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsArticle'),
+                'Doctrine\Tests\Models\CMS\CmsArticle',
                 'a',
                 'u',
                 $this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsUser')->getAssociationMapping('articles')
@@ -423,21 +423,21 @@ class ObjectHydratorTest extends HydrationTest
     public function testNewHydrationMixedQueryMultipleDeepMixedFetchJoin()
     {
         $rsm = new ResultSetMapping;
-        $rsm->addEntityResult($this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsUser'), 'u');
+        $rsm->addEntityResult('Doctrine\Tests\Models\CMS\CmsUser', 'u');
         $rsm->addJoinedEntityResult(
-                $this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsPhonenumber'),
+                'Doctrine\Tests\Models\CMS\CmsPhonenumber',
                 'p',
                 'u',
                 $this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsUser')->getAssociationMapping('phonenumbers')
         );
         $rsm->addJoinedEntityResult(
-                $this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsArticle'),
+                'Doctrine\Tests\Models\CMS\CmsArticle',
                 'a',
                 'u',
                 $this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsUser')->getAssociationMapping('articles')
         );
         $rsm->addJoinedEntityResult(
-                $this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsComment'),
+                'Doctrine\Tests\Models\CMS\CmsComment',
                 'c',
                 'a',
                 $this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsArticle')->getAssociationMapping('comments')
@@ -574,9 +574,9 @@ class ObjectHydratorTest extends HydrationTest
     public function testNewHydrationEntityQueryCustomResultSetOrder()
     {
         $rsm = new ResultSetMapping;
-        $rsm->addEntityResult($this->_em->getClassMetadata('Doctrine\Tests\Models\Forum\ForumCategory'), 'c');
+        $rsm->addEntityResult('Doctrine\Tests\Models\Forum\ForumCategory', 'c');
         $rsm->addJoinedEntityResult(
-                $this->_em->getClassMetadata('Doctrine\Tests\Models\Forum\ForumBoard'),
+                'Doctrine\Tests\Models\Forum\ForumBoard',
                 'b',
                 'c',
                 $this->_em->getClassMetadata('Doctrine\Tests\Models\Forum\ForumCategory')->getAssociationMapping('boards')
@@ -643,7 +643,7 @@ class ObjectHydratorTest extends HydrationTest
     public function testResultIteration()
     {
         $rsm = new ResultSetMapping;
-        $rsm->addEntityResult($this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsUser'), 'u');
+        $rsm->addEntityResult('Doctrine\Tests\Models\CMS\CmsUser', 'u');
         $rsm->addFieldResult('u', 'u__id', 'id');
         $rsm->addFieldResult('u', 'u__name', 'name');
 

@@ -68,10 +68,11 @@ class ObjectHydrator extends AbstractHydrator
         $this->_resultCounter = 0;
         $this->_fetchedAssociations = array();
         
-        foreach ($this->_rsm->aliasMap as $dqlAlias => $class) {
+        foreach ($this->_rsm->aliasMap as $dqlAlias => $className) {
             $this->_identifierMap[$dqlAlias] = array();
             $this->_resultPointers[$dqlAlias] = array();
             $this->_idTemplate[$dqlAlias] = '';
+            $class = $this->_em->getClassMetadata($className);
 
             if ( ! isset($this->_ce[$class->name])) {
                 $this->_ce[$class->name] = $class;
@@ -88,7 +89,7 @@ class ObjectHydrator extends AbstractHydrator
                 }
             }
             
-            // Remember which classes are "fetch joined"
+            // Remember which associations are "fetch joined"
             if (isset($this->_rsm->relationMap[$dqlAlias])) {
                 $assoc = $this->_rsm->relationMap[$dqlAlias];
                 $this->_fetchedAssociations[$assoc->sourceEntityName][$assoc->sourceFieldName] = true;
@@ -314,7 +315,7 @@ class ObjectHydrator extends AbstractHydrator
         // Hydrate the entity data found in the current row.
         foreach ($rowData as $dqlAlias => $data) {
             $index = false;
-            $entityName = $this->_rsm->aliasMap[$dqlAlias]->name;
+            $entityName = $this->_rsm->aliasMap[$dqlAlias];
             
             if (isset($this->_rsm->parentAliasMap[$dqlAlias])) {
                 // It's a joined result
@@ -326,9 +327,9 @@ class ObjectHydrator extends AbstractHydrator
                 // Get a reference to the right element in the result tree.
                 // This element will get the associated element attached.
                 if ($this->_rsm->isMixed && isset($this->_rootAliases[$parent])) {
-                    $key = key(reset($this->_resultPointers));
+                	$first = reset($this->_resultPointers);
                     // TODO: Exception if $key === null ?
-                    $baseElement = $this->_resultPointers[$parent][$key];
+                    $baseElement = $this->_resultPointers[$parent][key($first)];
                 } else if (isset($this->_resultPointers[$parent])) {
                     $baseElement = $this->_resultPointers[$parent];
                 } else {

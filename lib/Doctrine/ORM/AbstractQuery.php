@@ -188,7 +188,8 @@ abstract class AbstractQuery
      *
      * @param array $params
      */
-    public function setParams(array $params = array()) {
+    public function setParams(array $params = array())
+    {
         $this->_params = $params;
     }
 
@@ -256,9 +257,9 @@ abstract class AbstractQuery
      *
      * @return Doctrine_Cache_Interface Cache driver
      */
-    public function getResultCache()
+    public function getResultCacheDriver()
     {
-        if ($this->_resultCache instanceof \Doctrine\ORM\Cache\Cache) {
+        if ($this->_resultCache) {
             return $this->_resultCache;
         } else {
             return $this->_em->getConfiguration()->getResultCacheImpl();
@@ -471,10 +472,8 @@ abstract class AbstractQuery
 
         $params = $this->getParams($params);
 
-        // Check result cache (Only for SELECT queries)
-        if ($this->_resultCache && $this->_type === self::SELECT) {
-            $cacheDriver = $this->getResultCacheDriver();
-
+        // Check result cache
+        if ($cacheDriver = $this->getResultCacheDriver()) {
             // Calculate hash for DQL query.
             $hash = md5($this->getDql() . var_export($params, true));
             $cached = ($this->_expireResultCache) ? false : $cacheDriver->fetch($hash);

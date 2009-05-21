@@ -948,7 +948,7 @@ abstract class AbstractPlatform
      *
      * @todo Throw exception by default?
      */
-    public function getDropSequenceSql()
+    public function getDropSequenceSql($sequenceName)
     {
         throw DoctrineException::updateMe('Drop sequence not supported by this driver.');
     }

@@ -29,7 +29,7 @@ class NativeQueryTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->flush();
 
         $rsm = new ResultSetMapping;
-        $rsm->addEntityResult($this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsUser'), 'u');
+        $rsm->addEntityResult('Doctrine\Tests\Models\CMS\CmsUser', 'u');
         $rsm->addFieldResult('u', 'id', 'id');
         $rsm->addFieldResult('u', 'name', 'name');
 

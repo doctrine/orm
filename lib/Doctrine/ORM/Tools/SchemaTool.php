@@ -82,7 +82,6 @@ class SchemaTool
         $foreignKeyConstraints = array(); // FK SQL statements. Appended to $sql at the end.
         $sequences = array(); // Sequence SQL statements. Appended to $sql at the end.
 
-        // First we create the tables
         foreach ($classes as $class) {
             if (isset($processedClasses[$class->name])) {
                 continue;

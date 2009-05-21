@@ -116,7 +116,8 @@ final class PersistentCollection extends \Doctrine\Common\Collections\Collection
      * @var boolean
      */
     private $_isDirty = false;
-
+	
+    /** Whether the collection has already been initialized. */
     private $_initialized = false;
 
     /**

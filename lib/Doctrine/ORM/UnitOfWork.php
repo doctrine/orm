@@ -47,7 +47,7 @@ use Doctrine\ORM\EntityManager;
 class UnitOfWork implements PropertyChangedListener
 {
     /**
-     * An Entity is in managed state when it has a primary key/identifier (and
+     * An entity is in managed state when it has a primary key/identifier (and
      * therefore persistent state) and is managed by an EntityManager
      * (registered in the identity map).
      * In MANAGED state the entity is associated with an EntityManager that manages
@@ -56,20 +56,20 @@ class UnitOfWork implements PropertyChangedListener
     const STATE_MANAGED = 1;
 
     /**
-     * An Entity is new if it does not yet have an identifier/primary key
+     * An entity is new if it does not yet have an identifier/primary key
      * and is not (yet) managed by an EntityManager.
      */
     const STATE_NEW = 2;
 
     /**
-     * A detached Entity is an instance with a persistent identity that is not
+     * A detached entity is an instance with a persistent identity that is not
      * (or no longer) associated with an EntityManager (and a UnitOfWork).
-     * This means its no longer in the identity map.
+     * This means it is no longer in the identity map.
      */
     const STATE_DETACHED = 3;
 
     /**
-     * A removed Entity instance is an instance with a persistent identity,
+     * A removed entity instance is an instance with a persistent identity,
      * associated with an EntityManager, whose persistent state has been
      * deleted (or is scheduled for deletion).
      */
@@ -657,8 +657,10 @@ class UnitOfWork implements PropertyChangedListener
     }
 
     /**
-     * Registers a new entity.
+     * Registers a new entity. The entity will be scheduled for insertion.
+     * If the entity already has an identifier, it will be added to the identity map.
      * 
+     * @param object $entity
      * @todo Rename to scheduleForInsert().
      */
     public function registerNew($entity)
@@ -682,9 +684,9 @@ class UnitOfWork implements PropertyChangedListener
     }
 
     /**
-     * Checks whether an entity is registered as new on the unit of work.
+     * Checks whether an entity is registered as new on this unit of work.
      *
-     * @param Doctrine\ORM\Entity $entity
+     * @param object $entity
      * @return boolean
      * @todo Rename to isScheduledForInsert().
      */
@@ -696,7 +698,7 @@ class UnitOfWork implements PropertyChangedListener
     /**
      * Registers a dirty entity.
      *
-     * @param Doctrine\ORM\Entity $entity
+     * @param object $entity
      * @todo Rename to scheduleForUpdate().
      */
     public function registerDirty($entity)
@@ -788,8 +790,8 @@ class UnitOfWork implements PropertyChangedListener
     /**
      * Enter description here...
      *
-     * @param Doctrine\ORM\Entity $entity
-     * @return unknown
+     * @param object $entity
+     * @return boolean
      * @todo Rename to isScheduled()
      */
     public function isEntityRegistered($entity)
@@ -807,7 +809,7 @@ class UnitOfWork implements PropertyChangedListener
      * the identity map with the name of the root entity class. So calling detachAll()
      * with a class name that is not the name of a root entity has no effect.
      *
-     * @return integer   The number of detached entities.
+     * @return integer The number of detached entities.
      */
     public function detachAll($entityName = null)
     {
@@ -834,7 +836,7 @@ class UnitOfWork implements PropertyChangedListener
      * Note that entities in a hierarchy are registered with the class name of
      * the root entity.
      *
-     * @param Doctrine\ORM\Entity $entity  The entity to register.
+     * @param object $entity  The entity to register.
      * @return boolean  TRUE if the registration was successful, FALSE if the identity of
      *                  the entity in question is already managed.
      */
@@ -861,7 +863,7 @@ class UnitOfWork implements PropertyChangedListener
      * Gets the state of an entity within the current unit of work.
      *
      * @param object $entity
-     * @return int
+     * @return int The entity state.
      */
     public function getEntityState($entity)
     {
@@ -938,8 +940,7 @@ class UnitOfWork implements PropertyChangedListener
     }
 
     /**
-     * Checks whether an entity is registered in the identity map of the
-     * UnitOfWork.
+     * Checks whether an entity is registered in the identity map of this UnitOfWork.
      *
      * @param object $entity
      * @return boolean

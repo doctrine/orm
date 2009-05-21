@@ -29,7 +29,7 @@ class ResultSetMappingTest extends \Doctrine\Tests\OrmTestCase
     public function testBasicResultSetMapping()
     {
         $this->_rsm->addEntityResult(
-            $this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsUser'),
+            'Doctrine\Tests\Models\CMS\CmsUser',
             'u'
         );
         $this->_rsm->addFieldResult('u', 'id', 'id');
@@ -42,10 +42,9 @@ class ResultSetMappingTest extends \Doctrine\Tests\OrmTestCase
         $this->assertFalse($this->_rsm->isScalarResult('username'));
         $this->assertFalse($this->_rsm->isScalarResult('name'));
 
-        $this->assertTrue($this->_rsm->getClass('u') instanceof ClassMetadata);
+        $this->assertTrue($this->_rsm->getClass('u') == 'Doctrine\Tests\Models\CMS\CmsUser');
         $class = $this->_rsm->getOwningClass('id');
-        $this->assertTrue($class instanceof ClassMetadata);
-        $this->assertEquals('Doctrine\Tests\Models\CMS\CmsUser', $class->name);
+        $this->assertTrue($class == 'Doctrine\Tests\Models\CMS\CmsUser');
 
         $this->assertEquals('u', $this->_rsm->getEntityAlias('id'));
         $this->assertEquals('u', $this->_rsm->getEntityAlias('status'));

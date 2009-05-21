@@ -22,7 +22,8 @@
 namespace Doctrine\ORM\Query;
 
 /**
- * Doctrine_ORM_Query_ParserResult
+ * Encapsulates the resulting components from a DQL query parsing process that
+ * can be serialized.
  *
  * @author      Guilherme Blanco <guilhermeblanco@hotmail.com>
  * @author      Janne Vanhala <jpvanhal@cc.hut.fi>
@@ -31,15 +32,9 @@ namespace Doctrine\ORM\Query;
  * @since       2.0
  * @version     $Revision$
  */
-class ParserResult extends AbstractResult
+class ParserResult
 {
-    /**
-     * The EntityManager.
-     *
-     * @var Doctrine_EntityManager
-     */
-    protected $_em;
-
+	protected $_sqlExecutor;
     protected $_resultSetMapping;
 
     public function __construct()
@@ -67,33 +62,13 @@ class ParserResult extends AbstractResult
     {
         $this->_resultSetMapping = $rsm;
     }
-    
-    /**
-     * Sets the Entity Manager.
-     *
-     * @param Doctrine_EntityManager $em The Entity Manager.
-     */
-    public function setEntityManager($em)
-    {
-        $this->_em = $em;
-    }
-
-    /**
-     * Gets the Entity Manager.
-     *
-     * @return Doctrine_EntityManager
-     */
-    public function getEntityManager()
-    {
-        return $this->_em;
-    }
 
     /**
      * @nodoc
      */
     public function setSqlExecutor(\Doctrine\ORM\Query\Exec\AbstractExecutor $executor)
     {
-        $this->_data = $executor;
+        $this->_sqlExecutor = $executor;
     }
 
     /**
@@ -101,6 +76,6 @@ class ParserResult extends AbstractResult
      */
     public function getSqlExecutor()
     {
-        return $this->_data;
+        return $this->_sqlExecutor;
     }
 }

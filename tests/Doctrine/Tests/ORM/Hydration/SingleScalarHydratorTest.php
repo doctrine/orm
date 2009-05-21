@@ -55,7 +55,7 @@ class SingleScalarHydratorTest extends HydrationTest
     public function testHydrateSingleScalar($name, $resultSet)
     {
         $rsm = new ResultSetMapping;
-        $rsm->addEntityResult($this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsUser'), 'u');
+        $rsm->addEntityResult('Doctrine\Tests\Models\CMS\CmsUser', 'u');
         $rsm->addFieldResult('u', 'u__id', 'id');
         $rsm->addFieldResult('u', 'u__name', 'name');
 

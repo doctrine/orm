@@ -45,7 +45,7 @@ class ArrayHydrator extends AbstractHydrator
         $this->_resultPointers = array();
         $this->_idTemplate = array();
         $this->_resultCounter = 0;
-        foreach ($this->_rsm->getAliasMap() as $dqlAlias => $class) {
+        foreach ($this->_rsm->getAliasMap() as $dqlAlias => $className) {
             $this->_identifierMap[$dqlAlias] = array();
             $this->_resultPointers[$dqlAlias] = array();
             $this->_idTemplate[$dqlAlias] = '';
@@ -99,9 +99,9 @@ class ArrayHydrator extends AbstractHydrator
                 // Get a reference to the right element in the result tree.
                 // This element will get the associated element attached.
                 if ($this->_rsm->isMixed && isset($this->_rootAliases[$parent])) {
-                    $key = key(reset($this->_resultPointers));
+                	$first = reset($this->_resultPointers);
                     // TODO: Exception if $key === null ?
-                    $baseElement =& $this->_resultPointers[$parent][$key];
+                    $baseElement =& $this->_resultPointers[$parent][key($first)];
                 } else if (isset($this->_resultPointers[$parent])) {
                     $baseElement =& $this->_resultPointers[$parent];
                 } else {

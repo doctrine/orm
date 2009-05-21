@@ -22,18 +22,26 @@
 namespace Doctrine\ORM;
 
 /**
- * The DynamicProxyGenerator is used to generate proxy objects for entities.
- * For that purpose he generates proxy class files on the fly as needed.
+ * The DynamicProxyGenerator is used to generate proxy objects for entities at runtime.
  *
  * @author Roman Borschel <roman@code-factory.org>
  * @since 2.0
  */
 class DynamicProxyGenerator
 {
+	/** The namspace for the generated proxy classes. */
     private static $_ns = 'Doctrine\Generated\Proxies\\';
-    private $_cacheDir = '/Users/robo/dev/php/tmp/gen/';
+    private $_cacheDir;
     private $_em;
-
+	
+    /**
+	 * Initializes a new instance of the <tt>DynamicProxyGenerator</tt> class that is
+	 * connected to the given <tt>EntityManager</tt> and stores proxy class files in
+	 * the given cache directory.
+	 *
+	 * @param EntityManager $em
+	 * @param string $cacheDir
+     */
     public function __construct(EntityManager $em, $cacheDir = null)
     {
         $this->_em = $em;

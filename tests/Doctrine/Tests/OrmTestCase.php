@@ -9,6 +9,8 @@ class OrmTestCase extends DoctrineTestCase
 {
     /** The metadata cache that is shared between all ORM tests (except functional tests). */
     private static $_metadataCacheImpl = null;
+    /** The query cache that is shared between all ORM tests (except functional tests). */
+    private static $_queryCacheImpl = null;
 
     /**
      * Creates an EntityManager for testing purposes.
@@ -24,6 +26,7 @@ class OrmTestCase extends DoctrineTestCase
     {
         $config = new \Doctrine\ORM\Configuration();
         $config->setMetadataCacheImpl(self::getSharedMetadataCacheImpl());
+        $config->setQueryCacheImpl(self::getSharedQueryCacheImpl());
         $eventManager = new \Doctrine\Common\EventManager();
         if ($conn === null) {
             $conn = array(
@@ -42,5 +45,13 @@ class OrmTestCase extends DoctrineTestCase
             self::$_metadataCacheImpl = new \Doctrine\ORM\Cache\ArrayCache;
         }
         return self::$_metadataCacheImpl;
+    }
+    
+    private static function getSharedQueryCacheImpl()
+    {
+        if (self::$_queryCacheImpl === null) {
+            self::$_queryCacheImpl = new \Doctrine\ORM\Cache\ArrayCache;
+        }
+        return self::$_queryCacheImpl;
     }
 }

@@ -382,5 +382,5 @@ abstract class AssociationMapping
      * @param <type> $entity
      * @param <type> $entityManager 
      */
-    /*abstract*/ public function load($entity, $em) {}
+    /*abstract public function load($entity, $em) {}*/
 }

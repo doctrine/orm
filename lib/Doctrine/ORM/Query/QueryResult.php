@@ -33,6 +33,8 @@ namespace Doctrine\ORM\Query;
  */
 class QueryResult extends AbstractResult
 {
+	protected $_data;
+	
     /**
      * Returns cached resultset.
      *

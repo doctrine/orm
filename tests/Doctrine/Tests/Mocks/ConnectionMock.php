@@ -43,7 +43,7 @@ class ConnectionMock extends \Doctrine\DBAL\Connection
     /**
      * @override
      */
-    public function fetchOne($sql)
+    public function fetchOne($statement, array $params = array(), $colnum = 0)
     {
         return $this->_fetchOneResult;
     }

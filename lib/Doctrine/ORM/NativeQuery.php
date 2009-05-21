@@ -24,8 +24,8 @@ namespace Doctrine\ORM;
 /**
  * Represents a native SQL query.
  *
- * @since 2.0
  * @author Roman Borschel <roman@code-factory.org>
+ * @since 2.0
  */
 class NativeQuery extends AbstractQuery
 {
@@ -55,7 +55,7 @@ class NativeQuery extends AbstractQuery
     /**
      * Gets the SQL query.
      *
-     * @return mixed The built sql query or an array of all sql queries.
+     * @return mixed The built SQL query or an array of all SQL queries.
      * @override
      */
     public function getSql()
@@ -67,18 +67,11 @@ class NativeQuery extends AbstractQuery
      * Executes the query.
      *
      * @param array $params
-     * @return Statement  The Statement handle.
+     * @return Statement The Statement handle.
      * @override
      */
     protected function _doExecute(array $params)
     {
-        // Assignments for Enums
-        //$this->_setEnumParams($this->_parserResult->getEnumParams());
-
-        // Converting parameters
-        $params = $this->_prepareParams($params);
-
-        // Executing the query and returning statement
-        return $this->_em->getConnection()->execute($this->_sql, $params);
+        return $this->_em->getConnection()->execute($this->_sql, $this->_prepareParams($params));
     }
 }

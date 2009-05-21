@@ -44,17 +44,17 @@ abstract class AbstractResult
     /**
      * @var array Enum params.
      */
-    protected $_enumParams = array();
+    //protected $_enumParams = array();
 
     /**
      * Returns the enum parameters.
      *
      * @return mixed Enum parameters.
      */
-    public function getEnumParams()
+    /*public function getEnumParams()
     {
         return $this->_enumParams;
-    }
+    }*/
 
     /**
      * Returns this object in serialized format, revertable using fromCached*.

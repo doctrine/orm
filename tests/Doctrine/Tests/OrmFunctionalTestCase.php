@@ -11,6 +11,8 @@ class OrmFunctionalTestCase extends OrmTestCase
 {
     /* The metadata cache shared between all functional tests. */
     private static $_metadataCacheImpl = null;
+    /* The query cache shared between all functional tests. */
+    private static $_queryCacheImpl = null;
 
     /** The EntityManager for this testcase. */
     protected $_em;
@@ -123,8 +125,12 @@ class OrmFunctionalTestCase extends OrmTestCase
         if (is_null(self::$_metadataCacheImpl)) {
             self::$_metadataCacheImpl = new \Doctrine\ORM\Cache\ArrayCache;
         }
+        if (is_null(self::$_queryCacheImpl)) {
+        	self::$_queryCacheImpl = new \Doctrine\ORM\Cache\ArrayCache;
+        }
         $config = new \Doctrine\ORM\Configuration();
         $config->setMetadataCacheImpl(self::$_metadataCacheImpl);
+        $config->setQueryCacheImpl(self::$_queryCacheImpl);
         $eventManager = new \Doctrine\Common\EventManager();
         $conn = $this->sharedFixture['conn'];
         return \Doctrine\ORM\EntityManager::create($conn, $config, $eventManager);

@@ -180,7 +180,7 @@ abstract class AbstractHydrator
                     $cache[$key]['fieldName'] = $this->_rsm->scalarMappings[$key];
                     $cache[$key]['isScalar'] = true;
                 } else if (isset($this->_rsm->fieldMappings[$key])) {
-                    $classMetadata = $this->_rsm->getOwningClass($key);
+                    $classMetadata = $this->_em->getClassMetadata($this->_rsm->getOwningClass($key));
                     $fieldName = $this->_rsm->fieldMappings[$key];
                     $classMetadata = $this->_lookupDeclaringClass($classMetadata, $fieldName);
                     $cache[$key]['fieldName'] = $fieldName;
@@ -252,7 +252,7 @@ abstract class AbstractHydrator
                     $cache[$key]['fieldName'] = $this->_rsm->scalarMappings[$key];
                     $cache[$key]['isScalar'] = true;
                 } else {
-                    $classMetadata = $this->_rsm->getOwningClass($key);
+                    $classMetadata = $this->_em->getClassMetadata($this->_rsm->getOwningClass($key));
                     $fieldName = $this->_rsm->fieldMappings[$key];
                     $classMetadata = $this->_lookupDeclaringClass($classMetadata, $fieldName);
                     $cache[$key]['fieldName'] = $fieldName;
@@ -306,7 +306,7 @@ abstract class AbstractHydrator
      */
     private function _lookupDeclaringClass($class, $fieldName)
     {
-        if ($class->hasField($fieldName)) {
+        if (isset($class->reflFields[$fieldName])) {
             return $class;
         }
         

@@ -40,8 +40,6 @@ use Doctrine\ORM\Query\Exec;
  */
 class Parser
 {
-    const SCALAR_QUERYCOMPONENT_ALIAS = 'dctrn';
-
     /** Maps registered string function names to class names. */
     private static $_STRING_FUNCTIONS = array(
         'concat' => 'Doctrine\ORM\Query\AST\Functions\ConcatFunction',
@@ -87,14 +85,14 @@ class Parser
     /**
      * A scanner object.
      *
-     * @var Doctrine_ORM_Query_Scanner
+     * @var Doctrine\ORM\Query\Lexer
      */
     private $_lexer;
 
     /**
      * The Parser Result object.
      *
-     * @var Doctrine_ORM_Query_ParserResult
+     * @var Doctrine\ORM\Query\ParserResult
      */
     private $_parserResult;
     
@@ -131,8 +129,7 @@ class Parser
         $this->_em = $query->getEntityManager();
         $this->_lexer = new Lexer($query->getDql());
         $this->_parserResult = new ParserResult;
-        $this->_parserResult->setEntityManager($this->_em);
-        //$this->free(true);
+        //$this->_parserResult->setEntityManager($this->_em);
     }
 
     /**
@@ -495,7 +492,6 @@ class Parser
             $identVariable = $this->_lexer->token['value'];
             $this->match('.');
         } else {
-            //$identVariable = $this->_parserResult->getDefaultQueryComponentAlias();
             throw new DoctrineException("Missing alias qualifier.");
         }
         $this->match(Lexer::T_IDENTIFIER);
@@ -571,8 +567,7 @@ class Parser
             'scalar'   => null,
         );
         $this->_queryComponents[$deleteClause->getAliasIdentificationVariable()] = $queryComponent;
-        //$this->_parserResult->setDefaultQueryComponentAlias($deleteClause->getAliasIdentificationVariable());
-        //$this->_declaredClasses[$deleteClause->getAliasIdentificationVariable()] = $classMetadata;
+
         return $deleteClause;
     }
 
@@ -611,11 +606,6 @@ class Parser
         $identificationVariableDeclarations[] = $this->_IdentificationVariableDeclaration();
 
         $firstRangeDecl = $identificationVariableDeclarations[0]->getRangeVariableDeclaration();
-        /*if ($firstRangeDecl->getAliasIdentificationVariable()) {
-            $this->_parserResult->setDefaultQueryComponentAlias($firstRangeDecl->getAliasIdentificationVariable());
-        } else {
-            $this->_parserResult->setDefaultQueryComponentAlias($firstRangeDecl->getAbstractSchemaName());
-        }*/
 
         while ($this->_lexer->isNextToken(',')) {
             $this->match(',');
@@ -787,7 +777,6 @@ class Parser
 
         // Verify that the association exists, if yes update the ParserResult
         // with the new component.
-        //$parentComp = $this->_parserResult->getQueryComponent($joinPathExpression->getIdentificationVariable());
         $parentClass = $this->_queryComponents[$joinPathExpression->getIdentificationVariable()]['metadata'];
         $assocField = $joinPathExpression->getAssociationField();
         if ( ! $parentClass->hasAssociation($assocField)) {
