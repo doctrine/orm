@@ -64,7 +64,7 @@ abstract class AbstractQuery
     /**
      * @var array $_enumParams Array containing the keys of the parameters that should be enumerated.
      */
-    protected $_enumParams = array();
+    //protected $_enumParams = array();
 
     /**
      * The user-specified ResultSetMapping to use.
@@ -141,20 +141,20 @@ abstract class AbstractQuery
      *
      * @param array $enumParams Enum parameters.
      */
-    protected function _setEnumParams($enumParams = array())
+    /*protected function _setEnumParams($enumParams = array())
     {
         $this->_enumParams = $enumParams;
-    }
+    }*/
 
     /**
      * Get all enumerated parameters
      *
      * @return array All enumerated parameters
      */
-    public function getEnumParams()
+    /*public function getEnumParams()
     {
         return $this->_enumParams;
-    }
+    }*/
 
     /**
      * Convert ENUM parameters to their integer equivalents
@@ -162,7 +162,7 @@ abstract class AbstractQuery
      * @param $params Parameters to be converted
      * @return array Converted parameters array
      */
-    public function convertEnums($params)
+    /*public function convertEnums($params)
     {
         foreach ($this->_enumParams as $key => $values) {
             if (isset($params[$key]) && ! empty($values)) {
@@ -171,7 +171,7 @@ abstract class AbstractQuery
         }
 
         return $params;
-    }
+    }*/
 
     /**
      * Get all defined parameters
@@ -507,11 +507,7 @@ abstract class AbstractQuery
      */
     protected function _prepareParams(array $params)
     {
-        // Convert boolean params
-        $params = $this->_em->getConnection()->getDatabasePlatform()->convertBooleans($params);
-
-        // Convert enum params
-        return $this->convertEnums($params);
+        return $this->_em->getConnection()->getDatabasePlatform()->convertBooleans($params);
     }
 
     /**

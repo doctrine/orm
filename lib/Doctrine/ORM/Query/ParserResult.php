@@ -27,6 +27,7 @@ namespace Doctrine\ORM\Query;
  *
  * @author      Guilherme Blanco <guilhermeblanco@hotmail.com>
  * @author      Janne Vanhala <jpvanhal@cc.hut.fi>
+ * @author		Roman Borschel <roman@code-factory.org>
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @link        http://www.doctrine-project.org
  * @since       2.0
@@ -34,9 +35,13 @@ namespace Doctrine\ORM\Query;
  */
 class ParserResult
 {
-	protected $_sqlExecutor;
-    protected $_resultSetMapping;
-
+	private $_sqlExecutor;
+    private $_resultSetMapping;
+	
+    /**
+     * Initializes a new instance of the <tt>ParserResult</tt> class.
+     * The new instance is initialized with an empty <tt>ResultSetMapping</tt>.
+     */
     public function __construct()
     {
         $this->_resultSetMapping = new ResultSetMapping;
@@ -64,7 +69,9 @@ class ParserResult
     }
 
     /**
-     * @nodoc
+     * Sets the SQL executor that should be used for this ParserResult.
+     * 
+     * @param AbstractExecutor $executor
      */
     public function setSqlExecutor(\Doctrine\ORM\Query\Exec\AbstractExecutor $executor)
     {
@@ -72,7 +79,9 @@ class ParserResult
     }
 
     /**
-     * @nodoc
+     * Gets the SQL executor used by this ParserResult.
+     * 
+     * @return AbstractExecutor
      */
     public function getSqlExecutor()
     {
