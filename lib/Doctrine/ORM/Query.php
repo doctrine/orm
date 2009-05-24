@@ -148,9 +148,6 @@ class Query extends AbstractQuery
             $executor = $this->parse()->getSqlExecutor();
         }
 
-        // Assignments for Enums
-        //$this->_setEnumParams($this->_parserResult->getEnumParams());
-
         // Converting parameters
         $params = $this->_prepareParams($params);
 

@@ -16,7 +16,7 @@
  *
  * This software consists of voluntary contributions made by many individuals
  * and is licensed under the LGPL. For more information, see
- * <http://www.phpdoctrine.org>.
+ * <http://www.doctrine-project.org>.
  */
 
 namespace Doctrine\ORM\Query\Exec;
@@ -27,16 +27,15 @@ namespace Doctrine\ORM\Query\Exec;
  *
  * @author      Roman Borschel <roman@code-factory.org>
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
- * @link        http://www.phpdoctrine.org
+ * @link        http://www.doctrine-project.org
  * @since       2.0
  * @version     $Revision$
  * @todo For a good implementation that uses temporary tables see the Hibernate sources:
  *       (org.hibernate.hql.ast.exec.MultiTableUpdateExecutor).
- * @todo Rename to MultiTableUpdateExecutor
  */
 class MultiTableUpdateExecutor extends AbstractExecutor
 {
-    public function __construct(\Doctrine\ORM\Query\AST $AST)
+    public function __construct($AST)
     {
         // TODO: Inspect the AST, create the necessary SQL queries and store them
         // in $this->_sqlStatements

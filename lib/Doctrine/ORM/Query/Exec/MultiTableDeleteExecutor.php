@@ -16,7 +16,7 @@
  *
  * This software consists of voluntary contributions made by many individuals
  * and is licensed under the LGPL. For more information, see
- * <http://www.phpdoctrine.org>.
+ * <http://www.doctrine-project.org>.
  */
 
 namespace Doctrine\ORM\Query\Exec;
@@ -27,24 +27,23 @@ namespace Doctrine\ORM\Query\Exec;
  *
  * @author      Roman Borschel <roman@code-factory.org>
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
- * @link        http://www.phpdoctrine.org
+ * @link        http://www.doctrine-project.org
  * @since       2.0
  * @version     $Revision$
  * @todo For a good implementation that uses temporary tables see the Hibernate sources:
  *       (org.hibernate.hql.ast.exec.MultiTableDeleteExecutor).
- * @todo Rename to MultiTableDeleteExecutor
  */
 class MultiTableDeleteExecutor extends AbstractExecutor
 {
     /**
      * Enter description here...
      *
-     * @param Doctrine_ORM_Query_AST $AST
+     * @param Node $AST
      */
-    public function __construct(\Doctrine\ORM\Query\AST $AST)
+    public function __construct($AST)
     {
         // 1. Create a INSERT INTO temptable ... VALUES ( SELECT statement where the SELECT statement
-        // selects the identifiers and uses the WhereClause of the $AST.
+        // selects the identifiers and uses the WhereClause of the $AST ).
 
         // 2. Create ID subselect statement used in DELETE .... WHERE ... IN (subselect)
 

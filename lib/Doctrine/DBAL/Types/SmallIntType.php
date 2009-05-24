@@ -23,4 +23,9 @@ class SmallIntType
     {
         return (int) $value;
     }
+    
+    public function getTypeCode()
+    {
+    	return self::CODE_INT;
+    }
 }

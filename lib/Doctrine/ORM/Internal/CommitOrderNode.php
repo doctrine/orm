@@ -16,7 +16,7 @@
  *
  * This software consists of voluntary contributions made by many individuals
  * and is licensed under the LGPL. For more information, see
- * <http://www.phpdoctrine.org>.
+ * <http://www.doctrine-project.org>.
  */
 
 namespace Doctrine\ORM\Internal;
@@ -41,9 +41,9 @@ class CommitOrderNode
     private $_relatedNodes = array();
     
     /* The "time" when this node was first discovered during traversal */
-    private $_discoveryTime;
+    public $discoveryTime;
     /* The "time" when this node was finished during traversal */
-    private $_finishingTime;
+    public $finishingTime;
     
     /* The wrapped object */
     private $_wrappedObj;
@@ -109,7 +109,7 @@ class CommitOrderNode
     public function visit()
     {
         $this->markInProgress();
-        $this->setDiscoveryTime($this->_calculator->getNextTime());
+        $this->discoveryTime = $this->_calculator->getNextTime();
         
         foreach ($this->getRelatedNodes() as $node) {
             if ($node->isNotVisited()) {
@@ -124,27 +124,7 @@ class CommitOrderNode
         
         $this->markVisited();
         $this->_calculator->prependNode($this);
-        $this->setFinishingTime($this->_calculator->getNextTime());
-    }
-    
-    public function setDiscoveryTime($time)
-    {
-        $this->_discoveryTime = $time;
-    }
-    
-    public function setFinishingTime($time)
-    {
-        $this->_finishingTime = $time;
-    }
-    
-    public function getDiscoveryTime()
-    {
-        return $this->_discoveryTime;
-    }
-    
-    public function getFinishingTime()
-    {
-        return $this->_finishingTime;
+        $this->finishingTime = $this->_calculator->getNextTime();
     }
     
     public function getRelatedNodes()

@@ -118,7 +118,7 @@ class StandardEntityPersister
 
             $paramIndex = 1;
             foreach ($insertData[$primaryTableName] as $value) {
-                $stmt->bindValue($paramIndex++, $value/*, TODO: TYPE */);
+                $stmt->bindValue($paramIndex++, $value/*, Type::getType()*/);
             }
             $stmt->execute();
 
@@ -235,7 +235,7 @@ class StandardEntityPersister
 
             if (isset($this->_class->associationMappings[$field])) {
                 $assocMapping = $this->_class->associationMappings[$field];
-                // Only owning side of 1-1 associations can have a FK column.
+                // Only owning side of x-1 associations can have a FK column.
                 if ( ! $assocMapping->isOneToOne() || $assocMapping->isInverseSide()) {
                     continue;
                 }

@@ -19,4 +19,9 @@ class BigIntType extends Type
     {
         return $platform->getBigIntTypeDeclarationSql($fieldDeclaration);
     }
+    
+    public function getTypeCode()
+    {
+    	return self::CODE_INT;
+    }
 }

@@ -26,6 +26,7 @@ namespace Doctrine\ORM\Query\AST;
  *
  * @author      Guilherme Blanco <guilhermeblanco@hotmail.com>
  * @author      Janne Vanhala <jpvanhal@cc.hut.fi>
+ * @author		Roman Borschel <roman@code-factory.org>
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @link        http://www.doctrine-project.org
  * @since       2.0

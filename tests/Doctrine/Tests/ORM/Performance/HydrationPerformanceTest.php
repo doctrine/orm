@@ -27,7 +27,7 @@ class HydrationPerformanceTest extends \Doctrine\Tests\OrmPerformanceTestCase
     public function testNewHydrationSimpleQueryArrayHydrationPerformance()
     {
         $rsm = new ResultSetMapping;
-        $rsm->addEntityResult($this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsUser'), 'u');
+        $rsm->addEntityResult('Doctrine\Tests\Models\CMS\CmsUser', 'u');
         $rsm->addFieldResult('u', 'u__id', 'id');
         $rsm->addFieldResult('u', 'u__status', 'status');
         $rsm->addFieldResult('u', 'u__username', 'username');
@@ -82,9 +82,9 @@ class HydrationPerformanceTest extends \Doctrine\Tests\OrmPerformanceTestCase
     public function testNewHydrationMixedQueryFetchJoinArrayHydrationPerformance()
     {
         $rsm = new ResultSetMapping;
-        $rsm->addEntityResult($this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsUser'), 'u');
+        $rsm->addEntityResult('Doctrine\Tests\Models\CMS\CmsUser', 'u');
         $rsm->addJoinedEntityResult(
-                $this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsPhonenumber'),
+                'Doctrine\Tests\Models\CMS\CmsPhonenumber',
                 'p',
                 'u',
                 $this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsUser')->getAssociationMapping('phonenumbers')
@@ -151,7 +151,7 @@ class HydrationPerformanceTest extends \Doctrine\Tests\OrmPerformanceTestCase
     public function testSimpleQueryObjectHydrationPerformance()
     {
         $rsm = new ResultSetMapping;
-        $rsm->addEntityResult($this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsUser'), 'u');
+        $rsm->addEntityResult('Doctrine\Tests\Models\CMS\CmsUser', 'u');
         $rsm->addFieldResult('u', 'u__id', 'id');
         $rsm->addFieldResult('u', 'u__status', 'status');
         $rsm->addFieldResult('u', 'u__username', 'username');
@@ -194,6 +194,7 @@ class HydrationPerformanceTest extends \Doctrine\Tests\OrmPerformanceTestCase
 
         $this->setMaxRunningTime(5);
         $result = $hydrator->hydrateAll($stmt, $rsm);
+        echo count($result);
     }
 
     /**
@@ -204,9 +205,9 @@ class HydrationPerformanceTest extends \Doctrine\Tests\OrmPerformanceTestCase
     public function testMixedQueryFetchJoinObjectHydrationPerformance()
     {
         $rsm = new ResultSetMapping;
-        $rsm->addEntityResult($this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsUser'), 'u');
+        $rsm->addEntityResult('Doctrine\Tests\Models\CMS\CmsUser', 'u');
         $rsm->addJoinedEntityResult(
-                $this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsPhonenumber'),
+                'Doctrine\Tests\Models\CMS\CmsPhonenumber',
                 'p',
                 'u',
                 $this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsUser')->getAssociationMapping('phonenumbers')

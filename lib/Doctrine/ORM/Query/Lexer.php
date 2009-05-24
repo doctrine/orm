@@ -165,30 +165,6 @@ class Lexer
     }
 
     /**
-     * Attempts to match the given token with the current lookahead token.
-     *
-     * If they match, the lexer moves on to the next token, otherwise a syntax error
-     * is raised.
-     *
-     * @param int|string token type or value
-     * @return bool True, if tokens match; false otherwise.
-     */
-    /*public function match($token)
-    {
-        if (is_string($token)) {
-            $isMatch = ($this->lookahead['value'] === $token);
-        } else {
-            $isMatch = ($this->lookahead['type'] === $token);
-        }
-
-        if ( ! $isMatch) {
-            $this->syntaxError($this->getLiteral($token));
-        }
-
-        $this->moveNext();
-    }*/
-
-    /**
      * Checks if an identifier is a keyword and returns its correct type.
      *
      * @param string $identifier identifier name

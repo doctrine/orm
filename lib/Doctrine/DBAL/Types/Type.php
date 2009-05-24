@@ -5,8 +5,25 @@ namespace Doctrine\DBAL\Types;
 use Doctrine\Common\DoctrineException;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 
+/**
+ * The base class for so-called Doctrine mapping types.
+ * 
+ * A Type object is obtained by calling the static {@link getType()} method.
+ * 
+ * @author Roman Borschel <roman@code-factory.org>
+ * @since 2.0
+ */
 abstract class Type
 {
+	/* The following constants represent type codes and mirror the PDO::PARAM_X constants
+	 * to decouple ourself from PDO.
+	 */
+	const CODE_BOOL = 5;
+	const CODE_NULL = 0;
+	const CODE_INT = 1;
+	const CODE_STR = 2;
+	const CODE_LOB = 3;
+	
     private static $_typeObjects = array();
     private static $_typesMap = array(
         'integer' => 'Doctrine\DBAL\Types\IntegerType',
@@ -39,7 +56,10 @@ abstract class Type
 
     abstract public function getName();
 
-    //abstract public function getTypeCode();
+    public function getTypeCode()
+    {
+    	return self::CODE_STR;
+    }
     
     /**
      * Factory method to create type instances.
