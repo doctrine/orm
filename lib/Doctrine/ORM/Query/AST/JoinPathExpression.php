@@ -1,13 +1,11 @@
 <?php
-/* 
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 
 namespace Doctrine\ORM\Query\AST;
 
 /**
- * Description of JoinCollectionValuedPathExpression
+ * JoinAssociationPathExpression ::= JoinCollectionValuedPathExpression | JoinSingleValuedAssociationPathExpression
+ * JoinCollectionValuedPathExpression ::= IdentificationVariable "." CollectionValuedAssociationField
+ * JoinSingleValuedAssociationPathExpression ::= IdentificationVariable "." SingleValuedAssociationField
  *
  * @author robo
  * @todo Rename: JoinAssociationPathExpression

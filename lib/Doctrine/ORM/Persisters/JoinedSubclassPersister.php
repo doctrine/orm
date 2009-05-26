@@ -199,78 +199,64 @@ class JoinedSubclassPersister extends StandardEntityPersister
     }
     
     /**
-     * Adds all parent classes as INNER JOINs and subclasses as OUTER JOINs
-     * to the query.
+     * Gets the SELECT SQL to select a single entity by a set of field criteria.
      *
-     * Callback that is invoked during the SQL construction process.
-     *
-     * @return array  The custom joins in the format <className> => <joinType>
+     * @param array $criteria
+     * @return string The SQL.
+     * @todo Quote identifier.
+     * @override
      */
-    /*public function getCustomJoins()
+    protected function _getSelectSingleEntitySql(array $criteria)
     {
-        $customJoins = array();
-        $classMetadata = $this->_classMetadata;
-        foreach ($classMetadata->parentClasses as $parentClass) {
-            $customJoins[$parentClass] = 'INNER';
+    	$tableAliases = array();
+    	$aliasIndex = 1;
+    	$idColumns = $this->_class->getIdentifierColumnNames();
+    	$baseTableAlias = 't0';
+    	
+    	foreach (array_merge($this->_class->subClasses, $this->_class->parentClasses) as $className) {
+            $tableAliases[$className] = 't' . $aliasIndex++;
+    	}
+        
+        $columnList = '';
+        foreach ($this->_class->fieldMappings as $fieldName => $mapping) {
+        	$tableAlias = isset($mapping['inherited']) ?
+                    $tableAliases[$mapping['inherited']] : $baseTableAlias;
+            if ($columnList != '') $columnList .= ', ';
+            $columnList .= $tableAlias . '.' . $this->_class->columnNames[$fieldName];
         }
-        foreach ($classMetadata->subClasses as $subClass) {
-            if ($subClass != $this->getComponentName()) {
-                $customJoins[$subClass] = 'LEFT';
+	
+        $sql = 'SELECT ' . $columnList . ' FROM ' . $this->_class->primaryTable['name']. ' ' . $baseTableAlias;
+        
+        // INNER JOIN parent tables
+        foreach ($this->_class->parentClasses as $parentClassName) {
+        	$parentClass = $this->_em->getClassMetadata($parentClassName);
+        	$tableAlias = $tableAliases[$parentClassName];
+        	$sql .= ' INNER JOIN ' . $parentClass->primaryTable['name'] . ' ' . $tableAlias . ' ON ';
+            $first = true;
+            foreach ($idColumns as $idColumn) {
+                if ($first) $first = false; else $sql .= ' AND ';
+                $sql .= $baseTableAlias . '.' . $idColumn . ' = ' . $tableAlias . '.' . $idColumn;
             }
         }
         
-        return $customJoins;
-    }*/
-    
-    /**
-     * Adds the discriminator column to the selected fields in a query as well as
-     * all fields of subclasses. In Class Table Inheritance the default behavior is that
-     * all subclasses are joined in through OUTER JOINs when querying a base class.
-     *
-     * Callback that is invoked during the SQL construction process.
-     *
-     * @return array  An array with the field names that will get added to the query.
-     */
-    /*public function getCustomFields()
-    {
-        $classMetadata = $this->_classMetadata;
-        $conn = $this->_conn;
-        $discrColumn = $classMetadata->discriminatorColumn;
-        $fields = array($discrColumn['name']);
-        if ($classMetadata->subClasses) {
-            foreach ($classMetadata->subClasses as $subClass) {
-                $fields = array_merge($conn->getClassMetadata($subClass)->fieldNames, $fields);
-            }
-        }
-        return array_unique($fields);
-    }*/
-    
-    /**
-     * 
-     * @todo Looks like this better belongs into the ClassMetadata class.
-     */
-    /*public function getOwningClass($fieldName)
-    {
-        $conn = $this->_conn;
-        $classMetadata = $this->_classMetadata;
-        if ($classMetadata->hasField($fieldName) && ! $classMetadata->isInheritedField($fieldName)) {
-            return $classMetadata;
-        }
-        
-        foreach ($classMetadata->parentClasses as $parentClass) {
-            $parentTable = $conn->getClassMetadata($parentClass);
-            if ($parentTable->hasField($fieldName) && ! $parentTable->isInheritedField($fieldName)) {
-                return $parentTable;
+        // OUTER JOIN sub tables
+        foreach ($this->_class->subClasses as $subClassName) {
+            $subClass = $this->_em->getClassMetadata($subClassName);
+            $tableAlias = $tableAliases[$subClassName];
+            $sql .= ' LEFT JOIN ' . $subClass->primaryTable['name'] . ' ' . $tableAlias . ' ON ';
+            $first = true;
+            foreach ($idColumns as $idColumn) {
+                if ($first) $first = false; else $sql .= ' AND ';
+                $sql .= $baseTableAlias . '.' . $idColumn . ' = ' . $tableAlias . '.' . $idColumn;
             }
         }
         
-        foreach ((array)$classMetadata->subClasses as $subClass) {
-            $subTable = $conn->getClassMetadata($subClass);
-            if ($subTable->hasField($fieldName) && ! $subTable->isInheritedField($fieldName)) {
-                return $subTable;
-            }
+        $conditionSql = '';
+        foreach ($criteria as $field => $value) {
+            if ($conditionSql != '') $conditionSql .= ' AND ';
+            $conditionSql .= $baseTableAlias . '.' . $this->_class->columnNames[$field] . ' = ?';
         }
         
-        throw \Doctrine\Common\DoctrineException::updateMe("Unable to find defining class of field '$fieldName'.");
-    }*/
+        return $sql . ' WHERE ' . $conditionSql;
+    }
 }

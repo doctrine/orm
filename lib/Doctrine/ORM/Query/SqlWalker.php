@@ -112,7 +112,7 @@ class SqlWalker
                 . implode(', ', array_map(array($this, 'walkSelectExpression'),
                         $selectClause->getSelectExpressions()));
 
-        foreach ($this->_selectedClasses as $dqlAlias => $class) {
+        foreach ($this->_selectedClasses as $dqlAlias => $class) {        	
             if ($this->_queryComponents[$dqlAlias]['relation'] === null) {
                 $this->_resultSetMapping->addEntityResult($class->name, $dqlAlias);
             } else {
@@ -122,6 +122,7 @@ class SqlWalker
                     $this->_queryComponents[$dqlAlias]['relation']
                 );
             }
+            
             //if ($this->_query->getHydrationMode() == \Doctrine\ORM\Query::HYDRATE_OBJECT) {
             if ($class->isInheritanceTypeSingleTable() || $class->isInheritanceTypeJoined()) {
                 $rootClass = $this->_em->getClassMetadata($class->rootEntityName);
@@ -129,7 +130,7 @@ class SqlWalker
                 $discrColumn = $rootClass->discriminatorColumn;
                 $columnAlias = $this->getSqlColumnAlias($discrColumn['name']);
                 $sql .= ", $tblAlias." . $discrColumn['name'] . ' AS ' . $columnAlias;
-                $this->_resultSetMapping->setDiscriminatorColumn($class->name, $dqlAlias, $columnAlias);
+                $this->_resultSetMapping->setDiscriminatorColumn($dqlAlias, $columnAlias);
             }
             //}
         }
@@ -253,7 +254,7 @@ class SqlWalker
             $assoc = $targetQComp['relation'];
         }
 
-        if ($assoc->isOneToOne()/* || $assoc->isOneToMany()*/) {
+        if ($assoc->isOneToOne()) {
             $sql .= $targetTableName . ' ' . $targetTableAlias . ' ON ';
             $joinColumns = $assoc->getSourceToTargetKeyColumns();
             $first = true;

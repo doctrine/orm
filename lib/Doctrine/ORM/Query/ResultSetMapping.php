@@ -71,9 +71,9 @@ class ResultSetMapping
      * @param <type> $alias
      * @param <type> $discrColumn
      */
-    public function setDiscriminatorColumn($className, $alias, $discrColumn)
+    public function setDiscriminatorColumn($alias, $discrColumn)
     {
-        $this->discriminatorColumns[$className] = $discrColumn;
+        $this->discriminatorColumns[$alias] = $discrColumn;
         $this->columnOwnerMap[$discrColumn] = $alias;
     }
 

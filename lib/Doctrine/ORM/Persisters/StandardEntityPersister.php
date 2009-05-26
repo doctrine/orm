@@ -200,25 +200,20 @@ class StandardEntityPersister
     }
     
     /**
-     * Callback that is invoked during the SQL construction process.
-     */
-    public function getCustomJoins()
-    {
-        return array();
-    }
-    
-    /**
-     * Callback that is invoked during the SQL construction process.
-     */
-    public function getCustomFields()
-    {
-        return array();
-    }
-    
-    /**
      * Prepares the data changeset of an entity for database insertion.
      * The array that is passed as the second parameter is filled with
-     * <columnName> => <value> pairs during this preparation.
+     * <columnName> => <value> pairs, grouped by table name, during this preparation.
+     * 
+     * Example:
+     * <code>
+     * array(
+     *    'foo_table' => array('column1' => 'value1', 'column2' => 'value2', ...),
+     *    'bar_table' => array('columnX' => 'valueX', 'columnY' => 'valueY', ...),
+     *    ...
+     * )
+     * </code>
+     * 
+     * Notes to inheritors: Be sure to call <code>parent::_prepareData($entity, $result, $isInsert);</code>
      *
      * @param object $entity
      * @param array $result The reference to the data array.
@@ -227,7 +222,9 @@ class StandardEntityPersister
     protected function _prepareData($entity, array &$result, $isInsert = false)
     {
         $platform = $this->_conn->getDatabasePlatform();
-        foreach ($this->_em->getUnitOfWork()->getEntityChangeSet($entity) as $field => $change) {
+        $uow = $this->_em->getUnitOfWork();
+        
+        foreach ($uow->getEntityChangeSet($entity) as $field => $change) {
             $oldVal = $change[0];
             $newVal = $change[1];
 
@@ -239,6 +236,18 @@ class StandardEntityPersister
                 if ( ! $assocMapping->isOneToOne() || $assocMapping->isInverseSide()) {
                     continue;
                 }
+                
+                //TODO: If the one-one is self-referencing, check whether the referenced entity ($newVal)
+                //      is still scheduled for insertion. If so:
+                //      1) set $newVal = null, so that we insert a null value
+                //      2) schedule $entity for an update, so that the FK gets set through an update
+                //         later, after the referenced entity has been inserted.
+                //$needsPostponedUpdate = ...
+                /*if ($assocMapping->sourceEntityName == $assocMapping->targetEntityName &&
+                        isset($this->_queuedInserts[spl_object_hash($entity)])) {
+                	echo "SELF-REFERENCING!";
+                }*/
+                
                 foreach ($assocMapping->sourceToTargetKeyColumns as $sourceColumn => $targetColumn) {
                     $otherClass = $this->_em->getClassMetadata($assocMapping->targetEntityName);
                     if ($newVal === null) {
@@ -283,7 +292,7 @@ class StandardEntityPersister
         $stmt->execute(array_values($criteria));
         $data = array();
         foreach ($stmt->fetch(\PDO::FETCH_ASSOC) as $column => $value) {
-            $fieldName = $this->_class->lcColumnToFieldNames[$column];
+            $fieldName = $this->_class->fieldNames[$column];
             $data[$fieldName] = Type::getType($this->_class->getTypeOfField($fieldName))
                     ->convertToPHPValue($value);
         }

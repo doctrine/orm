@@ -95,9 +95,12 @@ class ObjectHydrator extends AbstractHydrator
                 $this->_fetchedAssociations[$assoc->sourceEntityName][$assoc->sourceFieldName] = true;
                 if ($assoc->mappedByFieldName) {
                     $this->_fetchedAssociations[$assoc->targetEntityName][$assoc->mappedByFieldName] = true;
-                } else if ($inverseAssoc = $this->_em->getClassMetadata($assoc->targetEntityName)
-                        ->inverseMappings[$assoc->sourceFieldName]) {
-                    $this->_fetchedAssociations[$assoc->targetEntityName][$inverseAssoc->sourceFieldName] = true;
+                } else {
+                	$targetClass = $this->_em->getClassMetadata($assoc->targetEntityName);
+                    if (isset($targetClass->inverseMappings[$assoc->sourceFieldName])) {
+                    	$inverseAssoc = $targetClass->inverseMappings[$assoc->sourceFieldName];
+                    	$this->_fetchedAssociations[$assoc->targetEntityName][$inverseAssoc->sourceFieldName] = true;
+                    }
                 }
             }
         }
@@ -230,10 +233,11 @@ class ObjectHydrator extends AbstractHydrator
         }
     }
 
-    private function getEntity(array $data, $className)
+    private function getEntity(array $data, $dqlAlias)
     {
-        if (isset($this->_rsm->discriminatorColumns[$className])) {
-            $discrColumn = $this->_rsm->discriminatorColumns[$className];
+    	$className = $this->_rsm->aliasMap[$dqlAlias];
+        if (isset($this->_rsm->discriminatorColumns[$dqlAlias])) {
+            $discrColumn = $this->_rsm->discriminatorColumns[$dqlAlias];
             $className = $this->_discriminatorMap[$className][$data[$discrColumn]];
             unset($data[$discrColumn]);
         }
@@ -351,7 +355,7 @@ class ObjectHydrator extends AbstractHydrator
                         $index = $indexExists ? $this->_identifierMap[$path][$id[$parent]][$id[$dqlAlias]] : false;
                         $indexIsValid = $index !== false ? $this->isIndexKeyInUse($baseElement, $relationAlias, $index) : false;
                         if ( ! $indexExists || ! $indexIsValid) {
-                            $element = $this->getEntity($data, $entityName);
+                            $element = $this->getEntity($data, $dqlAlias);
 
                             // If it's a bi-directional many-to-many, also initialize the reverse collection.
                             if ($relation->isManyToMany()) {
@@ -393,7 +397,7 @@ class ObjectHydrator extends AbstractHydrator
                         if ( ! isset($nonemptyComponents[$dqlAlias])) {
                             //$this->setRelatedElement($baseElement, $relationAlias, null);
                         } else {
-                            $this->setRelatedElement($baseElement, $relationAlias, $this->getEntity($data, $entityName));
+                            $this->setRelatedElement($baseElement, $relationAlias, $this->getEntity($data, $dqlAlias));
                         }
                     }
                 }
@@ -411,7 +415,7 @@ class ObjectHydrator extends AbstractHydrator
                 $this->_rootAliases[$dqlAlias] = true; // Mark as root alias
 
                 if ($this->_isSimpleQuery || ! isset($this->_identifierMap[$dqlAlias][$id[$dqlAlias]])) {
-                    $element = $this->getEntity($rowData[$dqlAlias], $entityName);
+                    $element = $this->getEntity($rowData[$dqlAlias], $dqlAlias);
                     if ($field = $this->_getCustomIndexField($dqlAlias)) {
                         if ($this->_rsm->isMixed) {
                             $result[] = array(

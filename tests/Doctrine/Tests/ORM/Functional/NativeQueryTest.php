@@ -39,6 +39,7 @@ class NativeQueryTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $users = $query->getResultList();
 
         $this->assertEquals(1, count($users));
+        $this->assertTrue($users[0] instanceof CmsUser);
         $this->assertEquals('Roman', $users[0]->name);
     }
 }

@@ -9,7 +9,7 @@ use Doctrine\Tests\Models\Company\CompanyEmployee;
 use Doctrine\Tests\Models\Company\CompanyManager;
 
 /**
- * Functional tests for the Single Table Inheritance mapping strategy.
+ * Functional tests for the Class Table Inheritance mapping strategy.
  *
  * @author robo
  */
@@ -22,7 +22,6 @@ class ClassTableInheritanceTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
     public function testCRUD()
     {
-        
         $person = new CompanyPerson;
         $person->setName('Roman S. Borschel');
         
@@ -88,5 +87,67 @@ class ClassTableInheritanceTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $affected = $query->execute();
         $this->assertEquals(2, $affected);
         */
+    }
+    
+    public function testMultiLevelUpdateAndFind() {
+    	$manager = new CompanyManager;
+        $manager->setName('Roman S. Borschel');
+        $manager->setSalary(100000);
+        $manager->setDepartment('IT');
+        $manager->setTitle('CTO');
+        $this->_em->save($manager);
+        $this->_em->flush();
+        
+        $manager->setName('Roman B.');
+        $manager->setSalary(119000);
+        $manager->setTitle('CEO');
+        $this->_em->save($manager);
+        $this->_em->flush();
+        
+        $this->_em->clear();
+        
+        $manager = $this->_em->find('Doctrine\Tests\Models\Company\CompanyManager', $manager->getId());
+        
+        $this->assertEquals('Roman B.', $manager->getName());
+        $this->assertEquals(119000, $manager->getSalary());
+        $this->assertEquals('CEO', $manager->getTitle());
+        $this->assertTrue(is_numeric($manager->getId()));
+    }
+    
+    public function testSelfReferencingOneToOne() {
+    	$manager = new CompanyManager;
+        $manager->setName('John Smith');
+        $manager->setSalary(100000);
+        $manager->setDepartment('IT');
+        $manager->setTitle('CTO');
+        
+        $wife = new CompanyPerson;
+        $wife->setName('Mary Smith');
+        $wife->setSpouse($manager);
+        
+        $this->assertSame($manager, $wife->getSpouse());
+        $this->assertSame($wife, $manager->getSpouse());
+        
+        $this->_em->save($manager);
+        $this->_em->save($wife);
+        
+        $this->_em->flush();
+        
+        //var_dump($this->_em->getConnection()->fetchAll('select * from company_persons'));
+        //var_dump($this->_em->getConnection()->fetchAll('select * from company_employees'));
+        //var_dump($this->_em->getConnection()->fetchAll('select * from company_managers'));
+        
+        $this->_em->clear();
+        
+        $query = $this->_em->createQuery('select p, s from Doctrine\Tests\Models\Company\CompanyPerson p join p.spouse s where p.name=\'Mary Smith\'');
+        
+        $result = $query->getResultList();
+        $this->assertEquals(1, count($result));
+        $this->assertTrue($result[0] instanceof CompanyPerson);
+        $this->assertEquals('Mary Smith', $result[0]->getName());
+        $this->assertTrue($result[0]->getSpouse() instanceof CompanyEmployee);
+        
+        //var_dump($result);
+        
     }
 }

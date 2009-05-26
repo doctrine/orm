@@ -22,9 +22,11 @@
 namespace Doctrine\ORM;
 
 /**
- * A repository provides the illusion of an in-memory Entity store. 
- * Base class for all custom user-defined repositories.
- * Provides basic finder methods, common to all repositories.
+ * An EntityRepository serves as a repository for entities with generic as well as
+ * business specific methods for retrieving entities.
+ * 
+ * This class is designed for inheritance and users can subclass this class to
+ * write their own repositories.
  *
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @link        www.doctrine-project.org

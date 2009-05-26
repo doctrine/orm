@@ -409,7 +409,7 @@ class Connection
      */
     public function fetchAll($sql, array $params = array())
     {
-        return $this->execute($sql, $params)->fetchAll(PDO::FETCH_ASSOC);
+        return $this->execute($sql, $params)->fetchAll(\PDO::FETCH_ASSOC);
     }
 
     /**

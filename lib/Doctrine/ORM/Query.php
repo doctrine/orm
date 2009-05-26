@@ -36,7 +36,7 @@ use Doctrine\ORM\Query\QueryException;
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  * @author      Roman Borschel <roman@code-factory.org>
  */
-class Query extends AbstractQuery
+final class Query extends AbstractQuery
 {
     /**
      * A query object is in CLEAN state when it has NO unparsed/unprocessed DQL parts.
@@ -53,32 +53,32 @@ class Query extends AbstractQuery
     /**
      * @var integer $_state   The current state of this query.
      */
-    protected $_state = self::STATE_CLEAN;
+    private $_state = self::STATE_CLEAN;
 
     /**
      * @var string $_dql Cached DQL query.
      */
-    protected $_dql = null;
+    private $_dql = null;
 
     /**
      * @var Doctrine\ORM\Query\ParserResult  The parser result that holds DQL => SQL information.
      */
-    protected $_parserResult;
+    private $_parserResult;
 
     /**
      * @var CacheDriver  The cache driver used for caching queries.
      */
-    protected $_queryCache;
+    private $_queryCache;
 
     /**
      * @var boolean Boolean value that indicates whether or not expire the query cache.
      */
-    protected $_expireQueryCache = false;
+    private $_expireQueryCache = false;
 
     /**
      * @var int Query Cache lifetime.
      */
-    protected $_queryCacheTTL;
+    private $_queryCacheTTL;
 
     // End of Caching Stuff
 
