@@ -2,18 +2,18 @@
 
 namespace Doctrine\Tests\DBAL\Platforms;
 
-use Doctrine\DBAL\Platforms\MySqlPlatform;
+use Doctrine\DBAL\Platforms\MsSqlPlatform;
 use Doctrine\DBAL\Types\Type;
 
 require_once __DIR__ . '/../../TestInit.php';
  
-class MySqlPlatformTest extends \Doctrine\Tests\DbalTestCase
+class MsSqlPlatformTest extends \Doctrine\Tests\DbalTestCase
 {
     private $_platform;
 
     public function setUp()
     {
-        $this->_platform = new MySqlPlatform;
+        $this->_platform = new MssqlPlatform;
     }
 
     public function testCreateTableSql()
@@ -70,7 +70,7 @@ class MySqlPlatformTest extends \Doctrine\Tests\DbalTestCase
         );
 
         $this->assertEquals(
-            'CREATE INDEX my_idx ON mytable (user_name(10) ASC, last_login)',
+            'CREATE INDEX my_idx ON mytable (user_name, last_login)',
             $this->_platform->getCreateIndexSql('mytable', 'my_idx', $indexDef)
         );
     }
@@ -80,22 +80,22 @@ class MySqlPlatformTest extends \Doctrine\Tests\DbalTestCase
         $this->assertEquals('RLIKE', $this->_platform->getRegexpExpression());
         $this->assertEquals('`', $this->_platform->getIdentifierQuoteCharacter());
         $this->assertEquals('RAND()', $this->_platform->getRandomExpression());
-        $this->assertEquals('CONCAT(column1, column2, column3)', $this->_platform->getConcatExpression('column1', 'column2', 'column3'));
+        $this->assertEquals('(column1 + column2 + column3)', $this->_platform->getConcatExpression('column1', 'column2', 'column3'));
         $this->assertEquals('CHARACTER SET utf8', $this->_platform->getCharsetFieldDeclaration('utf8'));
         $this->assertEquals(
-            'SET SESSION TRANSACTION ISOLATION LEVEL READ UNCOMMITTED',
+            'SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED',
             $this->_platform->getSetTransactionIsolationSql(\Doctrine\DBAL\Connection::TRANSACTION_READ_UNCOMMITTED)
         );
         $this->assertEquals(
-            'SET SESSION TRANSACTION ISOLATION LEVEL READ COMMITTED',
+            'SET TRANSACTION ISOLATION LEVEL READ COMMITTED',
             $this->_platform->getSetTransactionIsolationSql(\Doctrine\DBAL\Connection::TRANSACTION_READ_COMMITTED)
         );
         $this->assertEquals(
-            'SET SESSION TRANSACTION ISOLATION LEVEL REPEATABLE READ',
+            'SET TRANSACTION ISOLATION LEVEL REPEATABLE READ',
             $this->_platform->getSetTransactionIsolationSql(\Doctrine\DBAL\Connection::TRANSACTION_REPEATABLE_READ)
         );
         $this->assertEquals(
-            'SET SESSION TRANSACTION ISOLATION LEVEL SERIALIZABLE',
+            'SET TRANSACTION ISOLATION LEVEL SERIALIZABLE',
             $this->_platform->getSetTransactionIsolationSql(\Doctrine\DBAL\Connection::TRANSACTION_SERIALIZABLE)
         );
     }

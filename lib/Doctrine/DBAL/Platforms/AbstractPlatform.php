@@ -1092,11 +1092,7 @@ abstract class AbstractPlatform
 
         $query = 'CREATE ' . $type . 'INDEX ' . $name . ' ON ' . $table;
 
-        $fields = array();
-        foreach ($definition['fields'] as $field) {
-            $fields[] = $field;
-        }
-        $query .= ' (' . implode(', ', $fields) . ')';
+        $query .= ' (' . $this->getIndexFieldDeclarationListSql($definition['fields']) . ')';
 
         return $query;
     }
@@ -1715,7 +1711,20 @@ abstract class AbstractPlatform
     {
         throw DoctrineException::updateMe('Set transaction isolation not supported by this platform.');
     }
-    
+
+    /**
+     * Obtain DBMS specific SQL code portion needed to set the CHARACTER SET
+     * of a field declaration to be used in statements like CREATE TABLE.
+     *
+     * @param string $charset   name of the charset
+     * @return string  DBMS specific SQL code portion needed to set the CHARACTER SET
+     *                 of a field declaration.
+     */
+    public function getCharsetFieldDeclaration($charset)
+    {
+        throw DoctrineException::updateMe('Get charset field declaration not supported by this platform.');
+    }
+
     /**
      * Gets the default transaction isolation level of the platform.
      *
