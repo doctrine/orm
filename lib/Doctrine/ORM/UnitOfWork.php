@@ -269,8 +269,6 @@ class UnitOfWork implements PropertyChangedListener
             throw $e;
         }
 
-        //TODO: commit transaction here?
-
         // Take new snapshots from visited collections
         foreach ($this->_visitedCollections as $coll) {
             $coll->takeSnapshot();
@@ -548,9 +546,10 @@ class UnitOfWork implements PropertyChangedListener
     {
         $className = $class->name;
         $persister = $this->getEntityPersister($className);
-        foreach ($this->_entityInsertions as $entity) {
+        foreach ($this->_entityInsertions as $oid => $entity) {
             if (get_class($entity) == $className) {
                 $persister->addInsert($entity);
+                unset($this->_entityInsertions[$oid]);
             }
         }
         $postInsertIds = $persister->executeInserts();
@@ -577,9 +576,10 @@ class UnitOfWork implements PropertyChangedListener
     {
         $className = $class->name;
         $persister = $this->getEntityPersister($className);
-        foreach ($this->_entityUpdates as $entity) {
+        foreach ($this->_entityUpdates as $oid => $entity) {
             if (get_class($entity) == $className) {
                 $persister->update($entity);
+                unset($this->_entityUpdates[$oid]);
             }
         }
     }
@@ -593,9 +593,10 @@ class UnitOfWork implements PropertyChangedListener
     {
         $className = $class->name;
         $persister = $this->getEntityPersister($className);
-        foreach ($this->_entityDeletions as $entity) {
+        foreach ($this->_entityDeletions as $oid => $entity) {
             if (get_class($entity) == $className) {
                 $persister->delete($entity);
+                unset($this->_entityDeletions[$oid]);
             }
         }
     }
@@ -1532,6 +1533,17 @@ class UnitOfWork implements PropertyChangedListener
         $this->_originalEntityData[$oid] = $data;
         $this->addToIdentityMap($entity);
     }
+    
+    /**
+     * INTERNAL:
+     * Clears the property changeset of the entity with the given OID.
+     *
+     * @param string $oid The entity's OID.
+     */
+    public function clearEntityChangeSet($oid)
+    {
+    	unset($this->_entityChangeSets[$oid]);
+    }
 
     /* PropertyChangedListener implementation */
 
@@ -1552,7 +1564,7 @@ class UnitOfWork implements PropertyChangedListener
             $this->_entityChangeSets[$oid][$propertyName] = array($oldValue, $newValue);
 
             if (isset($class->associationMappings[$propertyName])) {
-                $assoc = $class->associationMappings[$name];
+                $assoc = $class->associationMappings[$propertyName];
                 if ($assoc->isOneToOne() && $assoc->isOwningSide) {
                     $this->_entityUpdates[$oid] = $entity;
                 } else if ($oldValue instanceof PersistentCollection) {

@@ -23,6 +23,7 @@ namespace Doctrine\ORM\Persisters;
 
 use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\UnitOfWork;
 use Doctrine\ORM\PersistentCollection;
 use Doctrine\ORM\Mapping\ClassMetadata;
 
@@ -92,7 +93,7 @@ class StandardEntityPersister
      */
     public function addInsert($entity)
     {
-        $this->_queuedInserts[] = $entity;
+        $this->_queuedInserts[spl_object_hash($entity)] = $entity;
     }
 
     /**
@@ -237,16 +238,22 @@ class StandardEntityPersister
                     continue;
                 }
                 
-                //TODO: If the one-one is self-referencing, check whether the referenced entity ($newVal)
-                //      is still scheduled for insertion. If so:
-                //      1) set $newVal = null, so that we insert a null value
-                //      2) schedule $entity for an update, so that the FK gets set through an update
-                //         later, after the referenced entity has been inserted.
-                //$needsPostponedUpdate = ...
-                /*if ($assocMapping->sourceEntityName == $assocMapping->targetEntityName &&
-                        isset($this->_queuedInserts[spl_object_hash($entity)])) {
-                	echo "SELF-REFERENCING!";
-                }*/
+                // Special case: One-one self-referencing of the same class.
+                if ($newVal !== null && $assocMapping->sourceEntityName == $assocMapping->targetEntityName) {
+                    $oid = spl_object_hash($newVal);
+                    $isScheduledForInsert = $uow->isRegisteredNew($newVal);
+                    if (isset($this->_queuedInserts[$oid]) || $isScheduledForInsert) {
+                    	// The associated entity $newVal is not yet persisted, so we must
+                    	// set $newVal = null, in order to insert a null value and update later.
+                        $newVal = null;
+                    } else if ($isInsert && ! $isScheduledForInsert && $uow->getEntityState($newVal) == UnitOfWork::STATE_MANAGED) {
+                    	// $newVal is already fully persisted
+                    	// Clear changeset of $newVal, so that only the identifier is updated.
+                    	// Not sure this is really rock-solid here but it seems to work.
+                    	$uow->clearEntityChangeSet($oid);
+                    	$uow->propertyChanged($newVal, $field, $entity, $entity);
+                    }
+                }
                 
                 foreach ($assocMapping->sourceToTargetKeyColumns as $sourceColumn => $targetColumn) {
                     $otherClass = $this->_em->getClassMetadata($assocMapping->targetEntityName);

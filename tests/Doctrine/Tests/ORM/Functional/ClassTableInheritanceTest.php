@@ -146,8 +146,7 @@ class ClassTableInheritanceTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertTrue($result[0] instanceof CompanyPerson);
         $this->assertEquals('Mary Smith', $result[0]->getName());
         $this->assertTrue($result[0]->getSpouse() instanceof CompanyEmployee);
-        
-        //var_dump($result);
-        
+        $this->assertEquals('John Smith', $result[0]->getSpouse()->getName());
+        $this->assertSame($result[0], $result[0]->getSpouse()->getSpouse());
     }
 }

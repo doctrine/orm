@@ -288,11 +288,14 @@ class ObjectHydrator extends AbstractHydrator
             if ($relation->isOwningSide) {
                 // If there is an inverse mapping on the target class its bidirectional
                 if (isset($targetClass->inverseMappings[$property])) {
-                    $sourceProp = $targetClass->inverseMappings[$fieldName]->sourceFieldName;
+                    $sourceProp = $targetClass->inverseMappings[$property]->sourceFieldName;
                     $targetClass->reflFields[$sourceProp]->setValue($entity2, $entity1);
+                } else if ($classMetadata1 === $targetClass) {
+                	// Special case: self-referencing one-one on the same class
+                	$targetClass->reflFields[$property]->setValue($entity2, $entity1);
                 }
             } else {
-                // For sure bidirectional, as there is no inverse side in unidirectional
+                // For sure bidirectional, as there is no inverse side in unidirectional mappings
                 $targetClass->reflFields[$relation->mappedByFieldName]->setValue($entity2, $entity1);
             }
         }
