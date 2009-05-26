@@ -96,10 +96,10 @@ class ObjectHydrator extends AbstractHydrator
                 if ($assoc->mappedByFieldName) {
                     $this->_fetchedAssociations[$assoc->targetEntityName][$assoc->mappedByFieldName] = true;
                 } else {
-                	$targetClass = $this->_em->getClassMetadata($assoc->targetEntityName);
+                    $targetClass = $this->_em->getClassMetadata($assoc->targetEntityName);
                     if (isset($targetClass->inverseMappings[$assoc->sourceFieldName])) {
-                    	$inverseAssoc = $targetClass->inverseMappings[$assoc->sourceFieldName];
-                    	$this->_fetchedAssociations[$assoc->targetEntityName][$inverseAssoc->sourceFieldName] = true;
+                        $inverseAssoc = $targetClass->inverseMappings[$assoc->sourceFieldName];
+                        $this->_fetchedAssociations[$assoc->targetEntityName][$inverseAssoc->sourceFieldName] = true;
                     }
                 }
             }
