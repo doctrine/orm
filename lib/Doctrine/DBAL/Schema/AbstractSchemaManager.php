@@ -21,6 +21,8 @@
 
 namespace Doctrine\DBAL\Schema;
 
+use \Doctrine\DBAL\Types;
+
 /**
  * Base class for schema managers. Schema managers are used to inspect and/or
  * modify the database schema/structure.
@@ -524,52 +526,132 @@ abstract class AbstractSchemaManager
 
     protected function _getPortableDatabasesList($databases)
     {
+        foreach ($databases as $key => $value) {
+            $databases[$key] = $this->_getPortableDatabaseDefinition($value);
+        }
         return $databases;
+    }
+
+    protected function _getPortableDatabaseDefinition($database)
+    {
+        return $database;
     }
 
     protected function _getPortableFunctionsList($functions)
     {
+        foreach ($functions as $key => $value) {
+            $functions[$key] = $this->_getPortableFunctionDefinition($value);
+        }
         return $functions;
+    }
+
+    protected function _getPortableFunctionDefinition($function)
+    {
+        return $function;
     }
 
     protected function _getPortableTriggersList($triggers)
     {
+        foreach ($triggers as $key => $value) {
+            $triggers[$key] = $this->_getPortableTriggerDefinition($value);
+        }
         return $triggers;
+    }
+
+    protected function _getPortableTriggerDefinition($trigger)
+    {
+        return $trigger;
     }
 
     protected function _getPortableSequencesList($sequences)
     {
+        foreach ($sequences as $key => $value) {
+            $sequences[$key] = $this->_getPortableSequenceDefinition($value);
+        }
         return $sequences;
+    }
+
+    protected function _getPortableSequenceDefinition($sequence)
+    {
+        return $sequence;
     }
 
     protected function _getPortableTableConstraintsList($tableConstraints)
     {
+        foreach ($tableConstraints as $key => $value) {
+            $tableConstraints[$key] = $this->_getPortableTableConstraintDefinition($value);
+        }
         return $tableConstraints;
+    }
+
+    protected function _getPortableTableConstraintDefinition($tableConstraint)
+    {
+        return $tableConstraint;
     }
 
     protected function _getPortableTableColumnList($tableColumns)
     {
+        foreach ($tableColumns as $key => $value) {
+            $tableColumns[$key] = $this->_getPortableTableColumnDefinition($value);
+        }
         return $tableColumns;
+    }
+
+    protected function _getPortableTableColumnDefinition($tableColumn)
+    {
+        return $tableColumn;
     }
 
     protected function _getPortableTableIndexesList($tableIndexes)
     {
+        foreach ($tableIndexes as $key => $value) {
+            $tableIndexes[$key] = $this->_getPortableTableIndexDefinition($value);
+        }
         return $tableIndexes;
+    }
+
+    protected function _getPortableTableIndexDefinition($tableIndex)
+    {
+        return $tableIndex;
     }
 
     protected function _getPortableTablesList($tables)
     {
+        foreach ($tables as $key => $value) {
+            $tables[$key] = $this->_getPortableTableDefinition($value);
+        }
         return $tables;
+    }
+
+    protected function _getPortableTableDefinition($table)
+    {
+        return $table;
     }
 
     protected function _getPortableUsersList($users)
     {
+        foreach ($users as $key => $value) {
+            $users[$key] = $this->_getPortableUserDefinition($value);
+        }
         return $users;
+    }
+
+    protected function _getPortableUserDefinition($user)
+    {
+        return $user;
     }
 
     protected function _getPortableViewsList($views)
     {
+        foreach ($views as $key => $value) {
+            $views[$key] = $this->_getPortableViewDefinition($value);
+        }
         return $views;
+    }
+
+    protected function _getPortableViewDefinition($view)
+    {
+        return $view;
     }
 
     protected function _executeSql($sql, $method = 'exec')

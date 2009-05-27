@@ -272,7 +272,12 @@ class MySqlPlatform extends AbstractPlatform
     {
         return 'SHOW TABLES';
     }
-    
+
+    public function getListTableColumnsSql($table)
+    {
+        return 'DESCRIBE ' . $this->quoteIdentifier($table);
+    }
+
     /**
      * create a new database
      *

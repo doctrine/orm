@@ -1,6 +1,6 @@
 <?php
 
-namespace Doctrine\Tests\DBAL\Functional\Schemas;
+namespace Doctrine\Tests\DBAL\Functional\Schema;
 
 use Doctrine\Tests\TestUtil;
 use Doctrine\DBAL\Schema;
@@ -16,7 +16,7 @@ class SqliteSchemaTest extends \Doctrine\Tests\DbalFunctionalTestCase
         $this->_conn = TestUtil::getConnection();
         if ($this->_conn->getDatabasePlatform()->getName() !== 'sqlite')
         {
-            $this->markTestSkipped('The SqliteSchemaTest requires the use of the pdo_sqlite');
+            $this->markTestSkipped('The SqliteSchemaTest requires the use of sqlite');
         }
         $this->_sm = new Schema\SqliteSchemaManager($this->_conn);
     }
@@ -41,7 +41,23 @@ class SqliteSchemaTest extends \Doctrine\Tests\DbalFunctionalTestCase
         $this->_sm->createTable('list_tables_test', $columns, $options);
 
         $columns = $this->_sm->listTableColumns('list_tables_test');
+
         $this->assertEquals($columns[0]['name'], 'id');
+        $this->assertEquals($columns[0]['primary'], true);
+        $this->assertEquals(get_class($columns[0]['type']), 'Doctrine\DBAL\Types\IntegerType');
+        $this->assertEquals($columns[0]['length'], 4);
+        $this->assertEquals($columns[0]['unsigned'], false);
+        $this->assertEquals($columns[0]['fixed'], false);
+        $this->assertEquals($columns[0]['notnull'], true);
+        $this->assertEquals($columns[0]['default'], null);
+
         $this->assertEquals($columns[1]['name'], 'test');
+        $this->assertEquals($columns[1]['primary'], false);
+        $this->assertEquals(get_class($columns[1]['type']), 'Doctrine\DBAL\Types\StringType');
+        $this->assertEquals($columns[1]['length'], 255);
+        $this->assertEquals($columns[1]['unsigned'], false);
+        $this->assertEquals($columns[1]['fixed'], false);
+        $this->assertEquals($columns[1]['notnull'], false);
+        $this->assertEquals($columns[1]['default'], null);
     }
 }

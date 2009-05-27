@@ -32,6 +32,205 @@ namespace Doctrine\DBAL\Schema;
  */
 class MySqlSchemaManager extends AbstractSchemaManager
 {
+    protected function _getPortableTableColumnDefinition($tableColumn)
+    {
+        $dbType = strtolower($tableColumn['type']);
+        $dbType = strtok($dbType, '(), ');
+        if ($dbType == 'national') {
+            $dbType = strtok('(), ');
+        }
+        if (isset($tableColumn['length'])) {
+            $length = $tableColumn['length'];
+            $decimal = '';
+        } else {
+            $length = strtok('(), ');
+            $decimal = strtok('(), ') ? strtok('(), '):null;
+        }
+        $type = array();
+        $unsigned = $fixed = null;
+
+        if ( ! isset($tableColumn['name'])) {
+            $tableColumn['name'] = '';
+        }
+
+        $values = null;
+        $scale = null;
+
+        switch ($dbType) {
+            case 'tinyint':
+                $type = 'integer';
+                $type = 'boolean';
+                if (preg_match('/^(is|has)/', $tableColumn['name'])) {
+                    $type = array_reverse($type);
+                }
+                $unsigned = preg_match('/ unsigned/i', $tableColumn['type']);
+                $length = 1;
+            break;
+            case 'smallint':
+                $type = 'integer';
+                $unsigned = preg_match('/ unsigned/i', $tableColumn['type']);
+                $length = 2;
+            break;
+            case 'mediumint':
+                $type = 'integer';
+                $unsigned = preg_match('/ unsigned/i', $tableColumn['type']);
+                $length = 3;
+            break;
+            case 'int':
+            case 'integer':
+                $type = 'integer';
+                $unsigned = preg_match('/ unsigned/i', $tableColumn['type']);
+                $length = 4;
+            break;
+            case 'bigint':
+                $type = 'integer';
+                $unsigned = preg_match('/ unsigned/i', $tableColumn['type']);
+                $length = 8;
+            break;
+            case 'tinytext':
+            case 'mediumtext':
+            case 'longtext':
+            case 'text':
+            case 'text':
+            case 'varchar':
+                $fixed = false;
+            case 'string':
+            case 'char':
+                $type = 'string';
+                if ($length == '1') {
+                    $type = 'boolean';
+                    if (preg_match('/^(is|has)/', $tableColumn['name'])) {
+                        $type = array_reverse($type);
+                    }
+                } elseif (strstr($dbType, 'text')) {
+                    $type = 'clob';
+                    if ($decimal == 'binary') {
+                        $type = 'blob';
+                    }
+                }
+                if ($fixed !== false) {
+                    $fixed = true;
+                }
+            break;
+            case 'enum':
+                $type = 'enum';
+                preg_match_all('/\'((?:\'\'|[^\'])*)\'/', $tableColumn['type'], $matches);
+                $length = 0;
+                $fixed = false;
+                if (is_array($matches)) {
+                    foreach ($matches[1] as &$value) {
+                        $value = str_replace('\'\'', '\'', $value);
+                        $length = max($length, strlen($value));
+                    }
+                    if ($length == '1' && count($matches[1]) == 2) {
+                        $type = 'boolean';
+                        if (preg_match('/^(is|has)/', $tableColumn['name'])) {
+                            $type = array_reverse($type);
+                        }
+                    }
+
+                    $values = $matches[1];
+                }
+                $type = 'integer';
+                break;
+            case 'set':
+                $fixed = false;
+                $type = 'text';
+                $type = 'integer';
+            break;
+            case 'date':
+                $type = 'date';
+                $length = null;
+            break;
+            case 'datetime':
+            case 'timestamp':
+                $type = 'timestamp';
+                $length = null;
+            break;
+            case 'time':
+                $type = 'time';
+                $length = null;
+            break;
+            case 'float':
+            case 'double':
+            case 'real':
+                $type = 'float';
+                $unsigned = preg_match('/ unsigned/i', $tableColumn['type']);
+            break;
+            case 'unknown':
+            case 'decimal':
+                if ($decimal !== null) {
+                    $scale = $decimal;
+                }
+            case 'numeric':
+                $type = 'decimal';
+                $unsigned = preg_match('/ unsigned/i', $tableColumn['type']);
+            break;
+            case 'tinyblob':
+            case 'mediumblob':
+            case 'longblob':
+            case 'blob':
+            case 'binary':
+            case 'varbinary':
+                $type = 'blob';
+                $length = null;
+            break;
+            case 'year':
+                $type = 'integer';
+                $type = 'date';
+                $length = null;
+            break;
+            case 'bit':
+                $type = 'bit';
+            break;
+            case 'geometry':
+            case 'geometrycollection':
+            case 'point':
+            case 'multipoint':
+            case 'linestring':
+            case 'multilinestring':
+            case 'polygon':
+            case 'multipolygon':
+                $type = 'blob';
+                $length = null;
+            break;
+            default:
+                $type = 'string';
+                $length = null;
+        }
+
+        $length = ((int) $length == 0) ? null : (int) $length;
+        $def =  array(
+            'type' => $type,
+            'length' => $length,
+            'unsigned' => (bool) $unsigned,
+            'fixed' => (bool) $fixed
+        );
+        if ($values !== null) {
+            $def['values'] = $values;
+        }
+        if ($scale !== null) {
+            $def['scale'] = $scale;
+        }
+
+        $values = isset($def['values']) ? $def['values'] : array();
+
+        $def['type'] = \Doctrine\DBAL\Types\Type::getType($def['type']);
+
+        $column = array(
+            'name'          => $tableColumn['field'],
+            'values'        => $values,
+            'primary'       => (bool) (strtolower($tableColumn['key']) == 'pri'),
+            'default'       => $tableColumn['default'],
+            'notnull'       => (bool) ($tableColumn['null'] != 'YES'),
+            'autoincrement' => (bool) (strpos($tableColumn['extra'], 'auto_increment') !== false),
+        );
+
+        $column = array_merge($column, $def);
+
+        return $column;
+    }
+
     /**
      * lists all database sequences
      *
@@ -116,48 +315,6 @@ class MySqlSchemaManager extends AbstractSchemaManager
         }
 
         return $result;
-    }
-
-    /**
-     * lists table constraints
-     *
-     * @param string $table     database table name
-     * @return array
-     * @override
-     */
-    public function listTableColumns($table)
-    {
-        $sql = 'DESCRIBE ' . $this->_conn->quoteIdentifier($table, true);
-        $result = $this->_conn->fetchAssoc($sql);
-
-        $description = array();
-        $columns = array();
-        foreach ($result as $key => $val) {
-
-            $val = array_change_key_case($val, CASE_LOWER);
-
-            $decl = $this->_conn->getDatabasePlatform()->getPortableDeclaration($val);
-
-            $values = isset($decl['values']) ? $decl['values'] : array();
-
-            $description = array(
-                          'name'          => $val['field'],
-                          'type'          => $decl['type'][0],
-                          'alltypes'      => $decl['type'],
-                          'ntype'         => $val['type'],
-                          'length'        => $decl['length'],
-                          'fixed'         => $decl['fixed'],
-                          'unsigned'      => $decl['unsigned'],
-                          'values'        => $values,
-                          'primary'       => (strtolower($val['key']) == 'pri'),
-                          'default'       => $val['default'],
-                          'notnull'       => (bool) ($val['null'] != 'YES'),
-                          'autoincrement' => (bool) (strpos($val['extra'], 'auto_increment') !== false),
-                          );
-            $columns[$val['field']] = $description;
-        }
-
-        return $columns;
     }
 
     /**

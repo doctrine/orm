@@ -14,4 +14,9 @@ class TextType extends Type
     {
         return $platform->getClobDeclarationSql($fieldDeclaration);
     }
+
+    public function getName()
+    {
+        return 'text';
+    }
 }

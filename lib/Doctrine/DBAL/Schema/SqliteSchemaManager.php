@@ -33,4 +33,142 @@ namespace Doctrine\DBAL\Schema;
  */
 class SqliteSchemaManager extends AbstractSchemaManager
 {
+    protected function _getPortableTableColumnDefinition($tableColumn)
+    {
+        $e = explode('(', $tableColumn['type']);
+        $tableColumn['type'] = $e[0];
+        if (isset($e[1])) {
+            $length = trim($e[1], ')');
+            $tableColumn['length'] = $length;
+        }
+
+        $dbType = strtolower($tableColumn['type']);
+
+        $length = isset($tableColumn['length']) ? $tableColumn['length'] : null;
+        $unsigned = (boolean) isset($tableColumn['unsigned']) ? $tableColumn['unsigned'] : false;
+        $fixed = false;
+        $type = null;
+        $default = $tableColumn['dflt_value'];
+        if  ($default == 'NULL') {
+            $default = null;
+        }
+        $notnull = (bool) $tableColumn['notnull'];
+
+        if ( ! isset($tableColumn['name'])) {
+            $tableColumn['name'] = '';
+        }
+
+        switch ($dbType) {
+            case 'boolean':
+                $type = 'boolean';
+                break;
+            case 'tinyint':
+                if (preg_match('/^(is|has)/', $tableColumn['name'])) {
+                    $type = 'boolean';
+                } else {
+                    $type = 'integer';
+                }
+                $unsigned = preg_match('/ unsigned/i', $tableColumn['type']);
+                $length = 1;
+                break;
+            case 'smallint':
+                $type = 'integer';
+                $unsigned = preg_match('/ unsigned/i', $tableColumn['type']);
+                $length = 2;
+                break;
+            case 'mediumint':
+                $type = 'integer';
+                $unsigned = preg_match('/ unsigned/i', $tableColumn['type']);
+                $length = 3;
+                break;
+            case 'int':
+            case 'integer':
+            case 'serial':
+                $type = 'integer';
+                $unsigned = preg_match('/ unsigned/i', $tableColumn['type']);
+                $length = 4;
+                break;
+            case 'bigint':
+            case 'bigserial':
+                $type = 'integer';
+                $unsigned = preg_match('/ unsigned/i', $tableColumn['type']);
+                $length = 8;
+                break;
+            case 'clob':
+            case 'tinytext':
+            case 'mediumtext':
+            case 'longtext':
+            case 'text':
+            case 'varchar':
+            case 'varchar2':
+            case 'nvarchar':
+            case 'ntext':
+            case 'image':
+            case 'nchar':
+                $fixed = false;
+            case 'char':
+                $type = 'string';
+                if ($length == '1') {
+                    $type = 'boolean';
+                    if (preg_match('/^(is|has)/', $tableColumn['name'])) {
+                        $type = array_reverse($type);
+                    }
+                } elseif (strstr($dbType, 'text')) {
+                    $type = 'clob';
+                }
+                if ($fixed !== false) {
+                    $fixed = true;
+                }
+                break;
+            case 'date':
+                $type = 'date';
+                $length = null;
+                break;
+            case 'datetime':
+            case 'timestamp':
+                $type = 'timestamp';
+                $length = null;
+                break;
+            case 'time':
+                $type = 'time';
+                $length = null;
+                break;
+            case 'float':
+            case 'double':
+            case 'real':
+                $type = 'float';
+                $length = null;
+                break;
+            case 'decimal':
+            case 'numeric':
+                $type = 'decimal';
+                $length = null;
+                break;
+            case 'tinyblob':
+            case 'mediumblob':
+            case 'longblob':
+            case 'blob':
+                $type = 'blob';
+                $length = null;
+                break;
+            case 'year':
+                $type = 'date';
+                $length = null;
+                break;
+            default:
+                $type = 'string';
+                $length = null;
+        }
+
+        $type = \Doctrine\DBAL\Types\Type::getType($type);
+
+        return array('name'     => $tableColumn['name'],
+                     'primary'  => (bool) $tableColumn['pk'],
+                     'type'     => $type,
+                     'length'   => $length,
+                     'unsigned' => (bool) $unsigned,
+                     'fixed'    => $fixed,
+                     'notnull'  => $notnull,
+                     'default'  => $default);
+    }
 }
