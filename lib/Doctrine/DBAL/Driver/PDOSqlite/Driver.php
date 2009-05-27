@@ -83,4 +83,9 @@ class Driver implements \Doctrine\DBAL\Driver
     {
         return new \Doctrine\DBAL\Schema\SqliteSchemaManager($conn);
     }
+
+    public function getName()
+    {
+        return 'pdo_sqlite';
+    }
 }

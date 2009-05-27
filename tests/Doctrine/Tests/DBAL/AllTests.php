@@ -4,6 +4,7 @@ namespace Doctrine\Tests\DBAL;
 
 use Doctrine\Tests\DBAL\Component;
 use Doctrine\Tests\DBAL\Ticker;
+use Doctrine\Tests\DBAL\Functional;
 
 if (!defined('PHPUnit_MAIN_METHOD')) {
     define('PHPUnit_MAIN_METHOD', 'Dbal_Platforms_AllTests::main');
@@ -26,6 +27,8 @@ class AllTests
         $suite->addTestSuite('Doctrine\Tests\DBAL\Platforms\MySqlPlatformTest');
         $suite->addTestSuite('Doctrine\Tests\DBAL\Platforms\PostgreSqlPlatformTest');
         $suite->addTestSuite('Doctrine\Tests\DBAL\Platforms\MsSqlPlatformTest');
+
+        $suite->addTest(Functional\AllTests::suite());
 
         return $suite;
     }

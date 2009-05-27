@@ -23,6 +23,7 @@ namespace Doctrine\DBAL\Platforms;
 
 use Doctrine\Common\DoctrineException;
 use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\Types;
 
 /**
  * Base class for all DatabasePlatforms. The DatabasePlatforms are the central
@@ -36,7 +37,7 @@ use Doctrine\DBAL\Connection;
 abstract class AbstractPlatform
 {
     private $_quoteIdentifiers = false;
-    
+
     /**
      * Constructor.
      */
@@ -59,7 +60,7 @@ abstract class AbstractPlatform
     {
         return $this->_quoteIdentifiers;
     }
-    
+
     /**
      * Gets the character used for identifier quoting.
      *
@@ -69,7 +70,7 @@ abstract class AbstractPlatform
     {
         return '"';
     }
-    
+
     /**
      * Gets the string portion that starts an SQL comment.
      *
@@ -79,7 +80,7 @@ abstract class AbstractPlatform
     {
         return "--";
     }
-    
+
     /**
      * Gets the string portion that ends an SQL comment.
      *
@@ -89,7 +90,7 @@ abstract class AbstractPlatform
     {
         return "\n";
     }
-    
+
     /**
      * Gets the maximum length of a varchar field.
      *
@@ -99,7 +100,7 @@ abstract class AbstractPlatform
     {
         return 255;
     }
-    
+
     /**
      * Gets all SQL wildcard characters of the platform.
      *
@@ -109,7 +110,7 @@ abstract class AbstractPlatform
     {
         return array('%', '_');
     }
-    
+
     /**
      * Returns the regular expression operator.
      *
@@ -129,6 +130,7 @@ abstract class AbstractPlatform
     public function getAvgExpression($column)
     {
         $column = $this->quoteIdentifier($column);
+
         return 'AVG(' .  $column . ')';
     }
 
@@ -144,6 +146,7 @@ abstract class AbstractPlatform
     public function getCountExpression($column)
     {
         $column = $this->quoteIdentifier($column);
+
         return 'COUNT(' . $column . ')';
     }
 
@@ -156,6 +159,7 @@ abstract class AbstractPlatform
     public function getMaxExpression($column)
     {
         $column = $this->quoteIdentifier($column);
+
         return 'MAX(' . $column . ')';
     }
 
@@ -168,6 +172,7 @@ abstract class AbstractPlatform
     public function getMinExpression($column)
     {
         $column = $this->quoteIdentifier($column);
+
         return 'MIN(' . $column . ')';
     }
 
@@ -180,6 +185,7 @@ abstract class AbstractPlatform
     public function getSumExpression($column)
     {
         $column = $this->quoteIdentifier($column);
+
         return 'SUM(' . $column . ')';
     }
 
@@ -195,6 +201,7 @@ abstract class AbstractPlatform
     public function getMd5Expression($column)
     {
         $column = $this->quoteIdentifier($column);
+
         return 'MD5(' . $column . ')';
     }
 
@@ -208,6 +215,7 @@ abstract class AbstractPlatform
     public function getLengthExpression($column)
     {
         $column = $this->quoteIdentifier($column);
+
         return 'LENGTH(' . $column . ')';
     }
 
@@ -237,6 +245,7 @@ abstract class AbstractPlatform
     {
         $expression1 = $this->quoteIdentifier($expression1);
         $expression2 = $this->quoteIdentifier($expression2);
+
         return 'MOD(' . $expression1 . ', ' . $expression2 . ')';
     }
 
@@ -326,21 +335,6 @@ abstract class AbstractPlatform
     }
 
     /**
-     * soundex
-     * Returns a string to call a function to compute the
-     * soundex encoding of a string
-     *
-     * The string "?000" is returned if the argument is NULL.
-     *
-     * @param string $value
-     * @return string   SQL soundex function with given parameter
-     */
-    /*public function getSoundexExpression($value)
-    {
-        throw DoctrineException::updateMe('SQL soundex function not supported by this driver.');
-    }*/
-
-    /**
      * return string to call a function to get a substring inside an SQL statement
      *
      * Note: Not SQL92, but common functionality.
@@ -396,265 +390,6 @@ abstract class AbstractPlatform
     }
 
     /**
-     * Returns the SQL to perform the same mathematical operation over an array
-     * of values or expressions.
-     *
-     * basicMath() accepts an arbitrary number of parameters. Each parameter
-     * must contain a value or an expression or an array with values or
-     * expressions.
-     *
-     * @param string $type the type of operation, can be '+', '-', '*' or '/'.
-     * @param string|array(string)
-     * @return string an expression
-     */
-    /*private function _getBasicMathExpression($type, array $args)
-    {
-        $elements = $this->getIdentifiers($args);
-        if (count($elements) < 1) {
-            return '';
-        }
-        if (count($elements) == 1) {
-            return $elements[0];
-        } else {
-            return '(' . implode(' ' . $type . ' ', $elements) . ')';
-        }
-    }*/
-
-    /**
-     * Returns the SQL to add values or expressions together.
-     *
-     * add() accepts an arbitrary number of parameters. Each parameter
-     * must contain a value or an expression or an array with values or
-     * expressions.
-     *
-     * Example:
-     * <code>
-     * $q = new Doctrine_Query();
-     * $e = $q->expr;
-     *
-     * $q->select('u.*')
-     *   ->from('User u')
-     *   ->where($e->eq($e->add('id', 2), 12));
-     * </code>
-     *
-     * @param string|array(string)
-     * @return string an expression
-     */
-    /*public function getAddExpression(array $args)
-    {
-        return $this->basicMath('+', $args);
-    }*/
-
-    /**
-     * Returns the SQL to subtract values or expressions from eachother.
-     *
-     * subtract() accepts an arbitrary number of parameters. Each parameter
-     * must contain a value or an expression or an array with values or
-     * expressions.
-     *
-     * Example:
-     * <code>
-     * $q = new Doctrine_Query();
-     * $e = $q->expr;
-     *
-     * $q->select('u.*')
-     *   ->from('User u')
-     *   ->where($e->eq($e->sub('id', 2), 12));
-     * </code>
-     *
-     * @param string|array(string)
-     * @return string an expression
-     */
-    /*public function getSubExpression(array $args)
-    {
-        return $this->basicMath('-', $args );
-    }*/
-
-    /**
-     * Returns the SQL to multiply values or expressions by eachother.
-     *
-     * multiply() accepts an arbitrary number of parameters. Each parameter
-     * must contain a value or an expression or an array with values or
-     * expressions.
-     *
-     * Example:
-     * <code>
-     * $q = new Doctrine_Query();
-     * $e = $q->expr;
-     *
-     * $q->select('u.*')
-     *   ->from('User u')
-     *   ->where($e->eq($e->mul('id', 2), 12));
-     * </code>
-     *
-     * @param string|array(string)
-     * @return string an expression
-     */
-    /*public function getMulExpression(array $args)
-    {
-        return $this->basicMath('*', $args);
-    }*/
-
-    /**
-     * Returns the SQL to divide values or expressions by eachother.
-     *
-     * divide() accepts an arbitrary number of parameters. Each parameter
-     * must contain a value or an expression or an array with values or
-     * expressions.
-     *
-     * Example:
-     * <code>
-     * $q = new Doctrine_Query();
-     * $e = $q->expr;
-     *
-     * $q->select('u.*')
-     *   ->from('User u')
-     *   ->where($e->eq($e->div('id', 2), 12));
-     * </code>
-     *
-     * @param string|array(string)
-     * @return string an expression
-     */
-    /*public function getDivExpression(array $args)
-    {
-        return $this->basicMath('/', $args);
-    }*/
-
-    /**
-     * Returns the SQL to check if two values are equal.
-     *
-     * Example:
-     * <code>
-     * $q = new Doctrine_Query();
-     * $q->select('u.*')
-     *   ->from('User u')
-     *   ->where($q->expr->eq('id', 1));
-     * </code>
-     *
-     * @param string $value1 logical expression to compare
-     * @param string $value2 logical expression to compare with
-     * @return string logical expression
-     */
-    /*public function getEqExpression($value1, $value2)
-    {
-        $value1 = $this->quoteIdentifier($value1);
-        $value2 = $this->quoteIdentifier($value2);
-        return $value1 . ' = ' . $value2;
-    }*/
-
-    /**
-     * Returns the SQL to check if two values are unequal.
-     *
-     * Example:
-     * <code>
-     * $q = new Doctrine_Query();
-     * $q->select('u.*')
-     *   ->from('User u')
-     *   ->where($q->expr->neq('id', 1));
-     * </code>
-     *
-     * @param string $value1 logical expression to compare
-     * @param string $value2 logical expression to compare with
-     * @return string logical expression
-     */
-    /*public function getNeqExpression($value1, $value2)
-    {
-        $value1 = $this->quoteIdentifier($value1);
-        $value2 = $this->quoteIdentifier($value2);
-        return $value1 . ' <> ' . $value2;
-    }*/
-
-    /**
-     * Returns the SQL to check if one value is greater than another value.
-     *
-     * Example:
-     * <code>
-     * $q = new Doctrine_Query();
-     * $q->select('u.*')
-     *   ->from('User u')
-     *   ->where($q->expr->gt('id', 1));
-     * </code>
-     *
-     * @param string $value1 logical expression to compare
-     * @param string $value2 logical expression to compare with
-     * @return string logical expression
-     */
-    /*public function getGtExpression($value1, $value2)
-    {
-        $value1 = $this->quoteIdentifier($value1);
-        $value2 = $this->quoteIdentifier($value2);
-        return $value1 . ' > ' . $value2;
-    }*/
-
-    /**
-     * Returns the SQL to check if one value is greater than or equal to
-     * another value.
-     *
-     * Example:
-     * <code>
-     * $q = new Doctrine_Query();
-     * $q->select('u.*')
-     *   ->from('User u')
-     *   ->where($q->expr->gte('id', 1));
-     * </code>
-     *
-     * @param string $value1 logical expression to compare
-     * @param string $value2 logical expression to compare with
-     * @return string logical expression
-     */
-    /*public function getGteExpression($value1, $value2)
-    {
-        $value1 = $this->quoteIdentifier($value1);
-        $value2 = $this->quoteIdentifier($value2);
-        return $value1 . ' >= ' . $value2;
-    }*/
-
-    /**
-     * Returns the SQL to check if one value is less than another value.
-     *
-     * Example:
-     * <code>
-     * $q = new Doctrine_Query();
-     * $q->select('u.*')
-     *   ->from('User u')
-     *   ->where($q->expr->lt('id', 1));
-     * </code>
-     *
-     * @param string $value1        logical expression to compare
-     * @param string $value2        logical expression to compare with
-     * @return string logical expression
-     */
-    /*public function getLtExpression($value1, $value2)
-    {
-        $value1 = $this->quoteIdentifier($value1);
-        $value2 = $this->quoteIdentifier($value2);
-        return $value1 . ' < ' . $value2;
-    }*/
-
-    /**
-     * Returns the SQL to check if one value is less than or equal to
-     * another value.
-     *
-     * Example:
-     * <code>
-     * $q = new Doctrine_Query();
-     * $q->select('u.*')
-     *   ->from('User u')
-     *   ->where($q->expr->lte('id', 1));
-     * </code>
-     *
-     * @param string $value1        logical expression to compare
-     * @param string $value2        logical expression to compare with
-     * @return string logical expression
-     */
-    /*public function getLteExpression($value1, $value2)
-    {
-        $value1 = $this->quoteIdentifier($value1);
-        $value2 = $this->quoteIdentifier($value2);
-        return $value1 . ' <= ' . $value2;
-    }*/
-
-    /**
      * Returns the SQL to check if a value is one in a set of
      * given values.
      *
@@ -706,6 +441,7 @@ abstract class AbstractPlatform
     public function getIsNullExpression($expression)
     {
         $expression = $this->quoteIdentifier($expression);
+
         return $expression . ' IS NULL';
     }
 
@@ -726,6 +462,7 @@ abstract class AbstractPlatform
     public function getIsNotNullExpression($expression)
     {
         $expression = $this->quoteIdentifier($expression);
+
         return $expression . ' IS NOT NULL';
     }
 
@@ -757,220 +494,66 @@ abstract class AbstractPlatform
         $expression = $this->quoteIdentifier($expression);
         $value1 = $this->quoteIdentifier($value1);
         $value2 = $this->quoteIdentifier($value2);
+
         return $expression . ' BETWEEN ' .$value1 . ' AND ' . $value2;
     }
 
-    /**
-     * Returns global unique identifier
-     *
-     * @return string to get global unique identifier
-     */
-    /*public function getGuidExpression()
-    {
-        throw DoctrineException::updateMe('method not implemented');
-    }*/
-
-    /**
-     * returns arcus cosine SQL string
-     *
-     * @return string
-     */
     public function getAcosExpression($value)
     {
         return 'ACOS(' . $value . ')';
     }
 
-    /**
-     * sin
-     *
-     * @param string $value
-     * @return void
-     */
     public function getSinExpression($value)
     {
         return 'SIN(' . $value . ')';
     }
 
-    /**
-     * pi
-     *
-     * @return void
-     */
     public function getPiExpression()
     {
         return 'PI()';
     }
 
-    /**
-     * cos
-     *
-     * @param string $value
-     * @return void
-     * @author Jonathan H. Wage
-     */
     public function getCosExpression($value)
     {
         return 'COS(' . $value . ')';
     }
-    
-    /**
-     * Enter description here...
-     *
-     * @return string
-     */
+
     public function getForUpdateSql()
     {
         return 'FOR UPDATE';
     }
-    
-    /**
-     * Enter description here...
-     *
-     * @todo Throw exception by default?
-     */
-    public function getListDatabasesSql()
-    {
-        throw DoctrineException::updateMe('List databases not supported by this driver.');
-    }
-    
-    /**
-     * Enter description here...
-     *
-     * @todo Throw exception by default?
-     */
-    public function getListFunctionsSql()
-    {
-        throw DoctrineException::updateMe('List functions not supported by this driver.');
-    }
-    
-    /**
-     * Enter description here...
-     *
-     * @todo Throw exception by default?
-     */
-    public function getListTriggersSql()
-    {
-        throw DoctrineException::updateMe('List triggers not supported by this driver.');
-    }
-    
-    /**
-     * Enter description here...
-     *
-     * @todo Throw exception by default?
-     */
-    public function getListSequencesSql()
-    {
-        throw DoctrineException::updateMe('List sequences not supported by this driver.');
-    }
-    
-    /**
-     * Enter description here...
-     *
-     * @todo Throw exception by default?
-     */
-    public function getListTableConstraintsSql()
-    {
-        throw DoctrineException::updateMe('List table constraints not supported by this driver.');
-    }
-    
-    /**
-     * Enter description here...
-     *
-     * @todo Throw exception by default?
-     */
-    public function getListTableColumnsSql()
-    {
-        throw DoctrineException::updateMe('List table columns not supported by this driver.');
-    }
-    
-    /**
-     * Enter description here...
-     *
-     * @todo Throw exception by default?
-     */
-    public function getListTablesSql()
-    {
-        throw DoctrineException::updateMe('List tables not supported by this driver.');
-    }
-    
-    /**
-     * Enter description here...
-     *
-     * @todo Throw exception by default?
-     */
-    public function getListUsersSql()
-    {
-        throw DoctrineException::updateMe('List users not supported by this driver.');
-    }
-    
-    /**
-     * Enter description here...
-     *
-     * @todo Throw exception by default?
-     */
-    public function getListViewsSql()
-    {
-        throw DoctrineException::updateMe('List views not supported by this driver.');
-    }
-    
-    /**
-     * Enter description here...
-     *
-     * @todo Throw exception by default?
-     */
+
     public function getDropDatabaseSql($database)
     {
         return 'DROP DATABASE ' . $database;
     }
-    
-    /**
-     * Enter description here...
-     *
-     * @todo Throw exception by default?
-     */
+
     public function getDropTableSql($table)
     {
         return 'DROP TABLE ' . $table;
     }
-    
-    /**
-     * Enter description here...
-     *
-     * @todo Throw exception by default?
-     */
+
     public function getDropIndexSql($index, $name)
     {
         return 'DROP INDEX ' . $index;
     }
-    
-    /**
-     * Enter description here...
-     *
-     * @todo Throw exception by default?
-     */
-    public function getDropSequenceSql($sequenceName)
+
+    public function getDropConstraintSql($table, $name, $primary = false)
     {
-        throw DoctrineException::updateMe('Drop sequence not supported by this driver.');
+        $table = $this->_conn->getDatabasePlatform()->quoteIdentifier($table);
+        $name = $this->_conn->getDatabasePlatform()->quoteIdentifier($name);
+
+        return 'ALTER TABLE ' . $table . ' DROP CONSTRAINT ' . $name;
     }
-    
-    /**
-     * Gets the SQL for acquiring the next value from a sequence.
-     */
-    public function getSequenceNextValSql($sequenceName)
+
+    public function getDropForeignKeySql($table, $name)
     {
-        throw DoctrineException::updateMe('Sequences not supported by this driver.');
+        $table = $this->_conn->getDatabasePlatform()->quoteIdentifier($table);
+        $name = $this->_conn->getDatabasePlatform()->quoteIdentifier($name);
+
+        return 'ALTER TABLE ' . $table . ' DROP FOREIGN KEY ' . $name;
     }
-    
-    /**
-     * Enter description here...
-     *
-     * @todo Throw exception by default?
-     */
-    public function getCreateDatabaseSql($database)
-    {
-        throw DoctrineException::updateMe('Create database not supported by this driver.');
-    }
-    
+
     /**
      * Gets the SQL statement(s) to create a table with the specified name, columns and options
      * on this platform.
@@ -978,7 +561,7 @@ abstract class AbstractPlatform
      * @param string $table
      * @param array $columns
      * @param array $options
-     * @return array 
+     * @return array
      */
     public function getCreateTableSql($table, array $columns, array $options = array())
     {
@@ -995,7 +578,7 @@ abstract class AbstractPlatform
         }
 
         $query = 'CREATE TABLE ' . $this->quoteIdentifier($table, true) . ' (' . $columnListSql;
-        
+
         $check = $this->getCheckDeclarationSql($columns);
         if ( ! empty($check)) {
             $query .= ', ' . $check;
@@ -1011,10 +594,10 @@ abstract class AbstractPlatform
                 }
             }
         }
-        
+
         return $sql;
     }
-    
+
     /**
      * Gets the SQL to create a sequence on this platform.
      *
@@ -1028,7 +611,7 @@ abstract class AbstractPlatform
     {
         throw DoctrineException::updateMe('Create sequence not supported by this driver.');
     }
-    
+
     /**
      * Gets the SQL to create a constraint on a table on this platform.
      *
@@ -1068,7 +651,7 @@ abstract class AbstractPlatform
 
         return $query;
     }
-    
+
     /**
      * Gets the SQL to create an index on a table on this platform.
      *
@@ -1096,7 +679,7 @@ abstract class AbstractPlatform
 
         return $query;
     }
-    
+
     /**
      * Quotes a string so that it can be safely used as a table or column name,
      * even if it is a reserved word of the platform.
@@ -1127,7 +710,7 @@ abstract class AbstractPlatform
 
         return $c . $str . $c;
     }
-    
+
     /**
      * createForeignKeySql
      *
@@ -1142,7 +725,7 @@ abstract class AbstractPlatform
 
         return $query;
     }
-    
+
     /**
      * Gets the sql for altering an existing table.
      * (this method is implemented by the drivers)
@@ -1158,7 +741,7 @@ abstract class AbstractPlatform
     {
         throw DoctrineException::updateMe('Alter table not supported by this driver.');
     }
-    
+
     /**
      * Get declaration of a number of fields in bulk
      *
@@ -1243,12 +826,12 @@ abstract class AbstractPlatform
 
         $unique = (isset($field['unique']) && $field['unique']) ?
                 ' ' . $this->getUniqueFieldDeclarationSql() : '';
-        
+
         $check = (isset($field['check']) && $field['check']) ?
                 ' ' . $field['check'] : '';
 
         $typeDecl = $field['type']->getSqlDeclaration($field, $this);
- 
+
         return $this->quoteIdentifier($name) . ' ' . $typeDecl . $charset . $default . $notnull . $unique . $check . $collation;
     }
 
@@ -1395,9 +978,9 @@ abstract class AbstractPlatform
     {
         return 'TEMPORARY';
     }
-    
+
     /**
-     * Enter description here...
+     * Get sql query to show a list of database
      *
      * @return unknown
      */
@@ -1405,7 +988,7 @@ abstract class AbstractPlatform
     {
         throw DoctrineException::updateMe('Show databases not supported by this driver.');
     }
-    
+
     /**
      * getForeignKeyDeclaration
      * Obtain DBMS specific SQL code portion needed to set the FOREIGN KEY constraint
@@ -1576,7 +1159,7 @@ abstract class AbstractPlatform
     {
         return '';
     }
-    
+
     /**
      * build a pattern matching string
      *
@@ -1598,7 +1181,7 @@ abstract class AbstractPlatform
     {
         throw DoctrineException::updateMe("Method not implemented.");
     }
-    
+
     /**
      * Whether the platform prefers sequences for ID generation.
      * Subclasses should override this method to return TRUE if they prefer sequences.
@@ -1609,7 +1192,7 @@ abstract class AbstractPlatform
     {
         return false;
     }
-    
+
     /**
      * Whether the platform prefers identity columns (eg. autoincrement) for ID generation.
      * Subclasses should override this method to return TRUE if they prefer identity columns.
@@ -1620,12 +1203,12 @@ abstract class AbstractPlatform
     {
         return false;
     }
-    
+
     /**
      * Adds a LIMIT/OFFSET clause to the query.
      * This default implementation writes the syntax "LIMIT x OFFSET y" to the
      * query which is supported by MySql, PostgreSql and Sqlite.
-     * Any database platforms that do not support this syntax should override 
+     * Any database platforms that do not support this syntax should override
      * this implementation and provide their own.
      *
      * @param string $query  The SQL string to write to / append to.
@@ -1636,7 +1219,7 @@ abstract class AbstractPlatform
     {
         $limit = (int) $limit;
         $offset = (int) $offset;
-        
+
         if ($limit && $offset) {
             $query .= ' LIMIT ' . $limit . ' OFFSET ' . $offset;
         } elseif ($limit && ! $offset) {
@@ -1647,7 +1230,7 @@ abstract class AbstractPlatform
 
         return $query;
     }
-    
+
     /**
      * Some platforms need the boolean values to be converted.
      * Default conversion defined here converts to integers.
@@ -1680,9 +1263,9 @@ abstract class AbstractPlatform
     {
         return 'SET NAMES ' . $this->quote($charset);
     }
-    
+
     /**
-     * Enter description here...
+     * Get sql for transaction isolation level Connection constant
      *
      * @param integer $level
      */
@@ -1699,11 +1282,71 @@ abstract class AbstractPlatform
                 return 'SERIALIZABLE';
             default:
                 throw DoctrineException::updateMe('isolation level is not supported: ' . $isolation);
-        } 
+        }
     }
-    
+
+    public function getListDatabasesSql()
+    {
+        throw DoctrineException::updateMe('List databases not supported by this driver.');
+    }
+
+    public function getListFunctionsSql()
+    {
+        throw DoctrineException::updateMe('List functions not supported by this driver.');
+    }
+
+    public function getListTriggersSql()
+    {
+        throw DoctrineException::updateMe('List triggers not supported by this driver.');
+    }
+
+    public function getListSequencesSql()
+    {
+        throw DoctrineException::updateMe('List sequences not supported by this driver.');
+    }
+
+    public function getListTableConstraintsSql($table)
+    {
+        throw DoctrineException::updateMe('List table constraints not supported by this driver.');
+    }
+
+    public function getListTableColumnsSql($table)
+    {
+        throw DoctrineException::updateMe('List table columns not supported by this driver.');
+    }
+
+    public function getListTablesSql()
+    {
+        throw DoctrineException::updateMe('List tables not supported by this driver.');
+    }
+
+    public function getListUsersSql()
+    {
+        throw DoctrineException::updateMe('List users not supported by this driver.');
+    }
+
+    public function getListViewsSql()
+    {
+        throw DoctrineException::updateMe('List views not supported by this driver.');
+    }
+
+    public function getDropSequenceSql($sequenceName)
+    {
+        throw DoctrineException::updateMe('Drop sequence not supported by this driver.');
+    }
+
+    public function getSequenceNextValSql($sequenceName)
+    {
+        throw DoctrineException::updateMe('Sequences not supported by this driver.');
+    }
+
+    public function getCreateDatabaseSql($database)
+    {
+        throw DoctrineException::updateMe('Create database not supported by this driver.');
+    }
+
     /**
-     * Enter description here...
+     * Get sql to set the transaction isolation level
      *
      * @param integer $level
      */
@@ -1735,7 +1378,7 @@ abstract class AbstractPlatform
     {
         return Connection::TRANSACTION_READ_COMMITTED;
     }
-    
+
     /* supports*() metods */
 
     /**
@@ -1829,7 +1472,14 @@ abstract class AbstractPlatform
     /**
      * Gets the SQL snippet used to declare a VARCHAR column type.
      *
-     * @params array $field
+     * @param array $field
      */
     abstract public function getVarcharTypeDeclarationSql(array $field);
+
+    /**
+     * Get the platform name for this instance
+     *
+     * @return string
+     */
+    abstract public function getName();
 }

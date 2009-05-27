@@ -63,7 +63,7 @@ class PostgreSqlPlatform extends AbstractPlatform
      *      declare the specified field.
      * @override
      */
-    /*public function getNativeDeclaration(array $field)
+    public function getNativeDeclaration(array $field)
     {
         if ( ! isset($field['type'])) {
             throw DoctrineException::updateMe('Missing column type.');
@@ -127,7 +127,7 @@ class PostgreSqlPlatform extends AbstractPlatform
                 return 'NUMERIC('.$length.','.$scale.')';
         }
         throw DoctrineException::updateMe('Unknown field type \'' . $field['type'] .  '\'.');
-    }*/
+    }
 
     /**
      * Maps a native array description of a field to a portable Doctrine datatype and length
@@ -137,7 +137,7 @@ class PostgreSqlPlatform extends AbstractPlatform
      * @return array containing the various possible types, length, sign, fixed
      * @override
      */
-    /*public function getPortableDeclaration(array $field)
+    public function getPortableDeclaration(array $field)
     {
         $length = (isset($field['length'])) ? $field['length'] : null;
         if ($length == '-1' && isset($field['atttypmod'])) {
@@ -264,7 +264,7 @@ class PostgreSqlPlatform extends AbstractPlatform
                      'length'   => $length,
                      'unsigned' => $unsigned,
                      'fixed'    => $fixed);
-    }*/
+    }
 
     /**
      * Returns the md5 sum of a field.
@@ -579,7 +579,7 @@ class PostgreSqlPlatform extends AbstractPlatform
      *
      * @override
      */
-    public function getListTableConstraintsSql()
+    public function getListTableConstraintsSql($table)
     {
         return "SELECT
                     relname
@@ -588,7 +588,7 @@ class PostgreSqlPlatform extends AbstractPlatform
                 WHERE oid IN (
                     SELECT indexrelid
                     FROM pg_index, pg_class
-                    WHERE pg_class.relname = %s
+                    WHERE pg_class.relname = '$table'
                         AND pg_class.oid = pg_index.indrelid
                         AND (indisunique = 't' OR indisprimary = 't')
                         )";
@@ -620,7 +620,7 @@ class PostgreSqlPlatform extends AbstractPlatform
      *
      * @override
      */
-    public function getListTableColumnsSql()
+    public function getListTableColumnsSql($table)
     {
         return "SELECT
                     a.attnum,
@@ -640,7 +640,7 @@ class PostgreSqlPlatform extends AbstractPlatform
                         AND pg_attrdef.adnum=a.attnum
                     ) AS default
                     FROM pg_attribute a, pg_class c, pg_type t
-                    WHERE c.relname = %s
+                    WHERE c.relname = '$table'
                         AND a.attnum > 0
                         AND a.attrelid = c.oid
                         AND a.atttypid = t.oid
@@ -960,5 +960,15 @@ class PostgreSqlPlatform extends AbstractPlatform
 
         return $fixed ? ($length ? 'CHAR(' . $length . ')' : 'CHAR(255)')
                 : ($length ? 'VARCHAR(' . $length . ')' : 'TEXT');
+    }
+
+    /**
+     * Get the platform name for this instance
+     *
+     * @return string
+     */
+    public function getName()
+    {
+        return 'postgresql';
     }
 }

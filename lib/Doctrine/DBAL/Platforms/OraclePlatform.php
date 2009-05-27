@@ -37,36 +37,7 @@ class OraclePlatform extends AbstractPlatform
     {
         parent::__construct();
     }
-    
-    /**
-     * @todo Doc
-     */
-    /*private function _createLimitSubquery($query, $limit, $offset, $column = null)
-    {
-        $limit = (int) $limit;
-        $offset = (int) $offset;
-        if (preg_match('/^\s*SELECT/i', $query)) {
-            if ( ! preg_match('/\sFROM\s/i', $query)) {
-                $query .= " FROM dual";
-            }
-            if ($limit > 0) {
-                $max = $offset + $limit;
-                $column = $column === null ? '*' : $column;
-                if ($offset > 0) {
-                    $min = $offset + 1;
-                    $query = 'SELECT b.'.$column.' FROM ('.
-                                 'SELECT a.*, ROWNUM AS doctrine_rownum FROM ('
-                                   . $query . ') a '.
-                              ') b '.
-                              'WHERE doctrine_rownum BETWEEN ' . $min .  ' AND ' . $max;
-                } else {
-                    $query = 'SELECT a.'.$column.' FROM (' . $query .') a WHERE ROWNUM <= ' . $max;
-                }
-            }
-        }
-        return $query;
-    }*/
-    
+
     /**
      * return string to call a function to get a substring inside an SQL statement
      *
@@ -80,8 +51,9 @@ class OraclePlatform extends AbstractPlatform
      */
     public function getSubstringExpression($value, $position, $length = null)
     {
-        if ($length !== null)
+        if ($length !== null) {
             return "SUBSTR($value, $position, $length)";
+        }
 
         return "SUBSTR($value, $position)";
     }
@@ -128,175 +100,6 @@ class OraclePlatform extends AbstractPlatform
     {
         return 'SYS_GUID()';
     }
-    
-    /**
-     * Obtain DBMS specific SQL code portion needed to declare an text type
-     * field to be used in statements like CREATE TABLE.
-     *
-     * @param array $field  associative array with the name of the properties
-     *      of the field being declared as array indexes. Currently, the types
-     *      of supported field properties are as follows:
-     *
-     *      length
-     *          Integer value that determines the maximum length of the text
-     *          field. If this argument is missing the field should be
-     *          declared to have the longest length allowed by the DBMS.
-     *
-     *      default
-     *          Text value to be used as default for this field.
-     *
-     *      notnull
-     *          Boolean flag that indicates whether this field is constrained
-     *          to not be set to null.
-     * @return string  DBMS specific SQL code portion that should be used to
-     *      declare the specified field.
-     * @override
-     */
-    /*public function getNativeDeclaration(array $field)
-    {
-        if ( ! isset($field['type'])) {
-            throw \Doctrine\Common\DoctrineException::updateMe('Missing column type.');
-        }
-        switch ($field['type']) {
-            case 'string':
-            case 'array':
-            case 'object':
-            case 'gzip':
-            case 'char':
-            case 'varchar':
-                $length = !empty($field['length'])
-                    ? $field['length'] : 16777215; // TODO: $this->conn->options['default_text_field_length'];
-
-                $fixed  = ((isset($field['fixed']) && $field['fixed']) || $field['type'] == 'char') ? true : false;
-
-                return $fixed ? 'CHAR('.$length.')' : 'VARCHAR2('.$length.')';
-            case 'clob':
-                return 'CLOB';
-            case 'blob':
-                return 'BLOB';
-            case 'integer':
-            case 'enum':
-            case 'int':
-                if ( ! empty($field['length'])) {
-                    return 'NUMBER('.$field['length'].')';
-                }
-                return 'INT';
-            case 'boolean':
-                return 'NUMBER(1)';
-            case 'date':
-            case 'time':
-            case 'timestamp':
-                return 'DATE';
-            case 'float':
-            case 'double':
-                return 'NUMBER';
-            case 'decimal':
-                $scale = !empty($field['scale']) ? $field['scale'] : $this->conn->getAttribute(Doctrine::ATTR_DECIMAL_PLACES);
-                return 'NUMBER(*,'.$scale.')';
-            default:
-        }
-        throw \Doctrine\Common\DoctrineException::updateMe('Unknown field type \'' . $field['type'] .  '\'.');
-    }*/
-
-    /**
-     * Maps a native array description of a field to a doctrine datatype and length
-     *
-     * @param array  $field native field description
-     * @return array containing the various possible types, length, sign, fixed
-     * @throws Doctrine_DataDict_Oracle_Exception
-     * @override
-     */
-    /*public function getPortableDeclaration(array $field)
-    {
-        if ( ! isset($field['data_type'])) {
-            throw \Doctrine\Common\DoctrineException::updateMe('Native oracle definition must have a data_type key specified');
-        }
-        
-        $dbType = strtolower($field['data_type']);
-        $type = array();
-        $length = $unsigned = $fixed = null;
-        if ( ! empty($field['data_length'])) {
-            $length = $field['data_length'];
-        }
-
-        if ( ! isset($field['column_name'])) {
-            $field['column_name'] = '';
-        }
-
-        switch ($dbType) {
-            case 'integer':
-            case 'pls_integer':
-            case 'binary_integer':
-                $type[] = 'integer';
-                if ($length == '1') {
-                    $type[] = 'boolean';
-                    if (preg_match('/^(is|has)/', $field['column_name'])) {
-                        $type = array_reverse($type);
-                    }
-                }
-                break;
-            case 'varchar':
-            case 'varchar2':
-            case 'nvarchar2':
-                $fixed = false;
-            case 'char':
-            case 'nchar':
-                $type[] = 'string';
-                if ($length == '1') {
-                    $type[] = 'boolean';
-                    if (preg_match('/^(is|has)/', $field['column_name'])) {
-                        $type = array_reverse($type);
-                    }
-                }
-                if ($fixed !== false) {
-                    $fixed = true;
-                }
-                break;
-            case 'date':
-            case 'timestamp':
-                $type[] = 'timestamp';
-                $length = null;
-                break;
-            case 'float':
-                $type[] = 'float';
-                break;
-            case 'number':
-                if ( ! empty($field['data_scale'])) {
-                    $type[] = 'decimal';
-                } else {
-                    $type[] = 'integer';
-                    if ($length == '1') {
-                        $type[] = 'boolean';
-                        if (preg_match('/^(is|has)/', $field['column_name'])) {
-                            $type = array_reverse($type);
-                        }
-                    }
-                }
-                break;
-            case 'long':
-                $type[] = 'string';
-            case 'clob':
-            case 'nclob':
-                $type[] = 'clob';
-                break;
-            case 'blob':
-            case 'raw':
-            case 'long raw':
-            case 'bfile':
-                $type[] = 'blob';
-                $length = null;
-            break;
-            case 'rowid':
-            case 'urowid':
-            default:
-                throw \Doctrine\Common\DoctrineException::updateMe('unknown database attribute type: ' . $dbType);
-        }
-
-        return array('type'     => $type,
-                     'length'   => $length,
-                     'unsigned' => $unsigned,
-                     'fixed'    => $fixed);
-    }*/
 
     /**
      * {@inheritdoc}
@@ -415,5 +218,15 @@ class OraclePlatform extends AbstractPlatform
     public function prefersSequences()
     {
         return true;
+    }
+
+    /**
+     * Get the platform name for this instance
+     *
+     * @return string
+     */
+    public function getName()
+    {
+        return 'oracle';
     }
 }

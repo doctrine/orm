@@ -7,17 +7,17 @@ class DatabasePlatformMock extends \Doctrine\DBAL\Platforms\AbstractPlatform
     private $_sequenceNextValSql = "";
     private $_prefersIdentityColumns = true;
     private $_prefersSequences = false;
-    
+
     /**
      * @override
      */
     public function getNativeDeclaration(array $field) {}
-    
+
     /**
      * @override
      */
     public function getPortableDeclaration(array $field) {}
-    
+
     /**
      * @override
      */
@@ -54,9 +54,9 @@ class DatabasePlatformMock extends \Doctrine\DBAL\Platforms\AbstractPlatform
 
     /** @override */
     public function getVarcharTypeDeclarationSql(array $field) {}
-    
+
     /* MOCK API */
-    
+
     public function setPrefersIdentityColumns($bool)
     {
         $this->_prefersIdentityColumns = $bool;
@@ -70,5 +70,10 @@ class DatabasePlatformMock extends \Doctrine\DBAL\Platforms\AbstractPlatform
     public function setSequenceNextValSql($sql)
     {
         $this->_sequenceNextValSql = $sql;
+    }
+
+    public function getName()
+    {
+        return 'mock';
     }
 }

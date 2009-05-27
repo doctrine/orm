@@ -51,4 +51,9 @@ class Driver implements \Doctrine\DBAL\Driver
     {
         return new \Doctrine\DBAL\Schema\PostgreSqlSchemaManager($conn);
     }
+
+    public function getName()
+    {
+        return 'pdo_pgsql';
+    }
 }

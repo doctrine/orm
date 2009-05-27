@@ -434,7 +434,7 @@ class Connection
      */
     public function fetchRow($statement, array $params = array())
     {
-        return $this->execute($statement, $params)->fetch(PDO::FETCH_ASSOC);
+        return $this->execute($statement, $params)->fetch(\PDO::FETCH_ASSOC);
     }
 
     /**
@@ -446,7 +446,7 @@ class Connection
      */
     public function fetchArray($statement, array $params = array())
     {
-        return $this->execute($statement, $params)->fetch(PDO::FETCH_NUM);
+        return $this->execute($statement, $params)->fetch(\PDO::FETCH_NUM);
     }
 
     /**
@@ -459,7 +459,7 @@ class Connection
      */
     public function fetchColumn($statement, array $params = array(), $colnum = 0)
     {
-        return $this->execute($statement, $params)->fetchAll(PDO::FETCH_COLUMN, $colnum);
+        return $this->execute($statement, $params)->fetchAll(\PDO::FETCH_COLUMN, $colnum);
     }
 
     /**
@@ -471,7 +471,7 @@ class Connection
      */
     public function fetchBoth($statement, array $params = array())
     {
-        return $this->execute($statement, $params)->fetchAll(PDO::FETCH_BOTH);
+        return $this->execute($statement, $params)->fetchAll(\PDO::FETCH_BOTH);
     }
     
     /**
@@ -515,7 +515,6 @@ class Connection
     {
         $this->connect();
         try {
-            echo "DBAL:" . $query . PHP_EOL;
             if ( ! empty($params)) {
                 $stmt = $this->prepare($query);
                 $stmt->execute($params);
@@ -542,7 +541,6 @@ class Connection
     public function exec($query, array $params = array()) {
         $this->connect();
         try {
-            echo "DBAL:" . $query . PHP_EOL;
             if ( ! empty($params)) {
                 var_dump($params);
                 $stmt = $this->prepare($query);

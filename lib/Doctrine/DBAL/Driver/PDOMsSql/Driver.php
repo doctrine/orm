@@ -57,4 +57,9 @@ class Driver implements \Doctrine\DBAL\Driver
     {
         return new \Doctrine\DBAL\Schema\MsSqlSchemaManager($conn);
     }
+
+    public function getName()
+    {
+        return 'pdo_mssql';
+    }
 }

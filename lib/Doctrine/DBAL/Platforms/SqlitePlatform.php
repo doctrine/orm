@@ -173,220 +173,7 @@ class SqlitePlatform extends AbstractPlatform
         }
         return 'SUBSTR(' . $value . ', ' . $position . ', LENGTH(' . $value . '))';
     }
-    
-    /**
-     * Obtain DBMS specific SQL code portion needed to declare an text type
-     * field to be used in statements like CREATE TABLE.
-     *
-     * @param array $field  associative array with the name of the properties
-     *      of the field being declared as array indexes. Currently, the types
-     *      of supported field properties are as follows:
-     *
-     *      length
-     *          Integer value that determines the maximum length of the text
-     *          field. If this argument is missing the field should be
-     *          declared to have the longest length allowed by the DBMS.
-     *
-     *      default
-     *          Text value to be used as default for this field.
-     *
-     *      notnull
-     *          Boolean flag that indicates whether this field is constrained
-     *          to not be set to null.
-     * @author Lukas Smith (PEAR MDB2 library)
-     * @return string  DBMS specific SQL code portion that should be used to
-     *      declare the specified field.
-     * @override
-     */
-    public function getNativeDeclaration(array $field)
-    {
-        /*if ( ! isset($field['type'])) {
-            throw DoctrineException::updateMe('Missing column type.');
-        }
-        switch ($field['type']) {
-            case 'text':
-            case 'object':
-            case 'array':
-            case 'string':
-            case 'char':
-            case 'gzip':
-            case 'varchar':
-                $length = (isset($field['length']) && $field['length']) ? $field['length'] : null;
 
-                $fixed  = ((isset($field['fixed']) && $field['fixed']) || $field['type'] == 'char') ? true : false;
-
-                return $fixed ? ($length ? 'CHAR('.$length.')' : 'CHAR('.$this->conn->getAttribute(Doctrine::ATTR_DEFAULT_TEXTFLD_LENGTH).')')
-                    : ($length ? 'VARCHAR('.$length.')' : 'TEXT');
-            case 'clob':
-                if ( ! empty($field['length'])) {
-                    $length = $field['length'];
-                    if ($length <= 255) {
-                        return 'TINYTEXT';
-                    } elseif ($length <= 65535) {
-                        return 'TEXT';
-                    } elseif ($length <= 16777215) {
-                        return 'MEDIUMTEXT';
-                    }
-                }
-                return 'LONGTEXT';
-            case 'blob':
-                if ( ! empty($field['length'])) {
-                    $length = $field['length'];
-                    if ($length <= 255) {
-                        return 'TINYBLOB';
-                    } elseif ($length <= 65535) {
-                        return 'BLOB';
-                    } elseif ($length <= 16777215) {
-                        return 'MEDIUMBLOB';
-                    }
-                }
-                return 'LONGBLOB';
-            case 'enum':
-            case 'integer':
-            case 'boolean':
-            case 'int':
-                return 'INTEGER';
-            case 'date':
-                return 'DATE';
-            case 'time':
-                return 'TIME';
-            case 'timestamp':
-                return 'DATETIME';
-            case 'float':
-            case 'double':
-                return 'DOUBLE';//($this->conn->options['fixed_float'] ? '('.
-                    //($this->conn->options['fixed_float']+2).','.$this->conn->options['fixed_float'].')' : '');
-            case 'decimal':
-                $length = !empty($field['length']) ? $field['length'] : 18;
-                $scale = !empty($field['scale']) ? $field['scale'] : $this->conn->getAttribute(Doctrine::ATTR_DECIMAL_PLACES);
-                return 'DECIMAL('.$length.','.$scale.')';
-        }*/
-        throw DoctrineException::updateMe('Unknown field type \'' . $field['type'] .  '\'.');
-    }
-
-    /**
-     * Maps a native array description of a field to Doctrine datatype and length
-     *
-     * @param array  $field native field description
-     * @return array containing the various possible types, length, sign, fixed
-     * @override
-     */
-    public function getPortableDeclaration(array $field)
-    {
-        /*$dbType = strtolower($field['type']);
-        $length = (isset($field['length'])) ? $field['length'] : null;
-        $unsigned = (isset($field['unsigned'])) ? $field['unsigned'] : null;
-        $fixed = null;
-        $type = array();
-
-        if ( ! isset($field['name'])) {
-            $field['name'] = '';
-        }
-
-        switch ($dbType) {
-            case 'boolean':
-                $type[] = 'boolean';
-                break;
-            case 'tinyint':
-                $type[] = 'integer';
-                $type[] = 'boolean';
-                if (preg_match('/^(is|has)/', $field['name'])) {
-                    $type = array_reverse($type);
-                }
-                $unsigned = preg_match('/ unsigned/i', $field['type']);
-                $length = 1;
-                break;
-            case 'smallint':
-                $type[] = 'integer';
-                $unsigned = preg_match('/ unsigned/i', $field['type']);
-                $length = 2;
-                break;
-            case 'mediumint':
-                $type[] = 'integer';
-                $unsigned = preg_match('/ unsigned/i', $field['type']);
-                $length = 3;
-                break;
-            case 'int':
-            case 'integer':
-            case 'serial':
-                $type[] = 'integer';
-                $unsigned = preg_match('/ unsigned/i', $field['type']);
-                $length = 4;
-                break;
-            case 'bigint':
-            case 'bigserial':
-                $type[] = 'integer';
-                $unsigned = preg_match('/ unsigned/i', $field['type']);
-                $length = 8;
-                break;
-            case 'clob':
-            case 'tinytext':
-            case 'mediumtext':
-            case 'longtext':
-            case 'text':
-            case 'varchar':
-            case 'varchar2':
-                $fixed = false;
-            case 'char':
-                $type[] = 'text';
-                if ($length == '1') {
-                    $type[] = 'boolean';
-                    if (preg_match('/^(is|has)/', $field['name'])) {
-                        $type = array_reverse($type);
-                    }
-                } elseif (strstr($dbType, 'text')) {
-                    $type[] = 'clob';
-                }
-                if ($fixed !== false) {
-                    $fixed = true;
-                }
-                break;
-            case 'date':
-                $type[] = 'date';
-                $length = null;
-                break;
-            case 'datetime':
-            case 'timestamp':
-                $type[] = 'timestamp';
-                $length = null;
-                break;
-            case 'time':
-                $type[] = 'time';
-                $length = null;
-                break;
-            case 'float':
-            case 'double':
-            case 'real':
-                $type[] = 'float';
-                $length = null;
-                break;
-            case 'decimal':
-            case 'numeric':
-                $type[] = 'decimal';
-                $length = null;
-                break;
-            case 'tinyblob':
-            case 'mediumblob':
-            case 'longblob':
-            case 'blob':
-                $type[] = 'blob';
-                $length = null;
-                break;
-            case 'year':
-                $type[] = 'integer';
-                $type[] = 'date';
-                $length = null;
-                break;
-            default:
-                throw DoctrineException::updateMe('unknown database attribute type: '.$dbType);
-        }
-
-        return array('type'     => $type,
-                     'length'   => $length,
-                     'unsigned' => $unsigned,
-                     'fixed'    => $fixed);*/
-    }
-    
     /**
      * Enter description here...
      *
@@ -419,7 +206,8 @@ class SqlitePlatform extends AbstractPlatform
     }
 
     /** @override */
-    public function prefersIdentityColumns() {
+    public function prefersIdentityColumns()
+    {
         return true;
     }
 
@@ -558,6 +346,43 @@ class SqlitePlatform extends AbstractPlatform
                 : ($length ? 'VARCHAR(' . $length . ')' : 'TEXT');
     }
 
+    public function getListSequencesSql()
+    {
+        return "SELECT name FROM sqlite_master WHERE type='table' AND sql NOT NULL ORDER BY name";
+    }
+
+    public function getListTableConstraintsSql($table)
+    {
+        return "SELECT sql FROM sqlite_master WHERE type='index' AND tbl_name = $table AND sql NOT NULL ORDER BY name";
+    }
+
+    public function getListTableColumnsSql($table)
+    {
+        return "PRAGMA table_info($table)";
+    }
+
+    public function getListTableIndexesSql($table)
+    {
+        return "PRAGMA index_list($table)";
+    }
+
+    public function getListTablesSql()
+    {
+        return "SELECT name FROM sqlite_master WHERE type = 'table' AND name != 'sqlite_sequence' "
+             . "UNION ALL SELECT name FROM sqlite_temp_master "
+             . "WHERE type = 'table' ORDER BY name";
+    }
+
+    public function getListTableViews()
+    {
+        return "SELECT name, sql FROM sqlite_master WHERE type='view' AND sql NOT NULL";
+    }
+
+    public function getListViewsSql()
+    {
+        return "SELECT name, sql FROM sqlite_master WHERE type='view' AND sql NOT NULL";
+    }
+
     /**
      * SQLite does support foreign key constraints, but only in CREATE TABLE statements...
      * This really limits their usefulness and requires SQLite specific handling, so
@@ -569,5 +394,15 @@ class SqlitePlatform extends AbstractPlatform
     public function supportsForeignKeyConstraints()
     {
         return false;
+    }
+
+    /**
+     * Get the platform name for this instance
+     *
+     * @return string
+     */
+    public function getName()
+    {
+        return 'sqlite';
     }
 }

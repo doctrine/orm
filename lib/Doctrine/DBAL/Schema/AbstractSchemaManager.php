@@ -29,235 +29,282 @@ namespace Doctrine\DBAL\Schema;
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  * @author      Lukas Smith <smith@pooteeweet.org> (PEAR MDB2 library)
  * @author      Roman Borschel <roman@code-factory.org>
+ * @author      Jonathan H. Wage <jonwage@gmail.com>
  * @version     $Revision$
  * @since       2.0
  */
 abstract class AbstractSchemaManager
 {
+    /**
+     * Holds instance of the Doctrine connection for this schema manager
+     *
+     * @var object \Doctrine\DBAL\Connection
+     */
     protected $_conn;
 
+    /**
+     * Holds instance of the database platform used for this schema manager
+     *
+     * @var string
+     */
+    protected $_platform;
+
+    /**
+     * Constructor. Accepts the Connection instance to manage the schema for
+     *
+     * @param \Doctrine\DBAL\Connection $conn 
+     */
     public function __construct(\Doctrine\DBAL\Connection $conn)
     {
         $this->_conn = $conn;
+        $this->_platform = $this->_conn->getDatabasePlatform();
     }
 
     /**
-     * lists all databases
+     * List the available databases for this connection
      *
-     * @return array
+     * @return array $databases
      */
     public function listDatabases()
     {
-        return $this->_conn->fetchColumn($this->_conn->getDatabasePlatform()
-                ->getListDatabasesSql());
+        $sql = $this->_platform->getListDatabasesSql();
+
+        $databases = $this->_conn->fetchAll($sql);
+
+        return $this->_getPortableDatabasesList($databases);
     }
 
     /**
-     * lists all availible database functions
+     * List the available functions for this connection
      *
-     * @return array
+     * @return array $functions
      */
     public function listFunctions()
     {
-        return $this->_conn->fetchColumn($this->_conn->getDatabasePlatform()
-                ->getListFunctionsSql());
+        $sql = $this->_platform->getListFunctionsSql();
+
+        $functions = $this->_conn->fetchAll($sql);
+
+        return $this->_getPortableFunctionsList($functions);
     }
 
     /**
-     * Lists all database triggers.
+     * List the available triggers for this connection
      *
-     * @param string|null $database
-     * @return array
+     * @return array $triggers
      */
-    public function listTriggers($database = null)
+    public function listTriggers()
     {
-        return $this->_conn->fetchColumn($this->_conn->getDatabasePlatform()
-                ->getListTriggersSql());
+        $sql = $this->_platform->getListTriggersSql();
+
+        $triggers = $this->_conn->fetchAll($sql);
+
+        return $this->_getPortableTriggersList($triggers);
     }
 
     /**
-     * lists all database sequences
+     * List the available sequences for this connection
      *
-     * @param string|null $database
-     * @return array
+     * @return array $sequences
      */
-    public function listSequences($database = null)
+    public function listSequences()
     {
-        return $this->_conn->fetchColumn($this->_conn->getDatabasePlatform()
-                ->getListSequencesSql());
+        $sql = $this->_platform->getListSequencesSql();
+
+        $sequences = $this->_conn->fetchAll($sql);
+
+        return $this->_getPortableSequencesList($sequences);
     }
 
     /**
-     * Lists table constraints.
+     * List the constraints for a given table
      *
-     * @param string $table     database table name
-     * @return array
+     * @param string $table The name of the table
+     * @return array $tableConstraints
      */
     public function listTableConstraints($table)
     {
-        return $this->_conn->fetchColumn($this->_conn->getDatabasePlatform()
-                ->getListTableConstraintsSql());
+        $sql = $this->_platform->getListTableConstraintsSql($table);
+
+        $tableContraints = $this->_conn->fetchAll($sql);
+
+        return $this->_getPortableTableConstraintsList($tableConstraints);
     }
 
     /**
-     * Lists table columns.
+     * List the columns for a given table
      *
-     * @param string $table     database table name
-     * @return array
+     * @param string $table The name of the table
+     * @return array $tableColumns
      */
     public function listTableColumns($table)
     {
-        return $this->_conn->fetchColumn($this->_conn->getDatabasePlatform()
-                ->getListTableColumnsSql());
+        $sql = $this->_platform->getListTableColumnsSql($table);
+
+        $tableColumns = $this->_conn->fetchAll($sql);
+
+        return $this->_getPortableTableColumnList($tableColumns);
     }
 
     /**
-     * Lists table indexes.
+     * List the indexes for a given table
      *
-     * @param string $table     database table name
-     * @return array
+     * @param string $table The name of the table
+     * @return array $tableIndexes
      */
     public function listTableIndexes($table)
     {
-        return $this->_conn->fetchColumn($this->_conn->getDatabasePlatform()
-                ->getListTableIndexesSql());
+        $sql = $this->_platform->getListTableIndexesSql($table);
+
+        $tableIndexes = $this->_conn->fetchAll($sql);
+
+        return $this->_getPortableTableIndexesList($tableIndexes);
     }
 
     /**
-     * Lists tables.
+     * List the tables for this connection
      *
-     * @param string|null $database
-     * @return array
+     * @return array $tables
      */
-    public function listTables($database = null)
+    public function listTables()
     {
-        return $this->_conn->fetchColumn($this->_conn->getDatabasePlatform()
-                ->getListTablesSql());
+        $sql = $this->_platform->getListTablesSql();
+
+        $tables = $this->_conn->fetchAll($sql);
+
+        return $this->_getPortableTablesList($tables);
     }
 
     /**
-     * Lists database users.
+     * List the users this connection has
      *
-     * @return array
+     * @return array $users
      */
     public function listUsers()
     {
-        return $this->_conn->fetchColumn($this->_conn->getDatabasePlatform()
-                ->getListUsersSql());
+        $sql = $this->_platform->getListUsersSql();
+
+        $users = $this->_conn->fetchAll($sql);
+
+        return $this->_getPortableUsersList($users);
     }
 
     /**
-     * Lists database views.
+     * List the views this connection has
      *
-     * @param string|null $database
-     * @return array
+     * @return array $views
      */
-    public function listViews($database = null)
+    public function listViews()
     {
-        return $this->_conn->fetchColumn($this->_conn->getDatabasePlatform()
-                ->getListViewsSql());
+        $sql = $this->_platform->getListViewsSql();
+
+        $views = $this->_conn->fetchAll($sql);
+
+        return $this->_getPortableViewsList($views);
     }
 
     /**
-     * drop an existing database
-     * (this method is implemented by the drivers)
+     * Drop the database for this connection
      *
-     * @param string $name name of the database that should be dropped
-     * @return void
+     * @return boolean $result
      */
-    public function dropDatabase($database)
+    public function dropDatabase()
     {
-        $this->_conn->execute($this->_conn->getDatabasePlatform()
-                ->getDropDatabaseSql($database));
+        $sql = $this->_platform->getDropDatabaseSql();
+
+        return $this->_executeSql($sql, 'execute');
     }
 
     /**
-     * drop an existing table
+     * Drop the given table
      *
-     * @param string $table           name of table that should be dropped from the database
-     * @return void
+     * @param string $table The name of the table to drop 
+     * @return boolean $result
      */
     public function dropTable($table)
     {
-        $this->_conn->execute($this->_conn->getDatabasePlatform()
-                ->getDropTableSql($table));
+        $sql = $this->_platform->getDropTableSql($table);
+
+        return $this->_executeSql($sql, 'execute');
     }
 
     /**
-     * drop existing index
+     * Drop the index from the given table
      *
-     * @param string    $table        name of table that should be used in method
-     * @param string    $name         name of the index to be dropped
-     * @return void
+     * @param string $table The name of the table
+     * @param string $name  The name of the index
+     * @return boolean $result
      */
     public function dropIndex($table, $name)
     {
-        return $this->_conn->exec($this->_conn->getDatabasePlatform()
-                ->getDropIndexSql($table, $name));
+        $sql = $this->_platform->getDropIndexSql($table, $name);
+
+        return $this->_executeSql($sql, 'exec');
     }
 
     /**
-     * drop existing constraint
+     * Drop the constraint from the given table
      *
-     * @param string    $table        name of table that should be used in method
-     * @param string    $name         name of the constraint to be dropped
-     * @param string    $primary      hint if the constraint is primary
-     * @return void
+     * @param string $table   The name of the table
+     * @param string $name    The name of the constraint
+     * @param string $primary Whether or not it is a primary constraint
+     * @return boolean $result
      */
     public function dropConstraint($table, $name, $primary = false)
     {
-        $table = $this->_conn->getDatabasePlatform()->quoteIdentifier($table);
-        $name = $this->_conn->getDatabasePlatform()->quoteIdentifier($name);
-        
-        return $this->_conn->exec('ALTER TABLE ' . $table . ' DROP CONSTRAINT ' . $name);
+        $sql = $this->_platform->getDropConstraintSql($table, $name, $primary);
+
+        return $this->_executeSql($sql, 'exec');
     }
 
     /**
-     * drop existing foreign key
+     * Drop the foreign key from the given table
      *
-     * @param string    $table        name of table that should be used in method
-     * @param string    $name         name of the foreign key to be dropped
-     * @return void
+     * @param string $table The name of the table
+     * @param string $name  The name of the foreign key
+     * @return boolean $result
      */
     public function dropForeignKey($table, $name)
     {
-        return $this->dropConstraint($table, $name);
+        $sql = $this->_platform->getDropForeignKeySql($table, $name);
+
+        return $this->_executeSql($sql, 'exec');
     }
 
     /**
-     * drop existing sequence
-     * (this method is implemented by the drivers)
+     * Drop the given sequence
      *
-     * @throws Doctrine\DBAL\ConnectionException     if something fails at database level
-     * @param string $sequenceName      name of the sequence to be dropped
-     * @return void
+     * @param string $name The name of the sequence
+     * @return boolean $result
      */
-    public function dropSequence($sequenceName)
+    public function dropSequence($name)
     {
-        $this->_conn->exec($this->_conn->getDatabasePlatform()->getDropSequenceSql($sequenceName));
+        $sql = $this->_platform->getDropSequenceSql($name);
+
+        return $this->_executeSql($sql, 'exec');
     }
 
     /**
-     * create a new database
-     * (this method is implemented by the drivers)
+     * Create the given database on the connection
      *
-     * @param string $name name of the database that should be created
-     * @return void
+     * @param string $database The name of the database
+     * @return boolean $result
      */
     public function createDatabase($database)
     {
-        $this->_conn->execute($this->_conn->getDatabasePlatform()->getCreateDatabaseSql($database));
+        $sql = $this->_platform->getCreateDatabaseSql($database);
+
+        return $this->_executeSql($sql, 'exec');
     }
 
     /**
-     * create a new table
+     * Create a new database table
      *
      * @param string $name   Name of the database that should be created
      * @param array $fields  Associative array that contains the definition of each field of the new table
      * @param array $options  An associative array of table options:
-     * @see Doctrine_Export::createTableSql()
      *
-     * @return void
+     * @return boolean $result
      */
     public function createTable($name, array $columns, array $options = array())
     {
@@ -274,18 +321,14 @@ abstract class AbstractSchemaManager
             }
         }
 
-        $sql = (array) $this->_conn->getDatabasePlatform()->getCreateTableSql(
-                $name, $columns, $options);
+        $sql = $this->_platform->getCreateTableSql($name, $columns, $options);
 
-        foreach ($sql as $query) {
-            $this->_conn->execute($query);
-        }
+        return $this->_executeSql($sql, 'exec');
     }
 
     /**
-     * create sequence
+     * Create a new sequence
      *
-     * @throws Doctrine\DBAL\ConnectionException     if something fails at database level
      * @param string    $seqName        name of the sequence to be created
      * @param string    $start          start value of the sequence; default is 1
      * @param array     $options  An associative array of table options:
@@ -294,16 +337,18 @@ abstract class AbstractSchemaManager
      *                              'charset' => 'utf8',
      *                              'collate' => 'utf8_unicode_ci',
      *                          );
-     * @return void
+     * @return boolean $result
+     * @throws Doctrine\DBAL\ConnectionException     if something fails at database level
      */
     public function createSequence($seqName, $start = 1, array $options = array())
     {
-        return $this->_conn->execute($this->_conn->getDatabasePlatform()
-                ->getCreateSequenceSql($seqName, $start, $options));
+        $sql = $this->_platform->getCreateSequenceSql($seqName, $start, $options);
+
+        return $this->_executeSql($sql, 'exec');
     }
 
     /**
-     * create a constraint on a table
+     * Create a constraint on a table
      *
      * @param string    $table         name of the table on which the constraint is to be created
      * @param string    $name          name of the constraint to be created
@@ -321,16 +366,17 @@ abstract class AbstractSchemaManager
      *                                            'last_login' => array()
      *                                        )
      *                                    )
-     * @return void
+     * @return boolean $result
      */
     public function createConstraint($table, $name, $definition)
     {
-        $sql = $this->_conn->getDatabasePlatform()->getCreateConstraintSql($table, $name, $definition);
-        return $this->_conn->exec($sql);
+        $sql = $this->_platform->getCreateConstraintSql($table, $name, $definition);
+
+        return $this->_executeSql($sql, 'exec');
     }
 
     /**
-     * Get the stucture of a field into an array
+     * Create a new index on a table
      *
      * @param string    $table         name of the table on which the index is to be created
      * @param string    $name          name of the index to be created
@@ -358,12 +404,13 @@ abstract class AbstractSchemaManager
      *                                            'last_login' => array()
      *                                        )
      *                                    )
-     * @return void
+     * @return boolean $result
      */
     public function createIndex($table, $name, array $definition)
     {
-        return $this->_conn->execute($this->_conn->getDatabasePlatform()
-                ->getCreateIndexSql($table, $name, $definition));
+        $sql = $this->_platform->getCreateIndexSql($table, $name, $definition);
+
+        return $this->_executeSql($sql, 'exec');
     }
 
     /**
@@ -371,17 +418,17 @@ abstract class AbstractSchemaManager
      *
      * @param string    $table         name of the table on which the foreign key is to be created
      * @param array     $definition    associative array that defines properties of the foreign key to be created.
-     * @return string
+     * @return boolean $result
      */
     public function createForeignKey($table, array $definition)
     {
-        $sql = $this->_conn->getDatabasePlatform()->getCreateForeignKeySql($table, $definition);
-        return $this->_conn->execute($sql);
+        $sql = $this->_platform->getCreateForeignKeySql($table, $definition);
+
+        return $this->_executeSql($sql, 'exec');
     }
 
     /**
-     * alter an existing table
-     * (this method is implemented by the drivers)
+     * Alter an existing tables schema
      *
      * @param string $name         name of the table that is intended to be changed.
      * @param array $changes     associative array that contains the details of each type
@@ -466,14 +513,71 @@ abstract class AbstractSchemaManager
      * @param boolean $check     indicates whether the function should just check if the DBMS driver
      *                             can perform the requested table alterations if the value is true or
      *                             actually perform them otherwise.
-     * @return void
+     * @return boolean $result
      */
     public function alterTable($name, array $changes, $check = false)
     {
-        $sql = $this->_conn->getDatabasePlatform()->getAlterTableSql($name, $changes, $check);
-        
-        if (is_string($sql) && $sql) {
-            $this->_conn->execute($sql);
+        $sql = $this->_platform->getAlterTableSql($name, $changes, $check);
+
+        return $this->_executeSql($sql, 'exec');
+    }
+
+    protected function _getPortableDatabasesList($databases)
+    {
+        return $databases;
+    }
+
+    protected function _getPortableFunctionsList($functions)
+    {
+        return $functions;
+    }
+
+    protected function _getPortableTriggersList($triggers)
+    {
+        return $triggers;
+    }
+
+    protected function _getPortableSequencesList($sequences)
+    {
+        return $sequences;
+    }
+
+    protected function _getPortableTableConstraintsList($tableConstraints)
+    {
+        return $tableConstraints;
+    }
+
+    protected function _getPortableTableColumnList($tableColumns)
+    {
+        return $tableColumns;
+    }
+
+    protected function _getPortableTableIndexesList($tableIndexes)
+    {
+        return $tableIndexes;
+    }
+
+    protected function _getPortableTablesList($tables)
+    {
+        return $tables;
+    }
+
+    protected function _getPortableUsersList($users)
+    {
+        return $users;
+    }
+
+    protected function _getPortableViewsList($views)
+    {
+        return $views;
+    }
+
+    protected function _executeSql($sql, $method = 'exec')
+    {
+        $result = true;
+        foreach ((array) $sql as $query) {
+            $result = $this->_conn->$method($query);
         }
+        return $result;
     }
 }

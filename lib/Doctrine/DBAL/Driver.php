@@ -36,4 +36,11 @@ interface Driver
      * @return Doctrine\DBAL\SchemaManager
      */
     public function getSchemaManager(Connection $conn);
+
+    /**
+     * Get the name of the driver
+     *
+     * @return string The name of the driver
+     */
+    public function getName();
 }

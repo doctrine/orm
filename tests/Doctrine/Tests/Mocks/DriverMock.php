@@ -48,4 +48,9 @@ class DriverMock implements \Doctrine\DBAL\Driver
     {
         $this->_platformMock = $platform;
     }
+
+    public function getName()
+    {
+        return 'mock';
+    }
 }
