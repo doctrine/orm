@@ -21,8 +21,8 @@ class AllTests
     {
         $suite = new \Doctrine\Tests\DbalFunctionalTestSuite('Doctrine Dbal Functional');
 
-        $suite->addTestSuite('Doctrine\Tests\DBAL\Functional\Schema\SqliteSchemaTest');
-        $suite->addTestSuite('Doctrine\Tests\DBAL\Functional\Schema\MySqlSchemaTest');
+        $suite->addTestSuite('Doctrine\Tests\DBAL\Functional\Schema\SqliteSchemaManagerTest');
+        $suite->addTestSuite('Doctrine\Tests\DBAL\Functional\Schema\MySqlSchemaManagerTest');
 
         return $suite;
     }

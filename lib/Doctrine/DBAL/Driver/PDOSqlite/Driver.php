@@ -88,4 +88,10 @@ class Driver implements \Doctrine\DBAL\Driver
     {
         return 'pdo_sqlite';
     }
+
+    public function getDatabase(\Doctrine\DBAL\Connection $conn)
+    {
+        $params = $conn->getParams();
+        return isset($params['path']) ? $params['path'] : null;
+    }
 }

@@ -79,4 +79,10 @@ class Driver implements \Doctrine\DBAL\Driver
     {
         return 'pdo_oracle';
     }
+
+    public function getDatabase(\Doctrine\DBAL\Connection $conn)
+    {
+        $params = $conn->getParams();
+        return $params['dbname'];
+    }
 }

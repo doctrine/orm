@@ -62,4 +62,10 @@ class Driver implements \Doctrine\DBAL\Driver
     {
         return 'pdo_mssql';
     }
+
+    public function getDatabase(\Doctrine\DBAL\Connection $conn)
+    {
+        $params = $conn->getParams();
+        return $params['dbname'];
+    }
 }

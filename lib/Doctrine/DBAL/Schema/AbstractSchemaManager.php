@@ -109,9 +109,12 @@ abstract class AbstractSchemaManager
      *
      * @return array $sequences
      */
-    public function listSequences()
+    public function listSequences($database = null)
     {
-        $sql = $this->_platform->getListSequencesSql();
+        if (is_null($database)) {
+            $database = $this->_conn->getDatabase();
+        }
+        $sql = $this->_platform->getListSequencesSql($database);
 
         $sequences = $this->_conn->fetchAll($sql);
 
@@ -128,7 +131,7 @@ abstract class AbstractSchemaManager
     {
         $sql = $this->_platform->getListTableConstraintsSql($table);
 
-        $tableContraints = $this->_conn->fetchAll($sql);
+        $tableConstraints = $this->_conn->fetchAll($sql);
 
         return $this->_getPortableTableConstraintsList($tableConstraints);
     }
@@ -208,11 +211,15 @@ abstract class AbstractSchemaManager
     /**
      * Drop the database for this connection
      *
+     * @param  string $database The name of the database to drop
      * @return boolean $result
      */
-    public function dropDatabase()
+    public function dropDatabase($database = null)
     {
-        $sql = $this->_platform->getDropDatabaseSql();
+        if (is_null($database)) {
+            $database = $this->_conn->getDatabase();
+        }
+        $sql = $this->_platform->getDropDatabaseSql($database);
 
         return $this->_executeSql($sql, 'execute');
     }
@@ -289,11 +296,14 @@ abstract class AbstractSchemaManager
     /**
      * Create the given database on the connection
      *
-     * @param string $database The name of the database
+     * @param  string $database The name of the database to create
      * @return boolean $result
      */
-    public function createDatabase($database)
+    public function createDatabase($database = null)
     {
+        if (is_null($database)) {
+            $database = $this->_conn->getDatabase();
+        }
         $sql = $this->_platform->getCreateDatabaseSql($database);
 
         return $this->_executeSql($sql, 'exec');
@@ -430,6 +440,33 @@ abstract class AbstractSchemaManager
     }
 
     /**
+     * Create a new view
+     *
+     * @param string $name The name of the view 
+     * @param string $sql  The sql to set to the view
+     * @return boolean $result
+     */
+    public function createView($name, $sql)
+    {
+        $sql = $this->_platform->getCreateViewSql($name, $sql);
+
+        return $this->_executeSql($sql, 'exec');
+    }
+
+    /**
+     * Drop a view
+     *
+     * @param string $name The name of the view 
+     * @return boolean $result
+     */
+    public function dropView($name)
+    {
+        $sql = $this->_platform->getDropViewSql($name);
+
+        return $this->_executeSql($sql, 'exec');
+    }
+
+    /**
      * Alter an existing tables schema
      *
      * @param string $name         name of the table that is intended to be changed.
@@ -524,12 +561,113 @@ abstract class AbstractSchemaManager
         return $this->_executeSql($sql, 'exec');
     }
 
+    /**
+     * Rename a given table to another name
+     *
+     * @param string $name     The current name of the table
+     * @param string $newName  The new name of the table
+     * @return boolean $result
+     */
+    public function renameTable($name, $newName)
+    {
+        $change = array(
+            'name' => $newName
+        );
+
+        return $this->alterTable($name, $change);
+    }
+
+    /**
+     * Add a new table column
+     *
+     * @param string $name          The name of the table
+     * @param array  $definition    The definition of the column to add
+     * @return boolean $result
+     */
+    public function addTableColumn($name, $definition)
+    {
+        $change = array(
+            'add' => array(
+                $name => $definition
+            )
+        );
+
+        return $this->alterTable($name, $change);
+    }
+
+    /**
+     * Remove a column from a table
+     *
+     * @param string $tableName The name of the table
+     * @param array|string $column The column name or array of names 
+     * @return boolean $result
+     */
+    public function removeTableColumn($name, $column)
+    {
+        $change = array(
+            'remove' => is_array($column) ? $column : array($column => array())
+        );
+
+        return $this->alterTable($name, $change);
+    }
+
+    /**
+     * Change a given table column. You can change the type, length, etc.
+     *
+     * @param string $name       The name of the table
+     * @param string $type       The type of the column
+     * @param string $length     The length of the column
+     * @param string $definition The definition array for the column
+     * @return boolean $result
+     */
+    public function changeTableColumn($name, $type, $length = null, $definition = array())
+    {
+        $definition['type'] = $type;
+
+        $change = array(
+            'change' => array(
+                $name => array(
+                    'length' => $length,
+                    'definition' => $definition
+                )
+            )
+        );
+
+        return $this->alterTable($name, $change);
+    }
+
+    /**
+     * Rename a given table column
+     *
+     * @param string $name       The name of the table
+     * @param string $oldName    The old column name
+     * @param string $newName    The new column
+     * @param string $definition The column definition array if you want to change something
+     * @return boolean $result
+     */
+    public function renameTableColumn($name, $oldName, $newName, $definition = array())
+    {
+        $change = array(
+            'rename' => array(
+                $oldName => array(
+                    'name' => $newName,
+                    'definition' => $definition
+                )
+            )
+        );
+
+        return $this->alterTable($name, $change);
+    }
+
     protected function _getPortableDatabasesList($databases)
     {
+        $list = array();
         foreach ($databases as $key => $value) {
-            $databases[$key] = $this->_getPortableDatabaseDefinition($value);
+            if ($value = $this->_getPortableDatabaseDefinition($value)) {
+                $list[] = $value;
+            }
         }
-        return $databases;
+        return $list;
     }
 
     protected function _getPortableDatabaseDefinition($database)
@@ -539,10 +677,13 @@ abstract class AbstractSchemaManager
 
     protected function _getPortableFunctionsList($functions)
     {
+        $list = array();
         foreach ($functions as $key => $value) {
-            $functions[$key] = $this->_getPortableFunctionDefinition($value);
+            if ($value = $this->_getPortableFunctionDefinition($value)) {
+                $list[] = $value;
+            }
         }
-        return $functions;
+        return $list;
     }
 
     protected function _getPortableFunctionDefinition($function)
@@ -552,10 +693,13 @@ abstract class AbstractSchemaManager
 
     protected function _getPortableTriggersList($triggers)
     {
+        $list = array();
         foreach ($triggers as $key => $value) {
-            $triggers[$key] = $this->_getPortableTriggerDefinition($value);
+            if ($value = $this->_getPortableTriggerDefinition($value)) {
+                $list[] = $value;
+            }
         }
-        return $triggers;
+        return $list;
     }
 
     protected function _getPortableTriggerDefinition($trigger)
@@ -565,10 +709,13 @@ abstract class AbstractSchemaManager
 
     protected function _getPortableSequencesList($sequences)
     {
+        $list = array();
         foreach ($sequences as $key => $value) {
-            $sequences[$key] = $this->_getPortableSequenceDefinition($value);
+            if ($value = $this->_getPortableSequenceDefinition($value)) {
+                $list[] = $value;
+            }
         }
-        return $sequences;
+        return $list;
     }
 
     protected function _getPortableSequenceDefinition($sequence)
@@ -578,10 +725,13 @@ abstract class AbstractSchemaManager
 
     protected function _getPortableTableConstraintsList($tableConstraints)
     {
+        $list = array();
         foreach ($tableConstraints as $key => $value) {
-            $tableConstraints[$key] = $this->_getPortableTableConstraintDefinition($value);
+            if ($value = $this->_getPortableTableConstraintDefinition($value)) {
+                $list[] = $value;
+            }
         }
-        return $tableConstraints;
+        return $list;
     }
 
     protected function _getPortableTableConstraintDefinition($tableConstraint)
@@ -591,10 +741,13 @@ abstract class AbstractSchemaManager
 
     protected function _getPortableTableColumnList($tableColumns)
     {
+        $list = array();
         foreach ($tableColumns as $key => $value) {
-            $tableColumns[$key] = $this->_getPortableTableColumnDefinition($value);
+            if ($value = $this->_getPortableTableColumnDefinition($value)) {
+                $list[] = $value;
+            }
         }
-        return $tableColumns;
+        return $list;
     }
 
     protected function _getPortableTableColumnDefinition($tableColumn)
@@ -604,10 +757,13 @@ abstract class AbstractSchemaManager
 
     protected function _getPortableTableIndexesList($tableIndexes)
     {
+        $list = array();
         foreach ($tableIndexes as $key => $value) {
-            $tableIndexes[$key] = $this->_getPortableTableIndexDefinition($value);
+            if ($value = $this->_getPortableTableIndexDefinition($value)) {
+                $list[] = $value;
+            }
         }
-        return $tableIndexes;
+        return $list;
     }
 
     protected function _getPortableTableIndexDefinition($tableIndex)
@@ -617,10 +773,13 @@ abstract class AbstractSchemaManager
 
     protected function _getPortableTablesList($tables)
     {
+        $list = array();
         foreach ($tables as $key => $value) {
-            $tables[$key] = $this->_getPortableTableDefinition($value);
+            if ($value = $this->_getPortableTableDefinition($value)) {
+                $list[] = $value;
+            }
         }
-        return $tables;
+        return $list;
     }
 
     protected function _getPortableTableDefinition($table)
@@ -630,10 +789,13 @@ abstract class AbstractSchemaManager
 
     protected function _getPortableUsersList($users)
     {
+        $list = array();
         foreach ($users as $key => $value) {
-            $users[$key] = $this->_getPortableUserDefinition($value);
+            if ($value = $this->_getPortableUserDefinition($value)) {
+                $list[] = $value;
+            }
         }
-        return $users;
+        return $list;
     }
 
     protected function _getPortableUserDefinition($user)
@@ -643,10 +805,13 @@ abstract class AbstractSchemaManager
 
     protected function _getPortableViewsList($views)
     {
+        $list = array();
         foreach ($views as $key => $value) {
-            $views[$key] = $this->_getPortableViewDefinition($value);
+            if ($value = $this->_getPortableViewDefinition($value)) {
+                $list[] = $value;
+            }
         }
-        return $views;
+        return $list;
     }
 
     protected function _getPortableViewDefinition($view)

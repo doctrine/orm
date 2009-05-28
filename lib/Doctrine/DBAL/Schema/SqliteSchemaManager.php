@@ -33,6 +33,37 @@ namespace Doctrine\DBAL\Schema;
  */
 class SqliteSchemaManager extends AbstractSchemaManager
 {
+    public function dropDatabase($database = null)
+    {
+        if (is_null($database)) {
+            $database = $this->_conn->getDriver()->getDatabase($this->_conn);
+        }
+        unlink($database);
+    }
+
+    public function createDatabase($database = null)
+    {
+        if (is_null($database)) {
+            $database = $this->_conn->getDriver()->getDatabase($this->_conn);
+        }
+        // TODO: Can we do this better?
+        $this->_conn->close();
+        $this->_conn->connect();
+    }
+
+    protected function _getPortableTableDefinition($table)
+    {
+        return $table['name'];
+    }
+
+    protected function _getPortableTableIndexDefinition($tableIndex)
+    {
+        return array(
+            'name' => $tableIndex['name'],
+            'unique' => (bool) $tableIndex['unique']
+        );
+    }
+
     protected function _getPortableTableColumnDefinition($tableColumn)
     {
         $e = explode('(', $tableColumn['type']);

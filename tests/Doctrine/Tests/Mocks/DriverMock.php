@@ -53,4 +53,9 @@ class DriverMock implements \Doctrine\DBAL\Driver
     {
         return 'mock';
     }
+
+    public function getDatabase(\Doctrine\DBAL\Connection $conn)
+    {
+        return;
+    }
 }

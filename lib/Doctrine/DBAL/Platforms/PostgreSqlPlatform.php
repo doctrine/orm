@@ -520,7 +520,7 @@ class PostgreSqlPlatform extends AbstractPlatform
      *
      * @override
      */
-    public function getListSequencesSql()
+    public function getListSequencesSql($database)
     {
         return "SELECT
                     relname
@@ -599,7 +599,7 @@ class PostgreSqlPlatform extends AbstractPlatform
      *
      * @override
      */
-    public function getListTableIndexesSql()
+    public function getListTableIndexesSql($table)
     {
         return "SELECT
                     relname
@@ -608,7 +608,7 @@ class PostgreSqlPlatform extends AbstractPlatform
                 WHERE oid IN (
                     SELECT indexrelid
                     FROM pg_index, pg_class
-                    WHERE pg_class.relname = %s
+                    WHERE pg_class.relname = '$table'
                         AND pg_class.oid=pg_index.indrelid
                         AND indisunique != 't'
                         AND indisprimary != 't'

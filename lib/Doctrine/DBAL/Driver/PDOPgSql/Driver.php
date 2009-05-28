@@ -56,4 +56,10 @@ class Driver implements \Doctrine\DBAL\Driver
     {
         return 'pdo_pgsql';
     }
+
+    public function getDatabase(\Doctrine\DBAL\Connection $conn)
+    {
+        $params = $conn->getParams();
+        return $params['dbname'];
+    }
 }

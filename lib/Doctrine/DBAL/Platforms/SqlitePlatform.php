@@ -346,14 +346,14 @@ class SqlitePlatform extends AbstractPlatform
                 : ($length ? 'VARCHAR(' . $length . ')' : 'TEXT');
     }
 
-    public function getListSequencesSql()
+    public function getListSequencesSql($database)
     {
         return "SELECT name FROM sqlite_master WHERE type='table' AND sql NOT NULL ORDER BY name";
     }
 
     public function getListTableConstraintsSql($table)
     {
-        return "SELECT sql FROM sqlite_master WHERE type='index' AND tbl_name = $table AND sql NOT NULL ORDER BY name";
+        return "SELECT sql FROM sqlite_master WHERE type='index' AND tbl_name = '$table' AND sql NOT NULL ORDER BY name";
     }
 
     public function getListTableColumnsSql($table)
@@ -381,6 +381,16 @@ class SqlitePlatform extends AbstractPlatform
     public function getListViewsSql()
     {
         return "SELECT name, sql FROM sqlite_master WHERE type='view' AND sql NOT NULL";
+    }
+
+    public function getCreateViewSql($name, $sql)
+    {
+        return 'CREATE VIEW ' . $name . ' AS ' . $sql;
+    }
+
+    public function getDropViewSql($name)
+    {
+        return 'DROP VIEW '. $name;
     }
 
     /**

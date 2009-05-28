@@ -662,6 +662,10 @@ abstract class AbstractPlatform
      */
     public function getCreateIndexSql($table, $name, array $definition)
     {
+        if ( ! isset($definition['fields'])) {
+            throw DoctrineException::updateMe('You must specify an array of fields to create the index for');
+        }
+
         $type = '';
         if (isset($definition['type'])) {
             switch (strtolower($definition['type'])) {
@@ -1300,7 +1304,7 @@ abstract class AbstractPlatform
         throw DoctrineException::updateMe('List triggers not supported by this driver.');
     }
 
-    public function getListSequencesSql()
+    public function getListSequencesSql($database)
     {
         throw DoctrineException::updateMe('List sequences not supported by this driver.');
     }
@@ -1328,6 +1332,21 @@ abstract class AbstractPlatform
     public function getListViewsSql()
     {
         throw DoctrineException::updateMe('List views not supported by this driver.');
+    }
+
+    public function getListTableIndexesSql($table)
+    {
+        throw DoctrineException::updateMe('List table indexes not supported by this driver.');
+    }
+
+    public function getCreateViewSql($name, $sql)
+    {
+        throw DoctrineException::updateMe('Create view not supported by this driver');
+    }
+
+    public function getDropViewSql($name)
+    {
+        throw DoctrineException::updateMe('Drop view not supported by this driver');
     }
 
     public function getDropSequenceSql($sequenceName)

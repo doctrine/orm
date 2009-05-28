@@ -193,6 +193,26 @@ class Connection
     }
 
     /**
+     * Get the array of parameters used to instantiated this connection instance
+     *
+     * @return array $params
+     */
+    public function getParams()
+    {
+        return $this->_params;
+    }
+
+    /**
+     * Get the name of the database connected to for this Connection instance
+     *
+     * @return string $database
+     */
+    public function getDatabase()
+    {
+        return $this->_driver->getDatabase($this);
+    }
+
+    /**
      * Gets the DBAL driver instance.
      *
      * @return Doctrine\DBAL\Driver
@@ -584,7 +604,6 @@ class Connection
      */
     public function close()
     {
-        $this->clear();
         unset($this->_conn);
         $this->_isConnected = false;
     }

@@ -146,7 +146,55 @@ class MySqlPlatform extends AbstractPlatform
         $args = func_get_args();
         return 'CONCAT(' . join(', ', (array) $args) . ')';
     }
-    
+
+    public function getListDatabasesSql()
+    {
+        return 'SHOW DATABASES';
+    }
+
+    public function getListSequencesSql($database)
+    {
+        $query = 'SHOW TABLES';
+        if ( ! is_null($database)) {
+            $query .= ' FROM ' . $this->quoteIdentifier($database);
+        }
+        return $query;
+    }
+
+    public function getListTableConstraintsSql($table)
+    {
+        return 'SHOW INDEX FROM ' . $this->quoteIdentifier($table);
+    }
+
+    public function getListTableIndexesSql($table)
+    {
+        return 'SHOW INDEX FROM ' . $this->quoteIdentifier($table);
+    }
+
+    public function getListUsersSql()
+    {
+        return "SELECT * FROM mysql.user WHERE user != '' GROUP BY user";
+    }
+
+    public function getListViewsSql($database = null)
+    {
+        if (is_null($database)) {
+            return 'SELECT * FROM information_schema.VIEWS';
+        } else {
+            return "SHOW FULL TABLES FROM " . $database . " WHERE Table_type = 'VIEW'";
+        }
+    }
+
+    public function getCreateViewSql($name, $sql)
+    {
+        return 'CREATE VIEW ' . $name . ' AS ' . $sql;
+    }
+
+    public function getDropViewSql($name)
+    {
+        return 'DROP VIEW '. $name;
+    }
+
     /**
      * Gets the SQL snippet used to declare a VARCHAR column on the MySql platform.
      *
@@ -739,7 +787,6 @@ class MySqlPlatform extends AbstractPlatform
      */
     public function getIndexDeclarationSql($name, array $definition)
     {
-        $name   = $this->formatter->getIndexName($name);
         $type   = '';
         if (isset($definition['type'])) {
             switch (strtolower($definition['type'])) {

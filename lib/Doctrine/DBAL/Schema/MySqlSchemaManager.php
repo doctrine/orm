@@ -32,6 +32,66 @@ namespace Doctrine\DBAL\Schema;
  */
 class MySqlSchemaManager extends AbstractSchemaManager
 {
+    protected function _getPortableViewDefinition($view)
+    {
+        return array(
+            'name' => $view['table_name'],
+            'sql' => $view['view_definition']
+        );
+    }
+
+    protected function _getPortableTableDefinition($table)
+    {
+        return end($table);
+    }
+
+    protected function _getPortableUserDefinition($user)
+    {
+        return array(
+            'user' => $user['user'],
+            'password' => $user['password'],
+        );
+    }
+
+    protected function _getPortableTableIndexDefinition($tableIndex)
+    {
+        $tableIndex = array_change_key_case($tableIndex, CASE_LOWER);
+
+        $result = array();
+        if ($tableIndex['key_name'] != 'PRIMARY' && ($index = $tableIndex['key_name'])) {
+            $result['name'] = $index;
+            $result['column'] = $tableIndex['column_name'];
+            $result['unique'] = $tableIndex['non_unique'] ? false : true;
+        }
+
+        return $result;
+    }
+
+    protected function _getPortableTableConstraintDefinition($tableConstraint)
+    {
+        $tableConstraint = array_change_key_case($tableConstraint, CASE_LOWER);
+
+        $result = array();
+        if ( ! $tableConstraint['non_unique']) {
+            $index = $tableConstraint['key_name'];
+            if ( ! empty($index)) {
+                $result[] = $index;
+            }
+        }
+
+        return $result;
+    }
+
+    protected function _getPortableSequenceDefinition($sequence)
+    {
+        return end($sequence);
+    }
+
+    protected function _getPortableDatabaseDefinition($database)
+    {
+        return $database['database'];
+    }
+
     protected function _getPortableTableColumnDefinition($tableColumn)
     {
         $dbType = strtolower($tableColumn['type']);
@@ -232,65 +292,6 @@ class MySqlSchemaManager extends AbstractSchemaManager
     }
 
     /**
-     * lists all database sequences
-     *
-     * @param string|null $database
-     * @return array
-     * @override
-     */
-    public function listSequences($database = null)
-    {
-        $query = 'SHOW TABLES';
-        if ( ! is_null($database)) {
-            $query .= ' FROM ' . $database;
-        }
-        $tableNames = $this->_conn->fetchColumn($query);
-
-        return array_map(array($this->_conn->formatter, 'fixSequenceName'), $tableNames);
-    }
-
-    /**
-     * lists table constraints
-     *
-     * @param string $table     database table name
-     * @return array
-     * @override
-     */
-    public function listTableConstraints($table)
-    {
-        $keyName = 'Key_name';
-        $nonUnique = 'Non_unique';
-        if ($this->_conn->getAttribute(Doctrine::ATTR_PORTABILITY) & Doctrine::PORTABILITY_FIX_CASE) {
-            if ($this->_conn->getAttribute(Doctrine::ATTR_FIELD_CASE) == CASE_LOWER) {
-                $keyName = strtolower($keyName);
-                $nonUnique = strtolower($nonUnique);
-            } else {
-                $keyName = strtoupper($keyName);
-                $nonUnique = strtoupper($nonUnique);
-            }
-        }
-
-        $table = $this->_conn->quoteIdentifier($table, true);
-        $query = 'SHOW INDEX FROM ' . $table;
-        $indexes = $this->_conn->fetchAssoc($query);
-
-        $result = array();
-        foreach ($indexes as $indexData) {
-            if ( ! $indexData[$nonUnique]) {
-                if ($indexData[$keyName] !== 'PRIMARY') {
-                    $index = $this->_conn->formatter->fixIndexName($indexData[$keyName]);
-                } else {
-                    $index = 'PRIMARY';
-                }
-                if ( ! empty($index)) {
-                    $result[] = $index;
-                }
-            }
-        }
-        return $result;
-    }
-
-    /**
      * lists table foreign keys
      *
      * @param string $table     database table name
@@ -315,70 +316,6 @@ class MySqlSchemaManager extends AbstractSchemaManager
         }
 
         return $result;
-    }
-
-    /**
-     * lists table constraints
-     *
-     * @param string $table     database table name
-     * @return array
-     * @override
-     */
-    public function listTableIndexes($table)
-    {
-        $keyName = 'Key_name';
-        $nonUnique = 'Non_unique';
-        if ($this->_conn->getAttribute(Doctrine::ATTR_PORTABILITY) & Doctrine::PORTABILITY_FIX_CASE) {
-            if ($this->_conn->getAttribute(Doctrine::ATTR_FIELD_CASE) == CASE_LOWER) {
-                $keyName = strtolower($keyName);
-                $nonUnique = strtolower($nonUnique);
-            } else {
-                $keyName = strtoupper($keyName);
-                $nonUnique = strtoupper($nonUnique);
-            }
-        }
-
-        $table = $this->_conn->quoteIdentifier($table, true);
-        $query = 'SHOW INDEX FROM ' . $table;
-        $indexes = $this->_conn->fetchAssoc($query);
-
-
-        $result = array();
-        foreach ($indexes as $indexData) {
-            if ($indexData[$nonUnique] && ($index = $this->_conn->formatter->fixIndexName($indexData[$keyName]))) {
-                $result[] = $index;
-            }
-        }
-        return $result;
-    }
-
-    /**
-     * lists tables
-     *
-     * @param string|null $database
-     * @return array
-     * @override
-     */
-    public function listTables($database = null)
-    {
-        return $this->_conn->fetchColumn($this->_conn->getDatabasePlatform()
-                ->getListTablesSql());
-    }
-
-    /**
-     * lists database views
-     *
-     * @param string|null $database
-     * @return array
-     * @override
-     */
-    public function listViews($database = null)
-    {
-        if ( ! is_null($database)) {
-            $query = sprintf($this->sql['listViews'], ' FROM ' . $database);
-        }
-
-        return $this->_conn->fetchColumn($query);
     }
 
     /**

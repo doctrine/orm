@@ -33,6 +33,7 @@ interface Driver
      * Gets the SchemaManager that can be used to inspect and change the underlying
      * database schema of the platform this driver connects to.
      *
+     * @param  Doctrine\DBAL\Connection $conn
      * @return Doctrine\DBAL\SchemaManager
      */
     public function getSchemaManager(Connection $conn);
@@ -43,4 +44,12 @@ interface Driver
      * @return string The name of the driver
      */
     public function getName();
+
+    /**
+     * Get the name of the database connected to for this driver instance
+     *
+     * @param  Doctrine\DBAL\Connection $conn
+     * @return string $database
+     */
+    public function getDatabase(\Doctrine\DBAL\Connection $conn);
 }
