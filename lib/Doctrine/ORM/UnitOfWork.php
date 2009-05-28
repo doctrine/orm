@@ -1517,7 +1517,7 @@ class UnitOfWork implements PropertyChangedListener
      */
     public function clearEntityChangeSet($oid)
     {
-    	unset($this->_entityChangeSets[$oid]);
+        unset($this->_entityChangeSets[$oid]);
     }
 
     /* PropertyChangedListener implementation */

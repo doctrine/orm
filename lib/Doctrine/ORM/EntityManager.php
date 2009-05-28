@@ -197,8 +197,8 @@ class EntityManager
      */
     public function rollback()
     {
-    	$this->_conn->rollback();
-    	$this->close();
+        $this->_conn->rollback();
+        $this->close();
     }
 
     /**
@@ -409,7 +409,7 @@ class EntityManager
      */
     public function refresh($entity)
     {
-    	$this->_errorIfClosed();
+        $this->_errorIfClosed();
         throw DoctrineException::notImplemented();
     }
 

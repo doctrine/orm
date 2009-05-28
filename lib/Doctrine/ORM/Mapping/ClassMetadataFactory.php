@@ -246,7 +246,7 @@ class ClassMetadataFactory
         // Generate INSERT SQL
         $columns = $values = array();
         if ($class->inheritanceType == ClassMetadata::INHERITANCE_TYPE_JOINED) {
-        	// Generate INSERT SQL for inheritance type JOINED
+            // Generate INSERT SQL for inheritance type JOINED
             foreach ($class->reflFields as $name => $field) {
                 if (isset($class->fieldMappings[$name]['inherited']) && ! isset($class->fieldMappings[$name]['id'])
                         || isset($class->inheritedAssociationFields[$name])) {
@@ -267,7 +267,7 @@ class ClassMetadataFactory
                 }
             }
         } else {
-        	// Generate INSERT SQL for inheritance types NONE, SINGLE_TABLE, TABLE_PER_CLASS
+            // Generate INSERT SQL for inheritance types NONE, SINGLE_TABLE, TABLE_PER_CLASS
             foreach ($class->reflFields as $name => $field) {
                 if (isset($class->associationMappings[$name])) {
                     $assoc = $class->associationMappings[$name];
