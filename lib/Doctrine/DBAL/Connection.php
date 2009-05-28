@@ -63,135 +63,135 @@ class Connection
 	 * Constant for transaction isolation level READ COMMITTED.
 	 */
 	const TRANSACTION_READ_COMMITTED = 2;
-	/**
-	 * Constant for transaction isolation level REPEATABLE READ.
-	 */
-	const TRANSACTION_REPEATABLE_READ = 3;
-	/**
-	 * Constant for transaction isolation level SERIALIZABLE.
-	 */
-	const TRANSACTION_SERIALIZABLE = 4;
+    /**
+     * Constant for transaction isolation level REPEATABLE READ.
+     */
+    const TRANSACTION_REPEATABLE_READ = 3;
+    /**
+     * Constant for transaction isolation level SERIALIZABLE.
+     */
+    const TRANSACTION_SERIALIZABLE = 4;
+
+    /**
+     * The wrapped driver connection.
+     *
+     * @var Doctrine\DBAL\Driver\Connection
+     */
+    protected $_conn;
+
+    /**
+     * The Configuration.
+     *
+     * @var Doctrine\DBAL\Configuration
+     */
+    protected $_config;
+
+    /**
+     * The EventManager.
+     *
+     * @var Doctrine\Common\EventManager
+     */
+    protected $_eventManager;
+
+    /**
+     * Whether or not a connection has been established.
+     *
+     * @var boolean
+     */
+    protected $_isConnected = false;
+
+    /**
+     * The transaction nesting level.
+     *
+     * @var integer
+     */
+    protected $_transactionNestingLevel = 0;
+    
+    /**
+     * The currently active transaction isolation level.
+     *
+     * @var integer
+     */
+    protected $_transactionIsolationLevel;
+
+    /**
+     * The parameters used during creation of the Connection instance.
+     *
+     * @var array
+     */
+    protected $_params = array();
+
+    /**
+     * The query count. Represents the number of executed database queries by the connection.
+     *
+     * @var integer
+     */
+    protected $_queryCount = 0;
+
+    /**
+     * The DatabasePlatform object that provides information about the
+     * database platform used by the connection.
+     *
+     * @var Doctrine\DBAL\Platforms\AbstractPlatform
+     */
+    protected $_platform;
+
+    /**
+     * The schema manager.
+     *
+     * @var Doctrine\DBAL\Schema\SchemaManager
+     */
+    protected $_schemaManager;
 
 	/**
-	 * The wrapped driver connection.
-	 *
-	 * @var Doctrine\DBAL\Driver\Connection
-	 */
-	protected $_conn;
+     * The used DBAL driver.
+     *
+     * @var Doctrine\DBAL\Driver
+     */
+    protected $_driver;
 
-	/**
-	 * The Configuration.
-	 *
-	 * @var Doctrine\DBAL\Configuration
-	 */
-	protected $_config;
+    /**
+     * Whether to quote identifiers. Read from the configuration upon construction.
+     *
+     * @var boolean
+     */
+    protected $_quoteIdentifiers = false;
 
-	/**
-	 * The EventManager.
-	 *
-	 * @var Doctrine\Common\EventManager
-	 */
-	protected $_eventManager;
+    /**
+     * Initializes a new instance of the Connection class.
+     *
+     * @param array $params  The connection parameters.
+     * @param Driver $driver
+     * @param Configuration $config
+     * @param EventManager $eventManager
+     */
+    public function __construct(array $params, Driver $driver, Configuration $config = null,
+            EventManager $eventManager = null)
+    {
+        $this->_driver = $driver;
+        $this->_params = $params;
 
-	/**
-	 * Whether or not a connection has been established.
-	 *
-	 * @var boolean
-	 */
-	protected $_isConnected = false;
+        if (isset($params['pdo'])) {
+            $this->_conn = $params['pdo'];
+            $this->_isConnected = true;
+        }
 
-	/**
-	 * The transaction nesting level.
-	 *
-	 * @var integer
-	 */
-	protected $_transactionNestingLevel = 0;
-
-	/**
-	 * The currently active transaction isolation level.
-	 *
-	 * @var integer
-	 */
-	protected $_transactionIsolationLevel;
-
-	/**
-	 * The parameters used during creation of the Connection instance.
-	 *
-	 * @var array
-	 */
-	protected $_params = array();
-
-	/**
-	 * The query count. Represents the number of executed database queries by the connection.
-	 *
-	 * @var integer
-	 */
-	protected $_queryCount = 0;
-
-	/**
-	 * The DatabasePlatform object that provides information about the
-	 * database platform used by the connection.
-	 *
-	 * @var Doctrine\DBAL\Platforms\AbstractPlatform
-	 */
-	protected $_platform;
-
-	/**
-	 * The schema manager.
-	 *
-	 * @var Doctrine\DBAL\Schema\SchemaManager
-	 */
-	protected $_schemaManager;
-
-	/**
-	 * The used DBAL driver.
-	 *
-	 * @var Doctrine\DBAL\Driver
-	 */
-	protected $_driver;
-
-	/**
-	 * Whether to quote identifiers. Read from the configuration upon construction.
-	 *
-	 * @var boolean
-	 */
-	protected $_quoteIdentifiers = false;
-
-	/**
-	 * Initializes a new instance of the Connection class.
-	 *
-	 * @param array $params  The connection parameters.
-	 * @param Driver $driver
-	 * @param Configuration $config
-	 * @param EventManager $eventManager
-	 */
-	public function __construct(array $params, Driver $driver, Configuration $config = null,
-	       EventManager $eventManager = null)
-	{
-		$this->_driver = $driver;
-		$this->_params = $params;
-
-		if (isset($params['pdo'])) {
-			$this->_conn = $params['pdo'];
-			$this->_isConnected = true;
-		}
-
-		// Create default config and event manager if none given
-		if ( ! $config) {
-			$config = new Configuration();
+        // Create default config and event manager if none given
+        if ( ! $config) {
+            $config = new Configuration();
 		}
 		if ( ! $eventManager) {
-			$eventManager = new EventManager();
+            $eventManager = new EventManager();
 		}
 
 		$this->_config = $config;
-		$this->_eventManager = $eventManager;
-		$this->_platform = $driver->getDatabasePlatform();
-		$this->_transactionIsolationLevel = $this->_platform->getDefaultTransactionIsolationLevel();
-		$this->_quoteIdentifiers = $config->getQuoteIdentifiers();
-		$this->_platform->setQuoteIdentifiers($this->_quoteIdentifiers);
+        $this->_eventManager = $eventManager;
+        $this->_platform = $driver->getDatabasePlatform();
+        $this->_transactionIsolationLevel = $this->_platform->getDefaultTransactionIsolationLevel();
+        $this->_quoteIdentifiers = $config->getQuoteIdentifiers();
+        $this->_platform->setQuoteIdentifiers($this->_quoteIdentifiers);
 	}
-	
+
     /**
      * Get the array of parameters used to instantiated this connection instance
      *
@@ -202,15 +202,15 @@ class Connection
         return $this->_params;
     }
 
-    /**
-     * Get the name of the database connected to for this Connection instance
-     *
-     * @return string $database
-     */
-    public function getDatabase()
-    {
-        return $this->_driver->getDatabase($this);
-    }
+	/**
+	 * Get the name of the database connected to for this Connection instance
+	 *
+	 * @return string $database
+	 */
+	public function getDatabase()
+	{
+		return $this->_driver->getDatabase($this);
+	}
 
 	/**
 	 * Gets the DBAL driver instance.
@@ -252,70 +252,70 @@ class Connection
 		return $this->_platform;
 	}
 
-    /**
-     * Establishes the connection with the database.
-     *
-     * @return boolean
-     */
-    public function connect()
-    {
-        if ($this->_isConnected) return false;
+	/**
+	 * Establishes the connection with the database.
+	 *
+	 * @return boolean
+	 */
+	public function connect()
+	{
+		if ($this->_isConnected) return false;
 
-        $driverOptions = isset($this->_params['driverOptions']) ?
-        $this->_params['driverOptions'] : array();
-        $user = isset($this->_params['user']) ?
-        $this->_params['user'] : null;
-        $password = isset($this->_params['password']) ?
-        $this->_params['password'] : null;
+		$driverOptions = isset($this->_params['driverOptions']) ?
+		$this->_params['driverOptions'] : array();
+		$user = isset($this->_params['user']) ?
+		$this->_params['user'] : null;
+		$password = isset($this->_params['password']) ?
+		$this->_params['password'] : null;
 
-        $this->_conn = $this->_driver->connect(
-        $this->_params,
-        $user,
-        $password,
-        $driverOptions
-        );
+		$this->_conn = $this->_driver->connect(
+		$this->_params,
+		$user,
+		$password,
+		$driverOptions
+		);
 
-        $this->_isConnected = true;
+		$this->_isConnected = true;
 
-        return true;
-    }
+		return true;
+	}
 
-    /**
-     * Convenience method for PDO::query("...") followed by $stmt->fetch(PDO::FETCH_ASSOC).
-     *
-     * @param string $statement The SQL query.
-     * @param array $params The query parameters.
-     * @return array
-     */
-    public function fetchRow($statement, array $params = array())
-    {
-        return $this->execute($statement, $params)->fetch(\PDO::FETCH_ASSOC);
-    }
+	/**
+	 * Convenience method for PDO::query("...") followed by $stmt->fetch(PDO::FETCH_ASSOC).
+	 *
+	 * @param string $statement The SQL query.
+	 * @param array $params The query parameters.
+	 * @return array
+	 */
+	public function fetchRow($statement, array $params = array())
+	{
+		return $this->execute($statement, $params)->fetch(\PDO::FETCH_ASSOC);
+	}
 
-    /**
-     * Convenience method for PDO::query("...") followed by $stmt->fetch(PDO::FETCH_NUM).
-     *
-     * @param string $statement         sql query to be executed
-     * @param array $params             prepared statement params
-     * @return array
-     */
-    public function fetchArray($statement, array $params = array())
-    {
-        return $this->execute($statement, $params)->fetch(\PDO::FETCH_NUM);
-    }
-	
-    /**
-     * Convenience method for PDO::query("...") followed by $stmt->fetchAll(PDO::FETCH_COLUMN, ...).
-     *
-     * @param string $statement         sql query to be executed
-     * @param array $params             prepared statement params
-     * @param int $colnum               0-indexed column number to retrieve
-     * @return array
-     */
-    public function fetchColumn($statement, array $params = array(), $colnum = 0)
-    {
-        return $this->execute($statement, $params)->fetchAll(\PDO::FETCH_COLUMN, $colnum);
-    }
+	/**
+	 * Convenience method for PDO::query("...") followed by $stmt->fetch(PDO::FETCH_NUM).
+	 *
+	 * @param string $statement         sql query to be executed
+	 * @param array $params             prepared statement params
+	 * @return array
+	 */
+	public function fetchArray($statement, array $params = array())
+	{
+		return $this->execute($statement, $params)->fetch(\PDO::FETCH_NUM);
+	}
+
+	/**
+	 * Convenience method for PDO::query("...") followed by $stmt->fetchAll(PDO::FETCH_COLUMN, ...).
+	 *
+	 * @param string $statement         sql query to be executed
+	 * @param array $params             prepared statement params
+	 * @param int $colnum               0-indexed column number to retrieve
+	 * @return array
+	 */
+	public function fetchColumn($statement, array $params = array(), $colnum = 0)
+	{
+		return $this->execute($statement, $params)->fetchAll(\PDO::FETCH_COLUMN, $colnum);
+	}
 
 	/**
 	 * Whether an actual connection to the database is established.
@@ -327,71 +327,71 @@ class Connection
 		return $this->_isConnected;
 	}
 
-    /**
-     * Convenience method for PDO::query("...") followed by $stmt->fetchAll(PDO::FETCH_BOTH).
-     *
-     * @param string $statement         sql query to be executed
-     * @param array $params             prepared statement params
-     * @return array
-     */
-    public function fetchBoth($statement, array $params = array())
-    {
-        return $this->execute($statement, $params)->fetchAll(\PDO::FETCH_BOTH);
-    }
+	/**
+	 * Convenience method for PDO::query("...") followed by $stmt->fetchAll(PDO::FETCH_BOTH).
+	 *
+	 * @param string $statement         sql query to be executed
+	 * @param array $params             prepared statement params
+	 * @return array
+	 */
+	public function fetchBoth($statement, array $params = array())
+	{
+		return $this->execute($statement, $params)->fetchAll(\PDO::FETCH_BOTH);
+	}
 
-    /**
-     * Deletes table row(s) matching the specified identifier.
-     *
-     * @param string $table         The table to delete data from
-     * @param array $identifier     An associateve array containing identifier fieldname-value pairs.
-     * @return integer              The number of affected rows
-     */
-    public function delete($tableName, array $identifier)
-    {
-        $this->connect();
-        $criteria = array();
-        foreach (array_keys($identifier) as $id) {
-            $criteria[] = $this->quoteIdentifier($id) . ' = ?';
-        }
+	/**
+	 * Deletes table row(s) matching the specified identifier.
+	 *
+	 * @param string $table         The table to delete data from
+	 * @param array $identifier     An associateve array containing identifier fieldname-value pairs.
+	 * @return integer              The number of affected rows
+	 */
+	public function delete($tableName, array $identifier)
+	{
+		$this->connect();
+		$criteria = array();
+		foreach (array_keys($identifier) as $id) {
+			$criteria[] = $this->quoteIdentifier($id) . ' = ?';
+		}
 
-        $query = 'DELETE FROM '
-                . $this->quoteIdentifier($tableName)
-                . ' WHERE ' . implode(' AND ', $criteria);
+		$query = 'DELETE FROM '
+		. $this->quoteIdentifier($tableName)
+		. ' WHERE ' . implode(' AND ', $criteria);
 
-        return $this->exec($query, array_values($identifier));
-    }
-    
-    /**
-     * Closes the connection.
-     *
-     * @return void
-     */
-    public function close()
-    {
-        unset($this->_conn);
-        $this->_isConnected = false;
-    }
-    
-    /**
-     * Sets the transaction isolation level.
-     *
-     * @param integer $level The level to set.
-     */
-    public function setTransactionIsolation($level)
-    {
-        $this->_transactionIsolationLevel = $level;
-        return $this->exec($this->_platform->getSetTransactionIsolationSql($level));
-    }
-    
-    /**
-     * Gets the currently active transaction isolation level.
-     *
-     * @return integer The current transaction isolation level.
-     */
-    public function getTransactionIsolation()
-    {
-        return $this->_transactionIsolationLevel;
-    }
+		return $this->exec($query, array_values($identifier));
+	}
+
+	/**
+	 * Closes the connection.
+	 *
+	 * @return void
+	 */
+	public function close()
+	{
+		unset($this->_conn);
+		$this->_isConnected = false;
+	}
+
+	/**
+	 * Sets the transaction isolation level.
+	 *
+	 * @param integer $level The level to set.
+	 */
+	public function setTransactionIsolation($level)
+	{
+		$this->_transactionIsolationLevel = $level;
+		return $this->exec($this->_platform->getSetTransactionIsolationSql($level));
+	}
+
+	/**
+	 * Gets the currently active transaction isolation level.
+	 *
+	 * @return integer The current transaction isolation level.
+	 */
+	public function getTransactionIsolation()
+	{
+		return $this->_transactionIsolationLevel;
+	}
 
 	/**
 	 * Updates table row(s) with specified data
@@ -417,9 +417,9 @@ class Connection
 		$params = array_merge(array_values($data), array_values($identifier));
 
 		$sql  = 'UPDATE ' . $this->quoteIdentifier($tableName)
-				. ' SET ' . implode(', ', $set)
-				. ' WHERE ' . implode(' = ? AND ', array_keys($identifier))
-				. ' = ?';
+		. ' SET ' . implode(', ', $set)
+		. ' WHERE ' . implode(' = ? AND ', array_keys($identifier))
+		. ' = ?';
 
 		return $this->exec($sql, $params);
 	}
@@ -566,11 +566,11 @@ class Connection
 	public function execute($query, array $params = array())
 	{
 		$this->connect();
-		
-	    if ($this->_config->getSqlLogger()) {
-            $this->_config->getSqlLogger()->logSql($query, $params);
-        }
-		
+
+		if ($this->_config->getSqlLogger()) {
+			$this->_config->getSqlLogger()->logSql($query, $params);
+		}
+
 		if ( ! empty($params)) {
 			$stmt = $this->prepare($query);
 			$stmt->execute($params);
