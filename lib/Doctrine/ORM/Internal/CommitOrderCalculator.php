@@ -97,24 +97,12 @@ class CommitOrderCalculator
     {
         $this->_nodes[$key] = $node;
     }
-    
-    /**
-     * Enter description here...
-     *
-     * @param unknown_type $key
-     * @param unknown_type $item
-     */
+
     public function addNodeWithItem($key, $item)
     {
         $this->_nodes[$key] = new CommitOrderNode($item, $this);
     }
-    
-    /**
-     * Enter description here...
-     *
-     * @param unknown_type $key
-     * @return unknown
-     */
+
     public function getNodeForKey($key)
     {
         return $this->_nodes[$key];

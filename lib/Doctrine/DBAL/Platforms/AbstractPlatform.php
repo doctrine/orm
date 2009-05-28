@@ -1299,7 +1299,7 @@ abstract class AbstractPlatform
         throw DoctrineException::updateMe('List functions not supported by this driver.');
     }
 
-    public function getListTriggersSql()
+    public function getListTriggersSql($table = null)
     {
         throw DoctrineException::updateMe('List triggers not supported by this driver.');
     }
@@ -1337,6 +1337,11 @@ abstract class AbstractPlatform
     public function getListTableIndexesSql($table)
     {
         throw DoctrineException::updateMe('List table indexes not supported by this driver.');
+    }
+
+    public function getListTableForeignKeysSql($table)
+    {
+        throw DoctrineException::updateMe('List table foreign keys not supported by this driver.');
     }
 
     public function getCreateViewSql($name, $sql)

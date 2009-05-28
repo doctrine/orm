@@ -787,13 +787,6 @@ class UnitOfWork implements PropertyChangedListener
                 $this->_entityStates[$oid]);
     }
 
-    /**
-     * Enter description here...
-     *
-     * @param object $entity
-     * @return boolean
-     * @todo Rename to isScheduled()
-     */
     public function isEntityRegistered($entity)
     {
         $oid = spl_object_hash($entity);

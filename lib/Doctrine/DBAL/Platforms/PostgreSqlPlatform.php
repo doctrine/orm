@@ -484,22 +484,12 @@ class PostgreSqlPlatform extends AbstractPlatform
     {
         return true;
     }
-    
-    /**
-     * Enter description here...
-     *
-     * @override
-     */
+
     public function getListDatabasesSql()
     {
         return 'SELECT datname FROM pg_database';
     }
-    
-    /**
-     * Enter description here...
-     *
-     * @override
-     */
+
     public function getListFunctionsSql()
     {
         return "SELECT
@@ -514,12 +504,7 @@ class PostgreSqlPlatform extends AbstractPlatform
                     (SELECT oid FROM pg_namespace
                     WHERE nspname NOT LIKE 'pg_%' AND nspname != 'information_schema'";
     }
-    
-    /**
-     * Enter description here...
-     *
-     * @override
-     */
+
     public function getListSequencesSql($database)
     {
         return "SELECT
@@ -530,12 +515,7 @@ class PostgreSqlPlatform extends AbstractPlatform
                     (SELECT oid FROM pg_namespace
                         WHERE nspname NOT LIKE 'pg_%' AND nspname != 'information_schema')";
     }
-    
-    /**
-     * Enter description here...
-     *
-     * @override
-     */
+
     public function getListTablesSql()
     {
         return "SELECT
@@ -553,32 +533,55 @@ class PostgreSqlPlatform extends AbstractPlatform
                     AND NOT EXISTS (SELECT 1 FROM pg_user WHERE usesysid = c.relowner)
                     AND c.relname !~ '^pg_'";
     }
-    
-    /**
-     * Enter description here...
-     *
-     * @override
-     */
+
     public function getListViewsSql()
     {
-        return 'SELECT viewname FROM pg_views';
+        return 'SELECT viewname, definition FROM pg_views';
     }
-    
-    /**
-     * Enter description here...
-     *
-     * @override
-     */
+
+    public function getListTriggersSql($table = null)
+    {
+        $sql = 'SELECT trg.tgname AS trigger_name
+                    FROM pg_trigger trg,
+                         pg_class tbl
+                   WHERE trg.tgrelid = tbl.oid';
+
+        if ( ! is_null($table)) {
+            $sql .= " AND tbl.relname = ".$this->quoteIdentifier($table);
+        }
+
+        return $sql;
+    }
+
     public function getListUsersSql()
     {
-        return 'SELECT usename FROM pg_user';
+        return 'SELECT usename, passwd FROM pg_user';
     }
-    
-    /**
-     * Enter description here...
-     *
-     * @override
-     */
+
+    public function getListTableForeignKeysSql($table, $database = null)
+    {
+        return "SELECT pg_catalog.pg_get_constraintdef(oid, true) as condef
+                  FROM pg_catalog.pg_constraint r
+                  WHERE r.conrelid =
+                  (
+                      SELECT c.oid
+                      FROM pg_catalog.pg_class c
+                      LEFT JOIN pg_catalog.pg_namespace n ON n.oid = c.relnamespace
+                      WHERE c.relname = '" . $table . "' AND pg_catalog.pg_table_is_visible(c.oid)
+                  )
+                  AND r.contype = 'f'";
+    }
+
+    public function getCreateViewSql($name, $sql)
+    {
+        return 'CREATE VIEW ' . $name . ' AS ' . $sql;
+    }
+
+    public function getDropViewSql($name)
+    {
+        return 'DROP VIEW '. $name;
+    }
+
     public function getListTableConstraintsSql($table)
     {
         return "SELECT
@@ -593,16 +596,16 @@ class PostgreSqlPlatform extends AbstractPlatform
                         AND (indisunique = 't' OR indisprimary = 't')
                         )";
     }
-    
-    /**
-     * Enter description here...
-     *
-     * @override
-     */
+
     public function getListTableIndexesSql($table)
     {
         return "SELECT
-                    relname
+                    relname,
+                    (
+                        SELECT indisunique 
+                        FROM pg_index 
+                        WHERE oid = indexrelid
+                    ) as unique
                 FROM
                     pg_class
                 WHERE oid IN (
@@ -610,16 +613,10 @@ class PostgreSqlPlatform extends AbstractPlatform
                     FROM pg_index, pg_class
                     WHERE pg_class.relname = '$table'
                         AND pg_class.oid=pg_index.indrelid
-                        AND indisunique != 't'
                         AND indisprimary != 't'
                 )";
     }
-    
-    /**
-     * Enter description here...
-     *
-     * @override
-     */
+
     public function getListTableColumnsSql($table)
     {
         return "SELECT
@@ -877,24 +874,12 @@ class PostgreSqlPlatform extends AbstractPlatform
         }
         return $item;
     }
-    
-    /**
-     * Enter description here...
-     *
-     * @param string $sequenceName
-     * @override
-     */
+
     public function getSequenceNextValSql($sequenceName)
     {
         return "SELECT NEXTVAL('" . $sequenceName . "')";
     }
-    
-    /**
-     * Enter description here...
-     *
-     * @param unknown_type $level
-     * @override
-     */
+
     public function getSetTransactionIsolationSql($level)
     {
         return 'SET SESSION CHARACTERISTICS AS TRANSACTION ISOLATION LEVEL '

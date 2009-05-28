@@ -19,7 +19,7 @@ class SqliteSchemaManagerTest extends \Doctrine\Tests\DbalFunctionalTestCase
         {
             $this->markTestSkipped('The SqliteSchemaTest requires the use of sqlite');
         }
-        $this->_sm = new Schema\SqliteSchemaManager($this->_conn);
+        $this->_sm = $this->_conn->getSchemaManager();
     }
 
     public function testListDatabases()
@@ -75,8 +75,8 @@ class SqliteSchemaManagerTest extends \Doctrine\Tests\DbalFunctionalTestCase
         $this->_sm->createTable('list_sequences_test', $columns, $options);
 
         $sequences = $this->_sm->listSequences();
-        $this->assertEquals($sequences[0]['name'], 'list_sequences_test');
-        $this->assertEquals($sequences[1]['name'], 'sqlite_sequence');
+        $this->assertEquals('list_sequences_test', $sequences[0]['name']);
+        $this->assertEquals('sqlite_sequence', $sequences[1]['name']);
     }
 
     public function testListTableConstraints()
@@ -85,7 +85,7 @@ class SqliteSchemaManagerTest extends \Doctrine\Tests\DbalFunctionalTestCase
         // when creating tables. Sqlite does not support adding them after
         // the table has already been created
         $tableConstraints = $this->_sm->listTableConstraints('list_table_constraints_test');
-        $this->assertEquals($tableConstraints, array());
+        $this->assertEquals(array(), $tableConstraints);
     }
 
     public function testListTableColumns()
@@ -109,23 +109,23 @@ class SqliteSchemaManagerTest extends \Doctrine\Tests\DbalFunctionalTestCase
 
         $tableColumns = $this->_sm->listTableColumns('list_table_columns_test');
 
-        $this->assertEquals($tableColumns[0]['name'], 'id');
-        $this->assertEquals($tableColumns[0]['primary'], true);
-        $this->assertEquals(get_class($tableColumns[0]['type']), 'Doctrine\DBAL\Types\IntegerType');
-        $this->assertEquals($tableColumns[0]['length'], 4);
-        $this->assertEquals($tableColumns[0]['unsigned'], false);
-        $this->assertEquals($tableColumns[0]['fixed'], false);
-        $this->assertEquals($tableColumns[0]['notnull'], true);
-        $this->assertEquals($tableColumns[0]['default'], null);
+        $this->assertEquals('id', $tableColumns[0]['name']);
+        $this->assertEquals(true, $tableColumns[0]['primary']);
+        $this->assertEquals('Doctrine\DBAL\Types\IntegerType', get_class($tableColumns[0]['type']));
+        $this->assertEquals(4, $tableColumns[0]['length']);
+        $this->assertEquals(false, $tableColumns[0]['unsigned']);
+        $this->assertEquals(false, $tableColumns[0]['fixed']);
+        $this->assertEquals(true, $tableColumns[0]['notnull']);
+        $this->assertEquals(null, $tableColumns[0]['default']);
 
-        $this->assertEquals($tableColumns[1]['name'], 'test');
-        $this->assertEquals($tableColumns[1]['primary'], false);
-        $this->assertEquals(get_class($tableColumns[1]['type']), 'Doctrine\DBAL\Types\StringType');
-        $this->assertEquals($tableColumns[1]['length'], 255);
-        $this->assertEquals($tableColumns[1]['unsigned'], false);
-        $this->assertEquals($tableColumns[1]['fixed'], false);
-        $this->assertEquals($tableColumns[1]['notnull'], false);
-        $this->assertEquals($tableColumns[1]['default'], null);
+        $this->assertEquals('test', $tableColumns[1]['name']);
+        $this->assertEquals(false, $tableColumns[1]['primary']);
+        $this->assertEquals('Doctrine\DBAL\Types\StringType', get_class($tableColumns[1]['type']));
+        $this->assertEquals(255, $tableColumns[1]['length']);
+        $this->assertEquals(false, $tableColumns[1]['unsigned']);
+        $this->assertEquals(false, $tableColumns[1]['fixed']);
+        $this->assertEquals(false, $tableColumns[1]['notnull']);
+        $this->assertEquals(null, $tableColumns[1]['default']);
     }
 
     public function testListTableIndexes()
@@ -157,11 +157,11 @@ class SqliteSchemaManagerTest extends \Doctrine\Tests\DbalFunctionalTestCase
         $this->_sm->createTable('list_table_indexes_test', $columns, $options);
 
         $tableIndexes = $this->_sm->listTableIndexes('list_table_indexes_test');
-        $this->assertEquals($tableIndexes[0]['name'], 'test');
-        $this->assertEquals($tableIndexes[0]['unique'], true);
+        $this->assertEquals('test', $tableIndexes[0]['name']);
+        $this->assertEquals(true, $tableIndexes[0]['unique']);
     }
 
-    public function testListTable()
+    public function testListTables()
     {
         $columns = array(
             'id' => array(
@@ -181,7 +181,7 @@ class SqliteSchemaManagerTest extends \Doctrine\Tests\DbalFunctionalTestCase
         $this->_sm->createTable('list_tables_test', $columns, $options);
 
         $tables = $this->_sm->listTables();
-        $this->assertEquals(in_array('list_tables_test', $tables), true);
+        $this->assertEquals(true, in_array('list_tables_test', $tables));
     }
 
     public function testListUsers()
@@ -221,8 +221,8 @@ class SqliteSchemaManagerTest extends \Doctrine\Tests\DbalFunctionalTestCase
         $this->_sm->createView('test_create_view', 'SELECT * from test_views');
         $views = $this->_sm->listViews();
 
-        $this->assertEquals($views[0]['name'], 'test_create_view');
-        $this->assertEquals($views[0]['sql'], 'CREATE VIEW test_create_view AS SELECT * from test_views');
+        $this->assertEquals('test_create_view', $views[0]['name']);
+        $this->assertEquals('CREATE VIEW test_create_view AS SELECT * from test_views', $views[0]['sql']);
     }
 
     public function testCreateAndDropDatabase()
@@ -239,11 +239,11 @@ class SqliteSchemaManagerTest extends \Doctrine\Tests\DbalFunctionalTestCase
         $sm = $conn->getSchemaManager();
 
         $sm->createDatabase();
-        $this->assertEquals(file_exists($path), true);
+        $this->assertEquals(true, file_exists($path));
         $sm->dropDatabase();
-        $this->assertEquals(file_exists($path), false);
+        $this->assertEquals(false, file_exists($path));
         $sm->createDatabase();
-        $this->assertEquals(file_exists($path), true);
+        $this->assertEquals(true, file_exists($path));
         $sm->dropDatabase();
     }
 
@@ -266,27 +266,27 @@ class SqliteSchemaManagerTest extends \Doctrine\Tests\DbalFunctionalTestCase
 
         $this->_sm->createTable('test_create_table', $columns, $options);
         $tables = $this->_sm->listTables();
-        $this->assertEquals(in_array('test_create_table', $tables), true);
+        $this->assertEquals(true, in_array('test_create_table', $tables));
 
         $tableColumns = $this->_sm->listTableColumns('test_create_table');
 
-        $this->assertEquals($tableColumns[0]['name'], 'id');
-        $this->assertEquals($tableColumns[0]['primary'], true);
-        $this->assertEquals(get_class($tableColumns[0]['type']), 'Doctrine\DBAL\Types\IntegerType');
-        $this->assertEquals($tableColumns[0]['length'], 4);
-        $this->assertEquals($tableColumns[0]['unsigned'], false);
-        $this->assertEquals($tableColumns[0]['fixed'], false);
-        $this->assertEquals($tableColumns[0]['notnull'], true);
-        $this->assertEquals($tableColumns[0]['default'], null);
+        $this->assertEquals('id', $tableColumns[0]['name']);
+        $this->assertEquals(true, $tableColumns[0]['primary']);
+        $this->assertEquals('Doctrine\DBAL\Types\IntegerType', get_class($tableColumns[0]['type']));
+        $this->assertEquals(4, $tableColumns[0]['length']);
+        $this->assertEquals(false, $tableColumns[0]['unsigned']);
+        $this->assertEquals(false, $tableColumns[0]['fixed']);
+        $this->assertEquals(true, $tableColumns[0]['notnull']);
+        $this->assertEquals(null, $tableColumns[0]['default']);
 
-        $this->assertEquals($tableColumns[1]['name'], 'test');
-        $this->assertEquals($tableColumns[1]['primary'], false);
-        $this->assertEquals(get_class($tableColumns[1]['type']), 'Doctrine\DBAL\Types\StringType');
-        $this->assertEquals($tableColumns[1]['length'], 255);
-        $this->assertEquals($tableColumns[1]['unsigned'], false);
-        $this->assertEquals($tableColumns[1]['fixed'], false);
-        $this->assertEquals($tableColumns[1]['notnull'], false);
-        $this->assertEquals($tableColumns[1]['default'], null);
+        $this->assertEquals('test', $tableColumns[1]['name']);
+        $this->assertEquals(false, $tableColumns[1]['primary']);
+        $this->assertEquals('Doctrine\DBAL\Types\StringType', get_class($tableColumns[1]['type']));
+        $this->assertEquals(255, $tableColumns[1]['length']);
+        $this->assertEquals(false, $tableColumns[1]['unsigned']);
+        $this->assertEquals(false, $tableColumns[1]['fixed']);
+        $this->assertEquals(false, $tableColumns[1]['notnull']);
+        $this->assertEquals(null, $tableColumns[1]['default']);
     }
 
     public function testCreateSequence()
@@ -339,8 +339,8 @@ class SqliteSchemaManagerTest extends \Doctrine\Tests\DbalFunctionalTestCase
 
         $this->_sm->createIndex('test_create_index', 'test', $index);
         $tableIndexes = $this->_sm->listTableIndexes('test_create_index');
-        $this->assertEquals($tableIndexes[0]['name'], 'test');
-        $this->assertEquals($tableIndexes[0]['unique'], true);
+        $this->assertEquals('test', $tableIndexes[0]['name']);
+        $this->assertEquals(true, $tableIndexes[0]['unique']);
     }
 
     public function testCreateForeignKey()

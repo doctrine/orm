@@ -191,8 +191,6 @@ class SqliteSchemaManager extends AbstractSchemaManager
                 $length = null;
         }
 
-        $type = \Doctrine\DBAL\Types\Type::getType($type);
-
         return array('name'     => $tableColumn['name'],
                      'primary'  => (bool) $tableColumn['pk'],
                      'type'     => $type,

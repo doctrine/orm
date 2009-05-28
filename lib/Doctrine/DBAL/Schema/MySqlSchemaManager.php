@@ -71,15 +71,12 @@ class MySqlSchemaManager extends AbstractSchemaManager
     {
         $tableConstraint = array_change_key_case($tableConstraint, CASE_LOWER);
 
-        $result = array();
         if ( ! $tableConstraint['non_unique']) {
             $index = $tableConstraint['key_name'];
             if ( ! empty($index)) {
-                $result[] = $index;
+                return $index;
             }
         }
-
-        return $result;
     }
 
     protected function _getPortableSequenceDefinition($sequence)
@@ -275,8 +272,6 @@ class MySqlSchemaManager extends AbstractSchemaManager
 
         $values = isset($def['values']) ? $def['values'] : array();
 
-        $def['type'] = \Doctrine\DBAL\Types\Type::getType($def['type']);
-
         $column = array(
             'name'          => $tableColumn['field'],
             'values'        => $values,
@@ -291,48 +286,17 @@ class MySqlSchemaManager extends AbstractSchemaManager
         return $column;
     }
 
-    /**
-     * lists table foreign keys
-     *
-     * @param string $table     database table name
-     * @return array
-     * @override
-     */
-    public function listTableForeignKeys($table)
+    public function _getPortableTableForeignKeyDefinition($tableForeignKey)
     {
-        $sql = 'SHOW CREATE TABLE ' . $this->_conn->quoteIdentifier($table, true);
-        $definition = $this->_conn->fetchOne($sql);
-        if (!empty($definition)) {
-            $pattern = '/\bCONSTRAINT\s+([^\s]+)\s+FOREIGN KEY\b/i';
-            if (preg_match_all($pattern, str_replace('`', '', $definition), $matches) > 1) {
-                foreach ($matches[1] as $constraint) {
-                    $result[$constraint] = true;
-                }
-            }
-        }
-
-        if ($this->_conn->getAttribute(Doctrine::ATTR_PORTABILITY) & Doctrine::PORTABILITY_FIX_CASE) {
-            $result = array_change_key_case($result, $this->_conn->getAttribute(Doctrine::ATTR_FIELD_CASE));
-        }
-
-        return $result;
+        $tableForeignKey = array_change_key_case($tableForeignKey, CASE_LOWER);
+        $foreignKey = array(
+            'table'   => $tableForeignKey['referenced_table_name'],
+            'local'   => $tableForeignKey['column_name'],
+            'foreign' => $tableForeignKey['referenced_column_name']
+        );
+        return $foreignKey;
     }
 
-    /**
-     * create sequence
-     *
-     * @param string    $sequenceName name of the sequence to be created
-     * @param string    $start        start value of the sequence; default is 1
-     * @param array     $options  An associative array of table options:
-     *                          array(
-     *                              'comment' => 'Foo',
-     *                              'charset' => 'utf8',
-     *                              'collate' => 'utf8_unicode_ci',
-     *                              'type'    => 'innodb',
-     *                          );
-     * @return boolean
-     * @override
-     */
     public function createSequence($sequenceName, $start = 1, array $options = array())
     {
         $sequenceName   = $this->_conn->quoteIdentifier($this->_conn->getSequenceName($sequenceName), true);
@@ -394,20 +358,5 @@ class MySqlSchemaManager extends AbstractSchemaManager
       }
 
       return $res;
-    }
-    
-    /**
-     * Enter description here...
-     *
-     * @param unknown_type $table
-     * @param unknown_type $name
-     * @return unknown
-     * @override
-     */
-    public function dropForeignKey($table, $name)
-    {
-        $table = $this->_conn->quoteIdentifier($table);
-        $name  = $this->_conn->quoteIdentifier($name);
-        return $this->_conn->exec('ALTER TABLE ' . $table . ' DROP FOREIGN KEY ' . $name);
     }
 }

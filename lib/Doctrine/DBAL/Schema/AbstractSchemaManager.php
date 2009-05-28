@@ -54,7 +54,7 @@ abstract class AbstractSchemaManager
     /**
      * Constructor. Accepts the Connection instance to manage the schema for
      *
-     * @param \Doctrine\DBAL\Connection $conn 
+     * @param \Doctrine\DBAL\Connection $conn
      */
     public function __construct(\Doctrine\DBAL\Connection $conn)
     {
@@ -209,6 +209,24 @@ abstract class AbstractSchemaManager
     }
 
     /**
+     * List the foreign keys for the given table
+     *
+     * @param string $table  The name of the table
+     * @return array $tableForeignKeys
+     */
+    public function listTableForeignKeys($table, $database = null)
+    {
+        if (is_null($database)) {
+            $database = $this->_conn->getDatabase();
+        }
+        $sql = $this->_platform->getListTableForeignKeysSql($table, $database);
+
+        $tableForeignKeys = $this->_conn->fetchAll($sql);
+
+        return $this->_getPortableTableForeignKeysList($tableForeignKeys);
+    }
+
+    /**
      * Drop the database for this connection
      *
      * @param  string $database The name of the database to drop
@@ -227,7 +245,7 @@ abstract class AbstractSchemaManager
     /**
      * Drop the given table
      *
-     * @param string $table The name of the table to drop 
+     * @param string $table The name of the table to drop
      * @return boolean $result
      */
     public function dropTable($table)
@@ -442,7 +460,7 @@ abstract class AbstractSchemaManager
     /**
      * Create a new view
      *
-     * @param string $name The name of the view 
+     * @param string $name The name of the view
      * @param string $sql  The sql to set to the view
      * @return boolean $result
      */
@@ -456,7 +474,7 @@ abstract class AbstractSchemaManager
     /**
      * Drop a view
      *
-     * @param string $name The name of the view 
+     * @param string $name The name of the view
      * @return boolean $result
      */
     public function dropView($name)
@@ -600,7 +618,7 @@ abstract class AbstractSchemaManager
      * Remove a column from a table
      *
      * @param string $tableName The name of the table
-     * @param array|string $column The column name or array of names 
+     * @param array|string $column The column name or array of names
      * @return boolean $result
      */
     public function removeTableColumn($name, $column)
@@ -745,6 +763,9 @@ abstract class AbstractSchemaManager
         $list = array();
         foreach ($tableColumns as $key => $value) {
             if ($value = $this->_getPortableTableColumnDefinition($value)) {
+                if (is_string($value['type'])) {
+                    $value['type'] = \Doctrine\DBAL\Types\Type::getType($value['type']);
+                }
                 $list[] = $value;
             }
         }
@@ -818,6 +839,22 @@ abstract class AbstractSchemaManager
     protected function _getPortableViewDefinition($view)
     {
         return $view;
+    }
+
+    protected function _getPortableTableForeignKeysList($tableForeignKeys)
+    {
+        $list = array();
+        foreach ($tableForeignKeys as $key => $value) {
+            if ($value = $this->_getPortableTableForeignKeyDefinition($value)) {
+                $list[] = $value;
+            }
+        }
+        return $list;
+    }
+
+    protected function _getPortableTableForeignKeyDefinition($tableForeignKey)
+    {
+        return $tableForeignKey;
     }
 
     protected function _executeSql($sql, $method = 'exec')

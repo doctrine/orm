@@ -185,6 +185,19 @@ class MySqlPlatform extends AbstractPlatform
         }
     }
 
+    public function getListTableForeignKeysSql($table, $database = null)
+    {
+        $sql = "SELECT column_name, REFERENCED_TABLE_NAME, REFERENCED_COLUMN_NAME FROM information_schema.key_column_usage WHERE table_name = '" . $table . "'";
+
+        if ( ! is_null($database)) {
+            $sql .= " AND table_schema = 'doctrine_tests'";
+        }
+
+        $sql .= " AND REFERENCED_COLUMN_NAME is not NULL";
+
+        return $sql;
+    }
+
     public function getCreateViewSql($name, $sql)
     {
         return 'CREATE VIEW ' . $name . ' AS ' . $sql;
@@ -216,12 +229,7 @@ class MySqlPlatform extends AbstractPlatform
         return $fixed ? ($length ? 'CHAR(' . $length . ')' : 'CHAR(255)')
                 : ($length ? 'VARCHAR(' . $length . ')' : 'TEXT');
     }
-    
-    /**
-     * Enter description here...
-     *
-     * @param array $field
-     */
+
     public function getClobDeclarationSql(array $field)
     {
         if ( ! empty($field['length'])) {
@@ -298,24 +306,12 @@ class MySqlPlatform extends AbstractPlatform
     {
         return false;
     }
-    
-    /**
-     * Enter description here...
-     *
-     * @return unknown
-     * @override
-     */
+
     public function getShowDatabasesSql()
     {
         return 'SHOW DATABASES';
     }
     
-    /**
-     * Enter description here...
-     *
-     * @todo Throw exception by default?
-     * @override
-     */
     public function getListTablesSql()
     {
         return 'SHOW TABLES';
@@ -899,13 +895,7 @@ class MySqlPlatform extends AbstractPlatform
     {
         return 'DROP TABLE ' . $this->quoteIdentifier($table);
     }
-    
-    /**
-     * Enter description here...
-     *
-     * @param unknown_type $level
-     * @override
-     */
+
     public function getSetTransactionIsolationSql($level)
     {
         return 'SET SESSION TRANSACTION ISOLATION LEVEL ' . $this->_getTransactionIsolationLevelSql($level);

@@ -4,9 +4,6 @@ namespace Doctrine\ORM\Id;
 
 use Doctrine\ORM\EntityManager;
 
-/**
- * Enter description here...
- */
 abstract class AbstractIdGenerator
 {
     /**

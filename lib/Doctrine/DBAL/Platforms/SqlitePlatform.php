@@ -174,12 +174,6 @@ class SqlitePlatform extends AbstractPlatform
         return 'SUBSTR(' . $value . ', ' . $position . ', LENGTH(' . $value . '))';
     }
 
-    /**
-     * Enter description here...
-     *
-     * @param unknown_type $level
-     * @override
-     */
     protected function _getTransactionIsolationLevelSql($level)
     {
         switch ($level) {
@@ -193,13 +187,7 @@ class SqlitePlatform extends AbstractPlatform
                 return parent::_getTransactionIsolationLevelSql($level);
         }
     }
-    
-    /**
-     * Enter description here...
-     *
-     * @param unknown_type $level
-     * @override
-     */
+
     public function getSetTransactionIsolationSql($level)
     {
         return 'PRAGMA read_uncommitted = ' . $this->_getTransactionIsolationLevelSql($level);

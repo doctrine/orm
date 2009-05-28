@@ -7,18 +7,12 @@ use Doctrine\ORM\EntityManager;
 class SequenceMock extends \Doctrine\ORM\Id\SequenceGenerator
 {
     private $_sequenceNumber = 0;
-    
-    /**
-     * Enter description here...
-     *
-     * @param object $entity
-     * @override
-     */
+
     public function generate(EntityManager $em, $entity)
     {
         return $this->_sequenceNumber++;
     }
-    
+
     /**
      * @override
      */
@@ -42,14 +36,14 @@ class SequenceMock extends \Doctrine\ORM\Id\SequenceGenerator
     {
         return $this->_sequenceNumber;
     }
-    
+
     /* Mock API */
-    
+
     public function reset()
     {
         $this->_sequenceNumber = 0;
     }
-    
+
     public function autoinc()
     {
         $this->_sequenceNumber++;

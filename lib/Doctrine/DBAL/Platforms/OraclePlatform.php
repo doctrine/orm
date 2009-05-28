@@ -134,13 +134,7 @@ class OraclePlatform extends AbstractPlatform
     {
         return 'SET TRANSACTION ISOLATION LEVEL ' . $this->_getTransactionIsolationLevelSql($level);
     }
-    
-    /**
-     * Enter description here...
-     *
-     * @param integer $level
-     * @override
-     */
+
     protected function _getTransactionIsolationLevelSql($level)
     {
         switch ($level) {

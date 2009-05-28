@@ -2,11 +2,6 @@
 
 namespace Doctrine\DBAL\Platforms;
 
-/**
- * Enter description here...
- *
- * @since 2.0
- */
 class FirebirdPlatform extends AbstractPlatform
 {
     /**
@@ -84,24 +79,12 @@ class FirebirdPlatform extends AbstractPlatform
     {
         return 'COLLATE ' . $collation;
     }
-    
-    /**
-     * Enter description here...
-     *
-     * @param unknown_type $sequenceName
-     * @override
-     */
+
     public function getSequenceNextValSql($sequenceName)
     {
         return 'SELECT GEN_ID(' . $this->quoteIdentifier($sequenceName) . ', 1) FROM RDB$DATABASE';
     }
-    
-    /**
-     * Enter description here...
-     *
-     * @param unknown_type $level
-     * @override
-     */
+
     protected function _getTransactionIsolationLevelSql($level)
     {
         switch ($level) {
@@ -117,13 +100,7 @@ class FirebirdPlatform extends AbstractPlatform
                 return parent::_getTransactionIsolationLevelSql($level);
         }
     }
-    
-    /**
-     * Enter description here...
-     *
-     * @param unknown_type $level
-     * @override
-     */
+
     public function getSetTransactionIsolationSql($level)
     {
         return 'SET TRANSACTION ISOLATION LEVEL ' . $this->_getTransactionIsolationLevelSql($level);

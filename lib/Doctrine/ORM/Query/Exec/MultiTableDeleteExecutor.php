@@ -35,11 +35,6 @@ namespace Doctrine\ORM\Query\Exec;
  */
 class MultiTableDeleteExecutor extends AbstractExecutor
 {
-    /**
-     * Enter description here...
-     *
-     * @param Node $AST
-     */
     public function __construct($AST)
     {
         // 1. Create a INSERT INTO temptable ... VALUES ( SELECT statement where the SELECT statement

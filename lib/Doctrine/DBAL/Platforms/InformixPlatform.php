@@ -2,11 +2,6 @@
 
 namespace Doctrine\DBAL\Platforms;
 
-/**
- * Enter description here...
- *
- * @since 2.0
- */
 class InformixPlatform extends AbstractPlatform
 {
     public function __construct()

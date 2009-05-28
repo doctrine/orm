@@ -302,23 +302,11 @@ class MsSqlPlatform extends AbstractPlatform
         return false;
     }
 
-    /**
-     * Enter description here...
-     *
-     * @return unknown
-     * @override
-     */
     public function getShowDatabasesSql()
     {
         return 'SHOW DATABASES';
     }
-    
-    /**
-     * Enter description here...
-     *
-     * @todo Throw exception by default?
-     * @override
-     */
+
     public function getListTablesSql()
     {
         return 'SHOW TABLES';
@@ -348,12 +336,6 @@ class MsSqlPlatform extends AbstractPlatform
         return 'DROP DATABASE ' . $this->quoteIdentifier($name);
     }
 
-    /**
-     * Enter description here...
-     *
-     * @param unknown_type $level
-     * @override
-     */
     public function getSetTransactionIsolationSql($level)
     {
         return 'SET TRANSACTION ISOLATION LEVEL ' . $this->_getTransactionIsolationLevelSql($level);
