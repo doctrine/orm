@@ -581,14 +581,15 @@ abstract class AbstractSchemaManager
      * Add a new table column
      *
      * @param string $name          The name of the table
+     * @param string $column        The name of the column to add
      * @param array  $definition    The definition of the column to add
      * @return boolean $result
      */
-    public function addTableColumn($name, $definition)
+    public function addTableColumn($name, $column, $definition)
     {
         $change = array(
             'add' => array(
-                $name => $definition
+                $column => $definition
             )
         );
 
