@@ -703,81 +703,80 @@ class Connection
 		if ($this->_transactionNestingLevel == 1) {
 			$this->_conn->commit();
 		}
-		--$this->_transactionNestingLevel;
+        --$this->_transactionNestingLevel;
 
-		return true;
-	}
+        return true;
+    }
 
-	/**
-	 * Cancel any database changes done during a transaction or since a specific
-	 * savepoint that is in progress. This function may only be called when
-	 * auto-committing is disabled, otherwise it will fail. Therefore, a new
-	 * transaction is implicitly started after canceling the pending changes.
-	 *
-	 * this method can be listened with onPreTransactionRollback and onTransactionRollback
-	 * eventlistener methods
-	 *
-	 * @param string $savepoint                 Name of a savepoint to rollback to.
-	 * @throws Doctrine\DBAL\ConnectionException   If the rollback operation fails at database level.
-	 * @return boolean                          FALSE if rollback couldn't be performed, TRUE otherwise.
-	 */
-	public function rollback()
+    /**
+     * Cancel any database changes done during a transaction or since a specific
+     * savepoint that is in progress. This function may only be called when
+     * auto-committing is disabled, otherwise it will fail. Therefore, a new
+     * transaction is implicitly started after canceling the pending changes.
+     *
+     * this method can be listened with onPreTransactionRollback and onTransactionRollback
+     * eventlistener methods
+     *
+     * @param string $savepoint                 Name of a savepoint to rollback to.
+     * @throws Doctrine\DBAL\ConnectionException   If the rollback operation fails at database level.
+     * @return boolean                          FALSE if rollback couldn't be performed, TRUE otherwise.
+     */
+    public function rollback()
 	{
-		if ($this->_transactionNestingLevel == 0) {
-			throw ConnectionException::rollbackFailedNoActiveTransaction();
-		}
+        if ($this->_transactionNestingLevel == 0) {
+            throw ConnectionException::rollbackFailedNoActiveTransaction();
+        }
 
-		$this->connect();
+        $this->connect();
 
-		if ($this->_transactionNestingLevel == 1) {
-			$this->_transactionNestingLevel = 0;
-			$this->_conn->rollback();
+        if ($this->_transactionNestingLevel == 1) {
+            $this->_transactionNestingLevel = 0;
+            $this->_conn->rollback();
+        }
+        --$this->_transactionNestingLevel;
 
-		}
-		--$this->_transactionNestingLevel;
+        return true;
+    }
 
-		return true;
-	}
+    /**
+     * Quotes pattern (% and _) characters in a string)
+     *
+     * EXPERIMENTAL
+     *
+     * WARNING: this function is experimental and may change signature at
+     * any time until labelled as non-experimental
+     *
+     * @param   string  the input string to quote
+     *
+     * @return  string  quoted string
+     */
+    protected function _escapePattern($text)
+    {
+        return $text;
+    }
 
-	/**
-	 * Quotes pattern (% and _) characters in a string)
-	 *
-	 * EXPERIMENTAL
-	 *
-	 * WARNING: this function is experimental and may change signature at
-	 * any time until labelled as non-experimental
-	 *
-	 * @param   string  the input string to quote
-	 *
-	 * @return  string  quoted string
-	 */
-	protected function _escapePattern($text)
-	{
-		return $text;
-	}
+    /**
+     * Gets the wrapped driver connection.
+     *
+     * @return Doctrine\DBAL\Driver\Connection
+     */
+    public function getWrappedConnection()
+    {
+        $this->connect();
+        return $this->_conn;
+    }
 
-	/**
-	 * Gets the wrapped driver connection.
-	 *
-	 * @return Doctrine\DBAL\Driver\Connection
-	 */
-	public function getWrappedConnection()
-	{
-		$this->connect();
-		return $this->_conn;
-	}
-
-	/**
-	 * Gets the SchemaManager that can be used to inspect or change the
-	 * database schema through the connection.
-	 *
-	 * @return Doctrine\DBAL\Schema\SchemaManager
-	 */
-	public function getSchemaManager()
-	{
-		if ( ! $this->_schemaManager) {
-			$this->_schemaManager = $this->_driver->getSchemaManager($this);
-		}
-		return $this->_schemaManager;
-	}
+    /**
+     * Gets the SchemaManager that can be used to inspect or change the
+     * database schema through the connection.
+     *
+     * @return Doctrine\DBAL\Schema\SchemaManager
+     */
+    public function getSchemaManager()
+    {
+        if ( ! $this->_schemaManager) {
+            $this->_schemaManager = $this->_driver->getSchemaManager($this);
+        }
+        return $this->_schemaManager;
+    }
 }
