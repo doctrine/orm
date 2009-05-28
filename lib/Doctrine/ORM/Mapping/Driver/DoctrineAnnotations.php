@@ -21,25 +21,25 @@
 
 /* Annotations */
 
-final class DoctrineEntity extends \Addendum\Annotation {
+final class DoctrineEntity extends \Annotation {
     public $repositoryClass;
 }
-final class DoctrineInheritanceType extends \Addendum\Annotation {}
-final class DoctrineDiscriminatorColumn extends \Addendum\Annotation {
+final class DoctrineInheritanceType extends \Annotation {}
+final class DoctrineDiscriminatorColumn extends \Annotation {
     public $name;
     public $type;
     public $length;
 }
-final class DoctrineDiscriminatorMap extends \Addendum\Annotation {}
-final class DoctrineDiscriminatorValue extends \Addendum\Annotation {}
-final class DoctrineSubClasses extends \Addendum\Annotation {}
-final class DoctrineId extends \Addendum\Annotation {}
-final class DoctrineGeneratedValue extends \Addendum\Annotation {
+final class DoctrineDiscriminatorMap extends \Annotation {}
+final class DoctrineDiscriminatorValue extends \Annotation {}
+final class DoctrineSubClasses extends \Annotation {}
+final class DoctrineId extends \Annotation {}
+final class DoctrineGeneratedValue extends \Annotation {
     public $strategy;
     //public $generator;
 }
-final class DoctrineVersion extends \Addendum\Annotation {}
-final class DoctrineJoinColumn extends \Addendum\Annotation {
+final class DoctrineVersion extends \Annotation {}
+final class DoctrineJoinColumn extends \Annotation {
     public $name;
     public $referencedColumnName;
     public $unique = false;
@@ -47,55 +47,55 @@ final class DoctrineJoinColumn extends \Addendum\Annotation {
     public $onDelete;
     public $onUpdate;
 }
-final class DoctrineJoinColumns extends \Addendum\Annotation {}
-final class DoctrineColumn extends \Addendum\Annotation {
+final class DoctrineJoinColumns extends \Annotation {}
+final class DoctrineColumn extends \Annotation {
     public $type;
     public $length;
     public $unique = false;
     public $nullable = false;
     public $quote = false;
 }
-final class DoctrineOneToOne extends \Addendum\Annotation {
+final class DoctrineOneToOne extends \Annotation {
     public $targetEntity;
     public $mappedBy;
     public $cascade;
     public $fetch;
     public $optional;
 }
-final class DoctrineOneToMany extends \Addendum\Annotation {
+final class DoctrineOneToMany extends \Annotation {
     public $mappedBy;
     public $targetEntity;
     public $cascade;
     public $fetch;
 }
-final class DoctrineManyToOne extends \Addendum\Annotation {
+final class DoctrineManyToOne extends \Annotation {
     public $targetEntity;
     public $cascade;
     public $fetch;
     public $optional;
 }
-final class DoctrineManyToMany extends \Addendum\Annotation {
+final class DoctrineManyToMany extends \Annotation {
     public $targetEntity;
     public $mappedBy;
     public $cascade;
     public $fetch;
 }
-final class DoctrineElementCollection extends \Addendum\Annotation {
+final class DoctrineElementCollection extends \Annotation {
     public $tableName;
 }
-final class DoctrineTable extends \Addendum\Annotation {
+final class DoctrineTable extends \Annotation {
     public $name;
     public $catalog;
     public $schema;
 }
-final class DoctrineJoinTable extends \Addendum\Annotation {
+final class DoctrineJoinTable extends \Annotation {
     public $name;
     public $catalog;
     public $schema;
     public $joinColumns;
     public $inverseJoinColumns;
 }
-final class DoctrineSequenceGenerator extends \Addendum\Annotation {
+final class DoctrineSequenceGenerator extends \Annotation {
     //public $name;
     public $sequenceName;
     public $allocationSize = 20;
@@ -103,4 +103,4 @@ final class DoctrineSequenceGenerator extends \Addendum\Annotation {
     /** The name of the class that defines the generator. */
     //public $definingClass;
 }
-final class DoctrineChangeTrackingPolicy {}
+final class DoctrineChangeTrackingPolicy extends \Annotation {}

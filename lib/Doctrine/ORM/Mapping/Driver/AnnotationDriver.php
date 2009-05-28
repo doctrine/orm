@@ -26,8 +26,8 @@ use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\MappingException;
 
 /* Addendum annotation reflection extensions */
-if ( ! class_exists('\Addendum', false)) {
-    require __DIR__ . '/addendum/annotations.php';
+if ( ! class_exists('Addendum', false)) {
+    require __DIR__ . '/../../../../vendor/addendum/annotations.php';
 }
 require __DIR__ . '/DoctrineAnnotations.php';
 
@@ -45,7 +45,7 @@ class AnnotationDriver
      */
     public function loadMetadataForClass($className, ClassMetadata $metadata)
     {
-        $annotClass = new \Addendum\ReflectionAnnotatedClass($className);
+        $annotClass = new \ReflectionAnnotatedClass($className);
 
         // Evaluate DoctrineEntity annotation
         if (($entityAnnot = $annotClass->getAnnotation('DoctrineEntity')) === false) {

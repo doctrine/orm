@@ -19,9 +19,7 @@
 	 * License along with this library; if not, write to the Free Software
 	 * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 	**/
-
-namespace Addendum;
-
+	
 	class CompositeMatcher {
 		protected $matchers = array();
 		private $wasConstructed = false;
@@ -334,4 +332,4 @@ namespace Addendum;
 			return $matches[1];
 		}
 	}
-
+?>

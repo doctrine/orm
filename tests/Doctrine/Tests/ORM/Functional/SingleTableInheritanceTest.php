@@ -13,11 +13,17 @@ class SingleTableInheritanceTest extends \Doctrine\Tests\OrmFunctionalTestCase
 {
     protected function setUp() {
         parent::setUp();
-        $this->_schemaTool->createSchema(array(
-            $this->_em->getClassMetadata('Doctrine\Tests\ORM\Functional\ParentEntity'),
-            $this->_em->getClassMetadata('Doctrine\Tests\ORM\Functional\ChildEntity'),
-            $this->_em->getClassMetadata('Doctrine\Tests\ORM\Functional\RelatedEntity')
-        ));
+        try {
+            $this->_schemaTool->createSchema(array(
+                $this->_em->getClassMetadata('Doctrine\Tests\ORM\Functional\ParentEntity'),
+                $this->_em->getClassMetadata('Doctrine\Tests\ORM\Functional\ChildEntity'),
+                $this->_em->getClassMetadata('Doctrine\Tests\ORM\Functional\RelatedEntity')
+            ));
+        } catch (\Exception $e) {
+            if (stripos($e->getMessage(), 'already exists') === false) {
+                throw $e;
+            }
+        }
     }
 
     public function testCRUD()
@@ -38,7 +44,7 @@ class SingleTableInheritanceTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $relatedEntity->setOwner($child);
 
         $this->_em->save($relatedEntity);
-        
+
         $this->_em->flush();
         $this->_em->clear();
 
