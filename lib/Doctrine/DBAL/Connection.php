@@ -661,48 +661,48 @@ class Connection
 	 * @param string $table     Name of the table into which a new row was inserted.
 	 * @param string $field     Name of the field into which a new row was inserted.
 	 */
-	public function lastInsertId($seqName = null)
-	{
-		$this->connect();
-		return $this->_conn->lastInsertId($seqName);
-	}
+    public function lastInsertId($seqName = null)
+    {
+        $this->connect();
+        return $this->_conn->lastInsertId($seqName);
+    }
 
-	/**
-	 * Start a transaction or set a savepoint.
-	 *
-	 * if trying to set a savepoint and there is no active transaction
-	 * a new transaction is being started.
-	 *
-	 * @return boolean
-	 */
-	public function beginTransaction()
-	{
-		$this->connect();
-		if ($this->_transactionNestingLevel == 0) {
-			$this->_conn->beginTransaction();
-		}
-		++$this->_transactionNestingLevel;
-		return true;
-	}
+    /**
+     * Start a transaction or set a savepoint.
+     *
+     * if trying to set a savepoint and there is no active transaction
+     * a new transaction is being started.
+     *
+     * @return boolean
+     */
+    public function beginTransaction()
+    {
+        $this->connect();
+        if ($this->_transactionNestingLevel == 0) {
+            $this->_conn->beginTransaction();
+        }
+        ++$this->_transactionNestingLevel;
+        return true;
+    }
 
-	/**
-	 * Commits the database changes done during a transaction that is in
-	 * progress or release a savepoint. This function may only be called when
-	 * auto-committing is disabled, otherwise it will fail.
-	 *
-	 * @return boolean FALSE if commit couldn't be performed, TRUE otherwise
-	 */
-	public function commit()
-	{
-		if ($this->_transactionNestingLevel == 0) {
-			throw ConnectionException::commitFailedNoActiveTransaction();
-		}
+    /**
+     * Commits the database changes done during a transaction that is in
+     * progress or release a savepoint. This function may only be called when
+     * auto-committing is disabled, otherwise it will fail.
+     *
+     * @return boolean FALSE if commit couldn't be performed, TRUE otherwise
+     */
+    public function commit()
+    {
+        if ($this->_transactionNestingLevel == 0) {
+            throw ConnectionException::commitFailedNoActiveTransaction();
+        }
 
-		$this->connect();
+        $this->connect();
 
-		if ($this->_transactionNestingLevel == 1) {
-			$this->_conn->commit();
-		}
+        if ($this->_transactionNestingLevel == 1) {
+            $this->_conn->commit();
+        }
         --$this->_transactionNestingLevel;
 
         return true;
@@ -722,7 +722,7 @@ class Connection
      * @return boolean                          FALSE if rollback couldn't be performed, TRUE otherwise.
      */
     public function rollback()
-	{
+    {
         if ($this->_transactionNestingLevel == 0) {
             throw ConnectionException::rollbackFailedNoActiveTransaction();
         }
