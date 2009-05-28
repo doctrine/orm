@@ -15,15 +15,15 @@ use Doctrine\DBAL\Platforms\AbstractPlatform;
  */
 abstract class Type
 {
-	/* The following constants represent type codes and mirror the PDO::PARAM_X constants
-	 * to decouple ourself from PDO.
-	 */
-	const CODE_BOOL = 5;
-	const CODE_NULL = 0;
-	const CODE_INT = 1;
-	const CODE_STR = 2;
-	const CODE_LOB = 3;
-	
+    /* The following constants represent type codes and mirror the PDO::PARAM_X constants
+     * to decouple ourself from PDO.
+     */
+    const CODE_BOOL = 5;
+    const CODE_NULL = 0;
+    const CODE_INT = 1;
+    const CODE_STR = 2;
+    const CODE_LOB = 3;
+    
     private static $_typeObjects = array();
     private static $_typesMap = array(
         'integer' => 'Doctrine\DBAL\Types\IntegerType',
@@ -61,7 +61,7 @@ abstract class Type
 
     public function getTypeCode()
     {
-    	return self::CODE_STR;
+        return self::CODE_STR;
     }
     
     /**

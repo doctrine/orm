@@ -28,12 +28,12 @@ namespace Doctrine\ORM\Query\AST;
  */
 class StateFieldPathExpression extends Node
 {
-	//const TYPE_COLLECTION_VALUED_ASSOCIATION = 1;
-	//const TYPE_SINGLE_VALUED_ASSOCIATION = 2;
-	//const TYPE_STATE_FIELD = 3;
-	//private $_type;
-	
-	
+    //const TYPE_COLLECTION_VALUED_ASSOCIATION = 1;
+    //const TYPE_SINGLE_VALUED_ASSOCIATION = 2;
+    //const TYPE_STATE_FIELD = 3;
+    //private $_type;
+    
+    
     private $_parts;
     // Information that is attached during semantical analysis.
     private $_isSimpleStateFieldPathExpression = false;

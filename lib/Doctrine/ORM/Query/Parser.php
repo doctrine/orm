@@ -884,7 +884,7 @@ class Parser
         
         while ($this->_lexer->isNextToken('.')) {
             if ($stateFieldSeen) {
-            	$this->syntaxError();
+                $this->syntaxError();
             }
             $this->match('.');
             $part = $this->_IdentificationVariable();
@@ -1098,7 +1098,7 @@ class Parser
     {
         $condPrimary = new AST\ConditionalPrimary;
         if ($this->_lexer->isNextToken('(')) {
-        	// Peek beyond the matching closing paranthesis ')'
+            // Peek beyond the matching closing paranthesis ')'
             $numUnmatched = 1;
             $peek = $this->_lexer->peek();
             while ($numUnmatched > 0) {
@@ -1276,8 +1276,8 @@ class Parser
      */
     private function _isNextAllAnySome()
     {
-    	return $this->_lexer->lookahead['type'] === Lexer::T_ALL ||
-        		$this->_lexer->lookahead['type'] === Lexer::T_ANY ||
+        return $this->_lexer->lookahead['type'] === Lexer::T_ALL ||
+                $this->_lexer->lookahead['type'] === Lexer::T_ANY ||
                 $this->_lexer->lookahead['type'] === Lexer::T_SOME;
     }
 
@@ -1499,7 +1499,7 @@ class Parser
     }
 
     /**
-     * 	Subselect ::= SimpleSelectClause SubselectFromClause [WhereClause] [GroupByClause] [HavingClause] [OrderByClause]
+     * Subselect ::= SimpleSelectClause SubselectFromClause [WhereClause] [GroupByClause] [HavingClause] [OrderByClause]
      */
     public function _Subselect()
     {
