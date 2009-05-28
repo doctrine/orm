@@ -55,16 +55,11 @@ class ArrayHydrator extends AbstractHydrator
     /** @override */
     protected function _hydrateAll()
     {
-        $s = microtime(true);
-
         $result = array();
         $cache = array();
         while ($data = $this->_stmt->fetch(PDO::FETCH_ASSOC)) {
             $this->_hydrateRow($data, $cache, $result);
         }
-
-        $e = microtime(true);
-        echo 'Hydration took: ' . ($e - $s) . PHP_EOL;
 
         return $result;
     }

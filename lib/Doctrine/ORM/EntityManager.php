@@ -170,11 +170,11 @@ class EntityManager
     }
     
     /**
-     * Starts a transaction on the underlying connection.
+     * Starts a transaction on the underlying database connection.
      */
     public function beginTransaction()
     {
-        return $this->_conn->beginTransaction();
+        $this->_conn->beginTransaction();
     }
     
     /**
@@ -182,15 +182,23 @@ class EntityManager
      * 
      * This causes a flush() of the EntityManager if the flush mode is set to
      * AUTO or COMMIT.
-     *
-     * @return boolean
      */
     public function commit()
     {
         if ($this->_flushMode == self::FLUSHMODE_AUTO || $this->_flushMode == self::FLUSHMODE_COMMIT) {
             $this->flush();
         }
-        return $this->_conn->commitTransaction();
+        $this->_conn->commitTransaction();
+    }
+    
+    /**
+     * Performs a rollback on the underlying database connection and closes the
+     * EntityManager as it may now be in a corrupted state.
+     */
+    public function rollback()
+    {
+    	$this->_conn->rollback();
+    	$this->close();
     }
 
     /**
@@ -401,6 +409,7 @@ class EntityManager
      */
     public function refresh($entity)
     {
+    	$this->_errorIfClosed();
         throw DoctrineException::notImplemented();
     }
 

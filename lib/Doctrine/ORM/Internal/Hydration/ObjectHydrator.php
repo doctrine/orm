@@ -113,8 +113,6 @@ class ObjectHydrator extends AbstractHydrator
      */
     protected function _hydrateAll()
     {
-        $s = microtime(true);
-
         $result = $this->_rsm->isMixed ? array() : new Collection;
 
         $cache = array();
@@ -131,10 +129,6 @@ class ObjectHydrator extends AbstractHydrator
         // Clean up
         $this->_collections = array();
         $this->_initializedRelations = array();
-
-        $e = microtime(true);
-
-        echo 'Hydration took: ' . ($e - $s) . ' for '.count($result).' records' . PHP_EOL;
 
         return $result;
     }
@@ -279,10 +273,10 @@ class ObjectHydrator extends AbstractHydrator
      */
     private function setRelatedElement($entity1, $property, $entity2)
     {
-        $classMetadata1 = $this->_ce[get_class($entity1)];
-        $classMetadata1->reflFields[$property]->setValue($entity1, $entity2);
+        $class = $this->_ce[get_class($entity1)];
+        $class->reflFields[$property]->setValue($entity1, $entity2);
         $this->_uow->setOriginalEntityProperty(spl_object_hash($entity1), $property, $entity2);
-        $relation = $classMetadata1->associationMappings[$property];
+        $relation = $class->associationMappings[$property];
         if ($relation->isOneToOne()) {
             $targetClass = $this->_ce[$relation->targetEntityName];
             if ($relation->isOwningSide) {
@@ -290,7 +284,7 @@ class ObjectHydrator extends AbstractHydrator
                 if (isset($targetClass->inverseMappings[$property])) {
                     $sourceProp = $targetClass->inverseMappings[$property]->sourceFieldName;
                     $targetClass->reflFields[$sourceProp]->setValue($entity2, $entity1);
-                } else if ($classMetadata1 === $targetClass) {
+                } else if ($class === $targetClass) {
                 	// Special case: self-referencing one-one on the same class
                 	$targetClass->reflFields[$property]->setValue($entity2, $entity1);
                 }

@@ -37,6 +37,9 @@ abstract class Type
         'double' => 'Doctrine\DBAL\Types\DoubleType'
     );
     
+    /* Prevent instantiation and force use of the factory method. */
+    private function __construct() {}
+    
     public function convertToDatabaseValue($value, \Doctrine\DBAL\Platforms\AbstractPlatform $platform)
     {
         return $value;

@@ -53,6 +53,7 @@ final class DoctrineColumn extends \Addendum\Annotation {
     public $length;
     public $unique = false;
     public $nullable = false;
+    public $quote = false;
 }
 final class DoctrineOneToOne extends \Addendum\Annotation {
     public $targetEntity;

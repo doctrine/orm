@@ -26,7 +26,7 @@ namespace Doctrine\ORM;
  *
  * This class cannot be instantiated.
  *
- * @author robo
+ * @author Roman Borschel <roman@code-factory.org>
  * @since 2.0
  */
 final class Events
@@ -35,6 +35,9 @@ final class Events
 
     const preDelete = 'preDelete';
     const postDelete = 'postDelete';
-    const preSave = 'preSave';
-    const postSave = 'postSave';
+    const preInsert = 'preSave';
+    const postInsert = 'postSave';
+    const preUpdate = 'preUpdate';
+    const postUpdate = 'postUpdate';
+    const load = 'load';
 }

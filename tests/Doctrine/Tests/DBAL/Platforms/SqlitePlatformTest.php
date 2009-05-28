@@ -3,6 +3,7 @@
 namespace Doctrine\Tests\DBAL\Platforms;
 
 use Doctrine\DBAL\Platforms\SqlitePlatform;
+use Doctrine\DBAL\Types\Type;
 
 require_once __DIR__ . '/../../TestInit.php';
  
@@ -19,13 +20,13 @@ class SqlitePlatformTest extends \Doctrine\Tests\DbalTestCase
     {
         $columns = array(
             'id' => array(
-                'type' => new \Doctrine\DBAL\Types\IntegerType,
+                'type' => Type::getType('integer'),
                 'autoincrement' => true,
                 'primary' => true,
                 'notnull' => true
             ),
             'test' => array(
-                'type' => new \Doctrine\DBAL\Types\StringType,
+                'type' => Type::getType('string'),
                 'length' => 255
             )
         );

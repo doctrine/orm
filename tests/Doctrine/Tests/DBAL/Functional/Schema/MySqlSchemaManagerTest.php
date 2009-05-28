@@ -4,6 +4,7 @@ namespace Doctrine\Tests\DBAL\Functional\Schema;
 
 use Doctrine\Tests\TestUtil;
 use Doctrine\DBAL\Schema;
+use Doctrine\DBAL\Types\Type;
 
 require_once __DIR__ . '/../../../TestInit.php';
  
@@ -59,13 +60,13 @@ class MysqlSchemaManagerTest extends \Doctrine\Tests\DbalFunctionalTestCase
     {
         $columns = array(
             'id' => array(
-                'type' => new \Doctrine\DBAL\Types\IntegerType,
+                'type' => Type::getType('integer'),
                 'autoincrement' => true,
                 'primary' => true,
                 'notnull' => true
             ),
             'test' => array(
-                'type' => new \Doctrine\DBAL\Types\StringType,
+                'type' => Type::getType('string'),
                 'length' => 255
             )
         );
@@ -86,13 +87,13 @@ class MysqlSchemaManagerTest extends \Doctrine\Tests\DbalFunctionalTestCase
     {
         $columns = array(
             'id' => array(
-                'type' => new \Doctrine\DBAL\Types\IntegerType,
+                'type' => Type::getType('integer'),
                 'autoincrement' => true,
                 'primary' => true,
                 'notnull' => true
             ),
             'test' => array(
-                'type' => new \Doctrine\DBAL\Types\StringType,
+                'type' => Type::getType('string'),
                 'length' => 255
             )
         );
@@ -114,13 +115,13 @@ class MysqlSchemaManagerTest extends \Doctrine\Tests\DbalFunctionalTestCase
     {
         $columns = array(
             'id' => array(
-                'type' => new \Doctrine\DBAL\Types\IntegerType,
+                'type' => Type::getType('integer'),
                 'autoincrement' => true,
                 'primary' => true,
                 'notnull' => true
             ),
             'test' => array(
-                'type' => new \Doctrine\DBAL\Types\StringType,
+                'type' => Type::getType('string'),
                 'length' => 255
             )
         );
@@ -158,13 +159,13 @@ class MysqlSchemaManagerTest extends \Doctrine\Tests\DbalFunctionalTestCase
     {
         $columns = array(
             'id' => array(
-                'type' => new \Doctrine\DBAL\Types\IntegerType,
+                'type' => Type::getType('integer'),
                 'autoincrement' => true,
                 'primary' => true,
                 'notnull' => true
             ),
             'test' => array(
-                'type' => new \Doctrine\DBAL\Types\StringType,
+                'type' => Type::getType('string'),
                 'length' => 255
             )
         );
@@ -197,13 +198,13 @@ class MysqlSchemaManagerTest extends \Doctrine\Tests\DbalFunctionalTestCase
     {
         $columns = array(
             'id' => array(
-                'type' => new \Doctrine\DBAL\Types\IntegerType,
+                'type' => Type::getType('integer'),
                 'autoincrement' => true,
                 'primary' => true,
                 'notnull' => true
             ),
             'test' => array(
-                'type' => new \Doctrine\DBAL\Types\StringType,
+                'type' => Type::getType('string'),
                 'length' => 255
             )
         );
@@ -245,7 +246,7 @@ class MysqlSchemaManagerTest extends \Doctrine\Tests\DbalFunctionalTestCase
         $this->_sm->createView('test_create_view', 'SELECT * from mysql.user');
         $views = $this->_sm->listViews();
 
-        $this->assertEquals($views[0]['name'], 'test_create_view');
-        $this->assertEquals($views[0]['sql'], '/* ALGORITHM=UNDEFINED */ select `mysql`.`user`.`Host` AS `Host`,`mysql`.`user`.`User` AS `User`,`mysql`.`user`.`Password` AS `Password`,`mysql`.`user`.`Select_priv` AS `Select_priv`,`mysql`.`user`.`Insert_priv` AS `Insert_priv`,`mysql`.`user`.`Update_priv` AS `Update_priv`,`mysql`.`user`.`Delete_priv` AS `Delete_priv`,`mysql`.`user`.`Create_priv` AS `Create_priv`,`mysql`.`user`.`Drop_priv` AS `Drop_priv`,`mysql`.`user`.`Reload_priv` AS `Reload_priv`,`mysql`.`user`.`Shutdown_priv` AS `Shutdown_priv`,`mysql`.`user`.`Process_priv` AS `Process_priv`,`mysql`.`user`.`File_priv` AS `File_priv`,`mysql`.`user`.`Grant_priv` AS `Grant_priv`,`mysql`.`user`.`References_priv` AS `References_priv`,`mysql`.`user`.`Index_priv` AS `Index_priv`,`mysql`.`user`.`Alter_priv` AS `Alter_priv`,`mysql`.`user`.`Show_db_priv` AS `Show_db_priv`,`mysql`.`user`.`Super_priv` AS `Super_priv`,`mysql`.`user`.`Create_tmp_table_priv` AS `Create_tmp_table_priv`,`mysql`.`user`.`Lock_tables_priv` AS `Lock_tables_priv`,`mysql`.`user`.`Execute_priv` AS `Execute_priv`,`mysql`.`user`.`Repl_slave_priv` AS `Repl_slave_priv`,`mysql`.`user`.`Repl_client_priv` AS `Repl_client_priv`,`mysql`.`user`.`Create_view_priv` AS `Create_view_priv`,`mysql`.`user`.`Show_view_priv` AS `Show_view_priv`,`mysql`.`user`.`Create_routine_priv` AS `Create_routine_priv`,`mysql`.`user`.`Alter_routine_priv` AS `Alter_routine_priv`,`mysql`.`user`.`Create_user_priv` AS `Create_user_priv`,`mysql`.`user`.`ssl_type` AS `ssl_type`,`mysql`.`user`.`ssl_cipher` AS `ssl_cipher`,`mysql`.`user`.`x509_issuer` AS `x509_issuer`,`mysql`.`user`.`x509_subject` AS `x509_subject`,`mysql`.`user`.`max_questions` AS `max_questions`,`mysql`.`user`.`max_updates` AS `max_updates`,`mysql`.`user`.`max_connections` AS `max_connections`,`mysql`.`user`.`max_user_connections` AS `max_user_connections` from `mysql`.`user`');
+        $this->assertEquals('test_create_view', $views[0]['name']);
+        $this->assertEquals('/* ALGORITHM=UNDEFINED */ select `mysql`.`user`.`Host` AS `Host`,`mysql`.`user`.`User` AS `User`,`mysql`.`user`.`Password` AS `Password`,`mysql`.`user`.`Select_priv` AS `Select_priv`,`mysql`.`user`.`Insert_priv` AS `Insert_priv`,`mysql`.`user`.`Update_priv` AS `Update_priv`,`mysql`.`user`.`Delete_priv` AS `Delete_priv`,`mysql`.`user`.`Create_priv` AS `Create_priv`,`mysql`.`user`.`Drop_priv` AS `Drop_priv`,`mysql`.`user`.`Reload_priv` AS `Reload_priv`,`mysql`.`user`.`Shutdown_priv` AS `Shutdown_priv`,`mysql`.`user`.`Process_priv` AS `Process_priv`,`mysql`.`user`.`File_priv` AS `File_priv`,`mysql`.`user`.`Grant_priv` AS `Grant_priv`,`mysql`.`user`.`References_priv` AS `References_priv`,`mysql`.`user`.`Index_priv` AS `Index_priv`,`mysql`.`user`.`Alter_priv` AS `Alter_priv`,`mysql`.`user`.`Show_db_priv` AS `Show_db_priv`,`mysql`.`user`.`Super_priv` AS `Super_priv`,`mysql`.`user`.`Create_tmp_table_priv` AS `Create_tmp_table_priv`,`mysql`.`user`.`Lock_tables_priv` AS `Lock_tables_priv`,`mysql`.`user`.`Execute_priv` AS `Execute_priv`,`mysql`.`user`.`Repl_slave_priv` AS `Repl_slave_priv`,`mysql`.`user`.`Repl_client_priv` AS `Repl_client_priv`,`mysql`.`user`.`Create_view_priv` AS `Create_view_priv`,`mysql`.`user`.`Show_view_priv` AS `Show_view_priv`,`mysql`.`user`.`Create_routine_priv` AS `Create_routine_priv`,`mysql`.`user`.`Alter_routine_priv` AS `Alter_routine_priv`,`mysql`.`user`.`Create_user_priv` AS `Create_user_priv`,`mysql`.`user`.`ssl_type` AS `ssl_type`,`mysql`.`user`.`ssl_cipher` AS `ssl_cipher`,`mysql`.`user`.`x509_issuer` AS `x509_issuer`,`mysql`.`user`.`x509_subject` AS `x509_subject`,`mysql`.`user`.`max_questions` AS `max_questions`,`mysql`.`user`.`max_updates` AS `max_updates`,`mysql`.`user`.`max_connections` AS `max_connections`,`mysql`.`user`.`max_user_connections` AS `max_user_connections` from `mysql`.`user`', $views[0]['sql']);
     }
 }

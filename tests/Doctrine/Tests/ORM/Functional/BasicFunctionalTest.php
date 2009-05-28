@@ -150,8 +150,6 @@ class BasicFunctionalTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
     public function testManyToManyCollectionClearing()
     {
-        echo PHP_EOL . "MANY-MANY" . PHP_EOL;
-
         $user = new CmsUser;
         $user->name = 'Guilherme';
         $user->username = 'gblanco';
@@ -176,7 +174,6 @@ class BasicFunctionalTest extends \Doctrine\Tests\OrmFunctionalTestCase
         //$user->groups->clear();
         unset($user->groups);
 
-        echo PHP_EOL . "FINAL FLUSH" . PHP_EOL;
         $this->_em->flush();
 
         // Check that the links in the association table have been deleted

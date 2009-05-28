@@ -1,4 +1,4 @@
-<?php 
+<?php
 /*
  *  $Id$
  *
@@ -37,336 +37,349 @@ use Doctrine\ORM\Mapping\ClassMetadata;
  * @since       2.0
  */
 class StandardEntityPersister
-{    
-    /**
-     * Metadata object that describes the mapping of the mapped entity class.
-     *
-     * @var Doctrine\ORM\Mapping\ClassMetadata
-     */
-    protected $_class;
+{
+	/**
+	 * Metadata object that describes the mapping of the mapped entity class.
+	 *
+	 * @var Doctrine\ORM\Mapping\ClassMetadata
+	 */
+	protected $_class;
+
+	/**
+	 * The name of the entity the persister is used for.
+	 *
+	 * @var string
+	 */
+	protected $_entityName;
+
+	/**
+	 * The Connection instance.
+	 *
+	 * @var Doctrine\DBAL\Connection $conn
+	 */
+	protected $_conn;
+
+	/**
+	 * The EntityManager instance.
+	 *
+	 * @var Doctrine\ORM\EntityManager
+	 */
+	protected $_em;
+
+	/**
+	 * Queued inserts.
+	 *
+	 * @var array
+	 */
+	protected $_queuedInserts = array();
+
+	/**
+	 * Initializes a new instance of a class derived from AbstractEntityPersister
+	 * that uses the given EntityManager and persists instances of the class described
+	 * by the given class metadata descriptor.
+	 */
+	public function __construct(EntityManager $em, ClassMetadata $class)
+	{
+		$this->_em = $em;
+		$this->_entityName = $class->name;
+		$this->_conn = $em->getConnection();
+		$this->_class = $class;
+	}
+
+	/**
+	 * Adds an entity to the queued inserts.
+	 *
+	 * @param object $entity
+	 */
+	public function addInsert($entity)
+	{
+		$this->_queuedInserts[spl_object_hash($entity)] = $entity;
+	}
+
+	/**
+	 * Executes all queued inserts.
+	 *
+	 * @return array An array of any generated post-insert IDs.
+	 */
+	public function executeInserts()
+	{
+		if ( ! $this->_queuedInserts) {
+			return;
+		}
+
+		$postInsertIds = array();
+		$idGen = $this->_class->idGenerator;
+		$isPostInsertId = $idGen->isPostInsertGenerator();
+
+		$stmt = $this->_conn->prepare($this->_class->insertSql);
+		$primaryTableName = $this->_class->primaryTable['name'];
+		$sqlLogger = $this->_conn->getConfiguration()->getSqlLogger();
+
+		foreach ($this->_queuedInserts as $entity) {
+			$insertData = array();
+			$this->_prepareData($entity, $insertData, true);
     
-    /**
-     * The name of the entity the persister is used for.
-     * 
-     * @var string
-     */
-    protected $_entityName;
+			$paramIndex = 1;
+			if ($sqlLogger) {
+				//TODO: Log type
+				$params = array();
+				foreach ($insertData[$primaryTableName] as $value) {
+					$params[$paramIndex] = $value;
+					$stmt->bindValue($paramIndex++, $value/*, Type::getType()*/);
+				}
+				$sqlLogger->logSql($this->_class->insertSql, $params);
+			} else {
+				foreach ($insertData[$primaryTableName] as $value) {
+					$stmt->bindValue($paramIndex++, $value/*, Type::getType()*/);
+				}
+			}
 
-    /**
-     * The Connection instance.
-     *
-     * @var Doctrine\DBAL\Connection $conn
-     */
-    protected $_conn;
-    
-    /**
-     * The EntityManager instance.
-     *
-     * @var Doctrine\ORM\EntityManager
-     */
-    protected $_em;
+			$stmt->execute();
 
-    /**
-     * Queued inserts.
-     *
-     * @var array
-     */
-    protected $_queuedInserts = array();
+			if ($isPostInsertId) {
+				$postInsertIds[$idGen->generate($this->_em, $entity)] = $entity;
+			}
+		}
 
-    /**
-     * Initializes a new instance of a class derived from AbstractEntityPersister
-     * that uses the given EntityManager and persists instances of the class described
-     * by the given class metadata descriptor.
-     */
-    public function __construct(EntityManager $em, ClassMetadata $class)
-    {
-        $this->_em = $em;
-        $this->_entityName = $class->name;
-        $this->_conn = $em->getConnection();
-        $this->_class = $class;
-    }
+		$stmt->closeCursor();
+		$this->_queuedInserts = array();
 
-    /**
-     * Adds an entity to the queued inserts.
-     *
-     * @param object $entity
-     */
-    public function addInsert($entity)
-    {
-        $this->_queuedInserts[spl_object_hash($entity)] = $entity;
-    }
+		return $postInsertIds;
+	}
 
-    /**
-     * Executes all queued inserts.
-     *
-     * @return array An array of any generated post-insert IDs.
-     */
-    public function executeInserts()
-    {
-        if ( ! $this->_queuedInserts) {
-            return;
-        }
-        
-        $postInsertIds = array();
-        $idGen = $this->_class->idGenerator;
-        $isPostInsertId = $idGen->isPostInsertGenerator();
+	/**
+	 * Updates an entity.
+	 *
+	 * @param object $entity The entity to update.
+	 */
+	public function update($entity)
+	{
+		$updateData = array();
+		$this->_prepareData($entity, $updateData);
+		$id = array_combine($this->_class->getIdentifierFieldNames(),
+		$this->_em->getUnitOfWork()->getEntityIdentifier($entity));
+		$tableName = $this->_class->primaryTable['name'];
+		$this->_conn->update($tableName, $updateData[$tableName], $id);
+	}
 
-        $stmt = $this->_conn->prepare($this->_class->insertSql);
-        $primaryTableName = $this->_class->primaryTable['name'];
-        foreach ($this->_queuedInserts as $entity) {
-            $insertData = array();
-            $this->_prepareData($entity, $insertData, true);
+	/**
+	 * Deletes an entity.
+	 *
+	 * @param object $entity The entity to delete.
+	 */
+	public function delete($entity)
+	{
+		$id = array_combine(
+		$this->_class->getIdentifierFieldNames(),
+		$this->_em->getUnitOfWork()->getEntityIdentifier($entity)
+		);
+		$this->_conn->delete($this->_class->primaryTable['name'], $id);
+	}
 
-            $paramIndex = 1;
-            foreach ($insertData[$primaryTableName] as $value) {
-                $stmt->bindValue($paramIndex++, $value/*, Type::getType()*/);
-            }
-            $stmt->execute();
+	/**
+	 * Adds an entity to delete.
+	 *
+	 * @param object $entity
+	 */
+	public function addDelete($entity)
+	{
 
-            if ($isPostInsertId) {
-                $postInsertIds[$idGen->generate($this->_em, $entity)] = $entity;
-            }
-        }
-        $stmt->closeCursor();
-        $this->_queuedInserts = array();
+	}
 
-        return $postInsertIds;
-    }
-    
-    /**
-     * Updates an entity.
-     *
-     * @param object $entity The entity to update.
-     */
-    public function update($entity)
-    {
-        $updateData = array();
-        $this->_prepareData($entity, $updateData);
-        $id = array_combine($this->_class->getIdentifierFieldNames(),
-                $this->_em->getUnitOfWork()->getEntityIdentifier($entity));
-        $tableName = $this->_class->primaryTable['name'];
-        $this->_conn->update($tableName, $updateData[$tableName], $id);
-    }
-    
-    /**
-     * Deletes an entity.
-     *
-     * @param object $entity The entity to delete.
-     */
-    public function delete($entity)
-    {
-        $id = array_combine(
-                $this->_class->getIdentifierFieldNames(),
-                $this->_em->getUnitOfWork()->getEntityIdentifier($entity)
-              );
-        $this->_conn->delete($this->_class->primaryTable['name'], $id);
-    }
+	/**
+	 * Executes all pending entity deletions.
+	 *
+	 * @see addDelete()
+	 */
+	public function executeDeletions()
+	{
 
-    /**
-     * Adds an entity to delete.
-     *
-     * @param object $entity
-     */
-    public function addDelete($entity)
-    {
-        
-    }
+	}
 
-    /**
-     * Executes all pending entity deletions.
-     * 
-     * @see addDelete()
-     */
-    public function executeDeletions()
-    {
-        
-    }
+	/**
+	 * Gets the ClassMetadata instance of the entity class this persister is used for.
+	 *
+	 * @return Doctrine\ORM\Mapping\ClassMetadata
+	 */
+	public function getClassMetadata()
+	{
+		return $this->_class;
+	}
 
-    /**
-     * Gets the ClassMetadata instance of the entity class this persister is used for.
-     *
-     * @return Doctrine\ORM\Mapping\ClassMetadata
-     */
-    public function getClassMetadata()
-    {
-        return $this->_class;
-    }
+	/**
+	 * Gets the table name to use for temporary identifier tables.
+	 */
+	public function getTemporaryIdTableName()
+	{
+		//...
+	}
 
-    /**
-     * Gets the table name to use for temporary identifier tables.
-     */
-    public function getTemporaryIdTableName()
-    {
-        //...
-    }
-    
-    /**
-     * Prepares the data changeset of an entity for database insertion.
-     * The array that is passed as the second parameter is filled with
-     * <columnName> => <value> pairs, grouped by table name, during this preparation.
-     * 
-     * Example:
-     * <code>
-     * array(
-     *    'foo_table' => array('column1' => 'value1', 'column2' => 'value2', ...),
-     *    'bar_table' => array('columnX' => 'valueX', 'columnY' => 'valueY', ...),
-     *    ...
-     * )
-     * </code>
-     * 
-     * Notes to inheritors: Be sure to call <code>parent::_prepareData($entity, $result, $isInsert);</code>
-     *
-     * @param object $entity
-     * @param array $result The reference to the data array.
-     * @param boolean $isInsert
-     */
-    protected function _prepareData($entity, array &$result, $isInsert = false)
-    {
-        $platform = $this->_conn->getDatabasePlatform();
-        $uow = $this->_em->getUnitOfWork();
-        
-        foreach ($uow->getEntityChangeSet($entity) as $field => $change) {
-            $oldVal = $change[0];
-            $newVal = $change[1];
+	/**
+	 * Prepares the data changeset of an entity for database insertion.
+	 * The array that is passed as the second parameter is filled with
+	 * <columnName> => <value> pairs, grouped by table name, during this preparation.
+	 *
+	 * Example:
+	 * <code>
+	 * array(
+	 *    'foo_table' => array('column1' => 'value1', 'column2' => 'value2', ...),
+	 *    'bar_table' => array('columnX' => 'valueX', 'columnY' => 'valueY', ...),
+	 *    ...
+	 * )
+	 * </code>
+	 *
+	 * Notes to inheritors: Be sure to call <code>parent::_prepareData($entity, $result, $isInsert);</code>
+	 *
+	 * @param object $entity
+	 * @param array $result The reference to the data array.
+	 * @param boolean $isInsert
+	 */
+	protected function _prepareData($entity, array &$result, $isInsert = false)
+	{
+		$platform = $this->_conn->getDatabasePlatform();
+		$uow = $this->_em->getUnitOfWork();
 
-            $columnName = $this->_class->getColumnName($field);
+		foreach ($uow->getEntityChangeSet($entity) as $field => $change) {
+			$oldVal = $change[0];
+			$newVal = $change[1];
 
-            if (isset($this->_class->associationMappings[$field])) {
-                $assocMapping = $this->_class->associationMappings[$field];
-                // Only owning side of x-1 associations can have a FK column.
-                if ( ! $assocMapping->isOneToOne() || $assocMapping->isInverseSide()) {
-                    continue;
-                }
-                
-                // Special case: One-one self-referencing of the same class.
-                if ($newVal !== null && $assocMapping->sourceEntityName == $assocMapping->targetEntityName) {
-                    $oid = spl_object_hash($newVal);
-                    $isScheduledForInsert = $uow->isRegisteredNew($newVal);
-                    if (isset($this->_queuedInserts[$oid]) || $isScheduledForInsert) {
-                    	// The associated entity $newVal is not yet persisted, so we must
-                    	// set $newVal = null, in order to insert a null value and update later.
-                        $newVal = null;
-                    } else if ($isInsert && ! $isScheduledForInsert && $uow->getEntityState($newVal) == UnitOfWork::STATE_MANAGED) {
-                    	// $newVal is already fully persisted
-                    	// Clear changeset of $newVal, so that only the identifier is updated.
-                    	// Not sure this is really rock-solid here but it seems to work.
-                    	$uow->clearEntityChangeSet($oid);
-                    	$uow->propertyChanged($newVal, $field, $entity, $entity);
-                    }
-                }
-                
-                foreach ($assocMapping->sourceToTargetKeyColumns as $sourceColumn => $targetColumn) {
-                    $otherClass = $this->_em->getClassMetadata($assocMapping->targetEntityName);
-                    if ($newVal === null) {
-                        $result[$this->getOwningTable($field)][$sourceColumn] = null;
-                    } else {
-                        $result[$this->getOwningTable($field)][$sourceColumn] =
-                                $otherClass->reflFields[$otherClass->fieldNames[$targetColumn]]
-                                        ->getValue($newVal);
-                    }
-                }
-            } else if ($newVal === null) {
-                $result[$this->getOwningTable($field)][$columnName] = null;
-            } else {
-                $result[$this->getOwningTable($field)][$columnName] = Type::getType(
-                        $this->_class->fieldMappings[$field]['type'])
-                                ->convertToDatabaseValue($newVal, $platform);
-            }
-        }
-    }
+			$columnName = $this->_class->getColumnName($field);
 
-    /**
-     * Gets the name of the table that owns the column the given field is mapped to.
-     *
-     * @param string $fieldName
-     * @return string
-     */
-    public function getOwningTable($fieldName)
-    {
-        return $this->_class->primaryTable['name'];
-    }
+			if (isset($this->_class->associationMappings[$field])) {
+				$assocMapping = $this->_class->associationMappings[$field];
+				// Only owning side of x-1 associations can have a FK column.
+				if ( ! $assocMapping->isOneToOne() || $assocMapping->isInverseSide()) {
+					continue;
+				}
 
-    /**
-     * Loads an entity by a list of field criteria.
-     *
-     * @param array $criteria The criteria by which to load the entity.
-     * @param object $entity The entity to load the data into. If not specified,
-     *                       a new entity is created.
-     */
-    public function load(array $criteria, $entity = null)
-    {
-        $stmt = $this->_conn->prepare($this->_getSelectSingleEntitySql($criteria));
-        $stmt->execute(array_values($criteria));
-        $data = array();
-        foreach ($stmt->fetch(\PDO::FETCH_ASSOC) as $column => $value) {
-            $fieldName = $this->_class->fieldNames[$column];
-            $data[$fieldName] = Type::getType($this->_class->getTypeOfField($fieldName))
-                    ->convertToPHPValue($value);
-        }
-        $stmt->closeCursor();
+				// Special case: One-one self-referencing of the same class.
+				if ($newVal !== null && $assocMapping->sourceEntityName == $assocMapping->targetEntityName) {
+					$oid = spl_object_hash($newVal);
+					$isScheduledForInsert = $uow->isRegisteredNew($newVal);
+					if (isset($this->_queuedInserts[$oid]) || $isScheduledForInsert) {
+						// The associated entity $newVal is not yet persisted, so we must
+						// set $newVal = null, in order to insert a null value and update later.
+						$newVal = null;
+					} else if ($isInsert && ! $isScheduledForInsert && $uow->getEntityState($newVal) == UnitOfWork::STATE_MANAGED) {
+						// $newVal is already fully persisted
+						// Clear changeset of $newVal, so that only the identifier is updated.
+						// Not sure this is really rock-solid here but it seems to work.
+						$uow->clearEntityChangeSet($oid);
+						$uow->propertyChanged($newVal, $field, $entity, $entity);
+					}
+				}
 
-        if ($entity === null) {
-            $entity = $this->_em->getUnitOfWork()->createEntity($this->_entityName, $data);
-        } else {
-            foreach ($data as $field => $value) {
-                $this->_class->reflFields[$field]->setValue($entity, $value);
-            }
-            $id = array();
-            if ($this->_class->isIdentifierComposite) {
-                foreach ($this->_class->identifier as $fieldName) {
-                    $id[] = $data[$fieldName];
-                }
-            } else {
-                $id = array($data[$this->_class->getSingleIdentifierFieldName()]);
-            }
-            $this->_em->getUnitOfWork()->registerManaged($entity, $id, $data);
-        }
+				foreach ($assocMapping->sourceToTargetKeyColumns as $sourceColumn => $targetColumn) {
+					$otherClass = $this->_em->getClassMetadata($assocMapping->targetEntityName);
+					if ($newVal === null) {
+						$result[$this->getOwningTable($field)][$sourceColumn] = null;
+					} else {
+						$result[$this->getOwningTable($field)][$sourceColumn] =
+						$otherClass->reflFields[$otherClass->fieldNames[$targetColumn]]->getValue($newVal);
+					}
+				}
+			} else if ($newVal === null) {
+				$result[$this->getOwningTable($field)][$columnName] = null;
+			} else {
+				$result[$this->getOwningTable($field)][$columnName] = Type::getType(
+				$this->_class->fieldMappings[$field]['type'])
+				->convertToDatabaseValue($newVal, $platform);
+			}
+		}
+	}
 
-        if ( ! $this->_em->getConfiguration()->getAllowPartialObjects()) {
-            foreach ($this->_class->associationMappings as $field => $assoc) {
-                if ($assoc->isOneToOne()) {
-                    if ($assoc->isLazilyFetched()) {
-                        // Inject proxy
-                        $proxy = $this->_em->getProxyGenerator()->getAssociationProxy($entity, $assoc);
-                        $this->_class->reflFields[$field]->setValue($entity, $proxy);
-                    } else {
-                        //TODO: Eager fetch?
-                    }
-                } else {
-                    // Inject collection
-                    $this->_class->reflFields[$field]->setValue(
-                            $entity, new PersistentCollection($this->_em,
-                            $this->_em->getClassMetadata($assoc->targetEntityName)
-                        ));
-                }
-            }
-        }
+	/**
+	 * Gets the name of the table that owns the column the given field is mapped to.
+	 *
+	 * @param string $fieldName
+	 * @return string
+	 */
+	public function getOwningTable($fieldName)
+	{
+		return $this->_class->primaryTable['name'];
+	}
 
-        return $entity;
-    }
+	/**
+	 * Loads an entity by a list of field criteria.
+	 *
+	 * @param array $criteria The criteria by which to load the entity.
+	 * @param object $entity The entity to load the data into. If not specified,
+	 *                       a new entity is created.
+	 */
+	public function load(array $criteria, $entity = null)
+	{
+		$stmt = $this->_conn->prepare($this->_getSelectSingleEntitySql($criteria));
+		$stmt->execute(array_values($criteria));
+		$data = array();
+		foreach ($stmt->fetch(\PDO::FETCH_ASSOC) as $column => $value) {
+			$fieldName = $this->_class->fieldNames[$column];
+			$data[$fieldName] = Type::getType($this->_class->getTypeOfField($fieldName))
+			->convertToPHPValue($value);
+		}
+		$stmt->closeCursor();
 
-    /**
-     * Gets the SELECT SQL to select a single entity by a set of field criteria.
-     *
-     * @param array $criteria
-     * @return string The SQL.
-     * @todo Quote identifier.
-     */
-    protected function _getSelectSingleEntitySql(array $criteria)
-    {
-        $columnList = '';
-        foreach ($this->_class->columnNames as $column) {
-            if ($columnList != '') $columnList .= ', ';
-            $columnList .= $column;
-        }
+		if ($entity === null) {
+			$entity = $this->_em->getUnitOfWork()->createEntity($this->_entityName, $data);
+		} else {
+			foreach ($data as $field => $value) {
+				$this->_class->reflFields[$field]->setValue($entity, $value);
+			}
+			$id = array();
+			if ($this->_class->isIdentifierComposite) {
+				foreach ($this->_class->identifier as $fieldName) {
+					$id[] = $data[$fieldName];
+				}
+			} else {
+				$id = array($data[$this->_class->getSingleIdentifierFieldName()]);
+			}
+			$this->_em->getUnitOfWork()->registerManaged($entity, $id, $data);
+		}
 
-        $conditionSql = '';
-        foreach ($criteria as $field => $value) {
-            if ($conditionSql != '') $conditionSql .= ' AND ';
-            $conditionSql .= $this->_class->columnNames[$field] . ' = ?';
-        }
+		if ( ! $this->_em->getConfiguration()->getAllowPartialObjects()) {
+			foreach ($this->_class->associationMappings as $field => $assoc) {
+				if ($assoc->isOneToOne()) {
+					if ($assoc->isLazilyFetched) {
+						// Inject proxy
+						$proxy = $this->_em->getProxyGenerator()->getAssociationProxy($entity, $assoc);
+						$this->_class->reflFields[$field]->setValue($entity, $proxy);
+					} else {
+						//TODO: Eager fetch?
+					}
+				} else {
+					// Inject collection
+					$this->_class->reflFields[$field]->setValue(
+					$entity, new PersistentCollection($this->_em,
+					$this->_em->getClassMetadata($assoc->targetEntityName)
+					));
+				}
+			}
+		}
 
-        return 'SELECT ' . $columnList . ' FROM ' . $this->_class->getTableName()
-                . ' WHERE ' . $conditionSql;
-    }
+		return $entity;
+	}
+
+	/**
+	 * Gets the SELECT SQL to select a single entity by a set of field criteria.
+	 *
+	 * @param array $criteria
+	 * @return string The SQL.
+	 * @todo Quote identifier.
+	 */
+	protected function _getSelectSingleEntitySql(array $criteria)
+	{
+		$columnList = '';
+		foreach ($this->_class->columnNames as $column) {
+			if ($columnList != '') $columnList .= ', ';
+			$columnList .= $column;
+		}
+
+		$conditionSql = '';
+		foreach ($criteria as $field => $value) {
+			if ($conditionSql != '') $conditionSql .= ' AND ';
+			$conditionSql .= $this->_class->columnNames[$field] . ' = ?';
+		}
+
+		return 'SELECT ' . $columnList . ' FROM ' . $this->_class->getTableName()
+		. ' WHERE ' . $conditionSql;
+	}
 }

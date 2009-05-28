@@ -47,8 +47,29 @@ class Configuration
     public function __construct()
     {
         $this->_attributes = array(
-            'quoteIdentifiers' => false
+            'quoteIdentifiers' => false,
+            'sqlLogger' => null
         );
+    }
+    
+    /**
+     * Sets the SQL logger to use. Defaults to NULL which means SQL logging is disabled.
+     *
+     * @param SqlLogger $logger
+     */
+    public function setSqlLogger($logger)
+    {
+        $this->_attributes['sqlLogger'] = $logger;
+    }
+    
+    /**
+     * Gets the SQL logger that is used.
+     * 
+     * @return SqlLogger
+     */
+    public function getSqlLogger()
+    {
+        return $this->_attributes['sqlLogger'];
     }
 
     public function getQuoteIdentifiers()

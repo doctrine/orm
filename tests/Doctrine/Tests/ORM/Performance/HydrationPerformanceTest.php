@@ -24,7 +24,7 @@ class HydrationPerformanceTest extends \Doctrine\Tests\OrmPerformanceTestCase
      *
      * MAXIMUM TIME: 3 seconds
      */
-    public function testNewHydrationSimpleQueryArrayHydrationPerformance()
+    public function testSimpleQueryArrayHydrationPerformance()
     {
         $rsm = new ResultSetMapping;
         $rsm->addEntityResult('Doctrine\Tests\Models\CMS\CmsUser', 'u');
@@ -69,7 +69,10 @@ class HydrationPerformanceTest extends \Doctrine\Tests\OrmPerformanceTestCase
         $hydrator = new \Doctrine\ORM\Internal\Hydration\ArrayHydrator($this->_em);
 
         $this->setMaxRunningTime(3);
+        $s = microtime(true);
         $result = $hydrator->hydrateAll($stmt, $rsm);
+        $e = microtime(true);
+        echo __FUNCTION__ . " - " . ($e - $s) . " seconds" . PHP_EOL;
     }
 
     /**
@@ -79,7 +82,7 @@ class HydrationPerformanceTest extends \Doctrine\Tests\OrmPerformanceTestCase
      *
      * MAXIMUM TIME: 4 seconds
      */
-    public function testNewHydrationMixedQueryFetchJoinArrayHydrationPerformance()
+    public function testMixedQueryFetchJoinArrayHydrationPerformance()
     {
         $rsm = new ResultSetMapping;
         $rsm->addEntityResult('Doctrine\Tests\Models\CMS\CmsUser', 'u');
@@ -140,7 +143,10 @@ class HydrationPerformanceTest extends \Doctrine\Tests\OrmPerformanceTestCase
         $hydrator = new \Doctrine\ORM\Internal\Hydration\ArrayHydrator($this->_em);
 
         $this->setMaxRunningTime(4);
+        $s = microtime(true);
         $result = $hydrator->hydrateAll($stmt, $rsm);
+        $e = microtime(true);
+        echo __FUNCTION__ . " - " . ($e - $s) . " seconds" . PHP_EOL;
     }
 
     /**
@@ -193,8 +199,10 @@ class HydrationPerformanceTest extends \Doctrine\Tests\OrmPerformanceTestCase
         $hydrator = new \Doctrine\ORM\Internal\Hydration\ObjectHydrator($this->_em);
 
         $this->setMaxRunningTime(5);
+        $s = microtime(true);
         $result = $hydrator->hydrateAll($stmt, $rsm);
-        echo count($result);
+        $e = microtime(true);
+        echo __FUNCTION__ . " - " . ($e - $s) . " seconds" . PHP_EOL;
     }
 
     /**
@@ -263,7 +271,10 @@ class HydrationPerformanceTest extends \Doctrine\Tests\OrmPerformanceTestCase
         $hydrator = new \Doctrine\ORM\Internal\Hydration\ObjectHydrator($this->_em);
 
         $this->setMaxRunningTime(4);
+        $s = microtime(true);
         $result = $hydrator->hydrateAll($stmt, $rsm);
+        $e = microtime(true);
+        echo __FUNCTION__ . " - " . ($e - $s) . " seconds" . PHP_EOL;
     }
 }
 

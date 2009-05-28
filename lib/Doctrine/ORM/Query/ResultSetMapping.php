@@ -56,9 +56,8 @@ class ResultSetMapping
 
     /**
      *
-     * @param <type> $class
-     * @param <type> $alias The alias for this class. The alias must be unique within this ResultSetMapping.
-     * @param <type> $discriminatorColumn
+     * @param string $class The class name.
+     * @param string $alias The alias for this class. The alias must be unique within this ResultSetMapping.
      */
     public function addEntityResult($class, $alias)
     {
@@ -67,9 +66,8 @@ class ResultSetMapping
 
     /**
      *
-     * @param <type> $className
-     * @param <type> $alias
-     * @param <type> $discrColumn
+     * @param string $alias
+     * @param string $discrColumn
      */
     public function setDiscriminatorColumn($alias, $discrColumn)
     {
@@ -130,9 +128,9 @@ class ResultSetMapping
 
     /**
      *
-     * @param <type> $alias
-     * @param <type> $columnName
-     * @param <type> $fieldName 
+     * @param string $alias
+     * @param string $columnName
+     * @param string $fieldName 
      */
     public function addFieldResult($alias, $columnName, $fieldName)
     {
@@ -145,10 +143,10 @@ class ResultSetMapping
 
     /**
      *
-     * @param <type> $class
-     * @param <type> $alias
-     * @param <type> $parentAlias
-     * @param <type> $relation
+     * @param string $class
+     * @param string $alias
+     * @param string $parentAlias
+     * @param object $relation
      */
     public function addJoinedEntityResult($class, $alias, $parentAlias, $relation)
     {
@@ -156,12 +154,12 @@ class ResultSetMapping
         $this->parentAliasMap[$alias] = $parentAlias;
         $this->relationMap[$alias] = $relation;
     }
-
-    /*public function isDiscriminatorColumn($columnName)
-    {
-        return isset($this->_discriminatorMap[$columnName]);
-    }*/
-
+    
+    /**
+     *
+     * @param string $columnName
+     * @param string $alias
+     */
     public function addScalarResult($columnName, $alias)
     {
         $this->scalarMappings[$columnName] = $alias;

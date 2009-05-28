@@ -185,7 +185,7 @@ abstract class AbstractHydrator
                     $classMetadata = $this->_lookupDeclaringClass($classMetadata, $fieldName);
                     $cache[$key]['fieldName'] = $fieldName;
                     $cache[$key]['isScalar'] = false;
-                    $cache[$key]['type'] = Type::getType($classMetadata->getTypeOfField($fieldName));
+                    $cache[$key]['type'] = Type::getType($classMetadata->fieldMappings[$fieldName]['type']);
                     $cache[$key]['isIdentifier'] = $classMetadata->isIdentifier($fieldName);
                     $cache[$key]['dqlAlias'] = $this->_rsm->columnOwnerMap[$key];
                 } else {

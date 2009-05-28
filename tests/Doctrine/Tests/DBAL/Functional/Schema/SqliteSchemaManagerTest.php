@@ -4,6 +4,7 @@ namespace Doctrine\Tests\DBAL\Functional\Schema;
 
 use Doctrine\Tests\TestUtil;
 use Doctrine\DBAL\Schema;
+use Doctrine\DBAL\Types\Type;
 
 require_once __DIR__ . '/../../../TestInit.php';
  
@@ -58,13 +59,13 @@ class SqliteSchemaManagerTest extends \Doctrine\Tests\DbalFunctionalTestCase
     {
         $columns = array(
             'id' => array(
-                'type' => new \Doctrine\DBAL\Types\IntegerType,
+                'type' => Type::getType('integer'),
                 'autoincrement' => true,
                 'primary' => true,
                 'notnull' => true
             ),
             'test' => array(
-                'type' => new \Doctrine\DBAL\Types\StringType,
+                'type' => Type::getType('string'),
                 'length' => 255
             )
         );
@@ -91,13 +92,13 @@ class SqliteSchemaManagerTest extends \Doctrine\Tests\DbalFunctionalTestCase
     {
         $columns = array(
             'id' => array(
-                'type' => new \Doctrine\DBAL\Types\IntegerType,
+                'type' => Type::getType('integer'),
                 'autoincrement' => true,
                 'primary' => true,
                 'notnull' => true
             ),
             'test' => array(
-                'type' => new \Doctrine\DBAL\Types\StringType,
+                'type' => Type::getType('string'),
                 'length' => 255
             )
         );
@@ -131,13 +132,13 @@ class SqliteSchemaManagerTest extends \Doctrine\Tests\DbalFunctionalTestCase
     {
         $columns = array(
             'id' => array(
-                'type' => new \Doctrine\DBAL\Types\IntegerType,
+                'type' => Type::getType('integer'),
                 'autoincrement' => true,
                 'primary' => true,
                 'notnull' => true
             ),
             'test' => array(
-                'type' => new \Doctrine\DBAL\Types\StringType,
+                'type' => Type::getType('string'),
                 'length' => 255
             )
         );
@@ -164,13 +165,13 @@ class SqliteSchemaManagerTest extends \Doctrine\Tests\DbalFunctionalTestCase
     {
         $columns = array(
             'id' => array(
-                'type' => new \Doctrine\DBAL\Types\IntegerType,
+                'type' => Type::getType('integer'),
                 'autoincrement' => true,
                 'primary' => true,
                 'notnull' => true
             ),
             'test' => array(
-                'type' => new \Doctrine\DBAL\Types\StringType,
+                'type' => Type::getType('string'),
                 'length' => 255
             )
         );
@@ -198,13 +199,13 @@ class SqliteSchemaManagerTest extends \Doctrine\Tests\DbalFunctionalTestCase
     {
         $columns = array(
             'id' => array(
-                'type' => new \Doctrine\DBAL\Types\IntegerType,
+                'type' => Type::getType('integer'),
                 'autoincrement' => true,
                 'primary' => true,
                 'notnull' => true
             ),
             'test' => array(
-                'type' => new \Doctrine\DBAL\Types\StringType,
+                'type' => Type::getType('string'),
                 'length' => 255
             )
         );
@@ -250,13 +251,13 @@ class SqliteSchemaManagerTest extends \Doctrine\Tests\DbalFunctionalTestCase
     {
         $columns = array(
             'id' => array(
-                'type' => new \Doctrine\DBAL\Types\IntegerType,
+                'type' => Type::getType('integer'),
                 'autoincrement' => true,
                 'primary' => true,
                 'notnull' => true
             ),
             'test' => array(
-                'type' => new \Doctrine\DBAL\Types\StringType,
+                'type' => Type::getType('string'),
                 'length' => 255
             )
         );
@@ -314,13 +315,13 @@ class SqliteSchemaManagerTest extends \Doctrine\Tests\DbalFunctionalTestCase
     {
         $columns = array(
             'id' => array(
-                'type' => new \Doctrine\DBAL\Types\IntegerType,
+                'type' => Type::getType('integer'),
                 'autoincrement' => true,
                 'primary' => true,
                 'notnull' => true
             ),
             'test' => array(
-                'type' => new \Doctrine\DBAL\Types\StringType,
+                'type' => Type::getType('string'),
                 'length' => 255
             )
         );

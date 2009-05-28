@@ -483,7 +483,6 @@ class UnitOfWork implements PropertyChangedListener
         }
 
         if ( ! $assoc->isCascadeSave) {
-            //echo "NOT CASCADING INTO " . $assoc->getSourceFieldName() . PHP_EOL;
             return; // "Persistence by reachability" only if save cascade specified
         }
 
@@ -498,7 +497,7 @@ class UnitOfWork implements PropertyChangedListener
             $oid = spl_object_hash($entry);
             if ($state == self::STATE_NEW) {
                 // Get identifier, if possible (not post-insert)
-                $idGen = $targetClass->getIdGenerator();
+                $idGen = $targetClass->idGenerator;
                 if ( ! $idGen->isPostInsertGenerator()) {
                     $idValue = $idGen->generate($this->_em, $entry);
                     $this->_entityStates[$oid] = self::STATE_MANAGED;
@@ -804,35 +803,6 @@ class UnitOfWork implements PropertyChangedListener
     }
 
     /**
-     * Detaches all currently managed entities.
-     * Alternatively, if an entity class name is given, all entities of that type
-     * (or subtypes) are detached. Don't forget that entities are registered in
-     * the identity map with the name of the root entity class. So calling detachAll()
-     * with a class name that is not the name of a root entity has no effect.
-     *
-     * @return integer The number of detached entities.
-     */
-    public function detachAll($entityName = null)
-    {
-        $numDetached = 0;
-        if ($entityName !== null && isset($this->_identityMap[$entityName])) {
-            $numDetached = count($this->_identityMap[$entityName]);
-            foreach ($this->_identityMap[$entityName] as $entity) {
-                $this->detach($entity);
-            }
-            $this->_identityMap[$entityName] = array();
-        } else {
-            $numDetached = count($this->_identityMap);
-            $this->_identityMap = array();
-            $this->_entityInsertions = array();
-            $this->_entityUpdates = array();
-            $this->_entityDeletions = array();
-        }
-
-        return $numDetached;
-    }
-
-    /**
      * Registers an entity in the identity map.
      * Note that entities in a hierarchy are registered with the class name of
      * the root entity.
@@ -960,8 +930,7 @@ class UnitOfWork implements PropertyChangedListener
         
         return isset($this->_identityMap
                 [$classMetadata->rootEntityName]
-                [$idHash]
-                );
+                [$idHash]);
     }
 
     /**
@@ -1174,6 +1143,10 @@ class UnitOfWork implements PropertyChangedListener
 
     /**
      * Cascades a merge operation to associated entities.
+     * 
+     * @param object $entity
+     * @param object $managedCopy
+     * @param array $visited
      */
     private function _cascadeMerge($entity, $managedCopy, array &$visited)
     {
@@ -1199,6 +1172,7 @@ class UnitOfWork implements PropertyChangedListener
      *
      * @param object $entity
      * @param array $visited
+     * @param array $insertNow
      */
     private function _cascadeSave($entity, array &$visited, array &$insertNow)
     {
@@ -1223,6 +1197,7 @@ class UnitOfWork implements PropertyChangedListener
      * Cascades the delete operation to associated entities.
      *
      * @param object $entity
+     * @param array $visited
      */
     private function _cascadeDelete($entity, array &$visited)
     {

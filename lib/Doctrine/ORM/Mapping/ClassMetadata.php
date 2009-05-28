@@ -253,15 +253,6 @@ final class ClassMetadata
      * @var array
      */
     public $columnNames = array();
-    
-    /**
-     * Map that maps lowercased column names (keys) to field names (values).
-     * Mainly used during hydration because Doctrine enforces PDO_CASE_LOWER
-     * for portability.
-     *
-     * @var array
-     */
-    public $lcColumnToFieldNames = array();
 
     /**
      * Whether to automatically OUTER JOIN subtypes when a basetype is queried.
@@ -725,29 +716,6 @@ final class ClassMetadata
     }
     
     /**
-     * Gets the field name for a completely lowercased column name.
-     * Mainly used during hydration.
-     *
-     * @param string $lcColumnName The all-lowercase column name.
-     * @return string The field name.
-     */
-    public function getFieldNameForLowerColumnName($lcColumnName)
-    {
-        return $this->lcColumnToFieldNames[$lcColumnName];
-    }
-
-    /**
-     * Checks whether a specified column name (all lowercase) exists in this class.
-     *
-     * @param string $lcColumnName
-     * @return boolean
-     */
-    public function hasLowerColumn($lcColumnName)
-    {
-        return isset($this->lcColumnToFieldNames[$lcColumnName]);
-    }
-    
-    /**
      * Validates & completes the given field mapping.
      *
      * @param array $mapping  The field mapping to validated & complete.
@@ -767,11 +735,9 @@ final class ClassMetadata
         if ( ! isset($mapping['columnName'])) {
             $mapping['columnName'] = $mapping['fieldName'];
         }
-        $lcColumnName = strtolower($mapping['columnName']);
 
         $this->columnNames[$mapping['fieldName']] = $mapping['columnName'];
         $this->fieldNames[$mapping['columnName']] = $mapping['fieldName'];
-        $this->lcColumnToFieldNames[$lcColumnName] = $mapping['fieldName'];
         
         // Complete id mapping
         if (isset($mapping['id']) && $mapping['id'] === true) {
