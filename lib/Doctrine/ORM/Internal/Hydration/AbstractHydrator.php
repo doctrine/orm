@@ -21,9 +21,9 @@
 
 namespace Doctrine\ORM\Internal\Hydration;
 
+use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\Common\DoctrineException;
-use \PDO;
 
 /**
  * Base class for all hydrators. A hydrator is a class that provides some form
@@ -104,7 +104,7 @@ abstract class AbstractHydrator
      */
     public function hydrateRow()
     {
-        $row = $this->_stmt->fetch(PDO::FETCH_ASSOC);
+        $row = $this->_stmt->fetch(Connection::FETCH_ASSOC);
         if ( ! $row) {
             $this->_cleanup();
             return false;

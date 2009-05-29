@@ -21,6 +21,7 @@
 
 namespace Doctrine\ORM\Persisters;
 
+use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\UnitOfWork;
@@ -339,7 +340,7 @@ class StandardEntityPersister
         $stmt = $this->_conn->prepare($this->_getSelectSingleEntitySql($criteria));
         $stmt->execute(array_values($criteria));
         $data = array();
-        foreach ($stmt->fetch(\PDO::FETCH_ASSOC) as $column => $value) {
+        foreach ($stmt->fetch(Connection::FETCH_ASSOC) as $column => $value) {
             $fieldName = $this->_class->fieldNames[$column];
             $data[$fieldName] = Type::getType($this->_class->getTypeOfField($fieldName))
             ->convertToPHPValue($value);

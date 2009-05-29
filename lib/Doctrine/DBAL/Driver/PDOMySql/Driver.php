@@ -21,6 +21,8 @@
 
 namespace Doctrine\DBAL\Driver\PDOMySql;
 
+use Doctrine\DBAL\Connection;
+
 /**
  * PDO MySql driver.
  *
@@ -45,7 +47,7 @@ class Driver implements \Doctrine\DBAL\Driver
             $password,
             $driverOptions
         );
-        $conn->setAttribute(\PDO::ATTR_AUTOCOMMIT, false);
+        $conn->setAttribute(Connection::ATTR_AUTOCOMMIT, false);
         return $conn;
     }
 

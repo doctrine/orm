@@ -21,7 +21,7 @@
 
 namespace Doctrine\ORM\Internal\Hydration;
 
-use \PDO;
+use Doctrine\DBAL\Connection;
 
 /**
  * Description of ArrayHydrator
@@ -57,7 +57,7 @@ class ArrayHydrator extends AbstractHydrator
     {
         $result = array();
         $cache = array();
-        while ($data = $this->_stmt->fetch(PDO::FETCH_ASSOC)) {
+        while ($data = $this->_stmt->fetch(Connection::FETCH_ASSOC)) {
             $this->_hydrateRow($data, $cache, $result);
         }
 

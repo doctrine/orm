@@ -21,7 +21,7 @@
 
 namespace Doctrine\ORM\Internal\Hydration;
 
-use \PDO;
+use Doctrine\DBAL\Connection;
 
 /**
  * Hydrator that produces flat, rectangular results of scalar data.
@@ -38,7 +38,7 @@ class ScalarHydrator extends AbstractHydrator
     {
         $result = array();
         $cache = array();
-        while ($data = $this->_stmt->fetch(PDO::FETCH_ASSOC)) {
+        while ($data = $this->_stmt->fetch(Connection::FETCH_ASSOC)) {
             $result[] = $this->_gatherScalarRowData($data, $cache);
         }
         return $result;

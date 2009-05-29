@@ -21,7 +21,7 @@
 
 namespace Doctrine\ORM\Internal\Hydration;
 
-use \PDO;
+use Doctrine\DBAL\Connection;
 use Doctrine\ORM\PersistentCollection;
 use Doctrine\Common\Collections\Collection;
 
@@ -116,7 +116,7 @@ class ObjectHydrator extends AbstractHydrator
         $result = $this->_rsm->isMixed ? array() : new Collection;
 
         $cache = array();
-        while ($data = $this->_stmt->fetch(PDO::FETCH_ASSOC)) {
+        while ($data = $this->_stmt->fetch(Connection::FETCH_ASSOC)) {
             $this->_hydrateRow($data, $cache, $result);
         }
 

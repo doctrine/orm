@@ -21,7 +21,7 @@
 
 namespace Doctrine\ORM\Internal\Hydration;
 
-use \PDO;
+use Doctrine\DBAL\Connection;
 
 /**
  * Description of SingleScalarHydrator
@@ -34,7 +34,7 @@ class SingleScalarHydrator extends AbstractHydrator
     protected function _hydrateAll()
     {
         $cache = array();
-        $result = $this->_stmt->fetchAll(PDO::FETCH_ASSOC);
+        $result = $this->_stmt->fetchAll(Connection::FETCH_ASSOC);
         //TODO: Let this exception be raised by Query as QueryException
         if (count($result) > 1 || count($result[0]) > 1) {
             throw HydrationException::nonUniqueResult();

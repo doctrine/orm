@@ -73,6 +73,15 @@ class Connection
     const TRANSACTION_SERIALIZABLE = 4;
 
     /**
+     * Derived PDO constants
+     */
+    const FETCH_ASSOC       = 2;
+    const FETCH_BOTH        = 4;
+    const FETCH_COLUMN      = 7;
+    const FETCH_NUM         = 3;
+    const ATTR_AUTOCOMMIT   = 0;
+
+    /**
      * The wrapped driver connection.
      *
      * @var Doctrine\DBAL\Driver\Connection
@@ -280,7 +289,7 @@ class Connection
      */
     public function fetchRow($statement, array $params = array())
     {
-        return $this->execute($statement, $params)->fetch(\PDO::FETCH_ASSOC);
+        return $this->execute($statement, $params)->fetch(Connection::FETCH_ASSOC);
     }
 
     /**
@@ -292,7 +301,7 @@ class Connection
      */
     public function fetchArray($statement, array $params = array())
     {
-        return $this->execute($statement, $params)->fetch(\PDO::FETCH_NUM);
+        return $this->execute($statement, $params)->fetch(Connection::FETCH_NUM);
     }
 
     /**
@@ -305,7 +314,7 @@ class Connection
      */
     public function fetchColumn($statement, array $params = array(), $colnum = 0)
     {
-        return $this->execute($statement, $params)->fetchAll(\PDO::FETCH_COLUMN, $colnum);
+        return $this->execute($statement, $params)->fetchAll(Connection::FETCH_COLUMN, $colnum);
     }
 
     /**
@@ -327,7 +336,7 @@ class Connection
      */
     public function fetchBoth($statement, array $params = array())
     {
-        return $this->execute($statement, $params)->fetchAll(\PDO::FETCH_BOTH);
+        return $this->execute($statement, $params)->fetchAll(Connection::FETCH_BOTH);
     }
 
     /**
@@ -498,7 +507,7 @@ class Connection
      */
     public function fetchAll($sql, array $params = array())
     {
-        return $this->execute($sql, $params)->fetchAll(\PDO::FETCH_ASSOC);
+        return $this->execute($sql, $params)->fetchAll(Connection::FETCH_ASSOC);
     }
 
     /**
