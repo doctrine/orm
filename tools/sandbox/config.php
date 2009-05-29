@@ -1,9 +1,8 @@
 <?php
+
 require '../../lib/Doctrine/Common/ClassLoader.php';
 
 $classLoader = new \Doctrine\Common\ClassLoader();
-$classLoader->register();
-
 $classLoader->setBasePath('Doctrine', realpath(__DIR__ . '/../../lib'));
 $classLoader->setBasePath('Entities', __DIR__);
 
@@ -15,4 +14,4 @@ $connectionOptions = array(
     'driver' => 'pdo_sqlite',
     'path' => 'database.sqlite'
 );
-$em = \Doctrine\ORM\EntityManager::create($connectionOptions, 'doctrine', $config, $eventManager);
+$em = \Doctrine\ORM\EntityManager::create($connectionOptions, $config, $eventManager);
