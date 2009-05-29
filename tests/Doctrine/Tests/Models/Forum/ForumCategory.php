@@ -3,26 +3,26 @@
 namespace Doctrine\Tests\Models\Forum;
 
 /**
- * @DoctrineEntity
- * @DoctrineTable(name="forum_categories")
+ * @Entity
+ * @Table(name="forum_categories")
  */
 class ForumCategory
 {
     /**
-     * @DoctrineColumn(type="integer")
-     * @DoctrineId
+     * @Column(type="integer")
+     * @Id
      */
     private $id;
     /**
-     * @DoctrineColumn(type="integer")
+     * @Column(type="integer")
      */
     public $position;
     /**
-     * @DoctrineColumn(type="string", length=255)
+     * @Column(type="string", length=255)
      */
     public $name;
     /**
-     * @DoctrineOneToMany(targetEntity="ForumBoard", mappedBy="category")
+     * @OneToMany(targetEntity="ForumBoard", mappedBy="category")
      */
     public $boards;
 

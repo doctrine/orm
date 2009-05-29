@@ -35,7 +35,7 @@ require __DIR__ . '/DoctrineAnnotations.php';
  * The AnnotationDriver reads the mapping metadata from docblock annotations
  * with the help of the Addendum reflection extensions.
  *
- * @author robo
+ * @author Roman Borschel <roman@code-factory.org>
  * @since 2.0
  */
 class AnnotationDriver
@@ -48,27 +48,26 @@ class AnnotationDriver
         $annotClass = new \ReflectionAnnotatedClass($className);
 
         // Evaluate DoctrineEntity annotation
-        if (($entityAnnot = $annotClass->getAnnotation('DoctrineEntity')) === false) {
+        if (($entityAnnot = $annotClass->getAnnotation('Entity')) === false) {
             throw DoctrineException::updateMe("$className is no entity.");
         }
         $metadata->setCustomRepositoryClass($entityAnnot->repositoryClass);
 
         // Evaluate DoctrineTable annotation
-        if ($tableAnnot = $annotClass->getAnnotation('DoctrineTable')) {
+        if ($tableAnnot = $annotClass->getAnnotation('Table')) {
             $metadata->setPrimaryTable(array(
                 'name' => $tableAnnot->name,
-                'schema' => $tableAnnot->schema,
-                'catalog' => $tableAnnot->catalog
+                'schema' => $tableAnnot->schema
             ));
         }
 
         // Evaluate DoctrineInheritanceType annotation
-        if ($inheritanceTypeAnnot = $annotClass->getAnnotation('DoctrineInheritanceType')) {
+        if ($inheritanceTypeAnnot = $annotClass->getAnnotation('InheritanceType')) {
             $metadata->setInheritanceType($inheritanceTypeAnnot->value);
         }
 
         // Evaluate DoctrineDiscriminatorColumn annotation
-        if ($discrColumnAnnot = $annotClass->getAnnotation('DoctrineDiscriminatorColumn')) {
+        if ($discrColumnAnnot = $annotClass->getAnnotation('DiscriminatorColumn')) {
             $metadata->setDiscriminatorColumn(array(
                 'name' => $discrColumnAnnot->name,
                 'type' => $discrColumnAnnot->type,
@@ -77,17 +76,17 @@ class AnnotationDriver
         }
 
         // Evaluate DoctrineDiscriminatorMap annotation
-        if ($discrValueAnnot = $annotClass->getAnnotation('DoctrineDiscriminatorValue')) {
+        if ($discrValueAnnot = $annotClass->getAnnotation('DiscriminatorValue')) {
             $metadata->setDiscriminatorValue($discrValueAnnot->value);
         }
 
         // Evaluate DoctrineSubClasses annotation
-        if ($subClassesAnnot = $annotClass->getAnnotation('DoctrineSubClasses')) {
+        if ($subClassesAnnot = $annotClass->getAnnotation('SubClasses')) {
             $metadata->setSubclasses($subClassesAnnot->value);
         }
 
         // Evaluate DoctrineChangeTrackingPolicy annotation
-        if ($changeTrackingAnnot = $annotClass->getAnnotation('DoctrineChangeTrackingPolicy')) {
+        if ($changeTrackingAnnot = $annotClass->getAnnotation('ChangeTrackingPolicy')) {
             $metadata->setChangeTrackingPolicy($changeTrackingAnnot->value);
         }
 
@@ -102,7 +101,7 @@ class AnnotationDriver
 
             // Check for DoctrineJoinColummn/DoctrineJoinColumns annotations
             $joinColumns = array();
-            if ($joinColumnAnnot = $property->getAnnotation('DoctrineJoinColumn')) {
+            if ($joinColumnAnnot = $property->getAnnotation('JoinColumn')) {
                 $joinColumns[] = array(
                         'name' => $joinColumnAnnot->name,
                         'referencedColumnName' => $joinColumnAnnot->referencedColumnName,
@@ -111,61 +110,63 @@ class AnnotationDriver
                         'onDelete' => $joinColumnAnnot->onDelete,
                         'onUpdate' => $joinColumnAnnot->onUpdate
                 );
-            } else if ($joinColumnsAnnot = $property->getAnnotation('DoctrineJoinColumns')) {
+            } else if ($joinColumnsAnnot = $property->getAnnotation('JoinColumns')) {
                 $joinColumns = $joinColumnsAnnot->value;
             }
 
             // Field can only be annotated with one of: DoctrineColumn,
             // DoctrineOneToOne, DoctrineOneToMany, DoctrineManyToOne, DoctrineManyToMany
-            if ($columnAnnot = $property->getAnnotation('DoctrineColumn')) {
+            if ($columnAnnot = $property->getAnnotation('Column')) {
                 if ($columnAnnot->type == null) {
                     throw DoctrineException::updateMe("Missing type on property " . $property->getName());
                 }
                 $mapping['type'] = $columnAnnot->type;
                 $mapping['length'] = $columnAnnot->length;
                 $mapping['nullable'] = $columnAnnot->nullable;
-                if ($idAnnot = $property->getAnnotation('DoctrineId')) {
+                if (isset($columnAnnot->name)) {
+                    $mapping['columnName'] = $columnAnnot->name;
+                }
+                if ($idAnnot = $property->getAnnotation('Id')) {
                     $mapping['id'] = true;
                 }
-                if ($generatedValueAnnot = $property->getAnnotation('DoctrineGeneratedValue')) {
+                if ($generatedValueAnnot = $property->getAnnotation('GeneratedValue')) {
                     $metadata->setIdGeneratorType($generatedValueAnnot->strategy);
                 }
                 $metadata->mapField($mapping);
 
                 // Check for SequenceGenerator/TableGenerator definition
-                if ($seqGeneratorAnnot = $property->getAnnotation('DoctrineSequenceGenerator')) {
+                if ($seqGeneratorAnnot = $property->getAnnotation('SequenceGenerator')) {
                     $metadata->setSequenceGeneratorDefinition(array(
                         'sequenceName' => $seqGeneratorAnnot->sequenceName,
                         'allocationSize' => $seqGeneratorAnnot->allocationSize,
                         'initialValue' => $seqGeneratorAnnot->initialValue
                     ));
-                } else if ($tblGeneratorAnnot = $property->getAnnotation('DoctrineTableGenerator')) {
+                } else if ($tblGeneratorAnnot = $property->getAnnotation('TableGenerator')) {
                     throw new DoctrineException("DoctrineTableGenerator not yet implemented.");
                 }
                 
-            } else if ($oneToOneAnnot = $property->getAnnotation('DoctrineOneToOne')) {
+            } else if ($oneToOneAnnot = $property->getAnnotation('OneToOne')) {
                 $mapping['targetEntity'] = $oneToOneAnnot->targetEntity;
                 $mapping['joinColumns'] = $joinColumns;
                 $mapping['mappedBy'] = $oneToOneAnnot->mappedBy;
                 $mapping['cascade'] = $oneToOneAnnot->cascade;
                 $metadata->mapOneToOne($mapping);
-            } else if ($oneToManyAnnot = $property->getAnnotation('DoctrineOneToMany')) {
+            } else if ($oneToManyAnnot = $property->getAnnotation('OneToMany')) {
                 $mapping['mappedBy'] = $oneToManyAnnot->mappedBy;
                 $mapping['targetEntity'] = $oneToManyAnnot->targetEntity;
                 $mapping['cascade'] = $oneToManyAnnot->cascade;
                 $metadata->mapOneToMany($mapping);
-            } else if ($manyToOneAnnot = $property->getAnnotation('DoctrineManyToOne')) {
+            } else if ($manyToOneAnnot = $property->getAnnotation('ManyToOne')) {
                 $mapping['joinColumns'] = $joinColumns;
                 $mapping['cascade'] = $manyToOneAnnot->cascade;
                 $mapping['targetEntity'] = $manyToOneAnnot->targetEntity;
                 $metadata->mapManyToOne($mapping);
-            } else if ($manyToManyAnnot = $property->getAnnotation('DoctrineManyToMany')) {
+            } else if ($manyToManyAnnot = $property->getAnnotation('ManyToMany')) {
                 $joinTable = array();
-                if ($joinTableAnnot = $property->getAnnotation('DoctrineJoinTable')) {
+                if ($joinTableAnnot = $property->getAnnotation('JoinTable')) {
                     $joinTable = array(
                         'name' => $joinTableAnnot->name,
                         'schema' => $joinTableAnnot->schema,
-                        'catalog' => $joinTableAnnot->catalog,
                         'joinColumns' => $joinTableAnnot->joinColumns,
                         'inverseJoinColumns' => $joinTableAnnot->inverseJoinColumns
                     );
@@ -182,8 +183,8 @@ class AnnotationDriver
 
     /**
      * Whether the class with the specified name should have its metadata loaded.
-     * This is only the case if it is annotated with either @DoctrineEntity or
-     * @DoctrineMappedSuperclass in the class doc block.
+     * This is only the case if it is annotated with either @Entity or
+     * @MappedSuperclass in the class doc block.
      *
      * @param string $className
      * @return boolean
@@ -192,7 +193,7 @@ class AnnotationDriver
     {
         $refClass = new \ReflectionClass($className);
         $docComment = $refClass->getDocComment();
-        return strpos($docComment, '@DoctrineEntity') === false &&
-                strpos($docComment, '@DoctrineMappedSuperclass') === false;
+        return strpos($docComment, '@Entity') === false &&
+                strpos($docComment, '@MappedSuperclass') === false;
     }
 }

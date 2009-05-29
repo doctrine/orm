@@ -36,30 +36,10 @@ use Doctrine\DBAL\Types;
  */
 abstract class AbstractPlatform
 {
-    private $_quoteIdentifiers = false;
-
     /**
      * Constructor.
      */
     public function __construct() {}
-
-    /**
-     * Sets whether to quote identifiers.
-     */
-    public function setQuoteIdentifiers($bool)
-    {
-        $this->_quoteIdentifiers = $bool;
-    }
-
-    /**
-     * Gets whether the platform instance currently quotes identifiers in generated SQL.
-     *
-     * @return boolean TRUE
-     */
-    public function getQuoteIdentifiers()
-    {
-        return $this->_quoteIdentifiers;
-    }
 
     /**
      * Gets the character used for identifier quoting.
@@ -697,22 +677,12 @@ abstract class AbstractPlatform
      */
     public function quoteIdentifier($str)
     {
-        if ( ! $this->_quoteIdentifiers) {
+        if ($str[0] != '`') {
             return $str;
         }
-
-        // quick fix for the identifiers that contain a dot
-        if (strpos($str, '.')) {
-            $e = explode('.', $str);
-            return $this->quoteIdentifier($e[0])
-                    . '.'
-                    . $this->quoteIdentifier($e[1]);
-        }
-
         $c = $this->getIdentifierQuoteCharacter();
-        $str = str_replace($c, $c . $c, $str);
 
-        return $c . $str . $c;
+        return $c . trim($str, '`') . $c;
     }
 
     /**

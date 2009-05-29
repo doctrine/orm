@@ -18,12 +18,12 @@ class SequenceGeneratorTest extends \Doctrine\Tests\OrmFunctionalTestCase
 }
 
 /**
- * @DoctrineEntity
+ * @Entity
  */
 class SeqUser {
     /**
-     * @DoctrineId
-     * @DoctrineIdGenerator("sequence")
+     * @Id
+     * @IdGenerator("sequence")
      */
     private $id;
 

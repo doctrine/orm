@@ -27,7 +27,7 @@ class SingleTableInheritanceTest extends \Doctrine\Tests\OrmFunctionalTestCase
     }
 
     public function testCRUD()
-    {
+    {        
         $parent = new ParentEntity;
         $parent->setData('foobar');
 
@@ -98,22 +98,22 @@ class SingleTableInheritanceTest extends \Doctrine\Tests\OrmFunctionalTestCase
 }
 
 /**
- * @DoctrineEntity
- * @DoctrineInheritanceType("singleTable")
- * @DoctrineDiscriminatorColumn(name="discr", type="string")
- * @DoctrineSubClasses({"Doctrine\Tests\ORM\Functional\ChildEntity"})
- * @DoctrineDiscriminatorValue("parent")
+ * @Entity
+ * @InheritanceType("singleTable")
+ * @DiscriminatorColumn(name="discr", type="string")
+ * @SubClasses({"Doctrine\Tests\ORM\Functional\ChildEntity"})
+ * @DiscriminatorValue("parent")
  */
 class ParentEntity {
     /**
-     * @DoctrineId
-     * @DoctrineColumn(type="integer")
-     * @DoctrineGeneratedValue(strategy="auto")
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue(strategy="auto")
      */
     private $id;
 
     /**
-     * @DoctrineColumn(type="string")
+     * @Column(type="string")
      */
     private $data;
 
@@ -131,17 +131,17 @@ class ParentEntity {
 }
 
 /**
- * @DoctrineEntity
- * @DoctrineDiscriminatorValue("child")
+ * @Entity
+ * @DiscriminatorValue("child")
  */
 class ChildEntity extends ParentEntity {
     /**
-     * @DoctrineColumn(type="integer", nullable=true)
+     * @Column(name="`number`", type="integer", nullable=true)
      */
     private $number;
     /**
-     * @DoctrineOneToOne(targetEntity="RelatedEntity")
-     * @DoctrineJoinColumn(name="related_entity_id", referencedColumnName="id")
+     * @OneToOne(targetEntity="RelatedEntity")
+     * @JoinColumn(name="related_entity_id", referencedColumnName="id")
      */
     private $relatedEntity;
 
@@ -164,21 +164,21 @@ class ChildEntity extends ParentEntity {
 }
 
 /**
- * @DoctrineEntity
+ * @Entity
  */
 class RelatedEntity {
     /**
-     * @DoctrineId
-     * @DoctrineColumn(type="integer")
-     * @DoctrineGeneratedValue(strategy="auto")
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue(strategy="auto")
      */
     private $id;
     /**
-     * @DoctrineColumn(type="string", length=50)
+     * @Column(type="string", length=50)
      */
     private $name;
     /**
-     * @DoctrineOneToOne(targetEntity="ChildEntity", mappedBy="relatedEntity")
+     * @OneToOne(targetEntity="ChildEntity", mappedBy="relatedEntity")
      */
     private $owner;
 

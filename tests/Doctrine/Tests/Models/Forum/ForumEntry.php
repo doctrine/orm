@@ -3,19 +3,19 @@
 namespace Doctrine\Tests\Models\Forum;
 
 /**
- * @DoctrineEntity
- * @DoctrineTable(name="forum_entries")
+ * @Entity
+ * @Table(name="forum_entries")
  */
 class ForumEntry
 {
     /**
-     * @DoctrineId
-     * @DoctrineColumn(type="integer")
-     * @DoctrineGeneratedValue(strategy="auto")
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue(strategy="auto")
      */
     public $id;
     /**
-     * @DoctrineColumn(type="string", length=50)
+     * @Column(type="string", length=50)
      */
     public $topic;
 }

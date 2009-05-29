@@ -151,13 +151,6 @@ class Connection
     protected $_driver;
 
     /**
-     * Whether to quote identifiers. Read from the configuration upon construction.
-     *
-     * @var boolean
-     */
-    protected $_quoteIdentifiers = false;
-
-    /**
      * Initializes a new instance of the Connection class.
      *
      * @param array $params  The connection parameters.
@@ -188,8 +181,6 @@ class Connection
         $this->_eventManager = $eventManager;
         $this->_platform = $driver->getDatabasePlatform();
         $this->_transactionIsolationLevel = $this->_platform->getDefaultTransactionIsolationLevel();
-        $this->_quoteIdentifiers = $config->getQuoteIdentifiers();
-        $this->_platform->setQuoteIdentifiers($this->_quoteIdentifiers);
     }
 
     /**
@@ -482,10 +473,7 @@ class Connection
      */
     public function quoteIdentifier($str)
     {
-        if ($this->_quoteIdentifiers) {
-            return $this->_platform->quoteIdentifier($str);
-        }
-        return $str;
+        return $this->_platform->quoteIdentifier($str);
     }
 
     /**

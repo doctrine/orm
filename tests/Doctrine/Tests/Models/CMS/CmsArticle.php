@@ -3,32 +3,32 @@
 namespace Doctrine\Tests\Models\CMS;
 
 /**
- * @DoctrineEntity
- * @DoctrineTable(name="cms_articles")
+ * @Entity
+ * @Table(name="cms_articles")
  */
 class CmsArticle
 {
     /**
-     * @DoctrineId
-     * @DoctrineColumn(type="integer")
-     * @DoctrineGeneratedValue(strategy="auto")
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue(strategy="auto")
      */
     public $id;
     /**
-     * @DoctrineColumn(type="string", length=255)
+     * @Column(type="string", length=255)
      */
     public $topic;
     /**
-     * @DoctrineColumn(type="string")
+     * @Column(type="string")
      */
     public $text;
     /**
-     * @DoctrineManyToOne(targetEntity="CmsUser")
-     * @DoctrineJoinColumn(name="user_id", referencedColumnName="id")
+     * @ManyToOne(targetEntity="CmsUser")
+     * @JoinColumn(name="user_id", referencedColumnName="id")
      */
     public $user;
     /**
-     * @DoctrineOneToMany(targetEntity="CmsComment", mappedBy="article")
+     * @OneToMany(targetEntity="CmsComment", mappedBy="article")
      */
     public $comments;
 }

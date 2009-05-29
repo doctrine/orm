@@ -3,19 +3,19 @@
 namespace Doctrine\Tests\Models\CMS;
 
 /**
- * @DoctrineEntity
- * @DoctrineTable(name="cms_phonenumbers")
+ * @Entity
+ * @Table(name="cms_phonenumbers")
  */
 class CmsPhonenumber
 {
     /**
-     * @DoctrineColumn(type="string", length=50)
-     * @DoctrineId
+     * @Column(type="string", length=50)
+     * @Id
      */
     public $phonenumber;
     /**
-     * @DoctrineManyToOne(targetEntity="CmsUser")
-     * @DoctrineJoinColumn(name="user_id", referencedColumnName="id")
+     * @ManyToOne(targetEntity="CmsUser")
+     * @JoinColumn(name="user_id", referencedColumnName="id")
      */
     public $user;
 

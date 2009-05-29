@@ -3,12 +3,12 @@
 namespace Doctrine\Tests\Models\Forum;
 
 /**
- * @DoctrineEntity
+ * @Entity
  */
 class ForumAdministrator extends ForumUser
 {
     /**
-     * @DoctrineColumn(type="integer", name="access_level")
+     * @Column(type="integer", name="access_level")
      */
     public $accessLevel;
 }

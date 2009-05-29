@@ -3,20 +3,20 @@
 namespace Doctrine\Tests\Models\Company;
 
 /**
- * @DoctrineEntity
- * @DoctrineTable(name="company_employees")
- * @DoctrineDiscriminatorValue("employee")
- * @DoctrineSubClasses({"Doctrine\Tests\Models\Company\CompanyManager"})
+ * @Entity
+ * @Table(name="company_employees")
+ * @DiscriminatorValue("employee")
+ * @SubClasses({"Doctrine\Tests\Models\Company\CompanyManager"})
  */
 class CompanyEmployee extends CompanyPerson
 {
     /**
-     * @DoctrineColumn(type="integer")
+     * @Column(type="integer")
      */
     private $salary;
 
     /**
-     * @DoctrineColumn(type="string", length=255)
+     * @Column(type="string", length=255)
      */
     private $department;
 

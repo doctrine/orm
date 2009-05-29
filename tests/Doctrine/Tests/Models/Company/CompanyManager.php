@@ -3,14 +3,14 @@
 namespace Doctrine\Tests\Models\Company;
 
 /**
- * @DoctrineEntity
- * @DoctrineTable(name="company_managers")
- * @DoctrineDiscriminatorValue("manager")
+ * @Entity
+ * @Table(name="company_managers")
+ * @DiscriminatorValue("manager")
  */
 class CompanyManager extends CompanyEmployee
 {
     /**
-     * @DoctrineColumn(type="string", length="250")
+     * @Column(type="string", length="250")
      */
     private $title;
 

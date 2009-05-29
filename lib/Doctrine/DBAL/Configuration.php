@@ -47,7 +47,7 @@ class Configuration
     public function __construct()
     {
         $this->_attributes = array(
-            'quoteIdentifiers' => false,
+            //'quoteIdentifiers' => false,
             'sqlLogger' => null
         );
     }
@@ -71,7 +71,7 @@ class Configuration
     {
         return $this->_attributes['sqlLogger'];
     }
-
+/*
     public function getQuoteIdentifiers()
     {
         return $this->_attributes['quoteIdentifiers'];
@@ -81,7 +81,7 @@ class Configuration
     {
         $this->_attributes['quoteIdentifiers'] = (bool) $bool;
     }
-
+*/
     public function setCustomTypes(array $types)
     {
         foreach ($types as $name => $typeClassName) {

@@ -6,29 +6,29 @@ namespace Doctrine\Tests\Models\Company;
  * Description of CompanyPerson
  *
  * @author robo
- * @DoctrineEntity
- * @DoctrineTable(name="company_persons")
- * @DoctrineDiscriminatorValue("person")
- * @DoctrineInheritanceType("joined")
- * @DoctrineDiscriminatorColumn(name="discr", type="string")
- * @DoctrineSubClasses({"Doctrine\Tests\Models\Company\CompanyEmployee",
+ * @Entity
+ * @Table(name="company_persons")
+ * @DiscriminatorValue("person")
+ * @InheritanceType("joined")
+ * @DiscriminatorColumn(name="discr", type="string")
+ * @SubClasses({"Doctrine\Tests\Models\Company\CompanyEmployee",
         "Doctrine\Tests\Models\Company\CompanyManager"})
  */
 class CompanyPerson
 {
     /**
-     * @DoctrineId
-     * @DoctrineColumn(type="integer")
-     * @DoctrineGeneratedValue(strategy="auto")
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue(strategy="auto")
      */
     private $id;
     /**
-     * @DoctrineColumn(type="string")
+     * @Column(type="string")
      */
     private $name;
     /**
-     * @DoctrineOneToOne(targetEntity="CompanyPerson")
-     * @DoctrineJoinColumn(name="spouse_id", referencedColumnName="id")
+     * @OneToOne(targetEntity="CompanyPerson")
+     * @JoinColumn(name="spouse_id", referencedColumnName="id")
      */
     private $spouse;
 

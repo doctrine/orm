@@ -6,26 +6,26 @@ namespace Doctrine\Tests\Models\CMS;
  * Description of CmsEmployee
  *
  * @author robo
- * @DoctrineEntity
- * @DoctrineTable(name="cms_employees")
+ * @Entity
+ * @Table(name="cms_employees")
  */
 class CmsEmployee
 {
     /**
-     * @DoctrineId
-     * @DoctrineColumn(type="integer")
-     * @DoctrineGeneratedValue(strategy="auto")
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue(strategy="auto")
      */
     private $id;
 
     /**
-     * @DoctrineColumn(type="string")
+     * @Column(type="string")
      */
     private $name;
 
     /**
-     * @DoctrineOneToOne(targetEntity="CmsEmployee")
-     * @DoctrineJoinColumn(name="spouse_id", referencedColumnName="id")
+     * @OneToOne(targetEntity="CmsEmployee")
+     * @JoinColumn(name="spouse_id", referencedColumnName="id")
      */
     private $spouse;
 

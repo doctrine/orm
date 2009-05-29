@@ -26,6 +26,7 @@ use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\UnitOfWork;
 use Doctrine\ORM\PersistentCollection;
 use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Events;
 
 /**
  * Base class for all EntityPersisters.
@@ -67,6 +68,13 @@ class StandardEntityPersister
     protected $_em;
 
     /**
+     * The EventManager instance.
+     *
+     * @var Doctrine\Common\EventManager
+     */
+    protected $_evm;
+
+    /**
      * Queued inserts.
      *
      * @var array
@@ -81,6 +89,7 @@ class StandardEntityPersister
     public function __construct(EntityManager $em, ClassMetadata $class)
     {
         $this->_em = $em;
+        $this->_evm = $em->getEventManager();
         $this->_entityName = $class->name;
         $this->_conn = $em->getConnection();
         $this->_class = $class;
@@ -113,12 +122,19 @@ class StandardEntityPersister
 
         $stmt = $this->_conn->prepare($this->_class->insertSql);
         $primaryTableName = $this->_class->primaryTable['name'];
+
         $sqlLogger = $this->_conn->getConfiguration()->getSqlLogger();
+        $hasPreInsertListeners = $this->_evm->hasListeners(Events::preInsert);
+        $hasPostInsertListeners = $this->_evm->hasListeners(Events::postInsert);
 
         foreach ($this->_queuedInserts as $entity) {
             $insertData = array();
             $this->_prepareData($entity, $insertData, true);
-    
+
+            if ($hasPreInsertListeners) {
+                $this->_preInsert($entity);
+            }
+
             $paramIndex = 1;
             if ($sqlLogger) {
                 //TODO: Log type
@@ -138,6 +154,10 @@ class StandardEntityPersister
 
             if ($isPostInsertId) {
                 $postInsertIds[$idGen->generate($this->_em, $entity)] = $entity;
+            }
+
+            if ($hasPostInsertListeners) {
+                $this->_postInsert($entity);
             }
         }
 
@@ -159,7 +179,16 @@ class StandardEntityPersister
         $id = array_combine($this->_class->getIdentifierFieldNames(),
         $this->_em->getUnitOfWork()->getEntityIdentifier($entity));
         $tableName = $this->_class->primaryTable['name'];
+        
+        if ($this->_evm->hasListeners(Events::preUpdate)) {
+            $this->_preUpdate($entity);
+        }
+        
         $this->_conn->update($tableName, $updateData[$tableName], $id);
+        
+        if ($this->_evm->hasListeners(Events::postUpdate)) {
+            $this->_postUpdate($entity);
+        }
     }
 
     /**
@@ -282,8 +311,7 @@ class StandardEntityPersister
                 $result[$this->getOwningTable($field)][$columnName] = null;
             } else {
                 $result[$this->getOwningTable($field)][$columnName] = Type::getType(
-                $this->_class->fieldMappings[$field]['type'])
-                ->convertToDatabaseValue($newVal, $platform);
+                        $this->_class->fieldMappings[$field]['type'])->convertToDatabaseValue($newVal, $platform);
             }
         }
     }
@@ -381,5 +409,51 @@ class StandardEntityPersister
 
         return 'SELECT ' . $columnList . ' FROM ' . $this->_class->getTableName()
         . ' WHERE ' . $conditionSql;
+    }
+    
+    /**
+     * Dispatches the preInsert event for the given entity.
+     *
+     * @param object $entity
+     */
+    final protected function _preInsert($entity)
+    {
+        $eventArgs = new \Doctrine\ORM\Event\PreInsertEventArgs(
+            $entity, $this->_em->getUnitOfWork()->getEntityChangeSet($entity)
+        );
+        $this->_evm->dispatchEvent(Events::preInsert, $eventArgs);
+    }
+    
+    /**
+     * Dispatches the postInsert event for the given entity.
+     *
+     * @param object $entity
+     */
+    final protected function _postInsert($entity)
+    {
+        $this->_evm->dispatchEvent(Events::postInsert);
+    }
+    
+    /**
+     * Dispatches the preUpdate event for the given entity.
+     *
+     * @param object $entity
+     */
+    final protected function _preUpdate($entity)
+    {
+        $eventArgs = new \Doctrine\ORM\Event\PreUpdateEventArgs(
+            $entity, $this->_em->getUnitOfWork()->getEntityChangeSet($entity)
+        );
+        $this->_evm->dispatchEvent(Events::preUpdate, $eventArgs);
+    }
+    
+    /**
+     * Dispatches the postUpdate event for the given entity.
+     *
+     * @param object $entity
+     */
+    final protected function _postUpdate($entity)
+    {
+        $this->_evm->dispatchEvent(Events::postUpdate);
     }
 }

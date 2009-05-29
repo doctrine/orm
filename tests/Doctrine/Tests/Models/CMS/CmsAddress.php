@@ -6,36 +6,36 @@ namespace Doctrine\Tests\Models\CMS;
  * CmsAddress
  *
  * @author Roman S. Borschel
- * @DoctrineEntity
- * @DoctrineTable(name="cms_addresses")
+ * @Entity
+ * @Table(name="cms_addresses")
  */
 class CmsAddress
 {
     /**
-     * @DoctrineColumn(type="integer")
-     * @DoctrineId
-     * @DoctrineGeneratedValue(strategy="auto")
+     * @Column(type="integer")
+     * @Id
+     * @GeneratedValue(strategy="auto")
      */
     public $id;
 
     /**
-     * @DoctrineColumn(type="string", length=50)
+     * @Column(type="string", length=50)
      */
     public $country;
 
     /**
-     * @DoctrineColumn(type="string", length=50)
+     * @Column(type="string", length=50)
      */
     public $zip;
 
     /**
-     * @DoctrineColumn(type="string", length=50)
+     * @Column(type="string", length=50)
      */
     public $city;
 
     /**
-     * @DoctrineOneToOne(targetEntity="CmsUser")
-     * @DoctrineJoinColumn(name="user_id", referencedColumnName="id")
+     * @OneToOne(targetEntity="CmsUser")
+     * @JoinColumn(name="user_id", referencedColumnName="id")
      */
     public $user;
 

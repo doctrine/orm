@@ -185,19 +185,19 @@ class UnitOfWorkTest extends \Doctrine\Tests\OrmTestCase
 }
 
 /**
- * @DoctrineEntity
+ * @Entity
  */
 class NotifyChangedEntity implements \Doctrine\Common\NotifyPropertyChanged
 {
     private $_listeners = array();
     /**
-     * @DoctrineId
-     * @DoctrineColumn(type="integer")
-     * @DoctrineGeneratedValue(strategy="auto")
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue(strategy="auto")
      */
     private $id;
     /**
-     * @DoctrineColumn(type="string")
+     * @Column(type="string")
      */
     private $data;
 

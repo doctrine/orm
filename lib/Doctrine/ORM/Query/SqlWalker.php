@@ -42,6 +42,7 @@ class SqlWalker
     private $_scalarResultCounter = 0;
     private $_parserResult;
     private $_em;
+    private $_conn;
     private $_query;
     private $_dqlToSqlAliasMap = array();
     /** Map of all components/classes that appear in the DQL query. */
@@ -67,6 +68,7 @@ class SqlWalker
         $this->_resultSetMapping = $parserResult->getResultSetMapping();
         $this->_query = $query;
         $this->_em = $query->getEntityManager();
+        $this->_conn = $this->_em->getConnection();
         $this->_parserResult = $parserResult;
         $this->_queryComponents = $queryComponents;
     }
@@ -405,7 +407,7 @@ class SqlWalker
                     if ($beginning) $beginning = false; else $sql .= ', ';
                     $sqlTableAlias = $this->getSqlTableAlias($tableName . $dqlAlias);
                     $columnAlias = $this->getSqlColumnAlias($mapping['columnName']);
-                    $sql .= $sqlTableAlias . '.' . $mapping['columnName'] . ' AS ' . $columnAlias;
+                    $sql .= $sqlTableAlias . '.' . $this->_conn->quoteIdentifier($mapping['columnName']) . ' AS ' . $columnAlias;
                     $this->_resultSetMapping->addFieldResult($dqlAlias, $columnAlias, $fieldName);
                 }
 
@@ -419,7 +421,7 @@ class SqlWalker
                         if ($beginning) $beginning = false; else $sql .= ', ';
                         $sqlTableAlias = $this->getSqlTableAlias($subClass->primaryTable['name'] . $dqlAlias);
                         $columnAlias = $this->getSqlColumnAlias($mapping['columnName']);
-                        $sql .= $sqlTableAlias . '.' . $mapping['columnName'] . ' AS ' . $columnAlias;
+                        $sql .= $sqlTableAlias . '.' . $this->_conn->quoteIdentifier($mapping['columnName']) . ' AS ' . $columnAlias;
                         $this->_resultSetMapping->addFieldResult($dqlAlias, $columnAlias, $fieldName);
                     }
                 }
@@ -435,7 +437,7 @@ class SqlWalker
                 foreach ($fieldMappings as $fieldName => $mapping) {
                     if ($beginning) $beginning = false; else $sql .= ', ';
                     $columnAlias = $this->getSqlColumnAlias($mapping['columnName']);
-                    $sql .= $sqlTableAlias . '.' . $mapping['columnName'] . ' AS ' . $columnAlias;
+                    $sql .= $sqlTableAlias . '.' . $this->_conn->quoteIdentifier($mapping['columnName']) . ' AS ' . $columnAlias;
                     $this->_resultSetMapping->addFieldResult($dqlAlias, $columnAlias, $fieldName);
                 }
             }
@@ -1100,7 +1102,7 @@ class SqlWalker
 
     public function getSqlColumnAlias($columnName)
     {
-        return $columnName . $this->_aliasCounter++;
+        return trim($columnName, '`') . $this->_aliasCounter++;
     }
 
     /**

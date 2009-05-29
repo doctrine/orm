@@ -3,44 +3,43 @@
 namespace Doctrine\Tests\Models\CMS;
 
 /**
- * @DoctrineEntity
- * @DoctrineTable(name="cms_users")
+ * @Entity
+ * @Table(name="cms_users")
  */
 class CmsUser
 {
     /**
-     * @DoctrineId
-     * @DoctrineColumn(type="integer")
-     * @DoctrineGeneratedValue(strategy="auto")
+     * @Id @Column(type="integer")
+     * @GeneratedValue(strategy="auto")
      */
     public $id;
     /**
-     * @DoctrineColumn(type="string", length=50)
+     * @Column(type="string", length=50)
      */
     public $status;
     /**
-     * @DoctrineColumn(type="string", length=255)
+     * @Column(type="string", length=255)
      */
     public $username;
     /**
-     * @DoctrineColumn(type="string", length=255)
+     * @Column(type="string", length=255)
      */
     public $name;
     /**
-     * @DoctrineOneToMany(targetEntity="CmsPhonenumber", mappedBy="user", cascade={"save", "delete"})
+     * @OneToMany(targetEntity="CmsPhonenumber", mappedBy="user", cascade={"save", "delete"})
      */
     public $phonenumbers;
     /**
-     * @DoctrineOneToMany(targetEntity="CmsArticle", mappedBy="user")
+     * @OneToMany(targetEntity="CmsArticle", mappedBy="user")
      */
     public $articles;
     /**
-     * @DoctrineOneToOne(targetEntity="CmsAddress", mappedBy="user", cascade={"save"})
+     * @OneToOne(targetEntity="CmsAddress", mappedBy="user", cascade={"save"})
      */
     public $address;
     /**
-     * @DoctrineManyToMany(targetEntity="CmsGroup", cascade={"save"})
-     * @DoctrineJoinTable(name="cms_users_groups",
+     * @ManyToMany(targetEntity="CmsGroup", cascade={"save"})
+     * @JoinTable(name="cms_users_groups",
             joinColumns={{"name"="user_id", "referencedColumnName"="id"}},
             inverseJoinColumns={{"name"="group_id", "referencedColumnName"="id"}})
      */

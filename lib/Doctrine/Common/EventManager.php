@@ -98,6 +98,21 @@ class EventManager
     }
     
     /**
+     * Removes an event listener from the specified events.
+     *
+     * @param string|array $events
+     * @param object $listener
+     */
+    public function removeEventListener($events, $listener)
+    {
+        foreach ((array)$events as $event) {
+            if ($key = array_search($listener, $this->_listeners[$event], true)) {
+                unset($this->_listeners[$event][$key]);
+            }
+        }
+    }
+    
+    /**
      * Adds an EventSubscriber. The subscriber is asked for all the events he is
      * interested in and added as a listener for these events.
      * 

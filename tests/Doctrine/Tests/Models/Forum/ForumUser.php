@@ -3,24 +3,24 @@
 namespace Doctrine\Tests\Models\Forum;
 
 /**
- * @DoctrineEntity
- * @DoctrineTable(name="forum_users")
+ * @Entity
+ * @Table(name="forum_users")
  */
 class ForumUser
 {
     /**
-     * @DoctrineColumn(type="integer")
-     * @DoctrineId
-     * @DoctrineGeneratedValue(strategy="auto")
+     * @Column(type="integer")
+     * @Id
+     * @GeneratedValue(strategy="auto")
      */
     public $id;
     /**
-     * @DoctrineColumn(type="string", length=50)
+     * @Column(type="string", length=50)
      */
     public $username;
     /**
-     * @DoctrineOneToOne(targetEntity="ForumAvatar", cascade={"save"})
-     * @DoctrineJoinColumn(name="avatar_id", referencedColumnName="id")
+     * @OneToOne(targetEntity="ForumAvatar", cascade={"save"})
+     * @JoinColumn(name="avatar_id", referencedColumnName="id")
      */
     public $avatar;
     
