@@ -879,6 +879,7 @@ abstract class AbstractSchemaManager
         try {
             return call_user_func_array(array($this, $method), $args);
         } catch (\Exception $e) {
+            //var_dump($e->getMessage());
             return false;
         }
     }

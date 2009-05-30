@@ -189,12 +189,8 @@ class OracleSchemaManager extends AbstractSchemaManager
         $query  = 'CREATE USER ' . $username . ' IDENTIFIED BY ' . $password;
         $result = $this->_conn->exec($query);
 
-        try {
-            $query = 'GRANT CREATE SESSION, CREATE TABLE, UNLIMITED TABLESPACE, CREATE SEQUENCE, CREATE TRIGGER TO ' . $username;
-            $result = $this->_conn->exec($query);
-        } catch (Exception $e) {
-            $this->dropDatabase($database);
-        }
+        $query = 'GRANT CREATE SESSION, CREATE TABLE, UNLIMITED TABLESPACE, CREATE SEQUENCE, CREATE TRIGGER TO ' . $username;
+        $result = $this->_conn->exec($query);
 
         return true;
     }

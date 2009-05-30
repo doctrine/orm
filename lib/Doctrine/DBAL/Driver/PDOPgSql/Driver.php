@@ -11,6 +11,11 @@ use Doctrine\DBAL\Platforms;
  */
 class Driver implements \Doctrine\DBAL\Driver
 {
+    /**
+     * Attempts to connect to the database and returns a driver connection on success.
+     *
+     * @return Doctrine\DBAL\Driver\Connection
+     */
     public function connect(array $params, $username = null, $password = null, array $driverOptions = array())
     {
         return new \Doctrine\DBAL\Driver\PDOConnection(
@@ -24,7 +29,7 @@ class Driver implements \Doctrine\DBAL\Driver
     /**
      * Constructs the Postgres PDO DSN.
      *
-     * @return string  The DSN.
+     * @return string The DSN.
      */
     private function _constructPdoDsn(array $params)
     {

@@ -16,7 +16,7 @@
  *
  * This software consists of voluntary contributions made by many individuals
  * and is licensed under the LGPL. For more information, see
- * <http://www.phpdoctrine.org>.
+ * <http://www.doctrine-project.org>.
  */
 
 namespace Doctrine\DBAL\Schema;
@@ -263,5 +263,27 @@ class PostgreSqlSchemaManager extends AbstractSchemaManager
         );
 
         return array_merge($decl, $description);
+    }
+    
+    /**
+     * Drops a database.
+     * If no database name is given, then the database this SchemaManager is
+     * currently connected to is dropped. In order to do this, the connection is
+     * closed and reopened on the "template1" database.
+     *
+     * @param  string $database The name of the database to drop.
+     * @return boolean $result
+     */
+    public function dropDatabase($database = null)
+    {
+        if (is_null($database)) {
+            $database = $this->_conn->getDatabase();
+        }
+        $sql = $this->_platform->getDropDatabaseSql($database);
+        
+        //$this->_conn->close();
+        
+
+        return $this->_executeSql($sql, 'execute');
     }
 }

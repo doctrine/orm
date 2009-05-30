@@ -115,7 +115,7 @@ class Connection
      * @var integer
      */
     protected $_transactionNestingLevel = 0;
-    
+
     /**
      * The currently active transaction isolation level.
      *
@@ -193,7 +193,7 @@ class Connection
     }
 
     /**
-     * Get the array of parameters used to instantiated this connection instance
+     * Gets the parameters used during instantiation.
      *
      * @return array $params
      */
@@ -203,7 +203,7 @@ class Connection
     }
 
     /**
-     * Get the name of the database connected to for this Connection instance
+     * Gets the name of the database this Connection is connected to.
      *
      * @return string $database
      */
@@ -262,18 +262,12 @@ class Connection
         if ($this->_isConnected) return false;
 
         $driverOptions = isset($this->_params['driverOptions']) ?
-        $this->_params['driverOptions'] : array();
-        $user = isset($this->_params['user']) ?
-        $this->_params['user'] : null;
+                $this->_params['driverOptions'] : array();
+        $user = isset($this->_params['user']) ? $this->_params['user'] : null;
         $password = isset($this->_params['password']) ?
-        $this->_params['password'] : null;
+                $this->_params['password'] : null;
 
-        $this->_conn = $this->_driver->connect(
-        $this->_params,
-        $user,
-        $password,
-        $driverOptions
-        );
+        $this->_conn = $this->_driver->connect($this->_params, $user, $password, $driverOptions);
 
         $this->_isConnected = true;
 

@@ -107,11 +107,11 @@ class OrmFunctionalTestCase extends OrmTestCase
             }
         }
         if ($classes) {
-            try {
+            //try {
                 $this->_schemaTool->createSchema($classes);
-            } catch (\Exception $e) {
+            //} catch (\Exception $e) {
                 // Swallow all exceptions. We do not test the schema tool here.
-            }
+            //}
         }
     }
 
