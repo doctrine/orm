@@ -14,6 +14,9 @@ class OrmFunctionalTestCase extends OrmTestCase
     /* The query cache shared between all functional tests. */
     private static $_queryCacheImpl = null;
 
+    /* Shared connection when a TestCase is run alone (outside of it's functional suite) */
+    private static $_sharedConn;
+    
     /** The EntityManager for this testcase. */
     protected $_em;
 
@@ -79,8 +82,12 @@ class OrmFunctionalTestCase extends OrmTestCase
     protected function setUp()
     {
         $forceCreateTables = false;
+        
         if ( ! isset($this->sharedFixture['conn'])) {
-            $this->sharedFixture['conn'] = TestUtil::getConnection();
+            if ( ! isset(self::$_sharedConn)) {
+                self::$_sharedConn = TestUtil::getConnection();
+            }
+            $this->sharedFixture['conn'] = self::$_sharedConn;
             if ($this->sharedFixture['conn']->getDriver() instanceof \Doctrine\DBAL\Driver\PDOSqlite\Driver) {
                 $forceCreateTables = true;
             }
