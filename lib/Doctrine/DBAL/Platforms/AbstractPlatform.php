@@ -513,9 +513,9 @@ abstract class AbstractPlatform
         return 'DROP TABLE ' . $table;
     }
 
-    public function getDropIndexSql($index, $name)
+    public function getDropIndexSql($table, $name)
     {
-        return 'DROP INDEX ' . $index;
+        return 'DROP INDEX ' . $name;
     }
 
     public function getDropConstraintSql($table, $name, $primary = false)

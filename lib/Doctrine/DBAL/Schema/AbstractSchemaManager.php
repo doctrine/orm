@@ -64,6 +64,34 @@ abstract class AbstractSchemaManager
     }
 
     /**
+     * Try any method on the schema manager. Normally a method throws an 
+     * exception when your DBMS doesn't support it or if an error occurs.
+     * This method allows you to try and method on your SchemaManager
+     * instance and will return false if it does not work or is not supported.
+     *
+     * <code>
+     * $result = $sm->tryMethod('dropView', 'view_name');
+     * </code>
+     *
+     * @return mixed
+     */
+    public function tryMethod()
+    {
+        $args = func_get_args();
+        $method = $args[0];
+        unset($args[0]);
+        $args = array_values($args);
+
+        try {
+            return call_user_func_array(array($this, $method), $args);
+        } catch (\Exception $e) {
+            return false;
+        }
+    }
+
+    /* list*() Methods */
+
+    /**
      * List the available databases for this connection
      *
      * @return array $databases
@@ -226,6 +254,8 @@ abstract class AbstractSchemaManager
         return $this->_getPortableTableForeignKeysList($tableForeignKeys);
     }
 
+    /* drop*() Methods */
+
     /**
      * Drops a database.
      * 
@@ -235,7 +265,7 @@ abstract class AbstractSchemaManager
      */
     public function dropDatabase($database)
     {
-        $this->_conn->exec($this->_platform->getDropDatabaseSql($database));
+        $this->_execSql($this->_platform->getDropDatabaseSql($database));
     }
 
     /**
@@ -256,9 +286,6 @@ abstract class AbstractSchemaManager
      */
     public function dropIndex($table, $name)
     {
-        //FIXME: Something is wrong here. The signature of getDropIndexSql is:
-        // public function getDropIndexSql($index, $name)
-        // $table == $index ???
         $this->_execSql($this->_platform->getDropIndexSql($table, $name));
     }
 
@@ -298,6 +325,19 @@ abstract class AbstractSchemaManager
     }
 
     /**
+     * Drop a view
+     *
+     * @param string $name The name of the view
+     * @return boolean $result
+     */
+    public function dropView($name)
+    {
+        return $this->_execSql($this->_platform->getDropViewSql($name));
+    }
+
+    /* create*() Methods */
+
+    /**
      * Creates a new database.
      *
      * @param string $database The name of the database to create.
@@ -311,7 +351,7 @@ abstract class AbstractSchemaManager
      * Create a new table.
      *
      * @param string $name Name of the database that should be created
-     * @param array $fields Associative array that contains the definition of each field of the new table
+     * @param array $columns Associative array that contains the definition of each field of the new table
      * @param array $options An associative array of table options.
      */
     public function createTable($name, array $columns, array $options = array())
@@ -336,12 +376,7 @@ abstract class AbstractSchemaManager
      *
      * @param string    $seqName        name of the sequence to be created
      * @param string    $start          start value of the sequence; default is 1
-     * @param array     $options  An associative array of table options:
-     *                          array(
-     *                              'comment' => 'Foo',
-     *                              'charset' => 'utf8',
-     *                              'collate' => 'utf8_unicode_ci',
-     *                          );
+     * @param array     $allocationSize The size to allocate for sequence
      * @throws Doctrine\DBAL\ConnectionException     if something fails at database level
      */
     public function createSequence($seqName, $start = 1, $allocationSize = 1)
@@ -410,7 +445,7 @@ abstract class AbstractSchemaManager
     }
 
     /**
-     * createForeignKey
+     * Create a new foreign key
      *
      * @param string    $table         name of the table on which the foreign key is to be created
      * @param array     $definition    associative array that defines properties of the foreign key to be created.
@@ -431,16 +466,136 @@ abstract class AbstractSchemaManager
         return $this->_execSql($this->_platform->getCreateViewSql($name, $sql));
     }
 
+    /* dropAndCreate*() Methods */
+
     /**
-     * Drop a view
+     * Drop and create a constraint
+     *
+     * @param string    $table         name of the table on which the constraint is to be created
+     * @param string    $name          name of the constraint to be created
+     * @param array     $definition    associative array that defines properties of the constraint to be created.
+     *                                 Currently, only one property named FIELDS is supported. This property
+     *                                 is also an associative with the names of the constraint fields as array
+     *                                 constraints. Each entry of this array is set to another type of associative
+     *                                 array that specifies properties of the constraint that are specific to
+     *                                 each field.
+     *
+     *                                 Example
+     *                                    array(
+     *                                        'fields' => array(
+     *                                            'user_name' => array(),
+     *                                            'last_login' => array()
+     *                                        )
+     *                                    )
+     * @param boolean $primary Whether or not it is a primary constraint
+     * @see dropConstraint()
+     * @see createConstraint()
+     */
+    public function dropAndCreateConstraint($table, $name, $definition, $primary = false)
+    {
+        $this->tryMethod('dropConstraint', $table, $name, $primary);
+        $this->createConstraint($table, $name, $definition);
+    }
+
+    /**
+     * Drop and create a new index on a table
+     *
+     * @param string    $table         name of the table on which the index is to be created
+     * @param string    $name          name of the index to be created
+     * @param array     $definition    associative array that defines properties of the index to be created.
+     *                                 Currently, only one property named FIELDS is supported. This property
+     *                                 is also an associative with the names of the index fields as array
+     *                                 indexes. Each entry of this array is set to another type of associative
+     *                                 array that specifies properties of the index that are specific to
+     *                                 each field.
+     *
+     *                                 Currently, only the sorting property is supported. It should be used
+     *                                 to define the sorting direction of the index. It may be set to either
+     *                                 ascending or descending.
+     *
+     *                                 Not all DBMS support index sorting direction configuration. The DBMS
+     *                                 drivers of those that do not support it ignore this property. Use the
+     *                                 function supports() to determine whether the DBMS driver can manage indexes.
+     *
+     *                                 Example
+     *                                    array(
+     *                                        'fields' => array(
+     *                                            'user_name' => array(
+     *                                                'sorting' => 'ascending'
+     *                                            ),
+     *                                            'last_login' => array()
+     *                                        )
+     *                                    )
+     */
+    public function dropAndCreateIndex($table, $name, array $definition)
+    {
+        $this->tryMethod('dropIndex', $table, $name);
+        $this->createIndex($table, $name, $definition);
+    }
+
+    /**
+     * Drop and create a new foreign key
+     *
+     * @param string    $table         name of the table on which the foreign key is to be created
+     * @param array     $definition    associative array that defines properties of the foreign key to be created.
+     */
+    public function dropAndCreateForeignKey($table, $definition)
+    {
+        $this->tryMethod('dropForeignKey', $table, $definition['name']);
+        $this->createForeignKey($table, $definition);
+    }
+
+    /**
+     * Drop and create a new sequence
+     *
+     * @param string    $seqName        name of the sequence to be created
+     * @param string    $start          start value of the sequence; default is 1
+     * @param array     $allocationSize The size to allocate for sequence
+     * @throws Doctrine\DBAL\ConnectionException     if something fails at database level
+     */
+    public function dropAndCreateSequence($seqName, $start = 1, $allocationSize = 1)
+    {
+        $this->tryMethod('createSequence', $seqName, $start, $allocationSize);
+        $this->createSequence($seqName, $start, $allocationSize);
+    }
+
+    /**
+     * Drop and create a new table.
+     *
+     * @param string $name Name of the database that should be created
+     * @param array $columns Associative array that contains the definition of each field of the new table
+     * @param array $options An associative array of table options.
+     */
+    public function dropAndCreateTable($name, array $columns, array $options = array())
+    {
+        $this->tryMethod('dropTable', $name);
+        $this->createTable($name, $columns, $options);
+    }
+
+    /**
+     * Drop and creates a new database.
+     *
+     * @param string $database The name of the database to create.
+     */
+    public function dropAndCreateDatabase($database)
+    {
+        $this->tryMethod('dropDatabase', $database);
+        $this->createDatabase($database);
+    }
+
+    /**
+     * Drop and create a new view
      *
      * @param string $name The name of the view
-     * @return boolean $result
+     * @param string $sql  The sql to set to the view
      */
-    public function dropView($name)
+    public function dropAndCreateView($name, $sql)
     {
-        return $this->_execSql($this->_platform->getDropViewSql($name));
+        $this->tryMethod('dropView', $name);
+        $this->createView($name, $sql);
     }
+
+    /* alterTable() Methods */
 
     /**
      * Alter an existing tables schema
@@ -623,6 +778,11 @@ abstract class AbstractSchemaManager
         $this->alterTable($name, $change);
     }
 
+    /**
+     * Methods for filtering return values of list*() methods to convert
+     * the native DBMS data definition to a portable Doctrine definition
+     */
+
     protected function _getPortableDatabasesList($databases)
     {
         $list = array();
@@ -801,75 +961,11 @@ abstract class AbstractSchemaManager
     {
         return $tableForeignKey;
     }
-    
-    /**
-     * Executes one or more SQL statements using Connection#exec.
-     * 
-     * @param string|array $sql The SQL to execute.
-     */
+
     protected function _execSql($sql)
     {
         foreach ((array) $sql as $query) {
             $this->_conn->exec($query);
         }
-    }
-
-    public function tryMethod()
-    {
-        $args = func_get_args();
-        $method = $args[0];
-        unset($args[0]);
-        $args = array_values($args);
-
-        try {
-            return call_user_func_array(array($this, $method), $args);
-        } catch (\Exception $e) {
-            //FIXME: Exception silencing is dangerous and hard to debug :(
-            return false;
-        }
-    }
-
-    private function _handleDropAndCreate($method, $arguments)
-    {
-        if (substr($method, 0, 13) == 'dropAndCreate') {
-            $base = substr($method, 13, strlen($method));
-            $dropMethod = 'drop' . $base;
-            $createMethod = 'create' . $base;
-
-            call_user_func_array(array($this, 'tryMethod'),
-                array_merge(array($dropMethod), $arguments));
-
-            call_user_func_array(array($this, 'tryMethod'),
-                array_merge(array($createMethod), $arguments));
-
-            return true;
-        }
-
-        return false;
-    }
-
-    private function _handleTryMethod($method, $arguments)
-    {
-        if (substr($method, 0, 3) == 'try') {
-            $method = substr($method, 3, strlen($method));
-            $method = strtolower($method[0]).substr($method, 1, strlen($method));
-
-            return call_user_func_array(array($this, 'tryMethod'),
-                array_merge(array($method), $arguments));
-        }
-    }
-    
-    //FIXME: Turn into explicit, public, documented method.
-    public function __call($method, $arguments)
-    {
-        if ($result = $this->_handleDropAndCreate($method, $arguments)) {
-            return $result;
-        }
-
-        if ($result = $this->_handleTryMethod($method, $arguments)) {
-            return $result;
-        }
-
-        throw DoctrineException::updateMe("Invalid method named `" . $method . "` on class `" . __CLASS__ . "`");
     }
 }
