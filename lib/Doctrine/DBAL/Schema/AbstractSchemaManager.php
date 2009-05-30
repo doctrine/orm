@@ -22,6 +22,7 @@
 namespace Doctrine\DBAL\Schema;
 
 use \Doctrine\DBAL\Types;
+use \Doctrine\Common\DoctrineException;
 
 /**
  * Base class for schema managers. Schema managers are used to inspect and/or
@@ -864,5 +865,62 @@ abstract class AbstractSchemaManager
             $result = $this->_conn->$method($query);
         }
         return $result;
+    }
+
+    public function tryMethod()
+    {
+        $args = func_get_args();
+        $method = $args[0];
+        unset($args[0]);
+        $args = array_values($args);
+
+        try {
+            return call_user_func_array(array($this, $method), $args);
+        } catch (\Exception $e) {
+            return false;
+        }
+    }
+
+    private function _handleDropAndCreate($method, $arguments)
+    {
+        if (substr($method, 0, 13) == 'dropAndCreate') {
+            $base = substr($method, 13, strlen($method));
+            $dropMethod = 'drop' . $base;
+            $createMethod = 'create' . $base;
+
+            call_user_func_array(array($this, 'tryMethod'),
+                array_merge(array($dropMethod), $arguments));
+
+            call_user_func_array(array($this, 'tryMethod'),
+                array_merge(array($createMethod), $arguments));
+
+            return true;
+        }
+
+        return false;
+    }
+
+    private function _handleTryMethod($method, $arguments)
+    {
+        if (substr($method, 0, 3) == 'try') {
+            $method = substr($method, 3, strlen($method));
+            $method = strtolower($method[0]).substr($method, 1, strlen($method));
+
+            return call_user_func_array(array($this, 'tryMethod'),
+                array_merge(array($method), $arguments));
+        }
+    }
+
+    public function __call($method, $arguments)
+    {
+        if ($result = $this->_handleDropAndCreate($method, $arguments)) {
+            return $result;
+        }
+
+        if ($result = $this->_handleTryMethod($method, $arguments)) {
+            return $result;
+        }
+
+        throw DoctrineException::updateMe("Invalid method named `" . $method . "` on class `" . __CLASS__ . "`");
     }
 }

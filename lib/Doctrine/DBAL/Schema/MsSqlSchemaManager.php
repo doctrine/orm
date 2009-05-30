@@ -63,16 +63,6 @@ class MsSqlSchemaManager extends AbstractSchemaManager
     }
 
     /**
-     * Override the parent method.
-     *
-     * @return string The string required to be placed between "CREATE" and "TABLE"
-     *                to generate a temporary table, if possible.
-     */
-    public function getTemporaryTableQuery()
-    {
-        return '';
-    }  
-    /**
      * alter an existing table
      *
      * @param string $name         name of the table that is intended to be changed.

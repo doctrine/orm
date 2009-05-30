@@ -101,18 +101,14 @@ class OraclePlatform extends AbstractPlatform
         return 'SYS_GUID()';
     }
 
-    /**
-     * {@inheritdoc}
-     *
-     * @return string
-     * @override
-     */
     public function getCreateSequenceSql($sequenceName, $start = 1, $allocationSize = 1)
     {
-        return 'CREATE SEQUENCE ' . $this->quoteIdentifier($sequenceName)
-                . ' START WITH ' . $start . ' INCREMENT BY ' . $allocationSize;
+        $query  = 'CREATE SEQUENCE ' . $this->quoteIdentifier($sequenceName) . ' START WITH ' . $start . ' INCREMENT BY 1 NOCACHE';
+        $query .= ($start < 1 ? ' MINVALUE ' . $start : '');
+
+        return $query;
     }
-    
+
     /**
      * {@inheritdoc}
      *
@@ -202,6 +198,228 @@ class OraclePlatform extends AbstractPlatform
 
         return $fixed ? ($length ? 'CHAR(' . $length . ')' : 'CHAR(2000)')
                 : ($length ? 'VARCHAR2(' . $length . ')' : 'VARCHAR2(4000)');
+    }
+
+    public function getListDatabasesSql()
+    {
+        return 'SELECT username FROM sys.dba_users';
+    }
+
+    public function getListFunctionsSql()
+    {
+        return "SELECT name FROM sys.user_source WHERE line = 1 AND type = 'FUNCTION'";
+    }
+
+    public function getCreateTableSql($table, array $columns, array $options = array())
+    {
+        $indexes = isset($options['indexes']) ? $options['indexes']:array();
+        $options['indexes'] = array();
+        $sql = parent::getCreateTableSql($table, $columns, $options);
+
+        foreach ($columns as $name => $column) {
+            if (isset($column['sequence'])) {
+              $sql[] = $this->getCreateSequenceSql($column['sequence'], 1);
+            }
+
+            if (isset($column['autoincrement']) && $column['autoincrement'] ||
+               (isset($column['autoinc']) && $column['autoinc'])) {           
+                $sql = array_merge($sql, $this->getCreateAutoincrementSql($name, $table));
+            }
+        }
+        
+        if (isset($indexes) && ! empty($indexes)) {
+            foreach ($indexes as $indexName => $definition) {
+                // create nonunique indexes, as they are a part od CREATE TABLE DDL
+                if ( ! isset($definition['type']) || 
+                    (isset($definition['type']) && strtolower($definition['type']) != 'unique')) {
+                    $sql[] = $this->getCreateIndexSql($table, $indexName, $definition);
+                }
+            }
+        }
+
+        return $sql;
+    }
+
+    public function getListTableIndexesSql($table)
+    {
+        return "SELECT * FROM user_indexes"
+               . " WHERE table_name = '" . strtoupper($table) . "'";
+    }
+
+    public function getListTablesSql()
+    {
+        return 'SELECT * FROM sys.user_tables';
+    }
+
+    public function getListUsersSql()
+    {
+        return 'SELECT * FROM sys.dba_users';
+    }
+
+    public function getListViewsSql()
+    {
+        return 'SELECT view_name FROM sys.user_views';
+    }
+
+    public function getCreateViewSql($name, $sql)
+    {
+        return 'CREATE VIEW ' . $name . ' AS ' . $sql;
+    }
+
+    public function getDropViewSql($name)
+    {
+        return 'DROP VIEW '. $name;
+    }
+
+    public function getCreateAutoincrementSql($name, $table, $start = 1)
+    {
+        $table = strtoupper($table);
+        $sql   = array();
+
+        $indexName  = $table . '_AI_PK';
+        $definition = array(
+            'primary' => true,
+            'fields' => array($name => true),
+        );
+
+        $sql[] = 'DECLARE
+  constraints_Count NUMBER;
+BEGIN
+  SELECT COUNT(CONSTRAINT_NAME) INTO constraints_Count FROM USER_CONSTRAINTS WHERE TABLE_NAME = \''.$table.'\' AND CONSTRAINT_TYPE = \'P\';
+  IF constraints_Count = 0 OR constraints_Count = \'\' THEN
+    EXECUTE IMMEDIATE \''.$this->getCreateConstraintSql($table, $indexName, $definition).'\';
+  END IF;
+END;';   
+
+        $sequenceName = $table . '_SEQ';
+        $sql[] = $this->getCreateSequenceSql($sequenceName, $start);
+
+        $triggerName  = $this->quoteIdentifier($table . '_AI_PK', true);
+        $table = $this->quoteIdentifier($table, true);
+        $name  = $this->quoteIdentifier($name, true);
+        $sql[] = 'CREATE TRIGGER ' . $triggerName . '
+   BEFORE INSERT
+   ON ' . $table . '
+   FOR EACH ROW
+DECLARE
+   last_Sequence NUMBER;
+   last_InsertID NUMBER;
+BEGIN
+   SELECT ' . $this->quoteIdentifier($sequenceName) . '.NEXTVAL INTO :NEW.' . $name . ' FROM DUAL;
+   IF (:NEW.' . $name . ' IS NULL OR :NEW.'.$name.' = 0) THEN
+      SELECT ' . $this->quoteIdentifier($sequenceName) . '.NEXTVAL INTO :NEW.' . $name . ' FROM DUAL;
+   ELSE
+      SELECT NVL(Last_Number, 0) INTO last_Sequence
+        FROM User_Sequences
+       WHERE Sequence_Name = \'' . $sequenceName . '\';
+      SELECT :NEW.' . $name . ' INTO last_InsertID FROM DUAL;
+      WHILE (last_InsertID > last_Sequence) LOOP
+         SELECT ' . $this->quoteIdentifier($sequenceName) . '.NEXTVAL INTO last_Sequence FROM DUAL;
+      END LOOP;
+   END IF;
+END;';
+        return $sql;
+    }
+
+    public function getDropAutoincrementSql($table)
+    {
+        $table = strtoupper($table);
+        $trigger = $table . '_AI_PK';
+
+        if ($trigger) {
+            $sql[] = 'DROP TRIGGER ' . $trigger;
+            $sql[] = $this->getDropSequenceSql($table.'_SEQ');
+
+            $indexName = $table . '_AI_PK';
+            $sql[] = $this->getDropConstraintSql($table, $indexName);
+        }
+
+        return $sql;
+    }
+
+    public function getListTableConstraintsSql($table)
+    {
+        $table = strtoupper($table);
+        return 'SELECT * FROM user_constraints WHERE table_name = \'' . $table . '\'';
+    }
+
+    public function getListTableColumnsSql($table)
+    {
+        $table = strtoupper($table);
+        return "SELECT * FROM all_tab_columns WHERE table_name = '" . $table . "' ORDER BY column_name";
+    }
+
+    public function getDropSequenceSql($sequenceName)
+    {
+        return 'DROP SEQUENCE ' . $this->quoteIdentifier($sequenceName);
+    }
+
+    public function getDropDatabaseSql($database)
+    {
+        return 'DROP USER ' . $database . ' CASCADE';
+    }
+
+    public function getAlterTableSql($name, array $changes, $check = false)
+    {
+        if ( ! $name) {
+            throw DoctrineException::updateMe('no valid table name specified');
+        }
+        foreach ($changes as $changeName => $change) {
+            switch ($changeName) {
+                case 'add':
+                case 'remove':
+                case 'change':
+                case 'name':
+                case 'rename':
+                    break;
+                default:
+                    throw \Doctrine\Common\DoctrineException::updateMe('change type "' . $changeName . '" not yet supported');
+            }
+        }
+
+        if ($check) {
+            return false;
+        }
+
+        $name = $this->quoteIdentifier($name);
+
+        if ( ! empty($changes['add']) && is_array($changes['add'])) {
+            $fields = array();
+            foreach ($changes['add'] as $fieldName => $field) {
+                $fields[] = $this->getColumnDeclarationSql($fieldName, $field);
+            }
+            $sql[] = 'ALTER TABLE ' . $name . ' ADD (' . implode(', ', $fields) . ')';
+        }
+
+        if ( ! empty($changes['change']) && is_array($changes['change'])) {
+            $fields = array();
+            foreach ($changes['change'] as $fieldName => $field) {
+                $fields[] = $fieldName. ' ' . $this->getColumnDeclarationSql('', $field['definition']);
+            }
+            $sql[] = 'ALTER TABLE ' . $name . ' MODIFY (' . implode(', ', $fields) . ')';
+        }
+
+        if ( ! empty($changes['rename']) && is_array($changes['rename'])) {
+            foreach ($changes['rename'] as $fieldName => $field) {
+                $sql[] = 'ALTER TABLE ' . $name . ' RENAME COLUMN ' . $this->quoteIdentifier($fieldName)
+                       . ' TO ' . $this->quoteIdentifier($field['name']);
+            }
+        }
+
+        if ( ! empty($changes['remove']) && is_array($changes['remove'])) {
+            $fields = array();
+            foreach ($changes['remove'] as $fieldName => $field) {
+                $fields[] = $this->quoteIdentifier($fieldName);
+            }
+            $sql[] = 'ALTER TABLE ' . $name . ' DROP COLUMN ' . implode(', ', $fields);
+        }
+
+        if ( ! empty($changes['name'])) {
+            $changeName = $this->quoteIdentifier($changes['name']);
+            $sql[] = 'ALTER TABLE ' . $name . ' RENAME TO ' . $changeName;
+        }
+
+        return $sql;
     }
 
     /**

@@ -2,48 +2,22 @@
 
 namespace Doctrine\Tests\DBAL\Functional\Schema;
 
-use Doctrine\Tests\TestUtil;
 use Doctrine\DBAL\Schema;
-use Doctrine\DBAL\Types\Type;
 
 require_once __DIR__ . '/../../../TestInit.php';
  
-class PostgreSqlSchemaManagerTest extends \Doctrine\Tests\DbalFunctionalTestCase
+class PostgreSqlSchemaManagerTest extends SchemaManagerFunctionalTest
 {
-    private $_conn;
-
-    protected function setUp()
-    {
-        $this->_conn = TestUtil::getConnection();
-        if ($this->_conn->getDatabasePlatform()->getName() !== 'postgresql')
-        {
-            $this->markTestSkipped('The PostgreSQLSchemaTest requires the use of postgresql');
-        }
-        $this->_sm = $this->_conn->getSchemaManager();
-    }
-
     public function testListDatabases()
     {
-        try {
-            $this->_sm->dropDatabase('test_pgsql_create_database');
-        } catch (\Exception $e) {}
-
-        $this->_sm->createDatabase('test_pgsql_create_database');
-
+        $this->_sm->dropAndCreateDatabase('test_create_database');
         $databases = $this->_sm->listDatabases();
-
-        $this->assertEquals(in_array('test_pgsql_create_database', $databases), true);
+        $this->assertEquals(true, in_array('test_create_database', $databases));
     }
 
     public function testListFunctions()
     {
-        try {
-            $this->_sm->listFunctions();
-        } catch (\Exception $e) {
-            return;
-        }
- 
-        $this->fail('PostgreSql listFunctions() should throw an exception because it is not supported');
+        return $this->assertUnsupportedMethod('listFunctions');
     }
 
     public function testListTriggers()
@@ -55,83 +29,21 @@ class PostgreSqlSchemaManagerTest extends \Doctrine\Tests\DbalFunctionalTestCase
 
     public function testListSequences()
     {
-        $columns = array(
-            'id' => array(
-                'type' => Type::getType('integer'),
-                'autoincrement' => true,
-                'primary' => true,
-                'notnull' => true
-            ),
-            'test' => array(
-                'type' => Type::getType('string'),
-                'length' => 255
-            )
-        );
-
-        $options = array();
-
-        try {
-            $this->_sm->dropTable('list_sequences_test');
-        } catch (\Exception $e) {}
-
-        $this->_sm->createTable('list_sequences_test', $columns, $options);
-
+        $this->createTestTable('list_sequences_test');
         $sequences = $this->_sm->listSequences();
-
         $this->assertEquals(true, in_array('list_sequences_test_id_seq', $sequences));
     }
 
     public function testListTableConstraints()
     {
-        $columns = array(
-            'id' => array(
-                'type' => Type::getType('integer'),
-                'autoincrement' => true,
-                'primary' => true,
-                'notnull' => true
-            ),
-            'test' => array(
-                'type' => Type::getType('string'),
-                'length' => 255
-            )
-        );
-
-        $options = array();
-
-        try {
-            $this->_sm->dropTable('list_table_constraints_test');
-        } catch (\Exception $e) {}
-
-        $this->_sm->createTable('list_table_constraints_test', $columns, $options);
-
+        $this->createTestTable('list_table_constraints_test');
         $tableConstraints = $this->_sm->listTableConstraints('list_table_constraints_test');
-
         $this->assertEquals(array('list_table_constraints_test_pkey'), $tableConstraints);
     }
 
     public function testListTableColumns()
     {
-        $columns = array(
-            'id' => array(
-                'type' => Type::getType('integer'),
-                'autoincrement' => true,
-                'primary' => true,
-                'notnull' => true
-            ),
-            'test' => array(
-                'type' => Type::getType('string'),
-                'length' => 255
-            )
-        );
-
-        $options = array();
-
-        try {
-            $this->_sm->dropTable('list_tables_test');
-        } catch (\Exception $e) {}
-
-        $this->_sm->createTable('list_tables_test', $columns, $options);
-
+        $this->createTestTable('list_tables_test');
         $columns = $this->_sm->listTableColumns('list_tables_test');
 
         $this->assertEquals('id', $columns[0]['name']);
@@ -155,20 +67,7 @@ class PostgreSqlSchemaManagerTest extends \Doctrine\Tests\DbalFunctionalTestCase
 
     public function testListTableIndexes()
     {
-        $columns = array(
-            'id' => array(
-                'type' => Type::getType('integer'),
-                'autoincrement' => true,
-                'primary' => true,
-                'notnull' => true
-            ),
-            'test' => array(
-                'type' => Type::getType('string'),
-                'length' => 255
-            )
-        );
-
-        $options = array(
+        $data['options'] = array(
             'indexes' => array(
                 'test' => array(
                     'fields' => array(
@@ -179,41 +78,15 @@ class PostgreSqlSchemaManagerTest extends \Doctrine\Tests\DbalFunctionalTestCase
             )
         );
 
-        try {
-            $this->_sm->dropTable('list_table_indexes_test');
-        } catch (\Exception $e) {}
-
-        $this->_sm->createTable('list_table_indexes_test', $columns, $options);
-
+        $this->createTestTable('list_table_indexes_test', $data);
         $tableIndexes = $this->_sm->listTableIndexes('list_table_indexes_test');
-
         $this->assertEquals('test', $tableIndexes[0]['name']);
         $this->assertEquals(true, $tableIndexes[0]['unique']);
     }
 
     public function testListTables()
     {
-        $columns = array(
-            'id' => array(
-                'type' => Type::getType('integer'),
-                'autoincrement' => true,
-                'primary' => true,
-                'notnull' => true
-            ),
-            'test' => array(
-                'type' => Type::getType('string'),
-                'length' => 255
-            )
-        );
-
-        $options = array();
-
-        try {
-            $this->_sm->dropTable('list_tables_test');
-        } catch (\Exception $e) {}
-
-        $this->_sm->createTable('list_tables_test', $columns, $options);
-
+        $this->createTestTable('list_tables_test');
         $tables = $this->_sm->listTables();
         $this->assertEquals(true, in_array('list_tables_test', $tables));
     }
@@ -235,11 +108,7 @@ class PostgreSqlSchemaManagerTest extends \Doctrine\Tests\DbalFunctionalTestCase
 
     public function testListViews()
     {
-        try {
-            $this->_sm->dropView('test_create_view');
-        } catch (\Exception $e) {}
-
-        $this->_sm->createView('test_create_view', 'SELECT usename, passwd FROM pg_user');
+        $this->_sm->dropAndCreateView('test_create_view', 'SELECT usename, passwd FROM pg_user');
         $views = $this->_sm->listViews();
 
         $found = false;
@@ -251,68 +120,26 @@ class PostgreSqlSchemaManagerTest extends \Doctrine\Tests\DbalFunctionalTestCase
         }
 
         $this->assertEquals(true, $found);
-        $this->assertEquals('SELECT pg_user.usename, pg_user.passwd FROM pg_user;', $view['sql']);
     }
 
     public function testListTableForeignKeys()
     {
-        // Create table that has foreign key
-        $columns = array(
-            'id' => array(
-                'type' => Type::getType('integer'),
-                'autoincrement' => true,
-                'primary' => true,
-                'notnull' => true
-            ),
-            'test' => array(
-                'type' => Type::getType('integer'),
-                'length' => 4
-            )
-        );
+        $data['options'] = array('type' => 'innodb');
+        $this->createTestTable('list_table_foreign_keys_test1', $data);
+        $this->createTestTable('list_table_foreign_keys_test2', $data);
 
-        $options = array('type' => 'innodb');
-
-        try {
-            $this->_sm->dropTable('list_table_foreign_keys_test2');
-        } catch (\Exception $e) {}
-
-        $this->_sm->createTable('list_table_foreign_keys_test2', $columns, $options);
-
-        // Create the table that is being referenced in the foreign key
-        $columns = array(
-            'id' => array(
-                'type' => Type::getType('integer'),
-                'autoincrement' => true,
-                'primary' => true,
-                'notnull' => true
-            ),
-            'whatever' => array(
-                'type' => Type::getType('string'),
-                'length' => 255
-            )
-        );
-
-        $options = array('type' => 'innodb');
-
-        try {
-            $this->_sm->dropTable('list_table_foreign_keys_test');
-        } catch (\Exception $e) {}
-
-        $this->_sm->createTable('list_table_foreign_keys_test', $columns, $options);
-
-        // Create the foreign key between the tables
         $definition = array(
             'name' => 'testing',
-            'local' => 'test',
+            'local' => 'foreign_key_test',
             'foreign' => 'id',
-            'foreignTable' => 'list_table_foreign_keys_test'
+            'foreignTable' => 'list_table_foreign_keys_test2'
         );
-        $this->_sm->createForeignKey('list_table_foreign_keys_test2', $definition);
+        $this->_sm->createForeignKey('list_table_foreign_keys_test1', $definition);
 
-        $tableForeignKeys = $this->_sm->listTableForeignKeys('list_table_foreign_keys_test2');
+        $tableForeignKeys = $this->_sm->listTableForeignKeys('list_table_foreign_keys_test1');
         $this->assertEquals(1, count($tableForeignKeys));
-        $this->assertEquals('list_table_foreign_keys_test', $tableForeignKeys[0]['table']);
-        $this->assertEquals('test', $tableForeignKeys[0]['local']);
+        $this->assertEquals('list_table_foreign_keys_test2', $tableForeignKeys[0]['table']);
+        $this->assertEquals('foreign_key_test', $tableForeignKeys[0]['local']);
         $this->assertEquals('id', $tableForeignKeys[0]['foreign']);
     }
 }

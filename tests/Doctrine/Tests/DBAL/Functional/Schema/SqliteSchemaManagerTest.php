@@ -2,78 +2,30 @@
 
 namespace Doctrine\Tests\DBAL\Functional\Schema;
 
-use Doctrine\Tests\TestUtil;
 use Doctrine\DBAL\Schema;
-use Doctrine\DBAL\Types\Type;
 
 require_once __DIR__ . '/../../../TestInit.php';
  
-class SqliteSchemaManagerTest extends \Doctrine\Tests\DbalFunctionalTestCase
+class SqliteSchemaManagerTest extends SchemaManagerFunctionalTest
 {
-    private $_conn;
-
-    protected function setUp()
-    {
-        $this->_conn = TestUtil::getConnection();
-        if ($this->_conn->getDatabasePlatform()->getName() !== 'sqlite')
-        {
-            $this->markTestSkipped('The SqliteSchemaTest requires the use of sqlite');
-        }
-        $this->_sm = $this->_conn->getSchemaManager();
-    }
-
     public function testListDatabases()
     {
-        try {
-            $this->_sm->listDatabases();
-        } catch (\Exception $e) {
-            return;
-        }
- 
-        $this->fail('Sqlite listDatabases() should throw an exception because it is not supported');
+        return $this->assertUnsupportedMethod('listDatabases');
     }
 
     public function testListFunctions()
     {
-        try {
-            $this->_sm->listFunctions();
-        } catch (\Exception $e) {
-            return;
-        }
- 
-        $this->fail('Sqlite listFunctions() should throw an exception because it is not supported');
+        return $this->assertUnsupportedMethod('listFunctions');
     }
 
     public function testListTriggers()
     {
-        try {
-            $this->_sm->listTriggers();
-        } catch (\Exception $e) {
-            return;
-        }
- 
-        $this->fail('Sqlite listTriggers() should throw an exception because it is not supported');
+        return $this->assertUnsupportedMethod('listTriggers');
     }
 
     public function testListSequences()
     {
-        $columns = array(
-            'id' => array(
-                'type' => Type::getType('integer'),
-                'autoincrement' => true,
-                'primary' => true,
-                'notnull' => true
-            ),
-            'test' => array(
-                'type' => Type::getType('string'),
-                'length' => 255
-            )
-        );
-
-        $options = array();
-
-        $this->_sm->createTable('list_sequences_test', $columns, $options);
-
+        $this->createTestTable('list_sequences_test');
         $sequences = $this->_sm->listSequences();
         $this->assertEquals('list_sequences_test', $sequences[0]['name']);
         $this->assertEquals('sqlite_sequence', $sequences[1]['name']);
@@ -90,22 +42,7 @@ class SqliteSchemaManagerTest extends \Doctrine\Tests\DbalFunctionalTestCase
 
     public function testListTableColumns()
     {
-        $columns = array(
-            'id' => array(
-                'type' => Type::getType('integer'),
-                'autoincrement' => true,
-                'primary' => true,
-                'notnull' => true
-            ),
-            'test' => array(
-                'type' => Type::getType('string'),
-                'length' => 255
-            )
-        );
-
-        $options = array();
-
-        $this->_sm->createTable('list_table_columns_test', $columns, $options);
+        $this->createTestTable('list_table_columns_test');
 
         $tableColumns = $this->_sm->listTableColumns('list_table_columns_test');
 
@@ -130,20 +67,7 @@ class SqliteSchemaManagerTest extends \Doctrine\Tests\DbalFunctionalTestCase
 
     public function testListTableIndexes()
     {
-        $columns = array(
-            'id' => array(
-                'type' => Type::getType('integer'),
-                'autoincrement' => true,
-                'primary' => true,
-                'notnull' => true
-            ),
-            'test' => array(
-                'type' => Type::getType('string'),
-                'length' => 255
-            )
-        );
-
-        $options = array(
+        $data['options'] = array(
             'indexes' => array(
                 'test' => array(
                     'fields' => array(
@@ -154,7 +78,7 @@ class SqliteSchemaManagerTest extends \Doctrine\Tests\DbalFunctionalTestCase
             )
         );
 
-        $this->_sm->createTable('list_table_indexes_test', $columns, $options);
+        $this->createTestTable('list_table_indexes_test', $data);
 
         $tableIndexes = $this->_sm->listTableIndexes('list_table_indexes_test');
         $this->assertEquals('test', $tableIndexes[0]['name']);
@@ -163,62 +87,20 @@ class SqliteSchemaManagerTest extends \Doctrine\Tests\DbalFunctionalTestCase
 
     public function testListTables()
     {
-        $columns = array(
-            'id' => array(
-                'type' => Type::getType('integer'),
-                'autoincrement' => true,
-                'primary' => true,
-                'notnull' => true
-            ),
-            'test' => array(
-                'type' => Type::getType('string'),
-                'length' => 255
-            )
-        );
-
-        $options = array();
-
-        $this->_sm->createTable('list_tables_test', $columns, $options);
-
+        $this->createTestTable('list_tables_test');
         $tables = $this->_sm->listTables();
         $this->assertEquals(true, in_array('list_tables_test', $tables));
     }
 
     public function testListUsers()
     {
-        try {
-            $this->_sm->listUsers();
-        } catch (\Exception $e) {
-            return;
-        }
- 
-        $this->fail('Sqlite listUsers() should throw an exception because it is not supported');
+        return $this->assertUnsupportedMethod('listUsers');
     }
 
     public function testListViews()
     {
-        $columns = array(
-            'id' => array(
-                'type' => Type::getType('integer'),
-                'autoincrement' => true,
-                'primary' => true,
-                'notnull' => true
-            ),
-            'test' => array(
-                'type' => Type::getType('string'),
-                'length' => 255
-            )
-        );
-
-        $options = array();
-
-        $this->_sm->createTable('test_views', $columns, $options);
-
-        try {
-            $this->_sm->dropView('test_create_view');
-        } catch (\Exception $e) {}
-
-        $this->_sm->createView('test_create_view', 'SELECT * from test_views');
+        $this->createTestTable('test_views');
+        $this->_sm->dropAndCreateView('test_create_view', 'SELECT * from test_views');
         $views = $this->_sm->listViews();
 
         $this->assertEquals('test_create_view', $views[0]['name']);
@@ -249,22 +131,7 @@ class SqliteSchemaManagerTest extends \Doctrine\Tests\DbalFunctionalTestCase
 
     public function testCreateTable()
     {
-        $columns = array(
-            'id' => array(
-                'type' => Type::getType('integer'),
-                'autoincrement' => true,
-                'primary' => true,
-                'notnull' => true
-            ),
-            'test' => array(
-                'type' => Type::getType('string'),
-                'length' => 255
-            )
-        );
-
-        $options = array();
-
-        $this->_sm->createTable('test_create_table', $columns, $options);
+        $this->createTestTable('test_create_table');
         $tables = $this->_sm->listTables();
         $this->assertEquals(true, in_array('test_create_table', $tables));
 
@@ -291,45 +158,18 @@ class SqliteSchemaManagerTest extends \Doctrine\Tests\DbalFunctionalTestCase
 
     public function testCreateSequence()
     {
-        try {
-            $this->_sm->createSequence();
-        } catch (\Exception $e) {
-            return;
-        }
- 
-        $this->fail('Sqlite createSequence() should throw an exception because it is not supported');
+        return $this->assertUnsupportedMethod('createSequence');
     }
 
     public function testCreateConstraint()
     {
-        try {
-            $this->_sm->createConstraint();
-        } catch (\Exception $e) {
-            return;
-        }
- 
-        $this->fail('Sqlite createConstraint() should throw an exception because it is not supported');
+        return $this->assertUnsupportedMethod('createConstraint');
     }
 
     public function testCreateIndex()
     {
-        $columns = array(
-            'id' => array(
-                'type' => Type::getType('integer'),
-                'autoincrement' => true,
-                'primary' => true,
-                'notnull' => true
-            ),
-            'test' => array(
-                'type' => Type::getType('string'),
-                'length' => 255
-            )
-        );
+        $this->createTestTable('test_create_index');
 
-        $options = array();
-
-        $this->_sm->createTable('test_create_index', $columns, $options);
-        
         $index = array(
             'fields' => array(
                 'test' => array()
@@ -337,7 +177,7 @@ class SqliteSchemaManagerTest extends \Doctrine\Tests\DbalFunctionalTestCase
             'type' => 'unique'
         );
 
-        $this->_sm->createIndex('test_create_index', 'test', $index);
+        $this->_sm->dropAndCreateIndex('test_create_index', 'test', $index);
         $tableIndexes = $this->_sm->listTableIndexes('test_create_index');
         $this->assertEquals('test', $tableIndexes[0]['name']);
         $this->assertEquals(true, $tableIndexes[0]['unique']);
@@ -345,68 +185,32 @@ class SqliteSchemaManagerTest extends \Doctrine\Tests\DbalFunctionalTestCase
 
     public function testCreateForeignKey()
     {
-        try {
-            $this->_sm->createForeignKey();
-        } catch (\Exception $e) {
-            return;
-        }
- 
-        $this->fail('Sqlite createForeignKey() should throw an exception because it is not supported');
+        return $this->assertUnsupportedMethod('createForeignKey');
     }
 
     public function testRenameTable()
     {
-        try {
-            $this->_sm->renameTable();
-        } catch (\Exception $e) {
-            return;
-        }
- 
-        $this->fail('Sqlite renameTable() should throw an exception because it is not supported');
+        return $this->assertUnsupportedMethod('renameTable');
     }
 
 
     public function testAddTableColumn()
     {
-        try {
-            $this->_sm->addTableColumn();
-        } catch (\Exception $e) {
-            return;
-        }
- 
-        $this->fail('Sqlite addTableColumn() should throw an exception because it is not supported');
+        return $this->assertUnsupportedMethod('addTableColumn');
     }
 
     public function testRemoveTableColumn()
     {
-        try {
-            $this->_sm->removeTableColumn();
-        } catch (\Exception $e) {
-            return;
-        }
- 
-        $this->fail('Sqlite removeTableColumn() should throw an exception because it is not supported');
+        return $this->assertUnsupportedMethod('removeTableColumn');
     }
 
     public function testChangeTableColumn()
     {
-        try {
-            $this->_sm->changeTableColumn();
-        } catch (\Exception $e) {
-            return;
-        }
- 
-        $this->fail('Sqlite changeTableColumn() should throw an exception because it is not supported');
+        return $this->assertUnsupportedMethod('changeTableColumn');
     }
 
     public function testRenameTableColumn()
     {
-        try {
-            $this->_sm->renameTableColumn();
-        } catch (\Exception $e) {
-            return;
-        }
- 
-        $this->fail('Sqlite renameTableColumn() should throw an exception because it is not supported');
+        return $this->assertUnsupportedMethod('renameTableColumn');
     }
 }

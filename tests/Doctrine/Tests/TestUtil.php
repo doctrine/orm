@@ -3,7 +3,7 @@
 namespace Doctrine\Tests;
 
 class TestUtil
-{    
+{
     public static function getConnection()
     {
         if (isset($GLOBALS['db_type'], $GLOBALS['db_username'], $GLOBALS['db_password'],
@@ -23,6 +23,20 @@ class TestUtil
             );
         }
         
-        return \Doctrine\DBAL\DriverManager::getConnection($params);
+        $conn = \Doctrine\DBAL\DriverManager::getConnection($params);
+        $sm = $conn->getSchemaManager();
+
+        try {
+            $sm->dropDatabase();
+        } catch (\Exception $e) {}
+
+        try {
+            $sm->createDatabase();
+        } catch (\Exception $e) {}
+
+        $conn->close();
+
+        $conn = \Doctrine\DBAL\DriverManager::getConnection($params);
+        return $conn;
     }
 }

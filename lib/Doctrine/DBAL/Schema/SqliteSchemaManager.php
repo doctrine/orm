@@ -36,15 +36,17 @@ class SqliteSchemaManager extends AbstractSchemaManager
     public function dropDatabase($database = null)
     {
         if (is_null($database)) {
-            $database = $this->_conn->getDriver()->getDatabase($this->_conn);
+            $database = $this->_conn->getDatabase();
         }
-        unlink($database);
+        if (file_exists($database)) {
+            unlink($database);
+        }
     }
 
     public function createDatabase($database = null)
     {
         if (is_null($database)) {
-            $database = $this->_conn->getDriver()->getDatabase($this->_conn);
+            $database = $this->_conn->getDatabase();
         }
         // TODO: Can we do this better?
         $this->_conn->close();

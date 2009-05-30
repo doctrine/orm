@@ -520,16 +520,16 @@ abstract class AbstractPlatform
 
     public function getDropConstraintSql($table, $name, $primary = false)
     {
-        $table = $this->_conn->getDatabasePlatform()->quoteIdentifier($table);
-        $name = $this->_conn->getDatabasePlatform()->quoteIdentifier($name);
+        $table = $this->quoteIdentifier($table);
+        $name = $this->quoteIdentifier($name);
 
         return 'ALTER TABLE ' . $table . ' DROP CONSTRAINT ' . $name;
     }
 
     public function getDropForeignKeySql($table, $name)
     {
-        $table = $this->_conn->getDatabasePlatform()->quoteIdentifier($table);
-        $name = $this->_conn->getDatabasePlatform()->quoteIdentifier($name);
+        $table = $this->quoteIdentifier($table);
+        $name = $this->quoteIdentifier($name);
 
         return 'ALTER TABLE ' . $table . ' DROP FOREIGN KEY ' . $name;
     }

@@ -34,10 +34,7 @@ class MySqlSchemaManager extends AbstractSchemaManager
 {
     protected function _getPortableViewDefinition($view)
     {
-        return array(
-            'name' => $view['table_name'],
-            'sql' => $view['view_definition']
-        );
+        return $view['table_name'];
     }
 
     protected function _getPortableTableDefinition($table)

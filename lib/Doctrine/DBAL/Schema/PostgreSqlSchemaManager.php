@@ -53,8 +53,7 @@ class PostgreSqlSchemaManager extends AbstractSchemaManager
     protected function _getPortableViewDefinition($view)
     {
         return array(
-            'name' => $view['viewname'],
-            'sql' => $view['definition']
+            'name' => $view['viewname']
         );
     }
 
