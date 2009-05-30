@@ -196,4 +196,9 @@ class AnnotationDriver
         return strpos($docComment, '@Entity') === false &&
                 strpos($docComment, '@MappedSuperclass') === false;
     }
+    
+    public function preload()
+    {
+        return array();
+    }
 }

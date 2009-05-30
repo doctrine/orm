@@ -265,6 +265,9 @@ abstract class AbstractSchemaManager
      */
     public function dropIndex($table, $name)
     {
+        //FIXME: Something is wrong here. The signature of getDropIndexSql is:
+        // public function getDropIndexSql($index, $name)
+        // $table == $index ???
         $sql = $this->_platform->getDropIndexSql($table, $name);
 
         return $this->_executeSql($sql, 'exec');

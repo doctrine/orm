@@ -1075,7 +1075,7 @@ class SqlWalker
                 //FIXME: Throw exception on composite key
                 $sql .= $class->associationMappings[$fieldName]->joinColumns[0]['name'];
             } else {
-                $sql .= $class->getColumnName($fieldName);
+                $sql .= $this->_conn->quoteIdentifier($class->getColumnName($fieldName));
             }
             
         } else if ($pathExpr->isSimpleStateFieldAssociationPathExpression()) {
@@ -1083,6 +1083,7 @@ class SqlWalker
         } else {
             throw DoctrineException::updateMe("Encountered invalid PathExpression during SQL construction.");
         }
+        
         return $sql;
     }
 

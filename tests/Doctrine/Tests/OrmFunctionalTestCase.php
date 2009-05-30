@@ -103,10 +103,7 @@ class OrmFunctionalTestCase extends OrmTestCase
             try {
                 $this->_schemaTool->createSchema($classes);
             } catch (\Exception $e) {
-                // Suppress "xxx already exists" messages
-                if (stripos($e->getMessage(), 'already exists') === false) {
-                    throw $e;
-                }
+                // Swallow all exceptions. We do not test the schema tool here.
             }
         }
     }
@@ -133,6 +130,7 @@ class OrmFunctionalTestCase extends OrmTestCase
         $config->setQueryCacheImpl(self::$_queryCacheImpl);
         $eventManager = new \Doctrine\Common\EventManager();
         $conn = $this->sharedFixture['conn'];
+        
         return \Doctrine\ORM\EntityManager::create($conn, $config, $eventManager);
     }
 }

@@ -100,13 +100,20 @@ class OraclePlatform extends AbstractPlatform
     {
         return 'SYS_GUID()';
     }
-
+    
+    /**
+     * Gets the SQL used to create a sequence that starts with a given value
+     * and increments by the given allocation size.
+     *
+     * @param string $sequenceName
+     * @param integer $start
+     * @param integer $allocationSize
+     * @return string The SQL.
+     */
     public function getCreateSequenceSql($sequenceName, $start = 1, $allocationSize = 1)
     {
-        $query  = 'CREATE SEQUENCE ' . $this->quoteIdentifier($sequenceName) . ' START WITH ' . $start . ' INCREMENT BY 1 NOCACHE';
-        $query .= ($start < 1 ? ' MINVALUE ' . $start : '');
-
-        return $query;
+﻿        return 'CREATE SEQUENCE ' . $this->quoteIdentifier($sequenceName) 
+                . ' START WITH ' . $start . ' INCREMENT BY ' . $allocationSize; 
     }
 
     /**

@@ -9,7 +9,10 @@ class DbalFunctionalTestCase extends DbalTestCase
     protected function setUp()
     {
         if ( ! isset($this->_conn)) {
-            $this->_conn = TestUtil::getConnection();
+            if ( ! isset($this->sharedFixture['conn'])) {
+                $this->sharedFixture['conn'] = TestUtil::getConnection();
+            }
+            $this->_conn = $this->sharedFixture['conn'];
         }
     }
 }

@@ -20,9 +20,7 @@ class SingleTableInheritanceTest extends \Doctrine\Tests\OrmFunctionalTestCase
                 $this->_em->getClassMetadata('Doctrine\Tests\ORM\Functional\RelatedEntity')
             ));
         } catch (\Exception $e) {
-            if (stripos($e->getMessage(), 'already exists') === false) {
-                throw $e;
-            }
+            // Swallow all exceptions. We do not test the schema tool here.
         }
     }
 
