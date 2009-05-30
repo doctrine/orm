@@ -273,17 +273,17 @@ class PostgreSqlSchemaManager extends AbstractSchemaManager
      *
      * @param  string $database The name of the database to drop.
      * @return boolean $result
+     * @override
      */
     public function dropDatabase($database = null)
     {
         if (is_null($database)) {
+            //TODO: How to deal with this? We need to connect to another database
+            //      in order to drop this one!
             $database = $this->_conn->getDatabase();
         }
         $sql = $this->_platform->getDropDatabaseSql($database);
         
-        //$this->_conn->close();
-        
-
         return $this->_executeSql($sql, 'execute');
     }
 }
