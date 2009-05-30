@@ -22,21 +22,13 @@ class TestUtil
                 'memory' => true
             );
         }
-        
+
         $conn = \Doctrine\DBAL\DriverManager::getConnection($params);
-        $sm = $conn->getSchemaManager();
-
-        try {
-            $sm->dropDatabase();
-        } catch (\Exception $e) {}
-
-        try {
-            $sm->createDatabase();
-        } catch (\Exception $e) {}
+        $conn->getSchemaManager()->dropAndCreateDatabase();
 
         $conn->close();
+        $conn->connect();
 
-        $conn = \Doctrine\DBAL\DriverManager::getConnection($params);
         return $conn;
     }
 }
