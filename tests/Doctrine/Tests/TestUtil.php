@@ -33,8 +33,10 @@ class TestUtil
     public static function getConnection()
     {
         if (isset($GLOBALS['db_type'], $GLOBALS['db_username'], $GLOBALS['db_password'],
-                $GLOBALS['db_host'], $GLOBALS['db_name'], $GLOBALS['db_port'])) {
-            $params = array(
+                $GLOBALS['db_host'], $GLOBALS['db_name'], $GLOBALS['db_port']) &&
+           isset($GLOBALS['tmpdb_type'], $GLOBALS['tmpdb_username'], $GLOBALS['tmpdb_password'],
+                $GLOBALS['tmpdb_host'], $GLOBALS['tmpdb_name'], $GLOBALS['tmpdb_port'])) {
+            $realDbParams = array(
                 'driver' => $GLOBALS['db_type'],
                 'user' => $GLOBALS['db_username'],
                 'password' => $GLOBALS['db_password'],
@@ -42,10 +44,29 @@ class TestUtil
                 'dbname' => $GLOBALS['db_name'],
                 'port' => $GLOBALS['db_port']
             );
-            $conn = \Doctrine\DBAL\DriverManager::getConnection($params);
-            $conn->getSchemaManager()->dropAndCreateDatabase();
-            $conn->close();
-            $conn->connect();
+            $tmpDbParams = array(
+                'driver' => $GLOBALS['tmpdb_type'],
+                'user' => $GLOBALS['tmpdb_username'],
+                'password' => $GLOBALS['tmpdb_password'],
+                'host' => $GLOBALS['tmpdb_host'],
+                'dbname' => $GLOBALS['tmpdb_name'],
+                'port' => $GLOBALS['tmpdb_port']
+            );
+            
+            // Connect to tmpdb in order to drop and create the real test db.
+            $tmpConn = \Doctrine\DBAL\DriverManager::getConnection($tmpDbParams);
+            $realConn = \Doctrine\DBAL\DriverManager::getConnection($realDbParams);
+            
+            $dbname = $realConn->getDatabase();
+            $realConn->close();
+            
+            $tmpConn->getSchemaManager()->dropDatabase($dbname);
+            $tmpConn->getSchemaManager()->createDatabase($dbname);
+            
+            $tmpConn->close();
+            
+            $conn = \Doctrine\DBAL\DriverManager::getConnection($realDbParams);
+            
         } else {
             $params = array(
                 'driver' => 'pdo_sqlite',

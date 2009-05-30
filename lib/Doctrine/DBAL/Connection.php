@@ -211,6 +211,46 @@ class Connection
     {
         return $this->_driver->getDatabase($this);
     }
+    
+    /**
+     * Gets the hostname of the currently connected database.
+     * 
+     * @return string
+     */
+    public function getHost()
+    {
+        return $this->_params['host'];
+    }
+    
+    /**
+     * Gets the port of the currently connected database.
+     * 
+     * @return mixed
+     */
+    public function getPort()
+    {
+        return $this->_params['port'];
+    }
+    
+    /**
+     * Gets the username used by this connection.
+     * 
+     * @return string
+     */
+    public function getUsername()
+    {
+        return $this->_params['user'];
+    }
+    
+    /**
+     * Gets the password used by this connection.
+     * 
+     * @return string
+     */
+    public function getPassword()
+    {
+        return $this->_params['password'];
+    }
 
     /**
      * Gets the DBAL driver instance.
@@ -349,8 +389,8 @@ class Connection
         }
 
         $query = 'DELETE FROM '
-        . $this->quoteIdentifier($tableName)
-        . ' WHERE ' . implode(' AND ', $criteria);
+                . $this->quoteIdentifier($tableName)
+                . ' WHERE ' . implode(' AND ', $criteria);
 
         return $this->exec($query, array_values($identifier));
     }
@@ -578,8 +618,7 @@ class Connection
      *
      * @param string $query     sql query
      * @param array $params     query parameters
-     *
-     * @return PDOStatement
+     * @return integer
      * @todo Rename to executeUpdate().
      */
     public function exec($query, array $params = array())

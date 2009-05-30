@@ -13,6 +13,7 @@ class DbalFunctionalTestSuite extends DbalTestSuite
     
     protected function tearDown()
     {
+        $this->sharedFixture['conn']->close();
         $this->sharedFixture = null;
     }
 }

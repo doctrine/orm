@@ -227,19 +227,15 @@ abstract class AbstractSchemaManager
     }
 
     /**
-     * Drop the database for this connection
+     * Drops a database.
+     * 
+     * NOTE: You can not drop the database this SchemaManager is currently connected to.
      *
      * @param  string $database The name of the database to drop
-     * @return boolean $result
      */
-    public function dropDatabase($database = null)
+    public function dropDatabase($database)
     {
-        if (is_null($database)) {
-            $database = $this->_conn->getDatabase();
-        }
-        $sql = $this->_platform->getDropDatabaseSql($database);
-
-        return $this->_executeSql($sql, 'execute');
+        $this->_conn->exec($this->_platform->getDropDatabaseSql($database));
     }
 
     /**
