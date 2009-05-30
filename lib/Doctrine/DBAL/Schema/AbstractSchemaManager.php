@@ -298,8 +298,7 @@ abstract class AbstractSchemaManager
      */
     public function dropConstraint($table, $name, $primary = false)
     {
-        $sql = $this->_platform->getDropConstraintSql($table, $name, $primary);
-        $this->_execSql($sql);
+        $this->_execSql($this->_platform->getDropConstraintSql($table, $name, $primary));
     }
 
     /**
@@ -332,7 +331,7 @@ abstract class AbstractSchemaManager
      */
     public function dropView($name)
     {
-        return $this->_execSql($this->_platform->getDropViewSql($name));
+        $this->_execSql($this->_platform->getDropViewSql($name));
     }
 
     /* create*() Methods */
@@ -452,7 +451,7 @@ abstract class AbstractSchemaManager
      */
     public function createForeignKey($table, array $definition)
     {
-        return $this->_execSql($this->_platform->getCreateForeignKeySql($table, $definition));
+        $this->_execSql($this->_platform->getCreateForeignKeySql($table, $definition));
     }
 
     /**
@@ -463,7 +462,7 @@ abstract class AbstractSchemaManager
      */
     public function createView($name, $sql)
     {
-        return $this->_execSql($this->_platform->getCreateViewSql($name, $sql));
+        $this->_execSql($this->_platform->getCreateViewSql($name, $sql));
     }
 
     /* dropAndCreate*() Methods */
@@ -686,7 +685,7 @@ abstract class AbstractSchemaManager
      */
     public function alterTable($name, array $changes, $check = false)
     {
-        return $this->_execSql($this->_platform->getAlterTableSql($name, $changes, $check));
+        $this->_execSql($this->_platform->getAlterTableSql($name, $changes, $check));
     }
 
     /**
