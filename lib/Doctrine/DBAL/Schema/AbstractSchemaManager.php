@@ -265,7 +265,7 @@ abstract class AbstractSchemaManager
         // $table == $index ???
         $sql = $this->_platform->getDropIndexSql($table, $name);
 
-        return $this->_executeSql($sql, 'exec');
+        return $this->_execSql($sql);
     }
 
     /**
@@ -280,7 +280,7 @@ abstract class AbstractSchemaManager
     {
         $sql = $this->_platform->getDropConstraintSql($table, $name, $primary);
 
-        return $this->_executeSql($sql, 'exec');
+        return $this->_execSql($sql);
     }
 
     /**
@@ -294,7 +294,7 @@ abstract class AbstractSchemaManager
     {
         $sql = $this->_platform->getDropForeignKeySql($table, $name);
 
-        return $this->_executeSql($sql, 'exec');
+        return $this->_execSql($sql);
     }
 
     /**
@@ -307,7 +307,7 @@ abstract class AbstractSchemaManager
     {
         $sql = $this->_platform->getDropSequenceSql($name);
 
-        return $this->_executeSql($sql, 'exec');
+        return $this->_execSql($sql);
     }
 
     /**
@@ -316,14 +316,11 @@ abstract class AbstractSchemaManager
      * @param  string $database The name of the database to create
      * @return boolean $result
      */
-    public function createDatabase($database = null)
+    public function createDatabase($database)
     {
-        if (is_null($database)) {
-            $database = $this->_conn->getDatabase();
-        }
         $sql = $this->_platform->getCreateDatabaseSql($database);
 
-        return $this->_executeSql($sql, 'exec');
+        return $this->_execSql($sql);
     }
 
     /**
@@ -352,7 +349,7 @@ abstract class AbstractSchemaManager
 
         $sql = $this->_platform->getCreateTableSql($name, $columns, $options);
 
-        return $this->_executeSql($sql, 'exec');
+        return $this->_execSql($sql);
     }
 
     /**
@@ -373,7 +370,7 @@ abstract class AbstractSchemaManager
     {
         $sql = $this->_platform->getCreateSequenceSql($seqName, $start, $options);
 
-        return $this->_executeSql($sql, 'exec');
+        return $this->_execSql($sql);
     }
 
     /**
@@ -401,7 +398,7 @@ abstract class AbstractSchemaManager
     {
         $sql = $this->_platform->getCreateConstraintSql($table, $name, $definition);
 
-        return $this->_executeSql($sql, 'exec');
+        return $this->_execSql($sql);
     }
 
     /**
@@ -439,7 +436,7 @@ abstract class AbstractSchemaManager
     {
         $sql = $this->_platform->getCreateIndexSql($table, $name, $definition);
 
-        return $this->_executeSql($sql, 'exec');
+        return $this->_execSql($sql);
     }
 
     /**
@@ -453,7 +450,7 @@ abstract class AbstractSchemaManager
     {
         $sql = $this->_platform->getCreateForeignKeySql($table, $definition);
 
-        return $this->_executeSql($sql, 'exec');
+        return $this->_execSql($sql);
     }
 
     /**
@@ -467,7 +464,7 @@ abstract class AbstractSchemaManager
     {
         $sql = $this->_platform->getCreateViewSql($name, $sql);
 
-        return $this->_executeSql($sql, 'exec');
+        return $this->_execSql($sql);
     }
 
     /**
@@ -480,7 +477,7 @@ abstract class AbstractSchemaManager
     {
         $sql = $this->_platform->getDropViewSql($name);
 
-        return $this->_executeSql($sql, 'exec');
+        return $this->_execSql($sql);
     }
 
     /**
@@ -575,7 +572,7 @@ abstract class AbstractSchemaManager
     {
         $sql = $this->_platform->getAlterTableSql($name, $changes, $check);
 
-        return $this->_executeSql($sql, 'exec');
+        return $this->_execSql($sql);
     }
 
     /**
@@ -856,11 +853,20 @@ abstract class AbstractSchemaManager
         return $tableForeignKey;
     }
 
-    protected function _executeSql($sql, $method = 'exec')
+    protected function _executeSql($sql)
     {
         $result = true;
         foreach ((array) $sql as $query) {
-            $result = $this->_conn->$method($query);
+            $result = $this->_conn->execute($query);
+        }
+        return $result;
+    }
+    
+    protected function _execSql($sql)
+    {
+        $result = true;
+        foreach ((array) $sql as $query) {
+            $result = $this->_conn->exec($query);
         }
         return $result;
     }
