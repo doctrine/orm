@@ -33,21 +33,26 @@ namespace Doctrine\DBAL\Schema;
  */
 class SqliteSchemaManager extends AbstractSchemaManager
 {
-    public function dropDatabase($database = null)
+    /**
+     * {@inheritdoc}
+     * 
+     * @override
+     */
+    public function dropDatabase($database)
     {
-        if (is_null($database)) {
-            $database = $this->_conn->getDatabase();
-        }
         if (file_exists($database)) {
             unlink($database);
         }
     }
 
-    public function createDatabase($database = null)
+    /**
+     * {@inheritdoc}
+     * 
+     * @override
+     */
+    public function createDatabase($database)
     {
-        if (is_null($database)) {
-            $database = $this->_conn->getDatabase();
-        }
+        // FIXME: $database parameter not used 
         // TODO: Can we do this better?
         $this->_conn->close();
         $this->_conn->connect();

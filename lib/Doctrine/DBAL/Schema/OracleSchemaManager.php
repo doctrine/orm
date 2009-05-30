@@ -239,53 +239,22 @@ class OracleSchemaManager extends AbstractSchemaManager
     {
         try {
             $this->dropAutoincrement($name);
-        } catch (\Exception $e) {}
+        } catch (\Exception $e) {
+            //FIXME: Exception silencing ;'-(
+        }
 
         return parent::dropTable($name);
     }
 
     /**
-     * create sequence
-     *
-     * @param string $seqName name of the sequence to be created
-     * @param string $start start value of the sequence; default is 1
-     * @param array     $options  An associative array of table options:
-     *                          array(
-     *                              'comment' => 'Foo',
-     *                              'charset' => 'utf8',
-     *                              'collate' => 'utf8_unicode_ci',
-     *                          );
-     * @return string
-     */
-    public function createSequenceSql($seqName, $start = 1, array $options = array())
-    {
-        $sequenceName = $this->_conn->quoteIdentifier($this->_conn->formatter->getSequenceName($seqName), true);
-        $query  = 'CREATE SEQUENCE ' . $sequenceName . ' START WITH ' . $start . ' INCREMENT BY 1 NOCACHE';
-        $query .= ($start < 1 ? ' MINVALUE ' . $start : '');
-        return $query;
-    }
-
-    /**
-     * drop existing sequence
-     *
-     * @param object $this->_conn database object that is extended by this class
-     * @param string $seqName name of the sequence to be dropped
-     * @return string
-     */
-    public function dropSequenceSql($seqName)
-    {
-        $sequenceName = $this->_conn->quoteIdentifier($this->_conn->formatter->getSequenceName($seqName), true);
-        return 'DROP SEQUENCE ' . $sequenceName;
-    }
-
-    /**
-     * lists all database sequences
+     * Lists all sequences.
      *
      * @param string|null $database
      * @return array
      */
     public function listSequences($database = null)
     {
+        //FIXME: $database not used. Remove?
         $query = "SELECT sequence_name FROM sys.user_sequences";
 
         $tableNames = $this->_conn->fetchColumn($query);

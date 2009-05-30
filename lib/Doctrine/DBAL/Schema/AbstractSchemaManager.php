@@ -242,13 +242,10 @@ abstract class AbstractSchemaManager
      * Drop the given table
      *
      * @param string $table The name of the table to drop
-     * @return boolean $result
      */
     public function dropTable($table)
     {
-        $sql = $this->_platform->getDropTableSql($table);
-
-        return $this->_executeSql($sql, 'execute');
+        $this->_execSql($this->_platform->getDropTableSql($table));
     }
 
     /**
@@ -256,16 +253,13 @@ abstract class AbstractSchemaManager
      *
      * @param string $table The name of the table
      * @param string $name  The name of the index
-     * @return boolean $result
      */
     public function dropIndex($table, $name)
     {
         //FIXME: Something is wrong here. The signature of getDropIndexSql is:
         // public function getDropIndexSql($index, $name)
         // $table == $index ???
-        $sql = $this->_platform->getDropIndexSql($table, $name);
-
-        return $this->_execSql($sql);
+        $this->_execSql($this->_platform->getDropIndexSql($table, $name));
     }
 
     /**
@@ -274,63 +268,51 @@ abstract class AbstractSchemaManager
      * @param string $table   The name of the table
      * @param string $name    The name of the constraint
      * @param string $primary Whether or not it is a primary constraint
-     * @return boolean $result
      */
     public function dropConstraint($table, $name, $primary = false)
     {
         $sql = $this->_platform->getDropConstraintSql($table, $name, $primary);
-
-        return $this->_execSql($sql);
+        $this->_execSql($sql);
     }
 
     /**
-     * Drop the foreign key from the given table
+     * Drops a foreign key from a table.
      *
-     * @param string $table The name of the table
-     * @param string $name  The name of the foreign key
+     * @param string $table The name of the table with the foreign key.
+     * @param string $name  The name of the foreign key.
      * @return boolean $result
      */
     public function dropForeignKey($table, $name)
     {
-        $sql = $this->_platform->getDropForeignKeySql($table, $name);
-
-        return $this->_execSql($sql);
+        $this->_execSql($this->_platform->getDropForeignKeySql($table, $name));
     }
 
     /**
-     * Drop the given sequence
+     * Drops a sequence with a given name.
      *
-     * @param string $name The name of the sequence
-     * @return boolean $result
+     * @param string $name The name of the sequence to drop.
      */
     public function dropSequence($name)
     {
-        $sql = $this->_platform->getDropSequenceSql($name);
-
-        return $this->_execSql($sql);
+        $this->_execSql($this->_platform->getDropSequenceSql($name));
     }
 
     /**
-     * Create the given database on the connection
+     * Creates a new database.
      *
-     * @param  string $database The name of the database to create
-     * @return boolean $result
+     * @param string $database The name of the database to create.
      */
     public function createDatabase($database)
     {
-        $sql = $this->_platform->getCreateDatabaseSql($database);
-
-        return $this->_execSql($sql);
+        $this->_execSql($this->_platform->getCreateDatabaseSql($database));
     }
 
     /**
-     * Create a new database table
+     * Create a new table.
      *
-     * @param string $name   Name of the database that should be created
-     * @param array $fields  Associative array that contains the definition of each field of the new table
-     * @param array $options  An associative array of table options:
-     *
-     * @return boolean $result
+     * @param string $name Name of the database that should be created
+     * @param array $fields Associative array that contains the definition of each field of the new table
+     * @param array $options An associative array of table options.
      */
     public function createTable($name, array $columns, array $options = array())
     {
@@ -346,10 +328,7 @@ abstract class AbstractSchemaManager
                 $options['primary'][] = $columnName;
             }
         }
-
-        $sql = $this->_platform->getCreateTableSql($name, $columns, $options);
-
-        return $this->_execSql($sql);
+        $this->_execSql($this->_platform->getCreateTableSql($name, $columns, $options));
     }
 
     /**
@@ -363,14 +342,11 @@ abstract class AbstractSchemaManager
      *                              'charset' => 'utf8',
      *                              'collate' => 'utf8_unicode_ci',
      *                          );
-     * @return boolean $result
      * @throws Doctrine\DBAL\ConnectionException     if something fails at database level
      */
-    public function createSequence($seqName, $start = 1, array $options = array())
+    public function createSequence($seqName, $start = 1, $allocationSize = 1)
     {
-        $sql = $this->_platform->getCreateSequenceSql($seqName, $start, $options);
-
-        return $this->_execSql($sql);
+        $this->_execSql($this->_platform->getCreateSequenceSql($seqName, $start, $allocationSize));
     }
 
     /**
@@ -392,13 +368,10 @@ abstract class AbstractSchemaManager
      *                                            'last_login' => array()
      *                                        )
      *                                    )
-     * @return boolean $result
      */
     public function createConstraint($table, $name, $definition)
     {
-        $sql = $this->_platform->getCreateConstraintSql($table, $name, $definition);
-
-        return $this->_execSql($sql);
+        $this->_execSql($this->_platform->getCreateConstraintSql($table, $name, $definition));
     }
 
     /**
@@ -430,13 +403,10 @@ abstract class AbstractSchemaManager
      *                                            'last_login' => array()
      *                                        )
      *                                    )
-     * @return boolean $result
      */
     public function createIndex($table, $name, array $definition)
     {
-        $sql = $this->_platform->getCreateIndexSql($table, $name, $definition);
-
-        return $this->_execSql($sql);
+        $this->_execSql($this->_platform->getCreateIndexSql($table, $name, $definition));
     }
 
     /**
@@ -444,13 +414,10 @@ abstract class AbstractSchemaManager
      *
      * @param string    $table         name of the table on which the foreign key is to be created
      * @param array     $definition    associative array that defines properties of the foreign key to be created.
-     * @return boolean $result
      */
     public function createForeignKey($table, array $definition)
     {
-        $sql = $this->_platform->getCreateForeignKeySql($table, $definition);
-
-        return $this->_execSql($sql);
+        return $this->_execSql($this->_platform->getCreateForeignKeySql($table, $definition));
     }
 
     /**
@@ -458,13 +425,10 @@ abstract class AbstractSchemaManager
      *
      * @param string $name The name of the view
      * @param string $sql  The sql to set to the view
-     * @return boolean $result
      */
     public function createView($name, $sql)
     {
-        $sql = $this->_platform->getCreateViewSql($name, $sql);
-
-        return $this->_execSql($sql);
+        return $this->_execSql($this->_platform->getCreateViewSql($name, $sql));
     }
 
     /**
@@ -475,9 +439,7 @@ abstract class AbstractSchemaManager
      */
     public function dropView($name)
     {
-        $sql = $this->_platform->getDropViewSql($name);
-
-        return $this->_execSql($sql);
+        return $this->_execSql($this->_platform->getDropViewSql($name));
     }
 
     /**
@@ -566,13 +528,10 @@ abstract class AbstractSchemaManager
      * @param boolean $check     indicates whether the function should just check if the DBMS driver
      *                             can perform the requested table alterations if the value is true or
      *                             actually perform them otherwise.
-     * @return boolean $result
      */
     public function alterTable($name, array $changes, $check = false)
     {
-        $sql = $this->_platform->getAlterTableSql($name, $changes, $check);
-
-        return $this->_execSql($sql);
+        return $this->_execSql($this->_platform->getAlterTableSql($name, $changes, $check));
     }
 
     /**
@@ -580,15 +539,13 @@ abstract class AbstractSchemaManager
      *
      * @param string $name     The current name of the table
      * @param string $newName  The new name of the table
-     * @return boolean $result
      */
     public function renameTable($name, $newName)
     {
         $change = array(
             'name' => $newName
         );
-
-        return $this->alterTable($name, $change);
+        $this->alterTable($name, $change);
     }
 
     /**
@@ -597,7 +554,6 @@ abstract class AbstractSchemaManager
      * @param string $name          The name of the table
      * @param string $column        The name of the column to add
      * @param array  $definition    The definition of the column to add
-     * @return boolean $result
      */
     public function addTableColumn($name, $column, $definition)
     {
@@ -606,8 +562,7 @@ abstract class AbstractSchemaManager
                 $column => $definition
             )
         );
-
-        return $this->alterTable($name, $change);
+        $this->alterTable($name, $change);
     }
 
     /**
@@ -615,15 +570,13 @@ abstract class AbstractSchemaManager
      *
      * @param string $tableName The name of the table
      * @param array|string $column The column name or array of names
-     * @return boolean $result
      */
     public function removeTableColumn($name, $column)
     {
         $change = array(
             'remove' => is_array($column) ? $column : array($column => array())
         );
-
-        return $this->alterTable($name, $change);
+        $this->alterTable($name, $change);
     }
 
     /**
@@ -633,7 +586,6 @@ abstract class AbstractSchemaManager
      * @param string $type       The type of the column
      * @param string $length     The length of the column
      * @param string $definition The definition array for the column
-     * @return boolean $result
      */
     public function changeTableColumn($name, $type, $length = null, $definition = array())
     {
@@ -647,8 +599,7 @@ abstract class AbstractSchemaManager
                 )
             )
         );
-
-        return $this->alterTable($name, $change);
+        $this->alterTable($name, $change);
     }
 
     /**
@@ -658,7 +609,6 @@ abstract class AbstractSchemaManager
      * @param string $oldName    The old column name
      * @param string $newName    The new column
      * @param string $definition The column definition array if you want to change something
-     * @return boolean $result
      */
     public function renameTableColumn($name, $oldName, $newName, $definition = array())
     {
@@ -670,8 +620,7 @@ abstract class AbstractSchemaManager
                 )
             )
         );
-
-        return $this->alterTable($name, $change);
+        $this->alterTable($name, $change);
     }
 
     protected function _getPortableDatabasesList($databases)
@@ -852,23 +801,17 @@ abstract class AbstractSchemaManager
     {
         return $tableForeignKey;
     }
-
-    protected function _executeSql($sql)
-    {
-        $result = true;
-        foreach ((array) $sql as $query) {
-            $result = $this->_conn->execute($query);
-        }
-        return $result;
-    }
     
+    /**
+     * Executes one or more SQL statements using Connection#exec.
+     * 
+     * @param string|array $sql The SQL to execute.
+     */
     protected function _execSql($sql)
     {
-        $result = true;
         foreach ((array) $sql as $query) {
-            $result = $this->_conn->exec($query);
+            $this->_conn->exec($query);
         }
-        return $result;
     }
 
     public function tryMethod()
@@ -881,7 +824,7 @@ abstract class AbstractSchemaManager
         try {
             return call_user_func_array(array($this, $method), $args);
         } catch (\Exception $e) {
-            //var_dump($e->getMessage());
+            //FIXME: Exception silencing is dangerous and hard to debug :(
             return false;
         }
     }
@@ -915,7 +858,8 @@ abstract class AbstractSchemaManager
                 array_merge(array($method), $arguments));
         }
     }
-
+    
+    //FIXME: Turn into explicit, public, documented method.
     public function __call($method, $arguments)
     {
         if ($result = $this->_handleDropAndCreate($method, $arguments)) {

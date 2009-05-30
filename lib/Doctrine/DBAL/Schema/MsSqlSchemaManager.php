@@ -195,19 +195,9 @@ class MsSqlSchemaManager extends AbstractSchemaManager
     }
 
     /**
-     * create sequence
-     *
-     * @param string $seqName name of the sequence to be created
-     * @param string $start start value of the sequence; default is 1
-     * @param array     $options  An associative array of table options:
-     *                          array(
-     *                              'comment' => 'Foo',
-     *                              'charset' => 'utf8',
-     *                              'collate' => 'utf8_unicode_ci',
-     *                          );
-     * @return string
+     * {@inheritdoc}
      */
-    public function createSequence($seqName, $start = 1, array $options = array())
+    public function createSequence($seqName, $start = 1, $allocationSize = 1)
     {
         $sequenceName = $this->conn->quoteIdentifier($this->conn->getSequenceName($seqName), true);
         $seqcolName = $this->conn->quoteIdentifier($this->conn->options['seqcol_name'], true);

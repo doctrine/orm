@@ -293,14 +293,18 @@ class MySqlSchemaManager extends AbstractSchemaManager
         );
         return $foreignKey;
     }
-
-    public function createSequence($sequenceName, $start = 1, array $options = array())
+    
+    /**
+     * {@inheritdoc}
+     */
+    public function createSequence($sequenceName, $start = 1, $allocationSize = 1)
     {
-        $sequenceName   = $this->_conn->quoteIdentifier($this->_conn->getSequenceName($sequenceName), true);
-        $seqcolName     = $this->_conn->quoteIdentifier($this->_conn->getAttribute(Doctrine::ATTR_SEQCOL_NAME), true);
+        $sequenceName = $this->_conn->quoteIdentifier($sequenceName);
+        $seqColumnName = 'mysql_sequence';
 
+        /* No support for options yet. Might add 4th options parameter later
         $optionsStrings = array();
-
+         
         if (isset($options['comment']) && ! empty($options['comment'])) {
             $optionsStrings['comment'] = 'COMMENT = ' . $this->_conn->quote($options['comment'], 'string');
         }
@@ -312,7 +316,7 @@ class MySqlSchemaManager extends AbstractSchemaManager
                 $optionsStrings['collate'] .= ' COLLATE ' . $options['collate'];
             }
         }
-
+        
         $type = false;
 
         if (isset($options['type'])) {
@@ -322,38 +326,39 @@ class MySqlSchemaManager extends AbstractSchemaManager
         }
         if ($type) {
             $optionsStrings[] = 'ENGINE = ' . $type;
-        }
+        }*/
 
         try {
             $query  = 'CREATE TABLE ' . $sequenceName
                     . ' (' . $seqcolName . ' INT NOT NULL AUTO_INCREMENT, PRIMARY KEY ('
                     . $seqcolName . '))';
 
-            if (!empty($options_strings)) {
+            /*if (!empty($options_strings)) {
                 $query .= ' '.implode(' ', $options_strings);
-            }
+            }*/
+            $query .= ' ENGINE = INNODB';
 
-            $res    = $this->_conn->exec($query);
+            $res = $this->_conn->exec($query);
         } catch(Doctrine\DBAL\ConnectionException $e) {
             throw \Doctrine\Common\DoctrineException::updateMe('could not create sequence table');
         }
 
         if ($start == 1) {
-            return true;
-       }
+            return;
+        }
 
-        $query  = 'INSERT INTO ' . $sequenceName
+        $query = 'INSERT INTO ' . $sequenceName
                 . ' (' . $seqcolName . ') VALUES (' . ($start - 1) . ')';
 
-        $res    = $this->_conn->exec($query);
+        $res = $this->_conn->exec($query);
 
-      // Handle error
-      try {
-          $res = $this->_conn->exec('DROP TABLE ' . $sequenceName);
-      } catch(Doctrine\DBAL\ConnectionException $e) {
-          throw \Doctrine\Common\DoctrineException::updateMe('could not drop inconsistent sequence table');
-      }
-
-      return $res;
+        // Handle error
+        try {
+            $res = $this->_conn->exec('DROP TABLE ' . $sequenceName);
+        } catch (\Exception $e) {
+            throw \Doctrine\Common\DoctrineException::updateMe('could not drop inconsistent sequence table');
+        }
+    
+        return $res;
     }
 }
