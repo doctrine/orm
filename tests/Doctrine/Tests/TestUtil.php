@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 namespace Doctrine\Tests;
 
@@ -16,18 +16,17 @@ class TestUtil
                 'dbname' => $GLOBALS['db_name'],
                 'port' => $GLOBALS['db_port']
             );
+            $conn = \Doctrine\DBAL\DriverManager::getConnection($params);
+            $conn->getSchemaManager()->dropAndCreateDatabase();
+            $conn->close();
+            $conn->connect();
         } else {
             $params = array(
                 'driver' => 'pdo_sqlite',
                 'memory' => true
             );
+            $conn = \Doctrine\DBAL\DriverManager::getConnection($params);
         }
-
-        $conn = \Doctrine\DBAL\DriverManager::getConnection($params);
-        $conn->getSchemaManager()->dropAndCreateDatabase();
-
-        $conn->close();
-        $conn->connect();
 
         return $conn;
     }
