@@ -120,7 +120,7 @@ class MySqlSchemaManagerTest extends SchemaManagerFunctionalTest
         $data['options'] = array('type' => 'innodb');
         $this->createTestTable('list_table_foreign_keys_test1', $data);
         $this->createTestTable('list_table_foreign_keys_test2', $data);
-
+        
         $definition = array(
             'name' => 'testing',
             'local' => 'foreign_key_test',
@@ -128,7 +128,7 @@ class MySqlSchemaManagerTest extends SchemaManagerFunctionalTest
             'foreignTable' => 'list_table_foreign_keys_test2'
         );
         $this->_sm->createForeignKey('list_table_foreign_keys_test1', $definition);
-
+        
         $tableForeignKeys = $this->_sm->listTableForeignKeys('list_table_foreign_keys_test1');
         $this->assertEquals(1, count($tableForeignKeys));
         $this->assertEquals('list_table_foreign_keys_test2', $tableForeignKeys[0]['table']);
