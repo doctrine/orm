@@ -112,7 +112,7 @@ class OraclePlatform extends AbstractPlatform
      */
     public function getCreateSequenceSql($sequenceName, $start = 1, $allocationSize = 1)
     {
-﻿        return 'CREATE SEQUENCE ' . $this->quoteIdentifier($sequenceName) 
+        return 'CREATE SEQUENCE ' . $this->quoteIdentifier($sequenceName) 
                 . ' START WITH ' . $start . ' INCREMENT BY ' . $allocationSize; 
     }
 
