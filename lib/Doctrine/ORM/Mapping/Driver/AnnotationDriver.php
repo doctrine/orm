@@ -61,12 +61,12 @@ class AnnotationDriver
             ));
         }
 
-        // Evaluate DoctrineInheritanceType annotation
+        // Evaluate InheritanceType annotation
         if ($inheritanceTypeAnnot = $annotClass->getAnnotation('InheritanceType')) {
             $metadata->setInheritanceType($inheritanceTypeAnnot->value);
         }
 
-        // Evaluate DoctrineDiscriminatorColumn annotation
+        // Evaluate DiscriminatorColumn annotation
         if ($discrColumnAnnot = $annotClass->getAnnotation('DiscriminatorColumn')) {
             $metadata->setDiscriminatorColumn(array(
                 'name' => $discrColumnAnnot->name,
@@ -75,7 +75,7 @@ class AnnotationDriver
             ));
         }
 
-        // Evaluate DoctrineDiscriminatorMap annotation
+        // Evaluate DiscriminatorValue annotation
         if ($discrValueAnnot = $annotClass->getAnnotation('DiscriminatorValue')) {
             $metadata->setDiscriminatorValue($discrValueAnnot->value);
         }

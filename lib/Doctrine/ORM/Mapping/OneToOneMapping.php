@@ -89,7 +89,7 @@ class OneToOneMapping extends AssociationMapping
         
         if ($this->isOwningSide()) {
             if ( ! isset($mapping['joinColumns'])) {
-                throw MappingException::invalidMapping($this->_sourceFieldName);
+                throw MappingException::invalidMapping($this->sourceFieldName);
             }
             $this->joinColumns = $mapping['joinColumns'];
             foreach ($mapping['joinColumns'] as $joinColumn) {

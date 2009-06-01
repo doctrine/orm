@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+  targetNamespace="http://schemas.doctrine-project.org/orm/doctrine-mapping"
+  xmlns:orm="http://schemas.doctrine-project.org/orm/doctrine-mapping"
+  elementFormDefault="qualified">
+
+  <xs:annotation>
+    <xs:documentation><![CDATA[ 
+       This is the XML Schema for the object/relational 
+       mapping file used by Doctrine.
+     ]]></xs:documentation>
+  </xs:annotation>
+
+  <xs:element name="doctrine-mapping">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="entity" type="orm:entity" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  
+  <xs:complexType name="emptyType"/> 
+  
+  <xs:complexType name="cascade-type">
+    <xs:sequence>
+      <xs:element name="cascade-all" type="orm:emptyType" minOccurs="0"/> 
+      <xs:element name="cascade-save" type="orm:emptyType" minOccurs="0"/> 
+      <xs:element name="cascade-merge" type="orm:emptyType" minOccurs="0"/> 
+      <xs:element name="cascade-delete" type="orm:emptyType" minOccurs="0"/> 
+      <xs:element name="cascade-refresh" type="orm:emptyType" minOccurs="0"/> 
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="entity">
+    <xs:sequence>
+      <xs:element name="id" type="orm:id" />
+      <xs:element name="field" type="orm:field" minOccurs="0" />
+      <xs:element name="one-to-one" type="orm:one-to-one" minOccurs="0"/>
+      <xs:element name="one-to-many" type="orm:one-to-many" minOccurs="0" />
+      <xs:element name="many-to-many" type="orm:many-to-many" minOccurs="0" />
+    </xs:sequence>
+    <xs:attribute name="name" type="xs:string" use="required" />
+    <xs:attribute name="table" type="xs:NMTOKEN" />
+    <xs:attribute name="schema" type="xs:NMTOKEN" />
+    <xs:attribute name="inheritance-type" type="orm:inheritance-type"/>
+  </xs:complexType>
+  
+  <xs:complexType name="mapped-superclass">
+    <xs:sequence>
+      <xs:element name="id" type="orm:id" minOccurs="0" />
+      <xs:element name="field" type="orm:field" minOccurs="0" />
+      <xs:element name="one-to-many" type="orm:one-to-many" minOccurs="0" />
+      <xs:element name="many-to-many" type="orm:many-to-many" minOccurs="0" />
+    </xs:sequence>
+    <xs:attribute name="name" type="xs:NMTOKEN" use="required" />
+  </xs:complexType>
+  
+  <xs:simpleType name="inheritance-type">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="single-table"/>
+      <xs:enumeration value="joined"/>
+      <xs:enumeration value="table-per-class"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:complexType name="field">
+    <xs:attribute name="name" type="xs:NMTOKEN" use="required" />
+    <xs:attribute name="type" type="xs:NMTOKEN" use="required" />
+    <xs:attribute name="column" type="xs:NMTOKEN" />
+    <xs:attribute name="length" type="xs:NMTOKEN" />
+  </xs:complexType>
+
+  <xs:complexType name="generator">
+    <xs:attribute name="strategy" type="xs:NMTOKEN" use="required" />
+  </xs:complexType>
+
+  <xs:complexType name="id">
+    <xs:sequence>
+      <xs:element name="generator" type="orm:generator" minOccurs="0" />
+    </xs:sequence>
+    <xs:attribute name="name" type="xs:NMTOKEN" use="required" />
+    <xs:attribute name="type" type="xs:NMTOKEN" use="required" />
+    <xs:attribute name="column" type="xs:NMTOKEN" />
+  </xs:complexType>
+
+  <xs:complexType name="inverse-join-columns">
+    <xs:sequence>
+      <xs:element name="join-column" type="orm:join-column" />
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="join-column">
+    <xs:attribute name="name" type="xs:NMTOKEN" use="required" />
+    <xs:attribute name="referencedColumnName" type="xs:NMTOKEN" use="required" />
+  </xs:complexType>
+
+  <xs:complexType name="join-columns">
+    <xs:sequence>
+      <xs:element name="join-column" type="orm:join-column" />
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="join-table">
+    <xs:sequence>
+      <xs:element name="join-columns" type="orm:join-columns" />
+      <xs:element name="inverse-join-columns" type="orm:join-columns" />
+    </xs:sequence>
+    <xs:attribute name="name" type="xs:NMTOKEN" use="required" />
+  </xs:complexType>
+
+  <xs:complexType name="many-to-many">
+    <xs:sequence>
+      <xs:element name="cascade" type="orm:cascade-type" minOccurs="0" />
+      <xs:element name="join-table" type="orm:join-table" />
+    </xs:sequence>
+    <xs:attribute name="targetEntity" type="xs:NMTOKEN" use="required" />
+    <xs:attribute name="field" type="xs:NMTOKEN" use="required" />
+  </xs:complexType>
+
+  <xs:complexType name="one-to-many">
+    <xs:sequence>
+      <xs:element name="cascade" type="orm:cascade-type" minOccurs="0" />
+    </xs:sequence>
+    <xs:attribute name="targetEntity" type="xs:NMTOKEN" use="required" />
+    <xs:attribute name="mappedBy" type="xs:NMTOKEN" />
+    <xs:attribute name="field" type="xs:NMTOKEN" use="required" />
+  </xs:complexType>
+  
+  <xs:complexType name="one-to-one">
+    <xs:sequence>
+      <xs:element name="cascade" type="orm:cascade-type" minOccurs="0" />
+      <xs:choice minOccurs="0" maxOccurs="1">
+        <xs:element name="join-column" type="orm:join-column"/>
+        <xs:element name="join-columns" type="orm:join-columns"/>
+      </xs:choice>
+    </xs:sequence>
+    <xs:attribute name="targetEntity" type="xs:NMTOKEN" use="required" />
+    <xs:attribute name="mappedBy" type="xs:NMTOKEN" />
+    <xs:attribute name="field" type="xs:NMTOKEN" use="required" />
+  </xs:complexType>
+
+</xs:schema>

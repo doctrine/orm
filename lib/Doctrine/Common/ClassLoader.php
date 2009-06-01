@@ -59,7 +59,7 @@ class ClassLoader
     }
 
     /**
-     * Set namespace separator
+     * Sets the namespace separator to use.
      *
      * @param string $separator 
      * @return void
