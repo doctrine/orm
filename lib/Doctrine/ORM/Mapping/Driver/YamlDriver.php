@@ -218,9 +218,9 @@ class YamlDriver extends AbstractFileDriver
 
     /**
      * Constructs a joinColumn mapping array based on the information
-     * found in the given SimpleXMLElement.
+     * found in the given join column element.
      * 
-     * @param $joinColumnElement The XML element.
+     * @param $joinColumnElement The array join column element
      * @return array The mapping array.
      */
     private function _getJoinColumnMapping($joinColumnElement)
