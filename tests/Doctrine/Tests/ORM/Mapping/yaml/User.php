@@ -1,6 +1,6 @@
 <?php
 
-namespace XmlMappingTest;
+namespace YamlMappingTest;
 
 class User {
     private $id;

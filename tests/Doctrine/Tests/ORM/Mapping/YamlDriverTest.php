@@ -3,23 +3,23 @@
 namespace Doctrine\Tests\ORM\Mapping;
 
 use Doctrine\ORM\Mapping\ClassMetadata;
-use Doctrine\ORM\Mapping\Driver\XmlDriver;
+use Doctrine\ORM\Mapping\Driver\YamlDriver;
 
-require_once __DIR__ . '/xml/User.php';
+require_once __DIR__ . '/yaml/User.php';
 require_once __DIR__ . '/../../TestInit.php';
  
-class XmlDriverTest extends \Doctrine\Tests\OrmTestCase
+class YamlDriverTest extends \Doctrine\Tests\OrmTestCase
 {
-    public function testFilePerClassMapping()
+    public function testYamlMapping()
     {
-        $className = 'XmlMappingTest\User';
-        $xmlDriver = new XmlDriver(__DIR__ . DIRECTORY_SEPARATOR . 'xml', XmlDriver::FILE_PER_CLASS);
+        $className = 'YamlMappingTest\User';
+        $yamlDriver = new YamlDriver(__DIR__ . DIRECTORY_SEPARATOR . 'yaml');
         
         $class = new ClassMetadata($className);
         
-        $this->assertFalse($xmlDriver->isTransient($className));
+        $this->assertFalse($yamlDriver->isTransient($className));
         
-        $xmlDriver->loadMetadataForClass($className, $class);
+        $yamlDriver->loadMetadataForClass($className, $class);
         
         $this->assertEquals('cms_users', $class->getTableName());
         $this->assertEquals(ClassMetadata::INHERITANCE_TYPE_NONE, $class->getInheritanceType());
@@ -47,20 +47,20 @@ class XmlDriverTest extends \Doctrine\Tests\OrmTestCase
         $this->assertTrue(isset($class->associationMappings['groups']));
         $this->assertTrue($class->associationMappings['groups']->isOwningSide);
     }
-    
+
     public function testPreloadMode()
     {
-        $className = 'XmlMappingTest\User';
-        $xmlDriver = new XmlDriver(__DIR__ . DIRECTORY_SEPARATOR . 'xml');
+        $className = 'YamlMappingTest\User';
+        $yamlDriver = new YamlDriver(__DIR__ . DIRECTORY_SEPARATOR . 'yaml');
         $class = new ClassMetadata($className);
         
-        $classNames = $xmlDriver->preload();
+        $classNames = $yamlDriver->preload();
         
         $this->assertEquals($className, $classNames[0]);
-        $this->assertEquals(1, count($xmlDriver->getPreloadedElements()));
+        $this->assertEquals(1, count($yamlDriver->getPreloadedElements()));
         
-        $xmlDriver->loadMetadataForClass($className, $class);
+        $yamlDriver->loadMetadataForClass($className, $class);
         
-        $this->assertEquals(0, count($xmlDriver->getPreloadedElements()));
+        $this->assertEquals(0, count($yamlDriver->getPreloadedElements()));
     }
 }

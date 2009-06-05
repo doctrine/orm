@@ -75,3 +75,10 @@ class ClassMetadataFactoryTestSubject extends \Doctrine\ORM\Mapping\ClassMetadat
         return $this->_requestedClasses;
     }
 }
+
+class TestEntity1
+{
+    private $id;
+    private $name;
+    private $other;
+}

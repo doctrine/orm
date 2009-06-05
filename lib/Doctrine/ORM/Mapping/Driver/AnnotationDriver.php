@@ -38,7 +38,7 @@ require __DIR__ . '/DoctrineAnnotations.php';
  * @author Roman Borschel <roman@code-factory.org>
  * @since 2.0
  */
-class AnnotationDriver
+class AnnotationDriver implements Driver
 {
     /**
      * Loads the metadata for the specified class into the provided container.

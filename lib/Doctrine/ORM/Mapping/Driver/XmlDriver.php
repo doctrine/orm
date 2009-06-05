@@ -22,7 +22,6 @@
 namespace Doctrine\ORM\Mapping\Driver;
 
 use Doctrine\ORM\Mapping\ClassMetadata;
-use Doctrine\ORM\Mapping\MappingException;
 
 /**
  * XmlDriver is a metadata driver that enables mapping through XML files.
@@ -30,63 +29,9 @@ use Doctrine\ORM\Mapping\MappingException;
  * @author Roman Borschel <roman@code-factory.org>
  * @since 2.0
  */
-class XmlDriver
+class XmlDriver extends AbstractFileDriver
 {
-    /**
-     * The FILE_PER_CLASS mode is an operating mode of the XmlDriver where it loads
-     * the mapping files of individual classes on demand. This requires the user to
-     * adhere to the convention of 1 mapping file per class and the file names of
-     * the mapping files must correspond to the full class name, including namespace,
-     * with the namespace delimiters '\', replaced by dots '.'.
-     * 
-     * Example:
-     * Class: My\Project\Model\User
-     * Mapping file: My.Project.Model.User.dcm.xml
-     * 
-     * @var integer
-     */
-    const FILE_PER_CLASS = 1;
-    
-    /**
-     * The PRELOAD mode is an operating mode of the XmlDriver where it loads
-     * all mapping files in advance. This is the default behavior. It does not
-     * require a naming convention or the convention of 1 class per mapping file.
-     * 
-     * @var integer
-     */
-    const PRELOAD = 2;
-    
-    /** The paths where to look for mapping files. */
-    private $_paths;
-    /** The operating mode. Either FILE_PER_CLASS or PRELOAD. */
-    private $_mode;
-    /** The file extension of mapping documents. */
-    private $_fileExtension = '.dcm.xml';
-    /** Any preloaded XML elements. */
-    private $_xmlElements = array();
-    
-    /**
-     * Initializes a new XmlDriver that looks in the given path(s) for mapping
-     * documents and operates in the specified operating mode.
-     * 
-     * @param string|array $paths One or multiple paths where mapping documents can be found.
-     * @param integer $mode The operating mode. Either PRELOAD (default) or FILE_PER_CLASS.
-     */
-    public function __construct($paths, $mode = self::PRELOAD)
-    {
-        $this->_paths = $paths;
-        $this->_mode = $mode;
-    }
-    
-    /**
-     * Gets any preloaded XML documents.
-     * 
-     * @return array
-     */
-    public function getPreloadedXmlElements()
-    {
-        return $this->_xmlElements;
-    }
+    protected $_fileExtension = '.dcm.xml';
 
     /**
      * Loads the metadata for the specified class into the provided container.
@@ -96,13 +41,7 @@ class XmlDriver
      */
     public function loadMetadataForClass($className, ClassMetadata $metadata)
     {
-        if (isset($this->_xmlElements[$className])) {
-            $xmlRoot = $this->_xmlElements[$className];
-            unset($this->_xmlElements[$className]);
-        } else {
-            $result = $this->_loadMappingFile($this->_findMappingFile($className));
-            $xmlRoot = $result[$className];
-        }
+        $xmlRoot = $this->getElement($className);
 
         if ($xmlRoot->getName() == 'entity') {
 
@@ -133,7 +72,6 @@ class XmlDriver
                     $metadata->mapField($mapping);
                 }
             }
-
 
             // Evaluate <id ...> mappings
             foreach ($xmlRoot->id as $idElement) {
@@ -263,59 +201,6 @@ class XmlDriver
         } else if ($xmlRoot->getName() == 'mapped-superclass') {
             throw MappingException::notImplemented('Mapped superclasses are not yet supported.');
         }
-
-    }
-
-    /**
-     * Whether the class with the specified name should have its metadata loaded.
-     * This is only the case if it is either mapped as an Entity or a
-     * MappedSuperclass.
-     *
-     * @param string $className
-     * @return boolean
-     */
-    public function isTransient($className)
-    {
-        $isTransient = true;
-        if ($this->_mode == self::FILE_PER_CLASS) {
-            // check whether file exists
-            foreach ((array)$this->_paths as $path) {
-                if (file_exists($path . DIRECTORY_SEPARATOR . str_replace('\\', '.', $className) . $this->_fileExtension)) {
-                    $isTransient = false;
-                    break;
-                }
-            }
-        } else {
-            $isTransient = isset($this->_xmlElements[$className]);
-        }
-
-        return $isTransient;
-    }
-
-    /**
-     * Preloads all mapping information found in any documents within the
-     * configured paths and returns a list of class names that have been preloaded.
-     * 
-     * @return array The list of class names that have been preloaded.
-     */
-    public function preload()
-    {
-        if ($this->_mode != self::PRELOAD) {
-            return array();
-        }
-
-        foreach ((array)$this->_paths as $path) {
-            if (is_dir($path)) {
-                $files = glob($path . '/*' . $this->_fileExtension);
-                foreach ($files as $file) {
-                    $this->_xmlElements = array_merge($this->_xmlElements, $this->_loadMappingFile($file));
-                }
-            } else if (is_file($path)) {
-                $this->_xmlElements = array_merge($this->_xmlElements, $this->_loadMappingFile($path));
-            }
-        }
-
-        return array_keys($this->_xmlElements);
     }
     
     /**
@@ -325,7 +210,7 @@ class XmlDriver
      * @param string $file The mapping file to load.
      * @return array
      */
-    private function _loadMappingFile($file)
+    protected function _loadMappingFile($file)
     {
         $result = array();
         $xmlElement = simplexml_load_file($file);
@@ -345,31 +230,6 @@ class XmlDriver
         return $result;
     }
 
-    /**
-     * Finds the mapping file for the class with the given name by searching
-     * through the configured paths.
-     *
-     * @param $className
-     * @return string The (absolute) file name.
-     * @throws MappingException
-     */
-    private function _findMappingFile($className)
-    {
-        $fileName = null;
-        foreach ((array)$this->_paths as $path) {
-            $fileName = $path . DIRECTORY_SEPARATOR . str_replace('\\', '.', $className) . $this->_fileExtension;
-            if (file_exists($fileName)) {
-                break;
-            }
-        }
-
-        if ($fileName === null) {
-            throw MappingException::mappingFileNotFound($className);
-        }
-
-        return $fileName;
-    }
-    
     /**
      * Constructs a joinColumn mapping array based on the information
      * found in the given SimpleXMLElement.
@@ -424,4 +284,3 @@ class XmlDriver
         return $cascades;
     }
 }
-

@@ -1,0 +1,34 @@
+YamlMappingTest\User:
+  type: entity
+  table: cms_users
+  id:
+    id:
+      type: integer
+      generator:
+        strategy: auto
+  fields:
+    name:
+      type: string
+      length: 50
+  oneToOne:
+    address:
+      targetEntity: Address
+      joinColumn:
+        name: address_id
+        referencedColumnName: id
+  oneToMany:
+    phonenumbers:
+      targetEntity: Phonenumber
+      mappedBy: user
+      cascade: cascadeSave
+  manyToMany:
+    groups:
+      targetEntity: Group
+      joinTable:
+        name: cms_users_groups
+        joinColumns:
+          user_id:
+            referencedColumnName: id
+        inverseJoinColumns:
+          group_id:
+            referencedColumnName: id

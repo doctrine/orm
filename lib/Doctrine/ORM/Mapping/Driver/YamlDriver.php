@@ -36,110 +36,249 @@ if ( ! class_exists('sfYaml', false)) {
  * @author Jonathan H. Wage <jonwage@gmail.com>
  * @since 2.0
  */
-class YamlDriver
+class YamlDriver extends AbstractFileDriver
 {
-    protected
-        $_paths = array(),
-        $_entities = array();
-
-    public function __construct($paths)
-    {
-        $this->_paths = $paths;
-        $this->_entities = $this->_loadYaml($this->_paths);
-    }
-
-    public function getEntities()
-    {
-        return $this->_entities;
-    }
+    protected $_fileExtension = '.dcm.yml';
 
     public function loadMetadataForClass($className, ClassMetadata $metadata)
     {
-        $entity = $this->_entities[$className];
+        $element = $this->getElement($className);
 
-        if (isset($entity['repositoryClass']) && $entity['repositoryClass']) {
-            $metadata->setCustomRepositoryClass($entity['repositoryClass']);
-        }
+        if ($element['type'] == 'entity') {
 
-        if (isset($entity['table'])) {
-            $metadata->setPrimaryTable($entity['table']);
-        }
-
-        if (isset($entity['inheritanceType']) && $entity['inheritanceType']) {
-            $metadata->setInheritanceType($entity['inheritanceType']);
-        }
-
-        if (isset($entity['discriminatorColumn'])) {
-            $metadata->setDiscriminatorColumn($entity['discriminatorColumn']);
-        }
-
-        if (isset($entity['discriminatorValue']) && $entity['discriminatorValue']) {
-            $metadata->setDiscriminatorValue($entity['discriminatorValue']);
-        }
-
-        if (isset($entity['subClasses']) && $entity['subClasses']) {
-            $metadata->setSubclasses((array) $entity['subClasses']);
-        }
-
-        $relationTypes = array('OneToOne', 'OneToMany', 'ManyToOne', 'ManyToMany');
-
-        foreach ($entity['properties'] as $name => $property) {
-            $mapping = array();
-            $mapping['fieldName'] = $name;
-
-            $joinColumns = array();
-            if (isset($property['joinColumn']) && $property['joinColumn']) {
-                $joinColumns[] = $property['joinColumn'];
-            } else if (isset($property['joinColumns']) && $property['joinColumns']) {
-                $joinColumns = $property['joinColumns'];
+            // Evaluate root level properties
+            if (isset($element['table'])) {
+                $metadata->primaryTable['name'] = $element['table'];
+            }
+            if (isset($element['schema'])) {
+                $metadata->primaryTable['schema'] = $element['schema'];
+            }
+            if (isset($element['inheritanceType'])) {
+                $metadata->setInheritanceType($element['inheritanceType']);
             }
 
-            $type = $property['type'];
+            // Evaluate fields
+            if (isset($element['fields'])) {
+                foreach ($element['fields'] as $name => $fieldMapping) {
+                    $mapping = array(
+                        'fieldName' => $name,
+                        'type' => $fieldMapping['type']
+                    );
+                    if (isset($fieldMapping['column'])) {
+                        $mapping['columnName'] = $fieldMapping['column'];
+                    }
+                    if (isset($fieldMapping['length'])) {
+                        $mapping['length'] = $fieldMapping['length'];
+                    }
+                    $metadata->mapField($mapping);
+                }
+            }
 
-            $mapping = array_merge($mapping, $property);
+            // Evaluate identifier settings
+            foreach ($element['id'] as $name => $idElement) {
+                $mapping = array(
+                    'id' => true,
+                    'fieldName' => $name,
+                    'type' => $idElement['type']
+                );
+                if (isset($idElement['column'])) {
+                    $mapping['columnName'] = $idElement['column'];
+                }
+                $metadata->mapField($mapping);
 
-            if (in_array($type, $relationTypes)) {
-                unset($property['type']);
+                if (isset($idElement['generator'])) {
+                    $metadata->setIdGeneratorType($idElement['generator']['strategy']);
+                }
+            }
 
-                switch ($type) {
-                    case 'ManyToOne':
-                    case 'OneToOne':
+            // Evaluate oneToOne relationships
+            if (isset($element['oneToOne'])) {
+                foreach ($element['oneToOne'] as $name => $oneToOneElement) {
+                    $mapping = array(
+                        'fieldName' => $name,
+                        'targetEntity' => $oneToOneElement['targetEntity']
+                    );
+                    if (isset($oneToOneElement['mappedBy'])) {
+                        $mapping['mappedBy'] = $oneToOneElement['mappedBy'];
+                    } else {
+                        $joinColumns = array();
+                        if (isset($oneToOneElement['joinColumn'])) {
+                            $joinColumns[] = $this->_getJoinColumnMapping($oneToOneElement['joinColumn']);
+                        } else if (isset($oneToOneElement['joinColumns'])) {
+                            foreach ($oneToOneElement['joinColumns'] as $name => $joinColumnElement) {
+                                if (!isset($joinColumnElement['name'])) {
+                                    $joinColumnElement['name'] = $name;
+                                }
+                                $joinColumns[] = $this->_getJoinColumnMapping($joinColumnElement);
+                            }
+                        } else {
+                            throw MappingException::invalidMapping($mapping['fieldName']);
+                        }
                         $mapping['joinColumns'] = $joinColumns;
-                        break;
-                    case 'ManyToMany':
-                        $joinTable = array();
-                        if (isset($property['joinTable'])) {
-                            $joinTable = $property['joinTable'];
+                    }
+
+                    if (isset($oneToOneElement['cascade'])) {
+                        $mapping['cascade'] = $this->_getCascadeMappings($oneToOneElement['cascade']);
+                    }
+
+                    $metadata->mapOneToOne($mapping);
+                }
+            }
+
+            // Evaluate oneToMany relationships
+            if (isset($element['oneToMany'])) {
+                foreach ($element['oneToMany'] as $name => $oneToManyElement) {
+                    $mapping = array(
+                        'fieldName' => $name,
+                        'targetEntity' => $oneToManyElement['targetEntity'],
+                        'mappedBy' => $oneToManyElement['mappedBy']
+                    );
+                    if (isset($oneToManyElement['cascade'])) {
+                        $mapping['cascade'] = $this->_getCascadeMappings($oneToManyElement['cascade']);
+                    }
+                    $metadata->mapOneToMany($mapping);
+                }
+            }
+
+            // Evaluate manyToOne relationships
+            if (isset($element['manyToOne'])) {
+                foreach ($element['manyToOne'] as $name => $manyToOneElement) {
+                    $mapping = array(
+                        'fieldName' => $name, 
+                        'targetEntity' => $manyToOneElement['targetEntity']
+                    );
+                    $joinColumns = array();
+                    if (isset($manyToOneElement['joinColumn'])) {
+                        $joinColumns[] = $this->_getJoinColumnMapping($manyToOneElement['joinColumn']);
+                    } else if (isset($manyToOneElement['joinColumns'])) {
+                        foreach ($manyToOneElement['joinColumns'] as $name => $joinColumnElement) {
+                            if (!isset($joinColumnElement['name'])) {
+                                $joinColumnElement['name'] = $name;
+                            }
+                            $joinColumns[] = $this->_getJoinColumnMapping($joinColumnElement);
+                        }
+                    } else {
+                        throw MappingException::invalidMapping($mapping['fieldName']);
+                    }
+                    $mapping['joinColumns'] = $joinColumns;
+                    if (isset($manyToOneElement['cascade'])) {
+                        $mapping['cascade'] = $this->_getCascadeMappings($manyToOneElement['cascade']);
+                    }
+                    $metadata->mapManyToOne($mapping);
+                }
+            }
+
+            // Evaluate manyToMany relationships
+            if (isset($element['manyToMany'])) {
+                foreach ($element['manyToMany'] as $name => $manyToManyElement) {
+                    $mapping = array(
+                        'fieldName' => $name,
+                        'targetEntity' => $manyToManyElement['targetEntity']
+                    );
+                    
+                    if (isset($manyToManyElement['mappedBy'])) {
+                        $mapping['mappedBy'] = $manyToManyElement['mappedBy'];
+                    } else if (isset($manyToManyElement['joinTable'])) {
+                        $joinTableElement = $manyToManyElement['joinTable'];
+                        $joinTable = array(
+                            'name' => $joinTableElement['name']
+                        );
+                        if (isset($joinTableElement['schema'])) {
+                            $joinTable['schema'] = $joinTableElement['schema'];
+                        }
+                        foreach ($joinTableElement['joinColumns'] as $name => $joinColumnElement) {
+                            if (!isset($joinColumnElement['name'])) {
+                                $joinColumnElement['name'] = $name;
+                            }
+                            $joinTable['joinColumns'][] = $this->_getJoinColumnMapping($joinColumnElement);
+                        }
+                        foreach ($joinTableElement['inverseJoinColumns'] as $name => $joinColumnElement) {
+                            if (!isset($joinColumnElement['name'])) {
+                                $joinColumnElement['name'] = $name;
+                            }
+                            $joinTable['inverseJoinColumns'][] = $this->_getJoinColumnMapping($joinColumnElement);
                         }
                         $mapping['joinTable'] = $joinTable;
-                        break;
-                    case 'OneToMany':
-                    default:
-                        break;
-                }
+                    } else {
+                        throw MappingException::invalidMapping($mapping['fieldName']);
+                    }
+                    
+                    if (isset($manyToManyElement['cascade'])) {
+                        $mapping['cascade'] = $this->_getCascadeMappings($manyToManyElement['cascade']);
+                    }
 
-                $func = 'map' . $type;
-                $metadata->$func($mapping);
-            } else {
-                $metadata->mapField($mapping);
+                    $metadata->mapManyToMany($mapping);
+                }
             }
-            
+
+        } else if ($element['type'] == 'mapped-superclass') {
+            throw MappingException::notImplemented('Mapped superclasses are not yet supported.');
         }
     }
 
-    protected function _loadYaml($paths)
+    /**
+     * Constructs a joinColumn mapping array based on the information
+     * found in the given SimpleXMLElement.
+     * 
+     * @param $joinColumnElement The XML element.
+     * @return array The mapping array.
+     */
+    private function _getJoinColumnMapping($joinColumnElement)
     {
-        $array = array();
-        foreach ((array) $paths as $path) {
-            if (is_dir($path)) {
-                $files = glob($path . '/*.yml');
-                foreach ($files as $file) {
-                    $array = array_merge($array, \sfYaml::load($file));
-                }
-            } else if (is_file($path)) {
-                $array = array_merge($array, \sfYaml::load($path));
-            }
+        $joinColumn = array(
+            'name' => $joinColumnElement['name'],
+            'referencedColumnName' => $joinColumnElement['referencedColumnName']
+        );
+        if (isset($joinColumnElement['unique'])) {
+            $joinColumn['unique'] = (bool) $joinColumnElement['unique'];
         }
-        return $array;
+        if (isset($joinColumnElement['nullable'])) {
+            $joinColumn['nullable'] = (bool) $joinColumnElement['nullable'];
+        }
+        if (isset($joinColumnElement['onDelete'])) {
+            $joinColumn['onDelete'] = $joinColumnElement['onDelete'];
+        }
+        if (isset($joinColumnElement['onUpdate'])) {
+            $joinColumn['onUpdate'] = $joinColumnElement['onUpdate'];
+        }
+        
+        return $joinColumn;
+    }
+    
+    /**
+     * Gathers a list of cascade options found in the given cascade element.
+     * 
+     * @param $cascadeElement The cascade element.
+     * @return array The list of cascade options.
+     */
+    private function _getCascadeMappings($cascadeElement)
+    {
+        $cascades = array();
+        if (isset($cascadeElement['cascadeSave'])) {
+            $cascades[] = 'save';
+        }
+        if (isset($cascadeElement['cascadeDelete'])) {
+            $cascades[] = 'delete';
+        }
+        if (isset($cascadeElement['cascadeMerge'])) {
+            $cascades[] = 'merge';
+        }
+        if (isset($cascadeElement['cascadeRefresh'])) {
+            $cascades[] = 'refresh';
+        }
+        
+        return $cascades;
+    }
+
+    /**
+     * Loads a mapping file with the given name and returns a map
+     * from class/entity names to their corresponding elements.
+     * 
+     * @param string $file The mapping file to load.
+     * @return array
+     */
+    protected function _loadMappingFile($file)
+    {
+        return \sfYaml::load($file);
     }
 }

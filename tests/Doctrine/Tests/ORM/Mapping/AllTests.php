@@ -21,7 +21,8 @@ class AllTests
 
         $suite->addTestSuite('Doctrine\Tests\ORM\Mapping\ClassMetadataTest');
         $suite->addTestSuite('Doctrine\Tests\ORM\Mapping\XmlDriverTest');
-        //$suite->addTestSuite('Doctrine\Tests\ORM\Mapping\ClassMetadataFactoryTest');
+        $suite->addTestSuite('Doctrine\Tests\ORM\Mapping\YamlDriverTest');
+        $suite->addTestSuite('Doctrine\Tests\ORM\Mapping\ClassMetadataFactoryTest');
 
         return $suite;
     }
