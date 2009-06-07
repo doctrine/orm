@@ -46,52 +46,52 @@ final class ClassMetadata
      * NONE means the class does not participate in an inheritance hierarchy
      * and therefore does not need an inheritance mapping type.
      */
-    const INHERITANCE_TYPE_NONE = 'none';
+    const INHERITANCE_TYPE_NONE = 1;
     /**
      * JOINED means the class will be persisted according to the rules of
      * <tt>Class Table Inheritance</tt>.
      */
-    const INHERITANCE_TYPE_JOINED = 'joined';
+    const INHERITANCE_TYPE_JOINED = 2;
     /**
      * SINGLE_TABLE means the class will be persisted according to the rules of
      * <tt>Single Table Inheritance</tt>.
      */
-    const INHERITANCE_TYPE_SINGLE_TABLE = 'singleTable';
+    const INHERITANCE_TYPE_SINGLE_TABLE = 3;
     /**
      * TABLE_PER_CLASS means the class will be persisted according to the rules
      * of <tt>Concrete Table Inheritance</tt>.
      */
-    const INHERITANCE_TYPE_TABLE_PER_CLASS = 'tablePerClass';
+    const INHERITANCE_TYPE_TABLE_PER_CLASS = 4;
     
     /* The Id generator types. */
     /**
      * AUTO means the generator type will depend on what the used platform prefers.
      * Offers full portability.
      */
-    const GENERATOR_TYPE_AUTO = 'auto';
+    const GENERATOR_TYPE_AUTO = 1;
     /**
      * SEQUENCE means a separate sequence object will be used. Platforms that do
      * not have native sequence support may emulate it. Full portability is currently
      * not guaranteed.
      */
-    const GENERATOR_TYPE_SEQUENCE = 'sequence';
+    const GENERATOR_TYPE_SEQUENCE = 2;
     /**
      * TABLE means a separate table is used for id generation.
      * Offers full portability.
      */
-    const GENERATOR_TYPE_TABLE = 'table';
+    const GENERATOR_TYPE_TABLE = 3;
     /**
      * IDENTITY means an identity column is used for id generation. The database
      * will fill in the id column on insertion. Platforms that do not support
      * native identity columns may emulate them. Full portability is currently
      * not guaranteed.
      */
-    const GENERATOR_TYPE_IDENTITY = 'identity';
+    const GENERATOR_TYPE_IDENTITY = 4;
     /**
      * NONE means the class does not have a generated id. That means the class
      * must have a natural id.
      */
-    const GENERATOR_TYPE_NONE = 'none';
+    const GENERATOR_TYPE_NONE = 5;
     /**
      * DEFERRED_IMPLICIT means that changes of entities are calculated at commit-time
      * by doing a property-by-property comparison with the original data. This will
@@ -1749,6 +1749,7 @@ final class ClassMetadata
      * Creates a string representation of this instance.
      *
      * @return string The string representation of this instance.
+     * @todo Construct meaningful string representation.
      */
     public function __toString()
     {

@@ -9,7 +9,7 @@ namespace Doctrine\Tests\Models\Company;
  * @Entity
  * @Table(name="company_persons")
  * @DiscriminatorValue("person")
- * @InheritanceType("joined")
+ * @InheritanceType("JOINED")
  * @DiscriminatorColumn(name="discr", type="string")
  * @SubClasses({"Doctrine\Tests\Models\Company\CompanyEmployee",
         "Doctrine\Tests\Models\Company\CompanyManager"})
@@ -19,7 +19,7 @@ class CompanyPerson
     /**
      * @Id
      * @Column(type="integer")
-     * @GeneratedValue(strategy="auto")
+     * @GeneratedValue(strategy="AUTO")
      */
     private $id;
     /**

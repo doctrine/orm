@@ -97,7 +97,7 @@ class SingleTableInheritanceTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
 /**
  * @Entity
- * @InheritanceType("singleTable")
+ * @InheritanceType("SINGLE_TABLE")
  * @DiscriminatorColumn(name="discr", type="string")
  * @SubClasses({"Doctrine\Tests\ORM\Functional\ChildEntity"})
  * @DiscriminatorValue("parent")
@@ -106,7 +106,7 @@ class ParentEntity {
     /**
      * @Id
      * @Column(type="integer")
-     * @GeneratedValue(strategy="auto")
+     * @GeneratedValue(strategy="AUTO")
      */
     private $id;
 
@@ -168,7 +168,7 @@ class RelatedEntity {
     /**
      * @Id
      * @Column(type="integer")
-     * @GeneratedValue(strategy="auto")
+     * @GeneratedValue(strategy="AUTO")
      */
     private $id;
     /**

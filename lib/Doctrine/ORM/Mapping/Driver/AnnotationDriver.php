@@ -63,7 +63,7 @@ class AnnotationDriver implements Driver
 
         // Evaluate InheritanceType annotation
         if ($inheritanceTypeAnnot = $annotClass->getAnnotation('InheritanceType')) {
-            $metadata->setInheritanceType($inheritanceTypeAnnot->value);
+            $metadata->setInheritanceType(constant('\Doctrine\ORM\Mapping\ClassMetadata::INHERITANCE_TYPE_' . $inheritanceTypeAnnot->value));
         }
 
         // Evaluate DiscriminatorColumn annotation
@@ -130,7 +130,14 @@ class AnnotationDriver implements Driver
                     $mapping['id'] = true;
                 }
                 if ($generatedValueAnnot = $property->getAnnotation('GeneratedValue')) {
-                    $metadata->setIdGeneratorType($generatedValueAnnot->strategy);
+                    if ($generatedValueAnnot->strategy == 'auto') {
+                        try {
+                            throw new \Exception();
+                        } catch (\Exception $e) {
+                            var_dump($e->getTraceAsString());
+                        }
+                    }
+                    $metadata->setIdGeneratorType(constant('Doctrine\ORM\Mapping\ClassMetadata::GENERATOR_TYPE_' . $generatedValueAnnot->strategy));
                 }
                 $metadata->mapField($mapping);
 

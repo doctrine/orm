@@ -87,7 +87,8 @@ class YamlDriver extends AbstractFileDriver
                 $metadata->mapField($mapping);
 
                 if (isset($idElement['generator'])) {
-                    $metadata->setIdGeneratorType($idElement['generator']['strategy']);
+                    $metadata->setIdGeneratorType(constant('Doctrine\ORM\Mapping\ClassMetadata::GENERATOR_TYPE_'
+                            . $idElement['generator']['strategy']));
                 }
             }
 

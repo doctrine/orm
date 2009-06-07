@@ -5,7 +5,7 @@ YamlMappingTest\User:
     id:
       type: integer
       generator:
-        strategy: auto
+        strategy: AUTO
   fields:
     name:
       type: string

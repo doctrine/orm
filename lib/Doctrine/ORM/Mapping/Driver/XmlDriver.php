@@ -86,7 +86,8 @@ class XmlDriver extends AbstractFileDriver
                 $metadata->mapField($mapping);
 
                 if (isset($idElement->generator)) {
-                    $metadata->setIdGeneratorType((string)$idElement->generator['strategy']);
+                    $metadata->setIdGeneratorType(constant('Doctrine\ORM\Mapping\ClassMetadata::GENERATOR_TYPE_'
+                            . (string)$idElement->generator['strategy']));
                 }
             }
 

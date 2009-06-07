@@ -14,7 +14,7 @@ class CmsEmployee
     /**
      * @Id
      * @Column(type="integer")
-     * @GeneratedValue(strategy="auto")
+     * @GeneratedValue(strategy="AUTO")
      */
     private $id;
 

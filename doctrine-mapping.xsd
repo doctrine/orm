@@ -57,12 +57,21 @@
   </xs:complexType>
   
   <xs:simpleType name="inheritance-type">
-    <xs:restriction base="xs:string">
-      <xs:enumeration value="single-table"/>
-      <xs:enumeration value="joined"/>
-      <xs:enumeration value="table-per-class"/>
+    <xs:restriction base="xs:token">
+      <xs:enumeration value="SINGLE_TABLE"/>
+      <xs:enumeration value="JOINED"/>
+      <xs:enumeration value="TABLE_PER_CLASS"/>
     </xs:restriction>
   </xs:simpleType>
+  
+  <xs:simpleType name="generator-strategy"> 
+    <xs:restriction base="xs:token"> 
+      <xs:enumeration value="TABLE"/> 
+      <xs:enumeration value="SEQUENCE"/> 
+      <xs:enumeration value="IDENTITY"/> 
+      <xs:enumeration value="AUTO"/> 
+    </xs:restriction> 
+  </xs:simpleType> 
 
   <xs:complexType name="field">
     <xs:attribute name="name" type="xs:NMTOKEN" use="required" />
@@ -72,7 +81,7 @@
   </xs:complexType>
 
   <xs:complexType name="generator">
-    <xs:attribute name="strategy" type="xs:NMTOKEN" use="required" />
+    <xs:attribute name="strategy" type="orm:generator-strategy" use="required" />
   </xs:complexType>
 
   <xs:complexType name="id">

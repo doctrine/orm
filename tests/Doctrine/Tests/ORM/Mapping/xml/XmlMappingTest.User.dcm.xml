@@ -8,7 +8,7 @@
     <entity name="XmlMappingTest\User" table="cms_users">
     
         <id name="id" type="integer" column="id">
-            <generator strategy="auto"/>
+            <generator strategy="AUTO"/>
         </id>
         
         <field name="name" column="name" type="string" length="50"/>
@@ -33,7 +33,6 @@
                 </inverse-join-columns>
             </join-table>
         </many-to-many>
-        
         
     </entity>
 

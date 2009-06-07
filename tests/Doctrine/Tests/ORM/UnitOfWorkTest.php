@@ -193,7 +193,7 @@ class NotifyChangedEntity implements \Doctrine\Common\NotifyPropertyChanged
     /**
      * @Id
      * @Column(type="integer")
-     * @GeneratedValue(strategy="auto")
+     * @GeneratedValue(strategy="AUTO")
      */
     private $id;
     /**

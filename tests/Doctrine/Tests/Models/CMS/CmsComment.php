@@ -11,7 +11,7 @@ class CmsComment
     /**
      * @Column(type="integer")
      * @Id
-     * @GeneratedValue(strategy="auto")
+     * @GeneratedValue(strategy="AUTO")
      */
     public $id;
     /**

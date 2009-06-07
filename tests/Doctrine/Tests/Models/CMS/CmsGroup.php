@@ -18,7 +18,7 @@ class CmsGroup
     /**
      * @Id
      * @Column(type="integer")
-     * @GeneratedValue(strategy="auto")
+     * @GeneratedValue(strategy="AUTO")
      */
     public $id;
     /**
