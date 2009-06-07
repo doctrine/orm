@@ -130,13 +130,6 @@ class AnnotationDriver implements Driver
                     $mapping['id'] = true;
                 }
                 if ($generatedValueAnnot = $property->getAnnotation('GeneratedValue')) {
-                    if ($generatedValueAnnot->strategy == 'auto') {
-                        try {
-                            throw new \Exception();
-                        } catch (\Exception $e) {
-                            var_dump($e->getTraceAsString());
-                        }
-                    }
                     $metadata->setIdGeneratorType(constant('Doctrine\ORM\Mapping\ClassMetadata::GENERATOR_TYPE_' . $generatedValueAnnot->strategy));
                 }
                 $metadata->mapField($mapping);
