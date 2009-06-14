@@ -74,4 +74,21 @@ final class NativeQuery extends AbstractQuery
     {
         return $this->_em->getConnection()->execute($this->_sql, $this->_prepareParams($params));
     }
+    
+    /**
+     * {@inheritdoc}
+     * 
+     * @override
+     */
+    protected function _prepareParams(array $params)
+    {
+        $sqlParams = array();
+        
+        foreach ($params as $key => $value) {
+            $sqlParams[$key] = $value;
+        }
+        ksort($sqlParams);
+        
+        return array_values($sqlParams);
+    }
 }

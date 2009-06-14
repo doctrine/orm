@@ -31,7 +31,6 @@ use Doctrine\ORM\Query\AST\Node;
 abstract class FunctionNode extends Node
 {
     private $_name;
-    //private $_expressions = array();
 
     public function __construct($name)
     {

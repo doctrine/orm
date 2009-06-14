@@ -9,7 +9,7 @@ namespace Doctrine\ORM\Query\AST\Functions;
 /**
  * "CONCAT" "(" StringPrimary "," StringPrimary ")"
  *
- * @author robo
+ * @author Roman Borschel <roman@code-factory.org>
  */
 class ConcatFunction extends FunctionNode
 {
@@ -36,13 +36,6 @@ class ConcatFunction extends FunctionNode
             $sqlWalker->walkStringPrimary($this->_firstStringPrimary),
             $sqlWalker->walkStringPrimary($this->_secondStringPrimary)
         );
-        /*
-        $sql = 'CONCAT(' .
-                $sqlWalker->walkStringPrimary($this->_firstStringPrimary)
-                . ', ' .
-                $sqlWalker->walkStringPrimary($this->_secondStringPrimary)
-                . ')';
-        return $sql;*/
     }
 
     /**
@@ -54,9 +47,9 @@ class ConcatFunction extends FunctionNode
         $parser->match($lexer->lookahead['value']);
         $parser->match('(');
 
-        $this->_firstStringPrimary = $parser->_StringPrimary();
+        $this->_firstStringPrimary = $parser->StringPrimary();
         $parser->match(',');
-        $this->_secondStringPrimary = $parser->_StringPrimary();
+        $this->_secondStringPrimary = $parser->StringPrimary();
 
         $parser->match(')');
     }

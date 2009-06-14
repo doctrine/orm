@@ -224,6 +224,7 @@ class SchemaTool
             if (isset($class->inheritedAssociationFields[$fieldName])) {
                 continue;
             }
+
             $foreignClass = $this->_em->getClassMetadata($mapping->targetEntityName);
             if ($mapping->isOneToOne() && $mapping->isOwningSide) {
                 $constraint = array();

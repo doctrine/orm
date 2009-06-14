@@ -14,7 +14,7 @@ class BooleanType extends Type
      *
      * @override
      */
-    public function convertToDatabaseValue($value, Doctrine_DatabasePlatform $platform)
+    public function convertToDatabaseValue($value, \Doctrine\DBAL\Platforms\AbstractPlatform $platform)
     {
         return $platform->convertBooleans($value);
     }
@@ -24,7 +24,7 @@ class BooleanType extends Type
      *
      * @override
      */
-    public function convertToObjectValue($value)
+    public function convertToPHPValue($value)
     {
         return (bool) $value;
     }

@@ -33,7 +33,6 @@ use \ArrayIterator;
  *
  * @author Roman S. Borschel <roman@code-factory.org>
  * @since 2.0
- * @todo Consider extending ArrayObject
  */
 class Collection implements Countable, IteratorAggregate, ArrayAccess
 {
@@ -310,6 +309,7 @@ class Collection implements Countable, IteratorAggregate, ArrayAccess
 
     /**
      * Checks whether the collection is empty.
+     * 
      * Note: This is preferrable over count() == 0.
      *
      * @return boolean TRUE if the collection is empty, FALSE otherwise.

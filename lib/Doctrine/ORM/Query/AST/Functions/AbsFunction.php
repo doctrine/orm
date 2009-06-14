@@ -9,7 +9,7 @@ namespace Doctrine\ORM\Query\AST\Functions;
 /**
  * "ABS" "(" SimpleArithmeticExpression ")"
  *
- * @author robo
+ * @author Roman Borschel <roman@code-factory.org>
  */
 class AbsFunction extends FunctionNode
 {
@@ -37,7 +37,7 @@ class AbsFunction extends FunctionNode
         $lexer = $parser->getLexer();
         $parser->match($lexer->lookahead['value']);
         $parser->match('(');
-        $this->_simpleArithmeticExpression = $parser->_SimpleArithmeticExpression();
+        $this->_simpleArithmeticExpression = $parser->SimpleArithmeticExpression();
         $parser->match(')');
     }
 }

@@ -21,7 +21,7 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
             $query->free();
         } catch (Doctrine_Exception $e) {
             echo $e->getMessage();
-            echo $e->getTraceAsString(); die();
+            echo $e->getTraceAsString();
             $this->fail($e->getMessage());
         }
     }
@@ -91,7 +91,7 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
     {
         $this->assertSqlGeneration(
             'select u from Doctrine\Tests\Models\Forum\ForumUser u where u.username = :name',
-            'SELECT f0_.id AS id0, f0_.username AS username1 FROM forum_users f0_ WHERE f0_.username = :name'
+            'SELECT f0_.id AS id0, f0_.username AS username1 FROM forum_users f0_ WHERE f0_.username = ?'
         );
     }
 
@@ -99,7 +99,7 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
     {
         $this->assertSqlGeneration(
             'select u from Doctrine\Tests\Models\Forum\ForumUser u where u.username = :name and u.username = :name2',
-            'SELECT f0_.id AS id0, f0_.username AS username1 FROM forum_users f0_ WHERE f0_.username = :name AND f0_.username = :name2'
+            'SELECT f0_.id AS id0, f0_.username AS username1 FROM forum_users f0_ WHERE f0_.username = ? AND f0_.username = ?'
         );
     }
 
@@ -107,7 +107,7 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
     {
         $this->assertSqlGeneration(
             'select u from Doctrine\Tests\Models\Forum\ForumUser u where (u.username = :name OR u.username = :name2) AND u.id = :id',
-            'SELECT f0_.id AS id0, f0_.username AS username1 FROM forum_users f0_ WHERE (f0_.username = :name OR f0_.username = :name2) AND f0_.id = :id'
+            'SELECT f0_.id AS id0, f0_.username AS username1 FROM forum_users f0_ WHERE (f0_.username = ? OR f0_.username = ?) AND f0_.id = ?'
         );
     }
 
@@ -243,8 +243,45 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
             'SELECT c0_.id AS id0 FROM cms_users c0_ WHERE EXISTS (SELECT c1_.phonenumber FROM cms_phonenumbers c1_ WHERE c1_.phonenumber = c0_.id)'
         );
     }
+    
+    public function testMemberOfExpression()
+    {
+        // "Get all users who have $phone as a phonenumber." (*cough* doesnt really make sense...)
+        $q1 = $this->_em->createQuery('SELECT u.id FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE :param MEMBER OF u.phonenumbers');
+        $phone = new \Doctrine\Tests\Models\CMS\CmsPhonenumber;
+        $phone->phonenumber = 101;
+        $q1->setParameter('param', $phone);
+        
+        $this->assertEquals(
+            'SELECT c0_.id AS id0 FROM cms_users c0_ WHERE EXISTS (SELECT 1 FROM cms_phonenumbers c1_ WHERE c0_.id = c1_.user_id AND c1_.phonenumber = ?)',
+            $q1->getSql()
+        );
+        
+        // "Get all users who are members of $group."
+        $q2 = $this->_em->createQuery('SELECT u.id FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE :param MEMBER OF u.groups');
+        $group = new \Doctrine\Tests\Models\CMS\CmsGroup;
+        $group->id = 101;
+        $q2->setParameter('param', $group);
+        
+        $this->assertEquals(
+            'SELECT c0_.id AS id0 FROM cms_users c0_ WHERE EXISTS (SELECT 1 FROM cms_users_groups c1_ INNER JOIN cms_groups c2_ ON c1_.user_id = c0_.id WHERE c1_.group_id = c2_.id AND c2_.id = ?)',
+            $q2->getSql()
+        );
+        
+        // "Get all persons who have $person as a friend."
+        // Tough one: Many-many self-referencing ("friends") with class table inheritance
+        $q3 = $this->_em->createQuery('SELECT p.id FROM Doctrine\Tests\Models\Company\CompanyPerson p WHERE :param MEMBER OF p.friends');
+        $person = new \Doctrine\Tests\Models\Company\CompanyPerson;
+        $this->_em->getClassMetadata(get_class($person))->setIdentifierValues($person, 101);
+        $q3->setParameter('param', $person);
+         
+        $this->assertEquals(
+            'SELECT c0_.id AS id0, c0_.discr AS discr1 FROM company_persons c0_ LEFT JOIN company_employees c1_ ON c0_.id = c1_.id LEFT JOIN company_managers c2_ ON c0_.id = c2_.id WHERE EXISTS (SELECT 1 FROM company_persons_friends c3_ INNER JOIN company_persons c4_ ON c3_.person_id = c0_.id WHERE c3_.friend_id = c4_.id AND c4_.id = ?)',
+            $q3->getSql()
+        );
+    }
 
-    public function testExistsExpressionInWhereCorrelatedSubqueryAssocCondition()
+    /*public function testExistsExpressionInWhereCorrelatedSubqueryAssocCondition()
     {
         $this->assertSqlGeneration(
             // DQL
@@ -261,5 +298,5 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
                     . ')'
 
         );
-    }
+    }*/
 }

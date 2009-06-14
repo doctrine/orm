@@ -858,6 +858,9 @@ final class ClassMetadata
 
     /**
      * Extracts the identifier values of an entity of this class.
+     * 
+     * For composite identifiers, the identifier values are returned as an array
+     * with the same order as the field order in {@link identifier}.
      *
      * @param object $entity
      * @return mixed

@@ -35,8 +35,12 @@ namespace Doctrine\ORM\Query;
  */
 class ParserResult
 {
+    /** The SQL executor used for executing the SQL. */
 	private $_sqlExecutor;
+	/** The ResultSetMapping that describes how to map the SQL result set. */
     private $_resultSetMapping;
+    /** The mappings of DQL parameter names/positions to SQL parameter positions. */
+    private $_parameterMappings;
 	
     /**
      * Initializes a new instance of the <tt>ParserResult</tt> class.
@@ -86,5 +90,38 @@ class ParserResult
     public function getSqlExecutor()
     {
         return $this->_sqlExecutor;
+    }
+    
+    /**
+     * Adds a DQL to SQL parameter mapping. One DQL parameter name/position can map to
+     * several SQL parameter positions.
+     *
+     * @param string|integer $dqlPosition
+     * @param integer $sqlPosition
+     */
+    public function addParameterMapping($dqlPosition, $sqlPosition)
+    {
+        $this->_parameterMappings[$dqlPosition][] = $sqlPosition;
+    }
+    
+    /**
+     * Gets all DQL to SQL parameter mappings.
+     * 
+     * @return array The parameter mappings.
+     */
+    public function getParameterMappings()
+    {
+        return $this->_parameterMappings;
+    }
+    
+    /**
+     * Gets the SQL parameter positions for a DQL parameter name/position.
+     *
+     * @param string|integer $dqlPosition The name or position of the DQL parameter.
+     * @return array The positions of the corresponding SQL parameters.
+     */
+    public function getSqlParameterPositions($dqlPosition)
+    {
+        return $this->_parameterMappings[$dqlPosition];
     }
 }

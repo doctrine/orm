@@ -1219,10 +1219,8 @@ abstract class AbstractPlatform
                     $item[$k] = (int) $value;
                 }
             }
-        } else {
-            if (is_bool($item)) {
-                $item = (int) $item;
-            }
+        } else if (is_bool($item)) {
+            $item = (int) $item;
         }
         return $item;
     }

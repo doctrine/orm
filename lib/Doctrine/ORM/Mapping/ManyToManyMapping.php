@@ -63,6 +63,9 @@ class ManyToManyMapping extends AssociationMapping
      */
     public $joinTableColumns = array();
     
+    /** FUTURE: The key column mapping, if any. The key column holds the keys of the Collection. */
+    //public $keyColumn;
+    
     /**
      * Initializes a new ManyToManyMapping.
      *

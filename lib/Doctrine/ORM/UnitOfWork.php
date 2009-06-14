@@ -403,12 +403,14 @@ class UnitOfWork implements PropertyChangedListener
                     && $actualData[$name] !== null
                     && ! ($actualData[$name] instanceof PersistentCollection)
                 ) {
-                //TODO: If $actualData[$name] is Collection then unwrap the array
+                // If $actualData[$name] is Collection then unwrap the array
+                if ($actualData[$name] instanceof Collection) {
+                    $actualData[$name] = $actualData[$name]->unwrap();
+                }
                 $assoc = $class->associationMappings[$name];
-                //echo PHP_EOL . "INJECTING PCOLL into $name" . PHP_EOL;
                 // Inject PersistentCollection
                 $coll = new PersistentCollection($this->_em, $this->_em->getClassMetadata($assoc->targetEntityName),
-                    $actualData[$name] ? $actualData[$name] : array());
+                        $actualData[$name] ? $actualData[$name] : array());
                 $coll->setOwner($entity, $assoc);
                 if ( ! $coll->isEmpty()) {
                     $coll->setDirty(true);

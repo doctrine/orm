@@ -9,7 +9,7 @@ namespace Doctrine\ORM\Query\AST\Functions;
 /**
  * "SQRT" "(" SimpleArithmeticExpression ")"
  *
- * @author robo
+ * @author Roman Borschel <roman@code-factory.org>
  */
 class SqrtFunction extends FunctionNode
 {
@@ -37,7 +37,7 @@ class SqrtFunction extends FunctionNode
         $lexer = $parser->getLexer();
         $parser->match($lexer->lookahead['value']);
         $parser->match('(');
-        $this->_simpleArithmeticExpression = $parser->_SimpleArithmeticExpression();
+        $this->_simpleArithmeticExpression = $parser->SimpleArithmeticExpression();
         $parser->match(')');
     }
 }

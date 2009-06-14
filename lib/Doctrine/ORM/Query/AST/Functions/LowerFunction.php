@@ -37,7 +37,7 @@ class LowerFunction extends FunctionNode
         $lexer = $parser->getLexer();
         $parser->match($lexer->lookahead['value']);
         $parser->match('(');
-        $this->_stringPrimary = $parser->_StringPrimary();
+        $this->_stringPrimary = $parser->StringPrimary();
         $parser->match(')');
     }
 }

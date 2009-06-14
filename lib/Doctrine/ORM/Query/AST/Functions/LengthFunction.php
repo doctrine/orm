@@ -9,7 +9,7 @@ namespace Doctrine\ORM\Query\AST\Functions;
 /**
  * "LENGTH" "(" StringPrimary ")"
  *
- * @author robo
+ * @author Roman Borschel <roman@code-factory.org>
  */
 class LengthFunction extends FunctionNode
 {
@@ -37,7 +37,7 @@ class LengthFunction extends FunctionNode
         $lexer = $parser->getLexer();
         $parser->match($lexer->lookahead['value']);
         $parser->match('(');
-        $this->_stringPrimary = $parser->_StringPrimary();
+        $this->_stringPrimary = $parser->StringPrimary();
         $parser->match(')');
     }
 }

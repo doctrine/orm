@@ -48,7 +48,7 @@ final class Query extends AbstractQuery
      * parsed/processed. This is automatically defined as DIRTY when addDqlQueryPart
      * is called.
      */
-    const STATE_DIRTY  = 2;
+    const STATE_DIRTY = 2;
 
     /**
      * @var integer $_state   The current state of this query.
@@ -64,6 +64,16 @@ final class Query extends AbstractQuery
      * @var Doctrine\ORM\Query\ParserResult  The parser result that holds DQL => SQL information.
      */
     private $_parserResult;
+    
+    /**
+     * @var integer The first result to return (the "offset").
+     */
+    private $_firstResult = null;
+    
+    /**
+     * @var integer The maximum number of results to return (the "limit").
+     */
+    private $_maxResults = null;
 
     /**
      * @var CacheDriver  The cache driver used for caching queries.
@@ -100,7 +110,7 @@ final class Query extends AbstractQuery
      */
     public function getSql()
     {
-        return $this->parse()->getSqlExecutor()->getSqlStatements();
+        return $this->_parse()->getSqlExecutor()->getSqlStatements();
     }
 
     /**
@@ -110,7 +120,7 @@ final class Query extends AbstractQuery
      *
      * @return Doctrine\ORM\Query\ParserResult
      */
-    public function parse()
+    private function _parse()
     {
         if ($this->_state === self::STATE_DIRTY) {
             $parser = new Parser($this);
@@ -121,15 +131,15 @@ final class Query extends AbstractQuery
     }
 
     /**
-     * _execute
+     * {@inheritdoc}
      *
      * @param array $params
-     * @return PDOStatement  The executed PDOStatement.
+     * @return Statement The resulting Statement.
      * @override
      */
     protected function _doExecute(array $params)
     {
-        // If there is a CacheDriver associated to cache queries...
+        // Check query cache
         if ($queryCache = $this->getQueryCacheDriver()) {
             // Calculate hash for dql query.
             $hash = md5($this->getDql() . 'DOCTRINE_QUERY_CACHE_SALT');
@@ -137,7 +147,7 @@ final class Query extends AbstractQuery
 
             if ($cached === false) {
                 // Cache miss.
-                $executor = $this->parse()->getSqlExecutor();
+                $executor = $this->_parse()->getSqlExecutor();
                 $queryCache->save($hash, serialize($this->_parserResult), null);
             } else {
                 // Cache hit.
@@ -145,18 +155,47 @@ final class Query extends AbstractQuery
                 $executor = $this->_parserResult->getSqlExecutor();
             }
         } else {
-            $executor = $this->parse()->getSqlExecutor();
+            $executor = $this->_parse()->getSqlExecutor();
         }
 
-        // Converting parameters
         $params = $this->_prepareParams($params);
 
         if ( ! $this->_resultSetMapping) {
             $this->_resultSetMapping = $this->_parserResult->getResultSetMapping();
         }
 
-        // Executing the query and returning statement
         return $executor->execute($this->_em->getConnection(), $params);
+    }
+    
+    /**
+     * {@inheritdoc}
+     *
+     * @override
+     */
+    protected function _prepareParams(array $params)
+    {
+        $sqlParams = array();
+        
+        $paramMappings = $this->_parserResult->getParameterMappings();
+        foreach ($params as $key => $value) {
+            if (is_object($value)) {
+                $values = $this->_em->getClassMetadata(get_class($value))->getIdentifierValues($value);
+                $sqlPositions = $paramMappings[$key];
+                $sqlParams = array_merge($sqlParams, array_combine((array)$sqlPositions, (array)$values));
+            } else if (is_bool($value)) {
+                $boolValue = $this->_em->getConnection()->getDatabasePlatform()->convertBooleans($value);
+                foreach ($paramMappings[$key] as $position) {
+                    $sqlParams[$position] = $boolValue;
+                }
+            } else {
+                foreach ($paramMappings[$key] as $position) {
+                    $sqlParams[$position] = $value;
+                }
+            }
+        }
+        ksort($sqlParams);
+        
+        return array_values($sqlParams);
     }
 
     /**
@@ -292,6 +331,52 @@ final class Query extends AbstractQuery
      */
     public function contains($dql)
     {
-      return stripos($this->getDql(), $dql) === false ? false : true;
+        return stripos($this->getDql(), $dql) === false ? false : true;
+    }
+    
+    /**
+     * Sets the position of the first result to retrieve (the "offset").
+     *
+     * @param integer $firstResult The first result to return.
+     * @return Query This query object.
+     */
+    public function setFirstResult($firstResult)
+    {
+        $this->_firstResult = $firstResult;
+        return $this;
+    }
+    
+    /**
+     * Gets the position of the first result the query object was set to retrieve (the "offset").
+     * Returns NULL if {@link setFirstResult} was not applied to this query.
+     * 
+     * @return integer The position of the first result.
+     */
+    public function getFirstResult()
+    {
+        return $this->_firstResult;
+    }
+    
+    /**
+     * Sets the maximum number of results to retrieve (the "limit").
+     * 
+     * @param integer $maxResults
+     * @return Query This query object.
+     */
+    public function setMaxResults($maxResults)
+    {
+        $this->_maxResults = $maxResults;
+        return $this;
+    }
+    
+    /**
+     * Gets the maximum number of results the query object was set to retrieve (the "limit").
+     * Returns NULL if {@link setMaxResults} was not applied to this query.
+     * 
+     * @return integer Maximum number of results.
+     */
+    public function getMaxResults()
+    {
+        return $this->_maxResults;
     }
 }

@@ -65,28 +65,6 @@ class ClassTableInheritanceTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertEquals(100000, $entities[0]->getSalary());
 
         $this->_em->clear();
-        /*
-        $query = $this->_em->createQuery("select r,o from Doctrine\Tests\ORM\Functional\RelatedEntity r join r.owner o");
-
-        $entities = $query->getResultList();
-        $this->assertEquals(1, count($entities));
-        $this->assertTrue($entities[0] instanceof RelatedEntity);
-        $this->assertTrue(is_numeric($entities[0]->getId()));
-        $this->assertEquals('theRelatedOne', $entities[0]->getName());
-        $this->assertTrue($entities[0]->getOwner() instanceof ChildEntity);
-        $this->assertEquals('thedata', $entities[0]->getOwner()->getData());
-        $this->assertSame($entities[0], $entities[0]->getOwner()->getRelatedEntity());
-
-        $query = $this->_em->createQuery("update Doctrine\Tests\ORM\Functional\ChildEntity e set e.data = 'newdata'");
-
-        $affected = $query->execute();
-        $this->assertEquals(1, $affected);
-
-        $query = $this->_em->createQuery("delete Doctrine\Tests\ORM\Functional\ParentEntity e");
-
-        $affected = $query->execute();
-        $this->assertEquals(2, $affected);
-        */
     }
     
     public function testMultiLevelUpdateAndFind() {
@@ -148,5 +126,38 @@ class ClassTableInheritanceTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertTrue($result[0]->getSpouse() instanceof CompanyEmployee);
         $this->assertEquals('John Smith', $result[0]->getSpouse()->getName());
         $this->assertSame($result[0], $result[0]->getSpouse()->getSpouse());
+    }
+    
+    public function testSelfReferencingManyToMany()
+    {
+        $person1 = new CompanyPerson;
+        $person1->setName('Roman');
+        
+        $person2 = new CompanyPerson;
+        $person2->setName('Jonathan');
+        
+        $person1->addFriend($person2);
+        
+        $this->assertEquals(1, count($person1->getFriends()));
+        $this->assertEquals(1, count($person2->getFriends()));
+        
+        
+        $this->_em->save($person1);
+        $this->_em->save($person2);
+        
+        $this->_em->flush();
+        
+        $this->_em->clear();
+        
+        $query = $this->_em->createQuery('select p, f from Doctrine\Tests\Models\Company\CompanyPerson p join p.friends f where p.name=?1');
+        $query->setParameter(1, 'Roman');
+        
+        $result = $query->getResultList();
+        $this->assertEquals(1, count($result));
+        $this->assertEquals(1, count($result[0]->getFriends()));
+        $this->assertEquals('Roman', $result[0]->getName());
+        
+        $friends = $result[0]->getFriends();
+        $this->assertEquals('Jonathan', $friends[0]->getName());
     }
 }

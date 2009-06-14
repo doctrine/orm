@@ -37,7 +37,7 @@ class SizeFunction extends FunctionNode
         $lexer = $parser->getLexer();
         $parser->match($lexer->lookahead['value']);
         $parser->match('(');
-        $this->_collectionPathExpression = $parser->_CollectionValuedPathExpression();
+        $this->_collectionPathExpression = $parser->CollectionValuedPathExpression();
         $parser->match(')');
     }
 }

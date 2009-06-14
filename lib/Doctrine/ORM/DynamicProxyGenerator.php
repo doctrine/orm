@@ -71,6 +71,7 @@ class DynamicProxyGenerator
             require $fileName;
         }
         $proxyClassName = '\\' . self::$_ns . $proxyClassName;
+        
         return new $proxyClassName($this->_em, $class, $identifier);
     }
 
@@ -89,6 +90,7 @@ class DynamicProxyGenerator
             require $fileName;
         }
         $proxyClassName = '\\' . self::$_ns . $proxyClassName;
+        
         return new $proxyClassName($this->_em, $assoc, $owner);
     }
 

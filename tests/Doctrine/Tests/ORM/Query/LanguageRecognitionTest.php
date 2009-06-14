@@ -16,7 +16,9 @@ class LanguageRecognitionTest extends \Doctrine\Tests\OrmTestCase
     {
         try {
             $query = $this->_em->createQuery($dql);
-            $parserResult = $query->parse();
+            $parser = new \Doctrine\ORM\Query\Parser($query);
+            $parser->setSqlTreeWalker(new \Doctrine\Tests\Mocks\MockTreeWalker);
+            $parserResult = $parser->parse();
         } catch (\Exception $e) {
             if ($debug) {
                 echo $e->getTraceAsString() . PHP_EOL;
@@ -30,15 +32,15 @@ class LanguageRecognitionTest extends \Doctrine\Tests\OrmTestCase
         try {
             $query = $this->_em->createQuery($dql);
             $query->setDql($dql);
-            $parserResult = $query->parse();
+            $parser = new \Doctrine\ORM\Query\Parser($query);
+            $parser->setSqlTreeWalker(new \Doctrine\Tests\Mocks\MockTreeWalker);
+            $parserResult = $parser->parse();
             $this->fail('No syntax errors were detected, when syntax errors were expected');
         } catch (\Exception $e) {
-            //echo $e->getMessage() . PHP_EOL;
             if ($debug) {
                 echo $e->getMessage() . PHP_EOL;
                 echo $e->getTraceAsString() . PHP_EOL;
             }
-            // It was expected!
         }
     }
 
@@ -318,5 +320,10 @@ class LanguageRecognitionTest extends \Doctrine\Tests\OrmTestCase
     public function testSomeExpressionWithCorrelatedSubquery()
     {
         $this->assertValidDql('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.id > SOME (SELECT u2.id FROM Doctrine\Tests\Models\CMS\CmsUser u2 WHERE u2.name = u.name)');
+    }
+    
+    public function testMemberOfExpression()
+    {
+        $this->assertValidDql('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE :param MEMBER OF u.phonenumbers');
     }
 }

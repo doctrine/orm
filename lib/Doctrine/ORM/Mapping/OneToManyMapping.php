@@ -42,24 +42,10 @@ namespace Doctrine\ORM\Mapping;
  */
 class OneToManyMapping extends AssociationMapping
 {
-    /** The target foreign key columns that reference the sourceKeyColumns. */
-    /* NOTE: Currently not used because uni-directional one-many not supported atm.  */
-    //protected $_targetForeignKeyColumns;
-
-    /** The (typically primary) source key columns that are referenced by the targetForeignKeyColumns. */
-    /* NOTE: Currently not used because uni-directional one-many not supported atm.  */
-    //protected $_sourceKeyColumns;
-
-    /** This maps the target foreign key columns to the corresponding (primary) source key columns. */
-    /* NOTE: Currently not used because uni-directional one-many not supported atm.  */
-    //protected $_targetForeignKeysToSourceKeys;
-    
-    /** This maps the (primary) source key columns to the corresponding target foreign key columns. */
-    /* NOTE: Currently not used because uni-directional one-many not supported atm.  */
-    //protected $_sourceKeysToTargetForeignKeys;
-    
     /** Whether to delete orphaned elements (removed from the collection) */
     public $deleteOrphans = false;
+    /** FUTURE: The key column mapping, if any. The key column holds the keys of the Collection. */
+    //public $keyColumn;
     
     /**
      * Initializes a new OneToManyMapping.

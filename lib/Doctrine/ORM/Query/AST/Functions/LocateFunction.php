@@ -57,12 +57,12 @@ class LocateFunction extends FunctionNode
         $lexer = $parser->getLexer();
         $parser->match($lexer->lookahead['value']);
         $parser->match('(');
-        $this->_firstStringPrimary = $parser->_StringPrimary();
+        $this->_firstStringPrimary = $parser->StringPrimary();
         $parser->match(',');
-        $this->_secondStringPrimary = $parser->_StringPrimary();
+        $this->_secondStringPrimary = $parser->StringPrimary();
         if ($lexer->isNextToken(',')) {
             $parser->match(',');
-            $this->_simpleArithmeticExpression = $parser->_SimpleArithmeticExpression();
+            $this->_simpleArithmeticExpression = $parser->SimpleArithmeticExpression();
         }
         $parser->match(')');
     }

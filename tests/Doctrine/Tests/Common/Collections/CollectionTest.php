@@ -19,9 +19,9 @@ class CollectionTest extends \Doctrine\Tests\DoctrineTestCase
     {
         $this->_coll->add("one");
         $this->_coll->add("two");
-        $exists = $this->_coll->exists(function($key, $element) { return $element == "one"; });
+        $exists = $this->_coll->exists(function($k, $e) { return $e == "one"; });
         $this->assertTrue($exists);
-        $exists = $this->_coll->exists(function($key, $element) { return $element == "other"; });
+        $exists = $this->_coll->exists(function($k, $e) { return $e == "other"; });
         $this->assertFalse($exists);
     }
 
@@ -29,7 +29,7 @@ class CollectionTest extends \Doctrine\Tests\DoctrineTestCase
     {
         $this->_coll->add(1);
         $this->_coll->add(2);
-        $res = $this->_coll->map(function ($e) { return $e * 2; });
+        $res = $this->_coll->map(function($e) { return $e * 2; });
         $this->assertEquals(array(2, 4), $res->unwrap());
     }
 
@@ -38,7 +38,7 @@ class CollectionTest extends \Doctrine\Tests\DoctrineTestCase
         $this->_coll->add(1);
         $this->_coll->add("foo");
         $this->_coll->add(3);
-        $res = $this->_coll->filter(function ($e) { return is_numeric($e); });
+        $res = $this->_coll->filter(function($e) { return is_numeric($e); });
         $this->assertEquals(array(0 => 1, 2 => 3), $res->unwrap());
     }
 
@@ -66,39 +66,39 @@ class CollectionTest extends \Doctrine\Tests\DoctrineTestCase
     public function testContainsKey()
     {
         $this->_coll[5] = 'five';
-        $this->assertEquals($this->_coll->containsKey(5), true);
+        $this->assertTrue($this->_coll->containsKey(5));
     }
 
     public function testContains()
     {
         $this->_coll[0] = 'test';
-        $this->assertEquals($this->_coll->contains('test'), true);
+        $this->assertTrue($this->_coll->contains('test'));
     }
 
     public function testSearch()
     {
         $this->_coll[0] = 'test';
-        $this->assertEquals($this->_coll->search('test'), 0);
+        $this->assertEquals(0, $this->_coll->search('test'));
     }
 
     public function testGet()
     {
         $this->_coll[0] = 'test';
-        $this->assertEquals($this->_coll->get(0), 'test');
+        $this->assertEquals('test', $this->_coll->get(0));
     }
 
     public function testGetKeys()
     {
         $this->_coll[] = 'one';
         $this->_coll[] = 'two';
-        $this->assertEquals($this->_coll->getKeys(), array(0, 1));
+        $this->assertEquals(array(0, 1), $this->_coll->getKeys());
     }
 
     public function testGetElements()
     {
         $this->_coll[] = 'one';
         $this->_coll[] = 'two';
-        $this->assertEquals($this->_coll->getElements(), array('one', 'two'));
+        $this->assertEquals(array('one', 'two'), $this->_coll->getElements());
     }
 
     public function testCount()
@@ -113,15 +113,15 @@ class CollectionTest extends \Doctrine\Tests\DoctrineTestCase
     {
         $this->_coll[] = 'one';
         $this->_coll[] = 'two';
-        $this->assertEquals($this->_coll->forAll(function($key, $element) { return is_string($element); }), true);
-        $this->assertEquals($this->_coll->forAll(function($key, $element) { return is_array($element); }), false);
+        $this->assertEquals($this->_coll->forAll(function($k, $e) { return is_string($e); }), true);
+        $this->assertEquals($this->_coll->forAll(function($k, $e) { return is_array($e); }), false);
     }
 
     public function testPartition()
     {
         $this->_coll[] = true;
         $this->_coll[] = false;
-        $partition = $this->_coll->partition(function($key, $element) { return $element == true; });
+        $partition = $this->_coll->partition(function($k, $e) { return $e == true; });
         $this->assertEquals($partition[0][0], true);
         $this->assertEquals($partition[1][0], false);
     }

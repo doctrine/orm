@@ -88,6 +88,8 @@ class Lexer
     const T_WITH                = 145;
     const T_TRUE                = 146;
     const T_FALSE               = 147;
+    const T_MEMBER              = 148;
+    const T_OF                  = 149;
 
     private $_keywordsTable;
 
@@ -131,8 +133,8 @@ class Lexer
     /**
      * Checks whether a given token matches the current lookahead.
      *
-     * @param <type> $token
-     * @return <type>
+     * @param integer|string $token
+     * @return boolean
      */
     public function isNextToken($token)
     {
@@ -170,7 +172,7 @@ class Lexer
      * @param string $identifier identifier name
      * @return int token type
      */
-    public function _checkLiteral($identifier)
+    private function _checkLiteral($identifier)
     {
         $name = 'Doctrine\ORM\Query\Lexer::T_' . strtoupper($identifier);
 
@@ -237,6 +239,7 @@ class Lexer
         }
         if ($value[0] === "'" && $value[strlen($value) - 1] === "'") {
             $type = self::T_STRING;
+            $value = str_replace("''", "'", substr($value, 1, strlen($value) - 2));
         } else if (ctype_alpha($value[0]) || $value[0] === '_') {
             $type = $this->_checkLiteral($value);
         } else if ($value[0] === '?' || $value[0] === ':') {

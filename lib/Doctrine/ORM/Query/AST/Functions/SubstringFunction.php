@@ -57,11 +57,11 @@ class SubstringFunction extends FunctionNode
         $parser->match($lexer->lookahead['value']);
         $parser->match('(');
 
-        $this->_stringPrimary = $parser->_StringPrimary();
+        $this->_stringPrimary = $parser->StringPrimary();
         $parser->match(',');
-        $this->_firstSimpleArithmeticExpression = $parser->_SimpleArithmeticExpression();
+        $this->_firstSimpleArithmeticExpression = $parser->SimpleArithmeticExpression();
         $parser->match(',');
-        $this->_secondSimpleArithmeticExpression = $parser->_SimpleArithmeticExpression();
+        $this->_secondSimpleArithmeticExpression = $parser->SimpleArithmeticExpression();
 
         $parser->match(')');
     }

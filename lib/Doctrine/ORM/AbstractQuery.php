@@ -178,19 +178,23 @@ abstract class AbstractQuery
      *
      * @return array Defined parameters
      */
-    public function getParams($params = array())
+    public function getParameters($params = array())
     {
-        return array_merge($this->_params, $params);
+        if ($params) {
+            return array_merge($this->_params, $params);
+        }
+        return $this->_params;
     }
-
+    
     /**
-     * setParams
-     *
-     * @param array $params
+     * Gets a query parameter.
+     * 
+     * @param mixed $key The key (index or name) of the bound parameter.
+     * @return mixed The value of the bound parameter.
      */
-    public function setParams(array $params = array())
+    public function getParameter($key)
     {
-        $this->_params = $params;
+        return isset($this->_params[$key]) ? $this->_params[$key] : null;
     }
 
     /**
@@ -469,8 +473,8 @@ abstract class AbstractQuery
         if ($hydrationMode !== null) {
             $this->_hydrationMode = $hydrationMode;
         }
-
-        $params = $this->getParams($params);
+    
+        $params = $this->getParameters($params);
 
         // Check result cache
         if ($cacheDriver = $this->getResultCacheDriver()) {
@@ -503,12 +507,15 @@ abstract class AbstractQuery
     }
 
     /**
-     * @nodoc
+     * Prepares the given parameters for execution in an SQL statement.
+     * 
+     * Note to inheritors: This method must return a numerically, continously indexed array,
+     * starting with index 0 where the values (the parameter values) are in the order
+     * in which the parameters appear in the SQL query.
+     * 
+     * @return array The SQL parameter array.
      */
-    protected function _prepareParams(array $params)
-    {
-        return $this->_em->getConnection()->getDatabasePlatform()->convertBooleans($params);
-    }
+    abstract protected function _prepareParams(array $params);
 
     /**
      * Executes the query and returns a reference to the resulting Statement object.

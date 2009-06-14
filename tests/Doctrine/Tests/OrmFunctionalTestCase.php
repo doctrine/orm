@@ -67,6 +67,7 @@ class OrmFunctionalTestCase extends OrmTestCase
             $conn->exec('DELETE FROM cms_users');
         }
         if (isset($this->_usedModelSets['company'])) {
+            $conn->exec('DELETE FROM company_persons_friends');
             $conn->exec('DELETE FROM company_managers');
             $conn->exec('DELETE FROM company_employees');
             $conn->exec('DELETE FROM company_persons');
@@ -99,7 +100,7 @@ class OrmFunctionalTestCase extends OrmTestCase
 
         $classes = array();
         foreach ($this->_usedModelSets as $setName => $bool) {
-            if ( ! isset(self::$_tablesCreated[$setName]) || $forceCreateTables) {
+            if ( ! isset(self::$_tablesCreated[$setName])/* || $forceCreateTables*/) {
                 foreach (self::$_modelSets[$setName] as $className) {
                     $classes[] = $this->_em->getClassMetadata($className);
                 }

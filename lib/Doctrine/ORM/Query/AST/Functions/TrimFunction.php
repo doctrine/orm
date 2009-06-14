@@ -75,7 +75,7 @@ class TrimFunction extends FunctionNode
         if ($this->_leading) $sql .= 'LEADING ';
         else if ($this->_trailing) $sql .= 'TRAILING ';
         else if ($this->_both) $sql .= 'BOTH ';
-        if ($this->_trimChar) $sql .= $this->_trimChar . ' '; //TODO: quote()
+        if ($this->_trimChar) $sql .= $sqlWalker->getConnection()->quote($this->_trimChar) . ' ';
         $sql .= 'FROM ' . $sqlWalker->walkStringPrimary($this->_stringPrimary);
         $sql .= ')';
         return $sql;
@@ -110,7 +110,7 @@ class TrimFunction extends FunctionNode
             $parser->match(Lexer::T_FROM);
         }
 
-        $this->_stringPrimary = $parser->_StringPrimary();
+        $this->_stringPrimary = $parser->StringPrimary();
         
         $parser->match(')');
     }

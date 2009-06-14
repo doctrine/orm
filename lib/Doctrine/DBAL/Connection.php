@@ -601,16 +601,16 @@ class Connection
         if ($this->_config->getSqlLogger()) {
             $this->_config->getSqlLogger()->logSql($query, $params);
         }
-
+        
         if ( ! empty($params)) {
-            $stmt = $this->prepare($query);
+            $stmt = $this->_conn->prepare($query);
             $stmt->execute($params);
-            return $stmt;
         } else {
             $stmt = $this->_conn->query($query);
-            $this->_queryCount++;
-            return $stmt;
         }
+        $this->_queryCount++;
+        
+        return $stmt;
     }
 
     /**
@@ -630,14 +630,15 @@ class Connection
         }
 
         if ( ! empty($params)) {
-            $stmt = $this->prepare($query);
+            $stmt = $this->_conn->prepare($query);
             $stmt->execute($params);
-            return $stmt->rowCount();
+            $result = $stmt->rowCount();
         } else {
-            $count = $this->_conn->exec($query);
-            $this->_queryCount++;
-            return $count;
+            $result = $this->_conn->exec($query);
         }
+        $this->_queryCount++;
+        
+        return $result;
     }
 
     /**
@@ -767,23 +768,6 @@ class Connection
         --$this->_transactionNestingLevel;
 
         return true;
-    }
-
-    /**
-     * Quotes pattern (% and _) characters in a string)
-     *
-     * EXPERIMENTAL
-     *
-     * WARNING: this function is experimental and may change signature at
-     * any time until labelled as non-experimental
-     *
-     * @param   string  the input string to quote
-     *
-     * @return  string  quoted string
-     */
-    protected function _escapePattern($text)
-    {
-        return $text;
     }
 
     /**

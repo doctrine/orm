@@ -182,7 +182,7 @@ class LexerTest extends \Doctrine\Tests\OrmTestCase
         $lexer->moveNext();
         $token = $lexer->lookahead;
         $this->assertEquals(Lexer::T_STRING, $token['type']);
-        $this->assertEquals("'This is a string.'", $token['value']);
+        $this->assertEquals("This is a string.", $token['value']);
     }
 
     public function testScannerRecognizesStringContainingSingleQuotes()
@@ -191,7 +191,7 @@ class LexerTest extends \Doctrine\Tests\OrmTestCase
         $lexer->moveNext();
         $token = $lexer->lookahead;
         $this->assertEquals(Lexer::T_STRING, $token['type']);
-        $this->assertEquals("'abc''defg'''", $token['value']);
+        $this->assertEquals("abc'defg'", $token['value']);
     }
 
     public function testScannerRecognizesInputParameter()
@@ -269,7 +269,7 @@ class LexerTest extends \Doctrine\Tests\OrmTestCase
                 'position' => 47
             ),
             array(
-                'value' => "'Jack O''Neil'",
+                'value' => "Jack O'Neil",
                 'type'  => Lexer::T_STRING,
                 'position' => 49
             )
