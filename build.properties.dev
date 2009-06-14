@@ -1,0 +1,3 @@
+version=2.0
+build.dir=build
+dist.dir=dir

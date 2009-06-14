@@ -1,0 +1,91 @@
+<?xml version="1.0"?>
+
+<!--
+    Doctrine 2 build file.
+-->
+
+<project name="Doctrine2" default="dist-all" basedir=".">
+    
+    <property file="build.properties" />
+    
+    <fileset id="shared-artifacts" dir=".">
+        <include name="LICENSE"/>
+        <include name="COPYRIGHT"/>
+        <include name="CHANGELOG"/>
+    </fileset>
+    
+    <fileset id="common-sources" dir=".">
+        <include name="lib/Doctrine/Common/**"/>
+    </fileset>
+    
+    <fileset id="dbal-sources" dir=".">
+        <include name="lib/Doctrine/DBAL/**"/>
+    </fileset>
+    
+    <fileset id="orm-sources" dir=".">
+        <include name="lib/Doctrine/ORM/**"/>
+    </fileset>
+
+    <target name="clean">
+        <delete dir="${build.dir}" includeemptydirs="true" />
+        <delete dir="${dist.dir}" includeemptydirs="true" />
+    </target>
+
+    <target name="prepare" depends="clean">
+        <echo msg="Creating build directory: build" />
+        <mkdir dir="${build.dir}" />
+        <echo msg="Creating distribution directory: dist" />
+        <mkdir dir="${dist.dir}" />
+    </target>
+
+    <target name="build-common">
+        <copy todir="build/common">
+            <fileset refid="shared-artifacts"/>
+            <fileset refid="common-sources"/>
+        </copy>
+    </target>
+    
+    <target name="build-dbal">
+        <copy todir="build/dbal">
+            <fileset refid="shared-artifacts"/>
+            <fileset refid="common-sources"/>
+            <fileset refid="dbal-sources"/>
+        </copy>
+    </target>
+    
+    <target name="build-all" depends="prepare, build-common, build-dbal">
+        <copy todir="build/all">
+            <fileset refid="shared-artifacts"/>
+            <fileset refid="common-sources"/>
+            <fileset refid="dbal-sources"/>
+            <fileset refid="orm-sources"/>
+        </copy>
+    </target>
+    
+    <target name="dist-common">
+        <tar destfile="./dist/Doctrine2-common.tar.gz" compression="gzip">
+            <fileset dir="./build/common">
+                <include name="**" />
+            </fileset>
+        </tar>
+    </target>
+    
+    <target name="dist-dbal">
+        <tar destfile="./dist/Doctrine2-dbal.tar.gz" compression="gzip">
+            <fileset dir="./build/dbal">
+                <include name="**" />
+            </fileset>
+        </tar>
+    </target>
+
+    <target name="dist-all" depends="build-all, dist-common, dist-dbal">
+
+        <tar destfile="./dist/Doctrine2-all.tar.gz" compression="gzip">
+            <fileset dir="./build/all">
+                <include name="**" />
+            </fileset>
+        </tar>
+
+    </target>
+    
+</project>
