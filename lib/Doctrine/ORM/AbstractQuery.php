@@ -62,11 +62,6 @@ abstract class AbstractQuery
     protected $_params = array();
 
     /**
-     * @var array $_enumParams Array containing the keys of the parameters that should be enumerated.
-     */
-    //protected $_enumParams = array();
-
-    /**
      * The user-specified ResultSetMapping to use.
      *
      * @var ResultSetMapping
@@ -133,45 +128,7 @@ abstract class AbstractQuery
     public function free()
     {
         $this->_params = array();
-        $this->_enumParams = array();
     }
-
-    /**
-     * Set enumerated parameters
-     *
-     * @param array $enumParams Enum parameters.
-     */
-    /*protected function _setEnumParams($enumParams = array())
-    {
-        $this->_enumParams = $enumParams;
-    }*/
-
-    /**
-     * Get all enumerated parameters
-     *
-     * @return array All enumerated parameters
-     */
-    /*public function getEnumParams()
-    {
-        return $this->_enumParams;
-    }*/
-
-    /**
-     * Convert ENUM parameters to their integer equivalents
-     *
-     * @param $params Parameters to be converted
-     * @return array Converted parameters array
-     */
-    /*public function convertEnums($params)
-    {
-        foreach ($this->_enumParams as $key => $values) {
-            if (isset($params[$key]) && ! empty($values)) {
-                $params[$key] = $values[0]->enumIndex($values[1], $params[$key]);
-            }
-        }
-
-        return $params;
-    }*/
 
     /**
      * Get all defined parameters

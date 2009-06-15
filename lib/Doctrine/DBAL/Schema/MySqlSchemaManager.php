@@ -166,27 +166,6 @@ class MySqlSchemaManager extends AbstractSchemaManager
                     $fixed = true;
                 }
             break;
-            case 'enum':
-                $type = 'enum';
-                preg_match_all('/\'((?:\'\'|[^\'])*)\'/', $tableColumn['type'], $matches);
-                $length = 0;
-                $fixed = false;
-                if (is_array($matches)) {
-                    foreach ($matches[1] as &$value) {
-                        $value = str_replace('\'\'', '\'', $value);
-                        $length = max($length, strlen($value));
-                    }
-                    if ($length == '1' && count($matches[1]) == 2) {
-                        $type = 'boolean';
-                        if (preg_match('/^(is|has)/', $tableColumn['name'])) {
-                            $type = array_reverse($type);
-                        }
-                    }
-
-                    $values = $matches[1];
-                }
-                $type = 'integer';
-                break;
             case 'set':
                 $fixed = false;
                 $type = 'text';
