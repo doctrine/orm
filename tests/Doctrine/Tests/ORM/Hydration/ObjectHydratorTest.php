@@ -7,12 +7,12 @@ use Doctrine\ORM\Query\ResultSetMapping;
 
 require_once __DIR__ . '/../../TestInit.php';
 
-class ObjectHydratorTest extends HydrationTest
+class ObjectHydratorTest extends HydrationTestCase
 {
     /**
      * Select u.id, u.name from \Doctrine\Tests\Models\CMS\CmsUser u
      */
-    public function testNewHydrationSimpleEntityQuery()
+    public function testSimpleEntityQuery()
     {
         $rsm = new ResultSetMapping;
         $rsm->addEntityResult('Doctrine\Tests\Models\CMS\CmsUser', 'u');
@@ -49,7 +49,7 @@ class ObjectHydratorTest extends HydrationTest
     /**
      * Select u.id, u.name from \Doctrine\Tests\Models\CMS\CmsUser u
      */
-    public function testNewHydrationSimpleMultipleRootEntityQuery()
+    public function testSimpleMultipleRootEntityQuery()
     {
         $rsm = new ResultSetMapping;
         $rsm->addEntityResult('Doctrine\Tests\Models\CMS\CmsUser', 'u');
@@ -105,7 +105,7 @@ class ObjectHydratorTest extends HydrationTest
      * select u.id, u.status, p.phonenumber, upper(u.name) as u__0 from USERS u
      * INNER JOIN PHONENUMBERS p ON u.id = p.user_id
      */
-    public function testNewHydrationMixedQueryFetchJoin()
+    public function testMixedQueryFetchJoin()
     {
         $rsm = new ResultSetMapping;
         $rsm->addEntityResult('Doctrine\Tests\Models\CMS\CmsUser', 'u');
@@ -179,7 +179,7 @@ class ObjectHydratorTest extends HydrationTest
      * select u.id, u.status, count(p.phonenumber) as p__0 from USERS u
      * INNER JOIN PHONENUMBERS p ON u.id = p.user_id group by u.id, u.status
      */
-    public function testNewHydrationMixedQueryNormalJoin()
+    public function testMixedQueryNormalJoin()
     {
         $rsm = new ResultSetMapping;
         $rsm->addEntityResult('Doctrine\Tests\Models\CMS\CmsUser', 'u');
@@ -226,7 +226,7 @@ class ObjectHydratorTest extends HydrationTest
      * select u.id, u.status, upper(u.name) as p__0 from USERS u
      * INNER JOIN PHONENUMBERS p ON u.id = p.user_id
      */
-    public function testNewHydrationMixedQueryFetchJoinCustomIndex()
+    public function testMixedQueryFetchJoinCustomIndex()
     {
         $rsm = new ResultSetMapping;
         $rsm->addEntityResult('Doctrine\Tests\Models\CMS\CmsUser', 'u');
@@ -305,7 +305,7 @@ class ObjectHydratorTest extends HydrationTest
      * inner join PHONENUMBERS p ON u.id = p.user_id
      * inner join ARTICLES a ON u.id = a.user_id
      */
-    public function testNewHydrationMixedQueryMultipleFetchJoin()
+    public function testMixedQueryMultipleFetchJoin()
     {
         $rsm = new ResultSetMapping;
         $rsm->addEntityResult('Doctrine\Tests\Models\CMS\CmsUser', 'u');
@@ -420,7 +420,7 @@ class ObjectHydratorTest extends HydrationTest
      * inner join ARTICLES a ON u.id = a.user_id
      * left outer join COMMENTS c ON a.id = c.article_id
      */
-    public function testNewHydrationMixedQueryMultipleDeepMixedFetchJoin()
+    public function testMixedQueryMultipleDeepMixedFetchJoin()
     {
         $rsm = new ResultSetMapping;
         $rsm->addEntityResult('Doctrine\Tests\Models\CMS\CmsUser', 'u');
@@ -571,7 +571,7 @@ class ObjectHydratorTest extends HydrationTest
      *  1    | 0          | First    | 1        |   3  | 1
      *  1    | 0          | First    | 2        |   4  | 1
      */
-    public function testNewHydrationEntityQueryCustomResultSetOrder()
+    public function testEntityQueryCustomResultSetOrder()
     {
         $rsm = new ResultSetMapping;
         $rsm->addEntityResult('Doctrine\Tests\Models\Forum\ForumCategory', 'c');

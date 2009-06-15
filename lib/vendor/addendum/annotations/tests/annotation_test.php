@@ -15,13 +15,13 @@
 		}
 		
 		public function testConstructorThrowsErrorOnInvalidParameter() {
+			$this->expectError("Property 'unknown' not defined for annotation 'TestingAnnotation'");
 			$annotation = new TestingAnnotation(array('unknown' => 1), $this);
-			$this->assertError("Property 'unknown' not defined for annotation 'TestingAnnotation'");
 		}
 		
 		public function TODO_testConstructorThrowsErrorWithoutSpecifingRequiredParameters() {
+			$this->expectError("Property 'required' in annotation 'TestingAnnotation' is required");
 			$annotation = new TestingAnnotation();
-			$this->assertError("Property 'required' in annotation 'TestingAnnotation' is required");
 		}
 	}
 ?>

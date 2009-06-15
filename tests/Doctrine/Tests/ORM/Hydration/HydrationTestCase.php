@@ -7,7 +7,7 @@ require_once __DIR__ . '/../../TestInit.php';
 use Doctrine\ORM\Query\ParserResult;
 use Doctrine\ORM\Query\Parser;
 
-class HydrationTest extends \Doctrine\Tests\OrmTestCase
+class HydrationTestCase extends \Doctrine\Tests\OrmTestCase
 {
     protected $_em;
 

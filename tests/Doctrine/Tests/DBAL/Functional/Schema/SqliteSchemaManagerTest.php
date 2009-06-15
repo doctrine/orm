@@ -6,21 +6,30 @@ use Doctrine\DBAL\Schema;
 
 require_once __DIR__ . '/../../../TestInit.php';
  
-class SqliteSchemaManagerTest extends SchemaManagerFunctionalTest
+class SqliteSchemaManagerTest extends SchemaManagerFunctionalTestCase
 {
+    /**
+     * @expectedException \Exception
+     */
     public function testListDatabases()
     {
-        return $this->assertUnsupportedMethod('listDatabases');
+        $this->_sm->listDatabases();
     }
 
+    /**
+     * @expectedException \Exception
+     */
     public function testListFunctions()
     {
-        return $this->assertUnsupportedMethod('listFunctions');
+        $this->_sm->listFunctions();
     }
 
+    /**
+     * @expectedException \Exception
+     */
     public function testListTriggers()
     {
-        return $this->assertUnsupportedMethod('listTriggers');
+        $this->_sm->listTriggers();
     }
 
     public function testListSequences()
@@ -92,9 +101,12 @@ class SqliteSchemaManagerTest extends SchemaManagerFunctionalTest
         $this->assertEquals(true, in_array('list_tables_test', $tables));
     }
 
+    /**
+     * @expectedException \Exception
+     */
     public function testListUsers()
     {
-        return $this->assertUnsupportedMethod('listUsers');
+        $this->_sm->listUsers();
     }
 
     public function testListViews()
@@ -157,14 +169,12 @@ class SqliteSchemaManagerTest extends SchemaManagerFunctionalTest
         $this->assertEquals(null, $tableColumns[1]['default']);
     }
 
+    /**
+     * @expectedException \Exception
+     */
     public function testCreateSequence()
     {
-        return $this->assertUnsupportedMethod('createSequence');
-    }
-
-    public function testCreateConstraint()
-    {
-        return $this->assertUnsupportedMethod('createConstraint');
+        $this->_sm->createSequence('seqname', 1, 1);
     }
     
     /* FIXME: See comment in AbstractSchemaManager#dropIndex($table, $name)
@@ -185,34 +195,51 @@ class SqliteSchemaManagerTest extends SchemaManagerFunctionalTest
         $this->assertEquals(true, $tableIndexes[0]['unique']);
     }*/
 
+    /**
+     * @expectedException \Exception
+     */
     public function testCreateForeignKey()
     {
-        return $this->assertUnsupportedMethod('createForeignKey');
+        $this->_sm->createForeignKey('table', array());
     }
 
+    /**
+     * @expectedException \Exception
+     */
     public function testRenameTable()
     {
-        return $this->assertUnsupportedMethod('renameTable');
+        $this->_sm->renameTable('oldname', 'newname');
     }
 
-
+    /**
+     * @expectedException \Exception
+     */
     public function testAddTableColumn()
     {
-        return $this->assertUnsupportedMethod('addTableColumn');
+        return $this->_sm->addTableColumn('table', 'column', array());
     }
 
+    /**
+     * @expectedException \Exception
+     */
     public function testRemoveTableColumn()
     {
-        return $this->assertUnsupportedMethod('removeTableColumn');
+        $this->_sm->removeTableColumn('table', 'column');
     }
 
+    /**
+     * @expectedException \Exception
+     */
     public function testChangeTableColumn()
     {
-        return $this->assertUnsupportedMethod('changeTableColumn');
+        $this->_sm->changeTableColumn('name', 'type', null, array());
     }
-
+    
+    /**
+     * @expectedException \Exception
+     */
     public function testRenameTableColumn()
     {
-        return $this->assertUnsupportedMethod('renameTableColumn');
+        $this->_sm->renameTableColumn('table', 'old', 'new', array());
     }
 }

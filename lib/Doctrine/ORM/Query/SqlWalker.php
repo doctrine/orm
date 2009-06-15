@@ -41,7 +41,7 @@ class SqlWalker implements TreeWalker
     private $_aliasCounter = 0;
     /** Counter for generating unique table aliases. */
     private $_tableAliasCounter = 0;
-    private $_scalarResultCounter = 0;
+    private $_scalarResultCounter = 1;
     /** Counter for SQL parameter positions. */
     private $_sqlParamIndex = 1;
     /** The ParserResult. */

@@ -48,6 +48,11 @@
 			$this->assertEqual($value, '1234');
 		}
 	}
+
+	class StaticClass {
+		const A_CONSTANT = 'constant';
+	}
+
 	
 	class TestOfAnnotationMatchers extends UnitTestCase {
 		public function testAnnotationsMatcherShouldMatchAnnotationWithGarbage() {
@@ -185,6 +190,11 @@
 			$matcher = new AnnotationValueMatcher;
 			$this->assertMatcherResult($matcher, '{1}', array(1));
 		}
+
+		public function testValueMatcherShouldMatchStaticConstant() {
+			$matcher = new AnnotationValueMatcher;
+			$this->assertMatcherResult($matcher, 'StaticClass::A_CONSTANT', StaticClass::A_CONSTANT);
+		}
 		
 		public function testArrayMatcherShouldMatchEmptyArray() {
 			$matcher = new AnnotationArrayMatcher;
@@ -299,6 +309,18 @@
 			$this->assertMatcherResult($matcher, '"string\"string"', 'string"string');
 			$this->assertMatcherResult($matcher, "'string\'string'", "string'string");
 		}
+
+		public function testStaticConstantMatcherShouldMatchConstants() {
+			$matcher = new AnnotationStaticConstantMatcher;
+			$this->assertMatcherResult($matcher, 'StaticClass::A_CONSTANT', StaticClass::A_CONSTANT);
+		}
+
+		public function testStaticConstantMatcherShouldThrowErrorOnBadConstant() {
+			$this->expectError("Constant 'StaticClass::NO_CONSTANT' used in annotation was not defined.");
+			$matcher = new AnnotationStaticConstantMatcher;
+			$matcher->matches('StaticClass::NO_CONSTANT', $value);
+		}
+
 		
 		private function assertNotFalse($value) {
 			$this->assertNotIdentical($value, false);

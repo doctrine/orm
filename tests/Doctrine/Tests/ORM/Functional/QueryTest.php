@@ -31,9 +31,9 @@ class QueryTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->clear();
 
         $query = $this->_em->createQuery("select u, upper(u.name) from Doctrine\Tests\Models\CMS\CmsUser u where u.username = 'gblanco'");
-
+        
         $result = $query->getResultList();
-
+        
         $this->assertEquals(1, count($result));
         $this->assertTrue($result[0][0] instanceof CmsUser);
         $this->assertEquals('Guilherme', $result[0][0]->name);
@@ -54,7 +54,7 @@ class QueryTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertEquals('Guilherme', $scalarResult[0]['u_name']);
         $this->assertEquals('gblanco', $scalarResult[0]['u_username']);
         $this->assertEquals('developer', $scalarResult[0]['u_status']);
-        $this->assertEquals('GUILHERME', $scalarResult[0]['dctrn_1']);
+        $this->assertEquals('GUILHERME', $scalarResult[0][1]);
 
         $query = $this->_em->createQuery("select upper(u.name) from Doctrine\Tests\Models\CMS\CmsUser u where u.username = 'gblanco'");
         $this->assertEquals('GUILHERME', $query->getSingleScalarResult());

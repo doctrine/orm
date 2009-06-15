@@ -19,7 +19,6 @@ class AllTests
     {
         $suite = new \Doctrine\Tests\DoctrineTestSuite('Doctrine Orm Query');
 
-        //$suite->addTestSuite('Doctrine\Tests\ORM\Query\IdentifierRecognitionTest');
         $suite->addTestSuite('Doctrine\Tests\ORM\Query\SelectSqlGenerationTest');
         $suite->addTestSuite('Doctrine\Tests\ORM\Query\LanguageRecognitionTest');
         $suite->addTestSuite('Doctrine\Tests\ORM\Query\LexerTest');

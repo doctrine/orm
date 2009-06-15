@@ -4,7 +4,9 @@ namespace Doctrine\Tests\DBAL\Functional\Schema;
 
 use Doctrine\DBAL\Types\Type;
 
-class SchemaManagerFunctionalTest extends \Doctrine\Tests\DbalFunctionalTestCase
+require_once __DIR__ . '/../../../TestInit.php';
+
+class SchemaManagerFunctionalTestCase extends \Doctrine\Tests\DbalFunctionalTestCase
 {
     protected function setUp()
     {
@@ -23,7 +25,7 @@ class SchemaManagerFunctionalTest extends \Doctrine\Tests\DbalFunctionalTestCase
         $this->_sm = $this->_conn->getSchemaManager();
     }
 
-    public function createTestTable($name = 'test_table', $data = array())
+    protected function createTestTable($name = 'test_table', $data = array())
     {
         if ( ! isset($data['columns'])) {
             $columns = array(
@@ -51,16 +53,5 @@ class SchemaManagerFunctionalTest extends \Doctrine\Tests\DbalFunctionalTestCase
         }
 
         $this->_sm->dropAndCreateTable($name, $columns, $options);
-    }
-
-    public function assertUnsupportedMethod($method)
-    {
-        try {
-            $this->_sm->$method();
-        } catch (\Exception $e) {
-            return;
-        }
- 
-        $this->fail($method . '() should throw an exception because it is not supported in ' . $this->_conn->getDatabasePlatform()->getName());
     }
 }

@@ -2,6 +2,8 @@
 
 namespace Doctrine\Tests\Common;
 
+require_once __DIR__ . '/../TestInit.php';
+
 class DoctrineExceptionTest extends \Doctrine\Tests\DoctrineTestCase
 {
     public function testStaticCall()

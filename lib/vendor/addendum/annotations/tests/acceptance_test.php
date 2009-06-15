@@ -35,6 +35,32 @@
 	
 	class FirstAnnotation extends Annotation {}
 	class SecondAnnotation extends Annotation {}
+
+	class NoAnnotation {}
+
+	/** @NoAnnotation @FirstAnnotation */
+	class ExampleWithInvalidAnnotation {}
+
+	/** @SelfReferencingAnnotation */
+	class SelfReferencingAnnotation extends Annotation {}
+
+	/** @IndirectReferenceLoopAnnotationHelper */
+	class IndirectReferenceLoopAnnotation extends Annotation {}
+
+	/** @IndirectReferenceLoopAnnotation */
+	class IndirectReferenceLoopAnnotationHelper extends Annotation {}
+
+
+	class Statics {
+		const A_CONSTANT = 'constant';
+		static public $static = 'static';
+	}
+
+	/** @FirstAnnotation(Statics::A_CONSTANT) */
+	class ClassAnnotatedWithStaticConstant {}
+
+	/** @FirstAnnotation(Statics::UNKNOWN_CONSTANT) */
+	class ClassAnnotatedWithNonExistingConstant {}
 	
 	class TestOfAnnotations extends UnitTestCase {
 		public function testReflectionAnnotatedClass() {
@@ -192,6 +218,36 @@
 			$this->assertIsA($annotations[0], 'FirstAnnotation');
 			$this->assertIsA($annotations[1], 'FirstAnnotation');
 		}
+
+		public function testClassWithNoAnnotationParentShouldNotBeParsed() {
+			$reflection = new ReflectionAnnotatedClass('ExampleWithInvalidAnnotation');
+			$annotations = $reflection = $reflection->getAnnotations();
+			$this->assertEqual(count($annotations), 1);
+			$this->assertIsA($annotations[0], 'FirstAnnotation');
+		}
+
+		public function testCircularReferenceShouldThrowError() {
+			$this->expectError("Circular annotation reference on 'SelfReferencingAnnotation'");
+			$reflection = new ReflectionAnnotatedClass('SelfReferencingAnnotation');
+			$reflection->getAnnotations();
+
+			$this->expectError("Circular annotation reference on 'IndirectReferenceLoopAnnotationHelper'");
+			$reflection = new ReflectionAnnotatedClass('IndirectReferenceLoopAnnotation');
+			$reflection->getAnnotations();
+		}
+
+		public function testConstInAnnotationShouldReturnCorrectValue() {
+			$reflection = new ReflectionAnnotatedClass('ClassAnnotatedWithStaticConstant');
+			$annotation = $reflection->getAnnotation('FirstAnnotation');
+			$this->assertEqual($annotation->value, Statics::A_CONSTANT);
+		}
+
+		public function testBadConstInAnnotationShouldCauseError() {
+			$this->expectError("Constant 'Statics::UNKNOWN_CONSTANT' used in annotation was not defined.");
+			$reflection = new ReflectionAnnotatedClass('ClassAnnotatedWithNonExistingConstant');
+			$annotation = $reflection->getAnnotation('FirstAnnotation');
+		}
+
 	}
 	
 	Mock::generatePartial('AnnotationsBuilder', 'MockedAnnotationsBuilder', array('getDocComment'));

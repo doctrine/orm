@@ -6,7 +6,7 @@ use Doctrine\DBAL\Schema;
 
 require_once __DIR__ . '/../../../TestInit.php';
  
-class PostgreSqlSchemaManagerTest extends SchemaManagerFunctionalTest
+class PostgreSqlSchemaManagerTest extends SchemaManagerFunctionalTestCase
 {
     public function testListDatabases()
     {
@@ -15,9 +15,12 @@ class PostgreSqlSchemaManagerTest extends SchemaManagerFunctionalTest
         $this->assertEquals(true, in_array('test_create_database', $databases));
     }
 
+    /**
+     * @expectedException \Exception
+     */
     public function testListFunctions()
     {
-        return $this->assertUnsupportedMethod('listFunctions');
+        $this->_sm->listFunctions();
     }
 
     public function testListTriggers()

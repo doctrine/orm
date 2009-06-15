@@ -6,7 +6,7 @@ namespace Doctrine\Tests;
 
 require_once 'PHPUnit/Framework.php';
 require_once 'PHPUnit/TextUI/TestRunner.php';
-require_once '../lib/Doctrine/Common/ClassLoader.php';
+require_once __DIR__ . '/../../../lib/Doctrine/Common/ClassLoader.php';
 
 $classLoader = new \Doctrine\Common\ClassLoader();
 

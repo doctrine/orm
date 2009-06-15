@@ -62,26 +62,40 @@
         </copy>
     </target>
     
+    <target name="test">
+        <mkdir dir="${build.dir}/logs"/>
+        <mkdir dir="reports/tests"/>
+        <phpunit printsummary="true" haltonfailure="true">
+            <formatter todir="${build.dir}/logs" type="xml"/>
+            <batchtest classpath="tests">
+                <fileset dir="tests">
+                    <include name="**/*Test.php"/>
+                </fileset>
+            </batchtest>
+        </phpunit>
+        <!-- <phpunitreport infile="build/logs/testsuites.xml" format="frames" todir="reports/tests" />-->
+    </target>
+    
     <target name="dist-common">
         <tar destfile="./dist/Doctrine2-common.tar.gz" compression="gzip">
-            <fileset dir="./build/common">
+            <fileset dir="${build.dir}/common">
                 <include name="**" />
             </fileset>
         </tar>
     </target>
     
     <target name="dist-dbal">
-        <tar destfile="./dist/Doctrine2-dbal.tar.gz" compression="gzip">
-            <fileset dir="./build/dbal">
+        <tar destfile="${dist.dir}/Doctrine2-dbal.tar.gz" compression="gzip">
+            <fileset dir="${build.dir}/dbal">
                 <include name="**" />
             </fileset>
         </tar>
     </target>
 
-    <target name="dist-all" depends="build-all, dist-common, dist-dbal">
+    <target name="dist-all" depends="test, build-all, dist-common, dist-dbal">
 
-        <tar destfile="./dist/Doctrine2-all.tar.gz" compression="gzip">
-            <fileset dir="./build/all">
+        <tar destfile="${dist.dir}/Doctrine2-all.tar.gz" compression="gzip">
+            <fileset dir="${build.dir}/all">
                 <include name="**" />
             </fileset>
         </tar>

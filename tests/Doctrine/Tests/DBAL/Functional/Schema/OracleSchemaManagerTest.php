@@ -6,7 +6,7 @@ use Doctrine\DBAL\Schema;
 
 require_once __DIR__ . '/../../../TestInit.php';
  
-class OracleSchemaManagerTest extends SchemaManagerFunctionalTest
+class OracleSchemaManagerTest extends SchemaManagerFunctionalTestCase
 {
     public function testListDatabases()
     {
@@ -21,9 +21,12 @@ class OracleSchemaManagerTest extends SchemaManagerFunctionalTest
         $this->assertEquals(array(), $functions);
     }
 
+    /**
+     * @expectedException \Exception
+     */
     public function testListTriggers()
     {
-        return $this->assertUnsupportedMethod('listTriggers');
+        $this->_sm->listTriggers();
     }
 
     public function testListSequences()

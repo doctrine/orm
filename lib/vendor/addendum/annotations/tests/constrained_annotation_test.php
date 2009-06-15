@@ -55,7 +55,6 @@
 			$reflection = new ReflectionAnnotatedClass('SuccesfullyAnnotatedClass');
 			$method = $reflection->getMethod('method');
 			$property = $reflection->getProperty('property');
-			$this->assertNoErrors();
 		}
 		
 		public function testMultiTargetAnnotationThrowsErrorWhenOnWrongPlace() {
@@ -67,7 +66,6 @@
 		public function testMultiTargetAnnotationThrowsNoErrorWhenOnRightPlace() {
 			$reflection = new ReflectionAnnotatedClass('SuccesfullyAnnotatedClass');
 			$method = $reflection->getProperty('property2');
-			$this->assertNoErrors();
 		}
 	}
 ?>

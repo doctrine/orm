@@ -6,7 +6,7 @@ use Doctrine\DBAL\Schema;
 
 require_once __DIR__ . '/../../../TestInit.php';
  
-class MySqlSchemaManagerTest extends SchemaManagerFunctionalTest
+class MySqlSchemaManagerTest extends SchemaManagerFunctionalTestCase
 {
     public function testListDatabases()
     {
@@ -15,14 +15,20 @@ class MySqlSchemaManagerTest extends SchemaManagerFunctionalTest
         $this->assertEquals(true, in_array('test_create_database', $databases));
     }
 
+    /**
+     * @expectedException \Exception
+     */
     public function testListFunctions()
     {
-        return $this->assertUnsupportedMethod('listFunctions');
+        $this->_sm->listFunctions();
     }
 
+    /**
+     * @expectedException \Exception
+     */
     public function testListTriggers()
     {
-        return $this->assertUnsupportedMethod('listTriggers');
+        $this->_sm->listTriggers();
     }
 
     public function testListSequences()

@@ -7,7 +7,7 @@ use Doctrine\ORM\Query\ResultSetMapping;
 
 require_once __DIR__ . '/../../TestInit.php';
 
-class SingleScalarHydratorTest extends HydrationTest
+class SingleScalarHydratorTest extends HydrationTestCase
 {
     /** Result set provider for the HYDRATE_SINGLE_SCALAR tests */
     public static function singleScalarResultSetProvider() {

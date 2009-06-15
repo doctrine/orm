@@ -7,7 +7,7 @@ use Doctrine\ORM\Query\ResultSetMapping;
 
 require_once __DIR__ . '/../../TestInit.php';
 
-class ScalarHydratorTest extends HydrationTest
+class ScalarHydratorTest extends HydrationTestCase
 {
     /**
      * Select u.id, u.name from CmsUser u
