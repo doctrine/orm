@@ -230,12 +230,18 @@ class SqlitePlatform extends AbstractPlatform
     }
 
     /** @override */
+    public function getDateTimeTypeDeclarationSql(array $fieldDeclaration)
+    {
+        return 'DATETIME';
+    }
+
+    /** @override */
     protected function _getCommonIntegerTypeDeclarationSql(array $columnDef)
     {
         $autoinc = ! empty($columnDef['autoincrement']) ? ' AUTOINCREMENT' : '';
         $pk = ! empty($columnDef['primary']) && ! empty($autoinc) ? ' PRIMARY KEY' : '';
 
-        return "INTEGER" . $pk . $autoinc;
+        return 'INTEGER' . $pk . $autoinc;
     }
 
     /**

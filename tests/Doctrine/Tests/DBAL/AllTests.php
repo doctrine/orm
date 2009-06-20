@@ -28,6 +28,8 @@ class AllTests
         $suite->addTestSuite('Doctrine\Tests\DBAL\Platforms\PostgreSqlPlatformTest');
         $suite->addTestSuite('Doctrine\Tests\DBAL\Platforms\MsSqlPlatformTest');
 
+        $suite->addTestSuite('Doctrine\Tests\DBAL\Types\DateTimeTest');
+
         $suite->addTest(Functional\AllTests::suite());
 
         return $suite;

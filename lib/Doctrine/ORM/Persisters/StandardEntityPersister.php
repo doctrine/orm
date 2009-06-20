@@ -90,6 +90,7 @@ class StandardEntityPersister
     public function __construct(EntityManager $em, ClassMetadata $class)
     {
         $this->_em = $em;
+        $this->_platform = $em->getConnection()->getDatabasePlatform();
         $this->_evm = $em->getEventManager();
         $this->_entityName = $class->name;
         $this->_conn = $em->getConnection();
@@ -343,7 +344,7 @@ class StandardEntityPersister
         foreach ($stmt->fetch(Connection::FETCH_ASSOC) as $column => $value) {
             $fieldName = $this->_class->fieldNames[$column];
             $data[$fieldName] = Type::getType($this->_class->getTypeOfField($fieldName))
-            ->convertToPHPValue($value);
+            ->convertToPHPValue($value, $this->_platform);
         }
         $stmt->closeCursor();
 

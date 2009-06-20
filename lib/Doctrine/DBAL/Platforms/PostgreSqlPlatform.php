@@ -693,6 +693,14 @@ class PostgreSqlPlatform extends AbstractPlatform
     /**
      * @override
      */
+    public function getDateTimeTypeDeclarationSql(array $fieldDeclaration)
+    {
+        return 'TIMESTAMP without time zone';
+    }
+
+    /**
+     * @override
+     */
     protected function _getCommonIntegerTypeDeclarationSql(array $columnDef)
     {
         return '';

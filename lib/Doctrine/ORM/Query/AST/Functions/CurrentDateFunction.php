@@ -1,8 +1,4 @@
 <?php
-/* 
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 
 namespace Doctrine\ORM\Query\AST\Functions;
 
@@ -18,8 +14,7 @@ class CurrentDateFunction extends FunctionNode
      */
     public function getSql(\Doctrine\ORM\Query\SqlWalker $sqlWalker)
     {
-        //TODO: Use platform to get SQL
-        return 'CURRENT_DATE';
+        return $sqlWalker->getConnection()->getDatabasePlatform()->getCurrentDateSql();
     }
 
     /**
@@ -29,6 +24,7 @@ class CurrentDateFunction extends FunctionNode
     {
         $lexer = $parser->getLexer();
         $parser->match($lexer->lookahead['value']);
+        $parser->match('(');
+        $parser->match(')');
     }
 }
-

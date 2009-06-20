@@ -179,6 +179,14 @@ class OraclePlatform extends AbstractPlatform
     /**
      * @override
      */
+    public function getDateTimeTypeDeclarationSql(array $fieldDeclaration)
+    {
+        return 'DATE';
+    }
+
+    /**
+     * @override
+     */
     protected function _getCommonIntegerTypeDeclarationSql(array $columnDef)
     {
         return '';

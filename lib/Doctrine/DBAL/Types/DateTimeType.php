@@ -9,6 +9,11 @@ namespace Doctrine\DBAL\Types;
  */
 class DateTimeType extends Type
 {
+    public function getName()
+    {
+        return 'DateTime';
+    }
+
     /**
      * {@inheritdoc}
      */
@@ -24,8 +29,7 @@ class DateTimeType extends Type
      */
     public function convertToDatabaseValue($value, \Doctrine\DBAL\Platforms\AbstractPlatform $platform)
     {
-        //TODO: howto? dbms specific? delegate to platform?
-        return $value;
+        return $value->format($platform->getDateTimeFormatString());
     }
     
     /**
@@ -33,8 +37,8 @@ class DateTimeType extends Type
      *
      * @override
      */
-    public function convertToObjectValue($value)
+    public function convertToPHPValue($value, \Doctrine\DBAL\Platforms\AbstractPlatform $platform)
     {
-        return new \DateTime($value);
+        return \DateTime::createFromFormat($platform->getDateTimeFormatString(), $value);
     }
 }

@@ -259,6 +259,14 @@ class MySqlPlatform extends AbstractPlatform
     }
 
     /**
+     * @override
+     */
+    public function getDateTimeTypeDeclarationSql(array $fieldDeclaration)
+    {
+        return 'DATETIME';
+    }
+
+    /**
      * Obtain DBMS specific SQL code portion needed to set the COLLATION
      * of a field declaration to be used in statements like CREATE TABLE.
      *

@@ -1237,6 +1237,28 @@ abstract class AbstractPlatform
     }
 
     /**
+     * Gets the SQL specific for the platform to get the current date.
+     *
+     * @return string
+     */
+    public function getCurrentDateSql()
+    {
+        return 'CURRENT_DATE';
+    }
+
+    /**
+     * Gets the SQL specific for the platform to get the current time.
+     *
+     * @return string
+     */
+    public function getCurrentTimeSql()
+    {
+        return 'CURRENT_TIME';
+    }
+
+
+
+    /**
      * Get sql for transaction isolation level Connection constant
      *
      * @param integer $level
@@ -1361,6 +1383,18 @@ abstract class AbstractPlatform
     }
 
     /**
+     * Obtain DBMS specific SQL to be used to create datetime fields in 
+     * statements like CREATE TABLE
+     *
+     * @param array $fieldDeclaration 
+     * @return string
+     */
+    public function getDateTimeTypeDeclarationSql(array $fieldDeclaration)
+    {
+        throw DoctrineException::updateMe('Get datetime type declaration not supported by this platform.');
+    }
+
+    /**
      * Gets the default transaction isolation level of the platform.
      *
      * @return integer The default isolation level.
@@ -1459,6 +1493,15 @@ abstract class AbstractPlatform
     public function getIdentityColumnNullInsertSql()
     {
         return "";
+    }
+
+    /**
+     * TODO: We need to get the specific format for each dbms and override this
+     * function for each platform
+     */
+    public function getDateTimeFormatString()
+    {
+        return 'Y-m-d H:i:s';
     }
 
     /**

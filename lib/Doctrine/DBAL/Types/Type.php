@@ -45,7 +45,7 @@ abstract class Type
         return $value;
     }
 
-    public function convertToPHPValue($value)
+    public function convertToPHPValue($value, \Doctrine\DBAL\Platforms\AbstractPlatform $platform)
     {
         return $value;
     }

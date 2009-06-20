@@ -44,7 +44,10 @@ class OrmFunctionalTestCase extends OrmTestCase
             'Doctrine\Tests\Models\Company\CompanyEmployee',
             'Doctrine\Tests\Models\Company\CompanyManager'
         ),
-        'ecommerce' => array()
+        'ecommerce' => array(),
+        'generic' => array(
+            'Doctrine\Tests\Models\Generic\DateTimeModel'
+        )
     );
 
     protected function useModelSet($setName)
@@ -72,7 +75,9 @@ class OrmFunctionalTestCase extends OrmTestCase
             $conn->exec('DELETE FROM company_employees');
             $conn->exec('DELETE FROM company_persons');
         }
-
+        if (isset($this->_usedModelSets['generic'])) {
+            $conn->exec('DELETE FROM date_time_model');
+        }
         $this->_em->clear();
     }
 

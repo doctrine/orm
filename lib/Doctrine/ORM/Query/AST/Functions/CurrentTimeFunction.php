@@ -18,8 +18,7 @@ class CurrentTimeFunction extends FunctionNode
      */
     public function getSql(\Doctrine\ORM\Query\SqlWalker $sqlWalker)
     {
-        //TODO: Use platform to get SQL
-        return 'CURRENT_TIME';
+        return $sqlWalker->getConnection()->getDatabasePlatform()->getCurrentTimeSql();
     }
 
     /**

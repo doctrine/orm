@@ -19,7 +19,7 @@ class DecimalType extends Type
         return $platform->getDecimalTypeDeclarationSql($fieldDeclaration);
     }
 
-    public function convertToPHPValue($value)
+    public function convertToPHPValue($value, \Doctrine\DBAL\Platforms\AbstractPlatform $platform)
     {
         return (double) $value;
     }

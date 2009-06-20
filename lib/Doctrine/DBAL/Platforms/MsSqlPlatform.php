@@ -401,6 +401,14 @@ class MsSqlPlatform extends AbstractPlatform
     }
 
     /**
+     * @override
+     */
+    public function getDateTimeTypeDeclarationSql(array $fieldDeclaration)
+    {
+        return 'CHAR(' . strlen('YYYY-MM-DD HH:MM:SS') . ')';
+    }
+
+    /**
      * Get the platform name for this instance
      *
      * @return string

@@ -61,6 +61,7 @@ abstract class AbstractHydrator
     public function __construct(\Doctrine\ORM\EntityManager $em)
     {
         $this->_em = $em;
+        $this->_platform = $em->getConnection()->getDatabasePlatform();
         $this->_uow = $em->getUnitOfWork();
     }
 
@@ -213,7 +214,7 @@ abstract class AbstractHydrator
                 $id[$dqlAlias] .= '|' . $value;
             }
 
-            $rowData[$dqlAlias][$cache[$key]['fieldName']] = $cache[$key]['type']->convertToPHPValue($value);
+            $rowData[$dqlAlias][$cache[$key]['fieldName']] = $cache[$key]['type']->convertToPHPValue($value, $this->_platform);
 
             if ( ! isset($nonemptyComponents[$dqlAlias]) && $value !== null) {
                 $nonemptyComponents[$dqlAlias] = true;
@@ -221,7 +222,7 @@ abstract class AbstractHydrator
 
             /* TODO: Consider this instead of the above 4 lines. */
             /*if ($value !== null) {
-                $rowData[$dqlAlias][$fieldName] = $cache[$key]['type']->convertToPHPValue($value);
+                $rowData[$dqlAlias][$fieldName] = $cache[$key]['type']->convertToPHPValue($value, $this->_platform);
             }*/
         }
 
@@ -268,7 +269,7 @@ abstract class AbstractHydrator
                 $rowData[/*$dqlAlias . '_' . */$fieldName] = $value;
             } else {
                 $dqlAlias = $cache[$key]['dqlAlias'];
-                $rowData[$dqlAlias . '_' . $fieldName] = $cache[$key]['type']->convertToPHPValue($value);
+                $rowData[$dqlAlias . '_' . $fieldName] = $cache[$key]['type']->convertToPHPValue($value, $this->_platform);
             }
         }
 

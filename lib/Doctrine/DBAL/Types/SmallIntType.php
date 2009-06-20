@@ -19,7 +19,7 @@ class SmallIntType
         return $platform->getSmallIntTypeDeclarationSql($fieldDeclaration);
     }
 
-    public function convertToPHPValue($value)
+    public function convertToPHPValue($value, \Doctrine\DBAL\Platforms\AbstractPlatform $platform)
     {
         return (int) $value;
     }
