@@ -44,6 +44,9 @@ abstract class AbstractHydrator
     /** @var EntityManager The EntityManager instance. */
     protected $_em;
 
+    /** @var AbstractPlatform The dbms Platform instance */
+    protected $_platform;
+
     /** @var UnitOfWork The UnitOfWork of the associated EntityManager. */
     protected $_uow;
 
