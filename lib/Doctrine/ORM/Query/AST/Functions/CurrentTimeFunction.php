@@ -28,6 +28,7 @@ class CurrentTimeFunction extends FunctionNode
     {
         $lexer = $parser->getLexer();
         $parser->match($lexer->lookahead['value']);
+        $parser->match('(');
+        $parser->match(')');
     }
 }
-

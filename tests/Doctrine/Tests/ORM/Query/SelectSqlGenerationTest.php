@@ -287,6 +287,18 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
       $this->assertEquals('SELECT d0_.id AS id0 FROM date_time_model d0_ WHERE d0_.datetime > CURRENT_DATE', $q->getSql());
     }
 
+    public function testCurrentTimeFunction()
+    {
+      $q = $this->_em->createQuery('SELECT d.id FROM Doctrine\Tests\Models\Generic\DateTimeModel d WHERE d.time > current_time()');
+      $this->assertEquals('SELECT d0_.id AS id0 FROM date_time_model d0_ WHERE d0_.time > CURRENT_TIME', $q->getSql());
+    }
+
+    public function testCurrentTimestampFunction()
+    {
+      $q = $this->_em->createQuery('SELECT d.id FROM Doctrine\Tests\Models\Generic\DateTimeModel d WHERE d.datetime > current_timestamp()');
+      $this->assertEquals('SELECT d0_.id AS id0 FROM date_time_model d0_ WHERE d0_.datetime > CURRENT_TIMESTAMP', $q->getSql());
+    }
+
     /*public function testExistsExpressionInWhereCorrelatedSubqueryAssocCondition()
     {
         $this->assertSqlGeneration(

@@ -17,4 +17,12 @@ class DateTimeModel
      * @Column(type="datetime")
      */
     public $datetime;
+    /**
+     * @Column(type="date")
+     */
+    public $date;
+    /**
+     * @Column(type="time")
+     */
+    public $time;
 }

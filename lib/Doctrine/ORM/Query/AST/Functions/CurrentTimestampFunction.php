@@ -18,8 +18,7 @@ class CurrentTimestampFunction extends FunctionNode
      */
     public function getSql(\Doctrine\ORM\Query\SqlWalker $sqlWalker)
     {
-        //TODO: Use platform to get SQL
-        return 'CURRENT_TIMESTAMP';
+        return $sqlWalker->getConnection()->getDatabasePlatform()->getCurrentTimestampSql();
     }
 
     /**
@@ -29,6 +28,7 @@ class CurrentTimestampFunction extends FunctionNode
     {
         $lexer = $parser->getLexer();
         $parser->match($lexer->lookahead['value']);
+        $parser->match('(');
+        $parser->match(')');
     }
 }
-

@@ -33,6 +33,8 @@ abstract class Type
         'string' => 'Doctrine\DBAL\Types\StringType',
         'text' => 'Doctrine\DBAL\Types\TextType',
         'datetime' => 'Doctrine\DBAL\Types\DateTimeType',
+        'date' => 'Doctrine\DBAL\Types\DateType',
+        'time' => 'Doctrine\DBAL\Types\TimeType',
         'decimal' => 'Doctrine\DBAL\Types\DecimalType',
         'double' => 'Doctrine\DBAL\Types\DoubleType'
     );

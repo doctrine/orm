@@ -23,12 +23,16 @@ class AllTests
     {
         $suite = new \Doctrine\Tests\DbalTestSuite('Doctrine DBAL');
 
+        // Platform tests
         $suite->addTestSuite('Doctrine\Tests\DBAL\Platforms\SqlitePlatformTest');
         $suite->addTestSuite('Doctrine\Tests\DBAL\Platforms\MySqlPlatformTest');
         $suite->addTestSuite('Doctrine\Tests\DBAL\Platforms\PostgreSqlPlatformTest');
         $suite->addTestSuite('Doctrine\Tests\DBAL\Platforms\MsSqlPlatformTest');
 
+        // Type tests
         $suite->addTestSuite('Doctrine\Tests\DBAL\Types\DateTimeTest');
+        $suite->addTestSuite('Doctrine\Tests\DBAL\Types\DateTest');
+        $suite->addTestSuite('Doctrine\Tests\DBAL\Types\TimeTest');
 
         $suite->addTest(Functional\AllTests::suite());
 

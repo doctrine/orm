@@ -1256,7 +1256,15 @@ abstract class AbstractPlatform
         return 'CURRENT_TIME';
     }
 
-
+    /**
+     * Gets the SQL specific for the platform to get the current timestamp
+     *
+     * @return string
+     */
+    public function getCurrentTimestampSql()
+    {
+        return 'CURRENT_TIMESTAMP';
+    }
 
     /**
      * Get sql for transaction isolation level Connection constant
@@ -1502,6 +1510,16 @@ abstract class AbstractPlatform
     public function getDateTimeFormatString()
     {
         return 'Y-m-d H:i:s';
+    }
+
+    public function getDateFormatString()
+    {
+        return 'Y-m-d';
+    }
+
+    public function getTimeFormatString()
+    {
+        return 'H:i:s';
     }
 
     /**
