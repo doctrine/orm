@@ -26,6 +26,9 @@ abstract class Type
     
     private static $_typeObjects = array();
     private static $_typesMap = array(
+        'array' => 'Doctrine\DBAL\Types\ArrayType',
+        'object' => 'Doctrine\DBAL\Types\ObjectType',
+        'boolean' => 'Doctrine\DBAL\Types\BooleanType',
         'integer' => 'Doctrine\DBAL\Types\IntegerType',
         'int' => 'Doctrine\DBAL\Types\IntegerType',
         'smallint' => 'Doctrine\DBAL\Types\SmallIntType',

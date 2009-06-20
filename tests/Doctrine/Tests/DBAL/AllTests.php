@@ -30,9 +30,15 @@ class AllTests
         $suite->addTestSuite('Doctrine\Tests\DBAL\Platforms\MsSqlPlatformTest');
 
         // Type tests
+        $suite->addTestSuite('Doctrine\Tests\DBAL\Types\ArrayTest');
+        $suite->addTestSuite('Doctrine\Tests\DBAL\Types\ObjectTest');
         $suite->addTestSuite('Doctrine\Tests\DBAL\Types\DateTimeTest');
         $suite->addTestSuite('Doctrine\Tests\DBAL\Types\DateTest');
         $suite->addTestSuite('Doctrine\Tests\DBAL\Types\TimeTest');
+        $suite->addTestSuite('Doctrine\Tests\DBAL\Types\BooleanTest');
+        $suite->addTestSuite('Doctrine\Tests\DBAL\Types\DecimalTest');
+        $suite->addTestSuite('Doctrine\Tests\DBAL\Types\IntegerTest');
+        $suite->addTestSuite('Doctrine\Tests\DBAL\Types\SmallIntTest');
 
         $suite->addTest(Functional\AllTests::suite());
 

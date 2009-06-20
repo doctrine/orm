@@ -409,6 +409,14 @@ class MsSqlPlatform extends AbstractPlatform
     }
 
     /**
+     * @override
+     */
+    public function getBooleanTypeDeclarationSql(array $field)
+    {
+        return 'BIT';
+    }
+
+    /**
      * Get the platform name for this instance
      *
      * @return string

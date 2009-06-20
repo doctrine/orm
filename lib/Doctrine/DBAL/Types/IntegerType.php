@@ -10,7 +10,7 @@ class IntegerType extends Type
 {
     public function getName()
     {
-        return "Integer";
+        return 'Integer';
     }
 
     public function getSqlDeclaration(array $fieldDeclaration, \Doctrine\DBAL\Platforms\AbstractPlatform $platform)

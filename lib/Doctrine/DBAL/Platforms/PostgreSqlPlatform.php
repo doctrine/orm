@@ -701,6 +701,14 @@ class PostgreSqlPlatform extends AbstractPlatform
     /**
      * @override
      */
+    public function getBooleanTypeDeclarationSql(array $field)
+    {
+        return 'BOOLEAN';
+    }
+
+    /**
+     * @override
+     */
     protected function _getCommonIntegerTypeDeclarationSql(array $columnDef)
     {
         return '';

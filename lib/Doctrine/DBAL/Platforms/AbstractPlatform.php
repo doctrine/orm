@@ -1529,6 +1529,11 @@ abstract class AbstractPlatform
      */
     abstract public function getVarcharTypeDeclarationSql(array $field);
 
+    public function getBooleanTypeDeclarationSql(array $field)
+    {
+        return $this->getIntegerTypeDeclarationSql($field);
+    }
+
     /**
      * Get the platform name for this instance
      *

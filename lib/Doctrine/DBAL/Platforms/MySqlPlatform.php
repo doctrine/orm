@@ -267,6 +267,14 @@ class MySqlPlatform extends AbstractPlatform
     }
 
     /**
+     * @override
+     */
+    public function getBooleanTypeDeclarationSql(array $field)
+    {
+        return 'TINYINT(1)';
+    }
+
+    /**
      * Obtain DBMS specific SQL code portion needed to set the COLLATION
      * of a field declaration to be used in statements like CREATE TABLE.
      *

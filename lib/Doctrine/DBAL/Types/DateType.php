@@ -14,29 +14,16 @@ class DateType extends Type
         return 'Date';
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getSqlDeclaration(array $fieldDeclaration, \Doctrine\DBAL\Platforms\AbstractPlatform $platform)
     {
         return $platform->getDateTypeDeclarationSql($fieldDeclaration);
     }
 
-    /**
-     * {@inheritdoc}
-     *
-     * @override
-     */
     public function convertToDatabaseValue($value, \Doctrine\DBAL\Platforms\AbstractPlatform $platform)
     {
         return $value->format($platform->getDateFormatString());
     }
     
-    /**
-     * {@inheritdoc}
-     *
-     * @override
-     */
     public function convertToPHPValue($value, \Doctrine\DBAL\Platforms\AbstractPlatform $platform)
     {
         return \DateTime::createFromFormat($platform->getDateFormatString(), $value);

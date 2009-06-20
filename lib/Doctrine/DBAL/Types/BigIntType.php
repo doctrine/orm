@@ -12,7 +12,7 @@ class BigIntType extends Type
 {
     public function getName()
     {
-        return "BigInteger";
+        return 'BigInteger';
     }
 
     public function getSqlDeclaration(array $fieldDeclaration, \Doctrine\DBAL\Platforms\AbstractPlatform $platform)

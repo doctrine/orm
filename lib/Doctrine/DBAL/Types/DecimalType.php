@@ -11,7 +11,7 @@ class DecimalType extends Type
 {
     public function getName()
     {
-        return "Decimal";
+        return 'Decimal';
     }
 
     public function getSqlDeclaration(array $fieldDeclaration, \Doctrine\DBAL\Platforms\AbstractPlatform $platform)

@@ -3,29 +3,29 @@
 namespace Doctrine\DBAL\Types;
 
 /**
- * Type that maps an SQL boolean to a PHP boolean.
+ * Type that maps a PHP object to a clob SQL type.
  *
  * @since 2.0
  */
-class BooleanType extends Type
+class ObjectType extends Type
 {
     public function getSqlDeclaration(array $fieldDeclaration, \Doctrine\DBAL\Platforms\AbstractPlatform $platform)
     {
-        return $platform->getBooleanDeclarationSql();
+        return $platform->getClobDeclarationSql($fieldDeclaration);
     }
 
     public function convertToDatabaseValue($value, \Doctrine\DBAL\Platforms\AbstractPlatform $platform)
     {
-        return $platform->convertBooleans($value);
+        return serialize($value);
     }
-    
+
     public function convertToPHPValue($value, \Doctrine\DBAL\Platforms\AbstractPlatform $platform)
     {
-        return (bool) $value;
+        return unserialize($value);
     }
 
     public function getName()
     {
-        return 'boolean';
+        return 'Object';
     }
 }
