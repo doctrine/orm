@@ -52,10 +52,15 @@ class SqliteSchemaManager extends AbstractSchemaManager
      */
     public function createDatabase($database)
     {
-        // FIXME: $database parameter not used 
-        // TODO: Can we do this better?
-        $this->_conn->close();
-        $this->_conn->connect();
+        $params = $this->_conn->getParams();
+        $driver = $params['driver'];
+        $options = array(
+            'driver' => $driver,
+            'path' => $database
+        );
+        $conn = \Doctrine\DBAL\DriverManager::getConnection($options);
+        $conn->connect();
+        $conn->close();
     }
 
     protected function _getPortableTableDefinition($table)

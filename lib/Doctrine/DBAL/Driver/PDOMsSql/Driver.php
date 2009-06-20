@@ -45,8 +45,21 @@ class Driver implements \Doctrine\DBAL\Driver
      */
     private function _constructPdoDsn(array $params)
     {
-        //TODO
+        // TODO: This might need to be revisted once we have access to a mssql server
+        $dsn = 'mssql:';
+        if (isset($params['host'])) {
+            $dsn .= 'host=' . $params['host'] . ';';
+        }
+        if (isset($params['port'])) {
+            $dsn .= 'port=' . $params['port'] . ';';
+        }
+        if (isset($params['dbname'])) {
+            $dsn .= 'dbname=' . $params['dbname'] . ';';
+        }
+
+        return $dsn;
     }
+
 
     public function getDatabasePlatform()
     {

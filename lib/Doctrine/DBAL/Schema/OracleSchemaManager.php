@@ -199,9 +199,7 @@ class OracleSchemaManager extends AbstractSchemaManager
     {
         $sql = $this->_platform->getDropAutoincrementSql($table);
         foreach ($sql as $query) {
-            try {
-                $this->_conn->exec($query);
-            } catch (\Exception $e) {}
+            $this->_conn->exec($query);
         }
 
         return true;
@@ -237,28 +235,8 @@ class OracleSchemaManager extends AbstractSchemaManager
 
     public function dropTable($name)
     {
-        try {
-            $this->dropAutoincrement($name);
-        } catch (\Exception $e) {
-            //FIXME: Exception silencing ;'-(
-        }
+        $this->dropAutoincrement($name);
 
         return parent::dropTable($name);
-    }
-
-    /**
-     * Lists all sequences.
-     *
-     * @param string|null $database
-     * @return array
-     */
-    public function listSequences($database = null)
-    {
-        //FIXME: $database not used. Remove?
-        $query = "SELECT sequence_name FROM sys.user_sequences";
-
-        $tableNames = $this->_conn->fetchColumn($query);
-
-        return $tableNames;
     }
 }

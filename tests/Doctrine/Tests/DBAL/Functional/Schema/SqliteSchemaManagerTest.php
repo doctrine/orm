@@ -119,28 +119,15 @@ class SqliteSchemaManagerTest extends SchemaManagerFunctionalTestCase
         $this->assertEquals('CREATE VIEW test_create_view AS SELECT * from test_views', $views[0]['sql']);
     }
 
-    /* FIXME: Using ORM in DBAL test suite. Not OK!!
     public function testCreateAndDropDatabase()
     {
         $path = dirname(__FILE__).'/test_create_and_drop_sqlite_database.sqlite';
-        $config = new \Doctrine\ORM\Configuration();
-        $eventManager = new \Doctrine\Common\EventManager();
-        $connectionOptions = array(
-            'driver' => 'pdo_sqlite',
-            'path' => $path
-        );
-        $em = \Doctrine\ORM\EntityManager::create($connectionOptions, $config, $eventManager);
-        $conn = $em->getConnection();
-        $sm = $conn->getSchemaManager();
 
-        $sm->createDatabase();
+        $this->_sm->createDatabase($path);
         $this->assertEquals(true, file_exists($path));
-        $sm->dropDatabase();
+        $this->_sm->dropDatabase($path);
         $this->assertEquals(false, file_exists($path));
-        $sm->createDatabase();
-        $this->assertEquals(true, file_exists($path));
-        $sm->dropDatabase();
-    }*/
+    }
 
     public function testCreateTable()
     {
@@ -176,8 +163,7 @@ class SqliteSchemaManagerTest extends SchemaManagerFunctionalTestCase
     {
         $this->_sm->createSequence('seqname', 1, 1);
     }
-    
-    /* FIXME: See comment in AbstractSchemaManager#dropIndex($table, $name)
+
     public function testCreateIndex()
     {
         $this->createTestTable('test_create_index');
@@ -193,7 +179,7 @@ class SqliteSchemaManagerTest extends SchemaManagerFunctionalTestCase
         $tableIndexes = $this->_sm->listTableIndexes('test_create_index');
         $this->assertEquals('test', $tableIndexes[0]['name']);
         $this->assertEquals(true, $tableIndexes[0]['unique']);
-    }*/
+    }
 
     /**
      * @expectedException \Exception

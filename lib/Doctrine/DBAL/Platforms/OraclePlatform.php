@@ -233,6 +233,11 @@ class OraclePlatform extends AbstractPlatform
         return "SELECT name FROM sys.user_source WHERE line = 1 AND type = 'FUNCTION'";
     }
 
+    public function getListSequencesSql($database)
+    {
+        return 'SELECT sequence_name FROM sys.user_sequences';
+    }
+
     public function getCreateTableSql($table, array $columns, array $options = array())
     {
         $indexes = isset($options['indexes']) ? $options['indexes']:array();
