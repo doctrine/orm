@@ -264,7 +264,7 @@ class EntityManager
     /**
      * @todo Implementation.
      */
-    public function createCriteria()
+    public function createQueryBuilder()
     {
         //...
     }
@@ -405,7 +405,7 @@ class EntityManager
      * overriding any local changes that have not yet been persisted.
      *
      * @param object $entity
-     * @todo Implemntation
+     * @todo Implementation
      */
     public function refresh($entity)
     {
@@ -559,7 +559,7 @@ class EntityManager
     }
 
     /**
-     * 
+     * Gets the proxy generated used by the EntityManager to create entity proxies.
      */
     public function getProxyGenerator()
     {
@@ -591,8 +591,6 @@ class EntityManager
             $eventManager = new EventManager();
         }
         
-        $em = new EntityManager($conn, $config, $eventManager);
-        
-        return $em;
+        return new EntityManager($conn, $config, $eventManager);
     }
 }

@@ -412,9 +412,7 @@ class UnitOfWork implements PropertyChangedListener
                 $coll = new PersistentCollection($this->_em, $this->_em->getClassMetadata($assoc->targetEntityName),
                         $actualData[$name] ? $actualData[$name] : array());
                 $coll->setOwner($entity, $assoc);
-                if ( ! $coll->isEmpty()) {
-                    $coll->setDirty(true);
-                }
+                $coll->setDirty( ! $coll->isEmpty());
                 $class->reflFields[$name]->setValue($entity, $coll);
                 $actualData[$name] = $coll;
             }
@@ -425,8 +423,7 @@ class UnitOfWork implements PropertyChangedListener
             // (only has an id). These result in an INSERT.
             $this->_originalEntityData[$oid] = $actualData;
             $this->_entityChangeSets[$oid] = array_map(
-                function($e) { return array(null, $e); },
-                $actualData
+                function($e) { return array(null, $e); }, $actualData
             );
         } else {
             // Entity is "fully" MANAGED: it was already fully persisted before
@@ -519,7 +516,6 @@ class UnitOfWork implements PropertyChangedListener
                     $data[$name] = $refProp->getValue($entry);
                     $changeSet[$name] = array(null, $data[$name]);
                     if (isset($targetClass->associationMappings[$name])) {
-                        //echo "RECURSING INTO $name" . PHP_EOL;
                         //TODO: Prevent infinite recursion
                         $this->_computeAssociationChanges($targetClass->associationMappings[$name], $data[$name]);
                     }
@@ -1300,8 +1296,9 @@ class UnitOfWork implements PropertyChangedListener
             $id = array($data[$class->identifier[0]]);
             $idHash = $id[0];
         }
-        $entity = $this->tryGetByIdHash($idHash, $class->rootEntityName);
-        if ($entity) {
+
+        if (isset($this->_identityMap[$class->rootEntityName][$idHash])) {
+            $entity = $this->_identityMap[$class->rootEntityName][$idHash];
             $oid = spl_object_hash($entity);
             $overrideLocalChanges = false;
             //$overrideLocalChanges = $query->getHint('doctrine.refresh');

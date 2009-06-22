@@ -68,17 +68,18 @@ abstract class AbstractExecutor implements \Serializable
         $isDeleteStatement = $AST instanceof \Doctrine\ORM\Query\AST\DeleteStatement;
         $isUpdateStatement = $AST instanceof \Doctrine\ORM\Query\AST\UpdateStatement;
 
-        if ($isUpdateStatement || $isDeleteStatement) {
-            // TODO: Inspect the $AST and create the proper executor like so (pseudo-code):
-            /*
-            if (primaryClassInFromClause->isMultiTable()) {
-                   if ($isDeleteStatement) {
-                       return new Doctrine_ORM_Query_SqlExecutor_MultiTableDelete($AST);
-                   } else {
-                       return new Doctrine_ORM_Query_SqlExecutor_MultiTableUpdate($AST);
-                   }
-            } else ...
-            */
+        if ($isDeleteStatement) {
+            $primaryClass = $sqlWalker->getEntityManager()->getClassMetadata(
+                $AST->getDeleteClause()->getAbstractSchemaName()
+            );
+            
+            if ($primaryClass->isInheritanceTypeJoined()) {
+                return new MultiTableDeleteExecutor($AST, $sqlWalker);
+            } else {
+                return new SingleTableDeleteUpdateExecutor($AST, $sqlWalker);
+            }
+        } else if ($isUpdateStatement) {
+            //TODO: Check whether to pick MultiTableUpdateExecutor instead
             return new SingleTableDeleteUpdateExecutor($AST, $sqlWalker);
         } else {
             return new SingleSelectExecutor($AST, $sqlWalker);

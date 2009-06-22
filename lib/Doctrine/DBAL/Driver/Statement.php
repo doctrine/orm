@@ -46,7 +46,7 @@ interface Statement
      * @param integer $type         Data type of the parameter, specified by the PDO::PARAM_* constants.
      * @return boolean              Returns TRUE on success or FALSE on failure
      */
-    public function bindColumn($column, &$param, $type = null);
+    function bindColumn($column, &$param, $type = null);
 
     /**
      * Binds a value to a corresponding named or positional
@@ -61,7 +61,7 @@ interface Statement
      *
      * @return boolean              Returns TRUE on success or FALSE on failure.
      */
-    public function bindValue($param, $value, $type = null);
+    function bindValue($param, $value, $type = null);
 
     /**
      * Binds a PHP variable to a corresponding named or question mark placeholder in the 
@@ -89,7 +89,7 @@ interface Statement
      * @param mixed $driverOptions
      * @return boolean              Returns TRUE on success or FALSE on failure.
      */
-    public function bindParam($column, &$variable, $type = null, $length = null, $driverOptions = array());
+    function bindParam($column, &$variable, $type = null, $length = null, $driverOptions = array());
 
     /**
      * closeCursor
@@ -97,7 +97,7 @@ interface Statement
      *
      * @return boolean              Returns TRUE on success or FALSE on failure.
      */
-    public function closeCursor();
+    function closeCursor();
 
     /** 
      * columnCount
@@ -107,7 +107,7 @@ interface Statement
      *                              by the PDOStatement object. If there is no result set,
      *                              this method should return 0.
      */
-    public function columnCount();
+    function columnCount();
 
     /**
      * errorCode
@@ -116,7 +116,7 @@ interface Statement
      * @see Doctrine_Adapter_Interface::errorCode()
      * @return string       error code string
      */
-    public function errorCode();
+    function errorCode();
 
     /**
      * errorInfo
@@ -125,7 +125,7 @@ interface Statement
      * @see Doctrine_Adapter_Interface::errorInfo()
      * @return array        error info array
      */
-    public function errorInfo();
+    function errorInfo();
 
     /**
      * Executes a prepared statement
@@ -141,7 +141,7 @@ interface Statement
      *                                  bound parameters in the SQL statement being executed.
      * @return boolean                  Returns TRUE on success or FALSE on failure.
      */
-    public function execute($params = null);
+    function execute($params = null);
 
     /**
      * fetch
@@ -170,7 +170,7 @@ interface Statement
      *
      * @return mixed
      */
-    public function fetch($fetchStyle = Query::HYDRATE_BOTH,
+    function fetch($fetchStyle = Query::HYDRATE_BOTH,
                           $cursorOrientation = Query::HYDRATE_ORI_NEXT,
                           $cursorOffset = null);
 
@@ -187,7 +187,7 @@ interface Statement
      *
      * @return array
      */
-    public function fetchAll($fetchStyle = Query::HYDRATE_BOTH);
+    function fetchAll($fetchStyle = Query::HYDRATE_BOTH);
 
     /**
      * fetchColumn
@@ -200,7 +200,7 @@ interface Statement
      *
      * @return string                       returns a single column in the next row of a result set.
      */
-    public function fetchColumn($columnIndex = 0);
+    function fetchColumn($columnIndex = 0);
 
     /**
      * fetchObject
@@ -215,7 +215,7 @@ interface Statement
      * @return mixed                        an instance of the required class with property names that correspond 
      *                                      to the column names or FALSE in case of an error.
      */
-    public function fetchObject($className = 'stdClass', $args = array());
+    function fetchObject($className = 'stdClass', $args = array());
 
     /**
      * getAttribute
@@ -225,7 +225,7 @@ interface Statement
      * @see Doctrine::ATTR_* constants
      * @return mixed                        the attribute value
      */
-    public function getAttribute($attribute);
+    function getAttribute($attribute);
 
     /**
      * getColumnMeta
@@ -243,7 +243,7 @@ interface Statement
      *          precision                   The numeric precision of this column. Normally 0 for types other than floating point decimals.
      *          pdo_type                    The type of this column as represented by the PDO::PARAM_* constants.
      */
-    public function getColumnMeta($column);
+    function getColumnMeta($column);
 
     /**
      * nextRowset
@@ -256,7 +256,7 @@ interface Statement
      *
      * @return boolean                      Returns TRUE on success or FALSE on failure.
      */
-    public function nextRowset();
+    function nextRowset();
 
     /**
      * rowCount
@@ -270,7 +270,7 @@ interface Statement
      *
      * @return integer                      Returns the number of rows.
      */
-    public function rowCount();
+    function rowCount();
 
     /**
      * setAttribute
@@ -280,7 +280,7 @@ interface Statement
      * @param mixed $value                  the value of given attribute
      * @return boolean                      Returns TRUE on success or FALSE on failure.
      */
-    public function setAttribute($attribute, $value);
+    function setAttribute($attribute, $value);
 
     /**
      * setFetchMode
@@ -289,5 +289,5 @@ interface Statement
      * @param integer $mode                 The fetch mode must be one of the Query::HYDRATE_* constants.
      * @return boolean                      Returns 1 on success or FALSE on failure.
      */
-    public function setFetchMode($mode, $arg1);
+    function setFetchMode($mode, $arg1);
 }

@@ -24,7 +24,10 @@ abstract class Type
     const CODE_STR = 2;
     const CODE_LOB = 3;
     
+    /** Map of already instantiated type objects. One instance per type (flyweight). */
     private static $_typeObjects = array();
+    
+    /** The map of supported doctrine mapping types. */
     private static $_typesMap = array(
         'array' => 'Doctrine\DBAL\Types\ArrayType',
         'object' => 'Doctrine\DBAL\Types\ObjectType',
@@ -45,25 +48,63 @@ abstract class Type
     /* Prevent instantiation and force use of the factory method. */
     private function __construct() {}
     
-    public function convertToDatabaseValue($value, \Doctrine\DBAL\Platforms\AbstractPlatform $platform)
+    /**
+     * Converts a value from its PHP representation to its database representation
+     * of this type.
+     *
+     * @param mixed $value The value to convert.
+     * @param AbstractPlatform $platform The currently used database platform.
+     * @return mixed The database representation of the value.
+     */
+    public function convertToDatabaseValue($value, AbstractPlatform $platform)
     {
         return $value;
     }
 
-    public function convertToPHPValue($value, \Doctrine\DBAL\Platforms\AbstractPlatform $platform)
+    /**
+     * Converts a value from its database representation to its PHP representation
+     * of this type.
+     *
+     * @param mixed $value The value to convert.
+     * @param AbstractPlatform $platform The currently used database platform.
+     * @return mixed The PHP representation of the value.
+     */
+    public function convertToPHPValue($value, AbstractPlatform $platform)
     {
         return $value;
     }
     
-    public function getDefaultLength(\Doctrine\DBAL\Platforms\AbstractPlatform $platform)
+    /**
+     * Gets the default length of this type.
+     *
+     * @todo Needed?
+     */
+    public function getDefaultLength(AbstractPlatform $platform)
     {
         return null;
     }
+    
+    /**
+     * Gets the SQL declaration snippet for a field of this type.
+     *
+     * @param array $fieldDeclaration The field declaration.
+     * @param AbstractPlatform $platform The currently used database platform.
+     */
+    abstract public function getSqlDeclaration(array $fieldDeclaration, AbstractPlatform $platform);
 
-    abstract public function getSqlDeclaration(array $fieldDeclaration, \Doctrine\DBAL\Platforms\AbstractPlatform $platform);
-
+    /**
+     * Gets the name of this type.
+     * 
+     * @return string
+     * @todo Needed?
+     */
     abstract public function getName();
 
+    /**
+     * Gets the type code of this type.
+     * 
+     * @return integer
+     */
     public function getTypeCode()
     {
         return self::CODE_STR;

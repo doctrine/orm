@@ -2,6 +2,8 @@
 
 namespace Doctrine\DBAL\Types;
 
+use Doctrine\DBAL\Platforms\AbstractPlatform;
+
 /**
  * Type that maps an SQL DATETIME to a PHP Date object.
  *
@@ -17,7 +19,7 @@ class TimeType extends Type
     /**
      * {@inheritdoc}
      */
-    public function getSqlDeclaration(array $fieldDeclaration, \Doctrine\DBAL\Platforms\AbstractPlatform $platform)
+    public function getSqlDeclaration(array $fieldDeclaration, AbstractPlatform $platform)
     {
         return $platform->getTimeTypeDeclarationSql($fieldDeclaration);
     }
@@ -27,7 +29,7 @@ class TimeType extends Type
      *
      * @override
      */
-    public function convertToDatabaseValue($value, \Doctrine\DBAL\Platforms\AbstractPlatform $platform)
+    public function convertToDatabaseValue($value, AbstractPlatform $platform)
     {
         return $value->format($platform->getTimeFormatString());
     }
@@ -37,7 +39,7 @@ class TimeType extends Type
      *
      * @override
      */
-    public function convertToPHPValue($value, \Doctrine\DBAL\Platforms\AbstractPlatform $platform)
+    public function convertToPHPValue($value, AbstractPlatform $platform)
     {
         return \DateTime::createFromFormat($platform->getTimeFormatString(), $value);
     }

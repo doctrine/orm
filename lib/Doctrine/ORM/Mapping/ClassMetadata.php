@@ -1121,6 +1121,16 @@ final class ClassMetadata
     {
         return $this->primaryTable['name'];
     }
+    
+    /**
+     * Gets the table name to use for temporary identifier tables of this class.
+     * 
+     * @return string
+     */
+    public function getTemporaryIdTableName()
+    {
+        return $this->primaryTable['name'] . '_id_tmp';
+    }
 
     public function getInheritedFields()
     {

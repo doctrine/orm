@@ -35,23 +35,6 @@ use Doctrine\Common\DoctrineException;
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  * @author      Lukas Smith <smith@pooteeweet.org> (MDB2 library)
  * @author      Roman Borschel <roman@code-factory.org>
- * @todo
- * 1) REPLICATION SUPPORT
- * Replication support should be tackled at this layer (DBAL).
- * There can be options that look like:
- *       'slaves' => array(
- *           'slave1' => array(
- *                user, pass etc.
- *           ),
- *           'slave2' => array(
- *                user, pass etc.
- *           )),
- *       'slaveConnectionResolver' => new MySlaveConnectionResolver(),
- *       'masters' => array(...),
- *       'masterConnectionResolver' => new MyMasterConnectionResolver()
- *
- * Doctrine\DBAL could ship with a simple standard broker that uses a primitive
- * round-robin approach to distribution. User can provide its own brokers.
  */
 class Connection
 {
@@ -451,9 +434,9 @@ class Connection
         $params = array_merge(array_values($data), array_values($identifier));
 
         $sql  = 'UPDATE ' . $this->quoteIdentifier($tableName)
-        . ' SET ' . implode(', ', $set)
-        . ' WHERE ' . implode(' = ? AND ', array_keys($identifier))
-        . ' = ?';
+                . ' SET ' . implode(', ', $set)
+                . ' WHERE ' . implode(' = ? AND ', array_keys($identifier))
+                . ' = ?';
 
         return $this->exec($sql, $params);
     }
@@ -528,7 +511,6 @@ class Connection
      */
     public function quote($input, $type = null)
     {
-        $this->connect();
         return $this->_conn->quote($input, $type);
     }
 

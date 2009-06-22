@@ -65,6 +65,13 @@ class ClassTableInheritanceTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertEquals(100000, $entities[0]->getSalary());
 
         $this->_em->clear();
+        
+        //TODO: Test bulk UPDATE
+        
+        $query = $this->_em->createQuery("delete from Doctrine\Tests\Models\Company\CompanyPerson p");
+        
+        $numDeleted = $query->execute();
+        $this->assertEquals(2, $numDeleted);
     }
     
     public function testMultiLevelUpdateAndFind() {

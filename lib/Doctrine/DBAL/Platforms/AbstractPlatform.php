@@ -1504,6 +1504,10 @@ abstract class AbstractPlatform
     }
 
     /**
+     * Gets the format string, as accepted by the date() function, that describes
+     * the format of a stored datetime value of this platform.
+     * 
+     * @return string The format string.
      * TODO: We need to get the specific format for each dbms and override this
      * function for each platform
      */
@@ -1512,11 +1516,23 @@ abstract class AbstractPlatform
         return 'Y-m-d H:i:s';
     }
 
+    /**
+     * Gets the format string, as accepted by the date() function, that describes
+     * the format of a stored date value of this platform.
+     * 
+     * @return string The format string.
+     */
     public function getDateFormatString()
     {
         return 'Y-m-d';
     }
-
+    
+    /**
+     * Gets the format string, as accepted by the date() function, that describes
+     * the format of a stored time value of this platform.
+     * 
+     * @return string The format string.
+     */
     public function getTimeFormatString()
     {
         return 'H:i:s';
@@ -1535,7 +1551,7 @@ abstract class AbstractPlatform
     }
 
     /**
-     * Get the platform name for this instance
+     * Gets the name of the platform.
      *
      * @return string
      */

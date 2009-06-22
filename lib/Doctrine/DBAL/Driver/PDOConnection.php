@@ -29,7 +29,7 @@ use \PDO;
  *
  * @since 2.0
  */
-class PDOConnection extends PDO implements \Doctrine\DBAL\Driver\Connection
+class PDOConnection extends PDO implements Connection
 {
     public function __construct($dsn, $user = null, $password = null, array $options = null)
     {

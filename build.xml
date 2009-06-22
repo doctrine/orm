@@ -8,20 +8,32 @@
     
     <property file="build.properties" />
     
+    <!-- 
+        Fileset for artifacts shared across all distributed packages.
+    -->
     <fileset id="shared-artifacts" dir=".">
         <include name="LICENSE"/>
         <include name="COPYRIGHT"/>
         <include name="CHANGELOG"/>
     </fileset>
     
+    <!-- 
+        Fileset for the sources of the Doctrine Common package.
+    -->
     <fileset id="common-sources" dir=".">
         <include name="lib/Doctrine/Common/**"/>
     </fileset>
     
+    <!-- 
+        Fileset for the sources of the Doctrine DBAL package.
+    -->
     <fileset id="dbal-sources" dir=".">
         <include name="lib/Doctrine/DBAL/**"/>
     </fileset>
     
+    <!-- 
+        Fileset for the sources of the Doctrine ORM package.
+    -->
     <fileset id="orm-sources" dir=".">
         <include name="lib/Doctrine/ORM/**"/>
     </fileset>
@@ -29,32 +41,38 @@
     <target name="clean">
         <delete dir="${build.dir}" includeemptydirs="true" />
         <delete dir="${dist.dir}" includeemptydirs="true" />
+        <delete dir="${report.dir}" includeemptydirs="true" />
     </target>
 
     <target name="prepare" depends="clean">
-        <echo msg="Creating build directory: build" />
+        <echo msg="Creating build directory: ${build.dir}" />
         <mkdir dir="${build.dir}" />
-        <echo msg="Creating distribution directory: dist" />
+        <echo msg="Creating distribution directory: ${dist.dir}" />
         <mkdir dir="${dist.dir}" />
+        <echo msg="Creating report directory: ${report.dir}" />
+        <mkdir dir="${report.dir}" />
     </target>
 
     <target name="build-common">
-        <copy todir="build/common">
+        <copy todir="${build.dir}/common">
             <fileset refid="shared-artifacts"/>
             <fileset refid="common-sources"/>
         </copy>
     </target>
     
     <target name="build-dbal">
-        <copy todir="build/dbal">
+        <copy todir="${build.dir}/dbal">
             <fileset refid="shared-artifacts"/>
             <fileset refid="common-sources"/>
             <fileset refid="dbal-sources"/>
         </copy>
     </target>
     
+    <!-- 
+        Builds all packages, preparing them for distribution.
+    -->
     <target name="build-all" depends="prepare, build-common, build-dbal">
-        <copy todir="build/all">
+        <copy todir="${build.dir}/all">
             <fileset refid="shared-artifacts"/>
             <fileset refid="common-sources"/>
             <fileset refid="dbal-sources"/>
@@ -62,9 +80,15 @@
         </copy>
     </target>
     
-    <target name="test">
+    <target name="prepare-test">
         <mkdir dir="${build.dir}/logs"/>
-        <mkdir dir="reports/tests"/>
+        <mkdir dir="${report.dir}/tests"/>
+    </target>
+    
+    <!-- 
+        Runs the full test suite.
+    -->
+    <target name="test" depends="prepare-test">
         <phpunit printsummary="true" haltonfailure="true">
             <formatter todir="${build.dir}/logs" type="xml"/>
             <batchtest classpath="tests">
@@ -76,14 +100,20 @@
         <!-- <phpunitreport infile="build/logs/testsuites.xml" format="frames" todir="reports/tests" />-->
     </target>
     
+    <!-- 
+        Distributes the Doctrine Common package.
+    -->
     <target name="dist-common">
-        <tar destfile="./dist/Doctrine2-common.tar.gz" compression="gzip">
+        <tar destfile="${dist.dir}/Doctrine2-common.tar.gz" compression="gzip">
             <fileset dir="${build.dir}/common">
                 <include name="**" />
             </fileset>
         </tar>
     </target>
     
+    <!-- 
+        Distributes the Doctrine DBAL package.
+    -->
     <target name="dist-dbal">
         <tar destfile="${dist.dir}/Doctrine2-dbal.tar.gz" compression="gzip">
             <fileset dir="${build.dir}/dbal">
@@ -92,14 +122,16 @@
         </tar>
     </target>
 
+    <!--
+        DEFAULT TARGET
+        Tests, builds and distributes the full Doctrine package (Common+DBAL+ORM).
+    -->
     <target name="dist-all" depends="test, build-all, dist-common, dist-dbal">
-
         <tar destfile="${dist.dir}/Doctrine2-all.tar.gz" compression="gzip">
             <fileset dir="${build.dir}/all">
                 <include name="**" />
             </fileset>
         </tar>
-
     </target>
     
 </project>

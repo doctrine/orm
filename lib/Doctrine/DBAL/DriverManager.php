@@ -94,7 +94,8 @@ final class DriverManager
      * @param Doctrine\Common\EventManager The event manager to use.
      * @return Doctrine\DBAL\Connection
      */
-    public static function getConnection(array $params,
+    public static function getConnection(
+            array $params,
             Configuration $config = null,
             EventManager $eventManager = null)
     {
@@ -107,10 +108,10 @@ final class DriverManager
         }
         
         // check for existing pdo object
-        if (isset($params['pdo']) && ! $params['pdo'] instanceof PDO) {
+        if (isset($params['pdo']) && ! $params['pdo'] instanceof \PDO) {
             throw DoctrineException::invalidPDOInstance();
         } else if (isset($params['pdo'])) {
-            $params['driver'] = $params['pdo']->getAttribute(PDO::ATTR_DRIVER_NAME);
+            $params['driver'] = $params['pdo']->getAttribute(\PDO::ATTR_DRIVER_NAME);
         } else {
             self::_checkParams($params);
         }

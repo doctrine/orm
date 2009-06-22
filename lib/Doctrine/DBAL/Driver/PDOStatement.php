@@ -27,7 +27,7 @@ namespace Doctrine\DBAL\Driver;
  *
  * @since 2.0
  */
-class PDOStatement extends \PDOStatement implements \Doctrine\DBAL\Driver\Statement
+class PDOStatement extends \PDOStatement implements Statement
 {
     private function __construct() {}
 }

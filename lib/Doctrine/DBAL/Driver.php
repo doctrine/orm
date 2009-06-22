@@ -17,7 +17,7 @@ interface Driver
      * @param string $username The username to use when connecting.
      * @param string $password The password to use when connecting.
      * @param array $driverOptions The driver options to use when connecting.
-     * @return Doctrine::DBAL::Connection The database connection.
+     * @return Doctrine\DBAL\Driver\Connection The database connection.
      */
     public function connect(array $params, $username = null, $password = null, array $driverOptions = array());
 
@@ -25,7 +25,7 @@ interface Driver
      * Gets the DatabasePlatform instance that provides all the metadata about
      * the platform this driver connects to.
      *
-     * @return Doctrine::DBAL::DatabasePlatform The database platform.
+     * @return Doctrine\DBAL\Platforms\AbstractPlatform The database platform.
      */
     public function getDatabasePlatform();
 
@@ -39,9 +39,9 @@ interface Driver
     public function getSchemaManager(Connection $conn);
 
     /**
-     * Get the name of the driver
+     * Gets the name of the driver.
      *
-     * @return string The name of the driver
+     * @return string The name of the driver.
      */
     public function getName();
 

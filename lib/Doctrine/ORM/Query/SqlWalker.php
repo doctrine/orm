@@ -85,11 +85,23 @@ class SqlWalker implements TreeWalker
     }
 
     /**
+     * Gets the Connection used by the walker.
+     * 
      * @return Connection
      */
     public function getConnection()
     {
         return $this->_em->getConnection();
+    }
+    
+    /**
+     * Gets the EntityManager used by the walker.
+     * 
+     * @return EntityManager
+     */
+    public function getEntityManager()
+    {
+        return $this->_em;
     }
 
     /**
@@ -1203,7 +1215,25 @@ class SqlWalker implements TreeWalker
         }
         return $this->_dqlToSqlAliasMap[$tableName];
     }
+    
+    /**
+     * Forces the SqlWalker to use a specific alias for a table name, rather than
+     * generating an alias on its own.
+     *
+     * @param string $tableName
+     * @param string $alias
+     */
+    public function setSqlTableAlias($tableName, $alias)
+    {
+        $this->_dqlToSqlAliasMap[$tableName] = $alias;
+    }
 
+    /**
+     * Gets an SQL column alias for a column name.
+     *
+     * @param string $columnName
+     * @return string
+     */
     public function getSqlColumnAlias($columnName)
     {
         return trim($columnName, '`') . $this->_aliasCounter++;

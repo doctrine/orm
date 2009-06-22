@@ -143,12 +143,12 @@ class StandardEntityPersister
                 $params = array();
                 foreach ($insertData[$primaryTableName] as $value) {
                     $params[$paramIndex] = $value;
-                    $stmt->bindValue($paramIndex++, $value/*, Type::getType()*/);
+                    $stmt->bindValue($paramIndex++, $value);
                 }
                 $sqlLogger->logSql($this->_class->insertSql, $params);
             } else {
                 foreach ($insertData[$primaryTableName] as $value) {
-                    $stmt->bindValue($paramIndex++, $value/*, Type::getType()*/);
+                    $stmt->bindValue($paramIndex++, $value);
                 }
             }
 
@@ -201,8 +201,8 @@ class StandardEntityPersister
     public function delete($entity)
     {
         $id = array_combine(
-        $this->_class->getIdentifierFieldNames(),
-        $this->_em->getUnitOfWork()->getEntityIdentifier($entity)
+            $this->_class->getIdentifierFieldNames(),
+            $this->_em->getUnitOfWork()->getEntityIdentifier($entity)
         );
         $this->_conn->delete($this->_class->primaryTable['name'], $id);
     }
@@ -238,11 +238,12 @@ class StandardEntityPersister
     }
 
     /**
-     * Gets the table name to use for temporary identifier tables.
+     * Gets the table name to use for temporary identifier tables of the class
+     * persisted by this persister.
      */
     public function getTemporaryIdTableName()
     {
-        //...
+        return $this->_class->primaryTable['name'] . '_id_tmp';
     }
 
     /**
@@ -378,8 +379,7 @@ class StandardEntityPersister
                 } else {
                     // Inject collection
                     $this->_class->reflFields[$field]->setValue(
-                    $entity, new PersistentCollection($this->_em,
-                    $this->_em->getClassMetadata($assoc->targetEntityName)
+                        $entity, new PersistentCollection($this->_em, $this->_em->getClassMetadata($assoc->targetEntityName)
                     ));
                 }
             }
@@ -410,7 +410,7 @@ class StandardEntityPersister
         }
 
         return 'SELECT ' . $columnList . ' FROM ' . $this->_class->getTableName()
-        . ' WHERE ' . $conditionSql;
+                . ' WHERE ' . $conditionSql;
     }
     
     /**
