@@ -21,6 +21,8 @@
 
 namespace Doctrine\ORM\Query\Exec;
 
+use Doctrine\ORM\Query\AST;
+
 /**
  * Executes the SQL statements for bulk DQL UPDATE statements on classes in
  * Class Table Inheritance (JOINED).
@@ -30,17 +32,103 @@ namespace Doctrine\ORM\Query\Exec;
  * @link        http://www.doctrine-project.org
  * @since       2.0
  * @version     $Revision$
- * @todo For a good implementation that uses temporary tables see the Hibernate sources:
- *       (org.hibernate.hql.ast.exec.MultiTableUpdateExecutor).
  */
 class MultiTableUpdateExecutor extends AbstractExecutor
 {
-    public function __construct($AST)
+    private $_createTempTableSql;
+    private $_dropTempTableSql;
+    private $_insertSql;
+    private $_sqlParameters = array();
+    private $_numParametersInUpdateClause = 0;
+
+    /**
+     * Initializes a new <tt>MultiTableUpdateExecutor</tt>.
+     *
+     * @param Node $AST The root AST node of the DQL query.
+     * @param SqlWalker $sqlWalker The walker used for SQL generation from the AST.
+     * @internal Any SQL construction and preparation takes place in the constructor for
+     *           best performance. With a query cache the executor will be cached.
+     */
+    public function __construct(AST\Node $AST, $sqlWalker)
     {
-        // TODO: Inspect the AST, create the necessary SQL queries and store them
-        // in $this->_sqlStatements
+        $em = $sqlWalker->getEntityManager();
+        $conn = $em->getConnection();
+
+        $primaryClass = $sqlWalker->getEntityManager()->getClassMetadata(
+            $AST->getUpdateClause()->getAbstractSchemaName()
+        );
+        $rootClass = $em->getClassMetadata($primaryClass->rootEntityName);
+
+        $updateItems = $AST->getUpdateClause()->getUpdateItems();
+
+        $tempTable = $rootClass->getTemporaryIdTableName();
+        $idColumnNames = $rootClass->getIdentifierColumnNames();
+        $idColumnList = implode(', ', $idColumnNames);
+
+        // 1. Create an INSERT INTO temptable ... SELECT identifiers WHERE $AST->getWhereClause()
+        $this->_insertSql = 'INSERT INTO ' . $tempTable . ' (' . $idColumnList . ')'
+                . ' SELECT t0.' . implode(', t0.', $idColumnNames);
+        $sqlWalker->setSqlTableAlias($primaryClass->primaryTable['name'] . $AST->getUpdateClause()->getAliasIdentificationVariable(), 't0');
+        $rangeDecl = new AST\RangeVariableDeclaration($primaryClass, $AST->getUpdateClause()->getAliasIdentificationVariable());
+        $fromClause = new AST\FromClause(array(new AST\IdentificationVariableDeclaration($rangeDecl, null, array())));
+        $this->_insertSql .= $sqlWalker->walkFromClause($fromClause);
+
+        // 2. Create ID subselect statement used in UPDATE ... WHERE ... IN (subselect)
+        $idSubselect = 'SELECT ' . $idColumnList . ' FROM ' . $tempTable;
+
+        // 3. Create and store UPDATE statements
+        $classNames = array_merge($primaryClass->parentClasses, array($primaryClass->name), $primaryClass->subClasses);
+        $i = -1;
+        foreach (array_reverse($classNames) as $className) {
+            $affected = false;
+            $class = $em->getClassMetadata($className);
+            $tableName = $class->primaryTable['name'];
+            $updateSql = 'UPDATE ' . $conn->quoteIdentifier($tableName) . ' SET ';
+
+            foreach ($updateItems as $updateItem) {
+                $field = $updateItem->getField();
+                if (isset($class->fieldMappings[$field]) && ! isset($class->fieldMappings[$field]['inherited'])) {
+                    $newValue = $updateItem->getNewValue();
+                    if ( ! $affected) {
+                        $affected = true;
+                        ++$i;
+                    } else {
+                        $updateSql .= ', ';
+                    }
+                    $updateSql .= $sqlWalker->walkUpdateItem($updateItem);
+                    //FIXME: parameters can be more deeply nested. traverse the tree.
+                    if ($newValue instanceof AST\InputParameter) {
+                        $paramKey = $newValue->isNamed() ? $newValue->getName() : $newValue->getPosition();
+                        $this->_sqlParameters[$i][] = $sqlWalker->getQuery()->getParameter($paramKey);
+                        ++$this->_numParametersInUpdateClause;
+                    }
+                }
+            }
+
+            if ($affected) {
+                $this->_sqlStatements[$i] = $updateSql . ' WHERE (' . $idColumnList . ') IN (' . $idSubselect . ')';
+            }
+        }
+        
+        // Append WHERE clause to insertSql, if there is one.
+        if ($AST->getWhereClause()) {
+            $this->_insertSql .= $sqlWalker->walkWhereClause($AST->getWhereClause());
+        }
+        
+        // 4. Store DDL for temporary identifier table.
+        $columnDefinitions = array();
+        foreach ($idColumnNames as $idColumnName) {
+            $columnDefinitions[$idColumnName] = array(
+                'notnull' => true,
+                'type' => \Doctrine\DBAL\Types\Type::getType($rootClass->getTypeOfColumn($idColumnName))
+            );
+        }
+        $this->_createTempTableSql = 'CREATE TEMPORARY TABLE ' . $tempTable . ' ('
+                . $conn->getDatabasePlatform()->getColumnDeclarationListSql($columnDefinitions)
+                . ', PRIMARY KEY(' . $idColumnList . '))';
+        $this->_dropTempTableSql = 'DROP TABLE ' . $tempTable;
     }
-    
+
     /**
      * Executes all sql statements.
      *
@@ -50,6 +138,22 @@ class MultiTableUpdateExecutor extends AbstractExecutor
      */
     public function execute(\Doctrine\DBAL\Connection $conn, array $params)
     {
-        //...
+        $numUpdated = 0;
+
+        // Create temporary id table
+        $conn->exec($this->_createTempTableSql);
+
+        // Insert identifiers. Parameters from the update clause are cut off.
+        $numUpdated = $conn->exec($this->_insertSql, array_slice($params, $this->_numParametersInUpdateClause));
+
+        // Execute UPDATE statements
+        for ($i=0, $count=count($this->_sqlStatements); $i<$count; ++$i) {
+            $conn->exec($this->_sqlStatements[$i], $this->_sqlParameters[$i]);
+        }
+
+        // Drop temporary table
+        $conn->exec($this->_dropTempTableSql);
+
+        return $numUpdated;
     }
 }

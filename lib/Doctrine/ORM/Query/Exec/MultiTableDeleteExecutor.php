@@ -21,6 +21,8 @@
 
 namespace Doctrine\ORM\Query\Exec;
 
+use Doctrine\ORM\Query\AST;
+
 /**
  * Executes the SQL statements for bulk DQL DELETE statements on classes in
  * Class Table Inheritance (JOINED).
@@ -42,8 +44,10 @@ class MultiTableDeleteExecutor extends AbstractExecutor
      *
      * @param Node $AST The root AST node of the DQL query.
      * @param SqlWalker $sqlWalker The walker used for SQL generation from the AST.
+     * @internal Any SQL construction and preparation takes place in the constructor for
+     *           best performance. With a query cache the executor will be cached.
      */
-    public function __construct(\Doctrine\ORM\Query\AST\Node $AST, $sqlWalker)
+    public function __construct(AST\Node $AST, $sqlWalker)
     {
         $em = $sqlWalker->getEntityManager();
         $conn = $em->getConnection();
@@ -51,20 +55,23 @@ class MultiTableDeleteExecutor extends AbstractExecutor
         $primaryClass = $sqlWalker->getEntityManager()->getClassMetadata(
             $AST->getDeleteClause()->getAbstractSchemaName()
         );
+        $primaryDqlAlias = $AST->getDeleteClause()->getAliasIdentificationVariable();
         $rootClass = $em->getClassMetadata($primaryClass->rootEntityName);
         
         $tempTable = $rootClass->getTemporaryIdTableName();
         $idColumnNames = $rootClass->getIdentifierColumnNames();
         $idColumnList = implode(', ', $idColumnNames);
 
-        // 1. Create a INSERT INTO temptable ... VALUES ( SELECT statement where the SELECT statement
-        // selects the identifiers and uses the WhereClause of the $AST ).
+        // 1. Create an INSERT INTO temptable ... SELECT identifiers WHERE $AST->getWhereClause()
         $this->_insertSql = 'INSERT INTO ' . $tempTable . ' (' . $idColumnList . ')'
-                . ' SELECT ' . $idColumnList . ' FROM ' . $conn->quoteIdentifier($rootClass->primaryTable['name']) . ' t0';
+                . ' SELECT t0.' . implode(', t0.', $idColumnNames);
+        $sqlWalker->setSqlTableAlias($primaryClass->primaryTable['name'] . $primaryDqlAlias, 't0');
+        $rangeDecl = new AST\RangeVariableDeclaration($primaryClass, $primaryDqlAlias);
+        $fromClause = new AST\FromClause(array(new AST\IdentificationVariableDeclaration($rangeDecl, null, array())));
+        $this->_insertSql .= $sqlWalker->walkFromClause($fromClause);
         
         // Append WHERE clause, if there is one.
         if ($AST->getWhereClause()) {
-            $sqlWalker->setSqlTableAlias($rootClass->primaryTable['name'] . $AST->getDeleteClause()->getAliasIdentificationVariable(), 't0');
             $this->_insertSql .= $sqlWalker->walkWhereClause($AST->getWhereClause());
         }
 
@@ -94,10 +101,10 @@ class MultiTableDeleteExecutor extends AbstractExecutor
     }
 
     /**
-     * Executes all sql statements.
+     * Executes all SQL statements.
      *
      * @param Doctrine\DBAL\Connection $conn The database connection that is used to execute the queries.
-     * @param array $params  The parameters.
+     * @param array $params The parameters.
      * @override
      */
     public function execute(\Doctrine\DBAL\Connection $conn, array $params)
@@ -108,15 +115,11 @@ class MultiTableDeleteExecutor extends AbstractExecutor
         $conn->exec($this->_createTempTableSql);
         
         // Insert identifiers
-        $conn->exec($this->_insertSql, $params);
+        $numDeleted = $conn->exec($this->_insertSql, $params);
 
         // Execute DELETE statements
-        for ($i=0, $count=count($this->_sqlStatements); $i<$count; ++$i) {
-            if ($i == $count-1) {
-                $numDeleted = $conn->exec($this->_sqlStatements[$i]);
-            } else {
-                $conn->exec($this->_sqlStatements[$i]);
-            }
+        foreach ($this->_sqlStatements as $sql) {
+            $conn->exec($sql);
         }
         
         // Drop temporary table

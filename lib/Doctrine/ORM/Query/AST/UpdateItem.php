@@ -23,6 +23,8 @@ namespace Doctrine\ORM\Query\AST;
 
 /**
  * UpdateItem ::= [IdentificationVariable "."] {StateField | SingleValuedAssociationField} "=" NewValue
+ * NewValue ::= SimpleArithmeticExpression | StringPrimary | DatetimePrimary | BooleanPrimary |
+ *              EnumPrimary | SimpleEntityExpression | "NULL"
  *
  * @author robo
  */

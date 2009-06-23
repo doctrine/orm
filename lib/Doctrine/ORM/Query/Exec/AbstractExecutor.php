@@ -22,7 +22,7 @@
 namespace Doctrine\ORM\Query\Exec;
 
 /**
- * Doctrine_ORM_Query_QueryResult
+ * Base class for SQL statement executors.
  *
  * @author      Roman Borschel <roman@code-factory.org>
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
@@ -72,15 +72,20 @@ abstract class AbstractExecutor implements \Serializable
             $primaryClass = $sqlWalker->getEntityManager()->getClassMetadata(
                 $AST->getDeleteClause()->getAbstractSchemaName()
             );
-            
             if ($primaryClass->isInheritanceTypeJoined()) {
                 return new MultiTableDeleteExecutor($AST, $sqlWalker);
             } else {
                 return new SingleTableDeleteUpdateExecutor($AST, $sqlWalker);
             }
         } else if ($isUpdateStatement) {
-            //TODO: Check whether to pick MultiTableUpdateExecutor instead
-            return new SingleTableDeleteUpdateExecutor($AST, $sqlWalker);
+            $primaryClass = $sqlWalker->getEntityManager()->getClassMetadata(
+                $AST->getUpdateClause()->getAbstractSchemaName()
+            );
+            if ($primaryClass->isInheritanceTypeJoined()) {
+                return new MultiTableUpdateExecutor($AST, $sqlWalker);
+            } else {
+                return new SingleTableDeleteUpdateExecutor($AST, $sqlWalker);
+            }
         } else {
             return new SingleSelectExecutor($AST, $sqlWalker);
         }
@@ -103,4 +108,5 @@ abstract class AbstractExecutor implements \Serializable
     {
         $this->_sqlStatements = unserialize($serialized);
     }
+    
 }

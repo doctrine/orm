@@ -83,6 +83,16 @@ class SqlWalker implements TreeWalker
         $this->_parserResult = $parserResult;
         $this->_queryComponents = $queryComponents;
     }
+    
+    /**
+     * Gets the Query instance used by the walker.
+     * 
+     * @return Query.
+     */
+    public function getQuery()
+    {
+        return $this->_query;
+    }
 
     /**
      * Gets the Connection used by the walker.
@@ -703,6 +713,9 @@ class SqlWalker implements TreeWalker
      */
     public function walkUpdateItem($updateItem)
     {
+        $useTableAliasesBefore = $this->_useSqlTableAliases;
+        $this->_useSqlTableAliases = false;
+        
         $sql = '';
         $dqlAlias = $updateItem->getIdentificationVariable();
         $qComp = $this->_queryComponents[$dqlAlias];
@@ -723,6 +736,8 @@ class SqlWalker implements TreeWalker
                 $sql .= $this->_conn->quote($newValue);
             }
         }
+        
+        $this->_useSqlTableAliases = $useTableAliasesBefore;
 
         return $sql;
     }
@@ -1175,14 +1190,19 @@ class SqlWalker implements TreeWalker
             $qComp = $this->_queryComponents[$dqlAlias];
             $class = $qComp['metadata'];
 
-            if ($numParts > 2) {
+            /*if ($numParts > 2) {
                 for ($i = 1; $i < $numParts-1; ++$i) {
                     //TODO
                 }
-            }
+            }*/
 
             if ($this->_useSqlTableAliases) {
-                $sql .= $this->getSqlTableAlias($class->getTableName() . $dqlAlias) . '.';
+                if ($class->isInheritanceTypeJoined() && isset($class->fieldMappings[$fieldName]['inherited'])) {
+                    $sql .= $this->getSqlTableAlias($this->_em->getClassMetadata(
+                            $class->fieldMappings[$fieldName]['inherited'])->getTableName() . $dqlAlias) . '.';
+                } else {
+                    $sql .= $this->getSqlTableAlias($class->getTableName() . $dqlAlias) . '.';
+                }
             }
 
             if (isset($class->associationMappings[$fieldName])) {

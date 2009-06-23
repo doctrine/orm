@@ -31,9 +31,8 @@ use Doctrine\ORM\Mapping\AssociationMapping;
  * That means, if the collection is part of a many-many mapping and you remove
  * entities from the collection, only the links in the relation table are removed (on flush).
  * Similarly, if you remove entities from a collection that is part of a one-many
- * mapping this will only result in the nulling out of the foreign keys on flush
- * (or removal of the links in the relation table if the one-many is mapped through a
- * relation table). If you want entities in a one-many collection to be removed when
+ * mapping this will only result in the nulling out of the foreign keys on flush.
+ * If you want entities in a one-many collection to be removed when
  * they're removed from the collection, use deleteOrphans => true on the one-many
  * mapping.
  *

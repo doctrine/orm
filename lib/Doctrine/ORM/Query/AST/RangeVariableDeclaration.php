@@ -59,8 +59,8 @@ class RangeVariableDeclaration extends Node
         return $this->_classMetadata;
     }
 
-    public function dispatch($sqlWalker)
+    public function dispatch($walker)
     {
-        return $sqlWalker->walkRangeVariableDeclaration($this);
+        return $walker->walkRangeVariableDeclaration($this);
     }
 }

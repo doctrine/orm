@@ -30,7 +30,8 @@ use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Events;
 
 /**
- * Base class for all EntityPersisters.
+ * Base class for all EntityPersisters. An EntityPersister is a class that knows
+ * how to persist (and to some extent how to load) entities of a specific type.
  *
  * @author      Roman Borschel <roman@code-factory.org>
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
@@ -235,15 +236,6 @@ class StandardEntityPersister
     public function getClassMetadata()
     {
         return $this->_class;
-    }
-
-    /**
-     * Gets the table name to use for temporary identifier tables of the class
-     * persisted by this persister.
-     */
-    public function getTemporaryIdTableName()
-    {
-        return $this->_class->primaryTable['name'] . '_id_tmp';
     }
 
     /**

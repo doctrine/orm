@@ -67,9 +67,15 @@ class ClassTableInheritanceTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->clear();
         
         //TODO: Test bulk UPDATE
+        $query = $this->_em->createQuery("update Doctrine\Tests\Models\Company\CompanyEmployee p set p.name = ?1, p.department = ?2 where p.name='Guilherme Blanco' and p.salary = ?3");
+        $query->setParameter(1, 'NewName');
+        $query->setParameter(2, 'NewDepartment');
+        $query->setParameter(3, 100000);
+        $query->getSql();
+        $numUpdated = $query->execute();
+        $this->assertEquals(1, $numUpdated);
         
         $query = $this->_em->createQuery("delete from Doctrine\Tests\Models\Company\CompanyPerson p");
-        
         $numDeleted = $query->execute();
         $this->assertEquals(2, $numDeleted);
     }
