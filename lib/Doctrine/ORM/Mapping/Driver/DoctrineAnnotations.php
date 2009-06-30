@@ -54,7 +54,6 @@ final class Column extends \Annotation {
     public $unique = false;
     public $nullable = false;
     public $name;
-    //public $quote = false;
 }
 final class OneToOne extends \Annotation {
     public $targetEntity;

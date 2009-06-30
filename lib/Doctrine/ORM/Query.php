@@ -202,7 +202,7 @@ final class Query extends AbstractQuery
      * Defines a cache driver to be used for caching queries.
      *
      * @param Doctrine_Cache_Interface|null $driver Cache driver
-     * @return Doctrine_ORM_Query
+     * @return Query This query instance.
      */
     public function setQueryCacheDriver($queryCache)
     {
@@ -229,7 +229,7 @@ final class Query extends AbstractQuery
      * Defines how long the query cache will be active before expire.
      *
      * @param integer $timeToLive How long the cache entry is valid
-     * @return Doctrine_ORM_Query
+     * @return Query This query instance.
      */
     public function setQueryCacheLifetime($timeToLive)
     {
@@ -255,7 +255,7 @@ final class Query extends AbstractQuery
      * Defines if the query cache is active or not.
      *
      * @param boolean $expire Whether or not to force query cache expiration.
-     * @return Doctrine_ORM_Query
+     * @return Query This query instance.
      */
     public function setExpireQueryCache($expire = true)
     {

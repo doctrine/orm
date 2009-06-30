@@ -1536,8 +1536,8 @@ class UnitOfWork implements PropertyChangedListener
                     $this->_entityUpdates[$oid] = $entity;
                 } else if ($oldValue instanceof PersistentCollection) {
                     // A PersistentCollection was de-referenced, so delete it.
-                    if  ( ! in_array($orgValue, $this->_collectionDeletions, true)) {
-                        $this->_collectionDeletions[] = $orgValue;
+                    if  ( ! in_array($oldValue, $this->_collectionDeletions, true)) {
+                        $this->_collectionDeletions[] = $oldValue;
                     }
                 }
             } else {

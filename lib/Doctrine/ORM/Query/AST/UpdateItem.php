@@ -26,7 +26,8 @@ namespace Doctrine\ORM\Query\AST;
  * NewValue ::= SimpleArithmeticExpression | StringPrimary | DatetimePrimary | BooleanPrimary |
  *              EnumPrimary | SimpleEntityExpression | "NULL"
  *
- * @author robo
+ * @author Roman Borschel <roman@code-factory.org>
+ * @since 2.0
  */
 class UpdateItem extends Node
 {

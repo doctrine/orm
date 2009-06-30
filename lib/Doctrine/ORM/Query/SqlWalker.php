@@ -32,6 +32,7 @@ use Doctrine\Common\DoctrineException;
  * @author Roman Borschel <roman@code-factory.org>
  * @since 2.0
  * @todo Code review for identifier quoting.
+ * @todo Code review for schema usage with table names.
  */
 class SqlWalker implements TreeWalker
 {

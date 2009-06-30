@@ -24,7 +24,7 @@ namespace Doctrine\ORM\Mapping\Driver;
 use Doctrine\ORM\Mapping\ClassMetadata;
 
 /**
- * SchemaMetadata mapping driver interface
+ * Contract for metadata drivers.
  *
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @link        www.doctrine-project.com

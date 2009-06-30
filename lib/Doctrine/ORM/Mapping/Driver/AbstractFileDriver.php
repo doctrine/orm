@@ -24,7 +24,7 @@ namespace Doctrine\ORM\Mapping\Driver;
 use Doctrine\ORM\Mapping\MappingException;
 
 /**
- * SchemaMetadata mapping driver interface
+ * Base driver for file-based metadata drivers.
  *
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @link        www.doctrine-project.com

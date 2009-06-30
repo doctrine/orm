@@ -99,23 +99,23 @@ class AnnotationDriver implements Driver
             $mapping = array();
             $mapping['fieldName'] = $property->getName();
 
-            // Check for DoctrineJoinColummn/DoctrineJoinColumns annotations
+            // Check for JoinColummn/JoinColumns annotations
             $joinColumns = array();
             if ($joinColumnAnnot = $property->getAnnotation('JoinColumn')) {
                 $joinColumns[] = array(
-                        'name' => $joinColumnAnnot->name,
-                        'referencedColumnName' => $joinColumnAnnot->referencedColumnName,
-                        'unique' => $joinColumnAnnot->unique,
-                        'nullable' => $joinColumnAnnot->nullable,
-                        'onDelete' => $joinColumnAnnot->onDelete,
-                        'onUpdate' => $joinColumnAnnot->onUpdate
+                    'name' => $joinColumnAnnot->name,
+                    'referencedColumnName' => $joinColumnAnnot->referencedColumnName,
+                    'unique' => $joinColumnAnnot->unique,
+                    'nullable' => $joinColumnAnnot->nullable,
+                    'onDelete' => $joinColumnAnnot->onDelete,
+                    'onUpdate' => $joinColumnAnnot->onUpdate
                 );
             } else if ($joinColumnsAnnot = $property->getAnnotation('JoinColumns')) {
                 $joinColumns = $joinColumnsAnnot->value;
             }
 
-            // Field can only be annotated with one of: DoctrineColumn,
-            // DoctrineOneToOne, DoctrineOneToMany, DoctrineManyToOne, DoctrineManyToMany
+            // Field can only be annotated with one of:
+            // @Column, @OneToOne, @OneToMany, @ManyToOne, @ManyToMany
             if ($columnAnnot = $property->getAnnotation('Column')) {
                 if ($columnAnnot->type == null) {
                     throw DoctrineException::updateMe("Missing type on property " . $property->getName());
