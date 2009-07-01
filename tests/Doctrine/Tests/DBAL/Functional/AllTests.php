@@ -23,7 +23,7 @@ class AllTests
 
         $suite->addTestSuite('Doctrine\Tests\DBAL\Functional\Schema\SqliteSchemaManagerTest');
         $suite->addTestSuite('Doctrine\Tests\DBAL\Functional\Schema\MySqlSchemaManagerTest');
-        $suite->addTestSuite('Doctrine\Tests\DBAL\Functional\Schema\PostgreSQLSchemaManagerTest');
+        $suite->addTestSuite('Doctrine\Tests\DBAL\Functional\Schema\PostgreSqlSchemaManagerTest');
 
         return $suite;
     }
