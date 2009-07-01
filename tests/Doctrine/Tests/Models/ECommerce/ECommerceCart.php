@@ -29,6 +29,14 @@ class ECommerceCart
      * @JoinColumn(name="customer_id", referencedColumnName="id")
      */
     private $customer;
+
+    /**
+     * @ManyToMany(targetEntity="ECommerceProduct", cascade={"save"})
+     * @JoinTable(name="ecommerce_carts_products",
+            joinColumns={{"name"="cart_id", "referencedColumnName"="id"}},
+            inverseJoinColumns={{"name"="product_id", "referencedColumnName"="id"}})
+     */
+    private $products;
     
     public function getId() {
         return $this->id;
@@ -62,4 +70,5 @@ class ECommerceCart
     public function getCustomer() {
         return $this->customer;
     }
+
 }
