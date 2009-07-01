@@ -61,9 +61,7 @@ class ECommerceCart
         if ($this->customer !== null) {
             $customer = $this->customer;
             $this->customer = null;
-            if ($customer->getCart() !== null) {
-                $customer->removeCart();
-            }
+            $customer->removeCart();
         }
     }
     
