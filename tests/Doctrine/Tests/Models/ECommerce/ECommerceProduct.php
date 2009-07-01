@@ -25,18 +25,23 @@ class ECommerceProduct
     private $name;
 
     /**
+     * @OneToOne(targetEntity="ECommerceShipping", cascade={"save"})
+     * @JoinColumn(name="shipping_id", referencedColumnName="id")
+     */
+    private $shipping;
+
+    /**
+     * @OneToMany(targetEntity="ECommerceFeature", mappedBy="product", cascade={"save"})
+     */
+    private $features;
+
+    /**
      * @ManyToMany(targetEntity="ECommerceCategory", cascade={"save"})
      * @JoinTable(name="ecommerce_products_categories",
             joinColumns={{"name"="product_id", "referencedColumnName"="id"}},
             inverseJoinColumns={{"name"="category_id", "referencedColumnName"="id"}})
     private $categories;
      */
-
-    /**
-     * @OneToOne(targetEntity="ECommerceShipping", cascade={"save"})
-     * @JoinColumn(name="shipping_id", referencedColumnName="id")
-     */
-    private $shipping;
 
     public function getId()
     {
@@ -53,16 +58,6 @@ class ECommerceProduct
         $this->name = $name;
     }
 
-    public function getPrice()
-    {
-        return $this->price;
-    }
-
-    public function setPrice($price)
-    {
-        $this->price = $price;
-    }
-
     public function getShipping()
     {
         return $this->shipping;
@@ -76,5 +71,31 @@ class ECommerceProduct
     public function removeShipping()
     {
         $this->shipping = null;
+    }
+
+    public function getFeatures()
+    {
+        return $this->features;
+    }
+
+    public function addFeature(ECommerceFeature $feature) {
+        $this->features[] = $feature;
+        $feature->setProduct($this);
+    }
+
+    /** does not set the owning side */
+    public function brokenAddFeature(ECommerceFeature $feature) {
+        $this->features[] = $feature;
+    }
+
+    public function removeFeature(ECommerceFeature $feature) {
+        foreach ($this->features as $index => $current) {
+            if ($current === $feature) {
+                unset($this->features[$index]);
+                $current->removeProduct();
+                return true;
+            }
+        }
+        return false;
     }
 }
