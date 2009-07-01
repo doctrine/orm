@@ -28,6 +28,7 @@ class AllTests
         $suite->addTestSuite('Doctrine\Tests\ORM\Functional\QueryTest');
         $suite->addTestSuite('Doctrine\Tests\ORM\Functional\OneToOneUnidirectionalAssociationTest');
         $suite->addTestSuite('Doctrine\Tests\ORM\Functional\OneToOneBidirectionalAssociationTest');
+        $suite->addTestSuite('Doctrine\Tests\ORM\Functional\OneToManyBidirectionalAssociationTest');
 
         return $suite;
     }

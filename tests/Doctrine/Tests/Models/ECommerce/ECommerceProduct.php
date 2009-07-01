@@ -89,12 +89,10 @@ class ECommerceProduct
     }
 
     public function removeFeature(ECommerceFeature $feature) {
-        foreach ($this->features as $index => $current) {
-            if ($current === $feature) {
-                unset($this->features[$index]);
-                $current->removeProduct();
-                return true;
-            }
+        $removed = $this->features->removeElement($feature);
+        if ($removed !== null) {
+            $removed->removeProduct();
+            return true;
         }
         return false;
     }
