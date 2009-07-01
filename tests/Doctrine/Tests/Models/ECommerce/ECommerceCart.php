@@ -17,16 +17,49 @@ class ECommerceCart
      * @Id
      * @GeneratedValue(strategy="AUTO")
      */
-    public $id;
+    private $id;
 
     /**
      * @Column(type="string", length=50)
      */
-    public $payment;
+    private $payment;
 
     /**
      * @OneToOne(targetEntity="ECommerceCustomer")
      * @JoinColumn(name="customer_id", referencedColumnName="id")
      */
-    public $customer;
+    private $customer;
+    
+    public function getId() {
+        return $this->id;
+    }
+    
+    public function getPayment() {
+        return $this->payment;
+    }
+    
+    public function setPayment($payment) {
+        $this->payment = $payment;
+    }
+    
+    public function setCustomer(ECommerceCustomer $customer) {
+        if ($this->customer !== $customer) {
+            $this->customer = $customer;
+            $customer->setCart($this);
+        }
+    }
+    
+    public function removeCustomer() {
+        if ($this->customer !== null) {
+            $customer = $this->customer;
+            $this->customer = null;
+            if ($customer->getCart() !== null) {
+                $customer->removeCart();
+            }
+        }
+    }
+    
+    public function getCustomer() {
+        return $this->customer;
+    }
 }

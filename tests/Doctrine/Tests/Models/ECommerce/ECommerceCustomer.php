@@ -17,27 +17,55 @@ class ECommerceCustomer
      * @Id
      * @GeneratedValue(strategy="AUTO")
      */
-    public $id;
+    private $id;
 
     /**
      * @Column(type="string", length=50)
      */
-    public $name;
+    private $name;
 
     /**
      * @OneToOne(targetEntity="ECommerceCart", mappedBy="customer", cascade={"save"})
      */
-    public $cart;
+    private $cart;
+    
+    public function getId() {
+        return $this->id;
+    }
+    
+    public function getName() {
+        return $this->name;
+    }
+    
+    public function setName($name) {
+        $this->name = $name;
+    }
 
     public function setCart(ECommerceCart $cart)
     {
+        if ($this->cart !== $cart) {
+            $this->cart = $cart;
+            $cart->setCustomer($this);   
+        }
+    }
+    
+    /* Does not properly maintain the bidirectional association! */
+    public function brokenSetCart(ECommerceCart $cart) {
         $this->cart = $cart;
-        $cart->customer = $this;
+    }
+    
+    public function getCart() {
+        return $this->cart;
     }
 
     public function removeCart()
     {
-        $this->cart->customer = null;
-        $this->cart = null;
+        if ($this->cart !== null) {
+            $cart = $this->cart;
+            $this->cart = null;
+            if ($cart->getCustomer() !== null) {
+                $cart->removeCustomer();
+            }
+        }
     }
 }

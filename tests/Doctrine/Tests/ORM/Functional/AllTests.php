@@ -26,6 +26,7 @@ class AllTests
         $suite->addTestSuite('Doctrine\Tests\ORM\Functional\DetachedEntityTest');
         $suite->addTestSuite('Doctrine\Tests\ORM\Functional\QueryCacheTest');
         $suite->addTestSuite('Doctrine\Tests\ORM\Functional\QueryTest');
+        $suite->addTestSuite('Doctrine\Tests\ORM\Functional\OneToOneBidirectionalAssociationTest');
 
         return $suite;
     }
