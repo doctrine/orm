@@ -14,6 +14,7 @@ class OneToManyBidirectionalAssociationTest extends \Doctrine\Tests\OrmFunctiona
 {
     private $product;
     private $firstFeature;
+    private $secondFeature;
 
     protected function setUp()
     {
