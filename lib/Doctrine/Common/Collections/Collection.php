@@ -120,10 +120,11 @@ class Collection implements Countable, IteratorAggregate, ArrayAccess
     {
         $key = array_search($element, $this->_elements, true);
         if ($key !== false) {
+            $removed = $this->_elements[$key];
             unset($this->_elements[$key]);
-            return true;
+            return $removed;
         }
-        return false;
+        return null;
     }
 
     /**
