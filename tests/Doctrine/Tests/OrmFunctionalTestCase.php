@@ -44,7 +44,10 @@ class OrmFunctionalTestCase extends OrmTestCase
             'Doctrine\Tests\Models\Company\CompanyEmployee',
             'Doctrine\Tests\Models\Company\CompanyManager'
         ),
-        'ecommerce' => array(),
+        'ecommerce' => array(
+            'Doctrine\Tests\Models\ECommerce\ECommerceCart',
+            'Doctrine\Tests\Models\ECommerce\ECommerceCustomer'
+        ),
         'generic' => array(
             'Doctrine\Tests\Models\Generic\DateTimeModel'
         )
@@ -68,6 +71,10 @@ class OrmFunctionalTestCase extends OrmTestCase
             $conn->exec('DELETE FROM cms_phonenumbers');
             $conn->exec('DELETE FROM cms_articles');
             $conn->exec('DELETE FROM cms_users');
+        }
+        if (isset($this->_usedModelSets['ecommerce'])) {
+            $conn->exec('DELETE FROM ecommerce_carts');
+            $conn->exec('DELETE FROM ecommerce_customers');
         }
         if (isset($this->_usedModelSets['company'])) {
             $conn->exec('DELETE FROM company_persons_friends');
