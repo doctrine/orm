@@ -80,6 +80,7 @@ class OrmFunctionalTestCase extends OrmTestCase
             $conn->exec('DELETE FROM ecommerce_carts');
             $conn->exec('DELETE FROM ecommerce_customers');
             $conn->exec('DELETE FROM ecommerce_products');
+            $conn->exec('DELETE FROM ecommerce_carts_products');
             $conn->exec('DELETE FROM ecommerce_shippings');
             $conn->exec('DELETE FROM ecommerce_features');
             $conn->exec('DELETE FROM ecommerce_categories');

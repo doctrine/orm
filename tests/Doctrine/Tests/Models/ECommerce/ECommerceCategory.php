@@ -17,21 +17,33 @@ class ECommerceCategory
      * @Id
      * @GeneratedValue(strategy="AUTO")
      */
-    public $id;
+    private $id;
 
     /**
      * @Column(type="string", length=50)
      */
-    public $name;
+    private $name;
 
     /**
      * @ManyToMany(targetEntity="ECommerceProduct", mappedBy="categories")
      */
-    public $products;
+    private $products;
+
+    /**
+     * @OneToMany(targetEntity="ECommerceCategory", mappedBy="parent", cascade={"save"})
+     */
+    private $children;
+
+    /**
+     * @ManyToOne(targetEntity="ECommerceCategory")
+     * @JoinColumn(name="parent_id", referencedColumnName="id")
+     */
+    private $parent;
 
     public function __construct()
     {
         $this->products = new \Doctrine\Common\Collections\Collection();
+        $this->children = new \Doctrine\Common\Collections\Collection();
     }
 
     public function getId()
@@ -68,5 +80,46 @@ class ECommerceCategory
     public function getProducts()
     {
         return $this->products;
+    }
+
+    private function setParent(ECommerceCategory $parent)
+    {
+        $this->parent = $parent;
+    }
+
+    public function getChildren()
+    {
+        return $this->children;
+    }
+
+    public function getParent()
+    {
+        return $this->parent;
+    }
+
+    public function addChild(ECommerceCategory $child)
+    {
+        $this->children[] = $child;
+        $child->setParent($this);
+    }
+
+    /** does not set the owning side. */
+    public function brokenAddChild(ECommerceCategory $child)
+    {
+        $this->children[] = $child;
+    }
+
+
+    public function removeChild(ECommerceCategory $child)
+    {
+        $removed = $this->children->removeElement($child);
+        if ($removed !== null) {
+            $removed->removeParent();
+        }
+    }
+
+    private function removeParent()
+    {
+        $this->parent = null;
     }
 }
