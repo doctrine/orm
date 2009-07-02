@@ -37,6 +37,13 @@ class OneToManyBidirectionalAssociationTest extends \Doctrine\Tests\OrmFunctiona
         $this->assertFeatureForeignKeyIs($this->product->getId(), $this->secondFeature);
     }
 
+    public function testSavesAnEmptyCollection()
+    {
+        $this->_em->save($this->product);
+
+        $this->assertEquals(0, count($this->product->getFeatures()));
+    }
+
     public function testDoesNotSaveAnInverseSideSet() {
         $this->product->brokenAddFeature($this->firstFeature);
         $this->_em->save($this->product);
