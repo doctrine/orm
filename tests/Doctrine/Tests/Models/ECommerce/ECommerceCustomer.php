@@ -41,11 +41,6 @@ class ECommerceCustomer
         $this->name = $name;
     }
 
-    /**
-     * @OneToMany(targetEntity="ECommerceProduct")
-    public $watched;
-     */
-
     public function setCart(ECommerceCart $cart)
     {
         if ($this->cart !== $cart) {

@@ -43,6 +43,11 @@ class ECommerceProduct
     private $categories;
      */
 
+    public function __construct()
+    {
+        $this->features = new \Doctrine\Common\Collections\Collection;
+    }
+
     public function getId()
     {
         return $this->id;
@@ -89,10 +94,12 @@ class ECommerceProduct
     }
 
     public function removeFeature(ECommerceFeature $feature) {
-        $removed = $this->features->removeElement($feature);
-        if ($removed !== null) {
-            $removed->removeProduct();
-            return true;
+        if ($this->features->contains($feature)) {
+            $removed = $this->features->removeElement($feature);
+            if ($removed) {
+                $feature->removeProduct();
+                return true;
+            }
         }
         return false;
     }

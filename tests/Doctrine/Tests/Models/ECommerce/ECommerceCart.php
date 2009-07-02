@@ -20,7 +20,7 @@ class ECommerceCart
     private $id;
 
     /**
-     * @Column(type="string", length=50)
+     * @Column(type="string", length=50, nullable=true)
      */
     private $payment;
 
@@ -37,6 +37,11 @@ class ECommerceCart
             inverseJoinColumns={{"name"="product_id", "referencedColumnName"="id"}})
      */
     private $products;
+
+    public function __construct()
+    {
+        $this->products = new \Doctrine\Common\Collections\Collection;
+    }
     
     public function getId() {
         return $this->id;
@@ -69,4 +74,12 @@ class ECommerceCart
         return $this->customer;
     }
 
+    public function getProducts()
+    {
+        return $this->products;
+    }
+
+    public function addProduct(ECommerceProduct $product) {
+        $this->products[] = $product;
+    }
 }
