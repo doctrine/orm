@@ -1148,11 +1148,11 @@ class UnitOfWork implements PropertyChangedListener
             }
             $relatedEntities = $class->reflFields[$assocMapping->getSourceFieldName()]
                     ->getValue($entity);
-            if (($relatedEntities instanceof Collection) && count($relatedEntities) > 0) {
+            if ($relatedEntities instanceof Collection) {
                 foreach ($relatedEntities as $relatedEntity) {
                     $this->_doMerge($relatedEntity, $visited, $managedCopy, $assocMapping);
                 }
-            } else if (is_object($relatedEntities)) {
+            } else if ($relatedEntities !== null) {
                 $this->_doMerge($relatedEntities, $visited, $managedCopy, $assocMapping);
             }
         }
@@ -1173,12 +1173,11 @@ class UnitOfWork implements PropertyChangedListener
                 continue;
             }
             $relatedEntities = $class->reflFields[$assocMapping->sourceFieldName]->getValue($entity);
-            if (($relatedEntities instanceof Collection || is_array($relatedEntities))
-                    && count($relatedEntities) > 0) {
+            if (($relatedEntities instanceof Collection || is_array($relatedEntities))) {
                 foreach ($relatedEntities as $relatedEntity) {
                     $this->_doSave($relatedEntity, $visited, $insertNow);
                 }
-            } else if (is_object($relatedEntities)) {
+            } else if ($relatedEntities !== null) {
                 $this->_doSave($relatedEntities, $visited, $insertNow);
             }
         }
@@ -1199,12 +1198,11 @@ class UnitOfWork implements PropertyChangedListener
             }
             $relatedEntities = $class->reflFields[$assocMapping->sourceFieldName]
                     ->getValue($entity);
-            if ($relatedEntities instanceof Collection || is_array($relatedEntities)
-                    && count($relatedEntities) > 0) {
+            if ($relatedEntities instanceof Collection || is_array($relatedEntities)) {
                 foreach ($relatedEntities as $relatedEntity) {
                     $this->_doDelete($relatedEntity, $visited);
                 }
-            } else if (is_object($relatedEntities)) {
+            } else if ($relatedEntities !== null) {
                 $this->_doDelete($relatedEntities, $visited);
             }
         }

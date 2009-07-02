@@ -14,9 +14,9 @@ require_once __DIR__ . '/../../TestInit.php';
  */
 class ManyToManyBidirectionalAssociationTest extends AbstractManyToManyAssociationTestCase
 {
-    protected $_firstField = 'cart_id';
-    protected $_secondField = 'product_id';
-    protected $_table = 'ecommerce_carts_products';
+    protected $_firstField = 'product_id';
+    protected $_secondField = 'category_id';
+    protected $_table = 'ecommerce_products_categories';
     private $firstProduct;
     private $secondProduct;
     private $firstCategory;
@@ -77,12 +77,23 @@ class ManyToManyBidirectionalAssociationTest extends AbstractManyToManyAssociati
     {
         $this->_createLoadingFixture();
         list ($firstProduct, $secondProduct) = $this->_findProducts();
-        $categories = $firstProduct->getCategories();
-        $products = $categories[0]->getProducts();
+        
+        $this->assertEquals(2, count($firstProduct->getCategories()));
+        $this->assertEquals(2, count($secondProduct->getCategories()));
+        
+        $categories = $firstProduct->getCategories();        
+        $firstCategoryProducts = $categories[0]->getProducts();
+        $secondCategoryProducts = $categories[1]->getProducts();
+        
+        $this->assertEquals(2, count($firstCategoryProducts));
+        $this->assertEquals(2, count($secondCategoryProducts));
 
-        $this->assertTrue($products[0] instanceof ECommerceProduct);
-        $this->assertTrue($products[1] instanceof ECommerceProduct);
-        $this->assertCollectionEquals($products, $categories[1]->getProducts());
+        $this->assertTrue($firstCategoryProducts[0] instanceof ECommerceProduct);
+        $this->assertTrue($firstCategoryProducts[1] instanceof ECommerceProduct);
+        $this->assertTrue($secondCategoryProducts[0] instanceof ECommerceProduct);
+        $this->assertTrue($secondCategoryProducts[1] instanceof ECommerceProduct);
+        
+        $this->assertCollectionEquals($firstCategoryProducts, $secondCategoryProducts);
     }
 
     protected function _createLoadingFixture()

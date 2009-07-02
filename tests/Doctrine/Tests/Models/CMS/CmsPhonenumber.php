@@ -9,8 +9,7 @@ namespace Doctrine\Tests\Models\CMS;
 class CmsPhonenumber
 {
     /**
-     * @Column(type="string", length=50)
-     * @Id
+     * @Id @Column(type="string", length=50)
      */
     public $phonenumber;
     /**
@@ -21,6 +20,9 @@ class CmsPhonenumber
 
     public function setUser(CmsUser $user) {
         $this->user = $user;
-        $user->addPhonenumber($this);
+    }
+    
+    public function getUser() {
+        return $this->user;
     }
 }

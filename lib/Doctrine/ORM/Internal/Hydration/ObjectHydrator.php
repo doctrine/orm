@@ -123,7 +123,6 @@ class ObjectHydrator extends AbstractHydrator
         // Take snapshots from all initialized collections
         foreach ($this->_collections as $coll) {
             $coll->takeSnapshot();
-            $coll->setHydrationFlag(false);
         }
         
         // Clean up
@@ -344,7 +343,7 @@ class ObjectHydrator extends AbstractHydrator
                 if ( ! $relation->isOneToOne()) {
                     if (isset($nonemptyComponents[$dqlAlias])) {
                         if ( ! isset($this->_initializedRelations[spl_object_hash($baseElement)][$relationAlias])) {
-                            $this->initRelatedCollection($baseElement, $relationAlias)->setHydrationFlag(true);
+                            $this->initRelatedCollection($baseElement, $relationAlias);
                         }
                         
                         $path = $parent . '.' . $dqlAlias;
@@ -357,10 +356,17 @@ class ObjectHydrator extends AbstractHydrator
                             // If it's a bi-directional many-to-many, also initialize the reverse collection.
                             if ($relation->isManyToMany()) {
                                 if ($relation->isOwningSide && isset($this->_ce[$entityName]->inverseMappings[$relationAlias])) {
-                                    $this->initRelatedCollection($element, $this->_ce[$entityName]
-                                            ->inverseMappings[$relationAlias]->sourceFieldName);
+                                    $inverseFieldName = $this->_ce[$entityName]->inverseMappings[$relationAlias]->sourceFieldName;
+                                    // Only initialize reverse collection if it is not yet initialized.
+                                    if ( ! isset($this->_initializedRelations[spl_object_hash($element)][$inverseFieldName])) {
+                                        $this->initRelatedCollection($element, $this->_ce[$entityName]
+                                                ->inverseMappings[$relationAlias]->sourceFieldName);
+                                    }
                                 } else if ($relation->mappedByFieldName) {
-                                    $this->initRelatedCollection($element, $relation->mappedByFieldName);
+                                    // Only initialize reverse collection if it is not yet initialized.
+                                    if ( ! isset($this->_initializedRelations[spl_object_hash($element)][$relation->mappedByFieldName])) {
+                                        $this->initRelatedCollection($element, $relation->mappedByFieldName);
+                                    }
                                 }
                             }
 
@@ -371,12 +377,12 @@ class ObjectHydrator extends AbstractHydrator
                                 $this->_ce[$parentClass]
                                     ->reflFields[$relationAlias]
                                     ->getValue($baseElement)
-                                    ->set($indexValue, $element);
+                                    ->hydrateSet($indexValue, $element);
                             } else {
                                 $this->_ce[$parentClass]
                                     ->reflFields[$relationAlias]
                                     ->getValue($baseElement)
-                                    ->add($element);
+                                    ->hydrateAdd($element);
                             }
                             $this->_identifierMap[$path][$id[$parent]][$id[$dqlAlias]] = $this->getLastKey(
                                     $this->_ce[$parentClass]

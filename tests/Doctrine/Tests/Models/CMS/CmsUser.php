@@ -68,9 +68,7 @@ class CmsUser
      */
     public function addPhonenumber(CmsPhonenumber $phone) {
         $this->phonenumbers[] = $phone;
-        if ($phone->user !== $this) {
-            $phone->user = $this;
-        }
+        $phone->setUser($this);
     }
 
     public function getPhonenumbers() {
@@ -79,9 +77,7 @@ class CmsUser
 
     public function addArticle(CmsArticle $article) {
         $this->articles[] = $article;
-        if ($article->user !== $this) {
-            $article->user = $this;
-        }
+        $article->setAuthor($this);
     }
 
     public function addGroup(CmsGroup $group) {

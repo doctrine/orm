@@ -41,10 +41,8 @@ class ManyToManyUnidirectionalAssociationTest extends AbstractManyToManyAssociat
         $this->_em->save($this->firstCart);
         $this->_em->flush();
         
-        $this->assertForeignKeysContain($this->firstCart->getId(),
-                                   $this->firstProduct->getId());
-        $this->assertForeignKeysContain($this->firstCart->getId(),
-                                   $this->secondProduct->getId());
+        $this->assertForeignKeysContain($this->firstCart->getId(), $this->firstProduct->getId());
+        $this->assertForeignKeysContain($this->firstCart->getId(), $this->secondProduct->getId());
     }
 
     public function testRemovesAManyToManyAssociation()
@@ -56,10 +54,8 @@ class ManyToManyUnidirectionalAssociationTest extends AbstractManyToManyAssociat
 
         $this->_em->flush();
 
-        $this->assertForeignKeysNotContain($this->firstCart->getId(),
-                                   $this->firstProduct->getId());
-        $this->assertForeignKeysContain($this->firstCart->getId(),
-                                   $this->secondProduct->getId());
+        $this->assertForeignKeysNotContain($this->firstCart->getId(), $this->firstProduct->getId());
+        $this->assertForeignKeysContain($this->firstCart->getId(), $this->secondProduct->getId());
     }
 
     public function testEagerLoad()

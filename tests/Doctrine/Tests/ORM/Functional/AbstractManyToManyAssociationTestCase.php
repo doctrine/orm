@@ -32,7 +32,8 @@ class AbstractManyToManyAssociationTestCase extends \Doctrine\Tests\OrmFunctiona
                                 FROM {$this->_table}
                                 WHERE {$this->_firstField}=?
                                   AND {$this->_secondField}=?",
-                               array($firstId, $secondId)));
+                               array($firstId, $secondId))
+                     ->fetchAll());
     }
 
     public function assertCollectionEquals(Collection $first, Collection $second)

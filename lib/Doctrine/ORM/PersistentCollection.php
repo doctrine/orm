@@ -26,7 +26,7 @@ use Doctrine\ORM\Mapping\AssociationMapping;
 
 /**
  * A PersistentCollection represents a collection of elements that have persistent state.
- * 
+ *
  * Collections of entities represent only the associations (links) to those entities.
  * That means, if the collection is part of a many-many mapping and you remove
  * entities from the collection, only the links in the relation table are removed (on flush).
@@ -43,7 +43,7 @@ use Doctrine\ORM\Mapping\AssociationMapping;
  * @author    Roman Borschel <roman@code-factory.org>
  */
 final class PersistentCollection extends \Doctrine\Common\Collections\Collection
-{   
+{
     /**
      * The base type of the collection.
      *
@@ -61,7 +61,7 @@ final class PersistentCollection extends \Doctrine\Common\Collections\Collection
 
     /**
      * The entity that owns this collection.
-     * 
+     *
      * @var object
      */
     private $_owner;
@@ -80,14 +80,14 @@ final class PersistentCollection extends \Doctrine\Common\Collections\Collection
      * @var string
      */
     private $_keyField;
-    
+
     /**
      * The EntityManager that manages the persistence of the collection.
      *
      * @var Doctrine\ORM\EntityManager
      */
     private $_em;
-    
+
     /**
      * The name of the field on the target entities that points to the owner
      * of the collection. This is only set if the association is bi-directional.
@@ -95,14 +95,6 @@ final class PersistentCollection extends \Doctrine\Common\Collections\Collection
      * @var string
      */
     private $_backRefFieldName;
-    
-    /**
-     * Hydration flag.
-     *
-     * @var boolean
-     * @see setHydrationFlag()
-     */
-    private $_hydrationFlag = false;
 
     /**
      * The class descriptor of the owning entity.
@@ -116,7 +108,7 @@ final class PersistentCollection extends \Doctrine\Common\Collections\Collection
      * @var boolean
      */
     private $_isDirty = false;
-	
+
     /** Whether the collection has already been initialized. */
     private $_initialized = false;
 
@@ -151,7 +143,7 @@ final class PersistentCollection extends \Doctrine\Common\Collections\Collection
     {
         return $this->_keyField;
     }
-    
+
     /**
      * INTERNAL:
      * Sets the collection owner. Used (only?) during hydration.
@@ -170,8 +162,7 @@ final class PersistentCollection extends \Doctrine\Common\Collections\Collection
             $targetClass = $this->_em->getClassMetadata($assoc->targetEntityName);
             if (isset($targetClass->inverseMappings[$assoc->sourceFieldName])) {
                 // Bi-directional
-                $this->_backRefFieldName = $targetClass->inverseMappings[$assoc->sourceFieldName]
-                        ->sourceFieldName;
+                $this->_backRefFieldName = $targetClass->inverseMappings[$assoc->sourceFieldName]->sourceFieldName;
             }
         }
     }
@@ -208,7 +199,7 @@ final class PersistentCollection extends \Doctrine\Common\Collections\Collection
     {
         //TODO: delete entity if shouldDeleteOrphans
         /*if ($this->_association->isOneToMany() && $this->_association->shouldDeleteOrphans()) {
-            $this->_em->delete($removed);
+        $this->_em->delete($removed);
         }*/
         $removed = parent::remove($key);
         if ($removed) {
@@ -220,7 +211,7 @@ final class PersistentCollection extends \Doctrine\Common\Collections\Collection
     /**
      * When the collection is a Map this is like put(key,value)/add(key,value).
      * When the collection is a List this is like add(position,value).
-     * 
+     *
      * @param integer $key
      * @param mixed $value
      * @override
@@ -228,55 +219,57 @@ final class PersistentCollection extends \Doctrine\Common\Collections\Collection
     public function set($key, $value)
     {
         parent::set($key, $value);
-        if ( ! $this->_hydrationFlag) {
-            $this->_changed();
-        }
+        $this->_changed();
     }
 
     /**
      * Adds an element to the collection.
-     * 
+     *
      * @param mixed $value
-     * @param string $key 
+     * @param string $key
      * @return boolean Always TRUE.
      * @override
      */
     public function add($value)
     {
         parent::add($value);
-
-        if ($this->_hydrationFlag) {
-            if ($this->_backRefFieldName) {
-                // Set back reference to owner
-                if ($this->_association->isOneToMany()) {
-                    $this->_typeClass->getReflectionProperty($this->_backRefFieldName)
-                            ->setValue($value, $this->_owner);
-                } else {
-                    // ManyToMany
-                    $this->_typeClass->getReflectionProperty($this->_backRefFieldName)
-                            ->getValue($value)->add($this->_owner);
-                }
-            }
-        } else {
-            $this->_changed();
-        }
-        
+        $this->_changed();
         return true;
+    }
+
+    /**
+     * INTERNAL:
+     * Adds an element to a collection during hydration.
+     * 
+     * @param mixed $value The element to add.
+     */
+    public function hydrateAdd($value)
+    {
+        parent::add($value);
+        if ($this->_backRefFieldName) {
+            // Set back reference to owner
+            if ($this->_association->isOneToMany()) {
+                // OneToMany
+                $this->_typeClass->getReflectionProperty($this->_backRefFieldName)
+                        ->setValue($value, $this->_owner);
+            } else {
+                // ManyToMany
+                $this->_typeClass->getReflectionProperty($this->_backRefFieldName)
+                        ->getValue($value)->add($this->_owner);
+            }
+        }
     }
     
     /**
-     * Adds all elements of the other collection to this collection.
+     * INTERNAL:
+     * Sets a keyed element in the collection during hydration.
      *
-     * @param object $otherCollection
-     * @todo Impl
-     * @override
+     * @param mixed $key The key to set.
+     * $param mixed $value The element to set.
      */
-    public function addAll($otherCollection)
+    public function hydrateSet($key, $value)
     {
-        parent::addAll($otherCollection);
-        //...
-        //TODO: Register collection as dirty with the UoW if necessary
-        //$this->_changed();
+        parent::set($key, $value);
     }
 
     /**
@@ -285,7 +278,7 @@ final class PersistentCollection extends \Doctrine\Common\Collections\Collection
      */
     public function contains($element)
     {
-        
+
         if ( ! $this->_initialized) {
             //TODO: Probably need to hit the database here...?
             //return $this->_checkElementExistence($element);
@@ -306,31 +299,12 @@ final class PersistentCollection extends \Doctrine\Common\Collections\Collection
 
     private function _checkElementExistence($element)
     {
-        
+
     }
 
     private function _initialize()
     {
-        
-    }
-    
-    /**
-     * INTERNAL:
-     * Sets a flag that indicates whether the collection is currently being hydrated.
-     *
-     * If the flag is set to TRUE, this has the following consequences:
-     * 
-     * 1) During hydration, bidirectional associations are completed automatically
-     *    by setting the back reference.
-     * 2) During hydration no change notifications are reported to the UnitOfWork.
-     *    That means add() etc. do not cause the collection to be scheduled
-     *    for an update.
-     *
-     * @param boolean $bool
-     */
-    public function setHydrationFlag($bool)
-    {
-        $this->_hydrationFlag = $bool;
+
     }
 
     /**
@@ -376,24 +350,24 @@ final class PersistentCollection extends \Doctrine\Common\Collections\Collection
 
     /**
      * Compares two records. To be used on _snapshot diffs using array_udiff.
-     * 
+     *
      * @return integer
      */
     private function _compareRecords($a, $b)
     {
         return $a === $b ? 0 : 1;
     }
-    
+
     /**
      * INTERNAL: Gets the association mapping of the collection.
-     * 
+     *
      * @return Doctrine\ORM\Mapping\AssociationMapping
      */
     public function getMapping()
     {
         return $this->_association;
     }
-    
+
     /**
      * Clears the collection.
      */
@@ -402,14 +376,14 @@ final class PersistentCollection extends \Doctrine\Common\Collections\Collection
         //TODO: Register collection as dirty with the UoW if necessary
         //TODO: If oneToMany() && shouldDeleteOrphan() delete entities
         /*if ($this->_association->isOneToMany() && $this->_association->shouldDeleteOrphans()) {
-            foreach ($this->_data as $entity) {
-                $this->_em->delete($entity);
-            }
+        foreach ($this->_data as $entity) {
+        $this->_em->delete($entity);
+        }
         }*/
         parent::clear();
         $this->_changed();
     }
-    
+
     private function _changed()
     {
         $this->_isDirty = true;

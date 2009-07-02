@@ -42,10 +42,7 @@ class ECommerceFeature
     }
     
     public function setProduct(ECommerceProduct $product) {
-        if ($this->product !== $product) {
-            $this->product = $product;
-            $product->addFeature($this);
-        }
+        $this->product = $product;
     }
     
     public function removeProduct() {
