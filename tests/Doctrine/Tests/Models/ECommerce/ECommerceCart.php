@@ -82,4 +82,8 @@ class ECommerceCart
     public function addProduct(ECommerceProduct $product) {
         $this->products[] = $product;
     }
+
+    public function removeProduct(ECommerceProduct $product) {
+        return $this->products->removeElement($product);
+    }
 }

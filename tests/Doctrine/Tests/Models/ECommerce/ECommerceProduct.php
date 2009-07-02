@@ -20,7 +20,7 @@ class ECommerceProduct
     private $id;
 
     /**
-     * @Column(type="string", length=50)
+     * @Column(type="string", length=50, nullable="true")
      */
     private $name;
 
@@ -40,12 +40,13 @@ class ECommerceProduct
      * @JoinTable(name="ecommerce_products_categories",
             joinColumns={{"name"="product_id", "referencedColumnName"="id"}},
             inverseJoinColumns={{"name"="category_id", "referencedColumnName"="id"}})
-    private $categories;
      */
+    private $categories;
 
     public function __construct()
     {
         $this->features = new \Doctrine\Common\Collections\Collection;
+        $this->categories = new \Doctrine\Common\Collections\Collection;
     }
 
     public function getId()
@@ -83,17 +84,20 @@ class ECommerceProduct
         return $this->features;
     }
 
-    public function addFeature(ECommerceFeature $feature) {
+    public function addFeature(ECommerceFeature $feature)
+    {
         $this->features[] = $feature;
         $feature->setProduct($this);
     }
 
     /** does not set the owning side */
-    public function brokenAddFeature(ECommerceFeature $feature) {
+    public function brokenAddFeature(ECommerceFeature $feature)
+    {
         $this->features[] = $feature;
     }
 
-    public function removeFeature(ECommerceFeature $feature) {
+    public function removeFeature(ECommerceFeature $feature)
+    {
         if ($this->features->contains($feature)) {
             $removed = $this->features->removeElement($feature);
             if ($removed) {
@@ -102,5 +106,26 @@ class ECommerceProduct
             }
         }
         return false;
+    }
+
+    public function addCategory(ECommerceCategory $category)
+    {
+        if (!$this->categories->contains($category)) {
+            $this->categories[] = $category;
+            $category->addProduct($this);
+        }
+    }
+
+    public function removeCategory(ECommerceCategory $category)
+    {
+        if ($this->categories->contains($category)) {
+            $this->categories->removeElement($category);
+            $category->removeProduct($this);
+        }
+    }
+
+    public function getCategories()
+    {
+        return $this->categories;
     }
 }
