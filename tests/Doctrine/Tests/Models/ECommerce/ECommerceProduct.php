@@ -98,12 +98,10 @@ class ECommerceProduct
 
     public function removeFeature(ECommerceFeature $feature)
     {
-        if ($this->features->contains($feature)) {
-            $removed = $this->features->removeElement($feature);
-            if ($removed) {
-                $feature->removeProduct();
-                return true;
-            }
+        $removed = $this->features->removeElement($feature);
+        if ($removed !== null) {
+            $removed->removeProduct();
+            return true;
         }
         return false;
     }
@@ -118,9 +116,9 @@ class ECommerceProduct
 
     public function removeCategory(ECommerceCategory $category)
     {
-        if ($this->categories->contains($category)) {
-            $this->categories->removeElement($category);
-            $category->removeProduct($this);
+        $removed = $this->categories->removeElement($category);
+        if ($removed !== null) {
+            $removed->removeProduct($this);
         }
     }
 

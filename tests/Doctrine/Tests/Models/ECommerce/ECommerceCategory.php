@@ -59,9 +59,9 @@ class ECommerceCategory
 
     public function removeProduct(ECommerceProduct $product)
     {
-        if ($this->products->contains($product)) {
-            $this->products->removeElement($product);
-            $product->removeCategory($this);
+        $removed = $this->products->removeElement($product);
+        if ($removed !== null) {
+            $removed->removeCategory($this);
         }
     }
 
