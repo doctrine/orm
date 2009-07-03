@@ -31,6 +31,7 @@ class AllTests
         $suite->addTestSuite('Doctrine\Tests\ORM\Functional\OneToManyBidirectionalAssociationTest');
         $suite->addTestSuite('Doctrine\Tests\ORM\Functional\ManyToManyUnidirectionalAssociationTest');
         $suite->addTestSuite('Doctrine\Tests\ORM\Functional\ManyToManyBidirectionalAssociationTest');
+        $suite->addTestSuite('Doctrine\Tests\ORM\Functional\OneToManySelfReferentialAssociationTest');
 
         return $suite;
     }

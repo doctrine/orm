@@ -179,16 +179,18 @@ class StandardEntityPersister
     {
         $updateData = array();
         $this->_prepareData($entity, $updateData);
-        $id = array_combine($this->_class->getIdentifierFieldNames(),
-        $this->_em->getUnitOfWork()->getEntityIdentifier($entity));
+        $id = array_combine(
+            $this->_class->getIdentifierFieldNames(),
+            $this->_em->getUnitOfWork()->getEntityIdentifier($entity)
+        );
         $tableName = $this->_class->primaryTable['name'];
-        
+
         if ($this->_evm->hasListeners(Events::preUpdate)) {
             $this->_preUpdate($entity);
         }
-        
+
         $this->_conn->update($tableName, $updateData[$tableName], $id);
-        
+
         if ($this->_evm->hasListeners(Events::postUpdate)) {
             $this->_postUpdate($entity);
         }
@@ -239,9 +241,10 @@ class StandardEntityPersister
     }
 
     /**
-     * Prepares the data changeset of an entity for database insertion.
-     * The array that is passed as the second parameter is filled with
-     * <columnName> => <value> pairs, grouped by table name, during this preparation.
+     * Prepares the data changeset of an entity for database insertion (INSERT/UPDATE).
+     * 
+     * During this preparation the array that is passed as the second parameter is filled with
+     * <columnName> => <value> pairs, grouped by table name.
      *
      * Example:
      * <code>
@@ -256,7 +259,7 @@ class StandardEntityPersister
      *
      * @param object $entity
      * @param array $result The reference to the data array.
-     * @param boolean $isInsert
+     * @param boolean $isInsert Whether the preparation is for an INSERT (or UPDATE, if FALSE).
      */
     protected function _prepareData($entity, array &$result, $isInsert = false)
     {
@@ -276,37 +279,43 @@ class StandardEntityPersister
                     continue;
                 }
 
-                // Special case: One-one self-referencing of the same class.
-                if ($newVal !== null && $assocMapping->sourceEntityName == $assocMapping->targetEntityName) {
+                // Special case: One-one self-referencing of the same class with IDENTITY type key generation.
+                if ($this->_class->isIdGeneratorIdentity() && $newVal !== null &&
+                        $assocMapping->sourceEntityName == $assocMapping->targetEntityName) {
                     $oid = spl_object_hash($newVal);
                     $isScheduledForInsert = $uow->isRegisteredNew($newVal);
                     if (isset($this->_queuedInserts[$oid]) || $isScheduledForInsert) {
                         // The associated entity $newVal is not yet persisted, so we must
-                        // set $newVal = null, in order to insert a null value and update later.
+                        // set $newVal = null, in order to insert a null value and schedule an
+                        // extra update on the UnitOfWork.
+                        $uow->scheduleExtraUpdate($entity, array(
+                            $field => array(null, $newVal)
+                        ));
                         $newVal = null;
                     } else if ($isInsert && ! $isScheduledForInsert && $uow->getEntityState($newVal) == UnitOfWork::STATE_MANAGED) {
-                        // $newVal is already fully persisted
-                        // Clear changeset of $newVal, so that only the identifier is updated.
-                        // Not sure this is really rock-solid here but it seems to work.
-                        $uow->clearEntityChangeSet($oid);
-                        $uow->propertyChanged($newVal, $field, $entity, $entity);
+                        // $newVal is already fully persisted.
+                        // Schedule an extra update for it, so that the foreign key(s) are properly set.
+                        $uow->scheduleExtraUpdate($newVal, array(
+                            $field => array(null, $entity)
+                        ));
                     }
                 }
-
+                
                 foreach ($assocMapping->sourceToTargetKeyColumns as $sourceColumn => $targetColumn) {
-                    $otherClass = $this->_em->getClassMetadata($assocMapping->targetEntityName);
                     if ($newVal === null) {
                         $result[$this->getOwningTable($field)][$sourceColumn] = null;
                     } else {
+                        $otherClass = $this->_em->getClassMetadata($assocMapping->targetEntityName);
                         $result[$this->getOwningTable($field)][$sourceColumn] =
-                        $otherClass->reflFields[$otherClass->fieldNames[$targetColumn]]->getValue($newVal);
+                                $otherClass->reflFields[$otherClass->fieldNames[$targetColumn]]
+                                ->getValue($newVal);
                     }
                 }
             } else if ($newVal === null) {
                 $result[$this->getOwningTable($field)][$columnName] = null;
             } else {
                 $result[$this->getOwningTable($field)][$columnName] = Type::getType(
-                        $this->_class->fieldMappings[$field]['type'])->convertToDatabaseValue($newVal, $platform);
+                $this->_class->fieldMappings[$field]['type'])->convertToDatabaseValue($newVal, $platform);
             }
         }
     }
@@ -404,7 +413,7 @@ class StandardEntityPersister
         return 'SELECT ' . $columnList . ' FROM ' . $this->_class->getTableName()
                 . ' WHERE ' . $conditionSql;
     }
-    
+
     /**
      * Dispatches the preInsert event for the given entity.
      *
@@ -417,7 +426,7 @@ class StandardEntityPersister
         );
         $this->_evm->dispatchEvent(Events::preInsert, $eventArgs);
     }
-    
+
     /**
      * Dispatches the postInsert event for the given entity.
      *
@@ -427,7 +436,7 @@ class StandardEntityPersister
     {
         $this->_evm->dispatchEvent(Events::postInsert);
     }
-    
+
     /**
      * Dispatches the preUpdate event for the given entity.
      *
@@ -440,7 +449,7 @@ class StandardEntityPersister
         );
         $this->_evm->dispatchEvent(Events::preUpdate, $eventArgs);
     }
-    
+
     /**
      * Dispatches the postUpdate event for the given entity.
      *

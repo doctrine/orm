@@ -38,7 +38,9 @@ class AbstractManyToManyAssociationTestCase extends \Doctrine\Tests\OrmFunctiona
 
     public function assertCollectionEquals(Collection $first, Collection $second)
     {
-        if (count($first) != count($second)) {
+        return $first->forAll(function($k, $e) use($second) { return $second->contains($e); });
+        
+        /*if (count($first) != count($second)) {
             return false;
         }
         foreach ($first as $element) {
@@ -46,6 +48,6 @@ class AbstractManyToManyAssociationTestCase extends \Doctrine\Tests\OrmFunctiona
                 return false;
             }
         }
-        return true;
+        return true;*/
     }
 }

@@ -2,6 +2,8 @@
 
 namespace Doctrine\Tests\Models\ECommerce;
 
+use Doctrine\Common\Collections\Collection;
+
 /**
  * ECommerceProduct
  * Represents a type of product of a shopping application.
@@ -45,8 +47,8 @@ class ECommerceProduct
 
     public function __construct()
     {
-        $this->features = new \Doctrine\Common\Collections\Collection;
-        $this->categories = new \Doctrine\Common\Collections\Collection;
+        $this->features = new Collection;
+        $this->categories = new Collection;
     }
 
     public function getId()

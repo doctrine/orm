@@ -32,6 +32,8 @@ class OneToManySelfReferentialAssociationTest extends \Doctrine\Tests\OrmFunctio
         $this->parent->addChild($this->secondChild);
         $this->_em->save($this->parent);
         
+        $this->_em->flush();
+        
         $this->assertForeignKeyIs($this->parent->getId(), $this->firstChild);
         $this->assertForeignKeyIs($this->parent->getId(), $this->secondChild);
     }
@@ -39,6 +41,7 @@ class OneToManySelfReferentialAssociationTest extends \Doctrine\Tests\OrmFunctio
     public function testSavesAnEmptyCollection()
     {
         $this->_em->save($this->parent);
+        $this->_em->flush();
 
         $this->assertEquals(0, count($this->parent->getChildren()));
     }
@@ -46,6 +49,7 @@ class OneToManySelfReferentialAssociationTest extends \Doctrine\Tests\OrmFunctio
     public function testDoesNotSaveAnInverseSideSet() {
         $this->parent->brokenAddChild($this->firstChild);
         $this->_em->save($this->parent);
+        $this->_em->flush();
         
         $this->assertForeignKeyIs(null, $this->firstChild);
     }
@@ -80,10 +84,10 @@ class OneToManySelfReferentialAssociationTest extends \Doctrine\Tests\OrmFunctio
         
         $this->assertTrue($children[0] instanceof ECommerceCategory);
         $this->assertSame($parent, $children[0]->getParent());
-        $this->assertTrue(strstr($children[0]->getName(), ' books'));
+        $this->assertEquals(' books', strstr($children[0]->getName(), ' books'));
         $this->assertTrue($children[1] instanceof ECommerceCategory);
         $this->assertSame($parent, $children[1]->getParent());
-        $this->assertTrue(strstr($children[1]->getName(), ' books'));
+        $this->assertEquals(' books', strstr($children[1]->getName(), ' books'));
     }
     
     /* TODO: not yet implemented

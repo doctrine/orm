@@ -13,8 +13,7 @@ namespace Doctrine\Tests\Models\ECommerce;
 class ECommerceShipping
 {
     /**
-     * @Column(type="integer")
-     * @Id
+     * @Id @Column(type="integer")
      * @GeneratedValue(strategy="AUTO")
      */
     private $id;

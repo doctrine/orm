@@ -187,8 +187,8 @@ class JoinedSubclassPersister extends StandardEntityPersister
         $this->_prepareData($entity, $updateData);
 
         $id = array_combine(
-        $this->_class->getIdentifierFieldNames(),
-        $this->_em->getUnitOfWork()->getEntityIdentifier($entity)
+            $this->_class->getIdentifierFieldNames(),
+            $this->_em->getUnitOfWork()->getEntityIdentifier($entity)
         );
 
         foreach ($updateData as $tableName => $data) {
@@ -205,15 +205,15 @@ class JoinedSubclassPersister extends StandardEntityPersister
     public function delete($entity)
     {
         $id = array_combine(
-        $this->_class->getIdentifierFieldNames(),
-        $this->_em->getUnitOfWork()->getEntityIdentifier($entity)
+            $this->_class->getIdentifierFieldNames(),
+            $this->_em->getUnitOfWork()->getEntityIdentifier($entity)
         );
 
         // If the database platform supports FKs, just
         // delete the row from the root table. Cascades do the rest.
         if ($this->_conn->getDatabasePlatform()->supportsForeignKeyConstraints()) {
             $this->_conn->delete($this->_em->getClassMetadata($this->_class->rootEntityName)
-            ->primaryTable['name'], $id);
+                    ->primaryTable['name'], $id);
         } else {
             // Delete the parent tables, starting from this class' table up to the root table
             $this->_conn->delete($this->_class->primaryTable['name'], $id);

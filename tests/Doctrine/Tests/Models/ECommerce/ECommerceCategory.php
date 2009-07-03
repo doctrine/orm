@@ -2,6 +2,8 @@
 
 namespace Doctrine\Tests\Models\ECommerce;
 
+use Doctrine\Common\Collections\Collection;
+
 /**
  * ECommerceCategory
  * Represents a tag applied on particular products.
@@ -42,8 +44,8 @@ class ECommerceCategory
 
     public function __construct()
     {
-        $this->products = new \Doctrine\Common\Collections\Collection();
-        $this->children = new \Doctrine\Common\Collections\Collection();
+        $this->products = new Collection();
+        $this->children = new Collection();
     }
 
     public function getId()

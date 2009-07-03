@@ -2,6 +2,8 @@
 
 namespace Doctrine\Tests\Models\ECommerce;
 
+use Doctrine\Common\Collections\Collection;
+
 /**
  * ECommerceCart
  * Represents a typical cart of a shopping application.
@@ -40,7 +42,7 @@ class ECommerceCart
 
     public function __construct()
     {
-        $this->products = new \Doctrine\Common\Collections\Collection;
+        $this->products = new Collection;
     }
     
     public function getId() {
