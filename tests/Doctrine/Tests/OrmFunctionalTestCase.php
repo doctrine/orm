@@ -85,6 +85,7 @@ class OrmFunctionalTestCase extends OrmTestCase
             $conn->exec('DELETE FROM ecommerce_features');
             $conn->exec('DELETE FROM ecommerce_categories');
             $conn->exec('DELETE FROM ecommerce_products_categories');
+            $conn->exec('DELETE FROM ecommerce_products_related');
         }
         if (isset($this->_usedModelSets['company'])) {
             $conn->exec('DELETE FROM company_persons_friends');

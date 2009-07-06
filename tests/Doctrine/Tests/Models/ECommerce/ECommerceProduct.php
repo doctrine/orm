@@ -45,10 +45,21 @@ class ECommerceProduct
      */
     private $categories;
 
+    /**
+     * This relation is saved with two records in the association table for 
+     * simplicity.
+     * @ManyToMany(targetEntity="ECommerceProduct", cascade={"save"})
+     * @JoinTable(name="ecommerce_products_related",
+            joinColumns={{"name"="product_id", "referencedColumnName"="id"}},
+            inverseJoinColumns={{"name"="related_id", "referencedColumnName"="id"}})
+     */
+    private $related;
+
     public function __construct()
     {
         $this->features = new Collection;
         $this->categories = new Collection;
+        $this->related = new Collection;
     }
 
     public function getId()
@@ -127,5 +138,26 @@ class ECommerceProduct
     public function getCategories()
     {
         return $this->categories;
+    }
+
+    public function getRelated()
+    {
+        return $this->related;
+    }
+
+    public function addRelated(ECommerceProduct $related)
+    {
+        if (!$this->related->contains($related)) {
+            $this->related[] = $related;
+            $related->addRelated($this);
+        }
+    }
+
+    public function removeRelated(ECommerceProduct $related)
+    {
+        $removed = $this->related->removeElement($related);
+        if ($removed) {
+            $related->removeRelated($this);
+        }
     }
 }
