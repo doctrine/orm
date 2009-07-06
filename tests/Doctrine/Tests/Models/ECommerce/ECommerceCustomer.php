@@ -28,6 +28,15 @@ class ECommerceCustomer
      * @OneToOne(targetEntity="ECommerceCart", mappedBy="customer", cascade={"save"})
      */
     private $cart;
+
+    /**
+     * Example of a one-one self referential association. A mentor can follow
+     * only one customer at the time, while a customer can choose only one
+     * mentor. Not properly appropriate but it works.
+     * @OneToOne(targetEntity="ECommerceCustomer", cascade={"save"})
+     * @JoinColumn(name="mentor_id", referencedColumnName="id")
+     */
+    private $mentor;
     
     public function getId() {
         return $this->id;
@@ -65,5 +74,20 @@ class ECommerceCustomer
             $this->cart = null;
             $cart->removeCustomer();
         }
+    }
+
+    public function setMentor(ECommerceCustomer $mentor)
+    {
+        $this->mentor = $mentor;
+    }
+
+    public function removeMentor()
+    {
+        $this->mentor = null;
+    }
+
+    public function getMentor()
+    {
+        return $this->mentor;
     }
 }
