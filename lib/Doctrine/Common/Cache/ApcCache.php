@@ -1,6 +1,6 @@
 <?php
 /*
- *  $Id: Memcache.php 4910 2008-09-12 08:51:56Z romanb $
+ *  $Id: Apc.php 4910 2008-09-12 08:51:56Z romanb $
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -19,52 +19,28 @@
  * <http://www.doctrine-project.org>.
  */
 
-namespace Doctrine\ORM\Cache;
+namespace Doctrine\Common\Cache;
 
 /**
- * Memcache cache driver.
+ * APC cache driver.
  *
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
- * @link        www.phpdoctrine.org
+ * @link        www.doctrine-project.org
  * @since       1.0
  * @version     $Revision: 4910 $
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
+ * @author      Roman Borschel <roman@code-factory.org>
  */
-class MemcacheCache implements Cache
+class ApcCache implements Cache
 {
-    /**
-     * @var Memcache $_memcache     memcache object
-     */
-    private $_memcache;
-
     /**
      * {@inheritdoc}
      */
     public function __construct()
     {      
-        if ( ! extension_loaded('memcache')) {
-            throw \Doctrine\Common\DoctrineException::updateMe('In order to use Memcache driver, the memcache extension must be loaded.');
+        if ( ! extension_loaded('apc')) {
+            \Doctrine\Common\DoctrineException::updateMe('The apc extension must be loaded in order to use the ApcCache.');
         }
-    }
-
-    /**
-     * Sets the memcache instance to use.
-     *
-     * @param Memcache $memcache
-     */
-    public function setMemcache(Memcache $memcache)
-    {
-        $this->_memcache = $memcache;
-    }
-
-    /**
-     * Gets the memcache instance used by the cache.
-     *
-     * @return Memcache
-     */
-    public function getMemcache()
-    {
-        return $this->_memcache;
     }
 
     /**
@@ -72,7 +48,7 @@ class MemcacheCache implements Cache
      */
     public function fetch($id) 
     {
-        return $this->_memcache->get($id);
+        return apc_fetch($id);
     }
 
     /**
@@ -80,7 +56,7 @@ class MemcacheCache implements Cache
      */
     public function contains($id) 
     {
-        return (bool) $this->_memcache->get($id);
+        return apc_fetch($id) === false ? false : true;
     }
 
     /**
@@ -88,7 +64,7 @@ class MemcacheCache implements Cache
      */
     public function save($id, $data, $lifeTime = false)
     {
-        return $this->_memcache->set($id, $data, 0, $lifeTime);
+        return (bool) apc_store($id, $data, $lifeTime);
     }
 
     /**
@@ -96,6 +72,6 @@ class MemcacheCache implements Cache
      */
     public function delete($id) 
     {
-        return $this->_memcache->delete($id);
+        return apc_delete($id);
     }
 }

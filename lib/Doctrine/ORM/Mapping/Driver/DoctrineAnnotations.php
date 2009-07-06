@@ -100,3 +100,4 @@ final class SequenceGenerator extends \Annotation {
     public $initialValue = 1;
 }
 final class ChangeTrackingPolicy extends \Annotation {}
+final class DoctrineX extends \Annotation {}

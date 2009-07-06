@@ -1,0 +1,322 @@
+<?php
+
+namespace Doctrine\Common\Annotations;
+
+/**
+ * A simple parser for docblock annotations.
+ * 
+ * @author Roman Borschel <roman@code-factory.org>
+ */
+class Parser
+{
+    /** Tags that are stripped prior to parsing in order to reduce parsing overhead. */
+    private static $_strippedInlineTags = array(
+        "{@example", "{@id", "{@internal", "{@inheritdoc",
+        "{@link", "{@source", "{@toc", "{@tutorial", "*/"
+    );
+    
+    private $_lexer;
+    private $_isNestedAnnotation = false;
+    private $_defaultAnnotationNamespace = '';
+    private $_namespaceAliases = array();
+    
+    /**
+     * Constructs a new AnnotationParser.
+     */
+    public function __construct()
+    {
+        $this->_lexer = new Lexer;
+    }
+    
+    /**
+     * Sets the default namespace that is assumed for an annotation that does not
+     * define a namespace prefix.
+     * 
+     * @param $defaultNamespace
+     */
+    public function setDefaultAnnotationNamespace($defaultNamespace)
+    {
+        $this->_defaultAnnotationNamespace = $defaultNamespace;
+    }
+    
+    public function setAnnotationNamespaceAlias($namespace, $alias)
+    {
+        $this->_namespaceAliases[$alias] = $namespace;
+    }
+
+    /**
+     * Parses the given docblock string for annotations.
+     * 
+     * @param $docBlockString
+     * @return array An array of Annotation instances. If no annotations are found, an empty
+     * array is returned.
+     */
+    public function parse($docBlockString)
+    {
+        // Strip out some known inline tags.
+        $input = str_replace(self::$_strippedInlineTags, '', $docBlockString);
+        // Cut of the beginning of the input until the first '@'.
+        $input = substr($input, strpos($input, '@'));
+        
+        $this->_lexer->reset();
+        $this->_lexer->setInput(trim($input, '* /'));
+        $this->_lexer->moveNext();
+        
+        return $this->Annotations();
+    }
+
+    /**
+     * Attempts to match the given token with the current lookahead token.
+     *
+     * If they match, updates the lookahead token; otherwise raises a syntax
+     * error.
+     *
+     * @param int|string token type or value
+     * @return bool True, if tokens match; false otherwise.
+     */
+    public function match($token)
+    {
+        if (is_string($token)) {
+            $isMatch = ($this->_lexer->lookahead['value'] === $token);
+        } else {
+            $isMatch = ($this->_lexer->lookahead['type'] === $token);
+        }
+
+        if ( ! $isMatch) {
+            $this->syntaxError($token['value']);
+        }
+
+        $this->_lexer->moveNext();
+    }
+    
+    /**
+     * Raises a syntax error.
+     * 
+     * @param $expected
+     * @throws Exception
+     */
+    private function syntaxError($expected)
+    {
+        throw new \Exception("Expected: $expected.");
+    }
+    
+    /**
+     * Annotations ::= Annotation ("*")* (Annotation)*
+     */
+    public function Annotations()
+    {
+        $this->_isNestedAnnotation = false;
+        $annotations = array();
+        $annot = $this->Annotation();
+        if ($annot === false) {
+            // Not a valid annotation. Go on to next annotation.
+            $this->_lexer->skipUntil('@');
+        } else {
+            $annotations[get_class($annot)] = $annot;
+        }
+        
+        while (true) {
+            if ($this->_lexer->lookahead['value'] == '*') {
+                $this->match('*');
+            } else if ($this->_lexer->lookahead['value'] == '@') {
+                $this->_isNestedAnnotation = false;
+                $annot = $this->Annotation();
+                if ($annot === false) {
+                    // Not a valid annotation. Go on to next annotation.
+                    $this->_lexer->skipUntil('@');
+                } else {
+                    $annotations[get_class($annot)] = $annot;
+                }
+            } else {
+                break;
+            }
+        }
+        
+        return $annotations;
+    }
+
+    /**
+     * Annotation ::= "@" AnnotationName [ "(" [Values] ")" ]
+     * AnnotationName ::= SimpleName | QualifiedName
+     * SimpleName ::= identifier
+     * QualifiedName ::= NameSpacePart "." (NameSpacePart ".")* SimpleName
+     * NameSpacePart ::= identifier
+     */
+    public function Annotation()
+    {
+        $values = array();
+
+        $nameParts = array();
+        $this->match('@');
+        $this->match(Lexer::T_IDENTIFIER);
+        $nameParts[] = $this->_lexer->token['value'];
+        while ($this->_lexer->isNextToken('.')) {
+            $this->match('.');
+            $this->match(Lexer::T_IDENTIFIER);
+            $nameParts[] = $this->_lexer->token['value'];
+        }
+
+        if (count($nameParts) == 1) {
+            $name = $this->_defaultAnnotationNamespace . $nameParts[0];
+        } else {
+            if (count($nameParts) == 2 && isset($this->_namespaceAliases[$nameParts[0]])) {
+                $name = $this->_namespaceAliases[$nameParts[0]] . $nameParts[1];
+            } else {
+                $name = implode('\\', $nameParts);
+            }
+        }
+
+        if ( ! $this->_isNestedAnnotation && $this->_lexer->lookahead != null
+                && $this->_lexer->lookahead['value'] != '('
+                || ! is_subclass_of($name, 'Doctrine\Common\Annotations\Annotation')) {
+            return false;
+        }
+
+        $this->_isNestedAnnotation = true; // Next will be nested
+
+        if ($this->_lexer->isNextToken('(')) {
+            $this->match('(');
+            if ($this->_lexer->isNextToken(')')) {
+                $this->match(')');
+            } else {
+                $values = $this->Values();
+                $this->match(')');
+            }
+        }
+
+        return new $name($values);
+    }
+
+    /**
+     * Values ::= Value ("," Value)*
+     */
+    public function Values()
+    {
+        $values = array();
+
+        $value = $this->Value();
+        if (is_array($value)) {
+            $k = key($value);
+            $v = $value[$k];
+            if (is_string($k)) {
+                // FieldAssignment
+                $values[$k] = $v;
+            } else {
+                $values['value'][] = $value;
+            }
+        } else {
+            $values['value'][] = $value;
+        }
+
+        while ($this->_lexer->isNextToken(',')) {
+            $this->match(',');
+            $value = $this->Value();
+            if (is_array($value)) {
+                $k = key($value);
+                $v = $value[$k];
+                if (is_string($k)) {
+                    // FieldAssignment
+                    $values[$k] = $v;
+                } else {
+                    $values['value'][] = $value;
+                }
+            } else {
+                $values['value'][] = $value;
+            }
+        }
+
+        return $values;
+    }
+
+    /**
+     * Value ::= PlainValue | FieldAssignment
+     */
+    public function Value()
+    {
+        $peek = $this->_lexer->glimpse();
+        if ($peek['value'] === '=') {
+            return $this->FieldAssignment();
+        }
+        return $this->PlainValue();
+    }
+
+    /**
+     * PlainValue ::= integer | string | float | Array | Annotation
+     */
+    public function PlainValue()
+    {
+        if ($this->_lexer->lookahead['value'] == '{') {
+            return $this->Array_();
+        }
+        if ($this->_lexer->lookahead['value'] == '@') {
+            return $this->Annotation();
+        }
+
+        switch ($this->_lexer->lookahead['type']) {
+            case Lexer::T_STRING:
+                $this->match(Lexer::T_STRING);
+                return $this->_lexer->token['value'];
+            case Lexer::T_INTEGER:
+                $this->match(Lexer::T_INTEGER);
+                return $this->_lexer->token['value'];
+            case Lexer::T_FLOAT:
+                $this->match(Lexer::T_FLOAT);
+                return $this->_lexer->token['value'];
+            default:
+                var_dump($this->_lexer->lookahead);
+                throw new \Exception("Invalid value.");
+        }
+    }
+
+    /**
+     * fieldAssignment ::= fieldName "=" plainValue
+     * fieldName ::= identifier
+     */
+    public function FieldAssignment()
+    {
+        $this->match(Lexer::T_IDENTIFIER);
+        $fieldName = $this->_lexer->token['value'];
+        $this->match('=');
+        return array($fieldName => $this->PlainValue());
+    }
+
+    /**
+     * Array ::= "{" arrayEntry ("," arrayEntry)* "}"
+     */
+    public function Array_()
+    {
+        $this->match('{');
+        $array = array();
+        $this->ArrayEntry($array);
+
+        while ($this->_lexer->isNextToken(',')) {
+            $this->match(',');
+            $this->ArrayEntry($array);
+        }
+        $this->match('}');
+
+        return $array;
+    }
+
+    /**
+     * ArrayEntry ::= Value | KeyValuePair
+     * KeyValuePair ::= Key "=" Value
+     * Key ::= string | integer
+     */
+    public function ArrayEntry(array &$array)
+    {
+        $peek = $this->_lexer->glimpse();
+        if ($peek['value'] == '=') {
+            if ($this->_lexer->lookahead['type'] === Lexer::T_INTEGER) {
+                $this->match(Lexer::T_INTEGER);
+            } else {
+                $this->match(Lexer::T_STRING);
+            }
+            $key = $this->_lexer->token['value'];
+            $this->match('=');
+            return $array[$key] = $this->Value();
+        } else {
+            return $array[] = $this->Value();
+        }
+    }
+}

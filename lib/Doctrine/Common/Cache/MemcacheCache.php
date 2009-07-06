@@ -1,6 +1,6 @@
 <?php
 /*
- *  $Id: Array.php 4910 2008-09-12 08:51:56Z romanb $
+ *  $Id: Memcache.php 4910 2008-09-12 08:51:56Z romanb $
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -19,41 +19,68 @@
  * <http://www.doctrine-project.org>.
  */
 
-namespace Doctrine\ORM\Cache;
+namespace Doctrine\Common\Cache;
 
 /**
- * Array cache driver.
+ * Memcache cache driver.
  *
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
- * @link        www.doctrine-project.org
+ * @link        www.phpdoctrine.org
  * @since       1.0
  * @version     $Revision: 4910 $
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  */
-class ArrayCache implements Cache
+class MemcacheCache implements Cache
 {
     /**
-     * @var array $data
+     * @var Memcache $_memcache     memcache object
      */
-    private $data;
+    private $_memcache;
 
     /**
      * {@inheritdoc}
      */
-    public function fetch($id) 
-    { 
-        if (isset($this->data[$id])) {
-            return $this->data[$id];
+    public function __construct()
+    {      
+        if ( ! extension_loaded('memcache')) {
+            throw \Doctrine\Common\DoctrineException::updateMe('In order to use Memcache driver, the memcache extension must be loaded.');
         }
-        return false;
+    }
+
+    /**
+     * Sets the memcache instance to use.
+     *
+     * @param Memcache $memcache
+     */
+    public function setMemcache(Memcache $memcache)
+    {
+        $this->_memcache = $memcache;
+    }
+
+    /**
+     * Gets the memcache instance used by the cache.
+     *
+     * @return Memcache
+     */
+    public function getMemcache()
+    {
+        return $this->_memcache;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function contains($id)
+    public function fetch($id) 
     {
-        return isset($this->data[$id]);
+        return $this->_memcache->get($id);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function contains($id) 
+    {
+        return (bool) $this->_memcache->get($id);
     }
 
     /**
@@ -61,32 +88,14 @@ class ArrayCache implements Cache
      */
     public function save($id, $data, $lifeTime = false)
     {
-        $this->data[$id] = $data;
+        return $this->_memcache->set($id, $data, 0, $lifeTime);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function delete($id)
+    public function delete($id) 
     {
-        unset($this->data[$id]);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function deleteAll()
-    {
-        $this->data = array();
-    }
-
-    /**
-     * count
-     *
-     * @return integer
-     */
-    public function count() 
-    {
-        return count($this->data);
+        return $this->_memcache->delete($id);
     }
 }

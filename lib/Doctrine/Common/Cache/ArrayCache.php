@@ -1,6 +1,6 @@
 <?php
 /*
- *  $Id: Apc.php 4910 2008-09-12 08:51:56Z romanb $
+ *  $Id: Array.php 4910 2008-09-12 08:51:56Z romanb $
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -19,44 +19,41 @@
  * <http://www.doctrine-project.org>.
  */
 
-namespace Doctrine\ORM\Cache;
+namespace Doctrine\Common\Cache;
 
 /**
- * APC cache driver.
+ * Array cache driver.
  *
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @link        www.doctrine-project.org
  * @since       1.0
  * @version     $Revision: 4910 $
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
- * @author      Roman Borschel <roman@code-factory.org>
  */
-class ApcCache implements Cache
+class ArrayCache implements Cache
 {
     /**
-     * {@inheritdoc}
+     * @var array $data
      */
-    public function __construct()
-    {      
-        if ( ! extension_loaded('apc')) {
-            \Doctrine\Common\DoctrineException::updateMe('The apc extension must be loaded in order to use the ApcCache.');
-        }
-    }
+    private $data;
 
     /**
      * {@inheritdoc}
      */
     public function fetch($id) 
-    {
-        return apc_fetch($id);
+    { 
+        if (isset($this->data[$id])) {
+            return $this->data[$id];
+        }
+        return false;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function contains($id) 
+    public function contains($id)
     {
-        return apc_fetch($id) === false ? false : true;
+        return isset($this->data[$id]);
     }
 
     /**
@@ -64,14 +61,32 @@ class ApcCache implements Cache
      */
     public function save($id, $data, $lifeTime = false)
     {
-        return (bool) apc_store($id, $data, $lifeTime);
+        $this->data[$id] = $data;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function delete($id) 
+    public function delete($id)
     {
-        return apc_delete($id);
+        unset($this->data[$id]);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function deleteAll()
+    {
+        $this->data = array();
+    }
+
+    /**
+     * count
+     *
+     * @return integer
+     */
+    public function count() 
+    {
+        return count($this->data);
     }
 }

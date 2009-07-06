@@ -199,12 +199,12 @@ abstract class AbstractQuery
     /**
      * Defines a cache driver to be used for caching result sets.
      *
-     * @param Doctrine\ORM\Cache\Cache $driver Cache driver
+     * @param Doctrine\Common\Cache\Cache $driver Cache driver
      * @return Doctrine\ORM\Query
      */
     public function setResultCache($resultCache = null)
     {
-        if ($resultCache !== null && ! ($resultCache instanceof \Doctrine\ORM\Cache\Cache)) {
+        if ($resultCache !== null && ! ($resultCache instanceof \Doctrine\Common\Cache\Cache)) {
             throw DoctrineException::updateMe(
                 'Method setResultCache() accepts only an instance of Doctrine_Cache_Interface or null.'
             );
@@ -216,7 +216,7 @@ abstract class AbstractQuery
     /**
      * Returns the cache driver used for caching result sets.
      *
-     * @return Doctrine_Cache_Interface Cache driver
+     * @return Doctrine\Common\Cache\Cache Cache driver
      */
     public function getResultCacheDriver()
     {

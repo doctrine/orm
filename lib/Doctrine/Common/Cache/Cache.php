@@ -19,7 +19,7 @@
  * <http://www.doctrine-project.org>.
  */
 
-namespace Doctrine\ORM\Cache;
+namespace Doctrine\Common\Cache;
 
 /**
  * Interface for cache drivers.

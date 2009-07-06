@@ -61,7 +61,7 @@ class ClassMetadataFactory
      * Sets the cache driver used by the factory to cache ClassMetadata instances
      * and invokes the preload() method of the metadata driver to prepopulate the cache.
      *
-     * @param Doctrine\ORM\Cache\Cache $cacheDriver
+     * @param Doctrine\Common\Cache\Cache $cacheDriver
      */
     public function setCacheDriver($cacheDriver)
     {
@@ -75,7 +75,7 @@ class ClassMetadataFactory
     /**
      * Gets the cache driver used by the factory to cache ClassMetadata instances.
      *
-     * @return Doctrine\ORM\Cache\Cache
+     * @return Doctrine\Common\Cache\Cache
      */
     public function getCacheDriver()
     {

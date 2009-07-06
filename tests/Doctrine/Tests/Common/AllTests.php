@@ -3,6 +3,7 @@
 namespace Doctrine\Tests\Common;
 
 use Doctrine\Tests\Common\Collections;
+use Doctrine\Tests\Common\Annotations;
 
 if (!defined('PHPUnit_MAIN_METHOD')) {
     define('PHPUnit_MAIN_METHOD', 'Common_AllTests::main');
@@ -26,6 +27,7 @@ class AllTests
         $suite->addTestSuite('Doctrine\Tests\Common\EventManagerTest');
 
         $suite->addTest(Collections\AllTests::suite());
+        $suite->addTest(Annotations\AllTests::suite());
 
         return $suite;
     }

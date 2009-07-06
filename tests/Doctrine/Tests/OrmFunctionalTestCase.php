@@ -147,10 +147,10 @@ class OrmFunctionalTestCase extends OrmTestCase
         // the actual database platform used during execution has effect on some
         // metadata mapping behaviors (like the choice of the ID generation).
         if (is_null(self::$_metadataCacheImpl)) {
-            self::$_metadataCacheImpl = new \Doctrine\ORM\Cache\ArrayCache;
+            self::$_metadataCacheImpl = new \Doctrine\Common\Cache\ArrayCache;
         }
         if (is_null(self::$_queryCacheImpl)) {
-        	self::$_queryCacheImpl = new \Doctrine\ORM\Cache\ArrayCache;
+        	self::$_queryCacheImpl = new \Doctrine\Common\Cache\ArrayCache;
         }
         $config = new \Doctrine\ORM\Configuration();
         $config->setMetadataCacheImpl(self::$_metadataCacheImpl);

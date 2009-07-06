@@ -42,7 +42,7 @@ class OrmTestCase extends DoctrineTestCase
     private static function getSharedMetadataCacheImpl()
     {
         if (self::$_metadataCacheImpl === null) {
-            self::$_metadataCacheImpl = new \Doctrine\ORM\Cache\ArrayCache;
+            self::$_metadataCacheImpl = new \Doctrine\Common\Cache\ArrayCache;
         }
         return self::$_metadataCacheImpl;
     }
@@ -50,7 +50,7 @@ class OrmTestCase extends DoctrineTestCase
     private static function getSharedQueryCacheImpl()
     {
         if (self::$_queryCacheImpl === null) {
-            self::$_queryCacheImpl = new \Doctrine\ORM\Cache\ArrayCache;
+            self::$_queryCacheImpl = new \Doctrine\Common\Cache\ArrayCache;
         }
         return self::$_queryCacheImpl;
     }

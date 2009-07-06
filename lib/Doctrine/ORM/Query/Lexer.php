@@ -237,7 +237,7 @@ class Lexer
                 $type = self::T_INTEGER;
             }
         }
-        if ($value[0] === "'" && $value[strlen($value) - 1] === "'") {
+        if ($value[0] === "'") {
             $type = self::T_STRING;
             $value = str_replace("''", "'", substr($value, 1, strlen($value) - 2));
         } else if (ctype_alpha($value[0]) || $value[0] === '_') {
