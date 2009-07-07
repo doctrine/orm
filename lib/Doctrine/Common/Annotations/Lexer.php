@@ -151,7 +151,7 @@ class Lexer
                 '(?:[0-9]+(?:[\.][0-9]+)*)(?:e[+-]?[0-9]+)?',
                 '"(?:[^"]|"")*"'
             );
-            $regex = '/(' . implode(')|(', $patterns) . ')|\s+|(.)/i';
+            $regex = '/(' . implode(')|(', $patterns) . ')|\s+|\*+|(.)/i';
         }
 
         $matches = preg_split($regex, $input, -1, PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE);

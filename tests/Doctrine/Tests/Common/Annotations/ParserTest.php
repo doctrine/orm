@@ -75,7 +75,7 @@ DOCBLOCK;
  * Some nifty class.
  * 
  * @author Mr.X
- * @Doctrine.Tests.Common.Annotations.Name(foo="bar")
+ * @Doctrine\Tests\Common\Annotations\Name(foo="bar")
  */
 DOCBLOCK;
 

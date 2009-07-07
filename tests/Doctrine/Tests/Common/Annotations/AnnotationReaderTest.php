@@ -21,18 +21,21 @@ class AnnotationReaderTest extends \Doctrine\Tests\DoctrineTestCase
         $this->assertTrue($classAnnots[$annotName] instanceof DummyAnnotation);
         $this->assertEquals("hello", $classAnnots[$annotName]->dummyValue);
         
-        $propAnnots = $reader->getPropertyAnnotations($class, 'field1');
+        $field1Prop = $class->getProperty('field1');
+        $propAnnots = $reader->getPropertyAnnotations($field1Prop);
         $this->assertEquals(1, count($propAnnots));
         $this->assertTrue($propAnnots[$annotName] instanceof DummyAnnotation);
         $this->assertEquals("fieldHello", $propAnnots[$annotName]->dummyValue);
         
-        $methodAnnots = $reader->getMethodAnnotations($class, 'getField1');
+        $getField1Method = $class->getMethod('getField1');
+        $methodAnnots = $reader->getMethodAnnotations($getField1Method);
         $this->assertEquals(1, count($methodAnnots));
         $this->assertTrue($methodAnnots[$annotName] instanceof DummyAnnotation);
         $this->assertEquals("methodHello", $methodAnnots[$annotName]->dummyValue);
         $this->assertEquals(array(array(1, 2, "three")), $methodAnnots[$annotName]->value);
         
-        $propAnnots = $reader->getPropertyAnnotations($class, 'field2');
+        $field2Prop = $class->getProperty('field2');
+        $propAnnots = $reader->getPropertyAnnotations($field2Prop);
         $this->assertEquals(1, count($propAnnots));
         $this->assertTrue(isset($propAnnots['Doctrine\Tests\Common\Annotations\DummyJoinTable']));
         $joinTableAnnot = $propAnnots['Doctrine\Tests\Common\Annotations\DummyJoinTable'];
@@ -65,12 +68,12 @@ class DummyClass {
     
     /**
      * @DummyJoinTable(name="join_table",
-            joinColumns={
-                @DummyJoinColumn(name="col1", referencedColumnName="col2")
-            },
-            inverseJoinColumns={
-                @DummyJoinColumn(name="col3", referencedColumnName="col4")
-            })
+     *      joinColumns={
+     *          @DummyJoinColumn(name="col1", referencedColumnName="col2")
+     *      },
+     *      inverseJoinColumns={
+     *          @DummyJoinColumn(name="col3", referencedColumnName="col4")
+     *      })
      */
     private $field2;
     

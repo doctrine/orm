@@ -1,10 +1,35 @@
 <?php
+/*
+ *  $Id$
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+ * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+ * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+ * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+ * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+ * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ * This software consists of voluntary contributions made by many individuals
+ * and is licensed under the LGPL. For more information, see
+ * <http://www.doctrine-project.org>.
+ */
 
 namespace Doctrine\Common\Annotations;
 
 use \ReflectionClass, \ReflectionMethod, \ReflectionProperty;
 use Doctrine\Common\Cache\Cache;
 
+/**
+ * A reader for docblock annotations.
+ * 
+ * @author Roman Borschel <roman@code-factory.org>
+ * @since 2.0
+ */
 class AnnotationReader
 {
     private static $CACHE_SALT = "@<Annot>";
@@ -12,12 +37,22 @@ class AnnotationReader
     private $_cache;
     private $_annotations = array();
     
+    /**
+     * Initiaizes a new AnnotationReader that uses the given Cache provider to cache annotations.
+     * 
+     * @param Cache $cache The cache provider to use.
+     */
     public function __construct(Cache $cache)
     {
         $this->_parser = new Parser;
         $this->_cache = $cache;
     }
     
+    /**
+     * 
+     * @param $defaultNamespace
+     * @return unknown_type
+     */
     public function setDefaultAnnotationNamespace($defaultNamespace)
     {
         $this->_parser->setDefaultAnnotationNamespace($defaultNamespace);
@@ -30,13 +65,9 @@ class AnnotationReader
      * the class annotations should be read.
      * @return array An array of Annotations.
      */
-    public function getClassAnnotations($class)
+    public function getClassAnnotations(ReflectionClass $class)
     {
-        if (is_string($class)) {
-            $className = $class;
-        } else {
-            $className = $class->getName();
-        }
+        $className = $class->getName();
         
         if (isset($this->_annotations[$className])) {
             return $this->_annotations[$className];
@@ -45,16 +76,18 @@ class AnnotationReader
             return $this->_annotations[$className];
         }
         
-        if (is_string($class)) {
-            $class = new ReflectionClass($className);
-        }
-        
         $this->_annotations[$className] = $this->_parser->parse($class->getDocComment());
         
         return $this->_annotations[$className];
     }
     
-    public function getClassAnnotation($class, $annotation)
+    /**
+     * 
+     * @param $class
+     * @param $annotation
+     * @return unknown_type
+     */
+    public function getClassAnnotation(ReflectionClass $class, $annotation)
     {
         $annotations = $this->getClassAnnotations($class);
         return isset($annotations[$annotation]) ? $annotations[$annotation] : null;
@@ -68,14 +101,9 @@ class AnnotationReader
      * from which the annotations should be read.
      * @return array An array of Annotations.
      */
-    public function getPropertyAnnotations($class, $property)
+    public function getPropertyAnnotations(ReflectionProperty $property)
     {
-        $className = is_string($class) ? $class : $class->getName();
-        if (is_string($property)) {
-            $propertyName = $className . '$' . $property;
-        } else {
-            $propertyName = $className . '$' . $property->getName();
-        }
+        $propertyName = $property->getDeclaringClass()->getName() . '$' . $property->getName();
         
         if (isset($this->_annotations[$propertyName])) {
             return $this->_annotations[$propertyName];
@@ -84,18 +112,20 @@ class AnnotationReader
             return $this->_annotations[$propertyName];
         }
         
-        if (is_string($property)) {
-            $property = new ReflectionProperty($className, $property);
-        }
-        
         $this->_annotations[$propertyName] = $this->_parser->parse($property->getDocComment());
         
         return $this->_annotations[$propertyName];
     }
     
-    public function getPropertyAnnotation($class, $property, $annotation)
+    /**
+     * 
+     * @param $property
+     * @param $annotation
+     * @return unknown_type
+     */
+    public function getPropertyAnnotation(ReflectionProperty $property, $annotation)
     {
-        $annotations = $this->getPropertyAnnotations($class, $property);
+        $annotations = $this->getPropertyAnnotations($property);
         return isset($annotations[$annotation]) ? $annotations[$annotation] : null;
     }
     
@@ -107,14 +137,9 @@ class AnnotationReader
      * the annotations should be read.
      * @return array An array of Annotations.
      */
-    public function getMethodAnnotations($class, $method)
+    public function getMethodAnnotations(ReflectionMethod $method)
     {
-        $className = is_string($class) ? $class : $class->getName();
-        if (is_string($method)) {
-            $methodName = $className . '#' . $method;
-        } else {
-            $methodName = $className . '#' . $method->getName();
-        }
+        $methodName = $method->getDeclaringClass()->getName() . '#' . $method->getName();
         
         if (isset($this->_annotations[$methodName])) {
             return $this->_annotations[$methodName];
@@ -123,18 +148,20 @@ class AnnotationReader
             return $this->_annotations[$methodName];
         }
         
-        if (is_string($method)) {
-            $method = new ReflectionMethod($className, $method);
-        }
-        
         $this->_annotations[$methodName] = $this->_parser->parse($method->getDocComment());
         
         return $this->_annotations[$methodName];
     }
     
-    public function getMethodAnnotation($class, $method, $annotation)
+    /**
+     * 
+     * @param $method
+     * @param $annotation
+     * @return unknown_type
+     */
+    public function getMethodAnnotation(ReflectionMethod $method, $annotation)
     {
-        $annotations = $this->getMethodAnnotations($class, $method);
+        $annotations = $this->getMethodAnnotations($method);
         return isset($annotations[$annotation]) ? $annotations[$annotation] : null;
     }
 }

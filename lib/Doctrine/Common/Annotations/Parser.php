@@ -39,6 +39,13 @@ class Parser
         $this->_defaultAnnotationNamespace = $defaultNamespace;
     }
     
+    /**
+     * Sets an alias for an annotation namespace.
+     * 
+     * @param $namespace
+     * @param $alias
+     * @return unknown_type
+     */
     public function setAnnotationNamespaceAlias($namespace, $alias)
     {
         $this->_namespaceAliases[$alias] = $namespace;
@@ -139,7 +146,7 @@ class Parser
      * Annotation ::= "@" AnnotationName [ "(" [Values] ")" ]
      * AnnotationName ::= SimpleName | QualifiedName
      * SimpleName ::= identifier
-     * QualifiedName ::= NameSpacePart "." (NameSpacePart ".")* SimpleName
+     * QualifiedName ::= NameSpacePart "\" (NameSpacePart "\")* SimpleName
      * NameSpacePart ::= identifier
      */
     public function Annotation()
@@ -150,8 +157,8 @@ class Parser
         $this->match('@');
         $this->match(Lexer::T_IDENTIFIER);
         $nameParts[] = $this->_lexer->token['value'];
-        while ($this->_lexer->isNextToken('.')) {
-            $this->match('.');
+        while ($this->_lexer->isNextToken('\\')) {
+            $this->match('\\');
             $this->match(Lexer::T_IDENTIFIER);
             $nameParts[] = $this->_lexer->token['value'];
         }
