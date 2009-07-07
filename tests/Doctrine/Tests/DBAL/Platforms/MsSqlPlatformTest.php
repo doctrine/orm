@@ -16,7 +16,7 @@ class MsSqlPlatformTest extends \Doctrine\Tests\DbalTestCase
         $this->_platform = new MssqlPlatform;
     }
 
-    public function testCreateTableSql()
+    public function testGeneratesTableCreationSql()
     {
         $columns = array(
             'id' => array(
@@ -40,7 +40,7 @@ class MsSqlPlatformTest extends \Doctrine\Tests\DbalTestCase
         $this->assertEquals('CREATE TABLE test (id INT AUTO_INCREMENT NOT NULL, test VARCHAR(255) NOT NULL, PRIMARY KEY(id))', $sql[0]);
     }
 
-    public function testAlterTableSql()
+    public function testGeneratesTableAlterationSql()
     {
         $changes = array(
             'name' => 'userlist',
@@ -57,31 +57,17 @@ class MsSqlPlatformTest extends \Doctrine\Tests\DbalTestCase
         );
     }
 
-    public function testCreateIndexSql()
+    public function testGeneratesSqlSnippets()
     {
-        $indexDef = array(
-            'fields' => array(
-                'user_name' => array(
-                    'sorting' => 'ASC',
-                    'length' => 10
-                ),
-                'last_login' => array()
-            )
-        );
-
-        $this->assertEquals(
-            'CREATE INDEX my_idx ON mytable (user_name, last_login)',
-            $this->_platform->getCreateIndexSql('mytable', 'my_idx', $indexDef)
-        );
+        $this->assertEquals('RLIKE', $this->_platform->getRegexpExpression(), 'Regular expression operator is not correct');
+        $this->assertEquals('`', $this->_platform->getIdentifierQuoteCharacter(), 'Identifier quote character is not correct');
+        $this->assertEquals('RAND()', $this->_platform->getRandomExpression(), 'Random function is not correct');
+        $this->assertEquals('(column1 + column2 + column3)', $this->_platform->getConcatExpression('column1', 'column2', 'column3'), 'Concatenation expression is not correct');
+        $this->assertEquals('CHARACTER SET utf8', $this->_platform->getCharsetFieldDeclaration('utf8'), 'Charset declaration is not correct');
     }
 
-    public function testSqlSnippets()
+    public function testGeneratesTransactionsCommands()
     {
-        $this->assertEquals('RLIKE', $this->_platform->getRegexpExpression());
-        $this->assertEquals('`', $this->_platform->getIdentifierQuoteCharacter());
-        $this->assertEquals('RAND()', $this->_platform->getRandomExpression());
-        $this->assertEquals('(column1 + column2 + column3)', $this->_platform->getConcatExpression('column1', 'column2', 'column3'));
-        $this->assertEquals('CHARACTER SET utf8', $this->_platform->getCharsetFieldDeclaration('utf8'));
         $this->assertEquals(
             'SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED',
             $this->_platform->getSetTransactionIsolationSql(\Doctrine\DBAL\Connection::TRANSACTION_READ_UNCOMMITTED)
@@ -100,7 +86,7 @@ class MsSqlPlatformTest extends \Doctrine\Tests\DbalTestCase
         );
     }
 
-    public function testDDLSnippets()
+    public function testGeneratesDDLSnippets()
     {
         $this->assertEquals('SHOW DATABASES', $this->_platform->getShowDatabasesSql());
         $this->assertEquals('CREATE DATABASE foobar', $this->_platform->getCreateDatabaseSql('foobar'));
@@ -108,7 +94,7 @@ class MsSqlPlatformTest extends \Doctrine\Tests\DbalTestCase
         $this->assertEquals('DROP TABLE foobar', $this->_platform->getDropTableSql('foobar'));
     }
 
-    public function testTypeDeclarationSql()
+    public function testGeneratesTypeDeclarationForIntegers()
     {
         $this->assertEquals(
             'INT',
@@ -123,6 +109,10 @@ class MsSqlPlatformTest extends \Doctrine\Tests\DbalTestCase
             $this->_platform->getIntegerTypeDeclarationSql(
                 array('autoincrement' => true, 'primary' => true)
         ));
+    }
+
+    public function testGeneratesTypeDeclarationsForStrings()
+    {
         $this->assertEquals(
             'CHAR(10)',
             $this->_platform->getVarcharTypeDeclarationSql(
@@ -130,35 +120,62 @@ class MsSqlPlatformTest extends \Doctrine\Tests\DbalTestCase
         ));
         $this->assertEquals(
             'VARCHAR(50)',
-            $this->_platform->getVarcharTypeDeclarationSql(array('length' => 50))
+            $this->_platform->getVarcharTypeDeclarationSql(array('length' => 50)),
+            'Variable string declaration is not correct'
         );
         $this->assertEquals(
             'TEXT',
-            $this->_platform->getVarcharTypeDeclarationSql(array())
+            $this->_platform->getVarcharTypeDeclarationSql(array()),
+            'Long string declaration is not correct'
         );
     }
 
-    public function testPreferences()
+    public function testPrefersIdentityColumns()
     {
         $this->assertTrue($this->_platform->prefersIdentityColumns());
-        $this->assertTrue($this->_platform->supportsIdentityColumns());
-        $this->assertFalse($this->_platform->supportsSavepoints());
-        
     }
 
-    public function testGetCreateConstraintSql()
+    public function testSupportsIdentityColumns()
+    {
+        $this->assertTrue($this->_platform->supportsIdentityColumns());
+    }
+
+    public function testDoesNotSupportSavePoints()
+    {
+        $this->assertFalse($this->_platform->supportsSavepoints());   
+    }
+
+    public function testGeneratesConstraintCreationSql()
     {
         $sql = $this->_platform->getCreateConstraintSql('test', 'constraint_name', array('fields' => array('test' => array())));
         $this->assertEquals($sql, 'ALTER TABLE test ADD CONSTRAINT constraint_name (test)');
     }
 
-    public function testGetCreateIndexSql()
+    public function testGeneratesIndexCreationSql()
+    {
+        $indexDef = array(
+            'fields' => array(
+                'user_name' => array(
+                    'sorting' => 'ASC',
+                    'length' => 10
+                ),
+                'last_login' => array()
+            )
+        );
+
+        $this->assertEquals(
+            'CREATE INDEX my_idx ON mytable (user_name, last_login)',
+            $this->_platform->getCreateIndexSql('mytable', 'my_idx', $indexDef)
+        );
+    }
+
+    public function testGeneratesUniqueIndexCreationSql()
     {
         $sql = $this->_platform->getCreateIndexSql('test', 'index_name', array('type' => 'unique', 'fields' => array('test', 'test2')));
         $this->assertEquals($sql, 'CREATE UNIQUE INDEX index_name ON test (test, test2)');
     }
 
-    public function testGetCreateForeignKeySql()
+    public function testGeneratesForeignKeyCreationSql()
     {
         $sql = $this->_platform->getCreateForeignKeySql('test', array('foreignTable' => 'other_table', 'local' => 'fk_name_id', 'foreign' => 'id'));
         $this->assertEquals($sql, 'ALTER TABLE test ADD FOREIGN KEY (fk_name_id) REFERENCES other_table(id)');

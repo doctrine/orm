@@ -17,7 +17,7 @@ class PostgreSqlPlatformTest extends \Doctrine\Tests\DbalTestCase
         $this->_platform = new PostgreSqlPlatform;
     }
 
-    public function testCreateTableSql()
+    public function testGeneratesTableCreationSql()
     {
         $columns = array(
             'id' => array(
@@ -41,7 +41,7 @@ class PostgreSqlPlatformTest extends \Doctrine\Tests\DbalTestCase
     
     }
 
-    public function testAlterTableSql()
+    public function testGeneratesTableAlterationSqlForAddingAndRenaming()
     {
         $changes = array(
             'name' => 'userlist',
@@ -63,7 +63,7 @@ class PostgreSqlPlatformTest extends \Doctrine\Tests\DbalTestCase
         );
     }
 
-    public function testCreateIndexSql()
+    public function testGeneratesIndexCreationSql()
     {
         $indexDef = array(
             'fields' => array(
@@ -80,12 +80,16 @@ class PostgreSqlPlatformTest extends \Doctrine\Tests\DbalTestCase
         );
     }
 
-    public function testSqlSnippets()
+    public function testGeneratesSqlSnippets()
     {
-        $this->assertEquals('SIMILAR TO', $this->_platform->getRegexpExpression());
-        $this->assertEquals('"', $this->_platform->getIdentifierQuoteCharacter());
-        $this->assertEquals('RANDOM()', $this->_platform->getRandomExpression());
-        $this->assertEquals('column1 || column2 || column3', $this->_platform->getConcatExpression('column1', 'column2', 'column3'));
+        $this->assertEquals('SIMILAR TO', $this->_platform->getRegexpExpression(), 'Regular expression operator is not correct');
+        $this->assertEquals('"', $this->_platform->getIdentifierQuoteCharacter(), 'Identifier quote character is not correct');
+        $this->assertEquals('RANDOM()', $this->_platform->getRandomExpression(), 'Random function is not correct');
+        $this->assertEquals('column1 || column2 || column3', $this->_platform->getConcatExpression('column1', 'column2', 'column3'), 'Concatenation expression is not correct');
+    }
+
+    public function testGeneratesTransactionCommands()
+    {
         $this->assertEquals(
             'SET SESSION CHARACTERISTICS AS TRANSACTION ISOLATION LEVEL READ UNCOMMITTED',
             $this->_platform->getSetTransactionIsolationSql(Connection::TRANSACTION_READ_UNCOMMITTED)
@@ -104,14 +108,14 @@ class PostgreSqlPlatformTest extends \Doctrine\Tests\DbalTestCase
         );
     }
 
-    public function testDDLSnippets()
+    public function testGeneratesDDLSnippets()
     {
         $this->assertEquals('CREATE DATABASE foobar', $this->_platform->getCreateDatabaseSql('foobar'));
         $this->assertEquals('DROP DATABASE foobar', $this->_platform->getDropDatabaseSql('foobar'));
         $this->assertEquals('DROP TABLE foobar', $this->_platform->getDropTableSql('foobar'));
     }
 
-    public function testTypeDeclarationSql()
+    public function testGeneratesTypeDeclarationForIntegers()
     {
         $this->assertEquals(
             'INT',
@@ -126,22 +130,28 @@ class PostgreSqlPlatformTest extends \Doctrine\Tests\DbalTestCase
             $this->_platform->getIntegerTypeDeclarationSql(
                 array('autoincrement' => true, 'primary' => true)
         ));
+    }
+
+    public function testGeneratesTypeDeclarationForStrings()
+    {
         $this->assertEquals(
             'CHAR(10)',
             $this->_platform->getVarcharTypeDeclarationSql(
-                array('length' => 10, 'fixed' => true)
-        ));
+                array('length' => 10, 'fixed' => true))
+        );
         $this->assertEquals(
             'VARCHAR(50)',
-            $this->_platform->getVarcharTypeDeclarationSql(array('length' => 50))
+            $this->_platform->getVarcharTypeDeclarationSql(array('length' => 50)),
+            'Variable string declaration is not correct'
         );
         $this->assertEquals(
             'TEXT',
-            $this->_platform->getVarcharTypeDeclarationSql(array())
+            $this->_platform->getVarcharTypeDeclarationSql(array()),
+            'Long string declaration is not correct'
         );
     }
 
-    public function testSequenceSQL()
+    public function testGeneratesSequenceSqlCommands()
     {
         $this->assertEquals(
             'CREATE SEQUENCE myseq INCREMENT BY 20 START 1',
@@ -157,12 +167,28 @@ class PostgreSqlPlatformTest extends \Doctrine\Tests\DbalTestCase
         );
     }
 
-    public function testPreferences()
+    public function testDoesNotPreferIdentityColumns()
     {
         $this->assertFalse($this->_platform->prefersIdentityColumns());
+    }
+
+    public function testPrefersSequences()
+    {
         $this->assertTrue($this->_platform->prefersSequences());
+    }
+
+    public function testSupportsIdentityColumns()
+    {
         $this->assertTrue($this->_platform->supportsIdentityColumns());
+    }
+
+    public function testSupportsSavePoints()
+    {
         $this->assertTrue($this->_platform->supportsSavepoints());
+    }
+
+    public function testSupportsSequences()
+    {
         $this->assertTrue($this->_platform->supportsSequences());
     }
 }

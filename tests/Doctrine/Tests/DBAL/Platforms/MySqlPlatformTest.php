@@ -16,7 +16,7 @@ class MySqlPlatformTest extends \Doctrine\Tests\DbalTestCase
         $this->_platform = new MySqlPlatform;
     }
 
-    public function testCreateTableSql()
+    public function testGeneratesTableCreationSql()
     {
         $columns = array(
             'id' => array(
@@ -40,7 +40,7 @@ class MySqlPlatformTest extends \Doctrine\Tests\DbalTestCase
         $this->assertEquals('CREATE TABLE test (id INT AUTO_INCREMENT NOT NULL, test VARCHAR(255) NOT NULL, PRIMARY KEY(id))', $sql[0]);
     }
 
-    public function testAlterTableSql()
+    public function testGeneratesTableAlterationSql()
     {
         $changes = array(
             'name' => 'userlist',
@@ -57,7 +57,103 @@ class MySqlPlatformTest extends \Doctrine\Tests\DbalTestCase
         );
     }
 
-    public function testCreateIndexSql()
+    public function testGeneratesSqlSnippets()
+    {
+        $this->assertEquals('RLIKE', $this->_platform->getRegexpExpression(), 'Regular expression operator is not correct');
+        $this->assertEquals('`', $this->_platform->getIdentifierQuoteCharacter(), 'Quote character is not correct');
+        $this->assertEquals('RAND()', $this->_platform->getRandomExpression(), 'Random function is not correct');
+        $this->assertEquals('CONCAT(column1, column2, column3)', $this->_platform->getConcatExpression('column1', 'column2', 'column3'), 'Concatenation function is not correct');
+        $this->assertEquals('CHARACTER SET utf8', $this->_platform->getCharsetFieldDeclaration('utf8'), 'Charset declaration is not correct');
+    }
+
+    public function testGeneratesTransactionsCommands()
+    {
+        $this->assertEquals(
+            'SET SESSION TRANSACTION ISOLATION LEVEL READ UNCOMMITTED',
+            $this->_platform->getSetTransactionIsolationSql(\Doctrine\DBAL\Connection::TRANSACTION_READ_UNCOMMITTED),
+            ''
+        );
+        $this->assertEquals(
+            'SET SESSION TRANSACTION ISOLATION LEVEL READ COMMITTED',
+            $this->_platform->getSetTransactionIsolationSql(\Doctrine\DBAL\Connection::TRANSACTION_READ_COMMITTED)
+        );
+        $this->assertEquals(
+            'SET SESSION TRANSACTION ISOLATION LEVEL REPEATABLE READ',
+            $this->_platform->getSetTransactionIsolationSql(\Doctrine\DBAL\Connection::TRANSACTION_REPEATABLE_READ)
+        );
+        $this->assertEquals(
+            'SET SESSION TRANSACTION ISOLATION LEVEL SERIALIZABLE',
+            $this->_platform->getSetTransactionIsolationSql(\Doctrine\DBAL\Connection::TRANSACTION_SERIALIZABLE)
+        );
+    }
+
+
+    public function testGeneratesDDLSnippets()
+    {
+        $this->assertEquals('SHOW DATABASES', $this->_platform->getShowDatabasesSql());
+        $this->assertEquals('CREATE DATABASE foobar', $this->_platform->getCreateDatabaseSql('foobar'));
+        $this->assertEquals('DROP DATABASE foobar', $this->_platform->getDropDatabaseSql('foobar'));
+        $this->assertEquals('DROP TABLE foobar', $this->_platform->getDropTableSql('foobar'));
+    }
+
+    public function testGeneratesTypeDeclarationForIntegers()
+    {
+        $this->assertEquals(
+            'INT',
+            $this->_platform->getIntegerTypeDeclarationSql(array())
+        );
+        $this->assertEquals(
+            'INT AUTO_INCREMENT',
+            $this->_platform->getIntegerTypeDeclarationSql(array('autoincrement' => true)
+        ));
+        $this->assertEquals(
+            'INT AUTO_INCREMENT',
+            $this->_platform->getIntegerTypeDeclarationSql(
+                array('autoincrement' => true, 'primary' => true)
+        ));
+    }
+
+    public function testGeneratesTypeDeclarationForStrings()
+    {
+        $this->assertEquals(
+            'CHAR(10)',
+            $this->_platform->getVarcharTypeDeclarationSql(
+                array('length' => 10, 'fixed' => true)
+        ));
+        $this->assertEquals(
+            'VARCHAR(50)',
+            $this->_platform->getVarcharTypeDeclarationSql(array('length' => 50)),
+            'Variable string declaration is not correct'
+        );
+        $this->assertEquals(
+            'TEXT',
+            $this->_platform->getVarcharTypeDeclarationSql(array()),
+            'Long string declaration is not correct'
+        );
+    }
+
+    public function testPrefersIdentityColumns()
+    {
+        $this->assertTrue($this->_platform->prefersIdentityColumns());
+    }
+
+    public function testSupportsIdentityColumns()
+    {
+        $this->assertTrue($this->_platform->supportsIdentityColumns());
+    }
+
+    public function testDoesNotSupportSavePoints()
+    {
+        $this->assertFalse($this->_platform->supportsSavepoints());   
+    }
+
+    public function testGeneratesConstraintCreationSql()
+    {
+        $sql = $this->_platform->getCreateConstraintSql('test', 'constraint_name', array('fields' => array('test' => array())));
+        $this->assertEquals($sql, 'ALTER TABLE test ADD CONSTRAINT constraint_name (test)');
+    }
+
+    public function testGeneratesIndexCreationSql()
     {
         $indexDef = array(
             'fields' => array(
@@ -75,90 +171,13 @@ class MySqlPlatformTest extends \Doctrine\Tests\DbalTestCase
         );
     }
 
-    public function testSqlSnippets()
-    {
-        $this->assertEquals('RLIKE', $this->_platform->getRegexpExpression());
-        $this->assertEquals('`', $this->_platform->getIdentifierQuoteCharacter());
-        $this->assertEquals('RAND()', $this->_platform->getRandomExpression());
-        $this->assertEquals('CONCAT(column1, column2, column3)', $this->_platform->getConcatExpression('column1', 'column2', 'column3'));
-        $this->assertEquals('CHARACTER SET utf8', $this->_platform->getCharsetFieldDeclaration('utf8'));
-        $this->assertEquals(
-            'SET SESSION TRANSACTION ISOLATION LEVEL READ UNCOMMITTED',
-            $this->_platform->getSetTransactionIsolationSql(\Doctrine\DBAL\Connection::TRANSACTION_READ_UNCOMMITTED)
-        );
-        $this->assertEquals(
-            'SET SESSION TRANSACTION ISOLATION LEVEL READ COMMITTED',
-            $this->_platform->getSetTransactionIsolationSql(\Doctrine\DBAL\Connection::TRANSACTION_READ_COMMITTED)
-        );
-        $this->assertEquals(
-            'SET SESSION TRANSACTION ISOLATION LEVEL REPEATABLE READ',
-            $this->_platform->getSetTransactionIsolationSql(\Doctrine\DBAL\Connection::TRANSACTION_REPEATABLE_READ)
-        );
-        $this->assertEquals(
-            'SET SESSION TRANSACTION ISOLATION LEVEL SERIALIZABLE',
-            $this->_platform->getSetTransactionIsolationSql(\Doctrine\DBAL\Connection::TRANSACTION_SERIALIZABLE)
-        );
-    }
-
-    public function testDDLSnippets()
-    {
-        $this->assertEquals('SHOW DATABASES', $this->_platform->getShowDatabasesSql());
-        $this->assertEquals('CREATE DATABASE foobar', $this->_platform->getCreateDatabaseSql('foobar'));
-        $this->assertEquals('DROP DATABASE foobar', $this->_platform->getDropDatabaseSql('foobar'));
-        $this->assertEquals('DROP TABLE foobar', $this->_platform->getDropTableSql('foobar'));
-    }
-
-    public function testTypeDeclarationSql()
-    {
-        $this->assertEquals(
-            'INT',
-            $this->_platform->getIntegerTypeDeclarationSql(array())
-        );
-        $this->assertEquals(
-            'INT AUTO_INCREMENT',
-            $this->_platform->getIntegerTypeDeclarationSql(array('autoincrement' => true)
-        ));
-        $this->assertEquals(
-            'INT AUTO_INCREMENT',
-            $this->_platform->getIntegerTypeDeclarationSql(
-                array('autoincrement' => true, 'primary' => true)
-        ));
-        $this->assertEquals(
-            'CHAR(10)',
-            $this->_platform->getVarcharTypeDeclarationSql(
-                array('length' => 10, 'fixed' => true)
-        ));
-        $this->assertEquals(
-            'VARCHAR(50)',
-            $this->_platform->getVarcharTypeDeclarationSql(array('length' => 50))
-        );
-        $this->assertEquals(
-            'TEXT',
-            $this->_platform->getVarcharTypeDeclarationSql(array())
-        );
-    }
-
-    public function testPreferences()
-    {
-        $this->assertTrue($this->_platform->prefersIdentityColumns());
-        $this->assertTrue($this->_platform->supportsIdentityColumns());
-        $this->assertFalse($this->_platform->supportsSavepoints());
-        
-    }
-
-    public function testGetCreateConstraintSql()
-    {
-        $sql = $this->_platform->getCreateConstraintSql('test', 'constraint_name', array('fields' => array('test' => array())));
-        $this->assertEquals($sql, 'ALTER TABLE test ADD CONSTRAINT constraint_name (test)');
-    }
-
-    public function testGetCreateIndexSql()
+    public function testGeneratesUniqueIndexCreationSql()
     {
         $sql = $this->_platform->getCreateIndexSql('test', 'index_name', array('type' => 'unique', 'fields' => array('test', 'test2')));
         $this->assertEquals($sql, 'CREATE UNIQUE INDEX index_name ON test (test, test2)');
     }
 
-    public function testGetCreateForeignKeySql()
+    public function testGeneratesForeignKeyCreationSql()
     {
         $sql = $this->_platform->getCreateForeignKeySql('test', array('foreignTable' => 'other_table', 'local' => 'fk_name_id', 'foreign' => 'id'));
         $this->assertEquals($sql, 'ALTER TABLE test ADD FOREIGN KEY (fk_name_id) REFERENCES other_table(id)');

@@ -16,7 +16,7 @@ class SqlitePlatformTest extends \Doctrine\Tests\DbalTestCase
         $this->_platform = new SqlitePlatform;
     }
 
-    public function testGetCreateTableSql()
+    public function testGeneratesTableCreationSql()
     {
         $columns = array(
             'id' => array(
@@ -37,41 +37,27 @@ class SqlitePlatformTest extends \Doctrine\Tests\DbalTestCase
         $this->assertEquals('CREATE TABLE test (id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, test VARCHAR(255) DEFAULT NULL)', $sql[0]);
     }
 
-    public function testGetCreateConstraintSql()
+    public function testGeneratesSqlSnippets()
     {
-        $sql = $this->_platform->getCreateConstraintSql('test', 'constraint_name', array('fields' => array('test' => array())));
-        $this->assertEquals('ALTER TABLE test ADD CONSTRAINT constraint_name (test)', $sql);
+        $this->assertEquals('RLIKE', $this->_platform->getRegexpExpression(), 'Regular expression operator is not correct');
+        $this->assertEquals('SUBSTR(column, 5, LENGTH(column))', $this->_platform->getSubstringExpression('column', 5), 'Substring expression without length is not correct');
+        $this->assertEquals('SUBSTR(column, 0, 5)', $this->_platform->getSubstringExpression('column', 0, 5), 'Substring expression with length is not correct');
     }
 
-    public function testGetCreateIndexSql()
+    public function testGeneratesTransactionCommands()
     {
-        $sql = $this->_platform->getCreateIndexSql('test', 'index_name', array('type' => 'unique', 'fields' => array('test', 'test2')));
-        $this->assertEquals('CREATE UNIQUE INDEX index_name ON test (test, test2)', $sql);
-    }
-
-    public function testGetCreateForeignKeySql()
-    {
-        $sql = $this->_platform->getCreateForeignKeySql('test', array('foreignTable' => 'other_table', 'local' => 'fk_name_id', 'foreign' => 'id'));
-        $this->assertEquals('ALTER TABLE test ADD FOREIGN KEY (fk_name_id) REFERENCES other_table(id)', $sql);
-    }
-
-    public function testExpressionsSql()
-    {
-        $this->assertEquals('RLIKE', $this->_platform->getRegexpExpression());
-        $this->assertEquals('SUBSTR(column, 5, LENGTH(column))', $this->_platform->getSubstringExpression('column', 5));
-        $this->assertEquals('SUBSTR(column, 0, 5)', $this->_platform->getSubstringExpression('column', 0, 5));
         $this->assertEquals('PRAGMA read_uncommitted = 0', $this->_platform->getSetTransactionIsolationSql(\Doctrine\DBAL\Connection::TRANSACTION_READ_UNCOMMITTED));
         $this->assertEquals('PRAGMA read_uncommitted = 1', $this->_platform->getSetTransactionIsolationSql(\Doctrine\DBAL\Connection::TRANSACTION_READ_COMMITTED));
         $this->assertEquals('PRAGMA read_uncommitted = 1', $this->_platform->getSetTransactionIsolationSql(\Doctrine\DBAL\Connection::TRANSACTION_REPEATABLE_READ));
         $this->assertEquals('PRAGMA read_uncommitted = 1', $this->_platform->getSetTransactionIsolationSql(\Doctrine\DBAL\Connection::TRANSACTION_SERIALIZABLE));
     }
 
-    public function testPreferences()
+    public function testPrefersIdentityColumns()
     {
         $this->assertTrue($this->_platform->prefersIdentityColumns());
     }
 
-    public function testTypeDeclarationSql()
+    public function testGeneratesTypeDeclarationForIntegers()
     {
         $this->assertEquals(
             'INTEGER',
@@ -79,26 +65,49 @@ class SqlitePlatformTest extends \Doctrine\Tests\DbalTestCase
         );
         $this->assertEquals(
             'INTEGER AUTOINCREMENT',
-            $this->_platform->getIntegerTypeDeclarationSql(array('autoincrement' => true)
-        ));
+            $this->_platform->getIntegerTypeDeclarationSql(array('autoincrement' => true))
+        );
         $this->assertEquals(
             'INTEGER PRIMARY KEY AUTOINCREMENT',
             $this->_platform->getIntegerTypeDeclarationSql(
-                array('autoincrement' => true, 'primary' => true)
-        ));
+                array('autoincrement' => true, 'primary' => true))
+        );
+    }
+
+    public function testGeneratesTypeDeclarationForStrings()
+    {
         $this->assertEquals(
             'CHAR(10)',
             $this->_platform->getVarcharTypeDeclarationSql(
-                array('length' => 10, 'fixed' => true)
-        ));
+                array('length' => 10, 'fixed' => true))
+        );
         $this->assertEquals(
             'VARCHAR(50)',
-            $this->_platform->getVarcharTypeDeclarationSql(array('length' => 50))
+            $this->_platform->getVarcharTypeDeclarationSql(array('length' => 50)),
+            'Variable string declaration is not correct'
         );
         $this->assertEquals(
             'TEXT',
-            $this->_platform->getVarcharTypeDeclarationSql(array())
+            $this->_platform->getVarcharTypeDeclarationSql(array()),
+            'Long string declaration is not correct'
         );
     }
-    
+
+    public function testGeneratesConstraintCreationSql()
+    {
+        $sql = $this->_platform->getCreateConstraintSql('test', 'constraint_name', array('fields' => array('test' => array())));
+        $this->assertEquals('ALTER TABLE test ADD CONSTRAINT constraint_name (test)', $sql);
+    }
+
+    public function testGeneratesIndexCreationSql()
+    {
+        $sql = $this->_platform->getCreateIndexSql('test', 'index_name', array('type' => 'unique', 'fields' => array('test', 'test2')));
+        $this->assertEquals('CREATE UNIQUE INDEX index_name ON test (test, test2)', $sql);
+    }
+
+    public function testGeneratesForeignKeyCreationSql()
+    {
+        $sql = $this->_platform->getCreateForeignKeySql('test', array('foreignTable' => 'other_table', 'local' => 'fk_name_id', 'foreign' => 'id'));
+        $this->assertEquals('ALTER TABLE test ADD FOREIGN KEY (fk_name_id) REFERENCES other_table(id)', $sql);
+    }
 }
