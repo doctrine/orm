@@ -31,8 +31,7 @@ class AnnotationReaderTest extends \Doctrine\Tests\DoctrineTestCase
         $methodAnnots = $reader->getMethodAnnotations($getField1Method);
         $this->assertEquals(1, count($methodAnnots));
         $this->assertTrue($methodAnnots[$annotName] instanceof DummyAnnotation);
-        $this->assertEquals("methodHello", $methodAnnots[$annotName]->dummyValue);
-        $this->assertEquals(array(array(1, 2, "three")), $methodAnnots[$annotName]->value);
+        $this->assertEquals(array(1, 2, "three"), $methodAnnots[$annotName]->value);
         
         $field2Prop = $class->getProperty('field2');
         $propAnnots = $reader->getPropertyAnnotations($field2Prop);
@@ -81,7 +80,7 @@ class DummyClass {
      * Gets the value of field1.
      *
      * @return mixed
-     * @DummyAnnotation({1,2,"three"}, dummyValue="methodHello")
+     * @DummyAnnotation({1,2,"three"})
      */
     public function getField1() {
     }

@@ -40,8 +40,8 @@ class CmsUser
     /**
      * @ManyToMany(targetEntity="CmsGroup", cascade={"save"})
      * @JoinTable(name="cms_users_groups",
-            joinColumns={{"name"="user_id", "referencedColumnName"="id"}},
-            inverseJoinColumns={{"name"="group_id", "referencedColumnName"="id"}})
+            joinColumns={@JoinColumn(name="user_id", referencedColumnName="id")},
+            inverseJoinColumns={@JoinColumn(name="group_id", referencedColumnName="id")})
      */
     public $groups;
 

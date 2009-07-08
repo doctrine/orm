@@ -35,8 +35,8 @@ class ECommerceCart
     /**
      * @ManyToMany(targetEntity="ECommerceProduct", cascade={"save"})
      * @JoinTable(name="ecommerce_carts_products",
-            joinColumns={{"name"="cart_id", "referencedColumnName"="id"}},
-            inverseJoinColumns={{"name"="product_id", "referencedColumnName"="id"}})
+            joinColumns={@JoinColumn(name="cart_id", referencedColumnName="id")},
+            inverseJoinColumns={@JoinColumn(name="product_id", referencedColumnName="id")})
      */
     private $products;
 

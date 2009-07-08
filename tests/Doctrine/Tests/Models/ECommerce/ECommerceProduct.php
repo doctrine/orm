@@ -40,8 +40,8 @@ class ECommerceProduct
     /**
      * @ManyToMany(targetEntity="ECommerceCategory", cascade={"save"})
      * @JoinTable(name="ecommerce_products_categories",
-            joinColumns={{"name"="product_id", "referencedColumnName"="id"}},
-            inverseJoinColumns={{"name"="category_id", "referencedColumnName"="id"}})
+            joinColumns={@JoinColumn(name="product_id", referencedColumnName="id")},
+            inverseJoinColumns={@JoinColumn(name="category_id", referencedColumnName="id")})
      */
     private $categories;
 
@@ -50,8 +50,8 @@ class ECommerceProduct
      * simplicity.
      * @ManyToMany(targetEntity="ECommerceProduct", cascade={"save"})
      * @JoinTable(name="ecommerce_products_related",
-            joinColumns={{"name"="product_id", "referencedColumnName"="id"}},
-            inverseJoinColumns={{"name"="related_id", "referencedColumnName"="id"}})
+            joinColumns={@JoinColumn(name="product_id", referencedColumnName="id")},
+            inverseJoinColumns={@JoinColumn(name="related_id", referencedColumnName="id")})
      */
     private $related;
 

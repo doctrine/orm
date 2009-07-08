@@ -35,8 +35,8 @@ class CompanyPerson
     /**
      * @ManyToMany(targetEntity="CompanyPerson")
      * @JoinTable(name="company_persons_friends",
-            joinColumns={{"name"="person_id", "referencedColumnName"="id"}},
-            inverseJoinColumns={{"name"="friend_id", "referencedColumnName"="id"}})
+            joinColumns={@JoinColumn(name="person_id", referencedColumnName="id")},
+            inverseJoinColumns={@JoinColumn(name="friend_id", referencedColumnName="id")})
      */
     private $friends;
 

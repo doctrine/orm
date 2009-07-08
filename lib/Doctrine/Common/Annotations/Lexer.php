@@ -37,6 +37,8 @@ class Lexer
     const T_INTEGER = 3;
     const T_STRING = 4;
     const T_IDENTIFIER = 5;
+    const T_TRUE = 6;
+    const T_FALSE = 7;
 
     /**
      * Array of scanned tokens.

@@ -21,25 +21,24 @@
 
 /* Annotations */
 
-final class Entity extends \Annotation {
+final class Entity extends \Doctrine\Common\Annotations\Annotation {
     public $repositoryClass;
 }
-final class InheritanceType extends \Annotation {}
-final class DiscriminatorColumn extends \Annotation {
+final class InheritanceType extends \Doctrine\Common\Annotations\Annotation {}
+final class DiscriminatorColumn extends \Doctrine\Common\Annotations\Annotation {
     public $name;
     public $type;
     public $length;
 }
-//final class DiscriminatorMap extends \Annotation {}
-final class DiscriminatorValue extends \Annotation {}
-final class SubClasses extends \Annotation {}
-final class Id extends \Annotation {}
-final class GeneratedValue extends \Annotation {
+final class DiscriminatorValue extends \Doctrine\Common\Annotations\Annotation {}
+final class SubClasses extends \Doctrine\Common\Annotations\Annotation {}
+final class Id extends \Doctrine\Common\Annotations\Annotation {}
+final class GeneratedValue extends \Doctrine\Common\Annotations\Annotation {
     public $strategy;
     //public $generator;
 }
-final class Version extends \Annotation {}
-final class JoinColumn extends \Annotation {
+final class Version extends \Doctrine\Common\Annotations\Annotation {}
+final class JoinColumn extends \Doctrine\Common\Annotations\Annotation {
     public $name;
     public $referencedColumnName;
     public $unique = false;
@@ -47,57 +46,57 @@ final class JoinColumn extends \Annotation {
     public $onDelete;
     public $onUpdate;
 }
-final class JoinColumns extends \Annotation {}
-final class Column extends \Annotation {
+final class JoinColumns extends \Doctrine\Common\Annotations\Annotation {}
+final class Column extends \Doctrine\Common\Annotations\Annotation {
     public $type;
     public $length;
     public $unique = false;
     public $nullable = false;
     public $name;
 }
-final class OneToOne extends \Annotation {
+final class OneToOne extends \Doctrine\Common\Annotations\Annotation {
     public $targetEntity;
     public $mappedBy;
     public $cascade;
     public $fetch;
     public $optional;
 }
-final class OneToMany extends \Annotation {
+final class OneToMany extends \Doctrine\Common\Annotations\Annotation {
     public $mappedBy;
     public $targetEntity;
     public $cascade;
     public $fetch;
 }
-final class ManyToOne extends \Annotation {
+final class ManyToOne extends \Doctrine\Common\Annotations\Annotation {
     public $targetEntity;
     public $cascade;
     public $fetch;
     public $optional;
 }
-final class ManyToMany extends \Annotation {
+final class ManyToMany extends \Doctrine\Common\Annotations\Annotation {
     public $targetEntity;
     public $mappedBy;
     public $cascade;
     public $fetch;
 }
-final class ElementCollection extends \Annotation {
+final class ElementCollection extends \Doctrine\Common\Annotations\Annotation {
     public $tableName;
 }
-final class Table extends \Annotation {
+final class Table extends \Doctrine\Common\Annotations\Annotation {
     public $name;
     public $schema;
 }
-final class JoinTable extends \Annotation {
+final class JoinTable extends \Doctrine\Common\Annotations\Annotation {
     public $name;
     public $schema;
     public $joinColumns;
     public $inverseJoinColumns;
 }
-final class SequenceGenerator extends \Annotation {
+final class SequenceGenerator extends \Doctrine\Common\Annotations\Annotation {
     //public $name;
     public $sequenceName;
     public $allocationSize = 10;
     public $initialValue = 1;
 }
-final class ChangeTrackingPolicy extends \Annotation {}
-final class DoctrineX extends \Annotation {}
+final class ChangeTrackingPolicy extends \Doctrine\Common\Annotations\Annotation {}
+final class DoctrineX extends \Doctrine\Common\Annotations\Annotation {}

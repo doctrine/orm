@@ -1,4 +1,23 @@
 <?php
+/*
+ *  $Id$
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+ * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+ * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+ * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+ * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+ * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ * This software consists of voluntary contributions made by many individuals
+ * and is licensed under the LGPL. For more information, see
+ * <http://www.doctrine-project.org>.
+ */
 
 namespace Doctrine\Common\Annotations;
 
@@ -69,7 +88,10 @@ class Parser
         $this->_lexer->setInput(trim($input, '* /'));
         $this->_lexer->moveNext();
         
-        return $this->Annotations();
+        if ($this->_lexer->isNextToken('@')) {
+            return $this->Annotations();
+        }
+        return array();
     }
 
     /**
@@ -90,7 +112,7 @@ class Parser
         }
 
         if ( ! $isMatch) {
-            $this->syntaxError($token['value']);
+            $this->syntaxError($token['value'], $this->_lexer->lookahead['value']);
         }
 
         $this->_lexer->moveNext();
@@ -102,9 +124,9 @@ class Parser
      * @param $expected
      * @throws Exception
      */
-    private function syntaxError($expected)
+    private function syntaxError($expected, $got = "")
     {
-        throw new \Exception("Expected: $expected.");
+        throw new \Exception("Expected: $expected. Got: $got");
     }
     
     /**
@@ -175,6 +197,7 @@ class Parser
 
         if ( ! $this->_isNestedAnnotation && $this->_lexer->lookahead != null
                 && $this->_lexer->lookahead['value'] != '('
+                && $this->_lexer->lookahead['value'] != '@'
                 || ! is_subclass_of($name, 'Doctrine\Common\Annotations\Annotation')) {
             return false;
         }
@@ -202,22 +225,9 @@ class Parser
         $values = array();
 
         $value = $this->Value();
-        if (is_array($value)) {
-            $k = key($value);
-            $v = $value[$k];
-            if (is_string($k)) {
-                // FieldAssignment
-                $values[$k] = $v;
-            } else {
-                $values['value'][] = $value;
-            }
-        } else {
-            $values['value'][] = $value;
-        }
-
-        while ($this->_lexer->isNextToken(',')) {
-            $this->match(',');
-            $value = $this->Value();
+        
+        if ($this->_lexer->isNextToken(')')) {
+            // Single value
             if (is_array($value)) {
                 $k = key($value);
                 $v = $value[$k];
@@ -225,11 +235,30 @@ class Parser
                     // FieldAssignment
                     $values[$k] = $v;
                 } else {
-                    $values['value'][] = $value;
+                    $values['value']= $value;
                 }
             } else {
-                $values['value'][] = $value;
+                $values['value'] = $value;
             }
+            return $values;
+        } else {
+            // FieldAssignment
+            $k = key($value);
+            $v = $value[$k];
+            $values[$k] = $v;
+        }
+
+        while ($this->_lexer->isNextToken(',')) {
+            $this->match(',');
+            $value = $this->Value();
+            
+            if ( ! is_array($value)) {
+                $this->syntaxError('FieldAssignment', $value);
+            }
+            
+            $k = key($value);
+            $v = $value[$k];
+            $values[$k] = $v;
         }
 
         return $values;
@@ -269,6 +298,12 @@ class Parser
             case Lexer::T_FLOAT:
                 $this->match(Lexer::T_FLOAT);
                 return $this->_lexer->token['value'];
+            case Lexer::T_TRUE:
+                $this->match(Lexer::T_TRUE);
+                return true;
+            case Lexer::T_FALSE:
+                $this->match(Lexer::T_FALSE);
+                return false;
             default:
                 var_dump($this->_lexer->lookahead);
                 throw new \Exception("Invalid value.");
