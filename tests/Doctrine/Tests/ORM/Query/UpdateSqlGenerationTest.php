@@ -71,4 +71,92 @@ class UpdateSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
             'UPDATE cms_users SET name = ?, username = ?'
         );
     }
+
+    public function testSupportsWhereClauses()
+    {
+        $this->assertSqlGeneration(
+            'UPDATE Doctrine\Tests\Models\CMS\CmsUser u SET u.name = ?1 WHERE u.id = ?2',
+            'UPDATE cms_users SET name = ? WHERE id = ?'
+        );
+    }
+
+    public function testSupportsWhereClausesOnTheUpdatedField()
+    {
+        $this->assertSqlGeneration(
+            'UPDATE Doctrine\Tests\Models\CMS\CmsUser u SET u.name = ?1 WHERE u.name = ?2',
+            'UPDATE cms_users SET name = ? WHERE name = ?'
+        );
+    }
+
+    public function testSupportsMultipleWhereClause()
+    {
+        $this->assertSqlGeneration(
+            'UPDATE Doctrine\Tests\Models\CMS\CmsUser u SET u.name = ?1 WHERE u.name = ?2 AND u.status = ?3',
+            'UPDATE cms_users SET name = ? WHERE name = ? AND status = ?'
+        );
+    }
+
+    public function testSupportsInClause()
+    {
+        $this->assertSqlGeneration(
+            'UPDATE Doctrine\Tests\Models\CMS\CmsUser u SET u.name = ?1 WHERE u.id IN (1, 3, 4)',
+            'UPDATE cms_users SET name = ? WHERE id IN (1, 3, 4)'
+        );
+    }
+
+    public function testSupportsParametrizedInClause()
+    {
+        $this->assertSqlGeneration(
+            'UPDATE Doctrine\Tests\Models\CMS\CmsUser u SET u.name = ?1 WHERE u.id IN (?2, ?3, ?4)',
+            'UPDATE cms_users SET name = ? WHERE id IN (?, ?, ?)'
+        );
+    }
+
+    public function testSupportsNotInClause()
+    {
+        $this->assertSqlGeneration(
+            'UPDATE Doctrine\Tests\Models\CMS\CmsUser u SET u.name = ?1 WHERE u.id NOT IN (1, 3, 4)',
+            'UPDATE cms_users SET name = ? WHERE id NOT IN (1, 3, 4)'
+        );
+    }
+
+    public function testSupportsGreatherThanClause()
+    {
+        $this->assertSqlGeneration(
+            'UPDATE Doctrine\Tests\Models\CMS\CmsUser u SET u.status = ?1 WHERE u.id > ?2',
+            'UPDATE cms_users SET status = ? WHERE id > ?'
+        );
+    }
+
+    public function testSupportsGreatherThanOrEqualToClause()
+    {
+        $this->assertSqlGeneration(
+            'UPDATE Doctrine\Tests\Models\CMS\CmsUser u SET u.status = ?1 WHERE u.id >= ?2',
+            'UPDATE cms_users SET status = ? WHERE id >= ?'
+        );
+    }
+
+    public function testSupportsLessThanClause()
+    {
+        $this->assertSqlGeneration(
+            'UPDATE Doctrine\Tests\Models\CMS\CmsUser u SET u.status = ?1 WHERE u.id < ?2',
+            'UPDATE cms_users SET status = ? WHERE id < ?'
+        );
+    }
+
+    public function testSupportsLessThanOrEqualToClause()
+    {
+        $this->assertSqlGeneration(
+            'UPDATE Doctrine\Tests\Models\CMS\CmsUser u SET u.status = ?1 WHERE u.id <= ?2',
+            'UPDATE cms_users SET status = ? WHERE id <= ?'
+        );
+    }
+
+    public function testSupportsBetweenClause()
+    {
+        $this->assertSqlGeneration(
+            'UPDATE Doctrine\Tests\Models\CMS\CmsUser u SET u.status = ?1 WHERE u.id BETWEEN :from AND :to',
+            'UPDATE cms_users SET status = ? WHERE id BETWEEN ? AND ?'
+        );
+    }
 }
