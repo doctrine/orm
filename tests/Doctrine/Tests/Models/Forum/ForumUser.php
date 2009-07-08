@@ -36,7 +36,7 @@ class ForumUser
     	return $this->avatar;
     }
     
-    public function setAvatar(CmsAvatar $avatar) {
+    public function setAvatar(ForumAvatar $avatar) {
     	$this->avatar = $avatar;
     }
 }
