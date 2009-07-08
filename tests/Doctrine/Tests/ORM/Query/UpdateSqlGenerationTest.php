@@ -56,16 +56,19 @@ class UpdateSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
         }
     }
 
-    public function testWithoutWhere()
+    public function testSupportsQueriesWithoutWhere()
     {
         $this->assertSqlGeneration(
             'UPDATE Doctrine\Tests\Models\CMS\CmsUser u SET u.name = ?1',
             'UPDATE cms_users SET name = ?'
         );
+    }
+
+    public function testSupportsMultipleFieldsWithoutWhere()
+    {
         $this->assertSqlGeneration(
             'UPDATE Doctrine\Tests\Models\CMS\CmsUser u SET u.name = ?1, u.username = ?2',
             'UPDATE cms_users SET name = ?, username = ?'
         );
     }
- 
 }

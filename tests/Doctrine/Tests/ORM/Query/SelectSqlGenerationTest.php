@@ -26,20 +26,23 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
         }
     }
 
-    public function testPlainFromClauseWithoutAlias()
+    public function testSupportsSelectForAllFields()
     {
         $this->assertSqlGeneration(
             'SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u',
             'SELECT c0_.id AS id0, c0_.status AS status1, c0_.username AS username2, c0_.name AS name3 FROM cms_users c0_'
         );
+    }
 
+    public function testSupportsSelectForOneField()
+    {
         $this->assertSqlGeneration(
             'SELECT u.id FROM Doctrine\Tests\Models\CMS\CmsUser u',
             'SELECT c0_.id AS id0 FROM cms_users c0_'
         );
     }
 
-    public function testSelectSingleComponentWithMultipleColumns()
+    public function testSupportsSelectForMultipleColumnsOfASingleComponent()
     {
         $this->assertSqlGeneration(
             'SELECT u.username, u.name FROM Doctrine\Tests\Models\CMS\CmsUser u',
@@ -47,7 +50,7 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
         );
     }
 
-    public function testSelectWithCollectionAssociationJoin()
+    public function testSupportsSelectWithCollectionAssociationJoin()
     {
         $this->assertSqlGeneration(
             'SELECT u, p FROM Doctrine\Tests\Models\CMS\CmsUser u JOIN u.phonenumbers p',
@@ -55,7 +58,7 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
         );
     }
 
-    public function testSelectWithSingleValuedAssociationJoin()
+    public function testSupportsSelectWithSingleValuedAssociationJoin()
     {
         $this->assertSqlGeneration(
             'SELECT u, a FROM Doctrine\Tests\Models\Forum\ForumUser u JOIN u.avatar a',
@@ -63,7 +66,7 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
         );
     }
 
-    public function testSelectDistinctIsSupported()
+    public function testSupportsSelectDistinct()
     {
         $this->assertSqlGeneration(
             'SELECT DISTINCT u.name FROM Doctrine\Tests\Models\CMS\CmsUser u',
@@ -71,7 +74,7 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
         );
     }
 
-    public function testAggregateFunctionInSelect()
+    public function testSupportsAggregateFunctionInSelectedFields()
     {
         $this->assertSqlGeneration(
             'SELECT COUNT(u.id) FROM Doctrine\Tests\Models\CMS\CmsUser u GROUP BY u.id',
@@ -79,7 +82,7 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
         );
     }
 
-    public function testWhereClauseInSelectWithPositionalParameter()
+    public function testSupportsWhereClauseWithPositionalParameter()
     {
         $this->assertSqlGeneration(
             'select u from Doctrine\Tests\Models\Forum\ForumUser u where u.id = ?1',
@@ -87,7 +90,7 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
         );
     }
 
-    public function testWhereClauseInSelectWithNamedParameter()
+    public function testSupportsWhereClauseWithNamedParameter()
     {
         $this->assertSqlGeneration(
             'select u from Doctrine\Tests\Models\Forum\ForumUser u where u.username = :name',
@@ -95,7 +98,7 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
         );
     }
 
-    public function testWhereANDClauseInSelectWithNamedParameter()
+    public function testSupportsWhereAndClauseWithNamedParameters()
     {
         $this->assertSqlGeneration(
             'select u from Doctrine\Tests\Models\Forum\ForumUser u where u.username = :name and u.username = :name2',
@@ -103,7 +106,7 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
         );
     }
 
-    public function testCombinedWhereClauseInSelectWithNamedParameter()
+    public function testSupportsCombinedWhereClauseWithNamedParameter()
     {
         $this->assertSqlGeneration(
             'select u from Doctrine\Tests\Models\Forum\ForumUser u where (u.username = :name OR u.username = :name2) AND u.id = :id',
@@ -111,7 +114,7 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
         );
     }
 
-    public function testAggregateFunctionWithDistinctInSelect()
+    public function testSupportsAggregateFunctionInASelectDistinct()
     {
         $this->assertSqlGeneration(
             'SELECT COUNT(DISTINCT u.name) FROM Doctrine\Tests\Models\CMS\CmsUser u',
@@ -120,7 +123,7 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
     }
 
     // Ticket #668
-    public function testKeywordUsageInStringParam()
+    public function testSupportsASqlKeywordInAStringLiteralParam()
     {
         $this->assertSqlGeneration(
             "SELECT u.name FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.name LIKE '%foo OR bar%'",
@@ -128,7 +131,7 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
         );
     }
 
-    public function testArithmeticExpressionsSupportedInWherePart()
+    public function testSupportsArithmeticExpressionsInWherePart()
     {
         $this->assertSqlGeneration(
             'SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE ((u.id + 5000) * u.id + 3) < 10000000',
@@ -136,7 +139,7 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
         );
     }
 
-    public function testPlainJoinWithoutClause()
+    public function testSupportsPlainJoinWithoutClause()
     {
         $this->assertSqlGeneration(
             'SELECT u.id, a.id from Doctrine\Tests\Models\CMS\CmsUser u LEFT JOIN u.articles a',
@@ -148,7 +151,7 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
         );
     }
 
-    public function testDeepJoin()
+    public function testSupportsMultipleJoins()
     {
         $this->assertSqlGeneration(
             'SELECT u.id, a.id, p, c.id from Doctrine\Tests\Models\CMS\CmsUser u JOIN u.articles a JOIN u.phonenumbers p JOIN a.comments c',
@@ -156,7 +159,7 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
         );
     }
     
-    public function testTrimFunction()
+    public function testSupportsTrimFunction()
     {
         $this->assertSqlGeneration(
             "SELECT u.name FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE TRIM(TRAILING ' ' FROM u.name) = 'someone'",
@@ -165,7 +168,7 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
     }
 
     // Ticket 894
-    public function testBetweenDeclarationWithInputParameter()
+    public function testSupportsBetweenClauseWithPositionalParameters()
     {
         $this->assertSqlGeneration(
             "SELECT u.name FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.id BETWEEN ?1 AND ?2",
@@ -173,7 +176,7 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
         );
     }
 
-    public function testFunctionalExpressionsSupportedInWherePart()
+    public function testSupportsFunctionalExpressionsInWherePart()
     {
         $this->assertSqlGeneration(
             "SELECT u.name FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE TRIM(u.name) = 'someone'",
@@ -184,7 +187,7 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
     }
 
     // Ticket #973
-    public function testSingleInValueWithoutSpace()
+    public function testSupportsSingleValuedInExpressionWithoutSpacesInWherePart()
     {
         $this->assertSqlGeneration(
             "SELECT u.name FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.id IN(46)",
@@ -192,7 +195,7 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
         );
     }
 
-    public function testInExpressionSupportedInWherePart()
+    public function testSupportsMultipleValuedInExpressionInWherePart()
     {
         $this->assertSqlGeneration(
             'SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.id IN (1, 2)',
@@ -200,7 +203,7 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
         );
     }
 
-    public function testNotInExpressionSupportedInWherePart()
+    public function testSupportsNotInExpressionInWherePart()
     {
         $this->assertSqlGeneration(
             'SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.id NOT IN (1)',
@@ -208,7 +211,7 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
         );
     }
 
-    public function testConcatFunction()
+    public function testSupportsConcatFunctionForMysqlAndPostgresql()
     {
         $connMock = $this->_em->getConnection();
         $orgPlatform = $connMock->getDatabasePlatform();
@@ -236,7 +239,7 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
         $connMock->setDatabasePlatform($orgPlatform);
     }
 
-    public function testExistsExpressionInWhereWithCorrelatedSubquery()
+    public function testSupportsExistsExpressionInWherePartWithCorrelatedSubquery()
     {
         $this->assertSqlGeneration(
             'SELECT u.id FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE EXISTS (SELECT p.phonenumber FROM Doctrine\Tests\Models\CMS\CmsPhonenumber p WHERE p.phonenumber = u.id)',
@@ -244,7 +247,7 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
         );
     }
     
-    public function testMemberOfExpression()
+    public function testSupportsMemberOfExpression()
     {
         // "Get all users who have $phone as a phonenumber." (*cough* doesnt really make sense...)
         $q1 = $this->_em->createQuery('SELECT u.id FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE :param MEMBER OF u.phonenumbers');
@@ -281,19 +284,19 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
         );
     }
 
-    public function testCurrentDateFunction()
+    public function testSupportsCurrentDateFunction()
     {
       $q = $this->_em->createQuery('SELECT d.id FROM Doctrine\Tests\Models\Generic\DateTimeModel d WHERE d.datetime > current_date()');
       $this->assertEquals('SELECT d0_.id AS id0 FROM date_time_model d0_ WHERE d0_.datetime > CURRENT_DATE', $q->getSql());
     }
 
-    public function testCurrentTimeFunction()
+    public function testSupportsCurrentTimeFunction()
     {
       $q = $this->_em->createQuery('SELECT d.id FROM Doctrine\Tests\Models\Generic\DateTimeModel d WHERE d.time > current_time()');
       $this->assertEquals('SELECT d0_.id AS id0 FROM date_time_model d0_ WHERE d0_.time > CURRENT_TIME', $q->getSql());
     }
 
-    public function testCurrentTimestampFunction()
+    public function testSupportsCurrentTimestampFunction()
     {
       $q = $this->_em->createQuery('SELECT d.id FROM Doctrine\Tests\Models\Generic\DateTimeModel d WHERE d.datetime > current_timestamp()');
       $this->assertEquals('SELECT d0_.id AS id0 FROM date_time_model d0_ WHERE d0_.datetime > CURRENT_TIMESTAMP', $q->getSql());
