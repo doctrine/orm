@@ -24,6 +24,7 @@ class AllTests
         $suite->addTestSuite('Doctrine\Tests\ORM\Query\LexerTest');
         $suite->addTestSuite('Doctrine\Tests\ORM\Query\DeleteSqlGenerationTest');
         $suite->addTestSuite('Doctrine\Tests\ORM\Query\UpdateSqlGenerationTest');
+        $suite->addTestSuite('Doctrine\Tests\ORM\Query\ExprTest');
 
         return $suite;
     }

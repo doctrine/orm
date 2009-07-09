@@ -31,6 +31,7 @@ class AllTests
         $suite->addTestSuite('Doctrine\Tests\ORM\UnitOfWorkTest');
         $suite->addTestSuite('Doctrine\Tests\ORM\EntityManagerTest');
         $suite->addTestSuite('Doctrine\Tests\ORM\CommitOrderCalculatorTest');
+        $suite->addTestSuite('Doctrine\Tests\ORM\QueryBuilderTest');
 
         $suite->addTest(Query\AllTests::suite());
         $suite->addTest(Hydration\AllTests::suite());
