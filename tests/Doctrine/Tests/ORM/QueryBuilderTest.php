@@ -62,11 +62,38 @@ class QueryBuilderTest extends \Doctrine\Tests\OrmTestCase
         $this->assertEquals($expectedDql, $dql);
     }
 
+    public function testSelectSetsType()
+    {
+        $qb = QueryBuilder::create($this->_em)
+            ->delete('Doctrine\Tests\Models\CMS\CmsUser', 'u')
+            ->select('u.id', 'u.username');
+
+        $this->assertEquals($qb->getType(), QueryBuilder::SELECT);
+    }
+
+    public function testDeleteSetsType()
+    {
+        $qb = QueryBuilder::create($this->_em)
+            ->from('Doctrine\Tests\Models\CMS\CmsUser', 'u')
+            ->delete();
+
+        $this->assertEquals($qb->getType(), QueryBuilder::DELETE);
+    }
+
+    public function testUpdateSetsType()
+    {
+        $qb = QueryBuilder::create($this->_em)
+            ->from('Doctrine\Tests\Models\CMS\CmsUser', 'u')
+            ->update();
+
+        $this->assertEquals($qb->getType(), QueryBuilder::UPDATE);
+    }
+
     public function testSimpleSelect()
     {
         $qb = QueryBuilder::create($this->_em)
             ->from('Doctrine\Tests\Models\CMS\CmsUser', 'u')
-            ->select('u.id, u.username');
+            ->select('u.id', 'u.username');
 
         $this->assertValidQueryBuilder($qb, 'SELECT u.id, u.username FROM Doctrine\Tests\Models\CMS\CmsUser u');
     }
@@ -83,27 +110,17 @@ class QueryBuilderTest extends \Doctrine\Tests\OrmTestCase
     {
         $qb = QueryBuilder::create($this->_em)
             ->update('Doctrine\Tests\Models\CMS\CmsUser', 'u')
-            ->set('u.username', ':username', 'jonwage');
+            ->set('u.username', ':username');
 
         $this->assertValidQueryBuilder($qb, 'UPDATE Doctrine\Tests\Models\CMS\CmsUser u SET u.username = :username');
-    }
-
-    public function testJoin()
-    {
-        $qb = QueryBuilder::create($this->_em)
-            ->select('u, a')
-            ->from('Doctrine\Tests\Models\CMS\CmsUser', 'u')
-            ->join('u.articles', 'a');
-
-        $this->assertValidQueryBuilder($qb, 'SELECT u, a FROM Doctrine\Tests\Models\CMS\CmsUser u INNER JOIN u.articles a');
     }
 
     public function testInnerJoin()
     {
         $qb = QueryBuilder::create($this->_em)
-            ->select('u, a')
+            ->select('u', 'a')
             ->from('Doctrine\Tests\Models\CMS\CmsUser', 'u')
-            ->innerJoin('u.articles', 'a');
+            ->innerJoin('u', 'articles', 'a');
 
         $this->assertValidQueryBuilder($qb, 'SELECT u, a FROM Doctrine\Tests\Models\CMS\CmsUser u INNER JOIN u.articles a');
     }
@@ -111,9 +128,9 @@ class QueryBuilderTest extends \Doctrine\Tests\OrmTestCase
     public function testLeftJoin()
     {
         $qb = QueryBuilder::create($this->_em)
-            ->select('u, a')
+            ->select('u', 'a')
             ->from('Doctrine\Tests\Models\CMS\CmsUser', 'u')
-            ->leftJoin('u.articles', 'a');
+            ->leftJoin('u', 'articles', 'a');
 
         $this->assertValidQueryBuilder($qb, 'SELECT u, a FROM Doctrine\Tests\Models\CMS\CmsUser u LEFT JOIN u.articles a');
     }
@@ -123,99 +140,10 @@ class QueryBuilderTest extends \Doctrine\Tests\OrmTestCase
         $qb = QueryBuilder::create($this->_em)
             ->select('u')
             ->from('Doctrine\Tests\Models\CMS\CmsUser', 'u')
-            ->where('u.id = :uid')
-            ->where('u.id = :id');
+            ->where('u.id = :uid');
 
-        $this->assertValidQueryBuilder($qb, 'SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.id = :id');
+        $this->assertValidQueryBuilder($qb, 'SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.id = :uid');
     }
-
-    public function testAndWhere()
-    {
-        $qb = QueryBuilder::create($this->_em)
-            ->select('u')
-            ->from('Doctrine\Tests\Models\CMS\CmsUser', 'u')
-            ->where('u.id = :id')
-            ->andWhere('u.username = :username');
-
-        $this->assertValidQueryBuilder($qb, 'SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.id = :id AND u.username = :username');
-    }
-
-    public function testOrWhere()
-    {
-        $qb = QueryBuilder::create($this->_em)
-            ->select('u')
-            ->from('Doctrine\Tests\Models\CMS\CmsUser', 'u')
-            ->where('u.id = :id')
-            ->orWhere('u.username = :username');
-
-        $this->assertValidQueryBuilder($qb, 'SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.id = :id OR u.username = :username');
-    }
-
-    /*
-    public function testWhereIn()
-    {
-        $qb = QueryBuilder::create($this->_em)
-            ->select('u')
-            ->from('Doctrine\Tests\Models\CMS\CmsUser', 'u')
-            ->whereIn('u.id', array(1));
-
-        $this->assertValidQueryBuilder($qb, 'SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.id IN(1)');
-    }
-
-    public function testWhereNotIn()
-    {
-        $qb = QueryBuilder::create($this->_em)
-            ->select('u')
-            ->from('Doctrine\Tests\Models\CMS\CmsUser', 'u')
-            ->whereNotIn('u.id', array(1));
-
-        $this->assertValidQueryBuilder($qb, 'SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.id NOT IN(1)');
-    }
-
-    public function testAndWhereIn()
-    {
-        $qb = QueryBuilder::create($this->_em)
-            ->select('u')
-            ->from('Doctrine\Tests\Models\CMS\CmsUser', 'u')
-            ->where('u.id = :id')
-            ->andWhereIn('u.id', array(1, 2, 3));
-
-        $this->assertValidQueryBuilder($qb, 'SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.id = :id AND u.id IN(1, 2, 3)');
-    }
-
-    public function testAndWhereNotIn()
-    {
-        $qb = QueryBuilder::create($this->_em)
-            ->select('u')
-            ->from('Doctrine\Tests\Models\CMS\CmsUser', 'u')
-            ->where('u.id = :id')
-            ->andWhereNotIn('u.id', array(1, 2, 3));
-
-        $this->assertValidQueryBuilder($qb, 'SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.id = :id AND u.id NOT IN(1, 2, 3)');
-    }
-
-    public function testOrWhereIn()
-    {
-        $qb = QueryBuilder::create($this->_em)
-            ->select('u')
-            ->from('Doctrine\Tests\Models\CMS\CmsUser', 'u')
-            ->where('u.id = :id')
-            ->orWhereIn('u.id', array(1, 2, 3));
-
-        $this->assertValidQueryBuilder($qb, 'SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.id = :id OR u.id IN(1, 2, 3)');
-    }
-
-    public function testOrWhereNotIn()
-    {
-        $qb = QueryBuilder::create($this->_em)
-            ->select('u')
-            ->from('Doctrine\Tests\Models\CMS\CmsUser', 'u')
-            ->where('u.id = :id')
-            ->orWhereNotIn('u.id', array(1, 2, 3));
-
-        $this->assertValidQueryBuilder($qb, 'SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.id = :id OR u.id NOT IN(1, 2, 3)');
-    }
-    */
 
     public function testGroupBy()
     {
@@ -282,6 +210,64 @@ class QueryBuilderTest extends \Doctrine\Tests\OrmTestCase
             ->addOrderBy('u.username', 'DESC');
 
         $this->assertValidQueryBuilder($qb, 'SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u ORDER BY u.username ASC, u.username DESC');
+    }
+
+    public function testGetQuery()
+    {
+        $qb = QueryBuilder::create($this->_em)
+            ->select('u')
+            ->from('Doctrine\Tests\Models\CMS\CmsUser', 'u');
+        $q = $qb->getQuery();
+
+        $this->assertEquals(get_class($q), 'Doctrine\ORM\Query');
+    }
+
+    public function testSetParameter()
+    {
+        $qb = QueryBuilder::create($this->_em)
+            ->select('u')
+            ->from('Doctrine\Tests\Models\CMS\CmsUser', 'u')
+            ->where('u.id = :id')
+            ->setParameter('id', 1);
+
+        $q = $qb->getQuery();
+
+        $this->assertEquals($q->getParameters(), array('id' => 1));
+    }
+
+    public function testSetParameters()
+    {
+        $qb = QueryBuilder::create($this->_em)
+            ->select('u')
+            ->from('Doctrine\Tests\Models\CMS\CmsUser', 'u')
+            ->where('u.username = :username OR u.username = :username2');
+
+        $qb->setParameters(array('username' => 'jwage', 'username2' => 'jonwage'));
+
+        $q = $qb->getQuery();
+
+        $this->assertEquals($q->getParameters(), array('username' => 'jwage', 'username2' => 'jonwage'));
+    }
+
+    public function testExprProxyWithMagicCall()
+    {
+        $qb = QueryBuilder::create($this->_em)
+            ->select('u')
+            ->from('Doctrine\Tests\Models\CMS\CmsUser', 'u');
+        $qb->where($qb->eq('u.id', 1));
+
+        $this->assertValidQueryBuilder($qb, 'SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.id = 1');
+    }
+
+    /**
+     * @expectedException \Doctrine\Common\DoctrineException
+     */
+    public function testInvalidQueryBuilderMethodThrowsException()
+    {
+        $qb = QueryBuilder::create($this->_em)
+            ->select('u')
+            ->from('Doctrine\Tests\Models\CMS\CmsUser', 'u');
+        $qb->where($qb->blah('u.id', 1));
     }
 
     public function testLimit()

@@ -228,4 +228,44 @@ class ExprTest extends \Doctrine\Tests\OrmTestCase
     {
         $this->assertEquals('u.id IN(1, 2, 3)', (string) Expr::in('u.id', array(1, 2, 3)));
     }
+
+    public function testOnExpr()
+    {
+        $this->assertEquals('ON 1 = 1', (string) Expr::on(Expr::eq(1, 1)));
+    }
+
+    public function testWithExpr()
+    {
+        $this->assertEquals('WITH 1 = 1', (string) Expr::with(Expr::eq(1, 1)));
+    }
+
+    public function testLeftJoinExpr()
+    {
+        $this->assertEquals('LEFT JOIN u.Profile p', (string) Expr::leftJoin('u', 'Profile', 'p'));
+    }
+
+    public function testLeftJoinOnConditionExpr()
+    {
+        $this->assertEquals('LEFT JOIN u.Profile p ON p.user_id = u.id', (string) Expr::leftJoin('u', 'Profile', 'p', Expr::on(Expr::eq('p.user_id', 'u.id'))));
+    }
+
+    public function testLeftJoinWithConditionExpr()
+    {
+        $this->assertEquals('LEFT JOIN u.Profile p WITH p.user_id = u.id', (string) Expr::leftJoin('u', 'Profile', 'p', Expr::with(Expr::eq('p.user_id', 'u.id'))));
+    }
+
+    public function testInnerJoinExpr()
+    {
+        $this->assertEquals('INNER JOIN u.Profile p', (string) Expr::innerJoin('u', 'Profile', 'p'));
+    }
+
+    public function testInnerJoinOnConditionExpr()
+    {
+        $this->assertEquals('INNER JOIN u.Profile p ON p.user_id = u.id', (string) Expr::innerJoin('u', 'Profile', 'p', Expr::on(Expr::eq('p.user_id', 'u.id'))));
+    }
+
+    public function testInnerJoinWithConditionExpr()
+    {
+        $this->assertEquals('INNER JOIN u.Profile p WITH p.user_id = u.id', (string) Expr::innerJoin('u', 'Profile', 'p', Expr::with(Expr::eq('p.user_id', 'u.id'))));
+    }
 }

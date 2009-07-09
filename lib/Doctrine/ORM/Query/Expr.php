@@ -69,7 +69,12 @@ class Expr
         'gtoet' => '_greaterThanOrEqualToExpr',
         'ltoet' => '_lessThanOrEqualToExpr',
         'between' => '_betweenExpr',
-        'trim' => '_trimExpr'
+        'trim' => '_trimExpr',
+        'on' => '_onExpr',
+        'with' => '_withExpr',
+        'from' => '_fromExpr',
+        'innerJoin' => '_innerJoinExpr',
+        'leftJoin' => '_leftJoinExpr'
     );
 
     private $_type;
@@ -281,6 +286,33 @@ class Expr
         return 'TRIM(' . $this->_parts[0] . ')';
     }
 
+    private function _onExpr()
+    {
+        return 'ON ' . $this->_parts[0];
+    }
+
+    private function _withExpr()
+    {
+        return 'WITH ' . $this->_parts[0];
+    }
+
+    private function _fromExpr()
+    {
+        return $this->_parts[0] . ' ' . $this->_parts[1];
+    }
+
+    private function _leftJoinExpr()
+    {
+        return 'LEFT JOIN ' . $this->_parts[0] . '.' . $this->_parts[1] . ' '
+        . $this->_parts[2] . (isset($this->_parts[3]) ? ' ' . $this->_parts[3] : null);
+    }
+
+    private function _innerJoinExpr()
+    {
+        return 'INNER JOIN ' . $this->_parts[0] . '.' . $this->_parts[1] . ' '
+        . $this->_parts[2] . (isset($this->_parts[3]) ? ' ' . $this->_parts[3] : null);
+    }
+
     public static function avg($x)
     {
         return new self('avg', array($x));
@@ -479,5 +511,30 @@ class Expr
     public static function trim($val, $spec = null, $char = null)
     {
         return new self('trim', array($val, $spec, $char));
+    }
+
+    public static function on($x)
+    {
+        return new self('on', array($x));
+    }
+
+    public static function with($x)
+    {
+        return new self('with', array($x));
+    }
+
+    public static function from($from, $alias)
+    {
+        return new self('from', array($from, $alias));
+    }
+
+    public static function leftJoin($parentAlias, $join, $alias, $condition = null)
+    {
+        return new self('leftJoin', array($parentAlias, $join, $alias, $condition));
+    }
+
+    public static function innerJoin($parentAlias, $join, $alias, $condition = null)
+    {
+        return new self('innerJoin', array($parentAlias, $join, $alias, $condition));
     }
 }

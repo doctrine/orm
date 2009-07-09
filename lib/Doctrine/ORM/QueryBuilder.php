@@ -46,7 +46,14 @@ class QueryBuilder
     const STATE_DIRTY = 0;
     const STATE_CLEAN = 1;
 
-    protected $_entityManager;
+    /**
+     * @var EntityManager $em Instance of an EntityManager to use for query
+     */
+    protected $_em;
+
+    /**
+     * @var array $dqlParts The array of DQL parts collected
+     */
     protected $_dqlParts = array(
         'select' => array(),
         'from' => array(),
@@ -57,13 +64,30 @@ class QueryBuilder
         'limit' => array(), 
         'offset' => array()
     );
+
+    /**
+     * @var integer $type  The type of query this is. Can be select, update or delete
+     */
     protected $_type = self::SELECT;
+
+    /**
+     * @var integer $state The state of the query object. Can be dirty or clean.
+     */
     protected $_state = self::STATE_CLEAN;
+
+    /**
+     * @var string $dql The complete DQL string for this query
+     */
     protected $_dql;
+
+    /**
+     * @var array $params Parameters of this query.
+     */
+    protected $_params = array();
 
     public function __construct(EntityManager $entityManager)
     {
-        $this->_entityManager = $entityManager;
+        $this->_em = $entityManager;
     }
 
     public static function create(EntityManager $entityManager)
@@ -74,6 +98,11 @@ class QueryBuilder
     public function getType()
     {
         return $this->_type;
+    }
+
+    public function getEntityManager()
+    {
+        return $this->_em;
     }
 
     public function getState()
@@ -111,21 +140,100 @@ class QueryBuilder
 
     public function getQuery()
     {
-        $q = new Query($this->_entityManager);
+        $q = new Query($this->_em);
         $q->setDql($this->getDql());
+        $q->setParameters($this->getParameters());
 
         return $q;
     }
 
-    public function select($select = null)
+    public function execute($params = array(), $hydrationMode = null)
     {
+        return $this->getQuery()->execute($params, $hydrationMode);
+    }
+
+    /**
+     * Sets a query parameter.
+     *
+     * @param string|integer $key The parameter position or name.
+     * @param mixed $value The parameter value.
+     */
+    public function setParameter($key, $value)
+    {
+        $this->_params[$key] = $value;
+
+        return $this;
+    }
+    
+    /**
+     * Sets a collection of query parameters.
+     *
+     * @param array $params
+     */
+    public function setParameters(array $params)
+    {
+        foreach ($params as $key => $value) {
+            $this->setParameter($key, $value);
+        }
+
+        return $this;
+    }
+
+    /**
+     * Get all defined parameters
+     *
+     * @return array Defined parameters
+     */
+    public function getParameters($params = array())
+    {
+        if ($params) {
+            return array_merge($this->_params, $params);
+        }
+        return $this->_params;
+    }
+    
+    /**
+     * Gets a query parameter.
+     * 
+     * @param mixed $key The key (index or name) of the bound parameter.
+     * @return mixed The value of the bound parameter.
+     */
+    public function getParameter($key)
+    {
+        return isset($this->_params[$key]) ? $this->_params[$key] : null;
+    }
+
+    /**
+     * Add a single DQL query part to the array of parts
+     *
+     * @param string $dqlPartName 
+     * @param string $dqlPart 
+     * @param string $append 
+     * @return QueryBuilder $this
+     */
+    public function add($dqlPartName, $dqlPart, $append = false)
+    {
+        if ($append) {
+            $this->_dqlParts[$dqlPartName][] = $dqlPart;
+        } else {
+            $this->_dqlParts[$dqlPartName] = array($dqlPart);
+        }
+
+        $this->_state = self::STATE_DIRTY;
+
+        return $this;
+    }
+
+    public function select()
+    {
+        $selects = func_get_args();
         $this->_type = self::SELECT;
 
-        if ( ! $select) {
+        if (empty($selects)) {
             return $this;
         }
 
-        return $this->_addDqlQueryPart('select', $select, true);
+        return $this->add('select', implode(', ', $selects), true);
     }
 
     public function delete($delete = null, $alias = null)
@@ -136,7 +244,7 @@ class QueryBuilder
             return $this;
         }
 
-        return $this->_addDqlQueryPart('from', $delete . ' ' . $alias);
+        return $this->add('from', Expr::from($delete, $alias));
     }
 
     public function update($update = null, $alias = null)
@@ -147,103 +255,80 @@ class QueryBuilder
             return $this;
         }
 
-        return $this->_addDqlQueryPart('from', $update . ' ' . $alias);
+        return $this->add('from', Expr::from($update, $alias));
     }
 
-    public function set($key, $value = null)
+    public function set($key, $value)
     {
-        return $this->_addDqlQueryPart('set', $key . ' = ' . $value, true);
+        return $this->add('set', Expr::eq($key, $value), true);
     }
 
     public function from($from, $alias)
     {
-        return $this->_addDqlQueryPart('from', $from . ' ' . $alias, true);
+        return $this->add('from', Expr::from($from, $alias), true);
     }
 
-    public function join($join, $alias)
+    public function innerJoin($parentAlias, $join, $alias, $condition = null)
     {
-        return $this->_addDqlQueryPart('from', 'INNER JOIN ' . $join . ' ' . $alias, true);
+        return $this->add('from', Expr::innerJoin($parentAlias, $join, $alias, $condition), true);
     }
 
-    public function innerJoin($join, $alias)
+    public function leftJoin($parentAlias, $join, $alias, $condition = null)
     {
-        return $this->join($join, $alias);
-    }
-
-    public function leftJoin($join, $alias)
-    {
-        return $this->_addDqlQueryPart('from', 'LEFT JOIN ' . $join . ' ' . $alias, true);
+        return $this->add('from', Expr::leftJoin($parentAlias, $join, $alias, $condition), true);
     }
 
     public function where($where)
     {
-        return $this->_addDqlQueryPart('where', $where, false);
-    }
-
-    public function andWhere($where)
-    {
-        if (count($this->getDqlQueryPart('where')) > 0) {
-            $this->_addDqlQueryPart('where', 'AND', true);
-        }
-
-        return $this->_addDqlQueryPart('where', $where, true);
-    }
-
-    public function orWhere($where)
-    {
-        if (count($this->getDqlQueryPart('where')) > 0) {
-            $this->_addDqlQueryPart('where', 'OR', true);
-        }
-
-        return $this->_addDqlQueryPart('where', $where, true);
+        return $this->add('where', $where, false);
     }
 
     public function groupBy($groupBy)
     {
-        return $this->_addDqlQueryPart('groupBy', $groupBy, false);
+        return $this->add('groupBy', $groupBy, false);
     }
 
     public function having($having)
     {
-        return $this->_addDqlQueryPart('having', $having, false);
+        return $this->add('having', $having, false);
     }
 
     public function andHaving($having)
     {
-        if (count($this->getDqlQueryPart('having')) > 0) {
-            $this->_addDqlQueryPart('having', 'AND', true);
+        if (count($this->_getDqlQueryPart('having')) > 0) {
+            $this->add('having', 'AND', true);
         }
 
-        return $this->_addDqlQueryPart('having', $having, true);
+        return $this->add('having', $having, true);
     }
 
     public function orHaving($having)
     {
-        if (count($this->getDqlQueryPart('having')) > 0) {
-            $this->_addDqlQueryPart('having', 'OR', true);
+        if (count($this->_getDqlQueryPart('having')) > 0) {
+            $this->add('having', 'OR', true);
         }
 
-        return $this->_addDqlQueryPart('having', $having, true);
+        return $this->add('having', $having, true);
     }
 
     public function orderBy($sort, $order)
     {
-        return $this->_addDqlQueryPart('orderBy', $sort . ' ' . $order, false);
+        return $this->add('orderBy', $sort . ' ' . $order, false);
     }
 
     public function addOrderBy($sort, $order)
     {
-        return $this->_addDqlQueryPart('orderBy', $sort . ' ' . $order, true);
+        return $this->add('orderBy', $sort . ' ' . $order, true);
     }
 
     public function limit($limit)
     {
-        return $this->_addDqlQueryPart('limit', $limit);
+        return $this->add('limit', $limit);
     }
 
     public function offset($offset)
     {
-        return $this->_addDqlQueryPart('offset', $offset);
+        return $this->add('offset', $offset);
     }
 
     /**
@@ -332,26 +417,31 @@ class QueryBuilder
         }
 
         $str  = (isset($options['pre']) ? $options['pre'] : '');
-        $str .= implode($options['separator'], $this->getDqlQueryPart($queryPartName));
+        $str .= implode($options['separator'], $this->_getDqlQueryPart($queryPartName));
         $str .= (isset($options['post']) ? $options['post'] : '');
 
         return $str;
     }
 
-    private function getDqlQueryPart($queryPartName)
+    private function _getDqlQueryPart($queryPartName)
     {
         return $this->_dqlParts[$queryPartName];
     }
 
-    private function _addDqlQueryPart($queryPartName, $queryPart, $append = false)
+    /**
+     * Proxy method calls to the Expr class to ease the syntax of the query builder 
+     *
+     * @param string $method     The method name called
+     * @param string $arguments  The arguments passed to the method
+     * @return void
+     * @throws \Doctrine\Common\DoctrineException Throws exception if method could not be proxied
+     */
+    public function __call($method, $arguments)
     {
-        if ($append) {
-            $this->_dqlParts[$queryPartName][] = $queryPart;
-        } else {
-            $this->_dqlParts[$queryPartName] = array($queryPart);
+        $class = 'Doctrine\ORM\Query\Expr';
+        if (method_exists($class, $method)) {
+            return call_user_func_array(array('Doctrine\ORM\Query\Expr', $method), $arguments);
         }
-
-        $this->_state = self::STATE_DIRTY;
-        return $this;
+        throw \Doctrine\Common\DoctrineException::notImplemented($method, get_class($this));
     }
 }
