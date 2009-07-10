@@ -36,6 +36,8 @@ require_once __DIR__ . '/../TestInit.php';
  * @link        http://www.phpdoctrine.org
  * @since       2.0
  * @version     $Revision$
+ * @todo Remove QueryBuilder::create. Use constructor in tests instead. Users will use
+ *       $em->createQueryBuilder().
  */
 class QueryBuilderTest extends \Doctrine\Tests\OrmTestCase
 {
@@ -50,7 +52,9 @@ class QueryBuilderTest extends \Doctrine\Tests\OrmTestCase
     {
         $dql = $qb->getDql();
         $q = $qb->getQuery();
-
+    
+        //FIXME: QueryBuilder tests should not test the Parser or SQL building, so
+        //       this block should probably be removed.
         try {
             $q->getSql();
         } catch (\Exception $e) {
@@ -58,6 +62,7 @@ class QueryBuilderTest extends \Doctrine\Tests\OrmTestCase
             echo $e->getTraceAsString();
             $this->fail($e->getMessage());
         }
+        //--
 
         $this->assertEquals($expectedDql, $dql);
     }

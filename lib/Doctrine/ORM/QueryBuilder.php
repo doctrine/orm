@@ -24,8 +24,8 @@ namespace Doctrine\ORM;
 use Doctrine\ORM\Query\Expr;
 
 /**
- * This class is responsible for building DQL query strings via a object oriented
- * PHP interface
+ * This class is responsible for building DQL query strings via an object oriented
+ * PHP interface.
  *
  * TODO: I don't like the API of using the Expr::*() syntax inside of the QueryBuilder
  * methods. What can we do to allow them to do it more fluently with the QueryBuilder.
@@ -33,7 +33,7 @@ use Doctrine\ORM\Query\Expr;
  * @author      Jonathan H. Wage <jonwage@gmail.com>
  * @author      Roman Borschel <roman@code-factory.org>
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
- * @link        http://www.phpdoctrine.org
+ * @link        http://www.doctrine-project.org
  * @since       2.0
  * @version     $Revision$
  */
