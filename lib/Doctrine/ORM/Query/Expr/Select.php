@@ -22,7 +22,7 @@
 namespace Doctrine\ORM\Query\Expr;
 
 /**
- * Expression class for building DQL select clauses
+ * Expression class for building DQL select statements
  *
  * @author      Jonathan H. Wage <jonwage@gmail.com>
  * @author      Guilherme Blanco <guilhermeblanco@gmail.com>
@@ -35,7 +35,4 @@ class Select extends Base
 {
     protected $_preSeparator = '';
     protected $_postSeparator = '';
-    protected $_allowedClasses = array(
-        'Doctrine\ORM\Query\Expr\SelectField'
-    );
 }

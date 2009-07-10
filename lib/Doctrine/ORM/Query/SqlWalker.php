@@ -134,6 +134,10 @@ class SqlWalker implements TreeWalker
         $sql .= $AST->getHavingClause() ? $this->walkHavingClause($AST->getHavingClause()) : '';
         $sql .= $AST->getOrderByClause() ? $this->walkOrderByClause($AST->getOrderByClause()) : '';
 
+        $q = $this->getQuery();
+        $sql = $this->getConnection()->getDatabasePlatform()
+            ->modifyLimitQuery($sql, $q->getMaxResults(), $q->getFirstResult());
+
         return $sql;
     }
 

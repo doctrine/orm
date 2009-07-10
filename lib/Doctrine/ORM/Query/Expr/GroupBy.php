@@ -22,25 +22,17 @@
 namespace Doctrine\ORM\Query\Expr;
 
 /**
- * Expression class for building comparison clauses
+ * Expression class for building DQL Group By parts
  *
  * @author      Jonathan H. Wage <jonwage@gmail.com>
+ * @author      Guilherme Blanco <guilhermeblanco@gmail.com>
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @link        http://www.phpdoctrine.org
  * @since       2.0
  * @version     $Revision$
  */
-class CountDistinctFunction
+class GroupBy extends Base
 {
-    private $_arguments;
-
-    public function __construct($arguments)
-    {
-        $this->_arguments  = $arguments;
-    }
-
-    public function __toString()
-    {
-        return 'COUNT(DISTINCT ' . implode(', ', $this->_arguments) . ')';
-    }
+    protected $_preSeparator = '';
+    protected $_postSeparator = '';
 }

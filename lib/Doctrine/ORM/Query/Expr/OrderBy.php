@@ -22,7 +22,7 @@
 namespace Doctrine\ORM\Query\Expr;
 
 /**
- * This class is used for representing field in a select statement
+ * Expression class for building DQL Order By parts
  *
  * @author      Jonathan H. Wage <jonwage@gmail.com>
  * @author      Guilherme Blanco <guilhermeblanco@gmail.com>
@@ -31,19 +31,35 @@ namespace Doctrine\ORM\Query\Expr;
  * @since       2.0
  * @version     $Revision$
  */
-class SelectField
+class OrderBy
 {
-    private $_field;
-    private $_alias;
+    protected $_preSeparator = '';
+    protected $_separator = ', ';
+    protected $_postSeparator = '';
+    protected $_allowedClasses = array();
 
-    public function __construct($field, $alias = null)
+    private $_parts = array();
+
+    public function __construct($sort = null, $order = null)
     {
-        $this->_field  = $field;
-        $this->_alias  = $alias;
+        if ($sort) {
+            $this->add($sort, $order);
+        }
     }
 
-    public function __toString()
+    public function add($sort, $order = null)
     {
-        return $this->_field . (($this->_alias !== null) ? ' AS ' . $this->_alias : '');
+        $order = ! $order ? 'ASC' : $order;
+        $this->_parts[] = $sort . ' '. $order;
+    }
+
+    public function count()
+    {
+        return count($this->_parts);
+    }
+
+    public function __tostring()
+    {
+        return $this->_preSeparator . implode($this->_separator, $this->_parts) . $this->_postSeparator;
     }
 }

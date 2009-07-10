@@ -22,7 +22,7 @@
 namespace Doctrine\ORM\Query\Expr;
 
 /**
- * Abstract class for building DQL expressions
+ * Abstract base Expr class for building DQL parts
  *
  * @author      Jonathan H. Wage <jonwage@gmail.com>
  * @author      Guilherme Blanco <guilhermeblanco@gmail.com>
@@ -68,7 +68,7 @@ abstract class Base
         return count($this->_parts);
     }
 
-    public function __tostring()
+    public function __toString()
     {
         return $this->_preSeparator . implode($this->_separator, $this->_parts) . $this->_postSeparator;
     }

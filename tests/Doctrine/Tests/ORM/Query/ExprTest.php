@@ -245,9 +245,48 @@ class ExprTest extends \Doctrine\Tests\OrmTestCase
     public function testSelectExpr()
     {
         $selectExpr = Expr::select();
-        $selectExpr->add(Expr::selectField('u.id'));
-        $selectExpr->add(Expr::selectField('u.username', 'my_test'));
+        $selectExpr->add('u.id');
+        $selectExpr->add('u.username');
 
-        $this->assertEquals('u.id, u.username AS my_test', (string) $selectExpr);
+        $this->assertEquals('u.id, u.username', (string) $selectExpr);
+    }
+
+    public function testExprBaseCount()
+    {
+        $selectExpr = Expr::select();
+        $selectExpr->add('u.id');
+        $selectExpr->add('u.username');
+
+        $this->assertEquals($selectExpr->count(), 2);
+    }
+
+    public function testOrderByCountExpr()
+    {
+        $orderByExpr = Expr::orderBy();
+        $orderByExpr->add('u.username', 'DESC');
+
+        $this->assertEquals($orderByExpr->count(), 1);
+        $this->assertEquals('u.username DESC', (string) $orderByExpr);
+    }
+
+    public function testOrderByOrder()
+    {
+        $orderByExpr = Expr::orderBy('u.username', 'DESC');
+        $this->assertEquals('u.username DESC', (string) $orderByExpr);
+    }
+
+    public function testOrderByDefaultOrderIsAsc()
+    {
+        $orderByExpr = Expr::orderBy('u.username');
+        $this->assertEquals('u.username ASC', (string) $orderByExpr);
+    }
+
+    /**
+     * @expectedException Doctrine\Common\DoctrineException
+     */
+    public function testAddThrowsException()
+    {
+        $orExpr = Expr::orx();
+        $orExpr->add(Expr::quot(5, 2));
     }
 }

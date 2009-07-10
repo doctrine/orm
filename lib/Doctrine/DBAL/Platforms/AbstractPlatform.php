@@ -1538,6 +1538,19 @@ abstract class AbstractPlatform
         return 'H:i:s';
     }
 
+    public function modifyLimitQuery($query, $max, $first)
+    {
+        if ( ! is_null($first)) {
+            $query .= ' OFFSET ' . $first;
+        }
+
+        if ( ! is_null($max)) {
+            $query .= ' LIMIT ' . $max;
+        }
+
+        return $query;
+    }
+
     /**
      * Gets the SQL snippet used to declare a VARCHAR column type.
      *

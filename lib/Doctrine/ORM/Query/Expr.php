@@ -33,24 +33,34 @@ namespace Doctrine\ORM\Query;
  */
 class Expr
 {
-    public static function andx()
+    public static function andx($x = null)
     {
         return new Expr\Andx(func_get_args());
     }
 
-    public static function orx()
+    public static function orx($x = null)
     {
         return new Expr\Orx(func_get_args());
     }
 
-    public static function select()
+    public static function select($select = null)
     {
         return new Expr\Select(func_get_args());
     }
 
-    public static function selectField($field, $alias = null)
+    public static function orderBy($sort = null, $order = null)
     {
-        return new Expr\SelectField($field, $alias);
+        return new Expr\OrderBy($sort, $order);
+    }
+
+    public static function groupBy($groupBy = null)
+    {
+        return new Expr\GroupBy(func_get_args());
+    }
+
+    public static function having($having = null)
+    {
+        return new Expr\Having(func_get_args());
     }
 
     public static function eq($x, $y)
@@ -105,7 +115,7 @@ class Expr
 
     public static function countDistinct()
     {
-        return new Expr\CountDistinctFunction(func_get_args());
+        return 'COUNT(DISTINCT ' . implode(', ', func_get_args()) . ')';
     }
 
     public static function exists($subquery)

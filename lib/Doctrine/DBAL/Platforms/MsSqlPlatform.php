@@ -425,4 +425,92 @@ class MsSqlPlatform extends AbstractPlatform
     {
         return 'mssql';
     }
+
+    /**
+     * Adds an adapter-specific LIMIT clause to the SELECT statement.
+     *
+     * @param string $query
+     * @param mixed $limit
+     * @param mixed $offset
+     * @link http://lists.bestpractical.com/pipermail/rt-devel/2005-June/007339.html
+     * @return string
+     */
+    public function modifyLimitQuery($query, $limit = false, $offset = false, $isManip = false)
+    {
+        if ($limit > 0) {
+            $count = intval($limit);
+            $offset = intval($offset);
+
+            if ($offset < 0) {
+                throw new Doctrine_Connection_Exception("LIMIT argument offset=$offset is not valid");
+            }
+
+            $orderby = stristr($query, 'ORDER BY');
+
+            if ($orderby !== false) {
+                // Ticket #1835: Fix for ORDER BY alias
+                // Ticket #2050: Fix for multiple ORDER BY clause
+                $order = str_ireplace('ORDER BY', '', $orderby);
+                $orders = explode(',', $order);
+
+                for ($i = 0; $i < count($orders); $i++) {
+                    $sorts[$i] = (stripos($orders[$i], ' desc') !== false) ? 'desc' : 'asc';
+                    $orders[$i] = trim(preg_replace('/\s+(ASC|DESC)$/i', '', $orders[$i]));
+
+                    // find alias in query string
+                    $helper_string = stristr($query, $orders[$i]);
+
+                    $from_clause_pos = strpos($helper_string, ' FROM ');
+                    $fields_string = substr($helper_string, 0, $from_clause_pos + 1);
+
+                    $field_array = explode(',', $fields_string);
+                    $field_array = array_shift($field_array);
+                    $aux2 = spliti(' as ', $field_array);
+
+                    $aliases[$i] = trim(end($aux2));
+                }
+            }
+
+            // Ticket #1259: Fix for limit-subquery in MSSQL
+            $selectRegExp = 'SELECT\s+';
+            $selectReplace = 'SELECT ';
+
+            if (preg_match('/^SELECT(\s+)DISTINCT/i', $query)) {
+                $selectRegExp .= 'DISTINCT\s+';
+                $selectReplace .= 'DISTINCT ';
+            }
+
+            $query = preg_replace('/^'.$selectRegExp.'/i', $selectReplace . 'TOP ' . ($count + $offset) . ' ', $query);
+            $query = 'SELECT * FROM (SELECT TOP ' . $count . ' * FROM (' . $query . ') AS ' . $this->quoteIdentifier('inner_tbl');
+
+            if ($orderby !== false) {
+                $query .= ' ORDER BY '; 
+
+                for ($i = 0, $l = count($orders); $i < $l; $i++) { 
+                    if ($i > 0) { // not first order clause 
+                        $query .= ', '; 
+                    } 
+
+                    $query .= $this->quoteIdentifier('inner_tbl') . '.' . $aliases[$i] . ' '; 
+                    $query .= (stripos($sorts[$i], 'asc') !== false) ? 'DESC' : 'ASC';
+                }
+            }
+
+            $query .= ') AS ' . $this->quoteIdentifier('outer_tbl');
+
+            if ($orderby !== false) {
+                $query .= ' ORDER BY '; 
+
+                for ($i = 0, $l = count($orders); $i < $l; $i++) { 
+                    if ($i > 0) { // not first order clause 
+                        $query .= ', '; 
+                    } 
+
+                    $query .= $this->quoteIdentifier('outer_tbl') . '.' . $aliases[$i] . ' ' . $sorts[$i];
+                }
+            }
+        }
+
+        return $query;
+    }
 }

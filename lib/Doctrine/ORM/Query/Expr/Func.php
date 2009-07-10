@@ -22,7 +22,7 @@
 namespace Doctrine\ORM\Query\Expr;
 
 /**
- * Expression class for building comparison clauses
+ * Expression class for generating DQL functions
  *
  * @author      Jonathan H. Wage <jonwage@gmail.com>
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL

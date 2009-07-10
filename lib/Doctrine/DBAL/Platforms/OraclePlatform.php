@@ -469,4 +469,38 @@ END;';
     {
         return 'oracle';
     }
+
+    /**
+     * Adds an driver-specific LIMIT clause to the query
+     *
+     * @param string $query         query to modify
+     * @param integer $limit        limit the number of rows
+     * @param integer $offset       start reading from given offset
+     * @return string               the modified query
+     */
+    public function modifyLimitQuery($query, $limit = false, $offset = false, $isManip = false)
+    {
+        $limit = (int) $limit;
+        $offset = (int) $offset;
+        if (preg_match('/^\s*SELECT/i', $query)) {
+            if ( ! preg_match('/\sFROM\s/i', $query)) {
+                $query .= " FROM dual";
+            }
+            if ($limit > 0) {
+                $max = $offset + $limit;
+                $column = $column === null ? '*' : $this->quoteIdentifier($column);
+                if ($offset > 0) {
+                    $min = $offset + 1;
+                    $query = 'SELECT b.'.$column.' FROM ('.
+                                 'SELECT a.*, ROWNUM AS doctrine_rownum FROM ('
+                                   . $query . ') a '.
+                              ') b '.
+                              'WHERE doctrine_rownum BETWEEN ' . $min .  ' AND ' . $max;
+                } else {
+                    $query = 'SELECT a.'.$column.' FROM (' . $query .') a WHERE ROWNUM <= ' . $max;
+                }
+            }
+        }
+        return $query;
+    }
 }

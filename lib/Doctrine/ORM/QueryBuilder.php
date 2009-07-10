@@ -49,41 +49,49 @@ class QueryBuilder
     /**
      * @var EntityManager $em Instance of an EntityManager to use for query
      */
-    protected $_em;
+    private $_em;
 
     /**
      * @var array $dqlParts The array of DQL parts collected
      */
-    protected $_dqlParts = array(
+    private $_dqlParts = array(
         'select' => array(),
         'from' => array(),
         'where' => array(),
         'groupBy' => array(),
         'having' => array(),
-        'orderBy' => array(),
-        'limit' => array(), 
-        'offset' => array()
+        'orderBy' => array()
     );
 
     /**
      * @var integer $type  The type of query this is. Can be select, update or delete
      */
-    protected $_type = self::SELECT;
+    private $_type = self::SELECT;
 
     /**
      * @var integer $state The state of the query object. Can be dirty or clean.
      */
-    protected $_state = self::STATE_CLEAN;
+    private $_state = self::STATE_CLEAN;
 
     /**
      * @var string $dql The complete DQL string for this query
      */
-    protected $_dql;
+    private $_dql;
 
     /**
      * @var array $params Parameters of this query.
      */
-    protected $_params = array();
+    private $_params = array();
+
+    /**
+     * @var integer The first result to return (the "offset").
+     */
+    private $_firstResult = null;
+    
+    /**
+     * @var integer The maximum number of results to return (the "limit").
+     */
+    private $_maxResults = null;
 
     public function __construct(EntityManager $entityManager)
     {
@@ -143,6 +151,8 @@ class QueryBuilder
         $q = new Query($this->_em);
         $q->setDql($this->getDql());
         $q->setParameters($this->getParameters());
+        $q->setFirstResult($this->getFirstResult());
+        $q->setMaxResults($this->getMaxResults());
 
         return $q;
     }
@@ -224,7 +234,7 @@ class QueryBuilder
         return $this;
     }
 
-    public function select($select)
+    public function select($select = null)
     {
         $selects = func_get_args();
         $this->_type = self::SELECT;
@@ -349,12 +359,17 @@ class QueryBuilder
 
     public function groupBy($groupBy)
     {
-        return $this->add('groupBy', $groupBy, false);
+        return $this->add('groupBy', Expr::groupBy($groupBy), false);
+    }
+
+    public function addGroupBy($groupBy)
+    {
+        return $this->add('groupBy', Expr::groupBy($groupBy), true);
     }
 
     public function having($having)
     {
-        return $this->add('having', $having, false);
+        return $this->add('having', Expr::having($having), false);
     }
 
     public function andHaving($having)
@@ -363,7 +378,7 @@ class QueryBuilder
             $this->add('having', 'AND', true);
         }
 
-        return $this->add('having', $having, true);
+        return $this->add('having', Expr::having($having), true);
     }
 
     public function orHaving($having)
@@ -372,27 +387,63 @@ class QueryBuilder
             $this->add('having', 'OR', true);
         }
 
-        return $this->add('having', $having, true);
+        return $this->add('having', Expr::having($having), true);
     }
 
     public function orderBy($sort, $order)
     {
-        return $this->add('orderBy', $sort . ' ' . $order, false);
+        return $this->add('orderBy', Expr::orderBy($sort, $order), false);
     }
 
     public function addOrderBy($sort, $order)
     {
-        return $this->add('orderBy', $sort . ' ' . $order, true);
+        return $this->add('orderBy', Expr::orderBy($sort, $order), true);
     }
 
-    public function limit($limit)
+    /**
+     * Sets the position of the first result to retrieve (the "offset").
+     *
+     * @param integer $firstResult The first result to return.
+     * @return Query This query object.
+     */
+    public function setFirstResult($firstResult)
     {
-        return $this->add('limit', $limit);
+        $this->_firstResult = $firstResult;
+        return $this;
+    }
+    
+    /**
+     * Gets the position of the first result the query object was set to retrieve (the "offset").
+     * Returns NULL if {@link setFirstResult} was not applied to this query.
+     * 
+     * @return integer The position of the first result.
+     */
+    public function getFirstResult()
+    {
+        return $this->_firstResult;
     }
 
-    public function offset($offset)
+    /**
+     * Sets the maximum number of results to retrieve (the "limit").
+     * 
+     * @param integer $maxResults
+     * @return Query This query object.
+     */
+    public function setMaxResults($maxResults)
     {
-        return $this->add('offset', $offset);
+        $this->_maxResults = $maxResults;
+        return $this;
+    }
+    
+    /**
+     * Gets the maximum number of results the query object was set to retrieve (the "limit").
+     * Returns NULL if {@link setMaxResults} was not applied to this query.
+     * 
+     * @return integer Maximum number of results.
+     */
+    public function getMaxResults()
+    {
+        return $this->_maxResults;
     }
 
     /**
@@ -414,9 +465,7 @@ class QueryBuilder
          return 'DELETE'
               . $this->_getReducedDqlQueryPart('from', array('pre' => ' ', 'separator' => ' '))
               . $this->_getReducedDqlQueryPart('where', array('pre' => ' WHERE ', 'separator' => ' '))
-              . $this->_getReducedDqlQueryPart('orderBy', array('pre' => ' ORDER BY ', 'separator' => ', '))
-              . $this->_getReducedDqlQueryPart('limit', array('pre' => ' LIMIT ', 'separator' => ' '))
-              . $this->_getReducedDqlQueryPart('offset', array('pre' => ' OFFSET ', 'separator' => ' '));
+              . $this->_getReducedDqlQueryPart('orderBy', array('pre' => ' ORDER BY ', 'separator' => ', '));
     }
 
     /**
@@ -439,9 +488,7 @@ class QueryBuilder
               . $this->_getReducedDqlQueryPart('from', array('pre' => ' ', 'separator' => ' '))
               . $this->_getReducedDqlQueryPart('set', array('pre' => ' SET ', 'separator' => ', '))
               . $this->_getReducedDqlQueryPart('where', array('pre' => ' WHERE ', 'separator' => ' '))
-              . $this->_getReducedDqlQueryPart('orderBy', array('pre' => ' ORDER BY ', 'separator' => ', '))
-              . $this->_getReducedDqlQueryPart('limit', array('pre' => ' LIMIT ', 'separator' => ' '))
-              . $this->_getReducedDqlQueryPart('offset', array('pre' => ' OFFSET ', 'separator' => ' '));
+              . $this->_getReducedDqlQueryPart('orderBy', array('pre' => ' ORDER BY ', 'separator' => ', '));
     }
 
     /**
@@ -469,9 +516,7 @@ class QueryBuilder
               . $this->_getReducedDqlQueryPart('where', array('pre' => ' WHERE ', 'separator' => ' '))
               . $this->_getReducedDqlQueryPart('groupBy', array('pre' => ' GROUP BY ', 'separator' => ', '))
               . $this->_getReducedDqlQueryPart('having', array('pre' => ' HAVING ', 'separator' => ' '))
-              . $this->_getReducedDqlQueryPart('orderBy', array('pre' => ' ORDER BY ', 'separator' => ', '))
-              . $this->_getReducedDqlQueryPart('limit', array('pre' => ' LIMIT ', 'separator' => ' '))
-              . $this->_getReducedDqlQueryPart('offset', array('pre' => ' OFFSET ', 'separator' => ' '));
+              . $this->_getReducedDqlQueryPart('orderBy', array('pre' => ' ORDER BY ', 'separator' => ', '));
     }
 
     private function _getReducedDqlQueryPart($queryPartName, $options = array())

@@ -65,6 +65,15 @@ class QueryBuilderTest extends \Doctrine\Tests\OrmTestCase
         $this->assertEquals($qb->getType(), QueryBuilder::SELECT);
     }
 
+    public function testEmptySelectSetsType()
+    {
+        $qb = QueryBuilder::create($this->_em)
+            ->delete('Doctrine\Tests\Models\CMS\CmsUser', 'u')
+            ->select();
+
+        $this->assertEquals($qb->getType(), QueryBuilder::SELECT);
+    }
+
     public function testDeleteSetsType()
     {
         $qb = QueryBuilder::create($this->_em)
@@ -210,9 +219,10 @@ class QueryBuilderTest extends \Doctrine\Tests\OrmTestCase
         $qb = QueryBuilder::create($this->_em)
             ->select('u')
             ->from('Doctrine\Tests\Models\CMS\CmsUser', 'u')
-            ->groupBy('u.id');
+            ->groupBy('u.id')
+            ->addGroupBy('u.username');
 
-        $this->assertValidQueryBuilder($qb, 'SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u GROUP BY u.id');
+        $this->assertValidQueryBuilder($qb, 'SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u GROUP BY u.id, u.username');
     }
 
     public function testHaving()
@@ -309,6 +319,29 @@ class QueryBuilderTest extends \Doctrine\Tests\OrmTestCase
         $this->assertEquals($q->getParameters(), array('username' => 'jwage', 'username2' => 'jonwage'));
     }
 
+
+    public function testGetParameters()
+    {
+        $qb = QueryBuilder::create($this->_em)
+            ->select('u')
+            ->from('Doctrine\Tests\Models\CMS\CmsUser', 'u')
+            ->where('u.id = :id');
+
+        $qb->setParameters(array('id' => 1));
+        $this->assertEquals(array('id' => 1, 'test' => 1), $qb->getParameters(array('test' => 1)));
+    }
+
+    public function testGetParameter()
+    {
+        $qb = QueryBuilder::create($this->_em)
+            ->select('u')
+            ->from('Doctrine\Tests\Models\CMS\CmsUser', 'u')
+            ->where('u.id = :id');
+
+        $qb->setParameters(array('id' => 1));
+        $this->assertEquals(1, $qb->getParameter('id'));
+    }
+
     public function testMultipleWhere()
     {
         $qb = QueryBuilder::create($this->_em)
@@ -353,17 +386,24 @@ class QueryBuilderTest extends \Doctrine\Tests\OrmTestCase
         $this->assertValidQueryBuilder($qb, 'SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE ((u.id = :uid3) OR (u.id IN(1)))');
     }
 
-    public function testLimit()
+    public function testGetEntityManager()
     {
-        /*
-        TODO: Limit fails. Is this not implemented in the DQL parser? Will look tomorrow.
+        $qb = QueryBuilder::create($this->_em);
+        $this->assertEquals($this->_em, $qb->getEntityManager());
+    }
+
+    public function testInitialStateIsClean()
+    {
+        $qb = QueryBuilder::create($this->_em);
+        $this->assertEquals(QueryBuilder::STATE_CLEAN, $qb->getState());
+    }
+
+    public function testAlteringQueryChangesStateToDirty()
+    {
         $qb = QueryBuilder::create($this->_em)
             ->select('u')
-            ->from('Doctrine\Tests\Models\CMS\CmsUser', 'u')
-            ->limit(10)
-            ->offset(0);
+            ->from('Doctrine\Tests\Models\CMS\CmsUser', 'u');
 
-        $this->assertValidQueryBuilder($qb, 'SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u LIMIT 10');
-        */
+        $this->assertEquals(QueryBuilder::STATE_DIRTY, $qb->getState());
     }
 }

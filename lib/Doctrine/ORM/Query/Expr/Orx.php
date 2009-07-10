@@ -22,7 +22,7 @@
 namespace Doctrine\ORM\Query\Expr;
 
 /**
- * Expression class for building and clauses
+ * Expression class for building DQL OR clauses
  *
  * @author      Jonathan H. Wage <jonwage@gmail.com>
  * @author      Guilherme Blanco <guilhermeblanco@gmail.com>
