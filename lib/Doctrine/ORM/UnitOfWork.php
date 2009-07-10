@@ -207,7 +207,7 @@ class UnitOfWork implements PropertyChangedListener
     /**
      * Flag for whether or not to use the C extension for hydration
      *
-     * @var string
+     * @var boolean
      */
     private $_useCExtension = false;
 
