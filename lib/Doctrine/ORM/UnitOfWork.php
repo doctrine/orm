@@ -205,6 +205,13 @@ class UnitOfWork implements PropertyChangedListener
     private $_collectionPersisters = array();
 
     /**
+     * Flag for whether or not to use the C extension for hydration
+     *
+     * @var string
+     */
+    private $_useCExtension = false;
+
+    /**
      * Initializes a new UnitOfWork instance, bound to the given EntityManager.
      *
      * @param Doctrine\ORM\EntityManager $em
@@ -214,6 +221,7 @@ class UnitOfWork implements PropertyChangedListener
         $this->_em = $em;
         //TODO: any benefit with lazy init?
         $this->_commitOrderCalculator = new CommitOrderCalculator();
+        $this->_useCExtension = $this->_em->getConfiguration()->getUseCExtension();
     }
 
     /**
@@ -1334,9 +1342,13 @@ class UnitOfWork implements PropertyChangedListener
         }
 
         if ($overrideLocalChanges) {
-            foreach ($data as $field => $value) {
-                if (isset($class->reflFields[$field])) {
-                    $class->reflFields[$field]->setValue($entity, $value);
+            if ($this->_useCExtension) {
+                doctrine_populate_data($entity, $data);
+            } else {
+                foreach ($data as $field => $value) {
+                    if (isset($class->reflFields[$field])) {
+                        $class->reflFields[$field]->setValue($entity, $value);
+                    }
                 }
             }
         } else {

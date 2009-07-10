@@ -47,7 +47,8 @@ class Configuration extends \Doctrine\DBAL\Configuration
             'metadataDriverImpl' => new AnnotationDriver(),
             'dqlClassAliasMap' => array(),
             'cacheDir' => null,
-            'allowPartialObjects' => true
+            'allowPartialObjects' => true,
+            'useCExtension' => false
             ));
     }
 
@@ -185,5 +186,15 @@ class Configuration extends \Doctrine\DBAL\Configuration
     public function setMetadataCacheImpl($cacheImpl)
     {
         $this->_attributes['metadataCacheImpl'] = $cacheImpl;
+    }
+
+    public function getUseCExtension()
+    {
+        return $this->_attributes['useCExtension'];
+    }
+
+    public function setUseCExtension($boolean)
+    {
+        $this->_attributes['useCExtension'] = $boolean;
     }
 }
