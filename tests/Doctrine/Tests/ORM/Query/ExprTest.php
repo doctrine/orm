@@ -97,12 +97,12 @@ class ExprTest extends \Doctrine\Tests\OrmTestCase
 
     public function testAndExpr()
     {
-        $this->assertEquals('(1 = 1 AND 2 = 2)', (string) Expr::andx((string) Expr::eq(1, 1), (string) Expr::eq(2, 2)));
+        $this->assertEquals('(1 = 1) AND (2 = 2)', (string) Expr::andx((string) Expr::eq(1, 1), (string) Expr::eq(2, 2)));
     }
 
     public function testOrExpr()
     {
-        $this->assertEquals('(1 = 1 OR 2 = 2)', (string) Expr::orx((string) Expr::eq(1, 1), (string) Expr::eq(2, 2)));
+        $this->assertEquals('(1 = 1) OR (2 = 2)', (string) Expr::orx((string) Expr::eq(1, 1), (string) Expr::eq(2, 2)));
     }
 
     public function testAbsExpr()
@@ -112,22 +112,22 @@ class ExprTest extends \Doctrine\Tests\OrmTestCase
 
     public function testProdExpr()
     {
-        $this->assertEquals('(1 * 2)', (string) Expr::prod(1, 2));
+        $this->assertEquals('1 * 2', (string) Expr::prod(1, 2));
     }
 
     public function testDiffExpr()
     {
-        $this->assertEquals('(1 - 2)', (string) Expr::diff(1, 2));
+        $this->assertEquals('1 - 2', (string) Expr::diff(1, 2));
     }
 
     public function testSumExpr()
     {
-        $this->assertEquals('(1 + 2)', (string) Expr::sum(1, 2));
+        $this->assertEquals('1 + 2', (string) Expr::sum(1, 2));
     }
 
     public function testQuotientExpr()
     {
-        $this->assertEquals('(10 / 2)', (string) Expr::quot(10, 2));
+        $this->assertEquals('10 / 2', (string) Expr::quot(10, 2));
     }
 
     public function testSquareRootExpr()
@@ -147,7 +147,7 @@ class ExprTest extends \Doctrine\Tests\OrmTestCase
 
     public function testLikeExpr()
     {
-        $this->assertEquals('(a.description LIKE :description)', (string) Expr::like('a.description', ':description'));
+        $this->assertEquals('a.description LIKE :description', (string) Expr::like('a.description', ':description'));
     }
 
     public function testConcatExpr()
@@ -178,18 +178,11 @@ class ExprTest extends \Doctrine\Tests\OrmTestCase
     public function testGreaterThanExpr()
     {
         $this->assertEquals('5 > 2', (string) Expr::gt(5, 2));
-        $this->assertEquals('5 > 2', (string) Expr::greaterThan(5, 2));
     }
 
     public function testLessThanExpr()
     {
         $this->assertEquals('2 < 5', (string) Expr::lt(2, 5));
-        $this->assertEquals('2 < 5', (string) Expr::lessThan(2, 5));
-    }
-
-    public function testPathExpr()
-    {
-        // TODO: This functionality still needs to be written and tested
     }
 
     public function testStringLiteralExpr()
@@ -204,14 +197,12 @@ class ExprTest extends \Doctrine\Tests\OrmTestCase
 
     public function testGreaterThanOrEqualToExpr()
     {
-        $this->assertEquals('5 >= 2', (string) Expr::gtoet(5, 2));
-        $this->assertEquals('5 >= 2', (string) Expr::greaterThanOrEqualTo(5, 2));
+        $this->assertEquals('5 >= 2', (string) Expr::gte(5, 2));
     }
 
     public function testLessThanOrEqualTo()
     {
-        $this->assertEquals('2 <= 5', (string) Expr::ltoet(2, 5));
-        $this->assertEquals('2 <= 5', (string) Expr::lessThanOrEqualTo(2, 5));
+        $this->assertEquals('2 <= 5', (string) Expr::lte(2, 5));
     }
 
     public function testBetweenExpr()
@@ -229,43 +220,34 @@ class ExprTest extends \Doctrine\Tests\OrmTestCase
         $this->assertEquals('u.id IN(1, 2, 3)', (string) Expr::in('u.id', array(1, 2, 3)));
     }
 
-    public function testOnExpr()
+    public function testAndxOrxExpr()
     {
-        $this->assertEquals('ON 1 = 1', (string) Expr::on(Expr::eq(1, 1)));
+        $andExpr = Expr::andx();
+        $andExpr->add(Expr::eq(1, 1));
+        $andExpr->add(Expr::lt(1, 5));
+
+        $orExpr = Expr::orx();
+        $orExpr->add($andExpr);
+        $orExpr->add(Expr::eq(1, 1));
+
+        $this->assertEquals('((1 = 1) AND (1 < 5)) OR (1 = 1)', (string) $orExpr);
     }
 
-    public function testWithExpr()
+    public function testOrxExpr()
     {
-        $this->assertEquals('WITH 1 = 1', (string) Expr::with(Expr::eq(1, 1)));
+        $orExpr = Expr::orx();
+        $orExpr->add(Expr::eq(1, 1));
+        $orExpr->add(Expr::lt(1, 5));
+
+        $this->assertEquals('(1 = 1) OR (1 < 5)', (string) $orExpr);
     }
 
-    public function testLeftJoinExpr()
+    public function testSelectExpr()
     {
-        $this->assertEquals('LEFT JOIN u.Profile p', (string) Expr::leftJoin('u', 'Profile', 'p'));
-    }
+        $selectExpr = Expr::select();
+        $selectExpr->add(Expr::selectField('u.id'));
+        $selectExpr->add(Expr::selectField('u.username', 'my_test'));
 
-    public function testLeftJoinOnConditionExpr()
-    {
-        $this->assertEquals('LEFT JOIN u.Profile p ON p.user_id = u.id', (string) Expr::leftJoin('u', 'Profile', 'p', Expr::on(Expr::eq('p.user_id', 'u.id'))));
-    }
-
-    public function testLeftJoinWithConditionExpr()
-    {
-        $this->assertEquals('LEFT JOIN u.Profile p WITH p.user_id = u.id', (string) Expr::leftJoin('u', 'Profile', 'p', Expr::with(Expr::eq('p.user_id', 'u.id'))));
-    }
-
-    public function testInnerJoinExpr()
-    {
-        $this->assertEquals('INNER JOIN u.Profile p', (string) Expr::innerJoin('u', 'Profile', 'p'));
-    }
-
-    public function testInnerJoinOnConditionExpr()
-    {
-        $this->assertEquals('INNER JOIN u.Profile p ON p.user_id = u.id', (string) Expr::innerJoin('u', 'Profile', 'p', Expr::on(Expr::eq('p.user_id', 'u.id'))));
-    }
-
-    public function testInnerJoinWithConditionExpr()
-    {
-        $this->assertEquals('INNER JOIN u.Profile p WITH p.user_id = u.id', (string) Expr::innerJoin('u', 'Profile', 'p', Expr::with(Expr::eq('p.user_id', 'u.id'))));
+        $this->assertEquals('u.id, u.username AS my_test', (string) $selectExpr);
     }
 }

@@ -52,17 +52,6 @@ class QueryBuilderTest extends \Doctrine\Tests\OrmTestCase
     {
         $dql = $qb->getDql();
         $q = $qb->getQuery();
-    
-        //FIXME: QueryBuilder tests should not test the Parser or SQL building, so
-        //       this block should probably be removed.
-        try {
-            $q->getSql();
-        } catch (\Exception $e) {
-            echo $dql . "\n";
-            echo $e->getTraceAsString();
-            $this->fail($e->getMessage());
-        }
-        //--
 
         $this->assertEquals($expectedDql, $dql);
     }
@@ -147,7 +136,73 @@ class QueryBuilderTest extends \Doctrine\Tests\OrmTestCase
             ->from('Doctrine\Tests\Models\CMS\CmsUser', 'u')
             ->where('u.id = :uid');
 
-        $this->assertValidQueryBuilder($qb, 'SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.id = :uid');
+        $this->assertValidQueryBuilder($qb, 'SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE (u.id = :uid)');
+    }
+
+    public function testAndWhere()
+    {
+        $qb = QueryBuilder::create($this->_em)
+            ->select('u')
+            ->from('Doctrine\Tests\Models\CMS\CmsUser', 'u')
+            ->where('u.id = :uid')
+            ->andWhere('u.id = :uid2');
+
+        $this->assertValidQueryBuilder($qb, 'SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE (u.id = :uid) AND (u.id = :uid2)');
+    }
+
+    public function testOrWhere()
+    {
+        $qb = QueryBuilder::create($this->_em)
+            ->select('u')
+            ->from('Doctrine\Tests\Models\CMS\CmsUser', 'u')
+            ->where('u.id = :uid')
+            ->orWhere('u.id = :uid2');
+
+        $this->assertValidQueryBuilder($qb, 'SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE (u.id = :uid) OR (u.id = :uid2)');
+    }
+
+    public function testAndWhereIn()
+    {
+        $qb = QueryBuilder::create($this->_em)
+            ->select('u')
+            ->from('Doctrine\Tests\Models\CMS\CmsUser', 'u')
+            ->where('u.id = :uid')
+            ->andWhereIn('u.id', array(1, 2, 3));
+
+        $this->assertValidQueryBuilder($qb, 'SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE (u.id = :uid) AND u.id IN(1, 2, 3)');
+    }
+
+    public function testOrWhereIn()
+    {
+        $qb = QueryBuilder::create($this->_em)
+            ->select('u')
+            ->from('Doctrine\Tests\Models\CMS\CmsUser', 'u')
+            ->where('u.id = :uid')
+            ->orWhereIn('u.id', array(1, 2, 3));
+
+        $this->assertValidQueryBuilder($qb, 'SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE (u.id = :uid) OR u.id IN(1, 2, 3)');
+    }
+
+    public function testAndWhereNotIn()
+    {
+        $qb = QueryBuilder::create($this->_em)
+            ->select('u')
+            ->from('Doctrine\Tests\Models\CMS\CmsUser', 'u')
+            ->where('u.id = :uid')
+            ->andWhereNotIn('u.id', array(1, 2, 3));
+
+        $this->assertValidQueryBuilder($qb, 'SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE (u.id = :uid) AND u.id NOT IN(1, 2, 3)');
+    }
+
+    public function testOrWhereNotIn()
+    {
+        $qb = QueryBuilder::create($this->_em)
+            ->select('u')
+            ->from('Doctrine\Tests\Models\CMS\CmsUser', 'u')
+            ->where('u.id = :uid')
+            ->OrWhereNotIn('u.id', array(1, 2, 3));
+
+        $this->assertValidQueryBuilder($qb, 'SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE (u.id = :uid) OR u.id NOT IN(1, 2, 3)');
     }
 
     public function testGroupBy()
@@ -254,25 +309,48 @@ class QueryBuilderTest extends \Doctrine\Tests\OrmTestCase
         $this->assertEquals($q->getParameters(), array('username' => 'jwage', 'username2' => 'jonwage'));
     }
 
-    public function testExprProxyWithMagicCall()
+    public function testMultipleWhere()
     {
         $qb = QueryBuilder::create($this->_em)
             ->select('u')
-            ->from('Doctrine\Tests\Models\CMS\CmsUser', 'u');
-        $qb->where($qb->eq('u.id', 1));
+            ->from('Doctrine\Tests\Models\CMS\CmsUser', 'u')
+            ->where('u.id = :uid', 'u.id = :uid2');
 
-        $this->assertValidQueryBuilder($qb, 'SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.id = 1');
+        $this->assertValidQueryBuilder($qb, 'SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE (u.id = :uid) AND (u.id = :uid2)');
     }
 
-    /**
-     * @expectedException \Doctrine\Common\DoctrineException
-     */
-    public function testInvalidQueryBuilderMethodThrowsException()
+    public function testMultipleAndWhere()
     {
         $qb = QueryBuilder::create($this->_em)
             ->select('u')
-            ->from('Doctrine\Tests\Models\CMS\CmsUser', 'u');
-        $qb->where($qb->blah('u.id', 1));
+            ->from('Doctrine\Tests\Models\CMS\CmsUser', 'u')
+            ->andWhere('u.id = :uid', 'u.id = :uid2');
+
+        $this->assertValidQueryBuilder($qb, 'SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE (u.id = :uid) AND (u.id = :uid2)');
+    }
+
+    public function testMultipleOrWhere()
+    {
+        $qb = QueryBuilder::create($this->_em)
+            ->select('u')
+            ->from('Doctrine\Tests\Models\CMS\CmsUser', 'u')
+            ->orWhere('u.id = :uid', Expr::eq('u.id', ':uid2'));
+
+        $this->assertValidQueryBuilder($qb, 'SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE (u.id = :uid) OR (u.id = :uid2)');
+    }
+
+    public function testComplexWhere()
+    {
+        $orExpr = Expr::orx();
+        $orExpr->add(Expr::eq('u.id', ':uid3'));
+        $orExpr->add(Expr::in('u.id', array(1)));
+
+        $qb = QueryBuilder::create($this->_em)
+            ->select('u')
+            ->from('Doctrine\Tests\Models\CMS\CmsUser', 'u')
+            ->where($orExpr);
+
+        $this->assertValidQueryBuilder($qb, 'SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE ((u.id = :uid3) OR (u.id IN(1)))');
     }
 
     public function testLimit()

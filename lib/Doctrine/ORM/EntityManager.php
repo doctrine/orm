@@ -226,7 +226,7 @@ class EntityManager
         }
         return $query;
     }
-    
+
     /**
      * Creates a DQL query with the specified name.
      *

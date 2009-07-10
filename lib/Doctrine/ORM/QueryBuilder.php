@@ -224,7 +224,7 @@ class QueryBuilder
         return $this;
     }
 
-    public function select()
+    public function select($select)
     {
         $selects = func_get_args();
         $this->_type = self::SELECT;
@@ -233,7 +233,8 @@ class QueryBuilder
             return $this;
         }
 
-        return $this->add('select', implode(', ', $selects), true);
+        $select = call_user_func_array(array('Doctrine\ORM\Query\Expr', 'select'), $selects);
+        return $this->add('select', $select, true);
     }
 
     public function delete($delete = null, $alias = null)
@@ -244,7 +245,7 @@ class QueryBuilder
             return $this;
         }
 
-        return $this->add('from', Expr::from($delete, $alias));
+        return $this->add('from', $delete . ' ' . $alias);
     }
 
     public function update($update = null, $alias = null)
@@ -255,7 +256,7 @@ class QueryBuilder
             return $this;
         }
 
-        return $this->add('from', Expr::from($update, $alias));
+        return $this->add('from', $update . ' ' . $alias);
     }
 
     public function set($key, $value)
@@ -265,22 +266,85 @@ class QueryBuilder
 
     public function from($from, $alias)
     {
-        return $this->add('from', Expr::from($from, $alias), true);
+        return $this->add('from', $from . ' ' . $alias, true);
     }
 
     public function innerJoin($parentAlias, $join, $alias, $condition = null)
     {
-        return $this->add('from', Expr::innerJoin($parentAlias, $join, $alias, $condition), true);
+        $join = 'INNER JOIN ' . $parentAlias . '.' . $join . ' '
+        . $alias . (isset($condition) ? ' ' . $condition : null);
+
+        return $this->add('from', $join, true);
     }
 
     public function leftJoin($parentAlias, $join, $alias, $condition = null)
     {
-        return $this->add('from', Expr::leftJoin($parentAlias, $join, $alias, $condition), true);
+        $join = 'LEFT JOIN ' . $parentAlias . '.' . $join . ' '
+        . $alias . (isset($condition) ? ' ' . $condition : null);
+
+        return $this->add('from', $join, true);
     }
 
     public function where($where)
     {
+        $where = call_user_func_array(array('Doctrine\ORM\Query\Expr', 'andx'), func_get_args());
         return $this->add('where', $where, false);
+    }
+
+    public function andWhere($where)
+    {
+        if (count($this->_getDqlQueryPart('where')) > 0) {
+            $this->add('where', 'AND', true);
+        }
+
+        $where = call_user_func_array(array('Doctrine\ORM\Query\Expr', 'andx'), func_get_args());
+        return $this->add('where', $where, true);
+    }
+
+    public function orWhere($where)
+    {
+        if (count($this->_getDqlQueryPart('where')) > 0) {
+            $this->add('where', 'OR', true);
+        }
+
+        $where = call_user_func_array(array('Doctrine\ORM\Query\Expr', 'orx'), func_get_args());
+        return $this->add('where', $where, true);
+    }
+
+    public function andWhereIn($expr, $params)
+    {
+        if (count($this->_getDqlQueryPart('where')) > 0) {
+            $this->add('where', 'AND', true);
+        }
+
+        return $this->add('where', Expr::in($expr, $params), true);
+    }
+
+    public function orWhereIn($expr, $params = array(), $not = false)
+    {
+        if (count($this->_getDqlQueryPart('where')) > 0) {
+            $this->add('where', 'OR', true);
+        }
+
+        return $this->add('where', Expr::in($expr, $params), true);
+    }
+
+    public function andWhereNotIn($expr, $params = array())
+    {
+        if (count($this->_getDqlQueryPart('where')) > 0) {
+            $this->add('where', 'AND', true);
+        }
+
+        return $this->add('where', Expr::notIn($expr, $params), true);
+    }
+
+    public function orWhereNotIn($expr, $params = array())
+    {
+        if (count($this->_getDqlQueryPart('where')) > 0) {
+            $this->add('where', 'OR', true);
+        }
+
+        return $this->add('where', Expr::notIn($expr, $params), true);
     }
 
     public function groupBy($groupBy)
@@ -426,22 +490,5 @@ class QueryBuilder
     private function _getDqlQueryPart($queryPartName)
     {
         return $this->_dqlParts[$queryPartName];
-    }
-
-    /**
-     * Proxy method calls to the Expr class to ease the syntax of the query builder 
-     *
-     * @param string $method     The method name called
-     * @param string $arguments  The arguments passed to the method
-     * @return void
-     * @throws \Doctrine\Common\DoctrineException Throws exception if method could not be proxied
-     */
-    public function __call($method, $arguments)
-    {
-        $class = 'Doctrine\ORM\Query\Expr';
-        if (method_exists($class, $method)) {
-            return call_user_func_array(array('Doctrine\ORM\Query\Expr', $method), $arguments);
-        }
-        throw \Doctrine\Common\DoctrineException::notImplemented($method, get_class($this));
     }
 }
