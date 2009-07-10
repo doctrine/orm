@@ -58,7 +58,7 @@ class QueryBuilderTest extends \Doctrine\Tests\OrmTestCase
 
     public function testSelectSetsType()
     {
-        $qb = QueryBuilder::create($this->_em)
+        $qb = $this->_em->createQueryBuilder()
             ->delete('Doctrine\Tests\Models\CMS\CmsUser', 'u')
             ->select('u.id', 'u.username');
 
@@ -67,7 +67,7 @@ class QueryBuilderTest extends \Doctrine\Tests\OrmTestCase
 
     public function testEmptySelectSetsType()
     {
-        $qb = QueryBuilder::create($this->_em)
+        $qb = $this->_em->createQueryBuilder()
             ->delete('Doctrine\Tests\Models\CMS\CmsUser', 'u')
             ->select();
 
@@ -76,7 +76,7 @@ class QueryBuilderTest extends \Doctrine\Tests\OrmTestCase
 
     public function testDeleteSetsType()
     {
-        $qb = QueryBuilder::create($this->_em)
+        $qb = $this->_em->createQueryBuilder()
             ->from('Doctrine\Tests\Models\CMS\CmsUser', 'u')
             ->delete();
 
@@ -85,7 +85,7 @@ class QueryBuilderTest extends \Doctrine\Tests\OrmTestCase
 
     public function testUpdateSetsType()
     {
-        $qb = QueryBuilder::create($this->_em)
+        $qb = $this->_em->createQueryBuilder()
             ->from('Doctrine\Tests\Models\CMS\CmsUser', 'u')
             ->update();
 
@@ -94,7 +94,7 @@ class QueryBuilderTest extends \Doctrine\Tests\OrmTestCase
 
     public function testSimpleSelect()
     {
-        $qb = QueryBuilder::create($this->_em)
+        $qb = $this->_em->createQueryBuilder()
             ->from('Doctrine\Tests\Models\CMS\CmsUser', 'u')
             ->select('u.id', 'u.username');
 
@@ -103,7 +103,7 @@ class QueryBuilderTest extends \Doctrine\Tests\OrmTestCase
 
     public function testSimpleDelete()
     {
-        $qb = QueryBuilder::create($this->_em)
+        $qb = $this->_em->createQueryBuilder()
             ->delete('Doctrine\Tests\Models\CMS\CmsUser', 'u');
 
         $this->assertValidQueryBuilder($qb, 'DELETE Doctrine\Tests\Models\CMS\CmsUser u');
@@ -111,7 +111,7 @@ class QueryBuilderTest extends \Doctrine\Tests\OrmTestCase
 
     public function testSimpleUpdate()
     {
-        $qb = QueryBuilder::create($this->_em)
+        $qb = $this->_em->createQueryBuilder()
             ->update('Doctrine\Tests\Models\CMS\CmsUser', 'u')
             ->set('u.username', ':username');
 
@@ -120,7 +120,7 @@ class QueryBuilderTest extends \Doctrine\Tests\OrmTestCase
 
     public function testInnerJoin()
     {
-        $qb = QueryBuilder::create($this->_em)
+        $qb = $this->_em->createQueryBuilder()
             ->select('u', 'a')
             ->from('Doctrine\Tests\Models\CMS\CmsUser', 'u')
             ->innerJoin('u', 'articles', 'a');
@@ -130,7 +130,7 @@ class QueryBuilderTest extends \Doctrine\Tests\OrmTestCase
 
     public function testLeftJoin()
     {
-        $qb = QueryBuilder::create($this->_em)
+        $qb = $this->_em->createQueryBuilder()
             ->select('u', 'a')
             ->from('Doctrine\Tests\Models\CMS\CmsUser', 'u')
             ->leftJoin('u', 'articles', 'a');
@@ -140,7 +140,7 @@ class QueryBuilderTest extends \Doctrine\Tests\OrmTestCase
 
     public function testWhere()
     {
-        $qb = QueryBuilder::create($this->_em)
+        $qb = $this->_em->createQueryBuilder()
             ->select('u')
             ->from('Doctrine\Tests\Models\CMS\CmsUser', 'u')
             ->where('u.id = :uid');
@@ -150,7 +150,7 @@ class QueryBuilderTest extends \Doctrine\Tests\OrmTestCase
 
     public function testAndWhere()
     {
-        $qb = QueryBuilder::create($this->_em)
+        $qb = $this->_em->createQueryBuilder()
             ->select('u')
             ->from('Doctrine\Tests\Models\CMS\CmsUser', 'u')
             ->where('u.id = :uid')
@@ -161,7 +161,7 @@ class QueryBuilderTest extends \Doctrine\Tests\OrmTestCase
 
     public function testOrWhere()
     {
-        $qb = QueryBuilder::create($this->_em)
+        $qb = $this->_em->createQueryBuilder()
             ->select('u')
             ->from('Doctrine\Tests\Models\CMS\CmsUser', 'u')
             ->where('u.id = :uid')
@@ -172,7 +172,7 @@ class QueryBuilderTest extends \Doctrine\Tests\OrmTestCase
 
     public function testAndWhereIn()
     {
-        $qb = QueryBuilder::create($this->_em)
+        $qb = $this->_em->createQueryBuilder()
             ->select('u')
             ->from('Doctrine\Tests\Models\CMS\CmsUser', 'u')
             ->where('u.id = :uid')
@@ -183,7 +183,7 @@ class QueryBuilderTest extends \Doctrine\Tests\OrmTestCase
 
     public function testOrWhereIn()
     {
-        $qb = QueryBuilder::create($this->_em)
+        $qb = $this->_em->createQueryBuilder()
             ->select('u')
             ->from('Doctrine\Tests\Models\CMS\CmsUser', 'u')
             ->where('u.id = :uid')
@@ -194,7 +194,7 @@ class QueryBuilderTest extends \Doctrine\Tests\OrmTestCase
 
     public function testAndWhereNotIn()
     {
-        $qb = QueryBuilder::create($this->_em)
+        $qb = $this->_em->createQueryBuilder()
             ->select('u')
             ->from('Doctrine\Tests\Models\CMS\CmsUser', 'u')
             ->where('u.id = :uid')
@@ -205,7 +205,7 @@ class QueryBuilderTest extends \Doctrine\Tests\OrmTestCase
 
     public function testOrWhereNotIn()
     {
-        $qb = QueryBuilder::create($this->_em)
+        $qb = $this->_em->createQueryBuilder()
             ->select('u')
             ->from('Doctrine\Tests\Models\CMS\CmsUser', 'u')
             ->where('u.id = :uid')
@@ -216,7 +216,7 @@ class QueryBuilderTest extends \Doctrine\Tests\OrmTestCase
 
     public function testGroupBy()
     {
-        $qb = QueryBuilder::create($this->_em)
+        $qb = $this->_em->createQueryBuilder()
             ->select('u')
             ->from('Doctrine\Tests\Models\CMS\CmsUser', 'u')
             ->groupBy('u.id')
@@ -227,7 +227,7 @@ class QueryBuilderTest extends \Doctrine\Tests\OrmTestCase
 
     public function testHaving()
     {
-        $qb = QueryBuilder::create($this->_em)
+        $qb = $this->_em->createQueryBuilder()
             ->select('u')
             ->from('Doctrine\Tests\Models\CMS\CmsUser', 'u')
             ->groupBy('u.id')
@@ -238,7 +238,7 @@ class QueryBuilderTest extends \Doctrine\Tests\OrmTestCase
 
     public function testAndHaving()
     {
-        $qb = QueryBuilder::create($this->_em)
+        $qb = $this->_em->createQueryBuilder()
             ->select('u')
             ->from('Doctrine\Tests\Models\CMS\CmsUser', 'u')
             ->groupBy('u.id')
@@ -250,7 +250,7 @@ class QueryBuilderTest extends \Doctrine\Tests\OrmTestCase
 
     public function testOrHaving()
     {
-        $qb = QueryBuilder::create($this->_em)
+        $qb = $this->_em->createQueryBuilder()
             ->select('u')
             ->from('Doctrine\Tests\Models\CMS\CmsUser', 'u')
             ->groupBy('u.id')
@@ -263,7 +263,7 @@ class QueryBuilderTest extends \Doctrine\Tests\OrmTestCase
 
     public function testOrderBy()
     {
-        $qb = QueryBuilder::create($this->_em)
+        $qb = $this->_em->createQueryBuilder()
             ->select('u')
             ->from('Doctrine\Tests\Models\CMS\CmsUser', 'u')
             ->orderBy('u.username', 'ASC');
@@ -273,7 +273,7 @@ class QueryBuilderTest extends \Doctrine\Tests\OrmTestCase
 
     public function testAddOrderBy()
     {
-        $qb = QueryBuilder::create($this->_em)
+        $qb = $this->_em->createQueryBuilder()
             ->select('u')
             ->from('Doctrine\Tests\Models\CMS\CmsUser', 'u')
             ->orderBy('u.username', 'ASC')
@@ -284,45 +284,41 @@ class QueryBuilderTest extends \Doctrine\Tests\OrmTestCase
 
     public function testGetQuery()
     {
-        $qb = QueryBuilder::create($this->_em)
+        $qb = $this->_em->createQueryBuilder()
             ->select('u')
             ->from('Doctrine\Tests\Models\CMS\CmsUser', 'u');
         $q = $qb->getQuery();
 
-        $this->assertEquals(get_class($q), 'Doctrine\ORM\Query');
+        $this->assertEquals('Doctrine\ORM\Query', get_class($q));
     }
 
     public function testSetParameter()
     {
-        $qb = QueryBuilder::create($this->_em)
+        $qb = $this->_em->createQueryBuilder()
             ->select('u')
             ->from('Doctrine\Tests\Models\CMS\CmsUser', 'u')
             ->where('u.id = :id')
             ->setParameter('id', 1);
 
-        $q = $qb->getQuery();
-
-        $this->assertEquals($q->getParameters(), array('id' => 1));
+        $this->assertEquals(array('id' => 1), $qb->getParameters());
     }
 
     public function testSetParameters()
     {
-        $qb = QueryBuilder::create($this->_em)
+        $qb = $this->_em->createQueryBuilder()
             ->select('u')
             ->from('Doctrine\Tests\Models\CMS\CmsUser', 'u')
             ->where('u.username = :username OR u.username = :username2');
 
         $qb->setParameters(array('username' => 'jwage', 'username2' => 'jonwage'));
 
-        $q = $qb->getQuery();
-
-        $this->assertEquals($q->getParameters(), array('username' => 'jwage', 'username2' => 'jonwage'));
+        $this->assertEquals(array('username' => 'jwage', 'username2' => 'jonwage'), $qb->getQuery()->getParameters());
     }
 
 
     public function testGetParameters()
     {
-        $qb = QueryBuilder::create($this->_em)
+        $qb = $this->_em->createQueryBuilder()
             ->select('u')
             ->from('Doctrine\Tests\Models\CMS\CmsUser', 'u')
             ->where('u.id = :id');
@@ -333,7 +329,7 @@ class QueryBuilderTest extends \Doctrine\Tests\OrmTestCase
 
     public function testGetParameter()
     {
-        $qb = QueryBuilder::create($this->_em)
+        $qb = $this->_em->createQueryBuilder()
             ->select('u')
             ->from('Doctrine\Tests\Models\CMS\CmsUser', 'u')
             ->where('u.id = :id');
@@ -344,7 +340,7 @@ class QueryBuilderTest extends \Doctrine\Tests\OrmTestCase
 
     public function testMultipleWhere()
     {
-        $qb = QueryBuilder::create($this->_em)
+        $qb = $this->_em->createQueryBuilder()
             ->select('u')
             ->from('Doctrine\Tests\Models\CMS\CmsUser', 'u')
             ->where('u.id = :uid', 'u.id = :uid2');
@@ -354,7 +350,7 @@ class QueryBuilderTest extends \Doctrine\Tests\OrmTestCase
 
     public function testMultipleAndWhere()
     {
-        $qb = QueryBuilder::create($this->_em)
+        $qb = $this->_em->createQueryBuilder()
             ->select('u')
             ->from('Doctrine\Tests\Models\CMS\CmsUser', 'u')
             ->andWhere('u.id = :uid', 'u.id = :uid2');
@@ -364,7 +360,7 @@ class QueryBuilderTest extends \Doctrine\Tests\OrmTestCase
 
     public function testMultipleOrWhere()
     {
-        $qb = QueryBuilder::create($this->_em)
+        $qb = $this->_em->createQueryBuilder()
             ->select('u')
             ->from('Doctrine\Tests\Models\CMS\CmsUser', 'u')
             ->orWhere('u.id = :uid', Expr::eq('u.id', ':uid2'));
@@ -378,7 +374,7 @@ class QueryBuilderTest extends \Doctrine\Tests\OrmTestCase
         $orExpr->add(Expr::eq('u.id', ':uid3'));
         $orExpr->add(Expr::in('u.id', array(1)));
 
-        $qb = QueryBuilder::create($this->_em)
+        $qb = $this->_em->createQueryBuilder()
             ->select('u')
             ->from('Doctrine\Tests\Models\CMS\CmsUser', 'u')
             ->where($orExpr);
@@ -388,19 +384,19 @@ class QueryBuilderTest extends \Doctrine\Tests\OrmTestCase
 
     public function testGetEntityManager()
     {
-        $qb = QueryBuilder::create($this->_em);
+        $qb = $this->_em->createQueryBuilder();
         $this->assertEquals($this->_em, $qb->getEntityManager());
     }
 
     public function testInitialStateIsClean()
     {
-        $qb = QueryBuilder::create($this->_em);
+        $qb = $this->_em->createQueryBuilder();
         $this->assertEquals(QueryBuilder::STATE_CLEAN, $qb->getState());
     }
 
     public function testAlteringQueryChangesStateToDirty()
     {
-        $qb = QueryBuilder::create($this->_em)
+        $qb = $this->_em->createQueryBuilder()
             ->select('u')
             ->from('Doctrine\Tests\Models\CMS\CmsUser', 'u');
 

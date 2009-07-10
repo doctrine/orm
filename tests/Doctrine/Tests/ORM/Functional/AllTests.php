@@ -34,7 +34,6 @@ class AllTests
         $suite->addTestSuite('Doctrine\Tests\ORM\Functional\OneToOneSelfReferentialAssociationTest');
         $suite->addTestSuite('Doctrine\Tests\ORM\Functional\OneToManySelfReferentialAssociationTest');
         $suite->addTestSuite('Doctrine\Tests\ORM\Functional\ManyToManySelfReferentialAssociationTest');
-        $suite->addTestSuite('Doctrine\Tests\ORM\Functional\QueryBuilderTest');
 
         return $suite;
     }

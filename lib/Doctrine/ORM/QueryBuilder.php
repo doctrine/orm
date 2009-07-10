@@ -79,28 +79,14 @@ class QueryBuilder
     private $_dql;
 
     /**
-     * @var array $params Parameters of this query.
+     * @var Query $q The Query instance used for this QueryBuilder
      */
-    private $_params = array();
-
-    /**
-     * @var integer The first result to return (the "offset").
-     */
-    private $_firstResult = null;
-    
-    /**
-     * @var integer The maximum number of results to return (the "limit").
-     */
-    private $_maxResults = null;
+    private $_q;
 
     public function __construct(EntityManager $entityManager)
     {
         $this->_em = $entityManager;
-    }
-
-    public static function create(EntityManager $entityManager)
-    {
-        return new self($entityManager);
+        $this->_q = $entityManager->createQuery();
     }
 
     public function getType()
@@ -148,18 +134,9 @@ class QueryBuilder
 
     public function getQuery()
     {
-        $q = new Query($this->_em);
-        $q->setDql($this->getDql());
-        $q->setParameters($this->getParameters());
-        $q->setFirstResult($this->getFirstResult());
-        $q->setMaxResults($this->getMaxResults());
+        $this->_q->setDql($this->getDql());
 
-        return $q;
-    }
-
-    public function execute($params = array(), $hydrationMode = null)
-    {
-        return $this->getQuery()->execute($params, $hydrationMode);
+        return $this->_q;
     }
 
     /**
@@ -170,7 +147,7 @@ class QueryBuilder
      */
     public function setParameter($key, $value)
     {
-        $this->_params[$key] = $value;
+        $this->_q->setParameter($key, $value);
 
         return $this;
     }
@@ -182,9 +159,7 @@ class QueryBuilder
      */
     public function setParameters(array $params)
     {
-        foreach ($params as $key => $value) {
-            $this->setParameter($key, $value);
-        }
+        $this->_q->setParameters($params);
 
         return $this;
     }
@@ -196,10 +171,7 @@ class QueryBuilder
      */
     public function getParameters($params = array())
     {
-        if ($params) {
-            return array_merge($this->_params, $params);
-        }
-        return $this->_params;
+        return $this->_q->getParameters($params);
     }
     
     /**
@@ -210,7 +182,7 @@ class QueryBuilder
      */
     public function getParameter($key)
     {
-        return isset($this->_params[$key]) ? $this->_params[$key] : null;
+        return $this->_q->getParameter($key);
     }
 
     /**
@@ -398,52 +370,6 @@ class QueryBuilder
     public function addOrderBy($sort, $order)
     {
         return $this->add('orderBy', Expr::orderBy($sort, $order), true);
-    }
-
-    /**
-     * Sets the position of the first result to retrieve (the "offset").
-     *
-     * @param integer $firstResult The first result to return.
-     * @return Query This query object.
-     */
-    public function setFirstResult($firstResult)
-    {
-        $this->_firstResult = $firstResult;
-        return $this;
-    }
-    
-    /**
-     * Gets the position of the first result the query object was set to retrieve (the "offset").
-     * Returns NULL if {@link setFirstResult} was not applied to this query.
-     * 
-     * @return integer The position of the first result.
-     */
-    public function getFirstResult()
-    {
-        return $this->_firstResult;
-    }
-
-    /**
-     * Sets the maximum number of results to retrieve (the "limit").
-     * 
-     * @param integer $maxResults
-     * @return Query This query object.
-     */
-    public function setMaxResults($maxResults)
-    {
-        $this->_maxResults = $maxResults;
-        return $this;
-    }
-    
-    /**
-     * Gets the maximum number of results the query object was set to retrieve (the "limit").
-     * Returns NULL if {@link setMaxResults} was not applied to this query.
-     * 
-     * @return integer Maximum number of results.
-     */
-    public function getMaxResults()
-    {
-        return $this->_maxResults;
     }
 
     /**

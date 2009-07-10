@@ -291,7 +291,6 @@ final class Query extends AbstractQuery
      */
     public function setDql($dqlQuery)
     {
-        $this->free();
         if ($dqlQuery !== null) {
             $this->_dql = $dqlQuery;
             $this->_state = self::STATE_DIRTY;

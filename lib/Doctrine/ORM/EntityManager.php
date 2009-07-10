@@ -262,11 +262,13 @@ class EntityManager
     }
     
     /**
-     * @todo Implementation.
+     * Create a QueryBuilder instance
+     *
+     * @return QueryBuilder $qb
      */
     public function createQueryBuilder()
     {
-        //...
+        return new QueryBuilder($this);
     }
     
     /**
