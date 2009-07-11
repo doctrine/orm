@@ -39,6 +39,7 @@ class AllTests
         $suite->addTestSuite('Doctrine\Tests\DBAL\Types\DecimalTest');
         $suite->addTestSuite('Doctrine\Tests\DBAL\Types\IntegerTest');
         $suite->addTestSuite('Doctrine\Tests\DBAL\Types\SmallIntTest');
+        $suite->addTestSuite('Doctrine\Tests\DBAL\Types\StringTest');
 
         $suite->addTest(Functional\AllTests::suite());
 

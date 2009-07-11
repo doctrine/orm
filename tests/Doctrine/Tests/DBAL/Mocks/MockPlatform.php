@@ -10,7 +10,17 @@ class MockPlatform extends \Doctrine\DBAL\Platforms\AbstractPlatform
     public function getBigIntTypeDeclarationSql(array $columnDef) {}
     public function getSmallIntTypeDeclarationSql(array $columnDef) {}
     public function _getCommonIntegerTypeDeclarationSql(array $columnDef) {}
-    public function getVarcharTypeDeclarationSql(array $field) {}
+
+    public function getVarcharTypeDeclarationSql(array $field)
+    {
+        return "DUMMYVARCHAR()";
+    }
+
+    public function getVarcharDefaultLength()
+    {
+        return 255;
+    }
+
     public function getName()
     {
         return 'mock';

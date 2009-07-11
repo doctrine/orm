@@ -80,12 +80,29 @@ class PostgreSqlPlatformTest extends \Doctrine\Tests\DbalTestCase
         );
     }
 
+    public function testGeneratesForeignKeySqlForNonStandardOptions()
+    {
+        $definition = array(
+            'name' => 'my_fk',
+            'local' => 'foreign_id',
+            'foreign' => 'id',
+            'foreignTable' => 'my_table',
+            'onDelete' => 'CASCADE'
+        );
+        $this->assertEquals(
+            " CONSTRAINT my_fk FOREIGN KEY (foreign_id) REFERENCES my_table(id) ON DELETE CASCADE NOT DEFERRABLE INITIALLY IMMEDIATE",
+            $this->_platform->getForeignKeyDeclarationSql($definition)
+        );
+    }
+
     public function testGeneratesSqlSnippets()
     {
         $this->assertEquals('SIMILAR TO', $this->_platform->getRegexpExpression(), 'Regular expression operator is not correct');
         $this->assertEquals('"', $this->_platform->getIdentifierQuoteCharacter(), 'Identifier quote character is not correct');
         $this->assertEquals('RANDOM()', $this->_platform->getRandomExpression(), 'Random function is not correct');
         $this->assertEquals('column1 || column2 || column3', $this->_platform->getConcatExpression('column1', 'column2', 'column3'), 'Concatenation expression is not correct');
+        $this->assertEquals('SUBSTR(column, 5)', $this->_platform->getSubstringExpression('column', 5), 'Substring expression without length is not correct');
+        $this->assertEquals('SUBSTR(column, 0, 5)', $this->_platform->getSubstringExpression('column', 0, 5), 'Substring expression with length is not correct');
     }
 
     public function testGeneratesTransactionCommands()
