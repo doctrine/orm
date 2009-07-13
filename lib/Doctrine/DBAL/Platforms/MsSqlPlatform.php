@@ -435,7 +435,7 @@ class MsSqlPlatform extends AbstractPlatform
      * @link http://lists.bestpractical.com/pipermail/rt-devel/2005-June/007339.html
      * @return string
      */
-    public function modifyLimitQuery($query, $limit = false, $offset = false, $isManip = false)
+    public function modifyLimitQuery($query, $limit, $offset = null)
     {
         if ($limit > 0) {
             $count = intval($limit);
@@ -454,18 +454,18 @@ class MsSqlPlatform extends AbstractPlatform
                 $orders = explode(',', $order);
 
                 for ($i = 0; $i < count($orders); $i++) {
-                    $sorts[$i] = (stripos($orders[$i], ' desc') !== false) ? 'desc' : 'asc';
+                    $sorts[$i] = (stripos($orders[$i], ' DESC') !== false) ? 'DESC' : 'ASC';
                     $orders[$i] = trim(preg_replace('/\s+(ASC|DESC)$/i', '', $orders[$i]));
 
                     // find alias in query string
-                    $helper_string = stristr($query, $orders[$i]);
+                    $helperString = stristr($query, $orders[$i]);
 
-                    $from_clause_pos = strpos($helper_string, ' FROM ');
-                    $fields_string = substr($helper_string, 0, $from_clause_pos + 1);
+                    $fromClausePos = strpos($helperString, ' FROM ');
+                    $fieldsString = substr($helperString, 0, $fromClausePos + 1);
 
-                    $field_array = explode(',', $fields_string);
-                    $field_array = array_shift($field_array);
-                    $aux2 = spliti(' as ', $field_array);
+                    $fieldArray = explode(',', $fieldsString);
+                    $fieldArray = array_shift($fieldArray);
+                    $aux2 = preg_split('/ as /i', $fieldArray);
 
                     $aliases[$i] = trim(end($aux2));
                 }
@@ -492,7 +492,7 @@ class MsSqlPlatform extends AbstractPlatform
                     } 
 
                     $query .= $this->quoteIdentifier('inner_tbl') . '.' . $aliases[$i] . ' '; 
-                    $query .= (stripos($sorts[$i], 'asc') !== false) ? 'DESC' : 'ASC';
+                    $query .= (stripos($sorts[$i], 'ASC') !== false) ? 'DESC' : 'ASC';
                 }
             }
 

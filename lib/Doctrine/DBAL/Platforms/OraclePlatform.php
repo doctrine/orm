@@ -141,11 +141,12 @@ class OraclePlatform extends AbstractPlatform
     protected function _getTransactionIsolationLevelSql($level)
     {
         switch ($level) {
-            case Doctrine_DBAL_Connection::TRANSACTION_READ_UNCOMMITTED:
-            case Doctrine_DBAL_Connection::TRANSACTION_READ_COMMITTED:
+            case \Doctrine\DBAL\Connection::TRANSACTION_READ_UNCOMMITTED:
+                return 'READ UNCOMMITTED';
+            case \Doctrine\DBAL\Connection::TRANSACTION_READ_COMMITTED:
                 return 'READ COMMITTED';
-            case Doctrine_DBAL_Connection::TRANSACTION_REPEATABLE_READ:
-            case Doctrine_DBAL_Connection::TRANSACTION_SERIALIZABLE:
+            case \Doctrine\DBAL\Connection::TRANSACTION_REPEATABLE_READ:
+            case \Doctrine\DBAL\Connection::TRANSACTION_SERIALIZABLE:
                 return 'SERIALIZABLE';
             default:
                 return parent::_getTransactionIsolationLevelSql($level);
@@ -478,7 +479,7 @@ END;';
      * @param integer $offset       start reading from given offset
      * @return string               the modified query
      */
-    public function modifyLimitQuery($query, $limit = false, $offset = false, $isManip = false)
+    public function modifyLimitQuery($query, $limit, $offset = null)
     {
         $limit = (int) $limit;
         $offset = (int) $offset;
@@ -488,7 +489,7 @@ END;';
             }
             if ($limit > 0) {
                 $max = $offset + $limit;
-                $column = $column === null ? '*' : $this->quoteIdentifier($column);
+                $column = '*';
                 if ($offset > 0) {
                     $min = $offset + 1;
                     $query = 'SELECT b.'.$column.' FROM ('.

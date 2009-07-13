@@ -208,4 +208,16 @@ class PostgreSqlPlatformTest extends \Doctrine\Tests\DbalTestCase
     {
         $this->assertTrue($this->_platform->supportsSequences());
     }
+
+    public function testModifyLimitQuery()
+    {
+        $sql = $this->_platform->modifyLimitQuery('SELECT * FROM user', 10, 0);
+        $this->assertEquals('SELECT * FROM user OFFSET 0 LIMIT 10', $sql);
+    }
+
+    public function testModifyLimitQueryWithEmptyOffset()
+    {
+        $sql = $this->_platform->modifyLimitQuery('SELECT * FROM user', 10);
+        $this->assertEquals('SELECT * FROM user LIMIT 10', $sql);
+    }
 }

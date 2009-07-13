@@ -1538,14 +1538,14 @@ abstract class AbstractPlatform
         return 'H:i:s';
     }
 
-    public function modifyLimitQuery($query, $max, $first)
+    public function modifyLimitQuery($query, $limit, $offset = null)
     {
-        if ( ! is_null($first)) {
-            $query .= ' OFFSET ' . $first;
+        if ( ! is_null($offset)) {
+            $query .= ' OFFSET ' . $offset;
         }
 
-        if ( ! is_null($max)) {
-            $query .= ' LIMIT ' . $max;
+        if ( ! is_null($limit)) {
+            $query .= ' LIMIT ' . $limit;
         }
 
         return $query;

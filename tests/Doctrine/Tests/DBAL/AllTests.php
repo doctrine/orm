@@ -28,6 +28,7 @@ class AllTests
         $suite->addTestSuite('Doctrine\Tests\DBAL\Platforms\MySqlPlatformTest');
         $suite->addTestSuite('Doctrine\Tests\DBAL\Platforms\PostgreSqlPlatformTest');
         $suite->addTestSuite('Doctrine\Tests\DBAL\Platforms\MsSqlPlatformTest');
+        $suite->addTestSuite('Doctrine\Tests\DBAL\Platforms\OraclePlatformTest');
 
         // Type tests
         $suite->addTestSuite('Doctrine\Tests\DBAL\Types\ArrayTest');

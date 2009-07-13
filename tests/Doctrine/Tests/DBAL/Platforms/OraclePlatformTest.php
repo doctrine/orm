@@ -2,18 +2,18 @@
 
 namespace Doctrine\Tests\DBAL\Platforms;
 
-use Doctrine\DBAL\Platforms\MsSqlPlatform;
+use Doctrine\DBAL\Platforms\OraclePlatform;
 use Doctrine\DBAL\Types\Type;
 
 require_once __DIR__ . '/../../TestInit.php';
  
-class MsSqlPlatformTest extends \Doctrine\Tests\DbalTestCase
+class OraclePlatformTest extends \Doctrine\Tests\DbalTestCase
 {
     private $_platform;
 
     public function setUp()
     {
-        $this->_platform = new MsSqlPlatform;
+        $this->_platform = new OraclePlatform;
     }
 
     public function testGeneratesTableCreationSql()
@@ -37,7 +37,7 @@ class MsSqlPlatformTest extends \Doctrine\Tests\DbalTestCase
         );
 
         $sql = $this->_platform->getCreateTableSql('test', $columns, $options);
-        $this->assertEquals('CREATE TABLE test (id INT AUTO_INCREMENT NOT NULL, test VARCHAR(255) NOT NULL, PRIMARY KEY(id))', $sql[0]);
+        $this->assertEquals('CREATE TABLE test (id NUMBER(10) NOT NULL, test VARCHAR2(255) NOT NULL, PRIMARY KEY(id))', $sql[0]);
     }
 
     public function testGeneratesTableAlterationSql()
@@ -51,18 +51,39 @@ class MsSqlPlatformTest extends \Doctrine\Tests\DbalTestCase
                 )
             ));
         
+        $sql = $this->_platform->getAlterTableSql('mytable', $changes);
+        
         $this->assertEquals(
-            'ALTER TABLE mytable RENAME TO userlist, ADD quota INT UNSIGNED DEFAULT NULL',
-            $this->_platform->getAlterTableSql('mytable', $changes)
+            'ALTER TABLE mytable ADD (quota NUMBER(10) DEFAULT NULL)',
+            $sql[0]
         );
+
+        $this->assertEquals(
+            'ALTER TABLE mytable RENAME TO userlist',
+            $sql[1]
+        );
+    }
+
+    /**
+     * @expectedException Doctrine\Common\DoctrineException
+     */
+    public function testRLike()
+    {
+        $this->assertEquals('RLIKE', $this->_platform->getRegexpExpression(), 'Regular expression operator is not correct');
     }
 
     public function testGeneratesSqlSnippets()
     {
-        $this->assertEquals('RLIKE', $this->_platform->getRegexpExpression(), 'Regular expression operator is not correct');
-        $this->assertEquals('`', $this->_platform->getIdentifierQuoteCharacter(), 'Identifier quote character is not correct');
-        $this->assertEquals('RAND()', $this->_platform->getRandomExpression(), 'Random function is not correct');
-        $this->assertEquals('(column1 + column2 + column3)', $this->_platform->getConcatExpression('column1', 'column2', 'column3'), 'Concatenation expression is not correct');
+        $this->assertEquals('"', $this->_platform->getIdentifierQuoteCharacter(), 'Identifier quote character is not correct');
+        $this->assertEquals('dbms_random.value', $this->_platform->getRandomExpression(), 'Random function is not correct');
+        $this->assertEquals('column1 || column2 || column3', $this->_platform->getConcatExpression('column1', 'column2', 'column3'), 'Concatenation expression is not correct');
+    }
+
+    /**
+     * @expectedException Doctrine\Common\DoctrineException
+     */
+    public function testGetCharsetFieldDeclaration()
+    {
         $this->assertEquals('CHARACTER SET utf8', $this->_platform->getCharsetFieldDeclaration('utf8'), 'Charset declaration is not correct');
     }
 
@@ -77,7 +98,7 @@ class MsSqlPlatformTest extends \Doctrine\Tests\DbalTestCase
             $this->_platform->getSetTransactionIsolationSql(\Doctrine\DBAL\Connection::TRANSACTION_READ_COMMITTED)
         );
         $this->assertEquals(
-            'SET TRANSACTION ISOLATION LEVEL REPEATABLE READ',
+            'SET TRANSACTION ISOLATION LEVEL SERIALIZABLE',
             $this->_platform->getSetTransactionIsolationSql(\Doctrine\DBAL\Connection::TRANSACTION_REPEATABLE_READ)
         );
         $this->assertEquals(
@@ -86,26 +107,44 @@ class MsSqlPlatformTest extends \Doctrine\Tests\DbalTestCase
         );
     }
 
-    public function testGeneratesDDLSnippets()
+    /**
+     * @expectedException Doctrine\Common\DoctrineException
+     */
+    public function testShowDatabasesThrowsException()
     {
         $this->assertEquals('SHOW DATABASES', $this->_platform->getShowDatabasesSql());
+    }
+
+    /**
+     * @expectedException Doctrine\Common\DoctrineException
+     */
+    public function testCreateDatabaseThrowsException()
+    {
         $this->assertEquals('CREATE DATABASE foobar', $this->_platform->getCreateDatabaseSql('foobar'));
-        $this->assertEquals('DROP DATABASE foobar', $this->_platform->getDropDatabaseSql('foobar'));
-        $this->assertEquals('DROP TABLE foobar', $this->_platform->getDropTableSql('foobar'));
+    }
+
+    public function testDropDatabaseThrowsException()
+    {
+        $this->assertEquals('DROP USER foobar CASCADE', $this->_platform->getDropDatabaseSql('foobar'));
+    }
+
+    public function testDropTable()
+    {
+        $this->assertEquals('DROP TABLE foobar', $this->_platform->getDropTableSql('foobar'));        
     }
 
     public function testGeneratesTypeDeclarationForIntegers()
     {
         $this->assertEquals(
-            'INT',
+            'NUMBER(10)',
             $this->_platform->getIntegerTypeDeclarationSql(array())
         );
         $this->assertEquals(
-            'INT AUTO_INCREMENT',
+            'NUMBER(10)',
             $this->_platform->getIntegerTypeDeclarationSql(array('autoincrement' => true)
         ));
         $this->assertEquals(
-            'INT AUTO_INCREMENT',
+            'NUMBER(10)',
             $this->_platform->getIntegerTypeDeclarationSql(
                 array('autoincrement' => true, 'primary' => true)
         ));
@@ -119,12 +158,12 @@ class MsSqlPlatformTest extends \Doctrine\Tests\DbalTestCase
                 array('length' => 10, 'fixed' => true)
         ));
         $this->assertEquals(
-            'VARCHAR(50)',
+            'VARCHAR2(50)',
             $this->_platform->getVarcharTypeDeclarationSql(array('length' => 50)),
             'Variable string declaration is not correct'
         );
         $this->assertEquals(
-            'TEXT',
+            'VARCHAR2(4000)',
             $this->_platform->getVarcharTypeDeclarationSql(array()),
             'Long string declaration is not correct'
         );
@@ -132,17 +171,17 @@ class MsSqlPlatformTest extends \Doctrine\Tests\DbalTestCase
 
     public function testPrefersIdentityColumns()
     {
-        $this->assertTrue($this->_platform->prefersIdentityColumns());
+        $this->assertFalse($this->_platform->prefersIdentityColumns());
     }
 
     public function testSupportsIdentityColumns()
     {
-        $this->assertTrue($this->_platform->supportsIdentityColumns());
+        $this->assertFalse($this->_platform->supportsIdentityColumns());
     }
 
-    public function testDoesNotSupportSavePoints()
+    public function testSupportsSavePoints()
     {
-        $this->assertFalse($this->_platform->supportsSavepoints());   
+        $this->assertTrue($this->_platform->supportsSavepoints());   
     }
 
     public function testGeneratesConstraintCreationSql()
@@ -184,24 +223,24 @@ class MsSqlPlatformTest extends \Doctrine\Tests\DbalTestCase
     public function testModifyLimitQuery()
     {
         $sql = $this->_platform->modifyLimitQuery('SELECT * FROM user', 10, 0);
-        $this->assertEquals('SELECT * FROM (SELECT TOP 10 * FROM (SELECT TOP 10 * FROM user) AS inner_tbl) AS outer_tbl', $sql);
+        $this->assertEquals('SELECT a.* FROM (SELECT * FROM user) a WHERE ROWNUM <= 10', $sql);
     }
 
     public function testModifyLimitQueryWithEmptyOffset()
     {
         $sql = $this->_platform->modifyLimitQuery('SELECT * FROM user', 10);
-        $this->assertEquals('SELECT * FROM (SELECT TOP 10 * FROM (SELECT TOP 10 * FROM user) AS inner_tbl) AS outer_tbl', $sql);
+        $this->assertEquals('SELECT a.* FROM (SELECT * FROM user) a WHERE ROWNUM <= 10', $sql);
     }
 
     public function testModifyLimitQueryWithAscOrderBy()
     {
         $sql = $this->_platform->modifyLimitQuery('SELECT * FROM user ORDER BY username ASC', 10);
-        $this->assertEquals('SELECT * FROM (SELECT TOP 10 * FROM (SELECT TOP 10 * FROM user ORDER BY username ASC) AS inner_tbl ORDER BY inner_tbl.u DESC) AS outer_tbl ORDER BY outer_tbl.u ASC', $sql);
+        $this->assertEquals('SELECT a.* FROM (SELECT * FROM user ORDER BY username ASC) a WHERE ROWNUM <= 10', $sql);
     }
 
     public function testModifyLimitQueryWithDescOrderBy()
     {
         $sql = $this->_platform->modifyLimitQuery('SELECT * FROM user ORDER BY username DESC', 10);
-        $this->assertEquals('SELECT * FROM (SELECT TOP 10 * FROM (SELECT TOP 10 * FROM user ORDER BY username DESC) AS inner_tbl ORDER BY inner_tbl.u ASC) AS outer_tbl ORDER BY outer_tbl.u DESC', $sql);
+        $this->assertEquals('SELECT a.* FROM (SELECT * FROM user ORDER BY username DESC) a WHERE ROWNUM <= 10', $sql);
     }
 }

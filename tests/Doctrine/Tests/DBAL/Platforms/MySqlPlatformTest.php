@@ -182,4 +182,16 @@ class MySqlPlatformTest extends \Doctrine\Tests\DbalTestCase
         $sql = $this->_platform->getCreateForeignKeySql('test', array('foreignTable' => 'other_table', 'local' => 'fk_name_id', 'foreign' => 'id'));
         $this->assertEquals($sql, 'ALTER TABLE test ADD FOREIGN KEY (fk_name_id) REFERENCES other_table(id)');
     }
+
+    public function testModifyLimitQuery()
+    {
+        $sql = $this->_platform->modifyLimitQuery('SELECT * FROM user', 10, 0);
+        $this->assertEquals('SELECT * FROM user OFFSET 0 LIMIT 10', $sql);
+    }
+
+    public function testModifyLimitQueryWithEmptyOffset()
+    {
+        $sql = $this->_platform->modifyLimitQuery('SELECT * FROM user', 10);
+        $this->assertEquals('SELECT * FROM user LIMIT 10', $sql);
+    }
 }
