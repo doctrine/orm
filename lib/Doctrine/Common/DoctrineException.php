@@ -29,8 +29,9 @@ class DoctrineException extends \Exception
         $messageKey = substr($class, strrpos($class, '\\') + 1) . "#$method";
 
         $end = end($arguments);
+        $innerException = null;
         if ($end instanceof \Exception) {
-            $this->_innerException = $end;
+            $innerException = $end;
             unset($arguments[count($arguments) - 1]);
         }
 
@@ -46,7 +47,7 @@ class DoctrineException extends \Exception
             $message .= ' (' . implode(', ', $args) . ')';
         }
         
-        return new $class($message);
+        return new $class($message, $innerException);
     }
 
     public static function getExceptionMessage($messageKey)

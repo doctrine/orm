@@ -15,6 +15,26 @@ class CollectionTest extends \Doctrine\Tests\DoctrineTestCase
         $this->_coll = new \Doctrine\Common\Collections\Collection;
     }
 
+    public function testIssetAndUnset()
+    {
+        $this->assertFalse(isset($this->_coll[0]));
+        $this->_coll->add('testing');
+        $this->assertTrue(isset($this->_coll[0]));
+        unset($this->_coll[0]);
+        $this->assertFalse(isset($this->_coll[0]));
+    }
+
+    public function testToString()
+    {
+        $this->_coll->add('testing');
+        $this->assertTrue(is_string((string) $this->_coll));
+    }
+
+    public function testRemovingNonExistentEntryReturnsNull()
+    {
+        $this->assertEquals(null, $this->_coll->remove('testing_does_not_exist'));
+    }
+
     public function testExists()
     {
         $this->_coll->add("one");

@@ -202,7 +202,7 @@ class Connection
      */
     public function getHost()
     {
-        return $this->_params['host'];
+        return isset($this->_params['host']) ? $this->_params['host'] : null;
     }
     
     /**
@@ -212,7 +212,7 @@ class Connection
      */
     public function getPort()
     {
-        return $this->_params['port'];
+        return isset($this->_params['port']) ? $this->_params['port'] : null;
     }
     
     /**
@@ -222,7 +222,7 @@ class Connection
      */
     public function getUsername()
     {
-        return $this->_params['user'];
+        return isset($this->_params['user']) ? $this->_params['user'] : null;
     }
     
     /**
@@ -232,7 +232,7 @@ class Connection
      */
     public function getPassword()
     {
-        return $this->_params['password'];
+        return isset($this->_params['password']) ? $this->_params['password'] : null;
     }
 
     /**

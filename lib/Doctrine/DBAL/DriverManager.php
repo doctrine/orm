@@ -48,7 +48,10 @@ final class DriverManager
             );
 
     /** Private constructor. This class cannot be instantiated. */
-    private function __construct() {}
+    public function __construct()
+    {
+        throw \Doctrine\Common\DoctrineException::driverManagerCannotBeInstantiated();
+    }
 
     /**
      * Creates a connection object based on the specified parameters.
@@ -109,9 +112,9 @@ final class DriverManager
         
         // check for existing pdo object
         if (isset($params['pdo']) && ! $params['pdo'] instanceof \PDO) {
-            throw DoctrineException::invalidPDOInstance();
+            throw DoctrineException::invalidPdoInstance();
         } else if (isset($params['pdo'])) {
-            $params['driver'] = $params['pdo']->getAttribute(\PDO::ATTR_DRIVER_NAME);
+            $params['driver'] = 'pdo_' . $params['pdo']->getAttribute(\PDO::ATTR_DRIVER_NAME);
         } else {
             self::_checkParams($params);
         }

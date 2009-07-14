@@ -12,6 +12,8 @@ class EventManagerTest extends \Doctrine\Tests\DoctrineTestCase
     /* Some pseudo events */
     const preFoo = 'preFoo';
     const postFoo = 'postFoo';
+    const preBar = 'preBar';
+    const postBar = 'postBar';
 
     private $_preFooInvoked = false;
     private $_postFooInvoked = false;
@@ -50,6 +52,22 @@ class EventManagerTest extends \Doctrine\Tests\DoctrineTestCase
         $this->assertFalse($this->_postFooInvoked);
     }
 
+    public function testRemoveEventListener()
+    {
+        $this->_eventManager->addEventListener(array('preBar'), $this);
+        $this->assertTrue($this->_eventManager->hasListeners(self::preBar));
+        $this->_eventManager->removeEventListener(array('preBar'), $this);
+        $this->assertFalse($this->_eventManager->hasListeners(self::preBar));
+    }
+
+    public function testAddEventSubscriber()
+    {
+        $eventSubscriber = new TestEventSubscriber();
+        $this->_eventManager->addEventSubscriber($eventSubscriber);
+        $this->assertTrue($this->_eventManager->hasListeners(self::preFoo));
+        $this->assertTrue($this->_eventManager->hasListeners(self::postFoo));
+    }
+
     /* Listener methods */
 
     public function preFoo(EventArgs $e)
@@ -60,5 +78,13 @@ class EventManagerTest extends \Doctrine\Tests\DoctrineTestCase
     public function postFoo(EventArgs $e)
     {
         $this->_postFooInvoked = true;
+    }
+}
+
+class TestEventSubscriber implements \Doctrine\Common\EventSubscriber
+{
+    public function getSubscribedEvents()
+    {
+        return array('preFoo', 'postFoo');
     }
 }

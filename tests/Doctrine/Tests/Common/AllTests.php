@@ -4,6 +4,7 @@ namespace Doctrine\Tests\Common;
 
 use Doctrine\Tests\Common\Collections;
 use Doctrine\Tests\Common\Annotations;
+use Doctrine\Tests\Common\Cache;
 
 if (!defined('PHPUnit_MAIN_METHOD')) {
     define('PHPUnit_MAIN_METHOD', 'Common_AllTests::main');
@@ -28,6 +29,7 @@ class AllTests
 
         $suite->addTest(Collections\AllTests::suite());
         $suite->addTest(Annotations\AllTests::suite());
+        $suite->addTest(Cache\AllTests::suite());
 
         return $suite;
     }

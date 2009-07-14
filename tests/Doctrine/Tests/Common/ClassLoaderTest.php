@@ -28,4 +28,16 @@ class ClassLoaderTest extends \Doctrine\Tests\DoctrineTestCase
         // This would return a fatal error without check file exists true
         $this->assertEquals($classLoader->loadClass('SomeInvalidClass'), false);
     }
+
+    public function testAlreadyLoadedClassReturnsFalse()
+    {
+        $classLoader = new \Doctrine\Common\ClassLoader();
+        $classLoader->setBasePath('ClassLoaderTest', __DIR__);
+        $classLoader->setClassFileExtension('.class.php');
+        $classLoader->setNamespaceSeparator('_');
+        $classLoader->setCheckFileExists(true);
+
+        $this->assertEquals($classLoader->loadClass('ClassLoaderTest_ClassA'), false);
+        $this->assertEquals($classLoader->loadClass('ClassLoaderTest_ClassC'), true);
+    }
 }

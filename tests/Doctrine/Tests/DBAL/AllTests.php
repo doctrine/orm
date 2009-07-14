@@ -42,6 +42,13 @@ class AllTests
         $suite->addTestSuite('Doctrine\Tests\DBAL\Types\SmallIntTest');
         $suite->addTestSuite('Doctrine\Tests\DBAL\Types\StringTest');
 
+        // Driver manager test
+        $suite->addTestSuite('Doctrine\Tests\DBAL\DriverManagerTest');
+
+        // Connection test
+        $suite->addTestSuite('Doctrine\Tests\DBAL\Connectiontest');
+
+        // All Functional DBAL tests
         $suite->addTest(Functional\AllTests::suite());
 
         return $suite;

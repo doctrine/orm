@@ -80,7 +80,7 @@ class EventManager
      */
     public function hasListeners($event)
     {
-        return isset($this->_listeners[$event]);
+        return isset($this->_listeners[$event]) && ! empty($this->_listeners[$event]);
     }
 
     /**
@@ -106,7 +106,7 @@ class EventManager
     public function removeEventListener($events, $listener)
     {
         foreach ((array)$events as $event) {
-            if ($key = array_search($listener, $this->_listeners[$event], true)) {
+            if (($key = array_search($listener, $this->_listeners[$event], true)) !== false) {
                 unset($this->_listeners[$event][$key]);
             }
         }

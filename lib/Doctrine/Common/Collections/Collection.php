@@ -127,22 +127,6 @@ class Collection implements Countable, IteratorAggregate, ArrayAccess
         return null;
     }
 
-    /**
-     * @see containsKey()
-     */
-    public function __isset($key)
-    {
-        return $this->containsKey($key);
-    }
-
-    /**
-     * @see remove()
-     */
-    public function __unset($key)
-    {
-        return $this->remove($key);
-    }
-
     /* ArrayAccess implementation */
 
     /**

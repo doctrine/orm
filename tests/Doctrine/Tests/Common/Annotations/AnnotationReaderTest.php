@@ -46,6 +46,16 @@ class AnnotationReaderTest extends \Doctrine\Tests\DoctrineTestCase
         $this->assertEquals('col2', $joinTableAnnot->joinColumns[0]->referencedColumnName);
         $this->assertEquals('col3', $joinTableAnnot->inverseJoinColumns[0]->name);
         $this->assertEquals('col4', $joinTableAnnot->inverseJoinColumns[0]->referencedColumnName);
+
+        $dummyAnnot = $reader->getMethodAnnotation($class->getMethod('getField1'), 'Doctrine\Tests\Common\Annotations\DummyAnnotation');
+        $this->assertEquals('', $dummyAnnot->dummyValue);
+        $this->assertEquals(array(1, 2, 'three'), $dummyAnnot->value);
+
+        $dummyAnnot = $reader->getPropertyAnnotation($class->getProperty('field1'), 'Doctrine\Tests\Common\Annotations\DummyAnnotation');
+        $this->assertEquals('fieldHello', $dummyAnnot->dummyValue);
+
+        $classAnnot = $reader->getClassAnnotation($class, 'Doctrine\Tests\Common\Annotations\DummyAnnotation');
+        $this->assertEquals('hello', $classAnnot->dummyValue);
     }
 }
 
