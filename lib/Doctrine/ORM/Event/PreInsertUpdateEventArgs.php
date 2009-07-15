@@ -5,12 +5,12 @@ namespace Doctrine\ORM\Event;
 use Doctrine\Common\EventArgs;
 
 /**
- * Class that holds event arguments for a preUpdate event.
+ * Class that holds event arguments for a preInsert/preUpdate event.
  *
  * @author Roman Borschel <roman@code-factory.org>
  * @since 2.0
  */
-class PreUpdateEventArgs extends EventArgs
+class PreInsertUpdateEventArgs extends EventArgs
 {
     private $_entity;
     private $_entityChangeSet;
@@ -28,7 +28,7 @@ class PreUpdateEventArgs extends EventArgs
     
     public function getEntityChangeSet()
     {
-        return $this->_entityState;
+    	return $this->_entityChangeSet;
     }
 }
 

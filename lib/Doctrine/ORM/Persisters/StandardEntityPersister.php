@@ -423,7 +423,7 @@ class StandardEntityPersister
      */
     final protected function _preInsert($entity)
     {
-        $eventArgs = new \Doctrine\ORM\Event\PreInsertEventArgs(
+        $eventArgs = new \Doctrine\ORM\Event\PreInsertUpdateEventArgs(
             $entity, $this->_em->getUnitOfWork()->getEntityChangeSet($entity)
         );
         $this->_evm->dispatchEvent(Events::preInsert, $eventArgs);
@@ -446,7 +446,7 @@ class StandardEntityPersister
      */
     final protected function _preUpdate($entity)
     {
-        $eventArgs = new \Doctrine\ORM\Event\PreUpdateEventArgs(
+        $eventArgs = new \Doctrine\ORM\Event\PreInsertUpdateEventArgs(
             $entity, $this->_em->getUnitOfWork()->getEntityChangeSet($entity)
         );
         $this->_evm->dispatchEvent(Events::preUpdate, $eventArgs);
