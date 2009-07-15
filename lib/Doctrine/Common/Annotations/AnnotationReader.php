@@ -35,7 +35,6 @@ class AnnotationReader
     private static $CACHE_SALT = "@<Annot>";
     private $_parser;
     private $_cache;
-    private $_annotations = array();
     
     /**
      * Initiaizes a new AnnotationReader that uses the given Cache provider to cache annotations.
@@ -49,9 +48,10 @@ class AnnotationReader
     }
     
     /**
+     * Sets the default namespace that the AnnotationReader should assume for annotations
+     * with not fully qualified names.
      * 
-     * @param $defaultNamespace
-     * @return unknown_type
+     * @param string $defaultNamespace
      */
     public function setDefaultAnnotationNamespace($defaultNamespace)
     {
@@ -67,25 +67,24 @@ class AnnotationReader
      */
     public function getClassAnnotations(ReflectionClass $class)
     {
-        $className = $class->getName();
+        $cacheKey = $class->getName() . self::$CACHE_SALT;
         
-        if (isset($this->_annotations[$className])) {
-            return $this->_annotations[$className];
-        } else if ($this->_cache->contains($className . self::$CACHE_SALT)) {
-            $this->_annotations[$className] = $this->_cacheDriver->get($className . self::$CACHE_SALT);
-            return $this->_annotations[$className];
+        if ($this->_cache->contains($cacheKey)) {
+            return $this->_cache->fetch($cacheKey);
         }
         
-        $this->_annotations[$className] = $this->_parser->parse($class->getDocComment());
+        $annotations = $this->_parser->parse($class->getDocComment());
+        $this->_cache->save($cacheKey, $annotations, null);
         
-        return $this->_annotations[$className];
+        return $annotations;
     }
     
     /**
+     * Gets a class annotation.
      * 
      * @param $class
-     * @param $annotation
-     * @return unknown_type
+     * @param string $annotation The name of the annotation.
+     * @return The Annotation or NULL, if the requested annotation does not exist.
      */
     public function getClassAnnotation(ReflectionClass $class, $annotation)
     {
@@ -103,25 +102,24 @@ class AnnotationReader
      */
     public function getPropertyAnnotations(ReflectionProperty $property)
     {
-        $propertyName = $property->getDeclaringClass()->getName() . '$' . $property->getName();
+        $cacheKey = $property->getDeclaringClass()->getName() . '$' . $property->getName() . self::$CACHE_SALT;
         
-        if (isset($this->_annotations[$propertyName])) {
-            return $this->_annotations[$propertyName];
-        } else if ($this->_cache->contains($propertyName . self::$CACHE_SALT)) {
-            $this->_annotations[$propertyName] = $this->_cacheDriver->get($propertyName . self::$CACHE_SALT);
-            return $this->_annotations[$propertyName];
+        if ($this->_cache->contains($cacheKey)) {
+            return $this->_cache->fetch($cacheKey);
         }
         
-        $this->_annotations[$propertyName] = $this->_parser->parse($property->getDocComment());
+        $annotations = $this->_parser->parse($property->getDocComment());
+        $this->_cache->save($cacheKey, $annotations, null);
         
-        return $this->_annotations[$propertyName];
+        return $annotations;
     }
     
     /**
+     * Gets a property annotation.
      * 
-     * @param $property
-     * @param $annotation
-     * @return unknown_type
+     * @param ReflectionProperty $property
+     * @param string $annotation The name of the annotation.
+     * @return The Annotation or NULL, if the requested annotation does not exist.
      */
     public function getPropertyAnnotation(ReflectionProperty $property, $annotation)
     {
@@ -139,25 +137,24 @@ class AnnotationReader
      */
     public function getMethodAnnotations(ReflectionMethod $method)
     {
-        $methodName = $method->getDeclaringClass()->getName() . '#' . $method->getName();
+        $cacheKey = $method->getDeclaringClass()->getName() . '#' . $method->getName() . self::$CACHE_SALT;
         
-        if (isset($this->_annotations[$methodName])) {
-            return $this->_annotations[$methodName];
-        } else if ($this->_cache->contains($methodName . self::$CACHE_SALT)) {
-            $this->_annotations[$methodName] = $this->_cacheDriver->get($methodName . self::$CACHE_SALT);
-            return $this->_annotations[$methodName];
+        if ($this->_cache->contains($cacheKey)) {
+            return $this->_cache->fetch($cacheKey);
         }
         
-        $this->_annotations[$methodName] = $this->_parser->parse($method->getDocComment());
+        $annotations = $this->_parser->parse($method->getDocComment());
+        $this->_cache->save($cacheKey, $annotations, null);
         
-        return $this->_annotations[$methodName];
+        return $annotations;
     }
     
     /**
+     * Gets a method annotation.
      * 
-     * @param $method
-     * @param $annotation
-     * @return unknown_type
+     * @param ReflectionMethod $method
+     * @param string $annotation The name of the annotation.
+     * @return The Annotation or NULL, if the requested annotation does not exist.
      */
     public function getMethodAnnotation(ReflectionMethod $method, $annotation)
     {
