@@ -19,6 +19,8 @@
  * <http://www.doctrine-project.org>.
  */
 
+namespace Doctrine\ORM\Mapping;
+
 /* Annotations */
 
 final class Entity extends \Doctrine\Common\Annotations\Annotation {

@@ -126,7 +126,7 @@ class Parser
      */
     private function syntaxError($expected, $got = "")
     {
-        throw new \Exception("Expected: $expected. Got: $got");
+        throw \Doctrine\Common\DoctrineException::syntaxError("Expected: $expected. Got: $got");
     }
     
     /**
