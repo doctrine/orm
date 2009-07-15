@@ -145,9 +145,7 @@ class Parser
         }
         
         while (true) {
-            if ($this->_lexer->lookahead['value'] == '*') {
-                $this->match('*');
-            } else if ($this->_lexer->lookahead['value'] == '@') {
+            if ($this->_lexer->lookahead['value'] == '@') {
                 $this->_isNestedAnnotation = false;
                 $annot = $this->Annotation();
                 if ($annot === false) {
