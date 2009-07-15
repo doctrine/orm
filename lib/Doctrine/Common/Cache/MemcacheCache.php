@@ -21,6 +21,8 @@
 
 namespace Doctrine\Common\Cache;
 
+use \Memcache;
+
 /**
  * Memcache cache driver.
  *
@@ -33,7 +35,7 @@ namespace Doctrine\Common\Cache;
 class MemcacheCache implements Cache
 {
     /**
-     * @var Memcache $_memcache     memcache object
+     * @var Memcache
      */
     private $_memcache;
 

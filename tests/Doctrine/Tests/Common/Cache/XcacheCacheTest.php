@@ -28,16 +28,9 @@ class XcacheCacheTest extends \Doctrine\Tests\DoctrineTestCase
         // Test fetch
         $this->assertEquals('testing this out', $cache->fetch('test_key'));
 
-        // Test count
-        $this->assertEquals(1, $cache->count());
-
         // Test delete
         $cache->save('test_key2', 'test2');
         $cache->delete('test_key2');
         $this->assertFalse($cache->contains('test_key2'));
-
-        // Test delete all
-        $cache->deleteAll();
-        $this->assertEquals(0, $cache->count());
     }
 }

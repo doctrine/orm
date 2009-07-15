@@ -28,8 +28,8 @@ use \ArrayAccess;
 use \ArrayIterator;
 
 /**
- * A Collection is a thin wrapper around a php array. Think of it as an OO version
- * of a plain array.
+ * A Collection is a thin wrapper around a php array. Like a php array it is essentially
+ * an ordered map.
  *
  * @author Roman S. Borschel <roman@code-factory.org>
  * @since 2.0
@@ -42,10 +42,10 @@ class Collection implements Countable, IteratorAggregate, ArrayAccess
      *
      * @var array
      */
-    protected $_elements = array();
+    protected $_elements;
 
     /**
-     * Constructor accepts an array of $elements
+     * Initializes a new Collection.
      *
      * @param array $elements
      */

@@ -34,38 +34,36 @@ namespace Doctrine\Common\Cache;
 interface Cache
 {
     /**
-     * Test if a cache entry is available for the given id and (if yes) return it (false else).
+     * Fetches an entry from the cache.
      * 
-     * Note : return value is always "string" (unserialization is done by the core not by the backend)
-     * 
-     * @param string $id cache id
-     * @return string cached datas (or false)
+     * @param string $id cache id The id of the cache entry to fetch.
+     * @return string The cached data or FALSE, if no cache entry exists for the given id.
      */
-    public function fetch($id);
+    function fetch($id);
 
     /**
-     * Test if a cache is available or not (for the given id)
+     * Test if an entry exists in the cache.
      *
-     * @param string $id cache id
-     * @return mixed false (a cache is not available) or "last modified" timestamp (int) of the available cache record
+     * @param string $id cache id The cache id of the entry to check for.
+     * @return boolean TRUE if a cache entry exists for the given cache id, FALSE otherwise.
      */
-    public function contains($id);
+    function contains($id);
 
     /**
      * Puts data into the cache.
      *
-     * @param string $id        cache id
-     * @param string $data      data to cache
-     * @param int $lifeTime     if != false, set a specific lifetime for this cache record (null => infinite lifeTime)
-     * @return boolean true if no problem
+     * @param string $id The cache id.
+     * @param string $data The cache entry/data.
+     * @param int $lifeTime The lifetime. If != false, sets a specific lifetime for this cache entry (null => infinite lifeTime).
+     * @return boolean TRUE if the entry was successfully stored in the cache, FALSE otherwise.
      */
-    public function save($id, $data, $lifeTime = false);
+    function save($id, $data, $lifeTime = false);
 
     /**
-     * Remove a cache record
+     * Deletes a cache entry.
      * 
      * @param string $id cache id
-     * @return boolean true if no problem
+     * @return boolean TRUE if the cache entry was successfully deleted, FALSE otherwise.
      */
-    public function delete($id);
+    function delete($id);
 }
