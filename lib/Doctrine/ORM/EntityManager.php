@@ -561,7 +561,9 @@ class EntityManager
     }
 
     /**
-     * Gets the proxy generated used by the EntityManager to create entity proxies.
+     * Gets the proxy generator used by the EntityManager to create entity proxies.
+     * 
+     * @return DynamicProxyGenerator
      */
     public function getProxyGenerator()
     {

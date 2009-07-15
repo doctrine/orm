@@ -19,17 +19,24 @@
  * <http://www.doctrine-project.org>.
  */
 
-namespace Doctrine\ORM;
+namespace Doctrine\DBAL;
 
 /**
- * EntityManagerException
+ * Container for all DBAL events.
  *
- * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
- * @author      Roman Borschel <roman@code-factory.org>
- * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
- * @link        www.doctrine-project.org
- * @since       2.0
- * @version     $Revision$
+ * This class cannot be instantiated.
+ *
+ * @author Roman Borschel <roman@code-factory.org>
+ * @since 2.0
  */
-class EntityManagerException extends \Doctrine\Common\DoctrineException
-{}
+final class Events
+{
+    private function __construct() {}
+
+    const preExec = 'preExec';
+    const postExec = 'postExec';
+    const preExecute = 'preExecute';
+    const postExecute = 'postExecute';
+    
+}
+

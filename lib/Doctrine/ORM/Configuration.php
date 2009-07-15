@@ -21,8 +21,6 @@
 
 namespace Doctrine\ORM;
 
-use Doctrine\ORM\Mapping\Driver\AnnotationDriver;
-
 /**
  * Configuration container for all configuration options of Doctrine.
  * It combines all configuration options from DBAL & ORM.
@@ -44,16 +42,21 @@ class Configuration extends \Doctrine\DBAL\Configuration
             'resultCacheImpl' => null,
             'queryCacheImpl' => null,
             'metadataCacheImpl' => null,
-            'metadataDriverImpl' => new AnnotationDriver(),
-            'dqlClassAliasMap' => array(),
+            'metadataDriverImpl' => null,
             'cacheDir' => null,
             'allowPartialObjects' => true,
             'useCExtension' => false
             ));
+        
+        //TODO: Move this to client code to avoid unnecessary work when a different metadata
+        // driver is used.
+        $reader = new \Doctrine\Common\Annotations\AnnotationReader(new \Doctrine\Common\Cache\ArrayCache);
+        $reader->setDefaultAnnotationNamespace('Doctrine\ORM\Mapping\\');
+        $this->_attributes['metadataDriverImpl'] = new \Doctrine\ORM\Mapping\Driver\AnnotationDriver($reader);
     }
 
     /**
-     * Gets a boolean flag that specifies whether partial objects are allowed.
+     * Gets a boolean flag that indicates whether partial objects are allowed.
      *
      * If partial objects are allowed, Doctrine will never use proxies or lazy loading
      * and you always only get what you explicitly query for.
@@ -96,16 +99,6 @@ class Configuration extends \Doctrine\DBAL\Configuration
     public function getCacheDir()
     {
         return $this->_attributes['cacheDir'];
-    }
-
-    public function getDqlClassAliasMap()
-    {
-        return $this->_attributes['dqlClassAliasMap'];
-    }
-
-    public function setDqlClassAliasMap(array $map)
-    {
-        $this->_attributes['dqlClassAliasMap'] = $map;
     }
 
     /**
@@ -187,12 +180,24 @@ class Configuration extends \Doctrine\DBAL\Configuration
     {
         $this->_attributes['metadataCacheImpl'] = $cacheImpl;
     }
-
+    
+    /**
+     * Gets a boolean flag that indicates whether Doctrine should make use of the
+     * C extension.
+     * 
+     * @return boolean TRUE if Doctrine is configured to use the C extension, FALSE otherwise.
+     */
     public function getUseCExtension()
     {
         return $this->_attributes['useCExtension'];
     }
-
+    
+    /**
+     * Sets a boolean flag that indicates whether Doctrine should make use of the
+     * C extension.
+     * 
+     * @param boolean $boolean Whether to make use of the C extension or not.
+     */
     public function setUseCExtension($boolean)
     {
         $this->_attributes['useCExtension'] = $boolean;
