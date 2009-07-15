@@ -350,6 +350,7 @@ class ObjectHydrator extends AbstractHydrator
                         $indexExists = isset($this->_identifierMap[$path][$id[$parent]][$id[$dqlAlias]]);
                         $index = $indexExists ? $this->_identifierMap[$path][$id[$parent]][$id[$dqlAlias]] : false;
                         $indexIsValid = $index !== false ? $this->isIndexKeyInUse($baseElement, $relationAlias, $index) : false;
+                        
                         if ( ! $indexExists || ! $indexIsValid) {
                             $element = $this->getEntity($data, $dqlAlias);
 
@@ -397,17 +398,13 @@ class ObjectHydrator extends AbstractHydrator
                     }
                 } else {
                     if ( ! $this->_ce[$parentClass]->reflFields[$relationAlias]->getValue($baseElement)) {
-                        if ( ! isset($nonemptyComponents[$dqlAlias])) {
-                            //$this->setRelatedElement($baseElement, $relationAlias, null);
-                        } else {
+                        if (isset($nonemptyComponents[$dqlAlias])) {
                             $this->setRelatedElement($baseElement, $relationAlias, $this->getEntity($data, $dqlAlias));
                         }
                     }
                 }
 
-                $coll = $this->_ce[$parentClass]
-                        ->reflFields[$relationAlias]
-                        ->getValue($baseElement);
+                $coll = $this->_ce[$parentClass]->reflFields[$relationAlias]->getValue($baseElement);
 
                 if ($coll !== null) {
                     $this->updateResultPointer($coll, $index, $dqlAlias);

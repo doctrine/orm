@@ -87,6 +87,9 @@ class StandardEntityPersister
      * Initializes a new instance of a class derived from AbstractEntityPersister
      * that uses the given EntityManager and persists instances of the class described
      * by the given class metadata descriptor.
+     * 
+     * @param EntityManager $em
+     * @param ClassMetadata $class
      */
     public function __construct(EntityManager $em, ClassMetadata $class)
     {
@@ -346,7 +349,7 @@ class StandardEntityPersister
         foreach ($stmt->fetch(Connection::FETCH_ASSOC) as $column => $value) {
             $fieldName = $this->_class->fieldNames[$column];
             $data[$fieldName] = Type::getType($this->_class->getTypeOfField($fieldName))
-            ->convertToPHPValue($value, $this->_platform);
+                    ->convertToPHPValue($value, $this->_platform);
         }
         $stmt->closeCursor();
 
@@ -394,20 +397,19 @@ class StandardEntityPersister
      *
      * @param array $criteria
      * @return string The SQL.
-     * @todo Quote identifier.
      */
     protected function _getSelectSingleEntitySql(array $criteria)
     {
         $columnList = '';
         foreach ($this->_class->columnNames as $column) {
             if ($columnList != '') $columnList .= ', ';
-            $columnList .= $column;
+            $columnList .= $this->_conn->quoteIdentifier($column);
         }
 
         $conditionSql = '';
         foreach ($criteria as $field => $value) {
             if ($conditionSql != '') $conditionSql .= ' AND ';
-            $conditionSql .= $this->_class->columnNames[$field] . ' = ?';
+            $conditionSql .= $this->_conn->quoteIdentifier($this->_class->columnNames[$field]) . ' = ?';
         }
 
         return 'SELECT ' . $columnList . ' FROM ' . $this->_class->getTableName()

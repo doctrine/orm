@@ -1355,6 +1355,10 @@ class UnitOfWork implements PropertyChangedListener
             foreach ($data as $field => $value) {
                 if (isset($class->reflFields[$field])) {
                     $currentValue = $class->reflFields[$field]->getValue($entity);
+                    // Only override the current value if:
+                    // a) There was no original value yet (nothing in _originalEntityData)
+                    // or
+                    // b) The original value is the same as the current value (it was not changed).
                     if ( ! isset($this->_originalEntityData[$oid][$field]) ||
                             $currentValue == $this->_originalEntityData[$oid][$field]) {
                         $class->reflFields[$field]->setValue($entity, $value);
@@ -1469,7 +1473,9 @@ class UnitOfWork implements PropertyChangedListener
     public function size()
     {
         $count = 0;
-        foreach ($this->_identityMap as $entitySet) $count += count($entitySet);
+        foreach ($this->_identityMap as $entitySet) {
+            $count += count($entitySet);
+        }
         return $count;
     }
 
