@@ -21,7 +21,7 @@ class AllTests
 
         $suite->addTestSuite('Doctrine\Tests\Common\Cache\ApcCacheTest');
         $suite->addTestSuite('Doctrine\Tests\Common\Cache\ArrayCacheTest');
-        $suite->addTestSuite('Doctrine\Tests\Common\Cache\MemcacheCacheTest');
+        //$suite->addTestSuite('Doctrine\Tests\Common\Cache\MemcacheCacheTest');
         $suite->addTestSuite('Doctrine\Tests\Common\Cache\XcacheCacheTest');
 
         return $suite;
