@@ -80,7 +80,7 @@ class EventManager
      */
     public function hasListeners($event)
     {
-        return isset($this->_listeners[$event]) && ! empty($this->_listeners[$event]);
+        return isset($this->_listeners[$event]) && $this->_listeners[$event];
     }
 
     /**
