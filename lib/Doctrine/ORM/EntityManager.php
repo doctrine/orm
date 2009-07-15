@@ -141,9 +141,7 @@ class EntityManager
         $this->_conn = $conn;
         $this->_config = $config;
         $this->_eventManager = $eventManager;
-        $this->_metadataFactory = new ClassMetadataFactory(
-                $this->_config->getMetadataDriverImpl(),
-                $this->_conn->getDatabasePlatform());
+        $this->_metadataFactory = new ClassMetadataFactory($this);
         $this->_metadataFactory->setCacheDriver($this->_config->getMetadataCacheImpl());
         $this->_unitOfWork = new UnitOfWork($this);
         $this->_proxyGenerator = new DynamicProxyGenerator($this, $this->_config->getCacheDir());

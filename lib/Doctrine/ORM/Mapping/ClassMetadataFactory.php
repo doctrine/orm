@@ -23,6 +23,7 @@ namespace Doctrine\ORM\Mapping;
 
 use Doctrine\Common\DoctrineException;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
+use Doctrine\ORM\Events;
 
 /**
  * The metadata factory is used to create ClassMetadata objects that contain all the
@@ -38,10 +39,13 @@ use Doctrine\DBAL\Platforms\AbstractPlatform;
  */
 class ClassMetadataFactory
 {
+    private $_em;
     /** The targeted database platform. */
     private $_targetPlatform;
     /** The used metadata driver. */
     private $_driver;
+    /** The event manager instance */
+    private $_evm;
     /** The used cache driver. */
     private $_cacheDriver;
     private $_loadedMetadata = array();
@@ -51,10 +55,12 @@ class ClassMetadataFactory
      *
      * @param $driver  The metadata driver to use.
      */
-    public function __construct($driver, AbstractPlatform $targetPlatform)
+    public function __construct(\Doctrine\ORM\EntityManager $em)
     {
-        $this->_driver = $driver;
-        $this->_targetPlatform = $targetPlatform;
+        $this->_em = $em;
+        $this->_driver = $em->getConfiguration()->getMetadataDriverImpl();
+        $this->_targetPlatform = $em->getConnection()->getDatabasePlatform();
+        $this->_evm = $em->getEventManager();
     }
 
     /**
@@ -182,6 +188,11 @@ class ClassMetadataFactory
             }
 
             $class->setParentClasses($visited);
+
+            if ($this->_evm->hasListeners(Events::loadClassMetadata)) {
+                $eventArgs = new \Doctrine\ORM\Event\LoadClassMetadataEventArgs($class);
+                $this->_evm->dispatchEvent(Events::loadClassMetadata, $eventArgs);
+            }
 
             $this->_generateStaticSql($class);
             

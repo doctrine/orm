@@ -4,7 +4,11 @@ namespace Doctrine\Tests\ORM\Mapping;
 
 use Doctrine\Tests\Mocks\MetadataDriverMock;
 use Doctrine\Tests\Mocks\DatabasePlatformMock;
+use Doctrine\Tests\Mocks\EntityManagerMock;
+use Doctrine\Tests\Mocks\ConnectionMock;
+use Doctrine\Tests\Mocks\DriverMock;
 use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\Common\EventManager;
 
 require_once __DIR__ . '/../../TestInit.php';
 
@@ -13,8 +17,16 @@ class ClassMetadataFactoryTest extends \Doctrine\Tests\OrmTestCase
 
     public function testGetMetadataForSingleClass()
     {
-        $mockPlatform = new DatabasePlatformMock();
+        $driverMock = new DriverMock();
+        $config = new \Doctrine\ORM\Configuration();
+        $eventManager = new EventManager();
+        $conn = new ConnectionMock(array(), $driverMock, $config, $eventManager);
         $mockDriver = new MetadataDriverMock();
+        $config->setMetadataDriverImpl($mockDriver);
+
+        $entityManager = EntityManagerMock::create($conn, $config, $eventManager);
+
+        $mockPlatform = $conn->getDatabasePlatform();
         $mockPlatform->setPrefersSequences(true);
         $mockPlatform->setPrefersIdentityColumns(false);
 
@@ -30,7 +42,7 @@ class ClassMetadataFactoryTest extends \Doctrine\Tests\OrmTestCase
         $cm1->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_AUTO);
 
         // SUT
-        $cmf = new ClassMetadataFactoryTestSubject($mockDriver, $mockPlatform);
+        $cmf = new ClassMetadataFactoryTestSubject($entityManager);
         $cmf->setMetadataForClass('Doctrine\Tests\ORM\Mapping\TestEntity1', $cm1);
 
         // Prechecks

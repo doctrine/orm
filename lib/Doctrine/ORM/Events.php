@@ -40,4 +40,5 @@ final class Events
     const preUpdate = 'preUpdate';
     const postUpdate = 'postUpdate';
     const load = 'load';
+    const loadClassMetadata = 'loadClassMetadata';
 }

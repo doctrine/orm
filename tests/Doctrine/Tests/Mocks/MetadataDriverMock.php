@@ -13,4 +13,9 @@ class MetadataDriverMock
     {
         return false;
     }
+
+    public function preload()
+    {
+        return array();
+    }
 }
