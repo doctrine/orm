@@ -19,17 +19,18 @@
  * <http://www.doctrine-project.org>.
  */
 
-namespace Doctrine\ORM\DynamicProxy;
+namespace Doctrine\ORM\Proxy;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Mapping\ClassMetadata;
 
 /**
- * The DynamicProxyGenerator is used to generate proxy objects for entities at runtime.
+ * The ProxyClassGenerator is used to generate proxy objects for entities at runtime.
  *
  * @author Roman Borschel <roman@code-factory.org>
+ * @author Giorgio Sironi <piccoloprincipeazzurro@gmail.com>
  * @since 2.0
  */
-class Generator
+class ProxyClassGenerator
 {
 	/** The namespace for the generated proxy classes. */
     private static $_ns = 'Doctrine\Generated\Proxies\\';

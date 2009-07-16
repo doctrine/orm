@@ -19,7 +19,7 @@
  * <http://www.doctrine-project.org>.
  */
 
-namespace Doctrine\ORM\DynamicProxy;
+namespace Doctrine\ORM\Proxy;
 
 use Doctrine\ORM\EntityManager;
 
@@ -27,9 +27,10 @@ use Doctrine\ORM\EntityManager;
  * This Factory is used to create proxy objects for entities at runtime.
  *
  * @author Roman Borschel <roman@code-factory.org>
+ * @author Giorgio Sironi <piccoloprincipeazzurro@gmail.com>
  * @since 2.0
  */
-class Factory
+class ProxyFactory
 {
     private $_em;
     private $_generator;
@@ -42,7 +43,7 @@ class Factory
 	 * @param EntityManager $em
 	 * @param Generator $generator
      */
-    public function __construct(EntityManager $em, Generator $generator)
+    public function __construct(EntityManager $em, ProxyClassGenerator $generator)
     {
         $this->_em = $em;
         $this->_generator = $generator;

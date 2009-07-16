@@ -26,8 +26,8 @@ use Doctrine\Common\DoctrineException;
 use Doctrine\DBAL\Connection;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
-use Doctrine\ORM\DynamicProxy\Factory as ProxyFactory;
-use Doctrine\ORM\DynamicProxy\Generator;
+use Doctrine\ORM\Proxy\ProxyFactory;
+use Doctrine\ORM\Proxy\ProxyClassGenerator;
 
 /**
  * The EntityManager is the central access point to ORM functionality.
@@ -147,7 +147,7 @@ class EntityManager
         $this->_metadataFactory->setCacheDriver($this->_config->getMetadataCacheImpl());
         $this->_unitOfWork = new UnitOfWork($this);
         //FIX: this should be in a factory
-        $this->_proxyFactory = new ProxyFactory($this, new Generator($this, $this->_config->getCacheDir()));
+        $this->_proxyFactory = new ProxyFactory($this, new ProxyClassGenerator($this, $this->_config->getCacheDir()));
     }
     
     /**
