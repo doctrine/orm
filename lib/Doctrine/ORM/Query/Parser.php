@@ -656,11 +656,12 @@ class Parser
                 $fieldIdentificationVariable = $this->_lexer->token['value'];
             }
         } else {
+            // Deny hydration of partial objects if doctrine.forcePartialLoad query hint not defined 
             if (
                 $this->_query->getHydrationMode() == Query::HYDRATE_OBJECT &&
                 ! $this->_em->getConfiguration()->getAllowPartialObjects()
             ) {
-                $this->semanticalError('Cannot select partial object when using object hydration');
+            	throw DoctrineException::partialObjectsAreDangerous();
             }
 
             $expression = $this->StateFieldPathExpression();
@@ -912,6 +913,7 @@ class Parser
     public function SingleValuedAssociationPathExpression()
     {
         $pathExpr = $this->PathExpression(AST\PathExpression::TYPE_SINGLE_VALUED_ASSOCIATION);
+        
         if ( ! empty($this->_deferredPathExpressionStacks)) {
             $exprStack = array_pop($this->_deferredPathExpressionStacks);
             $exprStack[] = $pathExpr;
@@ -1035,38 +1037,52 @@ class Parser
      *
      * PathExpression ::= IdentificationVariable "." {identifier "."}* identifier
      *
-     * @todo Refactor. We should never use break in a loop! This should use a do { ... } while (...) instead
      * @return PathExpression
      */
     public function PathExpression($type)
     {
         $this->match(Lexer::T_IDENTIFIER);
         $identificationVariable = $this->_lexer->token['value'];
-        $this->match('.');
-
+        
         $parts = array();
 
-        while ($this->_lexer->isNextToken(Lexer::T_IDENTIFIER)) {
+        do {
+            $this->match('.');
             $this->match(Lexer::T_IDENTIFIER);
+            
             $parts[] = $this->_lexer->token['value'];
-
-            if ($this->_lexer->isNextToken('.')) {
-                $this->match('.');
-            } else {
-                break;
-            }
-        }
-
+        } while ($this->_lexer->isNextToken('.'));
+        
         return new AST\PathExpression($type, $identificationVariable, $parts);
     }
 
     /**
      * EntityExpression ::= SingleValuedAssociationPathExpression | SimpleEntityExpression
-     * SimpleEntityExpression ::= IdentificationVariable | InputParameter
      */
     public function EntityExpression()
     {
-
+        $glimpse = $this->_lexer->glimpse();
+        
+        if ($this->_lexer->isNextToken(Lexer::T_IDENTIFIER) && $glimpse['value'] === '.') {
+            return $this->SingleValuedAssociationPathExpression();
+        }
+        
+        return $this->SimpleEntityExpression();
+    }
+    
+    /**
+     * SimpleEntityExpression ::= IdentificationVariable | InputParameter
+     */
+    public function SimpleEntityExpression()
+    {
+        if ($this->_lexer->isNextToken(Lexer::T_INPUT_PARAMETER)) {
+            $this->match(Lexer::T_INPUT_PARAMETER);
+            return new AST\InputParameter($this->_lexer->token['value']);
+        }
+        
+        $this->match(Lexer::T_IDENTIFIER);
+        
+        return $this->_lexer->token['value'];
     }
 
     /**
@@ -1390,33 +1406,27 @@ class Parser
      * SimpleEntityExpression ::= IdentificationVariable | InputParameter
      * 
      * @return AST\CollectionMemberExpression
-     * @todo Support SingleValuedAssociationPathExpression and IdentificationVariable
      */
     public function CollectionMemberExpression()
     {
         $isNot = false;
 
-        if ($this->_lexer->lookahead['type'] == Lexer::T_INPUT_PARAMETER) {
-            $this->match($this->_lexer->lookahead['value']);
-            $entityExpr = new AST\InputParameter($this->_lexer->token['value']);
+        $entityExpr = $this->EntityExpression(); 
 
-            if ($this->_lexer->isNextToken(Lexer::T_NOT)) {
-                $isNot = true;
-                $this->match(Lexer::T_NOT);
-            }
-
-            $this->match(Lexer::T_MEMBER);
-
-            if ($this->_lexer->isNextToken(Lexer::T_OF)) {
-                $this->match(Lexer::T_OF);
-            }
-
-            $collValuedPathExpr = $this->CollectionValuedPathExpression();
-        } else {
-            throw QueryException::notImplemented();
+        if ($this->_lexer->isNextToken(Lexer::T_NOT)) {
+            $isNot = true;
+            $this->match(Lexer::T_NOT);
         }
-        
-        return new AST\CollectionMemberExpression($entityExpr, $collValuedPathExpr, $isNot);
+
+        $this->match(Lexer::T_MEMBER);
+
+        if ($this->_lexer->isNextToken(Lexer::T_OF)) {
+            $this->match(Lexer::T_OF);
+        }
+
+        return new AST\CollectionMemberExpression(
+            $entityExpr, $this->CollectionValuedPathExpression(), $isNot
+        );
     }
 
     /**
