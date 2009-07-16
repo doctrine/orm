@@ -34,7 +34,7 @@ class AllTests
         $suite->addTestSuite('Doctrine\Tests\ORM\Functional\OneToOneSelfReferentialAssociationTest');
         $suite->addTestSuite('Doctrine\Tests\ORM\Functional\OneToManySelfReferentialAssociationTest');
         $suite->addTestSuite('Doctrine\Tests\ORM\Functional\ManyToManySelfReferentialAssociationTest');
-        $suite->addTestSuite('Doctrine\Tests\ORM\Functional\DynamicProxyTest');
+        $suite->addTestSuite('Doctrine\Tests\ORM\Functional\ReferenceProxyTest');
 
         return $suite;
     }

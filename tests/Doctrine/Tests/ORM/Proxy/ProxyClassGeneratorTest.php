@@ -1,8 +1,8 @@
 <?php
 
-namespace Doctrine\Tests\ORM\DynamicProxy;
+namespace Doctrine\Tests\ORM\Proxy;
 
-use Doctrine\ORM\DynamicProxy\Generator;
+use Doctrine\ORM\Proxy\ProxyClassGenerator;
 use Doctrine\Tests\Mocks\ConnectionMock;
 use Doctrine\Tests\Mocks\EntityManagerMock;
 use Doctrine\Tests\Models\ECommerce\ECommerceCart;
@@ -14,8 +14,9 @@ require_once __DIR__ . '/../../TestInit.php';
 
 /**
  * Test the proxy generator. Its work is generating on-the-fly subclasses of a given model, which implement the Proxy pattern.
+ * @author Giorgio Sironi <piccoloprincipeazzurro@gmail.com>
  */
-class GeneratorTest extends \Doctrine\Tests\OrmTestCase
+class ProxyClassGeneratorTest extends \Doctrine\Tests\OrmTestCase
 {
     private $_connectionMock;
     private $_emMock;
@@ -27,7 +28,7 @@ class GeneratorTest extends \Doctrine\Tests\OrmTestCase
         // SUT
         $this->_connectionMock = new ConnectionMock(array(), new \Doctrine\Tests\Mocks\DriverMock());
         $this->_emMock = EntityManagerMock::create($this->_connectionMock);
-        $this->_generator = new Generator($this->_emMock, __DIR__ . '/generated');
+        $this->_generator = new ProxyClassGenerator($this->_emMock, __DIR__ . '/generated');
     }
     
     protected function tearDown()
@@ -47,7 +48,7 @@ class GeneratorTest extends \Doctrine\Tests\OrmTestCase
 
     public function testCanGuessADefaultTempFolder()
     {
-        $generator = new Generator($this->_emMock);
+        $generator = new ProxyClassGenerator($this->_emMock);
         $proxyClass = $generator->generateReferenceProxyClass('Doctrine\Tests\Models\ECommerce\ECommerceShipping');
         $this->assertTrue(is_subclass_of($proxyClass, '\Doctrine\Tests\Models\ECommerce\ECommerceShipping'));
     }

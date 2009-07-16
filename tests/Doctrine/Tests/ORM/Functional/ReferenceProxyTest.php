@@ -2,16 +2,17 @@
 
 namespace Doctrine\Tests\ORM\Functional;
 
-use Doctrine\ORM\DynamicProxy\Factory;
-use Doctrine\ORM\DynamicProxy\Generator;
+use Doctrine\ORM\Proxy\ProxyFactory;
+use Doctrine\ORM\Proxy\ProxyClassGenerator;
 use Doctrine\Tests\Models\ECommerce\ECommerceProduct;
 
 require_once __DIR__ . '/../../TestInit.php';
 
 /**
  * Tests the generation of a proxy object for lazy loading.
+ * @author Giorgio Sironi <piccoloprincipeazzurro@gmail.com>
  */
-class DynamicProxyTest extends \Doctrine\Tests\OrmFunctionalTestCase
+class ReferenceProxyTest extends \Doctrine\Tests\OrmFunctionalTestCase
 {
     private $product;
 
@@ -19,7 +20,7 @@ class DynamicProxyTest extends \Doctrine\Tests\OrmFunctionalTestCase
     {
         $this->useModelSet('ecommerce');
         parent::setUp();
-        $this->_factory = new Factory($this->_em, new Generator($this->_em));
+        $this->_factory = new ProxyFactory($this->_em, new ProxyClassGenerator($this->_em));
     }
 
     public function testLazyLoadsFieldValuesFromDatabase()
