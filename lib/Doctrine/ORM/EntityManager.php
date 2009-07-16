@@ -26,6 +26,8 @@ use Doctrine\Common\DoctrineException;
 use Doctrine\DBAL\Connection;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
+use Doctrine\ORM\DynamicProxy\Factory as ProxyFactory;
+use Doctrine\ORM\DynamicProxy\Generator;
 
 /**
  * The EntityManager is the central access point to ORM functionality.
@@ -116,11 +118,11 @@ class EntityManager
     private $_hydrators = array();
 
     /**
-     * The proxy generator.
+     * The proxy factory which creates association or reference proxies.
      *
-     * @var DynamicProxyGenerator
+     * @var ProxyFactory
      */
-    private $_proxyGenerator;
+    private $_proxyFactory;
 
     /**
      * Whether the EntityManager is closed or not.
@@ -144,7 +146,8 @@ class EntityManager
         $this->_metadataFactory = new ClassMetadataFactory($this);
         $this->_metadataFactory->setCacheDriver($this->_config->getMetadataCacheImpl());
         $this->_unitOfWork = new UnitOfWork($this);
-        $this->_proxyGenerator = new DynamicProxyGenerator($this, $this->_config->getCacheDir());
+        //FIX: this should be in a factory
+        $this->_proxyFactory = new ProxyFactory($this, new Generator($this, $this->_config->getCacheDir()));
     }
     
     /**
@@ -559,13 +562,13 @@ class EntityManager
     }
 
     /**
-     * Gets the proxy generator used by the EntityManager to create entity proxies.
+     * Gets the proxy factory used by the EntityManager to create entity proxies.
      * 
-     * @return DynamicProxyGenerator
+     * @return ProxyFactory
      */
     public function getProxyGenerator()
     {
-        return $this->_proxyGenerator;
+        return $this->_proxyFactory;
     }
     
     /**

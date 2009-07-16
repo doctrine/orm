@@ -19,7 +19,9 @@
  * <http://www.doctrine-project.org>.
  */
 
-namespace Doctrine\ORM;
+namespace Doctrine\ORM\DynamicProxy;
+use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\Mapping\ClassMetadata;
 
 /**
  * The DynamicProxyGenerator is used to generate proxy objects for entities at runtime.
@@ -27,17 +29,15 @@ namespace Doctrine\ORM;
  * @author Roman Borschel <roman@code-factory.org>
  * @since 2.0
  */
-class DynamicProxyGenerator
+class Generator
 {
-	/** The namspace for the generated proxy classes. */
+	/** The namespace for the generated proxy classes. */
     private static $_ns = 'Doctrine\Generated\Proxies\\';
     private $_cacheDir;
     private $_em;
-	
+
     /**
-	 * Initializes a new instance of the <tt>DynamicProxyGenerator</tt> class that is
-	 * connected to the given <tt>EntityManager</tt> and stores proxy class files in
-	 * the given cache directory.
+	 * Generates and stores proxy class files in the given cache directory.
 	 *
 	 * @param EntityManager $em
 	 * @param string $cacheDir
@@ -48,67 +48,58 @@ class DynamicProxyGenerator
         if ($cacheDir === null) {
             $cacheDir = sys_get_temp_dir();
         }
-        $this->_cacheDir = $cacheDir;
+        $this->_cacheDir = rtrim($cacheDir, '/') . '/';
     }
 
     /**
-     * Gets a reference proxy instance.
+     * Generates a reference proxy class.
+     * This is a proxy for an object which we have the id for retrieval.
      *
      * @param string $className
-     * @param mixed $identifier
-     * @return object
-     */
-    public function getReferenceProxy($className, $identifier)
-    {
-        $class = $this->_em->getClassMetadata($className);
-        $proxyClassName = str_replace('\\', '_', $className) . 'RProxy';
-        if ( ! class_exists($proxyClassName, false)) {
-            $this->_em->getMetadataFactory()->setMetadataFor(self::$_ns . $proxyClassName, $class);
-            $fileName = $this->_cacheDir . $proxyClassName . '.g.php';
-            if ( ! file_exists($fileName)) {
-                $this->_generateReferenceProxyClass($className, $identifier, $proxyClassName, $fileName);
-            }
-            require $fileName;
-        }
-        $proxyClassName = '\\' . self::$_ns . $proxyClassName;
-        
-        return new $proxyClassName($this->_em, $class, $identifier);
-    }
-
-    /**
-     * Gets an association proxy instance.
-     */
-    public function getAssociationProxy($owner, \Doctrine\ORM\Mapping\AssociationMapping $assoc)
-    {
-        $proxyClassName = str_replace('\\', '_', $assoc->getTargetEntityName()) . 'AProxy';
-        if ( ! class_exists($proxyClassName, false)) {
-            $this->_em->getMetadataFactory()->setMetadataFor(self::$_ns . $proxyClassName, $this->_em->getClassMetadata($assoc->getTargetEntityName()));
-            $fileName = $this->_cacheDir . $proxyClassName . '.g.php';
-            if ( ! file_exists($fileName)) {
-                $this->_generateAssociationProxyClass($assoc->getTargetEntityName(), $proxyClassName, $fileName);
-            }
-            require $fileName;
-        }
-        $proxyClassName = '\\' . self::$_ns . $proxyClassName;
-        
-        return new $proxyClassName($this->_em, $assoc, $owner);
-    }
-
-    /**
-     * Generates a proxy class.
-     *
-     * @param string $className
-     * @param mixed $id
      * @param string $proxyClassName
      * @param string $fileName
      */
-    private function _generateReferenceProxyClass($className, $id, $proxyClassName, $fileName)
+    public function generateReferenceProxyClass($className)
     {
         $class = $this->_em->getClassMetadata($className);
-        $file = self::$_proxyClassTemplate;
+        $proxyClassName = str_replace('\\', '_', $className) . 'RProxy';
+        if (!class_exists($proxyClassName, false)) {
+            $this->_em->getMetadataFactory()->setMetadataFor(self::$_ns . $proxyClassName, $class);
+            $fileName = $this->_cacheDir . $proxyClassName . '.g.php';
+            if (file_exists($fileName)) {
+                require $fileName;
+                $proxyClassName = '\\' . self::$_ns . $proxyClassName;
+                return $proxyClassName;
+            }
+        }
 
+        $file = self::$_proxyClassTemplate;
+        $methods = $this->_generateMethods($class);
+        $sleepImpl = $this->_generateSleep($class);
+
+        $placeholders = array(
+            '<proxyClassName>', '<className>',
+            '<methods>', '<sleepImpl>'
+        );
+        $replacements = array(
+            $proxyClassName, $className, $methods, $sleepImpl
+        );
+        
+        $file = str_replace($placeholders, $replacements, $file);
+        
+        file_put_contents($fileName, $file);
+        require $fileName;
+        $proxyClassName = '\\' . self::$_ns . $proxyClassName;
+        return $proxyClassName;
+    }
+
+    protected function _generateMethods(ClassMetadata $class)
+    {
         $methods = '';
         foreach ($class->reflClass->getMethods() as $method) {
+            if ($method->getName() == '__construct') {
+                continue;
+            }
             if ($method->isPublic() && ! $method->isFinal()) {
                 $methods .= PHP_EOL . 'public function ' . $method->getName() . '(';
                 $firstParam = true;
@@ -127,7 +118,11 @@ class DynamicProxyGenerator
                 $methods .= '}' . PHP_EOL;
             }
         }
+        return $methods;
+    }
 
+    public function _generateSleep(ClassMetadata $class)
+    {
         $sleepImpl = '';
         if ($class->reflClass->hasMethod('__sleep')) {
             $sleepImpl .= 'return parent::__sleep();';
@@ -144,29 +139,18 @@ class DynamicProxyGenerator
             }
             $sleepImpl .= ');';
         }
-
-        $placeholders = array(
-            '<proxyClassName>', '<className>',
-            '<methods>', '<sleepImpl>'
-        );
-        $replacements = array(
-            $proxyClassName, $className, $methods, $sleepImpl
-        );
-        
-        $file = str_replace($placeholders, $replacements, $file);
-        
-        file_put_contents($fileName, $file);
+        return $sleepImpl;
     }
 
     /**
      * Generates a proxy class.
+     * This is a proxy class for an object which we have the association where
+     * it is involved, but no primary key to retrieve it.
      *
      * @param string $className
-     * @param mixed $id
      * @param string $proxyClassName
-     * @param string $fileName
      */
-    private function _generateAssociationProxyClass($className, $proxyClassName, $fileName)
+    public function generateAssociationProxyClass($className, $proxyClassName)
     {
         $class = $this->_em->getClassMetadata($className);
         $file = self::$_assocProxyClassTemplate;
@@ -220,6 +204,7 @@ class DynamicProxyGenerator
         $file = str_replace($placeholders, $replacements, $file);
 
         file_put_contents($fileName, $file);
+        return $fileName;
     }
 
     /** Proxy class code template */
@@ -228,19 +213,18 @@ class DynamicProxyGenerator
 /** This class was generated by the Doctrine ORM. DO NOT EDIT THIS FILE. */
 namespace Doctrine\Generated\Proxies {
     class <proxyClassName> extends \<className> {
-        private $_em;
-        private $_class;
+        private $_entityPersister;
+        private $_identifier;
         private $_loaded = false;
-        public function __construct($em, $class, $identifier) {
-            $this->_em = $em;
-            $this->_class = $class;
-            $this->_class->setIdentifierValues($this, $identifier);
+        public function __construct($entityPersister, $identifier) {
+            $this->_entityPersister = $entityPersister;
+            $this->_identifier = $identifier;
         }
         private function _load() {
             if ( ! $this->_loaded) {
-                $this->_em->getUnitOfWork()->getEntityPersister($this->_class->name)->load($this->_identifier, $this);
-                unset($this->_em);
-                unset($this->_class);
+                $this->_entityPersister->load($this->_identifier, $this);
+                unset($this->_entityPersister);
+                unset($this->_identifier);
                 $this->_loaded = true;
             }
         }
