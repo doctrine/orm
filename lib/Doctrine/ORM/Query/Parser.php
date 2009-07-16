@@ -117,6 +117,11 @@ class Parser
      */
     private $_queryComponents = array();
     
+    /**
+     * Sql tree walker
+     *
+     * @var SqlTreeWalker
+     */
     private $_sqlTreeWalker;
 
     /**
@@ -195,7 +200,9 @@ class Parser
         }
 
         // Create SqlWalker who creates the SQL from the AST
-        $sqlWalker = $this->_sqlTreeWalker ?: new SqlWalker($this->_query, $this->_parserResult, $this->_queryComponents);
+        $sqlWalker = $this->_sqlTreeWalker ?: new SqlWalker(
+            $this->_query, $this->_parserResult, $this->_queryComponents
+        );
 
         // Assign an SQL executor to the parser result
         $this->_parserResult->setSqlExecutor(Exec\AbstractExecutor::create($AST, $sqlWalker));
@@ -261,10 +268,18 @@ class Parser
     public function semanticalError($message = '', $token = null)
     {
         if ($token === null) {
-            $token = $this->_lexer->token;
+            $token = $this->_lexer->lookahead;
         }
+        
+        // Find a position of a final word to display in error string
+        $dql = $this->_query->getDql();
+        $pos = strpos($dql, ' ', $token['position'] + 10);
+        $length = ($pos !== false) ? $pos - $token['position'] : 10;
+        
+        // Building informative message
+        $message = 'line 0, col ' . (isset($token['position']) ? $token['position'] : '-1') 
+                 . " near '" . substr($dql, $token['position'], $length) . "'): Error: " . $message;
 
-        //TODO: Include $token in $message
         throw DoctrineException::updateMe($message);
     }
 
@@ -337,7 +352,6 @@ class Parser
 
             default:
                 $this->syntaxError('SELECT, UPDATE or DELETE');
-                break;
         }
     }
 
@@ -497,6 +511,7 @@ class Parser
     /**
      * NewValue ::= SimpleArithmeticExpression | StringPrimary | DatetimePrimary | BooleanPrimary |
      *      EnumPrimary | SimpleEntityExpression | "NULL"
+     *
      * @todo Implementation still incomplete.
      */
     public function NewValue()
@@ -641,8 +656,13 @@ class Parser
                 $fieldIdentificationVariable = $this->_lexer->token['value'];
             }
         } else {
-            //TODO: If hydration mode is OBJECT throw an exception ("partial object dangerous...")
-            // unless the doctrine.forcePartialLoad query hint is set
+            if (
+                $this->_query->getHydrationMode() == Query::HYDRATE_OBJECT &&
+                ! $this->_em->getConfiguration()->getAllowPartialObjects()
+            ) {
+                $this->semanticalError('Cannot select partial object when using object hydration');
+            }
+
             $expression = $this->StateFieldPathExpression();
         }
 

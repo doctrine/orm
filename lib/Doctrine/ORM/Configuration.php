@@ -38,6 +38,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
     public function __construct()
     {
         parent::__construct();
+        
         $this->_attributes = array_merge($this->_attributes, array(
             'resultCacheImpl' => null,
             'queryCacheImpl' => null,
@@ -46,7 +47,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
             'cacheDir' => null,
             'allowPartialObjects' => true,
             'useCExtension' => false
-            ));
+        ));
         
         //TODO: Move this to client code to avoid unnecessary work when a different metadata
         // driver is used.

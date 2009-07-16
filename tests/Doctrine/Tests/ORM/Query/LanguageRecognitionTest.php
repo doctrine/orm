@@ -15,10 +15,7 @@ class LanguageRecognitionTest extends \Doctrine\Tests\OrmTestCase
     public function assertValidDql($dql, $debug = false)
     {
         try {
-            $query = $this->_em->createQuery($dql);
-            $parser = new \Doctrine\ORM\Query\Parser($query);
-            $parser->setSqlTreeWalker(new \Doctrine\Tests\Mocks\MockTreeWalker);
-            $parserResult = $parser->parse();
+            $parserResult = $this->parseDql($dql);
         } catch (\Exception $e) {
             if ($debug) {
                 echo $e->getTraceAsString() . PHP_EOL;
@@ -30,11 +27,7 @@ class LanguageRecognitionTest extends \Doctrine\Tests\OrmTestCase
     public function assertInvalidDql($dql, $debug = false)
     {
         try {
-            $query = $this->_em->createQuery($dql);
-            $query->setDql($dql);
-            $parser = new \Doctrine\ORM\Query\Parser($query);
-            $parser->setSqlTreeWalker(new \Doctrine\Tests\Mocks\MockTreeWalker);
-            $parserResult = $parser->parse();
+            $parserResult = $this->parseDql($dql);
             $this->fail('No syntax errors were detected, when syntax errors were expected');
         } catch (\Exception $e) {
             if ($debug) {
@@ -42,6 +35,16 @@ class LanguageRecognitionTest extends \Doctrine\Tests\OrmTestCase
                 echo $e->getTraceAsString() . PHP_EOL;
             }
         }
+    }
+    
+    public function parseDql($dql)
+    {
+        $query = $this->_em->createQuery($dql);
+        $query->setDql($dql);
+        $parser = new \Doctrine\ORM\Query\Parser($query);
+        $parser->setSqlTreeWalker(new \Doctrine\Tests\Mocks\MockTreeWalker);
+        
+        return $parser->parse();
     }
 
     public function testEmptyQueryString()
@@ -325,5 +328,20 @@ class LanguageRecognitionTest extends \Doctrine\Tests\OrmTestCase
     public function testMemberOfExpression()
     {
         $this->assertValidDql('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE :param MEMBER OF u.phonenumbers');
+    }
+    
+    /**
+     * This checks for invalid attempt to hydrate a proxy. It should throw an exception
+     *
+     * @expectedException \Doctrine\Common\DoctrineException
+     */
+    public function testPartialObjectLoad()
+    {
+        $oldValue = $this->_em->getConfiguration()->getAllowPartialObjects();
+        $this->_em->getConfiguration()->setAllowPartialObjects(false);
+        
+        $this->parseDql('SELECT u.name FROM Doctrine\Tests\Models\CMS\CmsUser u');
+        
+        $this->_em->getConfiguration()->setAllowPartialObjects($oldValue);
     }
 }
