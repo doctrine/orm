@@ -46,7 +46,7 @@ class AllTests
         $suite->addTestSuite('Doctrine\Tests\DBAL\DriverManagerTest');
 
         // Connection test
-        $suite->addTestSuite('Doctrine\Tests\DBAL\Connectiontest');
+        $suite->addTestSuite('Doctrine\Tests\DBAL\ConnectionTest');
 
         // All Functional DBAL tests
         $suite->addTest(Functional\AllTests::suite());
