@@ -47,7 +47,7 @@ class Parser
         'trim' => 'Doctrine\ORM\Query\AST\Functions\TrimFunction',
         'lower' => 'Doctrine\ORM\Query\AST\Functions\LowerFunction',
         'upper' => 'Doctrine\ORM\Query\AST\Functions\UpperFunction'
-        );
+    );
 
     /** Maps registered numeric function names to class names. */
     private static $_NUMERIC_FUNCTIONS = array(
@@ -256,7 +256,7 @@ class Parser
             $message .= "'{$this->_lexer->lookahead['value']}'";
         }
 
-        throw DoctrineException::updateMe($message);
+        throw QueryException::syntaxError($message);
     }
 
     /**
@@ -280,7 +280,7 @@ class Parser
         $message = 'line 0, col ' . (isset($token['position']) ? $token['position'] : '-1') 
                  . " near '" . substr($dql, $token['position'], $length) . "'): Error: " . $message;
 
-        throw DoctrineException::updateMe($message);
+        throw QueryException::semanticalError($message);
     }
 
     /**
@@ -352,6 +352,7 @@ class Parser
 
             default:
                 $this->syntaxError('SELECT, UPDATE or DELETE');
+                break;
         }
     }
 
@@ -405,19 +406,19 @@ class Parser
             switch ($expr->getType()) {
                 case AST\PathExpression::TYPE_STATE_FIELD:
                     $this->_validateStateFieldPathExpression($expr);
-                break;
+                    break;
 
                 case AST\PathExpression::TYPE_SINGLE_VALUED_ASSOCIATION:
                     $this->_validateSingleValuedAssociationPathExpression($expr);
-                break;
+                    break;
 
                 case AST\PathExpression::TYPE_COLLECTION_VALUED_ASSOCIATION:
                     $this->_validateCollectionValuedAssociationPathExpression($expr);
-                break;
+                    break;
 
                 default:
                     $this->semanticalError('Encountered invalid PathExpression.');
-                break;
+                    break;
             }
         }
     }

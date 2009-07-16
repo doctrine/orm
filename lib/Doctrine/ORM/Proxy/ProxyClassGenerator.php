@@ -46,9 +46,11 @@ class ProxyClassGenerator
     public function __construct(EntityManager $em, $cacheDir = null)
     {
         $this->_em = $em;
+        
         if ($cacheDir === null) {
             $cacheDir = sys_get_temp_dir();
         }
+        
         $this->_cacheDir = rtrim($cacheDir, '/') . '/';
     }
 
@@ -64,9 +66,11 @@ class ProxyClassGenerator
     {
         $class = $this->_em->getClassMetadata($className);
         $proxyClassName = str_replace('\\', '_', $className) . 'RProxy';
-        if (!class_exists($proxyClassName, false)) {
+        
+        if ( ! class_exists($proxyClassName, false)) {
             $this->_em->getMetadataFactory()->setMetadataFor(self::$_ns . $proxyClassName, $class);
             $fileName = $this->_cacheDir . $proxyClassName . '.g.php';
+            
             if (file_exists($fileName)) {
                 require $fileName;
                 $proxyClassName = '\\' . self::$_ns . $proxyClassName;
@@ -90,56 +94,76 @@ class ProxyClassGenerator
         
         file_put_contents($fileName, $file);
         require $fileName;
+        
         $proxyClassName = '\\' . self::$_ns . $proxyClassName;
+        
         return $proxyClassName;
     }
 
     protected function _generateMethods(ClassMetadata $class)
     {
         $methods = '';
+        
         foreach ($class->reflClass->getMethods() as $method) {
             if ($method->getName() == '__construct') {
                 continue;
             }
+            
             if ($method->isPublic() && ! $method->isFinal()) {
                 $methods .= PHP_EOL . 'public function ' . $method->getName() . '(';
                 $firstParam = true;
-                $parameterString = '';
+                $parameterString = $argumentString = '';
+                
                 foreach ($method->getParameters() as $param) {
                     if ($firstParam) {
                         $firstParam = false;
                     } else {
                         $parameterString .= ', ';
+                        $argumentString  .= ', ';
                     }
+                    
+                    // We need to pick the type hint class too
+                    if (($paramClass = $param->getClass()) !== null) {
+                    	$parameterString .= '\\' . $paramClass->getName() . ' ';
+                    }
+                    
                     $parameterString .= '$' . $param->getName();
+                    $argumentString  .= '$' . $param->getName();
                 }
+                
                 $methods .= $parameterString . ') {' . PHP_EOL;
                 $methods .= '$this->_load();' . PHP_EOL;
-                $methods .= 'return parent::' . $method->getName() . '(' . $parameterString . ');';
+                $methods .= 'return parent::' . $method->getName() . '(' . $argumentString . ');';
                 $methods .= '}' . PHP_EOL;
             }
         }
+        
         return $methods;
     }
 
     public function _generateSleep(ClassMetadata $class)
     {
         $sleepImpl = '';
+        
         if ($class->reflClass->hasMethod('__sleep')) {
             $sleepImpl .= 'return parent::__sleep();';
         } else {
             $sleepImpl .= 'return array(';
             $first = true;
+            
             foreach ($class->getReflectionProperties() as $name => $prop) {
                 if ($first) {
                     $first = false;
                 } else {
                     $sleepImpl .= ', ';
                 }
+                
                 $sleepImpl .= "'" . $name . "'";
             }
+            
             $sleepImpl .= ');';
         }
+        
         return $sleepImpl;
     }
 
@@ -157,19 +181,23 @@ class ProxyClassGenerator
         $file = self::$_assocProxyClassTemplate;
 
         $methods = '';
+        
         foreach ($class->reflClass->getMethods() as $method) {
             if ($method->isPublic() && ! $method->isFinal()) {
                 $methods .= PHP_EOL . 'public function ' . $method->getName() . '(';
                 $firstParam = true;
                 $parameterString = '';
+                
                 foreach ($method->getParameters() as $param) {
                     if ($firstParam) {
                         $firstParam = false;
                     } else {
                         $parameterString .= ', ';
                     }
+                    
                     $parameterString .= '$' . $param->getName();
                 }
+                
                 $methods .= $parameterString . ') {' . PHP_EOL;
                 $methods .= '$this->_load();' . PHP_EOL;
                 $methods .= 'return parent::' . $method->getName() . '(' . $parameterString . ');';
@@ -178,19 +206,23 @@ class ProxyClassGenerator
         }
 
         $sleepImpl = '';
+        
         if ($class->reflClass->hasMethod('__sleep')) {
             $sleepImpl .= 'return parent::__sleep();';
         } else {
             $sleepImpl .= 'return array(';
             $first = true;
+            
             foreach ($class->getReflectionProperties() as $name => $prop) {
                 if ($first) {
                     $first = false;
                 } else {
                     $sleepImpl .= ', ';
                 }
+                
                 $sleepImpl .= "'" . $name . "'";
             }
+            
             $sleepImpl .= ');';
         }
 
@@ -205,6 +237,7 @@ class ProxyClassGenerator
         $file = str_replace($placeholders, $replacements, $file);
 
         file_put_contents($fileName, $file);
+        
         return $fileName;
     }
 
