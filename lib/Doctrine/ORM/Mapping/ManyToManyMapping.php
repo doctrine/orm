@@ -138,9 +138,9 @@ class ManyToManyMapping extends AssociationMapping
         return $this->targetKeyColumns;
     }
 
-    public function lazyLoadFor($entity, $entityManager)
+    public function load($owningEntity, $targetEntity, $em)
     {
-        //TODO
+        throw new Exception('Not yet implemented.');
     }
 
     /**

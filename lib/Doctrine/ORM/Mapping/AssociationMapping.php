@@ -386,5 +386,5 @@ abstract class AssociationMapping
      * @param object $targetEntity
      * @param EntityManager $em
      */
-    public function load($owningEntity, $targetEntity, $em) {}
+    abstract public function load($owningEntity, $targetEntity, $em);
 }

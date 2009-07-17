@@ -96,14 +96,9 @@ class OneToManyMapping extends AssociationMapping
     {
         return true;
     }
-    
-    /**
-     *
-     * @param <type> $entity 
-     * @override
-     */
-    public function lazyLoadFor($entity, $entityManager)
-    {
 
+    public function load($owningEntity, $targetEntity, $em)
+    {
+        throw new Exception('Not yet implemented.');
     }
 }
