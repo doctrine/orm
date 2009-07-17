@@ -110,8 +110,7 @@ class ProxyClassGeneratorTest extends \Doctrine\Tests\OrmTestCase
 
     protected function _getMockPersister()
     {
-        $this->markTestSkipped();
-        $persister = $this->getMock('Doctrine\ORM\Persisters\StandardEntityPersister', array('load'), array(), '', false);
+        $persister = $this->getMock('Doctrine\ORM\Persisters\StandardEntityPersister', array('load'), array(), '', false, false, false);
         return $persister;
     }
 
@@ -175,8 +174,7 @@ class ProxyClassGeneratorTest extends \Doctrine\Tests\OrmTestCase
 
     protected function _getAssociationMock()
     {
-        $this->markTestSkipped();
-        $assoc = $this->getMock('Doctrine\ORM\Mapping\AssociationMapping', array('load'), array(), '', false);
+        $assoc = $this->getMock('Doctrine\ORM\Mapping\AssociationMapping', array('load'), array(), '', false, false, false);
         return $assoc;
     }
 }
