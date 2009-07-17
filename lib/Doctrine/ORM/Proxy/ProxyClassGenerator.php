@@ -64,9 +64,30 @@ class ProxyClassGenerator
     public function generateReferenceProxyClass($originalClassName)
     {
         $proxyClassName = str_replace('\\', '_', $originalClassName) . 'RProxy';
-        //$proxyClassName = $originalClassName . 'RProxy';
+
+        return $this->_generateClass($originalClassName, $proxyClassName, self::$_proxyClassTemplate);
+    }
+
+    /**
+     * Generates an association proxy class.
+     * This is a proxy class for an object which we have the association where
+     * it is involved, but no primary key to retrieve it.
+     *
+     * @param string $originalClassName
+     * @return string the proxy class name
+     */
+    public function generateAssociationProxyClass($originalClassName)
+    {
+        $proxyClassName = str_replace('\\', '_', $originalClassName) . 'AProxy';
+
+        return $this->_generateClass($originalClassName, $proxyClassName, self::$_assocProxyClassTemplate);
+    }
+
+    protected function _generateClass($originalClassName, $proxyClassName, $file)
+    {
+        $class = $this->_em->getClassMetadata($originalClassName);
         $proxyFullyQualifiedClassName = self::$_ns . $proxyClassName;
-        
+
         if (class_exists($proxyFullyQualifiedClassName, false)) {
             return $proxyFullyQualifiedClassName;
         }
@@ -80,7 +101,6 @@ class ProxyClassGenerator
             return $proxyFullyQualifiedClassName;
         }
 
-        $file = self::$_proxyClassTemplate;
         $methods = $this->_generateMethods($class);
         $sleepImpl = $this->_generateSleep($class);
 
@@ -96,7 +116,6 @@ class ProxyClassGenerator
         
         file_put_contents($fileName, $file);
         require $fileName;
-        
         return $proxyFullyQualifiedClassName;
     }
 
@@ -167,79 +186,6 @@ class ProxyClassGenerator
         return $sleepImpl;
     }
 
-    /**
-     * Generates a proxy class.
-     * This is a proxy class for an object which we have the association where
-     * it is involved, but no primary key to retrieve it.
-     *
-     * @param string $originalClassName
-     * @param string $proxyClassName
-     */
-    public function generateAssociationProxyClass($originalClassName, $proxyClassName)
-    {
-        $class = $this->_em->getClassMetadata($originalClassName);
-        $file = self::$_assocProxyClassTemplate;
-
-        $methods = '';
-        
-        foreach ($class->reflClass->getMethods() as $method) {
-            if ($method->isPublic() && ! $method->isFinal()) {
-                $methods .= PHP_EOL . 'public function ' . $method->getName() . '(';
-                $firstParam = true;
-                $parameterString = '';
-                
-                foreach ($method->getParameters() as $param) {
-                    if ($firstParam) {
-                        $firstParam = false;
-                    } else {
-                        $parameterString .= ', ';
-                    }
-                    
-                    $parameterString .= '$' . $param->getName();
-                }
-                
-                $methods .= $parameterString . ') {' . PHP_EOL;
-                $methods .= '$this->_load();' . PHP_EOL;
-                $methods .= 'return parent::' . $method->getName() . '(' . $parameterString . ');';
-                $methods .= '}' . PHP_EOL;
-            }
-        }
-
-        $sleepImpl = '';
-        
-        if ($class->reflClass->hasMethod('__sleep')) {
-            $sleepImpl .= 'return parent::__sleep();';
-        } else {
-            $sleepImpl .= 'return array(';
-            $first = true;
-            
-            foreach ($class->getReflectionProperties() as $name => $prop) {
-                if ($first) {
-                    $first = false;
-                } else {
-                    $sleepImpl .= ', ';
-                }
-                
-                $sleepImpl .= "'" . $name . "'";
-            }
-            
-            $sleepImpl .= ');';
-        }
-
-        $placeholders = array(
-            '<proxyClassName>', '<className>',
-            '<methods>', '<sleepImpl>'
-        );
-        $replacements = array(
-            $proxyClassName, $originalClassName, $methods, $sleepImpl
-        );
-
-        $file = str_replace($placeholders, $replacements, $file);
-
-        file_put_contents($fileName, $file);
-        
-        return $fileName;
-    }
 
     /** Proxy class code template */
     private static $_proxyClassTemplate =

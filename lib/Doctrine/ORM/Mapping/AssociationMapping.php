@@ -378,9 +378,13 @@ abstract class AssociationMapping
     }
 
     /**
+     * Loads data in $targetEntity domain object using this association.
+     * The data comes from the association navigated from $owningEntity
+     * using $em.
      *
-     * @param <type> $entity
-     * @param <type> $entityManager 
+     * @param object $owningEntity
+     * @param object $targetEntity
+     * @param EntityManager $em
      */
-    /*abstract public function load($entity, $em) {}*/
+    public function load($owningEntity, $targetEntity, $em) {}
 }

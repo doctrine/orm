@@ -8,8 +8,8 @@ use Doctrine\Tests\Mocks\EntityManagerMock;
 use Doctrine\Tests\Models\ECommerce\ECommerceCart;
 use Doctrine\Tests\Models\ECommerce\ECommerceCustomer;
 use Doctrine\Tests\Models\ECommerce\ECommerceFeature;
+use Doctrine\Tests\Models\ECommerce\ECommerceProduct;
 use Doctrine\Tests\Models\ECommerce\ECommerceShipping;
-use Doctrine\ORM\Persisters\StandardEntityPersister;
 
 require_once __DIR__ . '/../../TestInit.php';
 
@@ -41,12 +41,6 @@ class ProxyClassGeneratorTest extends \Doctrine\Tests\OrmTestCase
         }
     }
 
-    public function testCreatesASubclassOfTheOriginalOne()
-    {
-        $proxyClass = $this->_generator->generateReferenceProxyClass('Doctrine\Tests\Models\ECommerce\ECommerceFeature');
-        $this->assertTrue(is_subclass_of($proxyClass, '\Doctrine\Tests\Models\ECommerce\ECommerceFeature'));
-    }
-
     public function testCanGuessADefaultTempFolder()
     {
         $generator = new ProxyClassGenerator($this->_emMock);
@@ -54,26 +48,32 @@ class ProxyClassGeneratorTest extends \Doctrine\Tests\OrmTestCase
         $this->assertTrue(is_subclass_of($proxyClass, '\Doctrine\Tests\Models\ECommerce\ECommerceShipping'));
     }
 
-    public function testAllowsClassesWithAConstructor()
+    public function testCreatesReferenceProxyAsSubclassOfTheOriginalOne()
+    {
+        $proxyClass = $this->_generator->generateReferenceProxyClass('Doctrine\Tests\Models\ECommerce\ECommerceFeature');
+        $this->assertTrue(is_subclass_of($proxyClass, '\Doctrine\Tests\Models\ECommerce\ECommerceFeature'));
+    }
+
+    public function testAllowsReferenceProxyForClassesWithAConstructor()
     {
         $proxyClass = $this->_generator->generateReferenceProxyClass('Doctrine\Tests\Models\ECommerce\ECommerceCart');
         $this->assertTrue(is_subclass_of($proxyClass, '\Doctrine\Tests\Models\ECommerce\ECommerceCart'));
     }
 
-    public function testAllowsIdempotentCreationOfProxyClass()
+    public function testAllowsIdempotentCreationOfReferenceProxyClass()
     {
         $proxyClass = $this->_generator->generateReferenceProxyClass('Doctrine\Tests\Models\ECommerce\ECommerceFeature');
         $theSameProxyClass = $this->_generator->generateReferenceProxyClass('Doctrine\Tests\Models\ECommerce\ECommerceFeature');
         $this->assertEquals($proxyClass, $theSameProxyClass);
     }
 
-    public function testCreatesClassesThatRequirePersisterInTheConstructor()
+    public function testReferenceProxyRequiresPersisterInTheConstructor()
     {
         $proxyClass = $this->_generator->generateReferenceProxyClass('Doctrine\Tests\Models\ECommerce\ECommerceFeature');
         $proxy = new $proxyClass($this->_getMockPersister(), null);
     }
 
-    public function testCreatesClassesThatDelegateLoadingToThePersister()
+    public function testReferenceProxyDelegatesLoadingToThePersister()
     {
         $identifier = array('id' => 42);
         $proxyClass = $this->_generator->generateReferenceProxyClass('Doctrine\Tests\Models\ECommerce\ECommerceFeature');
@@ -85,7 +85,7 @@ class ProxyClassGeneratorTest extends \Doctrine\Tests\OrmTestCase
         $proxy->getDescription();
     }
 
-    public function testCreatesClassesThatExecutesLoadingOnlyOnce()
+    public function testReferenceProxyExecutesLoadingOnlyOnce()
     {
         $identifier = array('id' => 42);
         $proxyClass = $this->_generator->generateReferenceProxyClass('Doctrine\Tests\Models\ECommerce\ECommerceFeature');
@@ -101,7 +101,7 @@ class ProxyClassGeneratorTest extends \Doctrine\Tests\OrmTestCase
     /**
      * @expectedException PHPUnit_Framework_Error
      */
-    public function testRespectsMethodsParametersTypeHinting()
+    public function testReferenceProxyRespectsMethodsParametersTypeHinting()
     {
         $proxyClass = $this->_generator->generateReferenceProxyClass('Doctrine\Tests\Models\ECommerce\ECommerceFeature');
         $proxy = new $proxyClass($this->_getMockPersister(), null);
@@ -112,5 +112,69 @@ class ProxyClassGeneratorTest extends \Doctrine\Tests\OrmTestCase
     {
         $persister = $this->getMock('Doctrine\ORM\Persisters\StandardEntityPersister', array('load'), array(), '', false);
         return $persister;
+    }
+
+    public function testCreatesAssociationProxyAsSubclassOfTheOriginalOne()
+    {
+        $proxyClass = $this->_generator->generateAssociationProxyClass('Doctrine\Tests\Models\ECommerce\ECommerceFeature');
+        $this->assertTrue(is_subclass_of($proxyClass, '\Doctrine\Tests\Models\ECommerce\ECommerceFeature'));
+    }
+
+    public function testAllowsAssociationProxyOfClassesWithAConstructor()
+    {
+        $proxyClass = $this->_generator->generateAssociationProxyClass('Doctrine\Tests\Models\ECommerce\ECommerceCart');
+        $this->assertTrue(is_subclass_of($proxyClass, '\Doctrine\Tests\Models\ECommerce\ECommerceCart'));
+    }
+
+    public function testAllowsIdempotentCreationOfAssociationProxyClass()
+    {
+        $proxyClass = $this->_generator->generateAssociationProxyClass('Doctrine\Tests\Models\ECommerce\ECommerceFeature');
+        $theSameProxyClass = $this->_generator->generateAssociationProxyClass('Doctrine\Tests\Models\ECommerce\ECommerceFeature');
+        $this->assertEquals($proxyClass, $theSameProxyClass);
+    }
+
+    public function testAllowsConcurrentCreationOfBothProxyTypes()
+    {
+        $referenceProxyClass = $this->_generator->generateReferenceProxyClass('Doctrine\Tests\Models\ECommerce\ECommerceFeature');
+        $associationProxyClass = $this->_generator->generateAssociationProxyClass('Doctrine\Tests\Models\ECommerce\ECommerceFeature');
+        $this->assertNotEquals($referenceProxyClass, $associationProxyClass);
+    }
+
+    public function testAssociationProxyRequiresEntityManagerAndAssociationAndOwnerInTheConstructor()
+    {
+        $proxyClass = $this->_generator->generateAssociationProxyClass('Doctrine\Tests\Models\ECommerce\ECommerceFeature');
+        $product = new ECommerceProduct;
+        $proxy = new $proxyClass($this->_emMock, $this->_getAssociationMock(), $product);
+    }
+
+    public function testAssociationProxyDelegatesLoadingToTheAssociation()
+    {
+        $proxyClass = $this->_generator->generateAssociationProxyClass('Doctrine\Tests\Models\ECommerce\ECommerceFeature');
+        $product = new ECommerceProduct;
+        $assoc = $this->_getAssociationMock();
+        $proxy = new $proxyClass($this->_emMock, $assoc, $product);
+        $assoc->expects($this->any())
+              ->method('load')
+              ->with($product, $this->isInstanceOf($proxyClass), $this->isInstanceOf('Doctrine\Tests\Mocks\EntityManagerMock'));
+        $proxy->getDescription();
+    }
+
+    public function testAssociationProxyExecutesLoadingOnlyOnce()
+    {
+        $proxyClass = $this->_generator->generateAssociationProxyClass('Doctrine\Tests\Models\ECommerce\ECommerceFeature');
+        $assoc = $this->_getAssociationMock();
+        $proxy = new $proxyClass($this->_emMock, $assoc, null);
+        $assoc->expects($this->once())
+              ->method('load');
+
+        $proxy->getDescription();
+        $proxy->getDescription();
+    }
+
+
+    protected function _getAssociationMock()
+    {
+        $assoc = $this->getMock('Doctrine\ORM\Mapping\AssociationMapping', array('load'), array(), '', false);
+        return $assoc;
     }
 }
