@@ -34,10 +34,11 @@ class OptimisticTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_conn = $this->_em->getConnection();
     }
 
-    public function testJoinedInsertSetsInitialVersionValue()
+    public function testJoinedChildInsertSetsInitialVersionValue()
     {
-        $test = new OptimisticJoinedParent();
-        $test->name = 'test';
+        $test = new OptimisticJoinedChild();
+        $test->name = 'child';
+        $test->whatever = 'whatever';
         $this->_em->save($test);
         $this->_em->flush();
 
@@ -47,10 +48,39 @@ class OptimisticTest extends \Doctrine\Tests\OrmFunctionalTestCase
     /**
      * @expectedException Doctrine\ORM\OptimisticLockException
      */
-    public function testJoinedFailureThrowsException()
+    public function testJoinedChildFailureThrowsException()
+    {
+        $q = $this->_em->createQuery('SELECT t FROM Doctrine\Tests\ORM\Locking\OptimisticJoinedChild t WHERE t.name = :name');
+        $q->setParameter('name', 'child');
+        $test = $q->getSingleResult();
+
+        // Manually update/increment the version so we can try and save the same
+        // $test and make sure the exception is thrown saying the record was 
+        // changed or updated since you read it
+        $this->_conn->execute('UPDATE optimistic_joined_parent SET version = ? WHERE id = ?', array(2, $test->id));
+
+        // Now lets change a property and try and save it again
+        $test->whatever = 'ok';
+        $this->_em->flush();
+    }
+
+    public function testJoinedParentInsertSetsInitialVersionValue()
+    {
+        $test = new OptimisticJoinedParent();
+        $test->name = 'parent';
+        $this->_em->save($test);
+        $this->_em->flush();
+
+        $this->assertEquals(1, $test->version);
+    }
+
+    /**
+     * @expectedException Doctrine\ORM\OptimisticLockException
+     */
+    public function testJoinedParentFailureThrowsException()
     {
         $q = $this->_em->createQuery('SELECT t FROM Doctrine\Tests\ORM\Locking\OptimisticJoinedParent t WHERE t.name = :name');
-        $q->setParameter('name', 'test');
+        $q->setParameter('name', 'parent');
         $test = $q->getSingleResult();
 
         // Manually update/increment the version so we can try and save the same
@@ -130,7 +160,7 @@ class OptimisticJoinedChild extends OptimisticJoinedParent
     /**
      * @Column(type="string", length=255)
      */
-    public $name;
+    public $whatever;
 }
 
 /**

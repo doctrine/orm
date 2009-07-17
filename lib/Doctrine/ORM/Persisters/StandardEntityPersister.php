@@ -182,6 +182,13 @@ class StandardEntityPersister
         return $postInsertIds;
     }
 
+    /**
+     * This function retrieves the default version value which was created
+     * by the DBMS INSERT statement. The value is assigned back in to the 
+     * $entity versionField property.
+     *
+     * @return void
+     */
     protected function _assignDefaultVersionValue($class, $entity, $id)
     {
         $versionField = $this->_class->getVersionField();
@@ -222,6 +229,16 @@ class StandardEntityPersister
         }
     }
 
+    /**
+     * Perform UPDATE statement for an entity. This function has support for
+     * optimistic locking if the entities ClassMetadata has versioning enabled.
+     *
+     * @param object $entity        The entity object being updated
+     * @param string $tableName     The name of the table being updated
+     * @param array $data           The array of data to set
+     * @param array $where          The condition used to update
+     * @return void
+     */
     protected function _doUpdate($entity, $tableName, $data, $where)
     {
         $set = array();
@@ -229,7 +246,7 @@ class StandardEntityPersister
             $set[] = $this->_conn->quoteIdentifier($columnName) . ' = ?';
         }
 
-        if ($versioned = $this->_class->isVersioned()) {
+        if ($isVersioned = $this->_class->isVersioned()) {
             $versionField = $this->_class->getVersionField();
             $identifier = $this->_class->getIdentifier();
             $versionFieldColumnName = $this->_class->getColumnName($versionField);
@@ -237,6 +254,7 @@ class StandardEntityPersister
             $set[] = $this->_conn->quoteIdentifier($versionFieldColumnName) . ' = ' .
                      $this->_conn->quoteIdentifier($versionFieldColumnName) . ' + 1';
         }
+
         $params = array_merge(array_values($data), array_values($where));
 
         $sql  = 'UPDATE ' . $this->_conn->quoteIdentifier($tableName)
@@ -246,7 +264,7 @@ class StandardEntityPersister
 
         $result = $this->_conn->exec($sql, $params);
 
-        if ($versioned && ! $result) {
+        if ($isVersioned && ! $result) {
             throw \Doctrine\ORM\OptimisticLockException::optimisticLockFailed();
         }
     }

@@ -59,6 +59,26 @@ class JoinedSubclassPersister extends StandardEntityPersister
     }
 
     /**
+     * This function finds the ClassMetadata instance in a inheritance hierarchy
+     * that is responsible for enabling versioning.
+     *
+     * @return mixed $versionedClass  ClassMetadata instance or false if versioning is not enabled
+     */
+    private function _getVersionedClassMetadata()
+    {
+        if ($isVersioned = $this->_class->isVersioned) {
+            if (isset($this->_class->fieldMappings[$this->_class->versionField]['inherited'])) {
+                $definingClassName = $this->_class->fieldMappings[$this->_class->versionField]['inherited'];
+                $versionedClass = $this->_em->getClassMetadata($definingClassName);
+            } else {
+                $versionedClass = $this->_class;
+            }
+            return $versionedClass;
+        }
+        return false;
+    }
+
+    /**
      * {@inheritdoc}
      *
      * @override
@@ -95,12 +115,7 @@ class JoinedSubclassPersister extends StandardEntityPersister
         }
 
         if ($isVersioned = $this->_class->isVersioned) {
-            if (isset($this->_class->fieldMappings[$this->_class->versionField]['inherited'])) {
-                $definingClassName = $this->_class->fieldMappings[$this->_class->versionField]['inherited'];
-                $versionedClass = $this->_em->getClassMetadata($definingClassName);
-            } else {
-                $versionedClass = $this->_class;
-            }
+            $versionedClass = $this->_getVersionedClassMetadata();
         }
 
         $postInsertIds = array();
@@ -204,8 +219,22 @@ class JoinedSubclassPersister extends StandardEntityPersister
             $this->_em->getUnitOfWork()->getEntityIdentifier($entity)
         );
 
-        foreach ($updateData as $tableName => $data) {
-            $this->_doUpdate($entity, $tableName, $updateData[$tableName], $id);
+        if ($isVersioned = $this->_class->isVersioned) {
+            $versionedClass = $this->_getVersionedClassMetadata();
+            $versionedTable = $versionedClass->primaryTable['name'];
+        }
+
+        if ($updateData) {
+            foreach ($updateData as $tableName => $data) {
+                if ($isVersioned && $versionedTable == $tableName) {
+                    $this->_doUpdate($entity, $tableName, $data, $id);
+                } else {
+                    $this->_conn->update($tableName, $data, $id);
+                }
+            }
+            if ($isVersioned && ! isset($updateData[$versionedTable])) {
+                $this->_doUpdate($entity, $versionedTable, array(), $id);
+            }
         }
     }
 
