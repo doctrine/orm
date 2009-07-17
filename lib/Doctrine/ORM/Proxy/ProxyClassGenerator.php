@@ -58,24 +58,26 @@ class ProxyClassGenerator
      * Generates a reference proxy class.
      * This is a proxy for an object which we have the id for retrieval.
      *
-     * @param string $className
-     * @param string $proxyClassName
-     * @param string $fileName
+     * @param string $originalClassName
+     * @return string name of the proxy class
      */
-    public function generateReferenceProxyClass($className)
+    public function generateReferenceProxyClass($originalClassName)
     {
-        $class = $this->_em->getClassMetadata($className);
-        $proxyClassName = str_replace('\\', '_', $className) . 'RProxy';
+        $proxyClassName = str_replace('\\', '_', $originalClassName) . 'RProxy';
+        //$proxyClassName = $originalClassName . 'RProxy';
+        $proxyFullyQualifiedClassName = self::$_ns . $proxyClassName;
         
-        if ( ! class_exists($proxyClassName, false)) {
-            $this->_em->getMetadataFactory()->setMetadataFor(self::$_ns . $proxyClassName, $class);
-            $fileName = $this->_cacheDir . $proxyClassName . '.g.php';
+        if (class_exists($proxyFullyQualifiedClassName, false)) {
+            return $proxyFullyQualifiedClassName;
+        }
+
+        $class = $this->_em->getClassMetadata($originalClassName);
+        $this->_em->getMetadataFactory()->setMetadataFor($proxyFullyQualifiedClassName, $class);
+        $fileName = $this->_cacheDir . $proxyClassName . '.g.php';
             
-            if (file_exists($fileName)) {
-                require $fileName;
-                $proxyClassName = '\\' . self::$_ns . $proxyClassName;
-                return $proxyClassName;
-            }
+        if (file_exists($fileName)) {
+            require $fileName;
+            return $proxyFullyQualifiedClassName;
         }
 
         $file = self::$_proxyClassTemplate;
@@ -87,7 +89,7 @@ class ProxyClassGenerator
             '<methods>', '<sleepImpl>'
         );
         $replacements = array(
-            $proxyClassName, $className, $methods, $sleepImpl
+            $proxyClassName, $originalClassName, $methods, $sleepImpl
         );
         
         $file = str_replace($placeholders, $replacements, $file);
@@ -95,9 +97,7 @@ class ProxyClassGenerator
         file_put_contents($fileName, $file);
         require $fileName;
         
-        $proxyClassName = '\\' . self::$_ns . $proxyClassName;
-        
-        return $proxyClassName;
+        return $proxyFullyQualifiedClassName;
     }
 
     protected function _generateMethods(ClassMetadata $class)
@@ -172,12 +172,12 @@ class ProxyClassGenerator
      * This is a proxy class for an object which we have the association where
      * it is involved, but no primary key to retrieve it.
      *
-     * @param string $className
+     * @param string $originalClassName
      * @param string $proxyClassName
      */
-    public function generateAssociationProxyClass($className, $proxyClassName)
+    public function generateAssociationProxyClass($originalClassName, $proxyClassName)
     {
-        $class = $this->_em->getClassMetadata($className);
+        $class = $this->_em->getClassMetadata($originalClassName);
         $file = self::$_assocProxyClassTemplate;
 
         $methods = '';
@@ -231,7 +231,7 @@ class ProxyClassGenerator
             '<methods>', '<sleepImpl>'
         );
         $replacements = array(
-            $proxyClassName, $className, $methods, $sleepImpl
+            $proxyClassName, $originalClassName, $methods, $sleepImpl
         );
 
         $file = str_replace($placeholders, $replacements, $file);

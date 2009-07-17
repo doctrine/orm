@@ -9,6 +9,7 @@ use Doctrine\Tests\Models\ECommerce\ECommerceCart;
 use Doctrine\Tests\Models\ECommerce\ECommerceCustomer;
 use Doctrine\Tests\Models\ECommerce\ECommerceFeature;
 use Doctrine\Tests\Models\ECommerce\ECommerceShipping;
+use Doctrine\ORM\Persisters\StandardEntityPersister;
 
 require_once __DIR__ . '/../../TestInit.php';
 
@@ -59,15 +60,57 @@ class ProxyClassGeneratorTest extends \Doctrine\Tests\OrmTestCase
         $this->assertTrue(is_subclass_of($proxyClass, '\Doctrine\Tests\Models\ECommerce\ECommerceCart'));
     }
 
-    public function _testGenerateProxiesWhichForwardsToTheModelWithTheGivenIdentifier()
+    public function testAllowsIdempotentCreationOfProxyClass()
     {
-        $feature = new ECommerceFeature;
-        $feature->setDescription('An interesting feature');
-        $this->_emMock->save($feature);
-        $id = $feature->getId();
-        $this->_emMock->clear();
+        $proxyClass = $this->_generator->generateReferenceProxyClass('Doctrine\Tests\Models\ECommerce\ECommerceFeature');
+        $theSameProxyClass = $this->_generator->generateReferenceProxyClass('Doctrine\Tests\Models\ECommerce\ECommerceFeature');
+        $this->assertEquals($proxyClass, $theSameProxyClass);
+    }
 
-        $proxy = $this->_generator->generateReferenceProxyClass('Doctrine\Tests\Models\ECommerce\ECommerceFeature', 1);
-        $this->assertEquals('An interesting feature', $proxy->getDescription());
+    public function testCreatesClassesThatRequirePersisterInTheConstructor()
+    {
+        $proxyClass = $this->_generator->generateReferenceProxyClass('Doctrine\Tests\Models\ECommerce\ECommerceFeature');
+        $proxy = new $proxyClass($this->_getMockPersister(), null);
+    }
+
+    public function testCreatesClassesThatDelegateLoadingToThePersister()
+    {
+        $identifier = array('id' => 42);
+        $proxyClass = $this->_generator->generateReferenceProxyClass('Doctrine\Tests\Models\ECommerce\ECommerceFeature');
+        $persister = $this->_getMockPersister();
+        $proxy = new $proxyClass($persister, $identifier);
+        $persister->expects($this->any())
+                  ->method('load')
+                  ->with($this->equalTo($identifier), $this->isInstanceOf($proxyClass));
+        $proxy->getDescription();
+    }
+
+    public function testCreatesClassesThatExecutesLoadingOnlyOnce()
+    {
+        $identifier = array('id' => 42);
+        $proxyClass = $this->_generator->generateReferenceProxyClass('Doctrine\Tests\Models\ECommerce\ECommerceFeature');
+        $persister = $this->_getMockPersister();
+        $proxy = new $proxyClass($persister, $identifier);
+        $persister->expects($this->once())
+                  ->method('load')
+                  ->with($this->equalTo($identifier), $this->isInstanceOf($proxyClass));
+        $proxy->getId();
+        $proxy->getDescription();
+    }
+
+    /**
+     * @expectedException PHPUnit_Framework_Error
+     */
+    public function testRespectsMethodsParametersTypeHinting()
+    {
+        $proxyClass = $this->_generator->generateReferenceProxyClass('Doctrine\Tests\Models\ECommerce\ECommerceFeature');
+        $proxy = new $proxyClass($this->_getMockPersister(), null);
+        $proxy->setProduct(array('invalid parameter'));
+    }
+
+    protected function _getMockPersister()
+    {
+        $persister = $this->getMock('Doctrine\ORM\Persisters\StandardEntityPersister', array('load'), array(), '', false);
+        return $persister;
     }
 }
