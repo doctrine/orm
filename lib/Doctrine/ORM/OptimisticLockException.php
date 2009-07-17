@@ -22,23 +22,14 @@
 namespace Doctrine\ORM;
 
 /**
- * Container for all ORM events.
+ * EntityManagerException
  *
- * This class cannot be instantiated.
- *
- * @author Roman Borschel <roman@code-factory.org>
- * @since 2.0
+ * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
+ * @author      Roman Borschel <roman@code-factory.org>
+ * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
+ * @link        www.doctrine-project.org
+ * @since       2.0
+ * @version     $Revision$
  */
-final class Events
-{
-    private function __construct() {}
-
-    const preDelete = 'preDelete';
-    const postDelete = 'postDelete';
-    const preInsert = 'preInsert';
-    const postInsert = 'postInsert';
-    const preUpdate = 'preUpdate';
-    const postUpdate = 'postUpdate';
-    const load = 'load';
-    const loadClassMetadata = 'loadClassMetadata';
-}
+class OptimisticLockException extends \Doctrine\Common\DoctrineException
+{}

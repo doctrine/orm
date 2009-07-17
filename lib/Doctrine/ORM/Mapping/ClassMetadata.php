@@ -398,6 +398,20 @@ final class ClassMetadata
     public $inheritedAssociationFields = array();
 
     /**
+     * A flag for whether or not the model is to be versioned with optimistic locking
+     *
+     * @var boolean $isVersioned
+     */
+    public $isVersioned;
+
+    /**
+     * The name of the field which stores the version information
+     *
+     * @var mixed $versionField
+     */
+    public $versionField;
+
+    /**
      * Initializes a new ClassMetadata instance that will hold the object-relational mapping
      * metadata of the class with the given name.
      *
@@ -1756,6 +1770,24 @@ final class ClassMetadata
     public function setSequenceGeneratorDefinition(array $definition)
     {
         $this->sequenceGeneratorDefinition = $definition;
+    }
+
+    public function isVersioned($bool = null)
+    {
+        if ( ! is_null($bool)) {
+            $this->isVersioned = $bool;
+        }
+        return $this->isVersioned;
+    }
+
+    public function getVersionField()
+    {
+        return $this->versionField;
+    }
+
+    public function setVersionField($versionField)
+    {
+        $this->versionField = $versionField;
     }
 
     /**

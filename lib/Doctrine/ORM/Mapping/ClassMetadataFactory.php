@@ -162,6 +162,8 @@ class ClassMetadataFactory
                 $this->_addInheritedFields($class, $parent);
                 $this->_addInheritedRelations($class, $parent);
                 $class->setIdentifier($parent->identifier);
+                $class->isVersioned($parent->isVersioned);
+                $class->setVersionField($parent->versionField);
             }
             
             // Invoke driver
@@ -259,13 +261,18 @@ class ClassMetadataFactory
      */
     private function _generateStaticSql($class)
     {
+        if ($versioned = $class->isVersioned()) {
+            $versionField = $class->getVersionField();
+        }
+
         // Generate INSERT SQL
         $columns = $values = array();
         if ($class->inheritanceType == ClassMetadata::INHERITANCE_TYPE_JOINED) {
             // Generate INSERT SQL for inheritance type JOINED
             foreach ($class->reflFields as $name => $field) {
                 if (isset($class->fieldMappings[$name]['inherited']) && ! isset($class->fieldMappings[$name]['id'])
-                        || isset($class->inheritedAssociationFields[$name])) {
+                        || isset($class->inheritedAssociationFields[$name])
+                        || ($versioned && $versionField == $name)) {
                     continue;
                 }
 
@@ -285,6 +292,9 @@ class ClassMetadataFactory
         } else {
             // Generate INSERT SQL for inheritance types NONE, SINGLE_TABLE, TABLE_PER_CLASS
             foreach ($class->reflFields as $name => $field) {
+                if ($versioned && $versionField == $name) {
+                    continue;
+                }
                 if (isset($class->associationMappings[$name])) {
                     $assoc = $class->associationMappings[$name];
                     if ($assoc->isOwningSide && $assoc->isOneToOne()) {

@@ -189,7 +189,7 @@ class EntityManager
         if ($this->_flushMode == self::FLUSHMODE_AUTO || $this->_flushMode == self::FLUSHMODE_COMMIT) {
             $this->flush();
         }
-        $this->_conn->commitTransaction();
+        $this->_conn->commit();
     }
     
     /**

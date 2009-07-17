@@ -144,6 +144,9 @@ class AnnotationDriver implements Driver
                 $mapping['type'] = $columnAnnot->type;
                 $mapping['length'] = $columnAnnot->length;
                 $mapping['nullable'] = $columnAnnot->nullable;
+                if (isset($columnAnnot->default)) {
+                    $mapping['default'] = $columnAnnot->default;
+                }
                 if (isset($columnAnnot->name)) {
                     $mapping['columnName'] = $columnAnnot->name;
                 }
@@ -152,6 +155,17 @@ class AnnotationDriver implements Driver
                 }
                 if ($generatedValueAnnot = $this->_reader->getPropertyAnnotation($property, 'Doctrine\ORM\Mapping\GeneratedValue')) {
                     $metadata->setIdGeneratorType(constant('Doctrine\ORM\Mapping\ClassMetadata::GENERATOR_TYPE_' . $generatedValueAnnot->strategy));
+                }
+                if ($versionAnnot = $this->_reader->getPropertyAnnotation($property, 'Doctrine\ORM\Mapping\Version')) {
+                    $metadata->isVersioned(true);
+                    $metadata->setVersionField($mapping['fieldName']);
+
+                    if ( ! isset($mapping['default'])) {
+                        // TODO: When we have timestamp optimistic locking
+                        // we'll have to figure out a better way to do this?
+                        // Can we set the default value to be NOW() ?
+                        $mapping['default'] = 1;
+                    }
                 }
                 $metadata->mapField($mapping);
 
@@ -165,7 +179,6 @@ class AnnotationDriver implements Driver
                 } else if ($tblGeneratorAnnot = $this->_reader->getPropertyAnnotation($property, 'Doctrine\ORM\Mapping\TableGenerator')) {
                     throw new DoctrineException("DoctrineTableGenerator not yet implemented.");
                 }
-                
             } else if ($oneToOneAnnot = $this->_reader->getPropertyAnnotation($property, 'Doctrine\ORM\Mapping\OneToOne')) {
                 $mapping['targetEntity'] = $oneToOneAnnot->targetEntity;
                 $mapping['joinColumns'] = $joinColumns;

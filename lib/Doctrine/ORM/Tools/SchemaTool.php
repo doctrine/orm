@@ -207,6 +207,9 @@ class SchemaTool
         $column['type'] = Type::getType($mapping['type']);
         $column['length'] = $mapping['length'];
         $column['notnull'] = ! $mapping['nullable'];
+        if (isset($mapping['default'])) {
+            $column['default'] = $mapping['default'];
+        }
         if ($class->isIdentifier($mapping['fieldName'])) {
             $column['primary'] = true;
             $options['primary'][] = $mapping['columnName'];

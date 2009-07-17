@@ -54,6 +54,7 @@ final class Column extends \Doctrine\Common\Annotations\Annotation {
     public $length;
     public $unique = false;
     public $nullable = false;
+    public $default;
     public $name;
 }
 final class OneToOne extends \Doctrine\Common\Annotations\Annotation {
@@ -95,7 +96,6 @@ final class JoinTable extends \Doctrine\Common\Annotations\Annotation {
     public $inverseJoinColumns;
 }
 final class SequenceGenerator extends \Doctrine\Common\Annotations\Annotation {
-    //public $name;
     public $sequenceName;
     public $allocationSize = 10;
     public $initialValue = 1;

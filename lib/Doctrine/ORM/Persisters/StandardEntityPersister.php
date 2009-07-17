@@ -122,6 +122,8 @@ class StandardEntityPersister
             return;
         }
 
+        $isVersioned = $this->_class->isVersioned;
+
         $postInsertIds = array();
         $idGen = $this->_class->idGenerator;
         $isPostInsertId = $idGen->isPostInsertGenerator();
@@ -159,7 +161,14 @@ class StandardEntityPersister
             $stmt->execute();
 
             if ($isPostInsertId) {
-                $postInsertIds[$idGen->generate($this->_em, $entity)] = $entity;
+                $id = $idGen->generate($this->_em, $entity);
+                $postInsertIds[$id] = $entity;
+            } else {
+                $id = $this->_class->getIdentifierValues($entity);
+            }
+
+            if ($isVersioned) {
+                $this->_assignDefaultVersionValue($this->_class, $entity, $id);
             }
 
             if ($hasPostInsertListeners) {
@@ -171,6 +180,18 @@ class StandardEntityPersister
         $this->_queuedInserts = array();
 
         return $postInsertIds;
+    }
+
+    protected function _assignDefaultVersionValue($class, $entity, $id)
+    {
+        $versionField = $this->_class->getVersionField();
+        $identifier = $this->_class->getIdentifierColumnNames();
+        $versionFieldColumnName = $this->_class->getColumnName($versionField);
+
+        $sql = "SELECT " . $versionFieldColumnName . " FROM " . $class->primaryTable['name'] .
+               " WHERE " . implode(' = ? AND ', $identifier) . " = ?";
+        $value = $this->_conn->fetchColumn($sql, (array) $id);
+        $this->_class->setFieldValue($entity, $versionField, $value[0]);
     }
 
     /**
@@ -192,10 +213,41 @@ class StandardEntityPersister
             $this->_preUpdate($entity);
         }
 
-        $this->_conn->update($tableName, $updateData[$tableName], $id);
+        if (isset($updateData[$tableName]) && $updateData[$tableName]) {
+            $this->_doUpdate($entity, $tableName, $updateData[$tableName], $id);
+        }
 
         if ($this->_evm->hasListeners(Events::postUpdate)) {
             $this->_postUpdate($entity);
+        }
+    }
+
+    protected function _doUpdate($entity, $tableName, $data, $where)
+    {
+        $set = array();
+        foreach ($data as $columnName => $value) {
+            $set[] = $this->_conn->quoteIdentifier($columnName) . ' = ?';
+        }
+
+        if ($versioned = $this->_class->isVersioned()) {
+            $versionField = $this->_class->getVersionField();
+            $identifier = $this->_class->getIdentifier();
+            $versionFieldColumnName = $this->_class->getColumnName($versionField);
+            $where[$versionFieldColumnName] = $entity->version;
+            $set[] = $this->_conn->quoteIdentifier($versionFieldColumnName) . ' = ' .
+                     $this->_conn->quoteIdentifier($versionFieldColumnName) . ' + 1';
+        }
+        $params = array_merge(array_values($data), array_values($where));
+
+        $sql  = 'UPDATE ' . $this->_conn->quoteIdentifier($tableName)
+                . ' SET ' . implode(', ', $set)
+                . ' WHERE ' . implode(' = ? AND ', array_keys($where))
+                . ' = ?';
+
+        $result = $this->_conn->exec($sql, $params);
+
+        if ($versioned && ! $result) {
+            throw \Doctrine\ORM\OptimisticLockException::optimisticLockFailed();
         }
     }
 
@@ -269,7 +321,14 @@ class StandardEntityPersister
         $platform = $this->_conn->getDatabasePlatform();
         $uow = $this->_em->getUnitOfWork();
 
+        if ($versioned = $this->_class->isVersioned()) {
+            $versionField = $this->_class->getVersionField();
+        }
+
         foreach ($uow->getEntityChangeSet($entity) as $field => $change) {
+            if ($versioned && $versionField == $field) {
+                continue;
+            }
             $oldVal = $change[0];
             $newVal = $change[1];
 

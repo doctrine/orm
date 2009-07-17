@@ -746,8 +746,9 @@ class Connection
         if ($this->_transactionNestingLevel == 1) {
             $this->_transactionNestingLevel = 0;
             $this->_conn->rollback();
+        } else {
+            --$this->_transactionNestingLevel;
         }
-        --$this->_transactionNestingLevel;
 
         return true;
     }

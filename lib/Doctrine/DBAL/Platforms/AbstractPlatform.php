@@ -850,7 +850,7 @@ abstract class AbstractPlatform
         $default = empty($field['notnull']) ? ' DEFAULT NULL' : '';
 
         if (isset($field['default'])) {
-            $default = ' DEFAULT ' . $this->quote($field['default'], $field['type']);
+            $default = ' DEFAULT ' . $this->quoteIdentifier($field['default'], $field['type']);
         }
         return $default;
     }

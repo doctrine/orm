@@ -94,6 +94,15 @@ class JoinedSubclassPersister extends StandardEntityPersister
             return;
         }
 
+        if ($isVersioned = $this->_class->isVersioned) {
+            if (isset($this->_class->fieldMappings[$this->_class->versionField]['inherited'])) {
+                $definingClassName = $this->_class->fieldMappings[$this->_class->versionField]['inherited'];
+                $versionedClass = $this->_em->getClassMetadata($definingClassName);
+            } else {
+                $versionedClass = $this->_class;
+            }
+        }
+
         $postInsertIds = array();
         $idGen = $this->_class->idGenerator;
         $isPostInsertId = $idGen->isPostInsertGenerator();
@@ -170,6 +179,10 @@ class JoinedSubclassPersister extends StandardEntityPersister
         foreach ($stmts as $stmt)
         $stmt->closeCursor();
 
+        if ($isVersioned) {
+            $this->_assignDefaultVersionValue($versionedClass, $entity, $id);
+        }
+
         $this->_queuedInserts = array();
 
         return $postInsertIds;
@@ -192,7 +205,7 @@ class JoinedSubclassPersister extends StandardEntityPersister
         );
 
         foreach ($updateData as $tableName => $data) {
-            $this->_conn->update($tableName, $updateData[$tableName], $id);
+            $this->_doUpdate($entity, $tableName, $updateData[$tableName], $id);
         }
     }
 
