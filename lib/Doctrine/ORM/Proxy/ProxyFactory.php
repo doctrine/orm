@@ -68,18 +68,7 @@ class ProxyFactory
      */
     public function getAssociationProxy($owner, \Doctrine\ORM\Mapping\AssociationMapping $assoc)
     {
-        throw new Exception("Not yet implemented.");
-        $proxyClassName = str_replace('\\', '_', $assoc->getTargetEntityName()) . 'AProxy';
-        if ( ! class_exists($proxyClassName, false)) {
-            $this->_em->getMetadataFactory()->setMetadataFor(self::$_ns . $proxyClassName, $this->_em->getClassMetadata($assoc->getTargetEntityName()));
-            $fileName = $this->_cacheDir . $proxyClassName . '.g.php';
-            if ( ! file_exists($fileName)) {
-                $this->_generateAssociationProxyClass($assoc->getTargetEntityName(), $proxyClassName, $fileName);
-            }
-            require $fileName;
-        }
-        $proxyClassName = '\\' . self::$_ns . $proxyClassName;
-        
+        $proxyClassName = $this->_generator->generateAssociationProxyClass($assoc->getTargetEntityName());
         return new $proxyClassName($this->_em, $assoc, $owner);
     }
 }

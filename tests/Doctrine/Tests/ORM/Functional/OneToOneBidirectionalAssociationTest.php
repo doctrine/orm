@@ -4,6 +4,7 @@ namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\Tests\Models\ECommerce\ECommerceCart;
 use Doctrine\Tests\Models\ECommerce\ECommerceCustomer;
+use Doctrine\ORM\Mapping\AssociationMapping;
 
 require_once __DIR__ . '/../../TestInit.php';
 
@@ -54,6 +55,33 @@ class OneToOneBidirectionalAssociationTest extends \Doctrine\Tests\OrmFunctional
 
     public function testEagerLoad()
     {
+        $this->_createFixture();
+
+        $query = $this->_em->createQuery('select c, ca from Doctrine\Tests\Models\ECommerce\ECommerceCustomer c join c.cart ca');
+        $result = $query->getResultList();
+        $customer = $result[0];
+        
+        $this->assertTrue($customer->getCart() instanceof ECommerceCart);
+        $this->assertEquals('paypal', $customer->getCart()->getPayment());
+    }
+    
+    public function testLazyLoad() {
+        $this->markTestSkipped();
+        $this->_createFixture();
+        $this->_em->getConfiguration()->setAllowPartialObjects(false);
+        $metadata = $this->_em->getClassMetadata('Doctrine\Tests\Models\ECommerce\ECommerceCustomer');
+        $metadata->getAssociationMapping('cart')->fetchMode = AssociationMapping::FETCH_LAZY;
+
+        $query = $this->_em->createQuery('select c from Doctrine\Tests\Models\ECommerce\ECommerceCustomer c');
+        $result = $query->getResultList();
+        $customer = $result[0];
+        
+        $this->assertTrue($customer->getCart() instanceof ECommerceCart);
+        $this->assertEquals('paypal', $customer->getCart()->getPayment());
+    }
+
+    protected function _createFixture()
+    {
         $customer = new ECommerceCustomer;
         $customer->setName('Giorgio');
         $cart = new ECommerceCart;
@@ -64,19 +92,7 @@ class OneToOneBidirectionalAssociationTest extends \Doctrine\Tests\OrmFunctional
         
         $this->_em->flush();
         $this->_em->clear();
-
-        $query = $this->_em->createQuery('select c, ca from Doctrine\Tests\Models\ECommerce\ECommerceCustomer c join c.cart ca');
-        $result = $query->getResultList();
-        $customer = $result[0];
-        
-        $this->assertTrue($customer->getCart() instanceof ECommerceCart);
-        $this->assertEquals('paypal', $customer->getCart()->getPayment());
     }
-    
-    /* TODO: not yet implemented
-    public function testLazyLoad() {
-        
-    }*/
 
     public function assertCartForeignKeyIs($value) {
         $foreignKey = $this->_em->getConnection()->execute('SELECT customer_id FROM ecommerce_carts WHERE id=?', array($this->cart->getId()))->fetchColumn();
