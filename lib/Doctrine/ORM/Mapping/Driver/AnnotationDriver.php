@@ -231,9 +231,39 @@ class AnnotationDriver implements Driver
                 $mapping['mappedBy'] = $manyToManyAnnot->mappedBy;
                 $mapping['cascade'] = $manyToManyAnnot->cascade;
                 $metadata->mapManyToMany($mapping);
-            }
-            
+            }   
         }
+        
+        // Evaluate LifecycleListener annotation
+        if (($lifecycleListenerAnnot = $this->_reader->getClassAnnotation($class, 'Doctrine\ORM\Mapping\LifecycleListener'))) {
+            foreach ($class->getMethods() as $method) {
+                if ($method->isPublic()) {
+                    $annotations = $this->_reader->getMethodAnnotations($method);
+                    if (isset($annotations['Doctrine\ORM\Mapping\PreSave'])) {
+                        $metadata->addLifecycleCallback($method->getName(), \Doctrine\ORM\Events::preSave);
+                    }
+                    if (isset($annotations['Doctrine\ORM\Mapping\PostSave'])) {
+                        $metadata->addLifecycleCallback($method->getName(), \Doctrine\ORM\Events::postSave);
+                    }
+                    if (isset($annotations['Doctrine\ORM\Mapping\PreUpdate'])) {
+                        $metadata->addLifecycleCallback($method->getName(), \Doctrine\ORM\Events::preUpdate);
+                    }
+                    if (isset($annotations['Doctrine\ORM\Mapping\PostUpdate'])) {
+                        $metadata->addLifecycleCallback($method->getName(), \Doctrine\ORM\Events::postUpdate);
+                    }
+                    if (isset($annotations['Doctrine\ORM\Mapping\PreDelete'])) {
+                        $metadata->addLifecycleCallback($method->getName(), \Doctrine\ORM\Events::preDelete);
+                    }
+                    if (isset($annotations['Doctrine\ORM\Mapping\PostDelete'])) {
+                        $metadata->addLifecycleCallback($method->getName(), \Doctrine\ORM\Events::postDelete);
+                    }
+                    if (isset($annotations['Doctrine\ORM\Mapping\PostLoad'])) {
+                        $metadata->addLifecycleCallback($method->getName(), \Doctrine\ORM\Events::postLoad);
+                    }
+                }
+            }
+        }
+        
     }
 
     /**

@@ -32,13 +32,76 @@ namespace Doctrine\ORM;
 final class Events
 {
     private function __construct() {}
-
+    /**
+     * The preDelete event occurs for a given entity before the respective
+     * EntityManager delete operation for that entity is executed.
+     * 
+     * This is an entity lifecycle event.
+     * 
+     * @var string
+     */
     const preDelete = 'preDelete';
+    /**
+     * The postDelete event occurs for an entity after the entity has 
+     * been deleted. It will be invoked after the database delete operations.
+     * 
+     * This is an entity lifecycle event.
+     * 
+     * @var string
+     */
     const postDelete = 'postDelete';
-    const preInsert = 'preInsert';
-    const postInsert = 'postInsert';
+    /**
+     * The preSave event occurs for a given entity before the respective
+     * EntityManager save operation for that entity is executed.
+     * 
+     * This is an entity lifecycle event.
+     * 
+     * @var string
+     */
+    const preSave = 'preSave';
+    /**
+     * The postSave event occurs for an entity after the entity has 
+     * been made persistent. It will be invoked after the database insert operations.
+     * Generated primary key values are available in the postSave event.
+     * 
+     * This is an entity lifecycle event.
+     * 
+     * @var string
+     */
+    const postSave = 'postSave';
+    /**
+     * The preUpdate event occurs before the database update operations to 
+     * entity data. 
+     * 
+     * This is an entity lifecycle event.
+     * 
+     * @var string
+     */
     const preUpdate = 'preUpdate';
+    /**
+     * The postUpdate event occurs after the database update operations to 
+     * entity data. 
+     * 
+     * This is an entity lifecycle event.
+     * 
+     * @var string
+     */
     const postUpdate = 'postUpdate';
+    /**
+     * The postLoad event occurs for an entity after the entity has been loaded
+     * into the current EntityManager from the database or after the refresh operation
+     * has been applied to it.
+     * 
+     * This is an entity lifecycle event.
+     * 
+     * @var string
+     */
     const postLoad = 'postLoad';
+    /**
+     * The loadClassMetadata event occurs after the mapping metadata for a class
+     * has been loaded from a mapping source (annotations/xml/yaml).
+     * 
+     * @var string
+     */
     const loadClassMetadata = 'loadClassMetadata';
 }

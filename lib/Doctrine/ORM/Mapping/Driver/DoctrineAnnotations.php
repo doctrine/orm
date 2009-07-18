@@ -103,6 +103,7 @@ final class SequenceGenerator extends \Doctrine\Common\Annotations\Annotation {
 final class ChangeTrackingPolicy extends \Doctrine\Common\Annotations\Annotation {}
 
 /* Annotations for lifecycle callbacks */
+final class LifecycleListener extends \Doctrine\Common\Annotations\Annotation {}
 final class PreSave extends \Doctrine\Common\Annotations\Annotation {}
 final class PostSave extends \Doctrine\Common\Annotations\Annotation {}
 final class PreUpdate extends \Doctrine\Common\Annotations\Annotation {}
