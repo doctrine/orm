@@ -157,7 +157,7 @@ class AnnotationDriver implements Driver
                     $metadata->setIdGeneratorType(constant('Doctrine\ORM\Mapping\ClassMetadata::GENERATOR_TYPE_' . $generatedValueAnnot->strategy));
                 }
                 if ($versionAnnot = $this->_reader->getPropertyAnnotation($property, 'Doctrine\ORM\Mapping\Version')) {
-                    $metadata->isVersioned(true);
+                    $metadata->setVersioned(true);
                     $metadata->setVersionField($mapping['fieldName']);
 
                     if ( ! isset($mapping['default'])) {
@@ -177,7 +177,7 @@ class AnnotationDriver implements Driver
                         'initialValue' => $seqGeneratorAnnot->initialValue
                     ));
                 } else if ($tblGeneratorAnnot = $this->_reader->getPropertyAnnotation($property, 'Doctrine\ORM\Mapping\TableGenerator')) {
-                    throw new DoctrineException("DoctrineTableGenerator not yet implemented.");
+                    throw DoctrineException::tableIdGeneratorNotImplemented();
                 }
             } else if ($oneToOneAnnot = $this->_reader->getPropertyAnnotation($property, 'Doctrine\ORM\Mapping\OneToOne')) {
                 $mapping['targetEntity'] = $oneToOneAnnot->targetEntity;

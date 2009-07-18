@@ -283,8 +283,8 @@ class ObjectHydrator extends AbstractHydrator
                 if (isset($targetClass->inverseMappings[$property])) {
                     $sourceProp = $targetClass->inverseMappings[$property]->sourceFieldName;
                     $targetClass->reflFields[$sourceProp]->setValue($entity2, $entity1);
-                } else if ($class === $targetClass) {
-                	// Special case: self-referencing one-one on the same class
+                } else if ($class === $targetClass && $relation->mappedByFieldName) {
+                	// Special case: bi-directional self-referencing one-one on the same class
                 	$targetClass->reflFields[$property]->setValue($entity2, $entity1);
                 }
             } else {

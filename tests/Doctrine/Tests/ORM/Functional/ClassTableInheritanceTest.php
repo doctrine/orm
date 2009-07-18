@@ -21,7 +21,7 @@ class ClassTableInheritanceTest extends \Doctrine\Tests\OrmFunctionalTestCase
     }
 
     public function testCRUD()
-    {
+    {        
         $person = new CompanyPerson;
         $person->setName('Roman S. Borschel');
         

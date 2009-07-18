@@ -26,7 +26,7 @@ use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\ORM\Events;
 
 /**
- * The metadata factory is used to create ClassMetadata objects that contain all the
+ * The ClassMetadataFactory is used to create ClassMetadata objects that contain all the
  * metadata mapping informations of a class which describes how a class should be mapped
  * to a relational database.
  *
@@ -35,7 +35,7 @@ use Doctrine\ORM\Events;
  * @version     $Revision$
  * @link        www.doctrine-project.org
  * @since       2.0
- * @todo Support for mapped superclasses (@DoctrineMappedSuperclass)
+ * @todo Support for mapped superclasses (@MappedSuperclass)
  */
 class ClassMetadataFactory
 {
@@ -114,7 +114,8 @@ class ClassMetadataFactory
 
     /**
      * Sets the metadata descriptor for a specific class.
-     * This is only useful in very special cases, like when generating proxy classes.
+     * 
+     * NOTE: This is only useful in very special cases, like when generating proxy classes.
      *
      * @param string $className
      * @param ClassMetadata $class
@@ -162,7 +163,7 @@ class ClassMetadataFactory
                 $this->_addInheritedFields($class, $parent);
                 $this->_addInheritedRelations($class, $parent);
                 $class->setIdentifier($parent->identifier);
-                $class->isVersioned($parent->isVersioned);
+                $class->setVersioned($parent->isVersioned);
                 $class->setVersionField($parent->versionField);
             }
             
@@ -261,8 +262,8 @@ class ClassMetadataFactory
      */
     private function _generateStaticSql($class)
     {
-        if ($versioned = $class->isVersioned()) {
-            $versionField = $class->getVersionField();
+        if ($versioned = $class->isVersioned) {
+            $versionField = $class->versionField;
         }
 
         // Generate INSERT SQL

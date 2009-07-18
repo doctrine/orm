@@ -24,6 +24,7 @@ namespace Doctrine\ORM;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\DoctrineException;
 use Doctrine\Common\PropertyChangedListener;
+use Doctrine\ORM\Events;
 use Doctrine\ORM\Internal\CommitOrderCalculator;
 use Doctrine\ORM\Internal\CommitOrderNode;
 use Doctrine\ORM\PersistentCollection;
@@ -135,7 +136,12 @@ class UnitOfWork implements PropertyChangedListener
      * @var array
      */
     private $_entityUpdates = array();
-
+    
+    /**
+     * Any extra updates that have been scheduled by persisters.
+     * 
+     * @var array
+     */
     private $_extraUpdates = array();
 
     /**
@@ -210,6 +216,13 @@ class UnitOfWork implements PropertyChangedListener
      * @var boolean
      */
     private $_useCExtension = false;
+    
+    /**
+     * The EventManager.
+     * 
+     * @var EventManager
+     */
+    private $_evm;
 
     /**
      * Initializes a new UnitOfWork instance, bound to the given EntityManager.
@@ -219,7 +232,7 @@ class UnitOfWork implements PropertyChangedListener
     public function __construct(EntityManager $em)
     {
         $this->_em = $em;
-        //TODO: any benefit with lazy init?
+        $this->_evm = $em->getEventManager();
         $this->_commitOrderCalculator = new CommitOrderCalculator();
         $this->_useCExtension = $this->_em->getConfiguration()->getUseCExtension();
     }
@@ -248,13 +261,19 @@ class UnitOfWork implements PropertyChangedListener
         $conn = $this->_em->getConnection();
         try {
             $conn->beginTransaction();
+            
+            if ($this->_entityInsertions) {
+                foreach ($commitOrder as $class) {
+                    $this->_executeInserts($class);
+                }
+            }
+            
+            if ($this->_entityUpdates) {
+                foreach ($commitOrder as $class) {
+                    $this->_executeUpdates($class);
+                }
+            }
 
-            foreach ($commitOrder as $class) {
-                $this->_executeInserts($class);
-            }
-            foreach ($commitOrder as $class) {
-                $this->_executeUpdates($class);
-            }
             // Extra updates that were requested by persisters.
             if ($this->_extraUpdates) {
                 $this->_executeExtraUpdates();
@@ -273,8 +292,10 @@ class UnitOfWork implements PropertyChangedListener
             //TODO: collection recreations (insertions of complete collections)
 
             // Entity deletions come last and need to be in reverse commit order
-            for ($count = count($commitOrder), $i = $count - 1; $i >= 0; --$i) {
-                $this->_executeDeletions($commitOrder[$i]);
+            if ($this->_entityDeletions) {
+                for ($count = count($commitOrder), $i = $count - 1; $i >= 0; --$i) {
+                    $this->_executeDeletions($commitOrder[$i]);
+                }
             }
 
             $conn->commit();
@@ -441,8 +462,8 @@ class UnitOfWork implements PropertyChangedListener
         }
 
         if ( ! isset($this->_originalEntityData[$oid])) {
-            // Entity is either NEW or MANAGED but not yet fully persisted
-            // (only has an id). These result in an INSERT.
+            // Entity is either NEW or MANAGED but not yet fully persisted (only has an id).
+            // These result in an INSERT.
             $this->_originalEntityData[$oid] = $actualData;
             $this->_entityChangeSets[$oid] = array_map(
                 function($e) { return array(null, $e); }, $actualData
@@ -549,10 +570,58 @@ class UnitOfWork implements PropertyChangedListener
                 $this->_originalEntityData[$oid] = $data;
             } else if ($state == self::STATE_DELETED) {
                 throw DoctrineException::updateMe("Deleted entity in collection detected during flush."
-                . " Make sure you properly remove deleted entities from collections.");
+                        . " Make sure you properly remove deleted entities from collections.");
             }
             // MANAGED associated entities are already taken into account
             // during changeset calculation anyway, since they are in the identity map.
+        }
+    }
+    
+    /**
+     * EXPERIMENTAL:
+     * Computes the changeset of an individual entity, independently of the
+     * computeChangeSets() routine that is used at the beginning of a UnitOfWork#commit().
+     * 
+     * @param $class
+     * @param $entity
+     */
+    public function computeSingleEntityChangeSet($class, $entity)
+    {
+        $oid = spl_object_hash($entity);
+
+        if ( ! $class->isInheritanceTypeNone()) {
+            $class = $this->_em->getClassMetadata(get_class($entity));
+        }
+
+        $actualData = array();
+        foreach ($class->reflFields as $name => $refProp) {
+            if ( ! $class->isIdentifier($name) || ! $class->isIdGeneratorIdentity()) {
+                $actualData[$name] = $refProp->getValue($entity);
+            }
+        }
+        
+        if ( ! isset($this->_originalEntityData[$oid])) {
+            $this->_originalEntityData[$oid] = $actualData;
+            $this->_entityChangeSets[$oid] = array_map(
+                function($e) { return array(null, $e); }, $actualData
+            );
+        } else {
+            $originalData = $this->_originalEntityData[$oid];
+            $changeSet = array();
+
+            foreach ($actualData as $propName => $actualValue) {
+                $orgValue = isset($originalData[$propName]) ? $originalData[$propName] : null;
+                if (is_object($orgValue) && $orgValue !== $actualValue) {
+                    $changeSet[$propName] = array($orgValue, $actualValue);
+                } else if ($orgValue != $actualValue || ($orgValue === null ^ $actualValue === null)) {
+                    $changeSet[$propName] = array($orgValue, $actualValue);
+                }
+            }
+            
+            if ($changeSet) {
+                $this->_entityChangeSets[$oid] = $changeSet;
+                $this->_originalEntityData[$oid] = $actualData;
+            }
         }
     }
 
@@ -571,7 +640,9 @@ class UnitOfWork implements PropertyChangedListener
                 unset($this->_entityInsertions[$oid]);
             }
         }
+        
         $postInsertIds = $persister->executeInserts();
+        
         if ($postInsertIds) {
             foreach ($postInsertIds as $id => $entity) {
                 // Persister returned a post-insert ID
@@ -597,8 +668,12 @@ class UnitOfWork implements PropertyChangedListener
         $persister = $this->getEntityPersister($className);
         foreach ($this->_entityUpdates as $oid => $entity) {
             if (get_class($entity) == $className) {
+                //TODO: Fire preUpdate
+                
                 $persister->update($entity);
                 unset($this->_entityUpdates[$oid]);
+                
+                //TODO: Fire postUpdate
             }
         }
     }
@@ -616,6 +691,8 @@ class UnitOfWork implements PropertyChangedListener
             if (get_class($entity) == $className) {
                 $persister->delete($entity);
                 unset($this->_entityDeletions[$oid]);
+                
+                //TODO: Fire postDelete
             }
         }
     }
@@ -737,7 +814,14 @@ class UnitOfWork implements PropertyChangedListener
             $this->_entityUpdates[$oid] = $entity;
         }
     }
-
+    
+    /**
+     * Schedules an extra update that will be executed immediately after the
+     * regular entity updates.
+     * 
+     * @param $entity
+     * @param $changeset
+     */
     public function scheduleExtraUpdate($entity, array $changeset)
     {
         $this->_extraUpdates[spl_object_hash($entity)] = array($entity, $changeset);
@@ -748,7 +832,7 @@ class UnitOfWork implements PropertyChangedListener
      * Note: Is not very useful currently as dirty entities are only registered
      * at commit time.
      *
-     * @param Doctrine_Entity $entity
+     * @param object $entity
      * @return boolean
      * @todo Rename to isScheduledForUpdate().
      */
@@ -789,7 +873,7 @@ class UnitOfWork implements PropertyChangedListener
      * Checks whether an entity is registered as removed/deleted with the unit
      * of work.
      *
-     * @param Doctrine\ORM\Entity $entity
+     * @param object $entity
      * @return boolean
      * @todo Rename to isScheduledForDelete().
      */
@@ -813,6 +897,12 @@ class UnitOfWork implements PropertyChangedListener
         $this->_entityStates[$oid]);
     }
 
+    /**
+     * 
+     * 
+     * @param $entity
+     * @return unknown_type
+     */
     public function isEntityRegistered($entity)
     {
         $oid = spl_object_hash($entity);
@@ -985,7 +1075,7 @@ class UnitOfWork implements PropertyChangedListener
                 $this->_executeExtraUpdates();
                 $this->_extraUpdates = array();
             }
-            // remove them from _entityInsertions and _entityChangeSets
+            // Remove them from _entityInsertions and _entityChangeSets
             $this->_entityInsertions = array_diff_key($this->_entityInsertions, $insertNow);
             $this->_entityChangeSets = array_diff_key($this->_entityChangeSets, $insertNow);
         }
@@ -1019,7 +1109,8 @@ class UnitOfWork implements PropertyChangedListener
                 }
                 break;
             case self::STATE_NEW:
-                //TODO: Better defer insert for post-insert ID generators also?
+                //TODO: Fire preSave lifecycle event
+                
                 $idGen = $class->idGenerator;
                 if ($idGen->isPostInsertGenerator()) {
                     $insertNow[$oid] = $entity;
@@ -1081,6 +1172,8 @@ class UnitOfWork implements PropertyChangedListener
         }
 
         $visited[$oid] = $entity; // mark visited
+        
+        //TODO: Fire preDelete
 
         switch ($this->getEntityState($entity)) {
             case self::STATE_NEW:
@@ -1330,14 +1423,17 @@ class UnitOfWork implements PropertyChangedListener
             $entity = $this->_identityMap[$class->rootEntityName][$idHash];
             $oid = spl_object_hash($entity);
             $overrideLocalChanges = false;
-            //$overrideLocalChanges = $query->getHint('doctrine.refresh');
+            //$overrideLocalChanges = isset($hints['doctrine.refresh']) && $hints['doctrine.refresh'] === true;
         } else {
             $entity = new $className;
             $oid = spl_object_hash($entity);
             $this->_entityIdentifiers[$oid] = $id;
             $this->_entityStates[$oid] = self::STATE_MANAGED;
             $this->_originalEntityData[$oid] = $data;
-            $this->addToIdentityMap($entity);
+            $this->_identityMap[$class->rootEntityName][$idHash] = $entity;
+            if ($entity instanceof \Doctrine\Common\NotifyPropertyChanged) {
+                $entity->addPropertyChangedListener($this);
+            }
             $overrideLocalChanges = true;
         }
 
@@ -1366,6 +1462,14 @@ class UnitOfWork implements PropertyChangedListener
                 }
             }
         }
+        
+        /*if (isset($class->lifecycleCallbacks[Events::postLoad])) {
+            $class->invokeLifecycleCallbacks(Events::postLoad, $entity);
+        }
+        if ($this->_evm->hasListeners(Events::postLoad)) {
+            $this->_evm->dispatchEvent(Events::postLoad, new LifecycleEventArgs($entity, $this->_em));
+        }
+        */
 
         return $entity;
     }
@@ -1563,7 +1667,7 @@ class UnitOfWork implements PropertyChangedListener
      */
     public function propertyChanged($entity, $propertyName, $oldValue, $newValue)
     {
-        if ($this->getEntityState($entity) == self::STATE_MANAGED) {
+        //if ($this->getEntityState($entity) == self::STATE_MANAGED) {
             $oid = spl_object_hash($entity);
             $class = $this->_em->getClassMetadata(get_class($entity));
 
@@ -1582,6 +1686,6 @@ class UnitOfWork implements PropertyChangedListener
             } else {
                 $this->_entityUpdates[$oid] = $entity;
             }
-        }
+        //}
     }
 }

@@ -1,8 +1,6 @@
 <?php
 
-namespace Doctrine\Tests\ORM\Locking;
-
-use Doctrine\ORM\Locking;
+namespace Doctrine\Tests\ORM\Functional\Locking;
 
 use Doctrine\Tests\Mocks\MetadataDriverMock;
 use Doctrine\Tests\Mocks\DatabasePlatformMock;
@@ -14,7 +12,7 @@ use Doctrine\Common\EventManager;
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
 use Doctrine\Tests\TestUtil;
 
-require_once __DIR__ . '/../../TestInit.php';
+require_once __DIR__ . '/../../../TestInit.php';
 
 class OptimisticTest extends \Doctrine\Tests\OrmFunctionalTestCase
 {
@@ -24,9 +22,9 @@ class OptimisticTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         try {
             $this->_schemaTool->createSchema(array(
-                $this->_em->getClassMetadata('Doctrine\Tests\ORM\Locking\OptimisticJoinedParent'),
-                $this->_em->getClassMetadata('Doctrine\Tests\ORM\Locking\OptimisticJoinedChild'),
-                $this->_em->getClassMetadata('Doctrine\Tests\ORM\Locking\OptimisticStandard')
+                $this->_em->getClassMetadata('Doctrine\Tests\ORM\Functional\Locking\OptimisticJoinedParent'),
+                $this->_em->getClassMetadata('Doctrine\Tests\ORM\Functional\Locking\OptimisticJoinedChild'),
+                $this->_em->getClassMetadata('Doctrine\Tests\ORM\Functional\Locking\OptimisticStandard')
             ));
         } catch (\Exception $e) {
             // Swallow all exceptions. We do not test the schema tool here.
@@ -50,7 +48,7 @@ class OptimisticTest extends \Doctrine\Tests\OrmFunctionalTestCase
      */
     public function testJoinedChildFailureThrowsException()
     {
-        $q = $this->_em->createQuery('SELECT t FROM Doctrine\Tests\ORM\Locking\OptimisticJoinedChild t WHERE t.name = :name');
+        $q = $this->_em->createQuery('SELECT t FROM Doctrine\Tests\ORM\Functional\Locking\OptimisticJoinedChild t WHERE t.name = :name');
         $q->setParameter('name', 'child');
         $test = $q->getSingleResult();
 
@@ -79,7 +77,7 @@ class OptimisticTest extends \Doctrine\Tests\OrmFunctionalTestCase
      */
     public function testJoinedParentFailureThrowsException()
     {
-        $q = $this->_em->createQuery('SELECT t FROM Doctrine\Tests\ORM\Locking\OptimisticJoinedParent t WHERE t.name = :name');
+        $q = $this->_em->createQuery('SELECT t FROM Doctrine\Tests\ORM\Functional\Locking\OptimisticJoinedParent t WHERE t.name = :name');
         $q->setParameter('name', 'parent');
         $test = $q->getSingleResult();
 
@@ -108,7 +106,7 @@ class OptimisticTest extends \Doctrine\Tests\OrmFunctionalTestCase
      */
     public function testStandardFailureThrowsException()
     {
-        $q = $this->_em->createQuery('SELECT t FROM Doctrine\Tests\ORM\Locking\OptimisticStandard t WHERE t.name = :name');
+        $q = $this->_em->createQuery('SELECT t FROM Doctrine\Tests\ORM\Functional\Locking\OptimisticStandard t WHERE t.name = :name');
         $q->setParameter('name', 'test');
         $test = $q->getSingleResult();
 
@@ -129,7 +127,7 @@ class OptimisticTest extends \Doctrine\Tests\OrmFunctionalTestCase
  * @DiscriminatorValue("parent")
  * @InheritanceType("JOINED")
  * @DiscriminatorColumn(name="discr", type="string")
- * @SubClasses({"Doctrine\Tests\ORM\Locking\OptimisticJoinedChild"})
+ * @SubClasses({"Doctrine\Tests\ORM\Functional\Locking\OptimisticJoinedChild"})
  */
 class OptimisticJoinedParent
 {

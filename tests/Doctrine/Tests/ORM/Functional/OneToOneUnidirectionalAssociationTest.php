@@ -29,6 +29,7 @@ class OneToOneUnidirectionalAssociationTest extends \Doctrine\Tests\OrmFunctiona
     public function testSavesAOneToOneAssociationWithCascadeSaveSet() {
         $this->product->setShipping($this->shipping);
         $this->_em->save($this->product);
+        $this->_em->flush();
         
         $this->assertForeignKeyIs($this->shipping->getId());
     }

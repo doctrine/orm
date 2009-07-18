@@ -293,14 +293,6 @@ final class ClassMetadata
      * @var array
      */
     public $primaryTable;
-    
-    /**
-     * The cached lifecycle listeners. There is only one instance of each
-     * listener class at any time.
-     *
-     * @var array
-     */
-    public $lifecycleListenerInstances = array();
 
     /**
      * The registered lifecycle callbacks for entities of this class.
@@ -308,13 +300,6 @@ final class ClassMetadata
      * @var array
      */
     public $lifecycleCallbacks = array();
-    
-    /**
-     * The registered lifecycle listeners for entities of this class.
-     *
-     * @var array
-     */
-    public $lifecycleListeners = array();
     
     /**
      * The association mappings. All mappings, inverse and owning side.
@@ -398,14 +383,14 @@ final class ClassMetadata
     public $inheritedAssociationFields = array();
 
     /**
-     * A flag for whether or not the model is to be versioned with optimistic locking
+     * A flag for whether or not instances of this class are to be versioned with optimistic locking.
      *
      * @var boolean $isVersioned
      */
     public $isVersioned;
 
     /**
-     * The name of the field which stores the version information
+     * The name of the field which is used for versioning in optimistic locking (if any).
      *
      * @var mixed $versionField
      */
@@ -415,7 +400,7 @@ final class ClassMetadata
      * Initializes a new ClassMetadata instance that will hold the object-relational mapping
      * metadata of the class with the given name.
      *
-     * @param string $entityName  Name of the entity class the new instance is used for.
+     * @param string $entityName The name of the entity class the new instance is used for.
      */
     public function __construct($entityName)
     {
@@ -1531,15 +1516,20 @@ final class ClassMetadata
      */
     public function invokeLifecycleCallbacks($lifecycleEvent, $entity)
     {
-        foreach ($this->getLifecycleCallbacks($lifecycleEvent) as $callback) {
+        foreach ($this->lifecycleCallbacks[$lifecycleEvent] as $callback) {
             $entity->$callback();
         }
-        foreach ($this->getLifecycleListeners($lifecycleEvent) as $className => $callback) {
-            if ( ! isset($this->lifecycleListenerInstances[$className])) {
-                $this->lifecycleListenerInstances[$className] = new $className;
-            }
-            $this->lifecycleListenerInstances[$className]->$callback($entity);
-        }
+    }
+    
+    /**
+     * Whether the class has any attached lifecycle listeners or callbacks for a lifecycle event.
+     * 
+     * @param string $lifecycleEvent
+     * @return boolean
+     */
+    public function hasLifecycleCallbacks($lifecycleEvent)
+    {
+        return isset($this->lifecycleCallbacks[$lifecycleEvent]);
     }
     
     /**
@@ -1550,37 +1540,7 @@ final class ClassMetadata
      */
     public function getLifecycleCallbacks($event)
     {
-        return isset($this->lifecycleCallbacks[$event]) ?
-                $this->lifecycleCallbacks[$event] : array();
-    }
-    
-    /**
-     * Gets the registered lifecycle listeners for an event.
-     *
-     * @param string $event
-     * @return array
-     */
-    public function getLifecycleListeners($event)
-    {
-        return isset($this->lifecycleListeners[$event]) ?
-                $this->lifecycleListeners[$event] : array();
-    }
-    
-    /**
-     * Adds a lifecycle listener for entities of this class.
-     * 
-     * Note: If the same listener class is registered more than once, the old
-     * one will be overridden.
-     *
-     * @param string $listenerClass
-     * @param array $callbacks
-     */
-    public function addLifecycleListener($listenerClass, array $callbacks)
-    {
-        $this->lifecycleListeners[$event][$listenerClass] = array();
-        foreach ($callbacks as $method => $event) {
-            $this->lifecycleListeners[$event][$listenerClass][] = $method;
-        }
+        return isset($this->lifecycleCallbacks[$event]) ? $this->lifecycleCallbacks[$event] : array();
     }
     
     /**
@@ -1594,12 +1554,7 @@ final class ClassMetadata
      */
     public function addLifecycleCallback($callback, $event)
     {
-        if ( ! isset($this->lifecycleCallbacks[$event])) {
-            $this->lifecycleCallbacks[$event] = array();
-        }
-        if ( ! in_array($callback, $this->lifecycleCallbacks[$event])) {
-            $this->lifecycleCallbacks[$event][$callback] = $callback;
-        } 
+        $this->lifecycleCallbacks[$event][] = $callback;
     }
 
     /**
@@ -1771,20 +1726,44 @@ final class ClassMetadata
     {
         $this->sequenceGeneratorDefinition = $definition;
     }
-
-    public function isVersioned($bool = null)
+    
+    /**
+     * Checks whether this class is versioned for optimistic locking.
+     * 
+     * @return boolean TRUE if this class is versioned for optimistic locking, FALSE otherwise.
+     */
+    public function isVersioned()
     {
-        if ( ! is_null($bool)) {
-            $this->isVersioned = $bool;
-        }
         return $this->isVersioned;
     }
-
+    
+    /**
+     * Sets whether this class is to be versioned for optimistic locking.
+     * 
+     * @param boolean $bool
+     */
+    public function setVersioned($bool)
+    {
+        $this->isVersioned = $bool;
+    }
+    
+    /**
+     * Gets the name of the field that is used for versioning if this class is versioned
+     * for optimistic locking.
+     * 
+     * @return string
+     */
     public function getVersionField()
     {
         return $this->versionField;
     }
-
+    
+    /**
+     * Sets the name of the field that is to be used for versioning if this class is
+     * versioned for optimistic locking.
+     * 
+     * @param string $versionField
+     */
     public function setVersionField($versionField)
     {
         $this->versionField = $versionField;

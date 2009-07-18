@@ -39,6 +39,6 @@ final class Events
     const postInsert = 'postInsert';
     const preUpdate = 'preUpdate';
     const postUpdate = 'postUpdate';
-    const load = 'load';
+    const postLoad = 'postLoad';
     const loadClassMetadata = 'loadClassMetadata';
 }

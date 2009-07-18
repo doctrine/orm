@@ -2,15 +2,6 @@
 
 namespace Doctrine\Tests\ORM;
 
-use Doctrine\Tests\ORM\Associations;
-use Doctrine\Tests\ORM\Cache;
-use Doctrine\Tests\ORM\Entity;
-use Doctrine\Tests\ORM\Hydration;
-use Doctrine\Tests\ORM\Mapping;
-use Doctrine\Tests\ORM\Query;
-use Doctrine\Tests\ORM\Ticket;
-use Doctrine\Tests\ORM\Functional;
-
 if (!defined('PHPUnit_MAIN_METHOD')) {
     define('PHPUnit_MAIN_METHOD', 'Orm_AllTests::main');
 }
@@ -42,7 +33,6 @@ class AllTests
         $suite->addTest(Mapping\AllTests::suite());
         $suite->addTest(Functional\AllTests::suite());
         $suite->addTest(Id\AllTests::suite());
-        $suite->addTest(Locking\AllTests::suite());
 
         return $suite;
     }

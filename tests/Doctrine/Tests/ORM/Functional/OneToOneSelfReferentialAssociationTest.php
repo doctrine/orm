@@ -31,6 +31,7 @@ class OneToOneSelfReferentialAssociationTest extends \Doctrine\Tests\OrmFunction
     public function testSavesAOneToOneAssociationWithCascadeSaveSet() {
         $this->customer->setMentor($this->mentor);
         $this->_em->save($this->customer);
+        $this->_em->flush();
         
         $this->assertForeignKeyIs($this->mentor->getId());
     }
@@ -59,7 +60,7 @@ class OneToOneSelfReferentialAssociationTest extends \Doctrine\Tests\OrmFunction
         $this->_em->flush();
         $this->_em->clear();
 
-        $query = $this->_em->createQuery('select c, m from Doctrine\Tests\Models\ECommerce\ECommerceCustomer c left join c.mentor m');
+        $query = $this->_em->createQuery('select c, m from Doctrine\Tests\Models\ECommerce\ECommerceCustomer c left join c.mentor m order by c.id asc');
         $result = $query->getResultList();
         $customer = $result[0];
         

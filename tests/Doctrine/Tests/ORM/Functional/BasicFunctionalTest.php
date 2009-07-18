@@ -26,6 +26,7 @@ class BasicFunctionalTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $user->username = 'romanb';
         $user->status = 'developer';
         $this->_em->save($user);
+       
         $this->assertTrue(is_numeric($user->id));
         $this->assertTrue($this->_em->contains($user));
 

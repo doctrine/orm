@@ -132,20 +132,13 @@ class StandardEntityPersister
         $primaryTableName = $this->_class->primaryTable['name'];
 
         $sqlLogger = $this->_conn->getConfiguration()->getSqlLogger();
-        $hasPreInsertListeners = $this->_evm->hasListeners(Events::preInsert);
-        $hasPostInsertListeners = $this->_evm->hasListeners(Events::postInsert);
 
         foreach ($this->_queuedInserts as $entity) {
             $insertData = array();
             $this->_prepareData($entity, $insertData, true);
 
-            if ($hasPreInsertListeners) {
-                $this->_preInsert($entity);
-            }
-
             $paramIndex = 1;
             if ($sqlLogger) {
-                //TODO: Log type
                 $params = array();
                 foreach ($insertData[$primaryTableName] as $value) {
                     $params[$paramIndex] = $value;
@@ -170,10 +163,6 @@ class StandardEntityPersister
             if ($isVersioned) {
                 $this->_assignDefaultVersionValue($this->_class, $entity, $id);
             }
-
-            if ($hasPostInsertListeners) {
-                $this->_postInsert($entity);
-            }
         }
 
         $stmt->closeCursor();
@@ -191,7 +180,7 @@ class StandardEntityPersister
      */
     protected function _assignDefaultVersionValue($class, $entity, $id)
     {
-        $versionField = $this->_class->getVersionField();
+        $versionField = $this->_class->versionField;
         $identifier = $this->_class->getIdentifierColumnNames();
         $versionFieldColumnName = $this->_class->getColumnName($versionField);
 
@@ -246,8 +235,8 @@ class StandardEntityPersister
             $set[] = $this->_conn->quoteIdentifier($columnName) . ' = ?';
         }
 
-        if ($isVersioned = $this->_class->isVersioned()) {
-            $versionField = $this->_class->getVersionField();
+        if ($isVersioned = $this->_class->isVersioned) {
+            $versionField = $this->_class->versionField;
             $identifier = $this->_class->getIdentifier();
             $versionFieldColumnName = $this->_class->getColumnName($versionField);
             $where[$versionFieldColumnName] = $entity->version;
@@ -339,8 +328,8 @@ class StandardEntityPersister
         $platform = $this->_conn->getDatabasePlatform();
         $uow = $this->_em->getUnitOfWork();
 
-        if ($versioned = $this->_class->isVersioned()) {
-            $versionField = $this->_class->getVersionField();
+        if ($versioned = $this->_class->isVersioned) {
+            $versionField = $this->_class->versionField;
         }
 
         foreach ($uow->getEntityChangeSet($entity) as $field => $change) {
@@ -359,9 +348,8 @@ class StandardEntityPersister
                     continue;
                 }
 
-                // Special case: One-one self-referencing of the same class with IDENTITY type key generation.
-                if ($this->_class->isIdGeneratorIdentity() && $newVal !== null &&
-                        $assocMapping->sourceEntityName == $assocMapping->targetEntityName) {
+                // Special case: One-one self-referencing of the same class.                
+                if ($newVal !== null && $assocMapping->sourceEntityName == $assocMapping->targetEntityName) {
                     $oid = spl_object_hash($newVal);
                     $isScheduledForInsert = $uow->isRegisteredNew($newVal);
                     if (isset($this->_queuedInserts[$oid]) || $isScheduledForInsert) {
@@ -448,6 +436,8 @@ class StandardEntityPersister
         }
 
         if ( ! $this->_em->getConfiguration()->getAllowPartialObjects()) {
+            // Partial objects not allowed, so make sure we put in proxies and
+            // empty collections respectively.
             foreach ($this->_class->associationMappings as $field => $assoc) {
                 if ($assoc->isOneToOne()) {
                     if ($assoc->isLazilyFetched) {
@@ -455,7 +445,7 @@ class StandardEntityPersister
                         $proxy = $this->_em->getProxyGenerator()->getAssociationProxy($entity, $assoc);
                         $this->_class->reflFields[$field]->setValue($entity, $proxy);
                     } else {
-                        //TODO: Eager fetch?
+                        //TODO: Eager fetch
                     }
                 } else {
                     // Inject collection
@@ -491,51 +481,5 @@ class StandardEntityPersister
 
         return 'SELECT ' . $columnList . ' FROM ' . $this->_class->getTableName()
                 . ' WHERE ' . $conditionSql;
-    }
-
-    /**
-     * Dispatches the preInsert event for the given entity.
-     *
-     * @param object $entity
-     */
-    final protected function _preInsert($entity)
-    {
-        $eventArgs = new \Doctrine\ORM\Event\PreInsertUpdateEventArgs(
-            $entity, $this->_em->getUnitOfWork()->getEntityChangeSet($entity)
-        );
-        $this->_evm->dispatchEvent(Events::preInsert, $eventArgs);
-    }
-
-    /**
-     * Dispatches the postInsert event for the given entity.
-     *
-     * @param object $entity
-     */
-    final protected function _postInsert($entity)
-    {
-        $this->_evm->dispatchEvent(Events::postInsert);
-    }
-
-    /**
-     * Dispatches the preUpdate event for the given entity.
-     *
-     * @param object $entity
-     */
-    final protected function _preUpdate($entity)
-    {
-        $eventArgs = new \Doctrine\ORM\Event\PreInsertUpdateEventArgs(
-            $entity, $this->_em->getUnitOfWork()->getEntityChangeSet($entity)
-        );
-        $this->_evm->dispatchEvent(Events::preUpdate, $eventArgs);
-    }
-
-    /**
-     * Dispatches the postUpdate event for the given entity.
-     *
-     * @param object $entity
-     */
-    final protected function _postUpdate($entity)
-    {
-        $this->_evm->dispatchEvent(Events::postUpdate);
     }
 }

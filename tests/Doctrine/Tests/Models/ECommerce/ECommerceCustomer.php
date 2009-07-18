@@ -33,6 +33,7 @@ class ECommerceCustomer
      * Example of a one-one self referential association. A mentor can follow
      * only one customer at the time, while a customer can choose only one
      * mentor. Not properly appropriate but it works.
+     * 
      * @OneToOne(targetEntity="ECommerceCustomer", cascade={"save"})
      * @JoinColumn(name="mentor_id", referencedColumnName="id")
      */

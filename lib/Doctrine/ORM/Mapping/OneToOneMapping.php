@@ -87,7 +87,11 @@ class OneToOneMapping extends AssociationMapping
     {
         parent::_validateAndCompleteMapping($mapping);
         
-        if ($this->isOwningSide()) {
+        if (isset($mapping['joinColumns']) && $mapping['joinColumns']) {
+            $this->isOwningSide = true;
+        }
+        
+        if ($this->isOwningSide) {
             if ( ! isset($mapping['joinColumns'])) {
                 throw MappingException::invalidMapping($this->sourceFieldName);
             }

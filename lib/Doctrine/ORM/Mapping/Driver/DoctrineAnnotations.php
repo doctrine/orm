@@ -101,4 +101,15 @@ final class SequenceGenerator extends \Doctrine\Common\Annotations\Annotation {
     public $initialValue = 1;
 }
 final class ChangeTrackingPolicy extends \Doctrine\Common\Annotations\Annotation {}
+
+/* Annotations for lifecycle callbacks */
+final class PreSave extends \Doctrine\Common\Annotations\Annotation {}
+final class PostSave extends \Doctrine\Common\Annotations\Annotation {}
+final class PreUpdate extends \Doctrine\Common\Annotations\Annotation {}
+final class PostUpdate extends \Doctrine\Common\Annotations\Annotation {}
+final class PreDelete extends \Doctrine\Common\Annotations\Annotation {}
+final class PostDelete extends \Doctrine\Common\Annotations\Annotation {}
+final class PostLoad extends \Doctrine\Common\Annotations\Annotation {}
+
+/* Generic annotation for Doctrine extensions */
 final class DoctrineX extends \Doctrine\Common\Annotations\Annotation {}
