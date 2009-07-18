@@ -37,10 +37,15 @@ class LanguageRecognitionTest extends \Doctrine\Tests\OrmTestCase
         }
     }
     
-    public function parseDql($dql)
+    public function parseDql($dql, $hints = array())
     {
         $query = $this->_em->createQuery($dql);
         $query->setDql($dql);
+        
+        foreach ($hints as $key => $value) {
+        	$query->setHint($key, $value);
+        }
+        
         $parser = new \Doctrine\ORM\Query\Parser($query);
         $parser->setSqlTreeWalker(new \Doctrine\Tests\Mocks\MockTreeWalker);
         
@@ -339,8 +344,10 @@ class LanguageRecognitionTest extends \Doctrine\Tests\OrmTestCase
     {
         $oldValue = $this->_em->getConfiguration()->getAllowPartialObjects();
         $this->_em->getConfiguration()->setAllowPartialObjects(false);
-        
-        $this->parseDql('SELECT u.name FROM Doctrine\Tests\Models\CMS\CmsUser u');
+                
+        $this->parseDql('SELECT u.name FROM Doctrine\Tests\Models\CMS\CmsUser u', array(
+        	'doctrine.forcePartialLoad' => false
+        ));
         
         $this->_em->getConfiguration()->setAllowPartialObjects($oldValue);
     }

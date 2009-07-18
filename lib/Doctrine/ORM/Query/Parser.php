@@ -415,6 +415,10 @@ class Parser
                 case AST\PathExpression::TYPE_COLLECTION_VALUED_ASSOCIATION:
                     $this->_validateCollectionValuedAssociationPathExpression($expr);
                     break;
+                    
+                case AST\PathExpression::TYPE_SINGLE_VALUED_PATH_EXPRESSION:
+                	$this->_validateSingleValuedPathExpression($expr);
+                	break;
 
                 default:
                     $this->semanticalError('Encountered invalid PathExpression.');
@@ -660,7 +664,8 @@ class Parser
             // Deny hydration of partial objects if doctrine.forcePartialLoad query hint not defined 
             if (
                 $this->_query->getHydrationMode() == Query::HYDRATE_OBJECT &&
-                ! $this->_em->getConfiguration()->getAllowPartialObjects()
+                ! $this->_em->getConfiguration()->getAllowPartialObjects() &&
+                ! $this->_query->getHint('doctrine.forcePartialLoad')
             ) {
             	throw DoctrineException::partialObjectsAreDangerous();
             }
@@ -891,9 +896,10 @@ class Parser
     {
         $pathExpr = $this->PathExpression(AST\PathExpression::TYPE_STATE_FIELD);
 
-        if (count($pathExpr->getParts()) > 1) {
-            $this->syntaxError('SimpleStateFieldPathExpression');
-        }
+        // @TODO It seems PathExpression already checks for the minimum amount of parts
+        // if (count($pathExpr->getParts()) > 1) {
+        //     $this->syntaxError('SimpleStateFieldPathExpression');
+        // }
 
         if ( ! empty($this->_deferredPathExpressionStacks)) {
             $exprStack = array_pop($this->_deferredPathExpressionStacks);
@@ -947,6 +953,26 @@ class Parser
 
         return $pathExpr;
     }
+    
+    /**
+     * SingleValuedPathExpression ::= StateFieldPathExpression | SingleValuedAssociationPathExpression
+     */
+    public function SingleValuedPathExpression()
+    {
+        $pathExpr = $this->PathExpression(AST\PathExpression::TYPE_SINGLE_VALUED_PATH_EXPRESSION);
+        
+        if ( ! empty($this->_deferredPathExpressionStacks)) {
+            $exprStack = array_pop($this->_deferredPathExpressionStacks);
+            $exprStack[] = $pathExpr;
+            array_push($this->_deferredPathExpressionStacks, $exprStack);
+
+            return $pathExpr;
+        }
+
+        $this->_validateSingleValuedPathExpression($pathExpr);
+
+        return $pathExpr;
+    }
 
     /**
      * Validates that the given <tt>PathExpression</tt> is a semantically correct
@@ -982,7 +1008,7 @@ class Parser
 
     /**
      * Validates that the given <tt>PathExpression</tt> is a semantically correct
-     * SingleValuedPathExpression as specified in the grammar.
+     * SingleValuedAssociationPathExpression as specified in the grammar.
      *
      * @param PathExpression $pathExpression
      */
@@ -1011,6 +1037,22 @@ class Parser
      */
     private function _validateStateFieldPathExpression(AST\PathExpression $pathExpression)
     {
+        $stateFieldSeen = $this->_validateSingleValuedPathExpression($pathExpression);
+
+        if ( ! $stateFieldSeen) {
+            $this->semanticalError('Invalid StateFieldPathExpression. Must end in a state field.');
+        }
+    }
+    
+    /**
+     * Validates that the given <tt>PathExpression</tt> is a semantically correct
+     * SingleValuedPathExpression as specified in the grammar.
+     *
+     * @param PathExpression $pathExpression
+     * @return boolean
+     */
+    private function _validateSingleValuedPathExpression(AST\PathExpression $pathExpression)
+    {
         $class = $this->_queryComponents[$pathExpression->getIdentificationVariable()]['metadata'];
         $stateFieldSeen = false;
 
@@ -1027,10 +1069,16 @@ class Parser
                 $this->semanticalError('SingleValuedAssociationField or StateField expected.');
             }
         }
+        
+        // We need to force the type in PathExpression since SingleValuedPathExpression is in a 
+        // state of recognition of what's is the dealed type (StateField or SingleValuedAssociation)
+        $pathExpression->setType(
+        	($stateFieldSeen) 
+        		? AST\PathExpression::TYPE_STATE_FIELD 
+        		: AST\PathExpression::TYPE_SINGLE_VALUED_ASSOCIATION
+        );
 
-        if ( ! $stateFieldSeen) {
-            $this->semanticalError('Invalid StateFieldPathExpression. Must end in a state field.');
-        }
+        return $stateFieldSeen;
     }
 
     /**
@@ -1042,8 +1090,7 @@ class Parser
      */
     public function PathExpression($type)
     {
-        $this->match(Lexer::T_IDENTIFIER);
-        $identificationVariable = $this->_lexer->token['value'];
+        $identificationVariable = $this->IdentificationVariable();
         
         $parts = array();
 
@@ -1081,15 +1128,11 @@ class Parser
             return new AST\InputParameter($this->_lexer->token['value']);
         }
         
-        $this->match(Lexer::T_IDENTIFIER);
-        
-        return $this->_lexer->token['value'];
+        return $this->IdentificationVariable();
     }
 
     /**
      * NullComparisonExpression ::= (SingleValuedPathExpression | InputParameter) "IS" ["NOT"] "NULL"
-     *
-     * @todo Implementation incomplete for SingleValuedPathExpression.
      */
     public function NullComparisonExpression()
     {
@@ -1097,8 +1140,7 @@ class Parser
             $this->match(Lexer::T_INPUT_PARAMETER);
             $expr = new AST\InputParameter($this->_lexer->token['value']);
         } else {
-            //TODO: Support SingleValuedAssociationPathExpression
-            $expr = $this->StateFieldPathExpression();
+            $expr = $this->SingleValuedPathExpression();
         }
 
         $nullCompExpr = new AST\NullComparisonExpression($expr);
@@ -1117,9 +1159,7 @@ class Parser
     /**
      * AggregateExpression ::=
      *  ("AVG" | "MAX" | "MIN" | "SUM") "(" ["DISTINCT"] StateFieldPathExpression ")" |
-     *  "COUNT" "(" ["DISTINCT"] (IdentificationVariable | SingleValuedAssociationPathExpression | StateFieldPathExpression) ")"
-     *
-     *  @todo Implementation incomplete. Support for SingleValuedAssociationPathExpression.
+     *  "COUNT" "(" ["DISTINCT"] (IdentificationVariable | SingleValuedPathExpression) ")"
      */
     public function AggregateExpression()
     {
@@ -1136,8 +1176,7 @@ class Parser
                 $isDistinct = true;
             }
 
-            //TODO: Support SingleValuedAssociationPathExpression
-            $pathExp = $this->StateFieldPathExpression();
+            $pathExp = $this->SingleValuedPathExpression();
             $this->match(')');
         } else {
             if ($this->_lexer->isNextToken(Lexer::T_AVG)) {
@@ -1878,11 +1917,9 @@ class Parser
     }
 
     /**
-     * ArithmeticPrimary ::= StateFieldPathExpression | Literal | "(" SimpleArithmeticExpression ")"
+     * ArithmeticPrimary ::= SingleValuedPathExpression | Literal | "(" SimpleArithmeticExpression ")"
      *          | FunctionsReturningNumerics | AggregateExpression | FunctionsReturningStrings
-     *          | FunctionsReturningDatetime | IdentificationVariable | SingleValuedAssociationPathExpression
-     *
-     * @todo IdentificationVariable | SingleValuedAssociationPathExpression
+     *          | FunctionsReturningDatetime | IdentificationVariable
      */
     public function ArithmeticPrimary()
     {
@@ -1903,14 +1940,10 @@ class Parser
                 }
 
                 if ($peek['value'] == '.') {
-                    //TODO: SingleValuedAssociationPathExpression
-                    return $this->StateFieldPathExpression();
+                    return $this->SingleValuedPathExpression();
                 }
 
-                $identificationVariable = $this->_lexer->lookahead['value'];
-                $this->match($identificationVariable);
-
-                return $identificationVariable;
+                return $this->IdentificationVariable();
 
             case Lexer::T_INPUT_PARAMETER:
                 $this->match($this->_lexer->lookahead['value']);

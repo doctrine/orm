@@ -1065,7 +1065,7 @@ class SqlWalker implements TreeWalker
         if ($leftExpr instanceof AST\Node) {
             $sql .= $leftExpr->dispatch($this);
         } else {
-            $sql .= $leftExpr; //TODO: quote()
+            $sql .= $this->_conn->quote($leftExpr);
         }
         
         $sql .= ' ' . $compExpr->getOperator() . ' ';
@@ -1073,7 +1073,7 @@ class SqlWalker implements TreeWalker
         if ($rightExpr instanceof AST\Node) {
             $sql .= $rightExpr->dispatch($this);
         } else {
-            $sql .= $rightExpr; //TODO: quote()
+            $sql .= $this->_conn->quote($rightExpr);
         }
 
         return $sql;

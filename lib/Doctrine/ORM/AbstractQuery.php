@@ -392,7 +392,7 @@ abstract class AbstractQuery
      * FALSE is returned.
      *
      * @param string $name The name of the hint.
-     * @return mixed The value of the hint or FALSe, if the hint name is not recognized.
+     * @return mixed The value of the hint or FALSE, if the hint name is not recognized.
      */
     public function getHint($name)
     {
@@ -404,7 +404,7 @@ abstract class AbstractQuery
      * iterated over the result.
      *
      * @param array $params The query parameters.
-     * @param integer $hydrationMode The hydratio mode to use.
+     * @param integer $hydrationMode The hydration mode to use.
      * @return IterableResult
      */
     public function iterate(array $params = array(), $hydrationMode = self::HYDRATE_OBJECT)
