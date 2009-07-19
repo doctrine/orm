@@ -31,7 +31,7 @@ class OneToManyBidirectionalAssociationTest extends \Doctrine\Tests\OrmFunctiona
     public function testSavesAOneToManyAssociationWithCascadeSaveSet() {
         $this->product->addFeature($this->firstFeature);
         $this->product->addFeature($this->secondFeature);
-        $this->_em->save($this->product);
+        $this->_em->persist($this->product);
         $this->_em->flush();
         
         $this->assertFeatureForeignKeyIs($this->product->getId(), $this->firstFeature);
@@ -40,7 +40,7 @@ class OneToManyBidirectionalAssociationTest extends \Doctrine\Tests\OrmFunctiona
 
     public function testSavesAnEmptyCollection()
     {
-        $this->_em->save($this->product);
+        $this->_em->persist($this->product);
         $this->_em->flush();
 
         $this->assertEquals(0, count($this->product->getFeatures()));
@@ -48,7 +48,7 @@ class OneToManyBidirectionalAssociationTest extends \Doctrine\Tests\OrmFunctiona
 
     public function testDoesNotSaveAnInverseSideSet() {
         $this->product->brokenAddFeature($this->firstFeature);
-        $this->_em->save($this->product);
+        $this->_em->persist($this->product);
         $this->_em->flush();
         
         $this->assertFeatureForeignKeyIs(null, $this->firstFeature);
@@ -58,7 +58,7 @@ class OneToManyBidirectionalAssociationTest extends \Doctrine\Tests\OrmFunctiona
     {
         $this->product->addFeature($this->firstFeature);
         $this->product->addFeature($this->secondFeature);
-        $this->_em->save($this->product);
+        $this->_em->persist($this->product);
 
         $this->product->removeFeature($this->firstFeature);
         $this->_em->flush();
@@ -71,7 +71,7 @@ class OneToManyBidirectionalAssociationTest extends \Doctrine\Tests\OrmFunctiona
     {
         $this->product->addFeature($this->firstFeature);
         $this->product->addFeature($this->secondFeature);
-        $this->_em->save($this->product);
+        $this->_em->persist($this->product);
         
         $this->_em->flush();
         $this->_em->clear();

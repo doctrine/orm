@@ -351,7 +351,7 @@ class StandardEntityPersister
                 // Special case: One-one self-referencing of the same class.                
                 if ($newVal !== null && $assocMapping->sourceEntityName == $assocMapping->targetEntityName) {
                     $oid = spl_object_hash($newVal);
-                    $isScheduledForInsert = $uow->isRegisteredNew($newVal);
+                    $isScheduledForInsert = $uow->isScheduledForInsert($newVal);
                     if (isset($this->_queuedInserts[$oid]) || $isScheduledForInsert) {
                         // The associated entity $newVal is not yet persisted, so we must
                         // set $newVal = null, in order to insert a null value and schedule an

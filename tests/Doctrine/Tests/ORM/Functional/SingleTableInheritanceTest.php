@@ -29,32 +29,32 @@ class SingleTableInheritanceTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $parent = new ParentEntity;
         $parent->setData('foobar');
 
-        $this->_em->save($parent);
+        $this->_em->persist($parent);
 
         $child = new ChildEntity;
         $child->setData('thedata');
         $child->setNumber(1234);
 
-        $this->_em->save($child);
+        $this->_em->persist($child);
 
         $relatedEntity = new RelatedEntity;
         $relatedEntity->setName('theRelatedOne');
         $relatedEntity->setOwner($child);
 
-        $this->_em->save($relatedEntity);
+        $this->_em->persist($relatedEntity);
 
         $this->_em->flush();
         $this->_em->clear();
 
-        $query = $this->_em->createQuery("select e from Doctrine\Tests\ORM\Functional\ParentEntity e order by e.id asc");
+        $query = $this->_em->createQuery("select e from Doctrine\Tests\ORM\Functional\ParentEntity e order by e.data asc");
 
         $entities = $query->getResultList();
-
+        
         $this->assertEquals(2, count($entities));
-        $this->assertTrue($entities[0] instanceof ParentEntity);
-        $this->assertTrue($entities[1] instanceof ChildEntity);
         $this->assertTrue(is_numeric($entities[0]->getId()));
         $this->assertTrue(is_numeric($entities[1]->getId()));
+        $this->assertTrue($entities[0] instanceof ParentEntity);
+        $this->assertTrue($entities[1] instanceof ChildEntity);  
         $this->assertEquals('foobar', $entities[0]->getData());
         $this->assertEquals('thedata', $entities[1]->getData());
         $this->assertEquals(1234, $entities[1]->getNumber());

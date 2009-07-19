@@ -38,7 +38,7 @@ class ManyToManySelfReferentialAssociationTest extends AbstractManyToManyAssocia
     {
         $this->firstProduct->addRelated($this->firstRelated);
         $this->firstProduct->addRelated($this->secondRelated);
-        $this->_em->save($this->firstProduct);
+        $this->_em->persist($this->firstProduct);
         $this->_em->flush();
         
         $this->assertForeignKeysContain($this->firstProduct->getId(),
@@ -51,7 +51,7 @@ class ManyToManySelfReferentialAssociationTest extends AbstractManyToManyAssocia
     {
         $this->firstProduct->addRelated($this->firstRelated);
         $this->firstProduct->addRelated($this->secondRelated);
-        $this->_em->save($this->firstProduct);
+        $this->_em->persist($this->firstProduct);
         $this->firstProduct->removeRelated($this->firstRelated);
 
         $this->_em->flush();
@@ -91,8 +91,8 @@ class ManyToManySelfReferentialAssociationTest extends AbstractManyToManyAssocia
         $this->firstProduct->addRelated($this->secondRelated);
         $this->secondProduct->addRelated($this->firstRelated);
         $this->secondProduct->addRelated($this->secondRelated);
-        $this->_em->save($this->firstProduct);
-        $this->_em->save($this->secondProduct);
+        $this->_em->persist($this->firstProduct);
+        $this->_em->persist($this->secondProduct);
         
         $this->_em->flush();
         $this->_em->clear();

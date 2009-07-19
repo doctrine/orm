@@ -38,7 +38,7 @@ class ManyToManyBidirectionalAssociationTest extends AbstractManyToManyAssociati
     {
         $this->firstProduct->addCategory($this->firstCategory);
         $this->firstProduct->addCategory($this->secondCategory);
-        $this->_em->save($this->firstProduct);
+        $this->_em->persist($this->firstProduct);
         $this->_em->flush();
         
         $this->assertForeignKeysContain($this->firstProduct->getId(),
@@ -51,7 +51,7 @@ class ManyToManyBidirectionalAssociationTest extends AbstractManyToManyAssociati
     {
         $this->firstProduct->addCategory($this->firstCategory);
         $this->firstProduct->addCategory($this->secondCategory);
-        $this->_em->save($this->firstProduct);
+        $this->_em->persist($this->firstProduct);
         $this->firstProduct->removeCategory($this->firstCategory);
 
         $this->_em->flush();
@@ -102,8 +102,8 @@ class ManyToManyBidirectionalAssociationTest extends AbstractManyToManyAssociati
         $this->firstProduct->addCategory($this->secondCategory);
         $this->secondProduct->addCategory($this->firstCategory);
         $this->secondProduct->addCategory($this->secondCategory);
-        $this->_em->save($this->firstProduct);
-        $this->_em->save($this->secondProduct);
+        $this->_em->persist($this->firstProduct);
+        $this->_em->persist($this->secondProduct);
         
         $this->_em->flush();
         $this->_em->clear();

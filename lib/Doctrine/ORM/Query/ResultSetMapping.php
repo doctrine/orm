@@ -166,7 +166,7 @@ class ResultSetMapping
         if ( ! $this->isMixed && $this->fieldMappings) {
             $this->isMixed = true;
         }
-    }    
+    }
 
     /**
      * @return boolean

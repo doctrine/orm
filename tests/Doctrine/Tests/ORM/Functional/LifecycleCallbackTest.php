@@ -21,7 +21,7 @@ class LifecycleCallbackTest extends \Doctrine\Tests\OrmFunctionalTestCase
     {        
         $entity = new LifecycleCallbackTestEntity;
         $entity->value = 'hello';
-        $this->_em->save($entity);
+        $this->_em->persist($entity);
         $this->_em->flush();
         
         $this->assertTrue($entity->preSaveCallbackInvoked);

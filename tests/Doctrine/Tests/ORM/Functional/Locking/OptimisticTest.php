@@ -37,7 +37,7 @@ class OptimisticTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $test = new OptimisticJoinedChild();
         $test->name = 'child';
         $test->whatever = 'whatever';
-        $this->_em->save($test);
+        $this->_em->persist($test);
         $this->_em->flush();
 
         $this->assertEquals(1, $test->version);
@@ -66,7 +66,7 @@ class OptimisticTest extends \Doctrine\Tests\OrmFunctionalTestCase
     {
         $test = new OptimisticJoinedParent();
         $test->name = 'parent';
-        $this->_em->save($test);
+        $this->_em->persist($test);
         $this->_em->flush();
 
         $this->assertEquals(1, $test->version);
@@ -95,7 +95,7 @@ class OptimisticTest extends \Doctrine\Tests\OrmFunctionalTestCase
     {
         $test = new OptimisticStandard();
         $test->name = 'test';
-        $this->_em->save($test);
+        $this->_em->persist($test);
         $this->_em->flush();
 
         $this->assertEquals(1, $test->version);

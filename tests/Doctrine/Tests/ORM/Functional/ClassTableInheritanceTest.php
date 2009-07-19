@@ -25,14 +25,14 @@ class ClassTableInheritanceTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $person = new CompanyPerson;
         $person->setName('Roman S. Borschel');
         
-        $this->_em->save($person);
+        $this->_em->persist($person);
 
         $employee = new CompanyEmployee;
         $employee->setName('Roman S. Borschel');
         $employee->setSalary(100000);
         $employee->setDepartment('IT');
 
-        $this->_em->save($employee);
+        $this->_em->persist($employee);
 
         $employee->setName('Guilherme Blanco');
         $this->_em->flush();
@@ -86,13 +86,13 @@ class ClassTableInheritanceTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $manager->setSalary(100000);
         $manager->setDepartment('IT');
         $manager->setTitle('CTO');
-        $this->_em->save($manager);
+        $this->_em->persist($manager);
         $this->_em->flush();
         
         $manager->setName('Roman B.');
         $manager->setSalary(119000);
         $manager->setTitle('CEO');
-        $this->_em->save($manager);
+        $this->_em->persist($manager);
         $this->_em->flush();
         
         $this->_em->clear();
@@ -119,8 +119,8 @@ class ClassTableInheritanceTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertSame($manager, $wife->getSpouse());
         $this->assertSame($wife, $manager->getSpouse());
         
-        $this->_em->save($manager);
-        $this->_em->save($wife);
+        $this->_em->persist($manager);
+        $this->_em->persist($wife);
         
         $this->_em->flush();
         
@@ -155,8 +155,8 @@ class ClassTableInheritanceTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertEquals(1, count($person2->getFriends()));
         
         
-        $this->_em->save($person1);
-        $this->_em->save($person2);
+        $this->_em->persist($person1);
+        $this->_em->persist($person2);
         
         $this->_em->flush();
         

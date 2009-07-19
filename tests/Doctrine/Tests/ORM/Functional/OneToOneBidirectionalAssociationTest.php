@@ -28,7 +28,7 @@ class OneToOneBidirectionalAssociationTest extends \Doctrine\Tests\OrmFunctional
 
     public function testSavesAOneToOneAssociationWithCascadeSaveSet() {
         $this->customer->setCart($this->cart);
-        $this->_em->save($this->customer);
+        $this->_em->persist($this->customer);
         $this->_em->flush();
         
         $this->assertCartForeignKeyIs($this->customer->getId());
@@ -36,7 +36,7 @@ class OneToOneBidirectionalAssociationTest extends \Doctrine\Tests\OrmFunctional
 
     public function testDoesNotSaveAnInverseSideSet() {
         $this->customer->brokenSetCart($this->cart);
-        $this->_em->save($this->customer);
+        $this->_em->persist($this->customer);
         $this->_em->flush();
         
         $this->assertCartForeignKeyIs(null);
@@ -45,7 +45,7 @@ class OneToOneBidirectionalAssociationTest extends \Doctrine\Tests\OrmFunctional
     public function testRemovesOneToOneAssociation()
     {
         $this->customer->setCart($this->cart);
-        $this->_em->save($this->customer);
+        $this->_em->persist($this->customer);
         $this->customer->removeCart();
 
         $this->_em->flush();
@@ -88,7 +88,7 @@ class OneToOneBidirectionalAssociationTest extends \Doctrine\Tests\OrmFunctional
         $cart->setPayment('paypal');
         $customer->setCart($cart);
         
-        $this->_em->save($customer);
+        $this->_em->persist($customer);
         
         $this->_em->flush();
         $this->_em->clear();

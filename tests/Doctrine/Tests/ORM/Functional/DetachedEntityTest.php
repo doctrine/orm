@@ -24,7 +24,7 @@ class DetachedEntityTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $user->name = 'Roman';
         $user->username = 'romanb';
         $user->status = 'dev';
-        $this->_em->save($user);
+        $this->_em->persist($user);
         $this->_em->flush();
         $this->_em->clear();
 

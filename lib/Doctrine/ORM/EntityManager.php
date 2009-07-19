@@ -376,35 +376,41 @@ class EntityManager
     }
     
     /**
-     * Saves the given entity, persisting it's state.
+     * Tells the EntityManager to make an instance managed and persistent.
      * 
-     * @param object $object
+     * The entity will be entered into the database at or before transaction
+     * commit or as a result of the flush operation.
+     * 
+     * @param object $object The instance to make managed and persistent.
      */
-    public function save($object)
+    public function persist($object)
     {
         $this->_errorIfClosed();
-        $this->_unitOfWork->save($object);
+        $this->_unitOfWork->persist($object);
         if ($this->_flushMode == self::FLUSHMODE_IMMEDIATE) {
             $this->flush();
         }
     }
     
     /**
-     * Deletes the persistent state of the given entity.
+     * Removes an entity instance.
      * 
-     * @param object $entity
+     * A removed entity will be removed from the database at or before transaction commit
+     * or as a result of the flush operation. 
+     * 
+     * @param object $entity The entity instance to remove.
      */
-    public function delete($entity)
+    public function remove($entity)
     {
         $this->_errorIfClosed();
-        $this->_unitOfWork->delete($entity);
+        $this->_unitOfWork->remove($entity);
         if ($this->_flushMode == self::FLUSHMODE_IMMEDIATE) {
             $this->flush();
         }
     }
     
     /**
-     * Refreshes the persistent state of the entity from the database,
+     * Refreshes the persistent state of an entity from the database,
      * overriding any local changes that have not yet been persisted.
      *
      * @param object $entity
@@ -417,7 +423,7 @@ class EntityManager
     }
 
     /**
-     * Detaches an entity from the EntityManager. Its lifecycle is no longer managed.
+     * Detaches an entity from the EntityManager.
      *
      * @param object $entity The entity to detach.
      * @return boolean
@@ -476,7 +482,7 @@ class EntityManager
     }
     
     /**
-     * Checks if the instance is managed by the EntityManager.
+     * Determines whether an entity instance is managed in this EntityManager.
      * 
      * @param object $entity
      * @return boolean TRUE if this EntityManager currently manages the given entity
@@ -485,7 +491,7 @@ class EntityManager
     public function contains($entity)
     {
         return $this->_unitOfWork->isInIdentityMap($entity) &&
-                ! $this->_unitOfWork->isRegisteredRemoved($entity);
+                ! $this->_unitOfWork->isScheduledForDelete($entity);
     }
     
     /**

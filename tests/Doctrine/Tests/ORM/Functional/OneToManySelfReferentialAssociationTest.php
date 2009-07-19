@@ -30,7 +30,7 @@ class OneToManySelfReferentialAssociationTest extends \Doctrine\Tests\OrmFunctio
     public function testSavesAOneToManyAssociationWithCascadeSaveSet() {
         $this->parent->addChild($this->firstChild);
         $this->parent->addChild($this->secondChild);
-        $this->_em->save($this->parent);
+        $this->_em->persist($this->parent);
         
         $this->_em->flush();
         
@@ -40,7 +40,7 @@ class OneToManySelfReferentialAssociationTest extends \Doctrine\Tests\OrmFunctio
 
     public function testSavesAnEmptyCollection()
     {
-        $this->_em->save($this->parent);
+        $this->_em->persist($this->parent);
         $this->_em->flush();
 
         $this->assertEquals(0, count($this->parent->getChildren()));
@@ -48,7 +48,7 @@ class OneToManySelfReferentialAssociationTest extends \Doctrine\Tests\OrmFunctio
 
     public function testDoesNotSaveAnInverseSideSet() {
         $this->parent->brokenAddChild($this->firstChild);
-        $this->_em->save($this->parent);
+        $this->_em->persist($this->parent);
         $this->_em->flush();
         
         $this->assertForeignKeyIs(null, $this->firstChild);
@@ -58,7 +58,7 @@ class OneToManySelfReferentialAssociationTest extends \Doctrine\Tests\OrmFunctio
     {
         $this->parent->addChild($this->firstChild);
         $this->parent->addChild($this->secondChild);
-        $this->_em->save($this->parent);
+        $this->_em->persist($this->parent);
 
         $this->parent->removeChild($this->firstChild);
         $this->_em->flush();
@@ -71,7 +71,7 @@ class OneToManySelfReferentialAssociationTest extends \Doctrine\Tests\OrmFunctio
     {
         $this->parent->addChild($this->firstChild);
         $this->parent->addChild($this->secondChild);
-        $this->_em->save($this->parent);
+        $this->_em->persist($this->parent);
         
         $this->_em->flush();
         $this->_em->clear();

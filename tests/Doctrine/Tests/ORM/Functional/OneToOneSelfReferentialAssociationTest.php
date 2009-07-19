@@ -30,7 +30,7 @@ class OneToOneSelfReferentialAssociationTest extends \Doctrine\Tests\OrmFunction
 
     public function testSavesAOneToOneAssociationWithCascadeSaveSet() {
         $this->customer->setMentor($this->mentor);
-        $this->_em->save($this->customer);
+        $this->_em->persist($this->customer);
         $this->_em->flush();
         
         $this->assertForeignKeyIs($this->mentor->getId());
@@ -39,7 +39,7 @@ class OneToOneSelfReferentialAssociationTest extends \Doctrine\Tests\OrmFunction
     public function testRemovesOneToOneAssociation()
     {
         $this->customer->setMentor($this->mentor);
-        $this->_em->save($this->customer);
+        $this->_em->persist($this->customer);
         $this->customer->removeMentor();
 
         $this->_em->flush();
@@ -55,7 +55,7 @@ class OneToOneSelfReferentialAssociationTest extends \Doctrine\Tests\OrmFunction
         $mentor->setName('Obi-wan Kenobi');
         $customer->setMentor($mentor);
         
-        $this->_em->save($customer);
+        $this->_em->persist($customer);
         
         $this->_em->flush();
         $this->_em->clear();

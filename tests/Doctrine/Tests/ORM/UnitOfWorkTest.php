@@ -40,9 +40,9 @@ class UnitOfWorkTest extends \Doctrine\Tests\OrmTestCase
     {
         $user = new ForumUser();
         $user->username = 'romanb';
-        $this->assertFalse($this->_unitOfWork->isRegisteredRemoved($user));
-        $this->_unitOfWork->registerDeleted($user);
-        $this->assertFalse($this->_unitOfWork->isRegisteredRemoved($user));        
+        $this->assertFalse($this->_unitOfWork->isScheduledForDelete($user));
+        $this->_unitOfWork->scheduleForDelete($user);
+        $this->assertFalse($this->_unitOfWork->isScheduledForDelete($user));        
     }
     
     
@@ -60,28 +60,29 @@ class UnitOfWorkTest extends \Doctrine\Tests\OrmTestCase
         // Test
         $user = new ForumUser();
         $user->username = 'romanb';
-        $this->_unitOfWork->save($user);
+        $this->_unitOfWork->persist($user);
 
         // Check
-        $this->assertEquals(1, count($userPersister->getInserts())); // insert forced
+        $this->assertEquals(0, count($userPersister->getInserts()));
         $this->assertEquals(0, count($userPersister->getUpdates()));
         $this->assertEquals(0, count($userPersister->getDeletes()));   
-        $this->assertTrue($this->_unitOfWork->isInIdentityMap($user));
+        $this->assertFalse($this->_unitOfWork->isInIdentityMap($user));
         // should no longer be scheduled for insert
-        $this->assertFalse($this->_unitOfWork->isRegisteredNew($user));        
-        // should have an id
-        $this->assertTrue(is_numeric($user->id));
+        $this->assertTrue($this->_unitOfWork->isScheduledForInsert($user));
         
         // Now lets check whether a subsequent commit() does anything
         $userPersister->reset();
 
         // Test
-        $this->_unitOfWork->commit(); // shouldnt do anything
+        $this->_unitOfWork->commit();
         
-        // Check. Verify that nothing happened.
-        $this->assertEquals(0, count($userPersister->getInserts()));
+        // Check.
+        $this->assertEquals(1, count($userPersister->getInserts()));
         $this->assertEquals(0, count($userPersister->getUpdates()));
         $this->assertEquals(0, count($userPersister->getDeletes()));
+        
+        // should have an id
+        $this->assertTrue(is_numeric($user->id));
     }
 
     /**
@@ -109,16 +110,18 @@ class UnitOfWorkTest extends \Doctrine\Tests\OrmTestCase
         $user->username = 'romanb';
         $avatar = new ForumAvatar();
         $user->avatar = $avatar;
-        $this->_unitOfWork->save($user); // save cascaded to avatar
+        $this->_unitOfWork->persist($user); // save cascaded to avatar
+        
+        $this->_unitOfWork->commit();
 
         $this->assertTrue(is_numeric($user->id));
         $this->assertTrue(is_numeric($avatar->id));
 
-        $this->assertEquals(1, count($userPersister->getInserts())); // insert forced
+        $this->assertEquals(1, count($userPersister->getInserts()));
         $this->assertEquals(0, count($userPersister->getUpdates()));
         $this->assertEquals(0, count($userPersister->getDeletes()));
 
-        $this->assertEquals(1, count($avatarPersister->getInserts())); // insert forced
+        $this->assertEquals(1, count($avatarPersister->getInserts()));
         $this->assertEquals(0, count($avatarPersister->getUpdates()));
         $this->assertEquals(0, count($avatarPersister->getDeletes()));
     }
@@ -130,13 +133,15 @@ class UnitOfWorkTest extends \Doctrine\Tests\OrmTestCase
 
         $entity = new NotifyChangedEntity;
         $entity->setData('thedata');
-        $this->_unitOfWork->save($entity);
+        $this->_unitOfWork->persist($entity);
+        
+        $this->_unitOfWork->commit();
 
         $this->assertTrue($this->_unitOfWork->isInIdentityMap($entity));
 
         $entity->setData('newdata');
 
-        $this->assertTrue($this->_unitOfWork->isRegisteredDirty($entity));
+        $this->assertTrue($this->_unitOfWork->isScheduledForUpdate($entity));
 
         $this->assertEquals(array('data' => array('thedata', 'newdata')), $this->_unitOfWork->getEntityChangeSet($entity));
     }

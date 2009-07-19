@@ -29,7 +29,7 @@ class OneToOneUnidirectionalAssociationTest extends \Doctrine\Tests\OrmFunctiona
 
     public function testSavesAOneToOneAssociationWithCascadeSaveSet() {
         $this->product->setShipping($this->shipping);
-        $this->_em->save($this->product);
+        $this->_em->persist($this->product);
         $this->_em->flush();
         
         $this->assertForeignKeyIs($this->shipping->getId());
@@ -38,7 +38,7 @@ class OneToOneUnidirectionalAssociationTest extends \Doctrine\Tests\OrmFunctiona
     public function testRemovesOneToOneAssociation()
     {
         $this->product->setShipping($this->shipping);
-        $this->_em->save($this->product);
+        $this->_em->persist($this->product);
         $this->product->removeShipping();
 
         $this->_em->flush();
@@ -81,7 +81,7 @@ class OneToOneUnidirectionalAssociationTest extends \Doctrine\Tests\OrmFunctiona
         $shipping->setDays('1');
         $product->setShipping($shipping);
         
-        $this->_em->save($product);
+        $this->_em->persist($product);
         
         $this->_em->flush();
         $this->_em->clear();

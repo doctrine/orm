@@ -37,7 +37,7 @@ class InsertPerformanceTest extends \Doctrine\Tests\OrmPerformanceTestCase
             $user->status = 'user';
             $user->username = 'user' . $i;
             $user->name = 'Mr.Smith-' . $i;
-            $this->_em->save($user);
+            $this->_em->persist($user);
             if (($i % $batchSize) == 0) {
                 $this->_em->flush();
                 $this->_em->clear();

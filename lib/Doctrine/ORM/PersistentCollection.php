@@ -199,7 +199,7 @@ final class PersistentCollection extends \Doctrine\Common\Collections\Collection
     {
         //TODO: delete entity if shouldDeleteOrphans
         /*if ($this->_association->isOneToMany() && $this->_association->shouldDeleteOrphans()) {
-        $this->_em->delete($removed);
+        $this->_em->remove($removed);
         }*/
         $removed = parent::remove($key);
         if ($removed) {
@@ -377,7 +377,7 @@ final class PersistentCollection extends \Doctrine\Common\Collections\Collection
         //TODO: If oneToMany() && shouldDeleteOrphan() delete entities
         /*if ($this->_association->isOneToMany() && $this->_association->shouldDeleteOrphans()) {
         foreach ($this->_data as $entity) {
-        $this->_em->delete($entity);
+        $this->_em->remove($entity);
         }
         }*/
         parent::clear();

@@ -26,7 +26,7 @@ class QueryTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $user->name = 'Guilherme';
         $user->username = 'gblanco';
         $user->status = 'developer';
-        $this->_em->save($user);
+        $this->_em->persist($user);
         $this->_em->flush();
         $this->_em->clear();
 
@@ -77,9 +77,9 @@ class QueryTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $article2->text = "This is an introduction to Symfony 2.";
         $user->addArticle($article2);
 
-        $this->_em->save($user);
-        $this->_em->save($article1);
-        $this->_em->save($article2);
+        $this->_em->persist($user);
+        $this->_em->persist($article1);
+        $this->_em->persist($article2);
 
         $this->_em->flush();
         $this->_em->clear();

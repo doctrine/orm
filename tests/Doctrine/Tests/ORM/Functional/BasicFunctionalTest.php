@@ -25,8 +25,10 @@ class BasicFunctionalTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $user->name = 'Roman';
         $user->username = 'romanb';
         $user->status = 'developer';
-        $this->_em->save($user);
+        $this->_em->persist($user);
        
+        $this->_em->flush();
+        
         $this->assertTrue(is_numeric($user->id));
         $this->assertTrue($this->_em->contains($user));
 
@@ -56,14 +58,14 @@ class BasicFunctionalTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertTrue($this->_em->contains($ph2));
 
         // Delete
-        $this->_em->delete($user);
-        $this->assertTrue($this->_em->getUnitOfWork()->isRegisteredRemoved($user));
-        $this->assertTrue($this->_em->getUnitOfWork()->isRegisteredRemoved($ph));
-        $this->assertTrue($this->_em->getUnitOfWork()->isRegisteredRemoved($ph2));
+        $this->_em->remove($user);
+        $this->assertTrue($this->_em->getUnitOfWork()->isScheduledForDelete($user));
+        $this->assertTrue($this->_em->getUnitOfWork()->isScheduledForDelete($ph));
+        $this->assertTrue($this->_em->getUnitOfWork()->isScheduledForDelete($ph2));
         $this->_em->flush();
-        $this->assertFalse($this->_em->getUnitOfWork()->isRegisteredRemoved($user));
-        $this->assertFalse($this->_em->getUnitOfWork()->isRegisteredRemoved($ph));
-        $this->assertFalse($this->_em->getUnitOfWork()->isRegisteredRemoved($ph2));
+        $this->assertFalse($this->_em->getUnitOfWork()->isScheduledForDelete($user));
+        $this->assertFalse($this->_em->getUnitOfWork()->isScheduledForDelete($ph));
+        $this->assertFalse($this->_em->getUnitOfWork()->isScheduledForDelete($ph2));
     }
 
     public function testOneToManyAssociationModification()
@@ -81,7 +83,7 @@ class BasicFunctionalTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $user->addPhonenumber($ph1);
         $user->addPhonenumber($ph2);
 
-        $this->_em->save($user);
+        $this->_em->persist($user);
         $this->_em->flush();
 
         //$this->assertTrue($user->phonenumbers instanceof \Doctrine\ORM\PersistentCollection);
@@ -111,7 +113,7 @@ class BasicFunctionalTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $user->address = $address; // inverse side
         $address->user = $user; // owning side!
 
-        $this->_em->save($user);
+        $this->_em->persist($user);
         $this->_em->flush();
 
         // Check that the foreign key has been set
@@ -133,8 +135,7 @@ class BasicFunctionalTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $user->groups[] = $group;
         $group->users[] = $user;
 
-        $this->_em->save($user);
-        $this->_em->save($group);
+        $this->_em->persist($user);
 
         $this->_em->flush();
 
@@ -163,10 +164,10 @@ class BasicFunctionalTest extends \Doctrine\Tests\OrmFunctionalTestCase
             $group->users[] = $user;
         }
 
-        $this->_em->save($user); // Saves the user, 'cause of post-insert ID
+        $this->_em->persist($user);
 
         $this->_em->flush();
-
+        
         // Check that there are indeed 10 links in the association table
         $count = $this->_em->getConnection()->execute("SELECT COUNT(*) FROM cms_users_groups",
                 array())->fetchColumn();
@@ -189,7 +190,7 @@ class BasicFunctionalTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $user->name = 'Guilherme';
         $user->username = 'gblanco';
         $user->status = 'developer';
-        $this->_em->save($user);
+        $this->_em->persist($user);
         $this->_em->flush();
 
         $query = $this->_em->createQuery("select u from Doctrine\Tests\Models\CMS\CmsUser u");
@@ -226,7 +227,7 @@ class BasicFunctionalTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $user->name = 'Guilherme';
         $user->username = 'gblanco';
         $user->status = 'developer';
-        $this->_em->save($user);
+        $this->_em->persist($user);
         $this->_em->flush();
 
         $query = $this->_em->createQuery("select u from Doctrine\Tests\Models\CMS\CmsUser u join u.phonenumbers p");
@@ -242,7 +243,7 @@ class BasicFunctionalTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $user->name = 'Guilherme';
         $user->username = 'gblanco';
         $user->status = 'developer';
-        $this->_em->save($user);
+        $this->_em->persist($user);
         $this->_em->flush();
 
         $query = $this->_em->createQuery("select u,p from Doctrine\Tests\Models\CMS\CmsUser u left join u.phonenumbers p");
@@ -270,9 +271,7 @@ class BasicFunctionalTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $user->addGroup($group1);
 
-        $this->_em->save($user);
-        $this->_em->save($group1);
-
+        $this->_em->persist($user);
         
         $this->_em->flush();
         $this->_em->clear();
@@ -304,30 +303,5 @@ class BasicFunctionalTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $query = $this->_em->createQuery("select u, g from Doctrine\Tests\Models\CMS\CmsUser u inner join u.groups g");
         $this->assertEquals(0, count($query->getResultList()));
-
-        /* RB: TEST */
-        /*
-        $address = new CmsAddress;
-        $address->country = 'Germany';
-        $address->zip = '103040';
-        $address->city = 'Berlin';
-        $address->user = $user;
-        $this->_em->save($address);
-        $this->_em->clear();
-        
-        $proxy = $this->_em->getProxyGenerator()->getAssociationProxy($user, $this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsUser')->getAssociationMapping('address'));
-
-        var_dump($proxy->getId());
-        //var_dump(get_class($proxy));
-        var_dump(get_class($proxy->user));
-        //var_dump($proxy);
-
-        //$proxy = $this->_em->getProxyGenerator()->getReferenceProxy('Doctrine\Tests\Models\CMS\CmsUser', 1);
-
-        //echo $proxy->getId();
-        //var_dump(serialize($proxy));
-        */
-        
-        
     }
 }
