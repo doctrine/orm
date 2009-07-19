@@ -627,8 +627,7 @@ class Parser
     /**
      * SelectExpression ::=
      *      IdentificationVariable | StateFieldPathExpression |
-     *      (AggregateExpression | "(" Subselect ")") [["AS"] FieldAliasIdentificationVariable] |
-     *      Function
+     *      (AggregateExpression | "(" Subselect ")" | Function) [["AS"] FieldAliasIdentificationVariable]
      */
     public function SelectExpression()
     {
@@ -657,8 +656,7 @@ class Parser
             }
 
             if ($this->_lexer->isNextToken(Lexer::T_IDENTIFIER)) {
-                $this->match(Lexer::T_IDENTIFIER);
-                $fieldIdentificationVariable = $this->_lexer->token['value'];
+                $fieldIdentificationVariable = $this->ResultVariable();
             }
         } else {
             // Deny hydration of partial objects if doctrine.forcePartialLoad query hint not defined 
@@ -674,6 +672,16 @@ class Parser
         }
 
         return new AST\SelectExpression($expression, $fieldIdentificationVariable);
+    }
+    
+    /**
+     * ResultVariable ::= identifier
+     */
+    public function ResultVariable()
+    {
+        $this->match(Lexer::T_IDENTIFIER);
+    
+        return $this->_lexer->token['value'];
     }
 
     /**
@@ -1251,24 +1259,38 @@ class Parser
     }
 
     /**
-     * OrderByItem ::= ResultVariable | StateFieldPathExpression ["ASC" | "DESC"]
+     * OrderByItem ::= (ResultVariable | StateFieldPathExpression) ["ASC" | "DESC"]
      *
-     * @todo Implementation incomplete for OrderByItem.
+     * @todo Support general SingleValuedPathExpression instead of only StateFieldPathExpression.
      */
     public function OrderByItem()
     {
-        $item = new AST\OrderByItem($this->StateFieldPathExpression());
+        // We need to check if we are in a ResultVariable or StateFieldPathExpression
+        $glimpse = $this->_lexer->glimpse();
+        
+        if ($glimpse['value'] != '.') {
+            $expr = $this->ResultVariable();
+            
+            // @todo Check if ResultVariable is defined somewhere
+        } else {
+            $expr = $this->StateFieldPathExpression();
+        }
+    
+        $item = new AST\OrderByItem($expr);
 
         if ($this->_lexer->isNextToken(Lexer::T_ASC)) {
             $this->match(Lexer::T_ASC);
             $item->setAsc(true);
-        } else if ($this->_lexer->isNextToken(Lexer::T_DESC)) {
-            $this->match(Lexer::T_DESC);
-            $item->setDesc(true);
-        } else {
-            $item->setDesc(true);
+            
+            return $item;
         }
-
+        
+        if ($this->_lexer->isNextToken(Lexer::T_DESC)) {
+            $this->match(Lexer::T_DESC);
+        }
+        
+        $item->setDesc(true);
+        
         return $item;
     }
 
@@ -1338,37 +1360,38 @@ class Parser
         $condPrimary = new AST\ConditionalPrimary;
 
         if ($this->_lexer->isNextToken('(')) {
-            // Peek beyond the matching closing paranthesis ')'
-            $numUnmatched = 1;
             $peek = $this->_lexer->peek();
-
-            while ($numUnmatched > 0) {
-                if ($peek['value'] == ')') {
-                    --$numUnmatched;
-                } else if ($peek['value'] == '(') {
-                    ++$numUnmatched;
+            
+            // We need to inner inspect for a subselect (ArithmeticExpression)
+            if ($peek['type'] != Lexer::T_SELECT) {
+                // Peek beyond and not until matching closing parenthesis
+                $arithmeticOps = array("+",  "-", "*", "/");
+                $numUnmatched = 1;
+            
+                // While not found a closing matched parenthesis and a matched arithmetic operator 
+                while ($numUnmatched > 0 && ! in_array($peek['value'], $arithmeticOps)) {
+                    if ($peek['value'] == ')') {
+                        --$numUnmatched;
+                    } else if ($peek['value'] == '(') {
+                        ++$numUnmatched;
+                    }
+                
+                    $peek = $this->_lexer->peek();
                 }
-
-                $peek = $this->_lexer->peek();
             }
-
-            $this->_lexer->resetPeek();
-
-            //TODO: This is not complete, what about LIKE/BETWEEN/...etc?
-            $comparisonOps = array("=",  "<", "<=", "<>", ">", ">=", "!=");
-
-            if (in_array($peek['value'], $comparisonOps)) {
+            
+            // Check if unmatched parenthesis is > 0, then we found a matching arithmetic operator
+            if ($numUnmatched > 0) {
                 $condPrimary->setSimpleConditionalExpression($this->SimpleConditionalExpression());
             } else {
                 $this->match('(');
-                $conditionalExpression = $this->ConditionalExpression();
+                $condPrimary->setConditionalExpression($this->ConditionalExpression());
                 $this->match(')');
-                $condPrimary->setConditionalExpression($conditionalExpression);
             }
         } else {
             $condPrimary->setSimpleConditionalExpression($this->SimpleConditionalExpression());
         }
-
+        
         return $condPrimary;
     }
 

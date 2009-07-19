@@ -240,9 +240,9 @@ class SqlWalker implements TreeWalker
     public function walkOrderByItem($orderByItem)
     {
         //TODO: support general SingleValuedPathExpression, not just state field
-        $pathExpr = $orderByItem->getStateFieldPathExpression();
-        $parts = $pathExpr->getParts();
-        $dqlAlias = $pathExpr->getIdentificationVariable();
+        $expr = $orderByItem->getExpression();
+        $parts = $expr->getParts();
+        $dqlAlias = $expr->getIdentificationVariable();
         $qComp = $this->_queryComponents[$dqlAlias];
         $columnName = $qComp['metadata']->getColumnName($parts[0]);
         $sql = $this->getSqlTableAlias($qComp['metadata']->getTableName() . $dqlAlias) . '.' . $columnName;
