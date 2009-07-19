@@ -148,13 +148,9 @@ class Parser
      */
     public function match($token)
     {
-        if (is_string($token)) {
-            $isMatch = ($this->_lexer->lookahead['value'] === $token);
-        } else {
-            $isMatch = ($this->_lexer->lookahead['type'] === $token);
-        }
-
-        if ( ! $isMatch) {
+        $key = (is_string($token)) ? 'value' : 'type';
+        
+        if ( ! ($this->_lexer->lookahead[$key] === $token)) {
             $this->syntaxError($this->_lexer->getLiteral($token));
         }
 
@@ -517,7 +513,15 @@ class Parser
      * NewValue ::= SimpleArithmeticExpression | StringPrimary | DatetimePrimary | BooleanPrimary |
      *      EnumPrimary | SimpleEntityExpression | "NULL"
      *
-     * @todo Implementation still incomplete.
+     * NOTE: Since it is not possible to correctly recognize individual types, here is the full
+     * grammar that needs to be supported:
+     * 
+     * NewValue ::= SimpleArithmeticExpression | "NULL"
+     *
+     * SimpleArithmeticExpression covers all *Primary grammar rules and also SimplEntityExpression
+     *
+     * @todo Find why removal of InputParameter check causes ClassTableInheritanceTest to fail with 
+     * wrong parameter count (Should be processed in Literal, part of SimpleArithmeticExpression)
      */
     public function NewValue()
     {
@@ -527,12 +531,9 @@ class Parser
         } else if ($this->_lexer->isNextToken(Lexer::T_INPUT_PARAMETER)) {
             $this->match(Lexer::T_INPUT_PARAMETER);
             return new AST\InputParameter($this->_lexer->token['value']);
-        } else if ($this->_lexer->isNextToken(Lexer::T_STRING)) {
-            //TODO: Can be StringPrimary or EnumPrimary
-            return $this->StringPrimary();
-        } else {
-            $this->syntaxError('Not yet implemented-1.');
         }
+        
+        return $this->SimpleArithmeticExpression();
     }
 
     /**
@@ -627,12 +628,12 @@ class Parser
     /**
      * SelectExpression ::=
      *      IdentificationVariable | StateFieldPathExpression |
-     *      (AggregateExpression | "(" Subselect ")" | Function) [["AS"] FieldAliasIdentificationVariable]
+     *      (AggregateExpression | "(" Subselect ")" | Function) [["AS"] ResultVariable]
      */
     public function SelectExpression()
     {
         $expression = null;
-        $fieldIdentificationVariable = null;
+        $fieldAliasIdentificationVariable = null;
         $peek = $this->_lexer->glimpse();
 
         // First we recognize for an IdentificationVariable (DQL class alias)
@@ -656,7 +657,7 @@ class Parser
             }
 
             if ($this->_lexer->isNextToken(Lexer::T_IDENTIFIER)) {
-                $fieldIdentificationVariable = $this->ResultVariable();
+                $fieldAliasIdentificationVariable = $this->ResultVariable();
             }
         } else {
             // Deny hydration of partial objects if doctrine.forcePartialLoad query hint not defined 
@@ -671,7 +672,7 @@ class Parser
             $expression = $this->StateFieldPathExpression();
         }
 
-        return new AST\SelectExpression($expression, $fieldIdentificationVariable);
+        return new AST\SelectExpression($expression, $fieldAliasIdentificationVariable);
     }
     
     /**
@@ -903,11 +904,6 @@ class Parser
     public function SimpleStateFieldPathExpression()
     {
         $pathExpr = $this->PathExpression(AST\PathExpression::TYPE_STATE_FIELD);
-
-        // @TODO It seems PathExpression already checks for the minimum amount of parts
-        // if (count($pathExpr->getParts()) > 1) {
-        //     $this->syntaxError('SimpleStateFieldPathExpression');
-        // }
 
         if ( ! empty($this->_deferredPathExpressionStacks)) {
             $exprStack = array_pop($this->_deferredPathExpressionStacks);
@@ -1210,23 +1206,30 @@ class Parser
 
     /**
      * GroupByClause ::= "GROUP" "BY" GroupByItem {"," GroupByItem}*
-     * GroupByItem ::= IdentificationVariable | SingleValuedPathExpression
-     * @todo Implementation incomplete for GroupByItem.
      */
     public function GroupByClause()
     {
         $this->match(Lexer::T_GROUP);
         $this->match(Lexer::T_BY);
 
-        $groupByItems = array();
-        $groupByItems[] = $this->StateFieldPathExpression();
+        $groupByItems = array($this->GroupByItem());
 
         while ($this->_lexer->isNextToken(',')) {
             $this->match(',');
-            $groupByItems[] = $this->StateFieldPathExpression();
+            $groupByItems[] = $this->GroupByItem();
         }
 
         return new AST\GroupByClause($groupByItems);
+    }
+    
+    /**
+     * GroupByItem ::= IdentificationVariable | SingleValuedPathExpression
+     *
+     * @todo Finish this implementation
+     */
+    public function GroupByItem()
+    {
+        return $this->SingleValuedPathExpression();
     }
 
     /**
@@ -1360,11 +1363,10 @@ class Parser
         $condPrimary = new AST\ConditionalPrimary;
 
         if ($this->_lexer->isNextToken('(')) {
-            $peek = $this->_lexer->peek();
-            
             // We need to inner inspect for a subselect (ArithmeticExpression)
-            if ($peek['type'] != Lexer::T_SELECT) {
+            if ( ! $this->_isSubselect()) {
                 // Peek beyond and not until matching closing parenthesis
+                $peek = $this->_lexer->peek();
                 $arithmeticOps = array("+",  "-", "*", "/");
                 $numUnmatched = 1;
             
@@ -1859,7 +1861,7 @@ class Parser
     }
 
     /**
-     * SimpleSelectExpression ::= StateFieldPathExpression | IdentificationVariable | (AggregateExpression [["AS"] FieldAliasIdentificationVariable])
+     * SimpleSelectExpression ::= StateFieldPathExpression | IdentificationVariable | (AggregateExpression [["AS"] ResultVariable])
      */
     public function SimpleSelectExpression()
     {
@@ -1882,8 +1884,7 @@ class Parser
             }
 
             if ($this->_lexer->isNextToken(Lexer::T_IDENTIFIER)) {
-                $this->match(Lexer::T_IDENTIFIER);
-                $expr->setFieldIdentificationVariable($this->_lexer->token['value']);
+                $expr->setFieldIdentificationVariable($this->ResultVariable());
             }
 
             return $expr;
