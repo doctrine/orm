@@ -67,6 +67,8 @@ class OneToOneMapping extends AssociationMapping
      */
     public $joinColumns = array();
     
+    public $joinColumnFieldNames = array();
+    
     /**
      * Creates a new OneToOneMapping.
      *
@@ -99,6 +101,8 @@ class OneToOneMapping extends AssociationMapping
             $this->joinColumns = $mapping['joinColumns'];
             foreach ($mapping['joinColumns'] as $joinColumn) {
                 $this->sourceToTargetKeyColumns[$joinColumn['name']] = $joinColumn['referencedColumnName'];
+                $this->joinColumnFieldNames[$joinColumn['name']] = isset($joinColumn['fieldName'])
+                        ? $joinColumn['fieldName'] : $joinColumn['name'];
             }
             $this->targetToSourceKeyColumns = array_flip($this->sourceToTargetKeyColumns);
         }

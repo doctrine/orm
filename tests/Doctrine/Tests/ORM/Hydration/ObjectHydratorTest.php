@@ -109,7 +109,7 @@ class ObjectHydratorTest extends HydrationTestCase
         $rsm->addEntityResult('Doctrine\Tests\Models\ECommerce\ECommerceProduct', 'p');
         $rsm->addFieldResult('p', 'p__id', 'id');
         $rsm->addFieldResult('p', 'p__name', 'name');
-        $rsm->addFieldResult('p', 'p__shipping_id', 'shipping_id');
+        $rsm->addMetaResult('p', 'p__shipping_id', 'shipping_id');
 
         // Faked result set
         $resultSet = array(

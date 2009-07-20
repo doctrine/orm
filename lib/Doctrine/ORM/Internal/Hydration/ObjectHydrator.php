@@ -230,18 +230,11 @@ class ObjectHydrator extends AbstractHydrator
     {
     	$className = $this->_rsm->aliasMap[$dqlAlias];
         if (isset($this->_rsm->discriminatorColumns[$dqlAlias])) {
-            $discrColumn = $this->_rsm->discriminatorColumns[$dqlAlias];
+            $discrColumn = $this->_rsm->metaMappings[$this->_rsm->discriminatorColumns[$dqlAlias]];
             $className = $this->_discriminatorMap[$className][$data[$discrColumn]];
             unset($data[$discrColumn]);
         }
         $entity = $this->_uow->createEntity($className, $data);
-
-        $joinColumnsValues = array();
-        foreach ($this->_ce[$className]->joinColumnNames as $name) {
-            if (isset($data[$name])) {
-                $joinColumnsValues[$name] = $data[$name];
-            }
-        }
 
         // Properly initialize any unfetched associations, if partial objects are not allowed.
         if ( ! $this->_allowPartialObjects) {
@@ -249,6 +242,10 @@ class ObjectHydrator extends AbstractHydrator
                 if ( ! isset($this->_fetchedAssociations[$className][$field])) {
                     if ($assoc->isOneToOne()) {
                         if ($assoc->isLazilyFetched()) {
+                            $joinColumnsValues = array();
+                            foreach ($assoc->targetToSourceKeyColumns as $srcColumn) {
+                                $joinColumnsValues[$srcColumn] = $data[$assoc->joinColumnFieldNames[$srcColumn]];
+                            }
                             // Inject proxy
                             $proxy = $this->_em->getProxyFactory()->getAssociationProxy($entity, $assoc, $joinColumnsValues);
                             $this->_ce[$className]->reflFields[$field]->setValue($entity, $proxy);

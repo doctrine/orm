@@ -45,6 +45,8 @@ class ResultSetMapping
     public $fieldMappings = array();
     /** Maps column names in the result set to the alias to use in the mapped result. */
     public $scalarMappings = array();
+    /** Maps column names of meta columns (foreign keys, discriminator columns, ...) to field names. */
+    public $metaMappings = array();
     /** Maps column names in the result set to the alias they belong to. */
     public $columnOwnerMap = array();
     /** List of columns in the result set that are used as discriminator columns. */
@@ -286,12 +288,29 @@ class ResultSetMapping
     }
 
     /**
+     * Checks whether this ResultSetMapping defines a mixed result.
+     * Mixed results can only occur in object and array (graph) hydration. In such a
+     * case a mixed result means that scalar values are mixed with objects/array in
+     * the result.
      *
      * @return boolean
      */
     public function isMixedResult()
     {
         return $this->isMixed;
+    }
+    
+    /**
+     * 
+     * @param $alias
+     * @param $columnName
+     * @param $fieldName
+     * @return unknown_type
+     */
+    public function addMetaResult($alias, $columnName, $fieldName)
+    {
+        $this->metaMappings[$columnName] = $fieldName;
+        $this->columnOwnerMap[$columnName] = $alias;
     }
 
     /**

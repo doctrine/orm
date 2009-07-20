@@ -41,7 +41,7 @@ class ClassMetadataTest extends \Doctrine\Tests\OrmTestCase
         $this->assertEquals(array('One', 'Two', 'Three'), $cm->subClasses);
         $this->assertEquals(array('UserParent'), $cm->parentClasses);
         $this->assertEquals('UserRepository', $cm->getCustomRepositoryClass());
-        $this->assertEquals(array('name' => 'disc', 'type' => 'integer'), $cm->discriminatorColumn);
+        $this->assertEquals(array('name' => 'disc', 'type' => 'integer', 'fieldName' => 'disc'), $cm->discriminatorColumn);
         $this->assertTrue($cm->getAssociationMapping('phonenumbers') instanceof \Doctrine\ORM\Mapping\OneToOneMapping);
         $this->assertEquals(1, count($cm->associationMappings));
         $oneOneMapping = $cm->getAssociationMapping('phonenumbers');

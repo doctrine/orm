@@ -29,6 +29,7 @@ final class Entity extends \Doctrine\Common\Annotations\Annotation {
 final class InheritanceType extends \Doctrine\Common\Annotations\Annotation {}
 final class DiscriminatorColumn extends \Doctrine\Common\Annotations\Annotation {
     public $name;
+    //public $fieldName; // field name used in non-object hydration (array/scalar)
     public $type;
     public $length;
 }
@@ -42,6 +43,7 @@ final class GeneratedValue extends \Doctrine\Common\Annotations\Annotation {
 final class Version extends \Doctrine\Common\Annotations\Annotation {}
 final class JoinColumn extends \Doctrine\Common\Annotations\Annotation {
     public $name;
+    //public $fieldName; // field name used in non-object hydration (array/scalar)
     public $referencedColumnName;
     public $unique = false;
     public $nullable = true;

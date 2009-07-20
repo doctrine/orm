@@ -171,6 +171,7 @@ class SqlWalker implements TreeWalker
                 $columnAlias = $this->getSqlColumnAlias($discrColumn['name']);
                 $sql .= ", $tblAlias." . $discrColumn['name'] . ' AS ' . $columnAlias;
                 $this->_rsm->setDiscriminatorColumn($dqlAlias, $columnAlias);
+                $this->_rsm->addMetaResult($dqlAlias, $columnAlias, $discrColumn['fieldName']);
             }
             //}
         }
@@ -470,13 +471,19 @@ class SqlWalker implements TreeWalker
                     $sql .= $sqlTableAlias . '.' . $this->_conn->quoteIdentifier($mapping['columnName']) . ' AS ' . $columnAlias;
                     $this->_rsm->addFieldResult($dqlAlias, $columnAlias, $fieldName);
                 }
-                if (!$this->_em->getConfiguration()->getAllowPartialObjects()) {
-                    foreach ($class->joinColumnNames as $name) {
-                        $columnAlias = $this->getSqlColumnAlias($name);
-                        $sql .= ', ' . $sqlTableAlias . '.' . $this->_conn->quoteIdentifier($name) . ' AS ' . $columnAlias;
-                        $this->_rsm->addFieldResult($dqlAlias, $columnAlias, $name);
+                
+                if ( ! $this->_em->getConfiguration()->getAllowPartialObjects()) {
+                    foreach ($class->associationMappings as $assoc) {
+                        if ($assoc->isOwningSide && $assoc->isOneToOne()) {
+                            foreach ($assoc->targetToSourceKeyColumns as $srcColumn) {
+                                $columnAlias = $this->getSqlColumnAlias($srcColumn);
+                                $sql .= ', ' . $sqlTableAlias . '.' . $this->_conn->quoteIdentifier($srcColumn) . ' AS ' . $columnAlias;
+                                $this->_rsm->addMetaResult($dqlAlias, $columnAlias, $srcColumn);
+                            }
+                        }
                     }
                 }
+                
             }
         }
         

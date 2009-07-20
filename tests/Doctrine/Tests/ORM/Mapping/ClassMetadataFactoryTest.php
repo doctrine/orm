@@ -60,7 +60,6 @@ class ClassMetadataFactoryTest extends \Doctrine\Tests\OrmTestCase
         $cm1 = $cmf->getMetadataFor('Doctrine\Tests\ORM\Mapping\TestEntity1');
 
         $this->assertEquals(array(), $cm1->parentClasses);
-        $this->assertEquals(array('other_id'), $cm1->joinColumnNames);
         $this->assertTrue($cm1->hasField('name'));
         $this->assertEquals(ClassMetadata::GENERATOR_TYPE_SEQUENCE, $cm1->generatorType);
     }

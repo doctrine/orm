@@ -21,6 +21,7 @@
 
 namespace Doctrine\ORM\Persisters;
 
+use Doctrine\Common\DoctrineException;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\EntityManager;
@@ -477,9 +478,16 @@ class StandardEntityPersister
             if ($columnList != '') $columnList .= ', ';
             $columnList .= $this->_conn->quoteIdentifier($column);
         }
-        if (!$this->_em->getConfiguration()->getAllowPartialObjects()) {
-            foreach ($this->_class->joinColumnNames as $column) {
-                $columnList .= ', ' . $this->_conn->quoteIdentifier($column);
+        
+        $joinColumnNames = array();
+        if ( ! $this->_em->getConfiguration()->getAllowPartialObjects()) {
+            foreach ($this->_class->associationMappings as $assoc) {
+                if ($assoc->isOwningSide && $assoc->isOneToOne()) {
+                    foreach ($assoc->targetToSourceKeyColumns as $srcColumn) {
+                        $joinColumnNames[] = $srcColumn;
+                        $columnList .= ', ' . $this->_conn->quoteIdentifier($srcColumn);
+                    }
+                }
             }
         }
 
@@ -488,10 +496,10 @@ class StandardEntityPersister
             if ($conditionSql != '') $conditionSql .= ' AND ';
             if (isset($this->_class->columnNames[$field])) {
                 $columnName = $this->_class->columnNames[$field];
-            } else if (in_array($field, $this->_class->joinColumnNames)) {
+            } else if (in_array($field, $joinColumnNames)) {
                 $columnName = $field;
             } else {
-                throw new Exception("Unrecognized field: $field");
+                throw DoctrineException::unrecognizedField($field);
             }
             $conditionSql .= $this->_conn->quoteIdentifier($columnName) . ' = ?';
         }

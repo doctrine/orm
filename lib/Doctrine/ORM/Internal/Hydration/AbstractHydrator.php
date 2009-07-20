@@ -38,8 +38,6 @@ use Doctrine\Common\DoctrineException;
  */
 abstract class AbstractHydrator
 {
-    const TYPES_JOINCOLUMN = 'join_column';
-
     /** The ResultSetMapping. */
     protected $_rsm;
 
@@ -186,23 +184,19 @@ abstract class AbstractHydrator
                 } else if (isset($this->_rsm->fieldMappings[$key])) {
                     $classMetadata = $this->_em->getClassMetadata($this->_rsm->getOwningClass($key));
                     $fieldName = $this->_rsm->fieldMappings[$key];
-                    if ( ! isset($classMetadata->reflFields[$fieldName]) && ! in_array($fieldName, $classMetadata->joinColumnNames)) {
+                    if ( ! isset($classMetadata->reflFields[$fieldName])) {
                         $classMetadata = $this->_lookupDeclaringClass($classMetadata, $fieldName);
                     }
                     $cache[$key]['fieldName'] = $fieldName;
                     $cache[$key]['isScalar'] = false;
-                    if (isset($classMetadata->fieldMappings[$fieldName])) {
-                        $cache[$key]['type'] = Type::getType($classMetadata->fieldMappings[$fieldName]['type']);
-                    } else {
-                        $cache[$key]['type'] = self::TYPES_JOINCOLUMN;
-                    }
+                    $cache[$key]['type'] = Type::getType($classMetadata->fieldMappings[$fieldName]['type']);
                     $cache[$key]['isIdentifier'] = $classMetadata->isIdentifier($fieldName);
                     $cache[$key]['dqlAlias'] = $this->_rsm->columnOwnerMap[$key];
                 } else {
-                    // Discriminator column
-                    $cache[$key]['isDiscriminator'] = true;
+                    // Meta column (has meaning in relational schema only, i.e. foreign keys or discriminator columns).
+                    $cache[$key]['isMetaColumn'] = true;
                     $cache[$key]['isScalar'] = false;
-                    $cache[$key]['fieldName'] = $key;
+                    $cache[$key]['fieldName'] = $this->_rsm->metaMappings[$key];
                     $cache[$key]['dqlAlias'] = $this->_rsm->columnOwnerMap[$key];
                 }
             }
@@ -214,7 +208,7 @@ abstract class AbstractHydrator
 
             $dqlAlias = $cache[$key]['dqlAlias'];
 
-            if (isset($cache[$key]['isDiscriminator'])) {
+            if (isset($cache[$key]['isMetaColumn'])) {
                 $rowData[$dqlAlias][$cache[$key]['fieldName']] = $value;
                 continue;
             }
@@ -223,11 +217,7 @@ abstract class AbstractHydrator
                 $id[$dqlAlias] .= '|' . $value;
             }
 
-            if ($cache[$key]['type'] == self::TYPES_JOINCOLUMN) {
-                $rowData[$dqlAlias][$cache[$key]['fieldName']] = $value;
-            } else {
-                $rowData[$dqlAlias][$cache[$key]['fieldName']] = $cache[$key]['type']->convertToPHPValue($value, $this->_platform);
-            }
+            $rowData[$dqlAlias][$cache[$key]['fieldName']] = $cache[$key]['type']->convertToPHPValue($value, $this->_platform);
 
             if ( ! isset($nonemptyComponents[$dqlAlias]) && $value !== null) {
                 $nonemptyComponents[$dqlAlias] = true;
