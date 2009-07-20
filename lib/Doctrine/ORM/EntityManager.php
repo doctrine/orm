@@ -572,7 +572,7 @@ class EntityManager
      * 
      * @return ProxyFactory
      */
-    public function getProxyGenerator()
+    public function getProxyFactory()
     {
         return $this->_proxyFactory;
     }

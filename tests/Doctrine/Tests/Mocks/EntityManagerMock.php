@@ -20,6 +20,7 @@
  */
 
 namespace Doctrine\Tests\Mocks;
+use Doctrine\ORM\Proxy\ProxyFactory;
 
 /**
  * Special EntityManager mock used for testing purposes.
@@ -27,6 +28,7 @@ namespace Doctrine\Tests\Mocks;
 class EntityManagerMock extends \Doctrine\ORM\EntityManager
 {
     private $_uowMock;
+    private $_proxyFactoryMock;
     private $_idGenerators = array();
 
     /**
@@ -47,6 +49,16 @@ class EntityManagerMock extends \Doctrine\ORM\EntityManager
     public function setUnitOfWork($uow)
     {
         $this->_uowMock = $uow;
+    }
+
+    public function setProxyFactory($proxyFactory)
+    {
+        $this->_proxyFactoryMock = $proxyFactory;
+    }
+
+    public function getProxyFactory()
+    {
+        return isset($this->_proxyFactoryMock) ? $this->_proxyFactoryMock : parent::getProxyFactory();
     }
     
     /**

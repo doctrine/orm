@@ -36,6 +36,7 @@ class AllTests
         $suite->addTestSuite('Doctrine\Tests\ORM\Functional\ManyToManySelfReferentialAssociationTest');
         $suite->addTestSuite('Doctrine\Tests\ORM\Functional\ReferenceProxyTest');
         $suite->addTestSuite('Doctrine\Tests\ORM\Functional\LifecycleCallbackTest');
+        $suite->addTestSuite('Doctrine\Tests\ORM\Functional\StandardEntityPersisterTest');
         
         $suite->addTest(Locking\AllTests::suite());
 

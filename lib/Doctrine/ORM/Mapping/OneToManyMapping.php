@@ -97,7 +97,7 @@ class OneToManyMapping extends AssociationMapping
         return true;
     }
 
-    public function load($owningEntity, $targetEntity, $em)
+    public function load($owningEntity, $targetEntity, $em, array $joinColumnValues)
     {
         throw new Exception('Not yet implemented.');
     }

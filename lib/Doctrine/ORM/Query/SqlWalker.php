@@ -470,6 +470,13 @@ class SqlWalker implements TreeWalker
                     $sql .= $sqlTableAlias . '.' . $this->_conn->quoteIdentifier($mapping['columnName']) . ' AS ' . $columnAlias;
                     $this->_rsm->addFieldResult($dqlAlias, $columnAlias, $fieldName);
                 }
+                if (!$this->_em->getConfiguration()->getAllowPartialObjects()) {
+                    foreach ($class->joinColumnNames as $name) {
+                        $columnAlias = $this->getSqlColumnAlias($name);
+                        $sql .= ', ' . $sqlTableAlias . '.' . $this->_conn->quoteIdentifier($name) . ' AS ' . $columnAlias;
+                        $this->_rsm->addFieldResult($dqlAlias, $columnAlias, $name);
+                    }
+                }
             }
         }
         

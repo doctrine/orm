@@ -88,12 +88,13 @@ class ProxyClassGenerator
         $class = $this->_em->getClassMetadata($originalClassName);
         $proxyFullyQualifiedClassName = self::$_ns . $proxyClassName;
 
+        $class = $this->_em->getClassMetadata($originalClassName);
+        $this->_em->getMetadataFactory()->setMetadataFor($proxyFullyQualifiedClassName, $class);
+
         if (class_exists($proxyFullyQualifiedClassName, false)) {
             return $proxyFullyQualifiedClassName;
         }
 
-        $class = $this->_em->getClassMetadata($originalClassName);
-        $this->_em->getMetadataFactory()->setMetadataFor($proxyFullyQualifiedClassName, $class);
         $fileName = $this->_cacheDir . $proxyClassName . '.g.php';
             
         if (file_exists($fileName)) {
@@ -228,18 +229,21 @@ namespace Doctrine\Generated\Proxies {
         private $_em;
         private $_assoc;
         private $_owner;
+        private $_joinColumnValues;
         private $_loaded = false;
-        public function __construct($em, $assoc, $owner) {
+        public function __construct($em, $assoc, $owner, array $joinColumnValues) {
             $this->_em = $em;
             $this->_assoc = $assoc;
             $this->_owner = $owner;
+            $this->_joinColumnValues = $joinColumnValues;
         }
         private function _load() {
             if ( ! $this->_loaded) {
-                $this->_assoc->load($this->_owner, $this, $this->_em);
+                $this->_assoc->load($this->_owner, $this, $this->_em, $this->_joinColumnValues);
                 unset($this->_em);
                 unset($this->_owner);
                 unset($this->_assoc);
+                unset($this->_joinColumnValues);
                 $this->_loaded = true;
             }
         }

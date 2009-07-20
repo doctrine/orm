@@ -236,6 +236,13 @@ class ObjectHydrator extends AbstractHydrator
         }
         $entity = $this->_uow->createEntity($className, $data);
 
+        $joinColumnsValues = array();
+        foreach ($this->_ce[$className]->joinColumnNames as $name) {
+            if (isset($data[$name])) {
+                $joinColumnsValues[$name] = $data[$name];
+            }
+        }
+
         // Properly initialize any unfetched associations, if partial objects are not allowed.
         if ( ! $this->_allowPartialObjects) {
             foreach ($this->_ce[$className]->associationMappings as $field => $assoc) {
@@ -243,7 +250,7 @@ class ObjectHydrator extends AbstractHydrator
                     if ($assoc->isOneToOne()) {
                         if ($assoc->isLazilyFetched()) {
                             // Inject proxy
-                            $proxy = $this->_em->getProxyGenerator()->getAssociationProxy($entity, $assoc);
+                            $proxy = $this->_em->getProxyFactory()->getAssociationProxy($entity, $assoc, $joinColumnsValues);
                             $this->_ce[$className]->reflFields[$field]->setValue($entity, $proxy);
                         } else {
                             //TODO: Schedule for eager fetching

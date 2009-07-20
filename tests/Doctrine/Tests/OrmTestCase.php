@@ -36,7 +36,10 @@ class OrmTestCase extends DoctrineTestCase
                 'password' => 'wayne'
             );
         }
-        return \Doctrine\ORM\EntityManager::create($conn, $config, $eventManager);
+        if (is_array($conn)) {
+            $conn = \Doctrine\DBAL\DriverManager::getConnection($conn, $config, $eventManager);
+        }
+        return \Doctrine\Tests\Mocks\EntityManagerMock::create($conn, $config, $eventManager);
     }
 
     private static function getSharedMetadataCacheImpl()

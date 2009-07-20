@@ -35,6 +35,7 @@ namespace Doctrine\ORM\Mapping;
  *
  * @since 2.0
  * @author Roman Borschel <roman@code-factory.org>
+ * @author Giorgio Sironi <piccoloprincipeazzurro@gmail.com>
  */
 class OneToOneMapping extends AssociationMapping
 {
@@ -152,11 +153,13 @@ class OneToOneMapping extends AssociationMapping
     /**
      * {@inheritdoc}
      *
-     * @param object $owningEntity
-     * @param object $targetEntity
+     * @param object $sourceEntity      the entity source of this association
+     * @param object $targetEntity      the entity to load data in
      * @param EntityManager $em
+     * @param array $joinColumnValues  values of the join columns of $sourceEntity. There are no fields
+     *                                  to store this data in $sourceEntity
      */
-    public function load($owningEntity, $targetEntity, $em)
+    public function load($sourceEntity, $targetEntity, $em, array $joinColumnValues)
     {
         $sourceClass = $em->getClassMetadata($this->sourceEntityName);
         $targetClass = $em->getClassMetadata($this->targetEntityName);
@@ -165,24 +168,38 @@ class OneToOneMapping extends AssociationMapping
 
         if ($this->isOwningSide) {
             foreach ($this->sourceToTargetKeyColumns as $sourceKeyColumn => $targetKeyColumn) {
-                $conditions[$targetKeyColumn] = $sourceClass->getReflectionProperty(
-                    $sourceClass->getFieldName($sourceKeyColumn))->getValue($owningEntity);
+                // getting customer_id
+                if (isset($sourceClass->reflFields[$sourceKeyColumn])) {
+                    $conditions[$targetKeyColumn] = $this->_getPrivateValue($sourceClass, $sourceEntity, $sourceKeyColumn);
+                } else {
+                    $conditions[$targetKeyColumn] = $joinColumnValues[$sourceKeyColumn];
+                }
             }
-            if ($targetClass->hasInverseAssociation($this->sourceFieldName)) {
+            if ($targetClass->hasInverseAssociationMapping($this->sourceFieldName)) {
                 $targetClass->setFieldValue(
                         $targetEntity,
-                        $targetClass->inverseMappings[$this->_sourceFieldName]->getSourceFieldName(),
-                        $owningEntity);
+                        $targetClass->inverseMappings[$this->sourceFieldName]->getSourceFieldName(),
+                        $sourceEntity);
             }
         } else {
             $owningAssoc = $em->getClassMetadata($this->targetEntityName)->getAssociationMapping($this->mappedByFieldName);
             foreach ($owningAssoc->getTargetToSourceKeyColumns() as $targetKeyColumn => $sourceKeyColumn) {
-                $conditions[$sourceKeyColumn] = $sourceClass->getReflectionProperty(
-                    $sourceClass->getFieldName($targetKeyColumn))->getValue($owningEntity);
+                // getting id
+                if (isset($sourceClass->reflFields[$targetKeyColumn])) {
+                    $conditions[$sourceKeyColumn] = $this->_getPrivateValue($sourceClass, $sourceEntity, $targetKeyColumn);
+                } else {
+                    $conditions[$sourceKeyColumn] = $joinColumnValues[$targetKeyColumn];
+                }
             }
-            $targetClass->setFieldValue($targetEntity, $this->mappedByFieldName, $owningEntity);
+            $targetClass->setFieldValue($targetEntity, $this->mappedByFieldName, $sourceEntity);
         }
 
         $em->getUnitOfWork()->getEntityPersister($this->targetEntityName)->load($conditions, $targetEntity);
+    }
+
+    protected function _getPrivateValue(ClassMetadata $class, $entity, $column)
+    {
+        $reflField = $class->getReflectionProperty($class->getFieldName($column));
+        return $reflField->getValue($entity);
     }
 }

@@ -14,7 +14,6 @@ require_once __DIR__ . '/../../TestInit.php';
 
 class ClassMetadataFactoryTest extends \Doctrine\Tests\OrmTestCase
 {
-
     public function testGetMetadataForSingleClass()
     {
         $driverMock = new DriverMock();
@@ -38,6 +37,11 @@ class ClassMetadataFactoryTest extends \Doctrine\Tests\OrmTestCase
         $cm1->mapField(array('fieldName' => 'id', 'type' => 'integer', 'id' => true));
         // and a mapped association
         $cm1->mapOneToOne(array('fieldName' => 'other', 'targetEntity' => 'Other', 'mappedBy' => 'this'));
+        // and an association on the owning side
+        $joinColumns = array(
+            array('name' => 'other_id', 'referencedColumnName' => 'id')
+        );
+        $cm1->mapOneToOne(array('fieldName' => 'association', 'targetEntity' => 'Other', 'joinColumns' => $joinColumns));
         // and an id generator type
         $cm1->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_AUTO);
 
@@ -49,13 +53,14 @@ class ClassMetadataFactoryTest extends \Doctrine\Tests\OrmTestCase
         $this->assertEquals(array(), $cm1->parentClasses);
         $this->assertEquals(ClassMetadata::INHERITANCE_TYPE_NONE, $cm1->inheritanceType);
         $this->assertTrue($cm1->hasField('name'));
-        $this->assertEquals(1, count($cm1->associationMappings));
+        $this->assertEquals(2, count($cm1->associationMappings));
         $this->assertEquals(ClassMetadata::GENERATOR_TYPE_AUTO, $cm1->generatorType);
 
         // Go
         $cm1 = $cmf->getMetadataFor('Doctrine\Tests\ORM\Mapping\TestEntity1');
 
         $this->assertEquals(array(), $cm1->parentClasses);
+        $this->assertEquals(array('other_id'), $cm1->joinColumnNames);
         $this->assertTrue($cm1->hasField('name'));
         $this->assertEquals(ClassMetadata::GENERATOR_TYPE_SEQUENCE, $cm1->generatorType);
     }
@@ -93,4 +98,5 @@ class TestEntity1
     private $id;
     private $name;
     private $other;
+    private $association;
 }

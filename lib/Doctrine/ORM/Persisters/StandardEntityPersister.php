@@ -411,10 +411,15 @@ class StandardEntityPersister
         $stmt = $this->_conn->prepare($this->_getSelectSingleEntitySql($criteria));
         $stmt->execute(array_values($criteria));
         $data = array();
+        $joinColumnValues = array();
         foreach ($stmt->fetch(Connection::FETCH_ASSOC) as $column => $value) {
-            $fieldName = $this->_class->fieldNames[$column];
-            $data[$fieldName] = Type::getType($this->_class->getTypeOfField($fieldName))
+            if (isset($this->_class->fieldNames[$column])) {
+                $fieldName = $this->_class->fieldNames[$column];
+                $data[$fieldName] = Type::getType($this->_class->getTypeOfField($fieldName))
                     ->convertToPHPValue($value, $this->_platform);
+            } else {
+                $joinColumnValues[$column] = $value;
+            }
         }
         $stmt->closeCursor();
 
@@ -440,9 +445,9 @@ class StandardEntityPersister
             // empty collections respectively.
             foreach ($this->_class->associationMappings as $field => $assoc) {
                 if ($assoc->isOneToOne()) {
-                    if ($assoc->isLazilyFetched) {
+                    if ($assoc->isLazilyFetched()) {
                         // Inject proxy
-                        $proxy = $this->_em->getProxyGenerator()->getAssociationProxy($entity, $assoc);
+                        $proxy = $this->_em->getProxyFactory()->getAssociationProxy($entity, $assoc, $joinColumnValues);
                         $this->_class->reflFields[$field]->setValue($entity, $proxy);
                     } else {
                         //TODO: Eager fetch
@@ -472,11 +477,23 @@ class StandardEntityPersister
             if ($columnList != '') $columnList .= ', ';
             $columnList .= $this->_conn->quoteIdentifier($column);
         }
+        if (!$this->_em->getConfiguration()->getAllowPartialObjects()) {
+            foreach ($this->_class->joinColumnNames as $column) {
+                $columnList .= ', ' . $this->_conn->quoteIdentifier($column);
+            }
+        }
 
         $conditionSql = '';
         foreach ($criteria as $field => $value) {
             if ($conditionSql != '') $conditionSql .= ' AND ';
-            $conditionSql .= $this->_conn->quoteIdentifier($this->_class->columnNames[$field]) . ' = ?';
+            if (isset($this->_class->columnNames[$field])) {
+                $columnName = $this->_class->columnNames[$field];
+            } else if (in_array($field, $this->_class->joinColumnNames)) {
+                $columnName = $field;
+            } else {
+                throw new Exception("Unrecognized field: $field");
+            }
+            $conditionSql .= $this->_conn->quoteIdentifier($columnName) . ' = ?';
         }
 
         return 'SELECT ' . $columnList . ' FROM ' . $this->_class->getTableName()

@@ -255,6 +255,12 @@ final class ClassMetadata
     public $columnNames = array();
 
     /**
+     * Array of all column names that does not map to a field. 
+     * Foreign keys are here.
+     */
+    public $joinColumnNames = array();
+
+    /**
      * Whether to automatically OUTER JOIN subtypes when a basetype is queried.
      *
      * <b>This does only apply to the JOINED inheritance mapping strategy.</b>
@@ -491,6 +497,11 @@ final class ClassMetadata
     public function addReflectionProperty($propName, \ReflectionProperty $property)
     {
         $this->reflFields[$propName] = $property;
+    }
+
+    public function addJoinColumn($name)
+    {
+        $this->joinColumnNames[] = $name;
     }
 
     /**
@@ -1315,7 +1326,7 @@ final class ClassMetadata
     
     /**
      * Makes some automatic additions to the association mapping to make the life
-     * easier for the user.
+     * easier for the user, and store join columns in the metadata.
      *
      * @param array $mapping
      * @todo Pass param by ref?
@@ -1325,6 +1336,11 @@ final class ClassMetadata
         $mapping['sourceEntity'] = $this->name;
         if (isset($mapping['targetEntity']) && strpos($mapping['targetEntity'], '\\') === false) {
             $mapping['targetEntity'] = $this->namespace . '\\' . $mapping['targetEntity'];
+        }
+        if (isset($mapping['joinColumns'])) {
+            foreach ($mapping['joinColumns'] as $columns) {
+                $this->addJoinColumn($columns['name']);
+            }
         }
         return $mapping;
     }

@@ -138,7 +138,7 @@ class ManyToManyMapping extends AssociationMapping
         return $this->targetKeyColumns;
     }
 
-    public function load($owningEntity, $targetEntity, $em)
+    public function load($owningEntity, $targetEntity, $em, array $joinColumnValues)
     {
         throw new Exception('Not yet implemented.');
     }

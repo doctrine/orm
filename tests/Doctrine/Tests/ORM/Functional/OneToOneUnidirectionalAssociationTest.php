@@ -58,8 +58,7 @@ class OneToOneUnidirectionalAssociationTest extends \Doctrine\Tests\OrmFunctiona
         $this->assertEquals(1, $product->getShipping()->getDays());
     }
     
-    public function testLazyLoad() {
-        $this->markTestSkipped();
+    public function testLazyLoadsObjects() {
         $this->_createFixture();
         $this->_em->getConfiguration()->setAllowPartialObjects(false);
         $metadata = $this->_em->getClassMetadata('Doctrine\Tests\Models\ECommerce\ECommerceProduct');
@@ -71,6 +70,17 @@ class OneToOneUnidirectionalAssociationTest extends \Doctrine\Tests\OrmFunctiona
         
         $this->assertTrue($product->getShipping() instanceof ECommerceShipping);
         $this->assertEquals(1, $product->getShipping()->getDays());
+    }
+
+    public function testDoesNotLazyLoadObjectsIfConfigurationDoesNotAllowIt() {
+        $this->_createFixture();
+        $this->_em->getConfiguration()->setAllowPartialObjects(true);
+
+        $query = $this->_em->createQuery('select p from Doctrine\Tests\Models\ECommerce\ECommerceProduct p');
+        $result = $query->getResultList();
+        $product = $result[0];
+        
+        $this->assertNull($product->getShipping());
     }
 
     protected function _createFixture()

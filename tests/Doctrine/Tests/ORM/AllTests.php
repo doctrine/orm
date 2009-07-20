@@ -24,7 +24,6 @@ class AllTests
         $suite->addTestSuite('Doctrine\Tests\ORM\CommitOrderCalculatorTest');
         $suite->addTestSuite('Doctrine\Tests\ORM\QueryBuilderTest');
         $suite->addTestSuite('Doctrine\Tests\ORM\Proxy\ProxyClassGeneratorTest');
-
         $suite->addTest(Query\AllTests::suite());
         $suite->addTest(Hydration\AllTests::suite());
         $suite->addTest(Entity\AllTests::suite());

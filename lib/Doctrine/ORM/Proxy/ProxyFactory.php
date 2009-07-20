@@ -66,9 +66,9 @@ class ProxyFactory
     /**
      * Gets an association proxy instance.
      */
-    public function getAssociationProxy($owner, \Doctrine\ORM\Mapping\AssociationMapping $assoc)
+    public function getAssociationProxy($owner, \Doctrine\ORM\Mapping\AssociationMapping $assoc, array $joinColumnValues)
     {
         $proxyClassName = $this->_generator->generateAssociationProxyClass($assoc->getTargetEntityName());
-        return new $proxyClassName($this->_em, $assoc, $owner);
+        return new $proxyClassName($this->_em, $assoc, $owner, $joinColumnValues);
     }
 }

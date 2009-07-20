@@ -4,6 +4,8 @@ namespace Doctrine\Tests\ORM\Hydration;
 
 use Doctrine\Tests\Mocks\HydratorMockStatement;
 use Doctrine\ORM\Query\ResultSetMapping;
+use Doctrine\ORM\Proxy\ProxyFactory;
+use Doctrine\ORM\Mapping\AssociationMapping;
 
 require_once __DIR__ . '/../../TestInit.php';
 
@@ -96,6 +98,50 @@ class ObjectHydratorTest extends HydrationTestCase
         $this->assertEquals('jwage', $result[2]->name);
         $this->assertEquals(2, $result[3]->id);
         $this->assertEquals('Cool things II.', $result[3]->topic);
+    }
+
+    /**
+     * Select p from \Doctrine\Tests\Models\ECommerce\ECommerceProduct p
+     */
+    public function testCreatesProxyForLazyLoadingWithForeignKeys()
+    {
+        $rsm = new ResultSetMapping;
+        $rsm->addEntityResult('Doctrine\Tests\Models\ECommerce\ECommerceProduct', 'p');
+        $rsm->addFieldResult('p', 'p__id', 'id');
+        $rsm->addFieldResult('p', 'p__name', 'name');
+        $rsm->addFieldResult('p', 'p__shipping_id', 'shipping_id');
+
+        // Faked result set
+        $resultSet = array(
+            array(
+                'p__id' => '1',
+                'p__name' => 'Doctrine Book',
+                'p__shipping_id' => 42
+                )
+            );
+        
+        // mocking the proxy factory
+        $proxyFactory = $this->getMock('Doctrine\ORM\Proxy\ProxyFactory', array('getAssociationProxy'), array(), '', false, false, false);
+        $proxyFactory->expects($this->once())
+                     ->method('getAssociationProxy')
+                     ->with($this->isInstanceOf('Doctrine\Tests\Models\ECommerce\ECommerceProduct'), 
+                            $this->isInstanceOf('Doctrine\ORM\Mapping\OneToOneMapping'),
+                            array('shipping_id' => 42));
+
+        $this->_em->setProxyFactory($proxyFactory);
+
+        // configuring lazy loading
+        $this->_em->getConfiguration()->setAllowPartialObjects(false);
+        $metadata = $this->_em->getClassMetadata('Doctrine\Tests\Models\ECommerce\ECommerceProduct');
+        $metadata->getAssociationMapping('shipping')->fetchMode = AssociationMapping::FETCH_LAZY;
+
+        $stmt = new HydratorMockStatement($resultSet);
+        $hydrator = new \Doctrine\ORM\Internal\Hydration\ObjectHydrator($this->_em);
+
+        $result = $hydrator->hydrateAll($stmt, $rsm);
+
+        $this->assertEquals(1, count($result));
+        $this->assertTrue($result[0] instanceof \Doctrine\Tests\Models\ECommerce\ECommerceProduct);
     }
 
     /**
