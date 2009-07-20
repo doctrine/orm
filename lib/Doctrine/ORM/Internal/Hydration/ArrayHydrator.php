@@ -24,9 +24,11 @@ namespace Doctrine\ORM\Internal\Hydration;
 use Doctrine\DBAL\Connection;
 
 /**
- * Description of ArrayHydrator
+ * The ArrayHydrator produces a nested array "graph" that is often (not always)
+ * interchangeable with the corresponding object graph for read-only access.
  *
- * @author robo
+ * @author Roman Borschel <roman@code-factory.org>
+ * @since 1.0
  */
 class ArrayHydrator extends AbstractHydrator
 {
@@ -116,7 +118,8 @@ class ArrayHydrator extends AbstractHydrator
                         $indexIsValid = $index !== false ? isset($baseElement[$relationAlias][$index]) : false;
                         if ( ! $indexExists || ! $indexIsValid) {
                             $element = $data;
-                            if ($field = $this->_getCustomIndexField($dqlAlias)) {
+                            if (isset($this->_rsm->indexByMap[$dqlAlias])) {
+                                $field = $this->_rsm->indexByMap[$dqlAlias];
                                 $baseElement[$relationAlias][$element[$field]] = $element;
                             } else {
                                 $baseElement[$relationAlias][] = $element;
@@ -144,12 +147,15 @@ class ArrayHydrator extends AbstractHydrator
                 }
 
             } else {
+                // It's a root result element
+                
                 $this->_rootAliases[$dqlAlias] = true; // Mark as root
-                // 2) Hydrate the data of the root entity from the current row
+                
                 // Check for an existing element
                 if ($this->_isSimpleQuery || ! isset($this->_identifierMap[$dqlAlias][$id[$dqlAlias]])) {
                     $element = $rowData[$dqlAlias];
-                    if ($field = $this->_getCustomIndexField($dqlAlias)) {
+                    if (isset($this->_rsm->indexByMap[$dqlAlias])) {
+                        $field = $this->_rsm->indexByMap[$dqlAlias];
                         if ($this->_rsm->isMixed) {
                             $result[] = array($element[$field] => $element);
                             ++$this->_resultCounter;

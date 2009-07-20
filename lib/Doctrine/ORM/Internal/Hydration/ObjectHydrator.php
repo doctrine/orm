@@ -168,10 +168,10 @@ class ObjectHydrator extends AbstractHydrator
     }
 
     /**
+     * Initializes a related collection.
      *
-     * @param object $entity
-     * @param string $name
-     * @todo Consider inlining this method.
+     * @param object $entity The entity to which the collection belongs.
+     * @param string $name The name of the field on the entity that holds the collection.
      */
     private function initRelatedCollection($entity, $name)
     {
@@ -179,16 +179,16 @@ class ObjectHydrator extends AbstractHydrator
         $classMetadata = $this->_ce[get_class($entity)];
 
         $relation = $classMetadata->associationMappings[$name];
-        $relatedClass = $this->_em->getClassMetadata($relation->targetEntityName);
-        $coll = new PersistentCollection($this->_em, $relatedClass);
+        if ( ! isset($this->_ce[$relation->targetEntityName])) {
+            $this->_ce[$relation->targetEntityName] = $this->_em->getClassMetadata($relation->targetEntityName);
+        }
+        $coll = new PersistentCollection($this->_em, $this->_ce[$relation->targetEntityName]);
         $this->_collections[] = $coll;
         $coll->setOwner($entity, $relation);
 
         $classMetadata->reflFields[$name]->setValue($entity, $coll);
         $this->_uow->setOriginalEntityProperty($oid, $name, $coll);
         $this->_initializedRelations[$oid][$name] = true;
-
-        return $coll;
     }
 
     /**
@@ -197,7 +197,7 @@ class ObjectHydrator extends AbstractHydrator
      * @param <type> $assocField
      * @param <type> $indexField
      * @return <type>
-     * @todo Consider inlining this method.
+     * @todo Inline this method.
      */
     private function isIndexKeyInUse($entity, $assocField, $indexField)
     {
@@ -371,7 +371,8 @@ class ObjectHydrator extends AbstractHydrator
                                 }
                             }
 
-                            if ($field = $this->_getCustomIndexField($dqlAlias)) {
+                            if (isset($this->_rsm->indexByMap[$dqlAlias])) {
+                                $field = $this->_rsm->indexByMap[$dqlAlias];
                                 $indexValue = $this->_ce[$entityName]
                                     ->reflFields[$field]
                                     ->getValue($element);
@@ -385,6 +386,7 @@ class ObjectHydrator extends AbstractHydrator
                                     ->getValue($baseElement)
                                     ->hydrateAdd($element);
                             }
+                            
                             $this->_identifierMap[$path][$id[$parent]][$id[$dqlAlias]] = $this->getLastKey(
                                     $this->_ce[$parentClass]
                                         ->reflFields[$relationAlias]
@@ -416,7 +418,8 @@ class ObjectHydrator extends AbstractHydrator
 
                 if ($this->_isSimpleQuery || ! isset($this->_identifierMap[$dqlAlias][$id[$dqlAlias]])) {
                     $element = $this->getEntity($rowData[$dqlAlias], $dqlAlias);
-                    if ($field = $this->_getCustomIndexField($dqlAlias)) {
+                    if (isset($this->_rsm->indexByMap[$dqlAlias])) {
+                        $field = $this->_rsm->indexByMap[$dqlAlias];
                         if ($this->_rsm->isMixed) {
                             $result[] = array(
                                 $this->_ce[$entityName]

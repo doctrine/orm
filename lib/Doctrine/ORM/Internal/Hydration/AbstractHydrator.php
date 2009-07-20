@@ -178,15 +178,15 @@ abstract class AbstractHydrator
         foreach ($data as $key => $value) {
             // Parse each column name only once. Cache the results.
             if ( ! isset($cache[$key])) {
-                if (isset($this->_rsm->ignoredColumns[$key])) {
-                    $cache[$key] = false;
-                } else if (isset($this->_rsm->scalarMappings[$key])) {
+                if (isset($this->_rsm->scalarMappings[$key])) {
                     $cache[$key]['fieldName'] = $this->_rsm->scalarMappings[$key];
                     $cache[$key]['isScalar'] = true;
                 } else if (isset($this->_rsm->fieldMappings[$key])) {
                     $classMetadata = $this->_em->getClassMetadata($this->_rsm->getOwningClass($key));
                     $fieldName = $this->_rsm->fieldMappings[$key];
-                    $classMetadata = $this->_lookupDeclaringClass($classMetadata, $fieldName);
+                    if ( ! isset($classMetadata->reflFields[$fieldName])) {
+                        $classMetadata = $this->_lookupDeclaringClass($classMetadata, $fieldName);
+                    }
                     $cache[$key]['fieldName'] = $fieldName;
                     $cache[$key]['isScalar'] = false;
                     $cache[$key]['type'] = Type::getType($classMetadata->fieldMappings[$fieldName]['type']);
@@ -222,11 +222,6 @@ abstract class AbstractHydrator
             if ( ! isset($nonemptyComponents[$dqlAlias]) && $value !== null) {
                 $nonemptyComponents[$dqlAlias] = true;
             }
-
-            /* TODO: Consider this instead of the above 4 lines. */
-            /*if ($value !== null) {
-                $rowData[$dqlAlias][$fieldName] = $cache[$key]['type']->convertToPHPValue($value, $this->_platform);
-            }*/
         }
 
         return $rowData;
@@ -249,16 +244,15 @@ abstract class AbstractHydrator
         foreach ($data as $key => $value) {
             // Parse each column name only once. Cache the results.
             if ( ! isset($cache[$key])) {
-                if (isset($this->_rsm->ignoredColumns[$key])) {
-                    $cache[$key] = false;
-                    continue;
-                } else if (isset($this->_rsm->scalarMappings[$key])) {
+                if (isset($this->_rsm->scalarMappings[$key])) {
                     $cache[$key]['fieldName'] = $this->_rsm->scalarMappings[$key];
                     $cache[$key]['isScalar'] = true;
                 } else {
                     $classMetadata = $this->_em->getClassMetadata($this->_rsm->getOwningClass($key));
                     $fieldName = $this->_rsm->fieldMappings[$key];
-                    $classMetadata = $this->_lookupDeclaringClass($classMetadata, $fieldName);
+                    if ( ! isset($classMetadata->reflFields[$fieldName])) {
+                        $classMetadata = $this->_lookupDeclaringClass($classMetadata, $fieldName);
+                    }
                     $cache[$key]['fieldName'] = $fieldName;
                     $cache[$key]['isScalar'] = false;
                     $cache[$key]['type'] = Type::getType($classMetadata->getTypeOfField($fieldName));
@@ -277,17 +271,6 @@ abstract class AbstractHydrator
         }
 
         return $rowData;
-    }
-
-    /**
-     * Gets the custom field used for indexing for the specified DQL alias.
-     *
-     * @return string  The field name of the field used for indexing or NULL
-     *                 if the component does not use any custom field indices.
-     */
-    protected function _getCustomIndexField($alias)
-    {
-        return isset($this->_rsm->indexByMap[$alias]) ? $this->_rsm->indexByMap[$alias] : null;
     }
 
     /**
@@ -310,10 +293,6 @@ abstract class AbstractHydrator
      */
     private function _lookupDeclaringClass($class, $fieldName)
     {
-        if (isset($class->reflFields[$fieldName])) {
-            return $class;
-        }
-        
         foreach ($class->subClasses as $subClass) {
             $subClassMetadata = $this->_em->getClassMetadata($subClass);
             if ($subClassMetadata->hasField($fieldName)) {
