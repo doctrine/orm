@@ -198,7 +198,7 @@ final class PersistentCollection extends \Doctrine\Common\Collections\Collection
     public function remove($key)
     {
         //TODO: delete entity if shouldDeleteOrphans
-        /*if ($this->_association->isOneToMany() && $this->_association->shouldDeleteOrphans()) {
+        /*if ($this->_association->isOneToMany() && $this->_association->shouldDeleteOrphans) {
         $this->_em->remove($removed);
         }*/
         $removed = parent::remove($key);
@@ -209,8 +209,8 @@ final class PersistentCollection extends \Doctrine\Common\Collections\Collection
     }
 
     /**
-     * When the collection is a Map this is like put(key,value)/add(key,value).
-     * When the collection is a List this is like add(position,value).
+     * When the collection is used as a Map this is like put(key,value)/add(key,value).
+     * When the collection is used as a List this is like add(position,value).
      *
      * @param integer $key
      * @param mixed $value
@@ -301,10 +301,13 @@ final class PersistentCollection extends \Doctrine\Common\Collections\Collection
     {
 
     }
-
+    
+    /**
+     * Initializes the collection by loading its contents from the database.
+     */
     private function _initialize()
     {
-
+        
     }
 
     /**
@@ -375,15 +378,21 @@ final class PersistentCollection extends \Doctrine\Common\Collections\Collection
     {
         //TODO: Register collection as dirty with the UoW if necessary
         //TODO: If oneToMany() && shouldDeleteOrphan() delete entities
-        /*if ($this->_association->isOneToMany() && $this->_association->shouldDeleteOrphans()) {
+        /*if ($this->_association->isOneToMany() && $this->_association->shouldDeleteOrphans) {
         foreach ($this->_data as $entity) {
         $this->_em->remove($entity);
         }
         }*/
         parent::clear();
-        $this->_changed();
+        if ($this->_association->isOwningSide) {
+            $this->_changed();
+            $this->_em->getUnitOfWork()->scheduleCollectionDeletion($this);
+        }
     }
-
+    
+    /**
+     * Marks this collection as changed/dirty.
+     */
     private function _changed()
     {
         $this->_isDirty = true;

@@ -413,13 +413,12 @@ class EntityManager
      * Refreshes the persistent state of an entity from the database,
      * overriding any local changes that have not yet been persisted.
      *
-     * @param object $entity
-     * @todo Implementation
+     * @param object $entity The entity to refresh.
      */
     public function refresh($entity)
     {
         $this->_errorIfClosed();
-        throw DoctrineException::notImplemented();
+        $this->_unitOfWork->refresh($entity);
     }
 
     /**

@@ -83,7 +83,7 @@ class OneToOneBidirectionalAssociationTest extends \Doctrine\Tests\OrmFunctional
         $this->_createFixture();
         $this->_em->getConfiguration()->setAllowPartialObjects(false);
         $metadata = $this->_em->getClassMetadata('Doctrine\Tests\Models\ECommerce\ECommerceCustomer');
-        $metadata->getAssociationMapping('cart')->fetchMode = AssociationMapping::FETCH_LAZY;
+        $metadata->getAssociationMapping('mentor')->fetchMode = AssociationMapping::FETCH_EAGER;
 
         $query = $this->_em->createQuery('select c from Doctrine\Tests\Models\ECommerce\ECommerceCustomer c');
         $result = $query->getResultList();

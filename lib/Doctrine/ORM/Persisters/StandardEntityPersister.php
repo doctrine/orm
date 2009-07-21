@@ -71,13 +71,6 @@ class StandardEntityPersister
     protected $_em;
 
     /**
-     * The EventManager instance.
-     *
-     * @var Doctrine\Common\EventManager
-     */
-    protected $_evm;
-
-    /**
      * Queued inserts.
      *
      * @var array
@@ -96,7 +89,6 @@ class StandardEntityPersister
     {
         $this->_em = $em;
         $this->_platform = $em->getConnection()->getDatabasePlatform();
-        $this->_evm = $em->getEventManager();
         $this->_entityName = $class->name;
         $this->_conn = $em->getConnection();
         $this->_class = $class;
@@ -206,16 +198,8 @@ class StandardEntityPersister
         );
         $tableName = $this->_class->primaryTable['name'];
 
-        if ($this->_evm->hasListeners(Events::preUpdate)) {
-            $this->_preUpdate($entity);
-        }
-
         if (isset($updateData[$tableName]) && $updateData[$tableName]) {
             $this->_doUpdate($entity, $tableName, $updateData[$tableName], $id);
-        }
-
-        if ($this->_evm->hasListeners(Events::postUpdate)) {
-            $this->_postUpdate($entity);
         }
     }
 
@@ -425,7 +409,7 @@ class StandardEntityPersister
             if (isset($this->_class->fieldNames[$column])) {
                 $fieldName = $this->_class->fieldNames[$column];
                 $data[$fieldName] = Type::getType($this->_class->getTypeOfField($fieldName))
-                    ->convertToPHPValue($value, $this->_platform);
+                        ->convertToPHPValue($value, $this->_platform);
             } else {
                 $joinColumnValues[$column] = $value;
             }
@@ -458,7 +442,9 @@ class StandardEntityPersister
                         $proxy = $this->_em->getProxyFactory()->getAssociationProxy($entity, $assoc, $joinColumnValues);
                         $this->_class->reflFields[$field]->setValue($entity, $proxy);
                     } else {
-                        //TODO: Eager fetch
+                        // Eager load
+                        //TODO: Allow more efficient and configurable batching of these loads
+                        $assoc->load($entity, new $assoc->targetEntityName, $this->_em, $joinColumnValues);
                     }
                 } else {
                     // Inject collection

@@ -25,6 +25,7 @@ namespace Doctrine\ORM\Persisters;
  * Persister for collections of basic elements / value types.
  *
  * @author robo
+ * @todo Implementation once support for collections of basic elements (i.e. strings) is added.
  */
 class ElementCollectionPersister extends AbstractCollectionPersister
 {

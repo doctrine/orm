@@ -1309,6 +1309,71 @@ class UnitOfWork implements PropertyChangedListener
 
         return $managedCopy;
     }
+    
+    /**
+     * 
+     * 
+     * @param $entity
+     * @return unknown_type
+     */
+    public function refresh($entity)
+    {
+        $visited = array();
+        return $this->_doRefresh($entity, $visited);
+    }
+    
+    /**
+     * Executes a refresh operation on an entity.
+     * 
+     * @param object $entity The entity to refresh.
+     * @param array $visited The already visited entities during cascades.
+     */
+    private function _doRefresh($entity, array &$visited)
+    {
+        $oid = spl_object_hash($entity);
+        if (isset($visited[$oid])) {
+            return; // Prevent infinite recursion
+        }
+
+        $visited[$oid] = $entity; // mark visited
+
+        $class = $this->_em->getClassMetadata(get_class($entity));
+        switch ($this->getEntityState($entity)) {
+            case self::STATE_MANAGED:
+                $this->getEntityPersister($class->name)->load(
+                    array_combine($class->identifier, $this->_entityIdentifiers[$oid]),
+                    $entity
+                );
+                break;
+            default:
+                throw DoctrineException::updateMe("NEW, REMOVED or DETACHED entity can not be refreshed.");
+        }
+        $this->_cascadeRefresh($entity, $visited);
+    }
+    
+    /**
+     * Cascades a refresh operation to associated entities.
+     *
+     * @param object $entity
+     * @param array $visited
+     */
+    private function _cascadeRefresh($entity, array &$visited)
+    {
+        $class = $this->_em->getClassMetadata(get_class($entity));
+        foreach ($class->associationMappings as $assocMapping) {
+            if ( ! $assocMapping->isCascadeRefresh) {
+                continue;
+            }
+            $relatedEntities = $class->reflFields[$assocMapping->sourceFieldName]->getValue($entity);
+            if ($relatedEntities instanceof Collection) {
+                foreach ($relatedEntities as $relatedEntity) {
+                    $this->_doRefresh($relatedEntity, $visited);
+                }
+            } else if ($relatedEntities !== null) {
+                $this->_doRefresh($relatedEntities, $visited);
+            }
+        }
+    }
 
     /**
      * Cascades a merge operation to associated entities.
@@ -1324,7 +1389,7 @@ class UnitOfWork implements PropertyChangedListener
             if ( ! $assocMapping->isCascadeMerge) {
                 continue;
             }
-            $relatedEntities = $class->reflFields[$assocMapping->getSourceFieldName()]
+            $relatedEntities = $class->reflFields[$assocMapping->sourceFieldName]
                     ->getValue($entity);
             if ($relatedEntities instanceof Collection) {
                 foreach ($relatedEntities as $relatedEntity) {

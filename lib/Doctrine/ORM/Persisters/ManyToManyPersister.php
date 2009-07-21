@@ -108,7 +108,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
         $mapping = $coll->getMapping();
         $joinTable = $mapping->getJoinTable();
         $whereClause = '';
-        foreach ($mapping->getSourceToRelationKeyColumns() as $relationColumn) {
+        foreach ($mapping->sourceToRelationKeyColumns as $relationColumn) {
             if ($whereClause !== '') $whereClause .= ' AND ';
             $whereClause .= "$relationColumn = ?";
         }

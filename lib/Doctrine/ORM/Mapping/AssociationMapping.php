@@ -37,8 +37,18 @@ namespace Doctrine\ORM\Mapping;
  */
 abstract class AssociationMapping
 {
-    const FETCH_MANUAL = 1;
+    /**
+     * Specifies that an association is to be fetched when it is first accessed.
+     * 
+     * @var integer
+     */
     const FETCH_LAZY = 2;
+    /**
+     * Specifies that an association is to be fetched when the owner of the
+     * association is fetched. 
+     *
+     * @var integer
+     */
     const FETCH_EAGER = 3;
     
     /**
@@ -66,7 +76,7 @@ abstract class AssociationMapping
      *
      * @var integer
      */
-    public $fetchMode = self::FETCH_MANUAL;
+    public $fetchMode = self::FETCH_LAZY;
     
     /**
      * Flag that indicates whether the class that defines this mapping is
@@ -242,16 +252,6 @@ abstract class AssociationMapping
     public function isLazilyFetched()
     {
         return $this->fetchMode == self::FETCH_LAZY;
-    }
-    
-    /**
-     * Whether the target entity/entities of the association are manually fetched.
-     *
-     * @return boolean
-     */
-    public function isManuallyFetched()
-    {
-        return $this->fetchMode == self::FETCH_MANUAL;
     }
     
     /**

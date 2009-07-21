@@ -260,7 +260,7 @@ class ObjectHydrator extends AbstractHydrator
                         } else {
                             // Eager load
                             //TODO: Allow more efficient and configurable batching of these loads
-                            $assoc->load($entity, new $className, $this->_em, $joinColumns);
+                            $assoc->load($entity, new $assoc->targetEntityName, $this->_em, $joinColumns);
                         }
                     } else {
                         //TODO: Eager load

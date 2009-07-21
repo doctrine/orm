@@ -173,8 +173,8 @@ class BasicFunctionalTest extends \Doctrine\Tests\OrmFunctionalTestCase
                 array())->fetchColumn();
         $this->assertEquals(10, $count);
 
-        //$user->groups->clear();
-        unset($user->groups);
+        $user->groups->clear();
+        //unset($user->groups);
 
         $this->_em->flush();
 
@@ -183,6 +183,35 @@ class BasicFunctionalTest extends \Doctrine\Tests\OrmFunctionalTestCase
                 array())->fetchColumn();
         $this->assertEquals(0, $count);
     }
+    
+    /* NOT YET IMPLEMENTED
+    public function testOneToManyOrphanDelete()
+    {
+        $user = new CmsUser;
+        $user->name = 'Guilherme';
+        $user->username = 'gblanco';
+        $user->status = 'developer';
+
+        for ($i=0; $i<3; ++$i) {
+            $phone = new CmsPhonenumber;
+            $phone->phonenumber = 100 + $i;
+            $user->addPhonenumber($phone);
+        }
+
+        $this->_em->persist($user);
+
+        $this->_em->flush();
+
+        $user->getPhonenumbers()->remove(0);
+
+        $this->_em->flush();
+
+        // Check that the links in the association table have been deleted
+        $count = $this->_em->getConnection()->execute("SELECT COUNT(*) FROM cms_phonenumbers",
+                array())->fetchColumn();
+        $this->assertEquals(2, $count); // only 2 remaining
+        
+    }*/
 
     public function testBasicQuery()
     {
@@ -303,5 +332,22 @@ class BasicFunctionalTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $query = $this->_em->createQuery("select u, g from Doctrine\Tests\Models\CMS\CmsUser u inner join u.groups g");
         $this->assertEquals(0, count($query->getResultList()));
+    }
+    
+    public function testBasicRefresh()
+    {
+        $user = new CmsUser;
+        $user->name = 'Guilherme';
+        $user->username = 'gblanco';
+        $user->status = 'developer';
+
+        $this->_em->persist($user);
+        $this->_em->flush();
+        
+        $user->status = 'mascot';
+        
+        $this->assertEquals('mascot', $user->status);
+        $this->_em->refresh($user);
+        $this->assertEquals('developer', $user->status);
     }
 }
