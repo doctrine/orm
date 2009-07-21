@@ -47,7 +47,7 @@ class LanguageRecognitionTest extends \Doctrine\Tests\OrmTestCase
         }
         
         $parser = new \Doctrine\ORM\Query\Parser($query);
-        $parser->setSqlTreeWalker(new \Doctrine\Tests\Mocks\MockTreeWalker);
+        //$parser->setSqlTreeWalker(new \Doctrine\Tests\Mocks\MockTreeWalker);
         
         return $parser->parse();
     }
@@ -65,11 +65,6 @@ class LanguageRecognitionTest extends \Doctrine\Tests\OrmTestCase
     public function testSelectSingleComponentWithAsterisk()
     {
         $this->assertValidDql('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u');
-    }
-
-    public function testInvalidSelectSingleComponentWithAsterisk()
-    {
-        //$this->assertInvalidDql('SELECT p FROM Doctrine\Tests\Models\CMS\CmsUser u', true);
     }
 
     public function testSelectSingleComponentWithMultipleColumns()
@@ -247,14 +242,14 @@ class LanguageRecognitionTest extends \Doctrine\Tests\OrmTestCase
     {
         $this->assertValidDql("SELECT u.id FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.name LIKE 'z|%' ESCAPE '|'");
     }
-/*
-    public function testImplicitJoinInWhereOnSingleValuedAssociationPathExpression()
+
+    /*public function testImplicitJoinInWhereOnSingleValuedAssociationPathExpression()
     {
         // This should be allowed because avatar is a single-value association.
         // SQL: SELECT ... FROM forum_user fu INNER JOIN forum_avatar fa ON fu.avatar_id = fa.id WHERE fa.id = ?
         $this->assertValidDql("SELECT u FROM Doctrine\Tests\Models\Forum\ForumUser u WHERE u.avatar.id = ?");
-    }
-*/
+    }*/
+
     public function testImplicitJoinInWhereOnCollectionValuedPathExpression()
     {
         // This should be forbidden, because articles is a collection
@@ -264,8 +259,7 @@ class LanguageRecognitionTest extends \Doctrine\Tests\OrmTestCase
     public function testInvalidSyntaxIsRejected()
     {
         $this->assertInvalidDql("FOOBAR CmsUser");
-        //$this->assertInvalidDql("DELETE FROM Doctrine\Tests\Models\CMS\CmsUser.articles");
-        //$this->assertInvalidDql("DELETE FROM Doctrine\Tests\Models\CMS\CmsUser cu WHERE cu.articles.id > ?");
+        $this->assertInvalidDql("DELETE FROM Doctrine\Tests\Models\CMS\CmsUser.articles");
         $this->assertInvalidDql("SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u JOIN u.articles.comments");
 
         // Currently UNDEFINED OFFSET error

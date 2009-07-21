@@ -67,14 +67,6 @@ class Parser
     );
 
     /**
-     * The minimum number of tokens read after last detected error before
-     * another error can be reported.
-     *
-     * @var int
-     */
-    //const MIN_ERROR_DISTANCE = 2;
-
-    /**
      * Path expressions that were encountered during parsing of SelectExpressions
      * and still need to be validated.
      *
@@ -134,7 +126,7 @@ class Parser
         $this->_query = $query;
         $this->_em = $query->getEntityManager();
         $this->_lexer = new Lexer($query->getDql());
-        $this->_parserResult = new ParserResult;
+        $this->_parserResult = new ParserResult();
     }
 
     /**
@@ -150,9 +142,8 @@ class Parser
     {
         $key = (is_string($token)) ? 'value' : 'type';
         
-        if ( ! ($this->_lexer->lookahead[$key] === $token)) {
+        if ( ! ($this->_lexer->lookahead[$key] === $token))
             $this->syntaxError($this->_lexer->getLiteral($token));
-        }
 
         $this->_lexer->moveNext();
     }
@@ -171,12 +162,10 @@ class Parser
         // Deep = true cleans peek and also any previously defined errors
         if ($deep) {
             $this->_lexer->resetPeek();
-            //$this->_errors = array();
         }
 
         $this->_lexer->token = null;
         $this->_lexer->lookahead = null;
-        //$this->_errorDistance = self::MIN_ERROR_DISTANCE;
     }
 
     /**
@@ -191,7 +180,6 @@ class Parser
 
         // Check for end of string
         if ($this->_lexer->lookahead !== null) {
-            //var_dump($this->_lexer->lookahead);
             $this->syntaxError('end of string');
         }
 
@@ -204,6 +192,16 @@ class Parser
         $this->_parserResult->setSqlExecutor(Exec\AbstractExecutor::create($AST, $sqlWalker));
 
         return $this->_parserResult;
+    }
+    
+    /**
+     * Sets the custom tree walker.
+     * 
+     * @param SqlTreeWalker $sqlTreeWalker
+     */
+    public function setSqlTreeWalker($sqlTreeWalker)
+    {
+        $this->_sqlTreeWalker = $sqlTreeWalker;
     }
 
     /**
@@ -225,6 +223,16 @@ class Parser
     {
         return $this->_parserResult;
     }
+    
+    /**
+     * Gets the EntityManager used by the parser.
+     *
+     * @return EntityManager
+     */
+    public function getEntityManager()
+    {
+        return $this->_em;
+    }
 
     /**
      * Generates a new syntax error.
@@ -238,10 +246,11 @@ class Parser
             $token = $this->_lexer->lookahead;
         }
 
-        $message = 'line 0, col ' . (isset($token['position']) ? $token['position'] : '-1') . ': Error: ';
+        $tokenPos = (isset($token['position'])) ? $token['position'] : '-1';
+        $message  = "line 0, col {$tokenPos}: Error: ";
 
         if ($expected !== '') {
-            $message .= "Expected '$expected', got ";
+            $message .= "Expected '{$expected}', got ";
         } else {
             $message .= 'Unexpected ';
         }
@@ -252,7 +261,7 @@ class Parser
             $message .= "'{$this->_lexer->lookahead['value']}'";
         }
 
-        throw QueryException::syntaxError($message);
+        throw \Doctrine\ORM\Query\QueryException::syntaxError($message);
     }
 
     /**
@@ -276,44 +285,51 @@ class Parser
         $message = 'line 0, col ' . (isset($token['position']) ? $token['position'] : '-1') 
                  . " near '" . substr($dql, $token['position'], $length) . "'): Error: " . $message;
 
-        throw QueryException::semanticalError($message);
+        throw \Doctrine\ORM\Query\QueryException::semanticalError($message);
     }
-
+    
     /**
-     * Logs new error entry.
-     *
-     * @param string $message Message to log.
-     * @param array $token Token that it was processing.
+     * Peeks beyond the specified token and returns the first token after that one.
      */
-    /*protected function _logError($message = '', $token)
-     {
-         if ($this->_errorDistance >= self::MIN_ERROR_DISTANCE) {
-             $message = 'line 0, col ' . $token['position'] . ': ' . $message;
-             $this->_errors[] = $message;
-         }
-
-         $this->_errorDistance = 0;
-     }*/
-
-    /**
-     * Gets the EntityManager used by the parser.
-     *
-     * @return EntityManager
-     */
-    public function getEntityManager()
+    private function _peekBeyond($token)
     {
-        return $this->_em;
+        $peek = $this->_lexer->peek();
+
+        while ($peek['value'] != $token) {
+            $peek = $this->_lexer->peek();
+        }
+
+        $peek = $this->_lexer->peek();
+        $this->_lexer->resetPeek();
+
+        return $peek;
     }
 
     /**
      * Checks if the next-next (after lookahead) token starts a function.
      *
-     * @return boolean
+     * @return boolean TRUE if the next-next tokens start a function, FALSE otherwise.
      */
     private function _isFunction()
     {
-        $next = $this->_lexer->glimpse();
-        return $next['value'] === '(';
+        $peek     = $this->_lexer->peek();
+        $nextpeek = $this->_lexer->peek();
+        $this->_lexer->resetPeek();
+        
+        // We deny the COUNT(SELECT * FROM User u) here. COUNT won't be considered a function
+        return ($peek['value'] === '(' && $nextpeek['type'] !== Lexer::T_SELECT);
+    }
+    
+    /**
+     * Checks whether the given token type indicates an aggregate function.
+     *
+     * @return boolean TRUE if the token type is an aggregate function, FALSE otherwise.
+     */
+    private function _isAggregateFunction($tokenType)
+    {
+        return $tokenType == Lexer::T_AVG || $tokenType == Lexer::T_MIN ||
+               $tokenType == Lexer::T_MAX || $tokenType == Lexer::T_SUM ||
+               $tokenType == Lexer::T_COUNT;
     }
 
     /**
@@ -328,6 +344,168 @@ class Parser
 
         return ($la['value'] === '(' && $next['type'] === Lexer::T_SELECT);
     }
+    
+    /**
+     * Begins a new stack of deferred path expressions.
+     */
+    private function _beginDeferredPathExpressionStack()
+    {
+        $this->_deferredPathExpressionStacks[] = array();
+    }
+
+    /**
+     * Processes the topmost stack of deferred path expressions.
+     */
+    private function _processDeferredPathExpressionStack()
+    {
+        $exprStack = array_pop($this->_deferredPathExpressionStacks);
+
+        foreach ($exprStack as $expr) {
+            switch ($expr->getType()) {
+                case AST\PathExpression::TYPE_SINGLE_VALUED_PATH_EXPRESSION:
+                	$this->_validateSingleValuedPathExpression($expr);
+                	break;
+            
+                case AST\PathExpression::TYPE_STATE_FIELD:
+                    $this->_validateStateFieldPathExpression($expr);
+                    break;
+
+                case AST\PathExpression::TYPE_SINGLE_VALUED_ASSOCIATION:
+                    $this->_validateSingleValuedAssociationPathExpression($expr);
+                    break;
+
+                case AST\PathExpression::TYPE_COLLECTION_VALUED_ASSOCIATION:
+                    $this->_validateCollectionValuedAssociationPathExpression($expr);
+                    break;
+
+                default:
+                    $this->semanticalError('Encountered invalid PathExpression.');
+                    break;
+            }
+        }
+    }
+    
+    /**
+     * Validates that the given <tt>PathExpression</tt> is a semantically correct for grammar rules:
+     *
+     * AssociationPathExpression             ::= CollectionValuedPathExpression | SingleValuedAssociationPathExpression
+     * SingleValuedPathExpression            ::= StateFieldPathExpression | SingleValuedAssociationPathExpression
+     * StateFieldPathExpression              ::= IdentificationVariable "." StateField | SingleValuedAssociationPathExpression "." StateField
+     * SingleValuedAssociationPathExpression ::= IdentificationVariable "." {SingleValuedAssociationField "."}* SingleValuedAssociationField
+     * CollectionValuedPathExpression        ::= IdentificationVariable "." {SingleValuedAssociationField "."}* CollectionValuedAssociationField
+     *
+     * @param PathExpression $pathExpression
+     * @return boolean
+     */
+    private function _validatePathExpression(AST\PathExpression $pathExpression)
+    {
+        $class = $this->_queryComponents[$pathExpression->getIdentificationVariable()]['metadata'];
+        $stateField = $collectionField = null;
+
+        foreach ($pathExpression->getParts() as $field) {
+            // Check if it is not in a state field
+            if ($stateField !== null) {
+                $this->semanticalError('Cannot navigate through state field named ' . $stateField);
+            }
+            
+            // Check if it is not a collection field
+            if ($collectionField !== null) {
+                $this->semanticalError('Can not navigate through collection-valued field named ' . $collectionField);
+            }
+            
+            // Check if field exists
+            if ( ! isset($class->associationMappings[$field]) && ! isset($class->fieldMappings[$field])) {
+                $this->semanticalError('Class ' . $class->name . ' has no field named ' . $field);
+            }
+            
+            if (isset($class->fieldMappings[$field])) {
+                $stateField = $field;
+            } else if ($class->associationMappings[$field]->isOneToOne()) {
+                $class = $this->_em->getClassMetadata($class->associationMappings[$field]->targetEntityName);
+            } else {
+                $collectionField = $field;
+            }
+        }
+        
+        $expressionType = null;
+        
+        if ($stateField !== null) {
+        	$expressionType = AST\PathExpression::TYPE_STATE_FIELD;
+        } else if ($collectionField !== null) {
+        	$expressionType = AST\PathExpression::TYPE_COLLECTION_VALUED_ASSOCIATION;
+        } else {
+            $expressionType = AST\PathExpression::TYPE_SINGLE_VALUED_ASSOCIATION;
+        }        
+        
+        // We need to force the type in PathExpression
+        $pathExpression->setType($expressionType);
+        
+        return $expressionType;
+    }
+
+    /**
+     * Validates that the given <tt>PathExpression</tt> is a semantically correct
+     * SingleValuedPathExpression as specified in the grammar.
+     *
+     * @param PathExpression $pathExpression
+     */
+    private function _validateSingleValuedPathExpression(AST\PathExpression $pathExpression)
+    {
+        $pathExprType = $this->_validatePathExpression($pathExpression);
+        
+        if (
+            $pathExprType !== AST\PathExpression::TYPE_STATE_FIELD && 
+            $pathExprType !== AST\PathExpression::TYPE_SINGLE_VALUED_ASSOCIATION
+        ) {
+            $this->semanticalError('SingleValuedAssociationField or StateField expected.');
+        }
+    }
+    
+    /**
+     * Validates that the given <tt>PathExpression</tt> is a semantically correct
+     * StateFieldPathExpression as specified in the grammar.
+     *
+     * @param PathExpression $pathExpression
+     */
+    private function _validateStateFieldPathExpression(AST\PathExpression $pathExpression)
+    {
+        $pathExprType = $this->_validatePathExpression($pathExpression);
+
+        if ($pathExprType !== AST\PathExpression::TYPE_STATE_FIELD) {
+            $this->semanticalError('Invalid StateFieldPathExpression. Must end in a state field.');
+        }
+    }
+    
+    /**
+     * Validates that the given <tt>PathExpression</tt> is a semantically correct
+     * CollectionValuedPathExpression as specified in the grammar.
+     *
+     * @param PathExpression $pathExpression
+     */
+    private function _validateCollectionValuedPathExpression(AST\PathExpression $pathExpression)
+    {
+        $pathExprType = $this->_validatePathExpression($pathExpression);
+
+        if ($pathExprType !== AST\PathExpression::TYPE_COLLECTION_VALUED_ASSOCIATION) {
+            $this->semanticalError('Invalid CollectionValuedAssociationField. Must end in a collection-valued field.');
+        }
+    }
+
+    /**
+     * Validates that the given <tt>PathExpression</tt> is a semantically correct
+     * SingleValuedAssociationPathExpression as specified in the grammar.
+     *
+     * @param PathExpression $pathExpression
+     */
+    private function _validateSingleValuedAssociationPathExpression(AST\PathExpression $pathExpression)
+    {
+        $pathExprType = $this->_validatePathExpression($pathExpression);
+
+        if ($pathExprType !== AST\PathExpression::TYPE_SINGLE_VALUED_ASSOCIATION) {
+            $this->semanticalError('Invalid SingleValuedAssociationField. Must end in a single valued association field.');
+        }
+    }
+    
 
     /**
      * QueryLanguage ::= SelectStatement | UpdateStatement | DeleteStatement
@@ -351,15 +529,21 @@ class Parser
                 break;
         }
     }
+    
 
     /**
      * SelectStatement ::= SelectClause FromClause [WhereClause] [GroupByClause] [HavingClause] [OrderByClause]
      */
     public function SelectStatement()
     {
+        // We need to prevent semantical checks on SelectClause, 
+        // since we do not have any IdentificationVariable yet
         $this->_beginDeferredPathExpressionStack();
+        
         $selectClause = $this->SelectClause();
         $fromClause = $this->FromClause();
+        
+        // Activate semantical checks after this point. Process all deferred checks in pipeline
         $this->_processDeferredPathExpressionStack();
 
         $whereClause = $this->_lexer->isNextToken(Lexer::T_WHERE)
@@ -380,50 +564,6 @@ class Parser
     }
 
     /**
-     * Begins a new stack of deferred path expressions.
-     */
-    private function _beginDeferredPathExpressionStack()
-    {
-        $this->_deferredPathExpressionStacks[] = array();
-    }
-
-    /**
-     * Processes the topmost stack of deferred path expressions.
-     * These will be validated to make sure they are indeed
-     * valid <tt>StateFieldPathExpression</tt>s and additional information
-     * is attached to their AST nodes.
-     */
-    private function _processDeferredPathExpressionStack()
-    {
-        $exprStack = array_pop($this->_deferredPathExpressionStacks);
-        $qComps = $this->_queryComponents;
-
-        foreach ($exprStack as $expr) {
-            switch ($expr->getType()) {
-                case AST\PathExpression::TYPE_STATE_FIELD:
-                    $this->_validateStateFieldPathExpression($expr);
-                    break;
-
-                case AST\PathExpression::TYPE_SINGLE_VALUED_ASSOCIATION:
-                    $this->_validateSingleValuedAssociationPathExpression($expr);
-                    break;
-
-                case AST\PathExpression::TYPE_COLLECTION_VALUED_ASSOCIATION:
-                    $this->_validateCollectionValuedAssociationPathExpression($expr);
-                    break;
-                    
-                case AST\PathExpression::TYPE_SINGLE_VALUED_PATH_EXPRESSION:
-                	$this->_validateSingleValuedPathExpression($expr);
-                	break;
-
-                default:
-                    $this->semanticalError('Encountered invalid PathExpression.');
-                    break;
-            }
-        }
-    }
-
-    /**
      * UpdateStatement ::= UpdateClause [WhereClause]
      */
     public function UpdateStatement()
@@ -435,7 +575,210 @@ class Parser
 
         return $updateStatement;
     }
+    
+    /**
+     * DeleteStatement ::= DeleteClause [WhereClause]
+     */
+    public function DeleteStatement()
+    {
+        $deleteStatement = new AST\DeleteStatement($this->DeleteClause());
+        $deleteStatement->setWhereClause(
+            $this->_lexer->isNextToken(Lexer::T_WHERE) ? $this->WhereClause() : null
+        );
 
+        return $deleteStatement;
+    }
+    
+    
+    /**
+     * IdentificationVariable ::= identifier
+     */
+    public function IdentificationVariable()
+    {
+        $this->match(Lexer::T_IDENTIFIER);
+
+        return $this->_lexer->token['value'];
+    }
+    
+    /**
+     * AliasIdentificationVariable = identifier
+     */
+    public function AliasIdentificationVariable()
+    {
+        $this->match(Lexer::T_IDENTIFIER);
+
+        return $this->_lexer->token['value'];
+    }
+    
+    /**
+     * AbstractSchemaName ::= identifier
+     */
+    public function AbstractSchemaName()
+    {
+        $this->match(Lexer::T_IDENTIFIER);
+
+        return $this->_lexer->token['value'];
+    }
+    
+    /**
+     * ResultVariable ::= identifier
+     */
+    public function ResultVariable()
+    {
+        $this->match(Lexer::T_IDENTIFIER);
+    
+        return $this->_lexer->token['value'];
+    }
+    
+
+    /**
+     * JoinPathExpression ::= IdentificationVariable "." (CollectionValuedAssociationField | SingleValuedAssociationField)
+     */
+    public function JoinPathExpression()
+    {
+        $identificationVariable = $this->IdentificationVariable();
+        $this->match('.');
+        $this->match(Lexer::T_IDENTIFIER);
+
+        return new AST\JoinPathExpression(
+            $identificationVariable, $this->_lexer->token['value']
+        );
+    }  
+
+    /**
+     * Parses an arbitrary path expression without any semantic validation.
+     *
+     * PathExpression ::= IdentificationVariable "." {identifier "."}* identifier
+     *
+     * @return PathExpression
+     */
+    public function PathExpression($type)
+    {
+        $identificationVariable = $this->IdentificationVariable();
+        
+        $parts = array();
+
+        do {
+            $this->match('.');
+            $this->match(Lexer::T_IDENTIFIER);
+            
+            $parts[] = $this->_lexer->token['value'];
+        } while ($this->_lexer->isNextToken('.'));
+        
+        return new AST\PathExpression($type, $identificationVariable, $parts);
+    }
+    
+    /**
+     * AssociationPathExpression ::= CollectionValuedPathExpression | SingleValuedAssociationPathExpression
+     *
+     * @todo Implement this grammar rule which is used in SubselectFromClause
+     */
+    public function AssociationPathExpression()
+    {
+        
+    }
+    
+    /**
+     * SingleValuedPathExpression ::= StateFieldPathExpression | SingleValuedAssociationPathExpression
+     */
+    public function SingleValuedPathExpression()
+    {
+        $pathExpr = $this->PathExpression(AST\PathExpression::TYPE_SINGLE_VALUED_PATH_EXPRESSION);
+        
+        if ( ! empty($this->_deferredPathExpressionStacks)) {
+            $exprStack = array_pop($this->_deferredPathExpressionStacks);
+            $exprStack[] = $pathExpr;
+            array_push($this->_deferredPathExpressionStacks, $exprStack);
+
+            return $pathExpr;
+        }
+
+        $this->_validateSingleValuedPathExpression($pathExpr);
+
+        return $pathExpr;
+    }
+    
+    /**
+     * StateFieldPathExpression ::= SimpleStateFieldPathExpression | SimpleStateFieldAssociationPathExpression
+     */
+    public function StateFieldPathExpression()
+    {
+        $pathExpr = $this->PathExpression(AST\PathExpression::TYPE_STATE_FIELD);
+
+        if ( ! empty($this->_deferredPathExpressionStacks)) {
+            $exprStack = array_pop($this->_deferredPathExpressionStacks);
+            $exprStack[] = $pathExpr;
+            array_push($this->_deferredPathExpressionStacks, $exprStack);
+
+            return $pathExpr;
+        }
+
+        $this->_validateStateFieldPathExpression($pathExpr);
+
+        return $pathExpr;
+    }
+    
+    /**
+     * SingleValuedAssociationPathExpression ::= IdentificationVariable "." {SingleValuedAssociationField "."}* SingleValuedAssociationField
+     */
+    public function SingleValuedAssociationPathExpression()
+    {
+        $pathExpr = $this->PathExpression(AST\PathExpression::TYPE_SINGLE_VALUED_ASSOCIATION);
+        
+        if ( ! empty($this->_deferredPathExpressionStacks)) {
+            $exprStack = array_pop($this->_deferredPathExpressionStacks);
+            $exprStack[] = $pathExpr;
+            array_push($this->_deferredPathExpressionStacks, $exprStack);
+
+            return $pathExpr;
+        }
+
+        $this->_validateSingleValuedAssociationPathExpression($pathExpr);
+
+        return $pathExpr;
+    }
+    
+    /**
+     * CollectionValuedPathExpression ::= IdentificationVariable "." {SingleValuedAssociationField "."}* CollectionValuedAssociationField
+     */
+    public function CollectionValuedPathExpression()
+    {
+        $pathExpr = $this->PathExpression(AST\PathExpression::TYPE_COLLECTION_VALUED_ASSOCIATION);
+
+        if ( ! empty($this->_deferredPathExpressionStacks)) {
+            $exprStack = array_pop($this->_deferredPathExpressionStacks);
+            $exprStack[] = $pathExpr;
+            array_push($this->_deferredPathExpressionStacks, $exprStack);
+
+            return $pathExpr;
+        }
+
+        $this->_validateCollectionValuedPathExpression($pathExpr);
+
+        return $pathExpr;
+    }
+    
+    /**
+     * SimpleStateFieldPathExpression ::= IdentificationVariable "." StateField
+     */
+    public function SimpleStateFieldPathExpression()
+    {
+        $pathExpr = $this->PathExpression(AST\PathExpression::TYPE_STATE_FIELD);
+
+        if ( ! empty($this->_deferredPathExpressionStacks)) {
+            $exprStack = array_pop($this->_deferredPathExpressionStacks);
+            $exprStack[] = $pathExpr;
+            array_push($this->_deferredPathExpressionStacks, $exprStack);
+
+            return $pathExpr;
+        }
+
+        $this->_validateStateFieldPathExpression($pathExpr);
+
+        return $pathExpr;
+    }
+
+    
     /**
      * UpdateClause ::= "UPDATE" AbstractSchemaName [["AS"] AliasIdentificationVariable] "SET" UpdateItem {"," UpdateItem}*
      */
@@ -500,7 +843,9 @@ class Parser
 
         $this->match(Lexer::T_IDENTIFIER);
         $field = $this->_lexer->token['value'];
+        
         $this->match('=');
+        
         $newValue = $this->NewValue();
 
         $updateItem = new AST\UpdateItem($field, $newValue);
@@ -534,19 +879,6 @@ class Parser
         }
         
         return $this->SimpleArithmeticExpression();
-    }
-
-    /**
-     * DeleteStatement ::= DeleteClause [WhereClause]
-     */
-    public function DeleteStatement()
-    {
-        $deleteStatement = new AST\DeleteStatement($this->DeleteClause());
-        $deleteStatement->setWhereClause(
-            $this->_lexer->isNextToken(Lexer::T_WHERE) ? $this->WhereClause() : null
-        );
-
-        return $deleteStatement;
     }
 
     /**
@@ -641,7 +973,7 @@ class Parser
             $expression = $this->IdentificationVariable();
         } else if (($isFunction = $this->_isFunction()) !== false || $this->_isSubselect()) {
             if ($isFunction) {
-                if ($this->isAggregateFunction($this->_lexer->lookahead['type'])) {
+                if ($this->_isAggregateFunction($this->_lexer->lookahead['type'])) {
                     $expression = $this->AggregateExpression();
                 } else {
                     $expression = $this->_Function();
@@ -673,26 +1005,6 @@ class Parser
         }
 
         return new AST\SelectExpression($expression, $fieldAliasIdentificationVariable);
-    }
-    
-    /**
-     * ResultVariable ::= identifier
-     */
-    public function ResultVariable()
-    {
-        $this->match(Lexer::T_IDENTIFIER);
-    
-        return $this->_lexer->token['value'];
-    }
-
-    /**
-     * IdentificationVariable ::= identifier
-     */
-    public function IdentificationVariable()
-    {
-        $this->match(Lexer::T_IDENTIFIER);
-
-        return $this->_lexer->token['value'];
     }
 
     /**
@@ -746,26 +1058,6 @@ class Parser
     }
 
     /**
-     * AbstractSchemaName ::= identifier
-     */
-    public function AbstractSchemaName()
-    {
-        $this->match(Lexer::T_IDENTIFIER);
-
-        return $this->_lexer->token['value'];
-    }
-
-    /**
-     * AliasIdentificationVariable = identifier
-     */
-    public function AliasIdentificationVariable()
-    {
-        $this->match(Lexer::T_IDENTIFIER);
-
-        return $this->_lexer->token['value'];
-    }
-
-    /**
      * JoinVariableDeclaration ::= Join [IndexBy]
      */
     public function JoinVariableDeclaration()
@@ -778,7 +1070,7 @@ class Parser
     }
 
     /**
-     * Join ::= ["LEFT" ["OUTER"] | "INNER"] "JOIN" JoinAssociationPathExpression
+     * Join ::= ["LEFT" ["OUTER"] | "INNER"] "JOIN" JoinPathExpression
      *          ["AS"] AliasIdentificationVariable [("ON" | "WITH") ConditionalExpression]
      */
     public function Join()
@@ -849,20 +1141,6 @@ class Parser
     }
 
     /**
-     * JoinPathExpression ::= IdentificationVariable "." (CollectionValuedAssociationField | SingleValuedAssociationField)
-     */
-    public function JoinPathExpression()
-    {
-        $identificationVariable = $this->IdentificationVariable();
-        $this->match('.');
-        $this->match(Lexer::T_IDENTIFIER);
-
-        return new AST\JoinPathExpression(
-            $identificationVariable, $this->_lexer->token['value']
-        );
-    }
-
-    /**
      * IndexBy ::= "INDEX" "BY" SimpleStateFieldPathExpression
      */
     public function IndexBy()
@@ -876,236 +1154,6 @@ class Parser
         $this->_queryComponents[$pathExp->getIdentificationVariable()]['map'] = $parts[0];
 
         return $pathExp;
-    }
-
-    /**
-     * StateFieldPathExpression ::= SimpleStateFieldPathExpression | SimpleStateFieldAssociationPathExpression
-     */
-    public function StateFieldPathExpression()
-    {
-        $pathExpr = $this->PathExpression(AST\PathExpression::TYPE_STATE_FIELD);
-
-        if ( ! empty($this->_deferredPathExpressionStacks)) {
-            $exprStack = array_pop($this->_deferredPathExpressionStacks);
-            $exprStack[] = $pathExpr;
-            array_push($this->_deferredPathExpressionStacks, $exprStack);
-
-            return $pathExpr;
-        }
-
-        $this->_validateStateFieldPathExpression($pathExpr);
-
-        return $pathExpr;
-    }
-
-    /**
-     * SimpleStateFieldPathExpression ::= IdentificationVariable "." StateField
-     */
-    public function SimpleStateFieldPathExpression()
-    {
-        $pathExpr = $this->PathExpression(AST\PathExpression::TYPE_STATE_FIELD);
-
-        if ( ! empty($this->_deferredPathExpressionStacks)) {
-            $exprStack = array_pop($this->_deferredPathExpressionStacks);
-            $exprStack[] = $pathExpr;
-            array_push($this->_deferredPathExpressionStacks, $exprStack);
-
-            return $pathExpr;
-        }
-
-        $this->_validateStateFieldPathExpression($pathExpr);
-
-        return $pathExpr;
-    }
-
-    /**
-     * SingleValuedAssociationPathExpression ::= IdentificationVariable "." {SingleValuedAssociationField "."}* SingleValuedAssociationField
-     */
-    public function SingleValuedAssociationPathExpression()
-    {
-        $pathExpr = $this->PathExpression(AST\PathExpression::TYPE_SINGLE_VALUED_ASSOCIATION);
-        
-        if ( ! empty($this->_deferredPathExpressionStacks)) {
-            $exprStack = array_pop($this->_deferredPathExpressionStacks);
-            $exprStack[] = $pathExpr;
-            array_push($this->_deferredPathExpressionStacks, $exprStack);
-
-            return $pathExpr;
-        }
-
-        $this->_validateSingleValuedAssociationPathExpression($pathExpr);
-
-        return $pathExpr;
-    }
-
-    /**
-     * CollectionValuedPathExpression ::= IdentificationVariable "." {SingleValuedAssociationField "."}* CollectionValuedAssociationField
-     */
-    public function CollectionValuedPathExpression()
-    {
-        $pathExpr = $this->PathExpression(AST\PathExpression::TYPE_COLLECTION_VALUED_ASSOCIATION);
-
-        if ( ! empty($this->_deferredPathExpressionStacks)) {
-            $exprStack = array_pop($this->_deferredPathExpressionStacks);
-            $exprStack[] = $pathExpr;
-            array_push($this->_deferredPathExpressionStacks, $exprStack);
-
-            return $pathExpr;
-        }
-
-        $this->_validateCollectionValuedPathExpression($pathExpr);
-
-        return $pathExpr;
-    }
-    
-    /**
-     * SingleValuedPathExpression ::= StateFieldPathExpression | SingleValuedAssociationPathExpression
-     */
-    public function SingleValuedPathExpression()
-    {
-        $pathExpr = $this->PathExpression(AST\PathExpression::TYPE_SINGLE_VALUED_PATH_EXPRESSION);
-        
-        if ( ! empty($this->_deferredPathExpressionStacks)) {
-            $exprStack = array_pop($this->_deferredPathExpressionStacks);
-            $exprStack[] = $pathExpr;
-            array_push($this->_deferredPathExpressionStacks, $exprStack);
-
-            return $pathExpr;
-        }
-
-        $this->_validateSingleValuedPathExpression($pathExpr);
-
-        return $pathExpr;
-    }
-
-    /**
-     * Validates that the given <tt>PathExpression</tt> is a semantically correct
-     * CollectionValuedPathExpression as specified in the grammar.
-     *
-     * @param PathExpression $pathExpression
-     */
-    private function _validateCollectionValuedPathExpression(AST\PathExpression $pathExpression)
-    {
-        $class = $this->_queryComponents[$pathExpression->getIdentificationVariable()]['metadata'];
-        $collectionValuedField = null;
-
-        foreach ($pathExpression->getParts() as $field) {
-            if ($collectionValuedField !== null) {
-                $this->semanticalError('Can not navigate through collection-valued field named ' . $collectionValuedField);
-            }
-
-            if ( ! isset($class->associationMappings[$field])) {
-                $this->semanticalError('Class ' . $class->name . ' has no association field named ' . $lastItem);
-            }
-
-            if ($class->associationMappings[$field]->isOneToOne()) {
-                $class = $this->_em->getClassMetadata($class->associationMappings[$field]->targetEntityName);
-            } else {
-                $collectionValuedField = $field;
-            }
-        }
-
-        if ($collectionValuedField === null) {
-            $this->syntaxError('SingleValuedAssociationField or CollectionValuedAssociationField');
-        }
-    }
-
-    /**
-     * Validates that the given <tt>PathExpression</tt> is a semantically correct
-     * SingleValuedAssociationPathExpression as specified in the grammar.
-     *
-     * @param PathExpression $pathExpression
-     */
-    private function _validateSingleValuedAssociationPathExpression(AST\PathExpression $pathExpression)
-    {
-        $class = $this->_queryComponents[$pathExpression->getIdentificationVariable()]['metadata'];
-
-        foreach ($pathExpression->getParts() as $field) {
-            if ( ! isset($class->associationMappings[$field])) {
-                $this->semanticalError('Class ' . $class->name . ' has no association field named ' . $field);
-            }
-
-            if ($class->associationMappings[$field]->isOneToOne()) {
-                $class = $this->_em->getClassMetadata($class->associationMappings[$field]->targetEntityName);
-            } else {
-                $this->syntaxError('SingleValuedAssociationField');
-            }
-        }
-    }
-
-    /**
-     * Validates that the given <tt>PathExpression</tt> is a semantically correct
-     * StateFieldPathExpression as specified in the grammar.
-     *
-     * @param PathExpression $pathExpression
-     */
-    private function _validateStateFieldPathExpression(AST\PathExpression $pathExpression)
-    {
-        $stateFieldSeen = $this->_validateSingleValuedPathExpression($pathExpression);
-
-        if ( ! $stateFieldSeen) {
-            $this->semanticalError('Invalid StateFieldPathExpression. Must end in a state field.');
-        }
-    }
-    
-    /**
-     * Validates that the given <tt>PathExpression</tt> is a semantically correct
-     * SingleValuedPathExpression as specified in the grammar.
-     *
-     * @param PathExpression $pathExpression
-     * @return boolean
-     */
-    private function _validateSingleValuedPathExpression(AST\PathExpression $pathExpression)
-    {
-        $class = $this->_queryComponents[$pathExpression->getIdentificationVariable()]['metadata'];
-        $stateFieldSeen = false;
-
-        foreach ($pathExpression->getParts() as $field) {
-            if ($stateFieldSeen) {
-                $this->semanticalError('Cannot navigate through state field.');
-            }
-
-            if (isset($class->associationMappings[$field]) && $class->associationMappings[$field]->isOneToOne()) {
-                $class = $this->_em->getClassMetadata($class->associationMappings[$field]->targetEntityName);
-            } else if (isset($class->fieldMappings[$field])) {
-                $stateFieldSeen = true;
-            } else {
-                $this->semanticalError('SingleValuedAssociationField or StateField expected.');
-            }
-        }
-        
-        // We need to force the type in PathExpression since SingleValuedPathExpression is in a 
-        // state of recognition of what's is the dealed type (StateField or SingleValuedAssociation)
-        $pathExpression->setType(
-        	($stateFieldSeen) 
-        		? AST\PathExpression::TYPE_STATE_FIELD 
-        		: AST\PathExpression::TYPE_SINGLE_VALUED_ASSOCIATION
-        );
-
-        return $stateFieldSeen;
-    }
-
-    /**
-     * Parses an arbitrary path expression without any semantic validation.
-     *
-     * PathExpression ::= IdentificationVariable "." {identifier "."}* identifier
-     *
-     * @return PathExpression
-     */
-    public function PathExpression($type)
-    {
-        $identificationVariable = $this->IdentificationVariable();
-        
-        $parts = array();
-
-        do {
-            $this->match('.');
-            $this->match(Lexer::T_IDENTIFIER);
-            
-            $parts[] = $this->_lexer->token['value'];
-        } while ($this->_lexer->isNextToken('.'));
-        
-        return new AST\PathExpression($type, $identificationVariable, $parts);
     }
 
     /**
@@ -1575,23 +1623,6 @@ class Parser
     }
 
     /**
-     * Peeks beyond the specified token and returns the first token after that one.
-     */
-    private function _peekBeyond($token)
-    {
-        $peek = $this->_lexer->peek();
-
-        while ($peek['value'] != $token) {
-            $peek = $this->_lexer->peek();
-        }
-
-        $peek = $this->_lexer->peek();
-        $this->_lexer->resetPeek();
-
-        return $peek;
-    }
-
-    /**
      * Checks whether the given token is a comparison operator.
      */
     public function isComparisonOperator($token)
@@ -1985,7 +2016,7 @@ class Parser
                 $peek = $this->_lexer->glimpse();
 
                 if ($peek['value'] == '(') {
-                    if ($this->isAggregateFunction($this->_lexer->lookahead['type'])) {
+                    if ($this->_isAggregateFunction($this->_lexer->lookahead['type'])) {
                         return $this->AggregateExpression();
                     }
 
@@ -2044,16 +2075,6 @@ class Parser
         $function->parse($this);
 
         return $function;
-    }
-
-    /**
-     * Checks whether the given token type indicates an aggregate function.
-     */
-    public function isAggregateFunction($tokenType)
-    {
-        return $tokenType == Lexer::T_AVG || $tokenType == Lexer::T_MIN ||
-               $tokenType == Lexer::T_MAX || $tokenType == Lexer::T_SUM ||
-               $tokenType == Lexer::T_COUNT;
     }
 
     /**
@@ -2180,21 +2201,11 @@ class Parser
             $this->match(Lexer::T_INPUT_PARAMETER);
 
             return new AST\InputParameter($this->_lexer->token['value']);
-        } else if ($this->isAggregateFunction($this->_lexer->lookahead['type'])) {
+        } else if ($this->_isAggregateFunction($this->_lexer->lookahead['type'])) {
             return $this->AggregateExpression();
         }
 
         $this->syntaxError('StateFieldPathExpression | string | InputParameter | FunctionsReturningStrings | AggregateExpression');
-    }
-    
-    /**
-     * Sets the list of custom tree walkers.
-     * 
-     * @param array $treeWalkers
-     */
-    public function setSqlTreeWalker($treeWalker)
-    {
-        $this->_treeWalker = $treeWalker;
     }
 
     /**
