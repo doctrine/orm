@@ -1311,15 +1311,15 @@ class UnitOfWork implements PropertyChangedListener
     }
     
     /**
+     * Refreshes the state of the given entity from the database, overwriting
+     * any local, unpersisted changes.
      * 
-     * 
-     * @param $entity
-     * @return unknown_type
+     * @param object $entity The entity to refresh.
      */
     public function refresh($entity)
     {
         $visited = array();
-        return $this->_doRefresh($entity, $visited);
+        $this->_doRefresh($entity, $visited);
     }
     
     /**
