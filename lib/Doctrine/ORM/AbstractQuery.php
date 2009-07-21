@@ -443,7 +443,12 @@ abstract class AbstractQuery
 
             if ($cached === false) {
                 // Cache miss.
-                $result = $this->_doExecute($params);
+                $stmt = $this->_doExecute($params);
+                
+                $result = $this->_em->getHydrator($this->_hydrationMode)->hydrateAll(
+                        $stmt, $this->_resultSetMapping, $this->_hints
+                        );
+                
                 $cacheDriver->save($hash, serialize($result), $this->_resultCacheTTL);
 
                 return $result;
@@ -467,7 +472,7 @@ abstract class AbstractQuery
     /**
      * Prepares the given parameters for execution in an SQL statement.
      * 
-     * Note to inheritors: This method must return a numerically, continously indexed array,
+     * Note to inheritors: This method must return a numerically, continuously indexed array,
      * starting with index 0 where the values (the parameter values) are in the order
      * in which the parameters appear in the SQL query.
      * 
