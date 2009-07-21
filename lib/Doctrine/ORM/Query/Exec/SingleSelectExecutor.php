@@ -30,11 +30,10 @@ namespace Doctrine\ORM\Query\Exec;
  * @link        www.doctrine-project.org
  * @since       2.0
  */
-class SingleSelectExecutor extends AbstractExecutor
+class SingleSelectExecutor extends AbstractSqlExecutor
 {    
     public function __construct(\Doctrine\ORM\Query\AST\SelectStatement $AST, $sqlWalker)
     {
-        parent::__construct($AST, $sqlWalker);
         $this->_sqlStatements = $sqlWalker->walkSelectStatement($AST);
     }
     

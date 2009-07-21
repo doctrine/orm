@@ -423,6 +423,8 @@ abstract class AbstractQuery
      */
     public function execute($params = array(), $hydrationMode = null)
     {
+        // If there are still pending insertions in the UnitOfWork we need to flush
+        // in order to guarantee a correct result.
         if ($this->_em->getUnitOfWork()->hasPendingInsertions()) {
             $this->_em->flush();
         }
@@ -442,25 +444,24 @@ abstract class AbstractQuery
             if ($cached === false) {
                 // Cache miss.
                 $result = $this->_doExecute($params);
-                $queryResult = CacheHandler::fromResultSet($this, $result);
-                $cacheDriver->save($hash, $queryResult->toCachedForm(), $this->_resultCacheTTL);
+                $cacheDriver->save($hash, serialize($result), $this->_resultCacheTTL);
 
                 return $result;
             } else {
                 // Cache hit.
-                $queryResult = CacheHandler::fromCachedResult($this, $cached);
-
-                return $queryResult->getResultSet();
+                return unserialize($cached);
             }
         }
 
         $stmt = $this->_doExecute($params);
 
-        if (is_integer($stmt)) {
+        if (is_numeric($stmt)) {
             return $stmt;
         }
 
-        return $this->_em->getHydrator($this->_hydrationMode)->hydrateAll($stmt, $this->_resultSetMapping);
+        return $this->_em->getHydrator($this->_hydrationMode)->hydrateAll(
+                $stmt, $this->_resultSetMapping, $this->_hints
+                );
     }
 
     /**

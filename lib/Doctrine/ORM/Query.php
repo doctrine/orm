@@ -21,7 +21,6 @@
 
 namespace Doctrine\ORM;
 
-use Doctrine\ORM\Query\CacheHandler;
 use Doctrine\ORM\Query\Parser;
 use Doctrine\ORM\Query\QueryException;
 
@@ -38,17 +37,43 @@ use Doctrine\ORM\Query\QueryException;
  */
 final class Query extends AbstractQuery
 {
+    /* Query STATES */
     /**
      * A query object is in CLEAN state when it has NO unparsed/unprocessed DQL parts.
      */
     const STATE_CLEAN  = 1;
-
     /**
      * A query object is in state DIRTY when it has DQL parts that have not yet been
      * parsed/processed. This is automatically defined as DIRTY when addDqlQueryPart
      * is called.
      */
     const STATE_DIRTY = 2;
+    
+    /* Query HINTS */
+    /**
+     * The refresh hint turns any query into a refresh query with the result that
+     * any local changes in entities are overridden with the fetched values.
+     * 
+     * @var string
+     */
+    const HINT_REFRESH = 'doctrine.refresh';
+    /**
+     * The forcePartialLoad query hint forces a particular query to return
+     * partial objects when partial objects in general are disallowed in the
+     * configuration.
+     * 
+     * @var string
+     */
+    const HINT_FORCE_PARTIAL_LOAD = 'doctrine.forcePartialLoad';
+    /**
+     * The includeMetaColumns query hint causes meta columns like foreign keys and
+     * discriminator columns to be selected and returned as part of the query result.
+     * 
+     * This hint does only apply to non-object queries.
+     * 
+     * @var string
+     */
+    const HINT_INCLUDE_META_COLUMNS = 'doctrine.includeMetaColumns';
 
     /**
      * @var integer $_state   The current state of this query.

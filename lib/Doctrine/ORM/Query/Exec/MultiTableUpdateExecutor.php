@@ -33,7 +33,7 @@ use Doctrine\ORM\Query\AST;
  * @since       2.0
  * @version     $Revision$
  */
-class MultiTableUpdateExecutor extends AbstractExecutor
+class MultiTableUpdateExecutor extends AbstractSqlExecutor
 {
     private $_createTempTableSql;
     private $_dropTempTableSql;

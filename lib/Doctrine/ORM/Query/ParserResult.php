@@ -77,7 +77,7 @@ class ParserResult
      * 
      * @param AbstractExecutor $executor
      */
-    public function setSqlExecutor(\Doctrine\ORM\Query\Exec\AbstractExecutor $executor)
+    public function setSqlExecutor($executor)
     {
         $this->_sqlExecutor = $executor;
     }

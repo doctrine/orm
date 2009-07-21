@@ -276,5 +276,63 @@ class HydrationPerformanceTest extends \Doctrine\Tests\OrmPerformanceTestCase
         $e = microtime(true);
         echo __FUNCTION__ . " - " . ($e - $s) . " seconds" . PHP_EOL;
     }
+    
+    /**
+     * Times for comparison:
+     *
+     * [romanb: 10000 rows => 0.7 seconds]
+     *
+     * MAXIMUM TIME: 1 second
+     */
+    public function testSimpleQueryScalarHydrationPerformance()
+    {
+        $rsm = new ResultSetMapping;
+        $rsm->addEntityResult('Doctrine\Tests\Models\CMS\CmsUser', 'u');
+        $rsm->addFieldResult('u', 'u__id', 'id');
+        $rsm->addFieldResult('u', 'u__status', 'status');
+        $rsm->addFieldResult('u', 'u__username', 'username');
+        $rsm->addFieldResult('u', 'u__name', 'name');
+
+        // Faked result set
+        $resultSet = array(
+            //row1
+            array(
+                'u__id' => '1',
+                'u__status' => 'developer',
+                'u__username' => 'romanb',
+                'u__name' => 'Roman',
+            ),
+            array(
+                'u__id' => '1',
+                'u__status' => 'developer',
+                'u__username' => 'romanb',
+                'u__name' => 'Roman',
+            ),
+            array(
+                'u__id' => '2',
+                'u__status' => 'developer',
+                'u__username' => 'romanb',
+                'u__name' => 'Roman',
+            )
+        );
+
+        for ($i = 4; $i < 10000; ++$i) {
+            $resultSet[] = array(
+                'u__id' => $i,
+                'u__status' => 'developer',
+                'u__username' => 'jwage',
+                'u__name' => 'Jonathan',
+            );
+        }
+
+        $stmt = new HydratorMockStatement($resultSet);
+        $hydrator = new \Doctrine\ORM\Internal\Hydration\ScalarHydrator($this->_em);
+
+        $this->setMaxRunningTime(1);
+        $s = microtime(true);
+        $result = $hydrator->hydrateAll($stmt, $rsm);
+        $e = microtime(true);
+        echo __FUNCTION__ . " - " . ($e - $s) . " seconds" . PHP_EOL;
+    }
 }
 

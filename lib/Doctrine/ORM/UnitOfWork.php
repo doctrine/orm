@@ -1476,8 +1476,7 @@ class UnitOfWork implements PropertyChangedListener
         if (isset($this->_identityMap[$class->rootEntityName][$idHash])) {
             $entity = $this->_identityMap[$class->rootEntityName][$idHash];
             $oid = spl_object_hash($entity);
-            $overrideLocalChanges = false;
-            //$overrideLocalChanges = isset($hints['doctrine.refresh']) && $hints['doctrine.refresh'] === true;
+            $overrideLocalChanges = isset($hints[Query::HINT_REFRESH]);
         } else {
             $entity = new $className;
             $oid = spl_object_hash($entity);

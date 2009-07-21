@@ -19,40 +19,36 @@
  * <http://www.doctrine-project.org>.
  */
 
-namespace Doctrine\ORM\Query;
-
-use Doctrine\Common\DoctrineException;
+namespace Doctrine\ORM\Query\Exec;
 
 /**
- * Doctrine_ORM_Query_AbstractResult
+ * Base class for SQL statement executors.
  *
- * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
- * @link        www.doctrine-project.com
- * @since       2.0
- * @version     $Revision: 1393 $
- * @author      Guilherme Blanco <guilhermeblanco@hotmail.com>
- * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  * @author      Roman Borschel <roman@code-factory.org>
+ * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
+ * @link        http://www.doctrine-project.org
+ * @since       2.0
+ * @version     $Revision$
  */
-abstract class AbstractResult
+abstract class AbstractSqlExecutor
 {
-    /**
-     * @var mixed $_data The actual data to be stored. Can be an array, a string or an integer.
-     */
-    protected $_data;
+    protected $_sqlStatements;
 
     /**
-     * Returns this object in serialized format, revertable using fromCached*.
+     * Gets the SQL statements that are executed by the executor.
      *
-     * @return string Serialized cached item.
+     * @return array  All the SQL update statements.
      */
-    public function toCachedForm()
+    public function getSqlStatements()
     {
-        return serialize(array(
-            $this->_data,
-            $this->getQueryComponents(),
-            $this->getTableAliasMap(),
-            $this->getEnumParams()
-        ));
+        return $this->_sqlStatements;
     }
+
+    /**
+     * Executes all sql statements.
+     *
+     * @param Doctrine_Connection $conn  The database connection that is used to execute the queries.
+     * @param array $params  The parameters.
+     */
+    abstract public function execute(\Doctrine\DBAL\Connection $conn, array $params);    
 }

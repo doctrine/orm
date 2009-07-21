@@ -189,7 +189,7 @@ class Parser
         );
 
         // Assign an SQL executor to the parser result
-        $this->_parserResult->setSqlExecutor(Exec\AbstractExecutor::create($AST, $sqlWalker));
+        $this->_parserResult->setSqlExecutor($sqlWalker->getExecutor($AST));
 
         return $this->_parserResult;
     }

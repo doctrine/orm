@@ -33,7 +33,7 @@ use Doctrine\ORM\Query\AST;
  * @since       2.0
  * @version     $Revision$
  */
-class MultiTableDeleteExecutor extends AbstractExecutor
+class MultiTableDeleteExecutor extends AbstractSqlExecutor
 {
     private $_createTempTableSql;
     private $_dropTempTableSql;

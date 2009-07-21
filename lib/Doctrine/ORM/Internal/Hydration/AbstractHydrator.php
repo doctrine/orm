@@ -55,6 +55,9 @@ abstract class AbstractHydrator
 
     /** @var Statement The statement that provides the data to hydrate. */
     protected $_stmt;
+    
+    /** @var array The query hints. */
+    protected $_hints;
 
     /**
      * Initializes a new instance of a class derived from <tt>AbstractHydrator</tt>.
@@ -90,10 +93,11 @@ abstract class AbstractHydrator
      * @param object $resultSetMapping
      * @return mixed
      */
-    public function hydrateAll($stmt, $resultSetMapping)
+    public function hydrateAll($stmt, $resultSetMapping, array $hints = array())
     {
         $this->_stmt = $stmt;
         $this->_rsm = $resultSetMapping;
+        $this->_hints = $hints;
         $this->_prepare();
         $result = $this->_hydrateAll();
         $this->_cleanup();

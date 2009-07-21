@@ -34,11 +34,10 @@ use Doctrine\ORM\Query\AST;
  * @since       2.0
  * @todo This is exactly the same as SingleSelectExecutor. Unify in SingleStatementExecutor. 
  */
-class SingleTableDeleteUpdateExecutor extends AbstractExecutor
+class SingleTableDeleteUpdateExecutor extends AbstractSqlExecutor
 {
     public function __construct(AST\Node $AST, $sqlWalker)
     {
-        parent::__construct($AST, $sqlWalker);
         if ($AST instanceof AST\UpdateStatement) {
             $this->_sqlStatements = $sqlWalker->walkUpdateStatement($AST);
         } else if ($AST instanceof AST\DeleteStatement) {

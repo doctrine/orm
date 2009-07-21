@@ -161,7 +161,7 @@ class OneToOneMapping extends AssociationMapping
      * @param object $targetEntity      the entity to load data in
      * @param EntityManager $em
      * @param array $joinColumnValues  values of the join columns of $sourceEntity. There are no fields
-     *                                  to store this data in $sourceEntity
+     *                                 to store this data in $sourceEntity
      */
     public function load($sourceEntity, $targetEntity, $em, array $joinColumnValues)
     {
@@ -179,10 +179,12 @@ class OneToOneMapping extends AssociationMapping
                     $conditions[$targetKeyColumn] = $joinColumnValues[$sourceKeyColumn];
                 }
             }
-            if ($targetClass->hasInverseAssociationMapping($this->sourceFieldName)) {
-                $targetClass->setFieldValue(
-                        $targetEntity,
-                        $targetClass->inverseMappings[$this->sourceFieldName]->getSourceFieldName(),
+            
+            $targetEntity = $em->getUnitOfWork()->getEntityPersister($this->targetEntityName)->load($conditions, $targetEntity);
+            
+            if ($targetEntity !== null && $targetClass->hasInverseAssociationMapping($this->sourceFieldName)) {
+                $targetClass->setFieldValue($targetEntity,
+                        $targetClass->inverseMappings[$this->sourceFieldName]->sourceFieldName,
                         $sourceEntity);
             }
         } else {
@@ -195,10 +197,11 @@ class OneToOneMapping extends AssociationMapping
                     $conditions[$sourceKeyColumn] = $joinColumnValues[$targetKeyColumn];
                 }
             }
+            
+            $targetEntity = $em->getUnitOfWork()->getEntityPersister($this->targetEntityName)->load($conditions, $targetEntity);
+            
             $targetClass->setFieldValue($targetEntity, $this->mappedByFieldName, $sourceEntity);
         }
-
-        $em->getUnitOfWork()->getEntityPersister($this->targetEntityName)->load($conditions, $targetEntity);
     }
 
     protected function _getPrivateValue(ClassMetadata $class, $entity, $column)

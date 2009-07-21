@@ -23,6 +23,7 @@ namespace Doctrine\ORM\Internal\Hydration;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\ORM\PersistentCollection;
+use Doctrine\ORM\Query;
 use Doctrine\Common\Collections\Collection;
 
 /**
@@ -39,7 +40,6 @@ class ObjectHydrator extends AbstractHydrator
     /* Class entries */
     private $_ce = array();
     private $_discriminatorMap = array();
-
     /*
      * The following parts are reinitialized on every hydration run.
      */
@@ -61,7 +61,8 @@ class ObjectHydrator extends AbstractHydrator
     protected function _prepare()
     {
         $this->_isSimpleQuery = count($this->_rsm->aliasMap) <= 1;
-        $this->_allowPartialObjects = $this->_em->getConfiguration()->getAllowPartialObjects();
+        $this->_allowPartialObjects = $this->_em->getConfiguration()->getAllowPartialObjects()
+                || isset($this->_hints[Query::HINT_FORCE_PARTIAL_LOAD]);
         $this->_identifierMap = array();
         $this->_resultPointers = array();
         $this->_idTemplate = array();
@@ -225,7 +226,14 @@ class ObjectHydrator extends AbstractHydrator
             return key($coll);
         }
     }
-
+    
+    /**
+     * Gets an entity instance.
+     * 
+     * @param $data The instance data.
+     * @param $dqlAlias The DQL alias of the entity's class.
+     * @return object The entity.
+     */
     private function getEntity(array $data, $dqlAlias)
     {
     	$className = $this->_rsm->aliasMap[$dqlAlias];
@@ -234,25 +242,28 @@ class ObjectHydrator extends AbstractHydrator
             $className = $this->_discriminatorMap[$className][$data[$discrColumn]];
             unset($data[$discrColumn]);
         }
-        $entity = $this->_uow->createEntity($className, $data);
+        $entity = $this->_uow->createEntity($className, $data, $this->_hints);
 
         // Properly initialize any unfetched associations, if partial objects are not allowed.
         if ( ! $this->_allowPartialObjects) {
             foreach ($this->_ce[$className]->associationMappings as $field => $assoc) {
                 if ( ! isset($this->_fetchedAssociations[$className][$field])) {
                     if ($assoc->isOneToOne()) {
+                        $joinColumns = array();
+                        foreach ($assoc->targetToSourceKeyColumns as $srcColumn) {
+                            $joinColumns[$srcColumn] = $data[$assoc->joinColumnFieldNames[$srcColumn]];
+                        }
                         if ($assoc->isLazilyFetched()) {
-                            $joinColumnsValues = array();
-                            foreach ($assoc->targetToSourceKeyColumns as $srcColumn) {
-                                $joinColumnsValues[$srcColumn] = $data[$assoc->joinColumnFieldNames[$srcColumn]];
-                            }
                             // Inject proxy
-                            $proxy = $this->_em->getProxyFactory()->getAssociationProxy($entity, $assoc, $joinColumnsValues);
-                            $this->_ce[$className]->reflFields[$field]->setValue($entity, $proxy);
+                            $this->_ce[$className]->reflFields[$field]->setValue($entity,
+                                    $this->_em->getProxyFactory()->getAssociationProxy($entity, $assoc, $joinColumns));
                         } else {
-                            //TODO: Schedule for eager fetching
+                            // Eager load
+                            //TODO: Allow more efficient and configurable batching of these loads
+                            $assoc->load($entity, new $className, $this->_em, $joinColumns);
                         }
                     } else {
+                        //TODO: Eager load
                         // Inject collection
                         $this->_ce[$className]->reflFields[$field]
                             ->setValue($entity, new PersistentCollection(
@@ -280,6 +291,7 @@ class ObjectHydrator extends AbstractHydrator
         $class->reflFields[$property]->setValue($entity1, $entity2);
         $this->_uow->setOriginalEntityProperty(spl_object_hash($entity1), $property, $entity2);
         $relation = $class->associationMappings[$property];
+        
         if ($relation->isOneToOne()) {
             $targetClass = $this->_ce[$relation->targetEntityName];
             if ($relation->isOwningSide) {

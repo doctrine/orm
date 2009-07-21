@@ -405,7 +405,8 @@ class StandardEntityPersister
      *
      * @param array $criteria The criteria by which to load the entity.
      * @param object $entity The entity to load the data into. If not specified,
-     *                       a new entity is created.
+     *        a new entity is created.
+     * @return The loaded entity instance or NULL if the entity/the data can not be found.
      */
     public function load(array $criteria, $entity = null)
     {
@@ -413,7 +414,14 @@ class StandardEntityPersister
         $stmt->execute(array_values($criteria));
         $data = array();
         $joinColumnValues = array();
-        foreach ($stmt->fetch(Connection::FETCH_ASSOC) as $column => $value) {
+        $result = $stmt->fetch(Connection::FETCH_ASSOC);
+        $stmt->closeCursor();
+        
+        if ($result === false) {
+            return null;
+        }
+        
+        foreach ($result as $column => $value) {
             if (isset($this->_class->fieldNames[$column])) {
                 $fieldName = $this->_class->fieldNames[$column];
                 $data[$fieldName] = Type::getType($this->_class->getTypeOfField($fieldName))
@@ -422,7 +430,6 @@ class StandardEntityPersister
                 $joinColumnValues[$column] = $value;
             }
         }
-        $stmt->closeCursor();
 
         if ($entity === null) {
             $entity = $this->_em->getUnitOfWork()->createEntity($this->_entityName, $data);
