@@ -110,11 +110,11 @@ class Parser
     private $_queryComponents = array();
     
     /**
-     * Sql tree walker
+     * Tree walker chain
      *
-     * @var SqlTreeWalker
+     * @var TreeWalker
      */
-    private $_sqlTreeWalker;
+    private $_treeWalker;
 
     /**
      * Creates a new query parser object.
@@ -127,6 +127,79 @@ class Parser
         $this->_em = $query->getEntityManager();
         $this->_lexer = new Lexer($query->getDql());
         $this->_parserResult = new ParserResult();
+    }
+
+    /**
+     * Sets the custom tree walker.
+     * 
+     * @param TreeWalker $treeWalker
+     */
+    public function setTreeWalker($treeWalker)
+    {
+        $this->_treeWalker = $treeWalker;
+    }
+
+    /**
+     * Gets the lexer used by the parser.
+     *
+     * @return Doctrine\ORM\Query\Lexer
+     */
+    public function getLexer()
+    {
+        return $this->_lexer;
+    }
+
+    /**
+     * Gets the ParserResult that is being filled with information during parsing.
+     *
+     * @return Doctrine\ORM\Query\ParserResult
+     */
+    public function getParserResult()
+    {
+        return $this->_parserResult;
+    }
+    
+    /**
+     * Gets the EntityManager used by the parser.
+     *
+     * @return EntityManager
+     */
+    public function getEntityManager()
+    {
+        return $this->_em;
+    }
+    
+    /**
+     * Registers a custom function that returns strings.
+     *
+     * @param string $name The function name.
+     * @param string $class The class name of the function implementation.
+     */
+    public static function registerStringFunction($name, $class)
+    {
+        self::$_STRING_FUNCTIONS[$name] = $class;
+    }
+
+    /**
+     * Registers a custom function that returns numerics.
+     *
+     * @param string $name The function name.
+     * @param string $class The class name of the function implementation.
+     */
+    public static function registerNumericFunction($name, $class)
+    {
+        self::$_NUMERIC_FUNCTIONS[$name] = $class;
+    }
+
+    /**
+     * Registers a custom function that returns date/time values.
+     *
+     * @param string $name The function name.
+     * @param string $class The class name of the function implementation.
+     */
+    public static function registerDatetimeFunction($name, $class)
+    {
+        self::$_DATETIME_FUNCTIONS[$name] = $class;
     }
 
     /**
@@ -183,57 +256,17 @@ class Parser
             $this->syntaxError('end of string');
         }
 
-        // Create SqlWalker who creates the SQL from the AST
-        $sqlWalker = $this->_sqlTreeWalker ?: new SqlWalker(
+        // Create TreeWalker who creates the SQL from the AST
+        $treeWalker = $this->_treeWalker ?: new SqlWalker(
             $this->_query, $this->_parserResult, $this->_queryComponents
         );
 
         // Assign an SQL executor to the parser result
-        $this->_parserResult->setSqlExecutor($sqlWalker->getExecutor($AST));
+        $this->_parserResult->setSqlExecutor($treeWalker->getExecutor($AST));
 
         return $this->_parserResult;
     }
     
-    /**
-     * Sets the custom tree walker.
-     * 
-     * @param SqlTreeWalker $sqlTreeWalker
-     */
-    public function setSqlTreeWalker($sqlTreeWalker)
-    {
-        $this->_sqlTreeWalker = $sqlTreeWalker;
-    }
-
-    /**
-     * Gets the lexer used by the parser.
-     *
-     * @return Doctrine\ORM\Query\Lexer
-     */
-    public function getLexer()
-    {
-        return $this->_lexer;
-    }
-
-    /**
-     * Gets the ParserResult that is being filled with information during parsing.
-     *
-     * @return Doctrine\ORM\Query\ParserResult
-     */
-    public function getParserResult()
-    {
-        return $this->_parserResult;
-    }
-    
-    /**
-     * Gets the EntityManager used by the parser.
-     *
-     * @return EntityManager
-     */
-    public function getEntityManager()
-    {
-        return $this->_em;
-    }
-
     /**
      * Generates a new syntax error.
      *
@@ -321,6 +354,39 @@ class Parser
     }
     
     /**
+     * Checks whether the function with the given name is a string function
+     * (a function that returns strings).
+     *
+     * @return boolean TRUE if the token type is a string function, FALSE otherwise.
+     */
+    private function _isStringFunction($funcName)
+    {
+        return isset(self::$_STRING_FUNCTIONS[strtolower($funcName)]);
+    }
+
+    /**
+     * Checks whether the function with the given name is a numeric function
+     * (a function that returns numerics).
+     *
+     * @return boolean TRUE if the token type is a numeric function, FALSE otherwise.
+     */
+    private function _isNumericFunction($funcName)
+    {
+        return isset(self::$_NUMERIC_FUNCTIONS[strtolower($funcName)]);
+    }
+
+    /**
+     * Checks whether the function with the given name is a datetime function
+     * (a function that returns date/time values).
+     *
+     * @return boolean TRUE if the token type is a datetime function, FALSE otherwise.
+     */
+    private function _isDatetimeFunction($funcName)
+    {
+        return isset(self::$_DATETIME_FUNCTIONS[strtolower($funcName)]);
+    }
+    
+    /**
      * Checks whether the given token type indicates an aggregate function.
      *
      * @return boolean TRUE if the token type is an aggregate function, FALSE otherwise.
@@ -330,6 +396,19 @@ class Parser
         return $tokenType == Lexer::T_AVG || $tokenType == Lexer::T_MIN ||
                $tokenType == Lexer::T_MAX || $tokenType == Lexer::T_SUM ||
                $tokenType == Lexer::T_COUNT;
+    }
+
+    /**
+     * Checks whether the current lookahead token of the lexer has the type
+     * T_ALL, T_ANY or T_SOME.
+     *
+     * @return boolean
+     */
+    private function _isNextAllAnySome()
+    {
+        return $this->_lexer->lookahead['type'] === Lexer::T_ALL ||
+               $this->_lexer->lookahead['type'] === Lexer::T_ANY ||
+               $this->_lexer->lookahead['type'] === Lexer::T_SOME;
     }
 
     /**
@@ -780,6 +859,51 @@ class Parser
 
     
     /**
+     * SelectClause ::= "SELECT" ["DISTINCT"] SelectExpression {"," SelectExpression}
+     */
+    public function SelectClause()
+    {
+        $isDistinct = false;
+        $this->match(Lexer::T_SELECT);
+
+        // Check for DISTINCT
+        if ($this->_lexer->isNextToken(Lexer::T_DISTINCT)) {
+            $this->match(Lexer::T_DISTINCT);
+            $isDistinct = true;
+        }
+
+        // Process SelectExpressions (1..N)
+        $selectExpressions = array();
+        $selectExpressions[] = $this->SelectExpression();
+
+        while ($this->_lexer->isNextToken(',')) {
+            $this->match(',');
+            $selectExpressions[] = $this->SelectExpression();
+        }
+
+        return new AST\SelectClause($selectExpressions, $isDistinct);
+    }
+
+    /**
+     * SimpleSelectClause ::= "SELECT" ["DISTINCT"] SimpleSelectExpression
+     */
+    public function SimpleSelectClause()
+    {
+        $distinct = false;
+        $this->match(Lexer::T_SELECT);
+
+        if ($this->_lexer->isNextToken(Lexer::T_DISTINCT)) {
+            $this->match(Lexer::T_DISTINCT);
+            $distinct = true;
+        }
+
+        $simpleSelectClause = new AST\SimpleSelectClause($this->SimpleSelectExpression());
+        $simpleSelectClause->setDistinct($distinct);
+
+        return $simpleSelectClause;
+    }
+
+    /**
      * UpdateClause ::= "UPDATE" AbstractSchemaName [["AS"] AliasIdentificationVariable] "SET" UpdateItem {"," UpdateItem}*
      */
     public function UpdateClause()
@@ -826,62 +950,6 @@ class Parser
     }
 
     /**
-     * UpdateItem ::= [IdentificationVariable "."] {StateField | SingleValuedAssociationField} "=" NewValue
-     */
-    public function UpdateItem()
-    {
-        $peek = $this->_lexer->glimpse();
-        $identVariable = null;
-
-        if ($peek['value'] == '.') {
-            $this->match(Lexer::T_IDENTIFIER);
-            $identVariable = $this->_lexer->token['value'];
-            $this->match('.');
-        } else {
-            throw QueryException::missingAliasQualifier();
-        }
-
-        $this->match(Lexer::T_IDENTIFIER);
-        $field = $this->_lexer->token['value'];
-        
-        $this->match('=');
-        
-        $newValue = $this->NewValue();
-
-        $updateItem = new AST\UpdateItem($field, $newValue);
-        $updateItem->setIdentificationVariable($identVariable);
-
-        return $updateItem;
-    }
-
-    /**
-     * NewValue ::= SimpleArithmeticExpression | StringPrimary | DatetimePrimary | BooleanPrimary |
-     *      EnumPrimary | SimpleEntityExpression | "NULL"
-     *
-     * NOTE: Since it is not possible to correctly recognize individual types, here is the full
-     * grammar that needs to be supported:
-     * 
-     * NewValue ::= SimpleArithmeticExpression | "NULL"
-     *
-     * SimpleArithmeticExpression covers all *Primary grammar rules and also SimplEntityExpression
-     *
-     * @todo Find why removal of InputParameter check causes ClassTableInheritanceTest to fail with 
-     * wrong parameter count (Should be processed in Literal, part of SimpleArithmeticExpression)
-     */
-    public function NewValue()
-    {
-        if ($this->_lexer->isNextToken(Lexer::T_NULL)) {
-            $this->match(Lexer::T_NULL);
-            return null;
-        } else if ($this->_lexer->isNextToken(Lexer::T_INPUT_PARAMETER)) {
-            $this->match(Lexer::T_INPUT_PARAMETER);
-            return new AST\InputParameter($this->_lexer->token['value']);
-        }
-        
-        return $this->SimpleArithmeticExpression();
-    }
-
-    /**
      * DeleteClause ::= "DELETE" ["FROM"] AbstractSchemaName [["AS"] AliasIdentificationVariable]
      */
     public function DeleteClause()
@@ -915,32 +983,6 @@ class Parser
     }
 
     /**
-     * SelectClause ::= "SELECT" ["DISTINCT"] SelectExpression {"," SelectExpression}
-     */
-    public function SelectClause()
-    {
-        $isDistinct = false;
-        $this->match(Lexer::T_SELECT);
-
-        // Check for DISTINCT
-        if ($this->_lexer->isNextToken(Lexer::T_DISTINCT)) {
-            $this->match(Lexer::T_DISTINCT);
-            $isDistinct = true;
-        }
-
-        // Process SelectExpressions (1..N)
-        $selectExpressions = array();
-        $selectExpressions[] = $this->SelectExpression();
-
-        while ($this->_lexer->isNextToken(',')) {
-            $this->match(',');
-            $selectExpressions[] = $this->SelectExpression();
-        }
-
-        return new AST\SelectClause($selectExpressions, $isDistinct);
-    }
-
-    /**
      * FromClause ::= "FROM" IdentificationVariableDeclaration {"," IdentificationVariableDeclaration}*
      */
     public function FromClause()
@@ -958,55 +1000,211 @@ class Parser
     }
 
     /**
-     * SelectExpression ::=
-     *      IdentificationVariable | StateFieldPathExpression |
-     *      (AggregateExpression | "(" Subselect ")" | Function) [["AS"] ResultVariable]
+     * SubselectFromClause ::= "FROM" SubselectIdentificationVariableDeclaration {"," SubselectIdentificationVariableDeclaration}*
      */
-    public function SelectExpression()
+    public function SubselectFromClause()
     {
-        $expression = null;
-        $fieldAliasIdentificationVariable = null;
-        $peek = $this->_lexer->glimpse();
+        $this->match(Lexer::T_FROM);
+        $identificationVariables = array();
+        $identificationVariables[] = $this->SubselectIdentificationVariableDeclaration();
 
-        // First we recognize for an IdentificationVariable (DQL class alias)
-        if ($peek['value'] != '.' && $peek['value'] != '(' && $this->_lexer->lookahead['type'] === Lexer::T_IDENTIFIER) {
-            $expression = $this->IdentificationVariable();
-        } else if (($isFunction = $this->_isFunction()) !== false || $this->_isSubselect()) {
-            if ($isFunction) {
-                if ($this->_isAggregateFunction($this->_lexer->lookahead['type'])) {
-                    $expression = $this->AggregateExpression();
-                } else {
-                    $expression = $this->_Function();
-                }
-            } else {
-                $this->match('(');
-                $expression = $this->Subselect();
-                $this->match(')');
-            }
-
-            if ($this->_lexer->isNextToken(Lexer::T_AS)) {
-                $this->match(Lexer::T_AS);
-            }
-
-            if ($this->_lexer->isNextToken(Lexer::T_IDENTIFIER)) {
-                $fieldAliasIdentificationVariable = $this->ResultVariable();
-            }
-        } else {
-            // Deny hydration of partial objects if doctrine.forcePartialLoad query hint not defined 
-            if (
-                $this->_query->getHydrationMode() == Query::HYDRATE_OBJECT &&
-                ! $this->_em->getConfiguration()->getAllowPartialObjects() &&
-                ! $this->_query->getHint('doctrine.forcePartialLoad')
-            ) {
-            	throw DoctrineException::partialObjectsAreDangerous();
-            }
-
-            $expression = $this->StateFieldPathExpression();
+        while ($this->_lexer->isNextToken(',')) {
+            $this->match(',');
+            $identificationVariables[] = $this->SubselectIdentificationVariableDeclaration();
         }
 
-        return new AST\SelectExpression($expression, $fieldAliasIdentificationVariable);
+        return new AST\SubselectFromClause($identificationVariables);
     }
 
+    /**
+     * WhereClause ::= "WHERE" ConditionalExpression
+     */
+    public function WhereClause()
+    {
+        $this->match(Lexer::T_WHERE);
+
+        return new AST\WhereClause($this->ConditionalExpression());
+    }
+
+    /**
+     * HavingClause ::= "HAVING" ConditionalExpression
+     */
+    public function HavingClause()
+    {
+        $this->match(Lexer::T_HAVING);
+
+        return new AST\HavingClause($this->ConditionalExpression());
+    }
+
+    /**
+     * GroupByClause ::= "GROUP" "BY" GroupByItem {"," GroupByItem}*
+     */
+    public function GroupByClause()
+    {
+        $this->match(Lexer::T_GROUP);
+        $this->match(Lexer::T_BY);
+
+        $groupByItems = array($this->GroupByItem());
+
+        while ($this->_lexer->isNextToken(',')) {
+            $this->match(',');
+            $groupByItems[] = $this->GroupByItem();
+        }
+
+        return new AST\GroupByClause($groupByItems);
+    }
+    
+    /**
+     * OrderByClause ::= "ORDER" "BY" OrderByItem {"," OrderByItem}*
+     */
+    public function OrderByClause()
+    {
+        $this->match(Lexer::T_ORDER);
+        $this->match(Lexer::T_BY);
+
+        $orderByItems = array();
+        $orderByItems[] = $this->OrderByItem();
+
+        while ($this->_lexer->isNextToken(',')) {
+            $this->match(',');
+            $orderByItems[] = $this->OrderByItem();
+        }
+
+        return new AST\OrderByClause($orderByItems);
+    }
+
+    /**
+     * Subselect ::= SimpleSelectClause SubselectFromClause [WhereClause] [GroupByClause] [HavingClause] [OrderByClause]
+     */
+    public function Subselect()
+    {
+        $this->_beginDeferredPathExpressionStack();
+        $subselect = new AST\Subselect($this->SimpleSelectClause(), $this->SubselectFromClause());
+        $this->_processDeferredPathExpressionStack();
+
+        $subselect->setWhereClause(
+            $this->_lexer->isNextToken(Lexer::T_WHERE) ? $this->WhereClause() : null
+        );
+
+        $subselect->setGroupByClause(
+            $this->_lexer->isNextToken(Lexer::T_GROUP) ? $this->GroupByClause() : null
+        );
+
+        $subselect->setHavingClause(
+            $this->_lexer->isNextToken(Lexer::T_HAVING) ? $this->HavingClause() : null
+        );
+
+        $subselect->setOrderByClause(
+            $this->_lexer->isNextToken(Lexer::T_ORDER) ? $this->OrderByClause() : null
+        );
+
+        return $subselect;
+    }
+
+    
+    /**
+     * UpdateItem ::= [IdentificationVariable "."] {StateField | SingleValuedAssociationField} "=" NewValue
+     */
+    public function UpdateItem()
+    {
+        $peek = $this->_lexer->glimpse();
+        $identVariable = null;
+
+        if ($peek['value'] == '.') {
+            $this->match(Lexer::T_IDENTIFIER);
+            $identVariable = $this->_lexer->token['value'];
+            $this->match('.');
+        } else {
+            throw QueryException::missingAliasQualifier();
+        }
+
+        $this->match(Lexer::T_IDENTIFIER);
+        $field = $this->_lexer->token['value'];
+        
+        $this->match('=');
+        
+        $newValue = $this->NewValue();
+
+        $updateItem = new AST\UpdateItem($field, $newValue);
+        $updateItem->setIdentificationVariable($identVariable);
+
+        return $updateItem;
+    }
+
+    /**
+     * GroupByItem ::= IdentificationVariable | SingleValuedPathExpression
+     *
+     * @todo Finish this implementation
+     */
+    public function GroupByItem()
+    {
+        return $this->SingleValuedPathExpression();
+    }
+
+    /**
+     * OrderByItem ::= (ResultVariable | StateFieldPathExpression) ["ASC" | "DESC"]
+     *
+     * @todo Support general SingleValuedPathExpression instead of only StateFieldPathExpression.
+     */
+    public function OrderByItem()
+    {
+        // We need to check if we are in a ResultVariable or StateFieldPathExpression
+        $glimpse = $this->_lexer->glimpse();
+        
+        if ($glimpse['value'] != '.') {
+            $expr = $this->ResultVariable();
+            
+            // @todo Check if ResultVariable is defined somewhere
+        } else {
+            $expr = $this->StateFieldPathExpression();
+        }
+    
+        $item = new AST\OrderByItem($expr);
+
+        if ($this->_lexer->isNextToken(Lexer::T_ASC)) {
+            $this->match(Lexer::T_ASC);
+            $item->setAsc(true);
+            
+            return $item;
+        }
+        
+        if ($this->_lexer->isNextToken(Lexer::T_DESC)) {
+            $this->match(Lexer::T_DESC);
+        }
+        
+        $item->setDesc(true);
+        
+        return $item;
+    }
+
+    /**
+     * NewValue ::= SimpleArithmeticExpression | StringPrimary | DatetimePrimary | BooleanPrimary |
+     *      EnumPrimary | SimpleEntityExpression | "NULL"
+     *
+     * NOTE: Since it is not possible to correctly recognize individual types, here is the full
+     * grammar that needs to be supported:
+     * 
+     * NewValue ::= SimpleArithmeticExpression | "NULL"
+     *
+     * SimpleArithmeticExpression covers all *Primary grammar rules and also SimplEntityExpression
+     *
+     * @todo Find why removal of InputParameter check causes ClassTableInheritanceTest to fail with 
+     * wrong parameter count (Should be processed in Literal, part of SimpleArithmeticExpression)
+     */
+    public function NewValue()
+    {
+        if ($this->_lexer->isNextToken(Lexer::T_NULL)) {
+            $this->match(Lexer::T_NULL);
+            return null;
+        } else if ($this->_lexer->isNextToken(Lexer::T_INPUT_PARAMETER)) {
+            $this->match(Lexer::T_INPUT_PARAMETER);
+            return new AST\InputParameter($this->_lexer->token['value']);
+        }
+        
+        return $this->SimpleArithmeticExpression();
+    }
+
+    
     /**
      * IdentificationVariableDeclaration ::= RangeVariableDeclaration [IndexBy] {JoinVariableDeclaration}*
      */
@@ -1027,6 +1225,38 @@ class Parser
         return new AST\IdentificationVariableDeclaration(
             $rangeVariableDeclaration, $indexBy, $joinVariableDeclarations
         );
+    }
+
+    /**
+     * SubselectIdentificationVariableDeclaration ::= IdentificationVariableDeclaration | (AssociationPathExpression ["AS"] AliasIdentificationVariable)
+     */
+    public function SubselectIdentificationVariableDeclaration()
+    {
+        $peek = $this->_lexer->glimpse();
+
+        if ($peek['value'] == '.') {
+            $subselectIdentificationVarDecl = new AST\SubselectIdentificationVariableDeclaration;
+            $subselectIdentificationVarDecl->setAssociationPathExpression($this->AssociationPathExpression());
+            $this->match(Lexer::T_AS);
+            $this->match(Lexer::T_IDENTIFIER);
+            $subselectIdentificationVarDecl->setAliasIdentificationVariable($this->_lexer->token['value']);
+
+            return $subselectIdentificationVarDecl;
+        }
+
+        return $this->IdentificationVariableDeclaration();
+    }
+
+    /**
+     * JoinVariableDeclaration ::= Join [IndexBy]
+     */
+    public function JoinVariableDeclaration()
+    {
+        $join = $this->Join();
+        $indexBy = $this->_lexer->isNextToken(Lexer::T_INDEX)
+            ? $this->IndexBy() : null;
+
+        return new AST\JoinVariableDeclaration($join, $indexBy);
     }
 
     /**
@@ -1055,18 +1285,6 @@ class Parser
         return new AST\RangeVariableDeclaration(
             $classMetadata, $aliasIdentificationVariable
         );
-    }
-
-    /**
-     * JoinVariableDeclaration ::= Join [IndexBy]
-     */
-    public function JoinVariableDeclaration()
-    {
-        $join = $this->Join();
-        $indexBy = $this->_lexer->isNextToken(Lexer::T_INDEX)
-            ? $this->IndexBy() : null;
-
-        return new AST\JoinVariableDeclaration($join, $indexBy);
     }
 
     /**
@@ -1156,205 +1374,89 @@ class Parser
         return $pathExp;
     }
 
-    /**
-     * EntityExpression ::= SingleValuedAssociationPathExpression | SimpleEntityExpression
-     */
-    public function EntityExpression()
-    {
-        $glimpse = $this->_lexer->glimpse();
-        
-        if ($this->_lexer->isNextToken(Lexer::T_IDENTIFIER) && $glimpse['value'] === '.') {
-            return $this->SingleValuedAssociationPathExpression();
-        }
-        
-        return $this->SimpleEntityExpression();
-    }
     
     /**
-     * SimpleEntityExpression ::= IdentificationVariable | InputParameter
+     * SelectExpression ::=
+     *      IdentificationVariable | StateFieldPathExpression |
+     *      (AggregateExpression | "(" Subselect ")" | FunctionDeclaration) [["AS"] ResultVariable]
      */
-    public function SimpleEntityExpression()
+    public function SelectExpression()
     {
-        if ($this->_lexer->isNextToken(Lexer::T_INPUT_PARAMETER)) {
-            $this->match(Lexer::T_INPUT_PARAMETER);
-            return new AST\InputParameter($this->_lexer->token['value']);
-        }
-        
-        return $this->IdentificationVariable();
-    }
+        $expression = null;
+        $fieldAliasIdentificationVariable = null;
+        $peek = $this->_lexer->glimpse();
 
-    /**
-     * NullComparisonExpression ::= (SingleValuedPathExpression | InputParameter) "IS" ["NOT"] "NULL"
-     */
-    public function NullComparisonExpression()
-    {
-        if ($this->_lexer->isNextToken(Lexer::T_INPUT_PARAMETER)) {
-            $this->match(Lexer::T_INPUT_PARAMETER);
-            $expr = new AST\InputParameter($this->_lexer->token['value']);
-        } else {
-            $expr = $this->SingleValuedPathExpression();
-        }
-
-        $nullCompExpr = new AST\NullComparisonExpression($expr);
-        $this->match(Lexer::T_IS);
-
-        if ($this->_lexer->isNextToken(Lexer::T_NOT)) {
-            $this->match(Lexer::T_NOT);
-            $nullCompExpr->setNot(true);
-        }
-
-        $this->match(Lexer::T_NULL);
-
-        return $nullCompExpr;
-    }
-
-    /**
-     * AggregateExpression ::=
-     *  ("AVG" | "MAX" | "MIN" | "SUM") "(" ["DISTINCT"] StateFieldPathExpression ")" |
-     *  "COUNT" "(" ["DISTINCT"] (IdentificationVariable | SingleValuedPathExpression) ")"
-     */
-    public function AggregateExpression()
-    {
-        $isDistinct = false;
-        $functionName = '';
-
-        if ($this->_lexer->isNextToken(Lexer::T_COUNT)) {
-            $this->match(Lexer::T_COUNT);
-            $functionName = $this->_lexer->token['value'];
-            $this->match('(');
-
-            if ($this->_lexer->isNextToken(Lexer::T_DISTINCT)) {
-                $this->match(Lexer::T_DISTINCT);
-                $isDistinct = true;
-            }
-
-            $pathExp = $this->SingleValuedPathExpression();
-            $this->match(')');
-        } else {
-            if ($this->_lexer->isNextToken(Lexer::T_AVG)) {
-                $this->match(Lexer::T_AVG);
-            } else if ($this->_lexer->isNextToken(Lexer::T_MAX)) {
-                $this->match(Lexer::T_MAX);
-            } else if ($this->_lexer->isNextToken(Lexer::T_MIN)) {
-                $this->match(Lexer::T_MIN);
-            } else if ($this->_lexer->isNextToken(Lexer::T_SUM)) {
-                $this->match(Lexer::T_SUM);
+        // First we recognize for an IdentificationVariable (DQL class alias)
+        if ($peek['value'] != '.' && $peek['value'] != '(' && $this->_lexer->lookahead['type'] === Lexer::T_IDENTIFIER) {
+            $expression = $this->IdentificationVariable();
+        } else if (($isFunction = $this->_isFunction()) !== false || $this->_isSubselect()) {
+            if ($isFunction) {
+                if ($this->_isAggregateFunction($this->_lexer->lookahead['type'])) {
+                    $expression = $this->AggregateExpression();
+                } else {
+                    $expression = $this->FunctionDeclaration();
+                }
             } else {
-                $this->syntaxError('One of: MAX, MIN, AVG, SUM, COUNT');
+                $this->match('(');
+                $expression = $this->Subselect();
+                $this->match(')');
             }
 
-            $functionName = $this->_lexer->token['value'];
-            $this->match('(');
-            $pathExp = $this->StateFieldPathExpression();
-            $this->match(')');
-        }
+            if ($this->_lexer->isNextToken(Lexer::T_AS)) {
+                $this->match(Lexer::T_AS);
+            }
 
-        return new AST\AggregateExpression($functionName, $pathExp, $isDistinct);
-    }
-
-    /**
-     * GroupByClause ::= "GROUP" "BY" GroupByItem {"," GroupByItem}*
-     */
-    public function GroupByClause()
-    {
-        $this->match(Lexer::T_GROUP);
-        $this->match(Lexer::T_BY);
-
-        $groupByItems = array($this->GroupByItem());
-
-        while ($this->_lexer->isNextToken(',')) {
-            $this->match(',');
-            $groupByItems[] = $this->GroupByItem();
-        }
-
-        return new AST\GroupByClause($groupByItems);
-    }
-    
-    /**
-     * GroupByItem ::= IdentificationVariable | SingleValuedPathExpression
-     *
-     * @todo Finish this implementation
-     */
-    public function GroupByItem()
-    {
-        return $this->SingleValuedPathExpression();
-    }
-
-    /**
-     * HavingClause ::= "HAVING" ConditionalExpression
-     */
-    public function HavingClause()
-    {
-        $this->match(Lexer::T_HAVING);
-
-        return new AST\HavingClause($this->ConditionalExpression());
-    }
-
-    /**
-     * OrderByClause ::= "ORDER" "BY" OrderByItem {"," OrderByItem}*
-     */
-    public function OrderByClause()
-    {
-        $this->match(Lexer::T_ORDER);
-        $this->match(Lexer::T_BY);
-
-        $orderByItems = array();
-        $orderByItems[] = $this->OrderByItem();
-
-        while ($this->_lexer->isNextToken(',')) {
-            $this->match(',');
-            $orderByItems[] = $this->OrderByItem();
-        }
-
-        return new AST\OrderByClause($orderByItems);
-    }
-
-    /**
-     * OrderByItem ::= (ResultVariable | StateFieldPathExpression) ["ASC" | "DESC"]
-     *
-     * @todo Support general SingleValuedPathExpression instead of only StateFieldPathExpression.
-     */
-    public function OrderByItem()
-    {
-        // We need to check if we are in a ResultVariable or StateFieldPathExpression
-        $glimpse = $this->_lexer->glimpse();
-        
-        if ($glimpse['value'] != '.') {
-            $expr = $this->ResultVariable();
-            
-            // @todo Check if ResultVariable is defined somewhere
+            if ($this->_lexer->isNextToken(Lexer::T_IDENTIFIER)) {
+                $fieldAliasIdentificationVariable = $this->ResultVariable();
+            }
         } else {
-            $expr = $this->StateFieldPathExpression();
-        }
-    
-        $item = new AST\OrderByItem($expr);
+            // Deny hydration of partial objects if doctrine.forcePartialLoad query hint not defined 
+            if (
+                $this->_query->getHydrationMode() == Query::HYDRATE_OBJECT &&
+                ! $this->_em->getConfiguration()->getAllowPartialObjects() &&
+                ! $this->_query->getHint('doctrine.forcePartialLoad')
+            ) {
+            	throw DoctrineException::partialObjectsAreDangerous();
+            }
 
-        if ($this->_lexer->isNextToken(Lexer::T_ASC)) {
-            $this->match(Lexer::T_ASC);
-            $item->setAsc(true);
-            
-            return $item;
+            $expression = $this->StateFieldPathExpression();
         }
-        
-        if ($this->_lexer->isNextToken(Lexer::T_DESC)) {
-            $this->match(Lexer::T_DESC);
-        }
-        
-        $item->setDesc(true);
-        
-        return $item;
+
+        return new AST\SelectExpression($expression, $fieldAliasIdentificationVariable);
     }
 
     /**
-     * WhereClause ::= "WHERE" ConditionalExpression
+     * SimpleSelectExpression ::= StateFieldPathExpression | IdentificationVariable | (AggregateExpression [["AS"] ResultVariable])
      */
-    public function WhereClause()
+    public function SimpleSelectExpression()
     {
-        $this->match(Lexer::T_WHERE);
+        if ($this->_lexer->isNextToken(Lexer::T_IDENTIFIER)) {
+            // SingleValuedPathExpression | IdentificationVariable
+            $peek = $this->_lexer->glimpse();
 
-        return new AST\WhereClause($this->ConditionalExpression());
+            if ($peek['value'] == '.') {
+                return new AST\SimpleSelectExpression($this->StateFieldPathExpression());
+            }
+
+            $this->match($this->_lexer->lookahead['value']);
+
+            return new AST\SimpleSelectExpression($this->_lexer->token['value']);
+        } else {
+            $expr = new AST\SimpleSelectExpression($this->AggregateExpression());
+
+            if ($this->_lexer->isNextToken(Lexer::T_AS)) {
+                $this->match(Lexer::T_AS);
+            }
+
+            if ($this->_lexer->isNextToken(Lexer::T_IDENTIFIER)) {
+                $expr->setFieldIdentificationVariable($this->ResultVariable());
+            }
+
+            return $expr;
+        }
     }
 
+    
     /**
      * ConditionalExpression ::= ConditionalTerm {"OR" ConditionalTerm}*
      */
@@ -1450,6 +1552,8 @@ class Parser
      *      ComparisonExpression | BetweenExpression | LikeExpression |
      *      InExpression | NullComparisonExpression | ExistsExpression |
      *      EmptyCollectionComparisonExpression | CollectionMemberExpression
+     *
+     * @todo Missing EmptyCollectionComparisonExpression implementation
      */
     public function SimpleConditionalExpression()
     {
@@ -1512,6 +1616,7 @@ class Parser
         }
     }
     
+    
     /**
      * CollectionMemberExpression ::= EntityExpression ["NOT"] "MEMBER" ["OF"] CollectionValuedPathExpression
      * 
@@ -1542,99 +1647,33 @@ class Parser
         );
     }
 
+    
     /**
-     * ComparisonExpression ::= ArithmeticExpression ComparisonOperator ( QuantifiedExpression | ArithmeticExpression )
+     * Literal ::= string | char | integer | float | boolean | InputParameter
      *
-     * @return AST\ComparisonExpression
-     * @todo Semantical checks whether $leftExpr $operator and $rightExpr are compatible.
+     * @todo Rip out InputParameter. Thats not a literal.
      */
-    public function ComparisonExpression()
+    public function Literal()
     {
-        $peek = $this->_lexer->glimpse();
+        switch ($this->_lexer->lookahead['type']) {
+            case Lexer::T_INPUT_PARAMETER:
+                $this->match($this->_lexer->lookahead['value']);
 
-        $leftExpr = $this->ArithmeticExpression();
-        $operator = $this->ComparisonOperator();
+                return new AST\InputParameter($this->_lexer->token['value']);
 
-        if ($this->_isNextAllAnySome()) {
-            $rightExpr = $this->QuantifiedExpression();
-        } else {
-            $rightExpr = $this->ArithmeticExpression();
+            case Lexer::T_STRING:
+            case Lexer::T_INTEGER:
+            case Lexer::T_FLOAT:
+                $this->match($this->_lexer->lookahead['value']);
+
+                return $this->_lexer->token['value'];
+
+            default:
+                $this->syntaxError('Literal');
         }
-
-        return new AST\ComparisonExpression($leftExpr, $operator, $rightExpr);
     }
 
-    /**
-     * Checks whether the current lookahead token of the lexer has the type
-     * T_ALL, T_ANY or T_SOME.
-     *
-     * @return boolean
-     */
-    private function _isNextAllAnySome()
-    {
-        return $this->_lexer->lookahead['type'] === Lexer::T_ALL ||
-               $this->_lexer->lookahead['type'] === Lexer::T_ANY ||
-               $this->_lexer->lookahead['type'] === Lexer::T_SOME;
-    }
-
-    /**
-     * Function ::= FunctionsReturningStrings | FunctionsReturningNumerics | FunctionsReturningDatetime
-     */
-    public function _Function()
-    {
-        $funcName = $this->_lexer->lookahead['value'];
-
-        if ($this->isStringFunction($funcName)) {
-            return $this->FunctionsReturningStrings();
-        } else if ($this->isNumericFunction($funcName)) {
-            return $this->FunctionsReturningNumerics();
-        } else if ($this->isDatetimeFunction($funcName)) {
-            return $this->FunctionsReturningDatetime();
-        }
-        
-        $this->syntaxError('Known function.');
-    }
-
-    /**
-     * Checks whether the function with the given name is a string function
-     * (a function that returns strings).
-     */
-    public function isStringFunction($funcName)
-    {
-        return isset(self::$_STRING_FUNCTIONS[strtolower($funcName)]);
-    }
-
-    /**
-     * Checks whether the function with the given name is a numeric function
-     * (a function that returns numerics).
-     */
-    public function isNumericFunction($funcName)
-    {
-        return isset(self::$_NUMERIC_FUNCTIONS[strtolower($funcName)]);
-    }
-
-    /**
-     * Checks whether the function with the given name is a datetime function
-     * (a function that returns date/time values).
-     */
-    public function isDatetimeFunction($funcName)
-    {
-        return isset(self::$_DATETIME_FUNCTIONS[strtolower($funcName)]);
-    }
-
-    /**
-     * Checks whether the given token is a comparison operator.
-     */
-    public function isComparisonOperator($token)
-    {
-        $value = $token['value'];
-
-        return $value == '=' || $value == '<' || 
-               $value == '<=' || $value == '<>' ||
-               $value == '>' || $value == '>=' || 
-               $value == '!=';
-    }
-
+    
     /**
      * ArithmeticExpression ::= SimpleArithmeticExpression | "(" Subselect ")"
      */
@@ -1722,256 +1761,6 @@ class Parser
     }
 
     /**
-     * InExpression ::= StateFieldPathExpression ["NOT"] "IN" "(" (Literal {"," Literal}* | Subselect) ")"
-     */
-    public function InExpression()
-    {
-        $inExpression = new AST\InExpression($this->StateFieldPathExpression());
-
-        if ($this->_lexer->isNextToken(Lexer::T_NOT)) {
-            $this->match(Lexer::T_NOT);
-            $inExpression->setNot(true);
-        }
-
-        $this->match(Lexer::T_IN);
-        $this->match('(');
-
-        if ($this->_lexer->isNextToken(Lexer::T_SELECT)) {
-            $inExpression->setSubselect($this->Subselect());
-        } else {
-            $literals = array();
-            $literals[] = $this->Literal();
-
-            while ($this->_lexer->isNextToken(',')) {
-                $this->match(',');
-                $literals[] = $this->Literal();
-            }
-
-            $inExpression->setLiterals($literals);
-        }
-
-        $this->match(')');
-
-        return $inExpression;
-    }
-
-    /**
-     * ExistsExpression ::= ["NOT"] "EXISTS" "(" Subselect ")"
-     */
-    public function ExistsExpression()
-    {
-        $not = false;
-
-        if ($this->_lexer->isNextToken(Lexer::T_NOT)) {
-            $this->match(Lexer::T_NOT);
-            $not = true;
-        }
-
-        $this->match(Lexer::T_EXISTS);
-        $this->match('(');
-        $existsExpression = new AST\ExistsExpression($this->Subselect());
-        $this->match(')');
-        $existsExpression->setNot($not);
-
-        return $existsExpression;
-    }
-
-    /**
-     * QuantifiedExpression ::= ("ALL" | "ANY" | "SOME") "(" Subselect ")"
-     */
-    public function QuantifiedExpression()
-    {
-        $all = $any = $some = false;
-
-        if ($this->_lexer->isNextToken(Lexer::T_ALL)) {
-            $this->match(Lexer::T_ALL);
-            $all = true;
-        } else if ($this->_lexer->isNextToken(Lexer::T_ANY)) {
-            $this->match(Lexer::T_ANY);
-            $any = true;
-        } else if ($this->_lexer->isNextToken(Lexer::T_SOME)) {
-            $this->match(Lexer::T_SOME);
-            $some = true;
-        } else {
-            $this->syntaxError('ALL, ANY or SOME');
-        }
-
-        $this->match('(');
-        $qExpr = new AST\QuantifiedExpression($this->Subselect());
-        $this->match(')');
-
-        $qExpr->setAll($all);
-        $qExpr->setAny($any);
-        $qExpr->setSome($some);
-
-        return $qExpr;
-    }
-
-    /**
-     * Subselect ::= SimpleSelectClause SubselectFromClause [WhereClause] [GroupByClause] [HavingClause] [OrderByClause]
-     */
-    public function Subselect()
-    {
-        $this->_beginDeferredPathExpressionStack();
-        $subselect = new AST\Subselect($this->SimpleSelectClause(), $this->SubselectFromClause());
-        $this->_processDeferredPathExpressionStack();
-
-        $subselect->setWhereClause(
-            $this->_lexer->isNextToken(Lexer::T_WHERE) ? $this->WhereClause() : null
-        );
-
-        $subselect->setGroupByClause(
-            $this->_lexer->isNextToken(Lexer::T_GROUP) ? $this->GroupByClause() : null
-        );
-
-        $subselect->setHavingClause(
-            $this->_lexer->isNextToken(Lexer::T_HAVING) ? $this->HavingClause() : null
-        );
-
-        $subselect->setOrderByClause(
-            $this->_lexer->isNextToken(Lexer::T_ORDER) ? $this->OrderByClause() : null
-        );
-
-        return $subselect;
-    }
-
-    /**
-     * SimpleSelectClause ::= "SELECT" ["DISTINCT"] SimpleSelectExpression
-     */
-    public function SimpleSelectClause()
-    {
-        $distinct = false;
-        $this->match(Lexer::T_SELECT);
-
-        if ($this->_lexer->isNextToken(Lexer::T_DISTINCT)) {
-            $this->match(Lexer::T_DISTINCT);
-            $distinct = true;
-        }
-
-        $simpleSelectClause = new AST\SimpleSelectClause($this->SimpleSelectExpression());
-        $simpleSelectClause->setDistinct($distinct);
-
-        return $simpleSelectClause;
-    }
-
-    /**
-     * SubselectFromClause ::= "FROM" SubselectIdentificationVariableDeclaration {"," SubselectIdentificationVariableDeclaration}*
-     */
-    public function SubselectFromClause()
-    {
-        $this->match(Lexer::T_FROM);
-        $identificationVariables = array();
-        $identificationVariables[] = $this->SubselectIdentificationVariableDeclaration();
-
-        while ($this->_lexer->isNextToken(',')) {
-            $this->match(',');
-            $identificationVariables[] = $this->SubselectIdentificationVariableDeclaration();
-        }
-
-        return new AST\SubselectFromClause($identificationVariables);
-    }
-
-    /**
-     * SubselectIdentificationVariableDeclaration ::= IdentificationVariableDeclaration | (AssociationPathExpression ["AS"] AliasIdentificationVariable)
-     */
-    public function SubselectIdentificationVariableDeclaration()
-    {
-        $peek = $this->_lexer->glimpse();
-
-        if ($peek['value'] == '.') {
-            $subselectIdentificationVarDecl = new AST\SubselectIdentificationVariableDeclaration;
-            $subselectIdentificationVarDecl->setAssociationPathExpression($this->AssociationPathExpression());
-            $this->match(Lexer::T_AS);
-            $this->match(Lexer::T_IDENTIFIER);
-            $subselectIdentificationVarDecl->setAliasIdentificationVariable($this->_lexer->token['value']);
-
-            return $subselectIdentificationVarDecl;
-        }
-
-        return $this->IdentificationVariableDeclaration();
-    }
-
-    /**
-     * SimpleSelectExpression ::= StateFieldPathExpression | IdentificationVariable | (AggregateExpression [["AS"] ResultVariable])
-     */
-    public function SimpleSelectExpression()
-    {
-        if ($this->_lexer->isNextToken(Lexer::T_IDENTIFIER)) {
-            // SingleValuedPathExpression | IdentificationVariable
-            $peek = $this->_lexer->glimpse();
-
-            if ($peek['value'] == '.') {
-                return new AST\SimpleSelectExpression($this->StateFieldPathExpression());
-            }
-
-            $this->match($this->_lexer->lookahead['value']);
-
-            return new AST\SimpleSelectExpression($this->_lexer->token['value']);
-        } else {
-            $expr = new AST\SimpleSelectExpression($this->AggregateExpression());
-
-            if ($this->_lexer->isNextToken(Lexer::T_AS)) {
-                $this->match(Lexer::T_AS);
-            }
-
-            if ($this->_lexer->isNextToken(Lexer::T_IDENTIFIER)) {
-                $expr->setFieldIdentificationVariable($this->ResultVariable());
-            }
-
-            return $expr;
-        }
-    }
-
-    /**
-     * Literal ::= string | char | integer | float | boolean | InputParameter
-     *
-     * @todo Rip out InputParameter. Thats not a literal.
-     */
-    public function Literal()
-    {
-        switch ($this->_lexer->lookahead['type']) {
-            case Lexer::T_INPUT_PARAMETER:
-                $this->match($this->_lexer->lookahead['value']);
-
-                return new AST\InputParameter($this->_lexer->token['value']);
-
-            case Lexer::T_STRING:
-            case Lexer::T_INTEGER:
-            case Lexer::T_FLOAT:
-                $this->match($this->_lexer->lookahead['value']);
-
-                return $this->_lexer->token['value'];
-
-            default:
-                $this->syntaxError('Literal');
-        }
-    }
-
-    /**
-     * BetweenExpression ::= ArithmeticExpression ["NOT"] "BETWEEN" ArithmeticExpression "AND" ArithmeticExpression
-     */
-    public function BetweenExpression()
-    {
-        $not = false;
-        $arithExpr1 = $this->ArithmeticExpression();
-
-        if ($this->_lexer->isNextToken(Lexer::T_NOT)) {
-            $this->match(Lexer::T_NOT);
-            $not = true;
-        }
-
-        $this->match(Lexer::T_BETWEEN);
-        $arithExpr2 = $this->ArithmeticExpression();
-        $this->match(Lexer::T_AND);
-        $arithExpr3 = $this->ArithmeticExpression();
-
-        $betweenExpr = new AST\BetweenExpression($arithExpr1, $arithExpr2, $arithExpr3);
-        $betweenExpr->setNot($not);
-
-        return $betweenExpr;
-    }
-
-    /**
      * ArithmeticPrimary ::= SingleValuedPathExpression | Literal | "(" SimpleArithmeticExpression ")"
      *          | FunctionsReturningNumerics | AggregateExpression | FunctionsReturningStrings
      *          | FunctionsReturningDatetime | IdentificationVariable
@@ -1991,7 +1780,7 @@ class Parser
                 $peek = $this->_lexer->glimpse();
 
                 if ($peek['value'] == '(') {
-                    return $this->_Function();
+                    return $this->FunctionDeclaration();
                 }
 
                 if ($peek['value'] == '.') {
@@ -2027,137 +1816,7 @@ class Parser
         }
     }
 
-    /**
-     * FunctionsReturningStrings ::=
-     *   "CONCAT" "(" StringPrimary "," StringPrimary ")" |
-     *   "SUBSTRING" "(" StringPrimary "," SimpleArithmeticExpression "," SimpleArithmeticExpression ")" |
-     *   "TRIM" "(" [["LEADING" | "TRAILING" | "BOTH"] [char] "FROM"] StringPrimary ")" |
-     *   "LOWER" "(" StringPrimary ")" |
-     *   "UPPER" "(" StringPrimary ")"
-     */
-    public function FunctionsReturningStrings()
-    {
-        $funcNameLower = strtolower($this->_lexer->lookahead['value']);
-        $funcClass = self::$_STRING_FUNCTIONS[$funcNameLower];
-        $function = new $funcClass($funcNameLower);
-        $function->parse($this);
-
-        return $function;
-    }
-
-    /**
-     * FunctionsReturningNumerics ::=
-     *      "LENGTH" "(" StringPrimary ")" |
-     *      "LOCATE" "(" StringPrimary "," StringPrimary ["," SimpleArithmeticExpression]")" |
-     *      "ABS" "(" SimpleArithmeticExpression ")" |
-     *      "SQRT" "(" SimpleArithmeticExpression ")" |
-     *      "MOD" "(" SimpleArithmeticExpression "," SimpleArithmeticExpression ")" |
-     *      "SIZE" "(" CollectionValuedPathExpression ")"
-     */
-    public function FunctionsReturningNumerics()
-    {
-        $funcNameLower = strtolower($this->_lexer->lookahead['value']);
-        $funcClass = self::$_NUMERIC_FUNCTIONS[$funcNameLower];
-        $function = new $funcClass($funcNameLower);
-        $function->parse($this);
-
-        return $function;
-    }
-
-    /**
-     * FunctionsReturningDateTime ::= "CURRENT_DATE" | "CURRENT_TIME" | "CURRENT_TIMESTAMP"
-     */
-    public function FunctionsReturningDatetime()
-    {
-        $funcNameLower = strtolower($this->_lexer->lookahead['value']);
-        $funcClass = self::$_DATETIME_FUNCTIONS[$funcNameLower];
-        $function = new $funcClass($funcNameLower);
-        $function->parse($this);
-
-        return $function;
-    }
-
-    /**
-     * ComparisonOperator ::= "=" | "<" | "<=" | "<>" | ">" | ">=" | "!="
-     */
-    public function ComparisonOperator()
-    {
-        switch ($this->_lexer->lookahead['value']) {
-            case '=':
-                $this->match('=');
-
-                return '=';
-
-            case '<':
-                $this->match('<');
-                $operator = '<';
-
-                if ($this->_lexer->isNextToken('=')) {
-                    $this->match('=');
-                    $operator .= '=';
-                } else if ($this->_lexer->isNextToken('>')) {
-                    $this->match('>');
-                    $operator .= '>';
-                }
-
-                return $operator;
-
-            case '>':
-                $this->match('>');
-                $operator = '>';
-
-                if ($this->_lexer->isNextToken('=')) {
-                    $this->match('=');
-                    $operator .= '=';
-                }
-
-                return $operator;
-
-            case '!':
-                $this->match('!');
-                $this->match('=');
-
-                return '<>';
-
-            default:
-                $this->syntaxError('=, <, <=, <>, >, >=, !=');
-        }
-    }
-
-    /**
-     * LikeExpression ::= StringExpression ["NOT"] "LIKE" (string | input_parameter) ["ESCAPE" char]
-     */
-    public function LikeExpression()
-    {
-        $stringExpr = $this->StringExpression();
-        $isNot = false;
-
-        if ($this->_lexer->lookahead['type'] === Lexer::T_NOT) {
-            $this->match(Lexer::T_NOT);
-            $isNot = true;
-        }
-
-        $this->match(Lexer::T_LIKE);
-
-        if ($this->_lexer->isNextToken(Lexer::T_INPUT_PARAMETER)) {
-            $this->match(Lexer::T_INPUT_PARAMETER);
-            $stringPattern = new AST\InputParameter($this->_lexer->token['value']);
-        } else {
-            $this->match(Lexer::T_STRING);
-            $stringPattern = $this->_lexer->token['value'];
-        }
-
-        $escapeChar = null;
-
-        if ($this->_lexer->lookahead['type'] === Lexer::T_ESCAPE) {
-            $this->match(Lexer::T_ESCAPE);
-            $this->match(Lexer::T_STRING);
-            $escapeChar = $this->_lexer->token['value'];
-        }
-
-        return new AST\LikeExpression($stringExpr, $stringPattern, $isNot, $escapeChar);
-    }
-
+    
     /**
      * StringExpression ::= StringPrimary | "(" Subselect ")"
      */
@@ -2209,35 +1868,382 @@ class Parser
     }
 
     /**
-     * Registers a custom function that returns strings.
-     *
-     * @param string $name The function name.
-     * @param string $class The class name of the function implementation.
+     * EntityExpression ::= SingleValuedAssociationPathExpression | SimpleEntityExpression
      */
-    public static function registerStringFunction($name, $class)
+    public function EntityExpression()
     {
-        self::$_STRING_FUNCTIONS[$name] = $class;
+        $glimpse = $this->_lexer->glimpse();
+        
+        if ($this->_lexer->isNextToken(Lexer::T_IDENTIFIER) && $glimpse['value'] === '.') {
+            return $this->SingleValuedAssociationPathExpression();
+        }
+        
+        return $this->SimpleEntityExpression();
+    }
+    
+    /**
+     * SimpleEntityExpression ::= IdentificationVariable | InputParameter
+     */
+    public function SimpleEntityExpression()
+    {
+        if ($this->_lexer->isNextToken(Lexer::T_INPUT_PARAMETER)) {
+            $this->match(Lexer::T_INPUT_PARAMETER);
+            return new AST\InputParameter($this->_lexer->token['value']);
+        }
+        
+        return $this->IdentificationVariable();
+    }
+
+    
+    /**
+     * AggregateExpression ::=
+     *  ("AVG" | "MAX" | "MIN" | "SUM") "(" ["DISTINCT"] StateFieldPathExpression ")" |
+     *  "COUNT" "(" ["DISTINCT"] (IdentificationVariable | SingleValuedPathExpression) ")"
+     */
+    public function AggregateExpression()
+    {
+        $isDistinct = false;
+        $functionName = '';
+
+        if ($this->_lexer->isNextToken(Lexer::T_COUNT)) {
+            $this->match(Lexer::T_COUNT);
+            $functionName = $this->_lexer->token['value'];
+            $this->match('(');
+
+            if ($this->_lexer->isNextToken(Lexer::T_DISTINCT)) {
+                $this->match(Lexer::T_DISTINCT);
+                $isDistinct = true;
+            }
+
+            $pathExp = $this->SingleValuedPathExpression();
+            $this->match(')');
+        } else {
+            if ($this->_lexer->isNextToken(Lexer::T_AVG)) {
+                $this->match(Lexer::T_AVG);
+            } else if ($this->_lexer->isNextToken(Lexer::T_MAX)) {
+                $this->match(Lexer::T_MAX);
+            } else if ($this->_lexer->isNextToken(Lexer::T_MIN)) {
+                $this->match(Lexer::T_MIN);
+            } else if ($this->_lexer->isNextToken(Lexer::T_SUM)) {
+                $this->match(Lexer::T_SUM);
+            } else {
+                $this->syntaxError('One of: MAX, MIN, AVG, SUM, COUNT');
+            }
+
+            $functionName = $this->_lexer->token['value'];
+            $this->match('(');
+            $pathExp = $this->StateFieldPathExpression();
+            $this->match(')');
+        }
+
+        return new AST\AggregateExpression($functionName, $pathExp, $isDistinct);
+    }
+
+    
+    /**
+     * QuantifiedExpression ::= ("ALL" | "ANY" | "SOME") "(" Subselect ")"
+     */
+    public function QuantifiedExpression()
+    {
+        $all = $any = $some = false;
+
+        if ($this->_lexer->isNextToken(Lexer::T_ALL)) {
+            $this->match(Lexer::T_ALL);
+            $all = true;
+        } else if ($this->_lexer->isNextToken(Lexer::T_ANY)) {
+            $this->match(Lexer::T_ANY);
+            $any = true;
+        } else if ($this->_lexer->isNextToken(Lexer::T_SOME)) {
+            $this->match(Lexer::T_SOME);
+            $some = true;
+        } else {
+            $this->syntaxError('ALL, ANY or SOME');
+        }
+
+        $this->match('(');
+        $qExpr = new AST\QuantifiedExpression($this->Subselect());
+        $this->match(')');
+
+        $qExpr->setAll($all);
+        $qExpr->setAny($any);
+        $qExpr->setSome($some);
+
+        return $qExpr;
     }
 
     /**
-     * Registers a custom function that returns numerics.
-     *
-     * @param string $name The function name.
-     * @param string $class The class name of the function implementation.
+     * BetweenExpression ::= ArithmeticExpression ["NOT"] "BETWEEN" ArithmeticExpression "AND" ArithmeticExpression
      */
-    public static function registerNumericFunction($name, $class)
+    public function BetweenExpression()
     {
-        self::$_NUMERIC_FUNCTIONS[$name] = $class;
+        $not = false;
+        $arithExpr1 = $this->ArithmeticExpression();
+
+        if ($this->_lexer->isNextToken(Lexer::T_NOT)) {
+            $this->match(Lexer::T_NOT);
+            $not = true;
+        }
+
+        $this->match(Lexer::T_BETWEEN);
+        $arithExpr2 = $this->ArithmeticExpression();
+        $this->match(Lexer::T_AND);
+        $arithExpr3 = $this->ArithmeticExpression();
+
+        $betweenExpr = new AST\BetweenExpression($arithExpr1, $arithExpr2, $arithExpr3);
+        $betweenExpr->setNot($not);
+
+        return $betweenExpr;
     }
 
     /**
-     * Registers a custom function that returns date/time values.
+     * ComparisonExpression ::= ArithmeticExpression ComparisonOperator ( QuantifiedExpression | ArithmeticExpression )
      *
-     * @param string $name The function name.
-     * @param string $class The class name of the function implementation.
+     * @return AST\ComparisonExpression
+     * @todo Semantical checks whether $leftExpr $operator and $rightExpr are compatible.
      */
-    public static function registerDatetimeFunction($name, $class)
+    public function ComparisonExpression()
     {
-        self::$_DATETIME_FUNCTIONS[$name] = $class;
+        $peek = $this->_lexer->glimpse();
+
+        $leftExpr = $this->ArithmeticExpression();
+        $operator = $this->ComparisonOperator();
+
+        if ($this->_isNextAllAnySome()) {
+            $rightExpr = $this->QuantifiedExpression();
+        } else {
+            $rightExpr = $this->ArithmeticExpression();
+        }
+
+        return new AST\ComparisonExpression($leftExpr, $operator, $rightExpr);
+    }
+
+    /**
+     * InExpression ::= StateFieldPathExpression ["NOT"] "IN" "(" (Literal {"," Literal}* | Subselect) ")"
+     */
+    public function InExpression()
+    {
+        $inExpression = new AST\InExpression($this->StateFieldPathExpression());
+
+        if ($this->_lexer->isNextToken(Lexer::T_NOT)) {
+            $this->match(Lexer::T_NOT);
+            $inExpression->setNot(true);
+        }
+
+        $this->match(Lexer::T_IN);
+        $this->match('(');
+
+        if ($this->_lexer->isNextToken(Lexer::T_SELECT)) {
+            $inExpression->setSubselect($this->Subselect());
+        } else {
+            $literals = array();
+            $literals[] = $this->Literal();
+
+            while ($this->_lexer->isNextToken(',')) {
+                $this->match(',');
+                $literals[] = $this->Literal();
+            }
+
+            $inExpression->setLiterals($literals);
+        }
+
+        $this->match(')');
+
+        return $inExpression;
+    }
+
+    /**
+     * LikeExpression ::= StringExpression ["NOT"] "LIKE" (string | input_parameter) ["ESCAPE" char]
+     */
+    public function LikeExpression()
+    {
+        $stringExpr = $this->StringExpression();
+        $isNot = false;
+
+        if ($this->_lexer->lookahead['type'] === Lexer::T_NOT) {
+            $this->match(Lexer::T_NOT);
+            $isNot = true;
+        }
+
+        $this->match(Lexer::T_LIKE);
+
+        if ($this->_lexer->isNextToken(Lexer::T_INPUT_PARAMETER)) {
+            $this->match(Lexer::T_INPUT_PARAMETER);
+            $stringPattern = new AST\InputParameter($this->_lexer->token['value']);
+        } else {
+            $this->match(Lexer::T_STRING);
+            $stringPattern = $this->_lexer->token['value'];
+        }
+
+        $escapeChar = null;
+
+        if ($this->_lexer->lookahead['type'] === Lexer::T_ESCAPE) {
+            $this->match(Lexer::T_ESCAPE);
+            $this->match(Lexer::T_STRING);
+            $escapeChar = $this->_lexer->token['value'];
+        }
+
+        return new AST\LikeExpression($stringExpr, $stringPattern, $isNot, $escapeChar);
+    }
+
+    /**
+     * NullComparisonExpression ::= (SingleValuedPathExpression | InputParameter) "IS" ["NOT"] "NULL"
+     */
+    public function NullComparisonExpression()
+    {
+        if ($this->_lexer->isNextToken(Lexer::T_INPUT_PARAMETER)) {
+            $this->match(Lexer::T_INPUT_PARAMETER);
+            $expr = new AST\InputParameter($this->_lexer->token['value']);
+        } else {
+            $expr = $this->SingleValuedPathExpression();
+        }
+
+        $nullCompExpr = new AST\NullComparisonExpression($expr);
+        $this->match(Lexer::T_IS);
+
+        if ($this->_lexer->isNextToken(Lexer::T_NOT)) {
+            $this->match(Lexer::T_NOT);
+            $nullCompExpr->setNot(true);
+        }
+
+        $this->match(Lexer::T_NULL);
+
+        return $nullCompExpr;
+    }
+
+    /**
+     * ExistsExpression ::= ["NOT"] "EXISTS" "(" Subselect ")"
+     */
+    public function ExistsExpression()
+    {
+        $not = false;
+
+        if ($this->_lexer->isNextToken(Lexer::T_NOT)) {
+            $this->match(Lexer::T_NOT);
+            $not = true;
+        }
+
+        $this->match(Lexer::T_EXISTS);
+        $this->match('(');
+        $existsExpression = new AST\ExistsExpression($this->Subselect());
+        $this->match(')');
+        $existsExpression->setNot($not);
+
+        return $existsExpression;
+    }
+
+    /**
+     * ComparisonOperator ::= "=" | "<" | "<=" | "<>" | ">" | ">=" | "!="
+     */
+    public function ComparisonOperator()
+    {
+        switch ($this->_lexer->lookahead['value']) {
+            case '=':
+                $this->match('=');
+
+                return '=';
+
+            case '<':
+                $this->match('<');
+                $operator = '<';
+
+                if ($this->_lexer->isNextToken('=')) {
+                    $this->match('=');
+                    $operator .= '=';
+                } else if ($this->_lexer->isNextToken('>')) {
+                    $this->match('>');
+                    $operator .= '>';
+                }
+
+                return $operator;
+
+            case '>':
+                $this->match('>');
+                $operator = '>';
+
+                if ($this->_lexer->isNextToken('=')) {
+                    $this->match('=');
+                    $operator .= '=';
+                }
+
+                return $operator;
+
+            case '!':
+                $this->match('!');
+                $this->match('=');
+
+                return '<>';
+
+            default:
+                $this->syntaxError('=, <, <=, <>, >, >=, !=');
+        }
+    }
+
+    
+    /**
+     * FunctionDeclaration ::= FunctionsReturningStrings | FunctionsReturningNumerics | FunctionsReturningDatetime
+     */
+    public function FunctionDeclaration()
+    {
+        $funcName = $this->_lexer->lookahead['value'];
+
+        if ($this->_isStringFunction($funcName)) {
+            return $this->FunctionsReturningStrings();
+        } else if ($this->_isNumericFunction($funcName)) {
+            return $this->FunctionsReturningNumerics();
+        } else if ($this->_isDatetimeFunction($funcName)) {
+            return $this->FunctionsReturningDatetime();
+        }
+        
+        $this->syntaxError('Known function.');
+    }
+
+    /**
+     * FunctionsReturningNumerics ::=
+     *      "LENGTH" "(" StringPrimary ")" |
+     *      "LOCATE" "(" StringPrimary "," StringPrimary ["," SimpleArithmeticExpression]")" |
+     *      "ABS" "(" SimpleArithmeticExpression ")" |
+     *      "SQRT" "(" SimpleArithmeticExpression ")" |
+     *      "MOD" "(" SimpleArithmeticExpression "," SimpleArithmeticExpression ")" |
+     *      "SIZE" "(" CollectionValuedPathExpression ")"
+     */
+    public function FunctionsReturningNumerics()
+    {
+        $funcNameLower = strtolower($this->_lexer->lookahead['value']);
+        $funcClass = self::$_NUMERIC_FUNCTIONS[$funcNameLower];
+        $function = new $funcClass($funcNameLower);
+        $function->parse($this);
+
+        return $function;
+    }
+
+    /**
+     * FunctionsReturningDateTime ::= "CURRENT_DATE" | "CURRENT_TIME" | "CURRENT_TIMESTAMP"
+     */
+    public function FunctionsReturningDatetime()
+    {
+        $funcNameLower = strtolower($this->_lexer->lookahead['value']);
+        $funcClass = self::$_DATETIME_FUNCTIONS[$funcNameLower];
+        $function = new $funcClass($funcNameLower);
+        $function->parse($this);
+
+        return $function;
+    }
+    
+    /**
+     * FunctionsReturningStrings ::=
+     *   "CONCAT" "(" StringPrimary "," StringPrimary ")" |
+     *   "SUBSTRING" "(" StringPrimary "," SimpleArithmeticExpression "," SimpleArithmeticExpression ")" |
+     *   "TRIM" "(" [["LEADING" | "TRAILING" | "BOTH"] [char] "FROM"] StringPrimary ")" |
+     *   "LOWER" "(" StringPrimary ")" |
+     *   "UPPER" "(" StringPrimary ")"
+     */
+    public function FunctionsReturningStrings()
+    {
+        $funcNameLower = strtolower($this->_lexer->lookahead['value']);
+        $funcClass = self::$_STRING_FUNCTIONS[$funcNameLower];
+        $function = new $funcClass($funcNameLower);
+        $function->parse($this);
+
+        return $function;
     }
 }
