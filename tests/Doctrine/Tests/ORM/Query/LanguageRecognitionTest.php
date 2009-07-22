@@ -341,7 +341,7 @@ class LanguageRecognitionTest extends \Doctrine\Tests\OrmTestCase
         $this->_em->getConfiguration()->setAllowPartialObjects(false);
                 
         $this->parseDql('SELECT u.name FROM Doctrine\Tests\Models\CMS\CmsUser u', array(
-        	'doctrine.forcePartialLoad' => false
+        	\Doctrine\ORM\Query::HINT_FORCE_PARTIAL_LOAD => false
         ));
         
         $this->_em->getConfiguration()->setAllowPartialObjects($oldValue);
