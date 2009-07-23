@@ -43,7 +43,7 @@ namespace Doctrine\ORM\Mapping;
 class OneToManyMapping extends AssociationMapping
 {
     /** Whether to delete orphaned elements (removed from the collection) */
-    public $deleteOrphans = false;
+    public $orphanRemoval = false;
     /** FUTURE: The key column mapping, if any. The key column holds the keys of the Collection. */
     //public $keyColumn;
     
@@ -73,8 +73,8 @@ class OneToManyMapping extends AssociationMapping
             throw MappingException::oneToManyRequiresMappedBy($mapping['fieldName']);
         }
         
-        $this->deleteOrphans = isset($mapping['deleteOrphans']) ?
-                (bool)$mapping['deleteOrphans'] : false;
+        $this->orphanRemoval = isset($mapping['orphanRemoval']) ?
+                (bool) $mapping['orphanRemoval'] : false;
     }
     
     /**

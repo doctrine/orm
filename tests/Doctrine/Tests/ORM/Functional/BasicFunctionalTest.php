@@ -184,8 +184,7 @@ class BasicFunctionalTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertEquals(0, $count);
     }
     
-    /* NOT YET IMPLEMENTED
-    public function testOneToManyOrphanDelete()
+    public function testOneToManyOrphanRemoval()
     {
         $user = new CmsUser;
         $user->name = 'Guilherme';
@@ -203,15 +202,15 @@ class BasicFunctionalTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->flush();
 
         $user->getPhonenumbers()->remove(0);
+        $this->assertEquals(2, count($user->getPhonenumbers()));
 
         $this->_em->flush();
 
-        // Check that the links in the association table have been deleted
+        // Check that there are just 2 phonenumbers left
         $count = $this->_em->getConnection()->execute("SELECT COUNT(*) FROM cms_phonenumbers",
                 array())->fetchColumn();
         $this->assertEquals(2, $count); // only 2 remaining
-        
-    }*/
+    }
 
     public function testBasicQuery()
     {

@@ -65,12 +65,14 @@ final class OneToOne extends \Doctrine\Common\Annotations\Annotation {
     public $cascade;
     public $fetch;
     public $optional;
+    public $orphanRemoval = false;
 }
 final class OneToMany extends \Doctrine\Common\Annotations\Annotation {
     public $mappedBy;
     public $targetEntity;
     public $cascade;
     public $fetch;
+    public $orphanRemoval = false;
 }
 final class ManyToOne extends \Doctrine\Common\Annotations\Annotation {
     public $targetEntity;

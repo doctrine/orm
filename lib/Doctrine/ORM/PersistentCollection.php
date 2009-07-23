@@ -197,14 +197,14 @@ final class PersistentCollection extends \Doctrine\Common\Collections\Collection
      */
     public function remove($key)
     {
-        //TODO: delete entity if shouldDeleteOrphans
-        /*if ($this->_association->isOneToMany() && $this->_association->shouldDeleteOrphans) {
-        $this->_em->remove($removed);
-        }*/
         $removed = parent::remove($key);
         if ($removed) {
             $this->_changed();
+            if ($this->_association->isOneToMany() && $this->_association->orphanRemoval) {
+                $this->_em->getUnitOfWork()->scheduleOrphanRemoval($removed);
+            }
         }
+        
         return $removed;
     }
 

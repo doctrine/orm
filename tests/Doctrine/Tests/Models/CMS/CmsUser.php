@@ -26,7 +26,7 @@ class CmsUser
      */
     public $name;
     /**
-     * @OneToMany(targetEntity="CmsPhonenumber", mappedBy="user", cascade={"save", "delete"})
+     * @OneToMany(targetEntity="CmsPhonenumber", mappedBy="user", cascade={"save", "delete"}, orphanRemoval=true)
      */
     public $phonenumbers;
     /**

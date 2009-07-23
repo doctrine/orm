@@ -230,6 +230,13 @@ class UnitOfWork implements PropertyChangedListener
      * @var EventManager
      */
     private $_evm;
+    
+    /**
+     * Orphaned entities scheduled for removal.
+     * 
+     * @var array
+     */
+    private $_orphanRemovals = array();
 
     /**
      * Initializes a new UnitOfWork instance, bound to the given EntityManager.
@@ -254,16 +261,23 @@ class UnitOfWork implements PropertyChangedListener
         // This populates _entityUpdates and _collectionUpdates.
         $this->computeChangeSets();
 
-        if (empty($this->_entityInsertions) &&
-                empty($this->_entityDeletions) &&
-                empty($this->_entityUpdates) &&
-                empty($this->_collectionUpdates) &&
-                empty($this->_collectionDeletions)) {
+        if ( ! ($this->_entityInsertions ||
+                $this->_entityDeletions ||
+                $this->_entityUpdates ||
+                $this->_collectionUpdates ||
+                $this->_collectionDeletions ||
+                $this->_orphanRemovals)) {
             return; // Nothing to do.
         }
 
         // Now we need a commit order to maintain referential integrity
         $commitOrder = $this->_getCommitOrder();
+        
+        if ($this->_orphanRemovals) {
+            foreach ($this->_orphanRemovals as $orphan) {
+                $this->remove($orphan);
+            }
+        }
 
         $conn = $this->_em->getConnection();
         try {
@@ -317,17 +331,18 @@ class UnitOfWork implements PropertyChangedListener
         }
 
         // Clear up
-        $this->_entityInsertions = array();
-        $this->_entityUpdates = array();
-        $this->_entityDeletions = array();
-        $this->_extraUpdates = array();
-        $this->_entityChangeSets = array();
-        $this->_collectionUpdates = array();
-        $this->_collectionDeletions = array();
-        $this->_visitedCollections = array();
+        $this->_entityInsertions =
+        $this->_entityUpdates =
+        $this->_entityDeletions =
+        $this->_extraUpdates =
+        $this->_entityChangeSets =
+        $this->_collectionUpdates =
+        $this->_collectionDeletions =
+        $this->_visitedCollections =
+        $this->_orphanRemovals = array();
     }
 
-    protected function _executeExtraUpdates()
+    private function _executeExtraUpdates()
     {
         foreach ($this->_extraUpdates as $oid => $update) {
             list ($entity, $changeset) = $update;
@@ -363,11 +378,8 @@ class UnitOfWork implements PropertyChangedListener
      */
     public function computeChangeSets()
     {
-        $entitySet = $this->_identityMap;
-        $entityInsertions = $this->_entityInsertions;
-
         // Compute changes for INSERTed entities first. This must always happen.
-        foreach ($entityInsertions as $entity) {
+        foreach ($this->_entityInsertions as $entity) {
             $class = $this->_em->getClassMetadata(get_class($entity));
             $this->_computeEntityChanges($class, $entity);
             // Look for changes in associations of the entity
@@ -380,7 +392,7 @@ class UnitOfWork implements PropertyChangedListener
         }
 
         // Compute changes for other MANAGED entities. Change tracking policies take effect here.
-        foreach ($entitySet as $className => $entities) {
+        foreach ($this->_identityMap as $className => $entities) {
             $class = $this->_em->getClassMetadata($className);
 
             // Skip class if change tracking happens through notification
@@ -493,8 +505,13 @@ class UnitOfWork implements PropertyChangedListener
                 if (isset($changeSet[$propName])) {
                     if (isset($class->associationMappings[$propName])) {
                         $assoc = $class->associationMappings[$propName];
-                        if ($assoc->isOneToOne() && $assoc->isOwningSide) {
-                            $entityIsDirty = true;
+                        if ($assoc->isOneToOne()) {
+                            if ($assoc->isOwningSide) {
+                                $entityIsDirty = true;
+                            }
+                            if ($actualValue === null && $assoc->orphanRemoval) {
+                                $this->scheduleOrphanRemoval($orgValue);
+                            }
                         } else if ($orgValue instanceof PersistentCollection) {
                             // A PersistentCollection was de-referenced, so delete it.
                             if  ( ! in_array($orgValue, $this->_collectionDeletions, true)) {
@@ -1478,19 +1495,39 @@ class UnitOfWork implements PropertyChangedListener
         $this->_collectionDeletions = array();
         //$this->_collectionCreations = array();
         $this->_collectionUpdates = array();
+        //$this->_orphanRemovals = array();
         $this->_commitOrderCalculator->clear();
     }
+    
+    /**
+     * INTERNAL:
+     * Schedules an orphaned entity for removal. The remove() operation will be
+     * invoked on that entity at the beginning of the next commit of this
+     * UnitOfWork.
+     * 
+     * @param object $entity
+     */
+    public function scheduleOrphanRemoval($entity)
+    {
+        $this->_orphanRemovals[spl_object_hash($entity)] = $entity;
+    }
 
-    public function scheduleCollectionUpdate(PersistentCollection $coll)
+    /*public function scheduleCollectionUpdate(PersistentCollection $coll)
     {
         $this->_collectionUpdates[] = $coll;
-    }
+    }*/
 
-    public function isCollectionScheduledForUpdate(PersistentCollection $coll)
+    /*public function isCollectionScheduledForUpdate(PersistentCollection $coll)
     {
         //...
-    }
-
+    }*/
+    
+    /**
+     * INTERNAL:
+     * Schedules a complete collection for removal when this UnitOfWork commits.
+     *
+     * @param PersistentCollection $coll
+     */
     public function scheduleCollectionDeletion(PersistentCollection $coll)
     {
         //TODO: if $coll is already scheduled for recreation ... what to do?
@@ -1503,15 +1540,15 @@ class UnitOfWork implements PropertyChangedListener
         //...
     }
 
-    public function scheduleCollectionRecreation(PersistentCollection $coll)
+    /*public function scheduleCollectionRecreation(PersistentCollection $coll)
     {
         $this->_collectionRecreations[] = $coll;
-    }
+    }*/
 
-    public function isCollectionScheduledForRecreation(PersistentCollection $coll)
+    /*public function isCollectionScheduledForRecreation(PersistentCollection $coll)
     {
         //...
-    }
+    }*/
 
     /**
      * INTERNAL:
@@ -1519,8 +1556,8 @@ class UnitOfWork implements PropertyChangedListener
      *
      * @param string $className  The name of the entity class.
      * @param array $data  The data for the entity.
-     * @return object
-     * @internal Performance-sensitive method. Run the performance test suites when
+     * @return object The created entity instance.
+     * @internal Highly performance-sensitive method. Run the performance test suites when
      *           making modifications.
      */
     public function createEntity($className, array $data, $hints = array())
@@ -1783,7 +1820,7 @@ class UnitOfWork implements PropertyChangedListener
      */
     public function propertyChanged($entity, $propertyName, $oldValue, $newValue)
     {
-        //if ($this->getEntityState($entity) == self::STATE_MANAGED) {
+        if ($this->getEntityState($entity) == self::STATE_MANAGED) {
             $oid = spl_object_hash($entity);
             $class = $this->_em->getClassMetadata(get_class($entity));
 
@@ -1802,6 +1839,6 @@ class UnitOfWork implements PropertyChangedListener
             } else {
                 $this->_entityUpdates[$oid] = $entity;
             }
-        //}
+        }
     }
 }

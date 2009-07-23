@@ -184,11 +184,13 @@ class AnnotationDriver implements Driver
                 $mapping['joinColumns'] = $joinColumns;
                 $mapping['mappedBy'] = $oneToOneAnnot->mappedBy;
                 $mapping['cascade'] = $oneToOneAnnot->cascade;
+                $mapping['orphanRemoval'] = $oneToOneAnnot->orphanRemoval;
                 $metadata->mapOneToOne($mapping);
             } else if ($oneToManyAnnot = $this->_reader->getPropertyAnnotation($property, 'Doctrine\ORM\Mapping\OneToMany')) {
                 $mapping['mappedBy'] = $oneToManyAnnot->mappedBy;
                 $mapping['targetEntity'] = $oneToManyAnnot->targetEntity;
                 $mapping['cascade'] = $oneToManyAnnot->cascade;
+                $mapping['orphanRemoval'] = $oneToManyAnnot->orphanRemoval;
                 $metadata->mapOneToMany($mapping);
             } else if ($manyToOneAnnot = $this->_reader->getPropertyAnnotation($property, 'Doctrine\ORM\Mapping\ManyToOne')) {
                 $mapping['joinColumns'] = $joinColumns;

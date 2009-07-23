@@ -91,7 +91,7 @@ class ClassMetadataFactory
     /**
      * Returns the metadata object for a class.
      *
-     * @param string $className  The name of the class.
+     * @param string $className The name of the class.
      * @return Doctrine\ORM\Mapping\ClassMetadata
      */
     public function getMetadataFor($className)

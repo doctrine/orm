@@ -58,7 +58,7 @@ class OneToOneMapping extends AssociationMapping
      * 
      * @var boolean
      */
-    public $deleteOrphans = false;
+    public $orphanRemoval = false;
 
     /**
      * The join column definitions.
@@ -107,8 +107,8 @@ class OneToOneMapping extends AssociationMapping
             $this->targetToSourceKeyColumns = array_flip($this->sourceToTargetKeyColumns);
         }
         
-        $this->deleteOrphans = isset($mapping['deleteOrphans']) ?
-                (bool)$mapping['deleteOrphans'] : false;
+        $this->orphanRemoval = isset($mapping['orphanRemoval']) ?
+                (bool) $mapping['orphanRemoval'] : false;
         
         return $mapping;
     }
