@@ -309,8 +309,13 @@ class EntityManager
      */
     public function getReference($entityName, $identifier)
     {
-        $entity = new $entityName;
-        $this->getClassMetadata($entityName)->setEntityIdentifier($entity, $identifier);
+        if ($this->_config->getAllowPartialObjects()) {
+            $entity = new $entityName;
+            $this->getClassMetadata($entityName)->setEntityIdentifier($entity, $identifier);
+        } else {
+            $entity = $this->_proxyFactory->getReferenceProxy($entityName, $identifier);
+        }
+
         return $entity;
     }
     
@@ -321,21 +326,10 @@ class EntityManager
      */
     public function setFlushMode($flushMode)
     {
-        if ( ! $this->_isFlushMode($flushMode)) {
+        if ( ! ($flushMode >= 1 && $flushMode <= 4)) {
             throw EntityManagerException::invalidFlushMode();
         }
         $this->_flushMode = $flushMode;
-    }
-    
-    /**
-     * Checks whether the given value is a valid flush mode.
-     *
-     * @param string $value
-     * @return boolean
-     */
-    private function _isFlushMode($value)
-    {
-        return $value >= 1 && $value <= 4;
     }
     
     /**

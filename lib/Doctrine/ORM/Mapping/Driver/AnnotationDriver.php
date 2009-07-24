@@ -57,15 +57,20 @@ class AnnotationDriver implements Driver
     public function loadMetadataForClass($className, ClassMetadata $metadata)
     {
         $class = $metadata->getReflectionClass();
+        
+        $classAnnotations = $this->_reader->getClassAnnotations($class);
 
         // Evaluate DoctrineEntity annotation
-        if (($entityAnnot = $this->_reader->getClassAnnotation($class, 'Doctrine\ORM\Mapping\Entity')) === null) {
+        if ( ! isset($classAnnotations['Doctrine\ORM\Mapping\Entity'])) {
             throw DoctrineException::updateMe("$className is no entity.");
         }
+        $entityAnnot = $classAnnotations['Doctrine\ORM\Mapping\Entity'];
+        
         $metadata->setCustomRepositoryClass($entityAnnot->repositoryClass);
 
         // Evaluate DoctrineTable annotation
-        if ($tableAnnot = $this->_reader->getClassAnnotation($class, 'Doctrine\ORM\Mapping\Table')) {
+        if (isset($classAnnotations['Doctrine\ORM\Mapping\Table'])) {
+            $tableAnnot = $classAnnotations['Doctrine\ORM\Mapping\Table'];
             $metadata->setPrimaryTable(array(
                 'name' => $tableAnnot->name,
                 'schema' => $tableAnnot->schema
@@ -73,12 +78,14 @@ class AnnotationDriver implements Driver
         }
 
         // Evaluate InheritanceType annotation
-        if ($inheritanceTypeAnnot = $this->_reader->getClassAnnotation($class, 'Doctrine\ORM\Mapping\InheritanceType')) {
+        if (isset($classAnnotations['Doctrine\ORM\Mapping\InheritanceType'])) {
+            $inheritanceTypeAnnot = $classAnnotations['Doctrine\ORM\Mapping\InheritanceType'];
             $metadata->setInheritanceType(constant('\Doctrine\ORM\Mapping\ClassMetadata::INHERITANCE_TYPE_' . $inheritanceTypeAnnot->value));
         }
 
         // Evaluate DiscriminatorColumn annotation
-        if ($discrColumnAnnot = $this->_reader->getClassAnnotation($class, 'Doctrine\ORM\Mapping\DiscriminatorColumn')) {
+        if (isset($classAnnotations['Doctrine\ORM\Mapping\DiscriminatorColumn'])) {
+            $discrColumnAnnot = $classAnnotations['Doctrine\ORM\Mapping\DiscriminatorColumn'];
             $metadata->setDiscriminatorColumn(array(
                 'name' => $discrColumnAnnot->name,
                 'type' => $discrColumnAnnot->type,
@@ -87,17 +94,20 @@ class AnnotationDriver implements Driver
         }
 
         // Evaluate DiscriminatorValue annotation
-        if ($discrValueAnnot = $this->_reader->getClassAnnotation($class, 'Doctrine\ORM\Mapping\DiscriminatorValue')) {
+        if (isset($classAnnotations['Doctrine\ORM\Mapping\DiscriminatorValue'])) {
+            $discrValueAnnot = $classAnnotations['Doctrine\ORM\Mapping\DiscriminatorValue'];
             $metadata->setDiscriminatorValue($discrValueAnnot->value);
         }
 
         // Evaluate DoctrineSubClasses annotation
-        if ($subClassesAnnot = $this->_reader->getClassAnnotation($class, 'Doctrine\ORM\Mapping\SubClasses')) {
+        if (isset($classAnnotations['Doctrine\ORM\Mapping\SubClasses'])) {
+            $subClassesAnnot = $classAnnotations['Doctrine\ORM\Mapping\SubClasses'];
             $metadata->setSubclasses($subClassesAnnot->value);
         }
 
         // Evaluate DoctrineChangeTrackingPolicy annotation
-        if ($changeTrackingAnnot = $this->_reader->getClassAnnotation($class, 'Doctrine\ORM\Mapping\ChangeTrackingPolicy')) {
+        if (isset($classAnnotations['Doctrine\ORM\Mapping\ChangeTrackingPolicy'])) {
+            $changeTrackingAnnot = $classAnnotations['Doctrine\ORM\Mapping\ChangeTrackingPolicy'];
             $metadata->setChangeTrackingPolicy($changeTrackingAnnot->value);
         }
 
@@ -237,15 +247,16 @@ class AnnotationDriver implements Driver
         }
         
         // Evaluate LifecycleListener annotation
-        if (($lifecycleListenerAnnot = $this->_reader->getClassAnnotation($class, 'Doctrine\ORM\Mapping\LifecycleListener'))) {
+        if (isset($classAnnotations['Doctrine\ORM\Mapping\LifecycleListener'])) {
+            $lifecycleListenerAnnot = $classAnnotations['Doctrine\ORM\Mapping\LifecycleListener'];
             foreach ($class->getMethods() as $method) {
                 if ($method->isPublic()) {
                     $annotations = $this->_reader->getMethodAnnotations($method);
-                    if (isset($annotations['Doctrine\ORM\Mapping\PreSave'])) {
-                        $metadata->addLifecycleCallback($method->getName(), \Doctrine\ORM\Events::preSave);
+                    if (isset($annotations['Doctrine\ORM\Mapping\PrePersist'])) {
+                        $metadata->addLifecycleCallback($method->getName(), \Doctrine\ORM\Events::prePersist);
                     }
-                    if (isset($annotations['Doctrine\ORM\Mapping\PostSave'])) {
-                        $metadata->addLifecycleCallback($method->getName(), \Doctrine\ORM\Events::postSave);
+                    if (isset($annotations['Doctrine\ORM\Mapping\PostPersist'])) {
+                        $metadata->addLifecycleCallback($method->getName(), \Doctrine\ORM\Events::postPersist);
                     }
                     if (isset($annotations['Doctrine\ORM\Mapping\PreUpdate'])) {
                         $metadata->addLifecycleCallback($method->getName(), \Doctrine\ORM\Events::preUpdate);
@@ -253,11 +264,11 @@ class AnnotationDriver implements Driver
                     if (isset($annotations['Doctrine\ORM\Mapping\PostUpdate'])) {
                         $metadata->addLifecycleCallback($method->getName(), \Doctrine\ORM\Events::postUpdate);
                     }
-                    if (isset($annotations['Doctrine\ORM\Mapping\PreDelete'])) {
-                        $metadata->addLifecycleCallback($method->getName(), \Doctrine\ORM\Events::preDelete);
+                    if (isset($annotations['Doctrine\ORM\Mapping\PreRemove'])) {
+                        $metadata->addLifecycleCallback($method->getName(), \Doctrine\ORM\Events::preRemove);
                     }
-                    if (isset($annotations['Doctrine\ORM\Mapping\PostDelete'])) {
-                        $metadata->addLifecycleCallback($method->getName(), \Doctrine\ORM\Events::postDelete);
+                    if (isset($annotations['Doctrine\ORM\Mapping\PostRemove'])) {
+                        $metadata->addLifecycleCallback($method->getName(), \Doctrine\ORM\Events::postRemove);
                     }
                     if (isset($annotations['Doctrine\ORM\Mapping\PostLoad'])) {
                         $metadata->addLifecycleCallback($method->getName(), \Doctrine\ORM\Events::postLoad);
@@ -265,7 +276,6 @@ class AnnotationDriver implements Driver
                 }
             }
         }
-        
     }
 
     /**
@@ -278,10 +288,9 @@ class AnnotationDriver implements Driver
      */
     public function isTransient($className)
     {
-        $refClass = new \ReflectionClass($className);
-        $docComment = $refClass->getDocComment();
-        return strpos($docComment, 'Entity') === false &&
-                strpos($docComment, 'MappedSuperclass') === false;
+        $classAnnotations = $this->_reader->getClassAnnotations(new \ReflectionClass($className));
+        return ! isset($classAnnotations['Doctrine\ORM\Mapping\Entity']) &&
+                ! isset($classAnnotations['Doctrine\ORM\Mapping\MappedSuperclass']);
     }
     
     public function preload()

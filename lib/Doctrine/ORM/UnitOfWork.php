@@ -322,6 +322,7 @@ class UnitOfWork implements PropertyChangedListener
             $conn->commit();
         } catch (\Exception $e) {
             $conn->rollback();
+            $this->clear();
             throw $e;
         }
 
@@ -341,7 +342,10 @@ class UnitOfWork implements PropertyChangedListener
         $this->_visitedCollections =
         $this->_orphanRemovals = array();
     }
-
+    
+    /**
+     * Executes any extra updates that have been scheduled.
+     */
     private function _executeExtraUpdates()
     {
         foreach ($this->_extraUpdates as $oid => $update) {
@@ -659,8 +663,8 @@ class UnitOfWork implements PropertyChangedListener
         $className = $class->name;
         $persister = $this->getEntityPersister($className);
         
-        $hasLifecycleCallbacks = isset($class->lifecycleCallbacks[Events::postSave]);
-        $hasListeners = $this->_evm->hasListeners(Events::postSave);
+        $hasLifecycleCallbacks = isset($class->lifecycleCallbacks[Events::postPersist]);
+        $hasListeners = $this->_evm->hasListeners(Events::postPersist);
         if ($hasLifecycleCallbacks || $hasListeners) {
             $entities = array();
         }
@@ -693,10 +697,10 @@ class UnitOfWork implements PropertyChangedListener
         if ($hasLifecycleCallbacks || $hasListeners) {
             foreach ($entities as $entity) {
                 if ($hasLifecycleCallbacks) {
-                    $class->invokeLifecycleCallbacks(Events::postSave, $entity);
+                    $class->invokeLifecycleCallbacks(Events::postPersist, $entity);
                 }
                 if ($hasListeners) {
-                    $this->_evm->dispatchEvent(Events::postSave, new LifecycleEventArgs($entity));
+                    $this->_evm->dispatchEvent(Events::postPersist, new LifecycleEventArgs($entity));
                 }
             }
         }
@@ -755,8 +759,8 @@ class UnitOfWork implements PropertyChangedListener
         $className = $class->name;
         $persister = $this->getEntityPersister($className);
                 
-        $hasLifecycleCallbacks = isset($class->lifecycleCallbacks[Events::postDelete]);
-        $hasListeners = $this->_evm->hasListeners(Events::postDelete);
+        $hasLifecycleCallbacks = isset($class->lifecycleCallbacks[Events::postRemove]);
+        $hasListeners = $this->_evm->hasListeners(Events::postRemove);
         
         foreach ($this->_entityDeletions as $oid => $entity) {
             if (get_class($entity) == $className) {
@@ -764,10 +768,10 @@ class UnitOfWork implements PropertyChangedListener
                 unset($this->_entityDeletions[$oid]);
                 
                 if ($hasLifecycleCallbacks) {
-                    $class->invokeLifecycleCallbacks(Events::postDelete, $entity);
+                    $class->invokeLifecycleCallbacks(Events::postRemove, $entity);
                 }
                 if ($hasListeners) {
-                    $this->_evm->dispatchEvent(Events::postDelete, new LifecycleEventArgs($entity));
+                    $this->_evm->dispatchEvent(Events::postRemove, new LifecycleEventArgs($entity));
                 }
             }
         }
@@ -1162,11 +1166,11 @@ class UnitOfWork implements PropertyChangedListener
                 }
                 break;
             case self::STATE_NEW:
-                if (isset($class->lifecycleCallbacks[Events::preSave])) {
-                    $class->invokeLifecycleCallbacks(Events::preSave, $entity);
+                if (isset($class->lifecycleCallbacks[Events::prePersist])) {
+                    $class->invokeLifecycleCallbacks(Events::prePersist, $entity);
                 }
-                if ($this->_evm->hasListeners(Events::preSave)) {
-                    $this->_evm->dispatchEvent(Events::preSave, new LifecycleEventArgs($entity));
+                if ($this->_evm->hasListeners(Events::prePersist)) {
+                    $this->_evm->dispatchEvent(Events::prePersist, new LifecycleEventArgs($entity));
                 }
                 
                 $idGen = $class->idGenerator;
@@ -1237,11 +1241,11 @@ class UnitOfWork implements PropertyChangedListener
                 // nothing to do
                 break;
             case self::STATE_MANAGED:
-                if (isset($class->lifecycleCallbacks[Events::preDelete])) {
-                    $class->invokeLifecycleCallbacks(Events::preDelete, $entity);
+                if (isset($class->lifecycleCallbacks[Events::preRemove])) {
+                    $class->invokeLifecycleCallbacks(Events::preRemove, $entity);
                 }
-                if ($this->_evm->hasListeners(Events::preDelete)) {
-                    $this->_evm->dispatchEvent(Events::preDelete, new LifecycleEventArgs($entity));
+                if ($this->_evm->hasListeners(Events::preRemove)) {
+                    $this->_evm->dispatchEvent(Events::preRemove, new LifecycleEventArgs($entity));
                 }
                 $this->scheduleForDelete($entity);
                 break;
@@ -1483,19 +1487,19 @@ class UnitOfWork implements PropertyChangedListener
      */
     public function clear()
     {
-        $this->_identityMap = array();
-        $this->_entityIdentifiers = array();
-        $this->_originalEntityData = array();
-        $this->_entityChangeSets = array();
-        $this->_entityStates = array();
-        $this->_scheduledForDirtyCheck = array();
-        $this->_entityInsertions = array();
-        $this->_entityUpdates = array();
-        $this->_entityDeletions = array();
-        $this->_collectionDeletions = array();
-        //$this->_collectionCreations = array();
-        $this->_collectionUpdates = array();
-        //$this->_orphanRemovals = array();
+        $this->_identityMap =
+        $this->_entityIdentifiers =
+        $this->_originalEntityData =
+        $this->_entityChangeSets =
+        $this->_entityStates =
+        $this->_scheduledForDirtyCheck =
+        $this->_entityInsertions =
+        $this->_entityUpdates =
+        $this->_entityDeletions =
+        $this->_collectionDeletions =
+        //$this->_collectionCreations =
+        $this->_collectionUpdates =
+        $this->_orphanRemovals = array();
         $this->_commitOrderCalculator->clear();
     }
     

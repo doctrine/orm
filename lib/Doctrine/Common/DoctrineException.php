@@ -4,18 +4,11 @@ namespace Doctrine\Common;
 
 class DoctrineException extends \Exception
 {
-    private $_innerException;
     private static $_messages = array();
 
-    public function __construct($message = "", \Exception $innerException = null)
+    public function __construct($message = "", \Exception $cause = null)
     {
-        parent::__construct($message);
-        $this->_innerException = $innerException;
-    }
-    
-    public function getInnerException()
-    {
-        return $this->_innerException;
+        parent::__construct($message, 0, $cause);
     }
     
     public static function notImplemented($method, $class)

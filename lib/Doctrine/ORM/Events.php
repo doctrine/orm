@@ -33,42 +33,42 @@ final class Events
 {
     private function __construct() {}
     /**
-     * The preDelete event occurs for a given entity before the respective
-     * EntityManager delete operation for that entity is executed.
+     * The preRemove event occurs for a given entity before the respective
+     * EntityManager remove operation for that entity is executed.
      * 
      * This is an entity lifecycle event.
      * 
      * @var string
      */
-    const preDelete = 'preDelete';
+    const preRemove = 'preRemove';
     /**
-     * The postDelete event occurs for an entity after the entity has 
+     * The postRemove event occurs for an entity after the entity has 
      * been deleted. It will be invoked after the database delete operations.
      * 
      * This is an entity lifecycle event.
      * 
      * @var string
      */
-    const postDelete = 'postDelete';
+    const postRemove = 'postRemove';
     /**
-     * The preSave event occurs for a given entity before the respective
-     * EntityManager save operation for that entity is executed.
+     * The prePersist event occurs for a given entity before the respective
+     * EntityManager persist operation for that entity is executed.
      * 
      * This is an entity lifecycle event.
      * 
      * @var string
      */
-    const preSave = 'preSave';
+    const prePersist = 'prePersist';
     /**
-     * The postSave event occurs for an entity after the entity has 
+     * The postPersist event occurs for an entity after the entity has 
      * been made persistent. It will be invoked after the database insert operations.
-     * Generated primary key values are available in the postSave event.
+     * Generated primary key values are available in the postPersist event.
      * 
      * This is an entity lifecycle event.
      * 
      * @var string
      */
-    const postSave = 'postSave';
+    const postPersist = 'postPersist';
     /**
      * The preUpdate event occurs before the database update operations to 
      * entity data. 

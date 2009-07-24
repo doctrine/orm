@@ -25,7 +25,7 @@ namespace Doctrine\Common;
  * Contract for classes that provide the service of notifying listeners of
  * changes to their properties.
  *
- * @author robo
+ * @author Roman Borschel <roman@code-factory.org>
  * @since 2.0
  */
 interface NotifyPropertyChanged
@@ -35,6 +35,6 @@ interface NotifyPropertyChanged
      *
      * @param PropertyChangedListener $listener
      */
-    public function addPropertyChangedListener(PropertyChangedListener $listener);
+    function addPropertyChangedListener(PropertyChangedListener $listener);
 }
 

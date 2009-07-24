@@ -24,8 +24,8 @@ class LifecycleCallbackTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->persist($entity);
         $this->_em->flush();
         
-        $this->assertTrue($entity->preSaveCallbackInvoked);
-        $this->assertTrue($entity->postSaveCallbackInvoked);
+        $this->assertTrue($entity->prePersistCallbackInvoked);
+        $this->assertTrue($entity->postPersistCallbackInvoked);
         
         $this->_em->clear();
         
@@ -49,8 +49,8 @@ class LifecycleCallbackTest extends \Doctrine\Tests\OrmFunctionalTestCase
 class LifecycleCallbackTestEntity
 {
     /* test stuff */
-    public $preSaveCallbackInvoked = false;
-    public $postSaveCallbackInvoked = false;
+    public $prePersistCallbackInvoked = false;
+    public $postPersistCallbackInvoked = false;
     public $postLoadCallbackInvoked = false;
     
     /**
@@ -63,14 +63,14 @@ class LifecycleCallbackTestEntity
      */
     public $value;
     
-    /** @PreSave */
-    public function doStuffOnPreSave() {
-        $this->preSaveCallbackInvoked = true;
+    /** @PrePersist */
+    public function doStuffOnPrePersist() {
+        $this->prePersistCallbackInvoked = true;
     }
     
-    /** @PostSave */
-    public function doStuffOnPostSave() {
-        $this->postSaveCallbackInvoked = true;
+    /** @PostPersist */
+    public function doStuffOnPostPersist() {
+        $this->postPersistCallbackInvoked = true;
     }
     
     /** @PostLoad */

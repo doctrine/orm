@@ -38,7 +38,12 @@ namespace Doctrine\Common;
 class EventArgs
 {
     private static $_emptyEventArgsInstance;
-
+    
+    /**
+     * Gets the single, empty EventArgs instance.
+     * 
+     * @return EventArgs
+     */
     public static function getEmptyInstance()
     {
         if ( ! self::$_emptyEventArgsInstance) {

@@ -25,11 +25,11 @@ namespace Doctrine\Common;
  * Contract for classes that are potential listeners of a <tt>NotifyPropertyChanged</tt>
  * implementor.
  *
- * @author robo
+ * @author Roman Borschel <roman@code-factory.org>
  * @since 2.0
  */
 interface PropertyChangedListener
 {
-    public function propertyChanged($sender, $propertyName, $oldValue, $newValue);
+    function propertyChanged($sender, $propertyName, $oldValue, $newValue);
 }
 

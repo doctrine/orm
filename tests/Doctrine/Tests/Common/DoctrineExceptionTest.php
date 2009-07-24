@@ -17,7 +17,7 @@ class DoctrineExceptionTest extends \Doctrine\Tests\DoctrineTestCase
     {
         $e1 = \Doctrine\Common\DoctrineException::testException();
         $e2 = \Doctrine\Common\DoctrineException::testException2('param1', $e1);
-        $this->assertEquals($e1, $e2->getInnerException());
+        $this->assertEquals($e1, $e2->getPrevious());
     }
 
     public function testNotImplemented()

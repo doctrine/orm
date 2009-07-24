@@ -448,6 +448,7 @@ class StandardEntityPersister
                     }
                 } else {
                     // Inject collection
+                    //TODO: Eager load
                     $this->_class->reflFields[$field]->setValue(
                         $entity, new PersistentCollection($this->_em, $this->_em->getClassMetadata($assoc->targetEntityName)
                     ));

@@ -21,7 +21,6 @@
 
 namespace Doctrine\ORM\Mapping;
 
-use \ReflectionClass;
 use Doctrine\Common\DoctrineException;
 
 /**
@@ -261,7 +260,7 @@ final class ClassMetadata
      *
      * @var boolean
      */
-    public $joinSubclasses = true;
+    //public $joinSubclasses = true;
 
     /**
      * The discriminator value of this class.
@@ -288,7 +287,6 @@ final class ClassMetadata
      *
      * name => <tableName>
      * schema => <schemaName>
-     * catalog => <catalogName> //TODO: remove catalog? needed?
      *
      * @var array
      */
@@ -408,7 +406,7 @@ final class ClassMetadata
         $this->namespace = substr($entityName, 0, strrpos($entityName, '\\'));
         $this->primaryTable['name'] = str_replace($this->namespace . '\\', '', $this->name);
         $this->rootEntityName = $entityName;
-        $this->reflClass = new ReflectionClass($entityName);
+        $this->reflClass = new \ReflectionClass($entityName);
     }
 
     /**
