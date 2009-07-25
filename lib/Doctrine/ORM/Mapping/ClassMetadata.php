@@ -26,6 +26,8 @@ use Doctrine\Common\DoctrineException;
 /**
  * A <tt>ClassMetadata</tt> instance holds all the ORM metadata of an entity and
  * it's associations. It is the backbone of Doctrine's metadata mapping.
+ * 
+ * Once populated, ClassMetadata instances are usually cached in a serialized form.
  *
  * <b>IMPORTANT NOTE:</b>
  *

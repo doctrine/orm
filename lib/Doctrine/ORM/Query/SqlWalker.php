@@ -474,6 +474,9 @@ class SqlWalker implements TreeWalker
                 }
                 
                 // Append foreign keys if necessary.
+                //FIXME: Evaluate HINT_INCLUDE_META_COLUMNS
+                //FIXME: Needs to be done in the case of Class Table Inheritance, too
+                //       (see upper block of the if/else)
                 if ( ! $this->_em->getConfiguration()->getAllowPartialObjects() &&
                         ! $this->_query->getHint(Query::HINT_FORCE_PARTIAL_LOAD)) {
                     foreach ($class->associationMappings as $assoc) {
@@ -1003,7 +1006,6 @@ class SqlWalker implements TreeWalker
         if ($literal instanceof AST\InputParameter) {
             $dqlParamKey = $literal->isNamed() ? $literal->getName() : $literal->getPosition();
             $this->_parserResult->addParameterMapping($dqlParamKey, $this->_sqlParamIndex++);
-            //return ($literal->isNamed() ? ':' . $literal->getName() : '?');
             return '?';
         } else {
             return $literal; //TODO: quote() ?
@@ -1045,7 +1047,6 @@ class SqlWalker implements TreeWalker
             $inputParam = $likeExpr->getStringPattern();
             $dqlParamKey = $inputParam->isNamed() ? $inputParam->getName() : $inputParam->getPosition();
             $this->_parserResult->addParameterMapping($dqlParamKey, $this->_sqlParamIndex++);
-            //$sql .= $inputParam->isNamed() ? ':' . $inputParam->getName() : '?';
             $sql .= '?';
         } else {
             $sql .= $this->_conn->quote($likeExpr->getStringPattern());
@@ -1172,7 +1173,6 @@ class SqlWalker implements TreeWalker
         if (is_numeric($primary)) {
             $sql .= $primary; //TODO: quote() ?
         } else if (is_string($primary)) {
-            //TODO: quote string according to platform
             $sql .= $this->_conn->quote($primary);
         } else if ($primary instanceof AST\SimpleArithmeticExpression) {
             $sql .= '(' . $this->walkSimpleArithmeticExpression($primary) . ')';
@@ -1211,12 +1211,6 @@ class SqlWalker implements TreeWalker
             $fieldName = $parts[$numParts-1];
             $qComp = $this->_queryComponents[$dqlAlias];
             $class = $qComp['metadata'];
-
-            /*if ($numParts > 2) {
-                for ($i = 1; $i < $numParts-1; ++$i) {
-                    //TODO
-                }
-            }*/
 
             if ($this->_useSqlTableAliases) {
                 if ($class->isInheritanceTypeJoined() && isset($class->fieldMappings[$fieldName]['inherited'])) {

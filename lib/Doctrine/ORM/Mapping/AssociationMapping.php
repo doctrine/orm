@@ -70,6 +70,7 @@ abstract class AssociationMapping
     public $isCascadePersist;
     public $isCascadeRefresh;
     public $isCascadeMerge;
+    public $isCascadeDetach;
     
     /**
      * The fetch mode used for the association.
@@ -188,6 +189,7 @@ abstract class AssociationMapping
         $this->isCascadePersist = in_array('persist', $this->cascades);
         $this->isCascadeRefresh = in_array('refresh', $this->cascades);
         $this->isCascadeMerge = in_array('merge', $this->cascades);
+        $this->isCascadeDetach = in_array('detach', $this->cascades);
     }
     
     /**
@@ -232,6 +234,17 @@ abstract class AssociationMapping
     public function isCascadeMerge()
     {
         return $this->isCascadeMerge;
+    }
+    
+    /**
+     * Whether the association cascades detach() operations from the source entity
+     * to the target entity/entities.
+     *
+     * @return boolean
+     */
+    public function isCascadeDetach()
+    {
+        return $this->isCascadeDetach;
     }
     
     /**
