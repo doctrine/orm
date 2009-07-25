@@ -32,7 +32,7 @@ class ECommerceCategory
     private $products;
 
     /**
-     * @OneToMany(targetEntity="ECommerceCategory", mappedBy="parent", cascade={"save"})
+     * @OneToMany(targetEntity="ECommerceCategory", mappedBy="parent", cascade={"persist"})
      */
     private $children;
 

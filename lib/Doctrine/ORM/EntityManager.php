@@ -416,21 +416,25 @@ class EntityManager
     }
 
     /**
-     * Detaches an entity from the EntityManager.
+     * Detaches an entity from the EntityManager, causing a managed entity to
+     * become detached.  Unflushed changes made to the entity if any
+     * (including removal of the entity), will not be synchronized to the database.
+     * Entities which previously referenced the detached entity will continue to 
+     * reference it.
      *
      * @param object $entity The entity to detach.
-     * @return boolean
      */
     public function detach($entity)
     {
-        return $this->_unitOfWork->removeFromIdentityMap($entity);
+        $this->_unitOfWork->detach($entity);
     }
 
     /**
      * Merges the state of a detached entity into the persistence context
-     * of this EntityManager.
+     * of this EntityManager and returns the managed copy of the entity.
+     * The entity passed to merge will not become associated/managed with this EntityManager.
      *
-     * @param object $entity The entity to merge into the persistence context.
+     * @param object $entity The detached entity to merge into the persistence context.
      * @return object The managed copy of the entity.
      */
     public function merge($entity)

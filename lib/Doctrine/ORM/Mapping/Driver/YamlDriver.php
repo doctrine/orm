@@ -255,11 +255,11 @@ class YamlDriver extends AbstractFileDriver
     private function _getCascadeMappings($cascadeElement)
     {
         $cascades = array();
-        if (isset($cascadeElement['cascadeSave'])) {
-            $cascades[] = 'save';
+        if (isset($cascadeElement['cascadePersist'])) {
+            $cascades[] = 'persist';
         }
-        if (isset($cascadeElement['cascadeDelete'])) {
-            $cascades[] = 'delete';
+        if (isset($cascadeElement['cascadeRemove'])) {
+            $cascades[] = 'remove';
         }
         if (isset($cascadeElement['cascadeMerge'])) {
             $cascades[] = 'merge';

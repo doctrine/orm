@@ -32,7 +32,7 @@ class InsertPerformanceTest extends \Doctrine\Tests\OrmPerformanceTestCase
         //$mem = memory_get_usage();
         //echo "Memory usage before: " . ($mem / 1024) . " KB" . PHP_EOL;
         $batchSize = 20;
-        for ($i=0; $i<10000; ++$i) {
+        for ($i=1; $i<=10000; ++$i) {
             $user = new CmsUser;
             $user->status = 'user';
             $user->username = 'user' . $i;
@@ -43,7 +43,6 @@ class InsertPerformanceTest extends \Doctrine\Tests\OrmPerformanceTestCase
                 $this->_em->clear();
             }
         }
-
         //$memAfter = memory_get_usage();
         //echo "Memory usage after: " . ($memAfter / 1024) . " KB" . PHP_EOL;
 

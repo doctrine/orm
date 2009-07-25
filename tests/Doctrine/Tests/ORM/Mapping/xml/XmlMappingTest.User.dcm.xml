@@ -19,7 +19,7 @@
         
         <one-to-many field="phonenumbers" targetEntity="Phonenumber" mappedBy="user">
             <cascade>
-                <cascade-save/>
+                <cascade-persist/>
             </cascade>
         </one-to-many>
         

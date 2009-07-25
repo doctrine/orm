@@ -25,7 +25,7 @@ class ECommerceCustomer
     private $name;
 
     /**
-     * @OneToOne(targetEntity="ECommerceCart", mappedBy="customer", cascade={"save"})
+     * @OneToOne(targetEntity="ECommerceCart", mappedBy="customer", cascade={"persist"})
      */
     private $cart;
 
@@ -34,7 +34,7 @@ class ECommerceCustomer
      * only one customer at the time, while a customer can choose only one
      * mentor. Not properly appropriate but it works.
      * 
-     * @OneToOne(targetEntity="ECommerceCustomer", cascade={"save"})
+     * @OneToOne(targetEntity="ECommerceCustomer", cascade={"persist"})
      * @JoinColumn(name="mentor_id", referencedColumnName="id")
      */
     private $mentor;

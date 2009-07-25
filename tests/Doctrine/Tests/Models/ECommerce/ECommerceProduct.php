@@ -27,18 +27,18 @@ class ECommerceProduct
     private $name;
 
     /**
-     * @OneToOne(targetEntity="ECommerceShipping", cascade={"save"})
+     * @OneToOne(targetEntity="ECommerceShipping", cascade={"persist"})
      * @JoinColumn(name="shipping_id", referencedColumnName="id")
      */
     private $shipping;
 
     /**
-     * @OneToMany(targetEntity="ECommerceFeature", mappedBy="product", cascade={"save"})
+     * @OneToMany(targetEntity="ECommerceFeature", mappedBy="product", cascade={"persist"})
      */
     private $features;
 
     /**
-     * @ManyToMany(targetEntity="ECommerceCategory", cascade={"save"})
+     * @ManyToMany(targetEntity="ECommerceCategory", cascade={"persist"})
      * @JoinTable(name="ecommerce_products_categories",
             joinColumns={@JoinColumn(name="product_id", referencedColumnName="id")},
             inverseJoinColumns={@JoinColumn(name="category_id", referencedColumnName="id")})
@@ -48,7 +48,7 @@ class ECommerceProduct
     /**
      * This relation is saved with two records in the association table for 
      * simplicity.
-     * @ManyToMany(targetEntity="ECommerceProduct", cascade={"save"})
+     * @ManyToMany(targetEntity="ECommerceProduct", cascade={"persist"})
      * @JoinTable(name="ecommerce_products_related",
             joinColumns={@JoinColumn(name="product_id", referencedColumnName="id")},
             inverseJoinColumns={@JoinColumn(name="related_id", referencedColumnName="id")})

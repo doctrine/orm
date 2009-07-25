@@ -250,11 +250,11 @@ final class PersistentCollection extends \Doctrine\Common\Collections\Collection
             // Set back reference to owner
             if ($this->_association->isOneToMany()) {
                 // OneToMany
-                $this->_typeClass->getReflectionProperty($this->_backRefFieldName)
+                $this->_typeClass->reflFields[$this->_backRefFieldName]
                         ->setValue($value, $this->_owner);
             } else {
                 // ManyToMany
-                $this->_typeClass->getReflectionProperty($this->_backRefFieldName)
+                $this->_typeClass->reflFields[$this->_backRefFieldName]
                         ->getValue($value)->add($this->_owner);
             }
         }
@@ -417,6 +417,16 @@ final class PersistentCollection extends \Doctrine\Common\Collections\Collection
     public function setDirty($dirty)
     {
         $this->_isDirty = $dirty;
+    }
+    
+    /**
+     * 
+     * @param $bool
+     * @return unknown_type
+     */
+    public function setInitialized($bool)
+    {
+        $this->_initialized = $bool;
     }
 
     /* Serializable implementation */

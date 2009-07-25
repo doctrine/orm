@@ -269,11 +269,11 @@ class XmlDriver extends AbstractFileDriver
     private function _getCascadeMappings($cascadeElement)
     {
         $cascades = array();
-        if (isset($cascadeElement->{'cascade-save'})) {
-            $cascades[] = 'save';
+        if (isset($cascadeElement->{'cascade-persist'})) {
+            $cascades[] = 'persist';
         }
-        if (isset($cascadeElement->{'cascade-delete'})) {
-            $cascades[] = 'delete';
+        if (isset($cascadeElement->{'cascade-remove'})) {
+            $cascades[] = 'remove';
         }
         if (isset($cascadeElement->{'cascade-merge'})) {
             $cascades[] = 'merge';

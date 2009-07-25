@@ -20,7 +20,7 @@ YamlMappingTest\User:
     phonenumbers:
       targetEntity: Phonenumber
       mappedBy: user
-      cascade: cascadeSave
+      cascade: cascadePersist
   manyToMany:
     groups:
       targetEntity: Group

@@ -19,7 +19,7 @@ class ForumUser
      */
     public $username;
     /**
-     * @OneToOne(targetEntity="ForumAvatar", cascade={"save"})
+     * @OneToOne(targetEntity="ForumAvatar", cascade={"persist"})
      * @JoinColumn(name="avatar_id", referencedColumnName="id")
      */
     public $avatar;

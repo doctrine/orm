@@ -33,7 +33,7 @@ class ECommerceCart
     private $customer;
 
     /**
-     * @ManyToMany(targetEntity="ECommerceProduct", cascade={"save"})
+     * @ManyToMany(targetEntity="ECommerceProduct", cascade={"persist"})
      * @JoinTable(name="ecommerce_carts_products",
             joinColumns={@JoinColumn(name="cart_id", referencedColumnName="id")},
             inverseJoinColumns={@JoinColumn(name="product_id", referencedColumnName="id")})

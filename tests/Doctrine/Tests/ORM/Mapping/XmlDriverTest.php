@@ -41,7 +41,7 @@ class XmlDriverTest extends \Doctrine\Tests\OrmTestCase
         $this->assertTrue(isset($class->associationMappings['phonenumbers']));
         $this->assertFalse($class->associationMappings['phonenumbers']->isOwningSide);
         $this->assertTrue($class->associationMappings['phonenumbers']->isInverseSide());
-        $this->assertTrue($class->associationMappings['phonenumbers']->isCascadeSave);
+        $this->assertTrue($class->associationMappings['phonenumbers']->isCascadePersist);
         
         $this->assertTrue($class->associationMappings['groups'] instanceof \Doctrine\ORM\Mapping\ManyToManyMapping);
         $this->assertTrue(isset($class->associationMappings['groups']));

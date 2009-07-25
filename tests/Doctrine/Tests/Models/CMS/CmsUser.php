@@ -26,7 +26,7 @@ class CmsUser
      */
     public $name;
     /**
-     * @OneToMany(targetEntity="CmsPhonenumber", mappedBy="user", cascade={"save", "delete"}, orphanRemoval=true)
+     * @OneToMany(targetEntity="CmsPhonenumber", mappedBy="user", cascade={"persist", "remove", "merge"}, orphanRemoval=true)
      */
     public $phonenumbers;
     /**
@@ -34,11 +34,11 @@ class CmsUser
      */
     public $articles;
     /**
-     * @OneToOne(targetEntity="CmsAddress", mappedBy="user", cascade={"save"})
+     * @OneToOne(targetEntity="CmsAddress", mappedBy="user", cascade={"persist"})
      */
     public $address;
     /**
-     * @ManyToMany(targetEntity="CmsGroup", cascade={"save"})
+     * @ManyToMany(targetEntity="CmsGroup", cascade={"persist"})
      * @JoinTable(name="cms_users_groups",
             joinColumns={@JoinColumn(name="user_id", referencedColumnName="id")},
             inverseJoinColumns={@JoinColumn(name="group_id", referencedColumnName="id")})

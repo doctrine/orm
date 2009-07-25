@@ -25,9 +25,9 @@
   <xs:complexType name="cascade-type">
     <xs:sequence>
       <xs:element name="cascade-all" type="orm:emptyType" minOccurs="0"/> 
-      <xs:element name="cascade-save" type="orm:emptyType" minOccurs="0"/> 
+      <xs:element name="cascade-persist" type="orm:emptyType" minOccurs="0"/> 
       <xs:element name="cascade-merge" type="orm:emptyType" minOccurs="0"/> 
-      <xs:element name="cascade-delete" type="orm:emptyType" minOccurs="0"/> 
+      <xs:element name="cascade-remove" type="orm:emptyType" minOccurs="0"/> 
       <xs:element name="cascade-refresh" type="orm:emptyType" minOccurs="0"/> 
     </xs:sequence>
   </xs:complexType>
