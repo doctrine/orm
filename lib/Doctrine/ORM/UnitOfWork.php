@@ -798,33 +798,24 @@ class UnitOfWork implements PropertyChangedListener
         $newNodes = array();
         foreach ($entityChangeSet as $entity) {
             $className = get_class($entity);
-            if ( ! $this->_commitOrderCalculator->hasNodeWithKey($className)) {
-                $this->_commitOrderCalculator->addNodeWithItem(
-                    $className, // index/key
-                    $this->_em->getClassMetadata($className) // item
-                );
-                $newNodes[] = $this->_commitOrderCalculator->getNodeForKey($className);
+            if ( ! $this->_commitOrderCalculator->hasClass($className)) {
+                $class = $this->_em->getClassMetadata($className);
+                $this->_commitOrderCalculator->addClass($class);
+                $newNodes[] = $class;
             }
         }
 
         // Calculate dependencies for new nodes
-        foreach ($newNodes as $node) {
-            $class = $node->getClass();
+        foreach ($newNodes as $class) {
             foreach ($class->associationMappings as $assocMapping) {
                 //TODO: should skip target classes that are not in the changeset.
                 if ($assocMapping->isOwningSide) {
                     $targetClass = $this->_em->getClassMetadata($assocMapping->targetEntityName);
-                    $targetClassName = $targetClass->name;
-                    // If the target class does not yet have a node, create it
-                    if ( ! $this->_commitOrderCalculator->hasNodeWithKey($targetClassName)) {
-                        $this->_commitOrderCalculator->addNodeWithItem(
-                            $targetClassName, // index/key
-                            $targetClass // item
-                        );
+                    if ( ! $this->_commitOrderCalculator->hasClass($targetClass->name)) {
+                        $this->_commitOrderCalculator->addClass($targetClass);
                     }
                     // add dependency
-                    $otherNode = $this->_commitOrderCalculator->getNodeForKey($targetClassName);
-                    $otherNode->before($node);
+                    $this->_commitOrderCalculator->addDependency($targetClass, $class);
                 }
             }
         }

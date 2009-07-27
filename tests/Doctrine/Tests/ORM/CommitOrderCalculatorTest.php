@@ -2,6 +2,8 @@
 
 namespace Doctrine\Tests\ORM;
 
+use Doctrine\ORM\Mapping\ClassMetadata;
+
 require_once __DIR__ . '/../TestInit.php';
 
 /**
@@ -19,34 +21,36 @@ class CommitOrderCalculatorTest extends \Doctrine\Tests\OrmTestCase
     {
         $this->_calc = new \Doctrine\ORM\Internal\CommitOrderCalculator();
     }
-
-    /** Helper to create an array of nodes */
-    private function _createNodes(array $names)
-    {
-        $nodes = array();
-        foreach ($names as $name) {
-            $node = new \Doctrine\ORM\Internal\CommitOrderNode($name, $this->_calc);
-            $nodes[$name] = $node;
-            $this->_calc->addNode($node->getClass(), $node);
-        }
-        return $nodes;
-    }
     
     public function testCommitOrdering1()
     {
-        $nodes = $this->_createNodes(array("node1", "node2", "node3", "node4", "node5"));
+        $class1 = new ClassMetadata(__NAMESPACE__ . '\NodeClass1');
+        $class2 = new ClassMetadata(__NAMESPACE__ . '\NodeClass2');
+        $class3 = new ClassMetadata(__NAMESPACE__ . '\NodeClass3');
+        $class4 = new ClassMetadata(__NAMESPACE__ . '\NodeClass4');
+        $class5 = new ClassMetadata(__NAMESPACE__ . '\NodeClass5');
         
-        $nodes['node1']->before($nodes['node2']);
-        $nodes['node2']->before($nodes['node3']);
-        $nodes['node3']->before($nodes['node4']);
-        $nodes['node5']->before($nodes['node1']);
+        $this->_calc->addClass($class1);
+        $this->_calc->addClass($class2);
+        $this->_calc->addClass($class3);
+        $this->_calc->addClass($class4);
+        $this->_calc->addClass($class5);
         
-        shuffle($nodes); // some randomness
+        $this->_calc->addDependency($class1, $class2);
+        $this->_calc->addDependency($class2, $class3);
+        $this->_calc->addDependency($class3, $class4);
+        $this->_calc->addDependency($class5, $class1);
 
         $sorted = $this->_calc->getCommitOrder();
         
         // There is only 1 valid ordering for this constellation
-        $correctOrder = array("node5", "node1", "node2", "node3", "node4");
+        $correctOrder = array($class5, $class1, $class2, $class3, $class4);
         $this->assertSame($correctOrder, $sorted);
     }
 }
+
+class NodeClass1 {}
+class NodeClass2 {}
+class NodeClass3 {}
+class NodeClass4 {}
+class NodeClass5 {}

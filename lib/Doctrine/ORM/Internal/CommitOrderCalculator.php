@@ -30,88 +30,14 @@ namespace Doctrine\ORM\Internal;
  */
 class CommitOrderCalculator
 {
-    private $_currentTime;
+    const NOT_VISITED = 1;
+    const IN_PROGRESS = 2;
+    const VISITED = 3;
     
-    /**
-     * The node list used for sorting.
-     *
-     * @var array
-     */
-    private $_nodes = array();
-    
-    /**
-     * The topologically sorted list of items. Note that these are not nodes
-     * but the wrapped items.
-     *
-     * @var array
-     */
-    private $_sorted;
-    
-    /**
-     * Orders the given list of CommitOrderNodes based on their dependencies.
-     * 
-     * Uses a depth-first search (DFS) to traverse the graph.
-     * The desired topological sorting is the reverse postorder of these searches.
-     *
-     * @param array $nodes  The list of (unordered) CommitOrderNodes.
-     * @return array  The list of ordered items. These are the items wrapped in the nodes.
-     */
-    public function getCommitOrder()
-    {
-        // Check whether we need to do anything. 0 or 1 node is easy.
-        $nodeCount = count($this->_nodes);
-        if ($nodeCount == 0) {
-            return array();
-        } else if ($nodeCount == 1) {
-            $node = array_pop($this->_nodes);
-            return array($node->getClass());
-        }
-        
-        $this->_sorted = array();
-        
-        // Init
-        foreach ($this->_nodes as $node) {
-            $node->markNotVisited();
-            $node->setPredecessor(null);
-        }
-        
-        $this->_currentTime = 0;
-        
-        // Go
-        foreach ($this->_nodes as $node) {
-            if ($node->isNotVisited()) {
-                $node->visit();
-            }
-        }
-        
-        return $this->_sorted;
-    }
-    
-    /**
-     * Adds a node to consider when ordering.
-     *
-     * @param mixed $key Somme arbitrary key for the node (must be unique!).
-     * @param unknown_type $node
-     */
-    public function addNode($key, $node)
-    {
-        $this->_nodes[$key] = $node;
-    }
-
-    public function addNodeWithItem($key, $item)
-    {
-        $this->_nodes[$key] = new CommitOrderNode($item, $this);
-    }
-
-    public function getNodeForKey($key)
-    {
-        return $this->_nodes[$key];
-    }
-    
-    public function hasNodeWithKey($key)
-    {
-        return isset($this->_nodes[$key]);
-    }
+    private $_nodeStates = array();
+    private $_classes = array(); // The nodes to sort
+    private $_relatedClasses = array();
+    private $_sorted = array();
     
     /**
      * Clears the current graph and the last result.
@@ -124,13 +50,74 @@ class CommitOrderCalculator
         $this->_sorted = array();
     }
     
-    public function getNextTime()
+    /**
+     * Gets a valid commit order for all current nodes.
+     * 
+     * Uses a depth-first search (DFS) to traverse the graph.
+     * The desired topological sorting is the reverse postorder of these searches.
+     *
+     * @return array  The list of ordered items. These are the items wrapped in the nodes.
+     */
+    public function getCommitOrder()
     {
-        return ++$this->_currentTime;
+        // Check whether we need to do anything. 0 or 1 node is easy.
+        $nodeCount = count($this->_classes);
+        if ($nodeCount == 0) {
+            return array();
+        } else if ($nodeCount == 1) {
+            return $this->_classes;
+        }
+        
+        // Init
+        $this->_sorted = array();
+        $this->_nodeStates = array();
+        foreach ($this->_classes as $node) {
+            $this->_nodeStates[$node->name] = self::NOT_VISITED;
+        }
+        
+        // Go
+        foreach ($this->_classes as $node) {
+            if ($this->_nodeStates[$node->name] == self::NOT_VISITED) {
+                $this->_visitNode($node);
+            }
+        }
+        
+        return array_reverse($this->_sorted);
     }
     
-    public function prependNode($node)
+    private function _visitNode($node)
     {
-        array_unshift($this->_sorted, $node->getClass());
+        $this->_nodeStates[$node->name] = self::IN_PROGRESS;
+        
+        if (isset($this->_relatedClasses[$node->name])) {
+            foreach ($this->_relatedClasses[$node->name] as $relatedNode) {
+                if ($this->_nodeStates[$relatedNode->name] == self::NOT_VISITED) {
+                    $this->_visitNode($relatedNode);
+                }
+                if ($this->_nodeStates[$relatedNode->name] == self::IN_PROGRESS) {
+                    // back edge => cycle
+                    //TODO: anything to do here?
+                }
+            }
+        }
+        
+        $this->_nodeStates[$node->name] = self::VISITED;
+
+        $this->_sorted[] = $node;
+    }
+    
+    public function addDependency($fromClass, $toClass)
+    {
+        $this->_relatedClasses[$fromClass->name][] = $toClass;
+    }
+    
+    public function hasClass($className)
+    {
+        return isset($this->_classes[$className]);
+    }
+    
+    public function addClass($class)
+    {
+        $this->_classes[$class->name] = $class;
     }
 }
