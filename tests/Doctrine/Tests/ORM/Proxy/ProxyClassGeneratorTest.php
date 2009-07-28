@@ -90,7 +90,7 @@ class ProxyClassGeneratorTest extends \Doctrine\Tests\OrmTestCase
         $proxyClass = $this->_generator->generateReferenceProxyClass('Doctrine\Tests\Models\ECommerce\ECommerceFeature');
         $persister = $this->_getMockPersister();
         $proxy = new $proxyClass($persister, $identifier);
-        $persister->expects($this->any())
+        $persister->expects($this->atLeastOnce())
                   ->method('load')
                   ->with($this->equalTo($identifier), $this->isInstanceOf($proxyClass));
         $proxy->getDescription();
@@ -102,7 +102,7 @@ class ProxyClassGeneratorTest extends \Doctrine\Tests\OrmTestCase
         $proxyClass = $this->_generator->generateReferenceProxyClass('Doctrine\Tests\Models\ECommerce\ECommerceFeature');
         $persister = $this->_getMockPersister();
         $proxy = new $proxyClass($persister, $identifier);
-        $persister->expects($this->once())
+        $persister->expects($this->atLeastOnce())
                   ->method('load')
                   ->with($this->equalTo($identifier), $this->isInstanceOf($proxyClass));
         $proxy->getId();
@@ -165,7 +165,7 @@ class ProxyClassGeneratorTest extends \Doctrine\Tests\OrmTestCase
         $foreignKeys = array('customer_id' => 42);
         $assoc = $this->_getAssociationMock();
         $proxy = new $proxyClass($this->_emMock, $assoc, $product, $foreignKeys);
-        $assoc->expects($this->any())
+        $assoc->expects($this->atLeastOnce())
               ->method('load')
               ->with($product, $this->isInstanceOf($proxyClass), $this->isInstanceOf('Doctrine\Tests\Mocks\EntityManagerMock'), $foreignKeys);
         $proxy->getDescription();

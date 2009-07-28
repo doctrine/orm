@@ -3,6 +3,7 @@
 namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\Tests\Models\ECommerce\ECommerceCategory;
+use Doctrine\ORM\Mapping\AssociationMapping;
 
 require_once __DIR__ . '/../../TestInit.php';
 
@@ -69,12 +70,7 @@ class OneToManySelfReferentialAssociationTest extends \Doctrine\Tests\OrmFunctio
 
     public function testEagerLoadsOneToManyAssociation()
     {
-        $this->parent->addChild($this->firstChild);
-        $this->parent->addChild($this->secondChild);
-        $this->_em->persist($this->parent);
-        
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->_createFixture();
 
         $query = $this->_em->createQuery('select c1, c2 from Doctrine\Tests\Models\ECommerce\ECommerceCategory c1 join c1.children c2');
         $result = $query->getResultList();
@@ -89,11 +85,36 @@ class OneToManySelfReferentialAssociationTest extends \Doctrine\Tests\OrmFunctio
         $this->assertSame($parent, $children[1]->getParent());
         $this->assertEquals(' books', strstr($children[1]->getName(), ' books'));
     }
-    
-    /* TODO: not yet implemented
-    public function testLazyLoad() {
+
+    public function testLazyLoadsOneToManyAssociation()
+    {
+        $this->_createFixture();
+        $this->_em->getConfiguration()->setAllowPartialObjects(false);
+        $metadata = $this->_em->getClassMetadata('Doctrine\Tests\Models\ECommerce\ECommerceCategory');
+        $metadata->getAssociationMapping('children')->fetchMode = AssociationMapping::FETCH_LAZY;
+
+        $query = $this->_em->createQuery('select c from Doctrine\Tests\Models\ECommerce\ECommerceCategory c order by c.id asc');
+        $result = $query->getResultList();
+        $parent = $result[0];
+        $children = $parent->getChildren();
         
-    }*/
+        $this->assertTrue($children[0] instanceof ECommerceCategory);
+        $this->assertSame($parent, $children[0]->getParent());
+        $this->assertEquals(' books', strstr($children[0]->getName(), ' books'));
+        $this->assertTrue($children[1] instanceof ECommerceCategory);
+        $this->assertSame($parent, $children[1]->getParent());
+        $this->assertEquals(' books', strstr($children[1]->getName(), ' books'));
+    }
+
+    private function _createFixture()
+    {
+        $this->parent->addChild($this->firstChild);
+        $this->parent->addChild($this->secondChild);
+        $this->_em->persist($this->parent);
+        
+        $this->_em->flush();
+        $this->_em->clear();
+    }
 
     public function assertForeignKeyIs($value, ECommerceCategory $child) {
         $foreignKey = $this->_em->getConnection()->execute('SELECT parent_id FROM ecommerce_categories WHERE id=?', array($child->getId()))->fetchColumn();

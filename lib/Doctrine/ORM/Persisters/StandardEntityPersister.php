@@ -35,6 +35,7 @@ use Doctrine\ORM\Events;
  * how to persist (and to some extent how to load) entities of a specific type.
  *
  * @author      Roman Borschel <roman@code-factory.org>
+ * @author      Giorgio Sironi <piccoloprincipeazzurro@gmail.com>
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @version     $Revision: 3406 $
  * @link        www.doctrine-project.org
@@ -396,10 +397,26 @@ class StandardEntityPersister
     {
         $stmt = $this->_conn->prepare($this->_getSelectSingleEntitySql($criteria));
         $stmt->execute(array_values($criteria));
-        $data = array();
-        $joinColumnValues = array();
         $result = $stmt->fetch(Connection::FETCH_ASSOC);
         $stmt->closeCursor();
+        return $this->_createEntity($result, $entity);
+    }
+
+    public function loadCollection(array $criteria, PersistentCollection $collection)
+    {
+        $sql = $this->_getSelectSingleEntitySql($criteria);
+        $stmt = $this->_conn->prepare($sql);
+        $stmt->execute(array_values($criteria));
+        while ($result = $stmt->fetch(Connection::FETCH_ASSOC)) {
+            $collection->hydrateAdd($this->_createEntity($result));
+        }
+        $stmt->closeCursor();
+    }
+
+    private function _createEntity($result, $entity = null)
+    {
+        $data = array();
+        $joinColumnValues = array();
         
         if ($result === false) {
             return null;
@@ -448,10 +465,15 @@ class StandardEntityPersister
                     }
                 } else {
                     // Inject collection
-                    //TODO: Eager load
-                    $this->_class->reflFields[$field]->setValue(
-                        $entity, new PersistentCollection($this->_em, $this->_em->getClassMetadata($assoc->targetEntityName)
-                    ));
+                    $coll = new PersistentCollection($this->_em, $this->_em->getClassMetadata($assoc->targetEntityName));
+                    $coll->setOwner($entity, $assoc);
+                    $this->_class->reflFields[$field]->setValue($entity, $coll);
+                    if ($assoc->isLazilyFetched()) {
+                        $coll->setLazyInitialization();
+                    } else {
+                        //TODO: Allow more efficient and configurable batching of these loads
+                        $assoc->load($entity, $coll, $this->_em);
+                    }
                 }
             }
         }
@@ -461,11 +483,14 @@ class StandardEntityPersister
 
     /**
      * Gets the SELECT SQL to select a single entity by a set of field criteria.
+     * No joins are used but the query can return multiple rows.
      *
-     * @param array $criteria
+     * @param array $criteria       every element can be a value or an joinClause
+     *                              if it is a joinClause, it will be removed and correspondent nested values will be added to $criteria.
+     *                              JoinClauses are used to restrict the result returned but only columns of this entity are selected (@see _getJoinSql()).
      * @return string The SQL.
      */
-    protected function _getSelectSingleEntitySql(array $criteria)
+    protected function _getSelectSingleEntitySql(array &$criteria)
     {
         $columnList = '';
         foreach ($this->_class->columnNames as $column) {
@@ -485,9 +510,23 @@ class StandardEntityPersister
             }
         }
 
+        $joinSql = '';
         $conditionSql = '';
         foreach ($criteria as $field => $value) {
-            if ($conditionSql != '') $conditionSql .= ' AND ';
+            if ($conditionSql != '') {
+                $conditionSql .= ' AND ';
+            }
+
+            if (is_array($value)) {
+                $joinSql .= $this->_getJoinSql($value);
+                foreach ($value['criteria'] as $nestedField => $nestedValue) {
+                    $columnName = "{$value['table']}.{$nestedField}";
+                    $conditionSql .= $this->_conn->quoteIdentifier($columnName) . ' = ?';
+                    $criteria[$columnName] = $nestedValue;
+                }
+                unset($criteria[$field]);
+                continue;
+            }
             if (isset($this->_class->columnNames[$field])) {
                 $columnName = $this->_class->columnNames[$field];
             } else if (in_array($field, $joinColumnNames)) {
@@ -498,7 +537,27 @@ class StandardEntityPersister
             $conditionSql .= $this->_conn->quoteIdentifier($columnName) . ' = ?';
         }
 
-        return 'SELECT ' . $columnList . ' FROM ' . $this->_class->getTableName()
-                . ' WHERE ' . $conditionSql;
+        return 'SELECT ' . $columnList 
+             . ' FROM ' . $this->_class->getTableName()
+             . $joinSql
+             . ' WHERE ' . $conditionSql;
+    }
+
+    /**
+     * Builds a LEFT JOIN sql query part using $joinClause
+     * @param array $joinClause     keys are:
+     *                              'table' => table to join
+     *                              'join' => array of [sourceField => joinTableField]
+     *                              'criteria' => array of [joinTableField => value]
+     * @return string
+     */
+    protected function _getJoinSql(array $joinClause)
+    {
+        $clauses = array();
+        foreach ($joinClause['join'] as $sourceField => $joinTableField) {
+            $clauses[] = $this->_class->getTableName() . ".{$sourceField} = "
+                       . "{$joinClause['table']}.{$joinTableField}";
+        }
+        return " LEFT JOIN {$joinClause['table']} ON " . implode(' AND ', $clauses);
     }
 }

@@ -391,14 +391,28 @@ abstract class AssociationMapping
     }
 
     /**
-     * Loads data in $targetEntity domain object using this association.
+     * Loads data in $target domain object using this association.
      * The data comes from the association navigated from $sourceEntity
      * using $em.
      *
      * @param object $sourceEntity
-     * @param object $targetEntity
+     * @param object $target            an entity or a collection
      * @param EntityManager $em
-     * @param array $joinColumnValues
+     * @param array $joinColumnValues   foreign keys (significative for this
+     *                                  association) of $sourceEntity, if needed
      */
-    abstract public function load($sourceEntity, $targetEntity, $em, array $joinColumnValues);
+    abstract public function load($sourceEntity, $target, $em, array $joinColumnValues = array());
+
+    /**
+     * Uses reflection to access internal data of entities.
+     * @param ClassMetadata $class
+     * @param $entity                   a domain object
+     * @param $column                   name of private field
+     * @return mixed
+     */
+    protected function _getPrivateValue(ClassMetadata $class, $entity, $column)
+    {
+        $reflField = $class->getReflectionProperty($class->getFieldName($column));
+        return $reflField->getValue($entity);
+    }
 }

@@ -19,55 +19,34 @@
  * <http://www.doctrine-project.org>.
  */
 
-namespace Doctrine\ORM\Query\AST;
+namespace Doctrine\Common\Util;
 
 /**
- * AST node for the following grammar rule:
- *
- * OrderByItem ::= (ResultVariable | StateFieldPathExpression) ["ASC" | "DESC"]
- *
- * @author Guilherme Blanco <guilhermeblanco@hotmail.com>
- * @author Roman Borschel <roman@code-factory.org>
+ * Static class containing most used debug methods.
+ * @author Giorgio Sironi <piccoloprincipeazzurro@gmail.com>
  * @since 2.0
  */
-class OrderByItem extends Node
+final class Debug
 {
-    private $_expr;
-    private $_asc;
-    private $_desc;
+    private function __construct() {}
 
-    public function __construct($expr)
+    /**
+     * Prints a dump of the public, protected and private properties of $var.
+     * To print a meaningful dump, whose depth is limited, requires xdebug 
+     * php extension.
+     * @link http://xdebug.org/
+     * @param mixed $var
+     * @param integer $maxDepth     maximum nesting level for object properties
+     */
+    public static function dump($var, $maxDepth = 2)
     {
-        $this->_expr = $expr;
-    }
-
-    public function getExpression()
-    {
-        return $this->_expr;
-    }
-
-    public function setAsc($bool)
-    {
-        $this->_asc = $bool;
-    }
-
-    public function isAsc()
-    {
-        return $this->_asc;
-    }
-
-    public function setDesc($bool)
-    {
-        $this->_desc = $bool;
-    }
-
-    public function isDesc()
-    {
-        return $this->_desc;
-    }
-
-    public function dispatch($sqlWalker)
-    {
-        return $sqlWalker->walkOrderByItem($this);
+        ini_set('html_errors', 'On');
+        ini_set('xdebug.var_display_max_depth', $maxDepth);
+        ob_start();
+        var_dump($var);
+        $dump = ob_get_contents();
+        ob_end_clean();
+        echo strip_tags(html_entity_decode($dump));
+        ini_set('html_errors', 'Off');
     }
 }

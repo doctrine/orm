@@ -163,7 +163,7 @@ class OneToOneMapping extends AssociationMapping
      * @param array $joinColumnValues  values of the join columns of $sourceEntity. There are no fields
      *                                 to store this data in $sourceEntity
      */
-    public function load($sourceEntity, $targetEntity, $em, array $joinColumnValues)
+    public function load($sourceEntity, $targetEntity, $em, array $joinColumnValues = array())
     {
         $sourceClass = $em->getClassMetadata($this->sourceEntityName);
         $targetClass = $em->getClassMetadata($this->targetEntityName);
@@ -189,12 +189,13 @@ class OneToOneMapping extends AssociationMapping
             }
         } else {
             $owningAssoc = $em->getClassMetadata($this->targetEntityName)->getAssociationMapping($this->mappedByFieldName);
-            foreach ($owningAssoc->getTargetToSourceKeyColumns() as $targetKeyColumn => $sourceKeyColumn) {
+            // TRICKY: since the association is specular source and target are flipped
+            foreach ($owningAssoc->getTargetToSourceKeyColumns() as $sourceKeyColumn => $targetKeyColumn) {
                 // getting id
-                if (isset($sourceClass->reflFields[$targetKeyColumn])) {
-                    $conditions[$sourceKeyColumn] = $this->_getPrivateValue($sourceClass, $sourceEntity, $targetKeyColumn);
+                if (isset($sourceClass->reflFields[$sourceKeyColumn])) {
+                    $conditions[$targetKeyColumn] = $this->_getPrivateValue($sourceClass, $sourceEntity, $sourceKeyColumn);
                 } else {
-                    $conditions[$sourceKeyColumn] = $joinColumnValues[$targetKeyColumn];
+                    $conditions[$targetKeyColumn] = $joinColumnValues[$sourceKeyColumn];
                 }
             }
             
@@ -202,11 +203,5 @@ class OneToOneMapping extends AssociationMapping
             
             $targetClass->setFieldValue($targetEntity, $this->mappedByFieldName, $sourceEntity);
         }
-    }
-
-    protected function _getPrivateValue(ClassMetadata $class, $entity, $column)
-    {
-        $reflField = $class->getReflectionProperty($class->getFieldName($column));
-        return $reflField->getValue($entity);
     }
 }

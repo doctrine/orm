@@ -4,6 +4,7 @@ namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Tests\Models\ECommerce\ECommerceProduct;
+use Doctrine\ORM\Mapping\AssociationMapping;
 
 require_once __DIR__ . '/../../TestInit.php';
 
@@ -65,8 +66,26 @@ class ManyToManySelfReferentialAssociationTest extends AbstractManyToManyAssocia
     public function testEagerLoadsOwningSide()
     {
         $this->_createLoadingFixture();
-        list ($firstProduct, $secondProduct) = $this->_findProducts();
-        
+        $products = $this->_findProducts();
+        $this->assertLoadingOfOwningSide($products); 
+    }
+
+    public function testLazyLoadsOwningSide()
+    {
+        $this->_createLoadingFixture();
+
+        $this->_em->getConfiguration()->setAllowPartialObjects(false);
+        $metadata = $this->_em->getClassMetadata('Doctrine\Tests\Models\ECommerce\ECommerceProduct');
+        $metadata->getAssociationMapping('related')->fetchMode = AssociationMapping::FETCH_LAZY;
+
+        $query = $this->_em->createQuery('SELECT p FROM Doctrine\Tests\Models\ECommerce\ECommerceProduct p');
+        $products = $query->getResultList();
+        $this->assertLoadingOfOwningSide($products); 
+    }
+
+    public function assertLoadingOfOwningSide($products)
+    {
+        list ($firstProduct, $secondProduct) = $products;
         $this->assertEquals(2, count($firstProduct->getRelated()));
         $this->assertEquals(2, count($secondProduct->getRelated()));
         
@@ -103,9 +122,4 @@ class ManyToManySelfReferentialAssociationTest extends AbstractManyToManyAssocia
         $query = $this->_em->createQuery('SELECT p, r FROM Doctrine\Tests\Models\ECommerce\ECommerceProduct p LEFT JOIN p.related r ORDER BY p.id, r.id');
         return $query->getResultList();
     }
-    
-    /* TODO: not yet implemented
-    public function testLazyLoad() {
-        
-    }*/
 }

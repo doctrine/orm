@@ -137,7 +137,6 @@ class ObjectHydrator extends AbstractHydrator
      * Updates the result pointer for an entity. The result pointers point to the
      * last seen instance of each entity type. This is used for graph construction.
      *
-     * @param array $resultPointers  The result pointers.
      * @param Collection $coll  The element.
      * @param boolean|integer $index  Index of the element in the collection.
      * @param string $dqlAlias
@@ -173,6 +172,7 @@ class ObjectHydrator extends AbstractHydrator
      *
      * @param object $entity The entity to which the collection belongs.
      * @param string $name The name of the field on the entity that holds the collection.
+     * @return PersistentCollection
      */
     private function initRelatedCollection($entity, $name)
     {
@@ -190,6 +190,7 @@ class ObjectHydrator extends AbstractHydrator
         $classMetadata->reflFields[$name]->setValue($entity, $coll);
         $this->_uow->setOriginalEntityProperty($oid, $name, $coll);
         $this->_initializedRelations[$oid][$name] = true;
+        return $coll;
     }
 
     /**
@@ -263,13 +264,14 @@ class ObjectHydrator extends AbstractHydrator
                             $assoc->load($entity, new $assoc->targetEntityName, $this->_em, $joinColumns);
                         }
                     } else {
-                        //TODO: Eager load
                         // Inject collection
-                        $this->_ce[$className]->reflFields[$field]
-                            ->setValue($entity, new PersistentCollection(
-                                $this->_em,
-                                $this->_em->getClassMetadata($assoc->targetEntityName)
-                            ));
+                        $collection = $this->initRelatedCollection($entity, $field);
+                        if ($assoc->isLazilyFetched()) {
+                            $collection->setLazyInitialization();
+                        } else {
+                            //TODO: Allow more efficient and configurable batching of these loads
+                            $assoc->load($entity, $collection, $this->_em);
+                        }
                     }
                 }
             }

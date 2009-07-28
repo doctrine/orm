@@ -3,6 +3,7 @@
 namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\Tests\Models\ECommerce\ECommerceCustomer;
+use Doctrine\ORM\Mapping\AssociationMapping;
 
 require_once __DIR__ . '/../../TestInit.php';
 
@@ -47,7 +48,42 @@ class OneToOneSelfReferentialAssociationTest extends \Doctrine\Tests\OrmFunction
         $this->assertForeignKeyIs(null);
     }
 
-    public function testEagerLoad()
+    public function testEagerLoadsAssociation()
+    {
+        $this->_createFixture();
+
+        $query = $this->_em->createQuery('select c, m from Doctrine\Tests\Models\ECommerce\ECommerceCustomer c left join c.mentor m order by c.id asc');
+        $result = $query->getResultList();
+        $customer = $result[0];
+        $this->assertLoadingOfAssociation($customer);
+    }
+    
+    public function testLazyLoadsAssociation()
+    {    
+        $this->_createFixture();
+
+        $this->_em->getConfiguration()->setAllowPartialObjects(false);
+        $metadata = $this->_em->getClassMetadata('Doctrine\Tests\Models\ECommerce\ECommerceCustomer');
+        $metadata->getAssociationMapping('mentor')->fetchMode = AssociationMapping::FETCH_LAZY;
+        
+        $query = $this->_em->createQuery('select c from Doctrine\Tests\Models\ECommerce\ECommerceCustomer c');
+        $result = $query->getResultList();
+        $customer = $result[0];
+        $this->assertLoadingOfAssociation($customer);
+    }
+
+    public function assertLoadingOfAssociation($customer)
+    {
+        $this->assertTrue($customer->getMentor() instanceof ECommerceCustomer);
+        $this->assertEquals('Obi-wan Kenobi', $customer->getMentor()->getName());
+    }
+
+    public function assertForeignKeyIs($value) {
+        $foreignKey = $this->_em->getConnection()->execute('SELECT mentor_id FROM ecommerce_customers WHERE id=?', array($this->customer->getId()))->fetchColumn();
+        $this->assertEquals($value, $foreignKey);
+    }
+
+    private function _createFixture()
     {
         $customer = new ECommerceCustomer;
         $customer->setName('Luke Skywalker');
@@ -59,22 +95,5 @@ class OneToOneSelfReferentialAssociationTest extends \Doctrine\Tests\OrmFunction
         
         $this->_em->flush();
         $this->_em->clear();
-
-        $query = $this->_em->createQuery('select c, m from Doctrine\Tests\Models\ECommerce\ECommerceCustomer c left join c.mentor m order by c.id asc');
-        $result = $query->getResultList();
-        $customer = $result[0];
-        
-        $this->assertTrue($customer->getMentor() instanceof ECommerceCustomer);
-        $this->assertEquals('Obi-wan Kenobi', $customer->getMentor()->getName());
-    }
-    
-    /* TODO: not yet implemented
-    public function testLazyLoad() {
-        
-    }*/
-
-    public function assertForeignKeyIs($value) {
-        $foreignKey = $this->_em->getConnection()->execute('SELECT mentor_id FROM ecommerce_customers WHERE id=?', array($this->customer->getId()))->fetchColumn();
-        $this->assertEquals($value, $foreignKey);
     }
 }

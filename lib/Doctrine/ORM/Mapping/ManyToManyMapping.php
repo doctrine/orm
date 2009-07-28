@@ -35,6 +35,7 @@ namespace Doctrine\ORM\Mapping;
  *
  * @since 2.0
  * @author Roman Borschel <roman@code-factory.org>
+ * @author Giorgio Sironi <piccoloprincipeazzurro@gmail.com>
  */
 class ManyToManyMapping extends AssociationMapping
 {
@@ -138,9 +139,47 @@ class ManyToManyMapping extends AssociationMapping
         return $this->targetKeyColumns;
     }
 
-    public function load($owningEntity, $targetEntity, $em, array $joinColumnValues)
+    /**
+     * Loads entities in $targetCollection using $em.
+     * The data of $sourceEntity are used to restrict the collection
+     * via the join table.
+     */
+    public function load($sourceEntity, $targetCollection, $em, array $joinColumnValues = array())
     {
-        throw new Exception('Not yet implemented.');
+        $sourceClass = $em->getClassMetadata($this->sourceEntityName);
+        $joinTableConditions = array();
+        if ($this->isOwningSide()) {
+            $joinTable = $this->getJoinTable();
+            $joinClauses = $this->getTargetToRelationKeyColumns();
+            foreach ($this->getSourceToRelationKeyColumns() as $sourceKeyColumn => $relationKeyColumn) {
+                // getting id
+                if (isset($sourceClass->reflFields[$sourceKeyColumn])) {
+                    $joinTableConditions[$relationKeyColumn] = $this->_getPrivateValue($sourceClass, $sourceEntity, $sourceKeyColumn);
+                } else {
+                    $joinTableConditions[$relationKeyColumn] = $joinColumnValues[$sourceKeyColumn];
+                }
+            }
+        } else {
+            $owningAssoc = $em->getClassMetadata($this->targetEntityName)->getAssociationMapping($this->mappedByFieldName);
+            $joinTable = $owningAssoc->getJoinTable();
+            // TRICKY: since the association is inverted source and target are flipped
+            $joinClauses = $owningAssoc->getSourceToRelationKeyColumns();
+            foreach ($owningAssoc->getTargetToRelationKeyColumns() as $sourceKeyColumn => $relationKeyColumn) {
+                // getting id
+                if (isset($sourceClass->reflFields[$sourceKeyColumn])) {
+                    $joinTableConditions[$relationKeyColumn] = $this->_getPrivateValue($sourceClass, $sourceEntity, $sourceKeyColumn);
+                } else {
+                    $joinTableConditions[$relationKeyColumn] = $joinColumnValues[$sourceKeyColumn];
+                }
+            }
+        }
+        $joinTableCriteria = array(
+            'table' => $joinTable['name'],
+            'join' => $joinClauses,
+            'criteria' => $joinTableConditions
+        );
+        $persister = $em->getUnitOfWork()->getEntityPersister($this->targetEntityName);
+        $persister->loadCollection(array($joinTableCriteria), $targetCollection);
     }
 
     /**

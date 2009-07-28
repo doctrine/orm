@@ -86,5 +86,6 @@ class DetachedEntityTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertTrue($this->_em->contains($phonenumbers[0]));
         $this->assertTrue($this->_em->contains($phonenumbers[1]));
     }
+
 }
 

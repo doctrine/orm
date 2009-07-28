@@ -273,7 +273,7 @@ class JoinedSubclassPersister extends StandardEntityPersister
      * @todo Quote identifier.
      * @override
      */
-    protected function _getSelectSingleEntitySql(array $criteria)
+    protected function _getSelectSingleEntitySql(array &$criteria)
     {
         $tableAliases = array();
         $aliasIndex = 1;

@@ -66,6 +66,29 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
         );
     }
 
+    public function testSupportsOrderByWithAscAsDefault()
+    {
+        $this->assertSqlGeneration(
+            'SELECT u FROM Doctrine\Tests\Models\Forum\ForumUser u ORDER BY u.id',
+            'SELECT f0_.id AS id0, f0_.username AS username1 FROM forum_users f0_ ORDER BY f0_.id ASC '
+        );
+    }
+
+    public function testSupportsOrderByAsc()
+    {
+        $this->assertSqlGeneration(
+            'SELECT u FROM Doctrine\Tests\Models\Forum\ForumUser u ORDER BY u.id asc',
+            'SELECT f0_.id AS id0, f0_.username AS username1 FROM forum_users f0_ ORDER BY f0_.id ASC '
+        );
+    }
+    public function testSupportsOrderByDesc()
+    {
+        $this->assertSqlGeneration(
+            'SELECT u FROM Doctrine\Tests\Models\Forum\ForumUser u ORDER BY u.id desc',
+            'SELECT f0_.id AS id0, f0_.username AS username1 FROM forum_users f0_ ORDER BY f0_.id DESC '
+        );
+    }
+
     public function testSupportsSelectDistinct()
     {
         $this->assertSqlGeneration(

@@ -23,6 +23,7 @@ namespace Doctrine\ORM;
 
 use Doctrine\Common\DoctrineException;
 use Doctrine\ORM\Mapping\AssociationMapping;
+use \Closure;
 
 /**
  * A PersistentCollection represents a collection of elements that have persistent state.
@@ -41,6 +42,7 @@ use Doctrine\ORM\Mapping\AssociationMapping;
  * @version   $Revision: 4930 $
  * @author    Konsta Vesterinen <kvesteri@cc.hut.fi>
  * @author    Roman Borschel <roman@code-factory.org>
+ * @author    Giorgio Sironi <piccoloprincipeazzurro@gmail.com>
  */
 final class PersistentCollection extends \Doctrine\Common\Collections\Collection
 {
@@ -110,7 +112,7 @@ final class PersistentCollection extends \Doctrine\Common\Collections\Collection
     private $_isDirty = false;
 
     /** Whether the collection has already been initialized. */
-    private $_initialized = false;
+    protected $_initialized = true;
 
     /**
      * Creates a new persistent collection.
@@ -188,74 +190,36 @@ final class PersistentCollection extends \Doctrine\Common\Collections\Collection
         return $this->_typeClass;
     }
 
-    /**
-     * Removes an element from the collection.
-     *
-     * @param mixed $key
-     * @return boolean
-     * @override
-     */
-    public function remove($key)
+    public function setLazyInitialization()
     {
-        $removed = parent::remove($key);
-        if ($removed) {
-            $this->_changed();
-            if ($this->_association->isOneToMany() && $this->_association->orphanRemoval) {
-                $this->_em->getUnitOfWork()->scheduleOrphanRemoval($removed);
-            }
-        }
-        
-        return $removed;
-    }
-
-    /**
-     * When the collection is used as a Map this is like put(key,value)/add(key,value).
-     * When the collection is used as a List this is like add(position,value).
-     *
-     * @param integer $key
-     * @param mixed $value
-     * @override
-     */
-    public function set($key, $value)
-    {
-        parent::set($key, $value);
-        $this->_changed();
-    }
-
-    /**
-     * Adds an element to the collection.
-     *
-     * @param mixed $value
-     * @param string $key
-     * @return boolean Always TRUE.
-     * @override
-     */
-    public function add($value)
-    {
-        parent::add($value);
-        $this->_changed();
-        return true;
+        $this->_initialized = false;
     }
 
     /**
      * INTERNAL:
-     * Adds an element to a collection during hydration.
+     * Adds an element to a collection during hydration, if it not already set.
+     * This control is performed to avoid infinite recursion during hydration
+     * of bidirectional many-to-many collections.
      * 
-     * @param mixed $value The element to add.
+     * @param mixed $element The element to add.
      */
-    public function hydrateAdd($value)
+    public function hydrateAdd($element)
     {
-        parent::add($value);
+        if (parent::contains($element)) {
+            return;
+        }
+        parent::add($element);
         if ($this->_backRefFieldName) {
             // Set back reference to owner
             if ($this->_association->isOneToMany()) {
                 // OneToMany
                 $this->_typeClass->reflFields[$this->_backRefFieldName]
-                        ->setValue($value, $this->_owner);
+                        ->setValue($element, $this->_owner);
             } else {
                 // ManyToMany
-                $this->_typeClass->reflFields[$this->_backRefFieldName]
-                        ->getValue($value)->add($this->_owner);
+                $otherCollection = $this->_typeClass->reflFields[$this->_backRefFieldName]
+                        ->getValue($element);
+                $otherCollection->hydrateAdd($this->_owner);
             }
         }
     }
@@ -273,41 +237,14 @@ final class PersistentCollection extends \Doctrine\Common\Collections\Collection
     }
 
     /**
-     * Checks whether an element is contained in the collection.
-     * This is an O(n) operation.
-     */
-    public function contains($element)
-    {
-
-        if ( ! $this->_initialized) {
-            //TODO: Probably need to hit the database here...?
-            //return $this->_checkElementExistence($element);
-        }
-        return parent::contains($element);
-    }
-
-    /**
-     * @override
-     */
-    public function count()
-    {
-        if ( ! $this->_initialized) {
-            //TODO: Initialize
-        }
-        return parent::count();
-    }
-
-    private function _checkElementExistence($element)
-    {
-
-    }
-    
-    /**
      * Initializes the collection by loading its contents from the database.
      */
     private function _initialize()
     {
-        
+        if (!$this->_initialized) {
+            $this->_association->load($this->_owner, $this, $this->_em);
+            $this->_initialized = true;
+        }
     }
 
     /**
@@ -371,25 +308,7 @@ final class PersistentCollection extends \Doctrine\Common\Collections\Collection
         return $this->_association;
     }
 
-    /**
-     * Clears the collection.
-     */
-    public function clear()
-    {
-        //TODO: Register collection as dirty with the UoW if necessary
-        //TODO: If oneToMany() && shouldDeleteOrphan() delete entities
-        /*if ($this->_association->isOneToMany() && $this->_association->shouldDeleteOrphans) {
-        foreach ($this->_data as $entity) {
-        $this->_em->remove($entity);
-        }
-        }*/
-        parent::clear();
-        if ($this->_association->isOwningSide) {
-            $this->_changed();
-            $this->_em->getUnitOfWork()->scheduleCollectionDeletion($this);
-        }
-    }
-    
+   
     /**
      * Marks this collection as changed/dirty.
      */
@@ -440,6 +359,236 @@ final class PersistentCollection extends \Doctrine\Common\Collections\Collection
      */
     public function __sleep()
     {
-        return array('_elements');
+        return array('_elements', '_initialized');
+    }
+
+    /**
+     * Decorated Collection methods.
+     */
+    public function unwrap()
+    {
+        $this->_initialize();
+        return parent::unwrap();
+    }
+
+    public function first()
+    {
+        $this->_initialize();
+        return parent::first();
+    }
+
+    public function last()
+    {
+        $this->_initialize();
+        return parent::last();
+    }
+
+    public function key()
+    {
+        $this->_initialize();
+        return parent::key();
+    }
+
+    /**
+     * Removes an element from the collection.
+     *
+     * @param mixed $key
+     * @return boolean
+     * @override
+     */
+    public function remove($key)
+    {
+        $this->_initialize();
+        $removed = parent::remove($key);
+        if ($removed) {
+            $this->_changed();
+            if ($this->_association->isOneToMany() && $this->_association->orphanRemoval) {
+                $this->_em->getUnitOfWork()->scheduleOrphanRemoval($removed);
+            }
+        }
+        
+        return $removed;
+    }
+
+    public function removeElement($element)
+    {
+        $this->_initialize();
+        $result = parent::removeElement($element);
+        $this->_changed();
+        return $result;
+    }
+
+    public function offsetExists($offset)
+    {
+        $this->_initialize();
+        return parent::offsetExists($offset);
+    }
+
+    public function offsetGet($offset)
+    {
+        $this->_initialize();
+        return parent::offsetGet($offset);
+    }
+
+    public function offsetSet($offset, $value)
+    {
+        $this->_initialize();
+        $result = parent::offsetSet($offset, $value);
+        $this->_changed();
+        return $result;
+    }
+
+    public function offsetUnset($offset)
+    {
+        $this->_initialize();
+        $result = parent::offsetUnset($offset);
+        $this->_changed();
+        return $result;
+    }
+
+    public function containsKey($key)
+    {
+        $this->_initialize();
+        return parent::containsKey($key);
+    }
+
+    /**
+     * Checks whether an element is contained in the collection.
+     * This is an O(n) operation.
+     */
+    public function contains($element)
+    {
+        $this->_initialize();
+        return parent::contains($element);
+    }
+
+    public function exists(Closure $p)
+    {
+        $this->_initialize();
+        return parent::exists($p);
+    }
+
+    public function search($element)
+    {
+        $this->_initialize();
+        return parent::search($element);
+    }
+
+    public function get($key)
+    {
+        $this->_initialize();
+        return parent::get($key);
+    }
+
+    public function getKeys()
+    {
+        $this->_initialize();
+        return parent::getKeys();
+    }
+
+    public function getElements()
+    {
+        $this->_initialize();
+        return parent::getElements();
+    }
+
+    /**
+     * @override
+     */
+    public function count()
+    {
+        $this->_initialize();
+        return parent::count();
+    }
+
+    /**
+     * When the collection is used as a Map this is like put(key,value)/add(key,value).
+     * When the collection is used as a List this is like add(position,value).
+     *
+     * @param integer $key
+     * @param mixed $value
+     * @override
+     */
+    public function set($key, $value)
+    {
+        $this->_initialize();
+        $result = parent::set($key, $value);
+        $this->_changed();
+        return $result;
+    }
+
+    /**
+     * Adds an element to the collection.
+     *
+     * @param mixed $value
+     * @param string $key
+     * @return boolean Always TRUE.
+     * @override
+     */
+    public function add($value)
+    {
+        $this->_initialize();
+        $result = parent::add($value);
+        $this->_changed();
+        return $result;
+    }
+
+    public function isEmpty()
+    {
+        $this->_initialize();
+        return parent::isEmpty();
+    }
+
+    public function getIterator()
+    {
+        $this->_initialize();
+        return parent::getIterator();
+    }
+
+    public function map(Closure $func)
+    {
+        $this->_initialize();
+        $result = parent::map($func);
+        $this->_changed();
+        return $result;
+    }
+
+    public function filter(Closure $p)
+    {
+        $this->_initialize();
+        return parent::filter($p);
+    }
+
+    public function forAll(Closure $p)
+    {
+        $this->_initialize();
+        return parent::forAll($p);
+    }
+
+    public function partition(Closure $p)
+    {
+        $this->_initialize();
+        return parent::partition($p);
+    }
+
+    /**
+     * Clears the collection.
+     */
+    public function clear()
+    {
+        $this->_initialize();
+        //TODO: Register collection as dirty with the UoW if necessary
+        //TODO: If oneToMany() && shouldDeleteOrphan() delete entities
+        /*if ($this->_association->isOneToMany() && $this->_association->shouldDeleteOrphans) {
+        foreach ($this->_data as $entity) {
+        $this->_em->remove($entity);
+        }
+        }*/
+        $result = parent::clear();
+        if ($this->_association->isOwningSide) {
+            $this->_changed();
+            $this->_em->getUnitOfWork()->scheduleCollectionDeletion($this);
+        }
+        return $result;
     }
 }

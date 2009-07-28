@@ -1164,16 +1164,16 @@ class Parser
         if ($this->_lexer->isNextToken(Lexer::T_ASC)) {
             $this->match(Lexer::T_ASC);
             $item->setAsc(true);
-            
             return $item;
         }
         
         if ($this->_lexer->isNextToken(Lexer::T_DESC)) {
             $this->match(Lexer::T_DESC);
+            $item->setDesc(true);
+            return $item;
         }
         
-        $item->setDesc(true);
-        
+        $item->setAsc(true);
         return $item;
     }
 

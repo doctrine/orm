@@ -38,6 +38,7 @@ namespace Doctrine\ORM\Mapping;
  *    the serialized representation).
  *
  * @author Roman Borschel <roman@code-factory.org>
+ * @author Giorgio Sironi <piccoloprincipeazzurro@gmail.com>
  * @since 2.0
  */
 class OneToManyMapping extends AssociationMapping
@@ -47,6 +48,13 @@ class OneToManyMapping extends AssociationMapping
     /** FUTURE: The key column mapping, if any. The key column holds the keys of the Collection. */
     //public $keyColumn;
     
+    /** 
+     * TODO: Allow any combination of source/target columns in lazy loading.
+     * What is supported now is primary key (that can spread on multiple fields)
+     * pointed to foreign keys on the target
+    public $targetColumns;
+     */
+
     /**
      * Initializes a new OneToManyMapping.
      *
@@ -67,7 +75,7 @@ class OneToManyMapping extends AssociationMapping
     protected function _validateAndCompleteMapping(array $mapping)
     {
         parent::_validateAndCompleteMapping($mapping);
-        
+
         // one-side MUST be inverse (must have mappedBy)
         if ( ! isset($mapping['mappedBy'])) {
             throw MappingException::oneToManyRequiresMappedBy($mapping['fieldName']);
@@ -97,8 +105,22 @@ class OneToManyMapping extends AssociationMapping
         return true;
     }
 
-    public function load($owningEntity, $targetEntity, $em, array $joinColumnValues)
+    public function load($sourceEntity, $targetCollection, $em, array $joinColumnValues = array())
     {
-        throw new Exception('Not yet implemented.');
+        $persister = $em->getUnitOfWork()->getEntityPersister($this->targetEntityName);
+        // a one-to-many is always inverse (does not have foreign key)
+        $sourceClass = $em->getClassMetadata($this->sourceEntityName);
+        $owningAssoc = $em->getClassMetadata($this->targetEntityName)->getAssociationMapping($this->mappedByFieldName);
+        // TRICKY: since the association is specular source and target are flipped
+        foreach ($owningAssoc->getTargetToSourceKeyColumns() as $sourceKeyColumn => $targetKeyColumn) {
+            // getting id
+            if (isset($sourceClass->reflFields[$sourceKeyColumn])) {
+                $conditions[$targetKeyColumn] = $this->_getPrivateValue($sourceClass, $sourceEntity, $sourceKeyColumn);
+            } else {
+                $conditions[$targetKeyColumn] = $joinColumnValues[$sourceKeyColumn];
+            }
+        }
+
+        $persister->loadCollection($conditions, $targetCollection);
     }
 }
