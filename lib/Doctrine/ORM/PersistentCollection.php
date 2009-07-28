@@ -203,13 +203,10 @@ final class PersistentCollection extends \Doctrine\Common\Collections\Collection
      * 
      * @param mixed $element The element to add.
      */
-    public function hydrateAdd($element)
+    public function hydrateAdd($element, $setBackRef = true)
     {
-        if (parent::contains($element)) {
-            return;
-        }
         parent::add($element);
-        if ($this->_backRefFieldName) {
+        if ($this->_backRefFieldName and $setBackRef) {
             // Set back reference to owner
             if ($this->_association->isOneToMany()) {
                 // OneToMany
@@ -219,7 +216,7 @@ final class PersistentCollection extends \Doctrine\Common\Collections\Collection
                 // ManyToMany
                 $otherCollection = $this->_typeClass->reflFields[$this->_backRefFieldName]
                         ->getValue($element);
-                $otherCollection->hydrateAdd($this->_owner);
+                $otherCollection->hydrateAdd($this->_owner, false);
             }
         }
     }
@@ -242,6 +239,7 @@ final class PersistentCollection extends \Doctrine\Common\Collections\Collection
     private function _initialize()
     {
         if (!$this->_initialized) {
+            parent::clear();
             $this->_association->load($this->_owner, $this, $this->_em);
             $this->_initialized = true;
         }

@@ -134,7 +134,7 @@ class ManyToManyBidirectionalAssociationTest extends AbstractManyToManyAssociati
         $categories = $firstProduct->getCategories();        
         $firstCategoryProducts = $categories[0]->getProducts();
         $secondCategoryProducts = $categories[1]->getProducts();
-        
+
         $this->assertEquals(2, count($firstCategoryProducts));
         $this->assertEquals(2, count($secondCategoryProducts));
 
