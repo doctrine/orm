@@ -47,13 +47,6 @@ use \Closure;
 final class PersistentCollection extends \Doctrine\Common\Collections\Collection
 {
     /**
-     * The base type of the collection.
-     *
-     * @var string
-     */
-    private $_type;
-
-    /**
      * A snapshot of the collection at the moment it was fetched from the database.
      * This is used to create a diff of the collection at commit time.
      *
@@ -75,13 +68,6 @@ final class PersistentCollection extends \Doctrine\Common\Collections\Collection
      * @var Doctrine\ORM\Mapping\AssociationMapping
      */
     private $_association;
-
-    /**
-     * The name of the field that is used for collection indexing.
-     *
-     * @var string
-     */
-    private $_keyField;
 
     /**
      * The EntityManager that manages the persistence of the collection.
@@ -112,7 +98,7 @@ final class PersistentCollection extends \Doctrine\Common\Collections\Collection
     private $_isDirty = false;
 
     /** Whether the collection has already been initialized. */
-    protected $_initialized = true;
+    private $_initialized = true;
 
     /**
      * Creates a new persistent collection.
@@ -120,30 +106,8 @@ final class PersistentCollection extends \Doctrine\Common\Collections\Collection
     public function __construct(EntityManager $em, $class, array $data = array())
     {
         parent::__construct($data);
-        $this->_type = $class->name;
         $this->_em = $em;
         $this->_typeClass = $class;
-    }
-
-    /**
-     * INTERNAL: Sets the key column for this collection
-     *
-     * @param string $column
-     * @return Doctrine_Collection
-     */
-    public function setKeyField($fieldName)
-    {
-        $this->_keyField = $fieldName;
-    }
-
-    /**
-     * INTERNAL: returns the name of the key column
-     *
-     * @return string
-     */
-    public function getKeyField()
-    {
-        return $this->_keyField;
     }
 
     /**
@@ -157,6 +121,7 @@ final class PersistentCollection extends \Doctrine\Common\Collections\Collection
     {
         $this->_owner = $entity;
         $this->_association = $assoc;
+        // Check for bidirectionality
         if ($assoc->isInverseSide()) {
             // For sure bi-directional
             $this->_backRefFieldName = $assoc->mappedByFieldName;
@@ -190,23 +155,18 @@ final class PersistentCollection extends \Doctrine\Common\Collections\Collection
         return $this->_typeClass;
     }
 
-    public function setLazyInitialization()
-    {
-        $this->_initialized = false;
-    }
-
     /**
      * INTERNAL:
-     * Adds an element to a collection during hydration, if it not already set.
-     * This control is performed to avoid infinite recursion during hydration
-     * of bidirectional many-to-many collections.
+     * Adds an element to a collection during hydration.
      * 
      * @param mixed $element The element to add.
      */
-    public function hydrateAdd($element, $setBackRef = true)
+    public function hydrateAdd($element)
     {
         parent::add($element);
-        if ($this->_backRefFieldName and $setBackRef) {
+        // If _backRefFieldName is set, then the association is bidirectional
+        // and we need to set the back reference.
+        if ($this->_backRefFieldName) {
             // Set back reference to owner
             if ($this->_association->isOneToMany()) {
                 // OneToMany
@@ -214,9 +174,8 @@ final class PersistentCollection extends \Doctrine\Common\Collections\Collection
                         ->setValue($element, $this->_owner);
             } else {
                 // ManyToMany
-                $otherCollection = $this->_typeClass->reflFields[$this->_backRefFieldName]
-                        ->getValue($element);
-                $otherCollection->hydrateAdd($this->_owner, false);
+                $this->_typeClass->reflFields[$this->_backRefFieldName] 
+                        ->getValue($element)->add($this->_owner);
             }
         }
     }
@@ -234,12 +193,12 @@ final class PersistentCollection extends \Doctrine\Common\Collections\Collection
     }
 
     /**
-     * Initializes the collection by loading its contents from the database.
+     * Initializes the collection by loading its contents from the database
+     * if the collection is not yet initialized.
      */
     private function _initialize()
     {
-        if (!$this->_initialized) {
-            parent::clear();
+        if ( ! $this->_initialized) {
             $this->_association->load($this->_owner, $this, $this->_em);
             $this->_initialized = true;
         }
@@ -345,54 +304,33 @@ final class PersistentCollection extends \Doctrine\Common\Collections\Collection
     {
         $this->_initialized = $bool;
     }
-
-    /* Serializable implementation */
-
+    
     /**
-     * Called by PHP when this collection is serialized. Ensures that only the
-     * elements are properly serialized.
+     * Checks whether this collection has been initialized.
      *
-     * @internal Tried to implement Serializable first but that did not work well
-     *           with circular references. This solution seems simpler and works well.
+     * @return boolean
      */
-    public function __sleep()
+    public function isInitialized()
     {
-        return array('_elements', '_initialized');
+        return $this->_initialized;
     }
 
-    /**
-     * Decorated Collection methods.
-     */
-    public function unwrap()
-    {
-        $this->_initialize();
-        return parent::unwrap();
-    }
-
+    /** {@inheritdoc} */
     public function first()
     {
         $this->_initialize();
         return parent::first();
     }
 
+    /** {@inheritdoc} */
     public function last()
     {
         $this->_initialize();
         return parent::last();
     }
 
-    public function key()
-    {
-        $this->_initialize();
-        return parent::key();
-    }
-
     /**
-     * Removes an element from the collection.
-     *
-     * @param mixed $key
-     * @return boolean
-     * @override
+     * {@inheritdoc}
      */
     public function remove($key)
     {
@@ -408,6 +346,9 @@ final class PersistentCollection extends \Doctrine\Common\Collections\Collection
         return $removed;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function removeElement($element)
     {
         $this->_initialize();
@@ -416,34 +357,9 @@ final class PersistentCollection extends \Doctrine\Common\Collections\Collection
         return $result;
     }
 
-    public function offsetExists($offset)
-    {
-        $this->_initialize();
-        return parent::offsetExists($offset);
-    }
-
-    public function offsetGet($offset)
-    {
-        $this->_initialize();
-        return parent::offsetGet($offset);
-    }
-
-    public function offsetSet($offset, $value)
-    {
-        $this->_initialize();
-        $result = parent::offsetSet($offset, $value);
-        $this->_changed();
-        return $result;
-    }
-
-    public function offsetUnset($offset)
-    {
-        $this->_initialize();
-        $result = parent::offsetUnset($offset);
-        $this->_changed();
-        return $result;
-    }
-
+    /**
+     * {@inheritdoc}
+     */
     public function containsKey($key)
     {
         $this->_initialize();
@@ -451,8 +367,7 @@ final class PersistentCollection extends \Doctrine\Common\Collections\Collection
     }
 
     /**
-     * Checks whether an element is contained in the collection.
-     * This is an O(n) operation.
+     * {@inheritdoc}
      */
     public function contains($element)
     {
@@ -460,30 +375,45 @@ final class PersistentCollection extends \Doctrine\Common\Collections\Collection
         return parent::contains($element);
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function exists(Closure $p)
     {
         $this->_initialize();
         return parent::exists($p);
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function search($element)
     {
         $this->_initialize();
         return parent::search($element);
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function get($key)
     {
         $this->_initialize();
         return parent::get($key);
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function getKeys()
     {
         $this->_initialize();
         return parent::getKeys();
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function getElements()
     {
         $this->_initialize();
@@ -491,7 +421,7 @@ final class PersistentCollection extends \Doctrine\Common\Collections\Collection
     }
 
     /**
-     * @override
+     * {@inheritdoc}
      */
     public function count()
     {
@@ -500,49 +430,45 @@ final class PersistentCollection extends \Doctrine\Common\Collections\Collection
     }
 
     /**
-     * When the collection is used as a Map this is like put(key,value)/add(key,value).
-     * When the collection is used as a List this is like add(position,value).
-     *
-     * @param integer $key
-     * @param mixed $value
-     * @override
+     * {@inheritdoc}
      */
     public function set($key, $value)
     {
-        $this->_initialize();
-        $result = parent::set($key, $value);
+        parent::set($key, $value);
         $this->_changed();
-        return $result;
     }
 
     /**
-     * Adds an element to the collection.
-     *
-     * @param mixed $value
-     * @param string $key
-     * @return boolean Always TRUE.
-     * @override
+     * {@inheritdoc}
      */
     public function add($value)
     {
-        $this->_initialize();
-        $result = parent::add($value);
+        parent::add($value);
         $this->_changed();
-        return $result;
+        return true;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function isEmpty()
     {
         $this->_initialize();
         return parent::isEmpty();
     }
-
+    
+    /**
+     * {@inheritdoc}
+     */
     public function getIterator()
     {
         $this->_initialize();
         return parent::getIterator();
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function map(Closure $func)
     {
         $this->_initialize();
@@ -551,18 +477,27 @@ final class PersistentCollection extends \Doctrine\Common\Collections\Collection
         return $result;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function filter(Closure $p)
     {
         $this->_initialize();
         return parent::filter($p);
     }
-
+    
+    /**
+     * {@inheritdoc}
+     */
     public function forAll(Closure $p)
     {
         $this->_initialize();
         return parent::forAll($p);
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function partition(Closure $p)
     {
         $this->_initialize();
@@ -570,23 +505,29 @@ final class PersistentCollection extends \Doctrine\Common\Collections\Collection
     }
 
     /**
-     * Clears the collection.
+     * {@inheritdoc}
      */
     public function clear()
     {
         $this->_initialize();
-        //TODO: Register collection as dirty with the UoW if necessary
-        //TODO: If oneToMany() && shouldDeleteOrphan() delete entities
-        /*if ($this->_association->isOneToMany() && $this->_association->shouldDeleteOrphans) {
-        foreach ($this->_data as $entity) {
-        $this->_em->remove($entity);
-        }
-        }*/
         $result = parent::clear();
         if ($this->_association->isOwningSide) {
             $this->_changed();
             $this->_em->getUnitOfWork()->scheduleCollectionDeletion($this);
         }
+        
         return $result;
+    }
+    
+    /**
+     * Called by PHP when this collection is serialized. Ensures that only the
+     * elements are properly serialized.
+     *
+     * @internal Tried to implement Serializable first but that did not work well
+     *           with circular references. This solution seems simpler and works well.
+     */
+    public function __sleep()
+    {
+        return array('_elements');
     }
 }

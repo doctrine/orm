@@ -37,7 +37,7 @@ class ObjectHydrator extends AbstractHydrator
     /*
      * These two properties maintain their values between hydration runs.
      */
-    /* Class entries */
+    /* Local ClassMetadata cache to avoid going to the EntityManager all the time. */
     private $_ce = array();
     private $_discriminatorMap = array();
     /*
@@ -48,9 +48,9 @@ class ObjectHydrator extends AbstractHydrator
     private $_identifierMap = array();
     private $_resultPointers = array();
     private $_idTemplate = array();
-    private $_resultCounter = 0;
+    private $_resultCounter;
     private $_rootAliases = array();
-    private $_fetchedAssociations = array();
+    private $_fetchedAssociations;
     /* TODO: Consider unifying _collections and _initializedRelations */
     /** Collections initialized by the hydrator */
     private $_collections = array();
@@ -63,11 +63,12 @@ class ObjectHydrator extends AbstractHydrator
         $this->_isSimpleQuery = count($this->_rsm->aliasMap) <= 1;
         $this->_allowPartialObjects = $this->_em->getConfiguration()->getAllowPartialObjects()
                 || isset($this->_hints[Query::HINT_FORCE_PARTIAL_LOAD]);
-        $this->_identifierMap = array();
-        $this->_resultPointers = array();
-        $this->_idTemplate = array();
-        $this->_resultCounter = 0;
+        
+        $this->_identifierMap =
+        $this->_resultPointers =
+        $this->_idTemplate =
         $this->_fetchedAssociations = array();
+        $this->_resultCounter = 0;
         
         foreach ($this->_rsm->aliasMap as $dqlAlias => $className) {
             $this->_identifierMap[$dqlAlias] = array();
@@ -172,25 +173,26 @@ class ObjectHydrator extends AbstractHydrator
      *
      * @param object $entity The entity to which the collection belongs.
      * @param string $name The name of the field on the entity that holds the collection.
-     * @return PersistentCollection
      */
     private function initRelatedCollection($entity, $name)
     {
         $oid = spl_object_hash($entity);
-        $classMetadata = $this->_ce[get_class($entity)];
+        $class = $this->_ce[get_class($entity)];
 
-        $relation = $classMetadata->associationMappings[$name];
-        if ( ! isset($this->_ce[$relation->targetEntityName])) {
-            $this->_ce[$relation->targetEntityName] = $this->_em->getClassMetadata($relation->targetEntityName);
-        }
-        $coll = new PersistentCollection($this->_em, $this->_ce[$relation->targetEntityName]);
-        $this->_collections[] = $coll;
-        $coll->setOwner($entity, $relation);
+        $relation = $class->associationMappings[$name];
+        
+        //$coll = $class->reflFields[$name]->getValue($entity);
+        //if ( ! $coll) {
+        //    $coll = new Collection;
+        //}
+        
+        $pColl = new PersistentCollection($this->_em, $this->_getClassMetadata($relation->targetEntityName));
+        $this->_collections[] = $pColl;
+        $pColl->setOwner($entity, $relation);
 
-        $classMetadata->reflFields[$name]->setValue($entity, $coll);
-        $this->_uow->setOriginalEntityProperty($oid, $name, $coll);
+        $class->reflFields[$name]->setValue($entity, $pColl);
+        $this->_uow->setOriginalEntityProperty($oid, $name, $pColl);
         $this->_initializedRelations[$oid][$name] = true;
-        return $coll;
     }
 
     /**
@@ -210,10 +212,10 @@ class ObjectHydrator extends AbstractHydrator
     }
 
     /**
+     * Gets the last key of a collection/array.
      *
-     * @param <type> $coll
-     * @return <type>
-     * @todo Consider inlining this method, introducing $coll->lastKey().
+     * @param Collection|array $coll
+     * @return string|integer
      */
     private function getLastKey($coll)
     {
@@ -248,6 +250,7 @@ class ObjectHydrator extends AbstractHydrator
         // Properly initialize any unfetched associations, if partial objects are not allowed.
         if ( ! $this->_allowPartialObjects) {
             foreach ($this->_ce[$className]->associationMappings as $field => $assoc) {
+                // Check if the association is not among the fetch-joined associatons already.
                 if ( ! isset($this->_fetchedAssociations[$className][$field])) {
                     if ($assoc->isOneToOne()) {
                         $joinColumns = array();
@@ -257,7 +260,8 @@ class ObjectHydrator extends AbstractHydrator
                         if ($assoc->isLazilyFetched()) {
                             // Inject proxy
                             $this->_ce[$className]->reflFields[$field]->setValue($entity,
-                                    $this->_em->getProxyFactory()->getAssociationProxy($entity, $assoc, $joinColumns));
+                                    $this->_em->getProxyFactory()->getAssociationProxy($entity, $assoc, $joinColumns)
+                                    );
                         } else {
                             // Eager load
                             //TODO: Allow more efficient and configurable batching of these loads
@@ -265,12 +269,14 @@ class ObjectHydrator extends AbstractHydrator
                         }
                     } else {
                         // Inject collection
-                        $collection = $this->initRelatedCollection($entity, $field);
-                        if ($assoc->isLazilyFetched()) {
-                            $collection->setLazyInitialization();
-                        } else {
+                        $pColl = new PersistentCollection($this->_em, $this->_getClassMetadata($assoc->targetEntityName));
+                        $pColl->setOwner($entity, $assoc);
+                        $this->_ce[$className]->reflFields[$field]->setValue($entity, $pColl);
+                        if ( ! $assoc->isLazilyFetched()) {
                             //TODO: Allow more efficient and configurable batching of these loads
-                            $assoc->load($entity, $collection, $this->_em);
+                            $assoc->load($entity, $pColl, $this->_em);
+                        } else {
+                            $pColl->setInitialized(false);
                         }
                     }
                 }
@@ -278,6 +284,22 @@ class ObjectHydrator extends AbstractHydrator
         }
 
         return $entity;
+    }
+    
+    /**
+     * Gets a ClassMetadata instance from the local cache.
+     * If the instance is not yet in the local cache, it is loaded into the
+     * local cache.
+     * 
+     * @param string $className The name of the class.
+     * @return ClassMetadata
+     */
+    private function _getClassMetadata($className)
+    {
+        if ( ! isset($this->_ce[$className])) {
+            $this->_ce[$className] = $this->_em->getClassMetadata($className);
+        }
+        return $this->_ce[$className];
     }
 
     /**
@@ -463,7 +485,6 @@ class ObjectHydrator extends AbstractHydrator
                     $index = $this->_identifierMap[$dqlAlias][$id[$dqlAlias]];
                 }
                 $this->updateResultPointer($result, $index, $dqlAlias);
-                //unset($rowData[$dqlAlias]);
             }
         }
 

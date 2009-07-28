@@ -412,7 +412,6 @@ abstract class AssociationMapping
      */
     protected function _getPrivateValue(ClassMetadata $class, $entity, $column)
     {
-        $reflField = $class->getReflectionProperty($class->getFieldName($column));
-        return $reflField->getValue($entity);
+        return $class->reflFields[$class->fieldNames[$column]]->getValue($entity);
     }
 }

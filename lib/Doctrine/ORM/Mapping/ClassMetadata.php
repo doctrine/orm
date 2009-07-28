@@ -405,10 +405,10 @@ final class ClassMetadata
     public function __construct($entityName)
     {
         $this->name = $entityName;
-        $this->namespace = substr($entityName, 0, strrpos($entityName, '\\'));
-        $this->primaryTable['name'] = str_replace($this->namespace . '\\', '', $this->name);
-        $this->rootEntityName = $entityName;
         $this->reflClass = new \ReflectionClass($entityName);
+        $this->namespace = $this->reflClass->getNamespaceName();
+        $this->primaryTable['name'] = $this->reflClass->getShortName();
+        $this->rootEntityName = $entityName;
     }
 
     /**

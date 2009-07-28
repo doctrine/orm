@@ -248,11 +248,8 @@ class SqlWalker implements TreeWalker
         $qComp = $this->_queryComponents[$dqlAlias];
         $columnName = $qComp['metadata']->getColumnName($parts[0]);
         $sql = $this->getSqlTableAlias($qComp['metadata']->getTableName(), $dqlAlias) . '.' . $columnName;
-        if ($orderByItem->isAsc()) {
-            $sql .= ' ASC ';
-        } else if ($orderByItem->isDesc()) {
-            $sql .= ' DESC ';
-        }
+        $sql .= $orderByItem->isDesc() ? ' DESC' : ' ASC';
+
         return $sql;
     }
 

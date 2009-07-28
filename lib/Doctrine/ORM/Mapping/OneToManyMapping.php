@@ -104,13 +104,22 @@ class OneToManyMapping extends AssociationMapping
     {
         return true;
     }
-
+    
+    /**
+     * 
+     * 
+     * @param $sourceEntity
+     * @param $targetCollection
+     * @param $em
+     * @param $joinColumnValues
+     * @return unknown_type
+     */
     public function load($sourceEntity, $targetCollection, $em, array $joinColumnValues = array())
     {
         $persister = $em->getUnitOfWork()->getEntityPersister($this->targetEntityName);
         // a one-to-many is always inverse (does not have foreign key)
         $sourceClass = $em->getClassMetadata($this->sourceEntityName);
-        $owningAssoc = $em->getClassMetadata($this->targetEntityName)->getAssociationMapping($this->mappedByFieldName);
+        $owningAssoc = $em->getClassMetadata($this->targetEntityName)->associationMappings[$this->mappedByFieldName];
         // TRICKY: since the association is specular source and target are flipped
         foreach ($owningAssoc->getTargetToSourceKeyColumns() as $sourceKeyColumn => $targetKeyColumn) {
             // getting id
@@ -121,6 +130,6 @@ class OneToManyMapping extends AssociationMapping
             }
         }
 
-        $persister->loadCollection($conditions, $targetCollection);
+        $persister->loadOneToManyCollection($conditions, $targetCollection);
     }
 }

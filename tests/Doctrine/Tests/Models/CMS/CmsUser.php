@@ -2,6 +2,8 @@
 
 namespace Doctrine\Tests\Models\CMS;
 
+use Doctrine\Common\Collections\Collection;
+
 /**
  * @Entity
  * @Table(name="cms_users")
@@ -40,10 +42,17 @@ class CmsUser
     /**
      * @ManyToMany(targetEntity="CmsGroup", cascade={"persist"})
      * @JoinTable(name="cms_users_groups",
-            joinColumns={@JoinColumn(name="user_id", referencedColumnName="id")},
-            inverseJoinColumns={@JoinColumn(name="group_id", referencedColumnName="id")})
+     *      joinColumns={@JoinColumn(name="user_id", referencedColumnName="id")},
+     *      inverseJoinColumns={@JoinColumn(name="group_id", referencedColumnName="id")}
+     *      )
      */
     public $groups;
+    
+    public function __construct() {
+        $this->phonenumbers = new Collection;
+        $this->articles = new Collection;
+        $this->groups = new Collection;
+    }
 
     public function getId() {
         return $this->id;

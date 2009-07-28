@@ -28,7 +28,9 @@ class ManyToManyBidirectionalAssociationTest extends AbstractManyToManyAssociati
         $this->useModelSet('ecommerce');
         parent::setUp();
         $this->firstProduct = new ECommerceProduct();
+        $this->firstProduct->setName("First Product");
         $this->secondProduct = new ECommerceProduct();
+        $this->secondProduct->setName("Second Product");
         $this->firstCategory = new ECommerceCategory();
         $this->firstCategory->setName("Business");
         $this->secondCategory = new ECommerceCategory();
@@ -102,6 +104,11 @@ class ManyToManyBidirectionalAssociationTest extends AbstractManyToManyAssociati
 
         $query = $this->_em->createQuery('SELECT p FROM Doctrine\Tests\Models\ECommerce\ECommerceProduct p order by p.id');
         $products = $query->getResultList();
+        
+        $this->assertEquals(2, count($products));
+        $this->assertEquals(0, count($products[0]->getCategories()->unwrap()));
+        $this->assertEquals(0, count($products[1]->getCategories()->unwrap()));
+        
         $this->assertLoadingOfOwningSide($products); 
     }
 
@@ -128,16 +135,21 @@ class ManyToManyBidirectionalAssociationTest extends AbstractManyToManyAssociati
     public function assertLoadingOfOwningSide($products)
     {
         list ($firstProduct, $secondProduct) = $products;
-        $this->assertEquals(2, count($firstProduct->getCategories()));
-        $this->assertEquals(2, count($secondProduct->getCategories()));
 
-        $categories = $firstProduct->getCategories();        
-        $firstCategoryProducts = $categories[0]->getProducts();
-        $secondCategoryProducts = $categories[1]->getProducts();
-
+        $firstProductCategories = $firstProduct->getCategories();
+        $secondProductCategories = $secondProduct->getCategories();
+        
+        $this->assertEquals(2, count($firstProductCategories));
+        $this->assertEquals(2, count($secondProductCategories));
+        $this->assertTrue($firstProductCategories[0] === $secondProductCategories[0]);
+        $this->assertTrue($firstProductCategories[1] === $secondProductCategories[1]);
+        
+        $firstCategoryProducts = $firstProductCategories[0]->getProducts();
+        $secondCategoryProducts = $firstProductCategories[1]->getProducts();
+        
         $this->assertEquals(2, count($firstCategoryProducts));
         $this->assertEquals(2, count($secondCategoryProducts));
-
+        
         $this->assertTrue($firstCategoryProducts[0] instanceof ECommerceProduct);
         $this->assertTrue($firstCategoryProducts[1] instanceof ECommerceProduct);
         $this->assertTrue($secondCategoryProducts[0] instanceof ECommerceProduct);

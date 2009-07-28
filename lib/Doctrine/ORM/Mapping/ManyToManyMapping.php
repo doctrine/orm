@@ -70,7 +70,7 @@ class ManyToManyMapping extends AssociationMapping
     /**
      * Initializes a new ManyToManyMapping.
      *
-     * @param array $mapping  The mapping information.
+     * @param array $mapping The mapping definition.
      */
     public function __construct(array $mapping)
     {
@@ -86,7 +86,7 @@ class ManyToManyMapping extends AssociationMapping
     protected function _validateAndCompleteMapping(array $mapping)
     {
         parent::_validateAndCompleteMapping($mapping);
-        if ($this->isOwningSide()) {
+        if ($this->isOwningSide) {
             // owning side MUST have a join table
             if ( ! isset($mapping['joinTable'])) {
                 throw MappingException::joinTableRequired($mapping['fieldName']);
@@ -143,15 +143,19 @@ class ManyToManyMapping extends AssociationMapping
      * Loads entities in $targetCollection using $em.
      * The data of $sourceEntity are used to restrict the collection
      * via the join table.
+     * 
+     * @param object The owner of the collection.
+     * @param object The collection to populate.
+     * @param array
      */
     public function load($sourceEntity, $targetCollection, $em, array $joinColumnValues = array())
     {
         $sourceClass = $em->getClassMetadata($this->sourceEntityName);
         $joinTableConditions = array();
         if ($this->isOwningSide()) {
-            $joinTable = $this->getJoinTable();
-            $joinClauses = $this->getTargetToRelationKeyColumns();
-            foreach ($this->getSourceToRelationKeyColumns() as $sourceKeyColumn => $relationKeyColumn) {
+            $joinTable = $this->joinTable;
+            $joinClauses = $this->targetToRelationKeyColumns;
+            foreach ($this->sourceToRelationKeyColumns as $sourceKeyColumn => $relationKeyColumn) {
                 // getting id
                 if (isset($sourceClass->reflFields[$sourceKeyColumn])) {
                     $joinTableConditions[$relationKeyColumn] = $this->_getPrivateValue($sourceClass, $sourceEntity, $sourceKeyColumn);
@@ -160,11 +164,11 @@ class ManyToManyMapping extends AssociationMapping
                 }
             }
         } else {
-            $owningAssoc = $em->getClassMetadata($this->targetEntityName)->getAssociationMapping($this->mappedByFieldName);
-            $joinTable = $owningAssoc->getJoinTable();
+            $owningAssoc = $em->getClassMetadata($this->targetEntityName)->associationMappings[$this->mappedByFieldName];
+            $joinTable = $owningAssoc->joinTable;
             // TRICKY: since the association is inverted source and target are flipped
-            $joinClauses = $owningAssoc->getSourceToRelationKeyColumns();
-            foreach ($owningAssoc->getTargetToRelationKeyColumns() as $sourceKeyColumn => $relationKeyColumn) {
+            $joinClauses = $owningAssoc->sourceToRelationKeyColumns;
+            foreach ($owningAssoc->targetToRelationKeyColumns as $sourceKeyColumn => $relationKeyColumn) {
                 // getting id
                 if (isset($sourceClass->reflFields[$sourceKeyColumn])) {
                     $joinTableConditions[$relationKeyColumn] = $this->_getPrivateValue($sourceClass, $sourceEntity, $sourceKeyColumn);
@@ -179,13 +183,11 @@ class ManyToManyMapping extends AssociationMapping
             'criteria' => $joinTableConditions
         );
         $persister = $em->getUnitOfWork()->getEntityPersister($this->targetEntityName);
-        $persister->loadCollection(array($joinTableCriteria), $targetCollection);
+        $persister->loadManyToManyCollection(array($joinTableCriteria), $targetCollection);
     }
 
     /**
      * {@inheritdoc}
-     *
-     * @override
      */
     public function isManyToMany()
     {
