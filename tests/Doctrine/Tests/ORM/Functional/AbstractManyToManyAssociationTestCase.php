@@ -2,7 +2,7 @@
 
 namespace Doctrine\Tests\ORM\Functional;
 
-use Doctrine\Common\Collections\ICollection;
+use Doctrine\Common\Collections\Collection;
 
 require_once __DIR__ . '/../../TestInit.php';
 
@@ -36,7 +36,7 @@ class AbstractManyToManyAssociationTestCase extends \Doctrine\Tests\OrmFunctiona
                      ->fetchAll());
     }
 
-    public function assertCollectionEquals(ICollection $first, ICollection $second)
+    public function assertCollectionEquals(Collection $first, Collection $second)
     {
         return $first->forAll(function($k, $e) use($second) { return $second->contains($e); });
     }

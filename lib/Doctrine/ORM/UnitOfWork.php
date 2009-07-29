@@ -22,7 +22,7 @@
 namespace Doctrine\ORM;
 
 use Doctrine\Common\Collections\ArrayCollection,
-    Doctrine\Common\Collections\ICollection,
+    Doctrine\Common\Collections\Collection,
     Doctrine\Common\DoctrineException,
     Doctrine\Common\PropertyChangedListener,
     Doctrine\ORM\Event\LifecycleEventArgs,
@@ -1455,7 +1455,7 @@ class UnitOfWork implements PropertyChangedListener
                 continue;
             }
             $relatedEntities = $class->reflFields[$assocMapping->sourceFieldName]->getValue($entity);
-            if ($relatedEntities instanceof ICollection) {
+            if ($relatedEntities instanceof Collection) {
                 foreach ($relatedEntities as $relatedEntity) {
                     $this->_doRefresh($relatedEntity, $visited);
                 }
@@ -1479,7 +1479,7 @@ class UnitOfWork implements PropertyChangedListener
                 continue;
             }
             $relatedEntities = $class->reflFields[$assocMapping->sourceFieldName]->getValue($entity);
-            if ($relatedEntities instanceof ICollection) {
+            if ($relatedEntities instanceof Collection) {
                 foreach ($relatedEntities as $relatedEntity) {
                     $this->_doDetach($relatedEntity, $visited);
                 }
@@ -1504,7 +1504,7 @@ class UnitOfWork implements PropertyChangedListener
                 continue;
             }
             $relatedEntities = $class->reflFields[$assocMapping->sourceFieldName]->getValue($entity);
-            if ($relatedEntities instanceof ICollection) {
+            if ($relatedEntities instanceof Collection) {
                 foreach ($relatedEntities as $relatedEntity) {
                     $this->_doMerge($relatedEntity, $visited, $managedCopy, $assocMapping);
                 }
@@ -1529,7 +1529,7 @@ class UnitOfWork implements PropertyChangedListener
                 continue;
             }
             $relatedEntities = $class->reflFields[$assocMapping->sourceFieldName]->getValue($entity);
-            if (($relatedEntities instanceof ICollection || is_array($relatedEntities))) {
+            if (($relatedEntities instanceof Collection || is_array($relatedEntities))) {
                 foreach ($relatedEntities as $relatedEntity) {
                     $this->_doPersist($relatedEntity, $visited);
                 }
@@ -1554,7 +1554,7 @@ class UnitOfWork implements PropertyChangedListener
             }
             $relatedEntities = $class->reflFields[$assocMapping->sourceFieldName]
                     ->getValue($entity);
-            if ($relatedEntities instanceof ICollection || is_array($relatedEntities)) {
+            if ($relatedEntities instanceof Collection || is_array($relatedEntities)) {
                 foreach ($relatedEntities as $relatedEntity) {
                     $this->_doRemove($relatedEntity, $visited);
                 }

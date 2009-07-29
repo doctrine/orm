@@ -44,7 +44,7 @@ use Doctrine\Common\DoctrineException,
  * @author    Roman Borschel <roman@code-factory.org>
  * @author    Giorgio Sironi <piccoloprincipeazzurro@gmail.com>
  */
-final class PersistentCollection implements \Doctrine\Common\Collections\ICollection
+final class PersistentCollection implements \Doctrine\Common\Collections\Collection
 {
     /**
      * A snapshot of the collection at the moment it was fetched from the database.

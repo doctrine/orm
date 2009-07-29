@@ -30,7 +30,7 @@ use \Closure, \ArrayIterator;
  * @author Roman S. Borschel <roman@code-factory.org>
  * @since 2.0
  */
-class ArrayCollection implements ICollection
+class ArrayCollection implements Collection
 {
     /**
      * An array containing the entries of this collection.

@@ -25,7 +25,7 @@ use Doctrine\DBAL\Connection,
     Doctrine\ORM\PersistentCollection,
     Doctrine\ORM\Query,
     Doctrine\Common\Collections\ArrayCollection,
-    Doctrine\Common\Collections\ICollection;
+    Doctrine\Common\Collections\Collection;
 
 /**
  * The ObjectHydrator constructs an object graph out of an SQL result set.
@@ -147,7 +147,7 @@ class ObjectHydrator extends AbstractHydrator
         if ( ! is_object($coll)) {
             end($coll);
             $this->_resultPointers[$dqlAlias] =& $coll[key($coll)];
-        } else if ($coll instanceof ICollection) {
+        } else if ($coll instanceof Collection) {
             if (count($coll) > 0) {
                 $this->_resultPointers[$dqlAlias] = $coll->last();
             }
