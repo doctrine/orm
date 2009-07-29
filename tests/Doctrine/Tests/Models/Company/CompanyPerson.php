@@ -62,7 +62,7 @@ class CompanyPerson
     
     public function addFriend(CompanyPerson $friend) {
         if ( ! $this->friends) {
-            $this->friends = new \Doctrine\Common\Collections\Collection;
+            $this->friends = new \Doctrine\Common\Collections\ArrayCollection;
         }
         if ( ! $this->friends->contains($friend)) {
             $this->friends->add($friend);

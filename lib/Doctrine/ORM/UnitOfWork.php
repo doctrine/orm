@@ -21,17 +21,13 @@
 
 namespace Doctrine\ORM;
 
-use Doctrine\Common\Collections\Collection;
-use Doctrine\Common\DoctrineException;
-use Doctrine\Common\PropertyChangedListener;
-use Doctrine\ORM\Events;
-use Doctrine\ORM\Event\LifecycleEventArgs;
-use Doctrine\ORM\Internal\CommitOrderCalculator;
-use Doctrine\ORM\Internal\CommitOrderNode;
-use Doctrine\ORM\PersistentCollection;
-use Doctrine\ORM\Mapping;
-use Doctrine\ORM\Persisters;
-use Doctrine\ORM\EntityManager;
+use Doctrine\Common\Collections\ArrayCollection,
+    Doctrine\Common\Collections\ICollection,
+    Doctrine\Common\DoctrineException,
+    Doctrine\Common\PropertyChangedListener,
+    Doctrine\ORM\Event\LifecycleEventArgs,
+    Doctrine\ORM\Internal\CommitOrderCalculator,
+    Doctrine\ORM\Internal\CommitOrderNode;
 
 /**
  * The UnitOfWork is responsible for tracking changes to objects during an
@@ -468,13 +464,13 @@ class UnitOfWork implements PropertyChangedListener
             if ($class->isCollectionValuedAssociation($name) && $actualData[$name] !== null
                     && ! ($actualData[$name] instanceof PersistentCollection)) {
                 // If $actualData[$name] is Collection then unwrap the array
-                if ($actualData[$name] instanceof Collection) {
-                    $actualData[$name] = $actualData[$name]->unwrap();
+                if ( ! $actualData[$name] instanceof ArrayCollection) {
+                    $actualData[$name] = new ArrayCollection($actualData[$name]);
                 }
                 $assoc = $class->associationMappings[$name];
                 // Inject PersistentCollection
-                $coll = new PersistentCollection($this->_em, $this->_em->getClassMetadata($assoc->targetEntityName),
-                        $actualData[$name] ? $actualData[$name] : array());
+                $coll = new PersistentCollection($this->_em, $this->_em->getClassMetadata(
+                        $assoc->targetEntityName), $actualData[$name]);
                 $coll->setOwner($entity, $assoc);
                 $coll->setDirty( ! $coll->isEmpty());
                 $class->reflFields[$name]->setValue($entity, $coll);
@@ -1326,7 +1322,8 @@ class UnitOfWork implements PropertyChangedListener
                     } else {
                         //TODO: Only do this when allowPartialObjects == false?
                         $coll = new PersistentCollection($this->_em,
-                                $this->_em->getClassMetadata($assoc2->targetEntityName)
+                                $this->_em->getClassMetadata($assoc2->targetEntityName),
+                                new ArrayCollection
                                 );
                         $coll->setOwner($managedCopy, $assoc2);
                         $coll->setInitialized($assoc2->isCascadeMerge);
@@ -1458,7 +1455,7 @@ class UnitOfWork implements PropertyChangedListener
                 continue;
             }
             $relatedEntities = $class->reflFields[$assocMapping->sourceFieldName]->getValue($entity);
-            if ($relatedEntities instanceof Collection) {
+            if ($relatedEntities instanceof ICollection) {
                 foreach ($relatedEntities as $relatedEntity) {
                     $this->_doRefresh($relatedEntity, $visited);
                 }
@@ -1482,7 +1479,7 @@ class UnitOfWork implements PropertyChangedListener
                 continue;
             }
             $relatedEntities = $class->reflFields[$assocMapping->sourceFieldName]->getValue($entity);
-            if ($relatedEntities instanceof Collection) {
+            if ($relatedEntities instanceof ICollection) {
                 foreach ($relatedEntities as $relatedEntity) {
                     $this->_doDetach($relatedEntity, $visited);
                 }
@@ -1507,7 +1504,7 @@ class UnitOfWork implements PropertyChangedListener
                 continue;
             }
             $relatedEntities = $class->reflFields[$assocMapping->sourceFieldName]->getValue($entity);
-            if ($relatedEntities instanceof Collection) {
+            if ($relatedEntities instanceof ICollection) {
                 foreach ($relatedEntities as $relatedEntity) {
                     $this->_doMerge($relatedEntity, $visited, $managedCopy, $assocMapping);
                 }
@@ -1532,7 +1529,7 @@ class UnitOfWork implements PropertyChangedListener
                 continue;
             }
             $relatedEntities = $class->reflFields[$assocMapping->sourceFieldName]->getValue($entity);
-            if (($relatedEntities instanceof Collection || is_array($relatedEntities))) {
+            if (($relatedEntities instanceof ICollection || is_array($relatedEntities))) {
                 foreach ($relatedEntities as $relatedEntity) {
                     $this->_doPersist($relatedEntity, $visited);
                 }
@@ -1557,7 +1554,7 @@ class UnitOfWork implements PropertyChangedListener
             }
             $relatedEntities = $class->reflFields[$assocMapping->sourceFieldName]
                     ->getValue($entity);
-            if ($relatedEntities instanceof Collection || is_array($relatedEntities)) {
+            if ($relatedEntities instanceof ICollection || is_array($relatedEntities)) {
                 foreach ($relatedEntities as $relatedEntity) {
                     $this->_doRemove($relatedEntity, $visited);
                 }

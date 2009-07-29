@@ -2,7 +2,7 @@
 
 namespace Doctrine\Tests\Models\CMS;
 
-use Doctrine\Common\Collections\Collection;
+use Doctrine\Common\Collections\ArrayCollection;
 
 /**
  * @Entity
@@ -49,9 +49,9 @@ class CmsUser
     public $groups;
     
     public function __construct() {
-        $this->phonenumbers = new Collection;
-        $this->articles = new Collection;
-        $this->groups = new Collection;
+        $this->phonenumbers = new ArrayCollection;
+        $this->articles = new ArrayCollection;
+        $this->groups = new ArrayCollection;
     }
 
     public function getId() {

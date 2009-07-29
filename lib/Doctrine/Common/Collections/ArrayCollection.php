@@ -21,11 +21,7 @@
 
 namespace Doctrine\Common\Collections;
 
-use \Closure;
-use \Countable;
-use \IteratorAggregate;
-use \ArrayAccess;
-use \ArrayIterator;
+use \Closure, \ArrayIterator;
 
 /**
  * A Collection is a thin wrapper around a php array. Like a php array it is essentially
@@ -34,7 +30,7 @@ use \ArrayIterator;
  * @author Roman S. Borschel <roman@code-factory.org>
  * @since 2.0
  */
-class Collection implements Countable, IteratorAggregate, ArrayAccess
+class ArrayCollection implements ICollection
 {
     /**
      * An array containing the entries of this collection.
@@ -42,10 +38,10 @@ class Collection implements Countable, IteratorAggregate, ArrayAccess
      *
      * @var array
      */
-    protected $_elements;
+    private $_elements;
 
     /**
-     * Initializes a new Collection.
+     * Initializes a new ArrayCollection.
      *
      * @param array $elements
      */
@@ -60,6 +56,11 @@ class Collection implements Countable, IteratorAggregate, ArrayAccess
      * @return array The wrapped array.
      */
     public function unwrap()
+    {
+        return $this->_elements;
+    }
+    
+    public function toArray()
     {
         return $this->_elements;
     }
@@ -249,7 +250,7 @@ class Collection implements Countable, IteratorAggregate, ArrayAccess
      *
      * @return array
      */
-    public function getElements()
+    public function getValues()
     {
         return array_values($this->_elements);
     }
@@ -323,7 +324,7 @@ class Collection implements Countable, IteratorAggregate, ArrayAccess
      */
     public function map(Closure $func)
     {
-        return new Collection(array_map($func, $this->_elements));
+        return new ArrayCollection(array_map($func, $this->_elements));
     }
 
     /**
@@ -335,7 +336,7 @@ class Collection implements Countable, IteratorAggregate, ArrayAccess
      */
     public function filter(Closure $p)
     {
-        return new Collection(array_filter($this->_elements, $p));
+        return new ArrayCollection(array_filter($this->_elements, $p));
     }
 
     /**
@@ -374,7 +375,7 @@ class Collection implements Countable, IteratorAggregate, ArrayAccess
                 $coll2[$key] = $element;
             }
         }
-        return array(new Collection($coll1), new Collection($coll2));
+        return array(new ArrayCollection($coll1), new ArrayCollection($coll2));
     }
 
     /**

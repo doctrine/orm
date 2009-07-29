@@ -21,10 +21,11 @@
 
 namespace Doctrine\ORM\Internal\Hydration;
 
-use Doctrine\DBAL\Connection;
-use Doctrine\ORM\PersistentCollection;
-use Doctrine\ORM\Query;
-use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Connection,
+    Doctrine\ORM\PersistentCollection,
+    Doctrine\ORM\Query,
+    Doctrine\Common\Collections\ArrayCollection,
+    Doctrine\Common\Collections\ICollection;
 
 /**
  * The ObjectHydrator constructs an object graph out of an SQL result set.
@@ -51,11 +52,8 @@ class ObjectHydrator extends AbstractHydrator
     private $_resultCounter;
     private $_rootAliases = array();
     private $_fetchedAssociations;
-    /* TODO: Consider unifying _collections and _initializedRelations */
-    /** Collections initialized by the hydrator */
-    private $_collections = array();
-    /** Memory for initialized relations */
-    private $_initializedRelations = array();
+    /** Memory for initialized collections. */
+    private $_initializedCollections = array();
 
     /** @override */
     protected function _prepare()
@@ -76,11 +74,11 @@ class ObjectHydrator extends AbstractHydrator
             $this->_idTemplate[$dqlAlias] = '';
             $class = $this->_em->getClassMetadata($className);
 
-            if ( ! isset($this->_ce[$class->name])) {
-                $this->_ce[$class->name] = $class;
+            if ( ! isset($this->_ce[$className])) {
+                $this->_ce[$className] = $class;
                 // Gather class descriptors and discriminator values of subclasses, if necessary
                 if ($class->isInheritanceTypeSingleTable() || $class->isInheritanceTypeJoined()) {
-                    $this->_discriminatorMap[$class->name][$class->discriminatorValue] = $class->name;
+                    $this->_discriminatorMap[$className][$class->discriminatorValue] = $className;
                     foreach (array_merge($class->parentClasses, $class->subClasses) as $className) {
                         $otherClass = $this->_em->getClassMetadata($className);
                         $value = $otherClass->discriminatorValue;
@@ -115,7 +113,7 @@ class ObjectHydrator extends AbstractHydrator
      */
     protected function _hydrateAll()
     {
-        $result = $this->_rsm->isMixed ? array() : new Collection;
+        $result = $this->_rsm->isMixed ? array() : new ArrayCollection;
 
         $cache = array();
         while ($data = $this->_stmt->fetch(Connection::FETCH_ASSOC)) {
@@ -123,13 +121,10 @@ class ObjectHydrator extends AbstractHydrator
         }
 
         // Take snapshots from all initialized collections
-        foreach ($this->_collections as $coll) {
+        foreach ($this->_initializedCollections as $coll) {
             $coll->takeSnapshot();
         }
-        
-        // Clean up
-        $this->_collections = array();
-        $this->_initializedRelations = array();
+        $this->_initializedCollections = array();
 
         return $result;
     }
@@ -141,16 +136,9 @@ class ObjectHydrator extends AbstractHydrator
      * @param Collection $coll  The element.
      * @param boolean|integer $index  Index of the element in the collection.
      * @param string $dqlAlias
-     * @todo May be worth to try to inline this method (through first reducing the
-     *       calls of this method to 1).
      */
     private function updateResultPointer(&$coll, $index, $dqlAlias)
     {
-        if ($coll === null) {
-            unset($this->_resultPointers[$dqlAlias]); // Ticket #1228
-            return;
-        }
-
         if ($index !== false) {
             $this->_resultPointers[$dqlAlias] = $coll[$index];
             return;
@@ -159,7 +147,7 @@ class ObjectHydrator extends AbstractHydrator
         if ( ! is_object($coll)) {
             end($coll);
             $this->_resultPointers[$dqlAlias] =& $coll[key($coll)];
-        } else if ($coll instanceof Collection) {
+        } else if ($coll instanceof ICollection) {
             if (count($coll) > 0) {
                 $this->_resultPointers[$dqlAlias] = $coll->last();
             }
@@ -178,37 +166,17 @@ class ObjectHydrator extends AbstractHydrator
     {
         $oid = spl_object_hash($entity);
         $class = $this->_ce[get_class($entity)];
-
         $relation = $class->associationMappings[$name];
         
-        //$coll = $class->reflFields[$name]->getValue($entity);
-        //if ( ! $coll) {
-        //    $coll = new Collection;
-        //}
+        $pColl = new PersistentCollection($this->_em, $this->_getClassMetadata($relation->targetEntityName),
+                $class->reflFields[$name]->getValue($entity) ?: new ArrayCollection);
         
-        $pColl = new PersistentCollection($this->_em, $this->_getClassMetadata($relation->targetEntityName));
-        $this->_collections[] = $pColl;
         $pColl->setOwner($entity, $relation);
-
         $class->reflFields[$name]->setValue($entity, $pColl);
         $this->_uow->setOriginalEntityProperty($oid, $name, $pColl);
-        $this->_initializedRelations[$oid][$name] = true;
-    }
-
-    /**
-     *
-     * @param <type> $entity
-     * @param <type> $assocField
-     * @param <type> $indexField
-     * @return <type>
-     * @todo Inline this method.
-     */
-    private function isIndexKeyInUse($entity, $assocField, $indexField)
-    {
-        return $this->_ce[get_class($entity)]
-                ->reflFields[$assocField]
-                ->getValue($entity)
-                ->containsKey($indexField);
+        $this->_initializedCollections[$oid . $name] = $pColl;
+        
+        return $pColl;
     }
 
     /**
@@ -245,6 +213,7 @@ class ObjectHydrator extends AbstractHydrator
             $className = $this->_discriminatorMap[$className][$data[$discrColumn]];
             unset($data[$discrColumn]);
         }
+        
         $entity = $this->_uow->createEntity($className, $data, $this->_hints);
 
         // Properly initialize any unfetched associations, if partial objects are not allowed.
@@ -269,9 +238,12 @@ class ObjectHydrator extends AbstractHydrator
                         }
                     } else {
                         // Inject collection
-                        $pColl = new PersistentCollection($this->_em, $this->_getClassMetadata($assoc->targetEntityName));
+                        $reflField = $this->_ce[$className]->reflFields[$field];
+                        $pColl = new PersistentCollection($this->_em, $this->_getClassMetadata(
+                                $assoc->targetEntityName), $reflField->getValue($entity) ?: new ArrayCollection
+                                );
                         $pColl->setOwner($entity, $assoc);
-                        $this->_ce[$className]->reflFields[$field]->setValue($entity, $pColl);
+                        $reflField->setValue($entity, $pColl);
                         if ( ! $assoc->isLazilyFetched()) {
                             //TODO: Allow more efficient and configurable batching of these loads
                             $assoc->load($entity, $pColl, $this->_em);
@@ -303,38 +275,6 @@ class ObjectHydrator extends AbstractHydrator
     }
 
     /**
-     * Sets a related element.
-     *
-     * @param object $entity1
-     * @param string $property
-     * @param object $entity2
-     */
-    private function setRelatedElement($entity1, $property, $entity2)
-    {
-        $class = $this->_ce[get_class($entity1)];
-        $class->reflFields[$property]->setValue($entity1, $entity2);
-        $this->_uow->setOriginalEntityProperty(spl_object_hash($entity1), $property, $entity2);
-        $relation = $class->associationMappings[$property];
-        
-        if ($relation->isOneToOne()) {
-            $targetClass = $this->_ce[$relation->targetEntityName];
-            if ($relation->isOwningSide) {
-                // If there is an inverse mapping on the target class its bidirectional
-                if (isset($targetClass->inverseMappings[$property])) {
-                    $sourceProp = $targetClass->inverseMappings[$property]->sourceFieldName;
-                    $targetClass->reflFields[$sourceProp]->setValue($entity2, $entity1);
-                } else if ($class === $targetClass && $relation->mappedByFieldName) {
-                	// Special case: bi-directional self-referencing one-one on the same class
-                	$targetClass->reflFields[$property]->setValue($entity2, $entity1);
-                }
-            } else {
-                // For sure bidirectional, as there is no inverse side in unidirectional mappings
-                $targetClass->reflFields[$relation->mappedByFieldName]->setValue($entity2, $entity1);
-            }
-        }
-    }
-
-    /**
      * {@inheritdoc}
      * 
      * @override
@@ -362,7 +302,7 @@ class ObjectHydrator extends AbstractHydrator
                 
                 $parent = $this->_rsm->parentAliasMap[$dqlAlias];
                 $relation = $this->_rsm->relationMap[$dqlAlias];
-                $relationAlias = $relation->sourceFieldName;
+                $relationField = $relation->sourceFieldName;
 
                 // Get a reference to the right element in the result tree.
                 // This element will get the associated element attached.
@@ -378,34 +318,38 @@ class ObjectHydrator extends AbstractHydrator
                 }
 
                 $parentClass = get_class($baseElement);
+                $oid = spl_object_hash($baseElement);
+                $reflField = $this->_ce[$parentClass]->reflFields[$relationField];
+                $reflFieldValue = $reflField->getValue($baseElement);
 
                 // Check the type of the relation (many or single-valued)
                 if ( ! $relation->isOneToOne()) {
+                    // Collection-valued association
                     if (isset($nonemptyComponents[$dqlAlias])) {
-                        if ( ! isset($this->_initializedRelations[spl_object_hash($baseElement)][$relationAlias])) {
-                            $this->initRelatedCollection($baseElement, $relationAlias);
+                        if ( ! isset($this->_initializedCollections[$oid . $relationField])) {
+                            $reflFieldValue = $this->initRelatedCollection($baseElement, $relationField);
                         }
                         
                         $path = $parent . '.' . $dqlAlias;
                         $indexExists = isset($this->_identifierMap[$path][$id[$parent]][$id[$dqlAlias]]);
                         $index = $indexExists ? $this->_identifierMap[$path][$id[$parent]][$id[$dqlAlias]] : false;
-                        $indexIsValid = $index !== false ? $this->isIndexKeyInUse($baseElement, $relationAlias, $index) : false;
+                        $indexIsValid = $index !== false ? $reflFieldValue->containsKey($index) : false;
                         
                         if ( ! $indexExists || ! $indexIsValid) {
                             $element = $this->getEntity($data, $dqlAlias);
 
                             // If it's a bi-directional many-to-many, also initialize the reverse collection.
                             if ($relation->isManyToMany()) {
-                                if ($relation->isOwningSide && isset($this->_ce[$entityName]->inverseMappings[$relationAlias])) {
-                                    $inverseFieldName = $this->_ce[$entityName]->inverseMappings[$relationAlias]->sourceFieldName;
+                                if ($relation->isOwningSide && isset($this->_ce[$entityName]->inverseMappings[$relationField])) {
+                                    $inverseFieldName = $this->_ce[$entityName]->inverseMappings[$relationField]->sourceFieldName;
                                     // Only initialize reverse collection if it is not yet initialized.
-                                    if ( ! isset($this->_initializedRelations[spl_object_hash($element)][$inverseFieldName])) {
+                                    if ( ! isset($this->_initializedCollections[spl_object_hash($element) . $inverseFieldName])) {
                                         $this->initRelatedCollection($element, $this->_ce[$entityName]
-                                                ->inverseMappings[$relationAlias]->sourceFieldName);
+                                                ->inverseMappings[$relationField]->sourceFieldName);
                                     }
                                 } else if ($relation->mappedByFieldName) {
                                     // Only initialize reverse collection if it is not yet initialized.
-                                    if ( ! isset($this->_initializedRelations[spl_object_hash($element)][$relation->mappedByFieldName])) {
+                                    if ( ! isset($this->_initializedCollections[spl_object_hash($element) . $relation->mappedByFieldName])) {
                                         $this->initRelatedCollection($element, $relation->mappedByFieldName);
                                     }
                                 }
@@ -416,40 +360,49 @@ class ObjectHydrator extends AbstractHydrator
                                 $indexValue = $this->_ce[$entityName]
                                     ->reflFields[$field]
                                     ->getValue($element);
-                                $this->_ce[$parentClass]
-                                    ->reflFields[$relationAlias]
-                                    ->getValue($baseElement)
-                                    ->hydrateSet($indexValue, $element);
+                                $reflFieldValue->hydrateSet($indexValue, $element);
                             } else {
-                                $this->_ce[$parentClass]
-                                    ->reflFields[$relationAlias]
-                                    ->getValue($baseElement)
-                                    ->hydrateAdd($element);
+                                $reflFieldValue->hydrateAdd($element);
                             }
                             
-                            $this->_identifierMap[$path][$id[$parent]][$id[$dqlAlias]] = $this->getLastKey(
-                                    $this->_ce[$parentClass]
-                                        ->reflFields[$relationAlias]
-                                        ->getValue($baseElement)
-                                    );
+                            $this->_identifierMap[$path][$id[$parent]][$id[$dqlAlias]] = $this->getLastKey($reflFieldValue);
                         }
-                    } else if ( ! $this->_ce[$parentClass]->reflFields[$relationAlias]->getValue($baseElement)) {
-                        $coll = new PersistentCollection($this->_em, $this->_ce[$entityName]);
-                        $this->_collections[] = $coll;
-                        $this->setRelatedElement($baseElement, $relationAlias, $coll);
+                    } else if ( ! $reflFieldValue) {
+                        $coll = new PersistentCollection($this->_em, $this->_ce[$entityName], new ArrayCollection);
+                        $reflField->setValue($baseElement, $coll);
+                        $reflFieldValue = $coll;
+                        $this->_uow->setOriginalEntityProperty($oid, $relationField, $coll);
                     }
+                    
+                    $this->updateResultPointer($reflFieldValue, $index, $dqlAlias);
                 } else {
-                    if ( ! $this->_ce[$parentClass]->reflFields[$relationAlias]->getValue($baseElement)) {
+                    // Single-valued association
+                    $reflFieldValue = $reflField->getValue($baseElement);
+                    if ( ! $reflFieldValue) {
                         if (isset($nonemptyComponents[$dqlAlias])) {
-                            $this->setRelatedElement($baseElement, $relationAlias, $this->getEntity($data, $dqlAlias));
+                            $element = $this->getEntity($data, $dqlAlias);
+                            $reflField->setValue($baseElement, $element);
+                            $this->_uow->setOriginalEntityProperty($oid, $relationField, $element);
+                            $targetClass = $this->_ce[$relation->targetEntityName];
+                            if ($relation->isOwningSide) {
+                                // If there is an inverse mapping on the target class its bidirectional
+                                if (isset($targetClass->inverseMappings[$relationField])) {
+                                    $sourceProp = $targetClass->inverseMappings[$relationField]->sourceFieldName;
+                                    $targetClass->reflFields[$sourceProp]->setValue($element, $base);
+                                } else if ($this->_ce[$parentClass] === $targetClass && $relation->mappedByFieldName) {
+                                    // Special case: bi-directional self-referencing one-one on the same class
+                                    $targetClass->reflFields[$relationField]->setValue($element, $baseElement);
+                                }
+                            } else {
+                                // For sure bidirectional, as there is no inverse side in unidirectional mappings
+                                $targetClass->reflFields[$relation->mappedByFieldName]->setValue($element, $baseElement);
+                            }
                         }
                     }
-                }
-
-                $coll = $this->_ce[$parentClass]->reflFields[$relationAlias]->getValue($baseElement);
-
-                if ($coll !== null) {
-                    $this->updateResultPointer($coll, $index, $dqlAlias);
+                    
+                    if ($reflFieldValue !== null) {
+                        $this->updateResultPointer($reflFieldValue, $index, $dqlAlias);
+                    }
                 }
             } else {
                 // Its a root result element
@@ -499,6 +452,6 @@ class ObjectHydrator extends AbstractHydrator
     /** {@inheritdoc} */
     protected function _getRowContainer()
     {
-        return new \Doctrine\Common\Collections\Collection;
+        return new \Doctrine\Common\Collections\ArrayCollection;
     }
 }

@@ -21,9 +21,9 @@
 
 namespace Doctrine\ORM\Internal\Hydration;
 
-use Doctrine\DBAL\Connection;
-use Doctrine\DBAL\Types\Type;
-use Doctrine\Common\DoctrineException;
+use Doctrine\DBAL\Connection,
+    Doctrine\DBAL\Types\Type,
+    Doctrine\Common\DoctrineException;
 
 /**
  * Base class for all hydrators. A hydrator is a class that provides some form
@@ -151,7 +151,7 @@ abstract class AbstractHydrator
      */
     protected function _hydrateRow(array &$data, array &$cache, &$result)
     {
-        throw new DoctrineException("_hydrateRow() not implemented for this hydrator.");
+        throw new DoctrineException("_hydrateRow() not implemented by this hydrator.");
     }
 
     /**

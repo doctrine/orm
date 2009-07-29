@@ -21,9 +21,9 @@
 
 namespace Doctrine\ORM;
 
-use Doctrine\Common\DoctrineException;
-use Doctrine\ORM\Mapping\AssociationMapping;
-use \Closure;
+use Doctrine\Common\DoctrineException,
+    Doctrine\ORM\Mapping\AssociationMapping,
+    \Closure;
 
 /**
  * A PersistentCollection represents a collection of elements that have persistent state.
@@ -44,7 +44,7 @@ use \Closure;
  * @author    Roman Borschel <roman@code-factory.org>
  * @author    Giorgio Sironi <piccoloprincipeazzurro@gmail.com>
  */
-final class PersistentCollection extends \Doctrine\Common\Collections\Collection
+final class PersistentCollection implements \Doctrine\Common\Collections\ICollection
 {
     /**
      * A snapshot of the collection at the moment it was fetched from the database.
@@ -97,15 +97,30 @@ final class PersistentCollection extends \Doctrine\Common\Collections\Collection
      */
     private $_isDirty = false;
 
-    /** Whether the collection has already been initialized. */
+    /**
+     * Whether the collection has already been initialized.
+     * 
+     * @var boolean
+     */
     private $_initialized = true;
+    
+    /**
+     * The wrapped Collection instance.
+     * 
+     * @var Collection
+     */
+    private $_coll;
 
     /**
      * Creates a new persistent collection.
+     * 
+     * @param EntityManager $em The EntityManager the collection will be associated with.
+     * @param ClassMetadata $class The class descriptor of the entity type of this collection.
+     * @param array The collection elements.
      */
-    public function __construct(EntityManager $em, $class, array $data = array())
+    public function __construct(EntityManager $em, $class, $coll)
     {
-        parent::__construct($data);
+        $this->_coll = $coll;
         $this->_em = $em;
         $this->_typeClass = $class;
     }
@@ -122,14 +137,13 @@ final class PersistentCollection extends \Doctrine\Common\Collections\Collection
         $this->_owner = $entity;
         $this->_association = $assoc;
         // Check for bidirectionality
-        if ($assoc->isInverseSide()) {
+        if ( ! $assoc->isOwningSide) {
             // For sure bi-directional
             $this->_backRefFieldName = $assoc->mappedByFieldName;
         } else {
-            $targetClass = $this->_em->getClassMetadata($assoc->targetEntityName);
-            if (isset($targetClass->inverseMappings[$assoc->sourceFieldName])) {
+            if (isset($this->_typeClass->inverseMappings[$assoc->sourceFieldName])) {
                 // Bi-directional
-                $this->_backRefFieldName = $targetClass->inverseMappings[$assoc->sourceFieldName]->sourceFieldName;
+                $this->_backRefFieldName = $this->_typeClass->inverseMappings[$assoc->sourceFieldName]->sourceFieldName;
             }
         }
     }
@@ -163,7 +177,7 @@ final class PersistentCollection extends \Doctrine\Common\Collections\Collection
      */
     public function hydrateAdd($element)
     {
-        parent::add($element);
+        $this->_coll->add($element);
         // If _backRefFieldName is set, then the association is bidirectional
         // and we need to set the back reference.
         if ($this->_backRefFieldName) {
@@ -189,7 +203,7 @@ final class PersistentCollection extends \Doctrine\Common\Collections\Collection
      */
     public function hydrateSet($key, $value)
     {
-        parent::set($key, $value);
+        $this->_coll->set($key, $value);
     }
 
     /**
@@ -210,7 +224,7 @@ final class PersistentCollection extends \Doctrine\Common\Collections\Collection
      */
     public function takeSnapshot()
     {
-        $this->_snapshot = $this->_elements;
+        $this->_snapshot = $this->_coll->unwrap();
     }
 
     /**
@@ -232,7 +246,7 @@ final class PersistentCollection extends \Doctrine\Common\Collections\Collection
      */
     public function getDeleteDiff()
     {
-        return array_udiff($this->_snapshot, $this->_elements, array($this, '_compareRecords'));
+        return array_udiff($this->_snapshot, $this->_coll->unwrap(), array($this, '_compareRecords'));
     }
 
     /**
@@ -242,7 +256,7 @@ final class PersistentCollection extends \Doctrine\Common\Collections\Collection
      */
     public function getInsertDiff()
     {
-        return array_udiff($this->_elements, $this->_snapshot, array($this, '_compareRecords'));
+        return array_udiff($this->_coll->unwrap(), $this->_snapshot, array($this, '_compareRecords'));
     }
 
     /**
@@ -319,14 +333,14 @@ final class PersistentCollection extends \Doctrine\Common\Collections\Collection
     public function first()
     {
         $this->_initialize();
-        return parent::first();
+        return $this->_coll->first();
     }
 
     /** {@inheritdoc} */
     public function last()
     {
         $this->_initialize();
-        return parent::last();
+        return $this->_coll->last();
     }
 
     /**
@@ -335,7 +349,7 @@ final class PersistentCollection extends \Doctrine\Common\Collections\Collection
     public function remove($key)
     {
         $this->_initialize();
-        $removed = parent::remove($key);
+        $removed = $this->_coll->remove($key);
         if ($removed) {
             $this->_changed();
             if ($this->_association->isOneToMany() && $this->_association->orphanRemoval) {
@@ -352,7 +366,7 @@ final class PersistentCollection extends \Doctrine\Common\Collections\Collection
     public function removeElement($element)
     {
         $this->_initialize();
-        $result = parent::removeElement($element);
+        $result = $this->_coll->removeElement($element);
         $this->_changed();
         return $result;
     }
@@ -363,7 +377,7 @@ final class PersistentCollection extends \Doctrine\Common\Collections\Collection
     public function containsKey($key)
     {
         $this->_initialize();
-        return parent::containsKey($key);
+        return $this->_coll->containsKey($key);
     }
 
     /**
@@ -372,7 +386,7 @@ final class PersistentCollection extends \Doctrine\Common\Collections\Collection
     public function contains($element)
     {
         $this->_initialize();
-        return parent::contains($element);
+        return $this->_coll->contains($element);
     }
 
     /**
@@ -381,7 +395,7 @@ final class PersistentCollection extends \Doctrine\Common\Collections\Collection
     public function exists(Closure $p)
     {
         $this->_initialize();
-        return parent::exists($p);
+        return $this->_coll->exists($p);
     }
 
     /**
@@ -390,7 +404,7 @@ final class PersistentCollection extends \Doctrine\Common\Collections\Collection
     public function search($element)
     {
         $this->_initialize();
-        return parent::search($element);
+        return $this->_coll->search($element);
     }
 
     /**
@@ -399,7 +413,7 @@ final class PersistentCollection extends \Doctrine\Common\Collections\Collection
     public function get($key)
     {
         $this->_initialize();
-        return parent::get($key);
+        return $this->_coll->get($key);
     }
 
     /**
@@ -408,16 +422,16 @@ final class PersistentCollection extends \Doctrine\Common\Collections\Collection
     public function getKeys()
     {
         $this->_initialize();
-        return parent::getKeys();
+        return $this->_coll->getKeys();
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getElements()
+    public function getValues()
     {
         $this->_initialize();
-        return parent::getElements();
+        return $this->_coll->getValues();
     }
 
     /**
@@ -426,7 +440,7 @@ final class PersistentCollection extends \Doctrine\Common\Collections\Collection
     public function count()
     {
         $this->_initialize();
-        return parent::count();
+        return $this->_coll->count();
     }
 
     /**
@@ -434,7 +448,7 @@ final class PersistentCollection extends \Doctrine\Common\Collections\Collection
      */
     public function set($key, $value)
     {
-        parent::set($key, $value);
+        $this->_coll->set($key, $value);
         $this->_changed();
     }
 
@@ -443,7 +457,7 @@ final class PersistentCollection extends \Doctrine\Common\Collections\Collection
      */
     public function add($value)
     {
-        parent::add($value);
+        $this->_coll->add($value);
         $this->_changed();
         return true;
     }
@@ -454,7 +468,7 @@ final class PersistentCollection extends \Doctrine\Common\Collections\Collection
     public function isEmpty()
     {
         $this->_initialize();
-        return parent::isEmpty();
+        return $this->_coll->isEmpty();
     }
     
     /**
@@ -463,7 +477,7 @@ final class PersistentCollection extends \Doctrine\Common\Collections\Collection
     public function getIterator()
     {
         $this->_initialize();
-        return parent::getIterator();
+        return $this->_coll->getIterator();
     }
 
     /**
@@ -472,7 +486,7 @@ final class PersistentCollection extends \Doctrine\Common\Collections\Collection
     public function map(Closure $func)
     {
         $this->_initialize();
-        $result = parent::map($func);
+        $result = $this->_coll->map($func);
         $this->_changed();
         return $result;
     }
@@ -483,7 +497,7 @@ final class PersistentCollection extends \Doctrine\Common\Collections\Collection
     public function filter(Closure $p)
     {
         $this->_initialize();
-        return parent::filter($p);
+        return $this->_coll->filter($p);
     }
     
     /**
@@ -492,7 +506,7 @@ final class PersistentCollection extends \Doctrine\Common\Collections\Collection
     public function forAll(Closure $p)
     {
         $this->_initialize();
-        return parent::forAll($p);
+        return $this->_coll->forAll($p);
     }
 
     /**
@@ -501,7 +515,7 @@ final class PersistentCollection extends \Doctrine\Common\Collections\Collection
     public function partition(Closure $p)
     {
         $this->_initialize();
-        return parent::partition($p);
+        return $this->_coll->partition($p);
     }
 
     /**
@@ -510,7 +524,7 @@ final class PersistentCollection extends \Doctrine\Common\Collections\Collection
     public function clear()
     {
         $this->_initialize();
-        $result = parent::clear();
+        $result = $this->_coll->clear();
         if ($this->_association->isOwningSide) {
             $this->_changed();
             $this->_em->getUnitOfWork()->scheduleCollectionDeletion($this);
@@ -528,6 +542,59 @@ final class PersistentCollection extends \Doctrine\Common\Collections\Collection
      */
     public function __sleep()
     {
-        return array('_elements');
+        return array('_coll');
+    }
+    
+    /* ArrayAccess implementation */
+
+    /**
+     * @see containsKey()
+     */
+    public function offsetExists($offset)
+    {
+        return $this->containsKey($offset);
+    }
+
+    /**
+     * @see get()
+     */
+    public function offsetGet($offset)
+    {
+        return $this->get($offset);
+    }
+
+    /**
+     * @see add()
+     * @see set()
+     */
+    public function offsetSet($offset, $value)
+    {
+        if ( ! isset($offset)) {
+            return $this->add($value);
+        }
+        return $this->set($offset, $value);
+    }
+
+    /**
+     * @see remove()
+     */
+    public function offsetUnset($offset)
+    {
+        return $this->remove($offset);
+    }
+    
+    public function toArray()
+    {
+        return $this->_coll->toArray();
+    }
+    
+    public function key()
+    {
+        return $this->_coll->key();
+    }
+    
+    public function unwrap()
+    {
+        return $this->_coll;
     }
 }

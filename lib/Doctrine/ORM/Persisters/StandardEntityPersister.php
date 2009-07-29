@@ -22,6 +22,7 @@
 namespace Doctrine\ORM\Persisters;
 
 use Doctrine\Common\DoctrineException;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\EntityManager;
@@ -490,7 +491,8 @@ class StandardEntityPersister
                     }
                 } else {
                     // Inject collection
-                    $coll = new PersistentCollection($this->_em, $this->_em->getClassMetadata($assoc->targetEntityName));
+                    $coll = new PersistentCollection($this->_em, $this->_em->getClassMetadata($assoc->targetEntityName),
+                            new ArrayCollection);
                     $coll->setOwner($entity, $assoc);
                     $this->_class->reflFields[$field]->setValue($entity, $coll);
                     if ($assoc->isLazilyFetched()) {

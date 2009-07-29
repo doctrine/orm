@@ -2,7 +2,6 @@
 
 namespace Doctrine\Tests\ORM\Functional;
 
-use Doctrine\Common\Collections\Collection;
 use Doctrine\Tests\Models\ECommerce\ECommerceProduct;
 use Doctrine\Tests\Models\ECommerce\ECommerceCategory;
 use Doctrine\ORM\Mapping\AssociationMapping;

@@ -111,6 +111,11 @@ class ClassMetadataFactory
         }
         return $this->_loadedMetadata[$className];
     }
+    
+    public function hasMetadataFor($className)
+    {
+        return isset($this->_loadedMetadata[$className]);
+    }
 
     /**
      * Sets the metadata descriptor for a specific class.

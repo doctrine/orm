@@ -12,7 +12,7 @@ class CollectionTest extends \Doctrine\Tests\DoctrineTestCase
 
     protected function setUp()
     {
-        $this->_coll = new \Doctrine\Common\Collections\Collection;
+        $this->_coll = new \Doctrine\Common\Collections\ArrayCollection;
     }
 
     public function testIssetAndUnset()
@@ -114,11 +114,11 @@ class CollectionTest extends \Doctrine\Tests\DoctrineTestCase
         $this->assertEquals(array(0, 1), $this->_coll->getKeys());
     }
 
-    public function testGetElements()
+    public function testGetValues()
     {
         $this->_coll[] = 'one';
         $this->_coll[] = 'two';
-        $this->assertEquals(array('one', 'two'), $this->_coll->getElements());
+        $this->assertEquals(array('one', 'two'), $this->_coll->getValues());
     }
 
     public function testCount()

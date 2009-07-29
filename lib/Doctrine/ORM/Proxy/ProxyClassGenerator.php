@@ -20,6 +20,7 @@
  */
 
 namespace Doctrine\ORM\Proxy;
+
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Mapping\ClassMetadata;
 
@@ -85,12 +86,15 @@ class ProxyClassGenerator
 
     protected function _generateClass($originalClassName, $proxyClassName, $file)
     {
-        $class = $this->_em->getClassMetadata($originalClassName);
         $proxyFullyQualifiedClassName = self::$_ns . $proxyClassName;
-
+        
+        if ($this->_em->getMetadataFactory()->hasMetadataFor($proxyFullyQualifiedClassName)) {
+            return $proxyFullyQualifiedClassName;
+        }
+        
         $class = $this->_em->getClassMetadata($originalClassName);
         $this->_em->getMetadataFactory()->setMetadataFor($proxyFullyQualifiedClassName, $class);
-
+        
         if (class_exists($proxyFullyQualifiedClassName, false)) {
             return $proxyFullyQualifiedClassName;
         }
@@ -214,7 +218,7 @@ namespace Doctrine\Generated\Proxies {
 
         public function __sleep() {
             if (!$this->_loaded) {
-                throw new RuntimeException("Not fully loaded proxy can not be serialized.");
+                throw new \RuntimeException("Not fully loaded proxy can not be serialized.");
             }
             <sleepImpl>
         }
@@ -252,7 +256,7 @@ namespace Doctrine\Generated\Proxies {
 
         public function __sleep() {
             if (!$this->_loaded) {
-                throw new RuntimeException("Not fully loaded proxy can not be serialized.");
+                throw new \RuntimeException("Not fully loaded proxy can not be serialized.");
             }
             <sleepImpl>
         }

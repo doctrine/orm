@@ -74,6 +74,8 @@ final class Query extends AbstractQuery
      * @var string
      */
     const HINT_INCLUDE_META_COLUMNS = 'doctrine.includeMetaColumns';
+    
+    //const HINT_READ_ONLY = 'doctrine.readOnly';
 
     /**
      * @var integer $_state   The current state of this query.

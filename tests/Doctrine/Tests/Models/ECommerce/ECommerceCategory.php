@@ -2,7 +2,7 @@
 
 namespace Doctrine\Tests\Models\ECommerce;
 
-use Doctrine\Common\Collections\Collection;
+use Doctrine\Common\Collections\ArrayCollection;
 
 /**
  * ECommerceCategory
@@ -44,8 +44,8 @@ class ECommerceCategory
 
     public function __construct()
     {
-        $this->products = new Collection();
-        $this->children = new Collection();
+        $this->products = new ArrayCollection();
+        $this->children = new ArrayCollection();
     }
 
     public function getId()
