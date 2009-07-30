@@ -26,18 +26,18 @@ namespace Doctrine\ORM\Query\AST;
  */
 class PathExpression extends Node
 {
-    const TYPE_SINGLE_VALUED_PATH_EXPRESSION = 1;
     const TYPE_COLLECTION_VALUED_ASSOCIATION = 2;
     const TYPE_SINGLE_VALUED_ASSOCIATION = 4;
     const TYPE_STATE_FIELD = 8;
     
     private $_type;
+    private $_expectedType;
     private $_identificationVariable;
     private $_parts;
     
-    public function __construct($type, $identificationVariable, array $parts)
+    public function __construct($expectedType, $identificationVariable, array $parts)
     {
-        $this->_type = $type;
+        $this->_expectedType = $expectedType;
         $this->_identificationVariable = $identificationVariable;
         $this->_parts = $parts;
     }
@@ -52,6 +52,19 @@ class PathExpression extends Node
         return $this->_parts;
     }
     
+    public function setExpectedType($type)
+    {
+    	$this->_expectedType;
+    }
+    
+    public function getExpectedType()
+    {
+    	return $this->_expectedType;
+    }
+    
+    /**
+     * INTERNAL
+     */
     public function setType($type)
     {
         $this->_type = $type;

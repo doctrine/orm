@@ -3,14 +3,12 @@
 namespace Doctrine\ORM\Query\AST;
 
 /**
- * JoinAssociationPathExpression ::= JoinCollectionValuedPathExpression | JoinSingleValuedAssociationPathExpression
- * JoinCollectionValuedPathExpression ::= IdentificationVariable "." CollectionValuedAssociationField
- * JoinSingleValuedAssociationPathExpression ::= IdentificationVariable "." SingleValuedAssociationField
+ * JoinAssociationPathExpression ::= IdentificationVariable "." (SingleValuedAssociationField | CollectionValuedAssociationField)
  *
- * @author robo
- * @todo Rename: JoinAssociationPathExpression
+ * @author Guilherme Blanco <guilhermeblanco@hotmail.com>
+ * @author Roman Borschel
  */
-class JoinPathExpression extends Node
+class JoinAssociationPathExpression extends Node
 {
     private $_identificationVariable;
     private $_assocField;
