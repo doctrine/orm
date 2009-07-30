@@ -47,12 +47,12 @@ class QueryBuilder
     const STATE_CLEAN = 1;
 
     /**
-     * @var EntityManager $em Instance of an EntityManager to use for query
+     * @var EntityManager $em Instance of an EntityManager to use for query.
      */
     private $_em;
 
     /**
-     * @var array $dqlParts The array of DQL parts collected
+     * @var array $dqlParts The array of DQL parts collected.
      */
     private $_dqlParts = array(
         'select' => array(),
@@ -64,25 +64,30 @@ class QueryBuilder
     );
 
     /**
-     * @var integer $type  The type of query this is. Can be select, update or delete
+     * @var integer The type of query this is. Can be select, update or delete.
      */
     private $_type = self::SELECT;
 
     /**
-     * @var integer $state The state of the query object. Can be dirty or clean.
+     * @var integer The state of the query object. Can be dirty or clean.
      */
     private $_state = self::STATE_CLEAN;
 
     /**
-     * @var string $dql The complete DQL string for this query
+     * @var string The complete DQL string for this query.
      */
     private $_dql;
 
     /**
-     * @var Query $q The Query instance used for this QueryBuilder
+     * @var Query The Query instance used for this QueryBuilder.
      */
     private $_q;
-
+    
+    /**
+     * Initializes a new <tt>QueryBuilder</tt> that uses the given <tt>EntityManager</tt>.
+     * 
+     * @param EntityManager $entityManager The EntityManager to use.
+     */
     public function __construct(EntityManager $entityManager)
     {
         $this->_em = $entityManager;
@@ -399,12 +404,10 @@ class QueryBuilder
      *
      * BNF:
      *
-     * UpdateStatement = UpdateClause [WhereClause] [OrderByClause] [LimitClause] [OffsetClause]
+     * UpdateStatement = UpdateClause [WhereClause] [OrderByClause]
      * UpdateClause    = "UPDATE" RangeVariableDeclaration "SET" UpdateItem {"," UpdateItem}
      * WhereClause     = "WHERE" ConditionalExpression
      * OrderByClause   = "ORDER" "BY" OrderByItem {"," OrderByItem}
-     * LimitClause     = "LIMIT" integer
-     * OffsetClause    = "OFFSET" integer
      *
      * @return string $dql
      */
@@ -422,15 +425,13 @@ class QueryBuilder
      *
      * BNF:
      *
-     * SelectStatement = [SelectClause] FromClause [WhereClause] [GroupByClause] [HavingClause] [OrderByClause] [LimitClause] [OffsetClause]
+     * SelectStatement = [SelectClause] FromClause [WhereClause] [GroupByClause] [HavingClause] [OrderByClause]
      * SelectClause    = "SELECT" ["ALL" | "DISTINCT"] SelectExpression {"," SelectExpression}
      * FromClause      = "FROM" IdentificationVariableDeclaration {"," IdentificationVariableDeclaration}
      * WhereClause     = "WHERE" ConditionalExpression
      * GroupByClause   = "GROUP" "BY" GroupByItem {"," GroupByItem}
      * HavingClause    = "HAVING" ConditionalExpression
      * OrderByClause   = "ORDER" "BY" OrderByItem {"," OrderByItem}
-     * LimitClause     = "LIMIT" integer
-     * OffsetClause    = "OFFSET" integer
      *
      * @return string $dql
      */

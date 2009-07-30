@@ -21,9 +21,9 @@
 
 namespace Doctrine\ORM\Mapping;
 
-use Doctrine\Common\DoctrineException;
-use Doctrine\DBAL\Platforms\AbstractPlatform;
-use Doctrine\ORM\Events;
+use Doctrine\Common\DoctrineException,
+    Doctrine\DBAL\Platforms\AbstractPlatform,
+    Doctrine\ORM\Events;
 
 /**
  * The ClassMetadataFactory is used to create ClassMetadata objects that contain all the
@@ -89,7 +89,7 @@ class ClassMetadataFactory
     }
 
     /**
-     * Returns the metadata object for a class.
+     * Gets the class metadata descriptor for a class.
      *
      * @param string $className The name of the class.
      * @return Doctrine\ORM\Mapping\ClassMetadata
@@ -112,6 +112,11 @@ class ClassMetadataFactory
         return $this->_loadedMetadata[$className];
     }
     
+    /**
+     * 
+     * @param $className
+     * @return boolean
+     */
     public function hasMetadataFor($className)
     {
         return isset($this->_loadedMetadata[$className]);
@@ -156,11 +161,14 @@ class ClassMetadataFactory
         foreach ($parentClasses as $className) {
             if (isset($this->_loadedMetadata[$className])) {
                 $parent = $this->_loadedMetadata[$className];
-                array_unshift($visited, $className);
+                if ( ! $parent->isMappedSuperclass) {
+                    array_unshift($visited, $className);
+                }
                 continue;
             }
 
             $class = $this->_newClassMetadataInstance($className);
+            
             if ($parent) {
                 $class->setInheritanceType($parent->inheritanceType);
                 $class->setDiscriminatorColumn($parent->discriminatorColumn);
@@ -176,7 +184,7 @@ class ClassMetadataFactory
             $this->_driver->loadMetadataForClass($className, $class);
 
             // Verify & complete identifier mapping
-            if ( ! $class->identifier) {
+            if ( ! $class->identifier && ! $class->isMappedSuperclass) {
                 throw MappingException::identifierRequired($className);
             }
             if ($parent) {
@@ -207,7 +215,10 @@ class ClassMetadataFactory
             $this->_loadedMetadata[$className] = $class;
             
             $parent = $class;
-            array_unshift($visited, $className);
+            
+            if ( ! $class->isMappedSuperclass) {
+                array_unshift($visited, $className);
+            }
         }
     }
 
@@ -231,7 +242,7 @@ class ClassMetadataFactory
     private function _addInheritedFields(ClassMetadata $subClass, ClassMetadata $parentClass)
     {
         foreach ($parentClass->fieldMappings as $fieldName => $mapping) {
-            if ( ! isset($mapping['inherited'])) {
+            if ( ! isset($mapping['inherited']) && ! $parentClass->isMappedSuperclass) {
                 $mapping['inherited'] = $parentClass->name;
             }
             $subClass->addFieldMapping($mapping);
@@ -253,9 +264,11 @@ class ClassMetadataFactory
             if (isset($parentClass->inheritedAssociationFields[$mapping->sourceFieldName])) {
                 // parent class also inherited that one
                 $subClass->addAssociationMapping($mapping, $parentClass->inheritedAssociationFields[$mapping->sourceFieldName]);
-            } else {
+            } else if ( ! $parentClass->isMappedSuperclass) {
                 // parent class defined that one
                 $subClass->addAssociationMapping($mapping, $parentClass->name);
+            } else {
+                $subClass->addAssociationMapping($mapping);
             }
         }
     }

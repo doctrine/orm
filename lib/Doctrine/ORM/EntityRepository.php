@@ -36,23 +36,28 @@ namespace Doctrine\ORM;
  */
 class EntityRepository
 {
-    protected $_entityName;
-    protected $_em;
-    protected $_classMetadata;
+    private $_entityName;
+    private $_em;
+    private $_class;
     
-    public function __construct($em, \Doctrine\ORM\Mapping\ClassMetadata $classMetadata)
+    /**
+     * Initializes a new <tt>EntityRepository</tt>.
+     * 
+     * @param EntityManager $em The EntityManager to use.
+     * @param ClassMetadata $classMetadata The class descriptor.
+     */
+    public function __construct($em, \Doctrine\ORM\Mapping\ClassMetadata $class)
     {
-        $this->_entityName = $classMetadata->name;
+        $this->_entityName = $class->name;
         $this->_em = $em;
-        $this->_classMetadata = $classMetadata;
+        $this->_class = $class;
     }
     
     /**
-     * creates a new Doctrine_Query object and adds the component name
-     * of this table as the query 'from' part
+     * Creates a new Doctrine_Query object and adds the component name
+     * of this table as the query 'from' part.
      *
      * @param string Optional alias name for component aliasing.
-     *
      * @return Doctrine_Query
      */
     protected function _createQuery($alias = '')
@@ -68,26 +73,26 @@ class EntityRepository
      */
     public function clear()
     {
-        $this->_em->getUnitOfWork()->clearIdentitiesForEntity($this->_classMetadata->rootEntityName);
+        $this->_em->clear($this->_class->rootEntityName);
     }
     
     /**
-     * Finds an entity by its primary key.
+     * Finds an entity by its primary key / identifier.
      *
-     * @param $id                       The identifier.
-     * @param int $hydrationMode        The hydration mode to use.
-     * @return mixed                    Array or Doctrine_Entity or false if no result
+     * @param $id The identifier.
+     * @param int $hydrationMode The hydration mode to use.
+     * @return mixed Array or Object or false if no result.
      */
     public function find($id, $hydrationMode = null)
     {
         // Check identity map first
-        if ($entity = $this->_em->getUnitOfWork()->tryGetById($id, $this->_classMetadata->rootEntityName)) {
+        if ($entity = $this->_em->getUnitOfWork()->tryGetById($id, $this->_class->rootEntityName)) {
             return $entity; // Hit!
         }
 
         if ( ! is_array($id) || count($id) <= 1) {
             $value = is_array($id) ? array_values($id) : array($id);
-            $id = array_combine($this->_classMetadata->identifier, $value);
+            $id = array_combine($this->_class->identifier, $value);
         }
 
         return $this->_em->getUnitOfWork()->getEntityPersister($this->_entityName)->load($id);
@@ -127,9 +132,10 @@ class EntityRepository
      */
     protected function findOneBy($fieldName, $value, $hydrationMode = null)
     {
-        $results = $this->_createQuery()->where($fieldName . ' = ?')->limit(1)->execute(
-                array($value), $hydrationMode);
-        return $hydrationMode === Doctrine::HYDRATE_ARRAY ? array_shift($results) : $results->getFirst();
+        $results = $this->_createQuery()->where($fieldName . ' = ?')
+                ->setMaxResults(1)
+                ->execute(array($value), $hydrationMode);
+        return $hydrationMode === Query::HYDRATE_ARRAY ? array_shift($results) : $results->getFirst();
     }
     
     /**
@@ -162,10 +168,10 @@ class EntityRepository
             $fieldName = Doctrine::tableize($by);
             $hydrationMode = isset($arguments[1]) ? $arguments[1]:null;
             
-            if ($this->_classMetadata->hasField($fieldName)) {
+            if ($this->_class->hasField($fieldName)) {
                 return $this->$method($fieldName, $arguments[0], $hydrationMode);
-            } else if ($this->_classMetadata->hasRelation($by)) {
-                $relation = $this->_classMetadata->getRelation($by);
+            } else if ($this->_class->hasRelation($by)) {
+                $relation = $this->_class->getRelation($by);
                 if ($relation['type'] === Doctrine_Relation::MANY) {
                     throw DoctrineException::updateMe('Cannot findBy many relationship.');
                 }

@@ -21,11 +21,11 @@
 
 namespace Doctrine\ORM\Mapping\Driver;
 
-use Doctrine\Common\DoctrineException;
-use Doctrine\Common\Cache\ArrayCache;
-use Doctrine\Common\Annotations\AnnotationReader;
-use Doctrine\ORM\Mapping\ClassMetadata;
-use Doctrine\ORM\Mapping\MappingException;
+use Doctrine\Common\DoctrineException,
+    Doctrine\Common\Cache\ArrayCache,
+    Doctrine\Common\Annotations\AnnotationReader,
+    Doctrine\ORM\Mapping\ClassMetadata,
+    Doctrine\ORM\Mapping\MappingException;
 
 require __DIR__ . '/DoctrineAnnotations.php';
 
@@ -60,13 +60,15 @@ class AnnotationDriver implements Driver
         
         $classAnnotations = $this->_reader->getClassAnnotations($class);
 
-        // Evaluate DoctrineEntity annotation
-        if ( ! isset($classAnnotations['Doctrine\ORM\Mapping\Entity'])) {
-            throw DoctrineException::updateMe("$className is no entity.");
+        // Evaluate Entity annotation
+        if (isset($classAnnotations['Doctrine\ORM\Mapping\Entity'])) {
+            $entityAnnot = $classAnnotations['Doctrine\ORM\Mapping\Entity'];
+            $metadata->setCustomRepositoryClass($entityAnnot->repositoryClass);
+        } else if (isset($classAnnotations['Doctrine\ORM\Mapping\MappedSuperclass'])) {
+            $metadata->isMappedSuperclass = true;
+        } else {
+            throw DoctrineException::updateMe("$className is no entity or mapped superclass.");
         }
-        $entityAnnot = $classAnnotations['Doctrine\ORM\Mapping\Entity'];
-        
-        $metadata->setCustomRepositoryClass($entityAnnot->repositoryClass);
 
         // Evaluate DoctrineTable annotation
         if (isset($classAnnotations['Doctrine\ORM\Mapping\Table'])) {

@@ -92,6 +92,7 @@ class ObjectHydrator extends AbstractHydrator
             // Remember which associations are "fetch joined"
             if (isset($this->_rsm->relationMap[$dqlAlias])) {
                 $assoc = $this->_rsm->relationMap[$dqlAlias];
+                //$assoc = $class->associationMappings[$this->_rsm->relationMap[$dqlAlias]];
                 $this->_fetchedAssociations[$assoc->sourceEntityName][$assoc->sourceFieldName] = true;
                 if ($assoc->mappedByFieldName) {
                     $this->_fetchedAssociations[$assoc->targetEntityName][$assoc->mappedByFieldName] = true;
@@ -148,9 +149,9 @@ class ObjectHydrator extends AbstractHydrator
             end($coll);
             $this->_resultPointers[$dqlAlias] =& $coll[key($coll)];
         } else if ($coll instanceof Collection) {
-            if (count($coll) > 0) {
+            //if ( ! $coll->isEmpty()) {
                 $this->_resultPointers[$dqlAlias] = $coll->last();
-            }
+            //}
         } else {
             $this->_resultPointers[$dqlAlias] = $coll;
         }
@@ -301,8 +302,6 @@ class ObjectHydrator extends AbstractHydrator
                 // It's a joined result
                 
                 $parent = $this->_rsm->parentAliasMap[$dqlAlias];
-                $relation = $this->_rsm->relationMap[$dqlAlias];
-                $relationField = $relation->sourceFieldName;
 
                 // Get a reference to the right element in the result tree.
                 // This element will get the associated element attached.
@@ -319,9 +318,13 @@ class ObjectHydrator extends AbstractHydrator
 
                 $parentClass = get_class($baseElement);
                 $oid = spl_object_hash($baseElement);
+                $relation = $this->_rsm->relationMap[$dqlAlias];
+                //$relationField = $this->_rsm->relationMap[$dqlAlias];
+                //$relation = $this->_ce[$parentClass]->associationMappings[$relationField];
+                $relationField = $relation->sourceFieldName;
                 $reflField = $this->_ce[$parentClass]->reflFields[$relationField];
                 $reflFieldValue = $reflField->getValue($baseElement);
-
+                
                 // Check the type of the relation (many or single-valued)
                 if ( ! $relation->isOneToOne()) {
                     // Collection-valued association
@@ -406,7 +409,6 @@ class ObjectHydrator extends AbstractHydrator
                 }
             } else {
                 // Its a root result element
-
                 $this->_rootAliases[$dqlAlias] = true; // Mark as root alias
 
                 if ($this->_isSimpleQuery || ! isset($this->_identifierMap[$dqlAlias][$id[$dqlAlias]])) {

@@ -21,11 +21,14 @@
 
 namespace Doctrine\ORM\Mapping;
 
+use \Doctrine\Common\Annotations\Annotation;
+
 /* Annotations */
 
 final class Entity extends \Doctrine\Common\Annotations\Annotation {
     public $repositoryClass;
 }
+final class MappedSuperclass extends Annotation {}
 final class InheritanceType extends \Doctrine\Common\Annotations\Annotation {}
 final class DiscriminatorColumn extends \Doctrine\Common\Annotations\Annotation {
     public $name;

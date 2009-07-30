@@ -35,7 +35,7 @@ final class NativeQuery extends AbstractQuery
      * Initializes a new instance of the <tt>NativeQuery</tt> class that is bound
      * to the given EntityManager.
      *
-     * @param EntityManager $em
+     * @param EntityManager $em The EntityManager to use.
      */
     public function __construct(EntityManager $em)
     {

@@ -302,8 +302,7 @@ class ArrayCollection implements Collection
      */
     public function isEmpty()
     {
-        // Note: Little "trick". Empty arrays evaluate to FALSE. No need to count().
-        return ! (bool) $this->_elements;
+        return ! $this->_elements;
     }
 
     /**

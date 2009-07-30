@@ -21,13 +21,13 @@
 
 namespace Doctrine\ORM;
 
-use Doctrine\Common\EventManager;
-use Doctrine\Common\DoctrineException;
-use Doctrine\DBAL\Connection;
-use Doctrine\ORM\Mapping\ClassMetadata;
-use Doctrine\ORM\Mapping\ClassMetadataFactory;
-use Doctrine\ORM\Proxy\ProxyFactory;
-use Doctrine\ORM\Proxy\ProxyClassGenerator;
+use Doctrine\Common\EventManager,
+    Doctrine\Common\DoctrineException,
+    Doctrine\DBAL\Connection,
+    Doctrine\ORM\Mapping\ClassMetadata,
+    Doctrine\ORM\Mapping\ClassMetadataFactory,
+    Doctrine\ORM\Proxy\ProxyFactory,
+    Doctrine\ORM\Proxy\ProxyClassGenerator;
 
 /**
  * The EntityManager is the central access point to ORM functionality.
@@ -146,7 +146,6 @@ class EntityManager
         $this->_metadataFactory = new ClassMetadataFactory($this);
         $this->_metadataFactory->setCacheDriver($this->_config->getMetadataCacheImpl());
         $this->_unitOfWork = new UnitOfWork($this);
-        //FIX: this should be in a factory
         $this->_proxyFactory = new ProxyFactory($this, new ProxyClassGenerator($this, $this->_config->getCacheDir()));
     }
     
@@ -179,7 +178,7 @@ class EntityManager
     }
     
     /**
-     * Commits a running transaction.
+     * Commits a transaction on the underlying database connection.
      * 
      * This causes a flush() of the EntityManager if the flush mode is set to
      * AUTO or COMMIT.
@@ -482,8 +481,7 @@ class EntityManager
      * Determines whether an entity instance is managed in this EntityManager.
      * 
      * @param object $entity
-     * @return boolean TRUE if this EntityManager currently manages the given entity
-     *                 (and has it in the identity map), FALSE otherwise.
+     * @return boolean TRUE if this EntityManager currently manages the given entity, FALSE otherwise.
      */
     public function contains($entity)
     {
@@ -514,12 +512,12 @@ class EntityManager
     /**
      * Throws an exception if the EntityManager is closed or currently not active.
      *
-     * @throws EntityManagerException If the EntityManager is closed or not active.
+     * @throws EntityManagerException If the EntityManager is closed.
      */
     private function _errorIfClosed()
     {
         if ($this->_closed) {
-            throw EntityManagerException::notActiveOrClosed();
+            throw EntityManagerException::closed();
         }
     }
     
@@ -543,19 +541,19 @@ class EntityManager
         if ( ! isset($this->_hydrators[$hydrationMode])) {
             switch ($hydrationMode) {
                 case Query::HYDRATE_OBJECT:
-                    $this->_hydrators[$hydrationMode] = new \Doctrine\ORM\Internal\Hydration\ObjectHydrator($this);
+                    $this->_hydrators[$hydrationMode] = new Internal\Hydration\ObjectHydrator($this);
                     break;
                 case Query::HYDRATE_ARRAY:
-                    $this->_hydrators[$hydrationMode] = new \Doctrine\ORM\Internal\Hydration\ArrayHydrator($this);
+                    $this->_hydrators[$hydrationMode] = new Internal\Hydration\ArrayHydrator($this);
                     break;
                 case Query::HYDRATE_SCALAR:
-                    $this->_hydrators[$hydrationMode] = new \Doctrine\ORM\Internal\Hydration\ScalarHydrator($this);
+                    $this->_hydrators[$hydrationMode] = new Internal\Hydration\ScalarHydrator($this);
                     break;
                 case Query::HYDRATE_SINGLE_SCALAR:
-                    $this->_hydrators[$hydrationMode] = new \Doctrine\ORM\Internal\Hydration\SingleScalarHydrator($this);
+                    $this->_hydrators[$hydrationMode] = new Internal\Hydration\SingleScalarHydrator($this);
                     break;
                 case Query::HYDRATE_NONE:
-                    $this->_hydrators[$hydrationMode] = new \Doctrine\ORM\Internal\Hydration\NoneHydrator($this);
+                    $this->_hydrators[$hydrationMode] = new Internal\Hydration\NoneHydrator($this);
                     break;
                 default:
                     throw DoctrineException::updateMe("No hydrator found for hydration mode '$hydrationMode'.");

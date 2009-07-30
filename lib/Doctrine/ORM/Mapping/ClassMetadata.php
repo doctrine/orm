@@ -24,8 +24,8 @@ namespace Doctrine\ORM\Mapping;
 use Doctrine\Common\DoctrineException;
 
 /**
- * A <tt>ClassMetadata</tt> instance holds all the ORM metadata of an entity and
- * it's associations. It is the backbone of Doctrine's metadata mapping.
+ * A <tt>ClassMetadata</tt> instance holds all the object-relational mapping metadata
+ * of an entity and it's associations.
  * 
  * Once populated, ClassMetadata instances are usually cached in a serialized form.
  *
@@ -142,6 +142,13 @@ final class ClassMetadata
      * @var string
      */
     public $customRepositoryClassName;
+    
+    /**
+     * Whether this class describes the mapping of a mapped superclass.
+     * 
+     * @var boolean
+     */
+    public $isMappedSuperclass = false;
 
     /**
      * The names of the parent classes (ancestors).
@@ -1352,14 +1359,16 @@ final class ClassMetadata
      * @param string $owningClassName The name of the class that defined this mapping.
      * @todo Rename: addInheritedAssociationMapping
      */
-    public function addAssociationMapping(AssociationMapping $mapping, $owningClassName)
+    public function addAssociationMapping(AssociationMapping $mapping, $owningClassName = null)
     {
         $sourceFieldName = $mapping->sourceFieldName;
         if (isset($this->associationMappings[$sourceFieldName])) {
             throw MappingException::duplicateFieldMapping();
         }
         $this->associationMappings[$sourceFieldName] = $mapping;
-        $this->inheritedAssociationFields[$sourceFieldName] = $owningClassName;
+        if ($owningClassName !== null) {
+            $this->inheritedAssociationFields[$sourceFieldName] = $owningClassName;
+        }
         $this->_registerMappingIfInverse($mapping);
     }
 

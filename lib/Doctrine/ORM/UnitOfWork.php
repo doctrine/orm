@@ -1552,8 +1552,7 @@ class UnitOfWork implements PropertyChangedListener
             if ( ! $assocMapping->isCascadeRemove) {
                 continue;
             }
-            $relatedEntities = $class->reflFields[$assocMapping->sourceFieldName]
-                    ->getValue($entity);
+            $relatedEntities = $class->reflFields[$assocMapping->sourceFieldName]->getValue($entity);
             if ($relatedEntities instanceof Collection || is_array($relatedEntities)) {
                 foreach ($relatedEntities as $relatedEntity) {
                     $this->_doRemove($relatedEntity, $visited);
@@ -1607,16 +1606,6 @@ class UnitOfWork implements PropertyChangedListener
     {
         $this->_orphanRemovals[spl_object_hash($entity)] = $entity;
     }
-
-    /*public function scheduleCollectionUpdate(PersistentCollection $coll)
-    {
-        $this->_collectionUpdates[] = $coll;
-    }*/
-
-    /*public function isCollectionScheduledForUpdate(PersistentCollection $coll)
-    {
-        //...
-    }*/
     
     /**
      * INTERNAL:

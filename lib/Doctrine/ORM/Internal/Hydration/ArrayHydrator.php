@@ -42,12 +42,12 @@ class ArrayHydrator extends AbstractHydrator
     /** @override */
     protected function _prepare()
     {
-        $this->_isSimpleQuery = $this->_rsm->getEntityResultCount() <= 1;
+        $this->_isSimpleQuery = count($this->_rsm->aliasMap) <= 1;
         $this->_identifierMap = array();
         $this->_resultPointers = array();
         $this->_idTemplate = array();
         $this->_resultCounter = 0;
-        foreach ($this->_rsm->getAliasMap() as $dqlAlias => $className) {
+        foreach ($this->_rsm->aliasMap as $dqlAlias => $className) {
             $this->_identifierMap[$dqlAlias] = array();
             $this->_resultPointers[$dqlAlias] = array();
             $this->_idTemplate[$dqlAlias] = '';
@@ -89,8 +89,6 @@ class ArrayHydrator extends AbstractHydrator
                 // It's a joined result
 
                 $parent = $this->_rsm->parentAliasMap[$dqlAlias];
-                $relation = $this->_rsm->relationMap[$dqlAlias];
-                $relationAlias = $relation->getSourceFieldName();
                 $path = $parent . '.' . $dqlAlias;
 
                 // Get a reference to the right element in the result tree.
@@ -105,6 +103,11 @@ class ArrayHydrator extends AbstractHydrator
                     unset($this->_resultPointers[$dqlAlias]); // Ticket #1228
                     continue;
                 }
+                
+                $relation = $this->_rsm->relationMap[$dqlAlias];
+                $relationAlias = $relation->sourceFieldName;
+                //$relationAlias = $this->_rsm->relationMap[$dqlAlias];
+                //$relation = $this->_ce[$parentClass]->associationMappings[$relationField];
 
                 // Check the type of the relation (many or single-valued)
                 if ( ! $relation->isOneToOne()) {
@@ -113,9 +116,11 @@ class ArrayHydrator extends AbstractHydrator
                         if ( ! isset($baseElement[$relationAlias])) {
                             $baseElement[$relationAlias] = array();
                         }
+                        
                         $indexExists = isset($this->_identifierMap[$path][$id[$parent]][$id[$dqlAlias]]);
                         $index = $indexExists ? $this->_identifierMap[$path][$id[$parent]][$id[$dqlAlias]] : false;
                         $indexIsValid = $index !== false ? isset($baseElement[$relationAlias][$index]) : false;
+                        
                         if ( ! $indexExists || ! $indexIsValid) {
                             $element = $data;
                             if (isset($this->_rsm->indexByMap[$dqlAlias])) {
@@ -176,7 +181,6 @@ class ArrayHydrator extends AbstractHydrator
                     $index = $this->_identifierMap[$dqlAlias][$id[$dqlAlias]];
                 }
                 $this->updateResultPointer($result, $index, $dqlAlias, false);
-                //unset($rowData[$rootAlias]);
             }
         }
 

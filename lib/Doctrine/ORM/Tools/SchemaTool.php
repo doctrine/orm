@@ -252,11 +252,12 @@ class SchemaTool
                 $joinTableColumns = array();
                 $joinTableOptions = array();
                 $joinTable = $mapping->getJoinTable();
-                $constraint1 = array();
-                $constraint1['tableName'] = $joinTable['name'];
-                $constraint1['foreignTable'] = $class->getTableName();
-                $constraint1['local'] = array();
-                $constraint1['foreign'] = array();
+                $constraint1 = array(
+                    'tableName' => $joinTable['name'],
+                    'foreignTable' => $class->getTableName(),
+                    'local' => array(),
+                    'foreign' => array()
+                );
                 foreach ($joinTable['joinColumns'] as $joinColumn) {
                     $column = array();
                     $column['primary'] = true;

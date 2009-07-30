@@ -22,9 +22,8 @@
 namespace Doctrine\ORM;
 
 /**
- * EntityManagerException
+ * OptimisticLockException
  *
- * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  * @author      Roman Borschel <roman@code-factory.org>
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @link        www.doctrine-project.org

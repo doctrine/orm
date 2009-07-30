@@ -25,11 +25,16 @@ namespace Doctrine\ORM\Query;
  * A ResultSetMapping describes how a result set of an SQL query maps to a Doctrine result.
  *
  * IMPORTANT NOTE:
- * The properties of this class are only public for fast internal READ access.
+ * The properties of this class are only public for fast internal READ access and to (drastically)
+ * reduce the size of serialized instances for more effective caching due to better (un-)serialization
+ * performance.
+ * 
  * Users should use the public methods.
  *
  * @author Roman Borschel <roman@code-factory.org>
  * @since 2.0
+ * @todo Do not store AssociationMappings in $relationMap. These bloat serialized instances
+ *       and in turn unserialize performance suffers which is important for most effective caching.
  */
 class ResultSetMapping
 {
@@ -54,7 +59,7 @@ class ResultSetMapping
     /** Maps alias names to field names that should be used for indexing. */
     public $indexByMap = array();
     /** A list of columns that should be ignored/skipped during hydration. */
-    public $ignoredColumns = array();
+    //public $ignoredColumns = array();
 
     /**
      *
@@ -318,19 +323,19 @@ class ResultSetMapping
      *
      * @param string $columnName
      */
-    public function addIgnoredColumn($columnName)
+    /*public function addIgnoredColumn($columnName)
     {
         $this->ignoredColumns[$columnName] = true;
-    }
+    }*/
 
     /**
      *
      * @param string $columnName
      * @return boolean
      */
-    public function isIgnoredColumn($columnName)
+    /*public function isIgnoredColumn($columnName)
     {
         return isset($this->ignoredColumns[$columnName]);
-    }
+    }*/
 }
 
