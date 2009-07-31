@@ -323,6 +323,9 @@ class Parser
     
     /**
      * Peeks beyond the specified token and returns the first token after that one.
+     *
+     * @param array $token
+     * @return array
      */
     private function _peekBeyond($token)
     {
@@ -439,8 +442,8 @@ class Parser
     {
         $exprStack = array_pop($this->_deferredPathExpressionStacks);
 
-        foreach ($exprStack as $expr) {
-            $this->_validatePathExpression($expr);
+        foreach ($exprStack as $pathExpression) {
+            $this->_validatePathExpression($pathExpression);
         }
     }
     
@@ -712,7 +715,7 @@ class Parser
      * PathExpression ::= IdentificationVariable "." {identifier "."}* identifier
      *
      * @param integer $expectedType
-     * @return PathExpression
+     * @return AST\PathExpression
      */
     public function PathExpression($expectedType)
     {
@@ -792,12 +795,20 @@ class Parser
     
     /**
      * SimpleStateFieldPathExpression ::= IdentificationVariable "." StateField
-     *
-     * @todo We should only allow 1 single part here (state field). It is used by INDEX BY clause.
      */
     public function SimpleStateFieldPathExpression()
     {
-        return $this->PathExpression(AST\PathExpression::TYPE_STATE_FIELD);
+        $pathExpression = $this->PathExpression(AST\PathExpression::TYPE_STATE_FIELD);
+        $parts = $pathExpression->getParts();
+        
+        if (count($parts) > 1) {
+            $this->semanticalError(
+                "Invalid SimpleStateFieldPathExpression. " . 
+                "Expected state field, got association '{$parts[0]}'."
+            );
+        }
+        
+        return $pathExpression;
     }
 
     
@@ -860,8 +871,7 @@ class Parser
         }
 
         if ($this->_lexer->isNextToken(Lexer::T_IDENTIFIER)) {
-            $this->match(Lexer::T_IDENTIFIER);
-            $aliasIdentificationVariable = $this->_lexer->token['value'];
+            $aliasIdentificationVariable = $this->AliasIdentificationVariable();
         } else {
             $aliasIdentificationVariable = $abstractSchemaName;
         }
@@ -910,15 +920,17 @@ class Parser
         }
 
         if ($this->_lexer->isNextToken(Lexer::T_IDENTIFIER)) {
-            $this->match(Lexer::T_IDENTIFIER);
-            $deleteClause->setAliasIdentificationVariable($this->_lexer->token['value']);
+            $deleteClause->setAliasIdentificationVariable($this->AliasIdentificationVariable());
         } else {
             $deleteClause->setAliasIdentificationVariable($deleteClause->getAbstractSchemaName());
         }
 
         $classMetadata = $this->_em->getClassMetadata($deleteClause->getAbstractSchemaName());
         $queryComponent = array(
-            'metadata' => $classMetadata
+            'metadata' => $classMetadata,
+            'parent'   => null,
+            'relation' => null,
+            'map'      => null
         );
         $this->_queryComponents[$deleteClause->getAliasIdentificationVariable()] = $queryComponent;
 
@@ -1076,18 +1088,29 @@ class Parser
 
     /**
      * GroupByItem ::= IdentificationVariable | SingleValuedPathExpression
-     *
-     * @todo Finish this implementation
      */
     public function GroupByItem()
     {
+        // We need to check if we are in a IdentificationVariable or SingleValuedPathExpression
+        $glimpse = $this->_lexer->glimpse();
+        
+        if ($glimpse['value'] != '.') {
+            $identificationVariable = $this->IdentificationVariable();
+            
+            // Validate if IdentificationVariable is defined
+            $this->_validateIdentificationVariable($identificationVariable);
+            
+            return $identificationVariable;
+        }
+        
         return $this->SingleValuedPathExpression();
     }
 
     /**
      * OrderByItem ::= (ResultVariable | StateFieldPathExpression) ["ASC" | "DESC"]
      *
-     * @todo Support general SingleValuedPathExpression instead of only StateFieldPathExpression.
+     * @todo Post 2.0 release. Support general SingleValuedPathExpression instead 
+     * of only StateFieldPathExpression.
      */
     public function OrderByItem()
     {
@@ -1097,7 +1120,8 @@ class Parser
         if ($glimpse['value'] != '.') {
             $expr = $this->ResultVariable();
             
-            // @todo Check if ResultVariable is defined somewhere
+            // Check if ResultVariable is defined in query components
+            $this->_validateIdentificationVariable($expr);
         } else {
             $expr = $this->StateFieldPathExpression();
         }
@@ -1178,13 +1202,12 @@ class Parser
         $peek = $this->_lexer->glimpse();
 
         if ($peek['value'] == '.') {
-            $subselectIdentificationVarDecl = new AST\SubselectIdentificationVariableDeclaration;
-            $subselectIdentificationVarDecl->setAssociationPathExpression($this->AssociationPathExpression());
+            $subselectIdVarDecl = new AST\SubselectIdentificationVariableDeclaration;
+            $subselectIdVarDecl->setAssociationPathExpression($this->AssociationPathExpression());
             $this->match(Lexer::T_AS);
-            $this->match(Lexer::T_IDENTIFIER);
-            $subselectIdentificationVarDecl->setAliasIdentificationVariable($this->_lexer->token['value']);
+            $subselectIdVarDecl->setAliasIdentificationVariable($this->AliasIdentificationVariable());
 
-            return $subselectIdentificationVarDecl;
+            return $subselectIdVarDecl;
         }
 
         return $this->IdentificationVariableDeclaration();
@@ -1279,7 +1302,7 @@ class Parser
             'metadata' => $this->_em->getClassMetadata($targetClassName),
             'parent'   => $joinPathExpression->getIdentificationVariable(),
             'relation' => $parentClass->getAssociationMapping($assocField),
-            'map'      => null
+            'map'      => null,
         );
         $this->_queryComponents[$aliasIdentificationVariable] = $joinQueryComponent;
 
@@ -1350,7 +1373,12 @@ class Parser
             }
 
             if ($this->_lexer->isNextToken(Lexer::T_IDENTIFIER)) {
-                $fieldAliasIdentificationVariable = $this->ResultVariable();
+                $resultVariable = $this->ResultVariable();
+                
+                // Include ResultVariable in query components.
+                $this->_queryComponents[$resultVariable] = array(
+                    'resultvariable' => $expression
+                );
             }
         } else {
             // Deny hydration of partial objects if doctrine.forcePartialLoad query hint not defined 
@@ -1392,7 +1420,13 @@ class Parser
             }
 
             if ($this->_lexer->isNextToken(Lexer::T_IDENTIFIER)) {
-                $expr->setFieldIdentificationVariable($this->ResultVariable());
+                $resultVariable = $this->ResultVariable();
+                $expr->setFieldIdentificationVariable($resultVariable);
+                
+                // Include ResultVariable in query components.
+                $this->_queryComponents[$resultVariable] = array(
+                    'resultvariable' => $expr
+                );
             }
 
             return $expr;
@@ -1449,7 +1483,6 @@ class Parser
 
     /**
      * ConditionalPrimary ::= SimpleConditionalExpression | "(" ConditionalExpression ")"
-     * @todo Implementation incomplete: Recognition of SimpleConditionalExpression is incomplete.
      */
     public function ConditionalPrimary()
     {
