@@ -36,16 +36,6 @@ class ApcCache implements Cache
     /**
      * {@inheritdoc}
      */
-    public function __construct()
-    {      
-        if ( ! extension_loaded('apc')) {
-            \Doctrine\Common\DoctrineException::updateMe('The apc extension must be loaded in order to use the ApcCache.');
-        }
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     public function fetch($id) 
     {
         return apc_fetch($id);

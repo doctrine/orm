@@ -35,7 +35,6 @@ use Doctrine\Common\DoctrineException,
  * @version     $Revision$
  * @link        www.doctrine-project.org
  * @since       2.0
- * @todo Support for mapped superclasses (@MappedSuperclass)
  */
 class ClassMetadataFactory
 {

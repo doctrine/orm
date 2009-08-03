@@ -45,7 +45,7 @@ class ScalarHydrator extends AbstractHydrator
     }
 
     /** @override */
-    protected function _hydrateRow(array &$data, array &$cache, &$result)
+    protected function _hydrateRow(array &$data, array &$cache, array &$result)
     {
         $result[] = $this->_gatherScalarRowData($data, $cache);
     }

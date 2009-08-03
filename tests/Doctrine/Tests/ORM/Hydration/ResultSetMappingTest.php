@@ -42,7 +42,7 @@ class ResultSetMappingTest extends \Doctrine\Tests\OrmTestCase
         $this->assertFalse($this->_rsm->isScalarResult('username'));
         $this->assertFalse($this->_rsm->isScalarResult('name'));
 
-        $this->assertTrue($this->_rsm->getClass('u') == 'Doctrine\Tests\Models\CMS\CmsUser');
+        $this->assertTrue($this->_rsm->getClassName('u') == 'Doctrine\Tests\Models\CMS\CmsUser');
         $class = $this->_rsm->getOwningClass('id');
         $this->assertTrue($class == 'Doctrine\Tests\Models\CMS\CmsUser');
 

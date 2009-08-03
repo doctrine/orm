@@ -24,8 +24,8 @@ namespace Doctrine\Common\Collections;
 use \Closure, \ArrayIterator;
 
 /**
- * A Collection is a thin wrapper around a php array. Like a php array it is essentially
- * an ordered map.
+ * An ArrayCollection is a Collection implementation that uses a regular PHP array
+ * internally.
  *
  * @author Roman S. Borschel <roman@code-factory.org>
  * @since 2.0
@@ -34,7 +34,7 @@ class ArrayCollection implements Collection
 {
     /**
      * An array containing the entries of this collection.
-     * This is the wrapped php array.
+     * This is the internal php array.
      *
      * @var array
      */
@@ -49,24 +49,20 @@ class ArrayCollection implements Collection
     {
         $this->_elements = $elements;
     }
-
-    /**
-     * Unwraps the array contained in the Collection instance.
-     *
-     * @return array The wrapped array.
-     */
-    public function unwrap()
-    {
-        return $this->_elements;
-    }
     
+    /**
+     * Gets the PHP array representation of this collection.
+     *
+     * @return array The PHP array representation of this collection.
+     */
     public function toArray()
     {
         return $this->_elements;
     }
 
     /**
-     * Gets the first element in the collection.
+     * Sets the internal iterator to the first element in the collection and
+     * returns this element.
      *
      * @return mixed
      */
@@ -76,7 +72,8 @@ class ArrayCollection implements Collection
     }
 
     /**
-     * Gets the last element in the collection.
+     * Sets the internal iterator to the last element in the collection and
+     * returns this element.
      *
      * @return mixed
      */
@@ -86,13 +83,29 @@ class ArrayCollection implements Collection
     }
 
     /**
-     * Gets the current key.
+     * Gets the current key/index at the current internal iterator position.
      *
      * @return mixed
      */
     public function key()
     {
         return key($this->_elements);
+    }
+    
+    /**
+     * Moves the internal iterator position to the next element.
+     */
+    public function next()
+    {
+        next($this->_elements);
+    }
+    
+    /**
+     * Gets the element of the collection at the current internal iterator position.
+     */
+    public function current()
+    {
+        return current($this->_elements);
     }
 
     /**

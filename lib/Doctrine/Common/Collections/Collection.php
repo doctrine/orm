@@ -4,9 +4,21 @@ namespace Doctrine\Common\Collections;
 
 /**
  * The missing (SPL) Collection/Array interface.
+ * 
  * A Collection resembles the nature of a regular PHP array. That is,
  * it is essentially an ordered map that can syntactically also be used
  * like a list.
+ * 
+ * A Collection has an internal iterator just like a PHP array. In addition
+ * a Collection can be iterated with external iterators, which is preferrable.
+ * To use an external iterator simply use the foreach language construct to
+ * iterator over the collection (which canns getIterator() internally) or
+ * explicitly retrieve an iterator though getIterator() which can then be
+ * used to iterate over the collection.
+ * 
+ * You can not rely on the internal iterator of the collection being at a certain
+ * position unless you explicitly positioned it before. Prefer iteration with
+ * external iterators.
  * 
  * @author Roman Borschel <roman@code-factory.org>
  * @since 2.0
@@ -100,13 +112,6 @@ interface Collection extends \Countable, \IteratorAggregate, \ArrayAccess
     function set($key, $value);
     
     /**
-     * Counts the elements in the collection.
-     * 
-     * @return integer The number of elements in the collection.
-     */
-    //function count();
-    
-    /**
      * Gets a plain PHP array representation of the collection.
      * 
      * @return array
@@ -114,16 +119,33 @@ interface Collection extends \Countable, \IteratorAggregate, \ArrayAccess
     function toArray();
     
     /**
-     * Gets the first element of the collection.
-     * 
+     * Sets the internal iterator to the first element in the collection and
+     * returns this element.
+     *
      * @return mixed
      */
     function first();
     
     /**
-     * Gets the last element of the collection.
-     * 
+     * Sets the internal iterator to the last element in the collection and
+     * returns this element.
+     *
      * @return mixed
      */
-    function last();   
+    function last();
+    
+    /**
+     * Gets the key/index of the element at the current iterator position.
+     */
+    function key();
+    
+    /**
+     * Gets the element of the collection at the current iterator position.
+     */
+    function current();
+    
+    /**
+     * Moves the internal iterator position to the next element.
+     */
+    function next();
 }

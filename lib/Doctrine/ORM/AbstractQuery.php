@@ -305,7 +305,8 @@ abstract class AbstractQuery
      *
      * Alias for execute(array(), HYDRATE_OBJECT).
      *
-     * @return Collection
+     * @return array
+     * @todo getResult()
      */
     public function getResultList()
     {
@@ -318,6 +319,7 @@ abstract class AbstractQuery
      * Alias for execute(array(), HYDRATE_ARRAY).
      *
      * @return array
+     * @todo getArrayResult()
      */
     public function getResultArray()
     {
@@ -449,12 +451,12 @@ abstract class AbstractQuery
                         $stmt, $this->_resultSetMapping, $this->_hints
                         );
                 
-                $cacheDriver->save($hash, serialize($result), $this->_resultCacheTTL);
+                $cacheDriver->save($hash, $result, $this->_resultCacheTTL);
 
                 return $result;
             } else {
                 // Cache hit.
-                return unserialize($cached);
+                return $cached;
             }
         }
 

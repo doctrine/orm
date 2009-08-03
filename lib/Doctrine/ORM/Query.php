@@ -175,10 +175,10 @@ final class Query extends AbstractQuery
             if ($cached === false) {
                 // Cache miss.
                 $executor = $this->_parse()->getSqlExecutor();
-                $queryCache->save($hash, serialize($this->_parserResult), null);
+                $queryCache->save($hash, $this->_parserResult, null);
             } else {
                 // Cache hit.
-                $this->_parserResult = unserialize($cached);
+                $this->_parserResult = $cached;
                 $executor = $this->_parserResult->getSqlExecutor();
             }
         } else {

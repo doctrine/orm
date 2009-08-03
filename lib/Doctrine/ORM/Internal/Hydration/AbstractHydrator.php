@@ -149,7 +149,7 @@ abstract class AbstractHydrator
      * @param array $cache The cache to use.
      * @param mixed $result The result to fill.
      */
-    protected function _hydrateRow(array &$data, array &$cache, &$result)
+    protected function _hydrateRow(array &$data, array &$cache, array &$result)
     {
         throw new DoctrineException("_hydrateRow() not implemented by this hydrator.");
     }

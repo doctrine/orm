@@ -35,16 +35,6 @@ class XcacheCache implements Cache
     /**
      * {@inheritdoc}
      */
-    public function __construct()
-    {      
-        if ( ! extension_loaded('xcache')) {
-            throw \Doctrine\Common\DoctrineException::updateMe('In order to use Xcache driver, the xcache extension must be loaded.');
-        }
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     public function fetch($id) 
     {
         return $this->contains($id) ? xcache_get($id) : false;

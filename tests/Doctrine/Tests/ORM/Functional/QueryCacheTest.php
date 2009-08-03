@@ -21,6 +21,8 @@ class QueryCacheTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
     public function testQueryCache()
     {
+        $this->_em->getConfiguration()->setQueryCacheImpl(null);
+        
         $user = new CmsUser;
         $user->name = 'Roman';
         $user->username = 'romanb';
@@ -47,7 +49,7 @@ class QueryCacheTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $query2->setQueryCacheDriver($cache);
         
         $users = $query2->getResultList();
-
+        
        	$this->assertEquals(1, $cache->count());
        	$this->assertTrue($cache->contains(md5('select ux from Doctrine\Tests\Models\CMS\CmsUser uxDOCTRINE_QUERY_CACHE_SALT')));
         $this->assertEquals(1, count($users));

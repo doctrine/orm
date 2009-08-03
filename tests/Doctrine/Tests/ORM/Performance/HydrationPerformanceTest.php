@@ -206,9 +206,9 @@ class HydrationPerformanceTest extends \Doctrine\Tests\OrmPerformanceTestCase
     }
 
     /**
-     * [romanb: 2000 rows => 1 second]
+     * [romanb: 2000 rows => 0.4 seconds]
      *
-     * MAXIMUM TIME: 2 seconds
+     * MAXIMUM TIME: 1 second
      */
     public function testMixedQueryFetchJoinObjectHydrationPerformance()
     {
@@ -270,7 +270,7 @@ class HydrationPerformanceTest extends \Doctrine\Tests\OrmPerformanceTestCase
         $stmt = new HydratorMockStatement($resultSet);
         $hydrator = new \Doctrine\ORM\Internal\Hydration\ObjectHydrator($this->_em);
 
-        $this->setMaxRunningTime(2);
+        $this->setMaxRunningTime(1);
         $s = microtime(true);
         $result = $hydrator->hydrateAll($stmt, $rsm);
         $e = microtime(true);

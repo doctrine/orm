@@ -677,6 +677,7 @@ class ObjectHydratorTest extends HydrationTestCase
         $this->assertEquals(2, count($result));
         $this->assertTrue($result[0] instanceof \Doctrine\Tests\Models\Forum\ForumCategory);
         $this->assertTrue($result[1] instanceof \Doctrine\Tests\Models\Forum\ForumCategory);
+        $this->assertTrue($result[0] !== $result[1]);
         $this->assertEquals(1, $result[0]->getId());
         $this->assertEquals(2, $result[1]->getId());
         $this->assertTrue(isset($result[0]->boards));

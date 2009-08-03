@@ -67,7 +67,7 @@ class ArrayHydrator extends AbstractHydrator
     }
 
     /** @override */
-    protected function _hydrateRow(array &$data, array &$cache, &$result)
+    protected function _hydrateRow(array &$data, array &$cache, array &$result)
     {
         // 1) Initialize
         $id = $this->_idTemplate; // initialize the id-memory
@@ -201,7 +201,7 @@ class ArrayHydrator extends AbstractHydrator
      * @param string $dqlAlias
      * @param boolean $oneToOne  Whether it is a single-valued association or not.
      */
-    private function updateResultPointer(&$coll, $index, $dqlAlias, $oneToOne)
+    private function updateResultPointer(array &$coll, $index, $dqlAlias, $oneToOne)
     {
         if ($coll === null) {
             unset($this->_resultPointers[$dqlAlias]); // Ticket #1228

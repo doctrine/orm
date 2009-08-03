@@ -33,9 +33,6 @@ use Doctrine\Common\DoctrineException,
  * entities from the collection, only the links in the relation table are removed (on flush).
  * Similarly, if you remove entities from a collection that is part of a one-many
  * mapping this will only result in the nulling out of the foreign keys on flush.
- * If you want entities in a one-many collection to be removed when
- * they're removed from the collection, use deleteOrphans => true on the one-many
- * mapping.
  *
  * @license   http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @since     2.0
@@ -224,7 +221,7 @@ final class PersistentCollection implements \Doctrine\Common\Collections\Collect
      */
     public function takeSnapshot()
     {
-        $this->_snapshot = $this->_coll->unwrap();
+        $this->_snapshot = $this->_coll->toArray();
     }
 
     /**
@@ -246,7 +243,7 @@ final class PersistentCollection implements \Doctrine\Common\Collections\Collect
      */
     public function getDeleteDiff()
     {
-        return array_udiff($this->_snapshot, $this->_coll->unwrap(), array($this, '_compareRecords'));
+        return array_udiff($this->_snapshot, $this->_coll->toArray(), array($this, '_compareRecords'));
     }
 
     /**
@@ -256,7 +253,7 @@ final class PersistentCollection implements \Doctrine\Common\Collections\Collect
      */
     public function getInsertDiff()
     {
-        return array_udiff($this->_coll->unwrap(), $this->_snapshot, array($this, '_compareRecords'));
+        return array_udiff($this->_coll->toArray(), $this->_snapshot, array($this, '_compareRecords'));
     }
 
     /**
@@ -593,6 +590,25 @@ final class PersistentCollection implements \Doctrine\Common\Collections\Collect
         return $this->_coll->key();
     }
     
+    /**
+     * Gets the element of the collection at the current iterator position.
+     */
+    public function current()
+    {
+        return $this->_coll->current();
+    }
+    
+    /**
+     * Moves the internal iterator position to the next element.
+     */
+    public function next()
+    {
+        return $this->_coll->next();
+    }
+    
+    /**
+     * Retrieves the wrapped Collection instance.
+     */
     public function unwrap()
     {
         return $this->_coll;

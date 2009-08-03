@@ -62,9 +62,11 @@ class ResultSetMapping
     //public $ignoredColumns = array();
 
     /**
+     * Adds an entity result to this ResultSetMapping.
      *
-     * @param string $class The class name.
-     * @param string $alias The alias for this class. The alias must be unique within this ResultSetMapping.
+     * @param string $class The class name of the entity.
+     * @param string $alias The alias for the class. The alias must be unique among all entity
+     *                      results or joined entity results within this ResultSetMapping.
      */
     public function addEntityResult($class, $alias)
     {
@@ -72,9 +74,13 @@ class ResultSetMapping
     }
 
     /**
+     * Sets a discriminator column for an entity result or joined entity result.
+     * The discriminator column will be used to determine the concrete class name to
+     * instantiate.
      *
-     * @param string $alias
-     * @param string $discrColumn
+     * @param string $alias The alias of the entity result or joined entity result the discriminator
+     *                      column should be used for.
+     * @param string $discrColumn The name of the discriminator column in the SQL result set.
      */
     public function setDiscriminatorColumn($alias, $discrColumn)
     {
@@ -83,20 +89,10 @@ class ResultSetMapping
     }
 
     /**
+     * Sets a field to use for indexing an entity result or joined entity result.
      *
-     * @param string $className
-     * @return string
-     */
-    public function getDiscriminatorColumn($className)
-    {
-        return isset($this->discriminatorColumns[$className]) ?
-                $this->discriminatorColumns[$className] : null;
-    }
-
-    /**
-     *
-     * @param string $alias
-     * @param string $fieldName
+     * @param string $alias The alias of an entity result or joined entity result.
+     * @param string $fieldName The name of the field to use for indexing.
      */
     public function addIndexBy($alias, $fieldName)
     {
@@ -104,6 +100,8 @@ class ResultSetMapping
     }
 
     /**
+     * Checks whether an entity result or joined entity result with a given alias has
+     * a field set for indexing.
      *
      * @param string $alias
      * @return boolean
@@ -114,18 +112,10 @@ class ResultSetMapping
     }
 
     /**
+     * Checks whether the column with the given name is mapped as a field result
+     * as part of an entity result or joined entity result.
      *
-     * @param string $alias
-     * @return string
-     */
-    public function getIndexByField($alias)
-    {
-        return $this->indexByMap[$alias];
-    }
-
-    /**
-     *
-     * @param string $columnName
+     * @param string $columnName The name of the column in the SQL result set.
      * @return boolean
      */
     public function isFieldResult($columnName)
@@ -134,10 +124,11 @@ class ResultSetMapping
     }
 
     /**
+     * Adds a field result that is part of an entity result or joined entity result.
      *
-     * @param string $alias
-     * @param string $columnName
-     * @param string $fieldName 
+     * @param string $alias The alias of the entity result or joined entity result.
+     * @param string $columnName The name of the column in the SQL result set.
+     * @param string $fieldName The name of the field on the (joined) entity.
      */
     public function addFieldResult($alias, $columnName, $fieldName)
     {
@@ -149,11 +140,12 @@ class ResultSetMapping
     }
 
     /**
+     * Adds a joined entity result.
      *
-     * @param string $class
-     * @param string $alias
-     * @param string $parentAlias
-     * @param object $relation
+     * @param string $class The class name of the joined entity.
+     * @param string $alias The unique alias to use for the joined entity.
+     * @param string $parentAlias The alias of the entity result that is the parent of this joined result.
+     * @param object $relation The association that connects the parent entity result with the joined entity result.
      */
     public function addJoinedEntityResult($class, $alias, $parentAlias, $relation)
     {
@@ -163,9 +155,10 @@ class ResultSetMapping
     }
     
     /**
+     * Adds a scalar result mapping.
      *
-     * @param string $columnName
-     * @param string $alias
+     * @param string $columnName The name of the column in the SQL result set.
+     * @param string $alias The field alias with which the scalar result should be placed in the result structure.
      */
     public function addScalarResult($columnName, $alias)
     {
@@ -176,6 +169,9 @@ class ResultSetMapping
     }
 
     /**
+     * Checks whether a column with a given name is mapped as a scalar result.
+     * 
+     * @param string $columName The name of the column in the SQL result set.
      * @return boolean
      */
     public function isScalarResult($columnName)
@@ -184,18 +180,21 @@ class ResultSetMapping
     }
 
     /**
+     * Gets the name of the class of an entity result or joined entity result,
+     * identified by the given unique alias.
      *
-     * @param <type> $alias
+     * @param string $alias
+     * @return string
      */
-    public function getClass($alias)
+    public function getClassName($alias)
     {
         return $this->aliasMap[$alias];
     }
 
     /**
-     * Gets the alias for a column that is mapped as a scalar value.
+     * Gets the field alias for a column that is mapped as a scalar value.
      *
-     * @param string $columnName
+     * @param string $columnName The name of the column in the SQL result set.
      * @return string
      */
     public function getScalarAlias($columnName)
@@ -204,9 +203,10 @@ class ResultSetMapping
     }
 
     /**
-     * Gets the class that owns the specified column.
+     * Gets the name of the class that owns a field mapping for the specified column.
      *
      * @param string $columnName
+     * @return string
      */
     public function getOwningClass($columnName)
     {
@@ -234,9 +234,10 @@ class ResultSetMapping
     }
 
     /**
+     * Gets the alias of the class that owns a field mapping for the specified column.
      *
-     * @param <type> $columnName
-     * @return <type>
+     * @param string $columnName
+     * @return string
      */
     public function getEntityAlias($columnName)
     {
@@ -244,6 +245,7 @@ class ResultSetMapping
     }
 
     /**
+     * Gets the parent alias of the given alias.
      *
      * @param string $alias
      * @return string
@@ -254,6 +256,7 @@ class ResultSetMapping
     }
 
     /**
+     * Checks whether the given alias has a parent alias.
      *
      * @param string $alias
      * @return boolean
@@ -284,6 +287,7 @@ class ResultSetMapping
     }
 
     /**
+     * Gets the number of different entities that appear in the mapped result.
      *
      * @return integer
      */

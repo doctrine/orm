@@ -114,8 +114,7 @@ class ObjectHydrator extends AbstractHydrator
      */
     protected function _hydrateAll()
     {
-        $result = $this->_rsm->isMixed ? array() : new ArrayCollection;
-
+        $result = array();
         $cache = array();
         while ($data = $this->_stmt->fetch(Connection::FETCH_ASSOC)) {
             $this->_hydrateRow($data, $cache, $result);
@@ -128,33 +127,6 @@ class ObjectHydrator extends AbstractHydrator
         $this->_initializedCollections = array();
 
         return $result;
-    }
-
-    /**
-     * Updates the result pointer for an entity. The result pointers point to the
-     * last seen instance of each entity type. This is used for graph construction.
-     *
-     * @param Collection $coll  The element.
-     * @param boolean|integer $index  Index of the element in the collection.
-     * @param string $dqlAlias
-     */
-    private function updateResultPointer(&$coll, $index, $dqlAlias)
-    {
-        if ($index !== false) {
-            $this->_resultPointers[$dqlAlias] = $coll[$index];
-            return;
-        }
-
-        if ( ! is_object($coll)) {
-            end($coll);
-            $this->_resultPointers[$dqlAlias] =& $coll[key($coll)];
-        } else if ($coll instanceof Collection) {
-            //if ( ! $coll->isEmpty()) {
-                $this->_resultPointers[$dqlAlias] = $coll->last();
-            //}
-        } else {
-            $this->_resultPointers[$dqlAlias] = $coll;
-        }
     }
 
     /**
@@ -178,25 +150,6 @@ class ObjectHydrator extends AbstractHydrator
         $this->_initializedCollections[$oid . $name] = $pColl;
         
         return $pColl;
-    }
-
-    /**
-     * Gets the last key of a collection/array.
-     *
-     * @param Collection|array $coll
-     * @return string|integer
-     */
-    private function getLastKey($coll)
-    {
-        // Check needed because of mixed results.
-        // is_object instead of is_array because is_array is slow on large arrays.
-        if (is_object($coll)) {
-            $coll->last();
-            return $coll->key();
-        } else {
-            end($coll);
-            return key($coll);
-        }
     }
     
     /**
@@ -280,7 +233,7 @@ class ObjectHydrator extends AbstractHydrator
      * 
      * @override
      */
-    protected function _hydrateRow(array &$data, array &$cache, &$result)
+    protected function _hydrateRow(array &$data, array &$cache, array &$result)
     {
         // 1) Initialize
         $id = $this->_idTemplate; // initialize the id-memory
@@ -368,7 +321,8 @@ class ObjectHydrator extends AbstractHydrator
                                 $reflFieldValue->hydrateAdd($element);
                             }
                             
-                            $this->_identifierMap[$path][$id[$parent]][$id[$dqlAlias]] = $this->getLastKey($reflFieldValue);
+                            $reflFieldValue->last();
+                            $this->_identifierMap[$path][$id[$parent]][$id[$dqlAlias]] = $reflFieldValue->key();
                         }
                     } else if ( ! $reflFieldValue) {
                         $coll = new PersistentCollection($this->_em, $this->_ce[$entityName], new ArrayCollection);
@@ -377,7 +331,9 @@ class ObjectHydrator extends AbstractHydrator
                         $this->_uow->setOriginalEntityProperty($oid, $relationField, $coll);
                     }
                     
-                    $this->updateResultPointer($reflFieldValue, $index, $dqlAlias);
+                    // Update result pointer
+                    $this->_resultPointers[$dqlAlias] = $index === false ?
+                            $reflFieldValue->last() : $reflFieldValue[$index];
                 } else {
                     // Single-valued association
                     $reflFieldValue = $reflField->getValue($baseElement);
@@ -403,8 +359,9 @@ class ObjectHydrator extends AbstractHydrator
                         }
                     }
                     
+                    // Update result pointer
                     if ($reflFieldValue !== null) {
-                        $this->updateResultPointer($reflFieldValue, $index, $dqlAlias);
+                        $this->_resultPointers[$dqlAlias] = $reflFieldValue;
                     }
                 }
             } else {
@@ -423,23 +380,29 @@ class ObjectHydrator extends AbstractHydrator
                             );
                             ++$this->_resultCounter;
                         } else {
-                            $result->set($element, $this->_ce[$entityName]
+                            $result[$this->_ce[$entityName]
                                     ->reflFields[$field]
-                                    ->getValue($element));
+                                    ->getValue($element)] = $element;
                         }
                     } else {
                         if ($this->_rsm->isMixed) {
                             $result[] = array($element);
                             ++$this->_resultCounter;
                         } else {
-                            $result->add($element);
+                            $result[] = $element;
                         }
                     }
-                    $this->_identifierMap[$dqlAlias][$id[$dqlAlias]] = $this->getLastKey($result);
+                    
+                    $last = end($result);
+                    $this->_identifierMap[$dqlAlias][$id[$dqlAlias]] = key($result);
+                    
+                    // Update result pointer
+                    $this->_resultPointers[$dqlAlias] = $last;
                 } else {
+                    // Update result pointer
                     $index = $this->_identifierMap[$dqlAlias][$id[$dqlAlias]];
+                    $this->_resultPointers[$dqlAlias] = $result[$index];
                 }
-                $this->updateResultPointer($result, $index, $dqlAlias);
             }
         }
 
@@ -454,6 +417,6 @@ class ObjectHydrator extends AbstractHydrator
     /** {@inheritdoc} */
     protected function _getRowContainer()
     {
-        return new \Doctrine\Common\Collections\ArrayCollection;
+        return array();
     }
 }

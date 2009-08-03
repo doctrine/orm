@@ -40,16 +40,6 @@ class MemcacheCache implements Cache
     private $_memcache;
 
     /**
-     * {@inheritdoc}
-     */
-    public function __construct()
-    {      
-        if ( ! extension_loaded('memcache')) {
-            throw \Doctrine\Common\DoctrineException::updateMe('In order to use Memcache driver, the memcache extension must be loaded.');
-        }
-    }
-
-    /**
      * Sets the memcache instance to use.
      *
      * @param Memcache $memcache

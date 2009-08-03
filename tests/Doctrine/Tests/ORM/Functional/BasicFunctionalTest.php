@@ -225,7 +225,7 @@ class BasicFunctionalTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $users = $query->getResultList();
 
-        $this->assertEquals(1, $users->count());
+        $this->assertEquals(1, count($users));
         $this->assertEquals('Guilherme', $users[0]->name);
         $this->assertEquals('gblanco', $users[0]->username);
         $this->assertEquals('developer', $users[0]->status);
@@ -262,7 +262,7 @@ class BasicFunctionalTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $users = $query->getResultList();
 
-        $this->assertEquals(0, $users->count());
+        $this->assertEquals(0, count($users));
     }
 
     public function testBasicOneToManyLeftJoin()
@@ -278,7 +278,7 @@ class BasicFunctionalTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $users = $query->getResultList();
 
-        $this->assertEquals(1, $users->count());
+        $this->assertEquals(1, count($users));
         $this->assertEquals('Guilherme', $users[0]->name);
         $this->assertEquals('gblanco', $users[0]->username);
         $this->assertEquals('developer', $users[0]->status);

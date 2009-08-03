@@ -50,7 +50,7 @@ class CollectionTest extends \Doctrine\Tests\DoctrineTestCase
         $this->_coll->add(1);
         $this->_coll->add(2);
         $res = $this->_coll->map(function($e) { return $e * 2; });
-        $this->assertEquals(array(2, 4), $res->unwrap());
+        $this->assertEquals(array(2, 4), $res->toArray());
     }
 
     public function testFilter()
@@ -59,7 +59,7 @@ class CollectionTest extends \Doctrine\Tests\DoctrineTestCase
         $this->_coll->add("foo");
         $this->_coll->add(3);
         $res = $this->_coll->filter(function($e) { return is_numeric($e); });
-        $this->assertEquals(array(0 => 1, 2 => 3), $res->unwrap());
+        $this->assertEquals(array(0 => 1, 2 => 3), $res->toArray());
     }
 
     public function testFirstAndLast()

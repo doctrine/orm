@@ -5,7 +5,7 @@ namespace Doctrine\DBAL\Types;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 
 /**
- * Type that maps an SQL DATETIME to a PHP Date object.
+ * Type that maps an SQL TIME to a PHP DateTime object.
  *
  * @since 2.0
  */
