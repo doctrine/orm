@@ -48,7 +48,7 @@ class SingleTableInheritanceTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $query = $this->_em->createQuery("select e from Doctrine\Tests\ORM\Functional\ParentEntity e order by e.data asc");
 
-        $entities = $query->getResultList();
+        $entities = $query->getResult();
         
         $this->assertEquals(2, count($entities));
         $this->assertTrue(is_numeric($entities[0]->getId()));
@@ -63,7 +63,7 @@ class SingleTableInheritanceTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $query = $this->_em->createQuery("select e from Doctrine\Tests\ORM\Functional\ChildEntity e");
 
-        $entities = $query->getResultList();
+        $entities = $query->getResult();
         $this->assertEquals(1, count($entities));
         $this->assertTrue($entities[0] instanceof ChildEntity);
         $this->assertTrue(is_numeric($entities[0]->getId()));
@@ -74,7 +74,7 @@ class SingleTableInheritanceTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $query = $this->_em->createQuery("select r,o from Doctrine\Tests\ORM\Functional\RelatedEntity r join r.owner o");
 
-        $entities = $query->getResultList();
+        $entities = $query->getResult();
         $this->assertEquals(1, count($entities));
         $this->assertTrue($entities[0] instanceof RelatedEntity);
         $this->assertTrue(is_numeric($entities[0]->getId()));

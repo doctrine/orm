@@ -73,7 +73,7 @@ class OneToManySelfReferentialAssociationTest extends \Doctrine\Tests\OrmFunctio
         $this->_createFixture();
 
         $query = $this->_em->createQuery('select c1, c2 from Doctrine\Tests\Models\ECommerce\ECommerceCategory c1 join c1.children c2');
-        $result = $query->getResultList();
+        $result = $query->getResult();
         $this->assertEquals(1, count($result));
         $parent = $result[0];
         $children = $parent->getChildren();
@@ -94,7 +94,7 @@ class OneToManySelfReferentialAssociationTest extends \Doctrine\Tests\OrmFunctio
         $metadata->getAssociationMapping('children')->fetchMode = AssociationMapping::FETCH_LAZY;
 
         $query = $this->_em->createQuery('select c from Doctrine\Tests\Models\ECommerce\ECommerceCategory c order by c.id asc');
-        $result = $query->getResultList();
+        $result = $query->getResult();
         $parent = $result[0];
         $children = $parent->getChildren();
         

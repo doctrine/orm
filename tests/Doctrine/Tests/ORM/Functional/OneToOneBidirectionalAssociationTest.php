@@ -58,7 +58,7 @@ class OneToOneBidirectionalAssociationTest extends \Doctrine\Tests\OrmFunctional
         $this->_createFixture();
 
         $query = $this->_em->createQuery('select c, ca from Doctrine\Tests\Models\ECommerce\ECommerceCustomer c join c.cart ca');
-        $result = $query->getResultList();
+        $result = $query->getResult();
         $customer = $result[0];
         
         $this->assertTrue($customer->getCart() instanceof ECommerceCart);
@@ -72,7 +72,7 @@ class OneToOneBidirectionalAssociationTest extends \Doctrine\Tests\OrmFunctional
         $metadata->getAssociationMapping('customer')->fetchMode = AssociationMapping::FETCH_LAZY;
 
         $query = $this->_em->createQuery('select c from Doctrine\Tests\Models\ECommerce\ECommerceCart c');
-        $result = $query->getResultList();
+        $result = $query->getResult();
         $cart = $result[0];
         
         $this->assertTrue($cart->getCustomer() instanceof ECommerceCustomer);
@@ -86,7 +86,7 @@ class OneToOneBidirectionalAssociationTest extends \Doctrine\Tests\OrmFunctional
         $metadata->getAssociationMapping('mentor')->fetchMode = AssociationMapping::FETCH_EAGER;
 
         $query = $this->_em->createQuery('select c from Doctrine\Tests\Models\ECommerce\ECommerceCustomer c');
-        $result = $query->getResultList();
+        $result = $query->getResult();
         $customer = $result[0];
         
         $this->assertNull($customer->getMentor());

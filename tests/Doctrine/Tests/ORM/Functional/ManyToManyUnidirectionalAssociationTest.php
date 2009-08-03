@@ -63,7 +63,7 @@ class ManyToManyUnidirectionalAssociationTest extends AbstractManyToManyAssociat
         $this->_createFixture();
 
         $query = $this->_em->createQuery('SELECT c, p FROM Doctrine\Tests\Models\ECommerce\ECommerceCart c LEFT JOIN c.products p ORDER BY c.id, p.id');
-        $result = $query->getResultList();
+        $result = $query->getResult();
         $firstCart = $result[0];
         $products = $firstCart->getProducts();
         $secondCart = $result[1];
@@ -83,7 +83,7 @@ class ManyToManyUnidirectionalAssociationTest extends AbstractManyToManyAssociat
         $metadata->getAssociationMapping('products')->fetchMode = AssociationMapping::FETCH_LAZY;
 
         $query = $this->_em->createQuery('SELECT c FROM Doctrine\Tests\Models\ECommerce\ECommerceCart c');
-        $result = $query->getResultList();
+        $result = $query->getResult();
         $firstCart = $result[0];
         $products = $firstCart->getProducts();
         $secondCart = $result[1];

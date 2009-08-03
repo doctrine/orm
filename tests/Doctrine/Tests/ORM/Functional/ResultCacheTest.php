@@ -36,7 +36,7 @@ class ResultCacheTest extends \Doctrine\Tests\OrmFunctionalTestCase
 		
 		$initialQueryCount = $this->_em->getConnection()->getQueryCount();
 		
-        $users = $query->getResultList();
+        $users = $query->getResult();
 
         $this->assertEquals($initialQueryCount + 1, $this->_em->getConnection()->getQueryCount());
        	$this->assertEquals(1, $cache->count());
@@ -48,7 +48,7 @@ class ResultCacheTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $query2 = $this->_em->createQuery('select ux from Doctrine\Tests\Models\CMS\CmsUser ux');
         $query2->setResultCache($cache);
         
-        $users = $query2->getResultList();
+        $users = $query2->getResult();
 
         $this->assertEquals($initialQueryCount + 1, $this->_em->getConnection()->getQueryCount());
        	$this->assertEquals(1, $cache->count());

@@ -223,7 +223,7 @@ class BasicFunctionalTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $query = $this->_em->createQuery("select u from Doctrine\Tests\Models\CMS\CmsUser u");
 
-        $users = $query->getResultList();
+        $users = $query->getResult();
 
         $this->assertEquals(1, count($users));
         $this->assertEquals('Guilherme', $users[0]->name);
@@ -232,7 +232,7 @@ class BasicFunctionalTest extends \Doctrine\Tests\OrmFunctionalTestCase
         //$this->assertNull($users[0]->phonenumbers);
         //$this->assertNull($users[0]->articles);
 
-        $usersArray = $query->getResultArray();
+        $usersArray = $query->getArrayResult();
 
         $this->assertTrue(is_array($usersArray));
         $this->assertEquals(1, count($usersArray));
@@ -260,7 +260,7 @@ class BasicFunctionalTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $query = $this->_em->createQuery("select u from Doctrine\Tests\Models\CMS\CmsUser u join u.phonenumbers p");
 
-        $users = $query->getResultList();
+        $users = $query->getResult();
 
         $this->assertEquals(0, count($users));
     }
@@ -276,7 +276,7 @@ class BasicFunctionalTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $query = $this->_em->createQuery("select u,p from Doctrine\Tests\Models\CMS\CmsUser u left join u.phonenumbers p");
 
-        $users = $query->getResultList();
+        $users = $query->getResult();
 
         $this->assertEquals(1, count($users));
         $this->assertEquals('Guilherme', $users[0]->name);
@@ -308,7 +308,7 @@ class BasicFunctionalTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $query = $this->_em->createQuery("select u, g from Doctrine\Tests\Models\CMS\CmsUser u join u.groups g");
 
-        $result = $query->getResultList();
+        $result = $query->getResult();
         
         $this->assertEquals(2, $this->_em->getUnitOfWork()->size());
         $this->assertTrue($result[0] instanceof CmsUser);
@@ -330,7 +330,7 @@ class BasicFunctionalTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->clear();
 
         $query = $this->_em->createQuery("select u, g from Doctrine\Tests\Models\CMS\CmsUser u inner join u.groups g");
-        $this->assertEquals(0, count($query->getResultList()));
+        $this->assertEquals(0, count($query->getResult()));
     }
     
     public function testBasicRefresh()

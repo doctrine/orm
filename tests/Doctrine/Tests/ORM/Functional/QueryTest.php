@@ -32,7 +32,7 @@ class QueryTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $query = $this->_em->createQuery("select u, upper(u.name) from Doctrine\Tests\Models\CMS\CmsUser u where u.username = 'gblanco'");
         
-        $result = $query->getResultList();
+        $result = $query->getResult();
         
         $this->assertEquals(1, count($result));
         $this->assertTrue($result[0][0] instanceof CmsUser);
@@ -41,7 +41,7 @@ class QueryTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertEquals('developer', $result[0][0]->status);
         $this->assertEquals('GUILHERME', $result[0][1]);
 
-        $resultArray = $query->getResultArray();
+        $resultArray = $query->getArrayResult();
         $this->assertEquals(1, count($resultArray));
         $this->assertTrue(is_array($resultArray[0][0]));
         $this->assertEquals('Guilherme', $resultArray[0][0]['name']);
@@ -85,7 +85,7 @@ class QueryTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->clear();
 
         $query = $this->_em->createQuery("select u, a from Doctrine\Tests\Models\CMS\CmsUser u join u.articles a");
-        $users = $query->getResultList();
+        $users = $query->getResult();
         $this->assertEquals(1, count($users));
         $this->assertTrue($users[0] instanceof CmsUser);
         $this->assertEquals(2, count($users[0]->articles));

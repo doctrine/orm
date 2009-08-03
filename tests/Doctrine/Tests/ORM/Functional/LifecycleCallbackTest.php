@@ -30,7 +30,7 @@ class LifecycleCallbackTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->clear();
         
         $query = $this->_em->createQuery("select e from Doctrine\Tests\ORM\Functional\LifecycleCallbackTestEntity e");
-        $result = $query->getResultList();
+        $result = $query->getResult();
         $this->assertTrue($result[0]->postLoadCallbackInvoked);
         
         $result[0]->value = 'hello again';

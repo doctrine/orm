@@ -89,7 +89,7 @@ class ManyToManyBidirectionalAssociationTest extends AbstractManyToManyAssociati
         $metadata->getAssociationMapping('products')->fetchMode = AssociationMapping::FETCH_LAZY;
 
         $query = $this->_em->createQuery('SELECT c FROM Doctrine\Tests\Models\ECommerce\ECommerceCategory c order by c.id');
-        $categories = $query->getResultList();
+        $categories = $query->getResult();
         $this->assertLoadingOfInverseSide($categories); 
     }
 
@@ -102,7 +102,7 @@ class ManyToManyBidirectionalAssociationTest extends AbstractManyToManyAssociati
         $metadata->getAssociationMapping('categories')->fetchMode = AssociationMapping::FETCH_LAZY;
 
         $query = $this->_em->createQuery('SELECT p FROM Doctrine\Tests\Models\ECommerce\ECommerceProduct p order by p.id');
-        $products = $query->getResultList();
+        $products = $query->getResult();
         
         $this->assertEquals(2, count($products));
         $this->assertEquals(0, count($products[0]->getCategories()->unwrap()));
@@ -128,7 +128,7 @@ class ManyToManyBidirectionalAssociationTest extends AbstractManyToManyAssociati
     protected function _findProducts()
     {
         $query = $this->_em->createQuery('SELECT p, c FROM Doctrine\Tests\Models\ECommerce\ECommerceProduct p LEFT JOIN p.categories c ORDER BY p.id, c.id');
-        return $query->getResultList();
+        return $query->getResult();
     }
     
     public function assertLoadingOfOwningSide($products)

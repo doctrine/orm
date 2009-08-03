@@ -72,7 +72,7 @@ class OneToManyBidirectionalAssociationTest extends \Doctrine\Tests\OrmFunctiona
     {
         $this->_createFixture();
         $query = $this->_em->createQuery('select p, f from Doctrine\Tests\Models\ECommerce\ECommerceProduct p join p.features f');
-        $result = $query->getResultList();
+        $result = $query->getResult();
         $product = $result[0];
         $features = $product->getFeatures();
         
@@ -92,7 +92,7 @@ class OneToManyBidirectionalAssociationTest extends \Doctrine\Tests\OrmFunctiona
         $metadata->getAssociationMapping('features')->fetchMode = AssociationMapping::FETCH_LAZY;
 
         $query = $this->_em->createQuery('select p from Doctrine\Tests\Models\ECommerce\ECommerceProduct p');
-        $result = $query->getResultList();
+        $result = $query->getResult();
         $product = $result[0];
         $features = $product->getFeatures();
         
@@ -112,7 +112,7 @@ class OneToManyBidirectionalAssociationTest extends \Doctrine\Tests\OrmFunctiona
         $metadata->getAssociationMapping('product')->fetchMode = AssociationMapping::FETCH_LAZY;
 
         $query = $this->_em->createQuery('select f from Doctrine\Tests\Models\ECommerce\ECommerceFeature f');
-        $features = $query->getResultList();
+        $features = $query->getResult();
         
         $product = $features[0]->getProduct();
         $this->assertTrue($product instanceof ECommerceProduct);

@@ -78,7 +78,7 @@ class ManyToManySelfReferentialAssociationTest extends AbstractManyToManyAssocia
         $metadata->getAssociationMapping('related')->fetchMode = AssociationMapping::FETCH_LAZY;
 
         $query = $this->_em->createQuery('SELECT p FROM Doctrine\Tests\Models\ECommerce\ECommerceProduct p');
-        $products = $query->getResultList();
+        $products = $query->getResult();
         $this->assertLoadingOfOwningSide($products); 
     }
 
@@ -119,6 +119,6 @@ class ManyToManySelfReferentialAssociationTest extends AbstractManyToManyAssocia
     protected function _findProducts()
     {
         $query = $this->_em->createQuery('SELECT p, r FROM Doctrine\Tests\Models\ECommerce\ECommerceProduct p LEFT JOIN p.related r ORDER BY p.id, r.id');
-        return $query->getResultList();
+        return $query->getResult();
     }
 }

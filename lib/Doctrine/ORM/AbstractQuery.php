@@ -303,14 +303,13 @@ abstract class AbstractQuery
     /**
      * Gets the list of results for the query.
      *
-     * Alias for execute(array(), HYDRATE_OBJECT).
+     * Alias for execute(array(), $hydrationMode = HYDRATE_OBJECT).
      *
      * @return array
-     * @todo getResult()
      */
-    public function getResultList()
+    public function getResult($hydrationMode = self::HYDRATE_OBJECT)
     {
-        return $this->execute(array(), self::HYDRATE_OBJECT);
+        return $this->execute(array(), $hydrationMode);
     }
 
     /**
@@ -319,9 +318,8 @@ abstract class AbstractQuery
      * Alias for execute(array(), HYDRATE_ARRAY).
      *
      * @return array
-     * @todo getArrayResult()
      */
-    public function getResultArray()
+    public function getArrayResult()
     {
         return $this->execute(array(), self::HYDRATE_ARRAY);
     }

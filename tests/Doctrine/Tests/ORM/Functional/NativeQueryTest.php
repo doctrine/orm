@@ -36,7 +36,7 @@ class NativeQueryTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $query = $this->_em->createNativeQuery('SELECT id, name FROM cms_users WHERE username = ?', $rsm);
         $query->setParameter(1, 'romanb');
 
-        $users = $query->getResultList();
+        $users = $query->getResult();
 
         $this->assertEquals(1, count($users));
         $this->assertTrue($users[0] instanceof CmsUser);

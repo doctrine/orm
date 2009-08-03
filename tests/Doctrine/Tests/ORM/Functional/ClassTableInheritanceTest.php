@@ -41,7 +41,7 @@ class ClassTableInheritanceTest extends \Doctrine\Tests\OrmFunctionalTestCase
         
         $query = $this->_em->createQuery("select p from Doctrine\Tests\Models\Company\CompanyPerson p order by p.id asc");
 
-        $entities = $query->getResultList();
+        $entities = $query->getResult();
 
         $this->assertEquals(2, count($entities));
         $this->assertTrue($entities[0] instanceof CompanyPerson);
@@ -56,7 +56,7 @@ class ClassTableInheritanceTest extends \Doctrine\Tests\OrmFunctionalTestCase
         
         $query = $this->_em->createQuery("select p from Doctrine\Tests\Models\Company\CompanyEmployee p");
 
-        $entities = $query->getResultList();
+        $entities = $query->getResult();
 
         $this->assertEquals(1, count($entities));
         $this->assertTrue($entities[0] instanceof CompanyEmployee);
@@ -132,7 +132,7 @@ class ClassTableInheritanceTest extends \Doctrine\Tests\OrmFunctionalTestCase
         
         $query = $this->_em->createQuery('select p, s from Doctrine\Tests\Models\Company\CompanyPerson p join p.spouse s where p.name=\'Mary Smith\'');
         
-        $result = $query->getResultList();
+        $result = $query->getResult();
         $this->assertEquals(1, count($result));
         $this->assertTrue($result[0] instanceof CompanyPerson);
         $this->assertEquals('Mary Smith', $result[0]->getName());
@@ -165,7 +165,7 @@ class ClassTableInheritanceTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $query = $this->_em->createQuery('select p, f from Doctrine\Tests\Models\Company\CompanyPerson p join p.friends f where p.name=?1');
         $query->setParameter(1, 'Roman');
         
-        $result = $query->getResultList();
+        $result = $query->getResult();
         $this->assertEquals(1, count($result));
         $this->assertEquals(1, count($result[0]->getFriends()));
         $this->assertEquals('Roman', $result[0]->getName());

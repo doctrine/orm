@@ -51,7 +51,7 @@ class OneToOneUnidirectionalAssociationTest extends \Doctrine\Tests\OrmFunctiona
         $this->_createFixture();
 
         $query = $this->_em->createQuery('select p, s from Doctrine\Tests\Models\ECommerce\ECommerceProduct p left join p.shipping s');
-        $result = $query->getResultList();
+        $result = $query->getResult();
         $product = $result[0];
         
         $this->assertTrue($product->getShipping() instanceof ECommerceShipping);
@@ -65,7 +65,7 @@ class OneToOneUnidirectionalAssociationTest extends \Doctrine\Tests\OrmFunctiona
         $metadata->getAssociationMapping('shipping')->fetchMode = AssociationMapping::FETCH_LAZY;
 
         $query = $this->_em->createQuery('select p from Doctrine\Tests\Models\ECommerce\ECommerceProduct p');
-        $result = $query->getResultList();
+        $result = $query->getResult();
         $product = $result[0];
         
         $this->assertTrue($product->getShipping() instanceof ECommerceShipping);
@@ -77,7 +77,7 @@ class OneToOneUnidirectionalAssociationTest extends \Doctrine\Tests\OrmFunctiona
         $this->_em->getConfiguration()->setAllowPartialObjects(true);
 
         $query = $this->_em->createQuery('select p from Doctrine\Tests\Models\ECommerce\ECommerceProduct p');
-        $result = $query->getResultList();
+        $result = $query->getResult();
         $product = $result[0];
         
         $this->assertNull($product->getShipping());

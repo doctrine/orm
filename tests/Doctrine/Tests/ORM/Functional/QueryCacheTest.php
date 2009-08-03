@@ -36,7 +36,7 @@ class QueryCacheTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $query->setQueryCacheDriver($cache);
 		$this->assertEquals(0, $cache->count());
 		
-        $users = $query->getResultList();
+        $users = $query->getResult();
 
        	$this->assertEquals(1, $cache->count());
        	$this->assertTrue($cache->contains(md5('select ux from Doctrine\Tests\Models\CMS\CmsUser uxDOCTRINE_QUERY_CACHE_SALT')));
@@ -48,7 +48,7 @@ class QueryCacheTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $query2 = $this->_em->createQuery('select ux from Doctrine\Tests\Models\CMS\CmsUser ux');
         $query2->setQueryCacheDriver($cache);
         
-        $users = $query2->getResultList();
+        $users = $query2->getResult();
         
        	$this->assertEquals(1, $cache->count());
        	$this->assertTrue($cache->contains(md5('select ux from Doctrine\Tests\Models\CMS\CmsUser uxDOCTRINE_QUERY_CACHE_SALT')));
