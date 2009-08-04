@@ -248,6 +248,14 @@ abstract class TreeWalkerAdapter implements TreeWalker
     public function walkCollectionMemberExpression($collMemberExpr) {}
 
     /**
+     * Walks down an EmptyCollectionComparisonExpression AST node, thereby generating the appropriate SQL.
+     *
+     * @param EmptyCollectionComparisonExpression
+     * @return string The SQL.
+     */
+    public function walkEmptyCollectionComparisonExpression($emptyCollCompExpr) {}
+
+    /**
      * Walks down a NullComparisonExpression AST node, thereby generating the appropriate SQL.
      *
      * @param NullComparisonExpression

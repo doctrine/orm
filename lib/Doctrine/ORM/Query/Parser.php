@@ -1639,7 +1639,7 @@ class Parser
      *      InExpression | NullComparisonExpression | ExistsExpression |
      *      EmptyCollectionComparisonExpression | CollectionMemberExpression
      *
-     * @todo Posy 2.0 release. Missing EmptyCollectionComparisonExpression implementation
+     * @todo Post 2.0 release. Missing EmptyCollectionComparisonExpression implementation
      */
     public function SimpleConditionalExpression()
     {
@@ -1669,9 +1669,18 @@ class Parser
             if ($peek['type'] === Lexer::T_NOT) {
                 $peek = $this->_lexer->peek();
             }
-
-            $this->_lexer->resetPeek();
+            
             $token = $peek;
+            
+            // We need to go even further in case of IS (differenciate between NULL and EMPTY)
+            $lookahead = $this->_lexer->peek();
+                
+            // Also peek beyond a NOT if there is one
+            if ($lookahead['type'] === Lexer::T_NOT) {
+                $lookahead = $this->_lexer->peek();
+            }
+            
+            $this->_lexer->resetPeek();
         }
 
         if ($pathExprOrInputParam) {            
@@ -1689,7 +1698,11 @@ class Parser
                     return $this->InExpression();
 
                 case Lexer::T_IS:
-                    return $this->NullComparisonExpression();
+                	if ($lookahead['type'] == Lexer::T_NULL) {
+                        return $this->NullComparisonExpression();
+                    }
+                    
+                    return $this->EmptyCollectionComparisonExpression();
 
                 case Lexer::T_MEMBER:
                     return $this->CollectionMemberExpression();
@@ -1702,6 +1715,28 @@ class Parser
         return $this->ComparisonExpression();
     }
     
+    
+    /**
+     * EmptyCollectionComparisonExpression ::= CollectionValuedPathExpression "IS" ["NOT"] "EMPTY"
+     *
+     * @return \Doctrine\ORM\Query\AST\EmptyCollectionComparisonExpression
+     */
+    public function EmptyCollectionComparisonExpression()
+    {
+        $emptyColletionCompExpr = new AST\EmptyCollectionComparisonExpression(
+            $this->CollectionValuedPathExpression()
+        );
+        $this->match(Lexer::T_IS);
+
+        if ($this->_lexer->isNextToken(Lexer::T_NOT)) {
+            $this->match(Lexer::T_NOT);
+            $emptyColletionCompExpr->setNot(true);
+        }
+
+        $this->match(Lexer::T_EMPTY);
+
+        return $emptyColletionCompExpr;
+    }
     
     /**
      * CollectionMemberExpression ::= EntityExpression ["NOT"] "MEMBER" ["OF"] CollectionValuedPathExpression
@@ -2121,9 +2156,6 @@ class Parser
 
     /**
      * ComparisonExpression ::= ArithmeticExpression ComparisonOperator ( QuantifiedExpression | ArithmeticExpression )
-     *
-     * @return AST\ComparisonExpression
-     * @todo Semantical checks whether $leftExpr $operator and $rightExpr are compatible.
      *
      * @return \Doctrine\ORM\Query\AST\ComparisonExpression
      */

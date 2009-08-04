@@ -249,6 +249,14 @@ interface TreeWalker
      * @return string The SQL.
      */
     function walkCollectionMemberExpression($collMemberExpr);
+    
+    /**
+     * Walks down an EmptyCollectionComparisonExpression AST node, thereby generating the appropriate SQL.
+     *
+     * @param EmptyCollectionComparisonExpression
+     * @return string The SQL.
+     */
+    function walkEmptyCollectionComparisonExpression($emptyCollCompExpr);
 
     /**
      * Walks down a NullComparisonExpression AST node, thereby generating the appropriate SQL.
