@@ -36,7 +36,7 @@ interface TreeWalker
      * @param ParserResult $parserResult The result of the parsing process.
      * @param array $queryComponents Query components (symbol table)
      */
-    function init($query, $parserResult, array $queryComponents);
+    function __construct($query, $parserResult, array $queryComponents);
     
     /**
      * Walks down a SelectStatement AST node, thereby generating the appropriate SQL.

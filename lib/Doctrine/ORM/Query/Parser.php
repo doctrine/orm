@@ -21,10 +21,10 @@
 
 namespace Doctrine\ORM\Query;
 
-use Doctrine\Common\DoctrineException;
-use Doctrine\ORM\Query;
-use Doctrine\ORM\Query\AST;
-use Doctrine\ORM\Query\Exec;
+use Doctrine\Common\DoctrineException,
+    Doctrine\ORM\Query,
+    Doctrine\ORM\Query\AST,
+    Doctrine\ORM\Query\Exec;
 
 /**
  * An LL(*) parser for the context-free grammar of the Doctrine Query Language.
@@ -257,8 +257,7 @@ class Parser
         }
 
         // Create TreeWalker who creates the SQL from the AST
-        $treeWalker = $this->_treeWalker ?: new SqlWalker();
-        $treeWalker->init(
+        $treeWalker = $this->_treeWalker ?: new SqlWalker(
             $this->_query, $this->_parserResult, $this->_queryComponents
         );
 

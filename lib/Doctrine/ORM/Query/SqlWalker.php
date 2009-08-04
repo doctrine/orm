@@ -74,7 +74,7 @@ class SqlWalker implements TreeWalker
     /**
      * @inheritdoc
      */
-    public function init($query, $parserResult, array $queryComponents)
+    public function __construct($query, $parserResult, array $queryComponents)
     {
         $this->_rsm = $parserResult->getResultSetMapping();
         $this->_query = $query;

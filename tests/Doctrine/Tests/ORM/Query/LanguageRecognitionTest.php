@@ -48,7 +48,7 @@ class LanguageRecognitionTest extends \Doctrine\Tests\OrmTestCase
         
         $parser = new \Doctrine\ORM\Query\Parser($query);
         // We do NOT test SQL construction here. That only unnecessarily slows down the tests!
-        $parser->setTreeWalker(new \Doctrine\Tests\Mocks\MockTreeWalker);
+        $parser->setTreeWalker(new \Doctrine\Tests\Mocks\MockTreeWalker(null, null, array()));
         
         return $parser->parse();
     }
