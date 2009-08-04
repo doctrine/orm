@@ -1117,7 +1117,7 @@ class Parser
 
     
     /**
-     * UpdateItem ::= [IdentificationVariable "."] {StateField | SingleValuedAssociationField} "=" NewValue
+     * UpdateItem ::= IdentificationVariable "." {StateField | SingleValuedAssociationField} "=" NewValue
      *
      * @return \Doctrine\ORM\Query\AST\UpdateItem
      */
@@ -1127,8 +1127,7 @@ class Parser
         $identVariable = null;
 
         if ($peek['value'] == '.') {
-            $this->match(Lexer::T_IDENTIFIER);
-            $identVariable = $this->_lexer->token['value'];
+            $identVariable = $this->IdentificationVariable();
             $this->match('.');
         } else {
             throw QueryException::missingAliasQualifier();
@@ -1219,9 +1218,6 @@ class Parser
      * NewValue ::= SimpleArithmeticExpression | "NULL"
      *
      * SimpleArithmeticExpression covers all *Primary grammar rules and also SimplEntityExpression
-     *
-     * @todo Find why removal of InputParameter check causes ClassTableInheritanceTest to fail with 
-     * wrong parameter count (Should be processed in Literal, part of SimpleArithmeticExpression)
      */
     public function NewValue()
     {
@@ -1619,7 +1615,7 @@ class Parser
      *      InExpression | NullComparisonExpression | ExistsExpression |
      *      EmptyCollectionComparisonExpression | CollectionMemberExpression
      *
-     * @todo Missing EmptyCollectionComparisonExpression implementation
+     * @todo Posy 2.0 release. Missing EmptyCollectionComparisonExpression implementation
      */
     public function SimpleConditionalExpression()
     {
@@ -1715,18 +1711,13 @@ class Parser
 
     
     /**
-     * Literal ::= string | char | integer | float | boolean | InputParameter
+     * Literal ::= string | char | integer | float | boolean
      *
-     * @todo Rip out InputParameter. Thats not a literal.
+     * @return string
      */
     public function Literal()
     {
         switch ($this->_lexer->lookahead['type']) {
-            case Lexer::T_INPUT_PARAMETER:
-                $this->match($this->_lexer->lookahead['value']);
-
-                return new AST\InputParameter($this->_lexer->token['value']);
-
             case Lexer::T_STRING:
             case Lexer::T_INTEGER:
             case Lexer::T_FLOAT:
@@ -1738,7 +1729,34 @@ class Parser
                 $this->syntaxError('Literal');
         }
     }
+    
+    /**
+     * InParameter ::= Literal | InputParameter
+     *
+     * @return string | \Doctrine\ORM\Query\AST\InputParameter
+     */
+    public function InParameter()
+    {
+        if ($this->_lexer->lookahead['type'] == Lexer::T_INPUT_PARAMETER) {
+            return $this->InputParameter();
+        }
+        
+        return $this->Literal();
+    }
+    
+    
+    /**
+     * InputParameter ::= PositionalParameter | NamedParameter
+     *
+     * @return \Doctrine\ORM\Query\AST\InputParameter
+     */
+    public function InputParameter()
+    {
+        $this->match($this->_lexer->lookahead['value']);
 
+        return new AST\InputParameter($this->_lexer->token['value']);
+    }
+    
     
     /**
      * ArithmeticExpression ::= SimpleArithmeticExpression | "(" Subselect ")"
@@ -1864,16 +1882,12 @@ class Parser
                 return $this->IdentificationVariable();
 
             case Lexer::T_INPUT_PARAMETER:
-                $this->match($this->_lexer->lookahead['value']);
-
-                return new AST\InputParameter($this->_lexer->token['value']);
+                return $this->InputParameter();
 
             case Lexer::T_STRING:
             case Lexer::T_INTEGER:
             case Lexer::T_FLOAT:
-                $this->match($this->_lexer->lookahead['value']);
-
-                return $this->_lexer->token['value'];
+                return $this->Literal();
 
             default:
                 $peek = $this->_lexer->glimpse();
@@ -1935,9 +1949,7 @@ class Parser
 
             return $this->_lexer->token['value'];
         } else if ($this->_lexer->lookahead['type'] === Lexer::T_INPUT_PARAMETER) {
-            $this->match(Lexer::T_INPUT_PARAMETER);
-
-            return new AST\InputParameter($this->_lexer->token['value']);
+            return $this->InputParameter();
         } else if ($this->_isAggregateFunction($this->_lexer->lookahead['type'])) {
             return $this->AggregateExpression();
         }
@@ -1970,8 +1982,7 @@ class Parser
     public function SimpleEntityExpression()
     {
         if ($this->_lexer->isNextToken(Lexer::T_INPUT_PARAMETER)) {
-            $this->match(Lexer::T_INPUT_PARAMETER);
-            return new AST\InputParameter($this->_lexer->token['value']);
+            return $this->InputParameter();
         }
         
         return $this->IdentificationVariable();
@@ -2109,7 +2120,7 @@ class Parser
     }
 
     /**
-     * InExpression ::= StateFieldPathExpression ["NOT"] "IN" "(" (Literal {"," Literal}* | Subselect) ")"
+     * InExpression ::= StateFieldPathExpression ["NOT"] "IN" "(" (InParameter {"," InParameter}* | Subselect) ")"
      *
      * @return \Doctrine\ORM\Query\AST\InExpression
      */
@@ -2129,11 +2140,11 @@ class Parser
             $inExpression->setSubselect($this->Subselect());
         } else {
             $literals = array();
-            $literals[] = $this->Literal();
+            $literals[] = $this->InParameter();
 
             while ($this->_lexer->isNextToken(',')) {
                 $this->match(',');
-                $literals[] = $this->Literal();
+                $literals[] = $this->InParameter();
             }
 
             $inExpression->setLiterals($literals);
