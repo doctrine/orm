@@ -257,7 +257,8 @@ class Parser
         }
 
         // Create TreeWalker who creates the SQL from the AST
-        $treeWalker = $this->_treeWalker ?: new SqlWalker(
+        $treeWalker = $this->_treeWalker ?: new SqlWalker();
+        $treeWalker->init(
             $this->_query, $this->_parserResult, $this->_queryComponents
         );
 

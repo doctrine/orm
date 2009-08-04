@@ -31,6 +31,11 @@ namespace Doctrine\ORM\Query;
 abstract class TreeWalkerAdapter implements TreeWalker
 {
     /**
+     * @inheritdoc
+     */
+    public function init($query, $parserResult, array $queryComponents) {}
+    
+    /**
      * Walks down a SelectStatement AST node, thereby generating the appropriate SQL.
      *
      * @return string The SQL.

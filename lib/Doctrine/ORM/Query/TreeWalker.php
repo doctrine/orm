@@ -30,6 +30,15 @@ namespace Doctrine\ORM\Query;
 interface TreeWalker
 {
     /**
+     * Initializes TreeWalker with important information about the ASTs to be walked
+     *
+     * @param Query $query The parsed Query.
+     * @param ParserResult $parserResult The result of the parsing process.
+     * @param array $queryComponents Query components (symbol table)
+     */
+    function init($query, $parserResult, array $queryComponents);
+    
+    /**
      * Walks down a SelectStatement AST node, thereby generating the appropriate SQL.
      *
      * @return string The SQL.

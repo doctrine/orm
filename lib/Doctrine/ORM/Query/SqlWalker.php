@@ -72,12 +72,9 @@ class SqlWalker implements TreeWalker
     private $_useSqlTableAliases = true;
 
     /**
-     * Initializes a new SqlWalker instance with the given Query and ParserResult.
-     *
-     * @param Query $query The parsed Query.
-     * @param ParserResult $parserResult The result of the parsing process.
+     * @inheritdoc
      */
-    public function __construct($query, $parserResult, array $queryComponents)
+    public function init($query, $parserResult, array $queryComponents)
     {
         $this->_rsm = $parserResult->getResultSetMapping();
         $this->_query = $query;
