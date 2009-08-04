@@ -110,11 +110,18 @@ class Parser
     private $_queryComponents = array();
     
     /**
+     * Keeps the nesting level of defined ResultVariables
+     *
+     * @var integer
+     */
+    private $_nestingLevel = 0;
+    
+    /**
      * Tree walker chain
      *
      * @var TreeWalker
      */
-    private $_treeWalker;
+    private $_treeWalker = 'Doctrine\ORM\Query\SqlWalker';
 
     /**
      * Creates a new query parser object.
@@ -132,7 +139,7 @@ class Parser
     /**
      * Sets the custom tree walker.
      * 
-     * @param TreeWalker $treeWalker
+     * @param string $treeWalker
      */
     public function setTreeWalker($treeWalker)
     {
@@ -257,7 +264,7 @@ class Parser
         }
 
         // Create TreeWalker who creates the SQL from the AST
-        $treeWalker = $this->_treeWalker ?: new SqlWalker(
+        $treeWalker = new $this->_treeWalker(
             $this->_query, $this->_parserResult, $this->_queryComponents
         );
 
@@ -553,6 +560,7 @@ class Parser
      * It must exist in query components list.
      *
      * @param string $identificationVariable
+     * @return array Query Component
      */
     private function _validateIdentificationVariable($identificationVariable)
     {
@@ -562,6 +570,8 @@ class Parser
                 $identificationVariable . '\' in query components.'
             );
         }
+        
+        return $this->_queryComponents[$identificationVariable];
     }
 
     
@@ -1091,6 +1101,9 @@ class Parser
      */
     public function Subselect()
     {
+        // Increase query nesting level
+        $this->_nestingLevel++;
+        
         $this->_beginDeferredPathExpressionStack();
         $subselect = new AST\Subselect($this->SimpleSelectClause(), $this->SubselectFromClause());
         $this->_processDeferredPathExpressionStack();
@@ -1110,6 +1123,9 @@ class Parser
         $subselect->setOrderByClause(
             $this->_lexer->isNextToken(Lexer::T_ORDER) ? $this->OrderByClause() : null
         );
+        
+        // Decrease query nesting level
+        $this->_nestingLevel--;
 
         return $subselect;
     }
@@ -1184,7 +1200,14 @@ class Parser
             $expr = $this->ResultVariable();
             
             // Check if ResultVariable is defined in query components
-            $this->_validateIdentificationVariable($expr);
+            $queryComponent = $this->_validateIdentificationVariable($expr);
+            
+            // ResultVariable exists in queryComponents, check nesting level
+            if ($queryComponent['nestingLevel'] != $this->_nestingLevel) {
+                $this->semanticalError(
+                    "ResultVariable '$expr' is not in the same nesting level of its declaration"
+                );
+            }
         } else {
             $expr = $this->StateFieldPathExpression();
         }
@@ -1452,7 +1475,8 @@ class Parser
                 
                 // Include ResultVariable in query components.
                 $this->_queryComponents[$resultVariable] = array(
-                    'resultvariable' => $expression
+                    'resultvariable' => $expression,
+                    'nestingLevel'   => $this->_nestingLevel,
                 );
             }
         } else {
@@ -1503,7 +1527,8 @@ class Parser
                 
             // Include ResultVariable in query components.
             $this->_queryComponents[$resultVariable] = array(
-                'resultvariable' => $expr
+                'resultvariable' => $expr,
+                'nestingLevel'   => $this->_nestingLevel,
             );
         }
 
