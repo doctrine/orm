@@ -453,8 +453,8 @@ class Parser
     {
         $exprStack = array_pop($this->_deferredPathExpressionStacks);
 
-        foreach ($exprStack as $pathExpression) {
-            $this->_validatePathExpression($pathExpression);
+        foreach ($exprStack as $item) {
+            $this->_validatePathExpression($item['pathExpression'], $item['nestingLevel']);
         }
     }
     
@@ -468,13 +468,14 @@ class Parser
      * CollectionValuedPathExpression        ::= IdentificationVariable "." {SingleValuedAssociationField "."}* CollectionValuedAssociationField
      *
      * @param PathExpression $pathExpression
+     * @param integer $nestingLevel
      * @return integer
      */
-    private function _validatePathExpression(AST\PathExpression $pathExpression)
+    private function _validatePathExpression(AST\PathExpression $pathExpression, $nestingLevel)
     {
         $identificationVariable = $pathExpression->getIdentificationVariable();
         
-        $this->_validateIdentificationVariable($identificationVariable);
+        $this->_validateIdentificationVariable($identificationVariable, $nestingLevel);
         
         $class = $this->_queryComponents[$identificationVariable]['metadata'];
         $stateField = $collectionField = null;
@@ -559,19 +560,26 @@ class Parser
      * Validates that the given <tt>IdentificationVariable</tt> is a semantically correct. 
      * It must exist in query components list.
      *
-     * @param string $identificationVariable
+     * @param string $idVariable
+     * @param integer $nestingLevel
      * @return array Query Component
      */
-    private function _validateIdentificationVariable($identificationVariable)
+    private function _validateIdentificationVariable($idVariable, $nestingLevel)
     {
-         if ( ! isset($this->_queryComponents[$identificationVariable])) {
+         if ( ! isset($this->_queryComponents[$idVariable])) {
             $this->semanticalError(
-                'Invalid IdentificationVariable. Could not find \'' . 
-                $identificationVariable . '\' in query components.'
+                "Could not find '$idVariable' in query components"
             );
         }
         
-        return $this->_queryComponents[$identificationVariable];
+        // Validate if identification variable nesting level is lower or equal than the current one
+        if ($this->_queryComponents[$idVariable]['nestingLevel'] > $nestingLevel) {
+            $this->semanticalError(
+                "Query component '$idVariable' is not in the same nesting level of its declaration"
+            );
+        }
+        
+        return $this->_queryComponents[$idVariable];
     }
 
     
@@ -730,7 +738,7 @@ class Parser
         $field = $this->_lexer->token['value'];
         
         // Validating IdentificationVariable (it was already defined previously)
-        $this->_validateIdentificationVariable($identificationVariable);
+        $this->_validateIdentificationVariable($identificationVariable, $this->_nestingLevel);
         
         // Validating association field (*-to-one or *-to-many)
         $class = $this->_queryComponents[$identificationVariable]['metadata'];
@@ -769,14 +777,17 @@ class Parser
         // Defer PathExpression validation if requested to be defered
         if ( ! empty($this->_deferredPathExpressionStacks)) {
             $exprStack = array_pop($this->_deferredPathExpressionStacks);
-            $exprStack[] = $pathExpr;
+            $exprStack[] = array(
+                'pathExpression' => $pathExpr,
+                'nestingLevel'   => $this->_nestingLevel,
+            );
             array_push($this->_deferredPathExpressionStacks, $exprStack);
 
             return $pathExpr;
         }
 
         // Apply PathExpression validation normally (not in defer mode)
-        $this->_validatePathExpression($pathExpr);
+        $this->_validatePathExpression($pathExpr, $this->_nestingLevel);
         
         return $pathExpr;
     }
@@ -941,10 +952,11 @@ class Parser
 
         // Building queryComponent
         $queryComponent = array(
-            'metadata' => $classMetadata,
-            'parent'   => null,
-            'relation' => null,
-            'map'      => null
+            'metadata'     => $classMetadata,
+            'parent'       => null,
+            'relation'     => null,
+            'map'          => null,
+            'nestingLevel' => $this->_nestingLevel,
         );
         $this->_queryComponents[$aliasIdentificationVariable] = $queryComponent;
 
@@ -981,10 +993,11 @@ class Parser
 
         $classMetadata = $this->_em->getClassMetadata($deleteClause->getAbstractSchemaName());
         $queryComponent = array(
-            'metadata' => $classMetadata,
-            'parent'   => null,
-            'relation' => null,
-            'map'      => null
+            'metadata'     => $classMetadata,
+            'parent'       => null,
+            'relation'     => null,
+            'map'          => null,
+            'nestingLevel' => $this->_nestingLevel,
         );
         $this->_queryComponents[$deleteClause->getAliasIdentificationVariable()] = $queryComponent;
 
@@ -1175,7 +1188,7 @@ class Parser
             $identificationVariable = $this->IdentificationVariable();
             
             // Validate if IdentificationVariable is defined
-            $this->_validateIdentificationVariable($identificationVariable);
+            $this->_validateIdentificationVariable($identificationVariable, $this->_nestingLevel);
             
             return $identificationVariable;
         }
@@ -1200,12 +1213,13 @@ class Parser
             $expr = $this->ResultVariable();
             
             // Check if ResultVariable is defined in query components
-            $queryComponent = $this->_validateIdentificationVariable($expr);
+            $queryComponent = $this->_validateIdentificationVariable($expr, $this->_nestingLevel);
             
+            // Outer defininition used in inner subselect is not enough.
             // ResultVariable exists in queryComponents, check nesting level
             if ($queryComponent['nestingLevel'] != $this->_nestingLevel) {
                 $this->semanticalError(
-                    "ResultVariable '$expr' is not in the same nesting level of its declaration"
+                    "Query component '$expr' is not in the same nesting level of its declaration"
                 );
             }
         } else {
@@ -1333,10 +1347,11 @@ class Parser
 
         // Building queryComponent
         $queryComponent = array(
-            'metadata' => $classMetadata,
-            'parent'   => null,
-            'relation' => null,
-            'map'      => null
+            'metadata'     => $classMetadata,
+            'parent'       => null,
+            'relation'     => null,
+            'map'          => null,
+            'nestingLevel' => $this->_nestingLevel,
         );
         $this->_queryComponents[$aliasIdentificationVariable] = $queryComponent;
 
@@ -1393,10 +1408,11 @@ class Parser
 
         // Building queryComponent
         $joinQueryComponent = array(
-            'metadata' => $this->_em->getClassMetadata($targetClassName),
-            'parent'   => $joinPathExpression->getIdentificationVariable(),
-            'relation' => $parentClass->getAssociationMapping($assocField),
-            'map'      => null,
+            'metadata'     => $this->_em->getClassMetadata($targetClassName),
+            'parent'       => $joinPathExpression->getIdentificationVariable(),
+            'relation'     => $parentClass->getAssociationMapping($assocField),
+            'map'          => null,
+            'nestingLevel' => $this->_nestingLevel,
         );
         $this->_queryComponents[$aliasIdentificationVariable] = $joinQueryComponent;
 
@@ -1638,8 +1654,6 @@ class Parser
      *      ComparisonExpression | BetweenExpression | LikeExpression |
      *      InExpression | NullComparisonExpression | ExistsExpression |
      *      EmptyCollectionComparisonExpression | CollectionMemberExpression
-     *
-     * @todo Post 2.0 release. Missing EmptyCollectionComparisonExpression implementation
      */
     public function SimpleConditionalExpression()
     {
