@@ -1970,7 +1970,7 @@ class Parser
                         return $this->AggregateExpression();
                     }
 
-                    return $this->FunctionsReturningStrings();
+                    return $this->FunctionDeclaration();
                 }
                 
                 $this->syntaxError();

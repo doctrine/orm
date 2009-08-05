@@ -21,10 +21,8 @@
 
 namespace Doctrine\ORM\Query;
 
-use Doctrine\ORM\Query;
-use Doctrine\ORM\Query\Parser;
-use Doctrine\ORM\Query\AST;
-use Doctrine\Common\DoctrineException;
+use Doctrine\ORM\Query,
+    Doctrine\Common\DoctrineException;
 
 /**
  * The SqlWalker is a TreeWalker that walks over a DQL AST and constructs
@@ -123,6 +121,11 @@ class SqlWalker implements TreeWalker
     public function getEntityManager()
     {
         return $this->_em;
+    }
+    
+    public function getQueryComponent($dqlAlias)
+    {
+        return $this->_queryComponents[$dqlAlias];
     }
 
     /**
@@ -962,6 +965,7 @@ class SqlWalker implements TreeWalker
             $dqlParamKey = $entityExpr->isNamed() ? $entityExpr->getName() : $entityExpr->getPosition();
             $entity = $this->_query->getParameter($dqlParamKey);
         } else {
+            //TODO
             throw DoctrineException::notImplemented();
         }
         
@@ -1046,13 +1050,14 @@ class SqlWalker implements TreeWalker
      *
      * @param EmptyCollectionComparisonExpression
      * @return string The SQL.
-     *
-     * @todo Finish this implementation. It is quite incomplete!
      */
     public function walkEmptyCollectionComparisonExpression($emptyCollCompExpr)
     {
-        $sql  = $this->walkPathExpression($emptyCollCompExpr->getExpression());
-        $sql .= ' IS' . ($emptyCollCompExpr->isNot() ? ' NOT' : '') . ' EMPTY';
+        $sizeFunc = new AST\Functions\SizeFunction('size');
+        $sizeFunc->setCollectionPathExpression($emptyCollCompExpr->getExpression());
+        
+        $sql  = $sizeFunc->getSql($this);
+        $sql .= ($emptyCollCompExpr->isNot() ? ' > 0' : ' = 0');
         
         return $sql;
     }
@@ -1316,7 +1321,7 @@ class SqlWalker implements TreeWalker
     }
 
     /**
-     * Walks down an PathExpression AST node, thereby generating the appropriate SQL.
+     * Walks down a PathExpression AST node, thereby generating the appropriate SQL.
      *
      * @param mixed
      * @return string The SQL.
@@ -1324,8 +1329,9 @@ class SqlWalker implements TreeWalker
     public function walkPathExpression($pathExpr)
     {
         $sql = '';
+        $pathExprType = $pathExpr->getType();
         
-        if ($pathExpr->getType() == AST\PathExpression::TYPE_STATE_FIELD) {
+        if ($pathExprType == AST\PathExpression::TYPE_STATE_FIELD) {
             $parts = $pathExpr->getParts();
             $numParts = count($parts);
             $dqlAlias = $pathExpr->getIdentificationVariable();
@@ -1349,7 +1355,7 @@ class SqlWalker implements TreeWalker
             } else {
                 $sql .= $this->_conn->quoteIdentifier($class->getColumnName($fieldName));
             }
-        } else if ($pathExpr->isSimpleStateFieldAssociationPathExpression()) {
+        } else if ($pathExprType == AST\PathExpression::TYPE_COLLECTION_VALUED_ASSOCIATION) {
             throw DoctrineException::updateMe("Not yet implemented.");
         } else {
             throw DoctrineException::updateMe("Encountered invalid PathExpression during SQL construction.");

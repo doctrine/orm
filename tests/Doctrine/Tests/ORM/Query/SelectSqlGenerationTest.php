@@ -362,4 +362,24 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
 
         $this->assertEquals('SELECT c0_.id AS id0, c0_.status AS status1, c0_.username AS username2, c0_.name AS name3 FROM cms_users c0_ OFFSET 0 LIMIT 10', $q->getSql());
     }
+    
+    public function testSizeFunction()
+    {
+        $this->assertSqlGeneration(
+            "SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE SIZE(u.phonenumbers) > 1",
+            "SELECT c0_.id AS id0, c0_.status AS status1, c0_.username AS username2, c0_.name AS name3 FROM cms_users c0_ WHERE (SELECT COUNT(c1_.user_id) FROM cms_phonenumbers c1_ WHERE c1_.user_id = c0_.id) > 1"
+        );
+    }
+    
+    public function testEmptyCollectionComparisonExpression()
+    {
+        $this->assertSqlGeneration(
+            "SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.phonenumbers IS EMPTY",
+            "SELECT c0_.id AS id0, c0_.status AS status1, c0_.username AS username2, c0_.name AS name3 FROM cms_users c0_ WHERE (SELECT COUNT(c1_.user_id) FROM cms_phonenumbers c1_ WHERE c1_.user_id = c0_.id) = 0"
+        );
+        $this->assertSqlGeneration(
+            "SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.phonenumbers IS NOT EMPTY",
+            "SELECT c0_.id AS id0, c0_.status AS status1, c0_.username AS username2, c0_.name AS name3 FROM cms_users c0_ WHERE (SELECT COUNT(c1_.user_id) FROM cms_phonenumbers c1_ WHERE c1_.user_id = c0_.id) > 0"
+        );
+    }
 }

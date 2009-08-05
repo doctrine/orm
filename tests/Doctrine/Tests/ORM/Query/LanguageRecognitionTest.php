@@ -330,6 +330,16 @@ class LanguageRecognitionTest extends \Doctrine\Tests\OrmTestCase
         $this->assertValidDql('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE :param MEMBER OF u.phonenumbers');
     }
     
+    public function testSizeFunction()
+    {
+        $this->assertValidDql('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE SIZE(u.phonenumbers) > 1');
+    }
+    
+    public function testEmptyCollectionComparisonExpression()
+    {
+        $this->assertValidDql('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.phonenumbers IS EMPTY');
+    }
+    
     /**
      * This checks for invalid attempt to hydrate a proxy. It should throw an exception
      *

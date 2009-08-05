@@ -552,9 +552,6 @@ class EntityManager
                 case Query::HYDRATE_SINGLE_SCALAR:
                     $this->_hydrators[$hydrationMode] = new Internal\Hydration\SingleScalarHydrator($this);
                     break;
-                case Query::HYDRATE_NONE:
-                    $this->_hydrators[$hydrationMode] = new Internal\Hydration\NoneHydrator($this);
-                    break;
                 default:
                     throw DoctrineException::updateMe("No hydrator found for hydration mode '$hydrationMode'.");
             }
