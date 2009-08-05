@@ -21,23 +21,49 @@
 
 namespace Doctrine\Common\Annotations;
 
-use \ReflectionClass, \ReflectionMethod, \ReflectionProperty;
-use Doctrine\Common\Cache\Cache;
+use \ReflectionClass, 
+    \ReflectionMethod, 
+    \ReflectionProperty,
+    Doctrine\Common\Cache\Cache;
 
 /**
  * A reader for docblock annotations.
  * 
- * @author Roman Borschel <roman@code-factory.org>
- * @since 2.0
+ * @license http://www.opensource.org/licenses/lgpl-license.php LGPL
+ * @link    www.doctrine-project.org
+ * @since   2.0
+ * @version $Revision: 3938 $
+ * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
+ * @author  Jonathan Wage <jonwage@gmail.com>
+ * @author  Roman Borschel <roman@code-factory.org>
  */
 class AnnotationReader
 {
+    /**
+     * Cache salt
+     *
+     * @var string
+     * @static
+     */
     private static $CACHE_SALT = "@<Annot>";
+    
+    /**
+     * Annotations Parser
+     *
+     * @var Doctrine\Common\Annotations\Parser
+     */
     private $_parser;
+    
+    /**
+     * Cache machanism to store processed Annotations
+     *
+     * @var Doctrine\Common\Cache\Cache
+     */
     private $_cache;
     
     /**
-     * Initiaizes a new AnnotationReader that uses the given Cache provider to cache annotations.
+     * Constructor. Initiaizes a new AnnotationReader that uses the given 
+     * Cache provider to cache annotations.
      * 
      * @param Cache $cache The cache provider to use.
      */

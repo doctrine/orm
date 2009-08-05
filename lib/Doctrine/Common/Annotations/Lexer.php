@@ -24,13 +24,15 @@ namespace Doctrine\Common\Annotations;
 /**
  * Simple lexer for docblock annotations.
  *
- * @author      Roman Borschel <roman@code-factory.org>
- * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
- * @link        www.doctrine-project.org
- * @since       2.0
- * @version     $Revision$
+ * @license http://www.opensource.org/licenses/lgpl-license.php LGPL
+ * @link    www.doctrine-project.org
+ * @since   2.0
+ * @version $Revision: 3938 $
+ * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
+ * @author  Jonathan Wage <jonwage@gmail.com>
+ * @author  Roman Borschel <roman@code-factory.org>
  */
-class Lexer
+class Lexer extends \Doctrine\Common\Lexer
 {
     const T_NONE = 1;
     const T_FLOAT = 2;
@@ -39,140 +41,32 @@ class Lexer
     const T_IDENTIFIER = 5;
     const T_TRUE = 6;
     const T_FALSE = 7;
-
-    /**
-     * Array of scanned tokens.
-     *
-     * @var array
-     */
-    private $_tokens = array();
-    private $_position = 0;
-    private $_peek = 0;
-
-    /**
-     * @var array The next token in the query string.
-     */
-    public $lookahead;
-
-    /**
-     * @var array The last matched/seen token.
-     */
-    public $token;
     
-    public function setInput($input)
-    {
-        $this->_tokens = array();
-        $this->_scan($input);
-    }
-    
-    public function reset()
-    {
-        $this->lookahead = null;
-        $this->token = null;
-        $this->_peek = 0;
-        $this->_position = 0;
-    }
-
     /**
-     * Checks whether a given token matches the current lookahead.
-     *
-     * @param integer|string $token
-     * @return boolean
+     * @inheritdoc
      */
-    public function isNextToken($token)
+    protected function getCatchablePatterns()
     {
-        $la = $this->lookahead;
-        return ($la['type'] === $token || $la['value'] === $token);
-    }
-
-    /**
-     * Moves to the next token in the input string.
-     *
-     * A token is an associative array containing three items:
-     *  - 'value'    : the string value of the token in the input string
-     *  - 'type'     : the type of the token (identifier, numeric, string, input
-     *                 parameter, none)
-     *  - 'position' : the position of the token in the input string
-     *
-     * @return array|null the next token; null if there is no more tokens left
-     */
-    public function moveNext()
-    {
-        $this->token = $this->lookahead;
-        $this->_peek = 0;
-        if (isset($this->_tokens[$this->_position])) {
-            $this->lookahead = $this->_tokens[$this->_position++];
-            return true;
-        } else {
-            $this->lookahead = null;
-            return false;
-        }
+        return array(
+            '[a-z_][a-z0-9_\\\]*',
+            '(?:[0-9]+(?:[\.][0-9]+)*)(?:e[+-]?[0-9]+)?',
+            '"(?:[^"]|"")*"'
+        );
     }
     
     /**
-     * Tells the lexer to skip input tokens until it sees a token with the given value.
-     * 
-     * @param $value The value to skip until.
+     * @inheritdoc
      */
-    public function skipUntil($value)
+    protected function getNonCatchablePatterns()
     {
-        while ($this->lookahead !== null && $this->lookahead['value'] !== $value) {
-            $this->moveNext();
-        }
+        return array('\s+', '\*+', '(.)');
     }
 
     /**
-     * Checks if an identifier is a keyword and returns its correct type.
-     *
-     * @param string $identifier identifier name
-     * @return int token type
+     * @inheritdoc
      */
-    private function _checkLiteral($identifier)
+    protected function _getType(&$value)
     {
-        $name = 'Doctrine\Common\Annotations\Lexer::T_' . strtoupper($identifier);
-
-        if (defined($name)) {
-            return constant($name);
-        }
-
-        return self::T_IDENTIFIER;
-    }
-
-    /**
-     * Scans the input string for tokens.
-     *
-     * @param string $input a query string
-     */
-    private function _scan($input)
-    {
-        static $regex;
-
-        if ( ! isset($regex)) {
-            $patterns = array(
-                '[a-z_][a-z0-9_\\\]*',
-                '(?:[0-9]+(?:[\.][0-9]+)*)(?:e[+-]?[0-9]+)?',
-                '"(?:[^"]|"")*"'
-            );
-            $regex = '/(' . implode(')|(', $patterns) . ')|\s+|\*+|(.)/i';
-        }
-
-        $matches = preg_split($regex, $input, -1, PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE);
-
-        foreach ($matches as $match) {
-            $type = $this->_getType($match);
-            $this->_tokens[] = array(
-                'value' => $match,
-                'type'  => $type
-            );
-        }
-    }
-
-    /**
-     * @todo Doc
-     */
-    private function _getType(&$value)
-    {
-        // $value is referenced because it can be changed if it is numeric.
         $type = self::T_NONE;
 
         $newVal = $this->_getNumeric($value);
@@ -209,30 +103,21 @@ class Lexer
 
         return false;
     }
-
+    
     /**
-     * Moves the lookahead token forward.
+     * Checks if an identifier is a keyword and returns its correct type.
      *
-     * @return array|null The next token or NULL if there are no more tokens ahead.
+     * @param string $identifier identifier name
+     * @return int token type
      */
-    public function peek()
+    private function _checkLiteral($identifier)
     {
-        if (isset($this->_tokens[$this->_position + $this->_peek])) {
-            return $this->_tokens[$this->_position + $this->_peek++];
-        } else {
-            return null;
+        $name = 'Doctrine\Common\Annotations\Lexer::T_' . strtoupper($identifier);
+
+        if (defined($name)) {
+            return constant($name);
         }
-    }
 
-    /**
-     * Peeks at the next token, returns it and immediately resets the peek.
-     *
-     * @return array|null The next token or NULL if there are no more tokens ahead.
-     */
-    public function glimpse()
-    {
-        $peek = $this->peek();
-        $this->_peek = 0;
-        return $peek;
+        return self::T_IDENTIFIER;
     }
 }

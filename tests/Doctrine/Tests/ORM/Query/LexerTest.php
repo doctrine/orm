@@ -100,65 +100,11 @@ class LexerTest extends \Doctrine\Tests\OrmTestCase
 
     public function testScannerRecognizesFloatBig()
     {
-        $lexer = new Lexer('1,234,567.89');
+        $lexer = new Lexer('123456789.01');
         $lexer->moveNext();
         $token = $lexer->lookahead;
         $this->assertEquals(Lexer::T_FLOAT, $token['type']);
-        $this->assertEquals(1.23456789e6, $token['value']);
-    }
-
-    public function testScannerRecognizesFloatBigWrongPoint()
-    {
-        $lexer = new Lexer('12,34,56,7.89');
-        $lexer->moveNext();
-        $token = $lexer->lookahead;
-        $this->assertEquals(Lexer::T_FLOAT, $token['type']);
-        $this->assertEquals(1.23456789e6, $token['value']);
-    }
-
-    public function testScannerRecognizesFloatLocaleSpecific()
-    {
-        $lexer = new Lexer('1,234');
-        $lexer->moveNext();
-        $token = $lexer->lookahead;
-        $this->assertEquals(Lexer::T_FLOAT, $token['type']);
-        $this->assertEquals(1.234, $token['value']);
-    }
-
-    public function testScannerRecognizesFloatLocaleSpecificBig()
-    {
-        $lexer = new Lexer('1.234.567,89');
-        $lexer->moveNext();
-        $token = $lexer->lookahead;
-        $this->assertEquals(Lexer::T_FLOAT, $token['type']);
-        $this->assertEquals(1.23456789e6, $token['value']);
-    }
-
-    public function testScannerRecognizesFloatLocaleSpecificBigWrongPoint()
-    {
-        $lexer = new Lexer('12.34.56.7,89');
-        $lexer->moveNext();
-        $token = $lexer->lookahead;
-        $this->assertEquals(Lexer::T_FLOAT, $token['type']);
-        $this->assertEquals(1.23456789e6, $token['value']);
-    }
-
-    public function testScannerRecognizesFloatLocaleSpecificExponent()
-    {
-        $lexer = new Lexer('1,234e2');
-        $lexer->moveNext();
-        $token = $lexer->lookahead;
-        $this->assertEquals(Lexer::T_FLOAT, $token['type']);
-        $this->assertEquals(1.234e2, $token['value']);
-    }
-
-    public function testScannerRecognizesFloatLocaleSpecificExponent2()
-    {
-        $lexer = new Lexer('0,234e2');
-        $lexer->moveNext();
-        $token = $lexer->lookahead;
-        $this->assertEquals(Lexer::T_FLOAT, $token['type']);
-        $this->assertEquals(.234e2, $token['value']);
+        $this->assertEquals(1.2345678901e8, $token['value']);
     }
 
     public function testScannerRecognizesFloatContainingWhitespace()

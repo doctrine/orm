@@ -32,7 +32,7 @@ namespace Doctrine\ORM\Query;
  * @since       2.0
  * @version     $Revision$
  */
-class Lexer
+class Lexer extends \Doctrine\Common\Lexer
 {
     const T_NONE                = 1;
     const T_IDENTIFIER          = 2;
@@ -95,138 +95,41 @@ class Lexer
     private $_keywordsTable;
 
     /**
-     * Array of scanned tokens.
-     *
-     * @var array
-     */
-    private $_tokens = array();
-
-    /**
-     * @todo Doc
-     */
-    private $_position = 0;
-
-    /**
-     * @todo Doc
-     */
-    private $_peek = 0;
-
-    /**
-     * @var array The next token in the query string.
-     */
-    public $lookahead;
-
-    /**
-     * @var array The last matched/seen token.
-     */
-    public $token;
-
-    /**
      * Creates a new query scanner object.
      *
      * @param string $input a query string
      */
     public function __construct($input)
     {
-        $this->_scan($input);
+        $this->setInput($input);
     }
 
     /**
-     * Checks whether a given token matches the current lookahead.
-     *
-     * @param integer|string $token
-     * @return boolean
+     * @inheritdoc
      */
-    public function isNextToken($token)
+    protected function getCatchablePatterns()
     {
-        $la = $this->lookahead;
-        return ($la['type'] === $token || $la['value'] === $token);
+        return array(
+            '[a-z_][a-z0-9_\\\]*',
+            '(?:[0-9]+(?:[,\.][0-9]+)*)(?:e[+-]?[0-9]+)?',
+            "'(?:[^']|'')*'",
+            '\?[1-9]+|:[a-z][a-z0-9_]+'
+        );
+    }
+    
+    /**
+     * @inheritdoc
+     */
+    protected function getNonCatchablePatterns()
+    {
+        return array('\s+', '(.)');
     }
 
     /**
-     * Moves to the next token in the input string.
-     *
-     * A token is an associative array containing three items:
-     *  - 'value'    : the string value of the token in the input string
-     *  - 'type'     : the type of the token (identifier, numeric, string, input
-     *                 parameter, none)
-     *  - 'position' : the position of the token in the input string
-     *
-     * @return array|null the next token; null if there is no more tokens left
+     * @inheritdoc
      */
-    public function moveNext()
+    protected function _getType(&$value)
     {
-        $this->token = $this->lookahead;
-        $this->_peek = 0;
-        if (isset($this->_tokens[$this->_position])) {
-            $this->lookahead = $this->_tokens[$this->_position++];
-            return true;
-        } else {
-            $this->lookahead = null;
-            return false;
-        }
-    }
-
-    /**
-     * Checks if an identifier is a keyword and returns its correct type.
-     *
-     * @param string $identifier identifier name
-     * @return int token type
-     */
-    private function _checkLiteral($identifier)
-    {
-        $name = 'Doctrine\ORM\Query\Lexer::T_' . strtoupper($identifier);
-
-        if (defined($name)) {
-            $type = constant($name);
-            if ($type > 100) {
-                return $type;
-            }
-        }
-
-        return self::T_IDENTIFIER;
-    }
-
-    /**
-     * Scans the input string for tokens.
-     *
-     * @param string $input a query string
-     */
-    private function _scan($input)
-    {
-        static $regex;
-
-        if ( ! isset($regex)) {
-            $patterns = array(
-                '[a-z_][a-z0-9_\\\]*',
-                '(?:[0-9]+(?:[,\.][0-9]+)*)(?:e[+-]?[0-9]+)?',
-                "'(?:[^']|'')*'",
-                '\?[1-9]+|:[a-z][a-z0-9_]+'
-            );
-            $regex = '/(' . implode(')|(', $patterns) . ')|\s+|(.)/i';
-        }
-
-        $flags = PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_OFFSET_CAPTURE;
-        $matches = preg_split($regex, $input, -1, $flags);
-
-        foreach ($matches as $match) {
-            $value = $match[0];
-            $type = $this->_getType($value);
-            $this->_tokens[] = array(
-                'value' => $value,
-                'type'  => $type,
-                'position' => $match[1]
-            );
-        }
-    }
-
-    /**
-     * @todo Doc
-     */
-    private function _getType(&$value)
-    {
-        // $value is referenced because it can be changed if it is numeric.
-        // [TODO] Revisit the _isNumeric and _getNumeric methods to reduce overhead.
         $type = self::T_NONE;
 
         $newVal = $this->_getNumeric($value);
@@ -263,72 +166,27 @@ class Lexer
             return $value;
         }
 
-        // World number: 1.000.000,02 or -1,234e-2
-        $worldnum = strtr($value, array('.' => '', ',' => '.'));
-        if (is_numeric($worldnum)) {
-            return $worldnum;
-        }
-
-        // American extensive number: 1,000,000.02
-        $american_en = strtr($value, array(',' => ''));
-        if (is_numeric($american_en)) {
-            return $american_en;
-        }
-
         return false;
-
     }
-
+    
     /**
-     * @todo Doc
-     */
-    public function isA($value, $token)
-    {
-        $type = $this->_getType($value);
-
-        return $type === $token;
-    }
-
-    /**
-     * Moves the lookahead token forward.
+     * Checks if an identifier is a keyword and returns its correct type.
      *
-     * @return array|null The next token or NULL if there are no more tokens ahead.
+     * @param string $identifier identifier name
+     * @return int token type
      */
-    public function peek()
+    private function _checkLiteral($identifier)
     {
-        if (isset($this->_tokens[$this->_position + $this->_peek])) {
-            return $this->_tokens[$this->_position + $this->_peek++];
-        } else {
-            return null;
+        $name = 'Doctrine\ORM\Query\Lexer::T_' . strtoupper($identifier);
+
+        if (defined($name)) {
+            $type = constant($name);
+            if ($type > 100) {
+                return $type;
+            }
         }
-    }
 
-    /**
-     * Peeks at the next token, returns it and immediately resets the peek.
-     *
-     * @return array|null The next token or NULL if there are no more tokens ahead.
-     */
-    public function glimpse()
-    {
-        $peek = $this->peek();
-        $this->_peek = 0;
-        return $peek;
-    }
-
-    /**
-     * Resets the peek pointer to 0.
-     */
-    public function resetPeek()
-    {
-        $this->_peek = 0;
-    }
-
-    /**
-     * Resets the lexer position on the input to the given position.
-     */
-    public function resetPosition($position = 0)
-    {
-        $this->_position = $position;
+        return self::T_IDENTIFIER;
     }
 
     /**
@@ -341,54 +199,54 @@ class Lexer
     {
         if ( ! $this->_keywordsTable) {
             $this->_keywordsTable = array(
-                self::T_ALL => "ALL",
-                self::T_AND => "AND",
-                self::T_ANY => "ANY",
-                self::T_AS => "AS",
-                self::T_ASC => "ASC",
-                self::T_AVG => "AVG",
-                self::T_BETWEEN => "BETWEEN",
-                self::T_BY => "BY",
-                self::T_COMMA => ",",
-                self::T_COUNT => "COUNT",
-                self::T_DELETE => "DELETE",
-                self::T_DESC => "DESC",
+                self::T_ALL      => "ALL",
+                self::T_AND      => "AND",
+                self::T_ANY      => "ANY",
+                self::T_AS       => "AS",
+                self::T_ASC      => "ASC",
+                self::T_AVG      => "AVG",
+                self::T_BETWEEN  => "BETWEEN",
+                self::T_BY       => "BY",
+                self::T_COMMA    => ",",
+                self::T_COUNT    => "COUNT",
+                self::T_DELETE   => "DELETE",
+                self::T_DESC     => "DESC",
                 self::T_DISTINCT => "DISTINCT",
-                self::T_DOT => ".",
-                self::T_EMPTY => "EMPTY",
-                self::T_ESCAPE => "ESCAPE",
-                self::T_EXISTS => "EXISTS",
-                self::T_FALSE => "FALSE",
-                self::T_FROM => "FROM",
-                self::T_GROUP => "GROUP",
-                self::T_HAVING => "HAVING",
-                self::T_IN => "IN",
-                self::T_INDEX => "INDEX",
-                self::T_INNER => "INNER",
-                self::T_IS => "IS",
-                self::T_JOIN => "JOIN",
-                self::T_LEFT => "LEFT",
-                self::T_LIKE => "LIKE",
-                self::T_LIMIT => "LIMIT",
-                self::T_MAX => "MAX",
-                self::T_MIN => "MIN",
-                self::T_MOD => "MOD",
-                self::T_NOT => "NOT",
-                self::T_NULL => "NULL",
-                self::T_OFFSET => "OFFSET",
-                self::T_ON => "ON",
-                self::T_OR => "OR",
-                self::T_ORDER => "ORDER",
-                self::T_OUTER => "OUTER",
-                self::T_SELECT => "SELECT",
-                self::T_SET => "SET",
-                self::T_SIZE => "SIZE",
-                self::T_SOME => "SOME",
-                self::T_SUM => "SUM",
-                self::T_TRUE => "TRUE",
-                self::T_UPDATE => "UPDATE",
-                self::T_WHERE => "WHERE",
-                self::T_WITH => "WITH");
+                self::T_DOT      => ".",
+                self::T_EMPTY    => "EMPTY",
+                self::T_ESCAPE   => "ESCAPE",
+                self::T_EXISTS   => "EXISTS",
+                self::T_FALSE    => "FALSE",
+                self::T_FROM     => "FROM",
+                self::T_GROUP    => "GROUP",
+                self::T_HAVING   => "HAVING",
+                self::T_IN       => "IN",
+                self::T_INDEX    => "INDEX",
+                self::T_INNER    => "INNER",
+                self::T_IS       => "IS",
+                self::T_JOIN     => "JOIN",
+                self::T_LEFT     => "LEFT",
+                self::T_LIKE     => "LIKE",
+                self::T_LIMIT    => "LIMIT",
+                self::T_MAX      => "MAX",
+                self::T_MIN      => "MIN",
+                self::T_MOD      => "MOD",
+                self::T_NOT      => "NOT",
+                self::T_NULL     => "NULL",
+                self::T_OFFSET   => "OFFSET",
+                self::T_ON       => "ON",
+                self::T_OR       => "OR",
+                self::T_ORDER    => "ORDER",
+                self::T_OUTER    => "OUTER",
+                self::T_SELECT   => "SELECT",
+                self::T_SET      => "SET",
+                self::T_SIZE     => "SIZE",
+                self::T_SOME     => "SOME",
+                self::T_SUM      => "SUM",
+                self::T_TRUE     => "TRUE",
+                self::T_UPDATE   => "UPDATE",
+                self::T_WHERE    => "WHERE",
+                self::T_WITH     => "WITH");
         }
         return isset($this->_keywordsTable[$token])
                 ? $this->_keywordsTable[$token]

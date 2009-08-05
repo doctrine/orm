@@ -1,0 +1,240 @@
+<?php
+/*
+ *  $Id$
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+ * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+ * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+ * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+ * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+ * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ * This software consists of voluntary contributions made by many individuals
+ * and is licensed under the LGPL. For more information, see
+ * <http://www.doctrine-project.org>.
+ */
+ 
+namespace Doctrine\Common;
+
+/**
+ * Simple generic lexical scanner
+ *
+ * @license http://www.opensource.org/licenses/lgpl-license.php LGPL
+ * @link    www.doctrine-project.org
+ * @since   2.0
+ * @version $Revision: 3938 $
+ * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
+ * @author  Jonathan Wage <jonwage@gmail.com>
+ * @author  Roman Borschel <roman@code-factory.org>
+ */
+abstract class Lexer
+{
+    /**
+     * Array of scanned tokens.
+     *
+     * @var array
+     */
+    private $_tokens = array();
+
+    /**
+     * @todo Doc
+     */
+    private $_position = 0;
+
+    /**
+     * @todo Doc
+     */
+    private $_peek = 0;
+
+    /**
+     * @var array The next token in the query string.
+     */
+    public $lookahead;
+
+    /**
+     * @var array The last matched/seen token.
+     */
+    public $token;
+    
+    /**
+     * Inputs data to be tokenized
+     *
+     * @param string $input input to be tokenized
+     */
+    public function setInput($input)
+    {
+        $this->_tokens = array();
+        $this->reset();
+        $this->_scan($input);
+    }
+    
+    /**
+     * Resets the scanner
+     *
+     */
+    public function reset()
+    {
+        $this->lookahead = null;
+        $this->token     = null;
+        $this->_peek     = 0;
+        $this->_position = 0;
+    }
+    
+    /**
+     * Resets the peek pointer to 0
+     *
+     */
+    public function resetPeek()
+    {
+        $this->_peek = 0;
+    }
+
+    /**
+     * Resets the lexer position on the input to the given position
+     *
+     * @param integer $position Position to place the lexical scanner
+     */
+    public function resetPosition($position = 0)
+    {
+        $this->_position = $position;
+    }
+    
+    /**
+     * Checks whether a given token matches the current lookahead.
+     *
+     * @param integer|string $token
+     * @return boolean
+     */
+    public function isNextToken($token)
+    {
+        $la = $this->lookahead;
+        return ($la['type'] === $token || $la['value'] === $token);
+    }
+
+    /**
+     * Moves to the next token in the input string.
+     *
+     * A token is an associative array containing three items:
+     *  - 'value'    : the string value of the token in the input string
+     *  - 'type'     : the type of the token (identifier, numeric, string, input
+     *                 parameter, none)
+     *  - 'position' : the position of the token in the input string
+     *
+     * @return array|null the next token; null if there is no more tokens left
+     */
+    public function moveNext()
+    {
+        $this->token = $this->lookahead;
+        $this->_peek = 0;
+        if (isset($this->_tokens[$this->_position])) {
+            $this->lookahead = $this->_tokens[$this->_position++];
+            return true;
+        } else {
+            $this->lookahead = null;
+            return false;
+        }
+    }
+    
+    /**
+     * Tells the lexer to skip input tokens until it sees a token with the given value.
+     * 
+     * @param $value The value to skip until.
+     */
+    public function skipUntil($value)
+    {
+        while ($this->lookahead !== null && $this->lookahead['value'] !== $value) {
+            $this->moveNext();
+        }
+    }
+    
+    /**
+     * @todo Doc
+     */
+    public function isA($value, $token)
+    {
+        $type = $this->_getType($value);
+
+        return $type === $token;
+    }
+
+    /**
+     * Moves the lookahead token forward.
+     *
+     * @return array | null The next token or NULL if there are no more tokens ahead.
+     */
+    public function peek()
+    {
+        if (isset($this->_tokens[$this->_position + $this->_peek])) {
+            return $this->_tokens[$this->_position + $this->_peek++];
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     * Peeks at the next token, returns it and immediately resets the peek.
+     *
+     * @return array|null The next token or NULL if there are no more tokens ahead.
+     */
+    public function glimpse()
+    {
+        $peek = $this->peek();
+        $this->_peek = 0;
+        return $peek;
+    }
+    
+    /**
+     * Scans the input string for tokens.
+     *
+     * @param string $input a query string
+     */
+    protected function _scan($input)
+    {
+        static $regex;
+
+        if ( ! isset($regex)) {
+            $regex = '/(' . implode(')|(', $this->getCatchablePatterns()) . ')|' 
+                   . implode('|', $this->getNonCatchablePatterns()) . '/i';
+        }
+
+        $flags = PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_OFFSET_CAPTURE;
+        $matches = preg_split($regex, $input, -1, $flags);
+
+        foreach ($matches as $match) {
+            $value = $match[0];
+            $type = $this->_getType($value);
+            $this->_tokens[] = array(
+                'value' => $value,
+                'type'  => $type,
+                'position' => $match[1]
+            );
+        }
+    }
+    
+    /**
+     * Lexical catchable patterns
+     *
+     * @return array
+     */
+    abstract protected function getCatchablePatterns();
+    
+    /**
+     * Lexical non-catchable patterns
+     *
+     * @return array
+     */
+    abstract protected function getNonCatchablePatterns();
+    
+    /**
+     * Retrieve token type. Also processes the token value if necessary.
+     *
+     * @param string $value
+     * @return integer
+     */
+    abstract protected function _getType(&$value);
+}
