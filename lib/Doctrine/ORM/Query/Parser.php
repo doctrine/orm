@@ -320,14 +320,20 @@ class Parser
             $token = $this->_lexer->lookahead;
         }
         
+        // Minimum exposed chars ahead of token
+        $distance = 12;
+        
         // Find a position of a final word to display in error string
         $dql = $this->_query->getDql();
-        $pos = strpos($dql, ' ', $token['position'] + 10);
-        $length = ($pos !== false) ? $pos - $token['position'] : 10;
+        $length = strlen($dql);
+        $pos = $token['position'] + $distance;
+        $pos = strpos($dql, ' ', ($length > $pos) ? $pos : $length);
+        $length = ($pos !== false) ? $pos - $token['position'] : $distance;
         
         // Building informative message
-        $message = 'line 0, col ' . (isset($token['position']) ? $token['position'] : '-1') 
-                 . " near '" . substr($dql, $token['position'], $length) . "': Error: " . $message;
+        $message = 'line 0, col ' . (
+            (isset($token['position']) && $token['position'] > 0) ? $token['position'] : '-1'
+        ) . " near '" . substr($dql, $token['position'], $length) . "': Error: " . $message;
 
         throw \Doctrine\ORM\Query\QueryException::semanticalError($message);
     }
@@ -454,7 +460,9 @@ class Parser
         $exprStack = array_pop($this->_deferredPathExpressionStacks);
 
         foreach ($exprStack as $item) {
-            $this->_validatePathExpression($item['pathExpression'], $item['nestingLevel']);
+            $this->_validatePathExpression(
+                $item['pathExpression'], $item['nestingLevel'], $item['token']
+            );
         }
     }
     
@@ -469,13 +477,16 @@ class Parser
      *
      * @param PathExpression $pathExpression
      * @param integer $nestingLevel
+     * @param array $token
      * @return integer
      */
-    private function _validatePathExpression(AST\PathExpression $pathExpression, $nestingLevel)
+    private function _validatePathExpression(AST\PathExpression $pathExpression, $nestingLevel = null, $token = null)
     {
         $identificationVariable = $pathExpression->getIdentificationVariable();
+        $nestingLevel = ($nestingLevel !== null) ?: $this->_nestingLevel;
+        $token = ($token) ?: $this->_lexer->lookahead;
         
-        $this->_validateIdentificationVariable($identificationVariable, $nestingLevel);
+        $this->_validateIdentificationVariable($identificationVariable, $nestingLevel, $token);
         
         $class = $this->_queryComponents[$identificationVariable]['metadata'];
         $stateField = $collectionField = null;
@@ -483,17 +494,24 @@ class Parser
         foreach ($pathExpression->getParts() as $field) {
             // Check if it is not in a state field
             if ($stateField !== null) {
-                $this->semanticalError('Cannot navigate through state field named ' . $stateField);
+                $this->semanticalError(
+                    'Cannot navigate through state field named ' . $stateField, $token
+                );
             }
             
             // Check if it is not a collection field
             if ($collectionField !== null) {
-                $this->semanticalError('Can not navigate through collection-valued field named ' . $collectionField);
+                $this->semanticalError(
+                    'Cannot navigate through collection-valued field named ' . $collectionField, 
+                    $token
+                );
             }
             
             // Check if field exists
             if ( ! isset($class->associationMappings[$field]) && ! isset($class->fieldMappings[$field])) {
-                $this->semanticalError('Class ' . $class->name . ' has no field named ' . $field);
+                $this->semanticalError(
+                    'Class ' . $class->name . ' has no field named ' . $field, $token
+                );
             }
             
             if (isset($class->fieldMappings[$field])) {
@@ -547,7 +565,7 @@ class Parser
                 $semanticalError .= ' ' . implode(' or ', $expectedStringTypes) . ' expected.';
             }
             
-            $this->semanticalError($semanticalError);
+            $this->semanticalError($semanticalError, $token);
         }
         
         // We need to force the type in PathExpression
@@ -562,20 +580,27 @@ class Parser
      *
      * @param string $idVariable
      * @param integer $nestingLevel
+     * @param array $token
      * @return array Query Component
      */
-    private function _validateIdentificationVariable($idVariable, $nestingLevel)
+    private function _validateIdentificationVariable($idVariable, $nestingLevel = null, $token = null)
     {
-         if ( ! isset($this->_queryComponents[$idVariable])) {
+        $nestingLevel = ($nestingLevel !== null) ?: $this->_nestingLevel;
+        $token = ($token) ?: $this->_lexer->lookahead;
+    
+        if ( ! isset($this->_queryComponents[$idVariable])) {
+            echo '[Query Components: ' . var_export($this->_queryComponents, true) . ']';
+        
             $this->semanticalError(
-                "Could not find '$idVariable' in query components"
+                "Could not find '$idVariable' in query components", $token
             );
         }
         
         // Validate if identification variable nesting level is lower or equal than the current one
         if ($this->_queryComponents[$idVariable]['nestingLevel'] > $nestingLevel) {
             $this->semanticalError(
-                "Query component '$idVariable' is not in the same nesting level of its declaration"
+                "Query component '$idVariable' is not in the same nesting level of its declaration",
+                $token
             );
         }
         
@@ -732,13 +757,14 @@ class Parser
      */
     public function JoinAssociationPathExpression()
     {
+        $token = $this->_lexer->lookahead;
         $identificationVariable = $this->IdentificationVariable();
         $this->match('.');
         $this->match(Lexer::T_IDENTIFIER);
         $field = $this->_lexer->token['value'];
         
         // Validating IdentificationVariable (it was already defined previously)
-        $this->_validateIdentificationVariable($identificationVariable, $this->_nestingLevel);
+        $this->_validateIdentificationVariable($identificationVariable, null, $token);
         
         // Validating association field (*-to-one or *-to-many)
         $class = $this->_queryComponents[$identificationVariable]['metadata'];
@@ -761,6 +787,7 @@ class Parser
      */
     public function PathExpression($expectedType)
     {
+        $token = $this->_lexer->lookahead;
         $identificationVariable = $this->IdentificationVariable();
         $parts = array();
 
@@ -780,6 +807,7 @@ class Parser
             $exprStack[] = array(
                 'pathExpression' => $pathExpr,
                 'nestingLevel'   => $this->_nestingLevel,
+                'token'          => $token,
             );
             array_push($this->_deferredPathExpressionStacks, $exprStack);
 
@@ -787,7 +815,7 @@ class Parser
         }
 
         // Apply PathExpression validation normally (not in defer mode)
-        $this->_validatePathExpression($pathExpr, $this->_nestingLevel);
+        $this->_validatePathExpression($pathExpr, $this->_nestingLevel, $token);
         
         return $pathExpr;
     }
@@ -926,6 +954,7 @@ class Parser
     public function UpdateClause()
     {
         $this->match(Lexer::T_UPDATE);
+        $token = $this->_lexer->lookahead;
         $abstractSchemaName = $this->AbstractSchemaName();
         $aliasIdentificationVariable = null;
 
@@ -934,10 +963,24 @@ class Parser
         }
 
         if ($this->_lexer->isNextToken(Lexer::T_IDENTIFIER)) {
+            $token = $this->_lexer->lookahead;
             $aliasIdentificationVariable = $this->AliasIdentificationVariable();
         } else {
             $aliasIdentificationVariable = $abstractSchemaName;
         }
+        
+        $class = $this->_em->getClassMetadata($abstractSchemaName);
+
+        // Building queryComponent
+        $queryComponent = array(
+            'metadata'     => $class,
+            'parent'       => null,
+            'relation'     => null,
+            'map'          => null,
+            'nestingLevel' => $this->_nestingLevel,
+            'token'        => $token,
+        );
+        $this->_queryComponents[$aliasIdentificationVariable] = $queryComponent;
 
         $this->match(Lexer::T_SET);
         $updateItems = array();
@@ -947,18 +990,6 @@ class Parser
             $this->match(',');
             $updateItems[] = $this->UpdateItem();
         }
-
-        $classMetadata = $this->_em->getClassMetadata($abstractSchemaName);
-
-        // Building queryComponent
-        $queryComponent = array(
-            'metadata'     => $classMetadata,
-            'parent'       => null,
-            'relation'     => null,
-            'map'          => null,
-            'nestingLevel' => $this->_nestingLevel,
-        );
-        $this->_queryComponents[$aliasIdentificationVariable] = $queryComponent;
 
         $updateClause = new AST\UpdateClause($abstractSchemaName, $updateItems);
         $updateClause->setAliasIdentificationVariable($aliasIdentificationVariable);
@@ -979,27 +1010,34 @@ class Parser
             $this->match(Lexer::T_FROM);
         }
 
+        $token = $this->_lexer->lookahead;
         $deleteClause = new AST\DeleteClause($this->AbstractSchemaName());
+        $aliasIdentificationVariable = null;
 
         if ($this->_lexer->isNextToken(Lexer::T_AS)) {
             $this->match(Lexer::T_AS);
         }
 
         if ($this->_lexer->isNextToken(Lexer::T_IDENTIFIER)) {
-            $deleteClause->setAliasIdentificationVariable($this->AliasIdentificationVariable());
+            $token = $this->_lexer->lookahead;
+            $aliasIdentificationVariable = $this->AliasIdentificationVariable();
         } else {
-            $deleteClause->setAliasIdentificationVariable($deleteClause->getAbstractSchemaName());
+            $aliasIdentificationVariable = $deleteClause->getAbstractSchemaName();
         }
-
-        $classMetadata = $this->_em->getClassMetadata($deleteClause->getAbstractSchemaName());
+        
+        $deleteClause->setAliasIdentificationVariable($aliasIdentificationVariable);
+        $class = $this->_em->getClassMetadata($deleteClause->getAbstractSchemaName());
+        
+        // Building queryComponent
         $queryComponent = array(
-            'metadata'     => $classMetadata,
+            'metadata'     => $class,
             'parent'       => null,
             'relation'     => null,
             'map'          => null,
             'nestingLevel' => $this->_nestingLevel,
+            'token'        => $token,
         );
-        $this->_queryComponents[$deleteClause->getAliasIdentificationVariable()] = $queryComponent;
+        $this->_queryComponents[$aliasIdentificationVariable] = $queryComponent;
 
         return $deleteClause;
     }
@@ -1151,25 +1189,31 @@ class Parser
      */
     public function UpdateItem()
     {
-        $peek = $this->_lexer->glimpse();
-        $identVariable = null;
-
-        if ($peek['value'] == '.') {
-            $identVariable = $this->IdentificationVariable();
-            $this->match('.');
-        } else {
-            throw QueryException::missingAliasQualifier();
-        }
-
+        $token = $this->_lexer->lookahead;
+        $identificationVariable = $this->IdentificationVariable();
+            
+        // Validate if IdentificationVariable is defined
+        $queryComponent = $this->_validateIdentificationVariable($identificationVariable, null, $token);
+            
+        $this->match('.');
         $this->match(Lexer::T_IDENTIFIER);
         $field = $this->_lexer->token['value'];
+        
+        // Check if field exists
+        $class = $queryComponent['metadata'];
+        
+        if ( ! isset($class->associationMappings[$field]) && ! isset($class->fieldMappings[$field])) {
+            $this->semanticalError(
+                'Class ' . $class->name . ' has no field named ' . $field, $token
+            );
+        }
         
         $this->match('=');
         
         $newValue = $this->NewValue();
 
         $updateItem = new AST\UpdateItem($field, $newValue);
-        $updateItem->setIdentificationVariable($identVariable);
+        $updateItem->setIdentificationVariable($identificationVariable);
 
         return $updateItem;
     }
@@ -1185,10 +1229,11 @@ class Parser
         $glimpse = $this->_lexer->glimpse();
         
         if ($glimpse['value'] != '.') {
+            $token = $this->_lexer->lookahead;
             $identificationVariable = $this->IdentificationVariable();
             
             // Validate if IdentificationVariable is defined
-            $this->_validateIdentificationVariable($identificationVariable, $this->_nestingLevel);
+            $this->_validateIdentificationVariable($identificationVariable, null, $token);
             
             return $identificationVariable;
         }
@@ -1210,10 +1255,11 @@ class Parser
         $glimpse = $this->_lexer->glimpse();
         
         if ($glimpse['value'] != '.') {
+            $token = $this->_lexer->lookahead;
             $expr = $this->ResultVariable();
             
             // Check if ResultVariable is defined in query components
-            $queryComponent = $this->_validateIdentificationVariable($expr, $this->_nestingLevel);
+            $queryComponent = $this->_validateIdentificationVariable($expr, null, $token);
             
             // Outer defininition used in inner subselect is not enough.
             // ResultVariable exists in queryComponents, check nesting level
@@ -1342,6 +1388,7 @@ class Parser
             $this->match(Lexer::T_AS);
         }
 
+        $token = $this->_lexer->lookahead;
         $aliasIdentificationVariable = $this->AliasIdentificationVariable();
         $classMetadata = $this->_em->getClassMetadata($abstractSchemaName);
 
@@ -1352,6 +1399,7 @@ class Parser
             'relation'     => null,
             'map'          => null,
             'nestingLevel' => $this->_nestingLevel,
+            'token'        => $token,
         );
         $this->_queryComponents[$aliasIdentificationVariable] = $queryComponent;
 
@@ -1386,12 +1434,14 @@ class Parser
         }
 
         $this->match(Lexer::T_JOIN);
+        
         $joinPathExpression = $this->JoinAssociationPathExpression();
 
         if ($this->_lexer->isNextToken(Lexer::T_AS)) {
             $this->match(Lexer::T_AS);
         }
 
+        $token = $this->_lexer->lookahead;
         $aliasIdentificationVariable = $this->AliasIdentificationVariable();
 
         // Verify that the association exists.
@@ -1413,6 +1463,7 @@ class Parser
             'relation'     => $parentClass->getAssociationMapping($assocField),
             'map'          => null,
             'nestingLevel' => $this->_nestingLevel,
+            'token'        => $token,
         );
         $this->_queryComponents[$aliasIdentificationVariable] = $joinQueryComponent;
 
@@ -1487,12 +1538,14 @@ class Parser
             }
 
             if ($this->_lexer->isNextToken(Lexer::T_IDENTIFIER)) {
+                $token = $this->_lexer->lookahead;
                 $resultVariable = $this->ResultVariable();
                 
                 // Include ResultVariable in query components.
                 $this->_queryComponents[$resultVariable] = array(
                     'resultvariable' => $expression,
                     'nestingLevel'   => $this->_nestingLevel,
+                    'token'          => $token,
                 );
             }
         } else {
@@ -1538,6 +1591,7 @@ class Parser
         }
 
         if ($this->_lexer->isNextToken(Lexer::T_IDENTIFIER)) {
+            $token = $this->_lexer->lookahead;
             $resultVariable = $this->ResultVariable();
             $expr->setFieldIdentificationVariable($resultVariable);
                 
@@ -1545,6 +1599,7 @@ class Parser
             $this->_queryComponents[$resultVariable] = array(
                 'resultvariable' => $expr,
                 'nestingLevel'   => $this->_nestingLevel,
+                'token'          => $token,
             );
         }
 
