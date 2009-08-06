@@ -16,7 +16,7 @@
  *
  * This software consists of voluntary contributions made by many individuals
  * and is licensed under the LGPL. For more information, see
- * <http://www.phpdoctrine.org>.
+ * <http://www.doctrine-project.org>.
  */
 
 namespace Doctrine\ORM\Query\AST;
@@ -24,27 +24,23 @@ namespace Doctrine\ORM\Query\AST;
 /**
  * FromClause ::= "FROM" IdentificationVariableDeclaration {"," IdentificationVariableDeclaration}
  *
- * @author      Guilherme Blanco <guilhermeblanco@hotmail.com>
- * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
- * @link        http://www.phpdoctrine.org
- * @since       2.0
- * @version     $Revision$
+ * @license http://www.opensource.org/licenses/lgpl-license.php LGPL
+ * @link    www.doctrine-project.org
+ * @since   2.0
+ * @version $Revision: 3938 $
+ * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
+ * @author  Jonathan Wage <jonwage@gmail.com>
+ * @author  Roman Borschel <roman@code-factory.org>
  */
 class FromClause extends Node
 {
-    protected $_identificationVariableDeclarations = array();
+    public $identificationVariableDeclarations = array();
 
     public function __construct(array $identificationVariableDeclarations)
     {
-        $this->_identificationVariableDeclarations = $identificationVariableDeclarations;
+        $this->identificationVariableDeclarations = $identificationVariableDeclarations;
     }    
     
-    /* Getters */
-    public function getIdentificationVariableDeclarations()
-    {
-        return $this->_identificationVariableDeclarations;
-    }
-
     public function dispatch($sqlWalker)
     {
         return $sqlWalker->walkFromClause($this);

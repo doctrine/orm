@@ -24,78 +24,29 @@ namespace Doctrine\ORM\Query\AST;
 /**
  * Subselect ::= SimpleSelectClause SubselectFromClause [WhereClause] [GroupByClause] [HavingClause] [OrderByClause]
  *
- * @author      Guilherme Blanco <guilhermeblanco@hotmail.com>
- * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
- * @link        http://www.doctrine-project.org
- * @since       2.0
- * @version     $Revision$
+ * @license http://www.opensource.org/licenses/lgpl-license.php LGPL
+ * @link    www.doctrine-project.org
+ * @since   2.0
+ * @version $Revision: 3938 $
+ * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
+ * @author  Jonathan Wage <jonwage@gmail.com>
+ * @author  Roman Borschel <roman@code-factory.org>
  */
 class Subselect extends Node
 {
-    private $_simpleSelectClause;
-    private $_subselectFromClause;
-    private $_whereClause;
-    private $_groupByClause;
-    private $_havingClause;
-    private $_orderByClause;
+    public $simpleSelectClause;
+    public $subselectFromClause;
+    public $whereClause;
+    public $groupByClause;
+    public $havingClause;
+    public $orderByClause;
 
     public function __construct($simpleSelectClause, $subselectFromClause)
     {
-        $this->_simpleSelectClause = $simpleSelectClause;
-        $this->_subselectFromClause = $subselectFromClause;
+        $this->simpleSelectClause = $simpleSelectClause;
+        $this->subselectFromClause = $subselectFromClause;
     }    
     
-    /* Getters */
-    public function getSimpleSelectClause()
-    {
-        return $this->_simpleSelectClause;
-    }
-
-    public function getSubselectFromClause()
-    {
-        return $this->_subselectFromClause;
-    }
-
-    public function getWhereClause()
-    {
-        return $this->_whereClause;
-    }
-
-    public function setWhereClause($whereClause)
-    {
-        $this->_whereClause = $whereClause;
-    }
-
-    public function getGroupByClause()
-    {
-        return $this->_groupByClause;
-    }
-
-    public function setGroupByClause($groupByClause)
-    {
-        $this->_groupByClause = $groupByClause;
-    }
-
-    public function getHavingClause()
-    {
-        return $this->_havingClause;
-    }
-
-    public function setHavingClause($havingClause)
-    {
-        $this->_havingClause = $havingClause;
-    }
-
-    public function getOrderByClause()
-    {
-        return $this->_orderByClause;
-    }
-    
-    public function setOrderByClause($orderByClause)
-    {
-        $this->_orderByClause = $orderByClause;
-    }
-
     public function dispatch($sqlWalker)
     {
         return $sqlWalker->walkSubselect($this);

@@ -26,39 +26,24 @@ namespace Doctrine\ORM\Query\AST;
  * NewValue ::= SimpleArithmeticExpression | StringPrimary | DatetimePrimary | BooleanPrimary |
  *              EnumPrimary | SimpleEntityExpression | "NULL"
  *
- * @author Roman Borschel <roman@code-factory.org>
- * @since 2.0
+ * @license http://www.opensource.org/licenses/lgpl-license.php LGPL
+ * @link    www.doctrine-project.org
+ * @since   2.0
+ * @version $Revision: 3938 $
+ * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
+ * @author  Jonathan Wage <jonwage@gmail.com>
+ * @author  Roman Borschel <roman@code-factory.org>
  */
 class UpdateItem extends Node
 {
-    private $_identificationVariable;
-    private $_field;
-    private $_newValue;
+    public $identificationVariable;
+    public $field;
+    public $newValue;
 
     public function __construct($field, $newValue)
     {
-        $this->_field = $field;
-        $this->_newValue = $newValue;
-    }
-
-    public function setIdentificationVariable($identVar)
-    {
-        $this->_identificationVariable = $identVar;
-    }
-
-    public function getIdentificationVariable()
-    {
-        return $this->_identificationVariable;
-    }
-
-    public function getField()
-    {
-        return $this->_field;
-    }
-
-    public function getNewValue()
-    {
-        return $this->_newValue;
+        $this->field = $field;
+        $this->newValue = $newValue;
     }
 
     public function dispatch($sqlWalker)

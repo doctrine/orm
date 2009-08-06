@@ -21,6 +21,8 @@
 
 namespace Doctrine\ORM;
 
+use Doctrine\ORM\Query\QueryException;
+
 /**
  * Base class for Query and NativeQuery.
  *

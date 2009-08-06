@@ -24,37 +24,24 @@ namespace Doctrine\ORM\Query\AST;
 /**
  * DeleteStatement = DeleteClause [WhereClause]
  *
- * @author      Guilherme Blanco <guilhermeblanco@hotmail.com>
- * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
- * @link        http://www.phpdoctrine.org
- * @since       2.0
- * @version     $Revision$
+ * @license http://www.opensource.org/licenses/lgpl-license.php LGPL
+ * @link    www.doctrine-project.org
+ * @since   2.0
+ * @version $Revision: 3938 $
+ * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
+ * @author  Jonathan Wage <jonwage@gmail.com>
+ * @author  Roman Borschel <roman@code-factory.org>
  */
 class DeleteStatement extends Node
 {
-    private $_deleteClause;
-    private $_whereClause;
+    public $deleteClause;
+    public $whereClause;
 
     public function __construct($deleteClause)
     {
-        $this->_deleteClause = $deleteClause;
+        $this->deleteClause = $deleteClause;
     }
     
-    public function setWhereClause($whereClause)
-    {
-        $this->_whereClause = $whereClause;
-    }
-    
-    public function getDeleteClause()
-    {
-        return $this->_deleteClause;
-    }
-
-    public function getWhereClause()
-    {
-        return $this->_whereClause;
-    }
-
     public function dispatch($sqlWalker)
     {
         return $sqlWalker->walkDeleteStatement($this);

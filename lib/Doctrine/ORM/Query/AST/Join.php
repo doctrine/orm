@@ -25,11 +25,13 @@ namespace Doctrine\ORM\Query\AST;
  * Join ::= ["LEFT" ["OUTER"] | "INNER"] "JOIN" JoinAssociationPathExpression
  *          ["AS"] AliasIdentificationVariable [("ON" | "WITH") ConditionalExpression]
  *
- * @author      Guilherme Blanco <guilhermeblanco@hotmail.com>
- * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
- * @link        http://www.phpdoctrine.org
- * @since       2.0
- * @version     $Revision$
+ * @license http://www.opensource.org/licenses/lgpl-license.php LGPL
+ * @link    www.doctrine-project.org
+ * @since   2.0
+ * @version $Revision: 3938 $
+ * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
+ * @author  Jonathan Wage <jonwage@gmail.com>
+ * @author  Roman Borschel <roman@code-factory.org>
  */
 class Join extends Node
 {
@@ -39,57 +41,19 @@ class Join extends Node
     const JOIN_WHERE_ON = 1;
     const JOIN_WHERE_WITH = 2;
 
-    protected $_joinType = self::JOIN_TYPE_INNER;    
-    protected $_joinAssociationPathExpression = null;
-    protected $_aliasIdentificationVariable = null;
-    protected $_whereType = self::JOIN_WHERE_WITH;
-    protected $_conditionalExpression = null;
+    public $joinType = self::JOIN_TYPE_INNER;    
+    public $joinAssociationPathExpression = null;
+    public $aliasIdentificationVariable = null;
+    public $whereType = self::JOIN_WHERE_WITH;
+    public $conditionalExpression = null;
 
     public function __construct($joinType, $joinAssocPathExpr, $aliasIdentVar)
     {
-        $this->_joinType = $joinType;
-        $this->_joinAssociationPathExpression = $joinAssocPathExpr;
-        $this->_aliasIdentificationVariable = $aliasIdentVar;
+        $this->joinType = $joinType;
+        $this->joinAssociationPathExpression = $joinAssocPathExpr;
+        $this->aliasIdentificationVariable = $aliasIdentVar;
     }
     
-    /* Setters */
-    
-    public function setWhereType($whereType)
-    {
-        $this->_whereType = $whereType;
-    }
-    
-    public function setConditionalExpression($conditionalExpression)
-    {
-        $this->_conditionalExpression = $conditionalExpression;
-    }
-    
-    /* Getters */
-    public function getJoinType()
-    {
-        return $this->_joinType;
-    }
-    
-    public function getJoinAssociationPathExpression()
-    {
-        return $this->_joinAssociationPathExpression;
-    }
-    
-    public function getAliasIdentificationVariable()
-    {
-        return $this->_aliasIdentificationVariable;
-    }
-    
-    public function getWhereType()
-    {
-        return $this->_whereType;
-    }
-    
-    public function getConditionalExpression()
-    {
-        return $this->_conditionalExpression;
-    }
-
     public function dispatch($sqlWalker)
     {
         return $sqlWalker->walkJoin($this);

@@ -1,7 +1,22 @@
 <?php
-/* 
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+/*
+ *  $Id$
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+ * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+ * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+ * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+ * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+ * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ * This software consists of voluntary contributions made by many individuals
+ * and is licensed under the LGPL. For more information, see
+ * <http://www.doctrine-project.org>.
  */
 
 namespace Doctrine\ORM\Query\AST\Functions;
@@ -9,28 +24,19 @@ namespace Doctrine\ORM\Query\AST\Functions;
 /**
  * "SUBSTRING" "(" StringPrimary "," SimpleArithmeticExpression "," SimpleArithmeticExpression ")"
  *
- * @author robo
+ * @license http://www.opensource.org/licenses/lgpl-license.php LGPL
+ * @link    www.doctrine-project.org
+ * @since   2.0
+ * @version $Revision: 3938 $
+ * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
+ * @author  Jonathan Wage <jonwage@gmail.com>
+ * @author  Roman Borschel <roman@code-factory.org>
  */
 class SubstringFunction extends FunctionNode
 {
-    private $_stringPrimary;
-    private $_firstSimpleArithmeticExpression;
-    private $_secondSimpleArithmeticExpression;
-
-    public function geStringPrimary()
-    {
-        return $this->_stringPrimary;
-    }
-
-    public function getSecondSimpleArithmeticExpression()
-    {
-        return $this->_secondSimpleArithmeticExpression;
-    }
-
-    public function getFirstSimpleArithmeticExpression()
-    {
-        return $this->_firstSimpleArithmeticExpression;
-    }
+    public $stringPrimary;
+    public $firstSimpleArithmeticExpression;
+    public $secondSimpleArithmeticExpression;
 
     /**
      * @override
@@ -38,14 +44,13 @@ class SubstringFunction extends FunctionNode
     public function getSql(\Doctrine\ORM\Query\SqlWalker $sqlWalker)
     {
         //TODO: Use platform to get SQL
-        $sql = 'SUBSTRING(' .
-                $sqlWalker->walkStringPrimary($this->_stringPrimary)
-                . ', ' .
-                $sqlWalker->walkSimpleArithmeticExpression($this->_firstSimpleArithmeticExpression)
-                . ', ' .
-                $sqlWalker->walkSimpleArithmeticExpression($this->_secondSimpleArithmeticExpression)
-                . ')';
-        return $sql;
+        return 'SUBSTRING(' 
+             . $sqlWalker->walkStringPrimary($this->stringPrimary)
+             . ', ' 
+             . $sqlWalker->walkSimpleArithmeticExpression($this->firstSimpleArithmeticExpression)
+             . ', ' 
+             . $sqlWalker->walkSimpleArithmeticExpression($this->secondSimpleArithmeticExpression)
+             . ')';
     }
 
     /**
@@ -54,14 +59,18 @@ class SubstringFunction extends FunctionNode
     public function parse(\Doctrine\ORM\Query\Parser $parser)
     {
         $lexer = $parser->getLexer();
+        
         $parser->match($lexer->lookahead['value']);
         $parser->match('(');
 
-        $this->_stringPrimary = $parser->StringPrimary();
+        $this->stringPrimary = $parser->StringPrimary();
+        
         $parser->match(',');
-        $this->_firstSimpleArithmeticExpression = $parser->SimpleArithmeticExpression();
+        
+        $this->firstSimpleArithmeticExpression = $parser->SimpleArithmeticExpression();
         $parser->match(',');
-        $this->_secondSimpleArithmeticExpression = $parser->SimpleArithmeticExpression();
+        
+        $this->secondSimpleArithmeticExpression = $parser->SimpleArithmeticExpression();
 
         $parser->match(')');
     }

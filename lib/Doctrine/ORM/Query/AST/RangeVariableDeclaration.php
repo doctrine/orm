@@ -24,41 +24,27 @@ namespace Doctrine\ORM\Query\AST;
 /**
  * RangeVariableDeclaration ::= AbstractSchemaName ["AS"] AliasIdentificationVariable
  *
- * @author      Guilherme Blanco <guilhermeblanco@hotmail.com>
- * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
- * @link        http://www.doctrine-project.org
- * @since       2.0
- * @version     $Revision$
+ * @license http://www.opensource.org/licenses/lgpl-license.php LGPL
+ * @link    www.doctrine-project.org
+ * @since   2.0
+ * @version $Revision: 3938 $
+ * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
+ * @author  Jonathan Wage <jonwage@gmail.com>
+ * @author  Roman Borschel <roman@code-factory.org>
  */
 class RangeVariableDeclaration extends Node
 {
-    private $_classMetadata;
-    private $_abstractSchemaName;
-    private $_aliasIdentificationVariable;
+    public $classMetadata;
+    public $abstractSchemaName;
+    public $aliasIdentificationVariable;
 
     public function __construct($classMetadata, $aliasIdentificationVar)
     {
-        $this->_classMetadata = $classMetadata;
-        $this->_abstractSchemaName = $classMetadata->name;
-        $this->_aliasIdentificationVariable = $aliasIdentificationVar;
+        $this->classMetadata = $classMetadata;
+        $this->abstractSchemaName = $classMetadata->name;
+        $this->aliasIdentificationVariable = $aliasIdentificationVar;
     }    
     
-    /* Getters */
-    public function getAbstractSchemaName()
-    {
-        return $this->_abstractSchemaName;
-    }
-
-    public function getAliasIdentificationVariable()
-    {
-        return $this->_aliasIdentificationVariable;
-    }
-
-    public function getClassMetadata()
-    {
-        return $this->_classMetadata;
-    }
-
     public function dispatch($walker)
     {
         return $walker->walkRangeVariableDeclaration($this);

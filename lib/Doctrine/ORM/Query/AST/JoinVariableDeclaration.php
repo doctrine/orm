@@ -24,34 +24,25 @@ namespace Doctrine\ORM\Query\AST;
 /**
  * JoinVariableDeclaration ::= Join [IndexBy]
  *
- * @author      Guilherme Blanco <guilhermeblanco@hotmail.com>
- * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
- * @link        http://www.phpdoctrine.org
- * @since       2.0
- * @version     $Revision$
+ * @license http://www.opensource.org/licenses/lgpl-license.php LGPL
+ * @link    www.doctrine-project.org
+ * @since   2.0
+ * @version $Revision: 3938 $
+ * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
+ * @author  Jonathan Wage <jonwage@gmail.com>
+ * @author  Roman Borschel <roman@code-factory.org>
  */
 class JoinVariableDeclaration extends Node
 {
-    protected $_join = null;
-    protected $_indexBy = null;
+    public $join = null;
+    public $indexBy = null;
 
     public function __construct($join, $indexBy)
     {
-        $this->_join = $join;
-        $this->_indexBy = $indexBy;
+        $this->join = $join;
+        $this->indexBy = $indexBy;
     }
     
-    /* Getters */
-    public function getJoin()
-    {
-        return $this->_join;
-    }
-
-    public function getIndexBy()
-    {
-        return $this->_indexBy;
-    }
-
     public function dispatch($sqlWalker)
     {
         return $sqlWalker->walkJoinVariableDeclaration($this);

@@ -24,38 +24,25 @@ namespace Doctrine\ORM\Query\AST;
 /**
  * SimpleSelectClause  ::= "SELECT" ["DISTINCT"] SimpleSelectExpression
  *
- * @author      Guilherme Blanco <guilhermeblanco@hotmail.com>
- * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
- * @link        http://www.doctrine-project.org
- * @since       2.0
- * @version     $Revision$
+ * @license http://www.opensource.org/licenses/lgpl-license.php LGPL
+ * @link    www.doctrine-project.org
+ * @since   2.0
+ * @version $Revision: 3938 $
+ * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
+ * @author  Jonathan Wage <jonwage@gmail.com>
+ * @author  Roman Borschel <roman@code-factory.org>
  */
 class SimpleSelectClause extends Node
 {
-    private $_isDistinct = false;
-    private $_simpleSelectExpression;
+    public $isDistinct = false;
+    public $simpleSelectExpression;
 
-    public function __construct($simpleSelectExpression)
+    public function __construct($simpleSelectExpression, $isDistinct)
     {
-        $this->_simpleSelectExpression = $simpleSelectExpression;
+        $this->simpleSelectExpression = $simpleSelectExpression;
+        $this->isDistinct = $isDistinct;
     }
     
-    /* Getters */
-    public function isDistinct()
-    {
-        return $this->_isDistinct;
-    }
-
-    public function setDistinct($bool)
-    {
-        $this->_isDistinct = $bool;
-    }
-
-    public function getSimpleSelectExpression()
-    {
-        return $this->_simpleSelectExpression;
-    }
-
     public function dispatch($sqlWalker)
     {
         return $sqlWalker->walkSimpleSelectClause($this);

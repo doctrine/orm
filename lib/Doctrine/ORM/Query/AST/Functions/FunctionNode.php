@@ -24,22 +24,23 @@ namespace Doctrine\ORM\Query\AST\Functions;
 use Doctrine\ORM\Query\AST\Node;
 
 /**
- * Description of Function
+ * Abtract Function Node.
  *
- * @author robo
+ * @license http://www.opensource.org/licenses/lgpl-license.php LGPL
+ * @link    www.doctrine-project.org
+ * @since   2.0
+ * @version $Revision: 3938 $
+ * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
+ * @author  Jonathan Wage <jonwage@gmail.com>
+ * @author  Roman Borschel <roman@code-factory.org>
  */
 abstract class FunctionNode extends Node
 {
-    private $_name;
+    public $name;
 
     public function __construct($name)
     {
-        $this->_name = $name;
-    }
-
-    public function getName()
-    {
-        return $this->_name;
+        $this->name = $name;
     }
 
     abstract public function getSql(\Doctrine\ORM\Query\SqlWalker $sqlWalker);

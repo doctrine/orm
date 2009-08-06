@@ -24,52 +24,25 @@ namespace Doctrine\ORM\Query\AST;
 /**
  * SelectClause = "SELECT" ["DISTINCT"] SelectExpression {"," SelectExpression}
  *
- * @author      Guilherme Blanco <guilhermeblanco@hotmail.com>
- * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
- * @link        http://www.doctrine-project.org
- * @since       2.0
- * @version     $Revision$
+ * @license http://www.opensource.org/licenses/lgpl-license.php LGPL
+ * @link    www.doctrine-project.org
+ * @since   2.0
+ * @version $Revision: 3938 $
+ * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
+ * @author  Jonathan Wage <jonwage@gmail.com>
+ * @author  Roman Borschel <roman@code-factory.org>
  */
 class SelectClause extends Node
 {
-    protected $_isDistinct;
-
-    protected $_selectExpressions = array();
+    public $isDistinct;
+    public $selectExpressions = array();
 
     public function __construct(array $selectExpressions, $isDistinct)
     {
-        $this->_isDistinct = $isDistinct;
-        $this->_selectExpressions = $selectExpressions;
+        $this->isDistinct = $isDistinct;
+        $this->selectExpressions = $selectExpressions;
     }
     
-    /* Getters */
-    public function isDistinct()
-    {
-        return $this->_isDistinct;
-    }
-
-    public function getSelectExpressions()
-    {
-        return $this->_selectExpressions;
-    }
-    
-    /* REMOVE ME LATER. COPIED METHODS FROM SPLIT OF PRODUCTION INTO "AST" AND "PARSER" */
-    public function buildSql()
-    {
-        return 'SELECT ' . (($this->_isDistinct) ? 'DISTINCT ' : '')
-             . implode(', ', $this->_mapSelectExpressions());
-    }
-
-    protected function _mapSelectExpressions()
-    {
-        return array_map(array(&$this, '_mapSelectExpression'), $this->_selectExpressions);
-    }
-
-    protected function _mapSelectExpression($value)
-    {
-        return is_object($value) ? $value->buildSql() : $value;
-    }
-
     public function dispatch($sqlWalker)
     {
         return $sqlWalker->walkSelectClause($this);

@@ -29,34 +29,25 @@ namespace Doctrine\ORM\Query\AST;
  *                          DatetimeExpression ComparisonOperator (DatetimeExpression | QuantifiedExpression) |
  *                          EntityExpression ("=" | "<>") (EntityExpression | QuantifiedExpression)
  *
- * @author robo
+ * @license http://www.opensource.org/licenses/lgpl-license.php LGPL
+ * @link    www.doctrine-project.org
+ * @since   2.0
+ * @version $Revision: 3938 $
+ * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
+ * @author  Jonathan Wage <jonwage@gmail.com>
+ * @author  Roman Borschel <roman@code-factory.org>
  */
 class ComparisonExpression extends Node
 {
-    private $_leftExpr;
-    private $_rightExpr;
-    private $_operator;
+    public $leftExpression;
+    public $rightExpression;
+    public $operator;
 
     public function __construct($leftExpr, $operator, $rightExpr)
     {
-        $this->_leftExpr = $leftExpr;
-        $this->_rightExpr = $rightExpr;
-        $this->_operator = $operator;
-    }
-
-    public function getLeftExpression()
-    {
-        return $this->_leftExpr;
-    }
-
-    public function getRightExpression()
-    {
-        return $this->_rightExpr;
-    }
-
-    public function getOperator()
-    {
-        return $this->_operator;
+        $this->leftExpression = $leftExpr;
+        $this->rightExpression = $rightExpr;
+        $this->operator = $operator;
     }
 
     public function dispatch($sqlWalker)

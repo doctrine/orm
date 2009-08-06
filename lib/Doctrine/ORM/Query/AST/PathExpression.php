@@ -1,28 +1,43 @@
 <?php
-
+/*
+ *  $Id$
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+ * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+ * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+ * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+ * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+ * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ * This software consists of voluntary contributions made by many individuals
+ * and is licensed under the LGPL. For more information, see
+ * <http://www.doctrine-project.org>.
+ */
+ 
 namespace Doctrine\ORM\Query\AST;
 
 /**
- * AST node for the following path expressions:
- * 
  * AssociationPathExpression ::= CollectionValuedPathExpression | SingleValuedAssociationPathExpression
- *
  * SingleValuedPathExpression ::= StateFieldPathExpression | SingleValuedAssociationPathExpression
- *
  * StateFieldPathExpression ::= SimpleStateFieldPathExpression | SimpleStateFieldAssociationPathExpression
- *
  * SingleValuedAssociationPathExpression ::= IdentificationVariable "." {SingleValuedAssociationField "."}* SingleValuedAssociationField
- *
  * CollectionValuedPathExpression ::= IdentificationVariable "." {SingleValuedAssociationField "."}* CollectionValuedAssociationField
- * 
  * StateField ::= {EmbeddedClassStateField "."}* SimpleStateField
- *
  * SimpleStateFieldPathExpression ::= IdentificationVariable "." StateField
- * 
  * SimpleStateFieldAssociationPathExpression ::= SingleValuedAssociationPathExpression "." StateField
  * 
- * @author Roman Borschel <roman@code-factory.org>
- * @since 2.0
+ * @license http://www.opensource.org/licenses/lgpl-license.php LGPL
+ * @link    www.doctrine-project.org
+ * @since   2.0
+ * @version $Revision: 3938 $
+ * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
+ * @author  Jonathan Wage <jonwage@gmail.com>
+ * @author  Roman Borschel <roman@code-factory.org>
  */
 class PathExpression extends Node
 {
@@ -30,54 +45,21 @@ class PathExpression extends Node
     const TYPE_SINGLE_VALUED_ASSOCIATION = 4;
     const TYPE_STATE_FIELD = 8;
     
-    private $_type;
-    private $_expectedType;
-    private $_identificationVariable;
-    private $_parts;
+    public $type;
+    public $expectedType;
+    public $identificationVariable;
+    public $parts;
     
     public function __construct($expectedType, $identificationVariable, array $parts)
     {
-        $this->_expectedType = $expectedType;
-        $this->_identificationVariable = $identificationVariable;
-        $this->_parts = $parts;
-    }
-    
-    public function getIdentificationVariable()
-    {
-        return $this->_identificationVariable;
-    }
-    
-    public function getParts()
-    {
-        return $this->_parts;
-    }
-    
-    public function setExpectedType($type)
-    {
-    	$this->_expectedType;
-    }
-    
-    public function getExpectedType()
-    {
-    	return $this->_expectedType;
-    }
-    
-    /**
-     * INTERNAL
-     */
-    public function setType($type)
-    {
-        $this->_type = $type;
-    }
-    
-    public function getType()
-    {
-        return $this->_type;
+        $this->expectedType = $expectedType;
+        $this->identificationVariable = $identificationVariable;
+        $this->parts = $parts;
     }
     
     public function dispatch($walker)
     {
-        switch ($this->_type) {
+        switch ($this->type) {
             case self::TYPE_STATE_FIELD:
                 return $walker->walkStateFieldPathExpression($this);
             case self::TYPE_SINGLE_VALUED_ASSOCIATION:

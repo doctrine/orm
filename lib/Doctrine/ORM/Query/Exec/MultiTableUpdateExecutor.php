@@ -53,13 +53,12 @@ class MultiTableUpdateExecutor extends AbstractSqlExecutor
     {
         $em = $sqlWalker->getEntityManager();
         $conn = $em->getConnection();
+        $updateClause = $AST->updateClause;
 
-        $primaryClass = $sqlWalker->getEntityManager()->getClassMetadata(
-            $AST->getUpdateClause()->getAbstractSchemaName()
-        );
+        $primaryClass = $sqlWalker->getEntityManager()->getClassMetadata($updateClause->abstractSchemaName);
         $rootClass = $em->getClassMetadata($primaryClass->rootEntityName);
 
-        $updateItems = $AST->getUpdateClause()->getUpdateItems();
+        $updateItems = $updateClause->updateItems;
 
         $tempTable = $rootClass->getTemporaryIdTableName();
         $idColumnNames = $rootClass->getIdentifierColumnNames();
@@ -68,8 +67,8 @@ class MultiTableUpdateExecutor extends AbstractSqlExecutor
         // 1. Create an INSERT INTO temptable ... SELECT identifiers WHERE $AST->getWhereClause()
         $this->_insertSql = 'INSERT INTO ' . $tempTable . ' (' . $idColumnList . ')'
                 . ' SELECT t0.' . implode(', t0.', $idColumnNames);
-        $sqlWalker->setSqlTableAlias($primaryClass->primaryTable['name'] . $AST->getUpdateClause()->getAliasIdentificationVariable(), 't0');
-        $rangeDecl = new AST\RangeVariableDeclaration($primaryClass, $AST->getUpdateClause()->getAliasIdentificationVariable());
+        $sqlWalker->setSqlTableAlias($primaryClass->primaryTable['name'] . $updateClause->aliasIdentificationVariable, 't0');
+        $rangeDecl = new AST\RangeVariableDeclaration($primaryClass, $updateClause->aliasIdentificationVariable);
         $fromClause = new AST\FromClause(array(new AST\IdentificationVariableDeclaration($rangeDecl, null, array())));
         $this->_insertSql .= $sqlWalker->walkFromClause($fromClause);
 
@@ -79,6 +78,7 @@ class MultiTableUpdateExecutor extends AbstractSqlExecutor
         // 3. Create and store UPDATE statements
         $classNames = array_merge($primaryClass->parentClasses, array($primaryClass->name), $primaryClass->subClasses);
         $i = -1;
+        
         foreach (array_reverse($classNames) as $className) {
             $affected = false;
             $class = $em->getClassMetadata($className);
@@ -86,19 +86,22 @@ class MultiTableUpdateExecutor extends AbstractSqlExecutor
             $updateSql = 'UPDATE ' . $conn->quoteIdentifier($tableName) . ' SET ';
 
             foreach ($updateItems as $updateItem) {
-                $field = $updateItem->getField();
+                $field = $updateItem->field;
                 if (isset($class->fieldMappings[$field]) && ! isset($class->fieldMappings[$field]['inherited'])) {
-                    $newValue = $updateItem->getNewValue();
+                    $newValue = $updateItem->newValue;
+                    
                     if ( ! $affected) {
                         $affected = true;
                         ++$i;
                     } else {
                         $updateSql .= ', ';
                     }
+                    
                     $updateSql .= $sqlWalker->walkUpdateItem($updateItem);
+                    
                     //FIXME: parameters can be more deeply nested. traverse the tree.
                     if ($newValue instanceof AST\InputParameter) {
-                        $paramKey = $newValue->isNamed() ? $newValue->getName() : $newValue->getPosition();
+                        $paramKey = $newValue->name;
                         $this->_sqlParameters[$i][] = $sqlWalker->getQuery()->getParameter($paramKey);
                         ++$this->_numParametersInUpdateClause;
                     }
@@ -111,8 +114,8 @@ class MultiTableUpdateExecutor extends AbstractSqlExecutor
         }
         
         // Append WHERE clause to insertSql, if there is one.
-        if ($AST->getWhereClause()) {
-            $this->_insertSql .= $sqlWalker->walkWhereClause($AST->getWhereClause());
+        if ($AST->whereClause) {
+            $this->_insertSql .= $sqlWalker->walkWhereClause($AST->whereClause);
         }
         
         // 4. Store DDL for temporary identifier table.

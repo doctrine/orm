@@ -23,30 +23,23 @@ namespace Doctrine\ORM\Query\AST;
 
 /**
  * DeleteClause ::= "DELETE" ["FROM"] AbstractSchemaName [["AS"] AliasIdentificationVariable]
+ *
+ * @license http://www.opensource.org/licenses/lgpl-license.php LGPL
+ * @link    www.doctrine-project.org
+ * @since   2.0
+ * @version $Revision: 3938 $
+ * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
+ * @author  Jonathan Wage <jonwage@gmail.com>
+ * @author  Roman Borschel <roman@code-factory.org>
  */
 class DeleteClause extends Node
 {
-    private $_abstractSchemaName;
-    private $_aliasIdentificationVariable;
+    public $abstractSchemaName;
+    public $aliasIdentificationVariable;
 
     public function __construct($abstractSchemaName)
     {
-        $this->_abstractSchemaName = $abstractSchemaName;
-    }
-
-    public function getAbstractSchemaName()
-    {
-        return $this->_abstractSchemaName;
-    }
-
-    public function getAliasIdentificationVariable()
-    {
-        return $this->_aliasIdentificationVariable;
-    }
-
-    public function setAliasIdentificationVariable($alias)
-    {
-        $this->_aliasIdentificationVariable = $alias;
+        $this->abstractSchemaName = $abstractSchemaName;
     }
 
     public function dispatch($sqlWalker)

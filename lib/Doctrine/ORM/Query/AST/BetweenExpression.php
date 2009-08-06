@@ -1,7 +1,22 @@
 <?php
-/* 
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+/*
+ *  $Id$
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+ * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+ * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+ * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+ * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+ * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ * This software consists of voluntary contributions made by many individuals
+ * and is licensed under the LGPL. For more information, see
+ * <http://www.doctrine-project.org>.
  */
 
 namespace Doctrine\ORM\Query\AST;
@@ -9,45 +24,26 @@ namespace Doctrine\ORM\Query\AST;
 /**
  * Description of BetweenExpression
  *
- * @author robo
+  @license http://www.opensource.org/licenses/lgpl-license.php LGPL
+ * @link    www.doctrine-project.org
+ * @since   2.0
+ * @version $Revision: 3938 $
+ * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
+ * @author  Jonathan Wage <jonwage@gmail.com>
+ * @author  Roman Borschel <roman@code-factory.org>
  */
 class BetweenExpression extends Node
 {
-    private $_baseExpression;
-    private $_leftBetweenExpression;
-    private $_rightBetweenExpression;
-    private $_not;
+    public $expression;
+    public $leftBetweenExpression;
+    public $rightBetweenExpression;
+    public $not;
 
-    public function __construct($baseExpr, $leftExpr, $rightExpr)
+    public function __construct($expr, $leftExpr, $rightExpr)
     {
-        $this->_baseExpression = $baseExpr;
-        $this->_leftBetweenExpression = $leftExpr;
-        $this->_rightBetweenExpression = $rightExpr;
-    }
-
-    public function getBaseExpression()
-    {
-        return $this->_baseExpression;
-    }
-
-    public function getLeftBetweenExpression()
-    {
-        return $this->_leftBetweenExpression;
-    }
-
-    public function getRightBetweenExpression()
-    {
-        return $this->_rightBetweenExpression;
-    }
-
-    public function setNot($bool)
-    {
-        $this->_not = $bool;
-    }
-
-    public function getNot()
-    {
-        return $this->_not;
+        $this->expression = $expr;
+        $this->leftBetweenExpression = $leftExpr;
+        $this->rightBetweenExpression = $rightExpr;
     }
 
     public function dispatch($sqlWalker)

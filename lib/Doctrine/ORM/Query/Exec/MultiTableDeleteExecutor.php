@@ -53,9 +53,9 @@ class MultiTableDeleteExecutor extends AbstractSqlExecutor
         $conn = $em->getConnection();
         
         $primaryClass = $sqlWalker->getEntityManager()->getClassMetadata(
-            $AST->getDeleteClause()->getAbstractSchemaName()
+            $AST->deleteClause->abstractSchemaName
         );
-        $primaryDqlAlias = $AST->getDeleteClause()->getAliasIdentificationVariable();
+        $primaryDqlAlias = $AST->deleteClause->aliasIdentificationVariable;
         $rootClass = $em->getClassMetadata($primaryClass->rootEntityName);
         
         $tempTable = $rootClass->getTemporaryIdTableName();
@@ -71,8 +71,8 @@ class MultiTableDeleteExecutor extends AbstractSqlExecutor
         $this->_insertSql .= $sqlWalker->walkFromClause($fromClause);
         
         // Append WHERE clause, if there is one.
-        if ($AST->getWhereClause()) {
-            $this->_insertSql .= $sqlWalker->walkWhereClause($AST->getWhereClause());
+        if ($AST->whereClause) {
+            $this->_insertSql .= $sqlWalker->walkWhereClause($AST->whereClause);
         }
 
         // 2. Create ID subselect statement used in DELETE .... WHERE ... IN (subselect)

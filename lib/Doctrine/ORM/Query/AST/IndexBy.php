@@ -24,27 +24,23 @@ namespace Doctrine\ORM\Query\AST;
 /**
  * IndexBy ::= "INDEX" "BY" SimpleStateFieldPathExpression
  *
- * @author      Guilherme Blanco <guilhermeblanco@hotmail.com>
- * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
- * @link        http://www.doctrine-project.org
- * @since       2.0
- * @version     $Revision$
+ * @license http://www.opensource.org/licenses/lgpl-license.php LGPL
+ * @link    www.doctrine-project.org
+ * @since   2.0
+ * @version $Revision: 3938 $
+ * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
+ * @author  Jonathan Wage <jonwage@gmail.com>
+ * @author  Roman Borschel <roman@code-factory.org>
  */
 class IndexBy extends Node
 {
-    protected $_simpleStateFieldPathExpression = null;
+    public $simpleStateFieldPathExpression = null;
 
     public function __construct($simpleStateFieldPathExpression)
     {
-        $this->_simpleStateFieldPathExpression = $simpleStateFieldPathExpression;
+        $this->simpleStateFieldPathExpression = $simpleStateFieldPathExpression;
     }    
     
-    /* Getters */
-    public function getSimpleStateFieldPathExpression()
-    {
-        return $this->_simpleStateFieldPathExpression;
-    }
-
     public function dispatch($sqlWalker)
     {
         return $sqlWalker->walkIndexBy($this);

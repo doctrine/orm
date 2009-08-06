@@ -22,48 +22,34 @@
 namespace Doctrine\ORM\Query\AST;
 
 /**
- * AST node for the following grammar rule:
- *
  * OrderByItem ::= (ResultVariable | StateFieldPathExpression) ["ASC" | "DESC"]
  *
- * @author Guilherme Blanco <guilhermeblanco@hotmail.com>
- * @author Roman Borschel <roman@code-factory.org>
- * @since 2.0
+ * @license http://www.opensource.org/licenses/lgpl-license.php LGPL
+ * @link    www.doctrine-project.org
+ * @since   2.0
+ * @version $Revision: 3938 $
+ * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
+ * @author  Jonathan Wage <jonwage@gmail.com>
+ * @author  Roman Borschel <roman@code-factory.org>
  */
 class OrderByItem extends Node
 {
-    private $_expr;
-    private $_asc;
-    private $_desc;
-
-    public function __construct($expr)
+    public $expression;
+    public $type;
+    
+    public function __construct($expression)
     {
-        $this->_expr = $expr;
-    }
-
-    public function getExpression()
-    {
-        return $this->_expr;
-    }
-
-    public function setAsc($bool)
-    {
-        $this->_asc = $bool;
+        $this->expression = $expression;
     }
 
     public function isAsc()
     {
-        return $this->_asc;
-    }
-
-    public function setDesc($bool)
-    {
-        $this->_desc = $bool;
+        return strtoupper($this->type) == 'ASC';
     }
 
     public function isDesc()
     {
-        return $this->_desc;
+        return strtoupper($this->type) == 'DESC';
     }
 
     public function dispatch($sqlWalker)

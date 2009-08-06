@@ -24,61 +24,27 @@ namespace Doctrine\ORM\Query\AST;
 /**
  * SelectStatement = SelectClause FromClause [WhereClause] [GroupByClause] [HavingClause] [OrderByClause]
  *
- * @author      Guilherme Blanco <guilhermeblanco@hotmail.com>
- * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
- * @link        http://www.phpdoctrine.org
- * @since       2.0
- * @version     $Revision$
+ * @license http://www.opensource.org/licenses/lgpl-license.php LGPL
+ * @link    www.doctrine-project.org
+ * @since   2.0
+ * @version $Revision: 3938 $
+ * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
+ * @author  Jonathan Wage <jonwage@gmail.com>
+ * @author  Roman Borschel <roman@code-factory.org>
  */
 class SelectStatement extends Node
 {
-    protected $_selectClause;
-    protected $_fromClause;
-    protected $_whereClause;
-    protected $_groupByClause;
-    protected $_havingClause;
-    protected $_orderByClause;
+    public $selectClause;
+    public $fromClause;
+    public $whereClause;
+    public $groupByClause;
+    public $havingClause;
+    public $orderByClause;
 
-    public function __construct($selectClause, $fromClause, $whereClause, $groupByClause,
-            $havingClause, $orderByClause) {
-        $this->_selectClause = $selectClause;
-        $this->_fromClause = $fromClause;
-        $this->_whereClause = $whereClause;
-        $this->_groupByClause = $groupByClause;
-        $this->_havingClause = $havingClause;
-        $this->_orderByClause = $orderByClause;
+    public function __construct($selectClause, $fromClause) {
+        $this->selectClause = $selectClause;
+        $this->fromClause = $fromClause;
     }    
-    
-    /* Getters */
-    public function getSelectClause()
-    {
-        return $this->_selectClause;
-    }
-
-    public function getFromClause()
-    {
-        return $this->_fromClause;
-    }
-
-    public function getWhereClause()
-    {
-        return $this->_whereClause;
-    }
-
-    public function getGroupByClause()
-    {
-        return $this->_groupByClause;
-    }
-
-    public function getHavingClause()
-    {
-        return $this->_havingClause;
-    }
-
-    public function getOrderByClause()
-    {
-        return $this->_orderByClause;
-    }
     
     public function dispatch($sqlWalker)
     {

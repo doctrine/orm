@@ -1,7 +1,22 @@
 <?php
-/* 
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+/*
+ *  $Id$
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+ * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+ * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+ * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+ * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+ * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ * This software consists of voluntary contributions made by many individuals
+ * and is licensed under the LGPL. For more information, see
+ * <http://www.doctrine-project.org>.
  */
 
 namespace Doctrine\ORM\Query\AST\Functions;
@@ -9,28 +24,19 @@ namespace Doctrine\ORM\Query\AST\Functions;
 /**
  * "LOCATE" "(" StringPrimary "," StringPrimary ["," SimpleArithmeticExpression]")"
  *
- * @author robo
+ * @license http://www.opensource.org/licenses/lgpl-license.php LGPL
+ * @link    www.doctrine-project.org
+ * @since   2.0
+ * @version $Revision: 3938 $
+ * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
+ * @author  Jonathan Wage <jonwage@gmail.com>
+ * @author  Roman Borschel <roman@code-factory.org>
  */
 class LocateFunction extends FunctionNode
 {
-    private $_firstStringPrimary;
-    private $_secondStringPrimary;
-    private $_simpleArithmeticExpression;
-
-    public function getFirstStringPrimary()
-    {
-        return $this->_firstStringPrimary;
-    }
-
-    public function getSecondStringPrimary()
-    {
-        return $this->_secondStringPrimary;
-    }
-
-    public function getSimpleArithmeticExpression()
-    {
-        return $this->_simpleArithmeticExpression;
-    }
+    public $firstStringPrimary;
+    public $secondStringPrimary;
+    public $simpleArithmeticExpression;
 
     /**
      * @override
@@ -38,15 +44,12 @@ class LocateFunction extends FunctionNode
     public function getSql(\Doctrine\ORM\Query\SqlWalker $sqlWalker)
     {
         //TODO: Use platform to get SQL
-        $sql = 'LOCATE(' .
-                $sqlWalker->walkStringPrimary($this->_firstStringPrimary)
-                . ', ' .
-                $sqlWalker->walkStringPrimary($this->_secondStringPrimary);
-        
-        if ($this->_simpleArithmeticExpression) {
-            $sql .= ', ' . $sqlWalker->walkSimpleArithmeticExpression($this->_simpleArithmeticExpression);
-        }
-        return $sql . ')';
+        return 'LOCATE(' . $sqlWalker->walkStringPrimary($this->firstStringPrimary) . ', ' 
+             . $sqlWalker->walkStringPrimary($this->secondStringPrimary)
+             . (($this->simpleArithmeticExpression) 
+                 ? ', ' . $sqlWalker->walkSimpleArithmeticExpression($this->simpleArithmeticExpression) 
+                 : ''
+             ) . ')';
     }
 
     /**
@@ -55,15 +58,22 @@ class LocateFunction extends FunctionNode
     public function parse(\Doctrine\ORM\Query\Parser $parser)
     {
         $lexer = $parser->getLexer();
+        
         $parser->match($lexer->lookahead['value']);
         $parser->match('(');
-        $this->_firstStringPrimary = $parser->StringPrimary();
+        
+        $this->firstStringPrimary = $parser->StringPrimary();
+        
         $parser->match(',');
-        $this->_secondStringPrimary = $parser->StringPrimary();
+        
+        $this->secondStringPrimary = $parser->StringPrimary();
+        
         if ($lexer->isNextToken(',')) {
             $parser->match(',');
-            $this->_simpleArithmeticExpression = $parser->SimpleArithmeticExpression();
+            
+            $this->simpleArithmeticExpression = $parser->SimpleArithmeticExpression();
         }
+        
         $parser->match(')');
     }
 }

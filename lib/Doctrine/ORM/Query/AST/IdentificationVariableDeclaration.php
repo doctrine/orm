@@ -24,45 +24,27 @@ namespace Doctrine\ORM\Query\AST;
 /**
  * IdentificationVariableDeclaration ::= RangeVariableDeclaration [IndexBy] {JoinVariableDeclaration}*
  *
- * @author      Guilherme Blanco <guilhermeblanco@hotmail.com>
- * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
- * @link        http://www.doctrine-project.org
- * @since       2.0
- * @version     $Revision$
+ * @license http://www.opensource.org/licenses/lgpl-license.php LGPL
+ * @link    www.doctrine-project.org
+ * @since   2.0
+ * @version $Revision: 3938 $
+ * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
+ * @author  Jonathan Wage <jonwage@gmail.com>
+ * @author  Roman Borschel <roman@code-factory.org>
  */
 class IdentificationVariableDeclaration extends Node
 {
-    protected $_rangeVariableDeclaration = null;
-    
-    protected $_indexBy = null;
-
-    protected $_joinVariableDeclarations = array();
+    public $rangeVariableDeclaration = null;
+    public $indexBy = null;
+    public $joinVariableDeclarations = array();
 
     public function __construct($rangeVariableDecl, $indexBy, array $joinVariableDecls)
     {
-        $this->_rangeVariableDeclaration = $rangeVariableDecl;
-        $this->_indexBy = $indexBy;
-        $this->_joinVariableDeclarations = $joinVariableDecls;
+        $this->rangeVariableDeclaration = $rangeVariableDecl;
+        $this->indexBy = $indexBy;
+        $this->joinVariableDeclarations = $joinVariableDecls;
     }
     
-    /* Getters */
-    public function getRangeVariableDeclaration()
-    {
-        return $this->_rangeVariableDeclaration;
-    }
-
-
-    public function getIndexBy()
-    {
-        return $this->_indexBy;
-    }
-    
-
-    public function getJoinVariableDeclarations()
-    {
-        return $this->_joinVariableDeclarations;
-    }
-
     public function dispatch($sqlWalker)
     {
         return $sqlWalker->walkIdentificationVariableDeclaration($this);

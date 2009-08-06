@@ -24,35 +24,22 @@ namespace Doctrine\ORM\Query\AST;
 /**
  * UpdateStatement = UpdateClause [WhereClause]
  *
- * @author      Guilherme Blanco <guilhermeblanco@hotmail.com>
- * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
- * @link        http://www.doctrine-project.org
- * @since       2.0
- * @version     $Revision$
+ * @license http://www.opensource.org/licenses/lgpl-license.php LGPL
+ * @link    www.doctrine-project.org
+ * @since   2.0
+ * @version $Revision: 3938 $
+ * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
+ * @author  Jonathan Wage <jonwage@gmail.com>
+ * @author  Roman Borschel <roman@code-factory.org>
  */
 class UpdateStatement extends Node
 {
-    private $_updateClause;
-    private $_whereClause;
+    public $updateClause;
+    public $whereClause;
 
     public function __construct($updateClause)
     {
-        $this->_updateClause = $updateClause;
-    }
-
-    public function setWhereClause($whereClause)
-    {
-        $this->_whereClause = $whereClause;
-    }
-    
-    public function getUpdateClause()
-    {
-        return $this->_updateClause;
-    }
-
-    public function getWhereClause()
-    {
-        return $this->_whereClause;
+        $this->updateClause = $updateClause;
     }
 
     public function dispatch($sqlWalker)

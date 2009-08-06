@@ -24,30 +24,26 @@ namespace Doctrine\ORM\Query\AST\Functions;
 /**
  * "SIZE" "(" CollectionValuedPathExpression ")"
  *
- * @author Roman Borschel <roman@code-factory.org>
+ * @license http://www.opensource.org/licenses/lgpl-license.php LGPL
+ * @link    www.doctrine-project.org
+ * @since   2.0
+ * @version $Revision: 3938 $
+ * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
+ * @author  Jonathan Wage <jonwage@gmail.com>
+ * @author  Roman Borschel <roman@code-factory.org>
  */
 class SizeFunction extends FunctionNode
 {
-    private $_collectionPathExpression;
-
-    public function getCollectionPathExpression()
-    {
-        return $this->_collectionPathExpression;
-    }
-    
-    public function setCollectionPathExpression($collPathExpr)
-    {
-        $this->_collectionPathExpression = $collPathExpr;
-    }
+    public $collectionPathExpression;
 
     /**
      * @override
      */
     public function getSql(\Doctrine\ORM\Query\SqlWalker $sqlWalker)
     {
-        $dqlAlias = $this->_collectionPathExpression->getIdentificationVariable();
+        $dqlAlias = $this->collectionPathExpression->identificationVariable;
         $qComp = $sqlWalker->getQueryComponent($dqlAlias);
-        $parts = $this->_collectionPathExpression->getParts();
+        $parts = $this->collectionPathExpression->parts;
         
         $assoc = $qComp['metadata']->associationMappings[$parts[0]];
         
@@ -80,9 +76,12 @@ class SizeFunction extends FunctionNode
     public function parse(\Doctrine\ORM\Query\Parser $parser)
     {
         $lexer = $parser->getLexer();
+        
         $parser->match($lexer->lookahead['value']);
         $parser->match('(');
-        $this->_collectionPathExpression = $parser->CollectionValuedPathExpression();
+        
+        $this->collectionPathExpression = $parser->CollectionValuedPathExpression();
+        
         $parser->match(')');
     }
 }
