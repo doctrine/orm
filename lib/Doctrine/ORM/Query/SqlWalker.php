@@ -30,7 +30,6 @@ use Doctrine\ORM\Query,
  *
  * @author Roman Borschel <roman@code-factory.org>
  * @since 2.0
- * @todo Code review for identifier quoting.
  * @todo Code review for schema usage with table names.
  *       (Prepend schema name to tables IF schema is defined AND platform supports them)
  */
@@ -1272,17 +1271,9 @@ class SqlWalker implements TreeWalker
      */
     public function walkArithmeticExpression($arithmeticExpr)
     {
-        $sql = '';
-        
-        if ($arithmeticExpr->isSimpleArithmeticExpression()) {
-            foreach ($arithmeticExpr->getSimpleArithmeticExpression()->getArithmeticTerms() as $term) {
-                $sql .= $this->walkArithmeticTerm($term);
-            }
-        } else {
-            $sql .= $this->walkSubselect($arithmeticExpr->getSubselect());
-        }
-        
-        return $sql;
+        return ($arithmeticExpr->isSimpleArithmeticExpression())
+        	? $this->walkSimpleArithmeticExpression($arithmeticExpr->simpleArithmeticExpression)
+        	: $this->walkSubselect($arithmeticExpr->subselect);
     }
 
     /**

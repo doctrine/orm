@@ -1900,14 +1900,14 @@ class Parser
 
             if ($peek['type'] === Lexer::T_SELECT) {
                 $this->match('(');
-                $expr->setSubselect($this->Subselect());
+                $expr->subselect = $this->Subselect();
                 $this->match(')');
 
                 return $expr;
             }
         }
 
-        $expr->setSimpleArithmeticExpression($this->SimpleArithmeticExpression());
+        $expr->simpleArithmeticExpression = $this->SimpleArithmeticExpression();
 
         return $expr;
     }
