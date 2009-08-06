@@ -681,16 +681,16 @@ class SqlWalker implements TreeWalker
     public function walkAggregateExpression($aggExpression)
     {
         $sql = '';
-        $parts = $aggExpression->getPathExpression()->getParts();
-        $dqlAlias = $aggExpression->getPathExpression()->getIdentificationVariable();
+        $parts = $aggExpression->pathExpression->getParts();
+        $dqlAlias = $aggExpression->pathExpression->getIdentificationVariable();
         $fieldName = $parts[0];
 
         $qComp = $this->_queryComponents[$dqlAlias];
         $columnName = $qComp['metadata']->getColumnName($fieldName);
 
-        $sql .= $aggExpression->getFunctionName() . '(';
+        $sql .= $aggExpression->functionName . '(';
         
-        if ($aggExpression->isDistinct()) $sql .= 'DISTINCT ';
+        if ($aggExpression->isDistinct) $sql .= 'DISTINCT ';
         
         $sql .= $this->getSqlTableAlias($qComp['metadata']->getTableName(), $dqlAlias) . '.' 
               . $this->_conn->quoteIdentifier($columnName) . ')';
