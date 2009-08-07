@@ -68,16 +68,18 @@ class Lexer extends \Doctrine\Common\Lexer
     protected function _getType(&$value)
     {
         $type = self::T_NONE;
-
         $newVal = $this->_getNumeric($value);
+        
         if ($newVal !== false){
             $value = $newVal;
+            
             if (strpos($value, '.') !== false || stripos($value, 'e') !== false) {
                 $type = self::T_FLOAT;
             } else {
                 $type = self::T_INTEGER;
             }
         }
+        
         if ($value[0] === '"') {
             $type = self::T_STRING;
             $value = str_replace('""', '"', substr($value, 1, strlen($value) - 2));
@@ -89,7 +91,10 @@ class Lexer extends \Doctrine\Common\Lexer
     }
 
     /**
-     * @todo Doc
+     * Checks if a value is numeric or not
+     *
+     * @param mixed $value Value to be inspected
+     * @return boolean|integer|float Processed value
      */
     private function _getNumeric($value)
     {
@@ -108,7 +113,7 @@ class Lexer extends \Doctrine\Common\Lexer
      * Checks if an identifier is a keyword and returns its correct type.
      *
      * @param string $identifier identifier name
-     * @return int token type
+     * @return integer token type
      */
     private function _checkLiteral($identifier)
     {

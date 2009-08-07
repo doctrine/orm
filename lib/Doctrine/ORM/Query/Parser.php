@@ -223,8 +223,9 @@ class Parser
     {
         $key = (is_string($token)) ? 'value' : 'type';
         
-        if ( ! ($this->_lexer->lookahead[$key] === $token))
+        if ( ! ($this->_lexer->lookahead[$key] === $token)) {
             $this->syntaxError($this->_lexer->getLiteral($token));
+        }
 
         $this->_lexer->moveNext();
     }
@@ -301,7 +302,7 @@ class Parser
         if ($this->_lexer->lookahead === null) {
             $message .= 'end of string.';
         } else {
-            $message .= "'{$this->_lexer->lookahead['value']}'";
+            $message .= "'{$token['value']}'";
         }
 
         throw \Doctrine\ORM\Query\QueryException::syntaxError($message);
