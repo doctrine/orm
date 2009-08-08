@@ -263,6 +263,8 @@ class Parser
 
     /**
      * Values ::= Value {"," Value}*
+     *
+     * @return array
      */
     public function Values()
     {
@@ -292,49 +294,12 @@ class Parser
         }
         
         return $values;
-        
-        /*if ($this->_lexer->isNextToken(')')) {
-            // Single value
-            if (is_array($value)) {
-                $k = key($value);
-                $v = $value[$k];
-                
-                if (is_string($k)) {
-                    // FieldAssignment
-                    $values[$k] = $v;
-                } else {
-                    $values['value']= $value;
-                }
-            } else {
-                $values['value'] = $value;
-            }
-            
-            return $values;
-        } else {
-            // FieldAssignment
-            $k = key($value);
-            $v = $value[$k];
-            $values[$k] = $v;
-        }
-
-        while ($this->_lexer->isNextToken(',')) {
-            $this->match(',');
-            $value = $this->Value();
-            
-            if ( ! is_array($value)) {
-                $this->syntaxError('FieldAssignment', $value);
-            }
-            
-            $k = key($value);
-            $v = $value[$k];
-            $values[$k] = $v;
-        }
-
-        return $values;*/
     }
 
     /**
      * Value ::= PlainValue | FieldAssignment
+     *
+     * @return mixed
      */
     public function Value()
     {
@@ -349,6 +314,8 @@ class Parser
 
     /**
      * PlainValue ::= integer | string | float | Array | Annotation
+     *
+     * @return mixed
      */
     public function PlainValue()
     {
@@ -388,8 +355,10 @@ class Parser
     }
 
     /**
-     * fieldAssignment ::= fieldName "=" plainValue
-     * fieldName ::= identifier
+     * FieldAssignment ::= FieldName "=" PlainValue
+     * FieldName ::= identifier
+     *
+     * @return array
      */
     public function FieldAssignment()
     {
@@ -402,20 +371,33 @@ class Parser
 
     /**
      * Array ::= "{" ArrayEntry {"," ArrayEntry}* "}"
+     *
+     * @return array
      */
     public function Arrayx()
     {
+        $array = $values = array();
+        
         $this->match('{');
-        $array = array();
-        $this->ArrayEntry($array);
-
+        $values[] = $this->ArrayEntry();
+        
         while ($this->_lexer->isNextToken(',')) {
             $this->match(',');
-            $this->ArrayEntry($array);
+            $values[] = $this->ArrayEntry();
         }
         
         $this->match('}');
-
+        
+        foreach ($values as $value) {
+            $key = key($value);
+            
+            if (is_string($key)) {
+                $array[$key] = $value[$key];
+            } else {
+                $array[] = $value[$key];
+            }
+        }
+        
         return $array;
     }
 
@@ -423,8 +405,10 @@ class Parser
      * ArrayEntry ::= Value | KeyValuePair
      * KeyValuePair ::= Key "=" Value
      * Key ::= string | integer
+     *
+     * @return array
      */
-    public function ArrayEntry(array &$array)
+    public function ArrayEntry()
     {
         $peek = $this->_lexer->glimpse();
         
@@ -438,9 +422,9 @@ class Parser
             $key = $this->_lexer->token['value'];
             $this->match('=');
             
-            return $array[$key] = $this->Value();
+            return array($key => $this->Value());
         }
         
-        return $array[] = $this->Value();
+        return array($this->Value());
     }
 }
