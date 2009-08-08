@@ -1,6 +1,6 @@
 <?php
 /*
- *  $Id: Array.php 4910 2008-09-12 08:51:56Z romanb $
+ *  $Id$
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -24,11 +24,13 @@ namespace Doctrine\Common\Cache;
 /**
  * Array cache driver.
  *
- * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
- * @link        www.doctrine-project.org
- * @since       1.0
- * @version     $Revision: 4910 $
- * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
+ * @license http://www.opensource.org/licenses/lgpl-license.php LGPL
+ * @link    www.doctrine-project.org
+ * @since   2.0
+ * @version $Revision: 3938 $
+ * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
+ * @author  Jonathan Wage <jonwage@gmail.com>
+ * @author  Roman Borschel <roman@code-factory.org>
  */
 class ArrayCache implements Cache
 {

@@ -19,10 +19,10 @@
  * <http://www.doctrine-project.org>.
  */
 
-namespace Doctrine\Common\Cache;
+namespace Doctrine\Common\Annotations;
 
 /**
- * Xcache cache driver.
+ * Description of AnnotationException
  *
  * @license http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @link    www.doctrine-project.org
@@ -32,37 +32,16 @@ namespace Doctrine\Common\Cache;
  * @author  Jonathan Wage <jonwage@gmail.com>
  * @author  Roman Borschel <roman@code-factory.org>
  */
-class XcacheCache implements Cache
+class AnnotationException extends \Doctrine\Common\DoctrineException 
 {
-    /**
-     * {@inheritdoc}
-     */
-    public function fetch($id) 
+	public static function syntaxError($message)
     {
-        return $this->contains($id) ? xcache_get($id) : false;
+        return new self('[Syntax Error] ' . $message);
     }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function contains($id) 
+    
+    
+    public static function semanticalError($message)
     {
-        return xcache_isset($id);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function save($id, $data, $lifeTime = false)
-    {
-        return xcache_set($id, $data, $lifeTime);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function delete($id) 
-    {
-        return xcache_unset($id);       
+        return new self('[Semantical Error] ' . $message);
     }
 }

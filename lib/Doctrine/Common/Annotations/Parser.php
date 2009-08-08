@@ -168,7 +168,7 @@ class Parser
             $message .= "'{$token['value']}'";
         }
         
-        throw \Doctrine\Common\DoctrineException::syntaxError($message);
+        throw AnnotationException::syntaxError($message);
     }
     
     /**
