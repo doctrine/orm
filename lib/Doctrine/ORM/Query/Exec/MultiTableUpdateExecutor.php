@@ -144,18 +144,18 @@ class MultiTableUpdateExecutor extends AbstractSqlExecutor
         $numUpdated = 0;
 
         // Create temporary id table
-        $conn->exec($this->_createTempTableSql);
+        $conn->executeUpdate($this->_createTempTableSql);
 
         // Insert identifiers. Parameters from the update clause are cut off.
-        $numUpdated = $conn->exec($this->_insertSql, array_slice($params, $this->_numParametersInUpdateClause));
+        $numUpdated = $conn->executeUpdate($this->_insertSql, array_slice($params, $this->_numParametersInUpdateClause));
 
         // Execute UPDATE statements
         for ($i=0, $count=count($this->_sqlStatements); $i<$count; ++$i) {
-            $conn->exec($this->_sqlStatements[$i], $this->_sqlParameters[$i]);
+            $conn->executeUpdate($this->_sqlStatements[$i], $this->_sqlParameters[$i]);
         }
 
         // Drop temporary table
-        $conn->exec($this->_dropTempTableSql);
+        $conn->executeUpdate($this->_dropTempTableSql);
 
         return $numUpdated;
     }

@@ -964,7 +964,7 @@ abstract class AbstractSchemaManager
     protected function _execSql($sql)
     {
         foreach ((array) $sql as $query) {
-            $this->_conn->exec($query);
+            $this->_conn->executeUpdate($query);
         }
     }
 }

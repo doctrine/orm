@@ -1,6 +1,6 @@
 <?php
 /*
- *  $Id: Connection.php 4933 2008-09-12 10:58:33Z romanb $
+ *  $Id$
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -29,12 +29,15 @@ use Doctrine\Common\DoctrineException;
  * events, transaction isolation levels, configuration, emulated transaction nesting,
  * lazy connecting and more.
  *
- * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
- * @since       1.0
- * @version     $Revision: 4933 $
- * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
- * @author      Lukas Smith <smith@pooteeweet.org> (MDB2 library)
- * @author      Roman Borschel <roman@code-factory.org>
+ * @license http://www.opensource.org/licenses/lgpl-license.php LGPL
+ * @link    www.doctrine-project.org
+ * @since   2.0
+ * @version $Revision: 3938 $
+ * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
+ * @author  Jonathan Wage <jonwage@gmail.com>
+ * @author  Roman Borschel <roman@code-factory.org>
+ * @author  Konsta Vesterinen <kvesteri@cc.hut.fi>
+ * @author  Lukas Smith <smith@pooteeweet.org> (MDB2 library)
  */
 class Connection
 {
@@ -42,14 +45,17 @@ class Connection
      * Constant for transaction isolation level READ UNCOMMITTED.
      */
     const TRANSACTION_READ_UNCOMMITTED = 1;
+    
     /**
      * Constant for transaction isolation level READ COMMITTED.
      */
     const TRANSACTION_READ_COMMITTED = 2;
+    
     /**
      * Constant for transaction isolation level REPEATABLE READ.
      */
     const TRANSACTION_REPEATABLE_READ = 3;
+    
     /**
      * Constant for transaction isolation level SERIALIZABLE.
      */
@@ -165,6 +171,7 @@ class Connection
         if ( ! $config) {
             $config = new Configuration();
         }
+        
         if ( ! $eventManager) {
             $eventManager = new EventManager();
         }
@@ -291,7 +298,6 @@ class Connection
                 $this->_params['password'] : null;
 
         $this->_conn = $this->_driver->connect($this->_params, $user, $password, $driverOptions);
-
         $this->_isConnected = true;
 
         return true;
@@ -366,16 +372,17 @@ class Connection
     public function delete($tableName, array $identifier)
     {
         $this->connect();
+        
         $criteria = array();
+        
         foreach (array_keys($identifier) as $id) {
             $criteria[] = $this->quoteIdentifier($id) . ' = ?';
         }
 
-        $query = 'DELETE FROM '
-                . $this->quoteIdentifier($tableName)
-                . ' WHERE ' . implode(' AND ', $criteria);
+        $query = 'DELETE FROM ' . $this->quoteIdentifier($tableName)
+               . ' WHERE ' . implode(' AND ', $criteria);
 
-        return $this->exec($query, array_values($identifier));
+        return $this->executeUpdate($query, array_values($identifier));
     }
 
     /**
@@ -386,6 +393,7 @@ class Connection
     public function close()
     {
         unset($this->_conn);
+        
         $this->_isConnected = false;
     }
 
@@ -397,7 +405,8 @@ class Connection
     public function setTransactionIsolation($level)
     {
         $this->_transactionIsolationLevel = $level;
-        return $this->exec($this->_platform->getSetTransactionIsolationSql($level));
+        
+        return $this->executeUpdate($this->_platform->getSetTransactionIsolationSql($level));
     }
 
     /**
@@ -422,11 +431,13 @@ class Connection
     public function update($tableName, array $data, array $identifier)
     {
         $this->connect();
+        
         if (empty($data)) {
             return false;
         }
 
         $set = array();
+        
         foreach ($data as $columnName => $value) {
             $set[] = $this->quoteIdentifier($columnName) . ' = ?';
         }
@@ -434,11 +445,11 @@ class Connection
         $params = array_merge(array_values($data), array_values($identifier));
 
         $sql  = 'UPDATE ' . $this->quoteIdentifier($tableName)
-                . ' SET ' . implode(', ', $set)
-                . ' WHERE ' . implode(' = ? AND ', array_keys($identifier))
-                . ' = ?';
+              . ' SET ' . implode(', ', $set)
+              . ' WHERE ' . implode(' = ? AND ', array_keys($identifier))
+              . ' = ?';
 
-        return $this->exec($sql, $params);
+        return $this->executeUpdate($sql, $params);
     }
 
     /**
@@ -452,6 +463,7 @@ class Connection
     public function insert($tableName, array $data)
     {
         $this->connect();
+        
         if (empty($data)) {
             return false;
         }
@@ -459,17 +471,17 @@ class Connection
         // column names are specified as array keys
         $cols = array();
         $a = array();
+        
         foreach ($data as $columnName => $value) {
             $cols[] = $this->quoteIdentifier($columnName);
             $a[] = '?';
         }
 
         $query = 'INSERT INTO ' . $this->quoteIdentifier($tableName)
-        . ' (' . implode(', ', $cols) . ') '
-        . 'VALUES (';
-        $query .= implode(', ', $a) . ')';
+               . ' (' . implode(', ', $cols) . ')'
+               . ' VALUES (' . implode(', ', $a) . ')';
 
-        return $this->exec($query, array_values($data));
+        return $this->executeUpdate($query, array_values($data));
     }
 
     /**
@@ -479,7 +491,7 @@ class Connection
      */
     public function setCharset($charset)
     {
-        $this->exec($this->_platform->getSetCharsetSql($charset));
+        $this->executeUpdate($this->_platform->getSetCharsetSql($charset));
     }
 
     /**
@@ -493,8 +505,6 @@ class Connection
      * problems than they solve.
      *
      * @param string $str           identifier name to be quoted
-     * @param bool $checkOption     check the 'quote_identifier' option
-     *
      * @return string               quoted identifier string
      */
     public function quoteIdentifier($str)
@@ -548,6 +558,7 @@ class Connection
     public function prepare($statement)
     {
         $this->connect();
+        
         return $this->_conn->prepare($statement);
     }
 
@@ -565,6 +576,7 @@ class Connection
         if ($limit > 0 || $offset > 0) {
             $query = $this->_platform->modifyLimitQuery($query, $limit, $offset);
         }
+        
         return $this->execute($query);
     }
 
@@ -573,7 +585,6 @@ class Connection
      *
      * @param string $query     sql query
      * @param array $params     query parameters
-     *
      * @return PDOStatement
      */
     public function execute($query, array $params = array())
@@ -590,6 +601,7 @@ class Connection
         } else {
             $stmt = $this->_conn->query($query);
         }
+        
         $this->_queryCount++;
         
         return $stmt;
@@ -601,9 +613,8 @@ class Connection
      * @param string $query     sql query
      * @param array $params     query parameters
      * @return integer
-     * @todo Rename to executeUpdate().
      */
-    public function exec($query, array $params = array())
+    public function executeUpdate($query, array $params = array())
     {
         $this->connect();
 
@@ -618,6 +629,7 @@ class Connection
         } else {
             $result = $this->_conn->exec($query);
         }
+        
         $this->_queryCount++;
         
         return $result;
@@ -651,6 +663,7 @@ class Connection
     public function errorCode()
     {
         $this->connect();
+        
         return $this->_conn->errorCode();
     }
 
@@ -662,6 +675,7 @@ class Connection
     public function errorInfo()
     {
         $this->connect();
+        
         return $this->_conn->errorInfo();
     }
 
@@ -678,6 +692,7 @@ class Connection
     public function lastInsertId($seqName = null)
     {
         $this->connect();
+        
         return $this->_conn->lastInsertId($seqName);
     }
 
@@ -692,10 +707,13 @@ class Connection
     public function beginTransaction()
     {
         $this->connect();
+        
         if ($this->_transactionNestingLevel == 0) {
             $this->_conn->beginTransaction();
         }
+        
         ++$this->_transactionNestingLevel;
+        
         return true;
     }
 
@@ -717,6 +735,7 @@ class Connection
         if ($this->_transactionNestingLevel == 1) {
             $this->_conn->commit();
         }
+        
         --$this->_transactionNestingLevel;
 
         return true;
@@ -761,6 +780,7 @@ class Connection
     public function getWrappedConnection()
     {
         $this->connect();
+        
         return $this->_conn;
     }
 
@@ -775,6 +795,7 @@ class Connection
         if ( ! $this->_schemaManager) {
             $this->_schemaManager = $this->_driver->getSchemaManager($this);
         }
+        
         return $this->_schemaManager;
     }
 }

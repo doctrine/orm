@@ -69,32 +69,32 @@ class OrmFunctionalTestCase extends OrmTestCase
     {
         $conn = $this->sharedFixture['conn'];
         if (isset($this->_usedModelSets['cms'])) {
-            $conn->exec('DELETE FROM cms_users_groups');
-            $conn->exec('DELETE FROM cms_groups');
-            $conn->exec('DELETE FROM cms_addresses');
-            $conn->exec('DELETE FROM cms_phonenumbers');
-            $conn->exec('DELETE FROM cms_articles');
-            $conn->exec('DELETE FROM cms_users');
+            $conn->executeUpdate('DELETE FROM cms_users_groups');
+            $conn->executeUpdate('DELETE FROM cms_groups');
+            $conn->executeUpdate('DELETE FROM cms_addresses');
+            $conn->executeUpdate('DELETE FROM cms_phonenumbers');
+            $conn->executeUpdate('DELETE FROM cms_articles');
+            $conn->executeUpdate('DELETE FROM cms_users');
         }
         if (isset($this->_usedModelSets['ecommerce'])) {
-            $conn->exec('DELETE FROM ecommerce_carts_products');
-            $conn->exec('DELETE FROM ecommerce_products_categories');
-            $conn->exec('DELETE FROM ecommerce_products_related');
-            $conn->exec('DELETE FROM ecommerce_carts');
-            $conn->exec('DELETE FROM ecommerce_customers');
-            $conn->exec('DELETE FROM ecommerce_features');
-            $conn->exec('DELETE FROM ecommerce_products');
-            $conn->exec('DELETE FROM ecommerce_shippings');
-            $conn->exec('DELETE FROM ecommerce_categories');
+            $conn->executeUpdate('DELETE FROM ecommerce_carts_products');
+            $conn->executeUpdate('DELETE FROM ecommerce_products_categories');
+            $conn->executeUpdate('DELETE FROM ecommerce_products_related');
+            $conn->executeUpdate('DELETE FROM ecommerce_carts');
+            $conn->executeUpdate('DELETE FROM ecommerce_customers');
+            $conn->executeUpdate('DELETE FROM ecommerce_features');
+            $conn->executeUpdate('DELETE FROM ecommerce_products');
+            $conn->executeUpdate('DELETE FROM ecommerce_shippings');
+            $conn->executeUpdate('DELETE FROM ecommerce_categories');
         }
         if (isset($this->_usedModelSets['company'])) {
-            $conn->exec('DELETE FROM company_persons_friends');
-            $conn->exec('DELETE FROM company_managers');
-            $conn->exec('DELETE FROM company_employees');
-            $conn->exec('DELETE FROM company_persons');
+            $conn->executeUpdate('DELETE FROM company_persons_friends');
+            $conn->executeUpdate('DELETE FROM company_managers');
+            $conn->executeUpdate('DELETE FROM company_employees');
+            $conn->executeUpdate('DELETE FROM company_persons');
         }
         if (isset($this->_usedModelSets['generic'])) {
-            $conn->exec('DELETE FROM date_time_model');
+            $conn->executeUpdate('DELETE FROM date_time_model');
         }
         $this->_em->clear();
     }

@@ -238,7 +238,7 @@ class StandardEntityPersister
                 . ' WHERE ' . implode(' = ? AND ', array_keys($where))
                 . ' = ?';
 
-        $result = $this->_conn->exec($sql, $params);
+        $result = $this->_conn->executeUpdate($sql, $params);
 
         if ($isVersioned && ! $result) {
             throw \Doctrine\ORM\OptimisticLockException::optimisticLockFailed();

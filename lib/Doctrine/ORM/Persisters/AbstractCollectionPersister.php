@@ -67,7 +67,7 @@ abstract class AbstractCollectionPersister
             return; // ignore inverse side
         }
         $sql = $this->_getDeleteSql($coll);
-        $this->_conn->exec($sql, $this->_getDeleteSqlParameters($coll));
+        $this->_conn->executeUpdate($sql, $this->_getDeleteSqlParameters($coll));
     }
 
     /**
@@ -106,7 +106,7 @@ abstract class AbstractCollectionPersister
         $deleteDiff = $coll->getDeleteDiff();
         $sql = $this->_getDeleteRowSql($coll);
         foreach ($deleteDiff as $element) {
-            $this->_conn->exec($sql, $this->_getDeleteRowSqlParameters($coll, $element));
+            $this->_conn->executeUpdate($sql, $this->_getDeleteRowSqlParameters($coll, $element));
         }
     }
     
@@ -118,7 +118,7 @@ abstract class AbstractCollectionPersister
         $insertDiff = $coll->getInsertDiff();
         $sql = $this->_getInsertRowSql($coll);
         foreach ($insertDiff as $element) {
-            $this->_conn->exec($sql, $this->_getInsertRowSqlParameters($coll, $element));
+            $this->_conn->executeUpdate($sql, $this->_getInsertRowSqlParameters($coll, $element));
         }
     }
 

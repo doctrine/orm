@@ -26,8 +26,14 @@ use Doctrine\DBAL\Types\Type;
 /**
  * Configuration container for the Doctrine DBAL.
  *
- * @author Roman Borschel <roman@code-factory.org>
- * @since 2.0
+ * @license http://www.opensource.org/licenses/lgpl-license.php LGPL
+ * @link    www.doctrine-project.org
+ * @since   2.0
+ * @version $Revision: 3938 $
+ * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
+ * @author  Jonathan Wage <jonwage@gmail.com>
+ * @author  Roman Borschel <roman@code-factory.org>
+ *
  * @internal When adding a new configuration option just write a getter/setter
  *           pair and add the option to the _attributes array with a proper default value.
  */
@@ -43,6 +49,7 @@ class Configuration
     
     /**
      * Creates a new configuration that can be used for Doctrine.
+     *
      */
     public function __construct()
     {
@@ -71,13 +78,28 @@ class Configuration
         return $this->_attributes['sqlLogger'];
     }
 
-    public function setCustomTypes(array $types)
+    /**
+     * Defines new custom types to be supported by Doctrine
+     *
+     * @param array $types Key-value map of types to include
+     * @param boolean $override Optional flag to support only inclusion or also override
+     * @throws DoctrineException
+     */
+    public function setCustomTypes(array $types, $override = false)
     {
         foreach ($types as $name => $typeClassName) {
-            Type::addCustomType($name, $typeClassName);
+            $method = (Type::hasType($name) ? 'override' : 'add') . 'Type';
+            
+            Type::$method($name, $typeClassName);
         }
     }
 
+    /**
+     * Overrides existent types in Doctrine
+     *
+     * @param array $types Key-value map of types to override
+     * @throws DoctrineException
+     */
     public function setTypeOverrides(array $overrides)
     {
         foreach ($override as $name => $typeClassName) {

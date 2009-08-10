@@ -114,6 +114,7 @@ abstract class Type
      * Factory method to create type instances.
      * Type instances are implemented as flyweights.
      *
+     * @static
      * @param string $name The name of the type (as returned by getName()).
      * @return Doctrine\DBAL\Types\Type
      */
@@ -123,37 +124,57 @@ abstract class Type
             if ( ! isset(self::$_typesMap[$name])) {
                 throw DoctrineException::updateMe("Unknown type: $name");
             }
+            
             self::$_typeObjects[$name] = new self::$_typesMap[$name]();
         }
+        
         return self::$_typeObjects[$name];
     }
     
     /**
      * Adds a custom type to the type map.
      *
+     * @static
      * @param string $name Name of the type. This should correspond to what
      *                           getName() returns.
      * @param string $className The class name of the custom type.
+     * @throws DoctrineException
      */
-    public static function addCustomType($name, $className)
+    public static function addType($name, $className)
     {
         if (isset(self::$_typesMap[$name])) {
             throw DoctrineException::typeExists($name);
         }
+        
         self::$_typesMap[$name] = $className;
+    }
+    
+    /**
+     * Checks if exists support for a type.
+     *
+     * @static
+     * @param string $name Name of the type
+     * @return boolean TRUE if type is supported; FALSE otherwise
+     */
+    public static function hasType($name)
+    {
+        return isset(self::$_typesMap[$name]);
     }
     
     /**
      * Overrides an already defined type to use a different implementation.
      *
+     * @static
      * @param string $name
      * @param string $className
+     * @throws DoctrineException
      */
     public static function overrideType($name, $className)
     {
         if ( ! isset(self::$_typesMap[$name])) {
             throw DoctrineException::typeNotFound($name);
         }
+        
         self::$_typesMap[$name] = $className;
     }
 }

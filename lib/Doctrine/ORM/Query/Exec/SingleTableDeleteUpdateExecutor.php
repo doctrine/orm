@@ -47,6 +47,6 @@ class SingleTableDeleteUpdateExecutor extends AbstractSqlExecutor
     
     public function execute(\Doctrine\DBAL\Connection $conn, array $params)
     {
-        return $conn->exec($this->_sqlStatements, $params);
+        return $conn->executeUpdate($this->_sqlStatements, $params);
     }
 }
