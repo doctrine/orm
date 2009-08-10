@@ -28,20 +28,26 @@ namespace Doctrine\Common;
  * information to an event handler when an event is raised. The single empty EventArgs
  * instance can be obtained through {@link getEmptyInstance()}.
  *
- * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
- * @author      Roman Borschel
- * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
- * @link        www.doctrine-project.org
- * @since       2.0
- * @version     $Revision$
+ * @license http://www.opensource.org/licenses/lgpl-license.php LGPL
+ * @link    www.doctrine-project.org
+ * @since   2.0
+ * @version $Revision: 3938 $
+ * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
+ * @author  Jonathan Wage <jonwage@gmail.com>
+ * @author  Roman Borschel <roman@code-factory.org>
  */
 class EventArgs
 {
+    /**
+     * @var EventArgs Single instance of EventArgs
+     * @static
+     */
     private static $_emptyEventArgsInstance;
     
     /**
      * Gets the single, empty EventArgs instance.
      * 
+     * @static
      * @return EventArgs
      */
     public static function getEmptyInstance()
@@ -49,6 +55,7 @@ class EventArgs
         if ( ! self::$_emptyEventArgsInstance) {
             self::$_emptyEventArgsInstance = new EventArgs;
         }
+        
         return self::$_emptyEventArgsInstance;
     }
 }  

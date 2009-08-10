@@ -46,14 +46,29 @@ namespace Doctrine\Common;
  */
 class ClassLoader
 {
-    private
-        $_namespaceSeparator = '\\',
-        $_fileExtension = '.php',
-        $_checkFileExists = false,
-        $_basePaths = array();
+    /**
+     * @var string Namespace separator
+     */
+    private $_namespaceSeparator = '\\';
+    
+    /**
+     * @var string File extension used for classes
+     */
+    private $_fileExtension = '.php';
+    
+    /**
+     * @var boolean Flag to inspect if file exists in codebase before include it
+     */
+    private $_checkFileExists = false;
+    
+    /**
+     * @var array Hashmap of base paths that Autoloader will look into
+     */
+    private $_basePaths = array();
 
     /**
      * Constructor registers the autoloader automatically
+     *
      */
     public function __construct()
     {
@@ -118,19 +133,17 @@ class ClassLoader
         }
 
         $prefix = substr($className, 0, strpos($className, $this->_namespaceSeparator));
-        $class = '';
+        
+        // If we have a custom path for namespace, use it
+        $class = ((isset($this->_basePaths[$prefix])) ? $this->_basePaths[$prefix] . DIRECTORY_SEPARATOR : '')
+               . str_replace($this->_namespaceSeparator, DIRECTORY_SEPARATOR, $className) . $this->_fileExtension;
 
-        if (isset($this->_basePaths[$prefix])) {
-            $class .= $this->_basePaths[$prefix] . DIRECTORY_SEPARATOR;
-        }
-
-        $class .= str_replace($this->_namespaceSeparator, DIRECTORY_SEPARATOR, $className)
-                . $this->_fileExtension;
-
+        // Assure file exists in codebase before require if flag is active
         if ($this->_checkFileExists) {
-            if (!$fh = @fopen($class, 'r', true)) {
+            if (($fh = @fopen($class, 'r', true)) === false) {
                 return false;
             }
+            
             @fclose($fh);
         }
 

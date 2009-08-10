@@ -27,13 +27,20 @@ namespace Doctrine\Common;
  * getSubscribedEvents() and registers the subscriber as a listener for all
  * returned events.
  *
- * @author      Roman Borschel <roman@code-factory.org>
- * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
- * @link        www.phpdoctrine.org
- * @since       2.0
- * @version     $Revision: 4653 $
+ * @license http://www.opensource.org/licenses/lgpl-license.php LGPL
+ * @link    www.doctrine-project.org
+ * @since   2.0
+ * @version $Revision: 3938 $
+ * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
+ * @author  Jonathan Wage <jonwage@gmail.com>
+ * @author  Roman Borschel <roman@code-factory.org>
  */
 interface EventSubscriber
 {
+    /**
+     * Returns an array of events that this subscriber listens 
+     *
+     * @return array
+     */
     public function getSubscribedEvents();
 }

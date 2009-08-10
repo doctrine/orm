@@ -35,19 +35,17 @@ namespace Doctrine\Common;
 abstract class Lexer
 {
     /**
-     * Array of scanned tokens.
-     *
-     * @var array
+     * @var array Array of scanned tokens
      */
     private $_tokens = array();
 
     /**
-     * @todo Doc
+     * @var integer Current lexer position in input string
      */
     private $_position = 0;
 
     /**
-     * @todo Doc
+     * @var integer Current peek of current lexer position
      */
     private $_peek = 0;
 
@@ -129,15 +127,12 @@ abstract class Lexer
      */
     public function moveNext()
     {
-        $this->token = $this->lookahead;
         $this->_peek = 0;
-        if (isset($this->_tokens[$this->_position])) {
-            $this->lookahead = $this->_tokens[$this->_position++];
-            return true;
-        } else {
-            $this->lookahead = null;
-            return false;
-        }
+        $this->token = $this->lookahead;
+        $this->lookahead = (isset($this->_tokens[$this->_position]))
+            ? $this->_tokens[$this->_position++] : null;
+        
+        return $this->lookahead !== null;
     }
     
     /**
@@ -153,13 +148,15 @@ abstract class Lexer
     }
     
     /**
-     * @todo Doc
+     * Checks if given value is identical to the given token
+     *
+     * @param mixed $value
+     * @param integer $token
+     * @return boolean
      */
     public function isA($value, $token)
     {
-        $type = $this->_getType($value);
-
-        return $type === $token;
+        return $this->_getType($value) === $token;
     }
 
     /**
@@ -206,11 +203,9 @@ abstract class Lexer
         $matches = preg_split($regex, $input, -1, $flags);
 
         foreach ($matches as $match) {
-            $value = $match[0];
-            $type = $this->_getType($value);
             $this->_tokens[] = array(
-                'value' => $value,
-                'type'  => $type,
+                'value' => $match[0],
+                'type'  => $this->_getType($match[0]),
                 'position' => $match[1]
             );
         }

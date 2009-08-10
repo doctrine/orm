@@ -27,8 +27,13 @@ use \Closure, \ArrayIterator;
  * An ArrayCollection is a Collection implementation that uses a regular PHP array
  * internally.
  *
- * @author Roman S. Borschel <roman@code-factory.org>
- * @since 2.0
+ * @license http://www.opensource.org/licenses/lgpl-license.php LGPL
+ * @link    www.doctrine-project.org
+ * @since   2.0
+ * @version $Revision: 3938 $
+ * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
+ * @author  Jonathan Wage <jonwage@gmail.com>
+ * @author  Roman Borschel <roman@code-factory.org>
  */
 class ArrayCollection implements Collection
 {
@@ -94,6 +99,8 @@ class ArrayCollection implements Collection
     
     /**
      * Moves the internal iterator position to the next element.
+     *
+     * @return mixed
      */
     public function next()
     {
@@ -102,6 +109,8 @@ class ArrayCollection implements Collection
     
     /**
      * Gets the element of the collection at the current internal iterator position.
+     *
+     * @return mixed
      */
     public function current()
     {
@@ -119,8 +128,10 @@ class ArrayCollection implements Collection
         if (isset($this->_elements[$key])) {
             $removed = $this->_elements[$key];
             unset($this->_elements[$key]);
+            
             return $removed;
         }
+        
         return null;
     }
 
@@ -133,17 +144,20 @@ class ArrayCollection implements Collection
     public function removeElement($element)
     {
         $key = array_search($element, $this->_elements, true);
+        
         if ($key !== false) {
             $removed = $this->_elements[$key];
             unset($this->_elements[$key]);
+            
             return $removed;
         }
+        
         return null;
     }
 
-    /* ArrayAccess implementation */
-
     /**
+     * ArrayAccess implementation of offsetExists()
+     *
      * @see containsKey()
      */
     public function offsetExists($offset)
@@ -152,6 +166,8 @@ class ArrayCollection implements Collection
     }
 
     /**
+     * ArrayAccess implementation of offsetGet()
+     *
      * @see get()
      */
     public function offsetGet($offset)
@@ -160,6 +176,8 @@ class ArrayCollection implements Collection
     }
 
     /**
+     * ArrayAccess implementation of offsetGet()
+     *
      * @see add()
      * @see set()
      */
@@ -172,14 +190,14 @@ class ArrayCollection implements Collection
     }
 
     /**
+     * ArrayAccess implementation of offsetUnset()
+     *
      * @see remove()
      */
     public function offsetUnset($offset)
     {
         return $this->remove($offset);
     }
-
-    /* END ArrayAccess implementation */
 
     /**
      * Checks whether the collection contains a specific key/index.
@@ -273,7 +291,7 @@ class ArrayCollection implements Collection
      *
      * Implementation of the Countable interface.
      *
-     * @return integer  The number of elements in the collection.
+     * @return integer The number of elements in the collection.
      */
     public function count()
     {
@@ -333,6 +351,7 @@ class ArrayCollection implements Collection
      * a new collection with the elements returned by the function.
      *
      * @param Closure $func
+     * @return Collection
      */
     public function map(Closure $func)
     {
@@ -365,6 +384,7 @@ class ArrayCollection implements Collection
                 return false;
             }
         }
+        
         return true;
     }
 
@@ -392,6 +412,7 @@ class ArrayCollection implements Collection
 
     /**
      * Returns a string representation of this object.
+     *
      */
     public function __toString()
     {
@@ -400,6 +421,7 @@ class ArrayCollection implements Collection
 
     /**
      * Clears the collection.
+     *
      */
     public function clear()
     {
