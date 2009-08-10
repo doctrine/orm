@@ -203,10 +203,13 @@ abstract class Lexer
         $matches = preg_split($regex, $input, -1, $flags);
 
         foreach ($matches as $match) {
+            // Must remain before 'value' assignment since it can change content
+            $type = $this->_getType($match[0]);
+            
             $this->_tokens[] = array(
                 'value' => $match[0],
-                'type'  => $this->_getType($match[0]),
-                'position' => $match[1]
+                'type'  => $type,
+                'position' => $match[1],
             );
         }
     }
