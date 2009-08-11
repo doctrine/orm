@@ -258,8 +258,6 @@ class Parser
         // Parse & build AST
         $AST = $this->QueryLanguage();
         
-        echo PHP_EOL . ((string) $AST) . PHP_EOL;
-
         // Check for end of string
         if ($this->_lexer->lookahead !== null) {
             $this->syntaxError('end of string');
