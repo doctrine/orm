@@ -298,7 +298,6 @@ class SqlitePlatform extends AbstractPlatform
             $queryFields.= ', PRIMARY KEY('.implode(', ', $keyColumns).')';
         }
 
-        $name  = $this->quoteIdentifier($name, true);
         $sql   = 'CREATE TABLE ' . $name . ' (' . $queryFields;
 
         /*if ($check = $this->getCheckDeclarationSql($fields)) {

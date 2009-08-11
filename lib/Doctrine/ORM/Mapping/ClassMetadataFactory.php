@@ -98,8 +98,8 @@ class ClassMetadataFactory
         if ( ! isset($this->_loadedMetadata[$className])) {
             $cacheKey = "$className\$CLASSMETADATA";
             if ($this->_cacheDriver) {
-                if ($this->_cacheDriver->contains($cacheKey)) {
-                    $this->_loadedMetadata[$className] = $this->_cacheDriver->fetch($cacheKey);
+                if (($cached = $this->_cacheDriver->fetch($cacheKey)) !== false) {
+                    $this->_loadedMetadata[$className] = $cached;
                 } else {
                     $this->_loadMetadata($className);
                     $this->_cacheDriver->save($cacheKey, $this->_loadedMetadata[$className], null);
@@ -298,12 +298,12 @@ class ClassMetadataFactory
                     $assoc = $class->associationMappings[$name];
                     if ($assoc->isOneToOne() && $assoc->isOwningSide) {
                         foreach ($assoc->targetToSourceKeyColumns as $sourceCol) {
-                            $columns[] = $this->_targetPlatform->quoteIdentifier($sourceCol);
+                            $columns[] = $assoc->getQuotedJoinColumnName($sourceCol, $this->_targetPlatform);
                             $values[] = '?';
                         }
                     }
                 } else if ($class->name != $class->rootEntityName || ! $class->isIdGeneratorIdentity() || $class->identifier[0] != $name) {
-                    $columns[] = $this->_targetPlatform->quoteIdentifier($class->columnNames[$name]);
+                    $columns[] = $class->getQuotedColumnName($name, $this->_targetPlatform);
                     $values[] = '?';
                 }
             }
@@ -317,12 +317,12 @@ class ClassMetadataFactory
                     $assoc = $class->associationMappings[$name];
                     if ($assoc->isOwningSide && $assoc->isOneToOne()) {
                         foreach ($assoc->targetToSourceKeyColumns as $sourceCol) {
-                            $columns[] = $this->_targetPlatform->quoteIdentifier($sourceCol);
+                            $columns[] = $assoc->getQuotedJoinColumnName($sourceCol, $this->_targetPlatform);
                             $values[] = '?';
                         }
                     }
                 } else if ($class->generatorType != ClassMetadata::GENERATOR_TYPE_IDENTITY ||  $class->identifier[0] != $name) {
-                    $columns[] = $this->_targetPlatform->quoteIdentifier($class->columnNames[$name]);
+                    $columns[] = $class->getQuotedColumnName($name, $this->_targetPlatform);
                     $values[] = '?';
                 }
             }
@@ -330,12 +330,12 @@ class ClassMetadataFactory
         
         // Add discriminator column to the INSERT SQL if necessary
         if ($class->isInheritanceTypeSingleTable() || $class->isInheritanceTypeJoined() && $class->name == $class->rootEntityName) {
-            $columns[] = $class->discriminatorColumn['name'];
+            $columns[] = $class->getQuotedDiscriminatorColumnName($this->_targetPlatform);
             $values[] = '?';
         }
 
         $class->insertSql = 'INSERT INTO ' .
-                $this->_targetPlatform->quoteIdentifier($class->primaryTable['name'])
+                $class->getQuotedTableName($this->_targetPlatform)
                . ' (' . implode(', ', $columns) . ') '
                . 'VALUES (' . implode(', ', $values) . ')';
     }

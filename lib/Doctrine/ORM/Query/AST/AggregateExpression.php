@@ -45,8 +45,8 @@ class AggregateExpression extends Node
         $this->isDistinct = $isDistinct;
     }
 
-    public function dispatch($sqlWalker)
+    public function dispatch($walker)
     {
-        return $sqlWalker->walkAggregateExpression($this);
+        return $walker->walkAggregateExpression($this);
     }
 }

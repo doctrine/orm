@@ -46,7 +46,9 @@ class Configuration extends \Doctrine\DBAL\Configuration
             'metadataDriverImpl' => null,
             'cacheDir' => null,
             'allowPartialObjects' => true,
-            'useCExtension' => false
+            'useCExtension' => false,
+            'namedQueries' => array(),
+            'namedNativeQueries' => array()
         ));
         
         //TODO: Move this to client code to avoid unnecessary work when a different metadata
@@ -202,5 +204,51 @@ class Configuration extends \Doctrine\DBAL\Configuration
     public function setUseCExtension($boolean)
     {
         $this->_attributes['useCExtension'] = $boolean;
+    }
+    
+    /**
+     * Adds a named DQL query to the configuration.
+     * 
+     * @param string $name The name of the query.
+     * @param string $dql The DQL query string.
+     */
+    public function addNamedQuery($name, $dql)
+    {
+        $this->_attributes['namedQueries'][$name] = $dql;
+    }
+    
+    /**
+     * Gets a previously registered named DQL query.
+     * 
+     * @param string $name The name of the query.
+     * @return string The DQL query.
+     */
+    public function getNamedQuery($name)
+    {
+        return $this->_attributes['namedQueries'][$name];
+    }
+    
+    /**
+     * Adds a named native query to the configuration.
+     * 
+     * @param string $name The name of the query.
+     * @param string $sql The native SQL query string. 
+     * @param ResultSetMapping $rsm The ResultSetMapping used for the results of the SQL query.
+     */
+    public function addNamedNativeQuery($name, $sql, Query\ResultSetMapping $rsm)
+    {
+        $this->_attributes['namedNativeQueries'][$name] = array($sql, $rsm);
+    }
+    
+    /**
+     * Gets the components of a previously registered named native query.
+     * 
+     * @param string $name The name of the query.
+     * @return array A tuple with the first element being the SQL string and the second
+     *          element being the ResultSetMapping.
+     */
+    public function getNamedNativeQuery($name)
+    {
+        return $this->_attributes['namedNativeQueries'][$name];
     }
 }

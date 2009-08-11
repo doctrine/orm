@@ -665,25 +665,31 @@ final class ClassMetadata
     }
     
     /**
-     * Gets the inverse association mapping for the given fieldname.
+     * Gets the inverse association mapping for the given target class name and
+     * owning fieldname.
      *
-     * @param string $mappedByFieldName
-     * @return Doctrine\ORM\Mapping\AssociationMapping The mapping.
+     * @param string $mappedByFieldName The field on the 
+     * @return Doctrine\ORM\Mapping\AssociationMapping The mapping or NULL if there is no such
+     *          inverse association mapping.
      */
-    public function getInverseAssociationMapping($mappedByFieldName)
+    public function getInverseAssociationMapping($targetClassName, $mappedByFieldName)
     {
-        return $this->inverseMappings[$mappedByFieldName];
+        return isset($this->inverseMappings[$targetClassName][$mappedByFieldName]) ?
+                $this->inverseMappings[$targetClassName][$mappedByFieldName] : null;
     }
     
     /**
-     * Whether the class has an inverse association mapping on the given fieldname.
+     * Checks whether the class has an inverse association mapping that points to the
+     * specified class and ha the specified mappedBy field.
      *
-     * @param string $mappedByFieldName
+     * @param string $targetClassName The name of the target class.
+     * @param string $mappedByFieldName The name of the mappedBy field that points to the field on
+     *          the target class that owns the association.
      * @return boolean
      */
-    public function hasInverseAssociationMapping($mappedByFieldName)
+    public function hasInverseAssociationMapping($targetClassName, $mappedByFieldName)
     {
-        return isset($this->inverseMappings[$mappedByFieldName]);
+        return isset($this->inverseMappings[$targetClassName][$mappedByFieldName]);
     }
     
     /**
@@ -740,6 +746,11 @@ final class ClassMetadata
         // Complete fieldName and columnName mapping
         if ( ! isset($mapping['columnName'])) {
             $mapping['columnName'] = $mapping['fieldName'];
+        } else {
+            if ($mapping['columnName'][0] == '`') {
+                $mapping['columnName'] = trim($mapping['columnName'], '`');
+                $mapping['quoted'] = true;
+            }
         }
 
         $this->columnNames[$mapping['fieldName']] = $mapping['columnName'];
@@ -763,35 +774,14 @@ final class ClassMetadata
     }
     
     /**
-     * @todo Implementation of Optimistic Locking.
-     */
-    public function mapVersionField(array $mapping)
-    {
-        //...
-    }
-    
-    /**
-     * Overrides an existant field mapping.
-     * Used i.e. by Entity classes deriving from another Entity class that acts
-     * as a mapped superclass to refine the basic mapping.
-     *
-     * @param array $newMapping
-     * @todo Implementation.
-     */
-    public function overrideFieldMapping(array $newMapping)
-    {
-        //...
-    }
-    
-    /**
      * Maps an embedded value object.
      *
      * @todo Implementation.
      */
-    public function mapEmbeddedValue()
+    /*public function mapEmbeddedValue()
     {
         //...
-    }
+    }*/
 
     /**
      * Gets the identifier (primary key) field names of the class.
@@ -964,7 +954,15 @@ final class ClassMetadata
      */
     public function getIdentifierColumnNames()
     {
-        return $this->getColumnNames((array)$this->getIdentifierFieldNames());
+        if ($this->isIdentifierComposite) {
+            $columnNames = array();
+            foreach ($this->identifier as $idField) {
+                $columnNames[] = $this->fieldMappings[$idField]['columnName'];
+            }
+            return $columnNames;
+        } else {
+            return array($this->fieldMappings[$this->identifier[0]]['columnName']);
+        }
     }
 
     /**
@@ -1007,7 +1005,7 @@ final class ClassMetadata
 
     /**
      *
-     * @return <type> 
+     * @return boolean
      */
     public function isInheritanceTypeNone()
     {
@@ -1111,14 +1109,6 @@ final class ClassMetadata
     }
 
     /**
-     * Gets the (maximum) length of a field.
-     */
-    public function getFieldLength($fieldName)
-    {
-        return $this->fieldMappings[$fieldName]['length'];
-    }
-
-    /**
      * Gets the name of the primary table.
      *
      * @return string
@@ -1136,23 +1126,6 @@ final class ClassMetadata
     public function getTemporaryIdTableName()
     {
         return $this->primaryTable['name'] . '_id_tmp';
-    }
-
-    public function getInheritedFields()
-    {
-
-    }
-
-    /**
-     * Adds a named query.
-     *
-     * @param string $name  The name under which the query gets registered.
-     * @param string $query The DQL query.
-     * @todo Implementation.
-     */
-    public function addNamedQuery($name, $query)
-    {
-        //...
     }
 
     /**
@@ -1339,7 +1312,7 @@ final class ClassMetadata
     /**
      * Adds a field mapping.
      *
-     * @param array $mapping
+     * @param array $mapping The field mapping.
      */
     public function mapField(array $mapping)
     {
@@ -1374,7 +1347,7 @@ final class ClassMetadata
 
     /**
      * INTERNAL:
-     * Adds an association mapping without completing/validating it.
+     * Adds a field mapping without completing/validating it.
      * This is mainly used to add inherited field mappings to derived classes.
      *
      * @param array $mapping
@@ -1409,7 +1382,7 @@ final class ClassMetadata
     private function _registerMappingIfInverse(AssociationMapping $assoc)
     {
         if ($assoc->isInverseSide()) {
-            $this->inverseMappings[$assoc->getMappedByFieldName()] = $assoc;
+            $this->inverseMappings[$assoc->targetEntityName][$assoc->mappedByFieldName] = $assoc;
         }
     }
 
@@ -1455,7 +1428,7 @@ final class ClassMetadata
      */
     private function _storeAssociationMapping(AssociationMapping $assocMapping)
     {
-        $sourceFieldName = $assocMapping->getSourceFieldName();
+        $sourceFieldName = $assocMapping->sourceFieldName;
         if (isset($this->associationMappings[$sourceFieldName])) {
             throw MappingException::duplicateFieldMapping();
         }
@@ -1499,10 +1472,10 @@ final class ClassMetadata
      * @param boolean $bool
      * @see getJoinSubClasses()
      */
-    public function setJoinSubClasses($bool)
+    /*public function setJoinSubClasses($bool)
     {
         $this->joinSubclasses = (bool)$bool;
-    }
+    }*/
 
     /**
      * Gets whether the class mapped by this instance should OUTER JOIN sub classes
@@ -1511,10 +1484,10 @@ final class ClassMetadata
      * @return <type>
      * @see setJoinSubClasses()
      */
-    public function getJoinSubClasses()
+    /*public function getJoinSubClasses()
     {
         return $this->joinSubclasses;
-    }
+    }*/
     
     /**
      * Dispatches the lifecycle event of the given entity to the registered
@@ -1780,7 +1753,50 @@ final class ClassMetadata
     {
         $this->versionField = $versionField;
     }
-
+    
+    /**
+     * Gets the (possibly quoted) column name of a mapped field for safe use
+     * in an SQL statement.
+     * 
+     * @param string $field
+     * @param AbstractPlatform $platform
+     * @return string
+     */
+    public function getQuotedColumnName($field, $platform)
+    {
+        return isset($this->fieldMappings[$field]['quoted']) ?
+                $platform->quoteIdentifier($this->fieldMappings[$field]['columnName']) :
+                $this->fieldMappings[$field]['columnName'];
+    }
+    
+    /**
+     * Gets the (possibly quoted) primary table name of this class for safe use
+     * in an SQL statement.
+     * 
+     * @param AbstractPlatform $platform
+     * @return string
+     */
+    public function getQuotedTableName($platform)
+    {
+        return isset($this->primaryTable['quoted']) ?
+                $platform->quoteIdentifier($this->primaryTable['name']) :
+                $this->primaryTable['name'];
+    }
+    
+    /**
+     * Gets the (possibly quoted) name of the discriminator column for safe use
+     * in an SQL statement.
+     * 
+     * @param AbstractPlatform $platform
+     * @return string
+     */
+    public function getQuotedDiscriminatorColumnName($platform)
+    {
+        return isset($this->discriminatorColumn['quoted']) ?
+                $platform->quoteIdentifier($this->discriminatorColumn['name']) :
+                $this->discriminatorColumn['name'];
+    }
+    
     /**
      * Creates a string representation of this instance.
      *
@@ -1790,5 +1806,66 @@ final class ClassMetadata
     public function __toString()
     {
         return __CLASS__ . '@' . spl_object_hash($this);
+    }
+    
+    /**
+     * Determines which fields get serialized.
+     * 
+     * Parts that are NOT serialized because they can not be properly unserialized:
+     *      - reflClass (ReflectionClass)
+     *      - reflFields (ReflectionProperty array)
+     * 
+     * @return array The names of all the fields that should be serialized.
+     */
+    public function __sleep()
+    {
+        return array(
+            'associationMappings',
+            'changeTrackingPolicy',
+            'columnNames',
+            'customRepositoryClassName',
+            'discriminatorColumn',
+            'discriminatorValue',
+            'fieldMappings',
+            'fieldNames',
+            'generatorType',
+            'identifier',
+            'idGenerator',
+            'inheritanceType',
+            'inheritedAssociationFields',
+            'insertSql',
+            'inverseMappings',
+            'isIdentifierComposite',
+            'isMappedSuperclass',
+            'isVersioned',
+            'lifecycleCallbacks',
+            'name',
+            'namespace',
+            'parentClasses',
+            'primaryTable',
+            'rootEntityName',
+            'sequenceGeneratorDefinition',
+            'subClasses',
+            'versionField'
+        );
+    }
+    
+    /**
+     * Restores some state that could not be serialized/unserialized.
+     * 
+     * @return void
+     */
+    public function __wakeup()
+    {
+        // Restore ReflectionClass and properties
+        $this->reflClass = new \ReflectionClass($this->name);
+        foreach ($this->fieldNames as $field) {
+            $this->reflFields[$field] = $this->reflClass->getProperty($field);
+            $this->reflFields[$field]->setAccessible(true);
+        }
+        foreach ($this->associationMappings as $field => $mapping) {
+            $this->reflFields[$field] = $this->reflClass->getProperty($field);
+            $this->reflFields[$field]->setAccessible(true);
+        }
     }
 }

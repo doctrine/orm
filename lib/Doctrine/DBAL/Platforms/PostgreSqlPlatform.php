@@ -61,7 +61,6 @@ class PostgreSqlPlatform extends AbstractPlatform
      */
     public function getMd5Expression($column)
     {
-        $column = $this->quoteIdentifier($column);
         if ($this->_version > 7) {
             return 'MD5(' . $column . ')';
         } else {
@@ -82,10 +81,7 @@ class PostgreSqlPlatform extends AbstractPlatform
      */
     public function getSubstringExpression($value, $from, $len = null)
     {
-        $value = $this->quoteIdentifier($value);
-
         if ($len === null) {
-            $len = $this->quoteIdentifier($len);
             return 'SUBSTR(' . $value . ', ' . $from . ')';
         } else {
             return 'SUBSTR(' . $value . ', ' . $from . ', ' . $len . ')';
@@ -239,6 +235,16 @@ class PostgreSqlPlatform extends AbstractPlatform
     }
     
     /**
+     * Whether the platform supports database schemas.
+     * 
+     * @return boolean
+     */
+    public function supportsSchemas()
+    {
+        return true;
+    }
+    
+    /**
      * Whether the platform supports identity columns.
      * Postgres supports these through the SERIAL keyword.
      *
@@ -321,7 +327,7 @@ class PostgreSqlPlatform extends AbstractPlatform
                    WHERE trg.tgrelid = tbl.oid';
 
         if ( ! is_null($table)) {
-            $sql .= " AND tbl.relname = ".$this->quoteIdentifier($table);
+            $sql .= " AND tbl.relname = " . $table;
         }
 
         return $sql;
@@ -428,7 +434,7 @@ class PostgreSqlPlatform extends AbstractPlatform
      */
     public function getCreateDatabaseSql($name)
     {
-        return 'CREATE DATABASE ' . $this->quoteIdentifier($name);
+        return 'CREATE DATABASE ' . $name;
     }
     
     /**
@@ -440,7 +446,7 @@ class PostgreSqlPlatform extends AbstractPlatform
      */
     public function getDropDatabaseSql($name)
     {
-        return 'DROP DATABASE ' . $this->quoteIdentifier($name);
+        return 'DROP DATABASE ' . $name;
     }
     
     /**
@@ -519,7 +525,6 @@ class PostgreSqlPlatform extends AbstractPlatform
 
         if (isset($changes['remove']) && is_array($changes['remove'])) {
             foreach ($changes['remove'] as $fieldName => $field) {
-                $fieldName = $this->quoteIdentifier($fieldName, true);
                 $query = 'DROP ' . $fieldName;
                 $sql[] = 'ALTER TABLE ' . $name . ' ' . $query;
             }
@@ -527,7 +532,6 @@ class PostgreSqlPlatform extends AbstractPlatform
 
         if (isset($changes['change']) && is_array($changes['change'])) {
             foreach ($changes['change'] as $fieldName => $field) {
-                $fieldName = $this->quoteIdentifier($fieldName, true);
                 if (isset($field['type'])) {
                     $serverInfo = $this->getServerVersion();
 
@@ -550,15 +554,12 @@ class PostgreSqlPlatform extends AbstractPlatform
 
         if (isset($changes['rename']) && is_array($changes['rename'])) {
             foreach ($changes['rename'] as $fieldName => $field) {
-                $fieldName = $this->quoteIdentifier($fieldName, true);
-                $sql[] = 'ALTER TABLE ' . $name . ' RENAME COLUMN ' . $fieldName . ' TO ' . $this->quoteIdentifier($field['name'], true);
+                $sql[] = 'ALTER TABLE ' . $name . ' RENAME COLUMN ' . $fieldName . ' TO ' . $field['name'];
             }
         }
 
-        $name = $this->quoteIdentifier($name, true);
         if (isset($changes['name'])) {
-            $changeName = $this->quoteIdentifier($changes['name'], true);
-            $sql[] = 'ALTER TABLE ' . $name . ' RENAME TO ' . $changeName;
+            $sql[] = 'ALTER TABLE ' . $name . ' RENAME TO ' . $changes['name'];
         }
 
         return $sql;
@@ -572,7 +573,7 @@ class PostgreSqlPlatform extends AbstractPlatform
      */
     public function getCreateSequenceSql($sequenceName, $start = 1, $allocationSize = 1)
     {
-        return 'CREATE SEQUENCE ' . $this->quoteIdentifier($sequenceName)
+        return 'CREATE SEQUENCE ' . $sequenceName
                 . ' INCREMENT BY ' . $allocationSize . ' START ' . $start;
     }
     
@@ -584,7 +585,7 @@ class PostgreSqlPlatform extends AbstractPlatform
      */
     public function getDropSequenceSql($sequenceName)
     {
-        return 'DROP SEQUENCE ' . $this->quoteIdentifier($sequenceName);
+        return 'DROP SEQUENCE ' . $sequenceName;
     }
     
     /**
@@ -601,11 +602,10 @@ class PostgreSqlPlatform extends AbstractPlatform
 
         if (isset($options['primary']) && ! empty($options['primary'])) {
             $keyColumns = array_unique(array_values($options['primary']));
-            $keyColumns = array_map(array($this, 'quoteIdentifier'), $keyColumns);
             $queryFields .= ', PRIMARY KEY(' . implode(', ', $keyColumns) . ')';
         }
 
-        $query = 'CREATE TABLE ' . $this->quoteIdentifier($name) . ' (' . $queryFields . ')';
+        $query = 'CREATE TABLE ' . $name . ' (' . $queryFields . ')';
 
         $sql[] = $query;
 
@@ -745,5 +745,10 @@ class PostgreSqlPlatform extends AbstractPlatform
     public function getName()
     {
         return 'postgresql';
+    }
+    
+    public function getSqlResultCasing($column)
+    {
+        return strtolower($column);
     }
 }

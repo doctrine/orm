@@ -33,8 +33,6 @@ namespace Doctrine\ORM\Query;
  *
  * @author Roman Borschel <roman@code-factory.org>
  * @since 2.0
- * @todo Do not store AssociationMappings in $relationMap. These bloat serialized instances
- *       and in turn unserialize performance suffers which is important for most effective caching.
  */
 class ResultSetMapping
 {
@@ -58,8 +56,6 @@ class ResultSetMapping
     public $discriminatorColumns = array();
     /** Maps alias names to field names that should be used for indexing. */
     public $indexByMap = array();
-    /** A list of columns that should be ignored/skipped during hydration. */
-    //public $ignoredColumns = array();
 
     /**
      * Adds an entity result to this ResultSetMapping.
@@ -321,25 +317,5 @@ class ResultSetMapping
         $this->metaMappings[$columnName] = $fieldName;
         $this->columnOwnerMap[$columnName] = $alias;
     }
-
-    /**
-     * Adds a column name that will be ignored during hydration.
-     *
-     * @param string $columnName
-     */
-    /*public function addIgnoredColumn($columnName)
-    {
-        $this->ignoredColumns[$columnName] = true;
-    }*/
-
-    /**
-     *
-     * @param string $columnName
-     * @return boolean
-     */
-    /*public function isIgnoredColumn($columnName)
-    {
-        return isset($this->ignoredColumns[$columnName]);
-    }*/
 }
 

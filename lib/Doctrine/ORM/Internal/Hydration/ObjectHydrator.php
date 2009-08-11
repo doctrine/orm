@@ -91,20 +91,28 @@ class ObjectHydrator extends AbstractHydrator
             
             // Remember which associations are "fetch joined"
             if (isset($this->_rsm->relationMap[$dqlAlias])) {
-                $assoc = $this->_rsm->relationMap[$dqlAlias];
-                //$assoc = $class->associationMappings[$this->_rsm->relationMap[$dqlAlias]];
+                $targetClassName = $this->_rsm->aliasMap[$this->_rsm->parentAliasMap[$dqlAlias]];
+                $targetClass = $this->_em->getClassMetadata($targetClassName);
+                $this->_ce[$targetClassName] = $targetClass;
+                $assoc = $targetClass->associationMappings[$this->_rsm->relationMap[$dqlAlias]];
                 $this->_fetchedAssociations[$assoc->sourceEntityName][$assoc->sourceFieldName] = true;
                 if ($assoc->mappedByFieldName) {
                     $this->_fetchedAssociations[$assoc->targetEntityName][$assoc->mappedByFieldName] = true;
                 } else {
-                    $targetClass = $this->_em->getClassMetadata($assoc->targetEntityName);
-                    if (isset($targetClass->inverseMappings[$assoc->sourceFieldName])) {
-                        $inverseAssoc = $targetClass->inverseMappings[$assoc->sourceFieldName];
+                    if (isset($targetClass->inverseMappings[$className][$assoc->sourceFieldName])) {
+                        $inverseAssoc = $targetClass->inverseMappings[$className][$assoc->sourceFieldName];
                         $this->_fetchedAssociations[$assoc->targetEntityName][$inverseAssoc->sourceFieldName] = true;
                     }
                 }
             }
         }
+    }
+    
+    protected function _cleanup()
+    {
+        parent::_cleanup();
+        $this->_identifierMap =
+        $this->_resultPointers = array();
     }
 
     /**
@@ -141,7 +149,7 @@ class ObjectHydrator extends AbstractHydrator
         $class = $this->_ce[get_class($entity)];
         $relation = $class->associationMappings[$name];
         
-        $pColl = new PersistentCollection($this->_em, $this->_getClassMetadata($relation->targetEntityName),
+        $pColl = new PersistentCollection($this->_em, $this->_ce[$relation->targetEntityName],
                 $class->reflFields[$name]->getValue($entity) ?: new ArrayCollection);
         
         $pColl->setOwner($entity, $relation);
@@ -193,8 +201,9 @@ class ObjectHydrator extends AbstractHydrator
                     } else {
                         // Inject collection
                         $reflField = $this->_ce[$className]->reflFields[$field];
-                        $pColl = new PersistentCollection($this->_em, $this->_getClassMetadata(
-                                $assoc->targetEntityName), $reflField->getValue($entity) ?: new ArrayCollection
+                        $pColl = new PersistentCollection($this->_em,
+                                $this->_getClassMetadata($assoc->targetEntityName),
+                                $reflField->getValue($entity) ?: new ArrayCollection
                                 );
                         $pColl->setOwner($entity, $assoc);
                         $reflField->setValue($entity, $pColl);
@@ -271,10 +280,8 @@ class ObjectHydrator extends AbstractHydrator
 
                 $parentClass = get_class($baseElement);
                 $oid = spl_object_hash($baseElement);
-                $relation = $this->_rsm->relationMap[$dqlAlias];
-                //$relationField = $this->_rsm->relationMap[$dqlAlias];
-                //$relation = $this->_ce[$parentClass]->associationMappings[$relationField];
-                $relationField = $relation->sourceFieldName;
+                $relationField = $this->_rsm->relationMap[$dqlAlias];
+                $relation = $this->_ce[$parentClass]->associationMappings[$relationField];
                 $reflField = $this->_ce[$parentClass]->reflFields[$relationField];
                 $reflFieldValue = $reflField->getValue($baseElement);
                 
@@ -296,12 +303,11 @@ class ObjectHydrator extends AbstractHydrator
 
                             // If it's a bi-directional many-to-many, also initialize the reverse collection.
                             if ($relation->isManyToMany()) {
-                                if ($relation->isOwningSide && isset($this->_ce[$entityName]->inverseMappings[$relationField])) {
-                                    $inverseFieldName = $this->_ce[$entityName]->inverseMappings[$relationField]->sourceFieldName;
+                                if ($relation->isOwningSide && isset($this->_ce[$entityName]->inverseMappings[$relation->sourceEntityName][$relationField])) {
+                                    $inverseFieldName = $this->_ce[$entityName]->inverseMappings[$relation->sourceEntityName][$relationField]->sourceFieldName;
                                     // Only initialize reverse collection if it is not yet initialized.
                                     if ( ! isset($this->_initializedCollections[spl_object_hash($element) . $inverseFieldName])) {
-                                        $this->initRelatedCollection($element, $this->_ce[$entityName]
-                                                ->inverseMappings[$relationField]->sourceFieldName);
+                                        $this->initRelatedCollection($element, $inverseFieldName);
                                     }
                                 } else if ($relation->mappedByFieldName) {
                                     // Only initialize reverse collection if it is not yet initialized.
@@ -345,8 +351,8 @@ class ObjectHydrator extends AbstractHydrator
                             $targetClass = $this->_ce[$relation->targetEntityName];
                             if ($relation->isOwningSide) {
                                 // If there is an inverse mapping on the target class its bidirectional
-                                if (isset($targetClass->inverseMappings[$relationField])) {
-                                    $sourceProp = $targetClass->inverseMappings[$relationField]->sourceFieldName;
+                                if (isset($targetClass->inverseMappings[$relation->sourceEntityName][$relationField])) {
+                                    $sourceProp = $targetClass->inverseMappings[$relation->sourceEntityName][$relationField]->sourceFieldName;
                                     $targetClass->reflFields[$sourceProp]->setValue($element, $base);
                                 } else if ($this->_ce[$parentClass] === $targetClass && $relation->mappedByFieldName) {
                                     // Special case: bi-directional self-referencing one-one on the same class

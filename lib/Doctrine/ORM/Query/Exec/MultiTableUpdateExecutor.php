@@ -53,6 +53,8 @@ class MultiTableUpdateExecutor extends AbstractSqlExecutor
     {
         $em = $sqlWalker->getEntityManager();
         $conn = $em->getConnection();
+        $platform = $conn->getDatabasePlatform();
+        
         $updateClause = $AST->updateClause;
 
         $primaryClass = $sqlWalker->getEntityManager()->getClassMetadata($updateClause->abstractSchemaName);
@@ -82,8 +84,7 @@ class MultiTableUpdateExecutor extends AbstractSqlExecutor
         foreach (array_reverse($classNames) as $className) {
             $affected = false;
             $class = $em->getClassMetadata($className);
-            $tableName = $class->primaryTable['name'];
-            $updateSql = 'UPDATE ' . $conn->quoteIdentifier($tableName) . ' SET ';
+            $updateSql = 'UPDATE ' . $class->getQuotedTableName($platform) . ' SET ';
 
             foreach ($updateItems as $updateItem) {
                 $field = $updateItem->field;

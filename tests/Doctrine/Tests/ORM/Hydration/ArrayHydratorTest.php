@@ -104,11 +104,8 @@ class ArrayHydratorTest extends HydrationTestCase
         $rsm = new ResultSetMapping;
         $rsm->addEntityResult('Doctrine\Tests\Models\CMS\CmsUser', 'u');
         $rsm->addJoinedEntityResult(
-                'Doctrine\Tests\Models\CMS\CmsPhonenumber',
-                'p',
-                'u',
-                $this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsUser')->getAssociationMapping('phonenumbers')
-        );
+                'Doctrine\Tests\Models\CMS\CmsPhonenumber', 'p',
+                'u', 'phonenumbers');
         $rsm->addFieldResult('u', 'u__id', 'id');
         $rsm->addFieldResult('u', 'u__status', 'status');
         $rsm->addScalarResult('sclr0', 'nameUpper');
@@ -219,7 +216,7 @@ class ArrayHydratorTest extends HydrationTestCase
                 'Doctrine\Tests\Models\CMS\CmsPhonenumber',
                 'p',
                 'u',
-                $this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsUser')->getAssociationMapping('phonenumbers')
+                'phonenumbers'
         );
         $rsm->addFieldResult('u', 'u__id', 'id');
         $rsm->addFieldResult('u', 'u__status', 'status');
@@ -294,13 +291,13 @@ class ArrayHydratorTest extends HydrationTestCase
                 'Doctrine\Tests\Models\CMS\CmsPhonenumber',
                 'p',
                 'u',
-                $this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsUser')->getAssociationMapping('phonenumbers')
+                'phonenumbers'
         );
         $rsm->addJoinedEntityResult(
                 'Doctrine\Tests\Models\CMS\CmsArticle',
                 'a',
                 'u',
-                $this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsUser')->getAssociationMapping('articles')
+                'articles'
         );
         $rsm->addFieldResult('u', 'u__id', 'id');
         $rsm->addFieldResult('u', 'u__status', 'status');
@@ -414,19 +411,19 @@ class ArrayHydratorTest extends HydrationTestCase
                 'Doctrine\Tests\Models\CMS\CmsPhonenumber',
                 'p',
                 'u',
-                $this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsUser')->getAssociationMapping('phonenumbers')
+                'phonenumbers'
         );
         $rsm->addJoinedEntityResult(
                 'Doctrine\Tests\Models\CMS\CmsArticle',
                 'a',
                 'u',
-                $this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsUser')->getAssociationMapping('articles')
+                'articles'
         );
         $rsm->addJoinedEntityResult(
                 'Doctrine\Tests\Models\CMS\CmsComment',
                 'c',
                 'a',
-                $this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsArticle')->getAssociationMapping('comments')
+                'comments'
         );
         $rsm->addFieldResult('u', 'u__id', 'id');
         $rsm->addFieldResult('u', 'u__status', 'status');
@@ -571,7 +568,7 @@ class ArrayHydratorTest extends HydrationTestCase
                 'Doctrine\Tests\Models\Forum\ForumBoard',
                 'b',
                 'c',
-                $this->_em->getClassMetadata('Doctrine\Tests\Models\Forum\ForumCategory')->getAssociationMapping('boards')
+                'boards'
         );
         $rsm->addFieldResult('c', 'c__id', 'id');
         $rsm->addFieldResult('c', 'c__position', 'position');

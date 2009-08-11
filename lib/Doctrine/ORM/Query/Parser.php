@@ -22,9 +22,7 @@
 namespace Doctrine\ORM\Query;
 
 use Doctrine\Common\DoctrineException,
-    Doctrine\ORM\Query,
-    Doctrine\ORM\Query\AST,
-    Doctrine\ORM\Query\Exec;
+    Doctrine\ORM\Query;
 
 /**
  * An LL(*) parser for the context-free grammar of the Doctrine Query Language.
@@ -269,6 +267,18 @@ class Parser
         $treeWalker = new $this->_treeWalker(
             $this->_query, $this->_parserResult, $this->_queryComponents
         );
+        /*if ($this->_treeWalkers) {
+            // We got additional walkers, so build a chain.
+            $treeWalker = new TreeWalkerChain($this->_query, $this->_parserResult, $this->_queryComponents);
+            foreach ($this->_treeWalkers as $walker) {
+                $treeWalker->addTreeWalker(new $walker($this->_query, $this->_parserResult, $this->_queryComponents));
+            }
+            $treeWalker->setLastTreeWalker('Doctrine\ORM\Query\SqlWalker');
+        } else {
+            $treeWalker = new SqlWalker(
+                $this->_query, $this->_parserResult, $this->_queryComponents
+            );
+        }*/
 
         // Assign an SQL executor to the parser result
         $this->_parserResult->setSqlExecutor($treeWalker->getExecutor($AST));
@@ -594,14 +604,14 @@ class Parser
             echo '[Query Components: ' . var_export($this->_queryComponents, true) . ']';
         
             $this->semanticalError(
-                "Could not find '$identVariable' in query components", $token
+                "'$idVariable' is not defined", $token
             );
         }
         
         // Validate if identification variable nesting level is lower or equal than the current one
         if ($this->_queryComponents[$identVariable]['nestingLevel'] > $nestingLevel) {
             $this->semanticalError(
-                "Query component '$identVariable' is not in the same nesting level of its declaration",
+                "'$idVariable' is used outside the scope of its declaration",
                 $token
             );
         }
@@ -1259,7 +1269,7 @@ class Parser
             // ResultVariable exists in queryComponents, check nesting level
             if ($queryComponent['nestingLevel'] != $this->_nestingLevel) {
                 $this->semanticalError(
-                    "Query component '$expr' is not in the same nesting level of its declaration"
+                    "'$expr' is used outside the scope of its declaration"
                 );
             }
         } else {

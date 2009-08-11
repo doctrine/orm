@@ -47,8 +47,8 @@ class ArithmeticExpression extends Node
         return (bool) $this->subselect;
     }
 
-    public function dispatch($sqlWalker)
+    public function dispatch($walker)
     {
-        return $sqlWalker->walkArithmeticExpression($this);
+        return $walker->walkArithmeticExpression($this);
     }
 }

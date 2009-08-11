@@ -105,7 +105,7 @@ class MsSqlPlatform extends AbstractPlatform
 
         $query = '';
         if ( ! empty($changes['name'])) {
-            $change_name = $this->quoteIdentifier($changes['name']);
+            $change_name = $changes['name'];
             $query .= 'RENAME TO ' . $change_name;
         }
 
@@ -123,7 +123,6 @@ class MsSqlPlatform extends AbstractPlatform
                 if ($query) {
                     $query .= ', ';
                 }
-                $field_name = $this->quoteIdentifier($fieldName, true);
                 $query .= 'DROP COLUMN ' . $fieldName;
             }
         }
@@ -146,7 +145,6 @@ class MsSqlPlatform extends AbstractPlatform
                 } else {
                     $oldFieldName = $fieldName;
                 }
-                $oldFieldName = $this->quoteIdentifier($oldFieldName, true);
                 $query .= 'CHANGE ' . $oldFieldName . ' '
                         . $this->getColumnDeclarationSql($fieldName, $field['definition']);
             }
@@ -158,7 +156,6 @@ class MsSqlPlatform extends AbstractPlatform
                     $query.= ', ';
                 }
                 $field = $changes['rename'][$renamedField];
-                $renamedField = $this->quoteIdentifier($renamedField, true);
                 $query .= 'CHANGE ' . $renamedField . ' '
                         . $this->getColumnDeclarationSql($field['name'], $field['definition']);
             }
@@ -168,20 +165,7 @@ class MsSqlPlatform extends AbstractPlatform
             return false;
         }
 
-        $name = $this->quoteIdentifier($name, true);
         return 'ALTER TABLE ' . $name . ' ' . $query;
-    }
-
-    
-    /**
-     * Gets the character used for identifier quoting.
-     *
-     * @return string
-     * @override
-     */
-    public function getIdentifierQuoteCharacter()
-    {
-        return '`';
     }
     
     /**
@@ -321,7 +305,7 @@ class MsSqlPlatform extends AbstractPlatform
      */
     public function getCreateDatabaseSql($name)
     {
-        return 'CREATE DATABASE ' . $this->quoteIdentifier($name);
+        return 'CREATE DATABASE ' . $name;
     }
     
     /**
@@ -333,7 +317,7 @@ class MsSqlPlatform extends AbstractPlatform
      */
     public function getDropDatabaseSql($name)
     {
-        return 'DROP DATABASE ' . $this->quoteIdentifier($name);
+        return 'DROP DATABASE ' . $name;
     }
 
     public function getSetTransactionIsolationSql($level)
@@ -481,7 +465,7 @@ class MsSqlPlatform extends AbstractPlatform
             }
 
             $query = preg_replace('/^'.$selectRegExp.'/i', $selectReplace . 'TOP ' . ($count + $offset) . ' ', $query);
-            $query = 'SELECT * FROM (SELECT TOP ' . $count . ' * FROM (' . $query . ') AS ' . $this->quoteIdentifier('inner_tbl');
+            $query = 'SELECT * FROM (SELECT TOP ' . $count . ' * FROM (' . $query . ') AS ' . 'inner_tbl';
 
             if ($orderby !== false) {
                 $query .= ' ORDER BY '; 
@@ -491,12 +475,12 @@ class MsSqlPlatform extends AbstractPlatform
                         $query .= ', '; 
                     } 
 
-                    $query .= $this->quoteIdentifier('inner_tbl') . '.' . $aliases[$i] . ' '; 
+                    $query .= 'inner_tbl' . '.' . $aliases[$i] . ' '; 
                     $query .= (stripos($sorts[$i], 'ASC') !== false) ? 'DESC' : 'ASC';
                 }
             }
 
-            $query .= ') AS ' . $this->quoteIdentifier('outer_tbl');
+            $query .= ') AS ' . 'outer_tbl';
 
             if ($orderby !== false) {
                 $query .= ' ORDER BY '; 
@@ -506,7 +490,7 @@ class MsSqlPlatform extends AbstractPlatform
                         $query .= ', '; 
                     } 
 
-                    $query .= $this->quoteIdentifier('outer_tbl') . '.' . $aliases[$i] . ' ' . $sorts[$i];
+                    $query .= 'outer_tbl' . '.' . $aliases[$i] . ' ' . $sorts[$i];
                 }
             }
         }

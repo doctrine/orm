@@ -138,9 +138,9 @@ final class PersistentCollection implements \Doctrine\Common\Collections\Collect
             // For sure bi-directional
             $this->_backRefFieldName = $assoc->mappedByFieldName;
         } else {
-            if (isset($this->_typeClass->inverseMappings[$assoc->sourceFieldName])) {
+            if (isset($this->_typeClass->inverseMappings[$assoc->sourceEntityName][$assoc->sourceFieldName])) {
                 // Bi-directional
-                $this->_backRefFieldName = $this->_typeClass->inverseMappings[$assoc->sourceFieldName]->sourceFieldName;
+                $this->_backRefFieldName = $this->_typeClass->inverseMappings[$assoc->sourceEntityName][$assoc->sourceFieldName]->sourceFieldName;
             }
         }
     }

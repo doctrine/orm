@@ -67,6 +67,12 @@ class OneToOneMapping extends AssociationMapping
      */
     public $joinColumns = array();
     
+    /**
+     * A map of join column names to field names that are used in cases
+     * when the join columns are fetched as part of the query result.
+     * 
+     * @var array
+     */
     public $joinColumnFieldNames = array();
     
     /**
@@ -98,12 +104,16 @@ class OneToOneMapping extends AssociationMapping
             if ( ! isset($mapping['joinColumns'])) {
                 throw MappingException::invalidMapping($this->sourceFieldName);
             }
-            $this->joinColumns = $mapping['joinColumns'];
-            foreach ($mapping['joinColumns'] as $joinColumn) {
+            foreach ($mapping['joinColumns'] as &$joinColumn) {
+                if ($joinColumn['name'][0] == '`') {
+                    $joinColumn['name'] = trim($joinColumn['name'], '`');
+                    $joinColumn['quoted'] = true;
+                }
                 $this->sourceToTargetKeyColumns[$joinColumn['name']] = $joinColumn['referencedColumnName'];
                 $this->joinColumnFieldNames[$joinColumn['name']] = isset($joinColumn['fieldName'])
                         ? $joinColumn['fieldName'] : $joinColumn['name'];
             }
+            $this->joinColumns = $mapping['joinColumns'];
             $this->targetToSourceKeyColumns = array_flip($this->sourceToTargetKeyColumns);
         }
         
@@ -155,6 +165,21 @@ class OneToOneMapping extends AssociationMapping
     }
     
     /**
+     * Gets the (possibly quoted) column name of a join column that is safe to use
+     * in an SQL statement.
+     * 
+     * @param string $joinColumn
+     * @param AbstractPlatform $platform
+     * @return string
+     */
+    public function getQuotedJoinColumnName($joinColumn, $platform)
+    {
+        return isset($this->joinColumns[$joinColumn]['quoted']) ?
+                $platform->quoteIdentifier($joinColumn) :
+                $joinColumn;
+    }
+    
+    /**
      * {@inheritdoc}
      *
      * @param object $sourceEntity      the entity source of this association
@@ -174,7 +199,7 @@ class OneToOneMapping extends AssociationMapping
             foreach ($this->sourceToTargetKeyColumns as $sourceKeyColumn => $targetKeyColumn) {
                 // getting customer_id
                 if (isset($sourceClass->reflFields[$sourceKeyColumn])) {
-                    $conditions[$targetKeyColumn] = $this->_getPrivateValue($sourceClass, $sourceEntity, $sourceKeyColumn);
+                    $conditions[$targetKeyColumn] = $sourceClass->reflFields[$sourceClass->fieldNames[$sourceKeyColumn]]->getValue($sourceEntity);
                 } else {
                     $conditions[$targetKeyColumn] = $joinColumnValues[$sourceKeyColumn];
                 }
@@ -182,18 +207,18 @@ class OneToOneMapping extends AssociationMapping
             
             $targetEntity = $em->getUnitOfWork()->getEntityPersister($this->targetEntityName)->load($conditions, $targetEntity);
             
-            if ($targetEntity !== null && $targetClass->hasInverseAssociationMapping($this->sourceFieldName)) {
+            if ($targetEntity !== null && $targetClass->hasInverseAssociationMapping($this->sourceEntityName, $this->sourceFieldName)) {
                 $targetClass->setFieldValue($targetEntity,
-                        $targetClass->inverseMappings[$this->sourceFieldName]->sourceFieldName,
+                        $targetClass->inverseMappings[$this->sourceEntityName][$this->sourceFieldName]->sourceFieldName,
                         $sourceEntity);
             }
         } else {
             $owningAssoc = $em->getClassMetadata($this->targetEntityName)->getAssociationMapping($this->mappedByFieldName);
             // TRICKY: since the association is specular source and target are flipped
-            foreach ($owningAssoc->getTargetToSourceKeyColumns() as $sourceKeyColumn => $targetKeyColumn) {
+            foreach ($owningAssoc->targetToSourceKeyColumns as $sourceKeyColumn => $targetKeyColumn) {
                 // getting id
                 if (isset($sourceClass->reflFields[$sourceKeyColumn])) {
-                    $conditions[$targetKeyColumn] = $this->_getPrivateValue($sourceClass, $sourceEntity, $sourceKeyColumn);
+                    $conditions[$targetKeyColumn] = $sourceClass->reflFields[$sourceClass->fieldNames[$sourceKeyColumn]]->getValue($sourceEntity);
                 } else {
                     $conditions[$targetKeyColumn] = $joinColumnValues[$sourceKeyColumn];
                 }

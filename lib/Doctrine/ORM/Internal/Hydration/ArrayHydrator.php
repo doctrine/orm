@@ -32,6 +32,7 @@ use Doctrine\DBAL\Connection;
  */
 class ArrayHydrator extends AbstractHydrator
 {
+    private $_ce = array();
     private $_rootAliases = array();
     private $_isSimpleQuery = false;
     private $_identifierMap = array();
@@ -104,10 +105,8 @@ class ArrayHydrator extends AbstractHydrator
                     continue;
                 }
                 
-                $relation = $this->_rsm->relationMap[$dqlAlias];
-                $relationAlias = $relation->sourceFieldName;
-                //$relationAlias = $this->_rsm->relationMap[$dqlAlias];
-                //$relation = $this->_ce[$parentClass]->associationMappings[$relationField];
+                $relationAlias = $this->_rsm->relationMap[$dqlAlias];
+                $relation = $this->_getClassMetadata($this->_rsm->aliasMap[$parent])->associationMappings[$relationAlias];
 
                 // Check the type of the relation (many or single-valued)
                 if ( ! $relation->isOneToOne()) {
@@ -220,6 +219,14 @@ class ArrayHydrator extends AbstractHydrator
                 }
             }
         }
+    }
+    
+    private function _getClassMetadata($className)
+    {
+        if ( ! isset($this->_ce[$className])) {
+            $this->_ce[$className] = $this->_em->getClassMetadata($className);
+        }
+        return $this->_ce[$className];
     }
 
     /** {@inheritdoc} */

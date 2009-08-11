@@ -113,7 +113,8 @@ class SchemaTool
                 // Add all non-inherited fields as columns
                 foreach ($class->fieldMappings as $fieldName => $mapping) {
                     if ( ! isset($mapping['inherited'])) {
-                        $columns[$mapping['columnName']] = $this->_gatherColumn($class, $mapping, $options);
+                        $columnName = $class->getQuotedColumnName($mapping['columnName'], $this->_platform);
+                        $columns[$columnName] = $this->_gatherColumn($class, $mapping, $options);
                     }
                 }
 
@@ -128,17 +129,16 @@ class SchemaTool
                     $idMapping = $class->fieldMappings[$class->identifier[0]];
                     $idColumn = $this->_gatherColumn($class, $idMapping, $options);
                     unset($idColumn['autoincrement']);
-                    $columns[$idMapping['columnName']] = $idColumn;
+                    $columns[$idColumn['name']] = $idColumn;
                     // Add a FK constraint on the ID column
                     $constraint = array();
-                    $constraint['tableName'] = $class->getTableName();
-                    $constraint['foreignTable'] = $this->_em->getClassMetadata($class->rootEntityName)->getTableName();
-                    $constraint['local'] = array($idMapping['columnName']);
-                    $constraint['foreign'] = array($idMapping['columnName']);
+                    $constraint['tableName'] = $class->getQuotedTableName($this->_platform);
+                    $constraint['foreignTable'] = $this->_em->getClassMetadata($class->rootEntityName)->getQuotedTableName($this->_platform);
+                    $constraint['local'] = array($idColumn['name']);
+                    $constraint['foreign'] = array($idColumn['name']);
                     $constraint['onDelete'] = 'CASCADE';
                     $foreignKeyConstraints[] = $constraint;
                 }
-
             } else if ($class->isInheritanceTypeTablePerClass()) {
                 //TODO
             } else {
@@ -146,7 +146,8 @@ class SchemaTool
                 $this->_gatherRelationsSql($class, $sql, $columns, $foreignKeyConstraints);
             }
 
-            $sql = array_merge($sql, $this->_platform->getCreateTableSql($class->getTableName(), $columns, $options));
+            $sql = array_merge($sql, $this->_platform->getCreateTableSql(
+                    $class->getQuotedTableName($this->_platform), $columns, $options));
             $processedClasses[$class->name] = true;
 
             if ($class->isIdGeneratorSequence() && $class->name == $class->rootEntityName) {
@@ -162,7 +163,7 @@ class SchemaTool
         // Append the foreign key constraints SQL
         if ($this->_platform->supportsForeignKeyConstraints()) {
             foreach ($foreignKeyConstraints as $fkConstraint) {
-                $sql = array_merge($sql, (array)$this->_platform->getCreateForeignKeySql($fkConstraint['tableName'], $fkConstraint));
+                $sql = array_merge($sql, (array) $this->_platform->getCreateForeignKeySql($fkConstraint['tableName'], $fkConstraint));
             }
         }
 
@@ -176,7 +177,7 @@ class SchemaTool
     {
         $discrColumn = $class->discriminatorColumn;
         return array(
-            'name' => $discrColumn['name'],
+            'name' => $class->getQuotedDiscriminatorColumnName($this->_platform),
             'type' => Type::getType($discrColumn['type']),
             'length' => $discrColumn['length'],
             'notnull' => true
@@ -194,7 +195,8 @@ class SchemaTool
     {
         $columns = array();
         foreach ($class->fieldMappings as $fieldName => $mapping) {
-            $columns[$mapping['columnName']] = $this->_gatherColumn($class, $mapping, $options);
+            $column = $this->_gatherColumn($class, $mapping, $options);
+            $columns[$column['name']] = $column;
         }
         
         return $columns;
@@ -203,7 +205,7 @@ class SchemaTool
     private function _gatherColumn($class, array $mapping, array &$options)
     {
         $column = array();
-        $column['name'] = $mapping['columnName'];
+        $column['name'] = $class->getQuotedColumnName($mapping['columnName'], $this->_platform);
         $column['type'] = Type::getType($mapping['type']);
         $column['length'] = $mapping['length'];
         $column['notnull'] = ! $mapping['nullable'];
@@ -231,16 +233,16 @@ class SchemaTool
             $foreignClass = $this->_em->getClassMetadata($mapping->targetEntityName);
             if ($mapping->isOneToOne() && $mapping->isOwningSide) {
                 $constraint = array();
-                $constraint['tableName'] = $class->getTableName();
-                $constraint['foreignTable'] = $foreignClass->getTableName();
+                $constraint['tableName'] = $class->getQuotedTableName($this->_platform);
+                $constraint['foreignTable'] = $foreignClass->getQuotedTableName($this->_platform);
                 $constraint['local'] = array();
                 $constraint['foreign'] = array();
                 foreach ($mapping->getJoinColumns() as $joinColumn) {
                     $column = array();
-                    $column['name'] = $joinColumn['name'];
+                    $column['name'] = $mapping->getQuotedJoinColumnName($joinColumn['name'], $this->_platform);
                     $column['type'] = Type::getType($foreignClass->getTypeOfColumn($joinColumn['referencedColumnName']));
-                    $columns[$joinColumn['name']] = $column;
-                    $constraint['local'][] = $joinColumn['name'];
+                    $columns[$column['name']] = $column;
+                    $constraint['local'][] = $column['name'];
                     $constraint['foreign'][] = $joinColumn['referencedColumnName'];
                 }
                 $constraints[] = $constraint;
@@ -253,8 +255,8 @@ class SchemaTool
                 $joinTableOptions = array();
                 $joinTable = $mapping->getJoinTable();
                 $constraint1 = array(
-                    'tableName' => $joinTable['name'],
-                    'foreignTable' => $class->getTableName(),
+                    'tableName' => $mapping->getQuotedJoinTableName($this->_platform),
+                    'foreignTable' => $class->getQuotedTableName($this->_platform),
                     'local' => array(),
                     'foreign' => array()
                 );
@@ -262,17 +264,17 @@ class SchemaTool
                     $column = array();
                     $column['primary'] = true;
                     $joinTableOptions['primary'][] = $joinColumn['name'];
-                    $column['name'] = $joinColumn['name'];
+                    $column['name'] = $mapping->getQuotedJoinColumnName($joinColumn['name'], $this->_platform);
                     $column['type'] = Type::getType($class->getTypeOfColumn($joinColumn['referencedColumnName']));
-                    $joinTableColumns[$joinColumn['name']] = $column;
-                    $constraint1['local'][] = $joinColumn['name'];
+                    $joinTableColumns[$column['name']] = $column;
+                    $constraint1['local'][] = $column['name'];
                     $constraint1['foreign'][] = $joinColumn['referencedColumnName'];
                 }
                 $constraints[] = $constraint1;
 
                 $constraint2 = array();
-                $constraint2['tableName'] = $joinTable['name'];
-                $constraint2['foreignTable'] = $foreignClass->getTableName();
+                $constraint2['tableName'] = $mapping->getQuotedJoinTableName($this->_platform);
+                $constraint2['foreignTable'] = $foreignClass->getQuotedTableName($this->_platform);
                 $constraint2['local'] = array();
                 $constraint2['foreign'] = array();
                 foreach ($joinTable['inverseJoinColumns'] as $inverseJoinColumn) {
@@ -289,7 +291,8 @@ class SchemaTool
                 $constraints[] = $constraint2;
 
                 $sql = array_merge($sql, $this->_platform->getCreateTableSql(
-                        $joinTable['name'], $joinTableColumns, $joinTableOptions));
+                        $mapping->getQuotedJoinTableName($this->_platform), $joinTableColumns, $joinTableOptions)
+                        );
             }
         }
     }

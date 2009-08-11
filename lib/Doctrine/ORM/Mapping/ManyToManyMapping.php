@@ -60,7 +60,7 @@ class ManyToManyMapping extends AssociationMapping
     public $targetToRelationKeyColumns = array();
 
     /**
-     * The columns on the join table.
+     * List of aggregated column names on the join table.
      */
     public $joinTableColumns = array();
     
@@ -91,22 +91,30 @@ class ManyToManyMapping extends AssociationMapping
             if ( ! isset($mapping['joinTable'])) {
                 throw MappingException::joinTableRequired($mapping['fieldName']);
             }
-
             // owning side MUST specify joinColumns
             if ( ! isset($mapping['joinTable']['joinColumns'])) {
                 throw MappingException::invalidMapping($this->_sourceFieldName);
             }
-            foreach ($mapping['joinTable']['joinColumns'] as $joinColumn) {
-                $this->sourceToRelationKeyColumns[$joinColumn['referencedColumnName']] = $joinColumn['name'];
-                $this->joinTableColumns[] = $joinColumn['name'];
-            }
-            $this->sourceKeyColumns = array_keys($this->sourceToRelationKeyColumns);
-
             // owning side MUST specify inverseJoinColumns
             if ( ! isset($mapping['joinTable']['inverseJoinColumns'])) {
                 throw MappingException::invalidMapping($this->_sourceFieldName);
             }
-            foreach ($mapping['joinTable']['inverseJoinColumns'] as $inverseJoinColumn) {
+            
+            foreach ($mapping['joinTable']['joinColumns'] as &$joinColumn) {
+                if ($joinColumn['name'][0] == '`') {
+                    $joinColumn['name'] = trim($joinColumn['name'], '`');
+                    $joinColumn['quoted'] = true;
+                }
+                $this->sourceToRelationKeyColumns[$joinColumn['referencedColumnName']] = $joinColumn['name'];
+                $this->joinTableColumns[] = $joinColumn['name'];
+            }
+            $this->sourceKeyColumns = array_keys($this->sourceToRelationKeyColumns);
+            
+            foreach ($mapping['joinTable']['inverseJoinColumns'] as &$inverseJoinColumn) {
+                if ($inverseJoinColumn['name'][0] == '`') {
+                    $inverseJoinColumn['name'] = trim($inverseJoinColumn['name'], '`');
+                    $inverseJoinColumn['quoted'] = true;
+                }
                 $this->targetToRelationKeyColumns[$inverseJoinColumn['referencedColumnName']] = $inverseJoinColumn['name'];
                 $this->joinTableColumns[] = $inverseJoinColumn['name'];
             }
@@ -114,7 +122,7 @@ class ManyToManyMapping extends AssociationMapping
         }
     }
 
-    public function getJoinTableColumns()
+    public function getJoinTableColumnNames()
     {
         return $this->joinTableColumns;
     }
@@ -152,38 +160,30 @@ class ManyToManyMapping extends AssociationMapping
     {
         $sourceClass = $em->getClassMetadata($this->sourceEntityName);
         $joinTableConditions = array();
-        if ($this->isOwningSide()) {
-            $joinTable = $this->joinTable;
-            $joinClauses = $this->targetToRelationKeyColumns;
+        if ($this->isOwningSide) {
             foreach ($this->sourceToRelationKeyColumns as $sourceKeyColumn => $relationKeyColumn) {
                 // getting id
                 if (isset($sourceClass->reflFields[$sourceKeyColumn])) {
-                    $joinTableConditions[$relationKeyColumn] = $this->_getPrivateValue($sourceClass, $sourceEntity, $sourceKeyColumn);
+                    $joinTableConditions[$relationKeyColumn] = $sourceClass->reflFields[$sourceClass->fieldNames[$sourceKeyColumn]]->getValue($sourceEntity);
                 } else {
                     $joinTableConditions[$relationKeyColumn] = $joinColumnValues[$sourceKeyColumn];
                 }
             }
         } else {
             $owningAssoc = $em->getClassMetadata($this->targetEntityName)->associationMappings[$this->mappedByFieldName];
-            $joinTable = $owningAssoc->joinTable;
             // TRICKY: since the association is inverted source and target are flipped
-            $joinClauses = $owningAssoc->sourceToRelationKeyColumns;
             foreach ($owningAssoc->targetToRelationKeyColumns as $sourceKeyColumn => $relationKeyColumn) {
                 // getting id
                 if (isset($sourceClass->reflFields[$sourceKeyColumn])) {
-                    $joinTableConditions[$relationKeyColumn] = $this->_getPrivateValue($sourceClass, $sourceEntity, $sourceKeyColumn);
+                    $joinTableConditions[$relationKeyColumn] = $sourceClass->reflFields[$sourceClass->fieldNames[$sourceKeyColumn]]->getValue($sourceEntity);
                 } else {
                     $joinTableConditions[$relationKeyColumn] = $joinColumnValues[$sourceKeyColumn];
                 }
             }
         }
-        $joinTableCriteria = array(
-            'table' => $joinTable['name'],
-            'join' => $joinClauses,
-            'criteria' => $joinTableConditions
-        );
+
         $persister = $em->getUnitOfWork()->getEntityPersister($this->targetEntityName);
-        $persister->loadManyToManyCollection(array($joinTableCriteria), $targetCollection);
+        $persister->loadManyToManyCollection($this, $joinTableConditions, $targetCollection);
     }
 
     /**
@@ -192,5 +192,20 @@ class ManyToManyMapping extends AssociationMapping
     public function isManyToMany()
     {
         return true;
+    }
+    
+    /**
+     * Gets the (possibly quoted) column name of a join column that is safe to use
+     * in an SQL statement.
+     * 
+     * @param string $joinColumn
+     * @param AbstractPlatform $platform
+     * @return string
+     */
+    public function getQuotedJoinColumnName($joinColumn, $platform)
+    {
+        return isset($this->joinTable['joinColumns'][$joinColumn]['quoted']) ?
+                $platform->quoteIdentifier($joinColumn) :
+                $joinColumn;
     }
 }

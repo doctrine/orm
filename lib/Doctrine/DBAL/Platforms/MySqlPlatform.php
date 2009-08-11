@@ -156,19 +156,19 @@ class MySqlPlatform extends AbstractPlatform
     {
         $query = 'SHOW TABLES';
         if ( ! is_null($database)) {
-            $query .= ' FROM ' . $this->quoteIdentifier($database);
+            $query .= ' FROM ' . $database;
         }
         return $query;
     }
 
     public function getListTableConstraintsSql($table)
     {
-        return 'SHOW INDEX FROM ' . $this->quoteIdentifier($table);
+        return 'SHOW INDEX FROM ' . $table;
     }
 
     public function getListTableIndexesSql($table)
     {
-        return 'SHOW INDEX FROM ' . $this->quoteIdentifier($table);
+        return 'SHOW INDEX FROM ' . $table;
     }
 
     public function getListUsersSql()
@@ -335,7 +335,7 @@ class MySqlPlatform extends AbstractPlatform
 
     public function getListTableColumnsSql($table)
     {
-        return 'DESCRIBE ' . $this->quoteIdentifier($table);
+        return 'DESCRIBE ' . $table;
     }
 
     /**
@@ -347,7 +347,7 @@ class MySqlPlatform extends AbstractPlatform
      */
     public function getCreateDatabaseSql($name)
     {
-        return 'CREATE DATABASE ' . $this->quoteIdentifier($name);
+        return 'CREATE DATABASE ' . $name;
     }
     
     /**
@@ -359,7 +359,7 @@ class MySqlPlatform extends AbstractPlatform
      */
     public function getDropDatabaseSql($name)
     {
-        return 'DROP DATABASE ' . $this->quoteIdentifier($name);
+        return 'DROP DATABASE ' . $name;
     }
     
     /**
@@ -445,7 +445,6 @@ class MySqlPlatform extends AbstractPlatform
         // attach all primary keys
         if (isset($options['primary']) && ! empty($options['primary'])) {
             $keyColumns = array_unique(array_values($options['primary']));
-            $keyColumns = array_map(array($this, 'quoteIdentifier'), $keyColumns);
             $queryFields .= ', PRIMARY KEY(' . implode(', ', $keyColumns) . ')';
         }
 
@@ -453,7 +452,7 @@ class MySqlPlatform extends AbstractPlatform
         if (!empty($options['temporary'])) {
             $query .= 'TEMPORARY ';
         }
-        $query.= 'TABLE ' . $this->quoteIdentifier($name, true) . ' (' . $queryFields . ')';
+        $query.= 'TABLE ' . $name . ' (' . $queryFields . ')';
 
         $optionStrings = array();
 
@@ -609,8 +608,7 @@ class MySqlPlatform extends AbstractPlatform
 
         $query = '';
         if ( ! empty($changes['name'])) {
-            $change_name = $this->quoteIdentifier($changes['name']);
-            $query .= 'RENAME TO ' . $change_name;
+            $query .= 'RENAME TO ' . $changes['name'];
         }
 
         if ( ! empty($changes['add']) && is_array($changes['add'])) {
@@ -627,7 +625,6 @@ class MySqlPlatform extends AbstractPlatform
                 if ($query) {
                     $query .= ', ';
                 }
-                $fieldName = $this->quoteIdentifier($fieldName);
                 $query .= 'DROP ' . $fieldName;
             }
         }
@@ -650,7 +647,6 @@ class MySqlPlatform extends AbstractPlatform
                 } else {
                     $oldFieldName = $fieldName;
                 }
-                $oldFieldName = $this->quoteIdentifier($oldFieldName, true);
                 $query .= 'CHANGE ' . $oldFieldName . ' '
                         . $this->getColumnDeclarationSql($fieldName, $field['definition']);
             }
@@ -662,7 +658,6 @@ class MySqlPlatform extends AbstractPlatform
                     $query.= ', ';
                 }
                 $field = $changes['rename'][$renamedField];
-                $renamedField = $this->quoteIdentifier($renamedField, true);
                 $query .= 'CHANGE ' . $renamedField . ' '
                         . $this->getColumnDeclarationSql($field['name'], $field['definition']);
             }
@@ -671,8 +666,6 @@ class MySqlPlatform extends AbstractPlatform
         if ( ! $query) {
             return false;
         }
-
-        $name = $this->quoteIdentifier($name, true);
 
         return 'ALTER TABLE ' . $name . ' ' . $query;
     }
@@ -715,7 +708,6 @@ class MySqlPlatform extends AbstractPlatform
     public function getCreateIndexSql($table, $name, array $definition)
     {
         $table = $table;
-        $name = $this->quoteIdentifier($name);
         $type = '';
         if (isset($definition['type'])) {
             switch (strtolower($definition['type'])) {
@@ -818,7 +810,7 @@ class MySqlPlatform extends AbstractPlatform
             $definition['fields'] = array($definition['fields']);
         }
 
-        $query = $type . 'INDEX ' . $this->quoteIdentifier($name);
+        $query = $type . 'INDEX ' . $name;
 
         $query .= ' (' . $this->getIndexFieldDeclarationListSql($definition['fields']) . ')';
 
@@ -838,7 +830,7 @@ class MySqlPlatform extends AbstractPlatform
         $declFields = array();
 
         foreach ($fields as $fieldName => $field) {
-            $fieldString = $this->quoteIdentifier($fieldName);
+            $fieldString = $fieldName;
 
             if (is_array($field)) {
                 if (isset($field['length'])) {
@@ -857,7 +849,7 @@ class MySqlPlatform extends AbstractPlatform
                     }
                 }
             } else {
-                $fieldString = $this->quoteIdentifier($field);
+                $fieldString = $field;
             }
             $declFields[] = $fieldString;
         }
@@ -896,8 +888,6 @@ class MySqlPlatform extends AbstractPlatform
      */
     public function getDropIndexSql($table, $name)
     {
-        $table = $this->quoteIdentifier($table);
-        $name = $this->quoteIdentifier($name);
         return 'DROP INDEX ' . $name . ' ON ' . $table;
     }
     
@@ -909,7 +899,7 @@ class MySqlPlatform extends AbstractPlatform
      */
     public function getDropTableSql($table)
     {
-        return 'DROP TABLE ' . $this->quoteIdentifier($table);
+        return 'DROP TABLE ' . $table;
     }
 
     public function getSetTransactionIsolationSql($level)

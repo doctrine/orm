@@ -124,7 +124,7 @@ class OneToManyMapping extends AssociationMapping
         foreach ($owningAssoc->getTargetToSourceKeyColumns() as $sourceKeyColumn => $targetKeyColumn) {
             // getting id
             if (isset($sourceClass->reflFields[$sourceKeyColumn])) {
-                $conditions[$targetKeyColumn] = $this->_getPrivateValue($sourceClass, $sourceEntity, $sourceKeyColumn);
+                $conditions[$targetKeyColumn] = $sourceClass->reflFields[$sourceClass->fieldNames[$sourceKeyColumn]]->getValue($sourceEntity);
             } else {
                 $conditions[$targetKeyColumn] = $joinColumnValues[$sourceKeyColumn];
             }

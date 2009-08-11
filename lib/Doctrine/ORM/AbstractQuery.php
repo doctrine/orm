@@ -412,7 +412,7 @@ abstract class AbstractQuery
     public function iterate(array $params = array(), $hydrationMode = self::HYDRATE_OBJECT)
     {
         return $this->_em->getHydrator($this->_hydrationMode)->iterate(
-            $this->_execute($params, $hydrationMode), $this->_resultSetMapping
+            $this->_doExecute($params, $hydrationMode), $this->_resultSetMapping
         );
     }
 

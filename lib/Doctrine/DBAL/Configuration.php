@@ -48,8 +48,7 @@ class Configuration
     protected $_attributes = array();
     
     /**
-     * Creates a new configuration that can be used for Doctrine.
-     *
+     * Creates a new DBAL configuration instance.
      */
     public function __construct()
     {

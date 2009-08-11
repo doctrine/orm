@@ -21,9 +21,9 @@
 
 namespace Doctrine\DBAL\Platforms;
 
-use Doctrine\Common\DoctrineException;
-use Doctrine\DBAL\Connection;
-use Doctrine\DBAL\Types;
+use Doctrine\Common\DoctrineException,
+    Doctrine\DBAL\Connection,
+    Doctrine\DBAL\Types;
 
 /**
  * Base class for all DatabasePlatforms. The DatabasePlatforms are the central
@@ -114,8 +114,6 @@ abstract class AbstractPlatform
      */
     public function getAvgExpression($column)
     {
-        $column = $this->quoteIdentifier($column);
-
         return 'AVG(' .  $column . ')';
     }
 
@@ -130,8 +128,6 @@ abstract class AbstractPlatform
      */
     public function getCountExpression($column)
     {
-        $column = $this->quoteIdentifier($column);
-
         return 'COUNT(' . $column . ')';
     }
 
@@ -143,8 +139,6 @@ abstract class AbstractPlatform
      */
     public function getMaxExpression($column)
     {
-        $column = $this->quoteIdentifier($column);
-
         return 'MAX(' . $column . ')';
     }
 
@@ -156,8 +150,6 @@ abstract class AbstractPlatform
      */
     public function getMinExpression($column)
     {
-        $column = $this->quoteIdentifier($column);
-
         return 'MIN(' . $column . ')';
     }
 
@@ -169,8 +161,6 @@ abstract class AbstractPlatform
      */
     public function getSumExpression($column)
     {
-        $column = $this->quoteIdentifier($column);
-
         return 'SUM(' . $column . ')';
     }
 
@@ -185,8 +175,6 @@ abstract class AbstractPlatform
      */
     public function getMd5Expression($column)
     {
-        $column = $this->quoteIdentifier($column);
-
         return 'MD5(' . $column . ')';
     }
 
@@ -199,8 +187,6 @@ abstract class AbstractPlatform
      */
     public function getLengthExpression($column)
     {
-        $column = $this->quoteIdentifier($column);
-
         return 'LENGTH(' . $column . ')';
     }
 
@@ -213,8 +199,6 @@ abstract class AbstractPlatform
      */
     public function getRoundExpression($column, $decimals = 0)
     {
-        $column = $this->quoteIdentifier($column);
-
         return 'ROUND(' . $column . ', ' . $decimals . ')';
     }
 
@@ -228,9 +212,6 @@ abstract class AbstractPlatform
      */
     public function getModExpression($expression1, $expression2)
     {
-        $expression1 = $this->quoteIdentifier($expression1);
-        $expression2 = $this->quoteIdentifier($expression2);
-
         return 'MOD(' . $expression1 . ', ' . $expression2 . ')';
     }
 
@@ -333,11 +314,9 @@ abstract class AbstractPlatform
      */
     public function getSubstringExpression($value, $from, $len = null)
     {
-        $value = $this->quoteIdentifier($value);
         if ($len === null)
             return 'SUBSTRING(' . $value . ' FROM ' . $from . ')';
         else {
-            $len = $this->quoteIdentifier($len);
             return 'SUBSTRING(' . $value . ' FROM ' . $from . ' FOR ' . $len . ')';
         }
     }
@@ -371,7 +350,7 @@ abstract class AbstractPlatform
      */
     public function getNotExpression($expression)
     {
-        return 'NOT(' . $this->quoteIdentifier($expression) . ')';
+        return 'NOT(' . $expression . ')';
     }
 
     /**
@@ -401,7 +380,6 @@ abstract class AbstractPlatform
             $values = array($values);
         }
         $values = $this->getIdentifiers($values);
-        $column = $this->quoteIdentifier($column);
 
         if (count($values) == 0) {
             throw DoctrineException::updateMe('Values array for IN operator should not be empty.');
@@ -425,8 +403,6 @@ abstract class AbstractPlatform
      */
     public function getIsNullExpression($expression)
     {
-        $expression = $this->quoteIdentifier($expression);
-
         return $expression . ' IS NULL';
     }
 
@@ -446,8 +422,6 @@ abstract class AbstractPlatform
      */
     public function getIsNotNullExpression($expression)
     {
-        $expression = $this->quoteIdentifier($expression);
-
         return $expression . ' IS NOT NULL';
     }
 
@@ -476,10 +450,6 @@ abstract class AbstractPlatform
      */
     public function getBetweenExpression($expression, $value1, $value2)
     {
-        $expression = $this->quoteIdentifier($expression);
-        $value1 = $this->quoteIdentifier($value1);
-        $value2 = $this->quoteIdentifier($value2);
-
         return $expression . ' BETWEEN ' .$value1 . ' AND ' . $value2;
     }
 
@@ -525,17 +495,11 @@ abstract class AbstractPlatform
 
     public function getDropConstraintSql($table, $name, $primary = false)
     {
-        $table = $this->quoteIdentifier($table);
-        $name = $this->quoteIdentifier($name);
-
         return 'ALTER TABLE ' . $table . ' DROP CONSTRAINT ' . $name;
     }
 
     public function getDropForeignKeySql($table, $name)
     {
-        $table = $this->quoteIdentifier($table);
-        $name = $this->quoteIdentifier($name);
-
         return 'ALTER TABLE ' . $table . ' DROP FOREIGN KEY ' . $name;
     }
 
@@ -562,7 +526,7 @@ abstract class AbstractPlatform
             }
         }
 
-        $query = 'CREATE TABLE ' . $this->quoteIdentifier($table, true) . ' (' . $columnListSql;
+        $query = 'CREATE TABLE ' . $table . ' (' . $columnListSql;
 
         $check = $this->getCheckDeclarationSql($columns);
         if ( ! empty($check)) {
@@ -682,12 +646,9 @@ abstract class AbstractPlatform
      */
     public function quoteIdentifier($str)
     {
-        if ($str[0] != '`') {
-            return $str;
-        }
         $c = $this->getIdentifierQuoteCharacter();
 
-        return $c . trim($str, '`') . $c;
+        return $c . $str . $c;
     }
 
     /**
@@ -699,7 +660,6 @@ abstract class AbstractPlatform
      */
     public function getCreateForeignKeySql($table, array $definition)
     {
-        $table = $this->quoteIdentifier($table);
         $query = 'ALTER TABLE ' . $table . ' ADD ' . $this->getForeignKeyDeclarationSql($definition);
 
         return $query;
@@ -811,7 +771,7 @@ abstract class AbstractPlatform
 
         $typeDecl = $field['type']->getSqlDeclaration($field, $this);
 
-        return $this->quoteIdentifier($name) . ' ' . $typeDecl . $charset . $default . $notnull . $unique . $check . $collation;
+        return $name . ' ' . $typeDecl . $charset . $default . $notnull . $unique . $check . $collation;
     }
 
     /**
@@ -855,7 +815,7 @@ abstract class AbstractPlatform
         $default = empty($field['notnull']) ? ' DEFAULT NULL' : '';
 
         if (isset($field['default'])) {
-            $default = ' DEFAULT ' . $this->quoteIdentifier($field['default'], $field['type']);
+            $default = ' DEFAULT ' . $field['default'];
         }
         return $default;
     }
@@ -897,7 +857,6 @@ abstract class AbstractPlatform
      */
     public function getIndexDeclarationSql($name, array $definition)
     {
-        $name   = $this->quoteIdentifier($name);
         $type   = '';
 
         if (isset($definition['type'])) {
@@ -931,9 +890,9 @@ abstract class AbstractPlatform
         $ret = array();
         foreach ($fields as $field => $definition) {
             if (is_array($definition)) {
-                $ret[] = $this->quoteIdentifier($field);
+                $ret[] = $field;
             } else {
-                $ret[] = $this->quoteIdentifier($definition);
+                $ret[] = $definition;
             }
         }
         return implode(', ', $ret);
@@ -1072,7 +1031,7 @@ abstract class AbstractPlatform
     {
         $sql = '';
         if (isset($definition['name'])) {
-            $sql .= ' CONSTRAINT ' . $this->quoteIdentifier($definition['name']) . ' ';
+            $sql .= ' CONSTRAINT ' . $definition['name'] . ' ';
         }
         $sql .= 'FOREIGN KEY (';
 
@@ -1093,10 +1052,10 @@ abstract class AbstractPlatform
             $definition['foreign'] = array($definition['foreign']);
         }
 
-        $sql .= implode(', ', array_map(array($this, 'quoteIdentifier'), $definition['local']))
+        $sql .= implode(', ', $definition['local'])
               . ') REFERENCES '
-              . $this->quoteIdentifier($definition['foreignTable']) . '('
-              . implode(', ', array_map(array($this, 'quoteIdentifier'), $definition['foreign'])) . ')';
+              . $definition['foreignTable'] . '('
+              . implode(', ', $definition['foreign']) . ')';
 
         return $sql;
     }
@@ -1491,6 +1450,16 @@ abstract class AbstractPlatform
     {
         return true;
     }
+    
+    /**
+     * Whether the platform supports database schemas.
+     * 
+     * @return boolean
+     */
+    public function supportsSchemas()
+    {
+        return false;
+    }
 
     /**
      * Whether the platform supports getting the affected rows of a recent
@@ -1574,4 +1543,9 @@ abstract class AbstractPlatform
      * @return string
      */
     abstract public function getName();
+    
+    public function getSqlResultCasing($column)
+    {
+        return $column;
+    }
 }

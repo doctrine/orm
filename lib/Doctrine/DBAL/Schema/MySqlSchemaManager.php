@@ -278,7 +278,6 @@ class MySqlSchemaManager extends AbstractSchemaManager
      */
     public function createSequence($sequenceName, $start = 1, $allocationSize = 1)
     {
-        $sequenceName = $this->_conn->quoteIdentifier($sequenceName);
         $seqColumnName = 'mysql_sequence';
 
         /* No support for options yet. Might add 4th options parameter later

@@ -1924,4 +1924,23 @@ class UnitOfWork implements PropertyChangedListener
             $this->_entityUpdates[$oid] = $entity;
         }
     }
+    
+    public function dump()
+    {
+        var_dump($this->_identityMap);
+        var_dump($this->_entityIdentifiers);
+        var_dump($this->_originalEntityData);
+        var_dump($this->_entityChangeSets);
+        var_dump($this->_entityStates);
+        var_dump($this->_scheduledForDirtyCheck);
+        var_dump($this->_entityInsertions);
+        var_dump($this->_entityUpdates);
+        var_dump($this->_entityDeletions);
+        var_dump($this->_collectionDeletions);
+        //$this->_collectionCreations =
+        var_dump($this->_collectionUpdates);
+        var_dump($this->_orphanRemovals);
+        //var_dump($this->_commitOrderCalculator->clear();
+        
+    }
 }

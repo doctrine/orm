@@ -228,14 +228,14 @@ class EntityManager
     }
 
     /**
-     * Creates a DQL query with the specified name.
+     * Creates a Query from a named query.
      *
+     * @param string $name
      * @todo Implementation.
-     * @throws DoctrineException  If there is no query registered with the given name.
      */
     public function createNamedQuery($name)
     {
-        //...
+        return $this->createQuery($this->_config->getNamedQuery($name));
     }
     
     /**
@@ -254,11 +254,15 @@ class EntityManager
     }
     
     /**
+     * Creates a NativeQuery from a named native query.
+     * 
+     * @param string $name
      * @todo Implementation.
      */
     public function createNamedNativeQuery($name)
     {
-        //...
+        list($sql, $rsm) = $this->_config->getNamedNativeQuery($name);
+        return $this->createNativeQuery($sql, $rsm);
     }
     
     /**

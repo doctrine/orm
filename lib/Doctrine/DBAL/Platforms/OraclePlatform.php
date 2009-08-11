@@ -112,7 +112,7 @@ class OraclePlatform extends AbstractPlatform
      */
     public function getCreateSequenceSql($sequenceName, $start = 1, $allocationSize = 1)
     {
-        return 'CREATE SEQUENCE ' . $this->quoteIdentifier($sequenceName) 
+        return 'CREATE SEQUENCE ' . $sequenceName 
                 . ' START WITH ' . $start . ' INCREMENT BY ' . $allocationSize; 
     }
 
@@ -124,7 +124,7 @@ class OraclePlatform extends AbstractPlatform
      */
     public function getSequenceNextValSql($sequenceName)
     {
-        return 'SELECT ' . $this->quoteIdentifier($sequenceName) . '.nextval FROM DUAL';
+        return 'SELECT ' . $sequenceName . '.nextval FROM DUAL';
     }
     
     /**
@@ -323,9 +323,7 @@ END;';
         $sequenceName = $table . '_SEQ';
         $sql[] = $this->getCreateSequenceSql($sequenceName, $start);
 
-        $triggerName  = $this->quoteIdentifier($table . '_AI_PK', true);
-        $table = $this->quoteIdentifier($table, true);
-        $name  = $this->quoteIdentifier($name, true);
+        $triggerName  = $table . '_AI_PK';
         $sql[] = 'CREATE TRIGGER ' . $triggerName . '
    BEFORE INSERT
    ON ' . $table . '
@@ -334,16 +332,16 @@ DECLARE
    last_Sequence NUMBER;
    last_InsertID NUMBER;
 BEGIN
-   SELECT ' . $this->quoteIdentifier($sequenceName) . '.NEXTVAL INTO :NEW.' . $name . ' FROM DUAL;
+   SELECT ' . $sequenceName . '.NEXTVAL INTO :NEW.' . $name . ' FROM DUAL;
    IF (:NEW.' . $name . ' IS NULL OR :NEW.'.$name.' = 0) THEN
-      SELECT ' . $this->quoteIdentifier($sequenceName) . '.NEXTVAL INTO :NEW.' . $name . ' FROM DUAL;
+      SELECT ' . $sequenceName . '.NEXTVAL INTO :NEW.' . $name . ' FROM DUAL;
    ELSE
       SELECT NVL(Last_Number, 0) INTO last_Sequence
         FROM User_Sequences
        WHERE Sequence_Name = \'' . $sequenceName . '\';
       SELECT :NEW.' . $name . ' INTO last_InsertID FROM DUAL;
       WHILE (last_InsertID > last_Sequence) LOOP
-         SELECT ' . $this->quoteIdentifier($sequenceName) . '.NEXTVAL INTO last_Sequence FROM DUAL;
+         SELECT ' . $sequenceName . '.NEXTVAL INTO last_Sequence FROM DUAL;
       END LOOP;
    END IF;
 END;';
@@ -380,7 +378,7 @@ END;';
 
     public function getDropSequenceSql($sequenceName)
     {
-        return 'DROP SEQUENCE ' . $this->quoteIdentifier($sequenceName);
+        return 'DROP SEQUENCE ' . $sequenceName;
     }
 
     public function getDropDatabaseSql($database)
@@ -410,8 +408,6 @@ END;';
             return false;
         }
 
-        $name = $this->quoteIdentifier($name);
-
         if ( ! empty($changes['add']) && is_array($changes['add'])) {
             $fields = array();
             foreach ($changes['add'] as $fieldName => $field) {
@@ -430,21 +426,21 @@ END;';
 
         if ( ! empty($changes['rename']) && is_array($changes['rename'])) {
             foreach ($changes['rename'] as $fieldName => $field) {
-                $sql[] = 'ALTER TABLE ' . $name . ' RENAME COLUMN ' . $this->quoteIdentifier($fieldName)
-                       . ' TO ' . $this->quoteIdentifier($field['name']);
+                $sql[] = 'ALTER TABLE ' . $name . ' RENAME COLUMN ' . $fieldName
+                       . ' TO ' . $field['name'];
             }
         }
 
         if ( ! empty($changes['remove']) && is_array($changes['remove'])) {
             $fields = array();
             foreach ($changes['remove'] as $fieldName => $field) {
-                $fields[] = $this->quoteIdentifier($fieldName);
+                $fields[] = $fieldName;
             }
             $sql[] = 'ALTER TABLE ' . $name . ' DROP COLUMN ' . implode(', ', $fields);
         }
 
         if ( ! empty($changes['name'])) {
-            $changeName = $this->quoteIdentifier($changes['name']);
+            $changeName = $changes['name'];
             $sql[] = 'ALTER TABLE ' . $name . ' RENAME TO ' . $changeName;
         }
 
@@ -503,5 +499,10 @@ END;';
             }
         }
         return $query;
+    }
+    
+    public function getSqlResultCasing($column)
+    {
+        return strtoupper($column);
     }
 }

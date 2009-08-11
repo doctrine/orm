@@ -40,7 +40,6 @@ class MsSqlSchemaManager extends AbstractSchemaManager
      */
     public function createDatabase($name)
     {
-        $name = $this->conn->quoteIdentifier($name, true);
         $query = "CREATE DATABASE $name";
         if ($this->conn->options['database_device']) {
             $query.= ' ON '.$this->conn->options['database_device'];
@@ -58,7 +57,6 @@ class MsSqlSchemaManager extends AbstractSchemaManager
      */
     public function dropDatabase($name)
     {
-        $name = $this->conn->quoteIdentifier($name, true);
         return $this->conn->standaloneQuery('DROP DATABASE ' . $name, null, true);
     }
 
@@ -181,7 +179,6 @@ class MsSqlSchemaManager extends AbstractSchemaManager
                 if ($query) {
                     $query .= ', ';
                 }
-                $field_name = $this->conn->quoteIdentifier($fieldName, true);
                 $query .= 'DROP COLUMN ' . $fieldName;
             }
         }
@@ -190,7 +187,6 @@ class MsSqlSchemaManager extends AbstractSchemaManager
             return false;
         }
 
-        $name = $this->conn->quoteIdentifier($name, true);
         return $this->conn->exec('ALTER TABLE ' . $name . ' ' . $query);
     }
 
@@ -199,9 +195,8 @@ class MsSqlSchemaManager extends AbstractSchemaManager
      */
     public function createSequence($seqName, $start = 1, $allocationSize = 1)
     {
-        $sequenceName = $this->conn->quoteIdentifier($this->conn->getSequenceName($seqName), true);
-        $seqcolName = $this->conn->quoteIdentifier($this->conn->options['seqcol_name'], true);
-        $query = 'CREATE TABLE ' . $sequenceName . ' (' . $seqcolName .
+        $seqcolName = 'seq_col';
+        $query = 'CREATE TABLE ' . $seqName . ' (' . $seqcolName .
                  ' INT PRIMARY KEY CLUSTERED IDENTITY(' . $start . ', 1) NOT NULL)';
 
         $res = $this->conn->exec($query);
@@ -228,8 +223,7 @@ class MsSqlSchemaManager extends AbstractSchemaManager
      */
     public function dropSequenceSql($seqName)
     {
-        $sequenceName = $this->conn->quoteIdentifier($this->conn->getSequenceName($seqName), true);
-        return 'DROP TABLE ' . $sequenceName;
+        return 'DROP TABLE ' . $seqName;
     }
     
     /**
@@ -254,7 +248,7 @@ class MsSqlSchemaManager extends AbstractSchemaManager
      */
     public function listTableColumns($table)
     {
-        $sql     = 'EXEC sp_columns @table_name = ' . $this->conn->quoteIdentifier($table, true);
+        $sql     = 'EXEC sp_columns @table_name = ' . $table;
         $result  = $this->conn->fetchAssoc($sql);
         $columns = array();
 

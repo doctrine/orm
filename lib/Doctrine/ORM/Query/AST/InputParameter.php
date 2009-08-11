@@ -48,8 +48,8 @@ class InputParameter extends Node
         $this->name = $param;
     }
 
-    public function dispatch($sqlWalker)
+    public function dispatch($walker)
     {
-        return $sqlWalker->walkInputParameter($this);
+        return $walker->walkInputParameter($this);
     }
 }

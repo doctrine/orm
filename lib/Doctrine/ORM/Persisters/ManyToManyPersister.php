@@ -40,7 +40,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
     {
         $mapping = $coll->getMapping();
         $joinTable = $mapping->getJoinTable();
-        $columns = $mapping->getJoinTableColumns();
+        $columns = $mapping->getJoinTableColumnNames();
         return 'DELETE FROM ' . $joinTable['name'] . ' WHERE ' . implode(' = ? AND ', $columns) . ' = ?';
     }
 
@@ -76,7 +76,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
     {
         $mapping = $coll->getMapping();
         $joinTable = $mapping->getJoinTable();
-        $columns = $mapping->getJoinTableColumns();
+        $columns = $mapping->getJoinTableColumnNames();
         return 'INSERT INTO ' . $joinTable['name'] . ' (' . implode(', ', $columns) . ')'
                 . ' VALUES (' . implode(', ', array_fill(0, count($columns), '?')) . ')';
     }

@@ -22,7 +22,7 @@
 namespace Doctrine\Common;
 
 /**
- * Simple generic lexical scanner
+ * Simple generic lexical scanner.
  *
  * @license http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @link    www.doctrine-project.org

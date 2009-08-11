@@ -21,8 +21,8 @@
 
 namespace Doctrine\DBAL;
 
-use Doctrine\Common\EventManager;
-use Doctrine\Common\DoctrineException;
+use Doctrine\Common\EventManager,
+    Doctrine\Common\DoctrineException;
 
 /**
  * A wrapper around a Doctrine\DBAL\Driver\Connection that adds features like
@@ -376,11 +376,10 @@ class Connection
         $criteria = array();
         
         foreach (array_keys($identifier) as $id) {
-            $criteria[] = $this->quoteIdentifier($id) . ' = ?';
+            $criteria[] = $id . ' = ?';
         }
 
-        $query = 'DELETE FROM ' . $this->quoteIdentifier($tableName)
-               . ' WHERE ' . implode(' AND ', $criteria);
+        $query = 'DELETE FROM ' . $tableName . ' WHERE ' . implode(' AND ', $criteria);
 
         return $this->executeUpdate($query, array_values($identifier));
     }
@@ -439,15 +438,14 @@ class Connection
         $set = array();
         
         foreach ($data as $columnName => $value) {
-            $set[] = $this->quoteIdentifier($columnName) . ' = ?';
+            $set[] = $columnName . ' = ?';
         }
 
         $params = array_merge(array_values($data), array_values($identifier));
 
-        $sql  = 'UPDATE ' . $this->quoteIdentifier($tableName)
-              . ' SET ' . implode(', ', $set)
-              . ' WHERE ' . implode(' = ? AND ', array_keys($identifier))
-              . ' = ?';
+        $sql  = 'UPDATE ' . $tableName . ' SET ' . implode(', ', $set)
+                . ' WHERE ' . implode(' = ? AND ', array_keys($identifier))
+                . ' = ?';
 
         return $this->executeUpdate($sql, $params);
     }
@@ -473,11 +471,11 @@ class Connection
         $a = array();
         
         foreach ($data as $columnName => $value) {
-            $cols[] = $this->quoteIdentifier($columnName);
+            $cols[] = $columnName;
             $a[] = '?';
         }
 
-        $query = 'INSERT INTO ' . $this->quoteIdentifier($tableName)
+        $query = 'INSERT INTO ' . $tableName
                . ' (' . implode(', ', $cols) . ')'
                . ' VALUES (' . implode(', ', $a) . ')';
 

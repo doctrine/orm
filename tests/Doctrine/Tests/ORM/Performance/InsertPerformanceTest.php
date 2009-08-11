@@ -29,8 +29,8 @@ class InsertPerformanceTest extends \Doctrine\Tests\OrmPerformanceTestCase
 
         $this->setMaxRunningTime(10);
 
-        //$mem = memory_get_usage();
-        //echo "Memory usage before: " . ($mem / 1024) . " KB" . PHP_EOL;
+        //echo "Memory usage before: " . (memory_get_usage() / 1024) . " KB" . PHP_EOL;
+        
         $batchSize = 20;
         for ($i=1; $i<=10000; ++$i) {
             $user = new CmsUser;
@@ -43,12 +43,13 @@ class InsertPerformanceTest extends \Doctrine\Tests\OrmPerformanceTestCase
                 $this->_em->clear();
             }
         }
-        //$memAfter = memory_get_usage();
-        //echo "Memory usage after: " . ($memAfter / 1024) . " KB" . PHP_EOL;
+        
+        //gc_collect_cycles();
+        //echo "Memory usage after: " . (memory_get_usage() / 1024) . " KB" . PHP_EOL;
 
         $e = microtime(true);
 
-        echo ' Inserted 10000 objects in ' . ($e - $s) . ' seconds' . PHP_EOL;
+        echo ' Inserted 10000 objects in ' . ($e - $s) . ' seconds' . PHP_EOL;        
     }
 }
 

@@ -32,7 +32,6 @@ use Doctrine\Common\DoctrineException;
  * @version     $Revision$
  * @link        www.doctrine-project.org
  * @since       2.0
- * @todo Reimplement.
  */
 class JoinedSubclassPersister extends StandardEntityPersister
 {
@@ -145,12 +144,12 @@ class JoinedSubclassPersister extends StandardEntityPersister
                 $params = array();
                 foreach ($insertData[$rootTableName] as $columnName => $value) {
                     $params[$paramIndex] = $value;
-                    $stmt->bindValue($paramIndex++, $value/*, TODO: TYPE*/);
+                    $stmt->bindValue($paramIndex++, $value);
                 }
                 $sqlLogger->logSql($sql[$rootTableName], $params);
             } else {
                 foreach ($insertData[$rootTableName] as $columnName => $value) {
-                    $stmt->bindValue($paramIndex++, $value/*, TODO: TYPE*/);
+                    $stmt->bindValue($paramIndex++, $value);
                 }
             }
             $stmt->execute();
@@ -168,31 +167,31 @@ class JoinedSubclassPersister extends StandardEntityPersister
                 $stmt = $stmts[$tableName];
                 $paramIndex = 1;
                 if ($sqlLogger) {
-                    //TODO: Log type
                     $params = array();
-                    foreach ((array)$id as $idVal) {
+                    foreach ((array) $id as $idVal) {
                         $params[$paramIndex] = $idVal;
-                        $stmt->bindValue($paramIndex++, $idVal/*, TODO: TYPE*/);
+                        $stmt->bindValue($paramIndex++, $idVal);
                     }
                     foreach ($data as $columnName => $value) {
                         $params[$paramIndex] = $value;
-                        $stmt->bindValue($paramIndex++, $value/*, TODO: TYPE*/);
+                        $stmt->bindValue($paramIndex++, $value);
                     }
                     $sqlLogger->logSql($sql[$tableName], $params);
                 } else {
-                    foreach ((array)$id as $idVal) {
-                        $stmt->bindValue($paramIndex++, $idVal/*, TODO: TYPE*/);
+                    foreach ((array) $id as $idVal) {
+                        $stmt->bindValue($paramIndex++, $idVal);
                     }
                     foreach ($data as $columnName => $value) {
-                        $stmt->bindValue($paramIndex++, $value/*, TODO: TYPE*/);
+                        $stmt->bindValue($paramIndex++, $value);
                     }
                 }
                 $stmt->execute();
             }
         }
 
-        foreach ($stmts as $stmt)
-        $stmt->closeCursor();
+        foreach ($stmts as $stmt) {
+            $stmt->closeCursor();
+        }
 
         if ($isVersioned) {
             $this->_assignDefaultVersionValue($versionedClass, $entity, $id);
@@ -247,7 +246,7 @@ class JoinedSubclassPersister extends StandardEntityPersister
     public function delete($entity)
     {
         $id = array_combine(
-            $this->_class->getIdentifierFieldNames(),
+            $this->_class->identifier,
             $this->_em->getUnitOfWork()->getEntityIdentifier($entity)
         );
 
@@ -257,7 +256,7 @@ class JoinedSubclassPersister extends StandardEntityPersister
             $this->_conn->delete($this->_em->getClassMetadata($this->_class->rootEntityName)
                     ->primaryTable['name'], $id);
         } else {
-            // Delete the parent tables, starting from this class' table up to the root table
+            // Delete from all tables individually, starting from this class' table up to the root table.
             $this->_conn->delete($this->_class->primaryTable['name'], $id);
             foreach ($this->_class->parentClasses as $parentClass) {
                 $this->_conn->delete($this->_em->getClassMetadata($parentClass)->primaryTable['name'], $id);
@@ -266,7 +265,7 @@ class JoinedSubclassPersister extends StandardEntityPersister
     }
 
     /**
-     * Gets the SELECT SQL to select a single entity by a set of field criteria.
+     * Gets the SELECT SQL to select one or more entities by a set of field criteria.
      *
      * @param array $criteria
      * @return string The SQL.

@@ -90,7 +90,7 @@ class HydrationPerformanceTest extends \Doctrine\Tests\OrmPerformanceTestCase
                 'Doctrine\Tests\Models\CMS\CmsPhonenumber',
                 'p',
                 'u',
-                $this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsUser')->getAssociationMapping('phonenumbers')
+                'phonenumbers'
         );
         $rsm->addFieldResult('u', 'u__id', 'id');
         $rsm->addFieldResult('u', 'u__status', 'status');
@@ -218,7 +218,7 @@ class HydrationPerformanceTest extends \Doctrine\Tests\OrmPerformanceTestCase
                 'Doctrine\Tests\Models\CMS\CmsPhonenumber',
                 'p',
                 'u',
-                $this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsUser')->getAssociationMapping('phonenumbers')
+                'phonenumbers'
         );
         $rsm->addFieldResult('u', 'u__id', 'id');
         $rsm->addFieldResult('u', 'u__status', 'status');

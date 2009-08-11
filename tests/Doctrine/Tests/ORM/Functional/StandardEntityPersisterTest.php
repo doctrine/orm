@@ -40,30 +40,4 @@ class StandardEntityPersisterTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $persister->load(array('customer_id' => $customer->getId()), $newCart);
         $this->assertEquals('Credit card', $newCart->getPayment());
     }
-
-    public function testAcceptsJoinTableAsCriteria()
-    {
-        $this->_em->getConfiguration()->setAllowPartialObjects(false);
-
-        $cart = new ECommerceCart();
-        $product = new ECommerceProduct();
-        $product->setName('Star Wars: A New Hope');
-        $cart->addProduct($product);
-        $this->_em->persist($cart);
-        $this->_em->flush();
-        $this->_em->clear();
-        unset($product);
-
-        $persister = $this->_em->getUnitOfWork()->getEntityPersister('Doctrine\Tests\Models\ECommerce\ECommerceProduct');
-        $newProduct = new ECommerceProduct();
-        $criteria = array(
-            array(
-                'table' => 'ecommerce_carts_products',
-                'join' => array('id' => 'product_id'),
-                'criteria' => array('cart_id' => $cart->getId())
-            )
-        );
-        $persister->load($criteria, $newProduct);
-        $this->assertEquals('Star Wars: A New Hope', $newProduct->getName());
-    }
 }

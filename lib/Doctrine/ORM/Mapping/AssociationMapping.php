@@ -57,12 +57,7 @@ abstract class AssociationMapping
      * @var array
      */
     protected static $_cascadeTypes = array(
-        'all',
-        'none',
-        'save',
-        'delete',
-        'refresh',
-        'merge'
+        'all', 'none', 'save', 'delete', 'refresh', 'merge'
     );
     
     public $cascades = array();
@@ -173,6 +168,10 @@ abstract class AssociationMapping
         if ( ! isset($mapping['mappedBy'])) {            
             // Optional
             if (isset($mapping['joinTable'])) {
+                if ($mapping['joinTable']['name'][0] == '`') {
+                    $mapping['joinTable']['name'] = trim($mapping['joinTable']['name'], '`');
+                    $mapping['joinTable']['quoted'] = true;
+                }
                 $this->joinTable = $mapping['joinTable'];   
             }
         } else {
@@ -402,16 +401,16 @@ abstract class AssociationMapping
      *                                  association) of $sourceEntity, if needed
      */
     abstract public function load($sourceEntity, $target, $em, array $joinColumnValues = array());
-
+    
     /**
-     * Uses reflection to access internal data of entities.
-     * @param ClassMetadata $class
-     * @param $entity                   a domain object
-     * @param $column                   name of private field
-     * @return mixed
+     * 
+     * @param $platform
+     * @return unknown_type
      */
-    protected function _getPrivateValue(ClassMetadata $class, $entity, $column)
+    public function getQuotedJoinTableName($platform)
     {
-        return $class->reflFields[$class->fieldNames[$column]]->getValue($entity);
+        return isset($this->joinTable['quoted']) ?
+                $platform->quoteIdentifier($this->joinTable['name']) :
+                $this->joinTable['name'];
     }
 }
