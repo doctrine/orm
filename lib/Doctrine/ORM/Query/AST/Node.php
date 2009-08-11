@@ -35,4 +35,54 @@ namespace Doctrine\ORM\Query\AST;
 abstract class Node
 {
     abstract public function dispatch($sqlWalker);
+    
+    /**
+     * Dumps the AST Node into a string representation for information purpose only
+     *
+     * @return string
+     */
+    public function __toString()
+    {
+        return $this->dump($this);
+    }
+    
+    public function dump($obj)
+    {
+        static $ident = 0;
+        
+        $str = '';
+        
+        if ($obj instanceof Node) {
+            $str .= get_class($obj) . '(' . PHP_EOL;
+            $props = get_object_vars($obj);
+                
+            foreach ($props as $name => $prop) {
+                $ident += 4;
+                $str .= str_repeat(' ', $ident) . '"' . $name . '": ' 
+                      . $this->dump($prop) . ',' . PHP_EOL;
+                $ident -= 4;
+            }
+                
+            $str .= str_repeat(' ', $ident) . ')';
+        } else if (is_array($obj)) {
+            $ident += 4;
+            $str .= 'array(';
+            $some = false;
+                
+            foreach ($obj as $k => $v) {
+                $str .= PHP_EOL . str_repeat(' ', $ident) . '"' 
+                      . $k . '" => ' . $this->dump($v) . ',';
+                $some = true;
+            }
+                
+            $ident -= 4;
+            $str .= ($some ? PHP_EOL . str_repeat(' ', $ident) : '') . ')';
+        } else if (is_object($obj)) {
+            $str .= 'instanceof(' . get_class($obj) . ')';
+        } else {
+            $str .= var_export($obj, true);
+        }
+          
+        return $str;
+    }
 }
