@@ -5,7 +5,7 @@
       xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
                           /Users/robo/dev/php/Doctrine/doctrine-mapping.xsd">
                               
-    <entity name="XmlMappingTest\User" table="cms_users">
+    <entity name="Doctrine\Tests\ORM\Mapping\User" table="cms_users">
     
         <id name="id" type="integer" column="id">
             <generator strategy="AUTO"/>

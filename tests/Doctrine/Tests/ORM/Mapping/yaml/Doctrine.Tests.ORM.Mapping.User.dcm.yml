@@ -1,4 +1,4 @@
-YamlMappingTest\User:
+Doctrine\Tests\ORM\Mapping\User:
   type: entity
   table: cms_users
   id:
