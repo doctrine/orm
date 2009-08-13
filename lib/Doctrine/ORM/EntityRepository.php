@@ -26,13 +26,12 @@ namespace Doctrine\ORM;
  * business specific methods for retrieving entities.
  * 
  * This class is designed for inheritance and users can subclass this class to
- * write their own repositories.
+ * write their own repositories with business-specific methods to locate entities.
  *
- * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
- * @link        www.doctrine-project.org
- * @since       2.0
- * @version     $Revision$
- * @author      Roman Borschel <roman@code-factory.org>
+ * @license http://www.opensource.org/licenses/lgpl-license.php LGPL
+ * @link www.doctrine-project.org
+ * @since 2.0
+ * @author Roman Borschel <roman@code-factory.org>
  */
 class EntityRepository
 {
@@ -54,21 +53,6 @@ class EntityRepository
     }
     
     /**
-     * Creates a new Doctrine_Query object and adds the component name
-     * of this table as the query 'from' part.
-     *
-     * @param string Optional alias name for component aliasing.
-     * @return Doctrine_Query
-     */
-    protected function _createQuery($alias = '')
-    {
-        if ( ! empty($alias)) {
-            $alias = ' ' . trim($alias);
-        }
-        return $this->_em->createQuery()->from($this->_entityName . $alias);
-    }
-    
-    /**
      * Clears the repository, causing all managed entities to become detached.
      */
     public function clear()
@@ -81,9 +65,9 @@ class EntityRepository
      *
      * @param $id The identifier.
      * @param int $hydrationMode The hydration mode to use.
-     * @return mixed Array or Object or false if no result.
+     * @return object The entity.
      */
-    public function find($id, $hydrationMode = null)
+    public function find($id)
     {
         // Check identity map first
         if ($entity = $this->_em->getUnitOfWork()->tryGetById($id, $this->_class->rootEntityName)) {
@@ -102,48 +86,41 @@ class EntityRepository
      * Finds all entities in the repository.
      *
      * @param int $hydrationMode
-     * @return mixed
+     * @return array The entities.
      */
-    public function findAll($hydrationMode = null)
+    public function findAll()
     {
-        return $this->_createQuery()->execute(array(), $hydrationMode);
+        return $this->findBy(array());
     }
     
     /**
-     * findBy
+     * Finds entities by a set of criteria.
      *
      * @param string $column 
      * @param string $value 
-     * @param string $hydrationMode 
-     * @return void
+     * @return array
      */
-    protected function findBy($fieldName, $value, $hydrationMode = null)
+    public function findBy(array $criteria)
     {
-        return $this->_createQuery()->where($fieldName . ' = ?')->execute(array($value), $hydrationMode);
+        return $this->_em->getUnitOfWork()->getEntityPersister($this->_entityName)->loadAll($criteria);
     }
     
     /**
-     * findOneBy
+     * Finds a single entity by a set of criteria.
      *
      * @param string $column 
-     * @param string $value 
-     * @param string $hydrationMode 
-     * @return void
+     * @param string $value
+     * @return object
      */
-    protected function findOneBy($fieldName, $value, $hydrationMode = null)
+    public function findOneBy(array $criteria)
     {
-        $results = $this->_createQuery()->where($fieldName . ' = ?')
-                ->setMaxResults(1)
-                ->execute(array($value), $hydrationMode);
-        return $hydrationMode === Query::HYDRATE_ARRAY ? array_shift($results) : $results->getFirst();
+        return $this->_em->getUnitOfWork()->getEntityPersister($this->_entityName)->load($criteria);
     }
     
     /**
      * Adds support for magic finders.
-     * findByColumnName, findByRelationAlias
-     * findById, findByContactId, etc.
      *
-     * @return void
+     * @return array|object The found entity/entities.
      * @throws BadMethodCallException  If the method called is an invalid find* method
      *                                    or no find* method at all and therefore an invalid
      *                                    method call.
@@ -160,25 +137,16 @@ class EntityRepository
             throw new BadMethodCallException("Undefined method '$method'.");
         }
         
-        if (isset($by)) {
-            if ( ! isset($arguments[0])) {
-                throw DoctrineException::updateMe('You must specify the value to findBy.');
-            }
-            
-            $fieldName = Doctrine::tableize($by);
-            $hydrationMode = isset($arguments[1]) ? $arguments[1]:null;
-            
-            if ($this->_class->hasField($fieldName)) {
-                return $this->$method($fieldName, $arguments[0], $hydrationMode);
-            } else if ($this->_class->hasRelation($by)) {
-                $relation = $this->_class->getRelation($by);
-                if ($relation['type'] === Doctrine_Relation::MANY) {
-                    throw DoctrineException::updateMe('Cannot findBy many relationship.');
-                }
-                return $this->$method($relation['local'], $arguments[0], $hydrationMode);
-            } else {
-                throw DoctrineException::updateMe('Cannot find by: ' . $by . '. Invalid field or relationship alias.');
-            }
+        if ( ! isset($arguments[0])) {
+            throw DoctrineException::updateMe('You must specify the value to findBy.');
+        }
+
+        $fieldName = lcfirst(\Doctrine\Common\Util\Inflector::classify($by));
+
+        if ($this->_class->hasField($fieldName)) {
+            return $this->$method(array($fieldName => $arguments[0]));
+        } else {
+            throw \Doctrine\Common\DoctrineException::updateMe('Cannot find by: ' . $by . '. Invalid field.');
         }
     }
 }

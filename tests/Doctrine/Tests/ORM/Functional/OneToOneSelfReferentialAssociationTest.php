@@ -58,6 +58,10 @@ class OneToOneSelfReferentialAssociationTest extends \Doctrine\Tests\OrmFunction
         $this->assertLoadingOfAssociation($customer);
     }
     
+    /**
+     * @group mine
+     * @return unknown_type
+     */
     public function testLazyLoadsAssociation()
     {    
         $this->_createFixture();
@@ -66,7 +70,7 @@ class OneToOneSelfReferentialAssociationTest extends \Doctrine\Tests\OrmFunction
         $metadata = $this->_em->getClassMetadata('Doctrine\Tests\Models\ECommerce\ECommerceCustomer');
         $metadata->getAssociationMapping('mentor')->fetchMode = AssociationMapping::FETCH_LAZY;
         
-        $query = $this->_em->createQuery('select c from Doctrine\Tests\Models\ECommerce\ECommerceCustomer c');
+        $query = $this->_em->createQuery("select c from Doctrine\Tests\Models\ECommerce\ECommerceCustomer c where c.name='Luke Skywalker'");
         $result = $query->getResult();
         $customer = $result[0];
         $this->assertLoadingOfAssociation($customer);

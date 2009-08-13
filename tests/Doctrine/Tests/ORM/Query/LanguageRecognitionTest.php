@@ -47,8 +47,8 @@ class LanguageRecognitionTest extends \Doctrine\Tests\OrmTestCase
         }
         
         $parser = new \Doctrine\ORM\Query\Parser($query);
-        // We do NOT test SQL construction here. That only unnecessarily slows down the tests!
-        $parser->setTreeWalker(new \Doctrine\Tests\Mocks\MockTreeWalker(null, null, array()));
+        // We do NOT test SQL output here. That only unnecessarily slows down the tests!
+        $parser->setCustomOutputTreeWalker('Doctrine\Tests\Mocks\MockTreeWalker');
         
         return $parser->parse();
     }
@@ -338,6 +338,12 @@ class LanguageRecognitionTest extends \Doctrine\Tests\OrmTestCase
     public function testEmptyCollectionComparisonExpression()
     {
         $this->assertValidDql('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.phonenumbers IS EMPTY');
+    }
+    
+    public function testSingleValuedAssociationFieldInWhere()
+    {
+        $this->assertValidDql('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.address = ?1');
+        $this->assertValidDql('SELECT p FROM Doctrine\Tests\Models\CMS\CmsPhonenumber p WHERE p.user = ?1');
     }
     
     /**

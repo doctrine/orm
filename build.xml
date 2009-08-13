@@ -97,7 +97,7 @@
                 </fileset>
             </batchtest>
         </phpunit>
-        <!-- <phpunitreport infile="build/logs/testsuites.xml" format="frames" todir="reports/tests" />-->
+        <phpunitreport infile="build/logs/testsuites.xml" format="frames" todir="reports/tests" />
     </target>
     
     <!-- 

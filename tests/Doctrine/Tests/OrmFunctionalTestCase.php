@@ -85,12 +85,14 @@ class OrmFunctionalTestCase extends OrmTestCase
             $conn->executeUpdate('DELETE FROM ecommerce_features');
             $conn->executeUpdate('DELETE FROM ecommerce_products');
             $conn->executeUpdate('DELETE FROM ecommerce_shippings');
+            $conn->executeUpdate('UPDATE ecommerce_categories SET parent_id = NULL');
             $conn->executeUpdate('DELETE FROM ecommerce_categories');
         }
         if (isset($this->_usedModelSets['company'])) {
             $conn->executeUpdate('DELETE FROM company_persons_friends');
             $conn->executeUpdate('DELETE FROM company_managers');
             $conn->executeUpdate('DELETE FROM company_employees');
+            $conn->executeUpdate('UPDATE company_persons SET spouse_id = NULL');
             $conn->executeUpdate('DELETE FROM company_persons');
         }
         if (isset($this->_usedModelSets['generic'])) {
@@ -155,9 +157,8 @@ class OrmFunctionalTestCase extends OrmTestCase
         $config = new \Doctrine\ORM\Configuration();
         $config->setMetadataCacheImpl(self::$_metadataCacheImpl);
         $config->setQueryCacheImpl(self::$_queryCacheImpl);
-        $eventManager = new \Doctrine\Common\EventManager();
         $conn = $this->sharedFixture['conn'];
         
-        return \Doctrine\ORM\EntityManager::create($conn, $config, $eventManager);
+        return \Doctrine\ORM\EntityManager::create($conn, $config);
     }
 }

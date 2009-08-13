@@ -21,8 +21,8 @@
 
 namespace Doctrine\ORM\Proxy;
 
-use Doctrine\ORM\EntityManager;
-use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\EntityManager,
+    Doctrine\ORM\Mapping\ClassMetadata;
 
 /**
  * The ProxyClassGenerator is used to generate proxy objects for entities at runtime.
@@ -42,7 +42,8 @@ class ProxyClassGenerator
 	 * Generates and stores proxy class files in the given cache directory.
 	 *
 	 * @param EntityManager $em
-	 * @param string $cacheDir
+	 * @param string $cacheDir The directory where generated proxy classes will be saved.
+	 *                         If not set, sys_get_temp_dir() is used.
      */
     public function __construct(EntityManager $em, $cacheDir = null)
     {
@@ -84,7 +85,7 @@ class ProxyClassGenerator
         return $this->_generateClass($originalClassName, $proxyClassName, self::$_assocProxyClassTemplate);
     }
 
-    protected function _generateClass($originalClassName, $proxyClassName, $file)
+    private function _generateClass($originalClassName, $proxyClassName, $file)
     {
         $proxyFullyQualifiedClassName = self::$_ns . $proxyClassName;
         
@@ -124,7 +125,7 @@ class ProxyClassGenerator
         return $proxyFullyQualifiedClassName;
     }
 
-    protected function _generateMethods(ClassMetadata $class)
+    private function _generateMethods(ClassMetadata $class)
     {
         $methods = '';
         
@@ -165,7 +166,7 @@ class ProxyClassGenerator
         return $methods;
     }
 
-    public function _generateSleep(ClassMetadata $class)
+    private function _generateSleep(ClassMetadata $class)
     {
         $sleepImpl = '';
         

@@ -109,14 +109,16 @@ class ProxyClassGeneratorTest extends \Doctrine\Tests\OrmTestCase
         $proxy->getDescription();
     }
 
-    /**
-     * @expectedException PHPUnit_Framework_Error
-     */
     public function testReferenceProxyRespectsMethodsParametersTypeHinting()
     {
         $proxyClass = $this->_generator->generateReferenceProxyClass('Doctrine\Tests\Models\ECommerce\ECommerceFeature');
         $proxy = new $proxyClass($this->_getMockPersister(), null);
-        $proxy->setProduct(array('invalid parameter'));
+        
+        $method = new \ReflectionMethod(get_class($proxy), 'setProduct');
+        $params = $method->getParameters();
+        
+        $this->assertEquals(1, count($params));
+        $this->assertEquals('Doctrine\Tests\Models\ECommerce\ECommerceProduct', $params[0]->getClass()->getName());
     }
 
     protected function _getMockPersister()

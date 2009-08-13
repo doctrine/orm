@@ -116,11 +116,18 @@ class Parser
     private $_nestingLevel = 0;
     
     /**
-     * Tree walker chain
+     * Any additional custom tree walkers that modify the AST.
      *
+     * @var array
+     */
+    private $_customTreeWalkers = array();
+    
+    /**
+     * The custom last tree walker, if any, that is responsible for producing the output.
+     * 
      * @var TreeWalker
      */
-    private $_treeWalker = 'Doctrine\ORM\Query\SqlWalker';
+    private $_customOutputWalker;
 
     /**
      * Creates a new query parser object.
@@ -136,13 +143,24 @@ class Parser
     }
 
     /**
-     * Sets the custom tree walker.
+     * Sets a custom tree walker that produces output.
+     * This tree walker will be run last over the AST, after any other walkers.
      * 
-     * @param string $treeWalker
+     * @param string $className
      */
-    public function setTreeWalker($treeWalker)
+    public function setCustomOutputTreeWalker($className)
     {
-        $this->_treeWalker = $treeWalker;
+        $this->_customOutputWalker = $className;
+    }
+    
+    /**
+     * Adds a custom tree walker for modifying the AST.
+     * 
+     * @param string $className
+     */
+    public function addCustomTreeWalker($className)
+    {
+        $this->_customTreeWalkers[] = $className;
     }
 
     /**
@@ -262,26 +280,38 @@ class Parser
         if ($this->_lexer->lookahead !== null) {
             $this->syntaxError('end of string');
         }
+        
+        if ($customWalkers = $this->_query->getHint(Query::HINT_CUSTOM_TREE_WALKERS)) {
+            $this->_customTreeWalkers = $customWalkers;
+        }
 
-        // Create TreeWalker who creates the SQL from the AST
-        $treeWalker = new $this->_treeWalker(
-            $this->_query, $this->_parserResult, $this->_queryComponents
-        );
-        /*if ($this->_treeWalkers) {
-            // We got additional walkers, so build a chain.
-            $treeWalker = new TreeWalkerChain($this->_query, $this->_parserResult, $this->_queryComponents);
-            foreach ($this->_treeWalkers as $walker) {
-                $treeWalker->addTreeWalker(new $walker($this->_query, $this->_parserResult, $this->_queryComponents));
+        // Run any custom tree walkers over the AST
+        if ($this->_customTreeWalkers) {
+            $treeWalkerChain = new TreeWalkerChain($this->_query, $this->_parserResult, $this->_queryComponents);
+            foreach ($this->_customTreeWalkers as $walker) {
+                $treeWalkerChain->addTreeWalker($walker);
             }
-            $treeWalker->setLastTreeWalker('Doctrine\ORM\Query\SqlWalker');
-        } else {
-            $treeWalker = new SqlWalker(
+            if ($AST instanceof AST\SelectStatement) {
+                $treeWalkerChain->walkSelectStatement($AST);
+            } else if ($AST instanceof AST\UpdateStatement) {
+                $treeWalkerChain->walkUpdateStatement($AST);
+            } else {
+                $treeWalkerChain->walkDeleteStatement($AST);
+            }
+        }
+        
+        if ($this->_customOutputWalker) {
+            $outputWalker = new $this->_customOutputWalker(
                 $this->_query, $this->_parserResult, $this->_queryComponents
             );
-        }*/
+        } else {
+            $outputWalker = new SqlWalker(
+                $this->_query, $this->_parserResult, $this->_queryComponents
+            );
+        }
 
         // Assign an SQL executor to the parser result
-        $this->_parserResult->setSqlExecutor($treeWalker->getExecutor($AST));
+        $this->_parserResult->setSqlExecutor($outputWalker->getExecutor($AST));
 
         return $this->_parserResult;
     }

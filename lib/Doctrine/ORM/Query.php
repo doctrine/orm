@@ -21,8 +21,8 @@
 
 namespace Doctrine\ORM;
 
-use Doctrine\ORM\Query\Parser;
-use Doctrine\ORM\Query\QueryException;
+use Doctrine\ORM\Query\Parser,
+    Doctrine\ORM\Query\QueryException;
 
 /**
  * A Query object represents a DQL query.
@@ -75,6 +75,7 @@ final class Query extends AbstractQuery
      */
     const HINT_INCLUDE_META_COLUMNS = 'doctrine.includeMetaColumns';
     
+    const HINT_CUSTOM_TREE_WALKERS = 'doctrine.customTreeWalkers';
     //const HINT_READ_ONLY = 'doctrine.readOnly';
 
     /**
@@ -169,6 +170,8 @@ final class Query extends AbstractQuery
         // Check query cache
         if ($queryCache = $this->getQueryCacheDriver()) {
             // Calculate hash for dql query.
+            // TODO: Probably need to include query hints in hash calculation, because query hints
+            //       can have influence on the SQL.
             $hash = md5($this->getDql() . 'DOCTRINE_QUERY_CACHE_SALT');
             $cached = ($this->_expireQueryCache) ? false : $queryCache->fetch($hash);
 

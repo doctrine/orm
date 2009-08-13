@@ -123,7 +123,7 @@ class BasicFunctionalTest extends \Doctrine\Tests\OrmFunctionalTestCase
     }
 
     public function testBasicManyToMany()
-    {
+    {        
         $user = new CmsUser;
         $user->name = 'Guilherme';
         $user->username = 'gblanco';

@@ -382,4 +382,17 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
             "SELECT c0_.id AS id0, c0_.status AS status1, c0_.username AS username2, c0_.name AS name3 FROM cms_users c0_ WHERE (SELECT COUNT(c1_.user_id) FROM cms_phonenumbers c1_ WHERE c1_.user_id = c0_.id) > 0"
         );
     }
+    
+    /* Not yet implemented, needs more thought
+    public function testSingleValuedAssociationFieldInWhere()
+    {
+        $this->assertSqlGeneration(
+            "SELECT p FROM Doctrine\Tests\Models\CMS\CmsPhonenumber p WHERE p.user = ?1",
+            "SELECT c0_.phonenumber AS phonenumber0 FROM cms_phonenumbers c0_ WHERE c0_.user_id = ?"
+        );
+        $this->assertSqlGeneration(
+            "SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.address = ?1",
+            "SELECT c0_.id AS id0, c0_.status AS status1, c0_.username AS username2, c0_.name AS name3 FROM cms_users c0_ WHERE c0_.id = (SELECT c1_.user_id FROM cms_addresses c1_ WHERE c1_.id = ?)"
+        );
+    }*/
 }

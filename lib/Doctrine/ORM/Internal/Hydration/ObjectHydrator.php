@@ -207,11 +207,11 @@ class ObjectHydrator extends AbstractHydrator
                                 );
                         $pColl->setOwner($entity, $assoc);
                         $reflField->setValue($entity, $pColl);
-                        if ( ! $assoc->isLazilyFetched()) {
+                        if ($assoc->isLazilyFetched()) {
+                            $pColl->setInitialized(false);
+                        } else {
                             //TODO: Allow more efficient and configurable batching of these loads
                             $assoc->load($entity, $pColl, $this->_em);
-                        } else {
-                            $pColl->setInitialized(false);
                         }
                     }
                 }

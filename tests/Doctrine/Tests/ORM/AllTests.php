@@ -23,7 +23,6 @@ class AllTests
         $suite->addTestSuite('Doctrine\Tests\ORM\EntityManagerTest');
         $suite->addTestSuite('Doctrine\Tests\ORM\CommitOrderCalculatorTest');
         $suite->addTestSuite('Doctrine\Tests\ORM\QueryBuilderTest');
-        $suite->addTestSuite('Doctrine\Tests\ORM\Proxy\ProxyClassGeneratorTest');
         $suite->addTest(Query\AllTests::suite());
         $suite->addTest(Hydration\AllTests::suite());
         $suite->addTest(Entity\AllTests::suite());
@@ -32,6 +31,7 @@ class AllTests
         $suite->addTest(Mapping\AllTests::suite());
         $suite->addTest(Functional\AllTests::suite());
         $suite->addTest(Id\AllTests::suite());
+        $suite->addTest(Proxy\AllTests::suite());
 
         return $suite;
     }

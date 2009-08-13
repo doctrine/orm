@@ -47,7 +47,6 @@ class Driver implements \Doctrine\DBAL\Driver
             $password,
             $driverOptions
         );
-        $conn->setAttribute(Connection::ATTR_AUTOCOMMIT, false);
         return $conn;
     }
 

@@ -159,13 +159,6 @@ class UnitOfWork implements PropertyChangedListener
     private $_collectionDeletions = array();
 
     /**
-     * All pending collection creations.
-     *
-     * @var array
-     */
-    //private $_collectionCreations = array();
-
-    /**
      * All pending collection updates.
      *
      * @var array
@@ -304,7 +297,6 @@ class UnitOfWork implements PropertyChangedListener
                 $this->getCollectionPersister($collectionToUpdate->getMapping())
                         ->update($collectionToUpdate);
             }
-            //TODO: collection recreations (insertions of complete collections)
 
             // Entity deletions come last and need to be in reverse commit order
             if ($this->_entityDeletions) {
@@ -377,7 +369,7 @@ class UnitOfWork implements PropertyChangedListener
     public function computeChangeSets()
     {
         // Compute changes for INSERTed entities first. This must always happen.
-        foreach ($this->_entityInsertions as $entity) {
+        foreach ($this->_entityInsertions as $oid => $entity) {
             $class = $this->_em->getClassMetadata(get_class($entity));
             $this->_computeEntityChanges($class, $entity);
             // Look for changes in associations of the entity
@@ -403,9 +395,9 @@ class UnitOfWork implements PropertyChangedListener
                     $this->_scheduledForDirtyCheck[$className] : $entities;
 
             foreach ($entitiesToProcess as $entity) {
-                // Only MANAGED entities that are NOT INSERTED are processed here.
+                // Only MANAGED entities that are NOT SCHEDULED FOR INSERTION are processed here.
                 $oid = spl_object_hash($entity);
-                if (isset($this->_entityStates[$oid]) && ! isset($entityInsertions[$oid])) {
+                if ( ! isset($this->_entityInsertions[$oid]) && isset($this->_entityStates[$oid])) {
                     $this->_computeEntityChanges($class, $entity);
                     // Look for changes in associations of the entity
                     foreach ($class->associationMappings as $assoc) {
@@ -581,7 +573,6 @@ class UnitOfWork implements PropertyChangedListener
                     $data[$name] = $refProp->getValue($entry);
                     $changeSet[$name] = array(null, $data[$name]);
                     if (isset($targetClass->associationMappings[$name])) {
-                        //TODO: Prevent infinite recursion
                         $this->_computeAssociationChanges($targetClass->associationMappings[$name], $data[$name]);
                     }
                 }
@@ -600,7 +591,7 @@ class UnitOfWork implements PropertyChangedListener
     }
     
     /**
-     * INTERNAL, EXPERIMENTAL:
+     * INTERNAL:
      * Computes the changeset of an individual entity, independently of the
      * computeChangeSets() routine that is used at the beginning of a UnitOfWork#commit().
      * 
@@ -810,7 +801,7 @@ class UnitOfWork implements PropertyChangedListener
                     if ( ! $this->_commitOrderCalculator->hasClass($targetClass->name)) {
                         $this->_commitOrderCalculator->addClass($targetClass);
                     }
-                    // add dependency
+                    // add dependency ($targetClass before $class)
                     $this->_commitOrderCalculator->addDependency($targetClass, $class);
                 }
             }
@@ -823,7 +814,7 @@ class UnitOfWork implements PropertyChangedListener
      * Schedules an entity for insertion into the database.
      * If the entity already has an identifier, it will be added to the identity map.
      *
-     * @param object $entity
+     * @param object $entity The entity to schedule for insertion.
      */
     public function scheduleForInsert($entity)
     {
@@ -840,13 +831,14 @@ class UnitOfWork implements PropertyChangedListener
         }
 
         $this->_entityInsertions[$oid] = $entity;
+        
         if (isset($this->_entityIdentifiers[$oid])) {
             $this->addToIdentityMap($entity);
         }
     }
 
     /**
-     * Checks whether an entity is registered as new on this unit of work.
+     * Checks whether an entity is scheduled for insertion.
      *
      * @param object $entity
      * @return boolean
@@ -857,9 +849,9 @@ class UnitOfWork implements PropertyChangedListener
     }
 
     /**
-     * Registers a dirty entity.
+     * Schedules an entity for being updated.
      *
-     * @param object $entity
+     * @param object $entity The entity to schedule for being updated.
      */
     public function scheduleForUpdate($entity)
     {
@@ -880,7 +872,7 @@ class UnitOfWork implements PropertyChangedListener
     /**
      * INTERNAL:
      * Schedules an extra update that will be executed immediately after the
-     * regular entity updates.
+     * regular entity updates within the currently running commit cycle.
      * 
      * @param $entity
      * @param $changeset
@@ -1588,7 +1580,6 @@ class UnitOfWork implements PropertyChangedListener
         $this->_entityUpdates =
         $this->_entityDeletions =
         $this->_collectionDeletions =
-        //$this->_collectionCreations =
         $this->_collectionUpdates =
         $this->_orphanRemovals = array();
         $this->_commitOrderCalculator->clear();
@@ -1778,7 +1769,7 @@ class UnitOfWork implements PropertyChangedListener
      */
     public function tryGetById($id, $rootClassName)
     {
-        $idHash = implode(' ', (array)$id);
+        $idHash = implode(' ', (array) $id);
         if (isset($this->_identityMap[$rootClassName][$idHash])) {
             return $this->_identityMap[$rootClassName][$idHash];
         }
@@ -1923,24 +1914,5 @@ class UnitOfWork implements PropertyChangedListener
         } else {
             $this->_entityUpdates[$oid] = $entity;
         }
-    }
-    
-    public function dump()
-    {
-        var_dump($this->_identityMap);
-        var_dump($this->_entityIdentifiers);
-        var_dump($this->_originalEntityData);
-        var_dump($this->_entityChangeSets);
-        var_dump($this->_entityStates);
-        var_dump($this->_scheduledForDirtyCheck);
-        var_dump($this->_entityInsertions);
-        var_dump($this->_entityUpdates);
-        var_dump($this->_entityDeletions);
-        var_dump($this->_collectionDeletions);
-        //$this->_collectionCreations =
-        var_dump($this->_collectionUpdates);
-        var_dump($this->_orphanRemovals);
-        //var_dump($this->_commitOrderCalculator->clear();
-        
     }
 }

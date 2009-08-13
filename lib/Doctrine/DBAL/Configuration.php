@@ -87,7 +87,7 @@ class Configuration
     public function setCustomTypes(array $types, $override = false)
     {
         foreach ($types as $name => $typeClassName) {
-            $method = (Type::hasType($name) ? 'override' : 'add') . 'Type';
+            $method = (Type::hasType($name) && $override ? 'override' : 'add') . 'Type';
             
             Type::$method($name, $typeClassName);
         }

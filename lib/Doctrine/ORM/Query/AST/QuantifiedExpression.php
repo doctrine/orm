@@ -42,11 +42,6 @@ class QuantifiedExpression extends Node
         $this->subselect = $subselect;
     }
 
-    public function getSubselect()
-    {
-        return $this->_subselect;
-    }
-
     public function isAll()
     {
         return strtoupper($this->type) == 'ALL';

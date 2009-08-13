@@ -21,8 +21,8 @@
 
 namespace Doctrine\Tests\ORM;
 
-use Doctrine\ORM\QueryBuilder;
-use Doctrine\ORM\Query\Expr;
+use Doctrine\ORM\QueryBuilder,
+    Doctrine\ORM\Query\Expr;
 
 require_once __DIR__ . '/../TestInit.php';
 
@@ -36,8 +36,6 @@ require_once __DIR__ . '/../TestInit.php';
  * @link        http://www.phpdoctrine.org
  * @since       2.0
  * @version     $Revision$
- * @todo Remove QueryBuilder::create. Use constructor in tests instead. Users will use
- *       $em->createQueryBuilder().
  */
 class QueryBuilderTest extends \Doctrine\Tests\OrmTestCase
 {

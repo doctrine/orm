@@ -416,6 +416,28 @@ class StandardEntityPersister
     }
     
     /**
+     * Loads all entities by a list of field criteria.
+     * 
+     * @param array $criteria
+     * @return array
+     */
+    public function loadAll(array $criteria = array())
+    {
+        $entities = array();
+        
+        $stmt = $this->_conn->prepare($this->_getSelectEntitiesSql($criteria));
+        $stmt->execute(array_values($criteria));
+        $result = $stmt->fetchAll(Connection::FETCH_ASSOC);
+        $stmt->closeCursor();
+        
+        foreach ($result as $row) {
+            $entities[] = $this->_createEntity($row);
+        }
+        
+        return $entities;
+    }
+    
+    /**
      * Loads a collection of entities into a one-to-many association.
      *
      * @param array $criteria The criteria by which to select the entities.
@@ -570,7 +592,7 @@ class StandardEntityPersister
         return 'SELECT ' . $columnList 
              . ' FROM ' . $this->_class->getQuotedTableName($this->_platform)
              . $joinSql
-             . ' WHERE ' . $conditionSql;
+             . ($conditionSql ? ' WHERE ' . $conditionSql : '');
     }
     
     /**

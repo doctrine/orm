@@ -30,8 +30,6 @@ use Doctrine\ORM\Query,
  *
  * @author Roman Borschel <roman@code-factory.org>
  * @since 2.0
- * @todo Code review for schema usage with table names.
- *       (Prepend schema name to tables IF schema is defined AND platform supports them)
  */
 class SqlWalker implements TreeWalker
 {
@@ -417,14 +415,7 @@ class SqlWalker implements TreeWalker
                     $sql .= $this->walkIdentificationVariable($dqlAlias, $fieldName) . '.';
                 }
 
-                if (isset($class->associationMappings[$fieldName])) {
-                    //FIXME: Inverse side support
-                    //FIXME: Throw exception on composite key
-                    $assoc = $class->associationMappings[$fieldName];
-                    $sql .= $assoc->getQuotedJoinColumnName($assoc->joinColumns[0]['name'], $this->_platform);
-                } else {
-                    $sql .= $class->getQuotedColumnName($fieldName, $this->_platform);
-                }                
+                $sql .= $class->getQuotedColumnName($fieldName, $this->_platform);      
                 break;
                 
             case AST\PathExpression::TYPE_COLLECTION_VALUED_ASSOCIATION:
@@ -604,7 +595,7 @@ class SqlWalker implements TreeWalker
      */
     public function walkHavingClause($havingClause)
     {
-        $condExpr = $havingClause->getConditionalExpression();
+        $condExpr = $havingClause->conditionalExpression;
         
         return ' HAVING ' . implode(
             ' OR ', array_map(array($this, 'walkConditionalTerm'), $condExpr->conditionalTerms)
@@ -846,7 +837,7 @@ class SqlWalker implements TreeWalker
     public function walkQuantifiedExpression($qExpr)
     {
         return ' ' . strtoupper($qExpr->type) 
-             . '(' . $this->walkSubselect($qExpr->getSubselect()) . ')';
+             . '(' . $this->walkSubselect($qExpr->subselect) . ')';
     }
 
     /**
@@ -921,7 +912,6 @@ class SqlWalker implements TreeWalker
         
         if ($expr instanceof AST\PathExpression) {
             $sql .= ' ' . $this->walkPathExpression($expr);
-            //...
         } else if ($expr instanceof AST\AggregateExpression) {
             if ( ! $simpleSelectExpression->fieldIdentificationVariable) {
                 $alias = $this->_scalarAliasCounter++;
@@ -932,8 +922,8 @@ class SqlWalker implements TreeWalker
             $sql .= $this->walkAggregateExpression($expr) . ' AS dctrn__' . $alias;
         } else {
             // IdentificationVariable
-            // FIXME: Composite key support, or select all columns? Does that make
-            //       in a subquery?
+            // FIXME: Composite key support, or select all columns? Does that make sense
+            //        in a subquery?
             $class = $this->_queryComponents[$expr]['metadata'];
             $sql .= ' ' . $this->getSqlTableAlias($class->getTableName(), $expr) . '.'
                   . $class->getQuotedColumnName($class->identifier[0], $this->_platform);
@@ -1420,7 +1410,7 @@ class SqlWalker implements TreeWalker
         if ($leftExpr instanceof AST\Node) {
             $sql .= $leftExpr->dispatch($this);
         } else {
-            $sql .= $this->_conn->quote($leftExpr);
+            $sql .= is_numeric($leftExpr) ? $leftExpr : $this->_conn->quote($leftExpr);
         }
         
         $sql .= ' ' . $compExpr->operator . ' ';
@@ -1428,7 +1418,7 @@ class SqlWalker implements TreeWalker
         if ($rightExpr instanceof AST\Node) {
             $sql .= $rightExpr->dispatch($this);
         } else {
-            $sql .= $this->_conn->quote($rightExpr);
+            $sql .= is_numeric($rightExpr) ? $rightExpr : $this->_conn->quote($rightExpr);
         }
 
         return $sql;

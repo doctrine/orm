@@ -141,7 +141,7 @@ interface Statement
      *                                  bound parameters in the SQL statement being executed.
      * @return boolean                  Returns TRUE on success or FALSE on failure.
      */
-    function execute($params = null);
+    function execute($params = array());
 
     /**
      * fetch

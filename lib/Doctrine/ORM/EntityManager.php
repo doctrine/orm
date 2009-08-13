@@ -585,19 +585,18 @@ class EntityManager
      */
     public static function create($conn, Configuration $config = null, EventManager $eventManager = null)
     {
+        $config = $config ?: new Configuration();
+
         if (is_array($conn)) {
-            $conn = \Doctrine\DBAL\DriverManager::getConnection($conn, $config, $eventManager);
-        } else if ( ! $conn instanceof Connection) {
+            $conn = \Doctrine\DBAL\DriverManager::getConnection($conn, $config, ($eventManager ?: new EventManager()));
+        } else if ($conn instanceof Connection) {
+            if ($eventManager !== null && $conn->getEventManager() !== $eventManager) {
+                 throw DoctrineException::updateMe("Cannot use different EventManagers for EntityManager and Connection.");
+            }
+        } else {
             throw DoctrineException::updateMe("Invalid parameter '$conn'.");
         }
-        
-        if ($config === null) {
-            $config = new Configuration();
-        }
-        if ($eventManager === null) {
-            $eventManager = new EventManager();
-        }
-        
-        return new EntityManager($conn, $config, $eventManager);
+
+        return new EntityManager($conn, $config, $conn->getEventManager());
     }
 }

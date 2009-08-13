@@ -87,11 +87,11 @@ class SingleTableInheritanceTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $affected = $query->execute();
         $this->assertEquals(1, $affected);
-
+        
         $query = $this->_em->createQuery("delete Doctrine\Tests\ORM\Functional\ParentEntity e");
 
         $affected = $query->execute();
-        $this->assertEquals(2, $affected);
+        $this->assertEquals(2, $affected);        
     }
 }
 
