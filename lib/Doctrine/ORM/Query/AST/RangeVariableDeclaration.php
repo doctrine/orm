@@ -34,14 +34,12 @@ namespace Doctrine\ORM\Query\AST;
  */
 class RangeVariableDeclaration extends Node
 {
-    public $classMetadata;
     public $abstractSchemaName;
     public $aliasIdentificationVariable;
 
-    public function __construct($classMetadata, $aliasIdentificationVar)
+    public function __construct($abstractSchemaName, $aliasIdentificationVar)
     {
-        $this->classMetadata = $classMetadata;
-        $this->abstractSchemaName = $classMetadata->name;
+        $this->abstractSchemaName = $abstractSchemaName;
         $this->aliasIdentificationVariable = $aliasIdentificationVar;
     }    
     

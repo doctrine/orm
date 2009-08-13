@@ -601,11 +601,7 @@ class Parser
         $token = ($token) ?: $this->_lexer->lookahead;
     
         if ( ! isset($this->_queryComponents[$identVariable])) {
-            echo '[Query Components: ' . var_export($this->_queryComponents, true) . ']';
-        
-            $this->semanticalError(
-                "'$idVariable' is not defined", $token
-            );
+            $this->semanticalError("'$idVariable' is not defined", $token);
         }
         
         // Validate if identification variable nesting level is lower or equal than the current one
@@ -1402,9 +1398,7 @@ class Parser
         );
         $this->_queryComponents[$aliasIdentificationVariable] = $queryComponent;
 
-        return new AST\RangeVariableDeclaration(
-            $classMetadata, $aliasIdentificationVariable
-        );
+        return new AST\RangeVariableDeclaration($abstractSchemaName, $aliasIdentificationVariable);
     }
 
     /**
