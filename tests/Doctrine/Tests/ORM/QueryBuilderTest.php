@@ -121,9 +121,22 @@ class QueryBuilderTest extends \Doctrine\Tests\OrmTestCase
         $qb = $this->_em->createQueryBuilder()
             ->select('u', 'a')
             ->from('Doctrine\Tests\Models\CMS\CmsUser', 'u')
-            ->innerJoin('u', 'articles', 'a');
+            ->innerJoin('u.articles', 'a');
 
         $this->assertValidQueryBuilder($qb, 'SELECT u, a FROM Doctrine\Tests\Models\CMS\CmsUser u INNER JOIN u.articles a');
+    }
+    
+    public function testComplexInnerJoin()
+    {
+        $qb = $this->_em->createQueryBuilder()
+            ->select('u', 'a')
+            ->from('Doctrine\Tests\Models\CMS\CmsUser', 'u')
+            ->innerJoin('u.articles', 'a', 'ON', 'u.id = a.author_id');
+
+        $this->assertValidQueryBuilder(
+            $qb, 
+            'SELECT u, a FROM Doctrine\Tests\Models\CMS\CmsUser u INNER JOIN u.articles a ON u.id = a.author_id'
+        );
     }
 
     public function testLeftJoin()
@@ -131,7 +144,7 @@ class QueryBuilderTest extends \Doctrine\Tests\OrmTestCase
         $qb = $this->_em->createQueryBuilder()
             ->select('u', 'a')
             ->from('Doctrine\Tests\Models\CMS\CmsUser', 'u')
-            ->leftJoin('u', 'articles', 'a');
+            ->leftJoin('u.articles', 'a');
 
         $this->assertValidQueryBuilder($qb, 'SELECT u, a FROM Doctrine\Tests\Models\CMS\CmsUser u LEFT JOIN u.articles a');
     }

@@ -72,27 +72,42 @@ class ExprTest extends \Doctrine\Tests\OrmTestCase
 
     public function testExistsExpr()
     {
-        $this->assertEquals('EXISTS(SUBQUERY)', (string) Expr::exists('SUBQUERY'));
+        $qb = $this->_em->createQueryBuilder();
+        $qb->select('u')->from('User', 'u')->where('u.name = ?1');
+        
+        $this->assertEquals('EXISTS(SELECT u FROM User u WHERE (u.name = ?1))', (string) Expr::exists($qb));
     }
 
     public function testAllExpr()
     {
-        $this->assertEquals('ALL(SUBQUERY)', (string) Expr::all('SUBQUERY'));
+        $qb = $this->_em->createQueryBuilder();
+        $qb->select('u')->from('User', 'u')->where('u.name = ?1');
+    
+        $this->assertEquals('ALL(SELECT u FROM User u WHERE (u.name = ?1))', (string) Expr::all($qb));
     }
 
     public function testSomeExpr()
     {
-        $this->assertEquals('SOME(SUBQUERY)', (string) Expr::some('SUBQUERY'));
+        $qb = $this->_em->createQueryBuilder();
+        $qb->select('u')->from('User', 'u')->where('u.name = ?1');
+    
+        $this->assertEquals('SOME(SELECT u FROM User u WHERE (u.name = ?1))', (string) Expr::some($qb));
     }
 
     public function testAnyExpr()
     {
-        $this->assertEquals('ANY(SUBQUERY)', (string) Expr::any('SUBQUERY'));
+        $qb = $this->_em->createQueryBuilder();
+        $qb->select('u')->from('User', 'u')->where('u.name = ?1');
+    
+        $this->assertEquals('ANY(SELECT u FROM User u WHERE (u.name = ?1))', (string) Expr::any($qb));
     }
 
     public function testNotExpr()
     {
-        $this->assertEquals('NOT(SUBQUERY)', (string) Expr::not('SUBQUERY'));
+        $qb = $this->_em->createQueryBuilder();
+        $qb->select('u')->from('User', 'u')->where('u.name = ?1');
+    
+        $this->assertEquals('NOT(SELECT u FROM User u WHERE (u.name = ?1))', (string) Expr::not($qb));
     }
 
     public function testAndExpr()
@@ -250,6 +265,12 @@ class ExprTest extends \Doctrine\Tests\OrmTestCase
         $selectExpr->add('u.username');
 
         $this->assertEquals('u.id, u.username', (string) $selectExpr);
+    }
+    
+    public function testFromExpr()
+    {
+        $this->assertEquals('User', (string) Expr::from('User'));
+        $this->assertEquals('User u', (string) Expr::from('User', 'u'));
     }
 
     public function testExprBaseCount()

@@ -233,7 +233,7 @@ class QueryBuilder
             return $this;
         }
 
-        return $this->add('from', $delete . ' ' . $alias);
+        return $this->add('from', Expr::from($delete, $alias));
     }
 
     public function update($update = null, $alias = null)
@@ -244,7 +244,7 @@ class QueryBuilder
             return $this;
         }
 
-        return $this->add('from', $update . ' ' . $alias);
+        return $this->add('from', Expr::from($update, $alias));
     }
 
     public function set($key, $value)
@@ -256,21 +256,23 @@ class QueryBuilder
     {
         return $this->add('from', Expr::from($from, $alias), true);
     }
-
-    public function innerJoin($parentAlias, $join, $alias, $condition = null)
+    
+    public function innerJoin($join, $alias = null, $conditionType = null, $condition = null)
     {
-        $join = 'INNER JOIN ' . $parentAlias . '.' . $join . ' '
+        /*$join = 'INNER JOIN ' . $parentAlias . '.' . $join . ' '
         . $alias . (isset($condition) ? ' ' . $condition : null);
 
-        return $this->add('from', $join, true);
+        return $this->add('from', $join, true);*/
+        return $this->add('from', Expr::innerJoin($join, $alias, $conditionType, $condition), true);
     }
 
-    public function leftJoin($parentAlias, $join, $alias, $condition = null)
+    public function leftJoin($join, $alias = null, $conditionType = null, $condition = null)
     {
-        $join = 'LEFT JOIN ' . $parentAlias . '.' . $join . ' '
+        /*$join = 'LEFT JOIN ' . $parentAlias . '.' . $join . ' '
         . $alias . (isset($condition) ? ' ' . $condition : null);
 
-        return $this->add('from', $join, true);
+        return $this->add('from', $join, true);*/
+        return $this->add('from', Expr::leftJoin($join, $alias, $conditionType, $condition), true);
     }
 
     public function where($where)
@@ -463,5 +465,10 @@ class QueryBuilder
     private function _getDqlQueryPart($queryPartName)
     {
         return $this->_dqlParts[$queryPartName];
+    }
+    
+    public function __toString()
+    {
+        return $this->getDql();
     }
 }
