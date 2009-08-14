@@ -47,6 +47,11 @@ class Expr
     {
         return new Expr\Select(func_get_args());
     }
+    
+    public static function from($from, $alias = null)
+    {
+        return new Expr\From($from, $alias);
+    }
 
     public static function orderBy($sort = null, $order = null)
     {
@@ -113,7 +118,7 @@ class Expr
         return new Expr\Func('COUNT', array($x));
     }
 
-    public static function countDistinct()
+    public static function countDistinct($x)
     {
         return 'COUNT(DISTINCT ' . implode(', ', func_get_args()) . ')';
     }
@@ -183,14 +188,9 @@ class Expr
         return new Expr\Func($x . ' NOT IN', (array) $y);
     }
 
-    public static function notEqual($x, $y)
-    {
-        return new Expr\Comparison($x, '!=', $y);
-    }
-
     public static function like($x, $y)
     {
-        return new Expr\Math($x, 'LIKE', $y);
+        return new Expr\Comparison($x, 'LIKE', $y);
     }
 
     public static function concat($x, $y)
@@ -232,8 +232,8 @@ class Expr
         return new Expr\Func('BETWEEN', array($val, $x, $y));
     }
 
-    public static function trim()
+    public static function trim($x)
     {
-        return new Expr\Func('TRIM', func_get_args());
+        return new Expr\Func('TRIM', $x);
     }
 }

@@ -22,7 +22,7 @@
 namespace Doctrine\ORM\Query\Expr;
 
 /**
- * Expression class for generating DQL functions
+ * Expression class for DQL from
  *
  * @author      Jonathan H. Wage <jonwage@gmail.com>
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
@@ -30,19 +30,19 @@ namespace Doctrine\ORM\Query\Expr;
  * @since       2.0
  * @version     $Revision$
  */
-class Func
+class From
 {
-    private $_name;
-    private $_arguments;
+    private $_from;
+    private $_alias;
 
-    public function __construct($name, $arguments)
+    public function __construct($from, $alias = null)
     {
-        $this->_name       = $name;
-        $this->_arguments  = (array) $arguments;
+        $this->_from  = $from;
+        $this->_alias  = $alias;
     }
 
     public function __toString()
     {
-        return $this->_name . '(' . implode(', ', $this->_arguments) . ')';
+        return $this->_from . ($this->_alias ? ' ' . $this->_alias : '');
     }
 }

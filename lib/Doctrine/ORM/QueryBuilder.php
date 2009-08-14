@@ -252,9 +252,9 @@ class QueryBuilder
         return $this->add('set', Expr::eq($key, $value), true);
     }
 
-    public function from($from, $alias)
+    public function from($from, $alias = null)
     {
-        return $this->add('from', $from . ' ' . $alias, true);
+        return $this->add('from', Expr::from($from, $alias), true);
     }
 
     public function innerJoin($parentAlias, $join, $alias, $condition = null)

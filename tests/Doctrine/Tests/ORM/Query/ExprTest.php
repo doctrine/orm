@@ -140,11 +140,6 @@ class ExprTest extends \Doctrine\Tests\OrmTestCase
         $this->assertEquals('1 = 1', (string) Expr::eq(1, 1));
     }
 
-    public function testNotEqualExpr()
-    {
-        $this->assertEquals('1 != 2', (string) Expr::notEqual(1, 2));
-    }
-
     public function testLikeExpr()
     {
         $this->assertEquals('a.description LIKE :description', (string) Expr::like('a.description', ':description'));
