@@ -4,7 +4,7 @@
     Doctrine 2 build file.
 -->
 
-<project name="Doctrine2" default="dist-all" basedir=".">
+<project name="Doctrine2" default="dist-orm" basedir=".">
     
     <property file="build.properties" />
     
@@ -71,8 +71,8 @@
     <!-- 
         Builds all packages, preparing them for distribution.
     -->
-    <target name="build-all" depends="prepare, build-common, build-dbal">
-        <copy todir="${build.dir}/all">
+    <target name="build-orm" depends="prepare, build-common, build-dbal">
+        <copy todir="${build.dir}/orm">
             <fileset refid="shared-artifacts"/>
             <fileset refid="common-sources"/>
             <fileset refid="dbal-sources"/>
@@ -104,7 +104,7 @@
         Distributes the Doctrine Common package.
     -->
     <target name="dist-common">
-        <tar destfile="${dist.dir}/Doctrine2-common.tar.gz" compression="gzip">
+        <tar destfile="${dist.dir}/Doctrine-${version}-common.tar.gz" compression="gzip">
             <fileset dir="${build.dir}/common">
                 <include name="**" />
             </fileset>
@@ -115,7 +115,7 @@
         Distributes the Doctrine DBAL package.
     -->
     <target name="dist-dbal">
-        <tar destfile="${dist.dir}/Doctrine2-dbal.tar.gz" compression="gzip">
+        <tar destfile="${dist.dir}/Doctrine-${version}-dbal.tar.gz" compression="gzip">
             <fileset dir="${build.dir}/dbal">
                 <include name="**" />
             </fileset>
@@ -126,9 +126,9 @@
         DEFAULT TARGET
         Tests, builds and distributes the full Doctrine package (Common+DBAL+ORM).
     -->
-    <target name="dist-all" depends="test, build-all, dist-common, dist-dbal">
-        <tar destfile="${dist.dir}/Doctrine2-all.tar.gz" compression="gzip">
-            <fileset dir="${build.dir}/all">
+    <target name="dist-orm" depends="test, build-orm, dist-common, dist-dbal">
+        <tar destfile="${dist.dir}/Doctrine-${version}-orm.tar.gz" compression="gzip">
+            <fileset dir="${build.dir}/orm">
                 <include name="**" />
             </fileset>
         </tar>

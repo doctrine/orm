@@ -39,6 +39,7 @@ class AllTests
         $suite->addTestSuite('Doctrine\Tests\ORM\Functional\LifecycleCallbackTest');
         $suite->addTestSuite('Doctrine\Tests\ORM\Functional\StandardEntityPersisterTest');
         $suite->addTestSuite('Doctrine\Tests\ORM\Functional\MappedSuperclassTest');
+        $suite->addTestSuite('Doctrine\Tests\ORM\Functional\EntityRepositoryTest');
         
         $suite->addTest(Locking\AllTests::suite());
 

@@ -7,6 +7,10 @@
                               
     <entity name="Doctrine\Tests\ORM\Mapping\User" table="cms_users">
     
+        <lifecycle-callbacks>
+            <lifecycle-callback type="prePersist" method="onPrePersist" />
+        </lifecycle-callbacks>
+    
         <id name="id" type="integer" column="id">
             <generator strategy="AUTO"/>
         </id>
