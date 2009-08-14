@@ -111,7 +111,7 @@ class QueryBuilder
 
     public function getDql()
     {
-        if ($this->_dql !== null && self::STATE_CLEAN) {
+        if ($this->_dql !== null && $this->_state === self::STATE_CLEAN) {
             return $this->_dql;
         }
 
@@ -132,6 +132,7 @@ class QueryBuilder
                 break;
         }
 
+        $this->_state = self::STATE_CLEAN;
         $this->_dql = $dql;
 
         return $dql;
