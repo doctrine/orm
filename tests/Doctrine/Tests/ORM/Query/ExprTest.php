@@ -129,6 +129,12 @@ class ExprTest extends \Doctrine\Tests\OrmTestCase
     {
         $this->assertEquals('10 / 2', (string) Expr::quot(10, 2));
     }
+    
+    public function testScopeInArithmeticExpr()
+    {
+        $this->assertEquals('(100 - 20) / 2', (string) Expr::quot(Expr::diff(100, 20), 2));
+        $this->assertEquals('100 - (20 / 2)', (string) Expr::diff(100, Expr::quot(20, 2)));
+    }
 
     public function testSquareRootExpr()
     {
