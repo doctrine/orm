@@ -205,7 +205,7 @@ class SchemaTool
     private function _gatherColumn($class, array $mapping, array &$options)
     {
         $column = array();
-        $column['name'] = $class->getQuotedColumnName($mapping['columnName'], $this->_platform);
+        $column['name'] = $class->getQuotedColumnName($mapping['fieldName'], $this->_platform);
         $column['type'] = Type::getType($mapping['type']);
         $column['length'] = $mapping['length'];
         $column['notnull'] = ! $mapping['nullable'];

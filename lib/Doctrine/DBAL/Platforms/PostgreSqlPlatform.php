@@ -747,6 +747,14 @@ class PostgreSqlPlatform extends AbstractPlatform
         return 'postgresql';
     }
     
+    /**
+     * Gets the character casing of a column in an SQL result set.
+     * 
+     * PostgreSQL returns all column names in SQL result sets in lowercase.
+     * 
+     * @param string $column The column name for which to get the correct character casing.
+     * @return string The column name in the character casing used in SQL result sets.
+     */
     public function getSqlResultCasing($column)
     {
         return strtolower($column);

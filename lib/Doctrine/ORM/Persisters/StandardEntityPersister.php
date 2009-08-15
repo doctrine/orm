@@ -530,7 +530,7 @@ class StandardEntityPersister
                     $coll = new PersistentCollection(
                             $this->_em,
                             $this->_em->getClassMetadata($assoc->targetEntityName),
-                            new ArrayCollection);
+                            /*$this->_class->reflFields[$field]->getValue($entity) ?:*/ new ArrayCollection);
                     $coll->setOwner($entity, $assoc);
                     $this->_class->reflFields[$field]->setValue($entity, $coll);
                     if ($assoc->isLazilyFetched()) {

@@ -29,7 +29,7 @@ namespace Doctrine\ORM\Query;
  * reduce the size of serialized instances for more effective caching due to better (un-)serialization
  * performance.
  * 
- * Users should use the public methods.
+ * <b>Users should use the public methods.</b>
  *
  * @author Roman Borschel <roman@code-factory.org>
  * @since 2.0
@@ -40,7 +40,7 @@ class ResultSetMapping
     public $isMixed = false;
     /** Maps alias names to ClassMetadata descriptors. */
     public $aliasMap = array();
-    /** Maps alias names to related association mappings. */
+    /** Maps alias names to related association field names. */
     public $relationMap = array();
     /** Maps alias names to parent alias names. */
     public $parentAliasMap = array();
@@ -141,7 +141,7 @@ class ResultSetMapping
      * @param string $class The class name of the joined entity.
      * @param string $alias The unique alias to use for the joined entity.
      * @param string $parentAlias The alias of the entity result that is the parent of this joined result.
-     * @param object $relation The association that connects the parent entity result with the joined entity result.
+     * @param object $relation The association field that connects the parent entity result with the joined entity result.
      */
     public function addJoinedEntityResult($class, $alias, $parentAlias, $relation)
     {
@@ -154,7 +154,7 @@ class ResultSetMapping
      * Adds a scalar result mapping.
      *
      * @param string $columnName The name of the column in the SQL result set.
-     * @param string $alias The field alias with which the scalar result should be placed in the result structure.
+     * @param string $alias The result alias with which the scalar result should be placed in the result structure.
      */
     public function addScalarResult($columnName, $alias)
     {

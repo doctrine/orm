@@ -20,6 +20,8 @@ class SingleTableInheritanceTest extends \Doctrine\Tests\OrmFunctionalTestCase
                 $this->_em->getClassMetadata('Doctrine\Tests\ORM\Functional\RelatedEntity')
             ));
         } catch (\Exception $e) {
+            var_dump($e->getMessage());
+            var_dump($e->getTraceAsString());
             // Swallow all exceptions. We do not test the schema tool here.
         }
     }
@@ -111,7 +113,7 @@ class ParentEntity {
     private $id;
 
     /**
-     * @Column(type="string")
+     * @Column(name="DATA", type="string")
      */
     private $data;
 

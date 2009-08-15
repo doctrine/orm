@@ -471,6 +471,7 @@ class SqlWalker implements TreeWalker
                 $sql .= ", $tblAlias." . $rootClass->getQuotedDiscriminatorColumnName($this->_platform)
                       . ' AS ' . $columnAlias;
                 
+                //$columnAlias = $this->_platform->getSqlResultCasing($columnAlias);
                 $this->_rsm->setDiscriminatorColumn($dqlAlias, $columnAlias);
                 $this->_rsm->addMetaResult($dqlAlias, $columnAlias, $discrColumn['fieldName']);
                 
@@ -489,6 +490,7 @@ class SqlWalker implements TreeWalker
                                 $columnAlias = $this->getSqlColumnAlias($srcColumn);
                                 $sql .= ", $sqlTableAlias." . $assoc->getQuotedJoinColumnName($srcColumn, $this->_platform) 
                                       . ' AS ' . $columnAlias;
+                                //$columnAlias = $this->_platform->getSqlResultCasing($columnAlias);
                                 $this->_rsm->addMetaResult($dqlAlias, $columnAlias, $srcColumn);
                             }
                         }
@@ -504,6 +506,7 @@ class SqlWalker implements TreeWalker
                             foreach ($assoc->targetToSourceKeyColumns as $srcColumn) {
                                 $columnAlias = $this->getSqlColumnAlias($srcColumn);
                                 $sql .= ', ' . $sqlTableAlias . '.' . $assoc->getQuotedJoinColumnName($srcColumn, $this->_platform) . ' AS ' . $columnAlias;
+                                //$columnAlias = $this->_platform->getSqlResultCasing($columnAlias);
                                 $this->_rsm->addMetaResult($dqlAlias, $columnAlias, $srcColumn);
                             }
                         }
@@ -745,6 +748,7 @@ class SqlWalker implements TreeWalker
                 $columnAlias = $this->getSqlColumnAlias($class->columnNames[$fieldName]);
                 $sql .= $sqlTableAlias . '.' . $columnName . ' AS ' . $columnAlias;
                 
+                //$columnAlias = $this->_platform->getSqlResultCasing($columnAlias);
                 $this->_rsm->addFieldResult($dqlAlias, $columnAlias, $fieldName);                
             } else {
                 throw DoctrineException::updateMe(
@@ -761,6 +765,7 @@ class SqlWalker implements TreeWalker
             $columnAlias = 'sclr' . $this->_aliasCounter++;
             $sql .= $this->walkAggregateExpression($expr) . ' AS ' . $columnAlias;
             
+            //$columnAlias = $this->_platform->getSqlResultCasing($columnAlias);
             $this->_rsm->addScalarResult($columnAlias, $resultAlias);
         } else if ($expr instanceof AST\Subselect) {
             $sql .= $this->walkSubselect($expr);
@@ -774,6 +779,7 @@ class SqlWalker implements TreeWalker
             $columnAlias = 'sclr' . $this->_aliasCounter++;
             $sql .= $this->walkFunction($expr) . ' AS ' . $columnAlias;
             
+            //$columnAlias = $this->_platform->getSqlResultCasing($columnAlias);
             $this->_rsm->addScalarResult($columnAlias, $resultAlias);
         } else {
             // IdentificationVariable
@@ -801,6 +807,7 @@ class SqlWalker implements TreeWalker
                 $sql .= $sqlTableAlias . '.' . $class->getQuotedColumnName($fieldName, $this->_platform)
                       . ' AS ' . $columnAlias;
                 
+                //$columnAlias = $this->_platform->getSqlResultCasing($columnAlias);
                 $this->_rsm->addFieldResult($dqlAlias, $columnAlias, $fieldName);
             }
 
@@ -820,6 +827,7 @@ class SqlWalker implements TreeWalker
                     $sql .= $sqlTableAlias . '.' . $subClass->getQuotedColumnName($fieldName, $this->_platform) 
                           . ' AS ' . $columnAlias;
                     
+                    //$columnAlias = $this->_platform->getSqlResultCasing($columnAlias);
                     $this->_rsm->addFieldResult($dqlAlias, $columnAlias, $fieldName);
                 }
             }
