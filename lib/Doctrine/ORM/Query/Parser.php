@@ -1719,9 +1719,8 @@ class Parser
                 $condPrimary->simpleConditionalExpression = $this->SimpleConditionalExpression();
             } else {
                 $this->match('(');
-                $conditionalExpression = $this->ConditionalExpression();
+                $condPrimary->conditionalExpression = $this->ConditionalExpression();
                 $this->match(')');
-                $condPrimary->conditionalExpression = $conditionalExpression;
             }
         } else {
             $condPrimary->simpleConditionalExpression = $this->SimpleConditionalExpression();
