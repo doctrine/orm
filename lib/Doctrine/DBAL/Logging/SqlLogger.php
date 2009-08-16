@@ -10,5 +10,5 @@ namespace Doctrine\DBAL\Logging;
  */
 interface SqlLogger
 {
-	public function logSql($sql, array $params = null);
+	function logSql($sql, array $params = null);
 }

@@ -369,7 +369,7 @@ class UnitOfWork implements PropertyChangedListener
     public function computeChangeSets()
     {
         // Compute changes for INSERTed entities first. This must always happen.
-        foreach ($this->_entityInsertions as $oid => $entity) {
+        foreach ($this->_entityInsertions as $entity) {
             $class = $this->_em->getClassMetadata(get_class($entity));
             $this->_computeEntityChanges($class, $entity);
             // Look for changes in associations of the entity
@@ -908,7 +908,6 @@ class UnitOfWork implements PropertyChangedListener
         }
 
         $this->removeFromIdentityMap($entity);
-        $className = get_class($entity);
 
         if (isset($this->_entityInsertions[$oid])) {
             unset($this->_entityInsertions[$oid]);

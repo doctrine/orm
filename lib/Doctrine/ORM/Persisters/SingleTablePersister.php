@@ -39,8 +39,8 @@ class SingleTablePersister extends StandardEntityPersister
         parent::_prepareData($entity, $result, $isInsert);
         // Populate the discriminator column
         if ($isInsert) {
-            $discColumn = $this->_class->discriminatorColumn;
-            $result[$this->_class->primaryTable['name']][$discColumn['name']] =
+            $discColumn = $this->_class->getQuotedDiscriminatorColumnName($this->_platform);
+            $result[$this->_class->getQuotedTableName($this->_platform)][$discColumn] =
                     $this->_class->discriminatorValue;
         }
     }

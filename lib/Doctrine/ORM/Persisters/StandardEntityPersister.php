@@ -85,6 +85,8 @@ class StandardEntityPersister
      * @var array
      */
     protected $_queuedInserts = array();
+    
+    //protected $_rsm;
 
     /**
      * Initializes a new instance of a class derived from AbstractEntityPersister
@@ -484,7 +486,22 @@ class StandardEntityPersister
         
         $data = $joinColumnValues = array();
         
+        /*if ($this->_rsm === null) {
+            $this->_rsm = array();
+            foreach ($this->_class->columnNames as $column) {
+                $this->_rsm[$this->_platform->getSqlResultCasing($column)] = $column;
+            }
+            foreach ($this->_class->associationMappings as $assoc) {
+                if ($assoc->isOwningSide && $assoc->isOneToOne()) {
+                    foreach ($assoc->targetToSourceKeyColumns as $keyColumn) {
+                        $this->_rsm[$this->_platform->getSqlResultCasing($keyColumn)] = $keyColumn;
+                    }
+                }
+            }
+        }*/
+        
         foreach ($result as $column => $value) {
+            //$column = $this->_rsm[$column];
             if (isset($this->_class->fieldNames[$column])) {
                 $fieldName = $this->_class->fieldNames[$column];
                 $data[$fieldName] = Type::getType($this->_class->fieldMappings[$fieldName]['type'])

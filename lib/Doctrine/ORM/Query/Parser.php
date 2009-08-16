@@ -631,7 +631,7 @@ class Parser
         $token = ($token) ?: $this->_lexer->lookahead;
     
         if ( ! isset($this->_queryComponents[$identVariable])) {
-            $this->semanticalError("'$idVariable' is not defined", $token);
+            $this->semanticalError("'$identVariable' is not defined", $token);
         }
         
         // Validate if identification variable nesting level is lower or equal than the current one
@@ -1694,34 +1694,34 @@ class Parser
     public function ConditionalPrimary()
     {
         $condPrimary = new AST\ConditionalPrimary;
-
+        
         if ($this->_lexer->isNextToken('(')) {
-            // We need to inner inspect for a subselect (ArithmeticExpression)
-            if ( ! $this->_isSubselect()) {
-                // Peek beyond and not until matching closing parenthesis
-                $peek = $this->_lexer->peek();
-                $arithmeticOps = array("+",  "-", "*", "/");
-                $numUnmatched = 1;
-            
-                // While not found a closing matched parenthesis and a matched arithmetic operator 
-                while ($numUnmatched > 0 && ! in_array($peek['value'], $arithmeticOps)) {
-                    if ($peek['value'] == ')') {
-                        --$numUnmatched;
-                    } else if ($peek['value'] == '(') {
-                        ++$numUnmatched;
-                    }
-                
-                    $peek = $this->_lexer->peek();
+            // Peek beyond the matching closing paranthesis ')'
+            $numUnmatched = 1;
+            $peek = $this->_lexer->peek();
+            while ($numUnmatched > 0 && $peek !== null) {
+                if ($peek['value'] == ')') {
+                    --$numUnmatched;
+                } else if ($peek['value'] == '(') {
+                    ++$numUnmatched;
                 }
+                $peek = $this->_lexer->peek();
             }
-            
-            // Check if unmatched parenthesis is > 0, then we found a matching arithmetic operator
-            if ($numUnmatched > 0) {
+            $this->_lexer->resetPeek();
+       
+            if (in_array($peek['value'], array("=",  "<", "<=", "<>", ">", ">=", "!=")) ||
+                    $peek['type'] === Lexer::T_NOT ||
+                    $peek['type'] === Lexer::T_BETWEEN ||
+                    $peek['type'] === Lexer::T_LIKE ||
+                    $peek['type'] === Lexer::T_IN ||
+                    $peek['type'] === Lexer::T_IS ||
+                    $peek['type'] === Lexer::T_EXISTS) {
                 $condPrimary->simpleConditionalExpression = $this->SimpleConditionalExpression();
             } else {
                 $this->match('(');
-                $condPrimary->conditionalExpression = $this->ConditionalExpression();
+                $conditionalExpression = $this->ConditionalExpression();
                 $this->match(')');
+                $condPrimary->conditionalExpression = $conditionalExpression;
             }
         } else {
             $condPrimary->simpleConditionalExpression = $this->SimpleConditionalExpression();
@@ -1961,7 +1961,7 @@ class Parser
             $terms[] = $this->_lexer->token['value'];
             $terms[] = $this->ArithmeticTerm();
         }
-
+        
         return new AST\SimpleArithmeticExpression($terms);
     }
 
@@ -2061,7 +2061,6 @@ class Parser
                 break;
         }
     }
-
     
     /**
      * StringExpression ::= StringPrimary | "(" Subselect ")"
