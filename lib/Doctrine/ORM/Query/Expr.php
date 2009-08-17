@@ -53,11 +53,6 @@ class Expr
         return new Expr\From($from, $alias);
     }
     
-    public static function join($joinType, $join, $alias = null, $conditionType = null, $condition = null)
-    {
-        return new Expr\Join($joinType, $join, $alias, $conditionType, $condition);
-    }
-    
     public static function leftJoin($join, $alias = null, $conditionType = null, $condition = null)
     {
         return new Expr\Join(Expr\Join::LEFT_JOIN, $join, $alias, $conditionType, $condition);

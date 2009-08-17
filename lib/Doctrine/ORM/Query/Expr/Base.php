@@ -42,7 +42,7 @@ abstract class Base
 
     public function __construct($args = array())
     {
-        foreach ($args as $arg) {
+        foreach ((array) $args as $arg) {
             $this->add($arg);
         }
     }

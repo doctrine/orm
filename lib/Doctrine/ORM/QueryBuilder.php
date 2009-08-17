@@ -259,19 +259,11 @@ class QueryBuilder
     
     public function innerJoin($join, $alias = null, $conditionType = null, $condition = null)
     {
-        /*$join = 'INNER JOIN ' . $parentAlias . '.' . $join . ' '
-        . $alias . (isset($condition) ? ' ' . $condition : null);
-
-        return $this->add('from', $join, true);*/
         return $this->add('from', Expr::innerJoin($join, $alias, $conditionType, $condition), true);
     }
 
     public function leftJoin($join, $alias = null, $conditionType = null, $condition = null)
     {
-        /*$join = 'LEFT JOIN ' . $parentAlias . '.' . $join . ' '
-        . $alias . (isset($condition) ? ' ' . $condition : null);
-
-        return $this->add('from', $join, true);*/
         return $this->add('from', Expr::leftJoin($join, $alias, $conditionType, $condition), true);
     }
 
@@ -310,7 +302,7 @@ class QueryBuilder
         return $this->add('where', Expr::in($expr, $params), true);
     }
 
-    public function orWhereIn($expr, $params = array(), $not = false)
+    public function orWhereIn($expr, $params = array())
     {
         if (count($this->_getDqlQueryPart('where')) > 0) {
             $this->add('where', 'OR', true);
@@ -370,12 +362,12 @@ class QueryBuilder
         return $this->add('having', Expr::having($having), true);
     }
 
-    public function orderBy($sort, $order)
+    public function orderBy($sort, $order = null)
     {
         return $this->add('orderBy', Expr::orderBy($sort, $order), false);
     }
 
-    public function addOrderBy($sort, $order)
+    public function addOrderBy($sort, $order = null)
     {
         return $this->add('orderBy', Expr::orderBy($sort, $order), true);
     }
