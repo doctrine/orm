@@ -1689,7 +1689,7 @@ class Parser
     /**
      * ConditionalPrimary ::= SimpleConditionalExpression | "(" ConditionalExpression ")"
      *
-     * @return \Doctrine\ORM\Query\AST\ConditionalPrimary
+     * @return Doctrine\ORM\Query\AST\ConditionalPrimary
      */
     public function ConditionalPrimary()
     {

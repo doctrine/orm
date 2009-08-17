@@ -101,8 +101,7 @@ class SingleTableInheritanceTest extends \Doctrine\Tests\OrmFunctionalTestCase
  * @Entity
  * @InheritanceType("SINGLE_TABLE")
  * @DiscriminatorColumn(name="discr", type="string")
- * @SubClasses({"Doctrine\Tests\ORM\Functional\ChildEntity"})
- * @DiscriminatorValue("parent")
+ * @DiscriminatorMap({"parent"="ParentEntity", "child"="ChildEntity"})
  */
 class ParentEntity {
     /**
@@ -132,7 +131,6 @@ class ParentEntity {
 
 /**
  * @Entity
- * @DiscriminatorValue("child")
  */
 class ChildEntity extends ParentEntity {
     /**

@@ -288,16 +288,25 @@ class JoinedSubclassPersister extends StandardEntityPersister
             $tableAlias = isset($mapping['inherited']) ?
             $tableAliases[$mapping['inherited']] : $baseTableAlias;
             if ($columnList != '') $columnList .= ', ';
-            $columnList .= $tableAlias . '.' . $this->_class->columnNames[$fieldName];
+            $columnList .= $tableAlias . '.' . $this->_class->getQuotedColumnName($fieldName, $this->_platform);
+        }
+        
+        // Add discriminator column
+        if ($this->_class->rootEntityName == $this->_class->name) {
+            $columnList .= ', ' . $baseTableAlias . '.' .
+                    $this->_class->getQuotedDiscriminatorColumnName($this->_platform);
+        } else {
+            $columnList .= ', ' . $tableAliases[$this->_class->rootEntityName] . '.' .
+                    $this->_class->getQuotedDiscriminatorColumnName($this->_platform);
         }
 
-        $sql = 'SELECT ' . $columnList . ' FROM ' . $this->_class->primaryTable['name']. ' ' . $baseTableAlias;
+        $sql = 'SELECT ' . $columnList . ' FROM ' . $this->_class->getQuotedTableName($this->_platform) . ' ' . $baseTableAlias;
 
         // INNER JOIN parent tables
         foreach ($this->_class->parentClasses as $parentClassName) {
             $parentClass = $this->_em->getClassMetadata($parentClassName);
             $tableAlias = $tableAliases[$parentClassName];
-            $sql .= ' INNER JOIN ' . $parentClass->primaryTable['name'] . ' ' . $tableAlias . ' ON ';
+            $sql .= ' INNER JOIN ' . $parentClass->getQuotedTableName($this->_platform) . ' ' . $tableAlias . ' ON ';
             $first = true;
             foreach ($idColumns as $idColumn) {
                 if ($first) $first = false; else $sql .= ' AND ';
@@ -309,7 +318,7 @@ class JoinedSubclassPersister extends StandardEntityPersister
         foreach ($this->_class->subClasses as $subClassName) {
             $subClass = $this->_em->getClassMetadata($subClassName);
             $tableAlias = $tableAliases[$subClassName];
-            $sql .= ' LEFT JOIN ' . $subClass->primaryTable['name'] . ' ' . $tableAlias . ' ON ';
+            $sql .= ' LEFT JOIN ' . $subClass->getQuotedTableName($this->_platform) . ' ' . $tableAlias . ' ON ';
             $first = true;
             foreach ($idColumns as $idColumn) {
                 if ($first) $first = false; else $sql .= ' AND ';
@@ -323,6 +332,6 @@ class JoinedSubclassPersister extends StandardEntityPersister
             $conditionSql .= $baseTableAlias . '.' . $this->_class->columnNames[$field] . ' = ?';
         }
 
-        return $sql . ' WHERE ' . $conditionSql;
+        return $sql . ($conditionSql != '' ? ' WHERE ' . $conditionSql : '');
     }
 }

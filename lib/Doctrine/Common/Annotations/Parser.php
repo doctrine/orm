@@ -269,6 +269,13 @@ class Parser
     public function Values()
     {
         $values = array();
+        
+        // Handle the case of a single array as value, i.e. @Foo({....})
+        if ($this->_lexer->isNextToken('{')) {
+            $values['value'] = $this->Value();
+            return $values;
+        }
+        
         $values[] = $this->Value();
         
         while ($this->_lexer->isNextToken(',')) {

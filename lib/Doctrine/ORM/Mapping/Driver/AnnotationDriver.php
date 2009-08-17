@@ -95,10 +95,10 @@ class AnnotationDriver implements Driver
             ));
         }
 
-        // Evaluate DiscriminatorValue annotation
-        if (isset($classAnnotations['Doctrine\ORM\Mapping\DiscriminatorValue'])) {
-            $discrValueAnnot = $classAnnotations['Doctrine\ORM\Mapping\DiscriminatorValue'];
-            $metadata->setDiscriminatorValue($discrValueAnnot->value);
+        // Evaluate DiscriminatorMap annotation
+        if (isset($classAnnotations['Doctrine\ORM\Mapping\DiscriminatorMap'])) {
+            $discrMapAnnot = $classAnnotations['Doctrine\ORM\Mapping\DiscriminatorMap'];
+            $metadata->setDiscriminatorMap($discrMapAnnot->value);
         }
 
         // Evaluate DoctrineSubClasses annotation

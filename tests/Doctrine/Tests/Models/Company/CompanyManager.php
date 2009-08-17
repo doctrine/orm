@@ -5,7 +5,6 @@ namespace Doctrine\Tests\Models\Company;
 /**
  * @Entity
  * @Table(name="company_managers")
- * @DiscriminatorValue("manager")
  */
 class CompanyManager extends CompanyEmployee
 {

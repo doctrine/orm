@@ -21,8 +21,8 @@
 
 namespace Doctrine\ORM\Tools;
 
-use Doctrine\DBAL\Types\Type;
-use Doctrine\ORM\EntityManager;
+use Doctrine\DBAL\Types\Type,
+    Doctrine\ORM\EntityManager;
 
 /**
  * The SchemaTool is a tool to create and/or drop database schemas based on
@@ -303,6 +303,16 @@ class SchemaTool
     }
 
     public function getDropSchemaSql(array $classes)
+    {
+        //TODO
+    }
+    
+    public function updateSchema(array $classes)
+    {
+        //TODO
+    }
+    
+    public function getUpdateSchemaSql(array $classes)
     {
         //TODO
     }

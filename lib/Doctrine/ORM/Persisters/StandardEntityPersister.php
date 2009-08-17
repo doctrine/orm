@@ -85,8 +85,6 @@ class StandardEntityPersister
      * @var array
      */
     protected $_queuedInserts = array();
-    
-    //protected $_rsm;
 
     /**
      * Initializes a new instance of a class derived from AbstractEntityPersister
@@ -483,36 +481,25 @@ class StandardEntityPersister
         if ($result === false) {
             return null;
         }
-        
+
         $data = $joinColumnValues = array();
-        
-        /*if ($this->_rsm === null) {
-            $this->_rsm = array();
-            foreach ($this->_class->columnNames as $column) {
-                $this->_rsm[$this->_platform->getSqlResultCasing($column)] = $column;
-            }
-            foreach ($this->_class->associationMappings as $assoc) {
-                if ($assoc->isOwningSide && $assoc->isOneToOne()) {
-                    foreach ($assoc->targetToSourceKeyColumns as $keyColumn) {
-                        $this->_rsm[$this->_platform->getSqlResultCasing($keyColumn)] = $keyColumn;
-                    }
-                }
-            }
-        }*/
+        $entityName = $this->_entityName;
         
         foreach ($result as $column => $value) {
-            //$column = $this->_rsm[$column];
+            $column = $this->_class->resultColumnNames[$column];
             if (isset($this->_class->fieldNames[$column])) {
                 $fieldName = $this->_class->fieldNames[$column];
                 $data[$fieldName] = Type::getType($this->_class->fieldMappings[$fieldName]['type'])
                         ->convertToPHPValue($value, $this->_platform);
+            } else if ($this->_class->discriminatorColumn !== null && $column == $this->_class->discriminatorColumn['name']) {
+                $entityName = $this->_class->discriminatorMap[$value];
             } else {
                 $joinColumnValues[$column] = $value;
             }
         }
 
         if ($entity === null) {
-            $entity = $this->_em->getUnitOfWork()->createEntity($this->_entityName, $data);
+            $entity = $this->_em->getUnitOfWork()->createEntity($entityName, $data);
         } else {
             foreach ($data as $field => $value) {
                 $this->_class->reflFields[$field]->setValue($entity, $value);

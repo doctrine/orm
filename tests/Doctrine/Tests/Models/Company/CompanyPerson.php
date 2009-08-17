@@ -8,11 +8,12 @@ namespace Doctrine\Tests\Models\Company;
  * @author robo
  * @Entity
  * @Table(name="company_persons")
- * @DiscriminatorValue("person")
  * @InheritanceType("JOINED")
  * @DiscriminatorColumn(name="discr", type="string")
- * @SubClasses({"Doctrine\Tests\Models\Company\CompanyEmployee",
-        "Doctrine\Tests\Models\Company\CompanyManager"})
+ * @DiscriminatorMap({
+ *      "person" = "CompanyPerson",
+ *      "manager" = "CompanyManager",
+ *      "employee" = "CompanyEmployee"})
  */
 class CompanyPerson
 {
@@ -39,6 +40,10 @@ class CompanyPerson
             inverseJoinColumns={@JoinColumn(name="friend_id", referencedColumnName="id")})
      */
     private $friends;
+    
+    public function __construct() {
+        $this->friends = new \Doctrine\Common\Collections\ArrayCollection;
+    }
 
     public function getId() {
         return  $this->id;
@@ -61,9 +66,6 @@ class CompanyPerson
     }
     
     public function addFriend(CompanyPerson $friend) {
-        if ( ! $this->friends) {
-            $this->friends = new \Doctrine\Common\Collections\ArrayCollection;
-        }
         if ( ! $this->friends->contains($friend)) {
             $this->friends->add($friend);
             $friend->addFriend($this);

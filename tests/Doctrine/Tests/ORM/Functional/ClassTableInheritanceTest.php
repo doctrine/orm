@@ -39,6 +39,7 @@ class ClassTableInheritanceTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $this->_em->clear();
         
+        $this->_em->getConfiguration()->setAllowPartialObjects(false);
         $query = $this->_em->createQuery("select p from Doctrine\Tests\Models\Company\CompanyPerson p order by p.id asc");
 
         $entities = $query->getResult();
@@ -51,6 +52,7 @@ class ClassTableInheritanceTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertEquals('Roman S. Borschel', $entities[0]->getName());
         $this->assertEquals('Guilherme Blanco', $entities[1]->getName());
         $this->assertEquals(100000, $entities[1]->getSalary());
+        $this->_em->getConfiguration()->setAllowPartialObjects(true);
 
         $this->_em->clear();
         
@@ -99,6 +101,7 @@ class ClassTableInheritanceTest extends \Doctrine\Tests\OrmFunctionalTestCase
         
         $manager = $this->_em->find('Doctrine\Tests\Models\Company\CompanyManager', $manager->getId());
         
+        $this->assertTrue($manager instanceof CompanyManager);
         $this->assertEquals('Roman B.', $manager->getName());
         $this->assertEquals(119000, $manager->getSalary());
         $this->assertEquals('CEO', $manager->getTitle());

@@ -40,7 +40,6 @@ class ObjectHydrator extends AbstractHydrator
      */
     /* Local ClassMetadata cache to avoid going to the EntityManager all the time. */
     private $_ce = array();
-    private $_discriminatorMap = array();
     /*
      * The following parts are reinitialized on every hydration run.
      */
@@ -76,17 +75,6 @@ class ObjectHydrator extends AbstractHydrator
 
             if ( ! isset($this->_ce[$className])) {
                 $this->_ce[$className] = $class;
-                // Gather class descriptors and discriminator values of subclasses, if necessary
-                if ($class->isInheritanceTypeSingleTable() || $class->isInheritanceTypeJoined()) {
-                    $this->_discriminatorMap[$className][$class->discriminatorValue] = $className;
-                    foreach (array_merge($class->parentClasses, $class->subClasses) as $className) {
-                        $otherClass = $this->_em->getClassMetadata($className);
-                        $value = $otherClass->discriminatorValue;
-                        $this->_ce[$className] = $otherClass;
-                        $this->_discriminatorMap[$class->name][$value] = $className;
-                        $this->_discriminatorMap[$className][$value] = $className;
-                    }
-                }
             }
             
             // Remember which associations are "fetch joined"
@@ -172,7 +160,7 @@ class ObjectHydrator extends AbstractHydrator
     	$className = $this->_rsm->aliasMap[$dqlAlias];
         if (isset($this->_rsm->discriminatorColumns[$dqlAlias])) {
             $discrColumn = $this->_rsm->metaMappings[$this->_rsm->discriminatorColumns[$dqlAlias]];
-            $className = $this->_discriminatorMap[$className][$data[$discrColumn]];
+            $className = $this->_ce[$className]->discriminatorMap[$data[$discrColumn]];
             unset($data[$discrColumn]);
         }
         
@@ -180,7 +168,7 @@ class ObjectHydrator extends AbstractHydrator
 
         // Properly initialize any unfetched associations, if partial objects are not allowed.
         if ( ! $this->_allowPartialObjects) {
-            foreach ($this->_ce[$className]->associationMappings as $field => $assoc) {
+            foreach ($this->_getClassMetadata($className)->associationMappings as $field => $assoc) {
                 // Check if the association is not among the fetch-joined associatons already.
                 if ( ! isset($this->_fetchedAssociations[$className][$field])) {
                     if ($assoc->isOneToOne()) {

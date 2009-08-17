@@ -34,7 +34,7 @@ class MySqlSchemaManager extends AbstractSchemaManager
 {
     protected function _getPortableViewDefinition($view)
     {
-        return $view['table_name'];
+        return $view['TABLE_NAME'];
     }
 
     protected function _getPortableTableDefinition($table)
@@ -45,8 +45,8 @@ class MySqlSchemaManager extends AbstractSchemaManager
     protected function _getPortableUserDefinition($user)
     {
         return array(
-            'user' => $user['user'],
-            'password' => $user['password'],
+            'user' => $user['User'],
+            'password' => $user['Password'],
         );
     }
 
@@ -83,12 +83,12 @@ class MySqlSchemaManager extends AbstractSchemaManager
 
     protected function _getPortableDatabaseDefinition($database)
     {
-        return $database['database'];
+        return $database['Database'];
     }
 
     protected function _getPortableTableColumnDefinition($tableColumn)
     {
-        $dbType = strtolower($tableColumn['type']);
+        $dbType = strtolower($tableColumn['Type']);
         $dbType = strtok($dbType, '(), ');
         if ($dbType == 'national') {
             $dbType = strtok('(), ');
@@ -117,28 +117,28 @@ class MySqlSchemaManager extends AbstractSchemaManager
                 if (preg_match('/^(is|has)/', $tableColumn['name'])) {
                     $type = array_reverse($type);
                 }
-                $unsigned = preg_match('/ unsigned/i', $tableColumn['type']);
+                $unsigned = preg_match('/ unsigned/i', $tableColumn['Type']);
                 $length = 1;
             break;
             case 'smallint':
                 $type = 'integer';
-                $unsigned = preg_match('/ unsigned/i', $tableColumn['type']);
+                $unsigned = preg_match('/ unsigned/i', $tableColumn['Type']);
                 $length = 2;
             break;
             case 'mediumint':
                 $type = 'integer';
-                $unsigned = preg_match('/ unsigned/i', $tableColumn['type']);
+                $unsigned = preg_match('/ unsigned/i', $tableColumn['Type']);
                 $length = 3;
             break;
             case 'int':
             case 'integer':
                 $type = 'integer';
-                $unsigned = preg_match('/ unsigned/i', $tableColumn['type']);
+                $unsigned = preg_match('/ unsigned/i', $tableColumn['Type']);
                 $length = 4;
             break;
             case 'bigint':
                 $type = 'integer';
-                $unsigned = preg_match('/ unsigned/i', $tableColumn['type']);
+                $unsigned = preg_match('/ unsigned/i', $tableColumn['Type']);
                 $length = 8;
             break;
             case 'tinytext':
@@ -249,12 +249,12 @@ class MySqlSchemaManager extends AbstractSchemaManager
         $values = isset($def['values']) ? $def['values'] : array();
 
         $column = array(
-            'name'          => $tableColumn['field'],
+            'name'          => $tableColumn['Field'],
             'values'        => $values,
-            'primary'       => (bool) (strtolower($tableColumn['key']) == 'pri'),
-            'default'       => $tableColumn['default'],
-            'notnull'       => (bool) ($tableColumn['null'] != 'YES'),
-            'autoincrement' => (bool) (strpos($tableColumn['extra'], 'auto_increment') !== false),
+            'primary'       => (bool) (strtolower($tableColumn['Key']) == 'pri'),
+            'default'       => $tableColumn['Default'],
+            'notnull'       => (bool) ($tableColumn['Null'] != 'YES'),
+            'autoincrement' => (bool) (strpos($tableColumn['Extra'], 'auto_increment') !== false),
         );
 
         $column = array_merge($column, $def);

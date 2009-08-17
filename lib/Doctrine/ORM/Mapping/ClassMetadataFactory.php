@@ -177,6 +177,7 @@ class ClassMetadataFactory
                 $class->setIdentifier($parent->identifier);
                 $class->setVersioned($parent->isVersioned);
                 $class->setVersionField($parent->versionField);
+                $class->setDiscriminatorMap($parent->discriminatorMap); 
             }
             
             // Invoke driver
@@ -291,6 +292,11 @@ class ClassMetadataFactory
                 if (isset($class->fieldMappings[$name]['inherited']) && ! isset($class->fieldMappings[$name]['id'])
                         || isset($class->inheritedAssociationFields[$name])
                         || ($versioned && $versionField == $name)) {
+                    if (isset($class->columnNames[$name])) {
+                        // Add column mapping for SQL result sets
+                        $columnName = $class->columnNames[$name];
+                        $class->resultColumnNames[$this->_targetPlatform->getSqlResultCasing($columnName)] = $columnName;
+                    }
                     continue;
                 }
 
@@ -300,11 +306,20 @@ class ClassMetadataFactory
                         foreach ($assoc->targetToSourceKeyColumns as $sourceCol) {
                             $columns[] = $assoc->getQuotedJoinColumnName($sourceCol, $this->_targetPlatform);
                             $values[] = '?';
+                            // Add column mapping for SQL result sets
+                            $class->resultColumnNames[$this->_targetPlatform->getSqlResultCasing($sourceCol)] = $sourceCol;
                         }
                     }
                 } else if ($class->name != $class->rootEntityName || ! $class->isIdGeneratorIdentity() || $class->identifier[0] != $name) {
                     $columns[] = $class->getQuotedColumnName($name, $this->_targetPlatform);
                     $values[] = '?';
+                    // Add column mapping for SQL result sets
+                    $columnName = $class->columnNames[$name];
+                    $class->resultColumnNames[$this->_targetPlatform->getSqlResultCasing($columnName)] = $columnName;
+                } else {
+                    // Add column mapping for SQL result sets
+                    $columnName = $class->columnNames[$name];
+                    $class->resultColumnNames[$this->_targetPlatform->getSqlResultCasing($columnName)] = $columnName;
                 }
             }
         } else {
@@ -319,19 +334,34 @@ class ClassMetadataFactory
                         foreach ($assoc->targetToSourceKeyColumns as $sourceCol) {
                             $columns[] = $assoc->getQuotedJoinColumnName($sourceCol, $this->_targetPlatform);
                             $values[] = '?';
+                            // Add column mapping for SQL result sets
+                            $class->resultColumnNames[$this->_targetPlatform->getSqlResultCasing($sourceCol)] = $sourceCol;
                         }
                     }
                 } else if ($class->generatorType != ClassMetadata::GENERATOR_TYPE_IDENTITY ||  $class->identifier[0] != $name) {
                     $columns[] = $class->getQuotedColumnName($name, $this->_targetPlatform);
                     $values[] = '?';
+                    // Add column mapping for SQL result sets
+                    $columnName = $class->columnNames[$name];
+                    $class->resultColumnNames[$this->_targetPlatform->getSqlResultCasing($columnName)] = $columnName;
+                } else {
+                    // Add column mapping for SQL result sets
+                    $columnName = $class->columnNames[$name];
+                    $class->resultColumnNames[$this->_targetPlatform->getSqlResultCasing($columnName)] = $columnName;
                 }
             }
         }
         
         // Add discriminator column to the INSERT SQL if necessary
-        if ($class->isInheritanceTypeSingleTable() || $class->isInheritanceTypeJoined() && $class->name == $class->rootEntityName) {
-            $columns[] = $class->getQuotedDiscriminatorColumnName($this->_targetPlatform);
-            $values[] = '?';
+        if (isset($class->discriminatorColumn['name'])) {
+            if ($class->isInheritanceTypeSingleTable() || $class->isInheritanceTypeJoined()
+                    && $class->name == $class->rootEntityName) {
+                $columns[] = $class->getQuotedDiscriminatorColumnName($this->_targetPlatform);
+                $values[] = '?';
+            }
+            // Add column mapping for SQL result sets
+            $columnName = $class->discriminatorColumn['name'];
+            $class->resultColumnNames[$this->_targetPlatform->getSqlResultCasing($columnName)] = $columnName;
         }
 
         $class->insertSql = 'INSERT INTO ' .

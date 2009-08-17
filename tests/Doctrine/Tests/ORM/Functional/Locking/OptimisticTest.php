@@ -124,10 +124,9 @@ class OptimisticTest extends \Doctrine\Tests\OrmFunctionalTestCase
 /**
  * @Entity
  * @Table(name="optimistic_joined_parent")
- * @DiscriminatorValue("parent")
  * @InheritanceType("JOINED")
  * @DiscriminatorColumn(name="discr", type="string")
- * @SubClasses({"Doctrine\Tests\ORM\Functional\Locking\OptimisticJoinedChild"})
+ * @DiscriminatorMap({"parent" = "OptimisticJoinedParent", "child" = "OptimisticJoinedChild"})
  */
 class OptimisticJoinedParent
 {
@@ -151,7 +150,6 @@ class OptimisticJoinedParent
 /**
  * @Entity
  * @Table(name="optimistic_joined_child")
- * @DiscriminatorValue("child")
  */
 class OptimisticJoinedChild extends OptimisticJoinedParent
 {

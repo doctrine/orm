@@ -254,13 +254,22 @@ final class ClassMetadata
     public $fieldNames = array();
 
     /**
-     * An array of column names. Keys are field names and values column names.
+     * A map of field names to column names. Keys are field names and values column names.
      * Used to look up column names from field names.
      * This is the reverse lookup map of $_fieldNames.
      *
      * @var array
      */
     public $columnNames = array();
+    
+    /**
+     * A map of column names as they appear in an SQL result set to column names as they
+     * are defined in the mapping. This includes the columns of all mapped fields as well
+     * as any join columns and discriminator columns.
+     * 
+     * @var array
+     */
+    public $resultColumnNames = array();
 
     /**
      * Whether to automatically OUTER JOIN subtypes when a basetype is queried.
@@ -281,6 +290,17 @@ final class ClassMetadata
      * @see _discriminatorColumn
      */
     public $discriminatorValue;
+    
+    /**
+     * The discriminator map of all mapped classes in the hierarchy.
+     *
+     * <b>This does only apply to the JOINED and SINGLE_TABLE inheritance mapping strategies
+     * where a discriminator column is used.</b>
+     *
+     * @var mixed
+     * @see _discriminatorColumn
+     */
+    public $discriminatorMap = array();
 
     /**
      * The definition of the descriminator column used in JOINED and SINGLE_TABLE
@@ -1139,16 +1159,19 @@ final class ClassMetadata
     }
 
     /**
-     * Sets the subclasses of the mapped class.
-     * 
-     * <b>All entity classes that participate in a hierarchy and have subclasses
-     * need to declare them this way.</b>
+     * Sets the mapped subclasses of this class.
      *
-     * @param array $subclasses  The names of all subclasses.
+     * @param array $subclasses  The names of all mapped subclasses.
      */
     public function setSubclasses(array $subclasses)
     {
-        $this->subClasses = $subclasses;
+        foreach ($subclasses as $subclass) {
+            if (strpos($subclass, '\\') === false) {
+                $this->subClasses[] = $this->namespace . '\\' . $subclass;
+            } else {
+                $this->subClasses[] = $subclass;
+            }
+        }
     }
 
     /**
@@ -1572,14 +1595,24 @@ final class ClassMetadata
     }
 
     /**
-     * Sets the dsicriminator value used by this class.
+     * Sets the dsicriminator values used by this class.
      * Used for JOINED and SINGLE_TABLE inheritance mapping strategies.
      *
      * @param array $map
      */
-    public function setDiscriminatorValue($value)
+    public function setDiscriminatorMap(array $map)
     {
-        $this->discriminatorValue = $value;
+        foreach ($map as $value => $className) {
+            if (strpos($className, '\\') === false) {
+                $className = $this->namespace . '\\' . $className;
+            }
+            $this->discriminatorMap[$value] = $className;
+            if ($this->name == $className) {
+                $this->discriminatorValue = $value;
+            } else if (is_subclass_of($className, $this->name)) {
+                $this->subClasses[] = $className;
+            }
+        }
     }
 
     /**

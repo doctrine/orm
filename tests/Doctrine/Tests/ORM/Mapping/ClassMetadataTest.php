@@ -38,7 +38,7 @@ class ClassMetadataTest extends \Doctrine\Tests\OrmTestCase
         $this->assertTrue($cm->reflClass instanceof \ReflectionClass);
         $this->assertEquals('Doctrine\Tests\Models\CMS\CmsUser', $cm->name);
         $this->assertEquals('UserParent', $cm->rootEntityName);
-        $this->assertEquals(array('One', 'Two', 'Three'), $cm->subClasses);
+        $this->assertEquals(array('Doctrine\Tests\Models\CMS\One', 'Doctrine\Tests\Models\CMS\Two', 'Doctrine\Tests\Models\CMS\Three'), $cm->subClasses);
         $this->assertEquals(array('UserParent'), $cm->parentClasses);
         $this->assertEquals('UserRepository', $cm->getCustomRepositoryClass());
         $this->assertEquals(array('name' => 'disc', 'type' => 'integer', 'fieldName' => 'disc'), $cm->discriminatorColumn);
