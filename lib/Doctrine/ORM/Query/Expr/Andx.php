@@ -36,7 +36,7 @@ class Andx extends Base
     protected $_separator = ') AND (';
     protected $_allowedClasses = array(
         'Doctrine\ORM\Query\Expr\Comparison',
+        'Doctrine\ORM\Query\Expr\Func',
         'Doctrine\ORM\Query\Expr\Orx',
-        'Doctrine\ORM\Query\Expr\Func'
     );
 }

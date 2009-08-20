@@ -42,6 +42,11 @@ abstract class Base
 
     public function __construct($args = array())
     {
+        $this->addMultiple($args);
+    }
+    
+    public function addMultiple($args = array())
+    {
         foreach ((array) $args as $arg) {
             $this->add($arg);
         }
@@ -70,6 +75,10 @@ abstract class Base
 
     public function __toString()
     {
+        if ($this->count() == 1) {
+            return (string) $this->_parts[0];
+        }
+        
         return $this->_preSeparator . implode($this->_separator, $this->_parts) . $this->_postSeparator;
     }
 }

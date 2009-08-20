@@ -384,7 +384,7 @@ final class ClassMetadata
      *
      * @var array
      */
-    //private $_tableGeneratorDefinition;
+    public $tableGeneratorDefinition;
 
     /**
      * The policy used for change-tracking on entities of this class.

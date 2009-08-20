@@ -73,39 +73,34 @@ class Expr
         return new Expr\GroupBy(func_get_args());
     }
 
-    public static function having($having = null)
-    {
-        return new Expr\Having(func_get_args());
-    }
-
     public static function eq($x, $y)
     {
-        return new Expr\Comparison($x, '=', $y);
+        return new Expr\Comparison($x, Expr\Comparison::EQ, $y);
     }
 
     public static function neq($x, $y)
     {
-        return new Expr\Comparison($x, '<>', $y);
+        return new Expr\Comparison($x, Expr\Comparison::NEQ, $y);
     }
 
     public static function lt($x, $y)
     {
-        return new Expr\Comparison($x, '<', $y);
+        return new Expr\Comparison($x, Expr\Comparison::LT, $y);
     }
 
     public static function lte($x, $y)
     {
-        return new Expr\Comparison($x, '<=', $y);
+        return new Expr\Comparison($x, Expr\Comparison::LTE, $y);
     }
 
     public static function gt($x, $y)
     {
-        return new Expr\Comparison($x, '>', $y);
+        return new Expr\Comparison($x, Expr\Comparison::GT, $y);
     }
 
     public static function gte($x, $y)
     {
-        return new Expr\Comparison($x, '>=', $y);
+        return new Expr\Comparison($x, Expr\Comparison::GTE, $y);
     }
 
     public static function avg($x)

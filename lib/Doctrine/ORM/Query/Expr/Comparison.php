@@ -32,6 +32,13 @@ namespace Doctrine\ORM\Query\Expr;
  */
 class Comparison
 {
+    const EQ  = '=';
+    const NEQ = '<>';
+    const LT  = '<';
+    const LTE = '<=';
+    const GT  = '>';
+    const GTE = '>=';
+    
     private $_leftExpr;
     private $_operator;
     private $_rightExpr;

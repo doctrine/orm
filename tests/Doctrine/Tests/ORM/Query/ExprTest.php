@@ -75,7 +75,7 @@ class ExprTest extends \Doctrine\Tests\OrmTestCase
         $qb = $this->_em->createQueryBuilder();
         $qb->select('u')->from('User', 'u')->where('u.name = ?1');
         
-        $this->assertEquals('EXISTS(SELECT u FROM User u WHERE (u.name = ?1))', (string) Expr::exists($qb));
+        $this->assertEquals('EXISTS(SELECT u FROM User u WHERE u.name = ?1)', (string) Expr::exists($qb));
     }
 
     public function testAllExpr()
@@ -83,7 +83,7 @@ class ExprTest extends \Doctrine\Tests\OrmTestCase
         $qb = $this->_em->createQueryBuilder();
         $qb->select('u')->from('User', 'u')->where('u.name = ?1');
     
-        $this->assertEquals('ALL(SELECT u FROM User u WHERE (u.name = ?1))', (string) Expr::all($qb));
+        $this->assertEquals('ALL(SELECT u FROM User u WHERE u.name = ?1)', (string) Expr::all($qb));
     }
 
     public function testSomeExpr()
@@ -91,7 +91,7 @@ class ExprTest extends \Doctrine\Tests\OrmTestCase
         $qb = $this->_em->createQueryBuilder();
         $qb->select('u')->from('User', 'u')->where('u.name = ?1');
     
-        $this->assertEquals('SOME(SELECT u FROM User u WHERE (u.name = ?1))', (string) Expr::some($qb));
+        $this->assertEquals('SOME(SELECT u FROM User u WHERE u.name = ?1)', (string) Expr::some($qb));
     }
 
     public function testAnyExpr()
@@ -99,7 +99,7 @@ class ExprTest extends \Doctrine\Tests\OrmTestCase
         $qb = $this->_em->createQueryBuilder();
         $qb->select('u')->from('User', 'u')->where('u.name = ?1');
     
-        $this->assertEquals('ANY(SELECT u FROM User u WHERE (u.name = ?1))', (string) Expr::any($qb));
+        $this->assertEquals('ANY(SELECT u FROM User u WHERE u.name = ?1)', (string) Expr::any($qb));
     }
 
     public function testNotExpr()
@@ -107,12 +107,20 @@ class ExprTest extends \Doctrine\Tests\OrmTestCase
         $qb = $this->_em->createQueryBuilder();
         $qb->select('u')->from('User', 'u')->where('u.name = ?1');
     
-        $this->assertEquals('NOT(SELECT u FROM User u WHERE (u.name = ?1))', (string) Expr::not($qb));
+        $this->assertEquals('NOT(SELECT u FROM User u WHERE u.name = ?1)', (string) Expr::not($qb));
     }
 
     public function testAndExpr()
     {
         $this->assertEquals('(1 = 1) AND (2 = 2)', (string) Expr::andx((string) Expr::eq(1, 1), (string) Expr::eq(2, 2)));
+    }
+    
+    public function testIntelligentParenthesisPreventionAndExpr()
+    {
+        $this->assertEquals(
+            '(1 = 1) AND (2 = 2)', 
+            (string) Expr::andx(Expr::orx(Expr::andx(Expr::eq(1, 1))), (string) Expr::eq(2, 2))
+        );
     }
 
     public function testOrExpr()

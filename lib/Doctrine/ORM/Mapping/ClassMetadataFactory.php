@@ -194,7 +194,7 @@ class ClassMetadataFactory
                     $class->getTableGeneratorDefinition($parent->getTableGeneratorDefinition());
                 }
                 $class->setIdGeneratorType($parent->generatorType);
-                $class->setidGenerator($parent->getIdGenerator());
+                $class->setIdGenerator($parent->getIdGenerator());
             } else {
                 $this->_completeIdGeneratorMapping($class);
             }

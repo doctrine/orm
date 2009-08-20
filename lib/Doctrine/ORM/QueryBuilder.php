@@ -55,11 +55,13 @@ class QueryBuilder
      * @var array $dqlParts The array of DQL parts collected.
      */
     private $_dqlParts = array(
-        'select' => array(),
-        'from' => array(),
-        'where' => array(),
+        'select'  => array(),
+        'from'    => null,
+        'join'    => array(),
+        'set'     => array(),
+        'where'   => null,
         'groupBy' => array(),
-        'having' => array(),
+        'having'  => null,
         'orderBy' => array()
     );
 
@@ -201,10 +203,12 @@ class QueryBuilder
      */
     public function add($dqlPartName, $dqlPart, $append = false)
     {
-        if ($append) {
+        $isMultiple = is_array($this->_dqlParts[$dqlPartName]);
+    
+        if ($append && $isMultiple) {
             $this->_dqlParts[$dqlPartName][] = $dqlPart;
         } else {
-            $this->_dqlParts[$dqlPartName] = array($dqlPart);
+            $this->_dqlParts[$dqlPartName] = ($isMultiple) ? array($dqlPart) : $dqlPart;
         }
 
         $this->_state = self::STATE_DIRTY;
@@ -214,15 +218,14 @@ class QueryBuilder
 
     public function select($select = null)
     {
-        $selects = func_get_args();
         $this->_type = self::SELECT;
+        $selects = func_get_args();
 
         if (empty($selects)) {
             return $this;
         }
-
-        $select = call_user_func_array(array('Doctrine\ORM\Query\Expr', 'select'), $selects);
-        return $this->add('select', $select, true);
+        
+        return $this->add('select', new Expr\Select($selects), true);
     }
 
     public function delete($delete = null, $alias = null)
@@ -233,7 +236,7 @@ class QueryBuilder
             return $this;
         }
 
-        return $this->add('from', Expr::from($delete, $alias));
+        return $this->add('from', new Expr\From($delete, $alias));
     }
 
     public function update($update = null, $alias = null)
@@ -244,89 +247,90 @@ class QueryBuilder
             return $this;
         }
 
-        return $this->add('from', Expr::from($update, $alias));
-    }
-
-    public function set($key, $value)
-    {
-        return $this->add('set', Expr::eq($key, $value), true);
+        return $this->add('from', new Expr\From($update, $alias));
     }
 
     public function from($from, $alias = null)
     {
-        return $this->add('from', Expr::from($from, $alias), true);
+        return $this->add('from', new Expr\From($from, $alias));
     }
     
     public function innerJoin($join, $alias = null, $conditionType = null, $condition = null)
     {
-        return $this->add('from', Expr::innerJoin($join, $alias, $conditionType, $condition), true);
+        return $this->add('join', new Expr\Join(
+            Expr\Join::INNER_JOIN, $join, $alias, $conditionType, $condition
+        ), true);
     }
 
     public function leftJoin($join, $alias = null, $conditionType = null, $condition = null)
     {
-        return $this->add('from', Expr::leftJoin($join, $alias, $conditionType, $condition), true);
+        return $this->add('join', new Expr\Join(
+            Expr\Join::LEFT_JOIN, $join, $alias, $conditionType, $condition
+        ), true);
+    }
+
+    public function set($key, $value)
+    {
+        return $this->add('set', new Expr\Comparison($key, Expr\Comparison::EQ, $value), true);
     }
 
     public function where($where)
     {
-        $where = call_user_func_array(array('Doctrine\ORM\Query\Expr', 'andx'), func_get_args());
-        return $this->add('where', $where, false);
+        if ( ! (func_num_args() == 1 && ($where instanceof Expr\Andx || $where instanceof Expr\Orx))) {
+            $where = new Expr\Andx(func_get_args());
+        }
+        
+        return $this->add('where', $where);
     }
 
     public function andWhere($where)
     {
-        if (count($this->_getDqlQueryPart('where')) > 0) {
-            $this->add('where', 'AND', true);
+        $where = $this->_getDqlQueryPart('where');
+        $args = func_get_args();
+        
+        if ($where instanceof Expr\Andx) {
+            $where->addMultiple($args);
+        } else { 
+            array_unshift($args, $where);
+            $where = new Expr\Andx($args);
         }
-
-        $where = call_user_func_array(array('Doctrine\ORM\Query\Expr', 'andx'), func_get_args());
-        return $this->add('where', $where, true);
+        
+        return $this->add('where', $where);
     }
 
     public function orWhere($where)
     {
-        if (count($this->_getDqlQueryPart('where')) > 0) {
-            $this->add('where', 'OR', true);
+        $where = $this->_getDqlQueryPart('where');
+        $args = func_get_args();
+        
+        if ($where instanceof Expr\Orx) {
+            $where->addMultiple($args);
+        } else {            
+            array_unshift($args, $where);
+            $where = new Expr\Orx($args);
         }
-
-        $where = call_user_func_array(array('Doctrine\ORM\Query\Expr', 'orx'), func_get_args());
-        return $this->add('where', $where, true);
+        
+        return $this->add('where', $where);
     }
 
     public function andWhereIn($expr, $params)
     {
-        if (count($this->_getDqlQueryPart('where')) > 0) {
-            $this->add('where', 'AND', true);
-        }
-
-        return $this->add('where', Expr::in($expr, $params), true);
+        return $this->andWhere(Expr::in($expr, $params));
     }
 
     public function orWhereIn($expr, $params = array())
     {
-        if (count($this->_getDqlQueryPart('where')) > 0) {
-            $this->add('where', 'OR', true);
-        }
-
-        return $this->add('where', Expr::in($expr, $params), true);
+        return $this->orWhere(Expr::in($expr, $params));
     }
 
     public function andWhereNotIn($expr, $params = array())
     {
-        if (count($this->_getDqlQueryPart('where')) > 0) {
-            $this->add('where', 'AND', true);
-        }
-
-        return $this->add('where', Expr::notIn($expr, $params), true);
+        return $this->andWhere(Expr::notIn($expr, $params));
     }
 
     public function orWhereNotIn($expr, $params = array())
     {
-        if (count($this->_getDqlQueryPart('where')) > 0) {
-            $this->add('where', 'OR', true);
-        }
-
-        return $this->add('where', Expr::notIn($expr, $params), true);
+        return $this->orWhere(Expr::notIn($expr, $params));
     }
 
     public function groupBy($groupBy)
@@ -341,25 +345,41 @@ class QueryBuilder
 
     public function having($having)
     {
-        return $this->add('having', Expr::having($having), false);
+        if ( ! (func_num_args() == 1 && ($having instanceof Expr\Andx || $having instanceof Expr\Orx))) {
+            $having = new Expr\Andx(func_get_args());
+        }
+        
+        return $this->add('having', $having);
     }
 
     public function andHaving($having)
     {
-        if (count($this->_getDqlQueryPart('having')) > 0) {
-            $this->add('having', 'AND', true);
+        $having = $this->_getDqlQueryPart('having');
+        $args = func_get_args();
+        
+        if ($having instanceof Expr\Andx) {
+            $having->addMultiple($args);
+        } else { 
+            array_unshift($args, $having);
+            $having = new Expr\Andx($args);
         }
-
-        return $this->add('having', Expr::having($having), true);
+        
+        return $this->add('having', $having);
     }
 
     public function orHaving($having)
     {
-        if (count($this->_getDqlQueryPart('having')) > 0) {
-            $this->add('having', 'OR', true);
+        $having = $this->_getDqlQueryPart('having');
+        $args = func_get_args();
+        
+        if ($having instanceof Expr\Orx) {
+            $having->addMultiple($args);
+        } else { 
+            array_unshift($args, $having);
+            $having = new Expr\Orx($args);
         }
-
-        return $this->add('having', Expr::having($having), true);
+        
+        return $this->add('having', $having);
     }
 
     public function orderBy($sort, $order = null)
@@ -374,8 +394,7 @@ class QueryBuilder
 
     /**
      * Get the DQL query string for DELETE queries
-     *
-     * BNF:
+     * EBNF:
      *
      * DeleteStatement = DeleteClause [WhereClause] [OrderByClause] [LimitClause] [OffsetClause]
      * DeleteClause    = "DELETE" "FROM" RangeVariableDeclaration
@@ -389,15 +408,14 @@ class QueryBuilder
     private function _getDqlForDelete()
     {
          return 'DELETE'
-              . $this->_getReducedDqlQueryPart('from', array('pre' => ' ', 'separator' => ' '))
-              . $this->_getReducedDqlQueryPart('where', array('pre' => ' WHERE ', 'separator' => ' '))
+              . $this->_getReducedDqlQueryPart('from', array('pre' => ' '))
+              . $this->_getReducedDqlQueryPart('where', array('pre' => ' WHERE '))
               . $this->_getReducedDqlQueryPart('orderBy', array('pre' => ' ORDER BY ', 'separator' => ', '));
     }
 
     /**
      * Get the DQL query string for UPDATE queries
-     *
-     * BNF:
+     * EBNF:
      *
      * UpdateStatement = UpdateClause [WhereClause] [OrderByClause]
      * UpdateClause    = "UPDATE" RangeVariableDeclaration "SET" UpdateItem {"," UpdateItem}
@@ -409,16 +427,15 @@ class QueryBuilder
     private function _getDqlForUpdate()
     {
          return 'UPDATE'
-              . $this->_getReducedDqlQueryPart('from', array('pre' => ' ', 'separator' => ' '))
+              . $this->_getReducedDqlQueryPart('from', array('pre' => ' '))
               . $this->_getReducedDqlQueryPart('set', array('pre' => ' SET ', 'separator' => ', '))
-              . $this->_getReducedDqlQueryPart('where', array('pre' => ' WHERE ', 'separator' => ' '))
+              . $this->_getReducedDqlQueryPart('where', array('pre' => ' WHERE '))
               . $this->_getReducedDqlQueryPart('orderBy', array('pre' => ' ORDER BY ', 'separator' => ', '));
     }
 
     /**
      * Get the DQL query string for SELECT queries
-     *
-     * BNF:
+     * EBNF:
      *
      * SelectStatement = [SelectClause] FromClause [WhereClause] [GroupByClause] [HavingClause] [OrderByClause]
      * SelectClause    = "SELECT" ["ALL" | "DISTINCT"] SelectExpression {"," SelectExpression}
@@ -432,26 +449,27 @@ class QueryBuilder
      */
     private function _getDqlForSelect()
     {
-         return 'SELECT'
+         return 'SELECT' 
               . $this->_getReducedDqlQueryPart('select', array('pre' => ' ', 'separator' => ', '))
-              . $this->_getReducedDqlQueryPart('from', array('pre' => ' FROM ', 'separator' => ' '))
-              . $this->_getReducedDqlQueryPart('where', array('pre' => ' WHERE ', 'separator' => ' '))
+              . $this->_getReducedDqlQueryPart('from', array('pre' => ' FROM '))
+              . $this->_getReducedDqlQueryPart('join', array('pre' => ' ', 'separator' => ' '))
+              . $this->_getReducedDqlQueryPart('where', array('pre' => ' WHERE '))
               . $this->_getReducedDqlQueryPart('groupBy', array('pre' => ' GROUP BY ', 'separator' => ', '))
-              . $this->_getReducedDqlQueryPart('having', array('pre' => ' HAVING ', 'separator' => ' '))
+              . $this->_getReducedDqlQueryPart('having', array('pre' => ' HAVING '))
               . $this->_getReducedDqlQueryPart('orderBy', array('pre' => ' ORDER BY ', 'separator' => ', '));
     }
 
     private function _getReducedDqlQueryPart($queryPartName, $options = array())
     {
-        if (empty($this->_dqlParts[$queryPartName])) {
+        $queryPart = $this->_getDqlQueryPart($queryPartName);
+        
+        if (empty($queryPart)) {
             return (isset($options['empty']) ? $options['empty'] : '');
         }
-
-        $str  = (isset($options['pre']) ? $options['pre'] : '');
-        $str .= implode($options['separator'], $this->_getDqlQueryPart($queryPartName));
-        $str .= (isset($options['post']) ? $options['post'] : '');
-
-        return $str;
+        
+        return (isset($options['pre']) ? $options['pre'] : '')
+             . (is_array($queryPart) ? implode($options['separator'], $queryPart) : $queryPart)
+             . (isset($options['post']) ? $options['post'] : '');
     }
 
     private function _getDqlQueryPart($queryPartName)

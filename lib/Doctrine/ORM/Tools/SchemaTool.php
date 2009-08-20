@@ -150,6 +150,8 @@ class SchemaTool
                     $class->getQuotedTableName($this->_platform), $columns, $options));
             $processedClasses[$class->name] = true;
 
+            // TODO if we're reusing the sequence previously defined (in another model),
+            // it should not attempt to create a new sequence.
             if ($class->isIdGeneratorSequence() && $class->name == $class->rootEntityName) {
                 $seqDef = $class->getSequenceGeneratorDefinition();
                 $sequences[] = $this->_platform->getCreateSequenceSql(
