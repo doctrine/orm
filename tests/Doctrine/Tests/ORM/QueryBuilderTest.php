@@ -187,7 +187,7 @@ class QueryBuilderTest extends \Doctrine\Tests\OrmTestCase
             ->select('u')
             ->from('Doctrine\Tests\Models\CMS\CmsUser', 'u')
             ->where('u.id = :uid')
-            ->andWhereIn('u.id', array(1, 2, 3));
+            ->andWhere(Expr::in('u.id', array(1, 2, 3)));
 
         $this->assertValidQueryBuilder($qb, 'SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE (u.id = :uid) AND (u.id IN(1, 2, 3))');
     }
@@ -198,7 +198,7 @@ class QueryBuilderTest extends \Doctrine\Tests\OrmTestCase
             ->select('u')
             ->from('Doctrine\Tests\Models\CMS\CmsUser', 'u')
             ->where('u.id = :uid')
-            ->orWhereIn('u.id', array(1, 2, 3));
+            ->orWhere(Expr::in('u.id', array(1, 2, 3)));
 
         $this->assertValidQueryBuilder($qb, 'SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE (u.id = :uid) OR (u.id IN(1, 2, 3))');
     }
@@ -209,7 +209,7 @@ class QueryBuilderTest extends \Doctrine\Tests\OrmTestCase
             ->select('u')
             ->from('Doctrine\Tests\Models\CMS\CmsUser', 'u')
             ->where('u.id = :uid')
-            ->andWhereNotIn('u.id', array(1, 2, 3));
+            ->andWhere(Expr::notIn('u.id', array(1, 2, 3)));
 
         $this->assertValidQueryBuilder($qb, 'SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE (u.id = :uid) AND (u.id NOT IN(1, 2, 3))');
     }
@@ -220,7 +220,7 @@ class QueryBuilderTest extends \Doctrine\Tests\OrmTestCase
             ->select('u')
             ->from('Doctrine\Tests\Models\CMS\CmsUser', 'u')
             ->where('u.id = :uid')
-            ->OrWhereNotIn('u.id', array(1, 2, 3));
+            ->OrWhere(Expr::notIn('u.id', array(1, 2, 3)));
 
         $this->assertValidQueryBuilder($qb, 'SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE (u.id = :uid) OR (u.id NOT IN(1, 2, 3))');
     }

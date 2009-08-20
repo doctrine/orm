@@ -27,15 +27,13 @@ use Doctrine\ORM\Query\Expr;
  * This class is responsible for building DQL query strings via an object oriented
  * PHP interface.
  *
- * TODO: I don't like the API of using the Expr::*() syntax inside of the QueryBuilder
- * methods. What can we do to allow them to do it more fluently with the QueryBuilder.
- *
- * @author      Jonathan H. Wage <jonwage@gmail.com>
- * @author      Roman Borschel <roman@code-factory.org>
- * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
- * @link        http://www.doctrine-project.org
- * @since       2.0
- * @version     $Revision$
+ * @license http://www.opensource.org/licenses/lgpl-license.php LGPL
+ * @link    www.doctrine-project.org
+ * @since   2.0
+ * @version $Revision$
+ * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
+ * @author  Jonathan Wage <jonwage@gmail.com>
+ * @author  Roman Borschel <roman@code-factory.org>
  */
 class QueryBuilder
 {
@@ -313,34 +311,14 @@ class QueryBuilder
         return $this->add('where', $where);
     }
 
-    public function andWhereIn($expr, $params)
-    {
-        return $this->andWhere(Expr::in($expr, $params));
-    }
-
-    public function orWhereIn($expr, $params = array())
-    {
-        return $this->orWhere(Expr::in($expr, $params));
-    }
-
-    public function andWhereNotIn($expr, $params = array())
-    {
-        return $this->andWhere(Expr::notIn($expr, $params));
-    }
-
-    public function orWhereNotIn($expr, $params = array())
-    {
-        return $this->orWhere(Expr::notIn($expr, $params));
-    }
-
     public function groupBy($groupBy)
     {
-        return $this->add('groupBy', Expr::groupBy($groupBy), false);
+        return $this->add('groupBy', new Expr\GroupBy(func_get_args()));
     }
 
     public function addGroupBy($groupBy)
     {
-        return $this->add('groupBy', Expr::groupBy($groupBy), true);
+        return $this->add('groupBy', new Expr\GroupBy(func_get_args()), true);
     }
 
     public function having($having)
@@ -384,12 +362,12 @@ class QueryBuilder
 
     public function orderBy($sort, $order = null)
     {
-        return $this->add('orderBy', Expr::orderBy($sort, $order), false);
+        return $this->add('orderBy', new Expr\OrderBy($sort, $order));
     }
 
     public function addOrderBy($sort, $order = null)
     {
-        return $this->add('orderBy', Expr::orderBy($sort, $order), true);
+        return $this->add('orderBy', new Expr\OrderBy($sort, $order), true);
     }
 
     /**
