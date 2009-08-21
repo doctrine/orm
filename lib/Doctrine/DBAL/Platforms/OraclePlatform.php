@@ -241,7 +241,7 @@ class OraclePlatform extends AbstractPlatform
 
     public function getCreateTableSql($table, array $columns, array $options = array())
     {
-        $indexes = isset($options['indexes']) ? $options['indexes']:array();
+        $indexes = isset($options['indexes']) ? $options['indexes'] : array();
         $options['indexes'] = array();
         $sql = parent::getCreateTableSql($table, $columns, $options);
 
@@ -258,9 +258,9 @@ class OraclePlatform extends AbstractPlatform
         
         if (isset($indexes) && ! empty($indexes)) {
             foreach ($indexes as $indexName => $definition) {
-                // create nonunique indexes, as they are a part od CREATE TABLE DDL
+                // create nonunique indexes, as they are a part of CREATE TABLE DDL
                 if ( ! isset($definition['type']) || 
-                    (isset($definition['type']) && strtolower($definition['type']) != 'unique')) {
+                        (isset($definition['type']) && strtolower($definition['type']) != 'unique')) {
                     $sql[] = $this->getCreateIndexSql($table, $indexName, $definition);
                 }
             }

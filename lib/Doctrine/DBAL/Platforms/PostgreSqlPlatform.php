@@ -616,11 +616,8 @@ class PostgreSqlPlatform extends AbstractPlatform
         }
 
         if (isset($options['foreignKeys'])) {
-
             foreach ((array) $options['foreignKeys'] as $k => $definition) {
-                if (is_array($definition)) {
-                    $sql[] = $this->getCreateForeignKeySql($name, $definition);
-                }
+                $sql[] = $this->getCreateForeignKeySql($name, $definition);
             }
         }
 

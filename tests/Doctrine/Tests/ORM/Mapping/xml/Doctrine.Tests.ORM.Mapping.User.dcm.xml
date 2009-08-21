@@ -17,23 +17,23 @@
         
         <field name="name" column="name" type="string" length="50"/>
         
-        <one-to-one field="address" targetEntity="Address">
-            <join-column name="address_id" referencedColumnName="id"/>
+        <one-to-one field="address" target-entity="Address">
+            <join-column name="address_id" referenced-column-name="id"/>
         </one-to-one>
         
-        <one-to-many field="phonenumbers" targetEntity="Phonenumber" mappedBy="user">
+        <one-to-many field="phonenumbers" target-entity="Phonenumber" mapped-by="user">
             <cascade>
                 <cascade-persist/>
             </cascade>
         </one-to-many>
         
-        <many-to-many field="groups" targetEntity="Group">
+        <many-to-many field="groups" target-entity="Group">
             <join-table name="cms_users_groups">
                 <join-columns>
-                    <join-column name="user_id" referencedColumnName="id"/>
+                    <join-column name="user_id" referenced-column-name="id"/>
                 </join-columns>
                 <inverse-join-columns>
-                    <join-column name="group_id" referencedColumnName="id"/>
+                    <join-column name="group_id" referenced-column-name="id"/>
                 </inverse-join-columns>
             </join-table>
         </many-to-many>

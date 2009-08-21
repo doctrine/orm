@@ -362,14 +362,6 @@ abstract class AbstractPlatform
      * must contain a logical expression or an array with logical expressions.
      * These expressions will be matched against the first parameter.
      *
-     * Example:
-     * <code>
-     * $q = new Doctrine_Query();
-     * $q->select('u.*')
-     *   ->from('User u')
-     *   ->where($q->expr->in( 'id', array(1,2,3)));
-     * </code>
-     *
      * @param string $column        the value that should be matched against
      * @param string|array(string)  values that will be matched against $column
      * @return string logical expression
@@ -390,14 +382,6 @@ abstract class AbstractPlatform
     /**
      * Returns SQL that checks if a expression is null.
      *
-     * Example:
-     * <code>
-     * $q = new Doctrine_Query();
-     * $q->select('u.*')
-     *   ->from('User u')
-     *   ->where($q->expr->isNull('id'));
-     * </code>
-     *
      * @param string $expression the expression that should be compared to null
      * @return string logical expression
      */
@@ -408,14 +392,6 @@ abstract class AbstractPlatform
 
     /**
      * Returns SQL that checks if a expression is not null.
-     *
-     * Example:
-     * <code>
-     * $q = new Doctrine_Query();
-     * $q->select('u.*')
-     *   ->from('User u')
-     *   ->where($q->expr->isNotNull('id'));
-     * </code>
      *
      * @param string $expression the expression that should be compared to null
      * @return string logical expression
@@ -434,14 +410,6 @@ abstract class AbstractPlatform
      * Note: There is a slight difference in the way BETWEEN works on some databases.
      * http://www.w3schools.com/sql/sql_between.asp. If you want complete database
      * independence you should avoid using between().
-     *
-     * Example:
-     * <code>
-     * $q = new Doctrine_Query();
-     * $q->select('u.*')
-     *   ->from('User u')
-     *   ->where($q->expr->between('id', 1, 5));
-     * </code>
      *
      * @param string $expression the value to compare to
      * @param string $value1 the lower value to compare with
@@ -504,18 +472,24 @@ abstract class AbstractPlatform
     }
 
     /**
-     * Gets the SQL statement(s) to create a table with the specified name, columns and options
+     * Gets the SQL statement(s) to create a table with the specified name, columns and constraints
      * on this platform.
      *
-     * @param string $table
-     * @param array $columns
-     * @param array $options
-     * @return array
+     * @param string $table The name of the table.
+     * @param array $columns The column definitions for the table.
+     * @param array $options The table constraints.
+     * @return array The sequence of SQL statements.
      */
     public function getCreateTableSql($table, array $columns, array $options = array())
     {
         $columnListSql = $this->getColumnDeclarationListSql($columns);
 
+        if (isset($options['uniqueConstraints']) && ! empty($options['uniqueConstraints'])) {
+            foreach ($options['uniqueConstraints'] as $uniqueConstraint) {
+                $columnListSql .= ', UNIQUE(' . implode(', ', array_values($uniqueConstraint)) . ')';
+            }
+        }
+        
         if (isset($options['primary']) && ! empty($options['primary'])) {
             $columnListSql .= ', PRIMARY KEY(' . implode(', ', array_unique(array_values($options['primary']))) . ')';
         }

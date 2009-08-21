@@ -21,7 +21,7 @@
 
 namespace Doctrine\ORM\Mapping;
 
-use \Doctrine\Common\Annotations\Annotation;
+use Doctrine\Common\Annotations\Annotation;
 
 /* Annotations */
 
@@ -94,6 +94,16 @@ final class ElementCollection extends Annotation {
 final class Table extends Annotation {
     public $name;
     public $schema;
+    public $indexes;
+    public $uniqueConstraints;
+}
+final class UniqueConstraint extends Annotation {
+    public $name;
+    public $columns;
+}
+final class Index extends Annotation {
+    public $name;
+    public $columns;
 }
 final class JoinTable extends Annotation {
     public $name;

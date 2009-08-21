@@ -227,7 +227,7 @@ class MySqlPlatform extends AbstractPlatform
         $fixed = (isset($field['fixed'])) ? $field['fixed'] : false;
 
         return $fixed ? ($length ? 'CHAR(' . $length . ')' : 'CHAR(255)')
-                : ($length ? 'VARCHAR(' . $length . ')' : 'TEXT');
+                : ($length ? 'VARCHAR(' . $length . ')' : 'VARCHAR(255)');
     }
 
     public function getClobDeclarationSql(array $field)
@@ -408,7 +408,7 @@ class MySqlPlatform extends AbstractPlatform
         $queryFields = $this->getColumnDeclarationListSql($fields);
 
         // build indexes for all foreign key fields (needed in MySQL!!)
-        if (isset($options['foreignKeys'])) {
+        /*if (isset($options['foreignKeys'])) {
             foreach ($options['foreignKeys'] as $fk) {
                 $local = $fk['local'];
                 $found = false;
@@ -432,6 +432,12 @@ class MySqlPlatform extends AbstractPlatform
                 if ( ! $found) {
                     $options['indexes'][$local] = array('fields' => array($local => array()));
                 }
+            }
+        }*/
+        
+        if (isset($options['uniqueConstraints']) && ! empty($options['uniqueConstraints'])) {
+            foreach ($options['uniqueConstraints'] as $uniqueConstraint) {
+                $queryFields .= ', UNIQUE(' . implode(', ', array_values($uniqueConstraint)) . ')';
             }
         }
 
@@ -471,9 +477,7 @@ class MySqlPlatform extends AbstractPlatform
         // get the type of the table
         if (isset($options['type'])) {
             $type = $options['type'];
-        }/* else {
-            $type = $this->getAttribute(Doctrine::ATTR_DEFAULT_TABLE_TYPE);
-        }*/
+        }
 
         if ($type) {
             $optionStrings[] = 'ENGINE = ' . $type;
@@ -589,6 +593,7 @@ class MySqlPlatform extends AbstractPlatform
         if ( ! $name) {
             throw DoctrineException::updateMe('no valid table name specified');
         }
+        
         foreach ($changes as $changeName => $change) {
             switch ($changeName) {
                 case 'add':
@@ -671,61 +676,6 @@ class MySqlPlatform extends AbstractPlatform
     }
     
     /**
-     * Get the stucture of a field into an array
-     *
-     * @author Leoncx
-     * @param string    $table         name of the table on which the index is to be created
-     * @param string    $name          name of the index to be created
-     * @param array     $definition    associative array that defines properties of the index to be created.
-     *                                 Currently, only one property named FIELDS is supported. This property
-     *                                 is also an associative with the names of the index fields as array
-     *                                 indexes. Each entry of this array is set to another type of associative
-     *                                 array that specifies properties of the index that are specific to
-     *                                 each field.
-     *
-     *                                 Currently, only the sorting property is supported. It should be used
-     *                                 to define the sorting direction of the index. It may be set to either
-     *                                 ascending or descending.
-     *
-     *                                 Not all DBMS support index sorting direction configuration. The DBMS
-     *                                 drivers of those that do not support it ignore this property. Use the
-     *                                 function supports() to determine whether the DBMS driver can manage indexes.
-     *
-     *                                 Example
-     *                                    array(
-     *                                        'fields' => array(
-     *                                            'user_name' => array(
-     *                                                'sorting' => 'ASC'
-     *                                                'length' => 10
-     *                                            ),
-     *                                            'last_login' => array()
-     *                                        )
-     *                                    )
-     * @throws PDOException
-     * @return void
-     * @override
-     */
-    public function getCreateIndexSql($table, $name, array $definition)
-    {
-        $table = $table;
-        $type = '';
-        if (isset($definition['type'])) {
-            switch (strtolower($definition['type'])) {
-                case 'fulltext':
-                case 'unique':
-                    $type = strtoupper($definition['type']) . ' ';
-                break;
-                default:
-                    throw DoctrineException::updateMe('Unknown index type ' . $definition['type']);
-            }
-        }
-        $query  = 'CREATE ' . $type . 'INDEX ' . $name . ' ON ' . $table;
-        $query .= ' (' . $this->getIndexFieldDeclarationListSql($definition['fields']) . ')';
-
-        return $query;
-    }
-    
-    /**
      * Obtain DBMS specific SQL code portion needed to declare an integer type
      * field to be used in statements like CREATE TABLE.
      *
@@ -791,7 +741,7 @@ class MySqlPlatform extends AbstractPlatform
      */
     public function getIndexDeclarationSql($name, array $definition)
     {
-        $type   = '';
+        $type = '';
         if (isset($definition['type'])) {
             switch (strtolower($definition['type'])) {
                 case 'fulltext':
@@ -818,7 +768,6 @@ class MySqlPlatform extends AbstractPlatform
     }
     
     /**
-     * getIndexFieldDeclarationList
      * Obtain DBMS specific SQL code portion needed to set an index
      * declaration to be used in statements like CREATE TABLE.
      *
@@ -908,7 +857,7 @@ class MySqlPlatform extends AbstractPlatform
     }
 
     /**
-     * Get the platform name for this instance
+     * Get the platform name for this instance.
      *
      * @return string
      */

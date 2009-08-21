@@ -233,11 +233,6 @@ final class ClassMetadata
      * The value specifies the name of the index. To create a multi-column index,
      * just use the same name for several mappings.
      * 
-     * - <b>unique (string, optional, schema-only)</b>
-     * Whether a unique constraint should be generated for the column.
-     * The value specifies the name of the unique constraint. To create a multi-column 
-     * unique constraint, just use the same name for several mappings.
-     * 
      * - <b>foreignKey (string, optional, schema-only)</b>
      *
      * @var array
@@ -316,6 +311,8 @@ final class ClassMetadata
      *
      * name => <tableName>
      * schema => <schemaName>
+     * indexes => array
+     * uniqueConstraints => array
      *
      * @var array
      */

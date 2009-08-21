@@ -42,6 +42,7 @@ class AllTests
         $suite->addTestSuite('Doctrine\Tests\ORM\Functional\EntityRepositoryTest');
         
         $suite->addTest(Locking\AllTests::suite());
+        $suite->addTest(SchemaTool\AllTests::suite());
 
         return $suite;
     }

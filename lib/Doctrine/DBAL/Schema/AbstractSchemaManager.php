@@ -166,10 +166,10 @@ abstract class AbstractSchemaManager
     }
 
     /**
-     * List the columns for a given table
+     * List the columns for a given table.
      *
-     * @param string $table The name of the table
-     * @return array $tableColumns
+     * @param string $table The name of the table.
+     * @return array $tableColumns The column descriptions.
      */
     public function listTableColumns($table)
     {

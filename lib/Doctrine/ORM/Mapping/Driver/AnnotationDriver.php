@@ -73,10 +73,21 @@ class AnnotationDriver implements Driver
         // Evaluate DoctrineTable annotation
         if (isset($classAnnotations['Doctrine\ORM\Mapping\Table'])) {
             $tableAnnot = $classAnnotations['Doctrine\ORM\Mapping\Table'];
-            $metadata->setPrimaryTable(array(
+            $primaryTable = array(
                 'name' => $tableAnnot->name,
                 'schema' => $tableAnnot->schema
-            ));
+            );
+            if ($tableAnnot->indexes !== null) {
+                foreach ($tableAnnot->indexes as $indexAnnot) {
+                    $primaryTable['indexes'][$indexAnnot->name] = array('fields' => $indexAnnot->columns);
+                }
+            }
+            if ($tableAnnot->uniqueConstraints !== null) {
+                foreach ($tableAnnot->uniqueConstraints as $uniqueConstraint) {
+                    $primaryTable['uniqueConstraints'][] = $uniqueConstraint->columns;
+                }
+            }
+            $metadata->setPrimaryTable($primaryTable);
         }
 
         // Evaluate InheritanceType annotation
@@ -135,7 +146,6 @@ class AnnotationDriver implements Driver
                 );
             } else if ($joinColumnsAnnot = $this->_reader->getPropertyAnnotation($property, 'Doctrine\ORM\Mapping\JoinColumns')) {
                 foreach ($joinColumnsAnnot->value as $joinColumn) {
-                    //$joinColumns = $joinColumnsAnnot->value;
                     $joinColumns[] = array(
                         'name' => $joinColumn->name,
                         'referencedColumnName' => $joinColumn->referencedColumnName,

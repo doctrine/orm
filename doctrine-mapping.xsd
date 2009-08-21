@@ -8,15 +8,15 @@
   <xs:annotation>
     <xs:documentation><![CDATA[ 
        This is the XML Schema for the object/relational 
-       mapping file used by Doctrine.
+       mapping file used by the Doctrine ORM.
      ]]></xs:documentation>
   </xs:annotation>
 
   <xs:element name="doctrine-mapping">
     <xs:complexType>
       <xs:sequence>
-        <xs:element name="mapped-superclass" type="orm:mapped-superclass" minOccurs="0" />
-        <xs:element name="entity" type="orm:entity" minOccurs="0" />
+        <xs:element name="mapped-superclass" type="orm:mapped-superclass" minOccurs="0" maxOccurs="unbounded" />
+        <xs:element name="entity" type="orm:entity" minOccurs="0" maxOccurs="unbounded" />
       </xs:sequence>
     </xs:complexType>
   </xs:element>
@@ -52,27 +52,28 @@
   
   <xs:complexType name="lifecycle-callbacks">
     <xs:sequence>
-      <xs:element name="lifecycle-callback" type="orm:lifecycle-callback" minOccurs="1" />
+      <xs:element name="lifecycle-callback" type="orm:lifecycle-callback" minOccurs="1" maxOccurs="unbounded" />
     </xs:sequence>
   </xs:complexType>
 
   <xs:complexType name="entity">
     <xs:sequence>
+      <xs:element name="indexes" type="orm:indexes" minOccurs="0"/>
+      <xs:element name="unique-constraints" type="orm:unique-constraints" minOccurs="0"/>
       <xs:element name="discriminator-column" type="orm:discriminator-column" minOccurs="0"/>
-      <xs:element name="subclasses" type="xs:NMTOKENS" minOccurs="0"/>
+      <xs:element name="discriminator-map" type="orm:discriminator-map" minOccurs="0"/>
       <xs:element name="lifecycle-callbacks" type="orm:lifecycle-callbacks" minOccurs="0" maxOccurs="1" />
       <xs:element name="id" type="orm:id" />
-      <xs:element name="field" type="orm:field" minOccurs="0" />
-      <xs:element name="one-to-one" type="orm:one-to-one" minOccurs="0"/>
-      <xs:element name="one-to-many" type="orm:one-to-many" minOccurs="0" />
-      <xs:element name="many-to-many" type="orm:many-to-many" minOccurs="0" />
+      <xs:element name="field" type="orm:field" minOccurs="0" maxOccurs="unbounded"/>
+      <xs:element name="one-to-one" type="orm:one-to-one" minOccurs="0" maxOccurs="unbounded"/>
+      <xs:element name="one-to-many" type="orm:one-to-many" minOccurs="0" maxOccurs="unbounded" />
+      <xs:element name="many-to-many" type="orm:many-to-many" minOccurs="0" maxOccurs="unbounded" />
     </xs:sequence>
     <xs:attribute name="name" type="xs:string" use="required" />
     <xs:attribute name="table" type="xs:NMTOKEN" />
     <xs:attribute name="schema" type="xs:NMTOKEN" />
     <xs:attribute name="repository-class" type="xs:NMTOKEN"/>
     <xs:attribute name="inheritance-type" type="orm:inheritance-type"/>
-    <xs:attribute name="discriminator-value" type="xs:NMTOKEN"/>
   </xs:complexType>
   
   <xs:complexType name="mapped-superclass" >
@@ -122,6 +123,39 @@
     <xs:attribute name="field-name" type="xs:NMTOKEN" />
     <xs:attribute name="length" type="xs:NMTOKEN" />
   </xs:complexType>
+  
+  <xs:complexType name="unique-constraint">
+    <xs:attribute name="name" type="xs:NMTOKEN" use="optional"/>
+    <xs:attribute name="columns" type="xs:NMTOKENS" use="required"/>
+  </xs:complexType>
+  
+  <xs:complexType name="unique-constraints">
+    <xs:sequence>
+      <xs:element name="unique-constraint" type="orm:unique-constraint" minOccurs="1" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+  
+  <xs:complexType name="index">
+    <xs:attribute name="name" type="xs:NMTOKEN" use="optional"/>
+    <xs:attribute name="columns" type="xs:NMTOKENS" use="required"/>
+  </xs:complexType>
+  
+  <xs:complexType name="indexes">
+    <xs:sequence>
+      <xs:element name="index" type="orm:index" minOccurs="1" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+  
+  <xs:complexType name="discriminator-mapping">
+    <xs:attribute name="value" type="xs:NMTOKEN" use="required"/>
+    <xs:attribute name="class" type="xs:NMTOKEN" use="required"/>
+  </xs:complexType>
+  
+  <xs:complexType name="discriminator-map">
+    <xs:sequence>
+      <xs:element name="discriminator-mapping" type="orm:discriminator-mapping" minOccurs="1" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
 
   <xs:complexType name="generator">
     <xs:attribute name="strategy" type="orm:generator-strategy" use="required" />
@@ -138,13 +172,13 @@
 
   <xs:complexType name="inverse-join-columns">
     <xs:sequence>
-      <xs:element name="join-column" type="orm:join-column" />
+      <xs:element name="join-column" type="orm:join-column" minOccurs="1" maxOccurs="unbounded" />
     </xs:sequence>
   </xs:complexType>
 
   <xs:complexType name="join-column">
     <xs:attribute name="name" type="xs:NMTOKEN" use="required" />
-    <xs:attribute name="referencedColumnName" type="xs:NMTOKEN" use="required" />
+    <xs:attribute name="referenced-column-name" type="xs:NMTOKEN" use="required" />
     <xs:attribute name="unique" type="xs:boolean" default="false" />
     <xs:attribute name="nullable" type="xs:boolean" default="true" />
     <xs:attribute name="on-delete" type="orm:fk-action" />
@@ -153,7 +187,7 @@
 
   <xs:complexType name="join-columns">
     <xs:sequence>
-      <xs:element name="join-column" type="orm:join-column" />
+      <xs:element name="join-column" type="orm:join-column" minOccurs="1" maxOccurs="unbounded" />
     </xs:sequence>
   </xs:complexType>
 
@@ -171,7 +205,7 @@
       <xs:element name="cascade" type="orm:cascade-type" minOccurs="0" />
       <xs:element name="join-table" type="orm:join-table" />
     </xs:sequence>
-    <xs:attribute name="targetEntity" type="xs:NMTOKEN" use="required" />
+    <xs:attribute name="target-entity" type="xs:NMTOKEN" use="required" />
     <xs:attribute name="field" type="xs:NMTOKEN" use="required" />
   </xs:complexType>
 
@@ -179,8 +213,8 @@
     <xs:sequence>
       <xs:element name="cascade" type="orm:cascade-type" minOccurs="0" />
     </xs:sequence>
-    <xs:attribute name="targetEntity" type="xs:NMTOKEN" use="required" />
-    <xs:attribute name="mappedBy" type="xs:NMTOKEN" />
+    <xs:attribute name="target-entity" type="xs:NMTOKEN" use="required" />
+    <xs:attribute name="mapped-by" type="xs:NMTOKEN" />
     <xs:attribute name="field" type="xs:NMTOKEN" use="required" />
     <xs:attribute name="orphan-removal" type="xs:boolean" default="false" />
   </xs:complexType>
@@ -193,8 +227,8 @@
         <xs:element name="join-columns" type="orm:join-columns"/>
       </xs:choice>
     </xs:sequence>
-    <xs:attribute name="targetEntity" type="xs:NMTOKEN" use="required" />
-    <xs:attribute name="mappedBy" type="xs:NMTOKEN" />
+    <xs:attribute name="target-entity" type="xs:NMTOKEN" use="required" />
+    <xs:attribute name="mapped-by" type="xs:NMTOKEN" />
     <xs:attribute name="field" type="xs:NMTOKEN" use="required" />
     <xs:attribute name="orphan-removal" type="xs:boolean" default="false" />
   </xs:complexType>

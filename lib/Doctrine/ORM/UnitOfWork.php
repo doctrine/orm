@@ -25,9 +25,7 @@ use Doctrine\Common\Collections\ArrayCollection,
     Doctrine\Common\Collections\Collection,
     Doctrine\Common\DoctrineException,
     Doctrine\Common\PropertyChangedListener,
-    Doctrine\ORM\Event\LifecycleEventArgs,
-    Doctrine\ORM\Internal\CommitOrderCalculator,
-    Doctrine\ORM\Internal\CommitOrderNode;
+    Doctrine\ORM\Event\LifecycleEventArgs;
 
 /**
  * The UnitOfWork is responsible for tracking changes to objects during an
@@ -233,7 +231,7 @@ class UnitOfWork implements PropertyChangedListener
     {
         $this->_em = $em;
         $this->_evm = $em->getEventManager();
-        $this->_commitOrderCalculator = new CommitOrderCalculator();
+        $this->_commitOrderCalculator = new Internal\CommitOrderCalculator();
         $this->_useCExtension = $this->_em->getConfiguration()->getUseCExtension();
     }
 
