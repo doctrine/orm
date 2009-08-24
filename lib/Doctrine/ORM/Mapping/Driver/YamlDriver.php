@@ -57,6 +57,21 @@ class YamlDriver extends AbstractFileDriver
                 $metadata->setInheritanceType($element['inheritanceType']);
             }
 
+            // Evaluate indexes
+            if (isset($element['indexes'])) {
+                foreach ($element['indexes'] as $index) {
+                    $metadata->primaryTable['indexes'][$index['name']] = array('fields' =>
+                            explode(',', $index['columns']));
+                }
+            }
+
+            // Evaluate uniqueConstraints
+            if (isset($element['uniqueConstraints'])) {
+                foreach ($element['uniqueConstraints'] as $unique) {
+                    $metadata->primaryTable['uniqueConstraints'][] = explode(',', $unique['columns']);
+                }
+            }
+
             // Evaluate fields
             if (isset($element['fields'])) {
                 foreach ($element['fields'] as $name => $fieldMapping) {
@@ -69,6 +84,12 @@ class YamlDriver extends AbstractFileDriver
                     }
                     if (isset($fieldMapping['length'])) {
                         $mapping['length'] = $fieldMapping['length'];
+                    }
+                    if (isset($fieldMapping['precision'])) {
+                        $mapping['precision'] = $fieldMapping['precision'];
+                    }
+                    if (isset($fieldMapping['scale'])) {
+                        $mapping['scale'] = $fieldMapping['scale'];
                     }
                     if (isset($fieldMapping['version']) && $fieldMapping['version']) {
                         $metadata->setVersionMapping($mapping);

@@ -67,7 +67,7 @@ class XmlDriver extends AbstractFileDriver
             // Evaluate <unique-constraints..>
             if (isset($xmlRoot->{'unique-constraints'})) {
                 foreach ($xmlRoot->{'unique-constraints'}->{'unique-constraint'} as $unique) {
-                    $metadata->primaryTable['uniqueConstraints'][] = explode(',', $index['columns']);
+                    $metadata->primaryTable['uniqueConstraints'][] = explode(',', $unique['columns']);
                 }
             }
 
@@ -173,6 +173,9 @@ class XmlDriver extends AbstractFileDriver
                         $joinColumns[] = $this->_getJoinColumnMapping($manyToOneElement->{'join-column'});
                     } else if (isset($manyToOneElement->{'join-columns'})) {
                         foreach ($manyToOneElement->{'join-columns'}->{'join-column'} as $joinColumnElement) {
+                            if (!isset($joinColumnElement['name'])) {
+                                $joinColumnElement['name'] = $name;
+                            }
                             $joinColumns[] = $this->_getJoinColumnMapping($joinColumnElement);
                         }
                     } else {
