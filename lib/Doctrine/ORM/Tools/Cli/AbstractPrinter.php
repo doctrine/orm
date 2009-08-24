@@ -21,8 +21,6 @@
  
 namespace Doctrine\ORM\Tools\Cli;
 
-use Doctrine\ORM\Tools\Cli\Style;
-
 abstract class AbstractPrinter
 {
     protected $_stream;

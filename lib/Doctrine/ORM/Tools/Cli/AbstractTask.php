@@ -21,8 +21,6 @@
  
 namespace Doctrine\ORM\Tools\Cli;
 
-use Doctrine\ORM\Tools\Cli\AbstractPrinter;
-
 abstract class AbstractTask
 {
     protected $_printer;

@@ -72,7 +72,7 @@ class Cli
     public function __construct($printer = null)
     {
         //$this->_printer = new Printer\Normal();
-        $this->_printer = ($printer) ?: new Printer\AnsiColor();
+        $this->_printer = $printer ?: new Printer\AnsiColor();
         
         // Include core tasks
         $ns = 'Doctrine\ORM\Tools\Cli\Task';
@@ -125,7 +125,7 @@ class Cli
                 $taskArguments['availableTasks'] = $this->_tasks;
         
                 // Check if task exists
-                if ($this->_tasks[$taskName] && class_exists($this->_tasks[$taskName], true)) {
+                if (isset($this->_tasks[$taskName]) && class_exists($this->_tasks[$taskName], true)) {
                     // Instantiate and execute the task
                     $task = new $this->_tasks[$taskName]();
                     $task->setPrinter($this->_printer);
@@ -139,12 +139,12 @@ class Cli
                         $task->basicHelp(); // Fallback of not-valid task arguments
                     }
                 } else {
-                    throw new Doctrine\Exception(
+                    throw \Doctrine\Common\DoctrineException::updateMe(
                         'Unexistent task or attached task class does not exist.'
                     );
                 }
             }
-        } catch (\Doctrine\Exception $e) {
+        } catch (\Doctrine\Common\DoctrineException $e) {
             $this->_printer->write(
                 $taskName . ':' . $e->getMessage() . PHP_EOL, 'ERROR'
             );
