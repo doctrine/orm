@@ -1743,6 +1743,29 @@ final class ClassMetadata
     }
     
     /**
+     * Sets the version field mapping used for versioning. Sets the default
+     * value to use depending on the column type
+     *
+     * @param array $mapping   The version field mapping array
+     * @return void
+     */
+    public function setVersionMapping(array &$mapping)
+    {
+        $this->isVersioned = true;
+        $this->versionField = $mapping['fieldName'];
+
+        if ( ! isset($mapping['default'])) {
+            if ($mapping['type'] == 'integer') {
+                $mapping['default'] = 1;
+            } else if ($mapping['type'] == 'datetime') {
+                $mapping['default'] = 'CURRENT_TIMESTAMP';
+            } else {
+                throw DoctrineException::unsupportedOptimisticLockingType($mapping['type']);
+            }
+        }
+    }
+    
+    /**
      * Checks whether this class is versioned for optimistic locking.
      * 
      * @return boolean TRUE if this class is versioned for optimistic locking, FALSE otherwise.

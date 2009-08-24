@@ -179,15 +179,7 @@ class AnnotationDriver implements Driver
                     $metadata->setIdGeneratorType(constant('Doctrine\ORM\Mapping\ClassMetadata::GENERATOR_TYPE_' . $generatedValueAnnot->strategy));
                 }
                 if ($versionAnnot = $this->_reader->getPropertyAnnotation($property, 'Doctrine\ORM\Mapping\Version')) {
-                    $metadata->setVersioned(true);
-                    $metadata->setVersionField($mapping['fieldName']);
-
-                    if ( ! isset($mapping['default'])) {
-                        // TODO: When we have timestamp optimistic locking
-                        // we'll have to figure out a better way to do this?
-                        // Can we set the default value to be NOW() ?
-                        $mapping['default'] = 1;
-                    }
+                    $metadata->setVersionMapping($mapping);
                 }
                 $metadata->mapField($mapping);
 

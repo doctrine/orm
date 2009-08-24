@@ -90,6 +90,9 @@ class XmlDriver extends AbstractFileDriver
                     if (isset($fieldMapping['scale'])) {
                         $mapping['scale'] = (int)$fieldMapping['scale'];
                     }
+                    if (isset($fieldMapping['version']) && $fieldMapping['version']) {
+                        $metadata->setVersionMapping($mapping);
+                    }
                     $metadata->mapField($mapping);
                 }
             }

@@ -233,9 +233,16 @@ class StandardEntityPersister
 
         if ($isVersioned = $this->_class->isVersioned) {
             $versionField = $this->_class->versionField;
-            $where[$this->_class->fieldNames[$versionField]] = $entity->version;
+            $versionFieldType = $this->_class->getTypeOfField($versionField);
+            $where[$this->_class->fieldNames[$versionField]] = Type::getType(
+                $this->_class->fieldMappings[$versionField]['type']
+            )->convertToDatabaseValue($entity->version, $this->_platform);
             $versionFieldColumnName = $this->_class->getQuotedColumnName($versionField, $this->_platform);
-            $set[] = $versionFieldColumnName . ' = ' . $versionFieldColumnName . ' + 1';
+            if ($versionFieldType == 'integer') {
+                $set[] = $versionFieldColumnName . ' = ' . $versionFieldColumnName . ' + 1';
+            } else if ($versionFieldType == 'datetime') {
+                $set[] = $versionFieldColumnName . ' = CURRENT_TIMESTAMP';
+            }
         }
 
         $params = array_merge(array_values($data), array_values($where));

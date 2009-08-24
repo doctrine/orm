@@ -70,6 +70,9 @@ class YamlDriver extends AbstractFileDriver
                     if (isset($fieldMapping['length'])) {
                         $mapping['length'] = $fieldMapping['length'];
                     }
+                    if (isset($fieldMapping['version']) && $fieldMapping['version']) {
+                        $metadata->setVersionMapping($mapping);
+                    }
                     $metadata->mapField($mapping);
                 }
             }

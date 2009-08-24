@@ -24,7 +24,8 @@ class OptimisticTest extends \Doctrine\Tests\OrmFunctionalTestCase
             $this->_schemaTool->createSchema(array(
                 $this->_em->getClassMetadata('Doctrine\Tests\ORM\Functional\Locking\OptimisticJoinedParent'),
                 $this->_em->getClassMetadata('Doctrine\Tests\ORM\Functional\Locking\OptimisticJoinedChild'),
-                $this->_em->getClassMetadata('Doctrine\Tests\ORM\Functional\Locking\OptimisticStandard')
+                $this->_em->getClassMetadata('Doctrine\Tests\ORM\Functional\Locking\OptimisticStandard'),
+                $this->_em->getClassMetadata('Doctrine\Tests\ORM\Functional\Locking\OptimisticTimestamp')
             ));
         } catch (\Exception $e) {
             // Swallow all exceptions. We do not test the schema tool here.
@@ -119,6 +120,33 @@ class OptimisticTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $test->name = 'WHATT???';
         $this->_em->flush();
     }
+
+    public function testOptimisticTimestampSetsDefaultValue()
+    {
+        $test = new OptimisticTimestamp();
+        $test->name = 'Testing';
+        $this->_em->persist($test);
+        $this->_em->flush();
+
+        $this->assertTrue(strtotime($test->version) > 0);
+    }
+
+    /**
+     * @expectedException Doctrine\ORM\OptimisticLockException
+     */
+    public function testOptimisticTimestampFailureThrowsException()
+    {
+        $q = $this->_em->createQuery('SELECT t FROM Doctrine\Tests\ORM\Functional\Locking\OptimisticTimestamp t WHERE t.name = :name');
+        $q->setParameter('name', 'Testing');
+        $test = $q->getSingleResult();
+
+        // Manually increment the version datetime column
+        $this->_conn->execute('UPDATE optimistic_timestamp SET version = ? WHERE id = ?', array(date('Y-m-d H:i:s', strtotime($test->version->format('Y-m-d H:i:s')) + 3600), $test->id));
+
+        // Try and update the record and it should throw an exception
+        $test->name = 'Testing again';
+        $this->_em->flush();
+    }
 }
 
 /**
@@ -178,6 +206,29 @@ class OptimisticStandard
 
     /**
      * @Version @Column(type="integer")
+     */
+    public $version;
+}
+
+/**
+ * @Entity
+ * @Table(name="optimistic_timestamp")
+ */
+class OptimisticTimestamp
+{
+    /**
+     * @Id @Column(type="integer")
+     * @GeneratedValue(strategy="AUTO")
+     */
+    public $id;
+
+    /**
+     * @Column(type="string", length=255)
+     */
+    public $name;
+
+    /**
+     * @Version @Column(type="datetime")
      */
     public $version;
 }
