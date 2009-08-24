@@ -112,12 +112,6 @@ class AnnotationDriver implements Driver
             $metadata->setDiscriminatorMap($discrMapAnnot->value);
         }
 
-        // Evaluate DoctrineSubClasses annotation
-        if (isset($classAnnotations['Doctrine\ORM\Mapping\SubClasses'])) {
-            $subClassesAnnot = $classAnnotations['Doctrine\ORM\Mapping\SubClasses'];
-            $metadata->setSubclasses($subClassesAnnot->value);
-        }
-
         // Evaluate DoctrineChangeTrackingPolicy annotation
         if (isset($classAnnotations['Doctrine\ORM\Mapping\ChangeTrackingPolicy'])) {
             $changeTrackingAnnot = $classAnnotations['Doctrine\ORM\Mapping\ChangeTrackingPolicy'];

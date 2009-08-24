@@ -97,6 +97,9 @@ class MappingDriverTest extends \Doctrine\Tests\OrmTestCase
         $this->assertTrue($class->associationMappings['groups'] instanceof \Doctrine\ORM\Mapping\ManyToManyMapping);
         $this->assertTrue(isset($class->associationMappings['groups']));
         $this->assertTrue($class->associationMappings['groups']->isOwningSide);
+        $this->assertEquals(count($class->lifecycleCallbacks), 2);
+        $this->assertEquals($class->lifecycleCallbacks['prePersist'][0], 'doStuffOnPrePersist');
+        $this->assertEquals($class->lifecycleCallbacks['postPersist'][0], 'doStuffOnPostPersist');
     }
 }
 
@@ -108,4 +111,13 @@ class User {
     private $groups;
     
     // ... rest of code omitted, irrelevant for the mapping tests
+
+    public function doStuffOnPrePersist()
+    {
+    }
+
+    public function doStuffOnPostPersist()
+    {
+        
+    }
 }

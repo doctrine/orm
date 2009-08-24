@@ -33,7 +33,7 @@
     </xs:sequence>
   </xs:complexType>
   
-  <xs:simpleType name="lifecycle-callback-type">
+  <xs:simpleType name="lifecycle-listener-type">
     <xs:restriction base="xs:token">
       <xs:enumeration value="prePersist"/>
       <xs:enumeration value="postPersist"/>
@@ -45,14 +45,14 @@
     </xs:restriction>
   </xs:simpleType>
   
-  <xs:complexType name="lifecycle-callback">
-    <xs:attribute name="type" type="orm:lifecycle-callback-type" use="required" />
+  <xs:complexType name="lifecycle-listener">
+    <xs:attribute name="type" type="orm:lifecycle-listener-type" use="required" />
     <xs:attribute name="method" type="xs:NMTOKEN" use="required" />
   </xs:complexType>
   
-  <xs:complexType name="lifecycle-callbacks">
+  <xs:complexType name="lifecycle-listener">
     <xs:sequence>
-      <xs:element name="lifecycle-callback" type="orm:lifecycle-callback" minOccurs="1" maxOccurs="unbounded" />
+      <xs:element name="lifecycle-listener" type="orm:lifecycle-listener" minOccurs="1" maxOccurs="unbounded" />
     </xs:sequence>
   </xs:complexType>
 

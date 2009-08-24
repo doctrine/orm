@@ -32,3 +32,6 @@ Doctrine\Tests\ORM\Mapping\User:
         inverseJoinColumns:
           group_id:
             referencedColumnName: id
+  lifecycleListeners:
+    doStuffOnPrePersist: prePersist
+    doStuffOnPostPersist: postPersist

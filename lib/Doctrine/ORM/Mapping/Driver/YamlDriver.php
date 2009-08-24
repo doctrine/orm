@@ -42,141 +42,125 @@ class YamlDriver extends AbstractFileDriver
 
     public function loadMetadataForClass($className, ClassMetadata $metadata)
     {
+        $class = $metadata->getReflectionClass();
+
         $element = $this->getElement($className);
 
         if ($element['type'] == 'entity') {
+            $metadata->setCustomRepositoryClass(
+                isset($element['repositoryClass']) ? $xmlRoot['repositoryClass'] : null
+            );
+        } else if ($element['type'] == 'mappedSuperclass') {
+            $metadata->isMappedSuperclass = true;
+        } else {
+            throw DoctrineException::updateMe("$className is no entity or mapped superclass.");
+        }
 
-            // Evaluate root level properties
-            if (isset($element['table'])) {
-                $metadata->primaryTable['name'] = $element['table'];
-            }
-            if (isset($element['schema'])) {
-                $metadata->primaryTable['schema'] = $element['schema'];
-            }
-            if (isset($element['inheritanceType'])) {
-                $metadata->setInheritanceType($element['inheritanceType']);
-            }
+        // Evaluate root level properties
+        if (isset($element['table'])) {
+            $metadata->primaryTable['name'] = $element['table'];
+        }
+        if (isset($element['schema'])) {
+            $metadata->primaryTable['schema'] = $element['schema'];
+        }
+        if (isset($element['inheritanceType'])) {
+            $metadata->setInheritanceType($element['inheritanceType']);
+        }
 
-            // Evaluate indexes
-            if (isset($element['indexes'])) {
-                foreach ($element['indexes'] as $index) {
-                    $metadata->primaryTable['indexes'][$index['name']] = array('fields' =>
-                            explode(',', $index['columns']));
-                }
-            }
+        // Evaluate discriminatorColumn
+        if (isset($element['discriminatorColumn'])) {
+            $discrColumn = $element['discriminatorColumn'];
+            $metadata->setDiscriminatorColumn(array(
+                'name' => $discrColumn['name'],
+                'type' => $discrColumn['type'],
+                'length' => $discrColumn['length']
+            ));
+        }
 
-            // Evaluate uniqueConstraints
-            if (isset($element['uniqueConstraints'])) {
-                foreach ($element['uniqueConstraints'] as $unique) {
-                    $metadata->primaryTable['uniqueConstraints'][] = explode(',', $unique['columns']);
-                }
-            }
+        // Evaluate discriminatorMap
+        if (isset($element['discriminatorMap'])) {
+            $metadata->setDiscriminatorMap($element['discriminatorMap']);
+        }
 
-            // Evaluate fields
-            if (isset($element['fields'])) {
-                foreach ($element['fields'] as $name => $fieldMapping) {
-                    $mapping = array(
-                        'fieldName' => $name,
-                        'type' => $fieldMapping['type']
-                    );
-                    if (isset($fieldMapping['column'])) {
-                        $mapping['columnName'] = $fieldMapping['column'];
-                    }
-                    if (isset($fieldMapping['length'])) {
-                        $mapping['length'] = $fieldMapping['length'];
-                    }
-                    if (isset($fieldMapping['precision'])) {
-                        $mapping['precision'] = $fieldMapping['precision'];
-                    }
-                    if (isset($fieldMapping['scale'])) {
-                        $mapping['scale'] = $fieldMapping['scale'];
-                    }
-                    if (isset($fieldMapping['version']) && $fieldMapping['version']) {
-                        $metadata->setVersionMapping($mapping);
-                    }
-                    $metadata->mapField($mapping);
-                }
-            }
+        // Evaluate changeTrackingPolicy
+        if (isset($element['changeTrackingPolicy'])) {
+            $metadata->setChangeTrackingPolicy($element['changeTrackingPolicy']);
+        }
 
-            // Evaluate identifier settings
-            foreach ($element['id'] as $name => $idElement) {
+        // Evaluate indexes
+        if (isset($element['indexes'])) {
+            foreach ($element['indexes'] as $index) {
+                $metadata->primaryTable['indexes'][$index['name']] = array('fields' =>
+                        explode(',', $index['columns']));
+            }
+        }
+
+        // Evaluate uniqueConstraints
+        if (isset($element['uniqueConstraints'])) {
+            foreach ($element['uniqueConstraints'] as $unique) {
+                $metadata->primaryTable['uniqueConstraints'][] = explode(',', $unique['columns']);
+            }
+        }
+
+        // Evaluate fields
+        if (isset($element['fields'])) {
+            foreach ($element['fields'] as $name => $fieldMapping) {
                 $mapping = array(
-                    'id' => true,
                     'fieldName' => $name,
-                    'type' => $idElement['type']
+                    'type' => $fieldMapping['type']
                 );
-                if (isset($idElement['column'])) {
-                    $mapping['columnName'] = $idElement['column'];
+                if (isset($fieldMapping['column'])) {
+                    $mapping['columnName'] = $fieldMapping['column'];
+                }
+                if (isset($fieldMapping['length'])) {
+                    $mapping['length'] = $fieldMapping['length'];
+                }
+                if (isset($fieldMapping['precision'])) {
+                    $mapping['precision'] = $fieldMapping['precision'];
+                }
+                if (isset($fieldMapping['scale'])) {
+                    $mapping['scale'] = $fieldMapping['scale'];
+                }
+                if (isset($fieldMapping['version']) && $fieldMapping['version']) {
+                    $metadata->setVersionMapping($mapping);
                 }
                 $metadata->mapField($mapping);
-
-                if (isset($idElement['generator'])) {
-                    $metadata->setIdGeneratorType(constant('Doctrine\ORM\Mapping\ClassMetadata::GENERATOR_TYPE_'
-                            . $idElement['generator']['strategy']));
-                }
             }
+        }
 
-            // Evaluate oneToOne relationships
-            if (isset($element['oneToOne'])) {
-                foreach ($element['oneToOne'] as $name => $oneToOneElement) {
-                    $mapping = array(
-                        'fieldName' => $name,
-                        'targetEntity' => $oneToOneElement['targetEntity']
-                    );
-                    if (isset($oneToOneElement['mappedBy'])) {
-                        $mapping['mappedBy'] = $oneToOneElement['mappedBy'];
-                    } else {
-                        $joinColumns = array();
-                        if (isset($oneToOneElement['joinColumn'])) {
-                            $joinColumns[] = $this->_getJoinColumnMapping($oneToOneElement['joinColumn']);
-                        } else if (isset($oneToOneElement['joinColumns'])) {
-                            foreach ($oneToOneElement['joinColumns'] as $name => $joinColumnElement) {
-                                if (!isset($joinColumnElement['name'])) {
-                                    $joinColumnElement['name'] = $name;
-                                }
-                                $joinColumns[] = $this->_getJoinColumnMapping($joinColumnElement);
-                            }
-                        } else {
-                            throw MappingException::invalidMapping($mapping['fieldName']);
-                        }
-                        $mapping['joinColumns'] = $joinColumns;
-                    }
-
-                    if (isset($oneToOneElement['cascade'])) {
-                        $mapping['cascade'] = $this->_getCascadeMappings($oneToOneElement['cascade']);
-                    }
-
-                    $metadata->mapOneToOne($mapping);
-                }
+        // Evaluate identifier settings
+        foreach ($element['id'] as $name => $idElement) {
+            $mapping = array(
+                'id' => true,
+                'fieldName' => $name,
+                'type' => $idElement['type']
+            );
+            if (isset($idElement['column'])) {
+                $mapping['columnName'] = $idElement['column'];
             }
+            $metadata->mapField($mapping);
 
-            // Evaluate oneToMany relationships
-            if (isset($element['oneToMany'])) {
-                foreach ($element['oneToMany'] as $name => $oneToManyElement) {
-                    $mapping = array(
-                        'fieldName' => $name,
-                        'targetEntity' => $oneToManyElement['targetEntity'],
-                        'mappedBy' => $oneToManyElement['mappedBy']
-                    );
-                    if (isset($oneToManyElement['cascade'])) {
-                        $mapping['cascade'] = $this->_getCascadeMappings($oneToManyElement['cascade']);
-                    }
-                    $metadata->mapOneToMany($mapping);
-                }
+            if (isset($idElement['generator'])) {
+                $metadata->setIdGeneratorType(constant('Doctrine\ORM\Mapping\ClassMetadata::GENERATOR_TYPE_'
+                        . $idElement['generator']['strategy']));
             }
+        }
 
-            // Evaluate manyToOne relationships
-            if (isset($element['manyToOne'])) {
-                foreach ($element['manyToOne'] as $name => $manyToOneElement) {
-                    $mapping = array(
-                        'fieldName' => $name, 
-                        'targetEntity' => $manyToOneElement['targetEntity']
-                    );
+        // Evaluate oneToOne relationships
+        if (isset($element['oneToOne'])) {
+            foreach ($element['oneToOne'] as $name => $oneToOneElement) {
+                $mapping = array(
+                    'fieldName' => $name,
+                    'targetEntity' => $oneToOneElement['targetEntity']
+                );
+                if (isset($oneToOneElement['mappedBy'])) {
+                    $mapping['mappedBy'] = $oneToOneElement['mappedBy'];
+                } else {
                     $joinColumns = array();
-                    if (isset($manyToOneElement['joinColumn'])) {
-                        $joinColumns[] = $this->_getJoinColumnMapping($manyToOneElement['joinColumn']);
-                    } else if (isset($manyToOneElement['joinColumns'])) {
-                        foreach ($manyToOneElement['joinColumns'] as $name => $joinColumnElement) {
+                    if (isset($oneToOneElement['joinColumn'])) {
+                        $joinColumns[] = $this->_getJoinColumnMapping($oneToOneElement['joinColumn']);
+                    } else if (isset($oneToOneElement['joinColumns'])) {
+                        foreach ($oneToOneElement['joinColumns'] as $name => $joinColumnElement) {
                             if (!isset($joinColumnElement['name'])) {
                                 $joinColumnElement['name'] = $name;
                             }
@@ -186,58 +170,110 @@ class YamlDriver extends AbstractFileDriver
                         throw MappingException::invalidMapping($mapping['fieldName']);
                     }
                     $mapping['joinColumns'] = $joinColumns;
-                    if (isset($manyToOneElement['cascade'])) {
-                        $mapping['cascade'] = $this->_getCascadeMappings($manyToOneElement['cascade']);
-                    }
-                    $metadata->mapManyToOne($mapping);
                 }
-            }
 
-            // Evaluate manyToMany relationships
-            if (isset($element['manyToMany'])) {
-                foreach ($element['manyToMany'] as $name => $manyToManyElement) {
-                    $mapping = array(
-                        'fieldName' => $name,
-                        'targetEntity' => $manyToManyElement['targetEntity']
+                if (isset($oneToOneElement['cascade'])) {
+                    $mapping['cascade'] = $this->_getCascadeMappings($oneToOneElement['cascade']);
+                }
+
+                $metadata->mapOneToOne($mapping);
+            }
+        }
+
+        // Evaluate oneToMany relationships
+        if (isset($element['oneToMany'])) {
+            foreach ($element['oneToMany'] as $name => $oneToManyElement) {
+                $mapping = array(
+                    'fieldName' => $name,
+                    'targetEntity' => $oneToManyElement['targetEntity'],
+                    'mappedBy' => $oneToManyElement['mappedBy']
+                );
+                if (isset($oneToManyElement['cascade'])) {
+                    $mapping['cascade'] = $this->_getCascadeMappings($oneToManyElement['cascade']);
+                }
+                $metadata->mapOneToMany($mapping);
+            }
+        }
+
+        // Evaluate manyToOne relationships
+        if (isset($element['manyToOne'])) {
+            foreach ($element['manyToOne'] as $name => $manyToOneElement) {
+                $mapping = array(
+                    'fieldName' => $name, 
+                    'targetEntity' => $manyToOneElement['targetEntity']
+                );
+                $joinColumns = array();
+                if (isset($manyToOneElement['joinColumn'])) {
+                    $joinColumns[] = $this->_getJoinColumnMapping($manyToOneElement['joinColumn']);
+                } else if (isset($manyToOneElement['joinColumns'])) {
+                    foreach ($manyToOneElement['joinColumns'] as $name => $joinColumnElement) {
+                        if (!isset($joinColumnElement['name'])) {
+                            $joinColumnElement['name'] = $name;
+                        }
+                        $joinColumns[] = $this->_getJoinColumnMapping($joinColumnElement);
+                    }
+                } else {
+                    throw MappingException::invalidMapping($mapping['fieldName']);
+                }
+                $mapping['joinColumns'] = $joinColumns;
+                if (isset($manyToOneElement['cascade'])) {
+                    $mapping['cascade'] = $this->_getCascadeMappings($manyToOneElement['cascade']);
+                }
+                $metadata->mapManyToOne($mapping);
+            }
+        }
+
+        // Evaluate manyToMany relationships
+        if (isset($element['manyToMany'])) {
+            foreach ($element['manyToMany'] as $name => $manyToManyElement) {
+                $mapping = array(
+                    'fieldName' => $name,
+                    'targetEntity' => $manyToManyElement['targetEntity']
+                );
+                
+                if (isset($manyToManyElement['mappedBy'])) {
+                    $mapping['mappedBy'] = $manyToManyElement['mappedBy'];
+                } else if (isset($manyToManyElement['joinTable'])) {
+                    $joinTableElement = $manyToManyElement['joinTable'];
+                    $joinTable = array(
+                        'name' => $joinTableElement['name']
                     );
-                    
-                    if (isset($manyToManyElement['mappedBy'])) {
-                        $mapping['mappedBy'] = $manyToManyElement['mappedBy'];
-                    } else if (isset($manyToManyElement['joinTable'])) {
-                        $joinTableElement = $manyToManyElement['joinTable'];
-                        $joinTable = array(
-                            'name' => $joinTableElement['name']
-                        );
-                        if (isset($joinTableElement['schema'])) {
-                            $joinTable['schema'] = $joinTableElement['schema'];
-                        }
-                        foreach ($joinTableElement['joinColumns'] as $name => $joinColumnElement) {
-                            if (!isset($joinColumnElement['name'])) {
-                                $joinColumnElement['name'] = $name;
-                            }
-                            $joinTable['joinColumns'][] = $this->_getJoinColumnMapping($joinColumnElement);
-                        }
-                        foreach ($joinTableElement['inverseJoinColumns'] as $name => $joinColumnElement) {
-                            if (!isset($joinColumnElement['name'])) {
-                                $joinColumnElement['name'] = $name;
-                            }
-                            $joinTable['inverseJoinColumns'][] = $this->_getJoinColumnMapping($joinColumnElement);
-                        }
-                        $mapping['joinTable'] = $joinTable;
-                    } else {
-                        throw MappingException::invalidMapping($mapping['fieldName']);
+                    if (isset($joinTableElement['schema'])) {
+                        $joinTable['schema'] = $joinTableElement['schema'];
                     }
-                    
-                    if (isset($manyToManyElement['cascade'])) {
-                        $mapping['cascade'] = $this->_getCascadeMappings($manyToManyElement['cascade']);
+                    foreach ($joinTableElement['joinColumns'] as $name => $joinColumnElement) {
+                        if (!isset($joinColumnElement['name'])) {
+                            $joinColumnElement['name'] = $name;
+                        }
+                        $joinTable['joinColumns'][] = $this->_getJoinColumnMapping($joinColumnElement);
                     }
+                    foreach ($joinTableElement['inverseJoinColumns'] as $name => $joinColumnElement) {
+                        if (!isset($joinColumnElement['name'])) {
+                            $joinColumnElement['name'] = $name;
+                        }
+                        $joinTable['inverseJoinColumns'][] = $this->_getJoinColumnMapping($joinColumnElement);
+                    }
+                    $mapping['joinTable'] = $joinTable;
+                } else {
+                    throw MappingException::invalidMapping($mapping['fieldName']);
+                }
+                
+                if (isset($manyToManyElement['cascade'])) {
+                    $mapping['cascade'] = $this->_getCascadeMappings($manyToManyElement['cascade']);
+                }
 
-                    $metadata->mapManyToMany($mapping);
+                $metadata->mapManyToMany($mapping);
+            }
+        }
+
+        // Evaluate lifeCycleListener
+        if (isset($element['lifecycleListeners'])) {
+            foreach ($element['lifecycleListeners'] as $method => $type) {
+                $method = $class->getMethod($method);
+                if ($method->isPublic()) {
+                    $metadata->addLifecycleCallback($method->getName(), constant('\Doctrine\ORM\Events::'.$type));
                 }
             }
-
-        } else if ($element['type'] == 'mapped-superclass') {
-            throw MappingException::notImplemented('Mapped superclasses are not yet supported.');
         }
     }
 
