@@ -266,12 +266,12 @@ class YamlDriver extends AbstractFileDriver
             }
         }
 
-        // Evaluate lifeCycleListener
-        if (isset($element['lifecycleListeners'])) {
-            foreach ($element['lifecycleListeners'] as $method => $type) {
+        // Evaluate lifeCycleCallbacks
+        if (isset($element['lifecycleCallbacks'])) {
+            foreach ($element['lifecycleCallbacks'] as $method => $type) {
                 $method = $class->getMethod($method);
                 if ($method->isPublic()) {
-                    $metadata->addLifecycleCallback($method->getName(), constant('\Doctrine\ORM\Events::'.$type));
+                    $metadata->addLifecycleCallback($method->getName(), constant('\Doctrine\ORM\Events::' . $type));
                 }
             }
         }

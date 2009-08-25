@@ -6,9 +6,11 @@
                           /Users/robo/dev/php/Doctrine/doctrine-mapping.xsd">
                               
     <entity name="Doctrine\Tests\ORM\Mapping\User" table="cms_users">
-    
-        <lifecycle-listener method="doStuffOnPrePersist" type="prePersist" />
-        <lifecycle-listener method="doStuffOnPostPersist" type="postPersist" />
+        
+        <lifecycle-callbacks>
+            <lifecycle-callback type="prePersist" method="doStuffOnPrePersist"/>
+            <lifecycle-callback type="postPersist" method="doStuffOnPostPersist"/>
+        </lifecycle-callbacks>
 
         <id name="id" type="integer" column="id">
             <generator strategy="AUTO"/>

@@ -275,12 +275,12 @@ class XmlDriver extends AbstractFileDriver
             }
         }
 
-        // Evaluate <lifecycle-listener...>
-        if (isset($xmlRoot->{'lifecycle-listener'})) {
-            foreach ($xmlRoot->{'lifecycle-listener'} as $lifecycleListener) {
-                $method = $class->getMethod((string)$lifecycleListener['method']);
+        // Evaluate <lifecycle-callbacks...>
+        if (isset($xmlRoot->{'lifecycle-callbacks'})) {
+            foreach ($xmlRoot->{'lifecycle-callbacks'}->{'lifecycle-callback'} as $lifecycleCallback) {
+                $method = $class->getMethod((string)$lifecycleCallback['method']);
                 if ($method->isPublic()) {
-                    $metadata->addLifecycleCallback($method->getName(), constant('\Doctrine\ORM\Events::' . (string)$lifecycleListener['type']));
+                    $metadata->addLifecycleCallback($method->getName(), constant('\Doctrine\ORM\Events::' . (string)$lifecycleCallback['type']));
                 }
             }
         }
