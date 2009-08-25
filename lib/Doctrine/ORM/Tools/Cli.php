@@ -22,6 +22,8 @@
 namespace Doctrine\ORM\Tools;
 
 use Doctrine\Common\Util\Inflector,
+    Doctrine\ORM\Tools\Cli\AbstractPrinter,
+    Doctrine\ORM\Tools\Cli\AbstractTask,
     Doctrine\ORM\Tools\Cli\Printer;
 
 /**
@@ -30,7 +32,7 @@ use Doctrine\Common\Util\Inflector,
  * To include a new Task support, create a task:
  *
  *     [php]
- *     class MyProject\Tools\Cli\Tasks\MyTask extends Doctrine\ORM\Tools\Cli\Task {
+ *     class MyProject\Tools\Cli\Tasks\MyTask extends Doctrine\ORM\Tools\Cli\AbstractTask {
  *         public function run();
  *         public function basicHelp();
  *         public function extendedHelp();
@@ -59,7 +61,12 @@ use Doctrine\Common\Util\Inflector,
 class Cli
 {
     /**
-     * @var Cli\AbstractPrinter CLI Printer instance
+     * @var ORM\Configuration Configuration
+     */
+    //private $_configuration = null;
+    
+    /**
+     * @var AbstractPrinter CLI Printer instance
      */
     private $_printer = null;
     
@@ -68,8 +75,12 @@ class Cli
      */
     private $_tasks = array();
     
-
-    public function __construct($printer = null)
+    /**
+     * The CLI processor of tasks
+     *
+     * @param AbstractPrinter $printer CLI Output printer
+     */
+    public function __construct(AbstractPrinter $printer = null)
     {
         //$this->_printer = new Printer\Normal();
         $this->_printer = $printer ?: new Printer\AnsiColor();
@@ -83,6 +94,18 @@ class Cli
         ));
     }
     
+    /**
+     * Add a collection of tasks to the CLI.
+     * To include them, just call the method with the following structure:
+     *
+     *    [php]
+     *    $cli->addTasks(array(
+     *        'my-custom-task' => 'MyProject\Cli\Tasks\MyCustomTask',
+     *        ...
+     *    ));
+     *
+     * @param array $tasks CLI Tasks to be included
+     */
     public function addTasks($tasks)
     {
         foreach ($tasks as $name => $class) {
@@ -90,6 +113,16 @@ class Cli
         }
     }
     
+    /**
+     * Add a single task to CLI.
+     * Example of inclusion support to a single task:
+     *
+     *     [php]
+     *     $cli->addTask('my-custom-task', 'MyProject\Cli\Tasks\MyCustomTask');
+     *
+     * @param string $name CLI Task name
+     * @param string $class CLI Task class (FQCN - Fully Qualified Class Name)
+     */
     public function addTask($name, $class)
     {
         // Convert $name into a class equivalent 
@@ -99,6 +132,12 @@ class Cli
         $this->_tasks[$name] = $class;
     }
     
+    /**
+     * Processor of CLI Tasks. Handles multiple task calls, instantiate
+     * respective classes and run them.
+     *
+     * @param array $args CLI Arguments
+     */
     public function run($args = array())
     {
         // Remove script file argument
@@ -121,18 +160,16 @@ class Cli
                 $taskName = $this->_processTaskName($taskData['name']);
                 $taskArguments = $taskData['args'];
                 
-                // Always include supported Tasks as argument
-                $taskArguments['availableTasks'] = $this->_tasks;
-        
                 // Check if task exists
                 if (isset($this->_tasks[$taskName]) && class_exists($this->_tasks[$taskName], true)) {
                     // Instantiate and execute the task
                     $task = new $this->_tasks[$taskName]();
+                    $task->setAvailableTasks($this->_tasks);
                     $task->setPrinter($this->_printer);
                     $task->setArguments($taskArguments);
                 
                     if (isset($taskArguments['help']) && $taskArguments['help']) {
-                        $task->extendedHelp(); // User explicitly asked for task help
+                        $task->extendedHelp(); // User explicitly asked for help option
                     } else if ($this->_isTaskValid($task)) {
                         $task->run();
                     } else {
@@ -248,9 +285,15 @@ class Cli
         return $preparedArgs;
     }
     
-    private function _isTaskValid($task)
+    /**
+     * Checks if CLI Task is valid based on given arguments.
+     *
+     * @param AbstractTask $task CLI Task instance
+     */
+    private function _isTaskValid(AbstractTask $task)
     {
-        // TODO: Should we check for required and optional arguments here?
+        // TODO: Should we change the behavior and check for 
+        // required and optional arguments here?
         return $task->validate();
     }
 }

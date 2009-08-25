@@ -21,14 +21,41 @@
  
 namespace Doctrine\ORM\Tools\Cli;
 
+/**
+ * CLI Output Printer.
+ * Abstract class responsable to provide basic methods to support output 
+ * styling and excerpt limited by output margin.
+ *
+ * @license http://www.opensource.org/licenses/lgpl-license.php LGPL
+ * @link    www.doctrine-project.org
+ * @since   2.0
+ * @version $Revision$
+ * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
+ * @author  Jonathan Wage <jonwage@gmail.com>
+ * @author  Roman Borschel <roman@code-factory.org>
+ */
 abstract class AbstractPrinter
 {
+    /**
+     * @var resource Output Stream
+     */
     protected $_stream;
 
+    /**
+     * @var integer Maximum column size
+     */
     protected $_maxColumnSize;
 
+    /**
+     * @var array Array of Styles
+     */
     protected $_styles;
 
+    /**
+     * Creates an instance of Printer
+     *
+     * @param resource $stream Output Stream
+     */
     public function __construct($stream = STDOUT)
     {
         $this->_stream = $stream;
@@ -37,6 +64,10 @@ abstract class AbstractPrinter
         $this->_initStyles();
     }
     
+    /**
+     * Initializes Printer Styles
+     *
+     */
     protected function _initStyles()
     {
         // Defines base styles
@@ -49,6 +80,18 @@ abstract class AbstractPrinter
         ));
     }
     
+    /**
+     * Add a collection of styles to the Printer.
+     * To include them, just call the method with the following structure:
+     *
+     *    [php]
+     *    $printer->addStyles(array(
+     *        'ERROR' => new Style('BLACK', 'DEFAULT', array('BOLD' => true)),
+     *        ...
+     *    ));
+     *
+     * @param array $tasks CLI Tasks to be included
+     */
     public function addStyles($styles)
     {
         foreach ($styles as $name => $style) {
@@ -56,11 +99,26 @@ abstract class AbstractPrinter
         }
     }
     
+    /**
+     * Add a single Style to Printer.
+     * Example of inclusion to support a new Style:
+     *
+     *     [php]
+     *     $printer->addStyle('ERROR', new Style('BLACK', 'DEFAULT', array('BOLD' => true)));
+     *
+     * @param string $name Style name
+     * @param Style $style Style instance
+     */
     public function addStyle($name, Style $style)
     {
         $this->_styles[strtoupper($name)] = $style;
     }
     
+    /**
+     * Retrieves a defined Style.
+     *
+     * @return Style
+     */
     public function getStyle($name)
     {
         $name = strtoupper($name);

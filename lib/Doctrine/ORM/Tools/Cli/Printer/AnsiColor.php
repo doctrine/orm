@@ -24,42 +24,65 @@ namespace Doctrine\ORM\Tools\Cli\Printer;
 use Doctrine\ORM\Tools\Cli\AbstractPrinter,
     Doctrine\ORM\Tools\Cli\Style;
 
+/**
+ * CLI Output Printer for ANSI Color terminal
+ *
+ * @license http://www.opensource.org/licenses/lgpl-license.php LGPL
+ * @link    www.doctrine-project.org
+ * @since   2.0
+ * @version $Revision$
+ * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
+ * @author  Jonathan Wage <jonwage@gmail.com>
+ * @author  Roman Borschel <roman@code-factory.org>
+ */
 class AnsiColor extends AbstractPrinter
 {
+    /**
+     * @inheritdoc
+     */
     protected function _initStyles()
     {
         $this->addStyles(array(
-            'ERROR'   => new Style('RED', 'WHITE', array('BOLD' => true)),
+            'ERROR'   => new Style('WHITE', 'RED', array('BOLD' => true)),
             'INFO'    => new Style('GREEN', 'DEFAULT', array('BOLD' => true)),
-            'COMMENT' => new Style('YELLOW', 'DEFAULT'),
+            'COMMENT' => new Style('DEFAULT', 'YELLOW'),
             'HEADER'  => new Style('DEFAULT', 'DEFAULT', array('BOLD' => true)),
             'NONE'    => new Style(),
         ));
     }
     
+    /**
+     * @inheritdoc
+     */
     public function format($message, Style $style)
     {
         if ( ! $this->_supportsColor()) {
             return $message;
         }
         
-        $str = $this->getForegroundString($style->getForeground()) 
-             . $this->getBackgroundString($style->getBackground()) 
-             . $this->getOptionsString($style->getOptions());
+        $str = $this->_getForegroundString($style->getForeground()) 
+             . $this->_getBackgroundString($style->getBackground()) 
+             . $this->_getOptionsString($style->getOptions());
         $styleSet = ($str != '');
         
         return $str . $message . ($styleSet ? chr(27) . '[0m' : '');
     }
     
-    public function getForegroundString($foreground)
+    /**
+     * Retrieves the ANSI string representation of requested color name
+     *
+     * @param string $background Background color name
+     * @return string
+     */
+    protected function _getBackgroundString($background)
     {
-        if (empty($foreground)) {
+        if (empty($background)) {
             return '';
         }
     
         $esc = chr(27);
         
-        switch ($foreground) {
+        switch ($background) {
             case 'BLACK': 
                 return $esc . '[40m';
             case 'RED': 
@@ -82,15 +105,21 @@ class AnsiColor extends AbstractPrinter
         }
     }
  
-    public function getBackgroundString($background)
+    /**
+     * Retrieves the ANSI string representation of requested color name
+     *
+     * @param string $foreground Foreground color name
+     * @return string
+     */
+    protected function _getForegroundString($foreground)
     {
-        if (empty($background)) {
+        if (empty($foreground)) {
             return '';
         }
     
         $esc = chr(27);
         
-        switch ($background) {
+        switch ($foreground) {
             case 'BLACK': 
                 return $esc . '[30m';
             case 'RED': 
@@ -115,7 +144,13 @@ class AnsiColor extends AbstractPrinter
         }
     }
     
-    public function getOptionsString($options)
+    /**
+     * Retrieves the ANSI string representation of requested options
+     *
+     * @param array $options Options
+     * @return string
+     */
+    protected function _getOptionsString($options)
     {
         if (empty($options)) {
             return '';
@@ -157,7 +192,11 @@ class AnsiColor extends AbstractPrinter
         return $str;
     }
     
-    
+    /**
+     * Checks if the current Output Stream supports ANSI Colors
+     *
+     * @return boolean
+     */
     private function _supportsColor()
     {
         return DIRECTORY_SEPARATOR != '\\' && 

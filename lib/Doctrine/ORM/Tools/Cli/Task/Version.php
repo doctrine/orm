@@ -23,8 +23,22 @@ namespace Doctrine\ORM\Tools\Cli\Task;
 
 use Doctrine\ORM\Tools\Cli\AbstractTask;
 
+/**
+ * CLI Task to display the doctrine version
+ *
+ * @license http://www.opensource.org/licenses/lgpl-license.php LGPL
+ * @link    www.doctrine-project.org
+ * @since   2.0
+ * @version $Revision$
+ * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
+ * @author  Jonathan Wage <jonwage@gmail.com>
+ * @author  Roman Borschel <roman@code-factory.org>
+ */
 class Version extends AbstractTask
 {
+    /**
+     * @inheritdoc
+     */
     public function extendedHelp()
     {
         $this->getPrinter()->write('version extended help' . PHP_EOL, 'HEADER');
@@ -34,6 +48,9 @@ class Version extends AbstractTask
         $this->getPrinter()->write('version extended help' . PHP_EOL, 'NONE');
     }
 
+    /**
+     * @inheritdoc
+     */
     public function basicHelp()
     {
         $this->getPrinter()->write('version basic help' . PHP_EOL, 'HEADER');
@@ -43,11 +60,18 @@ class Version extends AbstractTask
         $this->getPrinter()->write('version basic help' . PHP_EOL, 'NONE');
     }
     
+    /**
+     * @inheritdoc
+     */
     public function validate()
     {
         return true;
     }
 
+    /**
+     * Displays the current version of Doctrine
+     *
+     */
     public function run()
     {
         $this->getPrinter()->write('version run' . PHP_EOL, 'HEADER');

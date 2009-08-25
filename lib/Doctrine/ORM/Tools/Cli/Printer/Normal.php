@@ -24,8 +24,22 @@ namespace Doctrine\ORM\Tools\Cli\Printer;
 use Doctrine\ORM\Tools\Cli\AbstractPrinter,
     Doctrine\ORM\Tools\Cli\Style;
 
+/**
+ * CLI Output Printer for Normal terminal
+ *
+ * @license http://www.opensource.org/licenses/lgpl-license.php LGPL
+ * @link    www.doctrine-project.org
+ * @since   2.0
+ * @version $Revision$
+ * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
+ * @author  Jonathan Wage <jonwage@gmail.com>
+ * @author  Roman Borschel <roman@code-factory.org>
+ */
 class Normal extends AbstractPrinter
 {
+    /**
+     * @inheritdoc
+     */
     public function format($message, Style $style)
     {
         return $message;

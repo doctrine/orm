@@ -21,14 +21,39 @@
  
 namespace Doctrine\ORM\Tools\Cli;
 
+/**
+ * CLI Output Style
+ *
+ * @license http://www.opensource.org/licenses/lgpl-license.php LGPL
+ * @link    www.doctrine-project.org
+ * @since   2.0
+ * @version $Revision$
+ * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
+ * @author  Jonathan Wage <jonwage@gmail.com>
+ * @author  Roman Borschel <roman@code-factory.org>
+ */
 class Style
 {
+    /**
+     * @var string Background color
+     */
     private $_background;
     
+    /**
+     * @var string Foreground color
+     */    
     private $_foreground;
     
+    /**
+     * @var array Formatting options
+     */
     private $_options = array();
     
+    /**
+     * @param string $foreground Foreground color name
+     * @param string $background Background color name
+     * @param array $options Formatting options
+     */
     public function __construct($foreground = null, $background = null, $options = array())
     {
         $this->_foreground = strtoupper($foreground);
@@ -36,16 +61,31 @@ class Style
         $this->_options = $options;
     }
     
+    /**
+     * Retrieves the foreground color name
+     *
+     * @return string
+     */
     public function getForeground()
     {
         return $this->_foreground;
     }
     
+    /**
+     * Retrieves the background color name
+     *
+     * @return string
+     */
     public function getBackground()
     {
         return $this->_background;
     }
     
+    /**
+     * Retrieves the formatting options
+     *
+     * @return string
+     */
     public function getOptions()
     {
         return $this->_options;

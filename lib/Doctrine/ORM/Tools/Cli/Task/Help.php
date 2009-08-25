@@ -23,8 +23,22 @@ namespace Doctrine\ORM\Tools\Cli\Task;
 
 use Doctrine\ORM\Tools\Cli\AbstractTask;
 
+/**
+ * CLI Task to display available commands help
+ *
+ * @license http://www.opensource.org/licenses/lgpl-license.php LGPL
+ * @link    www.doctrine-project.org
+ * @since   2.0
+ * @version $Revision$
+ * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
+ * @author  Jonathan Wage <jonwage@gmail.com>
+ * @author  Roman Borschel <roman@code-factory.org>
+ */
 class Help extends AbstractTask
 {
+    /**
+     * @inheritdoc
+     */
     public function extendedHelp()
     {
         $this->getPrinter()->write('help extended help' . PHP_EOL, 'HEADER');
@@ -34,6 +48,9 @@ class Help extends AbstractTask
         $this->getPrinter()->write('help extended help' . PHP_EOL, 'NONE');
     }
 
+    /**
+     * @inheritdoc
+     */
     public function basicHelp()
     {
         $this->getPrinter()->write('help basic help' . PHP_EOL, 'HEADER');
@@ -42,12 +59,19 @@ class Help extends AbstractTask
         $this->getPrinter()->write('help basic help' . PHP_EOL, 'COMMENT');
         $this->getPrinter()->write('help basic help' . PHP_EOL, 'NONE');
     }
-    
+
+    /**
+     * @inheritdoc
+     */    
     public function validate()
     {
         return true;
     }
 
+    /**
+     * Exposes the available tasks
+     *
+     */
     public function run()
     {
         $this->getPrinter()->write('help run' . PHP_EOL, 'HEADER');
