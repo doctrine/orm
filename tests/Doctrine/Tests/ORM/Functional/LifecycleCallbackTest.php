@@ -43,7 +43,7 @@ class LifecycleCallbackTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
 /**
  * @Entity
- * @LifecycleListener
+ * @HasLifecycleCallbacks
  * @Table(name="lifecycle_callback_test_entity")
  */
 class LifecycleCallbackTestEntity
@@ -83,4 +83,3 @@ class LifecycleCallbackTestEntity
         $this->value = 'changed from preUpdate callback!';
     }
 }
-

@@ -244,9 +244,8 @@ class AnnotationDriver implements Driver
             }   
         }
         
-        // Evaluate LifecycleListener annotation
-        if (isset($classAnnotations['Doctrine\ORM\Mapping\LifecycleListener'])) {
-            $lifecycleListenerAnnot = $classAnnotations['Doctrine\ORM\Mapping\LifecycleListener'];
+        // Evaluate HasLifecycleCallbacks annotation
+        if (isset($classAnnotations['Doctrine\ORM\Mapping\HasLifecycleCallbacks'])) {
             foreach ($class->getMethods() as $method) {
                 if ($method->isPublic()) {
                     $annotations = $this->_reader->getMethodAnnotations($method);
