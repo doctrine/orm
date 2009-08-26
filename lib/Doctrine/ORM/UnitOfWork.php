@@ -265,9 +265,9 @@ class UnitOfWork implements PropertyChangedListener
         }
 
         $conn = $this->_em->getConnection();
-        try {
-            $conn->beginTransaction();
-            
+        
+        $conn->beginTransaction();
+        try {            
             if ($this->_entityInsertions) {
                 foreach ($commitOrder as $class) {
                     $this->_executeInserts($class);
