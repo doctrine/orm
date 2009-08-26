@@ -421,12 +421,10 @@ class SqlWalker implements TreeWalker
                 break;
                 
             case AST\PathExpression::TYPE_COLLECTION_VALUED_ASSOCIATION:
-                throw DoctrineException::updateMe("Not yet implemented.");
+                throw DoctrineException::notImplemented();
         
             default:
-                throw DoctrineException::updateMe(
-                    "Encountered invalid PathExpression during SQL construction."
-                );
+                throw DoctrineException::invalidPathExpression($pathExpr->type);
         }
         
         return $sql;
@@ -753,9 +751,7 @@ class SqlWalker implements TreeWalker
                 $columnAlias = $this->_platform->getSqlResultCasing($columnAlias);
                 $this->_rsm->addFieldResult($dqlAlias, $columnAlias, $fieldName);                
             } else {
-                throw DoctrineException::updateMe(
-                    "Encountered invalid PathExpression during SQL construction."
-                );
+                throw DoctrineException::invalidPathExpression($expr->type);
             }
         } else if ($expr instanceof AST\AggregateExpression) {
             if ( ! $selectExpression->fieldIdentificationVariable) {

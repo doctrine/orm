@@ -14,6 +14,6 @@ class TableGenerator extends AbstractIdGenerator
 {
     public function generate(EntityManager $em, $entity)
     {
-        throw \Doctrine\Common\DoctrineException::updateMe("Not implemented");
+        throw \Doctrine\Common\DoctrineException::notImplemented(__CLASS__ . '::' . __FUNCTION__);
     }
 }

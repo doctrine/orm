@@ -62,7 +62,7 @@ class Assigned extends AbstractIdGenerator
         }
 
         if ( ! $identifier) {
-            throw DoctrineException::updateMe("Entity of type '" . get_class($entity) . "' is missing an assigned ID.");
+            throw DoctrineException::entityMissingAssignedId($entity);
         }
         
         return $identifier;

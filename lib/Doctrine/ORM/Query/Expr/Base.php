@@ -60,7 +60,7 @@ abstract class Base
                 $class = get_class($arg);
 
                 if ( ! in_array($class, $this->_allowedClasses)) {
-                    throw \Doctrine\Common\DoctrineException::updateMe("Class '{$class}' is not allowed in " . get_class($this) . " instance.");
+                    throw \Doctrine\Common\DoctrineException::classNotAllowed($class, $this);
                 }
             }
 

@@ -389,7 +389,7 @@ END;';
     public function getAlterTableSql($name, array $changes, $check = false)
     {
         if ( ! $name) {
-            throw DoctrineException::updateMe('no valid table name specified');
+            throw DoctrineException::missingTableName();
         }
         foreach ($changes as $changeName => $change) {
             switch ($changeName) {
@@ -400,7 +400,7 @@ END;';
                 case 'rename':
                     break;
                 default:
-                    throw \Doctrine\Common\DoctrineException::updateMe('change type "' . $changeName . '" not yet supported');
+                    throw \Doctrine\Common\DoctrineException::alterTableChangeNotSupported($changeName);
             }
         }
 

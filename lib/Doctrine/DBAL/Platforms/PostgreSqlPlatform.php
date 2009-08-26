@@ -194,7 +194,7 @@ class PostgreSqlPlatform extends AbstractPlatform
                 $match = $field.'LIKE ';
                 break;
             default:
-                throw DoctrineException::updateMe('not a supported operator type:'. $operator);
+                throw DoctrineException::operatorNotSupported($operator);
             }
         }
         $match.= "'";
@@ -506,7 +506,7 @@ class PostgreSqlPlatform extends AbstractPlatform
                 case 'rename':
                     break;
                 default:
-                    throw DoctrineException::updateMe('change type "' . $changeName . '\" not yet supported');
+                    throw DoctrineException::alterTableChangeNotSupported($changeName);
             }
         }
 
@@ -536,7 +536,7 @@ class PostgreSqlPlatform extends AbstractPlatform
                     $serverInfo = $this->getServerVersion();
 
                     if (is_array($serverInfo) && $serverInfo['major'] < 8) {
-                        throw DoctrineException::updateMe('changing column type for "'.$field['type'].'\" requires PostgreSQL 8.0 or above');
+                        throw DoctrineException::changeColumnRequiresPostgreSQL8OrAbove($field['type']);
                     }
                     $query = 'ALTER ' . $fieldName . ' TYPE ' . $this->getTypeDeclarationSql($field['definition']);
                     $sql[] = 'ALTER TABLE ' . $name . ' ' . $query;

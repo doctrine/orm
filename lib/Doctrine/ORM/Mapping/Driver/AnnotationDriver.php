@@ -67,7 +67,7 @@ class AnnotationDriver implements Driver
         } else if (isset($classAnnotations['Doctrine\ORM\Mapping\MappedSuperclass'])) {
             $metadata->isMappedSuperclass = true;
         } else {
-            throw DoctrineException::updateMe("$className is no entity or mapped superclass.");
+            throw DoctrineException::classIsNotAValidEntityOrMapperSuperClass($className);
         }
 
         // Evaluate DoctrineTable annotation
@@ -155,7 +155,7 @@ class AnnotationDriver implements Driver
             // @Column, @OneToOne, @OneToMany, @ManyToOne, @ManyToMany
             if ($columnAnnot = $this->_reader->getPropertyAnnotation($property, 'Doctrine\ORM\Mapping\Column')) {
                 if ($columnAnnot->type == null) {
-                    throw DoctrineException::updateMe("Missing type on property " . $property->getName());
+                    throw DoctrineException::propertyTypeIsRequired($property->getName());
                 }
                 $mapping['type'] = $columnAnnot->type;
                 $mapping['length'] = $columnAnnot->length;

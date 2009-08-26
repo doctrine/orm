@@ -53,7 +53,7 @@ class YamlDriver extends AbstractFileDriver
         } else if ($element['type'] == 'mappedSuperclass') {
             $metadata->isMappedSuperclass = true;
         } else {
-            throw DoctrineException::updateMe("$className is no entity or mapped superclass.");
+            throw DoctrineException::classIsNotAValidEntityOrMapperSuperClass($className);
         }
 
         // Evaluate root level properties

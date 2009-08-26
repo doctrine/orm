@@ -304,6 +304,6 @@ abstract class AbstractHydrator
             }
         }
 
-        throw DoctrineException::updateMe("No owner found for field '$fieldName' during hydration.");
+        throw DoctrineException::noOwnerFoundForField($class, $fieldName);
     }
 }

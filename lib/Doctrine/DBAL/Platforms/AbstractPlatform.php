@@ -103,7 +103,7 @@ abstract class AbstractPlatform
      */
     public function getRegexpExpression()
     {
-        throw DoctrineException::updateMe('Regular expression operator is not supported by this database driver.');
+        throw DoctrineException::regularExpressionOperatorNotSupported($this);
     }
 
     /**
@@ -374,7 +374,7 @@ abstract class AbstractPlatform
         $values = $this->getIdentifiers($values);
 
         if (count($values) == 0) {
-            throw DoctrineException::updateMe('Values array for IN operator should not be empty.');
+            throw DoctrineException::valuesArrayForInOperatorInvalid();
         }
         return $column . ' IN (' . implode(', ', $values) . ')';
     }
@@ -532,7 +532,7 @@ abstract class AbstractPlatform
      */
     public function getCreateSequenceSql($sequenceName, $start = 1, $allocationSize = 1)
     {
-        throw DoctrineException::updateMe('Create sequence not supported by this driver.');
+        throw DoctrineException::createSequenceNotSupported($this);
     }
 
     /**
@@ -586,7 +586,7 @@ abstract class AbstractPlatform
     public function getCreateIndexSql($table, $name, array $definition)
     {
         if ( ! isset($definition['fields'])) {
-            throw DoctrineException::updateMe('You must specify an array of fields to create the index for');
+            throw DoctrineException::indexFieldsArrayRequired();
         }
 
         $type = '';
@@ -596,7 +596,7 @@ abstract class AbstractPlatform
                     $type = strtoupper($definition['type']) . ' ';
                 break;
                 default:
-                    throw DoctrineException::updateMe('Unknown index type ' . $definition['type']);
+                    throw DoctrineException::unknownIndexType($definition['type']);
             }
         }
 
@@ -652,7 +652,7 @@ abstract class AbstractPlatform
      */
     public function getAlterTableSql($name, array $changes, $check = false)
     {
-        throw DoctrineException::updateMe('Alter table not supported by this driver.');
+        throw DoctrineException::alterTableNotSupported($this);
     }
 
     /**
@@ -837,12 +837,12 @@ abstract class AbstractPlatform
             if (strtolower($definition['type']) == 'unique') {
                 $type = strtoupper($definition['type']) . ' ';
             } else {
-                throw DoctrineException::updateMe('Unknown index type ' . $definition['type']);
+                throw DoctrineException::unknownIndexType($definition['type']);
             }
         }
 
         if ( ! isset($definition['fields']) || ! is_array($definition['fields'])) {
-            throw DoctrineException::updateMe('No index columns given.');
+            throw DoctrineException::indexFieldsArrayRequired();
         }
 
         $query = $type . 'INDEX ' . $name;
@@ -898,7 +898,7 @@ abstract class AbstractPlatform
      */
     public function getShowDatabasesSql()
     {
-        throw DoctrineException::updateMe('Show databases not supported by this driver.');
+        throw DoctrineException::showDatabasesNotSupported($this);
     }
 
     /**
@@ -990,7 +990,7 @@ abstract class AbstractPlatform
                 return $upper;
             break;
             default:
-                throw DoctrineException::updateMe('Unknown foreign key referential action \'' . $upper . '\' given.');
+                throw DoctrineException::unknownForeignKeyReferentialAction($upper);
         }
     }
 
@@ -1010,13 +1010,13 @@ abstract class AbstractPlatform
         $sql .= 'FOREIGN KEY (';
 
         if ( ! isset($definition['local'])) {
-            throw DoctrineException::updateMe('Local reference field missing from definition.');
+            throw DoctrineException::localReferenceFieldMissing();
         }
         if ( ! isset($definition['foreign'])) {
-            throw DoctrineException::updateMe('Foreign reference field missing from definition.');
+            throw DoctrineException::foreignReferenceFieldMissing();
         }
         if ( ! isset($definition['foreignTable'])) {
-            throw DoctrineException::updateMe('Foreign reference table missing from definition.');
+            throw DoctrineException::foreignReferenceTableMissing();
         }
 
         if ( ! is_array($definition['local'])) {
@@ -1091,7 +1091,7 @@ abstract class AbstractPlatform
      */
     public function getMatchPatternExpression($pattern, $operator = null, $field = null)
     {
-        throw DoctrineException::updateMe("Method not implemented.");
+        throw DoctrineException::matchPatternExpressionNotSupported($this);
     }
 
     /**
@@ -1221,88 +1221,88 @@ abstract class AbstractPlatform
             case Connection::TRANSACTION_SERIALIZABLE:
                 return 'SERIALIZABLE';
             default:
-                throw DoctrineException::updateMe('isolation level is not supported: ' . $isolation);
+                throw DoctrineException::isolationLevelNotSupported($isolation);
         }
     }
 
     public function getListDatabasesSql()
     {
-        throw DoctrineException::updateMe('List databases not supported by this driver.');
+        throw DoctrineException::listDatabasesNotSupported($this);
     }
 
     public function getListFunctionsSql()
     {
-        throw DoctrineException::updateMe('List functions not supported by this driver.');
+        throw DoctrineException::listFunctionsNotSupported($this);
     }
 
     public function getListTriggersSql($table = null)
     {
-        throw DoctrineException::updateMe('List triggers not supported by this driver.');
+        throw DoctrineException::listTriggersNotSupported($this);
     }
 
     public function getListSequencesSql($database)
     {
-        throw DoctrineException::updateMe('List sequences not supported by this driver.');
+        throw DoctrineException::listSequencesNotSupported($this);
     }
 
     public function getListTableConstraintsSql($table)
     {
-        throw DoctrineException::updateMe('List table constraints not supported by this driver.');
+        throw DoctrineException::listTableConstraintsNotSupported($this);
     }
 
     public function getListTableColumnsSql($table)
     {
-        throw DoctrineException::updateMe('List table columns not supported by this driver.');
+        throw DoctrineException::listTableColumnsNotSupported($this);
     }
 
     public function getListTablesSql()
     {
-        throw DoctrineException::updateMe('List tables not supported by this driver.');
+        throw DoctrineException::listTablesNotSupported($this);
     }
 
     public function getListUsersSql()
     {
-        throw DoctrineException::updateMe('List users not supported by this driver.');
+        throw DoctrineException::listUsersNotSupported($this);
     }
 
     public function getListViewsSql()
     {
-        throw DoctrineException::updateMe('List views not supported by this driver.');
+        throw DoctrineException::listViewsNotSupported($this);
     }
 
     public function getListTableIndexesSql($table)
     {
-        throw DoctrineException::updateMe('List table indexes not supported by this driver.');
+        throw DoctrineException::listTableIndexesNotSupported($this);
     }
 
     public function getListTableForeignKeysSql($table)
     {
-        throw DoctrineException::updateMe('List table foreign keys not supported by this driver.');
+        throw DoctrineException::listTableForeignKeysNotSupported($this);
     }
 
     public function getCreateViewSql($name, $sql)
     {
-        throw DoctrineException::updateMe('Create view not supported by this driver');
+        throw DoctrineException::createViewNotSupported($this);
     }
 
     public function getDropViewSql($name)
     {
-        throw DoctrineException::updateMe('Drop view not supported by this driver');
+        throw DoctrineException::dropViewNotSupported($this);
     }
 
     public function getDropSequenceSql($sequenceName)
     {
-        throw DoctrineException::updateMe('Drop sequence not supported by this driver.');
+        throw DoctrineException::dropSequenceNotSupported($this);
     }
 
     public function getSequenceNextValSql($sequenceName)
     {
-        throw DoctrineException::updateMe('Sequences not supported by this driver.');
+        throw DoctrineException::sequenceNotSupported($this);
     }
 
     public function getCreateDatabaseSql($database)
     {
-        throw DoctrineException::updateMe('Create database not supported by this driver.');
+        throw DoctrineException::createDatabaseNotSupported($this);
     }
 
     /**
@@ -1312,7 +1312,7 @@ abstract class AbstractPlatform
      */
     public function getSetTransactionIsolationSql($level)
     {
-        throw DoctrineException::updateMe('Set transaction isolation not supported by this platform.');
+        throw DoctrineException::setTransactionIsolationLevelNotSupported($this);
     }
 
     /**
@@ -1325,7 +1325,7 @@ abstract class AbstractPlatform
      */
     public function getCharsetFieldDeclaration($charset)
     {
-        throw DoctrineException::updateMe('Get charset field declaration not supported by this platform.');
+        throw DoctrineException::getCharsetFieldDeclarationNotSupported($this);
     }
 
     /**
@@ -1337,7 +1337,7 @@ abstract class AbstractPlatform
      */
     public function getDateTimeTypeDeclarationSql(array $fieldDeclaration)
     {
-        throw DoctrineException::updateMe('Get datetime type declaration not supported by this platform.');
+        throw DoctrineException::getDateTimeTypeDeclarationNotSupported($this);
     }
 
     /**

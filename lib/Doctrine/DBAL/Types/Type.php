@@ -122,7 +122,7 @@ abstract class Type
     {
         if ( ! isset(self::$_typeObjects[$name])) {
             if ( ! isset(self::$_typesMap[$name])) {
-                throw DoctrineException::updateMe("Unknown type: $name");
+                throw DoctrineException::unknownColumnType($name);
             }
             
             self::$_typeObjects[$name] = new self::$_typesMap[$name]();

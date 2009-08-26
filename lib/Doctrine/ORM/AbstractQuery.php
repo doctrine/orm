@@ -207,9 +207,7 @@ abstract class AbstractQuery
     public function setResultCache($resultCache = null)
     {
         if ($resultCache !== null && ! ($resultCache instanceof \Doctrine\Common\Cache\Cache)) {
-            throw DoctrineException::updateMe(
-                'Method setResultCache() accepts only an instance of Doctrine_Cache_Interface or null.'
-            );
+            throw DoctrineException::invalidResultCacheObject($resultCache);
         }
         $this->_resultCache = $resultCache;
         return $this;

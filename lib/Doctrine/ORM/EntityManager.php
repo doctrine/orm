@@ -357,7 +357,7 @@ class EntityManager
             $this->_unitOfWork->clear();
         } else {
             //TODO
-            throw DoctrineException::notImplemented();
+            throw DoctrineException::notImplemented(__FUNCTION__, __CLASS__);
         }
     }
     
@@ -454,7 +454,7 @@ class EntityManager
      */
     public function copy($entity, $deep = false)
     {
-        throw DoctrineException::notImplemented();
+        throw DoctrineException::notImplemented(__FUNCTION__, __CLASS__);
     }
 
     /**
@@ -557,7 +557,7 @@ class EntityManager
                     $this->_hydrators[$hydrationMode] = new Internal\Hydration\SingleScalarHydrator($this);
                     break;
                 default:
-                    throw DoctrineException::updateMe("No hydrator found for hydration mode '$hydrationMode'.");
+                    throw DoctrineException::invalidHydrationMode($hydrationMode);
             }
         }
         return $this->_hydrators[$hydrationMode];
@@ -591,10 +591,10 @@ class EntityManager
             $conn = \Doctrine\DBAL\DriverManager::getConnection($conn, $config, ($eventManager ?: new EventManager()));
         } else if ($conn instanceof Connection) {
             if ($eventManager !== null && $conn->getEventManager() !== $eventManager) {
-                 throw DoctrineException::updateMe("Cannot use different EventManagers for EntityManager and Connection.");
+                 throw DoctrineException::invalidEventManager('Cannot use different EventManagers for EntityManager and Connection.');
             }
         } else {
-            throw DoctrineException::updateMe("Invalid parameter '$conn'.");
+            throw DoctrineException::invalidParameter($conn);
         }
 
         return new EntityManager($conn, $config, $conn->getEventManager());

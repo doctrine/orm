@@ -176,9 +176,7 @@ class Cli
                         $task->basicHelp(); // Fallback of not-valid task arguments
                     }
                 } else {
-                    throw \Doctrine\Common\DoctrineException::updateMe(
-                        'Unexistent task or attached task class does not exist.'
-                    );
+                    throw \Doctrine\Common\DoctrineException::taskDoesNotExist($taskName);
                 }
             }
         } catch (\Doctrine\Common\DoctrineException $e) {

@@ -138,7 +138,7 @@ class EntityRepository
         }
         
         if ( ! isset($arguments[0])) {
-            throw DoctrineException::updateMe('You must specify the value to findBy.');
+            throw DoctrineException::findByNameRequired();
         }
 
         $fieldName = lcfirst(\Doctrine\Common\Util\Inflector::classify($by));
@@ -146,7 +146,7 @@ class EntityRepository
         if ($this->_class->hasField($fieldName)) {
             return $this->$method(array($fieldName => $arguments[0]));
         } else {
-            throw \Doctrine\Common\DoctrineException::updateMe('Cannot find by: ' . $by . '. Invalid field.');
+            throw \Doctrine\Common\DoctrineException::invalidFindBy($by);
         }
     }
 }

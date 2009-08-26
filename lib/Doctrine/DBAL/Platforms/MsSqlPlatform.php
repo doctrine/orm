@@ -59,7 +59,7 @@ class MsSqlPlatform extends AbstractPlatform
 
             $offset = intval($offset);
             if ($offset < 0) {
-                throw \Doctrine\Common\DoctrineException::updateMe("LIMIT argument offset=$offset is not valid");
+                throw \Doctrine\Common\DoctrineException::limitOffsetInvalid($offset);
             }
     
             $orderby = stristr($query, 'ORDER BY');
@@ -99,7 +99,7 @@ class MsSqlPlatform extends AbstractPlatform
                 case 'name':
                     break;
                 default:
-                    throw \Doctrine\Common\DoctrineException::updateMe('alterTable: change type "' . $changeName . '" not yet supported');
+                    throw \Doctrine\Common\DoctrineException::alterTableChangeNotSupported($changeName);
             }
         }
 

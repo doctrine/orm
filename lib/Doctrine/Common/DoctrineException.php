@@ -61,9 +61,15 @@ class DoctrineException extends \Exception
      * @param string $class  Class name
      * @throws DoctrineException
      */
-    public static function notImplemented($method, $class)
+    public static function notImplemented($method = null, $class = null)
     {
-        return new self("The method '$method' is not implemented in class '$class'.");
+        if ($method && $class) {
+            return new self("The method '$method' is not implemented in class '$class'.");
+        } else if ($method && ! $class) {
+          return new self($method);
+        } else {
+          return new self('Functionality is not implemented.');
+        }
     }
 
     /**

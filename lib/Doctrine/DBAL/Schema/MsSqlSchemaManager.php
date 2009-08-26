@@ -160,7 +160,7 @@ class MsSqlSchemaManager extends AbstractSchemaManager
                 case 'rename':
                 case 'change':
                 default:
-                    throw \Doctrine\Common\DoctrineException::updateMe('alterTable: change type "' . $changeName . '" not yet supported');
+                    throw \Doctrine\Common\DoctrineException::alterTableChangeNotSupported($changeName);
             }
         }
 

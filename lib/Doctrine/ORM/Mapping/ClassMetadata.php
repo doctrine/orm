@@ -537,7 +537,7 @@ final class ClassMetadata
     public function getSingleIdReflectionProperty()
     {
         if ($this->isIdentifierComposite) {
-            throw DoctrineException::updateMe("getSingleIdReflectionProperty called on entity with composite key.");
+            throw DoctrineException::singleIdNotAllowedOnCompositePrimaryKey();
         }
         return $this->reflFields[$this->identifier[0]];
     }
@@ -830,8 +830,7 @@ final class ClassMetadata
     public function getSingleIdentifierFieldName()
     {
         if ($this->isIdentifierComposite) {
-            throw DoctrineException::updateMe("Calling getSingleIdentifierFieldName "
-                    . "on a class that uses a composite identifier is not allowed.");
+            throw DoctrineException::singleIdNotAllowedOnCompositePrimaryKey();
         }
         return $this->identifier[0];
     }
