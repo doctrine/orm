@@ -8,7 +8,7 @@
   <xs:annotation> 
     <xs:documentation><![CDATA[ 
        This is the XML Schema for the object/relational 
-       mapping file used by the Doctrine ORM.
+       mapping file used by the Doctrine ORM..
      ]]></xs:documentation>
   </xs:annotation>
 
