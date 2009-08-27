@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
-    targetNamespace="http://doctrine-project.org/doctrine-mapping"
-    xmlns:orm="http://doctrine-project.org/doctrine-mapping"
+    targetNamespace="http://doctrine-project.org/schemas/orm/doctrine-mapping"
+    xmlns:orm="http://doctrine-project.org/schemas/orm/doctrine-mapping"
     elementFormDefault="qualified">
 
   <xs:annotation> 
     <xs:documentation><![CDATA[ 
        This is the XML Schema for the object/relational 
-       mapping file used by the Doctrine ORM..
+       mapping file used by the Doctrine ORM.
      ]]></xs:documentation>
   </xs:annotation>
 
