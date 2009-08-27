@@ -5,7 +5,7 @@
   xmlns:orm="http://doctrine-project.org/schemas/orm/doctrine-mapping"
   elementFormDefault="qualified">
 
-  <xs:annotation>
+  <xs:annotation> 
     <xs:documentation><![CDATA[ 
        This is the XML Schema for the object/relational 
        mapping file used by the Doctrine ORM.
