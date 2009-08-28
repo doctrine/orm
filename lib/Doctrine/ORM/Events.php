@@ -92,6 +92,10 @@ final class Events
      * into the current EntityManager from the database or after the refresh operation
      * has been applied to it.
      * 
+     * Note that the postLoad event occurs for an entity before any associations have been
+     * initialized. Therefore it is not safe to access associations in a postLoad callback
+     * or event handler.
+     * 
      * This is an entity lifecycle event.
      * 
      * @var string

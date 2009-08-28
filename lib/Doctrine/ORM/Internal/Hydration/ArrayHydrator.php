@@ -228,10 +228,4 @@ class ArrayHydrator extends AbstractHydrator
         }
         return $this->_ce[$className];
     }
-
-    /** {@inheritdoc} */
-    protected function _getRowContainer()
-    {
-        return array();
-    }
 }

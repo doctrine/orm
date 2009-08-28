@@ -66,9 +66,9 @@ class DoctrineException extends \Exception
         if ($method && $class) {
             return new self("The method '$method' is not implemented in class '$class'.");
         } else if ($method && ! $class) {
-          return new self($method);
+            return new self($method);
         } else {
-          return new self('Functionality is not implemented.');
+            return new self('Functionality is not implemented.');
         }
     }
 

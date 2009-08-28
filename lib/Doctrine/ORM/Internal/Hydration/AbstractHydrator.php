@@ -162,7 +162,10 @@ abstract class AbstractHydrator
     /**
      * Gets the row container used during row-by-row hydration through {@link iterate()}.
      */
-    abstract protected function _getRowContainer();
+    protected function _getRowContainer()
+    {
+        return array();        
+    }
 
     /**
      * Processes a row of the result set.

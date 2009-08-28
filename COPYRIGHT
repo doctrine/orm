@@ -19,15 +19,6 @@ Url:       http://www.symfony-project.org
 Copyright: Fabien Potencier
 License:   MIT - see LICENSE file
 
-Spyc
-----
-
-Doctrine contains a port of the Spyc software
-
-Url:       http://spyc.sourceforge.net/
-Copyright: 2005-2006 Chris Wanstrath
-License:   MIT - http://www.opensource.org/licenses/mit-license.php
-
 Zend Framework
 --------------
 
