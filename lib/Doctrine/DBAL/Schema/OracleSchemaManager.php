@@ -187,10 +187,10 @@ class OracleSchemaManager extends AbstractSchemaManager
         $password   = $params['password'];
 
         $query  = 'CREATE USER ' . $username . ' IDENTIFIED BY ' . $password;
-        $result = $this->_conn->exec($query);
+        $result = $this->_conn->executeUpdate($query);
 
         $query = 'GRANT CREATE SESSION, CREATE TABLE, UNLIMITED TABLESPACE, CREATE SEQUENCE, CREATE TRIGGER TO ' . $username;
-        $result = $this->_conn->exec($query);
+        $result = $this->_conn->executeUpdate($query);
 
         return true;
     }
@@ -199,7 +199,7 @@ class OracleSchemaManager extends AbstractSchemaManager
     {
         $sql = $this->_platform->getDropAutoincrementSql($table);
         foreach ($sql as $query) {
-            $this->_conn->exec($query);
+            $this->_conn->executeUpdate($query);
         }
 
         return true;

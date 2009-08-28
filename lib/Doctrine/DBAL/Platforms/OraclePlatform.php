@@ -182,7 +182,7 @@ class OraclePlatform extends AbstractPlatform
      */
     public function getDateTimeTypeDeclarationSql(array $fieldDeclaration)
     {
-        return 'DATE';
+        return 'TIMESTAMP(0) WITH TIME ZONE';
     }
 
     /**
@@ -247,7 +247,7 @@ class OraclePlatform extends AbstractPlatform
 
         foreach ($columns as $name => $column) {
             if (isset($column['sequence'])) {
-              $sql[] = $this->getCreateSequenceSql($column['sequence'], 1);
+                $sql[] = $this->getCreateSequenceSql($column['sequence'], 1);
             }
 
             if (isset($column['autoincrement']) && $column['autoincrement'] ||
@@ -512,5 +512,24 @@ END;';
     public function getSqlResultCasing($column)
     {
         return strtoupper($column);
+    }
+    
+    public function getCreateTemporaryTableSnippetSql()
+    {
+        return "CREATE GLOBAL TEMPORARY TABLE";
+    }
+    
+    public function getDateTimeFormatString()
+    {
+        return 'Y-m-d H:i:sP';
+    }
+    
+    public function fixSchemaElementName($schemaElementName)
+    {
+        if (strlen($schemaElementName) > 30) {
+            // Trim it
+            return substr($schemaElementName, 0, 30);
+        }
+        return $schemaElementName;
     }
 }

@@ -692,7 +692,15 @@ class PostgreSqlPlatform extends AbstractPlatform
      */
     public function getDateTimeTypeDeclarationSql(array $fieldDeclaration)
     {
-        return 'TIMESTAMP without time zone';
+        return 'TIMESTAMP(0) WITH TIME ZONE';
+    }
+    
+    /**
+     * @override
+     */
+    public function getDateTypeDeclarationSql(array $fieldDeclaration)
+    {
+        return 'DATE';
     }
 
     /**
@@ -757,14 +765,8 @@ class PostgreSqlPlatform extends AbstractPlatform
         return strtolower($column);
     }
     
-    /**
-     * Gets the format string, as accepted by the date() function, that describes
-     * the format of a stored datetime value of this platform.
-     * 
-     * @return string The format string.
-     */
-    /*public function getDateTimeFormatString()
+    public function getDateTimeFormatString()
     {
-        return 'Y-m-d H:i:s.u';
-    }*/
+        return 'Y-m-d H:i:sO';
+    }
 }

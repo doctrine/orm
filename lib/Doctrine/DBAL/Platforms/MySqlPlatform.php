@@ -266,6 +266,14 @@ class MySqlPlatform extends AbstractPlatform
     {
         return 'DATETIME';
     }
+    
+    /**
+     * @override
+     */
+    public function getDateTypeDeclarationSql(array $fieldDeclaration)
+    {
+        return 'DATE';
+    }
 
     /**
      * @override

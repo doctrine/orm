@@ -398,7 +398,8 @@ class ClassMetadataFactory
                 // If there is no sequence definition yet, create a default definition
                 $definition = $class->getSequenceGeneratorDefinition();
                 if ( ! $definition) {
-                    $definition['sequenceName'] = $class->getTableName() . '_' . $class->getSingleIdentifierColumnName() . '_seq';
+                    $sequenceName = $class->getTableName() . '_' . $class->getSingleIdentifierColumnName() . '_seq';
+                    $definition['sequenceName'] = $this->_targetPlatform->fixSchemaElementName($sequenceName);
                     $definition['allocationSize'] = 20;
                     $definition['initialValue'] = 1;
                     $class->setSequenceGeneratorDefinition($definition);

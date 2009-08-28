@@ -234,6 +234,14 @@ class SqlitePlatform extends AbstractPlatform
     {
         return 'DATETIME';
     }
+    
+    /**
+     * @override
+     */
+    public function getDateTypeDeclarationSql(array $fieldDeclaration)
+    {
+        return 'DATE';
+    }
 
     /** @override */
     protected function _getCommonIntegerTypeDeclarationSql(array $columnDef)

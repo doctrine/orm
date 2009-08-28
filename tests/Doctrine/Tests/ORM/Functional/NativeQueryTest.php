@@ -20,7 +20,7 @@ class NativeQueryTest extends \Doctrine\Tests\OrmFunctionalTestCase
         parent::setUp();
         
         if ($this->_em->getConnection()->getDatabasePlatform()->getName() == 'oracle') {
-            $this->markTestSkipped('The ' . $testClass .' does not work with Oracle due to character casing.');
+            $this->markTestSkipped('The ' . __CLASS__ .' does not work with Oracle due to character casing.');
         }
     }
 

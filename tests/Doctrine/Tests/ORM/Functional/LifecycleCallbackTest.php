@@ -44,7 +44,7 @@ class LifecycleCallbackTest extends \Doctrine\Tests\OrmFunctionalTestCase
 /**
  * @Entity
  * @HasLifecycleCallbacks
- * @Table(name="lifecycle_callback_test_entity")
+ * @Table(name="lc_cb_test_entity")
  */
 class LifecycleCallbackTestEntity
 {

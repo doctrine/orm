@@ -520,6 +520,11 @@ abstract class AbstractPlatform
 
         return $sql;
     }
+    
+    public function getCreateTemporaryTableSnippetSql()
+    {
+        return "CREATE TEMPORARY TABLE";
+    }
 
     /**
      * Gets the SQL to create a sequence on this platform.
@@ -1339,6 +1344,18 @@ abstract class AbstractPlatform
     {
         throw DoctrineException::getDateTimeTypeDeclarationNotSupported($this);
     }
+    
+    /**
+     * Obtain DBMS specific SQL to be used to create date fields in statements
+     * like CREATE TABLE.
+     * 
+     * @param array $fieldDeclaration
+     * @return string
+     */
+    public function getDateTypeDeclarationSql(array $fieldDeclaration)
+    {
+        throw DoctrineException::getDateTypeDeclarationNotSupported($this);
+    }
 
     /**
      * Gets the default transaction isolation level of the platform.
@@ -1528,5 +1545,17 @@ abstract class AbstractPlatform
     public function getSqlResultCasing($column)
     {
         return $column;
+    }
+    
+    /**
+     * Makes any fixes to a name of a schema element (table, sequence, ...) that are required
+     * by restrictions of the platform, like a maximum length.
+     * 
+     * @param string $schemaName
+     * @return string
+     */
+    public function fixSchemaElementName($schemaElementName)
+    {
+        return $schemaElementName;
     }
 }
