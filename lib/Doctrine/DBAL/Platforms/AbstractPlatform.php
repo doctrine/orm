@@ -1456,7 +1456,8 @@ abstract class AbstractPlatform
      * the format of a stored datetime value of this platform.
      * 
      * @return string The format string.
-     * TODO: We need to get the specific format for each dbms and override this
+     * 
+     * @todo We need to get the specific format for each dbms and override this
      * function for each platform
      */
     public function getDateTimeFormatString()

@@ -37,7 +37,7 @@ class MySqlPlatformTest extends \Doctrine\Tests\DbalTestCase
         );
 
         $sql = $this->_platform->getCreateTableSql('test', $columns, $options);
-        $this->assertEquals('CREATE TABLE test (id INT AUTO_INCREMENT NOT NULL, test VARCHAR(255) NOT NULL, PRIMARY KEY(id))', $sql[0]);
+        $this->assertEquals('CREATE TABLE test (id INT AUTO_INCREMENT NOT NULL, test VARCHAR(255) NOT NULL, PRIMARY KEY(id)) ENGINE = InnoDB', $sql[0]);
     }
 
     public function testGeneratesTableAlterationSql()

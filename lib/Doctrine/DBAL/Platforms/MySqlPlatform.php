@@ -25,7 +25,8 @@ use Doctrine\Common\DoctrineException;
 
 /**
  * The MySqlPlatform provides the behavior, features and SQL dialect of the
- * MySQL database platform.
+ * MySQL database platform. This platform represents a MySQL 5.0 or greater platform that
+ * uses the InnoDB storage engine.
  *
  * @since 2.0
  * @author Roman Borschel <roman@code-factory.org>
@@ -472,17 +473,14 @@ class MySqlPlatform extends AbstractPlatform
             }
         }
 
-        $type = false;
-
         // get the type of the table
-        if (isset($options['type'])) {
-            $type = $options['type'];
+        if (isset($options['engine'])) {
+            $optionStrings[] = 'ENGINE = ' . $engine;
+        } else {
+            // default to innodb
+            $optionStrings[] = 'ENGINE = InnoDB';
         }
-
-        if ($type) {
-            $optionStrings[] = 'ENGINE = ' . $type;
-        }
-
+        
         if ( ! empty($optionStrings)) {
             $query.= ' '.implode(' ', $optionStrings);
         }

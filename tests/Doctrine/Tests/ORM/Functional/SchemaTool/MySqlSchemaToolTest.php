@@ -27,10 +27,10 @@ class MySqlSchemaToolTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $tool = new SchemaTool($this->_em);
         $sql = $tool->getCreateSchemaSql($classes);
         $this->assertEquals(count($sql), 8);
-        $this->assertEquals("CREATE TABLE cms_addresses (id INT AUTO_INCREMENT NOT NULL, country VARCHAR(50) NOT NULL, zip VARCHAR(50) NOT NULL, city VARCHAR(50) NOT NULL, user_id INT DEFAULT NULL, PRIMARY KEY(id))", $sql[0]);
-        $this->assertEquals("CREATE TABLE cms_users_groups (user_id INT DEFAULT NULL, group_id INT DEFAULT NULL, PRIMARY KEY(user_id, group_id))", $sql[1]);
-        $this->assertEquals("CREATE TABLE cms_users (id INT AUTO_INCREMENT NOT NULL, status VARCHAR(50) NOT NULL, username VARCHAR(255) NOT NULL, name VARCHAR(255) NOT NULL, PRIMARY KEY(id))", $sql[2]);
-        $this->assertEquals("CREATE TABLE cms_phonenumbers (phonenumber VARCHAR(50) NOT NULL, user_id INT DEFAULT NULL, PRIMARY KEY(phonenumber))", $sql[3]);
+        $this->assertEquals("CREATE TABLE cms_addresses (id INT AUTO_INCREMENT NOT NULL, country VARCHAR(50) NOT NULL, zip VARCHAR(50) NOT NULL, city VARCHAR(50) NOT NULL, user_id INT DEFAULT NULL, PRIMARY KEY(id)) ENGINE = InnoDB", $sql[0]);
+        $this->assertEquals("CREATE TABLE cms_users_groups (user_id INT DEFAULT NULL, group_id INT DEFAULT NULL, PRIMARY KEY(user_id, group_id)) ENGINE = InnoDB", $sql[1]);
+        $this->assertEquals("CREATE TABLE cms_users (id INT AUTO_INCREMENT NOT NULL, status VARCHAR(50) NOT NULL, username VARCHAR(255) NOT NULL, name VARCHAR(255) NOT NULL, PRIMARY KEY(id)) ENGINE = InnoDB", $sql[2]);
+        $this->assertEquals("CREATE TABLE cms_phonenumbers (phonenumber VARCHAR(50) NOT NULL, user_id INT DEFAULT NULL, PRIMARY KEY(phonenumber)) ENGINE = InnoDB", $sql[3]);
         $this->assertEquals("ALTER TABLE cms_addresses ADD FOREIGN KEY (user_id) REFERENCES cms_users(id)", $sql[4]);
         $this->assertEquals("ALTER TABLE cms_users_groups ADD FOREIGN KEY (user_id) REFERENCES cms_users(id)", $sql[5]);
         $this->assertEquals("ALTER TABLE cms_users_groups ADD FOREIGN KEY (group_id) REFERENCES cms_groups(id)", $sql[6]);
@@ -78,7 +78,7 @@ class MySqlSchemaToolTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $sql = $tool->getUpdateSchemaSql($classes);
         
         $this->assertEquals(2, count($sql));
-        $this->assertEquals("CREATE TABLE schematool_entity_b (id INT NOT NULL, field VARCHAR(255) NOT NULL, PRIMARY KEY(id))", $sql[0]);
+        $this->assertEquals("CREATE TABLE schematool_entity_b (id INT NOT NULL, field VARCHAR(255) NOT NULL, PRIMARY KEY(id)) ENGINE = InnoDB", $sql[0]);
         $this->assertEquals("ALTER TABLE schematool_entity_a ADD new_field VARCHAR(50) NOT NULL", $sql[1]);
         
     }
