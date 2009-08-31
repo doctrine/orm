@@ -4,8 +4,9 @@
     Doctrine 2 build file.
 -->
 
-<project name="Doctrine2" default="dist-orm" basedir=".">
-    
+<project name="Doctrine2" default="build" basedir=".">
+    <taskdef classname="phing.tasks.ext.d51PearPkg2Task" name="d51pearpkg2" />
+
     <property file="build.properties" />
     
     <!-- 
@@ -48,6 +49,7 @@
         <include name="tools/sandbox/cli-config.php"/>
         <include name="tools/sandbox/config.php"/>
         <include name="tools/sandbox/doctrine"/>
+        <include name="tools/sandbox/doctrine.php"/>
         <include name="tools/sandbox/index.php"/>
     </fileset>
 
@@ -94,6 +96,8 @@
         </copy>
     </target>
     
+    <target name="build" depends="test, build-orm"/>
+
     <target name="prepare-test">
         <mkdir dir="${build.dir}/logs"/>
         <mkdir dir="${report.dir}/tests"/>
@@ -113,39 +117,48 @@
         </phpunit>
         <phpunitreport infile="build/logs/testsuites.xml" format="frames" todir="reports/tests" />
     </target>
-    
-    <!-- 
-        Distributes the Doctrine Common package.
-    -->
-    <target name="dist-common">
-        <tar destfile="${dist.dir}/Doctrine-${version}-common.tar.gz" compression="gzip">
-            <fileset dir="${build.dir}/common">
-                <include name="**" />
-            </fileset>
-        </tar>
-    </target>
-    
-    <!-- 
-        Distributes the Doctrine DBAL package.
-    -->
-    <target name="dist-dbal">
-        <tar destfile="${dist.dir}/Doctrine-${version}-dbal.tar.gz" compression="gzip">
-            <fileset dir="${build.dir}/dbal">
-                <include name="**" />
-            </fileset>
-        </tar>
+
+    <target name="build-tar-packages" depends="test, build-orm">
+      <tar destfile="${dist.dir}/DoctrineCommon-${version_name}.tar.gz" compression="gzip">
+          <fileset dir="${build.dir}/common">
+              <include name="**" />
+          </fileset>
+      </tar>
+      <tar destfile="${dist.dir}/DoctrineDBAL-${version_name}.tar.gz" compression="gzip">
+          <fileset dir="${build.dir}/dbal">
+              <include name="**" />
+          </fileset>
+      </tar>
+      <tar destfile="${dist.dir}/DoctrineORM-${version_name}.tar.gz" compression="gzip">
+          <fileset dir="${build.dir}/orm">
+              <include name="**" />
+          </fileset>
+      </tar>
     </target>
 
-    <!--
-        DEFAULT TARGET
-        Tests, builds and distributes the full Doctrine package (Common+DBAL+ORM).
-    -->
-    <target name="dist-orm" depends="test, build-orm, dist-common, dist-dbal">
-        <tar destfile="${dist.dir}/Doctrine-${version}-orm.tar.gz" compression="gzip">
-            <fileset dir="${build.dir}/orm">
-                <include name="**" />
-            </fileset>
-        </tar>
+    <target name="build-pear-packages" depends="test, build-orm">
+        <d51pearpkg2 baseinstalldir="Doctrine" dir="${build.dir}/orm">
+           <name>${name}</name>
+           <summary>${summary}</summary>
+           <channel>pear.phpdoctrine.org</channel>
+           <description>${description}</description>
+           <lead user="jwage" name="Jonathan H. Wage" email="jonwage@gmail.com" />
+           <lead user="guilhermeblanco" name="Guilherme Blanco" email="guilhermeblanco@gmail.com" />
+           <lead user="romanb" name="Roman Borschel" email="roman@code-factory.org" />
+           <license>LGPL</license>
+           <version release="${version}" api="${version}" />
+           <stability release="${stability}" api="${stability}" />
+           <notes>-</notes>
+           <dependencies>
+               <php minimum_version="5.3.0" />
+               <pear minimum_version="1.6.0" recommended_version="1.6.1" />
+           </dependencies>
+        </d51pearpkg2>
+
+        <tar destfile="${dist.dir}/DoctrineCommon-${version_name}.tgz" basedir="${build.dir}/common" compression="gzip" />
+        <tar destfile="${dist.dir}/DoctrineDBAL-${version_name}.tgz" basedir="${build.dir}/dbal" compression="gzip" />
+        <tar destfile="${dist.dir}/DoctrineORM-${version_name}.tgz" basedir="${build.dir}/orm" compression="gzip" />
     </target>
-    
+
+    <target name="build-packages" depends="test, build-pear-packages, build-tar-packages"/>
 </project>
