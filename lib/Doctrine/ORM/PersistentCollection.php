@@ -82,7 +82,7 @@ final class PersistentCollection implements \Doctrine\Common\Collections\Collect
     private $_backRefFieldName;
 
     /**
-     * The class descriptor of the owning entity.
+     * The class descriptor of the collection's entity type.
      */
     private $_typeClass;
 
@@ -124,7 +124,8 @@ final class PersistentCollection implements \Doctrine\Common\Collections\Collect
 
     /**
      * INTERNAL:
-     * Sets the collection owner. Used (only?) during hydration.
+     * Sets the collection's owning entity together with the AssociationMapping that
+     * describes the association between the owner and the elements of the collection.
      *
      * @param object $entity
      * @param AssociationMapping $assoc
@@ -168,7 +169,8 @@ final class PersistentCollection implements \Doctrine\Common\Collections\Collect
 
     /**
      * INTERNAL:
-     * Adds an element to a collection during hydration.
+     * Adds an element to a collection during hydration. This will automatically
+     * complete bidirectional associations.
      * 
      * @param mixed $element The element to add.
      */
@@ -198,9 +200,23 @@ final class PersistentCollection implements \Doctrine\Common\Collections\Collect
      * @param mixed $key The key to set.
      * $param mixed $value The element to set.
      */
-    public function hydrateSet($key, $value)
+    public function hydrateSet($key, $element)
     {
-        $this->_coll->set($key, $value);
+        $this->_coll->set($key, $element);
+        // If _backRefFieldName is set, then the association is bidirectional
+        // and we need to set the back reference.
+        if ($this->_backRefFieldName) {
+            // Set back reference to owner
+            if ($this->_association->isOneToMany()) {
+                // OneToMany
+                $this->_typeClass->reflFields[$this->_backRefFieldName]
+                        ->setValue($element, $this->_owner);
+            } else {
+                // ManyToMany
+                $this->_typeClass->reflFields[$this->_backRefFieldName] 
+                        ->getValue($element)->set($key, $this->_owner);
+            }
+        }
     }
 
     /**
@@ -307,9 +323,9 @@ final class PersistentCollection implements \Doctrine\Common\Collections\Collect
     }
     
     /**
+     * Sets the initialized flag of the collection, forcing it into that state.
      * 
-     * @param $bool
-     * @return unknown_type
+     * @param boolean $bool
      */
     public function setInitialized($bool)
     {

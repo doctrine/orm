@@ -22,9 +22,9 @@
 namespace Doctrine\ORM\Tools;
 
 use Doctrine\Common\Util\Inflector,
-    Doctrine\ORM\Tools\Cli\AbstractPrinter,
-    Doctrine\ORM\Tools\Cli\AbstractTask,
-    Doctrine\ORM\Tools\Cli\Printer;
+    Doctrine\ORM\Tools\Cli\Printers\AbstractPrinter,
+    Doctrine\ORM\Tools\Cli\Tasks\AbstractTask,
+    Doctrine\ORM\Tools\Cli\Printers\AnsiColorPrinter;
 
 /**
  * Generic CLI Runner of Tasks
@@ -83,14 +83,16 @@ class Cli
     public function __construct(AbstractPrinter $printer = null)
     {
         //$this->_printer = new Printer\Normal();
-        $this->_printer = $printer ?: new Printer\AnsiColor();
+        $this->_printer = $printer ?: new AnsiColorPrinter;
         
         // Include core tasks
-        $ns = 'Doctrine\ORM\Tools\Cli\Task';
+        $ns = 'Doctrine\ORM\Tools\Cli\Tasks';
         
         $this->addTasks(array(
-            'help'    => $ns . '\Help',
-            'version' => $ns . '\Version',
+            'help'    => $ns . '\HelpTask',
+            'version' => $ns . '\VersionTask',
+            'schema-tool' => $ns . '\SchemaToolTask',
+            'run-sql' => $ns . '\RunSqlTask'
         ));
     }
     
@@ -146,12 +148,12 @@ class Cli
         // Automatically prepend 'help' task if:
         // 1- No arguments were passed
         // 2- First item is not a valid task name
-        if (empty($args) || (isset($args[0]) && strpos($args[0], '-') !== false)) {
+        if (empty($args) || ! isset($this->_tasks[$this->_processTaskName($args[0])])) {
             array_unshift($args, 'help');
         }
         
         // Process all sent arguments
-        $processedArgs = $this->_processArguments($args); 
+        $processedArgs = $this->_processArguments($args);
         
         try {
             // Handle possible multiple tasks on a single command

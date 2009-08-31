@@ -91,9 +91,9 @@ abstract class AbstractFileDriver implements Driver
      * documents and operates in the specified operating mode.
      * 
      * @param string|array $paths One or multiple paths where mapping documents can be found.
-     * @param integer $mode The operating mode. Either PRELOAD (default) or FILE_PER_CLASS.
+     * @param integer $mode The operating mode. Either PRELOAD or FILE_PER_CLASS (default).
      */
-    public function __construct($paths, $mode = self::PRELOAD)
+    public function __construct($paths, $mode = self::FILE_PER_CLASS)
     {
         $this->_paths = $paths;
         $this->_mode = $mode;

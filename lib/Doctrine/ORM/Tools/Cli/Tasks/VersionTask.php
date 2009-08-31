@@ -19,12 +19,10 @@
  * <http://www.doctrine-project.org>.
  */
  
-namespace Doctrine\ORM\Tools\Cli\Task;
-
-use Doctrine\ORM\Tools\Cli\AbstractTask;
+namespace Doctrine\ORM\Tools\Cli\Tasks;
 
 /**
- * CLI Task to display available commands help
+ * CLI Task to display the doctrine version
  *
  * @license http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @link    www.doctrine-project.org
@@ -34,18 +32,18 @@ use Doctrine\ORM\Tools\Cli\AbstractTask;
  * @author  Jonathan Wage <jonwage@gmail.com>
  * @author  Roman Borschel <roman@code-factory.org>
  */
-class Help extends AbstractTask
+class VersionTask extends AbstractTask
 {
     /**
      * @inheritdoc
      */
     public function extendedHelp()
     {
-        $this->getPrinter()->write('help extended help' . PHP_EOL, 'HEADER');
-        $this->getPrinter()->write('help extended help' . PHP_EOL, 'ERROR');
-        $this->getPrinter()->write('help extended help' . PHP_EOL, 'INFO');
-        $this->getPrinter()->write('help extended help' . PHP_EOL, 'COMMENT');
-        $this->getPrinter()->write('help extended help' . PHP_EOL, 'NONE');
+        $this->getPrinter()->write('version extended help' . PHP_EOL, 'HEADER');
+        $this->getPrinter()->write('version extended help' . PHP_EOL, 'ERROR');
+        $this->getPrinter()->write('version extended help' . PHP_EOL, 'INFO');
+        $this->getPrinter()->write('version extended help' . PHP_EOL, 'COMMENT');
+        $this->getPrinter()->write('version extended help' . PHP_EOL, 'NONE');
     }
 
     /**
@@ -53,31 +51,31 @@ class Help extends AbstractTask
      */
     public function basicHelp()
     {
-        $this->getPrinter()->write('help basic help' . PHP_EOL, 'HEADER');
-        $this->getPrinter()->write('help basic help' . PHP_EOL, 'ERROR');
-        $this->getPrinter()->write('help basic help' . PHP_EOL, 'INFO');
-        $this->getPrinter()->write('help basic help' . PHP_EOL, 'COMMENT');
-        $this->getPrinter()->write('help basic help' . PHP_EOL, 'NONE');
+        $this->getPrinter()->write('version basic help' . PHP_EOL, 'HEADER');
+        $this->getPrinter()->write('version basic help' . PHP_EOL, 'ERROR');
+        $this->getPrinter()->write('version basic help' . PHP_EOL, 'INFO');
+        $this->getPrinter()->write('version basic help' . PHP_EOL, 'COMMENT');
+        $this->getPrinter()->write('version basic help' . PHP_EOL, 'NONE');
     }
-
+    
     /**
      * @inheritdoc
-     */    
+     */
     public function validate()
     {
         return true;
     }
 
     /**
-     * Exposes the available tasks
+     * Displays the current version of Doctrine
      *
      */
     public function run()
     {
-        $this->getPrinter()->write('help run' . PHP_EOL, 'HEADER');
-        $this->getPrinter()->write('help run' . PHP_EOL, 'ERROR');
-        $this->getPrinter()->write('help run' . PHP_EOL, 'INFO');
-        $this->getPrinter()->write('help run' . PHP_EOL, 'COMMENT');
-        $this->getPrinter()->write('help run' . PHP_EOL, 'NONE');
+        $this->getPrinter()->write('version run' . PHP_EOL, 'HEADER');
+        $this->getPrinter()->write('version run' . PHP_EOL, 'ERROR');
+        $this->getPrinter()->write('version run' . PHP_EOL, 'INFO');
+        $this->getPrinter()->write('version run' . PHP_EOL, 'COMMENT');
+        $this->getPrinter()->write('version run' . PHP_EOL, 'NONE');
     }
 }

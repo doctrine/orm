@@ -302,11 +302,11 @@ class EntityManager
 
     /**
      * Gets a reference to the entity identified by the given type and identifier
-     * without actually loading it. Only the identifier of the returned entity
-     * will be populated.
-     *
-     * NOTE: There is currently no magic proxying in place, that means the full state
-     * of the entity will not be loaded upon accessing it.
+     * without actually loading it.
+     * 
+     * If partial objects are allowed, this method will return a partial object that only
+     * has its identifier populated. Otherwise a proxy is returned that automatically
+     * loads itself on first access.
      *
      * @return object The entity reference.
      */

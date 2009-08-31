@@ -86,6 +86,11 @@ class ClassMetadataFactory
     {
         return $this->_cacheDriver;
     }
+    
+    public function getLoadedMetadata()
+    {
+        return $this->_loadedMetadata;
+    }
 
     /**
      * Gets the class metadata descriptor for a class.

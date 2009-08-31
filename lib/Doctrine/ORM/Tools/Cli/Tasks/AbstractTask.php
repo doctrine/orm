@@ -19,12 +19,21 @@
  * <http://www.doctrine-project.org>.
  */
  
-namespace Doctrine\ORM\Tools\Cli;
+namespace Doctrine\ORM\Tools\Cli\Tasks;
+
+use Doctrine\ORM\Tools\Cli\Printers\AbstractPrinter;
 
 /**
- * CLI Task.
+ * Base class for CLI Tasks.
  * Provides basic methods and requires implementation of methods that
  * each task should implement in order to correctly work.
+ * 
+ * The following arguments are common to all tasks:
+ * 
+ * Argument: --config=<path>
+ * Description: Specifies the path to the configuration file to use. The configuration file
+ *              can bootstrap an EntityManager as well as provide defaults for any cli
+ *              arguments.
  *
  * @license http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @link    www.doctrine-project.org
@@ -50,6 +59,8 @@ abstract class AbstractTask
      * @var array Available CLI tasks
      */
     protected $_availableTasks;
+    
+    protected $_em;
     
     /**
      * Defines a CLI Output Printer
@@ -148,13 +159,44 @@ abstract class AbstractTask
      *
      * @return boolean
      */
-    abstract public function validate();
+    public function validate()
+    {
+        if ( ! isset($this->_arguments['config'])) {
+            if (file_exists('./cli-config.php')) {
+                require './cli-config.php';
+            } else {
+                $this->_printer->writeln('--config option or cli-config.php in the same directory required', 'ERROR');
+                return false;
+            }
+        } else {
+            require $this->_arguments['config'];
+        }
+        
+        // $em and $args come from the config
+        if (isset($em)) {
+            $this->_em = $em;
+        }
+        if (isset($args)) {
+            // Merge arguments. Values specified via the CLI take preference.
+            $this->_arguments = array_merge($args, $this->_arguments);
+        }
+        
+        return true;
+    }
     
     /**
      * Safely execution of task.
      * Each CLI task should implement this as normal flow execution of
      * what is supposed to do.
-     *
      */
     abstract public function run();
+    
+    protected function _requireEntityManager()
+    {
+        if ( ! isset($this->_em)) {
+            $this->_printer->writeln('No EntityManager created in configuration but required by task ' . get_class($this), 'ERROR');
+            return false;
+        }
+        return true;
+    }
 }

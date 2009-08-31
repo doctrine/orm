@@ -37,6 +37,19 @@
     <fileset id="orm-sources" dir=".">
         <include name="lib/Doctrine/ORM/**"/>
     </fileset>
+    
+    <!-- 
+        Fileset for the Doctrine ORM tools + sandbox.
+    -->
+    <fileset id="orm-tools" dir=".">
+        <include name="tools/sandbox/Entities"/>
+        <include name="tools/sandbox/xml"/>
+        <include name="tools/sandbox/yaml"/>
+        <include name="tools/sandbox/cli-config.php"/>
+        <include name="tools/sandbox/config.php"/>
+        <include name="tools/sandbox/doctrine"/>
+        <include name="tools/sandbox/index.php"/>
+    </fileset>
 
     <target name="clean">
         <delete dir="${build.dir}" includeemptydirs="true" />
@@ -77,6 +90,7 @@
             <fileset refid="common-sources"/>
             <fileset refid="dbal-sources"/>
             <fileset refid="orm-sources"/>
+            <fileset refid="orm-tools"/>
         </copy>
     </target>
     

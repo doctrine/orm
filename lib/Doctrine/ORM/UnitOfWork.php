@@ -1290,7 +1290,7 @@ class UnitOfWork implements PropertyChangedListener
                 $managedCopyVersion = $class->reflFields[$class->versionField]->getValue($managedCopy);
                 $entityVersion = $class->reflFields[$class->versionField]->getValue($entity);
                 // Throw exception if versions dont match.
-                if ($managedCopyVersion != $entity) {
+                if ($managedCopyVersion != $entityVersion) {
                     throw OptimisticLockException::versionMismatch();
                 }
             }

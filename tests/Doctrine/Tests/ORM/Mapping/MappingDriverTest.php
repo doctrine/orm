@@ -41,7 +41,7 @@ class MappingDriverTest extends \Doctrine\Tests\OrmTestCase
     public function testXmlPreloadMode()
     {
         $className = 'Doctrine\Tests\ORM\Mapping\User';
-        $xmlDriver = new XmlDriver(__DIR__ . DIRECTORY_SEPARATOR . 'xml');
+        $xmlDriver = new XmlDriver(__DIR__ . DIRECTORY_SEPARATOR . 'xml', XmlDriver::PRELOAD);
         $class = new ClassMetadata($className);
         
         $classNames = $xmlDriver->preload();
@@ -57,7 +57,7 @@ class MappingDriverTest extends \Doctrine\Tests\OrmTestCase
     public function testYamlPreloadMode()
     {
         $className = 'Doctrine\Tests\ORM\Mapping\User';
-        $yamlDriver = new YamlDriver(__DIR__ . DIRECTORY_SEPARATOR . 'yaml');
+        $yamlDriver = new YamlDriver(__DIR__ . DIRECTORY_SEPARATOR . 'yaml', YamlDriver::PRELOAD);
         $class = new ClassMetadata($className);
         
         $classNames = $yamlDriver->preload();

@@ -56,7 +56,7 @@ class CommitOrderCalculator
      * Uses a depth-first search (DFS) to traverse the graph.
      * The desired topological sorting is the reverse postorder of these searches.
      *
-     * @return array  The list of ordered items. These are the items wrapped in the nodes.
+     * @return array The list of ordered classes.
      */
     public function getCommitOrder()
     {
@@ -65,7 +65,7 @@ class CommitOrderCalculator
         if ($nodeCount == 0) {
             return array();
         } else if ($nodeCount == 1) {
-            return $this->_classes;
+            return array(0 => array_pop($this->_classes));
         }
         
         // Init
@@ -102,7 +102,6 @@ class CommitOrderCalculator
         }
         
         $this->_nodeStates[$node->name] = self::VISITED;
-
         $this->_sorted[] = $node;
     }
     

@@ -22,17 +22,17 @@
 namespace Doctrine\ORM\Tools;
 
 use Doctrine\DBAL\Types\Type,
-    Doctrine\ORM\EntityManager;
+    Doctrine\ORM\EntityManager,
+    Doctrine\ORM\Internal\CommitOrderCalculator;
 
 /**
- * The SchemaTool is a tool to create and/or drop database schemas based on
+ * The SchemaTool is a tool to create/drop/update database schemas based on
  * <tt>ClassMetadata</tt> class descriptors.
  *
  * @author      Roman Borschel <roman@code-factory.org>
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @link        www.doctrine-project.org
  * @since       2.0
- * @version     $Revision: 4805 $
  */
 class SchemaTool
 {
@@ -382,8 +382,9 @@ class SchemaTool
     public function getDropSchemaSql(array $classes)
     {
         $sql = array();
-        $commitOrder = $classes; //FIXME: get real commit order!!
         
+        $commitOrder = $this->_getCommitOrder($classes);
+
         // Drop tables in reverse commit order
         for ($i = count($commitOrder) - 1; $i >= 0; --$i) {
             $class = $commitOrder[$i];
@@ -392,6 +393,8 @@ class SchemaTool
             }
             $sql[] = $this->_platform->getDropTableSql($class->getTableName());
         }
+        
+        //TODO: Drop other schema elements, like sequences etc.
         
         return $sql;
     }
@@ -528,5 +531,27 @@ class SchemaTool
         }*/
         
         return $sql;
+    }
+    
+    private function _getCommitOrder(array $classes)
+    {
+        $calc = new CommitOrderCalculator;
+
+        // Calculate dependencies
+        foreach ($classes as $class) {
+            $calc->addClass($class);
+            foreach ($class->associationMappings as $assoc) {
+                if ($assoc->isOwningSide) {
+                    $targetClass = $this->_em->getClassMetadata($assoc->targetEntityName);
+                    if ( ! $calc->hasClass($targetClass->name)) {
+                        $calc->addClass($targetClass);
+                    }
+                    // add dependency ($targetClass before $class)
+                    $calc->addDependency($targetClass, $class);
+                }
+            }
+        }
+
+        return $calc->getCommitOrder();
     }
 }

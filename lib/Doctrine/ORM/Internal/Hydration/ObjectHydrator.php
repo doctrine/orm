@@ -363,9 +363,8 @@ class ObjectHydrator extends AbstractHydrator
                         if ($this->_rsm->isMixed) {
                             $element = array($key => $element);
                             $result[] = $element;
+                            $this->_identifierMap[$dqlAlias][$id[$dqlAlias]] = $this->_resultCounter;
                             ++$this->_resultCounter;
-                            end($result);
-                            $this->_identifierMap[$dqlAlias][$id[$dqlAlias]] = key($result);
                         } else {
                             $result[$key] = $element;
                             $this->_identifierMap[$dqlAlias][$id[$dqlAlias]] = $key;
@@ -373,11 +372,10 @@ class ObjectHydrator extends AbstractHydrator
                     } else {
                         if ($this->_rsm->isMixed) {
                             $element = array(0 => $element);
-                            ++$this->_resultCounter;
                         }
                         $result[] = $element;
-                        end($result);
-                        $this->_identifierMap[$dqlAlias][$id[$dqlAlias]] = key($result);
+                        $this->_identifierMap[$dqlAlias][$id[$dqlAlias]] = $this->_resultCounter;
+                        ++$this->_resultCounter;
                     }
                     
                     // Update result pointer

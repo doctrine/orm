@@ -172,6 +172,7 @@ final class Query extends AbstractQuery
             // Calculate hash for dql query.
             // TODO: Probably need to include query hints in hash calculation, because query hints
             //       can have influence on the SQL.
+            // TODO: Include _maxResults and _firstResult in hash calculation
             $hash = md5($this->getDql() . 'DOCTRINE_QUERY_CACHE_SALT');
             $cached = ($this->_expireQueryCache) ? false : $queryCache->fetch($hash);
 

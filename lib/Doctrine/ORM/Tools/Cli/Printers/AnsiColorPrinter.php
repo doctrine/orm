@@ -19,10 +19,9 @@
  * <http://www.doctrine-project.org>.
  */
  
-namespace Doctrine\ORM\Tools\Cli\Printer;
+namespace Doctrine\ORM\Tools\Cli\Printers;
 
-use Doctrine\ORM\Tools\Cli\AbstractPrinter,
-    Doctrine\ORM\Tools\Cli\Style;
+use Doctrine\ORM\Tools\Cli\Style;
 
 /**
  * CLI Output Printer for ANSI Color terminal
@@ -35,7 +34,7 @@ use Doctrine\ORM\Tools\Cli\AbstractPrinter,
  * @author  Jonathan Wage <jonwage@gmail.com>
  * @author  Roman Borschel <roman@code-factory.org>
  */
-class AnsiColor extends AbstractPrinter
+class AnsiColorPrinter extends AbstractPrinter
 {
     /**
      * @inheritdoc

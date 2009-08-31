@@ -120,6 +120,10 @@ class OneToOneMapping extends AssociationMapping
         $this->orphanRemoval = isset($mapping['orphanRemoval']) ?
                 (bool) $mapping['orphanRemoval'] : false;
         
+        /*if ($this->isOptional) {
+            $this->fetchMode = self::FETCH_EAGER;
+        }*/
+        
         return $mapping;
     }
 

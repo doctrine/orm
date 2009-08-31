@@ -19,7 +19,9 @@
  * <http://www.doctrine-project.org>.
  */
  
-namespace Doctrine\ORM\Tools\Cli;
+namespace Doctrine\ORM\Tools\Cli\Printers;
+
+use Doctrine\ORM\Tools\Cli\Style;
 
 /**
  * CLI Output Printer.
@@ -137,7 +139,7 @@ abstract class AbstractPrinter
     }
 
     /**
-     * Writes to output stream the message, formatting it by applying the defined style.
+     * Writes to the output stream, formatting it by applying the defined style.
      *
      * @param string $message Message to be outputted
      * @param mixed $style Optional style to be applied in message
@@ -147,6 +149,17 @@ abstract class AbstractPrinter
         $style = is_string($style) ? $this->getStyle($style) : $style;
     
         fwrite($this->_stream, $this->format($message, $style));
+    }
+    
+    /**
+     * Writes a line to the output stream, formatting it by applying the defined style.
+     *
+     * @param string $message Message to be outputted
+     * @param mixed $style Optional style to be applied in message
+     */
+    public function writeln($message, $style = 'ERROR')
+    {
+        $this->write($message . PHP_EOL, $style);
     }
     
     /**
