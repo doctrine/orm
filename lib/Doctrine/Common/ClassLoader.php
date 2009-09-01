@@ -24,17 +24,39 @@ namespace Doctrine\Common;
 /**
  * A class loader used to load class files on demand.
  *
- * Usage recommendation:
- * 1) Use only 1 class loader instance.
- * 2) Set the base paths to your class libraries (including Doctrine's) through
- *    $classLoader->setBasePath($prefix, $basePath);
- *    Example:
- *      $classLoader->setBasePath('Doctrine', '/usr/local/phplibs/doctrine/lib');
- *    Then, when trying to load the class Doctrine\ORM\EntityManager, for example
- *    the classloader will look for /usr/local/phplibs/doctrine/lib/Doctrine/ORM/EntityManager.php
+ * IMPORTANT:
+ * 
+ * This class loader is NOT meant to be put into a "chain" of autoloaders.
+ * It is not meant to load only Doctrine class file. It is a one-classloader-for-all-classes
+ * solution. It may not be useable with frameworks that do not follow basic pear/zend
+ * conventions where the namespace+class name reflects the physical location of the source
+ * file. This is not a bug. This class loader is, however, compatible with the
+ * old namespace separator '_' (underscore), so any classes using that convention
+ * instead of the 5.3 builtin namespaces can be loaded as well.
+ * 
+ * The only way to put this classloader into an autoloader chain is to use
+ * setCheckFileExists(true) which is not recommended.
  *
+ * Here is the recommended usage:
+ * 1) Use only 1 class loader instance.
+ * 2) Reduce the include_path to only the path to the PEAR packages.
+ * 2) Set the base paths to any non-pear class libraries through
+ *    $classLoader->setBasePath($prefix, $basePath);
  * 3) DO NOT setCheckFileExists(true). Doing so is expensive in terms of performance.
  * 4) Use an opcode-cache (i.e. APC) (STRONGLY RECOMMENDED).
+ * 
+ * The "prefix" is the part of a class name before the very first namespace separator
+ * character. If the class is named "Foo_Bar_Baz" then the prefix is "Foo".
+ * 
+ * If no base path is configured for a certain class prefix, the classloader relies on
+ * the include_path. That's why classes of any pear packages can be loaded without
+ * registering their base paths. However, since a long include_path has a negative effect
+ * on performance it is recommended to have only the path to the pear packages in the
+ * include_path.
+ * 
+ * For any other class libraries you always have the choice between registering the base
+ * path on the classloader or putting the base path into the include_path. The former
+ * should be preferred but the latter is fine also.
  *
  * @license http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @link    www.doctrine-project.org
