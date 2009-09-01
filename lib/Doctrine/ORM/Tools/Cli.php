@@ -156,6 +156,10 @@ class Cli
         $processedArgs = $this->_processArguments($args);
         
         try {
+            $this->_printer->writeln(
+                'Doctrine Command Line Interface' . PHP_EOL, 'HEADER'
+            );
+        
             // Handle possible multiple tasks on a single command
             foreach($processedArgs as $taskData) {
                 // Retrieve the task name and arguments
@@ -182,7 +186,7 @@ class Cli
                 }
             }
         } catch (\Doctrine\Common\DoctrineException $e) {
-            $this->_printer->write(
+            $this->_printer->writeln(
                 $taskName . ':' . $e->getMessage() . PHP_EOL, 'ERROR'
             );
         }

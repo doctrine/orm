@@ -21,6 +21,8 @@
  
 namespace Doctrine\ORM\Tools\Cli\Tasks;
 
+use Doctrine\Common\Util\Inflector;
+
 /**
  * CLI Task to display available commands help
  *
@@ -39,11 +41,7 @@ class HelpTask extends AbstractTask
      */
     public function extendedHelp()
     {
-        $this->getPrinter()->write('help extended help' . PHP_EOL, 'HEADER');
-        $this->getPrinter()->write('help extended help' . PHP_EOL, 'ERROR');
-        $this->getPrinter()->write('help extended help' . PHP_EOL, 'INFO');
-        $this->getPrinter()->write('help extended help' . PHP_EOL, 'COMMENT');
-        $this->getPrinter()->write('help extended help' . PHP_EOL, 'NONE');
+        $this->run();
     }
 
     /**
@@ -51,11 +49,7 @@ class HelpTask extends AbstractTask
      */
     public function basicHelp()
     {
-        $this->getPrinter()->write('help basic help' . PHP_EOL, 'HEADER');
-        $this->getPrinter()->write('help basic help' . PHP_EOL, 'ERROR');
-        $this->getPrinter()->write('help basic help' . PHP_EOL, 'INFO');
-        $this->getPrinter()->write('help basic help' . PHP_EOL, 'COMMENT');
-        $this->getPrinter()->write('help basic help' . PHP_EOL, 'NONE');
+        $this->run();
     }
 
     /**
@@ -72,10 +66,22 @@ class HelpTask extends AbstractTask
      */
     public function run()
     {
-        $this->getPrinter()->write('help run' . PHP_EOL, 'HEADER');
-        $this->getPrinter()->write('help run' . PHP_EOL, 'ERROR');
-        $this->getPrinter()->write('help run' . PHP_EOL, 'INFO');
-        $this->getPrinter()->write('help run' . PHP_EOL, 'COMMENT');
-        $this->getPrinter()->write('help run' . PHP_EOL, 'NONE');
+        // Switch between ALL available tasks and display the basic Help of each one
+        $availableTasks = $this->getAvailableTasks();
+        
+        $helpTaskName = Inflector::classify(str_replace('-', '_', 'help'));
+        unset($availableTasks[$helpTaskName]);
+        
+        ksort($availableTasks);
+        
+        foreach ($availableTasks as $taskName => $taskClass) {
+            $task = new $taskClass();
+            
+            $task->setAvailableTasks($availableTasks);
+            $task->setPrinter($this->getPrinter());
+            $task->setArguments($this->getArguments());
+            
+            $task->basicHelp();
+        }
     }
 }

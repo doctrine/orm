@@ -39,11 +39,12 @@ class VersionTask extends AbstractTask
      */
     public function extendedHelp()
     {
-        $this->getPrinter()->write('version extended help' . PHP_EOL, 'HEADER');
+        $this->getPrinter()->writeln('version extended help.', 'INFO');
+        /*$this->getPrinter()->write('version extended help' . PHP_EOL, 'HEADER');
         $this->getPrinter()->write('version extended help' . PHP_EOL, 'ERROR');
         $this->getPrinter()->write('version extended help' . PHP_EOL, 'INFO');
         $this->getPrinter()->write('version extended help' . PHP_EOL, 'COMMENT');
-        $this->getPrinter()->write('version extended help' . PHP_EOL, 'NONE');
+        $this->getPrinter()->write('version extended help' . PHP_EOL, 'NONE');*/
     }
 
     /**
@@ -51,11 +52,12 @@ class VersionTask extends AbstractTask
      */
     public function basicHelp()
     {
-        $this->getPrinter()->write('version basic help' . PHP_EOL, 'HEADER');
+        $this->getPrinter()->writeln('version extended help.', 'INFO');
+        /*$this->getPrinter()->write('version basic help' . PHP_EOL, 'HEADER');
         $this->getPrinter()->write('version basic help' . PHP_EOL, 'ERROR');
         $this->getPrinter()->write('version basic help' . PHP_EOL, 'INFO');
         $this->getPrinter()->write('version basic help' . PHP_EOL, 'COMMENT');
-        $this->getPrinter()->write('version basic help' . PHP_EOL, 'NONE');
+        $this->getPrinter()->write('version basic help' . PHP_EOL, 'NONE');*/
     }
     
     /**
@@ -72,10 +74,11 @@ class VersionTask extends AbstractTask
      */
     public function run()
     {
-        $this->getPrinter()->write('version run' . PHP_EOL, 'HEADER');
+        $this->getPrinter()->writeln('version normal flow.', 'INFO');
+        /*$this->getPrinter()->write('version run' . PHP_EOL, 'HEADER');
         $this->getPrinter()->write('version run' . PHP_EOL, 'ERROR');
         $this->getPrinter()->write('version run' . PHP_EOL, 'INFO');
         $this->getPrinter()->write('version run' . PHP_EOL, 'COMMENT');
-        $this->getPrinter()->write('version run' . PHP_EOL, 'NONE');
+        $this->getPrinter()->write('version run' . PHP_EOL, 'NONE');*/
     }
 }
