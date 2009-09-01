@@ -66,6 +66,8 @@ class HelpTask extends AbstractTask
      */
     public function run()
     {
+        $this->getPrinter()->writeln('Available Tasks:', 'NONE');
+        
         // Switch between ALL available tasks and display the basic Help of each one
         $availableTasks = $this->getAvailableTasks();
         

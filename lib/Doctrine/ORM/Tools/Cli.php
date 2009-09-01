@@ -61,11 +61,6 @@ use Doctrine\Common\Util\Inflector,
 class Cli
 {
     /**
-     * @var ORM\Configuration Configuration
-     */
-    //private $_configuration = null;
-    
-    /**
      * @var AbstractPrinter CLI Printer instance
      */
     private $_printer = null;
@@ -157,7 +152,8 @@ class Cli
         
         try {
             $this->_printer->writeln(
-                'Doctrine Command Line Interface' . PHP_EOL, 'HEADER'
+                'Doctrine Command Line Interface',
+                'HEADER'
             );
         
             // Handle possible multiple tasks on a single command

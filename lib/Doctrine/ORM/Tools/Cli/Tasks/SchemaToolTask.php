@@ -50,7 +50,10 @@ class SchemaToolTask extends AbstractTask
      */
     public function basicHelp()
     {
-        $this->getPrinter()->writeln('create-schema basic help.', 'INFO');
+        $this->getPrinter()->write('schema-tool', 'KEYWORD');
+        $this->getPrinter()->writeln(
+            ' --create | --drop | --update [--dump-sql] [--classdir=<path>]',
+            'INFO');
     }
     
     /**

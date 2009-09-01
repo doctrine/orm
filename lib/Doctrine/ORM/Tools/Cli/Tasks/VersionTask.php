@@ -52,7 +52,7 @@ class VersionTask extends AbstractTask
      */
     public function basicHelp()
     {
-        $this->getPrinter()->writeln('version extended help.', 'INFO');
+        $this->getPrinter()->writeln('version', 'KEYWORD');
         /*$this->getPrinter()->write('version basic help' . PHP_EOL, 'HEADER');
         $this->getPrinter()->write('version basic help' . PHP_EOL, 'ERROR');
         $this->getPrinter()->write('version basic help' . PHP_EOL, 'INFO');

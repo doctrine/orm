@@ -43,8 +43,10 @@ class AnsiColorPrinter extends AbstractPrinter
     {
         $this->addStyles(array(
             'ERROR'   => new Style('WHITE', 'RED', array('BOLD' => true)),
+            'WARNING' => new Style('DEFAULT', 'YELLOW'),
+            'KEYWORD' => new Style('BLUE', 'DEFAULT', array('BOLD' => true)),
             'INFO'    => new Style('GREEN', 'DEFAULT', array('BOLD' => true)),
-            'COMMENT' => new Style('DEFAULT', 'YELLOW'),
+            'COMMENT' => new Style('DEFAULT', 'MAGENTA'),
             'HEADER'  => new Style('DEFAULT', 'DEFAULT', array('BOLD' => true)),
             'NONE'    => new Style(),
         ));

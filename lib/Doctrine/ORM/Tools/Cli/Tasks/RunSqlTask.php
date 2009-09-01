@@ -24,7 +24,10 @@ class RunSqlTask extends AbstractTask
      */
     public function basicHelp()
     {
-        $this->getPrinter()->writeln('run-sql basic help.', 'INFO');
+        $this->getPrinter()->write('run-sql', 'KEYWORD');
+        $this->getPrinter()->writeln(
+            ' --file=<path> | --sql=<SQL>',
+            'INFO');
     }
     
     /**
