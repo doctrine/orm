@@ -16,7 +16,18 @@ class RunSqlTask extends AbstractTask
      */
     public function extendedHelp()
     {
-        $this->getPrinter()->writeln('run-sql extended help.', 'INFO');
+        $printer = $this->getPrinter();
+        
+        $printer->write('Task: ')->writeln('run-sql', 'KEYWORD')
+                ->write('Synopsis: ');
+        $this->_writeSynopsis($printer);
+        
+        $printer->writeln('Description: Executes arbitrary SQL from a file or directly from the command line.')
+                ->writeln('Options:')
+                ->write('--sql=<SQL>', 'KEYWORD')
+                ->writeln("\tThe SQL to execute.")
+                ->write('--file=<path>', 'KEYWORD')
+                ->writeln("\tThe path to the file with the SQL to execute.");
     }
 
     /**
@@ -24,10 +35,13 @@ class RunSqlTask extends AbstractTask
      */
     public function basicHelp()
     {
-        $this->getPrinter()->write('run-sql', 'KEYWORD');
-        $this->getPrinter()->writeln(
-            ' --file=<path> | --sql=<SQL>',
-            'INFO');
+        $this->_writeSynopsis($this->getPrinter());
+    }
+    
+    private function _writeSynopsis($printer)
+    {
+        $printer->write('run-sql', 'KEYWORD')
+                ->writeln(' --file=<path> | --sql=<SQL>', 'INFO');
     }
     
     /**

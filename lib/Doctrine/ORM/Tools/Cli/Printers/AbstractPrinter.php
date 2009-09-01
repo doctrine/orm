@@ -144,11 +144,13 @@ abstract class AbstractPrinter
      * @param string $message Message to be outputted
      * @param mixed $style Optional style to be applied in message
      */
-    public function write($message, $style = 'ERROR')
+    public function write($message, $style = 'NONE')
     {
         $style = is_string($style) ? $this->getStyle($style) : $style;
     
         fwrite($this->_stream, $this->format($message, $style));
+        
+        return $this;
     }
     
     /**
@@ -157,9 +159,9 @@ abstract class AbstractPrinter
      * @param string $message Message to be outputted
      * @param mixed $style Optional style to be applied in message
      */
-    public function writeln($message, $style = 'ERROR')
+    public function writeln($message, $style = 'NONE')
     {
-        $this->write($message . PHP_EOL, $style);
+        return $this->write($message . PHP_EOL, $style);
     }
     
     /**

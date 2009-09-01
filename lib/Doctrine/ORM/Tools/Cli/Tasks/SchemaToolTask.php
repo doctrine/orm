@@ -42,7 +42,7 @@ class SchemaToolTask extends AbstractTask
      */
     public function extendedHelp()
     {
-        $this->getPrinter()->writeln('create-schema extended help.', 'INFO');
+        $this->basicHelp();
     }
 
     /**
@@ -136,7 +136,7 @@ class SchemaToolTask extends AbstractTask
         if ($isCreate) {
             if (isset($args['dump-sql'])) {
                 foreach ($tool->getCreateSchemaSql($classes) as $sql) {
-                    $printer->writeln($sql, 'NONE');
+                    $printer->writeln($sql);
                 }
             } else {
                 $printer->writeln('Creating database schema...', 'INFO');
@@ -146,7 +146,7 @@ class SchemaToolTask extends AbstractTask
         } else if ($isDrop) {
             if (isset($args['dump-sql'])) {
                 foreach ($tool->getDropSchemaSql($classes) as $sql) {
-                    $printer->writeln($sql, 'NONE');
+                    $printer->writeln($sql);
                 }
             } else {
                 $printer->writeln('Dropping database schema...', 'INFO');
