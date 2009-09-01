@@ -49,7 +49,7 @@ class ClassLoader
     /**
      * @var string Namespace separator
      */
-    private $_namespaceSeparator = '\\';
+    private $_namespaceSeparator = array('\\', '_');
     
     /**
      * @var string File extension used for classes

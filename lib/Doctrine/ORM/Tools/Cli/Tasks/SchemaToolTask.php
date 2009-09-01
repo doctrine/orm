@@ -19,8 +19,8 @@ use Doctrine\ORM\Tools\SchemaTool,
  * otherwise it has no effect.
  * 
  * <tt>--dump-sql</tt>
- * Specifies that instead of directly executing the SQL statements for creating the
- * database schema, they should be printed to the standard output.
+ * Specifies that instead of directly executing the SQL statements,
+ * they should be printed to the standard output.
  * 
  * <tt>--create</tt>
  * Specifies that the schema of the classes should be created.
