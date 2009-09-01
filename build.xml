@@ -66,6 +66,8 @@
         <mkdir dir="${dist.dir}" />
         <echo msg="Creating report directory: ${report.dir}" />
         <mkdir dir="${report.dir}" />
+        <mkdir dir="${build.dir}/logs"/>
+        <mkdir dir="${report.dir}/tests"/>
     </target>
 
     <target name="build-common">
@@ -86,7 +88,7 @@
     <!-- 
         Builds all packages, preparing them for distribution.
     -->
-    <target name="build-orm" depends="prepare, build-common, build-dbal">
+    <target name="build-orm" depends="test, build-common, build-dbal">
         <copy todir="${build.dir}/orm">
             <fileset refid="shared-artifacts"/>
             <fileset refid="common-sources"/>
@@ -97,16 +99,11 @@
     </target>
     
     <target name="build" depends="test, build-orm"/>
-
-    <target name="prepare-test">
-        <mkdir dir="${build.dir}/logs"/>
-        <mkdir dir="${report.dir}/tests"/>
-    </target>
     
     <!-- 
         Runs the full test suite.
     -->
-    <target name="test" depends="prepare-test">
+    <target name="test" depends="prepare">
         <phpunit printsummary="true" haltonfailure="true">
             <formatter todir="${build.dir}/logs" type="xml"/>
             <batchtest classpath="tests">
@@ -115,10 +112,13 @@
                 </fileset>
             </batchtest>
         </phpunit>
-        <phpunitreport infile="build/logs/testsuites.xml" format="frames" todir="reports/tests" />
+        <phpunitreport infile="${build.dir}/logs/testsuites.xml" format="frames" todir="${report.dir}/tests" />
     </target>
-
-    <target name="build-tar-packages" depends="test, build-orm">
+    
+    <!-- 
+        Builds regular distributable packages (without PEAR package.xml).
+    -->
+    <target name="build-tar-packages" depends="build-orm">
       <tar destfile="${dist.dir}/DoctrineCommon-${version_name}.tar.gz" compression="gzip">
           <fileset dir="${build.dir}/common">
               <include name="**" />
@@ -136,7 +136,10 @@
       </tar>
     </target>
 
-    <target name="build-pear-packages" depends="test, build-orm">
+    <!-- 
+        Builds distributable PEAR packages.
+    -->
+    <target name="build-pear-packages" depends="build-orm">
         <d51pearpkg2 baseinstalldir="Doctrine" dir="${build.dir}/orm">
            <name>${name}</name>
            <summary>${summary}</summary>
@@ -159,6 +162,9 @@
         <tar destfile="${dist.dir}/DoctrineDBAL-${version_name}.tgz" basedir="${build.dir}/dbal" compression="gzip" />
         <tar destfile="${dist.dir}/DoctrineORM-${version_name}.tgz" basedir="${build.dir}/orm" compression="gzip" />
     </target>
-
-    <target name="build-packages" depends="test, build-pear-packages, build-tar-packages"/>
+    
+    <!-- 
+        Builds both PEAR packages as well as normal packages (without package.xml).
+    -->
+    <target name="build-packages" depends="build-pear-packages, build-tar-packages"/>
 </project>
