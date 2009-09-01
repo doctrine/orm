@@ -49,7 +49,7 @@ class ClassLoader
     /**
      * @var string Namespace separator
      */
-    private $_namespaceSeparator = array('\\', '_');
+    private $_namespaceSeparator = '\\';
     
     /**
      * @var string File extension used for classes
@@ -131,12 +131,20 @@ class ClassLoader
         if (class_exists($className, false) || interface_exists($className, false)) {
             return false;
         }
-
-        $prefix = substr($className, 0, strpos($className, $this->_namespaceSeparator));
+        
+        $prefix = '';
+        $separator = $this->_namespaceSeparator;
+        if (($pos = strpos($className, $this->_namespaceSeparator)) !== false) {
+            $prefix = substr($className, 0, strpos($className, $this->_namespaceSeparator));
+        } else if (($pos = strpos($className, '_')) !== false) {
+            // Support for '_' namespace separator for compatibility with Zend/PEAR/...
+            $prefix = substr($className, 0, strpos($className, '_'));
+            $separator = '_';
+        }
         
         // If we have a custom path for namespace, use it
         $class = ((isset($this->_basePaths[$prefix])) ? $this->_basePaths[$prefix] . DIRECTORY_SEPARATOR : '')
-               . str_replace($this->_namespaceSeparator, DIRECTORY_SEPARATOR, $className) . $this->_fileExtension;
+               . str_replace($separator, DIRECTORY_SEPARATOR, $className) . $this->_fileExtension;
 
         // Assure file exists in codebase before require if flag is active
         if ($this->_checkFileExists) {
