@@ -7,8 +7,10 @@ $classLoader->setBasePath('Doctrine', realpath(__DIR__ . '/../../lib'));
 $classLoader->setBasePath('Entities', __DIR__);
 
 $config = new \Doctrine\ORM\Configuration;
+$cache = new \Doctrine\Common\Cache\ApcCache;
+// Use ArrayCache is APC is not available
+// Warning without APC Doctrine will not perform as well
 $cache = new \Doctrine\Common\Cache\ArrayCache;
-// $cache = new \Doctrine\Common\Cache\ApcCache; # RECOMMENDED FOR PRODUCTION
 $config->setMetadataCacheImpl($cache);
 $config->setQueryCacheImpl($cache);
 
