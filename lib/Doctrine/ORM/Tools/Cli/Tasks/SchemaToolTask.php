@@ -156,6 +156,8 @@ class SchemaToolTask extends AbstractTask
                 $printer->writeln('Database schema dropped successfully.', 'INFO');
             }
         } else if ($isUpdate) {
+            $printer->writeln("--update support is not yet fully implemented.", 'ERROR');
+            
             if (isset($args['dump-sql'])) {
                 foreach ($tool->getUpdateSchemaSql($classes) as $sql) {
                     $printer->writeln($sql);
