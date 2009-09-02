@@ -143,7 +143,7 @@ class SchemaToolTask extends AbstractTask
             } else {
                 $printer->writeln('Creating database schema...', 'INFO');
                 $tool->createSchema($classes);
-                $printer->write('Database schema created successfully.' . PHP_EOL, 'INFO');
+                $printer->writeln('Database schema created successfully.', 'INFO');
             }
         } else if ($isDrop) {
             if (isset($args['dump-sql'])) {
@@ -156,8 +156,15 @@ class SchemaToolTask extends AbstractTask
                 $printer->writeln('Database schema dropped successfully.', 'INFO');
             }
         } else if ($isUpdate) {
-            //TODO
-            $printer->writeln('--update not yet implemented.', 'COMMENT');
+            if (isset($args['dump-sql'])) {
+                foreach ($tool->getUpdateSchemaSql($classes) as $sql) {
+                    $printer->writeln($sql);
+                }
+            } else {
+                $printer->writeln('Updating database schema...', 'INFO');
+                $tool->updateSchema($classes);
+                $printer->writeln('Database schema updated successfully.', 'INFO');
+            }
         }
     }
 }

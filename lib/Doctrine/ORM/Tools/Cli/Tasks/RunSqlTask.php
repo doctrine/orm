@@ -41,7 +41,7 @@ class RunSqlTask extends AbstractTask
     private function _writeSynopsis($printer)
     {
         $printer->write('run-sql', 'KEYWORD')
-                ->writeln(' --file=<path> | --sql=<SQL>', 'INFO');
+                ->writeln(' (--file=<path> | --sql=<SQL>)', 'INFO');
     }
     
     /**
@@ -53,7 +53,8 @@ class RunSqlTask extends AbstractTask
             return false;
         }
         
-        $args= $this->getArguments();
+        $args = $this->getArguments();
+        $printer = $this->getPrinter();
         
         $isSql = isset($args['sql']);
         $isFile = isset($args['file']);
