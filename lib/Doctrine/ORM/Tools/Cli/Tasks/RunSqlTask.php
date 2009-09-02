@@ -45,6 +45,29 @@ class RunSqlTask extends AbstractTask
     }
     
     /**
+     * @inheritdoc
+     */
+    public function validate()
+    {
+        if ( ! parent::validate()) {
+            return false;
+        }
+        
+        $args= $this->getArguments();
+        
+        $isSql = isset($args['sql']);
+        $isFile = isset($args['file']);
+        
+        if ( ! ($isSql ^ $isFile)) {
+            $printer->writeln("One of --sql or --file required, and only one.", 'ERROR');
+            return false;
+        }
+        
+        return true;
+    }
+    
+    
+    /**
      * Executes the task.
      */
     public function run()
