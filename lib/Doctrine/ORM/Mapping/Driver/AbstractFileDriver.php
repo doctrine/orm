@@ -180,15 +180,15 @@ abstract class AbstractFileDriver implements Driver
      * 
      * @return array The list of class names that have been preloaded.
      */
-    public function preload()
+    public function preload($force = false)
     {
-        if ($this->_mode != self::PRELOAD) {
+        if ($this->_mode != self::PRELOAD && ! $force) {
             return array();
         }
 
         foreach ((array)$this->_paths as $path) {
             if (is_dir($path)) {
-                $files = glob($path . '/*' . $this->_fileExtension);
+                $files = glob($path . '/*');
                 foreach ($files as $file) {
                     $this->_elements = array_merge($this->_elements, $this->_loadMappingFile($file));
                 }

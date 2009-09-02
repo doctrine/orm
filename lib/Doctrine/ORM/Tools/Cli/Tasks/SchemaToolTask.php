@@ -52,7 +52,7 @@ class SchemaToolTask extends AbstractTask
     {
         $this->getPrinter()->write('schema-tool', 'KEYWORD');
         $this->getPrinter()->writeln(
-            ' --create | --drop | --update [--dump-sql] [--classdir=<path>]',
+            ' (--create | --drop | --update) [--dump-sql] [--classdir=<path>]',
             'INFO');
     }
     
@@ -126,8 +126,10 @@ class SchemaToolTask extends AbstractTask
                 }
             }
         } else {
-            $driver->preload();
-            $classes = $cmf->getLoadedMetadata();
+            $preloadedClasses = $driver->preload(true);
+            foreach ($preloadedClasses as $className) {
+                $classes[] = $cmf->getMetadataFor($className);
+            }
         }
         
         $printer = $this->getPrinter();
