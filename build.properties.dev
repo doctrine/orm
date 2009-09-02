@@ -1,6 +1,3 @@
-name=Doctrine
-summary=PHP5 ORM
-description=Doctrine 2 is an ORM (object relational mapper) for transparent PHP object persistence.
 version_name=2.0.0-ALPHA1
 version=2.0.0
 stability=alpha
