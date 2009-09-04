@@ -24,10 +24,13 @@ class RunSqlTask extends AbstractTask
         
         $printer->writeln('Description: Executes arbitrary SQL from a file or directly from the command line.')
                 ->writeln('Options:')
-                ->write('--sql=<SQL>', 'KEYWORD')
+                ->write('--sql=<SQL>', 'REQ_ARG')
                 ->writeln("\tThe SQL to execute.")
-                ->write('--file=<path>', 'KEYWORD')
-                ->writeln("\tThe path to the file with the SQL to execute.");
+                ->writeln("\t\tIf defined, --file can not be requested on same task")
+                ->write(PHP_EOL)
+                ->write('--file=<path>', 'REQ_ARG')
+                ->writeln("\tThe path to the file with the SQL to execute.")
+                ->writeln("\t\tIf defined, --sql can not be requested on same task");
     }
 
     /**
@@ -41,7 +44,7 @@ class RunSqlTask extends AbstractTask
     private function _writeSynopsis($printer)
     {
         $printer->write('run-sql', 'KEYWORD')
-                ->writeln(' (--file=<path> | --sql=<SQL>)', 'INFO');
+                ->writeln(' (--file=<path> | --sql=<SQL>)', 'REQ_ARG');
     }
     
     /**

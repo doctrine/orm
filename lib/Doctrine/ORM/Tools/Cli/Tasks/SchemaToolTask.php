@@ -42,7 +42,31 @@ class SchemaToolTask extends AbstractTask
      */
     public function extendedHelp()
     {
-        $this->basicHelp();
+        $printer = $this->getPrinter();
+        
+        $printer->write('Task: ')->writeln('schema-tool', 'KEYWORD')
+                ->write('Synopsis: ');
+        $this->_writeSynopsis($printer);
+        
+        $printer->writeln('Description: Processes the schema and either apply it directly on EntityManager or generate the SQL output.')
+                ->writeln('Options:')
+                ->write('--create', 'REQ_ARG')
+                ->writeln("\t\tCreates the schema in EntityManager (create tables on Database)")
+                ->writeln("\t\t\tIf defined, --drop and --update can not be requested on same task")
+                ->write(PHP_EOL)
+                ->write('--drop', 'REQ_ARG')
+                ->writeln("\t\t\tDrops the schema of EntityManager (drop tables on Database)")
+                ->writeln("\t\t\tIf defined, --create and --update can not be requested on same task")
+                ->write(PHP_EOL)
+                ->write('--update', 'REQ_ARG')
+                ->writeln("\t\tUpdates the schema in EntityManager (update tables on Database)")
+                ->writeln("\t\t\tIf defined, --create and --drop can not be requested on same task")
+                ->write(PHP_EOL)
+                ->write('--dump-sql', 'OPT_ARG')
+                ->writeln("\t\tInstead of try to apply generated SQLs into EntityManager, output them.")
+                ->write(PHP_EOL)
+                ->write('--classdir=<path>', 'OPT_ARG')
+                ->writeln("\tOptional class directory to fetch for Entities.");
     }
 
     /**
@@ -50,10 +74,14 @@ class SchemaToolTask extends AbstractTask
      */
     public function basicHelp()
     {
-        $this->getPrinter()->write('schema-tool', 'KEYWORD');
-        $this->getPrinter()->writeln(
-            ' (--create | --drop | --update) [--dump-sql] [--classdir=<path>]',
-            'INFO');
+        $this->_writeSynopsis($this->getPrinter());
+    }
+    
+    private function _writeSynopsis($printer)
+    {
+        $printer->write('schema-tool', 'KEYWORD')
+                ->write(' (--create | --drop | --update)', 'REQ_ARG')
+                ->writeln(' [--dump-sql] [--classdir=<path>]', 'OPT_ARG');
     }
     
     /**
