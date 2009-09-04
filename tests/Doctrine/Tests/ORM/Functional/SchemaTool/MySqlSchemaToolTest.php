@@ -37,6 +37,19 @@ class MySqlSchemaToolTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertEquals("ALTER TABLE cms_phonenumbers ADD FOREIGN KEY (user_id) REFERENCES cms_users(id)", $sql[7]);
     }
     
+    public function testGetCreateSchemaSql2()
+    {
+        $classes = array(
+            $this->_em->getClassMetadata('Doctrine\Tests\Models\Generic\DecimalModel')
+        );
+
+        $tool = new SchemaTool($this->_em);
+        $sql = $tool->getCreateSchemaSql($classes);
+        
+        $this->assertEquals(1, count($sql));
+        $this->assertEquals("CREATE TABLE date_time_model (id INT AUTO_INCREMENT NOT NULL, decimal NUMERIC(2, 5) NOT NULL, PRIMARY KEY(id)) ENGINE = InnoDB", $sql[0]);
+    }
+    
     public function testGetUpdateSchemaSql()
     {
         $classes = array(

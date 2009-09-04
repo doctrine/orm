@@ -236,6 +236,12 @@ class SchemaTool
         $column['type'] = Type::getType($mapping['type']);
         $column['length'] = isset($mapping['length']) ? $mapping['length'] : null;
         $column['notnull'] = isset($mapping['nullable']) ? ! $mapping['nullable'] : false;
+        if (isset($mapping['precision'])) {
+            $column['precision'] = $mapping['precision'];
+        }
+        if (isset($mapping['scale'])) {
+            $column['scale'] = $mapping['scale'];
+        }
         if (isset($mapping['default'])) {
             $column['default'] = $mapping['default'];
         }
