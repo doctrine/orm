@@ -33,8 +33,13 @@ if ( ! class_exists('sfYaml', false)) {
 /**
  * The YamlDriver reads the mapping metadata from yaml schema files.
  *
- * @author Jonathan H. Wage <jonwage@gmail.com>
- * @since 2.0
+ * @license http://www.opensource.org/licenses/lgpl-license.php LGPL
+ * @link    www.doctrine-project.org
+ * @since   2.0
+ * @version $Revision$
+ * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
+ * @author  Jonathan Wage <jonwage@gmail.com>
+ * @author  Roman Borschel <roman@code-factory.org>
  */
 class YamlDriver extends AbstractFileDriver
 {

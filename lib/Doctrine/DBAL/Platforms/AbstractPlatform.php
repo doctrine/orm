@@ -752,18 +752,35 @@ abstract class AbstractPlatform
 
         return $name . ' ' . $typeDecl . $charset . $default . $notnull . $unique . $check . $collation;
     }
+    
+    /**
+     * Gets the SQL snippet that declares a floating point column of arbitrary precision.
+     *
+     * @param array $columnDef
+     * @return string
+     */
+    public function getDecimalTypeDeclarationSql(array $columnDef) 
+    {
+        $columnDef['precision'] = ( ! isset($columnDef['precision']) || empty($columnDef['precision']))
+            ? 10 : $columnDef['precision'];
+        $columnDef['scale'] = ( ! isset($columnDef['scale']) || empty($columnDef['scale']))
+            ? 0 : $columnDef['scale'];
+        
+        return 'NUMERIC(' . $columnDef['precision'] . ', ' . $columnDef['scale'] . ')';
+    }
 
     /**
      * Gets the SQL snippet that declares a 4 byte integer column.
      *
-     * @param <type> $name
-     * @param <type> $field
+     * @param array $columnDef
+     * @return string
      */
     abstract public function getIntegerTypeDeclarationSql(array $columnDef);
 
     /**
      * Gets the SQL snippet that declares an 8 byte integer column.
      *
+     * @param array $columnDef
      * @return string
      */
     abstract public function getBigIntTypeDeclarationSql(array $columnDef);
@@ -771,6 +788,7 @@ abstract class AbstractPlatform
     /**
      * Gets the SQL snippet that declares a 2 byte integer column.
      *
+     * @param array $columnDef
      * @return string
      */
     abstract public function getSmallIntTypeDeclarationSql(array $columnDef);
@@ -778,6 +796,7 @@ abstract class AbstractPlatform
     /**
      * Gets the SQL snippet that declares common properties of an integer column.
      *
+     * @param array $columnDef
      * @return string
      */
     abstract protected function _getCommonIntegerTypeDeclarationSql(array $columnDef);

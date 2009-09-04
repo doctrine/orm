@@ -39,12 +39,15 @@ class VersionTask extends AbstractTask
      */
     public function extendedHelp()
     {
-        $this->getPrinter()->writeln('version extended help.', 'INFO');
-        /*$this->getPrinter()->write('version extended help' . PHP_EOL, 'HEADER');
-        $this->getPrinter()->write('version extended help' . PHP_EOL, 'ERROR');
-        $this->getPrinter()->write('version extended help' . PHP_EOL, 'INFO');
-        $this->getPrinter()->write('version extended help' . PHP_EOL, 'COMMENT');
-        $this->getPrinter()->write('version extended help' . PHP_EOL, 'NONE');*/
+        $printer = $this->getPrinter();
+        
+        $printer->write('Task: ')->writeln('version', 'KEYWORD')
+                ->write('Synopsis: ');
+        $this->_writeSynopsis($printer);
+        
+        $printer->writeln('Description: Displays the current installed Doctrine version.')
+                ->writeln('Options:')
+                ->writeln('No available options', 'INFO');
     }
 
     /**
@@ -52,12 +55,12 @@ class VersionTask extends AbstractTask
      */
     public function basicHelp()
     {
-        $this->getPrinter()->writeln('version', 'KEYWORD');
-        /*$this->getPrinter()->write('version basic help' . PHP_EOL, 'HEADER');
-        $this->getPrinter()->write('version basic help' . PHP_EOL, 'ERROR');
-        $this->getPrinter()->write('version basic help' . PHP_EOL, 'INFO');
-        $this->getPrinter()->write('version basic help' . PHP_EOL, 'COMMENT');
-        $this->getPrinter()->write('version basic help' . PHP_EOL, 'NONE');*/
+        $this->_writeSynopsis($this->getPrinter());
+    }
+    
+    private function _writeSynopsis($printer)
+    {
+        $printer->writeln('version', 'KEYWORD');
     }
     
     /**
@@ -74,11 +77,6 @@ class VersionTask extends AbstractTask
      */
     public function run()
     {
-        $this->getPrinter()->writeln('version normal flow.', 'INFO');
-        /*$this->getPrinter()->write('version run' . PHP_EOL, 'HEADER');
-        $this->getPrinter()->write('version run' . PHP_EOL, 'ERROR');
-        $this->getPrinter()->write('version run' . PHP_EOL, 'INFO');
-        $this->getPrinter()->write('version run' . PHP_EOL, 'COMMENT');
-        $this->getPrinter()->write('version run' . PHP_EOL, 'NONE');*/
+        $this->getPrinter()->writeln('You are currently running Doctrine 2.0.0 Alpha 1', 'INFO');
     }
 }
