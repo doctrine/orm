@@ -59,9 +59,11 @@ class XmlDriver extends AbstractFileDriver
         if (isset($xmlRoot['table'])) {
             $metadata->primaryTable['name'] = (string)$xmlRoot['table'];
         }
+        
         if (isset($xmlRoot['schema'])) {
             $metadata->primaryTable['schema'] = (string)$xmlRoot['schema'];
         }
+        
         if (isset($xmlRoot['inheritance-type'])) {
             $metadata->setInheritanceType((string)$xmlRoot['inheritance-type']);
         }
@@ -89,8 +91,9 @@ class XmlDriver extends AbstractFileDriver
         // Evaluate <indexes...>
         if (isset($xmlRoot->indexes)) {
             foreach ($xmlRoot->indexes->index as $index) {
-                $metadata->primaryTable['indexes'][$index['name']] = array('fields' =>
-                        explode(',', $index['columns']));
+                $metadata->primaryTable['indexes'][$index['name']] = array(
+                    'fields' => explode(',', $index['columns'])
+                );
             }
         }
         
@@ -108,21 +111,27 @@ class XmlDriver extends AbstractFileDriver
                     'fieldName' => (string)$fieldMapping['name'],
                     'type' => (string)$fieldMapping['type']
                 );
+                
                 if (isset($fieldMapping['column'])) {
                     $mapping['columnName'] = (string)$fieldMapping['column'];
                 }
+                
                 if (isset($fieldMapping['length'])) {
                     $mapping['length'] = (int)$fieldMapping['length'];
                 }
+                
                 if (isset($fieldMapping['precision'])) {
                     $mapping['precision'] = (int)$fieldMapping['precision'];
                 }
+                
                 if (isset($fieldMapping['scale'])) {
                     $mapping['scale'] = (int)$fieldMapping['scale'];
                 }
+                
                 if (isset($fieldMapping['version']) && $fieldMapping['version']) {
                     $metadata->setVersionMapping($mapping);
                 }
+                
                 $metadata->mapField($mapping);
             }
         }
@@ -134,9 +143,11 @@ class XmlDriver extends AbstractFileDriver
                 'fieldName' => (string)$idElement['name'],
                 'type' => (string)$idElement['type']
             );
+            
             if (isset($idElement['column'])) {
                 $mapping['columnName'] = (string)$idElement['column'];
             }
+            
             $metadata->mapField($mapping);
 
             if (isset($idElement->generator)) {
@@ -164,10 +175,12 @@ class XmlDriver extends AbstractFileDriver
                     'fieldName' => (string)$oneToOneElement['field'],
                     'targetEntity' => (string)$oneToOneElement['target-entity'],
                 );
+                
                 if (isset($oneToOneElement['mapped-by'])) {
                     $mapping['mappedBy'] = (string)$oneToOneElement['mapped-by'];
                 } else {
                     $joinColumns = array();
+                    
                     if (isset($oneToOneElement->{'join-column'})) {
                         $joinColumns[] = $this->_getJoinColumnMapping($oneToOneElement->{'join-column'});
                     } else if (isset($oneToOneElement->{'join-columns'})) {
@@ -177,14 +190,18 @@ class XmlDriver extends AbstractFileDriver
                     } else {
                         throw MappingException::invalidMapping($mapping['fieldName']);
                     }
+                    
                     $mapping['joinColumns'] = $joinColumns;
                 }
+                
                 if (isset($oneToOneElement->cascade)) {
                     $mapping['cascade'] = $this->_getCascadeMappings($oneToOneElement->cascade);
                 }
+                
                 if (isset($oneToOneElement->{'orphan-removal'})) {
                     $mapping['orphanRemoval'] = (bool)$oneToOneElement->{'orphan-removal'};
                 }
+                
                 $metadata->mapOneToOne($mapping);
             }
         }
@@ -197,12 +214,15 @@ class XmlDriver extends AbstractFileDriver
                     'targetEntity' => (string)$oneToManyElement['target-entity'],
                     'mappedBy' => (string)$oneToManyElement['mapped-by']
                 );
+                
                 if (isset($oneToManyElement->cascade)) {
                     $mapping['cascade'] = $this->_getCascadeMappings($oneToManyElement->cascade);
                 }
+                
                 if (isset($oneToManyElement->{'orphan-removal'})) {
                     $mapping['orphanRemoval'] = (bool)$oneToManyElement->{'orphan-removal'};
                 }
+                
                 $metadata->mapOneToMany($mapping);
             }
         }
@@ -214,7 +234,9 @@ class XmlDriver extends AbstractFileDriver
                     'fieldName' => (string)$manyToOneElement['field'],
                     'targetEntity' => (string)$manyToOneElement['target-entity']
                 );
+                
                 $joinColumns = array();
+                
                 if (isset($manyToOneElement->{'join-column'})) {
                     $joinColumns[] = $this->_getJoinColumnMapping($manyToOneElement->{'join-column'});
                 } else if (isset($manyToOneElement->{'join-columns'})) {
@@ -222,18 +244,23 @@ class XmlDriver extends AbstractFileDriver
                         if (!isset($joinColumnElement['name'])) {
                             $joinColumnElement['name'] = $name;
                         }
+                        
                         $joinColumns[] = $this->_getJoinColumnMapping($joinColumnElement);
                     }
                 } else {
                     throw MappingException::invalidMapping($mapping['fieldName']);
                 }
+                
                 $mapping['joinColumns'] = $joinColumns;
+                
                 if (isset($manyToOneElement->cascade)) {
                     $mapping['cascade'] = $this->_getCascadeMappings($manyToOneElement->cascade);
                 }
+                
                 if (isset($manyToOneElement->{'orphan-removal'})) {
                     $mapping['orphanRemoval'] = (bool)$manyToOneElement->{'orphan-removal'};
                 }
+                
                 $metadata->mapManyToOne($mapping);
             }
         }
@@ -245,6 +272,7 @@ class XmlDriver extends AbstractFileDriver
                     'fieldName' => (string)$manyToManyElement['field'],
                     'targetEntity' => (string)$manyToManyElement['target-entity']
                 );
+                
                 if (isset($manyToManyElement['mappedBy'])) {
                     $mapping['mappedBy'] = (string)$manyToManyElement['mapped-by'];
                 } else if (isset($manyToManyElement->{'join-table'})) {
@@ -252,25 +280,32 @@ class XmlDriver extends AbstractFileDriver
                     $joinTable = array(
                         'name' => (string)$joinTableElement['name']
                     );
+                    
                     if (isset($joinTableElement['schema'])) {
                         $joinTable['schema'] = (string)$joinTableElement['schema'];
                     }
+                    
                     foreach ($joinTableElement->{'join-columns'}->{'join-column'} as $joinColumnElement) {
                         $joinTable['joinColumns'][] = $this->_getJoinColumnMapping($joinColumnElement);
                     }
+                    
                     foreach ($joinTableElement->{'inverse-join-columns'}->{'join-column'} as $joinColumnElement) {
                         $joinTable['inverseJoinColumns'][] = $this->_getJoinColumnMapping($joinColumnElement);
                     }
+                    
                     $mapping['joinTable'] = $joinTable;
                 } else {
                     throw MappingException::invalidMapping($mapping['fieldName']);
                 }
+                
                 if (isset($manyToManyElement->cascade)) {
                     $mapping['cascade'] = $this->_getCascadeMappings($manyToManyElement->cascade);
                 }
+                
                 if (isset($manyToManyElement->{'orphan-removal'})) {
                     $mapping['orphanRemoval'] = (bool)$manyToManyElement->{'orphan-removal'};
                 }
+                
                 $metadata->mapManyToMany($mapping);
             }
         }
@@ -279,6 +314,7 @@ class XmlDriver extends AbstractFileDriver
         if (isset($xmlRoot->{'lifecycle-callbacks'})) {
             foreach ($xmlRoot->{'lifecycle-callbacks'}->{'lifecycle-callback'} as $lifecycleCallback) {
                 $method = $class->getMethod((string)$lifecycleCallback['method']);
+                
                 if ($method->isPublic()) {
                     $metadata->addLifecycleCallback($method->getName(), constant('\Doctrine\ORM\Events::' . (string)$lifecycleCallback['type']));
                 }
@@ -326,15 +362,19 @@ class XmlDriver extends AbstractFileDriver
             'name' => (string)$joinColumnElement['name'],
             'referencedColumnName' => (string)$joinColumnElement['referenced-column-name']
         );
+        
         if (isset($joinColumnElement['unique'])) {
             $joinColumn['unique'] = (bool)$joinColumnElement['unique'];
         }
+        
         if (isset($joinColumnElement['nullable'])) {
             $joinColumn['nullable'] = (bool)$joinColumnElement['nullable'];
         }
+        
         if (isset($joinColumnElement['onDelete'])) {
             $joinColumn['onDelete'] = (string)$joinColumnElement['on-delete'];
         }
+        
         if (isset($joinColumnElement['onUpdate'])) {
             $joinColumn['onUpdate'] = (string)$joinColumnElement['on-update'];
         }
@@ -351,15 +391,19 @@ class XmlDriver extends AbstractFileDriver
     private function _getCascadeMappings($cascadeElement)
     {
         $cascades = array();
+        
         if (isset($cascadeElement->{'cascade-persist'})) {
             $cascades[] = 'persist';
         }
+        
         if (isset($cascadeElement->{'cascade-remove'})) {
             $cascades[] = 'remove';
         }
+        
         if (isset($cascadeElement->{'cascade-merge'})) {
             $cascades[] = 'merge';
         }
+        
         if (isset($cascadeElement->{'cascade-refresh'})) {
             $cascades[] = 'refresh';
         }

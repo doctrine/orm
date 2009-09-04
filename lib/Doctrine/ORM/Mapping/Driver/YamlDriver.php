@@ -60,9 +60,11 @@ class YamlDriver extends AbstractFileDriver
         if (isset($element['table'])) {
             $metadata->primaryTable['name'] = $element['table'];
         }
+        
         if (isset($element['schema'])) {
             $metadata->primaryTable['schema'] = $element['schema'];
         }
+        
         if (isset($element['inheritanceType'])) {
             $metadata->setInheritanceType($element['inheritanceType']);
         }
@@ -90,8 +92,9 @@ class YamlDriver extends AbstractFileDriver
         // Evaluate indexes
         if (isset($element['indexes'])) {
             foreach ($element['indexes'] as $index) {
-                $metadata->primaryTable['indexes'][$index['name']] = array('fields' =>
-                        explode(',', $index['columns']));
+                $metadata->primaryTable['indexes'][$index['name']] = array(
+                    'fields' => explode(',', $index['columns'])
+                );
             }
         }
 
@@ -109,21 +112,31 @@ class YamlDriver extends AbstractFileDriver
                     'fieldName' => $name,
                     'type' => $fieldMapping['type']
                 );
+                
                 if (isset($fieldMapping['column'])) {
                     $mapping['columnName'] = $fieldMapping['column'];
                 }
+                
                 if (isset($fieldMapping['length'])) {
                     $mapping['length'] = $fieldMapping['length'];
                 }
+                
                 if (isset($fieldMapping['precision'])) {
                     $mapping['precision'] = $fieldMapping['precision'];
                 }
+                
                 if (isset($fieldMapping['scale'])) {
                     $mapping['scale'] = $fieldMapping['scale'];
                 }
+                
+                if (isset($fieldMapping['options'])) {
+                    $mapping['options'] = $fieldMapping['options'];
+                }
+                
                 if (isset($fieldMapping['version']) && $fieldMapping['version']) {
                     $metadata->setVersionMapping($mapping);
                 }
+                
                 $metadata->mapField($mapping);
             }
         }
@@ -135,9 +148,11 @@ class YamlDriver extends AbstractFileDriver
                 'fieldName' => $name,
                 'type' => $idElement['type']
             );
+            
             if (isset($idElement['column'])) {
                 $mapping['columnName'] = $idElement['column'];
             }
+            
             $metadata->mapField($mapping);
 
             if (isset($idElement['generator'])) {
@@ -153,10 +168,12 @@ class YamlDriver extends AbstractFileDriver
                     'fieldName' => $name,
                     'targetEntity' => $oneToOneElement['targetEntity']
                 );
+                
                 if (isset($oneToOneElement['mappedBy'])) {
                     $mapping['mappedBy'] = $oneToOneElement['mappedBy'];
                 } else {
                     $joinColumns = array();
+                    
                     if (isset($oneToOneElement['joinColumn'])) {
                         $joinColumns[] = $this->_getJoinColumnMapping($oneToOneElement['joinColumn']);
                     } else if (isset($oneToOneElement['joinColumns'])) {
@@ -164,11 +181,13 @@ class YamlDriver extends AbstractFileDriver
                             if (!isset($joinColumnElement['name'])) {
                                 $joinColumnElement['name'] = $name;
                             }
+                            
                             $joinColumns[] = $this->_getJoinColumnMapping($joinColumnElement);
                         }
                     } else {
                         throw MappingException::invalidMapping($mapping['fieldName']);
                     }
+                    
                     $mapping['joinColumns'] = $joinColumns;
                 }
 
@@ -188,9 +207,11 @@ class YamlDriver extends AbstractFileDriver
                     'targetEntity' => $oneToManyElement['targetEntity'],
                     'mappedBy' => $oneToManyElement['mappedBy']
                 );
+                
                 if (isset($oneToManyElement['cascade'])) {
                     $mapping['cascade'] = $this->_getCascadeMappings($oneToManyElement['cascade']);
                 }
+                
                 $metadata->mapOneToMany($mapping);
             }
         }
@@ -202,7 +223,9 @@ class YamlDriver extends AbstractFileDriver
                     'fieldName' => $name, 
                     'targetEntity' => $manyToOneElement['targetEntity']
                 );
+                
                 $joinColumns = array();
+                
                 if (isset($manyToOneElement['joinColumn'])) {
                     $joinColumns[] = $this->_getJoinColumnMapping($manyToOneElement['joinColumn']);
                 } else if (isset($manyToOneElement['joinColumns'])) {
@@ -210,15 +233,19 @@ class YamlDriver extends AbstractFileDriver
                         if (!isset($joinColumnElement['name'])) {
                             $joinColumnElement['name'] = $name;
                         }
+                        
                         $joinColumns[] = $this->_getJoinColumnMapping($joinColumnElement);
                     }
                 } else {
                     throw MappingException::invalidMapping($mapping['fieldName']);
                 }
+                
                 $mapping['joinColumns'] = $joinColumns;
+                
                 if (isset($manyToOneElement['cascade'])) {
                     $mapping['cascade'] = $this->_getCascadeMappings($manyToOneElement['cascade']);
                 }
+                
                 $metadata->mapManyToOne($mapping);
             }
         }
@@ -238,21 +265,27 @@ class YamlDriver extends AbstractFileDriver
                     $joinTable = array(
                         'name' => $joinTableElement['name']
                     );
+                    
                     if (isset($joinTableElement['schema'])) {
                         $joinTable['schema'] = $joinTableElement['schema'];
                     }
+                    
                     foreach ($joinTableElement['joinColumns'] as $name => $joinColumnElement) {
                         if (!isset($joinColumnElement['name'])) {
                             $joinColumnElement['name'] = $name;
                         }
+                        
                         $joinTable['joinColumns'][] = $this->_getJoinColumnMapping($joinColumnElement);
                     }
+                    
                     foreach ($joinTableElement['inverseJoinColumns'] as $name => $joinColumnElement) {
                         if (!isset($joinColumnElement['name'])) {
                             $joinColumnElement['name'] = $name;
                         }
+                        
                         $joinTable['inverseJoinColumns'][] = $this->_getJoinColumnMapping($joinColumnElement);
                     }
+                    
                     $mapping['joinTable'] = $joinTable;
                 } else {
                     throw MappingException::invalidMapping($mapping['fieldName']);
@@ -270,6 +303,7 @@ class YamlDriver extends AbstractFileDriver
         if (isset($element['lifecycleCallbacks'])) {
             foreach ($element['lifecycleCallbacks'] as $method => $type) {
                 $method = $class->getMethod($method);
+                
                 if ($method->isPublic()) {
                     $metadata->addLifecycleCallback($method->getName(), constant('\Doctrine\ORM\Events::' . $type));
                 }
@@ -290,15 +324,19 @@ class YamlDriver extends AbstractFileDriver
             'name' => $joinColumnElement['name'],
             'referencedColumnName' => $joinColumnElement['referencedColumnName']
         );
+        
         if (isset($joinColumnElement['unique'])) {
             $joinColumn['unique'] = (bool) $joinColumnElement['unique'];
         }
+        
         if (isset($joinColumnElement['nullable'])) {
             $joinColumn['nullable'] = (bool) $joinColumnElement['nullable'];
         }
+        
         if (isset($joinColumnElement['onDelete'])) {
             $joinColumn['onDelete'] = $joinColumnElement['onDelete'];
         }
+        
         if (isset($joinColumnElement['onUpdate'])) {
             $joinColumn['onUpdate'] = $joinColumnElement['onUpdate'];
         }
@@ -315,15 +353,19 @@ class YamlDriver extends AbstractFileDriver
     private function _getCascadeMappings($cascadeElement)
     {
         $cascades = array();
+        
         if (isset($cascadeElement['cascadePersist'])) {
             $cascades[] = 'persist';
         }
+        
         if (isset($cascadeElement['cascadeRemove'])) {
             $cascades[] = 'remove';
         }
+        
         if (isset($cascadeElement['cascadeMerge'])) {
             $cascades[] = 'merge';
         }
+        
         if (isset($cascadeElement['cascadeRefresh'])) {
             $cascades[] = 'refresh';
         }
