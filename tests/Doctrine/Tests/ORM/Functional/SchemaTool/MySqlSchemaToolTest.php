@@ -60,7 +60,7 @@ class MySqlSchemaToolTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $sql = $tool->getCreateSchemaSql($classes);
         
         $this->assertEquals(1, count($sql));
-        $this->assertEquals("CREATE TABLE boolean_model (id INT AUTO_INCREMENT NOT NULL, boolean DEFAULT 1 NOT NULL, PRIMARY KEY(id)) ENGINE = InnoDB", $sql[0]);
+        $this->assertEquals("CREATE TABLE boolean_model (id INT AUTO_INCREMENT NOT NULL, booleanField TINYINT(1) NOT NULL, PRIMARY KEY(id)) ENGINE = InnoDB", $sql[0]);
     }
     
     public function testGetUpdateSchemaSql()

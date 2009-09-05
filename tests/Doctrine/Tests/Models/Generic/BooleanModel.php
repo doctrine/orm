@@ -6,7 +6,7 @@ namespace Doctrine\Tests\Models\Generic;
  * @Entity
  * @Table(name="boolean_model")
  */
-class DecimalModel
+class BooleanModel
 {
     /**
      * @Id @Column(type="integer")
@@ -14,7 +14,7 @@ class DecimalModel
      */
     public $id;
     /**
-     * @Column(type="boolean", default=true)
+     * @Column(type="boolean")
      */
-    public $boolean;
+    public $booleanField;
 }
