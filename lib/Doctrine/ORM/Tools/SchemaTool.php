@@ -62,6 +62,7 @@ class SchemaTool
     {
         $createSchemaSql = $this->getCreateSchemaSql($classes);
         $conn = $this->_em->getConnection();
+        
         foreach ($createSchemaSql as $sql) {
             $conn->execute($sql);
         }
@@ -102,6 +103,7 @@ class SchemaTool
                     // Parent class information is already contained in this class
                     $processedClasses[$parentClassName] = true;
                 }
+                
                 foreach ($class->subClasses as $subClassName) {
                     $subClass = $this->_em->getClassMetadata($subClassName);
                     $columns = array_merge($columns, $this->_gatherColumns($subClass, $options));
@@ -127,8 +129,11 @@ class SchemaTool
                     // Add an ID FK column to child tables
                     $idMapping = $class->fieldMappings[$class->identifier[0]];
                     $idColumn = $this->_gatherColumn($class, $idMapping, $options);
+                    
                     unset($idColumn['autoincrement']);
+                    
                     $columns[$idColumn['name']] = $idColumn;
+                    
                     // Add a FK constraint on the ID column
                     $constraint = array();
                     $constraint['tableName'] = $class->getQuotedTableName($this->_platform);
@@ -148,12 +153,14 @@ class SchemaTool
             if (isset($class->primaryTable['indexes'])) {
                 $options['indexes'] = $class->primaryTable['indexes'];
             }
+            
             if (isset($class->primaryTable['uniqueConstraints'])) {
                 $options['uniqueConstraints'] = $class->primaryTable['uniqueConstraints'];
             }
 
             $sql = array_merge($sql, $this->_platform->getCreateTableSql(
-                    $class->getQuotedTableName($this->_platform), $columns, $options));
+                $class->getQuotedTableName($this->_platform), $columns, $options)
+            );
             $processedClasses[$class->name] = true;
 
             // TODO if we're reusing the sequence previously defined (in another model),
@@ -192,6 +199,7 @@ class SchemaTool
     private function _getDiscriminatorColumnDefinition($class)
     {
         $discrColumn = $class->discriminatorColumn;
+        
         return array(
             'name' => $class->getQuotedDiscriminatorColumnName($this->_platform),
             'type' => Type::getType($discrColumn['type']),
@@ -212,6 +220,7 @@ class SchemaTool
     private function _gatherColumns($class, array &$options)
     {
         $columns = array();
+        
         foreach ($class->fieldMappings as $fieldName => $mapping) {
             $column = $this->_gatherColumn($class, $mapping, $options);
             $columns[$column['name']] = $column;
@@ -236,18 +245,23 @@ class SchemaTool
         $column['type'] = Type::getType($mapping['type']);
         $column['length'] = isset($mapping['length']) ? $mapping['length'] : null;
         $column['notnull'] = isset($mapping['nullable']) ? ! $mapping['nullable'] : false;
+        
         if (isset($mapping['precision'])) {
             $column['precision'] = $mapping['precision'];
         }
+        
         if (isset($mapping['scale'])) {
             $column['scale'] = $mapping['scale'];
         }
+        
         if (isset($mapping['default'])) {
             $column['default'] = $mapping['default'];
         }
+        
         if ($class->isIdentifier($mapping['fieldName'])) {
             $column['primary'] = true;
             $options['primary'][] = $mapping['columnName'];
+
             if ($class->isIdGeneratorIdentity()) {
                 $column['autoincrement'] = true;
             }
@@ -276,12 +290,14 @@ class SchemaTool
             }
 
             $foreignClass = $this->_em->getClassMetadata($mapping->targetEntityName);
+            
             if ($mapping->isOneToOne() && $mapping->isOwningSide) {
                 $constraint = array();
                 $constraint['tableName'] = $class->getQuotedTableName($this->_platform);
                 $constraint['foreignTable'] = $foreignClass->getQuotedTableName($this->_platform);
                 $constraint['local'] = array();
                 $constraint['foreign'] = array();
+                
                 foreach ($mapping->getJoinColumns() as $joinColumn) {
                     $column = array();
                     $column['name'] = $mapping->getQuotedJoinColumnName($joinColumn['name'], $this->_platform);
@@ -289,13 +305,16 @@ class SchemaTool
                     $columns[$column['name']] = $column;
                     $constraint['local'][] = $column['name'];
                     $constraint['foreign'][] = $joinColumn['referencedColumnName'];
+                    
                     if (isset($joinColumn['onUpdate'])) {
                         $constraint['onUpdate'] = $joinColumn['onUpdate'];
                     }
+                    
                     if (isset($joinColumn['onDelete'])) {
                         $constraint['onDelete'] = $joinColumn['onDelete'];
                     }
                 }
+                
                 $constraints[] = $constraint;
             } else if ($mapping->isOneToMany() && $mapping->isOwningSide) {
                 //... create join table, one-many through join table supported later
@@ -313,6 +332,7 @@ class SchemaTool
                     'local' => array(),
                     'foreign' => array()
                 );
+                
                 foreach ($joinTable['joinColumns'] as $joinColumn) {
                     $column = array();
                     $column['primary'] = true;
@@ -322,13 +342,16 @@ class SchemaTool
                     $joinTableColumns[$column['name']] = $column;
                     $constraint1['local'][] = $column['name'];
                     $constraint1['foreign'][] = $joinColumn['referencedColumnName'];
+                    
                     if (isset($joinColumn['onUpdate'])) {
                         $constraint1['onUpdate'] = $joinColumn['onUpdate'];
                     }
+                    
                     if (isset($joinColumn['onDelete'])) {
                         $constraint1['onDelete'] = $joinColumn['onDelete'];
                     }
                 }
+                
                 $constraints[] = $constraint1;
                 
                 // Build second FK constraint (relation table => target table)
@@ -337,6 +360,7 @@ class SchemaTool
                 $constraint2['foreignTable'] = $foreignClass->getQuotedTableName($this->_platform);
                 $constraint2['local'] = array();
                 $constraint2['foreign'] = array();
+                
                 foreach ($joinTable['inverseJoinColumns'] as $inverseJoinColumn) {
                     $column = array();
                     $column['primary'] = true;
@@ -347,19 +371,22 @@ class SchemaTool
                     $joinTableColumns[$inverseJoinColumn['name']] = $column;
                     $constraint2['local'][] = $inverseJoinColumn['name'];
                     $constraint2['foreign'][] = $inverseJoinColumn['referencedColumnName'];
+                    
                     if (isset($inverseJoinColumn['onUpdate'])) {
                         $constraint2['onUpdate'] = $inverseJoinColumn['onUpdate'];
                     }
+                    
                     if (isset($joinColumn['onDelete'])) {
                         $constraint2['onDelete'] = $inverseJoinColumn['onDelete'];
                     }
                 }
+                
                 $constraints[] = $constraint2;
                 
                 // Get the SQL for creating the join table and merge it with the others
                 $sql = array_merge($sql, $this->_platform->getCreateTableSql(
-                        $mapping->getQuotedJoinTableName($this->_platform), $joinTableColumns, $joinTableOptions)
-                        );
+                    $mapping->getQuotedJoinTableName($this->_platform), $joinTableColumns, $joinTableOptions)
+                );
             }
         }
     }
@@ -374,6 +401,7 @@ class SchemaTool
     {
         $dropSchemaSql = $this->getDropSchemaSql($classes);
         $conn = $this->_em->getConnection();
+        
         foreach ($dropSchemaSql as $sql) {
             $conn->execute($sql);
         }
@@ -390,13 +418,21 @@ class SchemaTool
         $sql = array();
         
         $commitOrder = $this->_getCommitOrder($classes);
+        $associationTables = $this->_getAssociationTables($commitOrder);
+        
+        // Drop association tables first
+        foreach ($associationTables as $associationTable) {
+            $sql[] = $this->_platform->getDropTableSql($associationTable);
+        }
 
         // Drop tables in reverse commit order
         for ($i = count($commitOrder) - 1; $i >= 0; --$i) {
             $class = $commitOrder[$i];
+            
             if ($class->isInheritanceTypeSingleTable() && $class->name != $class->rootEntityName) {
                 continue;
             }
+            
             $sql[] = $this->_platform->getDropTableSql($class->getTableName());
         }
         
@@ -416,6 +452,7 @@ class SchemaTool
     {
         $updateSchemaSql = $this->getUpdateSchemaSql($classes);
         $conn = $this->_em->getConnection();
+        
         foreach ($updateSchemaSql as $sql) {
             $conn->execute($sql);
         }
@@ -440,13 +477,16 @@ class SchemaTool
         foreach ($classes as $class) {
             $tableName = $class->getTableName();
             $tableExists = false;
+            
             foreach ($tables as $index => $table) {
                 if ($tableName == $table) {
                     $tableExists = true;
+                    
                     unset($tables[$index]);
                     break;
                 }
             }
+            
             if ( ! $tableExists) {
                 $newClasses[] = $class;
             } else {
@@ -456,6 +496,7 @@ class SchemaTool
                                 
                 foreach ($class->fieldMappings as $fieldMapping) {
                     $exists = false;
+                    
                     foreach ($currentColumns as $index => $column) {
                         if ($column['name'] == $fieldMapping['columnName']) {
                             // Column exists, check for changes
@@ -470,6 +511,7 @@ class SchemaTool
                             break;
                         }
                     }
+                    
                     if ( ! $exists) {
                         $newFields[] = $fieldMapping;
                     }
@@ -479,6 +521,7 @@ class SchemaTool
                     if ($assoc->isOwningSide && $assoc->isOneToOne()) {
                         foreach ($assoc->targetToSourceKeyColumns as $targetColumn => $sourceColumn) {
                             $exists = false;
+                            
                             foreach ($currentColumns as $index => $column) {
                                 if ($column['name'] == $sourceColumn) {
                                     // Column exists, check for changes
@@ -490,6 +533,7 @@ class SchemaTool
                                     break;
                                 }
                             }
+                            
                             if ( ! $exists) {
                                 $newJoinColumns[$sourceColumn] = array(
                                     'name' => $sourceColumn,
@@ -502,23 +546,28 @@ class SchemaTool
                 
                 if ($newFields || $newJoinColumns) {
                     $changes = array();
+                    
                     foreach ($newFields as $newField) {
                         $options = array();
                         $changes['add'][$newField['columnName']] = $this->_gatherColumn($class, $newField, $options);
                     }
+                    
                     foreach ($newJoinColumns as $name => $joinColumn) {
                         $changes['add'][$name] = $joinColumn;
                     }
+                    
                     $sql[] = $this->_platform->getAlterTableSql($tableName, $changes);
                 }
                 
                 // Drop any remaining columns
                 if ($currentColumns) {
                     $changes = array();
+                    
                     foreach ($currentColumns as $column) {
                         $options = array();
                         $changes['remove'][$column['name']] = $column;
                     }
+                    
                     $sql[] = $this->_platform->getAlterTableSql($tableName, $changes);
                 }
             }
@@ -546,12 +595,15 @@ class SchemaTool
         // Calculate dependencies
         foreach ($classes as $class) {
             $calc->addClass($class);
+            
             foreach ($class->associationMappings as $assoc) {
                 if ($assoc->isOwningSide) {
                     $targetClass = $this->_em->getClassMetadata($assoc->targetEntityName);
+                    
                     if ( ! $calc->hasClass($targetClass->name)) {
                         $calc->addClass($targetClass);
                     }
+                    
                     // add dependency ($targetClass before $class)
                     $calc->addDependency($targetClass, $class);
                 }
@@ -559,5 +611,20 @@ class SchemaTool
         }
 
         return $calc->getCommitOrder();
+    }
+    
+    private function _getAssociationTables(array $classes)
+    {
+        $associationTables = array();
+        
+        foreach ($classes as $class) {
+            foreach ($class->associationMappings as $assoc) {
+                if ($assoc->isOwningSide && $assoc->isManyToMany()) {
+                    $associationTables[] = $assoc->joinTable['name'];
+                }
+            }
+        }
+        
+        return $associationTables;
     }
 }
