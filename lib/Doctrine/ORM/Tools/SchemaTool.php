@@ -245,7 +245,8 @@ class SchemaTool
         $column['type'] = Type::getType($mapping['type']);
         $column['length'] = isset($mapping['length']) ? $mapping['length'] : null;
         $column['notnull'] = isset($mapping['nullable']) ? ! $mapping['nullable'] : false;
-        
+        $column['unique'] = isset($mapping['unique']) ? ! $mapping['unique'] : false;
+
         if (isset($mapping['precision'])) {
             $column['precision'] = $mapping['precision'];
         }
