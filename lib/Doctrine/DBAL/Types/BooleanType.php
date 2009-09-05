@@ -13,7 +13,7 @@ class BooleanType extends Type
 {
     public function getSqlDeclaration(array $fieldDeclaration, AbstractPlatform $platform)
     {
-        return $platform->getBooleanDeclarationSql();
+        return $platform->getBooleanTypeDeclarationSql($fieldDeclaration);
     }
 
     public function convertToDatabaseValue($value, AbstractPlatform $platform)

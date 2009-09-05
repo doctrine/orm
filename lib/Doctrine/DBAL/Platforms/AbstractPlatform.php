@@ -770,6 +770,14 @@ abstract class AbstractPlatform
     }
 
     /**
+     * Gets the SQL snippet that declares a boolean column.
+     *
+     * @param array $columnDef
+     * @return string
+     */
+    abstract public function getBooleanTypeDeclarationSql(array $columnDef);
+
+    /**
      * Gets the SQL snippet that declares a 4 byte integer column.
      *
      * @param array $columnDef
@@ -1542,11 +1550,6 @@ abstract class AbstractPlatform
      * @param array $field
      */
     abstract public function getVarcharTypeDeclarationSql(array $field);
-
-    public function getBooleanTypeDeclarationSql(array $field)
-    {
-        return $this->getIntegerTypeDeclarationSql($field);
-    }
 
     /**
      * Gets the name of the platform.

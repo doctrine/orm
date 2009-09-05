@@ -193,43 +193,65 @@ class SqlitePlatform extends AbstractPlatform
         return 'PRAGMA read_uncommitted = ' . $this->_getTransactionIsolationLevelSql($level);
     }
 
-    /** @override */
+    /** 
+     * @override 
+     */
     public function prefersIdentityColumns()
     {
         return true;
     }
+    
+    /** 
+     * @override 
+     */
+    public function getBooleanTypeDeclarationSql(array $field)
+    {
+        return 'BOOLEAN';
+    }
 
-    /** @override */
+    /** 
+     * @override 
+     */
     public function getIntegerTypeDeclarationSql(array $field)
     {
         return $this->_getCommonIntegerTypeDeclarationSql($field);
     }
 
-    /** @override */
+    /** 
+     * @override 
+     */
     public function getBigIntTypeDeclarationSql(array $field)
     {
         return $this->_getCommonIntegerTypeDeclarationSql($field);
     }
 
-    /** @override */
+    /** 
+     * @override 
+     */
     public function getTinyIntTypeDeclarationSql(array $field)
     {
         return $this->_getCommonIntegerTypeDeclarationSql($field);
     }
 
-    /** @override */
+    /** 
+     * @override 
+     */
     public function getSmallIntTypeDeclarationSql(array $field)
     {
         return $this->_getCommonIntegerTypeDeclarationSql($field);
     }
 
-    /** @override */
+    /** 
+     * @override 
+     */
     public function getMediumIntTypeDeclarationSql(array $field)
     {
         return $this->_getCommonIntegerTypeDeclarationSql($field);
     }
 
-    /** @override */
+    /** 
+     * @override 
+     */
     public function getDateTimeTypeDeclarationSql(array $fieldDeclaration)
     {
         return 'DATETIME';
@@ -243,7 +265,9 @@ class SqlitePlatform extends AbstractPlatform
         return 'DATE';
     }
 
-    /** @override */
+    /** 
+     * @override 
+     */
     protected function _getCommonIntegerTypeDeclarationSql(array $columnDef)
     {
         $autoinc = ! empty($columnDef['autoincrement']) ? ' AUTOINCREMENT' : '';

@@ -152,6 +152,14 @@ class OraclePlatform extends AbstractPlatform
                 return parent::_getTransactionIsolationLevelSql($level);
         }
     }
+    
+    /**
+     * @override
+     */
+    public function getBooleanTypeDeclarationSql(array $field)
+    {
+        return 'NUMBER(1)';
+    }
 
     /**
      * @override

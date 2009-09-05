@@ -218,10 +218,10 @@ class PostgreSqlPlatform extends AbstractPlatform
      * @param string $value     boolean value to be parsed
      * @return string           parsed boolean value
      */
-    public function parseBoolean($value)
+    /*public function parseBoolean($value)
     {
         return $value;
-    }
+    }*/
     
     /**
      * Whether the platform supports sequences.
@@ -656,6 +656,14 @@ class PostgreSqlPlatform extends AbstractPlatform
         return 'SET SESSION CHARACTERISTICS AS TRANSACTION ISOLATION LEVEL '
                 . $this->_getTransactionIsolationLevelSql($level);
     }
+    
+    /**
+     * @override
+     */
+    public function getBooleanTypeDeclarationSql(array $field)
+    {
+        return 'BOOLEAN';
+    }
 
     /**
      * @override
@@ -665,6 +673,7 @@ class PostgreSqlPlatform extends AbstractPlatform
         if ( ! empty($field['autoincrement'])) {
             return 'SERIAL';
         }
+        
         return 'INT';
     }
 

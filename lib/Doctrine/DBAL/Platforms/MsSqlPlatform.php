@@ -324,19 +324,34 @@ class MsSqlPlatform extends AbstractPlatform
     {
         return 'SET TRANSACTION ISOLATION LEVEL ' . $this->_getTransactionIsolationLevelSql($level);
     }
+    
+    /** 
+     * @override 
+     */
+    public function getBooleanTypeDeclarationSql(array $field)
+    {
+        return 'BIT';
+    }
 
+    /** 
+     * @override 
+     */
     public function getIntegerTypeDeclarationSql(array $field)
     {
         return 'INT' . $this->_getCommonIntegerTypeDeclarationSql($field);
     }
 
-    /** @override */
+    /**
+     * @override 
+     */
     public function getBigIntTypeDeclarationSql(array $field)
     {
         return 'BIGINT' . $this->_getCommonIntegerTypeDeclarationSql($field);
     }
 
-    /** @override */
+    /** 
+     * @override 
+     */
     public function getSmallIntTypeDeclarationSql(array $field)
     {
         return 'SMALLINT' . $this->_getCommonIntegerTypeDeclarationSql($field);
