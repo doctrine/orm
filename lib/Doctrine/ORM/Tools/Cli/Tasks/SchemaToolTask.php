@@ -170,8 +170,13 @@ class SchemaToolTask extends AbstractTask
                 }
             } else {
                 $printer->writeln('Creating database schema...', 'INFO');
-                $tool->createSchema($classes);
-                $printer->writeln('Database schema created successfully.', 'INFO');
+                
+                try {
+                    $tool->createSchema($classes);
+                    $printer->writeln('Database schema created successfully.', 'INFO');
+                } catch (\Exception $ex) {
+                    $printer->writeln($ex->getMessage(), 'ERROR');
+                }
             }
         } else if ($isDrop) {
             if (isset($args['dump-sql'])) {
@@ -180,8 +185,13 @@ class SchemaToolTask extends AbstractTask
                 }
             } else {
                 $printer->writeln('Dropping database schema...', 'INFO');
-                $tool->dropSchema($classes);
-                $printer->writeln('Database schema dropped successfully.', 'INFO');
+                
+                try {
+                    $tool->dropSchema($classes);
+                    $printer->writeln('Database schema dropped successfully.', 'INFO');
+                } catch (\Exception $ex) {
+                    $printer->writeln($ex->getMessage(), 'ERROR');
+                }
             }
         } else if ($isUpdate) {
             $printer->writeln("--update support is not yet fully implemented.", 'ERROR');
@@ -192,8 +202,13 @@ class SchemaToolTask extends AbstractTask
                 }
             } else {
                 $printer->writeln('Updating database schema...', 'INFO');
-                $tool->updateSchema($classes);
-                $printer->writeln('Database schema updated successfully.', 'INFO');
+                
+                try {
+                    $tool->updateSchema($classes);
+                    $printer->writeln('Database schema updated successfully.', 'INFO');
+                } catch (\Exception $ex) {
+                    $printer->writeln($ex->getMessage(), 'ERROR');
+                }
             }
         }
     }
