@@ -41,6 +41,9 @@ class DatabasePlatformMock extends \Doctrine\DBAL\Platforms\AbstractPlatform
     }
 
     /** @override */
+    public function getBooleanTypeDeclarationSql(array $field) {}
+
+    /** @override */
     public function getIntegerTypeDeclarationSql(array $field) {}
 
     /** @override */

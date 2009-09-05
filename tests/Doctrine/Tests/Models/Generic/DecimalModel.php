@@ -4,7 +4,7 @@ namespace Doctrine\Tests\Models\Generic;
 
 /**
  * @Entity
- * @Table(name="date_time_model")
+ * @Table(name="decimal_model")
  */
 class DecimalModel
 {

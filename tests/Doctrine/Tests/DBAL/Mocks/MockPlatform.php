@@ -6,6 +6,7 @@ use Doctrine\DBAL\Platforms;
 
 class MockPlatform extends \Doctrine\DBAL\Platforms\AbstractPlatform
 {
+    public function getBooleanTypeDeclarationSql(array $columnDef) {}
     public function getIntegerTypeDeclarationSql(array $columnDef) {}
     public function getBigIntTypeDeclarationSql(array $columnDef) {}
     public function getSmallIntTypeDeclarationSql(array $columnDef) {}

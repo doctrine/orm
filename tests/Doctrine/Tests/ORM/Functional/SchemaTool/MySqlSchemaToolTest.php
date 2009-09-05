@@ -47,7 +47,20 @@ class MySqlSchemaToolTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $sql = $tool->getCreateSchemaSql($classes);
         
         $this->assertEquals(1, count($sql));
-        $this->assertEquals("CREATE TABLE date_time_model (id INT AUTO_INCREMENT NOT NULL, decimal NUMERIC(2, 5) NOT NULL, PRIMARY KEY(id)) ENGINE = InnoDB", $sql[0]);
+        $this->assertEquals("CREATE TABLE decimal_model (id INT AUTO_INCREMENT NOT NULL, decimal NUMERIC(2, 5) NOT NULL, PRIMARY KEY(id)) ENGINE = InnoDB", $sql[0]);
+    }
+    
+    public function testGetCreateSchemaSql3()
+    {
+        $classes = array(
+            $this->_em->getClassMetadata('Doctrine\Tests\Models\Generic\BooleanModel')
+        );
+
+        $tool = new SchemaTool($this->_em);
+        $sql = $tool->getCreateSchemaSql($classes);
+        
+        $this->assertEquals(1, count($sql));
+        $this->assertEquals("CREATE TABLE boolean_model (id INT AUTO_INCREMENT NOT NULL, boolean DEFAULT 1 NOT NULL, PRIMARY KEY(id)) ENGINE = InnoDB", $sql[0]);
     }
     
     public function testGetUpdateSchemaSql()

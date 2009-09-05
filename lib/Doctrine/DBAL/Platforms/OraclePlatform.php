@@ -196,14 +196,6 @@ class OraclePlatform extends AbstractPlatform
     /**
      * @override
      */
-    public function getBooleanTypeDeclarationSql(array $field)
-    {
-        return 'NUMBER(1)';
-    }
-
-    /**
-     * @override
-     */
     protected function _getCommonIntegerTypeDeclarationSql(array $columnDef)
     {
         return '';

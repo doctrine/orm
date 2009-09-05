@@ -328,14 +328,6 @@ class MsSqlPlatform extends AbstractPlatform
     /** 
      * @override 
      */
-    public function getBooleanTypeDeclarationSql(array $field)
-    {
-        return 'BIT';
-    }
-
-    /** 
-     * @override 
-     */
     public function getIntegerTypeDeclarationSql(array $field)
     {
         return 'INT' . $this->_getCommonIntegerTypeDeclarationSql($field);
@@ -374,7 +366,9 @@ class MsSqlPlatform extends AbstractPlatform
                 : ($length ? 'VARCHAR(' . $length . ')' : 'TEXT');
     }
 
-    /** @override */
+    /** 
+     * @override 
+     */
     protected function _getCommonIntegerTypeDeclarationSql(array $columnDef)
     {
         $autoinc = '';
