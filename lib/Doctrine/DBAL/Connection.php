@@ -519,6 +519,8 @@ class Connection
      */
     public function quote($input, $type = null)
     {
+        $this->connect();
+        
         return $this->_conn->quote($input, $type);
     }
 
