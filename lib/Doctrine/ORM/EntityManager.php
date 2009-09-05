@@ -231,7 +231,7 @@ class EntityManager
      * Creates a Query from a named query.
      *
      * @param string $name
-     * @todo Implementation.
+     * @return Doctrine\ORM\Query
      */
     public function createNamedQuery($name)
     {
@@ -257,7 +257,7 @@ class EntityManager
      * Creates a NativeQuery from a named native query.
      * 
      * @param string $name
-     * @todo Implementation.
+     * @return Doctrine\ORM\NativeQuery
      */
     public function createNamedNativeQuery($name)
     {
