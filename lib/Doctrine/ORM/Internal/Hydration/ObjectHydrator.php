@@ -141,7 +141,7 @@ class ObjectHydrator extends AbstractHydrator
         $pColl = new PersistentCollection(
             $this->_em, 
             $this->_ce[$relation->targetEntityName],
-            $class->reflFields[$name]->getValue($entity) ?: new ArrayCollection
+            new ArrayCollection
         );
         
         $pColl->setOwner($entity, $relation);
