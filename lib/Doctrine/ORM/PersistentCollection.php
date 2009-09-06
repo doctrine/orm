@@ -177,9 +177,7 @@ final class PersistentCollection implements \Doctrine\Common\Collections\Collect
      */
     public function hydrateAdd($element)
     {
-        if ( ! $this->contains($element)) {
-            $this->_coll->add($element);
-        }
+        $this->_coll->add($element);
         
         // If _backRefFieldName is set, then the association is bidirectional
         // and we need to set the back reference.
@@ -206,9 +204,7 @@ final class PersistentCollection implements \Doctrine\Common\Collections\Collect
      */
     public function hydrateSet($key, $element)
     {
-        if ( ! $this->contains($element)) {
-            $this->_coll->set($key, $element);
-        }
+        $this->_coll->set($key, $element);
         
         // If _backRefFieldName is set, then the association is bidirectional
         // and we need to set the back reference.

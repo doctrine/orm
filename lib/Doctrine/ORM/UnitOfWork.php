@@ -451,13 +451,10 @@ class UnitOfWork implements PropertyChangedListener
                 $actualData[$name] = $refProp->getValue($entity);
             }
 
-            if ($class->isCollectionValuedAssociation($name) && $actualData[$name] !== null) {
+            if ($class->isCollectionValuedAssociation($name) && $actualData[$name] !== null
+                    && ! ($actualData[$name] instanceof PersistentCollection)) {
                 // If $actualData[$name] is Collection then unwrap the array
                 if ( ! $actualData[$name] instanceof ArrayCollection) {
-                    if ($actualData[$name] instanceof PersistentCollection) {
-                        $actualData[$name] = $actualData[$name]->toArray();
-                    }
-                    
                     $actualData[$name] = new ArrayCollection($actualData[$name]);
                 }
                 
@@ -1136,8 +1133,9 @@ class UnitOfWork implements PropertyChangedListener
 
         $visited[$oid] = $entity; // Mark visited
 
-        $class = $this->_em->getClassMetadata(get_class($entity));      
-        $entityState = $this->getEntityState($entity, self::STATE_NEW);  
+        $class = $this->_em->getClassMetadata(get_class($entity));
+        $entityState = $this->getEntityState($entity, self::STATE_NEW);
+        
         switch ($entityState) {
             case self::STATE_MANAGED:
                 // Nothing to do, except if policy is "deferred explicit"

@@ -3,7 +3,7 @@
 namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\Tests\Models\ECommerce\ECommerceCart,
-    Doctrine\Tests\Models\ECommerce\ECommerceCategory,
+    Doctrine\Tests\Models\ECommerce\ECommerceFeature,
     Doctrine\Tests\Models\ECommerce\ECommerceCustomer,
     Doctrine\Tests\Models\ECommerce\ECommerceProduct;
     
@@ -48,31 +48,40 @@ class StandardEntityPersisterTest extends \Doctrine\Tests\OrmFunctionalTestCase
      */
     public function testAddPersistRetrieve()
     {
-        $category = new ECommerceCategory();
-        $category->setName('Eletronics');
-        
-        $product = new ECommerceProduct();
-        $product->setName('MP3 Player Foo');
-        $category->addProduct($product);
-        
-        $product2 = new ECommerceProduct();
-        $product2->setName('MP3 Player Bar');
-        $category->addProduct($product2);
-        
-        $this->_em->persist($category);
+        $f1 = new ECommerceFeature;
+        $f1->setDescription('AC-3');
+
+        $f2 = new ECommerceFeature;
+        $f2->setDescription('DTS');
+
+        $p = new ECommerceProduct;
+        $p->addFeature($f1);
+        $p->addfeature($f2);
+        $this->_em->persist($p);
+
         $this->_em->flush();
         
-        // He reported that using $this->_em->clear(); after flush fixes the problem.
-        // It should work out of the box. That's what we are testing.
+        $this->assertEquals(2, count($p->getFeatures()));
+        $this->assertTrue($p->getFeatures() instanceof \Doctrine\ORM\PersistentCollection);
+
+        $q = $this->_em->createQuery(
+            'SELECT p, f
+               FROM Doctrine\Tests\Models\ECommerce\ECommerceProduct p
+               JOIN p.features f'
+        );
         
-        $q = $this->_em->createQuery('
-            SELECT c, p 
-              FROM Doctrine\Tests\Models\ECommerce\ECommerceCategory c 
-              LEFT JOIN c.products p
-        ');
         $res = $q->getResult();
         
-        $this->assertEquals(1, count($res));
-        $this->assertEquals(2, count($res[0]->getProducts()));
+        $this->assertEquals(2, count($p->getFeatures()));
+        $this->assertTrue($p->getFeatures() instanceof \Doctrine\ORM\PersistentCollection);
+        
+        // Check that the features are the same instances still
+        foreach ($p->getFeatures() as $feature) {
+            if ($feature->getDescription() == 'AC-3') {
+                $this->assertTrue($feature === $f1);
+            } else {
+                $this->assertTrue($feature === $f2);
+            }
+        }
     }
 }
