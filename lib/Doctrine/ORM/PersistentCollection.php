@@ -134,6 +134,7 @@ final class PersistentCollection implements \Doctrine\Common\Collections\Collect
     {
         $this->_owner = $entity;
         $this->_association = $assoc;
+        
         // Check for bidirectionality
         if ( ! $assoc->isOwningSide) {
             // For sure bi-directional
@@ -176,7 +177,10 @@ final class PersistentCollection implements \Doctrine\Common\Collections\Collect
      */
     public function hydrateAdd($element)
     {
-        $this->_coll->add($element);
+        if ( ! $this->contains($element)) {
+            $this->_coll->add($element);
+        }
+        
         // If _backRefFieldName is set, then the association is bidirectional
         // and we need to set the back reference.
         if ($this->_backRefFieldName) {
@@ -202,7 +206,10 @@ final class PersistentCollection implements \Doctrine\Common\Collections\Collect
      */
     public function hydrateSet($key, $element)
     {
-        $this->_coll->set($key, $element);
+        if ( ! $this->contains($element)) {
+            $this->_coll->set($key, $element);
+        }
+        
         // If _backRefFieldName is set, then the association is bidirectional
         // and we need to set the back reference.
         if ($this->_backRefFieldName) {

@@ -451,16 +451,25 @@ class UnitOfWork implements PropertyChangedListener
                 $actualData[$name] = $refProp->getValue($entity);
             }
 
-            if ($class->isCollectionValuedAssociation($name) && $actualData[$name] !== null
-                    && ! ($actualData[$name] instanceof PersistentCollection)) {
+            if ($class->isCollectionValuedAssociation($name) && $actualData[$name] !== null) {
                 // If $actualData[$name] is Collection then unwrap the array
                 if ( ! $actualData[$name] instanceof ArrayCollection) {
+                    if ($actualData[$name] instanceof PersistentCollection) {
+                        $actualData[$name] = $actualData[$name]->toArray();
+                    }
+                    
                     $actualData[$name] = new ArrayCollection($actualData[$name]);
                 }
+                
                 $assoc = $class->associationMappings[$name];
+                
                 // Inject PersistentCollection
-                $coll = new PersistentCollection($this->_em, $this->_em->getClassMetadata(
-                        $assoc->targetEntityName), $actualData[$name]);
+                $coll = new PersistentCollection(
+                    $this->_em, 
+                    $this->_em->getClassMetadata($assoc->targetEntityName), 
+                    $actualData[$name]
+                );
+                
                 $coll->setOwner($entity, $assoc);
                 $coll->setDirty( ! $coll->isEmpty());
                 $class->reflFields[$name]->setValue($entity, $coll);

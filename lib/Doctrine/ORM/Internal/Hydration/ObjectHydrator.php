@@ -141,11 +141,7 @@ class ObjectHydrator extends AbstractHydrator
         $pColl = new PersistentCollection(
             $this->_em, 
             $this->_ce[$relation->targetEntityName],
-            /*
-            TICKET #2478: This seems to double resultset in Collections after add/persist/retrieve execution
             $class->reflFields[$name]->getValue($entity) ?: new ArrayCollection
-            */
-            new ArrayCollection()
         );
         
         $pColl->setOwner($entity, $relation);
