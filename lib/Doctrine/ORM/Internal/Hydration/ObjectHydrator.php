@@ -138,18 +138,30 @@ class ObjectHydrator extends AbstractHydrator
         $class = $this->_ce[get_class($entity)];
         $relation = $class->associationMappings[$name];
         
-        $pColl = new PersistentCollection(
-            $this->_em, 
-            $this->_ce[$relation->targetEntityName],
-            new ArrayCollection
-        );
+        $value = $class->reflFields[$name]->getValue($entity);
+        if ($value === null) {
+            $value = new ArrayCollection;
+        }
         
-        $pColl->setOwner($entity, $relation);
-        $class->reflFields[$name]->setValue($entity, $pColl);
-        $this->_uow->setOriginalEntityProperty($oid, $name, $pColl);
-        $this->_initializedCollections[$oid . $name] = $pColl;
+        if ($value instanceof ArrayCollection) {
+            $value = new PersistentCollection(
+                $this->_em,
+                $this->_ce[$relation->targetEntityName],
+                $value
+            );
+            $value->setOwner($entity, $relation);
+        } else {
+            // Is already PersistentCollection.
+            $value->clear();
+            $value->setDirty(false);
+            $value->setInitialized(true);
+        }
         
-        return $pColl;
+        $class->reflFields[$name]->setValue($entity, $value);
+        $this->_uow->setOriginalEntityProperty($oid, $name, $value);
+        $this->_initializedCollections[$oid . $name] = $value;
+        
+        return $value;
     }
     
     /**
