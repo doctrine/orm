@@ -83,5 +83,37 @@ class StandardEntityPersisterTest extends \Doctrine\Tests\OrmFunctionalTestCase
                 $this->assertTrue($feature === $f2);
             }
         }
+        
+        // Now we test how Hydrator affects IdentityMap
+        $f3 = new ECommerceFeature();
+        $f3->setDescription('XVID');
+        $p->addfeature($f3);
+        
+        $q = $this->_em->createQuery(
+            'SELECT p, f
+               FROM Doctrine\Tests\Models\ECommerce\ECommerceProduct p
+               JOIN p.features f'
+        );
+        
+        $res = $q->getResult();
+        
+        // $p is our in-memory object... it should still contain the
+        // not yet managed Feature (it can't get lost)
+        $this->assertEquals(3, count($p->getFeatures()));
+        
+        // Now we persist the Feature #3
+        $this->_em->persist($p);
+        $this->_em->flush();
+        
+        $q = $this->_em->createQuery(
+            'SELECT p, f
+               FROM Doctrine\Tests\Models\ECommerce\ECommerceProduct p
+               JOIN p.features f'
+        );
+        
+        $res = $q->getResult();
+        
+        // Persisted Product now must have 3 Feature items
+        $this->assertEquals(3, count($res[0]->getFeatures()));
     }
 }
