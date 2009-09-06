@@ -18,7 +18,7 @@ $config->setQueryCacheImpl($cache);
 #$config->setMetadataDriverImpl(new \Doctrine\ORM\Mapping\Driver\YamlDriver(__DIR__ . '/yaml'));
 
 # EXAMPLE FOR XML DRIVER
-#$config->setMetadataDriverImpl(new \Doctrine\ORM\Mapping\Driver\YamlDriver(__DIR__ . '/xml'));
+#$config->setMetadataDriverImpl(new \Doctrine\ORM\Mapping\Driver\XmlDriver(__DIR__ . '/xml'));
 
 $eventManager = new \Doctrine\Common\EventManager();
 $connectionOptions = array(
