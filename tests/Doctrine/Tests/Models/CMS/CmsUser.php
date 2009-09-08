@@ -20,7 +20,7 @@ class CmsUser
      */
     public $status;
     /**
-     * @Column(type="string", length=255)
+     * @Column(type="string", length=255, unique=true)
      */
     public $username;
     /**

@@ -133,6 +133,14 @@ class XmlDriver extends AbstractFileDriver
                     $mapping['scale'] = (int)$fieldMapping['scale'];
                 }
                 
+                if (isset($fieldMapping['unique'])) {
+                  $mapping['unique'] = (bool)$fieldMapping['unique'];
+                }
+                
+                if (isset($fieldMapping['options'])) {
+                    $mapping['options'] = $fieldMapping['options'];
+                }
+                
                 if (isset($fieldMapping['version']) && $fieldMapping['version']) {
                     $metadata->setVersionMapping($mapping);
                 }

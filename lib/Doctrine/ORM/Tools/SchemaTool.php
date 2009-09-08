@@ -164,6 +164,7 @@ class SchemaTool
             $sql = array_merge($sql, $this->_platform->getCreateTableSql(
                 $class->getQuotedTableName($this->_platform), $columns, $options)
             );
+
             $processedClasses[$class->name] = true;
 
             // TODO if we're reusing the sequence previously defined (in another model),

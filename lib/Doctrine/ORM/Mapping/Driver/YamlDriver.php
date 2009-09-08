@@ -134,6 +134,10 @@ class YamlDriver extends AbstractFileDriver
                     $mapping['scale'] = $fieldMapping['scale'];
                 }
                 
+                if (isset($fieldMapping['unique'])) {
+                  $mapping['unique'] = (bool)$fieldMapping['unique'];
+                }
+                
                 if (isset($fieldMapping['options'])) {
                     $mapping['options'] = $fieldMapping['options'];
                 }
