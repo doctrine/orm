@@ -25,8 +25,7 @@ use Doctrine\Common\DoctrineException,
     Doctrine\Common\Util\Debug;
 
 /**
- * Task for executing arbitrary SQL that can come from a file or directly from
- * the command line.
+ * Task for executing DQL in passed EntityManager.
  * 
  * @license http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @link    www.doctrine-project.org
@@ -36,7 +35,7 @@ use Doctrine\Common\DoctrineException,
  * @author  Jonathan Wage <jonwage@gmail.com>
  * @author  Roman Borschel <roman@code-factory.org>
  */
-class RunSqlTask extends AbstractTask
+class RunDqlTask extends AbstractTask
 {
     /**
      * @inheritdoc
@@ -45,22 +44,17 @@ class RunSqlTask extends AbstractTask
     {
         $printer = $this->getPrinter();
         
-        $printer->write('Task: ')->writeln('run-sql', 'KEYWORD')
+        $printer->write('Task: ')->writeln('run-dql', 'KEYWORD')
                 ->write('Synopsis: ');
         $this->_writeSynopsis($printer);
         
-        $printer->writeln('Description: Executes arbitrary SQL from a file or directly from the command line.')
+        $printer->writeln('Description: Executes DQL in requested EntityManager.')
                 ->writeln('Options:')
-                ->write('--sql=<SQL>', 'REQ_ARG')
-                ->writeln("\tThe SQL to execute.")
-                ->writeln("\t\tIf defined, --file can not be requested on same task")
-                ->write(PHP_EOL)
-                ->write('--file=<path>', 'REQ_ARG')
-                ->writeln("\tThe path to the file with the SQL to execute.")
-                ->writeln("\t\tIf defined, --sql can not be requested on same task")
+                ->write('--dql=<DQL>', 'REQ_ARG')
+                ->writeln("\tThe DQL to execute.")
                 ->write(PHP_EOL)
                 ->write('--depth=<DEPTH>', 'OPT_ARG')
-                ->writeln("\tDumping depth of ResultSet graph.");
+                ->writeln("\tDumping depth of Entities graph.");
     }
 
     /**
@@ -73,8 +67,8 @@ class RunSqlTask extends AbstractTask
     
     private function _writeSynopsis($printer)
     {
-        $printer->write('run-sql', 'KEYWORD')
-                ->write(' (--file=<path> | --sql=<SQL>)', 'REQ_ARG')
+        $printer->write('run-dql', 'KEYWORD')
+                ->write(' --dql=<DQL>', 'REQ_ARG')
                 ->writeln(' --depth=<DEPTH>', 'OPT_ARG');
     }
     
@@ -90,11 +84,8 @@ class RunSqlTask extends AbstractTask
         $args = $this->getArguments();
         $printer = $this->getPrinter();
         
-        $isSql = isset($args['sql']);
-        $isFile = isset($args['file']);
-        
-        if ( ! ($isSql ^ $isFile)) {
-            $printer->writeln("One of --sql or --file required, and only one.", 'ERROR');
+        if ( ! isset($args['dql'])) {
+            $printer->writeln("Argument --dql must be defined.", 'ERROR');
             return false;
         }
         
@@ -110,20 +101,12 @@ class RunSqlTask extends AbstractTask
         $args = $this->getArguments();
         
         try {
-            if (isset($args['file'])) {
-                //TODO
-            } else if (isset($args['sql'])) {
-                if (preg_match('/^select/i', $args['sql'])) {
-                    $stmt = $this->_em->getConnection()->execute($args['sql']);
-                    $resultSet = $stmt->fetchAll(\Doctrine\DBAL\Connection::FETCH_ASSOC);
-                } else {
-                    $resultSet = $this->_em->getConnection()->executeUpdate($args['sql']);
-                }
-            
-                $maxDepth = isset($args['depth']) ? $args['depth'] : 7;
+            $query = $this->_em->createQuery($args['dql']);
+            $resultSet = $query->getResult();
         
-                Debug::dump($resultSet, $maxDepth);
-            }
+            $maxDepth = isset($args['depth']) ? $args['depth'] : 7;
+        
+            Debug::dump($resultSet, $maxDepth);
         } catch (\Exception $ex) {
             throw new DoctrineException($ex);
         }

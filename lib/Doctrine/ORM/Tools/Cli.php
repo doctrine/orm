@@ -84,10 +84,11 @@ class Cli
         $ns = 'Doctrine\ORM\Tools\Cli\Tasks';
         
         $this->addTasks(array(
-            'help'    => $ns . '\HelpTask',
-            'version' => $ns . '\VersionTask',
+            'help'        => $ns . '\HelpTask',
+            'version'     => $ns . '\VersionTask',
             'schema-tool' => $ns . '\SchemaToolTask',
-            'run-sql' => $ns . '\RunSqlTask'
+            'run-sql'     => $ns . '\RunSqlTask',
+            'run-dql'     => $ns . '\RunDqlTask',
         ));
     }
     
@@ -151,10 +152,7 @@ class Cli
         $processedArgs = $this->_processArguments($args);
         
         try {
-            $this->_printer->writeln(
-                'Doctrine Command Line Interface',
-                'HEADER'
-            );
+            $this->_printer->writeln('Doctrine Command Line Interface', 'HEADER');
         
             // Handle possible multiple tasks on a single command
             foreach($processedArgs as $taskData) {
@@ -170,7 +168,10 @@ class Cli
                     $task->setPrinter($this->_printer);
                     $task->setArguments($taskArguments);
                 
-                    if (isset($taskArguments['help']) && $taskArguments['help']) {
+                    if (
+                        (isset($taskArguments['help']) && $taskArguments['help']) ||
+                        (isset($taskArguments['h']) && $taskArguments['h'])
+                    ) {
                         $task->extendedHelp(); // User explicitly asked for help option
                     } else if ($this->_isTaskValid($task)) {
                         $task->run();
@@ -237,6 +238,8 @@ class Cli
      */
     private function _processArguments($args = array())
     {
+        $flags = PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE;
+        $regex = '/\s*[,]?\s*"([^"]*)"|\s*[,]?\s*([^,]*)/i';
         $preparedArgs = array();
         $out = & $preparedArgs;
         
@@ -252,16 +255,22 @@ class Cli
                 // --bar=baz
                 } else {
                     $key = substr($arg, 2, $eqPos - 2);
-                    $value = explode(',', substr($arg, $eqPos + 1));
-                    $out[$key] = (count($value) > 1) ? $value : $value[0];
+                    $value = substr($arg, $eqPos + 1);
+                    $value = (strpos($value, ' ') !== false) ? $value 
+                        : array_values(array_filter(explode(',', $value), function ($v) { return trim($v) != ''; }));
+                    $out[$key] = ( ! is_array($value) || (is_array($value) && count($value) > 1)) 
+                        ? $value : $value[0];
                 }
             // -k=value -abc
             } else if (substr($arg, 0, 1) == '-'){
                 // -k=value
                 if (substr($arg, 2, 1) == '='){
                     $key = substr($arg, 1, 1);
-                    $value = explode(',', substr($arg, 3));
-                    $out[$key] = (count($value) > 1) ? $value : $value[0];
+                    $value = substr($arg, 3);
+                    $value = (strpos($value, ' ') !== false) ? $value 
+                        : array_values(array_filter(explode(',', $value), function ($v) { return trim($v) != ''; }));
+                    $out[$key] = ( ! is_array($value) || (is_array($value) && count($value) > 1)) 
+                        ? $value : $value[0];
                 // -abc
                 } else {
                     $chars = str_split(substr($arg, 1));

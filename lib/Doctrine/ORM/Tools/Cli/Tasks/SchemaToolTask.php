@@ -2,7 +2,8 @@
 
 namespace Doctrine\ORM\Tools\Cli\Tasks;
 
-use Doctrine\ORM\Tools\SchemaTool,
+use Doctrine\Common\DoctrineException,
+    Doctrine\ORM\Tools\SchemaTool,
     Doctrine\Common\Annotations\AnnotationReader,
     Doctrine\ORM\Mapping\Driver\AnnotationDriver,
     Doctrine\ORM\Mapping\Driver\XmlDriver,
@@ -175,7 +176,7 @@ class SchemaToolTask extends AbstractTask
                     $tool->createSchema($classes);
                     $printer->writeln('Database schema created successfully.', 'INFO');
                 } catch (\Exception $ex) {
-                    $printer->writeln($ex->getMessage(), 'ERROR');
+                    throw new DoctrineException($ex);
                 }
             }
         } else if ($isDrop) {
@@ -190,7 +191,7 @@ class SchemaToolTask extends AbstractTask
                     $tool->dropSchema($classes);
                     $printer->writeln('Database schema dropped successfully.', 'INFO');
                 } catch (\Exception $ex) {
-                    $printer->writeln($ex->getMessage(), 'ERROR');
+                    throw new DoctrineException($ex);
                 }
             }
         } else if ($isUpdate) {
@@ -207,7 +208,7 @@ class SchemaToolTask extends AbstractTask
                     $tool->updateSchema($classes);
                     $printer->writeln('Database schema updated successfully.', 'INFO');
                 } catch (\Exception $ex) {
-                    $printer->writeln($ex->getMessage(), 'ERROR');
+                    throw new DoctrineException($ex);
                 }
             }
         }
