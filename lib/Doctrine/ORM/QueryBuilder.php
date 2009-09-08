@@ -82,7 +82,12 @@ class QueryBuilder
      * @var Query The Query instance used for this QueryBuilder.
      */
     private $_q;
-    
+
+    /**
+     * @var Expr The Expr instance used to generate DQL expressions
+     */
+    private $_expr;
+
     /**
      * Initializes a new <tt>QueryBuilder</tt> that uses the given <tt>EntityManager</tt>.
      * 
@@ -92,6 +97,19 @@ class QueryBuilder
     {
         $this->_em = $entityManager;
         $this->_q = $entityManager->createQuery();
+    }
+
+    /**
+     * Factory for instantiating and retrieving the Expr instance when needed
+     *
+     * @return Expr $expr
+     */
+    public function expr()
+    {
+        if ( ! $this->_expr) {
+            $this->_expr = new Expr;
+        }
+        return $this->_expr;
     }
 
     public function getType()

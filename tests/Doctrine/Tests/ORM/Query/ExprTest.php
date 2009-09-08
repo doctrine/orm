@@ -43,31 +43,32 @@ class ExprTest extends \Doctrine\Tests\OrmTestCase
     protected function setUp()
     {
         $this->_em = $this->_getTestEntityManager();
+        $this->_expr = new Expr;
     }
 
     public function testAvgExpr()
     {
-        $this->assertEquals('AVG(u.id)', (string) Expr::avg('u.id'));
+        $this->assertEquals('AVG(u.id)', (string) $this->_expr->avg('u.id'));
     }
 
     public function testMaxExpr()
     {
-        $this->assertEquals('MAX(u.id)', (string) Expr::max('u.id'));
+        $this->assertEquals('MAX(u.id)', (string) $this->_expr->max('u.id'));
     }
 
     public function testMinExpr()
     {
-        $this->assertEquals('MIN(u.id)', (string) Expr::min('u.id'));
+        $this->assertEquals('MIN(u.id)', (string) $this->_expr->min('u.id'));
     }
 
     public function testCountExpr()
     {
-        $this->assertEquals('MAX(u.id)', (string) Expr::max('u.id'));
+        $this->assertEquals('MAX(u.id)', (string) $this->_expr->max('u.id'));
     }
 
     public function testCountDistinctExpr()
     {
-        $this->assertEquals('COUNT(DISTINCT u.id)', (string) Expr::countDistinct('u.id'));
+        $this->assertEquals('COUNT(DISTINCT u.id)', (string) $this->_expr->countDistinct('u.id'));
     }
 
     public function testExistsExpr()
@@ -75,7 +76,7 @@ class ExprTest extends \Doctrine\Tests\OrmTestCase
         $qb = $this->_em->createQueryBuilder();
         $qb->select('u')->from('User', 'u')->where('u.name = ?1');
         
-        $this->assertEquals('EXISTS(SELECT u FROM User u WHERE u.name = ?1)', (string) Expr::exists($qb));
+        $this->assertEquals('EXISTS(SELECT u FROM User u WHERE u.name = ?1)', (string) $this->_expr->exists($qb));
     }
 
     public function testAllExpr()
@@ -83,7 +84,7 @@ class ExprTest extends \Doctrine\Tests\OrmTestCase
         $qb = $this->_em->createQueryBuilder();
         $qb->select('u')->from('User', 'u')->where('u.name = ?1');
     
-        $this->assertEquals('ALL(SELECT u FROM User u WHERE u.name = ?1)', (string) Expr::all($qb));
+        $this->assertEquals('ALL(SELECT u FROM User u WHERE u.name = ?1)', (string) $this->_expr->all($qb));
     }
 
     public function testSomeExpr()
@@ -91,7 +92,7 @@ class ExprTest extends \Doctrine\Tests\OrmTestCase
         $qb = $this->_em->createQueryBuilder();
         $qb->select('u')->from('User', 'u')->where('u.name = ?1');
     
-        $this->assertEquals('SOME(SELECT u FROM User u WHERE u.name = ?1)', (string) Expr::some($qb));
+        $this->assertEquals('SOME(SELECT u FROM User u WHERE u.name = ?1)', (string) $this->_expr->some($qb));
     }
 
     public function testAnyExpr()
@@ -99,7 +100,7 @@ class ExprTest extends \Doctrine\Tests\OrmTestCase
         $qb = $this->_em->createQueryBuilder();
         $qb->select('u')->from('User', 'u')->where('u.name = ?1');
     
-        $this->assertEquals('ANY(SELECT u FROM User u WHERE u.name = ?1)', (string) Expr::any($qb));
+        $this->assertEquals('ANY(SELECT u FROM User u WHERE u.name = ?1)', (string) $this->_expr->any($qb));
     }
 
     public function testNotExpr()
@@ -107,168 +108,168 @@ class ExprTest extends \Doctrine\Tests\OrmTestCase
         $qb = $this->_em->createQueryBuilder();
         $qb->select('u')->from('User', 'u')->where('u.name = ?1');
     
-        $this->assertEquals('NOT(SELECT u FROM User u WHERE u.name = ?1)', (string) Expr::not($qb));
+        $this->assertEquals('NOT(SELECT u FROM User u WHERE u.name = ?1)', (string) $this->_expr->not($qb));
     }
 
     public function testAndExpr()
     {
-        $this->assertEquals('(1 = 1) AND (2 = 2)', (string) Expr::andx((string) Expr::eq(1, 1), (string) Expr::eq(2, 2)));
+        $this->assertEquals('(1 = 1) AND (2 = 2)', (string) $this->_expr->andx((string) $this->_expr->eq(1, 1), (string) $this->_expr->eq(2, 2)));
     }
     
     public function testIntelligentParenthesisPreventionAndExpr()
     {
         $this->assertEquals(
             '(1 = 1) AND (2 = 2)', 
-            (string) Expr::andx(Expr::orx(Expr::andx(Expr::eq(1, 1))), (string) Expr::eq(2, 2))
+            (string) $this->_expr->andx($this->_expr->orx($this->_expr->andx($this->_expr->eq(1, 1))), (string) $this->_expr->eq(2, 2))
         );
     }
 
     public function testOrExpr()
     {
-        $this->assertEquals('(1 = 1) OR (2 = 2)', (string) Expr::orx((string) Expr::eq(1, 1), (string) Expr::eq(2, 2)));
+        $this->assertEquals('(1 = 1) OR (2 = 2)', (string) $this->_expr->orx((string) $this->_expr->eq(1, 1), (string) $this->_expr->eq(2, 2)));
     }
 
     public function testAbsExpr()
     {
-        $this->assertEquals('ABS(1)', (string) Expr::abs(1));
+        $this->assertEquals('ABS(1)', (string) $this->_expr->abs(1));
     }
 
     public function testProdExpr()
     {
-        $this->assertEquals('1 * 2', (string) Expr::prod(1, 2));
+        $this->assertEquals('1 * 2', (string) $this->_expr->prod(1, 2));
     }
 
     public function testDiffExpr()
     {
-        $this->assertEquals('1 - 2', (string) Expr::diff(1, 2));
+        $this->assertEquals('1 - 2', (string) $this->_expr->diff(1, 2));
     }
 
     public function testSumExpr()
     {
-        $this->assertEquals('1 + 2', (string) Expr::sum(1, 2));
+        $this->assertEquals('1 + 2', (string) $this->_expr->sum(1, 2));
     }
 
     public function testQuotientExpr()
     {
-        $this->assertEquals('10 / 2', (string) Expr::quot(10, 2));
+        $this->assertEquals('10 / 2', (string) $this->_expr->quot(10, 2));
     }
     
     public function testScopeInArithmeticExpr()
     {
-        $this->assertEquals('(100 - 20) / 2', (string) Expr::quot(Expr::diff(100, 20), 2));
-        $this->assertEquals('100 - (20 / 2)', (string) Expr::diff(100, Expr::quot(20, 2)));
+        $this->assertEquals('(100 - 20) / 2', (string) $this->_expr->quot($this->_expr->diff(100, 20), 2));
+        $this->assertEquals('100 - (20 / 2)', (string) $this->_expr->diff(100, $this->_expr->quot(20, 2)));
     }
 
     public function testSquareRootExpr()
     {
-        $this->assertEquals('SQRT(1)', (string) Expr::sqrt(1));
+        $this->assertEquals('SQRT(1)', (string) $this->_expr->sqrt(1));
     }
 
     public function testEqualExpr()
     {
-        $this->assertEquals('1 = 1', (string) Expr::eq(1, 1));
+        $this->assertEquals('1 = 1', (string) $this->_expr->eq(1, 1));
     }
 
     public function testLikeExpr()
     {
-        $this->assertEquals('a.description LIKE :description', (string) Expr::like('a.description', ':description'));
+        $this->assertEquals('a.description LIKE :description', (string) $this->_expr->like('a.description', ':description'));
     }
 
     public function testConcatExpr()
     {
-        $this->assertEquals('CONCAT(u.first_name, u.last_name)', (string) Expr::concat('u.first_name', 'u.last_name'));
+        $this->assertEquals('CONCAT(u.first_name, u.last_name)', (string) $this->_expr->concat('u.first_name', 'u.last_name'));
     }
 
     public function testSubstrExpr()
     {
-        $this->assertEquals('SUBSTR(a.title, 0, 25)', (string) Expr::substr('a.title', 0, 25));
+        $this->assertEquals('SUBSTR(a.title, 0, 25)', (string) $this->_expr->substr('a.title', 0, 25));
     }
 
     public function testLowerExpr()
     {
-        $this->assertEquals('LOWER(u.first_name)', (string) Expr::lower('u.first_name'));
+        $this->assertEquals('LOWER(u.first_name)', (string) $this->_expr->lower('u.first_name'));
     }
 
     public function testUpperExpr()
     {
-        $this->assertEquals('UPPER(u.first_name)', (string) Expr::upper('u.first_name'));
+        $this->assertEquals('UPPER(u.first_name)', (string) $this->_expr->upper('u.first_name'));
     }
 
     public function testLengthExpr()
     {
-        $this->assertEquals('LENGTH(u.first_name)', (string) Expr::length('u.first_name'));
+        $this->assertEquals('LENGTH(u.first_name)', (string) $this->_expr->length('u.first_name'));
     }
 
     public function testGreaterThanExpr()
     {
-        $this->assertEquals('5 > 2', (string) Expr::gt(5, 2));
+        $this->assertEquals('5 > 2', (string) $this->_expr->gt(5, 2));
     }
 
     public function testLessThanExpr()
     {
-        $this->assertEquals('2 < 5', (string) Expr::lt(2, 5));
+        $this->assertEquals('2 < 5', (string) $this->_expr->lt(2, 5));
     }
 
     public function testStringLiteralExpr()
     {
-        $this->assertEquals("'word'", (string) Expr::literal('word'));
+        $this->assertEquals("'word'", (string) $this->_expr->literal('word'));
     }
 
     public function testNumericLiteralExpr()
     {
-        $this->assertEquals(5, (string) Expr::literal(5));
+        $this->assertEquals(5, (string) $this->_expr->literal(5));
     }
 
     public function testGreaterThanOrEqualToExpr()
     {
-        $this->assertEquals('5 >= 2', (string) Expr::gte(5, 2));
+        $this->assertEquals('5 >= 2', (string) $this->_expr->gte(5, 2));
     }
 
     public function testLessThanOrEqualTo()
     {
-        $this->assertEquals('2 <= 5', (string) Expr::lte(2, 5));
+        $this->assertEquals('2 <= 5', (string) $this->_expr->lte(2, 5));
     }
 
     public function testBetweenExpr()
     {
-        $this->assertEquals('BETWEEN(u.id, 3, 6)', (string) Expr::between('u.id', 3, 6));
+        $this->assertEquals('BETWEEN(u.id, 3, 6)', (string) $this->_expr->between('u.id', 3, 6));
     }
 
     public function testTrimExpr()
     {
-        $this->assertEquals('TRIM(u.id)', (string) Expr::trim('u.id'));
+        $this->assertEquals('TRIM(u.id)', (string) $this->_expr->trim('u.id'));
     }
 
     public function testInExpr()
     {
-        $this->assertEquals('u.id IN(1, 2, 3)', (string) Expr::in('u.id', array(1, 2, 3)));
+        $this->assertEquals('u.id IN(1, 2, 3)', (string) $this->_expr->in('u.id', array(1, 2, 3)));
     }
 
     public function testAndxOrxExpr()
     {
-        $andExpr = Expr::andx();
-        $andExpr->add(Expr::eq(1, 1));
-        $andExpr->add(Expr::lt(1, 5));
+        $andExpr = $this->_expr->andx();
+        $andExpr->add($this->_expr->eq(1, 1));
+        $andExpr->add($this->_expr->lt(1, 5));
 
-        $orExpr = Expr::orx();
+        $orExpr = $this->_expr->orx();
         $orExpr->add($andExpr);
-        $orExpr->add(Expr::eq(1, 1));
+        $orExpr->add($this->_expr->eq(1, 1));
 
         $this->assertEquals('((1 = 1) AND (1 < 5)) OR (1 = 1)', (string) $orExpr);
     }
 
     public function testOrxExpr()
     {
-        $orExpr = Expr::orx();
-        $orExpr->add(Expr::eq(1, 1));
-        $orExpr->add(Expr::lt(1, 5));
+        $orExpr = $this->_expr->orx();
+        $orExpr->add($this->_expr->eq(1, 1));
+        $orExpr->add($this->_expr->lt(1, 5));
 
         $this->assertEquals('(1 = 1) OR (1 < 5)', (string) $orExpr);
     }
 
     public function testSelectExpr()
     {
-        $selectExpr = Expr::select();
+        $selectExpr = $this->_expr->select();
         $selectExpr->add('u.id');
         $selectExpr->add('u.username');
 
@@ -277,13 +278,13 @@ class ExprTest extends \Doctrine\Tests\OrmTestCase
     
     public function testFromExpr()
     {
-        $this->assertEquals('User', (string) Expr::from('User'));
-        $this->assertEquals('User u', (string) Expr::from('User', 'u'));
+        $this->assertEquals('User', (string) $this->_expr->from('User'));
+        $this->assertEquals('User u', (string) $this->_expr->from('User', 'u'));
     }
 
     public function testExprBaseCount()
     {
-        $selectExpr = Expr::select();
+        $selectExpr = $this->_expr->select();
         $selectExpr->add('u.id');
         $selectExpr->add('u.username');
 
@@ -292,7 +293,7 @@ class ExprTest extends \Doctrine\Tests\OrmTestCase
 
     public function testOrderByCountExpr()
     {
-        $orderByExpr = Expr::orderBy();
+        $orderByExpr = $this->_expr->orderBy();
         $orderByExpr->add('u.username', 'DESC');
 
         $this->assertEquals($orderByExpr->count(), 1);
@@ -301,13 +302,13 @@ class ExprTest extends \Doctrine\Tests\OrmTestCase
 
     public function testOrderByOrder()
     {
-        $orderByExpr = Expr::orderBy('u.username', 'DESC');
+        $orderByExpr = $this->_expr->orderBy('u.username', 'DESC');
         $this->assertEquals('u.username DESC', (string) $orderByExpr);
     }
 
     public function testOrderByDefaultOrderIsAsc()
     {
-        $orderByExpr = Expr::orderBy('u.username');
+        $orderByExpr = $this->_expr->orderBy('u.username');
         $this->assertEquals('u.username ASC', (string) $orderByExpr);
     }
 
@@ -316,7 +317,7 @@ class ExprTest extends \Doctrine\Tests\OrmTestCase
      */
     public function testAddThrowsException()
     {
-        $orExpr = Expr::orx();
-        $orExpr->add(Expr::quot(5, 2));
+        $orExpr = $this->_expr->orx();
+        $orExpr->add($this->_expr->quot(5, 2));
     }
 }

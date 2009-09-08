@@ -40,13 +40,13 @@ class Expr
      *
      *     [php]
      *     // (u.type = ?1) AND (u.role = ?2)
-     *     $q->where(Expr::andx('u.type = ?1', 'u.role = ?2'));
+     *     $q->where($q->expr()->andx('u.type = ?1', 'u.role = ?2'));
      *
      * @param mixed $x Optional clause. Defaults = null, but requires
      *                 at least one defined when converting to string.
      * @return Expr\Andx
      */
-    public static function andx($x = null)
+    public function andx($x = null)
     {
         return new Expr\Andx(func_get_args());
     }
@@ -57,13 +57,13 @@ class Expr
      *
      *     [php]
      *     // (u.type = ?1) OR (u.role = ?2)
-     *     $q->where(Expr::orx('u.type = ?1', 'u.role = ?2'));
+     *     $q->where($q->expr()->orx('u.type = ?1', 'u.role = ?2'));
      *
      * @param mixed $x Optional clause. Defaults = null, but requires
      *                 at least one defined when converting to string.
      * @return Expr\Orx
      */
-    public static function orx($x = null)
+    public function orx($x = null)
     {
         return new Expr\Orx(func_get_args());
     }
@@ -74,13 +74,13 @@ class Expr
      *
      *     [php]
      *     // u.id, u.name, u.surname
-     *     $q->select(Expr::select('u.id', 'u.name')->add('u.surname'));
+     *     $q->select($q->expr()->select('u.id', 'u.name')->add('u.surname'));
      *
      * @param mixed $select Optional select. Defaults = null, but requires
      *                      at least one defined when converting to string.
      * @return Expr\Select
      */
-    public static function select($select = null)
+    public function select($select = null)
     {
         return new Expr\Select(func_get_args());
     }
@@ -90,13 +90,13 @@ class Expr
      *
      *     [php]
      *     // User u
-     *     $q->from(Expr::from('User', 'u'));
+     *     $q->from($q->expr()->from('User', 'u'));
      *
      * @param string $from Entity name.
      * @param string $alias Optional alias to be used by Entity.
      * @return Expr\From
      */
-    public static function from($from, $alias = null)
+    public function from($from, $alias = null)
     {
         return new Expr\From($from, $alias);
     }
@@ -106,7 +106,7 @@ class Expr
      *
      *     [php]
      *     // LEFT JOIN u.Group g WITH g.name = 'admin'
-     *     Expr::leftJoin('u.Group', 'g', 'WITH', "g.name = 'admin'")
+     *     $q->expr()->leftJoin('u.Group', 'g', 'WITH', "g.name = 'admin'")
      *
      * @param string $join Relation join.
      * @param string $alias Optional alias to be used by Relation.
@@ -115,7 +115,7 @@ class Expr
      * @param mixed $condition Optional condition to be appended.
      * @return Expr\Join
      */
-    public static function leftJoin($join, $alias = null, $conditionType = null, $condition = null)
+    public function leftJoin($join, $alias = null, $conditionType = null, $condition = null)
     {
         return new Expr\Join(Expr\Join::LEFT_JOIN, $join, $alias, $conditionType, $condition);
     }
@@ -125,7 +125,7 @@ class Expr
      *
      *     [php]
      *     // INNER JOIN u.Group g WITH g.name = 'admin'
-     *     Expr::innerJoin('u.Group', 'g', 'WITH', "g.name = 'admin'")
+     *     $q->expr()->innerJoin('u.Group', 'g', 'WITH', "g.name = 'admin'")
      *
      * @param string $join Relation join.
      * @param string $alias Optional alias to be used by Relation.
@@ -134,7 +134,7 @@ class Expr
      * @param mixed $condition Optional condition to be appended.
      * @return Expr\Join
      */
-    public static function innerJoin($join, $alias = null, $conditionType = null, $condition = null)
+    public function innerJoin($join, $alias = null, $conditionType = null, $condition = null)
     {
         return new Expr\Join(Expr\Join::INNER_JOIN, $join, $alias, $conditionType, $condition);
     }
@@ -144,13 +144,13 @@ class Expr
      * Each argument is separated by a ",". Example:
      *
      *     [php]
-     *     $q->orderBy(Expr::orderBy('u.surname', 'ASC')->add('u.name', 'ASC'));
+     *     $q->orderBy($q->expr()->orderBy('u.surname', 'ASC')->add('u.name', 'ASC'));
      *
      * @param string $sort Optional item sort.
      * @param string $order Optional order to be applied in item.
      * @return Expr\OrderBy
      */
-    public static function orderBy($sort = null, $order = null)
+    public function orderBy($sort = null, $order = null)
     {
         return new Expr\OrderBy($sort, $order);
     }
@@ -161,13 +161,13 @@ class Expr
      *
      *     [php]
      *     // u.id, u.name
-     *     $q->select(Expr::groupBy('u.id', 'u.name'));
+     *     $q->select($q->expr()->groupBy('u.id', 'u.name'));
      *
      * @param mixed $groupBy Optional group by. Defaults = null, but requires
      *                       at least one defined when converting to string.
      * @return Expr\Select
      */
-    public static function groupBy($groupBy = null)
+    public function groupBy($groupBy = null)
     {
         return new Expr\GroupBy(func_get_args());
     }
@@ -179,13 +179,13 @@ class Expr
      *
      *     [php]
      *     // u.id = ?1
-     *     $q->where(Expr::eq('u.id', '?1'));
+     *     $q->where($q->expr()->eq('u.id', '?1'));
      *
      * @param mixed $x Left expression
      * @param mixed $y Right expression
      * @return Expr\Comparison
      */
-    public static function eq($x, $y)
+    public function eq($x, $y)
     {
         return new Expr\Comparison($x, Expr\Comparison::EQ, $y);
     }
@@ -197,13 +197,13 @@ class Expr
      *
      *     [php]
      *     // u.id <> ?1
-     *     $q->where(Expr::neq('u.id', '?1'));
+     *     $q->where($q->expr()->neq('u.id', '?1'));
      *
      * @param mixed $x Left expression
      * @param mixed $y Right expression
      * @return Expr\Comparison
      */
-    public static function neq($x, $y)
+    public function neq($x, $y)
     {
         return new Expr\Comparison($x, Expr\Comparison::NEQ, $y);
     }
@@ -215,13 +215,13 @@ class Expr
      *
      *     [php]
      *     // u.id < ?1
-     *     $q->where(Expr::lt('u.id', '?1'));
+     *     $q->where($q->expr()->lt('u.id', '?1'));
      *
      * @param mixed $x Left expression
      * @param mixed $y Right expression
      * @return Expr\Comparison
      */
-    public static function lt($x, $y)
+    public function lt($x, $y)
     {
         return new Expr\Comparison($x, Expr\Comparison::LT, $y);
     }
@@ -233,13 +233,13 @@ class Expr
      *
      *     [php]
      *     // u.id <= ?1
-     *     $q->where(Expr::lte('u.id', '?1'));
+     *     $q->where($q->expr()->lte('u.id', '?1'));
      *
      * @param mixed $x Left expression
      * @param mixed $y Right expression
      * @return Expr\Comparison
      */
-    public static function lte($x, $y)
+    public function lte($x, $y)
     {
         return new Expr\Comparison($x, Expr\Comparison::LTE, $y);
     }
@@ -251,13 +251,13 @@ class Expr
      *
      *     [php]
      *     // u.id > ?1
-     *     $q->where(Expr::gt('u.id', '?1'));
+     *     $q->where($q->expr()->gt('u.id', '?1'));
      *
      * @param mixed $x Left expression
      * @param mixed $y Right expression
      * @return Expr\Comparison
      */
-    public static function gt($x, $y)
+    public function gt($x, $y)
     {
         return new Expr\Comparison($x, Expr\Comparison::GT, $y);
     }
@@ -269,13 +269,13 @@ class Expr
      *
      *     [php]
      *     // u.id >= ?1
-     *     $q->where(Expr::gte('u.id', '?1'));
+     *     $q->where($q->expr()->gte('u.id', '?1'));
      *
      * @param mixed $x Left expression
      * @param mixed $y Right expression
      * @return Expr\Comparison
      */
-    public static function gte($x, $y)
+    public function gte($x, $y)
     {
         return new Expr\Comparison($x, Expr\Comparison::GTE, $y);
     }
@@ -286,7 +286,7 @@ class Expr
      * @param mixed $x Argument to be used in AVG() function.
      * @return Expr\Func
      */
-    public static function avg($x)
+    public function avg($x)
     {
         return new Expr\Func('AVG', array($x));
     }
@@ -297,7 +297,7 @@ class Expr
      * @param mixed $x Argument to be used in MAX() function.
      * @return Expr\Func
      */
-    public static function max($x)
+    public function max($x)
     {
         return new Expr\Func('MAX', array($x));
     }
@@ -308,7 +308,7 @@ class Expr
      * @param mixed $x Argument to be used in MIN() function.
      * @return Expr\Func
      */
-    public static function min($x)
+    public function min($x)
     {
         return new Expr\Func('MIN', array($x));
     }
@@ -319,7 +319,7 @@ class Expr
      * @param mixed $x Argument to be used in COUNT() function.
      * @return Expr\Func
      */
-    public static function count($x)
+    public function count($x)
     {
         return new Expr\Func('COUNT', array($x));
     }
@@ -330,7 +330,7 @@ class Expr
      * @param mixed $x Argument to be used in COUNT(DISTINCT) function.
      * @return string
      */
-    public static function countDistinct($x)
+    public function countDistinct($x)
     {
         return 'COUNT(DISTINCT ' . implode(', ', func_get_args()) . ')';
     }
@@ -341,7 +341,7 @@ class Expr
      * @param mixed $subquery DQL Subquery to be used in EXISTS() function.
      * @return Expr\Func
      */
-    public static function exists($subquery)
+    public function exists($subquery)
     {
         return new Expr\Func('EXISTS', array($subquery));
     }
@@ -352,7 +352,7 @@ class Expr
      * @param mixed $subquery DQL Subquery to be used in ALL() function.
      * @return Expr\Func
      */
-    public static function all($subquery)
+    public function all($subquery)
     {
         return new Expr\Func('ALL', array($subquery));
     }
@@ -363,7 +363,7 @@ class Expr
      * @param mixed $subquery DQL Subquery to be used in SOME() function.
      * @return Expr\Func
      */
-    public static function some($subquery)
+    public function some($subquery)
     {
         return new Expr\Func('SOME', array($subquery));
     }
@@ -374,7 +374,7 @@ class Expr
      * @param mixed $subquery DQL Subquery to be used in ANY() function.
      * @return Expr\Func
      */
-    public static function any($subquery)
+    public function any($subquery)
     {
         return new Expr\Func('ANY', array($subquery));
     }
@@ -385,7 +385,7 @@ class Expr
      * @param mixed $restriction Restriction to be used in NOT() function.
      * @return Expr\Func
      */
-    public static function not($restriction)
+    public function not($restriction)
     {
         return new Expr\Func('NOT', array($restriction));
     }
@@ -396,7 +396,7 @@ class Expr
      * @param mixed $x Argument to be used in ABS() function.
      * @return Expr\Func
      */
-    public static function abs($x)
+    public function abs($x)
     {
         return new Expr\Func('ABS', array($x));
     }
@@ -408,13 +408,13 @@ class Expr
      *
      *     [php]
      *     // u.salary * u.percentAnualSalaryIncrease
-     *     Expr::prod('u.salary', 'u.percentAnualSalaryIncrease')
+     *     $q->expr()->prod('u.salary', 'u.percentAnualSalaryIncrease')
      *
      * @param mixed $x Left expression
      * @param mixed $y Right expression
      * @return Expr\Math
      */
-    public static function prod($x, $y)
+    public function prod($x, $y)
     {
         return new Expr\Math($x, '*', $y);
     }
@@ -426,13 +426,13 @@ class Expr
      *
      *     [php]
      *     // u.monthlySubscriptionCount - 1
-     *     Expr::diff('u.monthlySubscriptionCount', '1')
+     *     $q->expr()->diff('u.monthlySubscriptionCount', '1')
      *
      * @param mixed $x Left expression
      * @param mixed $y Right expression
      * @return Expr\Math
      */
-    public static function diff($x, $y)
+    public function diff($x, $y)
     {
         return new Expr\Math($x, '-', $y);
     }
@@ -444,13 +444,13 @@ class Expr
      *
      *     [php]
      *     // u.numChildren + 1
-     *     Expr::diff('u.numChildren', '1')
+     *     $q->expr()->diff('u.numChildren', '1')
      *
      * @param mixed $x Left expression
      * @param mixed $y Right expression
      * @return Expr\Math
      */
-    public static function sum($x, $y)
+    public function sum($x, $y)
     {
         return new Expr\Math($x, '+', $y);
     }
@@ -462,13 +462,13 @@ class Expr
      *
      *     [php]
      *     // u.total - u.period
-     *     Expr::diff('u.total', 'u.period')
+     *     $q->expr()->diff('u.total', 'u.period')
      *
      * @param mixed $x Left expression
      * @param mixed $y Right expression
      * @return Expr\Math
      */
-    public static function quot($x, $y)
+    public function quot($x, $y)
     {
         return new Expr\Math($x, '/', $y);
     }
@@ -479,7 +479,7 @@ class Expr
      * @param mixed $x Argument to be used in SQRT() function.
      * @return Expr\Func
      */
-    public static function sqrt($x)
+    public function sqrt($x)
     {
         return new Expr\Func('SQRT', array($x));
     }
@@ -491,7 +491,7 @@ class Expr
      * @param mixed $y Argument to be used in IN() function.
      * @return Expr\Func
      */
-    public static function in($x, $y)
+    public function in($x, $y)
     {
         return new Expr\Func($x . ' IN', (array) $y);
     }
@@ -503,7 +503,7 @@ class Expr
      * @param mixed $y Argument to be used in NOT IN() function.
      * @return Expr\Func
      */
-    public static function notIn($x, $y)
+    public function notIn($x, $y)
     {
         return new Expr\Func($x . ' NOT IN', (array) $y);
     }
@@ -515,7 +515,7 @@ class Expr
      * @param mixed $y Argument to be used in LIKE() comparison.
      * @return Expr\Comparison
      */
-    public static function like($x, $y)
+    public function like($x, $y)
     {
         return new Expr\Comparison($x, 'LIKE', $y);
     }
@@ -527,7 +527,7 @@ class Expr
      * @param mixed $x Second argument to be used in CONCAT() function.
      * @return Expr\Func
      */
-    public static function concat($x, $y)
+    public function concat($x, $y)
     {
         return new Expr\Func('CONCAT', array($x, $y));
     }
@@ -540,7 +540,7 @@ class Expr
      * @param integer $len Length of crop. May accept negative values.
      * @return Expr\Func
      */
-    public static function substr($x, $from, $len)
+    public function substr($x, $from, $len)
     {
         return new Expr\Func('SUBSTR', array($x, $from, $len));
     }
@@ -551,7 +551,7 @@ class Expr
      * @param mixed $x Argument to be used in LOWER() function.
      * @return Expr\Func
      */
-    public static function lower($x)
+    public function lower($x)
     {
         return new Expr\Func('LOWER', array($x));
     }
@@ -562,7 +562,7 @@ class Expr
      * @param mixed $x Argument to be used in LOWER() function.
      * @return Expr\Func
      */
-    public static function upper($x)
+    public function upper($x)
     {
         return new Expr\Func('UPPER', array($x));
     }
@@ -573,7 +573,7 @@ class Expr
      * @param mixed $x Argument to be used as argument of LENGTH() function.
      * @return Expr\Func
      */
-    public static function length($x)
+    public function length($x)
     {
         return new Expr\Func('LENGTH', array($x));
     }
@@ -584,7 +584,7 @@ class Expr
      * @param mixed $literal Argument to be converted to literal.
      * @return string
      */
-    public static function literal($literal)
+    public function literal($literal)
     {
         if (is_numeric($literal)) {
             return (string) $literal;
@@ -601,7 +601,7 @@ class Expr
      * @param integer $y End point value to be used in BETWEEN() function.
      * @return Expr\Func
      */
-    public static function between($val, $x, $y)
+    public function between($val, $x, $y)
     {
         return new Expr\Func('BETWEEN', array($val, $x, $y));
     }
@@ -612,7 +612,7 @@ class Expr
      * @param mixed $x Argument to be used as argument of TRIM() function.
      * @return Expr\Func
      */
-    public static function trim($x)
+    public function trim($x)
     {
         return new Expr\Func('TRIM', $x);
     }
