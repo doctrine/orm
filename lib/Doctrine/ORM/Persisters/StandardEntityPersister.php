@@ -139,17 +139,19 @@ class StandardEntityPersister
             $insertData = array();
             $this->_prepareData($entity, $insertData, true);
 
-            $paramIndex = 1;
-            if ($sqlLogger) {
-                $params = array();
-                foreach ($insertData[$primaryTableName] as $value) {
-                    $params[$paramIndex] = $value;
-                    $stmt->bindValue($paramIndex++, $value);
-                }
-                $sqlLogger->logSql($this->_class->insertSql, $params);
-            } else {
-                foreach ($insertData[$primaryTableName] as $value) {
-                    $stmt->bindValue($paramIndex++, $value);
+            if (isset($insertData[$primaryTableName])) {
+                $paramIndex = 1;
+                if ($sqlLogger) {
+                    $params = array();
+                    foreach ($insertData[$primaryTableName] as $value) {
+                        $params[$paramIndex] = $value;
+                        $stmt->bindValue($paramIndex++, $value);
+                    }
+                    $sqlLogger->logSql($this->_class->insertSql, $params);
+                } else {
+                    foreach ($insertData[$primaryTableName] as $value) {
+                        $stmt->bindValue($paramIndex++, $value);
+                    }
                 }
             }
 

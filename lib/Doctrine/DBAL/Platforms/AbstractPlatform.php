@@ -1580,4 +1580,16 @@ abstract class AbstractPlatform
     {
         return $schemaElementName;
     }
+
+    /**
+     * Get the insert sql for an empty insert statement
+     *
+     * @param string $tableName 
+     * @param string $identifierColumnName 
+     * @return string $sql
+     */
+    public function getEmptyIdentityInsertSql($tableName, $identifierColumnName)
+    {
+        return 'INSERT INTO ' . $tableName . ' (' . $identifierColumnName . ') VALUES (null)';
+    }
 }

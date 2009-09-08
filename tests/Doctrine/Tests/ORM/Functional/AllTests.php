@@ -43,6 +43,7 @@ class AllTests
         
         $suite->addTest(Locking\AllTests::suite());
         $suite->addTest(SchemaTool\AllTests::suite());
+        $suite->addTest(Ticket\AllTests::suite());
 
         return $suite;
     }

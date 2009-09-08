@@ -369,10 +369,17 @@ class ClassMetadataFactory
             $class->resultColumnNames[$this->_targetPlatform->getSqlResultCasing($columnName)] = $columnName;
         }
 
-        $class->insertSql = 'INSERT INTO ' .
-                $class->getQuotedTableName($this->_targetPlatform)
-               . ' (' . implode(', ', $columns) . ') '
-               . 'VALUES (' . implode(', ', $values) . ')';
+        if (empty($columns)) {
+            $class->insertSql = $this->_targetPlatform->getEmptyIdentityInsertSql(
+                $class->getQuotedTableName($this->_targetPlatform),
+                $class->getQuotedColumnName($class->identifier[0], $this->_targetPlatform)
+            );
+        } else {
+            $class->insertSql = 'INSERT INTO ' .
+                 $class->getQuotedTableName($this->_targetPlatform)
+                . ' (' . implode(', ', $columns) . ') '
+                . 'VALUES (' . implode(', ', $values) . ')';
+        }
     }
 
     /**

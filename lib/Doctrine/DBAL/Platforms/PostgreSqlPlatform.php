@@ -770,4 +770,16 @@ class PostgreSqlPlatform extends AbstractPlatform
     {
         return 'Y-m-d H:i:sO';
     }
+
+    /**
+     * Get the insert sql for an empty insert statement
+     *
+     * @param string $tableName 
+     * @param string $identifierColumnName 
+     * @return string $sql
+     */
+    public function getEmptyIdentityInsertSql($quotedTableName, $quotedIdentifierColumnName)
+    {
+        return 'INSERT INTO ' . $quotedTableName . ' (' . $quotedIdentifierColumnName . ') VALUES (DEFAULT)';
+    }
 }

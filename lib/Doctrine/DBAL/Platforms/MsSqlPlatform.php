@@ -506,4 +506,16 @@ class MsSqlPlatform extends AbstractPlatform
 
         return $query;
     }
+
+    /**
+     * Get the insert sql for an empty insert statement
+     *
+     * @param string $tableName 
+     * @param string $identifierColumnName 
+     * @return string $sql
+     */
+    public function getEmptyIdentityInsertSql($quotedTableName, $quotedIdentifierColumnName)
+    {
+        return 'INSERT INTO ' . $quotedTableName . ' DEFAULT VALUES';
+    }
 }
