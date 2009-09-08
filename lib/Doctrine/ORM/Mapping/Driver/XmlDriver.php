@@ -138,7 +138,7 @@ class XmlDriver extends AbstractFileDriver
                 }
                 
                 if (isset($fieldMapping['options'])) {
-                    $mapping['options'] = $fieldMapping['options'];
+                    $mapping['options'] = (array)$fieldMapping['options'];
                 }
                 
                 if (isset($fieldMapping['version']) && $fieldMapping['version']) {
