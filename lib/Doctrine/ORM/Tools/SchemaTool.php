@@ -249,6 +249,7 @@ class SchemaTool
         $column['length'] = isset($mapping['length']) ? $mapping['length'] : null;
         $column['notnull'] = isset($mapping['nullable']) ? ! $mapping['nullable'] : false;
         $column['unique'] = isset($mapping['unique']) ? $mapping['unique'] : false;
+        $column['version'] = $class->isVersioned && $class->versionField == $mapping['fieldName'] ? true : false;
 
         if (isset($mapping['precision'])) {
             $column['precision'] = $mapping['precision'];

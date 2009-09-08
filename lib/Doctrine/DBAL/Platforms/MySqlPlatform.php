@@ -264,7 +264,11 @@ class MySqlPlatform extends AbstractPlatform
      */
     public function getDateTimeTypeDeclarationSql(array $fieldDeclaration)
     {
-        return 'DATETIME';
+        if ($fieldDeclaration['version']) {
+            return 'TIMESTAMP';
+        } else {
+            return 'DATETIME';
+        }
     }
     
     /**
