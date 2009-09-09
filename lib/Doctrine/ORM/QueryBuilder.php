@@ -124,15 +124,15 @@ class QueryBuilder
      *     [php]
      *     switch ($qb->getType())
      *     {
-     *         case 0:
+     *         case QueryBuilder::SELECT:
      *             echo 'SELECT';
      *         break;
      *
-     *         case 1:
+     *         case QueryBuilder::DELETE:
      *             echo 'DELETE';
      *         break;
      *
-     *         case 2:
+     *         case QueryBuilder::UPDATE:
      *             echo 'UPDATE';
      *         break;
      *     }
