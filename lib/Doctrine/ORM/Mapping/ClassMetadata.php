@@ -1591,7 +1591,7 @@ final class ClassMetadata
     }
 
     /**
-     * Sets the dsicriminator values used by this class.
+     * Sets the discriminator values used by this class.
      * Used for JOINED and SINGLE_TABLE inheritance mapping strategies.
      *
      * @param array $map
