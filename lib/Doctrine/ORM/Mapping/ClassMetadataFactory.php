@@ -113,6 +113,7 @@ class ClassMetadataFactory
                 $this->_loadMetadata($className);
             }
         }
+        
         return $this->_loadedMetadata[$className];
     }
     
@@ -158,7 +159,7 @@ class ClassMetadataFactory
         }
         $parentClasses = array_reverse($parentClasses);
         $parentClasses[] = $name;
-        
+
         // Move down the hierarchy of parent classes, starting from the topmost class
         $parent = null;
         $visited = array();
@@ -184,7 +185,7 @@ class ClassMetadataFactory
                 $class->setVersionField($parent->versionField);
                 $class->setDiscriminatorMap($parent->discriminatorMap); 
             }
-            
+
             // Invoke driver
             $this->_driver->loadMetadataForClass($className, $class);
 

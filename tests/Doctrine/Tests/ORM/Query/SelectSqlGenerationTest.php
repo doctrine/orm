@@ -408,6 +408,14 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
         );
     }
     
+    public function testOrderByCollectionAssociationSize()
+    {
+        $this->assertSqlGeneration(
+            "select u, size(u.articles) as numArticles from Doctrine\Tests\Models\CMS\CmsUser u order by numArticles",
+            "SELECT c0_.id AS id0, c0_.status AS status1, c0_.username AS username2, c0_.name AS name3, (SELECT COUNT(c1_.user_id) FROM cms_articles c1_ WHERE c1_.user_id = c0_.id) AS sclr4 FROM cms_users c0_ ORDER BY sclr4 ASC"
+        );
+    }
+    
     /* Not yet implemented, needs more thought
     public function testSingleValuedAssociationFieldInWhere()
     {

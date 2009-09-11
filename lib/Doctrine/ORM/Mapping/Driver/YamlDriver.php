@@ -21,7 +21,8 @@
 
 namespace Doctrine\ORM\Mapping\Driver;
 
-use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Mapping\ClassMetadata,
+    Doctrine\Common\DoctrineException;
 
 if ( ! class_exists('sfYaml', false)) {
     require_once __DIR__ . '/../../../../vendor/sfYaml/sfYaml.class.php';
@@ -48,9 +49,9 @@ class YamlDriver extends AbstractFileDriver
     public function loadMetadataForClass($className, ClassMetadata $metadata)
     {
         $class = $metadata->getReflectionClass();
-
+        
         $element = $this->getElement($className);
-
+        
         if ($element['type'] == 'entity') {
             $metadata->setCustomRepositoryClass(
                 isset($element['repositoryClass']) ? $xmlRoot['repositoryClass'] : null

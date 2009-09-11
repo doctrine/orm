@@ -1286,10 +1286,10 @@ class Parser
         
         if ($glimpse['value'] != '.') {
             $token = $this->_lexer->lookahead;
-            $resultVariable = $this->ResultVariable();
+            $expr = $this->ResultVariable();
             
             // Check if ResultVariable is defined in query components
-            $queryComponent = $this->_validateIdentificationVariable($resultVariable, null, $token);
+            $queryComponent = $this->_validateIdentificationVariable($expr, null, $token);
             
             // Outer defininition used in inner subselect is not enough.
             // ResultVariable exists in queryComponents, check nesting level
@@ -1562,10 +1562,10 @@ class Parser
 
             if ($this->_lexer->isNextToken(Lexer::T_IDENTIFIER)) {
                 $token = $this->_lexer->lookahead;
-                $resultVariable = $this->ResultVariable();
+                $fieldAliasIdentificationVariable = $this->ResultVariable();
                 
                 // Include ResultVariable in query components.
-                $this->_queryComponents[$resultVariable] = array(
+                $this->_queryComponents[$fieldAliasIdentificationVariable] = array(
                     'resultvariable' => $expression,
                     'nestingLevel'   => $this->_nestingLevel,
                     'token'          => $token,

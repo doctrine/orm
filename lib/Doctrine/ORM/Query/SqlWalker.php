@@ -59,6 +59,9 @@ class SqlWalker implements TreeWalker
     private $_query;
     private $_dqlToSqlAliasMap = array();
     
+    /** Map from result variable names to their SQL column alias names. */
+    private $_scalarResultAliasMap = array();
+    
     /** Map of all components/classes that appear in the DQL query. */
     private $_queryComponents;
     
@@ -581,13 +584,19 @@ class SqlWalker implements TreeWalker
     public function walkOrderByItem($orderByItem)
     {
         $expr = $orderByItem->expression;
-        $parts = $expr->parts;
-        $dqlAlias = $expr->identificationVariable;
-        $class = $this->_queryComponents[$dqlAlias]['metadata'];
-        $columnName = $class->getQuotedColumnName($parts[0], $this->_platform);
-        
-        return $this->getSqlTableAlias($class->getTableName(), $dqlAlias) . '.' 
-             . $columnName . ' ' . strtoupper($orderByItem->type);
+        if ($expr instanceof AST\PathExpression) {
+            $parts = $expr->parts;
+            $dqlAlias = $expr->identificationVariable;
+            $class = $this->_queryComponents[$dqlAlias]['metadata'];
+            $columnName = $class->getQuotedColumnName($parts[0], $this->_platform);
+            
+            return $this->getSqlTableAlias($class->getTableName(), $dqlAlias) . '.' 
+                    . $columnName . ' ' . strtoupper($orderByItem->type);
+        } else {
+            $columnName = $this->_queryComponents[$expr]['token']['value'];
+
+            return $this->_scalarResultAliasMap[$columnName] . ' ' . strtoupper($orderByItem->type);
+        }
     }
 
     /**
@@ -762,6 +771,7 @@ class SqlWalker implements TreeWalker
             
             $columnAlias = 'sclr' . $this->_aliasCounter++;
             $sql .= $this->walkAggregateExpression($expr) . ' AS ' . $columnAlias;
+            $this->_scalarResultAliasMap[$resultAlias] = $columnAlias;
             
             $columnAlias = $this->_platform->getSqlResultCasing($columnAlias);
             $this->_rsm->addScalarResult($columnAlias, $resultAlias);
@@ -773,9 +783,10 @@ class SqlWalker implements TreeWalker
             } else {
                 $resultAlias = $selectExpression->fieldIdentificationVariable;
             }
-            
+
             $columnAlias = 'sclr' . $this->_aliasCounter++;
             $sql .= $this->walkFunction($expr) . ' AS ' . $columnAlias;
+            $this->_scalarResultAliasMap[$resultAlias] = $columnAlias;
             
             $columnAlias = $this->_platform->getSqlResultCasing($columnAlias);
             $this->_rsm->addScalarResult($columnAlias, $resultAlias);

@@ -2,41 +2,32 @@
 
 namespace Doctrine\Tests\Common;
 
-use Doctrine\Common\ClassLoader;
+use Doctrine\Common\GlobalClassLoader,
+    Doctrine\Common\IsolatedClassLoader;
 
 require_once __DIR__ . '/../TestInit.php';
 
 class ClassLoaderTest extends \Doctrine\Tests\DoctrineTestCase
 {
-    public function testCustomFileExtensionAndNamespaceSeparator()
+    public function testGlobalClassLoaderThrowsExceptionIfPutInChain()
     {
-        $classLoader = new \Doctrine\Common\ClassLoader();
-        $classLoader->setBasePath('ClassLoaderTest', __DIR__);
-        $classLoader->setClassFileExtension('.class.php');
+        $this->setExpectedException('Doctrine\Common\DoctrineException');
+        
+        $classLoader1 = new IsolatedClassLoader('Foo');
+        $classLoader1->register();
+        
+        $globalClassLoader = new GlobalClassLoader;
+        $globalClassLoader->register();
+    }
+    
+    public function testIsolatedClassLoaderReturnsFalseOnClassExists()
+    {
+        $classLoader = new IsolatedClassLoader('ClassLoaderTest');
+        $classLoader->setBasePath( __DIR__);
+        $classLoader->setFileExtension('.class.php');
         $classLoader->setNamespaceSeparator('_');
 
         $this->assertEquals($classLoader->loadClass('ClassLoaderTest_ClassA'), true);
-        $this->assertEquals($classLoader->loadClass('ClassLoaderTest_ClassB'), true);
-    }
-
-    public function testClassLoaderCheckFileExists()
-    {
-        $classLoader = new \Doctrine\Common\ClassLoader();
-        $classLoader->setBasePath('ClassLoaderTest', __DIR__);
-        $classLoader->setCheckFileExists(true);
-
-        // This would return a fatal error without check file exists true
-        $this->assertEquals($classLoader->loadClass('SomeInvalidClass'), false);
-    }
-
-    public function testAlreadyLoadedClassReturnsFalse()
-    {
-        $classLoader = new \Doctrine\Common\ClassLoader();
-        $classLoader->setBasePath('ClassLoaderTest', __DIR__);
-        $classLoader->setClassFileExtension('.class.php');
-        $classLoader->setNamespaceSeparator('_');
-        $classLoader->setCheckFileExists(true);
-
         $this->assertEquals($classLoader->loadClass('ClassLoaderTest_ClassA'), false);
         $this->assertEquals($classLoader->loadClass('ClassLoaderTest_ClassC'), true);
     }

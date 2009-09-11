@@ -1,0 +1,16 @@
+Entities\Address:
+  type: entity
+  table: addresses
+  id:
+    id:
+      type: integer
+      generator:
+        strategy: AUTO
+  fields:
+    street:
+      type: string
+      length: 255
+  oneToOne:
+    user:
+      targetEntity: User
+      mappedBy: address

@@ -164,6 +164,11 @@ class SchemaToolTask extends AbstractTask
         $printer = $this->getPrinter();
         $tool = new SchemaTool($this->_em);
         
+        if (empty($classes)) {
+            $printer->writeln('No classes to process.', 'INFO');
+            return;
+        }
+        
         if ($isCreate) {
             if (isset($args['dump-sql'])) {
                 foreach ($tool->getCreateSchemaSql($classes) as $sql) {
