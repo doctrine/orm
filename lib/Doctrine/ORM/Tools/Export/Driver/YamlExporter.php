@@ -22,7 +22,10 @@
 
 namespace Doctrine\ORM\Tools\Export\Driver;
 
-use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Mapping\ClassMetadata,
+    Doctrine\ORM\Mapping\OneToOneMapping,
+    Doctrine\ORM\Mapping\OneToManyMapping,
+    Doctrine\ORM\Mapping\ManyToManyMapping;
 
 /**
  * ClassMetadata exporter for Doctrine YAML mapping files
@@ -82,12 +85,55 @@ class YamlExporter extends AbstractExporter
         if ($idGeneratorType = $metadata->getIdGeneratorType()) {
             $id[$metadata->getSingleIdentifierFieldName()]['generator']['strategy'] = $idGeneratorType;
         }
+        
         $array['id'] = $id;
         $array['fields'] = $fields;
 
+        $associations = array();
         foreach ($metadata->associationMappings as $name => $associationMapping) {
-            // TODO: build array of association mappings
+            $associationMappingArray = array(
+                'fieldName'    => $associationMapping->sourceFieldName,
+                'sourceEntity' => $associationMapping->sourceEntityName,
+                'targetEntity' => $associationMapping->targetEntityName,
+                'optional'     => $associationMapping->isOptional,
+                'cascades'     => array(
+                    'remove'  => $associationMapping->isCascadeRemove,
+                    'persist' => $associationMapping->isCascadePersist,
+                    'refresh' => $associationMapping->isCascadeRefresh,
+                    'merge'   => $associationMapping->isCascadeMerge,
+                    'detach'  => $associationMapping->isCascadeDetach,
+                ),
+            );
+            
+            if ($associationMapping instanceof OneToOneMapping) {
+                // TODO: We may need to re-include the quotes if quote = true in names of joinColumns
+                $oneToOneMappingArray = array(
+                    'mappedBy'      => $associationMapping->mappedByFieldName,
+                    'joinColumns'   => $associationMapping->joinColumns,
+                    'orphanRemoval' => $associationMapping->orphanRemoval,
+                );
+                
+                $associationMappingArray = array_merge($associationMappingArray, $oneToOneMappingArray);
+            } else if ($associationMapping instanceof OneToManyMapping) {
+                $oneToManyMappingArray = array(
+                    'mappedBy'      => $associationMapping->mappedByFieldName,
+                    'orphanRemoval' => $associationMapping->orphanRemoval,
+                );
+                
+                $associationMappingArray = array_merge($associationMappingArray, $oneToManyMappingArray);
+            } else if ($associationMapping instanceof ManyToManyMapping) {
+                // TODO: We may need to re-include the quotes if quote = true in name of joinTable
+                $manyToManyMappingArray = array(
+                    'joinTable' => $associationMapping->joinTable,
+                );
+                
+                $associationMappingArray = array_merge($associationMappingArray, $manyToManyMappingArray);
+            }
+            
+            $associations[$name] = $associationMappingArray;
         }
+        
+        $array['associations'] = $associations;
 
         return \sfYaml::dump(array($metadata->name => $array), 10);
     }
