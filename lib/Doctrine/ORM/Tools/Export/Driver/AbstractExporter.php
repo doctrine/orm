@@ -70,6 +70,10 @@ abstract class AbstractExporter
      */
     public function export()
     {
+        if ( ! is_dir($this->_outputDir)) {
+            mkdir($this->_outputDir, 0777);
+        }
+
         foreach ($this->_metadatas as $metadata) {
             $outputPath = $this->_outputDir . '/' . str_replace('\\', '.', $metadata->name) . $this->_extension;
             $output = $this->exportClassMetadata($metadata);
@@ -101,4 +105,66 @@ abstract class AbstractExporter
      * @return mixed $exported
      */
     abstract public function exportClassMetadata(ClassMetadata $metadata);
+
+    protected function _getInheritanceTypeString($type)
+    {
+        switch ($type)
+        {
+            case Classmetadata::INHERITANCE_TYPE_NONE:
+                return 'NONE';
+            break;
+
+            case Classmetadata::INHERITANCE_TYPE_JOINED:
+                return 'JOINED';
+            break;
+            
+            case Classmetadata::INHERITANCE_TYPE_SINGLE_TABLE:
+                return 'SINGLE_TABLE';
+            break;
+            
+            case Classmetadata::INHERITANCE_TYPE_TABLE_PER_CLASS:
+                return 'PER_CLASS';
+            break;
+        }
+    }
+
+    protected function _getChangeTrackingPolicyString($policy)
+    {
+        switch ($policy)
+        {
+            case Classmetadata::CHANGETRACKING_DEFERRED_IMPLICIT:
+                return 'DEFERRED_IMPLICIT';
+            break;
+            
+            case Classmetadata::CHANGETRACKING_DEFERRED_EXPLICIT:
+                return 'DEFERRED_EXPLICIT';
+            break;
+            
+            case Classmetadata::CHANGETRACKING_NOTIFY:
+                return 'NOTIFY';
+            break;
+        }
+    }
+
+    protected function _getIdGeneratorTypeString($type)
+    {
+        switch ($type)
+        {
+            case Classmetadata::GENERATOR_TYPE_AUTO:
+                return 'AUTO';
+            break;
+            
+            case Classmetadata::GENERATOR_TYPE_SEQUENCE:
+                return 'SEQUENCE';
+            break;
+            
+            case Classmetadata::GENERATOR_TYPE_TABLE:
+                return 'TABLE';
+            break;
+            
+            case Classmetadata::GENERATOR_TYPE_IDENTITY:
+                return 'IDENTITY';
+            break;
+        }
+    }
 }

@@ -59,10 +59,17 @@ class YamlExporter extends AbstractExporter
             $array['schema'] = $metadata->primaryTable['schema'];
         }
 
-        $array['inheritanceType'] = $metadata->getInheritanceType();
-        $array['discriminatorColumn'] = $metadata->getDiscriminatorColumn();
-        $array['discriminatorMap'] = $metadata->discriminatorMap;
-        $array['changeTrackingPolicy'] = $metadata->changeTrackingPolicy;
+        $array['inheritanceType'] = $this->_getInheritanceTypeString($metadata->getInheritanceType());
+
+        if ($column = $metadata->getDiscriminatorColumn()) {
+            $array['discriminatorColumn'] = $column;
+        }
+
+        if ($map = $metadata->discriminatorMap) {
+            $array['discriminatorMap'] = $map;
+        }
+
+        $array['changeTrackingPolicy'] = $this->_getChangeTrackingPolicyString($metadata->changeTrackingPolicy);
 
         if (isset($metadata->primaryTable['indexes'])) {
             $array['indexes'] = $metadata->primaryTable['indexes'];
@@ -82,7 +89,7 @@ class YamlExporter extends AbstractExporter
             }
         }
 
-        if ($idGeneratorType = $metadata->getIdGeneratorType()) {
+        if ($idGeneratorType = $this->_getIdGeneratorTypeString($metadata->getIdGeneratorType())) {
             $id[$metadata->getSingleIdentifierFieldName()]['generator']['strategy'] = $idGeneratorType;
         }
         

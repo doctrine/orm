@@ -72,7 +72,7 @@ class YamlDriver extends AbstractFileDriver
         }
         
         if (isset($element['inheritanceType'])) {
-            $metadata->setInheritanceType($element['inheritanceType']);
+            $metadata->setInheritanceType(constant('Doctrine\ORM\Mapping\ClassMetadata::INHERITANCE_TYPE_' . $element['inheritanceType']));
         }
 
         // Evaluate discriminatorColumn
@@ -92,7 +92,8 @@ class YamlDriver extends AbstractFileDriver
 
         // Evaluate changeTrackingPolicy
         if (isset($element['changeTrackingPolicy'])) {
-            $metadata->setChangeTrackingPolicy($element['changeTrackingPolicy']);
+            $metadata->setChangeTrackingPolicy(constant('Doctrine\ORM\Mapping\ClassMetadata::CHANGETRACKING_'
+                    . $element['changeTrackingPolicy']));
         }
 
         // Evaluate indexes
