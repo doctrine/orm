@@ -109,7 +109,7 @@ class MySqlSchemaManager extends AbstractSchemaManager
 
         $values = null;
         $scale = null;
-
+        
         switch ($dbType) {
             case 'tinyint':
                 $type = 'integer';
@@ -239,27 +239,24 @@ class MySqlSchemaManager extends AbstractSchemaManager
             'unsigned' => (bool) $unsigned,
             'fixed' => (bool) $fixed
         );
-        if ($values !== null) {
-            $def['values'] = $values;
-        }
+        
         if ($scale !== null) {
             $def['scale'] = $scale;
         }
 
-        $values = isset($def['values']) ? $def['values'] : array();
+        $values = ($values !== null) ? $values : array();
 
         $column = array(
             'name'          => $tableColumn['Field'],
             'values'        => $values,
             'primary'       => (bool) (strtolower($tableColumn['Key']) == 'pri'),
+            'unique'        => (bool) (strtolower($tableColumn['Key']) == 'uni'),
             'default'       => $tableColumn['Default'],
             'notnull'       => (bool) ($tableColumn['Null'] != 'YES'),
             'autoincrement' => (bool) (strpos($tableColumn['Extra'], 'auto_increment') !== false),
         );
 
-        $column = array_merge($column, $def);
-
-        return $column;
+        return array_merge($column, $def);
     }
 
     public function _getPortableTableForeignKeyDefinition($tableForeignKey)

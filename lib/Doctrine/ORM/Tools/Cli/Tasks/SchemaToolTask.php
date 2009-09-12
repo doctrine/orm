@@ -33,8 +33,13 @@ use Doctrine\Common\DoctrineException,
  * Specifies that the schema of the classes should be updated.
  * 
  * 
- * @author robo
- * @since 2.0
+ * @license http://www.opensource.org/licenses/lgpl-license.php LGPL
+ * @link    www.doctrine-project.org
+ * @since   2.0
+ * @version $Revision: 3938 $
+ * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
+ * @author  Jonathan Wage <jonwage@gmail.com>
+ * @author  Roman Borschel <roman@code-factory.org>
  */
 class SchemaToolTask extends AbstractTask
 {

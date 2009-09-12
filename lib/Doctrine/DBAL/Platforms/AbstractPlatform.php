@@ -762,7 +762,8 @@ abstract class AbstractPlatform
     public function getDecimalTypeDeclarationSql(array $columnDef) 
     {
         $columnDef['precision'] = ( ! isset($columnDef['precision']) || empty($columnDef['precision']))
-            ? 10 : $columnDef['precision'];
+            ? (( ! isset($columnDef['length']) || empty($columnDef['length'])) ? 10 : $columnDef['length']) 
+            : $columnDef['precision'];
         $columnDef['scale'] = ( ! isset($columnDef['scale']) || empty($columnDef['scale']))
             ? 0 : $columnDef['scale'];
         

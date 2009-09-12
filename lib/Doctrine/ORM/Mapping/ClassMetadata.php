@@ -628,11 +628,11 @@ final class ClassMetadata
      * @param string $fieldName  The field name
      * @return boolean  TRUE if the field is not null, FALSE otherwise.
      */
-    public function isNotNull($fieldName)
+    public function isNullable($fieldName)
     {
         $mapping = $this->getFieldMapping($fieldName);
         if ($mapping !== false) {
-            return isset($mapping['nullable']) && $mapping['nullable'] == false;
+            return isset($mapping['nullable']) && $mapping['nullable'] == true;
         }
         return false;
     }

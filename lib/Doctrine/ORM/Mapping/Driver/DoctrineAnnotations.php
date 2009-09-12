@@ -56,8 +56,10 @@ final class JoinColumns extends Annotation {}
 final class Column extends Annotation {
     public $type;
     public $length;
+    public $fixed = false;
     public $precision = 0; // The precision for a decimal (exact numeric) column (Applies only for decimal column)
     public $scale = 0; // The scale for a decimal (exact numeric) column (Applies only for decimal column)
+    public $unsigned = false;
     public $unique = false;
     public $nullable = false;
     public $default;

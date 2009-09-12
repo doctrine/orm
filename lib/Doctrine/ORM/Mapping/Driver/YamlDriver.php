@@ -128,12 +128,20 @@ class YamlDriver extends AbstractFileDriver
                     $mapping['length'] = $fieldMapping['length'];
                 }
                 
+                if (isset($fieldMapping['fixed'])) {
+                    $mapping['fixed'] = (bool)$fieldMapping['fixed'];
+                }
+                
                 if (isset($fieldMapping['precision'])) {
                     $mapping['precision'] = $fieldMapping['precision'];
                 }
                 
                 if (isset($fieldMapping['scale'])) {
                     $mapping['scale'] = $fieldMapping['scale'];
+                }
+                
+                if (isset($fieldMapping['unsigned'])) {
+                    $mapping['unsigned'] = (bool)$fieldMapping['unsigned'];
                 }
                 
                 if (isset($fieldMapping['unique'])) {

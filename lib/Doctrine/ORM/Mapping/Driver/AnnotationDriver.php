@@ -169,8 +169,10 @@ class AnnotationDriver implements Driver
                 
                 $mapping['type'] = $columnAnnot->type;
                 $mapping['length'] = $columnAnnot->length;
+                $mapping['fixed'] = $columnAnnot->fixed;
                 $mapping['precision'] = $columnAnnot->precision;
                 $mapping['scale'] = $columnAnnot->scale;
+                $mapping['unsigned'] = $columnAnnot->unsigned;
                 $mapping['nullable'] = $columnAnnot->nullable;
                 $mapping['options'] = $columnAnnot->options;
                 $mapping['unique'] = $columnAnnot->unique;

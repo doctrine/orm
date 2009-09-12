@@ -497,20 +497,95 @@ class SchemaTool
                 $newClasses[] = $class;
             } else {
                 $newFields = array();
+                $updateFields = array();
+                $dropIndexes = array();
                 $newJoinColumns = array();
                 $currentColumns = $sm->listTableColumns($tableName);
                                 
-                foreach ($class->fieldMappings as $fieldMapping) {
+                foreach ($class->fieldMappings as $fieldName => $fieldMapping) {
                     $exists = false;
                     
                     foreach ($currentColumns as $index => $column) {
                         if ($column['name'] == $fieldMapping['columnName']) {
                             // Column exists, check for changes
+                            $columnInfo = $column;
+                            $columnChanged = false;
+                            
+                            echo $column['name'] . ' ';
                             
                             // 1. check for nullability change
+                            $columnInfo['notnull'] = ( ! isset($columnInfo['notnull'])) 
+                                ? false : $columnInfo['notnull'];
+                            $notnull = ! $class->isNullable($fieldName);
+                            
+                            if ($columnInfo['notnull'] != $notnull) {
+                                $columnInfo['notnull'] = $notnull;
+                                $columnChanged = true;
+                            }
+                            
+                            unset($notnull);
+                            
                             // 2. check for uniqueness change
-                            // 3. check for length change if type string
-                            // 4. check for type change
+                            $columnInfo['unique'] = ( ! isset($columnInfo['unique'])) 
+                                ? false : $columnInfo['unique'];
+                            $unique = $class->isUniqueField($fieldName);
+                            
+                            if ($columnInfo['unique'] != $unique) {
+                                // We need to call a special DROP INDEX if it was defined
+                                if ($columnInfo['unique']) {
+                                    $dropIndexes[] = $column['name'];
+                                }
+                                
+                                $columnInfo['unique'] = $unique;
+                                $columnChanged = true;
+                            }
+                            
+                            unset($unique);
+                            
+                            // 3. check for type change
+                            $type = Type::getType($fieldMapping['type']);
+                            
+                            if ($columnInfo['type'] != $type) {
+                                $columnInfo['type'] = $type;
+                                $columnChanged = true;
+                            }
+                            
+                            unset($type);
+                            
+                            // 4. check for length change
+                            // 5. check for scale and precision change
+                            /*if (isset($fieldMapping['scale'])) {
+                                $columnInfo['length'] = $fieldMapping['precision'];
+                                $columnInfo['scale'] = $fieldMapping['scale'];
+                            } else {
+                                $columnInfo['length'] = $fieldMapping['length'];
+                            }*/
+                            
+                            // 6. check for flexible and fixed length
+                            $fieldMapping['fixed'] = ( ! isset($fieldMapping['fixed'])) 
+                                ? false : $fieldMapping['fixed'];
+                                
+                            if ($columnInfo['fixed'] != $fieldMapping['fixed']) {
+                                $columnInfo['fixed'] = $fieldMapping['fixed'];
+                                $columnChanged = true;
+                            }
+
+                            // 7. check for unsigned change
+                            $fieldMapping['unsigned'] = ( ! isset($fieldMapping['unsigned'])) 
+                                ? false : $fieldMapping['unsigned'];
+                                
+                            if ($columnInfo['unsigned'] != $fieldMapping['unsigned']) {
+                                $columnInfo['unsigned'] = $fieldMapping['unsigned'];
+                                $columnChanged = true;
+                            }
+                            
+                            // Only add to column changed list if it was actually changed
+                            if ($columnChanged) {
+                                $updateFields[] = $columnInfo;
+                            }
+                            
+                            //var_dump($columnInfo);
+                            echo PHP_EOL . PHP_EOL;
                             
                             unset($currentColumns[$index]);
                             $exists = true;
@@ -550,6 +625,14 @@ class SchemaTool
                     }
                 }
                 
+                // Drop indexes
+                if ($dropIndexes) {
+                    foreach ($dropIndexes as $dropIndex) {
+                        $sql[] = $this->_platform->getDropIndexSql($tableName, $dropIndex);
+                    }
+                }
+                
+                // Create new columns
                 if ($newFields || $newJoinColumns) {
                     $changes = array();
                     
@@ -560,6 +643,20 @@ class SchemaTool
                     
                     foreach ($newJoinColumns as $name => $joinColumn) {
                         $changes['add'][$name] = $joinColumn;
+                    }
+                    
+                    $sql[] = $this->_platform->getAlterTableSql($tableName, $changes);
+                }
+                
+                // Update existent columns
+                if ($updateFields) {
+                    $changes = array();
+                    
+                    foreach ($updateFields as $updateField) {
+                        // Now we pick the Type instance
+                        $changes['change'][$updateField['name']] = array(
+                            'definition' => $updateField
+                        );
                     }
                     
                     $sql[] = $this->_platform->getAlterTableSql($tableName, $changes);
