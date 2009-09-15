@@ -452,12 +452,13 @@ class StandardEntityPersister
      * @param array $criteria The criteria by which to select the entities.
      * @param PersistentCollection The collection to fill.
      */
-    public function loadOneToManyCollection(array $criteria, PersistentCollection $collection)
+    public function loadOneToManyCollection(array $criteria, PersistentCollection $coll)
     {
-        $stmt = $this->_conn->prepare($this->_getSelectEntitiesSql($criteria));
+        $owningAssoc = $this->_class->associationMappings[$coll->getMapping()->mappedByFieldName];
+        $stmt = $this->_conn->prepare($this->_getSelectEntitiesSql($criteria, $owningAssoc));
         $stmt->execute(array_values($criteria));
         while ($result = $stmt->fetch(Connection::FETCH_ASSOC)) {
-            $collection->hydrateAdd($this->_createEntity($result));
+            $coll->hydrateAdd($this->_createEntity($result));
         }
         $stmt->closeCursor();
     }
@@ -565,7 +566,7 @@ class StandardEntityPersister
      * @param array $criteria
      * @return string The SQL.
      */
-    protected function _getSelectEntitiesSql(array &$criteria)
+    protected function _getSelectEntitiesSql(array &$criteria, $assoc = null)
     {
         $columnList = '';
         foreach ($this->_class->fieldNames as $field) {
@@ -593,13 +594,13 @@ class StandardEntityPersister
             }
             
             if (isset($this->_class->columnNames[$field])) {
-                $columnName = $this->_class->getQuotedColumnName($field, $this->_platform);
-            } else if (in_array($field, $joinColumnNames)) {
-                $columnName = $field;
+                $conditionSql .= $this->_class->getQuotedColumnName($field, $this->_platform);
+            } else if ($assoc !== null) {
+                $conditionSql .= $assoc->getQuotedJoinColumnName($field, $this->_platform);
             } else {
                 throw DoctrineException::unrecognizedField($field);
             }
-            $conditionSql .= $columnName . ' = ?';
+            $conditionSql .= ' = ?';
         }
 
         return 'SELECT ' . $columnList 

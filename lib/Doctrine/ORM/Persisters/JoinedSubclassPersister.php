@@ -269,10 +269,9 @@ class JoinedSubclassPersister extends StandardEntityPersister
      *
      * @param array $criteria
      * @return string The SQL.
-     * @todo Quote identifier.
      * @override
      */
-    protected function _getSelectEntitiesSql(array &$criteria)
+    protected function _getSelectEntitiesSql(array &$criteria, $assoc = null)
     {
         $tableAliases = array();
         $aliasIndex = 1;
@@ -286,7 +285,7 @@ class JoinedSubclassPersister extends StandardEntityPersister
         $columnList = '';
         foreach ($this->_class->fieldMappings as $fieldName => $mapping) {
             $tableAlias = isset($mapping['inherited']) ?
-            $tableAliases[$mapping['inherited']] : $baseTableAlias;
+                    $tableAliases[$mapping['inherited']] : $baseTableAlias;
             if ($columnList != '') $columnList .= ', ';
             $columnList .= $tableAlias . '.' . $this->_class->getQuotedColumnName($fieldName, $this->_platform);
         }
@@ -329,7 +328,15 @@ class JoinedSubclassPersister extends StandardEntityPersister
         $conditionSql = '';
         foreach ($criteria as $field => $value) {
             if ($conditionSql != '') $conditionSql .= ' AND ';
-            $conditionSql .= $baseTableAlias . '.' . $this->_class->columnNames[$field] . ' = ?';
+            $conditionSql .= $baseTableAlias . '.';
+            if (isset($this->_class->columnNames[$field])) {
+                $conditionSql .= $this->_class->getQuotedColumnName($field, $this->_platform);
+            } else if ($assoc !== null) {
+                $conditionSql .= $assoc->getQuotedJoinColumnName($field, $this->_platform);
+            } else {
+                throw DoctrineException::unrecognizedField($field);
+            }
+            $conditionSql .= ' = ?';
         }
 
         return $sql . ($conditionSql != '' ? ' WHERE ' . $conditionSql : '');

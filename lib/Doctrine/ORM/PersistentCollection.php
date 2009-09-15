@@ -294,7 +294,6 @@ final class PersistentCollection implements \Doctrine\Common\Collections\Collect
     {
         return $this->_association;
     }
-
    
     /**
      * Marks this collection as changed/dirty.

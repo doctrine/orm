@@ -42,7 +42,11 @@ class OrmFunctionalTestCase extends OrmTestCase
         'company' => array(
             'Doctrine\Tests\Models\Company\CompanyPerson',
             'Doctrine\Tests\Models\Company\CompanyEmployee',
-            'Doctrine\Tests\Models\Company\CompanyManager'
+            'Doctrine\Tests\Models\Company\CompanyManager',
+            'Doctrine\Tests\Models\Company\CompanyOrganization',
+            'Doctrine\Tests\Models\Company\CompanyEvent',
+            'Doctrine\Tests\Models\Company\CompanyAuction',
+            'Doctrine\Tests\Models\Company\CompanyRaffle'
         ),
         'ecommerce' => array(
             'Doctrine\Tests\Models\ECommerce\ECommerceCart',
@@ -94,6 +98,10 @@ class OrmFunctionalTestCase extends OrmTestCase
             $conn->executeUpdate('DELETE FROM company_employees');
             $conn->executeUpdate('UPDATE company_persons SET spouse_id = NULL');
             $conn->executeUpdate('DELETE FROM company_persons');
+            $conn->executeUpdate('DELETE FROM company_raffles');
+            $conn->executeUpdate('DELETE FROM company_auctions');
+            $conn->executeUpdate('DELETE FROM company_events');
+            $conn->executeUpdate('DELETE FROM company_organizations');
         }
         if (isset($this->_usedModelSets['generic'])) {
             $conn->executeUpdate('DELETE FROM date_time_model');

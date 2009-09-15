@@ -4,9 +4,13 @@ namespace Doctrine\Tests\ORM\Functional;
 
 require_once __DIR__ . '/../../TestInit.php';
 
-use Doctrine\Tests\Models\Company\CompanyPerson;
-use Doctrine\Tests\Models\Company\CompanyEmployee;
-use Doctrine\Tests\Models\Company\CompanyManager;
+use Doctrine\Tests\Models\Company\CompanyPerson,
+    Doctrine\Tests\Models\Company\CompanyEmployee,
+    Doctrine\Tests\Models\Company\CompanyManager,
+    Doctrine\Tests\Models\Company\CompanyOrganization,
+    Doctrine\Tests\Models\Company\CompanyEvent,
+    Doctrine\Tests\Models\Company\CompanyAuction,
+    Doctrine\Tests\Models\Company\CompanyRaffle;
 
 /**
  * Functional tests for the Class Table Inheritance mapping strategy.
@@ -175,5 +179,47 @@ class ClassTableInheritanceTest extends \Doctrine\Tests\OrmFunctionalTestCase
         
         $friends = $result[0]->getFriends();
         $this->assertEquals('Jonathan', $friends[0]->getName());
+    }
+    
+    public function testLazyLoading1()
+    {
+        $org = new CompanyOrganization;
+        $event1 = new CompanyAuction;
+        $event1->setData('auction');
+        $org->addEvent($event1);
+        $event2 = new CompanyRaffle;
+        $event2->setData('raffle');
+        $org->addEvent($event2);
+        
+        $this->_em->persist($org);
+        $this->_em->flush();
+        $this->_em->clear();
+        
+        $orgId = $org->getId();
+        
+        $this->_em->getConfiguration()->setAllowPartialObjects(false);
+        
+        $q = $this->_em->createQuery('select a from Doctrine\Tests\Models\Company\CompanyOrganization a where a.id = ?1');
+        $q->setParameter(1, $orgId);
+        
+        $result = $q->getResult();
+        
+        $this->assertEquals(1, count($result));
+        $this->assertTrue($result[0] instanceof CompanyOrganization);
+        
+        $events = $result[0]->getEvents();
+        
+        $this->assertTrue($events instanceof \Doctrine\ORM\PersistentCollection);
+        $this->assertFalse($events->isInitialized());
+        
+        $this->assertEquals(2, count($events));
+        if ($events[0] instanceof CompanyAuction) {
+            $this->assertTrue($events[1] instanceof CompanyRaffle);
+        } else {
+            $this->assertTrue($events[0] instanceof CompanyRaffle);
+            $this->assertTrue($events[1] instanceof CompanyAuction);
+        }
+        
+        $this->_em->getConfiguration()->setAllowPartialObjects(true);
     }
 }
