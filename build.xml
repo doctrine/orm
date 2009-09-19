@@ -121,7 +121,6 @@
         Runs the full test suite.
     -->
     <target name="test" depends="prepare">
-        <!-- 
         <phpunit printsummary="true" haltonfailure="true">
             <formatter todir="${build.dir}/logs" type="xml"/>
             <batchtest classpath="tests">
@@ -131,7 +130,9 @@
             </batchtest>
         </phpunit>
         <phpunitreport infile="${build.dir}/logs/testsuites.xml" format="frames" todir="${report.dir}/tests" />
-        -->
+        <tstamp/>
+        <svnlastrevision svnpath="${svn.path}" workingcopy="." propertyname="svn.lastrevision"/>
+        <copy file="${build.dir}/logs/testsuites.xml" tofile="${log.archive.dir}/${svn.lastrevision}/log.xml" overwrite="true"/>
     </target>
 
     <!-- 

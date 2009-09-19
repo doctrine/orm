@@ -14,7 +14,8 @@ $classLoader = new \Doctrine\Common\IsolatedClassLoader('Doctrine');
 $classLoader->register();
 
 set_include_path(
-    '.'
-    . PATH_SEPARATOR . __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'lib'
+    __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'lib'
+    . PATH_SEPARATOR .
+    get_include_path() 
 );
 

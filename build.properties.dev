@@ -4,3 +4,5 @@ stability=alpha
 build.dir=build
 dist.dir=dist
 report.dir=reports
+log.archive.dir=logs
+svn.path=/usr/bin/svn
