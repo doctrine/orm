@@ -125,20 +125,12 @@ class XmlDriver extends AbstractFileDriver
                     $mapping['length'] = (int)$fieldMapping['length'];
                 }
                 
-                if (isset($fieldMapping['fixed'])) {
-                    $mapping['fixed'] = (bool)$fieldMapping['fixed'];
-                }
-                
                 if (isset($fieldMapping['precision'])) {
                     $mapping['precision'] = (int)$fieldMapping['precision'];
                 }
                 
                 if (isset($fieldMapping['scale'])) {
                     $mapping['scale'] = (int)$fieldMapping['scale'];
-                }
-                
-                if (isset($fieldMapping['unsigned'])) {
-                    $mapping['unsigned'] = (bool)$fieldMapping['unsigned'];
                 }
                 
                 if (isset($fieldMapping['unique'])) {

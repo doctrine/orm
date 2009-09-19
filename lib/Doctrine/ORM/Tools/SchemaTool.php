@@ -569,23 +569,11 @@ class SchemaTool
                                 $columnInfo['fixed'] = $fieldMapping['fixed'];
                                 $columnChanged = true;
                             }
-
-                            // 7. check for unsigned change
-                            $fieldMapping['unsigned'] = ( ! isset($fieldMapping['unsigned'])) 
-                                ? false : $fieldMapping['unsigned'];
-                                
-                            if ($columnInfo['unsigned'] != $fieldMapping['unsigned']) {
-                                $columnInfo['unsigned'] = $fieldMapping['unsigned'];
-                                $columnChanged = true;
-                            }
                             
                             // Only add to column changed list if it was actually changed
                             if ($columnChanged) {
                                 $updateFields[] = $columnInfo;
                             }
-                            
-                            //var_dump($columnInfo);
-                            echo PHP_EOL . PHP_EOL;
                             
                             unset($currentColumns[$index]);
                             $exists = true;
