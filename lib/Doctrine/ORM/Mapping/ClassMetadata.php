@@ -358,7 +358,7 @@ final class ClassMetadata
      *
      * @var array
      */
-    public $reflFields;
+    public $reflFields = array();
 
     /**
      * The ID generator used for generating IDs for this class.

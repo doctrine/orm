@@ -201,8 +201,12 @@ class ClassMetadataFactory
                 } else if ($parent->isIdGeneratorTable()) {
                     $class->getTableGeneratorDefinition($parent->getTableGeneratorDefinition());
                 }
-                $class->setIdGeneratorType($parent->generatorType);
-                $class->setIdGenerator($parent->getIdGenerator());
+                if ($generatorType = $parent->generatorType) {
+                    $class->setIdGeneratorType($generatorType);
+                }
+                if ($idGenerator = $parent->getIdGenerator()) {
+                    $class->setIdGenerator($idGenerator);
+                }
             } else {
                 $this->_completeIdGeneratorMapping($class);
             }
@@ -218,7 +222,9 @@ class ClassMetadataFactory
                 $this->_evm->dispatchEvent(Events::loadClassMetadata, $eventArgs);
             }
 
-            $this->_generateStaticSql($class);
+            if ( ! $class->isMappedSuperclass) {
+                $this->_generateStaticSql($class);
+            }
             
             $this->_loadedMetadata[$className] = $class;
             

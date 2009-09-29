@@ -22,7 +22,8 @@
 namespace Doctrine\ORM\Mapping\Driver;
 
 use Doctrine\ORM\Mapping\ClassMetadata,
-    Doctrine\Common\DoctrineException;
+    Doctrine\Common\DoctrineException,
+    Doctrine\ORM\Mapping\MappingException;
 
 if ( ! class_exists('sfYaml', false)) {
     require_once __DIR__ . '/../../../../vendor/sfYaml/sfYaml.class.php';
@@ -152,23 +153,25 @@ class YamlDriver extends AbstractFileDriver
             }
         }
 
-        // Evaluate identifier settings
-        foreach ($element['id'] as $name => $idElement) {
-            $mapping = array(
-                'id' => true,
-                'fieldName' => $name,
-                'type' => $idElement['type']
-            );
+        if (isset($element['id'])) {
+            // Evaluate identifier settings
+            foreach ($element['id'] as $name => $idElement) {
+                $mapping = array(
+                    'id' => true,
+                    'fieldName' => $name,
+                    'type' => $idElement['type']
+                );
             
-            if (isset($idElement['column'])) {
-                $mapping['columnName'] = $idElement['column'];
-            }
+                if (isset($idElement['column'])) {
+                    $mapping['columnName'] = $idElement['column'];
+                }
             
-            $metadata->mapField($mapping);
+                $metadata->mapField($mapping);
 
-            if (isset($idElement['generator'])) {
-                $metadata->setIdGeneratorType(constant('Doctrine\ORM\Mapping\ClassMetadata::GENERATOR_TYPE_'
-                        . $idElement['generator']['strategy']));
+                if (isset($idElement['generator'])) {
+                    $metadata->setIdGeneratorType(constant('Doctrine\ORM\Mapping\ClassMetadata::GENERATOR_TYPE_'
+                            . strtoupper($idElement['generator']['strategy'])));
+                }
             }
         }
 

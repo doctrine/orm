@@ -86,7 +86,7 @@ class SchemaTool
         $sequences = array(); // Sequence SQL statements. Appended to $sql at the end.
 
         foreach ($classes as $class) {
-            if (isset($processedClasses[$class->name])) {
+            if (isset($processedClasses[$class->name]) || $class->isMappedSuperclass) {
                 continue;
             }
 
