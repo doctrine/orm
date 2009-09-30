@@ -77,9 +77,9 @@ class XmlDriver extends AbstractFileDriver
         if (isset($xmlRoot->{'discriminator-column'})) {
             $discrColumn = $xmlRoot->{'discriminator-column'};
             $metadata->setDiscriminatorColumn(array(
-                'name' => (string)$discrColumn->name,
-                'type' => (string)$discrColumn->type,
-                'length' => (string)$discrColumn->length
+                'name' => (string)$discrColumn['name'],
+                'type' => (string)$discrColumn['type'],
+                'length' => (string)$discrColumn['length']
             ));
         }
 
@@ -90,7 +90,8 @@ class XmlDriver extends AbstractFileDriver
 
         // Evaluate <change-tracking-policy...>
         if (isset($xmlRoot->{'change-tracking-policy'})) {
-            $metadata->setChangeTrackingPolicy((array)$xmlRoot->{'change-tracking-policy'});
+            $metadata->setChangeTrackingPolicy(constant('Doctrine\ORM\Mapping\ClassMetadata::CHANGETRACKING_'
+                    . strtoupper((string)$xmlRoot->{'change-tracking-policy'})));
         }
 
         // Evaluate <indexes...>

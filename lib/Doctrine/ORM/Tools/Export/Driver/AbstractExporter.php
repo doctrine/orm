@@ -110,19 +110,19 @@ abstract class AbstractExporter
     {
         switch ($type)
         {
-            case Classmetadata::INHERITANCE_TYPE_NONE:
+            case ClassMetadata::INHERITANCE_TYPE_NONE:
                 return 'NONE';
             break;
 
-            case Classmetadata::INHERITANCE_TYPE_JOINED:
+            case ClassMetadata::INHERITANCE_TYPE_JOINED:
                 return 'JOINED';
             break;
             
-            case Classmetadata::INHERITANCE_TYPE_SINGLE_TABLE:
+            case ClassMetadata::INHERITANCE_TYPE_SINGLE_TABLE:
                 return 'SINGLE_TABLE';
             break;
             
-            case Classmetadata::INHERITANCE_TYPE_TABLE_PER_CLASS:
+            case ClassMetadata::INHERITANCE_TYPE_TABLE_PER_CLASS:
                 return 'PER_CLASS';
             break;
         }
@@ -132,15 +132,15 @@ abstract class AbstractExporter
     {
         switch ($policy)
         {
-            case Classmetadata::CHANGETRACKING_DEFERRED_IMPLICIT:
+            case ClassMetadata::CHANGETRACKING_DEFERRED_IMPLICIT:
                 return 'DEFERRED_IMPLICIT';
             break;
             
-            case Classmetadata::CHANGETRACKING_DEFERRED_EXPLICIT:
+            case ClassMetadata::CHANGETRACKING_DEFERRED_EXPLICIT:
                 return 'DEFERRED_EXPLICIT';
             break;
             
-            case Classmetadata::CHANGETRACKING_NOTIFY:
+            case ClassMetadata::CHANGETRACKING_NOTIFY:
                 return 'NOTIFY';
             break;
         }
@@ -150,19 +150,19 @@ abstract class AbstractExporter
     {
         switch ($type)
         {
-            case Classmetadata::GENERATOR_TYPE_AUTO:
+            case ClassMetadata::GENERATOR_TYPE_AUTO:
                 return 'AUTO';
             break;
             
-            case Classmetadata::GENERATOR_TYPE_SEQUENCE:
+            case ClassMetadata::GENERATOR_TYPE_SEQUENCE:
                 return 'SEQUENCE';
             break;
             
-            case Classmetadata::GENERATOR_TYPE_TABLE:
+            case ClassMetadata::GENERATOR_TYPE_TABLE:
                 return 'TABLE';
             break;
             
-            case Classmetadata::GENERATOR_TYPE_IDENTITY:
+            case ClassMetadata::GENERATOR_TYPE_IDENTITY:
                 return 'IDENTITY';
             break;
         }

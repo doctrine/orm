@@ -51,71 +51,91 @@ use Doctrine\ORM\Mapping\Classmetadata;
 class ClassmetadataExporter
 {
     private $_exporterDrivers = array(
-        'xml'  => 'Doctrine\ORM\Tools\Export\Driver\XmlExporter',
-        'yaml'  => 'Doctrine\ORM\Tools\Export\Driver\YamlExporter',
-        'php'  => 'Doctrine\ORM\Tools\Export\Driver\PhpExporter'
+        'xml' => 'Doctrine\ORM\Tools\Export\Driver\XmlExporter',
+        'yaml' => 'Doctrine\ORM\Tools\Export\Driver\YamlExporter',
+        'yml' => 'Doctrine\ORM\Tools\Export\Driver\YamlExporter',
+        'php' => 'Doctrine\ORM\Tools\Export\Driver\PhpExporter',
+        'annotation' => 'Doctrine\ORM\Tools\Export\Driver\AnnotationExporter'
     );
 
     private $_mappingDrivers = array(
-        'php'  => 'Doctrine\ORM\Mapping\Driver\AnnotationDriver',
+        'annotation' => 'Doctrine\ORM\Mapping\Driver\AnnotationDriver',
         'yaml' => 'Doctrine\ORM\Mapping\Driver\YamlDriver',
+        'yml' => 'Doctrine\ORM\Mapping\Driver\YamlDriver',
         'xml'  => 'Doctrine\ORM\Mapping\Driver\XmlDriver'
     );
 
-    private $_mappingDriverInstances = array();
+    private $_mappingDirectories = array();
 
     public function addMappingDir($dir, $type)
     {
-        if ( ! isset($this->_mappingDrivers[$type])) {
-            throw DoctrineException::invalidMappingDriverType($type);
-        }
-
-        $class = $this->_mappingDrivers[$type];
-        if (is_subclass_of($class, 'Doctrine\ORM\Mapping\Driver\AbstractFileDriver')) {
-            $driver = new $class($dir, constant($class . '::PRELOAD'));
+        if ($type === 'php') {
+            $this->_mappingDirectories[] = array($dir, $type);
         } else {
-            $reader = new \Doctrine\Common\Annotations\AnnotationReader(new \Doctrine\Common\Cache\ArrayCache);
-            $reader->setDefaultAnnotationNamespace('Doctrine\ORM\Mapping\\');
-            $driver = new $class($reader);
+            if ( ! isset($this->_mappingDrivers[$type])) {
+                throw DoctrineException::invalidMappingDriverType($type);
+            }
+
+            $class = $this->_mappingDrivers[$type];
+            if (is_subclass_of($class, 'Doctrine\ORM\Mapping\Driver\AbstractFileDriver')) {
+                $driver = new $class($dir, constant($class . '::PRELOAD'));
+            } else {
+                $reader = new \Doctrine\Common\Annotations\AnnotationReader(new \Doctrine\Common\Cache\ArrayCache);
+                $reader->setDefaultAnnotationNamespace('Doctrine\ORM\Mapping\\');
+                $driver = new $class($reader);
+            }
+            $this->_mappingDirectories[] = array($dir, $driver);
         }
-        $this->_mappingDriverInstances[] = array($dir, $driver);
     }
 
     private function _getMetadataInstances()
     {
         $classes = array();
 
-        foreach ($this->_mappingDriverInstances as $d) {
+        foreach ($this->_mappingDirectories as $d) {
             list($dir, $driver) = $d;
-            // TODO: This code exists in the SchemaToolTask.php
-            // Should we pull it out somewhere common? I can see the need to have
-            // a way to retrieve an array of entity names found in some directories
-            if ($driver instanceof \Doctrine\ORM\Mapping\Driver\AnnotationDriver) {
+            if ($driver == 'php') {
                 $iter = new \FilesystemIterator($dir);
 
-                $declared = get_declared_classes();          
                 foreach ($iter as $item) {
-                    $baseName = $item->getBaseName();
-                    if ($baseName[0] == '.') {
-                        continue;
+                    include $item->getPathName();
+                    $vars = get_defined_vars();
+                    foreach ($vars as $var) {
+                        if ($var instanceof \Doctrine\ORM\Mapping\ClassMetadata) {
+                            $classes[] = $var;
+                        }
                     }
-                    require_once $item->getPathName();
                 }
-                $declared = array_diff(get_declared_classes(), $declared);
+                $classes = array_unique($classes);
+                $classes = array_values($classes);
+            } else {
+                if ($driver instanceof \Doctrine\ORM\Mapping\Driver\AnnotationDriver) {
+                    $iter = new \FilesystemIterator($dir);
 
-                foreach ($declared as $className) {                 
-                    if ( ! $driver->isTransient($className)) {
+                    $declared = get_declared_classes();          
+                    foreach ($iter as $item) {
+                        $baseName = $item->getBaseName();
+                        if ($baseName[0] == '.') {
+                            continue;
+                        }
+                        require_once $item->getPathName();
+                    }
+                    $declared = array_diff(get_declared_classes(), $declared);
+
+                    foreach ($declared as $className) {                 
+                        if ( ! $driver->isTransient($className)) {
+                            $metadata = new ClassMetadata($className);
+                            $driver->loadMetadataForClass($className, $metadata);
+                            $classes[] = $metadata;
+                        }
+                    }
+                } else {
+                    $preloadedClasses = $driver->preload(true);
+                    foreach ($preloadedClasses as $className) {
                         $metadata = new ClassMetadata($className);
                         $driver->loadMetadataForClass($className, $metadata);
                         $classes[] = $metadata;
                     }
-                }
-            } else {
-                $preloadedClasses = $driver->preload(true);
-                foreach ($preloadedClasses as $className) {
-                    $metadata = new ClassMetadata($className);
-                    $driver->loadMetadataForClass($className, $metadata);
-                    $classes[] = $metadata;
                 }
             }
         }

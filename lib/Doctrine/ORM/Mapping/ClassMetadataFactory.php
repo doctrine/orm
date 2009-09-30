@@ -195,7 +195,7 @@ class ClassMetadataFactory
             if ( ! $class->identifier && ! $class->isMappedSuperclass) {
                 throw MappingException::identifierRequired($className);
             }
-            if ($parent) {
+            if ($parent && ! $parent->isMappedSuperclass) {
                 if ($parent->isIdGeneratorSequence()) {
                     $class->setSequenceGeneratorDefinition($parent->getSequenceGeneratorDefinition());
                 } else if ($parent->isIdGeneratorTable()) {

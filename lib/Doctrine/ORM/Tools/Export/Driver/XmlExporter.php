@@ -46,6 +46,182 @@ class XmlExporter extends AbstractExporter
      */
     public function exportClassMetadata(ClassMetadata $metadata)
     {
+        $xml = new \SimpleXmlElement("<?xml version=\"1.0\" encoding=\"utf-8\"?><doctrine-mapping/>");
+
+        $xml->addAttribute('xmlns', 'http://doctrine-project.org/schemas/orm/doctrine-mapping');
+        $xml->addAttribute('xmlns:xsi', 'http://www.w3.org/2001/XMLSchema-instance');
+        $xml->addAttribute('xsi:schemaLocation', 'http://doctrine-project.org/schemas/orm/doctrine-mapping.xsd');
+
+        if ($metadata->isMappedSuperclass) {
+            $root = $xml->addChild('mapped-superclass');
+        } else {
+            $root = $xml->addChild('entity');
+        }
+
+        if ($metadata->customRepositoryClassName) {
+            $root->addAttribute('repository-class', $metadata->customRepositoryClassName);
+        }
+
+        $root->addAttribute('name', $metadata->name);
+
+        if (isset($metadata->primaryTable['name'])) {
+            $root->addAttribute('table', $metadata->primaryTable['name']);
+        }
+
+        if (isset($metadata->primaryTable['schema'])) {
+            $root->addAttribute('schema', $metadata->primaryTable['schema']);
+        }
+
+        if (isset($metadata->primaryTable['inheritance-type'])) {
+            $root->addAttribute('inheritance-type', $metadata->primaryTable['inheritance-type']);
+        }
+
+        if ($metadata->discriminatorColumn) {
+            $discriminatorColumnXml = $root->addChild('discriminiator-column');
+            $discriminatorColumnXml->addAttribute('name', $metadata->discriminatorColumn['name']);
+            $discriminatorColumnXml->addAttribute('type', $metadata->discriminatorColumn['type']);
+            $discriminatorColumnXml->addAttribute('length', $metadata->discriminatorColumn['length']);
+        }
+
+        if ($metadata->discriminatorMap) {
+            $discriminatorMapXml = $root->addChild('discriminator-map');
+            foreach ($metadata->discriminatorMap as $value => $className) {
+                $discriminatorMappingXml = $discriminatorMapXml->addChild('discriminator-mapping');
+                $discriminatorMappingXml->addAttribute('value', $value);
+                $discriminatorMappingXml->addAttribute('class', $className);
+            }
+        }
+
+        $root->addChild('change-tracking-policy', $this->_getChangeTrackingPolicyString($metadata->changeTrackingPolicy));
+
+        if (isset($metadata->primaryTable['indexes'])) {
+            $indexesXml = $root->addChild('indexes');
+            foreach ($metadata->primaryTable['indexes'] as $name => $index) {
+                $indexXml = $root->addChild('index');
+                $indexXml->addAttribute('name', $name);
+                $indexXml->addAttribute('columns', implode(',', $index['fields']));
+            }
+        }
+
+        if (isset($metadata->primaryTable['uniqueConstraints'])) {
+            $uniqueConstraintsXml = $root->addChild('unique-constraints');
+            foreach ($metadata->primaryTable['uniqueConstraints'] as $uniqueConstraint) {
+                $uniqueConstraintXml = $uniqueConstraintsXml->addChild('unique-constraint');
+                $uniqueConstraintXml->addAttribute('columns', $uniqueConstraint['fields']);
+            }
+        }
+
+        $fields = $metadata->fieldMappings;
         
+        $id = array();
+        foreach ($fields as $name => $field) {
+            if (isset($field['id']) && $field['id']) {
+                $id[$name] = $field;
+                unset($fields[$name]);
+            }
+        }
+
+        if ($idGeneratorType = $this->_getIdGeneratorTypeString($metadata->getIdGeneratorType())) {
+            $id[$metadata->getSingleIdentifierFieldName()]['generator']['strategy'] = $idGeneratorType;
+        }
+
+        if ($fields) {
+            foreach ($fields as $field) {
+                $fieldXml = $root->addChild('field');
+                $fieldXml->addAttribute('name', $field['fieldName']);
+                $fieldXml->addAttribute('type', $field['type']);
+                if (isset($field['columnName'])) {
+                    $fieldXml->addAttribute('column', $field['columnName']);
+                }
+                if (isset($field['length'])) {
+                    $fieldXml->addAttribute('length', $field['length']);
+                }
+                if (isset($field['precision'])) {
+                    $fieldXml->addAttribute('precision', $field['precision']);
+                }
+                if (isset($field['scale'])) {
+                    $fieldXml->addAttribute('scale', $field['scale']);
+                }
+                if (isset($field['unique'])) {
+                    $fieldXml->addAttribute('unique', $field['unique']);
+                }
+                if (isset($field['options'])) {
+                    $fieldXml->addAttribute('options', $field['options']);
+                }
+                if (isset($field['version'])) {
+                    $fieldXml->addAttribute('version', $field['version']);
+                }
+            }
+        }
+
+        if ($id) {
+            foreach ($id as $field) {
+                $idXml = $root->addChild('id');
+                $idXml->addAttribute('name', $field['fieldName']);
+                $idXml->addAttribute('type', $field['type']);
+                if (isset($field['columnName'])) {
+                    $idXml->addAttribute('column', $field['columnName']);
+                }
+                if ($idGeneratorType = $this->_getIdGeneratorTypeString($metadata->generatorType)) {
+                    $generatorXml = $idXml->addChild('generator');
+                    $generatorXml->addAttribute('strategy', $idGeneratorType);
+                }
+            }
+        }
+
+        foreach ($metadata->associationMappings as $name => $associationMapping) {
+            if ($associationMapping instanceof \Doctrine\ORM\Mapping\OneToOneMapping) {
+                $associationMappingXml = $root->addChild('one-to-one');
+            } else if ($associationMapping instanceof \Doctrine\ORM\Mapping\OneToManyMapping) {
+                $associationMappingXml = $root->addChild('one-to-many');
+            } else if ($associationMapping instanceof \Doctrine\ORM\Mapping\ManyToManyMapping) {
+                $associationMappingXml = $root->addChild('many-to-many');
+            }
+
+            $associationMappingXml->addAttribute('field', $associationMapping->sourceFieldName);
+            $associationMappingXml->addAttribute('target-entity', $associationMapping->targetEntityName);
+
+            if (isset($associationMapping->mappedByFieldName)) {
+                $associationMappingXml->addAttribute('mapped-by', $associationMapping->mappedByFieldName);
+            }
+            if (isset($associationMapping->orphanRemoval)) {
+                $associationMappingXml->addAttribute('orphan-removal', $associationMapping->orphanRemoval);
+            }
+            if (isset($associationMapping->joinTable) && $associationMapping->joinTable) {
+                $joinTableXml = $associationMappingXml->addChild('join-table');
+                $joinTableXml->addAttribute('name', $associationMapping->joinTable['name']);
+                $joinColumnsXml = $joinTableXml->addChild('join-columns');
+                foreach ($associationMapping->joinTable['joinColumns'] as $joinColumn) {
+                    $joinColumnXml = $joinColumnsXml->addChild('join-column');
+                    $joinColumnXml->addAttribute('name', $joinColumn['name']);
+                    $joinColumnXml->addAttribute('referenced-column-name', $joinColumn['referencedColumnName']);
+                }
+            }
+
+            $cascade = array();
+            if ($associationMapping->isCascadeRemove) {
+                $cascade[] = 'remove';
+            }
+            if ($associationMapping->isCascadePersist) {
+                $cascade[] = 'persist';
+            }
+            if ($associationMapping->isCascadeRefresh) {
+                $cascade[] = 'refresh';
+            }
+            if ($associationMapping->isCascadeMerge) {
+                $cascade[] = 'merge';
+            }
+            if ($associationMapping->isCascadeDetach) {
+                $cascade[] = 'detach';
+            }
+            if ($cascade) {
+                $cascadeXml = $associationMappingXml->addChild('cascade');
+                foreach ($cascade as $type) {
+                    $cascadeXml->addChild($type);
+                }
+            }
+        }
+
+        return $xml->asXml();
     }
 }

@@ -84,11 +84,12 @@ class Cli
         $ns = 'Doctrine\ORM\Tools\Cli\Tasks';
         
         $this->addTasks(array(
-            'help'        => $ns . '\HelpTask',
-            'version'     => $ns . '\VersionTask',
-            'schema-tool' => $ns . '\SchemaToolTask',
-            'run-sql'     => $ns . '\RunSqlTask',
-            'run-dql'     => $ns . '\RunDqlTask',
+            'help'            => $ns . '\HelpTask',
+            'version'         => $ns . '\VersionTask',
+            'schema-tool'     => $ns . '\SchemaToolTask',
+            'run-sql'         => $ns . '\RunSqlTask',
+            'run-dql'         => $ns . '\RunDqlTask',
+            'convert-mapping' => $ns . '\ConvertMappingTask',
         ));
     }
     

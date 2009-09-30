@@ -52,7 +52,11 @@ class YamlExporter extends AbstractExporter
     public function exportClassMetadata(ClassMetadata $metadata)
     {
         $array = array();
-        $array['type'] = 'entity';
+        if ($metadata->isMappedSuperclass) {
+            $array['type'] = 'mappedSuperclass';
+        } else {
+            $array['type'] = 'entity';
+        }
         $array['table'] = $metadata->primaryTable['name'];
 
         if (isset($metadata->primaryTable['schema'])) {
@@ -79,7 +83,7 @@ class YamlExporter extends AbstractExporter
             $array['uniqueConstraints'] = $metadata->primaryTable['uniqueConstraints'];
         }
         
-        $fields = $metadata->getFieldMappings();
+        $fields = $metadata->fieldMappings;
         
         $id = array();
         foreach ($fields as $name => $field) {
@@ -89,8 +93,8 @@ class YamlExporter extends AbstractExporter
             }
         }
 
-        if ($idGeneratorType = $this->_getIdGeneratorTypeString($metadata->getIdGeneratorType())) {
-            $id[$metadata->getSingleIdentifierFieldName()]['generator']['strategy'] = $idGeneratorType;
+        if ($idGeneratorType = $this->_getIdGeneratorTypeString($metadata->generatorType)) {
+            $id[$metadata->getSingleIdentifierFieldName()]['generator']['strategy'] = $this->_getIdGeneratorTypeString($metadata->generatorType);
         }
         
         $array['id'] = $id;
@@ -100,10 +104,8 @@ class YamlExporter extends AbstractExporter
         foreach ($metadata->associationMappings as $name => $associationMapping) {
             $associationMappingArray = array(
                 'fieldName'    => $associationMapping->sourceFieldName,
-                'sourceEntity' => $associationMapping->sourceEntityName,
                 'targetEntity' => $associationMapping->targetEntityName,
-                'optional'     => $associationMapping->isOptional,
-                'cascades'     => array(
+                'cascade'     => array(
                     'remove'  => $associationMapping->isCascadeRemove,
                     'persist' => $associationMapping->isCascadePersist,
                     'refresh' => $associationMapping->isCascadeRefresh,
@@ -112,8 +114,7 @@ class YamlExporter extends AbstractExporter
                 ),
             );
             
-            if ($associationMapping instanceof OneToOneMapping) {
-                // TODO: We may need to re-include the quotes if quote = true in names of joinColumns
+            if ($associationMapping instanceof \Doctrine\ORM\Mapping\OneToOneMapping) {
                 $oneToOneMappingArray = array(
                     'mappedBy'      => $associationMapping->mappedByFieldName,
                     'joinColumns'   => $associationMapping->joinColumns,
@@ -121,16 +122,16 @@ class YamlExporter extends AbstractExporter
                 );
                 
                 $associationMappingArray = array_merge($associationMappingArray, $oneToOneMappingArray);
-            } else if ($associationMapping instanceof OneToManyMapping) {
+            } else if ($associationMapping instanceof \Doctrine\ORM\Mapping\OneToManyMapping) {
                 $oneToManyMappingArray = array(
                     'mappedBy'      => $associationMapping->mappedByFieldName,
                     'orphanRemoval' => $associationMapping->orphanRemoval,
                 );
                 
                 $associationMappingArray = array_merge($associationMappingArray, $oneToManyMappingArray);
-            } else if ($associationMapping instanceof ManyToManyMapping) {
-                // TODO: We may need to re-include the quotes if quote = true in name of joinTable
+            } else if ($associationMapping instanceof \Doctrine\ORM\Mapping\ManyToManyMapping) {
                 $manyToManyMappingArray = array(
+                    'mappedBy'  => $associationMapping->mappedByFieldName,
                     'joinTable' => $associationMapping->joinTable,
                 );
                 
