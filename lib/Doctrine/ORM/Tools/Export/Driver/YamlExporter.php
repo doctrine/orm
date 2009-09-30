@@ -122,6 +122,7 @@ class YamlExporter extends AbstractExporter
                 );
                 
                 $associationMappingArray = array_merge($associationMappingArray, $oneToOneMappingArray);
+                $array['oneToOne'][$name] = $associationMappingArray;
             } else if ($associationMapping instanceof \Doctrine\ORM\Mapping\OneToManyMapping) {
                 $oneToManyMappingArray = array(
                     'mappedBy'      => $associationMapping->mappedByFieldName,
@@ -129,6 +130,7 @@ class YamlExporter extends AbstractExporter
                 );
                 
                 $associationMappingArray = array_merge($associationMappingArray, $oneToManyMappingArray);
+                $array['oneToMany'][$name] = $associationMappingArray;
             } else if ($associationMapping instanceof \Doctrine\ORM\Mapping\ManyToManyMapping) {
                 $manyToManyMappingArray = array(
                     'mappedBy'  => $associationMapping->mappedByFieldName,
@@ -136,12 +138,9 @@ class YamlExporter extends AbstractExporter
                 );
                 
                 $associationMappingArray = array_merge($associationMappingArray, $manyToManyMappingArray);
+                $array['manyToMany'][$name] = $associationMappingArray;
             }
-            
-            $associations[$name] = $associationMappingArray;
         }
-        
-        $array['associations'] = $associations;
 
         return \sfYaml::dump(array($metadata->name => $array), 10);
     }
