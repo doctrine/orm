@@ -297,6 +297,52 @@ class QueryBuilder
     {
         return $this->_q->getParameter($key);
     }
+    
+    /**
+     * Sets the position of the first result to retrieve (the "offset").
+     *
+     * @param integer $firstResult The first result to return.
+     * @return QueryBuilder This query builder object.
+     */
+    public function setFirstResult($firstResult)
+    {
+        $this->_q->setFirstResult($firstResult);
+        return $this;
+    }
+    
+    /**
+     * Gets the position of the first result the query object was set to retrieve (the "offset").
+     * Returns NULL if {@link setFirstResult} was not applied to this query builder.
+     * 
+     * @return integer The position of the first result.
+     */
+    public function getFirstResult()
+    {
+        return $this->_q->getFirstResult();
+    }
+    
+    /**
+     * Sets the maximum number of results to retrieve (the "limit").
+     * 
+     * @param integer $maxResults
+     * @return QueryBuilder This query builder object.
+     */
+    public function setMaxResults($maxResults)
+    {
+        $this->_q->setMaxResults($maxResults);
+        return $this;
+    }
+    
+    /**
+     * Gets the maximum number of results the query object was set to retrieve (the "limit").
+     * Returns NULL if {@link setMaxResults} was not applied to this query builder.
+     * 
+     * @return integer Maximum number of results.
+     */
+    public function getMaxResults()
+    {
+        return $this->_q->getMaxResults();
+    }
 
     /**
      * Add a single DQL query part to the array of parts
