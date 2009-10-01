@@ -231,7 +231,8 @@ class MySqlPlatform extends AbstractPlatform
                 : ($length ? 'VARCHAR(' . $length . ')' : 'VARCHAR(255)');
     }
 
-    public function getClobDeclarationSql(array $field)
+    /** @override */
+    public function getClobTypeDeclarationSql(array $field)
     {
         if ( ! empty($field['length'])) {
             $length = $field['length'];

@@ -16,6 +16,12 @@ class MockPlatform extends \Doctrine\DBAL\Platforms\AbstractPlatform
     {
         return "DUMMYVARCHAR()";
     }
+    
+    /** @override */
+    public function getClobTypeDeclarationSql(array $field)
+    {
+        return 'DUMMYCLOB';
+    }
 
     public function getVarcharDefaultLength()
     {

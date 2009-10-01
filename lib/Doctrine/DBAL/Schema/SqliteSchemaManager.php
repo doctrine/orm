@@ -138,6 +138,9 @@ class SqliteSchemaManager extends AbstractSchemaManager
                 $length = 8;
                 break;
             case 'clob':
+                $fixed = false;
+                $type = 'text';
+                break;
             case 'tinytext':
             case 'mediumtext':
             case 'longtext':

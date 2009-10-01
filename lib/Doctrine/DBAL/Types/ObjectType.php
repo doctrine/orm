@@ -11,7 +11,7 @@ class ObjectType extends Type
 {
     public function getSqlDeclaration(array $fieldDeclaration, \Doctrine\DBAL\Platforms\AbstractPlatform $platform)
     {
-        return $platform->getClobDeclarationSql($fieldDeclaration);
+        return $platform->getClobTypeDeclarationSql($fieldDeclaration);
     }
 
     public function convertToDatabaseValue($value, \Doctrine\DBAL\Platforms\AbstractPlatform $platform)

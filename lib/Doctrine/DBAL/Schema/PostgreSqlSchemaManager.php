@@ -172,6 +172,9 @@ class PostgreSqlSchemaManager extends AbstractSchemaManager
                 $length = 1;
                 break;
             case 'text':
+                $fixed = false;
+                $type = 'text';
+                break;
             case 'varchar':
             case 'interval':
             case '_varchar':
@@ -186,7 +189,7 @@ class PostgreSqlSchemaManager extends AbstractSchemaManager
                         $type = 'boolean';
                     }
                 } elseif (strstr($dbType, 'text')) {
-                    $type = 'clob';
+                    $type = 'text';
                 }
                 if ($fixed !== false) {
                     $fixed = true;

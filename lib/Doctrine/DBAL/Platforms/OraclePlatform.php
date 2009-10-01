@@ -223,6 +223,12 @@ class OraclePlatform extends AbstractPlatform
         return $fixed ? ($length ? 'CHAR(' . $length . ')' : 'CHAR(2000)')
                 : ($length ? 'VARCHAR2(' . $length . ')' : 'VARCHAR2(4000)');
     }
+    
+    /** @override */
+    public function getClobTypeDeclarationSql(array $field)
+    {
+        return 'CLOB';
+    }
 
     public function getListDatabasesSql()
     {

@@ -57,6 +57,9 @@ class DatabasePlatformMock extends \Doctrine\DBAL\Platforms\AbstractPlatform
 
     /** @override */
     public function getVarcharTypeDeclarationSql(array $field) {}
+    
+    /** @override */
+    public function getClobTypeDeclarationSql(array $field) {}
 
     /* MOCK API */
 

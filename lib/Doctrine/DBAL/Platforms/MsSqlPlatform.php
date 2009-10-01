@@ -365,6 +365,12 @@ class MsSqlPlatform extends AbstractPlatform
         return $fixed ? ($length ? 'CHAR(' . $length . ')' : 'CHAR(255)')
                 : ($length ? 'VARCHAR(' . $length . ')' : 'TEXT');
     }
+    
+    /** @override */
+    public function getClobTypeDeclarationSql(array $field)
+    {
+        return 'TEXT';
+    }
 
     /** 
      * @override 

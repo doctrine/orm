@@ -54,4 +54,11 @@ class CmsAddress
     public function getCity() {
         return $this->city;
     }
+    
+    public function setUser(CmsUser $user) {
+        if ($this->user !== $user) {
+            $this->user = $user;
+            $user->setAddress($this);
+        }
+    }
 }

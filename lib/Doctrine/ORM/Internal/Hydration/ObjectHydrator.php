@@ -340,7 +340,7 @@ class ObjectHydrator extends AbstractHydrator
                 } else {
                     // Single-valued association
                     $reflFieldValue = $reflField->getValue($baseElement);
-                    if ( ! $reflFieldValue) {
+                    if ( ! $reflFieldValue /* || doctrine.refresh hint set */) {
                         if (isset($nonemptyComponents[$dqlAlias])) {
                             $element = $this->_getEntity($data, $dqlAlias);
                             $reflField->setValue($baseElement, $element);
@@ -350,7 +350,7 @@ class ObjectHydrator extends AbstractHydrator
                                 // If there is an inverse mapping on the target class its bidirectional
                                 if (isset($targetClass->inverseMappings[$relation->sourceEntityName][$relationField])) {
                                     $sourceProp = $targetClass->inverseMappings[$relation->sourceEntityName][$relationField]->sourceFieldName;
-                                    $targetClass->reflFields[$sourceProp]->setValue($element, $base);
+                                    $targetClass->reflFields[$sourceProp]->setValue($element, $baseElement);
                                 } else if ($this->_ce[$parentClass] === $targetClass && $relation->mappedByFieldName) {
                                     // Special case: bi-directional self-referencing one-one on the same class
                                     $targetClass->reflFields[$relationField]->setValue($element, $baseElement);

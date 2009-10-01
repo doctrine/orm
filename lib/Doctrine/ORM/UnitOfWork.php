@@ -1427,6 +1427,7 @@ class UnitOfWork implements PropertyChangedListener
                     array_combine($class->identifier, $this->_entityIdentifiers[$oid]),
                     $entity
                 );
+                //TODO: refresh (initialized) associations
                 break;
             default:
                 throw new \InvalidArgumentException("Entity is not MANAGED.");
@@ -1656,7 +1657,7 @@ class UnitOfWork implements PropertyChangedListener
         if (isset($this->_identityMap[$class->rootEntityName][$idHash])) {
             $entity = $this->_identityMap[$class->rootEntityName][$idHash];
             $oid = spl_object_hash($entity);
-            $overrideLocalChanges = isset($hints[Query::HINT_REFRESH]);
+            $overrideLocalValues = isset($hints[Query::HINT_REFRESH]);
         } else {
             $entity = new $className;
             $oid = spl_object_hash($entity);
@@ -1667,29 +1668,15 @@ class UnitOfWork implements PropertyChangedListener
             if ($entity instanceof \Doctrine\Common\NotifyPropertyChanged) {
                 $entity->addPropertyChangedListener($this);
             }
-            $overrideLocalChanges = true;
+            $overrideLocalValues = true;
         }
 
-        if ($overrideLocalChanges) {
+        if ($overrideLocalValues) {
             if ($this->_useCExtension) {
                 doctrine_populate_data($entity, $data);
             } else {
                 foreach ($data as $field => $value) {
                     if (isset($class->reflFields[$field])) {
-                        $class->reflFields[$field]->setValue($entity, $value);
-                    }
-                }
-            }
-        } else {
-            foreach ($data as $field => $value) {
-                if (isset($class->reflFields[$field])) {
-                    $currentValue = $class->reflFields[$field]->getValue($entity);
-                    // Only override the current value if:
-                    // a) There was no original value yet (nothing in _originalEntityData)
-                    // or
-                    // b) The original value is the same as the current value (it was not changed).
-                    if ( ! isset($this->_originalEntityData[$oid][$field]) ||
-                            $currentValue == $this->_originalEntityData[$oid][$field]) {
                         $class->reflFields[$field]->setValue($entity, $value);
                     }
                 }

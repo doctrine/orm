@@ -134,7 +134,7 @@ class EntityRepository
             $by = substr($method, 9, strlen($method));
             $method = 'findOneBy';
         } else {
-            throw new BadMethodCallException("Undefined method '$method'.");
+            throw new \BadMethodCallException("Undefined method '$method'.");
         }
         
         if ( ! isset($arguments[0])) {

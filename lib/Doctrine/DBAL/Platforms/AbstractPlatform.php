@@ -1551,6 +1551,13 @@ abstract class AbstractPlatform
      * @param array $field
      */
     abstract public function getVarcharTypeDeclarationSql(array $field);
+    
+    /**
+     * Gets the SQL snippet used to declare a CLOB column type.
+     *
+     * @param array $field
+     */
+    abstract public function getClobTypeDeclarationSql(array $field);
 
     /**
      * Gets the name of the platform.

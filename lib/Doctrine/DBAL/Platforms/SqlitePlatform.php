@@ -370,6 +370,11 @@ class SqlitePlatform extends AbstractPlatform
         return $fixed ? ($length ? 'CHAR(' . $length . ')' : 'CHAR(255)')
                 : ($length ? 'VARCHAR(' . $length . ')' : 'TEXT');
     }
+    
+    public function getClobTypeDeclarationSql(array $field)
+    {
+        return 'CLOB';
+    }
 
     public function getListSequencesSql($database)
     {

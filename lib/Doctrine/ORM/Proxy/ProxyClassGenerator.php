@@ -109,19 +109,25 @@ class ProxyClassGenerator
 
         $methods = $this->_generateMethods($class);
         $sleepImpl = $this->_generateSleep($class);
+        $constructorInv = $class->reflClass->hasMethod('__construct') ? 'parent::__construct();' : '';
 
         $placeholders = array(
             '<proxyClassName>', '<className>',
-            '<methods>', '<sleepImpl>'
+            '<methods>', '<sleepImpl>',
+            '<constructorInvocation>'
         );
         $replacements = array(
-            $proxyClassName, $originalClassName, $methods, $sleepImpl
+            $proxyClassName, $originalClassName,
+            $methods, $sleepImpl,
+            $constructorInv
         );
         
         $file = str_replace($placeholders, $replacements, $file);
         
         file_put_contents($fileName, $file);
+        
         require $fileName;
+        
         return $proxyFullyQualifiedClassName;
     }
 
@@ -130,7 +136,7 @@ class ProxyClassGenerator
         $methods = '';
         
         foreach ($class->reflClass->getMethods() as $method) {
-            if ($method->getName() == '__construct') {
+            if ($method->isConstructor()) {
                 continue;
             }
             
@@ -205,6 +211,7 @@ namespace Doctrine\Generated\Proxies {
         public function __construct($entityPersister, $identifier) {
             $this->_entityPersister = $entityPersister;
             $this->_identifier = $identifier;
+            <constructorInvocation>
         }
         private function _load() {
             if ( ! $this->_loaded) {
@@ -241,6 +248,7 @@ namespace Doctrine\Generated\Proxies {
             $this->_assoc = $assoc;
             $this->_owner = $owner;
             $this->_joinColumnValues = $joinColumnValues;
+            <constructorInvocation>
         }
         private function _load() {
             if ( ! $this->_loaded) {
