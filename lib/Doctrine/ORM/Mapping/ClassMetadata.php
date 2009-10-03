@@ -1567,8 +1567,13 @@ final class ClassMetadata
     public function setDiscriminatorColumn($columnDef)
     {
         $this->discriminatorColumn = $columnDef;
+        
         if ( ! isset($columnDef['fieldName'])) {
             $this->discriminatorColumn['fieldName'] = $columnDef['name'];
+        }
+        
+        if ( ! isset($columnDef['name'])) {
+            $this->discriminatorColumn['name'] = $this->discriminatorColumn['fieldName'];
         }
     }
 
