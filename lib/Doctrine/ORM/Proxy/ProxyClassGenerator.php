@@ -156,10 +156,20 @@ class ProxyClassGenerator
                     // We need to pick the type hint class too
                     if (($paramClass = $param->getClass()) !== null) {
                     	$parameterString .= '\\' . $paramClass->getName() . ' ';
+                    } else if ($param->isArray()) {
+                        $parameterString .= 'array ';
+                    }
+                    
+                    if ($param->isPassedByReference()) {
+                        $parameterString .= '&';
                     }
                     
                     $parameterString .= '$' . $param->getName();
                     $argumentString  .= '$' . $param->getName();
+                    
+                    if ($param->isDefaultValueAvailable()) {
+                        $parameterString .= ' = ' . var_export($param->getDefaultValue(), true);
+                    }
                 }
                 
                 $methods .= $parameterString . ') {' . PHP_EOL;
