@@ -1566,14 +1566,14 @@ final class ClassMetadata
      */
     public function setDiscriminatorColumn($columnDef)
     {
-        $this->discriminatorColumn = $columnDef;
-        
-        if ( ! isset($columnDef['fieldName'])) {
-            $this->discriminatorColumn['fieldName'] = $columnDef['name'];
-        }
-        
-        if ( ! isset($columnDef['name'])) {
-            $this->discriminatorColumn['name'] = $this->discriminatorColumn['fieldName'];
+        if ($columnDef !== null) {
+            if ( ! isset($columnDef['name'])) {
+                throw new MappingException("'name' attribute is mandatory for discriminator columns.");
+            }
+            if ( ! isset($columnDef['fieldName'])) {
+                $columnDef['fieldName'] = $columnDef['name'];
+            }
+            $this->discriminatorColumn = $columnDef;
         }
     }
 
@@ -1883,6 +1883,7 @@ final class ClassMetadata
             'customRepositoryClassName',
             'discriminatorColumn',
             'discriminatorValue',
+            'discriminatorMap',
             'fieldMappings',
             'fieldNames',
             'generatorType',
@@ -1900,6 +1901,7 @@ final class ClassMetadata
             'namespace',
             'parentClasses',
             'primaryTable',
+            'resultColumnNames',
             'rootEntityName',
             'sequenceGeneratorDefinition',
             'subClasses',
