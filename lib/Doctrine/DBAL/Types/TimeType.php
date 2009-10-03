@@ -31,7 +31,8 @@ class TimeType extends Type
      */
     public function convertToDatabaseValue($value, AbstractPlatform $platform)
     {
-        return $value->format($platform->getTimeFormatString());
+        return ($value !== null) 
+            ? $value->format($platform->getTimeFormatString()) : null;
     }
     
     /**
@@ -41,6 +42,7 @@ class TimeType extends Type
      */
     public function convertToPHPValue($value, AbstractPlatform $platform)
     {
-        return \DateTime::createFromFormat($platform->getTimeFormatString(), $value);
+        return ($value !== null) 
+            ? \DateTime::createFromFormat($platform->getTimeFormatString(), $value) : null;
     }
 }

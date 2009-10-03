@@ -23,11 +23,13 @@ class DateTimeType extends Type
 
     public function convertToDatabaseValue($value, AbstractPlatform $platform)
     {
-        return $value->format($platform->getDateTimeFormatString());
+        return ($value !== null) 
+            ? $value->format($platform->getDateTimeFormatString()) : null;
     }
     
     public function convertToPHPValue($value, AbstractPlatform $platform)
     {
-        return \DateTime::createFromFormat($platform->getDateTimeFormatString(), $value);
+        return ($value !== null) 
+            ? \DateTime::createFromFormat($platform->getDateTimeFormatString(), $value) : null;
     }
 }
