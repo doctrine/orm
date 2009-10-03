@@ -140,7 +140,7 @@ class ProxyClassGenerator
                 continue;
             }
             
-            if ($method->isPublic() && ! $method->isFinal()) {
+            if ($method->isPublic() && ! $method->isFinal() && ! $method->isStatic()) {
                 $methods .= PHP_EOL . 'public function ' . $method->getName() . '(';
                 $firstParam = true;
                 $parameterString = $argumentString = '';
