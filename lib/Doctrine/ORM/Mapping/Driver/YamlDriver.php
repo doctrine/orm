@@ -55,7 +55,7 @@ class YamlDriver extends AbstractFileDriver
         
         if ($element['type'] == 'entity') {
             $metadata->setCustomRepositoryClass(
-                isset($element['repositoryClass']) ? $xmlRoot['repositoryClass'] : null
+                isset($element['repositoryClass']) ? $element['repositoryClass'] : null
             );
         } else if ($element['type'] == 'mappedSuperclass') {
             $metadata->isMappedSuperclass = true;
@@ -113,6 +113,28 @@ class YamlDriver extends AbstractFileDriver
             }
         }
 
+        if (isset($element['id'])) {
+            // Evaluate identifier settings
+            foreach ($element['id'] as $name => $idElement) {
+                $mapping = array(
+                    'id' => true,
+                    'fieldName' => $name,
+                    'type' => $idElement['type']
+                );
+            
+                if (isset($idElement['column'])) {
+                    $mapping['columnName'] = $idElement['column'];
+                }
+            
+                $metadata->mapField($mapping);
+
+                if (isset($idElement['generator'])) {
+                    $metadata->setIdGeneratorType(constant('Doctrine\ORM\Mapping\ClassMetadata::GENERATOR_TYPE_'
+                            . strtoupper($idElement['generator']['strategy'])));
+                }
+            }
+        }
+
         // Evaluate fields
         if (isset($element['fields'])) {
             foreach ($element['fields'] as $name => $fieldMapping) {
@@ -138,40 +160,22 @@ class YamlDriver extends AbstractFileDriver
                 }
                 
                 if (isset($fieldMapping['unique'])) {
-                  $mapping['unique'] = (bool)$fieldMapping['unique'];
+                    $mapping['unique'] = (bool)$fieldMapping['unique'];
                 }
                 
                 if (isset($fieldMapping['options'])) {
                     $mapping['options'] = $fieldMapping['options'];
                 }
-                
+
+                if (isset($fieldMapping['notnull'])) {
+                    $mapping['notnull'] = $fieldMapping['notnull'];
+                }
+
                 if (isset($fieldMapping['version']) && $fieldMapping['version']) {
                     $metadata->setVersionMapping($mapping);
                 }
                 
                 $metadata->mapField($mapping);
-            }
-        }
-
-        if (isset($element['id'])) {
-            // Evaluate identifier settings
-            foreach ($element['id'] as $name => $idElement) {
-                $mapping = array(
-                    'id' => true,
-                    'fieldName' => $name,
-                    'type' => $idElement['type']
-                );
-            
-                if (isset($idElement['column'])) {
-                    $mapping['columnName'] = $idElement['column'];
-                }
-            
-                $metadata->mapField($mapping);
-
-                if (isset($idElement['generator'])) {
-                    $metadata->setIdGeneratorType(constant('Doctrine\ORM\Mapping\ClassMetadata::GENERATOR_TYPE_'
-                            . strtoupper($idElement['generator']['strategy'])));
-                }
             }
         }
 
@@ -338,6 +342,10 @@ class YamlDriver extends AbstractFileDriver
             'name' => $joinColumnElement['name'],
             'referencedColumnName' => $joinColumnElement['referencedColumnName']
         );
+                
+          if (isset($joinColumnElement['fieldName'])) {
+              $joinColumn['fieldName'] = (string) $joinColumnElement['fieldName'];
+          }
         
         if (isset($joinColumnElement['unique'])) {
             $joinColumn['unique'] = (bool) $joinColumnElement['unique'];

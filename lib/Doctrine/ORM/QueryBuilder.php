@@ -55,7 +55,7 @@ class QueryBuilder
      */
     private $_dqlParts = array(
         'select'  => array(),
-        'from'    => null,
+        'from'    => array(),
         'join'    => array(),
         'set'     => array(),
         'where'   => null,
@@ -192,10 +192,6 @@ class QueryBuilder
             return $this->_dql;
         }
 
-        if ( ! $this->_dqlParts['select'] || ! $this->_dqlParts['from']) {
-            throw DoctrineException::incompleteQueryBuilder();
-        }
-
         $dql = '';
 
         switch ($this->_type) {
@@ -236,6 +232,24 @@ class QueryBuilder
         $this->_q->setDql($this->getDql());
 
         return $this->_q;
+    }
+
+    /**
+     * Get the root alias for the query. This is the first entity alias involved
+     * in the construction of the query
+     *
+     *     [php]
+     *     $qb = $em->createQueryBuilder()
+     *         ->select('u')
+     *         ->from('User', 'u');
+     *
+     *     echo $qb->getRootAlias(); // u
+     *
+     * @return string $rootAlias
+     */
+    public function getRootAlias()
+    {
+        return $this->_dqlParts['from'][0]->getAlias();
     }
 
     /**
@@ -373,7 +387,7 @@ class QueryBuilder
     }
 
     /**
-     * Add to the SELECT statement
+     * Set the SELECT statement
      *
      *     [php]
      *     $qb = $em->createQueryBuilder()
@@ -393,6 +407,31 @@ class QueryBuilder
             return $this;
         }
         
+        return $this->add('select', new Expr\Select($selects), false);
+    }
+
+    /**
+     * Add to the SELECT statement
+     *
+     *     [php]
+     *     $qb = $em->createQueryBuilder()
+     *         ->select('u')
+     *         ->addSelect('p')
+     *         ->from('User', 'u')
+     *         ->leftJoin('u.Phonenumbers', 'p');
+     *
+     * @param mixed $select  String SELECT statement or SELECT Expr instance
+     * @return QueryBuilder $qb
+     */
+    public function addSelect($select = null)
+    {
+        $this->_type = self::SELECT;
+        $selects = func_get_args();
+
+        if (empty($selects)) {
+          return $this;
+        }
+
         return $this->add('select', new Expr\Select($selects), true);
     }
 
@@ -458,7 +497,7 @@ class QueryBuilder
      */
     public function from($from, $alias = null)
     {
-        return $this->add('from', new Expr\From($from, $alias));
+        return $this->add('from', new Expr\From($from, $alias), true);
     }
 
     /**
@@ -571,7 +610,7 @@ class QueryBuilder
      */
     public function andWhere($where)
     {
-        $where = $this->_getDqlQueryPart('where');
+        $where = $this->getDqlPart('where');
         $args = func_get_args();
         
         if ($where instanceof Expr\Andx) {
@@ -600,7 +639,7 @@ class QueryBuilder
      */
     public function orWhere($where)
     {
-        $where = $this->_getDqlQueryPart('where');
+        $where = $this->getDqlPart('where');
         $args = func_get_args();
         
         if ($where instanceof Expr\Orx) {
@@ -672,7 +711,7 @@ class QueryBuilder
      */
     public function andHaving($having)
     {
-        $having = $this->_getDqlQueryPart('having');
+        $having = $this->getDqlPart('having');
         $args = func_get_args();
         
         if ($having instanceof Expr\Andx) {
@@ -693,7 +732,7 @@ class QueryBuilder
      */
     public function orHaving($having)
     {
-        $having = $this->_getDqlQueryPart('having');
+        $having = $this->getDqlPart('having');
         $args = func_get_args();
         
         if ($having instanceof Expr\Orx) {
@@ -730,10 +769,31 @@ class QueryBuilder
         return $this->add('orderBy', new Expr\OrderBy($sort, $order), true);
     }
 
+    /**
+     * Get a DQL part or parts by the part name
+     *
+     * @param string $queryPartName
+     * @return mixed $queryPart
+     */
+    public function getDqlPart($queryPartName)
+    {
+        return $this->_dqlParts[$queryPartName];
+    }
+
+    /**
+     * Get the full DQL parts array
+     *
+     * @return array $dqlParts
+     */
+    public function getDqlParts()
+    {
+        return $this->_dqlParts;
+    }
+
     private function _getDqlForDelete()
     {
          return 'DELETE'
-              . $this->_getReducedDqlQueryPart('from', array('pre' => ' '))
+              . $this->_getReducedDqlQueryPart('from', array('pre' => ' ', 'separator' => ', '))
               . $this->_getReducedDqlQueryPart('where', array('pre' => ' WHERE '))
               . $this->_getReducedDqlQueryPart('orderBy', array('pre' => ' ORDER BY ', 'separator' => ', '));
     }
@@ -741,7 +801,7 @@ class QueryBuilder
     private function _getDqlForUpdate()
     {
          return 'UPDATE'
-              . $this->_getReducedDqlQueryPart('from', array('pre' => ' '))
+              . $this->_getReducedDqlQueryPart('from', array('pre' => ' ', 'separator' => ', '))
               . $this->_getReducedDqlQueryPart('set', array('pre' => ' SET ', 'separator' => ', '))
               . $this->_getReducedDqlQueryPart('where', array('pre' => ' WHERE '))
               . $this->_getReducedDqlQueryPart('orderBy', array('pre' => ' ORDER BY ', 'separator' => ', '));
@@ -751,7 +811,7 @@ class QueryBuilder
     {
          return 'SELECT' 
               . $this->_getReducedDqlQueryPart('select', array('pre' => ' ', 'separator' => ', '))
-              . $this->_getReducedDqlQueryPart('from', array('pre' => ' FROM '))
+              . $this->_getReducedDqlQueryPart('from', array('pre' => ' FROM ', 'separator' => ', '))
               . $this->_getReducedDqlQueryPart('join', array('pre' => ' ', 'separator' => ' '))
               . $this->_getReducedDqlQueryPart('where', array('pre' => ' WHERE '))
               . $this->_getReducedDqlQueryPart('groupBy', array('pre' => ' GROUP BY ', 'separator' => ', '))
@@ -761,7 +821,7 @@ class QueryBuilder
 
     private function _getReducedDqlQueryPart($queryPartName, $options = array())
     {
-        $queryPart = $this->_getDqlQueryPart($queryPartName);
+        $queryPart = $this->getDqlPart($queryPartName);
         
         if (empty($queryPart)) {
             return (isset($options['empty']) ? $options['empty'] : '');
@@ -772,13 +832,13 @@ class QueryBuilder
              . (isset($options['post']) ? $options['post'] : '');
     }
 
-    private function _getDqlQueryPart($queryPartName)
-    {
-        return $this->_dqlParts[$queryPartName];
-    }
-    
     public function __toString()
     {
         return $this->getDql();
+    }
+
+    public function __clone()
+    {
+        $this->_q = clone $this->_q;
     }
 }

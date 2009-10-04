@@ -100,7 +100,7 @@ class IsolatedClassLoader
             return false;
         }
 
-        if (strpos($className, $this->_namespace) !== 0) {
+        if (strpos($className, $this->_namespace.$this->_namespaceSeparator) !== 0) {
             return false;
         }
 
@@ -113,5 +113,4 @@ class IsolatedClassLoader
         
         return true;
     }
-    
 }

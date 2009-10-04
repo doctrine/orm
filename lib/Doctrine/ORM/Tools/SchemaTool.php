@@ -510,9 +510,7 @@ class SchemaTool
                             // Column exists, check for changes
                             $columnInfo = $column;
                             $columnChanged = false;
-                            
-                            echo $column['name'] . ' ';
-                            
+                                                        
                             // 1. check for nullability change
                             $columnInfo['notnull'] = ( ! isset($columnInfo['notnull'])) 
                                 ? false : $columnInfo['notnull'];

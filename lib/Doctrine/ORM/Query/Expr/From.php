@@ -43,6 +43,16 @@ class From
         $this->_alias  = $alias;
     }
 
+    public function getFrom()
+    {
+        return $this->_from;
+    }
+
+    public function getAlias()
+    {
+        return $this->_alias;
+    }
+
     public function __toString()
     {
         return $this->_from . ($this->_alias ? ' ' . $this->_alias : '');
