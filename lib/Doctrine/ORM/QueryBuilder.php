@@ -21,7 +21,8 @@
 
 namespace Doctrine\ORM;
 
-use Doctrine\ORM\Query\Expr;
+use Doctrine\ORM\Query\Expr,
+    Doctrine\Common\DoctrineException;
 
 /**
  * This class is responsible for building DQL query strings via an object oriented
@@ -189,6 +190,10 @@ class QueryBuilder
     {
         if ($this->_dql !== null && $this->_state === self::STATE_CLEAN) {
             return $this->_dql;
+        }
+
+        if ( ! $this->_dqlParts['select'] || ! $this->_dqlParts['from']) {
+            throw DoctrineException::incompleteQueryBuilder();
         }
 
         $dql = '';
