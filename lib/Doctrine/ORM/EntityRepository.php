@@ -32,6 +32,7 @@ namespace Doctrine\ORM;
  * @link www.doctrine-project.org
  * @since 2.0
  * @author Roman Borschel <roman@code-factory.org>
+ * @author Jonathan H. Wage <jonwage@gmail.com>
  */
 class EntityRepository
 {
@@ -50,6 +51,19 @@ class EntityRepository
         $this->_entityName = $class->name;
         $this->_em = $em;
         $this->_class = $class;
+    }
+    
+    /**
+     * Create a new QueryBuilder instance that is prepopulated for this entity name
+     *
+     * @param string $alias 
+     * @return QueryBuilder $qb
+     */
+    public function createQueryBuilder($alias)
+    {
+        return $this->_em->createQueryBuilder()
+            ->select($alias)
+            ->from($this->_entityName);
     }
     
     /**
