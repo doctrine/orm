@@ -89,17 +89,16 @@ class ClassMetadataExporterTest extends \Doctrine\Tests\OrmTestCase
     public function testGetMetadataInstances()
     {
         $cme = new ClassMetadataExporter();
-        $cme->addMappingDir(__DIR__ . '/annotation', 'annotation');
         $cme->addMappingDir(__DIR__ . '/php', 'php');
         $cme->addMappingDir(__DIR__ . '/xml', 'xml');
         $cme->addMappingDir(__DIR__ . '/yml', 'yml');
 
         $metadataInstances = $cme->getMetadataInstances();
-        $this->assertEquals(4, count($metadataInstances));
-        $this->assertEquals('AnnotationTest', $metadataInstances[0]->name);
-        $this->assertEquals('PhpTest', $metadataInstances[1]->name);
-        $this->assertEquals('XmlTest', $metadataInstances[2]->name);
-        $this->assertEquals('YmlTest', $metadataInstances[3]->name);
+
+        $this->assertEquals(3, count($metadataInstances));
+        $this->assertEquals('PhpTest', $metadataInstances[0]->name);
+        $this->assertEquals('XmlTest', $metadataInstances[1]->name);
+        $this->assertEquals('YmlTest', $metadataInstances[2]->name);
     }
 
     /**
