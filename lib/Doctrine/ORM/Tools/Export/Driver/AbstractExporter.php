@@ -22,7 +22,7 @@
 
 namespace Doctrine\ORM\Tools\Export\Driver;
 
-use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Mapping\ClassMetadataInfo;
 
 /**
  * Abstract base class which is to be used for the Exporter drivers
@@ -101,28 +101,28 @@ abstract class AbstractExporter
      * Converts a single ClassMetadata instance to the exported format
      * and returns it
      *
-     * @param ClassMetadata $metadata 
+     * @param ClassMetadataInfo $metadata 
      * @return mixed $exported
      */
-    abstract public function exportClassMetadata(ClassMetadata $metadata);
+    abstract public function exportClassMetadata(ClassMetadataInfo $metadata);
 
     protected function _getInheritanceTypeString($type)
     {
         switch ($type)
         {
-            case ClassMetadata::INHERITANCE_TYPE_NONE:
+            case ClassMetadataInfo::INHERITANCE_TYPE_NONE:
                 return 'NONE';
             break;
 
-            case ClassMetadata::INHERITANCE_TYPE_JOINED:
+            case ClassMetadataInfo::INHERITANCE_TYPE_JOINED:
                 return 'JOINED';
             break;
             
-            case ClassMetadata::INHERITANCE_TYPE_SINGLE_TABLE:
+            case ClassMetadataInfo::INHERITANCE_TYPE_SINGLE_TABLE:
                 return 'SINGLE_TABLE';
             break;
             
-            case ClassMetadata::INHERITANCE_TYPE_TABLE_PER_CLASS:
+            case ClassMetadataInfo::INHERITANCE_TYPE_TABLE_PER_CLASS:
                 return 'PER_CLASS';
             break;
         }
@@ -132,15 +132,15 @@ abstract class AbstractExporter
     {
         switch ($policy)
         {
-            case ClassMetadata::CHANGETRACKING_DEFERRED_IMPLICIT:
+            case ClassMetadataInfo::CHANGETRACKING_DEFERRED_IMPLICIT:
                 return 'DEFERRED_IMPLICIT';
             break;
             
-            case ClassMetadata::CHANGETRACKING_DEFERRED_EXPLICIT:
+            case ClassMetadataInfo::CHANGETRACKING_DEFERRED_EXPLICIT:
                 return 'DEFERRED_EXPLICIT';
             break;
             
-            case ClassMetadata::CHANGETRACKING_NOTIFY:
+            case ClassMetadataInfo::CHANGETRACKING_NOTIFY:
                 return 'NOTIFY';
             break;
         }
@@ -150,19 +150,19 @@ abstract class AbstractExporter
     {
         switch ($type)
         {
-            case ClassMetadata::GENERATOR_TYPE_AUTO:
+            case ClassMetadataInfo::GENERATOR_TYPE_AUTO:
                 return 'AUTO';
             break;
             
-            case ClassMetadata::GENERATOR_TYPE_SEQUENCE:
+            case ClassMetadataInfo::GENERATOR_TYPE_SEQUENCE:
                 return 'SEQUENCE';
             break;
             
-            case ClassMetadata::GENERATOR_TYPE_TABLE:
+            case ClassMetadataInfo::GENERATOR_TYPE_TABLE:
                 return 'TABLE';
             break;
             
-            case ClassMetadata::GENERATOR_TYPE_IDENTITY:
+            case ClassMetadataInfo::GENERATOR_TYPE_IDENTITY:
                 return 'IDENTITY';
             break;
         }

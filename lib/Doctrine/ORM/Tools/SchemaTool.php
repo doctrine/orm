@@ -630,7 +630,6 @@ class SchemaTool
                     foreach ($newJoinColumns as $name => $joinColumn) {
                         $changes['add'][$name] = $joinColumn;
                     }
-                    
                     $sql[] = $this->_platform->getAlterTableSql($tableName, $changes);
                 }
                 

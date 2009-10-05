@@ -1,6 +1,10 @@
 [?php
 
-namespace <?php echo $metadata->namespace ?>;
+namespace <?php echo $this->getNamespace($metadata) ?>;
+<?php if ($this->extendsClass()): ?>
+
+use <?php echo $this->getClassToExtendNamespace() ?>;
+<?php endif; ?>
 
 /**
 <?php if ($metadata->isMappedSuperclass): ?>
@@ -8,19 +12,10 @@ namespace <?php echo $metadata->namespace ?>;
 <?php else: ?>
  * @Entity
 <?php endif; ?>
- * <?php echo $this->_getTableAnnotation($metadata)."\n" ?>
+ * <?php echo $this->getTableAnnotation($metadata)."\n" ?>
  */
-class <?Php echo $metadata->getReflectionClass()->getShortName()."\n" ?>
+class <?Php echo $this->getClassName($metadata) ?><?php if ($this->extendsClass()): ?> extends <?php echo $this->getClassToExtendName() ?><?php endif; ?>
+
 {
-<?php foreach ($metadata->fieldMappings as $fieldMapping): ?>
-<?php echo $this->_getFieldMappingAnnotation($fieldMapping, $metadata)."\n" ?>
-    private $<?php echo $fieldMapping['fieldName'] ?>;
-
-<?php endforeach ?>
-<?php foreach ($metadata->associationMappings as $associationMapping): ?>
-<?php echo $this->_getAssociationMappingAnnotation($associationMapping, $metadata)."\n" ?>
-    private $<?php echo $associationMapping->sourceFieldName ?>;
-
-<?php endforeach; ?>
-
+<?php include('annotation_body.tpl.php') ?>
 }

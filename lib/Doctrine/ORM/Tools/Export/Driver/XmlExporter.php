@@ -22,7 +22,10 @@
 
 namespace Doctrine\ORM\Tools\Export\Driver;
 
-use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Mapping\ClassMetadataInfo,
+    Doctrine\ORM\Mapping\OneToOneMapping,
+    Doctrine\ORM\Mapping\OneToManyMapping,
+    Doctrine\ORM\Mapping\ManyToManyMapping;
 
 /**
  * ClassMetadata exporter for Doctrine XML mapping files
@@ -41,10 +44,10 @@ class XmlExporter extends AbstractExporter
      * Converts a single ClassMetadata instance to the exported format
      * and returns it
      *
-     * @param ClassMetadata $metadata 
+     * @param ClassMetadataInfo $metadata 
      * @return mixed $exported
      */
-    public function exportClassMetadata(ClassMetadata $metadata)
+    public function exportClassMetadata(ClassMetadataInfo $metadata)
     {
         $xml = new \SimpleXmlElement("<?xml version=\"1.0\" encoding=\"utf-8\"?><doctrine-mapping/>");
 
@@ -170,11 +173,11 @@ class XmlExporter extends AbstractExporter
         }
 
         foreach ($metadata->associationMappings as $name => $associationMapping) {
-            if ($associationMapping instanceof \Doctrine\ORM\Mapping\OneToOneMapping) {
+            if ($associationMapping instanceof OneToOneMapping) {
                 $associationMappingXml = $root->addChild('one-to-one');
-            } else if ($associationMapping instanceof \Doctrine\ORM\Mapping\OneToManyMapping) {
+            } else if ($associationMapping instanceof OneToManyMapping) {
                 $associationMappingXml = $root->addChild('one-to-many');
-            } else if ($associationMapping instanceof \Doctrine\ORM\Mapping\ManyToManyMapping) {
+            } else if ($associationMapping instanceof ManyToManyMapping) {
                 $associationMappingXml = $root->addChild('many-to-many');
             }
 

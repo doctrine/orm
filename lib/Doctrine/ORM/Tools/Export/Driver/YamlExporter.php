@@ -22,7 +22,7 @@
 
 namespace Doctrine\ORM\Tools\Export\Driver;
 
-use Doctrine\ORM\Mapping\ClassMetadata,
+use Doctrine\ORM\Mapping\ClassMetadataInfo,
     Doctrine\ORM\Mapping\OneToOneMapping,
     Doctrine\ORM\Mapping\OneToManyMapping,
     Doctrine\ORM\Mapping\ManyToManyMapping;
@@ -46,10 +46,10 @@ class YamlExporter extends AbstractExporter
      *
      * TODO: Should this code be pulled out in to a toArray() method in ClassMetadata
      *
-     * @param ClassMetadata $metadata 
+     * @param ClassMetadataInfo $metadata 
      * @return mixed $exported
      */
-    public function exportClassMetadata(ClassMetadata $metadata)
+    public function exportClassMetadata(ClassMetadataInfo $metadata)
     {
         $array = array();
         if ($metadata->isMappedSuperclass) {
@@ -114,7 +114,7 @@ class YamlExporter extends AbstractExporter
                 ),
             );
             
-            if ($associationMapping instanceof \Doctrine\ORM\Mapping\OneToOneMapping) {
+            if ($associationMapping instanceof OneToOneMapping) {
                 $oneToOneMappingArray = array(
                     'mappedBy'      => $associationMapping->mappedByFieldName,
                     'joinColumns'   => $associationMapping->joinColumns,
@@ -123,7 +123,7 @@ class YamlExporter extends AbstractExporter
                 
                 $associationMappingArray = array_merge($associationMappingArray, $oneToOneMappingArray);
                 $array['oneToOne'][$name] = $associationMappingArray;
-            } else if ($associationMapping instanceof \Doctrine\ORM\Mapping\OneToManyMapping) {
+            } else if ($associationMapping instanceof OneToManyMapping) {
                 $oneToManyMappingArray = array(
                     'mappedBy'      => $associationMapping->mappedByFieldName,
                     'orphanRemoval' => $associationMapping->orphanRemoval,
@@ -131,7 +131,7 @@ class YamlExporter extends AbstractExporter
                 
                 $associationMappingArray = array_merge($associationMappingArray, $oneToManyMappingArray);
                 $array['oneToMany'][$name] = $associationMappingArray;
-            } else if ($associationMapping instanceof \Doctrine\ORM\Mapping\ManyToManyMapping) {
+            } else if ($associationMapping instanceof ManyToManyMapping) {
                 $manyToManyMappingArray = array(
                     'mappedBy'  => $associationMapping->mappedByFieldName,
                     'joinTable' => $associationMapping->joinTable,

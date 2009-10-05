@@ -21,7 +21,7 @@
 
 namespace Doctrine\ORM\Mapping\Driver;
 
-use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Mapping\ClassMetadataInfo;
 
 /**
  * XmlDriver is a metadata driver that enables mapping through XML files.
@@ -44,10 +44,8 @@ class XmlDriver extends AbstractFileDriver
      * @param string $className
      * @param ClassMetadata $metadata
      */
-    public function loadMetadataForClass($className, ClassMetadata $metadata)
+    public function loadMetadataForClass($className, ClassMetadataInfo $metadata)
     {
-        $class = $metadata->getReflectionClass();
-
         $xmlRoot = $this->getElement($className);
 
         if ($xmlRoot->getName() == 'entity') {
@@ -327,11 +325,7 @@ class XmlDriver extends AbstractFileDriver
         // Evaluate <lifecycle-callbacks...>
         if (isset($xmlRoot->{'lifecycle-callbacks'})) {
             foreach ($xmlRoot->{'lifecycle-callbacks'}->{'lifecycle-callback'} as $lifecycleCallback) {
-                $method = $class->getMethod((string)$lifecycleCallback['method']);
-                
-                if ($method->isPublic()) {
-                    $metadata->addLifecycleCallback($method->getName(), constant('\Doctrine\ORM\Events::' . (string)$lifecycleCallback['type']));
-                }
+                $metadata->addLifecycleCallback((string)$lifecycleCallback['method'], constant('\Doctrine\ORM\Events::' . (string)$lifecycleCallback['type']));
             }
         }
     }

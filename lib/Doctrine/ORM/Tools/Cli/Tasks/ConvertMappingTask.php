@@ -21,7 +21,7 @@
  
 namespace Doctrine\ORM\Tools\Cli\Tasks;
 
-use Doctrine\ORM\Tools\Export\ClassmetadataExporter;
+use Doctrine\ORM\Tools\Export\ClassMetadataExporter;
 
 /**
  * CLI Task to convert your mapping information between the various formats
@@ -86,12 +86,14 @@ class ConvertMappingTask extends AbstractTask
         $args = $this->getArguments();
         $printer = $this->getPrinter();
 
-        if (!(isset($args['from']) && isset($args['to']) && isset($args['dest'])))
-        {
+        if (!(isset($args['from']) && isset($args['to']) && isset($args['dest']))) {
           $printer->writeln('You must include a value for all four options: --from, --to and --dest', 'ERROR');
           return false;
         }
-
+        if ($args['to'] != 'annotation' && $args['extend']) {
+            $printer->writeln('You can only use the --extend argument when converting to annoations.');
+            return false;
+        }
         return true;
     }
 
@@ -100,7 +102,7 @@ class ConvertMappingTask extends AbstractTask
         $printer = $this->getPrinter();
         $args = $this->getArguments();
 
-        $cme = new ClassmetadataExporter();
+        $cme = new ClassMetadataExporter();
         $from = (array) $args['from'];
         foreach ($from as $path) {
             $type = $this->_determinePathType($path);
@@ -111,6 +113,12 @@ class ConvertMappingTask extends AbstractTask
         }
 
         $exporter = $cme->getExporter($args['to']);
+        if (isset($args['extend'])) {
+            $exporter->setClassToExtend($args['extend']);
+        }
+        if (isset($args['num-spaces'])) {
+            $exporter->setNumSpaces($args['num-spaces']);
+        }
         $exporter->setOutputDir($args['dest']);
 
         $printer->writeln(sprintf('Exporting %s mapping information to directory: "%s"', $args['to'], $args['dest']), 'INFO');

@@ -164,9 +164,6 @@ abstract class AbstractTask
         if ( ! isset($this->_arguments['config'])) {
             if (file_exists('./cli-config.php')) {
                 require './cli-config.php';
-            } else {
-                $this->_printer->writeln('--config option or cli-config.php in the same directory required', 'ERROR');
-                return false;
             }
         } else {
             require $this->_arguments['config'];

@@ -472,7 +472,7 @@ class EntityManager
         $metadata = $this->getClassMetadata($entityName);
         $customRepositoryClassName = $metadata->getCustomRepositoryClass();
         if ($customRepositoryClassName !== null) {
-            $repository = new $customRepositoryClassName($entityName, $metadata);
+            $repository = new $customRepositoryClassName($this, $metadata);
         } else {
             $repository = new EntityRepository($this, $metadata);
         }

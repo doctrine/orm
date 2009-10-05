@@ -22,7 +22,7 @@
 
 namespace Doctrine\ORM\Tools\Export\Driver;
 
-use Doctrine\ORM\Mapping\ClassMetadata,
+use Doctrine\ORM\Mapping\ClassMetadataInfo,
     Doctrine\ORM\Mapping\AssociationMapping;
 
 /**
@@ -37,26 +37,194 @@ use Doctrine\ORM\Mapping\ClassMetadata,
 class AnnotationExporter extends AbstractExporter
 {
     protected $_extension = '.php';
+    protected $_isNew = false;
+    protected $_outputPath;
+    protected $_numSpaces = 4;
+    protected $_classToExtend;
+    protected $_currentCode;
+
+    public function hasProperty($property, $metadata)
+    {
+        if ($this->_isNew) {
+            return false;
+        } else {
+            return strpos($this->_currentCode, '$' . $property) !== false ? true : false;
+        }
+    }
+
+    public function hasMethod($method, $metadata)
+    {
+        if ($this->_isNew) {
+            return false;
+        } else {
+            return strpos($this->_currentCode, 'function ' . $method) !== false ? true : false;
+        }
+    }
 
     /**
      * Converts a single ClassMetadata instance to the exported format
      * and returns it
      *
-     * @param ClassMetadata $metadata 
+     * @param ClassMetadataInfo $metadata 
      * @return mixed $exported
      */
-    public function exportClassMetadata(ClassMetadata $metadata)
+    public function exportClassMetadata(ClassMetadataInfo $metadata)
     {
+        if (file_exists($this->_outputPath)) {
+            $this->_currentCode = file_get_contents($this->_outputPath);
+        }
+
         ob_start();
-        include('annotation.tpl.php');
+        include($this->_isNew ? 'annotation.tpl.php' : 'annotation_body.tpl.php');
         $code = ob_get_contents();
         ob_end_clean();
 
         $code = str_replace(array('[?php', '?]'), array('<?php', '?>'), $code);
+        $code = explode("\n", $code);
+
+        if ($this->_currentCode) {
+            $body = $code;
+            $code = $this->_currentCode;
+            $code = explode("\n", $code);
+            unset($code[array_search('}', $code)]);
+            foreach ($body as $line) {
+                $code[] = $line;
+            }
+            $code[] = '}';
+        }
+
+        $code = array_values($code);
+
+        // Remove empty lines before last "}"
+        for ($i = count($code) - 1; $i > 0; --$i) {
+            $line = trim($code[$i]);
+            if ($line && $line != '}') {
+                break;
+            }
+            if ( ! $line) {
+                unset($code[$i]);
+            }
+        }
+        $code = array_values($code);
+        $code = implode("\n", $code);
+
         return $code;
     }
 
-    private function _getTableAnnotation($metadata)
+    public function setNumSpaces($numSpaces)
+    {
+        $this->_numSpaces = $numSpaces;
+    }
+
+    public function extendsClass()
+    {
+        return $this->_classToExtend ? true : false;
+    }
+
+    public function getClassToExtend()
+    {
+        return $this->_classToExtend;
+    }
+
+    public function setClassToExtend($classToExtend)
+    {
+        $this->_classToExtend = $classToExtend;
+    }
+
+    public function getClassToExtendName()
+    {
+        $refl = new \ReflectionClass($this->getClassToExtend());
+        return $refl->getShortName();
+    }
+
+    public function getClassToExtendNamespace()
+    {
+        $refl = new \ReflectionClass($this->getClassToExtend());
+        return $refl->getNamespaceName() ? $refl->getNamespaceName():$refl->getShortName();        
+    }
+
+    public function getClassName($metadata)
+    {
+        return substr($metadata->name, strpos($metadata->name, '\\') + 1, strlen($metadata->name));
+    }
+
+    public function getNamespace($metadata)
+    {
+        return substr($metadata->name, 0, strrpos($metadata->name, '\\'));
+    }
+
+    public function addMethod($type, $fieldName, $metadata, array &$methods)
+    {
+        $methodName = $type . ucfirst($fieldName);
+        if ($this->hasMethod($methodName, $metadata)) {
+            return false;
+        }
+
+        $method = array();
+        $method[] = str_repeat(' ', $this->_numSpaces) . '/**';
+        if ($type == 'get') {
+            $method[] = str_repeat(' ', $this->_numSpaces) . ' * Get ' . $fieldName;
+        } else if ($type == 'set') {
+            $method[] = str_repeat(' ', $this->_numSpaces) . ' * Set ' . $fieldName;
+        } else if ($type == 'add') {
+            $method[] = str_repeat(' ', $this->_numSpaces) . ' * Add ' . $fieldName;
+        }
+        $method[] = str_repeat(' ', $this->_numSpaces) . ' */';
+
+        if ($type == 'get') {
+            $method[] = str_repeat(' ', $this->_numSpaces) . 'public function ' . $methodName . '()';
+        } else if ($type == 'set') {
+            $method[] = str_repeat(' ', $this->_numSpaces) . 'public function ' . $methodName . '($value)';
+        } else if ($type == 'add') {
+            $method[] = str_repeat(' ', $this->_numSpaces) . 'public function ' . $methodName . '($value)';        
+        }
+
+        $method[] = str_repeat(' ', $this->_numSpaces) . '{';
+        if ($type == 'get') {
+            $method[] = str_repeat(' ', $this->_numSpaces) . str_repeat(' ', $this->_numSpaces) . 'return $this->' . $fieldName . ';';
+        } else if ($type == 'set') {
+            $method[] = str_repeat(' ', $this->_numSpaces) . str_repeat(' ', $this->_numSpaces) . '$this->' . $fieldName . ' = $value;';
+        } else if ($type == 'add') {
+            $method[] = str_repeat(' ', $this->_numSpaces) . str_repeat(' ', $this->_numSpaces) . '$this->' . $fieldName . '[] = $value;';
+        }
+
+        $method[] = str_repeat(' ', $this->_numSpaces) . '}';
+        $method[] = "\n";
+
+        $methods[] = implode("\n", $method);
+    }
+
+    public function getMethods($metadata)
+    {
+      $methods = array();
+
+      foreach ($metadata->fieldMappings as $fieldMapping) {
+          $this->addMethod('set', $fieldMapping['fieldName'], $metadata, $methods);
+          $this->addMethod('get', $fieldMapping['fieldName'], $metadata, $methods);
+      }
+
+      foreach ($metadata->associationMappings as $associationMapping) {
+          if ($associationMapping instanceof \Doctrine\ORM\Mapping\OneToOneMapping) {
+              $this->addMethod('set', $associationMapping->sourceFieldName, $metadata, $methods);
+              $this->addMethod('get', $associationMapping->sourceFieldName, $metadata, $methods);
+          } else if ($associationMapping instanceof \Doctrine\ORM\Mapping\OneToManyMapping) {
+              if ($associationMapping->isOwningSide) {
+                  $this->addMethod('set', $associationMapping->sourceFieldName, $metadata, $methods);
+                  $this->addMethod('get', $associationMapping->sourceFieldName, $metadata, $methods);
+              } else {
+                  $this->addMethod('add', $associationMapping->sourceFieldName, $metadata, $methods);
+                  $this->addMethod('get', $associationMapping->sourceFieldName, $metadata, $methods);                
+              }
+          } else if ($associationMapping instanceof \Doctrine\ORM\Mapping\ManyToManyMapping) {
+              $this->addMethod('add', $associationMapping->sourceFieldName, $metadata, $methods);
+              $this->addMethod('get', $associationMapping->sourceFieldName, $metadata, $methods);                
+          }
+      }
+
+      return $methods;
+    }
+
+    public function getTableAnnotation($metadata)
     {
         $table = array();
         $table[] = 'name=' . $metadata->primaryTable['name'];
@@ -66,21 +234,21 @@ class AnnotationExporter extends AbstractExporter
         return '@Table(' . implode(', ', $table) . ')';
     }
 
-    private function _getAssociationMappingAnnotation(AssociationMapping $associationMapping, ClassMetadata $metadata)
+    public function getAssociationMappingAnnotation(AssociationMapping $associationMapping, ClassMetadataInfo $metadata)
     {
         // TODO: This function still needs to be written :)
         $lines = array();
-        $lines[] = '    /**';
-        $lines[] = '     *';
-        $lines[] = '     */';
+        $lines[] = str_repeat(' ', $this->_numSpaces) . '/**';
+        $lines[] = str_repeat(' ', $this->_numSpaces) . ' *';
+        $lines[] = str_repeat(' ', $this->_numSpaces) . ' */';
 
         return implode("\n", $lines);
     }
 
-    private function _getFieldMappingAnnotation(array $fieldMapping, ClassMetadata $metadata)
+    public function getFieldMappingAnnotation(array $fieldMapping, ClassMetadataInfo $metadata)
     {
         $lines = array();
-        $lines[] = '    /**';
+        $lines[] = str_repeat(' ', $this->_numSpaces) . '/**';
 
         $column = array();
         if (isset($fieldMapping['type'])) {
@@ -110,11 +278,11 @@ class AnnotationExporter extends AbstractExporter
         if (isset($fieldMapping['unique'])) {
             $column[] = 'unique=' . var_export($fieldMapping['unique'], true);
         }
-        $lines[] = '     * @Column(' . implode(', ', $column) . ')';
+        $lines[] = str_repeat(' ', $this->_numSpaces) . ' * @Column(' . implode(', ', $column) . ')';
         if (isset($fieldMapping['id']) && $fieldMapping['id']) {
-            $lines[] = '     * @Id';
+            $lines[] = str_repeat(' ', $this->_numSpaces) . ' * @Id';
             if ($generatorType = $this->_getIdGeneratorTypeString($metadata->generatorType)) {
-                $lines[] = '     * @GeneratedValue(strategy="' . $generatorType . '")';
+                $lines[] = str_repeat(' ', $this->_numSpaces).' * @GeneratedValue(strategy="' . $generatorType . '")';
             }
             if ($metadata->sequenceGeneratorDefinition) {
                 $sequenceGenerator = array();
@@ -127,13 +295,13 @@ class AnnotationExporter extends AbstractExporter
                 if (isset($metadata->sequenceGeneratorDefinition['initialValue'])) {
                     $sequenceGenerator[] = 'initialValue="' . $metadata->sequenceGeneratorDefinition['initialValue'] . '"';
                 }
-                $lines[] = '     * @SequenceGenerator(' . implode(', ', $sequenceGenerator) . ')';
+                $lines[] = str_repeat(' ', $this->_numSpaces) . ' * @SequenceGenerator(' . implode(', ', $sequenceGenerator) . ')';
             }
         }
         if (isset($fieldMapping['version']) && $fieldMapping['version']) {
-            $lines[] = '     * @Version';
+            $lines[] = str_repeat(' ', $this->_numSpaces) . ' * @Version';
         }
-        $lines[] = '     */';
+        $lines[] = str_repeat(' ', $this->_numSpaces) . ' */';
 
         return implode("\n", $lines);
     }
@@ -156,6 +324,10 @@ class AnnotationExporter extends AbstractExporter
             if ( ! is_dir($outputDir)) {
                 mkdir($outputDir, 0777, true);
             }
+            if ( ! file_exists($outputPath)) {
+               $this->_isNew = true;
+            }
+            $this->_outputPath = $outputPath;
             $output = $this->exportClassMetadata($metadata);
             file_put_contents($outputPath, $output);
         }

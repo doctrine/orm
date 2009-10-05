@@ -108,7 +108,6 @@ class IsolatedClassLoader
         $class = ($this->_basePath !== null ? $this->_basePath . DIRECTORY_SEPARATOR : '')
                . str_replace($this->_namespaceSeparator, DIRECTORY_SEPARATOR, $className)
                . $this->_fileExtension;
-        
         require $class;
         
         return true;

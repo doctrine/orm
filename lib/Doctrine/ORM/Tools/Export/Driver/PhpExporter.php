@@ -41,10 +41,10 @@ class PhpExporter extends AbstractExporter
      * Converts a single ClassMetadata instance to the exported format
      * and returns it
      *
-     * @param ClassMetadata $metadata 
+     * @param ClassMetadataInfo $metadata 
      * @return mixed $exported
      */
-    public function exportClassMetadata(ClassMetadata $metadata)
+    public function exportClassMetadata(ClassMetadataInfo $metadata)
     {
         $lines = array();
         $lines[] = '<?php';

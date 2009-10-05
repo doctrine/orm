@@ -35,9 +35,9 @@ namespace Doctrine\ORM;
  */
 class EntityRepository
 {
-    private $_entityName;
-    private $_em;
-    private $_class;
+    protected $_entityName;
+    protected $_em;
+    protected $_class;
     
     /**
      * Initializes a new <tt>EntityRepository</tt>.

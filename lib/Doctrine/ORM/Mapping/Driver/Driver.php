@@ -21,7 +21,7 @@
 
 namespace Doctrine\ORM\Mapping\Driver;
 
-use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Mapping\ClassMetadataInfo;
 
 /**
  * Contract for metadata drivers.
@@ -38,9 +38,9 @@ interface Driver
      * Loads the metadata for the specified class into the provided container.
      * 
      * @param string $className
-     * @param ClassMetadata $metadata
+     * @param ClassMetadataInfo $metadata
      */
-    public function loadMetadataForClass($className, ClassMetadata $metadata);
+    public function loadMetadataForClass($className, ClassMetadataInfo $metadata);
 
     /**
      * Whether the class with the specified name should have its metadata loaded.

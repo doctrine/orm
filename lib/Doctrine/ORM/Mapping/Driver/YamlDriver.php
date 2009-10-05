@@ -21,7 +21,7 @@
 
 namespace Doctrine\ORM\Mapping\Driver;
 
-use Doctrine\ORM\Mapping\ClassMetadata,
+use Doctrine\ORM\Mapping\ClassMetadataInfo,
     Doctrine\Common\DoctrineException,
     Doctrine\ORM\Mapping\MappingException;
 
@@ -47,10 +47,8 @@ class YamlDriver extends AbstractFileDriver
 {
     protected $_fileExtension = '.dcm.yml';
 
-    public function loadMetadataForClass($className, ClassMetadata $metadata)
+    public function loadMetadataForClass($className, ClassMetadataInfo $metadata)
     {
-        $class = $metadata->getReflectionClass();
-        
         $element = $this->getElement($className);
         
         if ($element['type'] == 'entity') {
@@ -320,11 +318,7 @@ class YamlDriver extends AbstractFileDriver
         // Evaluate lifeCycleCallbacks
         if (isset($element['lifecycleCallbacks'])) {
             foreach ($element['lifecycleCallbacks'] as $method => $type) {
-                $method = $class->getMethod($method);
-                
-                if ($method->isPublic()) {
-                    $metadata->addLifecycleCallback($method->getName(), constant('\Doctrine\ORM\Events::' . $type));
-                }
+                $metadata->addLifecycleCallback($method, constant('\Doctrine\ORM\Events::' . $type));
             }
         }
     }
