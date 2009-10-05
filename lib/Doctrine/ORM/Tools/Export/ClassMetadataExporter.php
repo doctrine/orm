@@ -77,19 +77,33 @@ class ClassMetadataExporter
                 throw DoctrineException::invalidMappingDriverType($type);
             }
 
-            $class = $this->_mappingDrivers[$type];
-            if (is_subclass_of($class, 'Doctrine\ORM\Mapping\Driver\AbstractFileDriver')) {
-                $driver = new $class($dir, constant($class . '::PRELOAD'));
-            } else {
-                $reader = new \Doctrine\Common\Annotations\AnnotationReader(new \Doctrine\Common\Cache\ArrayCache);
-                $reader->setDefaultAnnotationNamespace('Doctrine\ORM\Mapping\\');
-                $driver = new $class($reader);
-            }
+            $driver = $this->getMappingDriver($type, $dir);
             $this->_mappingDirectories[] = array($dir, $driver);
         }
     }
 
-    private function _getMetadataInstances()
+    public function getMappingDriver($type, $dir)
+    {
+        if ( ! isset($this->_mappingDrivers[$type])) {
+            return false;
+        }
+        $class = $this->_mappingDrivers[$type];
+        if (is_subclass_of($class, 'Doctrine\ORM\Mapping\Driver\AbstractFileDriver')) {
+            $driver = new $class($dir, constant($class . '::PRELOAD'));
+        } else {
+            $reader = new \Doctrine\Common\Annotations\AnnotationReader(new \Doctrine\Common\Cache\ArrayCache);
+            $reader->setDefaultAnnotationNamespace('Doctrine\ORM\Mapping\\');
+            $driver = new $class($reader);
+        }
+        return $driver;
+    }
+
+    public function getMappingDirectories()
+    {
+        return $this->_mappingDirectories;
+    }
+
+    public function getMetadataInstances()
     {
         $classes = array();
 
@@ -108,12 +122,10 @@ class ClassMetadataExporter
                     $vars = get_defined_vars();
                     foreach ($vars as $var) {
                         if ($var instanceof \Doctrine\ORM\Mapping\ClassMetadataInfo) {
-                            $classes[] = $var;
+                            $classes[$var->name] = $var;
                         }
                     }
                 }
-                $classes = array_unique($classes);
-                $classes = array_values($classes);
             } else {
                 if ($driver instanceof \Doctrine\ORM\Mapping\Driver\AnnotationDriver) {
                     $iter = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($dir),
@@ -133,7 +145,7 @@ class ClassMetadataExporter
                         if ( ! $driver->isTransient($className)) {
                             $metadata = new ClassMetadata($className);  
                             $driver->loadMetadataForClass($className, $metadata);
-                            $classes[] = $metadata;
+                            $classes[$metadata->name] = $metadata;
                         }
                     }
                 } else {
@@ -141,7 +153,7 @@ class ClassMetadataExporter
                     foreach ($preloadedClasses as $className) {
                         $metadata = new ClassMetadataInfo($className);    
                         $driver->loadMetadataForClass($className, $metadata);
-                        $classes[] = $metadata;
+                        $classes[$metadata->name] = $metadata;
                     }
                 }
             }
@@ -163,6 +175,6 @@ class ClassMetadataExporter
         }
 
         $class = $this->_exporterDrivers[$type];
-        return new $class($this->_getMetadataInstances());
+        return new $class($this->getMetadataInstances(), $dir);
     }
 }

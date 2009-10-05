@@ -1,6 +1,9 @@
 [?php
 
+<?php if ($this->hasNamespace($metadata)): ?>
+
 namespace <?php echo $this->getNamespace($metadata) ?>;
+<?php endif; ?>
 <?php if ($this->extendsClass()): ?>
 
 use <?php echo $this->getClassToExtendNamespace() ?>;

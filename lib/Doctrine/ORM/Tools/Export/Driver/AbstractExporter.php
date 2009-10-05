@@ -46,6 +46,11 @@ abstract class AbstractExporter
         $this->_outputDir = $dir;
     }
 
+    public function getExtension()
+    {
+        return $this->_extension;
+    }
+
     /**
      * Set the directory to output the mapping files to
      *

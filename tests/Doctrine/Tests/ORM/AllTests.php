@@ -31,6 +31,7 @@ class AllTests
         $suite->addTest(Functional\AllTests::suite());
         $suite->addTest(Id\AllTests::suite());
         $suite->addTest(Proxy\AllTests::suite());
+        $suite->addTest(Tools\AllTests::suite());
 
         return $suite;
     }

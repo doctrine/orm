@@ -22,7 +22,7 @@
 
 namespace Doctrine\ORM\Tools\Export\Driver;
 
-use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Mapping\ClassMetadataInfo;
 
 /**
  * ClassMetadata exporter for PHP code
@@ -49,16 +49,16 @@ class PhpExporter extends AbstractExporter
         $lines = array();
         $lines[] = '<?php';
         $lines[] = null;
-        $lines[] = 'use Doctrine\ORM\Mapping\ClassMetadata;';
+        $lines[] = 'use Doctrine\ORM\Mapping\ClassMetadataInfo;';
         $lines[] = null;
-        $lines[] = "\$metadata = new ClassMetadata('" . $metadata->name . "');";
+        $lines[] = "\$metadata = new ClassMetadataInfo('" . $metadata->name . "');";
 
         if ($metadata->isMappedSuperclass) {
             $lines[] = '$metadata->isMappedSuperclass = true;';
         }
 
         if ($metadata->inheritanceType) {
-            $lines[] = '$metadata->setInheritanceType(ClassMetadata::INHERITANCE_TYPE_' . $this->_getInheritanceTypeString($metadata->inheritanceType) . ');';
+            $lines[] = '$metadata->setInheritanceType(ClassMetadataInfo::INHERITANCE_TYPE_' . $this->_getInheritanceTypeString($metadata->inheritanceType) . ');';
         }
 
         if ($metadata->customRepositoryClassName) {
@@ -78,7 +78,7 @@ class PhpExporter extends AbstractExporter
         }
 
         if ($metadata->changeTrackingPolicy) {
-            $lines[] = '$metadata->setChangeTrackingPolicy(ClassMetadata::CHANGETRACKING_' . $this->_getChangeTrackingPolicyString($metadata->changeTrackingPolicy) . ');';
+            $lines[] = '$metadata->setChangeTrackingPolicy(ClassMetadataInfo::CHANGETRACKING_' . $this->_getChangeTrackingPolicyString($metadata->changeTrackingPolicy) . ');';
         }
 
         foreach ($metadata->fieldMappings as $fieldMapping) {
@@ -86,7 +86,7 @@ class PhpExporter extends AbstractExporter
         }
 
         if ($generatorType = $this->_getIdGeneratorTypeString($metadata->generatorType)) {
-            $lines[] = '$metadata->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_' . $generatorType . ');';
+            $lines[] = '$metadata->setIdGeneratorType(ClassMetadataInfo::GENERATOR_TYPE_' . $generatorType . ');';
         }
 
         foreach ($metadata->associationMappings as $associationMapping) {

@@ -116,6 +116,11 @@ class AnnotationExporter extends AbstractExporter
         $this->_numSpaces = $numSpaces;
     }
 
+    public function hasNamespace($metadata)
+    {
+        return strpos($metadata->name, '\\') ? true : false;
+    }
+
     public function extendsClass()
     {
         return $this->_classToExtend ? true : false;
@@ -145,7 +150,11 @@ class AnnotationExporter extends AbstractExporter
 
     public function getClassName($metadata)
     {
-        return substr($metadata->name, strpos($metadata->name, '\\') + 1, strlen($metadata->name));
+        if ($pos = strpos($metadata->name, '\\')) {
+            return substr($metadata->name, $pos + 1, strlen($metadata->name));
+        } else {
+            return $metadata->name;
+        }
     }
 
     public function getNamespace($metadata)
@@ -227,9 +236,9 @@ class AnnotationExporter extends AbstractExporter
     public function getTableAnnotation($metadata)
     {
         $table = array();
-        $table[] = 'name=' . $metadata->primaryTable['name'];
+        $table[] = 'name="' . $metadata->primaryTable['name'] . '"';
         if (isset($metadata->primaryTable['schema'])) {
-            $table[] = 'schema=' . $metadata->primaryTable['schema'];
+            $table[] = 'schema="' . $metadata->primaryTable['schema'] . '"';
         }
         return '@Table(' . implode(', ', $table) . ')';
     }
