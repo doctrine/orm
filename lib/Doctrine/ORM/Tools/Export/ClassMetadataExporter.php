@@ -96,9 +96,14 @@ class ClassMetadataExporter
         foreach ($this->_mappingDirectories as $d) {
             list($dir, $driver) = $d;
             if ($driver == 'php') {
-                $iter = new \FilesystemIterator($dir);
+                $iter = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($dir),
+                                                      \RecursiveIteratorIterator::LEAVES_ONLY);
 
                 foreach ($iter as $item) {
+                    $info = pathinfo($item->getPathName());
+                    if (! isset($info['extension']) || $info['extension'] != 'php') {
+                        continue;
+                    }
                     include $item->getPathName();
                     $vars = get_defined_vars();
                     foreach ($vars as $var) {
@@ -111,12 +116,13 @@ class ClassMetadataExporter
                 $classes = array_values($classes);
             } else {
                 if ($driver instanceof \Doctrine\ORM\Mapping\Driver\AnnotationDriver) {
-                    $iter = new \FilesystemIterator($dir);
+                    $iter = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($dir),
+                                                          \RecursiveIteratorIterator::LEAVES_ONLY);
 
                     $declared = get_declared_classes();          
                     foreach ($iter as $item) {
-                        $baseName = $item->getBaseName();
-                        if ($baseName[0] == '.') {
+                        $info = pathinfo($item->getPathName());
+                        if (! isset($info['extension']) || $info['extension'] != 'php') {
                             continue;
                         }
                         require_once $item->getPathName();
@@ -125,7 +131,7 @@ class ClassMetadataExporter
 
                     foreach ($declared as $className) {                 
                         if ( ! $driver->isTransient($className)) {
-                            $metadata = new ClassMetadataInfo($className);  
+                            $metadata = new ClassMetadata($className);  
                             $driver->loadMetadataForClass($className, $metadata);
                             $classes[] = $metadata;
                         }

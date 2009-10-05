@@ -90,7 +90,7 @@ class ConvertMappingTask extends AbstractTask
           $printer->writeln('You must include a value for all four options: --from, --to and --dest', 'ERROR');
           return false;
         }
-        if ($args['to'] != 'annotation' && $args['extend']) {
+        if ($args['to'] != 'annotation' && isset($args['extend'])) {
             $printer->writeln('You can only use the --extend argument when converting to annoations.');
             return false;
         }
@@ -133,7 +133,12 @@ class ConvertMappingTask extends AbstractTask
       {
         throw new \InvalidArgumentException(sprintf('No schema mapping files found in "%s"', $path));
       }
-      $info = pathinfo($files[0]);
-      return $info['extension'];
+      $contents = file_get_contents($files[0]);
+      if (preg_match("/class (.*)/", $contents)) {
+          return 'annotation';
+      } else {
+          $info = pathinfo($files[0]);
+          return $info['extension'];
+      }
     }
 }

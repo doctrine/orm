@@ -142,12 +142,13 @@ class SchemaToolTask extends AbstractTask
         $classes = array();
         
         if ($driver instanceof \Doctrine\ORM\Mapping\Driver\AnnotationDriver) {
-            $iter = new \FilesystemIterator($args['classdir']);
+            $iter = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($args['classdir']),
+                                                  \RecursiveIteratorIterator::LEAVES_ONLY);
             
             $declared = get_declared_classes();          
             foreach ($iter as $item) {
-                $baseName = $item->getBaseName();
-                if ($baseName[0] == '.') {
+                $info = pathinfo($item->getPathName());
+                if (! isset($info['extension']) || $info['extension'] != 'php') {
                     continue;
                 }
                 require_once $item->getPathName();

@@ -27,6 +27,13 @@ use Doctrine\ORM\Mapping\ClassMetadataInfo,
     Doctrine\ORM\Mapping\OneToManyMapping,
     Doctrine\ORM\Mapping\ManyToManyMapping;
 
+if ( ! class_exists('sfYaml', false)) {
+    require_once __DIR__ . '/../../../../../vendor/sfYaml/sfYaml.class.php';
+    require_once __DIR__ . '/../../../../../vendor/sfYaml/sfYamlDumper.class.php';
+    require_once __DIR__ . '/../../../../../vendor/sfYaml/sfYamlInline.class.php';
+    require_once __DIR__ . '/../../../../../vendor/sfYaml/sfYamlParser.class.php';
+}
+
 /**
  * ClassMetadata exporter for Doctrine YAML mapping files
  *
