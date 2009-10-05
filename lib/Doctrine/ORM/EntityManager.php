@@ -489,7 +489,8 @@ class EntityManager
      */
     public function contains($entity)
     {
-        return $this->_unitOfWork->isInIdentityMap($entity) &&
+        return $this->_unitOfWork->isScheduledForInsert($entity) ||
+                $this->_unitOfWork->isInIdentityMap($entity) &&
                 ! $this->_unitOfWork->isScheduledForDelete($entity);
     }
     
