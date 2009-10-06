@@ -162,6 +162,8 @@ class OrmFunctionalTestCase extends OrmTestCase
         if (is_null(self::$_queryCacheImpl)) {
         	self::$_queryCacheImpl = new \Doctrine\Common\Cache\ArrayCache;
         }
+        //FIXME: two different configs! $conn and the created entity manager have
+        // different configs.
         $config = new \Doctrine\ORM\Configuration();
         $config->setMetadataCacheImpl(self::$_metadataCacheImpl);
         $config->setQueryCacheImpl(self::$_queryCacheImpl);

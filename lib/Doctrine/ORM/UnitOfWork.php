@@ -598,6 +598,9 @@ class UnitOfWork implements PropertyChangedListener
      * Computes the changeset of an individual entity, independently of the
      * computeChangeSets() routine that is used at the beginning of a UnitOfWork#commit().
      * 
+     * The passed entity must be a managed entity.
+     * 
+     * @ignore
      * @param $class
      * @param $entity
      */
@@ -1381,7 +1384,7 @@ class UnitOfWork implements PropertyChangedListener
                 $this->removeFromIdentityMap($entity);
                 unset($this->_entityInsertions[$oid], $this->_entityUpdates[$oid],
                         $this->_entityDeletions[$oid], $this->_entityIdentifiers[$oid],
-                        $this->_entityStates[$oid]);
+                        $this->_entityStates[$oid], $this->_originalEntityData[$oid]);
                 break;
             case self::STATE_NEW:
             case self::STATE_DETACHED:

@@ -49,12 +49,17 @@ class ObjectHydrator extends AbstractHydrator
     private $_fetchedAssociations;
     private $_rootAliases = array();
     private $_initializedCollections = array();
+    private $_proxyFactory;
 
     /** @override */
     protected function _prepare()
     {
         $this->_allowPartialObjects = $this->_em->getConfiguration()->getAllowPartialObjects()
                 || isset($this->_hints[Query::HINT_FORCE_PARTIAL_LOAD]);
+        
+        if ( ! $this->_allowPartialObjects) {
+            $this->_proxyFactory = $this->_em->getProxyFactory();
+        }
         
         $this->_identifierMap =
         $this->_resultPointers =
@@ -184,6 +189,7 @@ class ObjectHydrator extends AbstractHydrator
 
         // Properly initialize any unfetched associations, if partial objects are not allowed.
         if ( ! $this->_allowPartialObjects) {
+            $oid = spl_object_hash($entity);
             foreach ($this->_getClassMetadata($className)->associationMappings as $field => $assoc) {
                 // Check if the association is not among the fetch-joined associatons already.
                 if ( ! isset($this->_fetchedAssociations[$className][$field])) {
@@ -194,9 +200,9 @@ class ObjectHydrator extends AbstractHydrator
                         }
                         if ($assoc->isLazilyFetched()) {
                             // Inject proxy
-                            $this->_ce[$className]->reflFields[$field]->setValue($entity,
-                                    $this->_em->getProxyFactory()->getAssociationProxy($entity, $assoc, $joinColumns)
-                                    );
+                            $proxy = $this->_proxyFactory->getAssociationProxy($entity, $assoc, $joinColumns);
+                            $this->_uow->setOriginalEntityProperty($oid, $field, $proxy);
+                            $this->_ce[$className]->reflFields[$field]->setValue($entity, $proxy);
                         } else {
                             // Eager load
                             //TODO: Allow more efficient and configurable batching of these loads
@@ -217,6 +223,7 @@ class ObjectHydrator extends AbstractHydrator
                             //TODO: Allow more efficient and configurable batching of these loads
                             $assoc->load($entity, $pColl, $this->_em);
                         }
+                        $this->_uow->setOriginalEntityProperty($oid, $field, $pColl);
                     }
                 }
             }

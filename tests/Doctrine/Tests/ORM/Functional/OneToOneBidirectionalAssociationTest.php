@@ -79,7 +79,8 @@ class OneToOneBidirectionalAssociationTest extends \Doctrine\Tests\OrmFunctional
         $this->assertEquals('Giorgio', $cart->getCustomer()->getName());
     }
 
-    public function testLazyLoadsObjectsOnTheInverseSide() {
+    public function testLazyLoadsObjectsOnTheInverseSide()
+    {
         $this->_createFixture();
         $this->_em->getConfiguration()->setAllowPartialObjects(false);
         $metadata = $this->_em->getClassMetadata('Doctrine\Tests\Models\ECommerce\ECommerceCustomer');
@@ -92,6 +93,45 @@ class OneToOneBidirectionalAssociationTest extends \Doctrine\Tests\OrmFunctional
         $this->assertNull($customer->getMentor());
         $this->assertTrue($customer->getCart() instanceof ECommerceCart);
         $this->assertEquals('paypal', $customer->getCart()->getPayment());
+    }
+    
+    public function testUpdateWithProxyObject()
+    {
+        $this->_em->getConfiguration()->setAllowPartialObjects(false);
+        
+        $cust = new ECommerceCustomer;
+        $cust->setName('Roman');
+        $cart = new ECommerceCart;
+        $cart->setPayment('CARD');
+        $cust->setCart($cart);
+        
+        $this->_em->persist($cust);
+        $this->_em->flush();
+        $this->_em->clear();
+        
+        $this->assertTrue($cust->getCart() instanceof ECommerceCart);
+        $this->assertEquals('Roman', $cust->getName());
+        $this->assertSame($cust, $cart->getCustomer());
+        
+        $query = $this->_em->createQuery('select ca from Doctrine\Tests\Models\ECommerce\ECommerceCart ca where ca.id =?1');
+        $query->setParameter(1, $cart->getId());
+        
+        $cart2 = $query->getSingleResult();
+        
+        $cart2->setPayment('CHEQUE');
+
+        $this->_em->flush();
+        $this->_em->clear();
+        
+        $query2 = $this->_em->createQuery('select ca, c from Doctrine\Tests\Models\ECommerce\ECommerceCart ca left join ca.customer c where ca.id =?1');
+        $query2->setParameter(1, $cart->getId());
+        
+        $cart3 = $query2->getSingleResult();
+        
+        $this->assertTrue($cart3->getCustomer() instanceof ECommerceCustomer);
+        $this->assertEquals('Roman', $cart3->getCustomer()->getName());        
+        
+        $this->_em->getConfiguration()->setAllowPartialObjects(true);
     }
 
     protected function _createFixture()
