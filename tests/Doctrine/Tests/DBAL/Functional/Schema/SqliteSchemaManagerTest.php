@@ -79,7 +79,7 @@ class SqliteSchemaManagerTest extends SchemaManagerFunctionalTestCase
         $data['options'] = array(
             'indexes' => array(
                 'test' => array(
-                    'fields' => array(
+                    'columns' => array(
                         'test' => array()
                     ),
                     'type' => 'unique'
@@ -169,7 +169,7 @@ class SqliteSchemaManagerTest extends SchemaManagerFunctionalTestCase
         $this->createTestTable('test_create_index');
 
         $index = array(
-            'fields' => array(
+            'columns' => array(
                 'test' => array()
             ),
             'type' => 'unique'

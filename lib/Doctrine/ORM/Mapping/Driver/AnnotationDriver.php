@@ -85,7 +85,7 @@ class AnnotationDriver implements Driver
             
             if ($tableAnnot->indexes !== null) {
                 foreach ($tableAnnot->indexes as $indexAnnot) {
-                    $primaryTable['indexes'][$indexAnnot->name] = array('fields' => $indexAnnot->columns);
+                    $primaryTable['indexes'][$indexAnnot->name] = array('columns' => $indexAnnot->columns);
                 }
             }
             

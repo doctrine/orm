@@ -397,7 +397,7 @@ abstract class AbstractSchemaManager
      *
      *                                 Example
      *                                    array(
-     *                                        'fields' => array(
+     *                                        'columns' => array(
      *                                            'user_name' => array(),
      *                                            'last_login' => array()
      *                                        )
@@ -430,7 +430,7 @@ abstract class AbstractSchemaManager
      *
      *                                 Example
      *                                    array(
-     *                                        'fields' => array(
+     *                                        'columns' => array(
      *                                            'user_name' => array(
      *                                                'sorting' => 'ascending'
      *                                            ),
@@ -481,7 +481,7 @@ abstract class AbstractSchemaManager
      *
      *                                 Example
      *                                    array(
-     *                                        'fields' => array(
+     *                                        'columns' => array(
      *                                            'user_name' => array(),
      *                                            'last_login' => array()
      *                                        )
@@ -518,7 +518,7 @@ abstract class AbstractSchemaManager
      *
      *                                 Example
      *                                    array(
-     *                                        'fields' => array(
+     *                                        'columns' => array(
      *                                            'user_name' => array(
      *                                                'sorting' => 'ascending'
      *                                            ),

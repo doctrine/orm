@@ -30,18 +30,20 @@ use Doctrine\ORM\Mapping\ClassMetadata;
  * Class used for converting your mapping information between the 
  * supported formats: yaml, xml, and php/annotation.
  *
- *      [php]
- *      // Unify all your mapping information which is written in php, xml, yml
- *      // and convert it to a single set of yaml files.
+ *     [php]
+ *     // Unify all your mapping information which is written in php, xml, yml
+ *     // and convert it to a single set of yaml files.
+ *     
+ *     $cme = new Doctrine\ORM\Tools\Export\ClassMetadataExporter();
+ *     $cme->addMappingDirectory(__DIR__ . '/Entities', 'php');
+ *     $cme->addMappingDirectory(__DIR__ . '/xml', 'xml');
+ *     $cme->addMappingDirectory(__DIR__ . '/yaml', 'yaml');
+ *     
+ *     $exporter = $cme->getExporter('yaml');
+ *     $exporter->setOutputDir(__DIR__ . '/new_yaml');
  *
- *      $cme = new Doctrine\ORM\Tools\Export\ClassMetadataExporter();
- *      $cme->addMappingDir(__DIR__ . '/Entities', 'php');
- *      $cme->addMappingDir(__DIR__ . '/xml', 'xml');
- *      $cme->addMappingDir(__DIR__ . '/yaml', 'yaml');
- *
- *      $exporter = $cme->getExporter('yaml');
- *      $exporter->setOutputDir(__DIR__ . '/new_yaml');
- *      $exporter->export();
+ *     $exporter->setMetadatas($cme->getMetadatasForMappingDirectories());
+ *     $exporter->export();
  *
  * @license http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @link    www.doctrine-project.org
@@ -68,7 +70,19 @@ class ClassMetadataExporter
 
     private $_mappingDirectories = array();
 
-    public function addMappingDir($dir, $type)
+    /**
+     * Add a new mapping directory to the array of directories to convert and export
+     * to another format
+     *
+     *     [php]
+     *     $cme = new Doctrine\ORM\Tools\Export\ClassMetadataExporter();
+     *     $cme->addMappingDirectory(__DIR__ . '/yaml', 'yaml');
+     *
+     * @param string $dir   The path to the mapping files
+     * @param string $type  The type of mapping files (yml, xml, etc.)
+     * @return void
+     */
+    public function addMappingDirectory($dir, $type)
     {
         if ($type === 'php') {
             $this->_mappingDirectories[] = array($dir, $type);
@@ -82,13 +96,23 @@ class ClassMetadataExporter
         }
     }
 
-    public function getMappingDriver($type, $dir)
+    /**
+     * Get an instance of a mapping driver
+     *
+     * @param string $type   The type of mapping driver (yaml, xml, annotation, etc.)
+     * @param string $dir    The directory to configure the driver to look in. Only required for file drivers (yml, xml).
+     * @return AbstractDriver $driver
+     */
+    public function getMappingDriver($type, $dir = null)
     {
         if ( ! isset($this->_mappingDrivers[$type])) {
             return false;
         }
         $class = $this->_mappingDrivers[$type];
         if (is_subclass_of($class, 'Doctrine\ORM\Mapping\Driver\AbstractFileDriver')) {
+            if (is_null($dir)) {
+                throw DoctrineException::fileMappingDriversRequireDirectoryPath();
+            }
             $driver = new $class($dir, constant($class . '::PRELOAD'));
         } else {
             $reader = new \Doctrine\Common\Annotations\AnnotationReader(new \Doctrine\Common\Cache\ArrayCache);
@@ -98,12 +122,24 @@ class ClassMetadataExporter
         return $driver;
     }
 
+    /**
+     * Get the array of added mapping directories
+     *
+     * @return array $mappingDirectories
+     */
     public function getMappingDirectories()
     {
         return $this->_mappingDirectories;
     }
 
-    public function getMetadataInstances()
+    /**
+     * Get an array of ClassMetadataInfo instances for all the configured mapping
+     * directories. Reads the mapping directories and populates ClassMetadataInfo
+     * instances.
+     *
+     * @return array $classes
+     */
+    public function getMetadatasForMappingDirectories()
     {
         $classes = array();
 
@@ -168,6 +204,13 @@ class ClassMetadataExporter
         return $classes;
     }
 
+    /**
+     * Get a exporter driver instance
+     *
+     * @param string $type   The type to get (yml, xml, etc.)
+     * @param string $dir    The directory where the exporter will export to
+     * @return AbstractExporter $exporter
+     */
     public function getExporter($type, $dir = null)
     {
         if ( ! isset($this->_exporterDrivers[$type])) {
@@ -175,6 +218,6 @@ class ClassMetadataExporter
         }
 
         $class = $this->_exporterDrivers[$type];
-        return new $class($this->getMetadataInstances(), $dir);
+        return new $class($dir);
     }
 }

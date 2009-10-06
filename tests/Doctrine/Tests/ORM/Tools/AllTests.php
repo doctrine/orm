@@ -21,6 +21,7 @@ class AllTests
         $suite = new \Doctrine\Tests\DoctrineTestSuite('Doctrine Orm Hydration');
 
         $suite->addTestSuite('Doctrine\Tests\ORM\Tools\Export\ClassMetadataExporterTest');
+        $suite->addTestSuite('Doctrine\Tests\ORM\Tools\ConvertDoctrine1SchemaTest');
 
         return $suite;
     }

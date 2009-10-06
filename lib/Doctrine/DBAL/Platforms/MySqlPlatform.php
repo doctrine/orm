@@ -421,34 +421,6 @@ class MySqlPlatform extends AbstractPlatform
         }
         $queryFields = $this->getColumnDeclarationListSql($fields);
 
-        // build indexes for all foreign key fields (needed in MySQL!!)
-        /*if (isset($options['foreignKeys'])) {
-            foreach ($options['foreignKeys'] as $fk) {
-                $local = $fk['local'];
-                $found = false;
-                if (isset($options['indexes'])) {
-                    foreach ($options['indexes'] as $definition) {
-                        if (is_string($definition['fields'])) {
-                            // Check if index already exists on the column
-                            $found = ($local == $definition['fields']);
-                        } else if (in_array($local, $definition['fields']) && count($definition['fields']) === 1) {
-                            // Index already exists on the column
-                            $found = true;
-                        }
-                    }
-                }
-                if (isset($options['primary']) && !empty($options['primary']) &&
-                        in_array($local, $options['primary'])) {
-                    // field is part of the PK and therefore already indexed
-                    $found = true;
-                }
-
-                if ( ! $found) {
-                    $options['indexes'][$local] = array('fields' => array($local => array()));
-                }
-            }
-        }*/
-        
         if (isset($options['uniqueConstraints']) && ! empty($options['uniqueConstraints'])) {
             foreach ($options['uniqueConstraints'] as $uniqueConstraint) {
                 $queryFields .= ', UNIQUE(' . implode(', ', array_values($uniqueConstraint)) . ')';
@@ -764,16 +736,14 @@ class MySqlPlatform extends AbstractPlatform
             }
         }
 
-        if ( ! isset($definition['fields'])) {
+        if ( ! isset($definition['columns'])) {
             throw DoctrineException::indexFieldsArrayRequired();
         }
-        if ( ! is_array($definition['fields'])) {
-            $definition['fields'] = array($definition['fields']);
-        }
+        $definition['columns'] = (array) $definition['columns'];
 
         $query = $type . 'INDEX ' . $name;
 
-        $query .= ' (' . $this->getIndexFieldDeclarationListSql($definition['fields']) . ')';
+        $query .= ' (' . $this->getIndexFieldDeclarationListSql($definition['columns']) . ')';
 
         return $query;
     }

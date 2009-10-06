@@ -71,7 +71,7 @@ class OracleSchemaManagerTest extends SchemaManagerFunctionalTestCase
         $data['options'] = array(
             'indexes' => array(
                 'test_index_name' => array(
-                    'fields' => array(
+                    'columns' => array(
                         'test' => array()
                     ),
                     'type' => 'unique'

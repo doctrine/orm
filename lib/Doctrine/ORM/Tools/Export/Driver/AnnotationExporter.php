@@ -37,36 +37,19 @@ use Doctrine\ORM\Mapping\ClassMetadataInfo,
 class AnnotationExporter extends AbstractExporter
 {
     protected $_extension = '.php';
-    protected $_isNew = false;
-    protected $_outputPath;
-    protected $_numSpaces = 4;
-    protected $_classToExtend;
-    protected $_currentCode;
 
-    public function hasProperty($property, $metadata)
-    {
-        if ($this->_isNew) {
-            return false;
-        } else {
-            return strpos($this->_currentCode, '$' . $property) !== false ? true : false;
-        }
-    }
-
-    public function hasMethod($method, $metadata)
-    {
-        if ($this->_isNew) {
-            return false;
-        } else {
-            return strpos($this->_currentCode, 'function ' . $method) !== false ? true : false;
-        }
-    }
+    private $_isNew = false;
+    private $_outputPath;
+    private $_numSpaces = 4;
+    private $_classToExtend;
+    private $_currentCode;
 
     /**
      * Converts a single ClassMetadata instance to the exported format
      * and returns it
      *
      * @param ClassMetadataInfo $metadata 
-     * @return mixed $exported
+     * @return string $exported
      */
     public function exportClassMetadata(ClassMetadataInfo $metadata)
     {
@@ -106,49 +89,108 @@ class AnnotationExporter extends AbstractExporter
             }
         }
         $code = array_values($code);
-        $code = implode("\n", $code);
+        $exported = implode("\n", $code);
 
-        return $code;
+        return $exported;
     }
 
+    /**
+     * Set the number of spaces the exported class should have
+     *
+     * @param integer $numSpaces 
+     * @return void
+     */
     public function setNumSpaces($numSpaces)
     {
         $this->_numSpaces = $numSpaces;
     }
 
-    public function hasNamespace($metadata)
-    {
-        return strpos($metadata->name, '\\') ? true : false;
-    }
-
-    public function extendsClass()
-    {
-        return $this->_classToExtend ? true : false;
-    }
-
-    public function getClassToExtend()
-    {
-        return $this->_classToExtend;
-    }
-
+    /**
+     * Set the name of the class the generated classes should extend from
+     *
+     * @return void
+     */
     public function setClassToExtend($classToExtend)
     {
         $this->_classToExtend = $classToExtend;
     }
 
-    public function getClassToExtendName()
+    /**
+     * This method is overriden so that each class is outputted
+     * to the appropriate path where namespaces become directories.
+     *
+     * Export each ClassMetadata instance to a single Doctrine Mapping file
+     * named after the entity
+     *
+     * @return void
+     */
+    public function export()
+    {
+        if ( ! is_dir($this->_outputDir)) {
+            mkdir($this->_outputDir, 0777);
+        }
+
+        foreach ($this->_metadatas as $metadata) {
+            $outputPath = $this->_outputDir . '/' . str_replace('\\', DIRECTORY_SEPARATOR, $metadata->name) . $this->_extension;
+            $outputDir = dirname($outputPath);
+            if ( ! is_dir($outputDir)) {
+                mkdir($outputDir, 0777, true);
+            }
+            if ( ! file_exists($outputPath)) {
+               $this->_isNew = true;
+            }
+            $this->_outputPath = $outputPath;
+            $output = $this->exportClassMetadata($metadata);
+            file_put_contents($outputPath, $output);
+        }
+    }
+
+    private function _hasProperty($property, $metadata)
+    {
+        if ($this->_isNew) {
+            return false;
+        } else {
+            return strpos($this->_currentCode, '$' . $property) !== false ? true : false;
+        }
+    }
+
+    private function _hasMethod($method, $metadata)
+    {
+        if ($this->_isNew) {
+            return false;
+        } else {
+            return strpos($this->_currentCode, 'function ' . $method) !== false ? true : false;
+        }
+    }
+
+    private function _hasNamespace($metadata)
+    {
+        return strpos($metadata->name, '\\') ? true : false;
+    }
+
+    private function _extendsClass()
+    {
+        return $this->_classToExtend ? true : false;
+    }
+
+    private function _getClassToExtend()
+    {
+        return $this->_classToExtend;
+    }
+
+    private function _getClassToExtendName()
     {
         $refl = new \ReflectionClass($this->getClassToExtend());
         return $refl->getShortName();
     }
 
-    public function getClassToExtendNamespace()
+    private function _getClassToExtendNamespace()
     {
         $refl = new \ReflectionClass($this->getClassToExtend());
         return $refl->getNamespaceName() ? $refl->getNamespaceName():$refl->getShortName();        
     }
 
-    public function getClassName($metadata)
+    private function _getClassName($metadata)
     {
         if ($pos = strpos($metadata->name, '\\')) {
             return substr($metadata->name, $pos + 1, strlen($metadata->name));
@@ -157,15 +199,15 @@ class AnnotationExporter extends AbstractExporter
         }
     }
 
-    public function getNamespace($metadata)
+    private function _getNamespace($metadata)
     {
         return substr($metadata->name, 0, strrpos($metadata->name, '\\'));
     }
 
-    public function addMethod($type, $fieldName, $metadata, array &$methods)
+    private function _addMethod($type, $fieldName, $metadata, array &$methods)
     {
         $methodName = $type . ucfirst($fieldName);
-        if ($this->hasMethod($methodName, $metadata)) {
+        if ($this->_hasMethod($methodName, $metadata)) {
             return false;
         }
 
@@ -203,37 +245,37 @@ class AnnotationExporter extends AbstractExporter
         $methods[] = implode("\n", $method);
     }
 
-    public function getMethods($metadata)
+    private function _getMethods($metadata)
     {
       $methods = array();
 
       foreach ($metadata->fieldMappings as $fieldMapping) {
-          $this->addMethod('set', $fieldMapping['fieldName'], $metadata, $methods);
-          $this->addMethod('get', $fieldMapping['fieldName'], $metadata, $methods);
+          $this->_addMethod('set', $fieldMapping['fieldName'], $metadata, $methods);
+          $this->_addMethod('get', $fieldMapping['fieldName'], $metadata, $methods);
       }
 
       foreach ($metadata->associationMappings as $associationMapping) {
           if ($associationMapping instanceof \Doctrine\ORM\Mapping\OneToOneMapping) {
-              $this->addMethod('set', $associationMapping->sourceFieldName, $metadata, $methods);
-              $this->addMethod('get', $associationMapping->sourceFieldName, $metadata, $methods);
+              $this->_addMethod('set', $associationMapping->sourceFieldName, $metadata, $methods);
+              $this->_addMethod('get', $associationMapping->sourceFieldName, $metadata, $methods);
           } else if ($associationMapping instanceof \Doctrine\ORM\Mapping\OneToManyMapping) {
               if ($associationMapping->isOwningSide) {
-                  $this->addMethod('set', $associationMapping->sourceFieldName, $metadata, $methods);
-                  $this->addMethod('get', $associationMapping->sourceFieldName, $metadata, $methods);
+                  $this->_addMethod('set', $associationMapping->sourceFieldName, $metadata, $methods);
+                  $this->_addMethod('get', $associationMapping->sourceFieldName, $metadata, $methods);
               } else {
-                  $this->addMethod('add', $associationMapping->sourceFieldName, $metadata, $methods);
-                  $this->addMethod('get', $associationMapping->sourceFieldName, $metadata, $methods);                
+                  $this->_addMethod('add', $associationMapping->sourceFieldName, $metadata, $methods);
+                  $this->_addMethod('get', $associationMapping->sourceFieldName, $metadata, $methods);                
               }
           } else if ($associationMapping instanceof \Doctrine\ORM\Mapping\ManyToManyMapping) {
-              $this->addMethod('add', $associationMapping->sourceFieldName, $metadata, $methods);
-              $this->addMethod('get', $associationMapping->sourceFieldName, $metadata, $methods);                
+              $this->_addMethod('add', $associationMapping->sourceFieldName, $metadata, $methods);
+              $this->_addMethod('get', $associationMapping->sourceFieldName, $metadata, $methods);                
           }
       }
 
       return $methods;
     }
 
-    public function getTableAnnotation($metadata)
+    private function _getTableAnnotation($metadata)
     {
         $table = array();
         $table[] = 'name="' . $metadata->primaryTable['name'] . '"';
@@ -243,7 +285,7 @@ class AnnotationExporter extends AbstractExporter
         return '@Table(' . implode(', ', $table) . ')';
     }
 
-    public function getAssociationMappingAnnotation(AssociationMapping $associationMapping, ClassMetadataInfo $metadata)
+    private function _getAssociationMappingAnnotation(AssociationMapping $associationMapping, ClassMetadataInfo $metadata)
     {
         // TODO: This function still needs to be written :)
         $lines = array();
@@ -254,7 +296,7 @@ class AnnotationExporter extends AbstractExporter
         return implode("\n", $lines);
     }
 
-    public function getFieldMappingAnnotation(array $fieldMapping, ClassMetadataInfo $metadata)
+    private function _getFieldMappingAnnotation(array $fieldMapping, ClassMetadataInfo $metadata)
     {
         $lines = array();
         $lines[] = str_repeat(' ', $this->_numSpaces) . '/**';
@@ -313,32 +355,5 @@ class AnnotationExporter extends AbstractExporter
         $lines[] = str_repeat(' ', $this->_numSpaces) . ' */';
 
         return implode("\n", $lines);
-    }
-
-    /**
-     * Export each ClassMetadata instance to a single Doctrine Mapping file
-     * named after the entity
-     *
-     * @return void
-     */
-    public function export()
-    {
-        if ( ! is_dir($this->_outputDir)) {
-            mkdir($this->_outputDir, 0777);
-        }
-
-        foreach ($this->_metadatas as $metadata) {
-            $outputPath = $this->_outputDir . '/' . str_replace('\\', DIRECTORY_SEPARATOR, $metadata->name) . $this->_extension;
-            $outputDir = dirname($outputPath);
-            if ( ! is_dir($outputDir)) {
-                mkdir($outputDir, 0777, true);
-            }
-            if ( ! file_exists($outputPath)) {
-               $this->_isNew = true;
-            }
-            $this->_outputPath = $outputPath;
-            $output = $this->exportClassMetadata($metadata);
-            file_put_contents($outputPath, $output);
-        }
     }
 }

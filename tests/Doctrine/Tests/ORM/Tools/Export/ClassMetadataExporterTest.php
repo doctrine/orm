@@ -61,10 +61,10 @@ class ClassMetadataExporterTest extends \Doctrine\Tests\OrmTestCase
     public function testAddMappingDirectory()
     {
         $cme = new ClassMetadataExporter();
-        $cme->addMappingDir(__DIR__ . '/annotation', 'annotation');
-        $cme->addMappingDir(__DIR__ . '/php', 'php');
-        $cme->addMappingDir(__DIR__ . '/xml', 'xml');
-        $cme->addMappingDir(__DIR__ . '/yml', 'yml');
+        $cme->addMappingDirectory(__DIR__ . '/annotation', 'annotation');
+        $cme->addMappingDirectory(__DIR__ . '/php', 'php');
+        $cme->addMappingDirectory(__DIR__ . '/xml', 'xml');
+        $cme->addMappingDirectory(__DIR__ . '/yml', 'yml');
 
         $mappingDirectories = $cme->getMappingDirectories();
         $this->assertEquals(4, count($mappingDirectories));
@@ -89,11 +89,11 @@ class ClassMetadataExporterTest extends \Doctrine\Tests\OrmTestCase
     public function testGetMetadataInstances()
     {
         $cme = new ClassMetadataExporter();
-        $cme->addMappingDir(__DIR__ . '/php', 'php');
-        $cme->addMappingDir(__DIR__ . '/xml', 'xml');
-        $cme->addMappingDir(__DIR__ . '/yml', 'yml');
+        $cme->addMappingDirectory(__DIR__ . '/php', 'php');
+        $cme->addMappingDirectory(__DIR__ . '/xml', 'xml');
+        $cme->addMappingDirectory(__DIR__ . '/yml', 'yml');
 
-        $metadataInstances = $cme->getMetadataInstances();
+        $metadataInstances = $cme->getMetadatasForMappingDirectories();
 
         $this->assertEquals(3, count($metadataInstances));
         $this->assertEquals('PhpTest', $metadataInstances[0]->name);
@@ -116,13 +116,14 @@ class ClassMetadataExporterTest extends \Doctrine\Tests\OrmTestCase
         $types = array('annotation', 'php', 'xml', 'yml');
 
         $cme = new ClassMetadataExporter();
-        $cme->addMappingDir(__DIR__ . '/php', 'php');
-        $cme->addMappingDir(__DIR__ . '/xml', 'xml');
-        $cme->addMappingDir(__DIR__ . '/yml', 'yml');
+        $cme->addMappingDirectory(__DIR__ . '/php', 'php');
+        $cme->addMappingDirectory(__DIR__ . '/xml', 'xml');
+        $cme->addMappingDirectory(__DIR__ . '/yml', 'yml');
 
         foreach ($types as $type) {
             // Export the above mapping directories to the type
             $exporter = $cme->getExporter($type, __DIR__ . '/export/' . $type);
+            $exporter->setMetadatas($cme->getMetadatasForMappingDirectories());
             $exporter->export();
 
             // Make sure the files were written
@@ -132,8 +133,8 @@ class ClassMetadataExporterTest extends \Doctrine\Tests\OrmTestCase
 
             // Try and read back in the exported mapping files to make sure they are valid
             $cme2 = new ClassMetadataExporter();
-            $cme2->addMappingDir(__DIR__ . '/export/' . $type, $type);
-            $metadataInstances = $cme2->getMetadataInstances();
+            $cme2->addMappingDirectory(__DIR__ . '/export/' . $type, $type);
+            $metadataInstances = $cme2->getMetadatasForMappingDirectories();
             $this->assertEquals(3, count($metadataInstances));
             $this->assertEquals('PhpTest', $metadataInstances[0]->name);
             $this->assertEquals('XmlTest', $metadataInstances[1]->name);

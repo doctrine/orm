@@ -147,14 +147,14 @@ class MsSqlPlatformTest extends \Doctrine\Tests\DbalTestCase
 
     public function testGeneratesConstraintCreationSql()
     {
-        $sql = $this->_platform->getCreateConstraintSql('test', 'constraint_name', array('fields' => array('test' => array())));
+        $sql = $this->_platform->getCreateConstraintSql('test', 'constraint_name', array('columns' => array('test' => array())));
         $this->assertEquals($sql, 'ALTER TABLE test ADD CONSTRAINT constraint_name (test)');
     }
 
     public function testGeneratesIndexCreationSql()
     {
         $indexDef = array(
-            'fields' => array(
+            'columns' => array(
                 'user_name' => array(
                     'sorting' => 'ASC',
                     'length' => 10
@@ -171,7 +171,7 @@ class MsSqlPlatformTest extends \Doctrine\Tests\DbalTestCase
 
     public function testGeneratesUniqueIndexCreationSql()
     {
-        $sql = $this->_platform->getCreateIndexSql('test', 'index_name', array('type' => 'unique', 'fields' => array('test', 'test2')));
+        $sql = $this->_platform->getCreateIndexSql('test', 'index_name', array('type' => 'unique', 'columns' => array('test', 'test2')));
         $this->assertEquals($sql, 'CREATE UNIQUE INDEX index_name ON test (test, test2)');
     }
 

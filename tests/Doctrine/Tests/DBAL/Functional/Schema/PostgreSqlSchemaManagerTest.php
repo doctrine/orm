@@ -73,7 +73,7 @@ class PostgreSqlSchemaManagerTest extends SchemaManagerFunctionalTestCase
         $data['options'] = array(
             'indexes' => array(
                 'test' => array(
-                    'fields' => array(
+                    'columns' => array(
                         'test' => array()
                     ),
                     'type' => 'unique'

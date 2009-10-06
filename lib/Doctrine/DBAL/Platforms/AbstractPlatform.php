@@ -554,7 +554,7 @@ abstract class AbstractPlatform
      *
      *                                 Example
      *                                    array(
-     *                                        'fields' => array(
+     *                                        'columns' => array(
      *                                            'user_name' => array(),
      *                                            'last_login' => array()
      *                                        )
@@ -571,11 +571,11 @@ abstract class AbstractPlatform
             $query .= ' UNIQUE';
         }
 
-        $fields = array();
-        foreach (array_keys($definition['fields']) as $field) {
-            $fields[] = $field;
+        $columns = array();
+        foreach (array_keys($definition['columns']) as $column) {
+            $columns[] = $column;
         }
-        $query .= ' ('. implode(', ', $fields) . ')';
+        $query .= ' ('. implode(', ', $columns) . ')';
 
         return $query;
     }
@@ -590,7 +590,7 @@ abstract class AbstractPlatform
      */
     public function getCreateIndexSql($table, $name, array $definition)
     {
-        if ( ! isset($definition['fields'])) {
+        if ( ! isset($definition['columns'])) {
             throw DoctrineException::indexFieldsArrayRequired();
         }
 
@@ -607,7 +607,7 @@ abstract class AbstractPlatform
 
         $query = 'CREATE ' . $type . 'INDEX ' . $name . ' ON ' . $table;
 
-        $query .= ' (' . $this->getIndexFieldDeclarationListSql($definition['fields']) . ')';
+        $query .= ' (' . $this->getIndexFieldDeclarationListSql($definition['columns']) . ')';
 
         return $query;
     }
@@ -874,13 +874,13 @@ abstract class AbstractPlatform
             }
         }
 
-        if ( ! isset($definition['fields']) || ! is_array($definition['fields'])) {
+        if ( ! isset($definition['columns']) || ! is_array($definition['columns'])) {
             throw DoctrineException::indexFieldsArrayRequired();
         }
 
         $query = $type . 'INDEX ' . $name;
 
-        $query .= ' (' . $this->getIndexFieldDeclarationListSql($definition['fields']) . ')';
+        $query .= ' (' . $this->getIndexFieldDeclarationListSql($definition['columns']) . ')';
 
         return $query;
     }

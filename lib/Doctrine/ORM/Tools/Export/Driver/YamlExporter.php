@@ -87,7 +87,9 @@ class YamlExporter extends AbstractExporter
         }
 
         if (isset($metadata->primaryTable['uniqueConstraints'])) {
-            $array['uniqueConstraints'] = $metadata->primaryTable['uniqueConstraints'];
+            foreach ($metadata->primaryTable['uniqueConstraints'] as $uniqueConstraint) {
+                $array['uniqueConstraints'][]['columns'] = $uniqueConstraint;
+            }
         }
         
         $fields = $metadata->fieldMappings;

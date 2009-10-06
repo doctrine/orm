@@ -97,9 +97,17 @@ class YamlDriver extends AbstractFileDriver
 
         // Evaluate indexes
         if (isset($element['indexes'])) {
-            foreach ($element['indexes'] as $index) {
+            foreach ($element['indexes'] as $name => $index) {
+                if ( ! isset($index['name'])) {
+                    $index['name'] = $name;
+                }
+                if (is_string($index['columns'])) {
+                    $columns = explode(',', $index['columns']);
+                } else {
+                    $columns = $index['columns'];
+                }
                 $metadata->primaryTable['indexes'][$index['name']] = array(
-                    'fields' => explode(',', $index['columns'])
+                    'columns' => $columns
                 );
             }
         }
@@ -107,7 +115,12 @@ class YamlDriver extends AbstractFileDriver
         // Evaluate uniqueConstraints
         if (isset($element['uniqueConstraints'])) {
             foreach ($element['uniqueConstraints'] as $unique) {
-                $metadata->primaryTable['uniqueConstraints'][] = explode(',', $unique['columns']);
+                if (is_string($index['columns'])) {
+                    $columns = explode(',', $unique['columns']);
+                } else {
+                    $columns = $unique['columns'];
+                }
+                $metadata->primaryTable['uniqueConstraints'][] = $columns;
             }
         }
 

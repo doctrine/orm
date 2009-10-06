@@ -1,12 +1,12 @@
 [?php
 
-<?php if ($this->hasNamespace($metadata)): ?>
+<?php if ($this->_hasNamespace($metadata)): ?>
 
-namespace <?php echo $this->getNamespace($metadata) ?>;
+namespace <?php echo $this->_getNamespace($metadata) ?>;
 <?php endif; ?>
-<?php if ($this->extendsClass()): ?>
+<?php if ($this->_extendsClass()): ?>
 
-use <?php echo $this->getClassToExtendNamespace() ?>;
+use <?php echo $this->_getClassToExtendNamespace() ?>;
 <?php endif; ?>
 
 /**
@@ -15,9 +15,9 @@ use <?php echo $this->getClassToExtendNamespace() ?>;
 <?php else: ?>
  * @Entity
 <?php endif; ?>
- * <?php echo $this->getTableAnnotation($metadata)."\n" ?>
+ * <?php echo $this->_getTableAnnotation($metadata)."\n" ?>
  */
-class <?Php echo $this->getClassName($metadata) ?><?php if ($this->extendsClass()): ?> extends <?php echo $this->getClassToExtendName() ?><?php endif; ?>
+class <?Php echo $this->_getClassName($metadata) ?><?php if ($this->_extendsClass()): ?> extends <?php echo $this->_getClassToExtendName() ?><?php endif; ?>
 
 {
 <?php include('annotation_body.tpl.php') ?>

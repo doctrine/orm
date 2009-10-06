@@ -314,7 +314,7 @@ class OraclePlatform extends AbstractPlatform
         $indexName  = $table . '_AI_PK';
         $definition = array(
             'primary' => true,
-            'fields' => array($name => true),
+            'columns' => array($name => true),
         );
 
         $sql[] = 'DECLARE

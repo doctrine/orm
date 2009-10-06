@@ -23,6 +23,13 @@ namespace Doctrine\ORM\Tools\Cli\Tasks;
 
 use Doctrine\ORM\Tools\Export\ClassMetadataExporter;
 
+if ( ! class_exists('sfYaml', false)) {
+    require_once __DIR__ . '/../../../../../vendor/sfYaml/sfYaml.class.php';
+    require_once __DIR__ . '/../../../../../vendor/sfYaml/sfYamlDumper.class.php';
+    require_once __DIR__ . '/../../../../../vendor/sfYaml/sfYamlInline.class.php';
+    require_once __DIR__ . '/../../../../../vendor/sfYaml/sfYamlParser.class.php';
+}
+
 /**
  * CLI Task to convert your mapping information between the various formats
  *
@@ -103,30 +110,52 @@ class ConvertMappingTask extends AbstractTask
         $args = $this->getArguments();
 
         $cme = new ClassMetadataExporter();
-        $from = (array) $args['from'];
-        foreach ($from as $path) {
-            $type = $this->_determinePathType($path);
 
-            $printer->writeln(sprintf('Adding %s mapping directory: "%s"', $type, $path), 'INFO');
+        // Get exporter and configure it
+        $exporter = $cme->getExporter($args['to'], $args['dest']);
 
-            $cme->addMappingDir($path, $type);
-        }
-
-        $exporter = $cme->getExporter($args['to']);
         if (isset($args['extend'])) {
             $exporter->setClassToExtend($args['extend']);
         }
         if (isset($args['num-spaces'])) {
             $exporter->setNumSpaces($args['num-spaces']);
         }
-        $exporter->setOutputDir($args['dest']);
+
+        $from = (array) $args['from'];
+
+        if ($this->_isDoctrine1Schema($from)) {
+            $printer->writeln('Converting Doctrine 1 schema to Doctrine 2 mapping files', 'INFO');
+
+            $converter = new \Doctrine\ORM\Tools\ConvertDoctrine1Schema($from);
+            $exporter->setMetadatas($converter->getMetadatasFromSchema());
+        } else {
+            foreach ($from as $path) {
+                $type = $this->_determinePathType($path);
+
+                $printer->writeln(sprintf('Adding %s mapping directory: "%s"', $type, $path), 'INFO');
+
+                $cme->addMappingDir($path, $type);
+            }
+            $exporter->setMetadatas($cme->getMetadatasForMappingDirectories());
+        }
 
         $printer->writeln(sprintf('Exporting %s mapping information to directory: "%s"', $args['to'], $args['dest']), 'INFO');
-
         $exporter->export();
     }
 
-    protected function _determinePathType($path)
+    private function _isDoctrine1Schema(array $from)
+    {
+        $files = glob($from[0] . '/*.yml');
+        if ($files) {
+            $array = \sfYaml::load($files[0]);
+            $first = current($array);
+            return isset($first['columns']);
+        } else {
+            return false;
+        }
+    }
+
+    private function _determinePathType($path)
     {
       $files = glob($path . '/*.*');
       if (!$files)

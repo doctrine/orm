@@ -40,10 +40,14 @@ abstract class AbstractExporter
     protected $_outputDir;
     protected $_extension;
 
-    public function __construct(array $metadatas, $dir = null)
+    public function __construct($dir = null)
+    {
+        $this->_outputDir = $dir;
+    }
+
+    public function setMetadatas(array $metadatas)
     {
         $this->_metadatas = $metadatas;
-        $this->_outputDir = $dir;
     }
 
     public function getExtension()

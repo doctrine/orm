@@ -66,7 +66,7 @@ class PostgreSqlPlatformTest extends \Doctrine\Tests\DbalTestCase
     public function testGeneratesIndexCreationSql()
     {
         $indexDef = array(
-            'fields' => array(
+            'columns' => array(
                 'user_name',
                 'last_login'
             )
