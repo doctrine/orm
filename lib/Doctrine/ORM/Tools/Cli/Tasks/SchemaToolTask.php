@@ -14,7 +14,7 @@ use Doctrine\Common\DoctrineException,
  * 
  * This task has the following arguments:
  * 
- * <tt>--classdir=<path></tt>
+ * <tt>--class-dir=<path></tt>
  * Specifies the directory where to start looking for mapped classes.
  * This argument is required when the annotation metadata driver is used,
  * otherwise it has no effect.
@@ -71,7 +71,7 @@ class SchemaToolTask extends AbstractTask
                 ->write('--dump-sql', 'OPT_ARG')
                 ->writeln("\t\tInstead of try to apply generated SQLs into EntityManager, output them.")
                 ->write(PHP_EOL)
-                ->write('--classdir=<path>', 'OPT_ARG')
+                ->write('--class-dir=<path>', 'OPT_ARG')
                 ->writeln("\tOptional class directory to fetch for Entities.");
     }
 
@@ -87,7 +87,7 @@ class SchemaToolTask extends AbstractTask
     {
         $printer->write('schema-tool', 'KEYWORD')
                 ->write(' (--create | --drop | --update)', 'REQ_ARG')
-                ->writeln(' [--dump-sql] [--classdir=<path>]', 'OPT_ARG');
+                ->writeln(' [--dump-sql] [--class-dir=<path>]', 'OPT_ARG');
     }
     
     /**
@@ -115,11 +115,15 @@ class SchemaToolTask extends AbstractTask
             return false;
         }
         
-        if ($this->_em->getConfiguration()->getMetadataDriverImpl() instanceof \Doctrine\ORM\Mapping\Driver\AnnotationDriver
-                && ! isset($args['classdir'])) {
-            $printer->writeln("The supplied configuration uses the annotation metadata driver."
-                    . " The 'classdir' argument is required for this driver.", 'ERROR');
-            return false;     
+        $metadataDriver = $this->_em->getConfiguration()->getMetadataDriverImpl();
+        if ($metadataDriver instanceof \Doctrine\ORM\Mapping\Driver\AnnotationDriver) {
+            if ( ! isset($args['class-dir'])) {
+                $printer->writeln("The supplied configuration uses the annotation metadata driver."
+                        . " The 'class-dir' argument is required for this driver.", 'ERROR');
+                return false;
+            } else {
+                $metadataDriver->setClassDirectory($args['class-dir']);
+            }
         }
         
         return true;
@@ -140,33 +144,11 @@ class SchemaToolTask extends AbstractTask
         $driver = $this->_em->getConfiguration()->getMetadataDriverImpl();
         
         $classes = array();
-        
-        if ($driver instanceof \Doctrine\ORM\Mapping\Driver\AnnotationDriver) {
-            $iter = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($args['classdir']),
-                                                  \RecursiveIteratorIterator::LEAVES_ONLY);
-            
-            $declared = get_declared_classes();          
-            foreach ($iter as $item) {
-                $info = pathinfo($item->getPathName());
-                if (! isset($info['extension']) || $info['extension'] != 'php') {
-                    continue;
-                }
-                require_once $item->getPathName();
-            }
-            $declared = array_diff(get_declared_classes(), $declared);
-            
-            foreach ($declared as $className) {                 
-                if ( ! $driver->isTransient($className)) {
-                    $classes[] = $cmf->getMetadataFor($className);
-                }
-            }
-        } else {
-            $preloadedClasses = $driver->preload(true);
-            foreach ($preloadedClasses as $className) {
-                $classes[] = $cmf->getMetadataFor($className);
-            }
+        $preloadedClasses = $driver->preload(true);
+        foreach ($preloadedClasses as $className) {
+            $classes[] = $cmf->getMetadataFor($className);
         }
-        
+
         $printer = $this->getPrinter();
         $tool = new SchemaTool($this->_em);
         

@@ -84,7 +84,7 @@ abstract class AbstractExporter
         }
 
         foreach ($this->_metadatas as $metadata) {
-            $outputPath = $this->_outputDir . '/' . str_replace('\\', '.', $metadata->name) . $this->_extension;
+            $outputPath = $this->_outputDir . '/' . $metadata->name . $this->_extension;
             $output = $this->exportClassMetadata($metadata);
             file_put_contents($outputPath, $output);
         }

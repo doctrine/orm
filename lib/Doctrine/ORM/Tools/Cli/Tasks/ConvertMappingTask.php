@@ -21,7 +21,8 @@
  
 namespace Doctrine\ORM\Tools\Cli\Tasks;
 
-use Doctrine\ORM\Tools\Export\ClassMetadataExporter;
+use Doctrine\ORM\Tools\Export\ClassMetadataExporter,
+    Doctrine\Common\DoctrineException;
 
 if ( ! class_exists('sfYaml', false)) {
     require_once __DIR__ . '/../../../../../vendor/sfYaml/sfYaml.class.php';
@@ -137,14 +138,17 @@ class ConvertMappingTask extends AbstractTask
                 $sourceArg = $source;
 
                 $type = $this->_determineSourceType($sourceArg);
+                if ( ! $type) {
+                    throw DoctrineException::invalidMappingSourceType($sourceArg);
+                }
                 $source = $this->_getSourceByType($type, $sourceArg);
 
                 $printer->writeln(
                     sprintf(
-                        'Adding "%s" mapping source', 
-                        $printer->format($sourceArg, 'KEYWORD')
-                    ),
-                    'INFO'
+                        'Adding "%s" mapping source which contains the "%s" format', 
+                        $printer->format($sourceArg, 'KEYWORD'),
+                        $printer->format($type, 'KEYWORD')
+                    )
                 );
 
                 $cme->addMappingSource($source, $type);
@@ -163,11 +167,10 @@ class ConvertMappingTask extends AbstractTask
 
         $printer->writeln(
             sprintf(
-                'Exporting %s mapping information to directory "%s"',
+                'Exporting "%s" mapping information to directory "%s"',
                 $printer->format($args['to'], 'KEYWORD'),
                 $printer->format($args['dest'], 'KEYWORD')
-            ),
-            'INFO'
+            )
         );
 
         $exporter->setMetadatas($metadatas);

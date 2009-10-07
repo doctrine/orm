@@ -73,7 +73,7 @@ class ClassMetadataExporterTest extends \Doctrine\Tests\OrmTestCase
         $this->assertTrue($mappingSources[0][1] instanceof \Doctrine\ORM\Mapping\Driver\AnnotationDriver);
 
         $this->assertEquals($mappingSources[1][0], __DIR__.'/php');
-        $this->assertEquals('php', $mappingSources[1][1]);
+        $this->assertTrue($mappingSources[1][1] instanceof \Doctrine\ORM\Mapping\Driver\PhpDriver);
 
         $this->assertEquals($mappingSources[2][0], __DIR__.'/xml');
         $this->assertTrue($mappingSources[2][1] instanceof \Doctrine\ORM\Mapping\Driver\XmlDriver);

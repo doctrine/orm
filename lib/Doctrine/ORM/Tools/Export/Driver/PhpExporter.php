@@ -51,7 +51,6 @@ class PhpExporter extends AbstractExporter
         $lines[] = null;
         $lines[] = 'use Doctrine\ORM\Mapping\ClassMetadataInfo;';
         $lines[] = null;
-        $lines[] = "\$metadata = new ClassMetadataInfo('" . $metadata->name . "');";
 
         if ($metadata->isMappedSuperclass) {
             $lines[] = '$metadata->isMappedSuperclass = true;';

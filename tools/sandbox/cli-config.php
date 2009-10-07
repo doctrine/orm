@@ -29,5 +29,5 @@ $connectionOptions = array(
 
 $em = \Doctrine\ORM\EntityManager::create($connectionOptions, $config);
 $args = array(
-    'classdir' => './Entities'
+    'class-dir' => './Entities'
 );

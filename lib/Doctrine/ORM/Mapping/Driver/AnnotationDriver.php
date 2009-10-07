@@ -44,18 +44,25 @@ class AnnotationDriver implements Driver
 {
     /** The AnnotationReader. */
     private $_reader;
-    
+    private $_classDirectory;
+
     /**
      * Initializes a new AnnotationDriver that uses the given AnnotationReader for reading
      * docblock annotations.
      * 
      * @param AnnotationReader $reader The AnnotationReader to use.
      */
-    public function __construct(AnnotationReader $reader)
+    public function __construct(AnnotationReader $reader, $classDirectory = null)
     {
         $this->_reader = $reader;
+        $this->_classDirectory = $classDirectory;
     }
-    
+
+    public function setClassDirectory($classDirectory)
+    {
+        $this->_classDirectory = $classDirectory;
+    }
+
     /**
      * {@inheritdoc}
      */
@@ -325,6 +332,28 @@ class AnnotationDriver implements Driver
     
     public function preload()
     {
-        return array();
+        if ($this->_classDirectory) {
+            $iter = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($this->_classDirectory),
+                                                  \RecursiveIteratorIterator::LEAVES_ONLY);
+        
+            $declared = get_declared_classes();          
+            foreach ($iter as $item) {
+                $info = pathinfo($item->getPathName());
+                if (! isset($info['extension']) || $info['extension'] != 'php') {
+                    continue;
+                }
+                require_once $item->getPathName();
+            }
+            $declared = array_diff(get_declared_classes(), $declared);
+        
+            foreach ($declared as $className) {                 
+                if ( ! $this->isTransient($className)) {
+                    $classes[] = $className;
+                }
+            }
+            return $classes;
+        } else {
+            return array();
+        }
     }
 }

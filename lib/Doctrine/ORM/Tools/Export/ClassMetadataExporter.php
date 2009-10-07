@@ -66,6 +66,7 @@ class ClassMetadataExporter
         'yaml' => 'Doctrine\ORM\Mapping\Driver\YamlDriver',
         'yml' => 'Doctrine\ORM\Mapping\Driver\YamlDriver',
         'xml'  => 'Doctrine\ORM\Mapping\Driver\XmlDriver',
+        'php' => 'Doctrine\ORM\Mapping\Driver\PhpDriver',
         'database' => 'Doctrine\ORM\Mapping\Driver\DatabaseDriver'
     );
 
@@ -86,16 +87,12 @@ class ClassMetadataExporter
      */
     public function addMappingSource($source, $type)
     {
-        if ($type === 'php') {
-            $this->_mappingSources[] = array($source, $type);
-        } else {
-            if ( ! isset($this->_mappingDrivers[$type])) {
-                throw DoctrineException::invalidMappingDriverType($type);
-            }
-
-            $driver = $this->getMappingDriver($type, $source);
-            $this->_mappingSources[] = array($source, $driver);
+        if ( ! isset($this->_mappingDrivers[$type])) {
+            throw DoctrineException::invalidMappingDriverType($type);
         }
+
+        $driver = $this->getMappingDriver($type, $source);
+        $this->_mappingSources[] = array($source, $driver);
     }
 
     /**
@@ -119,9 +116,9 @@ class ClassMetadataExporter
         } else if ($class == 'Doctrine\ORM\Mapping\Driver\AnnotationDriver') {
             $reader = new \Doctrine\Common\Annotations\AnnotationReader(new \Doctrine\Common\Cache\ArrayCache);
             $reader->setDefaultAnnotationNamespace('Doctrine\ORM\Mapping\\');
-            $driver = new \Doctrine\ORM\Mapping\Driver\AnnotationDriver($reader);
-        } else if ($class == 'Doctrine\ORM\Mapping\Driver\DatabaseDriver') {
-            $driver = new \Doctrine\ORM\Mapping\Driver\DatabaseDriver($source);
+            $driver = new \Doctrine\ORM\Mapping\Driver\AnnotationDriver($reader, $source);
+        } else {
+            $driver = new $class($source);
         }
         return $driver;
     }
@@ -149,61 +146,21 @@ class ClassMetadataExporter
 
         foreach ($this->_mappingSources as $d) {
             list($source, $driver) = $d;
-            if ($driver == 'php') {
-                $iter = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($source),
-                                                      \RecursiveIteratorIterator::LEAVES_ONLY);
 
-                foreach ($iter as $item) {
-                    $info = pathinfo($item->getPathName());
-                    if (! isset($info['extension']) || $info['extension'] != 'php') {
-                        continue;
-                    }
-                    include $item->getPathName();
-                    $vars = get_defined_vars();
-                    foreach ($vars as $var) {
-                        if ($var instanceof \Doctrine\ORM\Mapping\ClassMetadataInfo) {
-                            $classes[$var->name] = $var;
-                        }
-                    }
-                }
-            } else {
-                if ($driver instanceof \Doctrine\ORM\Mapping\Driver\AnnotationDriver) {
-                    $iter = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($source),
-                                                          \RecursiveIteratorIterator::LEAVES_ONLY);
-
-                    $declared = get_declared_classes();          
-                    foreach ($iter as $item) {
-                        $info = pathinfo($item->getPathName());
-                        if (! isset($info['extension']) || $info['extension'] != 'php') {
-                            continue;
-                        }
-                        require_once $item->getPathName();
-                    }
-                    $declared = array_diff(get_declared_classes(), $declared);
-
-                    foreach ($declared as $className) {                 
-                        if ( ! $driver->isTransient($className)) {
-                            $metadata = new ClassMetadata($className);  
-                            $driver->loadMetadataForClass($className, $metadata);
-                            $classes[$metadata->name] = $metadata;
-                        }
-                    }
+            $preloadedClasses = $driver->preload(true);
+            foreach ($preloadedClasses as $className) {
+                if (class_exists($className, false)) {
+                    $metadata = new ClassMetadata($className);
                 } else {
-                    $preloadedClasses = $driver->preload(true);
-                    foreach ($preloadedClasses as $className) {
-                        $metadata = new ClassMetadataInfo($className);    
-                        $driver->loadMetadataForClass($className, $metadata);
-                        $classes[$metadata->name] = $metadata;
-                    }
+                    $metadata = new ClassMetadataInfo($className);    
+                }
+                $driver->loadMetadataForClass($className, $metadata);
+                if ( ! $metadata->isMappedSuperclass) {
+                    $classes[$metadata->name] = $metadata;
                 }
             }
         }
 
-        foreach ($classes as $key => $class) {
-            if ($class->isMappedSuperclass) {
-                unset($classes[$key]);
-            }
-        }
         return $classes;
     }
 
