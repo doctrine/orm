@@ -35,14 +35,14 @@ use Doctrine\ORM\Mapping\ClassMetadata;
  *     // and convert it to a single set of yaml files.
  *     
  *     $cme = new Doctrine\ORM\Tools\Export\ClassMetadataExporter();
- *     $cme->addMappingDirectory(__DIR__ . '/Entities', 'php');
- *     $cme->addMappingDirectory(__DIR__ . '/xml', 'xml');
- *     $cme->addMappingDirectory(__DIR__ . '/yaml', 'yaml');
+ *     $cme->addMappingSource(__DIR__ . '/Entities', 'php');
+ *     $cme->addMappingSource(__DIR__ . '/xml', 'xml');
+ *     $cme->addMappingSource(__DIR__ . '/yaml', 'yaml');
  *     
  *     $exporter = $cme->getExporter('yaml');
  *     $exporter->setOutputDir(__DIR__ . '/new_yaml');
  *
- *     $exporter->setMetadatas($cme->getMetadatasForMappingDirectories());
+ *     $exporter->setMetadatas($cme->getMetadatasForMappingSources());
  *     $exporter->export();
  *
  * @license http://www.opensource.org/licenses/lgpl-license.php LGPL
@@ -65,10 +65,11 @@ class ClassMetadataExporter
         'annotation' => 'Doctrine\ORM\Mapping\Driver\AnnotationDriver',
         'yaml' => 'Doctrine\ORM\Mapping\Driver\YamlDriver',
         'yml' => 'Doctrine\ORM\Mapping\Driver\YamlDriver',
-        'xml'  => 'Doctrine\ORM\Mapping\Driver\XmlDriver'
+        'xml'  => 'Doctrine\ORM\Mapping\Driver\XmlDriver',
+        'database' => 'Doctrine\ORM\Mapping\Driver\DatabaseDriver'
     );
 
-    private $_mappingDirectories = array();
+    private $_mappingSources = array();
 
     /**
      * Add a new mapping directory to the array of directories to convert and export
@@ -76,23 +77,24 @@ class ClassMetadataExporter
      *
      *     [php]
      *     $cme = new Doctrine\ORM\Tools\Export\ClassMetadataExporter();
-     *     $cme->addMappingDirectory(__DIR__ . '/yaml', 'yaml');
+     *     $cme->addMappingSource(__DIR__ . '/yaml', 'yaml');
+     *     $cme->addMappingSource($schemaManager, 'database');
      *
-     * @param string $dir   The path to the mapping files
+     * @param string $source   The source for the mapping
      * @param string $type  The type of mapping files (yml, xml, etc.)
      * @return void
      */
-    public function addMappingDirectory($dir, $type)
+    public function addMappingSource($source, $type)
     {
         if ($type === 'php') {
-            $this->_mappingDirectories[] = array($dir, $type);
+            $this->_mappingSources[] = array($source, $type);
         } else {
             if ( ! isset($this->_mappingDrivers[$type])) {
                 throw DoctrineException::invalidMappingDriverType($type);
             }
 
-            $driver = $this->getMappingDriver($type, $dir);
-            $this->_mappingDirectories[] = array($dir, $driver);
+            $driver = $this->getMappingDriver($type, $source);
+            $this->_mappingSources[] = array($source, $driver);
         }
     }
 
@@ -100,24 +102,26 @@ class ClassMetadataExporter
      * Get an instance of a mapping driver
      *
      * @param string $type   The type of mapping driver (yaml, xml, annotation, etc.)
-     * @param string $dir    The directory to configure the driver to look in. Only required for file drivers (yml, xml).
+     * @param string $source The source for the driver
      * @return AbstractDriver $driver
      */
-    public function getMappingDriver($type, $dir = null)
+    public function getMappingDriver($type, $source = null)
     {
         if ( ! isset($this->_mappingDrivers[$type])) {
             return false;
         }
         $class = $this->_mappingDrivers[$type];
         if (is_subclass_of($class, 'Doctrine\ORM\Mapping\Driver\AbstractFileDriver')) {
-            if (is_null($dir)) {
+            if (is_null($source)) {
                 throw DoctrineException::fileMappingDriversRequireDirectoryPath();
             }
-            $driver = new $class($dir, constant($class . '::PRELOAD'));
-        } else {
+            $driver = new $class($source, constant($class . '::PRELOAD'));
+        } else if ($class == 'Doctrine\ORM\Mapping\Driver\AnnotationDriver') {
             $reader = new \Doctrine\Common\Annotations\AnnotationReader(new \Doctrine\Common\Cache\ArrayCache);
             $reader->setDefaultAnnotationNamespace('Doctrine\ORM\Mapping\\');
-            $driver = new $class($reader);
+            $driver = new \Doctrine\ORM\Mapping\Driver\AnnotationDriver($reader);
+        } else if ($class == 'Doctrine\ORM\Mapping\Driver\DatabaseDriver') {
+            $driver = new \Doctrine\ORM\Mapping\Driver\DatabaseDriver($source);
         }
         return $driver;
     }
@@ -127,9 +131,9 @@ class ClassMetadataExporter
      *
      * @return array $mappingDirectories
      */
-    public function getMappingDirectories()
+    public function getMappingSources()
     {
-        return $this->_mappingDirectories;
+        return $this->_mappingSources;
     }
 
     /**
@@ -139,14 +143,14 @@ class ClassMetadataExporter
      *
      * @return array $classes
      */
-    public function getMetadatasForMappingDirectories()
+    public function getMetadatasForMappingSources()
     {
         $classes = array();
 
-        foreach ($this->_mappingDirectories as $d) {
-            list($dir, $driver) = $d;
+        foreach ($this->_mappingSources as $d) {
+            list($source, $driver) = $d;
             if ($driver == 'php') {
-                $iter = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($dir),
+                $iter = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($source),
                                                       \RecursiveIteratorIterator::LEAVES_ONLY);
 
                 foreach ($iter as $item) {
@@ -164,7 +168,7 @@ class ClassMetadataExporter
                 }
             } else {
                 if ($driver instanceof \Doctrine\ORM\Mapping\Driver\AnnotationDriver) {
-                    $iter = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($dir),
+                    $iter = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($source),
                                                           \RecursiveIteratorIterator::LEAVES_ONLY);
 
                     $declared = get_declared_classes();          
@@ -200,7 +204,6 @@ class ClassMetadataExporter
                 unset($classes[$key]);
             }
         }
-        $classes = array_values($classes);
         return $classes;
     }
 
@@ -208,16 +211,16 @@ class ClassMetadataExporter
      * Get a exporter driver instance
      *
      * @param string $type   The type to get (yml, xml, etc.)
-     * @param string $dir    The directory where the exporter will export to
+     * @param string $source    The directory where the exporter will export to
      * @return AbstractExporter $exporter
      */
-    public function getExporter($type, $dir = null)
+    public function getExporter($type, $source = null)
     {
         if ( ! isset($this->_exporterDrivers[$type])) {
             throw DoctrineException::invalidExporterDriverType($type);
         }
 
         $class = $this->_exporterDrivers[$type];
-        return new $class($dir);
+        return new $class($source);
     }
 }

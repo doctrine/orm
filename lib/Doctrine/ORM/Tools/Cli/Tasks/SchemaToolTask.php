@@ -110,8 +110,8 @@ class SchemaToolTask extends AbstractTask
         $isDrop = isset($args['drop']);
         $isUpdate = isset($args['update']);
         
-        if ( ! ($isCreate ^ $isDrop ^ $isUpdate)) {
-            $printer->writeln("One of --create, --drop or --update required, and only one.", 'ERROR');
+        if ($isUpdate && ($isCreate || $isDrop)) {
+            $printer->writeln("You can't use --update with --create or --drop", 'ERROR');
             return false;
         }
         
@@ -174,7 +174,24 @@ class SchemaToolTask extends AbstractTask
             $printer->writeln('No classes to process.', 'INFO');
             return;
         }
-        
+
+        if ($isDrop) {
+            if (isset($args['dump-sql'])) {
+                foreach ($tool->getDropSchemaSql($classes) as $sql) {
+                    $printer->writeln($sql);
+                }
+            } else {
+                $printer->writeln('Dropping database schema...', 'INFO');
+                
+                try {
+                    $tool->dropSchema($classes);
+                    $printer->writeln('Database schema dropped successfully.', 'INFO');
+                } catch (\Exception $ex) {
+                    throw new DoctrineException($ex);
+                }
+            }
+        }
+
         if ($isCreate) {
             if (isset($args['dump-sql'])) {
                 foreach ($tool->getCreateSchemaSql($classes) as $sql) {
@@ -190,24 +207,9 @@ class SchemaToolTask extends AbstractTask
                     throw new DoctrineException($ex);
                 }
             }
-        } else if ($isDrop) {
-            if (isset($args['dump-sql'])) {
-                foreach ($tool->getDropSchemaSql($classes) as $sql) {
-                    $printer->writeln($sql);
-                }
-            } else {
-                $printer->writeln('Dropping database schema...', 'INFO');
-                
-                try {
-                    $tool->dropSchema($classes);
-                    $printer->writeln('Database schema dropped successfully.', 'INFO');
-                } catch (\Exception $ex) {
-                    throw new DoctrineException($ex);
-                }
-            }
-        } else if ($isUpdate) {
-            $printer->writeln("--update support is not yet fully implemented.", 'ERROR');
-            
+        }
+
+        if ($isUpdate) {            
             if (isset($args['dump-sql'])) {
                 foreach ($tool->getUpdateSchemaSql($classes) as $sql) {
                     $printer->writeln($sql);

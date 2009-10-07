@@ -145,11 +145,14 @@ class XmlExporter extends AbstractExporter
                 if (isset($field['scale'])) {
                     $fieldXml->addAttribute('scale', $field['scale']);
                 }
-                if (isset($field['unique'])) {
+                if (isset($field['unique']) && $field['unique']) {
                     $fieldXml->addAttribute('unique', $field['unique']);
                 }
                 if (isset($field['options'])) {
-                    $fieldXml->addAttribute('options', $field['options']);
+                    $optionsXml = $fieldXml->addChild('options');
+                    foreach ($field['options'] as $key => $value) {
+                        $optionsXml->addAttribute($key, $value);
+                    }
                 }
                 if (isset($field['version'])) {
                     $fieldXml->addAttribute('version', $field['version']);
@@ -225,6 +228,51 @@ class XmlExporter extends AbstractExporter
             }
         }
 
-        return $xml->asXml();
+        return $this->_asXml($xml);
+    }
+
+    /**
+     * Code originally taken from
+     * http://recurser.com/articles/2007/04/05/format-xml-with-php/
+     *
+     * @param string $simpleXml 
+     * @return string $xml
+     */
+    private function _asXml($simpleXml)
+    {
+        $xml = $simpleXml->asXml();
+
+        // add marker linefeeds to aid the pretty-tokeniser (adds a linefeed between all tag-end boundaries)
+        $xml = preg_replace('/(>)(<)(\/*)/', "$1\n$2$3", $xml);
+
+        // now indent the tags
+        $token = strtok($xml, "\n");
+        $result = ''; // holds formatted version as it is built
+        $pad = 0; // initial indent
+        $matches = array(); // returns from preg_matches()
+
+        // test for the various tag states
+        while ($token !== false) {
+            // 1. open and closing tags on same line - no change
+            if (preg_match('/.+<\/\w[^>]*>$/', $token, $matches)) {
+                $indent = 0;
+            // 2. closing tag - outdent now
+            } else if (preg_match('/^<\/\w/', $token, $matches)) {
+                $pad = $pad - 4;
+            // 3. opening tag - don't pad this one, only subsequent tags
+            } elseif (preg_match('/^<\w[^>]*[^\/]>.*$/', $token, $matches)) {
+                $indent = 4;
+            // 4. no indentation needed
+            } else {
+                $indent = 0; 
+            }
+
+            // pad the line with the required number of leading spaces
+            $line = str_pad($token, strlen($token)+$pad, ' ', STR_PAD_LEFT);
+            $result .= $line . "\n"; // add to the cumulative result, with linefeed
+            $token = strtok("\n"); // get the next token
+            $pad += $indent; // update the pad size for subsequent lines    
+        }
+        return $result;
     }
 }

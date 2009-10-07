@@ -23,8 +23,10 @@ $config = new \Doctrine\ORM\Configuration();
 $config->setMetadataCacheImpl(new \Doctrine\Common\Cache\ArrayCache);
 
 $connectionOptions = array(
-    'driver' => 'pdo_sqlite',
-    'path' => 'database.sqlite'
+    'driver' => 'pdo_mysql',
+    'user' => 'root',
+    'password' => '',
+    'dbname' => 'doctrine2'
 );
 
 $em = \Doctrine\ORM\EntityManager::create($connectionOptions, $config);

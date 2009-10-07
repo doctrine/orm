@@ -101,6 +101,10 @@ class ConvertMappingTask extends AbstractTask
             $printer->writeln('You can only use the --extend argument when converting to annoations.');
             return false;
         }
+        if ($args['from'][0] == 'database') {
+            $config = $this->_em->getConfiguration();
+            $config->setMetadataDriverImpl(new \Doctrine\ORM\Mapping\Driver\DatabaseDriver($this->_em->getConnection()->getSchemaManager()));
+        }
         return true;
     }
 
@@ -127,47 +131,83 @@ class ConvertMappingTask extends AbstractTask
             $printer->writeln('Converting Doctrine 1 schema to Doctrine 2 mapping files', 'INFO');
 
             $converter = new \Doctrine\ORM\Tools\ConvertDoctrine1Schema($from);
-            $exporter->setMetadatas($converter->getMetadatasFromSchema());
+            $metadatas = $converter->getMetadatasFromSchema();
         } else {
-            foreach ($from as $path) {
-                $type = $this->_determinePathType($path);
+            foreach ($from as $source) {
+                $sourceArg = $source;
 
-                $printer->writeln(sprintf('Adding %s mapping directory: "%s"', $type, $path), 'INFO');
+                $type = $this->_determineSourceType($sourceArg);
+                $source = $this->_getSourceByType($type, $sourceArg);
 
-                $cme->addMappingDir($path, $type);
+                $printer->writeln(sprintf('Adding "%s" mapping source', $sourceArg), 'INFO');
+
+                $cme->addMappingSource($source, $type);
             }
-            $exporter->setMetadatas($cme->getMetadatasForMappingDirectories());
+            $metadatas = $cme->getMetadatasForMappingSources();
         }
 
-        $printer->writeln(sprintf('Exporting %s mapping information to directory: "%s"', $args['to'], $args['dest']), 'INFO');
+        foreach ($metadatas as $metadata) {
+            $printer->write('Processing entity "')
+                    ->write($metadata->name, 'KEYWORD')->writeln('"');
+        }
+
+        $printer->writeln(sprintf('Exporting %s mapping information to directory "%s"', $args['to'], $args['dest']), 'INFO');
+
+        $exporter->setMetadatas($metadatas);
         $exporter->export();
     }
 
     private function _isDoctrine1Schema(array $from)
     {
-        $files = glob($from[0] . '/*.yml');
+        $files = glob(current($from) . '/*.yml');
         if ($files) {
             $array = \sfYaml::load($files[0]);
             $first = current($array);
+            // We're dealing with a Doctrine 1 schema if you have
+            // a columns index in the first model array
             return isset($first['columns']);
         } else {
             return false;
         }
     }
 
-    private function _determinePathType($path)
+    private function _determineSourceType($source)
     {
-      $files = glob($path . '/*.*');
-      if (!$files)
-      {
-        throw new \InvalidArgumentException(sprintf('No schema mapping files found in "%s"', $path));
-      }
-      $contents = file_get_contents($files[0]);
-      if (preg_match("/class (.*)/", $contents)) {
-          return 'annotation';
-      } else {
-          $info = pathinfo($files[0]);
-          return $info['extension'];
-      }
+        // If the --from=<VALUE> is a directory lets determine if it is
+        // annotations, yaml, xml, etc.
+        if (is_dir($source)) {
+            // Find the files in the directory
+            $files = glob($source . '/*.*');
+            if ( ! $files) {
+                throw new \InvalidArgumentException(sprintf('No mapping files found in "%s"', $source));
+            }
+
+            // Get the contents of the first file
+            $contents = file_get_contents($files[0]);
+
+            // Check if it has a class definition in it for annotations
+            if (preg_match("/class (.*)/", $contents)) {
+              return 'annotation';
+            // Otherwise lets determine the type based on the extension of the 
+            // first file in the directory (yml, xml, etc)
+            } else {
+              $info = pathinfo($files[0]);
+              return $info['extension'];
+            }
+        // Nothing special for database
+        } else if ($source == 'database') {
+            return 'database';
+        }
+    }
+
+    private function _getSourceByType($type, $source)
+    {
+        // If --from==database then the source is an instance of SchemaManager
+        // for the current EntityMAnager
+        if ($type == 'database') {
+            return $this->_em->getConnection()->getSchemaManager();
+        } else {
+            return $source;
+        }
     }
 }

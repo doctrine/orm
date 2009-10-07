@@ -50,19 +50,19 @@ class ConvertDoctrine1SchemaTest extends \Doctrine\Tests\OrmTestCase
         $this->assertTrue(file_exists(__DIR__ . '/convert/User.dcm.yml'));
         $this->assertTrue(file_exists(__DIR__ . '/convert/Profile.dcm.yml'));
 
-        $cme->addMappingDirectory(__DIR__ . '/convert', 'yml');
-        $metadatas = $cme->getMetadatasForMappingDirectories();
+        $cme->addMappingSource(__DIR__ . '/convert', 'yml');
+        $metadatas = $cme->getMetadatasForMappingSources();
 
         $this->assertEquals(2, count($metadatas));
-        $this->assertEquals('Profile', $metadatas[0]->name);
-        $this->assertEquals('User', $metadatas[1]->name);
-        $this->assertEquals(4, count($metadatas[0]->fieldMappings));
-        $this->assertEquals(3, count($metadatas[1]->fieldMappings));
+        $this->assertEquals('Profile', $metadatas['Profile']->name);
+        $this->assertEquals('User', $metadatas['User']->name);
+        $this->assertEquals(4, count($metadatas['Profile']->fieldMappings));
+        $this->assertEquals(3, count($metadatas['User']->fieldMappings));
 
-        $this->assertEquals('Profile', $metadatas[0]->associationMappings['User']->sourceEntityName);
-        $this->assertEquals('\User', $metadatas[0]->associationMappings['User']->targetEntityName);
+        $this->assertEquals('Profile', $metadatas['Profile']->associationMappings['User']->sourceEntityName);
+        $this->assertEquals('\User', $metadatas['Profile']->associationMappings['User']->targetEntityName);
 
-        $this->assertEquals('username', $metadatas[1]->primaryTable['indexes']['username']['columns'][0]);
+        $this->assertEquals('username', $metadatas['User']->primaryTable['indexes']['username']['columns'][0]);
 
         unlink(__DIR__ . '/convert/User.dcm.yml');
         unlink(__DIR__ . '/convert/Profile.dcm.yml');

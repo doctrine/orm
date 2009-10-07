@@ -250,7 +250,10 @@ class AnnotationExporter extends AbstractExporter
       $methods = array();
 
       foreach ($metadata->fieldMappings as $fieldMapping) {
-          $this->_addMethod('set', $fieldMapping['fieldName'], $metadata, $methods);
+          if ( ! isset($fieldMapping['id']) || ! $fieldMapping['id']) {
+              $this->_addMethod('set', $fieldMapping['fieldName'], $metadata, $methods);
+          }
+
           $this->_addMethod('get', $fieldMapping['fieldName'], $metadata, $methods);
       }
 
@@ -302,6 +305,9 @@ class AnnotationExporter extends AbstractExporter
         $lines[] = str_repeat(' ', $this->_numSpaces) . '/**';
 
         $column = array();
+        if (isset($fieldMapping['columnName'])) {
+            $column[] = 'name="' . $fieldMapping['columnName'] . '"';
+        }
         if (isset($fieldMapping['type'])) {
             $column[] = 'type="' . $fieldMapping['type'] . '"';
         }

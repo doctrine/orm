@@ -177,4 +177,10 @@ abstract class Type
         
         self::$_typesMap[$name] = $className;
     }
+
+    public function __toString()
+    {
+        $e = explode('\\', get_class($this));
+        return str_replace('Type', '', end($e));
+    }
 }

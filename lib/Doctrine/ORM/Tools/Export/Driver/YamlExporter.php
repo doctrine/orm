@@ -70,7 +70,10 @@ class YamlExporter extends AbstractExporter
             $array['schema'] = $metadata->primaryTable['schema'];
         }
 
-        $array['inheritanceType'] = $this->_getInheritanceTypeString($metadata->getInheritanceType());
+        $inheritanceType = $metadata->getInheritanceType();
+        if ($inheritanceType !== ClassMetadataInfo::INHERITANCE_TYPE_NONE) {
+            $array['inheritanceType'] = $this->_getInheritanceTypeString($inheritanceType);
+        }
 
         if ($column = $metadata->getDiscriminatorColumn()) {
             $array['discriminatorColumn'] = $column;
@@ -80,7 +83,9 @@ class YamlExporter extends AbstractExporter
             $array['discriminatorMap'] = $map;
         }
 
-        $array['changeTrackingPolicy'] = $this->_getChangeTrackingPolicyString($metadata->changeTrackingPolicy);
+        if ($metadata->changeTrackingPolicy !== ClassMetadataInfo::CHANGETRACKING_DEFERRED_IMPLICIT) {
+            $array['changeTrackingPolicy'] = $this->_getChangeTrackingPolicyString($metadata->changeTrackingPolicy);
+        }
 
         if (isset($metadata->primaryTable['indexes'])) {
             $array['indexes'] = $metadata->primaryTable['indexes'];
@@ -92,27 +97,48 @@ class YamlExporter extends AbstractExporter
             }
         }
         
-        $fields = $metadata->fieldMappings;
+        $fieldMappings = $metadata->fieldMappings;
         
-        $id = array();
-        foreach ($fields as $name => $field) {
-            if (isset($field['id']) && $field['id']) {
-                $id[$name] = $field;
-                unset($fields[$name]);
+        $ids = array();
+        foreach ($fieldMappings as $name => $fieldMapping) {
+            if (isset($fieldMapping['length'])) {
+                $fieldMapping['type'] = $fieldMapping['type'] . '(' . $fieldMapping['length'] . ')';
+                unset($fieldMapping['length']);
             }
+
+            unset($fieldMapping['fieldName']);
+
+            if ($fieldMapping['columnName'] == $name) {
+                unset($fieldMapping['columnName']);
+            }
+
+            if (isset($fieldMapping['id']) && $fieldMapping['id']) {
+                $ids[$name] = $fieldMapping;
+                unset($fieldMappings[$name]);
+                continue;
+            }
+
+            $fieldMappings[$name] = $fieldMapping;
         }
 
         if ($idGeneratorType = $this->_getIdGeneratorTypeString($metadata->generatorType)) {
-            $id[$metadata->getSingleIdentifierFieldName()]['generator']['strategy'] = $this->_getIdGeneratorTypeString($metadata->generatorType);
+            $ids[$metadata->getSingleIdentifierFieldName()]['generator']['strategy'] = $this->_getIdGeneratorTypeString($metadata->generatorType);
         }
         
-        $array['id'] = $id;
-        $array['fields'] = $fields;
+        if ($ids) {
+            $array['fields'] = $ids;
+        }
+
+        if ($fieldMappings) {
+            if ( ! isset($array['fields'])) {
+                $array['fields'] = array();
+            }
+            $array['fields'] = array_merge($array['fields'], $fieldMappings);
+        }
 
         $associations = array();
         foreach ($metadata->associationMappings as $name => $associationMapping) {
             $associationMappingArray = array(
-                'fieldName'    => $associationMapping->sourceFieldName,
                 'targetEntity' => $associationMapping->targetEntityName,
                 'cascade'     => array(
                     'remove'  => $associationMapping->isCascadeRemove,
@@ -124,9 +150,14 @@ class YamlExporter extends AbstractExporter
             );
             
             if ($associationMapping instanceof OneToOneMapping) {
+                $joinColumns = $associationMapping->joinColumns;
+                $newJoinColumns = array();
+                foreach ($joinColumns as $joinColumn) {
+                    $newJoinColumns[$joinColumn['name']]['referencedColumnName'] = $joinColumn['referencedColumnName'];
+                }
                 $oneToOneMappingArray = array(
                     'mappedBy'      => $associationMapping->mappedByFieldName,
-                    'joinColumns'   => $associationMapping->joinColumns,
+                    'joinColumns'   => $newJoinColumns,
                     'orphanRemoval' => $associationMapping->orphanRemoval,
                 );
                 
@@ -137,7 +168,7 @@ class YamlExporter extends AbstractExporter
                     'mappedBy'      => $associationMapping->mappedByFieldName,
                     'orphanRemoval' => $associationMapping->orphanRemoval,
                 );
-                
+
                 $associationMappingArray = array_merge($associationMappingArray, $oneToManyMappingArray);
                 $array['oneToMany'][$name] = $associationMappingArray;
             } else if ($associationMapping instanceof ManyToManyMapping) {

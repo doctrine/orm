@@ -149,39 +149,49 @@ class YamlDriver extends AbstractFileDriver
         // Evaluate fields
         if (isset($element['fields'])) {
             foreach ($element['fields'] as $name => $fieldMapping) {
+                $e = explode('(', $fieldMapping['type']);
+                $fieldMapping['type'] = $e[0];
+                if (isset($e[1])) {
+                    $fieldMapping['length'] = substr($e[1], 0, strlen($e[1]) - 1);
+                }
                 $mapping = array(
                     'fieldName' => $name,
                     'type' => $fieldMapping['type']
                 );
-                
+                if (isset($fieldMapping['id'])) {
+                    $mapping['id'] = true;
+                    if (isset($fieldMapping['generator']['strategy'])) {
+                        $metadata->setIdGeneratorType(constant('Doctrine\ORM\Mapping\ClassMetadata::GENERATOR_TYPE_'
+                                . strtoupper($fieldMapping['generator']['strategy'])));
+                    }
+                }
+                // Check for SequenceGenerator/TableGenerator definition
+                if (isset($fieldMapping['sequenceGenerator'])) {
+                    $metadata->setSequenceGeneratorDefinition($fieldMapping['sequenceGenerator']);
+                } else if (isset($fieldMapping['tableGenerator'])) {
+                    throw DoctrineException::tableIdGeneratorNotImplemented();
+                }
                 if (isset($fieldMapping['column'])) {
                     $mapping['columnName'] = $fieldMapping['column'];
                 }
-                
                 if (isset($fieldMapping['length'])) {
                     $mapping['length'] = $fieldMapping['length'];
                 }
-                
                 if (isset($fieldMapping['precision'])) {
                     $mapping['precision'] = $fieldMapping['precision'];
                 }
-                
                 if (isset($fieldMapping['scale'])) {
                     $mapping['scale'] = $fieldMapping['scale'];
                 }
-                
                 if (isset($fieldMapping['unique'])) {
                     $mapping['unique'] = (bool)$fieldMapping['unique'];
                 }
-                
                 if (isset($fieldMapping['options'])) {
                     $mapping['options'] = $fieldMapping['options'];
                 }
-
                 if (isset($fieldMapping['notnull'])) {
                     $mapping['notnull'] = $fieldMapping['notnull'];
                 }
-
                 if (isset($fieldMapping['version']) && $fieldMapping['version']) {
                     $metadata->setVersionMapping($mapping);
                 }
