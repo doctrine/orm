@@ -72,7 +72,11 @@ class SchemaToolTask extends AbstractTask
                 ->writeln("\t\tInstead of try to apply generated SQLs into EntityManager, output them.")
                 ->write(PHP_EOL)
                 ->write('--class-dir=<path>', 'OPT_ARG')
-                ->writeln("\tOptional class directory to fetch for Entities.");
+                ->writeln("\tOptional class directory to fetch for Entities.")
+                ->write(PHP_EOL)
+                ->write('--re-create', 'OPT_ARG')
+                ->writeln("\t\tRuns --drop then --create to re-create the database.")
+                ->write(PHP_EOL);
     }
 
     /**
@@ -87,7 +91,8 @@ class SchemaToolTask extends AbstractTask
     {
         $printer->write('schema-tool', 'KEYWORD')
                 ->write(' (--create | --drop | --update)', 'REQ_ARG')
-                ->writeln(' [--dump-sql] [--class-dir=<path>]', 'OPT_ARG');
+                ->write(' [--dump-sql] [--class-dir=<path>]', 'OPT_ARG')
+                ->writeln(' [--re-create]', 'OPT_ARG');
     }
     
     /**
@@ -105,6 +110,12 @@ class SchemaToolTask extends AbstractTask
         if ( ! $this->_requireEntityManager()) {
             return false;
         }
+
+        if (array_key_exists('re-create', $args)) {
+            $args['drop'] = true;
+            $args['create'] = true;
+            $this->setArguments($args);
+        }
         
         $isCreate = isset($args['create']);
         $isDrop = isset($args['drop']);
@@ -112,6 +123,11 @@ class SchemaToolTask extends AbstractTask
         
         if ($isUpdate && ($isCreate || $isDrop)) {
             $printer->writeln("You can't use --update with --create or --drop", 'ERROR');
+            return false;
+        }
+
+        if ( ! ($isCreate || $isDrop || $isUpdate)) {
+            $printer->writeln('You must specify at a minimum one of the options (--create, --drop, --update, --re-create).', 'ERROR');
             return false;
         }
         
@@ -135,7 +151,7 @@ class SchemaToolTask extends AbstractTask
     public function run()
     {
         $args = $this->getArguments();
-        
+
         $isCreate = isset($args['create']);
         $isDrop = isset($args['drop']);
         $isUpdate = isset($args['update']);

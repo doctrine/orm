@@ -153,7 +153,7 @@ class Cli
         $processedArgs = $this->_processArguments($args);
         
         try {
-            $this->_printer->writeln('Doctrine Command Line Interface', 'HEADER');
+            $this->_printer->writeln('Doctrine Command Line Interface' . PHP_EOL, 'HEADER');
         
             // Handle possible multiple tasks on a single command
             foreach($processedArgs as $taskData) {
@@ -177,7 +177,9 @@ class Cli
                     } else if ($this->_isTaskValid($task)) {
                         $task->run();
                     } else {
+                        $this->_printer->write(PHP_EOL);
                         $task->basicHelp(); // Fallback of not-valid task arguments
+                        $this->_printer->write(PHP_EOL);
                     }
                 } else {
                     throw \Doctrine\Common\DoctrineException::taskDoesNotExist($taskName);
