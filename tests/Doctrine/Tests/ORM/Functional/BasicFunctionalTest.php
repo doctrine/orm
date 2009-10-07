@@ -349,4 +349,86 @@ class BasicFunctionalTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->refresh($user);
         $this->assertEquals('developer', $user->status);
     }
+    
+    public function testAddToCollectionDoesNotInitialize()
+    {
+        $this->_em->getConfiguration()->setAllowPartialObjects(false);
+        
+        $user = new CmsUser;
+        $user->name = 'Guilherme';
+        $user->username = 'gblanco';
+        $user->status = 'developer';
+
+        for ($i=0; $i<3; ++$i) {
+            $phone = new CmsPhonenumber;
+            $phone->phonenumber = 100 + $i;
+            $user->addPhonenumber($phone);
+        }
+
+        $this->_em->persist($user);
+        $this->_em->flush();
+        $this->_em->clear();
+        
+        $this->assertEquals(3, $user->getPhonenumbers()->count());
+        
+        $query = $this->_em->createQuery("select u from Doctrine\Tests\Models\CMS\CmsUser u where u.username='gblanco'");
+
+        $gblanco = $query->getSingleResult();
+        
+        $this->assertFalse($gblanco->getPhonenumbers()->isInitialized());
+        
+        $newPhone = new CmsPhonenumber;
+        $phone->phonenumber = 555;
+        $gblanco->addPhonenumber($phone);
+        
+        $this->assertFalse($gblanco->getPhonenumbers()->isInitialized());
+        
+        $this->_em->flush();
+        $this->_em->clear();
+        
+        $query = $this->_em->createQuery("select u, p from Doctrine\Tests\Models\CMS\CmsUser u join u.phonenumbers p where u.username='gblanco'");
+        $gblanco2 = $query->getSingleResult();
+        $this->assertEquals(4, $gblanco2->getPhonenumbers()->count());
+        
+        $this->_em->getConfiguration()->setAllowPartialObjects(true);
+    }
+    
+    public function testSetSetAssociationWithGetReference()
+    {
+        $user = new CmsUser;
+        $user->name = 'Guilherme';
+        $user->username = 'gblanco';
+        $user->status = 'developer';        
+        $this->_em->persist($user);
+        
+        $address = new CmsAddress;
+        $address->country = 'Germany';
+        $address->city = 'Berlin';
+        $address->zip = '12345';
+        $this->_em->persist($address);
+        
+        $this->_em->flush();
+        $this->_em->detach($address);
+        
+        $this->assertFalse($this->_em->contains($address));
+        $this->assertTrue($this->_em->contains($user));
+        
+        // Assume we only got the identifier of the address and now want to attach
+        // that address to the user without actually loading it, using getReference().
+        $addressRef = $this->_em->getReference('Doctrine\Tests\Models\CMS\CmsAddress', $address->getId());
+        
+        $user->setAddress($addressRef);
+        
+        $this->_em->flush();
+        $this->_em->clear();
+        
+        // Check with a fresh load that the association is indeed there
+        $query = $this->_em->createQuery("select u, a from Doctrine\Tests\Models\CMS\CmsUser u join u.address a where u.username='gblanco'");
+        $gblanco = $query->getSingleResult();
+        
+        $this->assertTrue($gblanco instanceof CmsUser);
+        $this->assertTrue($gblanco->getAddress() instanceof CmsAddress);
+        $this->assertEquals('Berlin', $gblanco->getAddress()->getCity());
+        
+    }
 }

@@ -312,12 +312,19 @@ class EntityManager
      */
     public function getReference($entityName, $identifier)
     {
+        // Check identity map first, if its already in there just return it.
+        if ($entity = $this->_unitOfWork->tryGetById($identifier,
+                $this->_metadataFactory->getMetadataFor($entityName)->rootEntityName)) {
+            return $entity;
+        }
+        
         if ($this->_config->getAllowPartialObjects()) {
             $entity = new $entityName;
-            $this->getClassMetadata($entityName)->setEntityIdentifier($entity, $identifier);
+            $this->getClassMetadata($entityName)->setIdentifierValues($entity, $identifier);
         } else {
             $entity = $this->_proxyFactory->getReferenceProxy($entityName, $identifier);
         }
+        $this->_unitOfWork->registerManaged($entity, (array) $identifier, array());
 
         return $entity;
     }

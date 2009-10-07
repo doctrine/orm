@@ -24,6 +24,7 @@ namespace Doctrine\ORM;
 use Doctrine\Common\Collections\ArrayCollection,
     Doctrine\Common\Collections\Collection,
     Doctrine\Common\DoctrineException,
+    Doctrine\Common\NotifyPropertyChanged,
     Doctrine\Common\PropertyChangedListener,
     Doctrine\ORM\Event\LifecycleEventArgs;
 
@@ -239,11 +240,19 @@ class UnitOfWork implements PropertyChangedListener
      * Commits the UnitOfWork, executing all operations that have been postponed
      * up to this point. The state of all managed entities will be synchronized with
      * the database.
+     * 
+     * The operations are executed in the following order:
+     * 
+     * 1) All entity insertions
+     * 2) All entity updates
+     * 3) All collection deletions
+     * 4) All collection updates
+     * 5) All entity deletions
+     * 
      */
     public function commit()
     {
         // Compute changes done since last commit.
-        // This populates _entityUpdates and _collectionUpdates.
         $this->computeChangeSets();
 
         if ( ! ($this->_entityInsertions ||
@@ -879,6 +888,7 @@ class UnitOfWork implements PropertyChangedListener
      * Schedules an extra update that will be executed immediately after the
      * regular entity updates within the currently running commit cycle.
      * 
+     * @ignore
      * @param $entity
      * @param $changeset
      */
@@ -959,6 +969,7 @@ class UnitOfWork implements PropertyChangedListener
      * Note that entities in a hierarchy are registered with the class name of
      * the root entity.
      *
+     * @ignore
      * @param object $entity  The entity to register.
      * @return boolean  TRUE if the registration was successful, FALSE if the identity of
      *                  the entity in question is already managed.
@@ -968,14 +979,14 @@ class UnitOfWork implements PropertyChangedListener
         $classMetadata = $this->_em->getClassMetadata(get_class($entity));
         $idHash = implode(' ', $this->_entityIdentifiers[spl_object_hash($entity)]);
         if ($idHash === '') {
-            throw DoctrineException::entityMustHaveIdentifyToBeAddedToIdentityMap($entity);
+            throw DoctrineException::entityMustHaveIdentityToBeAddedToIdentityMap($entity);
         }
         $className = $classMetadata->rootEntityName;
         if (isset($this->_identityMap[$className][$idHash])) {
             return false;
         }
         $this->_identityMap[$className][$idHash] = $entity;
-        if ($entity instanceof \Doctrine\Common\NotifyPropertyChanged) {
+        if ($entity instanceof NotifyPropertyChanged) {
             $entity->addPropertyChangedListener($this);
         }
         return true;
@@ -1021,6 +1032,7 @@ class UnitOfWork implements PropertyChangedListener
      * Removes an entity from the identity map. This effectively detaches the
      * entity from the persistence management of Doctrine.
      *
+     * @ignore
      * @param object $entity
      * @return boolean
      */
@@ -1046,6 +1058,7 @@ class UnitOfWork implements PropertyChangedListener
      * INTERNAL:
      * Gets an entity in the identity map by its identifier hash.
      *
+     * @ignore
      * @param string $idHash
      * @param string $rootClassName
      * @return object
@@ -1060,6 +1073,7 @@ class UnitOfWork implements PropertyChangedListener
      * Tries to get an entity by its identifier hash. If no entity is found for
      * the given hash, FALSE is returned.
      *
+     * @ignore
      * @param string $idHash
      * @param string $rootClassName
      * @return mixed The found entity or FALSE.
@@ -1097,6 +1111,7 @@ class UnitOfWork implements PropertyChangedListener
      * INTERNAL:
      * Checks whether an identifier hash exists in the identity map.
      *
+     * @ignore
      * @param string $idHash
      * @param string $rootClassName
      * @return boolean
@@ -1597,6 +1612,7 @@ class UnitOfWork implements PropertyChangedListener
      * invoked on that entity at the beginning of the next commit of this
      * UnitOfWork.
      * 
+     * @ignore
      * @param object $entity
      */
     public function scheduleOrphanRemoval($entity)
@@ -1636,6 +1652,7 @@ class UnitOfWork implements PropertyChangedListener
      * INTERNAL:
      * Creates an entity. Used for reconstitution of entities during hydration.
      *
+     * @ignore
      * @param string $className  The name of the entity class.
      * @param array $data  The data for the entity.
      * @return object The created entity instance.
@@ -1668,7 +1685,7 @@ class UnitOfWork implements PropertyChangedListener
             $this->_entityStates[$oid] = self::STATE_MANAGED;
             $this->_originalEntityData[$oid] = $data;
             $this->_identityMap[$class->rootEntityName][$idHash] = $entity;
-            if ($entity instanceof \Doctrine\Common\NotifyPropertyChanged) {
+            if ($entity instanceof NotifyPropertyChanged) {
                 $entity->addPropertyChangedListener($this);
             }
             $overrideLocalValues = true;
@@ -1727,6 +1744,7 @@ class UnitOfWork implements PropertyChangedListener
      * INTERNAL:
      * Sets a property value of the original data array of an entity.
      *
+     * @ignore
      * @param string $oid
      * @param string $property
      * @param mixed $value
@@ -1856,7 +1874,7 @@ class UnitOfWork implements PropertyChangedListener
      * @param array $id The identifier values.
      * @param array $data The original entity data.
      */
-    public function registerManaged($entity, $id, $data)
+    public function registerManaged($entity, array $id, array $data)
     {
         $oid = spl_object_hash($entity);
         $this->_entityIdentifiers[$oid] = $id;

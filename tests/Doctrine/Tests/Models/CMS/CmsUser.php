@@ -108,6 +108,8 @@ class CmsUser
         return false;
     }
     
+    public function getAddress() { return $this->address; }
+    
     public function setAddress(CmsAddress $address) {
         if ($this->address !== $address) {
             $this->address = $address;
