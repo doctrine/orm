@@ -57,12 +57,12 @@ class AnsiColorPrinter extends AbstractPrinter
     /**
      * @inheritdoc
      */
-    public function format($message, Style $style)
+    public function format($message, $style)
     {
         if ( ! $this->_supportsColor()) {
             return $message;
         }
-        
+        $style = $this->getStyle($style);
         $str = $this->_getForegroundString($style->getForeground()) 
              . $this->_getBackgroundString($style->getBackground()) 
              . $this->_getOptionsString($style->getOptions());

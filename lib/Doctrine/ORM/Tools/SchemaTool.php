@@ -435,7 +435,8 @@ class SchemaTool
         for ($i = count($commitOrder) - 1; $i >= 0; --$i) {
             $class = $commitOrder[$i];
             
-            if ($class->isInheritanceTypeSingleTable() && $class->name != $class->rootEntityName) {
+            if (($class->isInheritanceTypeSingleTable() && $class->name != $class->rootEntityName)
+                || $class->isMappedSuperclass) {
                 continue;
             }
             
@@ -628,6 +629,7 @@ class SchemaTool
                     }
                     
                     foreach ($newJoinColumns as $name => $joinColumn) {
+                        $joinColumn['type'] = Type::getType($joinColumn['type']);
                         $changes['add'][$name] = $joinColumn;
                     }
                     $sql[] = $this->_platform->getAlterTableSql($tableName, $changes);

@@ -123,9 +123,12 @@ abstract class AbstractPrinter
      */
     public function getStyle($name)
     {
-        $name = strtoupper($name);
-        
-        return isset($this->_styles[$name]) ? $this->_styles[$name] : null;
+        if (is_string($name)) {
+            $name = strtoupper($name);
+            return isset($this->_styles[$name]) ? $this->_styles[$name] : null;
+        } else {
+            return $name;
+        }
     }
     
     /**
@@ -146,8 +149,6 @@ abstract class AbstractPrinter
      */
     public function write($message, $style = 'NONE')
     {
-        $style = is_string($style) ? $this->getStyle($style) : $style;
-    
         fwrite($this->_stream, $this->format($message, $style));
         
         return $this;
@@ -171,5 +172,5 @@ abstract class AbstractPrinter
      * @param mixed $style Style to be applied in message
      * @return string Formatted message
      */
-    abstract public function format($message, Style $style);
+    abstract public function format($message, $style);
 }

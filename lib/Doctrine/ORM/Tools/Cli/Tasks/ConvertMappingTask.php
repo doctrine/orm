@@ -139,7 +139,13 @@ class ConvertMappingTask extends AbstractTask
                 $type = $this->_determineSourceType($sourceArg);
                 $source = $this->_getSourceByType($type, $sourceArg);
 
-                $printer->writeln(sprintf('Adding "%s" mapping source', $sourceArg), 'INFO');
+                $printer->writeln(
+                    sprintf(
+                        'Adding "%s" mapping source', 
+                        $printer->format($sourceArg, 'KEYWORD')
+                    ),
+                    'INFO'
+                );
 
                 $cme->addMappingSource($source, $type);
             }
@@ -147,11 +153,22 @@ class ConvertMappingTask extends AbstractTask
         }
 
         foreach ($metadatas as $metadata) {
-            $printer->write('Processing entity "')
-                    ->write($metadata->name, 'KEYWORD')->writeln('"');
+            $printer->writeln(
+                sprintf(
+                    'Processing entity "%s"',
+                    $printer->format($metadata->name, 'KEYWORD')
+                )
+            );
         }
 
-        $printer->writeln(sprintf('Exporting %s mapping information to directory "%s"', $args['to'], $args['dest']), 'INFO');
+        $printer->writeln(
+            sprintf(
+                'Exporting %s mapping information to directory "%s"',
+                $printer->format($args['to'], 'KEYWORD'),
+                $printer->format($args['dest'], 'KEYWORD')
+            ),
+            'INFO'
+        );
 
         $exporter->setMetadatas($metadatas);
         $exporter->export();
@@ -179,7 +196,9 @@ class ConvertMappingTask extends AbstractTask
             // Find the files in the directory
             $files = glob($source . '/*.*');
             if ( ! $files) {
-                throw new \InvalidArgumentException(sprintf('No mapping files found in "%s"', $source));
+                throw new \InvalidArgumentException(
+                    sprintf('No mapping files found in "%s"', $source)
+                );
             }
 
             // Get the contents of the first file

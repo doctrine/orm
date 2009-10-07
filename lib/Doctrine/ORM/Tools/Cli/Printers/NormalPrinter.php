@@ -39,7 +39,7 @@ class NormalPrinter extends AbstractPrinter
     /**
      * @inheritdoc
      */
-    public function format($message, Style $style)
+    public function format($message, $style)
     {
         return $message;
     }
