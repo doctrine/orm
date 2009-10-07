@@ -588,7 +588,7 @@ class ClassMetadataInfo
     public function getFieldMapping($fieldName)
     {
         if ( ! isset($this->fieldMappings[$fieldName])) {
-            throw MappingException::mappingNotFound($fieldName);
+            throw MappingException::mappingNotFound($this->name, $fieldName);
         }
         return $this->fieldMappings[$fieldName];
     }
@@ -603,7 +603,7 @@ class ClassMetadataInfo
     public function getAssociationMapping($fieldName)
     {
         if ( ! isset($this->associationMappings[$fieldName])) {
-            throw MappingException::mappingNotFound($fieldName);
+            throw MappingException::mappingNotFound($this->name, $fieldName);
         }
         return $this->associationMappings[$fieldName];
     }
@@ -681,10 +681,10 @@ class ClassMetadataInfo
     {
         // Check mandatory fields
         if ( ! isset($mapping['fieldName'])) {
-            throw MappingException::missingFieldName();
+            throw MappingException::missingFieldName($this->name, $mapping);
         }
         if ( ! isset($mapping['type'])) {
-            throw MappingException::missingType();
+            throw MappingException::missingType($this->name, $mapping);
         }
 
         // Complete fieldName and columnName mapping
@@ -752,7 +752,7 @@ class ClassMetadataInfo
     public function getSingleIdentifierFieldName()
     {
         if ($this->isIdentifierComposite) {
-            throw DoctrineException::singleIdNotAllowedOnCompositePrimaryKey();
+            throw DoctrineException::singleIdNotAllowedOnCompositePrimaryKey($this->name);
         }
         return $this->identifier[0];
     }
@@ -788,6 +788,16 @@ class ClassMetadataInfo
     public function hasField($fieldName)
     {
         return isset($this->fieldMappings[$fieldName]);
+    }
+
+    public function hasInheritedMapping($fieldName)
+    {
+        if (isset($this->fieldMappings[$fieldName]) || isset($this->associationMappings[$fieldName]))
+        {
+            
+        } else {
+            return false;
+        }
     }
 
     /**
@@ -1086,7 +1096,7 @@ class ClassMetadataInfo
     public function setInheritanceType($type)
     {
         if ( ! $this->_isInheritanceType($type)) {
-            throw MappingException::invalidInheritanceType($type);
+            throw MappingException::invalidInheritanceType($this->name, $type);
         }
         $this->inheritanceType = $type;
     }
@@ -1099,6 +1109,17 @@ class ClassMetadataInfo
     public function isInheritedField($fieldName)
     {
         return isset($this->fieldMappings[$fieldName]['inherited']);
+    }
+
+    /**
+     * Checks whether a mapped association field is inherited from a superclass.
+     *
+     * @param string $fieldName
+     * @return boolean TRUE if the field is inherited, FALSE otherwise.
+     */
+    public function isInheritedAssociation($fieldName)
+    {
+        return isset($this->inheritedAssociationFields[$fieldName]);
     }
 
     /**
@@ -1192,7 +1213,7 @@ class ClassMetadataInfo
     {
         $this->_validateAndCompleteFieldMapping($mapping);
         if (isset($this->fieldMappings[$mapping['fieldName']])) {
-            throw MappingException::duplicateFieldMapping($mapping['fieldName']);
+            throw MappingException::duplicateFieldMapping($this->name, $mapping['fieldName']);
         }
         $this->fieldMappings[$mapping['fieldName']] = $mapping;
     }
@@ -1210,7 +1231,7 @@ class ClassMetadataInfo
     {
         $sourceFieldName = $mapping->sourceFieldName;
         if (isset($this->associationMappings[$sourceFieldName])) {
-            throw MappingException::duplicateFieldMapping();
+            throw MappingException::duplicateAssociationMapping($this->name, $sourceFieldName);
         }
         $this->associationMappings[$sourceFieldName] = $mapping;
         if ($owningClassName !== null) {
@@ -1304,7 +1325,7 @@ class ClassMetadataInfo
     {
         $sourceFieldName = $assocMapping->sourceFieldName;
         if (isset($this->associationMappings[$sourceFieldName])) {
-            throw MappingException::duplicateFieldMapping();
+            throw MappingException::duplicateFieldMapping($this->name, $sourceFieldName);
         }
         $this->associationMappings[$sourceFieldName] = $assocMapping;
         $this->_registerMappingIfInverse($assocMapping);
@@ -1418,7 +1439,7 @@ class ClassMetadataInfo
     {
         if ($columnDef !== null) {
             if ( ! isset($columnDef['name'])) {
-                throw new MappingException("'name' attribute is mandatory for discriminator columns.");
+                throw MappingException::nameIsMandatoryForDiscriminatorColumns($this->name, $columnDef);
             }
             if ( ! isset($columnDef['fieldName'])) {
                 $columnDef['fieldName'] = $columnDef['name'];
@@ -1614,7 +1635,7 @@ class ClassMetadataInfo
             } else if ($mapping['type'] == 'datetime') {
                 $mapping['default'] = 'CURRENT_TIMESTAMP';
             } else {
-                throw DoctrineException::unsupportedOptimisticLockingType($mapping['type']);
+                throw DoctrineException::unsupportedOptimisticLockingType($this->name, $mapping['fieldName'], $mapping['type']);
             }
         }
     }
