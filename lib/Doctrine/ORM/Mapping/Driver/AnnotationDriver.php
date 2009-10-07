@@ -128,7 +128,11 @@ class AnnotationDriver implements Driver
 
         // Evaluate annotations on properties/fields
         foreach ($class->getProperties() as $property) {
-            if ($metadata->hasField($property->getName())) {
+            if ($metadata->isMappedSuperclass && ! $property->isPrivate()
+                ||
+                $metadata->isInheritedField($property->name)
+                ||
+                $metadata->isInheritedAssociation($property->name)) {
                 continue;
             }
 
