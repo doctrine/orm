@@ -185,7 +185,7 @@ class Cli
             }
         } catch (\Doctrine\Common\DoctrineException $e) {
             $this->_printer->writeln(
-                $taskName . ':' . $e->getMessage() . PHP_EOL, 'ERROR'
+                $taskName . ': ' . $e->getMessage() . PHP_EOL . PHP_EOL . $e->getTraceAsString(), 'ERROR'
             );
         }
     }
