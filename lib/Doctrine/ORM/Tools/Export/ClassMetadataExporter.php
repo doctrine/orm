@@ -22,9 +22,10 @@
 
 namespace Doctrine\ORM\Tools\Export;
 
-use Doctrine\ORM\EntityManager;
-use Doctrine\ORM\Mapping\ClassMetadataInfo;
-use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\EntityManager,
+    Doctrine\ORM\Mapping\ClassMetadataInfo,
+    Doctrine\ORM\Mapping\ClassMetadata,
+    Doctrine\Common\DoctrineException;
 
 /**
  * Class used for converting your mapping information between the 
