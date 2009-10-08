@@ -345,7 +345,8 @@ class AnnotationDriver implements Driver
                 require_once $item->getPathName();
             }
             $declared = array_diff(get_declared_classes(), $declared);
-        
+
+            $classes = array();
             foreach ($declared as $className) {                 
                 if ( ! $this->isTransient($className)) {
                     $classes[] = $className;
