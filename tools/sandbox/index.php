@@ -14,7 +14,7 @@ $classLoader->register();
 
 // Set up caches
 $config = new \Doctrine\ORM\Configuration;
-$cache = new \Doctrine\Common\Cache\ApcCache;
+$cache = new \Doctrine\Common\Cache\ArrayCache;
 $config->setMetadataCacheImpl($cache);
 $config->setQueryCacheImpl($cache);
 
@@ -30,6 +30,13 @@ $em = \Doctrine\ORM\EntityManager::create($connectionOptions, $config);
 ## PUT YOUR TEST CODE BELOW
 
 $user = new User;
-$address = new Address;
+$user->setName('jwage');
 
-echo "Hello World!";
+$address = new Address;
+$address->setStreet('6512 Mercomatic Court');
+$address->setUser($user);
+$user->setAddress($address);
+
+$em->persist($user);
+$em->persist($address);
+$em->flush();

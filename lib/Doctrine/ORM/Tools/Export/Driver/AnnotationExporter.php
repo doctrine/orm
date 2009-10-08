@@ -40,9 +40,16 @@ class AnnotationExporter extends AbstractExporter
 
     private $_isNew = false;
     private $_outputPath;
-    private $_numSpaces = 4;
+    private $_numSpaces;
+    private $_spaces;
     private $_classToExtend;
     private $_currentCode;
+
+    public function __construct($dir = null)
+    {
+        parent::__construct($dir);
+        $this->setNumSpaces(4);
+    }
 
     /**
      * Converts a single ClassMetadata instance to the exported format
@@ -102,6 +109,7 @@ class AnnotationExporter extends AbstractExporter
      */
     public function setNumSpaces($numSpaces)
     {
+        $this->_spaces = str_repeat(' ', $numSpaces);
         $this->_numSpaces = $numSpaces;
     }
 
@@ -212,34 +220,34 @@ class AnnotationExporter extends AbstractExporter
         }
 
         $method = array();
-        $method[] = str_repeat(' ', $this->_numSpaces) . '/**';
+        $method[] = $this->_spaces . '/**';
         if ($type == 'get') {
-            $method[] = str_repeat(' ', $this->_numSpaces) . ' * Get ' . $fieldName;
+            $method[] = $this->_spaces . ' * Get ' . $fieldName;
         } else if ($type == 'set') {
-            $method[] = str_repeat(' ', $this->_numSpaces) . ' * Set ' . $fieldName;
+            $method[] = $this->_spaces . ' * Set ' . $fieldName;
         } else if ($type == 'add') {
-            $method[] = str_repeat(' ', $this->_numSpaces) . ' * Add ' . $fieldName;
+            $method[] = $this->_spaces . ' * Add ' . $fieldName;
         }
-        $method[] = str_repeat(' ', $this->_numSpaces) . ' */';
+        $method[] = $this->_spaces . ' */';
 
         if ($type == 'get') {
-            $method[] = str_repeat(' ', $this->_numSpaces) . 'public function ' . $methodName . '()';
+            $method[] = $this->_spaces . 'public function ' . $methodName . '()';
         } else if ($type == 'set') {
-            $method[] = str_repeat(' ', $this->_numSpaces) . 'public function ' . $methodName . '($value)';
+            $method[] = $this->_spaces . 'public function ' . $methodName . '($value)';
         } else if ($type == 'add') {
-            $method[] = str_repeat(' ', $this->_numSpaces) . 'public function ' . $methodName . '($value)';        
+            $method[] = $this->_spaces . 'public function ' . $methodName . '($value)';        
         }
 
-        $method[] = str_repeat(' ', $this->_numSpaces) . '{';
+        $method[] = $this->_spaces . '{';
         if ($type == 'get') {
-            $method[] = str_repeat(' ', $this->_numSpaces) . str_repeat(' ', $this->_numSpaces) . 'return $this->' . $fieldName . ';';
+            $method[] = $this->_spaces . $this->_spaces . 'return $this->' . $fieldName . ';';
         } else if ($type == 'set') {
-            $method[] = str_repeat(' ', $this->_numSpaces) . str_repeat(' ', $this->_numSpaces) . '$this->' . $fieldName . ' = $value;';
+            $method[] = $this->_spaces . $this->_spaces . '$this->' . $fieldName . ' = $value;';
         } else if ($type == 'add') {
-            $method[] = str_repeat(' ', $this->_numSpaces) . str_repeat(' ', $this->_numSpaces) . '$this->' . $fieldName . '[] = $value;';
+            $method[] = $this->_spaces . $this->_spaces . '$this->' . $fieldName . '[] = $value;';
         }
 
-        $method[] = str_repeat(' ', $this->_numSpaces) . '}';
+        $method[] = $this->_spaces . '}';
         $method[] = "\n";
 
         $methods[] = implode("\n", $method);
@@ -288,13 +296,90 @@ class AnnotationExporter extends AbstractExporter
         return '@Table(' . implode(', ', $table) . ')';
     }
 
+    private function _getJoinColumnAnnotation(array $joinColumn)
+    {
+        $joinColumnAnnot = array();
+        if (isset($joinColumn['name'])) {
+            $joinColumnAnnot[] = 'name="' . $joinColumn['name'] . '"';
+        }
+        if (isset($joinColumn['referencedColumnName'])) {
+            $joinColumnAnnot[] = 'referencedColumnName="' . $joinColumn['referencedColumnName'] . '"';
+        }
+        if (isset($joinColumn['unique']) && $joinColumn['unique']) {
+            $joinColumnAnnot[] = 'unique=' . ($joinColumn['unique'] ? 'true' : 'false');
+        }
+        if (isset($joinColumn['nullable'])) {
+            $joinColumnAnnot[] = 'nullable=' . ($joinColumn['nullable'] ? 'true' : 'false');
+        }
+        if (isset($joinColumn['onDelete'])) {
+            $joinColumnAnnot[] = 'onDelete=' . ($joinColumn['onDelete'] ? 'true' : 'false');
+        }
+        if (isset($joinColumn['onUpdate'])) {
+            $joinColumnAnnot[] = 'onUpdate=' . ($joinColumn['onUpdate'] ? 'true' : 'false');
+        }
+        return '@JoinColumn(' . implode(', ', $joinColumnAnnot) . ')';
+    }
+
     private function _getAssociationMappingAnnotation(AssociationMapping $associationMapping, ClassMetadataInfo $metadata)
     {
-        // TODO: This function still needs to be written :)
+        $e = explode('\\', get_class($associationMapping));
+        $type = str_replace('Mapping', '', end($e));
+        $typeOptions = array();
+        if (isset($associationMapping->targetEntityName)) {
+            $typeOptions[] = 'targetEntity="' . $associationMapping->targetEntityName . '"';
+        }
+        if (isset($associationMapping->mappedByFieldName)) {
+            $typeOptions[] = 'mappedBy="' . $associationMapping->mappedByFieldName . '"';
+        }
+        if (isset($associationMapping->cascades) && $associationMapping->cascades) {
+            $typeOptions[] = 'cascade={"' . implode('"', $associationMapping->cascades) . '"}';
+        }
+        if (isset($associationMapping->orphanRemoval) && $associationMapping->orphanRemoval) {
+            $typeOptions[] = 'orphanRemoval=' . ($associationMapping->orphanRemoval ? 'true' : 'false');
+        }
+
         $lines = array();
-        $lines[] = str_repeat(' ', $this->_numSpaces) . '/**';
-        $lines[] = str_repeat(' ', $this->_numSpaces) . ' *';
-        $lines[] = str_repeat(' ', $this->_numSpaces) . ' */';
+        $lines[] = $this->_spaces . '/**';
+        $lines[] = $this->_spaces . ' * @' . $type . '(' . implode(', ', $typeOptions) . ')';
+
+        if (isset($associationMapping->joinColumns) && $associationMapping->joinColumns) {
+            $lines[] = $this->_spaces . ' * @JoinColumns({';
+
+            $joinColumnsLines = array();
+            foreach ($associationMapping->joinColumns as $joinColumn) {
+                if ($joinColumnAnnot = $this->_getJoinColumnAnnotation($joinColumn)) {
+                    $joinColumnsLines[] = $this->_spaces . ' *   ' . $joinColumnAnnot;
+                }
+            }
+            $lines[] = implode(",\n", $joinColumnsLines);
+            $lines[] = $this->_spaces . ' * })';
+        }
+
+        if (isset($associationMapping->joinTable) && $associationMapping->joinTable) {
+            $joinTable = array();
+            $joinTable[] = 'name="' . $associationMapping->joinTable['name'] . '"';
+            if (isset($associationMapping->joinTable['schema'])) {
+                $joinTable[] = 'schema="' . $associationMapping->joinTable['schema'] . '"';
+            }
+
+            $lines[] = $this->_spaces . ' * @JoinTable(' . implode(', ', $joinTable) . ',';
+
+            $lines[] = $this->_spaces . ' *   joinColumns={';
+            foreach ($associationMapping->joinTable['joinColumns'] as $joinColumn) {
+                $lines[] = $this->_spaces . ' *     ' . $this->_getJoinColumnAnnotation($joinColumn);
+            }
+            $lines[] = $this->_spaces . ' *   },';
+
+            $lines[] = $this->_spaces . ' *   inverseJoinColumns={';
+            foreach ($associationMapping->joinTable['inverseJoinColumns'] as $joinColumn) {
+                $lines[] = $this->_spaces . ' *     ' . $this->_getJoinColumnAnnotation($joinColumn);
+            }
+            $lines[] = $this->_spaces . ' *   }';
+
+            $lines[] = $this->_spaces . ' * )';
+        }
+
+        $lines[] = $this->_spaces . ' */';
 
         return implode("\n", $lines);
     }
@@ -302,7 +387,7 @@ class AnnotationExporter extends AbstractExporter
     private function _getFieldMappingAnnotation(array $fieldMapping, ClassMetadataInfo $metadata)
     {
         $lines = array();
-        $lines[] = str_repeat(' ', $this->_numSpaces) . '/**';
+        $lines[] = $this->_spaces . '/**';
 
         $column = array();
         if (isset($fieldMapping['columnName'])) {
@@ -330,16 +415,18 @@ class AnnotationExporter extends AbstractExporter
                 $value = str_replace("'", '"', $value);
                 $options[] = ! is_numeric($key) ? $key . '=' . $value:$value;
             }
-            $column[] = 'options={' . implode(', ', $options) . '}';
+            if ($options) {
+                $column[] = 'options={' . implode(', ', $options) . '}';
+            }
         }
         if (isset($fieldMapping['unique'])) {
             $column[] = 'unique=' . var_export($fieldMapping['unique'], true);
         }
-        $lines[] = str_repeat(' ', $this->_numSpaces) . ' * @Column(' . implode(', ', $column) . ')';
+        $lines[] = $this->_spaces . ' * @Column(' . implode(', ', $column) . ')';
         if (isset($fieldMapping['id']) && $fieldMapping['id']) {
-            $lines[] = str_repeat(' ', $this->_numSpaces) . ' * @Id';
+            $lines[] = $this->_spaces . ' * @Id';
             if ($generatorType = $this->_getIdGeneratorTypeString($metadata->generatorType)) {
-                $lines[] = str_repeat(' ', $this->_numSpaces).' * @GeneratedValue(strategy="' . $generatorType . '")';
+                $lines[] = $this->_spaces.' * @GeneratedValue(strategy="' . $generatorType . '")';
             }
             if ($metadata->sequenceGeneratorDefinition) {
                 $sequenceGenerator = array();
@@ -352,13 +439,13 @@ class AnnotationExporter extends AbstractExporter
                 if (isset($metadata->sequenceGeneratorDefinition['initialValue'])) {
                     $sequenceGenerator[] = 'initialValue="' . $metadata->sequenceGeneratorDefinition['initialValue'] . '"';
                 }
-                $lines[] = str_repeat(' ', $this->_numSpaces) . ' * @SequenceGenerator(' . implode(', ', $sequenceGenerator) . ')';
+                $lines[] = $this->_spaces . ' * @SequenceGenerator(' . implode(', ', $sequenceGenerator) . ')';
             }
         }
         if (isset($fieldMapping['version']) && $fieldMapping['version']) {
-            $lines[] = str_repeat(' ', $this->_numSpaces) . ' * @Version';
+            $lines[] = $this->_spaces . ' * @Version';
         }
-        $lines[] = str_repeat(' ', $this->_numSpaces) . ' */';
+        $lines[] = $this->_spaces . ' */';
 
         return implode("\n", $lines);
     }
