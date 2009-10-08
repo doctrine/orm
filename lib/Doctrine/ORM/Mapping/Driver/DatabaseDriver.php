@@ -68,7 +68,11 @@ class DatabaseDriver implements Driver
         $metadata->primaryTable['name'] = $tableName;
 
         $columns = $this->_sm->listTableColumns($tableName);
-        $foreignKeys = $this->_sm->listTableForeignKeys($tableName);
+        try {
+            $foreignKeys = $this->_sm->listTableForeignKeys($tableName);
+        } catch (\Doctrine\Common\DoctrineException $e) {
+            $foreignKeys = array();
+        }
 
         $ids = array();
         $fieldMappings = array();
@@ -102,7 +106,9 @@ class DatabaseDriver implements Driver
         }
 
         if ($ids) {
-            $metadata->setIdGeneratorType(ClassMetadataInfo::GENERATOR_TYPE_AUTO);
+            if (count($ids) == 1) {
+                $metadata->setIdGeneratorType(ClassMetadataInfo::GENERATOR_TYPE_AUTO);
+            }
 
             foreach ($ids as $id) {
                 $metadata->mapField($id);
