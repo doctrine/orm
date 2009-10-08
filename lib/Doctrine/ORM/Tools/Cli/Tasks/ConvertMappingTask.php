@@ -57,10 +57,12 @@ class ConvertMappingTask extends AbstractTask
     
         $printer->writeln('Description: Convert mapping information between supported formats.')
                 ->writeln('Options:')
-                ->write('--from=<PATH>', 'REQ_ARG')
-                ->writeln("\tThe path to the mapping information you are converting from.")
+                ->write('--from=<SOURCE>', 'REQ_ARG')
+                ->writeln("\tThe path to the mapping information to convert from (yml, xml, php, annotation).")
+                ->write('--from-database', 'REQ_ARG')
+                ->writeln("\tUse this option if you wish to reverse engineer your database to a set of Doctrine mapping files.")
                 ->write('--to=<TYPE>', 'REQ_ARG')
-                ->writeln("\tThe format to convert to.")
+                ->writeln("\tThe format to convert to (yml, xml, php, annotation).")
                 ->write(PHP_EOL)
                 ->write('--dest=<PATH>', 'REQ_ARG')
                 ->writeln("\tThe path to write the converted mapping information.");
@@ -77,9 +79,10 @@ class ConvertMappingTask extends AbstractTask
     private function _writeSynopsis($printer)
     {
         $printer->write('convert-mapping', 'KEYWORD')
-                ->write(' --from=<PATH>', 'REQ_ARG')
+                ->write(' --from=<SOURCE>', 'REQ_ARG')
                 ->write(' --to=<TYPE>', 'REQ_ARG')
-                ->writeln(' --dest=<PATH>', 'REQ_ARG');
+                ->write(' --dest=<PATH>', 'REQ_ARG')
+                ->writeln(' --from-database', 'OPT_ARG');
     }
 
     /**
@@ -94,8 +97,13 @@ class ConvertMappingTask extends AbstractTask
         $args = $this->getArguments();
         $printer = $this->getPrinter();
 
+        if (array_key_exists('from-database', $args)) {
+            $args['from'][0] = 'database';
+            $this->setArguments($args);
+        }
+
         if (!(isset($args['from']) && isset($args['to']) && isset($args['dest']))) {
-          $printer->writeln('You must include a value for all four options: --from, --to and --dest', 'ERROR');
+          $printer->writeln('You must include a value for all three options: --from, --to and --dest', 'ERROR');
           return false;
         }
         if ($args['to'] != 'annotation' && isset($args['extend'])) {
