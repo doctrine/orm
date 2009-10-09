@@ -88,7 +88,7 @@ class StandardEntityPersisterTest extends \Doctrine\Tests\OrmFunctionalTestCase
         // (change from ArrayCollection to PersistentCollection)
         $f3 = new ECommerceFeature();
         $f3->setDescription('XVID');
-        $p->addfeature($f3);
+        $p->addFeature($f3);
         
         // Now we persist the Feature #3
         $this->_em->persist($p);

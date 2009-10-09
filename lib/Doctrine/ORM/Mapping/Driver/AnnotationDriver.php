@@ -273,7 +273,7 @@ class AnnotationDriver implements Driver
                 $mapping['mappedBy'] = $manyToManyAnnot->mappedBy;
                 $mapping['cascade'] = $manyToManyAnnot->cascade;
                 $metadata->mapManyToMany($mapping);
-            }   
+            }
         }
         
         // Evaluate HasLifecycleCallbacks annotation

@@ -1080,10 +1080,8 @@ class UnitOfWork implements PropertyChangedListener
      */
     public function tryGetByIdHash($idHash, $rootClassName)
     {
-        if ($this->containsIdHash($idHash, $rootClassName)) {
-            return $this->getByIdHash($idHash, $rootClassName);
-        }
-        return false;
+        return isset($this->_identityMap[$rootClassName][$idHash]) ?
+                $this->_identityMap[$rootClassName][$idHash] : false;
     }
 
     /**
@@ -1656,8 +1654,7 @@ class UnitOfWork implements PropertyChangedListener
      * @param string $className  The name of the entity class.
      * @param array $data  The data for the entity.
      * @return object The created entity instance.
-     * @internal Highly performance-sensitive method. Run the performance test suites when
-     *           making modifications.
+     * @internal Highly performance-sensitive method.
      */
     public function createEntity($className, array $data, $hints = array())
     {
@@ -1703,6 +1700,7 @@ class UnitOfWork implements PropertyChangedListener
             }
         }
         
+        //TODO: These should be invoked later, because associations are not yet loaded here.
         if (isset($class->lifecycleCallbacks[Events::postLoad])) {
             $class->invokeLifecycleCallbacks(Events::postLoad, $entity);
         }
