@@ -11,7 +11,7 @@ class Address {
     private $id;
     /** @Column(type="string", length=255) */
     private $street;
-    /** @OneToOne(targetEntity="User", mappedBy="address", cascade={"persist"}) */
+    /** @OneToOne(targetEntity="User", mappedBy="address") */
     private $user;
 
     public function getId() {

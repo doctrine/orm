@@ -15,20 +15,9 @@ class User {
     private $test;
     /**
      * @OneToOne(targetEntity="Address")
-     * @JoinColumns({
-     *   @JoinColumn(name="address_id", referencedColumnName="id"),
-     *   @JoinColumn(name="address2_id", referencedColumnName="id")
-     * })
+     * @JoinColumn(name="address_id", referencedColumnName="id")
      */
     private $address;
-    /**
-     * @ManyToMany(targetEntity="Group")
-     * @JoinTable(name="user_group",
-     *   joinColumns={@JoinColumn(name="user_id", referencedColumnName="id")},
-     *   inverseJoinColumns={@JoinColumn(name="group_id", referencedColumnName="id")
-     * })
-     */
-    private $groups;
 
     public function getId() {
         return $this->id;
