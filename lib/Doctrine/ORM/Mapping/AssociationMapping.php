@@ -72,7 +72,7 @@ abstract class AssociationMapping
      *
      * @var integer
      */
-    public $fetchMode = self::FETCH_LAZY;
+    public $fetchMode;
     
     /**
      * Flag that indicates whether the class that defines this mapping is
@@ -182,6 +182,8 @@ abstract class AssociationMapping
         // Optional attributes for both sides
         $this->isOptional = isset($mapping['optional']) ?
                 (bool)$mapping['optional'] : true;
+        $this->fetchMode = isset($mapping['fetch']) ?
+                $mapping['fetch'] : self::FETCH_LAZY;
         $this->cascades = isset($mapping['cascade']) ?
                 (array)$mapping['cascade'] : array();
         $this->isCascadeRemove = in_array('remove', $this->cascades);

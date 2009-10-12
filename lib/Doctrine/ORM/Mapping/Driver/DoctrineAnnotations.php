@@ -68,7 +68,7 @@ final class OneToOne extends Annotation {
     public $targetEntity;
     public $mappedBy;
     public $cascade;
-    public $fetch;
+    public $fetch = 'LAZY';
     public $optional;
     public $orphanRemoval = false;
 }
@@ -76,20 +76,20 @@ final class OneToMany extends Annotation {
     public $mappedBy;
     public $targetEntity;
     public $cascade;
-    public $fetch;
+    public $fetch = 'LAZY';
     public $orphanRemoval = false;
 }
 final class ManyToOne extends Annotation {
     public $targetEntity;
     public $cascade;
-    public $fetch;
+    public $fetch = 'LAZY';
     public $optional;
 }
 final class ManyToMany extends Annotation {
     public $targetEntity;
     public $mappedBy;
     public $cascade;
-    public $fetch;
+    public $fetch = 'LAZY';
 }
 final class ElementCollection extends Annotation {
     public $tableName;

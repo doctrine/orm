@@ -224,17 +224,20 @@ class AnnotationDriver implements Driver
                 $mapping['mappedBy'] = $oneToOneAnnot->mappedBy;
                 $mapping['cascade'] = $oneToOneAnnot->cascade;
                 $mapping['orphanRemoval'] = $oneToOneAnnot->orphanRemoval;
+                $mapping['fetch'] = constant('Doctrine\ORM\Mapping\AssociationMapping::FETCH_' . $oneToOneAnnot->fetch);
                 $metadata->mapOneToOne($mapping);
             } else if ($oneToManyAnnot = $this->_reader->getPropertyAnnotation($property, 'Doctrine\ORM\Mapping\OneToMany')) {
                 $mapping['mappedBy'] = $oneToManyAnnot->mappedBy;
                 $mapping['targetEntity'] = $oneToManyAnnot->targetEntity;
                 $mapping['cascade'] = $oneToManyAnnot->cascade;
                 $mapping['orphanRemoval'] = $oneToManyAnnot->orphanRemoval;
+                $mapping['fetch'] = constant('Doctrine\ORM\Mapping\AssociationMapping::FETCH_' . $oneToManyAnnot->fetch);
                 $metadata->mapOneToMany($mapping);
             } else if ($manyToOneAnnot = $this->_reader->getPropertyAnnotation($property, 'Doctrine\ORM\Mapping\ManyToOne')) {
                 $mapping['joinColumns'] = $joinColumns;
                 $mapping['cascade'] = $manyToOneAnnot->cascade;
                 $mapping['targetEntity'] = $manyToOneAnnot->targetEntity;
+                $mapping['fetch'] = constant('Doctrine\ORM\Mapping\AssociationMapping::FETCH_' . $manyToOneAnnot->fetch);
                 $metadata->mapManyToOne($mapping);
             } else if ($manyToManyAnnot = $this->_reader->getPropertyAnnotation($property, 'Doctrine\ORM\Mapping\ManyToMany')) {
                 $joinTable = array();
@@ -272,6 +275,7 @@ class AnnotationDriver implements Driver
                 $mapping['targetEntity'] = $manyToManyAnnot->targetEntity;
                 $mapping['mappedBy'] = $manyToManyAnnot->mappedBy;
                 $mapping['cascade'] = $manyToManyAnnot->cascade;
+                $mapping['fetch'] = constant('Doctrine\ORM\Mapping\AssociationMapping::FETCH_' . $manyToManyAnnot->fetch);
                 $metadata->mapManyToMany($mapping);
             }
         }

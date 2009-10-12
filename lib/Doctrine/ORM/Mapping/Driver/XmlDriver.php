@@ -195,8 +195,12 @@ class XmlDriver extends AbstractFileDriver
             foreach ($xmlRoot->{'one-to-one'} as $oneToOneElement) {
                 $mapping = array(
                     'fieldName' => (string)$oneToOneElement['field'],
-                    'targetEntity' => (string)$oneToOneElement['target-entity'],
+                    'targetEntity' => (string)$oneToOneElement['target-entity']
                 );
+                
+                if (isset($oneToOneElement['fetch'])) {
+                    $mapping['fetch'] = constant('Doctrine\ORM\Mapping\AssociationMapping::FETCH_' . (string)$oneToOneElement['fetch']);
+                }
                 
                 if (isset($oneToOneElement['mapped-by'])) {
                     $mapping['mappedBy'] = (string)$oneToOneElement['mapped-by'];
@@ -237,6 +241,10 @@ class XmlDriver extends AbstractFileDriver
                     'mappedBy' => (string)$oneToManyElement['mapped-by']
                 );
                 
+                if (isset($oneToManyElement['fetch'])) {
+                    $mapping['fetch'] = constant('Doctrine\ORM\Mapping\AssociationMapping::FETCH_' . (string)$oneToManyElement['fetch']);
+                }
+                
                 if (isset($oneToManyElement->cascade)) {
                     $mapping['cascade'] = $this->_getCascadeMappings($oneToManyElement->cascade);
                 }
@@ -256,6 +264,10 @@ class XmlDriver extends AbstractFileDriver
                     'fieldName' => (string)$manyToOneElement['field'],
                     'targetEntity' => (string)$manyToOneElement['target-entity']
                 );
+                
+                if (isset($manyToOneElement['fetch'])) {
+                    $mapping['fetch'] = constant('Doctrine\ORM\Mapping\AssociationMapping::FETCH_' . (string)$manyToOneElement['fetch']);
+                }
                 
                 $joinColumns = array();
                 
@@ -294,6 +306,10 @@ class XmlDriver extends AbstractFileDriver
                     'fieldName' => (string)$manyToManyElement['field'],
                     'targetEntity' => (string)$manyToManyElement['target-entity']
                 );
+                
+                if (isset($manyToManyElement['fetch'])) {
+                    $mapping['fetch'] = constant('Doctrine\ORM\Mapping\AssociationMapping::FETCH_' . (string)$manyToManyElement['fetch']);
+                }
                 
                 if (isset($manyToManyElement['mappedBy'])) {
                     $mapping['mappedBy'] = (string)$manyToManyElement['mapped-by'];

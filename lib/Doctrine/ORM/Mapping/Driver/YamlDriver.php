@@ -208,6 +208,10 @@ class YamlDriver extends AbstractFileDriver
                     'targetEntity' => $oneToOneElement['targetEntity']
                 );
                 
+                if (isset($oneToOneElement['fetch'])) {
+                    $mapping['fetch'] = constant('Doctrine\ORM\Mapping\AssociationMapping::FETCH_' . $oneToOneElement['fetch']);
+                }
+                
                 if (isset($oneToOneElement['mappedBy'])) {
                     $mapping['mappedBy'] = $oneToOneElement['mappedBy'];
                 } else {
@@ -247,6 +251,10 @@ class YamlDriver extends AbstractFileDriver
                     'mappedBy' => $oneToManyElement['mappedBy']
                 );
                 
+                if (isset($oneToManyElement['fetch'])) {
+                    $mapping['fetch'] = constant('Doctrine\ORM\Mapping\AssociationMapping::FETCH_' . $oneToManyElement['fetch']);
+                }
+                
                 if (isset($oneToManyElement['cascade'])) {
                     $mapping['cascade'] = $this->_getCascadeMappings($oneToManyElement['cascade']);
                 }
@@ -262,6 +270,10 @@ class YamlDriver extends AbstractFileDriver
                     'fieldName' => $name, 
                     'targetEntity' => $manyToOneElement['targetEntity']
                 );
+                
+                if (isset($manyToOneElement['fetch'])) {
+                    $mapping['fetch'] = constant('Doctrine\ORM\Mapping\AssociationMapping::FETCH_' . $manyToOneElement['fetch']);
+                }
                 
                 $joinColumns = array();
                 
@@ -296,6 +308,10 @@ class YamlDriver extends AbstractFileDriver
                     'fieldName' => $name,
                     'targetEntity' => $manyToManyElement['targetEntity']
                 );
+                
+                if (isset($manyToManyElement['fetch'])) {
+                    $mapping['fetch'] = constant('Doctrine\ORM\Mapping\AssociationMapping::FETCH_' . $manyToManyElement['fetch']);
+                }
                 
                 if (isset($manyToManyElement['mappedBy'])) {
                     $mapping['mappedBy'] = $manyToManyElement['mappedBy'];
