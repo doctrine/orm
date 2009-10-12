@@ -1150,33 +1150,6 @@ abstract class AbstractPlatform
     }
 
     /**
-     * Adds a LIMIT/OFFSET clause to the query.
-     * This default implementation writes the syntax "LIMIT x OFFSET y" to the
-     * query which is supported by MySql, PostgreSql and Sqlite.
-     * Any database platforms that do not support this syntax should override
-     * this implementation and provide their own.
-     *
-     * @param string $query  The SQL string to write to / append to.
-     * @param mixed $limit
-     * @param mixed $offset
-     */
-    public function writeLimitClause($query, $limit = false, $offset = false)
-    {
-        $limit = (int) $limit;
-        $offset = (int) $offset;
-
-        if ($limit && $offset) {
-            $query .= ' LIMIT ' . $limit . ' OFFSET ' . $offset;
-        } elseif ($limit && ! $offset) {
-            $query .= ' LIMIT ' . $limit;
-        } elseif ( ! $limit && $offset) {
-            $query .= ' LIMIT 999999999999 OFFSET ' . $offset;
-        }
-
-        return $query;
-    }
-
-    /**
      * Some platforms need the boolean values to be converted.
      * Default conversion defined here converts to integers.
      *
@@ -1534,12 +1507,12 @@ abstract class AbstractPlatform
 
     public function modifyLimitQuery($query, $limit, $offset = null)
     {
-        if ( ! is_null($offset)) {
-            $query .= ' OFFSET ' . $offset;
-        }
-
         if ( ! is_null($limit)) {
             $query .= ' LIMIT ' . $limit;
+        }
+
+        if ( ! is_null($offset)) {
+            $query .= ' OFFSET ' . $offset;
         }
 
         return $query;

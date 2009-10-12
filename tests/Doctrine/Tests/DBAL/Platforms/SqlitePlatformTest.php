@@ -114,7 +114,7 @@ class SqlitePlatformTest extends \Doctrine\Tests\DbalTestCase
     public function testModifyLimitQuery()
     {
         $sql = $this->_platform->modifyLimitQuery('SELECT * FROM user', 10, 0);
-        $this->assertEquals('SELECT * FROM user OFFSET 0 LIMIT 10', $sql);
+        $this->assertEquals('SELECT * FROM user LIMIT 10 OFFSET 0', $sql);
     }
 
     public function testModifyLimitQueryWithEmptyOffset()
