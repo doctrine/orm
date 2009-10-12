@@ -26,7 +26,8 @@ use Doctrine\Common\Collections\ArrayCollection,
     Doctrine\Common\DoctrineException,
     Doctrine\Common\NotifyPropertyChanged,
     Doctrine\Common\PropertyChangedListener,
-    Doctrine\ORM\Event\LifecycleEventArgs;
+    Doctrine\ORM\Event\LifecycleEventArgs,
+    Doctrine\ORM\Proxy\Proxy;
 
 /**
  * The UnitOfWork is responsible for tracking changes to objects during an
@@ -554,10 +555,13 @@ class UnitOfWork implements PropertyChangedListener
         if ( ! $assoc->isCascadePersist) {
             return; // "Persistence by reachability" only if persist cascade specified
         }
-
+        
         // Look through the entities, and in any of their associations, for transient
         // enities, recursively. ("Persistence by reachability")
         if ($assoc->isOneToOne()) {
+            if ($value instanceof Proxy) {
+                return; // Ignore proxy objects
+            }
             $value = array($value);
         }
         $targetClass = $this->_em->getClassMetadata($assoc->targetEntityName);
@@ -586,7 +590,9 @@ class UnitOfWork implements PropertyChangedListener
                     $data[$name] = $refProp->getValue($entry);
                     $changeSet[$name] = array(null, $data[$name]);
                     if (isset($targetClass->associationMappings[$name])) {
-                        $this->_computeAssociationChanges($targetClass->associationMappings[$name], $data[$name]);
+                        if ($data[$name] !== null) {
+                            $this->_computeAssociationChanges($targetClass->associationMappings[$name], $data[$name]);
+                        }
                     }
                 }
 
