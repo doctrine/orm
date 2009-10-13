@@ -1151,9 +1151,10 @@ abstract class AbstractPlatform
 
     /**
      * Some platforms need the boolean values to be converted.
-     * Default conversion defined here converts to integers.
+     * 
+     * The default conversion in this implementation converts to integers (false => 0, true => 1).
      *
-     * @param array $item
+     * @param mixed $item
      */
     public function convertBooleans($item)
     {

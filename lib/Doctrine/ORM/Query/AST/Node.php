@@ -34,7 +34,7 @@ namespace Doctrine\ORM\Query\AST;
  */
 abstract class Node
 {
-    abstract public function dispatch($sqlWalker);
+    abstract public function dispatch($walker);
     
     /**
      * Dumps the AST Node into a string representation for information purpose only

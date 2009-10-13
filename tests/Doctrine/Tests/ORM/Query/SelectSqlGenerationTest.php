@@ -416,6 +416,44 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
         );
     }
     
+    
+    public function testBooleanLiteralInWhereOnSqlite()
+    {
+        $oldPlat = $this->_em->getConnection()->getDatabasePlatform();
+        $this->_em->getConnection()->setDatabasePlatform(new \Doctrine\DBAL\Platforms\SqlitePlatform);
+        
+        $this->assertSqlGeneration(
+            "SELECT b FROM Doctrine\Tests\Models\Generic\BooleanModel b WHERE b.booleanField = true",
+            "SELECT b0_.id AS id0, b0_.booleanField AS booleanField1 FROM boolean_model b0_ WHERE b0_.booleanField = 1"
+        );
+        
+        $this->assertSqlGeneration(
+            "SELECT b FROM Doctrine\Tests\Models\Generic\BooleanModel b WHERE b.booleanField = false",
+            "SELECT b0_.id AS id0, b0_.booleanField AS booleanField1 FROM boolean_model b0_ WHERE b0_.booleanField = 0"
+        );
+        
+        $this->_em->getConnection()->setDatabasePlatform($oldPlat);
+    }
+    
+    public function testBooleanLiteralInWhereOnPostgres()
+    {
+        $oldPlat = $this->_em->getConnection()->getDatabasePlatform();
+        $this->_em->getConnection()->setDatabasePlatform(new \Doctrine\DBAL\Platforms\PostgreSqlPlatform);
+        
+        $this->assertSqlGeneration(
+            "SELECT b FROM Doctrine\Tests\Models\Generic\BooleanModel b WHERE b.booleanField = true",
+            "SELECT b0_.id AS id0, b0_.booleanField AS booleanField1 FROM boolean_model b0_ WHERE b0_.booleanField = 'true'"
+        );
+        
+        $this->assertSqlGeneration(
+            "SELECT b FROM Doctrine\Tests\Models\Generic\BooleanModel b WHERE b.booleanField = false",
+            "SELECT b0_.id AS id0, b0_.booleanField AS booleanField1 FROM boolean_model b0_ WHERE b0_.booleanField = 'false'"
+        );
+        
+        $this->_em->getConnection()->setDatabasePlatform($oldPlat);
+    }
+    
+    
     /* Not yet implemented, needs more thought
     public function testSingleValuedAssociationFieldInWhere()
     {

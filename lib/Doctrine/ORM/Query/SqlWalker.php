@@ -1338,12 +1338,19 @@ class SqlWalker implements TreeWalker
         if ($inExpr->subselect) {
             $sql .= $this->walkSubselect($inExpr->subselect);
         } else {
-            $sql .= implode(', ', array_map(array($this, 'walkLiteral'), $inExpr->literals));
+            $sql .= implode(', ', array_map(array($this, 'walkInParameter'), $inExpr->literals));
         }
         
         $sql .= ')';
         
         return $sql;
+    }
+    
+    public function walkInParameter($inParam)
+    {
+        return $inParam instanceof AST\InputParameter ?
+                $this->walkInputParameter($inParam) :
+                $this->walkLiteral($inParam);
     }
 
     /**
@@ -1354,11 +1361,18 @@ class SqlWalker implements TreeWalker
      */
     public function walkLiteral($literal)
     {
-        if ($literal instanceof AST\InputParameter) {
-            return $this->walkInputParameter($literal);
+        switch ($literal->type) {
+            case AST\Literal::STRING:
+                return $this->_conn->quote($literal->value);
+            case AST\Literal::BOOLEAN:
+                $bool = strtolower($literal->value) == 'true' ? true : false;
+                $boolVal = $this->_conn->getDatabasePlatform()->convertBooleans($bool);
+                return is_string($boolVal) ? $this->_conn->quote($boolVal) : $boolVal;
+            case AST\Literal::NUMERIC:
+                return $literal->value;
+            default:
+                throw QueryException::invalidLiteral($literal); 
         }
-        
-        return $literal; //TODO: quote() ?
     }
 
     /**
@@ -1513,11 +1527,7 @@ class SqlWalker implements TreeWalker
         $sql = ($factor->isNegativeSigned() ? '-' : ($factor->isPositiveSigned() ? '+' : ''));
         $primary = $factor->arithmeticPrimary;
         
-        if (is_numeric($primary)) {
-            $sql .= $primary;
-        } else if (is_string($primary)) {
-            $sql .= $this->_conn->quote($primary);
-        } else if ($primary instanceof AST\SimpleArithmeticExpression) {
+        if ($primary instanceof AST\SimpleArithmeticExpression) {
             $sql .= '(' . $this->walkSimpleArithmeticExpression($primary) . ')';
         } else if ($primary instanceof AST\Node) {
             $sql .= $primary->dispatch($this);

@@ -36,15 +36,14 @@ final class DriverManager
      * List of supported drivers and their mappings to the driver classes.
      *
      * @var array
+     * @todo REMOVE. Users should directly supply class names instead.
      */
      private static $_driverMap = array(
             'pdo_mysql'  => 'Doctrine\DBAL\Driver\PDOMySql\Driver',
             'pdo_sqlite' => 'Doctrine\DBAL\Driver\PDOSqlite\Driver',
             'pdo_pgsql'  => 'Doctrine\DBAL\Driver\PDOPgSql\Driver',
             'pdo_oci' => 'Doctrine\DBAL\Driver\PDOOracle\Driver',
-            'pdo_mssql'  => 'Doctrine\DBAL\Driver\PDOMsSql\Driver',
-            'pdo_firebird' => 'Doctrine\DBAL\Driver\PDOFirebird\Driver',
-            'pdo_informix' => 'Doctrine\DBAL\Driver\PDOInformix\Driver',
+            'pdo_mssql'  => 'Doctrine\DBAL\Driver\PDOMsSql\Driver'
             );
 
     /** Private constructor. This class cannot be instantiated. */
@@ -66,8 +65,6 @@ final class DriverManager
      *     pdo_pgsql
      *     pdo_oracle
      *     pdo_mssql
-     *     pdo_firebird
-     *     pdo_informix
      * 
      * OR 'driverClass' that contains the full class name (with namespace) of the
      * driver class to instantiate.

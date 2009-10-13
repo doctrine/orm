@@ -1875,12 +1875,16 @@ class Parser
     {
         switch ($this->_lexer->lookahead['type']) {
             case Lexer::T_STRING:
+                $this->match($this->_lexer->lookahead['value']);
+                return new AST\Literal(AST\Literal::STRING, $this->_lexer->token['value']);
             case Lexer::T_INTEGER:
             case Lexer::T_FLOAT:
                 $this->match($this->_lexer->lookahead['value']);
-
-                return $this->_lexer->token['value'];
-
+                return new AST\Literal(AST\Literal::NUMERIC, $this->_lexer->token['value']);
+            case Lexer::T_TRUE:
+            case Lexer::T_FALSE:
+                $this->match($this->_lexer->lookahead['value']);
+                return new AST\Literal(AST\Literal::BOOLEAN, $this->_lexer->token['value']);
             default:
                 $this->syntaxError('Literal');
         }
@@ -2040,11 +2044,6 @@ class Parser
             case Lexer::T_INPUT_PARAMETER:
                 return $this->InputParameter();
 
-            case Lexer::T_STRING:
-            case Lexer::T_INTEGER:
-            case Lexer::T_FLOAT:
-                return $this->Literal();
-
             default:
                 $peek = $this->_lexer->glimpse();
 
@@ -2054,10 +2053,9 @@ class Parser
                     }
 
                     return $this->FunctionDeclaration();
+                } else {
+                    return $this->Literal();
                 }
-                
-                $this->syntaxError();
-                break;
         }
     }
     

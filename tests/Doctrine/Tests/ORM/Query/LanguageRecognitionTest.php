@@ -346,6 +346,11 @@ class LanguageRecognitionTest extends \Doctrine\Tests\OrmTestCase
         $this->assertValidDql('SELECT p FROM Doctrine\Tests\Models\CMS\CmsPhonenumber p WHERE p.user = ?1');
     }
     
+    public function testBooleanLiteralInWhere()
+    {
+        $this->assertValidDql('SELECT b FROM Doctrine\Tests\Models\Generic\BooleanModel b WHERE b.booleanField = true');
+    }
+    
     /**
      * This checks for invalid attempt to hydrate a proxy. It should throw an exception
      *
