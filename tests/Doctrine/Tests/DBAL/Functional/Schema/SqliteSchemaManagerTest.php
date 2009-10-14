@@ -58,7 +58,7 @@ class SqliteSchemaManagerTest extends SchemaManagerFunctionalTestCase
         $this->assertEquals('id', $tableColumns[0]['name']);
         $this->assertEquals(true, $tableColumns[0]['primary']);
         $this->assertEquals('Doctrine\DBAL\Types\IntegerType', get_class($tableColumns[0]['type']));
-        $this->assertEquals(4, $tableColumns[0]['length']);
+        $this->assertEquals(null, $tableColumns[0]['length']);
         $this->assertEquals(false, $tableColumns[0]['unsigned']);
         $this->assertEquals(false, $tableColumns[0]['fixed']);
         $this->assertEquals(true, $tableColumns[0]['notnull']);
@@ -140,7 +140,7 @@ class SqliteSchemaManagerTest extends SchemaManagerFunctionalTestCase
         $this->assertEquals('id', $tableColumns[0]['name']);
         $this->assertEquals(true, $tableColumns[0]['primary']);
         $this->assertEquals('Doctrine\DBAL\Types\IntegerType', get_class($tableColumns[0]['type']));
-        $this->assertEquals(4, $tableColumns[0]['length']);
+        $this->assertEquals(null, $tableColumns[0]['length']);
         $this->assertEquals(false, $tableColumns[0]['unsigned']);
         $this->assertEquals(false, $tableColumns[0]['fixed']);
         $this->assertEquals(true, $tableColumns[0]['notnull']);

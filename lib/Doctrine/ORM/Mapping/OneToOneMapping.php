@@ -189,8 +189,7 @@ class OneToOneMapping extends AssociationMapping
      * @param object $sourceEntity      the entity source of this association
      * @param object $targetEntity      the entity to load data in
      * @param EntityManager $em
-     * @param array $joinColumnValues  values of the join columns of $sourceEntity. There are no fields
-     *                                 to store this data in $sourceEntity
+     * @param array $joinColumnValues  Values of the join columns of $sourceEntity.
      */
     public function load($sourceEntity, $targetEntity, $em, array $joinColumnValues = array())
     {

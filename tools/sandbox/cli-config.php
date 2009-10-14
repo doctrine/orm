@@ -19,8 +19,14 @@ $classLoader = new \Doctrine\Common\IsolatedClassLoader('Entities');
 $classLoader->setBasePath(__DIR__);
 $classLoader->register();
 
+$classLoader = new \Doctrine\Common\IsolatedClassLoader('Proxies');
+$classLoader->setBasePath(__DIR__);
+$classLoader->register();
+
 $config = new \Doctrine\ORM\Configuration();
 $config->setMetadataCacheImpl(new \Doctrine\Common\Cache\ArrayCache);
+$config->setProxyDir(__DIR__ . '/Proxies');
+$config->setProxyNamespace('Proxies');
 
 $connectionOptions = array(
     'driver' => 'pdo_sqlite',

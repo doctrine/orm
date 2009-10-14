@@ -79,13 +79,14 @@ class OracleSchemaManager extends AbstractSchemaManager
 
         switch ($dbType) {
             case 'integer':
+            case 'number':
+                $type = 'integer';
+                $length = null;
+                break;
             case 'pls_integer':
             case 'binary_integer':
-                if ($length == '1' && preg_match('/^(is|has)/', $tableColumn['column_name'])) {
-                    $type = 'boolean';
-                } else {
-                    $type = 'integer';
-                }
+                $type = 'boolean';
+                $length = null;
                 break;
             case 'varchar':
             case 'varchar2':
@@ -104,28 +105,18 @@ class OracleSchemaManager extends AbstractSchemaManager
                 break;
             case 'date':
             case 'timestamp':
-                $type = 'timestamp';
+                $type = 'datetime';
                 $length = null;
                 break;
             case 'float':
-                $type = 'float';
-                break;
-            case 'number':
-                if ( ! empty($tableColumn['data_scale'])) {
-                    $type = 'decimal';
-                } else {
-                    if ($length == '1' && preg_match('/^(is|has)/', $tableColumn['column_name'])) {
-                        $type = 'boolean';
-                    } else {
-                        $type = 'integer';
-                    }
-                }
+                $type = 'decimal';
+                $length = null;
                 break;
             case 'long':
                 $type = 'string';
             case 'clob':
             case 'nclob':
-                $type = 'clob';
+                $type = 'text';
                 break;
             case 'blob':
             case 'raw':

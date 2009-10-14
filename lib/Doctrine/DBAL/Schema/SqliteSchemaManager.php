@@ -106,36 +106,24 @@ class SqliteSchemaManager extends AbstractSchemaManager
                 $type = 'boolean';
                 break;
             case 'tinyint':
-                if (preg_match('/^(is|has)/', $tableColumn['name'])) {
-                    $type = 'boolean';
-                } else {
-                    $type = 'integer';
-                }
-                $unsigned = preg_match('/ unsigned/i', $tableColumn['type']);
-                $length = 1;
+                $type = 'boolean';
+                $length = null;
                 break;
             case 'smallint':
-                $type = 'integer';
-                $unsigned = preg_match('/ unsigned/i', $tableColumn['type']);
-                $length = 2;
+                $type = 'smallint';
+                $length = null;
                 break;
             case 'mediumint':
-                $type = 'integer';
-                $unsigned = preg_match('/ unsigned/i', $tableColumn['type']);
-                $length = 3;
-                break;
             case 'int':
             case 'integer':
             case 'serial':
                 $type = 'integer';
-                $unsigned = preg_match('/ unsigned/i', $tableColumn['type']);
-                $length = 4;
+                $length = null;
                 break;
             case 'bigint':
             case 'bigserial':
-                $type = 'integer';
-                $unsigned = preg_match('/ unsigned/i', $tableColumn['type']);
-                $length = 8;
+                $type = 'bigint';
+                $length = null;
                 break;
             case 'clob':
                 $fixed = false;
@@ -145,6 +133,8 @@ class SqliteSchemaManager extends AbstractSchemaManager
             case 'mediumtext':
             case 'longtext':
             case 'text':
+                $type = 'text';
+                break;
             case 'varchar':
             case 'varchar2':
             case 'nvarchar':
@@ -172,7 +162,7 @@ class SqliteSchemaManager extends AbstractSchemaManager
                 break;
             case 'datetime':
             case 'timestamp':
-                $type = 'timestamp';
+                $type = 'datetime';
                 $length = null;
                 break;
             case 'time':
@@ -182,9 +172,6 @@ class SqliteSchemaManager extends AbstractSchemaManager
             case 'float':
             case 'double':
             case 'real':
-                $type = 'float';
-                $length = null;
-                break;
             case 'decimal':
             case 'numeric':
                 $type = 'decimal';

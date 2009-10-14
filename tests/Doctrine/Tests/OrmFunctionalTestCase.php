@@ -167,6 +167,8 @@ class OrmFunctionalTestCase extends OrmTestCase
         $config = new \Doctrine\ORM\Configuration();
         $config->setMetadataCacheImpl(self::$_metadataCacheImpl);
         $config->setQueryCacheImpl(self::$_queryCacheImpl);
+        $config->setProxyDir(__DIR__ . '/Proxies');
+        $config->setProxyNamespace('Doctrine\Tests\Proxies');
         $conn = $this->sharedFixture['conn'];
         
         return \Doctrine\ORM\EntityManager::create($conn, $config);

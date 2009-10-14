@@ -54,7 +54,7 @@ class MySqlSchemaManagerTest extends SchemaManagerFunctionalTestCase
         $this->assertEquals('id', $columns[0]['name']);
         $this->assertEquals(true, $columns[0]['primary']);
         $this->assertEquals('Doctrine\DBAL\Types\IntegerType', get_class($columns[0]['type']));
-        $this->assertEquals(4, $columns[0]['length']);
+        $this->assertEquals(null, $columns[0]['length']);
         $this->assertEquals(false, $columns[0]['unsigned']);
         $this->assertEquals(false, $columns[0]['fixed']);
         $this->assertEquals(true, $columns[0]['notnull']);

@@ -1331,12 +1331,10 @@ class UnitOfWork implements PropertyChangedListener
                 } else {
                     $assoc2 = $class->associationMappings[$name];
                     if ($assoc2->isOneToOne() && ! $assoc2->isCascadeMerge) {
-                        //TODO: Only do this when allowPartialObjects == false?
                         $targetClass = $this->_em->getClassMetadata($assoc2->targetEntityName);
                         $prop->setValue($managedCopy, $this->_em->getProxyFactory()
                                 ->getReferenceProxy($assoc2->targetEntityName, $targetClass->getIdentifierValues($entity)));
                     } else {
-                        //TODO: Only do this when allowPartialObjects == false?
                         $coll = new PersistentCollection($this->_em,
                                 $this->_em->getClassMetadata($assoc2->targetEntityName),
                                 new ArrayCollection

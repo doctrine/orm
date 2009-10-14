@@ -20,7 +20,11 @@ class ReferenceProxyTest extends \Doctrine\Tests\OrmFunctionalTestCase
     {
         $this->useModelSet('ecommerce');
         parent::setUp();
-        $this->_factory = new ProxyFactory($this->_em, new ProxyClassGenerator($this->_em));
+        $this->_factory = new ProxyFactory(
+                $this->_em,
+                __DIR__ . '/../../Proxies',
+                'Doctrine\Tests\Proxies',
+                true);
     }
 
     public function testLazyLoadsFieldValuesFromDatabase()

@@ -26,17 +26,16 @@ use Doctrine\Common\EventManager,
     Doctrine\DBAL\Connection,
     Doctrine\ORM\Mapping\ClassMetadata,
     Doctrine\ORM\Mapping\ClassMetadataFactory,
-    Doctrine\ORM\Proxy\ProxyFactory,
-    Doctrine\ORM\Proxy\ProxyClassGenerator;
+    Doctrine\ORM\Proxy\ProxyFactory;
 
 /**
  * The EntityManager is the central access point to ORM functionality.
  *
- * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
- * @link        www.doctrine-project.org
- * @since       2.0
- * @version     $Revision$
- * @author      Roman Borschel <roman@code-factory.org>
+ * @license http://www.opensource.org/licenses/lgpl-license.php LGPL
+ * @link www.doctrine-project.org
+ * @since 2.0
+ * @version $Revision$
+ * @author Roman Borschel <roman@code-factory.org>
  */
 class EntityManager
 {
@@ -146,7 +145,10 @@ class EntityManager
         $this->_metadataFactory = new ClassMetadataFactory($this);
         $this->_metadataFactory->setCacheDriver($this->_config->getMetadataCacheImpl());
         $this->_unitOfWork = new UnitOfWork($this);
-        $this->_proxyFactory = new ProxyFactory($this, new ProxyClassGenerator($this, $this->_config->getCacheDir()));
+        $this->_proxyFactory = new ProxyFactory($this,
+                $config->getProxyDir(),
+                $config->getProxyNamespace(),
+                $config->getAutoGenerateProxyClasses());
     }
     
     /**

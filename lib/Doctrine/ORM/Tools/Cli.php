@@ -90,6 +90,7 @@ class Cli
             'run-sql'         => $ns . '\RunSqlTask',
             'run-dql'         => $ns . '\RunDqlTask',
             'convert-mapping' => $ns . '\ConvertMappingTask',
+            'generate-proxies'=> $ns . '\GenerateProxiesTask'
         ));
     }
     

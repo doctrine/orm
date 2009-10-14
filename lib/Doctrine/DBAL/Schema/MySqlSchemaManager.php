@@ -22,11 +22,12 @@
 namespace Doctrine\DBAL\Schema;
 
 /**
- * xxx
+ * Schema manager for the MySql RDBMS.
  *
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  * @author      Lukas Smith <smith@pooteeweet.org> (PEAR MDB2 library)
+ * @author      Roman Borschel <roman@code-factory.org>
  * @version     $Revision$
  * @since       2.0
  */
@@ -85,7 +86,15 @@ class MySqlSchemaManager extends AbstractSchemaManager
     {
         return $database['Database'];
     }
-
+    
+    /**
+     * Gets a portable column definition.
+     * 
+     * The database type is mapped to a corresponding Doctrine mapping type.
+     * 
+     * @param $tableColumn
+     * @return array
+     */
     protected function _getPortableTableColumnDefinition($tableColumn)
     {
         $dbType = strtolower($tableColumn['Type']);
@@ -110,42 +119,36 @@ class MySqlSchemaManager extends AbstractSchemaManager
         $values = null;
         $scale = null;
         
+        // Map db type to Doctrine mapping type
         switch ($dbType) {
             case 'tinyint':
-                $type = 'integer';
                 $type = 'boolean';
-                if (preg_match('/^(is|has)/', $tableColumn['name'])) {
-                    $type = array_reverse($type);
-                }
-                $unsigned = preg_match('/ unsigned/i', $tableColumn['Type']);
-                $length = 1;
-            break;
+                $length = null;
+                break;
             case 'smallint':
-                $type = 'integer';
-                $unsigned = preg_match('/ unsigned/i', $tableColumn['Type']);
-                $length = 2;
-            break;
+                $type = 'smallint';
+                $length = null;
+                break;
             case 'mediumint':
                 $type = 'integer';
-                $unsigned = preg_match('/ unsigned/i', $tableColumn['Type']);
-                $length = 3;
-            break;
+                $length = null;
+                break;
             case 'int':
             case 'integer':
                 $type = 'integer';
-                $unsigned = preg_match('/ unsigned/i', $tableColumn['Type']);
-                $length = 4;
-            break;
+                $length = null;
+                break;
             case 'bigint':
-                $type = 'integer';
-                $unsigned = preg_match('/ unsigned/i', $tableColumn['Type']);
-                $length = 8;
-            break;
+                $type = 'bigint';
+                $length = null;
+                break;
             case 'tinytext':
             case 'mediumtext':
             case 'longtext':
             case 'text':
-            case 'text':
+                $type = 'text';
+                $fixed = false;
+                break;
             case 'varchar':
                 $fixed = false;
             case 'string':
@@ -156,8 +159,8 @@ class MySqlSchemaManager extends AbstractSchemaManager
                     if (preg_match('/^(is|has)/', $tableColumn['name'])) {
                         $type = array_reverse($type);
                     }
-                } elseif (strstr($dbType, 'text')) {
-                    $type = 'clob';
+                } else if (strstr($dbType, 'text')) {
+                    $type = 'text';
                     if ($decimal == 'binary') {
                         $type = 'blob';
                     }
@@ -165,40 +168,28 @@ class MySqlSchemaManager extends AbstractSchemaManager
                 if ($fixed !== false) {
                     $fixed = true;
                 }
-            break;
+                break;
             case 'set':
                 $fixed = false;
                 $type = 'text';
-                $type = 'integer';
-            break;
+                $type = 'integer'; //FIXME:???
+                break;
             case 'date':
                 $type = 'date';
-                $length = null;
-            break;
+                break;
             case 'datetime':
             case 'timestamp':
-                $type = 'timestamp';
-                $length = null;
-            break;
+                $type = 'datetime';
+                break;
             case 'time':
                 $type = 'time';
-                $length = null;
-            break;
+                break;
             case 'float':
             case 'double':
             case 'real':
-                $type = 'float';
-                $unsigned = preg_match('/ unsigned/i', $tableColumn['type']);
-            break;
-            case 'unknown':
-            case 'decimal':
-                if ($decimal !== null) {
-                    $scale = $decimal;
-                }
             case 'numeric':
                 $type = 'decimal';
-                $unsigned = preg_match('/ unsigned/i', $tableColumn['type']);
-            break;
+                break;
             case 'tinyblob':
             case 'mediumblob':
             case 'longblob':
@@ -207,15 +198,12 @@ class MySqlSchemaManager extends AbstractSchemaManager
             case 'varbinary':
                 $type = 'blob';
                 $length = null;
-            break;
+                break;
             case 'year':
                 $type = 'integer';
                 $type = 'date';
                 $length = null;
-            break;
-            case 'bit':
-                $type = 'bit';
-            break;
+                break;
             case 'geometry':
             case 'geometrycollection':
             case 'point':
@@ -226,7 +214,7 @@ class MySqlSchemaManager extends AbstractSchemaManager
             case 'multipolygon':
                 $type = 'blob';
                 $length = null;
-            break;
+                break;
             default:
                 $type = 'string';
                 $length = null;

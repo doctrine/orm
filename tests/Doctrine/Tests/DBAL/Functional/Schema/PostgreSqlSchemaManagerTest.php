@@ -52,8 +52,7 @@ class PostgreSqlSchemaManagerTest extends SchemaManagerFunctionalTestCase
         $this->assertEquals('id', $columns[0]['name']);
         $this->assertEquals(true, $columns[0]['primary']);
         $this->assertEquals('Doctrine\DBAL\Types\IntegerType', get_class($columns[0]['type']));
-        $this->assertEquals(4, $columns[0]['length']);
-        $this->assertEquals(false, $columns[0]['unsigned']);
+        $this->assertEquals(null, $columns[0]['length']);
         $this->assertEquals(false, $columns[0]['fixed']);
         $this->assertEquals(true, $columns[0]['notnull']);
         $this->assertEquals(null, $columns[0]['default']);
@@ -62,7 +61,6 @@ class PostgreSqlSchemaManagerTest extends SchemaManagerFunctionalTestCase
         $this->assertEquals(false, $columns[1]['primary']);
         $this->assertEquals('Doctrine\DBAL\Types\StringType', get_class($columns[1]['type']));
         $this->assertEquals(255, $columns[1]['length']);
-        $this->assertEquals(false, $columns[1]['unsigned']);
         $this->assertEquals(false, $columns[1]['fixed']);
         $this->assertEquals(false, $columns[1]['notnull']);
         $this->assertEquals(null, $columns[1]['default']);

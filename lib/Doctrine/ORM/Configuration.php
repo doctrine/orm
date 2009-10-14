@@ -44,11 +44,13 @@ class Configuration extends \Doctrine\DBAL\Configuration
             'queryCacheImpl' => null,
             'metadataCacheImpl' => null,
             'metadataDriverImpl' => null,
-            'cacheDir' => null,
-            'allowPartialObjects' => true,
+            'proxyDir' => null,
+            'allowPartialObjects' => true, //TODO: Remove
             'useCExtension' => false,
             'namedQueries' => array(),
-            'namedNativeQueries' => array()
+            'namedNativeQueries' => array(),
+            'autoGenerateProxyClasses' => true,
+            'proxyNamespace' => null
         ));
         
         //TODO: Move this to client code to avoid unnecessary work when a different metadata
@@ -65,6 +67,8 @@ class Configuration extends \Doctrine\DBAL\Configuration
      * and you always only get what you explicitly query for.
      *
      * @return boolean Whether partial objects are allowed.
+     * @todo Remove
+     * @deprecated
      */
     public function getAllowPartialObjects()
     {
@@ -78,6 +82,8 @@ class Configuration extends \Doctrine\DBAL\Configuration
      * and you always only get what you explicitly query for.
      *
      * @param boolean $allowed Whether partial objects are allowed.
+     * @todo Remove
+     * @deprecated
      */
     public function setAllowPartialObjects($allowed)
     {
@@ -85,23 +91,55 @@ class Configuration extends \Doctrine\DBAL\Configuration
     }
 
     /**
-     * Sets the directory where Doctrine writes any necessary cache files.
+     * Sets the directory where Doctrine generates any necessary proxy class files.
      *
      * @param string $dir
      */
-    public function setCacheDir($dir)
+    public function setProxyDir($dir)
     {
-        $this->_attributes['cacheDir'] = $dir;
+        $this->_attributes['proxyDir'] = $dir;
     }
 
     /**
-     * Gets the directory where Doctrine writes any necessary cache files.
+     * Gets the directory where Doctrine generates any necessary proxy class files.
      *
      * @return string
      */
-    public function getCacheDir()
+    public function getProxyDir()
     {
-        return $this->_attributes['cacheDir'];
+        return $this->_attributes['proxyDir'];
+    }
+    
+    /**
+     * Gets a boolean flag that indicates whether proxy classes should always be regenerated
+     * during each script execution.
+     *
+     * @return boolean
+     */
+    public function getAutoGenerateProxyClasses()
+    {
+        return $this->_attributes['autoGenerateProxyClasses'];
+    }
+    
+    /**
+     * Sets a boolean flag that indicates whether proxy classes should always be regenerated
+     * during each script execution.
+     *
+     * @param boolean $bool
+     */
+    public function setAutoGenerateProxyClasses($bool)
+    {
+        $this->_attributes['autoGenerateProxyClasses'] = $bool;
+    }
+    
+    public function getProxyNamespace()
+    {
+        return $this->_attributes['proxyNamespace'];
+    }
+    
+    public function setProxyNamespace($ns)
+    {
+        $this->_attributes['proxyNamespace'] = $ns;
     }
 
     /**
@@ -250,5 +288,25 @@ class Configuration extends \Doctrine\DBAL\Configuration
     public function getNamedNativeQuery($name)
     {
         return $this->_attributes['namedNativeQueries'][$name];
+    }
+    
+    /**
+     * Ensures that this Configuration instance contains settings that are
+     * suitable for a production environment.
+     * 
+     * @throws DoctrineException If a configuration setting has a value that is not
+     *                           suitable for a production environment.
+     */
+    public function ensureProductionSettings()
+    {
+        if ( ! $this->_attributes['queryCacheImpl']) {
+            throw DoctrineException::queryCacheNotConfigured();
+        }
+        if ( ! $this->_attributes['metadataCacheImpl']) {
+            throw DoctrineException::metadataCacheNotConfigured();
+        }
+        if ($this->_attributes['autoGenerateProxyClasses']) {
+            throw DoctrineException::proxyClassesAlwaysRegenerating();
+        }
     }
 }

@@ -119,18 +119,13 @@ class GlobalClassLoader
         if (($pos = strpos($className, $separator)) !== false) {
             $prefix = substr($className, 0, strpos($className, $separator));
         } else if (($pos = strpos($className, '_')) !== false) {
-            // Support for '_' namespace separator for compatibility with Zend/PEAR/...
+            // Support for '_' namespace separator for compatibility with the "old" standard
             $prefix = substr($className, 0, strpos($className, '_'));
             $separator = '_';
         }
         
-        // Build the class file name
-        $class = ((isset($this->_basePaths[$prefix])) ?
-                $this->_basePaths[$prefix] . DIRECTORY_SEPARATOR : '')
+        require ((isset($this->_basePaths[$prefix])) ? $this->_basePaths[$prefix] . DIRECTORY_SEPARATOR : '')
                . str_replace($separator, DIRECTORY_SEPARATOR, $className)
-               . (isset($this->_fileExtensions[$prefix]) ?
-               $this->_fileExtensions[$prefix] : $this->_defaultFileExtension);
-
-        require $class;
+               . (isset($this->_fileExtensions[$prefix]) ? $this->_fileExtensions[$prefix] : $this->_defaultFileExtension);
     }
 }

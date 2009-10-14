@@ -103,7 +103,7 @@ class PostgreSqlSchemaManager extends AbstractSchemaManager
             $tableColumn['length'] = $length;
         }
         
-        $matches = array(); 
+        $matches = array();
         
         if (preg_match("/^nextval\('(.*)'(::.*)?\)$/", $tableColumn['default'], $matches)) {
             $tableColumn['sequence'] = $matches[1];
@@ -122,7 +122,7 @@ class PostgreSqlSchemaManager extends AbstractSchemaManager
             $length = null;
         }
         $type = array();
-        $unsigned = $fixed = null;
+        $fixed = null;
         
         if ( ! isset($tableColumn['name'])) {
             $tableColumn['name'] = '';
@@ -131,23 +131,10 @@ class PostgreSqlSchemaManager extends AbstractSchemaManager
         $dbType = strtolower($tableColumn['type']);
         
         switch ($dbType) {
-            case 'inet':
-                $type = 'inet';
-            break;
-            case 'bit':
-            case 'varbit':
-                $type = 'bit';
-            break;
             case 'smallint':
             case 'int2':
-                $type = 'integer';
-                $unsigned = false;
-                $length = 2;
-                if ($length == '2') {
-                    if (preg_match('/^(is|has)/', $tableColumn['name'])) {
-                        $type = 'boolean';
-                    }
-                }
+                $type = 'smallint';
+                $length = null;
                 break;
             case 'int':
             case 'int4':
@@ -155,21 +142,19 @@ class PostgreSqlSchemaManager extends AbstractSchemaManager
             case 'serial':
             case 'serial4':
                 $type = 'integer';
-                $unsigned = false;
-                $length = 4;
+                $length = null;
                 break;
             case 'bigint':
             case 'int8':
             case 'bigserial':
             case 'serial8':
-                $type = 'integer';
-                $unsigned = false;
-                $length = 8;
+                $type = 'bigint';
+                $length = null;
                 break;
             case 'bool':
             case 'boolean':
                 $type = 'boolean';
-                $length = 1;
+                $length = null;
                 break;
             case 'text':
                 $fixed = false;
@@ -203,7 +188,7 @@ class PostgreSqlSchemaManager extends AbstractSchemaManager
             case 'timestamp':
             case 'timetz':
             case 'timestamptz':
-                $type = 'timestamp';
+                $type = 'datetime';
                 $length = null;
                 break;
             case 'time':
@@ -216,8 +201,6 @@ class PostgreSqlSchemaManager extends AbstractSchemaManager
             case 'double':
             case 'double precision':
             case 'real':
-                $type = 'float';
-                break;
             case 'decimal':
             case 'money':
             case 'numeric':
@@ -254,7 +237,6 @@ class PostgreSqlSchemaManager extends AbstractSchemaManager
         $decl = array(
             'type'     => $type,
             'length'   => $length,
-            'unsigned' => $unsigned,
             'fixed'    => $fixed
         );
 

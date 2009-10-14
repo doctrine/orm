@@ -20,6 +20,7 @@
  */
 
 namespace Doctrine\Tests\Mocks;
+
 use Doctrine\ORM\Proxy\ProxyFactory;
 
 /**
@@ -75,6 +76,8 @@ class EntityManagerMock extends \Doctrine\ORM\EntityManager
     {
         if (is_null($config)) {
             $config = new \Doctrine\ORM\Configuration();
+            $config->setProxyDir(__DIR__ . '/../Proxies');
+            $config->setProxyNamespace('Doctrine\Tests\Proxies');
         }
         if (is_null($eventManager)) {
             $eventManager = new \Doctrine\Common\EventManager();

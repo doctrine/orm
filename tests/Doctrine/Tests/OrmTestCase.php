@@ -27,6 +27,8 @@ class OrmTestCase extends DoctrineTestCase
         $config = new \Doctrine\ORM\Configuration();
         $config->setMetadataCacheImpl(self::getSharedMetadataCacheImpl());
         $config->setQueryCacheImpl(self::getSharedQueryCacheImpl());
+        $config->setProxyDir(__DIR__ . '/Proxies');
+        $config->setProxyNamespace('Doctrine\Tests\Proxies');
         $eventManager = new \Doctrine\Common\EventManager();
         if ($conn === null) {
             $conn = array(

@@ -92,6 +92,7 @@ class OneToOneBidirectionalAssociationTest extends \Doctrine\Tests\OrmFunctional
         
         $this->assertNull($customer->getMentor());
         $this->assertTrue($customer->getCart() instanceof ECommerceCart);
+        $this->assertTrue($customer->getCart() instanceof \Doctrine\ORM\Proxy\Proxy);
         $this->assertEquals('paypal', $customer->getCart()->getPayment());
     }
     
