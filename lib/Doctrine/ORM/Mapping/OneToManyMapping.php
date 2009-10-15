@@ -106,13 +106,13 @@ class OneToManyMapping extends AssociationMapping
     }
     
     /**
+     * Loads a one-to-many collection.
      * 
-     * 
-     * @param $sourceEntity
-     * @param $targetCollection
-     * @param $em
-     * @param $joinColumnValues
-     * @return unknown_type
+     * @param $sourceEntity The entity that owns the collection.
+     * @param $targetCollection The collection to load/fill.
+     * @param $em The EntityManager to use.
+     * @param $joinColumnValues 
+     * @return void
      */
     public function load($sourceEntity, $targetCollection, $em, array $joinColumnValues = array())
     {
@@ -121,9 +121,9 @@ class OneToManyMapping extends AssociationMapping
         $sourceClass = $em->getClassMetadata($this->sourceEntityName);
         $owningAssoc = $em->getClassMetadata($this->targetEntityName)->associationMappings[$this->mappedByFieldName];
         // TRICKY: since the association is specular source and target are flipped
-        foreach ($owningAssoc->getTargetToSourceKeyColumns() as $sourceKeyColumn => $targetKeyColumn) {
+        foreach ($owningAssoc->targetToSourceKeyColumns as $sourceKeyColumn => $targetKeyColumn) {
             // getting id
-            if (isset($sourceClass->reflFields[$sourceKeyColumn])) {
+            if (isset($sourceClass->fieldNames[$sourceKeyColumn])) {
                 $conditions[$targetKeyColumn] = $sourceClass->reflFields[$sourceClass->fieldNames[$sourceKeyColumn]]->getValue($sourceEntity);
             } else {
                 $conditions[$targetKeyColumn] = $joinColumnValues[$sourceKeyColumn];

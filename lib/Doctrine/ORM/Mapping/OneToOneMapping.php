@@ -201,7 +201,7 @@ class OneToOneMapping extends AssociationMapping
         if ($this->isOwningSide) {
             foreach ($this->sourceToTargetKeyColumns as $sourceKeyColumn => $targetKeyColumn) {
                 // getting customer_id
-                if (isset($sourceClass->reflFields[$sourceKeyColumn])) {
+                if (isset($sourceClass->fieldNames[$sourceKeyColumn])) {
                     $conditions[$targetKeyColumn] = $sourceClass->reflFields[$sourceClass->fieldNames[$sourceKeyColumn]]->getValue($sourceEntity);
                 } else {
                     $conditions[$targetKeyColumn] = $joinColumnValues[$sourceKeyColumn];
@@ -220,7 +220,7 @@ class OneToOneMapping extends AssociationMapping
             // TRICKY: since the association is specular source and target are flipped
             foreach ($owningAssoc->targetToSourceKeyColumns as $sourceKeyColumn => $targetKeyColumn) {
                 // getting id
-                if (isset($sourceClass->reflFields[$sourceKeyColumn])) {
+                if (isset($sourceClass->fieldNames[$sourceKeyColumn])) {
                     $conditions[$targetKeyColumn] = $sourceClass->reflFields[$sourceClass->fieldNames[$sourceKeyColumn]]->getValue($sourceEntity);
                 } else {
                     $conditions[$targetKeyColumn] = $joinColumnValues[$sourceKeyColumn];

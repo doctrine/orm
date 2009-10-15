@@ -87,7 +87,6 @@ class OneToManyBidirectionalAssociationTest extends \Doctrine\Tests\OrmFunctiona
     public function testLazyLoadsObjectsOnTheOwningSide()
     {
         $this->_createFixture();
-        $this->_em->getConfiguration()->setAllowPartialObjects(false);
         $metadata = $this->_em->getClassMetadata('Doctrine\Tests\Models\ECommerce\ECommerceProduct');
         $metadata->getAssociationMapping('features')->fetchMode = AssociationMapping::FETCH_LAZY;
 
