@@ -5,21 +5,7 @@
 # Upgrade from 2.0-ALPHA2 to 2.0-ALPHA3
 
 This section details the changes made to Doctrine 2.0-ALPHA3 to make it easier for you
-to upgrade your projects to use this version.
-
-## Class loader changes
-
-The behavior of the two class loaders in the Common package changed slightly for more flexibility. When registering a namespace you now need to include the last namespace separator as well, if you really want the prefix to be checked as a namespace and not only as the string. Examples:
-
-    [php]
-    // This loader would load classes in the Doctrine namespace but not classes in other
-    // namespaces that start with the string "Doctrine", like "DoctrineExtensions".
-    $isolatedLoader = new IsolatedClassLoader('Doctrine\\');
-
-    // or...
-    $globalLoader = new GlobalClassLoader;
-    $globalLoader->registerNamespace('Doctrine\\', '/path/to/doctrine');
-  
+to upgrade your projects to use this version.  
     
 ## Proxy class changes
 
