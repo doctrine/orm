@@ -1,6 +1,8 @@
 <?php
 namespace Doctrine\Tests\ORM\Query;
 
+use Doctrine\ORM\Query;
+
 require_once __DIR__ . '/../../TestInit.php';
 
 class LanguageRecognitionTest extends \Doctrine\Tests\OrmTestCase
@@ -40,6 +42,7 @@ class LanguageRecognitionTest extends \Doctrine\Tests\OrmTestCase
     public function parseDql($dql, $hints = array())
     {
         $query = $this->_em->createQuery($dql);
+        $query->setHint(Query::HINT_FORCE_PARTIAL_LOAD, true);
         $query->setDql($dql);
         
         foreach ($hints as $key => $value) {
@@ -358,13 +361,8 @@ class LanguageRecognitionTest extends \Doctrine\Tests\OrmTestCase
      */
     public function testPartialObjectLoad()
     {
-        $oldValue = $this->_em->getConfiguration()->getAllowPartialObjects();
-        $this->_em->getConfiguration()->setAllowPartialObjects(false);
-                
         $this->parseDql('SELECT u.name FROM Doctrine\Tests\Models\CMS\CmsUser u', array(
         	\Doctrine\ORM\Query::HINT_FORCE_PARTIAL_LOAD => false
         ));
-        
-        $this->_em->getConfiguration()->setAllowPartialObjects($oldValue);
     }
 }

@@ -559,11 +559,14 @@ class UnitOfWork implements PropertyChangedListener
         // Look through the entities, and in any of their associations, for transient
         // enities, recursively. ("Persistence by reachability")
         if ($assoc->isOneToOne()) {
-            if ($value instanceof Proxy) {
-                return; // Ignore proxy objects
+            if ($value instanceof Proxy && ! $value->__isInitialized__()) {
+                return; // Ignore uninitialized proxy objects
             }
             $value = array($value);
+        } else if ($value instanceof PersistentCollection) {
+            $value = $value->unwrap();
         }
+        
         $targetClass = $this->_em->getClassMetadata($assoc->targetEntityName);
         foreach ($value as $entry) {
             $state = $this->getEntityState($entry, self::STATE_NEW);
@@ -728,7 +731,7 @@ class UnitOfWork implements PropertyChangedListener
         $hasPostUpdateListeners = $this->_evm->hasListeners(Events::postUpdate);
         
         foreach ($this->_entityUpdates as $oid => $entity) {
-            if (get_class($entity) == $className) {
+            if (get_class($entity) == $className || $entity instanceof Proxy && $entity instanceof $className) {
                 if ($hasPreUpdateLifecycleCallbacks) {
                     $class->invokeLifecycleCallbacks(Events::preUpdate, $entity);
                     if ( ! $hasPreUpdateListeners) {

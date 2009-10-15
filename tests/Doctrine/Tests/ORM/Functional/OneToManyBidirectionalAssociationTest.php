@@ -107,7 +107,6 @@ class OneToManyBidirectionalAssociationTest extends \Doctrine\Tests\OrmFunctiona
     public function testLazyLoadsObjectsOnTheInverseSide()
     {
         $this->_createFixture();
-        $this->_em->getConfiguration()->setAllowPartialObjects(false);
         $metadata = $this->_em->getClassMetadata('Doctrine\Tests\Models\ECommerce\ECommerceFeature');
         $metadata->getAssociationMapping('product')->fetchMode = AssociationMapping::FETCH_LAZY;
 
@@ -117,6 +116,13 @@ class OneToManyBidirectionalAssociationTest extends \Doctrine\Tests\OrmFunctiona
         $product = $features[0]->getProduct();
         $this->assertTrue($product instanceof ECommerceProduct);
         $this->assertSame('Doctrine Cookbook', $product->getName());
+    }
+    
+    public function testJoinFromOwningSide()
+    {
+        $query = $this->_em->createQuery('select f,p from Doctrine\Tests\Models\ECommerce\ECommerceFeature f join f.product p');
+        $features = $query->getResult();
+        $this->assertEquals(0, count($features));
     }
 
     private function _createFixture()

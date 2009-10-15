@@ -2,6 +2,8 @@
 
 namespace Doctrine\Tests\ORM\Query;
 
+use Doctrine\ORM\Query;
+
 require_once __DIR__ . '/../../TestInit.php';
 
 class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
@@ -17,6 +19,7 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
     {
         try {
             $query = $this->_em->createQuery($dqlToBeTested);
+            $query->setHint(Query::HINT_FORCE_PARTIAL_LOAD, true);
             parent::assertEquals($sqlToBeConfirmed, $query->getSql());
             $query->free();
         } catch (Doctrine_Exception $e) {
@@ -274,6 +277,8 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
     {
         // "Get all users who have $phone as a phonenumber." (*cough* doesnt really make sense...)
         $q1 = $this->_em->createQuery('SELECT u.id FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE :param MEMBER OF u.phonenumbers');
+        $q1->setHint(Query::HINT_FORCE_PARTIAL_LOAD, true);
+        
         $phone = new \Doctrine\Tests\Models\CMS\CmsPhonenumber;
         $phone->phonenumber = 101;
         $q1->setParameter('param', $phone);
@@ -285,6 +290,8 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
         
         // "Get all users who are members of $group."
         $q2 = $this->_em->createQuery('SELECT u.id FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE :param MEMBER OF u.groups');
+        $q2->setHint(Query::HINT_FORCE_PARTIAL_LOAD, true);
+        
         $group = new \Doctrine\Tests\Models\CMS\CmsGroup;
         $group->id = 101;
         $q2->setParameter('param', $group);
@@ -310,20 +317,23 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
 
     public function testSupportsCurrentDateFunction()
     {
-      $q = $this->_em->createQuery('SELECT d.id FROM Doctrine\Tests\Models\Generic\DateTimeModel d WHERE d.datetime > current_date()');
-      $this->assertEquals('SELECT d0_.id AS id0 FROM date_time_model d0_ WHERE d0_.datetime > CURRENT_DATE', $q->getSql());
+        $q = $this->_em->createQuery('SELECT d.id FROM Doctrine\Tests\Models\Generic\DateTimeModel d WHERE d.datetime > current_date()');
+        $q->setHint(Query::HINT_FORCE_PARTIAL_LOAD, true);
+        $this->assertEquals('SELECT d0_.id AS id0 FROM date_time_model d0_ WHERE d0_.datetime > CURRENT_DATE', $q->getSql());
     }
 
     public function testSupportsCurrentTimeFunction()
     {
-      $q = $this->_em->createQuery('SELECT d.id FROM Doctrine\Tests\Models\Generic\DateTimeModel d WHERE d.time > current_time()');
-      $this->assertEquals('SELECT d0_.id AS id0 FROM date_time_model d0_ WHERE d0_.time > CURRENT_TIME', $q->getSql());
+        $q = $this->_em->createQuery('SELECT d.id FROM Doctrine\Tests\Models\Generic\DateTimeModel d WHERE d.time > current_time()');
+        $q->setHint(Query::HINT_FORCE_PARTIAL_LOAD, true);
+        $this->assertEquals('SELECT d0_.id AS id0 FROM date_time_model d0_ WHERE d0_.time > CURRENT_TIME', $q->getSql());
     }
 
     public function testSupportsCurrentTimestampFunction()
     {
-      $q = $this->_em->createQuery('SELECT d.id FROM Doctrine\Tests\Models\Generic\DateTimeModel d WHERE d.datetime > current_timestamp()');
-      $this->assertEquals('SELECT d0_.id AS id0 FROM date_time_model d0_ WHERE d0_.datetime > CURRENT_TIMESTAMP', $q->getSql());
+        $q = $this->_em->createQuery('SELECT d.id FROM Doctrine\Tests\Models\Generic\DateTimeModel d WHERE d.datetime > current_timestamp()');
+        $q->setHint(Query::HINT_FORCE_PARTIAL_LOAD, true);
+        $this->assertEquals('SELECT d0_.id AS id0 FROM date_time_model d0_ WHERE d0_.datetime > CURRENT_TIMESTAMP', $q->getSql());
     }
 
     /*public function testExistsExpressionInWhereCorrelatedSubqueryAssocCondition()

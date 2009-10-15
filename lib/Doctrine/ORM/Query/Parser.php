@@ -1575,7 +1575,6 @@ class Parser
             // Deny hydration of partial objects if doctrine.forcePartialLoad query hint not defined 
             if (
                 $this->_query->getHydrationMode() == Query::HYDRATE_OBJECT &&
-                ! $this->_em->getConfiguration()->getAllowPartialObjects() &&
                 ! $this->_query->getHint(Query::HINT_FORCE_PARTIAL_LOAD)
             ) {
             	throw DoctrineException::partialObjectsAreDangerous();

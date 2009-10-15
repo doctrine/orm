@@ -45,7 +45,6 @@ class Configuration extends \Doctrine\DBAL\Configuration
             'metadataCacheImpl' => null,
             'metadataDriverImpl' => null,
             'proxyDir' => null,
-            'allowPartialObjects' => true, //TODO: Remove
             'useCExtension' => false,
             'namedQueries' => array(),
             'namedNativeQueries' => array(),
@@ -72,7 +71,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
      */
     public function getAllowPartialObjects()
     {
-        return $this->_attributes['allowPartialObjects'];
+        return true;
     }
 
     /**
@@ -86,9 +85,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
      * @deprecated
      */
     public function setAllowPartialObjects($allowed)
-    {
-        $this->_attributes['allowPartialObjects'] = $allowed;
-    }
+    {}
 
     /**
      * Sets the directory where Doctrine generates any necessary proxy class files.

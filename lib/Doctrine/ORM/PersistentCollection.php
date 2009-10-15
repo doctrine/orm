@@ -229,6 +229,7 @@ final class PersistentCollection implements \Doctrine\Common\Collections\Collect
     private function _initialize()
     {
         if ( ! $this->_initialized) {
+            $this->_coll->clear();
             $this->_association->load($this->_owner, $this, $this->_em);
             $this->_initialized = true;
         }

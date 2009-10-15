@@ -289,6 +289,7 @@ namespace <namespace> {
                 $this->_loaded = true;
             }
         }
+        public function __isInitialized__() { return $this->_loaded; }
 
         <methods>
 
@@ -331,6 +332,7 @@ namespace <namespace> {
                 $this->_loaded = true;
             }
         }
+        public function __isInitialized__() { return $this->_loaded; }
 
         <methods>
 

@@ -5,6 +5,7 @@ namespace Doctrine\Tests\ORM\Functional;
 use Doctrine\Tests\Models\ECommerce\ECommerceProduct;
 use Doctrine\Tests\Models\ECommerce\ECommerceCategory;
 use Doctrine\ORM\Mapping\AssociationMapping;
+use Doctrine\ORM\Query;
 
 require_once __DIR__ . '/../../TestInit.php';
 
@@ -77,7 +78,7 @@ class ManyToManyBidirectionalAssociationTest extends AbstractManyToManyAssociati
     {
         $this->_createLoadingFixture();
         $products = $this->_findProducts();
-        $this->assertLoadingOfOwningSide($products); 
+        $this->assertLoadingOfOwningSide($products);
     }
     
     public function testLazyLoadsCollectionOnTheInverseSide()
@@ -128,6 +129,7 @@ class ManyToManyBidirectionalAssociationTest extends AbstractManyToManyAssociati
     protected function _findProducts()
     {
         $query = $this->_em->createQuery('SELECT p, c FROM Doctrine\Tests\Models\ECommerce\ECommerceProduct p LEFT JOIN p.categories c ORDER BY p.id, c.id');
+        //$query->setHint(Query::HINT_FORCE_PARTIAL_LOAD, true);
         return $query->getResult();
     }
     

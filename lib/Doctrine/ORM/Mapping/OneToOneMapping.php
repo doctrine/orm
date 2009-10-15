@@ -208,7 +208,7 @@ class OneToOneMapping extends AssociationMapping
                 }
             }
             
-            $targetEntity = $em->getUnitOfWork()->getEntityPersister($this->targetEntityName)->load($conditions, $targetEntity);
+            $targetEntity = $em->getUnitOfWork()->getEntityPersister($this->targetEntityName)->load($conditions, $targetEntity, $this);
             
             if ($targetEntity !== null && $targetClass->hasInverseAssociationMapping($this->sourceEntityName, $this->sourceFieldName)) {
                 $targetClass->setFieldValue($targetEntity,
@@ -227,7 +227,7 @@ class OneToOneMapping extends AssociationMapping
                 }
             }
             
-            $targetEntity = $em->getUnitOfWork()->getEntityPersister($this->targetEntityName)->load($conditions, $targetEntity);
+            $targetEntity = $em->getUnitOfWork()->getEntityPersister($this->targetEntityName)->load($conditions, $targetEntity, $this);
             
             $targetClass->setFieldValue($targetEntity, $this->mappedByFieldName, $sourceEntity);
         }

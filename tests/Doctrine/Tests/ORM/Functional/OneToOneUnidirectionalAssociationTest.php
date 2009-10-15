@@ -5,6 +5,7 @@ namespace Doctrine\Tests\ORM\Functional;
 use Doctrine\Tests\Models\ECommerce\ECommerceProduct;
 use Doctrine\Tests\Models\ECommerce\ECommerceShipping;
 use Doctrine\ORM\Mapping\AssociationMapping;
+use Doctrine\ORM\Query;
 
 require_once __DIR__ . '/../../TestInit.php';
 
@@ -74,9 +75,10 @@ class OneToOneUnidirectionalAssociationTest extends \Doctrine\Tests\OrmFunctiona
 
     public function testDoesNotLazyLoadObjectsIfConfigurationDoesNotAllowIt() {
         $this->_createFixture();
-        $this->_em->getConfiguration()->setAllowPartialObjects(true);
 
         $query = $this->_em->createQuery('select p from Doctrine\Tests\Models\ECommerce\ECommerceProduct p');
+        $query->setHint(Query::HINT_FORCE_PARTIAL_LOAD, true);
+        
         $result = $query->getResult();
         $product = $result[0];
         

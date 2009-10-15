@@ -252,7 +252,7 @@ class SqlWalker implements TreeWalker
         }
 
         // LEFT JOIN subclass tables, only if partial objects disallowed
-        if ( ! $this->_em->getConfiguration()->getAllowPartialObjects() && ! $this->_query->getHint(Query::HINT_FORCE_PARTIAL_LOAD)) {
+        if ( ! $this->_query->getHint(Query::HINT_FORCE_PARTIAL_LOAD)) {
             foreach ($class->subClasses as $subClassName) {
                 $subClass = $this->_em->getClassMetadata($subClassName);
                 $tableAlias = $this->getSqlTableAlias($subClass->primaryTable['name'], $dqlAlias);
@@ -446,8 +446,7 @@ class SqlWalker implements TreeWalker
             ', ', array_map(array($this, 'walkSelectExpression'), $selectClause->selectExpressions)
         );
         
-        $addMetaColumns = ! $this->_em->getConfiguration()->getAllowPartialObjects() &&
-                ! $this->_query->getHint(Query::HINT_FORCE_PARTIAL_LOAD) &&
+        $addMetaColumns = ! $this->_query->getHint(Query::HINT_FORCE_PARTIAL_LOAD) &&
                 $this->_query->getHydrationMode() == Query::HYDRATE_OBJECT
                 ||
                 $this->_query->getHydrationMode() != Query::HYDRATE_OBJECT &&
@@ -480,6 +479,7 @@ class SqlWalker implements TreeWalker
                 
                 // Add foreign key columns to SQL, if necessary
                 if ($addMetaColumns) {
+                    //FIXME: Include foreign key columns of child classes also!!??
                     foreach ($class->associationMappings as $assoc) {
                         if ($assoc->isOwningSide && $assoc->isOneToOne()) {
                             if (isset($class->inheritedAssociationFields[$assoc->sourceFieldName])) {
@@ -654,22 +654,19 @@ class SqlWalker implements TreeWalker
         if ($assoc->isOneToOne()) {
             $sql .= $targetTableName . ' ' . $targetTableAlias . ' ON ';
             $first = true;
-            
+
             foreach ($assoc->sourceToTargetKeyColumns as $sourceColumn => $targetColumn) {
-                if ( ! $first) {
-                    $sql .= ' AND ';
-                } else {
-                    $first = false;
-                }
+                if ( ! $first) $sql .= ' AND '; else $first = false;
                 
                 $quotedSourceColumn = $assoc->getQuotedJoinColumnName($sourceColumn, $this->_platform);
-                $quotedTargetColumn = $sourceClass->getQuotedColumnName($sourceClass->fieldNames[$targetColumn], $this->_platform);
                 
                 if ($relation->isOwningSide) {
+                    $quotedTargetColumn = $targetClass->getQuotedColumnName($targetClass->fieldNames[$targetColumn], $this->_platform);
                     $sql .= $sourceTableAlias . '.' . $quotedSourceColumn
                           . ' = ' 
                           . $targetTableAlias . '.' . $quotedTargetColumn;
                 } else {
+                    $quotedTargetColumn = $sourceClass->getQuotedColumnName($sourceClass->fieldNames[$targetColumn], $this->_platform);
                     $sql .= $sourceTableAlias . '.' . $quotedTargetColumn
                           . ' = ' 
                           . $targetTableAlias . '.' . $quotedSourceColumn;
@@ -824,8 +821,7 @@ class SqlWalker implements TreeWalker
             // 1) on Single Table Inheritance: always, since its marginal overhead
             // 2) on Class Table Inheritance only if partial objects are disallowed,
             //    since it requires outer joining subtables.
-            if ($class->isInheritanceTypeSingleTable() || ! $this->_em->getConfiguration()->getAllowPartialObjects()
-                    && ! $this->_query->getHint(Query::HINT_FORCE_PARTIAL_LOAD)) {
+            if ($class->isInheritanceTypeSingleTable() || ! $this->_query->getHint(Query::HINT_FORCE_PARTIAL_LOAD)) {
                 foreach ($class->subClasses as $subClassName) {
                     $subClass = $this->_em->getClassMetadata($subClassName);
                     foreach ($subClass->fieldMappings as $fieldName => $mapping) {
@@ -838,7 +834,7 @@ class SqlWalker implements TreeWalker
                         $sqlTableAlias = $this->getSqlTableAlias($subClass->primaryTable['name'], $dqlAlias);
                         $columnAlias = $this->getSqlColumnAlias($mapping['columnName']);
                         $sql .= $sqlTableAlias . '.' . $subClass->getQuotedColumnName($fieldName, $this->_platform)
-                        . ' AS ' . $columnAlias;
+                                . ' AS ' . $columnAlias;
 
                         $columnAlias = $this->_platform->getSqlResultCasing($columnAlias);
                         $this->_rsm->addFieldResult($dqlAlias, $columnAlias, $fieldName);

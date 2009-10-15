@@ -414,9 +414,9 @@ class StandardEntityPersister
      *        a new entity is created.
      * @return The loaded entity instance or NULL if the entity/the data can not be found.
      */
-    public function load(array $criteria, $entity = null)
+    public function load(array $criteria, $entity = null, $assoc = null)
     {
-        $stmt = $this->_conn->prepare($this->_getSelectEntitiesSql($criteria));
+        $stmt = $this->_conn->prepare($this->_getSelectEntitiesSql($criteria, $assoc));
         $stmt->execute(array_values($criteria));
         $result = $stmt->fetch(Connection::FETCH_ASSOC);
         $stmt->closeCursor();
@@ -525,34 +525,31 @@ class StandardEntityPersister
             $this->_em->getUnitOfWork()->registerManaged($entity, $id, $data);
         }
 
-        if ( ! $this->_em->getConfiguration()->getAllowPartialObjects()) {
-            // Partial objects not allowed, so make sure we put in proxies and
-            // empty collections respectively.
-            foreach ($this->_class->associationMappings as $field => $assoc) {
-                if ($assoc->isOneToOne()) {
-                    if ($assoc->isLazilyFetched()) {
-                        // Inject proxy
-                        $proxy = $this->_em->getProxyFactory()->getAssociationProxy($entity, $assoc, $joinColumnValues);
-                        $this->_class->reflFields[$field]->setValue($entity, $proxy);
-                    } else {
-                        // Eager load
-                        //TODO: Allow more efficient and configurable batching of these loads
-                        $assoc->load($entity, new $assoc->targetEntityName, $this->_em, $joinColumnValues);
-                    }
+        // Initialize associations
+        foreach ($this->_class->associationMappings as $field => $assoc) {
+            if ($assoc->isOneToOne()) {
+                if ($assoc->isLazilyFetched()) {
+                    // Inject proxy
+                    $proxy = $this->_em->getProxyFactory()->getAssociationProxy($entity, $assoc, $joinColumnValues);
+                    $this->_class->reflFields[$field]->setValue($entity, $proxy);
                 } else {
-                    // Inject collection
-                    $coll = new PersistentCollection(
-                            $this->_em,
-                            $this->_em->getClassMetadata($assoc->targetEntityName),
-                            /*$this->_class->reflFields[$field]->getValue($entity) ?:*/ new ArrayCollection);
-                    $coll->setOwner($entity, $assoc);
-                    $this->_class->reflFields[$field]->setValue($entity, $coll);
-                    if ($assoc->isLazilyFetched()) {
-                        $coll->setInitialized(false);
-                    } else {
-                        //TODO: Allow more efficient and configurable batching of these loads
-                        $assoc->load($entity, $coll, $this->_em);
-                    }
+                    // Eager load
+                    //TODO: Allow more efficient and configurable batching of these loads
+                    $assoc->load($entity, new $assoc->targetEntityName, $this->_em, $joinColumnValues);
+                }
+            } else {
+                // Inject collection
+                $coll = new PersistentCollection(
+                $this->_em,
+                $this->_em->getClassMetadata($assoc->targetEntityName),
+                /*$this->_class->reflFields[$field]->getValue($entity) ?:*/ new ArrayCollection);
+                $coll->setOwner($entity, $assoc);
+                $this->_class->reflFields[$field]->setValue($entity, $coll);
+                if ($assoc->isLazilyFetched()) {
+                    $coll->setInitialized(false);
+                } else {
+                    //TODO: Allow more efficient and configurable batching of these loads
+                    $assoc->load($entity, $coll, $this->_em);
                 }
             }
         }
@@ -575,13 +572,11 @@ class StandardEntityPersister
         }
         
         $joinColumnNames = array();
-        if ( ! $this->_em->getConfiguration()->getAllowPartialObjects()) {
-            foreach ($this->_class->associationMappings as $assoc) {
-                if ($assoc->isOwningSide && $assoc->isOneToOne()) {
-                    foreach ($assoc->targetToSourceKeyColumns as $srcColumn) {
-                        $joinColumnNames[] = $srcColumn;
-                        $columnList .= ', ' . $assoc->getQuotedJoinColumnName($srcColumn, $this->_platform);
-                    }
+        foreach ($this->_class->associationMappings as $assoc2) {
+            if ($assoc2->isOwningSide && $assoc2->isOneToOne()) {
+                foreach ($assoc2->targetToSourceKeyColumns as $srcColumn) {
+                    $joinColumnNames[] = $srcColumn;
+                    $columnList .= ', ' . $assoc2->getQuotedJoinColumnName($srcColumn, $this->_platform);
                 }
             }
         }
@@ -623,12 +618,10 @@ class StandardEntityPersister
             $columnList .= $this->_class->getQuotedColumnName($field, $this->_platform);
         }
         
-        if ( ! $this->_em->getConfiguration()->getAllowPartialObjects()) {
-            foreach ($this->_class->associationMappings as $assoc) {
-                if ($assoc->isOwningSide && $assoc->isOneToOne()) {
-                    foreach ($assoc->targetToSourceKeyColumns as $srcColumn) {
-                        $columnList .= ', ' . $assoc->getQuotedJoinColumnName($srcColumn, $this->_platform);
-                    }
+        foreach ($this->_class->associationMappings as $assoc) {
+            if ($assoc->isOwningSide && $assoc->isOneToOne()) {
+                foreach ($assoc->targetToSourceKeyColumns as $srcColumn) {
+                    $columnList .= ', ' . $assoc->getQuotedJoinColumnName($srcColumn, $this->_platform);
                 }
             }
         }

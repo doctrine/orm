@@ -58,8 +58,7 @@ class ObjectHydrator extends AbstractHydrator
     /** @override */
     protected function _prepare()
     {
-        $this->_allowPartialObjects = $this->_em->getConfiguration()->getAllowPartialObjects()
-                || isset($this->_hints[Query::HINT_FORCE_PARTIAL_LOAD]);
+        $this->_allowPartialObjects = isset($this->_hints[Query::HINT_FORCE_PARTIAL_LOAD]);
         
         $this->_proxyFactory = $this->_em->getProxyFactory();
         
@@ -201,7 +200,7 @@ class ObjectHydrator extends AbstractHydrator
                         foreach ($assoc->targetToSourceKeyColumns as $srcColumn) {
                             $joinColumns[$srcColumn] = $data[$assoc->joinColumnFieldNames[$srcColumn]];
                         }
-                        if ($assoc->isLazilyFetched()) {
+                        if ($assoc->isLazilyFetched() /*&& ! $assoc->isOptional*/) {
                             // Inject proxy
                             $proxy = $this->_proxyFactory->getAssociationProxy($entity, $assoc, $joinColumns);
                             $this->_uow->setOriginalEntityProperty($oid, $field, $proxy);

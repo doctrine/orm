@@ -2,6 +2,8 @@
 
 namespace Doctrine\Tests\ORM\Functional;
 
+use Doctrine\ORM\Query;
+
 require_once __DIR__ . '/../../TestInit.php';
 
 /**
@@ -49,7 +51,7 @@ class SingleTableInheritanceTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->clear();
 
         $query = $this->_em->createQuery("select e from Doctrine\Tests\ORM\Functional\ParentEntity e order by e.data asc");
-
+        $query->setHint(Query::HINT_FORCE_PARTIAL_LOAD, true);
         $entities = $query->getResult();
         
         $this->assertEquals(2, count($entities));
@@ -64,7 +66,6 @@ class SingleTableInheritanceTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->clear();
 
         $query = $this->_em->createQuery("select e from Doctrine\Tests\ORM\Functional\ChildEntity e");
-
         $entities = $query->getResult();
         $this->assertEquals(1, count($entities));
         $this->assertTrue($entities[0] instanceof ChildEntity);

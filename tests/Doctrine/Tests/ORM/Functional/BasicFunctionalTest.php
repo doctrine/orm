@@ -352,8 +352,6 @@ class BasicFunctionalTest extends \Doctrine\Tests\OrmFunctionalTestCase
     
     public function testAddToCollectionDoesNotInitialize()
     {
-        $this->_em->getConfiguration()->setAllowPartialObjects(false);
-        
         $user = new CmsUser;
         $user->name = 'Guilherme';
         $user->username = 'gblanco';
@@ -382,15 +380,13 @@ class BasicFunctionalTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $gblanco->addPhonenumber($phone);
         
         $this->assertFalse($gblanco->getPhonenumbers()->isInitialized());
-        
+
         $this->_em->flush();
         $this->_em->clear();
         
         $query = $this->_em->createQuery("select u, p from Doctrine\Tests\Models\CMS\CmsUser u join u.phonenumbers p where u.username='gblanco'");
         $gblanco2 = $query->getSingleResult();
         $this->assertEquals(4, $gblanco2->getPhonenumbers()->count());
-        
-        $this->_em->getConfiguration()->setAllowPartialObjects(true);
     }
     
     public function testSetSetAssociationWithGetReference()
@@ -417,7 +413,10 @@ class BasicFunctionalTest extends \Doctrine\Tests\OrmFunctionalTestCase
         // that address to the user without actually loading it, using getReference().
         $addressRef = $this->_em->getReference('Doctrine\Tests\Models\CMS\CmsAddress', $address->getId());
         
-        $user->setAddress($addressRef);
+        //$addressRef->getId();
+        //\Doctrine\Common\Util\Debug::dump($addressRef);
+        
+        $user->setAddress($addressRef); // Ugh! Initializes address 'cause of $address->setUser($user)!
         
         $this->_em->flush();
         $this->_em->clear();
@@ -425,7 +424,7 @@ class BasicFunctionalTest extends \Doctrine\Tests\OrmFunctionalTestCase
         // Check with a fresh load that the association is indeed there
         $query = $this->_em->createQuery("select u, a from Doctrine\Tests\Models\CMS\CmsUser u join u.address a where u.username='gblanco'");
         $gblanco = $query->getSingleResult();
-        
+
         $this->assertTrue($gblanco instanceof CmsUser);
         $this->assertTrue($gblanco->getAddress() instanceof CmsAddress);
         $this->assertEquals('Berlin', $gblanco->getAddress()->getCity());

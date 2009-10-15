@@ -6,6 +6,7 @@ require_once __DIR__ . '/../../TestInit.php';
 
 use Doctrine\Tests\Mocks\HydratorMockStatement;
 use Doctrine\ORM\Query\ResultSetMapping;
+use Doctrine\ORM\Query;
 
 /**
  * Tests to prevent serious performance regressions.
@@ -24,7 +25,7 @@ class HydrationPerformanceTest extends \Doctrine\Tests\OrmPerformanceTestCase
      *
      * MAXIMUM TIME: 2 seconds
      */
-    public function testSimpleQueryArrayHydrationPerformance()
+    public function testSimpleQueryArrayHydrationPerformance10000Rows()
     {
         $rsm = new ResultSetMapping;
         $rsm->addEntityResult('Doctrine\Tests\Models\CMS\CmsUser', 'u');
@@ -82,7 +83,7 @@ class HydrationPerformanceTest extends \Doctrine\Tests\OrmPerformanceTestCase
      *
      * MAXIMUM TIME: 3 seconds
      */
-    public function testMixedQueryFetchJoinArrayHydrationPerformance()
+    public function testMixedQueryFetchJoinArrayHydrationPerformance10000Rows()
     {
         $rsm = new ResultSetMapping;
         $rsm->addEntityResult('Doctrine\Tests\Models\CMS\CmsUser', 'u');
@@ -154,7 +155,7 @@ class HydrationPerformanceTest extends \Doctrine\Tests\OrmPerformanceTestCase
      *
      * MAXIMUM TIME: 3 seconds
      */
-    public function testSimpleQueryObjectHydrationPerformance()
+    public function testSimpleQueryPartialObjectHydrationPerformance10000Rows()
     {
         $rsm = new ResultSetMapping;
         $rsm->addEntityResult('Doctrine\Tests\Models\CMS\CmsUser', 'u');
@@ -200,6 +201,62 @@ class HydrationPerformanceTest extends \Doctrine\Tests\OrmPerformanceTestCase
 
         $this->setMaxRunningTime(3);
         $s = microtime(true);
+        $result = $hydrator->hydrateAll($stmt, $rsm, array(Query::HINT_FORCE_PARTIAL_LOAD => true));
+        $e = microtime(true);
+        echo __FUNCTION__ . " - " . ($e - $s) . " seconds" . PHP_EOL;
+    }
+    
+    /**
+     * [romanb: 10000 rows => 3 seconds]
+     *
+     * MAXIMUM TIME: 4.5 seconds
+     */
+    public function testSimpleQueryFullObjectHydrationPerformance10000Rows()
+    {
+        $rsm = new ResultSetMapping;
+        $rsm->addEntityResult('Doctrine\Tests\Models\CMS\CmsUser', 'u');
+        $rsm->addFieldResult('u', 'u__id', 'id');
+        $rsm->addFieldResult('u', 'u__status', 'status');
+        $rsm->addFieldResult('u', 'u__username', 'username');
+        $rsm->addFieldResult('u', 'u__name', 'name');
+
+        // Faked result set
+        $resultSet = array(
+            //row1
+            array(
+                'u__id' => '1',
+                'u__status' => 'developer',
+                'u__username' => 'romanb',
+                'u__name' => 'Roman',
+            ),
+            array(
+                'u__id' => '1',
+                'u__status' => 'developer',
+                'u__username' => 'romanb',
+                'u__name' => 'Roman',
+            ),
+            array(
+                'u__id' => '2',
+                'u__status' => 'developer',
+                'u__username' => 'romanb',
+                'u__name' => 'Roman',
+            )
+        );
+
+        for ($i = 4; $i < 10000; ++$i) {
+            $resultSet[] = array(
+                'u__id' => $i,
+                'u__status' => 'developer',
+                'u__username' => 'jwage',
+                'u__name' => 'Jonathan',
+            );
+        }
+
+        $stmt = new HydratorMockStatement($resultSet);
+        $hydrator = new \Doctrine\ORM\Internal\Hydration\ObjectHydrator($this->_em);
+
+        $this->setMaxRunningTime(4);
+        $s = microtime(true);
         $result = $hydrator->hydrateAll($stmt, $rsm);
         $e = microtime(true);
         echo __FUNCTION__ . " - " . ($e - $s) . " seconds" . PHP_EOL;
@@ -210,7 +267,79 @@ class HydrationPerformanceTest extends \Doctrine\Tests\OrmPerformanceTestCase
      *
      * MAXIMUM TIME: 1 second
      */
-    public function testMixedQueryFetchJoinObjectHydrationPerformance()
+    public function testMixedQueryFetchJoinPartialObjectHydrationPerformance2000Rows()
+    {
+        $rsm = new ResultSetMapping;
+        $rsm->addEntityResult('Doctrine\Tests\Models\CMS\CmsUser', 'u');
+        $rsm->addJoinedEntityResult(
+                'Doctrine\Tests\Models\CMS\CmsPhonenumber',
+                'p',
+                'u',
+                'phonenumbers'
+        );
+        $rsm->addFieldResult('u', 'u__id', 'id');
+        $rsm->addFieldResult('u', 'u__status', 'status');
+        $rsm->addFieldResult('u', 'u__username', 'username');
+        $rsm->addFieldResult('u', 'u__name', 'name');
+        $rsm->addScalarResult('sclr0', 'nameUpper');
+        $rsm->addFieldResult('p', 'p__phonenumber', 'phonenumber');
+
+        // Faked result set
+        $resultSet = array(
+            //row1
+            array(
+                'u__id' => '1',
+                'u__status' => 'developer',
+                'u__username' => 'romanb',
+                'u__name' => 'Roman',
+                'sclr0' => 'ROMANB',
+                'p__phonenumber' => '42',
+            ),
+            array(
+                'u__id' => '1',
+                'u__status' => 'developer',
+                'u__username' => 'romanb',
+                'u__name' => 'Roman',
+                'sclr0' => 'ROMANB',
+                'p__phonenumber' => '43',
+            ),
+            array(
+                'u__id' => '2',
+                'u__status' => 'developer',
+                'u__username' => 'romanb',
+                'u__name' => 'Roman',
+                'sclr0' => 'JWAGE',
+                'p__phonenumber' => '91'
+            )
+        );
+
+        for ($i = 4; $i < 2000; ++$i) {
+            $resultSet[] = array(
+                'u__id' => $i,
+                'u__status' => 'developer',
+                'u__username' => 'jwage',
+                'u__name' => 'Jonathan',
+                'sclr0' => 'JWAGE' . $i,
+                'p__phonenumber' => '91'
+            );
+        }
+
+        $stmt = new HydratorMockStatement($resultSet);
+        $hydrator = new \Doctrine\ORM\Internal\Hydration\ObjectHydrator($this->_em);
+
+        $this->setMaxRunningTime(1);
+        $s = microtime(true);
+        $result = $hydrator->hydrateAll($stmt, $rsm, array(Query::HINT_FORCE_PARTIAL_LOAD => true));
+        $e = microtime(true);
+        echo __FUNCTION__ . " - " . ($e - $s) . " seconds" . PHP_EOL;
+    }
+    
+    /**
+     * [romanb: 2000 rows => 0.6 seconds]
+     *
+     * MAXIMUM TIME: 1 second
+     */
+    public function testMixedQueryFetchJoinFullObjectHydrationPerformance200Rows()
     {
         $rsm = new ResultSetMapping;
         $rsm->addEntityResult('Doctrine\Tests\Models\CMS\CmsUser', 'u');
@@ -284,7 +413,7 @@ class HydrationPerformanceTest extends \Doctrine\Tests\OrmPerformanceTestCase
      *
      * MAXIMUM TIME: 1 second
      */
-    public function testSimpleQueryScalarHydrationPerformance()
+    public function testSimpleQueryScalarHydrationPerformance10000Rows()
     {
         $rsm = new ResultSetMapping;
         $rsm->addEntityResult('Doctrine\Tests\Models\CMS\CmsUser', 'u');
