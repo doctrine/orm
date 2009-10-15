@@ -132,7 +132,6 @@ class ObjectHydratorTest extends HydrationTestCase
         $this->_em->setProxyFactory($proxyFactory);
 
         // configuring lazy loading
-        $this->_em->getConfiguration()->setAllowPartialObjects(false);
         $metadata = $this->_em->getClassMetadata('Doctrine\Tests\Models\ECommerce\ECommerceProduct');
         $metadata->getAssociationMapping('shipping')->fetchMode = AssociationMapping::FETCH_LAZY;
 

@@ -417,6 +417,13 @@ class StandardEntityPersister
     public function load(array $criteria, $entity = null, $assoc = null)
     {
         $stmt = $this->_conn->prepare($this->_getSelectEntitiesSql($criteria, $assoc));
+        if (!is_object($stmt)) {
+            try {
+                throw new \Exception;
+            } catch (\Exception $e) {
+                var_dump($e->getTraceAsString());
+            }
+        }
         $stmt->execute(array_values($criteria));
         $result = $stmt->fetch(Connection::FETCH_ASSOC);
         $stmt->closeCursor();

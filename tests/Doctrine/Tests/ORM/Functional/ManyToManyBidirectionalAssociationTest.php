@@ -85,7 +85,6 @@ class ManyToManyBidirectionalAssociationTest extends AbstractManyToManyAssociati
     {
         $this->_createLoadingFixture();
 
-        $this->_em->getConfiguration()->setAllowPartialObjects(false);
         $metadata = $this->_em->getClassMetadata('Doctrine\Tests\Models\ECommerce\ECommerceCategory');
         $metadata->getAssociationMapping('products')->fetchMode = AssociationMapping::FETCH_LAZY;
 
@@ -98,7 +97,6 @@ class ManyToManyBidirectionalAssociationTest extends AbstractManyToManyAssociati
     {
         $this->_createLoadingFixture();
 
-        $this->_em->getConfiguration()->setAllowPartialObjects(false);
         $metadata = $this->_em->getClassMetadata('Doctrine\Tests\Models\ECommerce\ECommerceProduct');
         $metadata->getAssociationMapping('categories')->fetchMode = AssociationMapping::FETCH_LAZY;
 

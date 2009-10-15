@@ -61,7 +61,6 @@ class OneToOneUnidirectionalAssociationTest extends \Doctrine\Tests\OrmFunctiona
     
     public function testLazyLoadsObjects() {
         $this->_createFixture();
-        $this->_em->getConfiguration()->setAllowPartialObjects(false);
         $metadata = $this->_em->getClassMetadata('Doctrine\Tests\Models\ECommerce\ECommerceProduct');
         $metadata->getAssociationMapping('shipping')->fetchMode = AssociationMapping::FETCH_LAZY;
 

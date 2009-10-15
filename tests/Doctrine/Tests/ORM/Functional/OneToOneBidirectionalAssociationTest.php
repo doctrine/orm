@@ -67,7 +67,6 @@ class OneToOneBidirectionalAssociationTest extends \Doctrine\Tests\OrmFunctional
     
     public function testLazyLoadsObjectsOnTheOwningSide() {
         $this->_createFixture();
-        $this->_em->getConfiguration()->setAllowPartialObjects(false);
         $metadata = $this->_em->getClassMetadata('Doctrine\Tests\Models\ECommerce\ECommerceCart');
         $metadata->getAssociationMapping('customer')->fetchMode = AssociationMapping::FETCH_LAZY;
 
@@ -82,7 +81,6 @@ class OneToOneBidirectionalAssociationTest extends \Doctrine\Tests\OrmFunctional
     public function testLazyLoadsObjectsOnTheInverseSide()
     {
         $this->_createFixture();
-        $this->_em->getConfiguration()->setAllowPartialObjects(false);
         $metadata = $this->_em->getClassMetadata('Doctrine\Tests\Models\ECommerce\ECommerceCustomer');
         $metadata->getAssociationMapping('mentor')->fetchMode = AssociationMapping::FETCH_EAGER;
 
@@ -97,9 +95,7 @@ class OneToOneBidirectionalAssociationTest extends \Doctrine\Tests\OrmFunctional
     }
     
     public function testUpdateWithProxyObject()
-    {
-        $this->_em->getConfiguration()->setAllowPartialObjects(false);
-        
+    {        
         $cust = new ECommerceCustomer;
         $cust->setName('Roman');
         $cart = new ECommerceCart;
@@ -130,9 +126,7 @@ class OneToOneBidirectionalAssociationTest extends \Doctrine\Tests\OrmFunctional
         $cart3 = $query2->getSingleResult();
         
         $this->assertTrue($cart3->getCustomer() instanceof ECommerceCustomer);
-        $this->assertEquals('Roman', $cart3->getCustomer()->getName());        
-        
-        $this->_em->getConfiguration()->setAllowPartialObjects(true);
+        $this->assertEquals('Roman', $cart3->getCustomer()->getName());
     }
 
     protected function _createFixture()

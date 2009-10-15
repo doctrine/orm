@@ -43,7 +43,6 @@ class ClassTableInheritanceTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $this->_em->clear();
         
-        $this->_em->getConfiguration()->setAllowPartialObjects(false);
         $query = $this->_em->createQuery("select p from Doctrine\Tests\Models\Company\CompanyPerson p order by p.id asc");
 
         $entities = $query->getResult();
@@ -56,7 +55,6 @@ class ClassTableInheritanceTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertEquals('Roman S. Borschel', $entities[0]->getName());
         $this->assertEquals('Guilherme Blanco', $entities[1]->getName());
         $this->assertEquals(100000, $entities[1]->getSalary());
-        $this->_em->getConfiguration()->setAllowPartialObjects(true);
 
         $this->_em->clear();
         
@@ -197,8 +195,6 @@ class ClassTableInheritanceTest extends \Doctrine\Tests\OrmFunctionalTestCase
         
         $orgId = $org->getId();
         
-        $this->_em->getConfiguration()->setAllowPartialObjects(false);
-        
         $q = $this->_em->createQuery('select a from Doctrine\Tests\Models\Company\CompanyOrganization a where a.id = ?1');
         $q->setParameter(1, $orgId);
         
@@ -219,7 +215,5 @@ class ClassTableInheritanceTest extends \Doctrine\Tests\OrmFunctionalTestCase
             $this->assertTrue($events[0] instanceof CompanyRaffle);
             $this->assertTrue($events[1] instanceof CompanyAuction);
         }
-        
-        $this->_em->getConfiguration()->setAllowPartialObjects(true);
     }
 }

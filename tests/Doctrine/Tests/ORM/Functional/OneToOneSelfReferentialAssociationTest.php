@@ -66,7 +66,6 @@ class OneToOneSelfReferentialAssociationTest extends \Doctrine\Tests\OrmFunction
     {    
         $this->_createFixture();
 
-        $this->_em->getConfiguration()->setAllowPartialObjects(false);
         $metadata = $this->_em->getClassMetadata('Doctrine\Tests\Models\ECommerce\ECommerceCustomer');
         $metadata->getAssociationMapping('mentor')->fetchMode = AssociationMapping::FETCH_LAZY;
         

@@ -83,14 +83,6 @@ abstract class AssociationMapping
     public $isOwningSide = true;
     
     /**
-     * Whether the association is optional (0..X) or not (1..X).
-     * By default all associations are optional.
-     *
-     * @var boolean
-     */
-    public $isOptional = true;
-    
-    /**
      * The name of the source Entity (the Entity that defines this mapping).
      *
      * @var string
@@ -180,8 +172,6 @@ abstract class AssociationMapping
         }
         
         // Optional attributes for both sides
-        $this->isOptional = isset($mapping['optional']) ?
-                (bool)$mapping['optional'] : true;
         $this->fetchMode = isset($mapping['fetch']) ?
                 $mapping['fetch'] : self::FETCH_LAZY;
         $this->cascades = isset($mapping['cascade']) ?
@@ -286,17 +276,6 @@ abstract class AssociationMapping
     public function isInverseSide()
     {
         return ! $this->isOwningSide;
-    }
-    
-    /**
-     * Whether the association is optional (0..X), or not (1..X).
-     *
-     * @return boolean TRUE if the association is optional, FALSE otherwise.
-     * @todo Only applicable to OneToOne. Move there.
-     */
-    public function isOptional()
-    {
-        return $this->isOptional;
     }
     
     /**

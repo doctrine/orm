@@ -1640,18 +1640,8 @@ class UnitOfWork implements PropertyChangedListener
 
     public function isCollectionScheduledForDeletion(PersistentCollection $coll)
     {
-        //...
+        return in_array($coll, $this->_collectionsDeletions, true);
     }
-
-    /*public function scheduleCollectionRecreation(PersistentCollection $coll)
-    {
-        $this->_collectionRecreations[] = $coll;
-    }*/
-
-    /*public function isCollectionScheduledForRecreation(PersistentCollection $coll)
-    {
-        //...
-    }*/
 
     /**
      * INTERNAL:

@@ -60,34 +60,6 @@ class Configuration extends \Doctrine\DBAL\Configuration
     }
 
     /**
-     * Gets a boolean flag that indicates whether partial objects are allowed.
-     *
-     * If partial objects are allowed, Doctrine will never use proxies or lazy loading
-     * and you always only get what you explicitly query for.
-     *
-     * @return boolean Whether partial objects are allowed.
-     * @todo Remove
-     * @deprecated
-     */
-    public function getAllowPartialObjects()
-    {
-        return true;
-    }
-
-    /**
-     * Sets a boolean flag that specifies whether partial objects are allowed.
-     *
-     * If partial objects are allowed, Doctrine will never use proxies or lazy loading
-     * and you always only get what you explicitly query for.
-     *
-     * @param boolean $allowed Whether partial objects are allowed.
-     * @todo Remove
-     * @deprecated
-     */
-    public function setAllowPartialObjects($allowed)
-    {}
-
-    /**
      * Sets the directory where Doctrine generates any necessary proxy class files.
      *
      * @param string $dir

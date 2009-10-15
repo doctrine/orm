@@ -59,6 +59,14 @@ class OneToOneMapping extends AssociationMapping
      * @var boolean
      */
     public $orphanRemoval = false;
+    
+    /**
+     * Whether the association is optional (0..1) or not (1..1).
+     * By default all associations are optional.
+     *
+     * @var boolean
+     */
+    public $isOptional = true;
 
     /**
      * The join column definitions.
@@ -78,7 +86,7 @@ class OneToOneMapping extends AssociationMapping
     /**
      * Creates a new OneToOneMapping.
      *
-     * @param array $mapping  The mapping info.
+     * @param array $mapping The mapping info.
      */
     public function __construct(array $mapping)
     {
@@ -117,6 +125,8 @@ class OneToOneMapping extends AssociationMapping
             $this->targetToSourceKeyColumns = array_flip($this->sourceToTargetKeyColumns);
         }
         
+        $this->isOptional = isset($mapping['optional']) ?
+                (bool)$mapping['optional'] : true;
         $this->orphanRemoval = isset($mapping['orphanRemoval']) ?
                 (bool) $mapping['orphanRemoval'] : false;
         
@@ -125,6 +135,17 @@ class OneToOneMapping extends AssociationMapping
         }*/
         
         return $mapping;
+    }
+    
+    /**
+     * Whether the association is optional (0..1), or not (1..1).
+     *
+     * @return boolean TRUE if the association is optional, FALSE otherwise.
+     * @todo Only applicable to OneToOne. Move there.
+     */
+    public function isOptional()
+    {
+        return $this->isOptional;
     }
 
     /**

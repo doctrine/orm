@@ -24,9 +24,7 @@ class StandardEntityPersisterTest extends \Doctrine\Tests\OrmFunctionalTestCase
     }
 
     public function testAcceptsForeignKeysAsCriteria()
-    {
-        $this->_em->getConfiguration()->setAllowPartialObjects(false);
-        
+    {        
         $customer = new ECommerceCustomer();
         $customer->setName('John Doe');
         $cart = new ECommerceCart();

@@ -303,7 +303,6 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
         
         // "Get all persons who have $person as a friend."
         // Tough one: Many-many self-referencing ("friends") with class table inheritance
-        $this->_em->getConfiguration()->setAllowPartialObjects(false);
         $q3 = $this->_em->createQuery('SELECT p FROM Doctrine\Tests\Models\Company\CompanyPerson p WHERE :param MEMBER OF p.friends');
         $person = new \Doctrine\Tests\Models\Company\CompanyPerson;
         $this->_em->getClassMetadata(get_class($person))->setIdentifierValues($person, 101);
@@ -312,7 +311,6 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
             'SELECT c0_.id AS id0, c0_.name AS name1, c1_.title AS title2, c2_.salary AS salary3, c2_.department AS department4, c0_.discr AS discr5, c0_.spouse_id AS spouse_id6 FROM company_persons c0_ LEFT JOIN company_managers c1_ ON c0_.id = c1_.id LEFT JOIN company_employees c2_ ON c0_.id = c2_.id WHERE EXISTS (SELECT 1 FROM company_persons_friends c3_ INNER JOIN company_persons c4_ ON c3_.person_id = c0_.id WHERE c3_.friend_id = c4_.id AND c4_.id = ?)',
             $q3->getSql()
         );
-        $this->_em->getConfiguration()->setAllowPartialObjects(true);
     }
 
     public function testSupportsCurrentDateFunction()

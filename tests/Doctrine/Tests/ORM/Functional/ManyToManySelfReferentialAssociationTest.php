@@ -73,7 +73,6 @@ class ManyToManySelfReferentialAssociationTest extends AbstractManyToManyAssocia
     {
         $this->_createLoadingFixture();
 
-        $this->_em->getConfiguration()->setAllowPartialObjects(false);
         $metadata = $this->_em->getClassMetadata('Doctrine\Tests\Models\ECommerce\ECommerceProduct');
         $metadata->getAssociationMapping('related')->fetchMode = AssociationMapping::FETCH_LAZY;
 

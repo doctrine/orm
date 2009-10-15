@@ -89,7 +89,6 @@ class OneToManySelfReferentialAssociationTest extends \Doctrine\Tests\OrmFunctio
     public function testLazyLoadsOneToManyAssociation()
     {
         $this->_createFixture();
-        $this->_em->getConfiguration()->setAllowPartialObjects(false);
         $metadata = $this->_em->getClassMetadata('Doctrine\Tests\Models\ECommerce\ECommerceCategory');
         $metadata->getAssociationMapping('children')->fetchMode = AssociationMapping::FETCH_LAZY;
 
