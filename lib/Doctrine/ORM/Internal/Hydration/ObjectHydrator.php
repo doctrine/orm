@@ -381,7 +381,6 @@ class ObjectHydrator extends AbstractHydrator
                             $this->_uow->setOriginalEntityProperty($oid, $relationField, $element);
                             $targetClass = $this->_ce[$relation->targetEntityName];
                             if ($relation->isOwningSide) {
-                                //FIXME: Not correct for many-to-one where other side is a collection!
                                 // If there is an inverse mapping on the target class its bidirectional
                                 if (isset($targetClass->inverseMappings[$relation->sourceEntityName][$relationField])) {
                                     $inverseAssoc = $targetClass->inverseMappings[$relation->sourceEntityName][$relationField];
