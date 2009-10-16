@@ -101,7 +101,7 @@ class ObjectHydrator extends AbstractHydrator
     /**
      * {@inheritdoc}
      */
-    /*@override*/ protected function _cleanup()
+    protected function _cleanup()
     {
         parent::_cleanup();
         $this->_identifierMap =
@@ -113,7 +113,7 @@ class ObjectHydrator extends AbstractHydrator
     /**
      * {@inheritdoc}
      */
-    /*@override*/ protected function _hydrateAll()
+    protected function _hydrateAll()
     {
         $result = array();
         $cache = array();
@@ -267,7 +267,7 @@ class ObjectHydrator extends AbstractHydrator
     /**
      * {@inheritdoc}
      */
-    /*@override*/ protected function _hydrateRow(array &$data, array &$cache, array &$result)
+    protected function _hydrateRow(array &$data, array &$cache, array &$result)
     {
         // Initialize
         $id = $this->_idTemplate; // initialize the id-memory
@@ -381,10 +381,18 @@ class ObjectHydrator extends AbstractHydrator
                             $this->_uow->setOriginalEntityProperty($oid, $relationField, $element);
                             $targetClass = $this->_ce[$relation->targetEntityName];
                             if ($relation->isOwningSide) {
+                                //FIXME: Not correct for many-to-one where other side is a collection!
                                 // If there is an inverse mapping on the target class its bidirectional
                                 if (isset($targetClass->inverseMappings[$relation->sourceEntityName][$relationField])) {
-                                    $sourceProp = $targetClass->inverseMappings[$relation->sourceEntityName][$relationField]->sourceFieldName;
-                                    $targetClass->reflFields[$sourceProp]->setValue($element, $parentObject);
+                                    $inverseAssoc = $targetClass->inverseMappings[$relation->sourceEntityName][$relationField];
+                                    if ($inverseAssoc->isOneToMany()) {
+                                        // Only initialize reverse collection if it is not yet initialized.
+                                        if ( ! isset($this->_initializedCollections[spl_object_hash($element) . $inverseAssoc->sourceFieldName])) {
+                                            $this->_initRelatedCollection($element, $inverseAssoc->sourceFieldName);
+                                        }
+                                    } else {
+                                        $targetClass->reflFields[$inverseAssoc->sourceFieldName]->setValue($element, $parentObject);
+                                    }
                                 } else if ($this->_ce[$parentClass] === $targetClass && $relation->mappedByFieldName) {
                                     // Special case: bi-directional self-referencing one-one on the same class
                                     $targetClass->reflFields[$relationField]->setValue($element, $parentObject);
