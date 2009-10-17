@@ -68,14 +68,14 @@ class SchemaToolTask extends AbstractTask
                 ->writeln("\t\tUpdates the schema in EntityManager (update tables on Database)")
                 ->writeln("\t\t\tIf defined, --create and --drop can not be requested on same task")
                 ->write(PHP_EOL)
+                ->write('--re-create', 'REQ_ARG')
+                ->writeln("\t\tRuns --drop then --create to re-create the database.")
+                ->write(PHP_EOL)
                 ->write('--dump-sql', 'OPT_ARG')
                 ->writeln("\t\tInstead of try to apply generated SQLs into EntityManager, output them.")
                 ->write(PHP_EOL)
                 ->write('--class-dir=<path>', 'OPT_ARG')
                 ->writeln("\tOptional class directory to fetch for Entities.")
-                ->write(PHP_EOL)
-                ->write('--re-create', 'OPT_ARG')
-                ->writeln("\t\tRuns --drop then --create to re-create the database.")
                 ->write(PHP_EOL);
     }
 
@@ -90,9 +90,8 @@ class SchemaToolTask extends AbstractTask
     private function _writeSynopsis($printer)
     {
         $printer->write('schema-tool', 'KEYWORD')
-                ->write(' (--create | --drop | --update)', 'REQ_ARG')
-                ->write(' [--dump-sql] [--class-dir=<path>]', 'OPT_ARG')
-                ->writeln(' [--re-create]', 'OPT_ARG');
+                ->write(' (--create | --drop | --update | --re-create)', 'REQ_ARG')
+                ->writeln(' [--dump-sql] [--class-dir=<path>]', 'OPT_ARG');
     }
     
     /**
