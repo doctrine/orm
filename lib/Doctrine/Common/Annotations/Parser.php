@@ -201,7 +201,7 @@ class Parser
     }
 
     /**
-     * Annotation     ::= "@" AnnotationName ["(" [Values] ")"]
+     * Annotation     ::= "@" AnnotationName [ "(" [Values] ")" ]
      * AnnotationName ::= QualifiedName | SimpleName
      * QualifiedName  ::= NameSpacePart "\" {NameSpacePart "\"}* SimpleName
      * NameSpacePart  ::= identifier
@@ -262,7 +262,7 @@ class Parser
     }
 
     /**
-     * Values ::= Array | Value {"," Value}*
+     * Values ::= Value {"," Value}*
      *
      * @return array
      */
@@ -320,7 +320,7 @@ class Parser
     }
 
     /**
-     * PlainValue ::= integer | string | float | boolean | Array | Annotation
+     * PlainValue ::= integer | string | float | Array | Annotation
      *
      * @return mixed
      */
@@ -410,7 +410,7 @@ class Parser
 
     /**
      * ArrayEntry ::= Value | KeyValuePair
-     * KeyValuePair ::= Key "=" PlainValue
+     * KeyValuePair ::= Key "=" Value
      * Key ::= string | integer
      *
      * @return array
@@ -429,7 +429,7 @@ class Parser
             $key = $this->_lexer->token['value'];
             $this->match('=');
             
-            return array($key => $this->PlainValue());
+            return array($key => $this->Value());
         }
         
         return array($this->Value());
