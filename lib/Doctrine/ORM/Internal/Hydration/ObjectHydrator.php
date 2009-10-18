@@ -265,13 +265,32 @@ class ObjectHydrator extends AbstractHydrator
     }
 
     /**
-     * {@inheritdoc}
+     * Hydrates a single row in an SQL result set.
+     * 
+     * @internal
+     * First, the data of the row is split into chunks where each chunk contains data
+     * that belongs to a particular component/class. Afterwards, all these chunks
+     * are processed, one after the other. For each chunk of class data only one of the
+     * following code paths is executed:
+     * 
+     * Path A: The data chunk belongs to a joined/associated object and the association
+     *         is collection-valued.
+     * Path B: The data chunk belongs to a joined/associated object and the association
+     *         is single-valued.
+     * Path C: The data chunk belongs to a root result element/object that appears in the topmost
+     *         level of the hydrated result. A typical example are the objects of the type
+     *         specified by the FROM clause in a DQL query. 
+     * 
+     * @param array $data The data of the row to process.
+     * @param array $cache
+     * @param array $result
      */
     protected function _hydrateRow(array &$data, array &$cache, array &$result)
     {
         // Initialize
         $id = $this->_idTemplate; // initialize the id-memory
         $nonemptyComponents = array();
+        // Split the row data into chunks of class data.
         $rowData = $this->_gatherRowData($data, $cache, $id, $nonemptyComponents);
 
         // Extract scalar values. They're appended at the end.
@@ -280,7 +299,7 @@ class ObjectHydrator extends AbstractHydrator
             unset($rowData['scalars']);
         }
 
-        // Hydrate the data found in the current row.
+        // Hydrate the data chunks
         foreach ($rowData as $dqlAlias => $data) {
             $index = false;
             $entityName = $this->_rsm->aliasMap[$dqlAlias];
@@ -309,7 +328,7 @@ class ObjectHydrator extends AbstractHydrator
                 
                 // Check the type of the relation (many or single-valued)
                 if ( ! $relation->isOneToOne()) {
-                    // Collection-valued association
+                    // PATH A: Collection-valued association
                     if (isset($nonemptyComponents[$dqlAlias])) {
                         $collKey = $oid . $relationField;
                         if (isset($this->_initializedCollections[$collKey])) {
@@ -324,7 +343,7 @@ class ObjectHydrator extends AbstractHydrator
                         
                         if ( ! $indexExists || ! $indexIsValid) {
                             if (isset($this->_existingCollections[$collKey])) {
-                                // Collection exists, only look for $element in identity map.
+                                // Collection exists, only look for the element in the identity map.
                                 if ($element = $this->_getEntityFromIdentityMap($entityName, $data)) {
                                     $this->_resultPointers[$dqlAlias] = $element;
                                 } else {
@@ -333,16 +352,15 @@ class ObjectHydrator extends AbstractHydrator
                             } else {
                                 $element = $this->_getEntity($data, $dqlAlias);
                                 
-                                // If it's a bi-directional many-to-many, also initialize the reverse collection.
+                                // If it's a bi-directional many-to-many, also initialize the reverse collection,
+                                // but only once, of course.
                                 if ($relation->isManyToMany()) {
                                     if ($relation->isOwningSide && isset($this->_ce[$entityName]->inverseMappings[$relation->sourceEntityName][$relationField])) {
                                         $inverseFieldName = $this->_ce[$entityName]->inverseMappings[$relation->sourceEntityName][$relationField]->sourceFieldName;
-                                        // Only initialize reverse collection if it is not yet initialized.
                                         if ( ! isset($this->_initializedCollections[spl_object_hash($element) . $inverseFieldName])) {
                                             $this->_initRelatedCollection($element, $inverseFieldName);
                                         }
                                     } else if ($relation->mappedByFieldName) {
-                                        // Only initialize reverse collection if it is not yet initialized.
                                         if ( ! isset($this->_initializedCollections[spl_object_hash($element) . $relation->mappedByFieldName])) {
                                             $this->_initRelatedCollection($element, $relation->mappedByFieldName);
                                         }
@@ -372,7 +390,7 @@ class ObjectHydrator extends AbstractHydrator
                         $this->_uow->setOriginalEntityProperty($oid, $relationField, $coll);
                     }
                 } else {
-                    // Single-valued association
+                    // PATH B: Single-valued association
                     $reflFieldValue = $reflField->getValue($parentObject);
                     if ( ! $reflFieldValue || isset($this->_hints[Query::HINT_REFRESH])) {
                         if (isset($nonemptyComponents[$dqlAlias])) {
@@ -410,7 +428,7 @@ class ObjectHydrator extends AbstractHydrator
                     }
                 }
             } else {
-                // Its a root result element
+                // PATH C: Its a root result element
                 $this->_rootAliases[$dqlAlias] = true; // Mark as root alias
 
                 if ( ! isset($this->_identifierMap[$dqlAlias][$id[$dqlAlias]])) {

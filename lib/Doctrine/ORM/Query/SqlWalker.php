@@ -680,13 +680,13 @@ class SqlWalker implements TreeWalker
             
             if ($relation->isOwningSide) {
                 foreach ($assoc->sourceToRelationKeyColumns as $sourceColumn => $relationColumn) {
-                    $sql .= $sourceTableAlias . '.' . $sourceClass->getQuotedColumnName($sourceColumn, $this->_platform)
+                    $sql .= $sourceTableAlias . '.' . $sourceClass->getQuotedColumnName($sourceClass->fieldNames[$sourceColumn], $this->_platform)
                           . ' = '
                           . $joinTableAlias . '.' . $assoc->getQuotedJoinColumnName($relationColumn, $this->_platform);
                 }
             } else {
                 foreach ($assoc->targetToRelationKeyColumns as $targetColumn => $relationColumn) {
-                    $sql .= $sourceTableAlias . '.' . $targetClass->getQuotedColumnName($targetColumn, $this->_platform)
+                    $sql .= $sourceTableAlias . '.' . $targetClass->getQuotedColumnName($targetClass->fieldNames[$targetColumn], $this->_platform)
                           . ' = '
                           . $joinTableAlias . '.' . $assoc->getQuotedJoinColumnName($relationColumn, $this->_platform);
                 }
@@ -699,13 +699,13 @@ class SqlWalker implements TreeWalker
 
             if ($relation->isOwningSide) {
                 foreach ($assoc->targetToRelationKeyColumns as $targetColumn => $relationColumn) {
-                    $sql .= $targetTableAlias . '.' . $targetClass->getQuotedColumnName($targetColumn, $this->_platform)
+                    $sql .= $targetTableAlias . '.' . $targetClass->getQuotedColumnName($targetClass->fieldNames[$targetColumn], $this->_platform)
                           . ' = '
                           . $joinTableAlias . '.' . $assoc->getQuotedJoinColumnName($relationColumn, $this->_platform);
                 }
             } else {
                 foreach ($assoc->sourceToRelationKeyColumns as $sourceColumn => $relationColumn) {
-                    $sql .= $targetTableAlias . '.' . $sourceClass->getQuotedColumnName($sourceColumn, $this->_platform)
+                    $sql .= $targetTableAlias . '.' . $sourceClass->getQuotedColumnName($sourceClass->fieldNames[$sourceColumn], $this->_platform)
                           . ' = '
                           . $joinTableAlias . '.' . $assoc->getQuotedJoinColumnName($relationColumn, $this->_platform);
                 }
@@ -1205,7 +1205,7 @@ class SqlWalker implements TreeWalker
             foreach ($owningAssoc->targetToSourceKeyColumns as $targetColumn => $sourceColumn) {
                 if ($first) $first = false; else $sql .= ' AND ';
                 
-                $sql .= $sourceTableAlias . '.' . $class->getQuotedColumnName($targetColumn, $this->_platform) 
+                $sql .= $sourceTableAlias . '.' . $class->getQuotedColumnName($class->fieldNames[$targetColumn], $this->_platform) 
                       . ' = ' 
                       . $targetTableAlias . '.' . $owningAssoc->getQuotedJoinColumnName($sourceColumn, $this->_platform);
             }
@@ -1247,9 +1247,12 @@ class SqlWalker implements TreeWalker
             foreach ($joinColumns as $joinColumn) {
                 if ($first) $first = false; else $sql .= ' AND ';
 
-                $sql .= $joinTableAlias . '.' . $owningAssoc->getQuotedJoinColumnName($joinColumn['name'], $this->_platform)
+                $sql .= $joinTableAlias . '.' . $owningAssoc->getQuotedJoinColumnName(
+                                $joinColumn['name'], $this->_platform)
                         . ' = '
-                        . $sourceTableAlias . '.' . $referencedColumnClass->getQuotedColumnName($joinColumn['referencedColumnName'], $this->_platform);
+                        . $sourceTableAlias . '.' . $referencedColumnClass->getQuotedColumnName(
+                                $referencedColumnClass->fieldNames[$joinColumn['referencedColumnName']],
+                                $this->_platform);
             }
             
             $sql .= ' WHERE ';
@@ -1264,7 +1267,9 @@ class SqlWalker implements TreeWalker
                 
                 $sql .= $joinTableAlias . '.' . $owningAssoc->getQuotedJoinColumnName($joinColumn['name'], $this->_platform) 
                       . ' = ' 
-                      . $targetTableAlias . '.' . $referencedColumnClass->getQuotedColumnName($joinColumn['referencedColumnName'], $this->_platform);
+                      . $targetTableAlias . '.' . $referencedColumnClass->getQuotedColumnName(
+                              $referencedColumnClass->fieldNames[$joinColumn['referencedColumnName']],
+                              $this->_platform);
             }
             
             $sql .= ' AND ';

@@ -117,7 +117,7 @@ class SchemaTool
                 // Add all non-inherited fields as columns
                 foreach ($class->fieldMappings as $fieldName => $mapping) {
                     if ( ! isset($mapping['inherited'])) {
-                        $columnName = $class->getQuotedColumnName($mapping['columnName'], $this->_platform);
+                        $columnName = $class->getQuotedColumnName($mapping['fieldName'], $this->_platform);
                         $columns[$columnName] = $this->_gatherColumn($class, $mapping, $options);
                     }
                 }
