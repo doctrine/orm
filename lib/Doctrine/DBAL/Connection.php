@@ -629,7 +629,7 @@ class Connection
         } else {
             $result = $this->_conn->exec($query);
         }
-        
+
         $this->_queryCount++;
         
         return $result;
