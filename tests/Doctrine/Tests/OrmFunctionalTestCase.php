@@ -74,41 +74,41 @@ class OrmFunctionalTestCase extends OrmTestCase
         $conn = $this->sharedFixture['conn'];
         
         if (isset($this->_usedModelSets['cms'])) {
-            $conn->executeUpdate('DROP TABLE cms_users_groups');
-            $conn->executeUpdate('DROP TABLE cms_groups');
-            $conn->executeUpdate('DROP TABLE cms_addresses');
-            $conn->executeUpdate('DROP TABLE cms_phonenumbers');
-            $conn->executeUpdate('DROP TABLE cms_articles');
-            $conn->executeUpdate('DROP TABLE cms_users');
+            $conn->executeUpdate('DELETE FROM cms_users_groups');
+            $conn->executeUpdate('DELETE FROM cms_groups');
+            $conn->executeUpdate('DELETE FROM cms_addresses');
+            $conn->executeUpdate('DELETE FROM cms_phonenumbers');
+            $conn->executeUpdate('DELETE FROM cms_articles');
+            $conn->executeUpdate('DELETE FROM cms_users');
         }
         
         if (isset($this->_usedModelSets['ecommerce'])) {
-            $conn->executeUpdate('DROP TABLE ecommerce_carts_products');
-            $conn->executeUpdate('DROP TABLE ecommerce_products_categories');
-            $conn->executeUpdate('DROP TABLE ecommerce_products_related');
-            $conn->executeUpdate('DROP TABLE ecommerce_carts');
-            $conn->executeUpdate('DROP TABLE ecommerce_customers');
-            $conn->executeUpdate('DROP TABLE ecommerce_features');
-            $conn->executeUpdate('DROP TABLE ecommerce_products');
-            $conn->executeUpdate('DROP TABLE ecommerce_shippings');
+            $conn->executeUpdate('DELETE FROM ecommerce_carts_products');
+            $conn->executeUpdate('DELETE FROM ecommerce_products_categories');
+            $conn->executeUpdate('DELETE FROM ecommerce_products_related');
+            $conn->executeUpdate('DELETE FROM ecommerce_carts');
+            $conn->executeUpdate('DELETE FROM ecommerce_customers');
+            $conn->executeUpdate('DELETE FROM ecommerce_features');
+            $conn->executeUpdate('DELETE FROM ecommerce_products');
+            $conn->executeUpdate('DELETE FROM ecommerce_shippings');
             $conn->executeUpdate('UPDATE ecommerce_categories SET parent_id = NULL');
-            $conn->executeUpdate('DROP TABLE ecommerce_categories');
+            $conn->executeUpdate('DELETE FROM ecommerce_categories');
         }
         
         if (isset($this->_usedModelSets['company'])) {
-            $conn->executeUpdate('DROP TABLE company_persons_friends');
-            $conn->executeUpdate('DROP TABLE company_managers');
-            $conn->executeUpdate('DROP TABLE company_employees');
+            $conn->executeUpdate('DELETE FROM company_persons_friends');
+            $conn->executeUpdate('DELETE FROM company_managers');
+            $conn->executeUpdate('DELETE FROM company_employees');
             $conn->executeUpdate('UPDATE company_persons SET spouse_id = NULL');
-            $conn->executeUpdate('DROP TABLE company_persons');
-            $conn->executeUpdate('DROP TABLE company_raffles');
-            $conn->executeUpdate('DROP TABLE company_auctions');
-            $conn->executeUpdate('DROP TABLE company_events');
-            $conn->executeUpdate('DROP TABLE company_organizations');
+            $conn->executeUpdate('DELETE FROM company_persons');
+            $conn->executeUpdate('DELETE FROM company_raffles');
+            $conn->executeUpdate('DELETE FROM company_auctions');
+            $conn->executeUpdate('DELETE FROM company_events');
+            $conn->executeUpdate('DELETE FROM company_organizations');
         }
         
         if (isset($this->_usedModelSets['generic'])) {
-            $conn->executeUpdate('DROP TABLE date_time_model');
+            $conn->executeUpdate('DELETE FROM date_time_model');
         }
         
         $this->_em->clear();
