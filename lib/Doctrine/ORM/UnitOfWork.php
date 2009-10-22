@@ -1722,9 +1722,10 @@ class UnitOfWork implements PropertyChangedListener
                         } else {
                             // Inject collection
                             $reflField = $class->reflFields[$field];
-                            $pColl = new PersistentCollection($this->_em,
-                            $this->_em->getClassMetadata($assoc->targetEntityName),
-                            $reflField->getValue($entity) ?: new ArrayCollection
+                            $pColl = new PersistentCollection(
+                                $this->_em,
+                                $this->_em->getClassMetadata($assoc->targetEntityName),
+                                $reflField->getValue($entity) ?: new ArrayCollection
                             );
                             $pColl->setOwner($entity, $assoc);
                             $reflField->setValue($entity, $pColl);
