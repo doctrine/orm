@@ -19,7 +19,7 @@ class ResultCacheTest extends \Doctrine\Tests\OrmFunctionalTestCase
         parent::setUp();
     }
 
-    public function testQueryCache()
+    public function testResultCache()
     {
         $user = new CmsUser;
         $user->name = 'Roman';
@@ -55,5 +55,16 @@ class ResultCacheTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertEquals(1, count($users));
         $this->assertEquals('Roman', $users[0]->name);
     }
-}
 
+    public function testSetResultCacheId()
+    {
+        $cache = new ArrayCache;
+
+        $query = $this->_em->createQuery('select ux from Doctrine\Tests\Models\CMS\CmsUser ux');
+        $query->setResultCache($cache);
+        $query->setResultCacheId('testing_result_cache_id');
+        $users = $query->getResult();
+
+        $this->assertTrue($cache->contains('testing_result_cache_id'));
+    }
+}

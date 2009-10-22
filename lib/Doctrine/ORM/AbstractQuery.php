@@ -95,6 +95,13 @@ abstract class AbstractQuery
     protected $_resultCache;
 
     /**
+     * The id to store the result cache entry under.
+     *
+     * @var string
+     */
+    protected $_resultCacheId;
+
+    /**
      * @var boolean Boolean value that indicates whether or not expire the result cache.
      */
     protected $_expireResultCache = false;
@@ -437,9 +444,8 @@ abstract class AbstractQuery
 
         // Check result cache
         if ($cacheDriver = $this->getResultCacheDriver()) {
-            // Calculate hash for DQL query.
-            $hash = md5($this->getDql() . var_export($params, true));
-            $cached = ($this->_expireResultCache) ? false : $cacheDriver->fetch($hash);
+            $id = $this->_getResultCacheId($params);
+            $cached = ($this->_expireResultCache) ? false : $cacheDriver->fetch($id);
 
             if ($cached === false) {
                 // Cache miss.
@@ -449,7 +455,7 @@ abstract class AbstractQuery
                         $stmt, $this->_resultSetMapping, $this->_hints
                         );
                 
-                $cacheDriver->save($hash, $result, $this->_resultCacheTTL);
+                $cacheDriver->save($id, $result, $this->_resultCacheTTL);
 
                 return $result;
             } else {
@@ -467,6 +473,36 @@ abstract class AbstractQuery
         return $this->_em->getHydrator($this->_hydrationMode)->hydrateAll(
                 $stmt, $this->_resultSetMapping, $this->_hints
                 );
+    }
+
+    /**
+     * Set the result cache id to use to store the result set cache entry.
+     * If this is not explicitely set by the developer then a hash is automatically
+     * generated for you.
+     *
+     * @param string $id 
+     * @return void
+     */
+    public function setResultCacheId($id)
+    {
+        $this->_resultCacheId = $id;
+    }
+
+    /**
+     * Get the result cache id to use to store the result set cache entry.
+     * Will return the configured id if it exists otherwise a hash will be
+     * automatically generated for you.
+     *
+     * @param array $params 
+     * @return string $id
+     */
+    protected function _getResultCacheId(array $params)
+    {
+        if ($this->_resultCacheId) {
+            return $this->_resultCacheId;
+        } else {
+            return md5($this->getDql() . var_export($params, true));
+        }
     }
 
     /**
