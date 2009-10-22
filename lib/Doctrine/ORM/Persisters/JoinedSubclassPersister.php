@@ -309,30 +309,47 @@ class JoinedSubclassPersister extends StandardEntityPersister
                     $this->_class->getQuotedDiscriminatorColumnName($this->_platform);
         }
 
-        $sql = 'SELECT ' . $columnList . ' FROM ' . $this->_class->getQuotedTableName($this->_platform) . ' ' . $baseTableAlias;
-
         // INNER JOIN parent tables
+        $joinSql = '';
         foreach ($this->_class->parentClasses as $parentClassName) {
             $parentClass = $this->_em->getClassMetadata($parentClassName);
             $tableAlias = $tableAliases[$parentClassName];
-            $sql .= ' INNER JOIN ' . $parentClass->getQuotedTableName($this->_platform) . ' ' . $tableAlias . ' ON ';
+            $joinSql .= ' INNER JOIN ' . $parentClass->getQuotedTableName($this->_platform) . ' ' . $tableAlias . ' ON ';
             $first = true;
             foreach ($idColumns as $idColumn) {
-                if ($first) $first = false; else $sql .= ' AND ';
-                $sql .= $baseTableAlias . '.' . $idColumn . ' = ' . $tableAlias . '.' . $idColumn;
+                if ($first) $first = false; else $joinSql .= ' AND ';
+                $joinSql .= $baseTableAlias . '.' . $idColumn . ' = ' . $tableAlias . '.' . $idColumn;
             }
         }
 
         // OUTER JOIN sub tables
         foreach ($this->_class->subClasses as $subClassName) {
-            //FIXME: Add columns and foreign key columns of inherited classes to the select list
             $subClass = $this->_em->getClassMetadata($subClassName);
             $tableAlias = $tableAliases[$subClassName];
-            $sql .= ' LEFT JOIN ' . $subClass->getQuotedTableName($this->_platform) . ' ' . $tableAlias . ' ON ';
+
+            // Add subclass columns
+            foreach ($subClass->fieldMappings as $fieldName => $mapping) {
+                if (isset($mapping['inherited'])) {
+                    continue;
+                }
+                $columnList .= ', ' . $tableAlias . '.' . $subClass->getQuotedColumnName($fieldName, $this->_platform);
+            }
+            
+            // Add join columns (foreign keys)
+            foreach ($subClass->associationMappings as $assoc2) {
+                if ($assoc2->isOwningSide && $assoc2->isOneToOne() && ! isset($subClass->inheritedAssociationFields[$assoc2->sourceFieldName])) {
+                    foreach ($assoc2->targetToSourceKeyColumns as $srcColumn) {
+                        $columnList .= ', ' . $tableAlias . '.' . $assoc2->getQuotedJoinColumnName($srcColumn, $this->_platform);
+                    }
+                }
+            }
+            
+            // Add LEFT JOIN
+            $joinSql .= ' LEFT JOIN ' . $subClass->getQuotedTableName($this->_platform) . ' ' . $tableAlias . ' ON ';
             $first = true;
             foreach ($idColumns as $idColumn) {
-                if ($first) $first = false; else $sql .= ' AND ';
-                $sql .= $baseTableAlias . '.' . $idColumn . ' = ' . $tableAlias . '.' . $idColumn;
+                if ($first) $first = false; else $joinSql .= ' AND ';
+                $joinSql .= $baseTableAlias . '.' . $idColumn . ' = ' . $tableAlias . '.' . $idColumn;
             }
         }
 
@@ -350,6 +367,9 @@ class JoinedSubclassPersister extends StandardEntityPersister
             $conditionSql .= ' = ?';
         }
 
-        return $sql . ($conditionSql != '' ? ' WHERE ' . $conditionSql : '');
+        return 'SELECT ' . $columnList
+                . ' FROM ' . $this->_class->getQuotedTableName($this->_platform) . ' ' . $baseTableAlias
+                . $joinSql
+                . ($conditionSql != '' ? ' WHERE ' . $conditionSql : '');
     }
 }

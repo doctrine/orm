@@ -503,7 +503,6 @@ class SqlWalker implements TreeWalker
                 // Add foreign key columns to SQL, if necessary            
                 if ($addMetaColumns) {
                     $sqlTableAlias = $this->getSqlTableAlias($class->primaryTable['name'], $dqlAlias);
-                    
                     foreach ($class->associationMappings as $assoc) {
                         if ($assoc->isOwningSide && $assoc->isOneToOne()) {
                             foreach ($assoc->targetToSourceKeyColumns as $srcColumn) {
@@ -817,13 +816,14 @@ class SqlWalker implements TreeWalker
                 $this->_rsm->addFieldResult($dqlAlias, $columnAlias, $fieldName);
             }
 
-            // Add any additional fields of subclasses (not inherited fields)
+            // Add any additional fields of subclasses (excluding inherited fields)
             // 1) on Single Table Inheritance: always, since its marginal overhead
             // 2) on Class Table Inheritance only if partial objects are disallowed,
             //    since it requires outer joining subtables.
             if ($class->isInheritanceTypeSingleTable() || ! $this->_query->getHint(Query::HINT_FORCE_PARTIAL_LOAD)) {
                 foreach ($class->subClasses as $subClassName) {
                     $subClass = $this->_em->getClassMetadata($subClassName);
+                    $sqlTableAlias = $this->getSqlTableAlias($subClass->primaryTable['name'], $dqlAlias);
                     foreach ($subClass->fieldMappings as $fieldName => $mapping) {
                         if (isset($mapping['inherited'])) {
                             continue;
@@ -831,13 +831,26 @@ class SqlWalker implements TreeWalker
 
                         if ($beginning) $beginning = false; else $sql .= ', ';
 
-                        $sqlTableAlias = $this->getSqlTableAlias($subClass->primaryTable['name'], $dqlAlias);
                         $columnAlias = $this->getSqlColumnAlias($mapping['columnName']);
                         $sql .= $sqlTableAlias . '.' . $subClass->getQuotedColumnName($fieldName, $this->_platform)
                                 . ' AS ' . $columnAlias;
 
                         $columnAlias = $this->_platform->getSqlResultCasing($columnAlias);
                         $this->_rsm->addFieldResult($dqlAlias, $columnAlias, $fieldName);
+                    }
+                    
+                    // Add join columns (foreign keys) of the subclass
+                    //TODO: Probably better do this in walkSelectClause to honor the INCLUDE_META_COLUMNS hint
+                    foreach ($subClass->associationMappings as $fieldName => $assoc) {
+                        if ($assoc->isOwningSide && $assoc->isOneToOne() && ! isset($subClass->inheritedAssociationFields[$fieldName])) {
+                            foreach ($assoc->targetToSourceKeyColumns as $srcColumn) {
+                                if ($beginning) $beginning = false; else $sql .= ', ';
+                                $columnAlias = $this->getSqlColumnAlias($srcColumn);
+                                $sql .= $sqlTableAlias . '.' . $assoc->getQuotedJoinColumnName($srcColumn, $this->_platform)
+                                        . ' AS ' . $columnAlias;
+                                $this->_rsm->addMetaResult($dqlAlias, $columnAlias, $srcColumn);
+                            }
+                        }
                     }
                 }
             }

@@ -507,6 +507,11 @@ class ClassMetadataInfo
     {
         return $this->rootEntityName;
     }
+    
+    public function setResultColumnNames(array $resultColumnNames)
+    {
+        $this->resultColumnNames = $resultColumnNames;
+    }
 
     /**
      * Checks whether a field is part of the identifier/primary key field(s).

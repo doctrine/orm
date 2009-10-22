@@ -10,7 +10,8 @@ use Doctrine\Tests\Models\Company\CompanyPerson,
     Doctrine\Tests\Models\Company\CompanyOrganization,
     Doctrine\Tests\Models\Company\CompanyEvent,
     Doctrine\Tests\Models\Company\CompanyAuction,
-    Doctrine\Tests\Models\Company\CompanyRaffle;
+    Doctrine\Tests\Models\Company\CompanyRaffle,
+    Doctrine\Tests\Models\Company\CompanyCar;
 
 /**
  * Functional tests for the Class Table Inheritance mapping strategy.
@@ -108,6 +109,27 @@ class ClassTableInheritanceTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertEquals(119000, $manager->getSalary());
         $this->assertEquals('CEO', $manager->getTitle());
         $this->assertTrue(is_numeric($manager->getId()));
+    }
+    
+    public function testFindOnBaseClass() {
+        $manager = new CompanyManager;
+        $manager->setName('Roman S. Borschel');
+        $manager->setSalary(100000);
+        $manager->setDepartment('IT');
+        $manager->setTitle('CTO');
+        $this->_em->persist($manager);
+        $this->_em->flush();
+        
+        $this->_em->clear();
+        
+        $person = $this->_em->find('Doctrine\Tests\Models\Company\CompanyPerson', $manager->getId());
+        
+        $this->assertTrue($person instanceof CompanyManager);
+        $this->assertEquals('Roman S. Borschel', $person->getName());
+        $this->assertEquals(100000, $person->getSalary());
+        $this->assertEquals('CTO', $person->getTitle());
+        $this->assertTrue(is_numeric($person->getId()));
+        //$this->assertTrue($person->getCar() instanceof CompanyCar);
     }
     
     public function testSelfReferencingOneToOne() {

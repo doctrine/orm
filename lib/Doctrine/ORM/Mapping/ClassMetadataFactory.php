@@ -186,7 +186,7 @@ class ClassMetadataFactory
                 $class->setVersioned($parent->isVersioned);
                 $class->setVersionField($parent->versionField);
                 $class->setDiscriminatorMap($parent->discriminatorMap);
-                $class->resultColumnNames = $parent->resultColumnNames;
+                $class->setResultColumnNames($parent->resultColumnNames);
             }
 
             // Invoke driver
@@ -225,6 +225,13 @@ class ClassMetadataFactory
 
             if ( ! $class->isMappedSuperclass) {
                 $this->_generateStaticSql($class);
+            }
+            
+            if ($parent) {
+                foreach ($visited as $parentClassName) {
+                    $parentClass = $this->_loadedMetadata[$parentClassName];
+                    $parentClass->setResultColumnNames(array_merge($parentClass->resultColumnNames, $class->resultColumnNames));
+                }
             }
             
             $this->_loadedMetadata[$className] = $class;
