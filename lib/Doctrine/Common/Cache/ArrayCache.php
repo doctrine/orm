@@ -32,7 +32,7 @@ namespace Doctrine\Common\Cache;
  * @author  Jonathan Wage <jonwage@gmail.com>
  * @author  Roman Borschel <roman@code-factory.org>
  */
-class ArrayCache implements Cache
+class ArrayCache extends AbstractCache
 {
     /**
      * @var array $data
@@ -42,7 +42,7 @@ class ArrayCache implements Cache
     /**
      * {@inheritdoc}
      */
-    public function fetch($id) 
+    protected function _doFetch($id) 
     { 
         if (isset($this->data[$id])) {
             return $this->data[$id];
@@ -53,7 +53,7 @@ class ArrayCache implements Cache
     /**
      * {@inheritdoc}
      */
-    public function contains($id)
+    protected function _doContains($id)
     {
         return isset($this->data[$id]);
     }
@@ -61,34 +61,18 @@ class ArrayCache implements Cache
     /**
      * {@inheritdoc}
      */
-    public function save($id, $data, $lifeTime = false)
+    protected function _doSave($id, $data, $lifeTime = false)
     {
         $this->data[$id] = $data;
+        return true;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function delete($id)
+    protected function _doDelete($id)
     {
         unset($this->data[$id]);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function deleteAll()
-    {
-        $this->data = array();
-    }
-
-    /**
-     * count
-     *
-     * @return integer
-     */
-    public function count() 
-    {
-        return count($this->data);
+        return true;
     }
 }

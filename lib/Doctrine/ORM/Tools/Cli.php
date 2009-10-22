@@ -32,7 +32,8 @@ use Doctrine\Common\Util\Inflector,
  * To include a new Task support, create a task:
  *
  *     [php]
- *     class MyProject\Tools\Cli\Tasks\MyTask extends Doctrine\ORM\Tools\Cli\AbstractTask {
+ *     class MyProject\Tools\Cli\Tasks\MyTask extends Doctrine\ORM\Tools\Cli\AbstractTask
+ *     {
  *         public function run();
  *         public function basicHelp();
  *         public function extendedHelp();
@@ -47,8 +48,7 @@ use Doctrine\Common\Util\Inflector,
  *
  * To execute, just type any classify-able name:
  *
- *     [bash]
- *     cli.php my-task
+ *     $ cli.php my-task
  *
  * @license http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @link    www.doctrine-project.org
@@ -84,13 +84,15 @@ class Cli
         $ns = 'Doctrine\ORM\Tools\Cli\Tasks';
         
         $this->addTasks(array(
-            'help'            => $ns . '\HelpTask',
-            'version'         => $ns . '\VersionTask',
-            'schema-tool'     => $ns . '\SchemaToolTask',
-            'run-sql'         => $ns . '\RunSqlTask',
-            'run-dql'         => $ns . '\RunDqlTask',
-            'convert-mapping' => $ns . '\ConvertMappingTask',
-            'generate-proxies'=> $ns . '\GenerateProxiesTask'
+            'help'                       => $ns . '\HelpTask',
+            'version'                    => $ns . '\VersionTask',
+            'schema-tool'                => $ns . '\SchemaToolTask',
+            'run-sql'                    => $ns . '\RunSqlTask',
+            'run-dql'                    => $ns . '\RunDqlTask',
+            'convert-mapping'            => $ns . '\ConvertMappingTask',
+            'generate-proxies'           => $ns . '\GenerateProxiesTask',
+            'clear-cache'                => $ns . '\ClearCacheTask',
+            'ensure-production-settings' => $ns . '\EnsureProductionSettingsTask'
         ));
     }
     

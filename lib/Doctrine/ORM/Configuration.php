@@ -21,6 +21,8 @@
 
 namespace Doctrine\ORM;
 
+use Doctrine\Common\DoctrineException;
+
 /**
  * Configuration container for all configuration options of Doctrine.
  * It combines all configuration options from DBAL & ORM.

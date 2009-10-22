@@ -107,7 +107,7 @@ class ConvertMappingTask extends AbstractTask
           return false;
         }
         if ($args['to'] != 'annotation' && isset($args['extend'])) {
-            $printer->writeln('You can only use the --extend argument when converting to annoations.');
+            $printer->writeln('You can only use the --extend argument when converting to annoations.', 'ERROR');
             return false;
         }
         if ($args['from'][0] == 'database') {

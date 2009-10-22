@@ -19,9 +19,10 @@ class AllTests
     {
         $suite = new \Doctrine\Tests\DoctrineTestSuite('Doctrine Common Cache Tests');
 
+        $suite->addTestSuite('Doctrine\Tests\Common\Cache\CacheTest');
         $suite->addTestSuite('Doctrine\Tests\Common\Cache\ApcCacheTest');
         $suite->addTestSuite('Doctrine\Tests\Common\Cache\ArrayCacheTest');
-        //$suite->addTestSuite('Doctrine\Tests\Common\Cache\MemcacheCacheTest');
+        $suite->addTestSuite('Doctrine\Tests\Common\Cache\MemcacheCacheTest');
         $suite->addTestSuite('Doctrine\Tests\Common\Cache\XcacheCacheTest');
 
         return $suite;

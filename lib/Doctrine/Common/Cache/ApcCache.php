@@ -32,12 +32,12 @@ namespace Doctrine\Common\Cache;
  * @author  Jonathan Wage <jonwage@gmail.com>
  * @author  Roman Borschel <roman@code-factory.org>
  */
-class ApcCache implements Cache
+class ApcCache extends AbstractCache
 {
     /**
      * {@inheritdoc}
      */
-    public function fetch($id) 
+    protected function _doFetch($id) 
     {
         return apc_fetch($id);
     }
@@ -45,7 +45,7 @@ class ApcCache implements Cache
     /**
      * {@inheritdoc}
      */
-    public function contains($id) 
+    protected function _doContains($id) 
     {
         return apc_fetch($id) === false ? false : true;
     }
@@ -53,7 +53,7 @@ class ApcCache implements Cache
     /**
      * {@inheritdoc}
      */
-    public function save($id, $data, $lifeTime = false)
+    protected function _doSave($id, $data, $lifeTime = false)
     {
         return (bool) apc_store($id, $data, $lifeTime);
     }
@@ -61,7 +61,7 @@ class ApcCache implements Cache
     /**
      * {@inheritdoc}
      */
-    public function delete($id) 
+    protected function _doDelete($id) 
     {
         return apc_delete($id);
     }

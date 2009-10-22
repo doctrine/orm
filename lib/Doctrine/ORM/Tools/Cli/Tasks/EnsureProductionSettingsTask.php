@@ -18,78 +18,52 @@
  * and is licensed under the LGPL. For more information, see
  * <http://www.doctrine-project.org>.
  */
+ 
+namespace Doctrine\ORM\Tools\Cli\Tasks;
 
-namespace Doctrine\Common\Cache;
-
-use \Memcache;
+use Doctrine\Common\Cache\AbstractDriver;
 
 /**
- * Memcache cache driver.
+ * CLI Task to ensure that Doctrine is properly configured for a production environment.
  *
  * @license http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @link    www.doctrine-project.org
  * @since   2.0
- * @version $Revision: 3938 $
+ * @version $Revision$
  * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
  * @author  Jonathan Wage <jonwage@gmail.com>
  * @author  Roman Borschel <roman@code-factory.org>
  */
-class MemcacheCache extends AbstractCache
+class EnsureProductionSettingsTask extends AbstractTask
 {
-    /**
-     * @var Memcache
-     */
-    private $_memcache;
-
-    /**
-     * Sets the memcache instance to use.
-     *
-     * @param Memcache $memcache
-     */
-    public function setMemcache(Memcache $memcache)
+    public function basicHelp()
     {
-        $this->_memcache = $memcache;
+        $this->_writeSynopsis($this->getPrinter());
     }
 
-    /**
-     * Gets the memcache instance used by the cache.
-     *
-     * @return Memcache
-     */
-    public function getMemcache()
+    public function extendedHelp()
     {
-        return $this->_memcache;
+        $printer = $this->getPrinter();
+    
+        $printer->write('Task: ')->writeln('ensure-production-settings', 'KEYWORD')
+                ->write('Synopsis: ');
+        $this->_writeSynopsis($printer);
+
+        $printer->writeln('Description: Verify that Doctrine is properly configured for a production environment.');
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function _doFetch($id) 
+    private function _writeSynopsis($printer)
     {
-        return $this->_memcache->get($id);
+        $printer->writeln('ensure-production-settings', 'KEYWORD');
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function _doContains($id) 
+    public function run()
     {
-        return (bool) $this->_memcache->get($id);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function _doSave($id, $data, $lifeTime = false)
-    {
-        return $this->_memcache->set($id, $data, 0, $lifeTime);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function _doDelete($id) 
-    {
-        return $this->_memcache->delete($id);
+        $printer = $this->getPrinter();
+        try {
+            $this->_em->getConfiguration()->ensureProductionSettings();
+        } catch (\Doctrine\Common\DoctrineException $e) {
+            $printer->writeln($e->getMessage(), 'ERROR');
+        }
     }
 }

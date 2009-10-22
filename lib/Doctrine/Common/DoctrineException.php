@@ -102,8 +102,10 @@ class DoctrineException extends \Exception
         } else {
             $dumper  = function ($value) { return var_export($value, true); };
             $message = strtolower(preg_replace('~(?<=\\w)([A-Z])~', '_$1', $method));
-            $message = ucfirst(str_replace('_', ' ', $message))
-                     . ' (' . implode(', ', array_map($dumper, $arguments)) . ')';
+            $message = ucfirst(str_replace('_', ' ', $message));
+            if ($arguments) {
+                $message .= ' (' . implode(', ', array_map($dumper, $arguments)) . ')';
+            }
         }
         
         return new $class($message, $innerException);
