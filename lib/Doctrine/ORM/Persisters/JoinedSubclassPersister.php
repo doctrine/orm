@@ -282,12 +282,22 @@ class JoinedSubclassPersister extends StandardEntityPersister
             $tableAliases[$className] = 't' . $aliasIndex++;
         }
 
+        // Add regular columns
         $columnList = '';
         foreach ($this->_class->fieldMappings as $fieldName => $mapping) {
             $tableAlias = isset($mapping['inherited']) ?
                     $tableAliases[$mapping['inherited']] : $baseTableAlias;
             if ($columnList != '') $columnList .= ', ';
             $columnList .= $tableAlias . '.' . $this->_class->getQuotedColumnName($fieldName, $this->_platform);
+        }
+        
+        // Add foreign key columns
+        foreach ($this->_class->associationMappings as $assoc2) {
+            if ($assoc2->isOwningSide && $assoc2->isOneToOne()) {
+                foreach ($assoc2->targetToSourceKeyColumns as $srcColumn) {
+                    $columnList .= ', ' . $assoc2->getQuotedJoinColumnName($srcColumn, $this->_platform);
+                }
+            }
         }
         
         // Add discriminator column
@@ -315,6 +325,7 @@ class JoinedSubclassPersister extends StandardEntityPersister
 
         // OUTER JOIN sub tables
         foreach ($this->_class->subClasses as $subClassName) {
+            //FIXME: Add columns and foreign key columns of inherited classes to the select list
             $subClass = $this->_em->getClassMetadata($subClassName);
             $tableAlias = $tableAliases[$subClassName];
             $sql .= ' LEFT JOIN ' . $subClass->getQuotedTableName($this->_platform) . ' ' . $tableAlias . ' ON ';

@@ -339,7 +339,7 @@ class HydrationPerformanceTest extends \Doctrine\Tests\OrmPerformanceTestCase
      *
      * MAXIMUM TIME: 1 second
      */
-    public function testMixedQueryFetchJoinFullObjectHydrationPerformance200Rows()
+    public function testMixedQueryFetchJoinFullObjectHydrationPerformance2000Rows()
     {
         $rsm = new ResultSetMapping;
         $rsm->addEntityResult('Doctrine\Tests\Models\CMS\CmsUser', 'u');

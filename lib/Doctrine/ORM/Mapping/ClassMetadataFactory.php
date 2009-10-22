@@ -185,7 +185,8 @@ class ClassMetadataFactory
                 $class->setIdentifier($parent->identifier);
                 $class->setVersioned($parent->isVersioned);
                 $class->setVersionField($parent->versionField);
-                $class->setDiscriminatorMap($parent->discriminatorMap); 
+                $class->setDiscriminatorMap($parent->discriminatorMap);
+                $class->resultColumnNames = $parent->resultColumnNames;
             }
 
             // Invoke driver

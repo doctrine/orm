@@ -1653,7 +1653,7 @@ class UnitOfWork implements PropertyChangedListener
      * @return object The created entity instance.
      * @internal Highly performance-sensitive method.
      */
-    public function createEntity($className, array $data, $hints = array())
+    public function createEntity($className, array $data, &$hints = array())
     {
         $class = $this->_em->getClassMetadata($className);
 
@@ -1695,9 +1695,53 @@ class UnitOfWork implements PropertyChangedListener
                     }
                 }
             }
+            
+            // Properly initialize any unfetched associations, if partial objects are not allowed.
+            if ( ! isset($hints[Query::HINT_FORCE_PARTIAL_LOAD])) {
+                foreach ($class->associationMappings as $field => $assoc) {
+                    // Check if the association is not among the fetch-joined associatons already.
+                    if ( ! isset($hints['fetched'][$className][$field])) {
+                        if ($assoc->isOneToOne()) {
+                            $joinColumns = array();
+                            if ($assoc->isOwningSide) {
+                                foreach ($assoc->targetToSourceKeyColumns as $srcColumn) {
+                                    $joinColumns[$srcColumn] = $data[$assoc->joinColumnFieldNames[$srcColumn]];
+                                }
+                            }
+                            //TODO: If its in the identity map just get it from there if possible!
+                            if ($assoc->isLazilyFetched() /*&& $assoc->isOwningSide)*/) {
+                                // Inject proxy
+                                $proxy = $this->_em->getProxyFactory()->getAssociationProxy($entity, $assoc, $joinColumns);
+                                $this->_originalEntityData[$oid][$field] = $proxy;
+                                $class->reflFields[$field]->setValue($entity, $proxy);
+                            } else {
+                                // Eager load
+                                //TODO: Allow more efficient and configurable batching of these loads
+                                $assoc->load($entity, new $assoc->targetEntityName, $this->_em, $joinColumns);
+                            }
+                        } else {
+                            // Inject collection
+                            $reflField = $class->reflFields[$field];
+                            $pColl = new PersistentCollection($this->_em,
+                            $this->_em->getClassMetadata($assoc->targetEntityName),
+                            $reflField->getValue($entity) ?: new ArrayCollection
+                            );
+                            $pColl->setOwner($entity, $assoc);
+                            $reflField->setValue($entity, $pColl);
+                            if ($assoc->isLazilyFetched()) {
+                                $pColl->setInitialized(false);
+                            } else {
+                                //TODO: Allow more efficient and configurable batching of these loads
+                                $assoc->load($entity, $pColl, $this->_em);
+                            }
+                            $this->_originalEntityData[$oid][$field] = $pColl;
+                        }
+                    }
+                }
+            }
         }
         
-        //TODO: These should be invoked later, because associations are not yet loaded here.
+        //TODO: These should be invoked later, after hydration, because associations may not yet be loaded here.
         if (isset($class->lifecycleCallbacks[Events::postLoad])) {
             $class->invokeLifecycleCallbacks(Events::postLoad, $entity);
         }

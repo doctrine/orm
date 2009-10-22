@@ -42,30 +42,22 @@ class ObjectHydrator extends AbstractHydrator
     
     /* The following parts are reinitialized on every hydration run. */
     
-    private $_allowPartialObjects = false;
     private $_identifierMap;
     private $_resultPointers;
     private $_idTemplate;
     private $_resultCounter;
-    private $_fetchedAssociations;
     private $_rootAliases = array();
     private $_initializedCollections = array();
     private $_existingCollections = array();
-    private $_proxyFactory;
     //private $_createdEntities;
     
 
     /** @override */
     protected function _prepare()
     {
-        $this->_allowPartialObjects = isset($this->_hints[Query::HINT_FORCE_PARTIAL_LOAD]);
-        
-        $this->_proxyFactory = $this->_em->getProxyFactory();
-        
         $this->_identifierMap =
         $this->_resultPointers =
-        $this->_idTemplate =
-        $this->_fetchedAssociations = array();
+        $this->_idTemplate = array();
         $this->_resultCounter = 0;
         
         foreach ($this->_rsm->aliasMap as $dqlAlias => $className) {
@@ -85,13 +77,13 @@ class ObjectHydrator extends AbstractHydrator
                 $targetClass = $this->_getClassMetadata($targetClassName);
                 $this->_ce[$targetClassName] = $targetClass;
                 $assoc = $targetClass->associationMappings[$this->_rsm->relationMap[$dqlAlias]];
-                $this->_fetchedAssociations[$assoc->sourceEntityName][$assoc->sourceFieldName] = true;
+                $this->_hints['fetched'][$assoc->sourceEntityName][$assoc->sourceFieldName] = true;
                 if ($assoc->mappedByFieldName) {
-                    $this->_fetchedAssociations[$assoc->targetEntityName][$assoc->mappedByFieldName] = true;
+                    $this->_hints['fetched'][$assoc->targetEntityName][$assoc->mappedByFieldName] = true;
                 } else {
                     if (isset($targetClass->inverseMappings[$className][$assoc->sourceFieldName])) {
                         $inverseAssoc = $targetClass->inverseMappings[$className][$assoc->sourceFieldName];
-                        $this->_fetchedAssociations[$assoc->targetEntityName][$inverseAssoc->sourceFieldName] = true;
+                        $this->_hints['fetched'][$assoc->targetEntityName][$inverseAssoc->sourceFieldName] = true;
                     }
                 }
             }
@@ -186,53 +178,7 @@ class ObjectHydrator extends AbstractHydrator
             unset($data[$discrColumn]);
         }
         
-        $entity = $this->_uow->createEntity($className, $data, $this->_hints);
-
-        //FIXME: If $entity comes from the identity map there is no need to do this!
-        // Properly initialize any unfetched associations, if partial objects are not allowed.
-        if ( ! $this->_allowPartialObjects) {
-            $oid = spl_object_hash($entity);
-            foreach ($this->_getClassMetadata($className)->associationMappings as $field => $assoc) {
-                // Check if the association is not among the fetch-joined associatons already.
-                if ( ! isset($this->_fetchedAssociations[$className][$field])) {
-                    if ($assoc->isOneToOne()) {
-                        $joinColumns = array();
-                        foreach ($assoc->targetToSourceKeyColumns as $srcColumn) {
-                            $joinColumns[$srcColumn] = $data[$assoc->joinColumnFieldNames[$srcColumn]];
-                        }
-                        //TODO: If its in the identity map just get it from there if possible!
-                        if ($assoc->isLazilyFetched() /*&& ! $assoc->isOptional*/) {
-                            // Inject proxy
-                            $proxy = $this->_proxyFactory->getAssociationProxy($entity, $assoc, $joinColumns);
-                            $this->_uow->setOriginalEntityProperty($oid, $field, $proxy);
-                            $this->_ce[$className]->reflFields[$field]->setValue($entity, $proxy);
-                        } else {
-                            // Eager load
-                            //TODO: Allow more efficient and configurable batching of these loads
-                            $assoc->load($entity, new $assoc->targetEntityName, $this->_em, $joinColumns);
-                        }
-                    } else {
-                        // Inject collection
-                        $reflField = $this->_ce[$className]->reflFields[$field];
-                        $pColl = new PersistentCollection($this->_em,
-                                $this->_getClassMetadata($assoc->targetEntityName),
-                                $reflField->getValue($entity) ?: new ArrayCollection
-                                );
-                        $pColl->setOwner($entity, $assoc);
-                        $reflField->setValue($entity, $pColl);
-                        if ($assoc->isLazilyFetched()) {
-                            $pColl->setInitialized(false);
-                        } else {
-                            //TODO: Allow more efficient and configurable batching of these loads
-                            $assoc->load($entity, $pColl, $this->_em);
-                        }
-                        $this->_uow->setOriginalEntityProperty($oid, $field, $pColl);
-                    }
-                }
-            }
-        }
-
-        return $entity;
+        return $this->_uow->createEntity($className, $data, $this->_hints);
     }
     
     private function _getEntityFromIdentityMap($className, array $data)

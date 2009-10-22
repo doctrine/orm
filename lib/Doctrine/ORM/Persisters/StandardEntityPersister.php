@@ -27,6 +27,7 @@ use Doctrine\Common\DoctrineException,
     Doctrine\DBAL\Types\Type,
     Doctrine\ORM\EntityManager,
     Doctrine\ORM\UnitOfWork,
+    Doctrine\ORM\Query,
     Doctrine\ORM\PersistentCollection,
     Doctrine\ORM\Mapping\ClassMetadata,
     Doctrine\ORM\Events;
@@ -236,9 +237,8 @@ class StandardEntityPersister
         if ($isVersioned = $this->_class->isVersioned) {
             $versionField = $this->_class->versionField;
             $versionFieldType = $this->_class->getTypeOfField($versionField);
-            $where[$this->_class->fieldNames[$versionField]] = Type::getType(
-                $this->_class->fieldMappings[$versionField]['type']
-            )->convertToDatabaseValue($entity->version, $this->_platform);
+            $where[$versionField] = Type::getType($versionFieldType)
+                    ->convertToDatabaseValue($entity->version, $this->_platform);
             $versionFieldColumnName = $this->_class->getQuotedColumnName($versionField, $this->_platform);
             if ($versionFieldType == 'integer') {
                 $set[] = $versionFieldColumnName . ' = ' . $versionFieldColumnName . ' + 1';
@@ -504,16 +504,15 @@ class StandardEntityPersister
             } else if ($this->_class->discriminatorColumn !== null && $column == $this->_class->discriminatorColumn['name']) {
                 $entityName = $this->_class->discriminatorMap[$value];
             } else {
+                $data[$column] = $value;
                 $joinColumnValues[$column] = $value;
             }
         }
 
-        if ($entity === null) {
-            $entity = $this->_em->getUnitOfWork()->createEntity($entityName, $data);
-        } else {
-            foreach ($data as $field => $value) {
-                $this->_class->reflFields[$field]->setValue($entity, $value);
-            }
+        $hints = array();
+        
+        if ($entity !== null) {
+            $hints[Query::HINT_REFRESH] = true;
             $id = array();
             if ($this->_class->isIdentifierComposite) {
                 foreach ($this->_class->identifier as $fieldName) {
@@ -524,37 +523,8 @@ class StandardEntityPersister
             }
             $this->_em->getUnitOfWork()->registerManaged($entity, $id, $data);
         }
-
-        // Initialize associations
-        foreach ($this->_class->associationMappings as $field => $assoc) {
-            if ($assoc->isOneToOne()) {
-                if ($assoc->isLazilyFetched()) {
-                    // Inject proxy
-                    $proxy = $this->_em->getProxyFactory()->getAssociationProxy($entity, $assoc, $joinColumnValues);
-                    $this->_class->reflFields[$field]->setValue($entity, $proxy);
-                } else {
-                    // Eager load
-                    //TODO: Allow more efficient and configurable batching of these loads
-                    $assoc->load($entity, new $assoc->targetEntityName, $this->_em, $joinColumnValues);
-                }
-            } else {
-                // Inject collection
-                $coll = new PersistentCollection(
-                $this->_em,
-                $this->_em->getClassMetadata($assoc->targetEntityName),
-                /*$this->_class->reflFields[$field]->getValue($entity) ?:*/ new ArrayCollection);
-                $coll->setOwner($entity, $assoc);
-                $this->_class->reflFields[$field]->setValue($entity, $coll);
-                if ($assoc->isLazilyFetched()) {
-                    $coll->setInitialized(false);
-                } else {
-                    //TODO: Allow more efficient and configurable batching of these loads
-                    $assoc->load($entity, $coll, $this->_em);
-                }
-            }
-        }
-
-        return $entity;
+        
+        return $this->_em->getUnitOfWork()->createEntity($entityName, $data, $hints);
     }
 
     /**
@@ -566,22 +536,23 @@ class StandardEntityPersister
     protected function _getSelectEntitiesSql(array &$criteria, $assoc = null)
     {
         $columnList = '';
+        
+        // Add regular columns to select list
         foreach ($this->_class->fieldNames as $field) {
             if ($columnList != '') $columnList .= ', ';
             $columnList .= $this->_class->getQuotedColumnName($field, $this->_platform);
         }
         
-        $joinColumnNames = array();
+        // Add join columns (foreign keys) to select list
         foreach ($this->_class->associationMappings as $assoc2) {
             if ($assoc2->isOwningSide && $assoc2->isOneToOne()) {
                 foreach ($assoc2->targetToSourceKeyColumns as $srcColumn) {
-                    $joinColumnNames[] = $srcColumn;
                     $columnList .= ', ' . $assoc2->getQuotedJoinColumnName($srcColumn, $this->_platform);
                 }
             }
         }
-
-        $joinSql = '';
+    
+        // Construct WHERE conditions
         $conditionSql = '';
         foreach ($criteria as $field => $value) {
             if ($conditionSql != '') {
@@ -600,7 +571,6 @@ class StandardEntityPersister
 
         return 'SELECT ' . $columnList 
              . ' FROM ' . $this->_class->getQuotedTableName($this->_platform)
-             . $joinSql
              . ($conditionSql ? ' WHERE ' . $conditionSql : '');
     }
     
