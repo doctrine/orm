@@ -42,6 +42,10 @@ class CmsAddress
     public function getId() {
         return $this->id;
     }
+    
+    public function getUser() {
+        return $this->user;
+    }
 
     public function getCountry() {
         return $this->country;

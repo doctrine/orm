@@ -200,6 +200,7 @@ class ObjectHydrator extends AbstractHydrator
                         foreach ($assoc->targetToSourceKeyColumns as $srcColumn) {
                             $joinColumns[$srcColumn] = $data[$assoc->joinColumnFieldNames[$srcColumn]];
                         }
+                        //TODO: If its in the identity map just get it from there if possible!
                         if ($assoc->isLazilyFetched() /*&& ! $assoc->isOptional*/) {
                             // Inject proxy
                             $proxy = $this->_proxyFactory->getAssociationProxy($entity, $assoc, $joinColumns);
