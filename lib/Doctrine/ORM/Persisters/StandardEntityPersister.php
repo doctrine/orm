@@ -607,12 +607,12 @@ class StandardEntityPersister
         $joinTableName = $owningAssoc->getQuotedJoinTableName($this->_platform);
         
         $joinSql = '';
-        foreach ($joinClauses as $sourceField => $joinTableField) {
+        foreach ($joinClauses as $sourceColumn => $joinTableColumn) {
             if ($joinSql != '') $joinSql .= ' AND ';
             $joinSql .= $this->_class->getQuotedTableName($this->_platform) .
-                    '.' . $this->_class->getQuotedColumnName($sourceField, $this->_platform) . ' = '
+                    '.' . $this->_class->getQuotedColumnName($this->_class->fieldNames[$sourceColumn], $this->_platform) . ' = '
                     . $joinTableName
-                    . '.' . $owningAssoc->getQuotedJoinColumnName($joinTableField, $this->_platform);
+                    . '.' . $owningAssoc->getQuotedJoinColumnName($joinTableColumn, $this->_platform);
         }
         
         $joinSql = ' INNER JOIN ' . $joinTableName . ' ON ' . $joinSql;
