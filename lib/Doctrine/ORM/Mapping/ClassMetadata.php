@@ -341,7 +341,7 @@ final class ClassMetadata extends ClassMetadataInfo
     }
     
     /**
-     * Restores some state that could not be serialized/unserialized.
+     * Restores some state that can not be serialized/unserialized.
      * 
      * @return void
      */

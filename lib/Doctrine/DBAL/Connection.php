@@ -683,10 +683,7 @@ class Connection
     }
 
     /**
-     * Start a transaction or set a savepoint.
-     *
-     * if trying to set a savepoint and there is no active transaction
-     * a new transaction is being started.
+     * Start a transaction by suspending auto-commit mode.
      *
      * @return void
      */
@@ -702,12 +699,11 @@ class Connection
     }
 
     /**
-     * Commits the database changes done during a transaction that is in
-     * progress or release a savepoint. This function may only be called when
-     * auto-committing is disabled, otherwise it will fail.
+     * Commits the current transaction.
      *
      * @return void
-     * @throws ConnectionException If the commit failed.
+     * @throws ConnectionException If the commit failed due to no active transaction or
+     *                             because the transaction was marked for rollback only.
      */
     public function commit()
     {
@@ -736,7 +732,6 @@ class Connection
      * this method can be listened with onPreTransactionRollback and onTransactionRollback
      * eventlistener methods
      *
-     * @param string $savepoint                 Name of a savepoint to rollback to.
      * @throws ConnectionException   If the rollback operation fails at database level.
      */
     public function rollback()
@@ -752,6 +747,7 @@ class Connection
             $this->_conn->rollback();
             $this->_isRollbackOnly = false;
         } else {
+            $this->_isRollbackOnly = true;
             --$this->_transactionNestingLevel;
         }
     }

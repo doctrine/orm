@@ -2,7 +2,7 @@
 
 namespace Entities;
 
-/** @Entity @Table(name="users", indexes={@Index(name="name_idx", columns={"name", "test"})}) */
+/** @Entity @Table(name="users") */
 class User {
     /**
      * @Id @Column(type="integer")
@@ -11,8 +11,6 @@ class User {
     private $id;
     /** @Column(type="string", length=50) */
     private $name;
-    /** @Column(type="string", length=50) */
-    private $test;
     /**
      * @OneToOne(targetEntity="Address")
      * @JoinColumn(name="address_id", referencedColumnName="id")
