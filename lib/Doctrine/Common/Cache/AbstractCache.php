@@ -57,7 +57,7 @@ abstract class AbstractCache implements Cache
     public function fetch($id)
     {
         $id = $this->_getNamespacedId($id);
-        return $this->_doFetch($this->_getNamespacedId($id));
+        return $this->_doFetch($id);
     }
 
     /**
