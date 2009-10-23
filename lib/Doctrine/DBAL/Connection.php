@@ -96,35 +96,28 @@ class Connection
      *
      * @var boolean
      */
-    protected $_isConnected = false;
+    private $_isConnected = false;
 
     /**
      * The transaction nesting level.
      *
      * @var integer
      */
-    protected $_transactionNestingLevel = 0;
+    private $_transactionNestingLevel = 0;
 
     /**
      * The currently active transaction isolation level.
      *
      * @var integer
      */
-    protected $_transactionIsolationLevel;
+    private $_transactionIsolationLevel;
 
     /**
      * The parameters used during creation of the Connection instance.
      *
      * @var array
      */
-    protected $_params = array();
-
-    /**
-     * The query count. Represents the number of executed database queries by the connection.
-     *
-     * @var integer
-     */
-    protected $_queryCount = 0;
+    private $_params = array();
 
     /**
      * The DatabasePlatform object that provides information about the
@@ -147,6 +140,13 @@ class Connection
      * @var Doctrine\DBAL\Driver
      */
     protected $_driver;
+    
+    /**
+     * Flag that indicates whether the current transaction is marked for rollback only.
+     * 
+     * @var boolean
+     */
+    private $_isRollbackOnly = false;
 
     /**
      * Initializes a new instance of the Connection class.
@@ -602,8 +602,6 @@ class Connection
             $stmt = $this->_conn->query($query);
         }
         
-        $this->_queryCount++;
-        
         return $stmt;
     }
 
@@ -629,20 +627,8 @@ class Connection
         } else {
             $result = $this->_conn->exec($query);
         }
-
-        $this->_queryCount++;
         
         return $result;
-    }
-
-    /**
-     * Returns the number of queries executed by the connection.
-     *
-     * @return integer
-     */
-    public function getQueryCount()
-    {
-        return $this->_queryCount;
     }
 
     /**
@@ -702,7 +688,7 @@ class Connection
      * if trying to set a savepoint and there is no active transaction
      * a new transaction is being started.
      *
-     * @return boolean
+     * @return void
      */
     public function beginTransaction()
     {
@@ -713,8 +699,6 @@ class Connection
         }
         
         ++$this->_transactionNestingLevel;
-        
-        return true;
     }
 
     /**
@@ -722,12 +706,16 @@ class Connection
      * progress or release a savepoint. This function may only be called when
      * auto-committing is disabled, otherwise it will fail.
      *
-     * @return boolean FALSE if commit couldn't be performed, TRUE otherwise
+     * @return void
+     * @throws ConnectionException If the commit failed.
      */
     public function commit()
     {
         if ($this->_transactionNestingLevel == 0) {
             throw ConnectionException::commitFailedNoActiveTransaction();
+        }
+        if ($this->_isRollbackOnly) {
+            throw ConnectionException::commitFailedRollbackOnly();
         }
 
         $this->connect();
@@ -737,8 +725,6 @@ class Connection
         }
         
         --$this->_transactionNestingLevel;
-
-        return true;
     }
 
     /**
@@ -751,8 +737,7 @@ class Connection
      * eventlistener methods
      *
      * @param string $savepoint                 Name of a savepoint to rollback to.
-     * @throws Doctrine\DBAL\ConnectionException   If the rollback operation fails at database level.
-     * @return boolean                          FALSE if rollback couldn't be performed, TRUE otherwise.
+     * @throws ConnectionException   If the rollback operation fails at database level.
      */
     public function rollback()
     {
@@ -765,11 +750,10 @@ class Connection
         if ($this->_transactionNestingLevel == 1) {
             $this->_transactionNestingLevel = 0;
             $this->_conn->rollback();
+            $this->_isRollbackOnly = false;
         } else {
             --$this->_transactionNestingLevel;
         }
-
-        return true;
     }
 
     /**
@@ -797,5 +781,33 @@ class Connection
         }
         
         return $this->_schemaManager;
+    }
+    
+    /**
+     * Marks the current transaction so that the only possible
+     * outcome for the transaction to be rolled back.
+     * 
+     * @throws BadMethodCallException If no transaction is active.
+     */
+    public function setRollbackOnly()
+    {
+        if ($this->_transactionNestingLevel == 0) {
+            throw ConnectionException::noActiveTransaction();
+        }
+        $this->_isRollbackOnly = true;
+    }
+    
+    /**
+     * Check whether the current transaction is marked for rollback only.
+     * 
+     * @return boolean
+     * @throws BadMethodCallException If no transaction is active.
+     */
+    public function getRollbackOnly()
+    {
+        if ($this->_transactionNestingLevel == 0) {
+            throw ConnectionException::noActiveTransaction();
+        }
+        return $this->_isRollbackOnly;
     }
 }

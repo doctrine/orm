@@ -90,7 +90,7 @@ class ManyToManyBidirectionalAssociationTest extends AbstractManyToManyAssociati
 
         $query = $this->_em->createQuery('SELECT c FROM Doctrine\Tests\Models\ECommerce\ECommerceCategory c order by c.id');
         $categories = $query->getResult();
-        $this->assertLoadingOfInverseSide($categories); 
+        $this->assertLoadingOfInverseSide($categories);
     }
 
     public function testLazyLoadsCollectionOnTheOwningSide()
@@ -107,7 +107,7 @@ class ManyToManyBidirectionalAssociationTest extends AbstractManyToManyAssociati
         $this->assertEquals(0, count($products[0]->getCategories()->unwrap()));
         $this->assertEquals(0, count($products[1]->getCategories()->unwrap()));
         
-        $this->assertLoadingOfOwningSide($products); 
+        $this->assertLoadingOfOwningSide($products);
     }
 
 
@@ -161,5 +161,13 @@ class ManyToManyBidirectionalAssociationTest extends AbstractManyToManyAssociati
     {
         $this->assertTrue($categories[0] instanceof ECommerceCategory);
         $this->assertTrue($categories[1] instanceof ECommerceCategory);
+        
+        $this->assertEquals(2, count($categories[0]->getProducts()));
+        $this->assertTrue($categories[0]->getProducts()->get(0) instanceof ECommerceProduct);
+        $this->assertTrue($categories[0]->getProducts()->get(1) instanceof ECommerceProduct);
+        
+        $this->assertEquals(2, count($categories[1]->getProducts()));
+        $this->assertTrue($categories[1]->getProducts()->get(0) instanceof ECommerceProduct);
+        $this->assertTrue($categories[1]->getProducts()->get(1) instanceof ECommerceProduct);
     }
 }

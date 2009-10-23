@@ -204,6 +204,7 @@ class UnitOfWork implements PropertyChangedListener
     private $_collectionPersisters = array();
 
     /**
+     * EXPERIMENTAL:
      * Flag for whether or not to make use of the C extension.
      *
      * @var boolean
@@ -315,6 +316,7 @@ class UnitOfWork implements PropertyChangedListener
 
             $conn->commit();
         } catch (\Exception $e) {
+            $conn->setRollbackOnly();
             $conn->rollback();
             $this->clear();
             throw $e;

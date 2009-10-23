@@ -91,7 +91,7 @@ class ClassMetadataInfo
     const GENERATOR_TYPE_IDENTITY = 4;
     /**
      * NONE means the class does not have a generated id. That means the class
-     * must have a natural id.
+     * must have a natural, manually assigned id.
      */
     const GENERATOR_TYPE_NONE = 5;
     /**
@@ -105,7 +105,7 @@ class ClassMetadataInfo
     /**
      * DEFERRED_EXPLICIT means that changes of entities are calculated at commit-time
      * by doing a property-by-property comparison with the original data. This will
-     * be done only for entities that were explicitly saved (through save() or cascade).
+     * be done only for entities that were explicitly saved (through persist() or a cascade).
      */
     const CHANGETRACKING_DEFERRED_EXPLICIT = 2;
     /**

@@ -22,7 +22,7 @@
 namespace Doctrine\Common\Cache;
 
 /**
- * Abstract cache driver class
+ * Base class for cache driver implementations.
  *
  * @license http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @link    www.doctrine-project.org
@@ -34,14 +34,44 @@ namespace Doctrine\Common\Cache;
  */
 abstract class AbstractCache implements Cache
 {
-    /* @var string $cacheIdsIndexId   The cache id to store the index of cache ids under */
+    /** @var string The cache id to store the index of cache ids under */
     private $_cacheIdsIndexId = 'doctrine_cache_ids';
 
-    /* @var string $namespace   The namespace to prefix all cache ids with */
+    /** @var string The namespace to prefix all cache ids with */
     private $_namespace = null;
+    
+    /** @var boolean Whether to manage cache keys or not. */
+    private $_manageCacheKeys = false;
+    
+    /**
+     * Sets whether cache keys should be managed by the cache driver
+     * separately from the cache entries. This allows more granular
+     * cache clearing through {@link deleteByPrefix}, {@link deleteByRegex},
+     * {@link deleteBySuffix} and some other operations such as {@link count}
+     * and {@link getIds}. Managing cache keys comes at the cost of a higher
+     * probability for cache slams due to the single cache key used for
+     * managing all other keys.
+     * 
+     * @param boolean $bool
+     */
+    public function setManageCacheKeys($bool)
+    {
+        $this->_manageCacheKeys = $bool;
+    }
+    
+    /**
+     * Checks whether cache keys are managed by this cache driver.
+     * 
+     * @return boolean
+     * @see setManageCacheKeys()
+     */
+    public function getManageCacheKeys()
+    {
+        return $this->_manageCacheKeys;
+    }
 
     /**
-     * Set the namespace to prefix all cache ids with
+     * Set the namespace to prefix all cache ids with.
      *
      * @param string $namespace
      * @return void
@@ -56,8 +86,7 @@ abstract class AbstractCache implements Cache
      */
     public function fetch($id)
     {
-        $id = $this->_getNamespacedId($id);
-        return $this->_doFetch($id);
+        return $this->_doFetch($this->_getNamespacedId($id));
     }
 
     /**
@@ -65,8 +94,7 @@ abstract class AbstractCache implements Cache
      */
     public function contains($id)
     {
-        $id = $this->_getNamespacedId($id);
-        return $this->_doContains($id);
+        return $this->_doContains($this->_getNamespacedId($id));
     }
 
     /**
@@ -76,7 +104,9 @@ abstract class AbstractCache implements Cache
     {
         $id = $this->_getNamespacedId($id);
         if ($this->_doSave($id, $data, $lifeTime)) {
-            $this->_saveId($id);
+            if ($this->_manageCacheKeys) {
+                $this->_saveId($id);
+            }
 
             return true;
         }
@@ -95,7 +125,9 @@ abstract class AbstractCache implements Cache
         }
 
         if ($this->_doDelete($id)) {
-            $this->_deleteId($id);
+            if ($this->_manageCacheKeys) {
+                $this->_deleteId($id);
+            }
 
             return true;
         }
@@ -109,6 +141,7 @@ abstract class AbstractCache implements Cache
      */
     public function deleteAll()
     {
+        $this->_errorIfCacheKeysNotManaged();
         $ids = $this->getIds();
         foreach ($ids as $id) {
             $this->delete($id);
@@ -124,6 +157,7 @@ abstract class AbstractCache implements Cache
      */
     public function deleteByRegex($regex)
     {
+        $this->_errorIfCacheKeysNotManaged();
         $deleted = array();
         $ids = $this->getIds();
         foreach ($ids as $id) {
@@ -143,6 +177,7 @@ abstract class AbstractCache implements Cache
      */
     public function deleteByPrefix($prefix)
     {
+        $this->_errorIfCacheKeysNotManaged();
         $deleted = array();
         $ids = $this->getIds();
         foreach ($ids as $id) {
@@ -162,6 +197,7 @@ abstract class AbstractCache implements Cache
      */
     public function deleteBySuffix($suffix)
     {
+        $this->_errorIfCacheKeysNotManaged();
         $deleted = array();
         $ids = $this->getIds();
         foreach ($ids as $id) {
@@ -180,6 +216,7 @@ abstract class AbstractCache implements Cache
      */
     public function count() 
     {
+        $this->_errorIfCacheKeysNotManaged();
         $ids = $this->getIds();
         return $ids ? count($ids) : 0;
     }
@@ -191,6 +228,7 @@ abstract class AbstractCache implements Cache
      */
     public function getIds()
     {
+        $this->_errorIfCacheKeysNotManaged();
         $ids = $this->fetch($this->_cacheIdsIndexId);
         return $ids ? $ids : array();
     }
@@ -242,6 +280,16 @@ abstract class AbstractCache implements Cache
             return $this->_doSave($cacheIdsIndexId, $ids, null);
         }
         return false;
+    }
+    
+    /**
+     * @throws BadMethodCallException If the cache driver does not manage cache keys.
+     */
+    private function _errorIfCacheKeysNotManaged()
+    {
+        if ( ! $this->_manageCacheKeys) {
+            throw new \BadMethodCallException("Operation not supported if cache keys are not managed.");
+        }
     }
 
     /**

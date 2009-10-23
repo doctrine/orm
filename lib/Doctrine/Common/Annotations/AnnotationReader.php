@@ -62,8 +62,8 @@ class AnnotationReader
     private $_cache;
     
     /**
-     * Constructor. Initiaizes a new AnnotationReader that uses the given 
-     * Cache provider to cache annotations.
+     * Constructor. Initializes a new AnnotationReader that uses the given 
+     * Cache provider.
      * 
      * @param Cache $cache The cache provider to use.
      */

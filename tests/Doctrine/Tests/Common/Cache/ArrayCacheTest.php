@@ -11,6 +11,7 @@ class ArrayCacheTest extends \Doctrine\Tests\DoctrineTestCase
     public function testArrayCacheDriver()
     {
         $cache = new ArrayCache();
+        $cache->setManageCacheKeys(true);
 
         // Test save
         $cache->save('test_key', 'testing this out');

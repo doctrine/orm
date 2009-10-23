@@ -262,14 +262,14 @@ abstract class AbstractQuery
     }
 
     /**
-     * Defines if the resultset cache is active or not.
+     * Defines if the result cache is active or not.
      *
      * @param boolean $expire Whether or not to force resultset cache expiration.
      * @return Doctrine_ORM_Query
      */
     public function setExpireResultCache($expire = true)
     {
-        $this->_expireResultCache = (bool) $expire;
+        $this->_expireResultCache = $expire;
 
         return $this;
     }
@@ -445,7 +445,7 @@ abstract class AbstractQuery
         // Check result cache
         if ($cacheDriver = $this->getResultCacheDriver()) {
             $id = $this->_getResultCacheId($params);
-            $cached = ($this->_expireResultCache) ? false : $cacheDriver->fetch($id);
+            $cached = $this->_expireResultCache ? false : $cacheDriver->fetch($id);
 
             if ($cached === false) {
                 // Cache miss.

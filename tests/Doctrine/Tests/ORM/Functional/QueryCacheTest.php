@@ -33,6 +33,7 @@ class QueryCacheTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $query = $this->_em->createQuery('select ux from Doctrine\Tests\Models\CMS\CmsUser ux');
         $cache = new ArrayCache;
+        $cache->setManageCacheKeys(true);
         $query->setQueryCacheDriver($cache);
 		$this->assertEquals(0, $cache->count());
 		

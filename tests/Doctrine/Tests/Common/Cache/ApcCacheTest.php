@@ -30,6 +30,7 @@ class ApcCacheTest extends \Doctrine\Tests\DoctrineTestCase
 
         // Test delete
         $cache->save('test_key2', 'test2');
+        
         $cache->delete('test_key2');
         $this->assertFalse($cache->contains('test_key2'));
     }
