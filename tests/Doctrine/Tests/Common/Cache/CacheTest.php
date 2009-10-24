@@ -11,7 +11,7 @@ class CacheTest extends \Doctrine\Tests\DoctrineTestCase
     public function testCount()
     {
         $cache = new ArrayCache();
-        $cache->setManageCacheKeys(true);
+        $cache->setManageCacheIds(true);
         $cache->save('test_key1', '1');
         $cache->save('test_key2', '2');
         $this->assertEquals($cache->count(), 2);
@@ -20,7 +20,7 @@ class CacheTest extends \Doctrine\Tests\DoctrineTestCase
     public function testDeleteAll()
     {
         $cache = new ArrayCache();
-        $cache->setManageCacheKeys(true);
+        $cache->setManageCacheIds(true);
         $cache->save('test_key1', '1');
         $cache->save('test_key2', '2');
         $cache->deleteAll();
@@ -31,7 +31,7 @@ class CacheTest extends \Doctrine\Tests\DoctrineTestCase
     public function testDeleteByRegex()
     {
         $cache = new ArrayCache();
-        $cache->setManageCacheKeys(true);
+        $cache->setManageCacheIds(true);
         $cache->save('test_key1', '1');
         $cache->save('test_key2', '2');
         $cache->deleteByRegex('/test_key[0-9]/');
@@ -42,7 +42,7 @@ class CacheTest extends \Doctrine\Tests\DoctrineTestCase
     public function testDeleteByPrefix()
     {
         $cache = new ArrayCache();
-        $cache->setManageCacheKeys(true);
+        $cache->setManageCacheIds(true);
         $cache->save('test_key1', '1');
         $cache->save('test_key2', '2');
         $cache->deleteByPrefix('test_key');
@@ -53,7 +53,7 @@ class CacheTest extends \Doctrine\Tests\DoctrineTestCase
     public function testDeleteBySuffix()
     {
         $cache = new ArrayCache();
-        $cache->setManageCacheKeys(true);
+        $cache->setManageCacheIds(true);
         $cache->save('1test_key', '1');
         $cache->save('2test_key', '2');
         $cache->deleteBySuffix('test_key');
@@ -64,7 +64,7 @@ class CacheTest extends \Doctrine\Tests\DoctrineTestCase
     public function testDeleteByWildcard()
     {
         $cache = new ArrayCache();
-        $cache->setManageCacheKeys(true);
+        $cache->setManageCacheIds(true);
         $cache->save('test_key1', '1');
         $cache->save('test_key2', '2');
         $cache->delete('test_key*');
@@ -75,7 +75,7 @@ class CacheTest extends \Doctrine\Tests\DoctrineTestCase
     public function testNamespace()
     {
         $cache = new ArrayCache();
-        $cache->setManageCacheKeys(true);
+        $cache->setManageCacheIds(true);
         $cache->setNamespace('test_');
         $cache->save('key1', 'test');
         $this->assertTrue($cache->contains('key1'));

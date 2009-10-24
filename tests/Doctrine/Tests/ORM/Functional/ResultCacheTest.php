@@ -31,8 +31,8 @@ class ResultCacheTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $query = $this->_em->createQuery('select ux from Doctrine\Tests\Models\CMS\CmsUser ux');
         $cache = new ArrayCache;
-        $cache->setManageCacheKeys(true);
-        $query->setResultCache($cache);
+        $cache->setManageCacheIds(true);
+        $query->setResultCacheDriver($cache);
 		$this->assertEquals(0, $cache->count());
 		
         $users = $query->getResult();
@@ -44,7 +44,7 @@ class ResultCacheTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->clear();
         
         $query2 = $this->_em->createQuery('select ux from Doctrine\Tests\Models\CMS\CmsUser ux');
-        $query2->setResultCache($cache);
+        $query2->setResultCacheDriver($cache);
         
         $users = $query2->getResult();
 
@@ -58,10 +58,25 @@ class ResultCacheTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $cache = new ArrayCache;
 
         $query = $this->_em->createQuery('select ux from Doctrine\Tests\Models\CMS\CmsUser ux');
-        $query->setResultCache($cache);
+        $query->setResultCacheDriver($cache);
         $query->setResultCacheId('testing_result_cache_id');
         $users = $query->getResult();
 
         $this->assertTrue($cache->contains('testing_result_cache_id'));
+    }
+
+    public function testUseResultCache()
+    {
+        $cache = new \Doctrine\Common\Cache\ArrayCache();
+        $this->_em->getConfiguration()->setResultCacheImpl($cache);
+
+        $query = $this->_em->createQuery('select ux from Doctrine\Tests\Models\CMS\CmsUser ux');
+        $query->useResultCache(true);
+        $query->setResultCacheId('testing_result_cache_id');
+        $users = $query->getResult();
+
+        $this->assertTrue($cache->contains('testing_result_cache_id'));
+
+        $this->_em->getConfiguration()->setResultCacheImpl(null);
     }
 }

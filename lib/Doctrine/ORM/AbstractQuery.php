@@ -92,7 +92,14 @@ abstract class AbstractQuery
      *
      * @var CacheDriver
      */
-    protected $_resultCache;
+    protected $_resultCacheDriver;
+
+    /**
+     * Boolean flag for whether or not to cache the result sets of this query.
+     *
+     * @var boolean
+     */
+    protected $_useResultCache;
 
     /**
      * The id to store the result cache entry under.
@@ -211,13 +218,15 @@ abstract class AbstractQuery
      * @param Doctrine\Common\Cache\Cache $driver Cache driver
      * @return Doctrine\ORM\Query
      */
-    public function setResultCache($resultCache = null)
+    public function setResultCacheDriver($resultCacheDriver = null)
     {
-        if ($resultCache !== null && ! ($resultCache instanceof \Doctrine\Common\Cache\Cache)) {
-            throw DoctrineException::invalidResultCacheObject($resultCache);
+        if ($resultCacheDriver !== null && ! ($resultCacheDriver instanceof \Doctrine\Common\Cache\Cache)) {
+            throw DoctrineException::invalidResultCacheObject($resultCacheDriver);
         }
-        $this->_resultCache = $resultCache;
-        return $this;
+        $this->_resultCacheDriver = $resultCacheDriver;
+        if ($resultCacheDriver) {
+            $this->_useResultCache = true;
+        }
     }
 
     /**
@@ -227,10 +236,26 @@ abstract class AbstractQuery
      */
     public function getResultCacheDriver()
     {
-        if ($this->_resultCache) {
-            return $this->_resultCache;
+        if ($this->_resultCacheDriver) {
+            return $this->_resultCacheDriver;
         } else {
             return $this->_em->getConfiguration()->getResultCacheImpl();
+        }
+    }
+
+    /**
+     * Set whether or not to cache the result sets for this query
+     *
+     * @param boolean $bool
+     */
+    public function useResultCache($bool, $timeToLive = null, $resultCacheId = null)
+    {
+        $this->_useResultCache = $bool;
+        if ($timeToLive) {
+            $this->setResultCacheLifetime($timeToLive);
+        }
+        if ($resultCacheId) {
+            $this->_resultCacheId = $resultCacheId;
         }
     }
 
@@ -238,7 +263,6 @@ abstract class AbstractQuery
      * Defines how long the result cache will be active before expire.
      *
      * @param integer $timeToLive How long the cache entry is valid
-     * @return Doctrine\ORM\Query
      */
     public function setResultCacheLifetime($timeToLive)
     {
@@ -247,8 +271,6 @@ abstract class AbstractQuery
         }
 
         $this->_resultCacheTTL = $timeToLive;
-
-        return $this;
     }
 
     /**
@@ -270,8 +292,6 @@ abstract class AbstractQuery
     public function setExpireResultCache($expire = true)
     {
         $this->_expireResultCache = $expire;
-
-        return $this;
     }
 
     /**
@@ -289,12 +309,10 @@ abstract class AbstractQuery
      *
      * @param integer $hydrationMode Doctrine processing mode to be used during hydration process.
      *                               One of the Query::HYDRATE_* constants.
-     * @return Doctrine\ORM\Query
      */
     public function setHydrationMode($hydrationMode)
     {
         $this->_hydrationMode = $hydrationMode;
-        return $this;
     }
 
     /**
@@ -443,7 +461,7 @@ abstract class AbstractQuery
         $params = $this->getParameters($params);
 
         // Check result cache
-        if ($cacheDriver = $this->getResultCacheDriver()) {
+        if ($this->_useResultCache && $cacheDriver = $this->getResultCacheDriver()) {
             $id = $this->_getResultCacheId($params);
             $cached = $this->_expireResultCache ? false : $cacheDriver->fetch($id);
 
@@ -481,7 +499,6 @@ abstract class AbstractQuery
      * generated for you.
      *
      * @param string $id 
-     * @return void
      */
     public function setResultCacheId($id)
     {
