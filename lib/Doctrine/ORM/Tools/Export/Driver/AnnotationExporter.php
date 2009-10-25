@@ -331,8 +331,14 @@ class AnnotationExporter extends AbstractExporter
         if (isset($associationMapping->mappedByFieldName)) {
             $typeOptions[] = 'mappedBy="' . $associationMapping->mappedByFieldName . '"';
         }
-        if (isset($associationMapping->cascades) && $associationMapping->cascades) {
-            $typeOptions[] = 'cascade={"' . implode('"', $associationMapping->cascades) . '"}';
+        if ($associationMapping->hasCascades()) {
+            $cascades = array();
+            if ($this->isCascadePersist) $cascades[] = '"persist"';
+            if ($this->isCascadeRemove) $cascades[] = '"remove"';
+            if ($this->isCascadeDetach) $cascades[] = '"detach"';
+            if ($this->isCascadeMerge) $cascades[] = '"merge"';
+            if ($this->isCascadeRefresh) $cascades[] = '"refresh"';
+            $typeOptions[] = 'cascade={' . implode(',', $cascades) . '}';            
         }
         if (isset($associationMapping->orphanRemoval) && $associationMapping->orphanRemoval) {
             $typeOptions[] = 'orphanRemoval=' . ($associationMapping->orphanRemoval ? 'true' : 'false');

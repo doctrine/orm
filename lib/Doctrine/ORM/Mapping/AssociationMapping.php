@@ -51,7 +51,6 @@ abstract class AssociationMapping
      */
     const FETCH_EAGER = 3;
     
-    public $cascades = array();
     public $isCascadeRemove;
     public $isCascadePersist;
     public $isCascadeRefresh;
@@ -165,13 +164,12 @@ abstract class AssociationMapping
         // Optional attributes for both sides
         $this->fetchMode = isset($mapping['fetch']) ?
                 $mapping['fetch'] : self::FETCH_LAZY;
-        $this->cascades = isset($mapping['cascade']) ?
-                (array)$mapping['cascade'] : array();
-        $this->isCascadeRemove = in_array('remove', $this->cascades);
-        $this->isCascadePersist = in_array('persist', $this->cascades);
-        $this->isCascadeRefresh = in_array('refresh', $this->cascades);
-        $this->isCascadeMerge = in_array('merge', $this->cascades);
-        $this->isCascadeDetach = in_array('detach', $this->cascades);
+        $cascades = isset($mapping['cascade']) ? $mapping['cascade'] : array();
+        $this->isCascadeRemove = in_array('remove', $cascades);
+        $this->isCascadePersist = in_array('persist', $cascades);
+        $this->isCascadeRefresh = in_array('refresh', $cascades);
+        $this->isCascadeMerge = in_array('merge', $cascades);
+        $this->isCascadeDetach = in_array('detach', $cascades);
     }
     
     /**
@@ -359,6 +357,15 @@ abstract class AssociationMapping
     public function usesJoinTable()
     {
         return (bool) $this->joinTable;
+    }
+    
+    public function hasCascades()
+    {
+        return $this->isCascadePersist ||
+                $this->isCascadeRemove ||
+                $this->isCascadeRefresh ||
+                $this->isCascadeMerge ||
+                $this->isCascadeDetach;
     }
 
     /**
