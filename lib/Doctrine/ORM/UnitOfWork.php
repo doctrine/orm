@@ -265,15 +265,15 @@ class UnitOfWork implements PropertyChangedListener
                 $this->_orphanRemovals)) {
             return; // Nothing to do.
         }
-
-        // Now we need a commit order to maintain referential integrity
-        $commitOrder = $this->_getCommitOrder();
         
         if ($this->_orphanRemovals) {
             foreach ($this->_orphanRemovals as $orphan) {
                 $this->remove($orphan);
             }
         }
+        
+        // Now we need a commit order to maintain referential integrity
+        $commitOrder = $this->_getCommitOrder();
 
         $conn = $this->_em->getConnection();
         
@@ -681,7 +681,7 @@ class UnitOfWork implements PropertyChangedListener
         }
         
         foreach ($this->_entityInsertions as $oid => $entity) {
-            if (get_class($entity) == $className) {
+            if (get_class($entity) === $className) {
                 $persister->addInsert($entity);
                 unset($this->_entityInsertions[$oid]);
                 if ($hasLifecycleCallbacks || $hasListeners) {
@@ -802,15 +802,14 @@ class UnitOfWork implements PropertyChangedListener
                     $this->_entityDeletions
                     );
         }
-
-        // TODO: We can cache computed commit orders in the metadata cache!
-        // Check cache at this point here!
-
+        
         // See if there are any new classes in the changeset, that are not in the
         // commit order graph yet (dont have a node).
         $newNodes = array();
-        foreach ($entityChangeSet as $entity) {
+        $classesInChangeSet = array();
+        foreach ($entityChangeSet as $oid => $entity) {
             $className = get_class($entity);
+            $classesInChangeSet[$className] = true;            
             if ( ! $this->_commitOrderCalculator->hasClass($className)) {
                 $class = $this->_em->getClassMetadata($className);
                 $this->_commitOrderCalculator->addClass($class);
@@ -820,14 +819,12 @@ class UnitOfWork implements PropertyChangedListener
 
         // Calculate dependencies for new nodes
         foreach ($newNodes as $class) {
-            foreach ($class->associationMappings as $assocMapping) {
-                //TODO: should skip target classes that are not in the changeset.
-                if ($assocMapping->isOwningSide) {
-                    $targetClass = $this->_em->getClassMetadata($assocMapping->targetEntityName);
+            foreach ($class->associationMappings as $assoc) {
+                if ($assoc->isOwningSide && $assoc->isOneToOne() && isset($classesInChangeSet[$assoc->targetEntityName])) {
+                    $targetClass = $this->_em->getClassMetadata($assoc->targetEntityName);
                     if ( ! $this->_commitOrderCalculator->hasClass($targetClass->name)) {
                         $this->_commitOrderCalculator->addClass($targetClass);
                     }
-                    // add dependency ($targetClass before $class)
                     $this->_commitOrderCalculator->addDependency($targetClass, $class);
                 }
             }

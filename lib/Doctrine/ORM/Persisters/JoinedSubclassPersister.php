@@ -214,7 +214,7 @@ class JoinedSubclassPersister extends StandardEntityPersister
         $this->_prepareData($entity, $updateData);
 
         $id = array_combine(
-            $this->_class->getIdentifierFieldNames(),
+            $this->_class->getIdentifierColumnNames(),
             $this->_em->getUnitOfWork()->getEntityIdentifier($entity)
         );
 

@@ -44,7 +44,7 @@ class ClassTableInheritanceTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $this->_em->clear();
         
-        $query = $this->_em->createQuery("select p from Doctrine\Tests\Models\Company\CompanyPerson p order by p.id asc");
+        $query = $this->_em->createQuery("select p from Doctrine\Tests\Models\Company\CompanyPerson p order by p.name desc");
 
         $entities = $query->getResult();
 

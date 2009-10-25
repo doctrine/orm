@@ -51,15 +51,6 @@ abstract class AssociationMapping
      */
     const FETCH_EAGER = 3;
     
-    /**
-     * Cascade types enumeration.
-     *
-     * @var array
-     */
-    protected static $_cascadeTypes = array(
-        'all', 'none', 'save', 'delete', 'refresh', 'merge'
-    );
-    
     public $cascades = array();
     public $isCascadeRemove;
     public $isCascadePersist;

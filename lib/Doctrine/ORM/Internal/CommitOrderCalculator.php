@@ -40,14 +40,14 @@ class CommitOrderCalculator
     private $_sorted = array();
     
     /**
-     * Clears the current graph and the last result.
+     * Clears the current graph.
      *
      * @return void
      */
     public function clear()
     {
-        $this->_nodes = array();
-        $this->_sorted = array();
+        $this->_classes =
+        $this->_relatedClasses = array();
     }
     
     /**
@@ -65,12 +65,10 @@ class CommitOrderCalculator
         if ($nodeCount == 0) {
             return array();
         } else if ($nodeCount == 1) {
-            return array(0 => array_pop($this->_classes));
+            return array_values($this->_classes);
         }
         
         // Init
-        $this->_sorted = array();
-        $this->_nodeStates = array();
         foreach ($this->_classes as $node) {
             $this->_nodeStates[$node->name] = self::NOT_VISITED;
         }
@@ -82,7 +80,12 @@ class CommitOrderCalculator
             }
         }
         
-        return array_reverse($this->_sorted);
+        $sorted = array_reverse($this->_sorted);
+        
+        $this->_sorted =
+        $this->_nodeStates = array();
+        
+        return $sorted;
     }
     
     private function _visitNode($node)
@@ -93,10 +96,6 @@ class CommitOrderCalculator
             foreach ($this->_relatedClasses[$node->name] as $relatedNode) {
                 if ($this->_nodeStates[$relatedNode->name] == self::NOT_VISITED) {
                     $this->_visitNode($relatedNode);
-                }
-                if ($this->_nodeStates[$relatedNode->name] == self::IN_PROGRESS) {
-                    // back edge => cycle
-                    //TODO: anything to do here?
                 }
             }
         }

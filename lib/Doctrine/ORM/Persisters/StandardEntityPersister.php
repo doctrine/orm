@@ -205,7 +205,7 @@ class StandardEntityPersister
         $updateData = array();
         $this->_prepareData($entity, $updateData);
         $id = array_combine(
-            $this->_class->identifier,
+            $this->_class->getIdentifierColumnNames(),
             $this->_em->getUnitOfWork()->getEntityIdentifier($entity)
         );
         $tableName = $this->_class->primaryTable['name'];
@@ -251,8 +251,7 @@ class StandardEntityPersister
 
         $sql  = 'UPDATE ' . $tableName
                 . ' SET ' . implode(', ', $set)
-                . ' WHERE ' . implode(' = ? AND ', array_keys($where))
-                . ' = ?';
+                . ' WHERE ' . implode(' = ? AND ', array_keys($where)) . ' = ?';
 
         $result = $this->_conn->executeUpdate($sql, $params);
 
@@ -352,7 +351,7 @@ class StandardEntityPersister
                 }
 
                 // Special case: One-one self-referencing of the same class.                
-                if ($newVal !== null && $assocMapping->sourceEntityName == $assocMapping->targetEntityName) {
+                if ($newVal !== null /*&& $assocMapping->sourceEntityName == $assocMapping->targetEntityName*/) {
                     $oid = spl_object_hash($newVal);
                     $isScheduledForInsert = $uow->isScheduledForInsert($newVal);
                     if (isset($this->_queuedInserts[$oid]) || $isScheduledForInsert) {
@@ -363,12 +362,6 @@ class StandardEntityPersister
                             $field => array(null, $newVal)
                         ));
                         $newVal = null;
-                    } else if ($isInsert && ! $isScheduledForInsert && $uow->getEntityState($newVal) == UnitOfWork::STATE_MANAGED) {
-                        // $newVal is already fully persisted.
-                        // Schedule an extra update for it, so that the foreign key(s) are properly set.
-                        $uow->scheduleExtraUpdate($newVal, array(
-                            $field => array(null, $entity)
-                        ));
                     }
                 }
                 
