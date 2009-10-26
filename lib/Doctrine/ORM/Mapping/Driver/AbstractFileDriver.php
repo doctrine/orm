@@ -104,7 +104,7 @@ abstract class AbstractFileDriver implements Driver
      *
      * @return void
      */
-    public function getfileExtension()
+    public function getFileExtension()
     {
         return $this->_fileExtension;
     }
