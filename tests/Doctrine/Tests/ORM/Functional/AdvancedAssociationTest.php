@@ -16,10 +16,12 @@ class AdvancedAssociationTest extends \Doctrine\Tests\OrmFunctionalTestCase
     protected function setUp() {
         parent::setUp();
         try {
-            $this->_schemaTool->createSchema(array(
-                $this->_em->getClassMetadata('Doctrine\Tests\ORM\Functional\Phrase'),
+            $this->_schemaTool->createSchema(array(            
+                $this->_em->getClassMetadata('Doctrine\Tests\ORM\Functional\Phrase'), 
                 $this->_em->getClassMetadata('Doctrine\Tests\ORM\Functional\PhraseType'),
                 $this->_em->getClassMetadata('Doctrine\Tests\ORM\Functional\Definition'),
+                $this->_em->getClassMetadata('Doctrine\Tests\ORM\Functional\Lemma'),
+                $this->_em->getClassMetadata('Doctrine\Tests\ORM\Functional\Type')
             ));
         } catch (\Exception $e) {
             // Swallow all exceptions. We do not test the schema tool here.
@@ -40,7 +42,7 @@ class AdvancedAssociationTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $def1->setDefinition('def1');
         $def2 = new Definition;
         $def2->setDefinition('def2');
-        
+                
         $phrase->setType($type);
         $phrase->addDefinition($def1);
         $phrase->addDefinition($def2);
@@ -96,7 +98,249 @@ class AdvancedAssociationTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertEquals(2, $definitions->count());
         
     }
+    
+    public function testManyToMany()
+    {
+        $lemma = new Lemma;
+        $lemma->setLemma('abu');
+        
+        $type = new Type();
+        $type->setType('nonsense');
+        $type->setAbbreviation('non');
+        
+        $lemma->addType($type);
+        
+        $this->_em->persist($lemma);
+        $this->_em->persist($type);
+        $this->_em->flush();
+        
+        // test5 ManyToMany
+        $query = $this->_em->createQuery("SELECT l FROM Doctrine\Tests\ORM\Functional\Lemma l");
+        $res = $query->getResult();
+        $types = $res[0]->getTypes();
+        
+        $this->assertTrue($types[0] instanceof Type);
+    }
 }
+
+/**
+ * @Entity
+ * @Table(name="lemma")
+ */
+class Lemma {
+
+	const CLASS_NAME = __CLASS__;
+
+	/**
+	 * @var int
+	 * @Id
+	 * @Column(type="integer", name="lemma_id")
+	 * @GeneratedValue(strategy="AUTO")
+	 */
+	private $id;
+
+	/**
+	 *
+	 * @var string
+	 * @Column(type="string", name="lemma_name", unique=true, length=255)
+	 */
+	private $lemma;
+
+	/**
+	 * @var kateglo\application\utilities\collections\ArrayCollection
+	 * @ManyToMany(targetEntity="Type", mappedBy="lemmas", cascade={"persist"})
+	 */
+	private $types;
+
+	public function __construct() {
+		$this->types = new \Doctrine\Common\Collections\ArrayCollection();
+	}
+
+
+	/**
+	 *
+	 * @return int
+	 */
+	public function getId(){
+		return $this->id;
+	}
+
+	/**
+	 *
+	 * @param string $lemma
+	 * @return void
+	 */
+	public function setLemma($lemma){
+		$this->lemma = $lemma;
+	}
+
+	/**
+	 *
+	 * @return string
+	 */
+	public function getLemma(){
+		return $this->lemma;
+	}
+	
+	/**
+     * 
+     * @param kateglo\application\models\Type $type
+     * @return void
+     */
+	public function addType(Type $type){
+        if (!$this->types->contains($type)) {
+            $this->types[] = $type;
+            $type->addLemma($this);
+        }
+    }
+
+    /**
+     * 
+     * @param kateglo\application\models\Type $type
+     * @return void
+     */
+    public function removeType(Type $type)
+    {
+        $removed = $this->sources->removeElement($type);
+        if ($removed !== null) {
+            $removed->removeLemma($this);
+        }
+    }
+
+    /**
+     * 
+     * @return kateglo\application\helpers\collections\ArrayCollection
+     */
+    public function getTypes()
+    {
+        return $this->types;
+    }
+}
+
+/**
+ * @Entity
+ * @Table(name="type")
+ */
+class Type {
+
+	const CLASS_NAME = __CLASS__;
+
+	/**
+	 *
+	 * @var int
+	 * @Id
+	 * @Column(type="integer", name="type_id")
+	 * @GeneratedValue(strategy="AUTO")
+	 */
+	private $id;
+
+	/**
+	 *
+	 * @var string
+	 * @Column(type="string", name="type_name", unique=true)
+	 */
+	private $type;
+
+	/**
+	 *
+	 * @var string
+	 * @Column(type="string", name="type_abbreviation", unique=true)
+	 */
+	private $abbreviation;
+
+	/**
+	 * @var kateglo\application\helpers\collections\ArrayCollection
+	 * @ManyToMany(targetEntity="Lemma")
+	 * @JoinTable(name="lemma_type",
+	 * 		joinColumns={@JoinColumn(name="type_id", referencedColumnName="type_id")},
+	 * 		inverseJoinColumns={@JoinColumn(name="lemma_id", referencedColumnName="lemma_id")}
+	 * )
+	 */
+	private $lemmas;
+
+	public function __construct(){
+		$this->lemmas = new \Doctrine\Common\Collections\ArrayCollection();
+	}
+	
+	/**
+	 *
+	 * @return int
+	 */
+	public function getId(){
+		return $this->id;
+	}
+
+	/**
+	 *
+	 * @param string $type
+	 * @return void
+	 */
+	public function setType($type){
+		$this->type = $type;
+	}
+
+	/**
+	 *
+	 * @return string
+	 */
+	public function getType(){
+		return $this->type;
+	}
+
+	/**
+	 *
+	 * @param string $abbreviation
+	 * @return void
+	 */
+	public function setAbbreviation($abbreviation){
+		$this->abbreviation = $abbreviation;
+	}
+
+	/**
+	 *
+	 * @return string
+	 */
+	public function getAbbreviation(){
+		return $this->abbreviation;
+	}
+
+	/**
+	 * 
+	 * @param kateglo\application\models\Lemma $lemma
+	 * @return void
+	 */
+	public function addLemma(Lemma $lemma)
+	{
+		if (!$this->lemmas->contains($lemma)) {
+			$this->lemmas[] = $lemma;
+			$lemma->addType($this);
+		}
+	}
+
+	/**
+	 * 
+	 * @param kateglo\application\models\Lemma $lemma
+	 * @return void
+	 */
+	public function removeLEmma(Lemma $lemma)
+	{
+		$removed = $this->lemmas->removeElement($lemma);
+		if ($removed !== null) {
+			$removed->removeType($this);
+		}
+	}
+
+	/**
+	 * 
+	 * @return kateglo\application\helpers\collections\ArrayCollection
+	 */
+	public function getCategories()
+	{
+		return $this->categories;
+	}
+
+}
+
 
 /**
  * @Entity
