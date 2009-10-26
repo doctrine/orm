@@ -576,9 +576,11 @@ class StandardEntityPersister
     protected function _getSelectManyToManyEntityCollectionSql($manyToMany, array &$criteria)
     {
         $columnList = '';
+        $tableName = $this->_class->getQuotedTableName($this->_platform);
+        
         foreach ($this->_class->fieldNames as $field) {
             if ($columnList != '') $columnList .= ', ';
-            $columnList .= $this->_class->getQuotedColumnName($field, $this->_platform);
+            $columnList .= $tableName . '.' . $this->_class->getQuotedColumnName($field, $this->_platform);
         }
         
         foreach ($this->_class->associationMappings as $assoc) {

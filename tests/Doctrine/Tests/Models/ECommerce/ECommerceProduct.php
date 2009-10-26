@@ -40,8 +40,8 @@ class ECommerceProduct
     /**
      * @ManyToMany(targetEntity="ECommerceCategory", cascade={"persist"})
      * @JoinTable(name="ecommerce_products_categories",
-            joinColumns={@JoinColumn(name="product_id", referencedColumnName="id")},
-            inverseJoinColumns={@JoinColumn(name="category_id", referencedColumnName="id")})
+     *      joinColumns={@JoinColumn(name="product_id", referencedColumnName="id")},
+     *      inverseJoinColumns={@JoinColumn(name="category_id", referencedColumnName="id")})
      */
     private $categories;
 

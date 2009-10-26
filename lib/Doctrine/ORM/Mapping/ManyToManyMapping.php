@@ -163,7 +163,7 @@ class ManyToManyMapping extends AssociationMapping
         if ($this->isOwningSide) {
             foreach ($this->sourceToRelationKeyColumns as $sourceKeyColumn => $relationKeyColumn) {
                 // getting id
-                if (isset($sourceClass->reflFields[$sourceKeyColumn])) {
+                if (isset($sourceClass->fieldNames[$sourceKeyColumn])) {
                     $joinTableConditions[$relationKeyColumn] = $sourceClass->reflFields[$sourceClass->fieldNames[$sourceKeyColumn]]->getValue($sourceEntity);
                 } else {
                     $joinTableConditions[$relationKeyColumn] = $joinColumnValues[$sourceKeyColumn];
@@ -174,7 +174,7 @@ class ManyToManyMapping extends AssociationMapping
             // TRICKY: since the association is inverted source and target are flipped
             foreach ($owningAssoc->targetToRelationKeyColumns as $sourceKeyColumn => $relationKeyColumn) {
                 // getting id
-                if (isset($sourceClass->reflFields[$sourceKeyColumn])) {
+                if (isset($sourceClass->fieldNames[$sourceKeyColumn])) {
                     $joinTableConditions[$relationKeyColumn] = $sourceClass->reflFields[$sourceClass->fieldNames[$sourceKeyColumn]]->getValue($sourceEntity);
                 } else {
                     $joinTableConditions[$relationKeyColumn] = $joinColumnValues[$sourceKeyColumn];
