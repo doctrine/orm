@@ -44,4 +44,9 @@ class QueryException extends \Doctrine\Common\DoctrineException
     {
         return new self('[Semantical Error] ' . $message);
     }
+    
+    public static function invalidParameterPosition($pos)
+    {
+        return new self('Invalid parameter position: ' . $pos);
+    }
 }

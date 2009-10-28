@@ -459,6 +459,10 @@ abstract class AbstractQuery
         }
     
         $params = $this->getParameters($params);
+        
+        if (isset($params[0])) {
+            throw QueryException::invalidParameterPosition(0);
+        }
 
         // Check result cache
         if ($this->_useResultCache && $cacheDriver = $this->getResultCacheDriver()) {
