@@ -1330,10 +1330,17 @@ class UnitOfWork implements PropertyChangedListener
                     $prop->setValue($managedCopy, $prop->getValue($entity));
                 } else {
                     $assoc2 = $class->associationMappings[$name];
-                    if ($assoc2->isOneToOne() && ! $assoc2->isCascadeMerge) {
-                        $targetClass = $this->_em->getClassMetadata($assoc2->targetEntityName);
-                        $prop->setValue($managedCopy, $this->_em->getProxyFactory()
-                                ->getReferenceProxy($assoc2->targetEntityName, $targetClass->getIdentifierValues($entity)));
+                    if ($assoc2->isOneToOne()) {
+                        if ( ! $assoc2->isCascadeMerge) {
+                            $other = $class->reflFields[$name]->getValue($entity);
+                            if ($other !== null) {
+                                $targetClass = $this->_em->getClassMetadata($assoc2->targetEntityName);
+                                $id = $targetClass->getIdentifierValues($other);
+                                $proxy = $this->_em->getProxyFactory()->getProxy($assoc2->targetEntityName, $id);
+                                $prop->setValue($managedCopy, $proxy);
+                                $this->registerManaged($proxy, (array)$id, array());
+                            }
+                        }
                     } else {
                         $coll = new PersistentCollection($this->_em,
                                 $this->_em->getClassMetadata($assoc2->targetEntityName),
@@ -1695,49 +1702,59 @@ class UnitOfWork implements PropertyChangedListener
             if ( ! isset($hints[Query::HINT_FORCE_PARTIAL_LOAD])) {
                 foreach ($class->associationMappings as $field => $assoc) {
                     // Check if the association is not among the fetch-joined associations already.
-                    if ( ! isset($hints['fetched'][$className][$field])) {
-                        if ($assoc->isOneToOne()) {
-                            if ($assoc->isOwningSide) {
-                                $joinColumns = array();
-                                foreach ($assoc->targetToSourceKeyColumns as $srcColumn) {
-                                    $joinColumnValue = $data[$assoc->joinColumnFieldNames[$srcColumn]];
-                                    if ($joinColumnValue !== null) {
-                                        $joinColumns[$srcColumn] = $joinColumnValue;
-                                    }
+                    if (isset($hints['fetched'][$className][$field])) {
+                        continue;
+                    }
+                    
+                    $targetClass = $this->_em->getClassMetadata($assoc->targetEntityName);
+                    
+                    if ($assoc->isOneToOne()) {
+                        if ($assoc->isOwningSide) {
+                            $associatedId = array();
+                            foreach ($assoc->targetToSourceKeyColumns as $targetColumn => $srcColumn) {
+                                $joinColumnValue = $data[$srcColumn];
+                                if ($joinColumnValue !== null) {
+                                    $associatedId[$targetColumn] = $joinColumnValue;
                                 }
-                                if ( ! $joinColumns) {
-                                    $class->reflFields[$field]->setValue($entity, null);
-                                    $this->_originalEntityData[$oid][$field] = null;
-                                } else {
-                                    //TODO: If its in the identity map just get it from there if possible!
-                                    // Inject proxy
-                                    $proxy = $this->_em->getProxyFactory()->getAssociationProxy($entity, $assoc, $joinColumns);
-                                    $this->_originalEntityData[$oid][$field] = $proxy;
-                                    $class->reflFields[$field]->setValue($entity, $proxy);
-                                }
+                            }
+                            if ( ! $associatedId) {
+                                $class->reflFields[$field]->setValue($entity, null);
+                                $this->_originalEntityData[$oid][$field] = null;
                             } else {
-                                // Inverse side can never be lazy.
-                                $targetEntity = $assoc->load($entity, new $assoc->targetEntityName, $this->_em);
-                                $class->reflFields[$field]->setValue($entity, $targetEntity);
+                                // Check identity map first
+                                // FIXME: Can break easily with composite keys if join column values are in
+                                //        wrong order. The correct order is the one in ClassMetadata#identifier.
+                                $relatedIdHash = implode(' ', $associatedId);
+                                if (isset($this->_identityMap[$targetClass->rootEntityName][$relatedIdHash])) {
+                                    $newValue = $this->_identityMap[$targetClass->rootEntityName][$relatedIdHash];
+                                } else {
+                                    $newValue = $this->_em->getProxyFactory()->getProxy($assoc->targetEntityName, $associatedId);
+                                    $this->_entityIdentifiers[spl_object_hash($newValue)] = $associatedId;
+                                    $this->_identityMap[$targetClass->rootEntityName][$relatedIdHash] = $newValue;
+                                }
+                                $this->_originalEntityData[$oid][$field] = $newValue;
+                                $class->reflFields[$field]->setValue($entity, $newValue);
                             }
                         } else {
-                            // Inject collection
-                            $reflField = $class->reflFields[$field];
-                            $pColl = new PersistentCollection(
-                                $this->_em,
-                                $this->_em->getClassMetadata($assoc->targetEntityName),
-                                $reflField->getValue($entity) ?: new ArrayCollection
-                            );
-                            $pColl->setOwner($entity, $assoc);
-                            $reflField->setValue($entity, $pColl);
-                            if ($assoc->isLazilyFetched()) {
-                                $pColl->setInitialized(false);
-                            } else {
-                                //TODO: Allow more efficient and configurable batching of these loads
-                                $assoc->load($entity, $pColl, $this->_em);
-                            }
-                            $this->_originalEntityData[$oid][$field] = $pColl;
+                            // Inverse side can never be lazy
+                            $targetEntity = $assoc->load($entity, new $assoc->targetEntityName, $this->_em);
+                            $class->reflFields[$field]->setValue($entity, $targetEntity);
                         }
+                    } else {
+                        // Inject collection
+                        $reflField = $class->reflFields[$field];
+                        $pColl = new PersistentCollection(
+                            $this->_em, $targetClass,
+                            $reflField->getValue($entity) ?: new ArrayCollection
+                        );
+                        $pColl->setOwner($entity, $assoc);
+                        $reflField->setValue($entity, $pColl);
+                        if ($assoc->isLazilyFetched()) {
+                            $pColl->setInitialized(false);
+                        } else {
+                            $assoc->load($entity, $pColl, $this->_em);
+                        }
+                        $this->_originalEntityData[$oid][$field] = $pColl;
                     }
                 }
             }

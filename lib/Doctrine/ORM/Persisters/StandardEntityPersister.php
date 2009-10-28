@@ -22,6 +22,7 @@
 namespace Doctrine\ORM\Persisters;
 
 use Doctrine\Common\DoctrineException,
+    Doctrine\ORM\ORMException,
     Doctrine\Common\Collections\ArrayCollection,
     Doctrine\DBAL\Connection,
     Doctrine\DBAL\Types\Type,
@@ -410,13 +411,6 @@ class StandardEntityPersister
     public function load(array $criteria, $entity = null, $assoc = null)
     {
         $stmt = $this->_conn->prepare($this->_getSelectEntitiesSql($criteria, $assoc));
-        if ($stmt === null) {
-            try {
-                throw new \Exception();
-            } catch (\Exception $e) {
-                var_dump($e->getTraceAsString());
-            }
-        }
         $stmt->execute(array_values($criteria));
         $result = $stmt->fetch(Connection::FETCH_ASSOC);
         $stmt->closeCursor();
@@ -464,12 +458,10 @@ class StandardEntityPersister
                 
                 if ($assoc->isOwningSide) {
                     $joinColumnValues = array();
-                    $targetColumns = array();
                     foreach ($assoc->targetToSourceKeyColumns as $targetColumn => $srcColumn) {
                         if ($metaColumns[$srcColumn] !== null) {
-                            $joinColumnValues[] = $metaColumns[$srcColumn];
+                            $joinColumnValues[$targetColumn] = $metaColumns[$srcColumn];
                         }
-                        $targetColumns[] = $targetColumn;
                     }
                     if ( ! $joinColumnValues && $value !== null) {
                         $this->_class->reflFields[$field]->setValue($entity, null);
@@ -486,16 +478,16 @@ class StandardEntityPersister
                                 $targetClass->reflFields[$inverseAssoc->sourceFieldName]->setValue($found, $entity);
                             }
                             $newData[$field] = $found;
-                        } else if ((array)$this->_class->getIdentifierValues($value) != $joinColumnValues) {
-                            $proxy = $this->_em->getProxyFactory()->getAssociationProxy($entity, $assoc, $joinColumnValues);
+                        } else {
+                            $proxy = $this->_em->getProxyFactory()->getProxy($assoc->targetEntityName, $joinColumnValues);
                             $this->_class->reflFields[$field]->setValue($entity, $proxy);
                             $newData[$field] = $proxy;
+                            $this->_em->getUnitOfWork()->addToIdentityMap($proxy);
                         }
                     }
                 } else {
-                    // Inverse side of 1-1/1-x can never be lazy
-                    $assoc->load($entity, null, $this->_em);
-                    $newData[$field] = $this->_class->reflFields[$field]->getValue($entity);
+                    // Inverse side of 1-1/1-x can never be lazy.
+                    $newData[$field] = $assoc->load($entity, null, $this->_em);
                 }
             } else if ($value instanceof PersistentCollection && $value->isInitialized()) {
                 $value->setInitialized(false);
@@ -643,10 +635,12 @@ class StandardEntityPersister
             
             if (isset($this->_class->columnNames[$field])) {
                 $conditionSql .= $this->_class->getQuotedColumnName($field, $this->_platform);
+            } else if (isset($this->_class->fieldNames[$field])) {
+                $conditionSql .= $this->_class->getQuotedColumnName($this->_class->fieldNames[$field], $this->_platform);
             } else if ($assoc !== null) {
                 $conditionSql .= $assoc->getQuotedJoinColumnName($field, $this->_platform);
             } else {
-                throw DoctrineException::unrecognizedField($field);
+                throw ORMException::unrecognizedField($field);
             }
             $conditionSql .= ' = ?';
         }

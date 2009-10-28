@@ -48,11 +48,11 @@ class ProxyClassGeneratorTest extends \Doctrine\Tests\OrmTestCase
     public function testReferenceProxyDelegatesLoadingToThePersister()
     {
         $identifier = array('id' => 42);
-        $proxyClass = 'Proxies\DoctrineTestsModelsECommerceECommerceFeatureRProxy';
+        $proxyClass = 'Proxies\DoctrineTestsModelsECommerceECommerceFeatureProxy';
         $persister = $this->_getMockPersister();
         $this->_uowMock->setEntityPersister('Doctrine\Tests\Models\ECommerce\ECommerceFeature', $persister);
         
-        $proxy = $this->_proxyFactory->getReferenceProxy('Doctrine\Tests\Models\ECommerce\ECommerceFeature', $identifier);
+        $proxy = $this->_proxyFactory->getProxy('Doctrine\Tests\Models\ECommerce\ECommerceFeature', $identifier);
         
         $persister->expects($this->atLeastOnce())
                   ->method('load')
@@ -64,10 +64,10 @@ class ProxyClassGeneratorTest extends \Doctrine\Tests\OrmTestCase
     public function testReferenceProxyExecutesLoadingOnlyOnce()
     {
         $identifier = array('id' => 42);
-        $proxyClass = 'Proxies\DoctrineTestsModelsECommerceECommerceFeatureRProxy';
+        $proxyClass = 'Proxies\DoctrineTestsModelsECommerceECommerceFeatureProxy';
         $persister = $this->_getMockPersister();
         $this->_uowMock->setEntityPersister('Doctrine\Tests\Models\ECommerce\ECommerceFeature', $persister);
-        $proxy = $this->_proxyFactory->getReferenceProxy('Doctrine\Tests\Models\ECommerce\ECommerceFeature', $identifier);
+        $proxy = $this->_proxyFactory->getProxy('Doctrine\Tests\Models\ECommerce\ECommerceFeature', $identifier);
         $persister->expects($this->atLeastOnce())
                   ->method('load')
                   ->with($this->equalTo($identifier), $this->isInstanceOf($proxyClass));
@@ -77,10 +77,10 @@ class ProxyClassGeneratorTest extends \Doctrine\Tests\OrmTestCase
 
     public function testReferenceProxyRespectsMethodsParametersTypeHinting()
     {
-        $proxyClass = 'Proxies\DoctrineTestsModelsECommerceECommerceFeatureRProxy';
+        $proxyClass = 'Proxies\DoctrineTestsModelsECommerceECommerceFeatureProxy';
         $persister = $this->_getMockPersister();
         $this->_uowMock->setEntityPersister('Doctrine\Tests\Models\ECommerce\ECommerceFeature', $persister);
-        $proxy = $this->_proxyFactory->getReferenceProxy('Doctrine\Tests\Models\ECommerce\ECommerceFeature', null);
+        $proxy = $this->_proxyFactory->getProxy('Doctrine\Tests\Models\ECommerce\ECommerceFeature', null);
         
         $method = new \ReflectionMethod(get_class($proxy), 'setProduct');
         $params = $method->getParameters();
@@ -91,41 +91,16 @@ class ProxyClassGeneratorTest extends \Doctrine\Tests\OrmTestCase
 
     public function testCreatesAssociationProxyAsSubclassOfTheOriginalOne()
     {
-        $proxyClass = 'Proxies\DoctrineTestsModelsECommerceECommerceFeatureRProxy';
+        $proxyClass = 'Proxies\DoctrineTestsModelsECommerceECommerceFeatureProxy';
         $this->assertTrue(is_subclass_of($proxyClass, 'Doctrine\Tests\Models\ECommerce\ECommerceFeature'));
     }
 
 
     public function testAllowsConcurrentCreationOfBothProxyTypes()
     {
-        $referenceProxyClass = 'Proxies\DoctrineTestsModelsECommerceECommerceFeatureRProxy';
+        $referenceProxyClass = 'Proxies\DoctrineTestsModelsECommerceECommerceFeatureProxy';
         $associationProxyClass = 'Proxies\DoctrineTestsModelsECommerceECommerceFeatureAProxy';
         $this->assertNotEquals($referenceProxyClass, $associationProxyClass);
-    }
-
-    public function testAssociationProxyDelegatesLoadingToTheAssociation()
-    {
-        $proxyClass = 'Proxies\DoctrineTestsModelsECommerceECommerceFeatureAProxy';
-        $product = new ECommerceProduct;
-        $foreignKeys = array('customer_id' => 42);
-        $assoc = $this->_getAssociationMock();
-        $assoc->targetEntityName = 'Doctrine\Tests\Models\ECommerce\ECommerceFeature';
-        $proxy = $this->_proxyFactory->getAssociationProxy($product, $assoc, $foreignKeys);
-        $assoc->expects($this->atLeastOnce())
-              ->method('load')
-              ->with($product, $this->isInstanceOf($proxyClass), $this->isInstanceOf('Doctrine\Tests\Mocks\EntityManagerMock'), $foreignKeys);
-        $proxy->getDescription();
-    }
-
-    public function testAssociationProxyExecutesLoadingOnlyOnce()
-    {
-        $proxyClass = 'Proxies\DoctrineTestsModelsECommerceECommerceFeatureAProxy';
-        $assoc = $this->_getAssociationMock();
-        $assoc->targetEntityName = 'Doctrine\Tests\Models\ECommerce\ECommerceFeature';
-        $proxy = $this->_proxyFactory->getAssociationProxy(null, $assoc, array());
-        $assoc->expects($this->once())->method('load');
-        $proxy->getDescription();
-        $proxy->getDescription();
     }
 
     protected function _getAssociationMock()

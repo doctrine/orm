@@ -368,7 +368,8 @@ final class PersistentCollection implements \Doctrine\Common\Collections\Collect
         $removed = $this->_coll->remove($key);
         if ($removed) {
             $this->_changed();
-            if ($this->_association->isOneToMany() && $this->_association->orphanRemoval) {
+            if ($this->_association !== null && $this->_association->isOneToMany() &&
+                    $this->_association->orphanRemoval) {
                 $this->_em->getUnitOfWork()->scheduleOrphanRemoval($removed);
             }
         }

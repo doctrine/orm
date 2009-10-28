@@ -323,7 +323,7 @@ class EntityManager
         if ( ! is_array($identifier)) {
             $identifier = array($class->identifier[0] => $identifier);
         }
-        $entity = $this->_proxyFactory->getReferenceProxy($entityName, $identifier);
+        $entity = $this->_proxyFactory->getProxy($entityName, $identifier);
         $this->_unitOfWork->registerManaged($entity, $identifier, array());
 
         return $entity;

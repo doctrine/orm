@@ -74,8 +74,6 @@ class DetachedEntityTest extends \Doctrine\Tests\OrmFunctionalTestCase
         
         $this->_em->persist($ph2);
         
-        //$removed = $user->removePhonenumber(1); // [romanb] this is currently broken, I'm on it.
-        
         // Merge back in
         $user = $this->_em->merge($user); // merge cascaded to phonenumbers
         $this->_em->flush();

@@ -59,8 +59,7 @@ final class Query extends AbstractQuery
     const HINT_REFRESH = 'doctrine.refresh';
     /**
      * The forcePartialLoad query hint forces a particular query to return
-     * partial objects when partial objects in general are disallowed in the
-     * configuration.
+     * partial objects.
      * 
      * @var string
      */
