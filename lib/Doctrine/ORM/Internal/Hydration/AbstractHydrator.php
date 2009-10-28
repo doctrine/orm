@@ -78,10 +78,11 @@ abstract class AbstractHydrator
      * @param object $resultSetMapping
      * @return IterableResult
      */
-    public function iterate($stmt, $resultSetMapping)
+    public function iterate($stmt, $resultSetMapping, array $hints = array())
     {
         $this->_stmt = $stmt;
         $this->_rsm = $resultSetMapping;
+        $this->_hints = $hints;
         $this->_prepare();
         return new IterableResult($this);
     }

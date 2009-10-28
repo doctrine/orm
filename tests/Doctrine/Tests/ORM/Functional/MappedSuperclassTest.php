@@ -37,7 +37,7 @@ class MappedSuperclassTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $e2 = $this->_em->find('Doctrine\Tests\ORM\Functional\EntitySubClass', 1);
         $this->assertEquals(1, $e2->getId());
         $this->assertEquals('Roman', $e2->getName());
-        $this->assertTrue($e2->getMappedRelated1() instanceof MappedSuperclassRelated1);
+        $this->assertNull($e2->getMappedRelated1());
         $this->assertEquals(42, $e2->getMapped1());
         $this->assertEquals('bar', $e2->getMapped2());
     }

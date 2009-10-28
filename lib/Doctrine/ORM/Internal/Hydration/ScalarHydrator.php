@@ -26,7 +26,7 @@ use Doctrine\DBAL\Connection;
 /**
  * Hydrator that produces flat, rectangular results of scalar data.
  * The created result is almost the same as a regular SQL result set, except
- * that column names are mapped to field names and data type conversions.
+ * that column names are mapped to field names and data type conversions take place.
  *
  * @author Roman Borschel <roman@code-factory.org>
  * @since 2.0
@@ -48,11 +48,5 @@ class ScalarHydrator extends AbstractHydrator
     protected function _hydrateRow(array &$data, array &$cache, array &$result)
     {
         $result[] = $this->_gatherScalarRowData($data, $cache);
-    }
-
-    /** @override */
-    protected function _getRowContainer()
-    {
-        return array();
     }
 }

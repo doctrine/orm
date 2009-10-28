@@ -34,7 +34,7 @@ use Doctrine\Common\DoctrineException,
 
 /**
  * Base class for all EntityPersisters. An EntityPersister is a class that knows
- * how to persist (and to some extent how to load) entities of a specific type.
+ * how to persist and load entities of a specific type.
  *
  * @author      Roman Borschel <roman@code-factory.org>
  * @author      Giorgio Sironi <piccoloprincipeazzurro@gmail.com>
@@ -410,11 +410,100 @@ class StandardEntityPersister
     public function load(array $criteria, $entity = null, $assoc = null)
     {
         $stmt = $this->_conn->prepare($this->_getSelectEntitiesSql($criteria, $assoc));
+        if ($stmt === null) {
+            try {
+                throw new \Exception();
+            } catch (\Exception $e) {
+                var_dump($e->getTraceAsString());
+            }
+        }
         $stmt->execute(array_values($criteria));
         $result = $stmt->fetch(Connection::FETCH_ASSOC);
         $stmt->closeCursor();
         
         return $this->_createEntity($result, $entity);
+    }
+    
+    /**
+     * Refreshes an entity.
+     * 
+     * @param array $id The identifier of the entity as an associative array from column names to values.
+     * @param object $entity The entity to refresh.
+     */
+    public function refresh(array $id, $entity)
+    {
+        $stmt = $this->_conn->prepare($this->_getSelectEntitiesSql($id));
+        $stmt->execute(array_values($id));
+        $result = $stmt->fetch(Connection::FETCH_ASSOC);
+        $stmt->closeCursor();
+        
+        $metaColumns = array();
+        $newData = array();
+        
+        // Refresh simple state
+        foreach ($result as $column => $value) {
+            $column = $this->_class->resultColumnNames[$column];
+            if (isset($this->_class->fieldNames[$column])) {
+                $fieldName = $this->_class->fieldNames[$column];
+                $type = Type::getType($this->_class->fieldMappings[$fieldName]['type']);
+                $newValue = $type->convertToPHPValue($value, $this->_platform);
+                $this->_class->reflFields[$fieldName]->setValue($entity, $newValue);
+                $newData[$fieldName] = $newValue;
+            } else {
+                $metaColumns[$column] = $value;
+            }
+        }
+        
+        // Refresh associations
+        foreach ($this->_class->associationMappings as $field => $assoc) {
+            $value = $this->_class->reflFields[$field]->getValue($entity);
+            if ($assoc->isOneToOne()) {
+                if ($value instanceof Proxy && ! $value->__isInitialized()) {
+                    continue; // skip uninitialized proxies
+                }
+                
+                if ($assoc->isOwningSide) {
+                    $joinColumnValues = array();
+                    $targetColumns = array();
+                    foreach ($assoc->targetToSourceKeyColumns as $targetColumn => $srcColumn) {
+                        if ($metaColumns[$srcColumn] !== null) {
+                            $joinColumnValues[] = $metaColumns[$srcColumn];
+                        }
+                        $targetColumns[] = $targetColumn;
+                    }
+                    if ( ! $joinColumnValues && $value !== null) {
+                        $this->_class->reflFields[$field]->setValue($entity, null);
+                        $newData[$field] = null;
+                    } else if ($value !== null) {
+                        // Check identity map first, if the entity is not there,
+                        // place a proxy in there instead.
+                        $targetClass = $this->_em->getClassMetadata($assoc->targetEntityName);
+                        if ($found = $this->_em->getUnitOfWork()->tryGetById($joinColumnValues, $targetClass->rootEntityName)) {
+                            $this->_class->reflFields[$field]->setValue($entity, $found);
+                            // Complete inverse side, if necessary.
+                            if (isset($targetClass->inverseMappings[$this->_class->name][$field])) {
+                                $inverseAssoc = $targetClass->inverseMappings[$this->_class->name][$field];
+                                $targetClass->reflFields[$inverseAssoc->sourceFieldName]->setValue($found, $entity);
+                            }
+                            $newData[$field] = $found;
+                        } else if ((array)$this->_class->getIdentifierValues($value) != $joinColumnValues) {
+                            $proxy = $this->_em->getProxyFactory()->getAssociationProxy($entity, $assoc, $joinColumnValues);
+                            $this->_class->reflFields[$field]->setValue($entity, $proxy);
+                            $newData[$field] = $proxy;
+                        }
+                    }
+                } else {
+                    // Inverse side of 1-1/1-x can never be lazy
+                    $assoc->load($entity, null, $this->_em);
+                    $newData[$field] = $this->_class->reflFields[$field]->getValue($entity);
+                }
+            } else if ($value instanceof PersistentCollection && $value->isInitialized()) {
+                $value->setInitialized(false);
+                $newData[$field] = $value;
+            }
+        }
+        
+        $this->_em->getUnitOfWork()->setOriginalEntityData($entity, $newData);
     }
     
     /**

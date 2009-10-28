@@ -169,6 +169,15 @@ final class ClassMetadata extends ClassMetadataInfo
             return $this->reflFields[$this->identifier[0]]->getValue($entity);
         }
     }
+    
+    public function getColumnValues($entity, array $columns)
+    {
+        $values = array();
+        foreach ($columns as $column) {
+            $values[] = $this->reflFields[$this->fieldNames[$column]]->getValue($entity);
+        }
+        return $values;
+    }
 
     /**
      * Populates the entity identifier of an entity.

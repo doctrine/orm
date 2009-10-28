@@ -22,7 +22,7 @@
 namespace Doctrine\ORM\Id;
 
 use Doctrine\ORM\EntityManager;
-use Doctrine\Common\DoctrineException;
+use Doctrine\ORM\ORMException;
 
 /**
  * Special generator for application-assigned identifiers (doesnt really generate anything).
@@ -62,7 +62,7 @@ class Assigned extends AbstractIdGenerator
         }
 
         if ( ! $identifier) {
-            throw DoctrineException::entityMissingAssignedId($entity);
+            throw ORMException::entityMissingAssignedId($entity);
         }
         
         return $identifier;

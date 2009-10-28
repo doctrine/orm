@@ -100,12 +100,12 @@ class DoctrineException extends \Exception
         if (($message = self::getExceptionMessage($messageKey)) !== false) {
             $message = sprintf($message, $arguments);
         } else {
-            $dumper  = function ($value) { return var_export($value, true); };
+            //$dumper  = function ($value) { return var_export($value, true); };
             $message = strtolower(preg_replace('~(?<=\\w)([A-Z])~', '_$1', $method));
             $message = ucfirst(str_replace('_', ' ', $message));
-            if ($arguments) {
+            /*if ($arguments) {
                 $message .= ' (' . implode(', ', array_map($dumper, $arguments)) . ')';
-            }
+            }*/
         }
         
         return new $class($message, $innerException);

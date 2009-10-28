@@ -1443,16 +1443,13 @@ class UnitOfWork implements PropertyChangedListener
         $visited[$oid] = $entity; // mark visited
 
         $class = $this->_em->getClassMetadata(get_class($entity));
-        switch ($this->getEntityState($entity)) {
-            case self::STATE_MANAGED:
-                $this->getEntityPersister($class->name)->load(
-                    array_combine($class->identifier, $this->_entityIdentifiers[$oid]),
-                    $entity
-                );
-                //TODO: refresh (initialized) associations
-                break;
-            default:
-                throw new \InvalidArgumentException("Entity is not MANAGED.");
+        if ($this->getEntityState($entity) == self::STATE_MANAGED) {
+            $this->getEntityPersister($class->name)->refresh(
+                array_combine($class->getIdentifierColumnNames(), $this->_entityIdentifiers[$oid]),
+                $entity
+            );
+        } else {
+            throw new \InvalidArgumentException("Entity is not MANAGED.");
         }
         
         $this->_cascadeRefresh($entity, $visited);
@@ -1651,6 +1648,7 @@ class UnitOfWork implements PropertyChangedListener
      * @param array $data  The data for the entity.
      * @return object The created entity instance.
      * @internal Highly performance-sensitive method.
+     * @todo Rename: getOrCreateEntity
      */
     public function createEntity($className, array $data, &$hints = array())
     {
@@ -1698,25 +1696,31 @@ class UnitOfWork implements PropertyChangedListener
             // Properly initialize any unfetched associations, if partial objects are not allowed.
             if ( ! isset($hints[Query::HINT_FORCE_PARTIAL_LOAD])) {
                 foreach ($class->associationMappings as $field => $assoc) {
-                    // Check if the association is not among the fetch-joined associatons already.
+                    // Check if the association is not among the fetch-joined associations already.
                     if ( ! isset($hints['fetched'][$className][$field])) {
                         if ($assoc->isOneToOne()) {
-                            $joinColumns = array();
                             if ($assoc->isOwningSide) {
+                                $joinColumns = array();
                                 foreach ($assoc->targetToSourceKeyColumns as $srcColumn) {
-                                    $joinColumns[$srcColumn] = $data[$assoc->joinColumnFieldNames[$srcColumn]];
+                                    $joinColumnValue = $data[$assoc->joinColumnFieldNames[$srcColumn]];
+                                    if ($joinColumnValue !== null) {
+                                        $joinColumns[$srcColumn] = $joinColumnValue;
+                                    }
                                 }
-                            }
-                            //TODO: If its in the identity map just get it from there if possible!
-                            if ($assoc->isLazilyFetched() /*&& $assoc->isOwningSide)*/) {
-                                // Inject proxy
-                                $proxy = $this->_em->getProxyFactory()->getAssociationProxy($entity, $assoc, $joinColumns);
-                                $this->_originalEntityData[$oid][$field] = $proxy;
-                                $class->reflFields[$field]->setValue($entity, $proxy);
+                                if ( ! $joinColumns) {
+                                    $class->reflFields[$field]->setValue($entity, null);
+                                    $this->_originalEntityData[$oid][$field] = null;
+                                } else {
+                                    //TODO: If its in the identity map just get it from there if possible!
+                                    // Inject proxy
+                                    $proxy = $this->_em->getProxyFactory()->getAssociationProxy($entity, $assoc, $joinColumns);
+                                    $this->_originalEntityData[$oid][$field] = $proxy;
+                                    $class->reflFields[$field]->setValue($entity, $proxy);
+                                }
                             } else {
-                                // Eager load
-                                //TODO: Allow more efficient and configurable batching of these loads
-                                $assoc->load($entity, new $assoc->targetEntityName, $this->_em, $joinColumns);
+                                // Inverse side can never be lazy.
+                                $targetEntity = $assoc->load($entity, new $assoc->targetEntityName, $this->_em);
+                                $class->reflFields[$field]->setValue($entity, $targetEntity);
                             }
                         } else {
                             // Inject collection
@@ -1777,6 +1781,14 @@ class UnitOfWork implements PropertyChangedListener
             return $this->_originalEntityData[$oid];
         }
         return array();
+    }
+    
+    /**
+     * @ignore
+     */
+    public function setOriginalEntityData($entity, array $data)
+    {
+        $this->_originalEntityData[spl_object_hash($entity)] = $data;
     }
 
     /**

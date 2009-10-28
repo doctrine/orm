@@ -78,7 +78,7 @@ class OneToOneBidirectionalAssociationTest extends \Doctrine\Tests\OrmFunctional
         $this->assertEquals('Giorgio', $cart->getCustomer()->getName());
     }
 
-    public function testLazyLoadsObjectsOnTheInverseSide()
+    public function testInverseSideIsNeverLazy()
     {
         $this->_createFixture();
         $metadata = $this->_em->getClassMetadata('Doctrine\Tests\Models\ECommerce\ECommerceCustomer');
@@ -90,7 +90,7 @@ class OneToOneBidirectionalAssociationTest extends \Doctrine\Tests\OrmFunctional
         
         $this->assertNull($customer->getMentor());
         $this->assertTrue($customer->getCart() instanceof ECommerceCart);
-        $this->assertTrue($customer->getCart() instanceof \Doctrine\ORM\Proxy\Proxy);
+        $this->assertFalse($customer->getCart() instanceof \Doctrine\ORM\Proxy\Proxy);
         $this->assertEquals('paypal', $customer->getCart()->getPayment());
     }
     
