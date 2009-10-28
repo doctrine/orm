@@ -806,10 +806,8 @@ class UnitOfWork implements PropertyChangedListener
         // See if there are any new classes in the changeset, that are not in the
         // commit order graph yet (dont have a node).
         $newNodes = array();
-        $classesInChangeSet = array();
         foreach ($entityChangeSet as $oid => $entity) {
-            $className = get_class($entity);
-            $classesInChangeSet[$className] = true;            
+            $className = get_class($entity);         
             if ( ! $this->_commitOrderCalculator->hasClass($className)) {
                 $class = $this->_em->getClassMetadata($className);
                 $this->_commitOrderCalculator->addClass($class);
@@ -820,7 +818,7 @@ class UnitOfWork implements PropertyChangedListener
         // Calculate dependencies for new nodes
         foreach ($newNodes as $class) {
             foreach ($class->associationMappings as $assoc) {
-                if ($assoc->isOwningSide && $assoc->isOneToOne() && isset($classesInChangeSet[$assoc->targetEntityName])) {
+                if ($assoc->isOwningSide && $assoc->isOneToOne()) {
                     $targetClass = $this->_em->getClassMetadata($assoc->targetEntityName);
                     if ( ! $this->_commitOrderCalculator->hasClass($targetClass->name)) {
                         $this->_commitOrderCalculator->addClass($targetClass);
