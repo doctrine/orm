@@ -449,6 +449,7 @@ class EntityManager
      */
     public function merge($entity)
     {
+        $this->_errorIfClosed();
         return $this->_unitOfWork->merge($entity);
     }
     
@@ -461,6 +462,7 @@ class EntityManager
      */
     public function copy($entity, $deep = false)
     {
+        $this->_errorIfClosed();
         throw DoctrineException::notImplemented(__FUNCTION__, __CLASS__);
     }
 
