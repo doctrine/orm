@@ -46,7 +46,8 @@ class OrmFunctionalTestCase extends OrmTestCase
             'Doctrine\Tests\Models\Company\CompanyOrganization',
             'Doctrine\Tests\Models\Company\CompanyEvent',
             'Doctrine\Tests\Models\Company\CompanyAuction',
-            'Doctrine\Tests\Models\Company\CompanyRaffle'
+            'Doctrine\Tests\Models\Company\CompanyRaffle',
+            'Doctrine\Tests\Models\Company\CompanyCar'
         ),
         'ecommerce' => array(
             'Doctrine\Tests\Models\ECommerce\ECommerceCart',
