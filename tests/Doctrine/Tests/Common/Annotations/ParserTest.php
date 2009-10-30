@@ -73,11 +73,22 @@ DOCBLOCK;
  */
 DOCBLOCK;
 
-         $result = $parser->parse($docblock);
-         $this->assertEquals(1, count($result));
-         $annot = $result['Doctrine\Tests\Common\Annotations\Name'];
-         $this->assertTrue($annot instanceof Name);
-         $this->assertEquals("bar", $annot->foo);
+        $result = $parser->parse($docblock);
+        $this->assertEquals(1, count($result));
+        $annot = $result['Doctrine\Tests\Common\Annotations\Name'];
+        $this->assertTrue($annot instanceof Name);
+        $this->assertEquals("bar", $annot->foo);
+    }
+
+    /**
+     * @group DDC-77
+     */
+    public function testAnnotationWithoutClassIsIgnoredWithoutWarning()
+    {
+        $parser = new Parser();
+        $result = $parser->parse("@param");
+
+        $this->assertEquals(0, count($result));
     }
 }
 
