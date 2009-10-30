@@ -475,7 +475,7 @@ class SqlWalker implements TreeWalker
                 
                 $columnAlias = $this->_platform->getSqlResultCasing($columnAlias);
                 $this->_rsm->setDiscriminatorColumn($dqlAlias, $columnAlias);
-                $this->_rsm->addMetaResult($dqlAlias, $columnAlias, $discrColumn['fieldName']);
+                $this->_rsm->addMetaResult($dqlAlias, $this->_platform->getSqlResultCasing($columnAlias), $discrColumn['fieldName']);
                 
                 // Add foreign key columns to SQL, if necessary
                 if ($addMetaColumns) {
@@ -494,7 +494,7 @@ class SqlWalker implements TreeWalker
                                 $sql .= ", $sqlTableAlias." . $assoc->getQuotedJoinColumnName($srcColumn, $this->_platform) 
                                       . ' AS ' . $columnAlias;
                                 $columnAlias = $this->_platform->getSqlResultCasing($columnAlias);
-                                $this->_rsm->addMetaResult($dqlAlias, $columnAlias, $srcColumn);
+                                $this->_rsm->addMetaResult($dqlAlias, $this->_platform->getSqlResultCasing($columnAlias), $srcColumn);
                             }
                         }
                     }
@@ -509,7 +509,7 @@ class SqlWalker implements TreeWalker
                                 $columnAlias = $this->getSqlColumnAlias($srcColumn);
                                 $sql .= ', ' . $sqlTableAlias . '.' . $assoc->getQuotedJoinColumnName($srcColumn, $this->_platform) . ' AS ' . $columnAlias;
                                 $columnAlias = $this->_platform->getSqlResultCasing($columnAlias);
-                                $this->_rsm->addMetaResult($dqlAlias, $columnAlias, $srcColumn);
+                                $this->_rsm->addMetaResult($dqlAlias, $this->_platform->getSqlResultCasing($columnAlias), $srcColumn);
                             }
                         }
                     }
@@ -848,7 +848,7 @@ class SqlWalker implements TreeWalker
                                 $columnAlias = $this->getSqlColumnAlias($srcColumn);
                                 $sql .= $sqlTableAlias . '.' . $assoc->getQuotedJoinColumnName($srcColumn, $this->_platform)
                                         . ' AS ' . $columnAlias;
-                                $this->_rsm->addMetaResult($dqlAlias, $columnAlias, $srcColumn);
+                                $this->_rsm->addMetaResult($dqlAlias, $this->_platform->getSqlResultCasing($columnAlias), $srcColumn);
                             }
                         }
                     }
