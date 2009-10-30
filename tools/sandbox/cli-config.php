@@ -33,7 +33,9 @@ $connectionOptions = array(
     'path' => 'database.sqlite'
 );
 
+// These are required named variables (names can't change!)
 $em = \Doctrine\ORM\EntityManager::create($connectionOptions, $config);
-$args = array(
+
+$globalArguments = array(
     'class-dir' => './Entities'
 );

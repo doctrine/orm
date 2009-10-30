@@ -40,6 +40,7 @@ abstract class AbstractFileDriver implements Driver
      * adhere to the convention of 1 mapping file per class and the file names of
      * the mapping files must correspond to the full class name, including namespace,
      * with the namespace delimiters '\', replaced by dots '.'.
+     * This is the default behavior. 
      * 
      * Example:
      * Class: My\Project\Model\User
@@ -51,8 +52,8 @@ abstract class AbstractFileDriver implements Driver
     
     /**
      * The PRELOAD mode is an operating mode of the FileDriver where it loads
-     * all mapping files in advance. This is the default behavior. It does not
-     * require a naming convention or the convention of 1 class per mapping file.
+     * all mapping files in advance. It does not require a naming convention 
+     * or the convention of 1 class per mapping file.
      * 
      * @var integer
      */
@@ -95,7 +96,7 @@ abstract class AbstractFileDriver implements Driver
      */
     public function __construct($paths, $mode = self::FILE_PER_CLASS)
     {
-        $this->_paths = $paths;
+        $this->_paths = (array) $paths;
         $this->_mode = $mode;
     }
 

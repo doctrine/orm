@@ -111,8 +111,9 @@ class ConvertMappingTask extends AbstractTask
             return false;
         }
         if ($args['from'][0] == 'database') {
-            $config = $this->_em->getConfiguration();
-            $config->setMetadataDriverImpl(new \Doctrine\ORM\Mapping\Driver\DatabaseDriver($this->_em->getConnection()->getSchemaManager()));
+            $em = $this->getEntityManager();
+            $config = $em->getConfiguration();
+            $config->setMetadataDriverImpl(new \Doctrine\ORM\Mapping\Driver\DatabaseDriver($em->getConnection()->getSchemaManager()));
         }
         return true;
     }

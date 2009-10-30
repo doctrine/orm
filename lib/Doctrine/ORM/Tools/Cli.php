@@ -157,7 +157,7 @@ class Cli
         
         try {
             $this->_printer->writeln('Doctrine Command Line Interface' . PHP_EOL, 'HEADER');
-        
+            
             // Handle possible multiple tasks on a single command
             foreach($processedArgs as $taskData) {
                 // Retrieve the task name and arguments
@@ -166,9 +166,13 @@ class Cli
                 
                 // Check if task exists
                 if (isset($this->_tasks[$taskName]) && class_exists($this->_tasks[$taskName], true)) {
+                    // Initializing EntityManager
+                    $em = $this->_initializeEntityManager($processedArgs);
+                
                     // Instantiate and execute the task
                     $task = new $this->_tasks[$taskName]();
                     $task->setAvailableTasks($this->_tasks);
+                    $task->setEntityManager($em);
                     $task->setPrinter($this->_printer);
                     $task->setArguments($taskArguments);
                 
@@ -310,5 +314,43 @@ class Cli
         // TODO: Should we change the behavior and check for 
         // required and optional arguments here?
         return $task->validate();
+    }
+    
+    /**
+     * Initialized Entity Manager for Tasks
+     *
+     * @param array CLI Task arguments
+     * @return EntityManager
+     */
+    private function _initializeEntityManager(& $args)
+    {
+        // Initialize EntityManager
+        $configFile = ( ! isset($args['config'])) ? './cli-config.php' : $args['config'];
+            
+        if (file_exists($configFile)) {
+            // Including configuration file
+            require $configFile;
+                
+            // Check existance of EntityManager
+            if ( ! isset($em)) {
+                throw new \Doctrine\Common\DoctrineException(
+                    'No EntityManager created in configuration'
+                );
+            }
+        
+            // Check for gloal argument options here
+            if (isset($globalArguments)) {
+                // Merge arguments. Values specified via the CLI take preference.
+                $args = array_merge($globalArguments, $args);
+            }
+            
+            return $em;
+        } else {
+            throw new \Doctrine\Common\DoctrineException(
+                'Requested configuration file [' . $configFile . '] does not exist'
+            );
+        }
+        
+        return null;
     }
 }

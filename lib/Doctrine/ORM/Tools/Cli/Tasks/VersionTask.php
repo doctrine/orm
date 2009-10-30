@@ -77,6 +77,6 @@ class VersionTask extends AbstractTask
      */
     public function run()
     {
-        $this->getPrinter()->writeln('You are currently running Doctrine 2.0.0 Alpha 1', 'INFO');
+        $this->getPrinter()->writeln('You are currently running Doctrine 2.0.0 Alpha 3', 'INFO');
     }
 }

@@ -59,11 +59,8 @@ class GenerateProxiesTask extends AbstractTask
         $args = $this->getArguments();
         $printer = $this->getPrinter();
         
-        if ( ! $this->_requireEntityManager()) {
-            return false;
-        }
+        $metadataDriver = $this->getEntityManager()->getConfiguration()->getMetadataDriverImpl();
         
-        $metadataDriver = $this->_em->getConfiguration()->getMetadataDriverImpl();
         if ($metadataDriver instanceof \Doctrine\ORM\Mapping\Driver\AnnotationDriver) {
             if ( ! isset($args['class-dir'])) {
                 $printer->writeln("The supplied configuration uses the annotation metadata driver."
@@ -84,17 +81,19 @@ class GenerateProxiesTask extends AbstractTask
     {
         $args = $this->getArguments();
 
-        $cmf = $this->_em->getMetadataFactory();
-        $driver = $this->_em->getConfiguration()->getMetadataDriverImpl();
+        $em = $this->getEntityManager();
+        $cmf = $em->getMetadataFactory();
+        $driver = $em->getConfiguration()->getMetadataDriverImpl();
         
         $classes = array();
         $preloadedClasses = $driver->preload(true);
+        
         foreach ($preloadedClasses as $className) {
             $classes[] = $cmf->getMetadataFor($className);
         }
 
         $printer = $this->getPrinter();
-        $factory = $this->_em->getProxyFactory();
+        $factory = $em->getProxyFactory();
         
         if (empty($classes)) {
             $printer->writeln('No classes to process.', 'INFO');
@@ -103,8 +102,9 @@ class GenerateProxiesTask extends AbstractTask
 
         $factory->generateProxyClasses($classes, isset($args['to-dir']) ? $args['to-dir'] : null);
         
-        $printer->writeln('Proxy classes generated to: ' .
-                (isset($args['to-dir']) ? $args['to-dir'] : $this->_em->getConfiguration()->getProxyDir())
-                );
+        $printer->writeln(
+            'Proxy classes generated to: ' . 
+            (isset($args['to-dir']) ? $args['to-dir'] : $em->getConfiguration()->getProxyDir())
+        );
     }
 }

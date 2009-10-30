@@ -56,12 +56,17 @@ class EnsureProductionSettingsTask extends AbstractTask
     {
         $printer->writeln('ensure-production-settings', 'KEYWORD');
     }
+    
+    public function validate()
+    {
+        return true;
+    }
 
     public function run()
     {
         $printer = $this->getPrinter();
         try {
-            $this->_em->getConfiguration()->ensureProductionSettings();
+            $this->getEntityManager()->getConfiguration()->ensureProductionSettings();
         } catch (\Doctrine\Common\DoctrineException $e) {
             $printer->writeln($e->getMessage(), 'ERROR');
         }

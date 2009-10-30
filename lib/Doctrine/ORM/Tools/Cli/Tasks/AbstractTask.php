@@ -60,6 +60,9 @@ abstract class AbstractTask
      */
     protected $_availableTasks;
     
+    /**
+     * @var EntityManager The EntityManager instance
+     */
     protected $_em;
     
     /**
@@ -123,6 +126,26 @@ abstract class AbstractTask
     }
     
     /**
+     * Defines the EntityManager
+     *
+     * @param EntityManager The EntityManager instance
+     */
+    public function setEntityManager($em)
+    {
+        $this->_em = $em;
+    }
+    
+    /**
+     * Retrieves current EntityManager
+     *
+     * @return EntityManager
+     */
+    public function getEntityManager()
+    {
+        return $this->_em;
+    }
+    
+    /**
      * Expose to CLI Output Printer the extended help of the given task.
      * This means it should detail all parameters, options and the meaning
      * of each one.
@@ -159,27 +182,7 @@ abstract class AbstractTask
      *
      * @return boolean
      */
-    public function validate()
-    {
-        if ( ! isset($this->_arguments['config'])) {
-            if (file_exists('./cli-config.php')) {
-                require './cli-config.php';
-            }
-        } else {
-            require $this->_arguments['config'];
-        }
-        
-        // $em and $args come from the config
-        if (isset($em)) {
-            $this->_em = $em;
-        }
-        if (isset($args)) {
-            // Merge arguments. Values specified via the CLI take preference.
-            $this->_arguments = array_merge($args, $this->_arguments);
-        }
-        
-        return true;
-    }
+    abstract public function validate();
     
     /**
      * Safely execution of task.
@@ -187,13 +190,4 @@ abstract class AbstractTask
      * what is supposed to do.
      */
     abstract public function run();
-    
-    protected function _requireEntityManager()
-    {
-        if ( ! isset($this->_em)) {
-            $this->_printer->writeln('No EntityManager created in configuration but required by task ' . get_class($this), 'ERROR');
-            return false;
-        }
-        return true;
-    }
 }

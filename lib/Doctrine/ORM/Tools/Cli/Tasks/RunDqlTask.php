@@ -101,7 +101,7 @@ class RunDqlTask extends AbstractTask
         $args = $this->getArguments();
         
         try {
-            $query = $this->_em->createQuery($args['dql']);
+            $query = $this->getEntityManager()->createQuery($args['dql']);
             $resultSet = $query->getResult();
         
             $maxDepth = isset($args['depth']) ? $args['depth'] : 7;

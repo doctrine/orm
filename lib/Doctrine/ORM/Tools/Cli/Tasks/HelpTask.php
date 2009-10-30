@@ -80,6 +80,7 @@ class HelpTask extends AbstractTask
             $task = new $taskClass();
             
             $task->setAvailableTasks($availableTasks);
+            $task->setEntityManager($this->getEntityManager());
             $task->setPrinter($this->getPrinter());
             $task->setArguments($this->getArguments());
             

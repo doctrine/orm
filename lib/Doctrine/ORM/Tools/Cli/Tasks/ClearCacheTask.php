@@ -120,7 +120,7 @@ class ClearCacheTask extends AbstractTask
             $all = true;
         }
 
-        $configuration = $this->_em->getConfiguration();
+        $configuration = $this->getEntityManager()->getConfiguration();
 
         if ($query || $all) {
             $this->_doDelete(

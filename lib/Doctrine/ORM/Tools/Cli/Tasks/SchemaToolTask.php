@@ -106,10 +106,6 @@ class SchemaToolTask extends AbstractTask
         $args = $this->getArguments();
         $printer = $this->getPrinter();
         
-        if ( ! $this->_requireEntityManager()) {
-            return false;
-        }
-
         if (array_key_exists('re-create', $args)) {
             $args['drop'] = true;
             $args['create'] = true;
@@ -130,7 +126,8 @@ class SchemaToolTask extends AbstractTask
             return false;
         }
         
-        $metadataDriver = $this->_em->getConfiguration()->getMetadataDriverImpl();
+        $metadataDriver = $this->getEntityManager()->getConfiguration()->getMetadataDriverImpl();
+        
         if ($metadataDriver instanceof \Doctrine\ORM\Mapping\Driver\AnnotationDriver) {
             if ( ! isset($args['class-dir'])) {
                 $printer->writeln("The supplied configuration uses the annotation metadata driver."
@@ -155,23 +152,26 @@ class SchemaToolTask extends AbstractTask
         $isDrop = isset($args['drop']);
         $isUpdate = isset($args['update']);
 
-        $cmf = $this->_em->getMetadataFactory();
-        $driver = $this->_em->getConfiguration()->getMetadataDriverImpl();
+        $em = $this->getEntityManager();
+        $cmf = $em->getMetadataFactory();
+        $driver = $em->getConfiguration()->getMetadataDriverImpl();
         
         $classes = array();
         $preloadedClasses = $driver->preload(true);
+        
         foreach ($preloadedClasses as $className) {
             $classes[] = $cmf->getMetadataFor($className);
         }
 
         $printer = $this->getPrinter();
-        $tool = new SchemaTool($this->_em);
         
         if (empty($classes)) {
             $printer->writeln('No classes to process.', 'INFO');
             return;
         }
 
+        $tool = new SchemaTool($em);
+        
         if ($isDrop) {
             if (isset($args['dump-sql'])) {
                 foreach ($tool->getDropSchemaSql($classes) as $sql) {

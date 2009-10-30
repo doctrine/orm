@@ -113,11 +113,13 @@ class RunSqlTask extends AbstractTask
             if (isset($args['file'])) {
                 //TODO
             } else if (isset($args['sql'])) {
+                $conn = $this->getEntityManager()->getConnection();
+            
                 if (preg_match('/^select/i', $args['sql'])) {
-                    $stmt = $this->_em->getConnection()->execute($args['sql']);
+                    $stmt = $conn->execute($args['sql']);
                     $resultSet = $stmt->fetchAll(\Doctrine\DBAL\Connection::FETCH_ASSOC);
                 } else {
-                    $resultSet = $this->_em->getConnection()->executeUpdate($args['sql']);
+                    $resultSet = $conn->executeUpdate($args['sql']);
                 }
             
                 $maxDepth = isset($args['depth']) ? $args['depth'] : 7;
