@@ -10,8 +10,7 @@ class ParserTest extends \Doctrine\Tests\DoctrineTestCase
 {
     public function testBasicAnnotations()
     {
-        $parser = new Parser;
-        $parser->setDefaultAnnotationNamespace('Doctrine\Tests\Common\Annotations\\');
+        $parser = $this->createTestParser();
         
         // Marker annotation
         $result = $parser->parse("@Name");
@@ -107,6 +106,21 @@ DOCBLOCK;
         $parser = new Parser();
         $parser->setDefaultAnnotationNamespace('Doctrine\Tests\Common\Annotations\\');
         return $parser;
+    }
+
+    /**
+     * @group DDC-78
+     */
+    public function testSyntaxErrorWithContextDescription()
+    {
+        $this->setExpectedException(
+            'Doctrine\Common\Annotations\AnnotationException',
+            "[Syntax Error] Expected 'PlainValue', got ''' at position 10 ".
+            "in class \Doctrine\Tests\Common\Annotations\Name"
+        );
+
+        $parser = $this->createTestParser();
+        $parser->parse("@Name(foo='bar')", "class \Doctrine\Tests\Common\Annotations\Name");
     }
 }
 

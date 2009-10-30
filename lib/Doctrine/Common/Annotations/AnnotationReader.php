@@ -99,7 +99,7 @@ class AnnotationReader
             return $this->_cache->fetch($cacheKey);
         }
         
-        $annotations = $this->_parser->parse($class->getDocComment());
+        $annotations = $this->_parser->parse($class->getDocComment(), "class ".$class->getName());
         $this->_cache->save($cacheKey, $annotations, null);
         
         return $annotations;
@@ -133,8 +133,9 @@ class AnnotationReader
         if ($this->_cache->contains($cacheKey)) {
             return $this->_cache->fetch($cacheKey);
         }
-        
-        $annotations = $this->_parser->parse($property->getDocComment());
+
+        $context = "property ".$property->getDeclaringClass()->getName()."::\$".$property->getName();
+        $annotations = $this->_parser->parse($property->getDocComment(), $context);
         $this->_cache->save($cacheKey, $annotations, null);
         
         return $annotations;
@@ -168,8 +169,9 @@ class AnnotationReader
         if ($this->_cache->contains($cacheKey)) {
             return $this->_cache->fetch($cacheKey);
         }
-        
-        $annotations = $this->_parser->parse($method->getDocComment());
+
+        $context = "method ".$method->getDeclaringClass()->getName()."::".$method->getName()."()";
+        $annotations = $this->_parser->parse($method->getDocComment(), $context);
         $this->_cache->save($cacheKey, $annotations, null);
         
         return $annotations;

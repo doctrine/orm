@@ -57,6 +57,57 @@ class AnnotationReaderTest extends \Doctrine\Tests\DoctrineTestCase
         $classAnnot = $reader->getClassAnnotation($class, 'Doctrine\Tests\Common\Annotations\DummyAnnotation');
         $this->assertEquals('hello', $classAnnot->dummyValue);
     }
+
+    public function testClassSyntaxErrorContext()
+    {
+        $this->setExpectedException(
+            "Doctrine\Common\Annotations\AnnotationException",
+            "[Syntax Error] Expected '', got ')' at position 18 in class ".
+            "Doctrine\Tests\Common\Annotations\DummyClassSyntaxError."
+        );
+
+        $class = new \ReflectionClass('\Doctrine\Tests\Common\Annotations\DummyClassSyntaxError');
+
+        $reader = $this->createAnnotationReader();
+        $reader->getClassAnnotations($class);
+    }
+
+    public function testMethodSyntaxErrorContext()
+    {
+        $this->setExpectedException(
+            "Doctrine\Common\Annotations\AnnotationException",
+            "[Syntax Error] Expected '', got ')' at position 18 in ".
+            "method Doctrine\Tests\Common\Annotations\DummyClassMethodSyntaxError::foo()."
+        );
+
+        $class = new \ReflectionClass('\Doctrine\Tests\Common\Annotations\DummyClassMethodSyntaxError');
+        $method = $class->getMethod('foo');
+
+        $reader = $this->createAnnotationReader();
+        $reader->getMethodAnnotations($method);
+    }
+
+    public function testPropertySyntaxErrorContext()
+    {
+        $this->setExpectedException(
+            "Doctrine\Common\Annotations\AnnotationException",
+            "[Syntax Error] Expected '', got ')' at position 18 in ".
+            "property Doctrine\Tests\Common\Annotations\DummyClassPropertySyntaxError::\$foo."
+        );
+
+        $class = new \ReflectionClass('\Doctrine\Tests\Common\Annotations\DummyClassPropertySyntaxError');
+        $property = $class->getProperty('foo');
+
+        $reader = $this->createAnnotationReader();
+        $reader->getPropertyAnnotations($property);
+    }
+
+    public function createAnnotationReader()
+    {
+        $reader = new AnnotationReader(new \Doctrine\Common\Cache\ArrayCache);
+        $reader->setDefaultAnnotationNamespace('Doctrine\Tests\Common\Annotations\\');
+        return $reader;
+    }
 }
 
 /**
@@ -107,4 +158,31 @@ class DummyJoinTable extends \Doctrine\Common\Annotations\Annotation {
     public $name;
     public $joinColumns;
     public $inverseJoinColumns;
+}
+
+/**
+ * @DummyAnnotation(@)
+ */
+class DummyClassSyntaxError
+{
+    
+}
+
+class DummyClassMethodSyntaxError
+{
+    /**
+     * @DummyAnnotation(@)
+     */
+    public function foo()
+    {
+        
+    }
+}
+
+class DummyClassPropertySyntaxError
+{
+    /**
+     * @DummyAnnotation(@)
+     */
+    public $foo;
 }

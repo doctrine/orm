@@ -72,6 +72,11 @@ class Parser
      * @var array
      */
     private $_namespaceAliases = array();
+
+    /**
+     * @var string
+     */ 
+    private $_context = '';
     
     /**
      * Constructs a new AnnotationParser.
@@ -107,11 +112,14 @@ class Parser
     /**
      * Parses the given docblock string for annotations.
      * 
-     * @param $docBlockString
+     * @param string $docBlockString
+     * @param string $context
      * @return array Array of Annotations. If no annotations are found, an empty array is returned.
      */
-    public function parse($docBlockString)
+    public function parse($docBlockString, $context='')
     {
+        $this->_context = $context;
+
         // Strip out some known inline tags.
         $input = str_replace(self::$_strippedInlineTags, '', $docBlockString);
         
@@ -164,10 +172,15 @@ class Parser
         $message =  "Expected '{$expected}', got ";
         
         if ($this->_lexer->lookahead === null) {
-            $message .= 'end of string.';
+            $message .= 'end of string';
         } else {
-            $message .= "'{$token['value']}' at position {$token['position']}.";
+            $message .= "'{$token['value']}' at position {$token['position']}";
         }
+
+        if(strlen($this->_context)) {
+            $message .= ' in '.$this->_context;
+        }
+        $message .= '.';
         
         throw AnnotationException::syntaxError($message);
     }
