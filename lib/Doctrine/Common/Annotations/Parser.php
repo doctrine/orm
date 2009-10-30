@@ -31,6 +31,7 @@ namespace Doctrine\Common\Annotations;
  * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
  * @author  Jonathan Wage <jonwage@gmail.com>
  * @author  Roman Borschel <roman@code-factory.org>
+ * @author  Benjamin Eberlei <kontakt@beberlei.de>
  */
 class Parser
 {
@@ -165,7 +166,7 @@ class Parser
         if ($this->_lexer->lookahead === null) {
             $message .= 'end of string.';
         } else {
-            $message .= "'{$token['value']}'";
+            $message .= "'{$token['value']}' at position {$token['position']}.";
         }
         
         throw AnnotationException::syntaxError($message);
@@ -357,8 +358,7 @@ class Parser
                 return false;
                 
             default:
-                var_dump($this->_lexer->lookahead);
-                throw new \Exception("Invalid value.");
+                $this->syntaxError('PlainValue');
         }
     }
 

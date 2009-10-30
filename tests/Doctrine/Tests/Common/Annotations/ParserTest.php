@@ -90,6 +90,24 @@ DOCBLOCK;
 
         $this->assertEquals(0, count($result));
     }
+
+    public function testAnnotationDontAcceptSingleQuotes()
+    {
+        $this->setExpectedException(
+            'Doctrine\Common\Annotations\AnnotationException',
+            "[Syntax Error] Expected 'PlainValue', got ''' at position 10."
+        );
+
+        $parser = $this->createTestParser();
+        $parser->parse("@Name(foo='bar')");
+    }
+
+    public function createTestParser()
+    {
+        $parser = new Parser();
+        $parser->setDefaultAnnotationNamespace('Doctrine\Tests\Common\Annotations\\');
+        return $parser;
+    }
 }
 
 class Name extends \Doctrine\Common\Annotations\Annotation {
