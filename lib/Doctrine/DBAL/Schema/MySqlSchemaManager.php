@@ -188,6 +188,7 @@ class MySqlSchemaManager extends AbstractSchemaManager
             case 'double':
             case 'real':
             case 'numeric':
+            case 'decimal':
                 $type = 'decimal';
                 break;
             case 'tinyblob':
