@@ -34,6 +34,11 @@ class CmsAddress
     public $city;
 
     /**
+     * Testfield for Schema Updating Tests.
+     */
+    public $street;
+
+    /**
      * @OneToOne(targetEntity="CmsUser")
      * @JoinColumn(name="user_id", referencedColumnName="id")
      */
