@@ -135,9 +135,16 @@ class ProxyFactory
             '<methods>', '<sleepImpl>',
             '<constructorInvocation>'
         );
+
+        if(substr($class->name, 0, 1) == "\\") {
+            $className = substr($class->name, 1);
+        } else {
+            $className = $class->name;
+        }
+
         $replacements = array(
             $this->_proxyNamespace,
-            $proxyClassName, $class->name,
+            $proxyClassName, $className,
             $methods, $sleepImpl,
             $constructorInv
         );

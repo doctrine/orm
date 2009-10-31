@@ -23,6 +23,10 @@ class ProxyClassGeneratorTest extends \Doctrine\Tests\OrmTestCase
     private $_connectionMock;
     private $_uowMock;
     private $_emMock;
+
+    /**
+     * @var \Doctrine\ORM\Proxy\ProxyFactory
+     */
     private $_proxyFactory;
     
     protected function setUp()
@@ -103,10 +107,22 @@ class ProxyClassGeneratorTest extends \Doctrine\Tests\OrmTestCase
         $this->assertNotEquals($referenceProxyClass, $associationProxyClass);
     }
 
-    protected function _getAssociationMock()
+    public function testNonNamespacedProxyGeneration()
     {
-        $assoc = $this->getMock('Doctrine\ORM\Mapping\AssociationMapping', array('load'), array(), '', false, false, false);
-        return $assoc;
+        require_once dirname(__FILE__)."/fixtures/NonNamespacedProxies.php";
+
+        $className = "\DoctrineOrmTestEntity";
+        $proxyName = "DoctrineOrmTestEntityProxy";
+        $classMetadata = new \Doctrine\ORM\Mapping\ClassMetadata($className);
+        $classMetadata->mapField(array('fieldName' => 'id', 'type' => 'integer'));
+        $classMetadata->setIdentifier(array('id'));
+
+        $this->_proxyFactory->generateProxyClasses(array($classMetadata));
+
+        $classCode = file_get_contents(dirname(__FILE__)."/generated/".$proxyName.".php");
+        
+        $this->assertNotContains("class DoctrineOrmTestEntityProxy extends \\\\DoctrineOrmTestEntity", $classCode);
+        $this->assertContains("class DoctrineOrmTestEntityProxy extends \\DoctrineOrmTestEntity", $classCode);
     }
     
     protected function _getMockPersister()
