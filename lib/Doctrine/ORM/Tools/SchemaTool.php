@@ -36,6 +36,7 @@ use Doctrine\DBAL\Types\Type,
  * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
  * @author  Jonathan Wage <jonwage@gmail.com>
  * @author  Roman Borschel <roman@code-factory.org>
+ * @author  Benjamin Eberlei <kontakt@beberlei.de>
  */
 class SchemaTool
 {
@@ -553,12 +554,21 @@ class SchemaTool
                             
                             // 4. check for length change
                             // 5. check for scale and precision change
-                            /*if (isset($fieldMapping['scale'])) {
-                                $columnInfo['length'] = $fieldMapping['precision'];
-                                $columnInfo['scale'] = $fieldMapping['scale'];
+                            if ($columnInfo['type'] == 'Decimal') {
+                                /*// Doesn't work yet, see DDC-89
+                                if($columnInfo['length'] != $fieldMapping['precision'] ||
+                                   $columnInfo['scale'] != $fieldMapping['scale']) {
+
+                                    $columnInfo['length'] = $fieldMapping['precision'];
+                                    $columnInfo['scale'] = $fieldMapping['scale'];
+                                    $columnChanged = true;
+                                }*/
                             } else {
-                                $columnInfo['length'] = $fieldMapping['length'];
-                            }*/
+                                if($columnInfo['length'] != $fieldMapping['length']) {
+                                    $columnInfo['length'] = $fieldMapping['length'];
+                                    $columnChanged = true;
+                                }
+                            }
                             
                             // 6. check for flexible and fixed length
                             $fieldMapping['fixed'] = ( ! isset($fieldMapping['fixed'])) 

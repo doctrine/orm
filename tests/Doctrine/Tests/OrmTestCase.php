@@ -5,7 +5,7 @@ namespace Doctrine\Tests;
 /**
  * Base testcase class for all ORM testcases.
  */
-class OrmTestCase extends DoctrineTestCase
+abstract class OrmTestCase extends DoctrineTestCase
 {
     /** The metadata cache that is shared between all ORM tests (except functional tests). */
     private static $_metadataCacheImpl = null;
@@ -22,10 +22,14 @@ class OrmTestCase extends DoctrineTestCase
      *
      * @return Doctrine\ORM\EntityManager
      */
-    protected function _getTestEntityManager($conn = null, $conf = null, $eventManager = null)
+    protected function _getTestEntityManager($conn = null, $conf = null, $eventManager = null, $withSharedMetadata = true)
     {
         $config = new \Doctrine\ORM\Configuration();
-        $config->setMetadataCacheImpl(self::getSharedMetadataCacheImpl());
+        if($withSharedMetadata) {
+            $config->setMetadataCacheImpl(self::getSharedMetadataCacheImpl());
+        } else {
+            $config->setMetadataCacheImpl(new \Doctrine\Common\Cache\ArrayCache);
+        }
         $config->setQueryCacheImpl(self::getSharedQueryCacheImpl());
         $config->setProxyDir(__DIR__ . '/Proxies');
         $config->setProxyNamespace('Doctrine\Tests\Proxies');
