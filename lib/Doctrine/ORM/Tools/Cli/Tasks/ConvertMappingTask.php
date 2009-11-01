@@ -90,10 +90,6 @@ class ConvertMappingTask extends AbstractTask
      */    
     public function validate()
     {
-        if ( ! parent::validate()) {
-            return false;
-        }
-        
         $args = $this->getArguments();
         $printer = $this->getPrinter();
 

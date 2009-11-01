@@ -167,7 +167,7 @@ class Cli
                 // Check if task exists
                 if (isset($this->_tasks[$taskName]) && class_exists($this->_tasks[$taskName], true)) {
                     // Initializing EntityManager
-                    $em = $this->_initializeEntityManager($processedArgs);
+                    $em = $this->_initializeEntityManager($processedArgs, $taskArguments);
                 
                     // Instantiate and execute the task
                     $task = new $this->_tasks[$taskName]();
@@ -322,7 +322,7 @@ class Cli
      * @param array CLI Task arguments
      * @return EntityManager
      */
-    private function _initializeEntityManager(& $args)
+    private function _initializeEntityManager(array $args, array &$taskArgs)
     {
         // Initialize EntityManager
         $configFile = ( ! isset($args['config'])) ? './cli-config.php' : $args['config'];
@@ -341,7 +341,7 @@ class Cli
             // Check for gloal argument options here
             if (isset($globalArguments)) {
                 // Merge arguments. Values specified via the CLI take preference.
-                $args = array_merge($globalArguments, $args);
+                $taskArgs = array_merge($globalArguments, $taskArgs);
             }
             
             return $em;

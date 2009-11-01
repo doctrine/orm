@@ -79,10 +79,6 @@ class ClearCacheTask extends AbstractTask
 
     public function validate()
     {
-        if ( ! parent::validate()) {
-            return false;
-        }
-
         $printer = $this->getPrinter();
         $args = $this->getArguments();
 
