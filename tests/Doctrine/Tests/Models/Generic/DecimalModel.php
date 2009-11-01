@@ -14,7 +14,7 @@ class DecimalModel
      */
     public $id;
     /**
-     * @Column(name="`decimal`", type="decimal", scale=5, precision=2)
+     * @Column(name="`decimal`", type="decimal", scale=2, precision=5)
      */
     public $decimal;
 }
