@@ -4,8 +4,9 @@
 # a task. A CLI configuration file usually initializes two local variables:
 #
 # $em - An EntityManager instance that the CLI tasks should use.
-# $args - An array of default command line arguments that take effect when an
-#         argument is not specifically set on the command line.
+# $globalArguments - An array of default command line arguments that are passed to all
+#                    CLI tasks automatically when an argument is not specifically set on
+#                    the command line.
 #
 # You can create several CLI configuration files with different names, for different databases.
 # Every CLI task recognizes the --config=<path> option where you can specify the configuration
