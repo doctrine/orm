@@ -685,7 +685,10 @@ abstract class AbstractSchemaManager
      */
     public function alterTable($name, array $changes, $check = false)
     {
-        $this->_execSql($this->_platform->getAlterTableSql($name, $changes, $check));
+        $queries = $this->_platform->getAlterTableSql($name, $changes, $check);
+        foreach($queries AS $ddlQuery) {
+            $this->_execSql($ddlQuery);
+        }
     }
 
     /**
