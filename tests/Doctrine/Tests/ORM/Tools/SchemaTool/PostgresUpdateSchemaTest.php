@@ -4,11 +4,11 @@ namespace Doctrine\Tests\ORM\Tools\SchemaTool;
 
 require_once __DIR__ . '/../../../TestInit.php';
 
-class MysqlUpdateSchemaTest extends UpdateSchemaTestCase
+class PostgresUpdateSchemaTest extends UpdateSchemaTestCase
 {
     protected function _createPlatform()
     {
-        return new \Doctrine\DBAL\Platforms\MySqlPlatform();
+        return new \Doctrine\DBAL\Platforms\PostgreSqlPlatform();
     }
 
     public function testAddField()
@@ -35,8 +35,9 @@ class MysqlUpdateSchemaTest extends UpdateSchemaTestCase
     {
         $sql = $this->_doTestChangeNullability();
 
-        $this->assertEquals(1, count($sql));
-        $this->assertEquals("ALTER TABLE cms_addresses CHANGE city city VARCHAR(50) DEFAULT NULL", $sql[0]);
+        $this->assertEquals(2, count($sql));
+        $this->assertEquals("ALTER TABLE cms_addresses ALTER city TYPE VARCHAR(50)", $sql[0]);
+        $this->assertEquals("ALTER TABLE cms_addresses ALTER city DROP NOT NULL", $sql[1]);
     }
 
     /**
@@ -53,24 +54,29 @@ class MysqlUpdateSchemaTest extends UpdateSchemaTestCase
     {
         $sql = $this->_doTestChangeType();
 
-        $this->assertEquals(1, count($sql));
-        $this->assertEquals("ALTER TABLE cms_addresses CHANGE city city TINYTEXT NOT NULL", $sql[0]);
+        $this->assertEquals(2, count($sql));
+        $this->assertEquals("ALTER TABLE cms_addresses ALTER city TYPE TEXT", $sql[0]);
+        $this->assertEquals("ALTER TABLE cms_addresses ALTER city SET NOT NULL", $sql[1]);
     }
 
     public function testChangeUniqueness()
     {
+        $this->markTestSkipped('Not supported on Postgres-Sql yet.');
+
         $sql = $this->_doTestChangeUniqueness();
 
-        $this->assertEquals(1, count($sql));
-        $this->assertEquals("ALTER TABLE cms_addresses CHANGE city city VARCHAR(50) NOT NULL UNIQUE", $sql[0]);
+        $this->assertEquals(2, count($sql));
+        $this->assertEquals("ALTER TABLE cms_addresses ALTER city TYPE VARCHAR(50)", $sql[0]);
+        $this->assertEquals("ALTER TABLE cms_addresses ALTER city SET NOT NULL", $sql[1]);
     }
 
     public function testChangeLength()
     {
         $sql = $this->_doTestChangeLength();
 
-        $this->assertEquals(1, count($sql));
-        $this->assertEquals('ALTER TABLE cms_addresses CHANGE city city VARCHAR(200) NOT NULL', $sql[0]);
+        $this->assertEquals(2, count($sql));
+        $this->assertEquals('ALTER TABLE cms_addresses ALTER city TYPE VARCHAR(200)', $sql[0]);
+        $this->assertEquals('ALTER TABLE cms_addresses ALTER city SET NOT NULL', $sql[1]);
     }
 
     /**
@@ -80,26 +86,29 @@ class MysqlUpdateSchemaTest extends UpdateSchemaTestCase
     {
         $sql = $this->_doTestChangeLengthToNull();
 
-        $this->assertEquals(1, count($sql));
-        $this->assertEquals('ALTER TABLE cms_addresses CHANGE city city VARCHAR(255) NOT NULL', $sql[0]);
+        $this->assertEquals(2, count($sql));
+        $this->assertEquals('ALTER TABLE cms_addresses ALTER city TYPE VARCHAR(255)', $sql[0]);
+        $this->assertEquals('ALTER TABLE cms_addresses ALTER city SET NOT NULL', $sql[1]);
     }
 
     public function testChangeDecimalLengthPrecision()
     {
         $sql = $this->_doTestChangeDecimalLengthPrecision();
 
-        $this->assertEquals(1, count($sql));
+        $this->assertEquals(2, count($sql));
         // invalid sql, because not escaped
         $this->assertEquals('ALTER TABLE decimal_model CHANGE decimal decimal NUMERIC(10, 2) NOT NULL', $sql[0]);
+        $this->assertEquals('ALTER TABLE decimal_model CHANGE decimal decimal NUMERIC(10, 2) NOT NULL', $sql[1]);
     }
 
     public function testChangeDecimalLengthScale()
     {
         $sql = $this->_doTestChangeDecimalLengthScale();
 
-        $this->assertEquals(1, count($sql));
+        $this->assertEquals(2, count($sql));
         // invalid sql, because not escaped
         $this->assertEquals('ALTER TABLE decimal_model CHANGE decimal decimal NUMERIC(5, 3) NOT NULL', $sql[0]);
+        $this->assertEquals('ALTER TABLE decimal_model CHANGE decimal decimal NUMERIC(5, 3) NOT NULL', $sql[1]);
     }
 
     public function testChangeFixed()

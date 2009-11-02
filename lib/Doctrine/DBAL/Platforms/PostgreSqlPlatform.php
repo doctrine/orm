@@ -532,23 +532,22 @@ class PostgreSqlPlatform extends AbstractPlatform
 
         if (isset($changes['change']) && is_array($changes['change'])) {
             foreach ($changes['change'] as $fieldName => $field) {
-                if (isset($field['type'])) {
-                    $serverInfo = $this->getServerVersion();
-
-                    if (is_array($serverInfo) && $serverInfo['major'] < 8) {
-                        throw DoctrineException::changeColumnRequiresPostgreSQL8OrAbove($field['type']);
-                    }
-                    $query = 'ALTER ' . $fieldName . ' TYPE ' . $this->getTypeDeclarationSql($field['definition']);
+                if (isset($field['definition']['type']) && $field['definition']['type'] instanceof \Doctrine\DBAL\Types\Type) {
+                    $type = $field['definition']['type'];
+                    
+                    // here was a server version check before, but DBAL API does not support this anymore.
+                    $query = 'ALTER ' . $fieldName . ' TYPE ' . $type->getSqlDeclaration($field['definition'], $this);
                     $sql[] = 'ALTER TABLE ' . $name . ' ' . $query;
                 }
-                if (array_key_exists('default', $field)) {
-                    $query = 'ALTER ' . $fieldName . ' SET DEFAULT ' . $this->quote($field['definition']['default'], $field['definition']['type']);
+                if (isset($field['definition']['default'])) {
+                    $query = 'ALTER ' . $fieldName . ' SET DEFAULT ' . $field['definition']['default'];
                     $sql[] = 'ALTER TABLE ' . $name . ' ' . $query;
                 }
-                if ( ! empty($field['notnull'])) {
+                if (isset($field['definition']['notnull']) && is_bool($field['definition']['notnull'])) {
                     $query = 'ALTER ' . $fieldName . ' ' . ($field['definition']['notnull'] ? 'SET' : 'DROP') . ' NOT NULL';
                     $sql[] = 'ALTER TABLE ' . $name . ' ' . $query;
                 }
+                
             }
         }
 
