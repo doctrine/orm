@@ -4,11 +4,11 @@ namespace Doctrine\Tests\ORM\Tools\SchemaTool;
 
 require_once __DIR__ . '/../../../TestInit.php';
 
-class PostgresUpdateSchemaTest extends UpdateSchemaTestCase
+class OracleUpdateSchemaTest extends UpdateSchemaTestCase
 {
     protected function _createPlatform()
     {
-        return new \Doctrine\DBAL\Platforms\PostgreSqlPlatform();
+        return new \Doctrine\DBAL\Platforms\OraclePlatform();
     }
 
     public function testAddField()
@@ -17,7 +17,7 @@ class PostgresUpdateSchemaTest extends UpdateSchemaTestCase
 
         $this->assertEquals(1, count($sql));
         $this->assertEquals(
-            "ALTER TABLE cms_addresses ADD street VARCHAR(255) NOT NULL",
+            "ALTER TABLE cms_addresses ADD (street VARCHAR2(255) NOT NULL)",
             $sql[0]
         );
     }
@@ -27,17 +27,16 @@ class PostgresUpdateSchemaTest extends UpdateSchemaTestCase
         $sql = $this->_doTestChangeColumnName();
 
         $this->assertEquals(2, count($sql));
-        $this->assertEquals("ALTER TABLE cms_addresses ADD the_city VARCHAR(50) NOT NULL", $sql[0]);
-        $this->assertEquals("ALTER TABLE cms_addresses DROP city", $sql[1]);
+        $this->assertEquals("ALTER TABLE cms_addresses ADD (the_city VARCHAR2(50) NOT NULL)", $sql[0]);
+        $this->assertEquals("ALTER TABLE cms_addresses DROP COLUMN city", $sql[1]);
     }
 
     public function testChangeNullability()
     {
         $sql = $this->_doTestChangeNullability();
 
-        $this->assertEquals(2, count($sql));
-        $this->assertEquals("ALTER TABLE cms_addresses ALTER city TYPE VARCHAR(50)", $sql[0]);
-        $this->assertEquals("ALTER TABLE cms_addresses ALTER city DROP NOT NULL", $sql[1]);
+        $this->assertEquals(1, count($sql));
+        $this->assertEquals("ALTER TABLE cms_addresses MODIFY (city  VARCHAR2(50) DEFAULT NULL)", $sql[0]);
     }
 
     /**
@@ -54,9 +53,8 @@ class PostgresUpdateSchemaTest extends UpdateSchemaTestCase
     {
         $sql = $this->_doTestChangeType();
 
-        $this->assertEquals(2, count($sql));
-        $this->assertEquals("ALTER TABLE cms_addresses ALTER city TYPE TEXT", $sql[0]);
-        $this->assertEquals("ALTER TABLE cms_addresses ALTER city SET NOT NULL", $sql[1]);
+        $this->assertEquals(1, count($sql));
+        $this->assertEquals("ALTER TABLE cms_addresses MODIFY (city  CLOB NOT NULL)", $sql[0]);
     }
 
     public function testChangeUniqueness()
@@ -74,9 +72,8 @@ class PostgresUpdateSchemaTest extends UpdateSchemaTestCase
     {
         $sql = $this->_doTestChangeLength();
 
-        $this->assertEquals(2, count($sql));
-        $this->assertEquals('ALTER TABLE cms_addresses ALTER city TYPE VARCHAR(200)', $sql[0]);
-        $this->assertEquals('ALTER TABLE cms_addresses ALTER city SET NOT NULL', $sql[1]);
+        $this->assertEquals(1, count($sql));
+        $this->assertEquals('ALTER TABLE cms_addresses MODIFY (city  VARCHAR2(200) NOT NULL)', $sql[0]);
     }
 
     /**
@@ -86,9 +83,8 @@ class PostgresUpdateSchemaTest extends UpdateSchemaTestCase
     {
         $sql = $this->_doTestChangeLengthToNull();
 
-        $this->assertEquals(2, count($sql));
-        $this->assertEquals('ALTER TABLE cms_addresses ALTER city TYPE VARCHAR(255)', $sql[0]);
-        $this->assertEquals('ALTER TABLE cms_addresses ALTER city SET NOT NULL', $sql[1]);
+        $this->assertEquals(1, count($sql));
+        $this->assertEquals('ALTER TABLE cms_addresses MODIFY (city  VARCHAR2(255) NOT NULL)', $sql[0]);
     }
 
     public function testChangeDecimalLengthPrecision()
@@ -115,9 +111,8 @@ class PostgresUpdateSchemaTest extends UpdateSchemaTestCase
     {
         $sql = $this->_doTestChangeFixed();
 
-        $this->assertEquals(2, count($sql));
-        $this->assertEquals("ALTER TABLE cms_addresses ALTER city TYPE CHAR(50)", $sql[0]);
-        $this->assertEquals("ALTER TABLE cms_addresses ALTER city SET NOT NULL", $sql[1]);
+        $this->assertEquals(1, count($sql));
+        $this->assertEquals("ALTER TABLE cms_addresses MODIFY (city  CHAR(50) NOT NULL)", $sql[0]);
     }
 
     public function testAddIndex()
@@ -136,9 +131,6 @@ class PostgresUpdateSchemaTest extends UpdateSchemaTestCase
         $sql = $this->_doTestRemoveField();
 
         $this->assertEquals(1, count($sql));
-        $this->assertEquals(
-            "ALTER TABLE cms_addresses DROP city",
-            $sql[0]
-        );
+        $this->assertEquals("ALTER TABLE cms_addresses DROP COLUMN city", $sql[0]);
     }
 }

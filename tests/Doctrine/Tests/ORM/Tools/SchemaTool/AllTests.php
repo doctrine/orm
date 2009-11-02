@@ -21,6 +21,7 @@ class AllTests
 
         $suite->addTestSuite('Doctrine\Tests\ORM\Tools\SchemaTool\MysqlUpdateSchemaTest');
         $suite->addTestSuite('Doctrine\Tests\ORM\Tools\SchemaTool\PostgresUpdateSchemaTest');
+        $suite->addTestSuite('Doctrine\Tests\ORM\Tools\SchemaTool\OracleUpdateSchemaTest');
 
 
         return $suite;
