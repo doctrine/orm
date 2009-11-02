@@ -655,7 +655,7 @@ class MySqlPlatform extends AbstractPlatform
             return false;
         }
 
-        return 'ALTER TABLE ' . $name . ' ' . $query;
+        return array('ALTER TABLE ' . $name . ' ' . $query);
     }
     
     /**

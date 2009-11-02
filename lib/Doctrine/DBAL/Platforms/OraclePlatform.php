@@ -392,6 +392,18 @@ END;';
         return 'DROP USER ' . $database . ' CASCADE';
     }
 
+    /**
+     * Gets the sql statements for altering an existing table.
+     *
+     * The method returns an array of sql statements, since some platforms need several statements.
+     *
+     * @param string $name          name of the table that is intended to be changed.
+     * @param array $changes        associative array that contains the details of each type      *
+     * @param boolean $check        indicates whether the function should just check if the DBMS driver
+     *                              can perform the requested table alterations if the value is true or
+     *                              actually perform them otherwise.
+     * @return array
+     */
     public function getAlterTableSql($name, array $changes, $check = false)
     {
         if ( ! $name) {

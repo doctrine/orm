@@ -656,7 +656,7 @@ class SchemaTool
                         $joinColumn['type'] = Type::getType($joinColumn['type']);
                         $changes['add'][$name] = $joinColumn;
                     }
-                    $sql[] = $this->_platform->getAlterTableSql($tableName, $changes);
+                    $sql = array_merge($sql, $this->_platform->getAlterTableSql($tableName, $changes));
                 }
                 
                 // Update existent columns
@@ -670,7 +670,7 @@ class SchemaTool
                         );
                     }
                     
-                    $sql[] = $this->_platform->getAlterTableSql($tableName, $changes);
+                    $sql = array_merge($sql, $this->_platform->getAlterTableSql($tableName, $changes));
                 }
                 
                 // Drop any remaining columns
@@ -682,7 +682,7 @@ class SchemaTool
                         $changes['remove'][$column['name']] = $column;
                     }
                     
-                    $sql[] = $this->_platform->getAlterTableSql($tableName, $changes);
+                    $sql = array_merge($sql, $this->_platform->getAlterTableSql($tableName, $changes));
                 }
             }
         }

@@ -50,10 +50,11 @@ class MsSqlPlatformTest extends \Doctrine\Tests\DbalTestCase
                 'unsigned' => 1
                 )
             ));
-        
+
+        $sql = $this->_platform->getAlterTableSql('mytable', $changes);
         $this->assertEquals(
             'ALTER TABLE mytable RENAME TO userlist, ADD quota INT UNSIGNED DEFAULT NULL',
-            $this->_platform->getAlterTableSql('mytable', $changes)
+            $sql[0]
         );
     }
 
