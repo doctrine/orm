@@ -23,7 +23,7 @@ class MysqlUpdateSchemaTest extends UpdateSchemaTestCase
 
         $this->assertEquals(1, count($sql));
         $this->assertEquals(
-            "ALTER TABLE cms_addresses ADD street VARCHAR(255) DEFAULT NULL",
+            "ALTER TABLE cms_addresses ADD street VARCHAR(255) NOT NULL",
             $sql[0]
         );
     }
@@ -55,6 +55,24 @@ class MysqlUpdateSchemaTest extends UpdateSchemaTestCase
 
         $this->assertEquals(1, count($sql));
         $this->assertEquals("ALTER TABLE cms_addresses CHANGE city city VARCHAR(50) DEFAULT NULL", $sql[0]);
+    }
+
+    /**
+     * @group DDC-102
+     */
+    public function testChangeNullabilityToNull()
+    {
+        $address = new \Doctrine\Tests\Models\CMS\CmsAddress;
+
+        $st = $this->_getSchemaTool("Cms");
+        $classMetadata = $this->_getMetadataFor("\Doctrine\Tests\Models\CMS\CmsAddress");
+
+        $this->assertFalse($classMetadata->fieldMappings['city']['nullable']);
+        unset($classMetadata->fieldMappings['city']['nullable']);
+
+        $sql = $st->getUpdateSchemaSql(array($classMetadata));
+
+        $this->assertEquals(0, count($sql));
     }
 
     public function testChangeType()
@@ -97,6 +115,23 @@ class MysqlUpdateSchemaTest extends UpdateSchemaTestCase
 
         $this->assertEquals(1, count($sql));
         $this->assertEquals('ALTER TABLE cms_addresses CHANGE city city VARCHAR(200) NOT NULL', $sql[0]);
+    }
+
+    /**
+     * @group DDC-101
+     */
+    public function testChangeLengthToNull()
+    {
+        $address = new \Doctrine\Tests\Models\CMS\CmsAddress;
+
+        $st = $this->_getSchemaTool("Cms");
+        $classMetadata = $this->_getMetadataFor("\Doctrine\Tests\Models\CMS\CmsAddress");
+        $classMetadata->fieldMappings['city']['length'] = null;
+
+        $sql = $st->getUpdateSchemaSql(array($classMetadata));
+
+        $this->assertEquals(1, count($sql));
+        $this->assertEquals('ALTER TABLE cms_addresses CHANGE city city VARCHAR(255) NOT NULL', $sql[0]);
     }
 
     public function testChangeDecimalLengthPrecision()

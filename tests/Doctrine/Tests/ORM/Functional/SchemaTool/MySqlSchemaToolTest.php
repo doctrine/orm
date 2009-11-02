@@ -82,6 +82,13 @@ class MySqlSchemaToolTest extends \Doctrine\Tests\OrmFunctionalTestCase
             'length' => 50,
             'nullable' => false
         ));
+
+        // Test create column with no length and nullable defaults to 255, NOT NULL
+        $classA->mapField(array(
+            'fieldName' => 'newField2',
+            'columnName' => 'new_field2',
+            'type' => 'string',
+        ));
         
         // Introduce SchemaToolEntityB
         $classB = new ClassMetadata(__NAMESPACE__ . '\SchemaToolEntityB');
@@ -105,8 +112,16 @@ class MySqlSchemaToolTest extends \Doctrine\Tests\OrmFunctionalTestCase
         
         $this->assertEquals(2, count($sql));
         $this->assertEquals("CREATE TABLE schematool_entity_b (id INT NOT NULL, field VARCHAR(255) NOT NULL, PRIMARY KEY(id)) ENGINE = InnoDB", $sql[0]);
-        $this->assertEquals("ALTER TABLE schematool_entity_a ADD new_field VARCHAR(50) NOT NULL", $sql[1]);
-        
+        $this->assertEquals("ALTER TABLE schematool_entity_a ADD new_field VARCHAR(50) NOT NULL, ADD new_field2 VARCHAR(255) NOT NULL", $sql[1]);
+
+        $tool->updateSchema($classes);
+
+        // Change from 50 to default value (by setting null)
+        $classA->fieldMappings['newField']['length'] = null;
+
+        $sql = $tool->getUpdateSchemaSql($classes);
+        $this->assertEquals(1, count($sql));
+        $this->assertEquals("ALTER TABLE schematool_entity_a CHANGE new_field new_field VARCHAR(255) NOT NULL", $sql[0]);
     }
 }
 
@@ -115,6 +130,7 @@ class SchemaToolEntityA {
     /** @Id @Column(type="integer") */
     private $id;
     private $newField;
+    private $newField2;
 }
 
 class SchemaToolEntityB {

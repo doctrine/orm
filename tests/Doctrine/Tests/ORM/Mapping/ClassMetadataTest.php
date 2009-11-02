@@ -48,4 +48,21 @@ class ClassMetadataTest extends \Doctrine\Tests\OrmTestCase
         $this->assertEquals('phonenumbers', $oneOneMapping->getSourceFieldName());
         $this->assertEquals('Doctrine\Tests\Models\CMS\Bar', $oneOneMapping->getTargetEntityName());
     }
+
+    public function testFieldIsNullable()
+    {
+        $cm = new ClassMetadata('Doctrine\Tests\Models\CMS\CmsUser');
+
+        // Explicit Nullable
+        $cm->mapField(array('fieldName' => 'status', 'nullable' => true, 'type' => 'string', 'length' => 50));
+        $this->assertTrue($cm->isNullable('status'));
+
+        // Explicit Not Nullable
+        $cm->mapField(array('fieldName' => 'username', 'nullable' => false, 'type' => 'string', 'length' => 50));
+        $this->assertFalse($cm->isNullable('username'));
+
+        // Implicit Not Nullable
+        $cm->mapField(array('fieldName' => 'name', 'type' => 'string', 'length' => 50));
+        $this->assertFalse($cm->isNullable('name'), "By default a field should not be nullable.");
+    }
 }

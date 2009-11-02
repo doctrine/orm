@@ -40,9 +40,14 @@ use Doctrine\DBAL\Types\Type,
  */
 class SchemaTool
 {
-    /** The EntityManager */
+    /**
+     * @var \Doctrine\ORM\EntityManager
+     */
     private $_em;
-    /** The DatabasePlatform */
+
+    /**
+     * @var \Doctrine\DBAL\Platforms\AbstractPlatform
+     */
     private $_platform;
 
     /**
@@ -249,9 +254,13 @@ class SchemaTool
         $column['name'] = $class->getQuotedColumnName($mapping['fieldName'], $this->_platform);
         $column['type'] = Type::getType($mapping['type']);
         $column['length'] = isset($mapping['length']) ? $mapping['length'] : null;
-        $column['notnull'] = isset($mapping['nullable']) ? ! $mapping['nullable'] : false;
+        $column['notnull'] = isset($mapping['nullable']) ? ! $mapping['nullable'] : true;
         $column['unique'] = isset($mapping['unique']) ? $mapping['unique'] : false;
         $column['version'] = $class->isVersioned && $class->versionField == $mapping['fieldName'] ? true : false;
+
+        if(strtolower($column['type']) == 'string' && $column['length'] === null) {
+            $column['length'] = 255;
+        }
 
         if (isset($mapping['precision'])) {
             $column['precision'] = $mapping['precision'];
@@ -552,9 +561,8 @@ class SchemaTool
                             
                             unset($type);
                             
-                            // 4. check for length change
-                            // 5. check for scale and precision change
-                            if ($columnInfo['type'] == 'Decimal') {
+                            // 4. check for scale and precision change
+                            if (strtolower($columnInfo['type']) == 'decimal') {
                                 /*// Doesn't work yet, see DDC-89
                                 if($columnInfo['length'] != $fieldMapping['precision'] ||
                                    $columnInfo['scale'] != $fieldMapping['scale']) {
@@ -563,7 +571,13 @@ class SchemaTool
                                     $columnInfo['scale'] = $fieldMapping['scale'];
                                     $columnChanged = true;
                                 }*/
-                            } else {
+                            }
+                            // 5. check for length change of strings
+                            elseif(strtolower($fieldMapping['type']) == 'string') {
+                                if(!isset($fieldMapping['length']) || $fieldMapping['length'] === null) {
+                                    $fieldMapping['length'] = 255;
+                                }
+
                                 if($columnInfo['length'] != $fieldMapping['length']) {
                                     $columnInfo['length'] = $fieldMapping['length'];
                                     $columnChanged = true;
