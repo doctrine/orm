@@ -112,7 +112,7 @@ class LexerTest extends \Doctrine\Tests\OrmTestCase
         $lexer = new Lexer('-   1.234e2');
         $lexer->moveNext();
         $token = $lexer->lookahead;
-        $this->assertEquals(Lexer::T_NONE, $token['type']);
+        $this->assertEquals(Lexer::T_MINUS, $token['type']);
         $this->assertEquals('-', $token['value']);
 
         $lexer->moveNext();
@@ -201,7 +201,7 @@ class LexerTest extends \Doctrine\Tests\OrmTestCase
             ),
             array(
                 'value' => '.',
-                'type'  => Lexer::T_NONE,
+                'type'  => Lexer::T_DOT,
                 'position' => 41
             ),
             array(
@@ -211,7 +211,7 @@ class LexerTest extends \Doctrine\Tests\OrmTestCase
             ),
             array(
                 'value' => '=',
-                'type'  => Lexer::T_NONE,
+                'type'  => Lexer::T_EQUALS,
                 'position' => 47
             ),
             array(

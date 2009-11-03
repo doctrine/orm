@@ -49,48 +49,58 @@ class Lexer extends \Doctrine\Common\Lexer
     const T_AVG                 = 106;
     const T_BETWEEN             = 107;
     const T_BY                  = 108;
-    const T_COMMA				= 109;
-    const T_COUNT               = 110;
-    const T_DELETE              = 111;
-    const T_DESC                = 112;
-    const T_DISTINCT            = 113;
-    const T_DOT                 = 114;
-    const T_EMPTY               = 115;
-    const T_ESCAPE              = 116;
-    const T_EXISTS              = 117;
-    const T_FROM                = 118;
-    const T_GROUP               = 119;
-    const T_HAVING              = 120;
-    const T_IN                  = 121;
-    const T_INDEX               = 122;
-    const T_INNER               = 123;
-    const T_IS                  = 124;
-    const T_JOIN                = 125;
-    const T_LEFT                = 126;
-    const T_LIKE                = 127;
-    const T_LIMIT               = 128;
-    const T_MAX                 = 129;
-    const T_MIN                 = 130;
-    const T_MOD                 = 131;
-    const T_NOT                 = 132;
-    const T_NULL                = 133;
-    const T_OFFSET              = 134;
-    const T_ON                  = 135;
-    const T_OR                  = 136;
-    const T_ORDER               = 137;
-    const T_OUTER               = 138;
-    const T_SELECT              = 139;
-    const T_SET                 = 140;
-    const T_SIZE                = 141;
-    const T_SOME                = 142;
-    const T_SUM                 = 143;
-    const T_UPDATE              = 144;
-    const T_WHERE               = 145;
-    const T_WITH                = 146;
-    const T_TRUE                = 147;
-    const T_FALSE               = 148;
-    const T_MEMBER              = 149;
-    const T_OF                  = 150;
+    const T_CLOSE_PARENTHESIS   = 109;
+    const T_COMMA               = 110;
+    const T_COUNT               = 111;
+    const T_DELETE              = 112;
+    const T_DESC                = 113;
+    const T_DISTINCT            = 114;
+    const T_DIVIDE              = 115;
+    const T_DOT                 = 116;
+    const T_EMPTY               = 117;
+    const T_EQUALS              = 118;
+    const T_ESCAPE              = 119;
+    const T_EXISTS              = 120;
+    const T_FALSE               = 121;
+    const T_FROM                = 122;
+    const T_GREATER_THAN        = 123;
+    const T_GROUP               = 124;
+    const T_HAVING              = 125;
+    const T_IN                  = 126;
+    const T_INDEX               = 127;
+    const T_INNER               = 128;
+    const T_IS                  = 129;
+    const T_JOIN                = 130;
+    const T_LEFT                = 131;
+    const T_LIKE                = 132;
+    const T_LIMIT               = 133;
+    const T_LOWER_THAN          = 134;
+    const T_MAX                 = 135;
+    const T_MEMBER              = 136;
+    const T_MIN                 = 137;
+    const T_MINUS               = 138;
+    const T_MOD                 = 139;
+    const T_MULTIPLY            = 140;
+    const T_NEGATE              = 141;
+    const T_NOT                 = 142;
+    const T_NULL                = 143;
+    const T_OF                  = 144;
+    const T_OFFSET              = 145;
+    const T_ON                  = 146;
+    const T_OPEN_PARENTHESIS    = 147;
+    const T_OR                  = 148;
+    const T_ORDER               = 149;
+    const T_OUTER               = 150;
+    const T_PLUS                = 151;
+    const T_SELECT              = 152;
+    const T_SET                 = 153;
+    const T_SIZE                = 154;
+    const T_SOME                = 155;
+    const T_SUM                 = 156;
+    const T_TRUE                = 157;
+    const T_UPDATE              = 158;
+    const T_WHERE               = 159;
+    const T_WITH                = 160;
 
     private $_keywordsTable;
 
@@ -131,23 +141,42 @@ class Lexer extends \Doctrine\Common\Lexer
     protected function _getType(&$value)
     {
         $type = self::T_NONE;
-
         $newVal = $this->_getNumeric($value);
+        
+        // Recognizing numeric values
         if ($newVal !== false){
             $value = $newVal;
-            if (strpos($value, '.') !== false || stripos($value, 'e') !== false) {
-                $type = self::T_FLOAT;
-            } else {
-                $type = self::T_INTEGER;
-            }
+
+            return (strpos($value, '.') !== false || stripos($value, 'e') !== false) 
+                ? self::T_FLOAT : self::T_INTEGER;
         }
+        
         if ($value[0] === "'") {
-            $type = self::T_STRING;
             $value = str_replace("''", "'", substr($value, 1, strlen($value) - 2));
+            
+            return self::T_STRING;
         } else if (ctype_alpha($value[0]) || $value[0] === '_') {
-            $type = $this->_checkLiteral($value);
+            return $this->_checkLiteral($value);
         } else if ($value[0] === '?' || $value[0] === ':') {
-            $type = self::T_INPUT_PARAMETER;
+            return self::T_INPUT_PARAMETER;
+        } else {
+            switch ($value) {
+                case '.': return self::T_DOT;
+                case ',': return self::T_COMMA;
+                case '(': return self::T_OPEN_PARENTHESIS;
+                case ')': return self::T_CLOSE_PARENTHESIS;
+                case '=': return self::T_EQUALS;
+                case '>': return self::T_GREATER_THAN;
+                case '<': return self::T_LOWER_THAN;
+                case '+': return self::T_PLUS;
+                case '-': return self::T_MINUS;
+                case '*': return self::T_MULTIPLY;
+                case '/': return self::T_DIVIDE;
+                case '!': return self::T_NEGATE;
+                default:
+                    // Do nothing
+                    break;
+            }
         }
 
         return $type;
