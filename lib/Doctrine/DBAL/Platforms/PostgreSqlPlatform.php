@@ -283,7 +283,7 @@ class PostgreSqlPlatform extends AbstractPlatform
                 AND tp.typname <> 'trigger'
                 AND pr.pronamespace IN
                     (SELECT oid FROM pg_namespace
-                    WHERE nspname NOT LIKE 'pg_%' AND nspname != 'information_schema'";
+                    WHERE nspname NOT LIKE 'pg_%' AND nspname != 'information_schema')";
     }
 
     public function getListSequencesSql($database)
@@ -708,6 +708,14 @@ class PostgreSqlPlatform extends AbstractPlatform
     public function getDateTypeDeclarationSql(array $fieldDeclaration)
     {
         return 'DATE';
+    }
+
+    /**
+     * @override
+     */
+    public function getTimeTypeDeclarationSql(array $fieldDeclaration)
+    {
+        return 'TIME';
     }
 
     /**

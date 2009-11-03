@@ -36,7 +36,10 @@ class MySqlSchemaManager extends AbstractSchemaManager
 {
     protected function _getPortableViewDefinition($view)
     {
-        return $view['TABLE_NAME'];
+        return array(
+            'name' => $view['TABLE_NAME'],
+            'sql' => $view['VIEW_DEFINITION']
+        );
     }
 
     protected function _getPortableTableDefinition($table)
@@ -117,9 +120,9 @@ class MySqlSchemaManager extends AbstractSchemaManager
         if ( ! isset($tableColumn['name'])) {
             $tableColumn['name'] = '';
         }
-
-        $values = null;
+        
         $scale = null;
+        $precision = null;
         
         // Map db type to Doctrine mapping type
         switch ($dbType) {
@@ -191,6 +194,11 @@ class MySqlSchemaManager extends AbstractSchemaManager
             case 'real':
             case 'numeric':
             case 'decimal':
+                if(preg_match('([A-Za-z]+\(([0-9]+)\,([0-9]+)\))', $tableColumn['Type'], $match)) {
+                    $precision = $match[1];
+                    $scale = $match[2];
+                    $length = null;
+                }
                 $type = 'decimal';
                 break;
             case 'tinyblob':
@@ -230,24 +238,30 @@ class MySqlSchemaManager extends AbstractSchemaManager
             'unsigned' => (bool) $unsigned,
             'fixed' => (bool) $fixed
         );
-        
-        if ($scale !== null) {
-            $def['scale'] = $scale;
-        }
-
-        $values = ($values !== null) ? $values : array();
 
         $column = array(
             'name'          => $tableColumn['Field'],
-            'values'        => $values,
-            'primary'       => (bool) (strtolower($tableColumn['Key']) == 'pri'),
-            'unique'        => (bool) (strtolower($tableColumn['Key']) == 'uni'),
+            'type'          => $type,
+            'length'        => $length,
+            'unsigned'      => (bool)$unsigned,
+            'fixed'         => (bool)$fixed,
             'default'       => $tableColumn['Default'],
             'notnull'       => (bool) ($tableColumn['Null'] != 'YES'),
-            'autoincrement' => (bool) (strpos($tableColumn['Extra'], 'auto_increment') !== false),
+            'scale'         => null,
+            'precision'     => null,
+            'platformDetails' => array(
+                'primary' => (strtolower($tableColumn['Key']) == 'pri') ? true : false,
+                'unique' => (strtolower($tableColumn['Key']) == 'uni') ? true :false,
+                'autoincrement' => (bool) (strpos($tableColumn['Extra'], 'auto_increment') !== false),
+            ),
         );
 
-        return array_merge($column, $def);
+        if ($scale !== null && $precision !== null) {
+            $column['scale'] = $scale;
+            $column['precision'] = $precision;
+        }
+
+        return $column;
     }
 
     public function _getPortableTableForeignKeyDefinition($tableForeignKey)

@@ -9,6 +9,8 @@ require_once __DIR__ . '/../../../TestInit.php';
 class SqliteSchemaManagerTest extends SchemaManagerFunctionalTestCase
 {
     /**
+     * SQLITE does not support databases.
+     * 
      * @expectedException \Exception
      */
     public function testListDatabases()
@@ -17,6 +19,8 @@ class SqliteSchemaManagerTest extends SchemaManagerFunctionalTestCase
     }
 
     /**
+     * SQLITE does not support databases.
+     *
      * @expectedException \Exception
      */
     public function testListFunctions()
@@ -49,7 +53,7 @@ class SqliteSchemaManagerTest extends SchemaManagerFunctionalTestCase
         $this->assertEquals(array(), $tableConstraints);
     }
 
-    public function testListTableColumns()
+    /*public function testListTableColumns()
     {
         $this->createTestTable('list_table_columns_test');
 
@@ -72,14 +76,7 @@ class SqliteSchemaManagerTest extends SchemaManagerFunctionalTestCase
         $this->assertEquals(false, $tableColumns[1]['fixed']);
         $this->assertEquals(false, $tableColumns[1]['notnull']);
         $this->assertEquals(null, $tableColumns[1]['default']);
-    }
-
-    public function testListTables()
-    {
-        $this->createTestTable('list_tables_test');
-        $tables = $this->_sm->listTables();
-        $this->assertEquals(true, in_array('list_tables_test', $tables));
-    }
+    }*/
 
     /**
      * @expectedException \Exception
@@ -89,14 +86,10 @@ class SqliteSchemaManagerTest extends SchemaManagerFunctionalTestCase
         $this->_sm->listUsers();
     }
 
-    public function testListViews()
+    protected function getCreateExampleViewSql()
     {
         $this->createTestTable('test_views');
-        $this->_sm->dropAndCreateView('test_create_view', 'SELECT * from test_views');
-        $views = $this->_sm->listViews();
-
-        $this->assertEquals('test_create_view', $views[0]['name']);
-        $this->assertEquals('CREATE VIEW test_create_view AS SELECT * from test_views', $views[0]['sql']);
+        return 'SELECT * from test_views';
     }
 
     public function testCreateAndDropDatabase()
@@ -107,33 +100,6 @@ class SqliteSchemaManagerTest extends SchemaManagerFunctionalTestCase
         $this->assertEquals(true, file_exists($path));
         $this->_sm->dropDatabase($path);
         $this->assertEquals(false, file_exists($path));
-    }
-
-    public function testCreateTable()
-    {
-        $this->createTestTable('test_create_table');
-        $tables = $this->_sm->listTables();
-        $this->assertEquals(true, in_array('test_create_table', $tables));
-
-        $tableColumns = $this->_sm->listTableColumns('test_create_table');
-
-        $this->assertEquals('id', $tableColumns[0]['name']);
-        $this->assertEquals(true, $tableColumns[0]['primary']);
-        $this->assertEquals('Doctrine\DBAL\Types\IntegerType', get_class($tableColumns[0]['type']));
-        $this->assertEquals(null, $tableColumns[0]['length']);
-        $this->assertEquals(false, $tableColumns[0]['unsigned']);
-        $this->assertEquals(false, $tableColumns[0]['fixed']);
-        $this->assertEquals(true, $tableColumns[0]['notnull']);
-        $this->assertEquals(null, $tableColumns[0]['default']);
-
-        $this->assertEquals('test', $tableColumns[1]['name']);
-        $this->assertEquals(false, $tableColumns[1]['primary']);
-        $this->assertEquals('Doctrine\DBAL\Types\StringType', get_class($tableColumns[1]['type']));
-        $this->assertEquals(255, $tableColumns[1]['length']);
-        $this->assertEquals(false, $tableColumns[1]['unsigned']);
-        $this->assertEquals(false, $tableColumns[1]['fixed']);
-        $this->assertEquals(false, $tableColumns[1]['notnull']);
-        $this->assertEquals(null, $tableColumns[1]['default']);
     }
 
     /**

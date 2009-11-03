@@ -1363,6 +1363,18 @@ abstract class AbstractPlatform
     }
 
     /**
+     * Obtain DBMS specific SQL to be used to create time fields in statements
+     * like CREATE TABLE.
+     *
+     * @param array $fieldDeclaration
+     * @return string
+     */
+    public function getTimeTypeDeclarationSql(array $fieldDeclaration)
+    {
+        throw DoctrineException::getTimeTypeDeclarationNotSupported($this);
+    }
+
+    /**
      * Gets the default transaction isolation level of the platform.
      *
      * @return integer The default isolation level.

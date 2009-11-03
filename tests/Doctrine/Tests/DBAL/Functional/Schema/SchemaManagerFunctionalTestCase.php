@@ -8,6 +8,160 @@ require_once __DIR__ . '/../../../TestInit.php';
 
 class SchemaManagerFunctionalTestCase extends \Doctrine\Tests\DbalFunctionalTestCase
 {
+    public function testListFunctions()
+    {
+        $funcs = $this->_sm->listFunctions();
+        $this->assertType('array', $funcs);
+        $this->assertTrue(count($funcs)>=0);
+    }
+
+    public function testListTriggers()
+    {
+        $triggers = $this->_sm->listTriggers();
+        $this->assertType('array', $triggers);
+        $this->assertTrue(count($triggers) >= 0);
+    }
+
+    public function testListDatabases()
+    {
+        $this->_sm->dropAndCreateDatabase('test_create_database');
+        $databases = $this->_sm->listDatabases();
+
+        $databases = \array_map('strtolower', $databases);
+        
+        $this->assertEquals(true, in_array('test_create_database', $databases));
+    }
+
+    public function testListTables()
+    {
+        $this->createTestTable('list_tables_test');
+        $tables = $this->_sm->listTables();
+
+        $tables = \array_change_key_case($tables, CASE_LOWER);
+
+        $this->assertEquals(true, in_array('list_tables_test', $tables));
+    }
+
+    public function testListTableColumns()
+    {
+        $data = array();
+        $data['columns'] = array(
+            'id' => array(
+                'type' => Type::getType('integer'),
+                'autoincrement' => true,
+                'primary' => true,
+                'notnull' => true
+            ),
+            'test' => array(
+                'type' => Type::getType('string'),
+                'length' => 255,
+                'notnull' => false,
+            ),
+            'foo' => array(
+                'type' => Type::getType('text'),
+                'notnull' => true,
+            ),
+            'bar' => array(
+                'type' => Type::getType('decimal'),
+                'precision' => 10,
+                'scale' => 4,
+            ),
+            'baz1' => array(
+                'type' => Type::getType('datetime'),
+            ),
+            'baz2' => array(
+                'type' => Type::getType('time'),
+            ),
+            'baz3' => array(
+                'type' => Type::getType('date'),
+            ),
+        );
+        $this->createTestTable('list_table_columns', $data);
+
+        $columns = $this->_sm->listTableColumns('list_table_columns');
+
+        $columns = \array_change_key_case($columns, CASE_LOWER);
+
+        $this->assertArrayHasKey('id', $columns);
+        $this->assertEquals('id',   strtolower($columns['id']['name']));
+        $this->assertType('Doctrine\DBAL\Types\IntegerType', $columns['id']['type']);
+        $this->assertEquals(null,   $columns['id']['length']);
+        $this->assertEquals(null,   $columns['id']['precision']);
+        $this->assertEquals(null,   $columns['id']['scale']);
+        $this->assertEquals(false,  $columns['id']['unsigned']);
+        $this->assertEquals(false,  $columns['id']['fixed']);
+        $this->assertEquals(true,   $columns['id']['notnull']);
+        $this->assertEquals(null,   $columns['id']['default']);
+        $this->assertType('array',  $columns['id']['platformDetails']);
+
+        $this->assertArrayHasKey('test', $columns);
+        $this->assertEquals('test', strtolower($columns['test']['name']));
+        $this->assertType('Doctrine\DBAL\Types\StringType', $columns['test']['type']);
+        $this->assertEquals(255,    $columns['test']['length']);
+        $this->assertEquals(null,   $columns['test']['precision']);
+        $this->assertEquals(null,   $columns['test']['scale']);
+        $this->assertEquals(false,  $columns['test']['unsigned']);
+        $this->assertEquals(false,  $columns['test']['fixed']);
+        $this->assertEquals(false,  $columns['test']['notnull']);
+        $this->assertEquals(null,   $columns['test']['default']);
+        $this->assertType('array',  $columns['test']['platformDetails']);
+
+        $this->assertEquals('foo', strtolower($columns['foo']['name']));
+        $this->assertType('Doctrine\DBAL\Types\TextType', $columns['foo']['type']);
+        $this->assertEquals(null,   $columns['foo']['length']);
+        $this->assertEquals(null,   $columns['foo']['precision']);
+        $this->assertEquals(null,   $columns['foo']['scale']);
+        $this->assertEquals(false,  $columns['foo']['unsigned']);
+        $this->assertEquals(false,  $columns['foo']['fixed']);
+        $this->assertEquals(true,   $columns['foo']['notnull']);
+        $this->assertEquals(null,   $columns['foo']['default']);
+        $this->assertType('array',  $columns['foo']['platformDetails']);
+
+        $this->assertEquals('bar', strtolower($columns['bar']['name']));
+        $this->assertType('Doctrine\DBAL\Types\DecimalType', $columns['bar']['type']);
+        $this->assertEquals(null,   $columns['bar']['length']);
+        $this->assertEquals(10,   $columns['bar']['precision']);
+        $this->assertEquals(4,   $columns['bar']['scale']);
+        $this->assertEquals(false,  $columns['bar']['unsigned']);
+        $this->assertEquals(false,  $columns['bar']['fixed']);
+        $this->assertEquals(false,   $columns['bar']['notnull']);
+        $this->assertEquals(null,   $columns['bar']['default']);
+        $this->assertType('array',  $columns['bar']['platformDetails']);
+
+        $this->assertEquals('baz1', strtolower($columns['baz1']['name']));
+        $this->assertType('Doctrine\DBAL\Types\DateTimeType', $columns['baz1']['type']);
+        $this->assertEquals(null,   $columns['baz1']['length']);
+        $this->assertEquals(null,   $columns['baz1']['precision']);
+        $this->assertEquals(null,   $columns['baz1']['scale']);
+        $this->assertEquals(false,  $columns['baz1']['unsigned']);
+        $this->assertEquals(false,  $columns['baz1']['fixed']);
+        $this->assertEquals(false,   $columns['baz1']['notnull']);
+        $this->assertEquals(null,   $columns['baz1']['default']);
+        $this->assertType('array',  $columns['baz1']['platformDetails']);
+
+        $this->assertEquals('baz2', strtolower($columns['baz2']['name']));
+        $this->assertContains($columns['baz2']['type']->getName(), array('Time', 'Date', 'DateTime'));
+        $this->assertEquals(null,   $columns['baz2']['length']);
+        $this->assertEquals(null,   $columns['baz2']['precision']);
+        $this->assertEquals(null,   $columns['baz2']['scale']);
+        $this->assertEquals(false,  $columns['baz2']['unsigned']);
+        $this->assertEquals(false,  $columns['baz2']['fixed']);
+        $this->assertEquals(false,   $columns['baz2']['notnull']);
+        $this->assertEquals(null,   $columns['baz2']['default']);
+        $this->assertType('array',  $columns['baz2']['platformDetails']);
+        
+        $this->assertEquals('baz3', strtolower($columns['baz3']['name']));
+        $this->assertContains($columns['baz2']['type']->getName(), array('Time', 'Date', 'DateTime'));
+        $this->assertEquals(null,   $columns['baz3']['length']);
+        $this->assertEquals(null,   $columns['baz3']['precision']);
+        $this->assertEquals(null,   $columns['baz3']['scale']);
+        $this->assertEquals(false,  $columns['baz3']['unsigned']);
+        $this->assertEquals(false,  $columns['baz3']['fixed']);
+        $this->assertEquals(false,   $columns['baz3']['notnull']);
+        $this->assertEquals(null,   $columns['baz3']['default']);
+        $this->assertType('array',  $columns['baz3']['platformDetails']);
+    }
+
     public function testListTableIndexes()
     {
         $data['options'] = array(
@@ -66,6 +220,38 @@ class SchemaManagerFunctionalTestCase extends \Doctrine\Tests\DbalFunctionalTest
         $this->assertTrue($tableIndexes['test']['unique']);
         $this->assertFalse($tableIndexes['test']['primary']);
     }
+
+    protected function getCreateExampleViewSql()
+    {
+        $this->markTestSkipped('No Create Example View SQL was defined for this SchemaManager');
+    }
+
+    public function testListViews()
+    {
+        $this->_sm->dropAndCreateView('test_create_view', $this->getCreateExampleViewSql());
+        $views = $this->_sm->listViews();
+        $this->assertTrue(count($views) >= 1, "There should be at least the fixture view created in the database, but none were found.");
+        
+        $found = false;
+        foreach($views AS $view) {
+            if(!isset($view['name']) || !isset($view['sql'])) {
+                $this->fail(
+                    "listViews() has to return entries with both name ".
+                    "and sql keys, but only ".implode(", ", array_keys($view))." are present."
+                );
+            }
+
+            if($view['name'] == 'test_create_view') {
+                $found = true;
+            }
+        }
+        $this->assertTrue($found, "'test_create_view' View was not found in listViews().");
+    }
+
+    /**
+     * @var \Doctrine\DBAL\Schema\AbstractSchemaManager
+     */
+    protected $_sm;
 
     protected function setUp()
     {

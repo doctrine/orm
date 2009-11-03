@@ -54,7 +54,8 @@ class PostgreSqlSchemaManager extends AbstractSchemaManager
     protected function _getPortableViewDefinition($view)
     {
         return array(
-            'name' => $view['viewname']
+            'name' => $view['viewname'],
+            'sql' => $view['definition']
         );
     }
 
@@ -151,6 +152,9 @@ class PostgreSqlSchemaManager extends AbstractSchemaManager
         if ( ! isset($tableColumn['name'])) {
             $tableColumn['name'] = '';
         }
+
+        $precision = null;
+        $scale = null;
         
         $dbType = strtolower($tableColumn['type']);
         
@@ -228,6 +232,11 @@ class PostgreSqlSchemaManager extends AbstractSchemaManager
             case 'decimal':
             case 'money':
             case 'numeric':
+                if(preg_match('([A-Za-z]+\(([0-9]+)\,([0-9]+)\))', $tableColumn['complete_type'], $match)) {
+                    $precision = $match[1];
+                    $scale = $match[2];
+                    $length = null;
+                }
                 $type = 'decimal';
                 break;
             case 'tinyblob':
@@ -258,19 +267,20 @@ class PostgreSqlSchemaManager extends AbstractSchemaManager
                 $type = 'string';
         }
 
-        $decl = array(
-            'type'     => $type,
-            'length'   => $length,
-            'fixed'    => $fixed
-        );
-
         $description = array(
             'name'      => $tableColumn['field'],
+            'type'      => $type,
+            'length'    => $length,
             'notnull'   => (bool) $tableColumn['isnotnull'],
             'default'   => $tableColumn['default'],
             'primary'   => (bool) ($tableColumn['pri'] == 't'),
+            'precision' => $precision,
+            'scale'     => $scale,
+            'fixed'     => $fixed,
+            'unsigned'  => false,
+            'platformDetails' => array(),
         );
 
-        return array_merge($decl, $description);
+        return $description;
     }
 }

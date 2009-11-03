@@ -77,4 +77,22 @@ class TestUtil
 
         return $conn;
     }
+
+    /**
+     * @return \Doctrine\DBAL\Connection
+     */
+    public static function getTempConnection()
+    {
+        $tmpDbParams = array(
+            'driver' => $GLOBALS['tmpdb_type'],
+            'user' => $GLOBALS['tmpdb_username'],
+            'password' => $GLOBALS['tmpdb_password'],
+            'host' => $GLOBALS['tmpdb_host'],
+            'dbname' => $GLOBALS['tmpdb_name'],
+            'port' => $GLOBALS['tmpdb_port']
+        );
+
+        // Connect to tmpdb in order to drop and create the real test db.
+        return \Doctrine\DBAL\DriverManager::getConnection($tmpDbParams);
+    }
 }

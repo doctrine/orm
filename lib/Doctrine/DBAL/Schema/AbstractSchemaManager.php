@@ -107,8 +107,11 @@ abstract class AbstractSchemaManager
     }
 
     /**
-     * List the available functions for this connection
+     * List the names of available functions for this connection
      *
+     * @example array(
+     *  'functionA', 'functionB', 'procedureA',
+     * )
      * @return array $functions
      */
     public function listFunctions()
@@ -121,8 +124,11 @@ abstract class AbstractSchemaManager
     }
 
     /**
-     * List the available triggers for this connection
+     * List the names of available triggers for this connection
      *
+     * @example array(
+     *  'triggerName1', 'triggerName2',
+     * );
      * @return array $triggers
      */
     public function listTriggers()
@@ -168,6 +174,28 @@ abstract class AbstractSchemaManager
 
     /**
      * List the columns for a given table.
+     *
+     * @example array(
+     *     'colA' => array(
+     *          'name' => 'colA',
+     *          'type' => \Doctrine\DBAL\Types\StringType instance,
+     *          'length' => 255,
+     *          'precision' => null,
+     *          'scale' => null,
+     *          'unsigned' => false,
+     *          'fixed' => false,
+     *          'notnull' => false,
+     *          'default' => null,
+     *          'platformDetails' => array(),
+     *     ),
+     * );
+     *
+     * In contrast to other libraries and to the old version of Doctrine,
+     * this column definition does try to contain the 'primary' field for
+     * the reason that it is not portable accross different RDBMS. Use
+     * {@see listTableIndexes($tableName)} to retrieve the primary key
+     * of a table. We're a RDBMS specifies more details these are held
+     * in the platformDetails array.
      *
      * @param string $table The name of the table.
      * @return array $tableColumns The column descriptions.
@@ -249,6 +277,10 @@ abstract class AbstractSchemaManager
     /**
      * List the views this connection has
      *
+     * @example array(
+     *  array('name' => 'ViewA', 'sql' => 'SELECT * FROM foo'),
+     *  array('name' => 'ViewB', 'sql' => 'SELECT * FROM bar'),
+     * )
      * @return array $views
      */
     public function listViews()
@@ -896,7 +928,7 @@ abstract class AbstractSchemaManager
                 if (is_string($value['type'])) {
                     $value['type'] = \Doctrine\DBAL\Types\Type::getType($value['type']);
                 }
-                $list[] = $value;
+                $list[$value['name']] = $value;
             }
         }
         return $list;

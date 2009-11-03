@@ -153,6 +153,11 @@ class MySqlPlatform extends AbstractPlatform
         return 'SHOW DATABASES';
     }
 
+    public function getListFunctionsSql()
+    {
+        return 'SELECT SPECIFIC_NAME FROM information_schema.ROUTINES';
+    }
+
     public function getListSequencesSql($database)
     {
         $query = 'SHOW TABLES';
@@ -177,13 +182,22 @@ class MySqlPlatform extends AbstractPlatform
         return "SELECT * FROM mysql.user WHERE user != '' GROUP BY user";
     }
 
+    public function getListTriggersSql($table = null)
+    {
+        $sql = "SELECT TRIGGER_NAME FROM information_schema.TRIGGERS";
+        if($table !== null) {
+            $sql .= " WHERE EVENT_OBJECT_TABLE = '".$table."'";
+        }
+        return $sql;
+    }
+
     public function getListViewsSql($database = null)
     {
-        if (is_null($database)) {
-            return 'SELECT * FROM information_schema.VIEWS';
-        } else {
-            return "SHOW FULL TABLES FROM " . $database . " WHERE Table_type = 'VIEW'";
+        $sql = 'SELECT * FROM information_schema.VIEWS';
+        if($database !== null) {
+            $sql .= " WHERE TABLE_SCHEMA = '".$database."'";
         }
+        return $sql;
     }
 
     public function getListTableForeignKeysSql($table, $database = null)
@@ -265,7 +279,7 @@ class MySqlPlatform extends AbstractPlatform
      */
     public function getDateTimeTypeDeclarationSql(array $fieldDeclaration)
     {
-        if ($fieldDeclaration['version']) {
+        if (isset($fieldDeclaration['version'])) {
             return 'TIMESTAMP';
         } else {
             return 'DATETIME';
@@ -279,6 +293,14 @@ class MySqlPlatform extends AbstractPlatform
     {
         return 'DATE';
     }
+
+    /**
+     * @override
+     */
+    public function getTimeTypeDeclarationSql(array $fieldDeclaration) 
+    {
+        return 'TIME';
+    }	
 
     /**
      * @override

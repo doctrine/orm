@@ -146,6 +146,9 @@ class SqliteSchemaManager extends AbstractSchemaManager
             $tableColumn['name'] = '';
         }
 
+        $precision = null;
+        $scale = null;
+
         switch ($dbType) {
             case 'boolean':
                 $type = 'boolean';
@@ -219,6 +222,7 @@ class SqliteSchemaManager extends AbstractSchemaManager
             case 'real':
             case 'decimal':
             case 'numeric':
+                list($precision, $scale) = array_map('trim', explode(', ', $tableColumn['length']));
                 $type = 'decimal';
                 $length = null;
                 break;
@@ -238,13 +242,19 @@ class SqliteSchemaManager extends AbstractSchemaManager
                 $length = null;
         }
 
-        return array('name'     => $tableColumn['name'],
-                     'primary'  => (bool) $tableColumn['pk'],
-                     'type'     => $type,
-                     'length'   => $length,
-                     'unsigned' => (bool) $unsigned,
-                     'fixed'    => $fixed,
-                     'notnull'  => $notnull,
-                     'default'  => $default);
+        return array(
+            'name'     => $tableColumn['name'],
+            'type'     => $type,
+            'length'   => $length,
+            'unsigned' => (bool) $unsigned,
+            'fixed'    => $fixed,
+            'notnull'  => $notnull,
+            'default'  => $default,
+            'precision' => $precision,
+            'scale'     => $scale,
+            'platformDetails' => array(
+                'primary'  => (bool) $tableColumn['pk'],
+            ),
+        );
     }
 }

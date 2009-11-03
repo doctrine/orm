@@ -8,29 +8,6 @@ require_once __DIR__ . '/../../../TestInit.php';
  
 class MySqlSchemaManagerTest extends SchemaManagerFunctionalTestCase
 {
-    public function testListDatabases()
-    {
-        $this->_sm->dropAndCreateDatabase('test_create_database');
-        $databases = $this->_sm->listDatabases();
-        $this->assertEquals(true, in_array('test_create_database', $databases));
-    }
-
-    /**
-     * @expectedException \Exception
-     */
-    public function testListFunctions()
-    {
-        $this->_sm->listFunctions();
-    }
-
-    /**
-     * @expectedException \Exception
-     */
-    public function testListTriggers()
-    {
-        $this->_sm->listTriggers();
-    }
-
     public function testListSequences()
     {
         $this->createTestTable('list_sequences_test');
@@ -43,38 +20,6 @@ class MySqlSchemaManagerTest extends SchemaManagerFunctionalTestCase
         $this->createTestTable('list_table_constraints_test');
         $tableConstraints = $this->_sm->listTableConstraints('list_table_constraints_test');
         $this->assertEquals(array('PRIMARY'), $tableConstraints);
-    }
-
-    public function testListTableColumns()
-    {
-        $this->createTestTable('list_tables_test');
-
-        $columns = $this->_sm->listTableColumns('list_tables_test');
-
-        $this->assertEquals('id', $columns[0]['name']);
-        $this->assertEquals(true, $columns[0]['primary']);
-        $this->assertEquals('Doctrine\DBAL\Types\IntegerType', get_class($columns[0]['type']));
-        $this->assertEquals(null, $columns[0]['length']);
-        $this->assertEquals(false, $columns[0]['unsigned']);
-        $this->assertEquals(false, $columns[0]['fixed']);
-        $this->assertEquals(true, $columns[0]['notnull']);
-        $this->assertEquals(null, $columns[0]['default']);
-
-        $this->assertEquals('test', $columns[1]['name']);
-        $this->assertEquals(false, $columns[1]['primary']);
-        $this->assertEquals('Doctrine\DBAL\Types\StringType', get_class($columns[1]['type']));
-        $this->assertEquals(255, $columns[1]['length']);
-        $this->assertEquals(false, $columns[1]['unsigned']);
-        $this->assertEquals(false, $columns[1]['fixed']);
-        $this->assertEquals(false, $columns[1]['notnull']);
-        $this->assertEquals(null, $columns[1]['default']);
-    }
-
-    public function testListTables()
-    {
-        $this->createTestTable('list_tables_test');
-        $tables = $this->_sm->listTables();
-        $this->assertEquals(true, in_array('list_tables_test', $tables));
     }
 
     public function testListUsers()
@@ -92,13 +37,11 @@ class MySqlSchemaManagerTest extends SchemaManagerFunctionalTestCase
         $this->assertEquals(true, $found);
     }
 
-    public function testListViews()
+    protected function getCreateExampleViewSql()
     {
-        $this->_sm->dropAndCreateView('test_create_view', 'SELECT * from mysql.user');
-        $views = $this->_sm->listViews();
-        $this->assertEquals('test_create_view', $views[0]);
+        return 'SELECT * from mysql.user';
     }
-
+    
     public function testListTableForeignKeys()
     {
         $data['options'] = array('type' => 'innodb');
@@ -118,11 +61,5 @@ class MySqlSchemaManagerTest extends SchemaManagerFunctionalTestCase
         $this->assertEquals('list_table_foreign_keys_test2', $tableForeignKeys[0]['table']);
         $this->assertEquals('foreign_key_test', $tableForeignKeys[0]['local']);
         $this->assertEquals('id', $tableForeignKeys[0]['foreign']);
-    }
-
-    public function testDropAndCreate()
-    {
-        $this->_sm->dropAndCreateView('testing_a_new_view', 'SELECT * from mysql.user');
-        $this->_sm->dropAndCreateView('testing_a_new_view', 'SELECT * from mysql.user');
     }
 }

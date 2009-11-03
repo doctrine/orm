@@ -8,28 +8,6 @@ require_once __DIR__ . '/../../../TestInit.php';
  
 class PostgreSqlSchemaManagerTest extends SchemaManagerFunctionalTestCase
 {
-    public function testListDatabases()
-    {
-        $this->_sm->dropAndCreateDatabase('test_create_database');
-        $databases = $this->_sm->listDatabases();
-        $this->assertEquals(true, in_array('test_create_database', $databases));
-    }
-
-    /**
-     * @expectedException \Exception
-     */
-    public function testListFunctions()
-    {
-        $this->_sm->listFunctions();
-    }
-
-    public function testListTriggers()
-    {
-        $triggers = $this->_sm->listTriggers();
-        $this->assertEquals(true, is_array($triggers));
-        $this->assertEquals(true, count($triggers) > 0);
-    }
-
     public function testListSequences()
     {
         $this->createTestTable('list_sequences_test');
@@ -44,7 +22,7 @@ class PostgreSqlSchemaManagerTest extends SchemaManagerFunctionalTestCase
         $this->assertEquals(array('list_table_constraints_test_pkey'), $tableConstraints);
     }
 
-    public function testListTableColumns()
+    /*public function testListTableColumns()
     {
         $this->createTestTable('list_tables_test');
         $columns = $this->_sm->listTableColumns('list_tables_test');
@@ -64,14 +42,7 @@ class PostgreSqlSchemaManagerTest extends SchemaManagerFunctionalTestCase
         $this->assertEquals(false, $columns[1]['fixed']);
         $this->assertEquals(false, $columns[1]['notnull']);
         $this->assertEquals(null, $columns[1]['default']);
-    }
-
-    public function testListTables()
-    {
-        $this->createTestTable('list_tables_test');
-        $tables = $this->_sm->listTables();
-        $this->assertEquals(true, in_array('list_tables_test', $tables));
-    }
+    }*/
 
     public function testListUsers()
     {
@@ -88,20 +59,9 @@ class PostgreSqlSchemaManagerTest extends SchemaManagerFunctionalTestCase
         $this->assertEquals(true, $found);
     }
 
-    public function testListViews()
+    protected function getCreateExampleViewSql()
     {
-        $this->_sm->dropAndCreateView('test_create_view', 'SELECT usename, passwd FROM pg_user');
-        $views = $this->_sm->listViews();
-
-        $found = false;
-        foreach ($views as $view) {
-            if ($view['name'] == 'test_create_view') {
-                $found = true;
-                break;
-            }
-        }
-
-        $this->assertEquals(true, $found);
+        return 'SELECT usename, passwd FROM pg_user';
     }
 
     public function testListTableForeignKeys()

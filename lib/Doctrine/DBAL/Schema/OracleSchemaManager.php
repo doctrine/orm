@@ -34,13 +34,18 @@ class OracleSchemaManager extends AbstractSchemaManager
 {
     protected function _getPortableViewDefinition($view)
     {
+        $view = \array_change_key_case($view, CASE_LOWER);
+
         return array(
-            'name' => $view['view_name']
+            'name' => $view['view_name'],
+            'sql' => '',
         );
     }
 
     protected function _getPortableUserDefinition($user)
     {
+        $user = \array_change_key_case($user, CASE_LOWER);
+
         return array(
             'user' => $user['username'],
             'password' => $user['password']
@@ -49,6 +54,8 @@ class OracleSchemaManager extends AbstractSchemaManager
 
     protected function _getPortableTableDefinition($table)
     {
+        $table = \array_change_key_case($table, CASE_LOWER);
+
         return $table['table_name'];
     }
 
@@ -61,6 +68,8 @@ class OracleSchemaManager extends AbstractSchemaManager
      */
     protected function _getPortableTableIndexesList($tableIndexes, $tableName=null)
     {
+        $tableIndexes = \array_change_key_case($tableIndexes, CASE_LOWER);
+
         $indexBuffer = array();
         foreach ( $tableIndexes as $tableIndex ) {
             $keyName = $tableIndex['name'];
@@ -82,7 +91,13 @@ class OracleSchemaManager extends AbstractSchemaManager
 
     protected function _getPortableTableColumnDefinition($tableColumn)
     {
+        $tableColumn = \array_change_key_case($tableColumn, CASE_LOWER);
+        
         $dbType = strtolower($tableColumn['data_type']);
+        if(strpos($dbType, "timestamp(") === 0) {
+            $dbType = "timestamp";
+        }
+
         $type = array();
         $length = $unsigned = $fixed = null;
         if ( ! empty($tableColumn['data_length'])) {
@@ -97,10 +112,19 @@ class OracleSchemaManager extends AbstractSchemaManager
             $tableColumn['data_default'] = null;
         }
 
+        $precision = null;
+        $scale = null;
+        
         switch ($dbType) {
             case 'integer':
             case 'number':
-                $type = 'integer';
+                if($tableColumn['data_scale'] > 0) {
+                    $type = 'decimal';
+                    $precision = $tableColumn['data_precision'];
+                    $scale = $tableColumn['data_scale'];
+                } else {
+                    $type = 'integer';
+                }
                 $length = null;
                 break;
             case 'pls_integer':
@@ -129,6 +153,8 @@ class OracleSchemaManager extends AbstractSchemaManager
                 $length = null;
                 break;
             case 'float':
+                $precision = $tableColumn['data_precision'];
+                $scale = $tableColumn['data_scale'];
                 $type = 'decimal';
                 $length = null;
                 break;
@@ -136,6 +162,7 @@ class OracleSchemaManager extends AbstractSchemaManager
                 $type = 'string';
             case 'clob':
             case 'nclob':
+                $length = null;
                 $type = 'text';
                 break;
             case 'blob':
@@ -160,30 +187,34 @@ class OracleSchemaManager extends AbstractSchemaManager
         );
 
         return array(
-           'name'       => $tableColumn['column_name'],
-           'notnull'    => (bool) ($tableColumn['nullable'] === 'N'),
-           'type'       => $decl['type'],
-           'fixed'      => (bool) $decl['fixed'],
-           'unsigned'   => (bool) $decl['unsigned'],
-           'default'    => $tableColumn['data_default'],
-           'length'     => $tableColumn['data_length'],
-           'precision'  => $tableColumn['data_precision'],
-           'scale'      => $tableColumn['data_scale'],
+            'name'       => $tableColumn['column_name'],
+            'notnull'    => (bool) ($tableColumn['nullable'] === 'N'),
+            'type'       => $type,
+            'fixed'      => (bool) $fixed,
+            'unsigned'   => (bool) $unsigned,
+            'default'    => $tableColumn['data_default'],
+            'length'     => $length,
+            'precision'  => $precision,
+            'scale'      => $scale,
+            'platformDetails' => array(),
         );
     }
 
     protected function _getPortableTableConstraintDefinition($tableConstraint)
     {
+        $tableConstraint = \array_change_key_case($tableConstraint, CASE_LOWER);
         return $tableConstraint['constraint_name'];
     }
 
     protected function _getPortableFunctionDefinition($function)
     {
+        $function = \array_change_key_case($function, CASE_LOWER);
         return $function['name'];
     }
 
     protected function _getPortableDatabaseDefinition($database)
     {
+        $database = \array_change_key_case($database, CASE_LOWER);
         return $database['username'];
     }
 

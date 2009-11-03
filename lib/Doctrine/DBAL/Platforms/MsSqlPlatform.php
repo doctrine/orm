@@ -422,6 +422,22 @@ class MsSqlPlatform extends AbstractPlatform
     /**
      * @override
      */
+    public function getDateTypeDeclarationSql(array $fieldDeclaration)
+    {
+        return 'CHAR(' . strlen('YYYY-MM-DD') . ')';
+    }	
+
+    /**
+     * @override
+     */
+    public function getTimeTypeDeclarationSql(array $fieldDeclaration) 
+    {
+        return 'CHAR(' . strlen('HH:MM:SS') . ')';
+    }
+
+    /**
+     * @override
+     */
     public function getBooleanTypeDeclarationSql(array $field)
     {
         return 'BIT';
