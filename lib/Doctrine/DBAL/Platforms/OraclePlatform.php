@@ -27,6 +27,7 @@ namespace Doctrine\DBAL\Platforms;
  * @since 2.0
  * @author Roman Borschel <roman@code-factory.org>
  * @author Lukas Smith <smith@pooteeweet.org> (PEAR MDB2 library)
+ * @author Benjamin Eberlei <kontakt@beberlei.de>
  */
 class OraclePlatform extends AbstractPlatform
 {
@@ -275,10 +276,22 @@ class OraclePlatform extends AbstractPlatform
         return $sql;
     }
 
+    /**
+     *
+     * @license New BSD License
+     * @link http://ezcomponents.org/docs/api/trunk/DatabaseSchema/ezcDbSchemaOracleReader.html
+     * @param  string $table
+     * @return string
+     */
     public function getListTableIndexesSql($table)
     {
-        return "SELECT * FROM user_indexes"
-               . " WHERE table_name = '" . strtoupper($table) . "'";
+        return "SELECT uind.index_name AS name, " .
+             "       uind.index_type AS type, " .
+             "       decode( uind.uniqueness, 'NONUNIQUE', 0, 'UNIQUE', 1 ) AS is_unique, " .
+             "       uind_col.column_name AS column_name, " .
+             "       uind_col.column_position AS column_pos " .
+             "FROM user_indexes uind, user_ind_columns uind_col " .
+             "WHERE uind.index_name = uind_col.index_name AND uind_col.table_name = '$table'";
     }
 
     public function getListTablesSql()

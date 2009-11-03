@@ -33,6 +33,7 @@ use \Doctrine\Common\DoctrineException;
  * @author      Lukas Smith <smith@pooteeweet.org> (PEAR MDB2 library)
  * @author      Roman Borschel <roman@code-factory.org>
  * @author      Jonathan H. Wage <jonwage@gmail.com>
+ * @author      Benjamin Eberlei <kontakt@beberlei.de>
  * @version     $Revision$
  * @since       2.0
  */
@@ -182,6 +183,28 @@ abstract class AbstractSchemaManager
 
     /**
      * List the indexes for a given table
+     * 
+     * @example
+     * $indexes = array(
+     *  'primary' => array(
+     *      'name' => 'primary',
+     *      'columns' => array('id'),
+     *      'unique' => true,
+     *      'primary' => true,
+     *  ),
+     *  'fieldUnq' => array(
+     *      'name' => 'fieldUnq',
+     *      'columns' => array('foo', 'bar'),
+     *      'unique' => true,
+     *      'primary' => false,
+     *  ),
+     *  'fieldIdx' => array(
+     *      'name' => 'fieldIdx',
+     *      'columns' => array('baz'),
+     *      'unique' => false,
+     *      'primary' => false,
+     *  ),
+     * );
      *
      * @param string $table The name of the table
      * @return array $tableIndexes
@@ -192,7 +215,7 @@ abstract class AbstractSchemaManager
 
         $tableIndexes = $this->_conn->fetchAll($sql);
 
-        return $this->_getPortableTableIndexesList($tableIndexes);
+        return $this->_getPortableTableIndexesList($tableIndexes, $table);
     }
 
     /**
@@ -884,20 +907,35 @@ abstract class AbstractSchemaManager
         return $tableColumn;
     }
 
-    protected function _getPortableTableIndexesList($tableIndexes)
+    /**
+     * Aggregate and group the index results according to the required data result.
+     *
+     * @param  array $tableIndexes
+     * @param  string $tableName
+     * @return array
+     */
+    protected function _getPortableTableIndexesList($tableIndexes, $tableName=null)
     {
-        $list = array();
-        foreach ($tableIndexes as $key => $value) {
-            if ($value = $this->_getPortableTableIndexDefinition($value)) {
-                $list[] = $value;
+        $result = array();
+        foreach($tableIndexes AS $tableIndex) {
+            $indexName = $keyName = $tableIndex['key_name'];
+            if($tableIndex['primary']) {
+                $keyName = 'primary';
+            }
+
+            if(!isset($result[$keyName])) {
+                $result[$keyName] = array(
+                    'name' => $indexName,
+                    'columns' => array($tableIndex['column_name']),
+                    'unique' => $tableIndex['non_unique'] ? false : true,
+                    'primary' => $tableIndex['primary'],
+                );
+            } else {
+                $result[$keyName]['columns'][] = $tableIndex['column_name'];
             }
         }
-        return $list;
-    }
 
-    protected function _getPortableTableIndexDefinition($tableIndex)
-    {
-        return $tableIndex;
+        return $result;
     }
 
     protected function _getPortableTablesList($tables)

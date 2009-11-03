@@ -25,4 +25,15 @@ Zend Framework
 Doctrine contains ports of a few Zend components and has borrowed concepts and ideas from the Zend Framework project.
 
 Url:       http://framework.zend.com
-Copyright: Copyright © 2006-2007 by Zend Technologies, All rights reserved.
+Copyright: Copyright © 2006-2009 by Zend Technologies, All rights reserved.
+License:   New BSD License
+
+eZ Components
+------------
+
+Doctrine SchemaTool, Platforms and SchemaManagers borrow ideas and concepts
+from ezcDatabaseSchema.
+
+Url:    http://www.ezcomponents.org
+License: New BSD License
+Copyright: Copyright (C) 2005-2009 eZ Systems AS. All rights reserved.

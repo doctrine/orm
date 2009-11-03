@@ -74,26 +74,6 @@ class SqliteSchemaManagerTest extends SchemaManagerFunctionalTestCase
         $this->assertEquals(null, $tableColumns[1]['default']);
     }
 
-    public function testListTableIndexes()
-    {
-        $data['options'] = array(
-            'indexes' => array(
-                'test' => array(
-                    'columns' => array(
-                        'test' => array()
-                    ),
-                    'type' => 'unique'
-                )
-            )
-        );
-
-        $this->createTestTable('list_table_indexes_test', $data);
-
-        $tableIndexes = $this->_sm->listTableIndexes('list_table_indexes_test');
-        $this->assertEquals('test', $tableIndexes[0]['name']);
-        $this->assertEquals(true, $tableIndexes[0]['unique']);
-    }
-
     public function testListTables()
     {
         $this->createTestTable('list_tables_test');
@@ -162,23 +142,6 @@ class SqliteSchemaManagerTest extends SchemaManagerFunctionalTestCase
     public function testCreateSequence()
     {
         $this->_sm->createSequence('seqname', 1, 1);
-    }
-
-    public function testCreateIndex()
-    {
-        $this->createTestTable('test_create_index');
-
-        $index = array(
-            'columns' => array(
-                'test' => array()
-            ),
-            'type' => 'unique'
-        );
-        
-        $this->_sm->dropAndCreateIndex('test_create_index', 'test', $index);
-        $tableIndexes = $this->_sm->listTableIndexes('test_create_index');
-        $this->assertEquals('test', $tableIndexes[0]['name']);
-        $this->assertEquals(true, $tableIndexes[0]['unique']);
     }
 
     /**

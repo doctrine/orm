@@ -28,6 +28,7 @@ namespace Doctrine\DBAL\Schema;
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  * @author      Lukas Smith <smith@pooteeweet.org> (PEAR MDB2 library)
  * @author      Roman Borschel <roman@code-factory.org>
+ * @author      Benjamin Eberlei <kontakt@beberlei.de>
  * @version     $Revision$
  * @since       2.0
  */
@@ -51,18 +52,19 @@ class MySqlSchemaManager extends AbstractSchemaManager
         );
     }
 
-    protected function _getPortableTableIndexDefinition($tableIndex)
+    protected function _getPortableTableIndexesList($tableIndexes, $tableName=null)
     {
-        $tableIndex = array_change_key_case($tableIndex, CASE_LOWER);
-
-        $result = array();
-        if ($tableIndex['key_name'] != 'PRIMARY' && ($index = $tableIndex['key_name'])) {
-            $result['name'] = $index;
-            $result['column'] = $tableIndex['column_name'];
-            $result['unique'] = $tableIndex['non_unique'] ? false : true;
+        foreach($tableIndexes AS $k => $v) {
+            $v = array_change_key_case($v, CASE_LOWER);
+            if($v['key_name'] == 'PRIMARY') {
+                $v['primary'] = true;
+            } else {
+                $v['primary'] = false;
+            }
+            $tablesIndexes[$k] = $v;
         }
-
-        return $result;
+        
+        return parent::_getPortableTableIndexesList($tablesIndexes, $tableName);
     }
 
     protected function _getPortableTableConstraintDefinition($tableConstraint)

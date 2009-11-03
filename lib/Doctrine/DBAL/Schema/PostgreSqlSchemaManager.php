@@ -27,6 +27,7 @@ namespace Doctrine\DBAL\Schema;
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  * @author      Lukas Smith <smith@pooteeweet.org> (PEAR MDB2 library)
+ * @author      Benjamin Eberlei <kontakt@beberlei.de>
  * @version     $Revision$
  * @since       2.0
  */
@@ -70,12 +71,35 @@ class PostgreSqlSchemaManager extends AbstractSchemaManager
         return $table['table_name'];
     }
 
-    protected function _getPortableTableIndexDefinition($index)
+    /**
+     * @license New BSD License
+     * @link http://ezcomponents.org/docs/api/trunk/DatabaseSchema/ezcDbSchemaPgsqlReader.html
+     * @param  array $tableIndexes
+     * @param  string $tableName
+     * @return array
+     */
+    protected function _getPortableTableIndexesList($tableIndexes, $tableName=null)
     {
-        return array(
-            'name' => $index['relname'],
-            'unique' => (bool) $index['unique']
-        );
+        $buffer = array();
+        foreach($tableIndexes AS $row) {
+            $colNumbers = explode( ' ', $row['indkey'] );
+            $colNumbersSql = 'IN (' . join( ' ,', $colNumbers ) . ' )';
+            $columnNameSql = "SELECT attname FROM pg_attribute
+                WHERE attrelid={$row['indrelid']} AND attnum $colNumbersSql;";
+                
+            $stmt = $this->_conn->execute($columnNameSql);
+            $indexColumns = $stmt->fetchAll();
+
+            foreach ( $indexColumns as $colRow ) {
+                $buffer[] = array(
+                    'key_name' => $row['relname'],
+                    'column_name' => $colRow['attname'],
+                    'non_unique' => !$row['indisunique'],
+                    'primary' => $row['indisprimary']
+                );
+            }
+        }
+        return parent::_getPortableTableIndexesList($buffer);
     }
 
     protected function _getPortableDatabaseDefinition($database)

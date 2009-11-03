@@ -27,6 +27,7 @@ namespace Doctrine\DBAL\Platforms;
  * @since 2.0
  * @author Roman Borschel <roman@code-factory.org>
  * @author Lukas Smith <smith@pooteeweet.org> (PEAR MDB2 library)
+ * @author Benjamin Eberlei <kontakt@beberlei.de>
  */
 class PostgreSqlPlatform extends AbstractPlatform
 {
@@ -377,24 +378,22 @@ class PostgreSqlPlatform extends AbstractPlatform
                         )";
     }
 
+    /**
+     * @license New BSD License
+     * @link http://ezcomponents.org/docs/api/trunk/DatabaseSchema/ezcDbSchemaPgsqlReader.html
+     * @param  string $table
+     * @return string
+     */
     public function getListTableIndexesSql($table)
     {
-        return "SELECT
-                    relname,
-                    (
-                        SELECT indisunique 
-                        FROM pg_index 
-                        WHERE oid = indexrelid
-                    ) as unique
-                FROM
-                    pg_class
-                WHERE oid IN (
+        return "SELECT relname, pg_index.indisunique, pg_index.indisprimary,
+                       pg_index.indkey, pg_index.indrelid
+                 FROM pg_class, pg_index
+                 WHERE oid IN (
                     SELECT indexrelid
                     FROM pg_index, pg_class
-                    WHERE pg_class.relname = '$table'
-                        AND pg_class.oid=pg_index.indrelid
-                        AND indisprimary != 't'
-                )";
+                    WHERE pg_class.relname='$table' AND pg_class.oid=pg_index.indrelid
+                 ) AND pg_index.indexrelid = oid";
     }
 
     public function getListTableColumnsSql($table)

@@ -66,25 +66,6 @@ class PostgreSqlSchemaManagerTest extends SchemaManagerFunctionalTestCase
         $this->assertEquals(null, $columns[1]['default']);
     }
 
-    public function testListTableIndexes()
-    {
-        $data['options'] = array(
-            'indexes' => array(
-                'test' => array(
-                    'columns' => array(
-                        'test' => array()
-                    ),
-                    'type' => 'unique'
-                )
-            )
-        );
-
-        $this->createTestTable('list_table_indexes_test', $data);
-        $tableIndexes = $this->_sm->listTableIndexes('list_table_indexes_test');
-        $this->assertEquals('test', $tableIndexes[0]['name']);
-        $this->assertEquals(true, $tableIndexes[0]['unique']);
-    }
-
     public function testListTables()
     {
         $this->createTestTable('list_tables_test');

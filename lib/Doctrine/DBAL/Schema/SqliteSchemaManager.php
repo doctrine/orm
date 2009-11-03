@@ -68,6 +68,51 @@ class SqliteSchemaManager extends AbstractSchemaManager
         return $table['name'];
     }
 
+    /**
+     * @license New BSD License
+     * @link http://ezcomponents.org/docs/api/trunk/DatabaseSchema/ezcDbSchemaPgsqlReader.html
+     * @param  array $tableIndexes
+     * @param  string $tableName
+     * @return array
+     */
+    protected function _getPortableTableIndexesList($tableIndexes, $tableName=null)
+    {
+        $indexBuffer = array();
+
+        // fetch primary
+        $stmt = $this->_conn->execute( "PRAGMA TABLE_INFO ('$tableName')" );
+        $indexArray = $stmt->fetchAll(\Doctrine\DBAL\Connection::FETCH_ASSOC);
+        foreach($indexArray AS $indexColumnRow) {
+            if($indexColumnRow['pk'] == "1") {
+                $indexBuffer[] = array(
+                    'key_name' => 'primary',
+                    'primary' => true,
+                    'non_unique' => false,
+                    'column_name' => $indexColumnRow['name']
+                );
+            }
+        }
+
+        // fetch regular indexes
+        foreach($tableIndexes AS $tableIndex) {
+            $keyName = $tableIndex['name'];
+            $idx = array();
+            $idx['key_name'] = $keyName;
+            $idx['primary'] = false;
+            $idx['non_unique'] = $tableIndex['unique']?false:true;
+
+            $stmt = $this->_conn->execute( "PRAGMA INDEX_INFO ( '{$keyName}' )" );
+            $indexArray = $stmt->fetchAll(\Doctrine\DBAL\Connection::FETCH_ASSOC);
+
+            foreach ( $indexArray as $indexColumnRow ) {
+                $idx['column_name'] = $indexColumnRow['name'];
+                $indexBuffer[] = $idx;
+            }
+        }
+
+        return parent::_getPortableTableIndexesList($indexBuffer, $tableName);
+    }
+
     protected function _getPortableTableIndexDefinition($tableIndex)
     {
         return array(

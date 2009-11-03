@@ -52,12 +52,32 @@ class OracleSchemaManager extends AbstractSchemaManager
         return $table['table_name'];
     }
 
-    protected function _getPortableTableIndexDefinition($tableIndex)
+    /**
+     * @license New BSD License
+     * @link http://ezcomponents.org/docs/api/trunk/DatabaseSchema/ezcDbSchemaPgsqlReader.html
+     * @param  array $tableIndexes
+     * @param  string $tableName
+     * @return array
+     */
+    protected function _getPortableTableIndexesList($tableIndexes, $tableName=null)
     {
-        return array(
-            'name' => $tableIndex['index_name'],
-            'unique' => (isset($tableIndex['uniqueness']) && $tableIndex['uniqueness'] == 'UNIQUE') ? true : false
-        );
+        $indexBuffer = array();
+        foreach ( $tableIndexes as $tableIndex ) {
+            $keyName = $tableIndex['name'];
+
+            if ( $keyName == $tableName.'_pkey' ) {
+                $keyName = 'primary';
+                $buffer['primary'] = true;
+                $buffer['non_unique'] = false;
+            } else {
+                $buffer['primary'] = false;
+                $buffer['non_unique'] = ( $tableIndex['is_unique'] == 0 ) ? true : false;
+            }
+            $buffer['key_name'] = $keyName;
+            $buffer['column_name'] = $tableIndex['column_name'];
+            $indexBuffer[] = $buffer;
+        }
+        parent::_getPortableTableIndexesList($indexBuffer, $tableName);
     }
 
     protected function _getPortableTableColumnDefinition($tableColumn)
