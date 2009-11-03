@@ -338,7 +338,7 @@ class SchemaTool
             } else if ($mapping->isManyToMany() && $mapping->isOwningSide) {
                 // create join table
                 $joinTableColumns = array();
-                $joinTableOptions = array();
+                $joinTableOptions = array('primary' => array(), 'uniqueConstraints' => array());
                 $joinTable = $mapping->getJoinTable();
                 
                 // Build first FK constraint (relation table => source table)
@@ -358,6 +358,10 @@ class SchemaTool
                     $joinTableColumns[$column['name']] = $column;
                     $constraint1['local'][] = $column['name'];
                     $constraint1['foreign'][] = $joinColumn['referencedColumnName'];
+
+                    if($joinColumn['unique'] == true) {
+                        $joinTableOptions['uniqueConstraints'][] = array($joinColumn['name']);
+                    }
                     
                     if (isset($joinColumn['onUpdate'])) {
                         $constraint1['onUpdate'] = $joinColumn['onUpdate'];
@@ -387,6 +391,10 @@ class SchemaTool
                     $joinTableColumns[$inverseJoinColumn['name']] = $column;
                     $constraint2['local'][] = $inverseJoinColumn['name'];
                     $constraint2['foreign'][] = $inverseJoinColumn['referencedColumnName'];
+
+                    if($inverseJoinColumn['unique'] == true) {
+                        $joinTableOptions['uniqueConstraints'][] = array($inverseJoinColumn['name']);
+                    }
                     
                     if (isset($inverseJoinColumn['onUpdate'])) {
                         $constraint2['onUpdate'] = $inverseJoinColumn['onUpdate'];
