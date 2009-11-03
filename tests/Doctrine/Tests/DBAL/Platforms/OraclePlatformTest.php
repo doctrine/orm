@@ -65,7 +65,7 @@ class OraclePlatformTest extends \Doctrine\Tests\DbalTestCase
     }
 
     /**
-     * @expectedException Doctrine\Common\DoctrineException
+     * @expectedException Doctrine\DBAL\DBALException
      */
     public function testRLike()
     {
@@ -80,7 +80,7 @@ class OraclePlatformTest extends \Doctrine\Tests\DbalTestCase
     }
 
     /**
-     * @expectedException Doctrine\Common\DoctrineException
+     * @expectedException Doctrine\DBAL\DBALException
      */
     public function testGetCharsetFieldDeclaration()
     {
@@ -108,7 +108,7 @@ class OraclePlatformTest extends \Doctrine\Tests\DbalTestCase
     }
 
     /**
-     * @expectedException Doctrine\Common\DoctrineException
+     * @expectedException Doctrine\DBAL\DBALException
      */
     public function testShowDatabasesThrowsException()
     {
@@ -116,7 +116,7 @@ class OraclePlatformTest extends \Doctrine\Tests\DbalTestCase
     }
 
     /**
-     * @expectedException Doctrine\Common\DoctrineException
+     * @expectedException Doctrine\DBAL\DBALException
      */
     public function testCreateDatabaseThrowsException()
     {

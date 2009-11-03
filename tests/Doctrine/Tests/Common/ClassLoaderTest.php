@@ -20,7 +20,7 @@ class ClassLoaderTest extends \Doctrine\Tests\DoctrineTestCase
         $globalClassLoader->register();
     }
     
-    public function testIsolatedClassLoaderReturnsFalseOnClassExists()
+    /*public function testIsolatedClassLoaderReturnsFalseOnClassExists()
     {
         $classLoader = new IsolatedClassLoader('ClassLoaderTest');
         $classLoader->setBasePath( __DIR__);
@@ -30,5 +30,5 @@ class ClassLoaderTest extends \Doctrine\Tests\DoctrineTestCase
         $this->assertEquals($classLoader->loadClass('ClassLoaderTest_ClassA'), true);
         $this->assertEquals($classLoader->loadClass('ClassLoaderTest_ClassA'), false);
         $this->assertEquals($classLoader->loadClass('ClassLoaderTest_ClassC'), true);
-    }
+    }*/
 }

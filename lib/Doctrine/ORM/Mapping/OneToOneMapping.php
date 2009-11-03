@@ -214,34 +214,33 @@ class OneToOneMapping extends AssociationMapping
      */
     public function load($sourceEntity, $targetEntity, $em, array $joinColumnValues = array())
     {
-        $sourceClass = $em->getClassMetadata($this->sourceEntityName);
         $targetClass = $em->getClassMetadata($this->targetEntityName);
-        
-        $conditions = array();
 
         if ($this->isOwningSide) {
-            foreach ($this->sourceToTargetKeyColumns as $sourceKeyColumn => $targetKeyColumn) {
-                if (isset($sourceClass->fieldNames[$sourceKeyColumn])) {
-                    $conditions[$targetKeyColumn] = $sourceClass->reflFields[$sourceClass->fieldNames[$sourceKeyColumn]]->getValue($sourceEntity);
-                } else {
-                    $conditions[$targetKeyColumn] = $joinColumnValues[$sourceKeyColumn];
-                }
+            $inverseField = isset($targetClass->inverseMappings[$this->sourceEntityName][$this->sourceFieldName]) ?
+                    $targetClass->inverseMappings[$this->sourceEntityName][$this->sourceFieldName]->sourceFieldName
+                    : false;
+            
+            $hints = array();
+            if ($inverseField) {
+                $hints['fetched'][$targetClass->rootEntityName][$inverseField] = true;
             }
+
+            $targetEntity = $em->getUnitOfWork()->getEntityPersister($this->targetEntityName)->load($joinColumnValues, $targetEntity, $this, $hints);
             
-            $targetEntity = $em->getUnitOfWork()->getEntityPersister($this->targetEntityName)->load($conditions, $targetEntity, $this);
-            
-            if ($targetEntity !== null && $targetClass->hasInverseAssociationMapping($this->sourceEntityName, $this->sourceFieldName)) {
-                $targetClass->setFieldValue($targetEntity,
-                        $targetClass->inverseMappings[$this->sourceEntityName][$this->sourceFieldName]->sourceFieldName,
-                        $sourceEntity);
+            if ($targetEntity !== null && $inverseField) {
+                $targetClass->reflFields[$inverseField]->setValue($targetEntity, $sourceEntity);
             }
         } else {
-            $owningAssoc = $em->getClassMetadata($this->targetEntityName)->getAssociationMapping($this->mappedByFieldName);
+            $conditions = array();
+            $sourceClass = $em->getClassMetadata($this->sourceEntityName);
+            $owningAssoc = $targetClass->getAssociationMapping($this->mappedByFieldName);
             // TRICKY: since the association is specular source and target are flipped
             foreach ($owningAssoc->targetToSourceKeyColumns as $sourceKeyColumn => $targetKeyColumn) {
                 if (isset($sourceClass->fieldNames[$sourceKeyColumn])) {
                     $conditions[$targetKeyColumn] = $sourceClass->reflFields[$sourceClass->fieldNames[$sourceKeyColumn]]->getValue($sourceEntity);
                 } else {
+                    //TODO: Should never happen. Exception?
                     $conditions[$targetKeyColumn] = $joinColumnValues[$sourceKeyColumn];
                 }
             }

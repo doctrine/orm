@@ -59,41 +59,6 @@ class EntityManagerTest extends \Doctrine\Tests\OrmTestCase
         $this->assertEquals(\Doctrine\ORM\EntityManager::FLUSHMODE_COMMIT, $this->_em->getFlushMode());
     }
 
-    public function testCommit_FlushModeOnCommit_FlushUnitOfWork()
-    {
-        $this->markTestSkipped('_unitOfWork is private, but EntityManager does not use getUnitofWork() all the time');
-
-        $uow = $this->getMock('\Doctrine\ORM\UnitOfWork', array(), array(), '', false);
-        $uow->expects($this->once())
-            ->method('flush');
-
-        $this->_em->setUnitOfWork($uow);
-        $this->_em->setFlushMode(\Doctrine\ORM\EntityManager::FLUSHMODE_COMMIT);
-
-        $this->assertSame($uow, $this->_em->getUnitOfWork());
-
-        $this->_em->beginTransaction();
-        $this->_em->commit();
-    }
-
-
-    public function testCommit_FlushModeAuto_FlushUnitOfWork()
-    {
-        $this->markTestSkipped('_unitOfWork is private, but EntityManager does not use getUnitofWork() all the time');
-
-        $uow = $this->getMock('\Doctrine\ORM\UnitOfWork', array(), array(), '', false);
-        $uow->expects($this->once())
-            ->method('flush');
-
-        $this->_em->setUnitOfWork($uow);
-        $this->_em->setFlushMode(\Doctrine\ORM\EntityManager::FLUSHMODE_AUTO);
-
-        $this->assertSame($uow, $this->_em->getUnitOfWork());
-
-        $this->_em->beginTransaction();
-        $this->_em->commit();
-    }
-
     public function testCreateNativeQuery()
     {
         $rsm = new \Doctrine\ORM\Query\ResultSetMapping();

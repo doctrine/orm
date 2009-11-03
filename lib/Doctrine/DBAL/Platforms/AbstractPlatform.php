@@ -21,7 +21,7 @@
 
 namespace Doctrine\DBAL\Platforms;
 
-use Doctrine\Common\DoctrineException,
+use Doctrine\DBAL\DBALException,
     Doctrine\DBAL\Connection,
     Doctrine\DBAL\Types;
 
@@ -103,7 +103,7 @@ abstract class AbstractPlatform
      */
     public function getRegexpExpression()
     {
-        throw DoctrineException::regularExpressionOperatorNotSupported($this);
+        throw DBALException::notSupported(__METHOD__);
     }
 
     /**
@@ -374,7 +374,7 @@ abstract class AbstractPlatform
         $values = $this->getIdentifiers($values);
 
         if (count($values) == 0) {
-            throw DoctrineException::valuesArrayForInOperatorInvalid();
+            throw \InvalidArgumentException('Values must not be empty.');
         }
         return $column . ' IN (' . implode(', ', $values) . ')';
     }
@@ -537,7 +537,7 @@ abstract class AbstractPlatform
      */
     public function getCreateSequenceSql($sequenceName, $start = 1, $allocationSize = 1)
     {
-        throw DoctrineException::createSequenceNotSupported($this);
+        throw DBALException::notSupported(__METHOD__);
     }
 
     /**
@@ -591,7 +591,7 @@ abstract class AbstractPlatform
     public function getCreateIndexSql($table, $name, array $definition)
     {
         if ( ! isset($definition['columns'])) {
-            throw DoctrineException::indexFieldsArrayRequired();
+            throw \InvalidArgumentException("Incomplete definition. 'columns' required.");
         }
 
         $type = '';
@@ -601,7 +601,7 @@ abstract class AbstractPlatform
                     $type = strtoupper($definition['type']) . ' ';
                 break;
                 default:
-                    throw DoctrineException::unknownIndexType($definition['type']);
+                    throw \InvalidArgumentException('Unknown type: ' . $definition['type']);
             }
         }
 
@@ -658,7 +658,7 @@ abstract class AbstractPlatform
      */
     public function getAlterTableSql($name, array $changes, $check = false)
     {
-        throw DoctrineException::alterTableNotSupported($this);
+        throw DBALException::notSupported(__METHOD__);
     }
 
     /**
@@ -870,12 +870,12 @@ abstract class AbstractPlatform
             if (strtolower($definition['type']) == 'unique') {
                 $type = strtoupper($definition['type']) . ' ';
             } else {
-                throw DoctrineException::unknownIndexType($definition['type']);
+                throw \InvalidArgumentException('Invalid type: ' . $definition['type']);
             }
         }
 
         if ( ! isset($definition['columns']) || ! is_array($definition['columns'])) {
-            throw DoctrineException::indexFieldsArrayRequired();
+            throw \InvalidArgumentException("Incomplete definition. 'columns' required.");
         }
 
         $query = $type . 'INDEX ' . $name;
@@ -931,7 +931,7 @@ abstract class AbstractPlatform
      */
     public function getShowDatabasesSql()
     {
-        throw DoctrineException::showDatabasesNotSupported($this);
+        throw DBALException::notSupported(__METHOD__);
     }
 
     /**
@@ -1023,7 +1023,7 @@ abstract class AbstractPlatform
                 return $upper;
             break;
             default:
-                throw DoctrineException::unknownForeignKeyReferentialAction($upper);
+                throw \InvalidArgumentException('Invalid foreign key action: ' . $upper);
         }
     }
 
@@ -1043,13 +1043,13 @@ abstract class AbstractPlatform
         $sql .= 'FOREIGN KEY (';
 
         if ( ! isset($definition['local'])) {
-            throw DoctrineException::localReferenceFieldMissing();
+            throw new \InvalidArgumentException("Incomplete definition. 'local' required.");
         }
         if ( ! isset($definition['foreign'])) {
-            throw DoctrineException::foreignReferenceFieldMissing();
+            throw new \InvalidArgumentException("Incomplete definition. 'foreign' required.");
         }
         if ( ! isset($definition['foreignTable'])) {
-            throw DoctrineException::foreignReferenceTableMissing();
+            throw new \InvalidArgumentException("Incomplete definition. 'foreignTable' required.");
         }
 
         if ( ! is_array($definition['local'])) {
@@ -1124,7 +1124,7 @@ abstract class AbstractPlatform
      */
     public function getMatchPatternExpression($pattern, $operator = null, $field = null)
     {
-        throw DoctrineException::matchPatternExpressionNotSupported($this);
+        throw DBALException::notSupported(__METHOD__);
     }
 
     /**
@@ -1231,88 +1231,88 @@ abstract class AbstractPlatform
             case Connection::TRANSACTION_SERIALIZABLE:
                 return 'SERIALIZABLE';
             default:
-                throw DoctrineException::isolationLevelNotSupported($isolation);
+                throw new \InvalidArgumentException('Invalid isolation level:' . $level);
         }
     }
 
     public function getListDatabasesSql()
     {
-        throw DoctrineException::listDatabasesNotSupported($this);
+        throw DBALException::notSupported(__METHOD__);
     }
 
     public function getListFunctionsSql()
     {
-        throw DoctrineException::listFunctionsNotSupported($this);
+        throw DBALException::notSupported(__METHOD__);
     }
 
     public function getListTriggersSql($table = null)
     {
-        throw DoctrineException::listTriggersNotSupported($this);
+        throw DBALException::notSupported(__METHOD__);
     }
 
     public function getListSequencesSql($database)
     {
-        throw DoctrineException::listSequencesNotSupported($this);
+        throw DBALException::notSupported(__METHOD__);
     }
 
     public function getListTableConstraintsSql($table)
     {
-        throw DoctrineException::listTableConstraintsNotSupported($this);
+        throw DBALException::notSupported(__METHOD__);
     }
 
     public function getListTableColumnsSql($table)
     {
-        throw DoctrineException::listTableColumnsNotSupported($this);
+        throw DBALException::notSupported(__METHOD__);
     }
 
     public function getListTablesSql()
     {
-        throw DoctrineException::listTablesNotSupported($this);
+        throw DBALException::notSupported(__METHOD__);
     }
 
     public function getListUsersSql()
     {
-        throw DoctrineException::listUsersNotSupported($this);
+        throw DBALException::notSupported(__METHOD__);
     }
 
     public function getListViewsSql()
     {
-        throw DoctrineException::listViewsNotSupported($this);
+        throw DBALException::notSupported(__METHOD__);
     }
 
     public function getListTableIndexesSql($table)
     {
-        throw DoctrineException::listTableIndexesNotSupported($this);
+        throw DBALException::notSupported(__METHOD__);
     }
 
     public function getListTableForeignKeysSql($table)
     {
-        throw DoctrineException::listTableForeignKeysNotSupported($this);
+        throw DBALException::notSupported(__METHOD__);
     }
 
     public function getCreateViewSql($name, $sql)
     {
-        throw DoctrineException::createViewNotSupported($this);
+        throw DBALException::notSupported(__METHOD__);
     }
 
     public function getDropViewSql($name)
     {
-        throw DoctrineException::dropViewNotSupported($this);
+        throw DBALException::notSupported(__METHOD__);
     }
 
     public function getDropSequenceSql($sequenceName)
     {
-        throw DoctrineException::dropSequenceNotSupported($this);
+        throw DBALException::notSupported(__METHOD__);
     }
 
     public function getSequenceNextValSql($sequenceName)
     {
-        throw DoctrineException::sequenceNotSupported($this);
+        throw DBALException::notSupported(__METHOD__);
     }
 
     public function getCreateDatabaseSql($database)
     {
-        throw DoctrineException::createDatabaseNotSupported($this);
+        throw DBALException::notSupported(__METHOD__);
     }
 
     /**
@@ -1322,7 +1322,7 @@ abstract class AbstractPlatform
      */
     public function getSetTransactionIsolationSql($level)
     {
-        throw DoctrineException::setTransactionIsolationLevelNotSupported($this);
+        throw DBALException::notSupported(__METHOD__);
     }
 
     /**
@@ -1335,7 +1335,7 @@ abstract class AbstractPlatform
      */
     public function getCharsetFieldDeclaration($charset)
     {
-        throw DoctrineException::getCharsetFieldDeclarationNotSupported($this);
+        throw DBALException::notSupported(__METHOD__);
     }
 
     /**
@@ -1347,7 +1347,7 @@ abstract class AbstractPlatform
      */
     public function getDateTimeTypeDeclarationSql(array $fieldDeclaration)
     {
-        throw DoctrineException::getDateTimeTypeDeclarationNotSupported($this);
+        throw DBALException::notSupported(__METHOD__);
     }
     
     /**
@@ -1359,7 +1359,7 @@ abstract class AbstractPlatform
      */
     public function getDateTypeDeclarationSql(array $fieldDeclaration)
     {
-        throw DoctrineException::getDateTypeDeclarationNotSupported($this);
+        throw DBALException::notSupported(__METHOD__);
     }
 
     /**

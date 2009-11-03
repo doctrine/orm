@@ -406,16 +406,18 @@ class StandardEntityPersister
      * @param array $criteria The criteria by which to load the entity.
      * @param object $entity The entity to load the data into. If not specified,
      *        a new entity is created.
+     * @param $assoc The association that connects the entity to load to another entity, if any.
+     * @param array $hints Hints for entity creation.
      * @return The loaded entity instance or NULL if the entity/the data can not be found.
      */
-    public function load(array $criteria, $entity = null, $assoc = null)
+    public function load(array $criteria, $entity = null, $assoc = null, array $hints = array())
     {
         $stmt = $this->_conn->prepare($this->_getSelectEntitiesSql($criteria, $assoc));
         $stmt->execute(array_values($criteria));
         $result = $stmt->fetch(Connection::FETCH_ASSOC);
         $stmt->closeCursor();
         
-        return $this->_createEntity($result, $entity);
+        return $this->_createEntity($result, $entity, $hints);
     }
     
     /**
@@ -557,10 +559,11 @@ class StandardEntityPersister
      * Creates or fills a single entity object from an SQL result.
      * 
      * @param $result The SQL result.
-     * @param $entity The entity object to fill.
+     * @param object $entity The entity object to fill.
+     * @param array $hints Hints for entity creation.
      * @return object The filled and managed entity object.
      */
-    private function _createEntity($result, $entity = null)
+    private function _createEntity($result, $entity = null, array $hints = array())
     {
         if ($result === false) {
             return null;
@@ -582,8 +585,6 @@ class StandardEntityPersister
                 $joinColumnValues[$column] = $value;
             }
         }
-
-        $hints = array();
         
         if ($entity !== null) {
             $hints[Query::HINT_REFRESH] = true;

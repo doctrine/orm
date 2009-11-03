@@ -6,7 +6,11 @@
 
 This section details the changes made to Doctrine 2.0-ALPHA3 to make it easier for you
 to upgrade your projects to use this version.  
-    
+
+## CLI Changes
+
+The $args variable used in the cli-config.php for configuring the Doctrine CLI has been renamed to $globalArguments.
+
 ## Proxy class changes
 
 You are now required to make supply some minimalist configuration with regards to proxy objects. That involves 2 new configuration options. First, the directory where generated proxy classes should be placed needs to be specified. Secondly, you need to configure the namespace used for proxy classes. The following snippet shows an example:

@@ -16,7 +16,7 @@ class CompanyEvent {
     private $id;
 
     /**
-     * @OneToOne(targetEntity="CompanyOrganization",cascade={"persist"})
+     * @ManyToOne(targetEntity="CompanyOrganization",cascade={"persist"})
      * @JoinColumn(name="org_id", referencedColumnName="id")
      */
      private $organization;
@@ -32,4 +32,5 @@ class CompanyEvent {
      public function setOrganization(CompanyOrganization $org) {
          $this->organization = $org;
      }
+     
 }

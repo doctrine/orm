@@ -27,4 +27,18 @@ class CompanyOrganization {
         $this->events[] = $event;
         $event->setOrganization($this);
     }
+    
+    /**
+     * @OneToOne(targetEntity="CompanyEvent", cascade={"persist"})
+     * @JoinColumn(name="main_event_id", referencedColumnName="id", nullable=true)
+     */
+    private $mainevent;
+    
+    public function getMainEvent() {
+        return $this->mainevent;
+    }
+    
+    public function setMainEvent($event) {
+        $this->mainevent = $event;
+    }
 }

@@ -104,6 +104,7 @@ class OrmFunctionalTestCase extends OrmTestCase
             $conn->executeUpdate('DELETE FROM company_persons');
             $conn->executeUpdate('DELETE FROM company_raffles');
             $conn->executeUpdate('DELETE FROM company_auctions');
+            $conn->executeUpdate('UPDATE company_organizations SET main_event_id = NULL');
             $conn->executeUpdate('DELETE FROM company_events');
             $conn->executeUpdate('DELETE FROM company_organizations');
         }

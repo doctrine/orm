@@ -588,23 +588,18 @@ class UnitOfWork implements PropertyChangedListener
                     $this->addToIdentityMap($entry);
                 }
 
-                // Collect the original data and changeset, recursing into associations.
-                $data = array();
-                $changeSet = array();
-                foreach ($targetClass->reflFields as $name => $refProp) {
-                    $data[$name] = $refProp->getValue($entry);
-                    $changeSet[$name] = array(null, $data[$name]);
-                    if (isset($targetClass->associationMappings[$name])) {
-                        if ($data[$name] !== null) {
-                            $this->_computeAssociationChanges($targetClass->associationMappings[$name], $data[$name]);
-                        }
-                    }
-                }
-
                 // NEW entities are INSERTed within the current unit of work.
                 $this->_entityInsertions[$oid] = $entry;
-                $this->_entityChangeSets[$oid] = $changeSet;
-                $this->_originalEntityData[$oid] = $data;
+                
+                $this->_computeEntityChanges($targetClass, $entry);
+                // Look for changes in associations of the entity
+                foreach ($targetClass->associationMappings as $assoc2) {
+                    $val = $targetClass->reflFields[$assoc2->sourceFieldName]->getValue($entry);
+                    if ($val !== null) {
+                        $this->_computeAssociationChanges($assoc2, $val);
+                    }
+                }
+                
             } else if ($state == self::STATE_REMOVED) {
                 throw DoctrineException::removedEntityInCollectionDetected();
             }
@@ -1675,6 +1670,7 @@ class UnitOfWork implements PropertyChangedListener
             $oid = spl_object_hash($entity);
             $overrideLocalValues = isset($hints[Query::HINT_REFRESH]);
         } else {
+            //$entity = clone $class->prototype;
             $entity = new $className;
             $oid = spl_object_hash($entity);
             $this->_entityIdentifiers[$oid] = $id;
@@ -1702,7 +1698,7 @@ class UnitOfWork implements PropertyChangedListener
             if ( ! isset($hints[Query::HINT_FORCE_PARTIAL_LOAD])) {
                 foreach ($class->associationMappings as $field => $assoc) {
                     // Check if the association is not among the fetch-joined associations already.
-                    if (isset($hints['fetched'][$className][$field])) {
+                    if (isset($hints['fetched'][$class->rootEntityName][$field])) {
                         continue;
                     }
                     
@@ -1728,16 +1724,21 @@ class UnitOfWork implements PropertyChangedListener
                                 if (isset($this->_identityMap[$targetClass->rootEntityName][$relatedIdHash])) {
                                     $newValue = $this->_identityMap[$targetClass->rootEntityName][$relatedIdHash];
                                 } else {
-                                    $newValue = $this->_em->getProxyFactory()->getProxy($assoc->targetEntityName, $associatedId);
-                                    $this->_entityIdentifiers[spl_object_hash($newValue)] = $associatedId;
-                                    $this->_identityMap[$targetClass->rootEntityName][$relatedIdHash] = $newValue;
+                                    if ($targetClass->subClasses) {
+                                        // If it might be a subtype, it can not be lazy
+                                        $newValue = $assoc->load($entity, null, $this->_em, $associatedId);
+                                    } else {
+                                        $newValue = $this->_em->getProxyFactory()->getProxy($assoc->targetEntityName, $associatedId);
+                                        $this->_entityIdentifiers[spl_object_hash($newValue)] = $associatedId;
+                                        $this->_identityMap[$targetClass->rootEntityName][$relatedIdHash] = $newValue;
+                                    }
                                 }
                                 $this->_originalEntityData[$oid][$field] = $newValue;
                                 $class->reflFields[$field]->setValue($entity, $newValue);
                             }
                         } else {
                             // Inverse side can never be lazy
-                            $targetEntity = $assoc->load($entity, new $assoc->targetEntityName, $this->_em);
+                            $targetEntity = $assoc->load($entity, null, $this->_em);
                             $class->reflFields[$field]->setValue($entity, $targetEntity);
                         }
                     } else {

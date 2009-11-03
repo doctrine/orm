@@ -70,6 +70,8 @@ final class ClassMetadata extends ClassMetadataInfo
         $this->namespace = $this->reflClass->getNamespaceName();
         $this->primaryTable['name'] = $this->reflClass->getShortName();
         $this->rootEntityName = $entityName;
+        
+        //$this->prototype = unserialize(sprintf('O:%d:"%s":0:{}', strlen($this->name), $this->name));
     }
 
     /**
@@ -366,5 +368,9 @@ final class ClassMetadata extends ClassMetadataInfo
             $this->reflFields[$field] = $this->reflClass->getProperty($field);
             $this->reflFields[$field]->setAccessible(true);
         }
+        
+        //$this->prototype = unserialize(sprintf('O:%d:"%s":0:{}', strlen($this->name), $this->name));
     }
+    
+    //public $prototype;
 }

@@ -224,6 +224,7 @@ class ClassTableInheritanceTest extends \Doctrine\Tests\OrmFunctionalTestCase
         
         $this->assertEquals(1, count($result));
         $this->assertTrue($result[0] instanceof CompanyOrganization);
+        $this->assertNull($result[0]->getMainEvent());
         
         $events = $result[0]->getEvents();
         
@@ -238,4 +239,40 @@ class ClassTableInheritanceTest extends \Doctrine\Tests\OrmFunctionalTestCase
             $this->assertTrue($events[1] instanceof CompanyAuction);
         }
     }
+
+    
+    public function testLazyLoading2()
+    {
+        $org = new CompanyOrganization;
+        $event1 = new CompanyAuction;
+        $event1->setData('auction');
+        $org->setMainEvent($event1);
+
+        $this->_em->persist($org);
+        $this->_em->flush();
+        $this->_em->clear();
+
+        $q = $this->_em->createQuery('select a from Doctrine\Tests\Models\Company\CompanyEvent a where a.id = ?1');
+        $q->setParameter(1, $event1->getId());
+
+        $result = $q->getResult();
+        $this->assertEquals(1, count($result));
+        $this->assertTrue($result[0] instanceof CompanyAuction, sprintf("Is of class %s",get_class($result[0])));
+
+        $this->_em->clear();
+
+        $q = $this->_em->createQuery('select a from Doctrine\Tests\Models\Company\CompanyOrganization a where a.id = ?1');
+        $q->setParameter(1, $org->getId());
+
+        $result = $q->getResult();
+
+        $this->assertEquals(1, count($result));
+        $this->assertTrue($result[0] instanceof CompanyOrganization);
+
+        $mainEvent = $result[0]->getMainEvent();
+        // mainEvent should have been loaded because it can't be lazy
+        $this->assertTrue($mainEvent instanceof CompanyAuction);
+        $this->assertFalse($mainEvent instanceof \Doctrine\ORM\Proxy\Proxy);
+    }
+    
 }

@@ -252,7 +252,7 @@ class Parser
             (! $this->_isNestedAnnotation && $this->_lexer->lookahead != null &&
             ! $this->_lexer->isNextToken('(') && 
             ! $this->_lexer->isNextToken('@')) ||
-            ! class_exists($name) ||
+            ! class_exists($name, false) ||
             ! is_subclass_of($name, 'Doctrine\Common\Annotations\Annotation')
         ) {
             $this->_lexer->skipUntil('@');
