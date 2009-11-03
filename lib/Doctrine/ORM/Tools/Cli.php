@@ -325,19 +325,19 @@ class Cli
     private function _initializeEntityManager(array $args, array &$taskArgs)
     {
         // Initialize EntityManager
-        $configFile = ( ! isset($args['config'])) ? './cli-config.php' : $args['config'];
-            
+        $configFile = ( ! isset($taskArgs['config'])) ? './cli-config.php' : $taskArgs['config'];
+
         if (file_exists($configFile)) {
             // Including configuration file
             require $configFile;
-                
+            
             // Check existance of EntityManager
             if ( ! isset($em)) {
                 throw new \Doctrine\Common\DoctrineException(
                     'No EntityManager created in configuration'
                 );
             }
-        
+            
             // Check for gloal argument options here
             if (isset($globalArguments)) {
                 // Merge arguments. Values specified via the CLI take preference.
