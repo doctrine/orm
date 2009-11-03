@@ -53,12 +53,6 @@ class Configuration extends \Doctrine\DBAL\Configuration
             'autoGenerateProxyClasses' => true,
             'proxyNamespace' => null
         ));
-        
-        //TODO: Move this to client code to avoid unnecessary work when a different metadata
-        // driver is used.
-        $reader = new \Doctrine\Common\Annotations\AnnotationReader(new \Doctrine\Common\Cache\ArrayCache);
-        $reader->setDefaultAnnotationNamespace('Doctrine\ORM\Mapping\\');
-        $this->_attributes['metadataDriverImpl'] = new \Doctrine\ORM\Mapping\Driver\AnnotationDriver($reader);
     }
 
     /**
@@ -130,6 +124,12 @@ class Configuration extends \Doctrine\DBAL\Configuration
      */
     public function getMetadataDriverImpl()
     {
+        if($this->_attributes['metadataDriverImpl'] == null) {
+            $reader = new \Doctrine\Common\Annotations\AnnotationReader(new \Doctrine\Common\Cache\ArrayCache);
+            $reader->setDefaultAnnotationNamespace('Doctrine\ORM\Mapping\\');
+            $this->_attributes['metadataDriverImpl'] = new \Doctrine\ORM\Mapping\Driver\AnnotationDriver($reader);
+        }
+
         return $this->_attributes['metadataDriverImpl'];
     }
 
