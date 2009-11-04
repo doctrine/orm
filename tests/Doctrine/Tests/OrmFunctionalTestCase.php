@@ -17,11 +17,20 @@ class OrmFunctionalTestCase extends OrmTestCase
     /* Shared connection when a TestCase is run alone (outside of it's functional suite) */
     private static $_sharedConn;
     
-    /** The EntityManager for this testcase. */
+    /**
+     * @var \Doctrine\ORM\EntityManager
+     */
     protected $_em;
 
-    /** The SchemaTool. */
+    /**
+     * @var \Doctrine\ORM\Tools\SchemaTool
+     */
     protected $_schemaTool;
+
+    /**
+     * @var \Doctrine\DBAL\Logging\DebugStack
+     */
+    protected $_sqlLoggerStack;
 
     /** The names of the model sets used in this testcase. */
     private $_usedModelSets = array();
@@ -73,6 +82,8 @@ class OrmFunctionalTestCase extends OrmTestCase
     protected function tearDown()
     {
         $conn = $this->sharedFixture['conn'];
+
+        $this->_sqlLoggerStack->enabled = false;
         
         if (isset($this->_usedModelSets['cms'])) {
             $conn->executeUpdate('DELETE FROM cms_users_groups');
@@ -156,6 +167,8 @@ class OrmFunctionalTestCase extends OrmTestCase
         if ($classes) {
             $this->_schemaTool->createSchema($classes);
         }
+
+        $this->_sqlLoggerStack->enabled = true;
     }
 
     /**
@@ -176,6 +189,9 @@ class OrmFunctionalTestCase extends OrmTestCase
         if (is_null(self::$_queryCacheImpl)) {
         	self::$_queryCacheImpl = new \Doctrine\Common\Cache\ArrayCache;
         }
+
+        $this->_sqlLoggerStack = new \Doctrine\DBAL\Logging\DebugStack();
+        $this->_sqlLoggerStack->enabled = false;
         
         //FIXME: two different configs! $conn and the created entity manager have
         // different configs.
@@ -184,8 +200,40 @@ class OrmFunctionalTestCase extends OrmTestCase
         $config->setQueryCacheImpl(self::$_queryCacheImpl);
         $config->setProxyDir(__DIR__ . '/Proxies');
         $config->setProxyNamespace('Doctrine\Tests\Proxies');
+        
         $conn = $this->sharedFixture['conn'];
+        $conn->getConfiguration()->setSqlLogger($this->_sqlLoggerStack);
         
         return \Doctrine\ORM\EntityManager::create($conn, $config);
+    }
+
+    protected function onNotSuccessfulTest(\Exception $e)
+    {
+        if($this->_sqlLoggerStack->queries !== null && count($this->_sqlLoggerStack->queries)) {
+            $queries = "";
+            for($i = 0; $i < count($this->_sqlLoggerStack->queries); $i++) {
+                $query = $this->_sqlLoggerStack->queries[$i];
+                $params = array_map(function($p) { return "'".$p."'"; }, $query['params']);
+                $queries .= ($i+1).". SQL: '".$query['sql']."' Params: ".implode(", ", $params).PHP_EOL;
+            }
+            
+            $trace = $e->getTrace();
+            $traceMsg = "";
+            foreach($trace AS $part) {
+                if(isset($part['file'])) {
+                    if(strpos($part['file'], "PHPUnit/") !== false) {
+                        // Beginning with PHPUnit files we don't print the trace anymore.
+                        break;
+                    }
+
+                    $traceMsg .= $part['file'].":".$part['line'].PHP_EOL;
+                }
+            }
+
+            $message = "[".get_class($e)."] ".$e->getMessage().PHP_EOL.PHP_EOL."With queries:".PHP_EOL.$queries.PHP_EOL."Trace:".PHP_EOL.$traceMsg;
+
+            throw new \Exception($message, (int)$e->getCode(), $e);
+        }
+        throw $e;
     }
 }
