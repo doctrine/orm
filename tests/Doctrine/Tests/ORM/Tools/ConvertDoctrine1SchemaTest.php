@@ -60,7 +60,7 @@ class ConvertDoctrine1SchemaTest extends \Doctrine\Tests\OrmTestCase
         $this->assertEquals(3, count($metadatas['User']->fieldMappings));
 
         $this->assertEquals('Profile', $metadatas['Profile']->associationMappings['User']->sourceEntityName);
-        $this->assertEquals('\User', $metadatas['Profile']->associationMappings['User']->targetEntityName);
+        $this->assertEquals('User', $metadatas['Profile']->associationMappings['User']->targetEntityName);
 
         $this->assertEquals('username', $metadatas['User']->primaryTable['indexes']['username']['columns'][0]);
 

@@ -59,7 +59,7 @@ class ClassMetadataFactoryTest extends \Doctrine\Tests\OrmTestCase
         $this->assertEquals(ClassMetadata::GENERATOR_TYPE_SEQUENCE, $cm1->generatorType);
     }
 
-    public function testGetMetadataGlobalNamespaceModel()
+    public function testHasGetMetadata_NamespaceSeperatorIsNotNormalized()
     {
         require_once __DIR__."/../../Models/Global/GlobalNamespaceModel.php";
 
@@ -72,11 +72,13 @@ class ClassMetadataFactoryTest extends \Doctrine\Tests\OrmTestCase
 
         $mf = $entityManager->getMetadataFactory();
         $m1 = $mf->getMetadataFor("DoctrineGlobal_Article");
+        $h1 = $mf->hasMetadataFor("DoctrineGlobal_Article");
         $h2 = $mf->hasMetadataFor("\DoctrineGlobal_Article");
         $m2 = $mf->getMetadataFor("\DoctrineGlobal_Article");
 
-        $this->assertSame($m1, $m2);
-        $this->assertTrue($h2);
+        $this->assertNotSame($m1, $m2);
+        $this->assertFalse($h2);
+        $this->assertTrue($h1);
     }
 
     protected function _createEntityManager($metadataDriver)

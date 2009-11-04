@@ -65,4 +65,52 @@ class ClassMetadataTest extends \Doctrine\Tests\OrmTestCase
         $cm->mapField(array('fieldName' => 'name', 'type' => 'string', 'length' => 50));
         $this->assertFalse($cm->isNullable('name'), "By default a field should not be nullable.");
     }
+
+    /**
+     * @group DDC-115
+     */
+    public function testMapAssocationInGlobalNamespace()
+    {
+        require_once __DIR__."/../../Models/Global/GlobalNamespaceModel.php";
+
+        $cm = new ClassMetadata('DoctrineGlobal_Article');
+        $cm->mapManyToMany(array(
+            'fieldName' => 'author',
+            'targetEntity' => 'DoctrineGlobal_User',
+            'joinTable' => array(
+                'name' => 'bar',
+                'joinColumns' => array(array('name' => 'bar_id', 'referencedColumnName' => 'id')),
+                'inverseJoinColumns' => array(array('name' => 'baz_id', 'referencedColumnName' => 'id')),
+            ),
+        ));
+
+        $this->assertEquals("DoctrineGlobal_User", $cm->associationMappings['author']->targetEntityName);
+    }
+
+    /**
+     * @group DDC-115
+     */
+    public function testSetDiscriminatorMapInGlobalNamespace()
+    {
+        require_once __DIR__."/../../Models/Global/GlobalNamespaceModel.php";
+
+        $cm = new ClassMetadata('DoctrineGlobal_User');
+        $cm->setDiscriminatorMap(array('descr' => 'DoctrineGlobal_Article', 'foo' => 'DoctrineGlobal_User'));
+
+        $this->assertEquals("DoctrineGlobal_Article", $cm->discriminatorMap['descr']);
+        $this->assertEquals("DoctrineGlobal_User", $cm->discriminatorMap['foo']);
+    }
+
+    /**
+     * @group DDC-115
+     */
+    public function testSetSubClassesInGlobalNamespace()
+    {
+        require_once __DIR__."/../../Models/Global/GlobalNamespaceModel.php";
+
+        $cm = new ClassMetadata('DoctrineGlobal_User');
+        $cm->setSubclasses(array('DoctrineGlobal_Article'));
+
+        $this->assertEquals("DoctrineGlobal_Article", $cm->subClasses[0]);
+    }
 }

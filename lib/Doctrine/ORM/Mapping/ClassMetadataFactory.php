@@ -102,10 +102,6 @@ class ClassMetadataFactory
      */
     public function getMetadataFor($className)
     {
-        if($className[0] == "\\") {
-            $className = substr($className, 1);
-        }
-
         if ( ! isset($this->_loadedMetadata[$className])) {
             $cacheKey = "$className\$CLASSMETADATA";
             if ($this->_cacheDriver) {
@@ -130,10 +126,6 @@ class ClassMetadataFactory
      */
     public function hasMetadataFor($className)
     {
-        if($className[0] == "\\") {
-            $className = substr($className, 1);
-        }
-
         return isset($this->_loadedMetadata[$className]);
     }
 
@@ -147,10 +139,6 @@ class ClassMetadataFactory
      */
     public function setMetadataFor($className, $class)
     {
-        if($className[0] == "\\") {
-            $className = substr($className, 1);
-        }
-
         $this->_loadedMetadata[$className] = $class;
     }
     

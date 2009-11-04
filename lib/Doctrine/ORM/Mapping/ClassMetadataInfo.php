@@ -1032,7 +1032,7 @@ class ClassMetadataInfo
     public function setSubclasses(array $subclasses)
     {
         foreach ($subclasses as $subclass) {
-            if (strpos($subclass, '\\') === false) {
+            if (strpos($subclass, '\\') === false && strlen($this->namespace)) {
                 $this->subClasses[] = $this->namespace . '\\' . $subclass;
             } else {
                 $this->subClasses[] = $subclass;
@@ -1203,7 +1203,7 @@ class ClassMetadataInfo
     private function _completeAssociationMapping(array $mapping)
     {
         $mapping['sourceEntity'] = $this->name;
-        if (isset($mapping['targetEntity']) && strpos($mapping['targetEntity'], '\\') === false) {
+        if (isset($mapping['targetEntity']) && strpos($mapping['targetEntity'], '\\') === false && strlen($this->namespace) > 0) {
             $mapping['targetEntity'] = $this->namespace . '\\' . $mapping['targetEntity'];
         }
         return $mapping;
@@ -1480,7 +1480,7 @@ class ClassMetadataInfo
     public function setDiscriminatorMap(array $map)
     {
         foreach ($map as $value => $className) {
-            if (strpos($className, '\\') === false) {
+            if (strpos($className, '\\') === false && strlen($this->namespace)) {
                 $className = $this->namespace . '\\' . $className;
             }
             $this->discriminatorMap[$value] = $className;
