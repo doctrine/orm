@@ -16,17 +16,10 @@ class ClassMetadataFactoryTest extends \Doctrine\Tests\OrmTestCase
 {
     public function testGetMetadataForSingleClass()
     {
-        $driverMock = new DriverMock();
-        $config = new \Doctrine\ORM\Configuration();
-        $config->setProxyDir(__DIR__ . '/../../Proxies');
-        $config->setProxyNamespace('Doctrine\Tests\Proxies');
-        $eventManager = new EventManager();
-        $conn = new ConnectionMock(array(), $driverMock, $config, $eventManager);
         $mockDriver = new MetadataDriverMock();
-        $config->setMetadataDriverImpl($mockDriver);
+        $entityManager = $this->_createEntityManager($mockDriver);
 
-        $entityManager = EntityManagerMock::create($conn, $config, $eventManager);
-
+        $conn = $entityManager->getConnection();
         $mockPlatform = $conn->getDatabasePlatform();
         $mockPlatform->setPrefersSequences(true);
         $mockPlatform->setPrefersIdentityColumns(false);
@@ -64,6 +57,40 @@ class ClassMetadataFactoryTest extends \Doctrine\Tests\OrmTestCase
         $this->assertEquals(array(), $cm1->parentClasses);
         $this->assertTrue($cm1->hasField('name'));
         $this->assertEquals(ClassMetadata::GENERATOR_TYPE_SEQUENCE, $cm1->generatorType);
+    }
+
+    public function testGetMetadataGlobalNamespaceModel()
+    {
+        require_once __DIR__."/../../Models/Global/GlobalNamespaceModel.php";
+
+        $reader = new \Doctrine\Common\Annotations\AnnotationReader(new \Doctrine\Common\Cache\ArrayCache);
+        $reader->setDefaultAnnotationNamespace('Doctrine\ORM\Mapping\\');
+        $metadataDriver = new \Doctrine\ORM\Mapping\Driver\AnnotationDriver($reader);
+        $metadataDriver->setClassDirectory(__DIR__."/../../Models/Global/");
+
+        $entityManager = $this->_createEntityManager($metadataDriver);
+
+        $mf = $entityManager->getMetadataFactory();
+        $m1 = $mf->getMetadataFor("DoctrineGlobal_Article");
+        $h2 = $mf->hasMetadataFor("\DoctrineGlobal_Article");
+        $m2 = $mf->getMetadataFor("\DoctrineGlobal_Article");
+
+        $this->assertSame($m1, $m2);
+        $this->assertTrue($h2);
+    }
+
+    protected function _createEntityManager($metadataDriver)
+    {
+        $driverMock = new DriverMock();
+        $config = new \Doctrine\ORM\Configuration();
+        $config->setProxyDir(__DIR__ . '/../../Proxies');
+        $config->setProxyNamespace('Doctrine\Tests\Proxies');
+        $eventManager = new EventManager();
+        $conn = new ConnectionMock(array(), $driverMock, $config, $eventManager);
+        $mockDriver = new MetadataDriverMock();
+        $config->setMetadataDriverImpl($metadataDriver);
+
+        return EntityManagerMock::create($conn, $config, $eventManager);
     }
 }
 
