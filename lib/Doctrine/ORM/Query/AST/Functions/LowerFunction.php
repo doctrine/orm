@@ -21,6 +21,8 @@
 
 namespace Doctrine\ORM\Query\AST\Functions;
 
+use Doctrine\ORM\Query\Lexer;
+
 /**
  * "LOWER" "(" StringPrimary ")"
  *
@@ -52,12 +54,12 @@ class LowerFunction extends FunctionNode
     {
         $lexer = $parser->getLexer();
         
-        $parser->match($lexer->lookahead['value']);
-        $parser->match('(');
+        $parser->match(Lexer::T_IDENTIFIER);
+        $parser->match(Lexer::T_OPEN_PARENTHESIS);
         
         $this->stringPrimary = $parser->StringPrimary();
         
-        $parser->match(')');
+        $parser->match(Lexer::T_CLOSE_PARENTHESIS);
     }
 }
 

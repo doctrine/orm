@@ -21,6 +21,8 @@
 
 namespace Doctrine\ORM\Query\AST\Functions;
 
+use Doctrine\ORM\Query\Lexer;
+
 /**
  * "ABS" "(" SimpleArithmeticExpression ")"
  *
@@ -52,10 +54,13 @@ class AbsFunction extends FunctionNode
     public function parse(\Doctrine\ORM\Query\Parser $parser)
     {
         $lexer = $parser->getLexer();
-        $parser->match($lexer->lookahead['value']);
-        $parser->match('(');
+        
+        $parser->match(Lexer::T_ABS);
+        $parser->match(Lexer::T_OPEN_PARENTHESIS);
+        
         $this->simpleArithmeticExpression = $parser->SimpleArithmeticExpression();
-        $parser->match(')');
+        
+        $parser->match(Lexer::T_CLOSE_PARENTHESIS);
     }
 }
 

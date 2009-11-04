@@ -21,6 +21,8 @@
 
 namespace Doctrine\ORM\Query\AST\Functions;
 
+use Doctrine\ORM\Query\Lexer;
+
 /**
  * "CONCAT" "(" StringPrimary "," StringPrimary ")"
  *
@@ -55,14 +57,15 @@ class ConcatFunction extends FunctionNode
     public function parse(\Doctrine\ORM\Query\Parser $parser)
     {
         $lexer = $parser->getLexer();
-        $parser->match($lexer->lookahead['value']);
-        $parser->match('(');
+        
+        $parser->match(Lexer::T_IDENTIFIER);
+        $parser->match(Lexer::T_OPEN_PARENTHESIS);
 
         $this->firstStringPrimary = $parser->StringPrimary();
-        $parser->match(',');
+        $parser->match(Lexer::T_COMMA);
         $this->secondStringPrimary = $parser->StringPrimary();
 
-        $parser->match(')');
+        $parser->match(Lexer::T_CLOSE_PARENTHESIS);
     }
 }
 

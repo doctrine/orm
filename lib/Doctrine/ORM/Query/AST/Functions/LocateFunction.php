@@ -21,6 +21,8 @@
 
 namespace Doctrine\ORM\Query\AST\Functions;
 
+use Doctrine\ORM\Query\Lexer;
+
 /**
  * "LOCATE" "(" StringPrimary "," StringPrimary ["," SimpleArithmeticExpression]")"
  *
@@ -59,22 +61,22 @@ class LocateFunction extends FunctionNode
     {
         $lexer = $parser->getLexer();
         
-        $parser->match($lexer->lookahead['value']);
-        $parser->match('(');
+        $parser->match(Lexer::T_IDENTIFIER);
+        $parser->match(Lexer::T_OPEN_PARENTHESIS);
         
         $this->firstStringPrimary = $parser->StringPrimary();
         
-        $parser->match(',');
+        $parser->match(Lexer::T_COMMA);
         
         $this->secondStringPrimary = $parser->StringPrimary();
         
-        if ($lexer->isNextToken(',')) {
-            $parser->match(',');
+        if ($lexer->isNextToken(Lexer::T_COMMA)) {
+            $parser->match(Lexer::T_COMMA);
             
             $this->simpleArithmeticExpression = $parser->SimpleArithmeticExpression();
         }
         
-        $parser->match(')');
+        $parser->match(Lexer::T_CLOSE_PARENTHESIS);
     }
 }
 

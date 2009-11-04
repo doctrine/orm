@@ -21,6 +21,8 @@
 
 namespace Doctrine\ORM\Query\AST\Functions;
 
+use Doctrine\ORM\Query\Lexer;
+
 /**
  * "SIZE" "(" CollectionValuedPathExpression ")"
  *
@@ -77,12 +79,12 @@ class SizeFunction extends FunctionNode
     {
         $lexer = $parser->getLexer();
         
-        $parser->match($lexer->lookahead['value']);
-        $parser->match('(');
+        $parser->match(Lexer::T_SIZE);
+        $parser->match(Lexer::T_OPEN_PARENTHESIS);
         
         $this->collectionPathExpression = $parser->CollectionValuedPathExpression();
         
-        $parser->match(')');
+        $parser->match(Lexer::T_CLOSE_PARENTHESIS);
     }
 }
 

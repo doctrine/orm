@@ -21,6 +21,8 @@
 
 namespace Doctrine\ORM\Query\AST\Functions;
 
+use Doctrine\ORM\Query\Lexer;
+
 /**
  * "SQRT" "(" SimpleArithmeticExpression ")"
  *
@@ -52,12 +54,12 @@ class SqrtFunction extends FunctionNode
     {
         $lexer = $parser->getLexer();
         
-        $parser->match($lexer->lookahead['value']);
-        $parser->match('(');
+        $parser->match(Lexer::T_IDENTIFIER);
+        $parser->match(Lexer::T_OPEN_PARENTHESIS);
         
         $this->simpleArithmeticExpression = $parser->SimpleArithmeticExpression();
         
-        $parser->match(')');
+        $parser->match(Lexer::T_CLOSE_PARENTHESIS);
     }
 }
 

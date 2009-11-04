@@ -94,7 +94,7 @@ DOCBLOCK;
     {
         $this->setExpectedException(
             'Doctrine\Common\Annotations\AnnotationException',
-            "[Syntax Error] Expected 'PlainValue', got ''' at position 10."
+            "[Syntax Error] Expected PlainValue, got ''' at position 10."
         );
 
         $parser = $this->createTestParser();
@@ -115,7 +115,7 @@ DOCBLOCK;
     {
         $this->setExpectedException(
             'Doctrine\Common\Annotations\AnnotationException',
-            "[Syntax Error] Expected 'PlainValue', got ''' at position 10 ".
+            "[Syntax Error] Expected PlainValue, got ''' at position 10 ".
             "in class \Doctrine\Tests\Common\Annotations\Name"
         );
 

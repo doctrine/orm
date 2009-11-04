@@ -62,7 +62,7 @@ class AnnotationReaderTest extends \Doctrine\Tests\DoctrineTestCase
     {
         $this->setExpectedException(
             "Doctrine\Common\Annotations\AnnotationException",
-            "[Syntax Error] Expected '', got ')' at position 18 in class ".
+            "[Syntax Error] Expected Doctrine\Common\Annotations\Lexer::T_IDENTIFIER, got ')' at position 18 in class ".
             "Doctrine\Tests\Common\Annotations\DummyClassSyntaxError."
         );
 
@@ -76,7 +76,7 @@ class AnnotationReaderTest extends \Doctrine\Tests\DoctrineTestCase
     {
         $this->setExpectedException(
             "Doctrine\Common\Annotations\AnnotationException",
-            "[Syntax Error] Expected '', got ')' at position 18 in ".
+            "[Syntax Error] Expected Doctrine\Common\Annotations\Lexer::T_IDENTIFIER, got ')' at position 18 in ".
             "method Doctrine\Tests\Common\Annotations\DummyClassMethodSyntaxError::foo()."
         );
 
@@ -91,7 +91,7 @@ class AnnotationReaderTest extends \Doctrine\Tests\DoctrineTestCase
     {
         $this->setExpectedException(
             "Doctrine\Common\Annotations\AnnotationException",
-            "[Syntax Error] Expected '', got ')' at position 18 in ".
+            "[Syntax Error] Expected Doctrine\Common\Annotations\Lexer::T_IDENTIFIER, got ')' at position 18 in ".
             "property Doctrine\Tests\Common\Annotations\DummyClassPropertySyntaxError::\$foo."
         );
 

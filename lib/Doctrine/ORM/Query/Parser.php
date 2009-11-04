@@ -237,9 +237,7 @@ class Parser
      */
     public function match($token)
     {
-        $key = (is_string($token)) ? 'value' : 'type';
-        
-        if ( ! ($this->_lexer->lookahead[$key] === $token)) {
+        if ( ! ($this->_lexer->lookahead['type'] === $token)) {
             $this->syntaxError($this->_lexer->getLiteral($token));
         }
 
@@ -334,7 +332,7 @@ class Parser
         $message  = "line 0, col {$tokenPos}: Error: ";
 
         if ($expected !== '') {
-            $message .= "Expected '{$expected}', got ";
+            $message .= "Expected {$expected}, got ";
         } else {
             $message .= 'Unexpected ';
         }
@@ -1601,9 +1599,7 @@ class Parser
                 return new AST\SimpleSelectExpression($this->StateFieldPathExpression());
             }
 
-            // TODO Fix this!!!
-            echo 'SimpleSelectExpression: '; var_dump($this->_lexer->lookahead);
-            $this->match($this->_lexer->lookahead['value']);
+            $this->match(Lexer::T_IDENTIFIER);
 
             return new AST\SimpleSelectExpression($this->_lexer->token['value']);
         }
@@ -1696,7 +1692,7 @@ class Parser
     {
         $condPrimary = new AST\ConditionalPrimary;
         
-        if ($this->_lexer->isNextToken('(')) {
+        if ($this->_lexer->isNextToken(Lexer::T_OPEN_PARENTHESIS)) {
             // Peek beyond the matching closing paranthesis ')'
             $numUnmatched = 1;
             $peek = $this->_lexer->peek();
@@ -2023,6 +2019,7 @@ class Parser
         if ($this->_lexer->isNextToken(Lexer::T_OPEN_PARENTHESIS)) {
             $this->match(Lexer::T_OPEN_PARENTHESIS);
             $expr = $this->SimpleArithmeticExpression();
+            
             $this->match(Lexer::T_CLOSE_PARENTHESIS);
 
             return $expr;

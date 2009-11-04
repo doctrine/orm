@@ -22,6 +22,7 @@ class LanguageRecognitionTest extends \Doctrine\Tests\OrmTestCase
             if ($debug) {
                 echo $e->getTraceAsString() . PHP_EOL;
             }
+            
             $this->fail($e->getMessage());
         }
     }

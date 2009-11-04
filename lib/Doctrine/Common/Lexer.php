@@ -110,8 +110,7 @@ abstract class Lexer
      */
     public function isNextToken($token)
     {
-        $la = $this->lookahead;
-        return ($la['type'] === $token || $la['value'] === $token);
+        return $this->lookahead['type'] === $token;
     }
 
     /**
@@ -138,11 +137,11 @@ abstract class Lexer
     /**
      * Tells the lexer to skip input tokens until it sees a token with the given value.
      * 
-     * @param $value The value to skip until.
+     * @param $type The token type to skip until.
      */
-    public function skipUntil($value)
+    public function skipUntil($type)
     {
-        while ($this->lookahead !== null && $this->lookahead['value'] !== $value) {
+        while ($this->lookahead !== null && $this->lookahead['type'] !== $type) {
             $this->moveNext();
         }
     }
@@ -212,6 +211,27 @@ abstract class Lexer
                 'position' => $match[1],
             );
         }
+    }
+    
+    /**
+     * Gets the literal for a given token.
+     *
+     * @param integer $token
+     * @return string
+     */
+    public function getLiteral($token)
+    {
+        $className = get_class($this);
+        $reflClass = new \ReflectionClass($className);
+        $constants = $reflClass->getConstants();
+        
+        foreach ($constants as $name => $value) {
+            if ($value === $token) {
+                return $className . '::' . $name;
+            }
+        }
+        
+        return $token;
     }
     
     /**

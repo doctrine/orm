@@ -21,6 +21,8 @@
 
 namespace Doctrine\ORM\Query\AST\Functions;
 
+use Doctrine\ORM\Query\Lexer;
+
 /**
  * "SUBSTRING" "(" StringPrimary "," SimpleArithmeticExpression "," SimpleArithmeticExpression ")"
  *
@@ -60,19 +62,20 @@ class SubstringFunction extends FunctionNode
     {
         $lexer = $parser->getLexer();
         
-        $parser->match($lexer->lookahead['value']);
-        $parser->match('(');
+        $parser->match(Lexer::T_IDENTIFIER);
+        $parser->match(Lexer::T_OPEN_PARENTHESIS);
 
         $this->stringPrimary = $parser->StringPrimary();
         
-        $parser->match(',');
+        $parser->match(Lexer::T_COMMA);
         
         $this->firstSimpleArithmeticExpression = $parser->SimpleArithmeticExpression();
-        $parser->match(',');
+        
+        $parser->match(Lexer::T_COMMA);
         
         $this->secondSimpleArithmeticExpression = $parser->SimpleArithmeticExpression();
 
-        $parser->match(')');
+        $parser->match(Lexer::T_CLOSE_PARENTHESIS);
     }
 }
 

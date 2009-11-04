@@ -52,6 +52,10 @@ class DeleteSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
             parent::assertEquals($sqlToBeConfirmed, $query->getSql());
             $query->free();
         } catch (\Exception $e) {
+            if ($debug) {
+                echo $e->getTraceAsString() . PHP_EOL;
+            }
+            
             $this->fail($e->getMessage());
         }
     }

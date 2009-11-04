@@ -71,17 +71,17 @@ class TrimFunction extends FunctionNode
     {
         $lexer = $parser->getLexer();
         
-        $parser->match($lexer->lookahead['value']);
-        $parser->match('(');
+        $parser->match(Lexer::T_IDENTIFIER);
+        $parser->match(Lexer::T_OPEN_PARENTHESIS);
 
         if (strcasecmp('leading', $lexer->lookahead['value']) === 0) {
-            $parser->match($lexer->lookahead['value']);
+            $parser->match(Lexer::T_LEADING);
             $this->leading = true;
         } else if (strcasecmp('trailing', $lexer->lookahead['value']) === 0) {
-            $parser->match($lexer->lookahead['value']);
+            $parser->match(Lexer::T_TRAILING);
             $this->trailing = true;
         } else if (strcasecmp('both', $lexer->lookahead['value']) === 0) {
-            $parser->match($lexer->lookahead['value']);
+            $parser->match(Lexer::T_BOTH);
             $this->both = true;
         }
 
@@ -96,7 +96,7 @@ class TrimFunction extends FunctionNode
 
         $this->stringPrimary = $parser->StringPrimary();
         
-        $parser->match(')');
+        $parser->match(Lexer::T_CLOSE_PARENTHESIS);
     }
     
 }

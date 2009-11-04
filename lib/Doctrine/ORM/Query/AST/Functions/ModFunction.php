@@ -21,6 +21,8 @@
 
 namespace Doctrine\ORM\Query\AST\Functions;
 
+use Doctrine\ORM\Query\Lexer;
+
 /**
  * "MOD" "(" SimpleArithmeticExpression "," SimpleArithmeticExpression ")"
  *
@@ -57,16 +59,16 @@ class ModFunction extends FunctionNode
     {
         $lexer = $parser->getLexer();
         
-        $parser->match($lexer->lookahead['value']);
-        $parser->match('(');
+        $parser->match(Lexer::T_MOD);
+        $parser->match(Lexer::T_OPEN_PARENTHESIS);
         
         $this->firstSimpleArithmeticExpression = $parser->SimpleArithmeticExpression();
         
-        $parser->match(',');
+        $parser->match(Lexer::T_COMMA);
         
         $this->secondSimpleArithmeticExpression = $parser->SimpleArithmeticExpression();
         
-        $parser->match(')');
+        $parser->match(Lexer::T_CLOSE_PARENTHESIS);
     }
 }
 

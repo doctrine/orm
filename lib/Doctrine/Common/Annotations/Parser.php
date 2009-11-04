@@ -130,7 +130,7 @@ class Parser
         $this->_lexer->setInput(trim($input, '* /'));
         $this->_lexer->moveNext();
         
-        if ($this->_lexer->isNextToken('@')) {
+        if ($this->_lexer->isNextToken(Lexer::T_AT)) {
             return $this->Annotations();
         }
         
@@ -146,11 +146,8 @@ class Parser
      */
     public function match($token)
     {
-        $key = (is_string($token)) ? 'value' : 'type';
-        
-        if ( ! ($this->_lexer->lookahead[$key] === $token)) {
-            $token = (is_string($token)) ? $token : $token['value'];
-            $this->syntaxError($token);
+        if ( ! ($this->_lexer->lookahead['type'] === $token)) {
+            $this->syntaxError($this->_lexer->getLiteral($token));
         }
 
         $this->_lexer->moveNext();
@@ -169,7 +166,7 @@ class Parser
             $token = $this->_lexer->lookahead;
         }
         
-        $message =  "Expected '{$expected}', got ";
+        $message =  "Expected {$expected}, got ";
         
         if ($this->_lexer->lookahead === null) {
             $message .= 'end of string';
@@ -201,7 +198,7 @@ class Parser
             $annotations[get_class($annot)] = $annot;
         }
         
-        while ($this->_lexer->lookahead !== null && $this->_lexer->lookahead['value'] == '@') {
+        while ($this->_lexer->lookahead !== null && $this->_lexer->isNextToken(Lexer::T_AT)) {
             $this->_isNestedAnnotation = false;
                 
             $annot = $this->Annotation();
@@ -228,12 +225,12 @@ class Parser
         $values = array();
         $nameParts = array();
         
-        $this->match('@');
+        $this->match(Lexer::T_AT);
         $this->match(Lexer::T_IDENTIFIER);
         $nameParts[] = $this->_lexer->token['value'];
         
-        while ($this->_lexer->isNextToken('\\')) {
-            $this->match('\\');
+        while ($this->_lexer->isNextToken(Lexer::T_NAMESPACE_SEPARATOR)) {
+            $this->match(Lexer::T_NAMESPACE_SEPARATOR);
             $this->match(Lexer::T_IDENTIFIER);
             $nameParts[] = $this->_lexer->token['value'];
         }
@@ -250,12 +247,12 @@ class Parser
         // If it really an annotation class?
         if (
             (! $this->_isNestedAnnotation && $this->_lexer->lookahead != null &&
-            ! $this->_lexer->isNextToken('(') && 
-            ! $this->_lexer->isNextToken('@')) ||
+            ! $this->_lexer->isNextToken(Lexer::T_OPEN_PARENTHESIS) && 
+            ! $this->_lexer->isNextToken(Lexer::T_AT)) ||
             ! class_exists($name, false) ||
             ! is_subclass_of($name, 'Doctrine\Common\Annotations\Annotation')
         ) {
-            $this->_lexer->skipUntil('@');
+            $this->_lexer->skipUntil(Lexer::T_AT);
             
             return false;
         }
@@ -263,14 +260,14 @@ class Parser
         // Next will be nested
         $this->_isNestedAnnotation = true;
 
-        if ($this->_lexer->isNextToken('(')) {
-            $this->match('(');
+        if ($this->_lexer->isNextToken(Lexer::T_OPEN_PARENTHESIS)) {
+            $this->match(Lexer::T_OPEN_PARENTHESIS);
             
-            if ( ! $this->_lexer->isNextToken(')')) {
+            if ( ! $this->_lexer->isNextToken(Lexer::T_CLOSE_PARENTHESIS)) {
                 $values = $this->Values();
             }
             
-            $this->match(')');
+            $this->match(Lexer::T_CLOSE_PARENTHESIS);
         }
 
         return new $name($values);
@@ -286,19 +283,19 @@ class Parser
         $values = array();
         
         // Handle the case of a single array as value, i.e. @Foo({....})
-        if ($this->_lexer->isNextToken('{')) {
+        if ($this->_lexer->isNextToken(Lexer::T_OPEN_CURLY_BRACES)) {
             $values['value'] = $this->Value();
             return $values;
         }
         
         $values[] = $this->Value();
         
-        while ($this->_lexer->isNextToken(',')) {
-            $this->match(',');
+        while ($this->_lexer->isNextToken(Lexer::T_COMMA)) {
+            $this->match(Lexer::T_COMMA);
             $value = $this->Value();
             
             if ( ! is_array($value)) {
-                $this->syntaxError('FieldAssignment', $value);
+                $this->syntaxError('Value', $value);
             }
             
             $values[] = $value;
@@ -341,11 +338,11 @@ class Parser
      */
     public function PlainValue()
     {
-        if ($this->_lexer->lookahead['value'] == '{') {
+        if ($this->_lexer->isNextToken(Lexer::T_OPEN_CURLY_BRACES)) {
             return $this->Arrayx();
         }
         
-        if ($this->_lexer->lookahead['value'] == '@') {
+        if ($this->_lexer->isNextToken(Lexer::T_AT)) {
             return $this->Annotation();
         }
 
@@ -385,7 +382,7 @@ class Parser
     {
         $this->match(Lexer::T_IDENTIFIER);
         $fieldName = $this->_lexer->token['value'];
-        $this->match('=');
+        $this->match(Lexer::T_EQUALS);
         
         return array($fieldName => $this->PlainValue());
     }
@@ -399,15 +396,15 @@ class Parser
     {
         $array = $values = array();
         
-        $this->match('{');
+        $this->match(Lexer::T_OPEN_CURLY_BRACES);
         $values[] = $this->ArrayEntry();
         
-        while ($this->_lexer->isNextToken(',')) {
-            $this->match(',');
+        while ($this->_lexer->isNextToken(Lexer::T_COMMA)) {
+            $this->match(Lexer::T_COMMA);
             $values[] = $this->ArrayEntry();
         }
         
-        $this->match('}');
+        $this->match(Lexer::T_CLOSE_CURLY_BRACES);
         
         foreach ($values as $value) {
             $key = key($value);
@@ -434,14 +431,12 @@ class Parser
         $peek = $this->_lexer->glimpse();
         
         if ($peek['value'] == '=') {
-            if ($this->_lexer->lookahead['type'] === Lexer::T_INTEGER) {
-                $this->match(Lexer::T_INTEGER);
-            } else {
-                $this->match(Lexer::T_STRING);
-            }
+            $this->match(
+                $this->_lexer->isNextToken(Lexer::T_INTEGER) ? Lexer::T_INTEGER : Lexer::T_STRING
+            );
             
             $key = $this->_lexer->token['value'];
-            $this->match('=');
+            $this->match(Lexer::T_EQUALS);
             
             return array($key => $this->PlainValue());
         }

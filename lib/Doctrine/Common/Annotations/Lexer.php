@@ -34,13 +34,22 @@ namespace Doctrine\Common\Annotations;
  */
 class Lexer extends \Doctrine\Common\Lexer
 {
-    const T_NONE = 1;
-    const T_FLOAT = 2;
-    const T_INTEGER = 3;
-    const T_STRING = 4;
-    const T_IDENTIFIER = 5;
-    const T_TRUE = 6;
-    const T_FALSE = 7;
+    const T_NONE                = 1;
+    const T_IDENTIFIER          = 2;
+    const T_INTEGER             = 3;
+    const T_STRING              = 4;
+    const T_FLOAT               = 5;
+    
+    const T_AT                  = 101;
+    const T_CLOSE_CURLY_BRACES  = 102;
+    const T_CLOSE_PARENTHESIS   = 103;
+    const T_COMMA               = 104;
+    const T_EQUALS              = 105;
+    const T_FALSE               = 106;
+    const T_NAMESPACE_SEPARATOR = 107;
+    const T_OPEN_CURLY_BRACES   = 108;
+    const T_OPEN_PARENTHESIS    = 109;
+    const T_TRUE                = 110;
     
     /**
      * @inheritdoc
@@ -70,21 +79,34 @@ class Lexer extends \Doctrine\Common\Lexer
         $type = self::T_NONE;
         $newVal = $this->_getNumeric($value);
         
+        // Checking numeric value
         if ($newVal !== false){
             $value = $newVal;
             
-            if (strpos($value, '.') !== false || stripos($value, 'e') !== false) {
-                $type = self::T_FLOAT;
-            } else {
-                $type = self::T_INTEGER;
-            }
+            return (strpos($value, '.') !== false || stripos($value, 'e') !== false)
+                ? self::T_FLOAT : self::T_INTEGER;
         }
         
         if ($value[0] === '"') {
-            $type = self::T_STRING;
             $value = str_replace('""', '"', substr($value, 1, strlen($value) - 2));
+            
+            return self::T_STRING;
         } else if (ctype_alpha($value[0]) || $value[0] === '_') {
-            $type = $this->_checkLiteral($value);
+            return $this->_checkLiteral($value);
+        } else {
+            switch ($value) {
+                case '@': return self::T_AT;
+                case ',': return self::T_COMMA;
+                case '(': return self::T_OPEN_PARENTHESIS;
+                case ')': return self::T_CLOSE_PARENTHESIS;
+                case '{': return self::T_OPEN_CURLY_BRACES;
+                case '}': return self::T_CLOSE_CURLY_BRACES;
+                case '=': return self::T_EQUALS;
+                case '\\': return self::T_NAMESPACE_SEPARATOR;
+                default:
+                    // Do nothing
+                    break;
+            }
         }
 
         return $type;

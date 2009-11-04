@@ -48,59 +48,62 @@ class Lexer extends \Doctrine\Common\Lexer
     const T_ASC                 = 105;
     const T_AVG                 = 106;
     const T_BETWEEN             = 107;
-    const T_BY                  = 108;
-    const T_CLOSE_PARENTHESIS   = 109;
-    const T_COMMA               = 110;
-    const T_COUNT               = 111;
-    const T_DELETE              = 112;
-    const T_DESC                = 113;
-    const T_DISTINCT            = 114;
-    const T_DIVIDE              = 115;
-    const T_DOT                 = 116;
-    const T_EMPTY               = 117;
-    const T_EQUALS              = 118;
-    const T_ESCAPE              = 119;
-    const T_EXISTS              = 120;
-    const T_FALSE               = 121;
-    const T_FROM                = 122;
-    const T_GREATER_THAN        = 123;
-    const T_GROUP               = 124;
-    const T_HAVING              = 125;
-    const T_IN                  = 126;
-    const T_INDEX               = 127;
-    const T_INNER               = 128;
-    const T_IS                  = 129;
-    const T_JOIN                = 130;
-    const T_LEFT                = 131;
-    const T_LIKE                = 132;
-    const T_LIMIT               = 133;
-    const T_LOWER_THAN          = 134;
-    const T_MAX                 = 135;
-    const T_MEMBER              = 136;
-    const T_MIN                 = 137;
-    const T_MINUS               = 138;
-    const T_MOD                 = 139;
-    const T_MULTIPLY            = 140;
-    const T_NEGATE              = 141;
-    const T_NOT                 = 142;
-    const T_NULL                = 143;
-    const T_OF                  = 144;
-    const T_OFFSET              = 145;
-    const T_ON                  = 146;
-    const T_OPEN_PARENTHESIS    = 147;
-    const T_OR                  = 148;
-    const T_ORDER               = 149;
-    const T_OUTER               = 150;
-    const T_PLUS                = 151;
-    const T_SELECT              = 152;
-    const T_SET                 = 153;
-    const T_SIZE                = 154;
-    const T_SOME                = 155;
-    const T_SUM                 = 156;
-    const T_TRUE                = 157;
-    const T_UPDATE              = 158;
-    const T_WHERE               = 159;
-    const T_WITH                = 160;
+    const T_BOTH                = 108;
+    const T_BY                  = 109;
+    const T_CLOSE_PARENTHESIS   = 110;
+    const T_COMMA               = 111;
+    const T_COUNT               = 112;
+    const T_DELETE              = 113;
+    const T_DESC                = 114;
+    const T_DISTINCT            = 115;
+    const T_DIVIDE              = 116;
+    const T_DOT                 = 117;
+    const T_EMPTY               = 118;
+    const T_EQUALS              = 119;
+    const T_ESCAPE              = 120;
+    const T_EXISTS              = 121;
+    const T_FALSE               = 122;
+    const T_FROM                = 123;
+    const T_GREATER_THAN        = 124;
+    const T_GROUP               = 125;
+    const T_HAVING              = 126;
+    const T_IN                  = 127;
+    const T_INDEX               = 128;
+    const T_INNER               = 129;
+    const T_IS                  = 130;
+    const T_JOIN                = 131;
+    const T_LEADING             = 132;
+    const T_LEFT                = 133;
+    const T_LIKE                = 134;
+    const T_LIMIT               = 135;
+    const T_LOWER_THAN          = 136;
+    const T_MAX                 = 137;
+    const T_MEMBER              = 138;
+    const T_MIN                 = 139;
+    const T_MINUS               = 140;
+    const T_MOD                 = 141;
+    const T_MULTIPLY            = 142;
+    const T_NEGATE              = 143;
+    const T_NOT                 = 144;
+    const T_NULL                = 145;
+    const T_OF                  = 146;
+    const T_OFFSET              = 147;
+    const T_ON                  = 148;
+    const T_OPEN_PARENTHESIS    = 149;
+    const T_OR                  = 150;
+    const T_ORDER               = 151;
+    const T_OUTER               = 152;
+    const T_PLUS                = 153;
+    const T_SELECT              = 154;
+    const T_SET                 = 155;
+    const T_SIZE                = 156;
+    const T_SOME                = 157;
+    const T_SUM                 = 158;
+    const T_TRAILING            = 159;
+    const T_TRUE                = 160;
+    const T_UPDATE              = 161;
+    const T_WHERE               = 162;
+    const T_WITH                = 163;
 
     private $_keywordsTable;
 
@@ -216,69 +219,5 @@ class Lexer extends \Doctrine\Common\Lexer
         }
 
         return self::T_IDENTIFIER;
-    }
-
-    /**
-     * Gets the literal for a given token.
-     *
-     * @param mixed $token
-     * @return string
-     */
-    public function getLiteral($token)
-    {
-        if ( ! $this->_keywordsTable) {
-            $this->_keywordsTable = array(
-                self::T_ALL      => "ALL",
-                self::T_AND      => "AND",
-                self::T_ANY      => "ANY",
-                self::T_AS       => "AS",
-                self::T_ASC      => "ASC",
-                self::T_AVG      => "AVG",
-                self::T_BETWEEN  => "BETWEEN",
-                self::T_BY       => "BY",
-                self::T_COMMA    => ",",
-                self::T_COUNT    => "COUNT",
-                self::T_DELETE   => "DELETE",
-                self::T_DESC     => "DESC",
-                self::T_DISTINCT => "DISTINCT",
-                self::T_DOT      => ".",
-                self::T_EMPTY    => "EMPTY",
-                self::T_ESCAPE   => "ESCAPE",
-                self::T_EXISTS   => "EXISTS",
-                self::T_FALSE    => "FALSE",
-                self::T_FROM     => "FROM",
-                self::T_GROUP    => "GROUP",
-                self::T_HAVING   => "HAVING",
-                self::T_IN       => "IN",
-                self::T_INDEX    => "INDEX",
-                self::T_INNER    => "INNER",
-                self::T_IS       => "IS",
-                self::T_JOIN     => "JOIN",
-                self::T_LEFT     => "LEFT",
-                self::T_LIKE     => "LIKE",
-                self::T_LIMIT    => "LIMIT",
-                self::T_MAX      => "MAX",
-                self::T_MIN      => "MIN",
-                self::T_MOD      => "MOD",
-                self::T_NOT      => "NOT",
-                self::T_NULL     => "NULL",
-                self::T_OFFSET   => "OFFSET",
-                self::T_ON       => "ON",
-                self::T_OR       => "OR",
-                self::T_ORDER    => "ORDER",
-                self::T_OUTER    => "OUTER",
-                self::T_SELECT   => "SELECT",
-                self::T_SET      => "SET",
-                self::T_SIZE     => "SIZE",
-                self::T_SOME     => "SOME",
-                self::T_SUM      => "SUM",
-                self::T_TRUE     => "TRUE",
-                self::T_UPDATE   => "UPDATE",
-                self::T_WHERE    => "WHERE",
-                self::T_WITH     => "WITH");
-        }
-        return isset($this->_keywordsTable[$token])
-                ? $this->_keywordsTable[$token]
-                : (is_string($token) ? $token : '');
     }
 }
