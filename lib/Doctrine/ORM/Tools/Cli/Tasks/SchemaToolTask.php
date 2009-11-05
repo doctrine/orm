@@ -60,8 +60,9 @@ class SchemaToolTask extends AbstractTask
                 ->writeln("\t\tCreates the schema in EntityManager (create tables on Database)")
                 ->writeln("\t\t\tIf defined, --drop and --update can not be requested on same task")
                 ->write(PHP_EOL)
-                ->write('--drop', 'REQ_ARG')
+                ->write('--drop=<metadata|database>', 'REQ_ARG')
                 ->writeln("\t\t\tDrops the schema of EntityManager (drop tables on Database)")
+                ->writeln("\t\t\tDefaults to 'metadata' if only --drop is specified.")
                 ->writeln("\t\t\tIf defined, --create and --update can not be requested on same task")
                 ->write(PHP_EOL)
                 ->write('--update', 'REQ_ARG')
@@ -90,7 +91,7 @@ class SchemaToolTask extends AbstractTask
     private function _writeSynopsis($printer)
     {
         $printer->write('schema-tool', 'KEYWORD')
-                ->write(' (--create | --drop | --update | --re-create)', 'REQ_ARG')
+                ->write(' (--create | --drop=<metadata|database> | --update | --re-create)', 'REQ_ARG')
                 ->writeln(' [--dump-sql] [--class-dir=<path>]', 'OPT_ARG');
     }
     
@@ -151,10 +152,10 @@ class SchemaToolTask extends AbstractTask
         $em = $this->getEntityManager();
         $cmf = $em->getMetadataFactory();
         $driver = $em->getConfiguration()->getMetadataDriverImpl();
-        
+
         $classes = array();
         $preloadedClasses = $driver->preload(true);
-        
+
         foreach ($preloadedClasses as $className) {
             $classes[] = $cmf->getMetadataFor($className);
         }
@@ -169,15 +170,20 @@ class SchemaToolTask extends AbstractTask
         $tool = new SchemaTool($em);
         
         if ($isDrop) {
+            $dropMode = $args['drop'];
+            if(!in_array($dropMode, array('metadata', 'database'))) {
+                $dropMode = 'metadata';
+            }
+
             if (isset($args['dump-sql'])) {
-                foreach ($tool->getDropSchemaSql($classes) as $sql) {
+                foreach ($tool->getDropSchemaSql($classes, $dropMode) as $sql) {
                     $printer->writeln($sql);
                 }
             } else {
                 $printer->writeln('Dropping database schema...', 'INFO');
                 
                 try {
-                    $tool->dropSchema($classes);
+                    $tool->dropSchema($classes, $dropMode);
                     $printer->writeln('Database schema dropped successfully.', 'INFO');
                 } catch (\Exception $ex) {
                     throw new DoctrineException($ex);

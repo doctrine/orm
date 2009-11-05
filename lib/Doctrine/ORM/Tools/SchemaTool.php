@@ -41,6 +41,15 @@ use Doctrine\DBAL\Types\Type,
 class SchemaTool
 {
     /**
+     * @var string
+     */
+    const DROP_METADATA = "metadata";
+    /**
+     * @var string
+     */
+    const DROP_DATABASE = "database";
+
+    /**
      * @var \Doctrine\ORM\EntityManager
      */
     private $_em;
@@ -417,13 +426,17 @@ class SchemaTool
     
     /**
      * Drops the database schema for the given classes.
-     * 
+     *
+     * In any way when an exception is thrown it is supressed since drop was
+     * issued for all classes of the schema and some probably just don't exist.
+     *
      * @param array $classes
+     * @param string $mode
      * @return void
      */
-    public function dropSchema(array $classes)
+    public function dropSchema(array $classes, $mode=self::DROP_METADATA)
     {
-        $dropSchemaSql = $this->getDropSchemaSql($classes);
+        $dropSchemaSql = $this->getDropSchemaSql($classes, $mode);
         $conn = $this->_em->getConnection();
         
         foreach ($dropSchemaSql as $sql) {
@@ -435,35 +448,84 @@ class SchemaTool
      * Gets the SQL needed to drop the database schema for the given classes.
      * 
      * @param array $classes
+     * @param string $mode
      * @return array
      */
-    public function getDropSchemaSql(array $classes)
+    public function getDropSchemaSql(array $classes, $mode=self::DROP_METADATA)
     {
+        if($mode == self::DROP_METADATA) {
+            $tables = $this->_getDropSchemaTablesMetadataMode($classes);
+        } else if($mode == self::DROP_DATABASE) {
+            $tables = $this->_getDropSchemaTablesDatabaseMode($classes);
+        } else {
+            throw new \Doctrine\ORM\ORMException("Given Drop Schema Mode is not supported.");
+        }
+
+        $sm = $this->_em->getConnection()->getSchemaManager();
+        /* @var $sm \Doctrine\DBAL\Schema\AbstractSchemaManager */
+        $allTables = $sm->listTables();
+        
         $sql = array();
+        foreach($tables AS $tableName) {
+            if(in_array($tableName, $allTables)) {
+                $sql[] = $this->_platform->getDropTableSql($tableName);
+            }
+        }
+
+        return $sql;
+    }
+
+    /**
+     * Drop all tables of the database connection.
+     * 
+     * @return array
+     */
+    private function _getDropSchemaTablesDatabaseMode($classes)
+    {
+        $conn = $this->_em->getConnection();
+        
+        $sm = $conn->getSchemaManager();
+        /* @var $sm \Doctrine\DBAL\Schema\AbstractSchemaManager */
+
+        $allTables = $sm->listTables();
+
+        $orderedTables = $this->_getDropSchemaTablesMetadataMode($classes);
+        foreach($allTables AS $tableName) {
+            if(!in_array($tableName, $orderedTables)) {
+                $orderedTables[] = $tableName;
+            }
+        }
+
+        return $orderedTables;
+    }
+
+    private function _getDropSchemaTablesMetadataMode(array $classes)
+    {
+        $orderedTables = array();
         
         $commitOrder = $this->_getCommitOrder($classes);
         $associationTables = $this->_getAssociationTables($commitOrder);
-        
+
         // Drop association tables first
         foreach ($associationTables as $associationTable) {
-            $sql[] = $this->_platform->getDropTableSql($associationTable);
+            $orderedTables[] = $associationTable;
         }
 
         // Drop tables in reverse commit order
         for ($i = count($commitOrder) - 1; $i >= 0; --$i) {
             $class = $commitOrder[$i];
-            
+
             if (($class->isInheritanceTypeSingleTable() && $class->name != $class->rootEntityName)
                 || $class->isMappedSuperclass) {
                 continue;
             }
-            
-            $sql[] = $this->_platform->getDropTableSql($class->getTableName());
+
+            $orderedTables[] = $class->getTableName();
         }
-        
+
         //TODO: Drop other schema elements, like sequences etc.
-        
-        return $sql;
+
+        return $orderedTables;
     }
     
     /**
@@ -713,7 +775,7 @@ class SchemaTool
     private function _getCommitOrder(array $classes)
     {
         $calc = new CommitOrderCalculator;
-
+        
         // Calculate dependencies
         foreach ($classes as $class) {
             $calc->addClass($class);
