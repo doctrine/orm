@@ -195,4 +195,14 @@ class MySqlPlatformTest extends \Doctrine\Tests\DbalTestCase
         $sql = $this->_platform->modifyLimitQuery('SELECT * FROM user', 10);
         $this->assertEquals('SELECT * FROM user LIMIT 10', $sql);
     }
+
+    /**
+     * @group DDC-118
+     */
+    public function testGetDateTimeTypeDeclarationSql()
+    {
+        $this->assertEquals("DATETIME", $this->_platform->getDateTimeTypeDeclarationSql(array('version' => false)));
+        $this->assertEquals("TIMESTAMP", $this->_platform->getDateTimeTypeDeclarationSql(array('version' => true)));
+        $this->assertEquals("DATETIME", $this->_platform->getDateTimeTypeDeclarationSql(array()));
+    }
 }

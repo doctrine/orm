@@ -279,7 +279,7 @@ class MySqlPlatform extends AbstractPlatform
      */
     public function getDateTimeTypeDeclarationSql(array $fieldDeclaration)
     {
-        if (isset($fieldDeclaration['version'])) {
+        if (isset($fieldDeclaration['version']) && $fieldDeclaration['version'] == true) {
             return 'TIMESTAMP';
         } else {
             return 'DATETIME';
