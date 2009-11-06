@@ -29,6 +29,7 @@ use Doctrine\ORM\ORMException;
  *
  * @since 2.0
  * @author Roman Borschel <roman@code-factory.org>
+ * @todo Rename: AssignedGenerator?
  */
 class Assigned extends AbstractIdGenerator
 {
@@ -42,27 +43,25 @@ class Assigned extends AbstractIdGenerator
     public function generate(EntityManager $em, $entity)
     {
         $class = $em->getClassMetadata(get_class($entity));
-        $identifier = null;
-        if ($class->isIdentifierComposite()) {
-            $identifier = array();
+        $identifier = array();
+        if ($class->isIdentifierComposite) {
             $idFields = $class->getIdentifierFieldNames();
             foreach ($idFields as $idField) {
-                $identifier[] =
                 $value = $class->getReflectionProperty($idField)->getValue($entity);
                 if (isset($value)) {
                     $identifier[] = $value;
+                } else {
+                    throw ORMException::entityMissingAssignedId($entity);
                 }
             }
         } else {
             $value = $class->getReflectionProperty($class->getSingleIdentifierFieldName())
                     ->getValue($entity);
             if (isset($value)) {
-                $identifier = array($value);
+                $identifier[] = $value;
+            } else {
+                throw ORMException::entityMissingAssignedId($entity);
             }
-        }
-
-        if ( ! $identifier) {
-            throw ORMException::entityMissingAssignedId($entity);
         }
         
         return $identifier;

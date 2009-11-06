@@ -20,6 +20,7 @@ class AllTests
         $suite = new \Doctrine\Tests\DoctrineTestSuite('Doctrine Orm Id');
 
         $suite->addTestSuite('Doctrine\Tests\ORM\Id\SequenceGeneratorTest');
+        $suite->addTestSuite('Doctrine\Tests\ORM\Id\AssignedIdTest');
 
         return $suite;
     }
