@@ -368,7 +368,7 @@ class SchemaTool
                     $constraint1['local'][] = $column['name'];
                     $constraint1['foreign'][] = $joinColumn['referencedColumnName'];
 
-                    if($joinColumn['unique'] == true) {
+                    if(isset($joinColumn['unique']) && $joinColumn['unique'] == true) {
                         $joinTableOptions['uniqueConstraints'][] = array($joinColumn['name']);
                     }
                     
