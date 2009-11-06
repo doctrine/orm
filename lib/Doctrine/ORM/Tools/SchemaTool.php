@@ -401,7 +401,7 @@ class SchemaTool
                     $constraint2['local'][] = $inverseJoinColumn['name'];
                     $constraint2['foreign'][] = $inverseJoinColumn['referencedColumnName'];
 
-                    if($inverseJoinColumn['unique'] == true) {
+                    if(isset($inverseJoinColumn['unique']) && $inverseJoinColumn['unique'] == true) {
                         $joinTableOptions['uniqueConstraints'][] = array($inverseJoinColumn['name']);
                     }
                     
