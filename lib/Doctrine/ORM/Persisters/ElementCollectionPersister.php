@@ -27,7 +27,7 @@ namespace Doctrine\ORM\Persisters;
  * @author robo
  * @todo Implementation once support for collections of basic elements (i.e. strings) is added.
  */
-class ElementCollectionPersister extends AbstractCollectionPersister
+abstract class ElementCollectionPersister extends AbstractCollectionPersister
 {
     //put your code here
 }
