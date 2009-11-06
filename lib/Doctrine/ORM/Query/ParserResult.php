@@ -35,12 +35,26 @@ namespace Doctrine\ORM\Query;
  */
 class ParserResult
 {
-    /** The SQL executor used for executing the SQL. */
-	private $_sqlExecutor;
-	/** The ResultSetMapping that describes how to map the SQL result set. */
+    /**
+     * The SQL executor used for executing the SQL.
+     * 
+     * @var \Doctrine\ORM\Query\Exec\AbstractSqlExecutor
+     */
+    private $_sqlExecutor;
+
+    /**
+     * The ResultSetMapping that describes how to map the SQL result set.
+     * 
+     * @var \Doctrine\ORM\Query\ResultSetMapping
+     */
     private $_resultSetMapping;
-    /** The mappings of DQL parameter names/positions to SQL parameter positions. */
-    private $_parameterMappings;
+
+    /**
+     * The mappings of DQL parameter names/positions to SQL parameter positions.
+     *
+     * @var array
+     */
+    private $_parameterMappings = array();
 	
     /**
      * Initializes a new instance of the <tt>ParserResult</tt> class.
@@ -75,7 +89,7 @@ class ParserResult
     /**
      * Sets the SQL executor that should be used for this ParserResult.
      * 
-     * @param AbstractExecutor $executor
+     * @param \Doctrine\ORM\Query\Exec\AbstractSqlExecutor $executor
      */
     public function setSqlExecutor($executor)
     {
@@ -85,7 +99,7 @@ class ParserResult
     /**
      * Gets the SQL executor used by this ParserResult.
      * 
-     * @return AbstractExecutor
+     * @return \Doctrine\ORM\Query\Exec\AbstractSqlExecutor
      */
     public function getSqlExecutor()
     {
