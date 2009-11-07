@@ -376,8 +376,8 @@ class BasicFunctionalTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertFalse($gblanco->getPhonenumbers()->isInitialized());
         
         $newPhone = new CmsPhonenumber;
-        $phone->phonenumber = 555;
-        $gblanco->addPhonenumber($phone);
+        $newPhone->phonenumber = 555;
+        $gblanco->addPhonenumber($newPhone);
         
         $this->assertFalse($gblanco->getPhonenumbers()->isInitialized());
 
