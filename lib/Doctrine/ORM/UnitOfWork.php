@@ -1494,6 +1494,10 @@ class UnitOfWork implements PropertyChangedListener
             }
             $relatedEntities = $class->reflFields[$assocMapping->sourceFieldName]->getValue($entity);
             if ($relatedEntities instanceof Collection) {
+                if ($relatedEntities instanceof PersistentCollection) {
+                    // Unwrap so that foreach() does not initialize
+                    $relatedEntities = $relatedEntities->unwrap();
+                }
                 foreach ($relatedEntities as $relatedEntity) {
                     $this->_doDetach($relatedEntity, $visited);
                 }
@@ -1519,6 +1523,10 @@ class UnitOfWork implements PropertyChangedListener
             }
             $relatedEntities = $class->reflFields[$assocMapping->sourceFieldName]->getValue($entity);
             if ($relatedEntities instanceof Collection) {
+                if ($relatedEntities instanceof PersistentCollection) {
+                    // Unwrap so that foreach() does not initialize
+                    $relatedEntities = $relatedEntities->unwrap();
+                }
                 foreach ($relatedEntities as $relatedEntity) {
                     $this->_doMerge($relatedEntity, $visited, $managedCopy, $assocMapping);
                 }
@@ -1544,6 +1552,10 @@ class UnitOfWork implements PropertyChangedListener
             }
             $relatedEntities = $class->reflFields[$assocMapping->sourceFieldName]->getValue($entity);
             if (($relatedEntities instanceof Collection || is_array($relatedEntities))) {
+                if ($relatedEntities instanceof PersistentCollection) {
+                    // Unwrap so that foreach() does not initialize
+                    $relatedEntities = $relatedEntities->unwrap();
+                }
                 foreach ($relatedEntities as $relatedEntity) {
                     $this->_doPersist($relatedEntity, $visited);
                 }
@@ -1568,6 +1580,10 @@ class UnitOfWork implements PropertyChangedListener
             }
             $relatedEntities = $class->reflFields[$assocMapping->sourceFieldName]->getValue($entity);
             if ($relatedEntities instanceof Collection || is_array($relatedEntities)) {
+                if ($relatedEntities instanceof PersistentCollection) {
+                    // Unwrap so that foreach() does not initialize
+                    $relatedEntities = $relatedEntities->unwrap();
+                }
                 foreach ($relatedEntities as $relatedEntity) {
                     $this->_doRemove($relatedEntity, $visited);
                 }
@@ -1703,7 +1719,7 @@ class UnitOfWork implements PropertyChangedListener
                     }
                     
                     $targetClass = $this->_em->getClassMetadata($assoc->targetEntityName);
-                    
+
                     if ($assoc->isOneToOne()) {
                         if ($assoc->isOwningSide) {
                             $associatedId = array();
@@ -1768,7 +1784,6 @@ class UnitOfWork implements PropertyChangedListener
         if ($this->_evm->hasListeners(Events::postLoad)) {
             $this->_evm->dispatchEvent(Events::postLoad, new LifecycleEventArgs($entity));
         }
-        
 
         return $entity;
     }
