@@ -35,7 +35,7 @@ interface Connection
     function query();
     function quote($input);
     function exec($statement);
-    function lastInsertId();
+    function lastInsertId($name = null);
     function beginTransaction();
     function commit();
     function rollBack();

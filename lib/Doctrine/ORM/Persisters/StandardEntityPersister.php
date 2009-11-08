@@ -193,7 +193,7 @@ class StandardEntityPersister
         $sql = "SELECT " . $versionFieldColumnName . " FROM " . $class->getQuotedTableName($this->_platform) .
                " WHERE " . implode(' = ? AND ', $identifier) . " = ?";
         $value = $this->_conn->fetchColumn($sql, (array) $id);
-        $this->_class->setFieldValue($entity, $versionField, $value[0]);
+        $this->_class->setFieldValue($entity, $versionField, $value);
     }
 
     /**
@@ -550,7 +550,8 @@ class StandardEntityPersister
         $stmt = $this->_conn->prepare($this->_getSelectManyToManyEntityCollectionSql($assoc, $criteria));
         $stmt->execute(array_values($criteria));
         while ($result = $stmt->fetch(Connection::FETCH_ASSOC)) {
-            $coll->add($this->_createEntity($result));
+            //$coll->add($this->_createEntity($result));
+            $coll->hydrateAdd($this->_createEntity($result));
         }
         $stmt->closeCursor();
     }

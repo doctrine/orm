@@ -190,7 +190,7 @@ final class PersistentCollection implements \Doctrine\Common\Collections\Collect
             } else {
                 // ManyToMany
                 $this->_typeClass->reflFields[$this->_backRefFieldName] 
-                        ->getValue($element)->add($this->_owner);
+                        ->getValue($element)->unwrap()->add($this->_owner);
             }
         }
     }
@@ -229,8 +229,18 @@ final class PersistentCollection implements \Doctrine\Common\Collections\Collect
     private function _initialize()
     {
         if ( ! $this->_initialized) {
+            if ($this->_isDirty) {
+                // Has NEW objects added through add(). Remember them.
+                $newObjects = $this->_coll->toArray();
+            }
             $this->_coll->clear();
             $this->_association->load($this->_owner, $this, $this->_em);
+            // Reattach NEW objects added through add(), if any.
+            if (isset($newObjects)) {
+                foreach ($newObjects as $obj) {
+                    $this->_coll->add($obj);
+                }
+            }
             $this->_initialized = true;
         }
     }
@@ -242,6 +252,7 @@ final class PersistentCollection implements \Doctrine\Common\Collections\Collect
     public function takeSnapshot()
     {
         $this->_snapshot = $this->_coll->toArray();
+        $this->_isDirty = false;
     }
 
     /**
@@ -267,7 +278,8 @@ final class PersistentCollection implements \Doctrine\Common\Collections\Collect
     }
 
     /**
-     * INTERNAL getInsertDiff
+     * INTERNAL:
+     * getInsertDiff
      *
      * @return array
      */
@@ -465,6 +477,7 @@ final class PersistentCollection implements \Doctrine\Common\Collections\Collect
      */
     public function set($key, $value)
     {
+        $this->_initialize();
         $this->_coll->set($key, $value);
         $this->_changed();
     }

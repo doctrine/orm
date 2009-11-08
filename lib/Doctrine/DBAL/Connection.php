@@ -328,7 +328,7 @@ class Connection
     }
 
     /**
-     * Convenience method for PDO::query("...") followed by $stmt->fetchAll(PDO::FETCH_COLUMN, ...).
+     * Convenience method for PDO::query("...") followed by $stmt->fetchColumn(...).
      *
      * @param string $statement         sql query to be executed
      * @param array $params             prepared statement params
@@ -337,7 +337,7 @@ class Connection
      */
     public function fetchColumn($statement, array $params = array(), $colnum = 0)
     {
-        return $this->execute($statement, $params)->fetchAll(Connection::FETCH_COLUMN, $colnum);
+        return $this->execute($statement, $params)->fetchColumn($colnum);
     }
 
     /**
@@ -534,19 +534,6 @@ class Connection
     public function fetchAll($sql, array $params = array())
     {
         return $this->execute($sql, $params)->fetchAll(Connection::FETCH_ASSOC);
-    }
-
-    /**
-     * Convenience method for PDO::query("...") followed by $stmt->fetchColumn().
-     *
-     * @param string $statement The SQL query.
-     * @param array $params The query parameters.
-     * @param int $colnum 0-indexed column number to retrieve
-     * @return mixed
-     */
-    public function fetchOne($statement, array $params = array(), $colnum = 0)
-    {
-        return $this->execute($statement, $params)->fetchColumn($colnum);
     }
 
     /**

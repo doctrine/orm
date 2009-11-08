@@ -8,7 +8,7 @@ class DriverConnectionMock implements \Doctrine\DBAL\Driver\Connection
     public function query() {}
     public function quote($input) {}
     public function exec($statement) {}
-    public function lastInsertId() {}
+    public function lastInsertId($name = null) {}
     public function beginTransaction() {}
     public function commit() {}
     public function rollBack() {}

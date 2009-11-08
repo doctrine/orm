@@ -110,7 +110,6 @@ class ManyToManyBidirectionalAssociationTest extends AbstractManyToManyAssociati
         $this->assertLoadingOfOwningSide($products);
     }
 
-
     private function _createLoadingFixture()
     {
         $this->firstProduct->addCategory($this->firstCategory);
@@ -140,6 +139,7 @@ class ManyToManyBidirectionalAssociationTest extends AbstractManyToManyAssociati
         
         $this->assertEquals(2, count($firstProductCategories));
         $this->assertEquals(2, count($secondProductCategories));
+        
         $this->assertTrue($firstProductCategories[0] === $secondProductCategories[0]);
         $this->assertTrue($firstProductCategories[1] === $secondProductCategories[1]);
         
@@ -148,7 +148,7 @@ class ManyToManyBidirectionalAssociationTest extends AbstractManyToManyAssociati
         
         $this->assertEquals(2, count($firstCategoryProducts));
         $this->assertEquals(2, count($secondCategoryProducts));
-        
+
         $this->assertTrue($firstCategoryProducts[0] instanceof ECommerceProduct);
         $this->assertTrue($firstCategoryProducts[1] instanceof ECommerceProduct);
         $this->assertTrue($secondCategoryProducts[0] instanceof ECommerceProduct);

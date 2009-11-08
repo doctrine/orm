@@ -8,9 +8,17 @@ require_once __DIR__ . '/../../TestInit.php';
 
 class MemcacheCacheTest extends \Doctrine\Tests\DoctrineTestCase
 {
+    private $_memcache;
+    
     public function setUp()
     {
-        if ( ! extension_loaded('memcache')) {
+        if (extension_loaded('memcache')) {
+            $memcache = new \Memcache;
+            $ok = @$memcache->connect('localhost', 11211);
+            if (!$ok) {
+                $this->markTestSkipped('The ' . __CLASS__ .' requires the use of memcache');
+            }
+        } else {
             $this->markTestSkipped('The ' . __CLASS__ .' requires the use of memcache');
         }
     }
@@ -18,6 +26,7 @@ class MemcacheCacheTest extends \Doctrine\Tests\DoctrineTestCase
     public function testMemcacheCacheDriver()
     {
         $cache = new MemcacheCache();
+        $cache->setMemcache($this->_memcache);
 
         // Test save
         $cache->save('test_key', 'testing this out');

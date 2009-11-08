@@ -36,10 +36,10 @@ class SingleScalarHydrator extends AbstractHydrator
         $cache = array();
         $result = $this->_stmt->fetchAll(Connection::FETCH_ASSOC);
         //TODO: Let this exception be raised by Query as QueryException
-        if (count($result) > 1 || count($result[0]) > 1) {
+        if (count($result) > 1 || count($result[key($result)]) > 1) {
             throw HydrationException::nonUniqueResult();
         }
-        $result = $this->_gatherScalarRowData($result[0], $cache);
+        $result = $this->_gatherScalarRowData($result[key($result)], $cache);
         return array_shift($result);
     }
 

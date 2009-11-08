@@ -178,6 +178,7 @@ class IdentityMapTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->flush();
         
         $this->assertEquals(3, count($user->getPhonenumbers()));
+        $this->assertFalse($user->getPhonenumbers()->isDirty());
         
         //external update to CmsAddress
         $this->_em->getConnection()->executeUpdate('insert into cms_phonenumbers (phonenumber, user_id) VALUES (?,?)', array(999, $user->getId()));

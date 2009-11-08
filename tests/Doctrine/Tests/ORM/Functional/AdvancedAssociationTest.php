@@ -94,9 +94,9 @@ class AdvancedAssociationTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $definitions = $res[0]->getDefinitions();
         
         $this->assertEquals(1, count($res));
+        
         $this->assertTrue($definitions[0] instanceof Definition);
         $this->assertEquals(2, $definitions->count());
-        
     }
     
     public function testManyToMany()

@@ -380,6 +380,48 @@ class BasicFunctionalTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $gblanco->addPhonenumber($newPhone);
         
         $this->assertFalse($gblanco->getPhonenumbers()->isInitialized());
+        $this->_em->persist($gblanco);
+
+        $this->_em->flush();
+        $this->_em->clear();
+        
+        $query = $this->_em->createQuery("select u, p from Doctrine\Tests\Models\CMS\CmsUser u join u.phonenumbers p where u.username='gblanco'");
+        $gblanco2 = $query->getSingleResult();
+        $this->assertEquals(4, $gblanco2->getPhonenumbers()->count());
+    }
+    
+    public function testInitializeCollectionWithNewObjectsRetainsNewObjects()
+    {
+        $user = new CmsUser;
+        $user->name = 'Guilherme';
+        $user->username = 'gblanco';
+        $user->status = 'developer';
+
+        for ($i=0; $i<3; ++$i) {
+            $phone = new CmsPhonenumber;
+            $phone->phonenumber = 100 + $i;
+            $user->addPhonenumber($phone);
+        }
+
+        $this->_em->persist($user);
+        $this->_em->flush();
+        $this->_em->clear();
+        
+        $this->assertEquals(3, $user->getPhonenumbers()->count());
+        
+        $query = $this->_em->createQuery("select u from Doctrine\Tests\Models\CMS\CmsUser u where u.username='gblanco'");
+
+        $gblanco = $query->getSingleResult();
+        
+        $this->assertFalse($gblanco->getPhonenumbers()->isInitialized());
+        
+        $newPhone = new CmsPhonenumber;
+        $newPhone->phonenumber = 555;
+        $gblanco->addPhonenumber($newPhone);
+        
+        $this->assertFalse($gblanco->getPhonenumbers()->isInitialized());
+        $this->assertEquals(4, $gblanco->getPhonenumbers()->count());
+        $this->assertTrue($gblanco->getPhonenumbers()->isInitialized());
 
         $this->_em->flush();
         $this->_em->clear();

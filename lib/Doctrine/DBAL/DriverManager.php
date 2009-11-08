@@ -43,7 +43,8 @@ final class DriverManager
             'pdo_sqlite' => 'Doctrine\DBAL\Driver\PDOSqlite\Driver',
             'pdo_pgsql'  => 'Doctrine\DBAL\Driver\PDOPgSql\Driver',
             'pdo_oci' => 'Doctrine\DBAL\Driver\PDOOracle\Driver',
-            'pdo_mssql'  => 'Doctrine\DBAL\Driver\PDOMsSql\Driver'
+            'pdo_mssql'  => 'Doctrine\DBAL\Driver\PDOMsSql\Driver',
+            'oci8' => 'Doctrine\DBAL\Driver\OCI8\Driver'
             );
 
     /** Private constructor. This class cannot be instantiated. */
