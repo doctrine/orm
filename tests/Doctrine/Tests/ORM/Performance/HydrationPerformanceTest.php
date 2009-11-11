@@ -313,7 +313,7 @@ class HydrationPerformanceTest extends \Doctrine\Tests\OrmPerformanceTestCase
         $stmt = new HydratorMockStatement($resultSet);
         $hydrator = new \Doctrine\ORM\Internal\Hydration\ObjectHydrator($this->_em);
 
-        $this->setMaxRunningTime(4);
+        $this->setMaxRunningTime(5);
         $s = microtime(true);
         $result = $hydrator->hydrateAll($stmt, $rsm);
         $e = microtime(true);
