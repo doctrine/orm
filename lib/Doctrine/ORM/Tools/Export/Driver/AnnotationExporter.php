@@ -189,13 +189,13 @@ class AnnotationExporter extends AbstractExporter
 
     private function _getClassToExtendName()
     {
-        $refl = new \ReflectionClass($this->getClassToExtend());
+        $refl = new \ReflectionClass($this->_getClassToExtend());
         return $refl->getShortName();
     }
 
     private function _getClassToExtendNamespace()
     {
-        $refl = new \ReflectionClass($this->getClassToExtend());
+        $refl = new \ReflectionClass($this->_getClassToExtend());
         return $refl->getNamespaceName() ? $refl->getNamespaceName():$refl->getShortName();        
     }
 
