@@ -66,6 +66,9 @@ class BasicFunctionalTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertFalse($this->_em->getUnitOfWork()->isScheduledForDelete($user));
         $this->assertFalse($this->_em->getUnitOfWork()->isScheduledForDelete($ph));
         $this->assertFalse($this->_em->getUnitOfWork()->isScheduledForDelete($ph2));
+        $this->assertEquals(\Doctrine\ORM\UnitOfWork::STATE_NEW, $this->_em->getUnitOfWork()->getEntityState($user));
+        $this->assertEquals(\Doctrine\ORM\UnitOfWork::STATE_NEW, $this->_em->getUnitOfWork()->getEntityState($ph));
+        $this->assertEquals(\Doctrine\ORM\UnitOfWork::STATE_NEW, $this->_em->getUnitOfWork()->getEntityState($ph2));
     }
 
     public function testOneToManyAssociationModification()

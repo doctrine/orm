@@ -771,7 +771,14 @@ class UnitOfWork implements PropertyChangedListener
         foreach ($this->_entityDeletions as $oid => $entity) {
             if (get_class($entity) == $className) {
                 $persister->delete($entity);
-                unset($this->_entityDeletions[$oid]);
+                unset(
+                    $this->_entityDeletions[$oid],
+                    $this->_entityIdentifiers[$oid],
+                    $this->_originalEntityData[$oid]
+                    );
+                // Entity with this $oid after deletion treated as NEW, even if the $oid
+                // is obtained by a new entity because the old one went out of scope.
+                $this->_entityStates[$oid] = self::STATE_NEW;
                 
                 if ($hasLifecycleCallbacks) {
                     $class->invokeLifecycleCallbacks(Events::postRemove, $entity);
@@ -919,16 +926,20 @@ class UnitOfWork implements PropertyChangedListener
     public function scheduleForDelete($entity)
     {
         $oid = spl_object_hash($entity);
-        if ( ! $this->isInIdentityMap($entity)) {
-            return;
-        }
-
-        $this->removeFromIdentityMap($entity);
-
+        
         if (isset($this->_entityInsertions[$oid])) {
+            if ($this->isInIdentityMap($entity)) {
+                $this->removeFromIdentityMap($entity);
+            }
             unset($this->_entityInsertions[$oid]);
             return; // entity has not been persisted yet, so nothing more to do.
         }
+        
+        if ( ! $this->isInIdentityMap($entity)) {
+            return; // ignore
+        }
+        
+        $this->removeFromIdentityMap($entity);
 
         if (isset($this->_entityUpdates[$oid])) {
             unset($this->_entityUpdates[$oid]);
@@ -1102,7 +1113,7 @@ class UnitOfWork implements PropertyChangedListener
         if ($idHash === '') {
             return false;
         }
-
+        
         return isset($this->_identityMap[$classMetadata->rootEntityName][$idHash]);
     }
 
