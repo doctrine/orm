@@ -201,7 +201,7 @@ class AnnotationExporter extends AbstractExporter
 
     private function _getClassName($metadata)
     {
-        if ($pos = strpos($metadata->name, '\\')) {
+        if ($pos = strrpos($metadata->name, '\\')) {
             return substr($metadata->name, $pos + 1, strlen($metadata->name));
         } else {
             return $metadata->name;
