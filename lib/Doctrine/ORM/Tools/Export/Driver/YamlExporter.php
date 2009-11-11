@@ -106,10 +106,14 @@ class YamlExporter extends AbstractExporter
                 unset($fieldMapping['length']);
             }
 
-            unset($fieldMapping['fieldName']);
-
-            if ($fieldMapping['columnName'] == $name) {
-                unset($fieldMapping['columnName']);
+            $fieldMapping['column'] = $fieldMapping['columnName'];
+            unset(
+                $fieldMapping['columnName'],
+                $fieldMapping['fieldName']
+            );
+ 
+            if ($fieldMapping['column'] == $name) {
+                unset($fieldMapping['column']);
             }
 
             if (isset($fieldMapping['id']) && $fieldMapping['id']) {

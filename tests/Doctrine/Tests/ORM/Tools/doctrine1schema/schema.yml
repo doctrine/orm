@@ -9,6 +9,8 @@ User:
     password:
       type: string(255)
     clob: clob
+    test_alias as theAlias:
+      type: string(255)
   indexes:
     username:
       fields: [username]

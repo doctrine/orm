@@ -150,12 +150,18 @@ class ConvertDoctrine1Schema
             $column = array();
             $column['type'] = $string;
         }
+        if ( ! isset($column['name'])) {
+            $column['name'] = $name;
+        }
+        // check if a column alias was used (column_name as field_name)
+        if (preg_match("/(\w+)\sas\s(\w+)/i", $column['name'], $matches)) {
+            $name = $matches[1];
+            $column['name'] = $name;
+            $column['alias'] = $matches[2];
+        }
         if (preg_match("/([a-zA-Z]+)\(([0-9]+)\)/", $column['type'], $matches)) {
             $column['type'] = $matches[1];
             $column['length'] = $matches[2];
-        }
-        if ( ! isset($column['name'])) {
-            $column['name'] = $name;
         }
         $column['type'] = strtolower($column['type']);
         // check if legacy column type (1.x) needs to be mapped to a 2.0 one
