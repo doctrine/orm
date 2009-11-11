@@ -60,6 +60,7 @@ class AnnotationExporter extends AbstractExporter
      */
     public function exportClassMetadata(ClassMetadataInfo $metadata)
     {
+        $this->_currentCode = null;
         if (file_exists($this->_outputPath)) {
             $this->_currentCode = file_get_contents($this->_outputPath);
         }
