@@ -48,7 +48,8 @@ class ConvertDoctrine1Schema
 {
     private $_legacyTypeMap = array(
         // TODO: This list may need to be updated
-        'clob' => 'text'
+        'clob' => 'text',
+        'timestamp' => 'datetime'
     );
 
     /**
