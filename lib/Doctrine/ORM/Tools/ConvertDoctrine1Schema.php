@@ -21,7 +21,8 @@
 
 namespace Doctrine\ORM\Tools;
 
-use Doctrine\ORM\Mapping\ClassMetadataInfo,
+use Doctrine\Common\DoctrineException,
+    Doctrine\ORM\Mapping\ClassMetadataInfo,
     Doctrine\ORM\Tools\Export\Driver\AbstractExporter,
     Doctrine\Common\Util\Inflector;
 
@@ -45,6 +46,11 @@ if ( ! class_exists('sfYaml', false)) {
  */
 class ConvertDoctrine1Schema
 {
+    private $_legacyTypeMap = array(
+        // TODO: This list may need to be updated
+        'clob' => 'text'
+    );
+
     /**
      * Constructor passes the directory or array of directories
      * to convert the Doctrine 1 schema files from
@@ -78,26 +84,26 @@ class ConvertDoctrine1Schema
         }
 
         $metadatas = array();
-        foreach ($schema as $name => $model) {
-            $metadatas[] = $this->_convertToClassMetadataInfo($name, $model);
+        foreach ($schema as $className => $mappingInformation) {
+            $metadatas[] = $this->_convertToClassMetadataInfo($className, $mappingInformation);
         }
 
         return $metadatas;
     }
 
-    private function _convertToClassMetadataInfo($modelName, $model)
+    private function _convertToClassMetadataInfo($className, $mappingInformation)
     {
-        $metadata = new ClassMetadataInfo($modelName);
+        $metadata = new ClassMetadataInfo($className);
 
-        $this->_convertTableName($modelName, $model, $metadata);
-        $this->_convertColumns($modelName, $model, $metadata);
-        $this->_convertIndexes($modelName, $model, $metadata);
-        $this->_convertRelations($modelName, $model, $metadata);
+        $this->_convertTableName($className, $mappingInformation, $metadata);
+        $this->_convertColumns($className, $mappingInformation, $metadata);
+        $this->_convertIndexes($className, $mappingInformation, $metadata);
+        $this->_convertRelations($className, $mappingInformation, $metadata);
 
         return $metadata;
     }
 
-    private function _convertTableName($modelName, array $model, ClassMetadataInfo $metadata)
+    private function _convertTableName($className, array $model, ClassMetadataInfo $metadata)
     {
         if (isset($model['tableName']) && $model['tableName']) {
             $e = explode('.', $model['tableName']);
@@ -110,13 +116,13 @@ class ConvertDoctrine1Schema
         }
     }
 
-    private function _convertColumns($modelName, array $model, ClassMetadataInfo $metadata)
+    private function _convertColumns($className, array $model, ClassMetadataInfo $metadata)
     {
         $id = false;
 
         if (isset($model['columns']) && $model['columns']) {
             foreach ($model['columns'] as $name => $column) {
-                $fieldMapping = $this->_convertColumn($modelName, $name, $column, $metadata);
+                $fieldMapping = $this->_convertColumn($className, $name, $column, $metadata);
 
                 if (isset($fieldMapping['id']) && $fieldMapping['id']) {
                     $id = true;
@@ -136,7 +142,7 @@ class ConvertDoctrine1Schema
         }
     }
 
-    private function _convertColumn($modelName, $name, $column, ClassMetadataInfo $metadata)
+    private function _convertColumn($className, $name, $column, ClassMetadataInfo $metadata)
     {
         if (is_string($column)) {
             $string = $column;
@@ -150,6 +156,15 @@ class ConvertDoctrine1Schema
         if ( ! isset($column['name'])) {
             $column['name'] = $name;
         }
+        $column['type'] = strtolower($column['type']);
+        // check if legacy column type (1.x) needs to be mapped to a 2.0 one
+        if (isset($this->_legacyTypeMap[$column['type']])) {
+            $column['type'] = $this->_legacyTypeMap[$column['type']];
+        }
+        if ( ! \Doctrine\DBAL\Types\Type::hasType($column['type'])) {
+            throw DoctrineException::couldNotMapDoctrine1Type($column['type']);
+        }
+
         $fieldMapping = array();
         if (isset($column['primary'])) {
             $fieldMapping['id'] = true;
@@ -187,7 +202,7 @@ class ConvertDoctrine1Schema
         return $fieldMapping;
     }
 
-    private function _convertIndexes($modelName, array $model, ClassMetadataInfo $metadata)
+    private function _convertIndexes($className, array $model, ClassMetadataInfo $metadata)
     {
         if (isset($model['indexes']) && $model['indexes']) {
             foreach ($model['indexes'] as $name => $index) {
@@ -202,7 +217,7 @@ class ConvertDoctrine1Schema
         }
     }
 
-    private function _convertRelations($modelName, array $model, ClassMetadataInfo $metadata)
+    private function _convertRelations($className, array $model, ClassMetadataInfo $metadata)
     {
         if (isset($model['relations']) && $model['relations']) {
             foreach ($model['relations'] as $name => $relation) {
@@ -219,7 +234,7 @@ class ConvertDoctrine1Schema
                     $relation['foreign'] = 'id';
                 }
                 if ( ! isset($relation['foreignAlias'])) {
-                    $relation['foreignAlias'] = $modelName;
+                    $relation['foreignAlias'] = $className;
                 }
 
                 if (isset($relation['refClass'])) {

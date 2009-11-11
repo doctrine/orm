@@ -8,6 +8,7 @@ User:
       unique: true
     password:
       type: string(255)
+    clob: clob
   indexes:
     username:
       fields: [username]
