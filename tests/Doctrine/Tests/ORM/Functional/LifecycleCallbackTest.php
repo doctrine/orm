@@ -10,7 +10,8 @@ class LifecycleCallbackTest extends \Doctrine\Tests\OrmFunctionalTestCase
         parent::setUp();
         try {
             $this->_schemaTool->createSchema(array(
-                $this->_em->getClassMetadata('Doctrine\Tests\ORM\Functional\LifecycleCallbackTestEntity')
+                $this->_em->getClassMetadata('Doctrine\Tests\ORM\Functional\LifecycleCallbackTestEntity'),
+                $this->_em->getClassMetadata('Doctrine\Tests\ORM\Functional\LifecycleCallbackTestUser')
             ));
         } catch (\Exception $e) {
             // Swallow all exceptions. We do not test the schema tool here.
@@ -39,6 +40,42 @@ class LifecycleCallbackTest extends \Doctrine\Tests\OrmFunctionalTestCase
         
         $this->assertEquals('changed from preUpdate callback!', $result[0]->value);
     }
+    
+    public function testChangesDontGetLost()
+    {
+        $user = new LifecycleCallbackTestUser;
+        $user->setName('Bob');
+        $user->setValue('');
+        $this->_em->persist($user);
+        $this->_em->flush();
+        
+        $user->setName('Alice');
+        $this->_em->flush(); // Triggers preUpdate
+        
+        $this->_em->clear();
+        
+        $user2 = $this->_em->find(get_class($user), $user->getId());
+        
+        $this->assertEquals('Alice', $user2->getName());
+        $this->assertEquals('Hello World', $user2->getValue());
+    }
+}
+
+/** @Entity @HasLifecycleCallbacks */
+class LifecycleCallbackTestUser {
+    /** @Id @Column(type="integer") @GeneratedValue(strategy="AUTO") */
+    private $id;
+    /** @Column(type="string") */
+    private $value;
+    /** @Column(type="string") */
+    private $name;
+    public function getId() {return $this->id;}
+    public function getValue() {return $this->value;}
+    public function setValue($value) {$this->value = $value;}
+    public function getName() {return $this->name;}
+    public function setName($name) {$this->name = $name;}
+    /** @PreUpdate */
+    public function testCallback() {$this->value = 'Hello World';}
 }
 
 /**
@@ -59,7 +96,7 @@ class LifecycleCallbackTestEntity
      */
     private $id;
     /**
-     * @Column(type="string", length=255)
+     * @Column(type="string")
      */
     public $value;
     

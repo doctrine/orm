@@ -613,15 +613,22 @@ class UnitOfWork implements PropertyChangedListener
      * Computes the changeset of an individual entity, independently of the
      * computeChangeSets() routine that is used at the beginning of a UnitOfWork#commit().
      * 
-     * The passed entity must be a managed entity.
+     * The passed entity must be a managed entity. If the entity already has a change set
+     * because this method is invoked during a commit cycle then the change sets are added.
+     * whereby changes detected in this method prevail.
      * 
      * @ignore
-     * @param $class
-     * @param $entity
+     * @param ClassMetadata $class The class descriptor of the entity.
+     * @param object $entity The entity for which to (re)calculate the change set.
+     * @throws InvalidArgumentException If the passed entity is not MANAGED.
      */
     public function computeSingleEntityChangeSet($class, $entity)
     {
         $oid = spl_object_hash($entity);
+        
+        if ( ! isset($this->_entityStates[$oid]) || $this->_entityStates[$oid] != self::STATE_MANAGED) {
+            throw new \InvalidArgumentException('Entity must be managed.');
+        }
 
         if ( ! $class->isInheritanceTypeNone()) {
             $class = $this->_em->getClassMetadata(get_class($entity));
@@ -634,28 +641,23 @@ class UnitOfWork implements PropertyChangedListener
             }
         }
         
-        if ( ! isset($this->_originalEntityData[$oid])) {
-            $this->_originalEntityData[$oid] = $actualData;
-            $this->_entityChangeSets[$oid] = array_map(
-                function($e) { return array(null, $e); }, $actualData
-            );
-        } else {
-            $originalData = $this->_originalEntityData[$oid];
-            $changeSet = array();
+        $originalData = $this->_originalEntityData[$oid];
+        $changeSet = array();
 
-            foreach ($actualData as $propName => $actualValue) {
-                $orgValue = isset($originalData[$propName]) ? $originalData[$propName] : null;
-                if (is_object($orgValue) && $orgValue !== $actualValue) {
-                    $changeSet[$propName] = array($orgValue, $actualValue);
-                } else if ($orgValue != $actualValue || ($orgValue === null ^ $actualValue === null)) {
-                    $changeSet[$propName] = array($orgValue, $actualValue);
-                }
+        foreach ($actualData as $propName => $actualValue) {
+            $orgValue = isset($originalData[$propName]) ? $originalData[$propName] : null;
+            if (is_object($orgValue) && $orgValue !== $actualValue) {
+                $changeSet[$propName] = array($orgValue, $actualValue);
+            } else if ($orgValue != $actualValue || ($orgValue === null ^ $actualValue === null)) {
+                $changeSet[$propName] = array($orgValue, $actualValue);
             }
-            
-            if ($changeSet) {
-                $this->_entityChangeSets[$oid] = $changeSet;
-                $this->_originalEntityData[$oid] = $actualData;
+        }
+
+        if ($changeSet) {
+            if (isset($this->_entityChangeSets[$oid])) {
+                $this->_entityChangeSets[$oid] = $changeSet + $this->_entityChangeSets[$oid];
             }
+            $this->_originalEntityData[$oid] = $actualData;
         }
     }
 
