@@ -629,6 +629,11 @@ class UnitOfWork implements PropertyChangedListener
         if ( ! isset($this->_entityStates[$oid]) || $this->_entityStates[$oid] != self::STATE_MANAGED) {
             throw new \InvalidArgumentException('Entity must be managed.');
         }
+        
+        /* TODO: Just return if changetracking policy is NOTIFY?
+        if ($class->isChangeTrackingNotify()) {
+            return;
+        }*/
 
         if ( ! $class->isInheritanceTypeNone()) {
             $class = $this->_em->getClassMetadata(get_class($entity));
@@ -690,7 +695,7 @@ class UnitOfWork implements PropertyChangedListener
         $postInsertIds = $persister->executeInserts();
         
         if ($postInsertIds) {
-            // Persister returned a post-insert IDs
+            // Persister returned post-insert IDs
             foreach ($postInsertIds as $id => $entity) {
                 $oid = spl_object_hash($entity);
                 $idField = $class->identifier[0];
@@ -1477,12 +1482,16 @@ class UnitOfWork implements PropertyChangedListener
     private function _cascadeRefresh($entity, array &$visited)
     {
         $class = $this->_em->getClassMetadata(get_class($entity));
-        foreach ($class->associationMappings as $assocMapping) {
-            if ( ! $assocMapping->isCascadeRefresh) {
+        foreach ($class->associationMappings as $assoc) {
+            if ( ! $assoc->isCascadeRefresh) {
                 continue;
             }
-            $relatedEntities = $class->reflFields[$assocMapping->sourceFieldName]->getValue($entity);
+            $relatedEntities = $class->reflFields[$assoc->sourceFieldName]->getValue($entity);
             if ($relatedEntities instanceof Collection) {
+                if ($relatedEntities instanceof PersistentCollection) {
+                    // Unwrap so that foreach() does not initialize
+                    $relatedEntities = $relatedEntities->unwrap();
+                }
                 foreach ($relatedEntities as $relatedEntity) {
                     $this->_doRefresh($relatedEntity, $visited);
                 }
@@ -1501,11 +1510,11 @@ class UnitOfWork implements PropertyChangedListener
     private function _cascadeDetach($entity, array &$visited)
     {
         $class = $this->_em->getClassMetadata(get_class($entity));
-        foreach ($class->associationMappings as $assocMapping) {
-            if ( ! $assocMapping->isCascadeDetach) {
+        foreach ($class->associationMappings as $assoc) {
+            if ( ! $assoc->isCascadeDetach) {
                 continue;
             }
-            $relatedEntities = $class->reflFields[$assocMapping->sourceFieldName]->getValue($entity);
+            $relatedEntities = $class->reflFields[$assoc->sourceFieldName]->getValue($entity);
             if ($relatedEntities instanceof Collection) {
                 if ($relatedEntities instanceof PersistentCollection) {
                     // Unwrap so that foreach() does not initialize
@@ -1530,21 +1539,21 @@ class UnitOfWork implements PropertyChangedListener
     private function _cascadeMerge($entity, $managedCopy, array &$visited)
     {
         $class = $this->_em->getClassMetadata(get_class($entity));
-        foreach ($class->associationMappings as $assocMapping) {
-            if ( ! $assocMapping->isCascadeMerge) {
+        foreach ($class->associationMappings as $assoc) {
+            if ( ! $assoc->isCascadeMerge) {
                 continue;
             }
-            $relatedEntities = $class->reflFields[$assocMapping->sourceFieldName]->getValue($entity);
+            $relatedEntities = $class->reflFields[$assoc->sourceFieldName]->getValue($entity);
             if ($relatedEntities instanceof Collection) {
                 if ($relatedEntities instanceof PersistentCollection) {
                     // Unwrap so that foreach() does not initialize
                     $relatedEntities = $relatedEntities->unwrap();
                 }
                 foreach ($relatedEntities as $relatedEntity) {
-                    $this->_doMerge($relatedEntity, $visited, $managedCopy, $assocMapping);
+                    $this->_doMerge($relatedEntity, $visited, $managedCopy, $assoc);
                 }
             } else if ($relatedEntities !== null) {
-                $this->_doMerge($relatedEntities, $visited, $managedCopy, $assocMapping);
+                $this->_doMerge($relatedEntities, $visited, $managedCopy, $assoc);
             }
         }
     }
@@ -1559,11 +1568,11 @@ class UnitOfWork implements PropertyChangedListener
     private function _cascadePersist($entity, array &$visited)
     {
         $class = $this->_em->getClassMetadata(get_class($entity));
-        foreach ($class->associationMappings as $assocMapping) {
-            if ( ! $assocMapping->isCascadePersist) {
+        foreach ($class->associationMappings as $assoc) {
+            if ( ! $assoc->isCascadePersist) {
                 continue;
             }
-            $relatedEntities = $class->reflFields[$assocMapping->sourceFieldName]->getValue($entity);
+            $relatedEntities = $class->reflFields[$assoc->sourceFieldName]->getValue($entity);
             if (($relatedEntities instanceof Collection || is_array($relatedEntities))) {
                 if ($relatedEntities instanceof PersistentCollection) {
                     // Unwrap so that foreach() does not initialize
@@ -1587,16 +1596,13 @@ class UnitOfWork implements PropertyChangedListener
     private function _cascadeRemove($entity, array &$visited)
     {
         $class = $this->_em->getClassMetadata(get_class($entity));
-        foreach ($class->associationMappings as $assocMapping) {
-            if ( ! $assocMapping->isCascadeRemove) {
+        foreach ($class->associationMappings as $assoc) {
+            if ( ! $assoc->isCascadeRemove) {
                 continue;
             }
-            $relatedEntities = $class->reflFields[$assocMapping->sourceFieldName]->getValue($entity);
+            $relatedEntities = $class->reflFields[$assoc->sourceFieldName]->getValue($entity);
             if ($relatedEntities instanceof Collection || is_array($relatedEntities)) {
-                if ($relatedEntities instanceof PersistentCollection) {
-                    // Unwrap so that foreach() does not initialize
-                    $relatedEntities = $relatedEntities->unwrap();
-                }
+                // If its a PersistentCollection initialization is intended! No unwrap!
                 foreach ($relatedEntities as $relatedEntity) {
                     $this->_doRemove($relatedEntity, $visited);
                 }

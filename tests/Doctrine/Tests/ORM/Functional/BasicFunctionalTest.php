@@ -475,4 +475,38 @@ class BasicFunctionalTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertEquals('Berlin', $gblanco->getAddress()->getCity());
         
     }
+    
+    public function testOneToManyCascadeRemove()
+    {
+        $user = new CmsUser;
+        $user->name = 'Guilherme';
+        $user->username = 'gblanco';
+        $user->status = 'developer';
+
+        for ($i=0; $i<3; ++$i) {
+            $phone = new CmsPhonenumber;
+            $phone->phonenumber = 100 + $i;
+            $user->addPhonenumber($phone);
+        }
+
+        $this->_em->persist($user);
+        $this->_em->flush();
+        $this->_em->clear();
+        
+        $query = $this->_em->createQuery("select u from Doctrine\Tests\Models\CMS\CmsUser u where u.username='gblanco'");
+        $gblanco = $query->getSingleResult();
+        
+        $this->_em->remove($gblanco);
+        $this->_em->flush();
+        
+        $this->_em->clear();
+        
+        $this->assertEquals(0, $this->_em->createQuery(
+                "select count(p.phonenumber) from Doctrine\Tests\Models\CMS\CmsPhonenumber p")
+                ->getSingleScalarResult());
+        
+        $this->assertEquals(0, $this->_em->createQuery(
+                "select count(u.id) from Doctrine\Tests\Models\CMS\CmsUser u")
+                ->getSingleScalarResult());
+    }
 }
