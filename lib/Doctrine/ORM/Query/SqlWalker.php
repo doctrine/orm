@@ -1115,9 +1115,7 @@ class SqlWalker implements TreeWalker
         $discrSql = $this->_generateDiscriminatorColumnConditionSql($this->_currentRootAlias);
         
         if ($discrSql) {
-            if ($termsSql) $sql .= ' AND';
-            
-            $sql .= ' ' . $discrSql;
+            $sql .= ' AND ' . $discrSql;
         }
 
         return $sql;

@@ -22,8 +22,6 @@ class SingleTableInheritanceTest extends \Doctrine\Tests\OrmFunctionalTestCase
                 $this->_em->getClassMetadata('Doctrine\Tests\ORM\Functional\RelatedEntity')
             ));
         } catch (\Exception $e) {
-            var_dump($e->getMessage());
-            var_dump($e->getTraceAsString());
             // Swallow all exceptions. We do not test the schema tool here.
         }
     }
@@ -94,7 +92,28 @@ class SingleTableInheritanceTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $query = $this->_em->createQuery("delete Doctrine\Tests\ORM\Functional\ParentEntity e");
 
         $affected = $query->execute();
-        $this->assertEquals(2, $affected);        
+        $this->assertEquals(2, $affected);
+        
+        $this->_em->clear();
+        
+        // DQL query with WHERE clause
+        $child = new ChildEntity;
+        $child->setData('thedata');
+        $child->setNumber(1234);
+
+        $this->_em->persist($child);
+        $this->_em->flush();
+        $this->_em->clear();
+        
+        $query = $this->_em->createQuery('select e from Doctrine\Tests\ORM\Functional\ParentEntity e where e.id=?1');
+        $query->setParameter(1, $child->getId());
+        
+        $child2 = $query->getSingleResult();
+        $this->assertTrue($child2 instanceof ChildEntity);
+        $this->assertEquals('thedata', $child2->getData());
+        $this->assertEquals(1234, $child2->getNumber());
+        $this->assertEquals($child->getId(), $child2->getId());
+        $this->assertFalse($child === $child2);
     }
 }
 
