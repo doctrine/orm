@@ -74,6 +74,34 @@ class OneToOneSelfReferentialAssociationTest extends \Doctrine\Tests\OrmFunction
         $customer = $result[0];
         $this->assertLoadingOfAssociation($customer);
     }
+    
+    public function testMultiSelfReference()
+    {
+        try {
+            $this->_schemaTool->createSchema(array(
+                $this->_em->getClassMetadata('Doctrine\Tests\ORM\Functional\MultiSelfReference')
+            ));
+        } catch (\Exception $e) {
+            // Swallow all exceptions. We do not test the schema tool here.
+        }
+        
+        $entity1 = new MultiSelfReference();
+        $this->_em->persist($entity1);
+        $entity1->setOther1($entity2 = new MultiSelfReference);
+        $entity1->setOther2($entity3 = new MultiSelfReference);
+        $this->_em->flush();
+        
+        $this->_em->clear();
+        
+        $entity2 = $this->_em->find(get_class($entity1), $entity1->getId());
+        
+        $this->assertTrue($entity2->getOther1() instanceof MultiSelfReference);
+        $this->assertTrue($entity2->getOther2() instanceof MultiSelfReference);
+        $this->assertNull($entity2->getOther1()->getOther1());
+        $this->assertNull($entity2->getOther1()->getOther2());
+        $this->assertNull($entity2->getOther2()->getOther1());
+        $this->assertNull($entity2->getOther2()->getOther2());
+    }
 
     public function assertLoadingOfAssociation($customer)
     {
@@ -99,4 +127,28 @@ class OneToOneSelfReferentialAssociationTest extends \Doctrine\Tests\OrmFunction
         $this->_em->flush();
         $this->_em->clear();
     }
+}
+
+/**
+ * @Entity
+ */
+class MultiSelfReference {
+    /** @Id @GeneratedValue(strategy="AUTO") @Column(type="integer") */
+    private $id;
+    /**
+     * @OneToOne(targetEntity="MultiSelfReference", cascade={"persist"})
+     * @JoinColumn(name="other1", referencedColumnName="id")
+     */
+    private $other1;
+    /**
+     * @OneToOne(targetEntity="MultiSelfReference", cascade={"persist"})
+     * @JoinColumn(name="other2", referencedColumnName="id")
+     */
+    private $other2;
+    
+    public function getId() {return $this->id;}
+    public function setOther1($other1) {$this->other1 = $other1;}
+    public function getOther1() {return $this->other1;}
+    public function setOther2($other2) {$this->other2 = $other2;}
+    public function getOther2() {return $this->other2;}
 }

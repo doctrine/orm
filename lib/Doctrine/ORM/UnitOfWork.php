@@ -903,13 +903,21 @@ class UnitOfWork implements PropertyChangedListener
      * Schedules an extra update that will be executed immediately after the
      * regular entity updates within the currently running commit cycle.
      * 
+     * Extra updates for entities are stored as (entity, changeset) tuples.
+     * 
      * @ignore
-     * @param $entity
-     * @param $changeset
+     * @param object $entity The entity for which to schedule an extra update.
+     * @param array $changeset The changeset of the entity (what to update).
      */
     public function scheduleExtraUpdate($entity, array $changeset)
     {
-        $this->_extraUpdates[spl_object_hash($entity)] = array($entity, $changeset);
+        $oid = spl_object_hash($entity);
+        if (isset($this->_extraUpdates[$oid])) {
+            list($ignored, $changeset2) = $this->_extraUpdates[$oid];
+            $this->_extraUpdates[$oid] = array($entity, $changeset + $changeset2);
+        } else {
+            $this->_extraUpdates[$oid] = array($entity, $changeset);
+        }
     }
 
     /**
@@ -1638,6 +1646,7 @@ class UnitOfWork implements PropertyChangedListener
         $this->_entityDeletions =
         $this->_collectionDeletions =
         $this->_collectionUpdates =
+        $this->_extraUpdates =
         $this->_orphanRemovals = array();
         $this->_commitOrderCalculator->clear();
     }
