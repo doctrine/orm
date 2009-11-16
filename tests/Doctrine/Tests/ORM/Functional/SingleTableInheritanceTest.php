@@ -115,6 +115,28 @@ class SingleTableInheritanceTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertEquals($child->getId(), $child2->getId());
         $this->assertFalse($child === $child2);
     }
+    
+    public function testGetScalarResult()
+    {
+        $child = new ChildEntity;
+        $child->setData('thedata');
+        $child->setNumber(1234);
+
+        $this->_em->persist($child);
+        $this->_em->flush();
+        
+        $query = $this->_em->createQuery('select e from Doctrine\Tests\ORM\Functional\ParentEntity e where e.id=?1');
+        $query->setParameter(1, $child->getId());
+        
+        $result = $query->getScalarResult();
+        
+        $this->assertEquals(1, count($result));
+        $this->assertEquals($child->getId(), $result[0]['e_id']);
+        $this->assertEquals('thedata', $result[0]['e_data']);
+        $this->assertEquals(1234, $result[0]['e_number']);
+        $this->assertNull($result[0]['e_related_entity_id']);
+        $this->assertEquals('child', $result[0]['e_discr']);
+    }
 }
 
 /**

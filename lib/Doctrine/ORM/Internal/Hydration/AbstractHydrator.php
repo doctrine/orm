@@ -196,20 +196,18 @@ abstract class AbstractHydrator
                         $classMetadata = $this->_lookupDeclaringClass($classMetadata, $fieldName);
                     }
                     $cache[$key]['fieldName'] = $fieldName;
-                    $cache[$key]['isScalar'] = false;
                     $cache[$key]['type'] = Type::getType($classMetadata->fieldMappings[$fieldName]['type']);
                     $cache[$key]['isIdentifier'] = $classMetadata->isIdentifier($fieldName);
                     $cache[$key]['dqlAlias'] = $this->_rsm->columnOwnerMap[$key];
                 } else {
                     // Meta column (has meaning in relational schema only, i.e. foreign keys or discriminator columns).
                     $cache[$key]['isMetaColumn'] = true;
-                    $cache[$key]['isScalar'] = false;
                     $cache[$key]['fieldName'] = $this->_rsm->metaMappings[$key];
                     $cache[$key]['dqlAlias'] = $this->_rsm->columnOwnerMap[$key];
                 }
             }
-
-            if ($cache[$key]['isScalar']) {
+            
+            if (isset($cache[$key]['isScalar'])) {
                 $rowData['scalars'][$cache[$key]['fieldName']] = $value;
                 continue;
             }
@@ -238,8 +236,9 @@ abstract class AbstractHydrator
     /**
      * Processes a row of the result set.
      * Used for HYDRATE_SCALAR. This is a variant of _gatherRowData() that
-     * simply converts column names to field names and properly prepares the
-     * values. The resulting row has the same number of elements as before.
+     * simply converts column names to field names and properly converts the
+     * values according to their types. The resulting row has the same number
+     * of elements as before.
      *
      * @param array $data
      * @param array $cache
@@ -255,26 +254,32 @@ abstract class AbstractHydrator
                 if (isset($this->_rsm->scalarMappings[$key])) {
                     $cache[$key]['fieldName'] = $this->_rsm->scalarMappings[$key];
                     $cache[$key]['isScalar'] = true;
-                } else {
+                } else if (isset($this->_rsm->fieldMappings[$key])) {
                     $classMetadata = $this->_em->getClassMetadata($this->_rsm->getOwningClass($key));
                     $fieldName = $this->_rsm->fieldMappings[$key];
                     if ( ! isset($classMetadata->reflFields[$fieldName])) {
                         $classMetadata = $this->_lookupDeclaringClass($classMetadata, $fieldName);
                     }
                     $cache[$key]['fieldName'] = $fieldName;
-                    $cache[$key]['isScalar'] = false;
                     $cache[$key]['type'] = Type::getType($classMetadata->getTypeOfField($fieldName));
+                    $cache[$key]['dqlAlias'] = $this->_rsm->columnOwnerMap[$key];
+                } else {
+                    // Meta column (has meaning in relational schema only, i.e. foreign keys or discriminator columns).
+                    $cache[$key]['isMetaColumn'] = true;
+                    $cache[$key]['fieldName'] = $this->_rsm->metaMappings[$key];
                     $cache[$key]['dqlAlias'] = $this->_rsm->columnOwnerMap[$key];
                 }
             }
             
             $fieldName = $cache[$key]['fieldName'];
 
-            if ($cache[$key]['isScalar']) {
-                $rowData[/*$dqlAlias . '_' . */$fieldName] = $value;
+            if (isset($cache[$key]['isScalar'])) {
+                $rowData[$fieldName] = $value;
+            } else if (isset($cache[$key]['isMetaColumn'])) {
+                $rowData[$cache[$key]['dqlAlias'] . '_' . $fieldName] = $value;
             } else {
-                $dqlAlias = $cache[$key]['dqlAlias'];
-                $rowData[$dqlAlias . '_' . $fieldName] = $cache[$key]['type']->convertToPHPValue($value, $this->_platform);
+                $rowData[$cache[$key]['dqlAlias'] . '_' . $fieldName] = $cache[$key]['type']
+                        ->convertToPHPValue($value, $this->_platform);
             }
         }
 
@@ -282,11 +287,10 @@ abstract class AbstractHydrator
     }
 
     /**
-     * Looks up the field name for a (lowercased) column name.
+     * Looks up the declaring class of a field in a class hierarchy.
      *
-     * This is mostly used during hydration, because we want to make the
-     * conversion to field names while iterating over the result set for best
-     * performance. By doing this at that point, we can avoid re-iterating over
+     * We want to make the conversion to field names while iterating over the result
+     * set for best performance. By doing this at that point, we can avoid re-iterating over
      * the data just to convert the column names to field names.
      *
      * However, when this is happening, we don't know the real
@@ -298,9 +302,14 @@ abstract class AbstractHydrator
      *
      * @return string  The field name.
      * @throws DoctrineException If the field name could not be found.
+     * @todo Remove. See inline FIXME comment.
      */
     private function _lookupDeclaringClass($class, $fieldName)
     {
+        //FIXME: What if two subclasses declare a (mapped) field with the same name?
+        //       We probably need to encode the information to which subclass a field
+        //       belongs in the column alias / result set mapping.
+        //       This would solve the issue and would probably make this lookup superfluous.
         foreach ($class->subClasses as $subClass) {
             $subClassMetadata = $this->_em->getClassMetadata($subClass);
             if ($subClassMetadata->hasField($fieldName)) {
