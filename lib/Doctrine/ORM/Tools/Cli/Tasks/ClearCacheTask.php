@@ -21,7 +21,11 @@
  
 namespace Doctrine\ORM\Tools\Cli\Tasks;
 
-use Doctrine\Common\Cache\AbstractDriver;
+use Doctrine\Common\DoctrineException,
+    Doctrine\Common\Util\Debug,
+    Doctrine\Common\Cli\Option,
+    Doctrine\Common\Cli\OptionGroup,
+    Doctrine\Common\Cache\AbstractDriver;
 
 /**
  * CLI Task to clear the cache of the various cache drivers
@@ -36,45 +40,32 @@ use Doctrine\Common\Cache\AbstractDriver;
  */
 class ClearCacheTask extends AbstractTask
 {
-    public function basicHelp()
+    /**
+     * @inheritdoc
+     */
+    public function buildDocumentation()
     {
-        $this->_writeSynopsis($this->getPrinter());
-    }
-
-    public function extendedHelp()
-    {
-        $printer = $this->getPrinter();
-    
-        $printer->write('Task: ')->writeln('clear-cache', 'KEYWORD')
-                ->write('Synopsis: ');
-        $this->_writeSynopsis($printer);
-
-        $printer->writeln('Description: Clear cache from configured query, result and metadata drivers.')
-                ->writeln('Options:')
-                ->write('--query', 'OPT_ARG')
-                ->writeln("\t\t\tClear the query cache.")
-                ->write('--result', 'OPT_ARG')
-                ->writeln("\t\tClear the result cache.")
-                ->write('--metadata', 'OPT_ARG')
-                ->writeln("\t\tClear the metadata cache.")
-                ->write('--id=<ID>', 'REQ_ARG')
-                ->writeln("\t\tThe id of the cache entry to delete (accepts * wildcards).")
-                ->write('--regex=<REGEX>', 'REQ_ARG')
-                ->writeln("\t\tDelete cache entries that match the given regular expression.")
-                ->write('--prefix=<PREFIX>', 'REQ_ARG')
-                ->writeln("\tDelete cache entries that have the given prefix.")
-                ->write('--suffix=<SUFFIX>', 'REQ_ARG')
-                ->writeln("\tDelete cache entries that have the given suffix.");
-    }
-
-    private function _writeSynopsis($printer)
-    {
-        $printer->write('clear-cache', 'KEYWORD')
-                ->write(' (--query | --result | --metadata)', 'OPT_ARG')
-                ->write(' [--id=<ID>]', 'REQ_ARG')
-                ->write(' [--regex=<REGEX>]', 'REQ_ARG')
-                ->write(' [--prefix=<PREFIX>]', 'REQ_ARG')
-                ->writeln(' [--suffix=<SUFFIX>]', 'REQ_ARG');
+        $cacheOptions = new OptionGroup(OptionGroup::CARDINALITY_1_1, array(
+            new Option('query', null, 'Clear the query cache.'),
+            new Option('metadata', null, 'Clear the metadata cache.'),
+            new OptionGroup(OptionGroup::CARDINALITY_M_N, array(
+                new OptionGroup(OptionGroup::CARDINALITY_1_1, array(
+                    new Option('result', null, 'Clear the result cache.')
+                )), 
+                new OptionGroup(OptionGroup::CARDINALITY_0_N, array(
+                    new Option('id', '<ID>', 'The id of the cache entry to delete (accepts * wildcards).'),
+                    new Option('regex', '<REGEX>', 'Delete cache entries that match the given regular expression.'),
+                    new Option('prefix', '<PREFIX>', 'Delete cache entries that have the given prefix.'),
+                    new Option('suffic', '<SUFFIX>', 'Delete cache entries that have the given suffix.')
+                ))
+            ))
+        ));
+        
+        $doc = $this->getDocumentation();
+        $doc->setName('clear-cache')
+            ->setDescription('Clear cache from configured query, result and metadata drivers.')
+            ->getOptionGroup()
+                ->addOption($cacheOptions);
     }
 
     public function validate()
@@ -90,7 +81,11 @@ class ClearCacheTask extends AbstractTask
                 || isset($args['prefix'])
                 || isset($args['suffix']))) {
 
-            $printer->writeln('When clearing the query or metadata cache do not specify any --id, --regex, --prefix or --suffix.', 'ERROR');
+            $printer->writeln(
+                'When clearing the query or metadata cache do not ' .
+                'specify any --id, --regex, --prefix or --suffix.', 
+                'ERROR'
+            );
 
             return false;
         }
@@ -112,6 +107,7 @@ class ClearCacheTask extends AbstractTask
         $suffix = isset($args['suffix']) ? $args['suffix'] : null;
 
         $all = false;
+        
         if ( ! $query && ! $result && ! $metadata) {
             $all = true;
         }
@@ -206,6 +202,7 @@ class ClearCacheTask extends AbstractTask
         } else {
             $printer->writeln('No ' . $type . ' cache entries found', 'ERROR');
         }
-        $printer->writeln("");
+        
+        $printer->write(PHP_EOL);
     }
 }

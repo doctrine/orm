@@ -3,6 +3,8 @@
 namespace Doctrine\ORM\Tools\Cli\Tasks;
 
 use Doctrine\Common\DoctrineException,
+    Doctrine\Common\Cli\Option,
+    Doctrine\Common\Cli\OptionGroup,
     Doctrine\ORM\Tools\SchemaTool,
     Doctrine\Common\Annotations\AnnotationReader,
     Doctrine\ORM\Mapping\Driver\AnnotationDriver,
@@ -46,7 +48,49 @@ class SchemaToolTask extends AbstractTask
     /**
      * @inheritdoc
      */
-    public function extendedHelp()
+    public function buildDocumentation()
+    {
+        $schemaOption = new OptionGroup(OptionGroup::CARDINALITY_1_1, array(
+            new Option(
+                'create', null, 
+                'Creates the schema in EntityManager (create tables on Database).' . PHP_EOL .
+                'If defined, --drop, --update and --re-create can not be requested on same task.'
+            ),
+            new Option(
+                'drop', '<metadata|database>', 
+                'Drops the schema of EntityManager (drop tables on Database).' . PHP_EOL .
+                'Defaults to "metadata" if only --drop is specified.' . PHP_EOL .
+                'If defined, --create, --update and --re-create can not be requested on same task.'
+            ),
+            new Option(
+                'update', null, 
+                'Updates the schema in EntityManager (update tables on Database).' . PHP_EOL .
+                'If defined, --create, --drop and --re-create can not be requested on same task.'
+            ),
+            new Option(
+                're-create', null, 
+                'Runs --drop then --create to re-create the database.' . PHP_EOL .
+                'If defined, --create, --update and --drop can not be requested on same task.'
+            )
+        ));
+        
+        $optionalOptions = new OptionGroup(OptionGroup::CARDINALITY_0_N, array(
+            new Option('dump-sql', null, 'Instead of try to apply generated SQLs into EntityManager, output them.'),
+            new Option('class-dir', '<PATH>', 'Optional class directory to fetch for Entities.')
+        ));
+        
+        $doc = $this->getDocumentation();
+        $doc->setName('schema-tool')
+            ->setDescription('Processes the schema and either apply it directly on EntityManager or generate the SQL output.')
+            ->getOptionGroup()
+                ->addOption($schemaOption)
+                ->addOption($optionalOptions);
+    }
+    
+    /**
+     * @inheritdoc
+     */
+    /*public function extendedHelp()
     {
         $printer = $this->getPrinter();
         
@@ -78,12 +122,12 @@ class SchemaToolTask extends AbstractTask
                 ->write('--class-dir=<path>', 'OPT_ARG')
                 ->writeln("\tOptional class directory to fetch for Entities.")
                 ->write(PHP_EOL);
-    }
+    }*/
 
     /**
      * @inheritdoc
      */
-    public function basicHelp()
+    /*public function basicHelp()
     {
         $this->_writeSynopsis($this->getPrinter());
     }
@@ -93,7 +137,7 @@ class SchemaToolTask extends AbstractTask
         $printer->write('schema-tool', 'KEYWORD')
                 ->write(' (--create | --drop=<metadata|database> | --update | --re-create)', 'REQ_ARG')
                 ->writeln(' [--dump-sql] [--class-dir=<path>]', 'OPT_ARG');
-    }
+    }*/
     
     /**
      * @inheritdoc

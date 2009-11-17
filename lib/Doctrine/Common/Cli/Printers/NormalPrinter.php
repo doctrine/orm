@@ -19,9 +19,9 @@
  * <http://www.doctrine-project.org>.
  */
  
-namespace Doctrine\ORM\Tools\Cli\Printers;
+namespace Doctrine\Common\Cli\Printers;
 
-use Doctrine\ORM\Tools\Cli\Style;
+use Doctrine\Common\Cli\Style;
 
 /**
  * CLI Output Printer for Normal terminal

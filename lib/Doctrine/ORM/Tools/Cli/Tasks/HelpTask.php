@@ -39,6 +39,14 @@ class HelpTask extends AbstractTask
     /**
      * @inheritdoc
      */
+    public function buildDocumentation()
+    {
+        // Does nothing
+    }
+    
+    /**
+     * @inheritdoc
+     */
     public function extendedHelp()
     {
         $this->run();
@@ -77,11 +85,10 @@ class HelpTask extends AbstractTask
         ksort($availableTasks);
         
         foreach ($availableTasks as $taskName => $taskClass) {
-            $task = new $taskClass();
+            $task = new $taskClass($this->getPrinter());
             
             $task->setAvailableTasks($availableTasks);
             $task->setEntityManager($this->getEntityManager());
-            $task->setPrinter($this->getPrinter());
             $task->setArguments($this->getArguments());
             
             $task->basicHelp();

@@ -19,10 +19,10 @@
  * <http://www.doctrine-project.org>.
  */
  
-namespace Doctrine\ORM\Tools\Cli\Tasks;
+namespace Doctrine\Common\Cli;
 
 /**
- * CLI Task to display the doctrine version
+ * CLI Output Style
  *
  * @license http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @link    www.doctrine-project.org
@@ -32,35 +32,62 @@ namespace Doctrine\ORM\Tools\Cli\Tasks;
  * @author  Jonathan Wage <jonwage@gmail.com>
  * @author  Roman Borschel <roman@code-factory.org>
  */
-class VersionTask extends AbstractTask
+class Style
 {
     /**
-     * @inheritdoc
+     * @var string Background color
      */
-    public function buildDocumentation()
-    {
-        // There're no options on this task
-        $this->getDocumentation()->getOptionGroup()->clear();
+    private $_background;
     
-        $doc = $this->getDocumentation();
-        $doc->setName('version')
-            ->setDescription('Displays the current installed Doctrine version.');
+    /**
+     * @var string Foreground color
+     */    
+    private $_foreground;
+    
+    /**
+     * @var array Formatting options
+     */
+    private $_options = array();
+    
+    /**
+     * @param string $foreground Foreground color name
+     * @param string $background Background color name
+     * @param array $options Formatting options
+     */
+    public function __construct($foreground = null, $background = null, $options = array())
+    {
+        $this->_foreground = strtoupper($foreground);
+        $this->_background = strtoupper($background);
+        $this->_options = $options;
     }
     
     /**
-     * @inheritdoc
-     */
-    public function validate()
-    {
-        return true;
-    }
-
-    /**
-     * Displays the current version of Doctrine
+     * Retrieves the foreground color name
      *
+     * @return string
      */
-    public function run()
+    public function getForeground()
     {
-        $this->getPrinter()->writeln('You are currently running Doctrine 2.0.0 Alpha 4', 'INFO');
+        return $this->_foreground;
+    }
+    
+    /**
+     * Retrieves the background color name
+     *
+     * @return string
+     */
+    public function getBackground()
+    {
+        return $this->_background;
+    }
+    
+    /**
+     * Retrieves the formatting options
+     *
+     * @return string
+     */
+    public function getOptions()
+    {
+        return $this->_options;
     }
 }

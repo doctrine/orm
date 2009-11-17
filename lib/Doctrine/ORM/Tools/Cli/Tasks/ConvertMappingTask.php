@@ -21,8 +21,10 @@
  
 namespace Doctrine\ORM\Tools\Cli\Tasks;
 
-use Doctrine\ORM\Tools\Export\ClassMetadataExporter,
-    Doctrine\Common\DoctrineException;
+use Doctrine\Common\DoctrineException,
+    Doctrine\Common\Cli\Option,
+    Doctrine\Common\Cli\OptionGroup,
+    Doctrine\ORM\Tools\Export\ClassMetadataExporter;
 
 if ( ! class_exists('sfYaml', false)) {
     require_once __DIR__ . '/../../../../../vendor/sfYaml/sfYaml.class.php';
@@ -47,44 +49,24 @@ class ConvertMappingTask extends AbstractTask
     /**
      * @inheritdoc
      */
-    public function extendedHelp()
+    public function buildDocumentation()
     {
-        $printer = $this->getPrinter();
+        $convertOptions = new OptionGroup(OptionGroup::CARDINALITY_N_N, array(
+            new OptionGroup(OptionGroup::CARDINALITY_1_1, array(
+                new Option('from', '<SOURCE>', 'The path to the mapping information to convert from (yml, xml, php, annotation).'),
+                new Option('from-database', null, 'Use this option if you wish to reverse engineer your database to a set of Doctrine mapping files.')
+            )),
+            new Option('to', '<TYPE>', 'The format to convert to (yml, xml, php, annotation).'),
+            new Option('dest', '<PATH>', 'The path to write the converted mapping information.')
+        ));
+        
+        $doc = $this->getDocumentation();
+        $doc->setName('convert-mapping')
+            ->setDescription('Convert mapping information between supported formats.')
+            ->getOptionGroup()
+                ->addOption($convertOptions);
+    }
     
-        $printer->write('Task: ')->writeln('convert-mapping', 'KEYWORD')
-                ->write('Synopsis: ');
-        $this->_writeSynopsis($printer);
-    
-        $printer->writeln('Description: Convert mapping information between supported formats.')
-                ->writeln('Options:')
-                ->write('--from=<SOURCE>', 'REQ_ARG')
-                ->writeln("\tThe path to the mapping information to convert from (yml, xml, php, annotation).")
-                ->write('--from-database', 'REQ_ARG')
-                ->writeln("\tUse this option if you wish to reverse engineer your database to a set of Doctrine mapping files.")
-                ->write('--to=<TYPE>', 'REQ_ARG')
-                ->writeln("\tThe format to convert to (yml, xml, php, annotation).")
-                ->write(PHP_EOL)
-                ->write('--dest=<PATH>', 'REQ_ARG')
-                ->writeln("\tThe path to write the converted mapping information.");
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function basicHelp()
-    {
-        $this->_writeSynopsis($this->getPrinter());
-    }
-
-    private function _writeSynopsis($printer)
-    {
-        $printer->write('convert-mapping', 'KEYWORD')
-                ->write(' --from=<SOURCE>', 'REQ_ARG')
-                ->write(' --to=<TYPE>', 'REQ_ARG')
-                ->write(' --dest=<PATH>', 'REQ_ARG')
-                ->writeln(' --from-database', 'OPT_ARG');
-    }
-
     /**
      * @inheritdoc
      */    

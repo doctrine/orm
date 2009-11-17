@@ -22,7 +22,9 @@
 namespace Doctrine\ORM\Tools\Cli\Tasks;
 
 use Doctrine\Common\DoctrineException,
-    Doctrine\Common\Util\Debug;
+    Doctrine\Common\Util\Debug,
+    Doctrine\Common\Cli\Option,
+    Doctrine\Common\Cli\OptionGroup;
 
 /**
  * Task for executing arbitrary SQL that can come from a file or directly from
@@ -41,41 +43,31 @@ class RunSqlTask extends AbstractTask
     /**
      * @inheritdoc
      */
-    public function extendedHelp()
+    public function buildDocumentation()
     {
-        $printer = $this->getPrinter();
+        $dqlAndFile = new OptionGroup(OptionGroup::CARDINALITY_1_1, array(
+            new Option(
+                'sql', '<DQL>', 
+                'The SQL to execute.' . PHP_EOL . 
+                'If defined, --file can not be requested on same task.'
+            ),
+            new Option(
+                'file', '<FILE_PATH>', 
+                'The path to the file with the SQL to execute.' . PHP_EOL . 
+                'If defined, --sql can not be requested on same task.'
+            )
+        ));
         
-        $printer->write('Task: ')->writeln('run-sql', 'KEYWORD')
-                ->write('Synopsis: ');
-        $this->_writeSynopsis($printer);
+        $depth = new OptionGroup(OptionGroup::CARDINALITY_0_1, array(
+            new Option('depth', '<DEPTH>', 'Dumping depth of Entities graph.')
+        ));
         
-        $printer->writeln('Description: Executes arbitrary SQL from a file or directly from the command line.')
-                ->writeln('Options:')
-                ->write('--sql=<SQL>', 'REQ_ARG')
-                ->writeln("\tThe SQL to execute.")
-                ->writeln("\t\tIf defined, --file can not be requested on same task")
-                ->write(PHP_EOL)
-                ->write('--file=<path>', 'REQ_ARG')
-                ->writeln("\tThe path to the file with the SQL to execute.")
-                ->writeln("\t\tIf defined, --sql can not be requested on same task")
-                ->write(PHP_EOL)
-                ->write('--depth=<DEPTH>', 'OPT_ARG')
-                ->writeln("\tDumping depth of ResultSet graph.");
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function basicHelp()
-    {
-        $this->_writeSynopsis($this->getPrinter());
-    }
-    
-    private function _writeSynopsis($printer)
-    {
-        $printer->write('run-sql', 'KEYWORD')
-                ->write(' (--file=<path> | --sql=<SQL>)', 'REQ_ARG')
-                ->writeln(' --depth=<DEPTH>', 'OPT_ARG');
+        $doc = $this->getDocumentation();
+        $doc->setName('run-sql')
+            ->setDescription('Executes arbitrary SQL from a file or directly from the command line.')
+            ->getOptionGroup()
+                ->addOption($dqlAndFile)
+                ->addOption($depth);
     }
     
     /**

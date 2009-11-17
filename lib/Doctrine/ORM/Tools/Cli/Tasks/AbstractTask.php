@@ -21,7 +21,10 @@
  
 namespace Doctrine\ORM\Tools\Cli\Tasks;
 
-use Doctrine\ORM\Tools\Cli\Printers\AbstractPrinter;
+use Doctrine\Common\Cli\Printers\AbstractPrinter,
+    Doctrine\Common\Cli\TaskDocumentation,
+    Doctrine\Common\Cli\OptionGroup,
+    Doctrine\Common\Cli\Option;
 
 /**
  * Base class for CLI Tasks.
@@ -51,6 +54,11 @@ abstract class AbstractTask
     protected $_printer;
     
     /**
+     * @var TaskDocumentation CLI Task Documentation
+     */
+    protected $_documentation;
+    
+    /**
      * @var array CLI argument options
      */
     protected $_arguments;
@@ -66,13 +74,24 @@ abstract class AbstractTask
     protected $_em;
     
     /**
-     * Defines a CLI Output Printer
+     * Constructor of CLI Task
      *
      * @param AbstractPrinter CLI Output Printer
      */
-    public function setPrinter(AbstractPrinter $printer)
+    public function __construct(AbstractPrinter $printer)
     {
         $this->_printer = $printer;
+        $this->_documentation = new TaskDocumentation($printer);
+        
+        // Include configuration option
+        $configGroup = new OptionGroup(OptionGroup::CARDINALITY_0_1);
+        $configGroup->addOption(
+            new Option('config', '<FILE_PATH>', 'Configuration file for EntityManager.')
+        );
+        $this->_documentation->addOption($configGroup);
+        
+        // Complete the CLI Task Documentation creation
+        $this->buildDocumentation();
     }
 
     /**
@@ -146,6 +165,16 @@ abstract class AbstractTask
     }
     
     /**
+     * Retrieves the CLI Task Documentation
+     *
+     * @return TaskDocumentation
+     */
+    public function getDocumentation()
+    {
+        return $this->_documentation;
+    }
+    
+    /**
      * Expose to CLI Output Printer the extended help of the given task.
      * This means it should detail all parameters, options and the meaning
      * of each one.
@@ -155,7 +184,10 @@ abstract class AbstractTask
      *     ./doctrine task --help
      *
      */
-    abstract public function extendedHelp();
+    public function extendedHelp()
+    {
+        $this->_printer->output($this->_documentation->getCompleteDocumentation());
+    }
     
     /**
      * Expose to CLI Output Printer the basic help of the given task.
@@ -173,7 +205,14 @@ abstract class AbstractTask
      *     ./doctrine --help
      *
      */
-    abstract public function basicHelp();
+    public function basicHelp()
+    {
+        $this->_printer
+             ->output($this->_documentation->getSynopsis())
+             ->output(PHP_EOL)
+             ->output('  ' . $this->_documentation->getDescription())
+             ->output(PHP_EOL . PHP_EOL);
+    }
     
     /**
      * Assures the given arguments matches with required/optional ones.
@@ -190,4 +229,9 @@ abstract class AbstractTask
      * what is supposed to do.
      */
     abstract public function run();
+    
+    /**
+     * Generate the CLI Task Documentation
+     */
+    abstract public function buildDocumentation();
 }

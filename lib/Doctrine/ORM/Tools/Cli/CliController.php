@@ -19,20 +19,20 @@
  * <http://www.doctrine-project.org>.
  */
  
-namespace Doctrine\ORM\Tools;
+namespace Doctrine\ORM\Tools\Cli;
 
 use Doctrine\Common\Util\Inflector,
-    Doctrine\ORM\Tools\Cli\Printers\AbstractPrinter,
-    Doctrine\ORM\Tools\Cli\Tasks\AbstractTask,
-    Doctrine\ORM\Tools\Cli\Printers\AnsiColorPrinter;
+    Doctrine\Common\Cli\Printers\AbstractPrinter,
+    Doctrine\Common\Cli\Printers\AnsiColorPrinter,
+    Doctrine\ORM\Tools\Cli\Tasks\AbstractTask;
 
 /**
- * Generic CLI Runner of Tasks
+ * Generic CLI Controller of Tasks execution
  *
  * To include a new Task support, create a task:
  *
  *     [php]
- *     class MyProject\Tools\Cli\Tasks\MyTask extends Doctrine\ORM\Tools\Cli\AbstractTask
+ *     class MyProject\Tools\Cli\Tasks\MyTask extends Doctrine\ORM\Tools\Cli\Tasks\AbstractTask
  *     {
  *         public function run();
  *         public function basicHelp();
@@ -43,7 +43,7 @@ use Doctrine\Common\Util\Inflector,
  * And then, include the support to it in your command-line script:
  *
  *     [php]
- *     $cli = new Doctrine\ORM\Tools\Cli();
+ *     $cli = new Doctrine\ORM\Tools\Cli\CliController();
  *     $cli->addTask('myTask', 'MyProject\Tools\Cli\Tasks\MyTask');
  *
  * To execute, just type any classify-able name:
@@ -58,7 +58,7 @@ use Doctrine\Common\Util\Inflector,
  * @author  Jonathan Wage <jonwage@gmail.com>
  * @author  Roman Borschel <roman@code-factory.org>
  */
-class Cli
+class CliController
 {
     /**
      * @var AbstractPrinter CLI Printer instance
@@ -107,12 +107,15 @@ class Cli
      *    ));
      *
      * @param array $tasks CLI Tasks to be included
+     * @return CliController This object instance
      */
     public function addTasks($tasks)
     {
         foreach ($tasks as $name => $class) {
             $this->addTask($name, $class);
         }
+        
+        return $this;
     }
     
     /**
@@ -124,6 +127,7 @@ class Cli
      *
      * @param string $name CLI Task name
      * @param string $class CLI Task class (FQCN - Fully Qualified Class Name)
+     * @return CliController This object instance
      */
     public function addTask($name, $class)
     {
@@ -132,6 +136,8 @@ class Cli
         $name = $this->_processTaskName($name);
         
         $this->_tasks[$name] = $class;
+        
+        return $this;
     }
     
     /**
@@ -170,10 +176,9 @@ class Cli
                     $em = $this->_initializeEntityManager($processedArgs, $taskArguments);
                 
                     // Instantiate and execute the task
-                    $task = new $this->_tasks[$taskName]();
+                    $task = new $this->_tasks[$taskName]($this->_printer);
                     $task->setAvailableTasks($this->_tasks);
                     $task->setEntityManager($em);
-                    $task->setPrinter($this->_printer);
                     $task->setArguments($taskArguments);
                 
                     if (

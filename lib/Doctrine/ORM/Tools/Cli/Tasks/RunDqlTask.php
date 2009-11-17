@@ -22,7 +22,9 @@
 namespace Doctrine\ORM\Tools\Cli\Tasks;
 
 use Doctrine\Common\DoctrineException,
-    Doctrine\Common\Util\Debug;
+    Doctrine\Common\Util\Debug,
+    Doctrine\Common\Cli\Option,
+    Doctrine\Common\Cli\OptionGroup;
 
 /**
  * Task for executing DQL in passed EntityManager.
@@ -40,36 +42,22 @@ class RunDqlTask extends AbstractTask
     /**
      * @inheritdoc
      */
-    public function extendedHelp()
+    public function buildDocumentation()
     {
-        $printer = $this->getPrinter();
+        $dql = new OptionGroup(OptionGroup::CARDINALITY_1_1, array(
+            new Option('dql', '<DQL>', 'The DQL to execute.')
+        ));
         
-        $printer->write('Task: ')->writeln('run-dql', 'KEYWORD')
-                ->write('Synopsis: ');
-        $this->_writeSynopsis($printer);
+        $depth = new OptionGroup(OptionGroup::CARDINALITY_0_1, array(
+            new Option('depth', '<DEPTH>', 'Dumping depth of Entities graph.')
+        ));
         
-        $printer->writeln('Description: Executes DQL in requested EntityManager.')
-                ->writeln('Options:')
-                ->write('--dql=<DQL>', 'REQ_ARG')
-                ->writeln("\tThe DQL to execute.")
-                ->write(PHP_EOL)
-                ->write('--depth=<DEPTH>', 'OPT_ARG')
-                ->writeln("\tDumping depth of Entities graph.");
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function basicHelp()
-    {
-        $this->_writeSynopsis($this->getPrinter());
-    }
-    
-    private function _writeSynopsis($printer)
-    {
-        $printer->write('run-dql', 'KEYWORD')
-                ->write(' --dql=<DQL>', 'REQ_ARG')
-                ->writeln(' --depth=<DEPTH>', 'OPT_ARG');
+        $doc = $this->getDocumentation();
+        $doc->setName('run-dql')
+            ->setDescription('Executes arbitrary DQL directly from the command line.')
+            ->getOptionGroup()
+                ->addOption($dql)
+                ->addOption($depth);
     }
     
     /**

@@ -2,6 +2,10 @@
 
 namespace Doctrine\ORM\Tools\Cli\Tasks;
 
+use Doctrine\Common\DoctrineException,
+    Doctrine\Common\Cli\Option,
+    Doctrine\Common\Cli\OptionGroup;
+
 /**
  * Task to (re)generate the proxy classes used by doctrine.
  * 
@@ -18,33 +22,17 @@ class GenerateProxiesTask extends AbstractTask
     /**
      * @inheritdoc
      */
-    public function extendedHelp()
+    public function buildDocumentation()
     {
-        $printer = $this->getPrinter();
+        $toDir = new OptionGroup(OptionGroup::CARDINALITY_0_1, array(
+            new Option('to-dir', '<PATH>', 'Generates the classes in the specified directory.')
+        ));
         
-        $printer->write('Task: ')->writeln('generate-proxies', 'KEYWORD')
-                ->write('Synopsis: ');
-        $this->_writeSynopsis($printer);
-        
-        $printer->writeln('Description: Generates proxy classes for entity classes.')
-                ->writeln('Options:')
-                ->write('--to-dir', 'OPT_ARG')
-                ->writeln("\t\tGenerates the classes in the specified directory.")
-                ->write(PHP_EOL);
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function basicHelp()
-    {
-        $this->_writeSynopsis($this->getPrinter());
-    }
-    
-    private function _writeSynopsis($printer)
-    {
-        $printer->write('generate-proxies', 'KEYWORD')
-                ->writeln(' [--to-dir=<PATH>]', 'OPT_ARG');
+        $doc = $this->getDocumentation();
+        $doc->setName('generate-proxies')
+            ->setDescription('Generates proxy classes for entity classes.')
+            ->getOptionGroup()
+                ->addOption($toDir);
     }
     
     /**

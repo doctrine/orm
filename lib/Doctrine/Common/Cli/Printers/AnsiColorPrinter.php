@@ -19,9 +19,9 @@
  * <http://www.doctrine-project.org>.
  */
  
-namespace Doctrine\ORM\Tools\Cli\Printers;
+namespace Doctrine\Common\Cli\Printers;
 
-use Doctrine\ORM\Tools\Cli\Style;
+use Doctrine\Common\Cli\Style;
 
 /**
  * CLI Output Printer for ANSI Color terminal
@@ -57,11 +57,12 @@ class AnsiColorPrinter extends AbstractPrinter
     /**
      * @inheritdoc
      */
-    public function format($message, $style)
+    public function format($message, $style = 'NONE')
     {
         if ( ! $this->_supportsColor()) {
             return $message;
         }
+        
         $style = $this->getStyle($style);
         $str = $this->_getForegroundString($style->getForeground()) 
              . $this->_getBackgroundString($style->getBackground()) 

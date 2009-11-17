@@ -19,9 +19,9 @@
  * <http://www.doctrine-project.org>.
  */
  
-namespace Doctrine\ORM\Tools\Cli\Printers;
+namespace Doctrine\Common\Cli\Printers;
 
-use Doctrine\ORM\Tools\Cli\Style;
+use Doctrine\Common\Cli\Style;
 
 /**
  * CLI Output Printer.
@@ -140,16 +140,28 @@ abstract class AbstractPrinter
     {
         $this->_maxColumnSize = $maxColumnSize;
     }
+    
+    /**
+     * Writes to the output stream.
+     *
+     * @param string $message Message to be outputted
+     */
+    public function output($message)
+    {
+        fwrite($this->_stream, $message);
+        
+        return $this;
+    }
 
     /**
-     * Writes to the output stream, formatting it by applying the defined style.
+     * Formats message applying the defined style and writes to the output stream.
      *
      * @param string $message Message to be outputted
      * @param mixed $style Optional style to be applied in message
      */
     public function write($message, $style = 'NONE')
     {
-        fwrite($this->_stream, $this->format($message, $style));
+        $this->output($this->format($message, $style));
         
         return $this;
     }

@@ -19,10 +19,10 @@
  * <http://www.doctrine-project.org>.
  */
  
-namespace Doctrine\ORM\Tools\Cli;
+namespace Doctrine\Common\Cli;
 
 /**
- * CLI Output Style
+ * CLI Option definition
  *
  * @license http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @link    www.doctrine-project.org
@@ -32,62 +32,68 @@ namespace Doctrine\ORM\Tools\Cli;
  * @author  Jonathan Wage <jonwage@gmail.com>
  * @author  Roman Borschel <roman@code-factory.org>
  */
-class Style
+class Option
 {
-    /**
-     * @var string Background color
-     */
-    private $_background;
+    /** @var string Option name */
+    private $_name;
+    
+    /** @var string Option default value */
+    
+    /** @var string Option description */
+    private $description;
     
     /**
-     * @var string Foreground color
-     */    
-    private $_foreground;
-    
-    /**
-     * @var array Formatting options
+     * Constructs a CLI Option
+     *
+     * @param string Option name
+     * @param integer Option type
+     * @param string Option description
      */
-    private $_options = array();
-    
-    /**
-     * @param string $foreground Foreground color name
-     * @param string $background Background color name
-     * @param array $options Formatting options
-     */
-    public function __construct($foreground = null, $background = null, $options = array())
+    public function __construct($name, $defaultValue, $description)
     {
-        $this->_foreground = strtoupper($foreground);
-        $this->_background = strtoupper($background);
-        $this->_options = $options;
+        $this->_name = $name;
+        $this->_defaultValue = $defaultValue;
+        $this->_description = $description;
     }
     
     /**
-     * Retrieves the foreground color name
+     * Retrieves the CLI Option name
      *
-     * @return string
+     * @return string Option name
      */
-    public function getForeground()
+    public function getName()
     {
-        return $this->_foreground;
+        return $this->_name;
     }
     
     /**
-     * Retrieves the background color name
+     * Retrieves the CLI Option default value
      *
-     * @return string
+     * @return string|null Option default value
      */
-    public function getBackground()
+    public function getDefaultValue()
     {
-        return $this->_background;
+        return $this->_defaultValue;
     }
     
     /**
-     * Retrieves the formatting options
+     * Retrieves the CLI Option description
      *
-     * @return string
+     * @return string Option description
      */
-    public function getOptions()
+    public function getDescription()
     {
-        return $this->_options;
+        return $this->_description;
+    }
+    
+    /**
+     * Converts the Option instance into a string representation
+     *
+     * @return string CLI Option representation in string
+     */
+    public function __toString()
+    {
+        return '--' . $this->_name 
+             . (( ! is_null($this->_defaultValue)) ? '=' . $this->_defaultValue : '');
     }
 }

@@ -36,27 +36,19 @@ use Doctrine\Common\Cache\AbstractDriver;
  */
 class EnsureProductionSettingsTask extends AbstractTask
 {
-    public function basicHelp()
+    /**
+     * @inheritdoc
+     */
+    public function buildDocumentation()
     {
-        $this->_writeSynopsis($this->getPrinter());
-    }
-
-    public function extendedHelp()
-    {
-        $printer = $this->getPrinter();
-    
-        $printer->write('Task: ')->writeln('ensure-production-settings', 'KEYWORD')
-                ->write('Synopsis: ');
-        $this->_writeSynopsis($printer);
-
-        $printer->writeln('Description: Verify that Doctrine is properly configured for a production environment.');
-    }
-
-    private function _writeSynopsis($printer)
-    {
-        $printer->writeln('ensure-production-settings', 'KEYWORD');
+        $doc = $this->getDocumentation();
+        $doc->setName('ensure-production-settings')
+            ->setDescription('Verify that Doctrine is properly configured for a production environment.');
     }
     
+    /**
+     * @inheritdoc
+     */
     public function validate()
     {
         return true;
@@ -65,6 +57,7 @@ class EnsureProductionSettingsTask extends AbstractTask
     public function run()
     {
         $printer = $this->getPrinter();
+        
         try {
             $this->getEntityManager()->getConfiguration()->ensureProductionSettings();
         } catch (\Doctrine\Common\DoctrineException $e) {
