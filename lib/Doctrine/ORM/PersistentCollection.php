@@ -241,6 +241,7 @@ final class PersistentCollection implements \Doctrine\Common\Collections\Collect
                 foreach ($newObjects as $obj) {
                     $this->_coll->add($obj);
                 }
+                $this->_isDirty = true;
             }
             $this->_initialized = true;
         }
