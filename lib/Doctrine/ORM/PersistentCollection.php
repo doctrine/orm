@@ -241,6 +241,7 @@ final class PersistentCollection implements \Doctrine\Common\Collections\Collect
                     $this->_coll->add($obj);
                 }
             }
+            $this->takeSnapshot();
             $this->_initialized = true;
         }
     }
@@ -376,6 +377,10 @@ final class PersistentCollection implements \Doctrine\Common\Collections\Collect
      */
     public function remove($key)
     {
+        // TODO: If the keys are persistent as well (not yet implemented)
+        //       and the collection is not initialized and orphanRemoval is
+        //       not used we can issue a straight SQL delete/update on the
+        //       association (table). Without initializing the collection.
         $this->_initialize();
         $removed = $this->_coll->remove($key);
         if ($removed) {
@@ -394,6 +399,16 @@ final class PersistentCollection implements \Doctrine\Common\Collections\Collect
      */
     public function removeElement($element)
     {
+        // TODO: Assuming the identity of entities in a collection is always based
+        //       on their primary key (there is no equals/hashCode in PHP),
+        //       if the collection is not initialized, we could issue a straight
+        //       SQL DELETE/UPDATE on the association (table) without initializing
+        //       the collection.
+        /*if ( ! $this->_initialized) {
+            $this->_em->getUnitOfWork()->getCollectionPersister($this->_association)
+                ->deleteRows($this, $element);
+        }*/
+        
         $this->_initialize();
         $result = $this->_coll->removeElement($element);
         $this->_changed();
@@ -414,6 +429,12 @@ final class PersistentCollection implements \Doctrine\Common\Collections\Collect
      */
     public function contains($element)
     {
+        // TODO: Assuming the identity of entities in a collection is always based
+        //       on their primary key (there is no equals/hashCode in PHP),
+        //       if the collection is not initialized, we could issue a straight
+        //       SQL "SELECT 1" on the association (table) without initializing
+        //       the collection.
+        
         $this->_initialize();
         return $this->_coll->contains($element);
     }

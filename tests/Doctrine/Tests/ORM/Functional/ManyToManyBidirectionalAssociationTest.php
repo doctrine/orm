@@ -59,10 +59,13 @@ class ManyToManyBidirectionalAssociationTest extends AbstractManyToManyAssociati
 
         $this->_em->flush();
 
-        $this->assertForeignKeysNotContain($this->firstProduct->getId(),
-                                   $this->firstCategory->getId());
-        $this->assertForeignKeysContain($this->firstProduct->getId(),
-                                   $this->secondCategory->getId());
+        $this->assertForeignKeysNotContain($this->firstProduct->getId(), $this->firstCategory->getId());
+        $this->assertForeignKeysContain($this->firstProduct->getId(), $this->secondCategory->getId());
+        
+        $this->firstProduct->getCategories()->remove(1);
+        $this->_em->flush();
+        
+        $this->assertForeignKeysNotContain($this->firstProduct->getId(), $this->secondCategory->getId());
     }
 
     public function testEagerLoadsInverseSide()
