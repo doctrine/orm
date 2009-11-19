@@ -235,13 +235,13 @@ final class PersistentCollection implements \Doctrine\Common\Collections\Collect
             }
             $this->_coll->clear();
             $this->_association->load($this->_owner, $this, $this->_em);
+            $this->takeSnapshot();
             // Reattach NEW objects added through add(), if any.
             if (isset($newObjects)) {
                 foreach ($newObjects as $obj) {
                     $this->_coll->add($obj);
                 }
             }
-            $this->takeSnapshot();
             $this->_initialized = true;
         }
     }
@@ -434,6 +434,8 @@ final class PersistentCollection implements \Doctrine\Common\Collections\Collect
         //       if the collection is not initialized, we could issue a straight
         //       SQL "SELECT 1" on the association (table) without initializing
         //       the collection.
+        
+        // TODO: Change to use PK identity, not php object identity!?
         
         $this->_initialize();
         return $this->_coll->contains($element);
