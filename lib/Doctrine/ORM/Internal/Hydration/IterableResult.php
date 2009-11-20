@@ -28,13 +28,46 @@ namespace Doctrine\ORM\Internal\Hydration;
  * @author robo
  * @since 2.0
  */
-class IterableResult
+class IterableResult implements \Iterator
 {
+    /**
+     *
+     * @var \Doctrine\ORM\Internal\Hydration\AbstractHydrator
+     */
     private $_hydrator;
 
+    /**
+     * @var bool
+     */
+    private $_rewinded = false;
+
+    /**
+     * @var int
+     */
+    private $_key = -1;
+
+    /**
+     * @var object
+     */
+    private $_current = null;
+
+    /**
+     *
+     * @param \Doctrine\ORM\Internal\Hydration\AbstractHydrator $hydrator
+     */
     public function __construct($hydrator)
     {
         $this->_hydrator = $hydrator;
+    }
+
+    public function rewind()
+    {
+        if($this->_rewinded == true) {
+            throw new HydrationException("Can only iterate a Result once.");
+        } else {
+            $this->_current = $this->next();
+            $this->_rewinded = true;
+        }
     }
 
     /**
@@ -44,6 +77,32 @@ class IterableResult
      */
     public function next()
     {
-        return $this->_hydrator->hydrateRow();
+        $this->_current = $this->_hydrator->hydrateRow();
+        $this->_key++;
+        return $this->_current;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function current()
+    {
+        return $this->_current;
+    }
+
+    /**
+     * @return int
+     */
+    public function key()
+    {
+        return $this->_key;
+    }
+
+    /**
+     * @return bool
+     */
+    public function valid()
+    {
+        return ($this->_current!=false);
     }
 }

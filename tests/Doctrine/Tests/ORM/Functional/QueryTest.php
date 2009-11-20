@@ -102,5 +102,78 @@ class QueryTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertEquals('Symfony 2', $users[0]->articles[1]->topic);
     }
 
+    public function testUsingUnknownQueryParameterShouldThrowException()
+    {
+        $this->setExpectedException(
+            "Doctrine\ORM\Query\QueryException",
+            "Invalid parameter: token 2 is not defined in the query."
+        );
+
+        $q = $this->_em->createQuery('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.name = ?1');
+        $q->setParameter(2, 'jwage');
+        $user = $q->getSingleResult();
+    }
+
+    public function testMismatchingParamExpectedParamCount()
+    {
+        $this->setExpectedException(
+            "Doctrine\ORM\Query\QueryException",
+            "Invalid parameter number: number of bound variables does not match number of tokens"
+        );
+
+        $q = $this->_em->createQuery('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.name = ?1');
+        $q->setParameter(1, 'jwage');
+        $q->setParameter(2, 'jwage');
+
+        $user = $q->getSingleResult();
+    }
+
+    public function testInvalidInputParameterThrowsException()
+    {
+        $this->setExpectedException("InvalidArgumentException");
+
+        $q = $this->_em->createQuery('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.name = ?');
+        $q->setParameter(1, 'jwage');
+        $user = $q->getSingleResult();
+    }
+
+    public function testIterateResult_IterativelyBuildUpUnitOfWork()
+    {
+        $article1 = new CmsArticle;
+        $article1->topic = "Doctrine 2";
+        $article1->text = "This is an introduction to Doctrine 2.";
+
+        $article2 = new CmsArticle;
+        $article2->topic = "Symfony 2";
+        $article2->text = "This is an introduction to Symfony 2.";
+
+        $this->_em->persist($article1);
+        $this->_em->persist($article2);
+
+        $this->_em->flush();
+        $this->_em->clear();
+
+        $query = $this->_em->createQuery("select a from Doctrine\Tests\Models\CMS\CmsArticle a");
+        $articles = $query->iterate();
+
+        $iteratedCount = 0;
+        $topics = array();
+        foreach($articles AS $row) {
+            $article = $row[0];
+            $topics[] = $article->topic;
+
+            $identityMap = $this->_em->getUnitOfWork()->getIdentityMap();
+            $identityMapCount = count($identityMap['Doctrine\Tests\Models\CMS\CmsArticle']);
+            $this->assertTrue($identityMapCount>$iteratedCount);
+            
+            $iteratedCount++;
+        }
+
+        $this->assertEquals(array("Doctrine 2", "Symfony 2"), $topics);
+        $this->assertEquals(2, $iteratedCount);
+
+        $this->_em->flush();
+        $this->_em->clear();
+    }
 }
 
