@@ -207,7 +207,16 @@ final class Query extends AbstractQuery
         $sqlParams = array();
         
         $paramMappings = $this->_parserResult->getParameterMappings();
+
+        if(count($paramMappings) != count($params)) {
+            throw new QueryException("Invalid parameter number: number of bound variables does not match number of tokens");
+        }
+
         foreach ($params as $key => $value) {
+            if(!isset($paramMappings[$key])) {
+                throw new QueryException("Invalid parameter: token ".$key." is not defined in the query.");
+            }
+
             if (is_object($value)) {
                 $values = $this->_em->getClassMetadata(get_class($value))->getIdentifierValues($value);
                 $sqlPositions = $paramMappings[$key];
