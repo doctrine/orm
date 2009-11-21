@@ -326,7 +326,16 @@ class SchemaTool
                 foreach ($mapping->getJoinColumns() as $joinColumn) {
                     $column = array();
                     $column['name'] = $mapping->getQuotedJoinColumnName($joinColumn['name'], $this->_platform);
-                    $column['type'] = Type::getType($foreignClass->getTypeOfColumn($joinColumn['referencedColumnName']));
+                    $referencedColumnName = $joinColumn['referencedColumnName'];
+                    $referencedFieldName = $foreignClass->getFieldName($referencedColumnName);
+                    if (!$foreignClass->hasField($referencedFieldName)) {
+                        throw new \Doctrine\Common\DoctrineException(
+                            "Column name `$referencedColumnName` referenced for relation from ".
+                            "$mapping->sourceEntityName towards $mapping->targetEntityName does not exist."
+                        );
+                    }
+                    $column['type'] = Type::getType($foreignClass->getTypeOfField($referencedFieldName));
+
                     $columns[$column['name']] = $column;
                     $constraint['local'][] = $column['name'];
                     $constraint['foreign'][] = $joinColumn['referencedColumnName'];
