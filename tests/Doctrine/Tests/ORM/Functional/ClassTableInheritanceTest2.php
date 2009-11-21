@@ -49,7 +49,6 @@ class ClassTableInheritanceTest2 extends \Doctrine\Tests\OrmFunctionalTestCase
         
         $this->assertSame($related2, $related2->getCTIParent()->getRelated());
     }
-    
 }
 
 /**

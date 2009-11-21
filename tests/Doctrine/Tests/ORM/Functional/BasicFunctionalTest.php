@@ -509,4 +509,37 @@ class BasicFunctionalTest extends \Doctrine\Tests\OrmFunctionalTestCase
                 "select count(u.id) from Doctrine\Tests\Models\CMS\CmsUser u")
                 ->getSingleScalarResult());
     }
+    
+    //DRAFT OF EXPECTED/DESIRED BEHAVIOR
+    /*public function testPersistentCollectionContainsDoesNeverInitialize()
+    {
+        $user = new CmsUser;
+        $user->name = 'Guilherme';
+        $user->username = 'gblanco';
+        $user->status = 'developer';
+        
+        $group = new CmsGroup;
+        $group->name = 'Developers';
+        
+        $user->addGroup($group);
+        
+        $this->_em->persist($user);
+        $this->_em->flush();
+        $this->_em->clear();
+        
+        $group = $this->_em->find(get_class($group), $group->getId());
+        
+        
+        
+        $user2 = new CmsUser;
+        $user2->id = $user->getId();
+        $this->assertFalse($group->getUsers()->contains($user2));
+        $this->assertFalse($group->getUsers()->isInitialized());
+        
+        $user2 = $this->_em->getReference(get_class($user), $user->getId());
+        $this->assertTrue($group->getUsers()->contains($user2));
+        $this->assertFalse($group->getUsers()->isInitialized());
+        
+    }
+    */
 }

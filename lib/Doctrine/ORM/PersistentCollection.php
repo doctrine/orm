@@ -162,8 +162,15 @@ final class PersistentCollection implements \Doctrine\Common\Collections\Collect
      * Gets the class descriptor for the owning entity class.
      *
      * @return Doctrine\ORM\Mapping\ClassMetadata
+     * @deprecated
+     * @todo Remove
      */
     public function getOwnerClass()
+    {
+        return $this->_typeClass;
+    }
+    
+    public function getTypeClass()
     {
         return $this->_typeClass;
     }
@@ -430,13 +437,22 @@ final class PersistentCollection implements \Doctrine\Common\Collections\Collect
      */
     public function contains($element)
     {
-        // TODO: Assuming the identity of entities in a collection is always based
-        //       on their primary key (there is no equals/hashCode in PHP),
-        //       if the collection is not initialized, we could issue a straight
-        //       SQL "SELECT 1" on the association (table) without initializing
-        //       the collection.
-        
-        // TODO: Change to use PK identity, not php object identity!?
+        /* DRAFT
+        if ($this->_initialized) {
+            return $this->_coll->contains($element);
+        } else {
+            if ($element is MANAGED) {
+                if ($this->_coll->contains($element)) {
+                    return true;
+                }
+                $exists = check db for existence;
+                if ($exists) {
+                    $this->_coll->add($element);
+                }
+                return $exists;
+            }
+            return false;
+        }*/
         
         $this->_initialize();
         return $this->_coll->contains($element);

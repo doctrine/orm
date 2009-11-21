@@ -208,12 +208,12 @@ final class Query extends AbstractQuery
         
         $paramMappings = $this->_parserResult->getParameterMappings();
 
-        if(count($paramMappings) != count($params)) {
+        if (count($paramMappings) != count($params)) {
             throw QueryException::invalidParameterNumber();
         }
 
         foreach ($params as $key => $value) {
-            if(!isset($paramMappings[$key])) {
+            if ( ! isset($paramMappings[$key])) {
                 throw QueryException::unknownParameter($key);
             }
 

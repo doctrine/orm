@@ -48,15 +48,12 @@ class ManyToManyPersister extends AbstractCollectionPersister
      * {@inheritdoc}
      *
      * @override
+     * @internal Order of the parameters must be the same as the order of the columns in
+     *           _getDeleteRowSql.
      */
     protected function _getDeleteRowSqlParameters(PersistentCollection $coll, $element)
     {
-        $params = array_merge(
-                $this->_uow->getEntityIdentifier($coll->getOwner()),
-                $this->_uow->getEntityIdentifier($element)
-                );
-        //var_dump($params);
-        return $params;
+        return $this->_collectJoinTableColumnParameters($coll, $element);
     }
 
     /**
@@ -71,12 +68,14 @@ class ManyToManyPersister extends AbstractCollectionPersister
      * {@inheritdoc}
      *
      * @override
+     * @internal Order of the parameters must be the same as the order of the columns in
+     *           _getInsertRowSql.
      */
     protected function _getInsertRowSql(PersistentCollection $coll)
     {
         $mapping = $coll->getMapping();
         $joinTable = $mapping->getJoinTable();
-        $columns = $mapping->getJoinTableColumnNames();
+        $columns = $mapping->joinTableColumns;
         return 'INSERT INTO ' . $joinTable['name'] . ' (' . implode(', ', $columns) . ')'
                 . ' VALUES (' . implode(', ', array_fill(0, count($columns), '?')) . ')';
     }
@@ -85,16 +84,52 @@ class ManyToManyPersister extends AbstractCollectionPersister
      * {@inheritdoc}
      *
      * @override
+     * @internal Order of the parameters must be the same as the order of the columns in
+     *           _getInsertRowSql.
      */
     protected function _getInsertRowSqlParameters(PersistentCollection $coll, $element)
     {
-        // FIXME: This is still problematic for composite keys because we silently
-        // rely on a specific ordering of the columns.
-        $params = array_merge(
-                $this->_uow->getEntityIdentifier($coll->getOwner()),
-                $this->_uow->getEntityIdentifier($element)
-                );
-        //var_dump($params);
+        return $this->_collectJoinTableColumnParameters($coll, $element);
+    }
+    
+    /**
+     * Collects the parameters for inserting/deleting on the join table in the order
+     * of the join table columns as specified in ManyToManyMapping#joinTableColumns.
+     *
+     * @param $coll
+     * @param $element
+     * @return array
+     */
+    private function _collectJoinTableColumnParameters(PersistentCollection $coll, $element)
+    {
+        $params = array();
+        $mapping = $coll->getMapping();
+        $isComposite = count($mapping->joinTableColumns) > 2;
+        
+        $identifier1 = $this->_uow->getEntityIdentifier($coll->getOwner());
+        $identifier2 = $this->_uow->getEntityIdentifier($element);
+        
+        if ($isComposite) {
+            $class1 = $this->_em->getClassMetadata(get_class($coll->getOwner()));
+            $class2 = $coll->getTypeClass();
+        }
+        
+        foreach ($mapping->joinTableColumns as $joinTableColumn) {
+            if (isset($mapping->relationToSourceKeyColumns[$joinTableColumn])) {
+                if ($isComposite) {
+                    $params[] = $identifier1[$class1->fieldNames[$mapping->relationToSourceKeyColumns[$joinTableColumn]]];
+                } else {
+                    $params[] = array_pop($identifier1);
+                }
+            } else {
+                if ($isComposite) {
+                    $params[] = $identifier2[$class2->fieldNames[$mapping->relationToTargetKeyColumns[$joinTableColumn]]];
+                } else {
+                    $params[] = array_pop($identifier2);
+                }
+            }
+        }
+
         return $params;
     }
 
@@ -108,7 +143,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
         $mapping = $coll->getMapping();
         $joinTable = $mapping->getJoinTable();
         $whereClause = '';
-        foreach ($mapping->sourceToRelationKeyColumns as $relationColumn) {
+        foreach ($mapping->relationToSourceKeyColumns as $relationColumn => $srcColumn) {
             if ($whereClause !== '') $whereClause .= ' AND ';
             $whereClause .= "$relationColumn = ?";
         }
@@ -119,11 +154,23 @@ class ManyToManyPersister extends AbstractCollectionPersister
      * {@inheritdoc}
      *
      * @override
+     * @internal Order of the parameters must be the same as the order of the columns in
+     *           _getDeleteSql.
      */
     protected function _getDeleteSqlParameters(PersistentCollection $coll)
     {
-        //FIXME: This is still problematic for composite keys because we silently
-        // rely on a specific ordering of the columns.
-        return $this->_uow->getEntityIdentifier($coll->getOwner());
+        $params = array();
+        $mapping = $coll->getMapping();
+        $identifier = $this->_uow->getEntityIdentifier($coll->getOwner());
+        if (count($mapping->relationToSourceKeyColumns) > 1) {
+            $sourceClass = $this->_em->getClassMetadata(get_class($mapping->getOwner()));
+            foreach ($mapping->relationToSourceKeyColumns as $relColumn => $srcColumn) {
+                $params[] = $identifier[$sourceClass->fieldNames[$srcColumn]];
+            }
+        } else {
+           $params[] = array_pop($identifier);
+        }
+        
+        return $params;
     }
 }

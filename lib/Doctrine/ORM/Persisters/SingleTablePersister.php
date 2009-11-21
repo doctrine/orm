@@ -21,6 +21,8 @@
 
 namespace Doctrine\ORM\Persisters;
 
+use Doctrine\DBAL\Types\Type;
+
 /**
  * Persister for entities that participate in a hierarchy mapped with the
  * SINGLE_TABLE strategy.
@@ -43,5 +45,40 @@ class SingleTablePersister extends StandardEntityPersister
             $result[$this->_class->getQuotedTableName($this->_platform)][$discColumn] =
                     $this->_class->discriminatorValue;
         }
+    }
+    
+    /** @override */
+    protected function _getSelectColumnList()
+    {
+        $columnList = parent::_getSelectColumnList();
+        // Append discriminator column
+        $columnList .= ', ' . $this->_class->getQuotedDiscriminatorColumnName($this->_platform);
+        ///$tableAlias = $this->_class->getQuotedTableName($this->_platform);
+        foreach ($this->_class->subClasses as $subClassName) {
+            $subClass = $this->_em->getClassMetadata($subClassName);
+            // Append subclass columns
+            foreach ($subClass->fieldMappings as $fieldName => $mapping) {
+                if ( ! isset($mapping['inherited'])) {
+                    $columnList .= ', ' . $subClass->getQuotedColumnName($fieldName, $this->_platform);
+                }
+            }
+            
+            // Append subclass foreign keys
+            foreach ($subClass->associationMappings as $assoc) {
+                if ($assoc->isOwningSide && $assoc->isOneToOne() && ! isset($subClass->inheritedAssociationFields[$assoc->sourceFieldName])) {
+                    foreach ($assoc->targetToSourceKeyColumns as $srcColumn) {
+                        $columnList .= ', ' /*. $tableAlias . '.'*/ . $assoc->getQuotedJoinColumnName($srcColumn, $this->_platform);
+                    }
+                }
+            }
+        }
+
+        return $columnList;
+    }
+    
+    /** @override */
+    protected function _processSqlResult(array $sqlResult)
+    {
+        return $this->_processSqlResultInheritanceAware($sqlResult);
     }
 }

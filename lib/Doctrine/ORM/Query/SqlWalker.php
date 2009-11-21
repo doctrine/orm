@@ -251,7 +251,7 @@ class SqlWalker implements TreeWalker
             }
         }
 
-        // LEFT JOIN subclass tables, only if partial objects disallowed
+        // LEFT JOIN subclass tables, if partial objects disallowed
         if ( ! $this->_query->getHint(Query::HINT_FORCE_PARTIAL_LOAD)) {
             foreach ($class->subClasses as $subClassName) {
                 $subClass = $this->_em->getClassMetadata($subClassName);
@@ -327,7 +327,7 @@ class SqlWalker implements TreeWalker
         $sql .= $AST->orderByClause ? $this->walkOrderByClause($AST->orderByClause) : '';
 
         $q = $this->getQuery();
-        $sql = $this->getConnection()->getDatabasePlatform()->modifyLimitQuery(
+        $sql = $this->_platform->modifyLimitQuery(
             $sql, $q->getMaxResults(), $q->getFirstResult()
         );
 
@@ -678,13 +678,13 @@ class SqlWalker implements TreeWalker
             $sql .= $assoc->getQuotedJoinTableName($this->_platform) . ' ' . $joinTableAlias . ' ON ';
             
             if ($relation->isOwningSide) {
-                foreach ($assoc->sourceToRelationKeyColumns as $sourceColumn => $relationColumn) {
+                foreach ($assoc->relationToSourceKeyColumns as $relationColumn => $sourceColumn) {
                     $sql .= $sourceTableAlias . '.' . $sourceClass->getQuotedColumnName($sourceClass->fieldNames[$sourceColumn], $this->_platform)
                           . ' = '
                           . $joinTableAlias . '.' . $assoc->getQuotedJoinColumnName($relationColumn, $this->_platform);
                 }
             } else {
-                foreach ($assoc->targetToRelationKeyColumns as $targetColumn => $relationColumn) {
+                foreach ($assoc->relationToTargetKeyColumns as $relationColumn => $targetColumn) {
                     $sql .= $sourceTableAlias . '.' . $targetClass->getQuotedColumnName($targetClass->fieldNames[$targetColumn], $this->_platform)
                           . ' = '
                           . $joinTableAlias . '.' . $assoc->getQuotedJoinColumnName($relationColumn, $this->_platform);
@@ -697,13 +697,13 @@ class SqlWalker implements TreeWalker
             $sql .= $targetTableName . ' ' . $targetTableAlias . ' ON ';
 
             if ($relation->isOwningSide) {
-                foreach ($assoc->targetToRelationKeyColumns as $targetColumn => $relationColumn) {
+                foreach ($assoc->relationToTargetKeyColumns as $relationColumn => $targetColumn) {
                     $sql .= $targetTableAlias . '.' . $targetClass->getQuotedColumnName($targetClass->fieldNames[$targetColumn], $this->_platform)
                           . ' = '
                           . $joinTableAlias . '.' . $assoc->getQuotedJoinColumnName($relationColumn, $this->_platform);
                 }
             } else {
-                foreach ($assoc->sourceToRelationKeyColumns as $sourceColumn => $relationColumn) {
+                foreach ($assoc->relationToSourceKeyColumns as $relationColumn => $sourceColumn) {
                     $sql .= $targetTableAlias . '.' . $sourceClass->getQuotedColumnName($sourceClass->fieldNames[$sourceColumn], $this->_platform)
                           . ' = '
                           . $joinTableAlias . '.' . $assoc->getQuotedJoinColumnName($relationColumn, $this->_platform);
@@ -787,7 +787,7 @@ class SqlWalker implements TreeWalker
             $columnAlias = $this->_platform->getSqlResultCasing($columnAlias);
             $this->_rsm->addScalarResult($columnAlias, $resultAlias);
         } else {
-            // IdentificationVariable
+            // $expr == IdentificationVariable
             $dqlAlias = $expr;
             $queryComp = $this->_queryComponents[$dqlAlias];
             $class = $queryComp['metadata'];

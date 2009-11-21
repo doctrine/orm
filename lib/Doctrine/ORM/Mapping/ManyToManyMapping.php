@@ -40,24 +40,14 @@ namespace Doctrine\ORM\Mapping;
 class ManyToManyMapping extends AssociationMapping
 {
     /**
-     * The key columns of the source table.
+     * Maps the columns in the relational table to the columns in the source table.
      */
-    public $sourceKeyColumns = array();
+    public $relationToSourceKeyColumns = array();
 
     /**
-     * The key columns of the target table.
+     * Maps the columns in the relation table to the columns in the target table.
      */
-    public $targetKeyColumns = array();
-
-    /**
-     * Maps the columns in the source table to the columns in the relation table.
-     */
-    public $sourceToRelationKeyColumns = array();
-
-    /**
-     * Maps the columns in the target table to the columns in the relation table.
-     */
-    public $targetToRelationKeyColumns = array();
+    public $relationToTargetKeyColumns = array();
 
     /**
      * List of aggregated column names on the join table.
@@ -105,46 +95,35 @@ class ManyToManyMapping extends AssociationMapping
                     $joinColumn['name'] = trim($joinColumn['name'], '`');
                     $joinColumn['quoted'] = true;
                 }
-                $this->sourceToRelationKeyColumns[$joinColumn['referencedColumnName']] = $joinColumn['name'];
+                $this->relationToSourceKeyColumns[$joinColumn['name']] = $joinColumn['referencedColumnName'];
                 $this->joinTableColumns[] = $joinColumn['name'];
             }
-            $this->sourceKeyColumns = array_keys($this->sourceToRelationKeyColumns);
             
             foreach ($mapping['joinTable']['inverseJoinColumns'] as &$inverseJoinColumn) {
                 if ($inverseJoinColumn['name'][0] == '`') {
                     $inverseJoinColumn['name'] = trim($inverseJoinColumn['name'], '`');
                     $inverseJoinColumn['quoted'] = true;
                 }
-                $this->targetToRelationKeyColumns[$inverseJoinColumn['referencedColumnName']] = $inverseJoinColumn['name'];
+                $this->relationToTargetKeyColumns[$inverseJoinColumn['name']] = $inverseJoinColumn['referencedColumnName'];
                 $this->joinTableColumns[] = $inverseJoinColumn['name'];
             }
-            $this->targetKeyColumns = array_keys($this->targetToRelationKeyColumns);
         }
     }
 
     public function getJoinTableColumnNames()
     {
         return $this->joinTableColumns;
+        //return array_merge(array_keys($this->relationToSourceKeyColumns), array_keys($this->relationToTargetKeyColumns));
+    }
+    
+    public function getRelationToSourceKeyColumns()
+    {
+        return $this->relationToSourceKeyColumns;
     }
 
-    public function getSourceToRelationKeyColumns()
+    public function getRelationToTargetKeyColumns()
     {
-        return $this->sourceToRelationKeyColumns;
-    }
-
-    public function getTargetToRelationKeyColumns()
-    {
-        return $this->targetToRelationKeyColumns;
-    }
-
-    public function getSourceKeyColumns()
-    {
-        return $this->sourceKeyColumns;
-    }
-
-    public function getTargetKeyColumns()
-    {
-        return $this->targetKeyColumns;
+        return $this->relationToTargetKeyColumns;
     }
 
     /**
@@ -161,7 +140,7 @@ class ManyToManyMapping extends AssociationMapping
         $sourceClass = $em->getClassMetadata($this->sourceEntityName);
         $joinTableConditions = array();
         if ($this->isOwningSide) {
-            foreach ($this->sourceToRelationKeyColumns as $sourceKeyColumn => $relationKeyColumn) {
+            foreach ($this->relationToSourceKeyColumns as $relationKeyColumn => $sourceKeyColumn) {
                 // getting id
                 if (isset($sourceClass->fieldNames[$sourceKeyColumn])) {
                     $joinTableConditions[$relationKeyColumn] = $sourceClass->reflFields[$sourceClass->fieldNames[$sourceKeyColumn]]->getValue($sourceEntity);
@@ -172,7 +151,7 @@ class ManyToManyMapping extends AssociationMapping
         } else {
             $owningAssoc = $em->getClassMetadata($this->targetEntityName)->associationMappings[$this->mappedByFieldName];
             // TRICKY: since the association is inverted source and target are flipped
-            foreach ($owningAssoc->targetToRelationKeyColumns as $sourceKeyColumn => $relationKeyColumn) {
+            foreach ($owningAssoc->relationToTargetKeyColumns as $relationKeyColumn => $sourceKeyColumn) {
                 // getting id
                 if (isset($sourceClass->fieldNames[$sourceKeyColumn])) {
                     $joinTableConditions[$relationKeyColumn] = $sourceClass->reflFields[$sourceClass->fieldNames[$sourceKeyColumn]]->getValue($sourceEntity);

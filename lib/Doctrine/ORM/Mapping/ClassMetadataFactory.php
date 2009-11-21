@@ -108,8 +108,9 @@ class ClassMetadataFactory
                 if (($cached = $this->_cacheDriver->fetch($cacheKey)) !== false) {
                     $this->_loadedMetadata[$className] = $cached;
                 } else {
-                    $this->_loadMetadata($className);
-                    $this->_cacheDriver->save($cacheKey, $this->_loadedMetadata[$className], null);
+                    foreach ($this->_loadMetadata($className) as $loadedClassName) {
+                        $this->_cacheDriver->save($cacheKey, $this->_loadedMetadata[$className], null);
+                    }
                 }
             } else {
                 $this->_loadMetadata($className);
@@ -151,6 +152,8 @@ class ClassMetadataFactory
      */
     protected function _loadMetadata($name)
     {
+        $loaded = array();
+        
         // Collect parent classes, ignoring transient (not-mapped) classes.
         $parentClass = $name;
         $parentClasses = array();
@@ -241,7 +244,11 @@ class ClassMetadataFactory
             if ( ! $class->isMappedSuperclass) {
                 array_unshift($visited, $className);
             }
+            
+            $loaded[] = $className;
         }
+        
+        return $loaded;
     }
 
     /**

@@ -30,8 +30,10 @@ foreach ($revisions as $rev) {
     $xml = simplexml_load_file($logsPath . $rev . '/log.xml');
     foreach ($xml->testsuite as $suite) {
         foreach ($suite->testcase as $test) {
-            $name = (string)$suite['name'] . '#' . (string)$test['name'];
-            $graphs[$name][] = (double)$test['time'];
+            if (stripos((string)$suite['name'], 'performance') !== false || stripos((string)$test['name'], 'performance') !== false) {
+                $name = (string)$suite['name'] . '#' . (string)$test['name'];
+                $graphs[$name][] = (double)$test['time'];
+            }
         }
     }
 }

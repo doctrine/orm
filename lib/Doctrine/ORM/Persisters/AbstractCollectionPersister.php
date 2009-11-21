@@ -48,13 +48,13 @@ abstract class AbstractCollectionPersister
         $this->_conn = $em->getConnection();
     }
 
-    public function recreate(PersistentCollection $coll)
+    /*public function recreate(PersistentCollection $coll)
     {
         if ($coll->getRelation()->isInverseSide()) {
             return;
         }
         //...
-    }
+    }*/
 
     /**
      * Deletes the persistent state represented by the given collection.
@@ -110,8 +110,8 @@ abstract class AbstractCollectionPersister
         }
     }
     
-    public function updateRows(PersistentCollection $coll)
-    {}
+    //public function updateRows(PersistentCollection $coll)
+    //{}
     
     public function insertRows(PersistentCollection $coll)
     {

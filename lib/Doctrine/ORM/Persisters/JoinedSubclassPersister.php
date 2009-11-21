@@ -78,8 +78,11 @@ class JoinedSubclassPersister extends StandardEntityPersister
     }
 
     /**
-     * {@inheritdoc}
+     * Gets the name of the table that owns the column the given field is mapped to.
+     * Does only look upwards in the hierarchy, not downwards.
      *
+     * @param string $fieldName
+     * @return string
      * @override
      */
     public function getOwningTable($fieldName)
@@ -371,5 +374,11 @@ class JoinedSubclassPersister extends StandardEntityPersister
                 . ' FROM ' . $this->_class->getQuotedTableName($this->_platform) . ' ' . $baseTableAlias
                 . $joinSql
                 . ($conditionSql != '' ? ' WHERE ' . $conditionSql : '');
+    }
+    
+    /** @override */
+    protected function _processSqlResult(array $sqlResult)
+    {
+        return $this->_processSqlResultInheritanceAware($sqlResult);
     }
 }

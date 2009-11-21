@@ -56,7 +56,7 @@ class TestUtil
             // Connect to tmpdb in order to drop and create the real test db.
             $tmpConn = \Doctrine\DBAL\DriverManager::getConnection($tmpDbParams);
             $realConn = \Doctrine\DBAL\DriverManager::getConnection($realDbParams);
-            
+
             $dbname = $realConn->getDatabase();
             $realConn->close();
             

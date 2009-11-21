@@ -137,6 +137,24 @@ class SingleTableInheritanceTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertNull($result[0]['e_related_entity_id']);
         $this->assertEquals('child', $result[0]['e_discr']);
     }
+    
+    public function testPolymorphicFind()
+    {
+        $child = new ChildEntity;
+        $child->setData('thedata');
+        $child->setNumber(1234);
+
+        $this->_em->persist($child);
+        $this->_em->flush();
+        
+        $this->_em->clear();
+        
+        $child2 = $this->_em->find('Doctrine\Tests\ORM\Functional\ParentEntity', $child->getId());
+        
+        $this->assertTrue($child2 instanceof ChildEntity);
+        $this->assertEquals('thedata', $child2->getData());
+        $this->assertSame(1234, $child2->getNumber());
+    }
 }
 
 /**

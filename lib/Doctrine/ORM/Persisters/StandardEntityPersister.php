@@ -21,13 +21,11 @@
 
 namespace Doctrine\ORM\Persisters;
 
-use Doctrine\Common\DoctrineException,
-    Doctrine\ORM\ORMException,
+use Doctrine\ORM\ORMException,
     Doctrine\Common\Collections\ArrayCollection,
     Doctrine\DBAL\Connection,
     Doctrine\DBAL\Types\Type,
     Doctrine\ORM\EntityManager,
-    Doctrine\ORM\UnitOfWork,
     Doctrine\ORM\Query,
     Doctrine\ORM\PersistentCollection,
     Doctrine\ORM\Mapping\ClassMetadata,
@@ -43,6 +41,7 @@ use Doctrine\Common\DoctrineException,
  * @version     $Revision: 3406 $
  * @link        www.doctrine-project.org
  * @since       2.0
+ * @todo Rename: BasicEntityPersister
  */
 class StandardEntityPersister
 {
@@ -52,13 +51,6 @@ class StandardEntityPersister
      * @var Doctrine\ORM\Mapping\ClassMetadata
      */
     protected $_class;
-
-    /**
-     * The name of the entity the persister is used for.
-     *
-     * @var string
-     */
-    protected $_entityName;
 
     /**
      * The Connection instance.
@@ -101,7 +93,6 @@ class StandardEntityPersister
         $this->_em = $em;
         $this->_conn = $em->getConnection();
         $this->_platform = $this->_conn->getDatabasePlatform();
-        $this->_entityName = $class->name;
         $this->_class = $class;
     }
 
@@ -189,10 +180,10 @@ class StandardEntityPersister
         $versionField = $this->_class->versionField;
         $identifier = $this->_class->getIdentifierColumnNames();
         $versionFieldColumnName = $this->_class->getColumnName($versionField);
-
+        //FIXME: Order with composite keys might not be correct
         $sql = "SELECT " . $versionFieldColumnName . " FROM " . $class->getQuotedTableName($this->_platform) .
                " WHERE " . implode(' = ? AND ', $identifier) . " = ?";
-        $value = $this->_conn->fetchColumn($sql, (array) $id);
+        $value = $this->_conn->fetchColumn($sql, array_values($id));
         $this->_class->setFieldValue($entity, $versionField, $value);
     }
 
@@ -347,15 +338,13 @@ class StandardEntityPersister
             if (isset($this->_class->associationMappings[$field])) {
                 $assocMapping = $this->_class->associationMappings[$field];
                 // Only owning side of x-1 associations can have a FK column.
-                if ( ! $assocMapping->isOneToOne() || $assocMapping->isInverseSide()) {
+                if ( ! $assocMapping->isOneToOne() || ! $assocMapping->isOwningSide) {
                     continue;
                 }
-
-                // Special case: One-one self-referencing of the same class.                
-                if ($newVal !== null /*&& $assocMapping->sourceEntityName == $assocMapping->targetEntityName*/) {
+         
+                if ($newVal !== null) {
                     $oid = spl_object_hash($newVal);
-                    $isScheduledForInsert = $uow->isScheduledForInsert($newVal);
-                    if (isset($this->_queuedInserts[$oid]) || $isScheduledForInsert) {
+                    if (isset($this->_queuedInserts[$oid]) || $uow->isScheduledForInsert($newVal)) {
                         // The associated entity $newVal is not yet persisted, so we must
                         // set $newVal = null, in order to insert a null value and schedule an
                         // extra update on the UnitOfWork.
@@ -366,15 +355,19 @@ class StandardEntityPersister
                     }
                 }
                 
+                if ($newVal !== null) {
+                    $newValId = $uow->getEntityIdentifier($newVal);
+                }
+                
+                $targetClass = $this->_em->getClassMetadata($assocMapping->targetEntityName);
+                $owningTable = $this->getOwningTable($field);
+                
                 foreach ($assocMapping->sourceToTargetKeyColumns as $sourceColumn => $targetColumn) {
                     $quotedSourceColumn = $assocMapping->getQuotedJoinColumnName($sourceColumn, $this->_platform);
                     if ($newVal === null) {
-                        $result[$this->getOwningTable($field)][$quotedSourceColumn] = null;
+                        $result[$owningTable][$quotedSourceColumn] = null;
                     } else {
-                        $otherClass = $this->_em->getClassMetadata($assocMapping->targetEntityName);
-                        $result[$this->getOwningTable($field)][$quotedSourceColumn] =
-                                $otherClass->reflFields[$otherClass->fieldNames[$targetColumn]]
-                                ->getValue($newVal);
+                        $result[$owningTable][$quotedSourceColumn] = $newValId[$targetClass->fieldNames[$targetColumn]];
                     }
                 }
             } else if ($newVal === null) {
@@ -426,7 +419,7 @@ class StandardEntityPersister
      * @param array $id The identifier of the entity as an associative array from column names to values.
      * @param object $entity The entity to refresh.
      */
-    public function refresh(array $id, $entity)
+    final public function refresh(array $id, $entity)
     {
         $stmt = $this->_conn->prepare($this->_getSelectEntitiesSql($id));
         $stmt->execute(array_values($id));
@@ -550,7 +543,6 @@ class StandardEntityPersister
         $stmt = $this->_conn->prepare($this->_getSelectManyToManyEntityCollectionSql($assoc, $criteria));
         $stmt->execute(array_values($criteria));
         while ($result = $stmt->fetch(Connection::FETCH_ASSOC)) {
-            //$coll->add($this->_createEntity($result));
             $coll->hydrateAdd($this->_createEntity($result));
         }
         $stmt->closeCursor();
@@ -570,37 +562,47 @@ class StandardEntityPersister
             return null;
         }
 
-        $data = $joinColumnValues = array();
-        $entityName = $this->_entityName;
-        
-        foreach ($result as $column => $value) {
-            $column = $this->_class->resultColumnNames[$column];
-            if (isset($this->_class->fieldNames[$column])) {
-                $fieldName = $this->_class->fieldNames[$column];
-                $data[$fieldName] = Type::getType($this->_class->fieldMappings[$fieldName]['type'])
-                        ->convertToPHPValue($value, $this->_platform);
-            } else if ($this->_class->discriminatorColumn !== null && $column == $this->_class->discriminatorColumn['name']) {
-                $entityName = $this->_class->discriminatorMap[$value];
-            } else {
-                $data[$column] = $value;
-                $joinColumnValues[$column] = $value;
-            }
-        }
+        list($entityName, $data) = $this->_processSqlResult($result);
         
         if ($entity !== null) {
             $hints[Query::HINT_REFRESH] = true;
             $id = array();
             if ($this->_class->isIdentifierComposite) {
                 foreach ($this->_class->identifier as $fieldName) {
-                    $id[] = $data[$fieldName];
+                    $id[$fieldName] = $data[$fieldName];
                 }
             } else {
-                $id = array($data[$this->_class->identifier[0]]);
+                $id = array($this->_class->identifier[0] => $data[$this->_class->identifier[0]]);
             }
             $this->_em->getUnitOfWork()->registerManaged($entity, $id, $data);
         }
         
         return $this->_em->getUnitOfWork()->createEntity($entityName, $data, $hints);
+    }
+    
+    /**
+     * Processes an SQL result set row that contains data for an entity of the type
+     * this persister is responsible for.
+     * 
+     * @param array $sqlResult The SQL result set row to process.
+     * @return array A tuple where the first value is the actual type of the entity and
+     *               the second value the data of the entity.
+     */
+    protected function _processSqlResult(array $sqlResult)
+    {
+        $data = array();
+        foreach ($sqlResult as $column => $value) {
+            $column = $this->_class->resultColumnNames[$column];
+            if (isset($this->_class->fieldNames[$column])) {
+                $field = $this->_class->fieldNames[$column];
+                $data[$field] = Type::getType($this->_class->fieldMappings[$field]['type'])
+                        ->convertToPHPValue($value, $this->_platform);
+            } else {
+                $data[$column] = $value;
+            }
+        }
+        
+        return array($this->_class->name, $data);
     }
 
     /**
@@ -611,23 +613,6 @@ class StandardEntityPersister
      */
     protected function _getSelectEntitiesSql(array &$criteria, $assoc = null)
     {
-        $columnList = '';
-        
-        // Add regular columns to select list
-        foreach ($this->_class->fieldNames as $field) {
-            if ($columnList != '') $columnList .= ', ';
-            $columnList .= $this->_class->getQuotedColumnName($field, $this->_platform);
-        }
-        
-        // Add join columns (foreign keys) to select list
-        foreach ($this->_class->associationMappings as $assoc2) {
-            if ($assoc2->isOwningSide && $assoc2->isOneToOne()) {
-                foreach ($assoc2->targetToSourceKeyColumns as $srcColumn) {
-                    $columnList .= ', ' . $assoc2->getQuotedJoinColumnName($srcColumn, $this->_platform);
-                }
-            }
-        }
-    
         // Construct WHERE conditions
         $conditionSql = '';
         foreach ($criteria as $field => $value) {
@@ -647,9 +632,37 @@ class StandardEntityPersister
             $conditionSql .= ' = ?';
         }
 
-        return 'SELECT ' . $columnList 
+        return 'SELECT ' . $this->_getSelectColumnList() 
              . ' FROM ' . $this->_class->getQuotedTableName($this->_platform)
              . ($conditionSql ? ' WHERE ' . $conditionSql : '');
+    }
+    
+    /**
+     * Gets the SQL fragment with the list of columns to select when querying for
+     * a entity of the type of this persister.
+     * 
+     * @return string The SQL fragment.
+     */
+    protected function _getSelectColumnList()
+    {
+        $columnList = '';
+        
+        // Add regular columns to select list
+        foreach ($this->_class->fieldNames as $field) {
+            if ($columnList != '') $columnList .= ', ';
+            $columnList .= $this->_class->getQuotedColumnName($field, $this->_platform);
+        }
+        
+        // Add join columns (foreign keys) to select list
+        foreach ($this->_class->associationMappings as $assoc) {
+            if ($assoc->isOwningSide && $assoc->isOneToOne()) {
+                foreach ($assoc->targetToSourceKeyColumns as $srcColumn) {
+                    $columnList .= ', ' . $assoc->getQuotedJoinColumnName($srcColumn, $this->_platform);
+                }
+            }
+        }
+        
+        return $columnList;
     }
     
     /**
@@ -678,16 +691,16 @@ class StandardEntityPersister
         
         if ($manyToMany->isOwningSide) {
             $owningAssoc = $manyToMany;
-            $joinClauses = $manyToMany->targetToRelationKeyColumns;
+            $joinClauses = $manyToMany->relationToTargetKeyColumns;
         } else {
             $owningAssoc = $this->_em->getClassMetadata($manyToMany->targetEntityName)->associationMappings[$manyToMany->mappedByFieldName];
-            $joinClauses = $owningAssoc->sourceToRelationKeyColumns;
+            $joinClauses = $owningAssoc->relationToSourceKeyColumns;
         }
         
         $joinTableName = $owningAssoc->getQuotedJoinTableName($this->_platform);
         
         $joinSql = '';
-        foreach ($joinClauses as $sourceColumn => $joinTableColumn) {
+        foreach ($joinClauses as $joinTableColumn => $sourceColumn) {
             if ($joinSql != '') $joinSql .= ' AND ';
             $joinSql .= $this->_class->getQuotedTableName($this->_platform) .
                     '.' . $this->_class->getQuotedColumnName($this->_class->fieldNames[$sourceColumn], $this->_platform) . ' = '
@@ -709,5 +722,51 @@ class StandardEntityPersister
              . ' FROM ' . $this->_class->getQuotedTableName($this->_platform)
              . $joinSql
              . ' WHERE ' . $conditionSql;
+    }
+    
+    /** @override */
+    final protected function _processSqlResultInheritanceAware(array $sqlResult)
+    {
+        $data = array();
+        $entityName = $this->_class->name;
+        foreach ($sqlResult as $column => $value) {
+            $column = $this->_class->resultColumnNames[$column];
+            if (($class = $this->_findDeclaringClass($column)) !== false) {
+                $field = $class->fieldNames[$column];
+                $data[$field] = Type::getType($class->fieldMappings[$field]['type'])
+                        ->convertToPHPValue($value, $this->_platform);
+            } else if ($column == $this->_class->discriminatorColumn['name']) {
+                $entityName = $this->_class->discriminatorMap[$value];
+            } else {
+                $data[$column] = $value;
+            }
+        }
+        
+        return array($entityName, $data);
+    }
+    
+    private function _findDeclaringClass($column)
+    {
+        static $cache = array();
+        
+        if (isset($cache[$column])) {
+            return $cache[$column];
+        }
+        
+        if (isset($this->_class->fieldNames[$column])) {
+            $cache[$column] = $this->_class;
+            return $this->_class;
+        }
+        
+        foreach ($this->_class->subClasses as $subClassName) {
+            $subClass = $this->_em->getClassMetadata($subClassName);
+            if (isset($subClass->fieldNames[$column])) {
+                $cache[$column] = $subClass;
+                return $subClass;
+            }
+        }
+        
+        $cache[$column] = false;
+        return false;
     }
 }

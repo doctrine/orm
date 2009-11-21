@@ -121,12 +121,12 @@ final class ClassMetadata extends ClassMetadataInfo
      * Gets the ReflectionProperty for the single identifier field.
      *
      * @return ReflectionProperty
-     * @throws DoctrineException If the class has a composite identifier.
+     * @throws BadMethodCallException If the class has a composite identifier.
      */
     public function getSingleIdReflectionProperty()
     {
         if ($this->isIdentifierComposite) {
-            throw DoctrineException::singleIdNotAllowedOnCompositePrimaryKey();
+            throw new \BadMethodCallException("Class " . $this->name . " has a composite identifier.");
         }
         return $this->reflFields[$this->identifier[0]];
     }
@@ -163,12 +163,12 @@ final class ClassMetadata extends ClassMetadataInfo
             foreach ($this->identifier as $idField) {
                 $value = $this->reflFields[$idField]->getValue($entity);
                 if ($value !== null) {
-                    $id[] = $value;
+                    $id[$idField] = $value;
                 }
             }
             return $id;
         } else {
-            return $this->reflFields[$this->identifier[0]]->getValue($entity);
+            return array($this->identifier[0] => $this->reflFields[$this->identifier[0]]->getValue($entity));
         }
     }
     

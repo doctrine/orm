@@ -124,7 +124,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
      */
     public function getMetadataDriverImpl()
     {
-        if($this->_attributes['metadataDriverImpl'] == null) {
+        if ($this->_attributes['metadataDriverImpl'] == null) {
             $reader = new \Doctrine\Common\Annotations\AnnotationReader(new \Doctrine\Common\Cache\ArrayCache);
             $reader->setDefaultAnnotationNamespace('Doctrine\ORM\Mapping\\');
             $this->_attributes['metadataDriverImpl'] = new \Doctrine\ORM\Mapping\Driver\AnnotationDriver($reader);

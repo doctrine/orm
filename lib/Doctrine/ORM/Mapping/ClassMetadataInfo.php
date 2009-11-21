@@ -264,6 +264,9 @@ class ClassMetadataInfo
      * as any join columns and discriminator columns.
      * 
      * @var array
+     * @todo Remove. Or at least remove from serialization/unserialization and instead
+     *       populate them during runtime.
+     *       See http://www.doctrine-project.org/jira/browse/DDC-132.
      */
     public $resultColumnNames = array();
 
@@ -486,7 +489,7 @@ class ClassMetadataInfo
      * @param string $fieldName
      * @return string
      */
-    public function getOwningClass($fieldName)
+    /*public function getOwningClass($fieldName)
     {
         if ($this->inheritanceType == self::INHERITANCE_TYPE_NONE) {
             return $this->name;
@@ -494,7 +497,7 @@ class ClassMetadataInfo
             $mapping = $this->getFieldMapping($fieldName);
             return $mapping['inherited'];
         }
-    }
+    }*/
 
     /**
      * Gets the name of the root class of the mapped entity hierarchy. If the entity described
