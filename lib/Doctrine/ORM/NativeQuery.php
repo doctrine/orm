@@ -46,10 +46,12 @@ final class NativeQuery extends AbstractQuery
      * Sets the SQL of the query.
      *
      * @param string $sql
+     * @return Doctrine\ORM\AbstractQuery
      */
     public function setSql($sql)
     {
         $this->_sql = $sql;
+        return $this;
     }
 
     /**

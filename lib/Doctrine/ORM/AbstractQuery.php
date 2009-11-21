@@ -184,39 +184,45 @@ abstract class AbstractQuery
      *
      * @param string|integer $key The parameter position or name.
      * @param mixed $value The parameter value.
+     * @return Doctrine\ORM\AbstractQuery
      */
     public function setParameter($key, $value)
     {
         $this->_params[$key] = $value;
+        return $this;
     }
     
     /**
      * Sets a collection of query parameters.
      *
      * @param array $params
+     * @return Doctrine\ORM\AbstractQuery
      */
     public function setParameters(array $params)
     {
         foreach ($params as $key => $value) {
             $this->setParameter($key, $value);
         }
+        return $this;
     }
 
     /**
      * Sets the ResultSetMapping that should be used for hydration.
      *
      * @param ResultSetMapping $rsm
+     * @return Doctrine\ORM\AbstractQuery
      */
     public function setResultSetMapping($rsm)
     {
         $this->_resultSetMapping = $rsm;
+        return $this;
     }
 
     /**
      * Defines a cache driver to be used for caching result sets.
      *
      * @param Doctrine\Common\Cache\Cache $driver Cache driver
-     * @return Doctrine\ORM\Query
+     * @return Doctrine\ORM\AbstractQuery
      */
     public function setResultCacheDriver($resultCacheDriver = null)
     {
@@ -227,6 +233,7 @@ abstract class AbstractQuery
         if ($resultCacheDriver) {
             $this->_useResultCache = true;
         }
+        return $this;
     }
 
     /**
@@ -263,6 +270,7 @@ abstract class AbstractQuery
      * Defines how long the result cache will be active before expire.
      *
      * @param integer $timeToLive How long the cache entry is valid
+     * @return Doctrine\ORM\AbstractQuery
      */
     public function setResultCacheLifetime($timeToLive)
     {
@@ -271,6 +279,7 @@ abstract class AbstractQuery
         }
 
         $this->_resultCacheTTL = $timeToLive;
+        return $this;
     }
 
     /**
@@ -287,11 +296,12 @@ abstract class AbstractQuery
      * Defines if the result cache is active or not.
      *
      * @param boolean $expire Whether or not to force resultset cache expiration.
-     * @return Doctrine_ORM_Query
+     * @return Doctrine\ORM\AbstractQuery
      */
-    public function setExpireResultCache($expire = true)
+    public function expireResultCache($expire = true)
     {
         $this->_expireResultCache = $expire;
+        return $this;
     }
 
     /**
@@ -309,10 +319,12 @@ abstract class AbstractQuery
      *
      * @param integer $hydrationMode Doctrine processing mode to be used during hydration process.
      *                               One of the Query::HYDRATE_* constants.
+     * @return Doctrine\ORM\AbstractQuery
      */
     public function setHydrationMode($hydrationMode)
     {
         $this->_hydrationMode = $hydrationMode;
+        return $this;
     }
 
     /**
@@ -406,10 +418,12 @@ abstract class AbstractQuery
      *
      * @param string $name The name of the hint.
      * @param mixed $value The value of the hint.
+     * @return Doctrine\ORM\AbstractQuery
      */
     public function setHint($name, $value)
     {
         $this->_hints[$name] = $value;
+        return $this;
     }
 
     /**
@@ -502,11 +516,13 @@ abstract class AbstractQuery
      * If this is not explicitely set by the developer then a hash is automatically
      * generated for you.
      *
-     * @param string $id 
+     * @param string $id
+     * @return Doctrine\ORM\AbstractQuery
      */
     public function setResultCacheId($id)
     {
         $this->_resultCacheId = $id;
+        return $this;
     }
 
     /**

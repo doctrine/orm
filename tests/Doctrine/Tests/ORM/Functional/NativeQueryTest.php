@@ -140,5 +140,22 @@ class NativeQueryTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertEquals(10827, $users[0]->getAddress()->getZipCode());
         $this->assertEquals('Berlin', $users[0]->getAddress()->getCity());
     }
+
+    public function testFluentInterface()
+    {
+        $rsm = new ResultSetMapping;
+
+        $q = $this->_em->createNativeQuery('SELECT id, name, status, phonenumber FROM cms_users INNER JOIN cms_phonenumbers ON id = user_id WHERE username = ?', $rsm);
+        $q2 = $q->setSql('foo', $rsm)
+          ->setResultSetMapping($rsm)
+          ->expireResultCache(true)
+          ->setHint('foo', 'bar')
+          ->setParameter(1, 'foo')
+          ->setParameters(array(2 => 'bar'))
+          ->setResultCacheDriver(null)
+          ->setResultCacheLifetime(3500);
+
+        $this->assertSame($q, $q2);
+    }
 }
 

@@ -296,7 +296,7 @@ final class Query extends AbstractQuery
      * @param boolean $expire Whether or not to force query cache expiration.
      * @return Query This query instance.
      */
-    public function setExpireQueryCache($expire = true)
+    public function expireQueryCache($expire = true)
     {
         $this->_expireQueryCache = $expire;
 
@@ -327,6 +327,7 @@ final class Query extends AbstractQuery
      * Sets a DQL query string.
      *
      * @param string $dqlQuery DQL Query
+     * @return Doctrine\ORM\AbstractQuery
      */
     public function setDql($dqlQuery)
     {
@@ -334,6 +335,7 @@ final class Query extends AbstractQuery
             $this->_dql = $dqlQuery;
             $this->_state = self::STATE_DIRTY;
         }
+        return $this;
     }
 
     /**

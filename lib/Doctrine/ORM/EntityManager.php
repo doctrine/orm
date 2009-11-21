@@ -245,7 +245,7 @@ class EntityManager
      *
      * @param string $sql
      * @param ResultSetMapping $rsm The ResultSetMapping to use.
-     * @return Query
+     * @return NativeQuery
      */
     public function createNativeQuery($sql, \Doctrine\ORM\Query\ResultSetMapping $rsm)
     {
