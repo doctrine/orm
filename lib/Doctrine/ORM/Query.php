@@ -209,12 +209,12 @@ final class Query extends AbstractQuery
         $paramMappings = $this->_parserResult->getParameterMappings();
 
         if(count($paramMappings) != count($params)) {
-            throw new QueryException("Invalid parameter number: number of bound variables does not match number of tokens");
+            throw QueryException::invalidParameterNumber();
         }
 
         foreach ($params as $key => $value) {
             if(!isset($paramMappings[$key])) {
-                throw new QueryException("Invalid parameter: token ".$key." is not defined in the query.");
+                throw QueryException::unknownParameter($key);
             }
 
             if (is_object($value)) {

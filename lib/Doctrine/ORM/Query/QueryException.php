@@ -34,11 +34,10 @@ namespace Doctrine\ORM\Query;
  */
 class QueryException extends \Doctrine\Common\DoctrineException 
 {
-	public static function syntaxError($message)
+    public static function syntaxError($message)
     {
         return new self('[Syntax Error] ' . $message);
     }
-    
     
     public static function semanticalError($message)
     {
@@ -48,5 +47,20 @@ class QueryException extends \Doctrine\Common\DoctrineException
     public static function invalidParameterPosition($pos)
     {
         return new self('Invalid parameter position: ' . $pos);
+    }
+
+    public static function invalidParameterNumber()
+    {
+        return new self("Invalid parameter number: number of bound variables does not match number of tokens");
+    }
+
+    public static function invalidParameterFormat($value)
+    {
+        return new self('Invalid parameter format, '.$value.' given, but :<name> or ?<num> expected.');
+    }
+
+    public static function unknownParameter($key)
+    {
+        return new self("Invalid parameter: token ".$key." is not defined in the query.");
     }
 }

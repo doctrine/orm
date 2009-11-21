@@ -130,7 +130,7 @@ class QueryTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
     public function testInvalidInputParameterThrowsException()
     {
-        $this->setExpectedException("InvalidArgumentException");
+        $this->setExpectedException("Doctrine\ORM\Query\QueryException");
 
         $q = $this->_em->createQuery('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.name = ?');
         $q->setParameter(1, 'jwage');

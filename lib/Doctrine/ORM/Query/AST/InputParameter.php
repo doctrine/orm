@@ -43,10 +43,7 @@ class InputParameter extends Node
     public function __construct($value)
     {
         if (strlen($value) == 1) {
-            throw new \InvalidArgumentException(
-                "Invalid parameter format, '".$value."' given, ".
-                "but :<name> or ?<num> expected."
-            );
+            throw \Doctrine\ORM\Query\QueryException::invalidParameterFormat($value);
         }
 
         $param = substr($value, 1);
