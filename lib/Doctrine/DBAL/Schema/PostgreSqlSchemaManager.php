@@ -46,6 +46,38 @@ class PostgreSqlSchemaManager extends AbstractSchemaManager
         }
     }
 
+    public function dropDatabase($database)
+    {
+      $params = $this->_conn->getParams();
+      $params["dbname"] = "postgres";
+      $tmpPlatform = $this->_platform;
+      $tmpConn = $this->_conn;
+      
+      $this->_conn = \Doctrine\DBAL\DriverManager::getConnection($params);
+      $this->_platform = $this->_conn->getDatabasePlatform(); 
+      
+      parent::dropDatabase($database);
+      
+      $this->_platform = $tmpPlatform;
+      $this->_conn = $tmpConn;
+    }
+
+    public function createDatabase($database)
+    {
+      $params = $this->_conn->getParams();
+      $params["dbname"] = "postgres";
+      $tmpPlatform = $this->_platform;
+      $tmpConn = $this->_conn;
+      
+      $this->_conn = \Doctrine\DBAL\DriverManager::getConnection($params);
+      $this->_platform = $this->_conn->getDatabasePlatform(); 
+      
+      parent::createDatabase($database);
+      
+      $this->_platform = $tmpPlatform;
+      $this->_conn = $tmpConn;
+    }    
+    
     protected function _getPortableTriggerDefinition($trigger)
     {
         return $trigger['trigger_name'];

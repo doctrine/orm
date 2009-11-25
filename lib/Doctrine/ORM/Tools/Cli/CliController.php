@@ -236,10 +236,13 @@ class CliController
      *         ),
      *     ),
      *     1 => array(
-     *         'option' => true,
-     *         'a' => 'value',
-     *         'optArr' => array(
-     *             'value1', 'value2'
+     *         'name' => 'bar',
+     *         'args' => array(
+     *             'option' => true,
+     *             'a' => 'value',
+     *             'optArr' => array(
+     *                 'value1', 'value2'
+     *             ),
      *         ),
      *     ),
      * )
