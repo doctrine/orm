@@ -49,16 +49,16 @@ class Assigned extends AbstractIdGenerator
             foreach ($idFields as $idField) {
                 $value = $class->getReflectionProperty($idField)->getValue($entity);
                 if (isset($value)) {
-                    $identifier[] = $value;
+                    $identifier[$idField] = $value;
                 } else {
                     throw ORMException::entityMissingAssignedId($entity);
                 }
             }
         } else {
-            $value = $class->getReflectionProperty($class->getSingleIdentifierFieldName())
-                    ->getValue($entity);
+            $idField = $class->identifier[0];
+            $value = $class->reflFields[$idField]->getValue($entity);
             if (isset($value)) {
-                $identifier[] = $value;
+                $identifier[$idField] = $value;
             } else {
                 throw ORMException::entityMissingAssignedId($entity);
             }

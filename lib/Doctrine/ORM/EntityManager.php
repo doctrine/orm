@@ -588,7 +588,6 @@ class EntityManager
      *
      * @param mixed $conn An array with the connection parameters or an existing
      *      Connection instance.
-     * @param string $name The name of the EntityManager.
      * @param Configuration $config The Configuration instance to use.
      * @param EventManager $eventManager The EventManager instance to use.
      * @return EntityManager The created EntityManager.

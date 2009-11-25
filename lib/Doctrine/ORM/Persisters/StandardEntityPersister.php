@@ -183,7 +183,7 @@ class StandardEntityPersister
         //FIXME: Order with composite keys might not be correct
         $sql = "SELECT " . $versionFieldColumnName . " FROM " . $class->getQuotedTableName($this->_platform) .
                " WHERE " . implode(' = ? AND ', $identifier) . " = ?";
-        $value = $this->_conn->fetchColumn($sql, array_values($id));
+        $value = $this->_conn->fetchColumn($sql, array_values((array)$id));
         $this->_class->setFieldValue($entity, $versionField, $value);
     }
 
