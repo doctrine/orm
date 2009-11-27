@@ -21,8 +21,7 @@
 
 namespace Doctrine\DBAL\Schema\Visitor;
 
-use Doctrine\DBAL\Schema\Visitor,
-    Doctrine\DBAL\Platforms\AbstractPlatform,
+use Doctrine\DBAL\Platforms\AbstractPlatform,
     Doctrine\DBAL\Schema\Table,
     Doctrine\DBAL\Schema\Schema,
     Doctrine\DBAL\Schema\Column,

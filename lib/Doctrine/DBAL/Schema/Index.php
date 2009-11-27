@@ -21,6 +21,8 @@
 
 namespace Doctrine\DBAL\Schema;
 
+use Doctrine\DBAL\Schema\Visitor\Visitor;
+
 class Index extends AbstractAsset
 {
     /**

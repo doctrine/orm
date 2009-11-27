@@ -22,6 +22,7 @@
 namespace Doctrine\DBAL\Schema;
 
 use Doctrine\DBAL\Types\Type;
+use Doctrine\DBAL\Schema\Visitor\Visitor;
 
 /**
  * Object Representation of a table
@@ -440,16 +441,16 @@ class Table extends AbstractAsset
     {
         $visitor->acceptTable($this);
 
-        foreach($this->getColumns() AS $column) {
+        foreach ($this->getColumns() AS $column) {
             $visitor->acceptColunn($this, $column);
         }
 
-        foreach($this->getIndexes() AS $index) {
+        foreach ($this->getIndexes() AS $index) {
             $visitor->acceptIndex($this, $index);
         }
 
-        foreach($this->getConstraints() AS $constraint) {
-            if($constraint instanceof ForeignKeyConstraint) {
+        foreach ($this->getConstraints() AS $constraint) {
+            if ($constraint instanceof ForeignKeyConstraint) {
                 $visitor->acceptForeignKey($this, $constraint);
             } else {
                 $visitor->acceptCheckConstraint($this, $constraint);

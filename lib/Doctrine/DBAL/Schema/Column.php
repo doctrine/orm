@@ -22,6 +22,7 @@
 namespace Doctrine\DBAL\Schema;
 
 use \Doctrine\DBAL\Types\Type;
+use Doctrine\DBAL\Schema\Visitor\Visitor;
 
 /**
  * Object representation of a database column

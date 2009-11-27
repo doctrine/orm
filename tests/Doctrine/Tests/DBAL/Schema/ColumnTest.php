@@ -39,5 +39,8 @@ class ColumnTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals("baz", $column->getDefault());
 
         $this->assertEquals(array('foo' => 'bar'), $column->getPlatformOptions());
+        $this->assertTrue($column->hasPlatformOption('foo'));
+        $this->assertEquals('bar', $column->getPlatformOption('foo'));
+        $this->assertFalse($column->hasPlatformOption('bar'));
     }
 }

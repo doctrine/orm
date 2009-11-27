@@ -22,6 +22,8 @@
 namespace Doctrine\DBAL\Schema;
 
 use Doctrine\DBAL\Schema\Visitor\CreateSchemaSqlCollector;
+use Doctrine\DBAL\Schema\Visitor\DropSchemaSqlCollector;
+use Doctrine\DBAL\Schema\Visitor\Visitor;
 
 /**
  * Object representation of a database schema
@@ -216,7 +218,10 @@ class Schema extends AbstractAsset
     }
 
     /**
+     * Return an array of necessary sql queries to create the schema on the given platform.
+     *
      * @param AbstractPlatform $platform
+     * @return array
      */
     public function toSql(\Doctrine\DBAL\Platforms\AbstractPlatform $platform)
     {
@@ -224,6 +229,30 @@ class Schema extends AbstractAsset
         $this->visit($sqlCollector);
 
         return $sqlCollector->getQueries();
+    }
+
+    /**
+     * Return an array of necessary sql queries to drop the schema on the given platform.
+     *
+     * @param AbstractPlatform $platform
+     * @return array
+     */
+    public function toDropSql(\Doctrine\DBAL\Platforms\AbstractPlatform $platform)
+    {
+        $dropSqlCollector = new DropSchemaSqlCollector($platform);
+        $this->visit($dropSqlCollector);
+
+        return $dropSqlCollector->getQueries();
+    }
+
+    public function migrateTo(Schema $schema, \Doctrine\DBAL\Platforms\AbstractPlatform $platform)
+    {
+        
+    }
+
+    public function migrateFrom(Schema $schema, \Doctrine\DBAL\Platforms\AbstractPlatform $platform)
+    {
+        
     }
 
     /**
