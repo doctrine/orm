@@ -42,6 +42,13 @@ class AllTests
         $suite->addTestSuite('Doctrine\Tests\DBAL\Types\SmallIntTest');
         $suite->addTestSuite('Doctrine\Tests\DBAL\Types\StringTest');
 
+        // Schema tests
+        $suite->addTestSuite('Doctrine\Tests\DBAL\Schema\ColumnTest');
+        $suite->addTestSuite('Doctrine\Tests\DBAL\Schema\IndexTest');
+        $suite->addTestSuite('Doctrine\Tests\DBAL\Schema\TableTest');
+        $suite->addTestSuite('Doctrine\Tests\DBAL\Schema\SchemaTest');
+        $suite->addTestSuite('Doctrine\Tests\DBAL\Schema\Visitor\SchemaSqlCollectorTest');
+
         // Driver manager test
         $suite->addTestSuite('Doctrine\Tests\DBAL\DriverManagerTest');
 
