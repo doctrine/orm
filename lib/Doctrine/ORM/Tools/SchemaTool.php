@@ -246,12 +246,12 @@ class SchemaTool
             }
         }
 
-        try {
+        /*try {
             $newSql = $schema->toSql($this->_platform);
             #return $newSql;
         } catch(\Exception $e) {
 
-        }
+        }*/
 
         // Append the sequence SQL
         $sql = array_merge($sql, $sequences);
@@ -301,6 +301,7 @@ class SchemaTool
      * @param ClassMetadata $class
      * @param array $options The table options/constraints where any additional options/constraints
      *              that are required by columns should be appended.
+     * @param Table $table
      * @return array The list of portable column definitions as required by the DBAL.
      */
     private function _gatherColumns($class, array &$options, $table)
@@ -316,7 +317,12 @@ class SchemaTool
                 $pkColumns[] = $column['name'];
             }
         }
-        $table->setPrimaryKey($pkColumns);
+        // For now, this is a hack required for single table inheritence, since this method is called
+        // twice by single table inheritence relations
+        if(!$table->hasIndex('primary')) {
+            $table->setPrimaryKey($pkColumns);
+        }
+        
         
         return $columns;
     }
@@ -328,6 +334,7 @@ class SchemaTool
      * @param array $mapping The field mapping.
      * @param array $options The table options/constraints where any additional options/constraints
      *          required by the column should be appended.
+     * @param Table $table
      * @return array The portable column definition as required by the DBAL.
      */
     private function _gatherColumn($class, array $mapping, array &$options, $table)
@@ -358,7 +365,11 @@ class SchemaTool
 
         $column['platformOptions']['unique'] = $column['unique'];
         $column['platformOptions']['version'] = $column['version'];
-        $table->createColumn($column['name'], $mapping['type'], $column);
+        if ($table->hasColumn($column['name'])) {
+            $table->changeColumn($column['name'], $column);
+        } else {
+            $table->createColumn($column['name'], $mapping['type'], $column);
+        }
         
         if ($class->isIdentifier($mapping['fieldName'])) {
             $column['primary'] = true;
