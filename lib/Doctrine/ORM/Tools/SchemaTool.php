@@ -95,9 +95,19 @@ class SchemaTool
      */
     public function getCreateSchemaSql(array $classes)
     {
-        $sql = array(); // All SQL statements
+        $schema = $this->getSchemaFromMetadata($classes);
+        return $schema->toSql($this->_platform);
+    }
+
+    /**
+     * From a given set of metadata classes this method creates a Schema instance.
+     *
+     * @param array $classes
+     * @return Schema
+     */
+    public function getSchemaFromMetadata(array $classes)
+    {
         $processedClasses = array(); // Reminder for processed classes, used for hierarchies
-        $sequences = array(); // Sequence SQL statements. Appended to $sql at the end.
 
         $schema = new \Doctrine\DBAL\Schema\Schema();
 
@@ -210,7 +220,7 @@ class SchemaTool
             }
         }
         
-        return $schema->toSql($this->_platform);
+        return $schema;
     }
 
     /**
