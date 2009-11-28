@@ -328,41 +328,9 @@ class SchemaTool
             $foreignClass = $this->_em->getClassMetadata($mapping->targetEntityName);
             
             if ($mapping->isOneToOne() && $mapping->isOwningSide) {
-                $options = array();
-                $localColumns = array();
-                $foreignColumns = array();
+                $primaryKeyColumns = $uniqueConstraints = array(); // unnecessary for this relation-type
                 
-                foreach ($mapping->getJoinColumns() as $joinColumn) {
-                    $columnName = $mapping->getQuotedJoinColumnName($joinColumn['name'], $this->_platform);
-                    $referencedColumnName = $joinColumn['referencedColumnName'];
-                    $referencedFieldName = $foreignClass->getFieldName($referencedColumnName);
-                    if (!$foreignClass->hasField($referencedFieldName)) {
-                        throw new \Doctrine\Common\DoctrineException(
-                            "Column name `$referencedColumnName` referenced for relation from ".
-                            "$mapping->sourceEntityName towards $mapping->targetEntityName does not exist."
-                        );
-                    }
-
-                    $table->createColumn(
-                        $columnName, $foreignClass->getTypeOfField($referencedFieldName), array('notnull' => false)
-                    );
-
-                    $localColumns[] = $columnName;
-                    $foreignColumns[] = $joinColumn['referencedColumnName'];
-                    
-                    if (isset($joinColumn['onUpdate'])) {
-                        $options['onUpdate'] = $joinColumn['onUpdate'];
-                    }
-                    
-                    if (isset($joinColumn['onDelete'])) {
-                        $options['onDelete'] = $joinColumn['onDelete'];
-                    }
-                }
-
-                $table->addForeignKeyConstraint(
-                    $foreignClass->getQuotedTableName($this->_platform),
-                    $localColumns, $foreignColumns, null, $options
-                );
+                $this->_gatherRelationJoinColumns($mapping->getJoinColumns(), $table, $foreignClass, $mapping, $primaryKeyColumns, $uniqueConstraints);
             } else if ($mapping->isOneToMany() && $mapping->isOwningSide) {
                 //... create join table, one-many through join table supported later
                 throw DoctrineException::notSupported();
@@ -370,87 +338,76 @@ class SchemaTool
                 // create join table
                 $joinTable = $mapping->getJoinTable();
 
-                $localColumns = array();
-                $foreignColumns = array();
-                $fkOptions = array();
-
                 $theJoinTable = $schema->createTable($mapping->getQuotedJoinTableName($this->_platform));
 
                 $primaryKeyColumns = array();
                 $uniqueConstraints = array();
-                foreach ($joinTable['joinColumns'] as $joinColumn) {
-                    $columnName = $mapping->getQuotedJoinColumnName($joinColumn['name'], $this->_platform);
-
-                    $theJoinTable->createColumn(
-                        $columnName,
-                        $class->getTypeOfColumn($joinColumn['referencedColumnName']),
-                        array('notnull' => false)
-                    );
-
-                    $primaryKeyColumns[] = $columnName;
-
-                    $localColumns[] = $columnName;
-                    $foreignColumns[] = $joinColumn['referencedColumnName'];
-
-                    if(isset($joinColumn['unique']) && $joinColumn['unique'] == true) {
-                        $uniqueConstraints[] = array($joinColumn['name']);
-                    }
-                    
-                    if (isset($joinColumn['onUpdate'])) {
-                        $fkOptions['onUpdate'] = $joinColumn['onUpdate'];
-                    }
-                    
-                    if (isset($joinColumn['onDelete'])) {
-                        $fkOptions['onDelete'] = $joinColumn['onDelete'];
-                    }
-                }
 
                 // Build first FK constraint (relation table => source table)
-                $theJoinTable->addForeignKeyConstraint(
-                    $class->getQuotedTableName($this->_platform), $localColumns, $foreignColumns, null, $fkOptions
-                );
+                $this->_gatherRelationJoinColumns($joinTable['joinColumns'], $theJoinTable, $class, $mapping, $primaryKeyColumns, $uniqueConstraints);
 
-                $localColumns = array();
-                $foreignColumns = array();
-                $fkOptions = array();
-                
-                foreach ($joinTable['inverseJoinColumns'] as $inverseJoinColumn) {
-                    $primaryKeyColumns[] = $inverseJoinColumn['name'];
-                    $localColumns[] = $inverseJoinColumn['name'];
-                    $foreignColumns[] = $inverseJoinColumn['referencedColumnName'];
-
-                    $theJoinTable->createColumn(
-                        $inverseJoinColumn['name'],
-                        $this->_em->getClassMetadata($mapping->getTargetEntityName())
-                            ->getTypeOfColumn($inverseJoinColumn['referencedColumnName']),
-                        array('notnull' => false)
-                    );
-
-                    if(isset($inverseJoinColumn['unique']) && $inverseJoinColumn['unique'] == true) {
-                        $uniqueConstraints[] = array($inverseJoinColumn['name']);
-                    }
-                    
-                    if (isset($inverseJoinColumn['onUpdate'])) {
-                        $fkOptions['onUpdate'] = $inverseJoinColumn['onUpdate'];
-                    }
-                    
-                    if (isset($joinColumn['onDelete'])) {
-                        $fkOptions['onDelete'] = $inverseJoinColumn['onDelete'];
-                    }
-                }
+                // Build second FK constraint (relation table => target table)
+                $this->_gatherRelationJoinColumns($joinTable['inverseJoinColumns'], $theJoinTable, $foreignClass, $mapping, $primaryKeyColumns, $uniqueConstraints);
 
                 foreach($uniqueConstraints AS $unique) {
                     $theJoinTable->addUniqueIndex($unique);
                 }
 
-                // Build second FK constraint (relation table => target table)
-                $theJoinTable->addForeignKeyConstraint(
-                    $foreignClass->getQuotedTableName($this->_platform), $localColumns, $foreignColumns, null, $fkOptions
-                );
-
                 $theJoinTable->setPrimaryKey($primaryKeyColumns);
             }
         }
+    }
+
+    /**
+     * Gather columns and fk constraints that are required for one part of relationship.
+     * 
+     * @param array $joinColumns
+     * @param \Doctrine\DBAL\Schema\Table $theJoinTable
+     * @param ClassMetadata $class
+     * @param \Doctrine\ORM\Mapping\AssociationMapping $mapping
+     * @param array $primaryKeyColumns
+     * @param array $uniqueConstraints
+     */
+    private function _gatherRelationJoinColumns($joinColumns, $theJoinTable, $class, $mapping, &$primaryKeyColumns, &$uniqueConstraints)
+    {
+        $localColumns = array();
+        $foreignColumns = array();
+        $fkOptions = array();
+
+        foreach ($joinColumns as $joinColumn) {
+            $columnName = $mapping->getQuotedJoinColumnName($joinColumn['name'], $this->_platform);
+
+            if (!$class->hasField($class->getFieldName($joinColumn['referencedColumnName']))) {
+                throw new \Doctrine\Common\DoctrineException(
+                    "Column name `".$joinColumn['referencedColumnName']."` referenced for relation from ".
+                    "$mapping->sourceEntityName towards $mapping->targetEntityName does not exist."
+                );
+            }
+
+            $primaryKeyColumns[] = $columnName;
+            $localColumns[] = $columnName;
+            $foreignColumns[] = $joinColumn['referencedColumnName'];
+
+            $theJoinTable->createColumn(
+                $columnName, $class->getTypeOfColumn($joinColumn['referencedColumnName']), array('notnull' => false)
+            );
+
+            if(isset($joinColumn['unique']) && $joinColumn['unique'] == true) {
+                $uniqueConstraints[] = array($columnName);
+            }
+
+            if (isset($joinColumn['onUpdate'])) {
+                $fkOptions['onUpdate'] = $joinColumn['onUpdate'];
+            }
+
+            if (isset($joinColumn['onDelete'])) {
+                $fkOptions['onDelete'] = $joinColumn['onDelete'];
+            }
+        }
+
+        $theJoinTable->addForeignKeyConstraint(
+            $class->getQuotedTableName($this->_platform), $localColumns, $foreignColumns, null, $fkOptions
+        );
     }
     
     /**
