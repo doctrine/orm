@@ -128,7 +128,7 @@ class SchemaTool
             
             if ($class->isInheritanceTypeSingleTable()) {
                 $columns = $this->_gatherColumns($class, $table);
-                $this->_gatherRelationsSql($class, $sql, $columns, $table, $schema);
+                $this->_gatherRelationsSql($class, $table, $schema);
                 
                 // Add the discriminator column
                 $discrColumnDef = $this->_getDiscriminatorColumnDefinition($class, $table);

@@ -26,11 +26,6 @@ use Doctrine\DBAL\Schema\Visitor\Visitor;
 class Index extends AbstractAsset
 {
     /**
-     * @var string
-     */
-    protected $_indexName;
-
-    /**
      * @var array
      */
     protected $_columns;
@@ -96,5 +91,15 @@ class Index extends AbstractAsset
     public function isPrimary()
     {
         return $this->_isPrimary;
+    }
+
+    /**
+     * @param  string $columnName
+     * @param  int $pos
+     * @return bool
+     */
+    public function hasColumnAtPosition($columnName, $pos=0)
+    {
+        return \array_search($columnName, $this->_columns) === $pos;
     }
 }
