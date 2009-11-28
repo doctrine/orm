@@ -108,7 +108,11 @@ class SchemaTest extends \PHPUnit_Framework_TestCase
     public function testCreateSequence()
     {
         $schema = new Schema();
-        $schema->createSequence('a_seq');
+        $sequence = $schema->createSequence('a_seq', 10, 20);
+
+        $this->assertEquals('a_seq', $sequence->getName());
+        $this->assertEquals(10, $sequence->getAllocationSize());
+        $this->assertEquals(20, $sequence->getInitialValue());
 
         $this->assertTrue($schema->hasSequence("a_seq"));
         $this->assertType('Doctrine\DBAL\Schema\Sequence', $schema->getSequence("a_seq"));

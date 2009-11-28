@@ -247,21 +247,28 @@ class Table extends AbstractAsset
      * @param array $options
      * @return Table
      */
-    public function addForeignKeyConstraint(Table $foreignTable, array $localColumnNames, array $foreignColumnNames, $name=null, array $options=array())
+    public function addForeignKeyConstraint($foreignTable, array $localColumnNames, array $foreignColumnNames, $name=null, array $options=array())
     {
+        if ($foreignTable instanceof Table) {
+            $foreignTableName = $foreignTable->getName();
+
+            foreach ($foreignColumnNames AS $columnName) {
+                if (!$foreignTable->hasColumn($columnName)) {
+                    throw SchemaException::columnDoesNotExist($columnName);
+                }
+            }
+        } else {
+            $foreignTableName = $foreignTable;
+        }
+
         foreach ($localColumnNames AS $columnName) {
             if (!$this->hasColumn($columnName)) {
                 throw SchemaException::columnDoesNotExist($columnName);
             }
         }
-        foreach  ($foreignColumnNames AS $columnName) {
-            if (!$foreignTable->hasColumn($columnName)) {
-                throw SchemaException::columnDoesNotExist($columnName);
-            }
-        }
 
         $constraint = new ForeignKeyConstraint(
-            $localColumnNames, $foreignTable->getName(), $foreignColumnNames, $name, $options
+            $localColumnNames, $foreignTableName, $foreignColumnNames, $name, $options
         );
         $this->_addConstraint($constraint);
         return $this;

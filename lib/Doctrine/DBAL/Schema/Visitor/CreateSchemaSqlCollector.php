@@ -93,36 +93,17 @@ class CreateSchemaSqlCollector implements Visitor
                 }
             }
         }
-/**
-        $column = array();
-        $column['name'] = $class->getQuotedColumnName($mapping['fieldName'], $this->_platform);
-        $column['type'] = Type::getType($mapping['type']);
-        $column['length'] = isset($mapping['length']) ? $mapping['length'] : null;
-        $column['notnull'] = isset($mapping['nullable']) ? ! $mapping['nullable'] : true;
-        $column['unique'] = isset($mapping['unique']) ? $mapping['unique'] : false;
-        $column['version'] = $class->isVersioned && $class->versionField == $mapping['fieldName'] ? true : false;
 
-        if(strtolower($column['type']) == 'string' && $column['length'] === null) {
-            $column['length'] = 255;
-        }
-
-        if (isset($mapping['precision'])) {
-            $column['precision'] = $mapping['precision'];
-        }
-
-        if (isset($mapping['scale'])) {
-            $column['scale'] = $mapping['scale'];
- */
         $columns = array();
-        foreach($columns AS $column) {
+        foreach($table->getColumns() AS $column) {
             /* @var \Doctrine\DBAL\Schema\Column $column */
             $columnData = array();
             $columnData['name'] = $column->getName();
             $columnData['type'] = $column->getType();
             $columnData['length'] = $column->getLength();
-            $columnData['notnull'] = $column->notNull();
-            $columnData['unique'] = false;
-            $columnData['version'] = ($column->hasPlatformOption("version"))?$column->getPlatformOptions('version'):false;
+            $columnData['notnull'] = $column->getNotNull();
+            $columnData['unique'] = ($column->hasPlatformOption("unique"))?$column->getPlatformOption('unique'):false;
+            $columnData['version'] = ($column->hasPlatformOption("version"))?$column->getPlatformOption('version'):false;
             if(strtolower($columnData['type']) == "string" && $columnData['length'] === null) {
                 $columnData['length'] = 255;
             }
@@ -139,7 +120,7 @@ class CreateSchemaSqlCollector implements Visitor
                 }
             }
 
-            $columns[] = $columnData;
+            $columns[$columnData['name']] = $columnData;
         }
 
         $this->_createTableQueries = array_merge($this->_createTableQueries,

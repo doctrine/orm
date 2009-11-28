@@ -53,8 +53,8 @@ class Sequence extends AbstractAsset
     public function __construct($name, $allocationSize=1, $initialValue=1)
     {
         $this->_setName($name);
-        $this->_allocationSize = (is_int($allocationSize))?:1;
-        $this->_initialValue = (is_int($initialValue))?:1;
+        $this->_allocationSize = (is_numeric($allocationSize))?$allocationSize:1;
+        $this->_initialValue = (is_numeric($initialValue))?$initialValue:1;
     }
 
     public function getAllocationSize()

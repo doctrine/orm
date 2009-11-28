@@ -73,7 +73,7 @@ class Column extends AbstractAsset
     /**
      * @var string
      */
-    protected $_default;
+    protected $_default = null;
 
     /**
      * @var array
