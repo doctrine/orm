@@ -73,7 +73,7 @@ class Table extends AbstractAsset
     /**
      * @var array
      */
-    protected $_constraints = array();
+    protected $_fkConstraints = array();
 
     /**
      * @var array
@@ -90,11 +90,11 @@ class Table extends AbstractAsset
      * @param string $tableName
      * @param array $columns
      * @param array $indexes
-     * @param array $constraints
+     * @param array $fkConstraints
      * @param int $idGeneratorType
      * @param array $options
      */
-    public function __construct($tableName, array $columns=array(), array $indexes=array(), array $constraints=array(), $idGeneratorType=self::ID_NONE, array $options=array())
+    public function __construct($tableName, array $columns=array(), array $indexes=array(), array $fkConstraints=array(), $idGeneratorType=self::ID_NONE, array $options=array())
     {
         $this->_name = $tableName;
         $this->_idGeneratorType = $idGeneratorType;
@@ -107,8 +107,8 @@ class Table extends AbstractAsset
             $this->_addIndex($idx);
         }
 
-        foreach ($constraints AS $constraint) {
-            $this->_addConstraint($constraint);
+        foreach ($fkConstraints AS $constraint) {
+            $this->_addForeignKeyConstraint($constraint);
         }
 
         $this->_options = $options;
@@ -143,6 +143,10 @@ class Table extends AbstractAsset
      */
     public function addIndex(array $columnNames, $indexName=null)
     {
+        if($indexName == null) {
+            $indexName = $this->_generateIdentifierName($columnNames, "idx");
+        }
+
         return $this->_createIndex($columnNames, $indexName, false, false);
     }
 
@@ -154,6 +158,10 @@ class Table extends AbstractAsset
      */
     public function addUniqueIndex(array $columnNames, $indexName=null)
     {
+        if ($indexName == null) {
+            $indexName = $this->_generateIdentifierName($columnNames, "uniq");
+        }
+
         return $this->_createIndex($columnNames, $indexName, true, false);
     }
 
@@ -241,13 +249,31 @@ class Table extends AbstractAsset
     /**
      * Add a foreign key constraint
      *
+     * Name is inferred from the local columns
+     *
      * @param Table $foreignTable
      * @param array $localColumns
      * @param array $foreignColumns
      * @param array $options
      * @return Table
      */
-    public function addForeignKeyConstraint($foreignTable, array $localColumnNames, array $foreignColumnNames, $name=null, array $options=array())
+    public function addForeignKeyConstraint($foreignTable, array $localColumnNames, array $foreignColumnNames, array $options=array())
+    {
+        $name = $this->_generateIdentifierName($localColumnNames, "fk");
+        return $this->addNamedForeignKeyConstraint($name, $foreignTable, $localColumnNames, $foreignColumnNames, $options);
+    }
+
+    /**
+     * Add a foreign key constraint with a given name
+     *
+     * @param string $name
+     * @param Table $foreignTable
+     * @param array $localColumns
+     * @param array $foreignColumns
+     * @param array $options
+     * @return Table
+     */
+    public function addNamedForeignKeyConstraint($name, $foreignTable, array $localColumnNames, array $foreignColumnNames, array $options=array())
     {
         if ($foreignTable instanceof Table) {
             $foreignTableName = $foreignTable->getName();
@@ -270,7 +296,7 @@ class Table extends AbstractAsset
         $constraint = new ForeignKeyConstraint(
             $localColumnNames, $foreignTableName, $foreignColumnNames, $name, $options
         );
-        $this->_addConstraint($constraint);
+        $this->_addForeignKeyConstraint($constraint);
         return $this;
     }
 
@@ -323,9 +349,33 @@ class Table extends AbstractAsset
     /**
      * @param Constraint $constraint
      */
-    protected function _addConstraint(Constraint $constraint)
+    protected function _addForeignKeyConstraint(Constraint $constraint)
     {
-        $this->_constraints[] = $constraint;
+        $this->_fkConstraints[$constraint->getName()] = $constraint;
+    }
+
+    /**
+     * Does Table have a foreign key constraint with the given name?
+     *      *
+     * @param  string $constraintName
+     * @return bool
+     */
+    public function hasForeignKey($constraintName)
+    {
+        return isset($this->_fkConstraints[$constraintName]);
+    }
+
+    /**
+     * @param string $constraintName
+     * @return ForeignKeyConstraint
+     */
+    public function getForeignKey($constraintName)
+    {
+        if(!$this->hasForeignKey($constraintName)) {
+            throw SchemaException::foreignKeyDoesNotExist($constraintName);
+        }
+
+        return $this->_fkConstraints[$constraintName];
     }
 
     /**
@@ -421,9 +471,9 @@ class Table extends AbstractAsset
      *
      * @return array
      */
-    public function getConstraints()
+    public function getForeignKeys()
     {
-        return $this->_constraints;
+        return $this->_fkConstraints;
     }
 
     public function hasOption($name)
@@ -456,12 +506,8 @@ class Table extends AbstractAsset
             $visitor->acceptIndex($this, $index);
         }
 
-        foreach ($this->getConstraints() AS $constraint) {
-            if ($constraint instanceof ForeignKeyConstraint) {
-                $visitor->acceptForeignKey($this, $constraint);
-            } else {
-                $visitor->acceptCheckConstraint($this, $constraint);
-            }
+        foreach ($this->getForeignKeys() AS $constraint) {
+            $visitor->acceptForeignKey($this, $constraint);
         }
     }
 }

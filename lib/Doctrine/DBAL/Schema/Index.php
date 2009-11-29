@@ -48,6 +48,8 @@ class Index extends AbstractAsset
      */
     public function __construct($indexName, array $columns, $isUnique=false, $isPrimary=false)
     {
+        $isUnique = ($isPrimary)?true:$isUnique;
+
         $this->_setName($indexName);
         $this->_isUnique = $isUnique;
         $this->_isPrimary = $isPrimary;

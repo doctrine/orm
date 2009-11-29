@@ -13,6 +13,7 @@ class SchemaException extends \Doctrine\DBAL\DBALException
     const SEQUENCE_DOENST_EXIST = 70;
     const SEQUENCE_ALREADY_EXISTS = 80;
     const INDEX_INVALID_NAME = 90;
+    const FOREIGNKEY_DOESNT_EXIST = 100;
 
     /**
      * @param string $tableName
@@ -98,5 +99,14 @@ class SchemaException extends \Doctrine\DBAL\DBALException
     static public function sequenceDoesNotExist($sequenceName)
     {
         return new self("There exists no sequence with the name '".$sequenceName."'.", self::SEQUENCE_DOENST_EXIST);
+    }
+
+    /**
+     * @param  string $fkName
+     * @return SchemaException
+     */
+    static public function foreignKeyDoesNotExist($fkName)
+    {
+        return new self("There exists no foreign key with the name '".$fkName."'.", self::FOREIGNKEY_DOESNT_EXIST);
     }
 }

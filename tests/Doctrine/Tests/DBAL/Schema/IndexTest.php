@@ -30,7 +30,7 @@ class IndexTest extends \PHPUnit_Framework_TestCase
     public function testCreatePrimary()
     {
         $idx = $this->createIndex(false, true);
-        $this->assertFalse($idx->isUnique());
+        $this->assertTrue($idx->isUnique());
         $this->assertTrue($idx->isPrimary());
     }
 

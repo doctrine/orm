@@ -35,6 +35,19 @@ namespace Doctrine\DBAL\Schema;
 class Comparator
 {
     /**
+     * @var array
+     */
+    private $_checkColumnPlatformOptions = array();
+
+    /**
+     * @param string $optionName
+     */
+    public function addColumnPlatformOptionCheck($optionName)
+    {
+        $this->_checkColumnPlatformOptions[] = $optionName;
+    }
+
+    /**
      * @param Schema $fromSchema
      * @param Schema $toSchema
      * @return SchemaDiff
@@ -79,9 +92,41 @@ class Comparator
             }
         }
 
-        // Todo add code for sequence diff
+        foreach ( $toSchema->getSequences() AS $sequenceName => $sequence) {
+            if (!$fromSchema->hasSequence($sequenceName)) {
+                $diff->newSequences[] = $sequence;
+            } else {
+                if ($this->diffSequence($sequence, $fromSchema->getSequence($sequenceName))) {
+                    $diff->changedSequences[] = $fromSchema->getSequence($sequenceName);
+                }
+            }
+        }
+
+        foreach ($fromSchema->getSequences() AS $sequenceName => $sequence) {
+            if (!$toSchema->hasSequence($sequenceName)) {
+                $diff->removedSequences[] = $sequence;
+            }
+        }
 
         return $diff;
+    }
+
+    /**
+     *
+     * @param Sequence $sequence1
+     * @param Sequence $sequence2
+     */
+    public function diffSequence($sequence1, $sequence2)
+    {
+        if($sequence1->getAllocationSize() != $sequence2->getAllocationSize()) {
+            return true;
+        }
+
+        if($sequence1->getInitialValue() != $sequence2->getInitialValue()) {
+            return true;
+        }
+
+        return false;
     }
 
     /**
@@ -94,7 +139,7 @@ class Comparator
      *
      * @return bool|TableDiff
      */
-    private function diffTable( Table $table1, Table $table2 )
+    public function diffTable( Table $table1, Table $table2 )
     {
         $changes = 0;
         $tableDifferences = new TableDiff();
@@ -116,9 +161,8 @@ class Comparator
         /* See if there are any changed fieldDefinitioninitions */
         foreach ( $table1->getColumns() as $columnName => $column ) {
             if ( $table2->hasColumn($columnName) ) {
-                $fieldDifferences = $this->diffField( $column, $table2->getColumn($columnName) );
-                if ( $fieldDifferences ) {
-                    $tableDifferences->changedFields[$columnName] = $fieldDifferences;
+                if ( $this->diffColumn( $column, $table2->getColumn($columnName) ) ) {
+                    $tableDifferences->changedFields[$columnName] = $table2->getColumn($columnName);
                     $changes++;
                 }
             }
@@ -144,17 +188,69 @@ class Comparator
         /* See if there are any changed indexDefinitions */
         foreach ( $table1Indexes as $indexName => $indexDefinition ) {
             if ( isset( $table2Indexes[$indexName] ) ) {
-                $indexDifferences = $this->diffIndex( $indexDefinition, $table2Indexes[$indexName] );
-                if ( $indexDifferences ) {
-                    $tableDifferences->changedIndexes[$indexName] = $indexDifferences;
+                if ( $this->diffIndex( $indexDefinition, $table2Indexes[$indexName] ) ) {
+                    $tableDifferences->changedIndexes[$indexName] = $table2Indexes[$indexName];
                     $changes++;
                 }
             }
         }
 
-        // Todo add code for foreign key differences
+        foreach ($table2->getForeignKeys() AS $constraint) {
+            $fkName = $constraint->getName();
+            if (!$table1->hasForeignKey($fkName)) {
+                $tableDifferences->addedForeignKeys[$fkName] = $constraint;
+                $changes++;
+            } else {
+                if ($this->diffForeignKey($constraint, $table1->getForeignKey($fkName))) {
+                    $tableDifferences->changedForeignKeys[$fkName] = $constraint;
+                    $changes++;
+                }
+            }
+        }
+
+        foreach ($table1->getForeignKeys() AS $constraint) {
+            $fkName = $constraint->getName();
+            if (!$table2->hasForeignKey($fkName)) {
+                $tableDifferences->removedForeignKeys[$fkName] = $constraint;
+                $changes++;
+            }
+        }
 
         return $changes ? $tableDifferences : false;
+    }
+
+    /**
+     * @param ForeignKeyConstraint $key1
+     * @param ForeignKeyConstraint $key2
+     * @return bool
+     */
+    public function diffForeignKey($key1, $key2)
+    {
+        if ($key1->getLocalColumnNames() != $key2->getLocalColumnNames()) {
+            return true;
+        }
+        
+        if ($key1->getForeignColumnNames() != $key2->getForeignColumnNames()) {
+            return true;
+        }
+
+        if ($key1->hasOption('onUpdate') != $key2->hasOption('onUpdate')) {
+            return true;
+        }
+
+        if ($key1->getOption('onUpdate') != $key2->getOption('onUpdate')) {
+            return true;
+        }
+
+        if ($key1->hasOption('onDelete') != $key2->hasOption('onDelete')) {
+            return true;
+        }
+
+        if ($key1->getOption('onDelete') != $key2->getOption('onDelete')) {
+            return true;
+        }
+
+        return false;
     }
 
     /**
@@ -166,12 +262,53 @@ class Comparator
      * @param Column $column1
      * @param Column $column2
      *
-     * @return bool|Column
+     * @return bool
      */
-    private function diffField( Column $column1, Column $column2 )
+    public function diffColumn( Column $column1, Column $column2 )
     {
         if ( $column1->getType() != $column2->getType() ) {
-            return $column2;
+            return true;
+        }
+
+        if ($column1->getNotnull() != $column2->getNotnull()) {
+            return true;
+        }
+
+        if ($column1->getDefault() != $column2->getDefault()) {
+            return true;
+        }
+
+        if ($column1->getUnsigned() != $column2->getUnsigned()) {
+            return true;
+        }
+
+        if ($column1->getType() instanceof \Doctrine\DBAL\Types\StringType) {
+            if ($column1->getLength() != $column2->getLength()) {
+                return true;
+            }
+
+            if ($column1->getFixed() != $column2->getFixed()) {
+                return true;
+            }
+        }
+
+        if ($column1->getType() instanceof \Doctrine\DBAL\Types\DecimalType) {
+            if ($column1->getPrecision() != $column2->getPrecision()) {
+                return true;
+            }
+            if ($column1->getScale() != $column2->getScale()) {
+                return true;
+            }
+        }
+
+        foreach ($this->_checkColumnPlatformOptions AS $optionName) {
+            if ($column1->hasPlatformOption($optionName) != $column2->hasPlatformOption($optionName)) {
+                return true;
+            }
+
+            if ($column1->getPlatformOption($optionName) != $column2->getPlatformOption($optionName)) {
+                return true;
+            }
         }
 
         return false;
@@ -185,15 +322,15 @@ class Comparator
      *
      * @param Index $index1
      * @param Index $index2
-     * @return bool|Index
+     * @return bool
      */
-    private function diffIndex( Index $index1, Index $index2 )
+    public function diffIndex( Index $index1, Index $index2 )
     {
         if($index1->isPrimary() != $index2->isPrimary()) {
-            return $index2;
+            return true;
         }
         if($index1->isUnique() != $index2->isUnique()) {
-            return $index2;
+            return true;
         }
 
         // Check for removed index fields in $index2
@@ -201,7 +338,7 @@ class Comparator
         for($i = 0; $i < count($index1Columns); $i++) {
             $indexColumn = $index1Columns[$i];
             if (!$index2->hasColumnAtPosition($indexColumn, $i)) {
-                return $index2;
+                return true;
             }
         }
 
@@ -210,7 +347,7 @@ class Comparator
         for($i = 0; $i < count($index2Columns); $i++) {
             $indexColumn = $index2Columns[$i];
             if (!$index1->hasColumnAtPosition($indexColumn, $i)) {
-                return $index2;
+                return true;
             }
         }
 

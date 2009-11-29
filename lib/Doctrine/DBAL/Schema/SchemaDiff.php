@@ -39,21 +39,36 @@ class SchemaDiff
      *
      * @var array(string=>ezcDbSchemaTable)
      */
-    public $newTables;
+    public $newTables = array();
 
     /**
      * All changed tables
      *
      * @var array(string=>ezcDbSchemaTableDiff)
      */
-    public $changedTables;
+    public $changedTables = array();
 
     /**
      * All removed tables
      *
-     * @var array(string=>bool)
+     * @var array(string=>Table)
      */
-    public $removedTables;
+    public $removedTables = array();
+
+    /**
+     * @var array
+     */
+    public $newSequences = array();
+
+    /**
+     * @var array
+     */
+    public $changedSequences = array();
+
+    /**
+     * @var array
+     */
+    public $removedSequences = array();
 
     /**
      * Constructs an SchemaDiff object.

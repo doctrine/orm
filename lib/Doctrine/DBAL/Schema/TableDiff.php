@@ -44,37 +44,58 @@ class TableDiff
     /**
      * All changed fields
      *
-     * @var array(string=>ezcDbSchemaField)
+     * @var array(string=>Column)
      */
-    public $changedFields;
+    public $changedFields = array();
 
     /**
      * All removed fields
      *
      * @var array(string=>bool)
      */
-    public $removedFields;
+    public $removedFields = array();
 
     /**
      * All added indexes
      *
-     * @var array(string=>ezcDbSchemaIndex)
+     * @var array(string=>Index)
      */
-    public $addedIndexes;
+    public $addedIndexes = array();
 
     /**
      * All changed indexes
      *
-     * @var array(string=>ezcDbSchemaIndex)
+     * @var array(string=>Index)
      */
-    public $changedIndexes;
+    public $changedIndexes = array();
 
     /**
      * All removed indexes
      *
      * @var array(string=>bool)
      */
-    public $removedIndexes;
+    public $removedIndexes = array();
+
+    /**
+     * All added foreign key definitions
+     * 
+     * @var array
+     */
+    public $addedForeignKeys = array();
+
+    /**
+     * All changed foreign keys
+     *
+     * @var array
+     */
+    public $changedForeignKeys = array();
+
+    /**
+     * All removed foreign keys
+     *
+     * @var array
+     */
+    public $removedForeignKeys = array();
 
     /**
      * Constructs an TableDiff object.

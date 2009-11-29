@@ -193,31 +193,12 @@ class ComparatorTest extends \PHPUnit_Framework_TestCase
 
     public function testCompareChangedColumns_ChangeType()
     {
-        $schema1 = new Schema( array(
-            'bugdb' => new Table('bugdb',
-                array (
-                    'charfield1' => new Column('charfield1', Type::getType('string')),
-                )
-            ),
-        ) );
-        $schema2 = new Schema( array(
-            'bugdb' => new Table('bugdb',
-                array (
-                    'charfield1' => new Column('charfield1', Type::getType('integer')),
-                )
-            ),
-        ) );
+        $column1 = new Column('charfield1', Type::getType('string'));
+        $column2 = new Column('charfield1', Type::getType('integer'));
 
-        $expected = new SchemaDiff ( array(),
-            array (
-                'bugdb' => new TableDiff( array(),
-                    array (
-                        'charfield1' => new Column('charfield1', Type::getType('integer')),
-                    )
-                ),
-            )
-        );
-        $this->assertEquals($expected, Comparator::compareSchemas( $schema1, $schema2 ) );
+        $c = new Comparator();
+        $this->assertTrue($c->diffColumn($column1, $column2));
+        $this->assertFalse($c->diffColumn($column1, $column1));
     }
 
     public function testCompareRemovedIndex()
@@ -353,5 +334,141 @@ class ComparatorTest extends \PHPUnit_Framework_TestCase
         );
         $actual = Comparator::compareSchemas( $schema1, $schema2 );
         $this->assertEquals($expected, $actual);
+    }
+
+    public function testCompareChangedIndexFieldPositions()
+    {
+        $schema1 = new Schema( array(
+            'bugdb' => new Table('bugdb',
+                array (
+                    'integerfield1' => new Column('integerfield1', Type::getType('integer')),
+                    'integerfield2' => new Column('integerfield2', Type::getType('integer')),
+                ),
+                array (
+                    'primary' => new Index('primary', array('integerfield1', 'integerfield2'), true)
+                )
+            ),
+        ) );
+        $schema2 = new Schema( array(
+            'bugdb' => new Table('bugdb',
+                array (
+                    'integerfield1' => new Column('integerfield1', Type::getType('integer')),
+                    'integerfield2' => new Column('integerfield2', Type::getType('integer')),
+                ),
+                array (
+                    'primary' => new Index('primary', array('integerfield2', 'integerfield1'), true)
+                )
+            ),
+        ) );
+
+        $expected = new SchemaDiff ( array(),
+            array (
+                'bugdb' => new TableDiff( array(), array(), array(), array(),
+                    array (
+                        'primary' => new Index('primary', array('integerfield2', 'integerfield1'), true)
+                    )
+                ),
+            )
+        );
+        $actual = Comparator::compareSchemas( $schema1, $schema2 );
+        $this->assertEquals($expected, $actual);
+    }
+
+    public function testCompareSequences()
+    {
+        $seq1 = new Sequence('foo', 1, 1);
+        $seq2 = new Sequence('foo', 1, 2);
+        $seq3 = new Sequence('foo', 2, 1);
+
+        $c = new Comparator();
+
+        $this->assertTrue($c->diffSequence($seq1, $seq2));
+        $this->assertTrue($c->diffSequence($seq1, $seq3));
+    }
+
+    public function testRemovedSequence()
+    {
+        $schema1 = new Schema();
+        $seq = $schema1->createSequence('foo');
+
+        $schema2 = new Schema();
+
+        $c = new Comparator();
+        $diffSchema = $c->compare($schema1, $schema2);
+
+        $this->assertEquals(1, count($diffSchema->removedSequences));
+        $this->assertSame($seq, $diffSchema->removedSequences[0]);
+    }
+
+    public function testAddedSequence()
+    {
+        $schema1 = new Schema();
+
+        $schema2 = new Schema();
+        $seq = $schema2->createSequence('foo');
+
+        $c = new Comparator();
+        $diffSchema = $c->compare($schema1, $schema2);
+
+        $this->assertEquals(1, count($diffSchema->newSequences));
+        $this->assertSame($seq, $diffSchema->newSequences[0]);
+    }
+
+    public function testTableAddForeignKey()
+    {
+        $tableForeign = new Table("bar");
+        $tableForeign->createColumn('id', 'integer');
+
+        $table1 = new Table("foo");
+        $table1->createColumn('fk', 'integer');
+
+        $table2 = new Table("foo");
+        $table2->createColumn('fk', 'integer');
+        $table2->addForeignKeyConstraint($tableForeign, array('fk'), array('id'));
+
+        $c = new Comparator();
+        $tableDiff = $c->diffTable($table1, $table2);
+
+        $this->assertType('Doctrine\DBAL\Schema\TableDiff', $tableDiff);
+        $this->assertEquals(1, count($tableDiff->addedForeignKeys));
+    }
+
+    public function testTableRemoveForeignKey()
+    {
+        $tableForeign = new Table("bar");
+        $tableForeign->createColumn('id', 'integer');
+
+        $table1 = new Table("foo");
+        $table1->createColumn('fk', 'integer');
+
+        $table2 = new Table("foo");
+        $table2->createColumn('fk', 'integer');
+        $table2->addForeignKeyConstraint($tableForeign, array('fk'), array('id'));
+
+        $c = new Comparator();
+        $tableDiff = $c->diffTable($table2, $table1);
+
+        $this->assertType('Doctrine\DBAL\Schema\TableDiff', $tableDiff);
+        $this->assertEquals(1, count($tableDiff->removedForeignKeys));
+    }
+
+    public function testTableUpdateForeignKey()
+    {
+        $tableForeign = new Table("bar");
+        $tableForeign->createColumn('id', 'integer');
+
+        $table1 = new Table("foo");
+        $table1->createColumn('fk', 'integer');
+        $table1->addForeignKeyConstraint($tableForeign, array('fk'), array('id'));
+
+        $table2 = new Table("foo");
+        $table2->createColumn('fk', 'integer');
+        $table2->addForeignKeyConstraint($tableForeign, array('fk'), array('id'), array('onUpdate' => 'CASCADE'));
+
+        $c = new Comparator();
+        $tableDiff = $c->diffTable($table1, $table2);
+
+        $this->assertType('Doctrine\DBAL\Schema\TableDiff', $tableDiff);
+        $this->assertEquals(1, count($tableDiff->changedForeignKeys));
     }
 }

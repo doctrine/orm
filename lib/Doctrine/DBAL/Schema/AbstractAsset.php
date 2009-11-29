@@ -59,4 +59,27 @@ abstract class AbstractAsset
     {
         return $this->_name;
     }
+
+    /**
+     * Generate an identifier from a list of column names obeying a certain string length.
+     *
+     * This is especially important for Oracle, since it does not allow identifiers larger than 30 chars,
+     * however building idents automatically for foreign keys, composite keys or such can easily create
+     * very long names.
+     *
+     * @param  array $columnNames
+     * @param  string $postfix
+     * @param  int $maxSize
+     * @return string
+     */
+    protected function _generateIdentifierName($columnNames, $postfix='', $maxSize=30)
+    {
+        $columnCount = count($columnNames);
+        $postfixLen = strlen($postfix);
+        $parts = array_map(function($columnName) use($columnCount, $postfixLen, $maxSize) {
+            return substr($columnName, 0, floor(($maxSize-$postfixLen)/$columnCount - 1));
+        }, $columnNames);
+        $parts[] = $postfix;
+        return implode("_", $parts);
+    }
 }

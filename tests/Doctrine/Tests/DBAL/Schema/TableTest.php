@@ -86,6 +86,18 @@ class TableTest extends \PHPUnit_Framework_TestCase
         $table = new Table("foo", $columns, array(), array());
     }
 
+    public function testCreateIndex()
+    {
+        $type = \Doctrine\DBAL\Types\Type::getType('integer');
+        $columns = array(new Column("foo", $type), new Column("bar", $type), new Column("baz", $type));
+        $table = new Table("foo", $columns);
+        $table->addIndex(array("foo", "bar", "baz"));
+        $table->addUniqueIndex(array("foo", "bar", "baz"));
+
+        $this->assertTrue($table->hasIndex("foo_bar_baz_idx"));
+        $this->assertTrue($table->hasIndex("foo_bar_baz_uniq"));
+    }
+
     public function testAddIndexes()
     {
         $type = \Doctrine\DBAL\Types\Type::getType('integer');
@@ -159,10 +171,10 @@ class TableTest extends \PHPUnit_Framework_TestCase
         $constraint = new ForeignKeyConstraint(array(), "foo", array());
 
         $tableA = new Table("foo", array(), array(), array($constraint));
-        $constraints = $tableA->getConstraints();
+        $constraints = $tableA->getForeignKeys();
 
         $this->assertEquals(1, count($constraints));
-        $this->assertSame($constraint, $constraints[0]);
+        $this->assertSame($constraint, array_shift($constraints));
     }
 
     public function testOptions()
@@ -256,7 +268,7 @@ class TableTest extends \PHPUnit_Framework_TestCase
         $foreignTable = new Table("bar");
         $foreignTable->createColumn("id", 'int');
 
-        $table->addForeignKeyConstraint($foreignTable, array("foo"), array("id"), array());
+        $table->addForeignKeyConstraint($foreignTable, array("foo"), array("id"));
     }
 
     public function testAddForeignKeyConstraint_UnknownForeignColumn_ThrowsException()
@@ -269,7 +281,7 @@ class TableTest extends \PHPUnit_Framework_TestCase
         $foreignTable = new Table("bar");
         $foreignTable->createColumn("id", 'integer');
 
-        $table->addForeignKeyConstraint($foreignTable, array("id"), array("foo"), array());
+        $table->addForeignKeyConstraint($foreignTable, array("id"), array("foo"));
     }
 
     public function testAddForeignKeyConstraint()
@@ -280,15 +292,15 @@ class TableTest extends \PHPUnit_Framework_TestCase
         $foreignTable = new Table("bar");
         $foreignTable->createColumn("id", 'integer');
 
-        $table->addForeignKeyConstraint($foreignTable, array("id"), array("id"), "fkName", array("foo" => "bar"));
+        $table->addForeignKeyConstraint($foreignTable, array("id"), array("id"), array("foo" => "bar"));
 
-        $constraints = $table->getConstraints();
+        $constraints = $table->getForeignKeys();
         $this->assertEquals(1, count($constraints));
-        $this->assertType('Doctrine\DBAL\Schema\ForeignKeyConstraint', $constraints[0]);
+        $this->assertType('Doctrine\DBAL\Schema\ForeignKeyConstraint', $constraints["id_fk"]);
 
-        $this->assertEquals("fkName", $constraints[0]->getName());
-        $this->assertTrue($constraints[0]->hasOption("foo"));
-        $this->assertEquals("bar", $constraints[0]->getOption("foo"));
+        $this->assertEquals("id_fk", $constraints["id_fk"]->getName());
+        $this->assertTrue($constraints["id_fk"]->hasOption("foo"));
+        $this->assertEquals("bar", $constraints["id_fk"]->getOption("foo"));
     }
     
 }
