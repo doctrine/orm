@@ -43,14 +43,14 @@ abstract class AbstractSchemaManager
     /**
      * Holds instance of the Doctrine connection for this schema manager
      *
-     * @var object \Doctrine\DBAL\Connection
+     * @var \Doctrine\DBAL\Connection
      */
     protected $_conn;
 
     /**
      * Holds instance of the database platform used for this schema manager
      *
-     * @var string
+     * @var \Doctrine\DBAL\Platform\AbstractPlatform
      */
     protected $_platform;
 
@@ -228,7 +228,7 @@ abstract class AbstractSchemaManager
     /**
      * List the tables for this connection
      *
-     * @return array $tables
+     * @return array(int => Table)
      */
     public function listTables()
     {
@@ -236,7 +236,28 @@ abstract class AbstractSchemaManager
 
         $tables = $this->_conn->fetchAll($sql);
 
-        return $this->_getPortableTablesList($tables);
+        $tableNames = $this->_getPortableTablesList($tables);
+        $tables = array();
+
+        foreach ($tableNames AS $tableName) {
+            $columns = $this->listTableColumns($tableName);
+            $foreignKeys = array();
+            if ($this->_platform->supportsForeignKeyConstraints()) {
+                $foreignKeys = $this->listTableForeignKeys($tableName);
+            }
+            $indexes = $this->listTableIndexes($tableName);
+
+            $idGeneratorType = Table::ID_NONE;
+            foreach ($columns AS $column) {
+                if ($column->hasPlatformOption('autoincrement') && $column->getPlatformOption('autoincrement')) {
+                    $idGeneratorType = Table::ID_IDENTITY;
+                }
+            }
+
+            $tables[] = new Table($tableName, $columns, $indexes, $foreignKeys, $idGeneratorType, array());
+        }
+
+        return $tables;
     }
 
     /**
@@ -1027,5 +1048,21 @@ abstract class AbstractSchemaManager
         foreach ((array) $sql as $query) {
             $this->_conn->executeUpdate($query);
         }
+    }
+
+    /**
+     * Create a schema instance for the current database.
+     * 
+     * @return Schema
+     */
+    public function createSchema()
+    {
+        $sequences = array();
+        if($this->_platform->supportsSequences()) {
+            $sequences = $this->listSequences();
+        }
+        $tables = $this->listTables();
+
+        return new Schema($tables, $sequences);
     }
 }

@@ -63,8 +63,19 @@ class SchemaManagerFunctionalTestCase extends \Doctrine\Tests\DbalFunctionalTest
         $tables = $this->_sm->listTables();
 
         $this->assertType('array', $tables);
-        $tables = \array_map('strtolower', $tables);
-        $this->assertEquals(true, in_array('list_tables_test', $tables));
+        $this->assertTrue(count($tables) > 0);
+
+        $foundTable = false;
+        foreach ($tables AS $table) {
+            $this->assertType('Doctrine\DBAL\Schema\Table', $table);
+            if (strtolower($table->getName()) == 'list_tables_test') {
+                $foundTable = true;
+
+                $this->assertTrue($table->hasColumn('id'));
+                $this->assertTrue($table->hasColumn('test'));
+                $this->assertTrue($table->hasColumn('foreign_key_test'));
+            }
+        }
     }
 
     public function testListTableColumns()
@@ -287,6 +298,15 @@ class SchemaManagerFunctionalTestCase extends \Doctrine\Tests\DbalFunctionalTest
         $this->assertTrue($found, "'test_create_view' View was not found in listViews().");
     }
 
+    public function testCreateSchema()
+    {
+        $this->createTestTable('test_table');
+
+        $schema = $this->_sm->createSchema();
+
+        $this->assertTrue($schema->hasTable('test_table'));
+    }
+
     /**
      * @var \Doctrine\DBAL\Schema\AbstractSchemaManager
      */
@@ -337,5 +357,17 @@ class SchemaManagerFunctionalTestCase extends \Doctrine\Tests\DbalFunctionalTest
         }
 
         $this->_sm->dropAndCreateTable($name, $columns, $options);
+    }
+
+    protected function assertHasTable($tables, $tableName)
+    {
+        $foundTable = false;
+        foreach ($tables AS $table) {
+            $this->assertType('Doctrine\DBAL\Schema\Table', $table, 'No Table instance was found in tables array.');
+            if (strtolower($table->getName()) == 'list_tables_test_new_name') {
+                $foundTable = true;
+            }
+        }
+        $this->assertTrue($foundTable, "Could not find new table");
     }
 }

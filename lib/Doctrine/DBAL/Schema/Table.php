@@ -215,6 +215,7 @@ class Table extends AbstractAsset
      */
     public function renameColumn($oldColumnName, $newColumnName)
     {
+        $columnName = strtolower($columnName);
         $column = $this->getColumn($oldColumnName);
         $this->dropColumn($oldColumnName);
 
@@ -231,6 +232,7 @@ class Table extends AbstractAsset
      */
     public function changeColumn($columnName, array $options)
     {
+        $columnName = strtolower($columnName);
         $column = $this->getColumn($columnName);
         $column->setOptions($options);
         return $this;
@@ -244,6 +246,7 @@ class Table extends AbstractAsset
      */
     public function dropColumn($columnName)
     {
+        $columnName = strtolower($columnName);
         $column = $this->getColumn($columnName);
         unset($this->_columns[$columnName]);
         return $this;
@@ -320,7 +323,7 @@ class Table extends AbstractAsset
      */
     protected function _addColumn(Column $column)
     {
-        $columnName = $column->getName();
+        $columnName = strtolower($column->getName());
         if (isset($this->_columns[$columnName])) {
             throw SchemaException::columnAlreadyExists($this->_name, $columnName);
         }
@@ -415,6 +418,7 @@ class Table extends AbstractAsset
      */
     public function hasColumn($columnName)
     {
+        $columnName = strtolower($columnName);
         return isset($this->_columns[$columnName]);
     }
 
@@ -426,6 +430,7 @@ class Table extends AbstractAsset
      */
     public function getColumn($columnName)
     {
+        $columnName = strtolower($columnName);
         if (!$this->hasColumn($columnName)) {
             throw SchemaException::columnDoesNotExist($columnName);
         }

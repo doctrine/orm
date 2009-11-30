@@ -251,7 +251,7 @@ class SqliteSchemaManager extends AbstractSchemaManager
             'precision' => $precision,
             'scale'     => $scale,
             'platformDetails' => array(
-                'primary'  => (bool) $tableColumn['pk'],
+                'autoincrement' => (bool) $tableColumn['pk'],
             ),
         );
 

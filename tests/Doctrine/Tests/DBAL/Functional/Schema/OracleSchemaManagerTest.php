@@ -73,6 +73,7 @@ class OracleSchemaManagerTest extends SchemaManagerFunctionalTestCase
         $this->_sm->renameTable('list_tables_test', 'list_tables_test_new_name');
 
         $tables = $this->_sm->listTables();
-        $this->assertEquals(true, in_array('LIST_TABLES_TEST_NEW_NAME', $tables));
+
+        $this->assertHasTable($tables, 'list_tables_test_new_name');
     }
 }

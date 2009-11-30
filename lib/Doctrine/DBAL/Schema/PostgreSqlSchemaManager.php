@@ -201,25 +201,30 @@ class PostgreSqlSchemaManager extends AbstractSchemaManager
         $scale = null;
         
         $dbType = strtolower($tableColumn['type']);
-        
+
+        $autoincrement = false;
         switch ($dbType) {
             case 'smallint':
             case 'int2':
                 $type = 'smallint';
                 $length = null;
                 break;
+            case 'serial':
+            case 'serial4':
+                $autoincrement = true;
+                // break missing intentionally
             case 'int':
             case 'int4':
             case 'integer':
-            case 'serial':
-            case 'serial4':
                 $type = 'integer';
                 $length = null;
                 break;
-            case 'bigint':
-            case 'int8':
             case 'bigserial':
             case 'serial8':
+                $autoincrement = true;
+                // break missing intentionally
+            case 'bigint':
+            case 'int8':
                 $type = 'bigint';
                 $length = null;
                 break;
@@ -320,7 +325,9 @@ class PostgreSqlSchemaManager extends AbstractSchemaManager
             'scale'     => $scale,
             'fixed'     => $fixed,
             'unsigned'  => false,
-            'platformDetails' => array(),
+            'platformDetails' => array(
+                'autoincrement' => $autoincrement,
+            ),
         );
 
         return new Column($tableColumn['field'], \Doctrine\DBAL\Types\Type::getType($type), $options);

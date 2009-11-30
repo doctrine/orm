@@ -65,7 +65,7 @@ class Schema extends AbstractAsset
      */
     protected function _addTable(Table $table)
     {
-        $tableName = $table->getName();
+        $tableName = strtolower($table->getName());
         if(isset($this->_tables[$tableName])) {
             throw SchemaException::tableAlreadyExists($tableName);
         }
@@ -78,7 +78,7 @@ class Schema extends AbstractAsset
      */
     protected function _addSequence(Sequence $sequence)
     {
-        $seqName = $sequence->getName();
+        $seqName = strtolower($sequence->getName());
         if (isset($this->_sequences[$seqName])) {
             throw SchemaException::sequenceAlreadyExists($seqName);
         }
@@ -101,6 +101,7 @@ class Schema extends AbstractAsset
      */
     public function getTable($tableName)
     {
+        $tableName = strtolower($tableName);
         if (!isset($this->_tables[$tableName])) {
             throw SchemaException::tableDoesNotExist($tableName);
         }
@@ -116,6 +117,7 @@ class Schema extends AbstractAsset
      */
     public function hasTable($tableName)
     {
+        $tableName = strtolower($tableName);
         return isset($this->_tables[$tableName]);
     }
 
@@ -125,6 +127,7 @@ class Schema extends AbstractAsset
      */
     public function hasSequence($sequenceName)
     {
+        $sequenceName = strtolower($sequenceName);
         return isset($this->_sequences[$sequenceName]);
     }
 
@@ -135,6 +138,7 @@ class Schema extends AbstractAsset
      */
     public function getSequence($sequenceName)
     {
+        $sequenceName = strtolower($sequenceName);
         if(!$this->hasSequence($sequenceName)) {
             throw SchemaException::sequenceDoesNotExist($sequenceName);
         }
@@ -187,6 +191,7 @@ class Schema extends AbstractAsset
      */
     public function dropTable($tableName)
     {
+        $tableName = strtolower($tableName);
         $table = $this->getTable($tableName);
         unset($this->_tables[$tableName]);
         return $this;
@@ -213,6 +218,7 @@ class Schema extends AbstractAsset
      */
     public function dropSequence($sequenceName)
     {
+        $sequenceName = strtolower($sequenceName);
         unset($this->_sequences[$sequenceName]);
         return $this;
     }

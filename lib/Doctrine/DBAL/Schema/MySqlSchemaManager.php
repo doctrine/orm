@@ -44,7 +44,7 @@ class MySqlSchemaManager extends AbstractSchemaManager
 
     protected function _getPortableTableDefinition($table)
     {
-        return end($table);
+        return array_shift($table);
     }
 
     protected function _getPortableUserDefinition($user)
