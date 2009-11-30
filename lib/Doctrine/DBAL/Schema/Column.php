@@ -132,7 +132,11 @@ class Column extends AbstractAsset
      */
     public function setLength($length)
     {
-        $this->_length = (int)$length;
+        if($length !== null) {
+            $this->_length = (int)$length;
+        } else {
+            $this->_length = null;
+        }
         return $this;
     }
 

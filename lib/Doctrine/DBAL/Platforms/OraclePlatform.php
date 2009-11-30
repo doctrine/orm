@@ -106,6 +106,10 @@ class OraclePlatform extends AbstractPlatform
      * Gets the SQL used to create a sequence that starts with a given value
      * and increments by the given allocation size.
      *
+     * Need to specifiy minvalue, since start with is hidden in the system and MINVALUE <= START WITH.
+     * Therefore we can use MINVALUE to be able to get a hint what START WITH was for later introspection
+     * in {@see listSequences()}
+     *
      * @param string $sequenceName
      * @param integer $start
      * @param integer $allocationSize
@@ -113,8 +117,8 @@ class OraclePlatform extends AbstractPlatform
      */
     public function getCreateSequenceSql($sequenceName, $start = 1, $allocationSize = 1)
     {
-        return 'CREATE SEQUENCE ' . $sequenceName 
-                . ' START WITH ' . $start . ' INCREMENT BY ' . $allocationSize; 
+        return 'CREATE SEQUENCE ' . $sequenceName
+                . ' START WITH ' . $start . ' MINVALUE ' . $start . ' INCREMENT BY ' . $allocationSize;
     }
 
     /**
@@ -249,7 +253,7 @@ class OraclePlatform extends AbstractPlatform
 
     public function getListDatabasesSql()
     {
-        return 'SELECT username FROM sys.dba_users';
+        return 'SELECT username FROM all_users';
     }
 
     public function getListFunctionsSql()
@@ -259,7 +263,7 @@ class OraclePlatform extends AbstractPlatform
 
     public function getListSequencesSql($database)
     {
-        return 'SELECT sequence_name FROM sys.user_sequences';
+        return 'SELECT sequence_name, min_value, increment_by FROM sys.user_sequences';
     }
 
     public function getCreateTableSql($table, array $columns, array $options = array())
@@ -281,11 +285,7 @@ class OraclePlatform extends AbstractPlatform
         
         if (isset($indexes) && ! empty($indexes)) {
             foreach ($indexes as $indexName => $definition) {
-                // create nonunique indexes, as they are a part of CREATE TABLE DDL
-                if ( ! isset($definition['type']) || 
-                        (isset($definition['type']) && strtolower($definition['type']) != 'unique')) {
-                    $sql[] = $this->getCreateIndexSql($table, $indexName, $definition);
-                }
+                $sql[] = $this->getCreateIndexSql($table, $indexName, $definition);
             }
         }
 
@@ -293,7 +293,6 @@ class OraclePlatform extends AbstractPlatform
     }
 
     /**
-     *
      * @license New BSD License
      * @link http://ezcomponents.org/docs/api/trunk/DatabaseSchema/ezcDbSchemaOracleReader.html
      * @param  string $table
@@ -301,11 +300,14 @@ class OraclePlatform extends AbstractPlatform
      */
     public function getListTableIndexesSql($table)
     {
+        $table = strtoupper($table);
+        
         return "SELECT uind.index_name AS name, " .
              "       uind.index_type AS type, " .
              "       decode( uind.uniqueness, 'NONUNIQUE', 0, 'UNIQUE', 1 ) AS is_unique, " .
              "       uind_col.column_name AS column_name, " .
-             "       uind_col.column_position AS column_pos " .
+             "       uind_col.column_position AS column_pos, " .
+             "       (SELECT ucon.constraint_type FROM user_constraints ucon WHERE ucon.constraint_name = uind.index_name) AS is_primary ".
              "FROM user_indexes uind, user_ind_columns uind_col " .
              "WHERE uind.index_name = uind_col.index_name AND uind_col.table_name = '$table'";
     }
@@ -317,7 +319,7 @@ class OraclePlatform extends AbstractPlatform
 
     public function getListUsersSql()
     {
-        return 'SELECT * FROM sys.dba_users';
+        return 'SELECT * FROM all_users';
     }
 
     public function getListViewsSql()
@@ -397,6 +399,24 @@ END;';
         }
 
         return $sql;
+    }
+
+    public function getListTableForeignKeysSql($table)
+    {
+        $table = strtoupper($table);
+
+        return "SELECT rel.constraint_name, rel.position, col.column_name AS local_column, ".
+               "     rel.table_name, rel.column_name AS foreign_column, cc.delete_rule ".
+               "FROM (user_tab_columns col ".
+               "JOIN user_cons_columns con ".
+               "  ON col.table_name = con.table_name ".
+               " AND col.column_name = con.column_name ".
+               "JOIN user_constraints cc ".
+               "  ON con.constraint_name = cc.constraint_name ".
+               "JOIN user_cons_columns rel ".
+               "  ON cc.r_constraint_name = rel.constraint_name ".
+               " AND con.position = rel.position) ".
+               "WHERE cc.constraint_type = 'R' AND col.table_name = '".$table."'";
     }
 
     public function getListTableConstraintsSql($table)
@@ -578,5 +598,15 @@ END;';
             return substr($schemaElementName, 0, 30);
         }
         return $schemaElementName;
+    }
+
+    /**
+     * Whether the platform supports sequences.
+     *
+     * @return boolean
+     */
+    public function supportsSequences()
+    {
+        return true;
     }
 }

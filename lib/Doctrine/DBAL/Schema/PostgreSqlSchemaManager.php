@@ -35,15 +35,26 @@ class PostgreSqlSchemaManager extends AbstractSchemaManager
 {
     protected function _getPortableTableForeignKeyDefinition($tableForeignKey)
     {
-        preg_match('/FOREIGN KEY \((.+)\) REFERENCES (.+)\((.+)\)/', $tableForeignKey['condef'], $values);
+        $onUpdate = null;
+        $onDelete = null;
 
-        if ((strpos(',', $values[1]) === false) && (strpos(',', $values[3]) === false)) {
-            return array(
-                'table'   => $values[2],
-                'local'   => $values[1],
-                'foreign' => $values[3]
-            );
+        if(preg_match('(ON UPDATE ([a-zA-Z0-9]+))', $tableForeignKey['condef'], $match)) {
+            $onUpdate = $match[1];
         }
+        if(preg_match('(ON DELETE ([a-zA-Z0-9]+))', $tableForeignKey['condef'], $match)) {
+            $onDelete = $match[1];
+        }
+
+        if(preg_match('/FOREIGN KEY \((.+)\) REFERENCES (.+)\((.+)\)/', $tableForeignKey['condef'], $values)) {
+            $localColumns = explode(",", $values[1]);
+            $foreignColumns = explode(",", $values[3]);
+            $foreignTable = $values[2];
+        }
+
+        return new ForeignKeyConstraint(
+            $localColumns, $foreignTable, $foreignColumns, $tableForeignKey['name'],
+            array('onUpdate' => $onUpdate, 'onDelete' => $onDelete)
+        );
     }
 
     public function dropDatabase($database)
@@ -299,9 +310,7 @@ class PostgreSqlSchemaManager extends AbstractSchemaManager
                 $type = 'string';
         }
 
-        $description = array(
-            'name'      => $tableColumn['field'],
-            'type'      => $type,
+        $options = array(
             'length'    => $length,
             'notnull'   => (bool) $tableColumn['isnotnull'],
             'default'   => $tableColumn['default'],
@@ -313,6 +322,6 @@ class PostgreSqlSchemaManager extends AbstractSchemaManager
             'platformDetails' => array(),
         );
 
-        return $description;
+        return new Column($tableColumn['field'], \Doctrine\DBAL\Types\Type::getType($type), $options);
     }
 }

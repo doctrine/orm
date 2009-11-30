@@ -245,14 +245,24 @@ class Schema extends AbstractAsset
         return $dropSqlCollector->getQueries();
     }
 
-    public function migrateTo(Schema $schema, \Doctrine\DBAL\Platforms\AbstractPlatform $platform)
+    /**
+     * @param Schema $schema
+     * @param AbstractPlatform $platform
+     */
+    public function getMigrateToSql(Schema $schema, \Doctrine\DBAL\Platforms\AbstractPlatform $platform)
     {
-        
+        $comparator = new Comparator();
+        $schemaDiff = $comparator->compare($this, $schema);
     }
 
-    public function migrateFrom(Schema $schema, \Doctrine\DBAL\Platforms\AbstractPlatform $platform)
+    /**
+     * @param Schema $schema
+     * @param AbstractPlatform $platform
+     */
+    public function getMigrateFromSql(Schema $schema, \Doctrine\DBAL\Platforms\AbstractPlatform $platform)
     {
-        
+        $comparator = new Comparator();
+        $schemaDiff = $comparator->compare($schema, $this);
     }
 
     /**

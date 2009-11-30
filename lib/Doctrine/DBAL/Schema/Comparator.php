@@ -226,11 +226,11 @@ class Comparator
      */
     public function diffForeignKey($key1, $key2)
     {
-        if ($key1->getLocalColumnNames() != $key2->getLocalColumnNames()) {
+        if ($key1->getLocalColumns() != $key2->getLocalColumns()) {
             return true;
         }
         
-        if ($key1->getForeignColumnNames() != $key2->getForeignColumnNames()) {
+        if ($key1->getForeignColumns() != $key2->getForeignColumns()) {
             return true;
         }
 

@@ -41,25 +41,4 @@ class MySqlSchemaManagerTest extends SchemaManagerFunctionalTestCase
     {
         return 'SELECT * from mysql.user';
     }
-    
-    public function testListTableForeignKeys()
-    {
-        $data['options'] = array('type' => 'innodb');
-        $this->createTestTable('list_table_foreign_keys_test1', $data);
-        $this->createTestTable('list_table_foreign_keys_test2', $data);
-        
-        $definition = array(
-            'name' => 'testing',
-            'local' => 'foreign_key_test',
-            'foreign' => 'id',
-            'foreignTable' => 'list_table_foreign_keys_test2'
-        );
-        $this->_sm->createForeignKey('list_table_foreign_keys_test1', $definition);
-        
-        $tableForeignKeys = $this->_sm->listTableForeignKeys('list_table_foreign_keys_test1');
-        $this->assertEquals(1, count($tableForeignKeys));
-        $this->assertEquals('list_table_foreign_keys_test2', $tableForeignKeys[0]['table']);
-        $this->assertEquals('foreign_key_test', $tableForeignKeys[0]['local']);
-        $this->assertEquals('id', $tableForeignKeys[0]['foreign']);
-    }
 }

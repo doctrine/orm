@@ -142,8 +142,8 @@ class CreateSchemaSqlCollector implements Visitor
         $fkConstraintArray = array(
             'tableName' => $fkConstraint->getName(),
             'foreignTable' => $fkConstraint->getForeignTableName(),
-            'local' => $fkConstraint->getLocalColumnNames(),
-            'foreign' => $fkConstraint->getForeignColumnNames(),
+            'local' => $fkConstraint->getLocalColumns(),
+            'foreign' => $fkConstraint->getForeignColumns(),
             'onUpdate' => ($fkConstraint->hasOption('onUpdate')?$fkConstraint->getOption('onUpdate'):null),
             'onDelete' => ($fkConstraint->hasOption('onDelete')?$fkConstraint->getOption('onDelete'):null),
         );

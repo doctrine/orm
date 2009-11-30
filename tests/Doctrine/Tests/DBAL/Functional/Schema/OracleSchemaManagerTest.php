@@ -10,8 +10,6 @@ class OracleSchemaManagerTest extends SchemaManagerFunctionalTestCase
 {
     public function setUp()
     {
-        $this->markTestSkipped('Somehow they all dont work because of privledges or other stuff.');
-
         parent::setUp();
 
         if(!isset($GLOBALS['db_username'])) {
@@ -32,13 +30,6 @@ class OracleSchemaManagerTest extends SchemaManagerFunctionalTestCase
     public function testListTriggers()
     {
         $this->_sm->listTriggers();
-    }
-
-    public function testListSequences()
-    {
-        $this->createTestTable('list_sequences_test');
-        $sequences = $this->_sm->listSequences();
-        $this->assertEquals(true, in_array('LIST_SEQUENCES_TEST_SEQ', $sequences));
     }
 
     public function testListTableConstraints()
@@ -71,11 +62,6 @@ class OracleSchemaManagerTest extends SchemaManagerFunctionalTestCase
         $view = end($views);
 
         $this->assertEquals('TEST_CREATE_VIEW', $view['name']);
-    }
-
-    public function testListTableForeignKeys()
-    {
-        $this->markTestSkipped('Not yet implemented');
     }
 
     public function testRenameTable()

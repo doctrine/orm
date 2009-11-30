@@ -202,13 +202,14 @@ class MySqlPlatform extends AbstractPlatform
 
     public function getListTableForeignKeysSql($table, $database = null)
     {
-        $sql = "SELECT column_name, REFERENCED_TABLE_NAME, REFERENCED_COLUMN_NAME FROM information_schema.key_column_usage WHERE table_name = '" . $table . "'";
+        $sql = "SELECT `CONSTRAINT_NAME`, `COLUMN_NAME`, `REFERENCED_TABLE_NAME`, ".
+               "`REFERENCED_COLUMN_NAME` FROM information_schema.key_column_usage WHERE table_name = '" . $table . "'";
 
         if ( ! is_null($database)) {
             $sql .= " AND table_schema = '$database'";
         }
 
-        $sql .= " AND REFERENCED_COLUMN_NAME is not NULL";
+        $sql .= " AND `REFERENCED_COLUMN_NAME` is not NULL";
 
         return $sql;
     }

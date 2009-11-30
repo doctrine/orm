@@ -341,7 +341,7 @@ class PostgreSqlPlatform extends AbstractPlatform
 
     public function getListTableForeignKeysSql($table, $database = null)
     {
-        return "SELECT pg_catalog.pg_get_constraintdef(oid, true) as condef
+        return "SELECT r.name, pg_catalog.pg_get_constraintdef(r.oid, true) as condef
                   FROM pg_catalog.pg_constraint r
                   WHERE r.conrelid =
                   (

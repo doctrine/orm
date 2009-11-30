@@ -23,6 +23,7 @@ namespace Doctrine\DBAL\Schema;
 
 use \Doctrine\DBAL\Types;
 use \Doctrine\Common\DoctrineException;
+use \Doctrine\DBAL\DBALException;
 
 /**
  * Base class for schema managers. Schema managers are used to inspect and/or
@@ -210,32 +211,10 @@ abstract class AbstractSchemaManager
     }
 
     /**
-     * List the indexes for a given table
-     * 
-     * @example
-     * $indexes = array(
-     *  'primary' => array(
-     *      'name' => 'primary',
-     *      'columns' => array('id'),
-     *      'unique' => true,
-     *      'primary' => true,
-     *  ),
-     *  'fieldUnq' => array(
-     *      'name' => 'fieldUnq',
-     *      'columns' => array('foo', 'bar'),
-     *      'unique' => true,
-     *      'primary' => false,
-     *  ),
-     *  'fieldIdx' => array(
-     *      'name' => 'fieldIdx',
-     *      'columns' => array('baz'),
-     *      'unique' => false,
-     *      'primary' => false,
-     *  ),
-     * );
+     * List the indexes for a given table returning an array of Index instances.
      *
      * @param string $table The name of the table
-     * @return array $tableIndexes
+     * @return Index[] $tableIndexes
      */
     public function listTableIndexes($table)
     {
@@ -899,9 +878,13 @@ abstract class AbstractSchemaManager
         return $list;
     }
 
+    /**
+     * @param array $sequence
+     * @return Sequence
+     */
     protected function _getPortableSequenceDefinition($sequence)
     {
-        return $sequence;
+        throw DBALException::notSupported('Sequences');
     }
 
     protected function _getPortableTableConstraintsList($tableConstraints)
@@ -923,21 +906,21 @@ abstract class AbstractSchemaManager
     protected function _getPortableTableColumnList($tableColumns)
     {
         $list = array();
-        foreach ($tableColumns as $key => $value) {
-            if ($value = $this->_getPortableTableColumnDefinition($value)) {
-                if (is_string($value['type'])) {
-                    $value['type'] = \Doctrine\DBAL\Types\Type::getType($value['type']);
-                }
-                $list[$value['name']] = $value;
+        foreach ($tableColumns as $key => $column) {
+            if ($column = $this->_getPortableTableColumnDefinition($column)) {
+                $list[$column->getName()] = $column;
             }
         }
         return $list;
     }
 
-    protected function _getPortableTableColumnDefinition($tableColumn)
-    {
-        return $tableColumn;
-    }
+    /**
+     * Get Table Column Definition
+     *
+     * @param array $tableColumn
+     * @return Column
+     */
+    abstract protected function _getPortableTableColumnDefinition($tableColumn);
 
     /**
      * Aggregate and group the index results according to the required data result.
@@ -967,7 +950,12 @@ abstract class AbstractSchemaManager
             }
         }
 
-        return $result;
+        $indexes = array();
+        foreach($result AS $indexKey => $data) {
+            $indexes[$indexKey] = new Index($data['name'], $data['columns'], $data['unique'], $data['primary']);
+        }
+
+        return $indexes;
     }
 
     protected function _getPortableTablesList($tables)

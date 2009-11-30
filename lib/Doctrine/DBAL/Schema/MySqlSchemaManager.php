@@ -239,9 +239,7 @@ class MySqlSchemaManager extends AbstractSchemaManager
             'fixed' => (bool) $fixed
         );
 
-        $column = array(
-            'name'          => $tableColumn['Field'],
-            'type'          => $type,
+        $options = array(
             'length'        => $length,
             'unsigned'      => (bool)$unsigned,
             'fixed'         => (bool)$fixed,
@@ -249,7 +247,7 @@ class MySqlSchemaManager extends AbstractSchemaManager
             'notnull'       => (bool) ($tableColumn['Null'] != 'YES'),
             'scale'         => null,
             'precision'     => null,
-            'platformDetails' => array(
+            'platformOptions' => array(
                 'primary' => (strtolower($tableColumn['Key']) == 'pri') ? true : false,
                 'unique' => (strtolower($tableColumn['Key']) == 'uni') ? true :false,
                 'autoincrement' => (bool) (strpos($tableColumn['Extra'], 'auto_increment') !== false),
@@ -257,22 +255,24 @@ class MySqlSchemaManager extends AbstractSchemaManager
         );
 
         if ($scale !== null && $precision !== null) {
-            $column['scale'] = $scale;
-            $column['precision'] = $precision;
+            $options['scale'] = $scale;
+            $options['precision'] = $precision;
         }
 
-        return $column;
+        return new Column($tableColumn['Field'], \Doctrine\DBAL\Types\Type::getType($type), $options);
     }
 
     public function _getPortableTableForeignKeyDefinition($tableForeignKey)
     {
         $tableForeignKey = array_change_key_case($tableForeignKey, CASE_LOWER);
-        $foreignKey = array(
-            'table'   => $tableForeignKey['referenced_table_name'],
-            'local'   => $tableForeignKey['column_name'],
-            'foreign' => $tableForeignKey['referenced_column_name']
+        
+        return new ForeignKeyConstraint(
+            (array)$tableForeignKey['column_name'],
+            $tableForeignKey['referenced_table_name'],
+            (array)$tableForeignKey['referenced_column_name'],
+            $tableForeignKey['constraint_name'],
+            array()
         );
-        return $foreignKey;
     }
     
     /**

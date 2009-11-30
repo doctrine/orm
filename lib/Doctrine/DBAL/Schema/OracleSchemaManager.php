@@ -48,7 +48,6 @@ class OracleSchemaManager extends AbstractSchemaManager
 
         return array(
             'user' => $user['username'],
-            'password' => $user['password']
         );
     }
 
@@ -68,13 +67,13 @@ class OracleSchemaManager extends AbstractSchemaManager
      */
     protected function _getPortableTableIndexesList($tableIndexes, $tableName=null)
     {
-        $tableIndexes = \array_change_key_case($tableIndexes, CASE_LOWER);
-
         $indexBuffer = array();
         foreach ( $tableIndexes as $tableIndex ) {
-            $keyName = $tableIndex['name'];
+            $tableIndex = \array_change_key_case($tableIndex, CASE_LOWER);
 
-            if ( $keyName == $tableName.'_pkey' ) {
+            $keyName = strtolower($tableIndex['name']);
+
+            if ( strtolower($tableIndex['is_primary']) == "p" ) {
                 $keyName = 'primary';
                 $buffer['primary'] = true;
                 $buffer['non_unique'] = false;
@@ -86,7 +85,7 @@ class OracleSchemaManager extends AbstractSchemaManager
             $buffer['column_name'] = $tableIndex['column_name'];
             $indexBuffer[] = $buffer;
         }
-        parent::_getPortableTableIndexesList($indexBuffer, $tableName);
+        return parent::_getPortableTableIndexesList($indexBuffer, $tableName);
     }
 
     protected function _getPortableTableColumnDefinition($tableColumn)
@@ -179,17 +178,8 @@ class OracleSchemaManager extends AbstractSchemaManager
                 $length = null;
         }
 
-        $decl = array(
-            'type'     => $type,
-            'length'   => $length,
-            'unsigned' => $unsigned,
-            'fixed'    => $fixed
-        );
-
-        return array(
-            'name'       => $tableColumn['column_name'],
+        $options = array(
             'notnull'    => (bool) ($tableColumn['nullable'] === 'N'),
-            'type'       => $type,
             'fixed'      => (bool) $fixed,
             'unsigned'   => (bool) $unsigned,
             'default'    => $tableColumn['data_default'],
@@ -198,6 +188,54 @@ class OracleSchemaManager extends AbstractSchemaManager
             'scale'      => $scale,
             'platformDetails' => array(),
         );
+
+        return new Column($tableColumn['column_name'], \Doctrine\DBAL\Types\Type::getType($type), $options);
+    }
+
+    public function createForeignKey($table, array $definition)
+    {
+        if(isset($definition['onUpdate'])) {
+            // Oracle does not support onUpdate
+            unset($definition['onUpdate']);
+        }
+
+        return parent::createForeignKey($table, $definition);
+    }
+
+    protected function _getPortableTableForeignKeysList($tableForeignKeys)
+    {
+        $list = array();
+        foreach ($tableForeignKeys as $key => $value) {
+            $value = \array_change_key_case($value, CASE_LOWER);
+            if (!isset($list[$value['constraint_name']])) {
+                $list[$value['constraint_name']] = array(
+                    'name' => $value['constraint_name'],
+                    'local' => array(),
+                    'foreign' => array(),
+                    'foreignTable' => $value['table_name'],
+                    'onDelete' => $value['delete_rule'],
+                );
+            }
+            $list[$value['constraint_name']]['local'][$value['position']] = $value['local_column'];
+            $list[$value['constraint_name']]['foreign'][$value['position']] = $value['foreign_column'];
+        }
+
+        $result = array();
+        foreach($list AS $constraint) {
+            $result[] = new ForeignKeyConstraint(
+                array_values($constraint['local']), $constraint['foreignTable'],
+                array_values($constraint['foreign']),  $constraint['name'],
+                array('onDelete' => $constraint['onDelete'])
+            );
+        }
+
+        return $result;
+    }
+
+    protected function _getPortableSequenceDefinition($sequence)
+    {
+        $sequence = \array_change_key_case($sequence, CASE_LOWER);
+        return new Sequence($sequence['sequence_name'], $sequence['increment_by'], $sequence['min_value']);
     }
 
     protected function _getPortableTableConstraintDefinition($tableConstraint)

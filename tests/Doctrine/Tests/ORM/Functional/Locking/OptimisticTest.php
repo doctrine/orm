@@ -135,6 +135,8 @@ class OptimisticTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $q->setParameter('name', 'Testing');
         $test = $q->getSingleResult();
 
+        $this->assertType('DateTime', $test->version);
+
         // Manually increment the version datetime column
         $format = $this->_em->getConnection()->getDatabasePlatform()->getDateTimeFormatString();
         $this->_conn->execute('UPDATE optimistic_timestamp SET version = ? WHERE id = ?', array(date($format, strtotime($test->version->format($format)) + 3600), $test->id));

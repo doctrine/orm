@@ -65,6 +65,8 @@ class MySqlSchemaToolTest extends \Doctrine\Tests\OrmFunctionalTestCase
     
     public function testGetUpdateSchemaSql()
     {
+        $this->markTestSkipped('Update Schema Tool stuff wont be needed anymore soon!');
+
         $classes = array(
             $this->_em->getClassMetadata(__NAMESPACE__ . '\SchemaToolEntityA')
         );
