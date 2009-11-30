@@ -263,7 +263,8 @@ class OraclePlatform extends AbstractPlatform
 
     public function getListSequencesSql($database)
     {
-        return 'SELECT sequence_name, min_value, increment_by FROM sys.user_sequences';
+        return "SELECT sequence_name, min_value, increment_by FROM sys.all_sequences ".
+               "WHERE SEQUENCE_OWNER = '".strtoupper($database)."'";
     }
 
     public function getCreateTableSql($table, array $columns, array $options = array())

@@ -444,6 +444,11 @@ class SqlitePlatform extends AbstractPlatform
         return false;
     }
 
+    public function supportsSequences()
+    {
+        return false;
+    }
+
     /**
      * Get the platform name for this instance
      *

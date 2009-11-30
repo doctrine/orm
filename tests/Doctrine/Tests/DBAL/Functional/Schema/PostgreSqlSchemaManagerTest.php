@@ -8,13 +8,6 @@ require_once __DIR__ . '/../../../TestInit.php';
  
 class PostgreSqlSchemaManagerTest extends SchemaManagerFunctionalTestCase
 {
-    public function testListSequences()
-    {
-        $this->createTestTable('list_sequences_test');
-        $sequences = $this->_sm->listSequences();
-        $this->assertEquals(true, in_array('list_sequences_test_id_seq', $sequences));
-    }
-
     public function testListTableConstraints()
     {
         $this->createTestTable('list_table_constraints_test');

@@ -153,7 +153,8 @@ class PostgreSqlSchemaManager extends AbstractSchemaManager
 
     protected function _getPortableSequenceDefinition($sequence)
     {
-        return $sequence['relname'];
+        $data = $this->_conn->fetchAll('SELECT start_value, increment_by FROM '.$sequence['relname']);
+        return new Sequence($sequence['relname'], $data[0]['increment_by'], $data[0]['start_value']);
     }
 
     protected function _getPortableTableConstraintDefinition($tableConstraint)

@@ -36,14 +36,6 @@ class SqliteSchemaManagerTest extends SchemaManagerFunctionalTestCase
         $this->_sm->listTriggers();
     }
 
-    public function testListSequences()
-    {
-        $this->createTestTable('list_sequences_test');
-        $sequences = $this->_sm->listSequences();
-        $this->assertEquals('list_sequences_test', $sequences[0]['name']);
-        $this->assertEquals('sqlite_sequence', $sequences[1]['name']);
-    }
-
     public function testListTableConstraints()
     {
         // TODO: Implement support for constraints/foreign keys to be specified
