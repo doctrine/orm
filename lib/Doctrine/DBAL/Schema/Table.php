@@ -179,7 +179,11 @@ class Table extends AbstractAsset
             throw SchemaException::indexNameInvalid($indexName);
         }
 
-        foreach ($columnNames AS $columnName) {
+        foreach ($columnNames AS $columnName => $indexColOptions) {
+            if (is_numeric($columnName) && is_string($indexColOptions)) {
+                $columnName = $indexColOptions;
+            }
+
             if (!isset($this->_columns[$columnName])) {
                 throw SchemaException::columnDoesNotExist($columnName);
             }
