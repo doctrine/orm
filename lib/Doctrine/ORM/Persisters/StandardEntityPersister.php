@@ -72,6 +72,13 @@ class StandardEntityPersister
      * @var Doctrine\ORM\EntityManager
      */
     protected $_em;
+    
+    /**
+     * The SqlLogger to use, if any.
+     * 
+     * @var Doctrine\DBAL\Logging\SqlLogger
+     */
+    protected $_sqlLogger;
 
     /**
      * Queued inserts.
@@ -92,6 +99,7 @@ class StandardEntityPersister
     {
         $this->_em = $em;
         $this->_conn = $em->getConnection();
+        $this->_sqlLogger = $em->getConfiguration()->getSqlLogger();
         $this->_platform = $this->_conn->getDatabasePlatform();
         $this->_class = $class;
     }
@@ -405,8 +413,15 @@ class StandardEntityPersister
      */
     public function load(array $criteria, $entity = null, $assoc = null, array $hints = array())
     {
-        $stmt = $this->_conn->prepare($this->_getSelectEntitiesSql($criteria, $assoc));
-        $stmt->execute(array_values($criteria));
+        $sql = $this->_getSelectEntitiesSql($criteria, $assoc);
+        $params = array_values($criteria);
+        
+        if ($this->_sqlLogger !== null) {
+            $this->_sqlLogger->logSql($sql, $params);
+        }
+        
+        $stmt = $this->_conn->prepare($sql);
+        $stmt->execute($params);
         $result = $stmt->fetch(Connection::FETCH_ASSOC);
         $stmt->closeCursor();
         
@@ -421,8 +436,15 @@ class StandardEntityPersister
      */
     final public function refresh(array $id, $entity)
     {
-        $stmt = $this->_conn->prepare($this->_getSelectEntitiesSql($id));
-        $stmt->execute(array_values($id));
+        $sql = $this->_getSelectEntitiesSql($id);
+        $params = array_values($id);
+        
+        if ($this->_sqlLogger !== null) {
+            $this->_sqlLogger->logSql($sql, $params);
+        }
+        
+        $stmt = $this->_conn->prepare($sql);
+        $stmt->execute($params);
         $result = $stmt->fetch(Connection::FETCH_ASSOC);
         $stmt->closeCursor();
         
@@ -503,8 +525,15 @@ class StandardEntityPersister
     {
         $entities = array();
         
-        $stmt = $this->_conn->prepare($this->_getSelectEntitiesSql($criteria));
-        $stmt->execute(array_values($criteria));
+        $sql = $this->_getSelectEntitiesSql($criteria);
+        $params = array_values($criteria);
+        
+        if ($this->_sqlLogger !== null) {
+            $this->_sqlLogger->logSql($sql, $params);
+        }
+        
+        $stmt = $this->_conn->prepare($sql);
+        $stmt->execute($params);
         $result = $stmt->fetchAll(Connection::FETCH_ASSOC);
         $stmt->closeCursor();
         
@@ -524,8 +553,16 @@ class StandardEntityPersister
     public function loadOneToManyCollection(array $criteria, PersistentCollection $coll)
     {
         $owningAssoc = $this->_class->associationMappings[$coll->getMapping()->mappedByFieldName];
-        $stmt = $this->_conn->prepare($this->_getSelectEntitiesSql($criteria, $owningAssoc));
-        $stmt->execute(array_values($criteria));
+        
+        $sql = $this->_getSelectEntitiesSql($criteria, $owningAssoc);
+        $params = array_values($criteria);
+        
+        if ($this->_sqlLogger !== null) {
+            $this->_sqlLogger->logSql($sql, $params);
+        }
+        
+        $stmt = $this->_conn->prepare($sql);
+        $stmt->execute($params);
         while ($result = $stmt->fetch(Connection::FETCH_ASSOC)) {
             $coll->hydrateAdd($this->_createEntity($result));
         }
@@ -540,8 +577,15 @@ class StandardEntityPersister
      */
     public function loadManyToManyCollection($assoc, array $criteria, PersistentCollection $coll)
     {
-        $stmt = $this->_conn->prepare($this->_getSelectManyToManyEntityCollectionSql($assoc, $criteria));
-        $stmt->execute(array_values($criteria));
+        $sql = $this->_getSelectManyToManyEntityCollectionSql($assoc, $criteria);
+        $params = array_values($criteria);
+        
+        if ($this->_sqlLogger !== null) {
+            $this->_sqlLogger->logSql($sql, $params);
+        }
+        
+        $stmt = $this->_conn->prepare($sql);
+        $stmt->execute($params);
         while ($result = $stmt->fetch(Connection::FETCH_ASSOC)) {
             $coll->hydrateAdd($this->_createEntity($result));
         }

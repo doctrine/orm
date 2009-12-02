@@ -603,8 +603,7 @@ class ObjectHydratorTest extends HydrationTestCase
      * in the result set.
      *
      * DQL:
-     * select c.id, c.position, c.name, b.id, b.position
-     * from \Doctrine\Tests\Models\Forum\ForumCategory c inner join c.boards b
+     * select c, b from Doctrine\Tests\Models\Forum\ForumCategory c inner join c.boards b
      * order by c.position asc, b.position asc
      *
      * Checks whether the boards are correctly assigned to the categories.
