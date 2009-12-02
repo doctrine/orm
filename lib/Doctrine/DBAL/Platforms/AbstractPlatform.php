@@ -496,11 +496,11 @@ abstract class AbstractPlatform
      */
     public function getDropConstraintSql($constraint, $table)
     {
-        if ($constraint->getName()) {
+        if ($constraint instanceof \Doctrine\DBAL\Schema\Constraint) {
             $constraint = $constraint->getName();
         }
 
-        if ($table->getName()) {
+        if ($table instanceof \Doctrine\DBAL\Schema\Table) {
             $table = $table->getName();
         }
 

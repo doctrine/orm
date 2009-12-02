@@ -406,7 +406,7 @@ END;';
             $sql[] = $this->getDropSequenceSql($table.'_SEQ');
 
             $indexName = $table . '_AI_PK';
-            $sql[] = $this->getDropConstraintSql($table, $indexName);
+            $sql[] = $this->getDropConstraintSql($indexName, $table);
         }
 
         return $sql;
