@@ -20,4 +20,14 @@ class ORMException extends \Exception
                 . " detected in collection '" . $assoc->sourceFieldName . "' during flush."
                 . " Remove deleted entities from collections.");
     }
+    
+    public static function invalidEntityState($state)
+    {
+        return new self("Invalid entity state: $state.");
+    }
+    
+    public static function detachedEntityCannotBeRemoved()
+    {
+        return new self("A detached entity can not be removed.");
+    }
 }

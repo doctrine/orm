@@ -854,13 +854,13 @@ class UnitOfWork implements PropertyChangedListener
         $oid = spl_object_hash($entity);
 
         if (isset($this->_entityUpdates[$oid])) {
-            throw DoctrineException::dirtyObjectCannotBeRegisteredAsNew();
+            throw new \InvalidArgumentException("Dirty entity can not be scheduled for insertion.");
         }
         if (isset($this->_entityDeletions[$oid])) {
-            throw DoctrineException::removedObjectCannotBeRegisteredAsNew();
+            throw new \InvalidArgumentException("Removed entity can not be scheduled for insertion.");
         }
         if (isset($this->_entityInsertions[$oid])) {
-            throw DoctrineException::objectAlreadyRegisteredAsNew();
+            throw new \InvalidArgumentException("Entity can not be scheduled for insertion twice.");
         }
 
         $this->_entityInsertions[$oid] = $entity;
@@ -890,10 +890,10 @@ class UnitOfWork implements PropertyChangedListener
     {
         $oid = spl_object_hash($entity);
         if ( ! isset($this->_entityIdentifiers[$oid])) {
-            throw DoctrineException::entityWithoutIdentityCannotBeRegisteredAsDirty();
+            throw new \InvalidArgumentException("Entity has no identity.");
         }
         if (isset($this->_entityDeletions[$oid])) {
-            throw DoctrineException::removedObjectCannotBeRegisteredAsDirty();
+            throw new \InvalidArgumentException("Entity is removed.");
         }
 
         if ( ! isset($this->_entityUpdates[$oid]) && ! isset($this->_entityInsertions[$oid])) {
@@ -1009,7 +1009,7 @@ class UnitOfWork implements PropertyChangedListener
         $classMetadata = $this->_em->getClassMetadata(get_class($entity));
         $idHash = implode(' ', $this->_entityIdentifiers[spl_object_hash($entity)]);
         if ($idHash === '') {
-            throw DoctrineException::entityMustHaveIdentityToBeAddedToIdentityMap($entity);
+            throw new \InvalidArgumentException("The given entity has no identity.");
         }
         $className = $classMetadata->rootEntityName;
         if (isset($this->_identityMap[$className][$idHash])) {
@@ -1072,7 +1072,7 @@ class UnitOfWork implements PropertyChangedListener
         $classMetadata = $this->_em->getClassMetadata(get_class($entity));
         $idHash = implode(' ', $this->_entityIdentifiers[$oid]);
         if ($idHash === '') {
-            throw DoctrineException::entityMustHaveIdentifyToBeRemovedFromIdentityMap($entity);
+            throw new \InvalidArgumentException("The given entity has no identity.");
         }
         $className = $classMetadata->rootEntityName;
         if (isset($this->_identityMap[$className][$idHash])) {
@@ -1212,8 +1212,8 @@ class UnitOfWork implements PropertyChangedListener
                 $this->scheduleForInsert($entity);
                 break;
             case self::STATE_DETACHED:
-                throw DoctrineException::notImplemented("Behavior of save() for a detached entity "
-                        . "is not yet defined.");
+                throw new \InvalidArgumentException(
+                        "Behavior of save() for a detached entity is not yet defined.");
             case self::STATE_REMOVED:
                 // Entity becomes managed again
                 if ($this->isScheduledForDelete($entity)) {
@@ -1224,7 +1224,7 @@ class UnitOfWork implements PropertyChangedListener
                 }
                 break;
             default:
-                throw DoctrineException::invalidEntityState($entityState);
+                throw ORMException::invalidEntityState($entityState);
         }
         
         $this->_cascadePersist($entity, $visited);
@@ -1277,9 +1277,9 @@ class UnitOfWork implements PropertyChangedListener
                 $this->scheduleForDelete($entity);
                 break;
             case self::STATE_DETACHED:
-                throw DoctrineException::detachedEntityCannotBeRemoved();
+                throw ORMException::detachedEntityCannotBeRemoved();
             default:
-                throw DoctrineException::invalidEntityState($entityState);
+                throw ORMException::invalidEntityState($entityState);
         }
 
         $this->_cascadeRemove($entity, $visited);
