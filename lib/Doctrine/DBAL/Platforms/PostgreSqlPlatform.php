@@ -559,15 +559,16 @@ class PostgreSqlPlatform extends AbstractPlatform
     }
     
     /**
-     * {@inheritdoc}
-     * 
-     * @return string
-     * @override
+     * Gets the SQL to create a sequence on this platform.
+     *
+     * @param \Doctrine\DBAL\Schema\Sequence $sequence
+     * @throws DoctrineException
      */
-    public function getCreateSequenceSql($sequenceName, $start = 1, $allocationSize = 1)
+    public function getCreateSequenceSql(\Doctrine\DBAL\Schema\Sequence $sequence)
     {
-        return 'CREATE SEQUENCE ' . $sequenceName
-                . ' INCREMENT BY ' . $allocationSize . ' START ' . $start;
+        return 'CREATE SEQUENCE ' . $sequence->getName() .
+               ' INCREMENT BY ' . $sequence->getAllocationSize() .
+               ' START ' . $sequence->getInitialValue();
     }
     
     /**

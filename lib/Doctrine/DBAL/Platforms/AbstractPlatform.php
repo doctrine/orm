@@ -598,13 +598,10 @@ abstract class AbstractPlatform
     /**
      * Gets the SQL to create a sequence on this platform.
      *
-     * @param string $sequenceName
-     * @param integer $start
-     * @param integer $allocationSize
-     * @return string
+     * @param \Doctrine\DBAL\Schema\Sequence $sequence
      * @throws DoctrineException
      */
-    public function getCreateSequenceSql($sequenceName, $start = 1, $allocationSize = 1)
+    public function getCreateSequenceSql(\Doctrine\DBAL\Schema\Sequence $sequence)
     {
         throw DBALException::notSupported(__METHOD__);
     }

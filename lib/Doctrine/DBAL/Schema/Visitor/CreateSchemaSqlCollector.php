@@ -123,12 +123,8 @@ class CreateSchemaSqlCollector implements Visitor
      */
     public function acceptSequence(Sequence $sequence)
     {
-        $this->_createSequenceQueries = array_merge($this->_createSequenceQueries,
-            (array)$this->_platform->getCreateSequenceSql(
-                $sequence->getName(),
-                $sequence->getInitialValue(),
-                $sequence->getAllocationSize()
-            )
+        $this->_createSequenceQueries = array_merge(
+            $this->_createSequenceQueries, (array)$this->_platform->getCreateSequenceSql($sequence)
         );
     }
 

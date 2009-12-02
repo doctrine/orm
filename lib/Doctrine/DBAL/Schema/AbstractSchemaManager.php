@@ -418,14 +418,12 @@ abstract class AbstractSchemaManager
     /**
      * Create a new sequence
      *
-     * @param string    $seqName        name of the sequence to be created
-     * @param string    $start          start value of the sequence; default is 1
-     * @param array     $allocationSize The size to allocate for sequence
+     * @param Sequence $sequence
      * @throws Doctrine\DBAL\ConnectionException     if something fails at database level
      */
-    public function createSequence($seqName, $start = 1, $allocationSize = 1)
+    public function createSequence($sequence)
     {
-        $this->_execSql($this->_platform->getCreateSequenceSql($seqName, $start, $allocationSize));
+        $this->_execSql($this->_platform->getCreateSequenceSql($sequence));
     }
 
     /**

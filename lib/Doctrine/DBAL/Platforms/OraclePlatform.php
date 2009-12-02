@@ -110,15 +110,15 @@ class OraclePlatform extends AbstractPlatform
      * Therefore we can use MINVALUE to be able to get a hint what START WITH was for later introspection
      * in {@see listSequences()}
      *
-     * @param string $sequenceName
-     * @param integer $start
-     * @param integer $allocationSize
-     * @return string The SQL.
+     * @param \Doctrine\DBAL\Schema\Sequence $sequence
+     * @throws DoctrineException
      */
-    public function getCreateSequenceSql($sequenceName, $start = 1, $allocationSize = 1)
+    public function getCreateSequenceSql(\Doctrine\DBAL\Schema\Sequence $sequence)
     {
-        return 'CREATE SEQUENCE ' . $sequenceName
-                . ' START WITH ' . $start . ' MINVALUE ' . $start . ' INCREMENT BY ' . $allocationSize;
+        return 'CREATE SEQUENCE ' . $sequence->getName() .
+               ' START WITH ' . $sequence->getInitialValue() .
+               ' MINVALUE ' . $sequence->getInitialValue() . 
+               ' INCREMENT BY ' . $sequence->getAllocationSize();
     }
 
     /**
@@ -366,7 +366,8 @@ BEGIN
 END;';   
 
         $sequenceName = $table . '_SEQ';
-        $sql[] = $this->getCreateSequenceSql($sequenceName, $start);
+        $sequence = new \Doctrine\DBAL\Schema\Sequence($sequenceName, $start);
+        $sql[] = $this->getCreateSequenceSql($sequence);
 
         $triggerName  = $table . '_AI_PK';
         $sql[] = 'CREATE TRIGGER ' . $triggerName . '

@@ -14,7 +14,8 @@ class SchemaManagerFunctionalTestCase extends \Doctrine\Tests\DbalFunctionalTest
             $this->markTestSkipped($this->_conn->getDriver()->getName().' does not support sequences.');
         }
 
-        $this->_sm->createSequence('list_sequences_test_seq', 10, 20);
+        $sequence = new \Doctrine\DBAL\Schema\Sequence('list_sequences_test_seq', 20, 10);
+        $this->_sm->createSequence($sequence);
         
         $sequences = $this->_sm->listSequences();
         

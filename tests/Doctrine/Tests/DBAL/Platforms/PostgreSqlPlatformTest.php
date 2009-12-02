@@ -143,9 +143,10 @@ class PostgreSqlPlatformTest extends AbstractPlatformTestCase
 
     public function testGeneratesSequenceSqlCommands()
     {
+        $sequence = new \Doctrine\DBAL\Schema\Sequence('myseq', 20, 1);
         $this->assertEquals(
             'CREATE SEQUENCE myseq INCREMENT BY 20 START 1',
-            $this->_platform->getCreateSequenceSql('myseq', 1, 20)
+            $this->_platform->getCreateSequenceSql($sequence)
         );
         $this->assertEquals(
             'DROP SEQUENCE myseq',
