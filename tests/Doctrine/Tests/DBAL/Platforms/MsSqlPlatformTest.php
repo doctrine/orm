@@ -7,37 +7,16 @@ use Doctrine\DBAL\Types\Type;
 
 require_once __DIR__ . '/../../TestInit.php';
  
-class MsSqlPlatformTest extends \Doctrine\Tests\DbalTestCase
+class MsSqlPlatformTest extends AbstractPlatformTestCase
 {
-    private $_platform;
-
-    public function setUp()
+    public function createPlatform()
     {
-        $this->_platform = new MsSqlPlatform;
+        return new MsSqlPlatform;
     }
 
-    public function testGeneratesTableCreationSql()
+    public function getGenerateTableSql()
     {
-        $columns = array(
-            'id' => array(
-                'type' => Type::getType('integer'),
-                'autoincrement' => true,
-                'primary' => true,
-                'notnull' => true
-            ),
-            'test' => array(
-                'type' => Type::getType('string'),
-                'length' => 255,
-                'notnull' => true
-            )
-        );
-
-        $options = array(
-            'primary' => array('id')
-        );
-
-        $sql = $this->_platform->getCreateTableSql('test', $columns, $options);
-        $this->assertEquals('CREATE TABLE test (id INT AUTO_INCREMENT NOT NULL, test VARCHAR(255) NOT NULL, PRIMARY KEY(id))', $sql[0]);
+        return 'CREATE TABLE test (id INT AUTO_INCREMENT NOT NULL, test VARCHAR(255) DEFAULT NULL, PRIMARY KEY(id))';
     }
 
     public function testGeneratesTableAlterationSql()
@@ -152,34 +131,19 @@ class MsSqlPlatformTest extends \Doctrine\Tests\DbalTestCase
         $this->assertEquals($sql, 'ALTER TABLE test ADD CONSTRAINT constraint_name (test)');
     }
 
-    public function testGeneratesIndexCreationSql()
+    public function getGenerateIndexSql()
     {
-        $indexDef = array(
-            'columns' => array(
-                'user_name' => array(
-                    'sorting' => 'ASC',
-                    'length' => 10
-                ),
-                'last_login' => array()
-            )
-        );
-
-        $this->assertEquals(
-            'CREATE INDEX my_idx ON mytable (user_name, last_login)',
-            $this->_platform->getCreateIndexSql('mytable', 'my_idx', $indexDef)
-        );
+        return 'CREATE INDEX my_idx ON mytable (user_name, last_login)';
     }
 
-    public function testGeneratesUniqueIndexCreationSql()
+    public function getGenerateUniqueIndexSql()
     {
-        $sql = $this->_platform->getCreateIndexSql('test', 'index_name', array('type' => 'unique', 'columns' => array('test', 'test2')));
-        $this->assertEquals($sql, 'CREATE UNIQUE INDEX index_name ON test (test, test2)');
+        return 'CREATE UNIQUE INDEX index_name ON test (test, test2)';
     }
 
-    public function testGeneratesForeignKeyCreationSql()
+    public function getGenerateForeignKeySql()
     {
-        $sql = $this->_platform->getCreateForeignKeySql('test', array('foreignTable' => 'other_table', 'local' => 'fk_name_id', 'foreign' => 'id'));
-        $this->assertEquals($sql, 'ALTER TABLE test ADD FOREIGN KEY (fk_name_id) REFERENCES other_table(id)');
+        return  'ALTER TABLE test ADD FOREIGN KEY (fk_name_id) REFERENCES other_table(id)';
     }
 
     public function testModifyLimitQuery()

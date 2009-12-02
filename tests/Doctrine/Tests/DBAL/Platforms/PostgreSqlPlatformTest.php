@@ -8,37 +8,16 @@ use Doctrine\DBAL\Connection;
 
 require_once __DIR__ . '/../../TestInit.php';
  
-class PostgreSqlPlatformTest extends \Doctrine\Tests\DbalTestCase
+class PostgreSqlPlatformTest extends AbstractPlatformTestCase
 {
-    private $_platform;
-
-    public function setUp()
+    public function createPlatform()
     {
-        $this->_platform = new PostgreSqlPlatform;
+        return new PostgreSqlPlatform;
     }
 
-    public function testGeneratesTableCreationSql()
+    public function getGenerateTableSql()
     {
-        $columns = array(
-            'id' => array(
-                'type' => Type::getType('integer'),
-                'primary' => true,
-                'notnull' => true
-            ),
-            'test' => array(
-                'type' => Type::getType('string'),
-                'length' => 255,
-                'notnull' => true
-            )
-        );
-
-        $options = array(
-            'primary' => array('id')
-        );
-
-        $sql = $this->_platform->getCreateTableSql('test', $columns, $options);
-        $this->assertEquals('CREATE TABLE test (id INT NOT NULL, test VARCHAR(255) NOT NULL, PRIMARY KEY(id))', $sql[0]);
-    
+        return 'CREATE TABLE test (id SERIAL NOT NULL, test VARCHAR(255) DEFAULT NULL, PRIMARY KEY(id))';
     }
 
     public function testGeneratesTableAlterationSqlForAddingAndRenaming()
@@ -63,35 +42,24 @@ class PostgreSqlPlatformTest extends \Doctrine\Tests\DbalTestCase
         );
     }
 
-    public function testGeneratesIndexCreationSql()
+    public function getGenerateIndexSql()
     {
-        $indexDef = array(
-            'columns' => array(
-                'user_name',
-                'last_login'
-            )
-        );
+        return 'CREATE INDEX my_idx ON mytable (user_name, last_login)';
+    }
 
-        $sql = $this->_platform->getCreateIndexSql('mytable', 'my_idx', $indexDef);
-
-        $this->assertEquals(
-            'CREATE INDEX my_idx ON mytable (user_name, last_login)',
-            $sql
-        );
+    public function getGenerateForeignKeySql()
+    {
+        return 'ALTER TABLE test ADD FOREIGN KEY (fk_name_id) REFERENCES other_table(id) NOT DEFERRABLE INITIALLY IMMEDIATE';
     }
 
     public function testGeneratesForeignKeySqlForNonStandardOptions()
     {
-        $definition = array(
-            'name' => 'my_fk',
-            'local' => 'foreign_id',
-            'foreign' => 'id',
-            'foreignTable' => 'my_table',
-            'onDelete' => 'CASCADE'
+        $foreignKey = new \Doctrine\DBAL\Schema\ForeignKeyConstraint(
+                array('foreign_id'), 'my_table', array('id'), 'my_fk', array('onDelete' => 'CASCADE')
         );
         $this->assertEquals(
-            " CONSTRAINT my_fk FOREIGN KEY (foreign_id) REFERENCES my_table(id) ON DELETE CASCADE NOT DEFERRABLE INITIALLY IMMEDIATE",
-            $this->_platform->getForeignKeyDeclarationSql($definition)
+            "CONSTRAINT my_fk FOREIGN KEY (foreign_id) REFERENCES my_table(id) ON DELETE CASCADE NOT DEFERRABLE INITIALLY IMMEDIATE",
+            $this->_platform->getForeignKeyDeclarationSql($foreignKey)
         );
     }
 
@@ -166,6 +134,11 @@ class PostgreSqlPlatformTest extends \Doctrine\Tests\DbalTestCase
             $this->_platform->getVarcharTypeDeclarationSql(array()),
             'Long string declaration is not correct'
         );
+    }
+
+    public function getGenerateUniqueIndexSql()
+    {
+        return 'CREATE UNIQUE INDEX index_name ON test (test, test2)';
     }
 
     public function testGeneratesSequenceSqlCommands()

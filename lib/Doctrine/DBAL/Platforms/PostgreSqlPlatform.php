@@ -453,28 +453,23 @@ class PostgreSqlPlatform extends AbstractPlatform
      * Return the FOREIGN KEY query section dealing with non-standard options
      * as MATCH, INITIALLY DEFERRED, ON UPDATE, ...
      *
-     * @param array $definition         foreign key definition
+     * @param \Doctrine\DBAL\Schema\ForeignKeyConstraint $foreignKey         foreign key definition
      * @return string
      * @override
      */
-    public function getAdvancedForeignKeyOptionsSql(array $definition)
+    public function getAdvancedForeignKeyOptionsSql(\Doctrine\DBAL\Schema\ForeignKeyConstraint $foreignKey)
     {
         $query = '';
-        if (isset($definition['match'])) {
-            $query .= ' MATCH ' . $definition['match'];
+        if ($foreignKey->hasOption('match')) {
+            $query .= ' MATCH ' . $foreignKey->getOption('match');
         }
-        if (isset($definition['onUpdate'])) {
-            $query .= ' ON UPDATE ' . $definition['onUpdate'];
-        }
-        if (isset($definition['onDelete'])) {
-            $query .= ' ON DELETE ' . $definition['onDelete'];
-        }
-        if (isset($definition['deferrable'])) {
+        $query .= parent::getAdvancedForeignKeyOptionsSql($foreignKey);
+        if ($foreignKey->hasOption('deferrable') && $foreignKey->getOption('deferrable') !== false) {
             $query .= ' DEFERRABLE';
         } else {
             $query .= ' NOT DEFERRABLE';
         }
-        if (isset($definition['feferred'])) {
+        if ($foreignKey->hasOption('feferred') && $foreignKey->getOption('feferred') !== false) {
             $query .= ' INITIALLY DEFERRED';
         } else {
             $query .= ' INITIALLY IMMEDIATE';
@@ -589,33 +584,33 @@ class PostgreSqlPlatform extends AbstractPlatform
     /**
      * Gets the SQL used to create a table.
      *
-     * @param unknown_type $name
-     * @param array $fields
+     * @param unknown_type $tableName
+     * @param array $columns
      * @param array $options
      * @return unknown
      */
-    public function getCreateTableSql($name, array $fields, array $options = array())
+    protected function _getCreateTableSql($tableName, array $columns, array $options = array())
     {
-        $queryFields = $this->getColumnDeclarationListSql($fields);
+        $queryFields = $this->getColumnDeclarationListSql($columns);
 
         if (isset($options['primary']) && ! empty($options['primary'])) {
             $keyColumns = array_unique(array_values($options['primary']));
             $queryFields .= ', PRIMARY KEY(' . implode(', ', $keyColumns) . ')';
         }
 
-        $query = 'CREATE TABLE ' . $name . ' (' . $queryFields . ')';
+        $query = 'CREATE TABLE ' . $tableName . ' (' . $queryFields . ')';
 
         $sql[] = $query;
 
         if (isset($options['indexes']) && ! empty($options['indexes'])) {
-            foreach($options['indexes'] as $index => $definition) {
-                $sql[] = $this->getCreateIndexSql($name, $index, $definition);
+            foreach ($options['indexes'] AS $index) {
+                $sql[] = $this->getCreateIndexSql($index, $tableName);
             }
         }
 
         if (isset($options['foreignKeys'])) {
-            foreach ((array) $options['foreignKeys'] as $k => $definition) {
-                $sql[] = $this->getCreateForeignKeySql($name, $definition);
+            foreach ((array) $options['foreignKeys'] as $definition) {
+                $sql[] = $this->getCreateForeignKeySql($definition, $tableName);
             }
         }
 

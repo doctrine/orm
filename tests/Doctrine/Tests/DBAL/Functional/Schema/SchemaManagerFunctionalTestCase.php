@@ -80,39 +80,16 @@ class SchemaManagerFunctionalTestCase extends \Doctrine\Tests\DbalFunctionalTest
 
     public function testListTableColumns()
     {
-        $data = array();
-        $data['columns'] = array(
-            'id' => array(
-                'type' => Type::getType('integer'),
-                'autoincrement' => true,
-                'primary' => true,
-                'notnull' => true
-            ),
-            'test' => array(
-                'type' => Type::getType('string'),
-                'length' => 255,
-                'notnull' => false,
-            ),
-            'foo' => array(
-                'type' => Type::getType('text'),
-                'notnull' => true,
-            ),
-            'bar' => array(
-                'type' => Type::getType('decimal'),
-                'precision' => 10,
-                'scale' => 4,
-            ),
-            'baz1' => array(
-                'type' => Type::getType('datetime'),
-            ),
-            'baz2' => array(
-                'type' => Type::getType('time'),
-            ),
-            'baz3' => array(
-                'type' => Type::getType('date'),
-            ),
-        );
-        $this->createTestTable('list_table_columns', $data);
+        $table = new \Doctrine\DBAL\Schema\Table('list_table_columns');
+        $table->createColumn('id', 'integer', array('notnull' => true));
+        $table->createColumn('test', 'string', array('length' => 255, 'notnull' => false));
+        $table->createColumn('foo', 'text', array('notnull' => true));
+        $table->createColumn('bar', 'decimal', array('precision' => 10, 'scale' => 4, 'notnull' => false));
+        $table->createColumn('baz1', 'datetime');
+        $table->createColumn('baz2', 'time');
+        $table->createColumn('baz3', 'date');
+
+        $this->_sm->dropAndCreateTable($table);
 
         $columns = $this->_sm->listTableColumns('list_table_columns');
 
@@ -157,43 +134,30 @@ class SchemaManagerFunctionalTestCase extends \Doctrine\Tests\DbalFunctionalTest
 
         $this->assertEquals('baz1', strtolower($columns['baz1']->getname()));
         $this->assertType('Doctrine\DBAL\Types\DateTimeType', $columns['baz1']->gettype());
-        $this->assertEquals(false,   $columns['baz1']->getnotnull());
+        $this->assertEquals(true,   $columns['baz1']->getnotnull());
         $this->assertEquals(null,   $columns['baz1']->getdefault());
         $this->assertType('array',  $columns['baz1']->getPlatformOptions());
 
         $this->assertEquals('baz2', strtolower($columns['baz2']->getname()));
         $this->assertContains($columns['baz2']->gettype()->getName(), array('Time', 'Date', 'DateTime'));
-        $this->assertEquals(false,   $columns['baz2']->getnotnull());
+        $this->assertEquals(true,   $columns['baz2']->getnotnull());
         $this->assertEquals(null,   $columns['baz2']->getdefault());
         $this->assertType('array',  $columns['baz2']->getPlatformOptions());
         
         $this->assertEquals('baz3', strtolower($columns['baz3']->getname()));
         $this->assertContains($columns['baz2']->gettype()->getName(), array('Time', 'Date', 'DateTime'));
-        $this->assertEquals(false,   $columns['baz3']->getnotnull());
+        $this->assertEquals(true,   $columns['baz3']->getnotnull());
         $this->assertEquals(null,   $columns['baz3']->getdefault());
         $this->assertType('array',  $columns['baz3']->getPlatformOptions());
     }
 
     public function testListTableIndexes()
     {
-        $data = array();
-        $data['options'] = array(
-            'indexes' => array(
-                'test_index_name' => array(
-                    'columns' => array(
-                        'test' => array()
-                    ),
-                    'type' => 'unique'
-                ),
-                'test_composite_idx' => array(
-                    'columns' => array(
-                        'id' => array(), 'test' => array(),
-                    )
-                ),
-            )
-        );
+        $table = $this->getTestTable('list_table_indexes_test');
+        $table->addUniqueIndex(array('test'), 'test_index_name');
+        $table->addIndex(array('id', 'test'), 'test_composite_idx');
 
-        $this->createTestTable('list_table_indexes_test', $data);
+        $this->_sm->createTable($table);
 
         $tableIndexes = $this->_sm->listTableIndexes('list_table_indexes_test');
 
@@ -216,16 +180,11 @@ class SchemaManagerFunctionalTestCase extends \Doctrine\Tests\DbalFunctionalTest
 
     public function testDropAndCreateIndex()
     {
-        $this->createTestTable('test_create_index');
+        $table = $this->getTestTable('test_create_index');
+        $table->addUniqueIndex(array('test'), 'test');
+        $this->_sm->dropAndCreateTable($table);
 
-        $index = array(
-            'columns' => array(
-                'test' => array()
-            ),
-            'type' => 'unique'
-        );
-
-        $this->_sm->dropAndCreateIndex('test_create_index', 'test', $index);
+        $this->_sm->dropAndCreateIndex($table->getIndex('test'), $table);
         $tableIndexes = $this->_sm->listTableIndexes('test_create_index');
         $this->assertType('array', $tableIndexes);
 
@@ -244,16 +203,11 @@ class SchemaManagerFunctionalTestCase extends \Doctrine\Tests\DbalFunctionalTest
         $this->createTestTable('test_create_fk1');
         $this->createTestTable('test_create_fk2');
 
-        $definition = array(
-            'name' => 'foreign_key_test_fk',
-            'local' => array('foreign_key_test'),
-            'foreign' => array('id'),
-            'foreignTable' => 'test_create_fk2',
-            'onUpdate' => 'CASCADE',
-            'onDelete' => 'CASCADE',
+        $foreignKey = new \Doctrine\DBAL\Schema\ForeignKeyConstraint(
+            array('foreign_key_test'), 'test_create_fk2', array('id'), 'foreign_key_test_fk', array('onUpdate' => 'CASCADE', 'onDelete' => 'CASCADE')
         );
 
-        $this->_sm->createForeignKey('test_create_fk1', $definition);
+        $this->_sm->createForeignKey($foreignKey, 'test_create_fk1');
 
         $fkeys = $this->_sm->listTableForeignKeys('test_create_fk1');
 
@@ -331,32 +285,25 @@ class SchemaManagerFunctionalTestCase extends \Doctrine\Tests\DbalFunctionalTest
 
     protected function createTestTable($name = 'test_table', $data = array())
     {
-        if ( ! isset($data['columns'])) {
-            $columns = array(
-                'id' => array(
-                    'type' => Type::getType('integer'),
-                    'autoincrement' => true,
-                    'primary' => true,
-                    'notnull' => true
-                ),
-                'test' => array(
-                    'type' => Type::getType('string'),
-                    'length' => 255
-                ),
-                'foreign_key_test' => array(
-                    'type' => Type::getType('integer')
-                )
-            );
-        } else {
-            $columns = $data['columns'];
-        }
-
         $options = array();
         if (isset($data['options'])) {
             $options = $data['options'];
         }
 
-        $this->_sm->dropAndCreateTable($name, $columns, $options);
+        $table = $this->getTestTable($name, $options);
+
+        $this->_sm->dropAndCreateTable($table);
+    }
+
+    protected function getTestTable($name, $options=array())
+    {
+        $table = new \Doctrine\DBAL\Schema\Table($name, array(), array(), array(), \Doctrine\DBAL\Schema\Table::ID_NONE, $options);
+        $table->setIdGeneratorType(\Doctrine\DBAL\Schema\Table::ID_IDENTITY);
+        $table->createColumn('id', 'integer', array('notnull' => true));
+        $table->setPrimaryKey(array('id'));
+        $table->createColumn('test', 'string', array('length' => 255));
+        $table->createColumn('foreign_key_test', 'integer');
+        return $table;
     }
 
     protected function assertHasTable($tables, $tableName)

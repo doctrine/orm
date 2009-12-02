@@ -313,19 +313,19 @@ class SqlitePlatform extends AbstractPlatform
      * @return void
      * @override
      */
-    public function getCreateTableSql($name, array $fields, array $options = array())
+    protected function _getCreateTableSql($name, array $columns, array $options = array())
     {
         if ( ! $name) {
             throw DoctrineException::invalidTableName($name);
         }
 
-        if (empty($fields)) {
+        if (empty($columns)) {
             throw DoctrineException::noFieldsSpecifiedForTable($name);
         }
-        $queryFields = $this->getColumnDeclarationListSql($fields);
+        $queryFields = $this->getColumnDeclarationListSql($columns);
 
         $autoinc = false;
-        foreach($fields as $field) {
+        foreach($columns as $field) {
             if (isset($field['autoincrement']) && $field['autoincrement']) {
                 $autoinc = true;
                 break;
@@ -338,23 +338,16 @@ class SqlitePlatform extends AbstractPlatform
             $queryFields.= ', PRIMARY KEY('.implode(', ', $keyColumns).')';
         }
 
-        $sql   = 'CREATE TABLE ' . $name . ' (' . $queryFields;
-
-        /*if ($check = $this->getCheckDeclarationSql($fields)) {
-            $sql .= ', ' . $check;
-        }
-
-        if (isset($options['checks']) && $check = $this->getCheckDeclarationSql($options['checks'])) {
-            $sql .= ', ' . $check;
-        }*/
-
-        $sql .= ')';
-
-        $query[] = $sql;
+        $query[] = 'CREATE TABLE ' . $name . ' (' . $queryFields . ')';
 
         if (isset($options['indexes']) && ! empty($options['indexes'])) {
-            foreach ($options['indexes'] as $index => $definition) {
-                $query[] = $this->getCreateIndexSql($name, $index, $definition);
+            foreach ($options['indexes'] as $index => $indexDef) {
+                $query[] = $this->getCreateIndexSql($indexDef, $name);
+            }
+        }
+        if (isset($options['unique']) && ! empty($options['unique'])) {
+            foreach ($options['unique'] as $index => $indexDef) {
+                $query[] = $this->getCreateIndexSql($indexDef, $name);
             }
         }
         return $query;

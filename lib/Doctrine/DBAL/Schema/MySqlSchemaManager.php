@@ -64,10 +64,10 @@ class MySqlSchemaManager extends AbstractSchemaManager
             } else {
                 $v['primary'] = false;
             }
-            $tablesIndexes[$k] = $v;
+            $tableIndexes[$k] = $v;
         }
         
-        return parent::_getPortableTableIndexesList($tablesIndexes, $tableName);
+        return parent::_getPortableTableIndexesList($tableIndexes, $tableName);
     }
 
     protected function _getPortableTableConstraintDefinition($tableConstraint)

@@ -402,8 +402,8 @@ class MySqlPlatform extends AbstractPlatform
     /**
      * create a new table
      *
-     * @param string $name   Name of the database that should be created
-     * @param array $fields  Associative array that contains the definition of each field of the new table
+     * @param string $tableName   Name of the database that should be created
+     * @param array $columns  Associative array that contains the definition of each field of the new table
      *                       The indexes of the array entries are the names of the fields of the table an
      *                       the array entry values are associative arrays like those that are meant to be
      *                       passed with the field definitions to get[Type]Declaration() functions.
@@ -434,15 +434,15 @@ class MySqlPlatform extends AbstractPlatform
      * @return void
      * @override
      */
-    public function getCreateTableSql($name, array $fields, array $options = array())
+    protected function _getCreateTableSql($tableName, array $columns, array $options = array())
     {
-        if ( ! $name) {
+        if ( ! $tableName) {
             throw DoctrineException::missingTableName();
         }
-        if (empty($fields)) {
-            throw DoctrineException::missingFieldsArrayForTable($name);
+        if (empty($columns)) {
+            throw DoctrineException::missingFieldsArrayForTable($tableName);
         }
-        $queryFields = $this->getColumnDeclarationListSql($fields);
+        $queryFields = $this->getColumnDeclarationListSql($columns);
 
         if (isset($options['uniqueConstraints']) && ! empty($options['uniqueConstraints'])) {
             foreach ($options['uniqueConstraints'] as $uniqueConstraint) {
@@ -467,7 +467,7 @@ class MySqlPlatform extends AbstractPlatform
         if (!empty($options['temporary'])) {
             $query .= 'TEMPORARY ';
         }
-        $query.= 'TABLE ' . $name . ' (' . $queryFields . ')';
+        $query.= 'TABLE ' . $tableName . ' (' . $queryFields . ')';
 
         $optionStrings = array();
 
@@ -495,10 +495,8 @@ class MySqlPlatform extends AbstractPlatform
         $sql[] = $query;
 
         if (isset($options['foreignKeys'])) {
-            foreach ((array) $options['foreignKeys'] as $k => $definition) {
-                if (is_array($definition)) {
-                    $sql[] = $this->getCreateForeignKeySql($name, $definition);
-                }
+            foreach ((array) $options['foreignKeys'] as $definition) {
+                $sql[] = $this->getCreateForeignKeySql($definition, $tableName);
             }
         }
         
@@ -740,41 +738,6 @@ class MySqlPlatform extends AbstractPlatform
      * Obtain DBMS specific SQL code portion needed to set an index
      * declaration to be used in statements like CREATE TABLE.
      *
-     * @param string $charset       name of the index
-     * @param array $definition     index definition
-     * @return string  DBMS specific SQL code portion needed to set an index
-     * @override
-     */
-    public function getIndexDeclarationSql($name, array $definition)
-    {
-        $type = '';
-        if (isset($definition['type'])) {
-            switch (strtolower($definition['type'])) {
-                case 'fulltext':
-                case 'unique':
-                    $type = strtoupper($definition['type']) . ' ';
-                break;
-                default:
-                    throw DoctrineException::invalidIndexType($definition['type']);
-            }
-        }
-
-        if ( ! isset($definition['columns'])) {
-            throw DoctrineException::indexFieldsArrayRequired();
-        }
-        $definition['columns'] = (array) $definition['columns'];
-
-        $query = $type . 'INDEX ' . $name;
-
-        $query .= ' (' . $this->getIndexFieldDeclarationListSql($definition['columns']) . ')';
-
-        return $query;
-    }
-    
-    /**
-     * Obtain DBMS specific SQL code portion needed to set an index
-     * declaration to be used in statements like CREATE TABLE.
-     *
      * @return string
      * @override
      */
@@ -813,35 +776,42 @@ class MySqlPlatform extends AbstractPlatform
      * Return the FOREIGN KEY query section dealing with non-standard options
      * as MATCH, INITIALLY DEFERRED, ON UPDATE, ...
      *
-     * @param array $definition
+     * @param ForeignKeyConstraint $foreignKey
      * @return string
      * @override
      */
-    public function getAdvancedForeignKeyOptionsSql(array $definition)
+    public function getAdvancedForeignKeyOptionsSql(\Doctrine\DBAL\Schema\ForeignKeyConstraint $foreignKey)
     {
         $query = '';
-        if ( ! empty($definition['match'])) {
-            $query .= ' MATCH ' . $definition['match'];
+        if ($foreignKey->hasOption('match')) {
+            $query .= ' MATCH ' . $foreignKey->getOption('match');
         }
-        if ( ! empty($definition['onUpdate'])) {
-            $query .= ' ON UPDATE ' . $this->getForeignKeyReferentialActionSql($definition['onUpdate']);
-        }
-        if ( ! empty($definition['onDelete'])) {
-            $query .= ' ON DELETE ' . $this->getForeignKeyReferentialActionSql($definition['onDelete']);
-        }
+        $query .= parent::getAdvancedForeignKeyOptionsSql($foreignKey);
         return $query;
     }
     
     /**
      * Gets the SQL to drop an index of a table.
      *
-     * @param string    $table          name of table that should be used in method
-     * @param string    $name           name of the index to be dropped
+     * @param Index $index           name of the index to be dropped
+     * @param string|Table $table          name of table that should be used in method
      * @override
      */
-    public function getDropIndexSql($table, $name)
+    public function getDropIndexSql($index, $table=null)
     {
-        return 'DROP INDEX ' . $name . ' ON ' . $table;
+        if($index instanceof \Doctrine\DBAL\Schema\Index) {
+            $index = $index->getName();
+        } else if(!is_string($index)) {
+            throw new \InvalidArgumentException('MysqlPlatform::getDropIndexSql() expects $index parameter to be string or \Doctrine\DBAL\Schema\Index.');
+        }
+        
+        if($table instanceof \Doctrine\DBAL\Schema\Table) {
+            $table = $table->getName();
+        } else if(!is_string($table)) {
+            throw new \InvalidArgumentException('MysqlPlatform::getDropIndexSql() expects $table parameter to be string or \Doctrine\DBAL\Schema\Table.');
+        }
+
+        return 'DROP INDEX ' . $index . ' ON ' . $table;
     }
     
     /**

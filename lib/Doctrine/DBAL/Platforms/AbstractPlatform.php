@@ -23,7 +23,10 @@ namespace Doctrine\DBAL\Platforms;
 
 use Doctrine\DBAL\DBALException,
     Doctrine\DBAL\Connection,
-    Doctrine\DBAL\Types;
+    Doctrine\DBAL\Types,
+    Doctrine\DBAL\Schema\Table,
+    Doctrine\DBAL\Schema\Index,
+    Doctrine\DBAL\Schema\ForeignKeyConstraint;
 
 /**
  * Base class for all DatabasePlatforms. The DatabasePlatforms are the central
@@ -456,9 +459,22 @@ abstract class AbstractPlatform
         return 'DROP TABLE ' . $table;
     }
 
-    public function getDropIndexSql($table, $name)
+    /**
+     * Drop index from a table
+     *
+     * @param Index|string $name
+     * @param string|Table $table
+     * @return string
+     */
+    public function getDropIndexSql($index, $table=null)
     {
-        return 'DROP INDEX ' . $name;
+        if($index instanceof \Doctrine\DBAL\Schema\Index) {
+            $index = $index->getName();
+        } else if(!is_string($index)) {
+            throw new \InvalidArgumentException('AbstractPlatform::getDropIndexSql() expects $index parameter to be string or \Doctrine\DBAL\Schema\Index.');
+        }
+
+        return 'DROP INDEX ' . $index;
     }
 
     public function getDropConstraintSql($table, $name, $primary = false)
@@ -480,10 +496,65 @@ abstract class AbstractPlatform
      * @param array $options The table constraints.
      * @return array The sequence of SQL statements.
      */
-    public function getCreateTableSql($table, array $columns, array $options = array())
+    public function getCreateTableSql(Table $table)
+    {
+        $tableName = $table->getName();
+        $options = $table->getOptions();
+        $options['uniqueConstraints'] = array();
+        $options['indexes'] = array();
+        $options['primary'] = array();
+
+        foreach($table->getIndexes() AS $index) {
+            /* @var $index Index */
+            if($index->isPrimary()) {
+                $options['primary'] = $index->getColumns();
+            } else {
+                $options['indexes'][$index->getName()] = $index;
+            }
+        }
+
+        $columns = array();
+        foreach($table->getColumns() AS $column) {
+            /* @var \Doctrine\DBAL\Schema\Column $column */
+            $columnData = array();
+            $columnData['name'] = $column->getName();
+            $columnData['type'] = $column->getType();
+            $columnData['length'] = $column->getLength();
+            $columnData['notnull'] = $column->getNotNull();
+            $columnData['unique'] = ($column->hasPlatformOption("unique"))?$column->getPlatformOption('unique'):false;
+            $columnData['version'] = ($column->hasPlatformOption("version"))?$column->getPlatformOption('version'):false;
+            if(strtolower($columnData['type']) == "string" && $columnData['length'] === null) {
+                $columnData['length'] = 255;
+            }
+            $columnData['precision'] = $column->getPrecision();
+            $columnData['scale'] = $column->getScale();
+            $columnData['default'] = $column->getDefault();
+            // TODO: Fixed? Unsigned?
+
+            if(in_array($column->getName(), $options['primary'])) {
+                $columnData['primary'] = true;
+
+                if($table->isIdGeneratorIdentity()) {
+                    $columnData['autoincrement'] = true;
+                }
+            }
+
+            $columns[$columnData['name']] = $columnData;
+        }
+
+        return $this->_getCreateTableSql($tableName, $columns, $options);
+    }
+
+    /**
+     * @param string $table
+     * @param array $columns
+     * @param array $options
+     * @return array
+     */
+    protected function _getCreateTableSql($table, array $columns, array $options = array())
     {
         $columnListSql = $this->getColumnDeclarationListSql($columns);
-
+        
         if (isset($options['uniqueConstraints']) && ! empty($options['uniqueConstraints'])) {
             foreach ($options['uniqueConstraints'] as $uniqueConstraint) {
                 $columnListSql .= ', UNIQUE(' . implode(', ', array_values($uniqueConstraint)) . ')';
@@ -511,10 +582,8 @@ abstract class AbstractPlatform
         $sql[] = $query;
 
         if (isset($options['foreignKeys'])) {
-            foreach ((array) $options['foreignKeys'] as $k => $definition) {
-                if (is_array($definition)) {
-                    $sql[] = $this->getCreateForeignKeySql($name, $definition);
-                }
+            foreach ((array) $options['foreignKeys'] AS $definition) {
+                $sql[] = $this->getCreateForeignKeySql($definition, $name);
             }
         }
 
@@ -583,31 +652,30 @@ abstract class AbstractPlatform
     /**
      * Gets the SQL to create an index on a table on this platform.
      *
-     * @param string    $table         name of the table on which the index is to be created
-     * @param string    $name          name of the index to be created
-     * @param array     $definition    associative array that defines properties of the index to be created.
+     * @param Index $index
+     * @param string|Table $table name of the table on which the index is to be created
      * @return string
      */
-    public function getCreateIndexSql($table, $name, array $definition)
+    public function getCreateIndexSql(Index $index, $table)
     {
-        if ( ! isset($definition['columns'])) {
-            throw \InvalidArgumentException("Incomplete definition. 'columns' required.");
+        if ($table instanceof Table) {
+            $table = $table->getName();
+        }
+        $name = $index->getName();
+        $columns = $index->getColumns();
+
+        if (count($columns) == 0) {
+            throw new \InvalidArgumentException("Incomplete definition. 'columns' required.");
         }
 
         $type = '';
-        if (isset($definition['type'])) {
-            switch (strtolower($definition['type'])) {
-                case 'unique':
-                    $type = strtoupper($definition['type']) . ' ';
-                break;
-                default:
-                    throw \InvalidArgumentException('Unknown type: ' . $definition['type']);
-            }
+        if ($index->isUnique()) {
+            $type = 'UNIQUE ';
         }
 
         $query = 'CREATE ' . $type . 'INDEX ' . $name . ' ON ' . $table;
 
-        $query .= ' (' . $this->getIndexFieldDeclarationListSql($definition['columns']) . ')';
+        $query .= ' (' . $this->getIndexFieldDeclarationListSql($columns) . ')';
 
         return $query;
     }
@@ -631,15 +699,19 @@ abstract class AbstractPlatform
     }
 
     /**
-     * createForeignKeySql
+     * Create a new foreign key
      *
-     * @param string    $table         name of the table on which the foreign key is to be created
-     * @param array     $definition    associative array that defines properties of the foreign key to be created.
+     * @param ForeignKeyConstraint  $foreignKey    ForeignKey instance
+     * @param string|Table          $table         name of the table on which the foreign key is to be created
      * @return string
      */
-    public function getCreateForeignKeySql($table, array $definition)
+    public function getCreateForeignKeySql(ForeignKeyConstraint $foreignKey, $table)
     {
-        $query = 'ALTER TABLE ' . $table . ' ADD ' . $this->getForeignKeyDeclarationSql($definition);
+        if ($table instanceof \Doctrine\DBAL\Schema\Table) {
+            $table = $table->getName();
+        }
+
+        $query = 'ALTER TABLE ' . $table . ' ADD ' . $this->getForeignKeyDeclarationSql($foreignKey);
 
         return $query;
     }
@@ -859,28 +931,24 @@ abstract class AbstractPlatform
      * declaration to be used in statements like CREATE TABLE.
      *
      * @param string $name          name of the index
-     * @param array $definition     index definition
+     * @param Index $index     index definition
      * @return string               DBMS specific SQL code portion needed to set an index
      */
-    public function getIndexDeclarationSql($name, array $definition)
+    public function getIndexDeclarationSql($name, Index $index)
     {
         $type   = '';
 
-        if (isset($definition['type'])) {
-            if (strtolower($definition['type']) == 'unique') {
-                $type = strtoupper($definition['type']) . ' ';
-            } else {
-                throw \InvalidArgumentException('Invalid type: ' . $definition['type']);
-            }
+        if($index->isUnique()) {
+            $type = "UNIQUE";
         }
 
-        if ( ! isset($definition['columns']) || ! is_array($definition['columns'])) {
+        if (count($index->getColumns()) == 0) {
             throw \InvalidArgumentException("Incomplete definition. 'columns' required.");
         }
 
-        $query = $type . 'INDEX ' . $name;
+        $query = $type . ' INDEX ' . $name;
 
-        $query .= ' (' . $this->getIndexFieldDeclarationListSql($definition['columns']) . ')';
+        $query .= ' (' . $this->getIndexFieldDeclarationListSql($index->getColumns()) . ')';
 
         return $query;
     }
@@ -976,10 +1044,10 @@ abstract class AbstractPlatform
      * @return string  DBMS specific SQL code portion needed to set the FOREIGN KEY constraint
      *                 of a field declaration.
      */
-    public function getForeignKeyDeclarationSql(array $definition)
+    public function getForeignKeyDeclarationSql(ForeignKeyConstraint $foreignKey)
     {
-        $sql  = $this->getForeignKeyBaseDeclarationSql($definition);
-        $sql .= $this->getAdvancedForeignKeyOptionsSql($definition);
+        $sql  = $this->getForeignKeyBaseDeclarationSql($foreignKey);
+        $sql .= $this->getAdvancedForeignKeyOptionsSql($foreignKey);
 
         return $sql;
     }
@@ -988,17 +1056,17 @@ abstract class AbstractPlatform
      * Return the FOREIGN KEY query section dealing with non-standard options
      * as MATCH, INITIALLY DEFERRED, ON UPDATE, ...
      *
-     * @param array $definition     foreign key definition
+     * @param ForeignKeyConstraint $foreignKey     foreign key definition
      * @return string
      */
-    public function getAdvancedForeignKeyOptionsSql(array $definition)
+    public function getAdvancedForeignKeyOptionsSql(ForeignKeyConstraint $foreignKey)
     {
         $query = '';
-        if ( ! empty($definition['onUpdate'])) {
-            $query .= ' ON UPDATE ' . $this->getForeignKeyReferentialActionSql($definition['onUpdate']);
+        if ($this->supportsForeignKeyOnUpdate() && $foreignKey->hasOption('onUpdate')) {
+            $query .= ' ON UPDATE ' . $this->getForeignKeyReferentialActionSql($foreignKey->getOption('onUpdate'));
         }
-        if ( ! empty($definition['onDelete'])) {
-            $query .= ' ON DELETE ' . $this->getForeignKeyReferentialActionSql($definition['onDelete']);
+        if ($foreignKey->hasOption('onDelete')) {
+            $query .= ' ON DELETE ' . $this->getForeignKeyReferentialActionSql($foreignKey->getOption('onDelete'));
         }
         return $query;
     }
@@ -1031,38 +1099,31 @@ abstract class AbstractPlatform
      * Obtain DBMS specific SQL code portion needed to set the FOREIGN KEY constraint
      * of a field declaration to be used in statements like CREATE TABLE.
      *
-     * @param array $definition
+     * @param ForeignKeyConstraint $foreignKey
      * @return string
      */
-    public function getForeignKeyBaseDeclarationSql(array $definition)
+    public function getForeignKeyBaseDeclarationSql(ForeignKeyConstraint $foreignKey)
     {
         $sql = '';
-        if (isset($definition['name'])) {
-            $sql .= ' CONSTRAINT ' . $definition['name'] . ' ';
+        if (strlen($foreignKey->getName())) {
+            $sql .= 'CONSTRAINT ' . $foreignKey->getName() . ' ';
         }
         $sql .= 'FOREIGN KEY (';
 
-        if ( ! isset($definition['local'])) {
+        if (count($foreignKey->getLocalColumns()) == 0) {
             throw new \InvalidArgumentException("Incomplete definition. 'local' required.");
         }
-        if ( ! isset($definition['foreign'])) {
+        if (count($foreignKey->getForeignColumns()) == 0) {
             throw new \InvalidArgumentException("Incomplete definition. 'foreign' required.");
         }
-        if ( ! isset($definition['foreignTable'])) {
+        if (strlen($foreignKey->getForeignTableName()) == 0) {
             throw new \InvalidArgumentException("Incomplete definition. 'foreignTable' required.");
         }
 
-        if ( ! is_array($definition['local'])) {
-            $definition['local'] = array($definition['local']);
-        }
-        if ( ! is_array($definition['foreign'])) {
-            $definition['foreign'] = array($definition['foreign']);
-        }
-
-        $sql .= implode(', ', $definition['local'])
+        $sql .= implode(', ', $foreignKey->getLocalColumns())
               . ') REFERENCES '
-              . $definition['foreignTable'] . '('
-              . implode(', ', $definition['foreign']) . ')';
+              . $foreignKey->getForeignTableName() . '('
+              . implode(', ', $foreignKey->getForeignColumns()) . ')';
 
         return $sql;
     }
@@ -1450,13 +1511,23 @@ abstract class AbstractPlatform
     }
 
     /**
-     * Whether the platform supports foreign key constraints.
+     * Does the platform supports foreign key constraints?
      *
      * @return boolean
      */
     public function supportsForeignKeyConstraints()
     {
         return true;
+    }
+
+    /**
+     * Does this platform supports onUpdate in foreign key constraints?
+     * 
+     * @return bool
+     */
+    public function supportsForeignKeyOnUpdate()
+    {
+        return ($this->supportsForeignKeyConstraints() && true);
     }
     
     /**

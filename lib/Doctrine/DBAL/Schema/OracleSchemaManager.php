@@ -192,16 +192,6 @@ class OracleSchemaManager extends AbstractSchemaManager
         return new Column($tableColumn['column_name'], \Doctrine\DBAL\Types\Type::getType($type), $options);
     }
 
-    public function createForeignKey($table, array $definition)
-    {
-        if(isset($definition['onUpdate'])) {
-            // Oracle does not support onUpdate
-            unset($definition['onUpdate']);
-        }
-
-        return parent::createForeignKey($table, $definition);
-    }
-
     protected function _getPortableTableForeignKeysList($tableForeignKeys)
     {
         $list = array();
@@ -283,34 +273,6 @@ class OracleSchemaManager extends AbstractSchemaManager
         }
 
         return true;
-    }
-
-    /**
-     * getAdvancedForeignKeyOptions
-     * Return the FOREIGN KEY query section dealing with non-standard options
-     * as MATCH, INITIALLY DEFERRED, ON UPDATE, ...
-     *
-     * @param array $definition         foreign key definition
-     * @return string
-     * @access protected
-     */
-    public function getAdvancedForeignKeyOptions(array $definition)
-    {
-        $query = '';
-        if (isset($definition['onDelete'])) {
-            $query .= ' ON DELETE ' . $definition['onDelete'];
-        }
-        if (isset($definition['deferrable'])) {
-            $query .= ' DEFERRABLE';
-        } else {
-            $query .= ' NOT DEFERRABLE';
-        }
-        if (isset($definition['feferred'])) {
-            $query .= ' INITIALLY DEFERRED';
-        } else {
-            $query .= ' INITIALLY IMMEDIATE';
-        }
-        return $query;
     }
 
     public function dropTable($name)

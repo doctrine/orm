@@ -267,11 +267,18 @@ class OraclePlatform extends AbstractPlatform
                "WHERE SEQUENCE_OWNER = '".strtoupper($database)."'";
     }
 
-    public function getCreateTableSql($table, array $columns, array $options = array())
+    /**
+     *
+     * @param string $table
+     * @param array $columns
+     * @param array $options
+     * @return array
+     */
+    protected function _getCreateTableSql($table, array $columns, array $options = array())
     {
         $indexes = isset($options['indexes']) ? $options['indexes'] : array();
         $options['indexes'] = array();
-        $sql = parent::getCreateTableSql($table, $columns, $options);
+        $sql = parent::_getCreateTableSql($table, $columns, $options);
 
         foreach ($columns as $name => $column) {
             if (isset($column['sequence'])) {
@@ -285,8 +292,8 @@ class OraclePlatform extends AbstractPlatform
         }
         
         if (isset($indexes) && ! empty($indexes)) {
-            foreach ($indexes as $indexName => $definition) {
-                $sql[] = $this->getCreateIndexSql($table, $indexName, $definition);
+            foreach ($indexes as $indexName => $index) {
+                $sql[] = $this->getCreateIndexSql($index, $table);
             }
         }
 
@@ -609,5 +616,10 @@ END;';
     public function supportsSequences()
     {
         return true;
+    }
+
+    public function supportsForeignKeyOnUpdate()
+    {
+        return false;
     }
 }

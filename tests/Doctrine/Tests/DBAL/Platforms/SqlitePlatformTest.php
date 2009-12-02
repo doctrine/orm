@@ -7,34 +7,16 @@ use Doctrine\DBAL\Types\Type;
 
 require_once __DIR__ . '/../../TestInit.php';
  
-class SqlitePlatformTest extends \Doctrine\Tests\DbalTestCase
+class SqlitePlatformTest extends AbstractPlatformTestCase
 {
-    private $_platform;
-
-    public function setUp()
+    public function createPlatform()
     {
-        $this->_platform = new SqlitePlatform;
+        return new SqlitePlatform;
     }
 
-    public function testGeneratesTableCreationSql()
+    public function getGenerateTableSql()
     {
-        $columns = array(
-            'id' => array(
-                'type' => Type::getType('integer'),
-                'autoincrement' => true,
-                'primary' => true,
-                'notnull' => true
-            ),
-            'test' => array(
-                'type' => Type::getType('string'),
-                'length' => 255
-            )
-        );
-
-        $options = array();
-
-        $sql = $this->_platform->getCreateTableSql('test', $columns, $options);
-        $this->assertEquals('CREATE TABLE test (id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, test VARCHAR(255) DEFAULT NULL)', $sql[0]);
+        return 'CREATE TABLE test (id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, test VARCHAR(255) DEFAULT NULL)';
     }
 
     public function testGeneratesSqlSnippets()
@@ -99,16 +81,19 @@ class SqlitePlatformTest extends \Doctrine\Tests\DbalTestCase
         $this->assertEquals('ALTER TABLE test ADD CONSTRAINT constraint_name (test)', $sql);
     }
 
-    public function testGeneratesIndexCreationSql()
+    public function getGenerateIndexSql()
     {
-        $sql = $this->_platform->getCreateIndexSql('test', 'index_name', array('type' => 'unique', 'columns' => array('test', 'test2')));
-        $this->assertEquals('CREATE UNIQUE INDEX index_name ON test (test, test2)', $sql);
+        return 'CREATE INDEX my_idx ON mytable (user_name, last_login)';
     }
 
-    public function testGeneratesForeignKeyCreationSql()
+    public function getGenerateUniqueIndexSql()
     {
-        $sql = $this->_platform->getCreateForeignKeySql('test', array('foreignTable' => 'other_table', 'local' => 'fk_name_id', 'foreign' => 'id'));
-        $this->assertEquals('ALTER TABLE test ADD FOREIGN KEY (fk_name_id) REFERENCES other_table(id)', $sql);
+        return 'CREATE UNIQUE INDEX index_name ON test (test, test2)';
+    }
+
+    public function getGenerateForeignKeySql()
+    {
+        $this->markTestSkipped('SQLite does not support ForeignKeys.');
     }
 
     public function testModifyLimitQuery()

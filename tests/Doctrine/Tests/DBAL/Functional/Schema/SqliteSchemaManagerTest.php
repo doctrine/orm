@@ -45,31 +45,6 @@ class SqliteSchemaManagerTest extends SchemaManagerFunctionalTestCase
         $this->assertEquals(array(), $tableConstraints);
     }
 
-    /*public function testListTableColumns()
-    {
-        $this->createTestTable('list_table_columns_test');
-
-        $tableColumns = $this->_sm->listTableColumns('list_table_columns_test');
-
-        $this->assertEquals('id', $tableColumns[0]['name']);
-        $this->assertEquals(true, $tableColumns[0]['primary']);
-        $this->assertEquals('Doctrine\DBAL\Types\IntegerType', get_class($tableColumns[0]['type']));
-        $this->assertEquals(null, $tableColumns[0]['length']);
-        $this->assertEquals(false, $tableColumns[0]['unsigned']);
-        $this->assertEquals(false, $tableColumns[0]['fixed']);
-        $this->assertEquals(true, $tableColumns[0]['notnull']);
-        $this->assertEquals(null, $tableColumns[0]['default']);
-
-        $this->assertEquals('test', $tableColumns[1]['name']);
-        $this->assertEquals(false, $tableColumns[1]['primary']);
-        $this->assertEquals('Doctrine\DBAL\Types\StringType', get_class($tableColumns[1]['type']));
-        $this->assertEquals(255, $tableColumns[1]['length']);
-        $this->assertEquals(false, $tableColumns[1]['unsigned']);
-        $this->assertEquals(false, $tableColumns[1]['fixed']);
-        $this->assertEquals(false, $tableColumns[1]['notnull']);
-        $this->assertEquals(null, $tableColumns[1]['default']);
-    }*/
-
     /**
      * @expectedException \Exception
      */

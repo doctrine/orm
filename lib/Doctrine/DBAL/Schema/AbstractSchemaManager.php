@@ -336,12 +336,16 @@ abstract class AbstractSchemaManager
     /**
      * Drop the index from the given table
      *
-     * @param string $table The name of the table
-     * @param string $name  The name of the index
+     * @param Index|string $index  The name of the index
+     * @param string|Table $table The name of the table
      */
-    public function dropIndex($table, $name)
+    public function dropIndex($index, $table)
     {
-        $this->_execSql($this->_platform->getDropIndexSql($table, $name));
+        if($index instanceof Index) {
+            $index = $index->getName();
+        }
+
+        $this->_execSql($this->_platform->getDropIndexSql($index, $table));
     }
 
     /**
@@ -404,25 +408,11 @@ abstract class AbstractSchemaManager
     /**
      * Create a new table.
      *
-     * @param string $name Name of the database that should be created
-     * @param array $columns Associative array that contains the definition of each field of the new table
-     * @param array $options An associative array of table options.
+     * @param Table $table
      */
-    public function createTable($name, array $columns, array $options = array())
+    public function createTable(Table $table)
     {
-        // Build array of the primary keys if any of the individual field definitions
-        // specify primary => true
-        $count = 0;
-        foreach ($columns as $columnName => $definition) {
-            if (isset($definition['primary']) && $definition['primary']) {
-                if ($count == 0) {
-                    $options['primary'] = array();
-                }
-                ++$count;
-                $options['primary'][] = $columnName;
-            }
-        }
-        $this->_execSql($this->_platform->getCreateTableSql($name, $columns, $options));
+        $this->_execSql($this->_platform->getCreateTableSql($table));
     }
 
     /**
@@ -466,47 +456,23 @@ abstract class AbstractSchemaManager
     /**
      * Create a new index on a table
      *
+     * @param Index     $index
      * @param string    $table         name of the table on which the index is to be created
-     * @param string    $name          name of the index to be created
-     * @param array     $definition    associative array that defines properties of the index to be created.
-     *                                 Currently, only one property named FIELDS is supported. This property
-     *                                 is also an associative with the names of the index fields as array
-     *                                 indexes. Each entry of this array is set to another type of associative
-     *                                 array that specifies properties of the index that are specific to
-     *                                 each field.
-     *
-     *                                 Currently, only the sorting property is supported. It should be used
-     *                                 to define the sorting direction of the index. It may be set to either
-     *                                 ascending or descending.
-     *
-     *                                 Not all DBMS support index sorting direction configuration. The DBMS
-     *                                 drivers of those that do not support it ignore this property. Use the
-     *                                 function supports() to determine whether the DBMS driver can manage indexes.
-     *
-     *                                 Example
-     *                                    array(
-     *                                        'columns' => array(
-     *                                            'user_name' => array(
-     *                                                'sorting' => 'ascending'
-     *                                            ),
-     *                                            'last_login' => array()
-     *                                        )
-     *                                    )
      */
-    public function createIndex($table, $name, array $definition)
+    public function createIndex(Index $index, $table)
     {
-        $this->_execSql($this->_platform->getCreateIndexSql($table, $name, $definition));
+        $this->_execSql($this->_platform->getCreateIndexSql($index, $table));
     }
 
     /**
      * Create a new foreign key
      *
-     * @param string    $table         name of the table on which the foreign key is to be created
-     * @param array     $definition    associative array that defines properties of the foreign key to be created.
+     * @param ForeignKeyConstraint  $foreignKey    ForeignKey instance
+     * @param string|Table          $table         name of the table on which the foreign key is to be created
      */
-    public function createForeignKey($table, array $definition)
+    public function createForeignKey(ForeignKeyConstraint $foreignKey, $table)
     {
-        $this->_execSql($this->_platform->getCreateForeignKeySql($table, $definition));
+        $this->_execSql($this->_platform->getCreateForeignKeySql($foreignKey, $table));
     }
 
     /**
@@ -554,37 +520,13 @@ abstract class AbstractSchemaManager
     /**
      * Drop and create a new index on a table
      *
-     * @param string    $table         name of the table on which the index is to be created
-     * @param string    $name          name of the index to be created
-     * @param array     $definition    associative array that defines properties of the index to be created.
-     *                                 Currently, only one property named FIELDS is supported. This property
-     *                                 is also an associative with the names of the index fields as array
-     *                                 indexes. Each entry of this array is set to another type of associative
-     *                                 array that specifies properties of the index that are specific to
-     *                                 each field.
-     *
-     *                                 Currently, only the sorting property is supported. It should be used
-     *                                 to define the sorting direction of the index. It may be set to either
-     *                                 ascending or descending.
-     *
-     *                                 Not all DBMS support index sorting direction configuration. The DBMS
-     *                                 drivers of those that do not support it ignore this property. Use the
-     *                                 function supports() to determine whether the DBMS driver can manage indexes.
-     *
-     *                                 Example
-     *                                    array(
-     *                                        'columns' => array(
-     *                                            'user_name' => array(
-     *                                                'sorting' => 'ascending'
-     *                                            ),
-     *                                            'last_login' => array()
-     *                                        )
-     *                                    )
+     * @param string|Table $table         name of the table on which the index is to be created
+     * @param Index $index
      */
-    public function dropAndCreateIndex($table, $name, array $definition)
+    public function dropAndCreateIndex(Index $index, $table)
     {
-        $this->tryMethod('dropIndex', $table, $name);
-        $this->createIndex($table, $name, $definition);
+        $this->tryMethod('dropIndex', $index->getName(), $table);
+        $this->createIndex($index, $table);
     }
 
     /**
@@ -616,14 +558,12 @@ abstract class AbstractSchemaManager
     /**
      * Drop and create a new table.
      *
-     * @param string $name Name of the database that should be created
-     * @param array $columns Associative array that contains the definition of each field of the new table
-     * @param array $options An associative array of table options.
+     * @param Table $table
      */
-    public function dropAndCreateTable($name, array $columns, array $options = array())
+    public function dropAndCreateTable(Table $table)
     {
-        $this->tryMethod('dropTable', $name);
-        $this->createTable($name, $columns, $options);
+        $this->tryMethod('dropTable', $table->getName());
+        $this->createTable($table);
     }
 
     /**

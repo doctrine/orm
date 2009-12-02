@@ -296,11 +296,11 @@ class TableTest extends \PHPUnit_Framework_TestCase
 
         $constraints = $table->getForeignKeys();
         $this->assertEquals(1, count($constraints));
-        $this->assertType('Doctrine\DBAL\Schema\ForeignKeyConstraint', $constraints["id_fk"]);
+        $this->assertType('Doctrine\DBAL\Schema\ForeignKeyConstraint', $constraints["foo_id_fk"]);
 
-        $this->assertEquals("id_fk", $constraints["id_fk"]->getName());
-        $this->assertTrue($constraints["id_fk"]->hasOption("foo"));
-        $this->assertEquals("bar", $constraints["id_fk"]->getOption("foo"));
+        $this->assertEquals("foo_id_fk", $constraints["foo_id_fk"]->getName());
+        $this->assertTrue($constraints["foo_id_fk"]->hasOption("foo"));
+        $this->assertEquals("bar", $constraints["foo_id_fk"]->getOption("foo"));
     }
     
 }

@@ -77,9 +77,9 @@ abstract class AbstractAsset
         $columnCount = count($columnNames);
         $postfixLen = strlen($postfix);
         $parts = array_map(function($columnName) use($columnCount, $postfixLen, $maxSize) {
-            return substr($columnName, 0, floor(($maxSize-$postfixLen)/$columnCount - 1));
+            return substr($columnName, -floor(($maxSize-$postfixLen)/$columnCount - 1));
         }, $columnNames);
         $parts[] = $postfix;
-        return implode("_", $parts);
+        return trim(implode("_", $parts), '_');
     }
 }
