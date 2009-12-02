@@ -356,12 +356,14 @@ class OraclePlatform extends AbstractPlatform
             'columns' => array($name => true),
         );
 
+        $idx = new \Doctrine\DBAL\Schema\Index($indexName, array($name), true, true);
+
         $sql[] = 'DECLARE
   constraints_Count NUMBER;
 BEGIN
   SELECT COUNT(CONSTRAINT_NAME) INTO constraints_Count FROM USER_CONSTRAINTS WHERE TABLE_NAME = \''.$table.'\' AND CONSTRAINT_TYPE = \'P\';
   IF constraints_Count = 0 OR constraints_Count = \'\' THEN
-    EXECUTE IMMEDIATE \''.$this->getCreateConstraintSql($table, $indexName, $definition).'\';
+    EXECUTE IMMEDIATE \''.$this->getCreateConstraintSql($idx, $table).'\';
   END IF;
 END;';   
 
@@ -440,9 +442,18 @@ END;';
         return "SELECT * FROM all_tab_columns WHERE table_name = '" . $table . "' ORDER BY column_name";
     }
 
-    public function getDropSequenceSql($sequenceName)
+    /**
+     *
+     * @param  \Doctrine\DBAL\Schema\Sequence $sequence
+     * @return string
+     */
+    public function getDropSequenceSql($sequence)
     {
-        return 'DROP SEQUENCE ' . $sequenceName;
+        if ($sequence instanceof \Doctrine\DBAL\Schema\Sequence) {
+            $sequence = $sequence->getName();
+        }
+
+        return 'DROP SEQUENCE ' . $sequence;
     }
 
     public function getDropDatabaseSql($database)

@@ -32,5 +32,7 @@ namespace Doctrine\DBAL\Schema;
  */
 interface Constraint
 {
-    
+    public function getName();
+
+    public function getColumns();
 }

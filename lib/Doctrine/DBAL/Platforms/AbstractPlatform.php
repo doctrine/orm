@@ -454,8 +454,18 @@ abstract class AbstractPlatform
         return 'DROP DATABASE ' . $database;
     }
 
+    /**
+     * Drop a Table
+     * 
+     * @param  Table|string $table
+     * @return string
+     */
     public function getDropTableSql($table)
     {
+        if ($table instanceof \Doctrine\DBAL\Schema\Table) {
+            $table = $table->getName();
+        }
+
         return 'DROP TABLE ' . $table;
     }
 
@@ -477,14 +487,42 @@ abstract class AbstractPlatform
         return 'DROP INDEX ' . $index;
     }
 
-    public function getDropConstraintSql($table, $name, $primary = false)
+    /**
+     * Get drop constraint sql
+     * 
+     * @param  \Doctrine\DBAL\Schema\Constraint $constraint
+     * @param  string|Table $table
+     * @return string
+     */
+    public function getDropConstraintSql($constraint, $table)
     {
-        return 'ALTER TABLE ' . $table . ' DROP CONSTRAINT ' . $name;
+        if ($constraint->getName()) {
+            $constraint = $constraint->getName();
+        }
+
+        if ($table->getName()) {
+            $table = $table->getName();
+        }
+
+        return 'ALTER TABLE ' . $table . ' DROP CONSTRAINT ' . $constraint;
     }
 
-    public function getDropForeignKeySql($table, $name)
+    /**
+     * @param  ForeignKeyConstraint|string $foreignKey
+     * @param  Table|string $table
+     * @return string
+     */
+    public function getDropForeignKeySql($foreignKey, $table)
     {
-        return 'ALTER TABLE ' . $table . ' DROP FOREIGN KEY ' . $name;
+        if ($foreignKey instanceof \Doctrine\DBAL\Schema\ForeignKeyConstraint) {
+            $foreignKey = $foreignKey->getName();
+        }
+
+        if ($table instanceof \Doctrine\DBAL\Schema\Table) {
+            $table = $table->getName();
+        }
+
+        return 'ALTER TABLE ' . $table . ' DROP FOREIGN KEY ' . $foreignKey;
     }
 
     /**
@@ -609,39 +647,46 @@ abstract class AbstractPlatform
     /**
      * Gets the SQL to create a constraint on a table on this platform.
      *
-     * @param string    $table         name of the table on which the constraint is to be created
-     * @param string    $name          name of the constraint to be created
-     * @param array     $definition    associative array that defines properties of the constraint to be created.
-     *                                 Currently, only one property named FIELDS is supported. This property
-     *                                 is also an associative with the names of the constraint fields as array
-     *                                 constraints. Each entry of this array is set to another type of associative
-     *                                 array that specifies properties of the constraint that are specific to
-     *                                 each field.
-     *
-     *                                 Example
-     *                                    array(
-     *                                        'columns' => array(
-     *                                            'user_name' => array(),
-     *                                            'last_login' => array()
-     *                                        )
-     *                                    )
+     * @param Constraint $constraint
+     * @param string|Table $table
      * @return string
      */
-    public function getCreateConstraintSql($table, $name, $definition)
+    public function getCreateConstraintSql(\Doctrine\DBAL\Schema\Constraint $constraint, $table)
     {
-        $query = 'ALTER TABLE ' . $table . ' ADD CONSTRAINT ' . $name;
-
-        if (isset($definition['primary']) && $definition['primary']) {
-            $query .= ' PRIMARY KEY';
-        } elseif (isset($definition['unique']) && $definition['unique']) {
-            $query .= ' UNIQUE';
+        if ($table instanceof \Doctrine\DBAL\Schema\Table) {
+            $table = $table->getName();
         }
+
+        $query = 'ALTER TABLE ' . $table . ' ADD CONSTRAINT ' . $constraint->getName();
 
         $columns = array();
-        foreach (array_keys($definition['columns']) as $column) {
+        foreach ($constraint->getColumns() as $column) {
             $columns[] = $column;
         }
-        $query .= ' ('. implode(', ', $columns) . ')';
+        $columnList = '('. implode(', ', $columns) . ')';
+
+        $referencesClause = '';
+        if ($constraint instanceof \Doctrine\DBAL\Schema\Index) {
+            if($constraint->isPrimary()) {
+                $query .= ' PRIMARY KEY';
+            } elseif ($constraint->isUnique()) {
+                $query .= ' UNIQUE';
+            } else {
+                throw new \InvalidArgumentException(
+                    'Can only create primary or unique constraints, no common indexes with getCreateConstraintSql().'
+                );
+            }
+        } else if ($constraint instanceof \Doctrine\DBAL\Schema\ForeignKeyConstraint) {
+            $query .= ' FOREIGN KEY';
+
+            $foreignColumns = array();
+            foreach ($constraint->getForeignColumns() AS $column) {
+                $foreignColumns[] = $column;
+            }
+            
+            $referencesClause = ' REFERENCES '.$constraint->getForeignTableName(). ' ('.implode(', ', $foreignColumns).')';
+        }
+        $query .= ' '.$columnList.$referencesClause;
 
         return $query;
     }
@@ -1358,7 +1403,7 @@ abstract class AbstractPlatform
         throw DBALException::notSupported(__METHOD__);
     }
 
-    public function getDropSequenceSql($sequenceName)
+    public function getDropSequenceSql($sequence)
     {
         throw DBALException::notSupported(__METHOD__);
     }

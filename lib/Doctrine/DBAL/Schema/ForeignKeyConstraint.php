@@ -75,6 +75,11 @@ class ForeignKeyConstraint extends AbstractAsset implements Constraint
         return $this->_localColumnNames;
     }
 
+    public function getColumns()
+    {
+        return $this->_localColumnNames;
+    }
+
     /**
      * @return string
      */

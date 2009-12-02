@@ -351,25 +351,24 @@ abstract class AbstractSchemaManager
     /**
      * Drop the constraint from the given table
      *
+     * @param Constraint $constraint
      * @param string $table   The name of the table
-     * @param string $name    The name of the constraint
-     * @param string $primary Whether or not it is a primary constraint
      */
-    public function dropConstraint($table, $name, $primary = false)
+    public function dropConstraint(Constraint $constraint, $table)
     {
-        $this->_execSql($this->_platform->getDropConstraintSql($table, $name, $primary));
+        $this->_execSql($this->_platform->getDropConstraintSql($constraint, $table));
     }
 
     /**
      * Drops a foreign key from a table.
      *
-     * @param string $table The name of the table with the foreign key.
-     * @param string $name  The name of the foreign key.
+     * @param ForeignKeyConstraint|string $table The name of the table with the foreign key.
+     * @param Table|string $name  The name of the foreign key.
      * @return boolean $result
      */
-    public function dropForeignKey($table, $name)
+    public function dropForeignKey($foreignKey, $table)
     {
-        $this->_execSql($this->_platform->getDropForeignKeySql($table, $name));
+        $this->_execSql($this->_platform->getDropForeignKeySql($foreignKey, $table));
     }
 
     /**
@@ -429,26 +428,12 @@ abstract class AbstractSchemaManager
     /**
      * Create a constraint on a table
      *
-     * @param string    $table         name of the table on which the constraint is to be created
-     * @param string    $name          name of the constraint to be created
-     * @param array     $definition    associative array that defines properties of the constraint to be created.
-     *                                 Currently, only one property named FIELDS is supported. This property
-     *                                 is also an associative with the names of the constraint fields as array
-     *                                 constraints. Each entry of this array is set to another type of associative
-     *                                 array that specifies properties of the constraint that are specific to
-     *                                 each field.
-     *
-     *                                 Example
-     *                                    array(
-     *                                        'columns' => array(
-     *                                            'user_name' => array(),
-     *                                            'last_login' => array()
-     *                                        )
-     *                                    )
+     * @param Constraint $constraint
+     * @param string|Table $table
      */
-    public function createConstraint($table, $name, $definition)
+    public function createConstraint(Constraint $constraint, $table)
     {
-        $this->_execSql($this->_platform->getCreateConstraintSql($table, $name, $definition));
+        $this->_execSql($this->_platform->getCreateConstraintSql($constraint, $table));
     }
 
     /**
@@ -489,30 +474,15 @@ abstract class AbstractSchemaManager
     /**
      * Drop and create a constraint
      *
-     * @param string    $table         name of the table on which the constraint is to be created
-     * @param string    $name          name of the constraint to be created
-     * @param array     $definition    associative array that defines properties of the constraint to be created.
-     *                                 Currently, only one property named FIELDS is supported. This property
-     *                                 is also an associative with the names of the constraint fields as array
-     *                                 constraints. Each entry of this array is set to another type of associative
-     *                                 array that specifies properties of the constraint that are specific to
-     *                                 each field.
-     *
-     *                                 Example
-     *                                    array(
-     *                                        'columns' => array(
-     *                                            'user_name' => array(),
-     *                                            'last_login' => array()
-     *                                        )
-     *                                    )
-     * @param boolean $primary Whether or not it is a primary constraint
+     * @param Constraint    $constraint
+     * @param string        $table
      * @see dropConstraint()
      * @see createConstraint()
      */
-    public function dropAndCreateConstraint($table, $name, $definition, $primary = false)
+    public function dropAndCreateConstraint(Constraint $constraint, $table)
     {
-        $this->tryMethod('dropConstraint', $table, $name, $primary);
-        $this->createConstraint($table, $name, $definition);
+        $this->tryMethod('dropConstraint', $constraint, $table);
+        $this->createConstraint($constraint, $table);
     }
 
     /**
@@ -530,24 +500,22 @@ abstract class AbstractSchemaManager
     /**
      * Drop and create a new foreign key
      *
-     * @param string    $table         name of the table on which the foreign key is to be created
-     * @param array     $definition    associative array that defines properties of the foreign key to be created.
+     * @param ForeignKeyConstraint  $foreignKey    associative array that defines properties of the foreign key to be created.
+     * @param string|Table          $table         name of the table on which the foreign key is to be created
      */
-    public function dropAndCreateForeignKey($table, $definition)
+    public function dropAndCreateForeignKey(ForeignKeyConstraint $foreignKey, $table)
     {
-        $this->tryMethod('dropForeignKey', $table, $definition['name']);
-        $this->createForeignKey($table, $definition);
+        $this->tryMethod('dropForeignKey', $foreignKey, $table);
+        $this->createForeignKey($foreignKey, $table);
     }
 
     /**
      * Drop and create a new sequence
      *
-     * @param string    $seqName        name of the sequence to be created
-     * @param string    $start          start value of the sequence; default is 1
-     * @param array     $allocationSize The size to allocate for sequence
+     * @param Sequence $sequence
      * @throws Doctrine\DBAL\ConnectionException     if something fails at database level
      */
-    public function dropAndCreateSequence($seqName, $start = 1, $allocationSize = 1)
+    public function dropAndCreateSequence(Sequence $sequence)
     {
         $this->tryMethod('createSequence', $seqName, $start, $allocationSize);
         $this->createSequence($seqName, $start, $allocationSize);

@@ -75,12 +75,6 @@ class SqlitePlatformTest extends AbstractPlatformTestCase
         );
     }
 
-    public function testGeneratesConstraintCreationSql()
-    {
-        $sql = $this->_platform->getCreateConstraintSql('test', 'constraint_name', array('columns' => array('test' => array())));
-        $this->assertEquals('ALTER TABLE test ADD CONSTRAINT constraint_name (test)', $sql);
-    }
-
     public function getGenerateIndexSql()
     {
         return 'CREATE INDEX my_idx ON mytable (user_name, last_login)';

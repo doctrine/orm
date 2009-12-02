@@ -23,7 +23,7 @@ namespace Doctrine\DBAL\Schema;
 
 use Doctrine\DBAL\Schema\Visitor\Visitor;
 
-class Index extends AbstractAsset
+class Index extends AbstractAsset implements Constraint
 {
     /**
      * @var array

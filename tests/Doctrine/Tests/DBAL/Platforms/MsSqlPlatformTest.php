@@ -125,12 +125,6 @@ class MsSqlPlatformTest extends AbstractPlatformTestCase
         $this->assertFalse($this->_platform->supportsSavepoints());   
     }
 
-    public function testGeneratesConstraintCreationSql()
-    {
-        $sql = $this->_platform->getCreateConstraintSql('test', 'constraint_name', array('columns' => array('test' => array())));
-        $this->assertEquals($sql, 'ALTER TABLE test ADD CONSTRAINT constraint_name (test)');
-    }
-
     public function getGenerateIndexSql()
     {
         return 'CREATE INDEX my_idx ON mytable (user_name, last_login)';

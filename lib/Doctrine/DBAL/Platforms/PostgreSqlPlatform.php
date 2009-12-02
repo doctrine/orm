@@ -572,14 +572,16 @@ class PostgreSqlPlatform extends AbstractPlatform
     }
     
     /**
-     * drop existing sequence
-     *
-     * @param string $sequenceName name of the sequence to be dropped
-     * @override
+     * Drop existing sequence
+     * @param  \Doctrine\DBAL\Schema\Sequence $sequence
+     * @return string
      */
-    public function getDropSequenceSql($sequenceName)
+    public function getDropSequenceSql($sequence)
     {
-        return 'DROP SEQUENCE ' . $sequenceName;
+        if ($sequence instanceof \Doctrine\DBAL\Schema\Sequence) {
+            $sequence = $sequence->getName();
+        }
+        return 'DROP SEQUENCE ' . $sequence;
     }
     
     /**
