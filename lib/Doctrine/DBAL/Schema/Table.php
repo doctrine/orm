@@ -96,7 +96,7 @@ class Table extends AbstractAsset
      */
     public function __construct($tableName, array $columns=array(), array $indexes=array(), array $fkConstraints=array(), $idGeneratorType=self::ID_NONE, array $options=array())
     {
-        $this->_name = $tableName;
+        $this->_setName($tableName);
         $this->_idGeneratorType = $idGeneratorType;
         
         foreach ($columns AS $column) {
@@ -215,7 +215,6 @@ class Table extends AbstractAsset
      */
     public function renameColumn($oldColumnName, $newColumnName)
     {
-        $columnName = strtolower($columnName);
         $column = $this->getColumn($oldColumnName);
         $this->dropColumn($oldColumnName);
 
@@ -232,7 +231,6 @@ class Table extends AbstractAsset
      */
     public function changeColumn($columnName, array $options)
     {
-        $columnName = strtolower($columnName);
         $column = $this->getColumn($columnName);
         $column->setOptions($options);
         return $this;
@@ -339,9 +337,13 @@ class Table extends AbstractAsset
      */
     protected function _addColumn(Column $column)
     {
-        $columnName = strtolower($column->getName());
+        $column->setCaseMode($this->_caseMode);
+
+        $columnName = $column->getName();
+        $columnName = strtolower($columnName);
+
         if (isset($this->_columns[$columnName])) {
-            throw SchemaException::columnAlreadyExists($this->_name, $columnName);
+            throw SchemaException::columnAlreadyExists($this->getName(), $columnName);
         }
 
         $this->_columns[$columnName] = $column;
@@ -355,7 +357,10 @@ class Table extends AbstractAsset
      */
     protected function _addIndex(Index $index)
     {
+        $index->setCaseMode($this->_caseMode);
+
         $indexName = $index->getName();
+        $indexName = strtolower($indexName);
 
         if (isset($this->_indexes[$indexName]) || ($this->_primaryKeyName != false && $index->isPrimary())) {
             throw SchemaException::indexAlreadyExists($indexName);
@@ -374,6 +379,8 @@ class Table extends AbstractAsset
      */
     protected function _addForeignKeyConstraint(ForeignKeyConstraint $constraint)
     {
+        $constraint->setCaseMode($this->_caseMode);
+
         if(strlen($constraint->getName())) {
             $name = $constraint->getName();
         } else {
@@ -381,6 +388,7 @@ class Table extends AbstractAsset
                 array_merge((array)$this->getName(), $constraint->getLocalColumns()), "fk"
             );
         }
+        $name = strtolower($name);
 
         $this->_fkConstraints[$name] = $constraint;
     }
@@ -393,6 +401,7 @@ class Table extends AbstractAsset
      */
     public function hasForeignKey($constraintName)
     {
+        $constraintName = strtolower($constraintName);
         return isset($this->_fkConstraints[$constraintName]);
     }
 
@@ -402,6 +411,7 @@ class Table extends AbstractAsset
      */
     public function getForeignKey($constraintName)
     {
+        $constraintName = strtolower($constraintName);
         if(!$this->hasForeignKey($constraintName)) {
             throw SchemaException::foreignKeyDoesNotExist($constraintName);
         }
@@ -476,6 +486,7 @@ class Table extends AbstractAsset
      */
     public function hasIndex($indexName)
     {
+        $indexName = strtolower($indexName);
         return (isset($this->_indexes[$indexName]));
     }
 
@@ -485,6 +496,7 @@ class Table extends AbstractAsset
      */
     public function getIndex($indexName)
     {
+        $indexName = strtolower($indexName);
         if (!$this->hasIndex($indexName)) {
             throw SchemaException::indexDoesNotExist($indexName);
         }

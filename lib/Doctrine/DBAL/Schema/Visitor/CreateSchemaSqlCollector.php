@@ -110,15 +110,6 @@ class CreateSchemaSqlCollector implements Visitor
     }
 
     /**
-     * @param Table $table
-     * @param Constraint $constraint
-     */
-    public function acceptCheckConstraint(Table $table, Constraint $constraint)
-    {
-        
-    }
-
-    /**
      * @param Sequence $sequence
      */
     public function acceptSequence(Sequence $sequence)

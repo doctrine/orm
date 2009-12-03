@@ -109,15 +109,6 @@ class DropSchemaSqlCollector implements Visitor
 
     /**
      * @param Table $table
-     * @param Constraint $constraint
-     */
-    public function acceptCheckConstraint(Table $table, Constraint $constraint)
-    {
-        
-    }
-
-    /**
-     * @param Table $table
      * @param Index $index
      */
     public function acceptIndex(Table $table, Index $index)

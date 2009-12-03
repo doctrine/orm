@@ -76,7 +76,7 @@ class Index extends AbstractAsset implements Constraint
      */
     public function getColumns()
     {
-        return $this->_columns;
+        return $this->_foldIdentifiers($this->_columns);
     }
 
     /**
@@ -102,6 +102,7 @@ class Index extends AbstractAsset implements Constraint
      */
     public function hasColumnAtPosition($columnName, $pos=0)
     {
-        return \array_search($columnName, $this->_columns) === $pos;
+        $columnName = $this->_foldIdentifier($columnName);
+        return \array_search($columnName, $this->getColumns()) === $pos;
     }
 }

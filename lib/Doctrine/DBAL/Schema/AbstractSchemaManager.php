@@ -213,6 +213,8 @@ abstract class AbstractSchemaManager
     /**
      * List the indexes for a given table returning an array of Index instances.
      *
+     * Keys of the portable indexes list are all lower-cased.
+     *
      * @param string $table The name of the table
      * @return Index[] $tableIndexes
      */
@@ -830,12 +832,21 @@ abstract class AbstractSchemaManager
         return $tableConstraint;
     }
 
+    /**
+     * Independent of the database the keys of the column list result are lowercased.
+     *
+     * The name of the created column instance however is kept in its case.
+     *
+     * @param  array $tableColumns
+     * @return array
+     */
     protected function _getPortableTableColumnList($tableColumns)
     {
         $list = array();
         foreach ($tableColumns as $key => $column) {
             if ($column = $this->_getPortableTableColumnDefinition($column)) {
-                $list[$column->getName()] = $column;
+                $name = strtolower($column->getName());
+                $list[$name] = $column;
             }
         }
         return $list;
@@ -864,6 +875,7 @@ abstract class AbstractSchemaManager
             if($tableIndex['primary']) {
                 $keyName = 'primary';
             }
+            $keyName = strtolower($keyName);
 
             if(!isset($result[$keyName])) {
                 $result[$keyName] = array(

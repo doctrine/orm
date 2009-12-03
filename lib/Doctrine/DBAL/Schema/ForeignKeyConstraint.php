@@ -72,12 +72,12 @@ class ForeignKeyConstraint extends AbstractAsset implements Constraint
      */
     public function getLocalColumns()
     {
-        return $this->_localColumnNames;
+        return $this->_foldIdentifiers($this->_localColumnNames);
     }
 
     public function getColumns()
     {
-        return $this->_localColumnNames;
+        return $this->_foldIdentifiers($this->_localColumnNames);
     }
 
     /**
@@ -85,7 +85,7 @@ class ForeignKeyConstraint extends AbstractAsset implements Constraint
      */
     public function getForeignTableName()
     {
-        return $this->_foreignTableName;
+        return $this->_foldIdentifier($this->_foreignTableName);
     }
 
     /**
@@ -93,7 +93,7 @@ class ForeignKeyConstraint extends AbstractAsset implements Constraint
      */
     public function getForeignColumns()
     {
-        return $this->_foreignColumnNames;
+        return $this->_foldIdentifiers($this->_foreignColumnNames);
     }
 
     public function hasOption($name)
