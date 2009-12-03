@@ -7,7 +7,7 @@ namespace Doctrine\DBAL\Types;
  *
  * @author robo
  */
-class SmallIntType
+class SmallIntType extends Type
 {
     public function getName()
     {
