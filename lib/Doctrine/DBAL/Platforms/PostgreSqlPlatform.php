@@ -341,7 +341,7 @@ class PostgreSqlPlatform extends AbstractPlatform
 
     public function getListTableForeignKeysSql($table, $database = null)
     {
-        return "SELECT r.name, pg_catalog.pg_get_constraintdef(r.oid, true) as condef
+        return "SELECT r.conname, pg_catalog.pg_get_constraintdef(r.oid, true) as condef
                   FROM pg_catalog.pg_constraint r
                   WHERE r.conrelid =
                   (
@@ -568,6 +568,7 @@ class PostgreSqlPlatform extends AbstractPlatform
     {
         return 'CREATE SEQUENCE ' . $sequence->getName() .
                ' INCREMENT BY ' . $sequence->getAllocationSize() .
+               ' MINVALUE ' . $sequence->getInitialValue() .
                ' START ' . $sequence->getInitialValue();
     }
     

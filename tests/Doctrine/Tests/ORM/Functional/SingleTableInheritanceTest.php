@@ -19,7 +19,8 @@ class SingleTableInheritanceTest extends \Doctrine\Tests\OrmFunctionalTestCase
             $this->_schemaTool->createSchema(array(
                 $this->_em->getClassMetadata('Doctrine\Tests\ORM\Functional\ParentEntity'),
                 $this->_em->getClassMetadata('Doctrine\Tests\ORM\Functional\ChildEntity'),
-                $this->_em->getClassMetadata('Doctrine\Tests\ORM\Functional\RelatedEntity')
+                $this->_em->getClassMetadata('Doctrine\Tests\ORM\Functional\RelatedEntity'),
+                $this->_em->getClassMetadata('Doctrine\Tests\ORM\Functional\ParentRelatedEntity')
             ));
         } catch (\Exception $e) {
             // Swallow all exceptions. We do not test the schema tool here.
@@ -56,7 +57,9 @@ class SingleTableInheritanceTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertTrue(is_numeric($entities[0]->getId()));
         $this->assertTrue(is_numeric($entities[1]->getId()));
         $this->assertTrue($entities[0] instanceof ParentEntity);
-        $this->assertTrue($entities[1] instanceof ChildEntity);  
+        $this->assertTrue($entities[1] instanceof ChildEntity);
+        $this->assertNull($entities[0]->getParentRelated());
+        $this->assertNull($entities[1]->getParentRelated());
         $this->assertEquals('foobar', $entities[0]->getData());
         $this->assertEquals('thedata', $entities[1]->getData());
         $this->assertEquals(1234, $entities[1]->getNumber());
@@ -70,6 +73,7 @@ class SingleTableInheritanceTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertTrue(is_numeric($entities[0]->getId()));
         $this->assertEquals('thedata', $entities[0]->getData());
         $this->assertEquals(1234, $entities[0]->getNumber());
+        $this->assertNull($entities[0]->getParentRelated());
 
         $this->_em->clear();
 
@@ -83,6 +87,7 @@ class SingleTableInheritanceTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertTrue($entities[0]->getOwner() instanceof ChildEntity);
         $this->assertEquals('thedata', $entities[0]->getOwner()->getData());
         $this->assertSame($entities[0], $entities[0]->getOwner()->getRelatedEntity());
+        $this->assertNull($entities[0]->getOwner()->getParentRelated());
 
         $query = $this->_em->createQuery("update Doctrine\Tests\ORM\Functional\ChildEntity e set e.data = 'newdata'");
 
@@ -114,6 +119,7 @@ class SingleTableInheritanceTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertEquals(1234, $child2->getNumber());
         $this->assertEquals($child->getId(), $child2->getId());
         $this->assertFalse($child === $child2);
+        $this->assertNull($child2->getParentRelated());
     }
     
     public function testGetScalarResult()
@@ -138,7 +144,7 @@ class SingleTableInheritanceTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertEquals('child', $result[0]['e_discr']);
     }
     
-    public function testPolymorphicFind()
+    public function testPolymorphicFindAndQuery()
     {
         $child = new ChildEntity;
         $child->setData('thedata');
@@ -154,7 +160,33 @@ class SingleTableInheritanceTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertTrue($child2 instanceof ChildEntity);
         $this->assertEquals('thedata', $child2->getData());
         $this->assertSame(1234, $child2->getNumber());
+        
+        $parentRelated = new ParentRelatedEntity;
+        $parentRelated->setData('related to parent!');
+        $child2->setParentRelated($parentRelated);
+        $parentRelated->setParent($child2);
+        $this->_em->persist($parentRelated);
+        
+        //$this->_em->getConnection()->getConfiguration()->setSqlLogger(new \Doctrine\DBAL\Logging\EchoSqlLogger);
+        
+        $this->_em->flush();
+        $this->_em->clear();
+        
+        $query = $this->_em->createQuery("select p, r from Doctrine\Tests\ORM\Functional\ParentEntity p join p.parentRelated r");
+        $result = $query->getResult();
+        
+        $this->assertEquals(1, count($result));
+        $this->assertTrue($result[0] instanceof ChildEntity);
+        $related = $result[0]->getParentRelated();
+        $this->assertFalse($related instanceof \Doctrine\ORM\Proxy\Proxy);
+        $this->assertTrue($related instanceof ParentRelatedEntity);
+        $this->assertEquals('related to parent!', $related->getData());
     }
+    
+    /*public function testPolymorphicQueryWithJoin()
+    {
+        
+    }*/
 }
 
 /**
@@ -175,6 +207,9 @@ class ParentEntity {
      * @Column(name="DATA", type="string")
      */
     private $data;
+    
+    /** @OneToOne(targetEntity="ParentRelatedEntity", mappedBy="parent") */
+    private $parentRelated;
 
     public function getId() {
         return $this->id;
@@ -186,6 +221,14 @@ class ParentEntity {
 
     public function setData($data) {
         $this->data = $data;
+    }
+    
+    public function getParentRelated() {
+        return $this->parentRelated;
+    }
+    
+    public function setParentRelated($parentRelated) {
+        $this->parentRelated = $parentRelated;
     }
 }
 
@@ -262,4 +305,25 @@ class RelatedEntity {
             $owner->setRelatedEntity($this);
         }
     }
+}
+
+/** @Entity */
+class ParentRelatedEntity {
+    /**
+     * @Id @Column(type="integer")
+     * @GeneratedValue(strategy="AUTO")
+     */
+    private $id;
+    public function getId() {return $this->id;}
+    /** @Column(type="string") */
+    private $data;
+    public function getData() {return $this->data;}
+    public function setData($data) {$this->data = $data;}
+    /**
+     * @OneToOne(targetEntity="ParentEntity")
+     * @JoinColumn(name="parent_id", referencedColumnName="id")
+     */
+    private $parent;
+    public function getParent() {return $this->parent;}
+    public function setParent($parent) {$this->parent = $parent;}
 }

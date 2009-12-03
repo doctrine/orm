@@ -145,7 +145,7 @@ class PostgreSqlPlatformTest extends AbstractPlatformTestCase
     {
         $sequence = new \Doctrine\DBAL\Schema\Sequence('myseq', 20, 1);
         $this->assertEquals(
-            'CREATE SEQUENCE myseq INCREMENT BY 20 START 1',
+            'CREATE SEQUENCE myseq INCREMENT BY 20 MINVALUE 1 START 1',
             $this->_platform->getCreateSequenceSql($sequence)
         );
         $this->assertEquals(

@@ -266,7 +266,7 @@ class ObjectHydrator extends AbstractHydrator
                     continue;
                 }
 
-                $parentClass = get_class($parentObject);
+                $parentClass = $this->_rsm->aliasMap[$parentAlias];
                 $oid = spl_object_hash($parentObject);
                 $relationField = $this->_rsm->relationMap[$dqlAlias];
                 $relation = $this->_ce[$parentClass]->associationMappings[$relationField];

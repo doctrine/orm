@@ -52,7 +52,7 @@ class PostgreSqlSchemaManager extends AbstractSchemaManager
         }
 
         return new ForeignKeyConstraint(
-            $localColumns, $foreignTable, $foreignColumns, $tableForeignKey['name'],
+            $localColumns, $foreignTable, $foreignColumns, $tableForeignKey['conname'],
             array('onUpdate' => $onUpdate, 'onDelete' => $onDelete)
         );
     }
@@ -87,7 +87,7 @@ class PostgreSqlSchemaManager extends AbstractSchemaManager
       
       $this->_platform = $tmpPlatform;
       $this->_conn = $tmpConn;
-    }    
+    }
     
     protected function _getPortableTriggerDefinition($trigger)
     {
@@ -153,8 +153,8 @@ class PostgreSqlSchemaManager extends AbstractSchemaManager
 
     protected function _getPortableSequenceDefinition($sequence)
     {
-        $data = $this->_conn->fetchAll('SELECT start_value, increment_by FROM '.$sequence['relname']);
-        return new Sequence($sequence['relname'], $data[0]['increment_by'], $data[0]['start_value']);
+        $data = $this->_conn->fetchAll('SELECT min_value, increment_by FROM '.$sequence['relname']);
+        return new Sequence($sequence['relname'], $data[0]['increment_by'], $data[0]['min_value']);
     }
 
     protected function _getPortableTableConstraintDefinition($tableConstraint)
