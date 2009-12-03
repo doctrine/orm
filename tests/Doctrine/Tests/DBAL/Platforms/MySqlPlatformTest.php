@@ -14,6 +14,15 @@ class MySqlPlatformTest extends AbstractPlatformTestCase
         return new MysqlPlatform;
     }
 
+    public function testGenerateMixedCaseTableCreate()
+    {
+        $table = new \Doctrine\DBAL\Schema\Table("Foo");
+        $table->createColumn("Bar", "integer");
+
+        $sql = $this->_platform->getCreateTableSql($table);
+        $this->assertEquals('CREATE TABLE Foo (Bar INT NOT NULL) ENGINE = InnoDB', array_shift($sql));
+    }
+
     public function getGenerateTableSql()
     {
         return 'CREATE TABLE test (id INT AUTO_INCREMENT NOT NULL, test VARCHAR(255) DEFAULT NULL, PRIMARY KEY(id)) ENGINE = InnoDB';
