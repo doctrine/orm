@@ -2,7 +2,8 @@
 
 namespace Doctrine\Tests\DBAL\Functional\Schema;
 
-use Doctrine\DBAL\Types\Type;
+use Doctrine\DBAL\Types\Type,
+    Doctrine\DBAL\Schema\AbstractSchemaManager;
 
 require_once __DIR__ . '/../../../TestInit.php';
 
@@ -195,6 +196,31 @@ class SchemaManagerFunctionalTestCase extends \Doctrine\Tests\DbalFunctionalTest
         $this->assertEquals(array('test'), array_map('strtolower', $tableIndexes['test']->getColumns()));
         $this->assertTrue($tableIndexes['test']->isUnique());
         $this->assertFalse($tableIndexes['test']->isPrimary());
+    }
+
+    public function testCreateTableWithForeignKeys()
+    {
+        if(!$this->_sm->getDatabasePlatform()->supportsForeignKeyConstraints()) {
+            $this->markTestSkipped('Platform does not support foreign keys.');
+        }
+
+        $tableB = $this->getTestTable('test_foreign');
+
+        $this->_sm->dropAndCreateTable($tableB);
+
+        $tableA = $this->getTestTable('test_create_fk');
+        $tableA->addForeignKeyConstraint('test_foreign', array('foreign_key_test'), array('id'));
+
+        $this->_sm->dropAndCreateTable($tableA);
+
+        $fkConstraints = $this->_sm->listTableForeignKeys('test_create_fk');
+        $this->assertEquals(1, count($fkConstraints));
+
+        $fkConstraint = current($fkConstraints);
+        $fkConstraint->setCaseMode("lower");
+        $this->assertEquals('test_foreign', $fkConstraint->getForeignTableName());
+        $this->assertEquals(array('foreign_key_test'), $fkConstraint->getColumns());
+        $this->assertEquals(array('id'), $fkConstraint->getForeignColumns());
     }
 
     public function testListForeignKeys()

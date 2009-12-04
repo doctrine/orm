@@ -209,6 +209,10 @@ class OrmFunctionalTestCase extends OrmTestCase
 
     protected function onNotSuccessfulTest(\Exception $e)
     {
+        if ($e instanceof \PHPUnit_Framework_ExpectationFailedException) {
+            throw $e;
+        }
+
         if($this->_sqlLoggerStack->queries !== null && count($this->_sqlLoggerStack->queries)) {
             $queries = "";
             for($i = 0; $i < count($this->_sqlLoggerStack->queries); $i++) {

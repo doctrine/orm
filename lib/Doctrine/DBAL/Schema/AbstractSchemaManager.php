@@ -24,6 +24,7 @@ namespace Doctrine\DBAL\Schema;
 use \Doctrine\DBAL\Types;
 use \Doctrine\Common\DoctrineException;
 use \Doctrine\DBAL\DBALException;
+use \Doctrine\DBAL\Platforms\AbstractPlatform;
 
 /**
  * Base class for schema managers. Schema managers are used to inspect and/or
@@ -63,6 +64,16 @@ abstract class AbstractSchemaManager
     {
         $this->_conn = $conn;
         $this->_platform = $this->_conn->getDatabasePlatform();
+    }
+
+    /**
+     * Return associated platform.
+     *
+     * @return \Doctrine\DBAL\Platform\AbstractPlatform
+     */
+    public function getDatabasePlatform()
+    {
+        return $this->_platform;
     }
 
     /**
@@ -410,10 +421,12 @@ abstract class AbstractSchemaManager
      * Create a new table.
      *
      * @param Table $table
+     * @param int $createFlags
      */
     public function createTable(Table $table)
     {
-        $this->_execSql($this->_platform->getCreateTableSql($table));
+        $createFlags = AbstractPlatform::CREATE_INDEXES|AbstractPlatform::CREATE_FOREIGNKEYS;
+        $this->_execSql($this->_platform->getCreateTableSql($table, $createFlags));
     }
 
     /**

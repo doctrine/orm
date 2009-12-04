@@ -1,0 +1,26 @@
+DbdriverBaz:
+  type: entity
+  table: dbdriver_baz
+  fields:
+    id:
+      id: true
+      type: integer
+      unsigned: false
+      notnull: true
+      default: null
+      generator:
+        strategy: AUTO
+  oneToOne:
+    bar:
+      targetEntity: DbdriverBar
+      cascade:
+        remove: false
+        persist: false
+        refresh: false
+        merge: false
+        detach: false
+      mappedBy: null
+      joinColumns:
+        bar_id:
+          referencedColumnName: id
+      orphanRemoval: false

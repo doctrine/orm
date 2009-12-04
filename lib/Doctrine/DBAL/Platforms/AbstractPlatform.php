@@ -45,6 +45,16 @@ use Doctrine\DBAL\DBALException,
 abstract class AbstractPlatform
 {
     /**
+     * @var int
+     */
+    const CREATE_INDEXES = 1;
+
+    /**
+     * @var int
+     */
+    const CREATE_FOREIGNKEYS = 2;
+
+    /**
      * Constructor.
      */
     public function __construct() {}
@@ -530,29 +540,34 @@ abstract class AbstractPlatform
      * on this platform.
      *
      * @param string $table The name of the table.
-     * @param array $columns The column definitions for the table.
-     * @param array $options The table constraints.
+     * @param int $createFlags
      * @return array The sequence of SQL statements.
      */
-    public function getCreateTableSql(Table $table)
+    public function getCreateTableSql(Table $table, $createFlags=self::CREATE_INDEXES)
     {
+        if (!is_int($createFlags)) {
+            throw new \InvalidArgumentException("Second argument of AbstractPlatform::getCreateTableSql() has to be integer.");
+        }
+
         $tableName = $table->getName();
         $options = $table->getOptions();
         $options['uniqueConstraints'] = array();
         $options['indexes'] = array();
         $options['primary'] = array();
 
-        foreach($table->getIndexes() AS $index) {
-            /* @var $index Index */
-            if($index->isPrimary()) {
-                $options['primary'] = $index->getColumns();
-            } else {
-                $options['indexes'][$index->getName()] = $index;
+        if (($createFlags&self::CREATE_INDEXES) > 0) {
+            foreach ($table->getIndexes() AS $index) {
+                /* @var $index Index */
+                if ($index->isPrimary()) {
+                    $options['primary'] = $index->getColumns();
+                } else {
+                    $options['indexes'][$index->getName()] = $index;
+                }
             }
         }
 
         $columns = array();
-        foreach($table->getColumns() AS $column) {
+        foreach ($table->getColumns() AS $column) {
             /* @var \Doctrine\DBAL\Schema\Column $column */
             $columnData = array();
             $columnData['name'] = $column->getName();
@@ -580,16 +595,23 @@ abstract class AbstractPlatform
             $columns[$columnData['name']] = $columnData;
         }
 
+        if (($createFlags&self::CREATE_FOREIGNKEYS) > 0) {
+            $options['foreignKeys'] = array();
+            foreach ($table->getForeignKeys() AS $fkConstraint) {
+                $options['foreignKeys'][] = $fkConstraint;
+            }
+        }
+
         return $this->_getCreateTableSql($tableName, $columns, $options);
     }
 
     /**
-     * @param string $table
+     * @param string $tableName
      * @param array $columns
      * @param array $options
      * @return array
      */
-    protected function _getCreateTableSql($table, array $columns, array $options = array())
+    protected function _getCreateTableSql($tableName, array $columns, array $options = array())
     {
         $columnListSql = $this->getColumnDeclarationListSql($columns);
         
@@ -609,7 +631,7 @@ abstract class AbstractPlatform
             }
         }
 
-        $query = 'CREATE TABLE ' . $table . ' (' . $columnListSql;
+        $query = 'CREATE TABLE ' . $tableName . ' (' . $columnListSql;
 
         $check = $this->getCheckDeclarationSql($columns);
         if ( ! empty($check)) {
@@ -621,7 +643,7 @@ abstract class AbstractPlatform
 
         if (isset($options['foreignKeys'])) {
             foreach ((array) $options['foreignKeys'] AS $definition) {
-                $sql[] = $this->getCreateForeignKeySql($definition, $name);
+                $sql[] = $this->getCreateForeignKeySql($definition, $tableName);
             }
         }
 

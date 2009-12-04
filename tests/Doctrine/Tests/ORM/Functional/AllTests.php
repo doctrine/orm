@@ -45,6 +45,7 @@ class AllTests
         $suite->addTestSuite('Doctrine\Tests\ORM\Functional\MappedSuperclassTest');
         $suite->addTestSuite('Doctrine\Tests\ORM\Functional\EntityRepositoryTest');
         $suite->addTestSuite('Doctrine\Tests\ORM\Functional\IdentityMapTest');
+        $suite->addTestSuite('Doctrine\Tests\ORM\Functional\DatabaseDriverTest');
         
         $suite->addTest(Locking\AllTests::suite());
         $suite->addTest(SchemaTool\AllTests::suite());
