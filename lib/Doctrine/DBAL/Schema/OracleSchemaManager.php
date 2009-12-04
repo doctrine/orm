@@ -189,7 +189,9 @@ class OracleSchemaManager extends AbstractSchemaManager
             'platformDetails' => array(),
         );
 
-        return new Column($tableColumn['column_name'], \Doctrine\DBAL\Types\Type::getType($type), $options);
+        $column = new Column($tableColumn['column_name'], \Doctrine\DBAL\Types\Type::getType($type), $options);
+        $column->setCaseMode($this->getCaseMode());
+        return $column;
     }
 
     protected function _getPortableTableForeignKeysList($tableForeignKeys)
@@ -212,11 +214,13 @@ class OracleSchemaManager extends AbstractSchemaManager
 
         $result = array();
         foreach($list AS $constraint) {
-            $result[] = new ForeignKeyConstraint(
+            $fk = new ForeignKeyConstraint(
                 array_values($constraint['local']), $constraint['foreignTable'],
                 array_values($constraint['foreign']),  $constraint['name'],
                 array('onDelete' => $constraint['onDelete'])
             );
+            $fk->setCaseMode($this->getCaseMode());
+            $result[] = $fk;
         }
 
         return $result;
@@ -225,7 +229,9 @@ class OracleSchemaManager extends AbstractSchemaManager
     protected function _getPortableSequenceDefinition($sequence)
     {
         $sequence = \array_change_key_case($sequence, CASE_LOWER);
-        return new Sequence($sequence['sequence_name'], $sequence['increment_by'], $sequence['min_value']);
+        $sequence = new Sequence($sequence['sequence_name'], $sequence['increment_by'], $sequence['min_value']);
+        $sequence->setCaseMode($this->getCaseMode());
+        return $sequence;
     }
 
     protected function _getPortableTableConstraintDefinition($tableConstraint)

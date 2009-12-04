@@ -51,10 +51,12 @@ class PostgreSqlSchemaManager extends AbstractSchemaManager
             $foreignTable = $values[2];
         }
 
-        return new ForeignKeyConstraint(
+        $fk = new ForeignKeyConstraint(
             $localColumns, $foreignTable, $foreignColumns, $tableForeignKey['conname'],
             array('onUpdate' => $onUpdate, 'onDelete' => $onDelete)
         );
+        $fk->setCaseMode($this->getCaseMode());
+        return $fk;
     }
 
     public function dropDatabase($database)
@@ -154,7 +156,9 @@ class PostgreSqlSchemaManager extends AbstractSchemaManager
     protected function _getPortableSequenceDefinition($sequence)
     {
         $data = $this->_conn->fetchAll('SELECT min_value, increment_by FROM '.$sequence['relname']);
-        return new Sequence($sequence['relname'], $data[0]['increment_by'], $data[0]['min_value']);
+        $sequence = new Sequence($sequence['relname'], $data[0]['increment_by'], $data[0]['min_value']);
+        $sequence->setCaseMode($this->getCaseMode());
+        return $sequence;
     }
 
     protected function _getPortableTableConstraintDefinition($tableConstraint)
@@ -330,6 +334,8 @@ class PostgreSqlSchemaManager extends AbstractSchemaManager
             ),
         );
 
-        return new Column($tableColumn['field'], \Doctrine\DBAL\Types\Type::getType($type), $options);
+        $column = new Column($tableColumn['field'], \Doctrine\DBAL\Types\Type::getType($type), $options);
+        $column->setCaseMode($this->getCaseMode());
+        return $column;
     }
 }

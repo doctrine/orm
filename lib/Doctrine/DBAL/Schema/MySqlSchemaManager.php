@@ -259,86 +259,23 @@ class MySqlSchemaManager extends AbstractSchemaManager
             $options['precision'] = $precision;
         }
 
-        return new Column($tableColumn['Field'], \Doctrine\DBAL\Types\Type::getType($type), $options);
+        $column = new Column($tableColumn['Field'], \Doctrine\DBAL\Types\Type::getType($type), $options);
+        $column->setCaseMode($this->getCaseMode());
+        return $column;
     }
 
     public function _getPortableTableForeignKeyDefinition($tableForeignKey)
     {
         $tableForeignKey = array_change_key_case($tableForeignKey, CASE_LOWER);
         
-        return new ForeignKeyConstraint(
+        $fk = new ForeignKeyConstraint(
             (array)$tableForeignKey['column_name'],
             $tableForeignKey['referenced_table_name'],
             (array)$tableForeignKey['referenced_column_name'],
             $tableForeignKey['constraint_name'],
             array()
         );
-    }
-    
-    /**
-     * {@inheritdoc}
-     */
-    public function createSequence($sequenceName, $start = 1, $allocationSize = 1)
-    {
-        $seqColumnName = 'mysql_sequence';
-
-        /* No support for options yet. Might add 4th options parameter later
-        $optionsStrings = array();
-         
-        if (isset($options['comment']) && ! empty($options['comment'])) {
-            $optionsStrings['comment'] = 'COMMENT = ' . $this->_conn->quote($options['comment'], 'string');
-        }
-
-        if (isset($options['charset']) && ! empty($options['charset'])) {
-            $optionsStrings['charset'] = 'DEFAULT CHARACTER SET ' . $options['charset'];
-
-            if (isset($options['collate'])) {
-                $optionsStrings['collate'] .= ' COLLATE ' . $options['collate'];
-            }
-        }
-        
-        $type = false;
-
-        if (isset($options['type'])) {
-            $type = $options['type'];
-        } else {
-            $type = $this->_conn->default_table_type;
-        }
-        if ($type) {
-            $optionsStrings[] = 'ENGINE = ' . $type;
-        }*/
-
-        try {
-            $query  = 'CREATE TABLE ' . $sequenceName
-                    . ' (' . $seqcolName . ' INT NOT NULL AUTO_INCREMENT, PRIMARY KEY ('
-                    . $seqcolName . '))';
-
-            /*if (!empty($options_strings)) {
-                $query .= ' '.implode(' ', $options_strings);
-            }*/
-            $query .= ' ENGINE = INNODB';
-
-            $res = $this->_conn->exec($query);
-        } catch(Doctrine\DBAL\ConnectionException $e) {
-            throw \Doctrine\Common\DoctrineException::createSequenceFailed($query);
-        }
-
-        if ($start == 1) {
-            return;
-        }
-
-        $query = 'INSERT INTO ' . $sequenceName
-                . ' (' . $seqcolName . ') VALUES (' . ($start - 1) . ')';
-
-        $res = $this->_conn->exec($query);
-
-        // Handle error
-        try {
-            $res = $this->_conn->exec('DROP TABLE ' . $sequenceName);
-        } catch (\Exception $e) {
-            throw \Doctrine\Common\DoctrineException::couldNotDropSequenceTable($sequenceName);
-        }
-    
-        return $res;
+        $fk->setCaseMode($this->getCaseMode());
+        return $fk;
     }
 }

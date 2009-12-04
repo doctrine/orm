@@ -8,7 +8,18 @@ use Doctrine\ORM\Tools\Export\ClassMetadataExporter;
 
 class DatabaseDriverTest extends \Doctrine\Tests\OrmFunctionalTestCase
 {
+    /**
+     * @var \Doctrine\DBAL\Schema\AbstractSchemaManager
+     */
     protected $_sm = null;
+
+    public function setUp()
+    {
+        parent::setUp();
+
+        $this->_sm = $this->_em->getConnection()->getSchemaManager();
+        $this->_sm->setCaseMode("lower");
+    }
 
     public function testCreateSimpleYamlFromDatabase()
     {
@@ -17,7 +28,6 @@ class DatabaseDriverTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $table->setPrimaryKey(array('id'));
         $table->createColumn('bar', 'string', array('length' => 200));
 
-        $this->_sm = $this->_em->getConnection()->getSchemaManager();
         $this->_sm->dropAndCreateTable($table);
 
         $this->assertClassMetadataYamlEqualsFile(__DIR__."/DatabaseDriver/simpleYaml.yml", "DbdriverFoo");
