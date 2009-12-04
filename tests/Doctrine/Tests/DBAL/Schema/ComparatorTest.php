@@ -471,4 +471,43 @@ class ComparatorTest extends \PHPUnit_Framework_TestCase
         $this->assertType('Doctrine\DBAL\Schema\TableDiff', $tableDiff);
         $this->assertEquals(1, count($tableDiff->changedForeignKeys));
     }
+
+    public function testTablesCaseInsensitive()
+    {
+        $schemaA = new Schema();
+        $schemaA->createTable('foo');
+        $schemaA->createTable('bAr');
+        $schemaA->createTable('BAZ');
+        $schemaA->createTable('new');
+
+        $schemaB = new Schema();
+        $schemaB->createTable('FOO');
+        $schemaB->createTable('bar');
+        $schemaB->createTable('Baz');
+        $schemaB->createTable('old');
+
+        $c = new Comparator();
+        $diff = $c->compare($schemaA, $schemaB);
+
+        $this->assertSchemaTableChangeCount($diff, 1, 0, 1);
+    }
+
+    public function testSequencesCaseInsenstive()
+    {
+        
+    }
+
+    /**
+     *
+     * @param SchemaDiff $diff
+     * @param int $newTableCount
+     * @param int $changeTableCount
+     * @param int $removeTableCount
+     */
+    public function assertSchemaTableChangeCount($diff, $newTableCount=0, $changeTableCount=0, $removeTableCount=0)
+    {
+        $this->assertEquals($newTableCount, count($diff->newTables));
+        $this->assertEquals($changeTableCount, count($diff->changedTables));
+        $this->assertEquals($removeTableCount, count($diff->removedTables));
+    }
 }

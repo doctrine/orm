@@ -38,6 +38,20 @@ class TableTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(2, count($table->getColumns()));
     }
 
+    public function testColumnsCaseInsensitive()
+    {
+        $table = new Table("foo");
+        $column = $table->createColumn('Foo', 'integer');
+
+        $this->assertTrue($table->hasColumn('Foo'));
+        $this->assertTrue($table->hasColumn('foo'));
+        $this->assertTrue($table->hasColumn('FOO'));
+
+        $this->assertSame($column, $table->getColumn('Foo'));
+        $this->assertSame($column, $table->getColumn('foo'));
+        $this->assertSame($column, $table->getColumn('FOO'));
+    }
+
     public function testCreateColumn()
     {
         $type = Type::getType('integer');
@@ -91,11 +105,25 @@ class TableTest extends \PHPUnit_Framework_TestCase
         $type = \Doctrine\DBAL\Types\Type::getType('integer');
         $columns = array(new Column("foo", $type), new Column("bar", $type), new Column("baz", $type));
         $table = new Table("foo", $columns);
+        
         $table->addIndex(array("foo", "bar", "baz"));
         $table->addUniqueIndex(array("foo", "bar", "baz"));
 
         $this->assertTrue($table->hasIndex("foo_bar_baz_idx"));
         $this->assertTrue($table->hasIndex("foo_bar_baz_uniq"));
+    }
+
+    public function testIndexCaseInsensitive()
+    {
+        $type = \Doctrine\DBAL\Types\Type::getType('integer');
+        $columns = array(new Column("foo", $type), new Column("bar", $type), new Column("baz", $type));
+        $table = new Table("foo", $columns);
+
+        $table->addIndex(array("foo", "bar", "baz"), "Foo_Idx");
+
+        $this->assertTrue($table->hasIndex('foo_idx'));
+        $this->assertTrue($table->hasIndex('Foo_Idx'));
+        $this->assertTrue($table->hasIndex('FOO_IDX'));
     }
 
     public function testAddIndexes()

@@ -26,6 +26,19 @@ class SchemaTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($schema->hasTable($tableName));
     }
 
+    public function testTableMatchingCaseInsenstive()
+    {
+        $table = new Table("Foo");
+
+        $schema = new Schema(array($table));
+        $this->assertTrue($schema->hasTable("foo"));
+        $this->assertTrue($schema->hasTable("FOO"));
+
+        $this->assertSame($table, $schema->getTable('FOO'));
+        $this->assertSame($table, $schema->getTable('foo'));
+        $this->assertSame($table, $schema->getTable('Foo'));
+    }
+
     public function testGetUnknownTableThrowsException()
     {
         $this->setExpectedException("Doctrine\DBAL\Schema\SchemaException");
@@ -95,6 +108,20 @@ class SchemaTest extends \PHPUnit_Framework_TestCase
 
         $sequences = $schema->getSequences();
         $this->assertArrayHasKey('a_seq', $sequences);
+    }
+
+    public function testSequenceAccessCaseInsensitive()
+    {
+        $sequence = new Sequence("a_Seq");
+
+        $schema = new Schema(array(), array($sequence));
+        $this->assertTrue($schema->hasSequence('a_seq'));
+        $this->assertTrue($schema->hasSequence('a_Seq'));
+        $this->assertTrue($schema->hasSequence('A_SEQ'));
+
+        $this->assertEquals($sequence, $schema->getSequence('a_seq'));
+        $this->assertEquals($sequence, $schema->getSequence('a_Seq'));
+        $this->assertEquals($sequence, $schema->getSequence('A_SEQ'));
     }
 
     public function testGetUnknownSequenceThrowsException()
