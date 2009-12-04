@@ -45,11 +45,6 @@ abstract class AbstractAsset
     protected $_name;
 
     /**
-     * @var int
-     */
-    protected $_caseMode = self::CASE_KEEP;
-
-    /**
      * Set name of this asset
      *
      * @param string $name
@@ -66,7 +61,7 @@ abstract class AbstractAsset
      */
     public function getName()
     {
-        return $this->_foldIdentifier($this->_name);
+        return $this->_name;
     }
 
     /**
@@ -90,48 +85,5 @@ abstract class AbstractAsset
         }, $columnNames);
         $parts[] = $postfix;
         return trim(implode("_", $parts), '_');
-    }
-
-    /**
-     * Set the case mode of this asset.
-     * 
-     * @param  string $caseMode
-     * @return void
-     */
-    public function setCaseMode($caseMode)
-    {
-        if (!in_array($caseMode, array(self::CASE_KEEP, self::CASE_LOWER, self::CASE_UPPER))) {
-            throw SchemaException::invalidCaseModeGiven($caseMode);
-        }
-        $this->_caseMode = $caseMode;
-    }
-
-    /**
-     * Fold the case of the identifier based on the CASE_* constants.
-     *
-     * This has never to be applied on write operation, only on read! This ensures that you can change
-     * the case at any point. For the keys of arrays however we always store them in lower-case which
-     * makes it easy to access them. This affects the maps in Schema and Table instances.
-     *
-     * @param  string $identifier
-     * @return string
-     */
-    protected function _foldIdentifier($identifier)
-    {
-        if ($this->_caseMode == self::CASE_UPPER) {
-            return strtoupper($identifier);
-        } else if ($this->_caseMode == self::CASE_LOWER) {
-            return strtolower($identifier);
-        }
-        return $identifier;
-    }
-
-    /**
-     * @param  array $identifiers
-     * @return array
-     */
-    protected function _foldIdentifiers($identifiers)
-    {
-        return array_map(array($this, '_foldIdentifier'), $identifiers);
     }
 }

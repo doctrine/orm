@@ -255,8 +255,6 @@ class SqliteSchemaManager extends AbstractSchemaManager
             ),
         );
 
-        $column = new Column($tableColumn['name'], \Doctrine\DBAL\Types\Type::getType($type), $options);
-        $column->setCaseMode($this->getCaseMode());
-        return $column;
+        return new Column($tableColumn['name'], \Doctrine\DBAL\Types\Type::getType($type), $options);
     }
 }

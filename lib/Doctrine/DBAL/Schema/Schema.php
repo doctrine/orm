@@ -65,8 +65,6 @@ class Schema extends AbstractAsset
      */
     protected function _addTable(Table $table)
     {
-        $table->setCaseMode($this->_caseMode);
-        
         $tableName = strtolower($table->getName());
         if(isset($this->_tables[$tableName])) {
             throw SchemaException::tableAlreadyExists($tableName);
@@ -80,8 +78,6 @@ class Schema extends AbstractAsset
      */
     protected function _addSequence(Sequence $sequence)
     {
-        $sequence->setCaseMode($this->_caseMode);
-
         $seqName = strtolower($sequence->getName());
         if (isset($this->_sequences[$seqName])) {
             throw SchemaException::sequenceAlreadyExists($seqName);

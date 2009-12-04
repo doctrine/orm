@@ -337,8 +337,6 @@ class Table extends AbstractAsset
      */
     protected function _addColumn(Column $column)
     {
-        $column->setCaseMode($this->_caseMode);
-
         $columnName = $column->getName();
         $columnName = strtolower($columnName);
 
@@ -357,8 +355,6 @@ class Table extends AbstractAsset
      */
     protected function _addIndex(Index $index)
     {
-        $index->setCaseMode($this->_caseMode);
-
         $indexName = $index->getName();
         $indexName = strtolower($indexName);
 
@@ -379,8 +375,6 @@ class Table extends AbstractAsset
      */
     protected function _addForeignKeyConstraint(ForeignKeyConstraint $constraint)
     {
-        $constraint->setCaseMode($this->_caseMode);
-
         if(strlen($constraint->getName())) {
             $name = $constraint->getName();
         } else {

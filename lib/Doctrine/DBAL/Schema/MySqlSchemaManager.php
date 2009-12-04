@@ -259,23 +259,19 @@ class MySqlSchemaManager extends AbstractSchemaManager
             $options['precision'] = $precision;
         }
 
-        $column = new Column($tableColumn['Field'], \Doctrine\DBAL\Types\Type::getType($type), $options);
-        $column->setCaseMode($this->getCaseMode());
-        return $column;
+        return new Column($tableColumn['Field'], \Doctrine\DBAL\Types\Type::getType($type), $options);
     }
 
     public function _getPortableTableForeignKeyDefinition($tableForeignKey)
     {
         $tableForeignKey = array_change_key_case($tableForeignKey, CASE_LOWER);
         
-        $fk = new ForeignKeyConstraint(
+        return new ForeignKeyConstraint(
             (array)$tableForeignKey['column_name'],
             $tableForeignKey['referenced_table_name'],
             (array)$tableForeignKey['referenced_column_name'],
             $tableForeignKey['constraint_name'],
             array()
         );
-        $fk->setCaseMode($this->getCaseMode());
-        return $fk;
     }
 }

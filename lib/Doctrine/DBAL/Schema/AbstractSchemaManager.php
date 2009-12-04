@@ -56,11 +56,6 @@ abstract class AbstractSchemaManager
     protected $_platform;
 
     /**
-     * @var string
-     */
-    protected $_caseMode = AbstractAsset::CASE_KEEP;
-
-    /**
      * Constructor. Accepts the Connection instance to manage the schema for
      *
      * @param \Doctrine\DBAL\Connection $conn
@@ -69,22 +64,6 @@ abstract class AbstractSchemaManager
     {
         $this->_conn = $conn;
         $this->_platform = $this->_conn->getDatabasePlatform();
-    }
-
-    /**
-     * @param string $caseMode
-     */
-    public function setCaseMode($caseMode)
-    {
-        $this->_caseMode = $caseMode;
-    }
-
-    /**
-     * @return string
-     */
-    public function getCaseMode()
-    {
-        return $this->_caseMode;
     }
 
     /**
@@ -288,9 +267,7 @@ abstract class AbstractSchemaManager
                 }
             }
 
-            $table = new Table($tableName, $columns, $indexes, $foreignKeys, $idGeneratorType, array());
-            $table->setCaseMode($this->_caseMode);
-            $tables[] = $table;
+            $tables[] = new Table($tableName, $columns, $indexes, $foreignKeys, $idGeneratorType, array());
         }
 
         return $tables;
@@ -928,7 +905,6 @@ abstract class AbstractSchemaManager
         $indexes = array();
         foreach($result AS $indexKey => $data) {
             $indexes[$indexKey] = new Index($data['name'], $data['columns'], $data['unique'], $data['primary']);
-            $indexes[$indexKey]->setCaseMode($this->_caseMode);
         }
 
         return $indexes;
@@ -1018,9 +994,6 @@ abstract class AbstractSchemaManager
         }
         $tables = $this->listTables();
 
-        $schema = new Schema($tables, $sequences);
-        $schema->setCaseMode($this->_caseMode);
-        
-        return $schema;
+        return new Schema($tables, $sequences);
     }
 }

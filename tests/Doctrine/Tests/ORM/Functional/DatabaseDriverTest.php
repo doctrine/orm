@@ -18,7 +18,6 @@ class DatabaseDriverTest extends \Doctrine\Tests\OrmFunctionalTestCase
         parent::setUp();
 
         $this->_sm = $this->_em->getConnection()->getSchemaManager();
-        $this->_sm->setCaseMode("lower");
     }
 
     public function testCreateSimpleYamlFromDatabase()
