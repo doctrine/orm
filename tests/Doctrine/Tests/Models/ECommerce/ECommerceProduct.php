@@ -10,7 +10,7 @@ use Doctrine\Common\Collections\ArrayCollection;
  *
  * @author Giorgio Sironi
  * @Entity
- * @Table(name="ecommerce_products")
+ * @Table(name="ecommerce_products",indexes={@index(name="name_idx", columns={"name"})})
  */
 class ECommerceProduct
 {

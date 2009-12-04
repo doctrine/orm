@@ -194,7 +194,7 @@ class SchemaTool
             
             if (isset($class->primaryTable['indexes'])) {
                 foreach ($class->primaryTable['indexes'] AS $indexName => $indexData) {
-                    $table->addIndex($indexData, $indexName);
+                    $table->addIndex($indexData['columns'], $indexName);
                 }
             }
             
