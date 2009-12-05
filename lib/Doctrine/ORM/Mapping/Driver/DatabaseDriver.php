@@ -82,7 +82,7 @@ class DatabaseDriver implements Driver
         foreach ($columns as $column) {
             // Skip columns that are foreign keys
             foreach ($foreignKeys as $foreignKey) {
-                if (in_array($column->getName(), $foreignKey->getColumns())) {
+                if (in_array(strtolower($column->getName()), array_map('strtolower', $foreignKey->getColumns()))) {
                     continue(2);
                 }
             }
@@ -142,7 +142,7 @@ class DatabaseDriver implements Driver
             $foreignColumn = current($foreignKey->getForeignColumns());
 
             $associationMapping = array();
-            $associationMapping['fieldName'] = Inflector::camelize(str_replace('_id', '', $localColumn));
+            $associationMapping['fieldName'] = Inflector::camelize(str_ireplace('_id', '', $localColumn));
             $associationMapping['columnName'] = $localColumn;
             $associationMapping['targetEntity'] = Inflector::classify($foreignKey->getForeignTableName());
             $associationMapping['joinColumns'][] = array(

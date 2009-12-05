@@ -29,25 +29,21 @@ class DatabaseDriverTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $this->_sm->dropAndCreateTable($table);
 
-        $this->assertClassMetadataYamlEqualsFile(__DIR__."/DatabaseDriver/simpleYaml.yml", "DbdriverFoo");
-    }
+        $metadata = $this->extractClassMetadata("DbdriverFoo");
 
-    protected function assertClassMetadataYamlEqualsFile($file, $className)
-    {
-        $cm = new ClassMetadataExporter();
-        $cm->addMappingSource($this->_sm, 'database');
-        $exporter = $cm->getExporter('yaml');
-        $metadatas = $cm->getMetadatasForMappingSources();
+        $this->assertArrayHasKey('id',          $metadata->fieldMappings);
+        $this->assertEquals('id',               $metadata->fieldMappings['id']['fieldName']);
+        $this->assertEquals('id',               strtolower($metadata->fieldMappings['id']['columnName']));
+        $this->assertEquals('integer',          (string)$metadata->fieldMappings['id']['type']);
+        $this->assertEquals('',                 $metadata->fieldMappings['id']['default']);
+        $this->assertTrue($metadata->fieldMappings['id']['notnull']);
 
-        $output = false;
-        foreach ($metadatas AS $metadata) {
-            if ($metadata->name == $className) {
-                $output = $exporter->exportClassMetadata($metadata);
-            }
-        }
-        
-        $this->assertTrue($output!==false, "No class matching the name '".$className."' was found!");
-        $this->assertEquals(strtolower(trim(file_get_contents($file))), strtolower(trim($output)));
+        $this->assertArrayHasKey('bar',         $metadata->fieldMappings);
+        $this->assertEquals('bar',              $metadata->fieldMappings['bar']['fieldName']);
+        $this->assertEquals('bar',              strtolower($metadata->fieldMappings['bar']['columnName']));
+        $this->assertEquals('string',           (string)$metadata->fieldMappings['bar']['type']);
+        $this->assertEquals(200,                $metadata->fieldMappings['bar']['length']);
+        $this->assertTrue($metadata->fieldMappings['bar']['notnull']);
     }
 
     public function testCreateYamlWithForeignKeyFromDatabase()
@@ -60,8 +56,7 @@ class DatabaseDriverTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $tableB->createColumn('id', 'integer');
         $tableB->setPrimaryKey(array('id'));
 
-        $sm = $this->_em->getConnection()->getSchemaManager();
-        $sm->dropAndCreateTable($tableB);
+        $this->_sm->dropAndCreateTable($tableB);
 
         $tableA = new \Doctrine\DBAL\Schema\Table("dbdriver_baz");
         $tableA->createColumn('id', 'integer');
@@ -69,9 +64,39 @@ class DatabaseDriverTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $tableA->createColumn('bar_id', 'integer');
         $tableA->addForeignKeyConstraint('dbdriver_bar', array('bar_id'), array('id'));
 
-        $this->_sm = $this->_em->getConnection()->getSchemaManager();
         $this->_sm->dropAndCreateTable($tableA);
 
-        $this->assertClassMetadataYamlEqualsFile(__DIR__."/DatabaseDriver/fkYaml.yml", "DbdriverBaz");
+        $metadata = $this->extractClassMetadata("DbdriverBaz");
+
+        $this->assertArrayNotHasKey('bar', $metadata->fieldMappings);
+        $this->assertArrayHasKey('id', $metadata->fieldMappings);
+
+        $metadata->associationMappings = \array_change_key_case($metadata->associationMappings, \CASE_LOWER);
+
+        $this->assertArrayHasKey('bar', $metadata->associationMappings);
+        $this->assertType('Doctrine\ORM\Mapping\OneToOneMapping', $metadata->associationMappings['bar']);
+    }
+
+
+    /**
+     *
+     * @param  string $className
+     * @return ClassMetadata
+     */
+    protected function extractClassMetadata($className)
+    {
+        $cm = new ClassMetadataExporter();
+        $cm->addMappingSource($this->_sm, 'database');
+        $exporter = $cm->getExporter('yaml');
+        $metadatas = $cm->getMetadatasForMappingSources();
+
+        $output = false;
+        foreach ($metadatas AS $metadata) {
+            if ($metadata->name == $className) {
+                return $metadata;
+            }
+        }
+
+        $this->fail("No class matching the name '".$className."' was found!");
     }
 }
