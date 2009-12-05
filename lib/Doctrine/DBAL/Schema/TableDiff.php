@@ -35,6 +35,16 @@ namespace Doctrine\DBAL\Schema;
 class TableDiff
 {
     /**
+     * @var string
+     */
+    public $name = null;
+
+    /**
+     * @var string
+     */
+    public $newName = false;
+
+    /**
      * All added fields
      *
      * @var array(string=>Column)
@@ -114,10 +124,11 @@ class TableDiff
      * @param array(string=>Index) $changedIndexes
      * @param array(string=>bool)             $removedIndexes
      */
-    function __construct( $addedColumns = array(), $changedColumns = array(),
+    function __construct( $tableName, $addedColumns = array(), $changedColumns = array(),
             $removedColumns = array(), $addedIndexes = array(), $changedIndexes =
             array(), $removedIndexes = array() )
     {
+        $this->name = $tableName;
         $this->addedColumns = $addedColumns;
         $this->changedColumns = $changedColumns;
         $this->removedColumns = $removedColumns;

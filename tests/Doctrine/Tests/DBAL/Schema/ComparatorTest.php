@@ -152,7 +152,7 @@ class ComparatorTest extends \PHPUnit_Framework_TestCase
 
         $expected = new SchemaDiff ( array(),
             array (
-                'bugdb' => new TableDiff( array(), array(),
+                'bugdb' => new TableDiff( 'bugdb', array(), array(),
                     array (
                         'integerfield1' => $missingColumn,
                     )
@@ -182,7 +182,7 @@ class ComparatorTest extends \PHPUnit_Framework_TestCase
 
         $expected = new SchemaDiff ( array(),
             array (
-                'bugdb' => new TableDiff (
+                'bugdb' => new TableDiff ('bugdb',
                     array (
                         'integerfield2' => new Column('integerfield2', Type::getType('integer')),
                     )
@@ -198,8 +198,8 @@ class ComparatorTest extends \PHPUnit_Framework_TestCase
         $column2 = new Column('charfield1', Type::getType('integer'));
 
         $c = new Comparator();
-        $this->assertTrue($c->diffColumn($column1, $column2));
-        $this->assertFalse($c->diffColumn($column1, $column1));
+        $this->assertEquals(array('type'), $c->diffColumn($column1, $column2));
+        $this->assertEquals(array(), $c->diffColumn($column1, $column1));
     }
 
     public function testCompareRemovedIndex()
@@ -231,7 +231,7 @@ class ComparatorTest extends \PHPUnit_Framework_TestCase
 
         $expected = new SchemaDiff ( array(),
             array (
-                'bugdb' => new TableDiff( array(), array(), array(), array(), array(),
+                'bugdb' => new TableDiff( 'bugdb', array(), array(), array(), array(), array(),
                     array (
                         'primary' => true
                     )
@@ -270,7 +270,7 @@ class ComparatorTest extends \PHPUnit_Framework_TestCase
 
         $expected = new SchemaDiff ( array(),
             array (
-                'bugdb' => new TableDiff( array(), array(), array(),
+                'bugdb' => new TableDiff( 'bugdb', array(), array(), array(),
                     array (
                         'primary' => new Index('primary',
                             array(
@@ -320,7 +320,7 @@ class ComparatorTest extends \PHPUnit_Framework_TestCase
 
         $expected = new SchemaDiff ( array(),
             array (
-                'bugdb' => new TableDiff( array(), array(), array(), array(),
+                'bugdb' => new TableDiff( 'bugdb', array(), array(), array(), array(),
                     array (
                         'primary' => new Index('primary',
                             array(
@@ -364,7 +364,7 @@ class ComparatorTest extends \PHPUnit_Framework_TestCase
 
         $expected = new SchemaDiff ( array(),
             array (
-                'bugdb' => new TableDiff( array(), array(), array(), array(),
+                'bugdb' => new TableDiff('bugdb', array(), array(), array(), array(),
                     array (
                         'primary' => new Index('primary', array('integerfield2', 'integerfield1'), true)
                     )

@@ -142,7 +142,7 @@ class Comparator
     public function diffTable( Table $table1, Table $table2 )
     {
         $changes = 0;
-        $tableDifferences = new TableDiff();
+        $tableDifferences = new TableDiff($table1->getName());
 
         $table1Columns = $table1->getColumns();
         $table2Columns = $table2->getColumns();
@@ -164,8 +164,10 @@ class Comparator
         /* See if there are any changed fieldDefinitioninitions */
         foreach ( $table1Columns as $columnName => $column ) {
             if ( $table2->hasColumn($columnName) ) {
-                if ( $this->diffColumn( $column, $table2->getColumn($columnName) ) ) {
-                    $tableDifferences->changedColumns[$column->getName()] = $table2->getColumn($columnName);
+                $changedProperties = $this->diffColumn( $column, $table2->getColumn($columnName) );
+                if (count($changedProperties) ) {
+                    $columnDiff = new ColumnDiff($table2->getColumn($columnName), $changedProperties);
+                    $tableDifferences->changedColumns[$column->getName()] = $columnDiff;
                     $changes++;
                 }
             }
@@ -174,7 +176,7 @@ class Comparator
         // Try to find columns that only changed their name, rename operations maybe cheaper than add/drop
         foreach ($tableDifferences->addedColumns AS $addedColumnName => $addedColumn) {
             foreach ($tableDifferences->removedColumns AS $removedColumnName => $removedColumn) {
-                if ($this->diffColumn($addedColumn, $removedColumn) === false) {
+                if (count($this->diffColumn($addedColumn, $removedColumn)) == 0) {
                     $tableDifferences->renamedColumns[$removedColumn->getName()] = $addedColumn;
                     unset($tableDifferences->addedColumns[$addedColumnName]);
                     unset($tableDifferences->removedColumns[$removedColumnName]);
@@ -286,56 +288,57 @@ class Comparator
      * @param Column $column1
      * @param Column $column2
      *
-     * @return bool
+     * @return array
      */
     public function diffColumn( Column $column1, Column $column2 )
     {
+        $changedProperties = array();
         if ( $column1->getType() != $column2->getType() ) {
-            return true;
+            $changedProperties[] = 'type';
         }
 
         if ($column1->getNotnull() != $column2->getNotnull()) {
-            return true;
+            $changedProperties[] = 'notnull';
         }
 
         if ($column1->getDefault() != $column2->getDefault()) {
-            return true;
+            $changedProperties[] = 'default';
         }
 
         if ($column1->getUnsigned() != $column2->getUnsigned()) {
-            return true;
+            $changedProperties[] = 'unsigned';
         }
 
         if ($column1->getType() instanceof \Doctrine\DBAL\Types\StringType) {
             if ($column1->getLength() != $column2->getLength()) {
-                return true;
+                $changedProperties[] = 'length';
             }
 
             if ($column1->getFixed() != $column2->getFixed()) {
-                return true;
+                $changedProperties[] = 'fixed';
             }
         }
 
         if ($column1->getType() instanceof \Doctrine\DBAL\Types\DecimalType) {
             if ($column1->getPrecision() != $column2->getPrecision()) {
-                return true;
+                $changedProperties[] = 'precision';
             }
             if ($column1->getScale() != $column2->getScale()) {
-                return true;
+                $changedProperties[] = 'scale';
             }
         }
 
         foreach ($this->_checkColumnPlatformOptions AS $optionName) {
-            if ($column1->hasPlatformOption($optionName) != $column2->hasPlatformOption($optionName)) {
-                return true;
-            }
-
-            if ($column1->getPlatformOption($optionName) != $column2->getPlatformOption($optionName)) {
-                return true;
+            if($column1->hasPlatformOption($optionName) && $column2->hasPlatformOption($optionName)) {
+                if ($column1->getPlatformOption($optionName) != $column2->getPlatformOption($optionName)) {
+                    $changedProperties[] = $optionName;
+                }
+            } else if ($column1->hasPlatformOption($optionName) != $column2->hasPlatformOption($optionName)) {
+                $changedProperties[] = $optionName;
             }
         }
 
-        return false;
+        return $changedProperties;
     }
 
     /**
