@@ -494,11 +494,71 @@ class ComparatorTest extends \PHPUnit_Framework_TestCase
 
     public function testSequencesCaseInsenstive()
     {
+        $schemaA = new Schema();
+        $schemaA->createSequence('foo');
+        $schemaA->createSequence('BAR');
+        $schemaA->createSequence('Baz');
+        $schemaA->createSequence('new');
+
+        $schemaB = new Schema();
+        $schemaB->createSequence('FOO');
+        $schemaB->createSequence('Bar');
+        $schemaB->createSequence('baz');
+        $schemaB->createSequence('old');
         
+        $c = new Comparator();
+        $diff = $c->compare($schemaA, $schemaB);
+
+        $this->assertSchemaSequenceChangeCount($diff, 1, 0, 1);
+    }
+
+    public function testCompareColumnCompareCaseInsensitive()
+    {
+        $tableA = new Table("foo");
+        $tableA->createColumn('id', 'integer');
+
+        $tableB = new Table("foo");
+        $tableB->createColumn('ID', 'integer');
+
+        $c = new Comparator();
+        $tableDiff = $c->diffTable($tableA, $tableB);
+
+        $this->assertFalse($tableDiff);
+    }
+
+    public function testCompareIndexBasedOnPropertiesNotName()
+    {
+        $tableA = new Table("foo");
+        $tableA->createColumn('id', 'integer');
+        $tableA->addIndex(array("id"), "foo_bar_idx");
+
+        $tableB = new Table("foo");
+        $tableB->createColumn('ID', 'integer');
+        $tableB->addIndex(array("id"), "bar_foo_idx");
+
+        $c = new Comparator();
+        $tableDiff = $c->diffTable($tableA, $tableB);
+
+        $this->assertFalse($tableDiff);
+    }
+
+    public function testCompareForeignKeyBasedOnPropertiesNotName()
+    {
+        $tableA = new Table("foo");
+        $tableA->createColumn('id', 'integer');
+        $tableA->addNamedForeignKeyConstraint('foo_constraint', 'bar', array('id'), array('id'));
+
+        $tableB = new Table("foo");
+        $tableB->createColumn('ID', 'integer');
+        $tableB->addNamedForeignKeyConstraint('bar_constraint', 'bar', array('id'), array('id'));
+
+        $c = new Comparator();
+        $tableDiff = $c->diffTable($tableA, $tableB);
+
+        $this->assertFalse($tableDiff);
     }
 
     /**
-     *
      * @param SchemaDiff $diff
      * @param int $newTableCount
      * @param int $changeTableCount
@@ -509,5 +569,18 @@ class ComparatorTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($newTableCount, count($diff->newTables));
         $this->assertEquals($changeTableCount, count($diff->changedTables));
         $this->assertEquals($removeTableCount, count($diff->removedTables));
+    }
+
+    /**
+     * @param SchemaDiff $diff
+     * @param int $newSequenceCount
+     * @param int $changeSequenceCount
+     * @param int $changeSequenceCount
+     */
+    public function assertSchemaSequenceChangeCount($diff, $newSequenceCount=0, $changeSequenceCount=0, $removeSequenceCount=0)
+    {
+        $this->assertEquals($newSequenceCount, count($diff->newSequences), "Expected number of new sequences is wrong.");
+        $this->assertEquals($changeSequenceCount, count($diff->changedSequences), "Expected number of changed sequences is wrong.");
+        $this->assertEquals($removeSequenceCount, count($diff->removedSequences), "Expected number of removed sequences is wrong.");
     }
 }

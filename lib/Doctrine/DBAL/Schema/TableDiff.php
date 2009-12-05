@@ -37,23 +37,23 @@ class TableDiff
     /**
      * All added fields
      *
-     * @var array(string=>ezcDbSchemaField)
+     * @var array(string=>Column)
      */
-    public $addedFields;
+    public $addedColumns;
 
     /**
      * All changed fields
      *
      * @var array(string=>Column)
      */
-    public $changedFields = array();
+    public $changedColumns = array();
 
     /**
      * All removed fields
      *
      * @var array(string=>bool)
      */
-    public $removedFields = array();
+    public $removedColumns = array();
 
     /**
      * All added indexes
@@ -100,20 +100,20 @@ class TableDiff
     /**
      * Constructs an TableDiff object.
      *
-     * @param array(string=>Column) $addedFields
-     * @param array(string=>Column) $changedFields
-     * @param array(string=>bool)             $removedFields
+     * @param array(string=>Column) $addedColumns
+     * @param array(string=>Column) $changedColumns
+     * @param array(string=>bool)             $removedColumns
      * @param array(string=>Index) $addedIndexes
      * @param array(string=>Index) $changedIndexes
      * @param array(string=>bool)             $removedIndexes
      */
-    function __construct( $addedFields = array(), $changedFields = array(),
-            $removedFields = array(), $addedIndexes = array(), $changedIndexes =
+    function __construct( $addedColumns = array(), $changedColumns = array(),
+            $removedColumns = array(), $addedIndexes = array(), $changedIndexes =
             array(), $removedIndexes = array() )
     {
-        $this->addedFields = $addedFields;
-        $this->changedFields = $changedFields;
-        $this->removedFields = $removedFields;
+        $this->addedColumns = $addedColumns;
+        $this->changedColumns = $changedColumns;
+        $this->removedColumns = $removedColumns;
         $this->addedIndexes = $addedIndexes;
         $this->changedIndexes = $changedIndexes;
         $this->removedIndexes = $removedIndexes;

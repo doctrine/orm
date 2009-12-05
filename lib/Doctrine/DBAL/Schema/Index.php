@@ -102,6 +102,8 @@ class Index extends AbstractAsset implements Constraint
      */
     public function hasColumnAtPosition($columnName, $pos=0)
     {
-        return \array_search($columnName, $this->getColumns()) === $pos;
+        $columnName = strtolower($columnName);
+        $indexColumns = \array_map('strtolower', $this->getColumns());
+        return \array_search($columnName, $indexColumns) === $pos;
     }
 }

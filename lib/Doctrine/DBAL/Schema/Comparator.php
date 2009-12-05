@@ -147,14 +147,14 @@ class Comparator
         /* See if all the fields in table 1 exist in table 2 */
         foreach ( $table2->getColumns() as $columnName => $column ) {
             if ( !$table1->hasColumn($columnName) ) {
-                $tableDifferences->addedFields[$columnName] = $column;
+                $tableDifferences->addedColumns[$columnName] = $column;
                 $changes++;
             }
         }
         /* See if there are any removed fields in table 2 */
         foreach ( $table1->getColumns() as $columnName => $column ) {
             if ( !$table2->hasColumn($columnName) ) {
-                $tableDifferences->removedFields[$columnName] = true;
+                $tableDifferences->removedColumns[$columnName] = true;
                 $changes++;
             }
         }
@@ -162,7 +162,7 @@ class Comparator
         foreach ( $table1->getColumns() as $columnName => $column ) {
             if ( $table2->hasColumn($columnName) ) {
                 if ( $this->diffColumn( $column, $table2->getColumn($columnName) ) ) {
-                    $tableDifferences->changedFields[$columnName] = $table2->getColumn($columnName);
+                    $tableDifferences->changedColumns[$columnName] = $table2->getColumn($columnName);
                     $changes++;
                 }
             }
@@ -171,49 +171,59 @@ class Comparator
         $table1Indexes = $table1->getIndexes();
         $table2Indexes = $table2->getIndexes();
 
-        /* See if all the indexes in table 1 exist in table 2 */
-        foreach ( $table2Indexes as $indexName => $indexDefinition ) {
-            if ( !isset( $table1Indexes[$indexName] ) ) {
-                $tableDifferences->addedIndexes[$indexName] = $indexDefinition;
-                $changes++;
-            }
-        }
-        /* See if there are any removed indexes in table 2 */
-        foreach ( $table1Indexes as $indexName => $indexDefinition ) {
-            if ( !isset( $table2Indexes[$indexName] ) ) {
-                $tableDifferences->removedIndexes[$indexName] = true;
-                $changes++;
-            }
-        }
-        /* See if there are any changed indexDefinitions */
-        foreach ( $table1Indexes as $indexName => $indexDefinition ) {
-            if ( isset( $table2Indexes[$indexName] ) ) {
-                if ( $this->diffIndex( $indexDefinition, $table2Indexes[$indexName] ) ) {
-                    $tableDifferences->changedIndexes[$indexName] = $table2Indexes[$indexName];
-                    $changes++;
+        foreach ($table2Indexes AS $index2Name => $index2Definition) {
+            foreach ($table1Indexes AS $index1Name => $index1Definition) {
+                if ($this->diffIndex($index1Definition, $index2Definition) === false) {
+                    unset($table1Indexes[$index1Name]);
+                    unset($table2Indexes[$index2Name]);
+                } else {
+                    if ($index1Name == $index2Name) {
+                        $tableDifferences->changedIndexes[$index2Name] = $table2Indexes[$index2Name];
+                        unset($table1Indexes[$index1Name]);
+                        unset($table2Indexes[$index2Name]);
+                        $changes++;
+                    }
                 }
             }
         }
 
-        foreach ($table2->getForeignKeys() AS $constraint) {
-            $fkName = $constraint->getName();
-            if (!$table1->hasForeignKey($fkName)) {
-                $tableDifferences->addedForeignKeys[$fkName] = $constraint;
-                $changes++;
-            } else {
-                if ($this->diffForeignKey($constraint, $table1->getForeignKey($fkName))) {
-                    $tableDifferences->changedForeignKeys[$fkName] = $constraint;
-                    $changes++;
+        foreach ($table1Indexes AS $index1Name => $index1Definition) {
+            $tableDifferences->removedIndexes[$index1Name] = true;
+            $changes++;
+        }
+
+        foreach ($table2Indexes AS $index2Name => $index2Definition) {
+            $tableDifferences->addedIndexes[$index2Name] = $index2Definition;
+            $changes++;
+        }
+
+        $fromFkeys = $table1->getForeignKeys();
+        $toFkeys = $table2->getForeignKeys();
+
+        foreach ($fromFkeys AS $key1 => $constraint1) {
+            foreach ($toFkeys AS $key2 => $constraint2) {
+                if($this->diffForeignKey($constraint1, $constraint2) === false) {
+                    unset($fromFkeys[$key1]);
+                    unset($toFkeys[$key2]);
+                } else {
+                    if (strtolower($constraint1->getName()) == strtolower($constraint2->getName())) {
+                        $tableDifferences->changedForeignKeys[] = $constraint2;
+                        $changes++;
+                        unset($fromFkeys[$key1]);
+                        unset($toFkeys[$key2]);
+                    }
                 }
             }
         }
 
-        foreach ($table1->getForeignKeys() AS $constraint) {
-            $fkName = $constraint->getName();
-            if (!$table2->hasForeignKey($fkName)) {
-                $tableDifferences->removedForeignKeys[$fkName] = $constraint;
-                $changes++;
-            }
+        foreach ($fromFkeys AS $key1 => $constraint1) {
+            $tableDifferences->removedForeignKeys[] = $constraint1;
+            $changes++;
+        }
+
+        foreach ($toFkeys AS $key2 => $constraint2) {
+            $tableDifferences->addedForeignKeys[] = $constraint2;
+            $changes++;
         }
 
         return $changes ? $tableDifferences : false;
@@ -234,19 +244,19 @@ class Comparator
             return true;
         }
 
-        if ($key1->hasOption('onUpdate') != $key2->hasOption('onUpdate')) {
+        if ($key1->hasOption('onUpdate') && $key->hasOption('onUpdate')) {
+            if ($key1->getOption('onUpdate') != $key2->getOption('onUpdate')) {
+                return true;
+            }
+        } else if ($key1->hasOption('onUpdate') != $key2->hasOption('onUpdate')) {
             return true;
         }
 
-        if ($key1->getOption('onUpdate') != $key2->getOption('onUpdate')) {
-            return true;
-        }
-
-        if ($key1->hasOption('onDelete') != $key2->hasOption('onDelete')) {
-            return true;
-        }
-
-        if ($key1->getOption('onDelete') != $key2->getOption('onDelete')) {
+        if ($key1->hasOption('onDelete') && $key2->hasOption('onDelete')) {
+            if ($key1->getOption('onDelete') != $key2->getOption('onDelete')) {
+                return true;
+            }
+        } else if ($key1->hasOption('onDelete') != $key2->hasOption('onDelete')) {
             return true;
         }
 
