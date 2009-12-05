@@ -19,27 +19,11 @@ class OraclePlatformTest extends AbstractPlatformTestCase
         return 'CREATE TABLE test (id NUMBER(10) NOT NULL, test VARCHAR2(255) DEFAULT NULL, PRIMARY KEY(id))';
     }
 
-    public function testGeneratesTableAlterationSql()
+    public function getGenerateAlterTableSql()
     {
-        $changes = array(
-            'name' => 'userlist',
-            'add' => array(
-                'quota' => array(
-                'type' => Type::getType('integer'),
-                'unsigned' => 1
-                )
-            ));
-        
-        $sql = $this->_platform->getAlterTableSql('mytable', $changes);
-        
-        $this->assertEquals(
+        return array(
             'ALTER TABLE mytable ADD (quota NUMBER(10) DEFAULT NULL)',
-            $sql[0]
-        );
-
-        $this->assertEquals(
             'ALTER TABLE mytable RENAME TO userlist',
-            $sql[1]
         );
     }
 

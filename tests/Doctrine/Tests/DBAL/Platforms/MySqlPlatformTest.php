@@ -28,21 +28,10 @@ class MySqlPlatformTest extends AbstractPlatformTestCase
         return 'CREATE TABLE test (id INT AUTO_INCREMENT NOT NULL, test VARCHAR(255) DEFAULT NULL, PRIMARY KEY(id)) ENGINE = InnoDB';
     }
 
-    public function testGeneratesTableAlterationSql()
+    public function getGenerateAlterTableSql()
     {
-        $changes = array(
-            'name' => 'userlist',
-            'add' => array(
-                'quota' => array(
-                'type' => Type::getType('integer'),
-                'unsigned' => 1
-                )
-            ));
-
-        $sql = $this->_platform->getAlterTableSql('mytable', $changes);
-        $this->assertEquals(
-            'ALTER TABLE mytable RENAME TO userlist, ADD quota INT UNSIGNED DEFAULT NULL',
-            $sql[0]
+        return array(
+            'ALTER TABLE mytable RENAME TO userlist, ADD quota INT DEFAULT NULL',
         );
     }
 

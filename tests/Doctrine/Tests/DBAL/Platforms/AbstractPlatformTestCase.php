@@ -88,4 +88,27 @@ abstract class AbstractPlatformTestCase extends \Doctrine\Tests\DbalTestCase
     {
         return 'ALTER TABLE test ADD CONSTRAINT constraint_fk FOREIGN KEY (fk_name) REFERENCES foreign (id)';
     }
+
+    abstract public function getGenerateAlterTableSql();
+
+    public function testGeneratesTableAlterationSqlForAddingAndRenaming()
+    {
+        $expectedSql = $this->getGenerateAlterTableSql();
+
+        $changes = array(
+            'name' => 'userlist',
+            'add' => array(
+                'quota' => array(
+                    'type' => \Doctrine\DBAL\Types\Type::getType('integer'),
+                    'notnull' => false,
+                )
+            ));
+
+        $sql = $this->_platform->getAlterTableSql('mytable', $changes);
+
+        $this->assertEquals(count($sql), count($expectedSql), "Expecting the same number of sql queries for alter table failed.");
+        for ($i = 0; $i < count($expectedSql); $i++) {
+            $this->assertEquals($expectedSql[$i], $sql[$i], $i."th query of alter table does not match.");
+        }
+    }
 }

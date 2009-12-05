@@ -20,25 +20,11 @@ class PostgreSqlPlatformTest extends AbstractPlatformTestCase
         return 'CREATE TABLE test (id SERIAL NOT NULL, test VARCHAR(255) DEFAULT NULL, PRIMARY KEY(id))';
     }
 
-    public function testGeneratesTableAlterationSqlForAddingAndRenaming()
+    public function getGenerateAlterTableSql()
     {
-        $changes = array(
-            'name' => 'userlist',
-            'add' => array(
-                'quota' => array(
-                'type' => Type::getType('integer')
-                )
-            ));
-
-        $sql = $this->_platform->getAlterTableSql('mytable', $changes);
-
-        $this->assertEquals(
+        return array(
             'ALTER TABLE mytable ADD quota INT DEFAULT NULL',
-            $sql[0]
-        );
-        $this->assertEquals(
             'ALTER TABLE mytable RENAME TO userlist',
-            $sql[1]
         );
     }
 

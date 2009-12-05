@@ -101,4 +101,9 @@ class SqlitePlatformTest extends AbstractPlatformTestCase
         $sql = $this->_platform->modifyLimitQuery('SELECT * FROM user', 10);
         $this->assertEquals('SELECT * FROM user LIMIT 10', $sql);
     }
+
+    public function getGenerateAlterTableSql()
+    {
+        $this->markTestSkipped('SQlite does not support ALTER Table.');
+    }
 }
