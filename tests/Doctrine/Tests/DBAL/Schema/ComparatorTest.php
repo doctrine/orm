@@ -133,10 +133,11 @@ class ComparatorTest extends \PHPUnit_Framework_TestCase
 
     public function testCompareMissingField()
     {
+        $missingColumn = new Column('integerfield1', Type::getType('integer'));
         $schema1 = new Schema( array(
             'bugdb' => new Table('bugdb',
                 array (
-                    'integerfield1' => new Column('integerfield1', Type::getType('integer')),
+                    'integerfield1' => $missingColumn,
                     'integerfield2' => new Column('integerfield2', Type::getType('integer')),
                 )
             ),
@@ -153,7 +154,7 @@ class ComparatorTest extends \PHPUnit_Framework_TestCase
             array (
                 'bugdb' => new TableDiff( array(), array(),
                     array (
-                        'integerfield1' => true,
+                        'integerfield1' => $missingColumn,
                     )
                 )
             )
@@ -556,6 +557,23 @@ class ComparatorTest extends \PHPUnit_Framework_TestCase
         $tableDiff = $c->diffTable($tableA, $tableB);
 
         $this->assertFalse($tableDiff);
+    }
+
+    public function testDetectRenameColumn()
+    {
+        $tableA = new Table("foo");
+        $tableA->createColumn('foo', 'integer');
+
+        $tableB = new Table("foo");
+        $tableB->createColumn('bar', 'integer');
+
+        $c = new Comparator();
+        $tableDiff = $c->diffTable($tableA, $tableB);
+
+        $this->assertEquals(0, count($tableDiff->addedColumns));
+        $this->assertEquals(0, count($tableDiff->removedColumns));
+        $this->assertArrayHasKey('foo', $tableDiff->renamedColumns);
+        $this->assertEquals('bar', $tableDiff->renamedColumns['foo']->getName());
     }
 
     /**

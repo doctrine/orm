@@ -56,6 +56,13 @@ class TableDiff
     public $removedColumns = array();
 
     /**
+     * Columns that are only renamed from key to column instance name.
+     *
+     * @var array(string=>Column)
+     */
+    public $renamedColumns = array();
+
+    /**
      * All added indexes
      *
      * @var array(string=>Index)

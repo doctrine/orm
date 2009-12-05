@@ -144,26 +144,40 @@ class Comparator
         $changes = 0;
         $tableDifferences = new TableDiff();
 
+        $table1Columns = $table1->getColumns();
+        $table2Columns = $table2->getColumns();
+
         /* See if all the fields in table 1 exist in table 2 */
-        foreach ( $table2->getColumns() as $columnName => $column ) {
+        foreach ( $table2Columns as $columnName => $column ) {
             if ( !$table1->hasColumn($columnName) ) {
                 $tableDifferences->addedColumns[$columnName] = $column;
                 $changes++;
             }
         }
         /* See if there are any removed fields in table 2 */
-        foreach ( $table1->getColumns() as $columnName => $column ) {
+        foreach ( $table1Columns as $columnName => $column ) {
             if ( !$table2->hasColumn($columnName) ) {
-                $tableDifferences->removedColumns[$columnName] = true;
+                $tableDifferences->removedColumns[$columnName] = $column;
                 $changes++;
             }
         }
         /* See if there are any changed fieldDefinitioninitions */
-        foreach ( $table1->getColumns() as $columnName => $column ) {
+        foreach ( $table1Columns as $columnName => $column ) {
             if ( $table2->hasColumn($columnName) ) {
                 if ( $this->diffColumn( $column, $table2->getColumn($columnName) ) ) {
-                    $tableDifferences->changedColumns[$columnName] = $table2->getColumn($columnName);
+                    $tableDifferences->changedColumns[$column->getName()] = $table2->getColumn($columnName);
                     $changes++;
+                }
+            }
+        }
+
+        // Try to find columns that only changed their name, rename operations maybe cheaper than add/drop
+        foreach ($tableDifferences->addedColumns AS $addedColumnName => $addedColumn) {
+            foreach ($tableDifferences->removedColumns AS $removedColumnName => $removedColumn) {
+                if ($this->diffColumn($addedColumn, $removedColumn) === false) {
+                    $tableDifferences->renamedColumns[$removedColumn->getName()] = $addedColumn;
+                    unset($tableDifferences->addedColumns[$addedColumnName]);
+                    unset($tableDifferences->removedColumns[$removedColumnName]);
                 }
             }
         }
