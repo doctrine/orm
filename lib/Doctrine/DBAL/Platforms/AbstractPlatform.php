@@ -26,7 +26,8 @@ use Doctrine\DBAL\DBALException,
     Doctrine\DBAL\Types,
     Doctrine\DBAL\Schema\Table,
     Doctrine\DBAL\Schema\Index,
-    Doctrine\DBAL\Schema\ForeignKeyConstraint;
+    Doctrine\DBAL\Schema\ForeignKeyConstraint,
+    Doctrine\DBAL\Schema\TableDiff;
 
 /**
  * Base class for all DatabasePlatforms. The DatabasePlatforms are the central
@@ -785,14 +786,10 @@ abstract class AbstractPlatform
      *
      * The method returns an array of sql statements, since some platforms need several statements.
      *
-     * @param string $name          name of the table that is intended to be changed.
-     * @param array $changes        associative array that contains the details of each type      *
-     * @param boolean $check        indicates whether the function should just check if the DBMS driver
-     *                              can perform the requested table alterations if the value is true or
-     *                              actually perform them otherwise.
+     * @param TableDiff $diff
      * @return array
      */
-    public function getAlterTableSql($name, array $changes, $check = false)
+    public function getAlterTableSql(TableDiff $diff)
     {
         throw DBALException::notSupported(__METHOD__);
     }

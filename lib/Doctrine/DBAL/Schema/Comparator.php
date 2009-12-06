@@ -161,12 +161,11 @@ class Comparator
                 $changes++;
             }
         }
-        /* See if there are any changed fieldDefinitioninitions */
         foreach ( $table1Columns as $columnName => $column ) {
             if ( $table2->hasColumn($columnName) ) {
                 $changedProperties = $this->diffColumn( $column, $table2->getColumn($columnName) );
                 if (count($changedProperties) ) {
-                    $columnDiff = new ColumnDiff($table2->getColumn($columnName), $changedProperties);
+                    $columnDiff = new ColumnDiff($column->getName(), $table2->getColumn($columnName), $changedProperties);
                     $tableDifferences->changedColumns[$column->getName()] = $columnDiff;
                     $changes++;
                 }

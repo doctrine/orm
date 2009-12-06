@@ -13,22 +13,10 @@ class ColumnTest extends \PHPUnit_Framework_TestCase
 {
     public function testGet()
     {
-        $options = array(
-            'length' => 200,
-            'precision' => 5,
-            'scale' => 2,
-            'unsigned' => true,
-            'notnull' => false,
-            'fixed' => true,
-            'default' => 'baz',
-            'platformOptions' => array('foo' => 'bar'),
-        );
-
-        $string = Type::getType('string');
-        $column = new Column("foo", $string, $options);
+        $column = $this->createColumn();
 
         $this->assertEquals("foo", $column->getName());
-        $this->assertSame($string, $column->getType());
+        $this->assertSame(Type::getType('string'), $column->getType());
 
         $this->assertEquals(200, $column->getLength());
         $this->assertEquals(5, $column->getPrecision());
@@ -42,5 +30,43 @@ class ColumnTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($column->hasPlatformOption('foo'));
         $this->assertEquals('bar', $column->getPlatformOption('foo'));
         $this->assertFalse($column->hasPlatformOption('bar'));
+    }
+
+    public function testToArray()
+    {
+        $expected = array(
+            'name' => 'foo',
+            'type' => Type::getType('string'),
+            'default' => 'baz',
+            'notnull' => false,
+            'length' => 200,
+            'precision' => 5,
+            'scale' => 2,
+            'fixed' => true,
+            'unsigned' => true,
+            'foo' => 'bar',
+        );
+
+        $this->assertEquals($expected, $this->createColumn()->toArray());
+    }
+
+    /**
+     * @return Column
+     */
+    public function createColumn()
+    {
+        $options = array(
+            'length' => 200,
+            'precision' => 5,
+            'scale' => 2,
+            'unsigned' => true,
+            'notnull' => false,
+            'fixed' => true,
+            'default' => 'baz',
+            'platformOptions' => array('foo' => 'bar'),
+        );
+
+        $string = Type::getType('string');
+        return new Column("foo", $string, $options);
     }
 }

@@ -95,18 +95,13 @@ abstract class AbstractPlatformTestCase extends \Doctrine\Tests\DbalTestCase
     {
         $expectedSql = $this->getGenerateAlterTableSql();
 
-        $changes = array(
-            'name' => 'userlist',
-            'add' => array(
-                'quota' => array(
-                    'type' => \Doctrine\DBAL\Types\Type::getType('integer'),
-                    'notnull' => false,
-                )
-            ));
+        $tableDiff = new \Doctrine\DBAL\Schema\TableDiff('mytable');
+        $tableDiff->newName = 'userlist';
+        $tableDiff->addedColumns['quota'] = new \Doctrine\DBAL\Schema\Column('quota', \Doctrine\DBAL\Types\Type::getType('integer'), array('notnull' => false));
 
-        $sql = $this->_platform->getAlterTableSql('mytable', $changes);
+        $sql = $this->_platform->getAlterTableSql($tableDiff);
 
-        $this->assertEquals(count($sql), count($expectedSql), "Expecting the same number of sql queries for alter table failed.");
+        $this->assertEquals(count($expectedSql), count($sql), "Expecting the same number of sql queries for alter table failed.");
         for ($i = 0; $i < count($expectedSql); $i++) {
             $this->assertEquals($expectedSql[$i], $sql[$i], $i."th query of alter table does not match.");
         }

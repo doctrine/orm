@@ -21,6 +21,8 @@
 
 namespace Doctrine\DBAL\Platforms;
 
+use \Doctrine\DBAL\Schema\TableDiff;
+
 use Doctrine\Common\DoctrineException;
 
 /**
@@ -93,91 +95,41 @@ class MsSqlPlatform extends AbstractPlatform
      *
      * The method returns an array of sql statements, since some platforms need several statements.
      *
-     * @param string $name          name of the table that is intended to be changed.
-     * @param array $changes        associative array that contains the details of each type      *
-     * @param boolean $check        indicates whether the function should just check if the DBMS driver
-     *                              can perform the requested table alterations if the value is true or
-     *                              actually perform them otherwise.
+     * @param TableDiff $diff
      * @return array
      */
-    public function getAlterTableSql($name, array $changes, $check = false)
+    public function getAlterTableSql(TableDiff $diff)
     {
-        foreach ($changes as $changeName => $change) {
-            switch ($changeName) {
-                case 'add':
-                case 'remove':
-                case 'change':
-                case 'rename':
-                case 'name':
-                    break;
-                default:
-                    throw \Doctrine\Common\DoctrineException::alterTableChangeNotSupported($changeName);
-            }
+        $queryParts = array();
+        if ($diff->newName !== false) {
+            $queryParts[] =  'RENAME TO ' . $diff->newName;
         }
 
-        $query = '';
-        if ( ! empty($changes['name'])) {
-            $change_name = $changes['name'];
-            $query .= 'RENAME TO ' . $change_name;
+        foreach ($diff->addedColumns AS $fieldName => $column) {
+            $queryParts[] = 'ADD ' . $this->getColumnDeclarationSql($column->getName(), $column->toArray());
         }
 
-        if ( ! empty($changes['add']) && is_array($changes['add'])) {
-            foreach ($changes['add'] as $fieldName => $field) {
-                if ($query) {
-                    $query .= ', ';
-                }
-                $query .= 'ADD ' . $this->getColumnDeclarationSql($fieldName, $field);
-            }
+        foreach ($diff->removedColumns AS $column) {
+            $queryParts[] =  'DROP ' . $column->getName();
         }
 
-        if ( ! empty($changes['remove']) && is_array($changes['remove'])) {
-            foreach ($changes['remove'] as $fieldName => $field) {
-                if ($query) {
-                    $query .= ', ';
-                }
-                $query .= 'DROP COLUMN ' . $fieldName;
-            }
+        foreach ($diff->changedColumns AS $columnDiff) {
+            /* @var $columnDiff Doctrine\DBAL\Schema\ColumnDiff */
+            $column = $columnDiff->column;
+            $queryParts[] =  'CHANGE ' . ($columnDiff->oldColumnName) . ' '
+                    . $this->getColumnDeclarationSql($column->getName(), $column->toArray());
         }
 
-        $rename = array();
-        if ( ! empty($changes['rename']) && is_array($changes['rename'])) {
-            foreach ($changes['rename'] as $fieldName => $field) {
-                $rename[$field['name']] = $fieldName;
-            }
+        foreach ($diff->renamedColumns AS $oldColumnName => $column) {
+            $queryParts[] =  'CHANGE ' . $oldColumnName . ' '
+                    . $this->getColumnDeclarationSql($column->getName(), $column->toArray());
         }
 
-        if ( ! empty($changes['change']) && is_array($changes['change'])) {
-            foreach ($changes['change'] as $fieldName => $field) {
-                if ($query) {
-                    $query.= ', ';
-                }
-                if (isset($rename[$fieldName])) {
-                    $oldFieldName = $rename[$fieldName];
-                    unset($rename[$fieldName]);
-                } else {
-                    $oldFieldName = $fieldName;
-                }
-                $query .= 'CHANGE ' . $oldFieldName . ' '
-                        . $this->getColumnDeclarationSql($fieldName, $field['definition']);
-            }
-        }
-
-        if ( ! empty($rename) && is_array($rename)) {
-            foreach ($rename as $renameName => $renamedField) {
-                if ($query) {
-                    $query.= ', ';
-                }
-                $field = $changes['rename'][$renamedField];
-                $query .= 'CHANGE ' . $renamedField . ' '
-                        . $this->getColumnDeclarationSql($field['name'], $field['definition']);
-            }
-        }
-
-        if ( ! $query) {
+        if (count($queryParts) == 0) {
             return false;
         }
 
-        return array('ALTER TABLE ' . $name . ' ' . $query);
+        return array('ALTER TABLE ' . $diff->name . ' ' . implode(", ", $queryParts));
     }
     
     /**

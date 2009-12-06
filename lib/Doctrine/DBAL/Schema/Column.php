@@ -33,7 +33,7 @@ use Doctrine\DBAL\Schema\Visitor\Visitor;
  * @version $Revision$
  * @author  Benjamin Eberlei <kontakt@beberlei.de>
  */
-class Column extends AbstractAsset implements \ArrayAccess
+class Column extends AbstractAsset
 {
     /**
      * @var \Doctrine\DBAL\Types\Type
@@ -290,41 +290,20 @@ class Column extends AbstractAsset implements \ArrayAccess
     }
 
     /**
-     * @param  string $option
-     * @return mixed
+     * @return array
      */
-    public function offsetExists($option)
+    public function toArray()
     {
-        return (\property_exists($this, "_".$option) || $this->hasPlatformOption($option));
-    }
-
-    /**
-     * @param  string $option
-     * @return mixed
-     */
-    public function offsetGet($option)
-    {
-        $optionAccessor = "_".$option;
-        if(\property_exists($this, $optionAccessor)) {
-            return $this->$optionAccessor;
-        } else if($this->hasPlatformOption($option)) {
-            return $this->getPlatformOption($option);
-        } else {
-            return false;
-        }
-    }
-
-    public function offsetSet($offset, $value)
-    {
-        throw new \BadMethodCallException(
-            "Setting column property ".$this->_name."::".$offset." through the ArrayAccess interface is not allowed."
-        );
-    }
-
-    public function offsetUnset($offset)
-    {
-        throw new \BadMethodCallException(
-            "Unsetting column property ".$this->_name."::".$offset." through the ArrayAccess interface is not allowed."
-        );
+        return array_merge(array(
+            'name'          => $this->_name,
+            'type'          => $this->_type,
+            'default'       => $this->_default,
+            'notnull'       => $this->_notnull,
+            'length'        => $this->_length,
+            'precision'     => $this->_precision,
+            'scale'         => $this->_scale,
+            'fixed'         => $this->_fixed,
+            'unsigned'      => $this->_unsigned,
+        ), $this->_platformOptions);
     }
 }

@@ -21,6 +21,8 @@
 
 namespace Doctrine\DBAL\Platforms;
 
+use Doctrine\DBAL\Schema\TableDiff;
+
 /**
  * PostgreSqlPlatform.
  *
@@ -489,70 +491,47 @@ class PostgreSqlPlatform extends AbstractPlatform
      * @return array
      * @override
      */
-    public function getAlterTableSql($name, array $changes, $check = false)
+    public function getAlterTableSql(TableDiff $diff)
     {
-        foreach ($changes as $changeName => $change) {
-            switch ($changeName) {
-                case 'add':
-                case 'remove':
-                case 'change':
-                case 'name':
-                case 'rename':
-                    break;
-                default:
-                    throw DoctrineException::alterTableChangeNotSupported($changeName);
-            }
-        }
-
-        if ($check) {
-            return true;
-        }
-
         $sql = array();
 
-        if (isset($changes['add']) && is_array($changes['add'])) {
-            foreach ($changes['add'] as $fieldName => $field) {
-                $query = 'ADD ' . $this->getColumnDeclarationSql($fieldName, $field);
-                $sql[] = 'ALTER TABLE ' . $name . ' ' . $query;
+        foreach ($diff->addedColumns as $column) {
+            $query = 'ADD ' . $this->getColumnDeclarationSql($column->getName(), $column->toArray());
+            $sql[] = 'ALTER TABLE ' . $diff->name . ' ' . $query;
+        }
+
+        foreach ($diff->removedColumns as $column) {
+            $query = 'DROP ' . $column->getName();
+            $sql[] = 'ALTER TABLE ' . $diff->name . ' ' . $query;
+        }
+
+        foreach ($diff->changedColumns AS $columnDiff) {
+            $oldColumnName = $columnDiff->oldColumnName;
+            $column = $columnDiff->column;
+            
+            if ($columnDiff->hasChanged('type')) {
+                $type = $column->getType();
+
+                // here was a server version check before, but DBAL API does not support this anymore.
+                $query = 'ALTER ' . $oldColumnName . ' TYPE ' . $type->getSqlDeclaration($column->toArray(), $this);
+                $sql[] = 'ALTER TABLE ' . $diff->name . ' ' . $query;
+            }
+            if ($columnDiff->hasChanged('default')) {
+                $query = 'ALTER ' . $oldColumnName . ' SET DEFAULT ' . $column->getDefault();
+                $sql[] = 'ALTER TABLE ' . $diff->name . ' ' . $query;
+            }
+            if ($columnDiff->hasChanged('notnull')) {
+                $query = 'ALTER ' . $oldColumnName . ' ' . ($column->getNotNull() ? 'SET' : 'DROP') . ' NOT NULL';
+                $sql[] = 'ALTER TABLE ' . $diff->name . ' ' . $query;
             }
         }
 
-        if (isset($changes['remove']) && is_array($changes['remove'])) {
-            foreach ($changes['remove'] as $fieldName => $field) {
-                $query = 'DROP ' . $fieldName;
-                $sql[] = 'ALTER TABLE ' . $name . ' ' . $query;
-            }
+        foreach ($diff->renamedColumns as $oldColumnName => $column) {
+            $sql[] = 'ALTER TABLE ' . $diff->name . ' RENAME COLUMN ' . $oldColumnName . ' TO ' . $column->getName();
         }
 
-        if (isset($changes['change']) && is_array($changes['change'])) {
-            foreach ($changes['change'] as $fieldName => $field) {
-                if (isset($field['definition']['type']) && $field['definition']['type'] instanceof \Doctrine\DBAL\Types\Type) {
-                    $type = $field['definition']['type'];
-                    
-                    // here was a server version check before, but DBAL API does not support this anymore.
-                    $query = 'ALTER ' . $fieldName . ' TYPE ' . $type->getSqlDeclaration($field['definition'], $this);
-                    $sql[] = 'ALTER TABLE ' . $name . ' ' . $query;
-                }
-                if (isset($field['definition']['default'])) {
-                    $query = 'ALTER ' . $fieldName . ' SET DEFAULT ' . $field['definition']['default'];
-                    $sql[] = 'ALTER TABLE ' . $name . ' ' . $query;
-                }
-                if (isset($field['definition']['notnull']) && is_bool($field['definition']['notnull'])) {
-                    $query = 'ALTER ' . $fieldName . ' ' . ($field['definition']['notnull'] ? 'SET' : 'DROP') . ' NOT NULL';
-                    $sql[] = 'ALTER TABLE ' . $name . ' ' . $query;
-                }
-                
-            }
-        }
-
-        if (isset($changes['rename']) && is_array($changes['rename'])) {
-            foreach ($changes['rename'] as $fieldName => $field) {
-                $sql[] = 'ALTER TABLE ' . $name . ' RENAME COLUMN ' . $fieldName . ' TO ' . $field['name'];
-            }
-        }
-
-        if (isset($changes['name'])) {
-            $sql[] = 'ALTER TABLE ' . $name . ' RENAME TO ' . $changes['name'];
+        if ($diff->newName !== false) {
+            $sql[] = 'ALTER TABLE ' . $diff->name . ' RENAME TO ' . $diff->newName;
         }
 
         return $sql;

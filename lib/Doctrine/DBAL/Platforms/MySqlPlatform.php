@@ -21,7 +21,8 @@
 
 namespace Doctrine\DBAL\Platforms;
 
-use Doctrine\Common\DoctrineException;
+use Doctrine\Common\DoctrineException,
+    Doctrine\DBAL\Schema\TableDiff;
 
 /**
  * The MySqlPlatform provides the behavior, features and SQL dialect of the
@@ -592,91 +593,38 @@ class MySqlPlatform extends AbstractPlatform
      * @return boolean
      * @override
      */
-    public function getAlterTableSql($name, array $changes, $check = false)
+    public function getAlterTableSql(TableDiff $diff)
     {
-        if ( ! $name) {
-            throw DoctrineException::missingTableName();
-        }
-        
-        foreach ($changes as $changeName => $change) {
-            switch ($changeName) {
-                case 'add':
-                case 'remove':
-                case 'change':
-                case 'rename':
-                case 'name':
-                    break;
-                default:
-                    throw \Doctrine\Common\DoctrineException::alterTableChangeNotSupported($changeName);
-            }
+        $queryParts = array();
+        if ($diff->newName !== false) {
+            $queryParts[] =  'RENAME TO ' . $diff->newName;
         }
 
-        if ($check) {
-            return true;
+        foreach ($diff->addedColumns AS $fieldName => $column) {
+            $queryParts[] = 'ADD ' . $this->getColumnDeclarationSql($column->getName(), $column->toArray());
         }
 
-        $query = '';
-        if ( ! empty($changes['name'])) {
-            $query .= 'RENAME TO ' . $changes['name'];
+        foreach ($diff->removedColumns AS $column) {
+            $queryParts[] =  'DROP ' . $column->getName();
         }
 
-        if ( ! empty($changes['add']) && is_array($changes['add'])) {
-            foreach ($changes['add'] as $fieldName => $field) {
-                if ($query) {
-                    $query.= ', ';
-                }
-                $query.= 'ADD ' . $this->getColumnDeclarationSql($fieldName, $field);
-            }
+        foreach ($diff->changedColumns AS $columnDiff) {
+            /* @var $columnDiff Doctrine\DBAL\Schema\ColumnDiff */
+            $column = $columnDiff->column;
+            $queryParts[] =  'CHANGE ' . ($columnDiff->oldColumnName) . ' '
+                    . $this->getColumnDeclarationSql($column->getName(), $column->toArray());
         }
 
-        if ( ! empty($changes['remove']) && is_array($changes['remove'])) {
-            foreach ($changes['remove'] as $fieldName => $field) {
-                if ($query) {
-                    $query .= ', ';
-                }
-                $query .= 'DROP ' . $fieldName;
-            }
+        foreach ($diff->renamedColumns AS $oldColumnName => $column) {
+            $queryParts[] =  'CHANGE ' . $oldColumnName . ' '
+                    . $this->getColumnDeclarationSql($column->getName(), $column->toArray());
         }
 
-        $rename = array();
-        if ( ! empty($changes['rename']) && is_array($changes['rename'])) {
-            foreach ($changes['rename'] as $fieldName => $field) {
-                $rename[$field['name']] = $fieldName;
-            }
-        }
-
-        if ( ! empty($changes['change']) && is_array($changes['change'])) {
-            foreach ($changes['change'] as $fieldName => $field) {
-                if ($query) {
-                    $query.= ', ';
-                }
-                if (isset($rename[$fieldName])) {
-                    $oldFieldName = $rename[$fieldName];
-                    unset($rename[$fieldName]);
-                } else {
-                    $oldFieldName = $fieldName;
-                }
-                $query .= 'CHANGE ' . $oldFieldName . ' '
-                        . $this->getColumnDeclarationSql($fieldName, $field['definition']);
-            }
-        }
-
-        if ( ! empty($rename) && is_array($rename)) {
-            foreach ($rename as $renameName => $renamedField) {
-                if ($query) {
-                    $query.= ', ';
-                }
-                $field = $changes['rename'][$renamedField];
-                $query .= 'CHANGE ' . $renamedField . ' '
-                        . $this->getColumnDeclarationSql($field['name'], $field['definition']);
-            }
-        }
-
-        if ( ! $query) {
+        if (count($queryParts) == 0) {
             return false;
         }
 
-        return array('ALTER TABLE ' . $name . ' ' . $query);
+        return array('ALTER TABLE ' . $diff->name . ' ' . implode(", ", $queryParts));
     }
     
     /**

@@ -21,6 +21,8 @@
 
 namespace Doctrine\DBAL\Platforms;
 
+use Doctrine\DBAL\Schema\TableDiff;
+
 /**
  * OraclePlatform.
  *
@@ -466,69 +468,48 @@ END;';
      *
      * The method returns an array of sql statements, since some platforms need several statements.
      *
-     * @param string $name          name of the table that is intended to be changed.
+     * @param string $diff->name          name of the table that is intended to be changed.
      * @param array $changes        associative array that contains the details of each type      *
      * @param boolean $check        indicates whether the function should just check if the DBMS driver
      *                              can perform the requested table alterations if the value is true or
      *                              actually perform them otherwise.
      * @return array
      */
-    public function getAlterTableSql($name, array $changes, $check = false)
+    public function getAlterTableSql(TableDiff $diff)
     {
-        if ( ! $name) {
-            throw DoctrineException::missingTableName();
+        $sql = array();
+
+        $fields = array();
+        foreach ($diff->addedColumns AS $column) {
+            $fields[] = $this->getColumnDeclarationSql($column->getName(), $column->toArray());
         }
-        foreach ($changes as $changeName => $change) {
-            switch ($changeName) {
-                case 'add':
-                case 'remove':
-                case 'change':
-                case 'name':
-                case 'rename':
-                    break;
-                default:
-                    throw \Doctrine\Common\DoctrineException::alterTableChangeNotSupported($changeName);
-            }
+        if (count($fields)) {
+            $sql[] = 'ALTER TABLE ' . $diff->name . ' ADD (' . implode(', ', $fields) . ')';
         }
 
-        if ($check) {
-            return false;
+        $fields = array();
+        foreach ($diff->changedColumns AS $columnDiff) {
+            $column = $columnDiff->column;
+            $fields[] = $column->getName(). ' ' . $this->getColumnDeclarationSql('', $column->toArray());
+        }
+        if (count($fields)) {
+            $sql[] = 'ALTER TABLE ' . $diff->name . ' MODIFY (' . implode(', ', $fields) . ')';
         }
 
-        if ( ! empty($changes['add']) && is_array($changes['add'])) {
-            $fields = array();
-            foreach ($changes['add'] as $fieldName => $field) {
-                $fields[] = $this->getColumnDeclarationSql($fieldName, $field);
-            }
-            $sql[] = 'ALTER TABLE ' . $name . ' ADD (' . implode(', ', $fields) . ')';
+        foreach ($diff->renamedColumns AS $oldColumnName => $column) {
+            $sql[] = 'ALTER TABLE ' . $diff->name . ' RENAME COLUMN ' . $oldColumnName .' TO ' . $column->getName();
         }
 
-        if ( ! empty($changes['change']) && is_array($changes['change'])) {
-            $fields = array();
-            foreach ($changes['change'] as $fieldName => $field) {
-                $fields[] = $fieldName. ' ' . $this->getColumnDeclarationSql('', $field['definition']);
-            }
-            $sql[] = 'ALTER TABLE ' . $name . ' MODIFY (' . implode(', ', $fields) . ')';
+        $fields = array();
+        foreach ($diff->removedColumns AS $column) {
+            $fields[] = $column->getName();
+        }
+        if (count($fields)) {
+            $sql[] = 'ALTER TABLE ' . $diff->name . ' DROP COLUMN ' . implode(', ', $fields);
         }
 
-        if ( ! empty($changes['rename']) && is_array($changes['rename'])) {
-            foreach ($changes['rename'] as $fieldName => $field) {
-                $sql[] = 'ALTER TABLE ' . $name . ' RENAME COLUMN ' . $fieldName
-                       . ' TO ' . $field['name'];
-            }
-        }
-
-        if ( ! empty($changes['remove']) && is_array($changes['remove'])) {
-            $fields = array();
-            foreach ($changes['remove'] as $fieldName => $field) {
-                $fields[] = $fieldName;
-            }
-            $sql[] = 'ALTER TABLE ' . $name . ' DROP COLUMN ' . implode(', ', $fields);
-        }
-
-        if ( ! empty($changes['name'])) {
-            $changeName = $changes['name'];
-            $sql[] = 'ALTER TABLE ' . $name . ' RENAME TO ' . $changeName;
+        if ($diff->newName !== false) {
+            $sql[] = 'ALTER TABLE ' . $diff->name . ' RENAME TO ' . $diff->newName;
         }
 
         return $sql;
