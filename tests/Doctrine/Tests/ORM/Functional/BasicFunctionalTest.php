@@ -530,8 +530,18 @@ class BasicFunctionalTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $this->_em->clear();
 
-        $article = $this->_em->find('Doctrine\Tests\Models\CMS\CmsArticle', $articleId);
-        $this->assertEquals("Lorem ipsum dolor sunt.", $article->text);
+        $articleNew = $this->_em->find('Doctrine\Tests\Models\CMS\CmsArticle', $articleId);
+        $this->assertEquals("Lorem ipsum dolor sunt.", $articleNew->text);
+        
+        $this->assertNotSame($article, $articleNew);
+
+        $articleNew->text = "Lorem ipsum dolor sunt. And stuff!";
+
+        $this->_em->flush();
+        $this->_em->clear();
+
+        $articleNew = $this->_em->find('Doctrine\Tests\Models\CMS\CmsArticle', $articleId);
+        $this->assertEquals("Lorem ipsum dolor sunt. And stuff!", $articleNew->text);
     }
     
     //DRAFT OF EXPECTED/DESIRED BEHAVIOR
