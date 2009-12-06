@@ -203,7 +203,7 @@ class Comparator
         }
 
         foreach ($table1Indexes AS $index1Name => $index1Definition) {
-            $tableDifferences->removedIndexes[$index1Name] = true;
+            $tableDifferences->removedIndexes[$index1Name] = $index1Definition;
             $changes++;
         }
 

@@ -233,7 +233,12 @@ class ComparatorTest extends \PHPUnit_Framework_TestCase
             array (
                 'bugdb' => new TableDiff( 'bugdb', array(), array(), array(), array(), array(),
                     array (
-                        'primary' => true
+                        'primary' => new Index('primary',
+                        array(
+                            'integerfield1'
+                        ),
+                        true
+                    )
                     )
                 ),
             )
