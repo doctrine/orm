@@ -379,17 +379,4 @@ class Comparator
 
         return false;
     }
-
-    /**
-     * @param Schema $fromSchema
-     * @param Schema $toSchema
-     * @param AbstractSchemaManager $sm
-     * @return array
-     */
-    public function toSql(Schema $fromSchema, Schema $toSchema, AbstractSchemaManager $sm)
-    {
-        $diffSchema = $this->compare($fromSchema, $toSchema);
-
-
-    }
 }

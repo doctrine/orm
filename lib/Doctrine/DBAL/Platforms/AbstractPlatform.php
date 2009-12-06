@@ -795,6 +795,42 @@ abstract class AbstractPlatform
     }
 
     /**
+     * Common code for alter table statement generation that updates the changed Index and Foreign Key definitions.
+     *
+     * @param TableDiff $diff
+     * @return array
+     */
+    protected function _getAlterTableIndexForeignKeySql(TableDiff $diff)
+    {
+        $sql = array();
+        if ($this->supportsForeignKeyConstraints()) {
+            foreach ($diff->addedForeignKeys AS $foreignKey) {
+                $sql[] = $this->getCreateForeignKeySql($foreignKey, $diff->name);
+            }
+            foreach ($diff->removedForeignKeys AS $foreignKey) {
+                $sql[] = $this->getDropForeignKeySql($foreignKey, $diff->name);
+            }
+            foreach ($diff->changedForeignKeys AS $foreignKey) {
+                $sql[] = $this->getDropForeignKeySql($foreignKey, $diff->name);
+                $sql[] = $this->getCreateForeignKeySql($foreignKey, $diff->name);
+            }
+        }
+
+        foreach ($diff->addedIndexes AS $index) {
+            $sql[] = $this->getCreateIndexSql($index, $diff->name);
+        }
+        foreach ($diff->removedIndexes AS $index) {
+            $sql[] = $this->getDropIndexSql($index, $diff->name);
+        }
+        foreach ($diff->changedIndexes AS $index) {
+            $sql[] = $this->getDropIndexSql($index, $diff->name);
+            $sql[] = $this->getCreateIndexSql($index, $diff->name);
+        }
+
+        return $sql;
+    }
+
+    /**
      * Get declaration of a number of fields in bulk
      *
      * @param array $fields  a multidimensional associative array.
@@ -955,7 +991,14 @@ abstract class AbstractPlatform
         $default = empty($field['notnull']) ? ' DEFAULT NULL' : '';
 
         if (isset($field['default'])) {
-            $default = ' DEFAULT ' . $field['default'];
+            $default = " DEFAULT '".$field['default']."'";
+            if (isset($field['type'])) {
+                if (in_array((string)$field['type'], array("Integer", "BigInteger", "SmallInteger"))) {
+                    $default = " DEFAULT ".$field['default'];
+                } else if ((string)$field['type'] == 'DateTime' && $field['default'] == $this->getCurrentTimestampSql()) {
+                    $default = " DEFAULT ".$this->getCurrentTimestampSql();
+                }
+            }
         }
         return $default;
     }
@@ -1537,6 +1580,11 @@ abstract class AbstractPlatform
      * @return boolean
      */
     public function supportsIndexes()
+    {
+        return true;
+    }
+
+    public function supportsAlterTable()
     {
         return true;
     }

@@ -128,19 +128,24 @@ class PostgreSqlSchemaManager extends AbstractSchemaManager
         foreach($tableIndexes AS $row) {
             $colNumbers = explode( ' ', $row['indkey'] );
             $colNumbersSql = 'IN (' . join( ' ,', $colNumbers ) . ' )';
-            $columnNameSql = "SELECT attname FROM pg_attribute
-                WHERE attrelid={$row['indrelid']} AND attnum $colNumbersSql;";
+            $columnNameSql = "SELECT attnum, attname FROM pg_attribute
+                WHERE attrelid={$row['indrelid']} AND attnum $colNumbersSql ORDER BY attnum ASC;";
                 
             $stmt = $this->_conn->execute($columnNameSql);
             $indexColumns = $stmt->fetchAll();
 
-            foreach ( $indexColumns as $colRow ) {
-                $buffer[] = array(
-                    'key_name' => $row['relname'],
-                    'column_name' => $colRow['attname'],
-                    'non_unique' => !$row['indisunique'],
-                    'primary' => $row['indisprimary']
-                );
+            // required for getting the order of the columns right.
+            foreach ($colNumbers AS $colNum) {
+                foreach ( $indexColumns as $colRow ) {
+                    if ($colNum == $colRow['attnum']) {
+                        $buffer[] = array(
+                            'key_name' => $row['relname'],
+                            'column_name' => $colRow['attname'],
+                            'non_unique' => !$row['indisunique'],
+                            'primary' => $row['indisprimary']
+                        );
+                    }
+                }
             }
         }
         return parent::_getPortableTableIndexesList($buffer);

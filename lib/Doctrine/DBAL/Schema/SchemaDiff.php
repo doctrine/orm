@@ -21,6 +21,8 @@
 
 namespace Doctrine\DBAL\Schema;
 
+use \Doctrine\DBAL\Platforms\AbstractPlatform;
+
 /**
  * Schema Diff
  *
@@ -82,5 +84,48 @@ class SchemaDiff
         $this->newTables = $newTables;
         $this->changedTables = $changedTables;
         $this->removedTables = $removedTables;
+    }
+
+    /**
+     * @param Schema $fromSchema
+     * @param Schema $toSchema
+     * @param AbstractPlatform $platform
+     * @return array
+     */
+    public function toSql(AbstractPlatform $platform)
+    {
+        $sql = array();
+
+        if ($platform->supportsSequences() == true) {
+            foreach ($this->changedSequences AS $sequence) {
+                $sql[] = $platform->getDropSequenceSql($sequence);
+                $sql[] = $platform->getCreateSequenceSql($sequence);
+            }
+
+            foreach ($this->removedSequences AS $sequence) {
+                $sql[] = $platform->getDropSequenceSql($sequence);
+            }
+
+            foreach ($this->newSequences AS $sequence) {
+                $sql[] = $platform->getCreateSequenceSql($sequence);
+            }
+        }
+
+        foreach ($this->newTables AS $table) {
+            $sql = array_merge(
+                $sql,
+                $platform->getCreateTableSql($table, AbstractPlatform::CREATE_FOREIGNKEYS|AbstractPlatform::CREATE_INDEXES)
+            );
+        }
+
+        foreach ($this->removedTables AS $table) {
+            $sql[] = $platform->getDropTableSql($table);
+        }
+
+        foreach ($this->changedTables AS $tableDiff) {
+            $sql = array_merge($sql, $platform->getAlterTableSql($tableDiff));
+        }
+
+        return $sql;
     }
 }

@@ -319,7 +319,7 @@ class OraclePlatform extends AbstractPlatform
              "       uind_col.column_position AS column_pos, " .
              "       (SELECT ucon.constraint_type FROM user_constraints ucon WHERE ucon.constraint_name = uind.index_name) AS is_primary ".
              "FROM user_indexes uind, user_ind_columns uind_col " .
-             "WHERE uind.index_name = uind_col.index_name AND uind_col.table_name = '$table'";
+             "WHERE uind.index_name = uind_col.index_name AND uind_col.table_name = '$table' ORDER BY uind_col.column_position ASC";
     }
 
     public function getListTablesSql()
@@ -477,7 +477,7 @@ END;';
      */
     public function getAlterTableSql(TableDiff $diff)
     {
-        $sql = array();
+        $sql = $this->_getAlterTableIndexForeignKeySql($diff);
 
         $fields = array();
         foreach ($diff->addedColumns AS $column) {

@@ -437,6 +437,11 @@ class SqlitePlatform extends AbstractPlatform
         return false;
     }
 
+    public function supportsAlterTable()
+    {
+        return false;
+    }
+
     public function supportsSequences()
     {
         return false;

@@ -620,11 +620,11 @@ class MySqlPlatform extends AbstractPlatform
                     . $this->getColumnDeclarationSql($column->getName(), $column->toArray());
         }
 
-        if (count($queryParts) == 0) {
-            return false;
+        $sql = $this->_getAlterTableIndexForeignKeySql($diff);
+        if (count($queryParts) > 0) {
+            $sql[] = 'ALTER TABLE ' . $diff->name . ' ' . implode(", ", $queryParts);
         }
-
-        return array('ALTER TABLE ' . $diff->name . ' ' . implode(", ", $queryParts));
+        return $sql;
     }
     
     /**

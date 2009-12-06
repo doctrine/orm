@@ -286,6 +286,72 @@ class SchemaManagerFunctionalTestCase extends \Doctrine\Tests\DbalFunctionalTest
         $this->assertTrue($schema->hasTable('test_table'));
     }
 
+    public function testAlterTableScenario()
+    {
+        if(!$this->_sm->getDatabasePlatform()->supportsAlterTable()) {
+            $this->markTestSkipped('Alter Table is not supported by this platform.');
+        }
+
+        $this->createTestTable('alter_table');
+        $this->createTestTable('alter_table_foreign');
+
+        $table = $this->_sm->listTableDetails('alter_table');
+        $this->assertTrue($table->hasColumn('id'));
+        $this->assertTrue($table->hasColumn('test'));
+        $this->assertTrue($table->hasColumn('foreign_key_test'));
+        $this->assertEquals(0, count($table->getForeignKeys()));
+        $this->assertEquals(1, count($table->getIndexes()));
+
+        $tableDiff = new \Doctrine\DBAL\Schema\TableDiff("alter_table");
+        $tableDiff->addedColumns['foo'] = new \Doctrine\DBAL\Schema\Column('foo', Type::getType('integer'));
+        $tableDiff->removedColumns['test'] = $table->getColumn('test');
+
+        $this->_sm->alterTable($tableDiff);
+
+        $table = $this->_sm->listTableDetails('alter_table');
+        $this->assertFalse($table->hasColumn('test'));
+        $this->assertTrue($table->hasColumn('foo'));
+
+        $tableDiff = new \Doctrine\DBAL\Schema\TableDiff("alter_table");
+        $tableDiff->addedIndexes[] = new \Doctrine\DBAL\Schema\Index('foo_idx', array('foo'));
+
+        $this->_sm->alterTable($tableDiff);
+
+        $table = $this->_sm->listTableDetails('alter_table');
+        $this->assertEquals(2, count($table->getIndexes()));
+        $this->assertTrue($table->hasIndex('foo_idx'));
+        $this->assertEquals(array('foo'), array_map('strtolower', $table->getIndex('foo_idx')->getColumns()));
+        $this->assertFalse($table->getIndex('foo_idx')->isPrimary());
+        $this->assertFalse($table->getIndex('foo_idx')->isUnique());
+
+        $tableDiff = new \Doctrine\DBAL\Schema\TableDiff("alter_table");
+        $tableDiff->changedIndexes[] = new \Doctrine\DBAL\Schema\Index('foo_idx', array('foo', 'foreign_key_test'));
+
+        $this->_sm->alterTable($tableDiff);
+
+        $table = $this->_sm->listTableDetails('alter_table');
+        $this->assertEquals(2, count($table->getIndexes()));
+        $this->assertTrue($table->hasIndex('foo_idx'));
+        $this->assertEquals(array('foo', 'foreign_key_test'), array_map('strtolower', $table->getIndex('foo_idx')->getColumns()));
+
+        $tableDiff = new \Doctrine\DBAL\Schema\TableDiff("alter_table");
+        $tableDiff->removedIndexes[] = new \Doctrine\DBAL\Schema\Index('foo_idx', array('foo', 'foreign_key_test'));
+        $fk = new \Doctrine\DBAL\Schema\ForeignKeyConstraint(array('foreign_key_test'), 'alter_table_foreign', array('id'));
+        $tableDiff->addedForeignKeys[] = $fk;
+
+        $this->_sm->alterTable($tableDiff);
+        $table = $this->_sm->listTableDetails('alter_table');
+
+        // dont check for index size here, some platforms automatically add indexes for foreign keys.
+        $this->assertFalse($table->hasIndex('foo_idx'));
+
+        $this->assertEquals(1, count($table->getForeignKeys()));
+        $foreignKey = current($table->getForeignKeys());
+        $this->assertEquals('alter_table_foreign', strtolower($foreignKey->getForeignTableName()));
+        $this->assertEquals(array('foreign_key_test'), array_map('strtolower', $foreignKey->getColumns()));
+        $this->assertEquals(array('id'), array_map('strtolower', $foreignKey->getForeignColumns()));
+    }
+
     /**
      * @var \Doctrine\DBAL\Schema\AbstractSchemaManager
      */

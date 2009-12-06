@@ -493,7 +493,7 @@ class PostgreSqlPlatform extends AbstractPlatform
      */
     public function getAlterTableSql(TableDiff $diff)
     {
-        $sql = array();
+        $sql = $this->_getAlterTableIndexForeignKeySql($diff);
 
         foreach ($diff->addedColumns as $column) {
             $query = 'ADD ' . $this->getColumnDeclarationSql($column->getName(), $column->toArray());
@@ -517,7 +517,7 @@ class PostgreSqlPlatform extends AbstractPlatform
                 $sql[] = 'ALTER TABLE ' . $diff->name . ' ' . $query;
             }
             if ($columnDiff->hasChanged('default')) {
-                $query = 'ALTER ' . $oldColumnName . ' SET DEFAULT ' . $column->getDefault();
+                $query = 'ALTER ' . $oldColumnName . ' SET ' . $this->getDefaultValueDeclarationSql($column->toArray());
                 $sql[] = 'ALTER TABLE ' . $diff->name . ' ' . $query;
             }
             if ($columnDiff->hasChanged('notnull')) {

@@ -24,6 +24,10 @@ class PostgreSqlPlatformTest extends AbstractPlatformTestCase
     {
         return array(
             'ALTER TABLE mytable ADD quota INT DEFAULT NULL',
+            'ALTER TABLE mytable DROP foo',
+            'ALTER TABLE mytable ALTER bar TYPE VARCHAR(255)',
+            "ALTER TABLE mytable ALTER bar SET  DEFAULT 'def'",
+            'ALTER TABLE mytable ALTER bar SET NOT NULL',
             'ALTER TABLE mytable RENAME TO userlist',
         );
     }

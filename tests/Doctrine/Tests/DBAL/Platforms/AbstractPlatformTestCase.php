@@ -91,19 +91,25 @@ abstract class AbstractPlatformTestCase extends \Doctrine\Tests\DbalTestCase
 
     abstract public function getGenerateAlterTableSql();
 
-    public function testGeneratesTableAlterationSqlForAddingAndRenaming()
+    public function testGeneratesTableAlterationSql()
     {
         $expectedSql = $this->getGenerateAlterTableSql();
+
+        $columnDiff = new \Doctrine\DBAL\Schema\ColumnDiff(
+            'bar', new \Doctrine\DBAL\Schema\Column(
+                'baz', \Doctrine\DBAL\Types\Type::getType('string'), array('default' => 'def')
+            ),
+            array('type', 'notnull', 'default')
+        );
 
         $tableDiff = new \Doctrine\DBAL\Schema\TableDiff('mytable');
         $tableDiff->newName = 'userlist';
         $tableDiff->addedColumns['quota'] = new \Doctrine\DBAL\Schema\Column('quota', \Doctrine\DBAL\Types\Type::getType('integer'), array('notnull' => false));
+        $tableDiff->removedColumns['foo'] = new \Doctrine\DBAL\Schema\Column('foo', \Doctrine\DBAL\Types\Type::getType('integer'));
+        $tableDiff->changedColumns['bar'] = $columnDiff;
 
         $sql = $this->_platform->getAlterTableSql($tableDiff);
 
-        $this->assertEquals(count($expectedSql), count($sql), "Expecting the same number of sql queries for alter table failed.");
-        for ($i = 0; $i < count($expectedSql); $i++) {
-            $this->assertEquals($expectedSql[$i], $sql[$i], $i."th query of alter table does not match.");
-        }
+        $this->assertEquals($expectedSql, $sql);
     }
 }
