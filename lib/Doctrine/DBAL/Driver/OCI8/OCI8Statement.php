@@ -149,7 +149,7 @@ class OCI8Statement implements \Doctrine\DBAL\Driver\Statement
             throw new \InvalidArgumentException("Invalid fetch style: " . $fetchStyle);
         }
         
-        return oci_fetch_array($this->_sth, self::$fetchStyleMap[$fetchStyle] | OCI_RETURN_NULLS);
+        return oci_fetch_array($this->_sth, self::$fetchStyleMap[$fetchStyle] | OCI_RETURN_NULLS | OCI_RETURN_LOBS);
     }
 
     /**
