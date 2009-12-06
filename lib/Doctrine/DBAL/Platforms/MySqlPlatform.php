@@ -794,4 +794,9 @@ class MySqlPlatform extends AbstractPlatform
     {
         return 'mysql';
     }
+
+    public function createsExplicitIndexForForeignKeys()
+    {
+        return true;
+    }
 }

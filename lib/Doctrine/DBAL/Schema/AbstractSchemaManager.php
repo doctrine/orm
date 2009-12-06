@@ -51,7 +51,7 @@ abstract class AbstractSchemaManager
     /**
      * Holds instance of the database platform used for this schema manager
      *
-     * @var \Doctrine\DBAL\Platform\AbstractPlatform
+     * @var \Doctrine\DBAL\Platforms\AbstractPlatform
      */
     protected $_platform;
 
@@ -936,6 +936,6 @@ abstract class AbstractSchemaManager
         }
         $tables = $this->listTables();
 
-        return new Schema($tables, $sequences);
+        return new Schema($tables, $sequences, $this->_platform->createsExplicitIndexForForeignKeys());
     }
 }

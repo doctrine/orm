@@ -72,6 +72,10 @@ class Comparator
      */
     public function compare(Schema $fromSchema, Schema $toSchema)
     {
+        if ($fromSchema->hasExplicitForeignKeyIndexes() && !$toSchema->hasExplicitForeignKeyIndexes()) {
+            $toSchema->visit(new \Doctrine\DBAL\Schema\Visitor\FixSchema(true));
+        }
+
         $diff = new SchemaDiff();
 
         $foreignKeysToTable = array();

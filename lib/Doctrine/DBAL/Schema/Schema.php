@@ -47,10 +47,15 @@ class Schema extends AbstractAsset
     protected $_sequences = array();
 
     /**
+     * @var bool
+     */
+    protected $_hasExplicitForeignKeyIndexes = false;
+
+    /**
      * @param array $tables
      * @param array $sequences
      */
-    public function __construct(array $tables=array(), array $sequences=array())
+    public function __construct(array $tables=array(), array $sequences=array(), $hasExplicitForeignKeyIndexes=false)
     {
         foreach ($tables AS $table) {
             $this->_addTable($table);
@@ -58,6 +63,15 @@ class Schema extends AbstractAsset
         foreach ($sequences AS $sequence) {
             $this->_addSequence($sequence);
         }
+        $this->_hasExplicitForeignKeyIndexes = $hasExplicitForeignKeyIndexes;
+    }
+
+    /**
+     * @return bool
+     */
+    public function hasExplicitForeignKeyIndexes()
+    {
+        return $this->_hasExplicitForeignKeyIndexes;
     }
 
     /**
