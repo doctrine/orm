@@ -23,8 +23,6 @@ class AllTests
         $suite->addTestSuite('Doctrine\Tests\ORM\Tools\Export\ClassMetadataExporterTest');
         $suite->addTestSuite('Doctrine\Tests\ORM\Tools\ConvertDoctrine1SchemaTest');
 
-        $suite->addTest(SchemaTool\AllTests::suite());
-
         return $suite;
     }
 }
