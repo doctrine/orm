@@ -802,29 +802,35 @@ abstract class AbstractPlatform
      */
     protected function _getAlterTableIndexForeignKeySql(TableDiff $diff)
     {
+        if ($diff->newName !== false) {
+            $tableName = $diff->newName;
+        } else {
+            $tableName = $diff->name;
+        }
+
         $sql = array();
         if ($this->supportsForeignKeyConstraints()) {
             foreach ($diff->addedForeignKeys AS $foreignKey) {
-                $sql[] = $this->getCreateForeignKeySql($foreignKey, $diff->name);
+                $sql[] = $this->getCreateForeignKeySql($foreignKey, $tableName);
             }
             foreach ($diff->removedForeignKeys AS $foreignKey) {
-                $sql[] = $this->getDropForeignKeySql($foreignKey, $diff->name);
+                $sql[] = $this->getDropForeignKeySql($foreignKey, $tableName);
             }
             foreach ($diff->changedForeignKeys AS $foreignKey) {
-                $sql[] = $this->getDropForeignKeySql($foreignKey, $diff->name);
-                $sql[] = $this->getCreateForeignKeySql($foreignKey, $diff->name);
+                $sql[] = $this->getDropForeignKeySql($foreignKey, $tableName);
+                $sql[] = $this->getCreateForeignKeySql($foreignKey, $tableName);
             }
         }
 
         foreach ($diff->addedIndexes AS $index) {
-            $sql[] = $this->getCreateIndexSql($index, $diff->name);
+            $sql[] = $this->getCreateIndexSql($index, $tableName);
         }
         foreach ($diff->removedIndexes AS $index) {
-            $sql[] = $this->getDropIndexSql($index, $diff->name);
+            $sql[] = $this->getDropIndexSql($index, $tableName);
         }
         foreach ($diff->changedIndexes AS $index) {
-            $sql[] = $this->getDropIndexSql($index, $diff->name);
-            $sql[] = $this->getCreateIndexSql($index, $diff->name);
+            $sql[] = $this->getDropIndexSql($index, $tableName);
+            $sql[] = $this->getCreateIndexSql($index, $tableName);
         }
 
         return $sql;

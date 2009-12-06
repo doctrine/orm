@@ -125,10 +125,11 @@ class MsSqlPlatform extends AbstractPlatform
                     . $this->getColumnDeclarationSql($column->getName(), $column->toArray());
         }
 
-        $sql = $this->_getAlterTableIndexForeignKeySql($diff);
+        $sql = array();
         if (count($queryParts) > 0) {
             $sql[] = 'ALTER TABLE ' . $diff->name . ' ' . implode(", ", $queryParts);
         }
+        $sql = array_merge($sql, $this->_getAlterTableIndexForeignKeySql($diff));
         return $sql;
     }
     

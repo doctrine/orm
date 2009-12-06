@@ -477,7 +477,7 @@ END;';
      */
     public function getAlterTableSql(TableDiff $diff)
     {
-        $sql = $this->_getAlterTableIndexForeignKeySql($diff);
+        $sql = array();
 
         $fields = array();
         foreach ($diff->addedColumns AS $column) {
@@ -511,6 +511,8 @@ END;';
         if ($diff->newName !== false) {
             $sql[] = 'ALTER TABLE ' . $diff->name . ' RENAME TO ' . $diff->newName;
         }
+
+        $sql = array_merge($sql, $this->_getAlterTableIndexForeignKeySql($diff));
 
         return $sql;
     }

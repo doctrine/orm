@@ -493,7 +493,7 @@ class PostgreSqlPlatform extends AbstractPlatform
      */
     public function getAlterTableSql(TableDiff $diff)
     {
-        $sql = $this->_getAlterTableIndexForeignKeySql($diff);
+        $sql = array();
 
         foreach ($diff->addedColumns as $column) {
             $query = 'ADD ' . $this->getColumnDeclarationSql($column->getName(), $column->toArray());
@@ -533,6 +533,8 @@ class PostgreSqlPlatform extends AbstractPlatform
         if ($diff->newName !== false) {
             $sql[] = 'ALTER TABLE ' . $diff->name . ' RENAME TO ' . $diff->newName;
         }
+
+        $sql = array_merge($sql, $this->_getAlterTableIndexForeignKeySql($diff));
 
         return $sql;
     }
