@@ -19,7 +19,7 @@ class CmsArticle
      */
     public $topic;
     /**
-     * @Column(type="string")
+     * @Column(type="text")
      */
     public $text;
     /**

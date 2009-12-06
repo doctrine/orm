@@ -509,6 +509,30 @@ class BasicFunctionalTest extends \Doctrine\Tests\OrmFunctionalTestCase
                 "select count(u.id) from Doctrine\Tests\Models\CMS\CmsUser u")
                 ->getSingleScalarResult());
     }
+
+    public function testTextColumnSaveAndRetrieve()
+    {
+        $user = new CmsUser;
+        $user->name = 'Guilherme';
+        $user->username = 'gblanco';
+        $user->status = 'developer';
+
+        $this->_em->persist($user);
+
+        $article = new \Doctrine\Tests\Models\CMS\CmsArticle();
+        $article->text = "Lorem ipsum dolor sunt.";
+        $article->topic = "A Test Article!";
+        $article->setAuthor($user);
+
+        $this->_em->persist($article);
+        $this->_em->flush();
+        $articleId = $article->id;
+
+        $this->_em->clear();
+
+        $article = $this->_em->find('Doctrine\Tests\Models\CMS\CmsArticle', $articleId);
+        $this->assertEquals("Lorem ipsum dolor sunt.", $article->text);
+    }
     
     //DRAFT OF EXPECTED/DESIRED BEHAVIOR
     /*public function testPersistentCollectionContainsDoesNeverInitialize()
