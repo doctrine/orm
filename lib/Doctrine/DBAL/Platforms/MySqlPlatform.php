@@ -771,6 +771,12 @@ class MySqlPlatform extends AbstractPlatform
      */
     public function getDropTableSql($table)
     {
+        if ($table instanceof \Doctrine\DBAL\Schema\Table) {
+            $table = $table->getName();
+        } else if(!is_string($table)) {
+            throw new \InvalidArgumentException('MysqlPlatform::getDropTableSql() expects $table parameter to be string or \Doctrine\DBAL\Schema\Table.');
+        }
+
         return 'DROP TABLE ' . $table;
     }
 

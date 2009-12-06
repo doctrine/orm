@@ -109,8 +109,8 @@ class TableTest extends \PHPUnit_Framework_TestCase
         $table->addIndex(array("foo", "bar", "baz"));
         $table->addUniqueIndex(array("foo", "bar", "baz"));
 
-        $this->assertTrue($table->hasIndex("foo_bar_baz_idx"));
-        $this->assertTrue($table->hasIndex("foo_bar_baz_uniq"));
+        $this->assertTrue($table->hasIndex("foo_foo_bar_baz_idx"));
+        $this->assertTrue($table->hasIndex("foo_foo_bar_baz_uniq"));
     }
 
     public function testIndexCaseInsensitive()
@@ -158,10 +158,10 @@ class TableTest extends \PHPUnit_Framework_TestCase
         $this->setExpectedException("Doctrine\DBAL\Schema\SchemaException");
 
         $type = \Doctrine\DBAL\Types\Type::getType('integer');
-        $columns = array(new Column("foo", $type));
+        $columns = array(new Column("foo", $type), new Column("bar", $type));
         $indexes = array(
             new Index("the_primary", array("foo"), true, true),
-            new Index("other_primary", array("foo"), true, true),
+            new Index("other_primary", array("bar"), true, true),
         );
         $table = new Table("foo", $columns, $indexes, array());
     }
@@ -171,10 +171,10 @@ class TableTest extends \PHPUnit_Framework_TestCase
         $this->setExpectedException("Doctrine\DBAL\Schema\SchemaException");
 
         $type = \Doctrine\DBAL\Types\Type::getType('integer');
-        $columns = array(new Column("foo", $type));
+        $columns = array(new Column("foo", $type), new Column("bar", $type));
         $indexes = array(
             new Index("an_idx", array("foo"), false, false),
-            new Index("an_idx", array("foo"), false, false),
+            new Index("an_idx", array("bar"), false, false),
         );
         $table = new Table("foo", $columns, $indexes, array());
     }

@@ -26,6 +26,11 @@ use Doctrine\DBAL\Schema\Visitor\Visitor;
 class ForeignKeyConstraint extends AbstractAsset implements Constraint
 {
     /**
+     * @var Table
+     */
+    protected $_localTable;
+
+    /**
      * @var array
      */
     protected $_localColumnNames;
@@ -65,6 +70,22 @@ class ForeignKeyConstraint extends AbstractAsset implements Constraint
         $this->_foreignTableName = $foreignTableName;
         $this->_foreignColumnNames = $foreignColumnNames;
         $this->_options = $options;
+    }
+
+    /**
+     * @return string
+     */
+    public function getLocalTableName()
+    {
+        return $this->_localTable->getName();
+    }
+
+    /**
+     * @param Table $table
+     */
+    public function setLocalTable(Table $table)
+    {
+        $this->_localTable = $table;
     }
 
     /**

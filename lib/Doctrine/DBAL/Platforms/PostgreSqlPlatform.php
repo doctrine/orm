@@ -565,6 +565,16 @@ class PostgreSqlPlatform extends AbstractPlatform
         }
         return 'DROP SEQUENCE ' . $sequence;
     }
+
+    /**
+     * @param  ForeignKeyConstraint|string $foreignKey
+     * @param  Table|string $table
+     * @return string
+     */
+    public function getDropForeignKeySql($foreignKey, $table)
+    {
+        return $this->getDropConstraintSql($foreignKey, $table);
+    }
     
     /**
      * Gets the SQL used to create a table.

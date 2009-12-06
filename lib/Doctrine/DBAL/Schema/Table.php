@@ -144,7 +144,9 @@ class Table extends AbstractAsset
     public function addIndex(array $columnNames, $indexName=null)
     {
         if($indexName == null) {
-            $indexName = $this->_generateIdentifierName($columnNames, "idx");
+            $indexName = $this->_generateIdentifierName(
+                array_merge(array($this->getName()), $columnNames), "idx"
+            );
         }
 
         return $this->_createIndex($columnNames, $indexName, false, false);
@@ -159,7 +161,9 @@ class Table extends AbstractAsset
     public function addUniqueIndex(array $columnNames, $indexName=null)
     {
         if ($indexName == null) {
-            $indexName = $this->_generateIdentifierName($columnNames, "uniq");
+            $indexName = $this->_generateIdentifierName(
+                array_merge(array($this->getName()), $columnNames), "uniq"
+            );
         }
 
         return $this->_createIndex($columnNames, $indexName, true, false);
@@ -313,11 +317,12 @@ class Table extends AbstractAsset
                 throw SchemaException::columnDoesNotExist($columnName);
             }
         }
-
+        
         $constraint = new ForeignKeyConstraint(
             $localColumnNames, $foreignTableName, $foreignColumnNames, $name, $options
         );
         $this->_addForeignKeyConstraint($constraint);
+
         return $this;
     }
 
@@ -355,6 +360,14 @@ class Table extends AbstractAsset
      */
     protected function _addIndex(Index $index)
     {
+        // check for duplicates
+        $c = new Comparator();
+        foreach ($this->_indexes AS $existingIndex) {
+            if ($c->diffIndex($index, $existingIndex) == false) {
+                return $this;
+            }
+        }
+
         $indexName = $index->getName();
         $indexName = strtolower($indexName);
 
@@ -375,6 +388,8 @@ class Table extends AbstractAsset
      */
     protected function _addForeignKeyConstraint(ForeignKeyConstraint $constraint)
     {
+        $constraint->setLocalTable($this);
+        
         if(strlen($constraint->getName())) {
             $name = $constraint->getName();
         } else {

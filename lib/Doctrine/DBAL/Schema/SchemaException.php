@@ -114,4 +114,14 @@ class SchemaException extends \Doctrine\DBAL\DBALException
     {
         return new self("Invalid case mode given to Schema Asset.");
     }
+
+    static public function namedForeignKeyRequired($localTable, $foreignKey)
+    {
+        return new self(
+            "The performed schema operation on ".$localTable->getName()." requires a named foreign key, ".
+            "but the given foreign key from (".implode(", ", $foreignKey->getColumns()).") onto foreign table ".
+            "'".$foreignKey->getForeignTableName()."' (".implode(", ", $foreignKey->getForeignColumns()).") is currently ".
+            "unnamed."
+        );
+    }
 }

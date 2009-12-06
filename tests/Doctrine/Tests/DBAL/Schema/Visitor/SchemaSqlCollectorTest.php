@@ -41,13 +41,13 @@ class SchemaSqlCollectorTest extends \PHPUnit_Framework_TestCase
         );
         $platformMock->expects($this->exactly(2))
                      ->method('getDropTableSql')
-                     ->will($this->returnValue(array("tbl")));
+                     ->will($this->returnValue("tbl"));
         $platformMock->expects($this->exactly(1))
                      ->method('getDropSequenceSql')
-                     ->will($this->returnValue(array("seq")));
+                     ->will($this->returnValue("seq"));
         $platformMock->expects($this->exactly(1))
                      ->method('getDropForeignKeySql')
-                     ->will($this->returnValue(array("fk")));
+                     ->will($this->returnValue("fk"));
 
         $schema = $this->createFixtureSchema();
 

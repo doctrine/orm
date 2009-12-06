@@ -70,11 +70,13 @@ class Comparator
      *
      * @return SchemaDiff
      */
-    public function compare( Schema $fromSchema, Schema $toSchema )
+    public function compare(Schema $fromSchema, Schema $toSchema)
     {
         $diff = new SchemaDiff();
 
-        foreach ( $toSchema->getTables() as $tableName => $table ) {
+        $foreignKeysToTable = array();
+
+        foreach ( $toSchema->getTables() AS $tableName => $table ) {
             if ( !$fromSchema->hasTable($tableName) ) {
                 $diff->newTables[$tableName] = $table;
             } else {
@@ -86,9 +88,24 @@ class Comparator
         }
 
         /* Check if there are tables removed */
-        foreach ( $fromSchema->getTables() as $tableName => $table ) {
+        foreach ( $fromSchema->getTables() AS $tableName => $table ) {
             if ( !$toSchema->hasTable($tableName) ) {
                 $diff->removedTables[$tableName] = $table;
+            }
+
+            // also remember all foreign keys that point to a specific table
+            foreach ($table->getForeignKeys() AS $foreignKey) {
+                $foreignTable = strtolower($foreignKey->getForeignTableName());
+                if (!isset($foreignKeysToTable[$foreignTable])) {
+                    $foreignKeysToTable[$foreignTable] = array();
+                }
+                $foreignKeysToTable[$foreignTable][] = $foreignKey;
+            }
+        }
+
+        foreach ($diff->removedTables AS $tableName => $table) {
+            if (isset($foreignKeysToTable[$tableName])) {
+                $diff->orphanedForeignKeys = array_merge($diff->orphanedForeignKeys, $foreignKeysToTable[$tableName]);
             }
         }
 
@@ -116,7 +133,7 @@ class Comparator
      * @param Sequence $sequence1
      * @param Sequence $sequence2
      */
-    public function diffSequence($sequence1, $sequence2)
+    public function diffSequence(Sequence $sequence1, Sequence $sequence2)
     {
         if($sequence1->getAllocationSize() != $sequence2->getAllocationSize()) {
             return true;
@@ -139,7 +156,7 @@ class Comparator
      *
      * @return bool|TableDiff
      */
-    public function diffTable( Table $table1, Table $table2 )
+    public function diffTable(Table $table1, Table $table2)
     {
         $changes = 0;
         $tableDifferences = new TableDiff($table1->getName());
@@ -249,7 +266,7 @@ class Comparator
      * @param ForeignKeyConstraint $key2
      * @return bool
      */
-    public function diffForeignKey($key1, $key2)
+    public function diffForeignKey(ForeignKeyConstraint $key1, ForeignKeyConstraint $key2)
     {
         if ($key1->getLocalColumns() != $key2->getLocalColumns()) {
             return true;
@@ -289,7 +306,7 @@ class Comparator
      *
      * @return array
      */
-    public function diffColumn( Column $column1, Column $column2 )
+    public function diffColumn(Column $column1, Column $column2)
     {
         $changedProperties = array();
         if ( $column1->getType() != $column2->getType() ) {
@@ -350,7 +367,7 @@ class Comparator
      * @param Index $index2
      * @return bool
      */
-    public function diffIndex( Index $index1, Index $index2 )
+    public function diffIndex(Index $index1, Index $index2)
     {
         if($index1->isPrimary() != $index2->isPrimary()) {
             return true;

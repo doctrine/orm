@@ -1656,6 +1656,14 @@ abstract class AbstractPlatform
     }
 
     /**
+     * @return bool
+     */
+    public function createsExplicitIndexForForeignKeys()
+    {
+        return false;
+    }
+
+    /**
      * Whether the platform supports getting the affected rows of a recent
      * update/delete type query.
      *

@@ -446,28 +446,15 @@ class SchemaTool
      * @param string $mode
      * @return array
      */
-    public function getDropSchemaSql(array $classes, $mode=self::DROP_METADATA)
+    public function getDropSchemaSql(array $classes)
     {
-        if($mode == self::DROP_METADATA) {
-            $tables = $this->_getDropSchemaTablesMetadataMode($classes);
-        } else if($mode == self::DROP_DATABASE) {
-            $tables = $this->_getDropSchemaTablesDatabaseMode($classes);
-        } else {
-            throw new \Doctrine\ORM\ORMException("Given Drop Schema Mode is not supported.");
-        }
-
         $sm = $this->_em->getConnection()->getSchemaManager();
-        /* @var $sm \Doctrine\DBAL\Schema\AbstractSchemaManager */
-        $allTables = $sm->listTables();
-        
-        $sql = array();
-        foreach($tables AS $tableName) {
-            if(in_array($tableName, $allTables)) {
-                $sql[] = $this->_platform->getDropTableSql($tableName);
-            }
-        }
+        $schema = $sm->createSchema();
 
-        return $sql;
+        $visitor = new \Doctrine\DBAL\Schema\Visitor\DropSchemaSqlCollector($this->_platform);
+        /* @var $schema \Doctrine\DBAL\Schema\Schema */
+        $schema->visit($visitor);
+        return $visitor->getQueries();
     }
 
     /**
@@ -534,7 +521,7 @@ class SchemaTool
     {
         $updateSchemaSql = $this->getUpdateSchemaSql($classes);
         $conn = $this->_em->getConnection();
-        
+
         foreach ($updateSchemaSql as $sql) {
             $conn->execute($sql);
         }

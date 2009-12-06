@@ -73,6 +73,11 @@ class SchemaDiff
     public $removedSequences = array();
 
     /**
+     * @var array
+     */
+    public $orphanedForeignKeys = array();
+
+    /**
      * Constructs an SchemaDiff object.
      *
      * @param array(string=>Table)      $newTables
@@ -87,14 +92,45 @@ class SchemaDiff
     }
 
     /**
-     * @param Schema $fromSchema
-     * @param Schema $toSchema
+     * The to save sql mode ensures that the following things don't happen:
+     *
+     * 1. Tables are deleted
+     * 2. Sequences are deleted
+     * 3. Foreign Keys which reference tables that would otherwise be deleted.
+     *
+     * This way it is ensured that assets are deleted which might not be relevant to the metadata schema at all.
+     *
+     * @param AbstractPlatform $platform
+     * @return array
+     */
+    public function toSaveSql(AbstractPlatform $platform)
+    {
+        return $this->_toSql($platform, true);
+    }
+
+    /**
      * @param AbstractPlatform $platform
      * @return array
      */
     public function toSql(AbstractPlatform $platform)
     {
+        return $this->_toSql($platform, false);
+    }
+
+    /**
+     * @param AbstractPlatform $platform
+     * @param bool $saveMode
+     * @return array
+     */
+    protected function _toSql(AbstractPlatform $platform, $saveMode = false)
+    {
         $sql = array();
+
+        if ($platform->supportsForeignKeyConstraints()) {
+            foreach ($this->orphanedForeignKeys AS $orphanedForeignKey) {
+                $sql[] = $platform->getDropForeignKeySql($orphanedForeignKey, $orphanedForeignKey->getLocalTableName());
+            }
+        }
 
         if ($platform->supportsSequences() == true) {
             foreach ($this->changedSequences AS $sequence) {
@@ -102,8 +138,10 @@ class SchemaDiff
                 $sql[] = $platform->getCreateSequenceSql($sequence);
             }
 
-            foreach ($this->removedSequences AS $sequence) {
-                $sql[] = $platform->getDropSequenceSql($sequence);
+            if ($saveMode === false) {
+                foreach ($this->removedSequences AS $sequence) {
+                    $sql[] = $platform->getDropSequenceSql($sequence);
+                }
             }
 
             foreach ($this->newSequences AS $sequence) {
@@ -118,8 +156,10 @@ class SchemaDiff
             );
         }
 
-        foreach ($this->removedTables AS $table) {
-            $sql[] = $platform->getDropTableSql($table);
+        if ($saveMode === true) {
+            foreach ($this->removedTables AS $table) {
+                $sql[] = $platform->getDropTableSql($table);
+            }
         }
 
         foreach ($this->changedTables AS $tableDiff) {
