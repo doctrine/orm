@@ -126,7 +126,7 @@ class SchemaDiff
     {
         $sql = array();
 
-        if ($platform->supportsForeignKeyConstraints()) {
+        if ($platform->supportsForeignKeyConstraints() && $saveMode == false) {
             foreach ($this->orphanedForeignKeys AS $orphanedForeignKey) {
                 $sql[] = $platform->getDropForeignKeySql($orphanedForeignKey, $orphanedForeignKey->getLocalTableName());
             }
@@ -156,7 +156,7 @@ class SchemaDiff
             );
         }
 
-        if ($saveMode === true) {
+        if ($saveMode === false) {
             foreach ($this->removedTables AS $table) {
                 $sql[] = $platform->getDropTableSql($table);
             }

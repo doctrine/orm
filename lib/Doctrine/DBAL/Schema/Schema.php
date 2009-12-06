@@ -266,23 +266,25 @@ class Schema extends AbstractAsset
     }
 
     /**
-     * @param Schema $schema
+     * @param Schema $toSchema
      * @param AbstractPlatform $platform
      */
-    public function getMigrateToSql(Schema $schema, \Doctrine\DBAL\Platforms\AbstractPlatform $platform)
+    public function getMigrateToSql(Schema $toSchema, \Doctrine\DBAL\Platforms\AbstractPlatform $platform)
     {
         $comparator = new Comparator();
-        $schemaDiff = $comparator->compare($this, $schema);
+        $schemaDiff = $comparator->compare($this, $toSchema);
+        return $schemaDiff->toSql($platform);
     }
 
     /**
-     * @param Schema $schema
+     * @param Schema $fromSchema
      * @param AbstractPlatform $platform
      */
-    public function getMigrateFromSql(Schema $schema, \Doctrine\DBAL\Platforms\AbstractPlatform $platform)
+    public function getMigrateFromSql(Schema $fromSchema, \Doctrine\DBAL\Platforms\AbstractPlatform $platform)
     {
         $comparator = new Comparator();
-        $schemaDiff = $comparator->compare($schema, $this);
+        $schemaDiff = $comparator->compare($fromSchema, $this);
+        return $schemaDiff->toSql($platform);
     }
 
     /**

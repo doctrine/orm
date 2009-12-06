@@ -517,9 +517,9 @@ class SchemaTool
      * @param array $classes
      * @return void
      */
-    public function updateSchema(array $classes)
+    public function updateSchema(array $classes, $saveMode=false)
     {
-        $updateSchemaSql = $this->getUpdateSchemaSql($classes);
+        $updateSchemaSql = $this->getUpdateSchemaSql($classes, $saveMode);
         $conn = $this->_em->getConnection();
 
         foreach ($updateSchemaSql as $sql) {
@@ -534,7 +534,7 @@ class SchemaTool
      * @param array $classes The classes to consider.
      * @return array The sequence of SQL statements.
      */
-    public function getUpdateSchemaSql(array $classes)
+    public function getUpdateSchemaSql(array $classes, $saveMode=false)
     {
         $sm = $this->_em->getConnection()->getSchemaManager();
 
@@ -544,7 +544,11 @@ class SchemaTool
         $comparator = new \Doctrine\DBAL\Schema\Comparator();
         $schemaDiff = $comparator->compare($fromSchema, $toSchema);
 
-        return $schemaDiff->toSql($this->_platform);
+        if ($saveMode) {
+            return $schemaDiff->toSaveSql($this->_platform);
+        } else {
+            return $schemaDiff->toSql($this->_platform);
+        }
     }
     
     private function _getCommitOrder(array $classes)

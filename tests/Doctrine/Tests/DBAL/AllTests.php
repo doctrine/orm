@@ -49,6 +49,7 @@ class AllTests
         $suite->addTestSuite('Doctrine\Tests\DBAL\Schema\SchemaTest');
         $suite->addTestSuite('Doctrine\Tests\DBAL\Schema\Visitor\SchemaSqlCollectorTest');
         $suite->addTestSuite('Doctrine\Tests\DBAL\Schema\ComparatorTest');
+        $suite->addTestSuite('Doctrine\Tests\DBAL\Schema\SchemaDiffTest');
 
         // Driver manager test
         $suite->addTestSuite('Doctrine\Tests\DBAL\DriverManagerTest');

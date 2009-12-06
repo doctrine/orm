@@ -4,10 +4,24 @@
 
 # Upgrade from 2.0-ALPHA3 to 2.0-ALPHA4
 
+## Changes in Method Signatures
+
+    * A bunch of Methods on both Doctrine\DBAL\Platforms\AbstractPlatform and Doctrine\DBAL\Schema\AbstractSchemaManager
+      have changed quite significantly by adopting the new Schema instance objects.
+
 ## Renamed Methods
 
     * Doctrine\ORM\AbstractQuery::setExpireResultCache() -> expireResultCache()
     * Doctrine\ORM\Query::setExpireQueryCache() -> expireQueryCache()
+
+## WARNING: Change in SchemaTool behaviour
+
+    * "doctrine schema-tool --drop" now always drops the complete database instead of only those tables defined by the
+      current database model. The previous method had problems when foreign keys of orphaned tables pointed to
+      tables that were schedulded for deletion.
+    * Use "doctrine schema-tool --update" to get a save incremental update for your database schema without
+      deleting any unused tables, sequences or foreign keys.
+    * Use "doctrine schema-tool --complete-update" to do a full incremental update of your schema.
 
 # Upgrade from 2.0-ALPHA2 to 2.0-ALPHA3
 

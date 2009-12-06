@@ -57,15 +57,23 @@ class SchemaToolTask extends AbstractTask
                 'If defined, --drop, --update and --re-create can not be requested on same task.'
             ),
             new Option(
-                'drop', '<metadata|database>', 
+                'drop', null,
                 'Drops the schema of EntityManager (drop tables on Database).' . PHP_EOL .
-                'Defaults to "metadata" if only --drop is specified.' . PHP_EOL .
+                'Beware that the complete database is dropped by this command, '.PHP_EOL.
+                'even tables that are not relevant to your metadata model.' . PHP_EOL .
                 'If defined, --create, --update and --re-create can not be requested on same task.'
             ),
             new Option(
-                'update', null, 
+                'update', null,
                 'Updates the schema in EntityManager (update tables on Database).' . PHP_EOL .
-                'If defined, --create, --drop and --re-create can not be requested on same task.'
+                'This command does a save update, which does not delete any tables, sequences or affected foreign keys.' . PHP_EOL .
+                'If defined, --create, --drop and --complete-update --re-create can not be requested on same task.'
+            ),
+            new Option(
+                'complete-update', null,
+                'Updates the schema in EntityManager (update tables on Database).' . PHP_EOL .
+                'Beware that all assets of the database which are not relevant to the current metadata are dropped by this command.'.PHP_EOL.
+                'If defined, --create, --drop and --update --re-create can not be requested on same task.'
             ),
             new Option(
                 're-create', null, 
@@ -104,14 +112,20 @@ class SchemaToolTask extends AbstractTask
         $isCreate = isset($args['create']);
         $isDrop = isset($args['drop']);
         $isUpdate = isset($args['update']);
+        $isCompleteUpdate = isset($args['complete-update']);
         
-        if ($isUpdate && ($isCreate || $isDrop)) {
-            $printer->writeln("You can't use --update with --create or --drop", 'ERROR');
+        if ($isUpdate && ($isCreate || $isDrop || $isCompleteUpdate)) {
+            $printer->writeln("You can't use --update with --create, --drop or --complete-update", 'ERROR');
             return false;
         }
 
-        if ( ! ($isCreate || $isDrop || $isUpdate)) {
-            $printer->writeln('You must specify at a minimum one of the options (--create, --drop, --update, --re-create).', 'ERROR');
+        if ($isCompleteUpdate && ($isCreate || $isDrop || $isUpdate)) {
+            $printer->writeln("You can't use --update with --create, --drop or --update", 'ERROR');
+            return false;
+        }
+
+        if ( ! ($isCreate || $isDrop || $isUpdate || $isCompleteUpdate)) {
+            $printer->writeln('You must specify at a minimum one of the options (--create, --drop, --update, --re-create, --complete-update).', 'ERROR');
             return false;
         }
         
@@ -140,6 +154,7 @@ class SchemaToolTask extends AbstractTask
         $isCreate = isset($args['create']);
         $isDrop = isset($args['drop']);
         $isUpdate = isset($args['update']);
+        $isCompleteUpdate = isset($args['complete-update']);
 
         $em = $this->getEntityManager();
         $cmf = $em->getMetadataFactory();
@@ -162,20 +177,15 @@ class SchemaToolTask extends AbstractTask
         $tool = new SchemaTool($em);
         
         if ($isDrop) {
-            $dropMode = $args['drop'];
-            if(!in_array($dropMode, array('metadata', 'database'))) {
-                $dropMode = 'metadata';
-            }
-
             if (isset($args['dump-sql'])) {
-                foreach ($tool->getDropSchemaSql($classes, $dropMode) as $sql) {
+                foreach ($tool->getDropSchemaSql($classes) as $sql) {
                     $printer->writeln($sql);
                 }
             } else {
                 $printer->writeln('Dropping database schema...', 'INFO');
                 
                 try {
-                    $tool->dropSchema($classes, $dropMode);
+                    $tool->dropSchema($classes);
                     $printer->writeln('Database schema dropped successfully.', 'INFO');
                 } catch (\Exception $ex) {
                     throw new DoctrineException($ex);
@@ -200,16 +210,17 @@ class SchemaToolTask extends AbstractTask
             }
         }
 
-        if ($isUpdate) {            
+        if ($isUpdate || $isCompleteUpdate) {
+            $saveMode = $isUpdate?true:false;
             if (isset($args['dump-sql'])) {
-                foreach ($tool->getUpdateSchemaSql($classes) as $sql) {
+                foreach ($tool->getUpdateSchemaSql($classes, $saveMode) as $sql) {
                     $printer->writeln($sql);
                 }
             } else {
                 $printer->writeln('Updating database schema...', 'INFO');
                 
                 try {
-                    $tool->updateSchema($classes);
+                    $tool->updateSchema($classes, $saveMode);
                     $printer->writeln('Database schema updated successfully.', 'INFO');
                 } catch (\Exception $ex) {
                     throw new DoctrineException($ex);

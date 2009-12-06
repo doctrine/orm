@@ -110,11 +110,6 @@ class SchemaException extends \Doctrine\DBAL\DBALException
         return new self("There exists no foreign key with the name '".$fkName."'.", self::FOREIGNKEY_DOESNT_EXIST);
     }
 
-    static public function invalidCaseModeGiven()
-    {
-        return new self("Invalid case mode given to Schema Asset.");
-    }
-
     static public function namedForeignKeyRequired($localTable, $foreignKey)
     {
         return new self(

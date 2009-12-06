@@ -166,4 +166,24 @@ class SchemaTest extends \PHPUnit_Framework_TestCase
 
         $schema = new Schema(array(), array($sequence, $sequence));
     }
+
+    public function testFixSchema_AddExplicitIndexForForeignKey()
+    {
+        $schema = new Schema();
+        $tableA = $schema->createTable('foo');
+        $tableA->createColumn('id', 'integer');
+
+        $tableB = $schema->createTable('bar');
+        $tableB->createColumn('id', 'integer');
+        $tableB->createcolumn('foo_id', 'integer');
+        $tableB->addForeignKeyConstraint($tableA, array('foo_id'), array('id'));
+
+        $this->assertEquals(0, count($tableB->getIndexes()));
+
+        $schema->visit(new \Doctrine\DBAL\Schema\Visitor\FixSchema(true));
+
+        $this->assertEquals(1, count($tableB->getIndexes()));
+        $index = current($tableB->getIndexes());
+        $this->assertTrue($index->hasColumnAtPosition('foo_id', 0));
+    }
 }
