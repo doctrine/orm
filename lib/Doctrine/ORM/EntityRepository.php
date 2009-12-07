@@ -136,8 +136,8 @@ class EntityRepository
      *
      * @return array|object The found entity/entities.
      * @throws BadMethodCallException  If the method called is an invalid find* method
-     *                                    or no find* method at all and therefore an invalid
-     *                                    method call.
+     *                                 or no find* method at all and therefore an invalid
+     *                                 method call.
      */
     public function __call($method, $arguments)
     {

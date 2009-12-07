@@ -30,5 +30,10 @@ namespace Doctrine\ORM;
  * @since       2.0
  * @version     $Revision$
  */
-class OptimisticLockException extends \Doctrine\Common\DoctrineException
-{}
+class OptimisticLockException extends ORMException
+{
+    public static function lockFailed()
+    {
+        return new self("The optimistic lock failed.");
+    }
+}

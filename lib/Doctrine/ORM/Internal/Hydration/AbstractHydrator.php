@@ -22,8 +22,7 @@
 namespace Doctrine\ORM\Internal\Hydration;
 
 use Doctrine\DBAL\Connection,
-    Doctrine\DBAL\Types\Type,
-    Doctrine\Common\DoctrineException;
+    Doctrine\DBAL\Types\Type;
 
 /**
  * Base class for all hydrators. A hydrator is a class that provides some form
@@ -38,7 +37,7 @@ use Doctrine\DBAL\Connection,
  */
 abstract class AbstractHydrator
 {
-    /** The ResultSetMapping. */
+    /** @var ResultSetMapping The ResultSetMapping. */
     protected $_rsm;
 
     /** @var EntityManager The EntityManager instance. */
@@ -152,7 +151,7 @@ abstract class AbstractHydrator
      */
     protected function _hydrateRow(array &$data, array &$cache, array &$result)
     {
-        throw new DoctrineException("_hydrateRow() not implemented by this hydrator.");
+        throw new HydrationException("_hydrateRow() not implemented by this hydrator.");
     }
 
     /**
@@ -301,7 +300,7 @@ abstract class AbstractHydrator
      * during hydration because the hydrator caches effectively.
      *
      * @return string  The field name.
-     * @throws DoctrineException If the field name could not be found.
+     * @throws HydrationException If the field name could not be found.
      * @todo Remove. See inline FIXME comment.
      */
     private function _lookupDeclaringClass($class, $fieldName)
@@ -317,6 +316,6 @@ abstract class AbstractHydrator
             }
         }
 
-        throw DoctrineException::noOwnerFoundForField($class, $fieldName);
+        throw new HydrationException("No owner found for field $fieldName.");
     }
 }

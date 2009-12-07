@@ -137,7 +137,7 @@ class ObjectHydrator extends AbstractHydrator
             $value = new ArrayCollection;
         }
         
-        if ($value instanceof ArrayCollection) {
+        if ( ! $value instanceof PersistentCollection) {
             $value = new PersistentCollection(
                 $this->_em,
                 $this->_ce[$relation->targetEntityName],

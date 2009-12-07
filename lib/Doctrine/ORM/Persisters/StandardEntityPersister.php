@@ -256,7 +256,7 @@ class StandardEntityPersister
         $result = $this->_conn->executeUpdate($sql, $params);
 
         if ($isVersioned && ! $result) {
-            throw \Doctrine\ORM\OptimisticLockException::optimisticLockFailed();
+            throw \Doctrine\ORM\OptimisticLockException::lockFailed();
         }
     }
 

@@ -183,8 +183,10 @@ class AnnotationDriver implements Driver
                 $mapping['precision'] = $columnAnnot->precision;
                 $mapping['scale'] = $columnAnnot->scale;
                 $mapping['nullable'] = $columnAnnot->nullable;
-                $mapping['options'] = $columnAnnot->options;
                 $mapping['unique'] = $columnAnnot->unique;
+                if ($columnAnnot->options) {
+                    $mapping['options'] = $columnAnnot->options;
+                }
                 
                 if (isset($columnAnnot->default)) {
                     $mapping['default'] = $columnAnnot->default;

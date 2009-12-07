@@ -81,8 +81,7 @@ class ArrayHydrator extends AbstractHydrator
             unset($rowData['scalars']);
         }
 
-        // 3) Now hydrate the rest of the data found in the current row, that
-        // belongs to other (related) entities.
+        // 2) Now hydrate the data found in the current row.
         foreach ($rowData as $dqlAlias => $data) {
             $index = false;
 

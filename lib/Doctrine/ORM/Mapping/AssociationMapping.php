@@ -120,7 +120,9 @@ abstract class AssociationMapping
      */
     public function __construct(array $mapping)
     {
-        $this->_validateAndCompleteMapping($mapping);
+        if ($mapping) {
+            $this->_validateAndCompleteMapping($mapping);
+        }
     }
     
     /**

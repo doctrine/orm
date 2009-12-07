@@ -183,7 +183,8 @@ class SchemaTest extends \PHPUnit_Framework_TestCase
         $schema->visit(new \Doctrine\DBAL\Schema\Visitor\FixSchema(true));
 
         $this->assertEquals(1, count($tableB->getIndexes()));
-        $index = current($tableB->getIndexes());
+        $indexes = $tableB->getIndexes();
+        $index = current($indexes);
         $this->assertTrue($index->hasColumnAtPosition('foo_id', 0));
     }
 }

@@ -42,10 +42,4 @@ class SingleScalarHydrator extends AbstractHydrator
         $result = $this->_gatherScalarRowData($result[key($result)], $cache);
         return array_shift($result);
     }
-
-    /** {@inheritdoc} */
-    protected function _getRowContainer()
-    {
-        return array();
-    }
 }
