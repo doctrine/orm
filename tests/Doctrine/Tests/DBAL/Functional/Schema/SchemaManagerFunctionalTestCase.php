@@ -346,7 +346,8 @@ class SchemaManagerFunctionalTestCase extends \Doctrine\Tests\DbalFunctionalTest
         $this->assertFalse($table->hasIndex('foo_idx'));
 
         $this->assertEquals(1, count($table->getForeignKeys()));
-        $foreignKey = current($table->getForeignKeys());
+        $fks = $table->getForeignKeys();
+        $foreignKey = current($fks);
         $this->assertEquals('alter_table_foreign', strtolower($foreignKey->getForeignTableName()));
         $this->assertEquals(array('foreign_key_test'), array_map('strtolower', $foreignKey->getColumns()));
         $this->assertEquals(array('id'), array_map('strtolower', $foreignKey->getForeignColumns()));

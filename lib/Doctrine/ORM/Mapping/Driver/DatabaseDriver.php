@@ -132,14 +132,16 @@ class DatabaseDriver implements Driver
                     "Cannot generate mapping for table '".$tableName."' with foreign keys with multiple local columns."
                 );
             }
-            $localColumn = current($foreignKey->getColumns());
+            $cols = $foreignKey->getColumns();
+            $localColumn = current($cols);
 
-            if (count($foreignKey->getForeignColumns()) != 1) {
+            $fkCols = $foreignKey->getForeignColumns();
+            if (count($fkCols) != 1) {
                 throw new MappingException(
                     "Cannot generate mapping for table '".$tableName."' with foreign keys with multiple foreign columns."
                 );
             }
-            $foreignColumn = current($foreignKey->getForeignColumns());
+            $foreignColumn = current($fkCols);
 
             $associationMapping = array();
             $associationMapping['fieldName'] = Inflector::camelize(str_ireplace('_id', '', $localColumn));
