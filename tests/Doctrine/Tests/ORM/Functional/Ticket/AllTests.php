@@ -19,7 +19,7 @@ class AllTests
     {
         $suite = new \Doctrine\Tests\OrmFunctionalTestSuite('Doctrine Orm Ticket Tests');
 
-        $tests = glob(__DIR__ . '/Ticket*Test.php');
+        $tests = glob(__DIR__ . '/*Test.php');
         foreach ($tests as $test) {
             $info = pathinfo($test);
             $suite->addTestSuite('Doctrine\Tests\ORM\Functional\Ticket\\' . $info['filename']);

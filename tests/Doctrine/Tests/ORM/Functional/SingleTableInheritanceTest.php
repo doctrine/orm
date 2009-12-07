@@ -183,10 +183,6 @@ class SingleTableInheritanceTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertEquals('related to parent!', $related->getData());
     }
     
-    /*public function testPolymorphicQueryWithJoin()
-    {
-        
-    }*/
 }
 
 /**

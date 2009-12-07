@@ -384,6 +384,7 @@ class SchemaTool
         $fkOptions = array();
 
         foreach ($joinColumns as $joinColumn) {
+            // Note that this thing might be quoted, i.e. `foo`, [foo], ...
             $columnName = $mapping->getQuotedJoinColumnName($joinColumn['name'], $this->_platform);
 
             if (!$class->hasField($class->getFieldName($joinColumn['referencedColumnName']))) {
@@ -397,11 +398,16 @@ class SchemaTool
             $localColumns[] = $columnName;
             $foreignColumns[] = $joinColumn['referencedColumnName'];
 
-            $theJoinTable->createColumn(
-                $columnName, $class->getTypeOfColumn($joinColumn['referencedColumnName']), array('notnull' => false)
-            );
+            if ( ! $theJoinTable->hasColumn($joinColumn['name'])) {
+                // Only add the column to the table if it does not exist already.
+                // It might exist already if the foreign key is mapped into a regular
+                // property as well.
+                $theJoinTable->createColumn(
+                    $columnName, $class->getTypeOfColumn($joinColumn['referencedColumnName']), array('notnull' => false)
+                );
+            }
 
-            if(isset($joinColumn['unique']) && $joinColumn['unique'] == true) {
+            if (isset($joinColumn['unique']) && $joinColumn['unique'] == true) {
                 $uniqueConstraints[] = array($columnName);
             }
 

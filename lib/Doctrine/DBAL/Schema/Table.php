@@ -188,7 +188,7 @@ class Table extends AbstractAsset
                 $columnName = $indexColOptions;
             }
 
-            if (!isset($this->_columns[$columnName])) {
+            if ( ! $this->hasColumn($columnName)) {
                 throw SchemaException::columnDoesNotExist($columnName);
             }
         }
@@ -304,7 +304,7 @@ class Table extends AbstractAsset
             $foreignTableName = $foreignTable->getName();
 
             foreach ($foreignColumnNames AS $columnName) {
-                if (!$foreignTable->hasColumn($columnName)) {
+                if ( ! $foreignTable->hasColumn($columnName)) {
                     throw SchemaException::columnDoesNotExist($columnName);
                 }
             }
@@ -313,7 +313,7 @@ class Table extends AbstractAsset
         }
 
         foreach ($localColumnNames AS $columnName) {
-            if (!$this->hasColumn($columnName)) {
+            if ( ! $this->hasColumn($columnName)) {
                 throw SchemaException::columnDoesNotExist($columnName);
             }
         }
