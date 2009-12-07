@@ -330,5 +330,15 @@ class TableTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($constraints["foo_id_fk"]->hasOption("foo"));
         $this->assertEquals("bar", $constraints["foo_id_fk"]->getOption("foo"));
     }
-    
+
+    public function testAddIndexWithCaseSensitiveColumnProblem()
+    {
+        $table = new Table("foo");
+        $table->createColumn("id", 'integer');
+
+        $table->addIndex(array("ID"), "my_idx");
+
+        $this->assertTrue($table->hasIndex('my_idx'));
+        $this->assertEquals(array("ID"), $table->getIndex("my_idx")->getColumns());
+    }
 }
