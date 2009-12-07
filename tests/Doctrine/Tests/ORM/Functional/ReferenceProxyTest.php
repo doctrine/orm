@@ -11,11 +11,10 @@ require_once __DIR__ . '/../../TestInit.php';
 /**
  * Tests the generation of a proxy object for lazy loading.
  * @author Giorgio Sironi <piccoloprincipeazzurro@gmail.com>
+ * @author Benjamin Eberlei <kontakt@beberlei.de>
  */
 class ReferenceProxyTest extends \Doctrine\Tests\OrmFunctionalTestCase
 {
-    private $product;
-
     protected function setUp()
     {
         $this->useModelSet('ecommerce');

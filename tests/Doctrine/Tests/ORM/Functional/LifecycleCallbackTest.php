@@ -59,6 +59,26 @@ class LifecycleCallbackTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertEquals('Alice', $user2->getName());
         $this->assertEquals('Hello World', $user2->getValue());
     }
+
+    /**
+     * @group DDC-194
+     */
+    public function testGetReferenceWithPostLoadEventIsDelayedUntilProxyTrigger()
+    {
+        $entity = new LifecycleCallbackTestEntity;
+        $entity->value = 'hello';
+        $this->_em->persist($entity);
+        $this->_em->flush();
+        $id = $entity->getId();
+
+        $this->_em->clear();
+
+        $reference = $this->_em->getReference('Doctrine\Tests\ORM\Functional\LifecycleCallbackTestEntity', $id);
+        $this->assertFalse($reference->postLoadCallbackInvoked);
+
+        $reference->getId(); // trigger proxy load
+        $this->assertTrue($reference->postLoadCallbackInvoked);
+    }
 }
 
 /** @Entity @HasLifecycleCallbacks */
@@ -99,6 +119,10 @@ class LifecycleCallbackTestEntity
      * @Column(type="string")
      */
     public $value;
+
+    public function getId() {
+        return $this->id;
+    }
     
     /** @PrePersist */
     public function doStuffOnPrePersist() {

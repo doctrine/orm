@@ -261,10 +261,10 @@ namespace <namespace> {
         }
         private function _load() {
             if ( ! $this->_loaded) {
+                $this->_loaded = true;
                 $this->_entityPersister->load($this->_identifier, $this);
                 unset($this->_entityPersister);
                 unset($this->_identifier);
-                $this->_loaded = true;
             }
         }
         public function __isInitialized__() { return $this->_loaded; }
