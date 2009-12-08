@@ -63,4 +63,15 @@ class QueryException extends \Doctrine\Common\DoctrineException
     {
         return new self("Invalid parameter: token ".$key." is not defined in the query.");
     }
+
+    /**
+     * @param Doctrine\ORM\Mapping\AssociationMapping $assoc
+     */
+    public static function iterateWithFetchJoinCollectionNotAllowed($assoc)
+    {
+        return new self(
+            "Invalid query operation: Not allowed to iterate over fetch join collections ".
+            "in class ".$assoc->sourceEntityName." assocation ".$assoc->sourceFieldName
+        );
+    }
 }

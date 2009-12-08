@@ -176,6 +176,15 @@ class QueryTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->clear();
     }
 
+    /**
+     * @expectedException \Doctrine\ORM\Query\QueryException
+     */
+    public function testIterateResult_FetchJoinedCollection_ThrowsException()
+    {
+        $query = $this->_em->createQuery("SELECT u, a FROM Doctrine\Tests\Models\CMS\CmsUser u JOIN u.articles a");
+        $articles = $query->iterate();
+    }
+
     public function testFluentQueryInterface()
     {
         $q = $this->_em->createQuery("select a from Doctrine\Tests\Models\CMS\CmsArticle a");

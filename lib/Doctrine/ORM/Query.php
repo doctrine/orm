@@ -78,6 +78,11 @@ final class Query extends AbstractQuery
     //const HINT_READ_ONLY = 'doctrine.readOnly';
 
     /**
+     * @var string
+     */
+    const HINT_INTERNAL_ITERATION = 'doctrine.internal.iteration';
+
+    /**
      * @var integer $_state   The current state of this query.
      */
     private $_state = self::STATE_CLEAN;
@@ -418,5 +423,19 @@ final class Query extends AbstractQuery
     public function getMaxResults()
     {
         return $this->_maxResults;
+    }
+
+    /**
+     * Executes the query and returns an IterableResult that can be used to incrementally
+     * iterated over the result.
+     *
+     * @param array $params The query parameters.
+     * @param integer $hydrationMode The hydration mode to use.
+     * @return IterableResult
+     */
+    public function iterate(array $params = array(), $hydrationMode = self::HYDRATE_OBJECT)
+    {
+        $this->setHint(self::HINT_INTERNAL_ITERATION, true);
+        return parent::iterate($params, $hydrationMode);
     }
 }

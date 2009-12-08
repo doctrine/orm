@@ -55,8 +55,11 @@ class SqlWalker implements TreeWalker
     /** The Connection of the EntityManager. */
     private $_conn;
     
-    /** The Query instance. */
+    /**
+     * @var AbstractQuery
+     */
     private $_query;
+
     private $_dqlToSqlAliasMap = array();
     
     /** Map from result variable names to their SQL column alias names. */
@@ -648,6 +651,12 @@ class SqlWalker implements TreeWalker
             $assoc = $targetClass->associationMappings[$relation->mappedByFieldName];
         } else {
             $assoc = $relation;
+        }
+
+        if ($this->_query->getHint(Query::HINT_INTERNAL_ITERATION) == true) {
+            if ($relation->isOneToMany() || $relation->isManyToMany()) {
+                throw QueryException::iterateWithFetchJoinNotAllowed($assoc);
+            }
         }
 
         if ($assoc->isOneToOne()) {
