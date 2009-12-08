@@ -22,7 +22,8 @@
 namespace Doctrine\DBAL;
 
 use Doctrine\Common\EventManager,
-    Doctrine\Common\DoctrineException;
+    Doctrine\Common\DoctrineException,
+    Doctrine\DBAL\DBALException;
 
 /**
  * A wrapper around a Doctrine\DBAL\Driver\Connection that adds features like
@@ -178,7 +179,13 @@ class Connection
 
         $this->_config = $config;
         $this->_eventManager = $eventManager;
-        $this->_platform = $driver->getDatabasePlatform();
+        if (!isset($params['platform'])) {
+            $this->_platform = $driver->getDatabasePlatform();
+        } else if($params['platform'] instanceof \Doctrine\DBAL\Platforms\AbstractPlatform) {
+            $this->_platform = $params['platform'];
+        } else {
+            throw DBALException::invalidPlatformSpecified();
+        }
         $this->_transactionIsolationLevel = $this->_platform->getDefaultTransactionIsolationLevel();
     }
 

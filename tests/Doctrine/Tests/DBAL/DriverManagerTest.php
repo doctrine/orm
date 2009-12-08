@@ -49,4 +49,16 @@ class DriverManagerTest extends \Doctrine\Tests\DbalTestCase
     {
         $conn = \Doctrine\DBAL\DriverManager::getConnection(array('driver' => 'invalid_driver'));
     }
+
+    public function testCustomPlatform()
+    {
+        $mockPlatform = new \Doctrine\Tests\DBAL\Mocks\MockPlatform();
+        $options = array(
+            'pdo' => new \PDO('sqlite::memory:'),
+            'platform' => $mockPlatform
+        );
+
+        $conn = \Doctrine\DBAL\DriverManager::getConnection($options);
+        $this->assertSame($mockPlatform, $conn->getDatabasePlatform());
+    }
 }
