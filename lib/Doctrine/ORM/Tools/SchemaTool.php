@@ -288,7 +288,6 @@ class SchemaTool
         $options['notnull'] = isset($mapping['nullable']) ? ! $mapping['nullable'] : true;
 
         $options['platformOptions'] = array();
-        $options['platformOptions']['unique'] = isset($mapping['unique']) ? $mapping['unique'] : false;
         $options['platformOptions']['version'] = $class->isVersioned && $class->versionField == $mapping['fieldName'] ? true : false;
 
         if(strtolower($columnType) == 'string' && $options['length'] === null) {
@@ -312,6 +311,11 @@ class SchemaTool
             $table->changeColumn($columnName, $options);
         } else {
             $table->createColumn($columnName, $columnType, $options);
+        }
+
+        $isUnique = isset($mapping['unique']) ? $mapping['unique'] : false;
+        if ($isUnique) {
+            $table->addUniqueIndex(array($columnName));
         }
     }
 
