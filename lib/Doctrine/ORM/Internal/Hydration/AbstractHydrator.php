@@ -305,7 +305,7 @@ abstract class AbstractHydrator
      */
     private function _lookupDeclaringClass($class, $fieldName)
     {
-        //FIXME: What if two subclasses declare a (mapped) field with the same name?
+        // FIXME: What if two subclasses declare a (mapped) field with the same name?
         //       We probably need to encode the information to which subclass a field
         //       belongs in the column alias / result set mapping.
         //       This would solve the issue and would probably make this lookup superfluous.

@@ -354,6 +354,7 @@ class ObjectHydrator extends AbstractHydrator
                                         }
                                     } else {
                                         $targetClass->reflFields[$inverseAssoc->sourceFieldName]->setValue($element, $parentObject);
+                                        $this->_uow->setOriginalEntityProperty(spl_object_hash($element), $inverseAssoc->sourceFieldName, $parentObject);
                                     }
                                 } else if ($parentClass === $targetClass && $relation->mappedByFieldName) {
                                     // Special case: bi-directional self-referencing one-one on the same class
@@ -362,6 +363,7 @@ class ObjectHydrator extends AbstractHydrator
                             } else {
                                 // For sure bidirectional, as there is no inverse side in unidirectional mappings
                                 $targetClass->reflFields[$relation->mappedByFieldName]->setValue($element, $parentObject);
+                                $this->_uow->setOriginalEntityProperty(spl_object_hash($element), $relation->mappedByFieldName, $parentObject);
                             }
                             // Update result pointer
                             $this->_resultPointers[$dqlAlias] = $element;

@@ -29,7 +29,7 @@ class DebugStack implements SqlLogger
 
     public function logSql($sql, array $params = null)
     {
-        if($this->enabled) {
+        if ($this->enabled) {
             $this->queries[] = array('sql' => $sql, 'params' => $params);
         }
     }
