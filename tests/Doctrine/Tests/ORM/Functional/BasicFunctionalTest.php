@@ -544,6 +544,40 @@ class BasicFunctionalTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertEquals("Lorem ipsum dolor sunt. And stuff!", $articleNew->text);
     }
     
+    public function testFlushDoesNotIssueUnnecessaryUpdates()
+    {
+        
+        $user = new CmsUser;
+        $user->name = 'Guilherme';
+        $user->username = 'gblanco';
+        $user->status = 'developer';
+        
+        $address = new CmsAddress;
+        $address->country = 'Germany';
+        $address->city = 'Berlin';
+        $address->zip = '12345';
+        
+        $address->user = $user;
+        $user->address = $address;
+        
+        $this->_em->persist($user);
+        
+        $this->_em->flush();
+        $this->_em->clear();
+                
+        $query = $this->_em->createQuery('select u, a from Doctrine\Tests\Models\CMS\CmsUser u join u.address a');
+        $user2 = $query->getSingleResult();
+        
+        $oldLogger = $this->_em->getConnection()->getConfiguration()->getSqlLogger();
+        $debugStack = new \Doctrine\DBAL\Logging\DebugStack;
+        $this->_em->getConnection()->getConfiguration()->setSqlLogger($debugStack);
+        
+        $this->_em->flush();
+        $this->assertEquals(0, count($debugStack->queries));
+        
+        $this->_em->getConnection()->getConfiguration()->setSqlLogger($oldLogger);
+    }
+    
     //DRAFT OF EXPECTED/DESIRED BEHAVIOR
     /*public function testPersistentCollectionContainsDoesNeverInitialize()
     {
