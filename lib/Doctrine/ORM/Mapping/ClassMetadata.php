@@ -334,7 +334,7 @@ final class ClassMetadata extends ClassMetadataInfo
             'inheritanceType',
             'inheritedAssociationFields',
             'insertSql',
-            'inverseMappings',
+            'inverseMappings', //TODO: Remove!
             'isIdentifierComposite',
             'isMappedSuperclass',
             'isVersioned',
@@ -343,7 +343,6 @@ final class ClassMetadata extends ClassMetadataInfo
             'namespace',
             'parentClasses',
             'primaryTable',
-            'resultColumnNames',
             'rootEntityName',
             'sequenceGeneratorDefinition',
             'subClasses',

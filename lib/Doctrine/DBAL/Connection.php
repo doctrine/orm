@@ -292,7 +292,8 @@ class Connection
     /**
      * Establishes the connection with the database.
      *
-     * @return boolean
+     * @return boolean TRUE if the connection was successfully established, FALSE if
+     *                 the connection is already open.
      */
     public function connect()
     {
@@ -311,11 +312,13 @@ class Connection
     }
 
     /**
-     * Convenience method for PDO::query("...") followed by $stmt->fetch(PDO::FETCH_ASSOC).
-     *
+     * Prepares and executes an SQL query and returns the first row of the result
+     * as an associative array.
+     * 
      * @param string $statement The SQL query.
      * @param array $params The query parameters.
      * @return array
+     * @todo Rename: fetchAssoc
      */
     public function fetchRow($statement, array $params = array())
     {
@@ -323,7 +326,8 @@ class Connection
     }
 
     /**
-     * Convenience method for PDO::query("...") followed by $stmt->fetch(PDO::FETCH_NUM).
+     * Prepares and executes an SQL query and returns the first row of the result
+     * as a numerically indexed array.
      *
      * @param string $statement         sql query to be executed
      * @param array $params             prepared statement params
@@ -335,12 +339,13 @@ class Connection
     }
 
     /**
-     * Convenience method for PDO::query("...") followed by $stmt->fetchColumn(...).
-     *
+     * Prepares and executes an SQL query and returns the value of a single column
+     * of the first row of the result.
+     * 
      * @param string $statement         sql query to be executed
      * @param array $params             prepared statement params
      * @param int $colnum               0-indexed column number to retrieve
-     * @return array
+     * @return mixed
      */
     public function fetchColumn($statement, array $params = array(), $colnum = 0)
     {
@@ -358,21 +363,9 @@ class Connection
     }
 
     /**
-     * Convenience method for PDO::query("...") followed by $stmt->fetchAll(PDO::FETCH_BOTH).
-     *
-     * @param string $statement         sql query to be executed
-     * @param array $params             prepared statement params
-     * @return array
-     */
-    public function fetchBoth($statement, array $params = array())
-    {
-        return $this->execute($statement, $params)->fetchAll(Connection::FETCH_BOTH);
-    }
-
-    /**
      * Deletes table row(s) matching the specified identifier.
      *
-     * @param string $table         The table to delete data from
+     * @param string $table         The table to delete data from.
      * @param array $identifier     An associateve array containing identifier fieldname-value pairs.
      * @return integer              The number of affected rows
      */
@@ -532,7 +525,7 @@ class Connection
     }
 
     /**
-     * Convenience method for PDO::query("...") followed by $stmt->fetchAll(PDO::FETCH_ASSOC).
+     * Prepares and executes an SQL query and returns the result as an associative array.
      *
      * @param string $sql The SQL query.
      * @param array $params The query parameters.
@@ -546,8 +539,8 @@ class Connection
     /**
      * Prepares an SQL statement.
      *
-     * @param string $statement
-     * @return Statement
+     * @param string $statement The SQL statement to prepare.
+     * @return Statement The prepared statement.
      */
     public function prepare($statement)
     {
@@ -557,29 +550,11 @@ class Connection
     }
 
     /**
-     * Queries the database with limit and offset added to the query and returns
-     * a Statement object.
+     * Prepares and executes an SQL query.
      *
-     * @param string $query
-     * @param integer $limit
-     * @param integer $offset
-     * @return Statement
-     */
-    public function select($query, $limit = 0, $offset = 0)
-    {
-        if ($limit > 0 || $offset > 0) {
-            $query = $this->_platform->modifyLimitQuery($query, $limit, $offset);
-        }
-        
-        return $this->execute($query);
-    }
-
-    /**
-     * Executes an SQL SELECT query with the given parameters.
-     *
-     * @param string $query     sql query
-     * @param array $params     query parameters
-     * @return PDOStatement
+     * @param string $query The SQL query to prepare and execute.
+     * @param array $params The parameters, if any.
+     * @return Statement The prepared and executed statement.
      */
     public function execute($query, array $params = array())
     {
@@ -597,6 +572,35 @@ class Connection
         }
         
         return $stmt;
+    }
+    
+    /**
+     * Prepares and executes an SQL query and returns the result, optionally applying a
+     * transformation on the rows of the result.
+     *
+     * @param string $query The SQL query to execute.
+     * @param array $params The parameters, if any.
+     * @param Closure $mapper The transformation function that is applied on each row.
+     *                        The function receives a single paramater, an array, that
+     *                        represents a row of the result set.
+     * @return mixed The (possibly transformed) result of the query.
+     */
+    public function query($query, array $params = array(), \Closure $mapper = null)
+    {
+        $result = array();
+        $stmt = $this->execute($query, $params);
+        
+        while ($row = $stmt->fetch()) {
+            if ($mapper === null) {
+                $result[] = $row;
+            } else {
+                $result[] = $mapper($row);
+            }
+        }
+        
+        $stmt->closeCursor();
+        
+        return $result;
     }
 
     /**
@@ -726,7 +730,7 @@ class Connection
      * this method can be listened with onPreTransactionRollback and onTransactionRollback
      * eventlistener methods
      *
-     * @throws ConnectionException   If the rollback operation fails at database level.
+     * @throws ConnectionException If the rollback operation failed.
      */
     public function rollback()
     {

@@ -10,7 +10,10 @@ class DDC168Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->useModelSet('company');
         parent::setUp();
     }
-
+    
+    /**
+     * @group DDC-168
+     */
     public function testJoinedSubclassPersisterRequiresSpecificOrderOfMetadataReflFieldsArray()
     {
         $metadata = $this->_em->getClassMetadata('Doctrine\Tests\Models\Company\CompanyEmployee');

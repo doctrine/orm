@@ -84,7 +84,7 @@ class DDC199ChildClass extends DDC199ParentClass
     public $childData;
 }
 
-/** @Entity @Table(name="ddcxxx_relatedclass") */
+/** @Entity @Table(name="ddc199_relatedclass") */
 class DDC199RelatedClass
 {
     /** @Id @Column(type="integer") @GeneratedValue(strategy="AUTO") */

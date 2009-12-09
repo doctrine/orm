@@ -21,7 +21,7 @@
 
 namespace Doctrine\ORM\Mapping;
 
-use Doctrine\Common\DoctrineException,
+use Doctrine\ORM\ORMException,
     Doctrine\DBAL\Platforms\AbstractPlatform,
     Doctrine\ORM\Events;
 
@@ -189,7 +189,6 @@ class ClassMetadataFactory
                 $class->setVersioned($parent->isVersioned);
                 $class->setVersionField($parent->versionField);
                 $class->setDiscriminatorMap($parent->discriminatorMap);
-                $class->setResultColumnNames($parent->resultColumnNames);
             }
 
             // Invoke driver
@@ -228,13 +227,6 @@ class ClassMetadataFactory
 
             if ( ! $class->isMappedSuperclass) {
                 $this->_generateStaticSql($class);
-            }
-            
-            if ($parent) {
-                foreach ($visited as $parentClassName) {
-                    $parentClass = $this->_loadedMetadata[$parentClassName];
-                    $parentClass->setResultColumnNames(array_merge($parentClass->resultColumnNames, $class->resultColumnNames));
-                }
             }
             
             $this->_loadedMetadata[$className] = $class;
@@ -321,11 +313,6 @@ class ClassMetadataFactory
                 if (isset($class->fieldMappings[$name]['inherited']) && ! isset($class->fieldMappings[$name]['id'])
                         || isset($class->inheritedAssociationFields[$name])
                         || ($versioned && $versionField == $name)) {
-                    if (isset($class->columnNames[$name])) {
-                        // Add column mapping for SQL result sets
-                        $columnName = $class->columnNames[$name];
-                        $class->resultColumnNames[$this->_targetPlatform->getSqlResultCasing($columnName)] = $columnName;
-                    }
                     continue;
                 }
 
@@ -334,19 +321,10 @@ class ClassMetadataFactory
                     if ($assoc->isOneToOne() && $assoc->isOwningSide) {
                         foreach ($assoc->targetToSourceKeyColumns as $sourceCol) {
                             $columns[] = $assoc->getQuotedJoinColumnName($sourceCol, $this->_targetPlatform);
-                            // Add column mapping for SQL result sets
-                            $class->resultColumnNames[$this->_targetPlatform->getSqlResultCasing($sourceCol)] = $sourceCol;
                         }
                     }
                 } else if ($class->name != $class->rootEntityName || ! $class->isIdGeneratorIdentity() || $class->identifier[0] != $name) {
                     $columns[] = $class->getQuotedColumnName($name, $this->_targetPlatform);
-                    // Add column mapping for SQL result sets
-                    $columnName = $class->columnNames[$name];
-                    $class->resultColumnNames[$this->_targetPlatform->getSqlResultCasing($columnName)] = $columnName;
-                } else {
-                    // Add column mapping for SQL result sets
-                    $columnName = $class->columnNames[$name];
-                    $class->resultColumnNames[$this->_targetPlatform->getSqlResultCasing($columnName)] = $columnName;
                 }
             }
         } else {
@@ -360,19 +338,10 @@ class ClassMetadataFactory
                     if ($assoc->isOwningSide && $assoc->isOneToOne()) {
                         foreach ($assoc->targetToSourceKeyColumns as $sourceCol) {
                             $columns[] = $assoc->getQuotedJoinColumnName($sourceCol, $this->_targetPlatform);
-                            // Add column mapping for SQL result sets
-                            $class->resultColumnNames[$this->_targetPlatform->getSqlResultCasing($sourceCol)] = $sourceCol;
                         }
                     }
                 } else if ($class->generatorType != ClassMetadata::GENERATOR_TYPE_IDENTITY ||  $class->identifier[0] != $name) {
                     $columns[] = $class->getQuotedColumnName($name, $this->_targetPlatform);
-                    // Add column mapping for SQL result sets
-                    $columnName = $class->columnNames[$name];
-                    $class->resultColumnNames[$this->_targetPlatform->getSqlResultCasing($columnName)] = $columnName;
-                } else {
-                    // Add column mapping for SQL result sets
-                    $columnName = $class->columnNames[$name];
-                    $class->resultColumnNames[$this->_targetPlatform->getSqlResultCasing($columnName)] = $columnName;
                 }
             }
         }
@@ -383,9 +352,6 @@ class ClassMetadataFactory
                     && $class->name == $class->rootEntityName) {
                 $columns[] = $class->getQuotedDiscriminatorColumnName($this->_targetPlatform);
             }
-            // Add column mapping for SQL result sets
-            $columnName = $class->discriminatorColumn['name'];
-            $class->resultColumnNames[$this->_targetPlatform->getSqlResultCasing($columnName)] = $columnName;
         }
 
         if (empty($columns)) {
@@ -448,10 +414,10 @@ class ClassMetadataFactory
                 $class->setIdGenerator(new \Doctrine\ORM\Id\Assigned());
                 break;
             case ClassMetadata::GENERATOR_TYPE_TABLE:
-                throw new DoctrineException("DoctrineTableGenerator not yet implemented.");
+                throw new ORMException("TableGenerator not yet implemented.");
                 break;
             default:
-                throw new DoctrineException("Unexhaustive match.");
+                throw new ORMException("Unknown generator type: " . $class->generatorType);
         }
     }
 }

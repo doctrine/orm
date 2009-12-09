@@ -45,7 +45,7 @@ class LifecycleCallbackTest extends \Doctrine\Tests\OrmFunctionalTestCase
     {
         $user = new LifecycleCallbackTestUser;
         $user->setName('Bob');
-        $user->setValue('');
+        $user->setValue('value');
         $this->_em->persist($user);
         $this->_em->flush();
         

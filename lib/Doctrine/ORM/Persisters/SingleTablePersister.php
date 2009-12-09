@@ -50,9 +50,16 @@ class SingleTablePersister extends StandardEntityPersister
     /** @override */
     protected function _getSelectColumnList()
     {
+        $setResultColumnNames = empty($this->_resultColumnNames);
         $columnList = parent::_getSelectColumnList();
         // Append discriminator column
         $columnList .= ', ' . $this->_class->getQuotedDiscriminatorColumnName($this->_platform);
+        
+        if ($setResultColumnNames) {
+            $resultColumnName = $this->_platform->getSqlResultCasing($this->_class->discriminatorColumn['name']);
+            $this->_resultColumnNames[$resultColumnName] = $this->_class->discriminatorColumn['name'];
+        }
+        
         ///$tableAlias = $this->_class->getQuotedTableName($this->_platform);
         foreach ($this->_class->subClasses as $subClassName) {
             $subClass = $this->_em->getClassMetadata($subClassName);
@@ -60,6 +67,10 @@ class SingleTablePersister extends StandardEntityPersister
             foreach ($subClass->fieldMappings as $fieldName => $mapping) {
                 if ( ! isset($mapping['inherited'])) {
                     $columnList .= ', ' . $subClass->getQuotedColumnName($fieldName, $this->_platform);
+                    if ($setResultColumnNames) {
+                        $resultColumnName = $this->_platform->getSqlResultCasing($mapping['columnName']);
+                        $this->_resultColumnNames[$resultColumnName] = $mapping['columnName'];
+                    }
                 }
             }
             
@@ -68,6 +79,10 @@ class SingleTablePersister extends StandardEntityPersister
                 if ($assoc->isOwningSide && $assoc->isOneToOne() && ! isset($subClass->inheritedAssociationFields[$assoc->sourceFieldName])) {
                     foreach ($assoc->targetToSourceKeyColumns as $srcColumn) {
                         $columnList .= ', ' /*. $tableAlias . '.'*/ . $assoc->getQuotedJoinColumnName($srcColumn, $this->_platform);
+                        if ($setResultColumnNames) {
+                            $resultColumnName = $this->_platform->getSqlResultCasing($srcColumn);
+                            $this->_resultColumnNames[$resultColumnName] = $srcColumn;
+                        }
                     }
                 }
             }

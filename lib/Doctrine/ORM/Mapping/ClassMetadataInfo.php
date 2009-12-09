@@ -257,18 +257,6 @@ class ClassMetadataInfo
      * @var array
      */
     public $columnNames = array();
-    
-    /**
-     * A map of column names as they appear in an SQL result set to column names as they
-     * are defined in the mapping. This includes the columns of all mapped fields as well
-     * as any join columns and discriminator columns.
-     * 
-     * @var array
-     * @todo Remove. Or at least remove from serialization/unserialization and instead
-     *       populate them during runtime.
-     *       See http://www.doctrine-project.org/jira/browse/DDC-132.
-     */
-    public $resultColumnNames = array();
 
     /**
      * Whether to automatically OUTER JOIN subtypes when a basetype is queried.
@@ -340,6 +328,7 @@ class ClassMetadataInfo
      * List of inverse association mappings, indexed by mappedBy field name.
      *
      * @var array
+     * @todo Remove! See http://www.doctrine-project.org/jira/browse/DDC-193
      */
     public $inverseMappings = array();
     

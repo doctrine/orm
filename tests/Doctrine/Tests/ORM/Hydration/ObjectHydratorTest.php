@@ -8,6 +8,8 @@ use Doctrine\ORM\Proxy\ProxyFactory;
 use Doctrine\ORM\Mapping\AssociationMapping;
 use Doctrine\ORM\Query;
 
+use Doctrine\Tests\Models\CMS\CmsUser;
+
 require_once __DIR__ . '/../../TestInit.php';
 
 class ObjectHydratorTest extends HydrationTestCase
@@ -684,6 +686,62 @@ class ObjectHydratorTest extends HydrationTestCase
         $this->assertTrue(isset($result[1]->boards));
         $this->assertEquals(1, count($result[1]->boards));
 
+    }
+    
+    public function testChainedJoinWithEmptyCollections()
+    {
+        $rsm = new ResultSetMapping;
+        $rsm->addEntityResult('Doctrine\Tests\Models\CMS\CmsUser', 'u');
+        $rsm->addJoinedEntityResult(
+                'Doctrine\Tests\Models\CMS\CmsArticle',
+                'a',
+                'u',
+                'articles'
+        );
+        $rsm->addJoinedEntityResult(
+                'Doctrine\Tests\Models\CMS\CmsComment',
+                'c',
+                'a',
+                'comments'
+        );
+        $rsm->addFieldResult('u', 'u__id', 'id');
+        $rsm->addFieldResult('u', 'u__status', 'status');
+        $rsm->addFieldResult('a', 'a__id', 'id');
+        $rsm->addFieldResult('a', 'a__topic', 'topic');
+        $rsm->addFieldResult('c', 'c__id', 'id');
+        $rsm->addFieldResult('c', 'c__topic', 'topic');
+
+        // Faked result set
+        $resultSet = array(
+            //row1
+            array(
+                'u__id' => '1',
+                'u__status' => 'developer',
+                'a__id' => null,
+                'a__topic' => null,
+                'c__id' => null,
+                'c__topic' => null
+                ),
+           array(
+                'u__id' => '2',
+                'u__status' => 'developer',
+                'a__id' => null,
+                'a__topic' => null,
+                'c__id' => null,
+                'c__topic' => null
+                ),
+            );
+
+        $stmt = new HydratorMockStatement($resultSet);
+        $hydrator = new \Doctrine\ORM\Internal\Hydration\ObjectHydrator($this->_em);
+
+        $result = $hydrator->hydrateAll($stmt, $rsm, array(Query::HINT_FORCE_PARTIAL_LOAD => true));
+
+        $this->assertEquals(2, count($result));
+        $this->assertTrue($result[0] instanceof CmsUser);
+        $this->assertTrue($result[1] instanceof CmsUser);
+        $this->assertEquals(0, $result[0]->articles->count());
+        $this->assertEquals(0, $result[1]->articles->count());
     }
 
     public function testResultIteration()

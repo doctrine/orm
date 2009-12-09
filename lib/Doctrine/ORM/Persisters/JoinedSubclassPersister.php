@@ -21,7 +21,7 @@
 
 namespace Doctrine\ORM\Persisters;
 
-use Doctrine\Common\DoctrineException;
+use Doctrine\ORM\ORMException;
 
 /**
  * The joined subclass persister maps a single entity instance to several tables in the
@@ -52,8 +52,7 @@ class JoinedSubclassPersister extends StandardEntityPersister
         if ($isInsert) {
             $discColumn = $this->_class->discriminatorColumn;
             $rootClass = $this->_em->getClassMetadata($this->_class->rootEntityName);
-            $result[$rootClass->primaryTable['name']][$discColumn['name']] =
-            $this->_class->discriminatorValue;
+            $result[$rootClass->primaryTable['name']][$discColumn['name']] = $this->_class->discriminatorValue;
         }
     }
 
@@ -61,7 +60,7 @@ class JoinedSubclassPersister extends StandardEntityPersister
      * This function finds the ClassMetadata instance in a inheritance hierarchy
      * that is responsible for enabling versioning.
      *
-     * @return mixed $versionedClass  ClassMetadata instance or false if versioning is not enabled
+     * @return mixed $versionedClass ClassMetadata instance or false if versioning is not enabled
      */
     private function _getVersionedClassMetadata()
     {
@@ -280,6 +279,7 @@ class JoinedSubclassPersister extends StandardEntityPersister
         $aliasIndex = 1;
         $idColumns = $this->_class->getIdentifierColumnNames();
         $baseTableAlias = 't0';
+        $setResultColumnNames = empty($this->_resultColumnNames);
             
         foreach (array_merge($this->_class->subClasses, $this->_class->parentClasses) as $className) {
             $tableAliases[$className] = 't' . $aliasIndex++;
@@ -292,6 +292,11 @@ class JoinedSubclassPersister extends StandardEntityPersister
                     $tableAliases[$mapping['inherited']] : $baseTableAlias;
             if ($columnList != '') $columnList .= ', ';
             $columnList .= $tableAlias . '.' . $this->_class->getQuotedColumnName($fieldName, $this->_platform);
+          
+            if ($setResultColumnNames) {
+                $resultColumnName = $this->_platform->getSqlResultCasing($mapping['columnName']);
+                $this->_resultColumnNames[$resultColumnName] = $mapping['columnName'];
+            }
         }
         
         // Add foreign key columns
@@ -299,6 +304,11 @@ class JoinedSubclassPersister extends StandardEntityPersister
             if ($assoc2->isOwningSide && $assoc2->isOneToOne()) {
                 foreach ($assoc2->targetToSourceKeyColumns as $srcColumn) {
                     $columnList .= ', ' . $assoc2->getQuotedJoinColumnName($srcColumn, $this->_platform);
+                    
+                    if ($setResultColumnNames) {
+                        $resultColumnName = $this->_platform->getSqlResultCasing($srcColumn);
+                        $this->_resultColumnNames[$resultColumnName] = $srcColumn;
+                    }
                 }
             }
         }
@@ -310,6 +320,11 @@ class JoinedSubclassPersister extends StandardEntityPersister
         } else {
             $columnList .= ', ' . $tableAliases[$this->_class->rootEntityName] . '.' .
                     $this->_class->getQuotedDiscriminatorColumnName($this->_platform);
+        }
+        
+        if ($setResultColumnNames) {
+            $resultColumnName = $this->_platform->getSqlResultCasing($this->_class->discriminatorColumn['name']);
+            $this->_resultColumnNames[$resultColumnName] = $this->_class->discriminatorColumn['name'];
         }
 
         // INNER JOIN parent tables
@@ -336,6 +351,11 @@ class JoinedSubclassPersister extends StandardEntityPersister
                     continue;
                 }
                 $columnList .= ', ' . $tableAlias . '.' . $subClass->getQuotedColumnName($fieldName, $this->_platform);
+                
+                if ($setResultColumnNames) {
+                    $resultColumnName = $this->_platform->getSqlResultCasing($mapping['columnName']);
+                    $this->_resultColumnNames[$resultColumnName] = $mapping['columnName'];
+                }
             }
             
             // Add join columns (foreign keys)
@@ -343,6 +363,11 @@ class JoinedSubclassPersister extends StandardEntityPersister
                 if ($assoc2->isOwningSide && $assoc2->isOneToOne() && ! isset($subClass->inheritedAssociationFields[$assoc2->sourceFieldName])) {
                     foreach ($assoc2->targetToSourceKeyColumns as $srcColumn) {
                         $columnList .= ', ' . $tableAlias . '.' . $assoc2->getQuotedJoinColumnName($srcColumn, $this->_platform);
+                        
+                        if ($setResultColumnNames) {
+                            $resultColumnName = $this->_platform->getSqlResultCasing($srcColumn);
+                            $this->_resultColumnNames[$resultColumnName] = $srcColumn;
+                        }
                     }
                 }
             }
@@ -365,7 +390,7 @@ class JoinedSubclassPersister extends StandardEntityPersister
             } else if ($assoc !== null) {
                 $conditionSql .= $assoc->getQuotedJoinColumnName($field, $this->_platform);
             } else {
-                throw DoctrineException::unrecognizedField($field);
+                throw ORMException::unrecognizedField($field);
             }
             $conditionSql .= ' = ?';
         }

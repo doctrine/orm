@@ -62,7 +62,7 @@ class ObjectHydrator extends AbstractHydrator
         
         foreach ($this->_rsm->aliasMap as $dqlAlias => $className) {
             $this->_identifierMap[$dqlAlias] = array();
-            $this->_resultPointers[$dqlAlias] = array();
+            //$this->_resultPointers[$dqlAlias] = array();
             $this->_idTemplate[$dqlAlias] = '';
             $class = $this->_em->getClassMetadata($className);
 

@@ -21,11 +21,13 @@
 
 namespace Doctrine\DBAL\Driver;
 
+use Doctrine\DBAL\Connection as DBALConnection;
+
 /**
  * Statement interface.
  * Drivers must implement this interface.
  * 
- * This resembles the PDOStatement interface.
+ * This resembles (a subset of) the PDOStatement interface.
  * 
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  * @author      Roman Borschel <roman@code-factory.org>
@@ -35,7 +37,7 @@ namespace Doctrine\DBAL\Driver;
  * @version     $Revision$
  */
 interface Statement
-{    
+{
     /**
      * Bind a column to a PHP variable
      *
@@ -92,7 +94,6 @@ interface Statement
     function bindParam($column, &$variable, $type = null, $length = null, $driverOptions = array());
 
     /**
-     * closeCursor
      * Closes the cursor, enabling the statement to be executed again.
      *
      * @return boolean              Returns TRUE on success or FALSE on failure.
@@ -170,12 +171,9 @@ interface Statement
      *
      * @return mixed
      */
-    function fetch($fetchStyle = Query::HYDRATE_BOTH,
-                          $cursorOrientation = Query::HYDRATE_ORI_NEXT,
-                          $cursorOffset = null);
+    function fetch($fetchStyle = DBALConnection::FETCH_BOTH);
 
     /**
-     * fetchAll
      * Returns an array containing all of the result set rows
      *
      * @param integer $fetchStyle           Controls how the next row will be returned to the caller.
@@ -187,7 +185,7 @@ interface Statement
      *
      * @return array
      */
-    function fetchAll($fetchStyle = Query::HYDRATE_BOTH);
+    function fetchAll($fetchStyle = DBALConnection::FETCH_BOTH);
 
     /**
      * fetchColumn
@@ -203,62 +201,6 @@ interface Statement
     function fetchColumn($columnIndex = 0);
 
     /**
-     * fetchObject
-     * Fetches the next row and returns it as an object.
-     *
-     * Fetches the next row and returns it as an object. This function is an alternative to 
-     * PDOStatement->fetch() with Query::HYDRATE_CLASS or Query::HYDRATE_OBJ style.
-     *
-     * @param string $className             Name of the created class, defaults to stdClass. 
-     * @param array $args                   Elements of this array are passed to the constructor.
-     *
-     * @return mixed                        an instance of the required class with property names that correspond 
-     *                                      to the column names or FALSE in case of an error.
-     */
-    function fetchObject($className = 'stdClass', $args = array());
-
-    /**
-     * getAttribute
-     * Retrieve a statement attribute 
-     *
-     * @param integer $attribute
-     * @see Doctrine::ATTR_* constants
-     * @return mixed                        the attribute value
-     */
-    function getAttribute($attribute);
-
-    /**
-     * getColumnMeta
-     * Returns metadata for a column in a result set
-     *
-     * @param integer $column               The 0-indexed column in the result set.
-     *
-     * @return array                        Associative meta data array with the following structure:
-     *
-     *          native_type                 The PHP native type used to represent the column value.
-     *          driver:decl_                type The SQL type used to represent the column value in the database. If the column in the result set is the result of a function, this value is not returned by PDOStatement->getColumnMeta().
-     *          flags                       Any flags set for this column.
-     *          name                        The name of this column as returned by the database.
-     *          len                         The length of this column. Normally -1 for types other than floating point decimals.
-     *          precision                   The numeric precision of this column. Normally 0 for types other than floating point decimals.
-     *          pdo_type                    The type of this column as represented by the PDO::PARAM_* constants.
-     */
-    function getColumnMeta($column);
-
-    /**
-     * nextRowset
-     * Advances to the next rowset in a multi-rowset statement handle
-     * 
-     * Some database servers support stored procedures that return more than one rowset 
-     * (also known as a result set). The nextRowset() method enables you to access the second 
-     * and subsequent rowsets associated with a PDOStatement object. Each rowset can have a 
-     * different set of columns from the preceding rowset.
-     *
-     * @return boolean                      Returns TRUE on success or FALSE on failure.
-     */
-    function nextRowset();
-
-    /**
      * rowCount
      * rowCount() returns the number of rows affected by the last DELETE, INSERT, or UPDATE statement 
      * executed by the corresponding object.
@@ -271,23 +213,4 @@ interface Statement
      * @return integer                      Returns the number of rows.
      */
     function rowCount();
-
-    /**
-     * setAttribute
-     * Set a statement attribute
-     *
-     * @param integer $attribute
-     * @param mixed $value                  the value of given attribute
-     * @return boolean                      Returns TRUE on success or FALSE on failure.
-     */
-    function setAttribute($attribute, $value);
-
-    /**
-     * setFetchMode
-     * Set the default fetch mode for this statement 
-     *
-     * @param integer $mode                 The fetch mode must be one of the Query::HYDRATE_* constants.
-     * @return boolean                      Returns 1 on success or FALSE on failure.
-     */
-    function setFetchMode($mode, $arg1);
 }

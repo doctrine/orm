@@ -86,6 +86,8 @@ class StandardEntityPersister
      * @var array
      */
     protected $_queuedInserts = array();
+    
+    protected $_resultColumnNames = array();
 
     /**
      * Initializes a new instance of a class derived from AbstractEntityPersister
@@ -189,8 +191,8 @@ class StandardEntityPersister
         $identifier = $this->_class->getIdentifierColumnNames();
         $versionFieldColumnName = $this->_class->getColumnName($versionField);
         //FIXME: Order with composite keys might not be correct
-        $sql = "SELECT " . $versionFieldColumnName . " FROM " . $class->getQuotedTableName($this->_platform) .
-               " WHERE " . implode(' = ? AND ', $identifier) . " = ?";
+        $sql = "SELECT " . $versionFieldColumnName . " FROM " . $class->getQuotedTableName($this->_platform)
+               . " WHERE " . implode(' = ? AND ', $identifier) . " = ?";
         $value = $this->_conn->fetchColumn($sql, array_values((array)$id));
         $this->_class->setFieldValue($entity, $versionField, $value);
     }
@@ -453,7 +455,7 @@ class StandardEntityPersister
         
         // Refresh simple state
         foreach ($result as $column => $value) {
-            $column = $this->_class->resultColumnNames[$column];
+            $column = isset($this->_resultColumnNames[$column]) ? $this->_resultColumnNames[$column] : $column;
             if (isset($this->_class->fieldNames[$column])) {
                 $fieldName = $this->_class->fieldNames[$column];
                 $type = Type::getType($this->_class->fieldMappings[$fieldName]['type']);
@@ -636,7 +638,7 @@ class StandardEntityPersister
     {
         $data = array();
         foreach ($sqlResult as $column => $value) {
-            $column = $this->_class->resultColumnNames[$column];
+            $column = isset($this->_resultColumnNames[$column]) ? $this->_resultColumnNames[$column] : $column;
             if (isset($this->_class->fieldNames[$column])) {
                 $field = $this->_class->fieldNames[$column];
                 $data[$field] = Type::getType($this->_class->fieldMappings[$field]['type'])
@@ -690,11 +692,18 @@ class StandardEntityPersister
     protected function _getSelectColumnList()
     {
         $columnList = '';
+        $tableName = $this->_class->getQuotedTableName($this->_platform);
+        $setResultColumnNames = empty($this->_resultColumnNames);
         
         // Add regular columns to select list
         foreach ($this->_class->fieldNames as $field) {
             if ($columnList != '') $columnList .= ', ';
-            $columnList .= $this->_class->getQuotedColumnName($field, $this->_platform);
+            $columnList .= $tableName . '.' . $this->_class->getQuotedColumnName($field, $this->_platform);
+            
+            if ($setResultColumnNames) {
+                $resultColumnName = $this->_platform->getSqlResultCasing($this->_class->columnNames[$field]);
+                $this->_resultColumnNames[$resultColumnName] = $this->_class->columnNames[$field];
+            }
         }
         
         // Add join columns (foreign keys) to select list
@@ -702,6 +711,11 @@ class StandardEntityPersister
             if ($assoc->isOwningSide && $assoc->isOneToOne()) {
                 foreach ($assoc->targetToSourceKeyColumns as $srcColumn) {
                     $columnList .= ', ' . $assoc->getQuotedJoinColumnName($srcColumn, $this->_platform);
+                    
+                    if ($setResultColumnNames) {
+                        $resultColumnName = $this->_platform->getSqlResultCasing($srcColumn);
+                        $this->_resultColumnNames[$resultColumnName] = $srcColumn;
+                    }
                 }
             }
         }
@@ -717,22 +731,6 @@ class StandardEntityPersister
      */
     protected function _getSelectManyToManyEntityCollectionSql($manyToMany, array &$criteria)
     {
-        $columnList = '';
-        $tableName = $this->_class->getQuotedTableName($this->_platform);
-        
-        foreach ($this->_class->fieldNames as $field) {
-            if ($columnList != '') $columnList .= ', ';
-            $columnList .= $tableName . '.' . $this->_class->getQuotedColumnName($field, $this->_platform);
-        }
-        
-        foreach ($this->_class->associationMappings as $assoc) {
-            if ($assoc->isOwningSide && $assoc->isOneToOne()) {
-                foreach ($assoc->targetToSourceKeyColumns as $srcColumn) {
-                    $columnList .= ', ' . $assoc->getQuotedJoinColumnName($srcColumn, $this->_platform);
-                }
-            }
-        }
-        
         if ($manyToMany->isOwningSide) {
             $owningAssoc = $manyToMany;
             $joinClauses = $manyToMany->relationToTargetKeyColumns;
@@ -762,7 +760,7 @@ class StandardEntityPersister
             $conditionSql .= $columnName . ' = ?';
         }
         
-        return 'SELECT ' . $columnList 
+        return 'SELECT ' . $this->_getSelectColumnList() 
              . ' FROM ' . $this->_class->getQuotedTableName($this->_platform)
              . $joinSql
              . ' WHERE ' . $conditionSql;
@@ -774,7 +772,7 @@ class StandardEntityPersister
         $data = array();
         $entityName = $this->_class->name;
         foreach ($sqlResult as $column => $value) {
-            $column = $this->_class->resultColumnNames[$column];
+            $column = isset($this->_resultColumnNames[$column]) ? $this->_resultColumnNames[$column] : $column;
             if (($class = $this->_findDeclaringClass($column)) !== false) {
                 $field = $class->fieldNames[$column];
                 $data[$field] = Type::getType($class->fieldMappings[$field]['type'])
