@@ -1773,6 +1773,16 @@ abstract class AbstractPlatform
     }
 
     /**
+     * Maximum length of any given databse identifier, like tables or column names.
+     * 
+     * @return int
+     */
+    public function getMaxIdentifierLength()
+    {
+        return 63;
+    }
+
+    /**
      * Get the insert sql for an empty insert statement
      *
      * @param string $tableName 

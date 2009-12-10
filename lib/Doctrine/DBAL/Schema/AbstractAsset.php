@@ -35,10 +35,6 @@ namespace Doctrine\DBAL\Schema;
  */
 abstract class AbstractAsset
 {
-    const CASE_UPPER = "upper";
-    const CASE_LOWER = "lower";
-    const CASE_KEEP  = "keep";
-
     /**
      * @var string
      */
