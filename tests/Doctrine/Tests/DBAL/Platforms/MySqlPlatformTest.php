@@ -28,6 +28,13 @@ class MySqlPlatformTest extends AbstractPlatformTestCase
         return 'CREATE TABLE test (id INT AUTO_INCREMENT NOT NULL, test VARCHAR(255) DEFAULT NULL, PRIMARY KEY(id)) ENGINE = InnoDB';
     }
 
+    public function getGenerateTableWithMultiColumnUniqueIndexSql()
+    {
+        return array(
+            'CREATE TABLE test (foo VARCHAR(255) DEFAULT NULL, bar VARCHAR(255) DEFAULT NULL, UNIQUE INDEX test_foo_bar_uniq (foo, bar)) ENGINE = InnoDB'
+        );
+    }
+
     public function getGenerateAlterTableSql()
     {
         return array(

@@ -19,6 +19,14 @@ class SqlitePlatformTest extends AbstractPlatformTestCase
         return 'CREATE TABLE test (id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, test VARCHAR(255) DEFAULT NULL)';
     }
 
+    public function getGenerateTableWithMultiColumnUniqueIndexSql()
+    {
+        return array(
+            'CREATE TABLE test (foo VARCHAR(255) DEFAULT NULL, bar VARCHAR(255) DEFAULT NULL)',
+            'CREATE UNIQUE INDEX test_foo_bar_uniq ON test (foo, bar)',
+        );
+    }
+
     public function testGeneratesSqlSnippets()
     {
         $this->assertEquals('RLIKE', $this->_platform->getRegexpExpression(), 'Regular expression operator is not correct');

@@ -390,6 +390,7 @@ class SchemaManagerFunctionalTestCase extends \Doctrine\Tests\DbalFunctionalTest
     protected function getTestTable($name, $options=array())
     {
         $table = new \Doctrine\DBAL\Schema\Table($name, array(), array(), array(), \Doctrine\DBAL\Schema\Table::ID_NONE, $options);
+        $table->setSchemaConfig($this->_sm->createSchemaConfig());
         $table->setIdGeneratorType(\Doctrine\DBAL\Schema\Table::ID_IDENTITY);
         $table->createColumn('id', 'integer', array('notnull' => true));
         $table->setPrimaryKey(array('id'));

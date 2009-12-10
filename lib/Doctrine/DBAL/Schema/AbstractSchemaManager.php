@@ -936,6 +936,20 @@ abstract class AbstractSchemaManager
         }
         $tables = $this->listTables();
 
-        return new Schema($tables, $sequences, $this->_platform->createsExplicitIndexForForeignKeys());
+        return new Schema($tables, $sequences, $this->createSchemaConfig());
+    }
+
+    /**
+     * Create the configuration for this schema.
+     *
+     * @return SchemaConfig
+     */
+    public function createSchemaConfig()
+    {
+        $schemaConfig = new SchemaConfig();
+        $schemaConfig->setExplicitForeignKeyIndexes($this->_platform->createsExplicitIndexForForeignKeys());
+        $schemaConfig->setMaxIdentifierLength($this->_platform->getMaxIdentifierLength());
+
+        return $schemaConfig;
     }
 }

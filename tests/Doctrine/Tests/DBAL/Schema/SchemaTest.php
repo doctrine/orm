@@ -187,4 +187,29 @@ class SchemaTest extends \PHPUnit_Framework_TestCase
         $index = current($indexes);
         $this->assertTrue($index->hasColumnAtPosition('foo_id', 0));
     }
+
+    public function testConfigHasExplicitForeignKeyIndex()
+    {
+        $schemaConfig = new \Doctrine\DBAL\Schema\SchemaConfig();
+        $schemaConfig->setExplicitForeignKeyIndexes(false);
+
+        $schema = new Schema(array(), array(), $schemaConfig);
+        $this->assertFalse($schema->hasExplicitForeignKeyIndexes());
+
+        $schemaConfig->setExplicitForeignKeyIndexes(true);
+        $this->assertTrue($schema->hasExplicitForeignKeyIndexes());
+    }
+
+    public function testConfigMaxIdentifierLength()
+    {
+        $schemaConfig = new \Doctrine\DBAL\Schema\SchemaConfig();
+        $schemaConfig->setMaxIdentifierLength(10);
+
+        $schema = new Schema(array(), array(), $schemaConfig);
+        $table = $schema->createTable("smalltable");
+        $table->createColumn('long_id', 'integer');
+        $table->addIndex(array('long_id'));
+
+        $this->assertTrue($table->hasIndex('le_id_idx'));
+    }
 }

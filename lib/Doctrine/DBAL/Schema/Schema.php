@@ -47,23 +47,28 @@ class Schema extends AbstractAsset
     protected $_sequences = array();
 
     /**
-     * @var bool
+     * @var SchemaConfig
      */
-    protected $_hasExplicitForeignKeyIndexes = false;
+    protected $_schemaConfig = false;
 
     /**
      * @param array $tables
      * @param array $sequences
+     * @param SchemaConfig $schemaConfig
      */
-    public function __construct(array $tables=array(), array $sequences=array(), $hasExplicitForeignKeyIndexes=false)
+    public function __construct(array $tables=array(), array $sequences=array(), SchemaConfig $schemaConfig=null)
     {
+        if ($schemaConfig == null) {
+            $schemaConfig = new SchemaConfig();
+        }
+        $this->_schemaConfig = $schemaConfig;
+
         foreach ($tables AS $table) {
             $this->_addTable($table);
         }
         foreach ($sequences AS $sequence) {
             $this->_addSequence($sequence);
         }
-        $this->_hasExplicitForeignKeyIndexes = $hasExplicitForeignKeyIndexes;
     }
 
     /**
@@ -71,7 +76,7 @@ class Schema extends AbstractAsset
      */
     public function hasExplicitForeignKeyIndexes()
     {
-        return $this->_hasExplicitForeignKeyIndexes;
+        return $this->_schemaConfig->hasExplicitForeignKeyIndexes();
     }
 
     /**
@@ -85,6 +90,7 @@ class Schema extends AbstractAsset
         }
 
         $this->_tables[$tableName] = $table;
+        $table->setSchemaConfig($this->_schemaConfig);
     }
 
     /**

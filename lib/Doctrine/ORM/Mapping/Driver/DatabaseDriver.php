@@ -88,7 +88,7 @@ class DatabaseDriver implements Driver
             }
 
             $fieldMapping = array();
-            if (in_array($column->getName(), $indexes['primary']->getColumns())) {
+            if (isset($indexes['primary']) && in_array($column->getName(), $indexes['primary']->getColumns())) {
                 $fieldMapping['id'] = true;
             }
 

@@ -27,6 +27,19 @@ abstract class AbstractPlatformTestCase extends \Doctrine\Tests\DbalTestCase
 
     abstract public function getGenerateTableSql();
 
+    public function testGenerateTableWithMultiColumnUniqueIndex()
+    {
+        $table = new \Doctrine\DBAL\Schema\Table('test');
+        $table->createColumn('foo', 'string', array('notnull' => false, 'length' => 255));
+        $table->createColumn('bar', 'string', array('notnull' => false, 'length' => 255));
+        $table->addUniqueIndex(array("foo", "bar"));
+
+        $sql = $this->_platform->getCreateTableSql($table);
+        $this->assertEquals($this->getGenerateTableWithMultiColumnUniqueIndexSql(), $sql);
+    }
+
+    abstract public function getGenerateTableWithMultiColumnUniqueIndexSql();
+
     public function testGeneratesIndexCreationSql()
     {
         $indexDef = new \Doctrine\DBAL\Schema\Index('my_idx', array('user_name', 'last_login'));

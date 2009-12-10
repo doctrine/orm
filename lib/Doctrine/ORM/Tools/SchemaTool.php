@@ -109,7 +109,8 @@ class SchemaTool
     {
         $processedClasses = array(); // Reminder for processed classes, used for hierarchies
 
-        $schema = new \Doctrine\DBAL\Schema\Schema();
+        $sm = $this->_em->getConnection()->getSchemaManager();
+        $schema = new \Doctrine\DBAL\Schema\Schema(array(), array(), $sm->createSchemaConfig());
 
         foreach ($classes as $class) {
             if (isset($processedClasses[$class->name]) || $class->isMappedSuperclass) {

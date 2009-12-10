@@ -20,6 +20,14 @@ class PostgreSqlPlatformTest extends AbstractPlatformTestCase
         return 'CREATE TABLE test (id SERIAL NOT NULL, test VARCHAR(255) DEFAULT NULL, PRIMARY KEY(id))';
     }
 
+    public function getGenerateTableWithMultiColumnUniqueIndexSql()
+    {
+        return array(
+            'CREATE TABLE test (foo VARCHAR(255) DEFAULT NULL, bar VARCHAR(255) DEFAULT NULL)',
+            'CREATE UNIQUE INDEX test_foo_bar_uniq ON test (foo, bar)'
+        );
+    }
+
     public function getGenerateAlterTableSql()
     {
         return array(

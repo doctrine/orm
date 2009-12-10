@@ -87,47 +87,28 @@ class ComparatorTest extends \PHPUnit_Framework_TestCase
 
     public function testCompareMissingTable()
     {
-        $schema1 = new Schema( array(
-            'bugdb' => new Table('bugdb',
-                array (
-                    'integerfield1' => new Column('integerfield1', Type::getType('integer')),
-                )
-            ),
-        ) );
-        $schema2 = new Schema( array(
-        ) );
+        $schemaConfig = new \Doctrine\DBAL\Schema\SchemaConfig;
+        $table = new Table('bugdb', array ('integerfield1' => new Column('integerfield1', Type::getType('integer'))));
+        $table->setSchemaConfig($schemaConfig);
+        
+        $schema1 = new Schema( array($table), array(), $schemaConfig );
+        $schema2 = new Schema( array(),       array(), $schemaConfig );
 
-        $expected = new SchemaDiff( array(), array(),
-            array(
-                'bugdb' => new Table('bugdb',
-                array (
-                    'integerfield1' => new Column('integerfield1', Type::getType('integer')),
-                )
-            ),
-            )
-        );
+        $expected = new SchemaDiff( array(), array(), array('bugdb' => $table) );
+        
         $this->assertEquals($expected, Comparator::compareSchemas( $schema1, $schema2 ) );
     }
 
     public function testCompareNewTable()
     {
-        $schema1 = new Schema( array(
-        ) );
-        $schema2 = new Schema( array(
-            'bugdb' => new Table('bugdb',
-                array (
-                    'integerfield1' => new Column('integerfield1', Type::getType('integer')),
-                )
-            ),
-        ) );
+        $schemaConfig = new \Doctrine\DBAL\Schema\SchemaConfig;
+        $table = new Table('bugdb', array ('integerfield1' => new Column('integerfield1', Type::getType('integer'))));
+        $table->setSchemaConfig($schemaConfig);
 
-        $expected = new SchemaDiff( array(
-            'bugdb' => new Table('bugdb',
-                array (
-                    'integerfield1' => new Column('integerfield1', Type::getType('integer')),
-                )
-            ),
-        ) );
+        $schema1 = new Schema( array(),       array(), $schemaConfig );
+        $schema2 = new Schema( array($table), array(), $schemaConfig );
+
+        $expected = new SchemaDiff( array('bugdb' => $table), array(), array() );
         $this->assertEquals($expected, Comparator::compareSchemas( $schema1, $schema2 ) );
     }
 

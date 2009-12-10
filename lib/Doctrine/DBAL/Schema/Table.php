@@ -86,6 +86,11 @@ class Table extends AbstractAsset
     protected $_idGeneratorType = self::ID_NONE;
 
     /**
+     * @var SchemaConfig
+     */
+    protected $_schemaConfig = null;
+
+    /**
      *
      * @param string $tableName
      * @param array $columns
@@ -112,6 +117,26 @@ class Table extends AbstractAsset
         }
 
         $this->_options = $options;
+    }
+
+    /**
+     * @param SchemaConfig $schemaConfig
+     */
+    public function setSchemaConfig(SchemaConfig $schemaConfig)
+    {
+        $this->_schemaConfig = $schemaConfig;
+    }
+
+    /**
+     * @return int
+     */
+    protected function _getMaxIdentifierLength()
+    {
+        if ($this->_schemaConfig instanceof SchemaConfig) {
+            return $this->_schemaConfig->getMaxIdentifierLength();
+        } else {
+            return 63;
+        }
     }
 
     /**
@@ -145,7 +170,7 @@ class Table extends AbstractAsset
     {
         if($indexName == null) {
             $indexName = $this->_generateIdentifierName(
-                array_merge(array($this->getName()), $columnNames), "idx"
+                array_merge(array($this->getName()), $columnNames), "idx", $this->_getMaxIdentifierLength()
             );
         }
 
@@ -162,7 +187,7 @@ class Table extends AbstractAsset
     {
         if ($indexName == null) {
             $indexName = $this->_generateIdentifierName(
-                array_merge(array($this->getName()), $columnNames), "uniq"
+                array_merge(array($this->getName()), $columnNames), "uniq", $this->_getMaxIdentifierLength()
             );
         }
 
@@ -268,7 +293,7 @@ class Table extends AbstractAsset
      */
     public function addForeignKeyConstraint($foreignTable, array $localColumnNames, array $foreignColumnNames, array $options=array())
     {
-        $name = $this->_generateIdentifierName(array_merge((array)$this->getName(), $localColumnNames), "fk");
+        $name = $this->_generateIdentifierName(array_merge((array)$this->getName(), $localColumnNames), "fk", $this->_getMaxIdentifierLength());
         return $this->addNamedForeignKeyConstraint($name, $foreignTable, $localColumnNames, $foreignColumnNames, $options);
     }
 
@@ -394,7 +419,7 @@ class Table extends AbstractAsset
             $name = $constraint->getName();
         } else {
             $name = $this->_generateIdentifierName(
-                array_merge((array)$this->getName(), $constraint->getLocalColumns()), "fk"
+                array_merge((array)$this->getName(), $constraint->getLocalColumns()), "fk", $this->_getMaxIdentifierLength()
             );
         }
         $name = strtolower($name);

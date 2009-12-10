@@ -19,6 +19,14 @@ class OraclePlatformTest extends AbstractPlatformTestCase
         return 'CREATE TABLE test (id NUMBER(10) NOT NULL, test VARCHAR2(255) DEFAULT NULL, PRIMARY KEY(id))';
     }
 
+    public function getGenerateTableWithMultiColumnUniqueIndexSql()
+    {
+        return array(
+            'CREATE TABLE test (foo VARCHAR2(255) DEFAULT NULL, bar VARCHAR2(255) DEFAULT NULL)',
+            'CREATE UNIQUE INDEX test_foo_bar_uniq ON test (foo, bar)',
+        );
+    }
+
     public function getGenerateAlterTableSql()
     {
         return array(
