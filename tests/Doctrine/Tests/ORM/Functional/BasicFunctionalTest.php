@@ -560,13 +560,24 @@ class BasicFunctionalTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $address->user = $user;
         $user->address = $address;
         
+        $article = new \Doctrine\Tests\Models\CMS\CmsArticle();
+        $article->text = "Lorem ipsum dolor sunt.";
+        $article->topic = "A Test Article!";
+        $article->setAuthor($user);
+        
+        $this->_em->persist($article);
         $this->_em->persist($user);
+        
+        //$this->_em->getConnection()->getConfiguration()->setSqlLogger(new \Doctrine\DBAL\Logging\EchoSqlLogger);
         
         $this->_em->flush();
         $this->_em->clear();
-                
-        $query = $this->_em->createQuery('select u, a from Doctrine\Tests\Models\CMS\CmsUser u join u.address a');
+        
+        $query = $this->_em->createQuery('select u,a,ad from Doctrine\Tests\Models\CMS\CmsUser u join u.articles a join u.address ad');
         $user2 = $query->getSingleResult();
+
+        $this->assertEquals(1, count($user2->articles));
+        $this->assertTrue($user2->address instanceof CmsAddress);
         
         $oldLogger = $this->_em->getConnection()->getConfiguration()->getSqlLogger();
         $debugStack = new \Doctrine\DBAL\Logging\DebugStack;

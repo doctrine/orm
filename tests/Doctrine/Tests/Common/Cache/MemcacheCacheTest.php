@@ -13,8 +13,8 @@ class MemcacheCacheTest extends \Doctrine\Tests\DoctrineTestCase
     public function setUp()
     {
         if (extension_loaded('memcache')) {
-            $memcache = new \Memcache;
-            $ok = @$memcache->connect('localhost', 11211);
+            $this->_memcache = new \Memcache;
+            $ok = @$this->_memcache->connect('localhost', 11211);
             if (!$ok) {
                 $this->markTestSkipped('The ' . __CLASS__ .' requires the use of memcache');
             }

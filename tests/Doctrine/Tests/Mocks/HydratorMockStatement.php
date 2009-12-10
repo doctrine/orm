@@ -3,12 +3,12 @@
 namespace Doctrine\Tests\Mocks;
 
 /**
- * This class is a mock of the PDOStatement class that can be passed in to the Hydrator
+ * This class is a mock of the Statement interface that can be passed in to the Hydrator
  * to test the hydration standalone with faked result sets.
  *
  * @author  Roman Borschel <roman@code-factory.org>
  */
-class HydratorMockStatement
+class HydratorMockStatement implements \Doctrine\DBAL\Driver\Statement
 {
     private $_resultSet;    
     
@@ -25,9 +25,6 @@ class HydratorMockStatement
     /**
      * Fetches all rows from the result set.
      *
-     * NOTE: Must adhere to the PDOStatement::fetchAll() signature that looks as follows:
-     * array fetchAll  ([ int $fetch_style  [, int $column_index  [, array $ctor_args  ]]] )
-     *
      * @return array
      */
     public function fetchAll($fetchStyle = null, $columnIndex = null, array $ctorArgs = null)
@@ -37,7 +34,7 @@ class HydratorMockStatement
     
     public function fetchColumn($columnNumber = 0)
     {
-        $row = array_shift($this->_resultSet);
+        $row = current($this->_resultSet);
         if ( ! is_array($row)) return false;
         $val = array_shift($row);
         return $val !== null ? $val : false;
@@ -45,14 +42,13 @@ class HydratorMockStatement
     
     /**
      * Fetches the next row in the result set.
-     *
-     * NOTE: Must adhere to the PDOStatement::fetch() signature that looks as follows:
-     * mixed fetch  ([ int $fetch_style  [, int $cursor_orientation  [, int $cursor_offset  ]]] )
-     *
+     * 
      */
-    public function fetch($fetchStyle = null, $cursorOrientation = null, $cursorOffset = null)
+    public function fetch($fetchStyle = null)
     {
-        return array_shift($this->_resultSet);
+        $current = current($this->_resultSet);
+        next($this->_resultSet);
+        return $current;
     }
     
     /**
@@ -67,6 +63,39 @@ class HydratorMockStatement
     
     public function setResultSet(array $resultSet)
     {
+        reset($resultSet);
         $this->_resultSet = $resultSet;
     }
+    
+    public function bindColumn($column, &$param, $type = null)
+    {
+    }
+
+    public function bindValue($param, $value, $type = null)
+    {
+    }
+
+    public function bindParam($column, &$variable, $type = null, $length = null, $driverOptions = array())
+    {
+    }
+    
+    public function columnCount()
+    {
+    }
+
+    public function errorCode()
+    {
+    }
+    
+    public function errorInfo()
+    {
+    }
+    
+    public function execute($params = array())
+    {
+    }
+    
+    public function rowCount()
+    {
+    }  
 }

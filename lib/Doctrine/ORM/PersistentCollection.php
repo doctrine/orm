@@ -157,18 +157,6 @@ final class PersistentCollection implements \Doctrine\Common\Collections\Collect
     {
         return $this->_owner;
     }
-
-    /**
-     * Gets the class descriptor for the owning entity class.
-     *
-     * @return Doctrine\ORM\Mapping\ClassMetadata
-     * @deprecated
-     * @todo Remove
-     */
-    public function getOwnerClass()
-    {
-        return $this->_typeClass;
-    }
     
     public function getTypeClass()
     {
@@ -194,6 +182,10 @@ final class PersistentCollection implements \Doctrine\Common\Collections\Collect
                 // OneToMany
                 $this->_typeClass->reflFields[$this->_backRefFieldName]
                         ->setValue($element, $this->_owner);
+                $this->_em->getUnitOfWork()->setOriginalEntityProperty(
+                        spl_object_hash($element),
+                        $this->_backRefFieldName,
+                        $this->_owner);
             } else {
                 // ManyToMany
                 $this->_typeClass->reflFields[$this->_backRefFieldName] 
