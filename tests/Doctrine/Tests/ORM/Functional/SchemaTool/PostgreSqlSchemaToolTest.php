@@ -15,6 +15,12 @@ class PostgreSqlSchemaToolTest extends \Doctrine\Tests\OrmFunctionalTestCase
             $this->markTestSkipped('The ' . __CLASS__ .' requires the use of postgresql.');
         }
     }
+
+    public function testPostgresMetadataSequenceIncrementedBy10()
+    {
+        $address = $this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsAddress');
+        $this->assertEquals(10, $address->sequenceGeneratorDefinition['allocationSize']);
+    }
     
     public function testGetCreateSchemaSql()
     {
@@ -26,18 +32,19 @@ class PostgreSqlSchemaToolTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $tool = new SchemaTool($this->_em);
         $sql = $tool->getCreateSchemaSql($classes);
-        $this->assertEquals(count($sql), 10);
+        $this->assertEquals(count($sql), 11);
         
         $this->assertEquals("CREATE TABLE cms_addresses (id INT NOT NULL, country VARCHAR(50) NOT NULL, zip VARCHAR(50) NOT NULL, city VARCHAR(50) NOT NULL, user_id INT DEFAULT NULL, PRIMARY KEY(id))", $sql[0]);
-        $this->assertEquals("CREATE TABLE cms_users_groups (user_id INT DEFAULT NULL, group_id INT DEFAULT NULL, PRIMARY KEY(user_id, group_id))", $sql[1]);
-        $this->assertEquals("CREATE TABLE cms_users (id INT NOT NULL, status VARCHAR(50) NOT NULL, username VARCHAR(255) NOT NULL UNIQUE, name VARCHAR(255) NOT NULL, PRIMARY KEY(id))", $sql[2]);
-        $this->assertEquals("CREATE TABLE cms_phonenumbers (phonenumber VARCHAR(50) NOT NULL, user_id INT DEFAULT NULL, PRIMARY KEY(phonenumber))", $sql[3]);
-        $this->assertEquals("ALTER TABLE cms_addresses ADD FOREIGN KEY (user_id) REFERENCES cms_users(id) NOT DEFERRABLE INITIALLY IMMEDIATE", $sql[4]);
-        $this->assertEquals("ALTER TABLE cms_users_groups ADD FOREIGN KEY (user_id) REFERENCES cms_users(id) NOT DEFERRABLE INITIALLY IMMEDIATE", $sql[5]);
-        $this->assertEquals("ALTER TABLE cms_users_groups ADD FOREIGN KEY (group_id) REFERENCES cms_groups(id) NOT DEFERRABLE INITIALLY IMMEDIATE", $sql[6]);
-        $this->assertEquals("ALTER TABLE cms_phonenumbers ADD FOREIGN KEY (user_id) REFERENCES cms_users(id) NOT DEFERRABLE INITIALLY IMMEDIATE", $sql[7]);
-        $this->assertEquals("CREATE SEQUENCE cms_addresses_id_seq INCREMENT BY 20 START 1", $sql[8]);
-        $this->assertEquals("CREATE SEQUENCE cms_users_id_seq INCREMENT BY 20 START 1", $sql[9]);
+        $this->assertEquals("CREATE TABLE cms_users (id INT NOT NULL, status VARCHAR(50) NOT NULL, username VARCHAR(255) NOT NULL, name VARCHAR(255) NOT NULL, PRIMARY KEY(id))", $sql[1]);
+        $this->assertEquals("CREATE UNIQUE INDEX cms_users_username_uniq ON cms_users (username)", $sql[2]);
+        $this->assertEquals("CREATE TABLE cms_users_groups (user_id INT DEFAULT NULL, group_id INT DEFAULT NULL, PRIMARY KEY(user_id, group_id))", $sql[3]);
+        $this->assertEquals("CREATE TABLE cms_phonenumbers (phonenumber VARCHAR(50) NOT NULL, user_id INT DEFAULT NULL, PRIMARY KEY(phonenumber))", $sql[4]);
+        $this->assertEquals("CREATE SEQUENCE cms_addresses_id_seq INCREMENT BY 10 MINVALUE 1 START 1", $sql[5]);
+        $this->assertEquals("CREATE SEQUENCE cms_users_id_seq INCREMENT BY 10 MINVALUE 1 START 1", $sql[6]);
+        $this->assertEquals("ALTER TABLE cms_addresses ADD FOREIGN KEY (user_id) REFERENCES cms_users(id) NOT DEFERRABLE INITIALLY IMMEDIATE", $sql[7]);
+        $this->assertEquals("ALTER TABLE cms_users_groups ADD FOREIGN KEY (user_id) REFERENCES cms_users(id) NOT DEFERRABLE INITIALLY IMMEDIATE", $sql[8]);
+        $this->assertEquals("ALTER TABLE cms_users_groups ADD FOREIGN KEY (group_id) REFERENCES cms_groups(id) NOT DEFERRABLE INITIALLY IMMEDIATE", $sql[9]);
+        $this->assertEquals("ALTER TABLE cms_phonenumbers ADD FOREIGN KEY (user_id) REFERENCES cms_users(id) NOT DEFERRABLE INITIALLY IMMEDIATE", $sql[10]);
     }
     
     public function testGetCreateSchemaSql2()
@@ -51,8 +58,8 @@ class PostgreSqlSchemaToolTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $this->assertEquals(2, count($sql));
         
-        $this->assertEquals("CREATE TABLE decimal_model (id INT NOT NULL, decimal NUMERIC(2, 5) NOT NULL, PRIMARY KEY(id))", $sql[0]);
-        $this->assertEquals("CREATE SEQUENCE decimal_model_id_seq INCREMENT BY 20 START 1", $sql[1]);
+        $this->assertEquals('CREATE TABLE decimal_model (id INT NOT NULL, "decimal" NUMERIC(5, 2) NOT NULL, PRIMARY KEY(id))', $sql[0]);
+        $this->assertEquals("CREATE SEQUENCE decimal_model_id_seq INCREMENT BY 10 MINVALUE 1 START 1", $sql[1]);
     }
     
     public function testGetCreateSchemaSql3()
@@ -66,6 +73,6 @@ class PostgreSqlSchemaToolTest extends \Doctrine\Tests\OrmFunctionalTestCase
         
         $this->assertEquals(2, count($sql));
         $this->assertEquals("CREATE TABLE boolean_model (id INT NOT NULL, booleanField BOOLEAN NOT NULL, PRIMARY KEY(id))", $sql[0]);
-        $this->assertEquals("CREATE SEQUENCE boolean_model_id_seq INCREMENT BY 20 START 1", $sql[1]);
+        $this->assertEquals("CREATE SEQUENCE boolean_model_id_seq INCREMENT BY 10 MINVALUE 1 START 1", $sql[1]);
     }
 }
