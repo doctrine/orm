@@ -1376,11 +1376,11 @@ class UnitOfWork implements PropertyChangedListener
                     }
                 }
                 if ($class->isChangeTrackingNotify()) {
-                    //TODO
+                    //TODO: put changed fields in changeset...?
                 }
             }
             if ($class->isChangeTrackingDeferredExplicit()) {
-                //TODO
+                //TODO: Mark $managedCopy for dirty check...? ($this->_scheduledForDirtyCheck)
             }
         }
 
@@ -1389,8 +1389,12 @@ class UnitOfWork implements PropertyChangedListener
             $prevClass = $this->_em->getClassMetadata(get_class($prevManagedCopy));
             if ($assoc->isOneToOne()) {
                 $prevClass->reflFields[$assocField]->setValue($prevManagedCopy, $managedCopy);
+                //TODO: What about back-reference if bidirectional?
             } else {
-                $prevClass->reflFields[$assocField]->getValue($prevManagedCopy)->hydrateAdd($managedCopy);
+                $prevClass->reflFields[$assocField]->getValue($prevManagedCopy)->unwrap()->add($managedCopy);
+                if ($assoc->isOneToMany()) {
+                    $class->reflFields[$assoc->mappedByFieldName]->setValue($managedCopy, $prevManagedCopy);
+                }
             }
         }
 

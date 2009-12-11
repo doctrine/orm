@@ -157,7 +157,7 @@ class StandardEntityPersister
                     }
                 }
             }
-
+            
             $stmt->execute();
 
             if ($isPostInsertId) {
