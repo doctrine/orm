@@ -13,7 +13,7 @@
         </lifecycle-callbacks>
 
         <id name="id" type="integer" column="id">
-            <generator strategy="AUTO"/>
+            <generator strategy="auto"/>
         </id>
         
         <field name="name" column="name" type="string" length="50"/>

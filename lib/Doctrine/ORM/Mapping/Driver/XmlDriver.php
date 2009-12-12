@@ -174,7 +174,7 @@ class XmlDriver extends AbstractFileDriver
 
             if (isset($idElement->generator)) {
                 $metadata->setIdGeneratorType(constant('Doctrine\ORM\Mapping\ClassMetadata::GENERATOR_TYPE_'
-                        . (string)$idElement->generator['strategy']));
+                        . strtoupper((string)$idElement->generator['strategy'])));
             }
 
             // Check for SequenceGenerator/TableGenerator definition
