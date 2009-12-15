@@ -9,20 +9,22 @@
 
 namespace Sandbox;
 
-use Doctrine\ORM\Configuration,
+use Doctrine\Common\ClassLoader,
+    Doctrine\ORM\Configuration,
     Doctrine\ORM\EntityManager,
     Doctrine\Common\Cache\ApcCache,
     Entities\User, Entities\Address;
 
-require '../../lib/Doctrine/Common/GlobalClassLoader.php';
+require '../../lib/Doctrine/Common/ClassLoader.php';
 
-// Set up class loading, we could alternatively use several IsolatedClassLoaders.
-// You could also use different autoloaders, provided by your favorite framework.
-$classLoader = new \Doctrine\Common\GlobalClassLoader();
-$classLoader->registerNamespace('Doctrine', realpath(__DIR__ . '/../../lib'));
-$classLoader->registerNamespace('Entities', __DIR__);
-$classLoader->registerNamespace('Proxies', __DIR__);
-$classLoader->register();
+// Set up class loading. You could use different autoloaders, provided by your favorite framework,
+// if you want to.
+$doctrineClassLoader = new ClassLoader('Doctrine', realpath(__DIR__ . '/../../lib'));
+$doctrineClassLoader->register();
+$entitiesClassLoader = new ClassLoader('Entities', __DIR__);
+$entitiesClassLoader->register();
+$proxiesClassLoader = new ClassLoader('Proxies', __DIR__);
+$proxiesClassLoader->register();
 
 // Set up caches
 $config = new Configuration;

@@ -13,7 +13,7 @@ class MappingDriverTest extends \Doctrine\Tests\OrmTestCase
     public function testXmlMapping()
     {
         $className = 'Doctrine\Tests\ORM\Mapping\User';
-        $xmlDriver = new XmlDriver(__DIR__ . DIRECTORY_SEPARATOR . 'xml', XmlDriver::FILE_PER_CLASS);
+        $xmlDriver = new XmlDriver(__DIR__ . DIRECTORY_SEPARATOR . 'xml');
         
         $class = new ClassMetadata($className);
         
@@ -38,36 +38,16 @@ class MappingDriverTest extends \Doctrine\Tests\OrmTestCase
         $this->_testUserClassMapping($class);
     }
     
-    public function testXmlPreloadMode()
+    public function testXmlGetAllClassNames()
     {
         $className = 'Doctrine\Tests\ORM\Mapping\User';
-        $xmlDriver = new XmlDriver(__DIR__ . DIRECTORY_SEPARATOR . 'xml', XmlDriver::PRELOAD);
+        $xmlDriver = new XmlDriver(__DIR__ . DIRECTORY_SEPARATOR . 'xml');
         $class = new ClassMetadata($className);
         
-        $classNames = $xmlDriver->preload();
+        $classNames = $xmlDriver->getAllClassNames();
         
         $this->assertEquals($className, $classNames[0]);
-        $this->assertEquals(1, count($xmlDriver->getPreloadedElements()));
-        
-        $xmlDriver->loadMetadataForClass($className, $class);
-        
-        $this->assertEquals(0, count($xmlDriver->getPreloadedElements()));
-    }
-    
-    public function testYamlPreloadMode()
-    {
-        $className = 'Doctrine\Tests\ORM\Mapping\User';
-        $yamlDriver = new YamlDriver(__DIR__ . DIRECTORY_SEPARATOR . 'yaml', YamlDriver::PRELOAD);
-        $class = new ClassMetadata($className);
-        
-        $classNames = $yamlDriver->preload();
-        
-        $this->assertEquals($className, $classNames[0]);
-        $this->assertEquals(1, count($yamlDriver->getPreloadedElements()));
-        
-        $yamlDriver->loadMetadataForClass($className, $class);
-        
-        $this->assertEquals(0, count($yamlDriver->getPreloadedElements()));
+        $this->assertEquals(1, count($classNames));
     }
     
     private function _testUserClassMapping($class)

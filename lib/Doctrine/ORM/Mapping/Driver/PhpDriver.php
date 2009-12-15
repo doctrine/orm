@@ -66,23 +66,20 @@ class PhpDriver implements Driver
     }
 
     /**
-     * Preloads all mapping information found in any documents within the
-     * configured paths and returns a list of class names that have been preloaded.
-     * 
-     * @return array The list of class names that have been preloaded.
+     * {@inheritDoc}
      */
-    public function preload()
+    public function getAllClassNames()
     {
         if ( ! is_dir($this->_directory)) {
             throw MappingException::phpDriverRequiresConfiguredDirectoryPath();
         }
         $iter = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($this->_directory),
-                                              \RecursiveIteratorIterator::LEAVES_ONLY);
+                \RecursiveIteratorIterator::LEAVES_ONLY);
 
         $classes = array();
         foreach ($iter as $item) {
             $info = pathinfo($item->getPathName());
-            if (! isset($info['extension']) || $info['extension'] != 'php') {
+            if ( ! isset($info['extension']) || $info['extension'] != 'php') {
                 continue;
             }
             $className = $info['filename'];

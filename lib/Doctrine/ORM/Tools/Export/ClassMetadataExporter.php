@@ -113,7 +113,7 @@ class ClassMetadataExporter
             if (is_null($source)) {
                 throw DoctrineException::fileMappingDriversRequireDirectoryPath();
             }
-            $driver = new $class($source, constant($class . '::PRELOAD'));
+            $driver = new $class($source);
         } else if ($class == 'Doctrine\ORM\Mapping\Driver\AnnotationDriver') {
             $reader = new \Doctrine\Common\Annotations\AnnotationReader(new \Doctrine\Common\Cache\ArrayCache);
             $reader->setDefaultAnnotationNamespace('Doctrine\ORM\Mapping\\');
@@ -148,8 +148,8 @@ class ClassMetadataExporter
         foreach ($this->_mappingSources as $d) {
             list($source, $driver) = $d;
 
-            $preloadedClasses = $driver->preload(true);
-            foreach ($preloadedClasses as $className) {
+            $allClasses = $driver->getAllClassNames();
+            foreach ($allClasses as $className) {
                 if (class_exists($className, false)) {
                     $metadata = new ClassMetadata($className);
                 } else {

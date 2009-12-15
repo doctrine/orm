@@ -67,14 +67,8 @@ class GenerateProxiesTask extends AbstractTask
 
         $em = $this->getEntityManager();
         $cmf = $em->getMetadataFactory();
-        $driver = $em->getConfiguration()->getMetadataDriverImpl();
         
-        $classes = array();
-        $preloadedClasses = $driver->preload(true);
-        
-        foreach ($preloadedClasses as $className) {
-            $classes[] = $cmf->getMetadataFor($className);
-        }
+        $classes = $cmf->getAllMetadata();
 
         $printer = $this->getPrinter();
         $factory = $em->getProxyFactory();

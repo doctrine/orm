@@ -111,6 +111,8 @@ class Configuration extends \Doctrine\DBAL\Configuration
      * Sets the cache driver implementation that is used for metadata caching.
      *
      * @param object $driverImpl
+     * @todo Force parameter to be a Closure to ensure lazy evaluation
+     *       (as soon as a metadata cache is in effect, the driver never needs to initialize).
      */
     public function setMetadataDriverImpl($driverImpl)
     {

@@ -223,6 +223,8 @@ class UnitOfWork implements PropertyChangedListener
      * @var array
      */
     private $_orphanRemovals = array();
+    
+    //private $_readOnlyObjects = array();
 
     /**
      * Initializes a new UnitOfWork instance, bound to the given EntityManager.
@@ -395,7 +397,7 @@ class UnitOfWork implements PropertyChangedListener
             $class = $this->_em->getClassMetadata($className);
 
             // Skip class if change tracking happens through notification
-            if ($class->isChangeTrackingNotify()) {
+            if ($class->isChangeTrackingNotify() /* || $class->isReadOnly*/) {
                 continue;
             }
 
@@ -405,7 +407,7 @@ class UnitOfWork implements PropertyChangedListener
 
             foreach ($entitiesToProcess as $entity) {
                 // Ignore uninitialized proxy objects
-                if ($entity instanceof Proxy && ! $entity->__isInitialized__()) {
+                if (/* $entity is readOnly || */ $entity instanceof Proxy && ! $entity->__isInitialized__()) {
                     continue;
                 }
                 // Only MANAGED entities that are NOT SCHEDULED FOR INSERTION are processed here.
@@ -1695,15 +1697,18 @@ class UnitOfWork implements PropertyChangedListener
      * Creates an entity. Used for reconstitution of entities during hydration.
      *
      * @ignore
-     * @param string $className  The name of the entity class.
-     * @param array $data  The data for the entity.
-     * @return object The created entity instance.
+     * @param string $className The name of the entity class.
+     * @param array $data The data for the entity.
+     * @param array $hints Any hints to account for during reconstitution/lookup of the entity.
+     * @return object The entity instance.
      * @internal Highly performance-sensitive method.
+     * 
      * @todo Rename: getOrCreateEntity
      */
     public function createEntity($className, array $data, &$hints = array())
     {
         $class = $this->_em->getClassMetadata($className);
+        //$isReadOnly = isset($hints[Query::HINT_READ_ONLY]);
 
         if ($class->isIdentifierComposite) {
             $id = array();
@@ -1765,9 +1770,11 @@ class UnitOfWork implements PropertyChangedListener
                                 }
                             }
                             if ( ! $associatedId) {
+                                // Foreign key is NULL
                                 $class->reflFields[$field]->setValue($entity, null);
                                 $this->_originalEntityData[$oid][$field] = null;
                             } else {
+                                // Foreign key is set
                                 // Check identity map first
                                 // FIXME: Can break easily with composite keys if join column values are in
                                 //        wrong order. The correct order is the one in ClassMetadata#identifier.
@@ -1788,15 +1795,15 @@ class UnitOfWork implements PropertyChangedListener
                                 $class->reflFields[$field]->setValue($entity, $newValue);
                             }
                         } else {
-                            // Inverse side can never be lazy
-                            $targetEntity = $assoc->load($entity, null, $this->_em);
-                            $class->reflFields[$field]->setValue($entity, $targetEntity);
+                            // Inverse side of x-to-one can never be lazy
+                            $class->reflFields[$field]->setValue($entity, $assoc->load($entity, null, $this->_em));
                         }
                     } else {
                         // Inject collection
                         $reflField = $class->reflFields[$field];
                         $pColl = new PersistentCollection(
                             $this->_em, $targetClass,
+                            //TODO: getValue might be superfluous once DDC-79 is implemented. 
                             $reflField->getValue($entity) ?: new ArrayCollection
                         );
                         $pColl->setOwner($entity, $assoc);

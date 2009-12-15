@@ -22,34 +22,34 @@
 namespace Doctrine\Common;
 
 /**
- * An <tt>IsolatedClassLoader</tt> is an autoloader for class files that can be
+ * A <tt>ClassLoader</tt> is an autoloader for class files that can be
  * installed on the SPL autoload stack. It is a class loader that loads only classes
- * of a specific namespace and is suitable for working together with other autoloaders
- * in the SPL autoload stack.
+ * of a specific namespace or all namespaces and is suitable for working together
+ * with other autoloaders in the SPL autoload stack.
  * 
- * If no base path is configured, an IsolatedClassLoader relies on the include_path.
+ * If no include path is configured through {@link setIncludePath}, a ClassLoader
+ * relies on the PHP include_path.
  * 
  * @author Roman Borschel <roman@code-factory.org>
  * @since 2.0
- * 
- * @deprecated Use Doctrine\Common\ClassLoader instead.
  */
-class IsolatedClassLoader
+class ClassLoader
 {
     private $_fileExtension = '.php';
     private $_namespace;
-    private $_basePath;
+    private $_includePath;
     private $_namespaceSeparator = '\\';
     
     /**
-     * Creates a new <tt>IsolatedClassLoader</tt> that loads classes of the
+     * Creates a new <tt>ClassLoader</tt> that loads classes of the
      * specified namespace.
      * 
      * @param string $ns The namespace to use.
      */
-    public function __construct($ns = null)
+    public function __construct($ns = null, $includePath = null)
     {
         $this->_namespace = $ns;
+        $this->_includePath = $includePath;
     }
     
     /**
@@ -63,13 +63,33 @@ class IsolatedClassLoader
     }
     
     /**
+     * Gets the namespace separator used by classes in the namespace of this class loader.
+     * 
+     * @return string
+     */
+    public function getNamespaceSeparator()
+    {
+        return $this->_namespaceSeparator;
+    }
+    
+    /**
      * Sets the base include path for all class files in the namespace of this class loader.
      * 
-     * @param string $basePath
+     * @param string $includePath
      */
-    public function setBasePath($basePath)
+    public function setIncludePath($includePath)
     {
-        $this->_basePath = $basePath;
+        $this->_includePath = $includePath;
+    }
+    
+    /**
+     * Gets the base include path for all class files in the namespace of this class loader.
+     * 
+     * @return string
+     */
+    public function getIncludePath()
+    {
+        return $this->_includePath;
     }
     
     /**
@@ -83,11 +103,29 @@ class IsolatedClassLoader
     }
     
     /**
+     * Gets the file extension of class files in the namespace of this class loader.
+     * 
+     * @return string
+     */
+    public function getFileExtension()
+    {
+        return $this->_fileExtension;
+    }
+    
+    /**
      * Installs this class loader on the SPL autoload stack.
      */
     public function register()
     {
         spl_autoload_register(array($this, 'loadClass'));
+    }
+    
+    /**
+     * Uninstalls this class loader on the SPL autoload stack.
+     */
+    public function unregister()
+    {
+        spl_autoload_unregister(array($this, 'loadClass'));
     }
     
     /**
@@ -98,11 +136,11 @@ class IsolatedClassLoader
      */
     public function loadClass($className)
     {
-        if ($this->_namespace && strpos($className, $this->_namespace.$this->_namespaceSeparator) !== 0) {
+        if ($this->_namespace !== null && strpos($className, $this->_namespace.$this->_namespaceSeparator) !== 0) {
             return false;
         }
 
-        require ($this->_basePath !== null ? $this->_basePath . DIRECTORY_SEPARATOR : '')
+        require ($this->_includePath !== null ? $this->_includePath . DIRECTORY_SEPARATOR : '')
                . str_replace($this->_namespaceSeparator, DIRECTORY_SEPARATOR, $className)
                . $this->_fileExtension;
         

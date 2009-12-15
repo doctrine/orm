@@ -179,9 +179,9 @@ class Connection
 
         $this->_config = $config;
         $this->_eventManager = $eventManager;
-        if (!isset($params['platform'])) {
+        if ( ! isset($params['platform'])) {
             $this->_platform = $driver->getDatabasePlatform();
-        } else if($params['platform'] instanceof \Doctrine\DBAL\Platforms\AbstractPlatform) {
+        } else if ($params['platform'] instanceof Platforms\AbstractPlatform) {
             $this->_platform = $params['platform'];
         } else {
             throw DBALException::invalidPlatformSpecified();
@@ -632,7 +632,7 @@ class Connection
     /**
      * Returns the current transaction nesting level.
      *
-     * @return integer  The nesting level. A value of 0 means theres no active transaction.
+     * @return integer The nesting level. A value of 0 means theres no active transaction.
      */
     public function getTransactionNestingLevel()
     {

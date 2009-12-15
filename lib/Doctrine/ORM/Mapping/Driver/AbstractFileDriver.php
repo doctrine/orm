@@ -25,53 +25,27 @@ use Doctrine\ORM\Mapping\MappingException;
 
 /**
  * Base driver for file-based metadata drivers.
+ * 
+ * A file driver operates in a mode where it loads the mapping files of individual
+ * classes on demand. This requires the user to adhere to the convention of 1 mapping
+ * file per class and the file names of the mapping files must correspond to the full
+ * class name, including namespace, with the namespace delimiters '\', replaced by dots '.'.
  *
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @link        www.doctrine-project.com
  * @since       2.0
  * @version     $Revision: 1393 $
  * @author      Jonathan H. Wage <jonwage@gmail.com>
+ * @author      Roman Borschel <roman@code-factory.org>
  */
 abstract class AbstractFileDriver implements Driver
 {
-    /**
-     * The FILE_PER_CLASS mode is an operating mode of the FileDriver where it loads
-     * the mapping files of individual classes on demand. This requires the user to
-     * adhere to the convention of 1 mapping file per class and the file names of
-     * the mapping files must correspond to the full class name, including namespace,
-     * with the namespace delimiters '\', replaced by dots '.'.
-     * This is the default behavior. 
-     * 
-     * Example:
-     * Class: My\Project\Model\User
-     * Mapping file: My.Project.Model.User.dcm.xml
-     * 
-     * @var integer
-     */
-    const FILE_PER_CLASS = 1;
-    
-    /**
-     * The PRELOAD mode is an operating mode of the FileDriver where it loads
-     * all mapping files in advance. It does not require a naming convention 
-     * or the convention of 1 class per mapping file.
-     * 
-     * @var integer
-     */
-    const PRELOAD = 2;
-    
     /**
      * The paths where to look for mapping files.
      *
      * @var array
      */
     protected $_paths;
-
-    /**
-     * The operating mode. Either FILE_PER_CLASS or PRELOAD.
-     *
-     * @var integer
-     */
-    protected $_mode;
 
     /**
      * The file extension of mapping documents.
@@ -81,23 +55,14 @@ abstract class AbstractFileDriver implements Driver
     protected $_fileExtension;
 
     /**
-     * Any preloaded elements.
-     *
-     * @var array
-     */
-    protected $_elements = array();
-
-    /**
      * Initializes a new FileDriver that looks in the given path(s) for mapping
      * documents and operates in the specified operating mode.
      * 
      * @param string|array $paths One or multiple paths where mapping documents can be found.
-     * @param integer $mode The operating mode. Either PRELOAD or FILE_PER_CLASS (default).
      */
-    public function __construct($paths, $mode = self::FILE_PER_CLASS)
+    public function __construct($paths)
     {
         $this->_paths = (array) $paths;
-        $this->_mode = $mode;
     }
 
     /**
@@ -129,24 +94,8 @@ abstract class AbstractFileDriver implements Driver
      */
     public function getElement($className)
     {
-        if (isset($this->_elements[$className])) {
-            $element = $this->_elements[$className];
-            unset($this->_elements[$className]);
-            return $element;
-        } else {
-            $result = $this->_loadMappingFile($this->_findMappingFile($className));
-            return $result[$className];
-        }
-    }
-
-    /**
-     * Gets any preloaded elements.
-     * 
-     * @return array
-     */
-    public function getPreloadedElements()
-    {
-        return $this->_elements;
+        $result = $this->_loadMappingFile($this->_findMappingFile($className));
+        return $result[$className];
     }
 
     /**
@@ -160,45 +109,37 @@ abstract class AbstractFileDriver implements Driver
     public function isTransient($className)
     {
         $isTransient = true;
-        if ($this->_mode == self::FILE_PER_CLASS) {
-            // check whether file exists
-            foreach ((array)$this->_paths as $path) {
-                if (file_exists($path . DIRECTORY_SEPARATOR . str_replace('\\', '.', $className) . $this->_fileExtension)) {
-                    $isTransient = false;
-                    break;
-                }
+        // check whether file exists
+        foreach ((array)$this->_paths as $path) {
+            if (file_exists($path . DIRECTORY_SEPARATOR . str_replace('\\', '.', $className) . $this->_fileExtension)) {
+                $isTransient = false;
+                break;
             }
-        } else {
-            $isTransient = isset($this->_elements[$className]);
         }
 
         return $isTransient;
     }
-
+    
     /**
-     * Preloads all mapping information found in any documents within the
-     * configured paths and returns a list of class names that have been preloaded.
+     * Gets the names of all mapped classes known to this driver.
      * 
-     * @return array The list of class names that have been preloaded.
+     * @return array The names of all mapped classes known to this driver.
      */
-    public function preload($force = false)
+    public function getAllClassNames()
     {
-        if ($this->_mode != self::PRELOAD && ! $force) {
-            return array();
-        }
-
+        $clasNames = array();
         foreach ((array)$this->_paths as $path) {
             if (is_dir($path)) {
                 $files = glob($path . '/*');
                 foreach ($files as $file) {
-                    $this->_elements = array_merge($this->_elements, $this->_loadMappingFile($file));
+                    $classNames[] = str_replace(array($this->_fileExtension, '.'), array('', '\\'), basename($file));
                 }
             } else if (is_file($path)) {
-                $this->_elements = array_merge($this->_elements, $this->_loadMappingFile($path));
+                $classNames[] = str_replace(array($this->_fileExtension, '.'), array('', '\\'), basename($file));
             }
         }
 
-        return array_keys($this->_elements);
+        return $classNames;
     }
 
     /**

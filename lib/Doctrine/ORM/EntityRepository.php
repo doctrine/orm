@@ -89,6 +89,7 @@ class EntityRepository
         }
 
         if ( ! is_array($id) || count($id) <= 1) {
+            //FIXME: Not correct. Relies on specific order.
             $value = is_array($id) ? array_values($id) : array($id);
             $id = array_combine($this->_class->identifier, $value);
         }

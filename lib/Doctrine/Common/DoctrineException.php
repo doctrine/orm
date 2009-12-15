@@ -31,6 +31,7 @@ namespace Doctrine\Common;
  * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
  * @author  Jonathan Wage <jonwage@gmail.com>
  * @author  Roman Borschel <roman@code-factory.org>
+ * @todo Remove
  */
 class DoctrineException extends \Exception
 {

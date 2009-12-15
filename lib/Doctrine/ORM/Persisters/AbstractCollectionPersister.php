@@ -21,8 +21,8 @@
 
 namespace Doctrine\ORM\Persisters;
 
-use Doctrine\ORM\EntityManager;
-use Doctrine\ORM\PersistentCollection;
+use Doctrine\ORM\EntityManager,
+    Doctrine\ORM\PersistentCollection;
 
 /**
  * Base class for all collection persisters.

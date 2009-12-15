@@ -600,7 +600,7 @@ class StandardEntityPersister
      * @param $result The SQL result.
      * @param object $entity The entity object to fill.
      * @param array $hints Hints for entity creation.
-     * @return object The filled and managed entity object.
+     * @return object The filled and managed entity object or NULL, if the SQL result is empty.
      */
     private function _createEntity($result, $entity = null, array $hints = array())
     {

@@ -36,8 +36,12 @@ namespace Doctrine\Common;
 interface PropertyChangedListener
 {
     /**
-     * @todo Document this function
+     * Notifies the listener of a property change.
      *
+     * @param object $sender The object on which the property changed.
+     * @param string $propertyName The name of the property that changed.
+     * @param mixed $oldValue The old value of the property that changed.
+     * @param mixed $newValue The new value of the property that changed.
      */
     function propertyChanged($sender, $propertyName, $oldValue, $newValue);
 }

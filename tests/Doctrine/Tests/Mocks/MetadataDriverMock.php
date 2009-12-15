@@ -2,9 +2,9 @@
 
 namespace Doctrine\Tests\Mocks;
 
-class MetadataDriverMock
+class MetadataDriverMock implements \Doctrine\ORM\Mapping\Driver\Driver
 {
-    public function loadMetadataForClass($className, \Doctrine\ORM\Mapping\ClassMetadata $metadata)
+    public function loadMetadataForClass($className, \Doctrine\ORM\Mapping\ClassMetadataInfo $metadata)
     {
         return;
     }
@@ -14,7 +14,7 @@ class MetadataDriverMock
         return false;
     }
 
-    public function preload()
+    public function getAllClassNames()
     {
         return array();
     }

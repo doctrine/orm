@@ -210,7 +210,7 @@ class EntityManager
      * @internal Performance-sensitive method.
      */
     public function getClassMetadata($className)
-    {        
+    {
         return $this->_metadataFactory->getMetadataFor($className);
     }
     

@@ -46,6 +46,8 @@ namespace Doctrine\Common;
  * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
  * @author  Jonathan Wage <jonwage@gmail.com>
  * @author  Roman Borschel <roman@code-factory.org>
+ * 
+ * @deprecated Use Doctrine\Common\ClassLoader instead.
  */
 class GlobalClassLoader
 {

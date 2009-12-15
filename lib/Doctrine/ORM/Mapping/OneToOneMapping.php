@@ -225,6 +225,11 @@ class OneToOneMapping extends AssociationMapping
             if ($inverseField) {
                 $hints['fetched'][$targetClass->rootEntityName][$inverseField] = true;
             }
+            /* cascade read-only status
+            if ($em->getUnitOfWork()->isReadOnly($sourceEntity)) {
+                $hints[Query::HINT_READ_ONLY] = true;
+            }
+            */
 
             $targetEntity = $em->getUnitOfWork()->getEntityPersister($this->targetEntityName)->load($joinColumnValues, $targetEntity, $this, $hints);
             

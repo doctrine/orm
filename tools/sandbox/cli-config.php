@@ -14,14 +14,12 @@
 # named "cli-config.php" (this one) in the same directory and uses that by default.
 #
 
-require_once __DIR__ . '/../../lib/Doctrine/Common/IsolatedClassLoader.php';
+require_once __DIR__ . '/../../lib/Doctrine/Common/ClassLoader.php';
 
-$classLoader = new \Doctrine\Common\IsolatedClassLoader('Entities');
-$classLoader->setBasePath(__DIR__);
+$classLoader = new \Doctrine\Common\ClassLoader('Entities', __DIR__);
 $classLoader->register();
 
-$classLoader = new \Doctrine\Common\IsolatedClassLoader('Proxies');
-$classLoader->setBasePath(__DIR__);
+$classLoader = new \Doctrine\Common\ClassLoader('Proxies', __DIR__);
 $classLoader->register();
 
 $config = new \Doctrine\ORM\Configuration();
