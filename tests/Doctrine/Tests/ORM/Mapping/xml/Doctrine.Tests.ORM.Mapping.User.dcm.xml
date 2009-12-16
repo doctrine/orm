@@ -3,7 +3,7 @@
 <doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
       xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
-                          /Users/robo/dev/php/Doctrine/doctrine-mapping.xsd">
+                          http://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
                               
     <entity name="Doctrine\Tests\ORM\Mapping\User" table="cms_users">
         
@@ -13,7 +13,7 @@
         </lifecycle-callbacks>
 
         <id name="id" type="integer" column="id">
-            <generator strategy="auto"/>
+            <generator strategy="AUTO"/>
         </id>
         
         <field name="name" column="name" type="string" length="50"/>
