@@ -374,7 +374,7 @@ class ClassMetadataInfo
      *
      * @var string
      */
-    public $insertSql;
+    //public $insertSql;
 
     /**
      * A map of field names to class names, where the field names are association

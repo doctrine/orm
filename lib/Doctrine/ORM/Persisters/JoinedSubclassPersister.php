@@ -60,7 +60,7 @@ class JoinedSubclassPersister extends StandardEntityPersister
      * This function finds the ClassMetadata instance in a inheritance hierarchy
      * that is responsible for enabling versioning.
      *
-     * @return mixed $versionedClass ClassMetadata instance or false if versioning is not enabled
+     * @return mixed ClassMetadata instance or false if versioning is not enabled.
      */
     private function _getVersionedClassMetadata()
     {
@@ -90,13 +90,15 @@ class JoinedSubclassPersister extends StandardEntityPersister
             if (isset($this->_class->associationMappings[$fieldName])) {
                 if (isset($this->_class->inheritedAssociationFields[$fieldName])) {
                     $this->_owningTableMap[$fieldName] = $this->_em->getClassMetadata(
-                    $this->_class->inheritedAssociationFields[$fieldName])->primaryTable['name'];
+                        $this->_class->inheritedAssociationFields[$fieldName]
+                        )->primaryTable['name'];
                 } else {
                     $this->_owningTableMap[$fieldName] = $this->_class->primaryTable['name'];
                 }
             } else if (isset($this->_class->fieldMappings[$fieldName]['inherited'])) {
                 $this->_owningTableMap[$fieldName] = $this->_em->getClassMetadata(
-                $this->_class->fieldMappings[$fieldName]['inherited'])->primaryTable['name'];
+                    $this->_class->fieldMappings[$fieldName]['inherited']
+                    )->primaryTable['name'];
             } else {
                 $this->_owningTableMap[$fieldName] = $this->_class->primaryTable['name'];
             }
@@ -122,16 +124,20 @@ class JoinedSubclassPersister extends StandardEntityPersister
         $postInsertIds = array();
         $idGen = $this->_class->idGenerator;
         $isPostInsertId = $idGen->isPostInsertGenerator();
-        $sqlLogger = $this->_conn->getConfiguration()->getSqlLogger();
 
         // Prepare statements for all tables
         $stmts = $classes = array();
-        $stmts[$this->_class->primaryTable['name']] = $this->_conn->prepare($this->_class->insertSql);
-        $sql[$this->_class->primaryTable['name']] = $this->_class->insertSql;
-        foreach ($this->_class->parentClasses as $parentClass) {
-            $parentClass = $this->_em->getClassMetadata($parentClass);
-            $sql[$parentClass->primaryTable['name']] = $parentClass->insertSql;
-            $stmts[$parentClass->primaryTable['name']] = $this->_conn->prepare($parentClass->insertSql);
+        $stmts[$this->_class->primaryTable['name']] = $this->_conn->prepare($this->getInsertSql());
+        if ($this->_sqlLogger !== null) {
+            $sql[$this->_class->primaryTable['name']] = $this->getInsertSql();
+        }
+        foreach ($this->_class->parentClasses as $parentClassName) {
+            $parentClass = $this->_em->getClassMetadata($parentClassName);
+            $parentPersister = $this->_em->getUnitOfWork()->getEntityPersister($parentClassName);
+            $stmts[$parentClass->primaryTable['name']] = $this->_conn->prepare($parentPersister->getInsertSql());
+            if ($this->_sqlLogger !== null) {
+                $sql[$parentClass->primaryTable['name']] = $parentPersister->getInsertSql();
+            }
         }
         $rootTableName = $this->_em->getClassMetadata($this->_class->rootEntityName)->primaryTable['name'];
 
@@ -142,13 +148,13 @@ class JoinedSubclassPersister extends StandardEntityPersister
             // Execute insert on root table
             $stmt = $stmts[$rootTableName];
             $paramIndex = 1;
-            if ($sqlLogger) {
+            if ($this->_sqlLogger !== null) {
                 $params = array();
                 foreach ($insertData[$rootTableName] as $columnName => $value) {
                     $params[$paramIndex] = $value;
                     $stmt->bindValue($paramIndex++, $value);
                 }
-                $sqlLogger->logSql($sql[$rootTableName], $params);
+                $this->_sqlLogger->logSql($sql[$rootTableName], $params);
             } else {
                 foreach ($insertData[$rootTableName] as $columnName => $value) {
                     $stmt->bindValue($paramIndex++, $value);
@@ -168,7 +174,7 @@ class JoinedSubclassPersister extends StandardEntityPersister
             foreach ($insertData as $tableName => $data) {
                 $stmt = $stmts[$tableName];
                 $paramIndex = 1;
-                if ($sqlLogger) {
+                if ($this->_sqlLogger !== null) {
                     $params = array();
                     foreach ((array) $id as $idVal) {
                         $params[$paramIndex] = $idVal;
@@ -178,7 +184,7 @@ class JoinedSubclassPersister extends StandardEntityPersister
                         $params[$paramIndex] = $value;
                         $stmt->bindValue($paramIndex++, $value);
                     }
-                    $sqlLogger->logSql($sql[$tableName], $params);
+                    $this->_sqlLogger->logSql($sql[$tableName], $params);
                 } else {
                     foreach ((array) $id as $idVal) {
                         $stmt->bindValue($paramIndex++, $idVal);
@@ -405,5 +411,39 @@ class JoinedSubclassPersister extends StandardEntityPersister
     protected function _processSqlResult(array $sqlResult)
     {
         return $this->_processSqlResultInheritanceAware($sqlResult);
+    }
+    
+    /** @override */
+    protected function _getInsertColumnList()
+    {
+        // Identifier columns must always come first in the column list of subclasses.
+        $columns = $this->_class->parentClasses ? $this->_class->getIdentifierColumnNames() : array();
+
+        foreach ($this->_class->reflFields as $name => $field) {
+            if (isset($this->_class->fieldMappings[$name]['inherited']) && ! isset($this->_class->fieldMappings[$name]['id'])
+                    || isset($this->_class->inheritedAssociationFields[$name])
+                    || ($this->_class->isVersioned && $this->_class->versionField == $name)) {
+                continue;
+            }
+
+            if (isset($this->_class->associationMappings[$name])) {
+                $assoc = $this->_class->associationMappings[$name];
+                if ($assoc->isOneToOne() && $assoc->isOwningSide) {
+                    foreach ($assoc->targetToSourceKeyColumns as $sourceCol) {
+                        $columns[] = $assoc->getQuotedJoinColumnName($sourceCol, $this->_platform);
+                    }
+                }
+            } else if ($this->_class->name != $this->_class->rootEntityName ||
+                    ! $this->_class->isIdGeneratorIdentity() || $this->_class->identifier[0] != $name) {
+                $columns[] = $this->_class->getQuotedColumnName($name, $this->_platform);
+            }
+        }
+
+        // Add discriminator column if it is the topmost class.
+        if ($this->_class->name == $this->_class->rootEntityName) {
+            $columns[] = $this->_class->getQuotedDiscriminatorColumnName($this->_platform);
+        }
+
+        return $columns;
     }
 }

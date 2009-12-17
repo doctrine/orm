@@ -254,10 +254,6 @@ class ClassMetadataFactory
                 $eventArgs = new \Doctrine\ORM\Event\LoadClassMetadataEventArgs($class);
                 $this->_evm->dispatchEvent(Events::loadClassMetadata, $eventArgs);
             }
-
-            if ( ! $class->isMappedSuperclass) {
-                $this->_generateStaticSql($class);
-            }
             
             $this->_loadedMetadata[$className] = $class;
             
@@ -321,82 +317,6 @@ class ClassMetadataFactory
             } else {
                 $subClass->addAssociationMapping($mapping);
             }
-        }
-    }
-
-    /**
-     * Generates any static SQL strings for a class and stores them in the descriptor.
-     *
-     * @param ClassMetadata $class
-     */
-    private function _generateStaticSql($class)
-    {
-        if ($versioned = $class->isVersioned) {
-            $versionField = $class->versionField;
-        }
-
-        // Generate INSERT SQL
-        $columns = $values = array();
-        if ($class->inheritanceType == ClassMetadata::INHERITANCE_TYPE_JOINED) {
-            // Generate INSERT SQL for inheritance type JOINED
-            foreach ($class->reflFields as $name => $field) {
-                if (isset($class->fieldMappings[$name]['inherited']) && ! isset($class->fieldMappings[$name]['id'])
-                        || isset($class->inheritedAssociationFields[$name])
-                        || ($versioned && $versionField == $name)) {
-                    continue;
-                }
-
-                if (isset($class->associationMappings[$name])) {
-                    $assoc = $class->associationMappings[$name];
-                    if ($assoc->isOneToOne() && $assoc->isOwningSide) {
-                        foreach ($assoc->targetToSourceKeyColumns as $sourceCol) {
-                            $columns[] = $assoc->getQuotedJoinColumnName($sourceCol, $this->_targetPlatform);
-                        }
-                    }
-                } else if ($class->name != $class->rootEntityName || ! $class->isIdGeneratorIdentity() || $class->identifier[0] != $name) {
-                    $columns[] = $class->getQuotedColumnName($name, $this->_targetPlatform);
-                }
-            }
-        } else {
-            // Generate INSERT SQL for inheritance types NONE, SINGLE_TABLE, TABLE_PER_CLASS
-            foreach ($class->reflFields as $name => $field) {
-                if ($versioned && $versionField == $name) {
-                    continue;
-                }
-                if (isset($class->associationMappings[$name])) {
-                    $assoc = $class->associationMappings[$name];
-                    if ($assoc->isOwningSide && $assoc->isOneToOne()) {
-                        foreach ($assoc->targetToSourceKeyColumns as $sourceCol) {
-                            $columns[] = $assoc->getQuotedJoinColumnName($sourceCol, $this->_targetPlatform);
-                        }
-                    }
-                } else if ($class->generatorType != ClassMetadata::GENERATOR_TYPE_IDENTITY ||  $class->identifier[0] != $name) {
-                    $columns[] = $class->getQuotedColumnName($name, $this->_targetPlatform);
-                }
-            }
-        }
-        
-        // Add discriminator column to the INSERT SQL if necessary
-        if (isset($class->discriminatorColumn['name'])) {
-            if ($class->isInheritanceTypeSingleTable() || $class->isInheritanceTypeJoined()
-                    && $class->name == $class->rootEntityName) {
-                $columns[] = $class->getQuotedDiscriminatorColumnName($this->_targetPlatform);
-            }
-        }
-
-        if (empty($columns)) {
-            $class->insertSql = $this->_targetPlatform->getEmptyIdentityInsertSql(
-                $class->getQuotedTableName($this->_targetPlatform),
-                $class->getQuotedColumnName($class->identifier[0], $this->_targetPlatform)
-            );
-        } else {
-            $columns = array_unique($columns);
-            $values = array_fill(0, count($columns), '?');
-
-            $class->insertSql = 'INSERT INTO ' .
-                 $class->getQuotedTableName($this->_targetPlatform)
-                . ' (' . implode(', ', $columns) . ') '
-                . 'VALUES (' . implode(', ', $values) . ')';
         }
     }
 

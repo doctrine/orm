@@ -36,6 +36,8 @@ use Doctrine\Common\EventManager,
  * @since 2.0
  * @version $Revision$
  * @author Roman Borschel <roman@code-factory.org>
+ * @todo Remove flush modes. They dont seem to be of much use. Manual flushing should
+ *       be enough.
  */
 class EntityManager
 {

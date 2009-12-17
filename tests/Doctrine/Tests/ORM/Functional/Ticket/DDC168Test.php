@@ -2,6 +2,8 @@
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\Tests\Models\Company\CompanyEmployee;
+
 require_once __DIR__ . '/../../../TestInit.php';
 
 class DDC168Test extends \Doctrine\Tests\OrmFunctionalTestCase
@@ -16,13 +18,17 @@ class DDC168Test extends \Doctrine\Tests\OrmFunctionalTestCase
      */
     public function testJoinedSubclassPersisterRequiresSpecificOrderOfMetadataReflFieldsArray()
     {
+        //$this->_em->getConnection()->getConfiguration()->setSqlLogger(new \Doctrine\DBAL\Logging\EchoSqlLogger);
+        
         $metadata = $this->_em->getClassMetadata('Doctrine\Tests\Models\Company\CompanyEmployee');
         ksort($metadata->reflFields);
 
-        $spouse = new \Doctrine\Tests\Models\Company\CompanyEmployee();
+        $spouse = new CompanyEmployee;
         $spouse->setName("Blub");
+        $spouse->setDepartment("Accounting");
+        $spouse->setSalary(500);
 
-        $employee = new \Doctrine\Tests\Models\Company\CompanyEmployee();
+        $employee = new CompanyEmployee;
         $employee->setName("Foo");
         $employee->setDepartment("bar");
         $employee->setSalary(1000);
@@ -39,5 +45,9 @@ class DDC168Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $theEmployee = $q->getSingleResult();
 
         $this->assertEquals("bar", $theEmployee->getDepartment());
+        $this->assertEquals("Foo", $theEmployee->getName());
+        $this->assertEquals(1000, $theEmployee->getSalary());
+        $this->assertTrue($theEmployee instanceof CompanyEmployee);
+        $this->assertTrue($theEmployee->getSpouse() instanceof CompanyEmployee);
     }
 }

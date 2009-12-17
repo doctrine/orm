@@ -87,7 +87,20 @@ class StandardEntityPersister
      */
     protected $_queuedInserts = array();
     
+    /**
+     * Mappings of column names as they appear in an SQL result set to
+     * column names as they are defined in the mapping.
+     * 
+     * @var array
+     */
     protected $_resultColumnNames = array();
+    
+    /**
+     * The INSERT SQL statement used for entities handled by this persister.
+     * 
+     * @var string
+     */
+    private $_insertSql;
 
     /**
      * Initializes a new instance of a class derived from AbstractEntityPersister
@@ -100,14 +113,15 @@ class StandardEntityPersister
     public function __construct(EntityManager $em, ClassMetadata $class)
     {
         $this->_em = $em;
-        $this->_conn = $em->getConnection();
-        $this->_sqlLogger = $em->getConfiguration()->getSqlLogger();
-        $this->_platform = $this->_conn->getDatabasePlatform();
         $this->_class = $class;
+        $this->_conn = $em->getConnection();
+        $this->_sqlLogger = $this->_conn->getConfiguration()->getSqlLogger();
+        $this->_platform = $this->_conn->getDatabasePlatform();
     }
 
     /**
      * Adds an entity to the queued insertions.
+     * The entity remains queued until {@link executeInserts()} is invoked.
      *
      * @param object $entity The entitiy to queue for insertion.
      */
@@ -133,10 +147,8 @@ class StandardEntityPersister
         $idGen = $this->_class->idGenerator;
         $isPostInsertId = $idGen->isPostInsertGenerator();
 
-        $stmt = $this->_conn->prepare($this->_class->insertSql);
+        $stmt = $this->_conn->prepare($this->getInsertSql());
         $primaryTableName = $this->_class->primaryTable['name'];
-
-        $sqlLogger = $this->_conn->getConfiguration()->getSqlLogger();
 
         foreach ($this->_queuedInserts as $entity) {
             $insertData = array();
@@ -144,13 +156,13 @@ class StandardEntityPersister
 
             if (isset($insertData[$primaryTableName])) {
                 $paramIndex = 1;
-                if ($sqlLogger) {
+                if ($this->_sqlLogger !== null) {
                     $params = array();
                     foreach ($insertData[$primaryTableName] as $value) {
                         $params[$paramIndex] = $value;
                         $stmt->bindValue($paramIndex++, $value);
                     }
-                    $sqlLogger->logSql($this->_class->insertSql, $params);
+                    $this->_sqlLogger->logSql($this->getInsertSql(), $params);
                 } else {
                     foreach ($insertData[$primaryTableName] as $value) {
                         $stmt->bindValue($paramIndex++, $value);
@@ -785,6 +797,74 @@ class StandardEntityPersister
         }
         
         return array($entityName, $data);
+    }
+    
+    /**
+     * Gets the INSERT SQL used by the persister to persist entities.
+     * 
+     * @return string
+     */
+    public function getInsertSql()
+    {
+        if ($this->_insertSql === null) {
+            $this->_insertSql = $this->_generateInsertSql();
+        }
+        
+        return $this->_insertSql;
+    }
+    
+    /**
+     * Gets the list of columns to put in the INSERT SQL statement.
+     * 
+     * @return array The list of columns.
+     */
+    protected function _getInsertColumnList()
+    {
+        $columns = array();
+        foreach ($this->_class->reflFields as $name => $field) {
+            if ($this->_class->isVersioned && $this->_class->versionField == $name) {
+                continue;
+            }
+            if (isset($this->_class->associationMappings[$name])) {
+                $assoc = $this->_class->associationMappings[$name];
+                if ($assoc->isOwningSide && $assoc->isOneToOne()) {
+                    foreach ($assoc->targetToSourceKeyColumns as $sourceCol) {
+                        $columns[] = $assoc->getQuotedJoinColumnName($sourceCol, $this->_platform);
+                    }
+                }
+            } else if ($this->_class->generatorType != ClassMetadata::GENERATOR_TYPE_IDENTITY ||
+                    $this->_class->identifier[0] != $name) {
+                $columns[] = $this->_class->getQuotedColumnName($name, $this->_platform);
+            }
+        }
+        
+        return $columns;
+    }
+    
+    /**
+     * Generates the INSERT SQL used by the persister to persist entities.
+     * 
+     * @return string
+     */
+    protected function _generateInsertSql()
+    {
+        $insertSql = '';
+        $columns = $this->_getInsertColumnList();
+        if (empty($columns)) {
+            $insertSql = $this->_platform->getEmptyIdentityInsertSql(
+                $this->_class->getQuotedTableName($this->_platform),
+                $this->_class->getQuotedColumnName($this->_class->identifier[0], $this->_platform)
+            );
+        } else {
+            $columns = array_unique($columns);
+            $values = array_fill(0, count($columns), '?');
+
+            $insertSql = 'INSERT INTO ' . $this->_class->getQuotedTableName($this->_platform)
+                    . ' (' . implode(', ', $columns) . ') '
+                    . 'VALUES (' . implode(', ', $values) . ')';
+        }
+        
+        return $insertSql;
     }
     
     private function _findDeclaringClass($column)

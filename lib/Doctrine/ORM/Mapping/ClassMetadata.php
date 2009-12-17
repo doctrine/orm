@@ -333,7 +333,7 @@ final class ClassMetadata extends ClassMetadataInfo
             'idGenerator',
             'inheritanceType',
             'inheritedAssociationFields',
-            'insertSql',
+            //'insertSql',
             'inverseMappings', //TODO: Remove!
             'isIdentifierComposite',
             'isMappedSuperclass',

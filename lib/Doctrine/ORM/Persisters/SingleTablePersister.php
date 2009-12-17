@@ -92,6 +92,16 @@ class SingleTablePersister extends StandardEntityPersister
     }
     
     /** @override */
+    protected function _getInsertColumnList()
+    {
+        $columns = parent::_getInsertColumnList();
+        // Add discriminator column to the INSERT SQL
+        $columns[] = $this->_class->getQuotedDiscriminatorColumnName($this->_platform);
+        
+        return $columns;
+    }
+    
+    /** @override */
     protected function _processSqlResult(array $sqlResult)
     {
         return $this->_processSqlResultInheritanceAware($sqlResult);
