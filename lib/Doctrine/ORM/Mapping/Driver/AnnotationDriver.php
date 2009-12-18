@@ -79,7 +79,7 @@ class AnnotationDriver implements Driver
         } else if (isset($classAnnotations['Doctrine\ORM\Mapping\MappedSuperclass'])) {
             $metadata->isMappedSuperclass = true;
         } else {
-            throw DoctrineException::classIsNotAValidEntityOrMapperSuperClass($className);
+            throw DoctrineException::classIsNotAValidEntityOrMappedSuperClass($className);
         }
 
         // Evaluate DoctrineTable annotation

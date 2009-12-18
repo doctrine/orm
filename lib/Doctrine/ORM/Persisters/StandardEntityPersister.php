@@ -168,6 +168,8 @@ class StandardEntityPersister
                         $stmt->bindValue($paramIndex++, $value);
                     }
                 }
+            } else if ($this->_sqlLogger !== null) {
+                $this->_sqlLogger->logSql($this->getInsertSql());
             }
             
             $stmt->execute();

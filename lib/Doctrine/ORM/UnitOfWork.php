@@ -370,12 +370,6 @@ class UnitOfWork implements PropertyChangedListener
      * Computes all the changes that have been done to entities and collections
      * since the last commit and stores these changes in the _entityChangeSet map
      * temporarily for access by the persisters, until the UoW commit is finished.
-     *
-     * @param array $entities The entities for which to compute the changesets. If this
-     *          parameter is not specified, the changesets of all entities in the identity
-     *          map are computed if automatic dirty checking is enabled (the default).
-     *          If automatic dirty checking is disabled, only those changesets will be
-     *          computed that have been scheduled through scheduleForDirtyCheck().
      */
     public function computeChangeSets()
     {
@@ -579,6 +573,13 @@ class UnitOfWork implements PropertyChangedListener
             $state = $this->getEntityState($entry, self::STATE_NEW);
             $oid = spl_object_hash($entry);
             if ($state == self::STATE_NEW) {
+                if (isset($targetClass->lifecycleCallbacks[Events::prePersist])) {
+                    $targetClass->invokeLifecycleCallbacks(Events::prePersist, $entry);
+                }
+                if ($this->_evm->hasListeners(Events::prePersist)) {
+                    $this->_evm->dispatchEvent(Events::prePersist, new LifecycleEventArgs($entry));
+                }
+                
                 // Get identifier, if possible (not post-insert)
                 $idGen = $targetClass->idGenerator;
                 if ( ! $idGen->isPostInsertGenerator()) {
@@ -696,7 +697,7 @@ class UnitOfWork implements PropertyChangedListener
                 }
             }
         }
-        
+
         $postInsertIds = $persister->executeInserts();
         
         if ($postInsertIds) {
@@ -866,7 +867,7 @@ class UnitOfWork implements PropertyChangedListener
         }
 
         $this->_entityInsertions[$oid] = $entity;
-        
+
         if (isset($this->_entityIdentifiers[$oid])) {
             $this->addToIdentityMap($entity);
         }

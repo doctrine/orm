@@ -16,4 +16,9 @@ class LifecycleEventArgs extends \Doctrine\Common\EventArgs
     {
         return $this->_entity;
     }
+    
+    public function getEntityManager()
+    {
+        return $this->_em;
+    }
 }

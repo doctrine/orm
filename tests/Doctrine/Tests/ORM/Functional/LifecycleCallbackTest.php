@@ -86,14 +86,20 @@ class LifecycleCallbackTest extends \Doctrine\Tests\OrmFunctionalTestCase
      */
     public function testCascadedEntitiesCallsPrePersist()
     {
+        //$this->_em->getConnection()->getConfiguration()->setSqlLogger(new \Doctrine\DBAL\Logging\EchoSqlLogger);
+        
         $e1 = new LifecycleCallbackTestEntity;
         $e2 = new LifecycleCallbackTestEntity;
 
         $c = new LifecycleCallbackCascader();
+        $this->_em->persist($c);
+        
         $c->entities[] = $e1;
         $c->entities[] = $e2;
-
-        $this->_em->persist($c);
+        $e1->cascader = $c;
+        $e2->cascader = $c;
+        
+        //$this->_em->persist($c);
         $this->_em->flush();
 
         $this->assertTrue($e1->prePersistCallbackInvoked);
@@ -184,7 +190,7 @@ class LifecycleCallbackCascader
     private $id;
 
     /**
-     * @OneToMany(targetEntity="LifecycleCallbackTestEntity", mappedBy="product", cascade={"persist"})
+     * @OneToMany(targetEntity="LifecycleCallbackTestEntity", mappedBy="cascader", cascade={"persist"})
      */
     public $entities;
 

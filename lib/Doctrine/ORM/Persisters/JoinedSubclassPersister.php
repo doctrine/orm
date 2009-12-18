@@ -64,7 +64,7 @@ class JoinedSubclassPersister extends StandardEntityPersister
      */
     private function _getVersionedClassMetadata()
     {
-        if ($isVersioned = $this->_class->isVersioned) {
+        if ($this->_class->isVersioned) {
             if (isset($this->_class->fieldMappings[$this->_class->versionField]['inherited'])) {
                 $definingClassName = $this->_class->fieldMappings[$this->_class->versionField]['inherited'];
                 $versionedClass = $this->_em->getClassMetadata($definingClassName);
@@ -125,43 +125,59 @@ class JoinedSubclassPersister extends StandardEntityPersister
         $idGen = $this->_class->idGenerator;
         $isPostInsertId = $idGen->isPostInsertGenerator();
 
-        // Prepare statements for all tables
-        $stmts = $classes = array();
-        $stmts[$this->_class->primaryTable['name']] = $this->_conn->prepare($this->getInsertSql());
+        // Prepare statement for the root table
+        $rootClass = $this->_class->name == $this->_class->rootEntityName ?
+                $this->_class : $this->_em->getClassMetadata($this->_class->rootEntityName);
+        $rootPersister = $this->_em->getUnitOfWork()->getEntityPersister($rootClass->name);
+        $rootTableName = $rootClass->primaryTable['name'];
+        $rootTableStmt = $this->_conn->prepare($rootPersister->getInsertSql());
         if ($this->_sqlLogger !== null) {
-            $sql[$this->_class->primaryTable['name']] = $this->getInsertSql();
+            $sql = array();
+            $sql[$rootTableName] = $rootPersister->getInsertSql();
+        }
+        
+        // Prepare statements for sub tables.
+        $subTableStmts = array();
+        if ($rootClass !== $this->_class) {
+            $subTableStmts[$this->_class->primaryTable['name']] = $this->_conn->prepare($this->getInsertSql());
+            if ($this->_sqlLogger !== null) {
+                $sql[$this->_class->primaryTable['name']] = $this->getInsertSql();
+            }
         }
         foreach ($this->_class->parentClasses as $parentClassName) {
             $parentClass = $this->_em->getClassMetadata($parentClassName);
-            $parentPersister = $this->_em->getUnitOfWork()->getEntityPersister($parentClassName);
-            $stmts[$parentClass->primaryTable['name']] = $this->_conn->prepare($parentPersister->getInsertSql());
-            if ($this->_sqlLogger !== null) {
-                $sql[$parentClass->primaryTable['name']] = $parentPersister->getInsertSql();
+            $parentTableName = $parentClass->primaryTable['name'];
+            if ($parentClass !== $rootClass) {
+                $parentPersister = $this->_em->getUnitOfWork()->getEntityPersister($parentClassName);
+                $subTableStmts[$parentTableName] = $this->_conn->prepare($parentPersister->getInsertSql());
+                if ($this->_sqlLogger !== null) {
+                    $sql[$parentTableName] = $parentPersister->getInsertSql();
+                }
             }
         }
-        $rootTableName = $this->_em->getClassMetadata($this->_class->rootEntityName)->primaryTable['name'];
-
+        
+        // Execute all inserts. For each entity:
+        // 1) Insert on root table
+        // 2) Insert on sub tables
         foreach ($this->_queuedInserts as $entity) {
             $insertData = array();
             $this->_prepareData($entity, $insertData, true);
 
             // Execute insert on root table
-            $stmt = $stmts[$rootTableName];
             $paramIndex = 1;
             if ($this->_sqlLogger !== null) {
                 $params = array();
                 foreach ($insertData[$rootTableName] as $columnName => $value) {
                     $params[$paramIndex] = $value;
-                    $stmt->bindValue($paramIndex++, $value);
+                    $rootTableStmt->bindValue($paramIndex++, $value);
                 }
                 $this->_sqlLogger->logSql($sql[$rootTableName], $params);
             } else {
                 foreach ($insertData[$rootTableName] as $columnName => $value) {
-                    $stmt->bindValue($paramIndex++, $value);
+                    $rootTableStmt->bindValue($paramIndex++, $value);
                 }
             }
-            $stmt->execute();
-            unset($insertData[$rootTableName]);
+            $rootTableStmt->execute();
 
             if ($isPostInsertId) {
                 $id = $idGen->generate($this->_em, $entity);
@@ -170,9 +186,10 @@ class JoinedSubclassPersister extends StandardEntityPersister
                 $id = $this->_em->getUnitOfWork()->getEntityIdentifier($entity);
             }
 
-            // Execute inserts on subtables
-            foreach ($insertData as $tableName => $data) {
-                $stmt = $stmts[$tableName];
+            // Execute inserts on subtables.
+            // The order doesn't matter because all child tables link to the root table via FK.
+            foreach ($subTableStmts as $tableName => $stmt) {
+                $data = isset($insertData[$tableName]) ? $insertData[$tableName] : array();
                 $paramIndex = 1;
                 if ($this->_sqlLogger !== null) {
                     $params = array();
@@ -197,7 +214,8 @@ class JoinedSubclassPersister extends StandardEntityPersister
             }
         }
 
-        foreach ($stmts as $stmt) {
+        $rootTableStmt->closeCursor();
+        foreach ($subTableStmts as $stmt) {
             $stmt->closeCursor();
         }
 
