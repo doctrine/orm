@@ -44,21 +44,25 @@ class EntityManager
     /**
      * IMMEDIATE: Flush occurs automatically after each operation that issues database
      * queries. No operations are queued.
+     * @deprecated
      */ 
     const FLUSHMODE_IMMEDIATE = 1;
     /**
      * AUTO: Flush occurs automatically in the following situations:
      * - Before any query executions (to prevent getting stale data)
      * - On EntityManager#commit()
+     * @deprecated
      */
     const FLUSHMODE_AUTO = 2;
     /**
      * COMMIT: Flush occurs automatically only on EntityManager#commit().
+     * @deprecated
      */
     const FLUSHMODE_COMMIT = 3;
     /**
      * MANUAL: Flush occurs never automatically. The only way to flush is
      * through EntityManager#flush().
+     * @deprecated
      */
     const FLUSHMODE_MANUAL = 4;
     
@@ -94,6 +98,7 @@ class EntityManager
      * The currently used flush mode. Defaults to 'commit'.
      *
      * @var string
+     * @deprecated
      */
     private $_flushMode = self::FLUSHMODE_COMMIT;
     
@@ -135,7 +140,6 @@ class EntityManager
      * and uses the given Configuration and EventManager implementations.
      *
      * @param Doctrine\DBAL\Connection $conn
-     * @param string $name
      * @param Doctrine\ORM\Configuration $config
      * @param Doctrine\Common\EventManager $eventManager
      */
@@ -335,11 +339,12 @@ class EntityManager
      * Sets the flush mode to use.
      *
      * @param string $flushMode
+     * @deprecated
      */
     public function setFlushMode($flushMode)
     {
         if ( ! ($flushMode >= 1 && $flushMode <= 4)) {
-            throw EntityManagerException::invalidFlushMode();
+            throw ORMException::invalidFlushMode($flushMode);
         }
         $this->_flushMode = $flushMode;
     }
@@ -348,6 +353,7 @@ class EntityManager
      * Gets the currently used flush mode.
      *
      * @return string
+     * @deprecated
      */
     public function getFlushMode()
     {
@@ -366,7 +372,7 @@ class EntityManager
             $this->_unitOfWork->clear();
         } else {
             //TODO
-            throw DoctrineException::notImplemented(__FUNCTION__, __CLASS__);
+            throw new ORMException("EntityManager#clear(\$entityName) not yet implemented.");
         }
     }
     
@@ -528,12 +534,12 @@ class EntityManager
     /**
      * Throws an exception if the EntityManager is closed or currently not active.
      *
-     * @throws EntityManagerException If the EntityManager is closed.
+     * @throws ORMException If the EntityManager is closed.
      */
     private function _errorIfClosed()
     {
         if ($this->_closed) {
-            throw EntityManagerException::closed();
+            throw ORMException::entityManagerClosed();
         }
     }
     

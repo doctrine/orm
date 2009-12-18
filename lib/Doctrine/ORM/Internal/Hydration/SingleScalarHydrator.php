@@ -24,9 +24,10 @@ namespace Doctrine\ORM\Internal\Hydration;
 use Doctrine\DBAL\Connection;
 
 /**
- * Description of SingleScalarHydrator
+ * Hydrator that hydrates a single scalar value from the result set.
  *
  * @author Roman Borschel <roman@code-factory.org>
+ * @since 2.0
  */
 class SingleScalarHydrator extends AbstractHydrator
 {
@@ -35,11 +36,11 @@ class SingleScalarHydrator extends AbstractHydrator
     {
         $cache = array();
         $result = $this->_stmt->fetchAll(Connection::FETCH_ASSOC);
-        //TODO: Let this exception be raised by Query as QueryException
         if (count($result) > 1 || count($result[key($result)]) > 1) {
-            throw HydrationException::nonUniqueResult();
+            throw new \Doctrine\ORM\NonUniqueResultException;
         }
         $result = $this->_gatherScalarRowData($result[key($result)], $cache);
+        
         return array_shift($result);
     }
 }

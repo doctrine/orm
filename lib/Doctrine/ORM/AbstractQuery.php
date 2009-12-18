@@ -56,7 +56,7 @@ abstract class AbstractQuery
     /**
      * Hydrates nothing.
      */
-    const HYDRATE_NONE = 5;
+    //const HYDRATE_NONE = 5;
 
     /**
      * @var array $params Parameters of this query.
@@ -375,27 +375,37 @@ abstract class AbstractQuery
 
     /**
      * Gets the single result of the query.
-     * Enforces the uniqueness of the result. If the result is not unique,
-     * a QueryException is thrown.
+     * 
+     * Enforces the presence as well as the uniqueness of the result.
+     * 
+     * If the result is not unique, a NonUniqueResultException is thrown.
+     * If there is no result, a NoResultException is thrown.
      *
      * @param integer $hydrationMode
      * @return mixed
      * @throws QueryException If the query result is not unique.
+     * @throws NoResultException If the query returned no result.
      */
     public function getSingleResult($hydrationMode = null)
     {
         $result = $this->execute(array(), $hydrationMode);
+        
+        if ($this->_hydrationMode !== self::HYDRATE_SINGLE_SCALAR && ! $result) {
+            throw new NoResultException;
+        }
+        
         if (is_array($result)) {
             if (count($result) > 1) {
-                throw QueryException::nonUniqueResult();
+                throw new NonUniqueResultException;
             }
             return array_shift($result);
         } else if (is_object($result)) {
             if (count($result) > 1) {
-                throw QueryException::nonUniqueResult();
+                throw new NonUniqueResultException;
             }
             return $result->first();
         }
+        
         return $result;
     }
 
@@ -413,8 +423,7 @@ abstract class AbstractQuery
     }
 
     /**
-     * Sets an implementation-specific hint. If the hint name is not recognized,
-     * it is silently ignored.
+     * Sets a query hint. If the hint name is not recognized, it is silently ignored.
      *
      * @param string $name The name of the hint.
      * @param mixed $value The value of the hint.
@@ -427,8 +436,7 @@ abstract class AbstractQuery
     }
 
     /**
-     * Gets an implementation-specific hint. If the hint name is not recognized,
-     * FALSE is returned.
+     * Gets the value of a query hint. If the hint name is not recognized, FALSE is returned.
      *
      * @param string $name The name of the hint.
      * @return mixed The value of the hint or FALSE, if the hint name is not recognized.
@@ -440,7 +448,7 @@ abstract class AbstractQuery
 
     /**
      * Executes the query and returns an IterableResult that can be used to incrementally
-     * iterated over the result.
+     * iterate over the result.
      *
      * @param array $params The query parameters.
      * @param integer $hydrationMode The hydration mode to use.

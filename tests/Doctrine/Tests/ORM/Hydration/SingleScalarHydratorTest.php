@@ -70,9 +70,9 @@ class SingleScalarHydratorTest extends HydrationTestCase
             $this->assertEquals(1, $result);
         } else if ($name == 'result3' || $name == 'result4') {
             try {
-                $result = $hydrator->hydrateall($stmt, $rsm);
+                $result = $hydrator->hydrateAll($stmt, $rsm);
                 $this->fail();
-            } catch (\Doctrine\ORM\Internal\Hydration\HydrationException $ex) {}
+            } catch (\Doctrine\ORM\NonUniqueResultException $e) {}
         }
     }
 }

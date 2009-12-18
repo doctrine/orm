@@ -20,7 +20,7 @@ class EntityManagerTest extends \Doctrine\Tests\OrmTestCase
         try {
             $this->_em->setFlushMode('foobar');
             $this->fail("Setting invalid flushmode did not trigger exception.");
-        } catch (\Doctrine\ORM\EntityManagerException $expected) {}
+        } catch (\Doctrine\ORM\ORMException $expected) {}
         $this->_em->setFlushMode($prev);
     }
 
@@ -102,7 +102,7 @@ class EntityManagerTest extends \Doctrine\Tests\OrmTestCase
      */
     public function testAffectedByErrorIfClosedException($methodName)
     {
-        $this->setExpectedException('Doctrine\ORM\EntityManagerException', 'Closed');
+        $this->setExpectedException('Doctrine\ORM\ORMException', 'closed');
 
         $this->_em->close();
         $this->_em->$methodName(new \stdClass());
