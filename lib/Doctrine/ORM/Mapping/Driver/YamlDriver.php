@@ -189,8 +189,8 @@ class YamlDriver extends AbstractFileDriver
                 if (isset($fieldMapping['options'])) {
                     $mapping['options'] = $fieldMapping['options'];
                 }
-                if (isset($fieldMapping['notnull'])) {
-                    $mapping['notnull'] = $fieldMapping['notnull'];
+                if (isset($fieldMapping['nullable'])) {
+                    $mapping['nullable'] = $fieldMapping['nullable'];
                 }
                 if (isset($fieldMapping['version']) && $fieldMapping['version']) {
                     $metadata->setVersionMapping($mapping);
