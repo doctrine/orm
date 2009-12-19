@@ -189,11 +189,8 @@ abstract class AbstractHydrator
                     $cache[$key]['fieldName'] = $this->_rsm->scalarMappings[$key];
                     $cache[$key]['isScalar'] = true;
                 } else if (isset($this->_rsm->fieldMappings[$key])) {
-                    $classMetadata = $this->_em->getClassMetadata($this->_rsm->getOwningClass($key));
                     $fieldName = $this->_rsm->fieldMappings[$key];
-                    if ( ! isset($classMetadata->reflFields[$fieldName])) {
-                        $classMetadata = $this->_lookupDeclaringClass($classMetadata, $fieldName);
-                    }
+                    $classMetadata = $this->_em->getClassMetadata($this->_rsm->declaringClasses[$key]);
                     $cache[$key]['fieldName'] = $fieldName;
                     $cache[$key]['type'] = Type::getType($classMetadata->fieldMappings[$fieldName]['type']);
                     $cache[$key]['isIdentifier'] = $classMetadata->isIdentifier($fieldName);
@@ -254,11 +251,8 @@ abstract class AbstractHydrator
                     $cache[$key]['fieldName'] = $this->_rsm->scalarMappings[$key];
                     $cache[$key]['isScalar'] = true;
                 } else if (isset($this->_rsm->fieldMappings[$key])) {
-                    $classMetadata = $this->_em->getClassMetadata($this->_rsm->getOwningClass($key));
                     $fieldName = $this->_rsm->fieldMappings[$key];
-                    if ( ! isset($classMetadata->reflFields[$fieldName])) {
-                        $classMetadata = $this->_lookupDeclaringClass($classMetadata, $fieldName);
-                    }
+                    $classMetadata = $this->_em->getClassMetadata($this->_rsm->declaringClasses[$key]);
                     $cache[$key]['fieldName'] = $fieldName;
                     $cache[$key]['type'] = Type::getType($classMetadata->getTypeOfField($fieldName));
                     $cache[$key]['dqlAlias'] = $this->_rsm->columnOwnerMap[$key];
@@ -283,39 +277,5 @@ abstract class AbstractHydrator
         }
 
         return $rowData;
-    }
-
-    /**
-     * Looks up the declaring class of a field in a class hierarchy.
-     *
-     * We want to make the conversion to field names while iterating over the result
-     * set for best performance. By doing this at that point, we can avoid re-iterating over
-     * the data just to convert the column names to field names.
-     *
-     * However, when this is happening, we don't know the real
-     * class name to instantiate yet (the row data may target a sub-type), hence
-     * this method looks up the field name in the subclass mappings if it's not
-     * found on this class mapping.
-     * This lookup on subclasses is costly but happens only *once* for a column
-     * during hydration because the hydrator caches effectively.
-     *
-     * @return string  The field name.
-     * @throws HydrationException If the field name could not be found.
-     * @todo Remove. See inline FIXME comment.
-     */
-    private function _lookupDeclaringClass($class, $fieldName)
-    {
-        // FIXME: What if two subclasses declare a (mapped) field with the same name?
-        //       We probably need to encode the information to which subclass a field
-        //       belongs in the column alias / result set mapping.
-        //       This would solve the issue and would probably make this lookup superfluous.
-        foreach ($class->subClasses as $subClass) {
-            $subClassMetadata = $this->_em->getClassMetadata($subClass);
-            if ($subClassMetadata->hasField($fieldName)) {
-                return $subClassMetadata;
-            }
-        }
-
-        throw new HydrationException("No owner found for field $fieldName.");
     }
 }

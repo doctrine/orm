@@ -763,7 +763,7 @@ class SqlWalker implements TreeWalker
                 $sql .= $sqlTableAlias . '.' . $columnName . ' AS ' . $columnAlias;
                 
                 $columnAlias = $this->_platform->getSqlResultCasing($columnAlias);
-                $this->_rsm->addFieldResult($dqlAlias, $columnAlias, $fieldName);                
+                $this->_rsm->addFieldResult($dqlAlias, $columnAlias, $fieldName, $class->name);                
             } else {
                 throw DoctrineException::invalidPathExpression($expr->type);
             }
@@ -822,7 +822,7 @@ class SqlWalker implements TreeWalker
                       . ' AS ' . $columnAlias;
                 
                 $columnAlias = $this->_platform->getSqlResultCasing($columnAlias);
-                $this->_rsm->addFieldResult($dqlAlias, $columnAlias, $fieldName);
+                $this->_rsm->addFieldResult($dqlAlias, $columnAlias, $fieldName, $class->name);
             }
 
             // Add any additional fields of subclasses (excluding inherited fields)
@@ -845,7 +845,7 @@ class SqlWalker implements TreeWalker
                                 . ' AS ' . $columnAlias;
 
                         $columnAlias = $this->_platform->getSqlResultCasing($columnAlias);
-                        $this->_rsm->addFieldResult($dqlAlias, $columnAlias, $fieldName);
+                        $this->_rsm->addFieldResult($dqlAlias, $columnAlias, $fieldName, $subClassName);
                     }
                     
                     // Add join columns (foreign keys) of the subclass
