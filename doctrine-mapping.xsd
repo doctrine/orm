@@ -105,6 +105,13 @@
       <xs:enumeration value="RESTRICT"/> 
       <xs:enumeration value="SET_NULL"/>
     </xs:restriction> 
+  </xs:simpleType>
+  
+  <xs:simpleType name="fetch-type"> 
+    <xs:restriction base="xs:token"> 
+      <xs:enumeration value="EAGER"/> 
+      <xs:enumeration value="LAZY"/>
+    </xs:restriction> 
   </xs:simpleType> 
 
   <xs:complexType name="field">
@@ -207,6 +214,7 @@
     </xs:sequence>
     <xs:attribute name="target-entity" type="xs:NMTOKEN" use="required" />
     <xs:attribute name="field" type="xs:NMTOKEN" use="required" />
+    <xs:attribute name="fetch" type="orm:fetch-type" default="LAZY" />
   </xs:complexType>
 
   <xs:complexType name="one-to-many">
@@ -217,6 +225,21 @@
     <xs:attribute name="mapped-by" type="xs:NMTOKEN" />
     <xs:attribute name="field" type="xs:NMTOKEN" use="required" />
     <xs:attribute name="orphan-removal" type="xs:boolean" default="false" />
+    <xs:attribute name="fetch" type="orm:fetch-type" default="LAZY" />
+  </xs:complexType>
+  
+  <xs:complexType name="many-to-one">
+    <xs:sequence>
+      <xs:element name="cascade" type="orm:cascade-type" minOccurs="0" />
+      <xs:choice minOccurs="0" maxOccurs="1">
+        <xs:element name="join-column" type="orm:join-column"/>
+        <xs:element name="join-columns" type="orm:join-columns"/>
+      </xs:choice>
+    </xs:sequence>
+    <xs:attribute name="target-entity" type="xs:NMTOKEN" use="required" />
+    <xs:attribute name="field" type="xs:NMTOKEN" use="required" />
+    <xs:attribute name="orphan-removal" type="xs:boolean" default="false" />
+    <xs:attribute name="fetch" type="orm:fetch-type" default="LAZY" />
   </xs:complexType>
   
   <xs:complexType name="one-to-one">
@@ -231,6 +254,7 @@
     <xs:attribute name="mapped-by" type="xs:NMTOKEN" />
     <xs:attribute name="field" type="xs:NMTOKEN" use="required" />
     <xs:attribute name="orphan-removal" type="xs:boolean" default="false" />
+    <xs:attribute name="fetch" type="orm:fetch-type" default="LAZY" />
   </xs:complexType>
 
 </xs:schema>
