@@ -19,9 +19,10 @@
  * <http://www.doctrine-project.org>.
  */
 
-namespace Doctrine\ORM\Tools\Cli\Tasks;
+namespace Doctrine\DBAL\Tools\Cli\Tasks;
 
-use Doctrine\Common\DoctrineException,
+use Doctrine\Common\Cli\Tasks\AbstractTask,
+    Doctrine\Common\Cli\CliException,
     Doctrine\Common\Util\Debug,
     Doctrine\Common\Cli\Option,
     Doctrine\Common\Cli\OptionGroup;
@@ -47,13 +48,11 @@ class RunSqlTask extends AbstractTask
     {
         $dqlAndFile = new OptionGroup(OptionGroup::CARDINALITY_1_1, array(
             new Option(
-                'sql', '<DQL>', 
-                'The SQL to execute.' . PHP_EOL . 
+                'sql', '<SQL>', 'The SQL to execute.' . PHP_EOL . 
                 'If defined, --file can not be requested on same task.'
             ),
             new Option(
-                'file', '<FILE_PATH>', 
-                'The path to the file with the SQL to execute.' . PHP_EOL . 
+                'file', '<PATH>', 'The path to the file with the SQL to execute.' . PHP_EOL . 
                 'If defined, --sql can not be requested on same task.'
             )
         ));
@@ -75,15 +74,17 @@ class RunSqlTask extends AbstractTask
      */
     public function validate()
     {
-        $args = $this->getArguments();
-        $printer = $this->getPrinter();
+        $arguments = $this->getArguments();
+        $em = $this->getConfiguration()->getAttribute('em');
         
-        $isSql = isset($args['sql']);
-        $isFile = isset($args['file']);
+        if ($em === null) {
+            throw new CliException(
+                "Attribute 'em' of CLI Configuration is not defined or it is not a valid EntityManager."
+            );
+        }
         
-        if ( ! ($isSql ^ $isFile)) {
-            $printer->writeln("One of --sql or --file required, and only one.", 'ERROR');
-            return false;
+        if ( ! (isset($arguments['sql']) ^ isset($arguments['file']))) {
+            throw new CliException('One of --sql or --file required, and only one.');
         }
         
         return true;
@@ -95,27 +96,23 @@ class RunSqlTask extends AbstractTask
      */
     public function run()
     {
-        $args = $this->getArguments();
+        $arguments = $this->getArguments();
         
-        try {
-            if (isset($args['file'])) {
-                //TODO
-            } else if (isset($args['sql'])) {
-                $conn = $this->getEntityManager()->getConnection();
+        if (isset($arguments['file'])) {
+            //TODO
+        } else if (isset($arguments['sql'])) {
+            $em = $this->getConfiguration()->getAttribute('em');
             
-                if (preg_match('/^select/i', $args['sql'])) {
-                    $stmt = $conn->execute($args['sql']);
-                    $resultSet = $stmt->fetchAll(\Doctrine\DBAL\Connection::FETCH_ASSOC);
-                } else {
-                    $resultSet = $conn->executeUpdate($args['sql']);
-                }
-            
-                $maxDepth = isset($args['depth']) ? $args['depth'] : 7;
-        
-                Debug::dump($resultSet, $maxDepth);
+            if (preg_match('/^select/i', $arguments['sql'])) {
+                $stmt = $em->getConnection()->execute($arguments['sql']);
+                $resultSet = $stmt->fetchAll(\Doctrine\DBAL\Connection::FETCH_ASSOC);
+            } else {
+                $resultSet = $em->getConnection()->executeUpdate($arguments['sql']);
             }
-        } catch (\Exception $ex) {
-            throw new DoctrineException($ex);
+            
+            $maxDepth = isset($args['arguments']) ? $arguments['depth'] : 7;
+        
+            Debug::dump($resultSet, $maxDepth);
         }
     }
 }

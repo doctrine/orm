@@ -21,6 +21,8 @@
  
 namespace Doctrine\ORM\Tools\Cli\Tasks;
 
+use Doctrine\Common\Cli\Tasks\AbstractTask;
+
 /**
  * CLI Task to display the doctrine version
  *
@@ -28,6 +30,7 @@ namespace Doctrine\ORM\Tools\Cli\Tasks;
  * @link    www.doctrine-project.org
  * @since   2.0
  * @version $Revision$
+ * @author  Benjamin Eberlei <kontakt@beberlei.de>
  * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
  * @author  Jonathan Wage <jonwage@gmail.com>
  * @author  Roman Borschel <roman@code-factory.org>
@@ -45,14 +48,6 @@ class VersionTask extends AbstractTask
         $doc = $this->getDocumentation();
         $doc->setName('version')
             ->setDescription('Displays the current installed Doctrine version.');
-    }
-    
-    /**
-     * @inheritdoc
-     */
-    public function validate()
-    {
-        return true;
     }
 
     /**

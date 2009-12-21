@@ -40,6 +40,9 @@ class TaskDocumentation
 {
     /** @var AbstractPrinter CLI Printer */
     private $_printer;
+
+    /** @var AbstractNamespace CLI Namespace */
+    private $_namespace;
     
     /** @var string CLI Task name */
     private $_name;
@@ -53,12 +56,23 @@ class TaskDocumentation
     /**
      * Constructs a new CLI Task Documentation
      *
-     * @param AbstractPrinter CLI Printer
+     * @param AbstractNamespace CLI Namespace
      */
-    public function __construct(AbstractPrinter $printer)
+    public function __construct(AbstractNamespace $namespace)
     {
-        $this->_printer = $printer;
+        $this->_namespace = $namespace;
+        $this->_printer = $namespace->getPrinter();
         $this->_optionGroup = new OptionGroup(OptionGroup::CARDINALITY_M_N);
+    }
+    
+    /**
+     * Retrieves the CLI Namespace
+     *
+     * @return AbstractNamespace
+     */
+    public function getNamespace()
+    {
+        return $this->_namespace;
     }
     
     /**
@@ -82,6 +96,16 @@ class TaskDocumentation
     public function getName()
     {
         return $this->_name;
+    }
+    
+    /**
+     * Retrieves the full CLI Task name
+     *
+     * @return string Task full name
+     */
+    public function getFullName()
+    {
+        return $this->getNamespace()->getFullName() . ':' . $this->_name;
     }
     
     /**
@@ -139,7 +163,7 @@ class TaskDocumentation
      */
     public function getSynopsis()
     {
-        return $this->_printer->format($this->_name, 'KEYWORD') .  ' ' 
+        return $this->_printer->format($this->getFullName(), 'KEYWORD') .  ' ' 
              . trim($this->_optionGroup->formatPlain($this->_printer));
     }
     
@@ -153,7 +177,7 @@ class TaskDocumentation
         $printer = $this->_printer;
     
         return $printer->format('Task: ')
-             . $printer->format($this->_name, 'KEYWORD')
+             . $printer->format($this->getFullName(), 'KEYWORD')
              . $printer->format(PHP_EOL)
              . $printer->format('Synopsis: ')
              . $this->getSynopsis()

@@ -21,7 +21,8 @@
  
 namespace Doctrine\ORM\Tools\Cli\Tasks;
 
-use Doctrine\Common\DoctrineException,
+use Doctrine\Common\Cli\Tasks\AbstractTask,
+    Doctrine\Common\Cli\CliException,
     Doctrine\Common\Cli\Option,
     Doctrine\Common\Cli\OptionGroup,
     Doctrine\ORM\Tools\Export\ClassMetadataExporter;
@@ -65,48 +66,65 @@ class ConvertMappingTask extends AbstractTask
      */    
     public function validate()
     {
-        $args = $this->getArguments();
-        $printer = $this->getPrinter();
-
-        if (array_key_exists('from-database', $args)) {
-            $args['from'][0] = 'database';
-            $this->setArguments($args);
+        $arguments = $this->getArguments();
+        
+        if (isset($arguments['from-database']) && $arguments['from-database']) {
+            $arguments['from'] = 'database';
+            
+            $this->setArguments($arguments);
         }
 
-        if (!(isset($args['from']) && isset($args['to']) && isset($args['dest']))) {
-          $printer->writeln('You must include a value for all three options: --from, --to and --dest', 'ERROR');
-          return false;
+        if (!(isset($arguments['from']) && isset($arguments['to']) && isset($arguments['dest']))) {
+            throw new CliException(
+                'You must include a value for all three options: --from, --to and --dest.'
+            );
         }
-        if ($args['to'] != 'annotation' && isset($args['extend'])) {
-            $printer->writeln('You can only use the --extend argument when converting to annoations.', 'ERROR');
-            return false;
+        
+        if (strtolower($arguments['to']) != 'annotation' && isset($arguments['extend'])) {
+            throw new CliException(
+                'You can only use the --extend argument when converting to annotations.'
+            );
         }
-        if ($args['from'][0] == 'database') {
-            $em = $this->getEntityManager();
+        
+        if (strtolower($arguments['from']) == 'database') {
+            // Check if we have an active EntityManager
+            $em = $this->getConfiguration()->getAttribute('em');
+        
+            if ($em === null) {
+                throw new CliException(
+                    "Attribute 'em' of CLI Configuration is not defined or it is not a valid EntityManager."
+                );
+            }
+    
             $config = $em->getConfiguration();
-            $config->setMetadataDriverImpl(new \Doctrine\ORM\Mapping\Driver\DatabaseDriver($em->getConnection()->getSchemaManager()));
+            $config->setMetadataDriverImpl(
+                new \Doctrine\ORM\Mapping\Driver\DatabaseDriver(
+                    $em->getConnection()->getSchemaManager()
+                )
+            );
         }
+        
         return true;
     }
 
     public function run()
     {
-        $printer = $this->getPrinter();
-        $args = $this->getArguments();
-
+        $arguments = $this->getArguments();
         $cme = new ClassMetadataExporter();
-
+        $printer = $this->getPrinter();
+        
         // Get exporter and configure it
-        $exporter = $cme->getExporter($args['to'], $args['dest']);
+        $exporter = $cme->getExporter($arguments['to'], $arguments['dest']);
 
-        if (isset($args['extend'])) {
-            $exporter->setClassToExtend($args['extend']);
+        if (isset($arguments['extend']) && $arguments['extend']) {
+            $exporter->setClassToExtend($arguments['extend']);
         }
-        if (isset($args['num-spaces'])) {
-            $exporter->setNumSpaces($args['num-spaces']);
+        
+        if (isset($arguments['num-spaces']) && $arguments['extend']) {
+            $exporter->setNumSpaces($arguments['num-spaces']);
         }
 
-        $from = (array) $args['from'];
+        $from = (array) $arguments['from'];
 
         if ($this->_isDoctrine1Schema($from)) {
             $printer->writeln('Converting Doctrine 1 schema to Doctrine 2 mapping files', 'INFO');
@@ -116,40 +134,38 @@ class ConvertMappingTask extends AbstractTask
         } else {
             foreach ($from as $source) {
                 $sourceArg = $source;
-
                 $type = $this->_determineSourceType($sourceArg);
+                
                 if ( ! $type) {
                     throw DoctrineException::invalidMappingSourceType($sourceArg);
                 }
+                
                 $source = $this->_getSourceByType($type, $sourceArg);
-
+                
                 $printer->writeln(
                     sprintf(
                         'Adding "%s" mapping source which contains the "%s" format', 
-                        $printer->format($sourceArg, 'KEYWORD'),
-                        $printer->format($type, 'KEYWORD')
+                        $printer->format($sourceArg, 'KEYWORD'), $printer->format($type, 'KEYWORD')
                     )
                 );
 
                 $cme->addMappingSource($source, $type);
             }
+            
             $metadatas = $cme->getMetadatasForMappingSources();
         }
 
         foreach ($metadatas as $metadata) {
             $printer->writeln(
-                sprintf(
-                    'Processing entity "%s"',
-                    $printer->format($metadata->name, 'KEYWORD')
-                )
+                sprintf('Processing entity "%s"', $printer->format($metadata->name, 'KEYWORD'))
             );
         }
 
         $printer->writeln(
             sprintf(
                 'Exporting "%s" mapping information to directory "%s"',
-                $printer->format($args['to'], 'KEYWORD'),
-                $printer->format($args['dest'], 'KEYWORD')
+                $printer->format($arguments['to'], 'KEYWORD'), 
+                $printer->format($arguments['dest'], 'KEYWORD')
             )
         );
 
@@ -167,9 +183,11 @@ class ConvertMappingTask extends AbstractTask
         }
         
         $files = glob(current($from) . '/*.yml');
+        
         if ($files) {
             $array = \sfYaml::load($files[0]);
             $first = current($array);
+            
             // We're dealing with a Doctrine 1 schema if you have
             // a columns index in the first model array
             return isset($first['columns']);
@@ -185,6 +203,7 @@ class ConvertMappingTask extends AbstractTask
         if (is_dir($source)) {
             // Find the files in the directory
             $files = glob($source . '/*.*');
+            
             if ( ! $files) {
                 throw new \InvalidArgumentException(
                     sprintf('No mapping files found in "%s"', $source)
@@ -201,6 +220,7 @@ class ConvertMappingTask extends AbstractTask
             // first file in the directory (yml, xml, etc)
             } else {
               $info = pathinfo($files[0]);
+              
               return $info['extension'];
             }
         // Nothing special for database
@@ -214,7 +234,9 @@ class ConvertMappingTask extends AbstractTask
         // If --from==database then the source is an instance of SchemaManager
         // for the current EntityMAnager
         if ($type == 'database') {
-            return $this->_em->getConnection()->getSchemaManager();
+            $em = $this->getConfiguration->getAttribute('em');
+            
+            return $em->getConnection()->getSchemaManager();
         } else {
             return $source;
         }

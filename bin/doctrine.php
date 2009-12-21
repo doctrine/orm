@@ -1,9 +1,12 @@
 <?php
 
-require 'Doctrine/Common/ClassLoader.php';
+require_once __DIR__ . '/../lib/Doctrine/Common/ClassLoader.php';
 
 $classLoader = new \Doctrine\Common\ClassLoader('Doctrine');
+$classLoader->setIncludePath(__DIR__ . '/../lib');
 $classLoader->register();
 
-$cli = new \Doctrine\ORM\Tools\Cli\CliController();
+$configuration = new \Doctrine\Common\Cli\Configuration();
+
+$cli = new \Doctrine\Common\Cli\CliController($configuration);
 $cli->run($_SERVER['argv']);

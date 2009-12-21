@@ -19,79 +19,68 @@
  * <http://www.doctrine-project.org>.
  */
  
-namespace Doctrine\ORM\Tools\Cli\Tasks;
-
-use Doctrine\Common\Util\Inflector;
+namespace Doctrine\Common\Cli;
 
 /**
- * CLI Task to display available commands help
+ * CLI Configuration class
  *
  * @license http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @link    www.doctrine-project.org
  * @since   2.0
  * @version $Revision$
+ * @author  Benjamin Eberlei <kontakt@beberlei.de>
  * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
  * @author  Jonathan Wage <jonwage@gmail.com>
  * @author  Roman Borschel <roman@code-factory.org>
  */
-class HelpTask extends AbstractTask
+class Configuration
 {
     /**
-     * @inheritdoc
+     * @var array Configuration attributes
      */
-    public function buildDocumentation()
+    private $_attributes = array();
+
+    /**
+     * Defines a new configuration attribute
+     *
+     * @param string $name Attribute name
+     * @param mixed $value Attribute value
+     *
+     * @return Configuration This object instance
+     */
+    public function setAttribute($name, $value = null)
     {
-        // Does nothing
+        $this->_attributes[$name] = $value;
+        
+        if ($value === null) {
+            unset($this->_attributes[$name]);
+        }
+        
+        return $this;
     }
     
     /**
-     * @inheritdoc
-     */
-    public function extendedHelp()
-    {
-        $this->run();
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function basicHelp()
-    {
-        $this->run();
-    }
-
-    /**
-     * @inheritdoc
-     */    
-    public function validate()
-    {
-        return true;
-    }
-
-    /**
-     * Exposes the available tasks
+     * Retrieves a configuration attribute
      *
+     * @param string $name Attribute name
+     *
+     * @return mixed Attribute value 
      */
-    public function run()
+    public function getAttribute($name)
     {
-        $this->getPrinter()->writeln('Available Tasks:', 'NONE');
-        
-        // Switch between ALL available tasks and display the basic Help of each one
-        $availableTasks = $this->getAvailableTasks();
-        
-        $helpTaskName = Inflector::classify(str_replace('-', '_', 'help'));
-        unset($availableTasks[$helpTaskName]);
-        
-        ksort($availableTasks);
-        
-        foreach ($availableTasks as $taskName => $taskClass) {
-            $task = new $taskClass($this->getPrinter());
-            
-            $task->setAvailableTasks($availableTasks);
-            $task->setEntityManager($this->getEntityManager());
-            $task->setArguments($this->getArguments());
-            
-            $task->basicHelp();
-        }
+        return isset($this->_attributes[$name])
+            ? $this->_attributes[$name] : null;
+    }
+    
+    /**
+     * Checks if configuration attribute is defined
+     *
+     * @param string $name Attribute name
+     *
+     * @return boolean TRUE if attribute exists, FALSE otherwise
+     */
+    public function hasAttribute($name)
+    {
+        return isset($this->_attribute[$name]);
     }
 }

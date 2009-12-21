@@ -2,7 +2,8 @@
 
 namespace Doctrine\ORM\Tools\Cli\Tasks;
 
-use Doctrine\Common\DoctrineException,
+use Doctrine\Common\Cli\Tasks\AbstractTask,
+    Doctrine\Common\Cli\CliException,
     Doctrine\Common\Cli\Option,
     Doctrine\Common\Cli\OptionGroup,
     Doctrine\ORM\Tools\SchemaTool,
@@ -100,44 +101,56 @@ class SchemaToolTask extends AbstractTask
      */
     public function validate()
     {
-        $args = $this->getArguments();
-        $printer = $this->getPrinter();
+        $arguments = $this->getArguments();
+        $em = $this->getConfiguration()->getAttribute('em');
         
-        if (array_key_exists('re-create', $args)) {
-            $args['drop'] = true;
-            $args['create'] = true;
-            $this->setArguments($args);
+        if ($em === null) {
+            throw new CliException(
+                "Attribute 'em' of CLI Configuration is not defined or it is not a valid EntityManager."
+            );
         }
         
-        $isCreate = isset($args['create']);
-        $isDrop = isset($args['drop']);
-        $isUpdate = isset($args['update']);
-        $isCompleteUpdate = isset($args['complete-update']);
+        if (isset($arguments['re-create'])) {
+            $arguments['drop'] = true;
+            $arguments['create'] = true;
+            
+            unset($arguments['re-create']);
+            
+            $this->setArguments($arguments);
+        }
+        
+        $isCreate = isset($arguments['create']) && $arguments['create'];
+        $isDrop = isset($arguments['drop']) && $arguments['drop'];
+        $isUpdate = isset($arguments['update']) && $arguments['update'];
+        $isCompleteUpdate = isset($arguments['complete-update']) && $arguments['complete-update'];
         
         if ($isUpdate && ($isCreate || $isDrop || $isCompleteUpdate)) {
-            $printer->writeln("You can't use --update with --create, --drop or --complete-update", 'ERROR');
-            return false;
+            throw new CliException(
+                'You cannot use --update with --create, --drop or --complete-update.'
+            );
         }
 
         if ($isCompleteUpdate && ($isCreate || $isDrop || $isUpdate)) {
-            $printer->writeln("You can't use --update with --create, --drop or --update", 'ERROR');
-            return false;
+            throw new CliException('You cannot use --update with --create, --drop or --update.');
         }
 
         if ( ! ($isCreate || $isDrop || $isUpdate || $isCompleteUpdate)) {
-            $printer->writeln('You must specify at a minimum one of the options (--create, --drop, --update, --re-create, --complete-update).', 'ERROR');
-            return false;
+            throw new CliException(
+                'You must specify at a minimum one of the options ' .
+                '(--create, --drop, --update, --re-create or --complete-update).'
+            );
         }
         
         $metadataDriver = $this->getEntityManager()->getConfiguration()->getMetadataDriverImpl();
         
         if ($metadataDriver instanceof \Doctrine\ORM\Mapping\Driver\AnnotationDriver) {
-            if ( ! isset($args['class-dir'])) {
-                $printer->writeln("The supplied configuration uses the annotation metadata driver."
-                        . " The 'class-dir' argument is required for this driver.", 'ERROR');
-                return false;
-            } else {
+            if (isset($args['class-dir'])) {
                 $metadataDriver->setClassDirectory($args['class-dir']);
+            } else {
+                throw new CliException(
+                    'The supplied configuration uses the annotation metadata driver. ' . 
+                    "The 'class-dir' argument is required for this driver."
+                );
             }
         }
         
@@ -145,80 +158,66 @@ class SchemaToolTask extends AbstractTask
     }
 
     /**
-     * Executes the task.
+     * @inheritdoc
      */
     public function run()
     {
-        $args = $this->getArguments();
-
-        $isCreate = isset($args['create']);
-        $isDrop = isset($args['drop']);
-        $isUpdate = isset($args['update']);
-        $isCompleteUpdate = isset($args['complete-update']);
-
-        $em = $this->getEntityManager();
-        $cmf = $em->getMetadataFactory();
-
-        $classes = $cmf->getAllMetadata();
-
+        $arguments = $this->getArguments();
         $printer = $this->getPrinter();
+
+        $isCreate = isset($arguments['create']) && $arguments['create'];
+        $isDrop = isset($arguments['drop']) && $arguments['drop'];
+        $isUpdate = isset($arguments['update']) && $arguments['update'];
+        $isCompleteUpdate = isset($arguments['complete-update']) && $arguments['complete-update'];
+        
+        $em = $this->getConfiguration()->getAttribute('em');
+        
+        $cmf = $em->getMetadataFactory();
+        $classes = $cmf->getAllMetadata();
         
         if (empty($classes)) {
             $printer->writeln('No classes to process.', 'INFO');
+            
             return;
         }
 
         $tool = new SchemaTool($em);
         
         if ($isDrop) {
-            if (isset($args['dump-sql'])) {
+            if (isset($arguments['dump-sql'])) {
                 foreach ($tool->getDropSchemaSql($classes) as $sql) {
                     $printer->writeln($sql);
                 }
             } else {
                 $printer->writeln('Dropping database schema...', 'INFO');
-                
-                try {
-                    $tool->dropSchema($classes);
-                    $printer->writeln('Database schema dropped successfully.', 'INFO');
-                } catch (\Exception $ex) {
-                    throw new DoctrineException($ex);
-                }
+                $tool->dropSchema($classes);
+                $printer->writeln('Database schema dropped successfully.', 'INFO');
             }
         }
 
         if ($isCreate) {
-            if (isset($args['dump-sql'])) {
+            if (isset($arguments['dump-sql'])) {
                 foreach ($tool->getCreateSchemaSql($classes) as $sql) {
                     $printer->writeln($sql);
                 }
             } else {
                 $printer->writeln('Creating database schema...', 'INFO');
-                
-                try {
-                    $tool->createSchema($classes);
-                    $printer->writeln('Database schema created successfully.', 'INFO');
-                } catch (\Exception $ex) {
-                    throw new DoctrineException($ex);
-                }
+                $tool->createSchema($classes);
+                $printer->writeln('Database schema created successfully.', 'INFO');
             }
         }
 
         if ($isUpdate || $isCompleteUpdate) {
-            $saveMode = $isUpdate?true:false;
-            if (isset($args['dump-sql'])) {
+            $saveMode = $isUpdate ? true : false;
+            
+            if (isset($arguments['dump-sql'])) {
                 foreach ($tool->getUpdateSchemaSql($classes, $saveMode) as $sql) {
                     $printer->writeln($sql);
                 }
             } else {
                 $printer->writeln('Updating database schema...', 'INFO');
-                
-                try {
-                    $tool->updateSchema($classes, $saveMode);
-                    $printer->writeln('Database schema updated successfully.', 'INFO');
-                } catch (\Exception $ex) {
-                    throw new DoctrineException($ex);
-                }
+                $tool->updateSchema($classes, $saveMode);
+                $printer->writeln('Database schema updated successfully.', 'INFO');
             }
         }
     }

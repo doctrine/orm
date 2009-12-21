@@ -2,7 +2,8 @@
 
 namespace Doctrine\ORM\Tools\Cli\Tasks;
 
-use Doctrine\Common\DoctrineException,
+use Doctrine\Common\Cli\Tasks\AbstractTask,
+    Doctrine\Common\Cli\CliException,
     Doctrine\Common\Cli\Option,
     Doctrine\Common\Cli\OptionGroup;
 
@@ -24,6 +25,10 @@ class GenerateProxiesTask extends AbstractTask
      */
     public function buildDocumentation()
     {
+        $classDir = new OptionGroup(OptionGroup::CARDINALITY_1_1, array(
+            new Option('class-dir', '<PATH>', 'Specified directory where mapping classes are located.')
+        ));
+        
         $toDir = new OptionGroup(OptionGroup::CARDINALITY_0_1, array(
             new Option('to-dir', '<PATH>', 'Generates the classes in the specified directory.')
         ));
@@ -32,6 +37,7 @@ class GenerateProxiesTask extends AbstractTask
         $doc->setName('generate-proxies')
             ->setDescription('Generates proxy classes for entity classes.')
             ->getOptionGroup()
+                ->addOption($classDir)
                 ->addOption($toDir);
     }
     
@@ -40,18 +46,25 @@ class GenerateProxiesTask extends AbstractTask
      */
     public function validate()
     {
-        $args = $this->getArguments();
-        $printer = $this->getPrinter();
+        $arguments = $this->getArguments();
+        $em = $this->getConfiguration()->getAttribute('em');
         
-        $metadataDriver = $this->getEntityManager()->getConfiguration()->getMetadataDriverImpl();
+        if ($em === null) {
+            throw new CliException(
+                "Attribute 'em' of CLI Configuration is not defined or it is not a valid EntityManager."
+            );
+        }
+        
+        $metadataDriver = $em->getConfiguration()->getMetadataDriverImpl();
         
         if ($metadataDriver instanceof \Doctrine\ORM\Mapping\Driver\AnnotationDriver) {
-            if ( ! isset($args['class-dir'])) {
-                $printer->writeln("The supplied configuration uses the annotation metadata driver."
-                        . " The 'class-dir' argument is required for this driver.", 'ERROR');
-                return false;
-            } else {
+            if (isset($arguments['class-dir'])) {
                 $metadataDriver->setClassDirectory($args['class-dir']);
+            } else {
+                throw new CliException(
+                    'The supplied configuration uses the annotation metadata driver. ' .
+                    "The 'class-dir' argument is required for this driver."
+                );
             }
         }
         
@@ -59,30 +72,29 @@ class GenerateProxiesTask extends AbstractTask
     }
 
     /**
-     * Executes the task.
+     * @inheritdoc
      */
     public function run()
     {
-        $args = $this->getArguments();
-
-        $em = $this->getEntityManager();
-        $cmf = $em->getMetadataFactory();
-        
-        $classes = $cmf->getAllMetadata();
-
+        $arguments = $this->getArguments();
         $printer = $this->getPrinter();
+        
+        $em = $this->getConfiguration->getAttribute('em');
+        $cmf = $em->getMetadataFactory();
+        $classes = $cmf->getAllMetadata();
         $factory = $em->getProxyFactory();
         
         if (empty($classes)) {
             $printer->writeln('No classes to process.', 'INFO');
-            return;
-        }
-
-        $factory->generateProxyClasses($classes, isset($args['to-dir']) ? $args['to-dir'] : null);
+        } else {
+            $factory->generateProxyClasses(
+                $classes, isset($arguments['to-dir']) ? $arguments['to-dir'] : null
+            );
         
-        $printer->writeln(
-            'Proxy classes generated to: ' . 
-            (isset($args['to-dir']) ? $args['to-dir'] : $em->getConfiguration()->getProxyDir())
-        );
+            $printer->writeln(
+                'Proxy classes generated to: ' . (isset($arguments['to-dir']) 
+                    ? $arguments['to-dir'] : $em->getConfiguration()->getProxyDir())
+            );
+        }
     }
 }

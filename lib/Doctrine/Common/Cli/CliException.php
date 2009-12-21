@@ -19,13 +19,12 @@
  * <http://www.doctrine-project.org>.
  */
  
-namespace Doctrine\ORM\Tools\Cli\Tasks;
+namespace Doctrine\Common\Cli;
 
-use Doctrine\Common\Cli\Tasks\AbstractTask,
-    Doctrine\Common\Cli\CliException;
+use Doctrine\Common\DoctrineException;
 
 /**
- * CLI Task to ensure that Doctrine is properly configured for a production environment.
+ * CLI Exception class
  *
  * @license http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @link    www.doctrine-project.org
@@ -36,41 +35,23 @@ use Doctrine\Common\Cli\Tasks\AbstractTask,
  * @author  Jonathan Wage <jonwage@gmail.com>
  * @author  Roman Borschel <roman@code-factory.org>
  */
-class EnsureProductionSettingsTask extends AbstractTask
+class CliException extends DoctrineException
 {
-    /**
-     * @inheritdoc
-     */
-    public function buildDocumentation()
+    public static function namespaceDoesNotExist($namespaceName, $namespacePath = '')
     {
-        $doc = $this->getDocumentation();
-        $doc->setName('ensure-production-settings')
-            ->setDescription('Verify that Doctrine is properly configured for a production environment.');
-    }
-    
-    /**
-     * @inheritdoc
-     */
-    public function validate()
-    {
-        // Check if we have an active EntityManager
-        $em = $this->getConfiguration()->getAttribute('em');
-        
-        if ($em === null) {
-            throw new CliException(
-                "Attribute 'em' of CLI Configuration is not defined or it is not a valid EntityManager."
-            );
-        }
-        
-        return true;
+        return new self(
+            "Namespace '{$namespaceName}' does not exist" . 
+            (( ! empty($namespacePath)) ? " in '{$namespacePath}'." : '.')
+        );
     }
 
-    /**
-     * @inheritdoc
-     */
-    public function run()
+    public static function taskDoesNotExist($taskName, $namespacePath)
     {
-        $em = $this->getConfiguration()->getAttribute('em');
-        $em->getConfiguration()->ensureProductionSettings();
+        return new self("Task '{$taskName}' does not exist in '{$namespacePath}'.");
+    }
+    
+    public static function cannotOverrideTask($taskName)
+    {
+        return new self("Task '{$taskName}' cannot be overriden.");
     }
 }

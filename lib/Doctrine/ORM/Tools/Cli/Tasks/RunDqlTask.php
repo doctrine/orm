@@ -21,7 +21,8 @@
 
 namespace Doctrine\ORM\Tools\Cli\Tasks;
 
-use Doctrine\Common\DoctrineException,
+use Doctrine\Common\Cli\Tasks\AbstractTask,
+    Doctrine\Common\Cli\CliException,
     Doctrine\Common\Util\Debug,
     Doctrine\Common\Cli\Option,
     Doctrine\Common\Cli\OptionGroup;
@@ -65,12 +66,17 @@ class RunDqlTask extends AbstractTask
      */
     public function validate()
     {
-        $args = $this->getArguments();
-        $printer = $this->getPrinter();
+        $arguments = $this->getArguments();
+        $em = $this->getConfiguration()->getAttribute('em');
         
-        if ( ! isset($args['dql'])) {
-            $printer->writeln("Argument --dql must be defined.", 'ERROR');
-            return false;
+        if ($em === null) {
+            throw new CliException(
+                "Attribute 'em' of CLI Configuration is not defined or it is not a valid EntityManager."
+            );
+        }
+        
+        if ( ! isset($arguments['dql'])) {
+            throw new CliException('Argument --dql must be defined.');
         }
         
         return true;
@@ -78,21 +84,16 @@ class RunDqlTask extends AbstractTask
     
     
     /**
-     * Executes the task.
+     * @inheritdoc
      */
     public function run()
     {
-        $args = $this->getArguments();
+        $arguments = $this->getArguments();
+        $em = $this->getConfiguration()->getAttribute('em');
+        $query = $em->createQuery($arguments['dql']);
+        $resultSet = $query->getResult();
+        $maxDepth = isset($arguments['depth']) ? $arguments['depth'] : 7;
         
-        try {
-            $query = $this->getEntityManager()->createQuery($args['dql']);
-            $resultSet = $query->getResult();
-        
-            $maxDepth = isset($args['depth']) ? $args['depth'] : 7;
-        
-            Debug::dump($resultSet, $maxDepth);
-        } catch (\Exception $ex) {
-            throw new DoctrineException($ex);
-        }
+        Debug::dump($resultSet, $maxDepth);
     }
 }

@@ -19,13 +19,12 @@
  * <http://www.doctrine-project.org>.
  */
  
-namespace Doctrine\ORM\Tools\Cli\Tasks;
+namespace Doctrine\Common\Cli\Tasks;
 
-use Doctrine\Common\Cli\Tasks\AbstractTask,
-    Doctrine\Common\Cli\CliException;
+use Doctrine\Common\Cli\CliException;
 
 /**
- * CLI Task to ensure that Doctrine is properly configured for a production environment.
+ * CLI Task to display available commands help
  *
  * @license http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @link    www.doctrine-project.org
@@ -36,41 +35,51 @@ use Doctrine\Common\Cli\Tasks\AbstractTask,
  * @author  Jonathan Wage <jonwage@gmail.com>
  * @author  Roman Borschel <roman@code-factory.org>
  */
-class EnsureProductionSettingsTask extends AbstractTask
+class HelpTask extends AbstractTask
 {
     /**
      * @inheritdoc
      */
     public function buildDocumentation()
     {
-        $doc = $this->getDocumentation();
-        $doc->setName('ensure-production-settings')
-            ->setDescription('Verify that Doctrine is properly configured for a production environment.');
+        // Does nothing
     }
     
     /**
      * @inheritdoc
      */
-    public function validate()
+    public function extendedHelp()
     {
-        // Check if we have an active EntityManager
-        $em = $this->getConfiguration()->getAttribute('em');
-        
-        if ($em === null) {
-            throw new CliException(
-                "Attribute 'em' of CLI Configuration is not defined or it is not a valid EntityManager."
-            );
-        }
-        
-        return true;
+        $this->run();
     }
 
     /**
      * @inheritdoc
      */
+    public function basicHelp()
+    {
+        $this->run();
+    }
+
+    /**
+     * Exposes the available tasks
+     *
+     */
     public function run()
     {
-        $em = $this->getConfiguration()->getAttribute('em');
-        $em->getConfiguration()->ensureProductionSettings();
+        $this->getPrinter()->writeln('Available Tasks:', 'HEADER')->write(PHP_EOL);
+        
+        // Find the CLI Controller
+        $cliController = $this->getNamespace()->getParentNamespace();
+        
+        // Switch between ALL available tasks and display the basic Help of each one
+        $availableTasks = $cliController->getAvailableTasks();
+        unset($availableTasks['Core:Help']);
+        
+        ksort($availableTasks);
+        
+        foreach (array_keys($availableTasks) as $taskName) {
+            $cliController->runTask($taskName, array('basic-help' => true));
+        }
     }
 }

@@ -6,8 +6,12 @@
 
 ## CLI Controller changes
 
-CLI main object changed its name and namespace. Renamed from Doctrine\ORM\Tools\Cli to Doctrine\ORM\Tools\Cli\CliController.
-Doctrine\ORM\Tools\Cli\CliController methods addTasks and addTask are now fluent.
+CLI main object changed its name and namespace. Renamed from Doctrine\ORM\Tools\Cli to Doctrine\Common\Cli\CliController.
+Doctrine\Common\Cli\CliController now only deals with namespaces. Ready to go, Core, Dbal and Orm are available and you can subscribe new tasks by retrieving the namespace and including new task. Example:
+
+    [php]
+    $cli->getNamespace('Core')->addTask('my-example', '\MyProject\Tools\Cli\Tasks\MyExampleTask');
+
 
 ## CLI Tasks documentation
 
