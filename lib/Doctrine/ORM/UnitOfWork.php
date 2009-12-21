@@ -235,7 +235,6 @@ class UnitOfWork implements PropertyChangedListener
     {
         $this->_em = $em;
         $this->_evm = $em->getEventManager();
-        $this->_commitOrderCalculator = new Internal\CommitOrderCalculator();
         $this->_useCExtension = $this->_em->getConfiguration()->getUseCExtension();
     }
 
@@ -818,14 +817,16 @@ class UnitOfWork implements PropertyChangedListener
                     );
         }
         
+        $calc = $this->getCommitOrderCalculator();
+        
         // See if there are any new classes in the changeset, that are not in the
         // commit order graph yet (dont have a node).
         $newNodes = array();
         foreach ($entityChangeSet as $oid => $entity) {
             $className = get_class($entity);         
-            if ( ! $this->_commitOrderCalculator->hasClass($className)) {
+            if ( ! $calc->hasClass($className)) {
                 $class = $this->_em->getClassMetadata($className);
-                $this->_commitOrderCalculator->addClass($class);
+                $calc->addClass($class);
                 $newNodes[] = $class;
             }
         }
@@ -835,15 +836,15 @@ class UnitOfWork implements PropertyChangedListener
             foreach ($class->associationMappings as $assoc) {
                 if ($assoc->isOwningSide && $assoc->isOneToOne()) {
                     $targetClass = $this->_em->getClassMetadata($assoc->targetEntityName);
-                    if ( ! $this->_commitOrderCalculator->hasClass($targetClass->name)) {
-                        $this->_commitOrderCalculator->addClass($targetClass);
+                    if ( ! $calc->hasClass($targetClass->name)) {
+                        $calc->addClass($targetClass);
                     }
-                    $this->_commitOrderCalculator->addDependency($targetClass, $class);
+                    $calc->addDependency($targetClass, $class);
                 }
             }
         }
 
-        return $this->_commitOrderCalculator->getCommitOrder();
+        return $calc->getCommitOrder();
     }
 
     /**
@@ -1637,6 +1638,9 @@ class UnitOfWork implements PropertyChangedListener
      */
     public function getCommitOrderCalculator()
     {
+        if ($this->_commitOrderCalculator === null) {
+            $this->_commitOrderCalculator = new Internal\CommitOrderCalculator;
+        }
         return $this->_commitOrderCalculator;
     }
 
@@ -1658,7 +1662,9 @@ class UnitOfWork implements PropertyChangedListener
         $this->_collectionUpdates =
         $this->_extraUpdates =
         $this->_orphanRemovals = array();
-        $this->_commitOrderCalculator->clear();
+        if ($this->_commitOrderCalculator !== null) {
+            $this->_commitOrderCalculator->clear();
+        }
     }
     
     /**

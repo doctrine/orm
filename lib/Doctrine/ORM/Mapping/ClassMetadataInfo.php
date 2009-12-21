@@ -124,6 +124,7 @@ class ClassMetadataInfo
      * The namespace the entity class is contained in.
      *
      * @var string
+     * @todo Not really needed. Usage could be localized.
      */
     public $namespace;
 
@@ -229,12 +230,8 @@ class ClassMetadataInfo
      * - <b>scale</b> (integer, optional, schema-only)
      * The scale of a decimal column. Only valid if the column type is decimal.
      * 
-     * - <b>index (string, optional, schema-only)</b>
-     * Whether an index should be generated for the column.
-     * The value specifies the name of the index. To create a multi-column index,
-     * just use the same name for several mappings.
-     * 
-     * - <b>foreignKey (string, optional, schema-only)</b>
+     * - <b>unique (string, optional, schema-only)</b>
+     * Whether a unique constraint should be generated for the column.
      *
      * @var array
      */    
@@ -255,6 +252,7 @@ class ClassMetadataInfo
      * This is the reverse lookup map of $_fieldNames.
      *
      * @var array
+     * @todo We could get rid of this array by just using $fieldMappings[$fieldName]['columnName'].
      */
     public $columnNames = array();
 
@@ -368,13 +366,6 @@ class ClassMetadataInfo
      * @var integer
      */
     public $changeTrackingPolicy = self::CHANGETRACKING_DEFERRED_IMPLICIT;
-
-    /**
-     * The SQL INSERT string for entities of this class.
-     *
-     * @var string
-     */
-    //public $insertSql;
 
     /**
      * A map of field names to class names, where the field names are association

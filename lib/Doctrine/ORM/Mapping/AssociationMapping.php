@@ -394,4 +394,5 @@ abstract class AssociationMapping
                 $platform->quoteIdentifier($this->joinTable['name']) :
                 $this->joinTable['name'];
     }
+    
 }

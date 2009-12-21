@@ -41,7 +41,7 @@ use Doctrine\Common\DoctrineException;
  * @author Jonathan H. Wage <jonwage@gmail.com>
  * @since 2.0
  */
-final class ClassMetadata extends ClassMetadataInfo
+class ClassMetadata extends ClassMetadataInfo
 {
     /**
      * The ReflectionClass instance of the mapped class.
@@ -319,32 +319,31 @@ final class ClassMetadata extends ClassMetadataInfo
     public function __sleep()
     {
         return array(
-            'associationMappings',
+            'associationMappings', // unserialization bottleneck with many assocs
             'changeTrackingPolicy',
-            'columnNames',
+            'columnNames', //TODO: Not really needed. Can use fieldMappings[$fieldName]['columnName']
             'customRepositoryClassName',
             'discriminatorColumn',
             'discriminatorValue',
             'discriminatorMap',
             'fieldMappings',
-            'fieldNames',
+            'fieldNames', //TODO: Not all of this stuff needs to be serialized. Only type, columnName and fieldName.
             'generatorType',
             'identifier',
-            'idGenerator',
+            'idGenerator', //TODO: Does not really need to be serialized. Could be moved to runtime.
             'inheritanceType',
             'inheritedAssociationFields',
-            //'insertSql',
             'inverseMappings', //TODO: Remove!
             'isIdentifierComposite',
             'isMappedSuperclass',
             'isVersioned',
             'lifecycleCallbacks',
             'name',
-            'namespace',
+            //'namespace',
             'parentClasses',
             'primaryTable',
             'rootEntityName',
-            'sequenceGeneratorDefinition',
+            //'sequenceGeneratorDefinition',
             'subClasses',
             'versionField'
         );

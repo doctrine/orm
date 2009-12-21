@@ -26,13 +26,6 @@ use Doctrine\Common\DoctrineException,
     Doctrine\Common\Cli\OptionGroup,
     Doctrine\ORM\Tools\Export\ClassMetadataExporter;
 
-if ( ! class_exists('sfYaml', false)) {
-    require_once __DIR__ . '/../../../../../vendor/sfYaml/sfYaml.class.php';
-    require_once __DIR__ . '/../../../../../vendor/sfYaml/sfYamlDumper.class.php';
-    require_once __DIR__ . '/../../../../../vendor/sfYaml/sfYamlInline.class.php';
-    require_once __DIR__ . '/../../../../../vendor/sfYaml/sfYamlParser.class.php';
-}
-
 /**
  * CLI Task to convert your mapping information between the various formats
  *
@@ -166,6 +159,13 @@ class ConvertMappingTask extends AbstractTask
 
     private function _isDoctrine1Schema(array $from)
     {
+        if ( ! class_exists('sfYaml', false)) {
+            require_once __DIR__ . '/../../../../../vendor/sfYaml/sfYaml.class.php';
+            require_once __DIR__ . '/../../../../../vendor/sfYaml/sfYamlDumper.class.php';
+            require_once __DIR__ . '/../../../../../vendor/sfYaml/sfYamlInline.class.php';
+            require_once __DIR__ . '/../../../../../vendor/sfYaml/sfYamlParser.class.php';
+        }
+        
         $files = glob(current($from) . '/*.yml');
         if ($files) {
             $array = \sfYaml::load($files[0]);
