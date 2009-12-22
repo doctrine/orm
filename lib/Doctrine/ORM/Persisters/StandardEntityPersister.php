@@ -103,9 +103,8 @@ class StandardEntityPersister
     private $_insertSql;
 
     /**
-     * Initializes a new instance of a class derived from AbstractEntityPersister
-     * that uses the given EntityManager and persists instances of the class described
-     * by the given class metadata descriptor.
+     * Initializes a new <tt>StandardEntityPersister</tt> that uses the given EntityManager
+     * and persists instances of the class described by the given class metadata descriptor.
      * 
      * @param EntityManager $em
      * @param ClassMetadata $class

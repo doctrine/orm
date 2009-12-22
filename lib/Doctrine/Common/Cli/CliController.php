@@ -68,11 +68,11 @@ class CliController extends AbstractNamespace
         $this->setConfiguration($config);
         
         // Include core namespaces of tasks
-        $ns = '\Doctrine\Common\Cli\Tasks';
+        $ns = 'Doctrine\Common\Cli\Tasks';
         $this->addNamespace('Core')
              ->addTask('help', $ns . '\HelpTask');
         
-        $ns = '\Doctrine\ORM\Tools\Cli\Tasks';
+        $ns = 'Doctrine\ORM\Tools\Cli\Tasks';
         $this->addNamespace('Orm')
              ->addTask('clear-cache', $ns . '\ClearCacheTask')
              ->addTask('convert-mapping', $ns . '\ConvertMappingTask')
@@ -82,7 +82,7 @@ class CliController extends AbstractNamespace
              ->addTask('schema-tool', $ns . '\SchemaToolTask')
              ->addTask('version', $ns . '\VersionTask');
         
-        $ns = '\Doctrine\DBAL\Tools\Cli\Tasks';
+        $ns = 'Doctrine\DBAL\Tools\Cli\Tasks';
         $this->addNamespace('Dbal')
              ->addTask('run-sql', $ns . '\RunSqlTask');
     }
