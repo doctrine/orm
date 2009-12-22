@@ -79,7 +79,7 @@ class GenerateProxiesTask extends AbstractTask
         $arguments = $this->getArguments();
         $printer = $this->getPrinter();
         
-        $em = $this->getConfiguration->getAttribute('em');
+        $em = $this->getConfiguration()->getAttribute('em');
         $cmf = $em->getMetadataFactory();
         $classes = $cmf->getAllMetadata();
         $factory = $em->getProxyFactory();
