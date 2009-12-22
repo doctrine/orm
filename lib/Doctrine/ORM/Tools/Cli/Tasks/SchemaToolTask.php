@@ -141,11 +141,11 @@ class SchemaToolTask extends AbstractTask
             );
         }
         
-        $metadataDriver = $this->getEntityManager()->getConfiguration()->getMetadataDriverImpl();
+        $metadataDriver = $em->getConfiguration()->getMetadataDriverImpl();
         
         if ($metadataDriver instanceof \Doctrine\ORM\Mapping\Driver\AnnotationDriver) {
-            if (isset($args['class-dir'])) {
-                $metadataDriver->setClassDirectory($args['class-dir']);
+            if (isset($arguments['class-dir'])) {
+                $metadataDriver->setClassDirectory($arguments['class-dir']);
             } else {
                 throw new CliException(
                     'The supplied configuration uses the annotation metadata driver. ' . 
