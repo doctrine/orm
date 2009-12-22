@@ -122,6 +122,31 @@ DOCBLOCK;
         $parser = $this->createTestParser();
         $parser->parse("@Name(foo='bar')", "class \Doctrine\Tests\Common\Annotations\Name");
     }
+    
+    /**
+     * @group DDC-183
+     */
+    public function testSyntaxErrorWithUnknownCharacters()
+    {
+        $docblock = <<<DOCBLOCK
+/**
+ * @test at.
+ */
+class A {
+}
+DOCBLOCK;
+        
+        //$lexer = new \Doctrine\Common\Annotations\Lexer();
+        //$lexer->setInput(trim($docblock, '/ *'));
+        //var_dump($lexer);
+        
+        try {
+            $parser = $this->createTestParser();
+            $result = $parser->parse($docblock);
+        } catch (Exception $e) {
+            $this->fail($e->getMessage());
+        }
+    }
 }
 
 class Name extends \Doctrine\Common\Annotations\Annotation {

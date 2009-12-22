@@ -91,10 +91,8 @@ class Lexer extends \Doctrine\Common\Lexer
             $value = str_replace('""', '"', substr($value, 1, strlen($value) - 2));
             
             return self::T_STRING;
-        } else if (ctype_alpha($value[0]) || $value[0] === '_') {
-            return $this->_checkLiteral($value);
         } else {
-            switch ($value) {
+            switch (strtolower($value)) {
                 case '@': return self::T_AT;
                 case ',': return self::T_COMMA;
                 case '(': return self::T_OPEN_PARENTHESIS;
@@ -103,8 +101,13 @@ class Lexer extends \Doctrine\Common\Lexer
                 case '}': return self::T_CLOSE_CURLY_BRACES;
                 case '=': return self::T_EQUALS;
                 case '\\': return self::T_NAMESPACE_SEPARATOR;
+                case 'true': return self::T_TRUE;
+                case 'false': return self::T_FALSE;
                 default:
-                    // Do nothing
+                    if (ctype_alpha($value[0]) || $value[0] === '_') {
+                        return self::T_IDENTIFIER;
+                    }
+                    
                     break;
             }
         }
@@ -129,22 +132,5 @@ class Lexer extends \Doctrine\Common\Lexer
         }
 
         return false;
-    }
-    
-    /**
-     * Checks if an identifier is a keyword and returns its correct type.
-     *
-     * @param string $identifier identifier name
-     * @return integer token type
-     */
-    private function _checkLiteral($identifier)
-    {
-        $name = 'Doctrine\Common\Annotations\Lexer::T_' . strtoupper($identifier);
-
-        if (defined($name)) {
-            return constant($name);
-        }
-
-        return self::T_IDENTIFIER;
     }
 }
