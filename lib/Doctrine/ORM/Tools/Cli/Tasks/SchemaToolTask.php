@@ -131,13 +131,13 @@ class SchemaToolTask extends AbstractTask
         }
 
         if ($isCompleteUpdate && ($isCreate || $isDrop || $isUpdate)) {
-            throw new CliException('You cannot use --update with --create, --drop or --update.');
+            throw new CliException('You cannot use --complete-update with --create, --drop or --update.');
         }
 
         if ( ! ($isCreate || $isDrop || $isUpdate || $isCompleteUpdate)) {
             throw new CliException(
-                'You must specify at a minimum one of the options ' .
-                '(--create, --drop, --update, --re-create or --complete-update).'
+                'You must specify at a minimum one of the options: ' .
+                '--create, --drop, --update, --re-create or --complete-update.'
             );
         }
         

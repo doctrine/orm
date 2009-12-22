@@ -59,7 +59,7 @@ class GenerateProxiesTask extends AbstractTask
         
         if ($metadataDriver instanceof \Doctrine\ORM\Mapping\Driver\AnnotationDriver) {
             if (isset($arguments['class-dir'])) {
-                $metadataDriver->setClassDirectory($args['class-dir']);
+                $metadataDriver->setClassDirectory($arguments['class-dir']);
             } else {
                 throw new CliException(
                     'The supplied configuration uses the annotation metadata driver. ' .

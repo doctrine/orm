@@ -88,7 +88,7 @@ class ClearCacheTask extends AbstractTask
         // id, regex, prefix or suffix.
         if (
             (isset($arguments['query']) || isset($arguments['metadata'])) && (isset($arguments['id']) || 
-            isset($args['regex']) || isset($args['prefix']) || isset($args['suffix']))
+            isset($arguments['regex']) || isset($arguments['prefix']) || isset($arguments['suffix']))
         ) {
             throw new CliException(
                 'When clearing the query or metadata cache do not ' .

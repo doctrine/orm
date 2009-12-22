@@ -110,7 +110,7 @@ class RunSqlTask extends AbstractTask
                 $resultSet = $em->getConnection()->executeUpdate($arguments['sql']);
             }
             
-            $maxDepth = isset($args['arguments']) ? $arguments['depth'] : 7;
+            $maxDepth = isset($arguments['depth']) ? $arguments['depth'] : 7;
         
             Debug::dump($resultSet, $maxDepth);
         }

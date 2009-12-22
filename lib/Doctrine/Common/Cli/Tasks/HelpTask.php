@@ -42,21 +42,15 @@ class HelpTask extends AbstractTask
      */
     public function buildDocumentation()
     {
-        // Does nothing
+        $doc = $this->getDocumentation();
+        $doc->setName('help')
+            ->setDescription('Exposes helpful information about all available tasks.');
     }
     
     /**
      * @inheritdoc
      */
     public function extendedHelp()
-    {
-        $this->run();
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function basicHelp()
     {
         $this->run();
     }
@@ -74,7 +68,7 @@ class HelpTask extends AbstractTask
         
         // Switch between ALL available tasks and display the basic Help of each one
         $availableTasks = $cliController->getAvailableTasks();
-        unset($availableTasks['Core:Help']);
+        //unset($availableTasks['Core:Help']);
         
         ksort($availableTasks);
         
