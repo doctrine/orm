@@ -336,6 +336,7 @@ class UnitOfWork implements PropertyChangedListener
         $this->_collectionUpdates =
         $this->_collectionDeletions =
         $this->_visitedCollections =
+        $this->_scheduledForDirtyCheck =
         $this->_orphanRemovals = array();
     }
     
