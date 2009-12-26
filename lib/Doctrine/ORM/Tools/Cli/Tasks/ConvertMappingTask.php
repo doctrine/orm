@@ -234,7 +234,7 @@ class ConvertMappingTask extends AbstractTask
         // If --from==database then the source is an instance of SchemaManager
         // for the current EntityMAnager
         if ($type == 'database') {
-            $em = $this->getConfiguration->getAttribute('em');
+            $em = $this->getConfiguration()->getAttribute('em');
             
             return $em->getConnection()->getSchemaManager();
         } else {
