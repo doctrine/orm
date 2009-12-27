@@ -464,16 +464,17 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
     }
     
     
-    /* Not yet implemented, needs more thought
+    /* Not yet implemented, needs more thought */
     public function testSingleValuedAssociationFieldInWhere()
     {
-        $this->assertSqlGeneration(
+        /*$this->assertSqlGeneration(
             "SELECT p FROM Doctrine\Tests\Models\CMS\CmsPhonenumber p WHERE p.user = ?1",
-            "SELECT c0_.phonenumber AS phonenumber0 FROM cms_phonenumbers c0_ WHERE c0_.user_id = ?"
+            "SELECT c0_.id AS id0, c0_user_id AS user_id1, c0_.phonenumber AS phonenumber2 FROM cms_phonenumbers c0_ WHERE c0_.user_id = ?"
         );
         $this->assertSqlGeneration(
             "SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.address = ?1",
-            "SELECT c0_.id AS id0, c0_.status AS status1, c0_.username AS username2, c0_.name AS name3 FROM cms_users c0_ WHERE c0_.id = (SELECT c1_.user_id FROM cms_addresses c1_ WHERE c1_.id = ?)"
-        );
-    }*/
+            //"SELECT c0_.id AS id0, c0_.status AS status1, c0_.username AS username2, c0_.name AS name3 FROM cms_users c0_ WHERE c0_.id = (SELECT c1_.user_id FROM cms_addresses c1_ WHERE c1_.id = ?)"
+            "SELECT c0_.id AS id0, c0_.status AS status1, c0_.username AS username2, c0_.name AS name3 FROM cms_users c0_ WHERE EXISTS (SELECT 1 FROM cms_addresses c1_ WHERE c1_.user_id = c0_.id AND c1_.id = ?)"
+        );*/
+    }
 }

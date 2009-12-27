@@ -22,6 +22,7 @@
 namespace Doctrine\ORM\Query;
 
 use Doctrine\ORM\Query,
+    Doctrine\ORM\Query\QueryException,
     Doctrine\Common\DoctrineException;
 
 /**
@@ -425,12 +426,35 @@ class SqlWalker implements TreeWalker
 
                 $sql .= $class->getQuotedColumnName($fieldName, $this->_platform);      
                 break;
+            
+            case AST\PathExpression::TYPE_SINGLE_VALUED_ASSOCIATION:
+                // "u.Group" should be converted to:
+                // 1- IdentificationVariable is the owning side:
+                //    Just append the condition: u.group_id = ?
+                /*$parts = $pathExpr->parts;
+                $numParts = count($parts);
+                $dqlAlias = $pathExpr->identificationVariable;
+                $fieldName = $parts[$numParts - 1];
+                $qComp = $this->_queryComponents[$dqlAlias];
+                $class = $qComp['metadata'];
+                $assoc = $class->associationMappings[$fieldName];
+                
+                if ($assoc->isOwningSide) {
+                    foreach ($assoc->)
+                    $sql .= $this->walkIdentificationVariable($dqlAlias, $fieldName) . '.';
+                    
+                }
+                
+                // 2- IdentificationVariable is the inverse side:
+                //    Join required: INNER JOIN u.Group g
+                //    Append condition: g.id = ?
+                break;*/
                 
             case AST\PathExpression::TYPE_COLLECTION_VALUED_ASSOCIATION:
                 throw DoctrineException::notImplemented();
         
             default:
-                throw DoctrineException::invalidPathExpression($pathExpr->type);
+                throw QueryException::invalidPathExpression($pathExpr);
         }
         
         return $sql;

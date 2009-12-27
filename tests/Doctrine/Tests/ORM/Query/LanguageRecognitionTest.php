@@ -1,7 +1,8 @@
 <?php
 namespace Doctrine\Tests\ORM\Query;
 
-use Doctrine\ORM\Query;
+use Doctrine\ORM\Query,
+    Doctrine\ORM\Query\QueryException;
 
 require_once __DIR__ . '/../../TestInit.php';
 
@@ -18,7 +19,7 @@ class LanguageRecognitionTest extends \Doctrine\Tests\OrmTestCase
     {
         try {
             $parserResult = $this->parseDql($dql);
-        } catch (\Exception $e) {
+        } catch (QueryException $e) {
             if ($debug) {
                 echo $e->getTraceAsString() . PHP_EOL;
             }
@@ -31,8 +32,9 @@ class LanguageRecognitionTest extends \Doctrine\Tests\OrmTestCase
     {
         try {
             $parserResult = $this->parseDql($dql);
+            
             $this->fail('No syntax errors were detected, when syntax errors were expected');
-        } catch (\Exception $e) {
+        } catch (QueryException $e) {
             if ($debug) {
                 echo $e->getMessage() . PHP_EOL;
                 echo $e->getTraceAsString() . PHP_EOL;
@@ -248,6 +250,16 @@ class LanguageRecognitionTest extends \Doctrine\Tests\OrmTestCase
         $this->assertValidDql("SELECT u.id FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.name LIKE 'z|%' ESCAPE '|'");
     }
 
+    public function testFieldComparisonWithoutAlias()
+    {
+        $this->assertInvalidDql("SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE id = 1");
+    }
+    
+    public function testDuplicatedAliasDeclaration()
+    {
+        $this->assertInvalidDql("SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u INNER JOIN u.articles u WHERE u.id = 1");
+    }
+
     /*public function testImplicitJoinInWhereOnSingleValuedAssociationPathExpression()
     {
         // This should be allowed because avatar is a single-value association.
@@ -288,7 +300,7 @@ class LanguageRecognitionTest extends \Doctrine\Tests\OrmTestCase
 
     public function testDeleteAll()
     {
-        $this->assertValidDql('DELETE FROM Doctrine\Tests\Models\CMS\CmsUser');
+        $this->assertValidDql('DELETE FROM Doctrine\Tests\Models\CMS\CmsUser u');
     }
 
     public function testDeleteWithCondition()

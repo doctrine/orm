@@ -21,6 +21,8 @@
 
 namespace Doctrine\ORM\Query;
 
+use Doctrine\ORM\Query\AST\PathExpression;
+
 /**
  * Description of QueryException
  *
@@ -62,6 +64,14 @@ class QueryException extends \Doctrine\Common\DoctrineException
     public static function unknownParameter($key)
     {
         return new self("Invalid parameter: token ".$key." is not defined in the query.");
+    }
+    
+    public static function invalidPathExpression($pathExpr)
+    {
+        return new self(
+            "Invalid PathExpression '" . $pathExpr->identificationVariable . 
+            "." . implode('.', $pathExpr->parts) . "'."
+        );
     }
 
     /**

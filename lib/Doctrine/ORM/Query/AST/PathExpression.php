@@ -59,15 +59,6 @@ class PathExpression extends Node
     
     public function dispatch($walker)
     {
-        switch ($this->type) {
-            case self::TYPE_STATE_FIELD:
-                return $walker->walkStateFieldPathExpression($this);
-            case self::TYPE_SINGLE_VALUED_ASSOCIATION:
-                return $walker->walkSingleValuedAssociationPathExpression($this);
-            case self::TYPE_COLLECTION_VALUED_ASSOCIATION:
-                return $walker->walkCollectionValuedAssociationPathExpression($this);
-            default:
-                throw new \Exception("Unexhaustive match.");
-        }
+        return $walker->walkPathExpression($this);
     }
 }
