@@ -367,6 +367,16 @@ class LanguageRecognitionTest extends \Doctrine\Tests\OrmTestCase
         $this->assertValidDql('SELECT b FROM Doctrine\Tests\Models\Generic\BooleanModel b WHERE b.booleanField = true');
     }
     
+    public function testSubqueryInSelectExpression()
+    {
+        $this->assertValidDql('select u, (select max(p.phonenumber) from Doctrine\Tests\Models\CMS\CmsPhonenumber p) maxId from Doctrine\Tests\Models\CMS\CmsUser u');
+    }
+    
+    public function testUsageOfQComponentOutsideSubquery()
+    {
+        $this->assertInvalidDql('select u, (select max(p.phonenumber) from Doctrine\Tests\Models\CMS\CmsPhonenumber p) maxId from Doctrine\Tests\Models\CMS\CmsUser u WHERE p.user = ?1');
+    }
+    
     /**
      * This checks for invalid attempt to hydrate a proxy. It should throw an exception
      *
