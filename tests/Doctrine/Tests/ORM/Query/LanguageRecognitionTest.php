@@ -377,6 +377,11 @@ class LanguageRecognitionTest extends \Doctrine\Tests\OrmTestCase
         $this->assertInvalidDql('select u, (select max(p.phonenumber) from Doctrine\Tests\Models\CMS\CmsPhonenumber p) maxId from Doctrine\Tests\Models\CMS\CmsUser u WHERE p.user = ?1');
     }
     
+    public function testUnknownAbstractSchemaName()
+    {
+        $this->assertInvalidDql('SELECT u FROM UnknownClassName u');
+    }
+    
     /**
      * This checks for invalid attempt to hydrate a proxy. It should throw an exception
      *
