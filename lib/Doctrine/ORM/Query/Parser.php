@@ -514,8 +514,6 @@ class Parser
     private function _processDeferredExpressionsStack($AST)
     {
         foreach ($this->_deferredExpressionsStack as $item) {
-            if (!isset($item['method'])) var_dump($item);
-        
             $method = '_validate' . $item['method'];
             
             $this->$method($item, $AST);
