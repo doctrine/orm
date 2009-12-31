@@ -140,7 +140,6 @@ class Parser
         $this->_em = $query->getEntityManager();
         $this->_lexer = new Lexer($query->getDql());
         $this->_parserResult = new ParserResult();
-        $this->_ast = null;
     }
 
     /**
