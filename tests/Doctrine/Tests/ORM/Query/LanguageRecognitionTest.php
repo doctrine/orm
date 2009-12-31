@@ -58,6 +58,25 @@ class LanguageRecognitionTest extends \Doctrine\Tests\OrmTestCase
         
         return $parser->parse();
     }
+    
+    public function parseDqlForAST($dql, $hints = array())
+    {
+        $query = $this->_em->createQuery($dql);
+        $query->setHint(Query::HINT_FORCE_PARTIAL_LOAD, true);
+        $query->setDql($dql);
+        
+        foreach ($hints as $key => $value) {
+        	$query->setHint($key, $value);
+        }
+        
+        $parser = new \Doctrine\ORM\Query\Parser($query);
+        // We do NOT test SQL output here. That only unnecessarily slows down the tests!
+        $parser->setCustomOutputTreeWalker('Doctrine\Tests\Mocks\MockTreeWalker');
+        $parser->parse();
+        
+        return $parser->getAST();
+    }
+
 
     public function testEmptyQueryString()
     {
@@ -84,6 +103,11 @@ class LanguageRecognitionTest extends \Doctrine\Tests\OrmTestCase
         $this->assertValidDql('SELECT u, p FROM Doctrine\Tests\Models\CMS\CmsUser u JOIN u.phonenumbers p');
     }
 
+    public function testSelectMultipleComponentsWithAsterisk2()
+    {
+        $this->assertValidDql('SELECT a.user.name FROM Doctrine\Tests\Models\CMS\CmsArticle a');
+    }
+
     public function testSelectDistinctIsSupported()
     {
         $this->assertValidDql('SELECT DISTINCT u.name FROM Doctrine\Tests\Models\CMS\CmsUser u');
@@ -92,6 +116,11 @@ class LanguageRecognitionTest extends \Doctrine\Tests\OrmTestCase
     public function testAggregateFunctionInSelect()
     {
         $this->assertValidDql('SELECT COUNT(u.id) FROM Doctrine\Tests\Models\CMS\CmsUser u');
+    }
+    
+    public function testDuplicatedAliasInAggregateFunction()
+    {
+        $this->assertInvalidDql('SELECT COUNT(u.id) AS num, SUM(u.id) AS num FROM Doctrine\Tests\Models\CMS\CmsUser u');
     }
 
     public function testAggregateFunctionWithDistinctInSelect()

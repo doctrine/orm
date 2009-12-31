@@ -414,9 +414,8 @@ class SqlWalker implements TreeWalker
         switch ($pathExpr->type) {
             case AST\PathExpression::TYPE_STATE_FIELD:
                 $parts = $pathExpr->parts;
-                $numParts = count($parts);
-                $dqlAlias = $pathExpr->identificationVariable;
-                $fieldName = $parts[$numParts - 1];
+                $fieldName = array_pop($parts);
+                $dqlAlias = $pathExpr->identificationVariable . (( ! empty($parts)) ? '.' . implode('.', $parts) : '');
                 $qComp = $this->_queryComponents[$dqlAlias];
                 $class = $qComp['metadata'];
 
@@ -609,20 +608,18 @@ class SqlWalker implements TreeWalker
      */
     public function walkOrderByItem($orderByItem)
     {
+        $sql = '';
         $expr = $orderByItem->expression;
+        
         if ($expr instanceof AST\PathExpression) {
-            $parts = $expr->parts;
-            $dqlAlias = $expr->identificationVariable;
-            $class = $this->_queryComponents[$dqlAlias]['metadata'];
-            $columnName = $class->getQuotedColumnName($parts[0], $this->_platform);
-            
-            return $this->getSqlTableAlias($class->getTableName(), $dqlAlias) . '.' 
-                    . $columnName . ' ' . strtoupper($orderByItem->type);
+            $sql = $this->walkPathExpression($expr);
         } else {
             $columnName = $this->_queryComponents[$expr]['token']['value'];
 
-            return $this->_scalarResultAliasMap[$columnName] . ' ' . strtoupper($orderByItem->type);
+            $sql = $this->_scalarResultAliasMap[$columnName];
         }
+        
+        return $sql . ' ' . strtoupper($orderByItem->type);;
     }
 
     /**
@@ -771,16 +768,15 @@ class SqlWalker implements TreeWalker
         if ($expr instanceof AST\PathExpression) {
             if ($expr->type == AST\PathExpression::TYPE_STATE_FIELD) {
                 $parts = $expr->parts;
-                $numParts = count($parts);
-                $dqlAlias = $expr->identificationVariable;
-                $fieldName = $parts[$numParts - 1];
+                $fieldName = array_pop($parts);
+                $dqlAlias = $expr->identificationVariable . (( ! empty($parts)) ? '.' . implode('.', $parts) : '');
                 $qComp = $this->_queryComponents[$dqlAlias];
                 $class = $qComp['metadata'];
 
                 if ( ! isset($this->_selectedClasses[$dqlAlias])) {
                     $this->_selectedClasses[$dqlAlias] = $class;
                 }
-
+                
                 $sqlTableAlias = $this->getSqlTableAlias($class->getTableName(), $dqlAlias);
                 $columnName = $class->getQuotedColumnName($fieldName, $this->_platform);
                 $columnAlias = $this->getSqlColumnAlias($class->columnNames[$fieldName]);
@@ -1004,17 +1000,8 @@ class SqlWalker implements TreeWalker
      */
     public function walkAggregateExpression($aggExpression)
     {
-        $sql = '';
-        $parts = $aggExpression->pathExpression->parts;
-        $dqlAlias = $aggExpression->pathExpression->identificationVariable;
-        $fieldName = $parts[0];
-
-        $qComp = $this->_queryComponents[$dqlAlias];
-        $columnName = $qComp['metadata']->getQuotedColumnName($fieldName, $this->_platform);
-
         return $aggExpression->functionName . '(' . ($aggExpression->isDistinct ? 'DISTINCT ' : '')
-             . $this->getSqlTableAlias($qComp['metadata']->getTableName(), $dqlAlias) . '.' 
-             . $columnName . ')';
+             . $this->walkPathExpression($aggExpression->pathExpression) . ')';
     }
 
     /**
@@ -1038,12 +1025,7 @@ class SqlWalker implements TreeWalker
      */
     public function walkGroupByItem(AST\PathExpression $pathExpr)
     {
-        $parts = $pathExpr->parts;
-        $dqlAlias = $pathExpr->identificationVariable;
-        $qComp = $this->_queryComponents[$dqlAlias];
-        $columnName = $qComp['metadata']->getQuotedColumnName($parts[0], $this->_platform);
-        
-        return $this->getSqlTableAlias($qComp['metadata']->getTableName(), $dqlAlias) . '.' . $columnName;
+        return $this->walkPathExpression($pathExpr);
     }
 
     /**
@@ -1219,8 +1201,10 @@ class SqlWalker implements TreeWalker
         $sql .= 'EXISTS (SELECT 1 FROM ';
         $entityExpr = $collMemberExpr->entityExpression;
         $collPathExpr = $collMemberExpr->collectionValuedPathExpression;
+        
         $parts = $collPathExpr->parts;
-        $dqlAlias = $collPathExpr->identificationVariable;
+        $fieldName = array_pop($parts);
+        $dqlAlias = $collPathExpr->identificationVariable . (( ! empty($parts)) ? '.' . implode('.', $parts) : '');
         
         $class = $this->_queryComponents[$dqlAlias]['metadata'];
         
@@ -1232,7 +1216,7 @@ class SqlWalker implements TreeWalker
             throw DoctrineException::notImplemented();
         }
         
-        $assoc = $class->associationMappings[$parts[0]];
+        $assoc = $class->associationMappings[$fieldName];
         
         if ($assoc->isOneToMany()) {
             $targetClass = $this->_em->getClassMetadata($assoc->targetEntityName);
