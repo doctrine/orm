@@ -278,7 +278,6 @@ class ExprTest extends \Doctrine\Tests\OrmTestCase
     
     public function testFromExpr()
     {
-        $this->assertEquals('User', (string) $this->_expr->from('User'));
         $this->assertEquals('User u', (string) $this->_expr->from('User', 'u'));
     }
 

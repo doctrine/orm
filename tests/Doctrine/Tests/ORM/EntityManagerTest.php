@@ -71,6 +71,20 @@ class EntityManagerTest extends \Doctrine\Tests\OrmTestCase
     {
         $this->assertType('\Doctrine\ORM\QueryBuilder', $this->_em->createQueryBuilder());
     }
+    
+    public function testCreateQueryBuilderAliasValid()
+    {
+        $q = $this->_em->createQueryBuilder()
+             ->select('u')->from('Doctrine\Tests\Models\CMS\CmsUser', 'u');
+        $q2 = clone $q;
+             
+        $this->assertEquals('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u', $q->getQuery()->getDql());
+        $this->assertEquals('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u', $q2->getQuery()->getDql());
+        
+        $q3 = clone $q;
+        
+        $this->assertEquals('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u', $q3->getQuery()->getDql());
+    }
 
     public function testCreateQuery_DqlIsOptional()
     {

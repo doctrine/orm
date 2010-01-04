@@ -495,7 +495,7 @@ class QueryBuilder
      * @param string $alias  The alias of the model
      * @return QueryBuilder $qb
      */
-    public function from($from, $alias = null)
+    public function from($from, $alias)
     {
         return $this->add('from', new Expr\From($from, $alias), true);
     }
@@ -515,7 +515,7 @@ class QueryBuilder
      * @param string $condition      The condition for the join
      * @return QueryBuilder $qb
      */
-    public function innerJoin($join, $alias = null, $conditionType = null, $condition = null)
+    public function innerJoin($join, $alias, $conditionType = null, $condition = null)
     {
         return $this->add('join', new Expr\Join(
             Expr\Join::INNER_JOIN, $join, $alias, $conditionType, $condition
@@ -537,7 +537,7 @@ class QueryBuilder
      * @param string $condition      The condition for the join
      * @return QueryBuilder $qb
      */
-    public function leftJoin($join, $alias = null, $conditionType = null, $condition = null)
+    public function leftJoin($join, $alias, $conditionType = null, $condition = null)
     {
         return $this->add('join', new Expr\Join(
             Expr\Join::LEFT_JOIN, $join, $alias, $conditionType, $condition

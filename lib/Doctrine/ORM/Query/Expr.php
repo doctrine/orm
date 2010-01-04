@@ -93,10 +93,10 @@ class Expr
      *     $q->from($q->expr()->from('User', 'u'));
      *
      * @param string $from Entity name.
-     * @param string $alias Optional alias to be used by Entity.
+     * @param string $alias Alias to be used by Entity.
      * @return Expr\From
      */
-    public function from($from, $alias = null)
+    public function from($from, $alias)
     {
         return new Expr\From($from, $alias);
     }
@@ -109,13 +109,13 @@ class Expr
      *     $q->expr()->leftJoin('u.Group', 'g', 'WITH', "g.name = 'admin'")
      *
      * @param string $join Relation join.
-     * @param string $alias Optional alias to be used by Relation.
+     * @param string $alias Alias to be used by Relation.
      * @param string $conditionType Optional type of condition appender. Accepts either string or constant.
      *                              'ON' and 'WITH' are supported strings. Expr\Join::ON and Expr\Join::WITH are supported constants.
      * @param mixed $condition Optional condition to be appended.
      * @return Expr\Join
      */
-    public function leftJoin($join, $alias = null, $conditionType = null, $condition = null)
+    public function leftJoin($join, $alias, $conditionType = null, $condition = null)
     {
         return new Expr\Join(Expr\Join::LEFT_JOIN, $join, $alias, $conditionType, $condition);
     }
@@ -128,13 +128,13 @@ class Expr
      *     $q->expr()->innerJoin('u.Group', 'g', 'WITH', "g.name = 'admin'")
      *
      * @param string $join Relation join.
-     * @param string $alias Optional alias to be used by Relation.
+     * @param string $alias Alias to be used by Relation.
      * @param string $conditionType Optional type of condition appender. Accepts either string or constant.
      *                              'ON' and 'WITH' are supported strings. Expr\Join::ON and Expr\Join::WITH are supported constants.
      * @param mixed $condition Optional condition to be appended.
      * @return Expr\Join
      */
-    public function innerJoin($join, $alias = null, $conditionType = null, $condition = null)
+    public function innerJoin($join, $alias, $conditionType = null, $condition = null)
     {
         return new Expr\Join(Expr\Join::INNER_JOIN, $join, $alias, $conditionType, $condition);
     }
