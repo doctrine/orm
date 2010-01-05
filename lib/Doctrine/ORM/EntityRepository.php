@@ -63,7 +63,7 @@ class EntityRepository
     {
         return $this->_em->createQueryBuilder()
             ->select($alias)
-            ->from($this->_entityName);
+            ->from($this->_entityName, $alias);
     }
     
     /**
