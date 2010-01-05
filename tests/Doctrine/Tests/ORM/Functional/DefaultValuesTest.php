@@ -34,7 +34,7 @@ class DefaultValuesTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $user2 = $this->_em->getReference(get_class($user), $userId);
         
         $this->_em->flush();
-        $this->assertFalse($user2->__isInitialized__());
+        $this->assertFalse($user2->__isInitialized__);
         
         $a = new DefaultValueAddress;
         $a->country = 'de';
@@ -46,7 +46,7 @@ class DefaultValuesTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->persist($a);
         $this->_em->flush();
         
-        $this->assertFalse($user2->__isInitialized__());
+        $this->assertFalse($user2->__isInitialized__);
         $this->_em->clear();
         
         $a2 = $this->_em->find(get_class($a), $a->id);

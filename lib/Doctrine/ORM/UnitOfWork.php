@@ -38,8 +38,7 @@ use Doctrine\Common\Collections\ArrayCollection,
  * @since       2.0
  * @version     $Revision$
  * @author      Roman Borschel <roman@code-factory.org>
- * @internal    This class contains performance-critical code. Work with care and
- *              regularly run the ORM performance tests.
+ * @internal    This class contains performance-critical code.
  */
 class UnitOfWork implements PropertyChangedListener
 {
@@ -401,7 +400,7 @@ class UnitOfWork implements PropertyChangedListener
 
             foreach ($entitiesToProcess as $entity) {
                 // Ignore uninitialized proxy objects
-                if (/* $entity is readOnly || */ $entity instanceof Proxy && ! $entity->__isInitialized__()) {
+                if (/* $entity is readOnly || */ $entity instanceof Proxy && ! $entity->__isInitialized__) {
                     continue;
                 }
                 // Only MANAGED entities that are NOT SCHEDULED FOR INSERTION are processed here.
@@ -560,7 +559,7 @@ class UnitOfWork implements PropertyChangedListener
         // Look through the entities, and in any of their associations, for transient
         // enities, recursively. ("Persistence by reachability")
         if ($assoc->isOneToOne()) {
-            if ($value instanceof Proxy && ! $value->__isInitialized__()) {
+            if ($value instanceof Proxy && ! $value->__isInitialized__) {
                 return; // Ignore uninitialized proxy objects
             }
             $value = array($value);
@@ -1732,7 +1731,12 @@ class UnitOfWork implements PropertyChangedListener
         if (isset($this->_identityMap[$class->rootEntityName][$idHash])) {
             $entity = $this->_identityMap[$class->rootEntityName][$idHash];
             $oid = spl_object_hash($entity);
-            $overrideLocalValues = isset($hints[Query::HINT_REFRESH]);
+            if ($entity instanceof Proxy && ! $entity->__isInitialized__) {
+                $entity->__isInitialized__ = true;
+                $overrideLocalValues = true;
+            } else {
+                $overrideLocalValues = isset($hints[Query::HINT_REFRESH]);
+            }
         } else {
             //$entity = clone $class->prototype;
             $entity = new $className;

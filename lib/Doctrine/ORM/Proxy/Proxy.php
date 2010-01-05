@@ -27,7 +27,4 @@ namespace Doctrine\ORM\Proxy;
  * @author Roman Borschel <roman@code-factory.org>
  * @since 2.0
  */
-interface Proxy
-{
-    function __isInitialized__();
-}
+interface Proxy {}

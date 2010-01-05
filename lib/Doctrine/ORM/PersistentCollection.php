@@ -571,6 +571,15 @@ final class PersistentCollection implements \Doctrine\Common\Collections\Collect
         $this->_initialize();
         return $this->_coll->partition($p);
     }
+    
+    /**
+     * {@inheritdoc}
+     */
+    public function toArray()
+    {
+        $this->_initialize();
+        return $this->_coll->toArray();
+    }
 
     /**
      * {@inheritdoc}
@@ -635,11 +644,6 @@ final class PersistentCollection implements \Doctrine\Common\Collections\Collect
     public function offsetUnset($offset)
     {
         return $this->remove($offset);
-    }
-    
-    public function toArray()
-    {
-        return $this->_coll->toArray();
     }
     
     public function key()
