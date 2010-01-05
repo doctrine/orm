@@ -283,7 +283,7 @@ class StandardEntityPersister
     public function delete($entity)
     {
         $id = array_combine(
-            $this->_class->getIdentifierFieldNames(),
+            $this->_class->getIdentifierColumnNames(),
             $this->_em->getUnitOfWork()->getEntityIdentifier($entity)
         );
         $this->_conn->delete($this->_class->primaryTable['name'], $id);
