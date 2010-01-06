@@ -233,7 +233,7 @@
   <xs:complexType name="many-to-one">
     <xs:sequence>
       <xs:element name="cascade" type="orm:cascade-type" minOccurs="0" />
-      <xs:choice minOccurs="0" maxOccurs="1">
+      <xs:choice minOccurs="1" maxOccurs="1">
         <xs:element name="join-column" type="orm:join-column"/>
         <xs:element name="join-columns" type="orm:join-columns"/>
       </xs:choice>
