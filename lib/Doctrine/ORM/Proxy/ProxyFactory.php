@@ -165,7 +165,8 @@ class ProxyFactory
         $methods = '';
         
         foreach ($class->reflClass->getMethods() as $method) {
-            if ($method->isConstructor()) {
+            /* @var $method ReflectionMethod */
+            if ($method->isConstructor() || strtolower($method->getName()) == "__sleep") {
                 continue;
             }
             

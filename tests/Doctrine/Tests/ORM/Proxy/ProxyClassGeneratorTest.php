@@ -124,10 +124,35 @@ class ProxyClassGeneratorTest extends \Doctrine\Tests\OrmTestCase
         $this->assertNotContains("class DoctrineOrmTestEntityProxy extends \\\\DoctrineOrmTestEntity", $classCode);
         $this->assertContains("class DoctrineOrmTestEntityProxy extends \\DoctrineOrmTestEntity", $classCode);
     }
+
+    public function testClassWithSleepProxyGeneration()
+    {
+        $className = "\Doctrine\Tests\ORM\Proxy\SleepClass";
+        $proxyName = "DoctrineTestsORMProxySleepClassProxy";
+        $classMetadata = new \Doctrine\ORM\Mapping\ClassMetadata($className);
+        $classMetadata->mapField(array('fieldName' => 'id', 'type' => 'integer'));
+        $classMetadata->setIdentifier(array('id'));
+
+        $this->_proxyFactory->generateProxyClasses(array($classMetadata));
+
+        $classCode = file_get_contents(dirname(__FILE__)."/generated/".$proxyName.".php");
+
+        $this->assertEquals(1, substr_count($classCode, 'function __sleep'));
+    }
     
     protected function _getMockPersister()
     {
         $persister = $this->getMock('Doctrine\ORM\Persisters\StandardEntityPersister', array('load'), array(), '', false, false, false);
         return $persister;
+    }
+}
+
+class SleepClass
+{
+    public $id;
+
+    public function __sleep()
+    {
+        return array('id');
     }
 }
