@@ -67,6 +67,7 @@
       <xs:element name="field" type="orm:field" minOccurs="0" maxOccurs="unbounded"/>
       <xs:element name="one-to-one" type="orm:one-to-one" minOccurs="0" maxOccurs="unbounded"/>
       <xs:element name="one-to-many" type="orm:one-to-many" minOccurs="0" maxOccurs="unbounded" />
+      <xs:element name="many-to-one" type="orm:many-to-one" minOccurs="0" maxOccurs="unbounded" />
       <xs:element name="many-to-many" type="orm:many-to-many" minOccurs="0" maxOccurs="unbounded" />
     </xs:sequence>
     <xs:attribute name="name" type="xs:string" use="required" />
@@ -214,6 +215,7 @@
     </xs:sequence>
     <xs:attribute name="target-entity" type="xs:NMTOKEN" use="required" />
     <xs:attribute name="field" type="xs:NMTOKEN" use="required" />
+    <xs:attribute name="mapped-by" type="xs:NMTOKEN" />
     <xs:attribute name="fetch" type="orm:fetch-type" default="LAZY" />
   </xs:complexType>
 
