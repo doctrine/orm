@@ -154,7 +154,7 @@ abstract class AbstractQuery
     public function getParameters($params = array())
     {
         if ($params) {
-            return array_merge($this->_params, $params);
+            return ($this->_params + $params);
         }
         return $this->_params;
     }
