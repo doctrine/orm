@@ -213,6 +213,12 @@ class TaskNamespace extends AbstractNamespace
     {
         try {
             $task = $this->getTask($name);
+            
+            // Merge global configuration if it exists
+            if (($globalArgs = $this->getConfiguration()->getAttribute('globalArguments')) !== null) {
+                $arguments = array_merge($globalArgs, $arguments);
+            }
+            
             $task->setArguments($arguments);
         
             if ((isset($arguments['help']) && $arguments['help']) || (isset($arguments['h']) && $arguments['h'])) {
