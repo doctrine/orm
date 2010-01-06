@@ -213,13 +213,12 @@ class ConvertDoctrine1Schema
     {
         if (isset($model['indexes']) && $model['indexes']) {
             foreach ($model['indexes'] as $name => $index) {
-                $metadata->primaryTable['indexes'][$name] = array(
+                $type = (isset($index['type']) && $index['type'] == 'unique')
+                    ? 'uniqueConstraints' : 'indexes';
+                    
+                $metadata->primaryTable[$type][$name] = array(
                     'columns' => $index['fields']
                 );
-
-                if (isset($index['type']) && $index['type'] == 'unique') {
-                    $metadata->primaryTable['uniqueConstraints'][] = $index['fields'];
-                }
             }
         }
     }

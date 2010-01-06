@@ -617,8 +617,8 @@ abstract class AbstractPlatform
         $columnListSql = $this->getColumnDeclarationListSql($columns);
         
         if (isset($options['uniqueConstraints']) && ! empty($options['uniqueConstraints'])) {
-            foreach ($options['uniqueConstraints'] as $uniqueConstraint) {
-                $columnListSql .= ', UNIQUE(' . implode(', ', array_values($uniqueConstraint)) . ')';
+            foreach ($options['uniqueConstraints'] as $name => $definition) {
+                $columnListSql .= ', ' . $this->getUniqueConstraintDeclarationSql($name, $definition);
             }
         }
         
@@ -1035,32 +1035,50 @@ abstract class AbstractPlatform
 
         return implode(', ', $constraints);
     }
+    
+    /**
+     * Obtain DBMS specific SQL code portion needed to set a unique
+     * constraint declaration to be used in statements like CREATE TABLE.
+     *
+     * @param string $name          name of the unique constraint
+     * @param Index $index          index definition
+     * @return string               DBMS specific SQL code portion needed 
+     *                              to set a constraint
+     */
+    public function getUniqueConstraintDeclarationSql($name, Index $index)
+    {
+        if (count($index->getColumns()) == 0) {
+            throw \InvalidArgumentException("Incomplete definition. 'columns' required.");
+        }
+        
+        return 'CONSTRAINT' . $name . ' UNIQUE ('
+             . $this->getIndexFieldDeclarationListSql($index->getColumns()) 
+             . ')';
+    }
 
     /**
      * Obtain DBMS specific SQL code portion needed to set an index
      * declaration to be used in statements like CREATE TABLE.
      *
      * @param string $name          name of the index
-     * @param Index $index     index definition
+     * @param Index $index          index definition
      * @return string               DBMS specific SQL code portion needed to set an index
      */
     public function getIndexDeclarationSql($name, Index $index)
     {
-        $type   = '';
+        $type = '';
 
         if($index->isUnique()) {
-            $type = "UNIQUE";
+            $type = 'UNIQUE ';
         }
 
         if (count($index->getColumns()) == 0) {
             throw \InvalidArgumentException("Incomplete definition. 'columns' required.");
         }
 
-        $query = $type . ' INDEX ' . $name;
-
-        $query .= ' (' . $this->getIndexFieldDeclarationListSql($index->getColumns()) . ')';
-
-        return $query;
+        return $type . 'INDEX ' . $name . ' ('
+             . $this->getIndexFieldDeclarationListSql($index->getColumns()) 
+             . ')';
     }
 
     /**

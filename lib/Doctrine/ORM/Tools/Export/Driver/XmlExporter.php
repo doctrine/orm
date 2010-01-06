@@ -99,8 +99,9 @@ class XmlExporter extends AbstractExporter
 
         if (isset($metadata->primaryTable['indexes'])) {
             $indexesXml = $root->addChild('indexes');
+            
             foreach ($metadata->primaryTable['indexes'] as $name => $index) {
-                $indexXml = $root->addChild('index');
+                $indexXml = $indexesXml->addChild('index');
                 $indexXml->addAttribute('name', $name);
                 $indexXml->addAttribute('columns', implode(',', $index['columns']));
             }
@@ -108,9 +109,11 @@ class XmlExporter extends AbstractExporter
 
         if (isset($metadata->primaryTable['uniqueConstraints'])) {
             $uniqueConstraintsXml = $root->addChild('unique-constraints');
-            foreach ($metadata->primaryTable['uniqueConstraints'] as $uniqueConstraint) {
+            
+            foreach ($metadata->primaryTable['uniqueConstraints'] as $unique) {
                 $uniqueConstraintXml = $uniqueConstraintsXml->addChild('unique-constraint');
-                $uniqueConstraintXml->addAttribute('columns', $uniqueConstraint['columns']);
+                $uniqueConstraintXml->addAttribute('name', $name);
+                $uniqueConstraintXml->addAttribute('columns', implode(',', $unique['columns']));
             }
         }
 

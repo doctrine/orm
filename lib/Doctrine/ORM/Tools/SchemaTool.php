@@ -201,7 +201,7 @@ class SchemaTool
             
             if (isset($class->primaryTable['uniqueConstraints'])) {
                 foreach ($class->primaryTable['uniqueConstraints'] AS $indexName => $indexData) {
-                    $table->addUniqueIndex($indexData, $indexName);
+                    $table->addUniqueIndex($indexData['columns'], $indexName);
                 }
             }
 
@@ -354,8 +354,7 @@ class SchemaTool
 
                 $theJoinTable = $schema->createTable($mapping->getQuotedJoinTableName($this->_platform));
 
-                $primaryKeyColumns = array();
-                $uniqueConstraints = array();
+                $primaryKeyColumns = $uniqueConstraints = array();
 
                 // Build first FK constraint (relation table => source table)
                 $this->_gatherRelationJoinColumns($joinTable['joinColumns'], $theJoinTable, $class, $mapping, $primaryKeyColumns, $uniqueConstraints);
@@ -363,8 +362,10 @@ class SchemaTool
                 // Build second FK constraint (relation table => target table)
                 $this->_gatherRelationJoinColumns($joinTable['inverseJoinColumns'], $theJoinTable, $foreignClass, $mapping, $primaryKeyColumns, $uniqueConstraints);
 
-                foreach($uniqueConstraints AS $unique) {
-                    $theJoinTable->addUniqueIndex($unique);
+                foreach($uniqueConstraints AS $indexName => $unique) {
+                    $theJoinTable->addUniqueIndex(
+                        $unique['columns'], is_numeric($indexName) ? null : $indexName
+                    );
                 }
 
                 $theJoinTable->setPrimaryKey($primaryKeyColumns);
@@ -413,7 +414,7 @@ class SchemaTool
             }
 
             if (isset($joinColumn['unique']) && $joinColumn['unique'] == true) {
-                $uniqueConstraints[] = array($columnName);
+                $uniqueConstraints[] = array('columns' => $columnName);
             }
 
             if (isset($joinColumn['onUpdate'])) {

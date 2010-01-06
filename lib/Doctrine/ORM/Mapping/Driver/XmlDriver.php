@@ -101,6 +101,7 @@ class XmlDriver extends AbstractFileDriver
                 } else {
                     $columns = $index['columns'];
                 }
+                
                 $metadata->primaryTable['indexes'][$index['name']] = array(
                     'columns' => $columns
                 );
@@ -115,7 +116,10 @@ class XmlDriver extends AbstractFileDriver
                 } else {
                     $columns = $unique['columns'];
                 }
-                $metadata->primaryTable['uniqueConstraints'][] = $columns;
+                
+                $metadata->primaryTable['uniqueConstraints'][$unique['name']] = array(
+                    'columns' => $columns
+                );
             }
         }
 

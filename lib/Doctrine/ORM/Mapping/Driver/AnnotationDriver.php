@@ -92,13 +92,17 @@ class AnnotationDriver implements Driver
             
             if ($tableAnnot->indexes !== null) {
                 foreach ($tableAnnot->indexes as $indexAnnot) {
-                    $primaryTable['indexes'][$indexAnnot->name] = array('columns' => $indexAnnot->columns);
+                    $primaryTable['indexes'][$indexAnnot->name] = array(
+                        'columns' => $indexAnnot->columns
+                    );
                 }
             }
             
             if ($tableAnnot->uniqueConstraints !== null) {
                 foreach ($tableAnnot->uniqueConstraints as $uniqueConstraint) {
-                    $primaryTable['uniqueConstraints'][] = $uniqueConstraint->columns;
+                    $primaryTable['uniqueConstraints'][$uniqueConstraint->name] = array(
+                        'columns' => $uniqueConstraint->columns
+                    );
                 }
             }
             

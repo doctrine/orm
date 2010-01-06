@@ -146,9 +146,9 @@ class Table extends AbstractAsset
      * @param string $indexName
      * @return Table
      */
-    public function setPrimaryKey(array $columns, $indexName=false)
+    public function setPrimaryKey(array $columns, $indexName = false)
     {
-        return $this->_createIndex($columns, $indexName?:"primary", true, true);
+        return $this->_createIndex($columns, $indexName ?: "primary", true, true);
     }
 
     /**
@@ -166,7 +166,7 @@ class Table extends AbstractAsset
      * @param string $indexName
      * @return Table
      */
-    public function addIndex(array $columnNames, $indexName=null)
+    public function addIndex(array $columnNames, $indexName = null)
     {
         if($indexName == null) {
             $indexName = $this->_generateIdentifierName(
@@ -183,7 +183,7 @@ class Table extends AbstractAsset
      * @param string $indexName
      * @return Table
      */
-    public function addUniqueIndex(array $columnNames, $indexName=null)
+    public function addUniqueIndex(array $columnNames, $indexName = null)
     {
         if ($indexName == null) {
             $indexName = $this->_generateIdentifierName(
