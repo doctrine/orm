@@ -161,6 +161,11 @@ class CliController extends AbstractNamespace
         // Find the correct namespace where the task is defined
         $taskName = array_pop($taskPath);
         $taskNamespace = $this->_retrieveTaskNamespace($taskPath);
+        
+        // Merge global configuration if it exists
+        if (($globalArgs = $this->getConfiguration()->getAttribute('globalArguments')) !== null) {
+            $args = array_merge($globalArgs, $args);
+        }
                 
         $taskNamespace->runTask($taskName, $args);
     }
