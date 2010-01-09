@@ -38,6 +38,7 @@ class Option
     private $_name;
     
     /** @var string Option default value */
+    private $_defaultValue;
     
     /** @var string Option description */
     private $description;
@@ -69,7 +70,7 @@ class Option
     /**
      * Retrieves the CLI Option default value
      *
-     * @return string|null Option default value
+     * @return mixed Option default value
      */
     public function getDefaultValue()
     {
@@ -93,7 +94,10 @@ class Option
      */
     public function __toString()
     {
-        return '--' . $this->_name 
-             . (( ! is_null($this->_defaultValue)) ? '=' . $this->_defaultValue : '');
+        $defaultValue = ( ! is_null($this->_defaultValue)) 
+            ? '=' . (is_array($this->_defaultValue) ? implode(',', $this->_defaultValue) : $this->_defaultValue) 
+            : '';
+    
+        return '--' . $this->_name . $defaultValue;
     }
 }

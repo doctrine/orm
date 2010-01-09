@@ -30,6 +30,7 @@ class AllTests
         $suite->addTest(Collections\AllTests::suite());
         $suite->addTest(Annotations\AllTests::suite());
         $suite->addTest(Cache\AllTests::suite());
+        $suite->addTest(Cli\AllTests::suite());
 
         return $suite;
     }

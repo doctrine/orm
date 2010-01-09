@@ -467,7 +467,7 @@ class OptionGroup
         $optionStr = (string) $option;
         
         // Format Option string
-        $str .= $printer->format($optionStr, $style);
+        $str = $printer->format($optionStr, $style);
         
         // Include missing spaces
         $str .= str_repeat(' ', $maxOptionLength - strlen($optionStr));
