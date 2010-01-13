@@ -34,4 +34,11 @@ class DateTest extends \Doctrine\Tests\DbalTestCase
             instanceof \DateTime
         );
     }
+
+    public function testDateResetsNonDatePartsToZeroUnixTimeValues()
+    {
+        $date = $this->_type->convertToPHPValue('1985-09-01', $this->_platform);
+
+        $this->assertEquals('00:00:00', $date->format('H:i:s'));
+    }
 }

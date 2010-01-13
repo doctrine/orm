@@ -1719,7 +1719,7 @@ abstract class AbstractPlatform
      */
     public function getDateFormatString()
     {
-        return 'Y-m-d';
+        return '!Y-m-d';
     }
     
     /**
