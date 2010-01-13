@@ -11,12 +11,19 @@ class DateTest extends \Doctrine\Tests\DbalTestCase
 {
     protected
         $_platform,
-        $_type;
+        $_type,
+        $_tz;
 
     protected function setUp()
     {
         $this->_platform = new \Doctrine\Tests\DBAL\Mocks\MockPlatform();
         $this->_type = Type::getType('date');
+        $this->_tz = date_default_timezone_get();
+    }
+
+    public function tearDown()
+    {
+        date_default_timezone_set($this->_tz);
     }
 
     public function testDateConvertsToDatabaseValue()
@@ -40,5 +47,18 @@ class DateTest extends \Doctrine\Tests\DbalTestCase
         $date = $this->_type->convertToPHPValue('1985-09-01', $this->_platform);
 
         $this->assertEquals('00:00:00', $date->format('H:i:s'));
+    }
+
+    public function testDateRests_SummerTimeAffection()
+    {
+        date_default_timezone_set('Europe/Berlin');
+
+        $date = $this->_type->convertToPHPValue('2009-08-01', $this->_platform);
+        $this->assertEquals('00:00:00', $date->format('H:i:s'));
+        $this->assertEquals('2009-08-01', $date->format('Y-m-d'));
+
+        $date = $this->_type->convertToPHPValue('2009-11-01', $this->_platform);
+        $this->assertEquals('00:00:00', $date->format('H:i:s'));
+        $this->assertEquals('2009-11-01', $date->format('Y-m-d'));
     }
 }
