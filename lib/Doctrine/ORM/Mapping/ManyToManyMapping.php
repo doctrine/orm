@@ -83,11 +83,17 @@ class ManyToManyMapping extends AssociationMapping
             }
             // owning side MUST specify joinColumns
             if ( ! isset($mapping['joinTable']['joinColumns'])) {
-                throw MappingException::invalidMapping($this->_sourceFieldName);
+                throw MappingException::missingRequiredOption(
+                    $this->sourceFieldName, 'joinColumns', 
+                    'Did you think of case sensitivity / plural s?'
+                );
             }
             // owning side MUST specify inverseJoinColumns
             if ( ! isset($mapping['joinTable']['inverseJoinColumns'])) {
-                throw MappingException::invalidMapping($this->_sourceFieldName);
+                throw MappingException::missingRequiredOption(
+                    $this->sourceFieldName, 'inverseJoinColumns', 
+                    'Did you think of case sensitivity / plural s?'
+                );
             }
             
             foreach ($mapping['joinTable']['joinColumns'] as &$joinColumn) {
