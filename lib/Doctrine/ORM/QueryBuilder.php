@@ -401,12 +401,13 @@ class QueryBuilder
     public function select($select = null)
     {
         $this->_type = self::SELECT;
-        $selects = func_get_args();
-
-        if (empty($selects)) {
+        
+        if (empty($select)) {
             return $this;
         }
         
+        $selects = is_array($select) ? $select : func_get_args();
+
         return $this->add('select', new Expr\Select($selects), false);
     }
 
@@ -426,11 +427,12 @@ class QueryBuilder
     public function addSelect($select = null)
     {
         $this->_type = self::SELECT;
-        $selects = func_get_args();
-
-        if (empty($selects)) {
-          return $this;
+        
+        if (empty($select)) {
+            return $this;
         }
+        
+        $selects = is_array($select) ? $select : func_get_args();
 
         return $this->add('select', new Expr\Select($selects), true);
     }
