@@ -82,7 +82,7 @@ class Expr
      */
     public function select($select = null)
     {
-        return new Expr\Select(func_get_args());
+        return new Expr\Select(is_array($select) ? $select : func_get_args());
     }
     
     /**
