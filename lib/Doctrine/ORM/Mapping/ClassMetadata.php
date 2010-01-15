@@ -358,13 +358,23 @@ class ClassMetadata extends ClassMetadataInfo
     {
         // Restore ReflectionClass and properties
         $this->reflClass = new \ReflectionClass($this->name);
-        foreach ($this->fieldNames as $field) {
-            $this->reflFields[$field] = $this->reflClass->getProperty($field);
-            $this->reflFields[$field]->setAccessible(true);
+        foreach ($this->fieldMappings as $field => $mapping) {
+            if (isset($mapping['inherited'])) {
+                $reflField = new \ReflectionProperty($mapping['inherited'], $field);
+            } else {
+                $reflField = $this->reflClass->getProperty($field);
+            }
+            $reflField->setAccessible(true);
+            $this->reflFields[$field] = $reflField;
         }
         foreach ($this->associationMappings as $field => $mapping) {
-            $this->reflFields[$field] = $this->reflClass->getProperty($field);
-            $this->reflFields[$field]->setAccessible(true);
+            if (isset($this->inheritedAssociationFields[$field])) {
+                $reflField = new \ReflectionProperty($this->inheritedAssociationFields[$field], $field);
+            } else {
+                $reflField = $this->reflClass->getProperty($field);
+            }
+            $reflField->setAccessible(true);
+            $this->reflFields[$field] = $reflField;
         }
         
         //$this->prototype = unserialize(sprintf('O:%d:"%s":0:{}', strlen($this->name), $this->name));

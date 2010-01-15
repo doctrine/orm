@@ -87,15 +87,15 @@ class OneToManyBidirectionalAssociationTest extends \Doctrine\Tests\OrmFunctiona
     public function testLazyLoadsObjectsOnTheOwningSide()
     {
         $this->_createFixture();
-        $metadata = $this->_em->getClassMetadata('Doctrine\Tests\Models\ECommerce\ECommerceProduct');
-        $metadata->getAssociationMapping('features')->fetchMode = AssociationMapping::FETCH_LAZY;
 
         $query = $this->_em->createQuery('select p from Doctrine\Tests\Models\ECommerce\ECommerceProduct p');
         $result = $query->getResult();
         $product = $result[0];
         $features = $product->getFeatures();
         
+        $this->assertFalse($features->isInitialized());
         $this->assertTrue($features[0] instanceof ECommerceFeature);
+        $this->assertTrue($features->isInitialized());
         $this->assertSame($product, $features[0]->getProduct());
         $this->assertEquals('Model writing tutorial', $features[0]->getDescription());
         $this->assertTrue($features[1] instanceof ECommerceFeature);
@@ -106,15 +106,39 @@ class OneToManyBidirectionalAssociationTest extends \Doctrine\Tests\OrmFunctiona
     public function testLazyLoadsObjectsOnTheInverseSide()
     {
         $this->_createFixture();
-        $metadata = $this->_em->getClassMetadata('Doctrine\Tests\Models\ECommerce\ECommerceFeature');
-        $metadata->getAssociationMapping('product')->fetchMode = AssociationMapping::FETCH_LAZY;
 
         $query = $this->_em->createQuery('select f from Doctrine\Tests\Models\ECommerce\ECommerceFeature f');
         $features = $query->getResult();
         
         $product = $features[0]->getProduct();
+        $this->assertTrue($product instanceof \Doctrine\ORM\Proxy\Proxy);
+        $this->assertTrue($product instanceof ECommerceProduct);
+        $this->assertFalse($product->__isInitialized__);
+        $this->assertSame('Doctrine Cookbook', $product->getName());
+        $this->assertTrue($product->__isInitialized__);
+    }
+    
+    public function testLazyLoadsObjectsOnTheInverseSide2()
+    {
+        //$this->_em->getConnection()->getConfiguration()->setSqlLogger(new \Doctrine\DBAL\Logging\EchoSqlLogger);
+        $this->_createFixture();
+
+        $query = $this->_em->createQuery('select f,p from Doctrine\Tests\Models\ECommerce\ECommerceFeature f join f.product p');
+        $features = $query->getResult();
+        
+        $product = $features[0]->getProduct();
+        $this->assertFalse($product instanceof \Doctrine\ORM\Proxy\Proxy);
         $this->assertTrue($product instanceof ECommerceProduct);
         $this->assertSame('Doctrine Cookbook', $product->getName());
+        
+        $this->assertFalse($product->getFeatures()->isInitialized());
+        
+        // This would trigger lazy-load
+        //$this->assertEquals(2, $product->getFeatures()->count());
+        //$this->assertTrue($product->getFeatures()->contains($features[0]));
+        //$this->assertTrue($product->getFeatures()->contains($features[1]));
+        
+        //$this->_em->getConnection()->getConfiguration()->setSqlLogger(null);
     }
     
     public function testJoinFromOwningSide()
