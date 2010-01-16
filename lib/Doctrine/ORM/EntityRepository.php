@@ -36,8 +36,19 @@ namespace Doctrine\ORM;
  */
 class EntityRepository
 {
+    /**
+     * @var string
+     */
     protected $_entityName;
+
+    /**
+     * @var EntityManager
+     */
     protected $_em;
+
+    /**
+     * @var Doctrine\ORM\Mapping\ClassMetadata
+     */
     protected $_class;
     
     /**
