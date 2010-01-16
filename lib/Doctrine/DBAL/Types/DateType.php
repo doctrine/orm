@@ -30,6 +30,6 @@ class DateType extends Type
     public function convertToPHPValue($value, AbstractPlatform $platform)
     {
         return ($value !== null) 
-            ? \DateTime::createFromFormat($platform->getDateFormatString(), $value) : null;
+            ? \DateTime::createFromFormat('!'.$platform->getDateFormatString(), $value) : null;
     }
 }
