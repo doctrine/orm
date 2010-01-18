@@ -19,6 +19,7 @@ class AllTests
     {
         $suite = new \Doctrine\Tests\DoctrineTestSuite('Doctrine Common CLI Tests');
 
+        $suite->addTestSuite('Doctrine\Tests\Common\Cli\ConfigurationTest');
         $suite->addTestSuite('Doctrine\Tests\Common\Cli\OptionTest');
         $suite->addTestSuite('Doctrine\Tests\Common\Cli\OptionGroupTest');
         $suite->addTestSuite('Doctrine\Tests\Common\Cli\StyleTest');

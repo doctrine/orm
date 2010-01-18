@@ -81,6 +81,6 @@ class Configuration
      */
     public function hasAttribute($name)
     {
-        return isset($this->_attribute[$name]);
+        return isset($this->_attributes[$name]);
     }
 }
