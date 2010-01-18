@@ -233,7 +233,7 @@ class OneToOneMapping extends AssociationMapping
 
             $targetEntity = $em->getUnitOfWork()->getEntityPersister($this->targetEntityName)->load($joinColumnValues, $targetEntity, $this, $hints);
             
-            if ($targetEntity !== null && $inverseField) {
+            if ($targetEntity !== null && $inverseField &&  ! $targetClass->isCollectionValuedAssociation($inverseField)) {
                 $targetClass->reflFields[$inverseField]->setValue($targetEntity, $sourceEntity);
             }
         } else {

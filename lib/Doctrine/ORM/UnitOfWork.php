@@ -463,8 +463,8 @@ class UnitOfWork implements PropertyChangedListener
 
             if ($class->isCollectionValuedAssociation($name) && $actualData[$name] !== null
                     && ! ($actualData[$name] instanceof PersistentCollection)) {
-                // If $actualData[$name] is Collection then unwrap the array
-                if ( ! $actualData[$name] instanceof ArrayCollection) {
+                // If $actualData[$name] is not a Collection then use an ArrayCollection.
+                if ( ! $actualData[$name] instanceof Collection) {
                     $actualData[$name] = new ArrayCollection($actualData[$name]);
                 }
                 
