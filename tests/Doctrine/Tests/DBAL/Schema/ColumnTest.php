@@ -44,6 +44,7 @@ class ColumnTest extends \PHPUnit_Framework_TestCase
             'scale' => 2,
             'fixed' => true,
             'unsigned' => true,
+            'columnDefinition' => null,
             'foo' => 'bar',
         );
 

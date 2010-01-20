@@ -81,6 +81,11 @@ class Column extends AbstractAsset
     protected $_platformOptions = array();
 
     /**
+     * @var string
+     */
+    protected $_columnDefinition = null;
+
+    /**
      * Create a new Column
      * 
      * @param string $columnName
@@ -226,6 +231,17 @@ class Column extends AbstractAsset
         return $this;
     }
 
+    /**
+     *
+     * @param  string
+     * @return Column
+     */
+    public function setColumnDefinition($value)
+    {
+        $this->_columnDefinition = $value;
+        return $this;
+    }
+
     public function getType()
     {
         return $this->_type;
@@ -281,6 +297,11 @@ class Column extends AbstractAsset
         return $this->_platformOptions[$name];
     }
 
+    public function getColumnDefinition()
+    {
+        return $this->_columnDefinition;
+    }
+
     /**
      * @param Visitor $visitor
      */
@@ -304,6 +325,7 @@ class Column extends AbstractAsset
             'scale'         => $this->_scale,
             'fixed'         => $this->_fixed,
             'unsigned'      => $this->_unsigned,
+            'columnDefinition' => $this->_columnDefinition,
         ), $this->_platformOptions);
     }
 }

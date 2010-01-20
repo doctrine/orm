@@ -4,6 +4,9 @@ namespace Doctrine\Tests\DBAL\Platforms;
 
 abstract class AbstractPlatformTestCase extends \Doctrine\Tests\DbalTestCase
 {
+    /**
+     * @var Doctrine\DBAL\Platforms\AbstractPlatform
+     */
     protected $_platform;
 
     abstract public function createPlatform();
@@ -124,5 +127,11 @@ abstract class AbstractPlatformTestCase extends \Doctrine\Tests\DbalTestCase
         $sql = $this->_platform->getAlterTableSql($tableDiff);
 
         $this->assertEquals($expectedSql, $sql);
+    }
+
+    public function testGetCustomColumnDeclarationSql()
+    {
+        $field = array('columnDefinition' => 'MEDIUMINT(6) UNSIGNED');
+        $this->assertEquals('foo MEDIUMINT(6) UNSIGNED', $this->_platform->getColumnDeclarationSql('foo', $field));
     }
 }

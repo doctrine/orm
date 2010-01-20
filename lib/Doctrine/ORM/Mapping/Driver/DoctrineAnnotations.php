@@ -63,6 +63,7 @@ final class Column extends Annotation {
     public $default; //TODO: remove?
     public $name;
     public $options = array();
+    public $columnDefinition;
 }
 final class OneToOne extends Annotation {
     public $targetEntity;

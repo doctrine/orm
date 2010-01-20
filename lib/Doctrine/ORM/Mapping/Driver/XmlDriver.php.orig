@@ -159,10 +159,6 @@ class XmlDriver extends AbstractFileDriver
                     $metadata->setVersionMapping($mapping);
                 }
                 
-                if (isset($fieldMapping['columnDefinition'])) {
-                    $mapping['columnDefinition'] = (string)$fieldMapping['columnDefinition'];
-                }
-                
                 $metadata->mapField($mapping);
             }
         }

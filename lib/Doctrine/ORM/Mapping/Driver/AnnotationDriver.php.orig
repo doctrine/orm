@@ -200,10 +200,6 @@ class AnnotationDriver implements Driver
                     $mapping['columnName'] = $columnAnnot->name;
                 }
                 
-                if (isset($columnAnnot->columnDefinition)) {
-                    $mapping['columnDefinition'] = $columnAnnot->columnDefinition;
-                }
-                
                 if ($idAnnot = $this->_reader->getPropertyAnnotation($property, 'Doctrine\ORM\Mapping\Id')) {
                     $mapping['id'] = true;
                 }

@@ -204,9 +204,6 @@ class YamlDriver extends AbstractFileDriver
                 if (isset($fieldMapping['version']) && $fieldMapping['version']) {
                     $metadata->setVersionMapping($mapping);
                 }
-                if (isset($fieldMapping['columnDefinition'])) {
-                    $mapping['columnDefinition'] = $fieldMapping['columnDefinition'];
-                }
                 
                 $metadata->mapField($mapping);
             }

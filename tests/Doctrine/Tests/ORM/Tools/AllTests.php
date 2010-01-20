@@ -18,10 +18,11 @@ class AllTests
 
     public static function suite()
     {
-        $suite = new \Doctrine\Tests\DoctrineTestSuite('Doctrine Orm Hydration');
+        $suite = new \Doctrine\Tests\DoctrineTestSuite('Doctrine Orm Tools');
 
         $suite->addTestSuite('Doctrine\Tests\ORM\Tools\Export\ClassMetadataExporterTest');
         $suite->addTestSuite('Doctrine\Tests\ORM\Tools\ConvertDoctrine1SchemaTest');
+        $suite->addTestSuite('Doctrine\Tests\ORM\Tools\SchemaToolTest');
 
         return $suite;
     }

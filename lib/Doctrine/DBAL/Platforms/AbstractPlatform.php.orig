@@ -583,7 +583,7 @@ abstract class AbstractPlatform
             $columnData['precision'] = $column->getPrecision();
             $columnData['scale'] = $column->getScale();
             $columnData['default'] = $column->getDefault();
-            $columnData['columnDefinition'] = $column->getColumnDefinition();
+            // TODO: Fixed? Unsigned?
 
             if(in_array($column->getName(), $options['primary'])) {
                 $columnData['primary'] = true;
@@ -903,37 +903,30 @@ abstract class AbstractPlatform
      *          unique constraint
      *      check
      *          column check constraint
-     *      columnDefinition
-     *          a string that defines the complete column
      *
      * @return string  DBMS specific SQL code portion that should be used to declare the column.
      */
     public function getColumnDeclarationSql($name, array $field)
     {
-        if (isset($field['columnDefinition'])) {
-            $columnDef = $this->getCustomTypeDeclarationSql($field);
-        } else {
-            $default = $this->getDefaultValueDeclarationSql($field);
+        $default = $this->getDefaultValueDeclarationSql($field);
 
-            $charset = (isset($field['charset']) && $field['charset']) ?
-                    ' ' . $this->getColumnCharsetDeclarationSql($field['charset']) : '';
+        $charset = (isset($field['charset']) && $field['charset']) ?
+                ' ' . $this->getColumnCharsetDeclarationSql($field['charset']) : '';
 
-            $collation = (isset($field['collation']) && $field['collation']) ?
-                    ' ' . $this->getColumnCollationDeclarationSql($field['collation']) : '';
+        $collation = (isset($field['collation']) && $field['collation']) ?
+                ' ' . $this->getColumnCollationDeclarationSql($field['collation']) : '';
 
-            $notnull = (isset($field['notnull']) && $field['notnull']) ? ' NOT NULL' : '';
+        $notnull = (isset($field['notnull']) && $field['notnull']) ? ' NOT NULL' : '';
 
-            $unique = (isset($field['unique']) && $field['unique']) ?
-                    ' ' . $this->getUniqueFieldDeclarationSql() : '';
+        $unique = (isset($field['unique']) && $field['unique']) ?
+                ' ' . $this->getUniqueFieldDeclarationSql() : '';
 
-            $check = (isset($field['check']) && $field['check']) ?
-                    ' ' . $field['check'] : '';
+        $check = (isset($field['check']) && $field['check']) ?
+                ' ' . $field['check'] : '';
 
-            $typeDecl = $field['type']->getSqlDeclaration($field, $this);
-            $columnDef = $typeDecl . $charset . $default . $notnull . $unique . $check . $collation;
-        }
+        $typeDecl = $field['type']->getSqlDeclaration($field, $this);
 
-        return $name . ' ' . $columnDef;
+        return $name . ' ' . $typeDecl . $charset . $default . $notnull . $unique . $check . $collation;
     }
     
     /**
@@ -1086,19 +1079,6 @@ abstract class AbstractPlatform
         return $type . 'INDEX ' . $name . ' ('
              . $this->getIndexFieldDeclarationListSql($index->getColumns()) 
              . ')';
-    }
-
-    /**
-     * getCustomTypeDeclarationSql
-     * Obtail SQL code portion needed to create a custom column,
-     * e.g. when a field has the "columnDefinition" keyword.
-     * Only "AUTOINCREMENT" and "PRIMARY KEY" are added if appropriate.
-     *
-     * @return string
-     */
-    public function getCustomTypeDeclarationSql(array $columnDef)
-    {
-        return $columnDef['columnDefinition'];
     }
 
     /**
