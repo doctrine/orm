@@ -103,4 +103,16 @@ class MappingException extends \Doctrine\Common\DoctrineException
     {
         return new self("The mapping of field '$fieldName' is invalid.");
     }
+    
+    /**
+     * Exception for reflection exceptions - adds the entity name,
+     * because there might be long classnames that will be shortened
+     * within the stacktrace
+     * 
+     * @param string $entity The entity's name
+     * @param \ReflectionException $previousException
+     */
+    public static function reflectionFailure($entity, \ReflectionException $previousException) {
+        return new self('An error occurred in ' . $entity, $previousException);
+    }
 }
