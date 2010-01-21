@@ -144,14 +144,9 @@ class ClassMetadata extends ClassMetadataInfo
         parent::_validateAndCompleteFieldMapping($mapping);
 
         // Store ReflectionProperty of mapped field
-        try {
-            $refProp = $this->reflClass->getProperty($mapping['fieldName']);
-            $refProp->setAccessible(true);
-            $this->reflFields[$mapping['fieldName']] = $refProp;
-        }
-        catch(\ReflectionException $e) { 
-        	throw MappingException::reflectionFailure($this->name, $e);
-        }
+        $refProp = $this->reflClass->getProperty($mapping['fieldName']);
+        $refProp->setAccessible(true);
+        $this->reflFields[$mapping['fieldName']] = $refProp;
     }
 
     /**
@@ -242,14 +237,9 @@ class ClassMetadata extends ClassMetadataInfo
         // Store ReflectionProperty of mapped field
         $sourceFieldName = $assocMapping->sourceFieldName;
         
-        try {
-	        $refProp = $this->reflClass->getProperty($sourceFieldName);
-	        $refProp->setAccessible(true);
-	        $this->reflFields[$sourceFieldName] = $refProp;
-        }
-        catch(\ReflectionException $e) { 
-            throw MappingException::reflectionFailure($this->name, $e);
-        }
+	    $refProp = $this->reflClass->getProperty($sourceFieldName);
+	    $refProp->setAccessible(true);
+	    $this->reflFields[$sourceFieldName] = $refProp;
     }
     
     /**
@@ -352,11 +342,9 @@ class ClassMetadata extends ClassMetadataInfo
             'isVersioned',
             'lifecycleCallbacks',
             'name',
-            //'namespace',
             'parentClasses',
             'primaryTable',
             'rootEntityName',
-            //'sequenceGeneratorDefinition',
             'subClasses',
             'versionField'
         );
@@ -373,33 +361,25 @@ class ClassMetadata extends ClassMetadataInfo
         $this->reflClass = new \ReflectionClass($this->name);
         
         foreach ($this->fieldMappings as $field => $mapping) {
-            try {
-	            if (isset($mapping['inherited'])) {
-	                $reflField = new \ReflectionProperty($mapping['inherited'], $field);
-	            } else {
-	                $reflField = $this->reflClass->getProperty($field);
-	            }
+	        if (isset($mapping['inherited'])) {
+	            $reflField = new \ReflectionProperty($mapping['inherited'], $field);
+	        } else {
+	            $reflField = $this->reflClass->getProperty($field);
+	        }
 	            
-	            $reflField->setAccessible(true);
-                $this->reflFields[$field] = $reflField;
-            } catch(\ReflectionException $e) { 
-                throw MappingException::reflectionFailure($this->name, $e);
-            }
+            $reflField->setAccessible(true);
+            $this->reflFields[$field] = $reflField;
         }
         
         foreach ($this->associationMappings as $field => $mapping) {
-            try {
-                if (isset($this->inheritedAssociationFields[$field])) {
-                    $reflField = new \ReflectionProperty($this->inheritedAssociationFields[$field], $field);
-                } else {
-                    $reflField = $this->reflClass->getProperty($field);
-                }
+            if (isset($this->inheritedAssociationFields[$field])) {
+                $reflField = new \ReflectionProperty($this->inheritedAssociationFields[$field], $field);
+            } else {
+                $reflField = $this->reflClass->getProperty($field);
+            }
                 
-                $reflField->setAccessible(true);
-                $this->reflFields[$field] = $reflField;
-            } catch(\ReflectionException $e) { 
-                throw MappingException::reflectionFailure($this->name, $e);
-            } 
+            $reflField->setAccessible(true);
+            $this->reflFields[$field] = $reflField;
         }
         
         //$this->prototype = unserialize(sprintf('O:%d:"%s":0:{}', strlen($this->name), $this->name));

@@ -222,7 +222,11 @@ class ClassMetadataFactory
             }
 
             // Invoke driver
-            $this->_driver->loadMetadataForClass($className, $class);
+            try {
+                $this->_driver->loadMetadataForClass($className, $class);
+            } catch(\ReflectionException $e) { 
+                throw MappingException::reflectionFailure($className, $e);
+            }
 
             // Verify & complete identifier mapping
             if ( ! $class->identifier && ! $class->isMappedSuperclass) {
