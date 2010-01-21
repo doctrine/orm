@@ -26,7 +26,7 @@ namespace Doctrine\ORM\Mapping;
  *
  * @since 2.0
  */
-class MappingException extends \Doctrine\Common\DoctrineException
+class MappingException extends \Doctrine\ORM\ORMException
 {
     public static function identifierRequired($entityName)
     {
@@ -112,7 +112,8 @@ class MappingException extends \Doctrine\Common\DoctrineException
      * @param string $entity The entity's name
      * @param \ReflectionException $previousException
      */
-    public static function reflectionFailure($entity, \ReflectionException $previousException) {
-        return new self('An error occurred in ' . $entity, $previousException);
+    public static function reflectionFailure($entity, \ReflectionException $previousException)
+    {
+        return new self('An error occurred in ' . $entity, 0, $previousException);
     }
 }
