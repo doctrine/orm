@@ -232,7 +232,7 @@ class XmlDriver extends AbstractFileDriver
                 if (isset($oneToOneElement->cascade)) {
                     $mapping['cascade'] = $this->_getCascadeMappings($oneToOneElement->cascade);
                 }
-                
+
                 if (isset($oneToOneElement->{'orphan-removal'})) {
                     $mapping['orphanRemoval'] = (bool)$oneToOneElement->{'orphan-removal'};
                 }
@@ -434,23 +434,14 @@ class XmlDriver extends AbstractFileDriver
     private function _getCascadeMappings($cascadeElement)
     {
         $cascades = array();
-        
-        if (isset($cascadeElement->{'cascade-persist'})) {
-            $cascades[] = 'persist';
+        foreach ($cascadeElement->children() as $action) {
+            // According to the JPA specifications, XML uses "cascade-persist"
+            // instead of "persist". Here, both variations
+            // are supported because both YAML and Annotation use "persist"
+            // and we want to make sure that this driver doesn't need to know
+            // anything about the supported cascading actions
+            $cascades[] = str_replace('cascade-', '', $action->getName());
         }
-        
-        if (isset($cascadeElement->{'cascade-remove'})) {
-            $cascades[] = 'remove';
-        }
-        
-        if (isset($cascadeElement->{'cascade-merge'})) {
-            $cascades[] = 'merge';
-        }
-        
-        if (isset($cascadeElement->{'cascade-refresh'})) {
-            $cascades[] = 'refresh';
-        }
-        
         return $cascades;
     }
 }

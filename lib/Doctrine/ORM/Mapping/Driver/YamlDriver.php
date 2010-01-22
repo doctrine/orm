@@ -247,7 +247,7 @@ class YamlDriver extends AbstractFileDriver
                 }
 
                 if (isset($oneToOneElement['cascade'])) {
-                    $mapping['cascade'] = $this->_getCascadeMappings($oneToOneElement['cascade']);
+                    $mapping['cascade'] = $oneToOneElement['cascade'];
                 }
 
                 $metadata->mapOneToOne($mapping);
@@ -268,7 +268,7 @@ class YamlDriver extends AbstractFileDriver
                 }
                 
                 if (isset($oneToManyElement['cascade'])) {
-                    $mapping['cascade'] = $this->_getCascadeMappings($oneToManyElement['cascade']);
+                    $mapping['cascade'] = $oneToManyElement['cascade'];
                 }
                 
                 $metadata->mapOneToMany($mapping);
@@ -306,7 +306,7 @@ class YamlDriver extends AbstractFileDriver
                 $mapping['joinColumns'] = $joinColumns;
                 
                 if (isset($manyToOneElement['cascade'])) {
-                    $mapping['cascade'] = $this->_getCascadeMappings($manyToOneElement['cascade']);
+                    $mapping['cascade'] = $manyToOneElement['cascade'];
                 }
                 
                 $metadata->mapManyToOne($mapping);
@@ -359,7 +359,7 @@ class YamlDriver extends AbstractFileDriver
                 }
                 
                 if (isset($manyToManyElement['cascade'])) {
-                    $mapping['cascade'] = $this->_getCascadeMappings($manyToManyElement['cascade']);
+                    $mapping['cascade'] = $manyToManyElement['cascade'];
                 }
 
                 $metadata->mapManyToMany($mapping);
@@ -411,35 +411,6 @@ class YamlDriver extends AbstractFileDriver
         return $joinColumn;
     }
     
-    /**
-     * Gathers a list of cascade options found in the given cascade element.
-     * 
-     * @param $cascadeElement The cascade element.
-     * @return array The list of cascade options.
-     */
-    private function _getCascadeMappings($cascadeElement)
-    {
-        $cascades = array();
-        
-        if (isset($cascadeElement['cascadePersist'])) {
-            $cascades[] = 'persist';
-        }
-        
-        if (isset($cascadeElement['cascadeRemove'])) {
-            $cascades[] = 'remove';
-        }
-        
-        if (isset($cascadeElement['cascadeMerge'])) {
-            $cascades[] = 'merge';
-        }
-        
-        if (isset($cascadeElement['cascadeRefresh'])) {
-            $cascades[] = 'refresh';
-        }
-        
-        return $cascades;
-    }
-
     /**
      * Loads a mapping file with the given name and returns a map
      * from class/entity names to their corresponding elements.

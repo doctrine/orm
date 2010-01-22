@@ -167,11 +167,22 @@ abstract class AssociationMapping
         $this->fetchMode = isset($mapping['fetch']) ?
                 $mapping['fetch'] : self::FETCH_LAZY;
         $cascades = isset($mapping['cascade']) ? $mapping['cascade'] : array();
-        $this->isCascadeRemove = in_array('remove', $cascades);
+        
+        if (in_array('all', $cascades)) {
+            $cascades = array(
+               'remove',
+               'persist',
+               'refresh',
+               'merge',
+               'detach'
+            );
+        }
+        
+        $this->isCascadeRemove  = in_array('remove',  $cascades);
         $this->isCascadePersist = in_array('persist', $cascades);
         $this->isCascadeRefresh = in_array('refresh', $cascades);
-        $this->isCascadeMerge = in_array('merge', $cascades);
-        $this->isCascadeDetach = in_array('detach', $cascades);
+        $this->isCascadeMerge   = in_array('merge',   $cascades);
+        $this->isCascadeDetach  = in_array('detach',  $cascades);
     }
     
     /**

@@ -16,11 +16,12 @@ Doctrine\Tests\ORM\Mapping\User:
       joinColumn:
         name: address_id
         referencedColumnName: id
+      cascade: [ remove ]
   oneToMany:
     phonenumbers:
       targetEntity: Phonenumber
       mappedBy: user
-      cascade: cascadePersist
+      cascade: [ persist ]
   manyToMany:
     groups:
       targetEntity: Group
@@ -32,6 +33,8 @@ Doctrine\Tests\ORM\Mapping\User:
         inverseJoinColumns:
           group_id:
             referencedColumnName: id
+      cascade:
+        - all
   lifecycleCallbacks:
     doStuffOnPrePersist: prePersist
     doStuffOnPostPersist: postPersist

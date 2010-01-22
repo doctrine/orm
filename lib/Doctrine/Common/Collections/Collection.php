@@ -22,7 +22,7 @@
 namespace Doctrine\Common\Collections;
 
 /**
- * The missing (SPL) Collection/Array interface.
+ * The missing (SPL) Collection/Array/OrderedMap interface.
  * 
  * A Collection resembles the nature of a regular PHP array. That is,
  * it is essentially an ordered map that can syntactically also be used
@@ -31,7 +31,7 @@ namespace Doctrine\Common\Collections;
  * A Collection has an internal iterator just like a PHP array. In addition
  * a Collection can be iterated with external iterators, which is preferrable.
  * To use an external iterator simply use the foreach language construct to
- * iterator over the collection (which canns getIterator() internally) or
+ * iterate over the collection (which calls getIterator() internally) or
  * explicitly retrieve an iterator though getIterator() which can then be
  * used to iterate over the collection.
  * 
@@ -58,8 +58,7 @@ interface Collection extends \Countable, \IteratorAggregate, \ArrayAccess
     function add($element);
     
     /**
-     * Clears the collection.
-     *
+     * Clears the collection, removing all elements.
      */
     function clear();
     

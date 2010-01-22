@@ -67,6 +67,12 @@ class MappingDriverTest extends \Doctrine\Tests\OrmTestCase
         $this->assertTrue($class->associationMappings['address'] instanceof \Doctrine\ORM\Mapping\OneToOneMapping);
         $this->assertTrue(isset($class->associationMappings['address']));
         $this->assertTrue($class->associationMappings['address']->isOwningSide);
+        // Check cascading
+        $this->assertTrue($class->associationMappings['address']->isCascadeRemove);
+        $this->assertFalse($class->associationMappings['address']->isCascadePersist);
+        $this->assertFalse($class->associationMappings['address']->isCascadeRefresh);
+        $this->assertFalse($class->associationMappings['address']->isCascadeDetach);
+        $this->assertFalse($class->associationMappings['address']->isCascadeMerge);
         
         $this->assertTrue($class->associationMappings['phonenumbers'] instanceof \Doctrine\ORM\Mapping\OneToManyMapping);
         $this->assertTrue(isset($class->associationMappings['phonenumbers']));
@@ -80,6 +86,12 @@ class MappingDriverTest extends \Doctrine\Tests\OrmTestCase
         $this->assertEquals(count($class->lifecycleCallbacks), 2);
         $this->assertEquals($class->lifecycleCallbacks['prePersist'][0], 'doStuffOnPrePersist');
         $this->assertEquals($class->lifecycleCallbacks['postPersist'][0], 'doStuffOnPostPersist');
+        // Make sure that cascade-all works as expected
+        $this->assertTrue($class->associationMappings['groups']->isCascadeRemove);
+        $this->assertTrue($class->associationMappings['groups']->isCascadePersist);
+        $this->assertTrue($class->associationMappings['groups']->isCascadeRefresh);
+        $this->assertTrue($class->associationMappings['groups']->isCascadeDetach);
+        $this->assertTrue($class->associationMappings['groups']->isCascadeMerge);
     }
 }
 

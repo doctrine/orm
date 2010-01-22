@@ -20,6 +20,9 @@
         
         <one-to-one field="address" target-entity="Address">
             <join-column name="address_id" referenced-column-name="id"/>
+            <cascade>
+                <cascade-remove />
+            </cascade>
         </one-to-one>
         
         <one-to-many field="phonenumbers" target-entity="Phonenumber" mapped-by="user">
@@ -37,6 +40,9 @@
                     <join-column name="group_id" referenced-column-name="id"/>
                 </inverse-join-columns>
             </join-table>
+            <cascade>
+                <cascade-all/>
+            </cascade>
         </many-to-many>
         
     </entity>
