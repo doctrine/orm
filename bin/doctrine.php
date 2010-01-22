@@ -1,9 +1,8 @@
 <?php
 
-require_once __DIR__ . '/../lib/Doctrine/Common/ClassLoader.php';
+require_once 'Doctrine/Common/ClassLoader.php';
 
 $classLoader = new \Doctrine\Common\ClassLoader('Doctrine');
-$classLoader->setIncludePath(__DIR__ . '/../lib');
 $classLoader->register();
 
 $configuration = new \Doctrine\Common\Cli\Configuration();
