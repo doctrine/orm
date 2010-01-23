@@ -7,15 +7,7 @@ require_once __DIR__ . '/../TestInit.php';
 class DriverManagerTest extends \Doctrine\Tests\DbalTestCase
 {
     /**
-     * @expectedException \Doctrine\Common\DoctrineException
-     */
-    public function testCantInstantiateDriverManager()
-    {
-        $test = new \Doctrine\DBAL\DriverManager();
-    }
-
-    /**
-     * @expectedException \Doctrine\Common\DoctrineException
+     * @expectedException \Doctrine\DBAL\DBALException
      */
     public function testInvalidPdoInstance()
     {
@@ -35,7 +27,7 @@ class DriverManagerTest extends \Doctrine\Tests\DbalTestCase
     }
 
     /**
-     * @expectedException \Doctrine\Common\DoctrineException
+     * @expectedException \Doctrine\DBAL\DBALException
      */
     public function testCheckParams()
     {
@@ -43,7 +35,7 @@ class DriverManagerTest extends \Doctrine\Tests\DbalTestCase
     }
 
     /**
-     * @expectedException \Doctrine\Common\DoctrineException
+     * @expectedException \Doctrine\DBAL\DBALException
      */
     public function testInvalidDriver()
     {
