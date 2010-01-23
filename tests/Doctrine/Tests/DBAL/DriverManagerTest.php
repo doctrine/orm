@@ -53,4 +53,51 @@ class DriverManagerTest extends \Doctrine\Tests\DbalTestCase
         $conn = \Doctrine\DBAL\DriverManager::getConnection($options);
         $this->assertSame($mockPlatform, $conn->getDatabasePlatform());
     }
+
+    public function testCustomWrapper()
+    {
+        $wrapperMock = $this->getMock('\Doctrine\DBAL\Connection', array(), array(), '', false);
+        $wrapperClass = get_class($wrapperMock);
+
+        $options = array(
+            'pdo' => new \PDO('sqlite::memory:'),
+            'wrapperClass' => $wrapperClass
+        );
+
+        $conn = \Doctrine\DBAL\DriverManager::getConnection($options);
+        $this->assertType($wrapperClass, $conn);
+    }
+
+    public function testInvalidWrapperClass()
+    {
+        $this->setExpectedException('\Doctrine\DBAL\DBALException');
+
+        $options = array(
+            'pdo' => new \PDO('sqlite::memory:'),
+            'wrapperClass' => 'stdClass',
+        );
+
+        $conn = \Doctrine\DBAL\DriverManager::getConnection($options);
+    }
+
+    public function testInvalidDriverClass()
+    {
+        $this->setExpectedException('\Doctrine\DBAL\DBALException');
+
+        $options = array(
+            'driverClass' => 'stdClass'
+        );
+
+        $conn = \Doctrine\DBAL\DriverManager::getConnection($options);
+    }
+
+    public function testValidDriverClass()
+    {
+        $options = array(
+            'driverClass' => 'Doctrine\DBAL\Driver\PDOMySql\Driver',
+        );
+
+        $conn = \Doctrine\DBAL\DriverManager::getConnection($options);
+        $this->assertType('Doctrine\DBAL\Driver\PDOMySql\Driver', $conn->getDriver());
+    }
 }

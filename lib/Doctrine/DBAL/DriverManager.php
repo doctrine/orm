@@ -122,8 +122,12 @@ final class DriverManager
         $driver = new $className();
         
         $wrapperClass = 'Doctrine\DBAL\Connection';
-        if (isset($params['wrapperClass']) && is_subclass_of($params['wrapperClass'], $wrapperClass)) {
-            $wrapperClass = $params['wrapperClass'];
+        if (isset($params['wrapperClass'])) {
+            if (is_subclass_of($params['wrapperClass'], $wrapperClass)) {
+               $wrapperClass = $params['wrapperClass'];
+            } else {
+                throw DBALException::invalidWrapperClass($params['wrapperClass']);
+            }
         }
         
         return new $wrapperClass($params, $driver, $config, $eventManager);
@@ -148,6 +152,10 @@ final class DriverManager
         // driver
         if ( isset($params['driver']) && ! isset(self::$_driverMap[$params['driver']])) {
             throw DBALException::unknownDriver($params['driver'], array_keys(self::$_driverMap));
+        }
+
+        if (isset($params['driverClass']) && ! in_array('Doctrine\DBAL\Driver', class_implements($params['driverClass'], true))) {
+            throw DBALException::invalidDriverClass($params['driverClass']);
         }
     }
 }

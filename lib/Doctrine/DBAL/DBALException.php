@@ -35,4 +35,16 @@ class DBALException extends \Exception
         return new self("The given 'driver' ".$unknownDriverName." is unknown, ".
             "Doctrine currently supports only the following drivers: ".implode(", ", $knownDrivers));
     }
+
+    public static function invalidWrapperClass($wrapperClass)
+    {
+        return new self("The given 'wrapperClass' ".$wrapperClass." has to be a ".
+            "subtype of \Doctrine\DBAL\Connection.");
+    }
+
+    public static function invalidDriverClass($driverClass)
+    {
+        return new self("The given 'driverClass' ".$driverClass." has to implement the ".
+            "\Doctrine\DBAL\Driver interface.");
+    }
 }
