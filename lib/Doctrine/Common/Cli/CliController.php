@@ -60,6 +60,7 @@ class CliController extends AbstractNamespace
     /**
      * The CLI processor of tasks
      *
+     * @param Configuration $config
      * @param AbstractPrinter $printer CLI Output printer
      */
     public function __construct(Configuration $config, AbstractPrinter $printer = null)
