@@ -192,10 +192,6 @@ class AnnotationDriver implements Driver
                     $mapping['options'] = $columnAnnot->options;
                 }
                 
-                if (isset($columnAnnot->default)) {
-                    $mapping['default'] = $columnAnnot->default;
-                }
-                
                 if (isset($columnAnnot->name)) {
                     $mapping['columnName'] = $columnAnnot->name;
                 }

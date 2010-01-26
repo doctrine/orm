@@ -60,7 +60,6 @@ final class Column extends Annotation {
     public $scale = 0; // The scale for a decimal (exact numeric) column (Applies only for decimal column)
     public $unique = false;
     public $nullable = false;
-    public $default; //TODO: remove?
     public $name;
     public $options = array();
     public $columnDefinition;

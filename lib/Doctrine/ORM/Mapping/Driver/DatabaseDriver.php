@@ -102,7 +102,6 @@ class DatabaseDriver implements Driver
                 $fieldMapping['unsigned'] = $column->getUnsigned();
             }
             $fieldMapping['notnull'] = $column->getNotNull();
-            $fieldMapping['default'] = $column->getDefault();
 
             if (isset($fieldMapping['id'])) {
                 $ids[] = $fieldMapping;
