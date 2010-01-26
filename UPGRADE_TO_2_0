@@ -2,6 +2,16 @@
 > This document does not describe how to upgrade from Doctrine 1.x to Doctrine 2 as this is a more
 > complicated process.
 
+# Upgrade from 2.0-ALPHA4 to 2.0 ...
+
+## Default Property for Field Mappings removed
+
+The "default" option for database column defaults has been removed. If desired database column defaults can
+be implemented by using the @columnDefinition annotation (or the approriate XML and YAML equivalents).
+
+Additionally keep in mind that Doctrine's focus in on objects and you can specifiy default values for an Entitiy's
+mapped fields inside PHP easily. Upon persist() invocation these values are saved as if they were default values.
+
 # Upgrade from 2.0-ALPHA3 to 2.0-ALPHA4
 
 ## CLI Controller changes
