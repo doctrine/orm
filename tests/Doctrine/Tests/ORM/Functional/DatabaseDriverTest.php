@@ -35,7 +35,6 @@ class DatabaseDriverTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertEquals('id',               $metadata->fieldMappings['id']['fieldName']);
         $this->assertEquals('id',               strtolower($metadata->fieldMappings['id']['columnName']));
         $this->assertEquals('integer',          (string)$metadata->fieldMappings['id']['type']);
-        $this->assertEquals('',                 $metadata->fieldMappings['id']['default']);
         $this->assertTrue($metadata->fieldMappings['id']['notnull']);
 
         $this->assertArrayHasKey('bar',         $metadata->fieldMappings);
