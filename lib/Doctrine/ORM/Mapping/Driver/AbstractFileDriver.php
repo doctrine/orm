@@ -127,7 +127,7 @@ abstract class AbstractFileDriver implements Driver
      */
     public function getAllClassNames()
     {
-        $clasNames = array();
+        $classNames = array();
         foreach ((array)$this->_paths as $path) {
             if (is_dir($path)) {
                 $files = glob($path . '/*');
