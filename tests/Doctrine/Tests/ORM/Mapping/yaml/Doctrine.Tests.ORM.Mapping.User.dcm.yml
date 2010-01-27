@@ -10,6 +10,8 @@ Doctrine\Tests\ORM\Mapping\User:
     name:
       type: string
       length: 50
+      nullable: true
+      unique: true
   oneToOne:
     address:
       targetEntity: Address
@@ -30,6 +32,8 @@ Doctrine\Tests\ORM\Mapping\User:
         joinColumns:
           user_id:
             referencedColumnName: id
+            nullable: false
+            unique: false
         inverseJoinColumns:
           group_id:
             referencedColumnName: id

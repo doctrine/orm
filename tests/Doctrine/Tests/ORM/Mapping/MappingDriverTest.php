@@ -50,7 +50,7 @@ class MappingDriverTest extends \Doctrine\Tests\OrmTestCase
         $this->assertEquals(1, count($classNames));
     }
     
-    private function _testUserClassMapping($class)
+    private function _testUserClassMapping(ClassMetadata $class)
     {        
         $this->assertEquals('cms_users', $class->getTableName());
         $this->assertEquals(ClassMetadata::INHERITANCE_TYPE_NONE, $class->getInheritanceType());
@@ -58,6 +58,8 @@ class MappingDriverTest extends \Doctrine\Tests\OrmTestCase
         $this->assertTrue(isset($class->fieldMappings['id']));
         $this->assertTrue(isset($class->fieldMappings['name']));
         $this->assertEquals('string', $class->fieldMappings['name']['type']);
+        $this->assertTrue($class->fieldMappings['name']['nullable']);
+        $this->assertTrue($class->fieldMappings['name']['unique']);
         $this->assertEquals(array('id'), $class->identifier);
         $this->assertEquals(ClassMetadata::GENERATOR_TYPE_AUTO, $class->getIdGeneratorType());
         
@@ -92,6 +94,10 @@ class MappingDriverTest extends \Doctrine\Tests\OrmTestCase
         $this->assertTrue($class->associationMappings['groups']->isCascadeRefresh);
         $this->assertTrue($class->associationMappings['groups']->isCascadeDetach);
         $this->assertTrue($class->associationMappings['groups']->isCascadeMerge);
+
+        // Non-Nullability of Join Column
+        $this->assertFalse($class->associationMappings['groups']->joinTable['joinColumns'][0]['nullable']);
+        $this->assertFalse($class->associationMappings['groups']->joinTable['joinColumns'][0]['unique']);
     }
 }
 

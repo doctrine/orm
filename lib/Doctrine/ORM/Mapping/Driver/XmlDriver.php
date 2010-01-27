@@ -148,11 +148,15 @@ class XmlDriver extends AbstractFileDriver
                 }
                 
                 if (isset($fieldMapping['unique'])) {
-                  $mapping['unique'] = (bool)$fieldMapping['unique'];
+                    $mapping['unique'] = ((string)$fieldMapping['unique'] == "false") ? false : true;
                 }
                 
                 if (isset($fieldMapping['options'])) {
                     $mapping['options'] = (array)$fieldMapping['options'];
+                }
+
+                if (isset($fieldMapping['nullable'])) {
+                    $mapping['nullable'] = ((string)$fieldMapping['nullable'] == "false") ? false : true;
                 }
                 
                 if (isset($fieldMapping['version']) && $fieldMapping['version']) {
@@ -407,11 +411,11 @@ class XmlDriver extends AbstractFileDriver
         );
         
         if (isset($joinColumnElement['unique'])) {
-            $joinColumn['unique'] = (bool)$joinColumnElement['unique'];
+            $joinColumn['unique'] = ((string)$joinColumnElement['unique'] == "false") ? false : true;
         }
         
         if (isset($joinColumnElement['nullable'])) {
-            $joinColumn['nullable'] = (bool)$joinColumnElement['nullable'];
+            $joinColumn['nullable'] = ((string)$joinColumnElement['nullable'] == "false") ? false : true;
         }
         
         if (isset($joinColumnElement['onDelete'])) {
