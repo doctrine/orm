@@ -346,25 +346,35 @@ class AnnotationDriver implements Driver
     public function getAllClassNames()
     {
         if ($this->_classDirectory) {
-            $iter = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($this->_classDirectory),
-                    \RecursiveIteratorIterator::LEAVES_ONLY);
-        
-            $declared = get_declared_classes();          
-            foreach ($iter as $item) {
-                $info = pathinfo($item->getPathName());
-                if ( ! isset($info['extension']) || $info['extension'] != 'php') {
-                    continue;
-                }
-                require_once $item->getPathName();
-            }
-            $declared = array_diff(get_declared_classes(), $declared);
-
             $classes = array();
-            foreach ($declared as $className) {                 
-                if ( ! $this->isTransient($className)) {
-                    $classes[] = $className;
+            
+            foreach ((array) $this->_classDirectory as $dir) {
+                $iter = new \RecursiveIteratorIterator(
+                    new \RecursiveDirectoryIterator($this->_classDirectory),
+                    \RecursiveIteratorIterator::LEAVES_ONLY
+                );
+        
+                $declared = get_declared_classes();
+                
+                foreach ($iter as $item) {
+                    $info = pathinfo($item->getPathName());
+                    
+                    if ( ! isset($info['extension']) || $info['extension'] != 'php') {
+                        continue;
+                    }
+                    
+                    require_once $item->getPathName();
                 }
-            }
+                
+                $declared = array_diff(get_declared_classes(), $declared);
+
+                foreach ($declared as $className) {                 
+                    if ( ! $this->isTransient($className)) {
+                        $classes[] = $className;
+                    }
+                }
+            }    
+                
             return $classes;
         } else {
             return array();
