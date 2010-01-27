@@ -123,6 +123,7 @@
     <xs:attribute name="unique" type="xs:boolean" default="false" />
     <xs:attribute name="nullable" type="xs:boolean" default="false" />
     <xs:attribute name="version" type="xs:boolean" />
+    <xs:attribute name="columnDefinition" type="xs:string" />
   </xs:complexType>
   
   <xs:complexType name="discriminator-column">
