@@ -54,7 +54,7 @@ abstract class AbstractFileDriver implements Driver
      *
      * @var string
      */
-    protected $_fileExtension = '.php';
+    protected $_fileExtension;
     
     /** 
      * Initializes a new FileDriver that looks in the given path(s) for mapping 
