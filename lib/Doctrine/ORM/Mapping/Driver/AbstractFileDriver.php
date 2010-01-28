@@ -34,58 +34,19 @@ use Doctrine\ORM\Mapping\MappingException;
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @link        www.doctrine-project.com
  * @since       2.0
- * @version     $Revision: 1393 $
+ * @version     $Revision$
+ * @author		Benjamin Eberlei <kontakt@beberlei.de>
+ * @author		Guilherme Blanco <guilhermeblanco@hotmail.com>
  * @author      Jonathan H. Wage <jonwage@gmail.com>
  * @author      Roman Borschel <roman@code-factory.org>
  */
-abstract class AbstractFileDriver implements Driver
+abstract class AbstractFileDriver extends AbstractDriver implements Driver
 {
     /**
-     * The paths where to look for mapping files.
-     *
-     * @var array
+     * @var string Middle part file extension.
      */
-    protected $_paths;
-
-    /**
-     * The file extension of mapping documents.
-     *
-     * @var string
-     */
-    protected $_fileExtension;
-
-    /**
-     * Initializes a new FileDriver that looks in the given path(s) for mapping
-     * documents and operates in the specified operating mode.
-     * 
-     * @param string|array $paths One or multiple paths where mapping documents can be found.
-     */
-    public function __construct($paths)
-    {
-        $this->_paths = (array) $paths;
-    }
-
-    /**
-     * Get the file extension used to look for mapping files under
-     *
-     * @return void
-     */
-    public function getFileExtension()
-    {
-        return $this->_fileExtension;
-    }
-
-    /**
-     * Set the file extension used to look for mapping files under
-     *
-     * @param string $fileExtension The file extension to set
-     * @return void
-     */
-    public function setFileExtension($fileExtension)
-    {
-        $this->_fileExtension = $fileExtension;
-    }
-
+    protected $_middleFileExtension = 'dcm';
+    
     /**
      * Get the element of schema meta data for the class from the mapping file.
      * This will lazily load the mapping file if it is not loaded yet
@@ -95,6 +56,7 @@ abstract class AbstractFileDriver implements Driver
     public function getElement($className)
     {
         $result = $this->_loadMappingFile($this->_findMappingFile($className));
+        
         return $result[$className];
     }
 
@@ -108,16 +70,13 @@ abstract class AbstractFileDriver implements Driver
      */
     public function isTransient($className)
     {
-        $isTransient = true;
-        // check whether file exists
-        foreach ((array)$this->_paths as $path) {
-            if (file_exists($path . DIRECTORY_SEPARATOR . str_replace('\\', '.', $className) . $this->_fileExtension)) {
-                $isTransient = false;
-                break;
-            }
+        try {
+            $fileName = $this->_findMappingFile($className);
+            
+            return false;
+        } catch (\Exception $e) {
+            return true;
         }
-
-        return $isTransient;
     }
     
     /**
@@ -127,19 +86,33 @@ abstract class AbstractFileDriver implements Driver
      */
     public function getAllClassNames()
     {
-        $classNames = array();
-        foreach ((array)$this->_paths as $path) {
-            if (is_dir($path)) {
-                $files = glob($path . '/*');
-                foreach ($files as $file) {
-                    $classNames[] = str_replace(array($this->_fileExtension, '.'), array('', '\\'), basename($file));
+        $classes = array();
+    
+        if ($this->_paths) {
+            foreach ((array) $this->_paths as $path) {
+                if ( ! is_dir($path)) {
+                    throw MappingException::driverRequiresConfiguredDirectoryPath();
                 }
-            } else if (is_file($path)) {
-                $classNames[] = str_replace(array($this->_fileExtension, '.'), array('', '\\'), basename($file));
+            
+                $iterator = new \RecursiveIteratorIterator(
+                    new \RecursiveDirectoryIterator($path),
+                    \RecursiveIteratorIterator::LEAVES_ONLY
+                );
+        
+                foreach ($iterator as $file) {
+                    $info = pathinfo($file->getPathName());
+                    
+                    if ( ! isset($info['extension']) || $info['extension'] != $this->_fileExtension) {
+                        continue;
+                    }
+                    
+                    // NOTE: All files found here means classes are not transient!
+                    $classes[] = str_replace('.', '\\', $file->getBasename('.' . $this->_getFileSuffix()));
+                }
             }
         }
-
-        return $classNames;
+        
+        return $classes;
     }
 
     /**
@@ -152,19 +125,27 @@ abstract class AbstractFileDriver implements Driver
      */
     protected function _findMappingFile($className)
     {
-        $fileName = null;
-        foreach ((array)$this->_paths as $path) {
-            $fileName = $path . DIRECTORY_SEPARATOR . str_replace('\\', '.', $className) . $this->_fileExtension;
-            if (file_exists($fileName)) {
-                break;
+        $fileName = str_replace('\\', '.', $className) . '.' . $this->_getFileSuffix();
+        
+        // Check whether file exists
+        foreach ((array) $this->_paths as $path) {
+            if (file_exists($path . DIRECTORY_SEPARATOR . $fileName)) {
+                return $path . DIRECTORY_SEPARATOR . $fileName;
             }
         }
 
-        if ($fileName === null) {
-            throw MappingException::mappingFileNotFound($className);
-        }
-
-        return $fileName;
+        throw MappingException::mappingFileNotFound($className);
+    }
+    
+    /**
+     * Retrieves the mapping file name suffix.
+     *
+     * @return string File name suffix.
+     */
+    protected function _getFileSuffix()
+    {
+        return ($this->_middleFileExtension != '' ? $this->_middleFileExtension . '.' : '')
+             . $this->_fileExtension;
     }
 
     /**

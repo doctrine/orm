@@ -155,12 +155,7 @@ class DatabaseDriver implements Driver
     }
 
     /**
-     * Whether the class with the specified name should have its metadata loaded.
-     * This is only the case if it is either mapped as an Entity or a
-     * MappedSuperclass.
-     *
-     * @param string $className
-     * @return boolean
+     * {@inheritdoc}
      */
     public function isTransient($className)
     {
@@ -172,11 +167,12 @@ class DatabaseDriver implements Driver
      */
     public function getAllClassNames()
     {
-        $tables = array();
+        $classes = array();
+        
         foreach ($this->_sm->listTables() as $table) {
-            $tables[] = $table->getName();
+            $classes[] = $table->getName(); // TODO: Why is this not correct? Inflector::classify($table->getName());
         }
 
-        return $tables;
+        return $classes;
     }
 }

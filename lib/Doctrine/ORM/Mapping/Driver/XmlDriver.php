@@ -27,23 +27,24 @@ use Doctrine\ORM\Mapping\ClassMetadataInfo,
 /**
  * XmlDriver is a metadata driver that enables mapping through XML files.
  *
- * @license http://www.opensource.org/licenses/lgpl-license.php LGPL
- * @link    www.doctrine-project.org
- * @since   2.0
- * @version $Revision$
- * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
- * @author  Jonathan Wage <jonwage@gmail.com>
- * @author  Roman Borschel <roman@code-factory.org>
+ * @license 	http://www.opensource.org/licenses/lgpl-license.php LGPL
+ * @link    	www.doctrine-project.org
+ * @since   	2.0
+ * @version     $Revision$
+ * @author		Benjamin Eberlei <kontakt@beberlei.de>
+ * @author		Guilherme Blanco <guilhermeblanco@hotmail.com>
+ * @author      Jonathan H. Wage <jonwage@gmail.com>
+ * @author      Roman Borschel <roman@code-factory.org>
  */
 class XmlDriver extends AbstractFileDriver
 {
-    protected $_fileExtension = '.dcm.xml';
+    /**
+     * {@inheritdoc}
+     */
+    protected $_fileExtension = 'xml';
 
     /**
-     * Loads the metadata for the specified class into the provided container.
-     * 
-     * @param string $className
-     * @param ClassMetadata $metadata
+     * {@inheritdoc}
      */
     public function loadMetadataForClass($className, ClassMetadataInfo $metadata)
     {
@@ -370,11 +371,7 @@ class XmlDriver extends AbstractFileDriver
     }
     
     /**
-     * Loads a mapping file with the given name and returns a map
-     * from class/entity names to their corresponding SimpleXMLElement nodes.
-     * 
-     * @param string $file The mapping file to load.
-     * @return array
+     * {@inheritdoc}
      */
     protected function _loadMappingFile($file)
     {

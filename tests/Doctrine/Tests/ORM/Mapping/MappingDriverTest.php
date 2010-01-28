@@ -13,7 +13,8 @@ class MappingDriverTest extends \Doctrine\Tests\OrmTestCase
     public function testXmlMapping()
     {
         $className = 'Doctrine\Tests\ORM\Mapping\User';
-        $xmlDriver = new XmlDriver(__DIR__ . DIRECTORY_SEPARATOR . 'xml');
+        $xmlDriver = new XmlDriver();
+        $xmlDriver->addPaths(array(__DIR__ . DIRECTORY_SEPARATOR . 'xml'));
         
         $class = new ClassMetadata($className);
         
@@ -27,7 +28,8 @@ class MappingDriverTest extends \Doctrine\Tests\OrmTestCase
     public function testYamlMapping()
     {
         $className = 'Doctrine\Tests\ORM\Mapping\User';
-        $yamlDriver = new YamlDriver(__DIR__ . DIRECTORY_SEPARATOR . 'yaml');
+        $yamlDriver = new YamlDriver();
+        $yamlDriver->addPaths(array(__DIR__ . DIRECTORY_SEPARATOR . 'yaml'));
         
         $class = new ClassMetadata($className);
         
@@ -41,7 +43,9 @@ class MappingDriverTest extends \Doctrine\Tests\OrmTestCase
     public function testXmlGetAllClassNames()
     {
         $className = 'Doctrine\Tests\ORM\Mapping\User';
-        $xmlDriver = new XmlDriver(__DIR__ . DIRECTORY_SEPARATOR . 'xml');
+        $xmlDriver = new XmlDriver();
+        $xmlDriver->addPaths(array(__DIR__ . DIRECTORY_SEPARATOR . 'xml'));
+        
         $class = new ClassMetadata($className);
         
         $classNames = $xmlDriver->getAllClassNames();

@@ -35,18 +35,25 @@ if ( ! class_exists('sfYaml', false)) {
 /**
  * The YamlDriver reads the mapping metadata from yaml schema files.
  *
- * @license http://www.opensource.org/licenses/lgpl-license.php LGPL
- * @link    www.doctrine-project.org
- * @since   2.0
- * @version $Revision$
- * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
- * @author  Jonathan Wage <jonwage@gmail.com>
- * @author  Roman Borschel <roman@code-factory.org>
+ * @license 	http://www.opensource.org/licenses/lgpl-license.php LGPL
+ * @link    	www.doctrine-project.org
+ * @since   	2.0
+ * @version     $Revision$
+ * @author		Benjamin Eberlei <kontakt@beberlei.de>
+ * @author		Guilherme Blanco <guilhermeblanco@hotmail.com>
+ * @author      Jonathan H. Wage <jonwage@gmail.com>
+ * @author      Roman Borschel <roman@code-factory.org>
  */
 class YamlDriver extends AbstractFileDriver
 {
-    protected $_fileExtension = '.dcm.yml';
+    /**
+     * {@inheritdoc}
+     */
+    protected $_fileExtension = 'yml';
 
+    /**
+     * {@inheritdoc}
+     */
     public function loadMetadataForClass($className, ClassMetadataInfo $metadata)
     {
         $element = $this->getElement($className);
@@ -412,11 +419,7 @@ class YamlDriver extends AbstractFileDriver
     }
     
     /**
-     * Loads a mapping file with the given name and returns a map
-     * from class/entity names to their corresponding elements.
-     * 
-     * @param string $file The mapping file to load.
-     * @return array
+     * {@inheritdoc}
      */
     protected function _loadMappingFile($file)
     {

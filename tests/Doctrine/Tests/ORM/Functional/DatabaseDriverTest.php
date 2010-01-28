@@ -90,6 +90,7 @@ class DatabaseDriverTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $metadatas = $cm->getMetadatasForMappingSources();
 
         $output = false;
+        
         foreach ($metadatas AS $metadata) {
             if ($metadata->name == $className) {
                 return $metadata;

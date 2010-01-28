@@ -33,33 +33,33 @@ use Doctrine\Common\DoctrineException,
  * The PhpDriver includes php files which just populate ClassMetadataInfo
  * instances with plain php code
  *
- * @license http://www.opensource.org/licenses/lgpl-license.php LGPL
- * @link    www.doctrine-project.org
- * @since   2.0
- * @version $Revision$
- * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
- * @author  Jonathan Wage <jonwage@gmail.com>
- * @author  Roman Borschel <roman@code-factory.org>
+ * @license 	http://www.opensource.org/licenses/lgpl-license.php LGPL
+ * @link    	www.doctrine-project.org
+ * @since   	2.0
+ * @version     $Revision$
+ * @author		Benjamin Eberlei <kontakt@beberlei.de>
+ * @author		Guilherme Blanco <guilhermeblanco@hotmail.com>
+ * @author      Jonathan H. Wage <jonwage@gmail.com>
+ * @author      Roman Borschel <roman@code-factory.org>
  */
-class PhpDriver implements Driver
+class PhpDriver extends AbstractDriver implements Driver
 {
-    /** The directory path to look in for php files */
-    private $_directory;
-
     /** The array of class names found and the path to the file */
     private $_classPaths = array();
-
-    public function __construct($directory)
-    {
-        $this->_directory = $directory;
-    }
-
+    
+    /**
+     * {@inheritdoc}
+     */
     public function loadMetadataForClass($className, ClassMetadataInfo $metadata)
     {
         $path = $this->_classPaths[$className];
+
         include $path;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function isTransient($className)
     {
         return true;
@@ -70,23 +70,33 @@ class PhpDriver implements Driver
      */
     public function getAllClassNames()
     {
-        if ( ! is_dir($this->_directory)) {
-            throw MappingException::phpDriverRequiresConfiguredDirectoryPath();
-        }
-        $iter = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($this->_directory),
-                \RecursiveIteratorIterator::LEAVES_ONLY);
-
         $classes = array();
-        foreach ($iter as $item) {
-            $info = pathinfo($item->getPathName());
-            if ( ! isset($info['extension']) || $info['extension'] != 'php') {
-                continue;
+    
+        if ($this->_paths) {
+            foreach ((array) $this->_paths as $path) {
+                if ( ! is_dir($path)) {
+                    throw MappingException::phpDriverRequiresConfiguredDirectoryPath();
+                }
+            
+                $iterator = new \RecursiveIteratorIterator(
+                    new \RecursiveDirectoryIterator($path),
+                    \RecursiveIteratorIterator::LEAVES_ONLY
+                );
+        
+                foreach ($iterator as $file) {
+                    $info = pathinfo($file->getPathName());
+                    
+                    if ( ! isset($info['extension']) || $info['extension'] != $this->_fileExtension) {
+                        continue;
+                    }
+                    
+                    $className = $info['filename'];
+                    $classes[] = $className;
+                    $this->_classPaths[$className] = $file->getPathName();
+                }
             }
-            $className = $info['filename'];
-            $classes[] = $className;
-            $this->_classPaths[$className] = $item->getPathName();
         }
-
+        
         return $classes;
     }
 }

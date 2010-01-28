@@ -108,19 +108,27 @@ class ClassMetadataExporter
         if ( ! isset($this->_mappingDrivers[$type])) {
             return false;
         }
+        
         $class = $this->_mappingDrivers[$type];
-        if (is_subclass_of($class, 'Doctrine\ORM\Mapping\Driver\AbstractFileDriver')) {
+        
+        if (is_subclass_of($class, 'Doctrine\ORM\Mapping\Driver\AbstractDriver')) {
             if (is_null($source)) {
                 throw DoctrineException::fileMappingDriversRequireDirectoryPath();
             }
-            $driver = new $class($source);
-        } else if ($class == 'Doctrine\ORM\Mapping\Driver\AnnotationDriver') {
-            $reader = new \Doctrine\Common\Annotations\AnnotationReader(new \Doctrine\Common\Cache\ArrayCache);
-            $reader->setDefaultAnnotationNamespace('Doctrine\ORM\Mapping\\');
-            $driver = new \Doctrine\ORM\Mapping\Driver\AnnotationDriver($reader, $source);
+            
+            if ($class == 'Doctrine\ORM\Mapping\Driver\AnnotationDriver') {
+                $reader = new \Doctrine\Common\Annotations\AnnotationReader(new \Doctrine\Common\Cache\ArrayCache);
+                $reader->setDefaultAnnotationNamespace('Doctrine\ORM\Mapping\\');
+                $driver = new \Doctrine\ORM\Mapping\Driver\AnnotationDriver($reader);
+            } else {
+                $driver = new $class();
+            }
+            
+            $driver->addPaths((array) $source);
         } else {
             $driver = new $class($source);
         }
+
         return $driver;
     }
 
@@ -149,13 +157,16 @@ class ClassMetadataExporter
             list($source, $driver) = $d;
 
             $allClasses = $driver->getAllClassNames();
+            
             foreach ($allClasses as $className) {
                 if (class_exists($className, false)) {
                     $metadata = new ClassMetadata($className);
                 } else {
                     $metadata = new ClassMetadataInfo($className);    
                 }
+                
                 $driver->loadMetadataForClass($className, $metadata);
+                
                 if ( ! $metadata->isMappedSuperclass) {
                     $classes[$metadata->name] = $metadata;
                 }
@@ -179,6 +190,7 @@ class ClassMetadataExporter
         }
 
         $class = $this->_exporterDrivers[$type];
+        
         return new $class($source);
     }
 }

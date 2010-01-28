@@ -32,35 +32,33 @@ require __DIR__ . '/DoctrineAnnotations.php';
 /**
  * The AnnotationDriver reads the mapping metadata from docblock annotations.
  *
- * @license http://www.opensource.org/licenses/lgpl-license.php LGPL
- * @link    www.doctrine-project.org
- * @since   2.0
- * @version $Revision$
- * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
- * @author  Jonathan Wage <jonwage@gmail.com>
- * @author  Roman Borschel <roman@code-factory.org>
+ * @license 	http://www.opensource.org/licenses/lgpl-license.php LGPL
+ * @link    	www.doctrine-project.org
+ * @since   	2.0
+ * @version     $Revision$
+ * @author		Benjamin Eberlei <kontakt@beberlei.de>
+ * @author		Guilherme Blanco <guilhermeblanco@hotmail.com>
+ * @author      Jonathan H. Wage <jonwage@gmail.com>
+ * @author      Roman Borschel <roman@code-factory.org>
  */
-class AnnotationDriver implements Driver
+class AnnotationDriver extends AbstractDriver implements Driver
 {
-    /** The AnnotationReader. */
+    /** 
+     * The AnnotationReader.
+     *
+     * @var AnnotationReader
+     */
     private $_reader;
-    private $_classDirectory;
-
+    
     /**
      * Initializes a new AnnotationDriver that uses the given AnnotationReader for reading
      * docblock annotations.
      * 
-     * @param AnnotationReader $reader The AnnotationReader to use.
+     * @param $reader The AnnotationReader to use.
      */
-    public function __construct(AnnotationReader $reader, $classDirectory = null)
+    public function __construct(AnnotationReader $reader)
     {
         $this->_reader = $reader;
-        $this->_classDirectory = $classDirectory;
-    }
-
-    public function setClassDirectory($classDirectory)
-    {
-        $this->_classDirectory = $classDirectory;
     }
 
     /**
@@ -345,40 +343,42 @@ class AnnotationDriver implements Driver
      */
     public function getAllClassNames()
     {
-        if ($this->_classDirectory) {
-            $classes = array();
+        $classes = array();
+    
+        if ($this->_paths) {
+            $declared = get_declared_classes();
             
-            foreach ((array) $this->_classDirectory as $dir) {
-                $iter = new \RecursiveIteratorIterator(
-                    new \RecursiveDirectoryIterator($this->_classDirectory),
+            foreach ((array) $this->_paths as $path) {
+                if ( ! is_dir($path)) {
+                    throw MappingException::annotationDriverRequiresConfiguredDirectoryPath();
+                }
+            
+                $iterator = new \RecursiveIteratorIterator(
+                    new \RecursiveDirectoryIterator($path),
                     \RecursiveIteratorIterator::LEAVES_ONLY
                 );
         
-                $declared = get_declared_classes();
-                
-                foreach ($iter as $item) {
-                    $info = pathinfo($item->getPathName());
+                foreach ($iterator as $file) {
+                    $info = pathinfo($file->getPathName());
                     
-                    if ( ! isset($info['extension']) || $info['extension'] != 'php') {
+                    if ( ! isset($info['extension']) || $info['extension'] != $this->_fileExtension) {
                         continue;
                     }
                     
-                    require_once $item->getPathName();
+                    require_once $file->getPathName();
                 }
-                
-                $declared = array_diff(get_declared_classes(), $declared);
+            }
+            
+            $declared = array_diff(get_declared_classes(), $declared);
 
-                foreach ($declared as $className) {                 
-                    if ( ! $this->isTransient($className)) {
-                        $classes[] = $className;
-                    }
+            foreach ($declared as $className) {                 
+                if ( ! $this->isTransient($className)) {
+                    $classes[] = $className;
                 }
-            }    
-                
-            return $classes;
-        } else {
-            return array();
+            }
         }
+        
+        return $classes;
     }
     
 }
