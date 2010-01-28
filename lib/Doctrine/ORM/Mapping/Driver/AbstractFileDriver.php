@@ -40,12 +40,73 @@ use Doctrine\ORM\Mapping\MappingException;
  * @author      Jonathan H. Wage <jonwage@gmail.com>
  * @author      Roman Borschel <roman@code-factory.org>
  */
-abstract class AbstractFileDriver extends AbstractDriver implements Driver
+abstract class AbstractFileDriver implements Driver
 {
     /**
-     * @var string Middle part file extension.
+     * The paths where to look for mapping files.
+     *
+     * @var array
      */
-    protected $_middleFileExtension = 'dcm';
+    protected $_paths = array();
+
+    /**
+     * The file extension of mapping documents.
+     *
+     * @var string
+     */
+    protected $_fileExtension = '.php';
+    
+    /** 
+     * Initializes a new FileDriver that looks in the given path(s) for mapping 
+     * documents and operates in the specified operating mode. 
+     *  
+     * @param string|array $paths One or multiple paths where mapping documents can be found. 
+     */ 
+    public function __construct($paths) 
+    { 
+        $this->addPaths((array) $paths);
+    } 
+
+    /**
+     * Append lookup paths to metadata driver.
+     *
+     * @param array $paths
+     */
+    public function addPaths(array $paths)
+    {
+        $this->_paths = array_unique(array_merge($this->_paths, $paths));
+    }
+    
+    /**
+     * Retrieve the defined metadata lookup paths.
+     *
+     * @return array
+     */
+    public function getPaths()
+    {
+        return $this->_paths;
+    }
+
+    /**
+     * Get the file extension used to look for mapping files under
+     *
+     * @return void
+     */
+    public function getFileExtension()
+    {
+        return $this->_fileExtension;
+    }
+
+    /**
+     * Set the file extension used to look for mapping files under
+     *
+     * @param string $fileExtension The file extension to set
+     * @return void
+     */
+    public function setFileExtension($fileExtension)
+    {
+        $this->_fileExtension = $fileExtension;
+    }
     
     /**
      * Get the element of schema meta data for the class from the mapping file.
@@ -70,13 +131,16 @@ abstract class AbstractFileDriver extends AbstractDriver implements Driver
      */
     public function isTransient($className)
     {
-        try {
-            $fileName = $this->_findMappingFile($className);
-            
-            return false;
-        } catch (\Exception $e) {
-            return true;
+        $fileName = str_replace('\\', '.', $className) . $this->_fileExtension;
+        
+        // Check whether file exists
+        foreach ((array) $this->_paths as $path) {
+            if (file_exists($path . DIRECTORY_SEPARATOR . $fileName)) {
+                return false;
+            }
         }
+
+        return true;
     }
     
     /**
@@ -100,14 +164,12 @@ abstract class AbstractFileDriver extends AbstractDriver implements Driver
                 );
         
                 foreach ($iterator as $file) {
-                    $info = pathinfo($file->getPathName());
-                    
-                    if ( ! isset($info['extension']) || $info['extension'] != $this->_fileExtension) {
+                    if (($fileName = $file->getBasename($this->_fileExtension)) == $file->getBasename()) {
                         continue;
                     }
                     
                     // NOTE: All files found here means classes are not transient!
-                    $classes[] = str_replace('.', '\\', $file->getBasename('.' . $this->_getFileSuffix()));
+                    $classes[] = str_replace('.', '\\', $fileName);
                 }
             }
         }
@@ -125,7 +187,7 @@ abstract class AbstractFileDriver extends AbstractDriver implements Driver
      */
     protected function _findMappingFile($className)
     {
-        $fileName = str_replace('\\', '.', $className) . '.' . $this->_getFileSuffix();
+        $fileName = str_replace('\\', '.', $className) . $this->_fileExtension;
         
         // Check whether file exists
         foreach ((array) $this->_paths as $path) {
@@ -135,17 +197,6 @@ abstract class AbstractFileDriver extends AbstractDriver implements Driver
         }
 
         throw MappingException::mappingFileNotFound($className);
-    }
-    
-    /**
-     * Retrieves the mapping file name suffix.
-     *
-     * @return string File name suffix.
-     */
-    protected function _getFileSuffix()
-    {
-        return ($this->_middleFileExtension != '' ? $this->_middleFileExtension . '.' : '')
-             . $this->_fileExtension;
     }
 
     /**

@@ -42,11 +42,79 @@ use Doctrine\Common\DoctrineException,
  * @author      Jonathan H. Wage <jonwage@gmail.com>
  * @author      Roman Borschel <roman@code-factory.org>
  */
-class PhpDriver extends AbstractDriver implements Driver
+class PhpDriver implements Driver
 {
-    /** The array of class names found and the path to the file */
+    /** 
+     * @var array The array of class names found and the path to the file
+     */
     private $_classPaths = array();
     
+    /**
+     * The paths where to look for mapping files.
+     *
+     * @var array
+     */
+    protected $_paths = array();
+
+    /**
+     * The file extension of mapping documents.
+     *
+     * @var string
+     */
+    protected $_fileExtension = '.php';
+    
+    /** 
+     * Initializes a new PhpDriver that looks in the given path(s) for mapping 
+     * documents and operates in the specified operating mode. 
+     *  
+     * @param string|array $paths One or multiple paths where mapping documents can be found. 
+     */ 
+    public function __construct($paths) 
+    { 
+        $this->addPaths((array) $paths);
+    } 
+
+    /**
+     * Append lookup paths to metadata driver.
+     *
+     * @param array $paths
+     */
+    public function addPaths(array $paths)
+    {
+        $this->_paths = array_unique(array_merge($this->_paths, $paths));
+    }
+    
+    /**
+     * Retrieve the defined metadata lookup paths.
+     *
+     * @return array
+     */
+    public function getPaths()
+    {
+        return $this->_paths;
+    }
+
+    /**
+     * Get the file extension used to look for mapping files under
+     *
+     * @return void
+     */
+    public function getFileExtension()
+    {
+        return $this->_fileExtension;
+    }
+
+    /**
+     * Set the file extension used to look for mapping files under
+     *
+     * @param string $fileExtension The file extension to set
+     * @return void
+     */
+    public function setFileExtension($fileExtension)
+    {
+        $this->_fileExtension = $fileExtension;
+    }
+
     /**
      * {@inheritdoc}
      */
@@ -84,15 +152,12 @@ class PhpDriver extends AbstractDriver implements Driver
                 );
         
                 foreach ($iterator as $file) {
-                    $info = pathinfo($file->getPathName());
-                    
-                    if ( ! isset($info['extension']) || $info['extension'] != $this->_fileExtension) {
+                    if (($fileName = $file->getBasename($this->_fileExtension)) == $file->getBasename()) {
                         continue;
                     }
                     
-                    $className = $info['filename'];
-                    $classes[] = $className;
-                    $this->_classPaths[$className] = $file->getPathName();
+                    $classes[] = $fileName;
+                    $this->_classPaths[$fileName] = $file->getPathName();
                 }
             }
         }

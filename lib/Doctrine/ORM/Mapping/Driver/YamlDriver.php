@@ -49,7 +49,7 @@ class YamlDriver extends AbstractFileDriver
     /**
      * {@inheritdoc}
      */
-    protected $_fileExtension = 'yml';
+    protected $_fileExtension = '.dcm.yml';
 
     /**
      * {@inheritdoc}

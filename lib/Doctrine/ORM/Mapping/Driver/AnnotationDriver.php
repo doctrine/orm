@@ -41,7 +41,7 @@ require __DIR__ . '/DoctrineAnnotations.php';
  * @author      Jonathan H. Wage <jonwage@gmail.com>
  * @author      Roman Borschel <roman@code-factory.org>
  */
-class AnnotationDriver extends AbstractDriver implements Driver
+class AnnotationDriver implements Driver
 {
     /** 
      * The AnnotationReader.
@@ -51,14 +51,74 @@ class AnnotationDriver extends AbstractDriver implements Driver
     private $_reader;
     
     /**
+     * The paths where to look for mapping files.
+     *
+     * @var array
+     */
+    protected $_paths = array();
+
+    /**
+     * The file extension of mapping documents.
+     *
+     * @var string
+     */
+    protected $_fileExtension = '.php';
+    
+    /**
      * Initializes a new AnnotationDriver that uses the given AnnotationReader for reading
      * docblock annotations.
      * 
      * @param $reader The AnnotationReader to use.
+     * @param string|array $paths One or multiple paths where mapping classes can be found. 
      */
-    public function __construct(AnnotationReader $reader)
+    public function __construct(AnnotationReader $reader, $paths = null)
     {
         $this->_reader = $reader;
+        
+        if ($paths) {
+            $this->addPaths((array) $paths);
+        }
+    }
+    
+    /**
+     * Append lookup paths to metadata driver.
+     *
+     * @param array $paths
+     */
+    public function addPaths(array $paths)
+    {
+        $this->_paths = array_unique(array_merge($this->_paths, $paths));
+    }
+    
+    /**
+     * Retrieve the defined metadata lookup paths.
+     *
+     * @return array
+     */
+    public function getPaths()
+    {
+        return $this->_paths;
+    }
+
+    /**
+     * Get the file extension used to look for mapping files under
+     *
+     * @return void
+     */
+    public function getFileExtension()
+    {
+        return $this->_fileExtension;
+    }
+
+    /**
+     * Set the file extension used to look for mapping files under
+     *
+     * @param string $fileExtension The file extension to set
+     * @return void
+     */
+    public function setFileExtension($fileExtension)
+    {
+        $this->_fileExtension = $fileExtension;
     }
 
     /**
@@ -359,9 +419,7 @@ class AnnotationDriver extends AbstractDriver implements Driver
                 );
         
                 foreach ($iterator as $file) {
-                    $info = pathinfo($file->getPathName());
-                    
-                    if ( ! isset($info['extension']) || $info['extension'] != $this->_fileExtension) {
+                    if (($fileName = $file->getBasename($this->_fileExtension)) == $file->getBasename()) {
                         continue;
                     }
                     

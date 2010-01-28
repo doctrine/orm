@@ -111,20 +111,17 @@ class ClassMetadataExporter
         
         $class = $this->_mappingDrivers[$type];
         
-        if (is_subclass_of($class, 'Doctrine\ORM\Mapping\Driver\AbstractDriver')) {
+        if (is_subclass_of($class, 'Doctrine\ORM\Mapping\Driver\AbstractFileDriver')) {
             if (is_null($source)) {
                 throw DoctrineException::fileMappingDriversRequireDirectoryPath();
             }
             
-            if ($class == 'Doctrine\ORM\Mapping\Driver\AnnotationDriver') {
-                $reader = new \Doctrine\Common\Annotations\AnnotationReader(new \Doctrine\Common\Cache\ArrayCache);
-                $reader->setDefaultAnnotationNamespace('Doctrine\ORM\Mapping\\');
-                $driver = new \Doctrine\ORM\Mapping\Driver\AnnotationDriver($reader);
-            } else {
-                $driver = new $class();
-            }
+            $driver = new $class($source);
+        } else if ($class == 'Doctrine\ORM\Mapping\Driver\AnnotationDriver') {
+            $reader = new \Doctrine\Common\Annotations\AnnotationReader(new \Doctrine\Common\Cache\ArrayCache);
+            $reader->setDefaultAnnotationNamespace('Doctrine\ORM\Mapping\\');
             
-            $driver->addPaths((array) $source);
+            $driver = new \Doctrine\ORM\Mapping\Driver\AnnotationDriver($reader, $source);
         } else {
             $driver = new $class($source);
         }

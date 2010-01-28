@@ -41,7 +41,7 @@ class XmlDriver extends AbstractFileDriver
     /**
      * {@inheritdoc}
      */
-    protected $_fileExtension = 'xml';
+    protected $_fileExtension = '.dcm.xml';
 
     /**
      * {@inheritdoc}
@@ -369,29 +369,6 @@ class XmlDriver extends AbstractFileDriver
             }
         }
     }
-    
-    /**
-     * {@inheritdoc}
-     */
-    protected function _loadMappingFile($file)
-    {
-        $result = array();
-        $xmlElement = simplexml_load_file($file);
-
-        if (isset($xmlElement->entity)) {
-            foreach ($xmlElement->entity as $entityElement) {
-                $entityName = (string)$entityElement['name'];
-                $result[$entityName] = $entityElement;
-            }
-        } else if (isset($xmlElement->{'mapped-superclass'})) {
-            foreach ($xmlElement->{'mapped-superclass'} as $mapperSuperClass) {
-                $className = (string)$mappedSuperClass['name'];
-                $result[$className] = $mappedSuperClass;
-            }
-        }
-
-        return $result;
-    }
 
     /**
      * Constructs a joinColumn mapping array based on the information
@@ -444,5 +421,28 @@ class XmlDriver extends AbstractFileDriver
             $cascades[] = str_replace('cascade-', '', $action->getName());
         }
         return $cascades;
+    }
+    
+    /**
+     * {@inheritdoc}
+     */
+    protected function _loadMappingFile($file)
+    {
+        $result = array();
+        $xmlElement = simplexml_load_file($file);
+
+        if (isset($xmlElement->entity)) {
+            foreach ($xmlElement->entity as $entityElement) {
+                $entityName = (string)$entityElement['name'];
+                $result[$entityName] = $entityElement;
+            }
+        } else if (isset($xmlElement->{'mapped-superclass'})) {
+            foreach ($xmlElement->{'mapped-superclass'} as $mapperSuperClass) {
+                $className = (string)$mappedSuperClass['name'];
+                $result[$className] = $mappedSuperClass;
+            }
+        }
+
+        return $result;
     }
 }
