@@ -39,36 +39,6 @@ abstract class AbstractCache implements Cache
 
     /** @var string The namespace to prefix all cache ids with */
     private $_namespace = null;
-    
-    /** @var boolean Whether to manage cache keys or not. */
-    private $_manageCacheIds = false;
-    
-    /**
-     * Sets whether cache keys should be managed by the cache driver
-     * separately from the cache entries. This allows more granular
-     * cache clearing through {@link deleteByPrefix}, {@link deleteByRegex},
-     * {@link deleteBySuffix} and some other operations such as {@link count}
-     * and {@link getIds}. Managing cache keys comes at the cost of a higher
-     * probability for cache slams due to the single cache key used for
-     * managing all other keys.
-     * 
-     * @param boolean $bool
-     */
-    public function setManageCacheIds($bool)
-    {
-        $this->_manageCacheIds = $bool;
-    }
-    
-    /**
-     * Checks whether cache keys are managed by this cache driver.
-     * 
-     * @return boolean
-     * @see setManageCacheIds()
-     */
-    public function getManageCacheIds()
-    {
-        return $this->_manageCacheIds;
-    }
 
     /**
      * Set the namespace to prefix all cache ids with.
@@ -103,14 +73,7 @@ abstract class AbstractCache implements Cache
     public function save($id, $data, $lifeTime = false)
     {
         $id = $this->_getNamespacedId($id);
-        if ($this->_doSave($id, $data, $lifeTime)) {
-            if ($this->_manageCacheIds) {
-                $this->_saveId($id);
-            }
-
-            return true;
-        }
-        return false;
+        return $this->_doSave($id, $data, $lifeTime);
     }
 
     /**
@@ -124,14 +87,7 @@ abstract class AbstractCache implements Cache
             return $this->deleteByRegex('/' . str_replace('*', '.*', $id) . '/');
         }
 
-        if ($this->_doDelete($id)) {
-            if ($this->_manageCacheIds) {
-                $this->_deleteId($id);
-            }
-
-            return true;
-        }
-        return false;
+        return $this->_doDelete($id);
     }
 
     /**
@@ -141,7 +97,6 @@ abstract class AbstractCache implements Cache
      */
     public function deleteAll()
     {
-        $this->_errorIfCacheIdsNotManaged();
         $ids = $this->getIds();
         foreach ($ids as $id) {
             $this->delete($id);
@@ -157,7 +112,6 @@ abstract class AbstractCache implements Cache
      */
     public function deleteByRegex($regex)
     {
-        $this->_errorIfCacheIdsNotManaged();
         $deleted = array();
         $ids = $this->getIds();
         foreach ($ids as $id) {
@@ -177,11 +131,10 @@ abstract class AbstractCache implements Cache
      */
     public function deleteByPrefix($prefix)
     {
-        $this->_errorIfCacheIdsNotManaged();
         $deleted = array();
         $ids = $this->getIds();
         foreach ($ids as $id) {
-            if (strpos($id, $prefix) == 0) {
+            if (strpos($id, $prefix) === 0) {
                 $this->delete($id);
                 $deleted[] = $id;
             }
@@ -192,45 +145,20 @@ abstract class AbstractCache implements Cache
     /**
      * Delete cache entries where the id has the passed suffix
      *
-     * @param string $suffix 
+     * @param string $suffix
      * @return array $deleted  Array of the deleted cache ids
      */
     public function deleteBySuffix($suffix)
     {
-        $this->_errorIfCacheIdsNotManaged();
         $deleted = array();
         $ids = $this->getIds();
         foreach ($ids as $id) {
-            if (substr($id, -1 * strlen($suffix)) == $suffix) {
+            if (substr($id, -1 * strlen($suffix)) === $suffix) {
                 $this->delete($id);
                 $deleted[] = $id;
             }
         }
         return $deleted;
-    }
-
-    /**
-     * Count and return the number of cache entries.
-     *
-     * @return integer $count
-     */
-    public function count() 
-    {
-        $this->_errorIfCacheIdsNotManaged();
-        $ids = $this->getIds();
-        return $ids ? count($ids) : 0;
-    }
-
-    /**
-     * Get an array of all the cache ids stored
-     *
-     * @return array $ids
-     */
-    public function getIds()
-    {
-        $this->_errorIfCacheIdsNotManaged();
-        $ids = $this->fetch($this->_cacheIdsIndexId);
-        return $ids ? $ids : array();
     }
 
     /**
@@ -249,52 +177,8 @@ abstract class AbstractCache implements Cache
     }
 
     /**
-     * Save a cache id to the index of cache ids
-     *
-     * @param string $id
-     * @return boolean TRUE if the id was successfully stored in the cache, FALSE otherwise.
-     */
-    private function _saveId($id)
-    {
-        $ids = $this->getIds();
-        $ids[] = $id;
-
-        $cacheIdsIndexId = $this->_getNamespacedId($this->_cacheIdsIndexId);
-        return $this->_doSave($cacheIdsIndexId, $ids, null);
-    }
-
-    /**
-     * Delete a cache id from the index of cache ids
-     *
-     * @param string $id 
-     * @return boolean TRUE if the entry was successfully removed from the cache, FALSE otherwise.
-     */
-    private function _deleteId($id)
-    {
-        $ids = $this->getIds();
-        $key = array_search($id, $ids);
-        if ($key !== false) {
-            unset($ids[$key]);
-
-            $cacheIdsIndexId = $this->_getNamespacedId($this->_cacheIdsIndexId);
-            return $this->_doSave($cacheIdsIndexId, $ids, null);
-        }
-        return false;
-    }
-    
-    /**
-     * @throws BadMethodCallException If the cache driver does not manage cache keys.
-     */
-    private function _errorIfCacheIdsNotManaged()
-    {
-        if ( ! $this->_manageCacheIds) {
-            throw new \BadMethodCallException("Operation not supported if cache keys are not managed.");
-        }
-    }
-
-    /**
      * Fetches an entry from the cache.
-     * 
+     *
      * @param string $id cache id The id of the cache entry to fetch.
      * @return string The cached data or FALSE, if no cache entry exists for the given id.
      */
@@ -320,9 +204,16 @@ abstract class AbstractCache implements Cache
 
     /**
      * Deletes a cache entry.
-     * 
+     *
      * @param string $id cache id
      * @return boolean TRUE if the cache entry was successfully deleted, FALSE otherwise.
      */
     abstract protected function _doDelete($id);
+
+    /**
+     * Get an array of all the cache ids stored
+     *
+     * @return array $ids
+     */
+    abstract public function getIds();
 }

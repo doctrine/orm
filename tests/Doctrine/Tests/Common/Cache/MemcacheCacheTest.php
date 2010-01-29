@@ -6,10 +6,10 @@ use Doctrine\Common\Cache\MemcacheCache;
 
 require_once __DIR__ . '/../../TestInit.php';
 
-class MemcacheCacheTest extends \Doctrine\Tests\DoctrineTestCase
+class MemcacheCacheTest extends CacheTest
 {
     private $_memcache;
-    
+
     public function setUp()
     {
         if (extension_loaded('memcache')) {
@@ -23,23 +23,10 @@ class MemcacheCacheTest extends \Doctrine\Tests\DoctrineTestCase
         }
     }
 
-    public function testMemcacheCacheDriver()
+    protected function _getCacheDriver()
     {
-        $cache = new MemcacheCache();
-        $cache->setMemcache($this->_memcache);
-
-        // Test save
-        $cache->save('test_key', 'testing this out');
-
-        // Test contains to test that save() worked
-        $this->assertTrue($cache->contains('test_key'));
-
-        // Test fetch
-        $this->assertEquals('testing this out', $cache->fetch('test_key'));
-
-        // Test delete
-        $cache->save('test_key2', 'test2');
-        $cache->delete('test_key2');
-        $this->assertFalse($cache->contains('test_key2'));
+        $driver = new MemcacheCache();
+        $driver->setMemcache($this->_memcache);
+        return $driver;
     }
 }

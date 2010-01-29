@@ -31,13 +31,28 @@ namespace Doctrine\Common\Cache;
  * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
  * @author  Jonathan Wage <jonwage@gmail.com>
  * @author  Roman Borschel <roman@code-factory.org>
+ * @author  David Abdemoulaie <dave@hobodave.com>
  */
 class ApcCache extends AbstractCache
 {
     /**
      * {@inheritdoc}
      */
-    protected function _doFetch($id) 
+    public function getIds()
+    {
+        $ci = apc_cache_info('user');
+        $keys = array();
+
+        foreach ($ci['cache_list'] as $entry) {
+          $keys[] = $entry['info'];
+        }
+        return $keys;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function _doFetch($id)
     {
         return apc_fetch($id);
     }
@@ -45,7 +60,7 @@ class ApcCache extends AbstractCache
     /**
      * {@inheritdoc}
      */
-    protected function _doContains($id) 
+    protected function _doContains($id)
     {
         $found = false;
         apc_fetch($id, $found);
@@ -63,7 +78,7 @@ class ApcCache extends AbstractCache
     /**
      * {@inheritdoc}
      */
-    protected function _doDelete($id) 
+    protected function _doDelete($id)
     {
         return apc_delete($id);
     }

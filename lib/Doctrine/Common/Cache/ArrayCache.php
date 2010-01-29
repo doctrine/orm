@@ -31,19 +31,28 @@ namespace Doctrine\Common\Cache;
  * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
  * @author  Jonathan Wage <jonwage@gmail.com>
  * @author  Roman Borschel <roman@code-factory.org>
+ * @author  David Abdemoulaie <dave@hobodave.com>
  */
 class ArrayCache extends AbstractCache
 {
     /**
      * @var array $data
      */
-    private $data;
+    private $data = array();
 
     /**
      * {@inheritdoc}
      */
-    protected function _doFetch($id) 
-    { 
+    public function getIds()
+    {
+        return array_keys($this->data);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function _doFetch($id)
+    {
         if (isset($this->data[$id])) {
             return $this->data[$id];
         }

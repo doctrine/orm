@@ -31,24 +31,22 @@ class ResultCacheTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $query = $this->_em->createQuery('select ux from Doctrine\Tests\Models\CMS\CmsUser ux');
         $cache = new ArrayCache;
-        $cache->setManageCacheIds(true);
         $query->setResultCacheDriver($cache);
-		$this->assertEquals(0, $cache->count());
-		
+
         $users = $query->getResult();
 
-       	$this->assertEquals(1, $cache->count());
+        $this->assertTrue($cache->contains($query->getResultCacheId(array())));
         $this->assertEquals(1, count($users));
         $this->assertEquals('Roman', $users[0]->name);
-        
+
         $this->_em->clear();
-        
+
         $query2 = $this->_em->createQuery('select ux from Doctrine\Tests\Models\CMS\CmsUser ux');
         $query2->setResultCacheDriver($cache);
-        
+
         $users = $query2->getResult();
 
-       	$this->assertEquals(1, $cache->count());
+        $this->assertTrue($cache->contains($query->getResultCacheId(array())));
         $this->assertEquals(1, count($users));
         $this->assertEquals('Roman', $users[0]->name);
     }
