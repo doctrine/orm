@@ -14,16 +14,6 @@ class EntityManagerTest extends \Doctrine\Tests\OrmTestCase
         $this->_em = $this->_getTestEntityManager();
     }
 
-    public function testSettingInvalidFlushModeThrowsException()
-    {
-        $prev = $this->_em->getFlushMode();
-        try {
-            $this->_em->setFlushMode('foobar');
-            $this->fail("Setting invalid flushmode did not trigger exception.");
-        } catch (\Doctrine\ORM\ORMException $expected) {}
-        $this->_em->setFlushMode($prev);
-    }
-
     public function testGetConnection()
     {
         $this->assertType('\Doctrine\DBAL\Connection', $this->_em->getConnection());
@@ -52,11 +42,6 @@ class EntityManagerTest extends \Doctrine\Tests\OrmTestCase
     public function testGetEventManager()
     {
         $this->assertType('\Doctrine\Common\EventManager', $this->_em->getEventManager());
-    }
-
-    public function testGetDefaultFlushMode_OnCommit()
-    {
-        $this->assertEquals(\Doctrine\ORM\EntityManager::FLUSHMODE_COMMIT, $this->_em->getFlushMode());
     }
 
     public function testCreateNativeQuery()
@@ -106,7 +91,6 @@ class EntityManagerTest extends \Doctrine\Tests\OrmTestCase
             array('remove'),
             array('merge'),
             array('refresh'),
-            array('copy'),
         );
     }
 

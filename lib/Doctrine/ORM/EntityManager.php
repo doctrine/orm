@@ -42,31 +42,6 @@ use Doctrine\Common\EventManager,
 class EntityManager
 {
     /**
-     * IMMEDIATE: Flush occurs automatically after each operation that issues database
-     * queries. No operations are queued.
-     * @deprecated
-     */ 
-    const FLUSHMODE_IMMEDIATE = 1;
-    /**
-     * AUTO: Flush occurs automatically in the following situations:
-     * - Before any query executions (to prevent getting stale data)
-     * - On EntityManager#commit()
-     * @deprecated
-     */
-    const FLUSHMODE_AUTO = 2;
-    /**
-     * COMMIT: Flush occurs automatically only on EntityManager#commit().
-     * @deprecated
-     */
-    const FLUSHMODE_COMMIT = 3;
-    /**
-     * MANUAL: Flush occurs never automatically. The only way to flush is
-     * through EntityManager#flush().
-     * @deprecated
-     */
-    const FLUSHMODE_MANUAL = 4;
-    
-    /**
      * The used Configuration.
      *
      * @var Doctrine\ORM\Configuration
@@ -93,14 +68,6 @@ class EntityManager
      * @var array
      */
     private $_repositories = array();
-    
-    /**
-     * The currently used flush mode. Defaults to 'commit'.
-     *
-     * @var string
-     * @deprecated
-     */
-    private $_flushMode = self::FLUSHMODE_COMMIT;
     
     /**
      * The UnitOfWork used to coordinate object-level transactions.
@@ -187,15 +154,9 @@ class EntityManager
     
     /**
      * Commits a transaction on the underlying database connection.
-     * 
-     * This causes a flush() of the EntityManager if the flush mode is set to
-     * AUTO or COMMIT.
      */
     public function commit()
     {
-        if ($this->_flushMode == self::FLUSHMODE_AUTO || $this->_flushMode == self::FLUSHMODE_COMMIT) {
-            $this->flush();
-        }
         $this->_conn->commit();
     }
     
@@ -336,31 +297,6 @@ class EntityManager
     }
     
     /**
-     * Sets the flush mode to use.
-     *
-     * @param string $flushMode
-     * @deprecated
-     */
-    public function setFlushMode($flushMode)
-    {
-        if ( ! ($flushMode >= 1 && $flushMode <= 4)) {
-            throw ORMException::invalidFlushMode($flushMode);
-        }
-        $this->_flushMode = $flushMode;
-    }
-    
-    /**
-     * Gets the currently used flush mode.
-     *
-     * @return string
-     * @deprecated
-     */
-    public function getFlushMode()
-    {
-        return $this->_flushMode;
-    }
-    
-    /**
      * Clears the EntityManager. All entities that are currently managed
      * by this EntityManager become detached.
      *
@@ -399,9 +335,6 @@ class EntityManager
     {
         $this->_errorIfClosed();
         $this->_unitOfWork->persist($object);
-        if ($this->_flushMode == self::FLUSHMODE_IMMEDIATE) {
-            $this->flush();
-        }
     }
     
     /**
@@ -416,9 +349,6 @@ class EntityManager
     {
         $this->_errorIfClosed();
         $this->_unitOfWork->remove($entity);
-        if ($this->_flushMode == self::FLUSHMODE_IMMEDIATE) {
-            $this->flush();
-        }
     }
     
     /**
@@ -470,8 +400,7 @@ class EntityManager
      */
     public function copy($entity, $deep = false)
     {
-        $this->_errorIfClosed();
-        throw DoctrineException::notImplemented(__FUNCTION__, __CLASS__);
+        throw new \BadMethodCallException("Not implemented.");
     }
 
     /**
@@ -575,7 +504,7 @@ class EntityManager
                     $this->_hydrators[$hydrationMode] = new Internal\Hydration\SingleScalarHydrator($this);
                     break;
                 default:
-                    throw DoctrineException::invalidHydrationMode($hydrationMode);
+                    throw ORMException::invalidHydrationMode($hydrationMode);
             }
         }
         return $this->_hydrators[$hydrationMode];
@@ -608,10 +537,10 @@ class EntityManager
             $conn = \Doctrine\DBAL\DriverManager::getConnection($conn, $config, ($eventManager ?: new EventManager()));
         } else if ($conn instanceof Connection) {
             if ($eventManager !== null && $conn->getEventManager() !== $eventManager) {
-                 throw DoctrineException::invalidEventManager('Cannot use different EventManagers for EntityManager and Connection.');
+                 throw ORMException::mismatchedEventManager();
             }
         } else {
-            throw DoctrineException::invalidParameter($conn);
+            throw new \InvalidArgumentException("Invalid argument: " . $conn);
         }
 
         return new EntityManager($conn, $config, $conn->getEventManager());

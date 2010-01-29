@@ -46,4 +46,14 @@ class ORMException extends \Exception
     {
         return new self("The EntityManager is closed.");
     }
+    
+    public static function invalidHydrationMode($mode)
+    {
+        return new self("'$mode' is an invalid hydration mode.");
+    }
+    
+    public static function mismatchedEventManager()
+    {
+        return new self("Cannot use different EventManager instances for EntityManager and Connection.");
+    }
 }
