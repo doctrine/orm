@@ -124,9 +124,9 @@ class EntityManager
     private $_hydrators = array();
 
     /**
-     * The proxy factory which creates association or reference proxies.
+     * The proxy factory used to create dynamic proxies.
      *
-     * @var ProxyFactory
+     * @var Doctrine\ORM\Proxy\ProxyFactory
      */
     private $_proxyFactory;
 

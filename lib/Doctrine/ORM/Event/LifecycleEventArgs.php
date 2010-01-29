@@ -4,7 +4,7 @@ namespace Doctrine\ORM\Event;
 
 class LifecycleEventArgs extends \Doctrine\Common\EventArgs
 {
-    private $_em;
+    //private $_em;
     private $_entity;
     
     public function __construct($entity)
@@ -17,8 +17,10 @@ class LifecycleEventArgs extends \Doctrine\Common\EventArgs
         return $this->_entity;
     }
     
+    /*
     public function getEntityManager()
     {
         return $this->_em;
     }
+    */
 }

@@ -53,7 +53,7 @@ class StandardEntityPersister
     protected $_class;
 
     /**
-     * The Connection instance.
+     * The underlying Connection of the used EntityManager.
      *
      * @var Doctrine\DBAL\Connection $conn
      */
@@ -287,28 +287,6 @@ class StandardEntityPersister
             $this->_em->getUnitOfWork()->getEntityIdentifier($entity)
         );
         $this->_conn->delete($this->_class->primaryTable['name'], $id);
-    }
-
-    /**
-     * Adds an entity to delete.
-     *
-     * @param object $entity
-     * @todo Impl.
-     */
-    public function addDelete($entity)
-    {
-
-    }
-
-    /**
-     * Executes all pending entity deletions.
-     *
-     * @see addDelete()
-     * @todo Impl.
-     */
-    public function executeDeletions()
-    {
-
     }
 
     /**
@@ -560,7 +538,7 @@ class StandardEntityPersister
     }
     
     /**
-     * Loads a collection of entities into a one-to-many association.
+     * Loads a collection of entities in a one-to-many association.
      *
      * @param array $criteria The criteria by which to select the entities.
      * @param PersistentCollection The collection to fill.

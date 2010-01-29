@@ -584,16 +584,16 @@ class QueryBuilder
      *         ->set('u.password', md5('password'))
      *         ->where($or);
      *
-     * @param mixed $where The WHERE statement
-     * @return QueryBuilder $qb
+     * @param mixed $predicates The predicates.
+     * @return QueryBuilder
      */
-    public function where($where)
+    public function where($predicates)
     {
-        if ( ! (func_num_args() == 1 && ($where instanceof Expr\Andx || $where instanceof Expr\Orx))) {
-            $where = new Expr\Andx(func_get_args());
+        if ( ! (func_num_args() == 1 && ($predicates instanceof Expr\Andx || $predicates instanceof Expr\Orx))) {
+            $predicates = new Expr\Andx(func_get_args());
         }
         
-        return $this->add('where', $where);
+        return $this->add('where', $predicates);
     }
 
     /**

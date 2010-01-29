@@ -121,4 +121,10 @@ class MappingException extends \Doctrine\ORM\ORMException
     {
         return new self('An error occurred in ' . $entity, 0, $previousException);
     }
+    
+    public static function joinColumnMustPointToMappedField($className, $joinColumn)
+    {
+        return new self('The column ' . $joinColumn . ' must be mapped to a field in class '
+                . $className . ' since it is referenced by a join column of another class.');
+    }
 }

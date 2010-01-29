@@ -10,9 +10,10 @@ class DDC279Test extends \Doctrine\Tests\OrmFunctionalTestCase
     {
         parent::setUp();
         $this->_schemaTool->createSchema(array(
+            $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC279EntityXAbstract'),
             $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC279EntityX'),
             $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC279EntityY'),
-            $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC279EntityZ')
+            $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC279EntityZ'),
         ));
     }
 
@@ -39,34 +40,31 @@ class DDC279Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
 
-        $result = $this->_em->createQuery(
+        $query = $this->_em->createQuery(
             'SELECT x, y, z FROM Doctrine\Tests\ORM\Functional\Ticket\DDC279EntityX x '.
-            'INNER JOIN x.y y INNER JOIN y.z z WHERE x.id = 1'
-        )->getArrayResult();
+            'INNER JOIN x.y y INNER JOIN y.z z WHERE x.id = ?1'
+        )->setParameter(1, $x->id);
+        
+        $result = $query->getResult();
+        
+        $expected1 = 'Y';
+        $expected2 = 'Z';
 
-        $expected = array(
-            0 => array(
-                'id' => 1,
-                'data' => 'X',
-                'y' => array(
-                    'id' => 1,
-                    'data' => 'Y',
-                    'z' => array(
-                        'id' => 1,
-                        'data' => 'Z',
-                    )
-                ),
-            ),
-        );
-
-        $this->assertEquals($expected, $result);
+        $this->assertEquals(1, count($result));
+        
+        $this->assertEquals($expected1, $result[0]->y->data);
+        $this->assertEquals($expected2, $result[0]->y->z->data);
     }
 }
 
+
 /**
  * @Entity
+ * @InheritanceType("JOINED")
+ * @DiscriminatorColumn(name="discr", type="string")
+ * @DiscriminatorMap({"DDC279EntityX" = "DDC279EntityX"})
  */
-class DDC279EntityX
+abstract class DDC279EntityXAbstract
 {
     /**
      * @Id
@@ -80,8 +78,15 @@ class DDC279EntityX
      */
     public $data;
 
+}
+
+/**
+ * @Entity
+ */
+class DDC279EntityX extends DDC279EntityXAbstract
+{
     /**
-     * @OneToOne(targetEntity="Doctrine\Tests\ORM\Functional\Ticket\DDC279EntityY")
+     * @OneToOne(targetEntity="DDC279EntityY")
      * @JoinColumn(name="y_id", referencedColumnName="id")
      */
     public $y;
@@ -105,7 +110,7 @@ class DDC279EntityY
     public $data;
 
     /**
-     * @OneToOne(targetEntity="Doctrine\Tests\ORM\Functional\Ticket\DDC279EntityZ")
+     * @OneToOne(targetEntity="DDC279EntityZ")
      * @JoinColumn(name="z_id", referencedColumnName="id")
      */
     public $z;

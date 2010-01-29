@@ -221,9 +221,16 @@ class OneToOneMapping extends AssociationMapping
                     $targetClass->inverseMappings[$this->sourceEntityName][$this->sourceFieldName]->sourceFieldName
                     : false;
             
+            // Mark inverse side as fetched in the hints, otherwise the UoW would
+            // try to load it in a separate query (remember: to-one inverse sides can not be lazy). 
             $hints = array();
             if ($inverseField) {
-                $hints['fetched'][$targetClass->rootEntityName][$inverseField] = true;
+                $hints['fetched'][$targetClass->name][$inverseField] = true;
+                if ($targetClass->subClasses) {
+                    foreach ($targetClass->subClasses as $targetSubclassName) {
+                        $hints['fetched'][$targetSubclassName][$inverseField] = true;
+                    }
+                }
             }
             /* cascade read-only status
             if ($em->getUnitOfWork()->isReadOnly($sourceEntity)) {
@@ -233,7 +240,7 @@ class OneToOneMapping extends AssociationMapping
 
             $targetEntity = $em->getUnitOfWork()->getEntityPersister($this->targetEntityName)->load($joinColumnValues, $targetEntity, $this, $hints);
             
-            if ($targetEntity !== null && $inverseField &&  ! $targetClass->isCollectionValuedAssociation($inverseField)) {
+            if ($targetEntity !== null && $inverseField && ! $targetClass->isCollectionValuedAssociation($inverseField)) {
                 $targetClass->reflFields[$inverseField]->setValue($targetEntity, $sourceEntity);
             }
         } else {
@@ -245,8 +252,9 @@ class OneToOneMapping extends AssociationMapping
                 if (isset($sourceClass->fieldNames[$sourceKeyColumn])) {
                     $conditions[$targetKeyColumn] = $sourceClass->reflFields[$sourceClass->fieldNames[$sourceKeyColumn]]->getValue($sourceEntity);
                 } else {
-                    //TODO: Should never happen. Exception?
-                    $conditions[$targetKeyColumn] = $joinColumnValues[$sourceKeyColumn];
+                    throw MappingException::joinColumnMustPointToMappedField(
+                        $sourceClass->name, $sourceKeyColumn
+                    );
                 }
             }
             
@@ -262,7 +270,7 @@ class OneToOneMapping extends AssociationMapping
     }
     
     /**
-     * @internal Experimental. For MetaModel API, Doctrine 2.1.
+     * @internal Experimental. For MetaModel API, Doctrine 2.1 or later.
      */
     public static function __set_state(array $state)
     {

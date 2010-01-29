@@ -76,7 +76,7 @@ class OneToManyMapping extends AssociationMapping
     {
         parent::_validateAndCompleteMapping($mapping);
 
-        // one-side MUST be inverse (must have mappedBy)
+        // OneToMany-side MUST be inverse (must have mappedBy)
         if ( ! isset($mapping['mappedBy'])) {
             throw MappingException::oneToManyRequiresMappedBy($mapping['fieldName']);
         }

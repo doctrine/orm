@@ -62,7 +62,6 @@ class ObjectHydrator extends AbstractHydrator
         
         foreach ($this->_rsm->aliasMap as $dqlAlias => $className) {
             $this->_identifierMap[$dqlAlias] = array();
-            //$this->_resultPointers[$dqlAlias] = array();
             $this->_idTemplate[$dqlAlias] = '';
             $class = $this->_em->getClassMetadata($className);
 
@@ -73,16 +72,26 @@ class ObjectHydrator extends AbstractHydrator
             // Remember which associations are "fetch joined", so that we know where to inject
             // collection stubs or proxies and where not.
             if (isset($this->_rsm->relationMap[$dqlAlias])) {
-                $targetClassName = $this->_rsm->aliasMap[$this->_rsm->parentAliasMap[$dqlAlias]];
-                $targetClass = $this->_getClassMetadata($targetClassName);
-                $assoc = $targetClass->associationMappings[$this->_rsm->relationMap[$dqlAlias]];
-                $this->_hints['fetched'][$assoc->sourceEntityName][$assoc->sourceFieldName] = true;
+                $sourceClassName = $this->_rsm->aliasMap[$this->_rsm->parentAliasMap[$dqlAlias]];
+                $sourceClass = $this->_getClassMetadata($sourceClassName);
+                $assoc = $sourceClass->associationMappings[$this->_rsm->relationMap[$dqlAlias]];
+                $this->_hints['fetched'][$sourceClassName][$assoc->sourceFieldName] = true;
+                if ($sourceClass->subClasses) {
+                    foreach ($sourceClass->subClasses as $sourceSubclassName) {
+                        $this->_hints['fetched'][$sourceSubclassName][$assoc->sourceFieldName] = true;
+                    }
+                }
                 if ($assoc->mappedByFieldName) {
-                    $this->_hints['fetched'][$assoc->targetEntityName][$assoc->mappedByFieldName] = true;
+                    $this->_hints['fetched'][$className][$assoc->mappedByFieldName] = true;
                 } else {
-                    if (isset($targetClass->inverseMappings[$className][$assoc->sourceFieldName])) {
-                        $inverseAssoc = $targetClass->inverseMappings[$className][$assoc->sourceFieldName];
-                        $this->_hints['fetched'][$assoc->targetEntityName][$inverseAssoc->sourceFieldName] = true;
+                    if (isset($sourceClass->inverseMappings[$className][$assoc->sourceFieldName])) {
+                        $inverseAssoc = $sourceClass->inverseMappings[$className][$assoc->sourceFieldName];
+                        $this->_hints['fetched'][$className][$inverseAssoc->sourceFieldName] = true;
+                        if ($class->subClasses) {
+                            foreach ($class->subClasses as $targetSubclassName) {
+                                $this->_hints['fetched'][$targetSubclassName][$inverseAssoc->sourceFieldName] = true;
+                            }
+                        }
                     }
                 }
             }

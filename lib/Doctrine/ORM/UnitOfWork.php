@@ -1217,7 +1217,7 @@ class UnitOfWork implements PropertyChangedListener
                 break;
             case self::STATE_DETACHED:
                 throw new \InvalidArgumentException(
-                        "Behavior of save() for a detached entity is not yet defined.");
+                        "Behavior of persist() for a detached entity is not yet defined.");
             case self::STATE_REMOVED:
                 // Entity becomes managed again
                 if ($this->isScheduledForDelete($entity)) {
@@ -1766,10 +1766,10 @@ class UnitOfWork implements PropertyChangedListener
             if ( ! isset($hints[Query::HINT_FORCE_PARTIAL_LOAD])) {
                 foreach ($class->associationMappings as $field => $assoc) {
                     // Check if the association is not among the fetch-joined associations already.
-                    if (isset($hints['fetched'][$class->rootEntityName][$field])) {
+                    if (isset($hints['fetched'][$className][$field])) {
                         continue;
                     }
-                    
+
                     $targetClass = $this->_em->getClassMetadata($assoc->targetEntityName);
 
                     if ($assoc->isOneToOne()) {
