@@ -127,4 +127,10 @@ class MappingException extends \Doctrine\ORM\ORMException
         return new self('The column ' . $joinColumn . ' must be mapped to a field in class '
                 . $className . ' since it is referenced by a join column of another class.');
     }
+    
+    public static function annotationDriverRequiresConfiguredDirectoryPath()
+    {
+        return new self('The annotation driver needs to have a directory path');
+    }
+
 }
