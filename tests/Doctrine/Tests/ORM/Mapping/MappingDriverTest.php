@@ -82,6 +82,10 @@ class MappingDriverTest extends \Doctrine\Tests\OrmTestCase
         $this->assertFalse($class->associationMappings['phonenumbers']->isOwningSide);
         $this->assertTrue($class->associationMappings['phonenumbers']->isInverseSide());
         $this->assertTrue($class->associationMappings['phonenumbers']->isCascadePersist);
+        $this->assertFalse($class->associationMappings['phonenumbers']->isCascadeRemove);
+        $this->assertFalse($class->associationMappings['phonenumbers']->isCascadeRefresh);
+        $this->assertFalse($class->associationMappings['phonenumbers']->isCascadeDetach);
+        $this->assertFalse($class->associationMappings['phonenumbers']->isCascadeMerge);
         
         $this->assertTrue($class->associationMappings['groups'] instanceof \Doctrine\ORM\Mapping\ManyToManyMapping);
         $this->assertTrue(isset($class->associationMappings['groups']));
