@@ -308,6 +308,11 @@ class Connection
         $this->_conn = $this->_driver->connect($this->_params, $user, $password, $driverOptions);
         $this->_isConnected = true;
 
+        if ($this->_eventManager->hasListeners(Events::postConnect)) {
+            $eventArgs = new \Doctrine\DBAL\Event\ConnectionEventArgs($this);
+            $this->_eventManager->dispatchEvent(Events::postConnect, $eventArgs);
+        }
+
         return true;
     }
 

@@ -3,6 +3,11 @@
 namespace Doctrine\Tests\DBAL;
 
 require_once __DIR__ . '/../TestInit.php';
+
+use Doctrine\DBAL\Connection;
+use Doctrine\Common\EventManager;
+use Doctrine\DBAL\Configuration;
+use Doctrine\DBAL\Events;
  
 class ConnectionTest extends \Doctrine\Tests\DbalTestCase
 {
@@ -40,11 +45,28 @@ class ConnectionTest extends \Doctrine\Tests\DbalTestCase
 
     public function testGetDriver()
     {
-        $this->assertEquals('Doctrine\DBAL\Driver\PDOMySql\Driver', get_class($this->_conn->getDriver()));
+        $this->assertType('Doctrine\DBAL\Driver\PDOMySql\Driver', $this->_conn->getDriver());
     }
 
     public function testGetEventManager()
     {
-        $this->assertEquals('Doctrine\Common\EventManager', get_class($this->_conn->getEventManager()));
+        $this->assertType('Doctrine\Common\EventManager', $this->_conn->getEventManager());
+    }
+
+    public function testConnectDispatchEvent()
+    {
+        $listenerMock = $this->getMock('ConnectDispatchEventListener', array('postConnect'));
+        $listenerMock->expects($this->once())->method('postConnect');
+
+        $eventManager = new EventManager();
+        $eventManager->addEventListener(array(Events::postConnect), $listenerMock);
+
+        $driverMock = $this->getMock('Doctrine\DBAL\Driver');
+        $driverMock->expects(($this->at(0)))
+                   ->method('connect');
+        $platform = new Mocks\MockPlatform();
+
+        $conn = new Connection(array('platform' => $platform), $driverMock, new Configuration(), $eventManager);
+        $conn->connect();
     }
 }

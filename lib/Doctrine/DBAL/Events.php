@@ -37,6 +37,7 @@ final class Events
     const postExec = 'postExec';
     const preExecute = 'preExecute';
     const postExecute = 'postExecute';
-    
+
+    const postConnect = 'postConnect';
 }
 

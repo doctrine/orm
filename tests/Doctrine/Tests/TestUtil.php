@@ -64,8 +64,17 @@ class TestUtil
             $tmpConn->getSchemaManager()->createDatabase($dbname);
             
             $tmpConn->close();
+
+            $eventManager = null;
+            if (isset($GLOBALS['db_event_subscribers'])) {
+                $eventManager = new \Doctrine\Common\EventManager();
+                foreach (explode(",", $GLOBALS['db_event_subscribers']) AS $subscriberClass) {
+                    $subscriberInstance = new $subscriberClass();
+                    $eventManager->addEventSubscriber($subscriberInstance);
+                }
+            }
             
-            $conn = \Doctrine\DBAL\DriverManager::getConnection($realDbParams);
+            $conn = \Doctrine\DBAL\DriverManager::getConnection($realDbParams, null, $eventManager);
             
         } else {
             $params = array(
