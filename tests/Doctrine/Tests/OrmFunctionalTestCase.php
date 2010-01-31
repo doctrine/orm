@@ -7,7 +7,7 @@ namespace Doctrine\Tests;
  *
  * @since 2.0
  */
-class OrmFunctionalTestCase extends OrmTestCase
+abstract class OrmFunctionalTestCase extends OrmTestCase
 {
     /* The metadata cache shared between all functional tests. */
     private static $_metadataCacheImpl = null;
@@ -68,7 +68,12 @@ class OrmFunctionalTestCase extends OrmTestCase
         ),
         'generic' => array(
             'Doctrine\Tests\Models\Generic\DateTimeModel'
-        )
+        ),
+        'routing' => array(
+            'Doctrine\Tests\Models\Routing\RoutingLeg',
+            'Doctrine\Tests\Models\Routing\RoutingLocation',
+            'Doctrine\Tests\Models\Routing\RoutingRoute',
+        ),
     );
 
     protected function useModelSet($setName)
@@ -213,11 +218,11 @@ class OrmFunctionalTestCase extends OrmTestCase
             throw $e;
         }
 
-        if($this->_sqlLoggerStack->queries !== null && count($this->_sqlLoggerStack->queries)) {
+        if(isset($this->_sqlLoggerStack->queries) && count($this->_sqlLoggerStack->queries)) {
             $queries = "";
             for($i = 0; $i < count($this->_sqlLoggerStack->queries); $i++) {
                 $query = $this->_sqlLoggerStack->queries[$i];
-                $params = array_map(function($p) { return "'".$p."'"; }, $query['params']);
+                $params = array_map(function($p) { return "'".$p."'"; }, $query['params'] ?: array());
                 $queries .= ($i+1).". SQL: '".$query['sql']."' Params: ".implode(", ", $params).PHP_EOL;
             }
             

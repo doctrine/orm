@@ -33,6 +33,7 @@ class AllTests
         $suite->addTestSuite('Doctrine\Tests\ORM\Functional\OneToOneUnidirectionalAssociationTest');
         $suite->addTestSuite('Doctrine\Tests\ORM\Functional\OneToOneBidirectionalAssociationTest');
         $suite->addTestSuite('Doctrine\Tests\ORM\Functional\OneToManyBidirectionalAssociationTest');
+        $suite->addTestSuite('Doctrine\Tests\ORM\Functional\OneToManyUnidirectionalAssociationTest');
         $suite->addTestSuite('Doctrine\Tests\ORM\Functional\ManyToManyBasicAssociationTest');
         $suite->addTestSuite('Doctrine\Tests\ORM\Functional\ManyToManyUnidirectionalAssociationTest');
         $suite->addTestSuite('Doctrine\Tests\ORM\Functional\ManyToManyBidirectionalAssociationTest');
