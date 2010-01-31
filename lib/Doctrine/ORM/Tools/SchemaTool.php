@@ -424,7 +424,7 @@ class SchemaTool
             }
 
             if (isset($joinColumn['unique']) && $joinColumn['unique'] == true) {
-                $uniqueConstraints[] = array('columns' => $columnName);
+                $uniqueConstraints[] = array('columns' => array($columnName));
             }
 
             if (isset($joinColumn['onUpdate'])) {
