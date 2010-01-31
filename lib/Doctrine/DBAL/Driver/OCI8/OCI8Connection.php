@@ -32,7 +32,10 @@ class OCI8Connection implements \Doctrine\DBAL\Driver\Connection
     
     public function __construct($username, $password, $db)
     {
-        $this->_dbh = oci_connect($username, $password, $db);
+        $this->_dbh = @oci_connect($username, $password, $db);
+        if (!$this->_dbh) {
+            throw new OCI8Exception($this->errorInfo());
+        }
     }
     
     public function prepare($prepareString)
@@ -74,12 +77,18 @@ class OCI8Connection implements \Doctrine\DBAL\Driver\Connection
     
     public function commit()
     {
-        return oci_commit($this->_dbh);
+        if (!oci_commit($this->_dbh)) {
+            throw OCI8Exception::fromErrorInfo($this->errorInfo());
+        }
+        return true;
     }
     
     public function rollBack()
     {
-        return oci_rollback($this->_dbh);
+        if (!oci_rollback($this->_dbh)) {
+            throw OCI8Exception::fromErrorInfo($this->errorInfo());
+        }
+        return true;
     }
     
     public function errorCode()

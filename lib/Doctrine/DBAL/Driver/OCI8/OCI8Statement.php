@@ -137,7 +137,11 @@ class OCI8Statement implements \Doctrine\DBAL\Driver\Statement
             }
         }
         
-        return oci_execute($this->_sth, OCI_DEFAULT);
+        $ret = @oci_execute($this->_sth, OCI_DEFAULT);
+        if (!$ret) {
+            throw OCI8Exception::fromErrorInfo($this->errorInfo());
+        }
+        return $ret;
     }
 
     /**
