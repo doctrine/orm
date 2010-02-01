@@ -59,6 +59,7 @@ class AllTests
         
         // Events and Listeners
         $suite->addTestSuite('Doctrine\Tests\DBAL\Events\OracleSessionInitTest');
+        $suite->addTestSuite('Doctrine\Tests\DBAL\Events\MysqlSessionInitTest');
 
         // All Functional DBAL tests
         $suite->addTest(Functional\AllTests::suite());
