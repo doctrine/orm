@@ -12,6 +12,10 @@ Doctrine\Tests\ORM\Mapping\User:
       length: 50
       nullable: true
       unique: true
+    email:
+      type: string
+      column: user_email
+      columnDefinition: CHAR(32) NOT NULL
   oneToOne:
     address:
       targetEntity: Address
@@ -37,6 +41,7 @@ Doctrine\Tests\ORM\Mapping\User:
         inverseJoinColumns:
           group_id:
             referencedColumnName: id
+            columnDefinition: INT NULL
       cascade:
         - all
   lifecycleCallbacks:

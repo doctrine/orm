@@ -414,6 +414,10 @@ class YamlDriver extends AbstractFileDriver
         if (isset($joinColumnElement['onUpdate'])) {
             $joinColumn['onUpdate'] = $joinColumnElement['onUpdate'];
         }
+
+        if (isset($joinColumnElement['columnDefinition'])) {
+            $joinColumn['columnDefinition'] = $joinColumnElement['columnDefinition'];
+        }
         
         return $joinColumn;
     }

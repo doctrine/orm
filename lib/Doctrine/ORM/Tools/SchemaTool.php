@@ -415,7 +415,13 @@ class SchemaTool
                 // property as well.
 
                 $fieldMapping = $class->getFieldMapping($referencedFieldName);
-                $columnDef = isset($fieldMapping['columnDefinition']) ? $fieldMapping['columnDefinition'] : null;
+
+                $columnDef = null;
+                if (isset($joinColumn['columnDefinition'])) {
+                    $columnDef = $joinColumn['columnDefinition'];
+                } else if (isset($fieldMapping['columnDefinition'])) {
+                    $columnDef = $fieldMapping['columnDefinition'];
+                }
                 $columnOptions = array('notnull' => false, 'columnDefinition' => $columnDef);
 
                 $theJoinTable->createColumn(

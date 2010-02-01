@@ -164,8 +164,8 @@ class XmlDriver extends AbstractFileDriver
                     $metadata->setVersionMapping($mapping);
                 }
                 
-                if (isset($fieldMapping['columnDefinition'])) {
-                    $mapping['columnDefinition'] = (string)$fieldMapping['columnDefinition'];
+                if (isset($fieldMapping['column-definition'])) {
+                    $mapping['columnDefinition'] = (string)$fieldMapping['column-definition'];
                 }
                 
                 $metadata->mapField($mapping);
@@ -392,12 +392,16 @@ class XmlDriver extends AbstractFileDriver
             $joinColumn['nullable'] = ((string)$joinColumnElement['nullable'] == "false") ? false : true;
         }
         
-        if (isset($joinColumnElement['onDelete'])) {
+        if (isset($joinColumnElement['on-delete'])) {
             $joinColumn['onDelete'] = (string)$joinColumnElement['on-delete'];
         }
         
-        if (isset($joinColumnElement['onUpdate'])) {
+        if (isset($joinColumnElement['on-update'])) {
             $joinColumn['onUpdate'] = (string)$joinColumnElement['on-update'];
+        }
+
+        if (isset($joinColumnElement['column-definition'])) {
+            $joinColumn['columnDefinition'] = (string)$joinColumnElement['column-definition'];
         }
         
         return $joinColumn;

@@ -123,7 +123,7 @@
     <xs:attribute name="unique" type="xs:boolean" default="false" />
     <xs:attribute name="nullable" type="xs:boolean" default="false" />
     <xs:attribute name="version" type="xs:boolean" />
-    <xs:attribute name="columnDefinition" type="xs:string" />
+    <xs:attribute name="column-definition" type="xs:string" />
   </xs:complexType>
   
   <xs:complexType name="discriminator-column">
@@ -192,6 +192,7 @@
     <xs:attribute name="nullable" type="xs:boolean" default="true" />
     <xs:attribute name="on-delete" type="orm:fk-action" />
     <xs:attribute name="on-update" type="orm:fk-action" />
+    <xs:attribute name="column-definition" type="xs:string" />
   </xs:complexType>
 
   <xs:complexType name="join-columns">

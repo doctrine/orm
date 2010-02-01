@@ -17,6 +17,7 @@
         </id>
         
         <field name="name" column="name" type="string" length="50" nullable="true" unique="true" />
+        <field name="email" column="user_email" type="string" column-definition="CHAR(32) NOT NULL" />
         
         <one-to-one field="address" target-entity="Address">
             <join-column name="address_id" referenced-column-name="id"/>
@@ -37,7 +38,7 @@
                     <join-column name="user_id" referenced-column-name="id" nullable="false" unique="false" />
                 </join-columns>
                 <inverse-join-columns>
-                    <join-column name="group_id" referenced-column-name="id"/>
+                    <join-column name="group_id" referenced-column-name="id" column-definition="INT NULL" />
                 </inverse-join-columns>
             </join-table>
             <cascade>
