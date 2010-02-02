@@ -15,7 +15,7 @@ class BasicInheritanceMappingTest extends \Doctrine\Tests\OrmTestCase
     }
     
     /**
-     * @expectedException Doctrine\Common\DoctrineException
+     * @expectedException Doctrine\ORM\Mapping\MappingException
      */
     public function testGetMetadataForTransientClassThrowsException()
     {

@@ -21,8 +21,7 @@
 
 namespace Doctrine\ORM\Mapping\Driver;
 
-use Doctrine\Common\DoctrineException,
-    Doctrine\Common\Cache\ArrayCache,
+use Doctrine\Common\Cache\ArrayCache,
     Doctrine\Common\Annotations\AnnotationReader,
     Doctrine\DBAL\Schema\AbstractSchemaManager,
     Doctrine\ORM\Mapping\ClassMetadataInfo,

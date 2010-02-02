@@ -127,10 +127,43 @@ class MappingException extends \Doctrine\ORM\ORMException
         return new self('The column ' . $joinColumn . ' must be mapped to a field in class '
                 . $className . ' since it is referenced by a join column of another class.');
     }
+
+    public static function classIsNotAValidEntityOrMappedSuperClass($className)
+    {
+        return new self('Class '.$className.' is not a valid entity or mapped super class.');
+    }
+
+    public static function propertyTypeIsRequired($className, $propertyName)
+    {
+        return new self("The attribute 'type' is required for the column description of property ".$className."::\$".$propertyName.".");
+    }
+
+    public static function tableIdGeneratorNotImplemented($className)
+    {
+        return new self("TableIdGenerator is not yet implemented for use with class ".$className);
+    }
+
+    /**
+     *
+     * @param string $entity The entity's name
+     * @param string $fieldName The name of the field that was already declared
+     */
+    public static function duplicateFieldMapping($entity, $fieldName) {
+        return new self('Property "'.$fieldName.'" in "'.$entity.'" was already declared, but it must be declared only once');
+    }
+
+    public static function singleIdNotAllowedOnCompositePrimaryKey($entity) {
+        return new self('Single id is not allowed on composite primary key in entity '.$entity);
+    }
+
+    public static function unsupportedOptimisticLockingType($entity, $fieldName, $unsupportedType) {
+        return new self('Locking type "'.$unsupportedType.'" (specified in "'.$entity.'", field "'.$fieldName.'") '
+                        .'is not supported by Doctrine.'
+        );
+    }
     
     public static function annotationDriverRequiresConfiguredDirectoryPath()
     {
         return new self('The annotation driver needs to have a directory path');
     }
-
 }

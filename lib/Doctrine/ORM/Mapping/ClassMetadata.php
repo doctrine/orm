@@ -21,8 +21,6 @@
 
 namespace Doctrine\ORM\Mapping;
 
-use Doctrine\Common\DoctrineException;
-
 /**
  * A <tt>ClassMetadata</tt> instance holds all the object-relational mapping metadata
  * of an entity and it's associations.

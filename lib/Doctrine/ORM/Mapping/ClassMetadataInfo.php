@@ -21,8 +21,6 @@
 
 namespace Doctrine\ORM\Mapping;
 
-use Doctrine\Common\DoctrineException;
-
 /**
  * A <tt>ClassMetadata</tt> instance holds all the object-relational mapping metadata
  * of an entity and it's associations.
@@ -740,7 +738,7 @@ class ClassMetadataInfo
     public function getSingleIdentifierFieldName()
     {
         if ($this->isIdentifierComposite) {
-            throw DoctrineException::singleIdNotAllowedOnCompositePrimaryKey($this->name);
+            throw MappingException::singleIdNotAllowedOnCompositePrimaryKey($this->name);
         }
         return $this->identifier[0];
     }
@@ -1623,7 +1621,7 @@ class ClassMetadataInfo
             } else if ($mapping['type'] == 'datetime') {
                 $mapping['default'] = 'CURRENT_TIMESTAMP';
             } else {
-                throw DoctrineException::unsupportedOptimisticLockingType($this->name, $mapping['fieldName'], $mapping['type']);
+                throw MappingException::unsupportedOptimisticLockingType($this->name, $mapping['fieldName'], $mapping['type']);
             }
         }
     }

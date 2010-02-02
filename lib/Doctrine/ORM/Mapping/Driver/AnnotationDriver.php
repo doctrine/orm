@@ -21,8 +21,7 @@
 
 namespace Doctrine\ORM\Mapping\Driver;
 
-use Doctrine\Common\DoctrineException,
-    Doctrine\Common\Cache\ArrayCache,
+use Doctrine\Common\Cache\ArrayCache,
     Doctrine\Common\Annotations\AnnotationReader,
     Doctrine\ORM\Mapping\ClassMetadataInfo,
     Doctrine\ORM\Mapping\MappingException;
@@ -137,7 +136,7 @@ class AnnotationDriver implements Driver
         } else if (isset($classAnnotations['Doctrine\ORM\Mapping\MappedSuperclass'])) {
             $metadata->isMappedSuperclass = true;
         } else {
-            throw DoctrineException::classIsNotAValidEntityOrMappedSuperClass($className);
+            throw MappingException::classIsNotAValidEntityOrMappedSuperClass($className);
         }
 
         // Evaluate DoctrineTable annotation
@@ -239,7 +238,7 @@ class AnnotationDriver implements Driver
             // @Column, @OneToOne, @OneToMany, @ManyToOne, @ManyToMany
             if ($columnAnnot = $this->_reader->getPropertyAnnotation($property, 'Doctrine\ORM\Mapping\Column')) {
                 if ($columnAnnot->type == null) {
-                    throw DoctrineException::propertyTypeIsRequired($property->getName());
+                    throw MappingException::propertyTypeIsRequired($className, $property->getName());
                 }
                 
                 $mapping['type'] = $columnAnnot->type;
@@ -282,7 +281,7 @@ class AnnotationDriver implements Driver
                         'initialValue' => $seqGeneratorAnnot->initialValue
                     ));
                 } else if ($tblGeneratorAnnot = $this->_reader->getPropertyAnnotation($property, 'Doctrine\ORM\Mapping\TableGenerator')) {
-                    throw DoctrineException::tableIdGeneratorNotImplemented();
+                    throw MappingException::tableIdGeneratorNotImplemented($className);
                 }
             } else if ($oneToOneAnnot = $this->_reader->getPropertyAnnotation($property, 'Doctrine\ORM\Mapping\OneToOne')) {
                 $mapping['targetEntity'] = $oneToOneAnnot->targetEntity;

@@ -113,4 +113,28 @@ class ClassMetadataTest extends \Doctrine\Tests\OrmTestCase
 
         $this->assertEquals("DoctrineGlobal_Article", $cm->subClasses[0]);
     }
+
+    /**
+     * @group DDC-268
+     */
+    public function testSetInvalidVersionMapping_ThrowsException()
+    {
+        $field = array();
+        $field['fieldName'] = 'foo';
+        $field['type'] = 'string';
+
+        $cm = new ClassMetadata('Doctrine\Tests\Models\CMS\CmsUser');
+
+        $this->setExpectedException('Doctrine\ORM\Mapping\MappingException');
+        $cm->setVersionMapping($field);
+    }
+
+    public function testGetSingleIdentifierFieldName_MultipleIdentifierEntity_ThrowsException()
+    {
+        $cm = new ClassMetadata('Doctrine\Tests\Models\CMS\CmsUser');
+        $cm->isIdentifierComposite  = true;
+
+        $this->setExpectedException('Doctrine\ORM\Mapping\MappingException');
+        $cm->getSingleIdentifierFieldName();
+    }
 }

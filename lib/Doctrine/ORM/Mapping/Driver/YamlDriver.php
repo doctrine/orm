@@ -22,7 +22,6 @@
 namespace Doctrine\ORM\Mapping\Driver;
 
 use Doctrine\ORM\Mapping\ClassMetadataInfo,
-    Doctrine\Common\DoctrineException,
     Doctrine\ORM\Mapping\MappingException;
 
 if ( ! class_exists('sfYaml', false)) {
@@ -65,7 +64,7 @@ class YamlDriver extends AbstractFileDriver
         } else if ($element['type'] == 'mappedSuperclass') {
             $metadata->isMappedSuperclass = true;
         } else {
-            throw DoctrineException::classIsNotAValidEntityOrMapperSuperClass($className);
+            throw MappingException::classIsNotAValidEntityOrMapperSuperClass($className);
         }
 
         // Evaluate root level properties
@@ -165,6 +164,10 @@ class YamlDriver extends AbstractFileDriver
         // Evaluate fields
         if (isset($element['fields'])) {
             foreach ($element['fields'] as $name => $fieldMapping) {
+                if (!isset($fieldMapping['type'])) {
+                    throw MappingException::propertyTypeIsRequired($className, $name);
+                }
+
                 $e = explode('(', $fieldMapping['type']);
                 $fieldMapping['type'] = $e[0];
                 if (isset($e[1])) {
@@ -185,7 +188,7 @@ class YamlDriver extends AbstractFileDriver
                 if (isset($fieldMapping['sequenceGenerator'])) {
                     $metadata->setSequenceGeneratorDefinition($fieldMapping['sequenceGenerator']);
                 } else if (isset($fieldMapping['tableGenerator'])) {
-                    throw DoctrineException::tableIdGeneratorNotImplemented();
+                    throw MappingException::tableIdGeneratorNotImplemented($className);
                 }
                 if (isset($fieldMapping['column'])) {
                     $mapping['columnName'] = $fieldMapping['column'];

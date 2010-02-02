@@ -57,7 +57,7 @@ class XmlDriver extends AbstractFileDriver
         } else if ($xmlRoot->getName() == 'mapped-superclass') {
             $metadata->isMappedSuperclass = true;
         } else {
-            throw DoctrineException::classIsNotAValidEntityOrMapperSuperClass($className);
+            throw MappingException::classIsNotAValidEntityOrMapperSuperClass($className);
         }
 
         // Evaluate <entity...> attributes
@@ -200,7 +200,7 @@ class XmlDriver extends AbstractFileDriver
                     'initialValue' => $seqGeneratorAnnot->{'initial-value'}
                 ));
             } else if (isset($idElement->{'table-generator'})) {
-                throw DoctrineException::tableIdGeneratorNotImplemented();
+                throw MappingException::tableIdGeneratorNotImplemented($className);
             }
         }
 
