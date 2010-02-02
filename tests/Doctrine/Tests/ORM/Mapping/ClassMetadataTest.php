@@ -137,4 +137,15 @@ class ClassMetadataTest extends \Doctrine\Tests\OrmTestCase
         $this->setExpectedException('Doctrine\ORM\Mapping\MappingException');
         $cm->getSingleIdentifierFieldName();
     }
+
+    public function testDuplicateAssociationMappingException()
+    {
+        $cm = new ClassMetadata('Doctrine\Tests\Models\CMS\CmsUser');
+        $a1 = new \Doctrine\ORM\Mapping\OneToOneMapping(array('fieldName' => 'foo', 'sourceEntity' => 'stdClass', 'targetEntity' => 'stdClass', 'joinColumns' => array()));
+        $a2 = new \Doctrine\ORM\Mapping\OneToOneMapping(array('fieldName' => 'foo', 'sourceEntity' => 'stdClass', 'targetEntity' => 'stdClass', 'joinColumns' => array()));
+
+        $cm->addAssociationMapping($a1);
+        $this->setExpectedException('Doctrine\ORM\Mapping\MappingException');
+        $cm->addAssociationMapping($a2);
+    }
 }

@@ -152,6 +152,10 @@ class MappingException extends \Doctrine\ORM\ORMException
         return new self('Property "'.$fieldName.'" in "'.$entity.'" was already declared, but it must be declared only once');
     }
 
+    public static function duplicateAssociationMapping($entity, $fieldName) {
+        return new self('Property "'.$fieldName.'" in "'.$entity.'" was already declared, but it must be declared only once');
+    }
+
     public static function singleIdNotAllowedOnCompositePrimaryKey($entity) {
         return new self('Single id is not allowed on composite primary key in entity '.$entity);
     }
