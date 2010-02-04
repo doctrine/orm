@@ -341,4 +341,16 @@ class TableTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($table->hasIndex('my_idx'));
         $this->assertEquals(array("ID"), $table->getIndex("my_idx")->getColumns());
     }
+
+    public function testAddPrimaryKey_ColumnsAreExplicitlySetToNotNull()
+    {
+        $table = new Table("foo");
+        $column = $table->createColumn("id", 'integer', array('notnull' => false));
+
+        $this->assertFalse($column->getNotnull());
+
+        $table->setPrimaryKey(array('id'));
+        
+        $this->assertTrue($column->getNotnull());
+    }
 }

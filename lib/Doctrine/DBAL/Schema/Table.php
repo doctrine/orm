@@ -148,7 +148,14 @@ class Table extends AbstractAsset
      */
     public function setPrimaryKey(array $columns, $indexName = false)
     {
-        return $this->_createIndex($columns, $indexName ?: "primary", true, true);
+        $primaryKey = $this->_createIndex($columns, $indexName ?: "primary", true, true);
+
+        foreach ($columns AS $columnName) {
+            $column = $this->getColumn($columnName);
+            $column->setNotnull(true);
+        }
+
+        return $primaryKey;
     }
 
     /**
