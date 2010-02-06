@@ -6,6 +6,7 @@
 
 <project name="Doctrine2" default="build" basedir=".">
     <taskdef classname="phing.tasks.ext.d51PearPkg2Task" name="d51pearpkg2" />
+    <taskdef classname="NativePhpunitTask" classpath="./tools/" name="nativephpunit" />
 
     <property file="build.properties" />
     
@@ -121,7 +122,7 @@
         Runs the full test suite.
     -->
     <target name="test" depends="prepare">
-        <phpunit printsummary="true" haltonfailure="true" haltonskipped="false" haltonincomplete="false" haltonerror="true">
+        <!--<phpunit printsummary="true" haltonfailure="true" haltonskipped="false" haltonincomplete="false" haltonerror="true">
             <formatter todir="${build.dir}/logs" type="xml"/>
             <batchtest classpath="tests">
                 <fileset dir="tests">
@@ -130,7 +131,14 @@
                 </fileset>
             </batchtest>
         </phpunit>
+        -->
+        <nativephpunit
+            testfile="./tests/Doctrine/Tests/AllTests.php" junitlogfile="${build.dir}/logs/testsuites.xml"
+            testdirectory="./tests"
+        />
         <phpunitreport infile="${build.dir}/logs/testsuites.xml" format="frames" todir="${report.dir}/tests" />
+
+        <nativephpunit testfile="./tests/Doctrine/Tests/ORM/Performance/AllTests.php" testdirectory="./tests" haltonfailure="false" haltonerror="false" />
         <tstamp/>
         <svnlastrevision svnpath="${svn.path}" workingcopy="." propertyname="svn.lastrevision"/>
         <copy file="${build.dir}/logs/testsuites.xml" tofile="${log.archive.dir}/${svn.lastrevision}/log.xml" overwrite="true"/>
