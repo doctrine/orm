@@ -121,7 +121,7 @@
         Runs the full test suite.
     -->
     <target name="test" depends="prepare">
-        <phpunit printsummary="true" haltonfailure="true">
+        <phpunit printsummary="true" haltonfailure="true" haltonskipped="false" haltonincomplete="false" haltonerror="true">
             <formatter todir="${build.dir}/logs" type="xml"/>
             <batchtest classpath="tests">
                 <fileset dir="tests">
