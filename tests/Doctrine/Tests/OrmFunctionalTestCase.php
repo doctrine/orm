@@ -214,13 +214,13 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
 
     protected function onNotSuccessfulTest(\Exception $e)
     {
-        if ($e instanceof \PHPUnit_Framework_ExpectationFailedException) {
+        if ($e instanceof \PHPUnit_Framework_AssertionFailedError) {
             throw $e;
         }
 
         if(isset($this->_sqlLoggerStack->queries) && count($this->_sqlLoggerStack->queries)) {
             $queries = "";
-            for($i = 0; $i < count($this->_sqlLoggerStack->queries); $i++) {
+            for($i = count($this->_sqlLoggerStack->queries)-1; $i > max(count($this->_sqlLoggerStack->queries)-25, 0); $i--) {
                 $query = $this->_sqlLoggerStack->queries[$i];
                 $params = array_map(function($p) { return "'".$p."'"; }, $query['params'] ?: array());
                 $queries .= ($i+1).". SQL: '".$query['sql']."' Params: ".implode(", ", $params).PHP_EOL;
