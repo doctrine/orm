@@ -98,36 +98,4 @@ class SqliteSchemaManagerTest extends SchemaManagerFunctionalTestCase
     {
         $this->_sm->renameTable('oldname', 'newname');
     }
-
-    /**
-     * @expectedException \Exception
-     */
-    public function testAddTableColumn()
-    {
-        return $this->_sm->addTableColumn('table', 'column', array());
-    }
-
-    /**
-     * @expectedException \Exception
-     */
-    public function testRemoveTableColumn()
-    {
-        $this->_sm->removeTableColumn('table', 'column');
-    }
-
-    /**
-     * @expectedException \Exception
-     */
-    public function testChangeTableColumn()
-    {
-        $this->_sm->changeTableColumn('name', 'type', null, array());
-    }
-    
-    /**
-     * @expectedException \Exception
-     */
-    public function testRenameTableColumn()
-    {
-        $this->_sm->renameTableColumn('table', 'old', 'new', array());
-    }
 }
