@@ -125,7 +125,8 @@
             <formatter todir="${build.dir}/logs" type="xml"/>
             <batchtest classpath="tests">
                 <fileset dir="tests">
-                    <include name="**/*Test.php"/>
+                    <include name="**/*Test.php" />
+                    <exclude name="**/*Performance*.php" />
                 </fileset>
             </batchtest>
         </phpunit>
