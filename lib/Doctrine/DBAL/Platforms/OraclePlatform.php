@@ -418,18 +418,27 @@ END;';
     {
         $table = strtoupper($table);
 
-        return "SELECT rel.constraint_name, rel.position, col.column_name AS local_column, ".
-               "     rel.table_name, rel.column_name AS foreign_column, cc.delete_rule ".
-               "FROM (user_tab_columns col ".
-               "JOIN user_cons_columns con ".
-               "  ON col.table_name = con.table_name ".
-               " AND col.column_name = con.column_name ".
-               "JOIN user_constraints cc ".
-               "  ON con.constraint_name = cc.constraint_name ".
-               "JOIN user_cons_columns rel ".
-               "  ON cc.r_constraint_name = rel.constraint_name ".
-               " AND con.position = rel.position) ".
-               "WHERE cc.constraint_type = 'R' AND col.table_name = '".$table."'";
+        return "SELECT alc.constraint_name,
+          alc.DELETE_RULE,
+          alc.search_condition,
+          cols.column_name \"local_column\",
+          cols.position,
+          r_alc.table_name \"references_table\",
+          r_cols.column_name \"foreign_column\"
+     FROM all_cons_columns cols
+LEFT JOIN all_constraints alc
+       ON alc.constraint_name = cols.constraint_name
+      AND alc.owner = cols.owner
+LEFT JOIN all_constraints r_alc
+       ON alc.r_constraint_name = r_alc.constraint_name
+      AND alc.r_owner = r_alc.owner
+LEFT JOIN all_cons_columns r_cols
+       ON r_alc.constraint_name = r_cols.constraint_name
+      AND r_alc.owner = r_cols.owner
+      AND cols.position = r_cols.position
+    WHERE alc.constraint_name = cols.constraint_name
+      AND alc.constraint_type = 'R'
+      AND alc.table_name = '".$table."'";
     }
 
     public function getListTableConstraintsSql($table)
@@ -456,6 +465,24 @@ END;';
         }
 
         return 'DROP SEQUENCE ' . $sequence;
+    }
+
+    /**
+     * @param  ForeignKeyConstraint|string $foreignKey
+     * @param  Table|string $table
+     * @return string
+     */
+    public function getDropForeignKeySql($foreignKey, $table)
+    {
+        if ($foreignKey instanceof \Doctrine\DBAL\Schema\ForeignKeyConstraint) {
+            $foreignKey = $foreignKey->getName();
+        }
+
+        if ($table instanceof \Doctrine\DBAL\Schema\Table) {
+            $table = $table->getName();
+        }
+
+        return 'ALTER TABLE ' . $table . ' DROP CONSTRAINT ' . $foreignKey;
     }
 
     public function getDropDatabaseSql($database)
@@ -626,5 +653,13 @@ END;';
     public function supportsForeignKeyOnUpdate()
     {
         return false;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getTruncateTableSql($tableName, $cascade = false)
+    {
+        return 'TRUNCATE TABLE '.$tableName;
     }
 }

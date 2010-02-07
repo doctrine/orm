@@ -784,4 +784,12 @@ class PostgreSqlPlatform extends AbstractPlatform
     {
         return 'INSERT INTO ' . $quotedTableName . ' (' . $quotedIdentifierColumnName . ') VALUES (DEFAULT)';
     }
+
+    /**
+     * @inheritdoc
+     */
+    public function getTruncateTableSql($tableName, $cascade = false)
+    {
+        return 'TRUNCATE '.$tableName.' '.($cascade)?'CASCADE':'';
+    }
 }

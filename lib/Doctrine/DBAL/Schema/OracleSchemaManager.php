@@ -22,11 +22,12 @@
 namespace Doctrine\DBAL\Schema;
 
 /**
- * xxx
+ * Oracle Schema Manager
  *
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  * @author      Lukas Smith <smith@pooteeweet.org> (PEAR MDB2 library)
+ * @author      Benjamin Eberlei <kontakt@beberlei.de>
  * @version     $Revision$
  * @since       2.0
  */
@@ -198,11 +199,15 @@ class OracleSchemaManager extends AbstractSchemaManager
         foreach ($tableForeignKeys as $key => $value) {
             $value = \array_change_key_case($value, CASE_LOWER);
             if (!isset($list[$value['constraint_name']])) {
+                if ($value['delete_rule'] == "NO ACTION") {
+                    $value['delete_rule'] = null;
+                }
+
                 $list[$value['constraint_name']] = array(
                     'name' => $value['constraint_name'],
                     'local' => array(),
                     'foreign' => array(),
-                    'foreignTable' => $value['table_name'],
+                    'foreignTable' => $value['references_table'],
                     'onDelete' => $value['delete_rule'],
                 );
             }

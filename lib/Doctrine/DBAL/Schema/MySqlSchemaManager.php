@@ -265,13 +265,23 @@ class MySqlSchemaManager extends AbstractSchemaManager
     public function _getPortableTableForeignKeyDefinition($tableForeignKey)
     {
         $tableForeignKey = array_change_key_case($tableForeignKey, CASE_LOWER);
+
+        if ($tableForeignKey['delete_rule'] == "RESTRICT") {
+            $tableForeignKey['delete_rule'] = null;
+        }
+        if ($tableForeignKey['update_rule'] == "RESTRICT") {
+            $tableForeignKey['update_rule'] = null;
+        }
         
         return new ForeignKeyConstraint(
             (array)$tableForeignKey['column_name'],
             $tableForeignKey['referenced_table_name'],
             (array)$tableForeignKey['referenced_column_name'],
             $tableForeignKey['constraint_name'],
-            array()
+            array(
+                'onUpdate' => $tableForeignKey['update_rule'],
+                'onDelete' => $tableForeignKey['delete_rule'],
+            )
         );
     }
 }

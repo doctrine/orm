@@ -90,7 +90,7 @@ class DatabaseDriver implements Driver
                 $fieldMapping['id'] = true;
             }
 
-            $fieldMapping['fieldName'] = Inflector::camelize($column->getName());
+            $fieldMapping['fieldName'] = Inflector::camelize(strtolower($column->getName()));
             $fieldMapping['columnName'] = $column->getName();
             $fieldMapping['type'] = strtolower((string) $column->getType());
 

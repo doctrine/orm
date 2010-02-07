@@ -505,4 +505,12 @@ class MsSqlPlatform extends AbstractPlatform
     {
         return 'INSERT INTO ' . $quotedTableName . ' DEFAULT VALUES';
     }
+
+    /**
+     * @inheritdoc
+     */
+    public function getTruncateTableSql($tableName, $cascade = false)
+    {
+        return 'TRUNCATE TABLE '.$tableName;
+    }
 }

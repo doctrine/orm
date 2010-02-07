@@ -810,11 +810,11 @@ abstract class AbstractPlatform
 
         $sql = array();
         if ($this->supportsForeignKeyConstraints()) {
-            foreach ($diff->addedForeignKeys AS $foreignKey) {
-                $sql[] = $this->getCreateForeignKeySql($foreignKey, $tableName);
-            }
             foreach ($diff->removedForeignKeys AS $foreignKey) {
                 $sql[] = $this->getDropForeignKeySql($foreignKey, $tableName);
+            }
+            foreach ($diff->addedForeignKeys AS $foreignKey) {
+                $sql[] = $this->getCreateForeignKeySql($foreignKey, $tableName);
             }
             foreach ($diff->changedForeignKeys AS $foreignKey) {
                 $sql[] = $this->getDropForeignKeySql($foreignKey, $tableName);
@@ -1830,5 +1830,20 @@ abstract class AbstractPlatform
     public function getEmptyIdentityInsertSql($tableName, $identifierColumnName)
     {
         return 'INSERT INTO ' . $tableName . ' (' . $identifierColumnName . ') VALUES (null)';
+    }
+
+    /**
+     * Generate a Truncate Table SQL statement for a given table.
+     *
+     * Cascade is not supported on many platforms but would optionally cascade the truncate by
+     * following the foreign keys.
+     *
+     * @param  string $tableName
+     * @param  bool $cascade
+     * @return string
+     */
+    public function getTruncateTableSql($tableName, $cascade = false)
+    {
+        return 'TRUNCATE '.$tableName;
     }
 }

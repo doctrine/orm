@@ -81,7 +81,7 @@ class CreateSchemaSqlCollector implements Visitor
         );
     }
 
-    public function acceptColunn(Table $table, Column $column)
+    public function acceptColumn(Table $table, Column $column)
     {
         
     }

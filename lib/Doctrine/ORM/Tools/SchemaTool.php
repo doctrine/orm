@@ -109,8 +109,12 @@ class SchemaTool
     {
         $processedClasses = array(); // Reminder for processed classes, used for hierarchies
 
+        $metadataSchemaConfig = new \Doctrine\DBAL\Schema\SchemaConfig();
+        $metadataSchemaConfig->setExplicitForeignKeyIndexes(false);
+        $metadataSchemaConfig->setMaxIdentifierLength(63);
+
         $sm = $this->_em->getConnection()->getSchemaManager();
-        $schema = new \Doctrine\DBAL\Schema\Schema(array(), array(), $sm->createSchemaConfig());
+        $schema = new \Doctrine\DBAL\Schema\Schema(array(), array(), $metadataSchemaConfig);
 
         foreach ($classes as $class) {
             if (isset($processedClasses[$class->name]) || $class->isMappedSuperclass) {
@@ -235,6 +239,11 @@ class SchemaTool
     {
         $discrColumn = $class->discriminatorColumn;
 
+        if (!isset($discrColumn['type']) || (strtolower($discrColumn['type']) == 'string' && $discrColumn['length'] === null)) {
+            $discrColumn['type'] = 'string';
+            $discrColumn['length'] = 255;
+        }
+
         $table->createColumn(
             $class->getQuotedDiscriminatorColumnName($this->_platform),
             $discrColumn['type'],
@@ -329,11 +338,8 @@ class SchemaTool
      * This includes the SQL for foreign key constraints and join tables.
      * 
      * @param ClassMetadata $class
-     * @param array $sql The sequence of SQL statements where any new statements should be appended.
-     * @param array $columns The list of columns in the class's primary table where any additional
-     *          columns required by relations should be appended.
-     * @param array $constraints The constraints of the table where any additional constraints
-     *          required by relations should be appended.
+     * @param \Doctrine\DBAL\Schema\Table $table
+     * @param \Doctrine\DBAL\Schema\Schema $schema
      * @return void
      */
     private function _gatherRelationsSql($class, $table, $schema)
@@ -344,10 +350,10 @@ class SchemaTool
             }
 
             $foreignClass = $this->_em->getClassMetadata($mapping->targetEntityName);
-            
+
             if ($mapping->isOneToOne() && $mapping->isOwningSide) {
                 $primaryKeyColumns = $uniqueConstraints = array(); // unnecessary for this relation-type
-                
+
                 $this->_gatherRelationJoinColumns($mapping->getJoinColumns(), $table, $foreignClass, $mapping, $primaryKeyColumns, $uniqueConstraints);
             } else if ($mapping->isOneToMany() && $mapping->isOwningSide) {
                 //... create join table, one-many through join table supported later
@@ -423,6 +429,9 @@ class SchemaTool
                     $columnDef = $fieldMapping['columnDefinition'];
                 }
                 $columnOptions = array('notnull' => false, 'columnDefinition' => $columnDef);
+                if (isset($joinColumn['nullable'])) {
+                    $columnOptions['notnull'] = !$joinColumn['nullable'];
+                }
 
                 $theJoinTable->createColumn(
                     $columnName, $class->getTypeOfColumn($joinColumn['referencedColumnName']), $columnOptions

@@ -54,7 +54,7 @@ interface Visitor
     /**
      * @param Column $column
      */
-    public function acceptColunn(Table $table, Column $column);
+    public function acceptColumn(Table $table, Column $column);
 
     /**
      * @param Table $localTable

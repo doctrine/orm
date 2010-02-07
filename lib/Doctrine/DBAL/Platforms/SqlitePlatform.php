@@ -456,4 +456,12 @@ class SqlitePlatform extends AbstractPlatform
     {
         return 'sqlite';
     }
+
+    /**
+     * @inheritdoc
+     */
+    public function getTruncateTableSql($tableName, $cascade = false)
+    {
+        return 'DELETE FROM '.$tableName;
+    }
 }

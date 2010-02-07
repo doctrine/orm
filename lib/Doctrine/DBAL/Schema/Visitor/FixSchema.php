@@ -42,7 +42,7 @@ class FixSchema implements Visitor
     /**
      * @param Column $column
      */
-    public function acceptColunn(Table $table, Column $column)
+    public function acceptColumn(Table $table, Column $column)
     {
         
     }
@@ -54,7 +54,12 @@ class FixSchema implements Visitor
     public function acceptForeignKey(Table $localTable, ForeignKeyConstraint $fkConstraint)
     {
         if ($this->_addExplicitIndexForForeignKey) {
-            $localTable->addIndex($fkConstraint->getColumns());
+            $columns = $fkConstraint->getColumns();
+            if ($localTable->columnsAreIndexed($columns)) {
+                return;
+            }
+
+            $localTable->addIndex($columns);
         }
     }
 

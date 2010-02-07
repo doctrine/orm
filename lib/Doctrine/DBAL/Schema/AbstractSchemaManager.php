@@ -239,19 +239,29 @@ abstract class AbstractSchemaManager
     }
 
     /**
+     * Return a list of all tables in the current database
+     *
+     * @return array
+     */
+    public function listTableNames()
+    {
+        $sql = $this->_platform->getListTablesSql();
+
+        $tables = $this->_conn->fetchAll($sql);
+
+        return $this->_getPortableTablesList($tables);
+    }
+
+    /**
      * List the tables for this connection
      *
      * @return Table[]
      */
     public function listTables()
     {
-        $sql = $this->_platform->getListTablesSql();
+        $tableNames = $this->listTableNames();
 
-        $tables = $this->_conn->fetchAll($sql);
-
-        $tableNames = $this->_getPortableTablesList($tables);
         $tables = array();
-
         foreach ($tableNames AS $tableName) {
             $columns = $this->listTableColumns($tableName);
             $foreignKeys = array();

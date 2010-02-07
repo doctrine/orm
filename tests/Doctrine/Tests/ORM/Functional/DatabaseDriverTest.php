@@ -22,6 +22,10 @@ class DatabaseDriverTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
     public function testCreateSimpleYamlFromDatabase()
     {
+        if (!$this->_em->getConnection()->getDatabasePlatform()->supportsForeignKeyConstraints()) {
+            $this->markTestSkipped('Platform does not support foreign keys.');
+        }
+
         $table = new \Doctrine\DBAL\Schema\Table("dbdriver_foo");
         $table->createColumn('id', 'integer');
         $table->setPrimaryKey(array('id'));
@@ -92,7 +96,7 @@ class DatabaseDriverTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $output = false;
         
         foreach ($metadatas AS $metadata) {
-            if ($metadata->name == $className) {
+            if (strtolower($metadata->name) == strtolower($className)) {
                 return $metadata;
             }
         }

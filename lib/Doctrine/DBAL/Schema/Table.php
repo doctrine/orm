@@ -202,6 +202,30 @@ class Table extends AbstractAsset
     }
 
     /**
+     * Check if an index begins in the order of the given columns.
+     *
+     * @param  array $columnsNames
+     * @return bool
+     */
+    public function columnsAreIndexed(array $columnsNames)
+    {
+        foreach ($this->getIndexes() AS $index) {
+            $indexColumns = $index->getColumns();
+            $areIndexed = true;
+            for ($i = 0; $i < count($columnsNames); $i++) {
+                if ($columnsNames[$i] != $indexColumns[$i]) {
+                    $areIndexed = false;
+                }
+            }
+
+            if ($areIndexed) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
      *
      * @param array $columnNames
      * @param string $indexName
@@ -585,7 +609,7 @@ class Table extends AbstractAsset
         $visitor->acceptTable($this);
 
         foreach ($this->getColumns() AS $column) {
-            $visitor->acceptColunn($this, $column);
+            $visitor->acceptColumn($this, $column);
         }
 
         foreach ($this->getIndexes() AS $index) {
