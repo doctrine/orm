@@ -201,7 +201,7 @@ class Parser
      */
     public static function registerStringFunction($name, $class)
     {
-        self::$_STRING_FUNCTIONS[$name] = $class;
+        self::$_STRING_FUNCTIONS[strtolower($name)] = $class;
     }
 
     /**
@@ -212,7 +212,7 @@ class Parser
      */
     public static function registerNumericFunction($name, $class)
     {
-        self::$_NUMERIC_FUNCTIONS[$name] = $class;
+        self::$_NUMERIC_FUNCTIONS[strtolower($name)] = $class;
     }
 
     /**
@@ -223,7 +223,7 @@ class Parser
      */
     public static function registerDatetimeFunction($name, $class)
     {
-        self::$_DATETIME_FUNCTIONS[$name] = $class;
+        self::$_DATETIME_FUNCTIONS[strtolower($name)] = $class;
     }
 
     /**
