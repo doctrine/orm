@@ -63,6 +63,9 @@
     </fileset>
 
     <target name="clean">
+        <available file="./build.properties" property="build_properties_exist" value="true"/>
+        <fail unless="build_properties_exist" message="The build.properties file is missing." />
+
         <delete dir="${build.dir}" includeemptydirs="true" />
         <delete dir="${dist.dir}" includeemptydirs="true" />
         <delete dir="${report.dir}" includeemptydirs="true" />
@@ -122,19 +125,18 @@
         Runs the full test suite.
     -->
     <target name="test" depends="prepare">
-        <!--<phpunit printsummary="true" haltonfailure="true" haltonskipped="false" haltonincomplete="false" haltonerror="true">
-            <formatter todir="${build.dir}/logs" type="xml"/>
-            <batchtest classpath="tests">
-                <fileset dir="tests">
-                    <include name="**/*Test.php" />
-                    <exclude name="**/*Performance*.php" />
-                </fileset>
-            </batchtest>
-        </phpunit>
-        -->
+        <if><equals arg1="${test.phpunit_generate_coverage}" arg2="1" />
+            <then>
+                <property name="test.phpunit_coverage_file" value="${build.dir}/logs/clover.xml" />
+            </then>
+            <else>
+                <property name="test.phpunit_coverage_file" value="false" />
+            </else>
+        </if>
+
         <nativephpunit
             testfile="./tests/Doctrine/Tests/AllTests.php" junitlogfile="${build.dir}/logs/testsuites.xml"
-            testdirectory="./tests"  coverageclover="${build.dir}/logs/clover.xml"
+            testdirectory="./tests"  coverageclover="${test.phpunit_coverage_file}" configuration="${test.phpunit_configuration_file}"
         />
         <phpunitreport infile="${build.dir}/logs/testsuites.xml" format="frames" todir="${report.dir}/tests" />
 

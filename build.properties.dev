@@ -6,3 +6,5 @@ dist.dir=dist
 report.dir=reports
 log.archive.dir=logs
 svn.path=/usr/bin/svn
+test.phpunit_configuration_file=
+test.phpunit_generate_coverage=0

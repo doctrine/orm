@@ -44,14 +44,26 @@ class NativePhpunitTask extends Task
     }
 
     public function setJunitlogfile($junitlogfile) {
+        if (strlen($junitlogfile) == 0) {
+            $junitlogfile = NULL;
+        }
+
         $this->junitlogfile = $junitlogfile;
     }
 
     public function setConfiguration($configuration) {
+        if (strlen($configuration) == 0) {
+            $configuration = NULL;
+        }
+
         $this->configuration = $configuration;
     }
 
     public function setCoverageClover($coverageClover) {
+        if (strlen($coverageClover) == 0) {
+            $coverageClover = NULL;
+        }
+
         $this->coverageClover = $coverageClover;
     }
 
@@ -92,7 +104,7 @@ class NativePhpunitTask extends Task
         $printer = new NativePhpunitPrinter();
 
         $arguments = array(
-            'configuration' => $this->configurationFile,
+            'configuration' => $this->configuration,
             'coverageClover' => $this->coverageClover,
             'junitLogfile' => $this->junitlogfile,
             'printer' => $printer,
@@ -114,7 +126,9 @@ class NativePhpunitTask extends Task
             $this->log("PHPUnit Success: ".count($result->passed())." tests passed, no ".
                 "failures (".$result->skippedCount()." skipped, ".$result->notImplementedCount()." not implemented)");
 
+            // Hudson for example doesn't like the backslash in class names
             if (file_exists($this->coverageClover)) {
+                $this->log("Generated Clover Coverage XML to: ".$this->coverageClover);
                 $content = file_get_contents($this->coverageClover);
                 $content = str_replace("\\", ".", $content);
                 file_put_contents($this->coverageClover, $content);
