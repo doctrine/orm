@@ -13,9 +13,6 @@ require_once __DIR__ . '/../../../lib/Doctrine/Common/ClassLoader.php';
 $classLoader = new \Doctrine\Common\ClassLoader('Doctrine');
 $classLoader->register();
 
-require_once 'PHPUnit/Util/Filter.php';
-\PHPUnit_Util_Filter::addDirectoryToWhitelist(__DIR__ . '/../../../lib/');
-
 set_include_path(
     __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'lib'
     . PATH_SEPARATOR .
