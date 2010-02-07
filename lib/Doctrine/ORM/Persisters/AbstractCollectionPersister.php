@@ -32,8 +32,21 @@ use Doctrine\ORM\EntityManager,
  */
 abstract class AbstractCollectionPersister
 {
+    /**
+     *
+     * @var EntityManager
+     */
     protected $_em;
+
+    /**
+     * @var \Doctrine\DBAL\Connection
+     */
     protected $_conn;
+
+    /**
+     *
+     * @var \Doctrine\ORM\UnitOfWork
+     */
     protected $_uow;
 
     /**
