@@ -114,6 +114,13 @@ class NativePhpunitTask extends Task
             $this->log("PHPUnit Success: ".count($result->passed())." tests passed, no ".
                 "failures (".$result->skippedCount()." skipped, ".$result->notImplementedCount()." not implemented)");
 
+            if (file_exists($this->coverageClover)) {
+                $content = file_get_contents($this->coverageClover);
+                $content = str_replace("\\", ".", $content);
+                file_put_contents($this->coverageClover, $content);
+                unset($content);
+            }
+
         } catch(\Exception $e) {
             throw new BuildException("NativePhpunitTask failed: ".$e->getMessage());
         }

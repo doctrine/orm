@@ -134,7 +134,7 @@
         -->
         <nativephpunit
             testfile="./tests/Doctrine/Tests/AllTests.php" junitlogfile="${build.dir}/logs/testsuites.xml"
-            testdirectory="./tests"
+            testdirectory="./tests"  coverageclover="${build.dir}/logs/clover.xml"
         />
         <phpunitreport infile="${build.dir}/logs/testsuites.xml" format="frames" todir="${report.dir}/tests" />
 
