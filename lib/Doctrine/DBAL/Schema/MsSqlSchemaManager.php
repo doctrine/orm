@@ -391,4 +391,9 @@ class MsSqlSchemaManager extends AbstractSchemaManager
 
         return $this->conn->fetchColumn($query);
     }
+
+    protected function _getPortableTableColumnDefinition($tableColumn)
+    {
+        return $column;
+    }
 }
