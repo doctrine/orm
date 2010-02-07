@@ -704,7 +704,7 @@ class SqlWalker implements TreeWalker
         } else if ($assoc->isManyToMany()) {
             // Join relation table
             $joinTable = $assoc->getJoinTable();
-            $joinTableAlias = $this->getSqlTableAlias($joinTable['name']);
+            $joinTableAlias = $this->getSqlTableAlias($joinTable['name'], $joinedDqlAlias);
             $sql .= $assoc->getQuotedJoinTableName($this->_platform) . ' ' . $joinTableAlias . ' ON ';
             
             if ($relation->isOwningSide) {
