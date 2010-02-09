@@ -510,29 +510,45 @@ class EntityManager
     /**
      * Gets a hydrator for the given hydration mode.
      *
-     * @param  $hydrationMode
+     * This method caches the hydrator instances which is used for all queries that don't
+     * selectively iterate over the result.
+     *
+     * @param int $hydrationMode
+     * @return Doctrine\ORM\Internal\Hydration\AbstractHydrator
      */
     public function getHydrator($hydrationMode)
     {
         if ( ! isset($this->_hydrators[$hydrationMode])) {
-            switch ($hydrationMode) {
-                case Query::HYDRATE_OBJECT:
-                    $this->_hydrators[$hydrationMode] = new Internal\Hydration\ObjectHydrator($this);
-                    break;
-                case Query::HYDRATE_ARRAY:
-                    $this->_hydrators[$hydrationMode] = new Internal\Hydration\ArrayHydrator($this);
-                    break;
-                case Query::HYDRATE_SCALAR:
-                    $this->_hydrators[$hydrationMode] = new Internal\Hydration\ScalarHydrator($this);
-                    break;
-                case Query::HYDRATE_SINGLE_SCALAR:
-                    $this->_hydrators[$hydrationMode] = new Internal\Hydration\SingleScalarHydrator($this);
-                    break;
-                default:
-                    throw ORMException::invalidHydrationMode($hydrationMode);
-            }
+            $this->_hydrators[$hydrationMode] = $this->newHydrator($hydrationMode);
         }
         return $this->_hydrators[$hydrationMode];
+    }
+
+    /**
+     * Create a new instance for the given hydration mode.
+     * 
+     * @param  int $hydrationMode
+     * @return Doctrine\ORM\Internal\Hydration\AbstractHydrator
+     */
+    public function newHydrator($hydrationMode)
+    {
+        switch ($hydrationMode) {
+            case Query::HYDRATE_OBJECT:
+                $hydrator = new Internal\Hydration\ObjectHydrator($this);
+                break;
+            case Query::HYDRATE_ARRAY:
+                $hydrator = new Internal\Hydration\ArrayHydrator($this);
+                break;
+            case Query::HYDRATE_SCALAR:
+                $hydrator = new Internal\Hydration\ScalarHydrator($this);
+                break;
+            case Query::HYDRATE_SINGLE_SCALAR:
+                $hydrator = new Internal\Hydration\SingleScalarHydrator($this);
+                break;
+            default:
+                throw ORMException::invalidHydrationMode($hydrationMode);
+        }
+        return $hydrator;
     }
 
     /**
