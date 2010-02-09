@@ -208,7 +208,7 @@ class MySqlPlatform extends AbstractPlatform
                "FROM information_schema.key_column_usage k /*!50116 ".
                "INNER JOIN information_schema.referential_constraints c ON k.`CONSTRAINT_NAME` = c.constraint_name AND ".
                "  c.constraint_name = k.constraint_name AND ".
-               "  c.table_name = k.table_name */ WHERE k.table_name = '$table'";
+               "  c.table_name = '$table' */ WHERE k.table_name = '$table'";
 
         if ( ! is_null($database)) {
             $sql .= " AND table_schema = '$database'";
