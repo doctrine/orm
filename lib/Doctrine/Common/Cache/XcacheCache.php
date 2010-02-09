@@ -32,6 +32,7 @@ namespace Doctrine\Common\Cache;
  * @author  Jonathan Wage <jonwage@gmail.com>
  * @author  Roman Borschel <roman@code-factory.org>
  * @author  David Abdemoulaie <dave@hobodave.com>
+ * @author  Benjamin Eberlei <kontakt@beberlei.de>
  */
 class XcacheCache extends AbstractCache
 {
@@ -58,7 +59,7 @@ class XcacheCache extends AbstractCache
      */
     protected function _doFetch($id)
     {
-        return $this->_doContains($id) ? xcache_get($id) : false;
+        return $this->_doContains($id) ? unserialize( xcache_get($id) ) : false;
     }
 
     /**
@@ -74,7 +75,7 @@ class XcacheCache extends AbstractCache
      */
     protected function _doSave($id, $data, $lifeTime = false)
     {
-        return xcache_set($id, $data, $lifeTime);
+        return xcache_set($id, serialize($data), $lifeTime);
     }
 
     /**
