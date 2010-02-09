@@ -113,11 +113,11 @@
       <xs:enumeration value="EAGER"/> 
       <xs:enumeration value="LAZY"/>
     </xs:restriction> 
-  </xs:simpleType> 
+  </xs:simpleType>
 
   <xs:complexType name="field">
     <xs:attribute name="name" type="xs:NMTOKEN" use="required" />
-    <xs:attribute name="type" type="xs:NMTOKEN" use="required" />
+    <xs:attribute name="type" type="xs:NMTOKEN" default="string" />
     <xs:attribute name="column" type="xs:NMTOKEN" />
     <xs:attribute name="length" type="xs:NMTOKEN" />
     <xs:attribute name="unique" type="xs:boolean" default="false" />
@@ -167,7 +167,7 @@
   </xs:complexType>
 
   <xs:complexType name="generator">
-    <xs:attribute name="strategy" type="orm:generator-strategy" use="required" />
+    <xs:attribute name="strategy" type="orm:generator-strategy" use="optional" default="AUTO" />
   </xs:complexType>
 
   <xs:complexType name="id">
@@ -187,7 +187,7 @@
 
   <xs:complexType name="join-column">
     <xs:attribute name="name" type="xs:NMTOKEN" use="required" />
-    <xs:attribute name="referenced-column-name" type="xs:NMTOKEN" use="required" />
+    <xs:attribute name="referenced-column-name" type="xs:NMTOKEN" use="optional" default="id" />
     <xs:attribute name="unique" type="xs:boolean" default="false" />
     <xs:attribute name="nullable" type="xs:boolean" default="true" />
     <xs:attribute name="on-delete" type="orm:fk-action" />
@@ -213,7 +213,7 @@
   <xs:complexType name="many-to-many">
     <xs:sequence>
       <xs:element name="cascade" type="orm:cascade-type" minOccurs="0" />
-      <xs:element name="join-table" type="orm:join-table" />
+      <xs:element name="join-table" type="orm:join-table" minOccurs="0" />
     </xs:sequence>
     <xs:attribute name="target-entity" type="xs:NMTOKEN" use="required" />
     <xs:attribute name="field" type="xs:NMTOKEN" use="required" />
@@ -235,7 +235,7 @@
   <xs:complexType name="many-to-one">
     <xs:sequence>
       <xs:element name="cascade" type="orm:cascade-type" minOccurs="0" />
-      <xs:choice minOccurs="1" maxOccurs="1">
+      <xs:choice minOccurs="0" maxOccurs="1">
         <xs:element name="join-column" type="orm:join-column"/>
         <xs:element name="join-columns" type="orm:join-columns"/>
       </xs:choice>

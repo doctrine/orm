@@ -52,4 +52,14 @@ class Annotation
             $this->$key = $value;
         }
     }
+    
+    public function __get($name)
+    {
+        throw new \BadMethodCallException("Unknown annotation property '$name' on annotation '".get_class($this)."'.");
+    }
+    
+    public function __set($name, $value)
+    {
+        throw new \BadMethodCallException("Unknown annotation property '$name' on annotation '".get_class($this)."'.");
+    }
 }

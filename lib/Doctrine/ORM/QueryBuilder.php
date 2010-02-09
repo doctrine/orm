@@ -21,8 +21,7 @@
 
 namespace Doctrine\ORM;
 
-use Doctrine\ORM\Query\Expr,
-    Doctrine\Common\DoctrineException;
+use Doctrine\ORM\Query\Expr;
 
 /**
  * This class is responsible for building DQL query strings via an object oriented
@@ -46,7 +45,7 @@ class QueryBuilder
     const STATE_CLEAN = 1;
 
     /**
-     * @var EntityManager $em Instance of an EntityManager to use for query.
+     * @var EntityManager $em The EntityManager used by this QueryBuilder.
      */
     private $_em;
 
@@ -78,30 +77,35 @@ class QueryBuilder
      * @var string The complete DQL string for this query.
      */
     private $_dql;
-
+    
     /**
-     * @var Query The Query instance used for this QueryBuilder.
+     * @var array The query parameters.
      */
-    private $_q;
-
+    private $_params = array();
+    
     /**
-     * @var Expr The Expr instance used to generate DQL expressions
+     * @var integer The index of the first result to retrieve.
      */
-    private $_expr;
+    private $_firstResult = null;
+    
+    /**
+     * @var integer The maximum number of results to retrieve.
+     */
+    private $_maxResults = null;
 
     /**
      * Initializes a new <tt>QueryBuilder</tt> that uses the given <tt>EntityManager</tt>.
      * 
-     * @param EntityManager $entityManager The EntityManager to use.
+     * @param EntityManager $em The EntityManager to use.
      */
-    public function __construct(EntityManager $entityManager)
+    public function __construct(EntityManager $em)
     {
-        $this->_em = $entityManager;
-        $this->_q = $entityManager->createQuery();
+        $this->_em = $em;
     }
 
     /**
-     * Factory for instantiating and retrieving the Expr instance when needed
+     * Gets an ExpressionBuilder used for object-oriented construction of query expressions.
+     * Intended for convenient inline usage. Example:
      *
      *     [php]
      *     $qb = $em->createQueryBuilder()
@@ -109,36 +113,17 @@ class QueryBuilder
      *         ->from('User', 'u')
      *         ->where($qb->expr()->eq('u.id', 1));
      *
-     * @return Expr $expr
+     * @return ExpressionBuilder
      */
     public function expr()
     {
-        if ( ! $this->_expr) {
-            $this->_expr = new Expr;
-        }
-        return $this->_expr;
+        return $this->_em->getExpressionBuilder();
     }
 
     /**
-     * Get the type of this query instance. Either the constant for SELECT, UPDATE or DELETE
+     * Get the type of the currently built query.
      *
-     *     [php]
-     *     switch ($qb->getType())
-     *     {
-     *         case QueryBuilder::SELECT:
-     *             echo 'SELECT';
-     *         break;
-     *
-     *         case QueryBuilder::DELETE:
-     *             echo 'DELETE';
-     *         break;
-     *
-     *         case QueryBuilder::UPDATE:
-     *             echo 'UPDATE';
-     *         break;
-     *     }
-     *
-     * @return integer $type
+     * @return integer
      */
     public function getType()
     {
@@ -146,12 +131,9 @@ class QueryBuilder
     }
 
     /**
-     * Get the entity manager instance for this query builder instance
+     * Get the associated EntityManager for this query builder.
      *
-     *     [php]
-     *     $em = $qb->getEntityManager();
-     *
-     * @return EntityManager $em
+     * @return EntityManager
      */
     public function getEntityManager()
     {
@@ -168,7 +150,7 @@ class QueryBuilder
      *         echo 'Query builder is clean';
      *     }
      *
-     * @return integer $state
+     * @return integer
      */
     public function getState()
     {
@@ -184,7 +166,7 @@ class QueryBuilder
      *         ->from('User', 'u')
      *     echo $qb->getDql(); // SELECT u FROM User u
      *
-     * @return string $dql The DQL string
+     * @return string The DQL string
      */
     public function getDql()
     {
@@ -216,7 +198,7 @@ class QueryBuilder
     }
 
     /**
-     * Get the Query instance with the DQL string set to it
+     * Constructs a Query instance from the current configuration of the builder.
      *
      *     [php]
      *     $qb = $em->createQueryBuilder()
@@ -225,13 +207,14 @@ class QueryBuilder
      *     $q = $qb->getQuery();
      *     $results = $q->execute();
      *
-     * @return Query $q
+     * @return Query
      */
     public function getQuery()
     {
-        $this->_q->setDql($this->getDql());
-
-        return $this->_q;
+        return $this->_em->createQuery($this->getDql())
+                ->setParameters($this->_params)
+                ->setFirstResult($this->_firstResult)
+                ->setMaxResults($this->_maxResults);
     }
 
     /**
@@ -264,12 +247,11 @@ class QueryBuilder
      *
      * @param string|integer $key The parameter position or name.
      * @param mixed $value The parameter value.
-     * @return QueryBuilder $qb
+     * @return QueryBuilder This QueryBuilder instance.
      */
     public function setParameter($key, $value)
     {
-        $this->_q->setParameter($key, $value);
-
+        $this->_params[$key] = $value;
         return $this;
     }
     
@@ -287,12 +269,11 @@ class QueryBuilder
      *         ));
      *
      * @param array $params
-     * @return QueryBuilder $qb
+     * @return QueryBuilder This QueryBuilder instance.
      */
     public function setParameters(array $params)
     {
-        $this->_q->setParameters($params);
-
+        $this->_params = $params;
         return $this;
     }
 
@@ -303,7 +284,7 @@ class QueryBuilder
      */
     public function getParameters($params = array())
     {
-        return $this->_q->getParameters($params);
+        return $this->_params;
     }
     
     /**
@@ -314,18 +295,18 @@ class QueryBuilder
      */
     public function getParameter($key)
     {
-        return $this->_q->getParameter($key);
+        return isset($this->_params[$key]) ? $this->_params[$key] : null;
     }
     
     /**
      * Sets the position of the first result to retrieve (the "offset").
      *
      * @param integer $firstResult The first result to return.
-     * @return QueryBuilder This query builder object.
+     * @return QueryBuilder This QueryBuilder instance.
      */
     public function setFirstResult($firstResult)
     {
-        $this->_q->setFirstResult($firstResult);
+        $this->_firstResult = $firstResult;
         return $this;
     }
     
@@ -337,18 +318,18 @@ class QueryBuilder
      */
     public function getFirstResult()
     {
-        return $this->_q->getFirstResult();
+        return $this->_firstResult;
     }
     
     /**
      * Sets the maximum number of results to retrieve (the "limit").
      * 
      * @param integer $maxResults
-     * @return QueryBuilder This query builder object.
+     * @return QueryBuilder This QueryBuilder instance.
      */
     public function setMaxResults($maxResults)
     {
-        $this->_q->setMaxResults($maxResults);
+        $this->_maxResults = $maxResults;
         return $this;
     }
     
@@ -360,7 +341,7 @@ class QueryBuilder
      */
     public function getMaxResults()
     {
-        return $this->_q->getMaxResults();
+        return $this->_maxResults;
     }
 
     /**
@@ -369,7 +350,7 @@ class QueryBuilder
      * @param string $dqlPartName 
      * @param string $dqlPart 
      * @param string $append 
-     * @return QueryBuilder $qb
+     * @return QueryBuilder This QueryBuilder instance.
      */
     public function add($dqlPartName, $dqlPart, $append = false)
     {
@@ -396,7 +377,7 @@ class QueryBuilder
      *         ->leftJoin('u.Phonenumbers', 'p');
      *
      * @param mixed $select  String SELECT statement or SELECT Expr instance
-     * @return QueryBuilder $qb
+     * @return QueryBuilder This QueryBuilder instance.
      */
     public function select($select = null)
     {
@@ -422,7 +403,7 @@ class QueryBuilder
      *         ->leftJoin('u.Phonenumbers', 'p');
      *
      * @param mixed $select  String SELECT statement or SELECT Expr instance
-     * @return QueryBuilder $qb
+     * @return QueryBuilder This QueryBuilder instance.
      */
     public function addSelect($select = null)
     {
@@ -448,7 +429,7 @@ class QueryBuilder
      *
      * @param string $delete    The model to delete 
      * @param string $alias     The alias of the model
-     * @return QueryBuilder $qb
+     * @return QueryBuilder This QueryBuilder instance.
      */
     public function delete($delete = null, $alias = null)
     {
@@ -472,7 +453,7 @@ class QueryBuilder
      *
      * @param string $update   The model to update
      * @param string $alias    The alias of the model
-     * @return QueryBuilder $qb
+     * @return QueryBuilder This QueryBuilder instance.
      */
     public function update($update = null, $alias = null)
     {
@@ -493,17 +474,17 @@ class QueryBuilder
      *         ->select('u')
      *         ->from('User', 'u')
      *
-     * @param string $from   The model name
-     * @param string $alias  The alias of the model
-     * @return QueryBuilder $qb
+     * @param string $from   The class name.
+     * @param string $alias  The alias of the class.
+     * @return QueryBuilder This QueryBuilder instance.
      */
     public function from($from, $alias)
     {
         return $this->add('from', new Expr\From($from, $alias), true);
     }
-
+    
     /**
-     * Add a INNER JOIN
+     * Add a INNER JOIN to an associated class.
      *
      *     [php]
      *     $qb = $em->createQueryBuilder()
@@ -515,7 +496,27 @@ class QueryBuilder
      * @param string $alias          The alias of the join
      * @param string $conditionType  The condition type constant. Either ON or WITH.
      * @param string $condition      The condition for the join
-     * @return QueryBuilder $qb
+     * @return QueryBuilder This QueryBuilder instance.
+     */
+    public function join($join, $alias, $conditionType = null, $condition = null)
+    {
+        return $this->innerJoin($join, $alias, $conditionType, $condition);
+    }
+
+    /**
+     * Add an INNER JOIN to an associated class.
+     *
+     *     [php]
+     *     $qb = $em->createQueryBuilder()
+     *         ->select('u')
+     *         ->from('User', 'u')
+     *         ->innerJoin('u.Phonenumbers', 'p', Expr\Join::WITH, 'p.is_primary = 1');
+     *
+     * @param string $join           The relationship to join
+     * @param string $alias          The alias of the join
+     * @param string $conditionType  The condition type constant. Either ON or WITH.
+     * @param string $condition      The condition for the join
+     * @return QueryBuilder This QueryBuilder instance.
      */
     public function innerJoin($join, $alias, $conditionType = null, $condition = null)
     {
@@ -756,7 +757,8 @@ class QueryBuilder
      */
     public function orderBy($sort, $order = null)
     {
-        return $this->add('orderBy', new Expr\OrderBy($sort, $order));
+        return $this->add('orderBy',  $sort instanceof Expr\OrderBy ? $sort
+                : new Expr\OrderBy($sort, $order));
     }
 
     /**
@@ -839,8 +841,8 @@ class QueryBuilder
         return $this->getDql();
     }
 
-    public function __clone()
+    /*public function __clone()
     {
         $this->_q = clone $this->_q;
-    }
+    }*/
 }

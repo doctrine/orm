@@ -266,53 +266,29 @@ class ExprTest extends \Doctrine\Tests\OrmTestCase
 
         $this->assertEquals('(1 = 1) OR (1 < 5)', (string) $orExpr);
     }
-
-    public function testSelectExpr()
-    {
-        $selectExpr = $this->_expr->select();
-        $selectExpr->add('u.id');
-        $selectExpr->add('u.username');
-
-        $this->assertEquals('u.id, u.username', (string) $selectExpr);
-    }
     
-    public function testFromExpr()
-    {
-        $this->assertEquals('User u', (string) $this->_expr->from('User', 'u'));
-    }
-
-    public function testExprBaseCount()
-    {
-        $selectExpr = $this->_expr->select();
-        $selectExpr->add('u.id');
-        $selectExpr->add('u.username');
-
-        $this->assertEquals($selectExpr->count(), 2);
-    }
-
     public function testOrderByCountExpr()
     {
-        $orderByExpr = $this->_expr->orderBy();
-        $orderByExpr->add('u.username', 'DESC');
+        $orderExpr = $this->_expr->desc('u.username');
 
-        $this->assertEquals($orderByExpr->count(), 1);
-        $this->assertEquals('u.username DESC', (string) $orderByExpr);
+        $this->assertEquals($orderExpr->count(), 1);
+        $this->assertEquals('u.username DESC', (string) $orderExpr);
     }
 
     public function testOrderByOrder()
     {
-        $orderByExpr = $this->_expr->orderBy('u.username', 'DESC');
-        $this->assertEquals('u.username DESC', (string) $orderByExpr);
+        $orderExpr = $this->_expr->desc('u.username');
+        $this->assertEquals('u.username DESC', (string) $orderExpr);
     }
 
-    public function testOrderByDefaultOrderIsAsc()
+    public function testOrderByAsc()
     {
-        $orderByExpr = $this->_expr->orderBy('u.username');
-        $this->assertEquals('u.username ASC', (string) $orderByExpr);
+        $orderExpr = $this->_expr->asc('u.username');
+        $this->assertEquals('u.username ASC', (string) $orderExpr);
     }
 
     /**
-     * @expectedException Doctrine\Common\DoctrineException
+     * @expectedException \InvalidArgumentException
      */
     public function testAddThrowsException()
     {

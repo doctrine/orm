@@ -86,6 +86,24 @@ class ClassMetadataTest extends \Doctrine\Tests\OrmTestCase
 
         $this->assertEquals("DoctrineGlobal_User", $cm->associationMappings['author']->targetEntityName);
     }
+    
+    public function testMapManyToManyJoinTableDefaults()
+    {
+        $cm = new ClassMetadata('Doctrine\Tests\Models\CMS\CmsUser');
+        $cm->mapManyToMany(
+            array(
+            'fieldName' => 'groups',
+            'targetEntity' => 'CmsGroup'
+        ));
+        
+        $assoc = $cm->associationMappings['groups'];
+        $this->assertTrue($assoc instanceof \Doctrine\ORM\Mapping\ManyToManyMapping);
+        $this->assertEquals(array(
+            'name' => 'CmsUser_CmsGroup',
+            'joinColumns' => array(array('name' => 'CmsUser_id', 'referencedColumnName' => 'id')),
+            'inverseJoinColumns' => array(array('name' => 'CmsGroup_id', 'referencedColumnName' => 'id'))
+        ), $assoc->joinTable);
+    }
 
     /**
      * @group DDC-115
@@ -141,8 +159,8 @@ class ClassMetadataTest extends \Doctrine\Tests\OrmTestCase
     public function testDuplicateAssociationMappingException()
     {
         $cm = new ClassMetadata('Doctrine\Tests\Models\CMS\CmsUser');
-        $a1 = new \Doctrine\ORM\Mapping\OneToOneMapping(array('fieldName' => 'foo', 'sourceEntity' => 'stdClass', 'targetEntity' => 'stdClass', 'joinColumns' => array()));
-        $a2 = new \Doctrine\ORM\Mapping\OneToOneMapping(array('fieldName' => 'foo', 'sourceEntity' => 'stdClass', 'targetEntity' => 'stdClass', 'joinColumns' => array()));
+        $a1 = new \Doctrine\ORM\Mapping\OneToOneMapping(array('fieldName' => 'foo', 'sourceEntity' => 'stdClass', 'targetEntity' => 'stdClass', 'mappedBy' => 'foo'));
+        $a2 = new \Doctrine\ORM\Mapping\OneToOneMapping(array('fieldName' => 'foo', 'sourceEntity' => 'stdClass', 'targetEntity' => 'stdClass', 'mappedBy' => 'foo'));
 
         $cm->addAssociationMapping($a1);
         $this->setExpectedException('Doctrine\ORM\Mapping\MappingException');

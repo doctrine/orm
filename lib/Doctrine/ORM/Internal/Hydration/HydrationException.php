@@ -2,7 +2,7 @@
 
 namespace Doctrine\ORM\Internal\Hydration;
 
-class HydrationException extends \Doctrine\Common\DoctrineException
+class HydrationException extends \Doctrine\ORM\ORMException
 {
     public static function nonUniqueResult()
     {

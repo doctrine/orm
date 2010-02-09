@@ -22,7 +22,6 @@
 namespace Doctrine\ORM;
 
 use Doctrine\Common\EventManager,
-    Doctrine\Common\DoctrineException,
     Doctrine\DBAL\Connection,
     Doctrine\ORM\Mapping\ClassMetadata,
     Doctrine\ORM\Mapping\ClassMetadataFactory,
@@ -96,6 +95,11 @@ class EntityManager
      * @var Doctrine\ORM\Proxy\ProxyFactory
      */
     private $_proxyFactory;
+    
+    /**
+     * @var ExpressionBuilder The expression builder instance used to generate query expressions.
+     */
+    private $_expressionBuilder;
 
     /**
      * Whether the EntityManager is closed or not.
@@ -142,6 +146,27 @@ class EntityManager
     public function getMetadataFactory()
     {
         return $this->_metadataFactory;
+    }
+    
+    /**
+     * Gets an ExpressionBuilder used for object-oriented construction of query expressions.
+     * 
+     * Example:
+     *
+     *     [php]
+     *     $qb = $em->createQueryBuilder();
+     *     $expr = $em->getExpressionBuilder();
+     *     $qb->select('u')->from('User', 'u')
+     *         ->where($expr->orX($expr->eq('u.id', 1), $expr->eq('u.id', 2)));
+     *
+     * @return ExpressionBuilder
+     */
+    public function getExpressionBuilder()
+    {
+        if ($this->_expressionBuilder === null) {
+            $this->_expressionBuilder = new Query\Expr;
+        }
+        return $this->_expressionBuilder;
     }
     
     /**

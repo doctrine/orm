@@ -40,13 +40,13 @@ final class DiscriminatorMap extends Annotation {}
 /*final class SubClasses extends Annotation {}*/
 final class Id extends Annotation {}
 final class GeneratedValue extends Annotation {
-    public $strategy;
+    public $strategy = 'AUTO';
 }
 final class Version extends Annotation {}
 final class JoinColumn extends Annotation {
     public $name;
     public $fieldName; // field name used in non-object hydration (array/scalar)
-    public $referencedColumnName;
+    public $referencedColumnName = 'id';
     public $unique = false;
     public $nullable = true;
     public $onDelete;
@@ -55,10 +55,12 @@ final class JoinColumn extends Annotation {
 }
 final class JoinColumns extends Annotation {}
 final class Column extends Annotation {
-    public $type;
+    public $type = 'string';
     public $length;
-    public $precision = 0; // The precision for a decimal (exact numeric) column (Applies only for decimal column)
-    public $scale = 0; // The scale for a decimal (exact numeric) column (Applies only for decimal column)
+    // The precision for a decimal (exact numeric) column (Applies only for decimal column)
+    public $precision = 0;
+    // The scale for a decimal (exact numeric) column (Applies only for decimal column)
+    public $scale = 0;
     public $unique = false;
     public $nullable = false;
     public $name;
@@ -132,5 +134,3 @@ final class PreRemove extends Annotation {}
 final class PostRemove extends Annotation {}
 final class PostLoad extends Annotation {}
 
-/* Generic annotation for Doctrine extensions */
-final class DoctrineX extends Annotation {}

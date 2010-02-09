@@ -21,8 +21,7 @@
 
 namespace Doctrine\ORM;
 
-use Doctrine\Common\DoctrineException,
-    Doctrine\ORM\Mapping\AssociationMapping,
+use Doctrine\ORM\Mapping\AssociationMapping,
     \Closure;
 
 /**

@@ -31,155 +31,77 @@ namespace Doctrine\ORM\Query;
  * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
  * @author  Jonathan Wage <jonwage@gmail.com>
  * @author  Roman Borschel <roman@code-factory.org>
+ * @todo Rename: ExpressionBuilder
  */
 class Expr
 {
     /**
-     * Creates an instance of Expr\Andx with given arguments.
-     * Each argument is separated by an "AND". Example:
+     * Creates a conjunction of the given boolean expressions.
+     * 
+     * Example:
      *
      *     [php]
      *     // (u.type = ?1) AND (u.role = ?2)
-     *     $q->where($q->expr()->andx('u.type = ?1', 'u.role = ?2'));
+     *     $expr->andX('u.type = ?1', 'u.role = ?2'));
      *
      * @param mixed $x Optional clause. Defaults = null, but requires
      *                 at least one defined when converting to string.
      * @return Expr\Andx
      */
-    public function andx($x = null)
+    public function andX($x = null)
     {
         return new Expr\Andx(func_get_args());
     }
 
     /**
-     * Creates an instance of Expr\Orx with given arguments.
-     * Each argument is separated by an "OR". Example:
+     * Creates a disjunction of the given boolean expressions.
+     * 
+     * Example:
      *
      *     [php]
      *     // (u.type = ?1) OR (u.role = ?2)
-     *     $q->where($q->expr()->orx('u.type = ?1', 'u.role = ?2'));
+     *     $q->where($q->expr()->orX('u.type = ?1', 'u.role = ?2'));
      *
      * @param mixed $x Optional clause. Defaults = null, but requires
      *                 at least one defined when converting to string.
      * @return Expr\Orx
      */
-    public function orx($x = null)
+    public function orX($x = null)
     {
         return new Expr\Orx(func_get_args());
     }
-
+    
     /**
-     * Creates an instance of Expr\Select with given arguments.
-     * Each argument is separated by a ",". Example:
-     *
-     *     [php]
-     *     // u.id, u.name, u.surname
-     *     $q->select($q->expr()->select('u.id', 'u.name')->add('u.surname'));
-     *
-     * @param mixed $select Optional select. Defaults = null, but requires
-     *                      at least one defined when converting to string.
-     * @return Expr\Select
+     * Creates an ASCending order expression.
+     * 
+     * @param $sort
+     * @return OrderBy
      */
-    public function select($select = null)
+    public function asc($expr)
     {
-        return new Expr\Select(is_array($select) ? $select : func_get_args());
+        return new Expr\OrderBy($expr, 'ASC');
     }
     
     /**
-     * Creates an instance of Expr\From with given arguments.
-     *
-     *     [php]
-     *     // User u
-     *     $q->from($q->expr()->from('User', 'u'));
-     *
-     * @param string $from Entity name.
-     * @param string $alias Alias to be used by Entity.
-     * @return Expr\From
+     * Creates a DESCending order expression.
+     * 
+     * @param $sort
+     * @return OrderBy
      */
-    public function from($from, $alias)
+    public function desc($expr)
     {
-        return new Expr\From($from, $alias);
-    }
-    
-    /**
-     * Creates an instance of Expr\Join with given arguments.
-     *
-     *     [php]
-     *     // LEFT JOIN u.Group g WITH g.name = 'admin'
-     *     $q->expr()->leftJoin('u.Group', 'g', 'WITH', "g.name = 'admin'")
-     *
-     * @param string $join Relation join.
-     * @param string $alias Alias to be used by Relation.
-     * @param string $conditionType Optional type of condition appender. Accepts either string or constant.
-     *                              'ON' and 'WITH' are supported strings. Expr\Join::ON and Expr\Join::WITH are supported constants.
-     * @param mixed $condition Optional condition to be appended.
-     * @return Expr\Join
-     */
-    public function leftJoin($join, $alias, $conditionType = null, $condition = null)
-    {
-        return new Expr\Join(Expr\Join::LEFT_JOIN, $join, $alias, $conditionType, $condition);
-    }
-    
-    /**
-     * Creates an instance of Expr\Join with given arguments.
-     *
-     *     [php]
-     *     // INNER JOIN u.Group g WITH g.name = 'admin'
-     *     $q->expr()->innerJoin('u.Group', 'g', 'WITH', "g.name = 'admin'")
-     *
-     * @param string $join Relation join.
-     * @param string $alias Alias to be used by Relation.
-     * @param string $conditionType Optional type of condition appender. Accepts either string or constant.
-     *                              'ON' and 'WITH' are supported strings. Expr\Join::ON and Expr\Join::WITH are supported constants.
-     * @param mixed $condition Optional condition to be appended.
-     * @return Expr\Join
-     */
-    public function innerJoin($join, $alias, $conditionType = null, $condition = null)
-    {
-        return new Expr\Join(Expr\Join::INNER_JOIN, $join, $alias, $conditionType, $condition);
+        return new Expr\OrderBy($expr, 'DESC');
     }
 
     /**
-     * Creates an instance of Expr\OrderBy with given item sort and order.
-     * Each argument is separated by a ",". Example:
-     *
-     *     [php]
-     *     $q->orderBy($q->expr()->orderBy('u.surname', 'ASC')->add('u.name', 'ASC'));
-     *
-     * @param string $sort Optional item sort.
-     * @param string $order Optional order to be applied in item.
-     * @return Expr\OrderBy
-     */
-    public function orderBy($sort = null, $order = null)
-    {
-        return new Expr\OrderBy($sort, $order);
-    }
-
-    /**
-     * Creates an instance of Expr\GroupBy with given arguments.
-     * Each argument is separated by a ",". Example:
-     *
-     *     [php]
-     *     // u.id, u.name
-     *     $q->select($q->expr()->groupBy('u.id', 'u.name'));
-     *
-     * @param mixed $groupBy Optional group by. Defaults = null, but requires
-     *                       at least one defined when converting to string.
-     * @return Expr\Select
-     */
-    public function groupBy($groupBy = null)
-    {
-        return new Expr\GroupBy(func_get_args());
-    }
-
-    /**
-     * Creates an instance of Expr\Comparison, with the given arguments.
+     * Creates an equality comparison expression with the given arguments.
+     * 
      * First argument is considered the left expression and the second is the right expression.
      * When converted to string, it will generated a <left expr> = <right expr>. Example:
      *
      *     [php]
      *     // u.id = ?1
-     *     $q->where($q->expr()->eq('u.id', '?1'));
+     *     $expr->eq('u.id', '?1');
      *
      * @param mixed $x Left expression
      * @param mixed $y Right expression
@@ -358,7 +280,7 @@ class Expr
     }
 
     /**
-     * Creates an instance of SOME() function, with the given DQL Subquery.
+     * Creates a SOME() function expression with the given DQL subquery.
      *
      * @param mixed $subquery DQL Subquery to be used in SOME() function.
      * @return Expr\Func
@@ -369,7 +291,7 @@ class Expr
     }
 
     /**
-     * Creates an instance of ANY() function, with the given DQL subquery.
+     * Creates an ANY() function expression with the given DQL subquery.
      *
      * @param mixed $subquery DQL Subquery to be used in ANY() function.
      * @return Expr\Func
@@ -380,7 +302,7 @@ class Expr
     }
 
     /**
-     * Creates an instance of NOT() function, with the given restriction.
+     * Creates a negation expression of the given restriction.
      *
      * @param mixed $restriction Restriction to be used in NOT() function.
      * @return Expr\Func
@@ -391,7 +313,7 @@ class Expr
     }
 
     /**
-     * Creates an instance of ABS() function, with the given argument.
+     * Creates an ABS() function expression with the given argument.
      *
      * @param mixed $x Argument to be used in ABS() function.
      * @return Expr\Func
@@ -403,6 +325,7 @@ class Expr
 
     /**
      * Creates a product mathematical expression with the given arguments.
+     * 
      * First argument is considered the left expression and the second is the right expression.
      * When converted to string, it will generated a <left expr> * <right expr>. Example:
      *
@@ -461,8 +384,8 @@ class Expr
      * When converted to string, it will generated a <left expr> / <right expr>. Example:
      *
      *     [php]
-     *     // u.total - u.period
-     *     $q->expr()->diff('u.total', 'u.period')
+     *     // u.total / u.period
+     *     $expr->quot('u.total', 'u.period')
      *
      * @param mixed $x Left expression
      * @param mixed $y Right expression
@@ -474,7 +397,7 @@ class Expr
     }
 
     /**
-     * Creates an instance of SQRT() function, with the given argument.
+     * Creates a SQRT() function expression with the given argument.
      *
      * @param mixed $x Argument to be used in SQRT() function.
      * @return Expr\Func
@@ -485,7 +408,7 @@ class Expr
     }
 
     /**
-     * Creates an instance of field IN() function, with the given arguments.
+     * Creates an IN() expression with the given arguments.
      *
      * @param string $x Field in string format to be restricted by IN() function
      * @param mixed $y Argument to be used in IN() function.
@@ -493,11 +416,18 @@ class Expr
      */
     public function in($x, $y)
     {
+        if (is_array($y)) {
+            foreach ($y as &$literal) {
+                if ( ! ($literal instanceof Expr\Literal)) {
+                    $literal = $this->_quoteLiteral($literal);
+                }
+            }
+        }
         return new Expr\Func($x . ' IN', (array) $y);
     }
 
     /**
-     * Creates an instance of field NOT IN() function, with the given arguments.
+     * Creates a NOT IN() expression with the given arguments.
      *
      * @param string $x Field in string format to be restricted by NOT IN() function
      * @param mixed $y Argument to be used in NOT IN() function.
@@ -509,7 +439,7 @@ class Expr
     }
 
     /**
-     * Creates an instance of field LIKE() comparison, with the given arguments.
+     * Creates a LIKE() comparison expression with the given arguments.
      *
      * @param string $x Field in string format to be inspected by LIKE() comparison.
      * @param mixed $y Argument to be used in LIKE() comparison.
@@ -521,7 +451,7 @@ class Expr
     }
 
     /**
-     * Creates an instance of CONCAT() function, with the given argument.
+     * Creates a CONCAT() function expression with the given arguments.
      *
      * @param mixed $x First argument to be used in CONCAT() function.
      * @param mixed $x Second argument to be used in CONCAT() function.
@@ -533,7 +463,7 @@ class Expr
     }
 
     /**
-     * Creates an instance of SUBSTR() function, with the given argument.
+     * Creates a SUBSTR() function expression with the given arguments.
      *
      * @param mixed $x Argument to be used as string to be cropped by SUBSTR() function.
      * @param integer $from Initial offset to start cropping string. May accept negative values.
@@ -546,10 +476,10 @@ class Expr
     }
 
     /**
-     * Creates an instance of LOWER() function, with the given argument.
+     * Creates a LOWER() function expression with the given argument.
      *
      * @param mixed $x Argument to be used in LOWER() function.
-     * @return Expr\Func
+     * @return Expr\Func A LOWER function expression.
      */
     public function lower($x)
     {
@@ -557,10 +487,10 @@ class Expr
     }
 
     /**
-     * Creates an instance of LOWER() function, with the given argument.
+     * Creates an UPPER() function expression with the given argument.
      *
-     * @param mixed $x Argument to be used in LOWER() function.
-     * @return Expr\Func
+     * @param mixed $x Argument to be used in UPPER() function.
+     * @return Expr\Func An UPPER function expression.
      */
     public function upper($x)
     {
@@ -568,10 +498,10 @@ class Expr
     }
 
     /**
-     * Creates an instance of LENGTH() function, with the given argument.
+     * Creates a LENGTH() function expression with the given argument.
      *
      * @param mixed $x Argument to be used as argument of LENGTH() function.
-     * @return Expr\Func
+     * @return Expr\Func A LENGTH function expression.
      */
     public function length($x)
     {
@@ -579,17 +509,28 @@ class Expr
     }
 
     /**
-     * Creates a literal representation of the given argument.
+     * Creates a literal expression of the given argument.
      *
      * @param mixed $literal Argument to be converted to literal.
-     * @return string
+     * @return Expr\Literal
      */
     public function literal($literal)
+    {
+        return new Expr\Literal($this->_quoteLiteral($literal));
+    }
+    
+    /**
+     * Quotes a literal value, if necessary, according to the DQL syntax.
+     * 
+     * @param mixed $literal The literal value.
+     * @return string
+     */
+    private function _quoteLiteral($literal)
     {
         if (is_numeric($literal)) {
             return (string) $literal;
         } else {
-            return "'" . $literal . "'";
+            return "'" . str_replace("'", "''", $literal) . "'";
         }
     }
 
@@ -599,7 +540,7 @@ class Expr
      * @param mixed $val Valued to be inspected by range values.
      * @param integer $x Starting range value to be used in BETWEEN() function.
      * @param integer $y End point value to be used in BETWEEN() function.
-     * @return Expr\Func
+     * @return Expr\Func A BETWEEN expression.
      */
     public function between($val, $x, $y)
     {
@@ -610,7 +551,7 @@ class Expr
      * Creates an instance of TRIM() function, with the given argument.
      *
      * @param mixed $x Argument to be used as argument of TRIM() function.
-     * @return Expr\Func
+     * @return Expr\Func a TRIM expression.
      */
     public function trim($x)
     {

@@ -82,7 +82,6 @@ class Configuration
      *
      * @param array $types Key-value map of types to include
      * @param boolean $override Optional flag to support only inclusion or also override
-     * @throws DoctrineException
      */
     public function setCustomTypes(array $types, $override = false)
     {
@@ -97,7 +96,6 @@ class Configuration
      * Overrides existent types in Doctrine
      *
      * @param array $types Key-value map of types to override
-     * @throws DoctrineException
      */
     public function setTypeOverrides(array $overrides)
     {

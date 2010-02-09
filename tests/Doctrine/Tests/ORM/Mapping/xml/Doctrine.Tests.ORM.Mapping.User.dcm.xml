@@ -20,10 +20,8 @@
         <field name="email" column="user_email" type="string" column-definition="CHAR(32) NOT NULL" />
         
         <one-to-one field="address" target-entity="Address">
+            <cascade><cascade-remove /></cascade>
             <join-column name="address_id" referenced-column-name="id"/>
-            <cascade>
-                <cascade-remove />
-            </cascade>
         </one-to-one>
         
         <one-to-many field="phonenumbers" target-entity="Phonenumber" mapped-by="user">
@@ -33,6 +31,9 @@
         </one-to-many>
         
         <many-to-many field="groups" target-entity="Group">
+            <cascade>
+                <cascade-all/>
+            </cascade>
             <join-table name="cms_users_groups">
                 <join-columns>
                     <join-column name="user_id" referenced-column-name="id" nullable="false" unique="false" />
@@ -41,9 +42,6 @@
                     <join-column name="group_id" referenced-column-name="id" column-definition="INT NULL" />
                 </inverse-join-columns>
             </join-table>
-            <cascade>
-                <cascade-all/>
-            </cascade>
         </many-to-many>
         
     </entity>

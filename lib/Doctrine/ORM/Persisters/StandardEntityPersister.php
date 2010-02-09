@@ -184,7 +184,7 @@ class StandardEntityPersister
                 $this->_assignDefaultVersionValue($this->_class, $entity, $id);
             }
         }
-
+        
         $stmt->closeCursor();
         $this->_queuedInserts = array();
 
@@ -462,7 +462,7 @@ class StandardEntityPersister
         foreach ($this->_class->associationMappings as $field => $assoc) {
             $value = $this->_class->reflFields[$field]->getValue($entity);
             if ($assoc->isOneToOne()) {
-                if ($value instanceof Proxy && ! $value->__isInitialized()) {
+                if ($value instanceof Proxy && ! $value->__isInitialized__) {
                     continue; // skip uninitialized proxies
                 }
                 

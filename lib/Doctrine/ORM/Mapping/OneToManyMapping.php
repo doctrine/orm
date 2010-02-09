@@ -36,6 +36,9 @@ namespace Doctrine\ORM\Mapping;
  * 2) To drastically reduce the size of a serialized instance (private/protected members
  *    get the whole class name, namespace inclusive, prepended to every property in
  *    the serialized representation).
+ *    
+ * Instances of this class are stored serialized in the metadata cache together with the
+ * owning <tt>ClassMetadata</tt> instance.
  *
  * @author Roman Borschel <roman@code-factory.org>
  * @author Giorgio Sironi <piccoloprincipeazzurro@gmail.com>
@@ -47,13 +50,6 @@ class OneToManyMapping extends AssociationMapping
     public $orphanRemoval = false;
     /** FUTURE: The key column mapping, if any. The key column holds the keys of the Collection. */
     //public $keyColumn;
-    
-    /** 
-     * TODO: Allow any combination of source/target columns in lazy loading.
-     * What is supported now is primary key (that can spread on multiple fields)
-     * pointed to foreign keys on the target
-    public $targetColumns;
-     */
 
     /**
      * Initializes a new OneToManyMapping.

@@ -40,7 +40,7 @@ class CmsAddress
 
     /**
      * @OneToOne(targetEntity="CmsUser")
-     * @JoinColumn(name="user_id", referencedColumnName="id")
+//     * @JoinColumn(name="user_id", referencedColumnName="id")
      */
     public $user;
 

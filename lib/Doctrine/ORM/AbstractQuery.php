@@ -147,7 +147,7 @@ abstract class AbstractQuery
     }
 
     /**
-     * Get all defined parameters
+     * Get all defined parameters.
      *
      * @return array Defined parameters
      */

@@ -249,8 +249,6 @@ class YamlDriver extends AbstractFileDriver
                             
                             $joinColumns[] = $this->_getJoinColumnMapping($joinColumnElement);
                         }
-                    } else {
-                        throw MappingException::invalidMapping($mapping['fieldName']);
                     }
                     
                     $mapping['joinColumns'] = $joinColumns;
@@ -309,8 +307,6 @@ class YamlDriver extends AbstractFileDriver
                         
                         $joinColumns[] = $this->_getJoinColumnMapping($joinColumnElement);
                     }
-                } else {
-                    throw MappingException::invalidMapping($mapping['fieldName']);
                 }
                 
                 $mapping['joinColumns'] = $joinColumns;
@@ -364,8 +360,6 @@ class YamlDriver extends AbstractFileDriver
                     }
                     
                     $mapping['joinTable'] = $joinTable;
-                } else {
-                    throw MappingException::invalidMapping($mapping['fieldName']);
                 }
                 
                 if (isset($manyToManyElement['cascade'])) {

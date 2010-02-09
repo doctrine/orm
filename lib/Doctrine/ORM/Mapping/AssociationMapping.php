@@ -129,6 +129,7 @@ abstract class AssociationMapping
      * Validates & completes the mapping. Mapping defaults are applied here.
      *
      * @param array $mapping
+     * @throws MappingException If something is wrong with the mapping.
      */
     protected function _validateAndCompleteMapping(array $mapping)
     {        
@@ -151,7 +152,7 @@ abstract class AssociationMapping
         // Mandatory and optional attributes for either side
         if ( ! isset($mapping['mappedBy'])) {            
             // Optional
-            if (isset($mapping['joinTable'])) {
+            if (isset($mapping['joinTable']) && $mapping['joinTable']) {
                 if ($mapping['joinTable']['name'][0] == '`') {
                     $mapping['joinTable']['name'] = trim($mapping['joinTable']['name'], '`');
                     $mapping['joinTable']['quoted'] = true;
@@ -164,8 +165,7 @@ abstract class AssociationMapping
         }
         
         // Optional attributes for both sides
-        $this->fetchMode = isset($mapping['fetch']) ?
-                $mapping['fetch'] : self::FETCH_LAZY;
+        $this->fetchMode = isset($mapping['fetch']) ? $mapping['fetch'] : self::FETCH_LAZY;
         $cascades = isset($mapping['cascade']) ? $mapping['cascade'] : array();
         
         if (in_array('all', $cascades)) {
@@ -178,11 +178,11 @@ abstract class AssociationMapping
             );
         }
         
-        $this->isCascadeRemove  = in_array('remove',  $cascades);
+        $this->isCascadeRemove = in_array('remove',  $cascades);
         $this->isCascadePersist = in_array('persist', $cascades);
         $this->isCascadeRefresh = in_array('refresh', $cascades);
-        $this->isCascadeMerge   = in_array('merge',   $cascades);
-        $this->isCascadeDetach  = in_array('detach',  $cascades);
+        $this->isCascadeMerge = in_array('merge',   $cascades);
+        $this->isCascadeDetach = in_array('detach',  $cascades);
     }
     
     /**

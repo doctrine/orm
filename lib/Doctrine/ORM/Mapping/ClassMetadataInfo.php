@@ -255,22 +255,13 @@ class ClassMetadataInfo
     public $columnNames = array();
 
     /**
-     * Whether to automatically OUTER JOIN subtypes when a basetype is queried.
-     *
-     * <b>This does only apply to the JOINED inheritance mapping strategy.</b>
-     *
-     * @var boolean
-     */
-    //public $joinSubclasses = true;
-
-    /**
      * The discriminator value of this class.
      *
      * <b>This does only apply to the JOINED and SINGLE_TABLE inheritance mapping strategies
      * where a discriminator column is used.</b>
      *
      * @var mixed
-     * @see _discriminatorColumn
+     * @see discriminatorColumn
      */
     public $discriminatorValue;
     
@@ -281,7 +272,7 @@ class ClassMetadataInfo
      * where a discriminator column is used.</b>
      *
      * @var mixed
-     * @see _discriminatorColumn
+     * @see discriminatorColumn
      */
     public $discriminatorMap = array();
 
@@ -670,7 +661,8 @@ class ClassMetadataInfo
             throw MappingException::missingFieldName($this->name, $mapping);
         }
         if ( ! isset($mapping['type'])) {
-            throw MappingException::missingType($this->name, $mapping);
+            // Default to string
+            $mapping['type'] = 'string';
         }
 
         // Complete fieldName and columnName mapping
@@ -734,6 +726,7 @@ class ClassMetadataInfo
      * entity classes that have a single-field pk.
      *
      * @return string
+     * @throws MappingException If the class has a composite primary key.
      */
     public function getSingleIdentifierFieldName()
     {
@@ -748,6 +741,7 @@ class ClassMetadataInfo
      * entity classes that have a single-field pk.
      *
      * @return string
+     * @throws MappingException If the class has a composite primary key.
      */
     public function getSingleIdentifierColumnName()
     {
@@ -774,16 +768,6 @@ class ClassMetadataInfo
     public function hasField($fieldName)
     {
         return isset($this->fieldMappings[$fieldName]);
-    }
-
-    public function hasInheritedMapping($fieldName)
-    {
-        if (isset($this->fieldMappings[$fieldName]) || isset($this->associationMappings[$fieldName]))
-        {
-            
-        } else {
-            return false;
-        }
     }
 
     /**
@@ -1008,7 +992,7 @@ class ClassMetadataInfo
     /**
      * Sets the mapped subclasses of this class.
      *
-     * @param array $subclasses  The names of all mapped subclasses.
+     * @param array $subclasses The names of all mapped subclasses.
      */
     public function setSubclasses(array $subclasses)
     {
@@ -1337,33 +1321,6 @@ class ClassMetadataInfo
     {
          return $this->customRepositoryClassName;
     }
-
-    /**
-     * Sets whether sub classes should be automatically OUTER JOINed when a base
-     * class is queried in a class hierarchy that uses the JOINED inheritance mapping
-     * strategy.
-     *
-     * <b>This options does only apply to the JOINED inheritance mapping strategy.</b>
-     *
-     * @param boolean $bool
-     * @see getJoinSubClasses()
-     */
-    /*public function setJoinSubClasses($bool)
-    {
-        $this->joinSubclasses = (bool)$bool;
-    }*/
-
-    /**
-     * Gets whether the class mapped by this instance should OUTER JOIN sub classes
-     * when a base class is queried.
-     *
-     * @return <type>
-     * @see setJoinSubClasses()
-     */
-    /*public function getJoinSubClasses()
-    {
-        return $this->joinSubclasses;
-    }*/
     
     /**
      * Dispatches the lifecycle event of the given entity to the registered
@@ -1608,7 +1565,6 @@ class ClassMetadataInfo
      * value to use depending on the column type
      *
      * @param array $mapping   The version field mapping array
-     * @return void
      */
     public function setVersionMapping(array &$mapping)
     {

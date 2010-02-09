@@ -32,6 +32,9 @@ namespace Doctrine\ORM\Mapping;
  * 2) To drastically reduce the size of a serialized instance (private/protected members
  *    get the whole class name, namespace inclusive, prepended to every property in
  *    the serialized representation).
+ *    
+ * Instances of this class are stored serialized in the metadata cache together with the
+ * owning <tt>ClassMetadata</tt> instance.
  *
  * @since 2.0
  * @author Roman Borschel <roman@code-factory.org>
@@ -109,8 +112,12 @@ class OneToOneMapping extends AssociationMapping
         }
         
         if ($this->isOwningSide) {
-            if ( ! isset($mapping['joinColumns'])) {
-                throw MappingException::invalidMapping($this->sourceFieldName);
+            if ( ! isset($mapping['joinColumns']) || ! $mapping['joinColumns']) {
+                // Apply default join column
+                $mapping['joinColumns'] = array(array(
+                    'name' => $this->sourceFieldName . '_id',
+                    'referencedColumnName' => 'id'
+                ));
             }
             foreach ($mapping['joinColumns'] as &$joinColumn) {
                 if ($joinColumn['name'][0] == '`') {
@@ -126,7 +133,7 @@ class OneToOneMapping extends AssociationMapping
         }
         
         $this->isOptional = isset($mapping['optional']) ?
-                (bool)$mapping['optional'] : true;
+                (bool) $mapping['optional'] : true;
         $this->orphanRemoval = isset($mapping['orphanRemoval']) ?
                 (bool) $mapping['orphanRemoval'] : false;
         
@@ -141,7 +148,6 @@ class OneToOneMapping extends AssociationMapping
      * Whether the association is optional (0..1), or not (1..1).
      *
      * @return boolean TRUE if the association is optional, FALSE otherwise.
-     * @todo Only applicable to OneToOne. Move there.
      */
     public function isOptional()
     {

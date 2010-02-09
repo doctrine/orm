@@ -21,8 +21,6 @@
 
 namespace Doctrine\DBAL;
 
-use Doctrine\Common\DoctrineException;
-
 /**
  * Doctrine\DBAL\ConnectionException
  *
@@ -32,20 +30,15 @@ use Doctrine\Common\DoctrineException;
  * @version     $Revision: 4628 $
  * @author      Jonathan H. Wage <jonwage@gmail.com
  */
-class ConnectionException extends DoctrineException
+class ConnectionException extends DBALException
 {
-    public static function invalidPDOInstance()
+    public static function commitFailedRollbackOnly()
     {
-        return new self("Invalid PDO instance provided on connection creation.");
-    }
-
-    public static function driverRequired()
-    {
-        return new self("Please provide a driver or a driverClass to be able to start a Connection.");
+        return new self("Transaction commit failed because the transaction has been marked for rollback only.");
     }
     
-    public static function unknownDriver($driver)
+    public static function noActiveTransaction()
     {
-        return new self("Unknown Connection driver '$driver'.");
+        return new self("There is no active transaction.");
     }
 }

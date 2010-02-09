@@ -187,8 +187,10 @@ class XmlDriver extends AbstractFileDriver
             $metadata->mapField($mapping);
 
             if (isset($idElement->generator)) {
+                $strategy = isset($idElement->generator['strategy']) ?
+                        (string)$idElement->generator['strategy'] : 'AUTO';
                 $metadata->setIdGeneratorType(constant('Doctrine\ORM\Mapping\ClassMetadata::GENERATOR_TYPE_'
-                        . strtoupper((string)$idElement->generator['strategy'])));
+                        . $strategy));
             }
 
             // Check for SequenceGenerator/TableGenerator definition
@@ -227,8 +229,6 @@ class XmlDriver extends AbstractFileDriver
                         foreach ($oneToOneElement->{'join-columns'}->{'join-column'} as $joinColumnElement) {
                             $joinColumns[] = $this->_getJoinColumnMapping($joinColumnElement);
                         }
-                    } else {
-                        throw MappingException::invalidMapping($mapping['fieldName']);
                     }
                     
                     $mapping['joinColumns'] = $joinColumns;
@@ -295,8 +295,6 @@ class XmlDriver extends AbstractFileDriver
                         
                         $joinColumns[] = $this->_getJoinColumnMapping($joinColumnElement);
                     }
-                } else {
-                    throw MappingException::invalidMapping($mapping['fieldName']);
                 }
                 
                 $mapping['joinColumns'] = $joinColumns;
@@ -346,8 +344,6 @@ class XmlDriver extends AbstractFileDriver
                     }
                     
                     $mapping['joinTable'] = $joinTable;
-                } else {
-                    throw MappingException::invalidMapping($mapping['fieldName']);
                 }
                 
                 if (isset($manyToManyElement->cascade)) {

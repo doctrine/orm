@@ -12,7 +12,7 @@ class CmsUser
 {
     /**
      * @Id @Column(type="integer")
-     * @GeneratedValue(strategy="AUTO")
+     * @GeneratedValue
      */
     public $id;
     /**

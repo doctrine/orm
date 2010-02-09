@@ -22,7 +22,6 @@
 namespace Doctrine\DBAL;
 
 use Doctrine\Common\EventManager,
-    Doctrine\Common\DoctrineException,
     Doctrine\DBAL\DBALException;
 
 /**

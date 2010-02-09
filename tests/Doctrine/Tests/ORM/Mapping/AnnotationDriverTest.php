@@ -25,16 +25,15 @@ class AnnotationDriverTest extends \Doctrine\Tests\OrmTestCase
     /**
      * @group DDC-268
      */
-    public function testColumnWithMissingTypeThrowsException()
+    public function testColumnWithMissingTypeDefaultsToString()
     {
         $cm = new ClassMetadata('Doctrine\Tests\ORM\Mapping\InvalidColumn');
         $reader = new \Doctrine\Common\Annotations\AnnotationReader(new \Doctrine\Common\Cache\ArrayCache());
         $reader->setDefaultAnnotationNamespace('Doctrine\ORM\Mapping\\');
         $annotationDriver = new \Doctrine\ORM\Mapping\Driver\AnnotationDriver($reader);
 
-        $this->setExpectedException('Doctrine\ORM\Mapping\MappingException',
-            "The attribute 'type' is required for the column description of property Doctrine\\Tests\\ORM\\Mapping\\InvalidColumn::\$id");
         $annotationDriver->loadMetadataForClass('Doctrine\Tests\ORM\Mapping\InvalidColumn', $cm);
+        $this->assertEquals('string', $cm->fieldMappings['id']['type']);
     }
 }
 

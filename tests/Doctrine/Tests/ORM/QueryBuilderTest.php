@@ -281,6 +281,16 @@ class QueryBuilderTest extends \Doctrine\Tests\OrmTestCase
 
         $this->assertValidQueryBuilder($qb, 'SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u ORDER BY u.username ASC');
     }
+    
+    public function testOrderByWithExpression()
+    {
+        $qb = $this->_em->createQueryBuilder();
+        $qb->select('u')
+            ->from('Doctrine\Tests\Models\CMS\CmsUser', 'u')
+            ->orderBy($qb->expr()->asc('u.username'));
+
+        $this->assertValidQueryBuilder($qb, 'SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u ORDER BY u.username ASC');
+    }
 
     public function testAddOrderBy()
     {
@@ -335,7 +345,7 @@ class QueryBuilderTest extends \Doctrine\Tests\OrmTestCase
            ->where('u.id = :id');
 
         $qb->setParameters(array('id' => 1));
-        $this->assertEquals(array('id' => 1, 'test' => 1), $qb->getParameters(array('test' => 1)));
+        $this->assertEquals(array('id' => 1), $qb->getParameters());
     }
 
     public function testGetParameter()
@@ -382,7 +392,7 @@ class QueryBuilderTest extends \Doctrine\Tests\OrmTestCase
     public function testComplexWhere()
     {
         $qb = $this->_em->createQueryBuilder();
-        $orExpr = $qb->expr()->orx();
+        $orExpr = $qb->expr()->orX();
         $orExpr->add($qb->expr()->eq('u.id', ':uid3'));
         $orExpr->add($qb->expr()->in('u.id', array(1)));
 
@@ -391,6 +401,90 @@ class QueryBuilderTest extends \Doctrine\Tests\OrmTestCase
            ->where($orExpr);
 
         $this->assertValidQueryBuilder($qb, 'SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE (u.id = :uid3) OR (u.id IN(1))');
+    }
+    
+    public function testWhereInWithStringLiterals()
+    {
+        $qb = $this->_em->createQueryBuilder();
+        $qb->select('u')
+           ->from('Doctrine\Tests\Models\CMS\CmsUser', 'u')
+           ->where($qb->expr()->in('u.name', array('one', 'two', 'three')));
+           
+        $this->assertValidQueryBuilder($qb, "SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.name IN('one', 'two', 'three')");
+        
+        $qb->where($qb->expr()->in('u.name', array("O'Reilly", "O'Neil", 'Smith')));
+           
+        $this->assertValidQueryBuilder($qb, "SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.name IN('O''Reilly', 'O''Neil', 'Smith')");
+    }
+    
+    public function testWhereInWithObjectLiterals()
+    {
+        $qb = $this->_em->createQueryBuilder();
+        $expr = $this->_em->getExpressionBuilder();
+        $qb->select('u')
+           ->from('Doctrine\Tests\Models\CMS\CmsUser', 'u')
+           ->where($expr->in('u.name', array($expr->literal('one'), $expr->literal('two'), $expr->literal('three'))));
+           
+        $this->assertValidQueryBuilder($qb, "SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.name IN('one', 'two', 'three')");
+        
+        $qb->where($expr->in('u.name', array($expr->literal("O'Reilly"), $expr->literal("O'Neil"), $expr->literal('Smith'))));
+           
+        $this->assertValidQueryBuilder($qb, "SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.name IN('O''Reilly', 'O''Neil', 'Smith')");
+    }
+    
+    public function testNegation()
+    {
+        $expr = $this->_em->getExpressionBuilder();
+        $orExpr = $expr->orX();
+        $orExpr->add($expr->eq('u.id', ':uid3'));
+        $orExpr->add($expr->not($expr->in('u.id', array(1))));
+
+        $qb = $this->_em->createQueryBuilder();
+        $qb->select('u')
+           ->from('Doctrine\Tests\Models\CMS\CmsUser', 'u')
+           ->where($orExpr);
+
+        $this->assertValidQueryBuilder($qb, 'SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE (u.id = :uid3) OR (NOT(u.id IN(1)))');
+    }
+    
+    public function testSomeAllAny()
+    {
+        $qb = $this->_em->createQueryBuilder();
+        $expr = $this->_em->getExpressionBuilder();
+
+        //$subquery = $qb->subquery('Doctrine\Tests\Models\CMS\CmsArticle', 'a')->select('a.id');
+
+        $qb->select('u')
+           ->from('Doctrine\Tests\Models\CMS\CmsUser', 'u')
+           ->where($expr->gt('u.id', $expr->all('select a.id from Doctrine\Tests\Models\CMS\CmsArticle a')));
+       
+        $this->assertValidQueryBuilder($qb, 'SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.id > ALL(select a.id from Doctrine\Tests\Models\CMS\CmsArticle a)');
+
+    }
+    
+    public function testMultipleIsolatedQueryConstruction()
+    {
+        $qb = $this->_em->createQueryBuilder();
+        $expr = $this->_em->getExpressionBuilder();
+        
+        $qb->select('u')->from('Doctrine\Tests\Models\CMS\CmsUser', 'u');
+        $qb->where($expr->eq('u.name', ':name'));
+        $qb->setParameter('name', 'romanb');
+        
+        $q1 = $qb->getQuery();
+        $this->assertEquals('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.name = :name', $q1->getDql());
+        $this->assertEquals(1, count($q1->getParameters()));
+        
+        // add another condition and construct a second query
+        $qb->andWhere($expr->eq('u.id', ':id'));
+        $qb->setParameter('id', 42);
+        
+        $q2 = $qb->getQuery();
+        
+        $this->assertEquals('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE (u.name = :name) AND (u.id = :id)', $q2->getDql());
+        $this->assertTrue($q1 !== $q2); // two different, independent queries
+        $this->assertEquals(2, count($q2->getParameters()));
+        $this->assertEquals(1, count($q1->getParameters())); // $q1 unaffected
     }
 
     public function testGetEntityManager()

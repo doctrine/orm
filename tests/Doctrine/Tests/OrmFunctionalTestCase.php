@@ -128,7 +128,7 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
         if (isset($this->_usedModelSets['generic'])) {
             $conn->executeUpdate('DELETE FROM date_time_model');
         }
-        
+
         $this->_em->clear();
     }
 

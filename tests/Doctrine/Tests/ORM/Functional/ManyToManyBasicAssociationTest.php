@@ -39,8 +39,8 @@ class ManyToManyBasicAssociationTest extends \Doctrine\Tests\OrmFunctionalTestCa
         $user->addGroup($group2);
         
         $this->_em->persist($user); // cascades to groups
-        $this->_em->flush();
         
+        $this->_em->flush();
         $this->_em->clear();
         
         $uRep = $this->_em->getRepository(get_class($user));

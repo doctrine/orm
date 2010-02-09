@@ -32,6 +32,9 @@ namespace Doctrine\ORM\Mapping;
  * 2) To drastically reduce the size of a serialized instance (private/protected members
  *    get the whole class name, namespace inclusive, prepended to every property in
  *    the serialized representation).
+ *    
+ * Instances of this class are stored serialized in the metadata cache together with the
+ * owning <tt>ClassMetadata</tt> instance.
  *
  * @since 2.0
  * @author Roman Borschel <roman@code-factory.org>
@@ -78,18 +81,36 @@ class ManyToManyMapping extends AssociationMapping
         parent::_validateAndCompleteMapping($mapping);
         if ($this->isOwningSide) {
             // owning side MUST have a join table
-            if ( ! isset($mapping['joinTable'])) {
-                throw MappingException::joinTableRequired($mapping['fieldName']);
+            if ( ! isset($mapping['joinTable']) || ! $mapping['joinTable']) {
+                // Apply default join table
+                $sourceShortName = substr($this->sourceEntityName, strrpos($this->sourceEntityName, '\\') + 1);
+                $targetShortName = substr($this->targetEntityName, strrpos($this->targetEntityName, '\\') + 1);
+                $mapping['joinTable'] = array(
+                    'name' => $sourceShortName .'_' . $targetShortName,
+                    'joinColumns' => array(
+                        array(
+                            'name' => $sourceShortName . '_id',
+                            'referencedColumnName' => 'id'
+                        )
+                    ),
+                    'inverseJoinColumns' => array(
+                        array(
+                            'name' => $targetShortName . '_id',
+                            'referencedColumnName' => 'id'
+                        )
+                    )
+                );
+                $this->joinTable = $mapping['joinTable'];
             }
             // owning side MUST specify joinColumns
-            if ( ! isset($mapping['joinTable']['joinColumns'])) {
+            else if ( ! isset($mapping['joinTable']['joinColumns'])) {
                 throw MappingException::missingRequiredOption(
                     $this->sourceFieldName, 'joinColumns', 
                     'Did you think of case sensitivity / plural s?'
                 );
             }
             // owning side MUST specify inverseJoinColumns
-            if ( ! isset($mapping['joinTable']['inverseJoinColumns'])) {
+            else if ( ! isset($mapping['joinTable']['inverseJoinColumns'])) {
                 throw MappingException::missingRequiredOption(
                     $this->sourceFieldName, 'inverseJoinColumns', 
                     'Did you think of case sensitivity / plural s?'
@@ -151,7 +172,9 @@ class ManyToManyMapping extends AssociationMapping
                 if (isset($sourceClass->fieldNames[$sourceKeyColumn])) {
                     $joinTableConditions[$relationKeyColumn] = $sourceClass->reflFields[$sourceClass->fieldNames[$sourceKeyColumn]]->getValue($sourceEntity);
                 } else {
-                    $joinTableConditions[$relationKeyColumn] = $joinColumnValues[$sourceKeyColumn];
+                    throw MappingException::joinColumnMustPointToMappedField(
+                        $sourceClass->name, $sourceKeyColumn
+                    );
                 }
             }
         } else {
@@ -162,7 +185,9 @@ class ManyToManyMapping extends AssociationMapping
                 if (isset($sourceClass->fieldNames[$sourceKeyColumn])) {
                     $joinTableConditions[$relationKeyColumn] = $sourceClass->reflFields[$sourceClass->fieldNames[$sourceKeyColumn]]->getValue($sourceEntity);
                 } else {
-                    $joinTableConditions[$relationKeyColumn] = $joinColumnValues[$sourceKeyColumn];
+                    throw MappingException::joinColumnMustPointToMappedField(
+                        $sourceClass->name, $sourceKeyColumn
+                    );
                 }
             }
         }
