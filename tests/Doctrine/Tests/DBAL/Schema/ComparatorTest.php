@@ -91,8 +91,8 @@ class ComparatorTest extends \PHPUnit_Framework_TestCase
         $table = new Table('bugdb', array ('integerfield1' => new Column('integerfield1', Type::getType('integer'))));
         $table->setSchemaConfig($schemaConfig);
         
-        $schema1 = new Schema( array($table), array(), $schemaConfig );
-        $schema2 = new Schema( array(),       array(), $schemaConfig );
+        $schema1 = new Schema( array($table), array(), array(), array(), $schemaConfig );
+        $schema2 = new Schema( array(),       array(), array(), array(), $schemaConfig );
 
         $expected = new SchemaDiff( array(), array(), array('bugdb' => $table) );
         
@@ -105,8 +105,8 @@ class ComparatorTest extends \PHPUnit_Framework_TestCase
         $table = new Table('bugdb', array ('integerfield1' => new Column('integerfield1', Type::getType('integer'))));
         $table->setSchemaConfig($schemaConfig);
 
-        $schema1 = new Schema( array(),       array(), $schemaConfig );
-        $schema2 = new Schema( array($table), array(), $schemaConfig );
+        $schema1 = new Schema( array(),       array(), array(), array(), $schemaConfig );
+        $schema2 = new Schema( array($table), array(), array(), array(), $schemaConfig );
 
         $expected = new SchemaDiff( array('bugdb' => $table), array(), array() );
         $this->assertEquals($expected, Comparator::compareSchemas( $schema1, $schema2 ) );

@@ -54,9 +54,11 @@ class Schema extends AbstractAsset
     /**
      * @param array $tables
      * @param array $sequences
+     * @param array $views
+     * @param array $triggers
      * @param SchemaConfig $schemaConfig
      */
-    public function __construct(array $tables=array(), array $sequences=array(), SchemaConfig $schemaConfig=null)
+    public function __construct(array $tables=array(), array $sequences=array(), array $views = array(), array $triggers = array(), SchemaConfig $schemaConfig=null)
     {
         if ($schemaConfig == null) {
             $schemaConfig = new SchemaConfig();

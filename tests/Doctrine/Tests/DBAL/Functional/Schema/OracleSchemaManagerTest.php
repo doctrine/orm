@@ -47,16 +47,6 @@ class OracleSchemaManagerTest extends SchemaManagerFunctionalTestCase
         $this->assertEquals(true, $found);
     }
 
-    public function testListViews()
-    {
-        $this->_sm->dropAndCreateView('test_create_view', 'SELECT * FROM sys.user_tables');
-
-        $views = $this->_sm->listViews();
-        $view = end($views);
-
-        $this->assertEquals('TEST_CREATE_VIEW', $view['name']);
-    }
-
     public function testRenameTable()
     {
         $this->_sm->tryMethod('DropTable', 'list_tables_test');

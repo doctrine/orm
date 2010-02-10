@@ -193,7 +193,7 @@ class SchemaTest extends \PHPUnit_Framework_TestCase
         $schemaConfig = new \Doctrine\DBAL\Schema\SchemaConfig();
         $schemaConfig->setExplicitForeignKeyIndexes(false);
 
-        $schema = new Schema(array(), array(), $schemaConfig);
+        $schema = new Schema(array(), array(), array(), array(), $schemaConfig);
         $this->assertFalse($schema->hasExplicitForeignKeyIndexes());
 
         $schemaConfig->setExplicitForeignKeyIndexes(true);
@@ -205,7 +205,7 @@ class SchemaTest extends \PHPUnit_Framework_TestCase
         $schemaConfig = new \Doctrine\DBAL\Schema\SchemaConfig();
         $schemaConfig->setMaxIdentifierLength(10);
 
-        $schema = new Schema(array(), array(), $schemaConfig);
+        $schema = new Schema(array(), array(), array(), array(), $schemaConfig);
         $table = $schema->createTable("smalltable");
         $table->createColumn('long_id', 'integer');
         $table->addIndex(array('long_id'));
