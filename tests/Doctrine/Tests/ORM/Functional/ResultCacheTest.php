@@ -30,23 +30,27 @@ class ResultCacheTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
 
         $query = $this->_em->createQuery('select ux from Doctrine\Tests\Models\CMS\CmsUser ux');
-        $cache = new ArrayCache;
-        $query->setResultCacheDriver($cache);
+
+        $cache = new ArrayCache();
+        
+        $query->setResultCacheDriver($cache)->setResultCacheId('my_cache_id');
+
+        $this->assertFalse($cache->contains('my_cache_id'));
 
         $users = $query->getResult();
 
-        $this->assertTrue($cache->contains($query->getResultCacheId(array())));
+        $this->assertTrue($cache->contains('my_cache_id'));
         $this->assertEquals(1, count($users));
         $this->assertEquals('Roman', $users[0]->name);
 
         $this->_em->clear();
 
         $query2 = $this->_em->createQuery('select ux from Doctrine\Tests\Models\CMS\CmsUser ux');
-        $query2->setResultCacheDriver($cache);
+        $query2->setResultCacheDriver($cache)->setResultCacheId('my_cache_id');
 
         $users = $query2->getResult();
 
-        $this->assertTrue($cache->contains($query->getResultCacheId(array())));
+        $this->assertTrue($cache->contains('my_cache_id'));
         $this->assertEquals(1, count($users));
         $this->assertEquals('Roman', $users[0]->name);
     }
@@ -58,6 +62,9 @@ class ResultCacheTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $query = $this->_em->createQuery('select ux from Doctrine\Tests\Models\CMS\CmsUser ux');
         $query->setResultCacheDriver($cache);
         $query->setResultCacheId('testing_result_cache_id');
+
+        $this->assertFalse($cache->contains('testing_result_cache_id'));
+        
         $users = $query->getResult();
 
         $this->assertTrue($cache->contains('testing_result_cache_id'));
@@ -76,5 +83,52 @@ class ResultCacheTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertTrue($cache->contains('testing_result_cache_id'));
 
         $this->_em->getConfiguration()->setResultCacheImpl(null);
+    }
+
+    public function testNativeQueryResultCaching()
+    {
+        $rsm = new \Doctrine\ORM\Query\ResultSetMapping();
+        $rsm->addScalarResult('id', 'u');
+        $query = $this->_em->createNativeQuery('select u.id FROM cms_users u WHERE u.id = ?', $rsm);
+        $query->setParameter(1, 10);
+
+        $cache = new ArrayCache();
+        $query->setResultCacheDriver($cache)->useResultCache(true);
+        
+        $this->assertEquals(0, count($cache->getIds()));
+        $query->getResult();
+        $this->assertEquals(1, count($cache->getIds()));
+
+        return $query;
+    }
+
+    /**
+     * @param <type> $query
+     * @depends testNativeQueryResultCaching
+     */
+    public function testResultCacheDependsOnQueryHints($query)
+    {
+        $cache = $query->getResultCacheDriver();
+        $cacheCount = count($cache->getIds());
+
+        $query->setHint('foo', 'bar');
+        $query->getResult();
+
+        $this->assertEquals($cacheCount + 1, count($cache->getIds()));
+    }
+
+    /**
+     * @param <type> $query
+     * @depends testNativeQueryResultCaching
+     */
+    public function testResultCacheDependsOnParameters($query)
+    {
+        $cache = $query->getResultCacheDriver();
+        $cacheCount = count($cache->getIds());
+
+        $query->setParameter(1, 50);
+        $query->getResult();
+
+        $this->assertEquals($cacheCount + 1, count($cache->getIds()));
     }
 }

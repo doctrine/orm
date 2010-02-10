@@ -488,7 +488,7 @@ abstract class AbstractQuery
 
         // Check result cache
         if ($this->_useResultCache && $cacheDriver = $this->getResultCacheDriver()) {
-            $id = $this->getResultCacheId($params);
+            $id = $this->_getResultCacheId($params);
             $cached = $this->_expireResultCache ? false : $cacheDriver->fetch($id);
 
             if ($cached === false) {
@@ -541,12 +541,14 @@ abstract class AbstractQuery
      * @param array $params
      * @return string $id
      */
-    public function getResultCacheId(array $params)
+    protected function _getResultCacheId(array $params)
     {
         if ($this->_resultCacheId) {
             return $this->_resultCacheId;
         } else {
-            return md5($this->getDql() . var_export($params, true));
+            $sql = $this->getSql();
+            ksort($this->_hints);
+            return md5(implode(";", (array)$sql) . var_export($params, true) . var_export($this->_hints, true));
         }
     }
 

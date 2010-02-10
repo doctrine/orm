@@ -173,11 +173,7 @@ final class Query extends AbstractQuery
     {
         // Check query cache
         if ($queryCache = $this->getQueryCacheDriver()) {
-            // Calculate hash for dql query.
-            // TODO: Probably need to include query hints in hash calculation, because query hints
-            //       can have influence on the SQL.
-            // TODO: Include _maxResults and _firstResult in hash calculation
-            $hash = md5($this->getDql() . 'DOCTRINE_QUERY_CACHE_SALT');
+            $hash = $this->_getQueryCacheId();
             $cached = ($this->_expireQueryCache) ? false : $queryCache->fetch($hash);
 
             if ($cached === false) {
@@ -437,5 +433,22 @@ final class Query extends AbstractQuery
     {
         $this->setHint(self::HINT_INTERNAL_ITERATION, true);
         return parent::iterate($params, $hydrationMode);
+    }
+
+    /**
+     * Generate a cache id for the query cache - reusing the Result-Cache-Id generator.
+     *
+     * The query cache
+     *
+     * @return string
+     */
+    protected function _getQueryCacheId()
+    {
+        ksort($this->_hints);
+
+        return md5(
+            $this->getDql() . var_export($this->_hints, true) . 
+            'firstResult='.$this->_firstResult.'&maxResult='.$this->_maxResults.'DOCTRINE_QUERY_CACHE_SALT'
+        );
     }
 }
