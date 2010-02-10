@@ -116,4 +116,5 @@ class CmsUser
             $address->setUser($this);
         }
     }
+
 }

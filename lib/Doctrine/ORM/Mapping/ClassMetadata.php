@@ -54,6 +54,13 @@ class ClassMetadata extends ClassMetadataInfo
      * @var array
      */
     public $reflFields = array();
+    
+    /**
+     * The prototype from which new instances of the mapped class are created.
+     * 
+     * @var object
+     */
+    private $_prototype;
 
     /**
      * Initializes a new ClassMetadata instance that will hold the object-relational mapping
@@ -68,8 +75,6 @@ class ClassMetadata extends ClassMetadataInfo
         $this->namespace = $this->reflClass->getNamespaceName();
         $this->primaryTable['name'] = $this->reflClass->getShortName();
         $this->rootEntityName = $entityName;
-        
-        //$this->prototype = unserialize(sprintf('O:%d:"%s":0:{}', strlen($this->name), $this->name));
     }
 
     /**
@@ -320,7 +325,7 @@ class ClassMetadata extends ClassMetadataInfo
     public function __sleep()
     {
         return array(
-            'associationMappings', // unserialization bottleneck with many assocs
+            'associationMappings', // unserialization "bottleneck" with many associations
             'changeTrackingPolicy',
             'columnNames', //TODO: Not really needed. Can use fieldMappings[$fieldName]['columnName']
             'customRepositoryClassName',
@@ -375,13 +380,22 @@ class ClassMetadata extends ClassMetadataInfo
             } else {
                 $reflField = $this->reflClass->getProperty($field);
             }
-                
+
             $reflField->setAccessible(true);
             $this->reflFields[$field] = $reflField;
         }
-        
-        //$this->prototype = unserialize(sprintf('O:%d:"%s":0:{}', strlen($this->name), $this->name));
     }
     
-    //public $prototype;
+    /**
+     * Creates a new instance of the mapped class, without invoking the constructor.
+     * 
+     * @return object
+     */
+    public function newInstance()
+    {
+        if ($this->_prototype === null) {
+            $this->_prototype = unserialize(sprintf('O:%d:"%s":0:{}', strlen($this->name), $this->name));
+        }
+        return clone $this->_prototype;
+    }
 }

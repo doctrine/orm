@@ -589,6 +589,29 @@ class BasicFunctionalTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->getConnection()->getConfiguration()->setSqlLogger($oldLogger);
     }
     
+    public function testRemoveEntityByReference()
+    {
+        $user = new CmsUser;
+        $user->name = 'Guilherme';
+        $user->username = 'gblanco';
+        $user->status = 'developer';
+        
+        //$this->_em->getConnection()->getConfiguration()->setSqlLogger(new \Doctrine\DBAL\Logging\EchoSqlLogger);
+        
+        $this->_em->persist($user);
+        $this->_em->flush();
+        $this->_em->clear();
+        
+        $userRef = $this->_em->getReference('Doctrine\Tests\Models\CMS\CmsUser', $user->getId());
+        $this->_em->remove($userRef);
+        $this->_em->flush();
+        $this->_em->clear();
+        
+        $this->assertEquals(0, $this->_em->getConnection()->fetchColumn("select count(*) from cms_users"));
+        
+        //$this->_em->getConnection()->getConfiguration()->setSqlLogger(null);
+    }
+    
     //DRAFT OF EXPECTED/DESIRED BEHAVIOR
     /*public function testPersistentCollectionContainsDoesNeverInitialize()
     {

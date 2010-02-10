@@ -781,7 +781,7 @@ class UnitOfWork implements PropertyChangedListener
         $hasListeners = $this->_evm->hasListeners(Events::postRemove);
         
         foreach ($this->_entityDeletions as $oid => $entity) {
-            if (get_class($entity) == $className) {
+            if (get_class($entity) == $className || $entity instanceof Proxy && $entity instanceof $className) {
                 $persister->delete($entity);
                 unset(
                     $this->_entityDeletions[$oid],
@@ -956,11 +956,11 @@ class UnitOfWork implements PropertyChangedListener
             unset($this->_entityInsertions[$oid]);
             return; // entity has not been persisted yet, so nothing more to do.
         }
-        
+
         if ( ! $this->isInIdentityMap($entity)) {
             return; // ignore
         }
-        
+
         $this->removeFromIdentityMap($entity);
 
         if (isset($this->_entityUpdates[$oid])) {
@@ -1738,8 +1738,7 @@ class UnitOfWork implements PropertyChangedListener
                 $overrideLocalValues = isset($hints[Query::HINT_REFRESH]);
             }
         } else {
-            //$entity = clone $class->prototype;
-            $entity = new $className;
+            $entity = $class->newInstance();
             $oid = spl_object_hash($entity);
             $this->_entityIdentifiers[$oid] = $id;
             $this->_entityStates[$oid] = self::STATE_MANAGED;
