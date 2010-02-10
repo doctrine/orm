@@ -257,4 +257,9 @@ class SqliteSchemaManager extends AbstractSchemaManager
 
         return new Column($tableColumn['name'], \Doctrine\DBAL\Types\Type::getType($type), $options);
     }
+
+    protected function _getPortableViewDefinition($view)
+    {
+        return new View($view['name'], $view['sql']);
+    }
 }

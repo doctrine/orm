@@ -192,13 +192,9 @@ class MySqlPlatform extends AbstractPlatform
         return $sql;
     }
 
-    public function getListViewsSql($database = null)
+    public function getListViewsSql($database)
     {
-        $sql = 'SELECT * FROM information_schema.VIEWS';
-        if($database !== null) {
-            $sql .= " WHERE TABLE_SCHEMA = '".$database."'";
-        }
-        return $sql;
+        return "SELECT * FROM information_schema.VIEWS WHERE TABLE_SCHEMA = '".$database."'";
     }
 
     public function getListTableForeignKeysSql($table, $database = null)

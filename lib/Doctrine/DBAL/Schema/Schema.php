@@ -40,7 +40,7 @@ class Schema extends AbstractAsset
      * @var array
      */
     protected $_tables = array();
-
+    
     /**
      * @var array
      */

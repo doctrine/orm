@@ -22,9 +22,4 @@ class MySqlSchemaManagerTest extends SchemaManagerFunctionalTestCase
         }
         $this->assertEquals(true, $found);
     }
-
-    protected function getCreateExampleViewSql()
-    {
-        return 'SELECT * from mysql.user';
-    }
 }

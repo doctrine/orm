@@ -279,16 +279,12 @@ abstract class AbstractSchemaManager
     /**
      * List the views this connection has
      *
-     * @example array(
-     *  array('name' => 'ViewA', 'sql' => 'SELECT * FROM foo'),
-     *  array('name' => 'ViewB', 'sql' => 'SELECT * FROM bar'),
-     * )
-     * @return array $views
+     * @return View[]
      */
     public function listViews()
     {
-        $sql = $this->_platform->getListViewsSql();
-
+        $database = $this->_conn->getDatabase();
+        $sql = $this->_platform->getListViewsSql($database);
         $views = $this->_conn->fetchAll($sql);
 
         return $this->_getPortableViewsList($views);
@@ -465,12 +461,11 @@ abstract class AbstractSchemaManager
     /**
      * Create a new view
      *
-     * @param string $name The name of the view
-     * @param string $sql  The sql to set to the view
+     * @param View $view
      */
-    public function createView($name, $sql)
+    public function createView(View $view)
     {
-        $this->_execSql($this->_platform->getCreateViewSql($name, $sql));
+        $this->_execSql($this->_platform->getCreateViewSql($view->getName(), $view->getSql()));
     }
 
     /* dropAndCreate*() Methods */
@@ -550,13 +545,12 @@ abstract class AbstractSchemaManager
     /**
      * Drop and create a new view
      *
-     * @param string $name The name of the view
-     * @param string $sql  The sql to set to the view
+     * @param View $view
      */
-    public function dropAndCreateView($name, $sql)
+    public function dropAndCreateView(View $view)
     {
-        $this->tryMethod('dropView', $name);
-        $this->createView($name, $sql);
+        $this->tryMethod('dropView', $view->getName());
+        $this->createView($view);
     }
 
     /* alterTable() Methods */
@@ -763,8 +757,9 @@ abstract class AbstractSchemaManager
     {
         $list = array();
         foreach ($views as $key => $value) {
-            if ($value = $this->_getPortableViewDefinition($value)) {
-                $list[] = $value;
+            if ($view = $this->_getPortableViewDefinition($value)) {
+                $viewName = strtolower($view->getName());
+                $list[$viewName] = $view;
             }
         }
         return $list;
@@ -772,7 +767,7 @@ abstract class AbstractSchemaManager
 
     protected function _getPortableViewDefinition($view)
     {
-        return $view;
+        return false;
     }
 
     protected function _getPortableTableForeignKeysList($tableForeignKeys)

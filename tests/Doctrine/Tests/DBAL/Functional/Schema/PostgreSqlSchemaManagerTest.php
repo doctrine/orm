@@ -22,9 +22,4 @@ class PostgreSqlSchemaManagerTest extends SchemaManagerFunctionalTestCase
         }
         $this->assertEquals(true, $found);
     }
-
-    protected function getCreateExampleViewSql()
-    {
-        return 'SELECT usename, passwd FROM pg_user';
-    }
 }

@@ -9,6 +9,28 @@ require_once __DIR__ . '/../../../TestInit.php';
 
 class SchemaManagerFunctionalTestCase extends \Doctrine\Tests\DbalFunctionalTestCase
 {
+    /**
+     * @var \Doctrine\DBAL\Schema\AbstractSchemaManager
+     */
+    protected $_sm;
+
+    protected function setUp()
+    {
+        parent::setUp();
+
+        $class = get_class($this);
+        $e = explode('\\', $class);
+        $testClass = end($e);
+        $dbms = strtolower(str_replace('SchemaManagerTest', null, $testClass));
+
+        if ($this->_conn->getDatabasePlatform()->getName() !== $dbms)
+        {
+            $this->markTestSkipped('The ' . $testClass .' requires the use of ' . $dbms);
+        }
+
+        $this->_sm = $this->_conn->getSchemaManager();
+    }
+
     public function testListSequences()
     {
         if(!$this->_conn->getDatabasePlatform()->supportsSequences()) {
@@ -255,28 +277,6 @@ class SchemaManagerFunctionalTestCase extends \Doctrine\Tests\DbalFunctionalTest
         $this->markTestSkipped('No Create Example View SQL was defined for this SchemaManager');
     }
 
-    public function testListViews()
-    {
-        $this->_sm->dropAndCreateView('test_create_view', $this->getCreateExampleViewSql());
-        $views = $this->_sm->listViews();
-        $this->assertTrue(count($views) >= 1, "There should be at least the fixture view created in the database, but none were found.");
-        
-        $found = false;
-        foreach($views AS $view) {
-            if(!isset($view['name']) || !isset($view['sql'])) {
-                $this->fail(
-                    "listViews() has to return entries with both name ".
-                    "and sql keys, but only ".implode(", ", array_keys($view))." are present."
-                );
-            }
-
-            if($view['name'] == 'test_create_view') {
-                $found = true;
-            }
-        }
-        $this->assertTrue($found, "'test_create_view' View was not found in listViews().");
-    }
-
     public function testCreateSchema()
     {
         $this->createTestTable('test_table');
@@ -353,26 +353,18 @@ class SchemaManagerFunctionalTestCase extends \Doctrine\Tests\DbalFunctionalTest
         $this->assertEquals(array('id'), array_map('strtolower', $foreignKey->getForeignColumns()));
     }
 
-    /**
-     * @var \Doctrine\DBAL\Schema\AbstractSchemaManager
-     */
-    protected $_sm;
-
-    protected function setUp()
+    public function testCreateAndListViews()
     {
-        parent::setUp();
+        $this->createTestTable('view_test_table');
 
-        $class = get_class($this);
-        $e = explode('\\', $class);
-        $testClass = end($e);
-        $dbms = strtolower(str_replace('SchemaManagerTest', null, $testClass));
+        $name = "doctrine_test_view";
+        $sql = "SELECT * FROM view_test_table";
 
-        if ($this->_conn->getDatabasePlatform()->getName() !== $dbms)
-        {
-            $this->markTestSkipped('The ' . $testClass .' requires the use of ' . $dbms);
-        }
+        $view = new \Doctrine\DBAL\Schema\View($name, $sql);
 
-        $this->_sm = $this->_conn->getSchemaManager();
+        $this->_sm->dropAndCreateView($view);
+
+        $views = $this->_sm->listViews();
     }
 
     protected function createTestTable($name = 'test_table', $data = array())

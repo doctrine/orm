@@ -404,12 +404,7 @@ class SqlitePlatform extends AbstractPlatform
              . "WHERE type = 'table' ORDER BY name";
     }
 
-    public function getListTableViews()
-    {
-        return "SELECT name, sql FROM sqlite_master WHERE type='view' AND sql NOT NULL";
-    }
-
-    public function getListViewsSql()
+    public function getListViewsSql($database)
     {
         return "SELECT name, sql FROM sqlite_master WHERE type='view' AND sql NOT NULL";
     }

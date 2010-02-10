@@ -332,9 +332,9 @@ class OraclePlatform extends AbstractPlatform
         return 'SELECT * FROM all_users';
     }
 
-    public function getListViewsSql()
+    public function getListViewsSql($database)
     {
-        return 'SELECT view_name FROM sys.user_views';
+        return 'SELECT view_name, text FROM sys.user_views';
     }
 
     public function getCreateViewSql($name, $sql)

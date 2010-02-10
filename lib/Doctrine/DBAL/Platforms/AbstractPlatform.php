@@ -1484,7 +1484,13 @@ abstract class AbstractPlatform
         throw DBALException::notSupported(__METHOD__);
     }
 
-    public function getListViewsSql()
+    /**
+     * Get the SQL to list all views of a database or user.
+     *
+     * @param string $database
+     * @return string
+     */
+    public function getListViewsSql($database)
     {
         throw DBALException::notSupported(__METHOD__);
     }

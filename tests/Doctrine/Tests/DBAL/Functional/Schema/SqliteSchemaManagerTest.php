@@ -44,12 +44,6 @@ class SqliteSchemaManagerTest extends SchemaManagerFunctionalTestCase
         $this->_sm->listUsers();
     }
 
-    protected function getCreateExampleViewSql()
-    {
-        $this->createTestTable('test_views');
-        return 'SELECT * from test_views';
-    }
-
     public function testCreateAndDropDatabase()
     {
         $path = dirname(__FILE__).'/test_create_and_drop_sqlite_database.sqlite';
