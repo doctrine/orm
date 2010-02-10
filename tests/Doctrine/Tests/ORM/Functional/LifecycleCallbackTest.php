@@ -105,11 +105,17 @@ class LifecycleCallbackTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertTrue($e1->prePersistCallbackInvoked);
         $this->assertTrue($e2->prePersistCallbackInvoked);
     }
+    
+    public function testLifecycleCallbacksGetInherited()
+    {
+        $childMeta = $this->_em->getClassMetadata(__NAMESPACE__ . '\LifecycleCallbackChildEntity');
+        $this->assertEquals(array('prePersist' => array(0 => 'doStuff')), $childMeta->lifecycleCallbacks);
+    }
 }
 
 /** @Entity @HasLifecycleCallbacks */
 class LifecycleCallbackTestUser {
-    /** @Id @Column(type="integer") @GeneratedValue(strategy="AUTO") */
+    /** @Id @Column(type="integer") @GeneratedValue */
     private $id;
     /** @Column(type="string") */
     private $value;
@@ -198,4 +204,18 @@ class LifecycleCallbackCascader
     {
         $this->entities = new \Doctrine\Common\Collections\ArrayCollection();
     }
+}
+
+/** @MappedSuperclass @HasLifecycleCallbacks */
+class LifecycleCallbackParentEntity {
+    /** @PrePersist */
+    function doStuff() {
+        
+    }
+}
+
+/** @Entity @Table(name="lc_cb_childentity") */
+class LifecycleCallbackChildEntity extends LifecycleCallbackParentEntity {
+    /** @Id @Column(type="integer") @GeneratedValue */
+    private $id;
 }

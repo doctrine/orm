@@ -219,6 +219,7 @@ class ClassMetadataFactory
                 $class->setVersioned($parent->isVersioned);
                 $class->setVersionField($parent->versionField);
                 $class->setDiscriminatorMap($parent->discriminatorMap);
+                $class->setLifecycleCallbacks($parent->lifecycleCallbacks);
             }
 
             // Invoke driver

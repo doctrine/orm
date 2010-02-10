@@ -1371,6 +1371,17 @@ class ClassMetadataInfo
     {
         $this->lifecycleCallbacks[$event][] = $callback;
     }
+    
+    /**
+     * Sets the lifecycle callbacks for entities of this class.
+     * Any previously registered callbacks are overwritten.
+     * 
+     * @param array $callbacks
+     */
+    public function setLifecycleCallbacks(array $callbacks)
+    {
+        $this->lifecycleCallbacks = $callbacks;
+    }
 
     /**
      * Sets the discriminator column definition.
