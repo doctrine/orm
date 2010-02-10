@@ -44,10 +44,12 @@ class SizeFunction extends FunctionNode
     public function getSql(\Doctrine\ORM\Query\SqlWalker $sqlWalker)
     {
         $dqlAlias = $this->collectionPathExpression->identificationVariable;
-        $qComp = $sqlWalker->getQueryComponent($dqlAlias);
         $parts = $this->collectionPathExpression->parts;
-        
-        $assoc = $qComp['metadata']->associationMappings[$parts[0]];
+        $assocField = array_pop($parts);
+
+        $qComp = $sqlWalker->getQueryComponent(implode('.', array_merge((array) $dqlAlias, $parts)));
+        $assoc = $qComp['metadata']->associationMappings[$assocField];
+        $sql = '';
         
         if ($assoc->isOneToMany()) {
             $targetClass = $sqlWalker->getEntityManager()->getClassMetadata($assoc->targetEntityName);
@@ -56,17 +58,33 @@ class SizeFunction extends FunctionNode
             $targetTableAlias = $sqlWalker->getSqlTableAlias($targetClass->primaryTable['name']);
             $sourceTableAlias = $sqlWalker->getSqlTableAlias($qComp['metadata']->primaryTable['name'], $dqlAlias);
             
-            $sql = "(SELECT COUNT($targetTableAlias."
-                    . implode(", $targetTableAlias.", $targetAssoc->targetToSourceKeyColumns)
-                    . ') FROM ' . $targetClass->primaryTable['name'] . ' ' . $targetTableAlias;
-             
             $whereSql = '';
+
             foreach ($targetAssoc->targetToSourceKeyColumns as $targetKeyColumn => $sourceKeyColumn) {
-                if ($whereSql == '') $whereSql = ' WHERE '; else $whereSql .= ' AND ';
-                $whereSql .= $targetTableAlias . '.' . $sourceKeyColumn . ' = ' . $sourceTableAlias . '.' . $targetKeyColumn;
+                $whereSql .= (($whereSql == '') ? ' WHERE ' : ' AND ')
+                           . $targetTableAlias . '.' . $sourceKeyColumn . ' = ' 
+                           . $sourceTableAlias . '.' . $targetKeyColumn;
             }
             
-            $sql .= $whereSql . ')';
+            $sql = '(SELECT COUNT(' 
+                 . "$targetTableAlias." . implode(", $targetTableAlias.", $targetAssoc->targetToSourceKeyColumns)
+                 . ') FROM ' . $targetClass->primaryTable['name'] . ' ' . $targetTableAlias .  $whereSql . ')';
+        } else if ($assoc->isManyToMany()) {
+            // TODO
+            $targetTableAlias = $sqlWalker->getSqlTableAlias($assoc->joinTable['name']);
+            $sourceTableAlias = $sqlWalker->getSqlTableAlias($qComp['metadata']->primaryTable['name'], $dqlAlias);
+            
+            $whereSql = '';
+
+            foreach ($assoc->relationToSourceKeyColumns as $targetKeyColumn => $sourceKeyColumn) {
+                $whereSql .= (($whereSql == '') ? ' WHERE ' : ' AND ')
+                           . $targetTableAlias . '.' . $targetKeyColumn . ' = ' 
+                           . $sourceTableAlias . '.' . $sourceKeyColumn;
+            }
+
+            $sql = '(SELECT COUNT(' 
+                 . "$targetTableAlias." . implode(", $targetTableAlias.", $assoc->joinTableColumns)
+                 . ') FROM ' . $assoc->joinTable['name'] . ' ' . $targetTableAlias . $whereSql . ')';
         }
         
         return $sql;

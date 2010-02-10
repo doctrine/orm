@@ -395,6 +395,14 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
         );
     }
     
+    public function testSizeFunctionSupportsManyToMany()
+    {
+        $this->assertSqlGeneration(
+            "SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE SIZE(u.groups) > 1",
+            "SELECT c0_.id AS id0, c0_.status AS status1, c0_.username AS username2, c0_.name AS name3 FROM cms_users c0_ WHERE (SELECT COUNT(c1_.user_id, c1_.group_id) FROM cms_users_groups c1_ WHERE c1_.user_id = c0_.id) > 1"
+        );
+    }
+
     public function testEmptyCollectionComparisonExpression()
     {
         $this->assertSqlGeneration(
