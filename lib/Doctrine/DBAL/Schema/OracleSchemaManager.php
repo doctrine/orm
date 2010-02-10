@@ -233,12 +233,6 @@ class OracleSchemaManager extends AbstractSchemaManager
         return new Sequence($sequence['sequence_name'], $sequence['increment_by'], $sequence['min_value']);
     }
 
-    protected function _getPortableTableConstraintDefinition($tableConstraint)
-    {
-        $tableConstraint = \array_change_key_case($tableConstraint, CASE_LOWER);
-        return $tableConstraint['constraint_name'];
-    }
-
     protected function _getPortableFunctionDefinition($function)
     {
         $function = \array_change_key_case($function, CASE_LOWER);

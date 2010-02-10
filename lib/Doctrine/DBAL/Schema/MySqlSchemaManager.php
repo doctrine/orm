@@ -70,18 +70,6 @@ class MySqlSchemaManager extends AbstractSchemaManager
         return parent::_getPortableTableIndexesList($tableIndexes, $tableName);
     }
 
-    protected function _getPortableTableConstraintDefinition($tableConstraint)
-    {
-        $tableConstraint = array_change_key_case($tableConstraint, CASE_LOWER);
-
-        if ( ! $tableConstraint['non_unique']) {
-            $index = $tableConstraint['key_name'];
-            if ( ! empty($index)) {
-                return $index;
-            }
-        }
-    }
-
     protected function _getPortableSequenceDefinition($sequence)
     {
         return end($sequence);

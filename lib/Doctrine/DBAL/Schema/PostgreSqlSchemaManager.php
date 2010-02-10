@@ -162,11 +162,6 @@ class PostgreSqlSchemaManager extends AbstractSchemaManager
         return new Sequence($sequence['relname'], $data[0]['increment_by'], $data[0]['min_value']);
     }
 
-    protected function _getPortableTableConstraintDefinition($tableConstraint)
-    {
-        return $tableConstraint['relname'];
-    }
-
     protected function _getPortableTableColumnDefinition($tableColumn)
     {
         $tableColumn = array_change_key_case($tableColumn, CASE_LOWER);

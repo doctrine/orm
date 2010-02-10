@@ -36,15 +36,6 @@ class SqliteSchemaManagerTest extends SchemaManagerFunctionalTestCase
         $this->_sm->listTriggers();
     }
 
-    public function testListTableConstraints()
-    {
-        // TODO: Implement support for constraints/foreign keys to be specified
-        // when creating tables. Sqlite does not support adding them after
-        // the table has already been created
-        $tableConstraints = $this->_sm->listTableConstraints('list_table_constraints_test');
-        $this->assertEquals(array(), $tableConstraints);
-    }
-
     /**
      * @expectedException \Exception
      */

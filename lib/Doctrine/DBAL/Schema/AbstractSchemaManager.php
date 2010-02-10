@@ -155,7 +155,7 @@ abstract class AbstractSchemaManager
     /**
      * List the available sequences for this connection
      *
-     * @return array $sequences
+     * @return Sequence[]
      */
     public function listSequences($database = null)
     {
@@ -170,37 +170,7 @@ abstract class AbstractSchemaManager
     }
 
     /**
-     * List the constraints for a given table
-     *
-     * @param string $table The name of the table
-     * @return array $tableConstraints
-     */
-    public function listTableConstraints($table)
-    {
-        $sql = $this->_platform->getListTableConstraintsSql($table);
-
-        $tableConstraints = $this->_conn->fetchAll($sql);
-
-        return $this->_getPortableTableConstraintsList($tableConstraints);
-    }
-
-    /**
      * List the columns for a given table.
-     *
-     * @example array(
-     *     'colA' => array(
-     *          'name' => 'colA',
-     *          'type' => \Doctrine\DBAL\Types\StringType instance,
-     *          'length' => 255,
-     *          'precision' => null,
-     *          'scale' => null,
-     *          'unsigned' => false,
-     *          'fixed' => false,
-     *          'notnull' => false,
-     *          'default' => null,
-     *          'platformDetails' => array(),
-     *     ),
-     * );
      *
      * In contrast to other libraries and to the old version of Doctrine,
      * this column definition does try to contain the 'primary' field for
@@ -210,7 +180,7 @@ abstract class AbstractSchemaManager
      * in the platformDetails array.
      *
      * @param string $table The name of the table.
-     * @return array $tableColumns The column descriptions.
+     * @return Column[]
      */
     public function listTableColumns($table)
     {
@@ -263,20 +233,6 @@ abstract class AbstractSchemaManager
 
         $tables = array();
         foreach ($tableNames AS $tableName) {
-            $columns = $this->listTableColumns($tableName);
-            $foreignKeys = array();
-            if ($this->_platform->supportsForeignKeyConstraints()) {
-                $foreignKeys = $this->listTableForeignKeys($tableName);
-            }
-            $indexes = $this->listTableIndexes($tableName);
-
-            $idGeneratorType = Table::ID_NONE;
-            foreach ($columns AS $column) {
-                if ($column->hasPlatformOption('autoincrement') && $column->getPlatformOption('autoincrement')) {
-                    $idGeneratorType = Table::ID_IDENTITY;
-                }
-            }
-
             $tables[] = $this->listTableDetails($tableName);
         }
 
@@ -634,81 +590,6 @@ abstract class AbstractSchemaManager
     }
 
     /**
-     * Add a new table column
-     *
-     * @param string $name          The name of the table
-     * @param string $column        The name of the column to add
-     * @param array  $definition    The definition of the column to add
-     */
-    public function addTableColumn($name, $column, $definition)
-    {
-        $change = array(
-            'add' => array(
-                $column => $definition
-            )
-        );
-        $this->alterTable($name, $change);
-    }
-
-    /**
-     * Remove a column from a table
-     *
-     * @param string $tableName The name of the table
-     * @param array|string $column The column name or array of names
-     */
-    public function removeTableColumn($name, $column)
-    {
-        $change = array(
-            'remove' => is_array($column) ? $column : array($column => array())
-        );
-        $this->alterTable($name, $change);
-    }
-
-    /**
-     * Change a given table column. You can change the type, length, etc.
-     *
-     * @param string $name       The name of the table
-     * @param string $type       The type of the column
-     * @param string $length     The length of the column
-     * @param string $definition The definition array for the column
-     */
-    public function changeTableColumn($name, $type, $length = null, $definition = array())
-    {
-        $definition['type'] = $type;
-
-        $change = array(
-            'change' => array(
-                $name => array(
-                    'length' => $length,
-                    'definition' => $definition
-                )
-            )
-        );
-        $this->alterTable($name, $change);
-    }
-
-    /**
-     * Rename a given table column
-     *
-     * @param string $name       The name of the table
-     * @param string $oldName    The old column name
-     * @param string $newName    The new column
-     * @param string $definition The column definition array if you want to change something
-     */
-    public function renameTableColumn($name, $oldName, $newName, $definition = array())
-    {
-        $change = array(
-            'rename' => array(
-                $oldName => array(
-                    'name' => $newName,
-                    'definition' => $definition
-                )
-            )
-        );
-        $this->alterTable($name, $change);
-    }
-
-    /**
      * Methods for filtering return values of list*() methods to convert
      * the native DBMS data definition to a portable Doctrine definition
      */
@@ -779,22 +660,6 @@ abstract class AbstractSchemaManager
     protected function _getPortableSequenceDefinition($sequence)
     {
         throw DBALException::notSupported('Sequences');
-    }
-
-    protected function _getPortableTableConstraintsList($tableConstraints)
-    {
-        $list = array();
-        foreach ($tableConstraints as $key => $value) {
-            if ($value = $this->_getPortableTableConstraintDefinition($value)) {
-                $list[] = $value;
-            }
-        }
-        return $list;
-    }
-
-    protected function _getPortableTableConstraintDefinition($tableConstraint)
-    {
-        return $tableConstraint;
     }
 
     /**

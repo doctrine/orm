@@ -32,13 +32,6 @@ class OracleSchemaManagerTest extends SchemaManagerFunctionalTestCase
         $this->_sm->listTriggers();
     }
 
-    public function testListTableConstraints()
-    {
-        $this->createTestTable('test_constraints');
-        $tableConstraints = $this->_sm->listTableConstraints('test_constraints');
-        $this->assertTrue(count($tableConstraints)>=2);
-    }
-
     public function testListUsers()
     {
         $users = $this->_sm->listUsers();

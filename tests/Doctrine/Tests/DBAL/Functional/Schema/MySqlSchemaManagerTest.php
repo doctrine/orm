@@ -8,13 +8,6 @@ require_once __DIR__ . '/../../../TestInit.php';
  
 class MySqlSchemaManagerTest extends SchemaManagerFunctionalTestCase
 {
-    public function testListTableConstraints()
-    {
-        $this->createTestTable('list_table_constraints_test');
-        $tableConstraints = $this->_sm->listTableConstraints('list_table_constraints_test');
-        $this->assertEquals(array('PRIMARY'), $tableConstraints);
-    }
-
     public function testListUsers()
     {
         $users = $this->_sm->listUsers();
