@@ -1315,28 +1315,6 @@ abstract class AbstractPlatform
     }
 
     /**
-     * build a pattern matching string
-     *
-     * EXPERIMENTAL
-     *
-     * WARNING: this function is experimental and may change signature at
-     * any time until labelled as non-experimental
-     *
-     * @access public
-     *
-     * @param array $pattern even keys are strings, odd are patterns (% and _)
-     * @param string $operator optional pattern operator (LIKE, ILIKE and maybe others in the future)
-     * @param string $field optional field name that is being matched against
-     *                  (might be required when emulating ILIKE)
-     *
-     * @return string SQL pattern
-     */
-    public function getMatchPatternExpression($pattern, $operator = null, $field = null)
-    {
-        throw DBALException::notSupported(__METHOD__);
-    }
-
-    /**
      * Whether the platform prefers sequences for ID generation.
      * Subclasses should override this method to return TRUE if they prefer sequences.
      *
@@ -1526,19 +1504,6 @@ abstract class AbstractPlatform
      * @param integer $level
      */
     public function getSetTransactionIsolationSql($level)
-    {
-        throw DBALException::notSupported(__METHOD__);
-    }
-
-    /**
-     * Obtain DBMS specific SQL code portion needed to set the CHARACTER SET
-     * of a field declaration to be used in statements like CREATE TABLE.
-     *
-     * @param string $charset   name of the charset
-     * @return string  DBMS specific SQL code portion needed to set the CHARACTER SET
-     *                 of a field declaration.
-     */
-    public function getCharsetFieldDeclaration($charset)
     {
         throw DBALException::notSupported(__METHOD__);
     }

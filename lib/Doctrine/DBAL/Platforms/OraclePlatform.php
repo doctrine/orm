@@ -34,14 +34,6 @@ use Doctrine\DBAL\Schema\TableDiff;
 class OraclePlatform extends AbstractPlatform
 {
     /**
-     * Constructor.
-     */
-    public function __construct()
-    {
-        parent::__construct();
-    }
-
-    /**
      * return string to call a function to get a substring inside an SQL statement
      *
      * Note: Not SQL92, but common functionality.
@@ -80,17 +72,6 @@ class OraclePlatform extends AbstractPlatform
             default:
                 return 'TO_CHAR(CURRENT_TIMESTAMP, \'YYYY-MM-DD HH24:MI:SS\')';
         }
-    }
-
-    /**
-     * random
-     *
-     * @return string           an oracle SQL string that generates a float between 0 and 1
-     * @override
-     */
-    public function getRandomExpression()
-    {
-        return 'dbms_random.value';
     }
 
     /**

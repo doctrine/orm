@@ -31,17 +31,10 @@ use Doctrine\Common\DoctrineException,
  *
  * @since 2.0
  * @author Roman Borschel <roman@code-factory.org>
+ * @author Benjamin Eberlei <kontakt@beberlei.de>
  */
 class MySqlPlatform extends AbstractPlatform
-{    
-    /**
-     * Creates a new MySqlPlatform instance.
-     */
-    public function __construct()
-    {
-        parent::__construct();      
-    }
-    
+{
     /**
      * Gets the character used for identifier quoting.
      *
@@ -62,65 +55,6 @@ class MySqlPlatform extends AbstractPlatform
     public function getRegexpExpression()
     {
         return 'RLIKE';
-    }
-
-    /**
-     * return string to call a function to get random value inside an SQL statement
-     *
-     * @return string to generate float between 0 and 1
-     */
-    public function getRandomExpression()
-    {
-        return 'RAND()';
-    }
-
-    /**
-     * Builds a pattern matching string.
-     *
-     * EXPERIMENTAL
-     *
-     * WARNING: this function is experimental and may change signature at
-     * any time until labelled as non-experimental.
-     *
-     * @param array $pattern even keys are strings, odd are patterns (% and _)
-     * @param string $operator optional pattern operator (LIKE, ILIKE and maybe others in the future)
-     * @param string $field optional field name that is being matched against
-     *                  (might be required when emulating ILIKE)
-     *
-     * @return string SQL pattern
-     * @override
-     */
-    public function getMatchPatternExpression($pattern, $operator = null, $field = null)
-    {
-        $match = '';
-        if ( ! is_null($operator)) {
-            $field = is_null($field) ? '' : $field.' ';
-            $operator = strtoupper($operator);
-            switch ($operator) {
-                // case insensitive
-                case 'ILIKE':
-                    $match = $field.'LIKE ';
-                    break;
-                // case sensitive
-                case 'LIKE':
-                    $match = $field.'LIKE BINARY ';
-                    break;
-                default:
-                    throw DoctrineException::operatorNotSupported($operator);
-            }
-        }
-        $match.= "'";
-        foreach ($pattern as $key => $value) {
-            if ($key % 2) {
-                $match .= $value;
-            } else {
-                $match .= $this->conn->escapePattern($this->conn->escape($value));
-            }
-        }
-        $match.= "'";
-        $match.= $this->patternEscapeString();
-        
-        return $match;
     }
 
     /**
@@ -233,19 +167,6 @@ class MySqlPlatform extends AbstractPlatform
             }
         }
         return 'LONGTEXT';
-    }
-
-    /**
-     * Obtain DBMS specific SQL code portion needed to set the CHARACTER SET
-     * of a field declaration to be used in statements like CREATE TABLE.
-     *
-     * @param string $charset   name of the charset
-     * @return string  DBMS specific SQL code portion needed to set the CHARACTER SET
-     *                 of a field declaration.
-     */
-    public function getCharsetFieldDeclaration($charset)
-    {
-        return 'CHARACTER SET ' . $charset;
     }
 
     /**

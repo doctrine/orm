@@ -37,9 +37,7 @@ class MsSqlPlatformTest extends AbstractPlatformTestCase
     {
         $this->assertEquals('RLIKE', $this->_platform->getRegexpExpression(), 'Regular expression operator is not correct');
         $this->assertEquals('"', $this->_platform->getIdentifierQuoteCharacter(), 'Identifier quote character is not correct');
-        $this->assertEquals('RAND()', $this->_platform->getRandomExpression(), 'Random function is not correct');
         $this->assertEquals('(column1 + column2 + column3)', $this->_platform->getConcatExpression('column1', 'column2', 'column3'), 'Concatenation expression is not correct');
-        $this->assertEquals('CHARACTER SET utf8', $this->_platform->getCharsetFieldDeclaration('utf8'), 'Charset declaration is not correct');
     }
 
     public function testGeneratesTransactionsCommands()

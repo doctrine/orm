@@ -29,74 +29,10 @@ use Doctrine\Common\DoctrineException;
  *
  * @since 2.0
  * @author Roman Borschel <roman@code-factory.org>
+ * @author Benjamin Eberlei <kontakt@beberlei.de>
  */
 class SqlitePlatform extends AbstractPlatform
 {
-    /**
-     * the constructor
-     */
-    public function __construct()
-    {
-        parent::__construct();
-    }
-    
-    /**
-     * Returns the md5 sum of the data that SQLite's md5() function receives.
-     *
-     * @param mixed $data
-     * @return string
-     */
-    public static function md5Impl($data)
-    {
-        return md5($data);
-    }
-
-    /**
-     * Returns the modules of the data that SQLite's mod() function receives.
-     *
-     * @param integer $dividend
-     * @param integer $divisor
-     * @return string
-     */
-    public static function modImpl($dividend, $divisor)
-    {
-        return $dividend % $divisor;
-    }
-
-    /**
-     * locate
-     * returns the position of the first occurrence of substring $substr in string $str that
-     * SQLite's locate() function receives
-     *
-     * @param string $substr    literal string to find
-     * @param string $str       literal string
-     * @return string
-     */
-    public static function locateImpl($substr, $str)
-    {
-        return strpos($str, $substr);
-    }
-
-    public static function sha1Impl($str)
-    {
-        return sha1($str);
-    }
-
-    public static function ltrimImpl($str)
-    {
-        return ltrim($str);
-    }
-
-    public static function rtrimImpl($str)
-    {
-        return rtrim($str);
-    }
-
-    public static function trimImpl($str)
-    {
-        return trim($str);
-    }
-
     /**
      * returns the regular expression operator
      *
@@ -106,20 +42,6 @@ class SqlitePlatform extends AbstractPlatform
     public function getRegexpExpression()
     {
         return 'RLIKE';
-    }
-
-    /**
-     * Returns a string to call a function to compute the
-     * soundex encoding of a string
-     *
-     * The string "?000" is returned if the argument is NULL.
-     *
-     * @param string $value
-     * @return string   SQL soundex function with given parameter
-     */
-    public function getSoundexExpression($value)
-    {
-        return 'SOUNDEX(' . $value . ')';
     }
 
     /**
@@ -140,17 +62,6 @@ class SqlitePlatform extends AbstractPlatform
             default:
                 return 'datetime(\'now\')';
         }
-    }
-
-    /**
-     * return string to call a function to get random value inside an SQL statement
-     *
-     * @return string to generate float between 0 and 1
-     * @override
-     */
-    public function getRandomExpression()
-    {
-        return '((RANDOM() + 2147483648) / 4294967296)';
     }
 
     /**
@@ -377,11 +288,6 @@ class SqlitePlatform extends AbstractPlatform
         return 'CLOB';
     }
 
-    public function getListSequencesSql($database)
-    {
-        return "SELECT name FROM sqlite_master WHERE type='table' AND sql NOT NULL ORDER BY name";
-    }
-
     public function getListTableConstraintsSql($table)
     {
         return "SELECT sql FROM sqlite_master WHERE type='index' AND tbl_name = '$table' AND sql NOT NULL ORDER BY name";
@@ -433,11 +339,6 @@ class SqlitePlatform extends AbstractPlatform
     }
 
     public function supportsAlterTable()
-    {
-        return false;
-    }
-
-    public function supportsSequences()
     {
         return false;
     }

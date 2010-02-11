@@ -32,17 +32,10 @@ use Doctrine\Common\DoctrineException;
  * @since 2.0
  * @author Roman Borschel <roman@code-factory.org>
  * @author Jonathan H. Wage <jonwage@gmail.com>
+ * @author Benjamin Eberlei <kontakt@beberlei.de>
  */
 class MsSqlPlatform extends AbstractPlatform
-{ 
-    /**
-     * the constructor
-     */
-    public function __construct()
-    {
-        parent::__construct();
-    }
-    
+{
     /**
      * Adds an adapter-specific LIMIT clause to the SELECT statement.
      * [ borrowed from Zend Framework ]
@@ -142,16 +135,6 @@ class MsSqlPlatform extends AbstractPlatform
     public function getRegexpExpression()
     {
         return 'RLIKE';
-    }
-
-    /**
-     * return string to call a function to get random value inside an SQL statement
-     *
-     * @return string to generate float between 0 and 1
-     */
-    public function getRandomExpression()
-    {
-        return 'RAND()';
     }
 
     /**
@@ -349,19 +332,6 @@ class MsSqlPlatform extends AbstractPlatform
         $unsigned = (isset($columnDef['unsigned']) && $columnDef['unsigned']) ? ' UNSIGNED' : '';
 
         return $unsigned . $autoinc;
-    }
-
-    /**
-     * Obtain DBMS specific SQL code portion needed to set the CHARACTER SET
-     * of a field declaration to be used in statements like CREATE TABLE.
-     *
-     * @param string $charset   name of the charset
-     * @return string  DBMS specific SQL code portion needed to set the CHARACTER SET
-     *                 of a field declaration.
-     */
-    public function getCharsetFieldDeclaration($charset)
-    {
-        return 'CHARACTER SET ' . $charset;
     }
 
     /**
