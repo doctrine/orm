@@ -99,7 +99,7 @@ class QueryDqlFunctionTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
     public function testFunctionLocate()
     {
-        $dql = "SELECT m, LOCATE(LOWER(m.name), 'e') AS loc, LOCATE(LOWER(m.name), 'e', 7) AS loc2 ".
+        $dql = "SELECT m, LOCATE('e', LOWER(m.name)) AS loc, LOCATE('e', LOWER(m.name), 7) AS loc2 ".
                "FROM Doctrine\Tests\Models\Company\CompanyManager m";
 
         $result = $this->_em->createQuery($dql)
