@@ -321,10 +321,10 @@ abstract class AbstractPlatform
      *
      * SQLite only supports the 2 parameter variant of this function
      *
-     * @param string $value         an sql string literal or column name/alias
-     * @param integer $position     where to start the substring portion
-     * @param integer $length       the substring portion length
-     * @return string               SQL substring function with given parameters
+     * @param  string $value         an sql string literal or column name/alias
+     * @param  integer $from     where to start the substring portion
+     * @param  integer $len       the substring portion length
+     * @return string
      */
     public function getSubstringExpression($value, $from, $len = null)
     {

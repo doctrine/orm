@@ -38,21 +38,23 @@ class SubstringFunction extends FunctionNode
 {
     public $stringPrimary;
     public $firstSimpleArithmeticExpression;
-    public $secondSimpleArithmeticExpression;
+    public $secondSimpleArithmeticExpression = null;
 
     /**
      * @override
      */
     public function getSql(\Doctrine\ORM\Query\SqlWalker $sqlWalker)
     {
-        //TODO: Use platform to get SQL
-        return 'SUBSTRING(' 
-             . $sqlWalker->walkStringPrimary($this->stringPrimary)
-             . ', ' 
-             . $sqlWalker->walkSimpleArithmeticExpression($this->firstSimpleArithmeticExpression)
-             . ', ' 
-             . $sqlWalker->walkSimpleArithmeticExpression($this->secondSimpleArithmeticExpression)
-             . ')';
+        $optionalSecondSimpleArithmeticExpression = null;
+        if ($this->secondSimpleArithmeticExpression !== null) {
+            $optionalSecondSimpleArithmeticExpression = $sqlWalker->walkSimpleArithmeticExpression($this->secondSimpleArithmeticExpression);
+        }
+
+        return $sqlWalker->getConnection()->getDatabasePlatform()->getSubstringExpression(
+            $sqlWalker->walkStringPrimary($this->stringPrimary),
+            $sqlWalker->walkSimpleArithmeticExpression($this->firstSimpleArithmeticExpression),
+            $optionalSecondSimpleArithmeticExpression
+        );
     }
 
     /**
@@ -70,10 +72,12 @@ class SubstringFunction extends FunctionNode
         $parser->match(Lexer::T_COMMA);
         
         $this->firstSimpleArithmeticExpression = $parser->SimpleArithmeticExpression();
+
+        if ($lexer->isNextToken(Lexer::T_COMMA)) {
+            $parser->match(Lexer::T_COMMA);
         
-        $parser->match(Lexer::T_COMMA);
-        
-        $this->secondSimpleArithmeticExpression = $parser->SimpleArithmeticExpression();
+            $this->secondSimpleArithmeticExpression = $parser->SimpleArithmeticExpression();
+        }
 
         $parser->match(Lexer::T_CLOSE_PARENTHESIS);
     }

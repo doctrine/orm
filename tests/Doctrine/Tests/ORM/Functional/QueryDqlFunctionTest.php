@@ -165,9 +165,10 @@ class QueryDqlFunctionTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
     public function testFunctionSubstring()
     {
-        $this->markTestSkipped('SUBSTRING does not exist on Oracle and Sqlite.');
+        $dql = "SELECT m, SUBSTRING(m.name, 1, 3) AS str1, SUBSTRING(m.name, 5) AS str2 ".
+                "FROM Doctrine\Tests\Models\Company\CompanyManager m";
 
-        $result = $this->_em->createQuery("SELECT m, SUBSTRING(m.name, 1, 3) AS str1 FROM Doctrine\Tests\Models\Company\CompanyManager m")
+        $result = $this->_em->createQuery($dql)
                          ->getArrayResult();
 
         $this->assertEquals(4, count($result));
@@ -175,6 +176,10 @@ class QueryDqlFunctionTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertEquals('Ben', $result[1]['str1']);
         $this->assertEquals('Gui', $result[2]['str1']);
         $this->assertEquals('Jon', $result[3]['str1']);
+        $this->assertEquals('n B.', $result[0]['str2']);
+        $this->assertEquals('amin E.', $result[1]['str2']);
+        $this->assertEquals('herme B.', $result[2]['str2']);
+        $this->assertEquals('than W.', $result[3]['str2']);
     }
 
     public function testFunctionTrim()
