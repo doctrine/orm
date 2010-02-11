@@ -38,20 +38,22 @@ class LocateFunction extends FunctionNode
 {
     public $firstStringPrimary;
     public $secondStringPrimary;
-    public $simpleArithmeticExpression;
+    public $simpleArithmeticExpression = false;
 
     /**
      * @override
      */
     public function getSql(\Doctrine\ORM\Query\SqlWalker $sqlWalker)
     {
-        //TODO: Use platform to get SQL
-        return 'LOCATE(' . $sqlWalker->walkStringPrimary($this->firstStringPrimary) . ', ' 
-             . $sqlWalker->walkStringPrimary($this->secondStringPrimary)
-             . (($this->simpleArithmeticExpression) 
-                 ? ', ' . $sqlWalker->walkSimpleArithmeticExpression($this->simpleArithmeticExpression) 
-                 : ''
-             ) . ')';
+
+        return $sqlWalker->getConnection()->getDatabasePlatform()->getLocateExpression(
+            $sqlWalker->walkStringPrimary($this->firstStringPrimary),
+            $sqlWalker->walkStringPrimary($this->secondStringPrimary),
+            (($this->simpleArithmeticExpression)
+                ? $sqlWalker->walkSimpleArithmeticExpression($this->simpleArithmeticExpression)
+                : false
+            )
+        );
     }
 
     /**

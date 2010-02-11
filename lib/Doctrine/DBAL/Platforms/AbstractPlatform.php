@@ -324,16 +324,16 @@ abstract class AbstractPlatform
     }
 
     /**
-     * locate
      * returns the position of the first occurrence of substring $substr in string $str
      *
      * @param string $substr    literal string to find
      * @param string $str       literal string
+     * @param int    $pos       position to start at, beginning of string by default
      * @return integer
      */
-    public function getLocateExpression($str, $substr)
+    public function getLocateExpression($str, $substr, $startPos = false)
     {
-        return 'LOCATE(' . $str . ', ' . $substr . ')';
+        throw DBALException::notSupported(__METHOD__);
     }
 
     /**

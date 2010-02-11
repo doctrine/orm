@@ -99,16 +99,21 @@ class QueryDqlFunctionTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
     public function testFunctionLocate()
     {
-        $this->markTestIncomplete('Locate is not working equally across platforms, needs some work.');
+        $dql = "SELECT m, LOCATE(LOWER(m.name), 'e') AS loc, LOCATE(LOWER(m.name), 'e', 7) AS loc2 ".
+               "FROM Doctrine\Tests\Models\Company\CompanyManager m";
 
-        $result = $this->_em->createQuery("SELECT m, LOCATE(m.name, 'e') AS locate FROM Doctrine\Tests\Models\Company\CompanyManager m")
+        $result = $this->_em->createQuery($dql)
                          ->getArrayResult();
 
         $this->assertEquals(4, count($result));
-        $this->assertEquals(0, $result[0]['locate']);
-        $this->assertEquals(2, $result[1]['locate']);
-        $this->assertEquals(10, $result[2]['locate']);
-        $this->assertEquals(25, $result[3]['locate']);
+        $this->assertEquals(0, $result[0]['loc']);
+        $this->assertEquals(2, $result[1]['loc']);
+        $this->assertEquals(6, $result[2]['loc']);
+        $this->assertEquals(0, $result[3]['loc']);
+        $this->assertEquals(0, $result[0]['loc2']);
+        $this->assertEquals(10, $result[1]['loc2']);
+        $this->assertEquals(9, $result[2]['loc2']);
+        $this->assertEquals(0, $result[3]['loc2']);
     }
 
     public function testFunctionLower()

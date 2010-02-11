@@ -75,6 +75,23 @@ class OraclePlatform extends AbstractPlatform
     }
 
     /**
+     * returns the position of the first occurrence of substring $substr in string $str
+     *
+     * @param string $substr    literal string to find
+     * @param string $str       literal string
+     * @param int    $pos       position to start at, beginning of string by default
+     * @return integer
+     */
+    public function getLocateExpression($str, $substr, $startPos = false)
+    {
+        if ($startPos == false) {
+            return 'INSTR('.$str.', '.$substr.')';
+        } else {
+            return 'INSTR('.$str.', '.$substr.', '.$startPos.')';
+        }
+    }
+
+    /**
      * Returns global unique identifier
      *
      * @return string to get global unique identifier

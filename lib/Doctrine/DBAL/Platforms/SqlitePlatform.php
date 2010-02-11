@@ -109,6 +109,23 @@ class SqlitePlatform extends AbstractPlatform
         return 'SUBSTR(' . $value . ', ' . $position . ', LENGTH(' . $value . '))';
     }
 
+    /**
+     * returns the position of the first occurrence of substring $substr in string $str
+     *
+     * @param string $substr    literal string to find
+     * @param string $str       literal string
+     * @param int    $pos       position to start at, beginning of string by default
+     * @return integer
+     */
+    public function getLocateExpression($str, $substr, $startPos = false)
+    {
+        if ($startPos == false) {
+            return 'LOCATE('.$str.', '.$substr.')';
+        } else {
+            return 'LOCATE('.$str.', '.$substr.', '.$startPos.')';
+        }
+    }
+
     protected function _getTransactionIsolationLevelSql($level)
     {
         switch ($level) {
@@ -402,5 +419,19 @@ class SqlitePlatform extends AbstractPlatform
     static public function udfMod($a, $b)
     {
         return ($a % $b);
+    }
+
+    /**
+     * @param string $str
+     * @param string $substr
+     * @param int $offset
+     */
+    static public function udfLocate($str, $substr, $offset = 0)
+    {
+        $pos = strpos($str, $substr, $offset);
+        if ($pos !== false) {
+            return $pos+1;
+        }
+        return 0;
     }
 }

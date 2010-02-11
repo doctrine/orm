@@ -69,6 +69,23 @@ class MySqlPlatform extends AbstractPlatform
     }
 
     /**
+     * returns the position of the first occurrence of substring $substr in string $str
+     *
+     * @param string $substr    literal string to find
+     * @param string $str       literal string
+     * @param int    $pos       position to start at, beginning of string by default
+     * @return integer
+     */
+    public function getLocateExpression($str, $substr, $startPos = false)
+    {
+        if ($startPos == false) {
+            return 'LOCATE(' . $substr . ', ' . $str . ')';
+        } else {
+            return 'LOCATE(' . $substr . ', ' . $str . ', '.$startPos.')';
+        }
+    }
+
+    /**
      * Returns a series of strings concatinated
      *
      * concat() accepts an arbitrary number of parameters. Each parameter
