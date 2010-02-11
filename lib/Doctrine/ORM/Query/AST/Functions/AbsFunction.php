@@ -55,7 +55,7 @@ class AbsFunction extends FunctionNode
     {
         $lexer = $parser->getLexer();
         
-        $parser->match(Lexer::T_ABS);
+        $parser->match(Lexer::T_IDENTIFIER);
         $parser->match(Lexer::T_OPEN_PARENTHESIS);
         
         $this->simpleArithmeticExpression = $parser->SimpleArithmeticExpression();

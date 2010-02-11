@@ -46,9 +46,9 @@ class ModFunction extends FunctionNode
     {
         //TODO: Use platform to get SQL
         return 'MOD(' 
-             . $sqlWalker->walkSimpleArithmeticExpression($this->_firstSimpleArithmeticExpression)
+             . $sqlWalker->walkSimpleArithmeticExpression($this->firstSimpleArithmeticExpression)
              . ', ' 
-             . $sqlWalker->walkSimpleArithmeticExpression($this->_secondSimpleArithmeticExpression) 
+             . $sqlWalker->walkSimpleArithmeticExpression($this->secondSimpleArithmeticExpression) 
              . ')';
     }
 
