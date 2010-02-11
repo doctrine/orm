@@ -258,11 +258,6 @@ class OraclePlatform extends AbstractPlatform
         return 'SELECT username FROM all_users';
     }
 
-    public function getListFunctionsSql()
-    {
-        return "SELECT name FROM sys.user_source WHERE line = 1 AND type = 'FUNCTION'";
-    }
-
     public function getListSequencesSql($database)
     {
         return "SELECT sequence_name, min_value, increment_by FROM sys.all_sequences ".
@@ -325,11 +320,6 @@ class OraclePlatform extends AbstractPlatform
     public function getListTablesSql()
     {
         return 'SELECT * FROM sys.user_tables';
-    }
-
-    public function getListUsersSql()
-    {
-        return 'SELECT * FROM all_users';
     }
 
     public function getListViewsSql($database)

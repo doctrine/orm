@@ -102,8 +102,6 @@ abstract class AbstractSchemaManager
         }
     }
 
-    /* list*() Methods */
-
     /**
      * List the available databases for this connection
      *
@@ -116,40 +114,6 @@ abstract class AbstractSchemaManager
         $databases = $this->_conn->fetchAll($sql);
 
         return $this->_getPortableDatabasesList($databases);
-    }
-
-    /**
-     * List the names of available functions for this connection
-     *
-     * @example array(
-     *  'functionA', 'functionB', 'procedureA',
-     * )
-     * @return array $functions
-     */
-    public function listFunctions()
-    {
-        $sql = $this->_platform->getListFunctionsSql();
-
-        $functions = $this->_conn->fetchAll($sql);
-
-        return $this->_getPortableFunctionsList($functions);
-    }
-
-    /**
-     * List the names of available triggers for this connection
-     *
-     * @example array(
-     *  'triggerName1', 'triggerName2',
-     * );
-     * @return array $triggers
-     */
-    public function listTriggers()
-    {
-        $sql = $this->_platform->getListTriggersSql();
-
-        $triggers = $this->_conn->fetchAll($sql);
-
-        return $this->_getPortableTriggersList($triggers);
     }
 
     /**
@@ -263,20 +227,6 @@ abstract class AbstractSchemaManager
     }
 
     /**
-     * List the users this connection has
-     *
-     * @return array $users
-     */
-    public function listUsers()
-    {
-        $sql = $this->_platform->getListUsersSql();
-
-        $users = $this->_conn->fetchAll($sql);
-
-        return $this->_getPortableUsersList($users);
-    }
-
-    /**
      * List the views this connection has
      *
      * @return View[]
@@ -294,7 +244,7 @@ abstract class AbstractSchemaManager
      * List the foreign keys for the given table
      *
      * @param string $table  The name of the table
-     * @return array $tableForeignKeys
+     * @return ForeignKeyConstraint[]
      */
     public function listTableForeignKeys($table, $database = null)
     {
@@ -314,7 +264,7 @@ abstract class AbstractSchemaManager
      * 
      * NOTE: You can not drop the database this SchemaManager is currently connected to.
      *
-     * @param  string $database The name of the database to drop
+     * @param string $database The name of the database to drop
      */
     public function dropDatabase($database)
     {

@@ -1449,16 +1449,6 @@ abstract class AbstractPlatform
         throw DBALException::notSupported(__METHOD__);
     }
 
-    public function getListFunctionsSql()
-    {
-        throw DBALException::notSupported(__METHOD__);
-    }
-
-    public function getListTriggersSql($table = null)
-    {
-        throw DBALException::notSupported(__METHOD__);
-    }
-
     public function getListSequencesSql($database)
     {
         throw DBALException::notSupported(__METHOD__);

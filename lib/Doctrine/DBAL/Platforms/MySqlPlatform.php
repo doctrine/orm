@@ -154,20 +154,6 @@ class MySqlPlatform extends AbstractPlatform
         return 'SHOW DATABASES';
     }
 
-    public function getListFunctionsSql()
-    {
-        return 'SELECT SPECIFIC_NAME FROM information_schema.ROUTINES';
-    }
-
-    public function getListSequencesSql($database)
-    {
-        $query = 'SHOW TABLES';
-        if ( ! is_null($database)) {
-            $query .= ' FROM ' . $database;
-        }
-        return $query;
-    }
-
     public function getListTableConstraintsSql($table)
     {
         return 'SHOW INDEX FROM ' . $table;
@@ -176,20 +162,6 @@ class MySqlPlatform extends AbstractPlatform
     public function getListTableIndexesSql($table)
     {
         return 'SHOW INDEX FROM ' . $table;
-    }
-
-    public function getListUsersSql()
-    {
-        return "SELECT * FROM mysql.user WHERE user != '' GROUP BY user";
-    }
-
-    public function getListTriggersSql($table = null)
-    {
-        $sql = "SELECT TRIGGER_NAME FROM information_schema.TRIGGERS";
-        if($table !== null) {
-            $sql .= " WHERE EVENT_OBJECT_TABLE = '".$table."'";
-        }
-        return $sql;
     }
 
     public function getListViewsSql($database)

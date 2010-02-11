@@ -57,20 +57,6 @@ class SchemaManagerFunctionalTestCase extends \Doctrine\Tests\DbalFunctionalTest
         $this->assertEquals(10, $foundSequence->getInitialValue(), "Initial Value is expected to be 10.");
     }
 
-    public function testListFunctions()
-    {
-        $funcs = $this->_sm->listFunctions();
-        $this->assertType('array', $funcs);
-        $this->assertTrue(count($funcs)>=0);
-    }
-
-    public function testListTriggers()
-    {
-        $triggers = $this->_sm->listTriggers();
-        $this->assertType('array', $triggers);
-        $this->assertTrue(count($triggers) >= 0);
-    }
-
     public function testListDatabases()
     {
         $this->_sm->dropAndCreateDatabase('test_create_database');

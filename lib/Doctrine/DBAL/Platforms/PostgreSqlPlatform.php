@@ -273,21 +273,6 @@ class PostgreSqlPlatform extends AbstractPlatform
         return 'SELECT datname FROM pg_database';
     }
 
-    public function getListFunctionsSql()
-    {
-        return "SELECT
-                    proname
-                FROM
-                    pg_proc pr, pg_type tp
-                WHERE
-                    tp.oid = pr.prorettype
-                AND pr.proisagg = FALSE
-                AND tp.typname <> 'trigger'
-                AND pr.pronamespace IN
-                    (SELECT oid FROM pg_namespace
-                    WHERE nspname NOT LIKE 'pg_%' AND nspname != 'information_schema')";
-    }
-
     public function getListSequencesSql($database)
     {
         return "SELECT
@@ -320,25 +305,6 @@ class PostgreSqlPlatform extends AbstractPlatform
     public function getListViewsSql($database)
     {
         return 'SELECT viewname, definition FROM pg_views';
-    }
-
-    public function getListTriggersSql($table = null)
-    {
-        $sql = 'SELECT trg.tgname AS trigger_name
-                    FROM pg_trigger trg,
-                         pg_class tbl
-                   WHERE trg.tgrelid = tbl.oid';
-
-        if ( ! is_null($table)) {
-            $sql .= " AND tbl.relname = " . $table;
-        }
-
-        return $sql;
-    }
-
-    public function getListUsersSql()
-    {
-        return 'SELECT usename, passwd FROM pg_user';
     }
 
     public function getListTableForeignKeysSql($table, $database = null)

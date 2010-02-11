@@ -24,29 +24,6 @@ class OracleSchemaManagerTest extends SchemaManagerFunctionalTestCase
         $conn->executeUpdate($query);
     }
 
-    /**
-     * @expectedException \Exception
-     */
-    public function testListTriggers()
-    {
-        $this->_sm->listTriggers();
-    }
-
-    public function testListUsers()
-    {
-        $users = $this->_sm->listUsers();
-        $this->assertEquals(true, is_array($users));
-        $params = $this->_conn->getParams();
-        $testUser = strtoupper($params['user']);
-        $found = false;
-        foreach ($users as $user) {
-            if ($user['user'] == $testUser) {
-                $found = true;
-            }
-        }
-        $this->assertEquals(true, $found);
-    }
-
     public function testRenameTable()
     {
         $this->_sm->tryMethod('DropTable', 'list_tables_test');

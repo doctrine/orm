@@ -18,32 +18,6 @@ class SqliteSchemaManagerTest extends SchemaManagerFunctionalTestCase
         $this->_sm->listDatabases();
     }
 
-    /**
-     * SQLITE does not support databases.
-     *
-     * @expectedException \Exception
-     */
-    public function testListFunctions()
-    {
-        $this->_sm->listFunctions();
-    }
-
-    /**
-     * @expectedException \Exception
-     */
-    public function testListTriggers()
-    {
-        $this->_sm->listTriggers();
-    }
-
-    /**
-     * @expectedException \Exception
-     */
-    public function testListUsers()
-    {
-        $this->_sm->listUsers();
-    }
-
     public function testCreateAndDropDatabase()
     {
         $path = dirname(__FILE__).'/test_create_and_drop_sqlite_database.sqlite';
