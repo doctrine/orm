@@ -62,6 +62,11 @@ class AnnotationDriver implements Driver
      * @var string
      */
     protected $_fileExtension = '.php';
+
+    /**
+     * @param array
+     */
+    protected $_classNames = null;
     
     /**
      * Initializes a new AnnotationDriver that uses the given AnnotationReader for reading
@@ -407,6 +412,10 @@ class AnnotationDriver implements Driver
      */
     public function getAllClassNames()
     {
+        if ($this->_classNames !== null) {
+            return $this->_classNames;
+        }
+
         $classes = array();
     
         if ($this->_paths) {
@@ -439,6 +448,8 @@ class AnnotationDriver implements Driver
                 }
             }
         }
+
+        $this->_classNames = $classes;
         
         return $classes;
     }
