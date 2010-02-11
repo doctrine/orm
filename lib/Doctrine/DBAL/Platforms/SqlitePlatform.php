@@ -384,4 +384,23 @@ class SqlitePlatform extends AbstractPlatform
     {
         return 'DELETE FROM '.$tableName;
     }
+
+    /**
+     * User-defined function for Sqlite that is used with PDO::sqliteCreateFunction()
+     *
+     * @param  int|float $value
+     * @return float
+     */
+    static public function udfSqrt($value)
+    {
+        return sqrt($value);
+    }
+
+    /**
+     * User-defined function for Sqlite that implements MOD(a, b)
+     */
+    static public function udfMod($a, $b)
+    {
+        return ($a % $b);
+    }
 }

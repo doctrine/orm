@@ -125,8 +125,6 @@ class QueryDqlFunctionTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
     public function testFunctionMod()
     {
-        $this->markTestSkipped('MOD does not exist on SqLite');
-
         $result = $this->_em->createQuery("SELECT m, MOD(m.salary, 3500) AS amod FROM Doctrine\Tests\Models\Company\CompanyManager m")
                          ->getArrayResult();
 
@@ -139,8 +137,6 @@ class QueryDqlFunctionTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
     public function testFunctionSqrt()
     {
-        $this->markTestSkipped('SQRT does not exist on SqLite');
-
         $result = $this->_em->createQuery("SELECT m, SQRT(m.salary) AS sqrtsalary FROM Doctrine\Tests\Models\Company\CompanyManager m")
                          ->getArrayResult();
 
