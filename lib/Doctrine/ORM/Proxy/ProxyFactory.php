@@ -121,19 +121,16 @@ class ProxyFactory
      * @param $originalClassName
      * @param $proxyClassName
      * @param $file The path of the file to write to.
-     * @return void
      */
     private function _generateProxyClass($class, $proxyClassName, $fileName, $file)
     {
         $methods = $this->_generateMethods($class);
         $sleepImpl = $this->_generateSleep($class);
-        $constructorInv = $class->reflClass->hasMethod('__construct') ? 'parent::__construct();' : '';
 
         $placeholders = array(
             '<namespace>',
             '<proxyClassName>', '<className>',
-            '<methods>', '<sleepImpl>',
-            '<constructorInvocation>'
+            '<methods>', '<sleepImpl>'
         );
 
         if(substr($class->name, 0, 1) == "\\") {
@@ -145,8 +142,7 @@ class ProxyFactory
         $replacements = array(
             $this->_proxyNamespace,
             $proxyClassName, $className,
-            $methods, $sleepImpl,
-            $constructorInv
+            $methods, $sleepImpl
         );
         
         $file = str_replace($placeholders, $replacements, $file);
@@ -258,7 +254,6 @@ namespace <namespace> {
         public function __construct($entityPersister, $identifier) {
             $this->_entityPersister = $entityPersister;
             $this->_identifier = $identifier;
-            <constructorInvocation>
         }
         private function _load() {
             if (!$this->__isInitialized__) {
