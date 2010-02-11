@@ -65,6 +65,30 @@ class SqlitePlatform extends AbstractPlatform
     }
 
     /**
+     * Trim a string, leading/trailing/both and with a given char which defaults to space.
+     *
+     * @param string $str
+     * @param int $pos
+     * @param string $char
+     * @return string
+     */
+    public function getTrimExpression($str, $pos = self::TRIM_UNSPECIFIED, $char = false)
+    {
+        $trimFn = '';
+        $trimChar = ($char != false) ? (', ' . $char) : '';
+
+        if ($pos == self::TRIM_LEADING) {
+            $trimFn = 'LTRIM';
+        } else if($pos == self::TRIM_TRAILING) {
+            $trimFn = 'RTRIM';
+        } else {
+            $trimFn = 'TRIM';
+        }
+
+        return $trimFn . '(' . $str . $trimChar . ')';
+    }
+
+    /**
      * return string to call a function to get a substring inside an SQL statement
      *
      * Note: Not SQL92, but common functionality.

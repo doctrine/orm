@@ -184,8 +184,6 @@ class QueryDqlFunctionTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
     public function testFunctionTrim()
     {
-        $this->markTestIncomplete('Trim has problems on MySql (3rd Case).');
-
         $dql = "SELECT m, TRIM(TRAILING '.' FROM m.name) AS str1, ".
                " TRIM(LEADING '.' FROM m.name) AS str2, TRIM(CONCAT(' ', CONCAT(m.name, ' '))) AS str3 ".
                "FROM Doctrine\Tests\Models\Company\CompanyManager m";

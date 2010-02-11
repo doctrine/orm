@@ -56,6 +56,26 @@ abstract class AbstractPlatform
     const CREATE_FOREIGNKEYS = 2;
 
     /**
+     * @var int
+     */
+    const TRIM_UNSPECIFIED = 0;
+
+    /**
+     * @var int
+     */
+    const TRIM_LEADING = 1;
+
+    /**
+     * @var int
+     */
+    const TRIM_TRAILING = 2;
+
+    /**
+     * @var int
+     */
+    const TRIM_BOTH = 3;
+
+    /**
      * Constructor.
      */
     public function __construct() {}
@@ -230,15 +250,27 @@ abstract class AbstractPlatform
     }
 
     /**
-     * trim
-     * returns the string $str with leading and proceeding space characters removed
+     * Trim a string, leading/trailing/both and with a given char which defaults to space.
      *
-     * @param string $str       literal string or column name
+     * @param string $str
+     * @param int $pos
+     * @param string $char has to be quoted already
      * @return string
      */
-    public function getTrimExpression($str)
+    public function getTrimExpression($str, $pos = self::TRIM_UNSPECIFIED, $char = false)
     {
-        return 'TRIM(' . $str . ')';
+        $posStr = '';
+        $trimChar = ($char != false) ? $char . ' FROM ' : '';
+        
+        if ($pos == self::TRIM_LEADING) {
+            $posStr = 'LEADING '.$trimChar;
+        } else if($pos == self::TRIM_TRAILING) {
+            $posStr = 'TRAILING '.$trimChar;
+        } else if($pos == self::TRIM_BOTH) {
+            $posStr = 'BOTH '.$trimChar;
+        }
+
+        return 'TRIM(' . $posStr . $str . ')';
     }
 
     /**

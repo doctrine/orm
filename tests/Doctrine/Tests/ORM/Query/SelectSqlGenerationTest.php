@@ -223,7 +223,7 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
             "SELECT u.name FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE TRIM(u.name) = 'someone'",
             // String quoting in the SQL usually depends on the database platform.
             // This test works with a mock connection which uses ' for string quoting.
-            "SELECT c0_.name AS name0 FROM cms_users c0_ WHERE TRIM(FROM c0_.name) = 'someone'"
+            "SELECT c0_.name AS name0 FROM cms_users c0_ WHERE TRIM(c0_.name) = 'someone'"
         );
     }
 

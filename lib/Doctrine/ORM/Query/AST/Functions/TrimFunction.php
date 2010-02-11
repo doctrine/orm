@@ -22,6 +22,7 @@
 namespace Doctrine\ORM\Query\AST\Functions;
 
 use Doctrine\ORM\Query\Lexer;
+use Doctrine\DBAL\Platforms\AbstractPlatform;
 
 /**
  * "TRIM" "(" [["LEADING" | "TRAILING" | "BOTH"] [char] "FROM"] StringPrimary ")"
@@ -39,7 +40,7 @@ class TrimFunction extends FunctionNode
     public $leading;
     public $trailing;
     public $both;
-    public $trimChar;
+    public $trimChar = false;
     public $stringPrimary;
 
     /**
@@ -47,21 +48,20 @@ class TrimFunction extends FunctionNode
      */
     public function getSql(\Doctrine\ORM\Query\SqlWalker $sqlWalker)
     {
-        $sql = 'TRIM(';
-        
+        $pos = AbstractPlatform::TRIM_UNSPECIFIED;
         if ($this->leading) {
-            $sql .= 'LEADING ';
+            $pos = AbstractPlatform::TRIM_LEADING;
         } else if ($this->trailing) {
-            $sql .= 'TRAILING ';
+            $pos = AbstractPlatform::TRIM_TRAILING;
         } else if ($this->both) {
-            $sql .= 'BOTH ';
+            $pos = AbstractPlatform::TRIM_BOTH;
         }
-        
-        if ($this->trimChar) {
-            $sql .= $sqlWalker->getConnection()->quote($this->trimChar) . ' ';
-        }
-        
-        return $sql . 'FROM ' . $sqlWalker->walkStringPrimary($this->stringPrimary) . ')';
+
+        return $sqlWalker->getConnection()->getDatabasePlatform()->getTrimExpression(
+            $sqlWalker->walkStringPrimary($this->stringPrimary),
+            $pos,
+            ($this->trimChar != false) ? $sqlWalker->getConnection()->quote($this->trimChar) : false
+        );
     }
 
     /**
@@ -70,7 +70,7 @@ class TrimFunction extends FunctionNode
     public function parse(\Doctrine\ORM\Query\Parser $parser)
     {
         $lexer = $parser->getLexer();
-        
+
         $parser->match(Lexer::T_IDENTIFIER);
         $parser->match(Lexer::T_OPEN_PARENTHESIS);
 
@@ -95,8 +95,8 @@ class TrimFunction extends FunctionNode
         }
 
         $this->stringPrimary = $parser->StringPrimary();
-        
+
         $parser->match(Lexer::T_CLOSE_PARENTHESIS);
     }
-    
+
 }
