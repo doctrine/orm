@@ -63,14 +63,14 @@ class QueryDqlFunctionTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
     public function testFunctionAbs()
     {
-        $arg = $this->_em->createQuery('SELECT m, ABS(m.salary * -1) AS abs FROM Doctrine\Tests\Models\Company\CompanyManager m')
+        $result = $this->_em->createQuery('SELECT m, ABS(m.salary * -1) AS abs FROM Doctrine\Tests\Models\Company\CompanyManager m')
                          ->getResult();
 
-        $this->assertEquals(4, count($arg));
-        $this->assertEquals(100000, $arg[0]['abs']);
-        $this->assertEquals(200000, $arg[1]['abs']);
-        $this->assertEquals(400000, $arg[2]['abs']);
-        $this->assertEquals(800000, $arg[3]['abs']);
+        $this->assertEquals(4, count($result));
+        $this->assertEquals(100000, $result[0]['abs']);
+        $this->assertEquals(200000, $result[1]['abs']);
+        $this->assertEquals(400000, $result[2]['abs']);
+        $this->assertEquals(800000, $result[3]['abs']);
     }
 
     public function testFunctionConcat()
@@ -202,6 +202,54 @@ class QueryDqlFunctionTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertEquals('Guilherme B.', $result[2]['str3']);
         $this->assertEquals('Jonathan W.', $result[3]['str3']);
     }
+
+    /*public function testOperatorAdd()
+    {
+        $result = $this->_em->createQuery('SELECT m, m.salary+2500 AS add FROM Doctrine\Tests\Models\Company\CompanyManager m')
+                         ->getResult();
+
+        $this->assertEquals(4, count($result));
+        $this->assertEquals(102500, $result[0]['op']);
+        $this->assertEquals(202500, $result[1]['op']);
+        $this->assertEquals(402500, $result[2]['op']);
+        $this->assertEquals(802500, $result[3]['op']);
+    }
+
+    public function testOperatorSub()
+    {
+        $result = $this->_em->createQuery('SELECT m, m.salary-2500 AS add FROM Doctrine\Tests\Models\Company\CompanyManager m')
+                         ->getResult();
+
+        $this->assertEquals(4, count($result));
+        $this->assertEquals(102500, $result[0]['op']);
+        $this->assertEquals(202500, $result[1]['op']);
+        $this->assertEquals(402500, $result[2]['op']);
+        $this->assertEquals(802500, $result[3]['op']);
+    }
+
+    public function testOperatorMultiply()
+    {
+        $result = $this->_em->createQuery('SELECT m, m.salary*2 AS op FROM Doctrine\Tests\Models\Company\CompanyManager m')
+                         ->getResult();
+
+        $this->assertEquals(4, count($result));
+        $this->assertEquals(200000, $result[0]['op']);
+        $this->assertEquals(400000, $result[1]['op']);
+        $this->assertEquals(800000, $result[2]['op']);
+        $this->assertEquals(1600000, $result[3]['op']);
+    }
+
+    public function testOperatorDiv()
+    {
+        $result = $this->_em->createQuery('SELECT m, (m.salary/0.5) AS op FROM Doctrine\Tests\Models\Company\CompanyManager m')
+                         ->getResult();
+
+        $this->assertEquals(4, count($result));
+        $this->assertEquals(200000, $result[0]['op']);
+        $this->assertEquals(400000, $result[1]['op']);
+        $this->assertEquals(800000, $result[2]['op']);
+        $this->assertEquals(1600000, $result[3]['op']);
+    }*/
 
     protected function generateFixture()
     {
