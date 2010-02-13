@@ -309,4 +309,19 @@ class Schema extends AbstractAsset
             $sequence->visit($visitor);
         }
     }
+
+    /**
+     * Cloning a Schema triggers a deep clone of all related assets.
+     *
+     * @return void
+     */
+    public function __clone()
+    {
+        foreach ($this->_tables AS $k => $table) {
+            $this->_tables[$k] = clone $table;
+        }
+        foreach ($this->_sequences AS $k => $sequence) {
+            $this->_sequences[$k] = clone $sequence;
+        }
+    }
 }

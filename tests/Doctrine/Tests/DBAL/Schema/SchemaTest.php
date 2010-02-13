@@ -212,4 +212,31 @@ class SchemaTest extends \PHPUnit_Framework_TestCase
 
         $this->assertTrue($table->hasIndex('le_id_idx'));
     }
+
+    public function testDeepClone()
+    {
+        $schema = new Schema();
+        $sequence = $schema->createSequence('baz');
+
+        $tableA = $schema->createTable('foo');
+        $tableA->createColumn('id', 'integer');
+
+        $tableB = $schema->createTable('bar');
+        $tableB->createColumn('id', 'integer');
+        $tableB->createcolumn('foo_id', 'integer');
+        $tableB->addForeignKeyConstraint($tableA, array('foo_id'), array('id'));
+
+        $schemaNew = clone $schema;
+
+        $this->assertNotSame($sequence, $schemaNew->getSequence('baz'));
+
+        $this->assertNotSame($tableA, $schemaNew->getTable('foo'));
+        $this->assertNotSame($tableA->getColumn('id'), $schemaNew->getTable('foo')->getColumn('id'));
+
+        $this->assertNotSame($tableB, $schemaNew->getTable('bar'));
+        $this->assertNotSame($tableB->getColumn('id'), $schemaNew->getTable('bar')->getColumn('id'));
+
+        $fk = current( $schemaNew->getTable('bar')->getForeignKeys() );
+        $this->assertSame($schemaNew->getTable('bar'), $this->readAttribute($fk, '_localTable'));
+    }
 }

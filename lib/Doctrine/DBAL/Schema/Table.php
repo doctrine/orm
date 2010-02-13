@@ -620,4 +620,21 @@ class Table extends AbstractAsset
             $visitor->acceptForeignKey($this, $constraint);
         }
     }
+
+    /**
+     * Clone of a Table triggers a deep clone of all affected assets
+     */
+    public function __clone()
+    {
+        foreach ($this->_columns AS $k => $column) {
+            $this->_columns[$k] = clone $column;
+        }
+        foreach ($this->_indexes AS $k => $index) {
+            $this->_indexes[$k] = clone $index;
+        }
+        foreach ($this->_fkConstraints AS $k => $fk) {
+            $this->_fkConstraints[$k] = clone $fk;
+            $this->_fkConstraints[$k]->setLocalTable($this);
+        }
+    }
 }
